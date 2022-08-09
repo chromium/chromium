@@ -21,6 +21,7 @@ bool PermissionUiSelector::ShouldSuppressAnimation(
     case QuietUiReason::kTriggeredByCrowdDeny:
     case QuietUiReason::kTriggeredDueToAbusiveRequests:
     case QuietUiReason::kTriggeredDueToAbusiveContent:
+    case QuietUiReason::kTriggeredDueToDisruptiveBehavior:
       return true;
   }
 }

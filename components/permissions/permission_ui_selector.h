@@ -27,11 +27,13 @@ class PermissionUiSelector {
     kTriggeredDueToAbusiveContent,
     kServicePredictedVeryUnlikelyGrant,
     kOnDevicePredictedVeryUnlikelyGrant,
+    kTriggeredDueToDisruptiveBehavior,
   };
 
   enum class WarningReason {
     kAbusiveRequests,
     kAbusiveContent,
+    kDisruptiveBehavior,
   };
 
   struct Decision {

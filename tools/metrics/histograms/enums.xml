@@ -57606,6 +57606,8 @@ from previous Chrome versions.
   <int value="-784199026" label="EnableFilesAppCopyImage:enabled"/>
   <int value="-783890018" label="LacrosProfileMigrationForAnyUser:disabled"/>
   <int value="-783093620" label="WebViewHitTestInBlinkOnTouchStart:enabled"/>
+  <int value="-781625651"
+      label="DisruptiveNotificationPermissionRevocation:enabled"/>
   <int value="-780798969" label="disable-single-click-autofill"/>
   <int value="-778126349" label="DownloadsLocationChange:enabled"/>
   <int value="-778098896" label="EnableAggregatedMlSearchRanking:disabled"/>
@@ -58172,6 +58174,8 @@ from previous Chrome versions.
   <int value="-415186532" label="AndroidSiteSettingsUIRefresh:enabled"/>
   <int value="-414900505" label="ScrollCapture:enabled"/>
   <int value="-413562235" label="MessagesForAndroidUpdatePassword:disabled"/>
+  <int value="-413286115"
+      label="DisruptiveNotificationPermissionRevocation:disabled"/>
   <int value="-412736561" label="EnableZeroStateMixedTypesRanker:enabled"/>
   <int value="-412645531" label="AutofillTokenPrefixMatching:enabled"/>
   <int value="-410852857" label="ImprovedA2HS:disabled"/>

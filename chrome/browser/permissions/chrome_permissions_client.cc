@@ -17,12 +17,12 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/engagement/important_sites_util.h"
 #include "chrome/browser/metrics/ukm_background_recorder_service.h"
-#include "chrome/browser/permissions/abusive_origin_permission_revocation_request.h"
 #include "chrome/browser/permissions/adaptive_quiet_notification_permission_ui_enabler.h"
 #include "chrome/browser/permissions/contextual_notification_permission_ui_selector.h"
 #include "chrome/browser/permissions/permission_actions_history_factory.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
+#include "chrome/browser/permissions/permission_revocation_request.h"
 #include "chrome/browser/permissions/prediction_based_permission_ui_selector.h"
 #include "chrome/browser/permissions/pref_notification_permission_ui_selector.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_config.h"
@@ -335,9 +335,11 @@ void ChromePermissionsClient::OnPromptResolved(
         (quiet_ui_reason.value() ==
              QuietUiReason::kTriggeredDueToAbusiveRequests ||
          quiet_ui_reason.value() ==
-             QuietUiReason::kTriggeredDueToAbusiveContent)) {
-      AbusiveOriginPermissionRevocationRequest::
-          ExemptOriginFromFutureRevocations(profile, origin);
+             QuietUiReason::kTriggeredDueToAbusiveContent ||
+         quiet_ui_reason.value() ==
+             QuietUiReason::kTriggeredDueToDisruptiveBehavior)) {
+      PermissionRevocationRequest::ExemptOriginFromFutureRevocations(profile,
+                                                                     origin);
     }
   }
 
@@ -368,8 +370,8 @@ ChromePermissionsClient::HasPreviouslyAutoRevokedPermission(
   }
 
   Profile* profile = Profile::FromBrowserContext(browser_context);
-  return AbusiveOriginPermissionRevocationRequest::
-      HasPreviouslyRevokedPermission(profile, origin);
+  return PermissionRevocationRequest::HasPreviouslyRevokedPermission(profile,
+                                                                     origin);
 }
 
 absl::optional<url::Origin> ChromePermissionsClient::GetAutoApprovalOrigin() {

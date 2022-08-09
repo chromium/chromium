@@ -70,6 +70,10 @@ constexpr char kAbusiveNotificationContentWarningMessage[] =
     "possible and submit your site for another review. Learn more at "
     "https://support.google.com/webtools/answer/9799048";
 
+constexpr char kDisruptiveNotificationBehaviorEnforcementMessage[] =
+    "Chrome is blocking notification permission requests on this site because "
+    "the site exhibits behaviors that may be disruptive to users.";
+
 namespace {
 
 // When there are multiple permissions requests in
@@ -730,6 +734,10 @@ void PermissionRequestManager::ShowBubble() {
         case QuietUiReason::kTriggeredDueToAbusiveContent:
           LogWarningToConsole(kAbusiveNotificationContentEnforcementMessage);
           break;
+        case QuietUiReason::kTriggeredDueToDisruptiveBehavior:
+          LogWarningToConsole(
+              kDisruptiveNotificationBehaviorEnforcementMessage);
+          break;
       }
       base::RecordAction(base::UserMetricsAction(
           "Notifications.Quiet.PermissionRequestShown"));
@@ -973,6 +981,7 @@ bool PermissionRequestManager::ShouldDropCurrentRequestIfCannotShowQuietly()
         return false;
       case QuietUiReason::kTriggeredDueToAbusiveRequests:
       case QuietUiReason::kTriggeredDueToAbusiveContent:
+      case QuietUiReason::kTriggeredDueToDisruptiveBehavior:
         return true;
     }
   }
@@ -1000,6 +1009,8 @@ void PermissionRequestManager::OnPermissionUiSelectorDone(
         break;
       case WarningReason::kAbusiveContent:
         LogWarningToConsole(kAbusiveNotificationContentWarningMessage);
+        break;
+      case WarningReason::kDisruptiveBehavior:
         break;
     }
   }
@@ -1065,6 +1076,7 @@ PermissionRequestManager::DetermineCurrentRequestUIDispositionReasonForUMA() {
     case QuietUiReason::kTriggeredByCrowdDeny:
     case QuietUiReason::kTriggeredDueToAbusiveRequests:
     case QuietUiReason::kTriggeredDueToAbusiveContent:
+    case QuietUiReason::kTriggeredDueToDisruptiveBehavior:
       return PermissionPromptDispositionReason::SAFE_BROWSING_VERDICT;
     case QuietUiReason::kServicePredictedVeryUnlikelyGrant:
       return PermissionPromptDispositionReason::PREDICTION_SERVICE;

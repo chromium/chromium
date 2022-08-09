@@ -49,6 +49,16 @@ const char QuietNotificationPermissionUiConfig::
         "enable_abusive_content_warning";
 
 // static
+const char QuietNotificationPermissionUiConfig::
+    kEnableDisruptiveBehaviorRequestBlocking[] =
+        "enable_disruptive_behavior_triggering";
+
+// static
+const char QuietNotificationPermissionUiConfig::
+    kEnableDisruptiveBehaviorRequestWarning[] =
+        "enable_disruptive_behavior_warning";
+
+// static
 const char QuietNotificationPermissionUiConfig::kMiniInfobarExpandLinkText[] =
     "mini_infobar_expand_link_text";
 
@@ -148,4 +158,26 @@ bool QuietNotificationPermissionUiConfig::
   return base::GetFieldTrialParamByFeatureAsBool(
       features::kQuietNotificationPrompts,
       kEnableAbusiveContentTriggeredRequestWarning, true /* default */);
+}
+
+// static
+bool QuietNotificationPermissionUiConfig::
+    IsDisruptiveBehaviorRequestBlockingEnabled() {
+  if (!base::FeatureList::IsEnabled(features::kQuietNotificationPrompts))
+    return false;
+
+  return base::GetFieldTrialParamByFeatureAsBool(
+      features::kQuietNotificationPrompts,
+      kEnableDisruptiveBehaviorRequestBlocking, true /* default */);
+}
+
+// static
+bool QuietNotificationPermissionUiConfig::
+    IsDisruptiveBehaviorRequestWarningEnabled() {
+  if (!base::FeatureList::IsEnabled(features::kQuietNotificationPrompts))
+    return false;
+
+  return base::GetFieldTrialParamByFeatureAsBool(
+      features::kQuietNotificationPrompts,
+      kEnableDisruptiveBehaviorRequestWarning, true /* default */);
 }
