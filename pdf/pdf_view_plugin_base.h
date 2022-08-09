@@ -40,7 +40,6 @@ namespace chrome_pdf {
 
 class PDFiumEngine;
 class PaintReadyRect;
-struct AccessibilityActionData;
 struct AccessibilityCharInfo;
 struct AccessibilityDocInfo;
 struct AccessibilityPageInfo;
@@ -102,12 +101,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   void OnPaint(const std::vector<gfx::Rect>& paint_rects,
                std::vector<PaintReadyRect>& ready,
                std::vector<gfx::Rect>& pending) override;
-
-  // Enable accessibility for PDF plugin.
-  void EnableAccessibility();
-
-  // Handle invoked accessibility actions.
-  void HandleAccessibilityAction(const AccessibilityActionData& action_data);
 
   // Gets the content restrictions based on the permissions which `engine_` has.
   int GetContentRestrictions() const;
@@ -176,11 +169,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // device scale
   int GetDocumentPixelWidth() const;
   int GetDocumentPixelHeight() const;
-
-  // Common `pdf::mojom::PdfListener` implementations.
-  void SetCaretPosition(const gfx::PointF& position);
-  void MoveRangeSelectionExtent(const gfx::PointF& extent);
-  void SetSelectionBounds(const gfx::PointF& base, const gfx::PointF& extent);
 
   // Sets the text input type for this plugin based on `in_focus`.
   virtual void SetFormTextFieldInFocus(bool in_focus) = 0;
@@ -276,6 +264,10 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   AccessibilityState accessibility_state() const {
     return accessibility_state_;
+  }
+
+  void set_accessibility_state(AccessibilityState state) {
+    accessibility_state_ = state;
   }
 
   static constexpr bool IsSaveDataSizeValid(size_t size) {

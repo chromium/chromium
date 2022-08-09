@@ -189,9 +189,6 @@ void PdfViewPluginBase::DocumentLoadComplete() {
 
   OnDocumentLoadComplete();
 
-  if (accessibility_state_ == AccessibilityState::kPending)
-    LoadAccessibility();
-
   if (!full_frame())
     return;
 
@@ -322,22 +319,6 @@ void PdfViewPluginBase::OnPaint(const std::vector<gfx::Rect>& paint_rects,
   DoPaint(paint_rects, ready, pending);
 }
 
-void PdfViewPluginBase::EnableAccessibility() {
-  if (accessibility_state_ == AccessibilityState::kLoaded)
-    return;
-
-  if (accessibility_state_ == AccessibilityState::kOff)
-    accessibility_state_ = AccessibilityState::kPending;
-
-  if (document_load_state_ == DocumentLoadState::kComplete)
-    LoadAccessibility();
-}
-
-void PdfViewPluginBase::HandleAccessibilityAction(
-    const AccessibilityActionData& action_data) {
-  engine()->HandleAccessibilityAction(action_data);
-}
-
 int PdfViewPluginBase::GetContentRestrictions() const {
   int content_restrictions = kContentRestrictionCut | kContentRestrictionPaste;
   if (!engine()->HasPermission(DocumentPermission::kCopy))
@@ -452,20 +433,6 @@ int PdfViewPluginBase::GetDocumentPixelWidth() const {
 int PdfViewPluginBase::GetDocumentPixelHeight() const {
   return static_cast<int>(
       std::ceil(document_size_.height() * zoom() * device_scale()));
-}
-
-void PdfViewPluginBase::SetCaretPosition(const gfx::PointF& position) {
-  engine()->SetCaretPosition(FrameToPdfCoordinates(position));
-}
-
-void PdfViewPluginBase::MoveRangeSelectionExtent(const gfx::PointF& extent) {
-  engine()->MoveRangeSelectionExtent(FrameToPdfCoordinates(extent));
-}
-
-void PdfViewPluginBase::SetSelectionBounds(const gfx::PointF& base,
-                                           const gfx::PointF& extent) {
-  engine()->SetSelectionBounds(FrameToPdfCoordinates(base),
-                               FrameToPdfCoordinates(extent));
 }
 
 void PdfViewPluginBase::PrepareAndSetAccessibilityPageInfo(int32_t page_index) {

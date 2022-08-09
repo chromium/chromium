@@ -1017,16 +1017,17 @@ bool PdfViewWebPlugin::IsValidLink(const std::string& url) {
 }
 
 void PdfViewWebPlugin::SetCaretPosition(const gfx::PointF& position) {
-  PdfViewPluginBase::SetCaretPosition(position);
+  engine_->SetCaretPosition(FrameToPdfCoordinates(position));
 }
 
 void PdfViewWebPlugin::MoveRangeSelectionExtent(const gfx::PointF& extent) {
-  PdfViewPluginBase::MoveRangeSelectionExtent(extent);
+  engine_->MoveRangeSelectionExtent(FrameToPdfCoordinates(extent));
 }
 
 void PdfViewWebPlugin::SetSelectionBounds(const gfx::PointF& base,
                                           const gfx::PointF& extent) {
-  PdfViewPluginBase::SetSelectionBounds(base, extent);
+  engine_->SetSelectionBounds(FrameToPdfCoordinates(base),
+                              FrameToPdfCoordinates(extent));
 }
 
 bool PdfViewWebPlugin::IsValid() const {
@@ -1458,12 +1459,19 @@ void PdfViewWebPlugin::UpdateLayerTransform(float scale,
 }
 
 void PdfViewWebPlugin::EnableAccessibility() {
-  PdfViewPluginBase::EnableAccessibility();
+  if (accessibility_state() == AccessibilityState::kLoaded)
+    return;
+
+  if (accessibility_state() == AccessibilityState::kOff)
+    set_accessibility_state(AccessibilityState::kPending);
+
+  if (document_load_state() == DocumentLoadState::kComplete)
+    LoadAccessibility();
 }
 
 void PdfViewWebPlugin::HandleAccessibilityAction(
     const AccessibilityActionData& action_data) {
-  PdfViewPluginBase::HandleAccessibilityAction(action_data);
+  engine_->HandleAccessibilityAction(action_data);
 }
 
 base::WeakPtr<PdfViewPluginBase> PdfViewWebPlugin::GetWeakPtr() {
@@ -1493,6 +1501,9 @@ void PdfViewWebPlugin::OnDocumentLoadComplete() {
   SendAttachments();
   SendBookmarks();
   SendMetadata();
+
+  if (accessibility_state() == AccessibilityState::kPending)
+    LoadAccessibility();
 }
 
 void PdfViewWebPlugin::SendMessage(base::Value::Dict message) {
