@@ -310,8 +310,9 @@ void GetAnnotatedVisitsToCluster::AddClusteredVisits(
 
   // Get the clusters within `days_of_clustered_visits_` days older than the
   // unclustered visits.
-  const auto cluster_ids = db->GetRecentClusterIds(
-      unclustered_begin_time - base::Days(days_of_clustered_visits_));
+  const auto cluster_ids = db->GetMostRecentClusterIds(
+      unclustered_begin_time - base::Days(days_of_clustered_visits_),
+      unclustered_begin_time, 1000);
 
   // If we found a cluster and are iterating recent_first_, then we've reached
   // the cluster threshold and have no more unclustered visits remaining.

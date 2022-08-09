@@ -494,25 +494,6 @@ Cluster VisitAnnotationsDatabase::GetCluster(int64_t cluster_id) {
   return cluster;
 }
 
-std::vector<int64_t> VisitAnnotationsDatabase::GetRecentClusterIds(
-    base::Time minimum_time) {
-  // Using `EXISTS` instead of `IN` would result in a full scan of
-  // `clusters_and_visits`. Using `JOIN` would produce an equivalent query plan.
-  sql::Statement statement(
-      GetDB().GetCachedStatement(SQL_FROM_HERE,
-                                 "SELECT DISTINCT cluster_id "
-                                 "FROM clusters_and_visits "
-                                 "WHERE visit_id IN("
-                                 "SELECT id FROM visits WHERE visit_time>=?)"
-                                 "ORDER BY cluster_id DESC"));
-  statement.BindTime(0, minimum_time);
-
-  std::vector<int64_t> cluster_ids;
-  while (statement.Step())
-    cluster_ids.push_back(statement.ColumnInt64(0));
-  return cluster_ids;
-}
-
 std::vector<int64_t> VisitAnnotationsDatabase::GetMostRecentClusterIds(
     base::Time inclusive_min_time,
     base::Time exclusive_max_time,

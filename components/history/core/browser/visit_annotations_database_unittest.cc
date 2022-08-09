@@ -300,15 +300,6 @@ TEST_F(VisitAnnotationsDatabaseTest, AddClusters_GetCluster_GetClusterVisit) {
   EXPECT_EQ(visit_2_retrieved.url_for_display, u"url_for_display_2");
 }
 
-TEST_F(VisitAnnotationsDatabaseTest, GetRecentClusterIds) {
-  AddCluster(
-      {AddVisitWithTime(IntToTime(11)), AddVisitWithTime(IntToTime(12))});
-
-  EXPECT_EQ(GetRecentClusterIds(IntToTime(13)), std::vector<int64_t>({}));
-  EXPECT_EQ(GetRecentClusterIds(IntToTime(12)), std::vector<int64_t>({1}));
-  EXPECT_EQ(GetRecentClusterIds(IntToTime(10)), std::vector<int64_t>({1}));
-}
-
 TEST_F(VisitAnnotationsDatabaseTest, GetMostRecentClusterIds) {
   AddCluster(
       {AddVisitWithTime(IntToTime(11)), AddVisitWithTime(IntToTime(12))});

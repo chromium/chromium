@@ -79,9 +79,6 @@ class VisitAnnotationsDatabase {
   // Get a `Cluster`.
   Cluster GetCluster(int64_t cluster_id);
 
-  // Get recent `Cluster`s' IDs newer than `minimum_time`.
-  std::vector<int64_t> GetRecentClusterIds(base::Time minimum_time);
-
   // Get the most recent clusters within the constraints. The most recent visit
   // of a cluster represents the cluster's time.
   std::vector<int64_t> GetMostRecentClusterIds(base::Time inclusive_min_time,
