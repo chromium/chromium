@@ -1294,6 +1294,9 @@ const base::Feature kProjectorUseOAuthForGetVideoInfo(
 const base::Feature kProjectorLocalPlayback("ProjectorLocalPlayback",
                                             base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enable or disable quick settings revamped view.
+const base::Feature kQsRevamp{"QsRevamp", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether the quick dim prototype is enabled.
 const base::Feature kQuickDim{"QuickDim", base::FEATURE_ENABLED_BY_DEFAULT};
 
@@ -2312,6 +2315,10 @@ bool IsProjectorUseOAuthForGetVideoInfoEnabled() {
 
 bool IsProjectorLocalPlaybackEnabled() {
   return base::FeatureList::IsEnabled(kProjectorLocalPlayback);
+}
+
+bool IsQsRevampEnabled() {
+  return base::FeatureList::IsEnabled(kQsRevamp);
 }
 
 bool IsQuickDimEnabled() {

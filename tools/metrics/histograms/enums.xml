@@ -55734,6 +55734,7 @@ from previous Chrome versions.
       label="AutofillEnableFixedPaymentsBubbleLogging:disabled"/>
   <int value="-2026156288"
       label="LookalikeUrlNavigationSuggestionsUI:disabled"/>
+  <int value="-2025971178" label="QsRevamp:disabled"/>
   <int value="-2025367104" label="enable-material-design-ntp"/>
   <int value="-2025360412" label="SyncAndroidPromosWithSingleButton:disabled"/>
   <int value="-2025330968" label="Journeys:disabled"/>
@@ -57826,6 +57827,7 @@ from previous Chrome versions.
   <int value="-752321357" label="AutofillEnableGoogleIssuedCard:enabled"/>
   <int value="-750175757" label="ClientLoFi:enabled"/>
   <int value="-749550261" label="SeamlessRefreshRateSwitching:enabled"/>
+  <int value="-749306189" label="QsRevamp:enabled"/>
   <int value="-749048160" label="enable-panels"/>
   <int value="-748571227"
       label="AssistantEnableMediaSessionIntegration:enabled"/>

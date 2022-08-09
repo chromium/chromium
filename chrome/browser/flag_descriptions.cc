@@ -5588,6 +5588,10 @@ const char kProjectorExcludeTranscriptName[] =
 const char kProjectorExcludeTranscriptDescription[] =
     "Support excluding segment of Projector recording by excluding transcript";
 
+const char kQsRevampName[] = "Quick Settings Revamp";
+const char kQsRevampDescription[] =
+    "Enable QS UI revamp with separated message center.";
+
 const char kReleaseNotesNotificationAllChannelsName[] =
     "Release Notes Notification All Channels";
 const char kReleaseNotesNotificationAllChannelsDescription[] =

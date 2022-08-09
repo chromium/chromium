@@ -5309,6 +5309,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "qs-revamp",
+    "owners": ["jiamingc","amehfooz", "newcomer"],
+    "expiry_milestone" : 116
+  },
+  {
     "name": "query-tiles",
     "owners": [ "shaktisahu", "qinmin" ],
     "expiry_milestone": 120

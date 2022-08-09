@@ -3199,6 +3199,9 @@ extern const char kProjectorAnnotatorDescription[];
 extern const char kProjectorExcludeTranscriptName[];
 extern const char kProjectorExcludeTranscriptDescription[];
 
+extern const char kQsRevampName[];
+extern const char kQsRevampDescription[];
+
 extern const char kReleaseNotesNotificationAllChannelsName[];
 extern const char kReleaseNotesNotificationAllChannelsDescription[];
 
