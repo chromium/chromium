@@ -292,8 +292,7 @@ TEST_F(AutofillProfileSyncUtilTest, CreateEntityDataFromAutofillProfile) {
   structured_names_feature.InitWithFeatures(
       {features::kAutofillEnableSupportForMoreStructureInAddresses,
        features::kAutofillEnableSupportForMoreStructureInNames,
-       features::kAutofillEnableSupportForHonorificPrefixes,
-       features::kAutofillEnableCompatibilitySupportForBirthdates},
+       features::kAutofillEnableSupportForHonorificPrefixes},
       {});
 
   AutofillProfile profile = ConstructCompleteProfile();

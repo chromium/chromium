@@ -1004,10 +1004,6 @@ bool AutofillProfileComparator::MergeAddresses(const AutofillProfile& p1,
 bool AutofillProfileComparator::MergeBirthdates(const AutofillProfile& p1,
                                                 const AutofillProfile& p2,
                                                 Birthdate& birthdate) const {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnableCompatibilitySupportForBirthdates)) {
-    return true;
-  }
   DCHECK(HaveMergeableBirthdates(p1, p2));
 
   for (ServerFieldType component : Birthdate::GetRawComponents()) {
@@ -1468,10 +1464,6 @@ bool AutofillProfileComparator::HaveMergeableAddresses(
 bool AutofillProfileComparator::HaveMergeableBirthdates(
     const AutofillProfile& p1,
     const AutofillProfile& p2) const {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnableCompatibilitySupportForBirthdates)) {
-    return true;
-  }
   return base::ranges::all_of(
       Birthdate::GetRawComponents(), [&](ServerFieldType component) {
         const std::u16string& component1 = p1.GetInfo(component, app_locale_);

@@ -1230,8 +1230,7 @@ TEST_F(AutofillTableTest,
 TEST_F(AutofillTableTest, AutofillProfile_StructuredNames) {
   // Enable the structured names and birthdates.
   scoped_feature_list_.InitWithFeatures(
-      {features::kAutofillEnableSupportForMoreStructureInNames,
-       features::kAutofillEnableCompatibilitySupportForBirthdates},
+      {features::kAutofillEnableSupportForMoreStructureInNames},
       {features::kAutofillEnableSupportForMoreStructureInAddresses});
 
   AutofillProfile home_profile;
@@ -1412,9 +1411,8 @@ TEST_F(AutofillTableTest, AutofillProfile) {
   // Disable the structured names since this test is only applicable if
   // structured names are not used.
   scoped_feature_list_.InitWithFeatures(
-      {features::kAutofillEnableCompatibilitySupportForBirthdates},
-      {features::kAutofillEnableSupportForMoreStructureInAddresses,
-       features::kAutofillEnableSupportForMoreStructureInNames});
+      {}, {features::kAutofillEnableSupportForMoreStructureInAddresses,
+           features::kAutofillEnableSupportForMoreStructureInNames});
 
   // Add a 'Home' profile with non-default data. The specific values are not
   // important.
@@ -1711,9 +1709,6 @@ TEST_F(AutofillTableTest, AddFullServerCreditCard) {
 }
 
 TEST_F(AutofillTableTest, UpdateAutofillProfile) {
-  scoped_feature_list_.InitWithFeatures(
-      {features::kAutofillEnableCompatibilitySupportForBirthdates}, {});
-
   // Add a profile to the db.
   AutofillProfile profile;
   profile.SetRawInfo(NAME_FIRST, u"John");

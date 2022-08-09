@@ -723,10 +723,6 @@ TEST_P(AutofillProfileComparatorTest, HaveMergeableAddresses) {
 }
 
 TEST_P(AutofillProfileComparatorTest, HaveMergeableBirthdates) {
-  base::test::ScopedFeatureList feature;
-  feature.InitAndEnableFeature(
-      autofill::features::kAutofillEnableCompatibilitySupportForBirthdates);
-
   // Birthdates are mergeable if the components are either equal or one of them
   // is empty.
   AutofillProfile p1 = CreateProfileWithBirthdate("14", "", "1997");
@@ -1252,10 +1248,6 @@ TEST_P(AutofillProfileComparatorTest,
 }
 
 TEST_P(AutofillProfileComparatorTest, MergeBirthdates) {
-  base::test::ScopedFeatureList feature;
-  feature.InitAndEnableFeature(
-      autofill::features::kAutofillEnableCompatibilitySupportForBirthdates);
-
   AutofillProfile profile1 = CreateProfileWithBirthdate("14", "", "1997");
   AutofillProfile profile2 = CreateProfileWithBirthdate("", "3", "1997");
 

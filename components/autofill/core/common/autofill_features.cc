@@ -202,15 +202,6 @@ const base::Feature kAutofillEnableAugmentedPhoneCountryCode{
 const base::Feature kAutofillEnableBirthdateParsing{
     "AutofillEnableBirthdateParsing", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// This feature guards the logic for Autofills future compatibility launch of
-// birthdates. Currently filling is not supported and this effectively
-// disables the birthdate merging logic, reads/writes to the AutofillTable and
-// reading/writing from the sync proto.
-// TODO(crbug.com/1305940):  Remove once launched.
-const base::Feature kAutofillEnableCompatibilitySupportForBirthdates{
-    "AutofillEnableCompatibilitySupportForBirthdates",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Controls if Autofill parses ADDRESS_HOME_DEPENDENT_LOCALITY.
 // TODO(crbug.com/1157405): Remove once launched.
 const base::Feature kAutofillEnableDependentLocalityParsing{

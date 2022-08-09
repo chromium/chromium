@@ -908,11 +908,6 @@ bool AddAutofillProfilePhonesToProfile(sql::Database* db,
 
 bool AddAutofillProfileBirthdateToProfile(sql::Database* db,
                                           AutofillProfile* profile) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnableCompatibilitySupportForBirthdates)) {
-    return true;
-  }
-
   sql::Statement s;
   if (SelectByGuid(db, s, kAutofillProfileBirthdatesTable,
                    {kGuid, kDay, kMonth, kYear}, profile->guid())) {
@@ -948,11 +943,6 @@ bool AddAutofillProfilePhones(const AutofillProfile& profile,
 
 bool AddAutofillProfileBirthdate(const AutofillProfile& profile,
                                  sql::Database* db) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnableCompatibilitySupportForBirthdates)) {
-    return true;
-  }
-
   // Add the new birthdate.
   sql::Statement s;
   InsertBuilder(db, s, kAutofillProfileBirthdatesTable,

@@ -237,13 +237,9 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
           entry.GetVerificationStatus(ADDRESS_HOME_HOUSE_NUMBER)));
 
   // Set birthdate-related values.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableCompatibilitySupportForBirthdates)) {
-    specifics->set_birthdate_day(entry.GetRawInfoAsInt(BIRTHDATE_DAY));
-    specifics->set_birthdate_month(entry.GetRawInfoAsInt(BIRTHDATE_MONTH));
-    specifics->set_birthdate_year(
-        entry.GetRawInfoAsInt(BIRTHDATE_4_DIGIT_YEAR));
-  }
+  specifics->set_birthdate_day(entry.GetRawInfoAsInt(BIRTHDATE_DAY));
+  specifics->set_birthdate_month(entry.GetRawInfoAsInt(BIRTHDATE_MONTH));
+  specifics->set_birthdate_year(entry.GetRawInfoAsInt(BIRTHDATE_4_DIGIT_YEAR));
 
   return entity_data;
 }
@@ -468,13 +464,9 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
           specifics.address_home_subpremise_name_status()));
 
   // Set birthdate-related fields.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableCompatibilitySupportForBirthdates)) {
-    profile->SetRawInfoAsInt(BIRTHDATE_DAY, specifics.birthdate_day());
-    profile->SetRawInfoAsInt(BIRTHDATE_MONTH, specifics.birthdate_month());
-    profile->SetRawInfoAsInt(BIRTHDATE_4_DIGIT_YEAR,
-                             specifics.birthdate_year());
-  }
+  profile->SetRawInfoAsInt(BIRTHDATE_DAY, specifics.birthdate_day());
+  profile->SetRawInfoAsInt(BIRTHDATE_MONTH, specifics.birthdate_month());
+  profile->SetRawInfoAsInt(BIRTHDATE_4_DIGIT_YEAR, specifics.birthdate_year());
 
   // The profile may be in a legacy state. By calling |FinalizeAfterImport()|
   // * The profile is migrated if the name structure is in legacy state.
