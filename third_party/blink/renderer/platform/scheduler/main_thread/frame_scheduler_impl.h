@@ -121,6 +121,7 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   WebScopedVirtualTimePauser CreateWebScopedVirtualTimePauser(
       const WTF::String& name,
       WebScopedVirtualTimePauser::VirtualTaskDuration duration) override;
+  scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner() override;
 
   void OnFirstContentfulPaintInMainFrame() override;
   void OnDomContentLoaded() override;

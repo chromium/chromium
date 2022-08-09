@@ -176,6 +176,9 @@ class FakeFrameScheduler : public FrameSchedulerImpl {
   GetPauseSubresourceLoadingHandle() override {
     return nullptr;
   }
+  scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner() override {
+    return nullptr;
+  }
 
  private:
   PageScheduler* page_scheduler_;  // NOT OWNED

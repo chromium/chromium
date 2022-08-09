@@ -314,5 +314,10 @@ WorkerSchedulerImpl::CreateWebSchedulingTaskQueue(
       std::move(task_queue));
 }
 
+scoped_refptr<base::SingleThreadTaskRunner>
+WorkerSchedulerImpl::CompositorTaskRunner() {
+  return thread_scheduler_->CompositorTaskRunner();
+}
+
 }  // namespace scheduler
 }  // namespace blink

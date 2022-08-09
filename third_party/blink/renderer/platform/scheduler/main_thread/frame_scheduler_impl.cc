@@ -674,6 +674,12 @@ WebScopedVirtualTimePauser FrameSchedulerImpl::CreateWebScopedVirtualTimePauser(
   return WebScopedVirtualTimePauser(main_thread_scheduler_, duration, name);
 }
 
+scoped_refptr<base::SingleThreadTaskRunner>
+FrameSchedulerImpl::CompositorTaskRunner() {
+  return parent_page_scheduler_->GetAgentGroupScheduler()
+      .CompositorTaskRunner();
+}
+
 void FrameSchedulerImpl::ResetForNavigation() {
   document_bound_weak_factory_.InvalidateWeakPtrs();
   back_forward_cache_disabling_feature_tracker_.Reset();

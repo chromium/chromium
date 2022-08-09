@@ -36,9 +36,6 @@ class MockIdleDeadlineScheduler final : public ThreadScheduler {
                            Thread::IdleTask) override {}
   void PostNonNestableIdleTask(const base::Location&,
                                Thread::IdleTask) override {}
-  scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner() override {
-    return nullptr;
-  }
   scoped_refptr<base::SingleThreadTaskRunner> DeprecatedDefaultTaskRunner()
       override {
     return nullptr;

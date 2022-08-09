@@ -92,12 +92,6 @@ class PLATFORM_EXPORT ThreadScheduler {
   // Returns a task runner for kV8 tasks. Can be called from any thread.
   virtual scoped_refptr<base::SingleThreadTaskRunner> V8TaskRunner() = 0;
 
-  // Returns a task runner for compositor tasks. This is intended only to be
-  // used by specific animation and rendering related tasks (e.g. animated GIFS)
-  // and should not generally be used.
-  virtual scoped_refptr<base::SingleThreadTaskRunner>
-  CompositorTaskRunner() = 0;
-
   // Returns a default task runner. This is basically same as the default task
   // runner, but is explicitly allowed to run JavaScript. We plan to forbid V8
   // execution on per-thread task runners (crbug.com/913912). If you need to

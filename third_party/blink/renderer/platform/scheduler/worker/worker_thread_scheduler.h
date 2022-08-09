@@ -50,7 +50,6 @@ class PLATFORM_EXPORT WorkerThreadScheduler : public NonMainThreadSchedulerBase,
 
   // ThreadScheduler implementation:
   scoped_refptr<base::SingleThreadTaskRunner> V8TaskRunner() override;
-  scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner() override;
   bool ShouldYieldForHighPriorityWork() override;
   bool CanExceedIdleDeadlineIfRequired() const override;
   void AddTaskObserver(base::TaskObserver* task_observer) override;
@@ -82,6 +81,7 @@ class PLATFORM_EXPORT WorkerThreadScheduler : public NonMainThreadSchedulerBase,
   base::TimeTicks CurrentIdleTaskDeadlineForTesting() const;
 
   scoped_refptr<SingleThreadIdleTaskRunner> IdleTaskRunner();
+  scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner();
 
   // Virtual for test.
   virtual void OnLifecycleStateChanged(

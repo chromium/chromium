@@ -139,6 +139,9 @@ class DummyFrameScheduler : public FrameScheduler {
     return weak_ptr_factory_.GetWeakPtr();
   }
   void ReportActiveSchedulerTrackedFeatures() override {}
+  scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner() override {
+    return base::ThreadTaskRunnerHandle::Get();
+  }
 
  private:
   std::unique_ptr<PageScheduler> page_scheduler_;

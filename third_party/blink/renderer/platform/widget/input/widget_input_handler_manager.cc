@@ -235,7 +235,7 @@ WidgetInputHandlerManager::WidgetInputHandlerManager(
       main_thread_task_runner_(widget_scheduler_->InputTaskRunner()),
       compositor_thread_default_task_runner_(
           compositor_thread_scheduler
-              ? compositor_thread_scheduler->CompositorTaskRunner()
+              ? compositor_thread_scheduler->DefaultTaskRunner()
               : nullptr),
       compositor_thread_input_blocking_task_runner_(
           compositor_thread_scheduler

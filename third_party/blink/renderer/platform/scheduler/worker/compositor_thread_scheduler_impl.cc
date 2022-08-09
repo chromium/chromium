@@ -82,7 +82,7 @@ CompositorThreadSchedulerImpl::InputTaskRunner() {
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
-CompositorThreadSchedulerImpl::CompositorTaskRunner() {
+CompositorThreadSchedulerImpl::DefaultTaskRunner() {
   return GetHelper().DefaultTaskRunner();
 }
 

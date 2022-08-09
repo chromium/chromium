@@ -26,6 +26,8 @@ struct BeginFrameProviderParams;
 class PLATFORM_EXPORT BeginFrameProviderClient : public GarbageCollectedMixin {
  public:
   virtual void BeginFrame(const viz::BeginFrameArgs&) = 0;
+  virtual scoped_refptr<base::SingleThreadTaskRunner>
+  GetCompositorTaskRunner() = 0;
   virtual ~BeginFrameProviderClient() = default;
 };
 

@@ -202,7 +202,7 @@ void WidgetBase::InitializeCompositing(
   layer_tree_view_->Initialize(
       *settings, main_thread_compositor_task_runner_,
       compositing_thread_scheduler
-          ? compositing_thread_scheduler->CompositorTaskRunner()
+          ? compositing_thread_scheduler->DefaultTaskRunner()
           : nullptr,
       CategorizedWorkerPool::GetOrCreate());
 

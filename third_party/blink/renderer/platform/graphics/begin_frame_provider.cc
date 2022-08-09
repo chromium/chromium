@@ -84,7 +84,7 @@ void BeginFrameProvider::CreateCompositorFrameSinkIfNeeded() {
       provider.BindNewPipeAndPassReceiver());
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      ThreadScheduler::Current()->CompositorTaskRunner();
+      begin_frame_client_->GetCompositorTaskRunner();
 
   provider->CreateSimpleCompositorFrameSink(
       parent_frame_sink_id_, frame_sink_id_,

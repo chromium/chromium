@@ -43,6 +43,8 @@ class CORE_EXPORT WorkerAnimationFrameProvider
 
   // BeginFrameProviderClient
   void BeginFrame(const viz::BeginFrameArgs&) override;
+  scoped_refptr<base::SingleThreadTaskRunner> GetCompositorTaskRunner()
+      override;
 
   void RegisterOffscreenCanvas(OffscreenCanvas*);
   void DeregisterOffscreenCanvas(OffscreenCanvas*);

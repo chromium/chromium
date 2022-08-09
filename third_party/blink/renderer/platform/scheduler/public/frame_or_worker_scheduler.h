@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/types/strong_alias.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/public/scheduling_lifecycle_state.h"
@@ -134,6 +135,12 @@ class PLATFORM_EXPORT FrameOrWorkerScheduler {
   virtual FrameScheduler* ToFrameScheduler() { return nullptr; }
 
   base::WeakPtr<FrameOrWorkerScheduler> GetWeakPtr();
+
+  // Returns a task runner for compositor tasks. This is intended only to be
+  // used by specific animation and rendering related tasks (e.g. animated GIFS)
+  // and should not generally be used.
+  virtual scoped_refptr<base::SingleThreadTaskRunner>
+  CompositorTaskRunner() = 0;
 
  protected:
   FrameOrWorkerScheduler();

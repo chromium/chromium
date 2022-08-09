@@ -70,6 +70,11 @@ void WorkerAnimationFrameProvider::BeginFrame(const viz::BeginFrameArgs& args) {
       WrapWeakPersistent(this), args));
 }
 
+scoped_refptr<base::SingleThreadTaskRunner>
+WorkerAnimationFrameProvider::GetCompositorTaskRunner() {
+  return context_->GetScheduler()->CompositorTaskRunner();
+}
+
 void WorkerAnimationFrameProvider::RegisterOffscreenCanvas(
     OffscreenCanvas* context) {
   auto result = offscreen_canvases_.insert(context);
