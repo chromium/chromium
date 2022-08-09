@@ -7,6 +7,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 #include "gin/gin_export.h"
 
 namespace features {
@@ -47,6 +48,9 @@ GIN_EXPORT extern const base::Feature kV8SparkplugNeedsShortBuiltinCalls;
 GIN_EXPORT extern const base::Feature kV8TurboFastApiCalls;
 GIN_EXPORT extern const base::Feature kV8Turboprop;
 GIN_EXPORT extern const base::Feature kV8UseMapSpace;
+GIN_EXPORT extern const base::Feature kV8DelayMemoryReducer;
+GIN_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kV8MemoryReducerStartDelay;
 
 }  // namespace features
 

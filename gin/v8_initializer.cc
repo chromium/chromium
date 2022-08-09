@@ -260,6 +260,12 @@ void SetFlags(IsolateHolder::ScriptMode mode,
   SetV8FlagsIfOverridden(features::kV8OffThreadFinalization,
                          "--finalize-streaming-on-background",
                          "--no-finalize-streaming-on-background");
+  if (base::FeatureList::IsEnabled(features::kV8DelayMemoryReducer)) {
+    SetV8FlagsFormatted(
+        "--gc-memory-reducer-start-delay-ms=%i",
+        static_cast<int>(
+            features::kV8MemoryReducerStartDelay.Get().InMilliseconds()));
+  }
   SetV8FlagsIfOverridden(features::kV8LazyFeedbackAllocation,
                          "--lazy-feedback-allocation",
                          "--no-lazy-feedback-allocation");

@@ -131,4 +131,9 @@ const base::Feature kV8SlowHistogramsSparkplugAndroid{
 const base::Feature kV8SlowHistogramsScriptAblation{
     "V8SlowHistogramsScriptAblation", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kV8DelayMemoryReducer{"V8DelayMemoryReducer",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+const base::FeatureParam<base::TimeDelta> kV8MemoryReducerStartDelay{
+    &kV8DelayMemoryReducer, "delay", base::Seconds(8)};
+
 }  // namespace features
