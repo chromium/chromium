@@ -65,16 +65,18 @@ TEST(PDFiumPermissionTest, InvalidSecurityHandler) {
       obsolete_perms.HasPermission(DocumentPermission::kPrintHighQuality));
 }
 
-TEST(PDFiumPermissionTest, Revision2SecurityHandler) {
+TEST(PDFiumPermissionTest, Revision2SecurityHandlerNone) {
   uint32_t permissions = GeneratePermissions2(0);
   auto no_perms = PDFiumPermissions::CreateForTesting(2, permissions);
   EXPECT_FALSE(no_perms.HasPermission(DocumentPermission::kCopy));
   EXPECT_FALSE(no_perms.HasPermission(DocumentPermission::kCopyAccessible));
   EXPECT_FALSE(no_perms.HasPermission(DocumentPermission::kPrintLowQuality));
   EXPECT_FALSE(no_perms.HasPermission(DocumentPermission::kPrintHighQuality));
+}
 
-  permissions = GeneratePermissions2(kPDFPermissionBit03PrintMask |
-                                     kPDFPermissionBit05CopyMask);
+TEST(PDFiumPermissionTest, Revision2SecurityHandlerAll) {
+  uint32_t permissions = GeneratePermissions2(kPDFPermissionBit03PrintMask |
+                                              kPDFPermissionBit05CopyMask);
   auto all_known_perms = PDFiumPermissions::CreateForTesting(2, permissions);
   EXPECT_TRUE(all_known_perms.HasPermission(DocumentPermission::kCopy));
   EXPECT_TRUE(
@@ -83,8 +85,10 @@ TEST(PDFiumPermissionTest, Revision2SecurityHandler) {
       all_known_perms.HasPermission(DocumentPermission::kPrintLowQuality));
   EXPECT_TRUE(
       all_known_perms.HasPermission(DocumentPermission::kPrintHighQuality));
+}
 
-  permissions = GeneratePermissions2(kPDFPermissionBit05CopyMask);
+TEST(PDFiumPermissionTest, Revision2SecurityHandlerCopyPrint) {
+  uint32_t permissions = GeneratePermissions2(kPDFPermissionBit05CopyMask);
   auto no_print_perms = PDFiumPermissions::CreateForTesting(2, permissions);
   EXPECT_TRUE(no_print_perms.HasPermission(DocumentPermission::kCopy));
   EXPECT_TRUE(
@@ -105,18 +109,20 @@ TEST(PDFiumPermissionTest, Revision2SecurityHandler) {
       no_copy_perms.HasPermission(DocumentPermission::kPrintHighQuality));
 }
 
-TEST(PDFiumPermissionTest, Revision3SecurityHandler) {
+TEST(PDFiumPermissionTest, Revision3SecurityHandlerNone) {
   uint32_t permissions = GeneratePermissions3(0);
   auto no_perms = PDFiumPermissions::CreateForTesting(3, permissions);
   EXPECT_FALSE(no_perms.HasPermission(DocumentPermission::kCopy));
   EXPECT_FALSE(no_perms.HasPermission(DocumentPermission::kCopyAccessible));
   EXPECT_FALSE(no_perms.HasPermission(DocumentPermission::kPrintLowQuality));
   EXPECT_FALSE(no_perms.HasPermission(DocumentPermission::kPrintHighQuality));
+}
 
-  permissions = GeneratePermissions3(kPDFPermissionBit03PrintMask |
-                                     kPDFPermissionBit05CopyMask |
-                                     kPDFPermissionBit10CopyAccessibleMask |
-                                     kPDFPermissionBit12PrintHighQualityMask);
+TEST(PDFiumPermissionTest, Revision3SecurityHandlerAll) {
+  uint32_t permissions = GeneratePermissions3(
+      kPDFPermissionBit03PrintMask | kPDFPermissionBit05CopyMask |
+      kPDFPermissionBit10CopyAccessibleMask |
+      kPDFPermissionBit12PrintHighQualityMask);
   auto all_known_perms = PDFiumPermissions::CreateForTesting(3, permissions);
   EXPECT_TRUE(all_known_perms.HasPermission(DocumentPermission::kCopy));
   EXPECT_TRUE(
@@ -125,9 +131,11 @@ TEST(PDFiumPermissionTest, Revision3SecurityHandler) {
       all_known_perms.HasPermission(DocumentPermission::kPrintLowQuality));
   EXPECT_TRUE(
       all_known_perms.HasPermission(DocumentPermission::kPrintHighQuality));
+}
 
-  permissions = GeneratePermissions3(kPDFPermissionBit05CopyMask |
-                                     kPDFPermissionBit10CopyAccessibleMask);
+TEST(PDFiumPermissionTest, Revision3SecurityHandlerCopyPrint) {
+  uint32_t permissions = GeneratePermissions3(
+      kPDFPermissionBit05CopyMask | kPDFPermissionBit10CopyAccessibleMask);
   auto copy_no_print_perms =
       PDFiumPermissions::CreateForTesting(3, permissions);
   EXPECT_TRUE(copy_no_print_perms.HasPermission(DocumentPermission::kCopy));
