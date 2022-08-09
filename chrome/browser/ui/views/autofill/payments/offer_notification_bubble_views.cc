@@ -208,11 +208,13 @@ void OfferNotificationBubbleViews::InitWithGPayPromoCodeOfferContent() {
         ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL);
     promo_code_label_->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
     promo_code_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    promo_code_label_->AddStyleRange(
-        gfx::Range(offsets.at(1), offsets.at(1) + see_details_text.length()),
-        views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
-            &OfferNotificationBubbleViews::OnPromoCodeSeeDetailsClicked,
-            base::Unretained(this))));
+    if (!see_details_text.empty()) {
+      promo_code_label_->AddStyleRange(
+          gfx::Range(offsets.at(1), offsets.at(1) + see_details_text.length()),
+          views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
+              &OfferNotificationBubbleViews::OnPromoCodeSeeDetailsClicked,
+              base::Unretained(this))));
+    }
   }
   // Add the usage instructions text.
   if (!offer->GetDisplayStrings().usage_instructions_text.empty()) {

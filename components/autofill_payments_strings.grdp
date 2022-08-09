@@ -706,7 +706,7 @@
     <message name="IDS_AUTOFILL_PROMO_CODE_OFFER_BUTTON_TOOLTIP_CLICKED" desc="The tooltip message for a button containing a copyable promo code in the merchant promo code offer notification bubble on Desktop. This message is shown when the button is hovered over and if the button has been clicked.">
       Copied to clipboard
     </message>
-    <message name="IDS_AUTOFILL_GPAY_PROMO_CODE_OFFERS_REMINDER_VALUE_PROP_TEXT" desc="The first line of the GPay promo ocde notification bubble, consisting of the value prop text and a see details link">
+    <message name="IDS_AUTOFILL_GPAY_PROMO_CODE_OFFERS_REMINDER_VALUE_PROP_TEXT" desc="The first line of the GPay promo code notification bubble, consisting of the value prop text and a see details link">
       <ph name="VALUE_PROP">$1<ex>5% off on shoes. Up to $50.</ex></ph> <ph name="DETAILS">$2<ex>See Details</ex></ph>
     </message>
   </if>
