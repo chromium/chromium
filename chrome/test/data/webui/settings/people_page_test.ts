@@ -6,12 +6,12 @@
 import 'chrome://settings/lazy_load.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
-// <if expr="not chromeos_ash and not chromeos_lacros">
+// <if expr="not is_chromeos">
 import {listenOnce} from 'chrome://resources/js/util.m.js';
 // </if>
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// <if expr="not chromeos_ash and not chromeos_lacros">
+// <if expr="not is_chromeos">
 import {CrCheckboxElement} from 'chrome://settings/lazy_load.js';
 // </if>
 
@@ -21,14 +21,14 @@ import {loadTimeData} from 'chrome://settings/settings.js';
 
 import {pageVisibility, ProfileInfoBrowserProxyImpl, Router, routes, SettingsPeoplePageElement, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-// <if expr="not chromeos_ash and not chromeos_lacros">
+// <if expr="not is_chromeos">
 import {assertLT} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitBeforeNextRender} from 'chrome://webui-test/test_util.js';
 
 // </if>
 
 import {simulateSyncStatus} from './sync_test_util.js';
-// <if expr="not chromeos_ash and not chromeos_lacros">
+// <if expr="not is_chromeos">
 import {simulateStoredAccounts} from './sync_test_util.js';
 // </if>
 
@@ -99,7 +99,7 @@ suite('ProfileInfoTests', function() {
   });
 });
 
-// <if expr="not chromeos_ash and not chromeos_lacros">
+// <if expr="not is_chromeos">
 suite('SigninDisallowedTests', function() {
   setup(function() {
     loadTimeData.overrideValues({signinAllowed: false});

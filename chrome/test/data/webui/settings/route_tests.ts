@@ -262,7 +262,7 @@ suite('route', function() {
     // </if>
 
     assertFalse(routes.PRIVACY.isNavigableDialog);
-    // <if expr="not chromeos_ash and not chromeos_lacros">
+    // <if expr="not is_chromeos">
     assertFalse(routes.DEFAULT_BROWSER.isNavigableDialog);
     // </if>
   });

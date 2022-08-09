@@ -813,7 +813,7 @@ suite('PasswordEditDialog', function() {
     assertEquals('', noteElement!.value);
   });
 
-  // <if expr="not chromeos_ash and not chromeos_lacros">
+  // <if expr="not is_chromeos">
   // On ChromeOS/Lacros the behavior is different (on failure we request token
   // and retry).
   test(

@@ -93,7 +93,7 @@ suite('SettingsMenuReset', function() {
     function assertPagesHidden(expectedHidden: boolean) {
       const ids = [
         'accessibility', 'appearance',
-        // <if expr="not chromeos_ash and not chromeos_lacros">
+        // <if expr="not is_chromeos">
         'defaultBrowser',
         // </if>
         'downloads', 'languages', 'onStartup', 'people', 'reset',

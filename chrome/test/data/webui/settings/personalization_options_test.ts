@@ -11,9 +11,8 @@ import {PrivacyPageVisibility} from 'chrome://settings/page_visibility.js';
 import {loadTimeData, PrivacyPageBrowserProxyImpl, SettingsToggleButtonElement, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
-// <if expr="not chromeos_ash and not chromeos_lacros">
+// <if expr="not is_chromeos">
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
-
 // </if>
 
 import {TestPrivacyPageBrowserProxy} from './test_privacy_page_browser_proxy.js';
@@ -90,7 +89,7 @@ suite('PersonalizationOptionsTests_AllBuilds', function() {
         !!testElement.shadowRoot!.querySelector('#driveSuggestControl'));
   });
 
-  // <if expr="not chromeos_ash and not chromeos_lacros">
+  // <if expr="not is_chromeos">
   test('signinAllowedToggle', function() {
     const toggle = testElement.$.signinAllowedToggle;
     assertTrue(isVisible(toggle));
