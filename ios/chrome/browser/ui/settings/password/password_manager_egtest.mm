@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <TargetConditionals.h>
+#import <TargetConditionals.h>
 
-#include <utility>
+#import <utility>
 
 #import "base/callback.h"
 #import "base/ios/ios_util.h"
@@ -36,16 +36,11 @@
 #import "ios/web/public/test/element_selector.h"
 #import "ui/base/l10n/l10n_util.h"
 
-#include "ios/third_party/earl_grey2/src/CommonLib/Matcher/GREYLayoutConstraint.h"  // nogncheck
+#import "ios/third_party/earl_grey2/src/CommonLib/Matcher/GREYLayoutConstraint.h"  // nogncheck
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-// This test complements
-// password_details_collection_view_controller_unittest.mm. Very simple
-// integration tests and features which are not currently unittestable should
-// go here, the rest into the unittest.
 
 using chrome_test_util::ButtonWithAccessibilityLabel;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
@@ -383,11 +378,11 @@ id<GREYMatcher> EditDoneButton() {
 
 }  // namespace
 
-// Various tests for the Save Passwords section of the settings.
-@interface PasswordsSettingsTestCase : ChromeTestCase
+// Various tests for the main Password Manager UI.
+@interface PasswordManagerTestCase : ChromeTestCase
 @end
 
-@implementation PasswordsSettingsTestCase
+@implementation PasswordManagerTestCase
 
 - (void)setUp {
   [super setUp];
@@ -411,6 +406,9 @@ id<GREYMatcher> EditDoneButton() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
+
+  config.features_enabled.push_back(
+      password_manager::features::kIOSPasswordUISplit);
 
   if ([self isRunningTest:@selector
             (testNoOndeviceEncryptionSetupWhenSignedOut)]) {
@@ -850,9 +848,8 @@ id<GREYMatcher> EditDoneButton() {
       performAction:grey_tap()];
 }
 
-// Checks that if the list view is in edit mode, the "Save Passwords" switch is
-// disabled and the details password view is not accessible on tapping the
-// entries.
+// Checks that if the list view is in edit mode, the details password view is
+// not accessible on tapping the entries.
 - (void)testEditMode {
   // Save a form to have something to tap on.
   SaveExamplePasswordForm();
@@ -860,11 +857,6 @@ id<GREYMatcher> EditDoneButton() {
   OpenPasswordSettings();
 
   TapEdit();
-
-  // Check that the "Save Passwords" switch is disabled.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
-                                          kSavePasswordSwitchTableViewId, YES,
-                                          NO)] assertWithMatcher:grey_notNil()];
 
   [GetInteractionForPasswordEntry(@"example.com, concrete username")
       performAction:grey_tap()];
@@ -1060,68 +1052,6 @@ id<GREYMatcher> EditDoneButton() {
 
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
-      performAction:grey_tap()];
-}
-
-// Check that stored entries are shown no matter what the preference for saving
-// passwords is.
-- (void)testStoredEntriesAlwaysShown {
-  SaveExamplePasswordForm();
-
-  OpenPasswordSettings();
-
-  // Toggle the "Save Passwords" control off and back on and check that stored
-  // items are still present.
-  BOOL isSwitchEnabled =
-      [PasswordSettingsAppInterface isCredentialsServiceEnabled];
-  BOOL kExpectedState[] = {isSwitchEnabled, !isSwitchEnabled};
-  for (BOOL expected_state : kExpectedState) {
-    // Toggle the switch. It is located near the top, so if not interactable,
-    // try scrolling up.
-    [GetInteractionForListItem(
-        chrome_test_util::TableViewSwitchCell(kSavePasswordSwitchTableViewId,
-                                              expected_state),
-        kGREYDirectionUp) performAction:TurnTableViewSwitchOn(!expected_state)];
-
-    // Check that the switch has been modified.
-    [GetInteractionForListItem(
-        chrome_test_util::TableViewSwitchCell(kSavePasswordSwitchTableViewId,
-                                              !expected_state),
-        kGREYDirectionUp) assertWithMatcher:grey_sufficientlyVisible()];
-
-    // Check the stored items. Scroll down if needed.
-    [GetInteractionForPasswordEntry(@"example.com, concrete username")
-        assertWithMatcher:grey_notNil()];
-  }
-
-  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
-      performAction:grey_tap()];
-}
-
-// Check that toggling the switch for the "save passwords" preference changes
-// the settings.
-- (void)testPrefToggle {
-  OpenPasswordSettings();
-
-  // Toggle the "Save Passwords" control off and back on and check the
-  // preferences.
-  constexpr BOOL kExpectedState[] = {YES, NO};
-  for (BOOL expected_initial_state : kExpectedState) {
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
-                                            kSavePasswordSwitchTableViewId,
-                                            expected_initial_state)]
-        performAction:TurnTableViewSwitchOn(!expected_initial_state)];
-    const bool expected_final_state = !expected_initial_state;
-    GREYAssertEqual(expected_final_state,
-                    [PasswordSettingsAppInterface isCredentialsServiceEnabled],
-                    @"State of the UI toggle differs from real preferences.");
-  }
-
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
@@ -1770,37 +1700,6 @@ id<GREYMatcher> EditDoneButton() {
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
-}
-
-// Checks the 'Add Password' button is enabled when the passwords screen is
-// presented irrespective of the enable password toggle.
-- (void)testToolbarAddPasswordButton {
-  SaveExamplePasswordForm();
-  OpenPasswordSettings();
-
-  // Toggle the "Save Passwords" control off and back on and check that add
-  // password button is disabled and enabled respectively.
-  BOOL isSwitchEnabled =
-      [PasswordSettingsAppInterface isCredentialsServiceEnabled];
-  BOOL kExpectedState[] = {isSwitchEnabled, !isSwitchEnabled};
-  for (BOOL expectedState : kExpectedState) {
-    // Toggle the switch. It is located near the top, so if not interactable,
-    // try scrolling up.
-    [GetInteractionForListItem(
-        chrome_test_util::TableViewSwitchCell(kSavePasswordSwitchTableViewId,
-                                              expectedState),
-        kGREYDirectionUp) performAction:TurnTableViewSwitchOn(!expectedState)];
-
-    // Check that the switch has been modified.
-    [GetInteractionForListItem(
-        chrome_test_util::TableViewSwitchCell(kSavePasswordSwitchTableViewId,
-                                              !expectedState),
-        kGREYDirectionUp) assertWithMatcher:grey_sufficientlyVisible()];
-
-    // Expect the button to be enabled.
-    [[EarlGrey selectElementWithMatcher:AddPasswordButton()]
-        assertWithMatcher:grey_sufficientlyVisible()];
-  }
 }
 
 // Checks that the "Add" button is not shown on Edit.

@@ -246,7 +246,10 @@ source_set("eg2_tests") {
     "//build/config/ios:xctest_config",
   ]
   testonly = true
-  sources = [ "passwords_settings_egtest.mm" ]
+  sources = [
+    "legacy_password_settings_egtest.mm",
+    "password_manager_egtest.mm",
+  ]
   deps = [
     ":eg_test_support+eg2",
     ":password_constants",
