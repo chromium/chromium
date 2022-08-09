@@ -1,4 +1,42 @@
 {
+  "$build/chromium_tests_builder_config": {
+    "builder_config": {
+      "builder_db": {
+        "entries": [
+          {
+            "builder_id": {
+              "bucket": "ci",
+              "builder": "win32-updater-builder-dbg",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "builder_group": "chromium.updater",
+              "execution_mode": "COMPILE_AND_TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "chromium",
+                "target_bits": 64,
+                "target_platform": "win"
+              },
+              "legacy_gclient_config": {
+                "config": "chromium"
+              }
+            }
+          }
+        ]
+      },
+      "builder_ids": [
+        {
+          "bucket": "ci",
+          "builder": "win32-updater-builder-dbg",
+          "project": "chromium"
+        }
+      ]
+    }
+  },
   "$build/reclient": {
     "instance": "rbe-chromium-trusted",
     "jobs": 80,

@@ -409,6 +409,20 @@ ci.builder(
 
 ci.builder(
     name = "win32-updater-builder-dbg",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
+        ),
+    ),
     builderless = True,
     console_view_entry = consoles.console_view_entry(
         category = "debug|win (32)",
@@ -451,6 +465,20 @@ ci.builder(
 
 ci.builder(
     name = "win32-updater-builder-rel",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
+        ),
+    ),
     builderless = True,
     console_view_entry = consoles.console_view_entry(
         category = "release|win (32)",
@@ -488,6 +516,21 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "win7(32)-updater-tester-rel",
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
+        ),
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "release|win (32)",
         short_name = "7",
