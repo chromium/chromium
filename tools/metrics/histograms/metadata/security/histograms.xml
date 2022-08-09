@@ -559,9 +559,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SecurityLevel.InsecureMainFrameFormSubmission"
-    enum="SecurityLevel" expires_after="2022-08-14">
+    enum="SecurityLevel" expires_after="2023-08-14">
   <owner>estark@chromium.org</owner>
-  <owner>trusty-transport@chromium.org</owner>
+  <owner>carlosil@chromium.org</owner>
   <summary>
     Records the security level of a page when submitting a form on a top-frame
     navigation with a non-cryptographic scheme. This histogram is recorded
