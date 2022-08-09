@@ -77,6 +77,11 @@ void RestoreIOTask::Execute(IOTask::ProgressCallback progress_callback,
   progress_callback_ = std::move(progress_callback);
   complete_callback_ = std::move(complete_callback);
 
+  if (progress_.sources.size() == 0) {
+    Complete(State::kSuccess);
+    return;
+  }
+
   enabled_trash_locations_ =
       GenerateEnabledTrashLocationsForProfile(profile_, base_path_);
   progress_.state = State::kInProgress;

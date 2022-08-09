@@ -74,6 +74,25 @@ class RestoreIOTaskTest : public TrashBaseTest {
       trash_service_impl_;
 };
 
+TEST_F(RestoreIOTaskTest, NoSourceUrlsShouldReturnSuccess) {
+  base::RunLoop run_loop;
+  std::vector<storage::FileSystemURL> source_urls;
+
+  base::MockRepeatingCallback<void(const ProgressStatus&)> progress_callback;
+  base::MockOnceCallback<void(ProgressStatus)> complete_callback;
+
+  // We should get one complete callback when the size check of `source_urls`
+  // finds none.
+  EXPECT_CALL(complete_callback,
+              Run(Field(&ProgressStatus::state, State::kSuccess)))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+
+  RestoreIOTask task(source_urls, profile_.get(), file_system_context_,
+                     temp_dir_.GetPath());
+  task.Execute(progress_callback.Get(), complete_callback.Get());
+  run_loop.Run();
+}
+
 TEST_F(RestoreIOTaskTest, URLsWithInvalidSuffixShouldError) {
   std::string foo_contents = base::RandBytesAsString(kTestFileSize);
   const base::FilePath file_path = temp_dir_.GetPath().Append("foo.txt");

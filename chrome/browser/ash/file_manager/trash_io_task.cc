@@ -119,6 +119,11 @@ void TrashIOTask::Execute(IOTask::ProgressCallback progress_callback,
   progress_callback_ = std::move(progress_callback);
   complete_callback_ = std::move(complete_callback);
 
+  if (progress_.sources.size() == 0) {
+    Complete(State::kSuccess);
+    return;
+  }
+
   // Build the list of known paths that are enabled, for now Downloads is a bind
   // mount at MyFiles/Downloads so treat them as separate volumes.
   free_space_map_ =
