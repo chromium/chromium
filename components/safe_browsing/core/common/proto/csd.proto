@@ -121,6 +121,9 @@ message ChromeUserPopulation {
   // The time when the account-level enhanced safe browsing (A-ESB) bit state
   // was last sent updated on the client. This is an optional field.
   optional int64 aesb_last_update_time_windows_epoch_micros = 16;
+
+  // Server-side only field.
+  reserved 17;
 }
 
 message ClientPhishingRequest {
