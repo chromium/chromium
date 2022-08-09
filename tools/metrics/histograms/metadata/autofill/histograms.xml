@@ -122,6 +122,8 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="Autofill.ShadowPredictions.SourcePair">
+  <variant name="DefaultHeuristicToDefaultServer"
+      summary="the default heuristics, the default server prediction"/>
   <variant name="ExperimentalToDefault"
       summary="the heuristics being rolled out, the default heuristics"/>
   <variant name="NextGenToDefault"

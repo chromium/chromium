@@ -30,12 +30,12 @@ constexpr int kNameFirstDifferentPredictionsValueAgreesWithOld = 21;
 constexpr int kNameFirstDifferentPredictionsValueAgreesWithBoth = 24;
 constexpr int kNameFirstDifferentPredictionsValueAgreesWithNeither = 23;
 constexpr int kEmailAddressDifferentPredictionsValueAgreesWithNew = 58;
-#if BUILDFLAG(USE_INTERNAL_AUTOFILL_HEADERS)
 constexpr int kNameFullSamePredictionValueAgrees = 43;
+constexpr int kSearchTermDifferentPredictionsValueAgreesWithNew = 586;
+#if BUILDFLAG(USE_INTERNAL_AUTOFILL_HEADERS)
 constexpr int kNameFullDifferentPredictionsValueAgreesWithOld = 45;
 constexpr int kEmailAddressDifferentPredictionsValueAgreesWithOld = 57;
 constexpr int kSearchTermSamePredictionValueDisagrees = 584;
-constexpr int kSearchTermDifferentPredictionsValueAgreesWithNew = 586;
 #endif
 
 namespace {
@@ -210,6 +210,42 @@ TEST_F(AutofillShadowPredictionMetricsTest,
           Bucket(kEmailAddressDifferentPredictionsValueAgreesWithOld, 1)));
 }
 #endif
+
+// Test that Autofill.ShadowPredictions.DefaultHeuristicToDefaultServer compares
+// heuristics to server predictions.
+TEST_F(AutofillShadowPredictionMetricsTest, CompareHeuristicsAndServer) {
+#if BUILDFLAG(USE_INTERNAL_AUTOFILL_HEADERS)
+  constexpr PatternSource source = PatternSource::kDefault;
+#else
+  constexpr PatternSource source = PatternSource::kLegacy;
+#endif
+
+  FormData form = GetFormWith2Fields(autofill_client_->form_origin());
+  form.fields[0].value = u"Elvis Aaron Presley";  // A known `NAME_FULL`.
+  form.fields[1].value = u"buddy@gmail.com";      // A known `EMAIL_ADDRESS`.
+
+  std::vector<ServerFieldType> server_types = {NAME_FULL, EMAIL_ADDRESS};
+
+  // Simulate having seen this form on page load.
+  autofill_manager().AddSeenForm(form,
+                                 {// Field 0
+                                  {{source, NAME_FULL}},
+                                  // Field 1
+                                  {{source, SEARCH_TERM}}},
+                                 server_types);
+
+  // Simulate form submission.
+  base::HistogramTester histogram_tester;
+  autofill_manager().OnFormSubmitted(form, /*known_success=*/false,
+                                     SubmissionSource::FORM_SUBMISSION);
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Autofill.ShadowPredictions.DefaultHeuristicToDefaultServer"),
+      UnorderedElementsAre(
+          Bucket(kNameFullSamePredictionValueAgrees, 1),
+          Bucket(kSearchTermDifferentPredictionsValueAgreesWithNew, 1)));
+}
 
 }  // namespace
 
