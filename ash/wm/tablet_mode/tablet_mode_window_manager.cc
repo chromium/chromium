@@ -24,6 +24,7 @@
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/tablet_mode/scoped_skip_user_session_blocked_check.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/tablet_mode/tablet_mode_multitask_menu_event_handler.h"
 #include "ash/wm/tablet_mode/tablet_mode_toggle_fullscreen_event_handler.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_state.h"
 #include "ash/wm/window_state.h"
@@ -35,6 +36,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "chromeos/ui/wm/features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_element.h"
@@ -174,6 +176,10 @@ void TabletModeWindowManager::Init() {
   accounts_since_entering_tablet_.insert(
       Shell::Get()->session_controller()->GetActiveAccountId());
   event_handler_ = std::make_unique<TabletModeToggleFullscreenEventHandler>();
+  if (chromeos::wm::features::IsFloatWindowEnabled()) {
+    tablet_mode_multitask_menu_event_handler_ =
+        std::make_unique<TabletModeMultitaskMenuEventHandler>();
+  }
 }
 
 void TabletModeWindowManager::Shutdown() {
