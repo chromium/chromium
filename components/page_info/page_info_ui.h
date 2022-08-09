@@ -106,6 +106,9 @@ class PageInfoUI {
   struct CookiesNewInfo {
     CookiesNewInfo();
 
+    // The number of third-party sites blocked.
+    int blocked_sites_count = -1;
+
     // The number of sites allowed to access cookies.
     int allowed_sites_count = -1;
 

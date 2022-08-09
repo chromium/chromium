@@ -712,6 +712,15 @@
   <message name="IDS_PAGE_INFO_COOKIES_SETTINGS_LINK" desc="The text of the link to cookies settings." translateable="false">
     Settings
   </message>
+  <message name="IDS_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_TITLE" desc="The title on the blocking third-party cookies toggle in cookies subpage." translateable="false">
+    Block third-party cookies
+  </message>
+  <message name="IDS_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_TOGGLE_TOOLTIP" desc="The tooltip on the blocking third-party cookies toggle in cookies subpage." translateable="false">
+    Block third-party cookies
+  </message>
+  <message name="IDS_PAGE_INFO_COOKIES_BLOCKED_SITES_COUNT" desc="The label of the count for sites that have blocked access to cookies on the page. This text will be shown on the blocking third-party cookies toggle." translateable="false">
+        {NUM_COOKIES, plural, =1 {1 site blocked} other {# sites blocked}}
+  </message>
   <message name="IDS_PAGE_INFO_COOKIES_ALLOWED_SITES_COUNT" desc="The label of the count for sites with allowed cookies on the page. This text will be shown on the cookies dialog button." translateable="false">
         {NUM_COOKIES, plural, =1 {1 site allowed} other {# sites allowed}}
   </message>
