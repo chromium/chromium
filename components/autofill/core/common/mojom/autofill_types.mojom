@@ -137,11 +137,28 @@ struct SelectOption {
   mojo_base.mojom.String16 content;
 };
 
+// autofill::Section::FieldIdentifier
+// (components/autofill/core/common/form_field_data.h)
+struct SectionFieldIdentifier {
+  string field_name;
+  uint64 local_frame_id;
+  FieldRendererId field_renderer_id;
+};
+
+// autofill::Section::SectionPrefix
+// (components/autofill/core/common/form_field_data.h)
+union SectionPrefix {
+  bool default_prefix;
+  string autocomplete_section_prefix;
+  SectionFieldIdentifier from_field_prefix;
+  bool credit_card_prefix;
+};
+
 // autofill::Section (components/autofill/core/common/form_field_data.h)
 struct Section {
   // autofill::Section::FieldTypeGroupSuffix
   uint8 field_type_group;
-  string prefix;
+  SectionPrefix prefix;
 };
 
 // autofill::FormFieldData (components/autofill/core/common/form_field_data.h)

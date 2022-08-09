@@ -305,32 +305,6 @@ ServerFieldTypeSet GetNecessaryTypesFor(ServerFieldType type) {
   }
 }
 
-// Creates a uniquely named section that starts with `field`.
-//
-// The section name is a string of the form "%s_%u_%u", where the first string
-// is the field's name and the two integers are the field's frame ID and its
-// renderer ID.
-//
-// For the frame ID, we do not use LocalFrameTokens but instead map them to
-// consecutive integers using |frame_token_ids|, which uniquely identify a frame
-// within a given FormStructure. Since we do not intend to compare sections from
-// different FormStructures, this is sufficient.
-//
-// We intentionally do not include the LocalFrameToken in the section string
-// because frame tokens should not be sent to a renderer.
-//
-// TODO(crbug.com/1257141): Remove special handling of FrameTokens.
-Section GetSection(const AutofillField& field,
-                   base::flat_map<LocalFrameToken, size_t>& frame_token_ids) {
-  size_t id = frame_token_ids.emplace(field.host_frame, frame_token_ids.size())
-                  .first->second;
-  Section section;
-  section.set_prefix(base::StrCat(
-      {base::UTF16ToUTF8(field.name), "_", base::NumberToString(id), "_",
-       base::NumberToString(field.unique_renderer_id.value())}));
-  return section;
-}
-
 }  // namespace
 
 class FormStructure::SectionedFieldsIndexes {
@@ -2055,8 +2029,11 @@ void FormStructure::IdentifySectionsWithNewMethod() {
       base::FeatureList::IsEnabled(
           features::kAutofillSectionUponRedundantNameInfo);
 
+  // Create a unique identifier for the section based on the field.
   base::flat_map<LocalFrameToken, size_t> frame_token_ids;
-  Section current_section = GetSection(*fields_.front(), frame_token_ids);
+  Section current_section;
+  current_section.SetPrefixFromFieldIdentifier(*fields_.front(),
+                                               frame_token_ids);
 
   // Keep track of the types we've seen in this section.
   ServerFieldTypeSet seen_types;
@@ -2073,7 +2050,7 @@ void FormStructure::IdentifySectionsWithNewMethod() {
     // All credit card fields belong to the same section that's different
     // from address sections.
     if (AutofillType(current_type).group() == FieldTypeGroup::kCreditCard) {
-      field->section.set_prefix("credit-card");
+      field->section.SetPrefixToCreditCard();
       continue;
     }
 
@@ -2166,7 +2143,7 @@ void FormStructure::IdentifySectionsWithNewMethod() {
       }
 
       // The end of a section, so start a new section.
-      current_section = GetSection(*field, frame_token_ids);
+      current_section.SetPrefixFromFieldIdentifier(*field, frame_token_ids);
 
       // The section described in the autocomplete section attribute
       // overrides the value determined by the heuristic.
@@ -2224,8 +2201,11 @@ void FormStructure::IdentifySections(bool has_author_specified_sections) {
           features::kAutofillSectionUponRedundantNameInfo);
 
   if (!has_author_specified_sections) {
+    // Create a unique identifier based on the field for the section.
     base::flat_map<LocalFrameToken, size_t> frame_token_ids;
-    Section current_section = GetSection(*fields_.front(), frame_token_ids);
+    Section current_section;
+    current_section.SetPrefixFromFieldIdentifier(*fields_.front(),
+                                                 frame_token_ids);
 
     // Keep track of the types we've seen in this section.
     ServerFieldTypeSet seen_types;
@@ -2238,7 +2218,7 @@ void FormStructure::IdentifySections(bool has_author_specified_sections) {
       // All credit card fields belong to the same section that's different
       // from address sections.
       if (AutofillType(current_type).group() == FieldTypeGroup::kCreditCard) {
-        field->section.set_prefix("credit-card");
+        field->section.SetPrefixToCreditCard();
         continue;
       }
 
@@ -2303,7 +2283,7 @@ void FormStructure::IdentifySections(bool has_author_specified_sections) {
           seen_types.clear();
 
         // The end of a section, so start a new section.
-        current_section = GetSection(*field, frame_token_ids);
+        current_section.SetPrefixFromFieldIdentifier(*field, frame_token_ids);
       }
 
       // Only consider a type "seen" if it was not ignored. Some forms have

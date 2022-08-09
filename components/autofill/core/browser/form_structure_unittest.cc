@@ -28,6 +28,7 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/html_field_types.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -6260,9 +6261,8 @@ TEST_F(FormStructureTestImpl, RationalizePhoneNumber_RunsOncePerSection) {
   FormStructure::ParseApiQueryResponse(response_string, forms,
                                        test::GetEncodedSignatures(forms),
                                        nullptr, nullptr);
-  Section s;
-  s.set_prefix("fullName_0_11");
-  s.set_field_type_group(Section::FieldTypeGroupSuffix::kDefault);
+
+  Section s = forms[0]->field(0)->section;
   EXPECT_FALSE(test_api(&form_structure).phone_rationalized(s));
   form_structure.RationalizePhoneNumbersInSection(s);
   EXPECT_TRUE(test_api(&form_structure).phone_rationalized(s));
@@ -6589,39 +6589,41 @@ TEST_F(FormStructureTestImpl,
   field.form_control_type = "text";
   field.max_length = 10000;
 
+  // Billing.
+  field.section.SetPrefixFromAutocomplete("Billing",
+                                          HtmlFieldMode::HTML_MODE_NONE);
+
   field.label = u"Full Name";
   field.name = u"fullName";
-  field.section.set_prefix("Billing");
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Address";
   field.name = u"address";
-  field.section.set_prefix("Billing");
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"City";
   field.name = u"city";
-  field.section.set_prefix("Billing");
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
+  // Shipping.
+  field.section.SetPrefixFromAutocomplete("Shipping",
+                                          HtmlFieldMode::HTML_MODE_NONE);
+
   field.label = u"Full Name";
   field.name = u"fullName";
-  field.section.set_prefix("Shipping");
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Address";
   field.name = u"address";
-  field.section.set_prefix("Shipping");
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"City";
   field.name = u"city";
-  field.section.set_prefix("Shipping");
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
@@ -6675,96 +6677,87 @@ TEST_F(
   field.form_control_type = "text";
   field.max_length = 10000;
 
-  // Shipping
+  // Shipping.
+  field.section.SetPrefixFromAutocomplete("Shipping",
+                                          HtmlFieldMode::HTML_MODE_NONE);
   field.label = u"Full Name";
   field.name = u"fullName";
-  field.section.set_prefix("Shipping");
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Address";
   field.name = u"address";
-  field.section.set_prefix("Shipping");
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Address";
   field.name = u"address";
-  field.section.set_prefix("Shipping");
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"City";
   field.name = u"city";
-  field.section.set_prefix("Shipping");
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
-  // Billing
+  // Billing.
+  field.section.SetPrefixFromAutocomplete("Billing",
+                                          HtmlFieldMode::HTML_MODE_NONE);
   field.label = u"Full Name";
   field.name = u"fullName";
-  field.section.set_prefix("Billing");
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Address";
   field.name = u"address";
-  field.section.set_prefix("Billing");
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Address";
   field.name = u"address";
-  field.section.set_prefix("Billing");
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Address";
   field.name = u"address";
-  field.section.set_prefix("Billing");
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"City";
   field.name = u"city";
-  field.section.set_prefix("Billing");
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
-  // Work address (not realistic)
+  // Work address (not realistic).
+  field.section.SetPrefixFromAutocomplete("Work",
+                                          HtmlFieldMode::HTML_MODE_NONE);
   field.label = u"Full Name";
   field.name = u"fullName";
-  field.section.set_prefix("Work");
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Address";
   field.name = u"address";
-  field.section.set_prefix("Work");
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Address";
   field.name = u"address";
-  field.section.set_prefix("Work");
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Address";
   field.name = u"address";
-  field.section.set_prefix("Work");
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Address";
   field.name = u"address";
-  field.section.set_prefix("Work");
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"City";
   field.name = u"city";
-  field.section.set_prefix("Work");
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
@@ -7137,7 +7130,9 @@ TEST_F(FormStructureTestImpl,
   field.form_control_type = "text";
   field.max_length = 10000;
 
-  field.section.set_prefix("shipping");
+  // Shipping.
+  field.section.SetPrefixFromAutocomplete("shipping",
+                                          HtmlFieldMode::HTML_MODE_NONE);
 
   field.label = u"Full Name";
   field.name = u"fullName";
@@ -7159,7 +7154,9 @@ TEST_F(FormStructureTestImpl,
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
-  field.section.set_prefix("billing");
+  // Billing.
+  field.section.SetPrefixFromAutocomplete("billing",
+                                          HtmlFieldMode::HTML_MODE_NONE);
 
   field.label = u"Country";
   field.name = u"country2";
@@ -7208,7 +7205,9 @@ TEST_F(FormStructureTestImpl,
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
-  field.section.set_prefix("billing-2");
+  // Billing-2.
+  field.section.SetPrefixFromAutocomplete("billing-2",
+                                          HtmlFieldMode::HTML_MODE_NONE);
 
   field.label = u"Country";
   field.name = u"country";
@@ -7445,7 +7444,8 @@ TEST_F(FormStructureTestImpl,
   field.form_control_type = "text";
   field.max_length = 10000;
 
-  field.section.set_prefix("billing");
+  field.section.SetPrefixFromAutocomplete("billing",
+                                          HtmlFieldMode::HTML_MODE_NONE);
 
   field.label = u"Country";
   field.name = u"country";
@@ -7514,7 +7514,8 @@ TEST_F(FormStructureTestImpl,
   field.form_control_type = "text";
   field.max_length = 10000;
 
-  field.section.set_prefix("billing");
+  field.section.SetPrefixFromAutocomplete("billing",
+                                          HtmlFieldMode::HTML_MODE_NONE);
 
   field.label = u"Country";
   field.name = u"country";

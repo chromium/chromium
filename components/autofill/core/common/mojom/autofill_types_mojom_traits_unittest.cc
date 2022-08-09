@@ -12,6 +12,7 @@
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/html_field_types.h"
 #include "components/autofill/core/common/mojom/test_autofill_types.mojom.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/signatures.h"
@@ -145,6 +146,10 @@ class AutofillTypeTraitsTestImpl : public testing::Test,
     std::move(callback).Run(s);
   }
 
+  void PassSection(const Section& s, PassSectionCallback callback) override {
+    std::move(callback).Run(s);
+  }
+
   void PassFormDataPredictions(
       const FormDataPredictions& s,
       PassFormDataPredictionsCallback callback) override {
@@ -241,6 +246,64 @@ void ExpectPasswordGenerationUIData(
   std::move(closure).Run();
 }
 
+// Test all Section::SectionPrefix states.
+class AutofillTypeTraitsTestImplSectionTest
+    : public AutofillTypeTraitsTestImpl,
+      public testing::WithParamInterface<Section> {
+ public:
+  const Section& section() const { return GetParam(); }
+};
+
+TEST_P(AutofillTypeTraitsTestImplSectionTest, PassSection) {
+  base::RunLoop loop;
+  mojo::Remote<mojom::TypeTraitsTest> remote(GetTypeTraitsTestRemote());
+  remote->PassSection(
+      section(),
+      base::BindOnce(
+          [](const Section& a, base::OnceClosure closure, const Section& b) {
+            EXPECT_EQ(a, b);
+            std::move(closure).Run();
+          },
+          section(), loop.QuitClosure()));
+  loop.Run();
+}
+
+std::vector<Section> SectionTestCases() {
+  std::vector<Section> test_cases;
+  Section s;
+  // Default.
+  test_cases.push_back(s);
+
+  // Autocomplete.
+  s = Section();
+  s.SetPrefixFromAutocomplete("autocomplete_section",
+                              HtmlFieldMode::HTML_MODE_BILLING);
+  s.set_field_type_group(Section::FieldTypeGroupSuffix::kDefault);
+  test_cases.push_back(s);
+
+  // FieldIdentifier.
+  s = Section();
+  base::flat_map<LocalFrameToken, size_t> frame_token_ids;
+  FormFieldData field;
+  field.name = u"from_field_name";
+  field.host_frame = test::MakeLocalFrameToken();
+  field.unique_renderer_id = test::MakeFieldRendererId();
+  s.SetPrefixFromFieldIdentifier(field, frame_token_ids);
+  test_cases.push_back(s);
+
+  // CreditCard.
+  s = Section();
+  s.SetPrefixToCreditCard();
+  s.set_field_type_group(Section::FieldTypeGroupSuffix::kCreditCard);
+  test_cases.push_back(s);
+
+  return test_cases;
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AutofillTypeTraitsTestImplSectionTest,
+                         testing::ValuesIn(SectionTestCases()));
+
 TEST_F(AutofillTypeTraitsTestImpl, PassFormFieldData) {
   FormFieldData input;
   test::CreateTestSelectField("TestLabel", "TestName", "TestValue", kOptions,
@@ -264,10 +327,9 @@ TEST_F(AutofillTypeTraitsTestImpl, PassFormFieldData) {
   input.properties_mask = FieldPropertiesFlags::kHadFocus;
   input.user_input = u"TestTypedValue";
   input.bounds = gfx::RectF(1, 2, 10, 100);
-  input.section = Section();
-  input.section.set_prefix("random");
-  input.section.set_field_type_group(
-      Section::FieldTypeGroupSuffix::kCreditCard);
+  base::flat_map<LocalFrameToken, size_t> frame_token_ids;
+  input.section.SetPrefixFromAutocomplete("autocomplete_section",
+                                          HtmlFieldMode::HTML_MODE_SHIPPING);
 
   EXPECT_FALSE(input.host_frame.is_empty());
   base::RunLoop loop;

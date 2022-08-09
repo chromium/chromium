@@ -10,8 +10,10 @@
 #include "base/notreached.h"
 #include "base/pickle.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_util.h"
@@ -26,6 +28,9 @@ namespace {
 // Increment this anytime pickle format is modified as well as provide
 // deserialization routine from previous kFormFieldDataPickleVersion format.
 const int kFormFieldDataPickleVersion = 9;
+
+// Default section name for the fields.
+static constexpr char kDefaultSection[] = "-default";
 
 void WriteSelectOption(const SelectOption& option, base::Pickle* pickle) {
   pickle->WriteString16(option.value);
@@ -241,6 +246,27 @@ auto IdentityTuple(const FormFieldData& f) {
 
 }  // namespace
 
+Section::Section() = default;
+Section::Section(const Section& section) = default;
+Section::~Section() = default;
+
+bool operator==(const Section::FieldIdentifier& a,
+                const Section::FieldIdentifier& b) {
+  return std::tie(a.field_name, a.local_frame_id, a.field_renderer_id) ==
+         std::tie(b.field_name, b.local_frame_id, b.field_renderer_id);
+}
+
+bool operator!=(const Section::FieldIdentifier& a,
+                const Section::FieldIdentifier& b) {
+  return !(a == b);
+}
+
+bool operator<(const Section::FieldIdentifier& a,
+               const Section::FieldIdentifier& b) {
+  return std::tie(a.field_name, a.local_frame_id, a.field_renderer_id) <
+         std::tie(b.field_name, b.local_frame_id, b.field_renderer_id);
+}
+
 bool operator==(const Section& a, const Section& b) {
   return std::tie(a.field_type_group_, a.prefix_) ==
          std::tie(b.field_type_group_, b.prefix_);
@@ -259,12 +285,13 @@ void Section::set_field_type_group(FieldTypeGroupSuffix field_type_group) {
   field_type_group_ = field_type_group;
 }
 
-void Section::set_prefix(std::string prefix) {
-  prefix_ = std::move(prefix);
+void Section::SetPrefixToCreditCard() {
+  prefix_ = CreditCard();
 }
 
-bool Section::SetPrefixFromAutocomplete(const std::string& autocomplete_section,
-                                        HtmlFieldMode autocomplete_mode) {
+bool Section::SetPrefixFromAutocomplete(
+    const Autocomplete& autocomplete_section,
+    HtmlFieldMode autocomplete_mode) {
   if (autocomplete_section.empty() && autocomplete_mode == HTML_MODE_NONE)
     return false;
   // To prevent potential section name collisions, append `kDefaultSection`
@@ -279,8 +306,33 @@ bool Section::SetPrefixFromAutocomplete(const std::string& autocomplete_section,
   return true;
 }
 
+void Section::SetPrefixFromFieldIdentifier(
+    const FormFieldData& field,
+    base::flat_map<LocalFrameToken, size_t>& frame_token_ids) {
+  size_t generated_frame_id =
+      frame_token_ids.emplace(field.host_frame, frame_token_ids.size())
+          .first->second;
+  prefix_ = FieldIdentifier(base::UTF16ToUTF8(field.name), generated_frame_id,
+                            field.unique_renderer_id);
+}
+
 std::string Section::ToString() const {
-  std::string section_name = prefix_.empty() ? kDefaultSection : prefix_;
+  std::string section_name;
+  if (const Autocomplete* autocomplete_section =
+          absl::get_if<Autocomplete>(&prefix_)) {
+    section_name = *autocomplete_section;
+  } else if (const FieldIdentifier* f =
+                 absl::get_if<FieldIdentifier>(&prefix_)) {
+    FieldIdentifier field_identifier = *f;
+    section_name = base::StrCat(
+        {field_identifier.field_name, "_",
+         base::NumberToString(field_identifier.local_frame_id), "_",
+         base::NumberToString(field_identifier.field_renderer_id.value())});
+  } else if (absl::holds_alternative<CreditCard>(prefix_)) {
+    section_name = "credit-card";
+  }
+
+  section_name = section_name.empty() ? kDefaultSection : section_name;
   switch (field_type_group_) {
     case FieldTypeGroupSuffix::kNoGroup:
       return section_name;

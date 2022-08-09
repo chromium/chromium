@@ -1207,7 +1207,8 @@ TEST_P(FormDataImporterTest, ImportAddressProfileFromUnifiedSection) {
       ConstructDefaultProfileFormStructure();
 
   // Assign the address field another section than the other fields.
-  form_structure->field(4)->section.set_prefix("another_section");
+  form_structure->field(4)->section.SetPrefixFromAutocomplete(
+      "another_section", HtmlFieldMode::HTML_MODE_NONE);
 
   ImportAddressProfileAndVerifyImportOfDefaultProfile(*form_structure);
 }

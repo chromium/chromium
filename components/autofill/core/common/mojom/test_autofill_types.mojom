@@ -7,6 +7,7 @@ module autofill.mojom;
 import "components/autofill/core/common/mojom/autofill_types.mojom";
 
 interface TypeTraitsTest {
+  PassSection(Section s) => (Section passed);
   PassFormData(FormData s) => (FormData passed);
   PassFormFieldData(FormFieldData s) => (FormFieldData passed);
   PassFormDataPredictions(FormDataPredictions s) =>
