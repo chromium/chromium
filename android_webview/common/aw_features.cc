@@ -110,7 +110,7 @@ const base::FeatureParam<int> kWebViewXRequestedWithHeaderMode{
 // invalidates the URL after).
 const base::Feature kWebViewSynthesizePageLoadOnlyOnInitialMainDocumentAccess{
     "WebViewSynthesizePageLoadOnlyOnInitialMainDocumentAccess",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 }  // namespace features
 }  // namespace android_webview
