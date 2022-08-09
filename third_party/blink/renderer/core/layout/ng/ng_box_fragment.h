@@ -62,7 +62,7 @@ class CORE_EXPORT NGBoxFragment final : public NGFragment {
       return *baseline;
 
     if (baseline_type == kAlphabeticBaseline)
-      return BlockSize();
+      return writing_direction_.IsFlippedLines() ? LayoutUnit() : BlockSize();
 
     return BlockSize() / 2;
   }
