@@ -54,7 +54,13 @@ bool WebrtcVideoEncoderAV1::InitializeCodec(const webrtc::DesktopSize& size) {
   // Set the width, height, and thread count now that the frame size is known.
   config_.g_w = size.width();
   config_.g_h = size.height();
-  config_.g_threads = GetEncoderThreadCount(config_.g_w);
+  // Determine the number of threads to use for encoding by choosing the larger
+  // of the two dimensions. If we only checked the width, the performance for
+  // displays in portrait mode will be degraded due to a lower thread count.
+  // Since AV1 supports dividing the image into both rows and cols, we set the
+  // maximum number of threads here and then set the tile_row and tile_column
+  // values based on the frame dimensions later on.
+  config_.g_threads = GetEncoderThreadCount(std::max(config_.g_w, config_.g_h));
 
   // Initialize an encoder instance.
   scoped_aom_codec codec(new aom_codec_ctx_t, DestroyAomCodecContext);
@@ -79,13 +85,21 @@ bool WebrtcVideoEncoderAV1::InitializeCodec(const webrtc::DesktopSize& size) {
     DCHECK_EQ(error, AOM_CODEC_OK) << "Failed to set AV1E_SET_ROW_MT";
   }
 
-  // The param for the tile column control is a log2 value so 0 is ok.
-  error = aom_codec_control(codec.get(), AV1E_SET_TILE_COLUMNS,
-                            static_cast<int>(std::log2(config_.g_threads)));
+  // The param used to set the tile columns and tile rows is in log2 so 0 is ok.
+  int log2_threads = static_cast<int>(std::log2(config_.g_threads));
+  // Split the cols/rows as evenly as possible, favoring columns for widescreen.
+  int log2_cols = (log2_threads + 1) / 2;
+  int log2_rows = log2_threads - log2_cols;
+  if (size.height() > size.width()) {
+    // Swap for portrait mode since we want more rows than columns.
+    std::swap(log2_cols, log2_rows);
+  }
+
+  error = aom_codec_control(codec.get(), AV1E_SET_TILE_COLUMNS, log2_cols);
   DCHECK_EQ(error, AOM_CODEC_OK) << "Failed to set AV1E_SET_TILE_COLUMNS";
 
-  // TODO(joedow): Experiment with AV1E_SET_TILE_ROWS. Note that the total
-  // number of COLUMNS and ROWS should add up to, at most, config_.g_threads.
+  error = aom_codec_control(codec.get(), AV1E_SET_TILE_ROWS, log2_rows);
+  DCHECK_EQ(error, AOM_CODEC_OK) << "Failed to set AV1E_SET_TILE_ROWS";
 
   // These make realtime encoding faster.
   error =

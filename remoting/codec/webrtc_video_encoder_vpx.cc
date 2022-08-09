@@ -66,6 +66,10 @@ void SetCommonCodecParameters(vpx_codec_enc_cfg_t* config,
   config->g_w = size.width();
   config->g_h = size.height();
   config->g_pass = VPX_RC_ONE_PASS;
+  // TODO(joedow): Determine whether it is possible to support portrait mode.
+  // VP9 only supports breaking an image up into columns for parallel encoding,
+  // this means that a display in portrait mode cannot be broken up into as many
+  // columns as a display in landscape mode can so performance will be degraded.
   config->g_threads = WebrtcVideoEncoder::GetEncoderThreadCount(config->g_w);
 
   // Start emitting packets immediately.
