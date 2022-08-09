@@ -20,6 +20,10 @@ extern const base::FeatureParam<bool> kDisableSettings;
 extern const base::FeatureParam<bool> kDisableAntiVirus;
 extern const base::FeatureParam<bool> kDisableHotfix;
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+extern const base::Feature kDeviceSignalsPromoAfterSigninIntercept;
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
 // Enum used to map a given function to its kill switch.
 enum class NewEvFunction { kFileSystemInfo, kSettings, kAntiVirus, kHotfix };
 

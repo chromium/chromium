@@ -18,6 +18,17 @@ const base::FeatureParam<bool> kDisableAntiVirus{&kNewEvSignalsEnabled,
 const base::FeatureParam<bool> kDisableHotfix{&kNewEvSignalsEnabled,
                                               "DisableHotfix", false};
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+// Enables the consent promo for sharing device signal when a managed user
+// signs in on an unmanaged device. This occurs after the sign-in intercept
+// and before the sync promo (if enabled)
+// This feature also requires UnmanagedDeviceSignalsConsentFlowEnabled policy to
+// be enabled
+const base::Feature kDeviceSignalsPromoAfterSigninIntercept{
+    "DeviceSignalsPromoAfterSigninIntercept",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
 bool IsNewFunctionEnabled(NewEvFunction new_ev_function) {
   if (!base::FeatureList::IsEnabled(kNewEvSignalsEnabled)) {
     return false;
