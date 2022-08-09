@@ -11,6 +11,7 @@ import {AbstractTts} from '../common/abstract_tts.js';
 import {Msgs} from '../common/msgs.js';
 import {PanelCommand, PanelCommandType} from '../common/panel_command.js';
 import {ChromeTtsBase} from '../common/tts_base.js';
+import {QueueMode, TtsCapturingEventListener, TtsInterface, TtsSpeechProperties} from '../common/tts_interface.js';
 
 import {ChromeVox} from './chromevox.js';
 import {PhoneticData} from './phonetic_data.js';

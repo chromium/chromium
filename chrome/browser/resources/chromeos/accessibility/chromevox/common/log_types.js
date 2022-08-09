@@ -7,6 +7,7 @@
  */
 
 import {TreeDumper} from './tree_dumper.js';
+import {QueueMode} from './tts_interface.js';
 
 /**
  * List of all types of logs supported.

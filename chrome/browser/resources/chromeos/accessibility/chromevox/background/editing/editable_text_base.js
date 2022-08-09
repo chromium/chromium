@@ -15,6 +15,7 @@
  */
 import {AbstractTts} from '../../common/abstract_tts.js';
 import {Msgs} from '../../common/msgs.js';
+import {QueueMode, TtsCategory, TtsInterface, TtsSpeechProperties} from '../../common/tts_interface.js';
 import {ChromeVoxState} from '../chromevox_state.js';
 
 /**

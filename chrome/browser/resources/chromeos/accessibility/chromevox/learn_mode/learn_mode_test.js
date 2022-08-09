@@ -29,6 +29,7 @@ ChromeVoxLearnModeTest = class extends ChromeVoxNextE2ETest {
         ['BrailleKeyEvent', 'BrailleKeyCommand'],
         '/chromevox/common/braille/braille_key_types.js');
     await importModule('KeyCode', '/common/key_code.js');
+    await importModule('QueueMode', '/chromevox/common/tts_interface.js');
   }
 
   async runOnLearnModePage() {

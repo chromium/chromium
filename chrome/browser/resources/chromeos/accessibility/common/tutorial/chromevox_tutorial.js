@@ -9,6 +9,8 @@
 
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {QueueMode} from '../../../chromevox/common/tts_interface.js';
+
 import {Curriculum, InteractionMedium, LessonData, MainMenuButtonData, Screen} from './constants.js';
 import {LessonContainer} from './lesson_container.js';
 import {LessonMenu} from './lesson_menu.js';

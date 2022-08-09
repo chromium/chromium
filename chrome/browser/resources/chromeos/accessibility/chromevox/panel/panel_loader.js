@@ -12,9 +12,7 @@ goog.require('AutomationTreeWalker');
 goog.require('EarconDescription');
 goog.require('PanelNodeMenuData');
 goog.require('PanelNodeMenuItemData');
-goog.require('QueueMode');
 goog.require('RecoveryStrategy');
-goog.require('TtsCategory');
 
 goog.require('constants');
 goog.require('goog.i18n.MessageFormat');

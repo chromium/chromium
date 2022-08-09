@@ -8,6 +8,8 @@
  *
  */
 
+import {QueueMode, TtsInterface, TtsSpeechProperties} from './tts_interface.js';
+
 /**
  * A Composite Tts
  * @implements {TtsInterface}

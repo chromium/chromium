@@ -8,6 +8,7 @@
  */
 import {EventGenerator} from '../../common/event_generator.js';
 import {CustomAutomationEvent} from '../common/custom_automation_event.js';
+import {QueueMode} from '../common/tts_interface.js';
 
 import {BaseAutomationHandler} from './base_automation_handler.js';
 import {ChromeVox} from './chromevox.js';

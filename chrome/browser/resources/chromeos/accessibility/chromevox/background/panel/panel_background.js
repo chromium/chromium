@@ -10,6 +10,7 @@ import {CursorRange} from '../../../common/cursors/range.js';
 import {BridgeConstants} from '../../common/bridge_constants.js';
 import {BridgeHelper} from '../../common/bridge_helper.js';
 import {PanelBridge} from '../../common/panel_bridge.js';
+import {QueueMode} from '../../common/tts_interface.js';
 import {ChromeVox} from '../chromevox.js';
 import {ChromeVoxState, ChromeVoxStateObserver} from '../chromevox_state.js';
 import {Output} from '../output/output.js';

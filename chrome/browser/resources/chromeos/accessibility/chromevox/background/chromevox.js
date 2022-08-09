@@ -7,6 +7,7 @@
  */
 
 import {BrailleInterface} from '../common/braille/braille_interface.js';
+import {TtsInterface} from '../common/tts_interface.js';
 
 export class ChromeVox {
   /**

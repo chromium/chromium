@@ -8,6 +8,7 @@
  */
 
 import {Msgs} from './msgs.js';
+import {QueueMode, TtsInterface, TtsSpeechProperties} from './tts_interface.js';
 
 /**
  * Creates a new instance.

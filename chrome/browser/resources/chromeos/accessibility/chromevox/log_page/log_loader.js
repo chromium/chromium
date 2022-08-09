@@ -6,5 +6,3 @@
  * @fileoverview Loads the log script.
  *
  */
-
-goog.require('QueueMode');

@@ -18,6 +18,7 @@ import {KeyUtil} from '../common/key_util.js';
 import {ChromeVoxKbHandler} from '../common/keyboard_handler.js';
 import {Msgs} from '../common/msgs.js';
 import {Spannable} from '../common/spannable.js';
+import {QueueMode, TtsSpeechProperties} from '../common/tts_interface.js';
 
 /**
  * Class to manage the keyboard explorer.
@@ -283,9 +284,8 @@ export class LearnMode {
     const ChromeVox = window.ChromeVox;
     ChromeVox.tts.speak(
         text,
-        LearnMode.shouldFlushSpeech_ ?
-            window.backgroundWindow.QueueMode.CATEGORY_FLUSH :
-            window.backgroundWindow.QueueMode.QUEUE,
+        LearnMode.shouldFlushSpeech_ ? QueueMode.CATEGORY_FLUSH :
+                                       QueueMode.QUEUE,
         new TtsSpeechProperties({endCallback: opt_speakCallback}));
     ChromeVox.braille.write(new NavBraille({text: new Spannable(text)}));
     LearnMode.shouldFlushSpeech_ = false;

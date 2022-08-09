@@ -9,12 +9,6 @@
  *
  */
 
-goog.provide('QueueMode');
-goog.provide('TtsCapturingEventListener');
-goog.provide('TtsCategory');
-goog.provide('TtsInterface');
-goog.provide('TtsSpeechProperties');
-
 /**
  * Categories for a speech utterance. This can be used with the
  * CATEGORY_FLUSH queue mode, which flushes all utterances from a given
@@ -25,7 +19,7 @@ goog.provide('TtsSpeechProperties');
  *
  * @enum {string}
  */
-TtsCategory = {
+export const TtsCategory = {
   LIVE: 'live',
   NAV: 'nav',
 };
@@ -35,7 +29,7 @@ TtsCategory = {
  * descending order of priority.
  * @enum
  */
-QueueMode = {
+export const QueueMode = {
   /**
      Prepend the current utterance (if any) to the queue, stop speech, and
      speak this utterance.
@@ -60,7 +54,7 @@ QueueMode = {
  * starts or ends from any source.
  * @interface
  */
-TtsCapturingEventListener = class {
+export class TtsCapturingEventListener {
   /**
    * Called when any utterance starts.
    */
@@ -75,10 +69,10 @@ TtsCapturingEventListener = class {
    * Called when any utterance gets interrupted.
    */
   onTtsInterrupted() {}
-};
+}
 
 /** Structure to store properties around TTS speech production. */
-TtsSpeechProperties = class {
+export class TtsSpeechProperties {
   /** @param {Object=} opt_initialValues */
   constructor(opt_initialValues) {
     /** @public {TtsCategory|undefined} */
@@ -159,10 +153,10 @@ TtsSpeechProperties = class {
     }
     Object.assign(this, opt_initialValues);
   }
-};
+}
 
 /** @interface */
-TtsInterface = class {
+export class TtsInterface {
   /**
    * Speaks the given string using the specified queueMode and properties.
    * @param {string} textString The string of text to be spoken.
@@ -229,4 +223,4 @@ TtsInterface = class {
    * Sets the rate, pitch, and volume TTS Settings to their defaults.
    */
   resetTextToSpeechSettings() {}
-};
+}

@@ -13,12 +13,8 @@ goog.require('AutomationTreeWalker');
 goog.require('JaPhoneticData');
 goog.require('PanelNodeMenuData');
 goog.require('PanelTabMenuItemData');
-goog.require('QueueMode');
 goog.require('RecoveryStrategy');
 goog.require('TreePathRecoveryStrategy');
-goog.require('TtsCategory');
-goog.require('TtsInterface');
-goog.require('TtsSpeechProperties');
 
 goog.require('constants');
 goog.require('goog.i18n.MessageFormat');
