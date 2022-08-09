@@ -106,17 +106,13 @@ class ClipboardOzone : public Clipboard {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Used for syncing clipboard sources between Lacros and Ash in ChromeOS.
   void AddClipboardSourceToDataOffer(const ClipboardBuffer buffer);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-  // Retrieves the clipboard source data transfer endpoint. This source and
-  // clipboard destination are passed to the DLP stack to check if restrictions
-  // allow or prevent the clipboard read. If no clipboard source exists in the
-  // internal store (i.e. none was initially provided), an attempt to parse the
-  // source from the data offer occurs since clipboard sources from Ash are
-  // offered to Lacros through a custom MIME type.
-  bool GetSourceAndCheckIfReadIsAllowed(const ClipboardBuffer buffer,
-                                        const DataTransferEndpoint* data_dst,
-                                        const base::span<uint8_t> data) const;
+  // Updates the source for the given buffer. It is used by
+  // `async_clipboard_ozone_` whenever some text is copied from Ash and pasted
+  // to Lacros.
+  void SetSource(ClipboardBuffer buffer,
+                 std::unique_ptr<DataTransferEndpoint> data_src);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   base::span<uint8_t> ReadPngInternal(const ClipboardBuffer buffer) const;
 
