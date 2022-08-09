@@ -5,6 +5,6 @@
 // This interface of not really web-exposed, and only used to generate a
 // ScriptWrappable object, that would pass along the TaskId to V8 and back, as
 // continuation embedder data.
-interface ScriptWrappableTaskId {
+interface ScriptWrappableTaskAttributionId {
   readonly attribute long value;
 };

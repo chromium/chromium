@@ -5,11 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_CALLBACK_INTERFACE_BASE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_CALLBACK_INTERFACE_BASE_H_
 
+#include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/scheduler/public/task_id.h"
 
 namespace blink {
 
@@ -83,7 +83,7 @@ class PLATFORM_EXPORT CallbackInterfaceBase
 
   DOMWrapperWorld& GetWorld() const { return incumbent_script_state_->World(); }
 
-  absl::optional<scheduler::TaskId> GetParentTaskId() const {
+  absl::optional<scheduler::TaskAttributionId> GetParentTaskId() const {
     return absl::nullopt;
   }
 

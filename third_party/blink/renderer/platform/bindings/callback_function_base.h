@@ -6,11 +6,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_CALLBACK_FUNCTION_BASE_H_
 
 #include "base/callback.h"
+#include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/scheduler/public/task_id.h"
 
 namespace blink {
 
@@ -89,11 +89,11 @@ class PLATFORM_EXPORT CallbackFunctionBase
     callback_function_.Reset();
   }
 
-  absl::optional<scheduler::TaskId> GetParentTaskId() const {
+  absl::optional<scheduler::TaskAttributionId> GetParentTaskId() const {
     return parent_task_id_;
   }
 
-  void SetParentTaskId(absl::optional<scheduler::TaskId> task_id) {
+  void SetParentTaskId(absl::optional<scheduler::TaskAttributionId> task_id) {
     parent_task_id_ = task_id;
   }
 
@@ -117,7 +117,7 @@ class PLATFORM_EXPORT CallbackFunctionBase
   // https://webidl.spec.whatwg.org/#dfn-callback-context
   Member<ScriptState> incumbent_script_state_;
 
-  absl::optional<scheduler::TaskId> parent_task_id_;
+  absl::optional<scheduler::TaskAttributionId> parent_task_id_;
 };
 
 }  // namespace blink

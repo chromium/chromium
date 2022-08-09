@@ -167,7 +167,7 @@ void SoftNavigationHeuristics::Trace(Visitor* visitor) const {
 }
 
 void SoftNavigationHeuristics::OnCreateTaskScope(
-    const scheduler::TaskId& task_id) {
+    const scheduler::TaskAttributionId& task_id) {
   // We're inside a click event handler, so need to add this task to the set of
   // potential soft navigation root tasks.
   potential_soft_navigation_task_ids_.insert(task_id.value());

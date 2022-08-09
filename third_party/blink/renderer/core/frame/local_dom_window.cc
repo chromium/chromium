@@ -1821,7 +1821,7 @@ void LocalDOMWindow::queueMicrotask(V8VoidFunction* callback) {
   ScriptState* script_state = callback->CallbackRelevantScriptState();
   auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker();
   if (tracker && script_state->World().IsMainWorld()) {
-    callback->SetParentTaskId(tracker->RunningTaskId(script_state));
+    callback->SetParentTaskId(tracker->RunningTaskAttributionId(script_state));
   }
   Microtask::EnqueueMicrotask(
       WTF::Bind(&V8VoidFunction::InvokeAndReportException,

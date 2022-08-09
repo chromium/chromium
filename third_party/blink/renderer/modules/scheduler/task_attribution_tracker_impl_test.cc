@@ -7,9 +7,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
-#include "third_party/blink/renderer/platform/scheduler/public/task_id.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink::scheduler {
@@ -21,44 +21,45 @@ class TaskAttributionTrackerTest : public PageTestBase {
  public:
   class MockV8Adapter : public TaskAttributionTrackerImpl::V8Adapter {
    public:
-    absl::optional<TaskId> GetValue(ScriptState*) override { return value_; }
-    void SetValue(ScriptState*, absl::optional<TaskId> task_id) override {
-      value_ = task_id;
+    absl::optional<TaskAttributionId> GetValue(ScriptState*) override {
+      return value_;
+    }
+    void SetValue(ScriptState*, absl::optional<TaskAttributionId> id) override {
+      value_ = id;
     }
 
    private:
-    absl::optional<TaskId> value_;
+    absl::optional<TaskAttributionId> value_;
   };
 
   void PostTasks(TaskAttributionTrackerImpl& tracker,
                  unsigned task_number,
                  unsigned number_to_assert,
-                 TaskIdType parent_to_assert,
+                 TaskAttributionIdType parent_to_assert,
                  bool complete,
-                 TaskId* task_id = nullptr) {
-    TaskId previous_task_id = TaskId(parent_to_assert);
+                 TaskAttributionId* id = nullptr) {
+    TaskAttributionId previous_id = TaskAttributionId(parent_to_assert);
     ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
     for (unsigned i = 0; i < task_number; ++i) {
-      task_stack_.push_back(
-          tracker.CreateTaskScope(script_state, previous_task_id));
-      absl::optional<TaskId> running_task_id =
-          tracker.RunningTaskId(script_state);
+      task_stack_.push_back(tracker.CreateTaskScope(script_state, previous_id));
+      absl::optional<TaskAttributionId> running_id =
+          tracker.RunningTaskAttributionId(script_state);
       if (i < number_to_assert) {
         // Make sure that the parent task is an ancestor.
-        TaskId parent_task(parent_to_assert);
+        TaskAttributionId parent_task(parent_to_assert);
         TaskAttributionTracker::AncestorStatus is_ancestor =
             tracker.IsAncestor(script_state, parent_task);
         ASSERT_TRUE(is_ancestor ==
                     TaskAttributionTracker::AncestorStatus::kAncestor);
         if (!complete) {
-          ASSERT_TRUE(tracker.IsAncestor(script_state, previous_task_id) ==
+          ASSERT_TRUE(tracker.IsAncestor(script_state, previous_id) ==
                       TaskAttributionTracker::AncestorStatus::kAncestor);
         }
       }
-      if (task_id) {
-        *task_id = running_task_id.value();
+      if (id) {
+        *id = running_id.value();
       }
-      previous_task_id = running_task_id.value();
+      previous_id = running_id.value();
       if (complete) {
         task_stack_.pop_back();
       }
@@ -73,30 +74,31 @@ class TaskAttributionTrackerTest : public PageTestBase {
     MockV8ForTracker(tracker);
     // Post tasks for half the queue.
     unsigned half_queue = TaskAttributionTrackerImpl::kVectorSize / 2;
-    TaskId task_id(0);
+    TaskAttributionId id(0);
     ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
     PostTasks(tracker, half_queue, /*number_to_assert=*/0,
               /*parent_to_assert=*/0,
-              /*complete=*/true, &task_id);
+              /*complete=*/true, &id);
     // Verify that the ID of the last task that ran is what we expect it to be.
-    ASSERT_EQ(half_queue, task_id.value());
+    ASSERT_EQ(half_queue, id.value());
     // Start the parent task, but don't complete it.
     task_stack_.push_back(tracker.CreateTaskScope(
-        script_state, tracker.RunningTaskId(script_state)));
+        script_state, tracker.RunningTaskAttributionId(script_state)));
     // Get its ID.
-    TaskId parent_task_id = tracker.RunningTaskId(script_state).value();
+    TaskAttributionId parent_id =
+        tracker.RunningTaskAttributionId(script_state).value();
     // Post |overflow_length| tasks.
-    PostTasks(tracker, overflow_length, asserts_length, parent_task_id.value(),
+    PostTasks(tracker, overflow_length, asserts_length, parent_id.value(),
               nested_tasks_complete);
     if (assert_last_task && ((overflow_length + half_queue) >
                              TaskAttributionTrackerImpl::kVectorSize)) {
       // Post another task.
       task_stack_.push_back(tracker.CreateTaskScope(
-          script_state, tracker.RunningTaskId(script_state)));
+          script_state, tracker.RunningTaskAttributionId(script_state)));
 
       // Since it goes beyond the queue length and the parent task was
       // overwritten, we cannot track ancestry.
-      ASSERT_TRUE(tracker.IsAncestor(script_state, parent_task_id) !=
+      ASSERT_TRUE(tracker.IsAncestor(script_state, parent_id) !=
                   TaskAttributionTracker::AncestorStatus::kAncestor);
       if (nested_tasks_complete) {
         task_stack_.pop_back();
@@ -146,19 +148,19 @@ TEST_F(TaskAttributionTrackerTest, CausalityChainOverflow) {
 TEST_F(TaskAttributionTrackerTest, NotAncestor) {
   TaskAttributionTrackerImpl tracker;
   MockV8ForTracker(tracker);
-  TaskId first_task_id(0);
+  TaskAttributionId first_id(0);
   ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
 
   // Start a task, get its ID and complete it.
   {
     auto scope = tracker.CreateTaskScope(script_state, absl::nullopt);
-    first_task_id = tracker.RunningTaskId(script_state).value();
+    first_id = tracker.RunningTaskAttributionId(script_state).value();
   }
 
   // Start an incomplete task.
   auto scope = tracker.CreateTaskScope(script_state, absl::nullopt);
   // Make sure that the first task is not an ancestor.
-  ASSERT_TRUE(tracker.IsAncestor(script_state, first_task_id) ==
+  ASSERT_TRUE(tracker.IsAncestor(script_state, first_id) ==
               TaskAttributionTracker::AncestorStatus::kNotAncestor);
 }
 

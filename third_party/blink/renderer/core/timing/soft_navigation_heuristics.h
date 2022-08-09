@@ -6,10 +6,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_SOFT_NAVIGATION_HEURISTICS_H_
 
 #include "base/containers/enum_set.h"
+#include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
-#include "third_party/blink/renderer/platform/scheduler/public/task_id.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
@@ -41,7 +41,7 @@ class SoftNavigationHeuristics
   uint32_t SoftNavigationCount() { return soft_navigation_count_; }
 
   // TaskAttributionTracker::Observer's implementation.
-  void OnCreateTaskScope(const scheduler::TaskId&) override;
+  void OnCreateTaskScope(const scheduler::TaskAttributionId&) override;
 
  private:
   void CheckSoftNavigation(ScriptState*);
@@ -56,7 +56,8 @@ class SoftNavigationHeuristics
   bool SetFlagIfDescendantAndCheck(ScriptState*, FlagType);
   void ResetHeuristic();
 
-  WTF::HashSet<scheduler::TaskIdType> potential_soft_navigation_task_ids_;
+  WTF::HashSet<scheduler::TaskAttributionIdType>
+      potential_soft_navigation_task_ids_;
   FlagTypeSet flag_set_;
   uint32_t soft_navigation_count_ = 0;
 };

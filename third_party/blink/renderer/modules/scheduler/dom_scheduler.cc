@@ -80,7 +80,8 @@ ScriptPromise DOMScheduler::postTask(
 
   auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker();
   if (tracker && script_state->World().IsMainWorld()) {
-    callback_function->SetParentTaskId(tracker->RunningTaskId(script_state));
+    callback_function->SetParentTaskId(
+        tracker->RunningTaskAttributionId(script_state));
   }
   // Always honor the priority and the task signal if given.
   DOMTaskQueue* task_queue;
@@ -111,20 +112,23 @@ ScriptPromise DOMScheduler::postTask(
   return resolver->Promise();
 }
 
-scheduler::TaskIdType DOMScheduler::taskId(ScriptState* script_state) {
+scheduler::TaskAttributionIdType DOMScheduler::taskId(
+    ScriptState* script_state) {
   ThreadScheduler* scheduler = ThreadScheduler::Current();
   DCHECK(scheduler);
   DCHECK(scheduler->GetTaskAttributionTracker());
-  absl::optional<scheduler::TaskId> task_id =
-      scheduler->GetTaskAttributionTracker()->RunningTaskId(script_state);
+  absl::optional<scheduler::TaskAttributionId> task_id =
+      scheduler->GetTaskAttributionTracker()->RunningTaskAttributionId(
+          script_state);
   // task_id cannot be unset here, as a task has presumably already ran in order
   // for this API call to be called.
   DCHECK(task_id);
   return task_id.value().value();
 }
 
-AtomicString DOMScheduler::isAncestor(ScriptState* script_state,
-                                      scheduler::TaskIdType parentId) {
+AtomicString DOMScheduler::isAncestor(
+    ScriptState* script_state,
+    scheduler::TaskAttributionIdType parentId) {
   scheduler::TaskAttributionTracker::AncestorStatus status =
       scheduler::TaskAttributionTracker::AncestorStatus::kNotAncestor;
   ThreadScheduler* scheduler = ThreadScheduler::Current();
@@ -132,7 +136,8 @@ AtomicString DOMScheduler::isAncestor(ScriptState* script_state,
   scheduler::TaskAttributionTracker* tracker =
       scheduler->GetTaskAttributionTracker();
   DCHECK(tracker);
-  status = tracker->IsAncestor(script_state, scheduler::TaskId(parentId));
+  status =
+      tracker->IsAncestor(script_state, scheduler::TaskAttributionId(parentId));
   switch (status) {
     case scheduler::TaskAttributionTracker::AncestorStatus::kAncestor:
       return "ancestor";

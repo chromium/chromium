@@ -64,7 +64,8 @@ ScheduledAction::ScheduledAction(ScriptState* script_state,
     arguments_ = arguments;
     auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker();
     if (tracker && script_state->World().IsMainWorld()) {
-      function_->SetParentTaskId(tracker->RunningTaskId(script_state));
+      function_->SetParentTaskId(
+          tracker->RunningTaskAttributionId(script_state));
     }
   } else {
     UseCounter::Count(target, WebFeature::kScheduledActionIgnored);
@@ -84,7 +85,7 @@ ScheduledAction::ScheduledAction(ScriptState* script_state,
     code_ = handler;
     auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker();
     if (tracker && script_state->World().IsMainWorld()) {
-      code_parent_task_id_ = tracker->RunningTaskId(script_state);
+      code_parent_task_id_ = tracker->RunningTaskAttributionId(script_state);
     }
   } else {
     UseCounter::Count(target, WebFeature::kScheduledActionIgnored);

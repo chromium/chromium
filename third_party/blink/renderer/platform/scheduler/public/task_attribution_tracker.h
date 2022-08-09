@@ -6,9 +6,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_PUBLIC_TASK_ATTRIBUTION_TRACKER_H_
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/scheduler/public/task_id.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
@@ -43,7 +43,7 @@ class PLATFORM_EXPORT TaskAttributionTracker {
 
   class Observer : public GarbageCollectedMixin {
    public:
-    virtual void OnCreateTaskScope(const TaskId&) = 0;
+    virtual void OnCreateTaskScope(const TaskAttributionId&) = 0;
   };
 
   virtual ~TaskAttributionTracker() = default;
@@ -51,17 +51,19 @@ class PLATFORM_EXPORT TaskAttributionTracker {
   // Create a new task scope.
   virtual std::unique_ptr<TaskScope> CreateTaskScope(
       ScriptState*,
-      absl::optional<TaskId> parent_task_id) = 0;
+      absl::optional<TaskAttributionId> parent_task_id) = 0;
 
   // Get the ID of the currently running task.
-  virtual absl::optional<TaskId> RunningTaskId(ScriptState*) const = 0;
+  virtual absl::optional<TaskAttributionId> RunningTaskAttributionId(
+      ScriptState*) const = 0;
 
   // Check for ancestry of the currently running task against an input
   // |parentId|.
-  virtual AncestorStatus IsAncestor(ScriptState*, TaskId parentId) = 0;
+  virtual AncestorStatus IsAncestor(ScriptState*,
+                                    TaskAttributionId parentId) = 0;
   virtual AncestorStatus HasAncestorInSet(
       ScriptState*,
-      const WTF::HashSet<scheduler::TaskIdType>&) = 0;
+      const WTF::HashSet<scheduler::TaskAttributionIdType>&) = 0;
 
   // Register an observer to be notified when a task is started. Only one
   // observer can be set at every point in time.

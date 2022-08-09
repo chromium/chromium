@@ -32,10 +32,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SCHEDULED_ACTION_H_
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/scheduler/public/task_id.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "v8/include/v8.h"
@@ -78,7 +78,7 @@ class ScheduledAction final : public GarbageCollected<ScheduledAction>,
   Member<V8Function> function_;
   HeapVector<ScriptValue> arguments_;
   String code_;
-  absl::optional<scheduler::TaskId> code_parent_task_id_;
+  absl::optional<scheduler::TaskAttributionId> code_parent_task_id_;
 };
 
 }  // namespace blink

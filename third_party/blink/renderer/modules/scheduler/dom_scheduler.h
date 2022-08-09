@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SCHEDULER_DOM_SCHEDULER_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -14,7 +15,6 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/scheduler/public/task_id.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_priority.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -75,8 +75,9 @@ class MODULES_EXPORT DOMScheduler : public ScriptWrappable,
                          SchedulerPostTaskOptions*,
                          ExceptionState&);
 
-  scheduler::TaskIdType taskId(ScriptState*);
-  AtomicString isAncestor(ScriptState*, scheduler::TaskIdType parent_id);
+  scheduler::TaskAttributionIdType taskId(ScriptState*);
+  AtomicString isAncestor(ScriptState*,
+                          scheduler::TaskAttributionIdType parent_id);
 
   void ContextDestroyed() override;
 
