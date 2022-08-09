@@ -9,7 +9,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/dlcservice/fake_dlcservice_client.h"
 #include "components/live_caption/pref_names.h"
 #include "components/prefs/testing_pref_service.h"
@@ -48,7 +47,6 @@ class SodaInstallerImplChromeOSTest : public testing::Test {
     pref_service_->registry()->RegisterStringPref(
         prefs::kLiveCaptionLanguageCode, kUsEnglishLocale);
 
-    chromeos::DBusThreadManager::Initialize();
     chromeos::DlcserviceClient::InitializeFake();
     fake_dlcservice_client_ = static_cast<chromeos::FakeDlcserviceClient*>(
         chromeos::DlcserviceClient::Get());
@@ -57,7 +55,6 @@ class SodaInstallerImplChromeOSTest : public testing::Test {
   void TearDown() override {
     soda_installer_impl_.reset();
     pref_service_.reset();
-    chromeos::DBusThreadManager::Shutdown();
     chromeos::DlcserviceClient::Shutdown();
   }
 
