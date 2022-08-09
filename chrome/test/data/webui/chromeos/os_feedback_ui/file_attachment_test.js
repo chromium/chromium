@@ -156,6 +156,9 @@ export function fileAttachmentTestSuite() {
     assertEquals('Replace file', getElement('#replaceFileButton').ariaLabel);
     // Verify the i18n string is added.
     assertTrue(page.i18nExists('replaceFileArialLabel'));
+    // Verify the image container is not visible for non-image files.
+    const selectedImageButton = getElement('#selectedImageButton');
+    assertFalse(isVisible(selectedImageButton));
   });
 
   // Test that when there is not a file selected, getAttachedFile returns null.
@@ -288,8 +291,10 @@ export function fileAttachmentTestSuite() {
     const selectedImage = getElement('#selectedFileImage');
     assertTrue(!!selectedImage.src);
     assertEquals(imageUrl, selectedImage.src);
-    assertEquals(
-        'Preview fake.png', getElement('#selectedImageButton').ariaLabel);
+    const selectedImageButton = getElement('#selectedImageButton');
+    assertEquals('Preview fake.png', selectedImageButton.ariaLabel);
+    // Verify the image container is visible for image files.
+    assertTrue(isVisible(selectedImageButton));
   });
 
   // Test that clicking the image will open preview dialog and set the

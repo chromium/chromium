@@ -131,8 +131,9 @@
       [[i18n('replaceFileLabel')]]
     </button>
   </div>
-  <button id="selectedImageButton" on-click="handleSelectedImageClick_">
-    <img id="selectedFileImage" src="[[selectedImageUrl_]]" hidden="[[!selectedImageUrl_]]">
+  <button id="selectedImageButton" on-click="handleSelectedImageClick_"
+      hidden="[[!selectedImageUrl_]]">
+    <img id="selectedFileImage" src="[[selectedImageUrl_]]">
   </button>
 </div>
 <cr-toast id="fileTooBigErrorMessage" duration="5000">
