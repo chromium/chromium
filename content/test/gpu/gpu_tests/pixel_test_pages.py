@@ -1145,7 +1145,7 @@ class PixelTestPages():
     # All these tests contain 4 or 8 solid colored rectangles
     # around 50x100 pixels, this should account for possible antialiasing and
     # color cenversion during RGB<->YUV conversions.
-    match_algo = algo.SobelMatchingAlgorithm(max_different_pixels=5000,
+    match_algo = algo.SobelMatchingAlgorithm(max_different_pixels=11000,
                                              pixel_delta_threshold=50,
                                              edge_threshold=30,
                                              ignored_border_thickness=1)
