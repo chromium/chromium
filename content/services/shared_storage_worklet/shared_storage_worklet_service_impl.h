@@ -5,7 +5,7 @@
 #ifndef CONTENT_SERVICES_SHARED_STORAGE_WORKLET_SHARED_STORAGE_WORKLET_SERVICE_IMPL_H_
 #define CONTENT_SERVICES_SHARED_STORAGE_WORKLET_SHARED_STORAGE_WORKLET_SERVICE_IMPL_H_
 
-#include "content/services/shared_storage_worklet/public/mojom/shared_storage_worklet_service.mojom.h"
+#include "content/common/shared_storage_worklet_service.mojom.h"
 #include "content/services/shared_storage_worklet/shared_storage_worklet_global_scope.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"

@@ -5,7 +5,7 @@
 #ifndef CONTENT_BROWSER_SHARED_STORAGE_SHARED_STORAGE_WORKLET_DRIVER_H_
 #define CONTENT_BROWSER_SHARED_STORAGE_SHARED_STORAGE_WORKLET_DRIVER_H_
 
-#include "content/services/shared_storage_worklet/public/mojom/shared_storage_worklet_service.mojom-forward.h"
+#include "content/common/shared_storage_worklet_service.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace content {

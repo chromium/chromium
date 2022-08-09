@@ -5,7 +5,8 @@
 #ifndef CONTENT_SERVICES_SHARED_STORAGE_WORKLET_SHARED_STORAGE_WORKLET_GLOBAL_SCOPE_H_
 #define CONTENT_SERVICES_SHARED_STORAGE_WORKLET_SHARED_STORAGE_WORKLET_GLOBAL_SCOPE_H_
 
-#include "content/services/shared_storage_worklet/public/mojom/shared_storage_worklet_service.mojom.h"
+#include "content/common/content_export.h"
+#include "content/common/shared_storage_worklet_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "v8/include/v8-forward.h"
@@ -28,7 +29,7 @@ class ModuleScriptDownloader;
 // v8::Isolate and a v8::Context to execute all worklet operations. Members are
 // initialized only after AddModule() succeeds.
 // https://github.com/pythagoraskitty/shared-storage/blob/main/README.md
-class SharedStorageWorkletGlobalScope {
+class CONTENT_EXPORT SharedStorageWorkletGlobalScope {
  public:
   SharedStorageWorkletGlobalScope();
   ~SharedStorageWorkletGlobalScope();

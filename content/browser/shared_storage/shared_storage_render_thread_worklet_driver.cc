@@ -6,8 +6,8 @@
 
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/common/renderer.mojom.h"
+#include "content/common/shared_storage_worklet_service.mojom.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/services/shared_storage_worklet/public/mojom/shared_storage_worklet_service.mojom.h"
 
 namespace content {
 

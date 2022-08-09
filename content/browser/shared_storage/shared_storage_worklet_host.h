@@ -8,7 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
 #include "content/common/content_export.h"
-#include "content/services/shared_storage_worklet/public/mojom/shared_storage_worklet_service.mojom.h"
+#include "content/common/shared_storage_worklet_service.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"

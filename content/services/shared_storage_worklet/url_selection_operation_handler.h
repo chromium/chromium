@@ -7,7 +7,7 @@
 
 #include <map>
 
-#include "content/services/shared_storage_worklet/public/mojom/shared_storage_worklet_service.mojom.h"
+#include "content/common/shared_storage_worklet_service.mojom.h"
 #include "v8/include/v8-forward.h"
 #include "v8/include/v8-persistent-handle.h"
 

@@ -47,7 +47,6 @@ include_rules = [
 
   "+content/public/app",
   "+content/public/browser",
-  "+content/services/shared_storage_worklet/public",
   "+device/base/synchronization",
   "+device/bluetooth",
   "+device/fido/hid",

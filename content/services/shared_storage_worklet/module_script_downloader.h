@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "content/common/content_export.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -22,7 +23,7 @@ namespace shared_storage_worklet {
 
 // Download utility for worklet module script. Creates requests and blocks
 // responses.
-class ModuleScriptDownloader {
+class CONTENT_EXPORT ModuleScriptDownloader {
  public:
   // Passes in nullptr on failure. Always invoked asynchronously.
   using ModuleScriptDownloaderCallback =
