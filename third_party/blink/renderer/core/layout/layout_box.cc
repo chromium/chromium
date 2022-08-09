@@ -7276,7 +7276,7 @@ LayoutBox::PaginationBreakability LayoutBox::GetPaginationBreakability(
       (Parent() && IsWritingModeRoot()) ||
       (IsFixedPositioned() && GetDocument().Printing() &&
        IsA<LayoutView>(Container())) ||
-      ShouldApplySizeContainment() || IsFrameSet())
+      ShouldApplySizeContainment() || IsFrameSetIncludingNG())
     return kForbidBreaks;
 
   if (engine != kUnknownFragmentationEngine) {

@@ -37,9 +37,38 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/layout/layout_frame_set.h"
+#include "third_party/blink/renderer/core/layout/ng/frame_set_layout_data.h"
+#include "third_party/blink/renderer/core/layout/ng/layout_ng_frame_set.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
+
+namespace {
+
+const Vector<LayoutUnit>& ColumnSizes(const LayoutBox& box) {
+  if (const auto* legacy = DynamicTo<LayoutFrameSet>(box))
+    return legacy->Columns().sizes_;
+  DCHECK(IsA<LayoutNGFrameSet>(box));
+  // |object| should have only 1 physical fragment because <frameset> is
+  // monolithic.
+  const auto* data = box.GetPhysicalFragment(0)->GetFrameSetLayoutData();
+  DCHECK(data);
+  return data->col_sizes;
+}
+
+const Vector<LayoutUnit>& RowSizes(const LayoutBox& box) {
+  if (const auto* legacy = DynamicTo<LayoutFrameSet>(box))
+    return legacy->Rows().sizes_;
+  DCHECK(IsA<LayoutNGFrameSet>(box));
+  // |object| should have only 1 physical fragment because <frameset> is
+  // monolithic.
+  const auto* data = box.GetPhysicalFragment(0)->GetFrameSetLayoutData();
+  DCHECK(data);
+  return data->row_sizes;
+}
+
+}  // namespace
 
 HTMLFrameSetElement::HTMLFrameSetElement(Document& document)
     : HTMLElement(html_names::kFramesetTag, document),
@@ -343,7 +372,7 @@ void HTMLFrameSetElement::AttachLayoutTree(AttachContext& context) {
 void HTMLFrameSetElement::DefaultEventHandler(Event& evt) {
   auto* mouse_event = DynamicTo<MouseEvent>(evt);
   if (mouse_event && !noresize_ && GetLayoutObject() &&
-      GetLayoutObject()->IsFrameSet()) {
+      GetLayoutObject()->IsFrameSetIncludingNG()) {
     if (UserResize(*mouse_event)) {
       evt.SetDefaultHandled();
       return;
@@ -375,17 +404,15 @@ void HTMLFrameSetElement::WillRecalcStyle(const StyleRecalcChange) {
 }
 
 bool HTMLFrameSetElement::UserResize(const MouseEvent& event) {
-  auto& layout_frame_set = *To<LayoutFrameSet>(GetLayoutObject());
+  const auto& box = *GetLayoutBox();
   if (!is_resizing_) {
-    if (layout_frame_set.NeedsLayout())
+    if (box.NeedsLayout())
       return false;
     if (event.type() == event_type_names::kMousedown && event.IsLeftButton()) {
       gfx::PointF local_pos =
-          layout_frame_set.AbsoluteToLocalPoint(event.AbsoluteLocation());
-      StartResizing(layout_frame_set.Columns().sizes_, local_pos.x(),
-                    resize_cols_);
-      StartResizing(layout_frame_set.Rows().sizes_, local_pos.y(),
-                    resize_rows_);
+          box.AbsoluteToLocalPoint(event.AbsoluteLocation());
+      StartResizing(ColumnSizes(box), local_pos.x(), resize_cols_);
+      StartResizing(RowSizes(box), local_pos.y(), resize_rows_);
       if (resize_cols_.IsResizingSplit() || resize_rows_.IsResizingSplit()) {
         SetIsResizing(true);
         return true;
@@ -395,11 +422,9 @@ bool HTMLFrameSetElement::UserResize(const MouseEvent& event) {
     if (event.type() == event_type_names::kMousemove ||
         (event.type() == event_type_names::kMouseup && event.IsLeftButton())) {
       gfx::PointF local_pos =
-          layout_frame_set.AbsoluteToLocalPoint(event.AbsoluteLocation());
-      ContinueResizing(layout_frame_set.Columns().sizes_, local_pos.x(),
-                       resize_cols_);
-      ContinueResizing(layout_frame_set.Rows().sizes_, local_pos.y(),
-                       resize_rows_);
+          box.AbsoluteToLocalPoint(event.AbsoluteLocation());
+      ContinueResizing(ColumnSizes(box), local_pos.x(), resize_cols_);
+      ContinueResizing(RowSizes(box), local_pos.y(), resize_rows_);
       if (event.type() == event_type_names::kMouseup && event.IsLeftButton()) {
         SetIsResizing(false);
         return true;
@@ -474,13 +499,13 @@ int HTMLFrameSetElement::SplitPosition(const Vector<LayoutUnit>& sizes,
 }
 
 bool HTMLFrameSetElement::CanResizeRow(const gfx::Point& p) const {
-  return resize_rows_.CanResizeSplitAt(HitTestSplit(
-      To<LayoutFrameSet>(GetLayoutObject())->Rows().sizes_, p.y()));
+  return resize_rows_.CanResizeSplitAt(
+      HitTestSplit(RowSizes(*GetLayoutBox()), p.y()));
 }
 
 bool HTMLFrameSetElement::CanResizeColumn(const gfx::Point& p) const {
-  return resize_cols_.CanResizeSplitAt(HitTestSplit(
-      To<LayoutFrameSet>(GetLayoutObject())->Columns().sizes_, p.x()));
+  return resize_cols_.CanResizeSplitAt(
+      HitTestSplit(ColumnSizes(*GetLayoutBox()), p.x()));
 }
 
 int HTMLFrameSetElement::HitTestSplit(const Vector<LayoutUnit>& sizes,
