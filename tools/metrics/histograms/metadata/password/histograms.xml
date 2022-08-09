@@ -3587,16 +3587,6 @@ chromium-metrics-reviews@google.com.
   <token key="CustomPassphraseStatus" variants="CustomPassphraseStatus"/>
 </histogram>
 
-<histogram name="PasswordProtection.DomFeatureExtractionDuration" units="ms"
-    expires_after="2022-09-11">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    The time it takes to extract the DOM features of a login page before sending
-    a PasswordProtectionRequest. Logged on every password reuse PhishGuard ping.
-  </summary>
-</histogram>
-
 <histogram name="PasswordProtection.InterstitialAction"
     enum="PasswordProtectionWarningAction" expires_after="2022-12-25">
   <owner>xinghuilu@chromium.org</owner>

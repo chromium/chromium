@@ -155,7 +155,6 @@ void PasswordProtectionRequestContent::GetDomFeatures() {
               &PasswordProtectionRequestContent::OnGetDomFeatureTimeout,
               AsWeakPtr()),
           base::Milliseconds(kDomFeatureTimeoutMs));
-  dom_feature_start_time_ = base::TimeTicks::Now();
 }
 
 void PasswordProtectionRequestContent::OnGetDomFeatures(
@@ -193,9 +192,6 @@ void PasswordProtectionRequestContent::OnGetDomFeatures(
     request_proto_->mutable_dom_features()->set_model_version(
         dom_features_request.model_version());
   }
-
-  UMA_HISTOGRAM_TIMES("PasswordProtection.DomFeatureExtractionDuration",
-                      base::TimeTicks::Now() - dom_feature_start_time_);
 
   if (IsVisualFeaturesEnabled()) {
     MaybeCollectVisualFeatures();

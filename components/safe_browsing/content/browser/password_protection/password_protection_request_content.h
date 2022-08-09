@@ -154,11 +154,6 @@ class PasswordProtectionRequestContent : public PasswordProtectionRequest {
   // The Mojo pipe used for extracting DOM features from the renderer.
   mojo::Remote<safe_browsing::mojom::PhishingDetector> phishing_detector_;
 
-  // When we start extracting DOM features. Used to compute the duration of DOM
-  // feature extraction, which is logged at
-  // PasswordProtection.DomFeatureExtractionDuration.
-  base::TimeTicks dom_feature_start_time_;
-
   // Whether the DOM features collection is finished, either by timeout or by
   // successfully gathering the features.
   bool dom_features_collection_complete_;
