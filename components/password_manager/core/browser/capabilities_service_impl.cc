@@ -5,13 +5,11 @@
 #include "components/password_manager/core/browser/capabilities_service_impl.h"
 
 #include "base/containers/flat_set.h"
-#include "base/hash/legacy_hash.h"
-#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/strings/string_split.h"
-#include "base/strings/string_util.h"
+#include "components/autofill_assistant/browser/public/autofill_assistant.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "net/http/http_status_code.h"
 #include "url/gurl.h"
@@ -42,19 +40,6 @@ bool ScriptInLiveExperiment(
   return base::ranges::count(experiments, kScriptLiveExperiment) > 0;
 }
 
-std::string CanonicalizeOrigin(const url::Origin& origin) {
-  std::string url_str = origin.GetURL().spec();
-  // Remove trailing '/' if exist.
-  base::TrimString(url_str, "/", &url_str);
-  return url_str;
-}
-
-uint64_t GetHashPrefix(const url::Origin& origin) {
-  const std::string& canonicalized_url = CanonicalizeOrigin(origin);
-  uint64_t hash = base::legacy::CityHash64(
-      base::as_bytes(base::make_span(canonicalized_url)));
-  return hash >> (64 - kHashPrefixSize);
-}
 }  // namespace
 
 CapabilitiesServiceImpl::CapabilitiesServiceImpl(
@@ -72,8 +57,12 @@ void CapabilitiesServiceImpl::QueryPasswordChangeScriptAvailability(
   }
 
   std::vector<uint64_t> hash_prefixes;
-  base::ranges::transform(origins, std::back_inserter(hash_prefixes),
-                          GetHashPrefix);
+  base::ranges::transform(
+      origins, std::back_inserter(hash_prefixes),
+      [](const url::Origin& origin) {
+        return autofill_assistant::AutofillAssistant::GetHashPrefix(
+            kHashPrefixSize, origin);
+      });
 
   autofill_assistant_->GetCapabilitiesByHashPrefix(
       kHashPrefixSize, hash_prefixes, kRequestIntent,

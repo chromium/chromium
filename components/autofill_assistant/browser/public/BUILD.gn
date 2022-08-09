@@ -109,6 +109,7 @@ static_library("unit_test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "autofill_assistant_unittest.cc",
     "password_change/save_password_leak_detection_delegate_unittest.cc",
     "password_change/website_login_manager_impl_unittest.cc",
   ]

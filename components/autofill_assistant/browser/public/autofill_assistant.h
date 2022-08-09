@@ -17,6 +17,10 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+namespace url {
+class Origin;
+}  // namespace url
+
 namespace autofill_assistant {
 
 class WebsiteLoginManager;
@@ -42,6 +46,11 @@ class AutofillAssistant {
                               const std::vector<CapabilitiesInfo>&)>;
 
   virtual ~AutofillAssistant() = default;
+
+  // Creates a hash prefix of `hash_prefix_length` for `origin` for use in
+  // `GetCapabilitiesByHashPrefix`.
+  static uint64_t GetHashPrefix(uint32_t hash_prefix_length,
+                                const url::Origin& origin);
 
   // Allows querying for domain capabilities by sending the |hash_prefix_length|
   // number of leading bits of the domain url hashes. CityHash64 should be used
