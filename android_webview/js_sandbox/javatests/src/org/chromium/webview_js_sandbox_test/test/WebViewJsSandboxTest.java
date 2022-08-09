@@ -41,14 +41,13 @@ public class WebViewJsSandboxTest {
         Context context = ContextUtils.getApplicationContext();
 
         ListenableFuture<JsSandbox> JsSandboxFuture = JsSandbox.newConnectedInstanceAsync(context);
-        JsSandbox jsSandbox = JsSandboxFuture.get(5, TimeUnit.SECONDS);
-        JsIsolate jsIsolate = jsSandbox.createIsolate();
-        ListenableFuture<String> resultFuture = jsIsolate.evaluateJavascriptAsync(code);
-        String result = resultFuture.get(5, TimeUnit.SECONDS);
-        jsIsolate.close();
-        jsSandbox.close();
+        try (JsSandbox jsSandbox = JsSandboxFuture.get(5, TimeUnit.SECONDS);
+                JsIsolate jsIsolate = jsSandbox.createIsolate()) {
+            ListenableFuture<String> resultFuture = jsIsolate.evaluateJavascriptAsync(code);
+            String result = resultFuture.get(5, TimeUnit.SECONDS);
 
-        Assert.assertEquals(expected, result);
+            Assert.assertEquals(expected, result);
+        }
     }
 
     @Test
@@ -59,16 +58,16 @@ public class WebViewJsSandboxTest {
         Context context = ContextUtils.getApplicationContext();
 
         ListenableFuture<JsSandbox> JsSandboxFuture = JsSandbox.newConnectedInstanceAsync(context);
-        JsSandbox jsSandbox = JsSandboxFuture.get(5, TimeUnit.SECONDS);
-        JsIsolate jsIsolate1 = jsSandbox.createIsolate();
-        JsIsolate jsIsolate2 = jsSandbox.createIsolate();
-        jsIsolate1.close();
-        ListenableFuture<String> resultFuture = jsIsolate2.evaluateJavascriptAsync(code);
-        String result = resultFuture.get(5, TimeUnit.SECONDS);
-        jsIsolate2.close();
-        jsSandbox.close();
+        try (JsSandbox jsSandbox = JsSandboxFuture.get(5, TimeUnit.SECONDS);
+                JsIsolate jsIsolate1 = jsSandbox.createIsolate()) {
+            JsIsolate jsIsolate2 = jsSandbox.createIsolate();
+            jsIsolate2.close();
 
-        Assert.assertEquals(expected, result);
+            ListenableFuture<String> resultFuture = jsIsolate1.evaluateJavascriptAsync(code);
+            String result = resultFuture.get(5, TimeUnit.SECONDS);
+
+            Assert.assertEquals(expected, result);
+        }
     }
 
     @Test
@@ -82,19 +81,17 @@ public class WebViewJsSandboxTest {
         Context context = ContextUtils.getApplicationContext();
 
         ListenableFuture<JsSandbox> JsSandboxFuture = JsSandbox.newConnectedInstanceAsync(context);
-        JsSandbox jsSandbox = JsSandboxFuture.get(5, TimeUnit.SECONDS);
-        JsIsolate jsIsolate1 = jsSandbox.createIsolate();
-        ListenableFuture<String> resultFuture1 = jsIsolate1.evaluateJavascriptAsync(code1);
-        String result1 = resultFuture1.get(5, TimeUnit.SECONDS);
-        JsIsolate jsIsolate2 = jsSandbox.createIsolate();
-        ListenableFuture<String> resultFuture2 = jsIsolate2.evaluateJavascriptAsync(code2);
-        String result2 = resultFuture2.get(5, TimeUnit.SECONDS);
-        jsIsolate1.close();
-        jsIsolate2.close();
-        jsSandbox.close();
+        try (JsSandbox jsSandbox = JsSandboxFuture.get(5, TimeUnit.SECONDS);
+                JsIsolate jsIsolate1 = jsSandbox.createIsolate();
+                JsIsolate jsIsolate2 = jsSandbox.createIsolate()) {
+            ListenableFuture<String> resultFuture1 = jsIsolate1.evaluateJavascriptAsync(code1);
+            String result1 = resultFuture1.get(5, TimeUnit.SECONDS);
+            ListenableFuture<String> resultFuture2 = jsIsolate2.evaluateJavascriptAsync(code2);
+            String result2 = resultFuture2.get(5, TimeUnit.SECONDS);
 
-        Assert.assertEquals(expected1, result1);
-        Assert.assertEquals(expected2, result2);
+            Assert.assertEquals(expected1, result1);
+            Assert.assertEquals(expected2, result2);
+        }
     }
 
     @Test
@@ -107,19 +104,17 @@ public class WebViewJsSandboxTest {
         Context context = ContextUtils.getApplicationContext();
 
         ListenableFuture<JsSandbox> JsSandboxFuture = JsSandbox.newConnectedInstanceAsync(context);
-        JsSandbox jsSandbox = JsSandboxFuture.get(5, TimeUnit.SECONDS);
-        JsIsolate jsIsolate1 = jsSandbox.createIsolate();
-        ListenableFuture<String> resultFuture1 = jsIsolate1.evaluateJavascriptAsync(code1);
-        String result1 = resultFuture1.get(5, TimeUnit.SECONDS);
-        JsIsolate jsIsolate2 = jsSandbox.createIsolate();
-        ListenableFuture<String> resultFuture2 = jsIsolate2.evaluateJavascriptAsync(code2);
-        String result2 = resultFuture2.get(5, TimeUnit.SECONDS);
-        jsIsolate1.close();
-        jsIsolate2.close();
-        jsSandbox.close();
+        try (JsSandbox jsSandbox = JsSandboxFuture.get(5, TimeUnit.SECONDS);
+                JsIsolate jsIsolate1 = jsSandbox.createIsolate();
+                JsIsolate jsIsolate2 = jsSandbox.createIsolate()) {
+            ListenableFuture<String> resultFuture1 = jsIsolate1.evaluateJavascriptAsync(code1);
+            String result1 = resultFuture1.get(5, TimeUnit.SECONDS);
+            ListenableFuture<String> resultFuture2 = jsIsolate2.evaluateJavascriptAsync(code2);
+            String result2 = resultFuture2.get(5, TimeUnit.SECONDS);
 
-        Assert.assertEquals(expected1, result1);
-        Assert.assertEquals(expected2, result2);
+            Assert.assertEquals(expected1, result1);
+            Assert.assertEquals(expected2, result2);
+        }
     }
 
     @Test
@@ -132,17 +127,16 @@ public class WebViewJsSandboxTest {
         Context context = ContextUtils.getApplicationContext();
 
         ListenableFuture<JsSandbox> JsSandboxFuture = JsSandbox.newConnectedInstanceAsync(context);
-        JsSandbox jsSandbox = JsSandboxFuture.get(5, TimeUnit.SECONDS);
-        JsIsolate jsIsolate1 = jsSandbox.createIsolate();
-        ListenableFuture<String> resultFuture1 = jsIsolate1.evaluateJavascriptAsync(code1);
-        String result1 = resultFuture1.get(5, TimeUnit.SECONDS);
-        ListenableFuture<String> resultFuture2 = jsIsolate1.evaluateJavascriptAsync(code2);
-        String result2 = resultFuture2.get(5, TimeUnit.SECONDS);
-        jsIsolate1.close();
-        jsSandbox.close();
+        try (JsSandbox jsSandbox = JsSandboxFuture.get(5, TimeUnit.SECONDS);
+                JsIsolate jsIsolate1 = jsSandbox.createIsolate()) {
+            ListenableFuture<String> resultFuture1 = jsIsolate1.evaluateJavascriptAsync(code1);
+            String result1 = resultFuture1.get(5, TimeUnit.SECONDS);
+            ListenableFuture<String> resultFuture2 = jsIsolate1.evaluateJavascriptAsync(code2);
+            String result2 = resultFuture2.get(5, TimeUnit.SECONDS);
 
-        Assert.assertEquals(expected1, result1);
-        Assert.assertEquals(expected2, result2);
+            Assert.assertEquals(expected1, result1);
+            Assert.assertEquals(expected2, result2);
+        }
     }
 
     @Test
@@ -153,22 +147,22 @@ public class WebViewJsSandboxTest {
         Context context = ContextUtils.getApplicationContext();
 
         ListenableFuture<JsSandbox> JsSandboxFuture = JsSandbox.newConnectedInstanceAsync(context);
-        JsSandbox jsSandbox = JsSandboxFuture.get(5, TimeUnit.SECONDS);
-        JsIsolate jsIsolate = jsSandbox.createIsolate();
-        ListenableFuture<String> resultFuture = jsIsolate.evaluateJavascriptAsync(code);
-        boolean isOfCorrectType = false;
-        String error = "";
-        try {
-            String result = resultFuture.get(5, TimeUnit.SECONDS);
-        } catch (ExecutionException e) {
-            isOfCorrectType = e.getCause().getClass().equals(EvaluationFailedException.class);
-            error = e.getCause().getMessage();
-        }
-        jsIsolate.close();
-        jsSandbox.close();
+        try (JsSandbox jsSandbox = JsSandboxFuture.get(5, TimeUnit.SECONDS);
+                JsIsolate jsIsolate = jsSandbox.createIsolate()) {
+            ListenableFuture<String> resultFuture = jsIsolate.evaluateJavascriptAsync(code);
+            boolean isOfCorrectType = false;
+            String error = "";
+            try {
+                resultFuture.get(5, TimeUnit.SECONDS);
+                Assert.fail("Should have thrown.");
+            } catch (ExecutionException e) {
+                isOfCorrectType = e.getCause().getClass().equals(EvaluationFailedException.class);
+                error = e.getCause().getMessage();
+            }
 
-        Assert.assertTrue(isOfCorrectType);
-        Assert.assertTrue(error.contains(contains));
+            Assert.assertTrue(isOfCorrectType);
+            Assert.assertTrue(error.contains(contains));
+        }
     }
 
     @Test
@@ -178,21 +172,23 @@ public class WebViewJsSandboxTest {
         Context context = ContextUtils.getApplicationContext();
 
         ListenableFuture<JsSandbox> JsSandboxFuture = JsSandbox.newConnectedInstanceAsync(context);
-        JsSandbox jsSandbox = JsSandboxFuture.get(5, TimeUnit.SECONDS);
-        Assume.assumeTrue(jsSandbox.isFeatureSupported(JsSandbox.ISOLATE_TERMINATION));
+        try (JsSandbox jsSandbox = JsSandboxFuture.get(5, TimeUnit.SECONDS)) {
+            Assume.assumeTrue(jsSandbox.isFeatureSupported(JsSandbox.ISOLATE_TERMINATION));
 
-        JsIsolate jsIsolate = jsSandbox.createIsolate();
-        ListenableFuture<String> resultFuture = jsIsolate.evaluateJavascriptAsync(code);
-        boolean isOfCorrectType = false;
-        try {
-            jsIsolate.close();
-            String result = resultFuture.get(5, TimeUnit.SECONDS);
-        } catch (ExecutionException e) {
-            isOfCorrectType = e.getCause().getClass().equals(IsolateTerminatedException.class);
+            ListenableFuture<String> resultFuture;
+            try (JsIsolate jsIsolate = jsSandbox.createIsolate()) {
+                resultFuture = jsIsolate.evaluateJavascriptAsync(code);
+            }
+
+            try {
+                resultFuture.get(5, TimeUnit.SECONDS);
+                Assert.fail("Should have thrown.");
+            } catch (ExecutionException e) {
+                if (!(e.getCause() instanceof IsolateTerminatedException)) {
+                    throw e;
+                }
+            }
         }
-        jsSandbox.close();
-
-        Assert.assertTrue(isOfCorrectType);
     }
 
     @Test
@@ -203,27 +199,28 @@ public class WebViewJsSandboxTest {
         Context context = ContextUtils.getApplicationContext();
 
         ListenableFuture<JsSandbox> JsSandboxFuture = JsSandbox.newConnectedInstanceAsync(context);
-        JsSandbox jsSandbox = JsSandboxFuture.get(5, TimeUnit.SECONDS);
-        Assume.assumeTrue(jsSandbox.isFeatureSupported(JsSandbox.ISOLATE_TERMINATION));
+        try (JsSandbox jsSandbox = JsSandboxFuture.get(5, TimeUnit.SECONDS)) {
+            Assume.assumeTrue(jsSandbox.isFeatureSupported(JsSandbox.ISOLATE_TERMINATION));
 
-        JsIsolate jsIsolate = jsSandbox.createIsolate();
-        Vector<ListenableFuture<String>> resultFutures = new Vector<ListenableFuture<String>>();
-        for (int i = 0; i < num_of_evaluations; i++) {
-            ListenableFuture<String> resultFuture = jsIsolate.evaluateJavascriptAsync(code);
-            resultFutures.add(resultFuture);
-        }
-        jsIsolate.close();
-
-        for (int i = 0; i < num_of_evaluations; i++) {
-            boolean isOfCorrectType = false;
-            try {
-                String result = resultFutures.elementAt(i).get(5, TimeUnit.SECONDS);
-            } catch (ExecutionException e) {
-                isOfCorrectType = e.getCause().getClass().equals(IsolateTerminatedException.class);
+            Vector<ListenableFuture<String>> resultFutures = new Vector<ListenableFuture<String>>();
+            try (JsIsolate jsIsolate = jsSandbox.createIsolate()) {
+                for (int i = 0; i < num_of_evaluations; i++) {
+                    ListenableFuture<String> resultFuture = jsIsolate.evaluateJavascriptAsync(code);
+                    resultFutures.add(resultFuture);
+                }
             }
-            Assert.assertTrue(isOfCorrectType);
+
+            for (int i = 0; i < num_of_evaluations; i++) {
+                try {
+                    resultFutures.elementAt(i).get(5, TimeUnit.SECONDS);
+                    Assert.fail("Should have thrown.");
+                } catch (ExecutionException e) {
+                    if (!(e.getCause() instanceof IsolateTerminatedException)) {
+                        throw e;
+                    }
+                }
+            }
         }
-        jsSandbox.close();
     }
 
     @Test
@@ -401,7 +398,7 @@ public class WebViewJsSandboxTest {
 
             ListenableFuture<String> resultFuture = jsIsolate.evaluateJavascriptAsync(code);
             try {
-                String result = resultFuture.get(5, TimeUnit.SECONDS);
+                resultFuture.get(5, TimeUnit.SECONDS);
                 Assert.fail("Should have thrown.");
             } catch (ExecutionException e) {
                 if (!(e.getCause() instanceof EvaluationFailedException)) {
@@ -419,16 +416,17 @@ public class WebViewJsSandboxTest {
         Context context = ContextUtils.getApplicationContext();
 
         ListenableFuture<JsSandbox> JsSandboxFuture = JsSandbox.newConnectedInstanceAsync(context);
-        JsSandbox jsSandbox = JsSandboxFuture.get(5, TimeUnit.SECONDS);
-        JsIsolate jsIsolate = jsSandbox.createIsolate();
-        ListenableFuture<String> resultFuture = jsIsolate.evaluateJavascriptAsync(code);
-        try {
+        try (JsSandbox jsSandbox = JsSandboxFuture.get(5, TimeUnit.SECONDS);
+                JsIsolate jsIsolate = jsSandbox.createIsolate()) {
+            ListenableFuture<String> resultFuture = jsIsolate.evaluateJavascriptAsync(code);
             jsSandbox.close();
-            resultFuture.get(5, TimeUnit.SECONDS);
-            Assert.fail("Should have thrown.");
-        } catch (ExecutionException e) {
-            if (!(e.getCause() instanceof IsolateTerminatedException)) {
-                throw e;
+            try {
+                resultFuture.get(5, TimeUnit.SECONDS);
+                Assert.fail("Should have thrown.");
+            } catch (ExecutionException e) {
+                if (!(e.getCause() instanceof IsolateTerminatedException)) {
+                    throw e;
+                }
             }
         }
     }
@@ -443,8 +441,9 @@ public class WebViewJsSandboxTest {
             ListenableFuture<JsSandbox> JsSandboxFuture2 =
                     JsSandbox.newConnectedInstanceAsync(context);
             try {
-                JsSandbox jsSandbox2 = JsSandboxFuture2.get(5, TimeUnit.SECONDS);
-                Assert.fail("Should have thrown.");
+                try (JsSandbox jsSandbox2 = JsSandboxFuture2.get(5, TimeUnit.SECONDS)) {
+                    Assert.fail("Should have thrown.");
+                }
             } catch (ExecutionException e) {
                 if (!(e.getCause() instanceof RuntimeException)) {
                     throw e;
@@ -459,18 +458,19 @@ public class WebViewJsSandboxTest {
     public void testSandboxCanBeCreatedAfterClosed() throws Throwable {
         final String code = "\"PASS\"";
         final String expected = "PASS";
+        final int num_of_startups = 2;
         Context context = ContextUtils.getApplicationContext();
 
-        ListenableFuture<JsSandbox> JsSandboxFuture1 = JsSandbox.newConnectedInstanceAsync(context);
-        JsSandbox jsSandbox1 = JsSandboxFuture1.get(5, TimeUnit.SECONDS);
-        jsSandbox1.close();
-        ListenableFuture<JsSandbox> JsSandboxFuture2 = JsSandbox.newConnectedInstanceAsync(context);
-        try (JsSandbox jsSandbox2 = JsSandboxFuture2.get(5, TimeUnit.SECONDS);
-                JsIsolate jsIsolate = jsSandbox2.createIsolate()) {
-            ListenableFuture<String> resultFuture1 = jsIsolate.evaluateJavascriptAsync(code);
-            String result = resultFuture1.get(5, TimeUnit.SECONDS);
+        for (int i = 0; i < num_of_startups; i++) {
+            ListenableFuture<JsSandbox> JsSandboxFuture =
+                    JsSandbox.newConnectedInstanceAsync(context);
+            try (JsSandbox jsSandbox = JsSandboxFuture.get(5, TimeUnit.SECONDS);
+                    JsIsolate jsIsolate = jsSandbox.createIsolate()) {
+                ListenableFuture<String> resultFuture = jsIsolate.evaluateJavascriptAsync(code);
+                String result = resultFuture.get(5, TimeUnit.SECONDS);
 
-            Assert.assertEquals(expected, result);
+                Assert.assertEquals(expected, result);
+            }
         }
     }
 
