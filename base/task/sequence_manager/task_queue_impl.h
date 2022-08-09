@@ -317,6 +317,10 @@ class BASE_EXPORT TaskQueueImpl {
 
     void ShutdownAndWaitForZeroOperations() {
       operations_controller_.ShutdownAndWaitForZeroOperations();
+      // `operations_controller_` won't let any more operations here, and
+      // `outer_` might get destroyed before `this` does, so clearing `outer_`
+      // avoids a potential dangling pointer.
+      outer_ = nullptr;
     }
 
    private:
@@ -326,7 +330,7 @@ class BASE_EXPORT TaskQueueImpl {
 
     base::internal::OperationsController operations_controller_;
     // Pointer might be stale, access guarded by |operations_controller_|
-    const raw_ptr<TaskQueueImpl, DanglingUntriaged> outer_;
+    raw_ptr<TaskQueueImpl> outer_;
   };
 
   class TaskRunner final : public SingleThreadTaskRunner {
