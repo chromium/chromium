@@ -341,7 +341,6 @@ after discussions on the right group.
       <annotation id="gaia_auth_check_connection_info"/>
       <annotation id="gaia_auth_exchange_device_id"/>
       <annotation id="gaia_auth_fetch_for_uber"/>
-      <annotation id="gaia_auth_get_user_info"/>
       <annotation id="gaia_auth_list_accounts"/>
       <annotation id="gaia_auth_log_out"/>
       <annotation id="gaia_auth_login"/>

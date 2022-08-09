@@ -38,7 +38,6 @@ class GaiaUrls {
   const GURL& signin_chrome_sync_keys_recoverability_degraded_url() const;
   const GURL& service_login_auth_url() const;
   const GURL& service_logout_url() const;
-  const GURL& get_user_info_url() const;
   const GURL& token_auth_url() const;
   const GURL& merge_session_url() const;
   const GURL& get_oauth_token_url() const;
@@ -101,7 +100,6 @@ class GaiaUrls {
   GURL service_login_auth_url_;
   GURL service_logout_url_;
   GURL continue_url_for_logout_;
-  GURL get_user_info_url_;
   GURL token_auth_url_;
   GURL merge_session_url_;
   GURL get_oauth_token_url_;

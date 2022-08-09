@@ -12,8 +12,6 @@
 class GoogleServiceAuthError;
 class OAuthMultiloginResult;
 
-typedef std::map<std::string, std::string> UserInfoMap;
-
 // An interface that defines the callbacks for objects that
 // GaiaAuthFetcher can return data to.
 class GaiaAuthConsumer {
@@ -113,9 +111,6 @@ class GaiaAuthConsumer {
   virtual void OnClientOAuthFailure(const GoogleServiceAuthError& error) {}
 
   virtual void OnOAuth2RevokeTokenCompleted(TokenRevocationStatus status) {}
-
-  virtual void OnGetUserInfoSuccess(const UserInfoMap& data) {}
-  virtual void OnGetUserInfoFailure(const GoogleServiceAuthError& error) {}
 
   virtual void OnUberAuthTokenSuccess(const std::string& token) {}
   virtual void OnUberAuthTokenFailure(const GoogleServiceAuthError& error) {}

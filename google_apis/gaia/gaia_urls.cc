@@ -65,7 +65,6 @@ const char kSigninChromeSyncKeysRecoverabilityUrlSuffix[] =
 const char kServiceLoginAuthUrlSuffix[] = "ServiceLoginAuth";
 const char kServiceLogoutUrlSuffix[] = "Logout";
 const char kContinueUrlForLogoutSuffix[] = "chrome/blank.html";
-const char kGetUserInfoUrlSuffix[] = "GetUserInfo";
 const char kTokenAuthUrlSuffix[] = "TokenAuth";
 const char kMergeSessionUrlSuffix[] = "MergeSession";
 const char kOAuthGetAccessTokenUrlSuffix[] = "OAuthGetAccessToken";
@@ -243,10 +242,6 @@ const GURL& GaiaUrls::service_logout_url() const {
   return service_logout_url_;
 }
 
-const GURL& GaiaUrls::get_user_info_url() const {
-  return get_user_info_url_;
-}
-
 const GURL& GaiaUrls::token_auth_url() const {
   return token_auth_url_;
 }
@@ -415,7 +410,6 @@ void GaiaUrls::InitializeDefault() {
   ResolveURLIfInvalid(&service_logout_url_, gaia_url, kServiceLogoutUrlSuffix);
   ResolveURLIfInvalid(&continue_url_for_logout_, gaia_url,
                       kContinueUrlForLogoutSuffix);
-  ResolveURLIfInvalid(&get_user_info_url_, gaia_url, kGetUserInfoUrlSuffix);
   ResolveURLIfInvalid(&token_auth_url_, gaia_url, kTokenAuthUrlSuffix);
   ResolveURLIfInvalid(&merge_session_url_, gaia_url, kMergeSessionUrlSuffix);
   ResolveURLIfInvalid(&oauth_multilogin_url_, gaia_url, kOAuthMultiloginSuffix);
@@ -494,7 +488,6 @@ void GaiaUrls::InitializeFromConfig() {
   config->GetURLIfExists(URL_KEY_AND_PTR(service_login_auth_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(service_logout_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(continue_url_for_logout));
-  config->GetURLIfExists(URL_KEY_AND_PTR(get_user_info_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(token_auth_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(merge_session_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(get_oauth_token_url));

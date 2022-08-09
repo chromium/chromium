@@ -95,8 +95,6 @@ TEST_F(GaiaUrlsTest, InitializeDefault_AllUrls) {
   EXPECT_EQ(gaia_urls()->LogOutURLWithSource("").spec(),
             "https://accounts.google.com/Logout?continue=https://"
             "accounts.google.com/chrome/blank.html");
-  EXPECT_EQ(gaia_urls()->get_user_info_url().spec(),
-            "https://accounts.google.com/GetUserInfo");
   EXPECT_EQ(gaia_urls()->token_auth_url().spec(),
             "https://accounts.google.com/TokenAuth");
   EXPECT_EQ(gaia_urls()->merge_session_url().spec(),
@@ -188,8 +186,6 @@ TEST_F(GaiaUrlsTest, InitializeDefault_URLSwitches) {
   EXPECT_EQ(gaia_urls()->LogOutURLWithSource("").spec(),
             "https://test-gaia.com/Logout?continue=https://"
             "test-gaia.com/chrome/blank.html");
-  EXPECT_EQ(gaia_urls()->get_user_info_url().spec(),
-            "https://test-gaia.com/GetUserInfo");
   EXPECT_EQ(gaia_urls()->token_auth_url().spec(),
             "https://test-gaia.com/TokenAuth");
   EXPECT_EQ(gaia_urls()->merge_session_url().spec(),
@@ -313,8 +309,6 @@ TEST_F(GaiaUrlsTest, InitializeFromConfig_AllUrls) {
   EXPECT_EQ(gaia_urls()->LogOutURLWithSource("").spec(),
             "https://accounts.example.com/Logout?continue=https://"
             "accounts.example.com/chrome/blank.html");
-  EXPECT_EQ(gaia_urls()->get_user_info_url().spec(),
-            "https://accounts.example.com/GetUserInfo");
   EXPECT_EQ(gaia_urls()->token_auth_url().spec(),
             "https://accounts.example.com/TokenAuth");
   EXPECT_EQ(gaia_urls()->merge_session_url().spec(),
@@ -392,8 +386,6 @@ TEST_F(GaiaUrlsTest, InitializeFromConfig_AllBaseUrls) {
   EXPECT_EQ(gaia_urls()->LogOutURLWithSource("").spec(),
             "https://accounts.example.com/Logout?continue=https://"
             "accounts.example.com/chrome/blank.html");
-  EXPECT_EQ(gaia_urls()->get_user_info_url().spec(),
-            "https://accounts.example.com/GetUserInfo");
   EXPECT_EQ(gaia_urls()->token_auth_url().spec(),
             "https://accounts.example.com/TokenAuth");
   EXPECT_EQ(gaia_urls()->merge_session_url().spec(),

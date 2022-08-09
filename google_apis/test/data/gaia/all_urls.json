@@ -57,9 +57,6 @@
     "continue_url_for_logout": {
       "url": "https://accounts.example.com/chrome/blank.html"
     },
-    "get_user_info_url": {
-      "url": "https://accounts.example.com/GetUserInfo"
-    },
     "token_auth_url": {
       "url": "https://accounts.example.com/TokenAuth"
     },

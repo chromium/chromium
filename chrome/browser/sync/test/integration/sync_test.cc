@@ -1221,9 +1221,6 @@ void SyncTest::ReadPasswordFile() {
 
 void SyncTest::SetupMockGaiaResponses() {
   test_url_loader_factory_.AddResponse(
-      GaiaUrls::GetInstance()->get_user_info_url().spec(),
-      "email=user@gmail.com\ndisplayEmail=user@gmail.com");
-  test_url_loader_factory_.AddResponse(
       GaiaUrls::GetInstance()->oauth2_token_url().spec(),
       R"({
             "refresh_token": "rt1",

@@ -120,12 +120,6 @@ class GaiaAuthFetcher {
       const std::string& auth_code,
       const std::string& device_id);
 
-  // Start a request to get user info for the account identified by |lsid|.
-  //
-  // Either OnGetUserInfoSuccess or OnGetUserInfoFailure will be
-  // called on the consumer on the original thread.
-  void StartGetUserInfo(const std::string& lsid);
-
   // Start a MergeSession request to pre-login the user with the given
   // credentials.
   //
@@ -261,8 +255,6 @@ class GaiaAuthFetcher {
   static const char kOAuth2CodeToTokenPairDeviceIdParam[];
   // The format of the POST body to revoke an OAuth2 token.
   static const char kOAuth2RevokeTokenBodyFormat[];
-  // The format of the POST body for GetUserInfo.
-  static const char kGetUserInfoFormat[];
   // The format of the POST body for MergeSession.
   static const char kMergeSessionFormat[];
   // The format of the URL for UberAuthToken.
@@ -297,10 +289,6 @@ class GaiaAuthFetcher {
   void OnLogOutFetched(const std::string& data,
                        net::Error net_error,
                        int response_code);
-
-  void OnGetUserInfoFetched(const std::string& data,
-                            net::Error net_error,
-                            int response_code);
 
   void OnMergeSessionFetched(const std::string& data,
                              net::Error net_error,
@@ -347,9 +335,6 @@ class GaiaAuthFetcher {
                                           const std::string& device_id);
   // Given an OAuth2 token, create body to revoke the token.
   std::string MakeRevokeTokenBody(const std::string& auth_token);
-  // Supply the lsid returned from ClientLogin in order to fetch
-  // user information.
-  static std::string MakeGetUserInfoBody(const std::string& lsid);
 
   // Supply the authentication token returned from StartIssueAuthToken.
   static std::string MakeMergeSessionQuery(
@@ -375,7 +360,6 @@ class GaiaAuthFetcher {
   std::string source_;
   const GURL oauth2_token_gurl_;
   const GURL oauth2_revoke_gurl_;
-  const GURL get_user_info_gurl_;
   const GURL merge_session_gurl_;
   const GURL uberauth_token_gurl_;
   const GURL oauth_login_gurl_;

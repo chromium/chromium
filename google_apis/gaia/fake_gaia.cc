@@ -366,10 +366,6 @@ void FakeGaia::Initialize() {
   REGISTER_RESPONSE_HANDLER(
       gaia_urls->ListAccountsURLWithSource(std::string()), HandleListAccounts);
 
-  // Handles /GetUserInfo GAIA call.
-  REGISTER_RESPONSE_HANDLER(
-      gaia_urls->get_user_info_url(), HandleGetUserInfo);
-
   // Handles /oauth2/v1/userinfo call.
   REGISTER_RESPONSE_HANDLER(
       gaia_urls->oauth_user_info_url(), HandleOAuthUserInfo);
@@ -920,15 +916,6 @@ void FakeGaia::HandleListAccounts(const HttpRequest& request,
   http_response->set_content(
       base::StringPrintf(kListAccountsResponseFormat,
                          base::JoinString(listed_accounts, ",").c_str()));
-  http_response->set_code(net::HTTP_OK);
-}
-
-void FakeGaia::HandleGetUserInfo(const HttpRequest& request,
-                                 BasicHttpResponse* http_response) {
-  http_response->set_content(base::StringPrintf(
-      "email=%s\ndisplayEmail=%s",
-      merge_session_params_.email.c_str(),
-      merge_session_params_.email.c_str()));
   http_response->set_code(net::HTTP_OK);
 }
 

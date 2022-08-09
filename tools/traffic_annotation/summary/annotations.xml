@@ -94,7 +94,6 @@ Refer to README.md for content description and update process.
  <item id="gaia_auth_check_connection_info" added_in_milestone="62" content_hash_code="036b0bb8" os_list="linux,windows,chromeos,android" file_path="google_apis/gaia/gaia_auth_fetcher.cc" />
  <item id="gaia_auth_exchange_device_id" added_in_milestone="62" content_hash_code="03afe09b" os_list="linux,windows,chromeos,android" file_path="google_apis/gaia/gaia_auth_fetcher.cc" />
  <item id="gaia_auth_fetch_for_uber" added_in_milestone="62" content_hash_code="01ab5779" os_list="linux,windows,chromeos,android" file_path="google_apis/gaia/gaia_auth_fetcher.cc" />
- <item id="gaia_auth_get_user_info" added_in_milestone="62" content_hash_code="0047a3e9" os_list="linux,windows,chromeos,android" file_path="google_apis/gaia/gaia_auth_fetcher.cc" />
  <item id="gaia_auth_list_accounts" added_in_milestone="62" content_hash_code="0595471e" os_list="linux,windows,chromeos,android" file_path="google_apis/gaia/gaia_auth_fetcher.cc" />
  <item id="gaia_auth_log_out" added_in_milestone="62" content_hash_code="056ee739" os_list="linux,windows,chromeos,android" file_path="google_apis/gaia/gaia_auth_fetcher.cc" />
  <item id="gaia_auth_login" added_in_milestone="62" content_hash_code="06aba27c" os_list="linux,windows,chromeos,android" file_path="google_apis/gaia/gaia_auth_fetcher.cc" />
