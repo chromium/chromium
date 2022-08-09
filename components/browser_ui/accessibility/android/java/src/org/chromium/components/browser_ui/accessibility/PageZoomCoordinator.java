@@ -5,6 +5,7 @@
 package org.chromium.components.browser_ui.accessibility;
 
 import android.view.View;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
@@ -32,6 +33,7 @@ public class PageZoomCoordinator {
     private WebContentsObserver mWebContentsObserver;
     private GestureListenerManager mGestureListenerManager;
     private GestureStateListener mGestureListener;
+    private int mBottomControlsOffset;
 
     private View mView;
 
@@ -74,6 +76,9 @@ public class PageZoomCoordinator {
             mView.setVisibility(View.VISIBLE);
             mView.startAnimation(getInAnimation());
         }
+
+        // Adjust bottom margin for any bottom controls
+        setBottomMargin(mBottomControlsOffset);
 
         mMediator.setWebContents(webContents);
         mWebContentsObserver = new WebContentsObserver(webContents) {
@@ -124,6 +129,19 @@ public class PageZoomCoordinator {
     }
 
     /**
+     * Handle when height of bottom controls changes
+     *
+     * @param bottomControlsOffset the height of the bottom controls (if they are visible) by which
+     *         the slider should be offset in the y direction. 0 otherwise.
+     */
+    public void onBottomControlsHeightChanged(int bottomControlsOffset) {
+        mBottomControlsOffset = bottomControlsOffset;
+
+        // Set margin in case view is currently visible
+        setBottomMargin(mBottomControlsOffset);
+    }
+
+    /**
      * Clean-up views and children during destruction.
      */
     public void destroy() {
@@ -155,5 +173,15 @@ public class PageZoomCoordinator {
                 AnimationUtils.loadAnimation(mView.getContext(), R.anim.slide_out_child_bottom);
         a.setStartTime(AnimationUtils.currentAnimationTimeMillis());
         return a;
+    }
+
+    private void setBottomMargin(int bottomOffset) {
+        if (mView != null) {
+            MarginLayoutParams layout = (MarginLayoutParams) mView.getLayoutParams();
+            layout.setMargins(layout.leftMargin, layout.topMargin, layout.rightMargin,
+                    mView.getContext().getResources().getDimensionPixelSize(
+                            R.dimen.page_zoom_view_margins)
+                            + bottomOffset);
+        }
     }
 }

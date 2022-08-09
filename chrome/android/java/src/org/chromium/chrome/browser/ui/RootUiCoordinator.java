@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
@@ -253,6 +254,7 @@ public class RootUiCoordinator
     private final Supplier<ContextualSearchManager> mContextualSearchManagerSupplier;
     protected final CallbackController mCallbackController;
     protected final BrowserControlsManager mBrowserControlsManager;
+    private BrowserControlsStateProvider.Observer mBrowserControlsObserver;
     protected ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     protected final OneshotSupplier<StartSurface> mStartSurfaceSupplier;
     protected final OneshotSupplier<TabSwitcher> mTabSwitcherSupplier;
@@ -632,6 +634,10 @@ public class RootUiCoordinator
             mPageZoomCoordinator = null;
         }
 
+        if (mBrowserControlsObserver != null) {
+            mBrowserControlsManager.removeObserver(mBrowserControlsObserver);
+        }
+
         mActivity = null;
     }
 
@@ -670,6 +676,7 @@ public class RootUiCoordinator
         initDirectActionInitializer();
         initBottomSheetObserver();
         initSnackbarObserver();
+        initBrowserControlsObserver();
         if (mAppMenuCoordinator != null && mModalDialogManagerSupplier.hasValue()) {
             mModalDialogManagerObserver = new ModalDialogManagerObserver() {
                 @Override
@@ -1489,7 +1496,7 @@ public class RootUiCoordinator
     }
 
     /**
-     * Initialize logic for hiding page zoom slider when snackbar is showiung
+     * Initialize logic for hiding page zoom slider when snackbar is showing
      */
     private void initSnackbarObserver() {
         mSnackbarManagerSupplier.get().isShowingSupplier().addObserver((Boolean isShowing) -> {
@@ -1498,6 +1505,21 @@ public class RootUiCoordinator
                 mPageZoomCoordinator.hide();
             }
         });
+    }
+
+    /**
+     * Initialize logic for changing page zoom slider margins when browser bottom controls are
+     * showing
+     */
+    private void initBrowserControlsObserver() {
+        mBrowserControlsObserver = new BrowserControlsStateProvider.Observer() {
+            @Override
+            public void onBottomControlsHeightChanged(
+                    int bottomControlsHeight, int bottomControlsMinHeight) {
+                mPageZoomCoordinator.onBottomControlsHeightChanged(bottomControlsHeight);
+            }
+        };
+        mBrowserControlsManager.addObserver(mBrowserControlsObserver);
     }
 
     public OneshotSupplier<IncognitoReauthController> getIncognitoReauthControllerSupplier() {

@@ -171,7 +171,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center"
-            android:layout_margin="@dimen/page_zoom_view_margins"
+            android:layout_marginLeft="@dimen/page_zoom_view_margins"
+            android:layout_marginRight="@dimen/page_zoom_view_margins"
+            android:layout_marginBottom="@dimen/page_zoom_view_margins"
             android:inflatedId="@+id/page_zoom_layout"
             android:layout="@layout/page_zoom_view" />
 
