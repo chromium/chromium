@@ -33,7 +33,7 @@ class HTMLFrameSetElement;
 
 class LayoutFrameSet final : public LayoutBox {
  public:
-  LayoutFrameSet(HTMLFrameSetElement*);
+  explicit LayoutFrameSet(Element*);
   ~LayoutFrameSet() override;
   void Trace(Visitor*) const override;
 

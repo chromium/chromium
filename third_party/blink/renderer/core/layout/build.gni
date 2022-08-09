@@ -455,6 +455,8 @@ blink_core_sources_layout = [
   "ng/layout_ng_button.h",
   "ng/layout_ng_fieldset.cc",
   "ng/layout_ng_fieldset.h",
+  "ng/layout_ng_frame_set.cc",
+  "ng/layout_ng_frame_set.h",
   "ng/layout_ng_mixin.cc",
   "ng/layout_ng_mixin.h",
   "ng/layout_ng_progress.cc",

@@ -50,8 +50,8 @@ static int AdjustSizeToRemainingSize(int current,
   return base::checked_cast<int>(temp_product.ValueOrDie());
 }
 
-LayoutFrameSet::LayoutFrameSet(HTMLFrameSetElement* frame_set)
-    : LayoutBox(frame_set) {
+LayoutFrameSet::LayoutFrameSet(Element* element) : LayoutBox(element) {
+  DCHECK(IsA<HTMLFrameSetElement>(element));
   SetInline(false);
 }
 

@@ -15,6 +15,7 @@ class ComputedStyle;
 class CounterContentData;
 class Document;
 class HTMLElement;
+class HTMLFrameSetElement;
 class LayoutBlock;
 class LayoutBlockFlow;
 class LayoutObject;
@@ -83,6 +84,9 @@ class LayoutObjectFactory {
   static LayoutBlockFlow* CreateFileUploadControl(Node& node,
                                                   const ComputedStyle& style,
                                                   LegacyLayout legacy);
+  static LayoutBox* CreateFrameSet(HTMLFrameSetElement& element,
+                                   const ComputedStyle& style,
+                                   LegacyLayout legacy);
   static LayoutObject* CreateSliderTrack(Node& node,
                                          const ComputedStyle& style,
                                          LegacyLayout legacy);

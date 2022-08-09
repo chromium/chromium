@@ -849,6 +849,14 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return IsOfType(kLayoutObjectFrameSet);
   }
+  bool IsLayoutNGFrameSet() const {
+    NOT_DESTROYED();
+    return IsOfType(kLayoutObjectNGFrameSet);
+  }
+  bool IsFrameSetIncludingNG() const {
+    NOT_DESTROYED();
+    return IsFrameSet() || IsLayoutNGFrameSet();
+  }
   bool IsInsideListMarkerForCustomContent() const {
     NOT_DESTROYED();
     return IsOfType(kLayoutObjectInsideListMarker);
@@ -3608,6 +3616,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     kLayoutObjectNGCustom,
     kLayoutObjectNGFieldset,
     kLayoutObjectNGFlexibleBox,
+    kLayoutObjectNGFrameSet,
     kLayoutObjectNGGrid,
     kLayoutObjectNGInsideListMarker,
     kLayoutObjectNGListItem,
