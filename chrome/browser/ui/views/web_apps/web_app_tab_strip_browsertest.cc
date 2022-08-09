@@ -9,6 +9,7 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/web_applications/commands/fetch_manifest_and_install_command.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
@@ -30,6 +32,7 @@
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -257,10 +260,8 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, AutoNewTabUrl) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, NewTabUrl) {
-  GURL start_url = embedded_test_server()->GetURL(
-      "/banners/"
-      "manifest_test_page.html?manifest=manifest_tab_strip_customizations."
-      "json");
+  GURL start_url =
+      embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
   AppId app_id = InstallWebAppFromPage(browser(), start_url);
   Browser* app_browser = LaunchWebAppBrowser(browser()->profile(), app_id);
 
@@ -269,7 +270,120 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, NewTabUrl) {
   chrome::NewTab(app_browser);
   EXPECT_EQ(
       app_browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
-      embedded_test_server()->GetURL("/banners/theme-color.html"));
+      embedded_test_server()->GetURL("/web_apps/favicon_only.html"));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, InstallingPinsHomeTab) {
+  GURL start_url = embedded_test_server()->GetURL(
+      "/web_apps/tab_strip_customizations.html?some_query#blah");
+  AppId app_id = InstallWebAppFromPage(browser(), start_url);
+  Browser* app_browser = FindWebAppBrowser(browser()->profile(), app_id);
+  TabStripModel* tab_strip = app_browser->tab_strip_model();
+
+  EXPECT_TRUE(registrar().IsTabbedWindowModeEnabled(app_id));
+
+  EXPECT_EQ(tab_strip->count(), 1);
+  EXPECT_TRUE(tab_strip->IsTabPinned(0));
+  // The URL of the pinned home tab should include the query params.
+  EXPECT_EQ(tab_strip->GetWebContentsAt(0)->GetVisibleURL(), start_url);
+  EXPECT_EQ(tab_strip->active_index(), 0);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, InstallFromNonHomeTabUrl) {
+  GURL start_url = embedded_test_server()->GetURL(
+      "/web_apps/get_manifest.html?tab_strip_customizations.json");
+  AppId app_id = InstallWebAppFromPage(browser(), start_url);
+  Browser* app_browser = FindWebAppBrowser(browser()->profile(), app_id);
+  TabStripModel* tab_strip = app_browser->tab_strip_model();
+
+  EXPECT_TRUE(registrar().IsTabbedWindowModeEnabled(app_id));
+
+  // Expect the home tab was opened in addition to the launch URL.
+  EXPECT_EQ(tab_strip->count(), 2);
+  EXPECT_TRUE(tab_strip->IsTabPinned(0));
+  EXPECT_EQ(tab_strip->GetWebContentsAt(0)->GetVisibleURL(),
+            registrar().GetAppStartUrl(app_id));
+  EXPECT_EQ(tab_strip->active_index(), 1);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, OpeningPinsHomeTab) {
+  GURL start_url =
+      embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
+  // Install and close app.
+  AppId app_id = InstallWebAppFromPage(browser(), start_url);
+  Browser* app_browser = FindWebAppBrowser(browser()->profile(), app_id);
+  CloseAndWait(app_browser);
+
+  // Launch the app to a non home tab URL.
+  app_browser = LaunchWebAppToURL(
+      browser()->profile(), app_id,
+      embedded_test_server()->GetURL("/web_apps/favicon_only.html"));
+  TabStripModel* tab_strip = app_browser->tab_strip_model();
+
+  EXPECT_TRUE(registrar().IsTabbedWindowModeEnabled(app_id));
+
+  // Expect the home tab was opened in addition to the launch URL.
+  EXPECT_EQ(tab_strip->count(), 2);
+  EXPECT_TRUE(tab_strip->IsTabPinned(0));
+  EXPECT_EQ(tab_strip->GetWebContentsAt(0)->GetVisibleURL(),
+            registrar().GetAppStartUrl(app_id));
+  EXPECT_EQ(tab_strip->active_index(), 1);
+
+  // Open app at home tab URL.
+  EXPECT_EQ(app_browser,
+            LaunchWebAppToURL(browser()->profile(), app_id, start_url));
+
+  // Expect the home tab to be focused.
+  EXPECT_EQ(tab_strip->count(), 2);
+  EXPECT_TRUE(tab_strip->IsTabPinned(0));
+  EXPECT_EQ(tab_strip->GetWebContentsAt(0)->GetVisibleURL(), start_url);
+  EXPECT_EQ(tab_strip->active_index(), 0);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, ReparentingPinsHomeTab) {
+  GURL start_url =
+      embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
+  // Install and close app.
+  AppId app_id = InstallWebAppFromPage(browser(), start_url);
+  Browser* app_browser = FindWebAppBrowser(browser()->profile(), app_id);
+  CloseAndWait(app_browser);
+
+  // Navigate to the app URL in the browser.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("/web_apps/favicon_only.html")));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Reparent web contents into app browser.
+  app_browser =
+      web_app::ReparentWebContentsIntoAppBrowser(web_contents, app_id);
+  TabStripModel* tab_strip = app_browser->tab_strip_model();
+
+  // Expect the pinned home tab to also be opened.
+  EXPECT_EQ(tab_strip->count(), 2);
+  EXPECT_TRUE(tab_strip->IsTabPinned(0));
+  EXPECT_EQ(tab_strip->GetWebContentsAt(0)->GetVisibleURL(),
+            registrar().GetAppStartUrl(app_id));
+  EXPECT_EQ(tab_strip->active_index(), 1);
+
+  // Navigate to home tab URL in the browser.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(
+                     "/web_apps/tab_strip_customizations.html")));
+  web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Reparent web contents into app browser.
+  EXPECT_EQ(app_browser,
+            web_app::ReparentWebContentsIntoAppBrowser(web_contents, app_id));
+  tab_strip = app_browser->tab_strip_model();
+
+  // Expect home tab to be focused.
+  EXPECT_EQ(tab_strip->count(), 2);
+  EXPECT_TRUE(tab_strip->IsTabPinned(0));
+  EXPECT_EQ(tab_strip->GetWebContentsAt(0)->GetVisibleURL(),
+            registrar().GetAppStartUrl(app_id));
+  EXPECT_EQ(tab_strip->active_index(), 0);
 }
 
 }  // namespace web_app

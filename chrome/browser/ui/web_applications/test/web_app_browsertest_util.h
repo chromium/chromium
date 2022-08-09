@@ -65,6 +65,11 @@ Browser* LaunchWebAppBrowserAndWait(
 // Launches a new tab for |app| in |profile|.
 Browser* LaunchBrowserForWebAppInTab(Profile*, const AppId&);
 
+// Launches the web app to the given URL.
+Browser* LaunchWebAppToURL(Profile* profile,
+                           const AppId& app_id,
+                           const GURL& url);
+
 // Return |ExternalInstallOptions| with OS shortcut creation disabled.
 ExternalInstallOptions CreateInstallOptions(
     const GURL& url,

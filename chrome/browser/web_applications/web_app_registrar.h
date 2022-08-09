@@ -323,6 +323,10 @@ class WebAppRegistrar : public ProfileManagerObserver {
 
   GURL GetAppNewTabUrl(const AppId& app_id) const;
 
+  // Returns the URL of the pinned home tab for tabbed apps which have this
+  // enabled, otherwise returns nullopt.
+  absl::optional<GURL> GetAppPinnedHomeTabUrl(const AppId& app_id) const;
+
 #if BUILDFLAG(IS_MAC)
   bool AlwaysShowToolbarInFullscreen(const AppId& app_id) const;
   void NotifyAlwaysShowToolbarInFullscreenChanged(const AppId& app_id,

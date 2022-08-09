@@ -60,6 +60,8 @@ void ClearAppPrefsForWebContents(content::WebContents* web_contents);
 std::unique_ptr<AppBrowserController> MaybeCreateAppBrowserController(
     Browser* browser);
 
+void MaybeAddPinnedHomeTab(Browser* browser, const std::string& app_id);
+
 Browser* CreateWebApplicationWindow(Profile* profile,
                                     const std::string& app_id,
                                     WindowOpenDisposition disposition,

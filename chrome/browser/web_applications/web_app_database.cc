@@ -1291,6 +1291,8 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
     if (local_data.tab_strip().has_home_tab_visibility()) {
       tab_strip.home_tab = ProtoToTabStripVisibility(
           local_data.tab_strip().home_tab_visibility());
+    } else {
+      tab_strip.home_tab = blink::Manifest::HomeTabParams();
     }
 
     if (local_data.tab_strip().has_new_tab_button_visibility()) {

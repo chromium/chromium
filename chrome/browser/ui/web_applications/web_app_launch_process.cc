@@ -184,6 +184,10 @@ std::tuple<GURL, bool /*is_file_handling*/> WebAppLaunchProcess::GetLaunchUrl(
 
 WindowOpenDisposition WebAppLaunchProcess::GetNavigationDisposition(
     bool is_new_browser) const {
+  if (provider_.registrar().IsTabbedWindowModeEnabled(params_.app_id)) {
+    return WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  }
+
   if (is_new_browser) {
     // By opening a new window we've already performed part of a "disposition",
     // the only remaining thing for Navigate() to do is navigate the new window.

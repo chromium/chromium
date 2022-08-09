@@ -7,12 +7,13 @@
       "type": "image/png"
     }
   ],
-  "start_url": "manifest_test_page.html",
+  "start_url": "tab_strip_customizations.html",
   "display": "standalone",
   "display_override": [ "tabbed" ],
   "tab_strip": {
+    "home_tab": {},
     "new_tab_button": {
-      "url": "theme-color.html"
+      "url": "favicon_only.html"
     }
   }
 }

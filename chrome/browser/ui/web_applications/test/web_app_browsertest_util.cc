@@ -236,6 +236,24 @@ Browser* LaunchBrowserForWebAppInTab(Profile* profile, const AppId& app_id) {
   return browser;
 }
 
+Browser* LaunchWebAppToURL(Profile* profile,
+                           const AppId& app_id,
+                           const GURL& url) {
+  apps::AppLaunchParams params(
+      app_id, apps::LaunchContainer::kLaunchContainerWindow,
+      WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromCommandLine);
+  params.override_url = url;
+  content::WebContents* const web_contents =
+      apps::AppServiceProxyFactory::GetForProfile(profile)
+          ->BrowserAppLauncher()
+          ->LaunchAppWithParamsForTesting(std::move(params));
+  EXPECT_TRUE(web_contents);
+
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  EXPECT_TRUE(AppBrowserController::IsForWebApp(browser, app_id));
+  return browser;
+}
+
 ExternalInstallOptions CreateInstallOptions(
     const GURL& url,
     const ExternalInstallSource& source) {

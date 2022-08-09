@@ -493,6 +493,23 @@ GURL WebAppRegistrar::GetAppNewTabUrl(const AppId& app_id) const {
   return GetAppStartUrl(app_id);
 }
 
+absl::optional<GURL> WebAppRegistrar::GetAppPinnedHomeTabUrl(
+    const AppId& app_id) const {
+  if (IsTabbedWindowModeEnabled(app_id)) {
+    const WebApp* web_app = GetAppById(app_id);
+    if (!web_app)
+      return absl::nullopt;
+
+    if (web_app->tab_strip() &&
+        absl::holds_alternative<blink::Manifest::HomeTabParams>(
+            web_app->tab_strip().value().home_tab)) {
+      return GetAppStartUrl(app_id);
+    }
+  }
+  // Apps with home_tab set to 'auto' will not have a home tab.
+  return absl::nullopt;
+}
+
 #if BUILDFLAG(IS_MAC)
 bool WebAppRegistrar::AlwaysShowToolbarInFullscreen(const AppId& app_id) const {
   auto* web_app = GetAppById(app_id);
