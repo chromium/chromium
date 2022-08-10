@@ -136,7 +136,7 @@
 <translation id="1126809382673880764">Няма защита срещу опасни уебсайтове, изтеглени файлове и разширения. Пак ще получавате защита посредством Безопасно сърфиране в други услуги на Google, където функцията се поддържа – например Gmail и Търсене.</translation>
 <translation id="1128090040635299943">Понастоящем Linux се конфигурира. Това ще отнеме няколко минути.</translation>
 <translation id="1128591060186966949">Редактиране на търсещата машина</translation>
-<translation id="1129420403709586868">Преглед на снимките и мултимедийните файлове на телефона ви</translation>
+<translation id="1129420403709586868">Преглеждайте снимките и мултимедийните файлове на телефона си</translation>
 <translation id="1129850422003387628">Управление на приложенията</translation>
 <translation id="113050636487300043">Изберете име и цветова тема, за да различавате потребителските профили</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> е част от групата <ph name="GROUP_NAME" /></translation>
@@ -5561,7 +5561,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="641469293210305670">Инсталиране на актуализации и приложения</translation>
 <translation id="6414878884710400018">Отваряне на системните предпочитания</translation>
 <translation id="6414888972213066896">Попитахте родителя си дали може да посетите този сайт</translation>
-<translation id="6415900369006735853">Връзка с интернет през телефона ви</translation>
+<translation id="6415900369006735853">Свързвайте се с интернет през телефона си</translation>
 <translation id="6416743254476733475">Разрешаване или блокиране на компютъра ви.</translation>
 <translation id="6417265370957905582">Google Асистент</translation>
 <translation id="6417468503703810114">Поведение по подразбиране</translation>
@@ -6377,7 +6377,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7228523857728654909">Заключване на екрана и влизане в профила</translation>
 <translation id="7230222852462421043">Възстановяване на &amp;прозореца</translation>
 <translation id="7230787553283372882">Персонализирайте размера на текста</translation>
-<translation id="7231260028442989757">Преглед, отхвърляне и отговаряне на известията на телефона ви</translation>
+<translation id="7231260028442989757">Преглеждайте, отхвърляйте и отговаряйте на известията на телефона си</translation>
 <translation id="7232750842195536390">Преименуването не бе успешно</translation>
 <translation id="723343421145275488">Търсене на изображения посредством <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="7234010996000898150">Възстановяването на Linux се анулира</translation>
@@ -7219,7 +7219,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8037357227543935929">Извеждане на запитване (по подразбиране)</translation>
 <translation id="803771048473350947">Файл</translation>
 <translation id="8041089156583427627">Изпращане на отзивите</translation>
-<translation id="8041267120753677077">Поточно предаване на приложенията на телефона ви</translation>
+<translation id="8041267120753677077">Предавайте поточно приложенията на телефона си</translation>
 <translation id="8042142357103597104">Плътност на текста</translation>
 <translation id="8042331986490021244">Паролите ви се шифроват на устройството ви, преди да бъдат запазени в мениджъра на паролите в Google</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> не реагира.</translation>

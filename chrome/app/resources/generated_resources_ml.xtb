@@ -1005,7 +1005,7 @@
 <translation id="1937774647013465102"><ph name="ARCHITECTURE_DEVICE" /> ആയ ഈ ഉപകരണം ഉപയോഗിച്ച് കണ്ടെയ്‌നർ ആർക്കി‌ടെക്‌ചർ തരമായ <ph name="ARCHITECTURE_CONTAINER" /> ഇമ്പോർട്ട് ചെയ്യാനാവില്ല. നിങ്ങൾക്ക് ഈ കണ്ടെയ്‌നർ മറ്റൊരു ഉപകരണത്തിലേക്ക് പുനഃസ്ഥാപിക്കാൻ ശ്രമിക്കാം അല്ലെങ്കിൽ Files ആപ്പിൽ തുറന്ന് ഈ കണ്ടെയ്‌നർ ചിത്രത്തിനുള്ളിലെ ഫയലുകൾ ആക്‌സസ് ചെയ്യാം.</translation>
 <translation id="1938320257168860255">എന്തോ കുഴപ്പമുണ്ടായി. നിങ്ങളുടെ ഫോൺ സമീപത്തുണ്ടെന്നും അൺലോക്ക് ചെയ്തിട്ടുണ്ടെന്നും Bluetooth-ഉം വൈഫൈയും ഓണാക്കിയിട്ടുണ്ടെന്നും ഉറപ്പാക്കുക.</translation>
 <translation id="1938351510777341717">എക്‌സ്‌റ്റേണൽ കമാൻഡ്</translation>
-<translation id="1940546824932169984">കണക്‌റ്റുചെയ്ത ഉപകരണം</translation>
+<translation id="1940546824932169984">കണക്‌റ്റ് ചെയ്ത ഉപകരണം</translation>
 <translation id="1941410638996203291">ആരംഭിക്കുന്ന സമയം <ph name="TIME" /></translation>
 <translation id="1941553344801134989">പതിപ്പ്: <ph name="APP_VERSION" /></translation>
 <translation id="1941995177877935582">കീ മാപ്പിംഗ് കാണിക്കുക</translation>
@@ -1033,7 +1033,7 @@
 <translation id="197288927597451399">Keep</translation>
 <translation id="1973763416111613016"><ph name="FILE_NAME" /> സുരക്ഷിതമായി ഡൗൺലോഡ് ചെയ്യാനാകില്ല. ഡൗൺലോഡ് വിവരങ്ങളുടെ ബാർ ഏരിയയിലേക്ക് പോകാൻ Shift+F6 അമർത്തുക.</translation>
 <translation id="1974043046396539880">CRL വിതരണ പോയിന്‍റുകള്‍‌</translation>
-<translation id="1974060860693918893">നൂതനം</translation>
+<translation id="1974060860693918893">വിപുലമായത്</translation>
 <translation id="1974159333077206889">എല്ലാ സ്‌പീക്കറുകളിലും ഒരേ ഓഡിയോ</translation>
 <translation id="1974821797477522211">നെറ്റ്‌വർക്കിലേക്ക് കണക്‌റ്റ് ചെയ്യുക</translation>
 <translation id="1975841812214822307">നീക്കംചെയ്യുക...</translation>
@@ -1941,7 +1941,7 @@
 <translation id="2804680522274557040">ക്യാമറ ഓഫാക്കി</translation>
 <translation id="2805539617243680210">നിങ്ങൾ തയ്യാറായിക്കഴിഞ്ഞു!</translation>
 <translation id="2805646850212350655">Microsoft Encrypting File System</translation>
-<translation id="2805756323405976993">ആപ്സ്</translation>
+<translation id="2805756323405976993">ആപ്പുകൾ</translation>
 <translation id="2805760958323556153">ExtensionInstallForcelist എന്നതിന്റെ നയ മൂല്യം അസാധുവാണ്. നിങ്ങളുടെ അഡ്മിനെ ബന്ധപ്പെടുക.</translation>
 <translation id="2805770823691782631">കൂടുതൽ വിശദാംശങ്ങൾ</translation>
 <translation id="2806372837663997957">നിങ്ങൾ ഫയൽ പങ്കിടാൻ ശ്രമിച്ച ഉപകരണം അത് സ്വീകരിച്ചില്ല</translation>
@@ -5044,7 +5044,7 @@
   <ph name="EXPONENT_HEX_DUMP" /></translation>
 <translation id="591556859191968540">നിങ്ങളുടെ ഫോണും <ph name="DEVICE_TYPE" /> ഉപകരണവും കണക്റ്റ് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="5916664084637901428">ഓൺ ചെയ്യുക</translation>
-<translation id="59174027418879706">പ്രാപ്തമാക്കി</translation>
+<translation id="59174027418879706">പ്രവർത്തനക്ഷമമാക്കി</translation>
 <translation id="5920543303088087579">ഈ നെറ്റ്‌വർക്കിൽ കണക്‌റ്റ് ചെയ്യുന്നതിനെ അഡ്‌മിൻ പ്രവർത്തനരഹിതമാക്കി</translation>
 <translation id="5921257443092182237">ഈ ഉപകരണത്തിന്റെ ലൊക്കേഷൻ നിർണ്ണയിക്കാൻ വൈഫൈയും മൊബൈൽ നെറ്റ്‌വർക്കുകളും സെൻസറുകളും പോലുള്ള ഉറവിടങ്ങളെ Google-ന്റെ ലൊക്കേഷൻ സേവനം ഉപയോഗിക്കുന്നു.</translation>
 <translation id="5924047253200400718">സഹായം തേടുക<ph name="SCANNING_STATUS" /></translation>

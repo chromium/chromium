@@ -8,7 +8,7 @@
 <translation id="1450760146488584666">Objek yang diminta tidak ada.</translation>
 <translation id="1480046233931937785">Kredit</translation>
 <translation id="1520828917794284345">Ubah ukuran desktop agar sesuai</translation>
-<translation id="1546934824884762070">Terjadi kesalahan yang tidak terduga. Laporkan masalah ini kepada pengembang.</translation>
+<translation id="1546934824884762070">Terjadi error yang tidak terduga. Laporkan masalah ini kepada pengembang.</translation>
 <translation id="1697532407822776718">Anda sudah siap!</translation>
 <translation id="1742469581923031760">Menyambungkan...</translation>
 <translation id="177040763384871009">Agar link yang diklik di perangkat jarak jauh dapat dibuka di browser klien, Anda perlu mengubah browser web sistem ke "<ph name="URL_FORWARDER_NAME" />".</translation>
@@ -38,7 +38,7 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' sudah dicentang, hapus centangnya, lalu
 <translation id="2676780859508944670">Sedang bekerja…</translation>
 <translation id="2692522824157224199">Hak Cipta 2022 Google LLC. Hak Cipta Dilindungi Undang-Undang.</translation>
 <translation id="2699970397166997657">Chromoting</translation>
-<translation id="2758123043070977469">Terjadi masalah saat mengautentikasi. Silakan login kembali.</translation>
+<translation id="2758123043070977469">Terjadi error saat mengautentikasi. Silakan login kembali.</translation>
 <translation id="2803375539583399270">Masukkan PIN</translation>
 <translation id="2919669478609886916">Saat ini Anda sedang berbagi mesin ini dengan pengguna lain. Apakah Anda ingin terus berbagi?</translation>
 <translation id="2939145106548231838">Autentikasi untuk menghosting</translation>
@@ -164,7 +164,7 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' sudah dicentang, hapus centangnya, lalu
 <translation id="806699900641041263">Menghubungkan ke <ph name="HOSTNAME" /></translation>
 <translation id="8073845705237259513">Untuk menggunakan Chrome Desktop Jarak Jauh, Anda perlu menambahkan Akun Google ke perangkat.</translation>
 <translation id="809687642899217504">Komputer Saya</translation>
-<translation id="8116630183974937060">Terjadi kesalahan jaringan. Periksa bahwa perangkat Anda online dan coba lagi.</translation>
+<translation id="8116630183974937060">Terjadi error jaringan. Periksa bahwa perangkat Anda online dan coba lagi.</translation>
 <translation id="8295077433896346116">Untuk menggunakan <ph name="PRODUCT_NAME" />, Anda harus memberikan izin ke 'Aksesibilitas' agar input dari perangkat jarak jauh dapat dimasukkan ke Mac ini.
 
 Untuk memberikan izin ini, klik '<ph name="BUTTON_NAME" />' di bawah. Di panel preferensi 'Aksesibilitas' yang terbuka, centang kotak di samping '<ph name="SERVICE_SCRIPT_NAME" />'.

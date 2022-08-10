@@ -57,7 +57,7 @@
 <translation id="1123753900084781868">Jonli izoh hozirda mavjud emas</translation>
 <translation id="1125573121925420732">Saytlar xavfsizlik sozlamalarini yangilayotganda ogohlantirishlar umumiy bo‘lishi mumkin. Bu tezda yashilanadi.</translation>
 <translation id="112840717907525620">Siyosat keshida xatoliklar yo‘q</translation>
-<translation id="1130564665089811311">“Sahifani tarjima qilish” tugmasi, bu sahifani Google Tarjimon orqali tarjima qilish uchun Enter tugmasini bosing</translation>
+<translation id="1130564665089811311">“Sahifani tarjima qilish” tugmasi, bu sahifani Google Tarjima orqali tarjima qilish uchun Enter tugmasini bosing</translation>
 <translation id="1131264053432022307">Nusxalangan rasm</translation>
 <translation id="1142846828089312304">Inkognito rejimidagi tashqi cookie fayllarni taqiqlash</translation>
 <translation id="1147769322402934017">Onlayn rasm galereyalari</translation>
@@ -1490,7 +1490,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5029568752722684782">Nusxani o‘chirib tashlash</translation>
 <translation id="5030338702439866405">Berilgan vaqt:</translation>
 <translation id="503069730517007720">“<ph name="SOFTWARE_NAME" />” uchun negiz sertifikati zarur, lekin o‘rnatilmagan. Tarmoq administratori bu muammoning yechimini “<ph name="SOFTWARE_NAME" />” konfiguratsiyasi ko‘rsatmalaridan izlashi zarur. <ph name="FURTHER_EXPLANATION" /></translation>
-<translation id="5031870354684148875">Google Tarjimon haqida</translation>
+<translation id="5031870354684148875">Google Tarjima haqida</translation>
 <translation id="503498442187459473"><ph name="HOST" /> kamera va mikrofoningizdan foydalanishni istaydi</translation>
 <translation id="5035135400558156732">Bogʻdorchilik</translation>
 <translation id="5039762155821394373">Shrift oʻlchami</translation>
@@ -1709,7 +1709,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5607240918979444548">Architecture-C</translation>
 <translation id="5610142619324316209">Internet aloqasini tekshiring</translation>
 <translation id="5610807607761827392">Karta va manzillarni <ph name="BEGIN_LINK" />Sozlamalar<ph name="END_LINK" /> orqali boshqarish mumkin.</translation>
-<translation id="561165882404867731">Bu sahifani Google Tarjimon bilan tarjima qilish</translation>
+<translation id="561165882404867731">Bu sahifani Google Tarjima bilan tarjima qilish</translation>
 <translation id="5612720917913232150"><ph name="URL" /> sayti kompyuteringiz joylashuvi ma’lumotlaridan foydalanmoqchi</translation>
 <translation id="561669346091975195">Ilmiy fantastik va fentezi TV seriallar</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> sayti juda ko‘p marta qayta yo‘naltirildi.</translation>

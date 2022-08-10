@@ -738,7 +738,7 @@
 <translation id="5956928062748260866">דו-שיח</translation>
 <translation id="5963413905009737549">קטע</translation>
 <translation id="5968607524793740041">הצגת תפריט הקשר</translation>
-<translation id="597121107011153418">{COUNT,plural, =1{עם פריט אחד}two{with # items}many{with # items}other{עם # פריטים}}</translation>
+<translation id="597121107011153418">{COUNT,plural, =1{עם פריט אחד}two{עם # פריטים}many{עם # פריטים}other{עם # פריטים}}</translation>
 <translation id="5981446804259161541">ציאן בהיר</translation>
 <translation id="5983179082906765664">העמקת רמת הפירוט של הניווט</translation>
 <translation id="5992285135956208197">מסמך גרפי</translation>

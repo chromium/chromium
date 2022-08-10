@@ -398,7 +398,7 @@
 <translation id="1959001866257244765">നിങ്ങൾ സന്ദർശിക്കുന്ന ചില പേജുകളുടെ <ph name="BEGIN_WHITEPAPER_LINK" />URL, പരിമിത സിസ്‌റ്റം വിവരങ്ങൾ, ചില പേജുകളുടെ ഉള്ളടക്കം<ph name="END_WHITEPAPER_LINK" /> എന്നിവ Google-ലേക്ക് അയച്ച് എല്ലാവർക്കുമായി വെബിലെ സുരക്ഷ മെച്ചപ്പെടുത്താൻ സഹായിക്കുക. <ph name="BEGIN_PRIVACY_PAGE_LINK" />സ്വകാര്യതാ നയം<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> ബുക്ക്‌മാർക്കുകൾ</translation>
 <translation id="1973335181906896915">സീരിയലൈസേഷൻ പിശക്</translation>
-<translation id="1974060860693918893">നൂതനം</translation>
+<translation id="1974060860693918893">വിപുലമായത്</translation>
 <translation id="1975457531113383421">ഇൻപുട്ട് ട്രേ</translation>
 <translation id="1975584088563498795">മെയിൽബോക്സ് 10</translation>
 <translation id="1978555033938440688">ഫേംവെയർ പതിപ്പ്</translation>
@@ -1805,7 +1805,7 @@
 <translation id="5904360430676679685">കുടുംബവും ബന്ധങ്ങളും</translation>
 <translation id="5905445707201418379"><ph name="ORIGIN" /> എന്നതിന്റെ ഉറവിട നയത്തിന് അനുസൃതമായി ബ്ലോക്ക് ചെയ്‌തു.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (സമന്വയിപ്പിച്ചത്)</translation>
-<translation id="59174027418879706">പ്രാപ്തമാക്കി</translation>
+<translation id="59174027418879706">പ്രവർത്തനക്ഷമമാക്കി</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{ഒരെണ്ണം ഉപയോഗത്തിലുണ്ട്}other{# എണ്ണം ഉപയോഗത്തിലുണ്ട്}}</translation>
 <translation id="592031860219554105">ഐസ് സ്‌കേറ്റിംഗ്</translation>

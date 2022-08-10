@@ -93,7 +93,7 @@
 <translation id="1676557873873341166">Merekam video</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Keberadaan DNS Resolver</translation>
-<translation id="1715359911173058521">Terjadi masalah saat menghubungkan ke pemindai. Periksa koneksi jaringan atau USB, lalu coba lagi.</translation>
+<translation id="1715359911173058521">Terjadi error saat menghubungkan ke pemindai. Periksa koneksi jaringan atau USB, lalu coba lagi.</translation>
 <translation id="1717874160321062422">Dikelola oleh <ph name="FIRST_MANAGER" /> dan <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Nama server</translation>
 <translation id="1731082422893354635">Touchpad Bluetooth</translation>
@@ -207,7 +207,7 @@
 <translation id="2727250716596204208">Tidak dapat menemukan image firmware. Masukkan penyimpanan eksternal, seperti drive USB atau kartu SD, yang berisi image Utilitas Pemulihan Chromebook yang telah didownload.</translation>
 <translation id="2740531572673183784">Oke</translation>
 <translation id="2751739896257479635">Autentikasi tahap 2 EAP</translation>
-<translation id="2756652381241102009">Jalankan Diagnosis</translation>
+<translation id="2756652381241102009">Jalankan Diagnostik</translation>
 <translation id="2783010256799387990">LULUS</translation>
 <translation id="2789486458103222910">Oke</translation>
 <translation id="2805756323405976993">Apl</translation>

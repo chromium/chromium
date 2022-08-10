@@ -1391,7 +1391,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="4761869838909035636">Jalankan Pemeriksaan Keamanan Chrome</translation>
 <translation id="4764776831041365478">Halaman web di <ph name="URL" /> mungkin sedang tidak aktif untuk sementara atau dipindahkan secara permanen ke alamat web baru.</translation>
 <translation id="4766713847338118463">Dua jepretan di bawah</translation>
-<translation id="4771973620359291008">Terjadi kesalahan yang tidak diketahui.</translation>
+<translation id="4771973620359291008">Terjadi error yang tidak diketahui.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Pop-up diblokir}other{# pop-up diblokir}}</translation>
 <translation id="4780366598804516005">Kotak surat 1</translation>
 <translation id="4785376858512657294">Kelola Akun Google</translation>
@@ -1760,7 +1760,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="5781136890105823427">Eksperimen diaktifkan</translation>
 <translation id="578305955206182703">Oranye kekuningan</translation>
 <translation id="57838592816432529">Bisukan</translation>
-<translation id="5784606427469807560">Terjadi masalah saat mengonfirmasi kartu. Periksa koneksi internet Anda dan coba lagi.</translation>
+<translation id="5784606427469807560">Terjadi error saat mengonfirmasi kartu. Periksa koneksi internet Anda dan coba lagi.</translation>
 <translation id="5785756445106461925">Selain itu, halaman ini berisi sumber daya lainnya yang tidak aman. Sumber daya ini dapat dilihat oleh orang lain saat transit dan dapat dimodifikasi oleh penyerang untuk mengubah tampilan perangkat.</translation>
 <translation id="5786044859038896871">Ingin mengisi informasi kartu?</translation>
 <translation id="578633867165174378">Chrome menemukan sandi yang baru saja Anda gunakan dalam pelanggaran data. Sebaiknya ubah sandi ini sekarang.</translation>

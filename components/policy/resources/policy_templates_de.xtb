@@ -6667,7 +6667,7 @@ Unter Windows ist es empfehlenswert, Richtlinien über Gruppenrichtlinienobjekte
           Wenn du diese Richtlinie konfigurierst, kann sie vom Nutzer nicht geändert oder überschrieben werden.
 
           Ist die Richtlinie nicht konfiguriert, ist die Spracheingabe anfangs deaktiviert, kann jedoch vom Nutzer jederzeit aktiviert werden.</translation>
-<translation id="8293414596801971604">Regulärer Ausdruck für die Suche nach dem angegebenen angezeigten Namen des Druckers.</translation>
+<translation id="8293414596801971604">Regulärer Ausdruck für die Suche nach dem angegebenen Angezeigenamen des Druckers.</translation>
 <translation id="8293509904023267821">Wenn diese Richtlinie konfiguriert ist, werden Daten in der Zwischenablage, die an den Host gesendet und von diesem empfangen werden, je nach der durch diese Richtlinie festgelegten Begrenzung abgeschnitten.
 
           Bei einem Wert von 0 ist die Synchronisierung der Zwischenablage deaktiviert.

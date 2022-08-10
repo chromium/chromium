@@ -1514,7 +1514,7 @@ Del</translation>
 <translation id="5066056036849835175">היסטוריית הדפסות</translation>
 <translation id="5068234115460527047">קרנות גידור</translation>
 <translation id="5068524481479508725">A10</translation>
-<translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(אחד נמצא בשימוש)}two{(# in use)}many{(# in use)}other{(# נמצאים בשימוש)}}</translation>
+<translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(אחד נמצא בשימוש)}two{(# נמצאים בשימוש)}many{(# נמצאים בשימוש)}other{(# נמצאים בשימוש)}}</translation>
 <translation id="5070335125961472645">‏<ph name="BEGIN_LINK" />לבדוק את כתובת שרת ה-Proxy<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">גליל עשירי</translation>
 <translation id="507130231501693183">תיבת דואר 4</translation>

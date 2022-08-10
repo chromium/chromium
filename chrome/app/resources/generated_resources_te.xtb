@@ -6204,7 +6204,7 @@
 <translation id="7022562585984256452">మీ హోమ్ పేజీ సెట్ చేయబడింది.</translation>
 <translation id="7025082428878635038">సంజ్ఞలతో నావిగేట్ చేయడానికి కొత్త మార్గాన్ని మీకు అందిస్తున్నాము</translation>
 <translation id="7025190659207909717">మొబైల్ డేటా సేవ నిర్వహణ</translation>
-<translation id="7025895441903756761">భద్రత, గోప్యత</translation>
+<translation id="7025895441903756761">సెక్యూరిటీ, గోప్యత</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{అన్నింటినీ &amp;అజ్ఞాత విండోలో తెరువు}=1{&amp;అజ్ఞాత విండోలో తెరువు}other{అన్నింటినీ ({COUNT}) &amp;అజ్ఞాత విండోలో తెరువు}}</translation>
 <translation id="7029307918966275733">Crostini ఇన్‌స్టాల్ చేయబడలేదు. క్రెడిట్‌లను చూడడానికి దయచేసి Crostiniని ఇన్‌స్టాల్ చేయండి.</translation>
 <translation id="7029809446516969842">పాస్‌వర్డ్‌లు</translation>
@@ -6378,7 +6378,7 @@
 <translation id="7228523857728654909">స్క్రీన్ లాక్ మరియు సైన్ ఇన్</translation>
 <translation id="7230222852462421043">&amp;విండోను రీస్టోర్ చేయండి</translation>
 <translation id="7230787553283372882">మీ వచన పరిమాణాన్ని అనుకూలంగా మార్చండి</translation>
-<translation id="7231260028442989757">మీ ఫోన్ నోటిఫికేషన్‌లను చూడండి, విస్మరించండి, వాటికి రిప్లయి చేయండి</translation>
+<translation id="7231260028442989757">మీ ఫోన్ నోటిఫికేషన్‌లను చూడండి, విస్మరించండి, వాటికి రిప్లయి ఇవ్వండి</translation>
 <translation id="7232750842195536390">పేరు మార్చడం విఫలమైంది</translation>
 <translation id="723343421145275488"><ph name="VISUAL_SEARCH_PROVIDER" />‌ ఇమేజ్ సెర్చ్</translation>
 <translation id="7234010996000898150">Linux పునరుద్ధరణను రద్దు చేస్తోంది</translation>
