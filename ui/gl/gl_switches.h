@@ -109,6 +109,7 @@ GL_EXPORT extern const base::Feature kDefaultANGLEVulkan;
 GL_EXPORT extern const base::Feature kTrackCurrentShaders;
 GL_EXPORT extern const base::Feature kVulkanFromANGLE;
 GL_EXPORT extern const base::Feature kDXGIWaitableSwapChain;
+GL_EXPORT extern const base::Feature kIncreasedCmdBufferParseSlice;
 GL_EXPORT extern const base::FeatureParam<int>
     kDXGIWaitableSwapChainMaxQueuedFrames;
 

@@ -22,6 +22,7 @@
 #include "gpu/command_buffer/common/cmd_buffer_common.h"
 #include "gpu/command_buffer/common/command_buffer_shared.h"
 #include "gpu/command_buffer/service/transfer_buffer_manager.h"
+#include "ui/gl/gl_switches.h"
 
 #if BUILDFLAG(IS_MAC)
 #include <mach/mach_vm.h>
@@ -164,6 +165,17 @@ bool AppleGpuMemoryDumpProvider::OnMemoryDump(
 }  // namespace
 #endif
 
+// Context switching leads to a render pass break in ANGLE/Vulkan. The command
+// buffer has a 20-command limit before it forces a context switch. This
+// experiment tests a 100-command limit.
+int GetCommandBufferSliceSize() {
+  static int slice_size =
+      (base::FeatureList::IsEnabled(features::kIncreasedCmdBufferParseSlice)
+           ? CommandBufferService::kParseCommandsSliceLarge
+           : CommandBufferService::kParseCommandsSliceSmall);
+  return slice_size;
+}
+
 CommandBufferService::CommandBufferService(CommandBufferServiceClient* client,
                                            MemoryTracker* memory_tracker)
     : client_(client),
@@ -214,9 +226,9 @@ void CommandBufferService::Flush(int32_t put_offset,
   while (put_offset_ != state_.get_offset) {
     int num_entries = end - state_.get_offset;
     int entries_processed = 0;
-    error::Error error =
-        handler->DoCommands(kParseCommandsSlice, buffer_ + state_.get_offset,
-                            num_entries, &entries_processed);
+    error::Error error = handler->DoCommands(GetCommandBufferSliceSize(),
+                                             buffer_ + state_.get_offset,
+                                             num_entries, &entries_processed);
 
     state_.get_offset += entries_processed;
     DCHECK_LE(state_.get_offset, num_entries_);
