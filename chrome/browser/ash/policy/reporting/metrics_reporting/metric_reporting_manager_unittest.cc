@@ -182,6 +182,8 @@ const MetricReportingSettingData memory_info_settings = {
     ::ash::kReportDeviceMemoryInfo, false, "", 0};
 const MetricReportingSettingData bus_info_settings = {
     ::ash::kReportDeviceSecurityStatus, false, "", 0};
+const MetricReportingSettingData input_info_settings = {
+    ::ash::kReportDeviceGraphicsStatus, false, "", 0};
 const MetricReportingSettingData network_telemetry_settings = {
     ::ash::kReportDeviceNetworkStatus, true,
     ::ash::kReportDeviceNetworkTelemetryCollectionRateMs, 1};
@@ -363,6 +365,12 @@ INSTANTIATE_TEST_SUITE_P(
           /*enabled_features=*/{},
           /*disabled_features=*/{},
           /*is_affiliated=*/true, bus_info_settings,
+          /*expected_count_before_login=*/1,
+          /*expected_count_after_login=*/1},
+         {"InputInfo",
+          /*enabled_features=*/{},
+          /*disabled_features=*/{},
+          /*is_affiliated=*/true, input_info_settings,
           /*expected_count_before_login=*/1,
           /*expected_count_after_login=*/1}}),
     [](const testing::TestParamInfo<MetricReportingManagerInfoTest::ParamType>&

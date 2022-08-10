@@ -316,6 +316,11 @@ void MetricReportingManager::DelayedInit() {
       CrosHealthdMetricSampler::MetricType::kTelemetry,
       ::ash::kReportDeviceBootMode,
       /*default_value=*/true, telemetry_report_queue_.get());
+  CreateCrosHealthdOneShotCollector(
+      chromeos::cros_healthd::mojom::ProbeCategoryEnum::kInput,
+      CrosHealthdMetricSampler::MetricType::kInfo,
+      ::ash::kReportDeviceGraphicsStatus,
+      /*default_value=*/false, info_report_queue_.get());
 
   // Network health info.
   // ReportDeviceNetworkConfiguration policy is enabled by default, so set its

@@ -322,6 +322,61 @@ void HandleMemoryResult(OptionalMetricCallback callback,
   std::move(callback).Run(std::move(metric_data));
 }
 
+void HandleInputResult(OptionalMetricCallback callback,
+                       CrosHealthdMetricSampler::MetricType metric_type,
+                       cros_healthd::TelemetryInfoPtr result) {
+  absl::optional<MetricData> metric_data;
+  const auto& input_result = result->input_result;
+
+  if (!input_result.is_null()) {
+    switch (input_result->which()) {
+      case cros_healthd::InputResult::Tag::kError: {
+        DVLOG(1) << "cros_healthd: Error getting input info: "
+                 << input_result->get_error()->msg;
+        break;
+      }
+
+      case cros_healthd::InputResult::Tag::kInputInfo: {
+        const auto& input_info = input_result->get_input_info();
+        if (input_info.is_null()) {
+          DVLOG(1) << "Null InputInfo from cros_healthd";
+          break;
+        }
+
+        // Gather touch screen info.
+        if (metric_type == CrosHealthdMetricSampler::MetricType::kInfo) {
+          metric_data = absl::make_optional<MetricData>();
+          auto* const touch_screen_info_out =
+              metric_data->mutable_info_data()->mutable_touch_screen_info();
+
+          touch_screen_info_out->set_library_name(
+              input_info->touchpad_library_name);
+
+          for (const auto& screen : input_info->touchscreen_devices) {
+            if (screen->input_device->is_enabled &&
+                screen->input_device->connection_type ==
+                    cros_healthd::InputDevice::ConnectionType::kInternal) {
+              auto* const touch_screen_device_out =
+                  touch_screen_info_out->add_touch_screen_devices();
+              touch_screen_device_out->set_display_name(
+                  screen->input_device->name);
+              touch_screen_device_out->set_touch_points(screen->touch_points);
+              touch_screen_device_out->set_has_stylus(screen->has_stylus);
+            }
+          }
+          // Don't report anything if no internal touchscreen was detected.
+          if (touch_screen_info_out->touch_screen_devices().empty()) {
+            metric_data = absl::nullopt;
+          }
+        }
+        break;
+      }
+    }
+  }
+
+  std::move(callback).Run(std::move(metric_data));
+}
+
 void OnHealthdInfoReceived(OptionalMetricCallback callback,
                            cros_healthd::ProbeCategoryEnum probe_category,
                            CrosHealthdMetricSampler::MetricType metric_type,
@@ -347,6 +402,10 @@ void OnHealthdInfoReceived(OptionalMetricCallback callback,
     case cros_healthd::ProbeCategoryEnum::kBootPerformance: {
       HandleBootPerformanceResult(std::move(callback), metric_type,
                                   std::move(result));
+      break;
+    }
+    case cros_healthd::ProbeCategoryEnum::kInput: {
+      HandleInputResult(std::move(callback), metric_type, std::move(result));
       break;
     }
     default: {
