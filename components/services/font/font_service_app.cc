@@ -79,18 +79,8 @@ font_service::mojom::RenderStyleSwitch ConvertSubpixelRendering(
   return font_service::mojom::RenderStyleSwitch::NO_PREFERENCE;
 }
 
-// A feature that controls whether we use a cache for font family matching.
-const base::Feature kCacheFontFamilyMatching {
-  "CacheFontFamilyMatching",
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      base::FEATURE_ENABLED_BY_DEFAULT
-#else
-      base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-};
-
 // The maximum number of entries to keep in the font family matching cache.
-constexpr int kCacheFontFamilyMaxSize = 10000;
+constexpr int kCacheFontFamilyMaxSize = 3000;
 
 }  // namespace
 
@@ -119,18 +109,18 @@ void FontServiceApp::MatchFamilyName(const std::string& family_name,
       requested_style->weight, requested_style->width,
       static_cast<SkFontStyle::Slant>(requested_style->slant));
 
+  // Check for presence in cache.
   MatchCacheKey key;
-  if (base::FeatureList::IsEnabled(kCacheFontFamilyMatching)) {
-    key.family_name = family_name;
-    key.font_style = font_style;
-    auto it = match_cache_.Get(key);
-    if (it != match_cache_.end()) {
-      std::move(callback).Run(
-          it->second.identity ? it->second.identity.Clone() : nullptr,
-          it->second.family_name, it->second.style.Clone());
-      return;
-    }
+  key.family_name = family_name;
+  key.font_style = font_style;
+  auto it = match_cache_.Get(key);
+  if (it != match_cache_.end()) {
+    std::move(callback).Run(
+        it->second.identity ? it->second.identity.Clone() : nullptr,
+        it->second.family_name, it->second.style.Clone());
+    return;
   }
+
   const bool r =
       fc->matchFamilyName(family_name.data(), font_style, &result_identity,
                           &result_family, &result_style);
@@ -159,13 +149,12 @@ void FontServiceApp::MatchFamilyName(const std::string& family_name,
     style->slant = static_cast<mojom::TypefaceSlant>(SkFontStyle().slant());
   }
 
-  if (base::FeatureList::IsEnabled(kCacheFontFamilyMatching)) {
-    MatchCacheValue value;
-    value.family_name = result_family_cppstring;
-    value.identity = identity ? identity.Clone() : nullptr;
-    value.style = style.Clone();
-    match_cache_.Put(key, std::move(value));
-  }
+  // Add to the cache.
+  MatchCacheValue value;
+  value.family_name = result_family_cppstring;
+  value.identity = identity ? identity.Clone() : nullptr;
+  value.style = style.Clone();
+  match_cache_.Put(key, std::move(value));
 
   std::move(callback).Run(std::move(identity), result_family_cppstring,
                           std::move(style));
