@@ -2256,7 +2256,7 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
   OriginTrialContext::AddTokensFromHeader(
       frame_->DomWindow(), response_.HttpHeaderField(http_names::kOriginTrial));
 
-  if (auto* parent = frame_->Tree().Parent()) {
+  if (auto* parent = frame_->Tree().Parent(FrameTreeBoundary::kFenced)) {
     const SecurityContext* parent_context = parent->GetSecurityContext();
     security_context.SetInsecureRequestPolicy(
         parent_context->GetInsecureRequestPolicy());
