@@ -82,14 +82,8 @@ const base::Feature kDownloadBubble{"DownloadBubble",
 const base::Feature kDownloadBubbleV2{"DownloadBubbleV2",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kEnhancedProtection {
-  "SafeBrowsingEnhancedProtection",
-#if BUILDFLAG(IS_IOS)
-      base::FEATURE_DISABLED_BY_DEFAULT
-#else
-      base::FEATURE_ENABLED_BY_DEFAULT
-#endif
-};
+const base::Feature kEnhancedProtection{"SafeBrowsingEnhancedProtection",
+                                        base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kEnhancedProtectionPhase2IOS{
     "SafeBrowsingEnhancedProtectionPhase2IOS",
