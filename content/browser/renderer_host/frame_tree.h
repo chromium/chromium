@@ -525,7 +525,7 @@ class CONTENT_EXPORT FrameTree {
   friend class FrameTreeTest;
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplBrowserTest, RemoveFocusedFrame);
   FRIEND_TEST_ALL_PREFIXES(PortalBrowserTest, NodesForIsLoading);
-  FRIEND_TEST_ALL_PREFIXES(FencedFrameBrowserTest, NodesForIsLoading);
+  FRIEND_TEST_ALL_PREFIXES(FencedFrameMPArchBrowserTest, NodesForIsLoading);
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostManagerTest,
                            CreateRenderViewAfterProcessKillAndClosedProxy);
 
