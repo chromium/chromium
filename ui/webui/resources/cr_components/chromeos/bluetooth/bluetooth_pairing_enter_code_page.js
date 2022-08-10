@@ -15,10 +15,8 @@ import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {BluetoothDeviceProperties} from 'chrome://resources/mojo/chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 
 import {ButtonBarState, ButtonState} from './bluetooth_types.js';
-import {mojoString16ToString} from './bluetooth_utils.js';
 
 // Pairing passkey can be a maximum of 16 characters while pairing code a max
 // of  6 digits. This is used to check that the passed code is less than or
@@ -46,11 +44,11 @@ export class SettingsBluetoothPairingEnterCodeElement extends
   static get properties() {
     return {
       /**
-       * @type {?BluetoothDeviceProperties}
+       * @type {string}
        */
-      device: {
-        type: Object,
-        value: null,
+      deviceName: {
+        type: String,
+        value: '',
       },
 
       /** @type {string} */
@@ -146,19 +144,7 @@ export class SettingsBluetoothPairingEnterCodeElement extends
    * @return {string}
    */
   getMessage_() {
-    return this.i18n('bluetoothPairingEnterKeys', this.getDeviceName_());
-  }
-
-  /**
-   * @return {string}
-   * @private
-   */
-  getDeviceName_() {
-    if (!this.device) {
-      return '';
-    }
-
-    return mojoString16ToString(this.device.publicName);
+    return this.i18n('bluetoothPairingEnterKeys', this.deviceName);
   }
 }
 

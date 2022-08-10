@@ -113,9 +113,10 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
   async function displayPinOrPasskey(pairingAuthType) {
     await init();
 
+    const deviceName = 'BeatsX';
     const device = createDefaultBluetoothDevice(
         /*id=*/ '123456',
-        /*publicName=*/ 'BeatsX',
+        /*publicName=*/ deviceName,
         /*connectionState=*/
         DeviceConnectionState.kConnected,
         /*opt_nickname=*/ 'device1',
@@ -137,6 +138,7 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
     await flushTasks();
 
     assertTrue(!!getEnterCodePage());
+    assertEquals(getEnterCodePage().deviceName, deviceName);
 
     // Simulate pairing cancelation.
     await simulateCancelation();
@@ -155,6 +157,7 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
 
     assertEquals(getEnterCodePage().numKeysEntered, 2);
     assertEquals(getEnterCodePage().code, pairingCode);
+    assertEquals(getEnterCodePage().deviceName, deviceName);
 
     const finishedPromise = eventToPromise('finished', bluetoothPairingUi);
     // Finished event is fired on successful pairing.

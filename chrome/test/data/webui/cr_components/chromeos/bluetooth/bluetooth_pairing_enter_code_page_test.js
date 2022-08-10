@@ -37,16 +37,7 @@ suite('CrComponentsBluetoothPairingEnterCodePageTest', function() {
         bluetoothPairingEnterCodePage.shadowRoot.querySelector('#enter');
 
     const deviceName = 'BeatsX';
-    const device = createDefaultBluetoothDevice(
-        /*id=*/ '123456', deviceName,
-        /*connectionState=*/
-        DeviceConnectionState.kConnected,
-        /*opt_nickname=*/ 'device1',
-        /*opt_audioCapability=*/
-        AudioOutputCapability.kCapableOfAudioOutput,
-        /*opt_deviceType=*/ DeviceType.kMouse);
-
-    bluetoothPairingEnterCodePage.device = device.deviceProperties;
+    bluetoothPairingEnterCodePage.deviceName = deviceName;
     await flushAsync();
 
     const message =
