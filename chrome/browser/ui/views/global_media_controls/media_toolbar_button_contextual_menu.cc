@@ -50,8 +50,7 @@ MediaToolbarButtonContextualMenu::CreateMenuModel() {
       IDS_MEDIA_TOOLBAR_CONTEXT_SHOW_OTHER_SESSIONS);
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (!browser_->profile()->IsOffTheRecord() &&
-      browser_->profile()->GetPrefs()->GetBoolean(
+  if (browser_->profile()->GetPrefs()->GetBoolean(
           prefs::kUserFeedbackAllowed)) {
     menu_model->AddItemWithStringId(
         IDC_MEDIA_TOOLBAR_CONTEXT_REPORT_CAST_ISSUE,

@@ -77,8 +77,7 @@ MediaRouterContextualMenu::CreateMenuModel() {
   menu_model->AddCheckItemWithStringId(IDC_MEDIA_ROUTER_TOGGLE_MEDIA_REMOTING,
                                        IDS_MEDIA_ROUTER_TOGGLE_MEDIA_REMOTING);
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (!browser_->profile()->IsOffTheRecord() &&
-      browser_->profile()->GetPrefs()->GetBoolean(
+  if (browser_->profile()->GetPrefs()->GetBoolean(
           prefs::kUserFeedbackAllowed)) {
     menu_model->AddSeparator(ui::NORMAL_SEPARATOR);
     menu_model->AddItemWithStringId(
