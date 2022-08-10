@@ -5138,6 +5138,16 @@
                     "name": "Enabled",
                     "enable_features": [
                         "CalendarExperienceKit"
+                    ],
+                    "disable_features": [
+                        "EnableExpKitCalendarTextClassifier"
+                    ]
+                },
+                {
+                    "name": "EnabledWithTextClassifier",
+                    "enable_features": [
+                        "CalendarExperienceKit",
+                        "EnableExpKitCalendarTextClassifier"
                     ]
                 }
             ]
