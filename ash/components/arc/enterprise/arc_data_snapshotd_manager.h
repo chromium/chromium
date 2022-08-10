@@ -104,7 +104,7 @@ class ArcDataSnapshotdManager final
    public:
     // Creates new snapshot with current parameters.
     explicit SnapshotInfo(bool is_last);
-    SnapshotInfo(const base::Value* value, bool is_last);
+    SnapshotInfo(const base::Value::Dict& value, bool is_last);
     SnapshotInfo(const SnapshotInfo&) = delete;
     SnapshotInfo& operator=(const SnapshotInfo&) = delete;
     ~SnapshotInfo();
@@ -119,7 +119,7 @@ class ArcDataSnapshotdManager final
         bool is_last);
 
     // Syncs stored snapshot info to dictionaty |value|.
-    void Sync(base::Value* value);
+    void Sync(base::Value::Dict& value);
 
     // Returns true if snapshot is expired.
     bool IsExpired() const;

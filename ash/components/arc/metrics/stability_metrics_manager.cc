@@ -47,11 +47,12 @@ StabilityMetricsManager::~StabilityMetricsManager() {
 
 void StabilityMetricsManager::RecordMetricsToUMA() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // GetDictionary() should never return null, but since this may be called
-  // early on browser startup, be paranoid here to prevent going into a crash
-  // loop.
-  if (!local_state_->GetDictionary(prefs::kStabilityMetrics)) {
-    NOTREACHED() << "Local state unavailable, not recording stabiltiy metrics.";
+  // FindPreference(prefs::kStabilityMetrics) should never return null, but
+  // since this may be called early on browser startup, be paranoid here to
+  // prevent going into a crash loop.
+  if (const auto* pref = local_state_->FindPreference(prefs::kStabilityMetrics);
+      !pref || pref->GetType() != base::Value::Type::DICT) {
+    NOTREACHED() << "Local state unavailable, not recording stability metrics.";
     return;
   }
 

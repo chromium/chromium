@@ -123,32 +123,30 @@ ArcDataSnapshotdManager::SnapshotInfo::SnapshotInfo(bool is_last)
   UpdateCreationDate(base::Time::Now());
 }
 
-ArcDataSnapshotdManager::SnapshotInfo::SnapshotInfo(const base::Value* value,
-                                                    bool is_last)
+ArcDataSnapshotdManager::SnapshotInfo::SnapshotInfo(
+    const base::Value::Dict& dict,
+    bool is_last)
     : is_last_(is_last) {
-  const base::DictionaryValue* dict;
-  if (!value || !value->GetAsDictionary(&dict) || !dict)
-    return;
   {
-    auto* found = dict->FindStringPath(kOsVersion);
+    auto* found = dict.FindString(kOsVersion);
     if (found)
       os_version_ = *found;
   }
   {
-    auto* found = dict->FindPath(kCreationDate);
+    auto* found = dict.Find(kCreationDate);
     if (found && base::ValueToTime(found).has_value()) {
       auto parsed_time = base::ValueToTime(found).value();
       UpdateCreationDate(parsed_time);
     }
   }
   {
-    auto found = dict->FindBoolPath(kVerified);
+    auto found = dict.FindBool(kVerified);
     if (found.has_value())
       verified_ = found.value();
   }
 
   {
-    auto found = dict->FindBoolPath(kUpdated);
+    auto found = dict.FindBool(kUpdated);
     if (found.has_value())
       updated_ = found.value();
   }
@@ -168,17 +166,14 @@ ArcDataSnapshotdManager::SnapshotInfo::CreateForTesting(
       os_version, creation_date, verified, updated, is_last));
 }
 
-void ArcDataSnapshotdManager::SnapshotInfo::Sync(base::Value* dict) {
-  if (!dict)
-    return;
+void ArcDataSnapshotdManager::SnapshotInfo::Sync(base::Value::Dict& dict) {
+  base::Value::Dict value;
+  value.Set(kOsVersion, os_version_);
+  value.Set(kCreationDate, base::TimeToValue(creation_date_));
+  value.Set(kVerified, verified_);
+  value.Set(kUpdated, updated_);
 
-  base::DictionaryValue value;
-  value.SetStringKey(kOsVersion, os_version_);
-  value.SetKey(kCreationDate, base::TimeToValue(creation_date_));
-  value.SetBoolKey(kVerified, verified_);
-  value.SetBoolKey(kUpdated, updated_);
-
-  dict->SetKey(GetDictPath(), std::move(value));
+  dict.Set(GetDictPath(), std::move(value));
 }
 
 bool ArcDataSnapshotdManager::SnapshotInfo::IsExpired() const {
@@ -257,41 +252,39 @@ ArcDataSnapshotdManager::Snapshot::CreateForTesting(
 }
 
 void ArcDataSnapshotdManager::Snapshot::Parse() {
-  const base::Value* dict =
-      local_state_->GetDictionary(arc::prefs::kArcSnapshotInfo);
-  if (!dict)
-    return;
+  const base::Value::Dict& dict =
+      local_state_->GetValueDict(arc::prefs::kArcSnapshotInfo);
   {
-    const auto* found = dict->FindDictPath(kPrevious);
+    const auto* found = dict.FindDict(kPrevious);
     if (found)
-      previous_snapshot_ = std::make_unique<SnapshotInfo>(found, false);
+      previous_snapshot_ = std::make_unique<SnapshotInfo>(*found, false);
   }
   {
-    const auto* found = dict->FindDictPath(kLast);
+    const auto* found = dict.FindDict(kLast);
     if (found)
-      last_snapshot_ = std::make_unique<SnapshotInfo>(found, true);
+      last_snapshot_ = std::make_unique<SnapshotInfo>(*found, true);
   }
   {
-    auto found = dict->FindBoolPath(kBlockedUiReboot);
+    auto found = dict.FindBool(kBlockedUiReboot);
     if (found.has_value())
       blocked_ui_mode_ = found.value();
   }
   {
-    auto found = dict->FindBoolPath(kStarted);
+    auto found = dict.FindBool(kStarted);
     if (found.has_value())
       started_ = found.value();
   }
 }
 
 void ArcDataSnapshotdManager::Snapshot::Sync() {
-  base::DictionaryValue dict;
+  base::Value::Dict dict;
   if (previous_snapshot_)
-    previous_snapshot_->Sync(&dict);
+    previous_snapshot_->Sync(dict);
   if (last_snapshot_)
-    last_snapshot_->Sync(&dict);
-  dict.SetBoolKey(kBlockedUiReboot, blocked_ui_mode_);
-  dict.SetBoolKey(kStarted, started_);
-  local_state_->Set(arc::prefs::kArcSnapshotInfo, std::move(dict));
+    last_snapshot_->Sync(dict);
+  dict.Set(kBlockedUiReboot, blocked_ui_mode_);
+  dict.Set(kStarted, started_);
+  local_state_->SetDict(arc::prefs::kArcSnapshotInfo, std::move(dict));
 }
 
 void ArcDataSnapshotdManager::Snapshot::Sync(base::OnceClosure callback) {
