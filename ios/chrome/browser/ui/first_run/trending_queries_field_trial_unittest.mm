@@ -52,6 +52,8 @@ TEST_F(TrendingQueriesFieldTrialTest, TestControl) {
   scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
   ASSERT_TRUE(base::FieldTrialList::IsTrialActive(kTrendingQueriesModule.name));
   EXPECT_FALSE(base::FeatureList::IsEnabled(kTrendingQueriesModule));
+  EXPECT_FALSE(
+      base::FeatureList::IsEnabled(kContentSuggestionsUIModuleRefresh));
 }
 
 // Tests kTrendingQueriesEnabledAllUsersID field trial.
@@ -66,6 +68,7 @@ TEST_F(TrendingQueriesFieldTrialTest, TestEnabledAllUsers) {
   scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
   ASSERT_TRUE(base::FieldTrialList::IsTrialActive(kTrendingQueriesModule.name));
   EXPECT_TRUE(base::FeatureList::IsEnabled(kTrendingQueriesModule));
+  EXPECT_TRUE(base::FeatureList::IsEnabled(kContentSuggestionsUIModuleRefresh));
   EXPECT_FALSE(base::GetFieldTrialParamByFeatureAsBool(
       kTrendingQueriesModule, kTrendingQueriesHideShortcutsParam, true));
   EXPECT_FALSE(base::GetFieldTrialParamByFeatureAsBool(
@@ -88,6 +91,7 @@ TEST_F(TrendingQueriesFieldTrialTest, TestEnabledHideShortcuts) {
   scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
   ASSERT_TRUE(base::FieldTrialList::IsTrialActive(kTrendingQueriesModule.name));
   EXPECT_TRUE(base::FeatureList::IsEnabled(kTrendingQueriesModule));
+  EXPECT_TRUE(base::FeatureList::IsEnabled(kContentSuggestionsUIModuleRefresh));
   EXPECT_TRUE(base::GetFieldTrialParamByFeatureAsBool(
       kTrendingQueriesModule, kTrendingQueriesHideShortcutsParam, false));
   EXPECT_FALSE(base::GetFieldTrialParamByFeatureAsBool(
@@ -110,6 +114,7 @@ TEST_F(TrendingQueriesFieldTrialTest, TestEnabledDisabledFeed) {
   scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
   ASSERT_TRUE(base::FieldTrialList::IsTrialActive(kTrendingQueriesModule.name));
   EXPECT_TRUE(base::FeatureList::IsEnabled(kTrendingQueriesModule));
+  EXPECT_TRUE(base::FeatureList::IsEnabled(kContentSuggestionsUIModuleRefresh));
   EXPECT_FALSE(base::GetFieldTrialParamByFeatureAsBool(
       kTrendingQueriesModule, kTrendingQueriesHideShortcutsParam, true));
   EXPECT_TRUE(base::GetFieldTrialParamByFeatureAsBool(
@@ -132,6 +137,7 @@ TEST_F(TrendingQueriesFieldTrialTest, TestEnabledSignedOut) {
   scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
   ASSERT_TRUE(base::FieldTrialList::IsTrialActive(kTrendingQueriesModule.name));
   EXPECT_TRUE(base::FeatureList::IsEnabled(kTrendingQueriesModule));
+  EXPECT_TRUE(base::FeatureList::IsEnabled(kContentSuggestionsUIModuleRefresh));
   EXPECT_TRUE(base::GetFieldTrialParamByFeatureAsBool(
       kTrendingQueriesModule, kTrendingQueriesHideShortcutsParam, false));
   EXPECT_FALSE(base::GetFieldTrialParamByFeatureAsBool(
@@ -154,6 +160,7 @@ TEST_F(TrendingQueriesFieldTrialTest, TestEnabledNeverShowModule) {
   scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
   ASSERT_TRUE(base::FieldTrialList::IsTrialActive(kTrendingQueriesModule.name));
   EXPECT_TRUE(base::FeatureList::IsEnabled(kTrendingQueriesModule));
+  EXPECT_TRUE(base::FeatureList::IsEnabled(kContentSuggestionsUIModuleRefresh));
   EXPECT_TRUE(base::GetFieldTrialParamByFeatureAsBool(
       kTrendingQueriesModule, kTrendingQueriesHideShortcutsParam, false));
   EXPECT_FALSE(base::GetFieldTrialParamByFeatureAsBool(
