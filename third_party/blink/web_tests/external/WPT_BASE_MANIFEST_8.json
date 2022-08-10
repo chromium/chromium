@@ -113553,6 +113553,97 @@
       ]
      ],
      "intrinsic-size": {
+      "col-wrap-001.html": [
+       "45da5123896a7b6ebd430b1ea0b67f1965771ea7",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "col-wrap-002.html": [
+       "0e61cf7846213a7237e574a248965fcd40695889",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "col-wrap-003.html": [
+       "518bf9f65844e00998b7154f074b14d93e71df40",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "col-wrap-006.html": [
+       "52560057c8327cabd99fa7c7813ec630db42e7ec",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "col-wrap-007.html": [
+       "7f50f504569fa7e0a40e95fb881970f8145a6489",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "col-wrap-008.html": [
+       "5edde9495d1382e774cd295cabf81766b0b41a7b",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "col-wrap-009.html": [
+       "62514dbcffea07f87bf01930dd45e00d2e6a6af1",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "row-001.html": [
        "a681d07d58a15559cc6594fb045ff9c42c6981b8",
        [
@@ -292948,7 +293039,7 @@
       []
      ],
      "compute-kind-widget-no-fallback-ref.html": [
-      "241ecf93751bc3db73c4c586a6d695e0cdc51e7a",
+      "c0e56dc051000b907d5c7b66f9a014470c14c685",
       []
      ],
      "input-security-auto-sensitive-text-input-ref.html": [
@@ -379793,6 +379884,20 @@
       ]
      ],
      "intrinsic-size": {
+      "col-wrap-004.html": [
+       "00cfa520690374562242cbca8fa19c0e1ca44520",
+       [
+        null,
+        {}
+       ]
+      ],
+      "col-wrap-005.html": [
+       "a753619c62f51b85fa0b51f0cb058bec589707c5",
+       [
+        null,
+        {}
+       ]
+      ],
       "row-005.html": [
        "0f34c6fbdb400c35af723c8be56c22bbe1612e96",
        [

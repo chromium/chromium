@@ -2403,7 +2403,7 @@ crbug.com/922618 external/wpt/html/semantics/document-metadata/the-link-element/
 crbug.com/922618 external/wpt/html/semantics/document-metadata/the-link-element/link-multiple-load-events.html [ Timeout ]
 
 # crbug.com/1095379: These are flaky-slow, but are already present in SlowTests
-crbug.com/73609 http/tests/media/video-play-stall.html [ Pass Timeout Failure ]
+crbug.com/73609 http/tests/media/video-play-stall.html [ Failure Pass Timeout ]
 crbug.com/518987 http/tests/xmlhttprequest/navigation-abort-detaches-frame.html [ Pass Timeout ]
 crbug.com/538717 [ Win ] http/tests/permissions/chromium/test-request-worker.html [ Pass Timeout ]
 crbug.com/829740 fast/history/history-back-twice-with-subframes-assert.html [ Pass Timeout ]
