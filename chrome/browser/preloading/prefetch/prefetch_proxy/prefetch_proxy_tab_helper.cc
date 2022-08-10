@@ -1014,6 +1014,12 @@ void PrefetchProxyTabHelper::OnPrefetchComplete(
           *loader->ResponseInfo());
     }
 
+    if (body) {
+      devtools_observer->OnPrefetchBodyDataReceived(
+          prefetch_container_iter->second->RequestId(), *body,
+          /*is_base64_encoded=*/false);
+    }
+
     devtools_observer->OnPrefetchRequestComplete(
         prefetch_container_iter->second->RequestId(),
         loader->CompletionStatus().value_or(

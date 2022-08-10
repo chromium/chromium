@@ -2601,6 +2601,23 @@ void NetworkHandler::GetResponseBodyForInterception(
                                            std::move(callback));
 }
 
+void NetworkHandler::BodyDataReceived(const String& request_id,
+                                      const String& body,
+                                      bool is_base64_encoded) {
+  received_body_data_[request_id] = {body, is_base64_encoded};
+}
+
+void NetworkHandler::GetResponseBody(
+    const String& request_id,
+    std::unique_ptr<GetResponseBodyCallback> callback) {
+  auto it = received_body_data_.find(request_id);
+  if (it != received_body_data_.end()) {
+    callback->sendSuccess(it->second.first, it->second.second);
+  } else {
+    callback->fallThrough();
+  }
+}
+
 void NetworkHandler::TakeResponseBodyForInterceptionAsStream(
     const String& interception_id,
     std::unique_ptr<TakeResponseBodyForInterceptionAsStreamCallback> callback) {

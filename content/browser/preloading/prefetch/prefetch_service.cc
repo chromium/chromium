@@ -742,6 +742,11 @@ void PrefetchService::OnPrefetchComplete(
           *prefetch_container->GetLoader()->ResponseInfo());
     }
 
+    if (body) {
+      devtools_observer->OnPrefetchBodyDataReceived(
+          prefetch_container->RequestId(), *body, /*is_base64_encoded=*/false);
+    }
+
     devtools_observer->OnPrefetchRequestComplete(
         prefetch_container->RequestId(),
         prefetch_container->GetLoader()->CompletionStatus().value_or(

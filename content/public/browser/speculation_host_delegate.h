@@ -24,6 +24,9 @@ class CONTENT_EXPORT SpeculationHostDevToolsObserver {
   virtual void OnPrefetchRequestComplete(
       const std::string& request_id,
       const network::URLLoaderCompletionStatus& status) = 0;
+  virtual void OnPrefetchBodyDataReceived(const std::string& request_id,
+                                          const std::string& body,
+                                          bool is_base64_encoded) = 0;
 };
 
 // Allow embedders to handle speculation candidates with their own strategies.

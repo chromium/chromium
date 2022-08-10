@@ -954,6 +954,13 @@ void OnPrefetchRequestComplete(
                    request_id, protocol::Network::ResourceTypeEnum::Prefetch,
                    status);
 }
+void OnPrefetchBodyDataReceived(FrameTreeNode* frame_tree_node,
+                                const std::string& request_id,
+                                const std::string& body,
+                                bool is_base64_encoded) {
+  DispatchToAgents(frame_tree_node, &protocol::NetworkHandler::BodyDataReceived,
+                   request_id, body, is_base64_encoded);
+}
 
 void OnNavigationRequestWillBeSent(
     const NavigationRequest& navigation_request) {

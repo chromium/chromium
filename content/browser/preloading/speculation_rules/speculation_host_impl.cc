@@ -330,4 +330,14 @@ void SpeculationHostImpl::OnPrefetchRequestComplete(
   devtools_instrumentation::OnPrefetchRequestComplete(ftn, request_id, status);
 }
 
+void SpeculationHostImpl::OnPrefetchBodyDataReceived(
+    const std::string& request_id,
+    const std::string& body,
+    bool is_base64_encoded) {
+  auto* ftn = static_cast<RenderFrameHostImpl*>(&render_frame_host())
+                  ->frame_tree_node();
+  devtools_instrumentation::OnPrefetchBodyDataReceived(ftn, request_id, body,
+                                                       is_base64_encoded);
+}
+
 }  // namespace content

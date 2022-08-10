@@ -30,18 +30,31 @@
 
   page.navigate("https://127.0.0.1:8443/inspector-protocol/prefetch/resources/prefetch.https.html")
 
-  await testPromise.then((result) => {
+  let prefetchRequestId = await testPromise.then((result) => {
+    let prefetchRequestId = undefined;
     const stabilizeNames = [...TestRunner.stabilizeNames, 'wallTime', 'requestTime', 'responseTime', 'Date', 'receiveHeadersEnd', 'sendStart', 'sendEnd', 'ETag', 'Last-Modified', 'User-Agent'];
     let {requestIds, events} = result;
     for(let i=0; i<requestIds.length; ++i) {
       testRunner.log(`Message ${i}`);
       events.forEach((event) => {
         if(event.id === requestIds[i]) {
+          if(event.params?.type == 'Prefetch') {
+            prefetchRequestId = requestIds[i];
+          }
           testRunner.log(event.params, event.title, stabilizeNames);
         }
       });
     }
+    return prefetchRequestId;
   });
+
+  const msg = await dp.Network.getResponseBody({requestId: prefetchRequestId});
+  const prefetchResponseBodyTitle = 'Prefetch response body';
+  if(msg.error) {
+    testRunner.log(msg.error, prefetchResponseBodyTitle);
+  } else {
+    testRunner.log(msg.result, prefetchResponseBodyTitle);
+  }
 
   testRunner.completeTest();
 })

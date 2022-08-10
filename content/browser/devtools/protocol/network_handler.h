@@ -187,6 +187,9 @@ class NetworkHandler : public DevToolsDomainHandler,
       const String& interception_id,
       std::unique_ptr<GetResponseBodyForInterceptionCallback> callback)
       override;
+  void GetResponseBody(
+      const String& request_id,
+      std::unique_ptr<GetResponseBodyCallback> callback) override;
   void TakeResponseBodyForInterceptionAsStream(
       const String& interception_id,
       std::unique_ptr<TakeResponseBodyForInterceptionAsStreamCallback> callback)
@@ -307,6 +310,10 @@ class NetworkHandler : public DevToolsDomainHandler,
   static std::unique_ptr<protocol::Network::CorsErrorStatus>
   BuildCorsErrorStatus(const network::CorsErrorStatus& status);
 
+  void BodyDataReceived(const String& request_id,
+                        const String& body,
+                        bool is_base64_encoded);
+
  private:
   void OnLoadNetworkResourceFinished(DevToolsNetworkResourceLoader* loader,
                                      const net::HttpResponseHeaders* rh,
@@ -349,6 +356,7 @@ class NetworkHandler : public DevToolsDomainHandler,
   absl::optional<std::set<net::SourceStream::SourceType>>
       accepted_stream_types_;
   const bool allow_file_access_;
+  std::unordered_map<String, std::pair<String, bool>> received_body_data_;
   base::WeakPtrFactory<NetworkHandler> weak_factory_{this};
 };
 

@@ -154,6 +154,10 @@ void OnPrefetchRequestComplete(
     FrameTreeNode* frame_tree_node,
     const std::string& request_id,
     const network::URLLoaderCompletionStatus& status);
+void OnPrefetchBodyDataReceived(FrameTreeNode* frame_tree_node,
+                                const std::string& request_id,
+                                const std::string& body,
+                                bool is_base64_encoded);
 
 void OnResetNavigationRequest(NavigationRequest* navigation_request);
 void OnNavigationRequestWillBeSent(const NavigationRequest& navigation_request);
