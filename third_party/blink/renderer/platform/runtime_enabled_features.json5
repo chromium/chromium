@@ -580,7 +580,7 @@
     },
     {
       name: "CSSIcUnit",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "CSSIndependentTransformProperties",
