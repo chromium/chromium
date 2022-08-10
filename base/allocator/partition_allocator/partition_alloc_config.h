@@ -18,7 +18,7 @@
 static_assert(sizeof(void*) == 8, "");
 #else
 static_assert(sizeof(void*) != 8, "");
-#endif
+#endif  // defined(ARCH_CPU_64_BITS) && !BUILDFLAG(IS_NACL)
 
 // PCScan supports 64 bits only.
 #if defined(PA_HAS_64_BITS_POINTERS)
@@ -43,7 +43,8 @@ static_assert(sizeof(void*) != 8, "");
 //
 // This setting is specific to 64-bit, as 32-bit has a different implementation.
 #define PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE
-#endif  // defined(PA_HAS_64_BITS_POINTERS) && BUILDFLAG(IS_WIN)
+#endif  // defined(PA_HAS_64_BITS_POINTERS) &&
+        // (BUILDFLAG(IS_IOS) || BUILDFLAG(IS_WIN))
 
 #if defined(PA_HAS_64_BITS_POINTERS) && \
     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID))
@@ -97,7 +98,7 @@ static_assert(sizeof(void*) != 8, "");
 #define PA_HAS_FAST_MUTEX
 #endif
 
-// If set to 1, enables zeroing memory on Free() with roughly 1% probability.
+// If defined, enables zeroing memory on Free() with roughly 1% probability.
 // This applies only to normal buckets, as direct-map allocations are always
 // decommitted.
 // TODO(bartekn): Re-enable once PartitionAlloc-Everywhere evaluation is done.
@@ -236,7 +237,7 @@ constexpr bool kUseLazyCommit = false;
 // larger slot spans.
 #if BUILDFLAG(IS_LINUX) || (BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64))
 #define PA_PREFER_SMALLER_SLOT_SPANS
-#endif  // BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX) || (BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64))
 
 // Build MTECheckedPtr code.
 //
