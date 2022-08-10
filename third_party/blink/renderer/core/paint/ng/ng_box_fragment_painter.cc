@@ -922,15 +922,6 @@ void NGBoxFragmentPainter::PaintFloatingChildren(
       // Any children which paint atomically shouldn't be traversed.
       if (child_fragment.IsPaintedAtomically())
         continue;
-
-      // Drawing in SelectionDragImage phase can result in an exponential
-      // paint time: crbug.com://1182106
-      if (local_paint_info->phase != PaintPhase::kSelectionDragImage &&
-          child_fragment.Type() == NGPhysicalFragment::kFragmentBox &&
-          FragmentRequiresLegacyFallback(child_fragment)) {
-        child_fragment.GetLayoutObject()->Paint(*local_paint_info);
-        continue;
-      }
     }
 
     // The selection paint traversal is special. We will visit all fragments
