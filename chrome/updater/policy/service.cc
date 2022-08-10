@@ -41,14 +41,15 @@ PolicyService::PolicyService(PolicyManagerVector managers)
 PolicyService::~PolicyService() = default;
 
 std::string PolicyService::source() const {
-  // Returns the source combination of all active policy providers, separated
-  // by ';'. For example: "group_policy;device_management". Note that the
-  // default provider is not "managed" and its source will be ignored.
+  // Returns the non-empty source combination of all active policy providers,
+  // separated by ';'. For example: "group_policy;device_management".
   std::vector<std::string> sources;
   for (const std::unique_ptr<PolicyManagerInterface>& policy_manager :
        policy_managers_) {
-    if (policy_manager->HasActiveDevicePolicies())
+    if (policy_manager->HasActiveDevicePolicies() &&
+        !policy_manager->source().empty()) {
       sources.push_back(policy_manager->source());
+    }
   }
   return base::JoinString(sources, ";");
 }
