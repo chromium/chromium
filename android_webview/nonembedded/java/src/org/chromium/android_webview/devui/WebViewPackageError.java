@@ -12,6 +12,7 @@ import android.content.pm.PackageInfo;
 import android.os.Build;
 import android.provider.Settings;
 
+import org.chromium.android_webview.devui.util.SafeIntentUtils;
 import org.chromium.android_webview.nonembedded_util.WebViewPackageHelper;
 import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
@@ -188,6 +189,8 @@ public class WebViewPackageError {
     }
 
     private void openChangeWebViewProviderSettings() {
-        mContext.startActivity(new Intent(Settings.ACTION_WEBVIEW_SETTINGS));
+        SafeIntentUtils.startActivityOrShowError(mContext,
+                new Intent(Settings.ACTION_WEBVIEW_SETTINGS),
+                SafeIntentUtils.WEBVIEW_SETTINGS_ERROR);
     }
 }

@@ -72,6 +72,7 @@ android_library("devui_java") {
     "java/src/org/chromium/android_webview/devui/util/ComponentsInfoLoader.java",
     "java/src/org/chromium/android_webview/devui/util/CrashBugUrlFactory.java",
     "java/src/org/chromium/android_webview/devui/util/CrashInfoLoader.java",
+    "java/src/org/chromium/android_webview/devui/util/SafeIntentUtils.java",
     "java/src/org/chromium/android_webview/devui/util/UnuploadedFilesStateLoader.java",
     "java/src/org/chromium/android_webview/devui/util/UploadedCrashesInfoLoader.java",
     "java/src/org/chromium/android_webview/devui/util/WebViewCrashInfoCollector.java",

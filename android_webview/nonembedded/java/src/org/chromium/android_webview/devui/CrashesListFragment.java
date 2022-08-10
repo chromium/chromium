@@ -40,6 +40,7 @@ import org.chromium.android_webview.common.crash.CrashInfo;
 import org.chromium.android_webview.common.crash.CrashInfo.UploadState;
 import org.chromium.android_webview.common.crash.CrashUploadUtil;
 import org.chromium.android_webview.devui.util.CrashBugUrlFactory;
+import org.chromium.android_webview.devui.util.SafeIntentUtils;
 import org.chromium.android_webview.devui.util.WebViewCrashInfoCollector;
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.CommandLine;
@@ -519,7 +520,9 @@ public class CrashesListFragment extends DevUiBaseFragment {
         dialogBuilder.setMessage(CRASH_BUG_DIALOG_MESSAGE);
         dialogBuilder.setPositiveButton("Provide more info", (dialog, id) -> {
             logCrashInteraction(CrashInteraction.FILE_BUG_REPORT_DIALOG_PROCEED);
-            mContext.startActivity(new CrashBugUrlFactory(crashInfo).getReportIntent());
+            SafeIntentUtils.startActivityOrShowError(mContext,
+                    new CrashBugUrlFactory(crashInfo).getReportIntent(),
+                    SafeIntentUtils.NO_BROWSER_FOUND_ERROR);
         });
         dialogBuilder.setNegativeButton("Dismiss", (dialog, id) -> {
             logCrashInteraction(CrashInteraction.FILE_BUG_REPORT_DIALOG_DISMISS);
