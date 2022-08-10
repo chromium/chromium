@@ -32,7 +32,7 @@ class NameField : public FormField {
  protected:
   NameField() = default;
 
-  void AddClassifications(FieldCandidatesMap* field_candidates) const override;
+  void AddClassifications(FieldCandidatesMap& field_candidates) const override;
 };
 
 }  // namespace autofill

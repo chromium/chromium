@@ -35,7 +35,7 @@ std::unique_ptr<FormField> PriceField::Parse(AutofillScanner* scanner,
 PriceField::PriceField(const AutofillField* field) : field_(field) {}
 
 void PriceField::AddClassifications(
-    FieldCandidatesMap* field_candidates) const {
+    FieldCandidatesMap& field_candidates) const {
   AddClassification(field_, PRICE, kBasePriceParserScore, field_candidates);
 }
 

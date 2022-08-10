@@ -34,7 +34,7 @@ class CreditCardField : public FormField {
                                           LogManager* log_manager);
 
  protected:
-  void AddClassifications(FieldCandidatesMap* field_candidates) const override;
+  void AddClassifications(FieldCandidatesMap& field_candidates) const override;
 
  private:
   friend class CreditCardFieldTestBase;

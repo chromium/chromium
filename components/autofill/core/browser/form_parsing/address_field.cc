@@ -193,7 +193,7 @@ AddressField::AddressField(LogManager* log_manager)
     : log_manager_(log_manager) {}
 
 void AddressField::AddClassifications(
-    FieldCandidatesMap* field_candidates) const {
+    FieldCandidatesMap& field_candidates) const {
   // The page can request the address lines as a single textarea input or as
   // multiple text fields (or not at all), but it shouldn't be possible to
   // request both.

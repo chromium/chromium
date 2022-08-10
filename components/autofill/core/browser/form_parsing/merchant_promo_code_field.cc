@@ -41,7 +41,7 @@ MerchantPromoCodeField::MerchantPromoCodeField(const AutofillField* field)
     : field_(field) {}
 
 void MerchantPromoCodeField::AddClassifications(
-    FieldCandidatesMap* field_candidates) const {
+    FieldCandidatesMap& field_candidates) const {
   AddClassification(field_, MERCHANT_PROMO_CODE,
                     kBaseMerchantPromoCodeParserScore, field_candidates);
 }

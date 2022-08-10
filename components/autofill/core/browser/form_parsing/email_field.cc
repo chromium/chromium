@@ -30,7 +30,7 @@ std::unique_ptr<FormField> EmailField::Parse(AutofillScanner* scanner,
 EmailField::EmailField(const AutofillField* field) : field_(field) {}
 
 void EmailField::AddClassifications(
-    FieldCandidatesMap* field_candidates) const {
+    FieldCandidatesMap& field_candidates) const {
   AddClassification(field_, EMAIL_ADDRESS, kBaseEmailParserScore,
                     field_candidates);
 }

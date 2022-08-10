@@ -35,10 +35,10 @@ class FormFieldTest
   // Parses all added fields using `ParseFormFields`.
   // Returns the number of fields parsed.
   int ParseFormFields() {
-    field_candidates_map_ = FormField::ParseFormFields(list_, LanguageCode(""),
-                                                       /*is_form_tag=*/true,
-                                                       GetActivePatternSource(),
-                                                       /*log_manager=*/nullptr);
+    FormField::ParseFormFields(list_, LanguageCode(""),
+                               /*is_form_tag=*/true, GetActivePatternSource(),
+                               field_candidates_map_,
+                               /*log_manager=*/nullptr);
     return field_candidates_map_.size();
   }
 
@@ -46,7 +46,7 @@ class FormFieldTest
   int ParseSingleFieldForms() {
     FormField::ParseSingleFieldForms(
         list_, LanguageCode(""),
-        /*is_form_tag=*/true, GetActivePatternSource(), &field_candidates_map_);
+        /*is_form_tag=*/true, GetActivePatternSource(), field_candidates_map_);
     return field_candidates_map_.size();
   }
 

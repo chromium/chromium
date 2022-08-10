@@ -26,7 +26,7 @@ class BirthdateField : public FormField {
   BirthdateField& operator=(const BirthdateField&) = delete;
 
  protected:
-  void AddClassifications(FieldCandidatesMap* field_candidates) const override;
+  void AddClassifications(FieldCandidatesMap& field_candidates) const override;
 
  private:
   BirthdateField(const AutofillField* day,

@@ -300,7 +300,7 @@ std::unique_ptr<FormField> PhoneField::Parse(AutofillScanner* scanner,
 }
 
 void PhoneField::AddClassifications(
-    FieldCandidatesMap* field_candidates) const {
+    FieldCandidatesMap& field_candidates) const {
   DCHECK(parsed_phone_fields_[FIELD_PHONE]);  // Phone was correctly parsed.
 
   bool has_country_code = parsed_phone_fields_[FIELD_COUNTRY_CODE] != nullptr;

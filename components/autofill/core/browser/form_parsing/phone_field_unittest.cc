@@ -148,7 +148,7 @@ void PhoneFieldTest::RunParsingTest(const std::vector<TestFieldData>& fields,
 
   // Verify expecations.
   if (expect_success) {
-    field_->AddClassificationsForTesting(&field_candidates_map_);
+    field_->AddClassificationsForTesting(field_candidates_map_);
     for (size_t i = 0; i < fields.size(); i++) {
       CheckField(global_ids[i], fields[i].expected_type);
     }

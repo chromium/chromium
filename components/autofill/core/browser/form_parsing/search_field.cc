@@ -33,7 +33,7 @@ std::unique_ptr<FormField> SearchField::Parse(AutofillScanner* scanner,
 SearchField::SearchField(const AutofillField* field) : field_(field) {}
 
 void SearchField::AddClassifications(
-    FieldCandidatesMap* field_candidates) const {
+    FieldCandidatesMap& field_candidates) const {
   AddClassification(field_, SEARCH_TERM, kBaseSearchParserScore,
                     field_candidates);
 }

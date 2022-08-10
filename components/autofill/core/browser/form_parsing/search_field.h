@@ -33,7 +33,7 @@ class SearchField : public FormField {
   SearchField& operator=(const SearchField&) = delete;
 
  protected:
-  void AddClassifications(FieldCandidatesMap* field_candidates) const override;
+  void AddClassifications(FieldCandidatesMap& field_candidates) const override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(SearchFieldTest, ParseSearchTerm);

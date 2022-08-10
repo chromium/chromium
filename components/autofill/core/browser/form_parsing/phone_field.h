@@ -40,13 +40,13 @@ class PhoneField : public FormField {
 #if defined(UNIT_TEST)
   // Assign types to the fields for the testing purposes.
   void AddClassificationsForTesting(
-      FieldCandidatesMap* field_candidates_for_testing) const {
+      FieldCandidatesMap& field_candidates_for_testing) const {
     AddClassifications(field_candidates_for_testing);
   }
 #endif
 
  protected:
-  void AddClassifications(FieldCandidatesMap* field_candidates) const override;
+  void AddClassifications(FieldCandidatesMap& field_candidates) const override;
 
  private:
   // This is for easy description of the possible parsing paths of the phone

@@ -106,7 +106,7 @@ bool BirthdateField::IsLikelyBirthdateYearSelectField(
 }
 
 void BirthdateField::AddClassifications(
-    FieldCandidatesMap* field_candidates) const {
+    FieldCandidatesMap& field_candidates) const {
   AddClassification(day_, BIRTHDATE_DAY, kBaseBirthdateParserScore,
                     field_candidates);
   AddClassification(month_, BIRTHDATE_MONTH, kBaseBirthdateParserScore,

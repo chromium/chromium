@@ -62,59 +62,59 @@ bool FormField::MatchesRegexWithCache(base::StringPiece16 input,
 }
 
 // static
-FieldCandidatesMap FormField::ParseFormFields(
+void FormField::ParseFormFields(
     const std::vector<std::unique_ptr<AutofillField>>& fields,
     const LanguageCode& page_language,
     bool is_form_tag,
     PatternSource pattern_source,
+    FieldCandidatesMap& field_candidates,
     LogManager* log_manager) {
   std::vector<AutofillField*> processed_fields = RemoveCheckableFields(fields);
-  FieldCandidatesMap field_candidates;
 
   // Email pass.
-  ParseFormFieldsPass(EmailField::Parse, processed_fields, &field_candidates,
+  ParseFormFieldsPass(EmailField::Parse, processed_fields, field_candidates,
                       page_language, pattern_source, log_manager);
   const size_t email_count = field_candidates.size();
 
   // Single fields pass.
   ParseSingleFieldForms(fields, page_language, is_form_tag, pattern_source,
-                        &field_candidates, log_manager);
+                        field_candidates, log_manager);
   const size_t fillable_single_fields = field_candidates.size() - email_count;
 
   // Phone pass.
-  ParseFormFieldsPass(PhoneField::Parse, processed_fields, &field_candidates,
+  ParseFormFieldsPass(PhoneField::Parse, processed_fields, field_candidates,
                       page_language, pattern_source, log_manager);
 
   // Travel pass.
-  ParseFormFieldsPass(TravelField::Parse, processed_fields, &field_candidates,
+  ParseFormFieldsPass(TravelField::Parse, processed_fields, field_candidates,
                       page_language, pattern_source, log_manager);
 
   // Address pass.
-  ParseFormFieldsPass(AddressField::Parse, processed_fields, &field_candidates,
+  ParseFormFieldsPass(AddressField::Parse, processed_fields, field_candidates,
                       page_language, pattern_source, log_manager);
 
   // Birthdate pass.
   if (base::FeatureList::IsEnabled(features::kAutofillEnableBirthdateParsing)) {
     ParseFormFieldsPass(BirthdateField::Parse, processed_fields,
-                        &field_candidates, page_language, pattern_source,
+                        field_candidates, page_language, pattern_source,
                         log_manager);
   }
 
   // Credit card pass.
   ParseFormFieldsPass(CreditCardField::Parse, processed_fields,
-                      &field_candidates, page_language, pattern_source,
+                      field_candidates, page_language, pattern_source,
                       log_manager);
 
   // Price pass.
-  ParseFormFieldsPass(PriceField::Parse, processed_fields, &field_candidates,
+  ParseFormFieldsPass(PriceField::Parse, processed_fields, field_candidates,
                       page_language, pattern_source, log_manager);
 
   // Name pass.
-  ParseFormFieldsPass(NameField::Parse, processed_fields, &field_candidates,
+  ParseFormFieldsPass(NameField::Parse, processed_fields, field_candidates,
                       page_language, pattern_source, log_manager);
 
   // Search pass.
-  ParseFormFieldsPass(SearchField::Parse, processed_fields, &field_candidates,
+  ParseFormFieldsPass(SearchField::Parse, processed_fields, field_candidates,
                       page_language, pattern_source, log_manager);
 
   size_t fillable_fields = 0;
@@ -164,8 +164,6 @@ FieldCandidatesMap FormField::ParseFormFields(
       field_candidates.clear();
     }
   }
-
-  return field_candidates;
 }
 
 void FormField::ParseSingleFieldForms(
@@ -173,7 +171,7 @@ void FormField::ParseSingleFieldForms(
     const LanguageCode& page_language,
     bool is_form_tag,
     PatternSource pattern_source,
-    FieldCandidatesMap* field_candidates,
+    FieldCandidatesMap& field_candidates,
     LogManager* log_manager) {
   std::vector<AutofillField*> processed_fields = RemoveCheckableFields(fields);
 
@@ -331,12 +329,12 @@ bool FormField::ParseEmptyLabel(AutofillScanner* scanner,
 void FormField::AddClassification(const AutofillField* field,
                                   ServerFieldType type,
                                   float score,
-                                  FieldCandidatesMap* field_candidates) {
+                                  FieldCandidatesMap& field_candidates) {
   // Several fields are optional.
   if (field == nullptr)
     return;
 
-  FieldCandidates& candidates = (*field_candidates)[field->global_id()];
+  FieldCandidates& candidates = field_candidates[field->global_id()];
   candidates.AddFieldCandidate(type, score);
 }
 
@@ -444,7 +442,7 @@ bool FormField::Match(const AutofillField* field,
 // static
 void FormField::ParseFormFieldsPass(ParseFunction parse,
                                     const std::vector<AutofillField*>& fields,
-                                    FieldCandidatesMap* field_candidates,
+                                    FieldCandidatesMap& field_candidates,
                                     const LanguageCode& page_language,
                                     PatternSource pattern_source,
                                     LogManager* log_manager) {

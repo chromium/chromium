@@ -33,7 +33,7 @@ class PriceField : public FormField {
   PriceField& operator=(const PriceField&) = delete;
 
  protected:
-  void AddClassifications(FieldCandidatesMap* field_candidates) const override;
+  void AddClassifications(FieldCandidatesMap& field_candidates) const override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(PriceFieldTest, ParsePrice);

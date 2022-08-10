@@ -28,7 +28,7 @@ class EmailField : public FormField {
   EmailField& operator=(const EmailField&) = delete;
 
  protected:
-  void AddClassifications(FieldCandidatesMap* field_candidates) const override;
+  void AddClassifications(FieldCandidatesMap& field_candidates) const override;
 
  private:
   raw_ptr<const AutofillField> field_;

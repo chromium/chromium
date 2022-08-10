@@ -106,7 +106,7 @@ class CreditCardFieldTestBase : public FormFieldTestBase {
       if (field_ == nullptr) {
         scanner.Advance();
       } else {
-        field_->AddClassificationsForTesting(&field_candidates_map_);
+        field_->AddClassificationsForTesting(field_candidates_map_);
       }
     }
     TestClassificationExpectations();

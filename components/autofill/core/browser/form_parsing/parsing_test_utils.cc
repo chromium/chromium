@@ -105,7 +105,7 @@ void FormFieldTestBase::ClassifyAndVerify(ParseResult parse_result,
     return;
   }
   ASSERT_NE(nullptr, field_.get());
-  field_->AddClassificationsForTesting(&field_candidates_map_);
+  field_->AddClassificationsForTesting(field_candidates_map_);
 
   TestClassificationExpectations();
 }

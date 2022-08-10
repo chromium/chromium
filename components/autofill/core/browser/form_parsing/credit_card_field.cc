@@ -472,9 +472,9 @@ CreditCardField::CreditCardField(LogManager* log_manager)
 CreditCardField::~CreditCardField() {}
 
 void CreditCardField::AddClassifications(
-    FieldCandidatesMap* field_candidates) const {
-  for (size_t index = 0; index < numbers_.size(); ++index) {
-    AddClassification(numbers_[index], CREDIT_CARD_NUMBER,
+    FieldCandidatesMap& field_candidates) const {
+  for (auto* number : numbers_) {
+    AddClassification(number, CREDIT_CARD_NUMBER,
                       kBaseCreditCardParserScore, field_candidates);
   }
 

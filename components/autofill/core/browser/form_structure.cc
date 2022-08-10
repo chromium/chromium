@@ -1286,13 +1286,12 @@ void FormStructure::ParseFieldTypesWithPatterns(PatternSource pattern_source,
                                                 LogManager* log_manager) {
   FieldCandidatesMap field_type_map;
   if (ShouldRunHeuristics()) {
-    field_type_map =
-        FormField::ParseFormFields(fields_, current_page_language_,
-                                   is_form_tag_, pattern_source, log_manager);
+    FormField::ParseFormFields(fields_, current_page_language_, is_form_tag_,
+                               pattern_source, field_type_map, log_manager);
   } else if (ShouldRunHeuristicsForSingleFieldForms()) {
     FormField::ParseSingleFieldForms(fields_, current_page_language_,
                                      is_form_tag_, pattern_source,
-                                     &field_type_map, log_manager);
+                                     field_type_map, log_manager);
   }
   if (field_type_map.empty())
     return;

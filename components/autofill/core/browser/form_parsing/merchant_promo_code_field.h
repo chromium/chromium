@@ -33,7 +33,7 @@ class MerchantPromoCodeField : public FormField {
   MerchantPromoCodeField& operator=(const MerchantPromoCodeField&) = delete;
 
  protected:
-  void AddClassifications(FieldCandidatesMap* field_candidates) const override;
+  void AddClassifications(FieldCandidatesMap& field_candidates) const override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(MerchantPromoCodeFieldTest, ParsePromoCode);

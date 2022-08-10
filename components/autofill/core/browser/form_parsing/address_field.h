@@ -33,7 +33,7 @@ class AddressField : public FormField {
   AddressField& operator=(const AddressField&) = delete;
 
  protected:
-  void AddClassifications(FieldCandidatesMap* field_candidates) const override;
+  void AddClassifications(FieldCandidatesMap& field_candidates) const override;
 
  private:
   // When parsing a field's label and name separately with a given pattern:

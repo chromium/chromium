@@ -32,7 +32,7 @@ class FullNameField : public NameField {
   FullNameField& operator=(const FullNameField&) = delete;
 
  protected:
-  void AddClassifications(FieldCandidatesMap* field_candidates) const override;
+  void AddClassifications(FieldCandidatesMap& field_candidates) const override;
 
  private:
   raw_ptr<AutofillField> field_;
@@ -57,7 +57,7 @@ class FirstTwoLastNamesField : public NameField {
   FirstTwoLastNamesField& operator=(const FirstTwoLastNamesField&) = delete;
 
  protected:
-  void AddClassifications(FieldCandidatesMap* field_candidates) const override;
+  void AddClassifications(FieldCandidatesMap& field_candidates) const override;
 
  private:
   FirstTwoLastNamesField();
@@ -111,7 +111,7 @@ class FirstLastNameField : public NameField {
   FirstLastNameField& operator=(const FirstLastNameField&) = delete;
 
  protected:
-  void AddClassifications(FieldCandidatesMap* field_candidates) const override;
+  void AddClassifications(FieldCandidatesMap& field_candidates) const override;
 
  private:
   FirstLastNameField();
@@ -152,8 +152,8 @@ std::unique_ptr<FormField> NameField::Parse(AutofillScanner* scanner,
   return field;
 }
 
-// This is overriden in concrete subclasses.
-void NameField::AddClassifications(FieldCandidatesMap* field_candidates) const {
+// This is overridden in concrete subclasses.
+void NameField::AddClassifications(FieldCandidatesMap& field_candidates) const {
 }
 
 // static
@@ -192,7 +192,7 @@ std::unique_ptr<FullNameField> FullNameField::Parse(
 }
 
 void FullNameField::AddClassifications(
-    FieldCandidatesMap* field_candidates) const {
+    FieldCandidatesMap& field_candidates) const {
   AddClassification(field_, NAME_FULL, kBaseNameParserScore, field_candidates);
 }
 
@@ -303,7 +303,7 @@ FirstTwoLastNamesField::ParseComponentNames(AutofillScanner* scanner,
 }
 
 void FirstTwoLastNamesField::AddClassifications(
-    FieldCandidatesMap* field_candidates) const {
+    FieldCandidatesMap& field_candidates) const {
   AddClassification(honorific_prefix_, NAME_HONORIFIC_PREFIX,
                     kBaseNameParserScore, field_candidates);
   AddClassification(first_name_, NAME_FIRST, kBaseNameParserScore,
@@ -539,7 +539,7 @@ std::unique_ptr<FirstLastNameField> FirstLastNameField::Parse(
 FirstLastNameField::FirstLastNameField() = default;
 
 void FirstLastNameField::AddClassifications(
-    FieldCandidatesMap* field_candidates) const {
+    FieldCandidatesMap& field_candidates) const {
   AddClassification(honorific_prefix_, NAME_HONORIFIC_PREFIX,
                     kBaseNameParserScore, field_candidates);
   AddClassification(first_name_, NAME_FIRST, kBaseNameParserScore,

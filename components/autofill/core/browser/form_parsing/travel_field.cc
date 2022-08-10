@@ -49,7 +49,7 @@ std::unique_ptr<FormField> TravelField::Parse(AutofillScanner* scanner,
 }
 
 void TravelField::AddClassifications(
-    FieldCandidatesMap* field_candidates) const {
+    FieldCandidatesMap& field_candidates) const {
   // Simply tag all the fields as unknown types. Travel is currently used as
   // filter.
   AddClassification(passport_, UNKNOWN_TYPE, kBaseTravelParserScore,
