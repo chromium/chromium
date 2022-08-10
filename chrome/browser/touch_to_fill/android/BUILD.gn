@@ -86,6 +86,7 @@ android_library("test_java") {
 
   sources = [
     "javatests/src/org/chromium/chrome/browser/touch_to_fill/TouchToFillIntegrationTest.java",
+    "javatests/src/org/chromium/chrome/browser/touch_to_fill/TouchToFillRenderTest.java",
     "javatests/src/org/chromium/chrome/browser/touch_to_fill/TouchToFillViewTest.java",
   ]
 
@@ -99,9 +100,12 @@ android_library("test_java") {
     "//chrome/browser/flags:java",
     "//chrome/browser/touch_to_fill/android/internal:java",
     "//chrome/browser/touch_to_fill/android/internal:resource_provider_public_impl_java",
+    "//chrome/browser/ui/android/night_mode:night_mode_java_test_support",
     "//chrome/test/android:chrome_java_integration_test_support",
     "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/bottomsheet/android:java_resources",
     "//components/browser_ui/bottomsheet/android/test:java",
+    "//components/url_formatter/android:url_formatter_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_deps:espresso_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
@@ -110,7 +114,9 @@ android_library("test_java") {
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_full_java",
+    "//ui/android:ui_java_test_support",
     "//ui/android:ui_utils_java",
     "//url:gurl_java",
+    "//url:gurl_junit_test_support",
   ]
 }

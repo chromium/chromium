@@ -28,6 +28,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.ui.base.LocalizationUtils;
 
 /**
  * This class is responsible for rendering the bottom sheet which displays the touch to fill
@@ -159,6 +160,12 @@ class TouchToFillView implements BottomSheetContent {
                 return true;
             }
         });
+
+        // Apply RTL layout changes.
+        int layoutDirection = LocalizationUtils.isLayoutRtl() ? View.LAYOUT_DIRECTION_RTL
+                                                              : View.LAYOUT_DIRECTION_LTR;
+        mContentView.setLayoutDirection(layoutDirection);
+
         if (usesUnifiedPasswordManagerUI()) {
             mSheetItemListView.addItemDecoration(new HorizontalDividerItemDecoration(
                     mContentView.getResources().getDimensionPixelSize(
