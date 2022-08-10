@@ -13,6 +13,12 @@ struct UrlLoadStats;
 
 namespace metrics {
 
+// Records when a bookmark is added by the user.
+void RecordBookmarkAdded();
+
+// Records when a bookmark is opened by the user.
+void RecordBookmarkOpened();
+
 // Records the time since the last save with a 1 hour max. The first save will
 // record the time since startup.
 void RecordTimeSinceLastScheduledSave(base::TimeDelta delta);

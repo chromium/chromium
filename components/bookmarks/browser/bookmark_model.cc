@@ -336,6 +336,7 @@ void BookmarkModel::UpdateLastUsedTime(const BookmarkNode* node,
   DCHECK(node);
 
   UpdateLastUsedTimeImpl(node, time);
+  metrics::RecordBookmarkOpened();
 }
 
 void BookmarkModel::UpdateLastUsedTimeImpl(const BookmarkNode* node,
@@ -668,8 +669,7 @@ const BookmarkNode* BookmarkModel::AddNewURL(
     const std::u16string& title,
     const GURL& url,
     const BookmarkNode::MetaInfoMap* meta_info) {
-  // TODO(crbug.com/1313299): Record metrics for new bookmarks.
-  // TODO(crbug.com/1332341): Add bookmark_client hook for power bookmarks.
+  metrics::RecordBookmarkAdded();
   return AddURL(parent, index, title, url, meta_info, absl::nullopt,
                 absl::nullopt);
 }

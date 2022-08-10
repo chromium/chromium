@@ -5,6 +5,7 @@
 #include "components/bookmarks/common/bookmark_metrics.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/user_metrics.h"
 #include "components/bookmarks/common/url_load_stats.h"
 
 namespace {
@@ -12,6 +13,14 @@ const int kBytesPerKB = 1024;
 }
 
 namespace bookmarks::metrics {
+
+void RecordBookmarkAdded() {
+  base::RecordAction(base::UserMetricsAction("Bookmarks.Added"));
+}
+
+void RecordBookmarkOpened() {
+  base::RecordAction(base::UserMetricsAction("Bookmarks.Opened"));
+}
 
 void RecordTimeSinceLastScheduledSave(base::TimeDelta delta) {
   UmaHistogramLongTimes("Bookmarks.Storage.TimeSinceLastScheduledSave", delta);
