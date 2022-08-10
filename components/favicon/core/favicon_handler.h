@@ -93,12 +93,14 @@ class FaviconHandler {
     // is called with the results. Returns the unique id of the download
     // request, which will also be passed to the callback. In case of error, 0
     // is returned and no callback will be called.
-    // Bitmaps with pixel sizes larger than |max_bitmap_size| are filtered out
-    // from the bitmap results. If there are no bitmap results <=
-    // |max_bitmap_size|, the smallest bitmap is resized to |max_bitmap_size|
-    // and is the only result. A |max_bitmap_size| of 0 means unlimited.
+    // For vector images, |preferred_size| will serve as a viewport into which
+    // the image will be rendered. This would usually be the dimensions of the
+    // rectangle where the bitmap will be rendered. If |preferred_size| is
+    // empty, any existing intrinsic dimensions of the image will be used. All
+    // images are downloaded (without filtering by size), and all filtering is
+    // handled by the utility functions inside select_favicon_frames.cc.
     virtual int DownloadImage(const GURL& url,
-                              int max_image_size,
+                              int preferred_size,
                               ImageDownloadCallback callback) = 0;
 
     // Downloads a WebManifest and returns the favicons listed there.

@@ -8,13 +8,17 @@
 
 #include <algorithm>
 #include <memory>
+#include <vector>
 
+#include "base/check.h"
 #include "base/cxx17_backports.h"
+#include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/codec/webp_codec.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
@@ -156,6 +160,63 @@ void GetVisibleMargins(const ImageSkia& image, int* left, int* right) {
       break;
   }
   *right = bitmap.width() - 1 - x;
+}
+
+SkBitmap ResizeImageToLargestSize(const SkBitmap& image,
+                                  uint32_t max_image_size) {
+  uint32_t max_dimension = std::max(image.width(), image.height());
+  if (max_dimension <= max_image_size)
+    return image;
+  // Proportionally resize the minimal image to fit in a box of size
+  // max_image_size.
+  return skia::ImageOperations::Resize(
+      image, skia::ImageOperations::RESIZE_BEST,
+      base::checked_cast<uint32_t>(image.width()) * max_image_size /
+          max_dimension,
+      base::checked_cast<uint32_t>(image.height()) * max_image_size /
+          max_dimension);
+}
+
+void FilterAndResizeImagesForMaximalSize(
+    const std::vector<SkBitmap>& images,
+    uint32_t max_image_size,
+    std::vector<SkBitmap>& filtered_images,
+    std::vector<gfx::Size>& filtered_image_sizes) {
+  filtered_images.clear();
+  filtered_image_sizes.clear();
+
+  if (images.empty())
+    return;
+
+  const SkBitmap* min_image = nullptr;
+  uint32_t min_image_size = std::numeric_limits<uint32_t>::max();
+  // Filter the images by |max_image_size|, and also identify the smallest
+  // image in case all the images are bigger than |max_image_size|.
+  for (const SkBitmap& image : images) {
+    uint32_t current_size = std::max(image.width(), image.height());
+    if (current_size < min_image_size) {
+      min_image = &image;
+      min_image_size = current_size;
+    }
+    if (base::checked_cast<uint32_t>(image.width()) <= max_image_size &&
+        base::checked_cast<uint32_t>(image.height()) <= max_image_size) {
+      filtered_images.emplace_back(image);
+      filtered_image_sizes.emplace_back(
+          gfx::Size(image.width(), image.height()));
+    }
+  }
+  if (!filtered_images.empty())
+    return;
+  // Proportionally resize the minimal image to fit in a box of size
+  // |max_image_size|.
+  DCHECK(min_image);
+  SkBitmap resized = ResizeImageToLargestSize(*min_image, max_image_size);
+  // Drop null or empty SkBitmap.
+  if (resized.drawsNothing())
+    return;
+  filtered_images.emplace_back(resized);
+  filtered_image_sizes.emplace_back(
+      gfx::Size(min_image->width(), min_image->height()));
 }
 
 }  // namespace gfx

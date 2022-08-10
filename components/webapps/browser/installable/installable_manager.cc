@@ -922,14 +922,12 @@ void InstallableManager::CheckAndFetchScreenshots(bool check_platform) {
                                ? kMinimumScreenshotSizeInPx
                                : std::max(url->image.sizes[0].width(),
                                           url->image.sizes[0].height());
-    // Do not pass in a maximum icon size so that screenshots larger than
-    // kMaximumScreenshotSizeInPx are not downscaled to the maximum size by
-    // `ManifestIconDownloader::Download`. Screenshots with size larger than
-    // kMaximumScreenshotSizeInPx get filtered out by OnScreenshotFetched.
+    // Passing in kMaximumScreenshotSizeInPx ensures that screenshots above that
+    // size are filtered out by the blink image_downloader implementation.
+    // Thus, we no longer need them to be resized in OnScreenshotFetched().
     bool can_download = content::ManifestIconDownloader::Download(
         GetWebContents(), url->image.src, ideal_size_in_px,
-        kMinimumScreenshotSizeInPx,
-        /*maximum_icon_size_in_px=*/0,
+        kMinimumScreenshotSizeInPx, kMaximumScreenshotSizeInPx,
         base::BindOnce(&InstallableManager::OnScreenshotFetched,
                        weak_factory_.GetWeakPtr(), url->image.src),
         /*square_only=*/false);
@@ -971,12 +969,7 @@ void InstallableManager::OnScreenshotFetched(GURL screenshot_url,
       auto iter = downloaded_screenshots_.find(url->image.src);
       if (iter == downloaded_screenshots_.end())
         continue;
-
       auto screenshot = iter->second;
-      if (screenshot.dimensions().width() > kMaximumScreenshotSizeInPx ||
-          screenshot.dimensions().height() > kMaximumScreenshotSizeInPx) {
-        continue;
-      }
 
       // Screenshots must have the same aspect ratio. Cross-multiplying
       // dimensions checks portrait vs landscape mode (1:2 vs 2:1 for instance).

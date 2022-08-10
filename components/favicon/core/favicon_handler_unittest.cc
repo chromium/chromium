@@ -134,21 +134,12 @@ class FakeImageDownloader {
   // Implementation of FaviconHalder::Delegate's DownloadImage(). If a given
   // URL is not known (i.e. not previously added via Add()), it produces 404s.
   int DownloadImage(const GURL& url,
-                    int max_image_size,
+                    int preferred_size,
                     FaviconHandler::Delegate::ImageDownloadCallback callback) {
     downloads_->push_back(url);
 
     Response response = responses_[url];
     DCHECK_EQ(response.bitmaps.size(), response.original_bitmap_sizes.size());
-    // Apply maximum image size.
-    for (size_t i = 0; i < response.bitmaps.size(); ++i) {
-      if (response.bitmaps[i].width() > max_image_size ||
-          response.bitmaps[i].height() > max_image_size) {
-        response.bitmaps[i] = skia::ImageOperations::Resize(
-            response.bitmaps[i], skia::ImageOperations::RESIZE_LANCZOS3,
-            max_image_size, max_image_size);
-      }
-    }
 
     int download_id = next_download_id_++;
     base::OnceClosure bound_callback = base::BindOnce(
@@ -299,9 +290,9 @@ class MockDelegate : public FaviconHandler::Delegate {
   }
 
   int DownloadImage(const GURL& url,
-                    int max_image_size,
+                    int preferred_size,
                     ImageDownloadCallback callback) override {
-    return fake_image_downloader_.DownloadImage(url, max_image_size,
+    return fake_image_downloader_.DownloadImage(url, preferred_size,
                                                 std::move(callback));
   }
 
@@ -1727,7 +1718,7 @@ TEST_F(FaviconHandlerTest, TestSelectLargestFavicon) {
   EXPECT_THAT(delegate_.downloads(), ElementsAre(kIconURL2));
 }
 
-TEST_F(FaviconHandlerTest, TestFaviconWasScaledAfterDownload) {
+TEST_F(FaviconHandlerTest, TestFaviconNotScaledButSelectedCorrectly) {
   const int kMaximalSize = FaviconHandler::GetMaximalIconSize(
       FaviconDriverObserver::NON_TOUCH_LARGEST,
       /*candidates_from_web_manifest=*/false);
@@ -1744,10 +1735,10 @@ TEST_F(FaviconHandlerTest, TestFaviconWasScaledAfterDownload) {
                                         SK_ColorBLUE);
 
   // Verify the best bitmap was selected (although smaller than |kIconURL2|)
-  // and that it was scaled down to |kMaximalSize|.
+  // and that it was downloaded without any scaling.
   EXPECT_CALL(delegate_,
               OnFaviconUpdated(_, _, kIconURL1, _,
-                               ImageSizeIs(kMaximalSize, kMaximalSize)));
+                               ImageSizeIs(kOriginalSize1, kOriginalSize1)));
 
   RunHandlerWithCandidates(
       FaviconDriverObserver::NON_TOUCH_LARGEST,

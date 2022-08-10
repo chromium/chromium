@@ -14,6 +14,17 @@
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/image/resize_image_dimensions.h"
 
+namespace {
+
+SkBitmap CreateRandomImage(int size, SkColor color) {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(size, size);
+  bitmap.eraseColor(color);
+  return bitmap;
+}
+
+}  // namespace
+
 TEST(ImageUtilTest, JPEGEncodeAndDecode) {
   gfx::Image original = gfx::test::CreateImage(100, 100);
 
@@ -156,4 +167,71 @@ TEST(ImageUtilTest, ResizedImageForSearchByImageShouldKeepRatio) {
   gfx::Image resized_image = gfx::ResizedImageForSearchByImage(original_image);
   EXPECT_EQ(resized_image.Width(), 400);
   EXPECT_EQ(resized_image.Height(), 400);
+}
+
+TEST(ImageUtilTest, NoFilterNoResize) {
+  std::vector<SkBitmap> previous_images;
+  previous_images.push_back(CreateRandomImage(1, SK_ColorBLACK));
+  previous_images.push_back(CreateRandomImage(2, SK_ColorGRAY));
+  previous_images.push_back(CreateRandomImage(3, SK_ColorBLUE));
+
+  std::vector<SkBitmap> filtered_images;
+  std::vector<gfx::Size> filtered_sizes;
+  gfx::FilterAndResizeImagesForMaximalSize(
+      previous_images, /*max_image_size=*/5, filtered_images, filtered_sizes);
+
+  // No image gets filtered.
+  EXPECT_EQ(filtered_images.size(), previous_images.size());
+  EXPECT_EQ(3u, filtered_sizes.size());
+  EXPECT_EQ(SK_ColorBLACK, filtered_images.at(0).getColor(0, 0));
+  EXPECT_EQ(SK_ColorGRAY, filtered_images.at(1).getColor(1, 1));
+  EXPECT_EQ(SK_ColorBLUE, filtered_images.at(2).getColor(2, 2));
+}
+
+TEST(ImageUtilTest, FilterImageNoResize) {
+  std::vector<SkBitmap> previous_images;
+  previous_images.push_back(CreateRandomImage(1, SK_ColorBLACK));
+  previous_images.push_back(CreateRandomImage(3, SK_ColorGRAY));
+  previous_images.push_back(CreateRandomImage(4, SK_ColorBLUE));
+
+  std::vector<SkBitmap> filtered_images;
+  std::vector<gfx::Size> filtered_sizes;
+  gfx::FilterAndResizeImagesForMaximalSize(
+      previous_images, /*max_image_size=*/2, filtered_images, filtered_sizes);
+
+  // No image gets filtered.
+  EXPECT_EQ(1u, filtered_images.size());
+  EXPECT_EQ(1u, filtered_sizes.size());
+  EXPECT_EQ(SK_ColorBLACK, filtered_images.at(0).getColor(0, 0));
+  // Verify grey and blue SkBitmaps are not in the filtered image.
+  EXPECT_NE(SK_ColorGRAY, filtered_images.at(0).getColor(0, 0));
+  EXPECT_NE(SK_ColorBLUE, filtered_images.at(0).getColor(0, 0));
+}
+
+TEST(ImageUtilTest, AllFilterOnlyResize) {
+  std::vector<SkBitmap> previous_images;
+  previous_images.push_back(CreateRandomImage(6, SK_ColorBLACK));
+  previous_images.push_back(CreateRandomImage(5, SK_ColorGRAY));
+  previous_images.push_back(CreateRandomImage(4, SK_ColorBLUE));
+
+  std::vector<SkBitmap> filtered_images;
+  std::vector<gfx::Size> filtered_sizes;
+  gfx::FilterAndResizeImagesForMaximalSize(
+      previous_images, /*max_image_size=*/3, filtered_images, filtered_sizes);
+
+  // Only 1 image gets resized, and it is the smallest one (the blue one).
+  // All other images are not filtered.
+  EXPECT_EQ(1u, filtered_images.size());
+  EXPECT_EQ(1u, filtered_sizes.size());
+  // Verify that resizing happens to proper size.
+  EXPECT_EQ(3, filtered_images.at(0).dimensions().width());
+  EXPECT_EQ(3, filtered_images.at(0).dimensions().height());
+  // Original sizes.
+  EXPECT_EQ(4, filtered_sizes.at(0).width());
+  EXPECT_EQ(4, filtered_sizes.at(0).height());
+  // Verify grey and black SkBitmaps are not in the filtered image.
+  // Only blue image is filtered.
+  EXPECT_EQ(SK_ColorBLUE, filtered_images.at(0).getColor(0, 0));
+  EXPECT_NE(SK_ColorGRAY, filtered_images.at(0).getColor(0, 0));
+  EXPECT_NE(SK_ColorBLACK, filtered_images.at(0).getColor(0, 0));
 }
