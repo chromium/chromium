@@ -112,12 +112,13 @@ void RasterInvalidationTracking::AsJSON(JSONObject* json, bool detailed) const {
       auto under_invalidation_json = std::make_unique<JSONObject>();
       under_invalidation_json->SetDouble("x", under_invalidation.x);
       under_invalidation_json->SetDouble("y", under_invalidation.y);
+      // TODO(https://crbug.com/1351544): This should use SkColor4f.
       under_invalidation_json->SetString(
-          "oldPixel",
-          Color(under_invalidation.old_pixel).NameForLayoutTreeAsText());
+          "oldPixel", Color::FromSkColor(under_invalidation.old_pixel)
+                          .NameForLayoutTreeAsText());
       under_invalidation_json->SetString(
-          "newPixel",
-          Color(under_invalidation.new_pixel).NameForLayoutTreeAsText());
+          "newPixel", Color::FromSkColor(under_invalidation.new_pixel)
+                          .NameForLayoutTreeAsText());
       under_invalidations_json->PushObject(std::move(under_invalidation_json));
     }
     json->SetArray("underInvalidations", std::move(under_invalidations_json));

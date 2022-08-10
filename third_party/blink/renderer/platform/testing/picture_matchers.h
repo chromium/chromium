@@ -25,6 +25,7 @@ struct RectWithColor {
   RectWithColor(const gfx::RectF& rect_arg, const Color& color_arg)
       : rect(rect_arg), color(color_arg) {}
   gfx::RectF rect;
+  // TODO(https://crbug.com/1351544): This class should use SkColor4f.
   Color color;
 };
 

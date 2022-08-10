@@ -37,19 +37,19 @@ namespace blink {
 
 NSColor* NsColor(const Color& color) {
   RGBA32 c = color.Rgb();
-  if (c == Color::kTransparent) {
+  if (color == Color::kTransparent) {
     // Need this to avoid returning nil because cachedRGBAValues will default
     // to 0.
     DEFINE_STATIC_LOCAL(base::scoped_nsobject<NSColor>, clear_color,
                         ([[NSColor colorWithDeviceRed:0 green:0 blue:0
                                                 alpha:0] retain]));
     return clear_color;
-  } else if (c == Color::kBlack) {
+  } else if (color == Color::kBlack) {
     DEFINE_STATIC_LOCAL(base::scoped_nsobject<NSColor>, black_color,
                         ([[NSColor colorWithDeviceRed:0 green:0 blue:0
                                                 alpha:1] retain]));
     return black_color;
-  } else if (c == Color::kWhite) {
+  } else if (color == Color::kWhite) {
     DEFINE_STATIC_LOCAL(base::scoped_nsobject<NSColor>, white_color,
                         ([[NSColor colorWithDeviceRed:1 green:1 blue:1
                                                 alpha:1] retain]));

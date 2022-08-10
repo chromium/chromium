@@ -55,6 +55,7 @@ struct RasterUnderInvalidation {
   DISALLOW_NEW();
   int x;
   int y;
+  // TODO(https://crbug.com/1351544): This class should use SkColor4f.
   SkColor old_pixel;
   SkColor new_pixel;
 };

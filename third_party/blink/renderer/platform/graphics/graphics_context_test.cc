@@ -167,16 +167,16 @@ class GraphicsContextDarkModeTest : public testing::Test {
     if (is_dark_mode_on)
       context.UpdateDarkModeSettingsForTest(settings);
     context.BeginRecording(gfx::RectF(0, 0, 4, 1));
-    context.FillRect(gfx::RectF(0, 0, 1, 1), Color(SK_ColorBLACK),
+    context.FillRect(gfx::RectF(0, 0, 1, 1), Color::kBlack,
                      AutoDarkMode(DarkModeFilter::ElementRole::kBackground,
                                   is_dark_mode_on));
-    context.FillRect(gfx::RectF(1, 0, 1, 1), Color(SK_ColorWHITE),
+    context.FillRect(gfx::RectF(1, 0, 1, 1), Color::kWhite,
                      AutoDarkMode(DarkModeFilter::ElementRole::kBackground,
                                   is_dark_mode_on));
-    context.FillRect(gfx::RectF(2, 0, 1, 1), Color(SK_ColorRED),
+    context.FillRect(gfx::RectF(2, 0, 1, 1), Color::FromSkColor(SK_ColorRED),
                      AutoDarkMode(DarkModeFilter::ElementRole::kBackground,
                                   is_dark_mode_on));
-    context.FillRect(gfx::RectF(3, 0, 1, 1), Color(SK_ColorGRAY),
+    context.FillRect(gfx::RectF(3, 0, 1, 1), Color::FromSkColor(SK_ColorGRAY),
                      AutoDarkMode(DarkModeFilter::ElementRole::kBackground,
                                   is_dark_mode_on));
     // Capture the result in the bitmap.

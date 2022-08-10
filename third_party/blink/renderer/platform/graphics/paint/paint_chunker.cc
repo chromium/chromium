@@ -130,7 +130,9 @@ bool PaintChunker::IncrementDisplayItemIndex(const DisplayItemClient& client,
   // set the candidate to be this item.
   if (item.IsDrawing() && item.DrawsContent()) {
     float item_area;
-    Color item_color = To<DrawingDisplayItem>(item).BackgroundColor(item_area);
+    // TODO(https://crbug.com/1351544): This should be SkColor4f and not Color.
+    Color item_color = Color::FromSkColor(
+        To<DrawingDisplayItem>(item).BackgroundColor(item_area));
     ProcessBackgroundColorCandidate(chunk.id, client, item_color, item_area);
   }
 

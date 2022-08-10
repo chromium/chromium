@@ -90,7 +90,7 @@ void WebFont::DrawText(cc::PaintCanvas* canvas,
   {
     DrawingRecorder recorder(context, *builder, DisplayItem::kWebFont);
     context.Save();
-    context.SetFillColor(color);
+    context.SetFillColor(Color::FromSkColor(color));
     context.DrawText(private_->GetFont(), run_info, left_baseline,
                      kInvalidDOMNodeId, AutoDarkMode::Disabled());
     context.Restore();

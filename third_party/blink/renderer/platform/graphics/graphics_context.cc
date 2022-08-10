@@ -94,8 +94,10 @@ Color DarkModeColor(GraphicsContext& context,
                     const Color& color,
                     const AutoDarkMode& auto_dark_mode) {
   if (auto_dark_mode.enabled) {
+    // TODO(https://crbug.com/1351544): DarkModeFilter should operate on
+    // SkColor4f, not SkColor.
     return context.GetDarkModeFilter()->InvertColorIfNeeded(
-        color.Rgb(), auto_dark_mode.role);
+        SkColor(color), auto_dark_mode.role);
   }
   return color;
 }
@@ -549,7 +551,7 @@ void GraphicsContext::DrawLineForText(const gfx::PointF& pt,
       cc::PaintFlags flags;
       flags = ImmutableState()->FillFlags();
       // Text lines are drawn using the stroke color.
-      flags.setColor(StrokeColor().Rgb());
+      flags.setColor(StrokeColor().toSkColor4f());
       SkRect r = gfx::RectFToSkRect(
           GetRectForTextLine(pt, width, RoundDownThickness(StrokeThickness())));
       DrawRect(r, flags, auto_dark_mode);
@@ -571,7 +573,7 @@ void GraphicsContext::DrawRect(const gfx::Rect& rect,
       ImmutableState()->StrokeColor().Alpha()) {
     // Stroke a width: 1 inset border
     cc::PaintFlags flags(ImmutableState()->FillFlags());
-    flags.setColor(StrokeColor().Rgb());
+    flags.setColor(StrokeColor().toSkColor4f());
     flags.setStyle(cc::PaintFlags::kStroke_Style);
     flags.setStrokeWidth(1);
 
@@ -920,7 +922,7 @@ void GraphicsContext::FillRect(const gfx::RectF& rect,
                                const AutoDarkMode& auto_dark_mode,
                                SkBlendMode xfer_mode) {
   cc::PaintFlags flags = ImmutableState()->FillFlags();
-  flags.setColor(color.Rgb());
+  flags.setColor(color.toSkColor4f());
   flags.setBlendMode(xfer_mode);
 
   DrawRect(gfx::RectFToSkRect(rect), flags, auto_dark_mode);
@@ -940,7 +942,7 @@ void GraphicsContext::FillRoundedRect(const FloatRoundedRect& rrect,
   }
 
   cc::PaintFlags flags = ImmutableState()->FillFlags();
-  flags.setColor(color.Rgb());
+  flags.setColor(color.toSkColor4f());
 
   DrawRRect(SkRRect(rrect), flags, auto_dark_mode);
 }
@@ -1001,7 +1003,7 @@ void GraphicsContext::FillDRRect(const FloatRoundedRect& outer,
           DarkModeFlags(this, auto_dark_mode, ImmutableState()->FillFlags()));
     } else {
       cc::PaintFlags flags(ImmutableState()->FillFlags());
-      flags.setColor(color.Rgb());
+      flags.setColor(color.toSkColor4f());
       canvas_->drawDRRect(SkRRect(outer), SkRRect(inner),
                           DarkModeFlags(this, auto_dark_mode, flags));
     }
@@ -1015,7 +1017,7 @@ void GraphicsContext::FillDRRect(const FloatRoundedRect& outer,
   stroke_r_rect.inset(stroke_width / 2, stroke_width / 2);
 
   cc::PaintFlags stroke_flags(ImmutableState()->FillFlags());
-  stroke_flags.setColor(color.Rgb());
+  stroke_flags.setColor(color.toSkColor4f());
   stroke_flags.setStyle(cc::PaintFlags::kStroke_Style);
   stroke_flags.setStrokeWidth(stroke_width);
 
@@ -1029,7 +1031,7 @@ void GraphicsContext::FillRectWithRoundedHole(
     const Color& color,
     const AutoDarkMode& auto_dark_mode) {
   cc::PaintFlags flags(ImmutableState()->FillFlags());
-  flags.setColor(color.Rgb());
+  flags.setColor(color.toSkColor4f());
   canvas_->drawDRRect(SkRRect::MakeRect(gfx::RectFToSkRect(rect)),
                       SkRRect(rounded_hole_rect),
                       DarkModeFlags(this, auto_dark_mode, flags));

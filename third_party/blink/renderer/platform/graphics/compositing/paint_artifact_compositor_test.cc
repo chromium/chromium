@@ -1505,7 +1505,7 @@ TEST_P(PaintArtifactCompositorTest, MergeOpacity) {
     // Transform is applied to this PaintChunk.
     rects_with_color.push_back(
         RectWithColor(gfx::RectF(0, 0, 100, 100),
-                      Color(Color::kBlack).CombineWithAlpha(opacity).Rgb()));
+                      Color(Color::kBlack).CombineWithAlpha(opacity)));
     rects_with_color.push_back(
         RectWithColor(gfx::RectF(0, 0, 200, 300), Color::kGray));
 
@@ -1537,7 +1537,7 @@ TEST_P(PaintArtifactCompositorTest, MergeOpacityWithAlias) {
     // Transform is applied to this PaintChunk.
     rects_with_color.push_back(
         RectWithColor(gfx::RectF(0, 0, 100, 100),
-                      Color(Color::kBlack).CombineWithAlpha(opacity).Rgb()));
+                      Color(Color::kBlack).CombineWithAlpha(opacity)));
     rects_with_color.push_back(
         RectWithColor(gfx::RectF(0, 0, 200, 300), Color::kGray));
 
@@ -1578,7 +1578,7 @@ TEST_P(PaintArtifactCompositorTest, MergeNestedWithAlias) {
     // Transform is applied to this PaintChunk.
     rects_with_color.push_back(
         RectWithColor(gfx::RectF(60, 70, 50, 60),
-                      Color(Color::kBlack).CombineWithAlpha(opacity).Rgb()));
+                      Color(Color::kBlack).CombineWithAlpha(opacity)));
     rects_with_color.push_back(
         RectWithColor(gfx::RectF(0, 0, 200, 300), Color::kGray));
 
@@ -1659,7 +1659,7 @@ TEST_P(PaintArtifactCompositorTest, EffectPushedUp) {
         RectWithColor(gfx::RectF(0, 0, 100, 100), Color::kWhite));
     rects_with_color.push_back(
         RectWithColor(gfx::RectF(0, 0, 300, 400),
-                      Color(Color::kBlack).CombineWithAlpha(opacity).Rgb()));
+                      Color(Color::kBlack).CombineWithAlpha(opacity)));
     rects_with_color.push_back(
         RectWithColor(gfx::RectF(0, 0, 200, 300), Color::kGray));
 
@@ -1702,7 +1702,7 @@ TEST_P(PaintArtifactCompositorTest, EffectAndClipPushedUp) {
     // of (20, 25) occurs.
     rects_with_color.push_back(
         RectWithColor(gfx::RectF(30, 45, 50, 60),
-                      Color(Color::kBlack).CombineWithAlpha(opacity).Rgb()));
+                      Color(Color::kBlack).CombineWithAlpha(opacity)));
     rects_with_color.push_back(
         RectWithColor(gfx::RectF(0, 0, 200, 300), Color::kGray));
 
@@ -1735,7 +1735,7 @@ TEST_P(PaintArtifactCompositorTest, ClipAndEffectNoTransform) {
         RectWithColor(gfx::RectF(0, 0, 100, 100), Color::kWhite));
     rects_with_color.push_back(
         RectWithColor(gfx::RectF(10, 20, 50, 60),
-                      Color(Color::kBlack).CombineWithAlpha(opacity).Rgb()));
+                      Color(Color::kBlack).CombineWithAlpha(opacity)));
     rects_with_color.push_back(
         RectWithColor(gfx::RectF(0, 0, 200, 300), Color::kGray));
 
