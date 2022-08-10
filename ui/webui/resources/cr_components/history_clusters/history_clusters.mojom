@@ -179,8 +179,9 @@ interface PageHandler {
   // its state once the request is fulfilled by the browser.
   ToggleVisibility(bool visible) => (bool visible);
 
-  // Queries for clusters matching `query`.
-  StartQueryClusters(string query);
+  // Queries for clusters matching `query`. If true, `recluster` forces
+  // reclustering as if `persist_clusters_in_history_db` were false.
+  StartQueryClusters(string query, bool recluster);
 
   // Asks the service for more clusters. Call this when the user has scrolled
   // to the bottom of the page. `query` is passed through for sanity checking.

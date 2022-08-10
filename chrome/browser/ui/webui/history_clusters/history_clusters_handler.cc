@@ -327,7 +327,8 @@ void HistoryClustersHandler::ToggleVisibility(
   std::move(callback).Run(visible);
 }
 
-void HistoryClustersHandler::StartQueryClusters(const std::string& query) {
+void HistoryClustersHandler::StartQueryClusters(const std::string& query,
+                                                bool recluster) {
   if (!query.empty()) {
     // If the query string is not empty, we assume that this clusters query
     // is user generated.
@@ -341,7 +342,7 @@ void HistoryClustersHandler::StartQueryClusters(const std::string& query) {
   auto* history_clusters_service =
       HistoryClustersServiceFactory::GetForBrowserContext(profile_);
   query_clusters_state_ = std::make_unique<QueryClustersState>(
-      history_clusters_service->GetWeakPtr(), query);
+      history_clusters_service->GetWeakPtr(), query, recluster);
   LoadMoreClusters(query);
 }
 

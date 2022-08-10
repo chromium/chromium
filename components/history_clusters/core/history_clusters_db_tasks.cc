@@ -51,6 +51,7 @@ GetAnnotatedVisitsToCluster::GetAnnotatedVisitsToCluster(
     QueryClustersContinuationParams continuation_params,
     bool recent_first,
     int days_of_clustered_visits,
+    bool recluster,
     Callback callback)
     : incomplete_visit_map_(incomplete_visit_map),
       begin_time_limit_(
@@ -58,6 +59,7 @@ GetAnnotatedVisitsToCluster::GetAnnotatedVisitsToCluster(
       continuation_params_(continuation_params),
       recent_first_(recent_first),
       days_of_clustered_visits_(days_of_clustered_visits),
+      recluster_(recluster),
       callback_(std::move(callback)) {
   // Callers shouldn't ask for more visits if they've been exhausted.
   DCHECK(!continuation_params.exhausted_unclustered_visits);
@@ -165,15 +167,15 @@ bool GetAnnotatedVisitsToCluster::AddUnclusteredVisits(
 
   for (const auto& visit :
        backend->GetAnnotatedVisits(options, &limited_by_max_count)) {
-    // Filter out visits from sync.
-    // TODO(manukh): Consider allowing the clustering backend to handle sync
-    //  visits.
     const bool is_clustered =
-        GetConfig().persist_clusters_in_history_db
+        GetConfig().persist_clusters_in_history_db && !recluster_
             ? db->GetClusterIdContainingVisit(visit.visit_row.visit_id) > 0
             : false;
     if (is_clustered && recent_first_)
       continuation_params_.exhausted_unclustered_visits = true;
+    // Filter out visits from sync.
+    // TODO(manukh): Consider allowing the clustering backend to handle sync
+    //  visits.
     if (!is_clustered && visit.source != history::SOURCE_SYNCED)
       annotated_visits_.push_back(std::move(visit));
   }

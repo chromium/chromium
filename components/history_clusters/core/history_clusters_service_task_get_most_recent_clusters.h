@@ -39,6 +39,7 @@ class HistoryClustersServiceTaskGetMostRecentClusters {
       ClusteringRequestSource clustering_request_source,
       base::Time begin_time,
       QueryClustersContinuationParams continuation_params,
+      bool recluster,
       QueryClustersCallback callback);
   ~HistoryClustersServiceTaskGetMostRecentClusters();
 
@@ -99,6 +100,7 @@ class HistoryClustersServiceTaskGetMostRecentClusters {
   // `HistoryService`.
   base::Time begin_time_;
   QueryClustersContinuationParams continuation_params_;
+  bool recluster_;
   base::CancelableTaskTracker task_tracker_;
 
   // Invoked after either `OnGotModelClusters()` or

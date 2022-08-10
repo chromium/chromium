@@ -45,7 +45,8 @@ class QueryClustersState {
                               bool is_continuation)>;
 
   QueryClustersState(base::WeakPtr<HistoryClustersService> service,
-                     const std::string& query);
+                     const std::string& query,
+                     bool recluster = false);
   ~QueryClustersState();
 
   QueryClustersState(const QueryClustersState&) = delete;
@@ -95,6 +96,10 @@ class QueryClustersState {
 
   // The string query the user entered into the searchbox.
   const std::string query_;
+
+  // If true, forces reclustering as if `persist_clusters_in_history_db` were
+  // false.
+  bool recluster_;
 
   // The de-duplicated list of raw labels we've seen so far and their number of
   // occurrences, in the same order as the clusters themselves were provided.

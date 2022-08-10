@@ -40,7 +40,7 @@ void HistoryClustersServiceTaskUpdateClusters::Start() {
       FROM_HERE,
       std::make_unique<GetAnnotatedVisitsToCluster>(
           incomplete_visit_context_annotations_, base::Time(),
-          continuation_params_, false, 2,
+          continuation_params_, false, 2, false,
           base::BindOnce(&HistoryClustersServiceTaskUpdateClusters::
                              OnGotAnnotatedVisitsToCluster,
                          weak_ptr_factory_.GetWeakPtr())),

@@ -155,6 +155,8 @@ class HistoryClustersService : public base::SupportsUserData,
   //   should be set to the default initialized
   //   `QueryClustersContinuationParams`
   //   if the caller wants the newest visits.
+  // - `recluster`, if true, forces reclustering as if
+  //   `persist_clusters_in_history_db` were false.
   // The returned clusters are sorted in reverse-chronological order based on
   // their highest scoring visit. The visits within each cluster are sorted by
   // score, from highest to lowest.
@@ -165,6 +167,7 @@ class HistoryClustersService : public base::SupportsUserData,
   QueryClusters(ClusteringRequestSource clustering_request_source,
                 base::Time begin_time,
                 QueryClustersContinuationParams continuation_params,
+                bool recluster,
                 QueryClustersCallback callback);
 
   // Invokes `UpdateClusters()` after a short delay, then again periodically.

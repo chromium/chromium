@@ -248,7 +248,7 @@ class HistoryClustersServiceTestBase : public testing::Test {
     base::RunLoop loop;
     const auto task = history_clusters_service_->QueryClusters(
         ClusteringRequestSource::kJourneysPage,
-        /*begin_time=*/base::Time(), continuation_params,
+        /*begin_time=*/base::Time(), continuation_params, /*recluster=*/false,
         base::BindLambdaForTesting(
             [&](std::vector<history::Cluster> clusters_temp,
                 QueryClustersContinuationParams continuation_params_temp) {
@@ -290,7 +290,7 @@ class HistoryClustersServiceTestBase : public testing::Test {
         FROM_HERE,
         std::make_unique<GetAnnotatedVisitsToCluster>(
             IncompleteVisitMap{}, base::Time(), continuation_params,
-            recent_first, days_of_clustered_visits,
+            recent_first, days_of_clustered_visits, /*recluster=*/false,
             base::BindLambdaForTesting(
                 [&](std::vector<int64_t> old_clusters_temp,
                     std::vector<history::AnnotatedVisit> visits_temp,
@@ -404,6 +404,7 @@ TEST_F(HistoryClustersServiceTest, HardCapOnVisitsFetchedFromHistory) {
   const auto task = history_clusters_service_->QueryClusters(
       ClusteringRequestSource::kKeywordCacheGeneration,
       /*begin_time=*/base::Time(), /*continuation_params=*/{},
+      /*recluster=*/false,
       base::DoNothing()  // Only need to verify the correct request is sent
   );
 
@@ -820,6 +821,7 @@ TEST_F(HistoryClustersServiceTest, EndToEndWithBackend) {
       ClusteringRequestSource::kJourneysPage,
       /*begin_time=*/base::Time(),
       /*continuation_params=*/{},
+      /*recluster=*/false,
       // This "expect" block is not run until after the fake response is
       // sent further down in this method.
       base::BindLambdaForTesting([&](std::vector<history::Cluster> clusters,

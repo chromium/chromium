@@ -352,7 +352,9 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
         // Prevent sending further load-more requests until this one finishes.
         this.set('result_.canLoadMore', false);
       }
-      this.pageHandler_.startQueryClusters(this.query.trim());
+      this.pageHandler_.startQueryClusters(
+          this.query.trim(),
+          new URLSearchParams(window.location.search).has('recluster'));
     });
   }
 

@@ -153,6 +153,7 @@ HistoryClustersService::QueryClusters(
     ClusteringRequestSource clustering_request_source,
     base::Time begin_time,
     QueryClustersContinuationParams continuation_params,
+    bool recluster,
     QueryClustersCallback callback) {
   if (ShouldNotifyDebugMessage()) {
     NotifyDebugMessage("HistoryClustersService::QueryClusters()");
@@ -170,7 +171,7 @@ HistoryClustersService::QueryClusters(
   return std::make_unique<HistoryClustersServiceTaskGetMostRecentClusters>(
       weak_ptr_factory_.GetWeakPtr(), incomplete_visit_context_annotations_,
       backend_.get(), history_service_, clustering_request_source, begin_time,
-      continuation_params, std::move(callback));
+      continuation_params, recluster, std::move(callback));
 }
 
 void HistoryClustersService::RepeatedlyUpdateClusters() {
@@ -280,7 +281,7 @@ void HistoryClustersService::StartKeywordCacheRefresh() {
     cache_keyword_query_task_ = QueryClusters(
         ClusteringRequestSource::kKeywordCacheGeneration,
         /*begin_time=*/base::Time(),
-        /*continuation_params=*/{},
+        /*continuation_params=*/{}, false,
         base::BindOnce(&HistoryClustersService::PopulateClusterKeywordCache,
                        weak_ptr_factory_.GetWeakPtr(), base::ElapsedTimer(),
                        /*begin_time=*/base::Time(),
@@ -298,7 +299,7 @@ void HistoryClustersService::StartKeywordCacheRefresh() {
     cache_keyword_query_task_ = QueryClusters(
         ClusteringRequestSource::kKeywordCacheGeneration,
         /*begin_time=*/all_keywords_cache_timestamp_,
-        /*continuation_params=*/{},
+        /*continuation_params=*/{}, false,
         base::BindOnce(&HistoryClustersService::PopulateClusterKeywordCache,
                        weak_ptr_factory_.GetWeakPtr(), base::ElapsedTimer(),
                        all_keywords_cache_timestamp_,
@@ -381,7 +382,7 @@ void HistoryClustersService::PopulateClusterKeywordCache(
        url_keyword_accumulator->size() < max_keyword_phrases)) {
     cache_keyword_query_task_ = QueryClusters(
         ClusteringRequestSource::kKeywordCacheGeneration, begin_time,
-        continuation_params,
+        continuation_params, /*recluster=*/false,
         base::BindOnce(&HistoryClustersService::PopulateClusterKeywordCache,
                        weak_ptr_factory_.GetWeakPtr(),
                        std::move(total_latency_timer), begin_time,

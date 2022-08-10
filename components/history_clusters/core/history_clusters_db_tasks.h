@@ -42,6 +42,7 @@ class GetAnnotatedVisitsToCluster : public history::HistoryDBTask {
       QueryClustersContinuationParams continuation_params,
       bool recent_first,
       int days_of_clustered_visits,
+      bool recluster,
       Callback callback);
   ~GetAnnotatedVisitsToCluster() override;
 
@@ -123,6 +124,10 @@ class GetAnnotatedVisitsToCluster : public history::HistoryDBTask {
   // already clustered visits with unclustered visits to allow existing clusters
   // to grow rather than be split up arbitrarily at day boundaries.
   int days_of_clustered_visits_;
+
+  // If true, forces reclustering as if `persist_clusters_in_history_db` were
+  // false.
+  bool recluster_;
 
   // The clusters whose visits were returned. Any cluster included will have all
   // its visits included; i.e. won't return partial clusters. Retrieved from the

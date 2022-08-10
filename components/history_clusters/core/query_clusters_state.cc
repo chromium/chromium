@@ -59,9 +59,11 @@ class QueryClustersState::PostProcessor
 
 QueryClustersState::QueryClustersState(
     base::WeakPtr<HistoryClustersService> service,
-    const std::string& query)
+    const std::string& query,
+    bool recluster)
     : service_(service),
       query_(query),
+      recluster_(recluster),
       post_processing_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE})),
       post_processing_state_(
@@ -77,7 +79,7 @@ void QueryClustersState::LoadNextBatchOfClusters(ResultCallback callback) {
   base::TimeTicks query_start_time = base::TimeTicks::Now();
   query_clusters_task = service_->QueryClusters(
       ClusteringRequestSource::kJourneysPage,
-      /*begin_time=*/base::Time(), continuation_params_,
+      /*begin_time=*/base::Time(), continuation_params_, recluster_,
       base::BindOnce(&QueryClustersState::OnGotRawClusters,
                      weak_factory_.GetWeakPtr(), query_start_time,
                      std::move(callback)));

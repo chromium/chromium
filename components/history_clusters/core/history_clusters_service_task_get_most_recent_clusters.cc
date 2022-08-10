@@ -28,6 +28,7 @@ HistoryClustersServiceTaskGetMostRecentClusters::
         ClusteringRequestSource clustering_request_source,
         base::Time begin_time,
         QueryClustersContinuationParams continuation_params,
+        bool recluster,
         QueryClustersCallback callback)
     : weak_history_clusters_service_(std::move(weak_history_clusters_service)),
       incomplete_visit_context_annotations_(
@@ -37,6 +38,7 @@ HistoryClustersServiceTaskGetMostRecentClusters::
       clustering_request_source_(clustering_request_source),
       begin_time_(begin_time),
       continuation_params_(continuation_params),
+      recluster_(recluster),
       callback_(std::move(callback)) {
   DCHECK(weak_history_clusters_service_);
   DCHECK(history_service_);
@@ -82,7 +84,7 @@ void HistoryClustersServiceTaskGetMostRecentClusters::Start() {
         FROM_HERE,
         std::make_unique<GetAnnotatedVisitsToCluster>(
             incomplete_visit_context_annotations_, begin_time_,
-            continuation_params_, true, 0,
+            continuation_params_, true, 0, recluster_,
             base::BindOnce(&HistoryClustersServiceTaskGetMostRecentClusters::
                                OnGotAnnotatedVisitsToCluster,
                            weak_ptr_factory_.GetWeakPtr())),
@@ -166,7 +168,7 @@ void HistoryClustersServiceTaskGetMostRecentClusters::OnGotModelClusters(
 
 void HistoryClustersServiceTaskGetMostRecentClusters::
     ReturnMostRecentPersistedClusters(base::Time exclusive_max_time) {
-  if (GetConfig().persist_clusters_in_history_db) {
+  if (GetConfig().persist_clusters_in_history_db && !recluster_) {
     history_service_->GetMostRecentClusters(
         begin_time_, exclusive_max_time, 1,
         base::BindOnce(&HistoryClustersServiceTaskGetMostRecentClusters::

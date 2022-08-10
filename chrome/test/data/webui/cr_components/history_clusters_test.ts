@@ -65,7 +65,7 @@ suite('history-clusters', () => {
     const clustersElement = new HistoryClustersElement();
     document.body.appendChild(clustersElement);
 
-    const query = await handler.whenCalled('startQueryClusters');
+    const query = (await handler.whenCalled('startQueryClusters'))[0];
     assertEquals(query, '');
 
     callbackRouterRemote.onClustersQueryResult(getTestResult());
@@ -93,7 +93,7 @@ suite('history-clusters', () => {
     await callbackRouterRemote.$.flushForTesting();
     flushTasks();
 
-    const newQuery = await handler.whenCalled('startQueryClusters');
+    const newQuery = (await handler.whenCalled('startQueryClusters'))[0];
     assertEquals(newQuery, '');
   });
 
@@ -101,7 +101,7 @@ suite('history-clusters', () => {
     const clustersElement = await setupClustersElement();
     clustersElement.query = 'foobar';
 
-    const query = await handler.whenCalled('startQueryClusters');
+    const query = (await handler.whenCalled('startQueryClusters'))[0];
     assertEquals(query, 'foobar');
 
     callbackRouterRemote.onClustersQueryResult(getTestResult());
@@ -115,7 +115,7 @@ suite('history-clusters', () => {
     await callbackRouterRemote.$.flushForTesting();
     flushTasks();
 
-    const newQuery = await handler.whenCalled('startQueryClusters');
+    const newQuery = (await handler.whenCalled('startQueryClusters'))[0];
     assertEquals(newQuery, 'foobar');
   });
 

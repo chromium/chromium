@@ -71,7 +71,7 @@ class HistoryClustersHandler : public mojom::PageHandler,
   void ShowSidePanelUI() override;
   void ToggleVisibility(bool visible,
                         ToggleVisibilityCallback callback) override;
-  void StartQueryClusters(const std::string& query) override;
+  void StartQueryClusters(const std::string& query, bool recluster) override;
   void LoadMoreClusters(const std::string& query) override;
   void RemoveVisits(std::vector<mojom::URLVisitPtr> visits,
                     RemoveVisitsCallback callback) override;
