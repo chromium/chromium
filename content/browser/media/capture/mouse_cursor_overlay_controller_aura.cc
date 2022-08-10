@@ -167,32 +167,31 @@ gfx::RectF MouseCursorOverlayController::ComputeRelativeBoundsForOverlay(
     const gfx::PointF& location) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
 
-  if (auto* window = Observer::GetTargetWindow(observer_)) {
-    const gfx::Size window_size = window->bounds().size();
-    if (!window_size.IsEmpty()) {
-      if (auto* root_window = window->GetRootWindow()) {
-        const SkBitmap& bitmap = wm::GetCursorBitmap(cursor);
-        const float scale_factor = cursor.image_scale_factor();
-        DCHECK_GT(scale_factor, 0.0f);
+  auto* window = Observer::GetTargetWindow(observer_);
+  if (!window)
+    return gfx::RectF();
 
-        // Compute the cursor size in terms of DIP coordinates.
-        const gfx::SizeF size = gfx::ScaleSize(
-            gfx::SizeF(bitmap.width(), bitmap.height()), 1.0f / scale_factor);
+  const gfx::Size& window_size = window->bounds().size();
+  if (window_size.IsEmpty() || !window->GetRootWindow())
+    return gfx::RectF();
 
-        // Compute the hotspot in terms of DIP coordinates.
-        const gfx::PointF hotspot = gfx::ScalePoint(
-            gfx::PointF(wm::GetCursorHotspot(cursor)), 1.0f / scale_factor);
+  const SkBitmap& bitmap = wm::GetCursorBitmap(cursor);
+  const float scale_factor = cursor.image_scale_factor();
+  DCHECK_GT(scale_factor, 0.0f);
 
-        // Finally, put it all together: Scale the absolute bounds of the
-        // overlay by the window size to produce relative coordinates.
-        return gfx::ScaleRect(
-            gfx::RectF(location - hotspot.OffsetFromOrigin(), size),
-            1.0f / window_size.width(), 1.0f / window_size.height());
-      }
-    }
-  }
+  // Compute the cursor size in terms of DIP coordinates.
+  const gfx::SizeF size = gfx::ScaleSize(
+      gfx::SizeF(bitmap.width(), bitmap.height()), 1.0f / scale_factor);
 
-  return gfx::RectF();
+  // Compute the hotspot in terms of DIP coordinates.
+  const gfx::PointF hotspot = gfx::ScalePoint(
+      gfx::PointF(wm::GetCursorHotspot(cursor)), 1.0f / scale_factor);
+
+  // Finally, put it all together: Scale the absolute bounds of the
+  // overlay by the window size to produce relative coordinates.
+  return gfx::ScaleRect(gfx::RectF(location - hotspot.OffsetFromOrigin(), size),
+                        1.0f / window_size.width(),
+                        1.0f / window_size.height());
 }
 
 void MouseCursorOverlayController::DisconnectFromToolkitForTesting() {
