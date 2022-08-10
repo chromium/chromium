@@ -156,6 +156,7 @@
 #include "components/version_info/version_info.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/switches.h"
+#include "components/webapps/browser/features.h"
 #include "components/webapps/common/switches.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -229,7 +230,6 @@
 #include "components/content_creation/notes/core/note_features.h"
 #include "components/content_creation/reactions/core/reactions_features.h"
 #include "components/translate/content/android/translate_message.h"
-#include "components/webapps/browser/features.h"
 #else  // BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_sink_service.h"
 #include "chrome/browser/media/router/media_router_feature.h"
@@ -4396,6 +4396,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDesktopPWAsWebBundlesName,
      flag_descriptions::kDesktopPWAsWebBundlesDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kDesktopPWAsWebBundles)},
+    {"enable-desktop-pwas-detailed-install-dialog",
+     flag_descriptions::kDesktopPWAsDetailedInstallDialogName,
+     flag_descriptions::kDesktopPWAsDetailedInstallDialogDescription, kOsAll,
+     FEATURE_VALUE_TYPE(webapps::features::kDesktopPWAsDetailedInstallDialog)},
     {"record-web-app-debug-info", flag_descriptions::kRecordWebAppDebugInfoName,
      flag_descriptions::kRecordWebAppDebugInfoDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kRecordWebAppDebugInfo)},
