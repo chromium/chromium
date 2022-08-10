@@ -68,16 +68,6 @@ class InterruptedAutoStartEnrollmentTest : public OobeBaseTest,
   LocalStateMixin local_state_mixin_{&mixin_host_, this};
 };
 
-class OobeBaseTestPolymer3 : public OobeBaseTest {
- public:
-  OobeBaseTestPolymer3() {
-    scoped_feature_list_.InitAndEnableFeature(features::kEnableOobePolymer3);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // Tests that the default first screen is the welcome screen after OOBE
 // when auto enrollment is enabled and device is not yet enrolled.
 IN_PROC_BROWSER_TEST_F(InterruptedAutoStartEnrollmentTest, ShowsWelcome) {
@@ -85,11 +75,6 @@ IN_PROC_BROWSER_TEST_F(InterruptedAutoStartEnrollmentTest, ShowsWelcome) {
 }
 
 IN_PROC_BROWSER_TEST_F(OobeBaseTest, OobeNoExceptions) {
-  OobeScreenWaiter(WelcomeView::kScreenId).Wait();
-  OobeBaseTest::CheckJsExceptionErrors(0);
-}
-
-IN_PROC_BROWSER_TEST_F(OobeBaseTestPolymer3, OobeNoExceptions) {
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
   OobeBaseTest::CheckJsExceptionErrors(0);
 }

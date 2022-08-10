@@ -158,8 +158,6 @@ constexpr char kArcPlaystoreCSSPath[] = "playstore.css";
 constexpr char kArcPlaystoreJSPath[] = "playstore.js";
 constexpr char kArcPlaystoreLogoPath[] = "playstore.svg";
 constexpr char kArcSupervisionIconPath[] = "supervision_icon.png";
-constexpr char kCustomElementsHTMLPath[] = "custom_elements.html";
-constexpr char kDebuggerJSPath[] = "debug/debug.js";
 constexpr char kDebuggerMJSPath[] = "debug/debug.m.js";
 constexpr char kDebuggerUtilJSPath[] = "debug/debug_util.js";
 constexpr char kKeyboardUtilsJSPath[] = "keyboard_utils.js";
@@ -168,13 +166,10 @@ constexpr char kKeyboardUtilsForInjectionPath[] =
 constexpr char kKeyboardUtilsForInjectionModulePath[] =
     "components/keyboard_utils_for_injection.m.js";
 
-constexpr char kLoginJSPath[] = "login.js";
-constexpr char kOobeJSPath[] = "oobe.js";
 constexpr char kProductLogoPath[] = "product-logo.png";
 // TODO(crbug.com/1261902): Clean-up old implementation once feature is
 // launched.
 constexpr char kRecommendAppListViewJSPath[] = "recommend_app_list_view.js";
-constexpr char kTestAPIJSPath[] = "test_api.js";
 constexpr char kTestAPIJsMPath[] = "test_api/test_api.m.js";
 constexpr char kWebviewSamlInjectedJSPath[] = "webview_saml_injected.js";
 
@@ -253,7 +248,7 @@ void AddMultiDeviceSetupResources(content::WebUIDataSource* source) {
       network::mojom::CSPDirectiveName::WorkerSrc, "worker-src blob: 'self';");
 }
 
-void AddDebuggerResources(content::WebUIDataSource* source, bool use_poly3) {
+void AddDebuggerResources(content::WebUIDataSource* source) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   bool enable_debugger = command_line->HasSwitch(switches::kShowOobeDevOverlay);
   // Enable for ChromeOS-on-linux for developers and test images.
@@ -264,15 +259,10 @@ void AddDebuggerResources(content::WebUIDataSource* source, bool use_poly3) {
 
   if (enable_debugger) {
     source->AddResourcePath(kDebuggerUtilJSPath, IDR_OOBE_DEBUGGER_UTIL_JS);
-    if (use_poly3) {
-      source->AddResourcePath(kDebuggerMJSPath, IDR_OOBE_DEBUGGER_M_JS);
-    } else {
-      source->AddResourcePath(kDebuggerJSPath, IDR_OOBE_DEBUGGER_JS);
-    }
+    source->AddResourcePath(kDebuggerMJSPath, IDR_OOBE_DEBUGGER_M_JS);
   } else {
     // Serve empty files under all resource paths.
     source->AddResourcePath(kDebuggerMJSPath, IDR_OOBE_DEBUGGER_STUB_JS);
-    source->AddResourcePath(kDebuggerJSPath, IDR_OOBE_DEBUGGER_STUB_JS);
     source->AddResourcePath(kDebuggerUtilJSPath, IDR_OOBE_DEBUGGER_STUB_JS);
   }
 }
@@ -281,54 +271,10 @@ void AddTestAPIResources(content::WebUIDataSource* source) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   bool enable_test_api = command_line->HasSwitch(switches::kEnableOobeTestAPI);
   if (enable_test_api) {
-    source->AddResourcePath(kTestAPIJSPath, IDR_OOBE_TEST_API_JS);
     source->AddResourcePath(kTestAPIJsMPath, IDR_OOBE_TEST_API_M_JS);
   } else {
-    source->AddResourcePath(kTestAPIJSPath, IDR_OOBE_TEST_API_STUB_JS);
     source->AddResourcePath(kTestAPIJsMPath, IDR_OOBE_TEST_API_STUB_M_JS);
   }
-}
-
-// Default and non-shared resource definition for kOobeDisplay display type.
-// chrome://oobe/oobe
-void AddOobeDisplayTypeDefaultResources(content::WebUIDataSource* source) {
-  if (switches::IsOsInstallAllowed()) {
-    source->SetDefaultResource(IDR_OS_INSTALL_OOBE_HTML);
-    source->AddResourcePath(kCustomElementsHTMLPath,
-                            IDR_CUSTOM_ELEMENTS_OS_INSTALL_OOBE_HTML);
-  } else {
-    source->SetDefaultResource(IDR_OOBE_HTML);
-    source->AddResourcePath(kCustomElementsHTMLPath,
-                            IDR_CUSTOM_ELEMENTS_OOBE_HTML);
-  }
-  source->AddResourcePath(kOobeJSPath, IDR_OOBE_JS);
-}
-
-// Default and non-shared resource definition for kGaiaSigninDisplay display
-// type. chrome://oobe/gaia-signin
-void AddLoginDisplayTypeDefaultResources(content::WebUIDataSource* source) {
-  if (switches::IsOsInstallAllowed()) {
-    source->SetDefaultResource(IDR_OS_INSTALL_LOGIN_HTML);
-    source->AddResourcePath(kCustomElementsHTMLPath,
-                            IDR_CUSTOM_ELEMENTS_OS_INSTALL_LOGIN_HTML);
-  } else {
-    source->SetDefaultResource(IDR_MD_LOGIN_HTML);
-    source->AddResourcePath(kCustomElementsHTMLPath,
-                            IDR_CUSTOM_ELEMENTS_LOGIN_HTML);
-  }
-  source->AddResourcePath(kLoginJSPath, IDR_OOBE_JS);
-}
-
-// Polymer3 could be turned on for both flows (OOBE & 'Add Person'), or just
-// for the 'Add Person' flow.
-bool ShouldUsePolymer3Resources(bool is_oobe_flow) {
-  const bool is_add_person_flow = !is_oobe_flow;
-  const bool poly3_enabled_for_both_flows = features::IsOobePolymer3Enabled();
-  const bool poly3_enabled_for_addperson_flow =
-      features::IsOobeAddPersonPolymer3Enabled();
-
-  return poly3_enabled_for_both_flows ||
-         (poly3_enabled_for_addperson_flow && is_add_person_flow);
 }
 
 // Creates a WebUIDataSource for chrome://oobe
@@ -344,23 +290,13 @@ content::WebUIDataSource* CreateOobeUIDataSource(
 
   OobeUI::AddOobeComponents(source);
 
-  // Determine whether this is the 'OOBE' or the 'Add Person' flow, and add
-  // either Polymer3 or Polymer2 default resources.
+  source->SetDefaultResource(IDR_OOBE_POLY3_HTML);
+
+  // Add boolean variables that are used to add screens
+  // dynamically depending on the flow type.
   const bool is_oobe_flow = display_type == OobeUI::kOobeDisplay;
-  const bool use_polymer3_resources = ShouldUsePolymer3Resources(is_oobe_flow);
-  if (use_polymer3_resources) {
-    source->SetDefaultResource(IDR_OOBE_POLY3_HTML);
-    // Add boolean variables that are used by Polymer3 to add screens
-    // dynamically depending on the flow type.
-    source->AddBoolean("isOsInstallAllowed", switches::IsOsInstallAllowed());
-    source->AddBoolean("isOobeFlow", is_oobe_flow);
-  } else { /* Polymer 2 Resources */
-    if (is_oobe_flow) {
-      AddOobeDisplayTypeDefaultResources(source);
-    } else /* is_add_person_flow */ {
-      AddLoginDisplayTypeDefaultResources(source);
-    }
-  }
+  source->AddBoolean("isOsInstallAllowed", switches::IsOsInstallAllowed());
+  source->AddBoolean("isOobeFlow", is_oobe_flow);
 
   // Configure shared resources
   AddProductLogoResources(source);
@@ -371,7 +307,7 @@ content::WebUIDataSource* CreateOobeUIDataSource(
   AddAssistantScreensResources(source);
   AddMultiDeviceSetupResources(source);
 
-  AddDebuggerResources(source, use_polymer3_resources);
+  AddDebuggerResources(source);
   AddTestAPIResources(source);
 
   source->AddResourcePath(kWebviewSamlInjectedJSPath,

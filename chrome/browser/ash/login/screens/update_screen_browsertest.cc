@@ -118,12 +118,6 @@ chromeos::OobeUI* GetOobeUI() {
   return host ? host->GetOobeUI() : nullptr;
 }
 
-// TODO(crbug.com/1184731) - Remove once fixed.
-bool IsPolymer3Enabled() {
-  return (features::IsOobeAddPersonPolymer3Enabled() ||
-          features::IsOobePolymer3Enabled());
-}
-
 class UpdateScreenTest : public OobeBaseTest,
                          public LocalStateMixin::Delegate,
                          public ::testing::WithParamInterface<RegionToCodeMap> {
@@ -835,11 +829,9 @@ IN_PROC_BROWSER_TEST_P(UpdateScreenTest, TestInitialLowBatteryStatus) {
   test::OobeJS().ExpectVisiblePath(kLowBatteryWarningMessage);
 }
 
-IN_PROC_BROWSER_TEST_P(UpdateScreenTest, TestBatteryWarningDuringUpdateStages) {
-  // TODO(crbug.com/1184731) - Adapt these tests to run with Polymer3 enabled.
-  if (IsPolymer3Enabled())
-    return;
-
+// TODO(crbug.com/1324627): Fix this test.
+IN_PROC_BROWSER_TEST_P(UpdateScreenTest,
+                       DISABLED_TestBatteryWarningDuringUpdateStages) {
   base::ScopedMockTimeMessageLoopTaskRunner mocked_task_runner;
   SetTickClockAndDefaultDelaysForTesting(
       mocked_task_runner->GetMockTickClock());
@@ -953,11 +945,9 @@ IN_PROC_BROWSER_TEST_P(UpdateScreenTest,
   test::OobeJS().ExpectHiddenPath(kLowBatteryWarningMessage);
 }
 
-IN_PROC_BROWSER_TEST_P(UpdateScreenTest, TestUpdateCompletedRebootNeeded) {
-  // TODO(crbug.com/1184731) - Adapt these tests to run with Polymer3 enabled.
-  if (IsPolymer3Enabled())
-    return;
-
+// TODO(crbug.com/1324627): Fix this test.
+IN_PROC_BROWSER_TEST_P(UpdateScreenTest,
+                       DISABLED_TestUpdateCompletedRebootNeeded) {
   base::ScopedMockTimeMessageLoopTaskRunner mocked_task_runner;
   SetTickClockAndDefaultDelaysForTesting(
       mocked_task_runner->GetMockTickClock());
@@ -990,11 +980,8 @@ IN_PROC_BROWSER_TEST_P(UpdateScreenTest, TestUpdateCompletedRebootNeeded) {
   test::OobeJS().ExpectVisiblePath(kBetterUpdateCompletedDialog);
 }
 
-IN_PROC_BROWSER_TEST_P(UpdateScreenTest, UpdateScreenSteps) {
-  // TODO(crbug.com/1184731) - Adapt these tests to run with Polymer3 enabled.
-  if (IsPolymer3Enabled())
-    return;
-
+// TODO(crbug.com/1324627): Fix this test.
+IN_PROC_BROWSER_TEST_P(UpdateScreenTest, DISABLED_UpdateScreenSteps) {
   base::ScopedMockTimeMessageLoopTaskRunner mocked_task_runner;
   SetTickClockAndDefaultDelaysForTesting(
       mocked_task_runner->GetMockTickClock());
@@ -1095,11 +1082,8 @@ IN_PROC_BROWSER_TEST_P(UpdateScreenTest, UpdateScreenSteps) {
   test::OobeJS().ExpectVisiblePath(kBetterUpdateCompletedDialog);
 }
 
-IN_PROC_BROWSER_TEST_P(UpdateScreenTest, UpdateOverCellularShown) {
-  // TODO(crbug.com/1184731) - Adapt these tests to run with Polymer3 enabled.
-  if (IsPolymer3Enabled())
-    return;
-
+// TODO(crbug.com/1324627): Fix this test.
+IN_PROC_BROWSER_TEST_P(UpdateScreenTest, DISABLED_UpdateOverCellularShown) {
   base::ScopedMockTimeMessageLoopTaskRunner mocked_task_runner;
   SetTickClockAndDefaultDelaysForTesting(
       mocked_task_runner->GetMockTickClock());

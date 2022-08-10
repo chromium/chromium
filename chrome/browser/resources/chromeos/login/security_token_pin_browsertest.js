@@ -28,11 +28,6 @@ var PolymerSecurityTokenPinTest = class extends Polymer2DeprecatedTest {
     });
   }
 
-   /** @override */
-   get featureList() {
-    return {disabled: ['ash::features::kEnableOobePolymer3']};
-  }
-
   get extraLibraries() {
     return super.extraLibraries.concat(['components/oobe_types.js']);
   }

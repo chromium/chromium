@@ -65,12 +65,6 @@ std::string GetExpectedCountdownMessage(base::TimeDelta time_left) {
       l10n_util::GetStringUTF16(IDS_INSTALLED_PRODUCT_OS_NAME));
 }
 
-// TODO(crbug.com/1324627) - Remove once fixed.
-bool IsPolymer3Enabled() {
-  return (features::IsOobeAddPersonPolymer3Enabled() ||
-          features::IsOobePolymer3Enabled());
-}
-
 }  // namespace
 
 class OsInstallScreenTest : public OobeBaseTest, OsInstallClient::Observer {
@@ -229,17 +223,9 @@ IN_PROC_BROWSER_TEST_F(OsInstallScreenTest, OsInstallGenericError) {
 // Check that a successful install shows the success step and countdown timer,
 // which will shut down the computer automatically after 60 seconds.
 // TODO(crbug.com/1318903): Re-enable this test on linux-chromeos-dbg.
-#if !defined(NDEBUG)
-#define MAYBE_OsInstallSuccessAutoShutdown DISABLED_OsInstallSuccessAutoShutdown
-#else
-#define MAYBE_OsInstallSuccessAutoShutdown OsInstallSuccessAutoShutdown
-#endif
+// TODO(crbug.com/1324627): Fix this test.
 IN_PROC_BROWSER_TEST_F(OsInstallScreenTest,
-                       MAYBE_OsInstallSuccessAutoShutdown) {
-  // TODO(crbug.com/1324627) - Adapt these tests to run with Polymer3 enabled.
-  if (IsPolymer3Enabled())
-    return;
-
+                       DISABLED_OsInstallSuccessAutoShutdown) {
   base::ScopedMockTimeMessageLoopTaskRunner mocked_task_runner;
   SetTickClockForTesting(mocked_task_runner->GetMockTickClock());
   auto* ti = OsInstallClient::Get()->GetTestInterface();
