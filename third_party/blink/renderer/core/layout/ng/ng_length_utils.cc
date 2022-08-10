@@ -1471,7 +1471,9 @@ NGFragmentGeometry CalculateInitialFragmentGeometry(
   LayoutUnit default_block_size = CalculateDefaultBlockSize(
       constraint_space, node, break_token, border_scrollbar_padding);
   absl::optional<LayoutUnit> inline_size;
-  if (!is_intrinsic) {
+  if (!is_intrinsic &&
+      (!InlineLengthUnresolvable(constraint_space, style.LogicalWidth()) ||
+       constraint_space.IsFixedInlineSize())) {
     inline_size =
         ComputeInlineSizeForFragment(constraint_space, node, border_padding);
 
