@@ -13,7 +13,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/app_list_test_view_delegate.h"
 #include "ash/app_list/model/app_list_test_model.h"
 #include "ash/app_list/model/search/search_box_model.h"
@@ -36,7 +35,6 @@
 #include "ash/app_list/views/search_result_container_view.h"
 #include "ash/app_list/views/search_result_list_view.h"
 #include "ash/app_list/views/search_result_page_view.h"
-#include "ash/app_list/views/search_result_suggestion_chip_view.h"
 #include "ash/app_list/views/search_result_tile_item_list_view.h"
 #include "ash/app_list/views/search_result_tile_item_view.h"
 #include "ash/app_list/views/search_result_view.h"
@@ -44,7 +42,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
-#include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "ash/public/cpp/test/test_app_list_color_provider.h"
@@ -52,14 +49,12 @@
 #include "ash/style/ash_color_provider.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/presentation_time_recorder.h"
@@ -73,8 +68,11 @@
 #include "ui/views/view_model.h"
 
 namespace ash {
-namespace test {
 namespace {
+
+using test::AppListTestModel;
+using test::AppListTestViewDelegate;
+using test::AppsGridViewTestApi;
 
 constexpr int kInitialItems = 34;
 
@@ -786,8 +784,8 @@ class AppListViewFocusTest : public views::ViewsTestBase,
     view_->SetState(state);
   }
 
-  void Show(bool is_side_shelf = false) {
-    view_->Show(AppListViewState::kPeeking, is_side_shelf);
+  void Show() {
+    view_->Show(AppListViewState::kPeeking, /*is_side_shelf=*/false);
   }
 
   SearchResultTileItemListView* GetSearchResultTileItemListView() {
@@ -840,7 +838,7 @@ class AppListViewFocusTest : public views::ViewsTestBase,
     }
 
     // Adding results will schedule Update().
-    RunPendingMessages();
+    base::RunLoop().RunUntilIdle();
   }
 
   // Add search results for test on embedded Assistant UI.
@@ -867,7 +865,7 @@ class AppListViewFocusTest : public views::ViewsTestBase,
     }
 
     // Adding results will schedule Update().
-    RunPendingMessages();
+    base::RunLoop().RunUntilIdle();
   }
 
   void ClearSearchResults() { GetSearchModel()->results()->DeleteAll(); }
@@ -881,7 +879,7 @@ class AppListViewFocusTest : public views::ViewsTestBase,
     result->SetTitle(ASCIIToUTF16(title));
     result->set_best_match(true);
     GetSearchModel()->results()->Add(std::move(result));
-    RunPendingMessages();
+    base::RunLoop().RunUntilIdle();
   }
 
   int GetOpenFirstSearchResultCount() {
@@ -3050,7 +3048,7 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
        RegularLandscapeScreenAtMinPreferredVerticalMargin) {
   const int window_height = GetExpectedScreenSizeForProductivityLauncher(
       /*row_count=*/4, /*tile_height=*/120, /*tile_margins=*/8,
-      /*large_height=*/false);
+      /*is_large_height=*/false);
   EXPECT_EQ(689, window_height);
   const gfx::Size window_size = gfx::Size(800, window_height);
   GetContext()->SetBounds(gfx::Rect(window_size));
@@ -3085,7 +3083,7 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
        RegularLandscapeScreenWithRemovedRows) {
   const int window_height = GetExpectedScreenSizeForProductivityLauncher(
                                 /*row_count=*/4, /*tile_height=*/120,
-                                /*tile_margins=*/8, /*large_height=*/false) -
+                                /*tile_margins=*/8, /*is_large_height=*/false) -
                             4;
   EXPECT_EQ(685, window_height);
   const gfx::Size window_size = gfx::Size(800, window_height);
@@ -3121,7 +3119,7 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
        RegularLandscapeScreenAtMaxPreferredVerticalMargin) {
   const int window_height = GetExpectedScreenSizeForProductivityLauncher(
       /*row_count=*/4, /*tile_height=*/120, /*tile_margins=*/96,
-      /*large_height=*/true);
+      /*is_large_height=*/true);
   EXPECT_EQ(1024, window_height);
   const gfx::Size window_size = gfx::Size(1100, window_height);
   GetContext()->SetBounds(gfx::Rect(window_size));
@@ -3156,7 +3154,7 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
        RegularLandscapeScreenWithAddedRows) {
   const int window_height = GetExpectedScreenSizeForProductivityLauncher(
                                 /*row_count=*/4, /*tile_height=*/120,
-                                /*tile_margins=*/96, /*large_height=*/true) +
+                                /*tile_margins=*/96, /*is_large_height=*/true) +
                             6;
   EXPECT_EQ(1030, window_height);
   const gfx::Size window_size = gfx::Size(1100, window_height);
@@ -3222,7 +3220,7 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
        RegularPortraitScreenAtMinPreferredVerticalMargin) {
   int window_height = GetExpectedScreenSizeForProductivityLauncher(
       /*row_count=*/5, /*tile_height=*/120, /*tile_margins=*/8,
-      /*large_height=*/true);
+      /*is_large_height=*/true);
   // window_height = 860;
   EXPECT_EQ(868, window_height);
   const gfx::Size window_size = gfx::Size(700, window_height);
@@ -3259,7 +3257,7 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
   const int window_height =
       GetExpectedScreenSizeForProductivityLauncher(
           /*row_count=*/5, /*tile_height=*/120, /*tile_margins=*/8,
-          /*large_height=*/true) -
+          /*is_large_height=*/true) -
       8;
   EXPECT_EQ(860, window_height);
   const gfx::Size window_size = gfx::Size(700, window_height);
@@ -3295,7 +3293,7 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
        RegularPortraitScreenAtMaxPreferredVerticalMargin) {
   const int window_height = GetExpectedScreenSizeForProductivityLauncher(
       /*row_count=*/5, /*tile_height=*/120, /*tile_margins=*/96,
-      /*large_height=*/true);
+      /*is_large_height=*/true);
   EXPECT_EQ(1270, window_height);
   const gfx::Size window_size = gfx::Size(1200, window_height);
   GetContext()->SetBounds(gfx::Rect(window_size));
@@ -3330,7 +3328,7 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
   const int window_height =
       GetExpectedScreenSizeForProductivityLauncher(
           /*row_count=*/5, /*tile_height=*/120, /*tile_margins=*/96,
-          /*large_height=*/true) +
+          /*is_large_height=*/true) +
       4;
   EXPECT_EQ(1274, window_height);
   const gfx::Size window_size = gfx::Size(1200, window_height);
@@ -3395,7 +3393,7 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
        DenseLandscapeScreenAtMinPreferredVerticalMargin) {
   const int window_height = GetExpectedScreenSizeForProductivityLauncher(
       /*row_count=*/4, /*tile_height=*/88, /*tile_margins=*/8,
-      /*large_height=*/false);
+      /*is_large_height=*/false);
   EXPECT_EQ(552, window_height);
   const gfx::Size window_size = gfx::Size(800, window_height);
   GetContext()->SetBounds(gfx::Rect(window_size));
@@ -4061,5 +4059,4 @@ TEST_F(AppListViewPeekingFocusTest, PageSwitchingNotRecordingMetric) {
 }
 
 }  // namespace
-}  // namespace test
 }  // namespace ash
