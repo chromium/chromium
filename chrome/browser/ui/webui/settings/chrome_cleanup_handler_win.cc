@@ -61,13 +61,14 @@ base::Value::List GetStringSetAsListStorage(
   return value;
 }
 
-base::Value::Dict GetScannerResultsAsDictionary(
+base::DictionaryValue GetScannerResultsAsDictionary(
     const safe_browsing::ChromeCleanerScannerResults& scanner_results,
     Profile* profile) {
-  base::Value::Dict value;
-  value.Set("files", GetFilesAsListStorage(scanner_results.files_to_delete()));
-  value.Set("registryKeys",
-            GetStringSetAsListStorage(scanner_results.registry_keys()));
+  base::DictionaryValue value;
+  value.GetDict().Set("files",
+                      GetFilesAsListStorage(scanner_results.files_to_delete()));
+  value.GetDict().Set("registryKeys", GetStringSetAsListStorage(
+                                          scanner_results.registry_keys()));
   return value;
 }
 

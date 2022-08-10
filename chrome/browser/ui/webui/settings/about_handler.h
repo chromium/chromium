@@ -10,7 +10,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/webui/help/version_updater.h"
@@ -25,6 +24,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace base {
+class DictionaryValue;
 class FilePath;
 class Clock;
 }  // namespace base
@@ -102,8 +102,9 @@ class AboutHandler : public settings::SettingsPageUIHandler,
 
   // Retrieves OS, ARC and firmware versions.
   void HandleGetVersionInfo(const base::Value::List& args);
-  void OnGetVersionInfoReady(std::string callback_id,
-                             base::Value::Dict version_info);
+  void OnGetVersionInfoReady(
+      std::string callback_id,
+      std::unique_ptr<base::DictionaryValue> version_info);
 
   // Retrieves the number of firmware updates available.
   void HandleGetFirmwareUpdateCount(const base::Value::List& args);

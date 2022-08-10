@@ -8,7 +8,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/values.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
@@ -42,7 +41,7 @@ class OnStartupHandler : public SettingsPageUIHandler,
                            HandleValidateStartupPage_Invalid);
 
   // Info for extension controlling the NTP or empty value.
-  base::Value::Dict GetNtpExtension();
+  base::Value GetNtpExtension();
 
   // Handler for the "getNtpExtension" message. No arguments.
   void HandleGetNtpExtension(const base::Value::List& args);

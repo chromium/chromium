@@ -216,7 +216,8 @@ void ImportDataHandler::SendBrowserProfileData(const std::string& callback_id) {
     browser_profiles.Append(std::move(browser_profile));
   }
 
-  ResolveJavascriptCallback(base::Value(callback_id), browser_profiles);
+  ResolveJavascriptCallback(base::Value(callback_id),
+                            base::Value(std::move(browser_profiles)));
 }
 
 void ImportDataHandler::ImportStarted() {
