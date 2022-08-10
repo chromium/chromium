@@ -466,7 +466,10 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromTextureQuad(
     // |size_in_pixels| as 'set_resource_size_in_pixels' is not called as these
     // quads are not intended to become overlays.
     if (!quad->resource_size_in_pixels().IsEmpty())
-      candidate.priority_hint = gfx::OverlayPriorityHint::kRegular;
+      candidate.priority_hint =
+          candidate.requires_overlay
+              ? gfx::OverlayPriorityHint::kHardwareProtection
+              : gfx::OverlayPriorityHint::kRegular;
 
 #if BUILDFLAG(IS_ANDROID)
     if (quad->is_stream_video) {
