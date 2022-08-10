@@ -249,7 +249,7 @@ class DriverContext:
     self.WriteScenarioSummary(scenario_driver)
 
     dtraces_output_dir = os.path.join(self._output_dir, scenario_driver.name,
-                                      "dtraces_stacks")
+                                      f"dtraces_{profile_mode}")
     os.makedirs(dtraces_output_dir, exist_ok=True)
     scenario_driver.Launch()
     browser_process = scenario_driver.browser.browser_process

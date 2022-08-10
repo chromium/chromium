@@ -15,7 +15,7 @@
 // stated in the probe comments, this script emits the stacks of the code that
 // ran because of the interrupt wakeup, not the code that triggered the wakeup.
 // The iwakeup probe fires in the Darwin kernel
-// (see https://github.com/apple/darwin-xnu/blob/2ff845c2e033bd0ff64b5b6aa6063a1f8f65aa32/osfmk/kern/sched_prim.c#L709).
+// (see github.com/apple/darwin-xnu/blob/2ff845c2e033bd0ff64b5b6aa6063a1f8f65aa32/osfmk/kern/sched_prim.c#L709).
 // The first user space thread that will come on-cpu as a result of the wakeup
 // will be in the state that made the thread go to sleep in the first place.
 //
