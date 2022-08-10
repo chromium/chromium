@@ -113,12 +113,15 @@
   <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
   <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
 
   <link rel='stylesheet' href='style.css'>
   <script src='filter.js'></script>
   <script src='filter-ui.js'></script>
   <script src='frame.js'></script>
   <script src='connection.js'></script>
+  <script src='thread.js'></script>
+  <script src='thread-ui.js'></script>
 </head>
 
 <div id='connectionPanel'>
@@ -193,8 +196,8 @@
 
 <div class='panelSection'>
   <div class='sectionTitle'>
-    <i class="material-icons-outlined">
-      water
+    <i class="material-symbols-outlined">
+      airwave
     </i>
     Threads
   </div>
@@ -271,17 +274,6 @@
 </div>
 
 <div id='importtracing'>
-  <div class='sectionTitle'>Tracing (Prototype)...</div>
-  <div class='section'>
-    <button id='importtracebutton' class="mdc-button mdc-button--outline"
-      title="Import tracing data (json) into visual debugger app.">
-      <div class="mdc-button__ripple"></div>
-      <span class="mdc-button__label">Import Trace</span>
-    </button>
-  </div>
-</div>
-
-<div style='margin-right: 10px' id='importtracing'>
   <div class='sectionTitle'>Tracing (Prototype)...</div>
   <div class='section'>
     <button id='importtracebutton' class="mdc-button mdc-button--outline"

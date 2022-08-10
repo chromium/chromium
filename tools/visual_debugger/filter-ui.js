@@ -4,6 +4,7 @@
 
 const MDCMenu = mdc.menu.MDCMenu;
 const MDCMenuFoundation = mdc.menu.MDCMenuFoundation;
+const maxZIndex = 999;
 
 class FilterUI extends HTMLElement {
   constructor() {
@@ -135,6 +136,7 @@ function createFilterChip(filter) {
   chip.setAttribute("role", "row");
   chip.style.margin = '5px';
   chip.style.borderRadius = '0px';
+  chip.style.zIndex = maxZIndex;
   if (filter.shouldDraw) {
     chip.style.border = filter.drawColor ?
       `2px solid ${filter.drawColor}` : `1px solid black`;
@@ -202,7 +204,7 @@ function createFilterChip(filter) {
 
   chip.querySelector('#filtermenu').addEventListener('click', () => {
     const menu = new MDCMenu(chip.querySelector('#filterchipmenu'));
-    menu.setAnchorMargin({ top: 25 })
+    menu.setAnchorMargin({ top: 25 });
     menu.open = true;
   });
 
@@ -231,6 +233,7 @@ function showCreateFilterPopup(anchor) {
   filterUi.style.position = 'absolute';
   filterUi.style.top = (anchor.offsetTop + anchor.offsetHeight) + 'px';
   filterUi.style.left = (anchor.offsetLeft + 20) + 'px';
+  filterUi.style.zIndex = maxZIndex;
   
   showModal(filterUi);
 }
@@ -323,9 +326,7 @@ function showEditFilterPopup(item) {
   filterUi.style.position = 'absolute';
   filterUi.style.top = (chip.offsetTop + chip.offsetHeight) + 'px';
   filterUi.style.left = (chip.offsetLeft + 20) + 'px';
-  // Copyright 2022 The Chromium Authors. All rights reserved.
-  // Use of this source code is governed by a BSD-style license that can be
-  // found in the LICENSE file.
+  filterUi.style.zIndex = maxZIndex;
 
   showModal(filterUi);
 

@@ -60,16 +60,20 @@ class DrawFrame {
     this.drawCalls_ = json.drawcalls.map(c => new DrawCall(c));
     this.buffer_map = json.buff_map;
 
-    this.thread_mapping_ = {}
+    this.threadMapping_ = {}
 
     json.threads.forEach(t => {
       // If new thread has not been registered yet, then register it.
       if (!(Thread.isThreadRegistered(t.thread_name))) {
         new Thread(t);
       };
-      // Map thread id's to thread name and enabled state.
-      this.thread_mapping_[t.thread_id] = {threadName: t.thread_name,
-                                           threadEnabled: true}
+      // Map thread id's to all the thread information.
+      // Values are set by default when frame first comes in.
+      this.threadMapping_[t.thread_id] = {threadName: t.thread_name,
+                                           threadEnabled: true,
+                                           overrideFilters: false,
+                                           threadColor: "#000000",
+                                           threadAlpha: "10"};
     });
 
     this.submissionFreezeIndex_ = -1;
@@ -170,24 +174,31 @@ class DrawFrame {
   }
 
   draw(canvas, context, scale, orientationDeg, transformMatrix) {
-    // Look at global state of which threads have been enabled/disabled and
-    // map the states to the current frame's threads.
-    for (const threadId of Object.keys(this.thread_mapping_)) {
-      const mappedThread = this.thread_mapping_[threadId];
+    // Look at global state of all threads and copy those states
+    // to the current frame's threadID-to-state mapping.
+    for (const threadId of Object.keys(this.threadMapping_)) {
+      const mappedThread = this.threadMapping_[threadId];
       mappedThread.threadEnabled =
-              Thread.registered_threads[mappedThread.threadName].enabled_;
+              Thread.getThread(mappedThread.threadName).enabled_;
+      mappedThread.threadColor =
+              Thread.getThread(mappedThread.threadName).drawColor_;
+      mappedThread.threadAlpha =
+              Thread.getThread(mappedThread.threadName).fillAlpha_;
+      mappedThread.overrideFilters =
+              Thread.getThread(mappedThread.threadName).overrideFilters_;
     }
 
     for (const call of this.drawCalls_) {
       if (call.drawIndex_ > this.submissionFreezeIndex()) break;
 
       // If thread not enabled, then skip draw call from this thread.
-      if (!this.thread_mapping_[call.threadId_].threadEnabled) {
+      if (!this.threadMapping_[call.threadId_].threadEnabled) {
         continue;
       }
 
       call.draw(canvas, context, scale, orientationDeg,
-        transformMatrix, DrawFrame.buffer_map);
+        transformMatrix, DrawFrame.buffer_map,
+        this.threadMapping_[call.threadId_]);
     }
 
     context.fillStyle = 'black';
@@ -202,7 +213,7 @@ class DrawFrame {
 
     for (const text of this.drawTexts_) {
       // If thread not enabled, then skip text calls from this thread.
-      if (!this.thread_mapping_[text.thread_id].threadEnabled) {
+      if (!this.threadMapping_[text.thread_id].threadEnabled) {
         continue;
       }
 
@@ -211,15 +222,24 @@ class DrawFrame {
 
       if (text.drawindex > this.submissionFreezeIndex()) break;
 
-      let filter = this.getFilter(text.source_index);
-      if (!filter) continue;
-
       const newTextPos = this.rotateFlipText(textPosX, textPosY,
-                                              orientationDeg, scale,
-                                              transformMatrix);
+        orientationDeg, scale,
+        transformMatrix);
 
-      var color = (filter && filter.drawColor) ?
-        filter.drawColor : text.option.color;
+      let filter;
+      var color;
+      // If thread is overriding, take thread color.
+      if (this.threadMapping_[text.thread_id].overrideFilters) {
+        color = this.threadMapping_[text.thread_id].threadColor;
+      }
+      // Otherwise, take filter's color.
+      else {
+        filter = this.getFilter(text.source_index);
+        if (!filter) continue;
+
+        color = (filter && filter.drawColor) ?
+          filter.drawColor : text.option.color;
+      }
       context.fillStyle = color;
       // TODO: This should also create some DrawText object or something.
       context.fillText(text.text, newTextPos[0], newTextPos[1]);
@@ -280,11 +300,21 @@ class DrawFrame {
     for (const log of this.logs_) {
       if (log.drawindex > this.submissionFreezeIndex()) break;
 
-      let filter = this.getFilter(log.source_index);
-      if (!filter) continue;
+      var color;
+      let filter;
+      // If thread is overriding, take thread color.
+      if (this.threadMapping_[log.thread_id].overrideFilters) {
+        color = this.threadMapping_[log.thread_id].threadColor;
+      }
+      // Otherwise, take filter's color.
+      else {
+        filter = this.getFilter(log.source_index);
+        if (!filter) continue;
 
-      var color = (filter && filter.drawColor) ?
-        filter.drawColor : log.option.color;
+        color = (filter && filter.drawColor) ?
+          filter.drawColor : log.option.color;
+      }
+
       var container = document.createElement("span");
       var new_node = document.createTextNode(log.value);
       container.style.color = color;
