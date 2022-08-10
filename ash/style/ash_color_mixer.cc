@@ -138,7 +138,8 @@ void AddContentColors(ui::ColorMixer& mixer,
   mixer[kColorAshTextColorPositive] = {cros_tokens::kColorPositive};
   mixer[kColorAshTextColorURL] = {cros_tokens::kColorProminent};
   mixer[kColorAshIconColorPrimary] = {kColorAshTextColorPrimary};
-  mixer[kColorAshIconColorSecondary] = {kColorAshTextColorSecondary};
+  // TODO(skau): Figure out if this should be kColorSecondary instead.
+  mixer[kColorAshIconColorSecondary] = {cros_tokens::kColorDisabledDark};
   mixer[kColorAshIconColorAlert] = {kColorAshTextColorAlert};
   mixer[kColorAshIconColorWarning] = {kColorAshTextColorWarning};
   mixer[kColorAshIconColorPositive] = {kColorAshTextColorPositive};
@@ -151,6 +152,7 @@ void AddContentColors(ui::ColorMixer& mixer,
       cros_tokens::kColorPrimaryInverted};
   mixer[kColorAshInvertedTextColorPrimary] = {kColorAshButtonLabelColorPrimary};
   mixer[kColorAshInvertedButtonLabelColor] = {kColorAshButtonLabelColorPrimary};
+  mixer[kColorAshTextColorSuggestion] = {cros_tokens::kColorDisabled};
   mixer[kColorAshButtonLabelColorBlue] = {kColorAshTextColorURL};
   mixer[kColorAshButtonIconColor] = {kColorAshTextColorPrimary};
   mixer[kColorAshButtonIconColorPrimary] = {kColorAshButtonLabelColorPrimary};

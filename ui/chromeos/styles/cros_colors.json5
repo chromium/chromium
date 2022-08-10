@@ -39,6 +39,7 @@
     color_disabled: {
       light: "$google_grey_600",
       dark: "$google_grey_500",
+      generate_per_mode: true,
     },
     color_prominent: {
       light: "$google_blue_600",

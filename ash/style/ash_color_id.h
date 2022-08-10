@@ -54,6 +54,7 @@ namespace ash {
   E_CPONLY(kColorAshButtonLabelColor) \
   /* Inverted `kColorAshButtonLabelColor` on current color mode. */ \
   E_CPONLY(kColorAshInvertedButtonLabelColor) \
+  E_CPONLY(kColorAshTextColorSuggestion) \
   E_CPONLY(kColorAshButtonLabelColorPrimary) \
   /* Color for blue button labels, e.g, 'Retry' button of the system toast. */ \
   E_CPONLY(kColorAshButtonLabelColorBlue) \
