@@ -33,6 +33,7 @@ using arc::mojom::ArcDoNotDisturbStatusPtr;
 using arc::mojom::ArcNotificationData;
 using arc::mojom::ArcNotificationDataPtr;
 using arc::mojom::ArcNotificationEvent;
+using arc::mojom::ArcNotificationExpandState;
 using arc::mojom::ArcNotificationPriority;
 using arc::mojom::MessageCenterVisibility;
 using arc::mojom::NotificationConfiguration;
@@ -227,6 +228,10 @@ void ArcNotificationManager::OnNotificationPosted(ArcNotificationDataPtr data) {
     metrics_utils::LogArcNotificationActionEnabled(data->is_action_enabled);
     metrics_utils::LogArcNotificationInlineReplyEnabled(
         data->is_inline_reply_enabled);
+    metrics_utils::LogArcNotificationExpandState(
+        data->expand_state == ArcNotificationExpandState::FIXED_SIZE
+            ? metrics_utils::ArcNotificationExpandState::kFixedSize
+            : metrics_utils::ArcNotificationExpandState::kExpandable);
   }
 
   std::string app_id =

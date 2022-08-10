@@ -4366,6 +4366,13 @@ Unknown properties are collapsed to zero. -->
   <int value="39" label="Disconnect host VPN"/>
 </enum>
 
+<enum name="ArcNotificationExpandState">
+  <int value="0" label="Fixed size"/>
+  <int value="1" label="Expandable"/>
+  <int value="2" label="Expanded"/>
+  <int value="3" label="Collapsed"/>
+</enum>
+
 <enum name="ArcNotificationStyle">
   <int value="0" label="No Style"/>
   <int value="1" label="Big Picture Style"/>

@@ -1392,6 +1392,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Arc.Notifications.ExpandState"
+    enum="ArcNotificationExpandState" expires_after="2022-10-05">
+  <owner>yaoqq@google.com</owner>
+  <owner>arc-framework@google.com</owner>
+  <summary>
+    Records the expand state of an Arc notification, the status of
+    fixed_size/expandable is logged when the notification is created, while the
+    status of expanded/collapsed is logged when the user expands/collapses it.
+    Need to note that if it's a grouped notification we are tracking the state
+    of the summary(top level) notification of the group, since we can't easily
+    acquire the state for the child notifications of the group.
+  </summary>
+</histogram>
+
 <histogram name="Arc.Notifications.InlineReplyEnabled" enum="BooleanEnabled"
     expires_after="2022-10-07">
   <owner>yaoqq@google.com</owner>

@@ -11,6 +11,7 @@
 #include "ash/public/cpp/external_arc/message_center/arc_notification_content_view.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_delegate.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_view.h"
+#include "ash/public/cpp/external_arc/message_center/metrics_utils.h"
 #include "ash/public/cpp/message_center/arc_notification_constants.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
@@ -131,9 +132,13 @@ void ArcNotificationItemImpl::OnUpdatedFromAndroid(
   if (expand_state_ != ArcNotificationExpandState::FIXED_SIZE &&
       data->expand_state != ArcNotificationExpandState::FIXED_SIZE &&
       expand_state_ != data->expand_state) {
-    // Assuming changing the expand status on Android-side is manually tiggered
+    // Assuming changing the expand status on Android-side is manually triggered
     // by user.
     manually_expanded_or_collapsed_ = true;
+    metrics_utils::LogArcNotificationExpandState(
+        data->expand_state == ArcNotificationExpandState::EXPANDED
+            ? metrics_utils::ArcNotificationExpandState::kExpanded
+            : metrics_utils::ArcNotificationExpandState::kCollapsed);
   }
 
   type_ = data->type;
