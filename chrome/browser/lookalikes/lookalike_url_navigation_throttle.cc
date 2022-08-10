@@ -414,17 +414,11 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::PerformChecks(
   LookalikeUrlMatchType match_type =
       first_is_lookalike ? first_match_type : last_match_type;
 
-  // TODO(crbug.com/1344981): Once the Combo Squatting heuristic is fully
-  // launched, this console message should be removed.
-  if (match_type == LookalikeUrlMatchType::kComboSquatting ||
-      match_type == LookalikeUrlMatchType::kComboSquattingSiteEngagement) {
-    GURL lookalike_url = first_is_lookalike ? first_url : last_url;
-
-    navigation_handle()->GetRenderFrameHost()->AddMessageToConsole(
-        blink::mojom::ConsoleMessageLevel::kWarning,
-        lookalikes::GetConsoleMessage(lookalike_url,
-                                      /*is_new_heuristic=*/true));
-  }
+  // IMPORTANT: Every time that a new lookalike heuristic is added, before
+  // adding a warning UI, a console message should be printed here. To do that,
+  // `lookalikes::GetConsoleMessage(lookalike_url, is_new_heuristic)` should be
+  // called with `is_new_heuristic=true`. The `lookalike_url` could be first_url
+  // or last_url depending on the value of `first_is_lookalike`.
 
   RecordUMAFromMatchType(match_type);
   // Interstitial normally records UKM, but still record when it's not shown.
