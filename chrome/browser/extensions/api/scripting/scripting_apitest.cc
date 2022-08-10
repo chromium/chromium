@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/build_config.h"
 #include "chrome/browser/extensions/api/scripting/scripting_api.h"
 
 #include "base/test/bind.h"
@@ -518,7 +519,13 @@ class ScriptingAPIPrerenderingTest : public ScriptingAPITest {
   content::test::ScopedPrerenderFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(ScriptingAPIPrerenderingTest, Basic) {
+// TODO(crbug.com/1351648): disabled on Mac due to flakiness.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_Basic DISABLED_Basic
+#else  // BUILDFLAG(IS_MAC)
+#define MAYBE_Basic Basic
+#endif  // BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(ScriptingAPIPrerenderingTest, MAYBE_Basic) {
   ASSERT_TRUE(RunExtensionTest("scripting/prerendering")) << message_;
 }
 
