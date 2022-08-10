@@ -451,8 +451,7 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient {
 
   const TileManagerSettings tile_manager_settings_;
   bool use_gpu_rasterization_;
-  raw_ptr<RasterQueryQueue, DanglingUntriaged> pending_raster_queries_ =
-      nullptr;
+  raw_ptr<RasterQueryQueue> pending_raster_queries_ = nullptr;
 
   std::unordered_map<Tile::Id, Tile*> tiles_;
 

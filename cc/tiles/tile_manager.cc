@@ -461,6 +461,7 @@ void TileManager::FinishTasksAndCleanUp() {
 
   tile_task_manager_ = nullptr;
   resource_pool_ = nullptr;
+  pending_raster_queries_ = nullptr;
   more_tiles_need_prepare_check_notifier_.Cancel();
   signals_check_notifier_.Cancel();
   task_set_finished_weak_ptr_factory_.InvalidateWeakPtrs();
