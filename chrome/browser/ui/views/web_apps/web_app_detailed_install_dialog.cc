@@ -69,12 +69,6 @@ class ImageCarouselLayoutManager : public views::LayoutManagerBase {
   ImageCarouselLayoutManager() = default;
   ~ImageCarouselLayoutManager() override = default;
 
-  int GetActualFullWidth() const {
-    views::View* const inner_container = host_view()->children().front();
-
-    return inner_container->GetPreferredSize().width();
-  }
-
  protected:
   // LayoutManagerBase:
   views::ProposedLayout CalculateProposedLayout(
