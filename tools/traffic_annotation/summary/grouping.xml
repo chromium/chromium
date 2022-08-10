@@ -299,6 +299,7 @@ after discussions on the right group.
   <group name="Child-protection and Safe Browsing Features" hidden="true">
     <sender name="Safe Browsing">
       <annotation id="client_download_request"/>
+      <annotation id="kids_chrome_management_list_family_members"/>
       <annotation id="password_protection_request"/>
       <annotation id="permission_predictions"/>
       <annotation id="safe_browsing_certificate_error_reporting"/>
