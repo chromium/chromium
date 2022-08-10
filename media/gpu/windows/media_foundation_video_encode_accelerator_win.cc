@@ -66,6 +66,8 @@ const size_t kMaxFrameRateNumerator = 30;
 const size_t kMaxFrameRateDenominator = 1;
 const size_t kMaxResolutionWidth = 1920;
 const size_t kMaxResolutionHeight = 1088;
+const size_t kMinResolutionWidth = 32;
+const size_t kMinResolutionHeight = 32;
 const size_t kNumInputBuffers = 3;
 // Media Foundation uses 100 nanosecond units for time, see
 // https://msdn.microsoft.com/en-us/library/windows/desktop/ms697282(v=vs.85).aspx.
@@ -388,6 +390,7 @@ MediaFoundationVideoEncodeAccelerator::GetSupportedProfilesForCodec(
   profile.max_framerate_denominator = kMaxFrameRateDenominator;
   profile.rate_control_modes = kSupportedProfileModes;
   profile.max_resolution = gfx::Size(kMaxResolutionWidth, kMaxResolutionHeight);
+  profile.min_resolution = gfx::Size(kMinResolutionWidth, kMinResolutionHeight);
   if (svc_supported) {
     profile.scalability_modes.push_back(SVCScalabilityMode::kL1T2);
     profile.scalability_modes.push_back(SVCScalabilityMode::kL1T3);

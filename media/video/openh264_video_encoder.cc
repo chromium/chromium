@@ -133,6 +133,12 @@ void OpenH264VideoEncoder::Initialize(VideoCodecProfile profile,
     return;
   }
 
+  if (options.frame_size.height() < 16 || options.frame_size.width() < 16) {
+    std::move(done_cb).Run(
+        EncoderStatus(EncoderStatus::Codes::kEncoderInitializationError,
+                      "Unsupported frame size which is less than 16"));
+    return;
+  }
   SetUpOpenH264Params(options, &params);
 
   if (int err = codec->InitializeExt(&params)) {
