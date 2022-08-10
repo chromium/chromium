@@ -228,17 +228,9 @@ int BuildAndEvaluateSecTrustRef(CFArrayRef cert_array,
 #endif
   }
 
-  ScopedCFTypeRef<CFMutableArrayRef> tmp_verified_chain(
-      CFArrayCreateMutable(kCFAllocatorDefault, 0, &kCFTypeArrayCallBacks));
-  const CFIndex chain_length = SecTrustGetCertificateCount(tmp_trust);
-  for (CFIndex i = 0; i < chain_length; ++i) {
-    SecCertificateRef chain_cert = SecTrustGetCertificateAtIndex(tmp_trust, i);
-    CFArrayAppendValue(tmp_verified_chain, chain_cert);
-  }
-
   trust_ref->swap(scoped_tmp_trust);
   trust_error->swap(tmp_error);
-  verified_chain->reset(tmp_verified_chain.release());
+  *verified_chain = x509_util::CertificateChainFromSecTrust(tmp_trust);
   *is_trusted = tmp_is_trusted;
   return OK;
 }

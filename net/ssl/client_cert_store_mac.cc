@@ -39,11 +39,6 @@ using base::ScopedCFTypeRef;
 
 namespace net {
 
-// CSSM functions are deprecated as of OSX 10.7, but have no replacement.
-// https://bugs.chromium.org/p/chromium/issues/detail?id=590914#c1
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-
 namespace {
 
 using ClientCertIdentityMacList =
@@ -53,9 +48,8 @@ using ClientCertIdentityMacList =
 // including the intermediate and finally root certificates (if any).
 // This function calls SecTrust but doesn't actually pay attention to the trust
 // result: it shouldn't be used to determine trust, just to traverse the chain.
-// Caller is responsible for releasing the value stored into *out_cert_chain.
 OSStatus CopyCertChain(SecCertificateRef cert_handle,
-                       CFArrayRef* out_cert_chain) {
+                       base::ScopedCFTypeRef<CFArrayRef>* out_cert_chain) {
   DCHECK(cert_handle);
   DCHECK(out_cert_chain);
 
@@ -82,16 +76,12 @@ OSStatus CopyCertChain(SecCertificateRef cert_handle,
 
   // Evaluate trust, which creates the cert chain.
   SecTrustResultType status;
-  CSSM_TP_APPLE_EVIDENCE_INFO* status_chain;
   {
     base::AutoLock lock(crypto::GetMacSecurityServicesLock());
     result = SecTrustEvaluate(trust, &status);
-  }
-  if (result)
-    return result;
-  {
-    base::AutoLock lock(crypto::GetMacSecurityServicesLock());
-    result = SecTrustGetResult(trust, &status, out_cert_chain, &status_chain);
+    if (result)
+      return result;
+    *out_cert_chain = x509_util::CertificateChainFromSecTrust(trust);
   }
   return result;
 }
@@ -109,7 +99,7 @@ bool IsIssuedByInKeychain(const std::vector<std::string>& valid_issuers,
                                        os_cert.InitializeInto());
   if (err != noErr)
     return false;
-  CFArrayRef cert_chain = nullptr;
+  base::ScopedCFTypeRef<CFArrayRef> cert_chain;
   OSStatus result = CopyCertChain(os_cert.get(), &cert_chain);
   if (result) {
     OSSTATUS_LOG(ERROR, result) << "CopyCertChain error";
@@ -134,7 +124,6 @@ bool IsIssuedByInKeychain(const std::vector<std::string>& valid_issuers,
   scoped_refptr<X509Certificate> new_cert(
       x509_util::CreateX509CertificateFromSecCertificate(os_cert, intermediates,
                                                          options));
-  CFRelease(cert_chain);  // Also frees |intermediates|.
 
   if (!new_cert || !new_cert->IsIssuedByEncoded(valid_issuers))
     return false;
@@ -332,6 +321,12 @@ ClientCertIdentityList GetClientCertsOnBackgroundThread(
   std::unique_ptr<ClientCertIdentityMac> preferred_identity;
   ClientCertIdentityMacList regular_identities;
 
+// TODO(https://crbug.com/1348251): Is it still true, as claimed below, that
+// SecIdentitySearchCopyNext sometimes returns identities missed by
+// SecItemCopyMatching? Add some histograms to test this and, if none are
+// missing, remove this code.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
   SecIdentitySearchRef search = nullptr;
   OSStatus err;
   {
@@ -357,6 +352,7 @@ ClientCertIdentityList GetClientCertsOnBackgroundThread(
     OSSTATUS_LOG(ERROR, err) << "SecIdentitySearch error";
     return ClientCertIdentityList();
   }
+#pragma clang diagnostic pop  // "-Wdeprecated-declarations"
 
   // macOS provides two ways to search for identities. SecIdentitySearchCreate()
   // is deprecated, as it relies on CSSM_KEYUSE_SIGN (part of the deprecated
@@ -433,7 +429,5 @@ bool ClientCertStoreMac::SelectClientCertsGivenPreferredForTesting(
                      selected_identities);
   return true;
 }
-
-#pragma clang diagnostic pop  // "-Wdeprecated-declarations"
 
 }  // namespace net

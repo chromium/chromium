@@ -137,5 +137,21 @@ SHA256HashValue CalculateFingerprint256(SecCertificateRef cert) {
   return sha256;
 }
 
+base::ScopedCFTypeRef<CFArrayRef> CertificateChainFromSecTrust(
+    SecTrustRef trust) {
+  if (__builtin_available(macOS 12.0, iOS 15.0, *)) {
+    return base::ScopedCFTypeRef<CFArrayRef>(
+        SecTrustCopyCertificateChain(trust));
+  }
+
+  base::ScopedCFTypeRef<CFMutableArrayRef> chain(
+      CFArrayCreateMutable(kCFAllocatorDefault, 0, &kCFTypeArrayCallBacks));
+  const CFIndex chain_length = SecTrustGetCertificateCount(trust);
+  for (CFIndex i = 0; i < chain_length; ++i) {
+    CFArrayAppendValue(chain, SecTrustGetCertificateAtIndex(trust, i));
+  }
+  return base::ScopedCFTypeRef<CFArrayRef>(chain.release());
+}
+
 }  // namespace x509_util
 }  // namespace net

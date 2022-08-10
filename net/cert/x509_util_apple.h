@@ -69,6 +69,10 @@ CreateX509CertificateFromSecCertificate(
 // (all zero) fingerprint on failure.
 NET_EXPORT SHA256HashValue CalculateFingerprint256(SecCertificateRef cert);
 
+// Returns a new CFArrayRef containing the certificate chain built in |trust|.
+base::ScopedCFTypeRef<CFArrayRef> CertificateChainFromSecTrust(
+    SecTrustRef trust);
+
 }  // namespace x509_util
 }  // namespace net
 
