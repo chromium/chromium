@@ -73,8 +73,10 @@ void MediaStreamVideoCapturerSource::KeepDeviceAliveForTransfer(
     base::UnguessableToken session_id,
     base::UnguessableToken transfer_id,
     KeepDeviceAliveForTransferCallback keep_alive_cb) {
-  if (!frame_)
+  if (!frame_) {
     std::move(keep_alive_cb).Run(/*device_found=*/false);
+    return;
+  }
 
   GetMediaStreamDispatcherHost()->KeepDeviceAliveForTransfer(
       session_id, transfer_id, std::move(keep_alive_cb));
