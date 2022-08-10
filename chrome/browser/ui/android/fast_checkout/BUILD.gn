@@ -26,3 +26,23 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/chrome/browser/ui/fast_checkout/data/FastCheckoutCreditCard.java",
   ]
 }
+
+robolectric_library("junit") {
+  testonly = true
+
+  sources = [ "junit/java/src/org/chromium/chrome/browser/ui/fast_checkout/FastCheckoutControllerTest.java" ]
+  deps = [
+    ":java",
+    "//base:base_junit_test_support",
+    "//chrome/browser/ui/android/fast_checkout/internal:java",
+    "//components/autofill/android:main_autofill_java",
+    "//components/autofill_assistant/android:public_java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/hamcrest:hamcrest_library_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java_test_support",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+}
