@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/build_config.h"
 #include "chrome/browser/ash/app_restore/full_restore_app_launch_handler.h"
 
 #include <cstdint>
@@ -372,8 +373,14 @@ class FullRestoreAppLaunchHandlerBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(crbug.com/1351532): disabled due to flakiness.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_NoBrowserOnLaunch DISABLED_NoBrowserOnLaunch
+#else
+#define MAYBE_NoBrowserOnLaunch NoBrowserOnLaunch
+#endif
 IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
-                       NoBrowserOnLaunch) {
+                       MAYBE_NoBrowserOnLaunch) {
   EXPECT_TRUE(BrowserList::GetInstance()->empty());
 }
 
