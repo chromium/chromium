@@ -4346,11 +4346,12 @@ void RenderFrameHostImpl::DidFailLoadWithError(const GURL& url,
   TRACE_EVENT("navigation", "RenderFrameHostImpl::DidFailLoadWithError",
               ChromeTrackEvent::kRenderFrameHost, *this, "error", error_code);
 
-  // Cancel prerendering if DidFailLoadWithError is called during prerendering.
-  // Don't dispatch the DidFailLoad event in such a case as the embedders are
-  // unaware of prerender page yet and shouldn't show any user-visible changes
-  // from an inactive RenderFrameHost.
-  if (CancelPrerendering(PrerenderHost::FinalStatus::kDidFailLoad)) {
+  // Cancel prerendering if DidFailLoadWithError is called on the outermost main
+  // document during prerendering. Don't dispatch the DidFailLoad event in such
+  // a case as the embedders are unaware of prerender page yet and shouldn't
+  // show any user-visible changes from an inactive RenderFrameHost.
+  if (!GetParentOrOuterDocument() &&
+      CancelPrerendering(PrerenderHost::FinalStatus::kDidFailLoad)) {
     return;
   }
 

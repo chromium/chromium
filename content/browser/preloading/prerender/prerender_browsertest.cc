@@ -3882,7 +3882,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, OpenURLInPrerenderingFrame) {
 }
 
 // Ensure that WebContentsObserver::DidFailLoad is not invoked and cancels
-// prerendering when invoked inside prerender frame tree.
+// prerendering when invoked on the prerendering main frame.
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DidFailLoadCancelsPrerendering) {
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl = GetUrl("/page_with_iframe.html");
@@ -3919,6 +3919,72 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DidFailLoadCancelsPrerendering) {
   navigation_observer.WaitForNavigationFinished();
   EXPECT_FALSE(prerender_observer.was_activated());
 
+  ExpectFinalStatusForSpeculationRule(PrerenderHost::FinalStatus::kDidFailLoad);
+}
+
+class DidFailLoadWebContentsObserver : public WebContentsObserver {
+ public:
+  explicit DidFailLoadWebContentsObserver(WebContents* web_contents)
+      : WebContentsObserver(web_contents) {}
+  bool WasDidFailLoadCalled() { return was_did_fail_load_called_; }
+  int GetErrorCode() const { return error_code_; }
+  const GURL& GetUrl() const { return url_; }
+
+ private:
+  void DidFailLoad(RenderFrameHost* rfh,
+                   const GURL& url,
+                   int error_code) override {
+    was_did_fail_load_called_ = true;
+    url_ = url;
+    error_code_ = error_code;
+
+    EXPECT_FALSE(rfh->IsErrorDocument());
+    EXPECT_TRUE(rfh->IsInLifecycleState(
+        RenderFrameHost::LifecycleState::kPrerendering));
+  }
+
+  bool was_did_fail_load_called_ = false;
+  int error_code_ = net::OK;
+  GURL url_;
+};
+
+// Ensure that RenderFrameHost::DidFailLoad on subframes don't cancel
+// prerendering. This happens when JavaScript calls `window.stop()` in a
+// frame, for instance.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       DidFailLoadSubframesDoesNotCancelPrerendering) {
+  DidFailLoadWebContentsObserver observer(web_contents());
+
+  TestHostPrerenderingState(GetUrl("/page_with_stop_iframe.html"));
+
+  EXPECT_TRUE(observer.WasDidFailLoadCalled());
+  EXPECT_EQ(net::ERR_ABORTED, observer.GetErrorCode());
+  EXPECT_EQ(GetUrl("/stop.html"), observer.GetUrl());
+}
+
+// Ensure that RenderFrameHost::DidFailLoad on the main frame cancels
+// prerendering. This happens when JavaScript calls `window.stop()` in the
+// main frame, for instance.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       DidFailLoadMainFrameCancelsPrerendering) {
+  DidFailLoadWebContentsObserver observer(web_contents());
+
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kPrerenderingUrl = GetUrl("/stop.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Start a prerender and wait until it is canceled.
+  test::PrerenderHostObserver host_observer(*web_contents_impl(),
+                                            kPrerenderingUrl);
+  AddPrerenderAsync(kPrerenderingUrl);
+  host_observer.WaitForDestroyed();
+
+  // DidFailLoad callback should not be called.
+  EXPECT_FALSE(observer.WasDidFailLoadCalled());
+
+  // Prerendering should be canceled for kDidFailLoad.
   ExpectFinalStatusForSpeculationRule(PrerenderHost::FinalStatus::kDidFailLoad);
 }
 
