@@ -180,6 +180,8 @@ static_library("update_client") {
   if (enable_puffin_patches) {
     include_dirs = [ "//third_party/puffin/src/include" ]
     sources += [
+      "puffin_component_unpacker.cc",
+      "puffin_component_unpacker.h",
       "puffin_patcher.cc",
       "puffin_patcher.h",
     ]
@@ -299,7 +301,10 @@ source_set("unit_tests") {
   # TODO(crbug.com/1349060) once Puffin patches are fully implemented,
   # we should remove the enable_puffin_patches flag.
   if (enable_puffin_patches) {
-    sources += [ "puffin_patcher_unittest.cc" ]
+    sources += [
+      "puffin_component_unpacker_unittest.cc",
+      "puffin_patcher_unittest.cc",
+    ]
     deps += [ "//third_party/puffin:libpuffpatch" ]
     data_deps = [ "//components/test/data/update_client/puffin_patch_test:puffin_patch_test_files" ]
   }
