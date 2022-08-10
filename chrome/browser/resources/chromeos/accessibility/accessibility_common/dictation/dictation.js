@@ -151,7 +151,6 @@ export class Dictation {
       // utterances added to the queue later.
       chrome.accessibilityPrivate.silenceSpokenFeedback();
     }
-    this.startTone_.play();
     this.setStopTimeout_(
         Dictation.Timeouts.NO_FOCUSED_IME_MS,
         'Dictation stopped automatically: No focused IME');
@@ -310,6 +309,7 @@ export class Dictation {
       return;
     }
 
+    this.startTone_.play();
     this.clearInterimText_();
 
     // Record metrics.
