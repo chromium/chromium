@@ -1583,9 +1583,9 @@ StyleResolver::CascadedValuesForElement(Element* element, PseudoId pseudo_id) {
 Element* StyleResolver::FindContainerForElement(
     Element* element,
     const ContainerSelector& container_selector) {
-  auto context = StyleRecalcContext::FromAncestors(*element);
-  return ContainerQueryEvaluator::FindContainer(context.container,
-                                                container_selector);
+  DCHECK(element);
+  return ContainerQueryEvaluator::FindContainer(
+      element->ParentOrShadowHostElement(), container_selector);
 }
 
 RuleIndexList* StyleResolver::PseudoCSSRulesForElement(

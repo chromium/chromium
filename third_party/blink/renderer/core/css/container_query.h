@@ -34,10 +34,18 @@ class CORE_EXPORT ContainerSelector {
   // for this selector to match.
   unsigned Type(WritingMode) const;
 
+  bool SelectsSizeContainers() const {
+    return physical_axes_ != kPhysicalAxisNone ||
+           logical_axes_ != kLogicalAxisNone;
+  }
+
+  bool SelectsStyleContainers() const { return has_style_query_; }
+
  private:
   AtomicString name_;
   PhysicalAxes physical_axes_{kPhysicalAxisNone};
   LogicalAxes logical_axes_{kLogicalAxisNone};
+  bool has_style_query_{false};
 };
 
 class CORE_EXPORT ContainerQuery final

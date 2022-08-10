@@ -694,6 +694,14 @@ void MediaQueryFunctionExpNode::SerializeTo(StringBuilder& builder) const {
   builder.Append(")");
 }
 
+MediaQueryExpNode::FeatureFlags MediaQueryFunctionExpNode::CollectFeatureFlags()
+    const {
+  FeatureFlags flags = MediaQueryUnaryExpNode::CollectFeatureFlags();
+  if (name_ == AtomicString("style"))
+    flags |= kFeatureStyle;
+  return flags;
+}
+
 void MediaQueryNotExpNode::SerializeTo(StringBuilder& builder) const {
   builder.Append("not ");
   Operand().SerializeTo(builder);

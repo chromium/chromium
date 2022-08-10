@@ -52,13 +52,13 @@ bool Matches(const ComputedStyle& style,
 
 // static
 Element* ContainerQueryEvaluator::FindContainer(
-    Element* context_element,
+    Element* starting_element,
     const ContainerSelector& container_selector) {
   // TODO(crbug.com/1213888): Cache results.
-  for (Element* element = context_element; element;
+  for (Element* element = starting_element; element;
        element = element->ParentOrShadowHostElement()) {
     if (const ComputedStyle* style = element->GetComputedStyle()) {
-      if (style->IsContainerForSizeContainerQueries() &&
+      if (style->StyleType() == kPseudoIdNone &&
           Matches(*style, container_selector)) {
         return element;
       }
@@ -68,15 +68,30 @@ Element* ContainerQueryEvaluator::FindContainer(
   return nullptr;
 }
 
-bool ContainerQueryEvaluator::EvalAndAdd(const StyleRecalcContext& context,
+bool ContainerQueryEvaluator::EvalAndAdd(const Element& matching_element,
+                                         const StyleRecalcContext& context,
                                          const ContainerQuery& query,
                                          MatchResult& match_result) {
-  Element* container = FindContainer(context.container, query.Selector());
+  const ContainerSelector& selector = query.Selector();
+  Element* starting_element =
+      selector.SelectsSizeContainers()
+          ? context.container
+          : matching_element.ParentOrShadowHostElement();
+  Element* container = FindContainer(starting_element, selector);
   if (!container)
     return false;
   ContainerQueryEvaluator* evaluator = container->GetContainerQueryEvaluator();
-  if (!evaluator)
-    return false;
+  if (!evaluator) {
+    if (selector.SelectsSizeContainers() ||
+        !selector.SelectsStyleContainers()) {
+      return false;
+    }
+    evaluator = &container->EnsureContainerQueryEvaluator();
+    evaluator->SetData(container->GetDocument(), *container, PhysicalSize(),
+                       kPhysicalAxisNone);
+  }
+  // TODO(crbug.com/1302630): style() queries should not compare with
+  // context.container.
   Change change = (context.container == container)
                       ? Change::kNearestContainer
                       : Change::kDescendantContainers;

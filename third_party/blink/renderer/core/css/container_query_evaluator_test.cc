@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/dom/parent_node.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
@@ -624,6 +625,44 @@ TEST_F(ContainerQueryEvaluatorTest, CustomPropertyStyleQuery) {
   EXPECT_FALSE(Eval("style(--my-prop: 10px)", "--my-prop", "10px "));
   EXPECT_TRUE(Eval("style(--my-prop:10px )", "--my-prop", "10px "));
   EXPECT_TRUE(Eval("style(--my-prop: 10px )", "--my-prop", "10px "));
+}
+
+TEST_F(ContainerQueryEvaluatorTest, FindContainer) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="container-name:outer;container-type:size">
+      <div style="container-name:outer">
+        <div style="container-type: size">
+          <div>
+            <div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* outer_size = ParentNode::firstElementChild(*GetDocument().body());
+  Element* outer = ParentNode::firstElementChild(*outer_size);
+  Element* inner_size = ParentNode::firstElementChild(*outer);
+  Element* inner = ParentNode::firstElementChild(*inner_size);
+
+  EXPECT_EQ(ContainerQueryEvaluator::FindContainer(
+                inner, ParseContainer("style(--foo: bar)")->Selector()),
+            inner);
+  EXPECT_EQ(
+      ContainerQueryEvaluator::FindContainer(
+          inner,
+          ParseContainer("(width > 100px) and style(--foo: bar)")->Selector()),
+      inner_size);
+  EXPECT_EQ(ContainerQueryEvaluator::FindContainer(
+                inner, ParseContainer("outer style(--foo: bar)")->Selector()),
+            outer);
+  EXPECT_EQ(
+      ContainerQueryEvaluator::FindContainer(
+          inner, ParseContainer("outer (width > 100px) and style(--foo: bar)")
+                     ->Selector()),
+      outer_size);
 }
 
 }  // namespace blink

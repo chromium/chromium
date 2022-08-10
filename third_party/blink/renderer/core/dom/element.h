@@ -1138,6 +1138,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   ContainerQueryData* GetContainerQueryData() const;
   ContainerQueryEvaluator* GetContainerQueryEvaluator() const;
+  ContainerQueryEvaluator& EnsureContainerQueryEvaluator();
   bool SkippedContainerStyleRecalc() const;
 
   virtual void SetActive(bool active);

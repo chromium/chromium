@@ -316,6 +316,7 @@ class CORE_EXPORT MediaQueryExpNode
     kFeatureHeight = 1 << 3,
     kFeatureInlineSize = 1 << 4,
     kFeatureBlockSize = 1 << 5,
+    kFeatureStyle = 1 << 6,
   };
 
   using FeatureFlags = unsigned;
@@ -398,6 +399,7 @@ class CORE_EXPORT MediaQueryFunctionExpNode : public MediaQueryUnaryExpNode {
 
   Type GetType() const override { return Type::kFunction; }
   void SerializeTo(StringBuilder&) const override;
+  FeatureFlags CollectFeatureFlags() const override;
 
  private:
   AtomicString name_;

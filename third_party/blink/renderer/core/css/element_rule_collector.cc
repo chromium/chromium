@@ -81,13 +81,14 @@ unsigned LinkMatchTypeFromInsideLink(EInsideLink inside_link) {
 }
 
 bool EvaluateAndAddContainerQueries(
+    const Element& matching_element,
     const ContainerQuery& container_query,
     const StyleRecalcContext& style_recalc_context,
     MatchResult& result) {
   for (const ContainerQuery* current = &container_query; current;
        current = current->Parent()) {
-    if (!ContainerQueryEvaluator::EvalAndAdd(style_recalc_context, *current,
-                                             result)) {
+    if (!ContainerQueryEvaluator::EvalAndAdd(
+            matching_element, style_recalc_context, *current, result)) {
       return false;
     }
   }
@@ -415,7 +416,8 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
       // elements when they depend on the originating element.
       if (pseudo_style_request_.pseudo_id != kPseudoIdNone ||
           result.dynamic_pseudo == kPseudoIdNone) {
-        if (!EvaluateAndAddContainerQueries(*container_query,
+        if (!EvaluateAndAddContainerQueries(context_.GetElement(),
+                                            *container_query,
                                             style_recalc_context_, result_)) {
           if (AffectsAnimations(rule_data))
             result_.SetConditionallyAffectsAnimations();

@@ -20,6 +20,8 @@ ContainerSelector::ContainerSelector(AtomicString name,
     physical_axes_ |= kPhysicalAxisHorizontal;
   if (feature_flags & MediaQueryExpNode::kFeatureHeight)
     physical_axes_ |= kPhysicalAxisVertical;
+  if (feature_flags & MediaQueryExpNode::kFeatureStyle)
+    has_style_query_ = true;
 }
 
 unsigned ContainerSelector::Type(WritingMode writing_mode) const {

@@ -27,11 +27,12 @@ class ContainerSelector;
 class CORE_EXPORT ContainerQueryEvaluator final
     : public GarbageCollected<ContainerQueryEvaluator> {
  public:
-  // Look for a container query container in the inclusive ancestor
-  // chain of `context_element`.
-  static Element* FindContainer(Element* context_element,
+  // Look for a container query container in the shadow-including inclusive
+  // ancestor chain of 'starting_element'.
+  static Element* FindContainer(Element* starting_element,
                                 const ContainerSelector&);
-  static bool EvalAndAdd(const StyleRecalcContext&,
+  static bool EvalAndAdd(const Element& matching_element,
+                         const StyleRecalcContext&,
                          const ContainerQuery&,
                          MatchResult&);
 
