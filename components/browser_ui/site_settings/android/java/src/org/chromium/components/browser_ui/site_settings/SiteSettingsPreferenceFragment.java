@@ -40,6 +40,8 @@ public abstract class SiteSettingsPreferenceFragment extends PreferenceFragmentC
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        mSiteSettingsDelegate.onDestroyView();
+        if (mSiteSettingsDelegate != null) {
+            mSiteSettingsDelegate.onDestroyView();
+        }
     }
 }
