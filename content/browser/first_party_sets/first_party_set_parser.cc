@@ -109,7 +109,10 @@ absl::optional<FirstPartySetParser::ParseError> ParseSet(
   if (maybe_members_list->GetListDeprecated().empty())
     return FirstPartySetParser::ParseError::kSingletonSet;
 
-  std::vector<net::SchemefulSite> members;
+  std::vector<std::pair<net::SchemefulSite, net::FirstPartySetEntry>> sites;
+  sites.emplace_back(
+      *canonical_owner,
+      net::FirstPartySetEntry(*canonical_owner, net::SiteType::kPrimary));
   // Add each member to our mapping (assuming the member is a string).
   for (const auto& item : maybe_members_list->GetListDeprecated()) {
     // Members may not be a member of another set, and may not be an owner of
@@ -121,21 +124,31 @@ absl::optional<FirstPartySetParser::ParseError> ParseSet(
     if (!member.has_value())
       return FirstPartySetParser::ParseError::kInvalidOrigin;
 
-    if (*member == *canonical_owner || base::Contains(members, member))
+    if (*member == *canonical_owner ||
+        base::ranges::any_of(
+            sites,
+            [&](const std::pair<net::SchemefulSite, net::FirstPartySetEntry>&
+                    site_and_entry) {
+              return site_and_entry.first == member;
+            })) {
       return FirstPartySetParser::ParseError::kRepeatedDomain;
+    }
 
     if (elements.contains(*member))
       return FirstPartySetParser::ParseError::kNonDisjointSets;
 
-    members.push_back(*member);
+    sites.emplace_back(
+        *member,
+        net::FirstPartySetEntry(*canonical_owner, net::SiteType::kAssociated));
   }
 
-  elements.insert(*canonical_owner);
-  for (const auto& member : members) {
-    elements.insert(member);
+  for (const std::pair<net::SchemefulSite, net::FirstPartySetEntry>&
+           site_and_entry : sites) {
+    bool inserted = elements.insert(site_and_entry.first).second;
+    DCHECK(inserted);
   }
 
-  out_set = std::make_pair(*canonical_owner, members);
+  out_set = FirstPartySetParser::SingleSet(sites);
   return absl::nullopt;
 }
 
@@ -290,13 +303,9 @@ FirstPartySetParser::SetsMap FirstPartySetParser::ParseSetsFromStream(
       // Abort, something is wrong with the component.
       return {};
     }
-    auto [owner, members] = output;
-    map.emplace_back(owner,
-                     net::FirstPartySetEntry(owner, net::SiteType::kPrimary));
-    for (net::SchemefulSite& member : members) {
-      map.emplace_back(
-          std::move(member),
-          net::FirstPartySetEntry(owner, net::SiteType::kAssociated));
+    for (const std::pair<net::SchemefulSite, net::FirstPartySetEntry>&
+             site_and_entry : output) {
+      map.emplace_back(site_and_entry.first, site_and_entry.second);
     }
   }
   return map;

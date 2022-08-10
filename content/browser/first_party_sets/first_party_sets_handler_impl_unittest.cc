@@ -61,28 +61,33 @@ FirstPartySetsHandlerImpl::FlattenedSets MakeFlattenedSetsFromMap(
   return result;
 }
 
+// Parses `input` as a collection of primaries and their associated sites, and
+// appends the results to `output`.
+void ParseAndAppend(
+    const base::flat_map<std::string, std::vector<std::string>>& input,
+    std::vector<SingleSet>& output) {
+  for (auto& [owner, members] : input) {
+    std::vector<std::pair<net::SchemefulSite, net::FirstPartySetEntry>> sites;
+    net::SchemefulSite owner_site((GURL(owner)));
+    sites.emplace_back(owner_site, net::FirstPartySetEntry(
+                                       owner_site, net::SiteType::kPrimary));
+    for (const std::string& member : members) {
+      sites.emplace_back(
+          GURL(member),
+          net::FirstPartySetEntry(owner_site, net::SiteType::kAssociated));
+    }
+    output.emplace_back(sites);
+  }
+}
+
 // Creates a ParsedPolicySetLists with the replacements and additions fields
 // constructed from `replacements` and `additions`.
 FirstPartySetParser::ParsedPolicySetLists MakeParsedPolicyFromMap(
     const base::flat_map<std::string, std::vector<std::string>>& replacements,
     const base::flat_map<std::string, std::vector<std::string>>& additions) {
   FirstPartySetParser::ParsedPolicySetLists result;
-  for (auto& [owner, members] : replacements) {
-    std::vector<net::SchemefulSite> member_sites;
-    for (const std::string& member : members) {
-      member_sites.emplace_back(GURL(member));
-    }
-    result.replacements.emplace_back(net::SchemefulSite(GURL(owner)),
-                                     member_sites);
-  }
-  for (auto& [owner, members] : additions) {
-    std::vector<net::SchemefulSite> member_sites;
-    for (const std::string& member : members) {
-      member_sites.emplace_back(GURL(member));
-    }
-    result.additions.emplace_back(net::SchemefulSite(GURL(owner)),
-                                  member_sites);
-  }
+  ParseAndAppend(replacements, result.replacements);
+  ParseAndAppend(additions, result.additions);
   return result;
 }
 
@@ -1158,6 +1163,14 @@ TEST(FirstPartySetsProfilePolicyCustomizations,
 
 TEST(FirstPartySetsProfilePolicyCustomizations,
      TransitiveOverlap_TwoCommonOwners) {
+  net::SchemefulSite owner0(GURL("https://owner0.test"));
+  net::SchemefulSite member0(GURL("https://member0.test"));
+  net::SchemefulSite owner1(GURL("https://owner1.test"));
+  net::SchemefulSite member1(GURL("https://member1.test"));
+  net::SchemefulSite owner2(GURL("https://owner2.test"));
+  net::SchemefulSite member2(GURL("https://member2.test"));
+  net::SchemefulSite owner42(GURL("https://owner42.test"));
+  net::SchemefulSite member42(GURL("https://member42.test"));
   // {owner1, {member1}} and {owner2, {member2}} transitively overlap with the
   // existing set.
   // owner1 takes ownership of the normalized addition set since it was
@@ -1169,52 +1182,57 @@ TEST(FirstPartySetsProfilePolicyCustomizations,
               {{"https://owner1.test", {"https://owner2.test"}}}),
           FirstPartySetParser::ParsedPolicySetLists(
               /*replacement_list=*/{},
-              {SingleSet(net::SchemefulSite(GURL("https://owner0.test")),
-                         {net::SchemefulSite(GURL("https://member0.test"))}),
-               SingleSet(net::SchemefulSite(GURL("https://owner1.test")),
-                         {net::SchemefulSite(GURL("https://member1.test"))}),
-               SingleSet(net::SchemefulSite(GURL("https://owner2.test")),
-                         {net::SchemefulSite(GURL("https://member2.test"))}),
-               SingleSet(
-                   net::SchemefulSite(GURL("https://owner42.test")),
-                   {net::SchemefulSite(GURL("https://member42.test"))})})),
+              {
+                  SingleSet(
+                      {{owner0, net::FirstPartySetEntry(
+                                    owner0, net::SiteType::kPrimary)},
+                       {member0, net::FirstPartySetEntry(
+                                     owner0, net::SiteType::kAssociated)}}),
+                  SingleSet(
+                      {{owner1, net::FirstPartySetEntry(
+                                    owner1, net::SiteType::kPrimary)},
+                       {member1, net::FirstPartySetEntry(
+                                     owner1, net::SiteType::kAssociated)}}),
+                  SingleSet(
+                      {{owner2, net::FirstPartySetEntry(
+                                    owner2, net::SiteType::kPrimary)},
+                       {member2, net::FirstPartySetEntry(
+                                     owner2, net::SiteType::kAssociated)}}),
+                  SingleSet(
+                      {{owner42, net::FirstPartySetEntry(
+                                     owner42, net::SiteType::kPrimary)},
+                       {member42, net::FirstPartySetEntry(
+                                      owner42, net::SiteType::kAssociated)}}),
+              })),
       UnorderedElementsAre(
-          Pair(net::SchemefulSite(GURL("https://member0.test")),
-               absl::make_optional(net::FirstPartySetEntry(
-                   net::SchemefulSite(GURL("https://owner0.test")),
-                   net::SiteType::kAssociated))),
-          Pair(net::SchemefulSite(GURL("https://member1.test")),
-               absl::make_optional(net::FirstPartySetEntry(
-                   net::SchemefulSite(GURL("https://owner1.test")),
-                   net::SiteType::kAssociated))),
-          Pair(net::SchemefulSite(GURL("https://member2.test")),
-               absl::make_optional(net::FirstPartySetEntry(
-                   net::SchemefulSite(GURL("https://owner1.test")),
-                   net::SiteType::kAssociated))),
-          Pair(net::SchemefulSite(GURL("https://member42.test")),
-               absl::make_optional(net::FirstPartySetEntry(
-                   net::SchemefulSite(GURL("https://owner42.test")),
-                   net::SiteType::kAssociated))),
-          Pair(net::SchemefulSite(GURL("https://owner0.test")),
-               absl::make_optional(net::FirstPartySetEntry(
-                   net::SchemefulSite(GURL("https://owner0.test")),
-                   net::SiteType::kPrimary))),
-          Pair(net::SchemefulSite(GURL("https://owner1.test")),
-               absl::make_optional(net::FirstPartySetEntry(
-                   net::SchemefulSite(GURL("https://owner1.test")),
-                   net::SiteType::kPrimary))),
-          Pair(net::SchemefulSite(GURL("https://owner2.test")),
-               absl::make_optional(net::FirstPartySetEntry(
-                   net::SchemefulSite(GURL("https://owner1.test")),
-                   net::SiteType::kAssociated))),
-          Pair(net::SchemefulSite(GURL("https://owner42.test")),
-               absl::make_optional(net::FirstPartySetEntry(
-                   net::SchemefulSite(GURL("https://owner42.test")),
-                   net::SiteType::kPrimary)))));
+          Pair(member0, absl::make_optional(net::FirstPartySetEntry(
+                            owner0, net::SiteType::kAssociated))),
+          Pair(member1, absl::make_optional(net::FirstPartySetEntry(
+                            owner1, net::SiteType::kAssociated))),
+          Pair(member2, absl::make_optional(net::FirstPartySetEntry(
+                            owner1, net::SiteType::kAssociated))),
+          Pair(member42, absl::make_optional(net::FirstPartySetEntry(
+                             owner42, net::SiteType::kAssociated))),
+          Pair(owner0, absl::make_optional(net::FirstPartySetEntry(
+                           owner0, net::SiteType::kPrimary))),
+          Pair(owner1, absl::make_optional(net::FirstPartySetEntry(
+                           owner1, net::SiteType::kPrimary))),
+          Pair(owner2, absl::make_optional(net::FirstPartySetEntry(
+                           owner1, net::SiteType::kAssociated))),
+          Pair(owner42, absl::make_optional(net::FirstPartySetEntry(
+                            owner42, net::SiteType::kPrimary)))));
 }
 
 TEST(FirstPartySetsProfilePolicyCustomizations,
      TransitiveOverlap_TwoCommonMembers) {
+  net::SchemefulSite owner0(GURL("https://owner0.test"));
+  net::SchemefulSite member0(GURL("https://member0.test"));
+  net::SchemefulSite owner1(GURL("https://owner1.test"));
+  net::SchemefulSite member1(GURL("https://member1.test"));
+  net::SchemefulSite owner2(GURL("https://owner2.test"));
+  net::SchemefulSite member2(GURL("https://member2.test"));
+  net::SchemefulSite owner42(GURL("https://owner42.test"));
+  net::SchemefulSite member42(GURL("https://member42.test"));
   // {owner1, {member1}} and {owner2, {member2}} transitively overlap with the
   // existing set.
   // owner2 takes ownership of the normalized addition set since it was
@@ -1226,48 +1244,45 @@ TEST(FirstPartySetsProfilePolicyCustomizations,
               {{"https://owner2.test", {"https://owner1.test"}}}),
           FirstPartySetParser::ParsedPolicySetLists(
               /*replacement_list=*/{},
-              {SingleSet(net::SchemefulSite(GURL("https://owner0.test")),
-                         {net::SchemefulSite(GURL("https://member0.test"))}),
-               SingleSet(net::SchemefulSite(GURL("https://owner2.test")),
-                         {net::SchemefulSite(GURL("https://member2.test"))}),
-               SingleSet(net::SchemefulSite(GURL("https://owner1.test")),
-                         {net::SchemefulSite(GURL("https://member1.test"))}),
-               SingleSet(
-                   net::SchemefulSite(GURL("https://owner42.test")),
-                   {net::SchemefulSite(GURL("https://member42.test"))})})),
+              {
+                  SingleSet(
+                      {{owner0, net::FirstPartySetEntry(
+                                    owner0, net::SiteType::kPrimary)},
+                       {member0, net::FirstPartySetEntry(
+                                     owner0, net::SiteType::kAssociated)}}),
+                  SingleSet(
+                      {{owner2, net::FirstPartySetEntry(
+                                    owner2, net::SiteType::kPrimary)},
+                       {member2, net::FirstPartySetEntry(
+                                     owner2, net::SiteType::kAssociated)}}),
+                  SingleSet(
+                      {{owner1, net::FirstPartySetEntry(
+                                    owner1, net::SiteType::kPrimary)},
+                       {member1, net::FirstPartySetEntry(
+                                     owner1, net::SiteType::kAssociated)}}),
+                  SingleSet(
+                      {{owner42, net::FirstPartySetEntry(
+                                     owner42, net::SiteType::kPrimary)},
+                       {member42, net::FirstPartySetEntry(
+                                      owner42, net::SiteType::kAssociated)}}),
+              })),
       UnorderedElementsAre(
-          Pair(net::SchemefulSite(GURL("https://member0.test")),
-               absl::make_optional(net::FirstPartySetEntry(
-                   net::SchemefulSite(GURL("https://owner0.test")),
-                   net::SiteType::kAssociated))),
-          Pair(net::SchemefulSite(GURL("https://member1.test")),
-               absl::make_optional(net::FirstPartySetEntry(
-                   net::SchemefulSite(GURL("https://owner2.test")),
-                   net::SiteType::kAssociated))),
-          Pair(net::SchemefulSite(GURL("https://member2.test")),
-               absl::make_optional(net::FirstPartySetEntry(
-                   net::SchemefulSite(GURL("https://owner2.test")),
-                   net::SiteType::kAssociated))),
-          Pair(net::SchemefulSite(GURL("https://member42.test")),
-               absl::make_optional(net::FirstPartySetEntry(
-                   net::SchemefulSite(GURL("https://owner42.test")),
-                   net::SiteType::kAssociated))),
-          Pair(net::SchemefulSite(GURL("https://owner0.test")),
-               absl::make_optional(net::FirstPartySetEntry(
-                   net::SchemefulSite(GURL("https://owner0.test")),
-                   net::SiteType::kPrimary))),
-          Pair(net::SchemefulSite(GURL("https://owner1.test")),
-               absl::make_optional(net::FirstPartySetEntry(
-                   net::SchemefulSite(GURL("https://owner2.test")),
-                   net::SiteType::kAssociated))),
-          Pair(net::SchemefulSite(GURL("https://owner2.test")),
-               absl::make_optional(net::FirstPartySetEntry(
-                   net::SchemefulSite(GURL("https://owner2.test")),
-                   net::SiteType::kPrimary))),
-          Pair(net::SchemefulSite(GURL("https://owner42.test")),
-               absl::make_optional(net::FirstPartySetEntry(
-                   net::SchemefulSite(GURL("https://owner42.test")),
-                   net::SiteType::kPrimary)))));
+          Pair(member0, absl::make_optional(net::FirstPartySetEntry(
+                            owner0, net::SiteType::kAssociated))),
+          Pair(member1, absl::make_optional(net::FirstPartySetEntry(
+                            owner2, net::SiteType::kAssociated))),
+          Pair(member2, absl::make_optional(net::FirstPartySetEntry(
+                            owner2, net::SiteType::kAssociated))),
+          Pair(member42, absl::make_optional(net::FirstPartySetEntry(
+                             owner42, net::SiteType::kAssociated))),
+          Pair(owner0, absl::make_optional(net::FirstPartySetEntry(
+                           owner0, net::SiteType::kPrimary))),
+          Pair(owner1, absl::make_optional(net::FirstPartySetEntry(
+                           owner2, net::SiteType::kAssociated))),
+          Pair(owner2, absl::make_optional(net::FirstPartySetEntry(
+                           owner2, net::SiteType::kPrimary))),
+          Pair(owner42, absl::make_optional(net::FirstPartySetEntry(
+                            owner42, net::SiteType::kPrimary)))));
 }
 
 // Existing set overlaps with both replacement and addition set.

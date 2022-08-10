@@ -937,6 +937,11 @@ TEST(ParseSetsFromEnterprisePolicyTest, NonDisjointError_AcrossBothLists) {
 }
 
 TEST(ParseSetsFromEnterprisePolicyTest, SuccessfulMapping_SameList) {
+  net::SchemefulSite owner1(GURL("https://owner1.test"));
+  net::SchemefulSite member1(GURL("https://member1.test"));
+  net::SchemefulSite owner2(GURL("https://owner2.test"));
+  net::SchemefulSite member2(GURL("https://member2.test"));
+
   base::Value policy_value = base::JSONReader::Read(R"(
              {
                 "replacements": [
@@ -959,14 +964,29 @@ TEST(ParseSetsFromEnterprisePolicyTest, SuccessfulMapping_SameList) {
   EXPECT_THAT(
       out_sets.replacements,
       ElementsAre(
-          Pair(SerializesTo("https://owner1.test"),
-               UnorderedElementsAre(SerializesTo("https://member1.test"))),
-          Pair(SerializesTo("https://owner2.test"),
-               UnorderedElementsAre(SerializesTo("https://member2.test")))));
+          FirstPartySetParser::SetsMap({
+              {owner1,
+               net::FirstPartySetEntry(owner1, net::SiteType::kPrimary)},
+              {member1,
+               net::FirstPartySetEntry(owner1, net::SiteType::kAssociated)},
+          }),
+          FirstPartySetParser::SetsMap({
+              {owner2,
+               net::FirstPartySetEntry(owner2, net::SiteType::kPrimary)},
+              {member2,
+               net::FirstPartySetEntry(owner2, net::SiteType::kAssociated)},
+          })));
   EXPECT_THAT(out_sets.additions, IsEmpty());
 }
 
 TEST(ParseSetsFromEnterprisePolicyTest, SuccessfulMapping_CrossList) {
+  net::SchemefulSite owner1(GURL("https://owner1.test"));
+  net::SchemefulSite member1(GURL("https://member1.test"));
+  net::SchemefulSite owner2(GURL("https://owner2.test"));
+  net::SchemefulSite member2(GURL("https://member2.test"));
+  net::SchemefulSite owner3(GURL("https://owner3.test"));
+  net::SchemefulSite member3(GURL("https://member3.test"));
+
   base::Value policy_value = base::JSONReader::Read(R"(
                 {
                 "replacements": [
@@ -995,15 +1015,26 @@ TEST(ParseSetsFromEnterprisePolicyTest, SuccessfulMapping_CrossList) {
   EXPECT_THAT(
       out_sets.replacements,
       ElementsAre(
-          Pair(SerializesTo("https://owner1.test"),
-               UnorderedElementsAre(SerializesTo("https://member1.test"))),
-          Pair(SerializesTo("https://owner2.test"),
-               UnorderedElementsAre(SerializesTo("https://member2.test")))));
+          FirstPartySetParser::SetsMap({
+              {owner1,
+               net::FirstPartySetEntry(owner1, net::SiteType::kPrimary)},
+              {member1,
+               net::FirstPartySetEntry(owner1, net::SiteType::kAssociated)},
+          }),
+          FirstPartySetParser::SetsMap({
+              {owner2,
+               net::FirstPartySetEntry(owner2, net::SiteType::kPrimary)},
+              {member2,
+               net::FirstPartySetEntry(owner2, net::SiteType::kAssociated)},
+          })));
 
-  EXPECT_THAT(out_sets.additions,
-              ElementsAre(Pair(
-                  SerializesTo("https://owner3.test"),
-                  UnorderedElementsAre(SerializesTo("https://member3.test")))));
+  EXPECT_THAT(
+      out_sets.additions,
+      ElementsAre(FirstPartySetParser::SetsMap({
+          {owner3, net::FirstPartySetEntry(owner3, net::SiteType::kPrimary)},
+          {member3,
+           net::FirstPartySetEntry(owner3, net::SiteType::kAssociated)},
+      })));
 }
 
 }  // namespace content

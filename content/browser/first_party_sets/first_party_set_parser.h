@@ -27,8 +27,7 @@ namespace content {
 class CONTENT_EXPORT FirstPartySetParser {
  public:
   using SetsMap = base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>;
-  using SingleSet =
-      std::pair<net::SchemefulSite, base::flat_set<net::SchemefulSite>>;
+  using SingleSet = SetsMap;
   using ParseError = FirstPartySetsHandler::ParseError;
   using PolicySetType = FirstPartySetsHandler::PolicySetType;
   using PolicyParsingError = FirstPartySetsHandler::PolicyParsingError;

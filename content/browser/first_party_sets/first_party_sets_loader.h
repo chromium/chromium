@@ -80,9 +80,11 @@ class CONTENT_EXPORT FirstPartySetsLoader {
   // Holds the set that was provided on the command line (if any). There are two
   // layers of absl::optional here because the value is initially unset (outer
   // optional), and may be empty if no command-line flag was provided (or one
-  // was provided but invalid) (inner optional).
-  absl::optional<absl::optional<SingleSet>> manually_specified_set_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  // was provided but invalid) (inner optional). For convenience, we store the
+  // primary domain separately, *and* store it and its entry within the
+  // `FlattenedSets`.
+  absl::optional<absl::optional<std::pair<net::SchemefulSite, FlattenedSets>>>
+      manually_specified_set_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   enum Progress {
     kNotStarted,

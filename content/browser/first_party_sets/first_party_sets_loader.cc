@@ -27,8 +27,8 @@ namespace content {
 
 namespace {
 
-absl::optional<FirstPartySetsLoader::SingleSet> CanonicalizeSet(
-    const std::vector<std::string>& origins) {
+absl::optional<std::pair<net::SchemefulSite, FirstPartySetsLoader::SingleSet>>
+CanonicalizeSet(const std::vector<std::string>& origins) {
   if (origins.empty())
     return absl::nullopt;
 
@@ -41,22 +41,26 @@ absl::optional<FirstPartySetsLoader::SingleSet> CanonicalizeSet(
   }
 
   const net::SchemefulSite& owner = *maybe_owner;
-  base::flat_set<net::SchemefulSite> members;
+  std::vector<std::pair<net::SchemefulSite, net::FirstPartySetEntry>> sites(
+      {{owner, net::FirstPartySetEntry(owner, net::SiteType::kPrimary)}});
   for (auto it = origins.begin() + 1; it != origins.end(); ++it) {
     const absl::optional<net::SchemefulSite> maybe_member =
         content::FirstPartySetParser::CanonicalizeRegisteredDomain(
             *it, true /* emit_errors */);
     if (maybe_member.has_value() && maybe_member != owner)
-      members.emplace(std::move(*maybe_member));
+      sites.emplace_back(*maybe_member, net::FirstPartySetEntry(
+                                            owner, net::SiteType::kAssociated));
   }
 
-  if (members.empty()) {
+  if (sites.size() < 2) {
+    // We're guaranteed at least one site (the primary), but there needs to be
+    // at least one other site as well.
     LOG(ERROR) << "No valid First-Party Set members were specified; aborting.";
     return absl::nullopt;
   }
 
   return absl::make_optional(
-      std::make_pair(std::move(owner), std::move(members)));
+      std::make_pair(std::move(owner), std::move(sites)));
 }
 
 std::string ReadSetsFile(base::File sets_file) {
@@ -141,22 +145,33 @@ void FirstPartySetsLoader::ApplyManuallySpecifiedSet() {
   DCHECK(HasAllInputs());
   if (!manually_specified_set_.value().has_value())
     return;
-  net::SchemefulSite owner = manually_specified_set_->value().first;
-  base::flat_set<net::SchemefulSite> members =
-      manually_specified_set_->value().second;
+  const net::SchemefulSite& manual_owner =
+      manually_specified_set_->value().first;
+  const FlattenedSets& manual_sites = manually_specified_set_->value().second;
 
   // Erase the intersection between |sets_| and |manually_specified_set_| and
   // any members whose owner was in the intersection.
-  base::EraseIf(sets_, [&owner, members](const auto& p) {
-    return p.first == owner || p.second.primary() == owner ||
-           members.contains(p.first) || members.contains(p.second.primary());
-  });
+  base::EraseIf(
+      sets_, [&](const std::pair<net::SchemefulSite, net::FirstPartySetEntry>&
+                     public_site_and_entry) {
+        const net::SchemefulSite& public_site = public_site_and_entry.first;
+        const net::SchemefulSite& public_owner =
+            public_site_and_entry.second.primary();
+        return public_site == manual_owner || public_owner == manual_owner ||
+               base::ranges::any_of(
+                   manual_sites, [&](const std::pair<net::SchemefulSite,
+                                                     net::FirstPartySetEntry>&
+                                         manual_site_and_entry) {
+                     const net::SchemefulSite& manual_site =
+                         manual_site_and_entry.first;
+                     return manual_site == public_site ||
+                            manual_site == public_owner;
+                   });
+      });
 
   // Next, we must add the manually specified set to |sets_|.
-  sets_.emplace(owner, net::FirstPartySetEntry(owner, net::SiteType::kPrimary));
-  for (const net::SchemefulSite& member : members) {
-    sets_.emplace(member,
-                  net::FirstPartySetEntry(owner, net::SiteType::kAssociated));
+  for (const auto& manual_site : manual_sites) {
+    sets_.emplace(manual_site.first, manual_site.second);
   }
   // Now remove singleton sets, which are sets that just contain sites that
   // *are* owners, but no longer have any (other) members.
