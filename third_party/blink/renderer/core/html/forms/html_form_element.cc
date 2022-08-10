@@ -360,10 +360,8 @@ void HTMLFormElement::PrepareForSubmission(
   if (should_submit) {
     // If this form already made a request to navigate another frame which is
     // still pending, then we should cancel that one.
-    if (cancel_last_submission_ &&
-        RuntimeEnabledFeatures::CancelFormSubmissionInDefaultHandlerEnabled()) {
+    if (cancel_last_submission_)
       std::move(cancel_last_submission_).Run();
-    }
     ScheduleFormSubmission(event, submit_button);
   }
 }
