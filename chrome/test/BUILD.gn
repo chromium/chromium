@@ -4476,14 +4476,14 @@ if (!is_android) {
     if (is_fuchsia) {
       use_test_server = true
 
-      use_cfv1 = false
-      test_runner_shard = "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml"
+      use_cfv2 = false
       additional_manifest_fragments = [
-        "//build/config/fuchsia/test/audio_output.shard.test-cml",
-        "//build/config/fuchsia/test/fonts.shard.test-cml",
-        "//build/config/fuchsia/test/network.shard.test-cml",
-        "//build/config/fuchsia/test/present_view.shard.test-cml",
-        "//third_party/fuchsia-sdk/sdk/pkg/vulkan/client.shard.cml",
+        "//build/config/fuchsia/test/audio_capabilities.test-cmx",
+        "//build/config/fuchsia/test/font_capabilities.test-cmx",
+        "//build/config/fuchsia/test/jit_capabilities.test-cmx",
+        "//build/config/fuchsia/test/network_capabilities.test-cmx",
+        "//build/config/fuchsia/test/present_view_capabilities.test-cmx",
+        "//build/config/fuchsia/test/vulkan_capabilities.test-cmx",
       ]
 
       # TODO(crbug.com/931218): Ninja cannot handle certain characters appearing
