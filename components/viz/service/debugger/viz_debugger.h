@@ -23,6 +23,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/privileged/mojom/viz_main.mojom.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 // The visual debugger can be completely disabled/enabled at compile time via
@@ -110,16 +111,18 @@ class VIZ_SERVICE_EXPORT VizDebugger {
                 const std::string& text,
                 const StaticSource* dcs,
                 DrawOption option);
-  void Draw(const gfx::Size& obj_size,
-            const gfx::Vector2dF& pos,
-            const StaticSource* dcs,
-            DrawOption option,
-            int* id);
   void Draw(const gfx::SizeF& obj_size,
             const gfx::Vector2dF& pos,
             const StaticSource* dcs,
             DrawOption option,
-            int* id);
+            int* id,
+            const gfx::RectF& uv);
+  void Draw(const gfx::Size& obj_size,
+            const gfx::Vector2dF& pos,
+            const StaticSource* dcs,
+            DrawOption option,
+            int* id,
+            const gfx::RectF& uv);
 
   void AddLogMessage(std::string log,
                      const StaticSource* dcs,
@@ -143,7 +146,8 @@ class VIZ_SERVICE_EXPORT VizDebugger {
                     const gfx::Vector2dF& pos,
                     const StaticSource* dcs,
                     DrawOption option,
-                    int* id);
+                    int* id,
+                    const gfx::RectF& uv);
   void ApplyFilters(VizDebugger::StaticSource* source);
   mojo::Remote<mojom::VizDebugOutput> debug_output_;
 
@@ -172,14 +176,17 @@ class VIZ_SERVICE_EXPORT VizDebugger {
              DrawOption draw_option,
              gfx::Size size,
              gfx::Vector2dF position,
-             int buffer_id)
+             int buffer_id,
+             gfx::RectF uv_rect)
         : CallSubmitCommon(index, source, thread, draw_option),
           obj_size(size),
           pos(position),
-          buff_id(buffer_id) {}
+          buff_id(buffer_id),
+          uv(uv_rect) {}
     gfx::Size obj_size;
     gfx::Vector2dF pos;
     int buff_id;
+    gfx::RectF uv;
   };
 
   struct DrawTextCall : public CallSubmitCommon {
@@ -269,17 +276,22 @@ class VIZ_SERVICE_EXPORT VizDebugger {
 #define DBG_OPT_GREEN viz::VizDebugger::DrawOption({0, 255, 0, 0})
 #define DBG_OPT_BLUE viz::VizDebugger::DrawOption({0, 0, 255, 0})
 #define DBG_OPT_BLACK viz::VizDebugger::DrawOption({0, 0, 0, 0})
+#define DEFAULT_UV gfx::RectF(0, 0, 1, 1)
 
-#define DBG_DRAW_RECTANGLE_OPT_BUFF(anno, option, pos, size, id)            \
-  do {                                                                      \
-    if (viz::VizDebugger::IsEnabled()) {                                    \
-      static viz::VizDebugger::StaticSource dcs(anno, __FILE__, __LINE__,   \
-                                                __func__);                  \
-      if (dcs.IsActive()) {                                                 \
-        viz::VizDebugger::GetInstance()->Draw(size, pos, &dcs, option, id); \
-      }                                                                     \
-    }                                                                       \
+#define DBG_DRAW_RECTANGLE_OPT_BUFF_UV(anno, option, pos, size, id, uv)    \
+  do {                                                                     \
+    if (viz::VizDebugger::IsEnabled()) {                                   \
+      static viz::VizDebugger::StaticSource dcs(anno, __FILE__, __LINE__,  \
+                                                __func__);                 \
+      if (dcs.IsActive()) {                                                \
+        viz::VizDebugger::GetInstance()->Draw(size, pos, &dcs, option, id, \
+                                              uv);                         \
+      }                                                                    \
+    }                                                                      \
   } while (0)
+
+#define DBG_DRAW_RECTANGLE_OPT_BUFF(anno, option, pos, size, id) \
+  DBG_DRAW_RECTANGLE_OPT_BUFF_UV(anno, option, pos, size, id, DEFAULT_UV)
 
 #define DBG_COMPLETE_BUFFERS(buff_id, buffer) \
   viz::VizDebugger::GetInstance()->SubmitBuffer(buff_id, buffer);
@@ -324,6 +336,11 @@ class VIZ_SERVICE_EXPORT VizDebugger {
       anno, option, gfx::Vector2dF(rect.origin().x(), rect.origin().y()), \
       rect.size(), id)
 
+#define DBG_DRAW_RECT_OPT_BUFF_UV(anno, option, rect, id, uv)             \
+  DBG_DRAW_RECTANGLE_OPT_BUFF_UV(                                         \
+      anno, option, gfx::Vector2dF(rect.origin().x(), rect.origin().y()), \
+      rect.size(), id, uv)
+
 #define DBG_DRAW_RECT_OPT(anno, option, rect)                                  \
   DBG_DRAW_RECTANGLE_OPT(anno, option,                                         \
                          gfx::Vector2dF(rect.origin().x(), rect.origin().y()), \
@@ -331,6 +348,9 @@ class VIZ_SERVICE_EXPORT VizDebugger {
 
 #define DBG_DRAW_RECT_BUFF(anno, rect, id) \
   DBG_DRAW_RECT_OPT_BUFF(anno, DBG_OPT_BLACK, rect, id)
+
+#define DBG_DRAW_RECT_BUFF_UV(anno, rect, id, uv) \
+  DBG_DRAW_RECT_OPT_BUFF_UV(anno, DBG_OPT_BLACK, rect, id, uv)
 
 #define DBG_DRAW_RECT(anno, rect) DBG_DRAW_RECT_OPT(anno, DBG_OPT_BLACK, rect)
 
@@ -383,6 +403,16 @@ class VIZ_SERVICE_EXPORT VizDebugger {
 
 #define DBG_OPT_BLACK 0
 
+#define DEFAULT_UV 0
+
+#define DBG_DRAW_RECTANGLE_OPT_BUFF_UV(anno, option, pos, size, id, uv) \
+  std::ignore = anno;                                                   \
+  std::ignore = option;                                                 \
+  std::ignore = pos;                                                    \
+  std::ignore = size;                                                   \
+  std::ignore = id;                                                     \
+  std::ignore = uv;
+
 #define DBG_DRAW_RECTANGLE_OPT_BUFF(anno, option, pos, size, id) \
   std::ignore = anno;                                            \
   std::ignore = option;                                          \
@@ -413,6 +443,13 @@ class VIZ_SERVICE_EXPORT VizDebugger {
 
 #define DBG_LOG(anno, format, ...) DBG_LOG_OPT(anno, DBG_OPT_BLACK, format, ...)
 
+#define DBG_DRAW_RECT_OPT_BUFF_UV(anno, option, rect, id, uv) \
+  std::ignore = anno;                                         \
+  std::ignore = option;                                       \
+  std::ignore = rect;                                         \
+  std::ignore = id;                                           \
+  std::ignore = uv;
+
 #define DBG_DRAW_RECT_OPT_BUFF(anno, option, rect, id) \
   std::ignore = anno;                                  \
   std::ignore = option;                                \
@@ -421,6 +458,9 @@ class VIZ_SERVICE_EXPORT VizDebugger {
 
 #define DBG_DRAW_RECT_OPT(anno, option, rect) \
   DBG_DRAW_RECT_OPT_BUFF(anno, option, rect, nullptr)
+
+#define DBG_DRAW_RECT_BUFF_UV(anno, rect, id, uv) \
+  DBG_DRAW_RECT_OPT_BUFF_UV(anno, DBG_OPT_BLACK, rect, id, uv)
 
 #define DBG_DRAW_RECT_BUFF(anno, rect, id) \
   DBG_DRAW_RECT_OPT_BUFF(anno, DBG_OPT_BLACK, rect, id)

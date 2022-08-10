@@ -151,6 +151,20 @@ base::Value VizDebugger::FrameAsJson(const uint64_t counter,
       list_xy.Append(static_cast<double>(draw_rect_calls_[i].pos.y()));
       dict.SetKey("pos", std::move(list_xy));
     }
+    if (draw_rect_calls_[i].uv != DEFAULT_UV) {
+      {
+        base::ListValue list_xy;
+        list_xy.Append(static_cast<double>(draw_rect_calls_[i].uv.width()));
+        list_xy.Append(static_cast<double>(draw_rect_calls_[i].uv.height()));
+        dict.SetKey("uv_size", std::move(list_xy));
+      }
+      {
+        base::ListValue list_xy;
+        list_xy.Append(static_cast<double>(draw_rect_calls_[i].uv.x()));
+        list_xy.Append(static_cast<double>(draw_rect_calls_[i].uv.y()));
+        dict.SetKey("uv_pos", std::move(list_xy));
+      }
+    }
     dict.SetInteger("buff_id", std::move(draw_rect_calls_[i].buff_id));
 
     // Thread ID and Name processing stuff.
@@ -279,23 +293,27 @@ void VizDebugger::Draw(const gfx::SizeF& obj_size,
                        const gfx::Vector2dF& pos,
                        const VizDebugger::StaticSource* dcs,
                        VizDebugger::DrawOption option,
-                       int* id) {
-  Draw(gfx::Size(obj_size.width(), obj_size.height()), pos, dcs, option, id);
+                       int* id,
+                       const gfx::RectF& uv) {
+  Draw(gfx::Size(obj_size.width(), obj_size.height()), pos, dcs, option, id,
+       uv);
 }
 
 void VizDebugger::Draw(const gfx::Size& obj_size,
                        const gfx::Vector2dF& pos,
                        const VizDebugger::StaticSource* dcs,
                        VizDebugger::DrawOption option,
-                       int* id) {
-  DrawInternal(obj_size, pos, dcs, option, id);
+                       int* id,
+                       const gfx::RectF& uv) {
+  DrawInternal(obj_size, pos, dcs, option, id, uv);
 }
 
 void VizDebugger::DrawInternal(const gfx::Size& obj_size,
                                const gfx::Vector2dF& pos,
                                const VizDebugger::StaticSource* dcs,
                                VizDebugger::DrawOption option,
-                               int* id) {
+                               int* id,
+                               const gfx::RectF& uv) {
   int local_id_buffer = -1;
   if (id != nullptr) {
     local_id_buffer = buffer_id++;
@@ -319,7 +337,8 @@ void VizDebugger::DrawInternal(const gfx::Size& obj_size,
                                                    option,
                                                    obj_size,
                                                    pos,
-                                                   local_id_buffer};
+                                                   local_id_buffer,
+                                                   uv};
       // Return when call insertion is successful.
       read_write_lock_.ReadUnlock();
       return;

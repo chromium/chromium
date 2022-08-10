@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <string>
 #include "base/strings/string_number_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 #if VIZ_DEBUGGER_IS_ON()
 
@@ -179,9 +180,31 @@ void VisualDebuggerTestBase::GetFrameData(bool clear_cache) {
 
     const base::Value* buffer_id = local_dict.FindKey("buff_id");
 
+    float uv_pos_x = 0.0;
+    float uv_pos_y = 0.0;
+    float uv_size_w = 1.0;
+    float uv_size_h = 1.0;
+    const base::Value* list_uv_pos = local_dict.FindListKey("uv_pos");
+    const base::Value* list_uv_size = local_dict.FindListKey("uv_size");
+    if (local_dict.FindListKey("uv_pos")->GetIfList() &&
+        local_dict.FindListKey("uv_size")->GetIfList()) {
+      EXPECT_TRUE(list_uv_pos->is_list());
+      uv_pos_x =
+          list_uv_pos->GetListDeprecated()[0].GetIfDouble().value_or(0.0f);
+      uv_pos_y =
+          list_uv_pos->GetListDeprecated()[1].GetIfDouble().value_or(0.0f);
+
+      EXPECT_TRUE(list_uv_size->is_list());
+      uv_size_w =
+          list_uv_size->GetListDeprecated()[0].GetIfDouble().value_or(1.0f);
+      uv_size_h =
+          list_uv_size->GetListDeprecated()[1].GetIfDouble().value_or(1.0f);
+    }
+
     VizDebuggerInternal::DrawCall draw_call(
         draw_index, source_index, thread_id, option, gfx::Size(size_x, size_y),
-        gfx::Vector2dF(pos_x, pos_y), buffer_id ? buffer_id->GetInt() : -1);
+        gfx::Vector2dF(pos_x, pos_y), buffer_id ? buffer_id->GetInt() : -1,
+        gfx::RectF(uv_pos_x, uv_pos_y, uv_size_w, uv_size_h));
 
     draw_rect_calls_cache_.push_back(draw_call);
   }

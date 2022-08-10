@@ -47,6 +47,26 @@ class DrawCall {
       this.alpha_ = DrawCall.alphaIntToHex(json.option.alpha)
     }
     this.buffer_id = json.buff_id;
+    if (json.uv_size && json.uv_pos) {
+      this.uv_size = {
+        width: json.uv_size[0],
+        height: json.uv_size[1],
+      };
+      this.uv_pos = {
+        x: json.uv_pos[0],
+        y: json.uv_pos[1],
+      };
+    }
+    else {
+      this.uv_size = {
+        width: 1.0,
+        height: 1.0,
+      };
+      this.uv_pos = {
+        x: 0.0,
+        y: 0.0,
+      };
+    }
   }
 
   // Used in conversion of Json.
@@ -111,8 +131,15 @@ class DrawCall {
                         newCallPosAndDimension[1],
                         newCallPosAndDimension[2],
                         newCallPosAndDimension[3]);
-    if(buffer_map[this.buffer_id.toString()]) {
-      context.drawImage(buffer_map[this.buffer_id.toString()],
+    var buff_id = this.buffer_id.toString();
+    if(buffer_map[buff_id]) {
+      var buff_width = buffer_map[buff_id].width;
+      var buff_height = buffer_map[buff_id].height;
+      context.drawImage(buffer_map[buff_id],
+                        this.uv_pos.x * buff_width,
+                        this.uv_pos.y * buff_height,
+                        this.uv_size.width * buff_width,
+                        this.uv_size.height * buff_height,
                         newCallPosAndDimension[0],
                         newCallPosAndDimension[1],
                         newCallPosAndDimension[2],

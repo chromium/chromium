@@ -35,6 +35,7 @@ TEST_F(VisualDebuggerTest, GeneralDrawSubmission) {
   const char kAnnoText[] = "annotext";
   const char kAnnoLog[] = "annolog";
   const gfx::Rect kTestRect = gfx::Rect(12, 34, 56, 78);
+  const gfx::RectF kTestUV = gfx::RectF(0.46, 0.25, 0.38, 1);
   static const int kNumFrames = 4;
   GetInternal()->ForceEnabled();
   for (uint64_t frame_idx = 0; frame_idx < kNumFrames; frame_idx++) {
@@ -42,7 +43,8 @@ TEST_F(VisualDebuggerTest, GeneralDrawSubmission) {
 
     static const int kNumSubmission = 8;
     for (int i = 0; i < kNumSubmission; i++) {
-      DBG_DRAW_RECT(kAnnoRect, kTestRect);
+      int buff_id = i;
+      DBG_DRAW_RECT_BUFF_UV(kAnnoRect, kTestRect, &buff_id, kTestUV);
       DBG_DRAW_TEXT(kAnnoText, kTestRect.origin(),
                     base::StringPrintf("Text %d", i));
       DBG_LOG(kAnnoLog, "%d", i);
@@ -73,6 +75,7 @@ TEST_F(VisualDebuggerTest, GeneralDrawSubmission) {
     }
 
     for (int i = 0; i < kNumSubmission; i++) {
+      EXPECT_EQ(draw_rect_calls_cache_[i].uv, kTestUV);
       EXPECT_EQ(draw_rect_calls_cache_[i].pos,
                 gfx::Vector2dF(kTestRect.origin().x(), kTestRect.origin().y()));
       EXPECT_EQ(draw_rect_calls_cache_[i].obj_size, kTestRect.size());
