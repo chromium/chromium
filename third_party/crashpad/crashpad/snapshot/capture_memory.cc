@@ -74,6 +74,7 @@ void CaptureMemory::PointedToByContext(const CPUContext& context,
                                        Delegate* delegate) {
 #if defined(ARCH_CPU_X86_FAMILY)
   if (context.architecture == kCPUArchitectureX86_64) {
+    MaybeCaptureMemoryAround(delegate, context.x86_64->rip);
     MaybeCaptureMemoryAround(delegate, context.x86_64->rax);
     MaybeCaptureMemoryAround(delegate, context.x86_64->rbx);
     MaybeCaptureMemoryAround(delegate, context.x86_64->rcx);
@@ -89,9 +90,9 @@ void CaptureMemory::PointedToByContext(const CPUContext& context,
     MaybeCaptureMemoryAround(delegate, context.x86_64->r13);
     MaybeCaptureMemoryAround(delegate, context.x86_64->r14);
     MaybeCaptureMemoryAround(delegate, context.x86_64->r15);
-    MaybeCaptureMemoryAround(delegate, context.x86_64->rip);
     // Note: Shadow stack region is directly captured.
   } else {
+    MaybeCaptureMemoryAround(delegate, context.x86->eip);
     MaybeCaptureMemoryAround(delegate, context.x86->eax);
     MaybeCaptureMemoryAround(delegate, context.x86->ebx);
     MaybeCaptureMemoryAround(delegate, context.x86->ecx);
@@ -99,7 +100,6 @@ void CaptureMemory::PointedToByContext(const CPUContext& context,
     MaybeCaptureMemoryAround(delegate, context.x86->edi);
     MaybeCaptureMemoryAround(delegate, context.x86->esi);
     MaybeCaptureMemoryAround(delegate, context.x86->ebp);
-    MaybeCaptureMemoryAround(delegate, context.x86->eip);
   }
 #elif defined(ARCH_CPU_ARM_FAMILY)
   if (context.architecture == kCPUArchitectureARM64) {

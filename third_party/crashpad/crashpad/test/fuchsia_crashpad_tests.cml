@@ -1,0 +1,83 @@
+// Copyright 2022 The Fuchsia Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+{
+    include: [
+        "//src/sys/test_runners/elf/ambient_exec.shard.cml",
+        "syslog/client.shard.cml",
+    ],
+    program: {
+        binary: "bin/crashpad_tests",
+
+        // For ProcessSnapshotFuchsiaTest.AddressSpaceMapping.
+        job_policy_ambient_mark_vmo_exec: "true",
+    },
+    children: [
+        {
+            name: "dns_resolver",
+            url: "#meta/dns_resolver.cm",
+        },
+        {
+            name: "netstack",
+            url: "#meta/netstack.cm",
+        },
+        {
+            name: "crashpad_test",
+            url: "#meta/crashpad_test.cm",
+        },
+    ],
+    use: [
+        {
+            protocol: [ "fuchsia.net.name.Lookup" ],
+            from: "#dns_resolver",
+        },
+        {
+            protocol: [ "fuchsia.posix.socket.Provider" ],
+            from: "#netstack",
+        },
+        {
+            protocol: [ "fuchsia.process.Launcher" ],
+        },
+        {
+            storage: "tmp",
+            path: "/tmp",
+        },
+    ],
+    offer: [
+        {
+            protocol: "fuchsia.logger.LogSink",
+            from: "parent",
+            to: [
+                "#crashpad_test",
+                "#dns_resolver",
+                "#netstack",
+            ]
+        },
+        {
+            protocol: "fuchsia.net.name.Lookup",
+            from: "#dns_resolver",
+            to: "#crashpad_test",
+        },
+        {
+            protocol: "fuchsia.net.routes.State",
+            from: "#netstack",
+            to: "#dns_resolver",
+        },
+        {
+            protocol: "fuchsia.posix.socket.Provider",
+            from: "#netstack",
+            to: "#crashpad_test",
+        },
+        {
+            storage: "cache",
+            from: "parent",
+            to: [ "#netstack" ],
+        },
+        {
+            storage: "tmp",
+            from: "parent",
+            to: "#crashpad_test",
+            rights: [ "rw*" ],
+        },
+    ],
+}

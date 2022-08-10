@@ -70,7 +70,7 @@ if (crashpad_is_in_chromium || crashpad_is_in_fuchsia) {
   if (crashpad_is_in_fuchsia) {
     import("//build/components.gni")
     fuchsia_test_component("crashpad-test-component") {
-      manifest = "test/fuchsia_crashpad_tests.cmx"
+      manifest = "test/fuchsia_crashpad_tests.cml"
       deps = [
         ":crashpad-test-resources",
         ":crashpad_tests",
@@ -87,8 +87,8 @@ if (crashpad_is_in_chromium || crashpad_is_in_fuchsia) {
       test_components = [ ":crashpad-test-component" ]
 
       deps = [
-        "//src/connectivity/network/dns:component-legacy",
-        "//src/connectivity/network/netstack:component-legacy",
+        "//src/connectivity/network/dns:component",
+        "//src/connectivity/network/netstack:component",
       ]
 
       test_specs = {
