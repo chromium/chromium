@@ -38,6 +38,15 @@ source_set("elements") {
   ]
 }
 
+source_set("constants") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "elements_constants.h",
+    "elements_constants.mm",
+  ]
+  deps = [ "//base" ]
+}
+
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
@@ -75,6 +84,7 @@ source_set("elements_internal") {
     "chrome_activity_overlay_view_controller.mm",
   ]
   deps = [
+    ":constants",
     "//base",
     "//ios/chrome/browser",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",

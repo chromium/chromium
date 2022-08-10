@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/elements/activity_overlay_view.h"
 
+#import "ios/chrome/browser/ui/elements/elements_constants.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -26,6 +27,7 @@
 - (void)didMoveToSuperview {
   if (self.subviews.count == 0) {
     // This is the first time the view is used, finish setting everything up.
+    self.accessibilityIdentifier = kActivityOverlayViewAccessibilityIdentifier;
     [self addSubview:self.indicator];
     AddSameCenterConstraints(self, self.indicator);
     [self.indicator startAnimating];

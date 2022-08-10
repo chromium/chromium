@@ -4,10 +4,12 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey_ui.h"
+#import "ios/chrome/browser/ui/elements/elements_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/accounts_table_view_controller_constants.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -329,8 +331,7 @@ const NSTimeInterval kSyncOperationTimeout = 10.0;
 
 // Tests that users data is cleared out when the signed in account disappear and
 // it is a managed account. Regression test for crbug.com/1208381.
-// TODO(crbug.com/1348569): Failing on bot, fix to enable again.
-- (void)DISABLED_testsManagedAccountRemovedFromAnotherGoogleApp {
+- (void)testsManagedAccountRemovedFromAnotherGoogleApp {
   // Sign In `fakeManagedIdentity`.
   FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeManagedIdentity];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
@@ -343,7 +344,23 @@ const NSTimeInterval kSyncOperationTimeout = 10.0;
   // Simulate that the user remove their primary account from another Google
   // app.
   [SigninEarlGrey forgetFakeIdentity:fakeIdentity];
+
+  // Wait until sign-out and the overlay disappears.
   [ChromeEarlGreyUI waitForAppToIdle];
+  [SigninEarlGrey verifySignedOut];
+  ConditionBlock condition = ^{
+    NSError* error = nil;
+    [[EarlGrey selectElementWithMatcher:
+                   grey_allOf(grey_accessibilityID(
+                                  kActivityOverlayViewAccessibilityIdentifier),
+                              grey_sufficientlyVisible(), nil)]
+        assertWithMatcher:grey_sufficientlyVisible()
+                    error:&error];
+    return error != nil;
+  };
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                 base::test::ios::kWaitForActionTimeout, condition),
+             @"Waiting for the overlay to dissapear");
 
   // Open the Bookmarks screen on the Tools menu.
   [BookmarkEarlGreyUI openBookmarks];
