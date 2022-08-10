@@ -177,19 +177,20 @@ void PresentationRequestNotificationItem::UpdateViewWithMetadata() {
     return;
 
   // If we have metadata from the media session, use that.
-  if (metadata_.has_value()) {
-    view_->UpdateWithMediaMetadata(*metadata_);
-    return;
-  }
+  media_session::MediaMetadata data =
+      metadata_.value_or(media_session::MediaMetadata{});
 
   auto* web_contents = GetWebContentsFromPresentationRequest(request_);
   DCHECK(web_contents);
-
-  media_session::MediaMetadata data;
+  // `request_` has more accurate origin info than `metadata_` e.g. when the
+  // request is from within an iframe.
   data.source_title = url_formatter::FormatOriginForSecurityDisplay(
       request_.frame_origin, url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
-  data.artist = web_contents->GetTitle();
-
+  // If not empty, then `metadata_.artist` is likely to contain information
+  // more relevant than the page title.
+  if (data.artist.empty()) {
+    data.artist = web_contents->GetTitle();
+  }
   view_->UpdateWithMediaMetadata(data);
 }
 

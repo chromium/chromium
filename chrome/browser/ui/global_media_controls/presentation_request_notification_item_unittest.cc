@@ -141,7 +141,9 @@ TEST_F(PresentationRequestNotificationItemTest,
   const std::u16string title = u"This is the page title";
   web_contents()->UpdateTitleForEntry(controller().GetVisibleEntry(), title);
 
-  // The item should prioritize Media Session metadata.
+  // The item should prioritize Media Session metadata except for
+  // `source_title`, which should come from the Presentation Request.
+  data.source_title = u"google2.com";
   EXPECT_CALL(view, UpdateWithMediaMetadata(data));
 
   item->SetView(&view);
