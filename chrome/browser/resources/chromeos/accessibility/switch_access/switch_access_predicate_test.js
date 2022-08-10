@@ -13,6 +13,7 @@ SwitchAccessPredicateTest = class extends SwitchAccessE2ETest {
     await importModule('SACache', '/switch_access/cache.js');
     await importModule(
         'SARootNode', '/switch_access/nodes/switch_access_node.js');
+    await importModule('AutomationTreeWalker', '/common/tree_walker.js');
   }
 };
 

@@ -26,6 +26,7 @@ SwitchAccessItemScanManagerTest = class extends SwitchAccessE2ETest {
     await importModule(
         'SwitchAccessPredicate', '/switch_access/switch_access_predicate.js');
     await importModule('KeyCode', '/common/key_code.js');
+    await importModule('AutomationTreeWalker', '/common/tree_walker.js');
 
     BackButtonNode
         .locationForTesting = {top: 10, left: 10, width: 20, height: 20};

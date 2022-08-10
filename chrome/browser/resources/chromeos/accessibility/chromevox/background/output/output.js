@@ -8,6 +8,7 @@
 import {AutomationUtil} from '../../../common/automation_util.js';
 import {Cursor, CURSOR_NODE_INDEX} from '../../../common/cursors/cursor.js';
 import {CursorRange} from '../../../common/cursors/range.js';
+import {AutomationTreeWalker} from '../../../common/tree_walker.js';
 import {NavBraille} from '../../common/braille/nav_braille.js';
 import {EventSourceType} from '../../common/event_source_type.js';
 import {LocaleOutputHelper} from '../../common/locale_output_helper.js';

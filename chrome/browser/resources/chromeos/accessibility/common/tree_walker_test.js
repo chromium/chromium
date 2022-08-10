@@ -54,6 +54,13 @@ AccessibilityExtensionAutomationTreeWalkerTest =
   isDescendant(descendant, node) {
     return this.isAncestor(node, descendant);
   }
+
+  async setUpDeferred() {
+    await super.setUpDeferred();
+    await importModule(
+        ['AutomationTreeWalker', 'AutomationTreeWalkerPhase'],
+        '/common/tree_walker.js');
+  }
 };
 
 

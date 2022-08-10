@@ -6,6 +6,8 @@
  * @fileoverview ChromeVox utilities for the automation extension API.
  */
 
+import {AutomationTreeWalker, AutomationTreeWalkerRestriction} from './tree_walker.js';
+
 const AutomationNode = chrome.automation.AutomationNode;
 const RoleType = chrome.automation.RoleType;
 

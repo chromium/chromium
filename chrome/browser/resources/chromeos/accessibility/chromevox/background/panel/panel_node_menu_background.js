@@ -8,6 +8,7 @@
  */
 import {AutomationUtil} from '../../../common/automation_util.js';
 import {CursorRange} from '../../../common/cursors/range.js';
+import {AutomationTreeWalker} from '../../../common/tree_walker.js';
 import {Msgs} from '../../common/msgs.js';
 import {PanelBridge} from '../../common/panel_bridge.js';
 import {ChromeVoxState} from '../chromevox_state.js';
