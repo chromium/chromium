@@ -180,6 +180,7 @@ void PermissionsUpdater::NetworkPermissionsUpdateHelper::UpdatePermissions(
   // NotifyPermissionsUpdated if the profile is still valid.
   NetworkPermissionsUpdater::UpdateExtension(
       *browser_context, *extension,
+      NetworkPermissionsUpdater::ContextSet::kAllRelatedContexts,
       base::BindOnce(&NetworkPermissionsUpdateHelper::OnOriginAccessUpdated,
                      helper->weak_factory_.GetWeakPtr()));
 }

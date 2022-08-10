@@ -23,9 +23,9 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/network_permissions_updater.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/renderer_startup_helper.h"
-#include "extensions/common/cors_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
@@ -118,21 +118,17 @@ void SetCorsOriginAccessList(content::BrowserContext* browser_context,
                              const Extension& extension,
                              base::OnceClosure closure) {
   // To limit how far the new permissions reach, we only apply them to the
-  // ActiveTab's profile for split-mode extensions.  OTOH, spanning-mode
+  // ActiveTab's context for split-mode extensions.  OTOH, spanning-mode
   // extensions need to get the new permissions in all profiles (e.g. if the
   // ActiveTab is in an incognito window, than the [single/only/spanning]
   // background page in the regular profile also needs to get the new
   // permissions).
-  std::vector<content::BrowserContext*> target_contexts;
-  if (IncognitoInfo::IsSplitMode(&extension)) {
-    target_contexts = {browser_context};
-  } else {
-    target_contexts = util::GetAllRelatedProfiles(
-        Profile::FromBrowserContext(browser_context), extension);
-  }
-
-  util::SetCorsOriginAccessListForExtension(target_contexts, extension,
-                                            std::move(closure));
+  NetworkPermissionsUpdater::ContextSet context_set =
+      IncognitoInfo::IsSplitMode(&extension)
+          ? NetworkPermissionsUpdater::ContextSet::kCurrentContextOnly
+          : NetworkPermissionsUpdater::ContextSet::kAllRelatedContexts;
+  NetworkPermissionsUpdater::UpdateExtension(*browser_context, extension,
+                                             context_set, std::move(closure));
 }
 
 }  // namespace

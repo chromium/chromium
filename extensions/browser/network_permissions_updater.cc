@@ -27,6 +27,7 @@ NetworkPermissionsUpdater::~NetworkPermissionsUpdater() = default;
 void NetworkPermissionsUpdater::UpdateExtension(
     content::BrowserContext& browser_context,
     const Extension& extension,
+    ContextSet context_set,
     base::OnceClosure completion_callback) {
   auto updater = std::make_unique<NetworkPermissionsUpdater>(
       PassKey(), browser_context, std::move(completion_callback));
@@ -35,7 +36,7 @@ void NetworkPermissionsUpdater::UpdateExtension(
   // The callback takes ownership of `updater`, ensuring it's deleted when
   // the update completes.
   updater_raw->UpdateExtension(
-      extension,
+      extension, context_set,
       base::BindOnce(&NetworkPermissionsUpdater::OnOriginAccessUpdated,
                      std::move(updater)));
 }
@@ -58,20 +59,30 @@ void NetworkPermissionsUpdater::UpdateAllExtensions(
       base::BindOnce(&NetworkPermissionsUpdater::OnOriginAccessUpdated,
                      std::move(updater)));
 
-  for (const auto& extension : extensions)
-    updater_raw->UpdateExtension(*extension, barrier_closure);
+  // When updating all extensions, we always use "all related contexts".
+  constexpr ContextSet kContextSet = ContextSet::kAllRelatedContexts;
+
+  for (const auto& extension : extensions) {
+    updater_raw->UpdateExtension(*extension, kContextSet, barrier_closure);
+  }
 }
 
 void NetworkPermissionsUpdater::UpdateExtension(
     const Extension& extension,
+    ContextSet context_set,
     base::OnceClosure completion_callback) {
-  // Non-tab-specific extension permissions are shared across profiles (even for
-  // split-mode extensions), so we update all profiles the extension is enabled
-  // for.
-  util::SetCorsOriginAccessListForExtension(
-      ExtensionsBrowserClient::Get()->GetRelatedContextsForExtension(
-          browser_context_, extension),
-      extension, std::move(completion_callback));
+  std::vector<content::BrowserContext*> target_contexts;
+  if (context_set == ContextSet::kCurrentContextOnly) {
+    target_contexts = {browser_context_.get()};
+  } else {
+    DCHECK_EQ(ContextSet::kAllRelatedContexts, context_set);
+    target_contexts =
+        ExtensionsBrowserClient::Get()->GetRelatedContextsForExtension(
+            browser_context_, extension);
+  }
+
+  util::SetCorsOriginAccessListForExtension(target_contexts, extension,
+                                            std::move(completion_callback));
 }
 
 // static
