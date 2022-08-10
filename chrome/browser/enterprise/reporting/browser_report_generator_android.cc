@@ -41,11 +41,6 @@ BrowserReportGeneratorAndroid::GetReportedProfiles() {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   for (const auto* entry : profile_manager->GetProfileAttributesStorage()
                                .GetAllProfilesAttributes()) {
-    // Skip off-the-record profile.
-    auto* profile = profile_manager->GetProfile(entry->GetPath());
-    if (profile && profile->IsOffTheRecord())
-      continue;
-
     reportedProfileData.push_back(
         {entry->GetPath().AsUTF8Unsafe(), base::UTF16ToUTF8(entry->GetName())});
   }
