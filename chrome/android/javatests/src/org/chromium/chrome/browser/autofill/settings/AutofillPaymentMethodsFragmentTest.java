@@ -19,12 +19,15 @@ import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.autofill.VirtualCardEnrollmentState;
 
 import java.util.concurrent.TimeoutException;
 
@@ -63,6 +66,28 @@ public class AutofillPaymentMethodsFragmentTest {
                     /* basicCardIssuerNetwork= */ "mastercard", /* issuerIconDrawableId= */ 0,
                     /* billingAddressId= */ "",
                     /* serverId= */ "");
+    private static final CreditCard SAMPLE_VIRTUAL_CARD_UNENROLLED = new CreditCard(/* guid= */ "",
+            /* origin= */ "",
+            /* isLocal= */ false, /* isCached= */ false, /* name= */ "John Doe",
+            /* number= */ "4444333322221111",
+            /* obfuscatedNumber= */ "", /* month= */ "5", AutofillTestHelper.nextYear(),
+            /* basicCardIssuerNetwork =*/"visa",
+            /* issuerIconDrawableId= */ 0, /* billingAddressId= */ "",
+            /* serverId= */ "", /* instrumentId= */ 0, /* cardLabel= */ "", /* nickname= */ "",
+            /* cardArtUrl= */ null,
+            /* virtualCardEnrollmentState= */ VirtualCardEnrollmentState.UNENROLLED_AND_ELIGIBLE,
+            /* productDescription= */ "");
+    private static final CreditCard SAMPLE_VIRTUAL_CARD_ENROLLED = new CreditCard(/* guid= */ "",
+            /* origin= */ "",
+            /* isLocal= */ false, /* isCached= */ false, /* name= */ "John Doe",
+            /* number= */ "4444333322221111",
+            /* obfuscatedNumber= */ "", /* month= */ "5", AutofillTestHelper.nextYear(),
+            /* basicCardIssuerNetwork =*/"visa",
+            /* issuerIconDrawableId= */ 0, /* billingAddressId= */ "",
+            /* serverId= */ "", /* instrumentId= */ 0, /* cardLabel= */ "", /* nickname= */ "",
+            /* cardArtUrl= */ null,
+            /* virtualCardEnrollmentState= */ VirtualCardEnrollmentState.ENROLLED,
+            /* productDescription= */ "");
 
     private AutofillTestHelper mAutofillTestHelper;
 
@@ -130,6 +155,61 @@ public class AutofillPaymentMethodsFragmentTest {
         String title = cardPreference.getTitle().toString();
         assertThat(title).contains("This is a long nickname");
         assertThat(title).contains("1111");
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_VIRTUAL_CARD_METADATA})
+    public void testCreditCardSummary_displaysVirtualCardEnrolledStatus() throws Exception {
+        mAutofillTestHelper.addServerCreditCard(SAMPLE_VIRTUAL_CARD_ENROLLED);
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        Preference cardPreference = getPreferenceScreen(activity).getPreference(1);
+        String summary = cardPreference.getSummary().toString();
+        assertThat(summary).isEqualTo(
+                activity.getString(R.string.autofill_virtual_card_enrolled_text));
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_VIRTUAL_CARD_METADATA})
+    public void testCreditCardSummary_displaysVirtualCardEligibleStatus() throws Exception {
+        mAutofillTestHelper.addServerCreditCard(SAMPLE_VIRTUAL_CARD_UNENROLLED);
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        Preference cardPreference = getPreferenceScreen(activity).getPreference(1);
+        String summary = cardPreference.getSummary().toString();
+        assertThat(summary).isEqualTo(
+                activity.getString(R.string.autofill_virtual_card_enrollment_eligible_text));
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_VIRTUAL_CARD_METADATA})
+    public void testCreditCardSummary_displaysExpirationDateForNonVirtualCards() throws Exception {
+        mAutofillTestHelper.addServerCreditCard(SAMPLE_CARD_VISA);
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        Preference cardPreference = getPreferenceScreen(activity).getPreference(1);
+        String summary = cardPreference.getSummary().toString();
+        assertThat(summary).contains(String.format("05/%s", AutofillTestHelper.nextYear()));
+    }
+
+    @Test
+    @MediumTest
+    @Features.DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_VIRTUAL_CARD_METADATA})
+    public void testCreditCardSummary_displaysExpirationDateForVirtualCardsWhenMetadataFlagOff()
+            throws Exception {
+        mAutofillTestHelper.addServerCreditCard(SAMPLE_VIRTUAL_CARD_ENROLLED);
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        Preference cardPreference = getPreferenceScreen(activity).getPreference(1);
+        String summary = cardPreference.getSummary().toString();
+        assertThat(summary).contains(String.format("05/%s", AutofillTestHelper.nextYear()));
     }
 
     private static PreferenceScreen getPreferenceScreen(SettingsActivity activity) {
