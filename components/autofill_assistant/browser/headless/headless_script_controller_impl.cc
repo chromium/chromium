@@ -7,24 +7,19 @@
 #include "base/callback_helpers.h"
 #include "base/time/default_tick_clock.h"
 #include "components/autofill_assistant/browser/desktop/starter_delegate_desktop.h"
-#include "components/autofill_assistant/browser/public/password_change/website_login_manager.h"
+#include "components/autofill_assistant/browser/headless/client_headless.h"
 #include "components/autofill_assistant/browser/starter.h"
 
 namespace autofill_assistant {
 
 HeadlessScriptControllerImpl::HeadlessScriptControllerImpl(
     content::WebContents* web_contents,
-    ExternalActionDelegate* action_extension_delegate,
-    WebsiteLoginManager* website_login_manager)
-    : web_contents_(web_contents) {
-  DCHECK(web_contents_);
-
-  auto* starter = Starter::FromWebContents(web_contents_);
-  if (starter) {
-    client_ = std::make_unique<ClientHeadless>(
-        web_contents, starter->GetCommonDependencies(),
-        action_extension_delegate, website_login_manager);
-  }
+    Starter* starter,
+    std::unique_ptr<ClientHeadless> client)
+    : web_contents_(web_contents),
+      starter_(starter),
+      client_(std::move(client)) {
+  DCHECK(web_contents_ && starter_ && client_);
 }
 
 HeadlessScriptControllerImpl::~HeadlessScriptControllerImpl() = default;
@@ -41,16 +36,21 @@ void HeadlessScriptControllerImpl::StartScript(
     base::OnceCallback<void(ScriptResult)> script_ended_callback,
     bool use_autofill_assistant_onboarding,
     base::OnceCallback<void()> onboarding_successful_callback) {
+  StartScript(script_parameters, std::move(script_ended_callback),
+              use_autofill_assistant_onboarding,
+              std::move(onboarding_successful_callback),
+              /* service= */ nullptr, /* web_controller= */ nullptr);
+}
+void HeadlessScriptControllerImpl::StartScript(
+    const base::flat_map<std::string, std::string>& script_parameters,
+    base::OnceCallback<void(ScriptResult)> script_ended_callback,
+    bool use_autofill_assistant_onboarding,
+    base::OnceCallback<void()> onboarding_successful_callback,
+    std::unique_ptr<Service> service,
+    std::unique_ptr<WebController> web_controller) {
   // This HeadlessScriptController is currently executing a script, so we return
   // an error.
   if (script_ended_callback_) {
-    std::move(script_ended_callback).Run({false});
-    return;
-  }
-  auto* starter = Starter::FromWebContents(web_contents_);
-  // The starter has not yet been initialized or was not initialized at the
-  // time the constructor was called.
-  if (!starter || !client_) {
     std::move(script_ended_callback).Run({false});
     return;
   }
@@ -61,7 +61,7 @@ void HeadlessScriptControllerImpl::StartScript(
   auto trigger_context = std::make_unique<TriggerContext>(
       std::move(parameters),
       /* experiment_ids = */ "",
-      starter->GetPlatformDependencies()->IsCustomTab(*web_contents_),
+      starter_->GetPlatformDependencies()->IsCustomTab(*web_contents_),
       /*onboarding_shown = */ false,
       /*is_direct_action = */ false,
       /* initial_url = */ "",
@@ -69,13 +69,16 @@ void HeadlessScriptControllerImpl::StartScript(
       /* is_externally_triggered = */ true,
       /* skip_autofill_assistant_onboarding = */
       !use_autofill_assistant_onboarding);
-  starter->CanStart(
+  starter_->CanStart(
       std::move(trigger_context),
       base::BindOnce(&HeadlessScriptControllerImpl::OnReadyToStart,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(service),
+                     std::move(web_controller)));
 }
 
 void HeadlessScriptControllerImpl::OnReadyToStart(
+    std::unique_ptr<Service> service,
+    std::unique_ptr<WebController> web_controller,
     bool can_start,
     absl::optional<GURL> url,
     std::unique_ptr<TriggerContext> trigger_context) {
@@ -89,7 +92,8 @@ void HeadlessScriptControllerImpl::OnReadyToStart(
   // TODO(b/201964911): At this point we should be sure no other Controller
   // exists on this tab. Add logic to the starter to check that's the case.
   client_->Start(
-      *url, std::move(trigger_context),
+      *url, std::move(trigger_context), std::move(service),
+      std::move(web_controller),
       base::BindOnce(&HeadlessScriptControllerImpl::NotifyScriptEnded,
                      weak_ptr_factory_.GetWeakPtr()));
 }
