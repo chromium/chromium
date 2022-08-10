@@ -132,14 +132,21 @@ class FastPairAdvertiserTest : public testing::Test {
   void TestExpectedMetrics(bool should_succeed) {
     if (should_succeed) {
       expected_success_count_++;
-      histograms_.ExpectBucketCount("OOBE.QuickStart.FastPairAdvertising", true,
-                                    expected_success_count_);
+      histograms_.ExpectBucketCount(
+          "OOBE.QuickStart.FastPair.AdvertisingStart.Result", true,
+          expected_success_count_);
       return;
     }
 
     expected_failure_count_++;
-    histograms_.ExpectBucketCount("OOBE.QuickStart.FastPairAdvertising", false,
-                                  expected_failure_count_);
+    histograms_.ExpectBucketCount(
+        "OOBE.QuickStart.FastPair.AdvertisingStart.Result", false,
+        expected_failure_count_);
+    histograms_.ExpectBucketCount(
+        "OOBE.QuickStart.FastPair.AdvertisingStart.ErrorCode",
+        device::BluetoothAdvertisement::ErrorCode::
+            INVALID_ADVERTISEMENT_ERROR_CODE,
+        expected_failure_count_);
   }
 
   void SetUp() override {
