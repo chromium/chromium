@@ -7,11 +7,17 @@
 #include "ash/constants/ash_features.h"
 #include "ash/webui/grit/ash_projector_app_trusted_resources.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
+#include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
 #include "chrome/browser/ui/ash/projector/projector_utils.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/grit/generated_resources.h"
+#include "content/public/browser/web_contents.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_styles.h"
@@ -85,4 +91,31 @@ gfx::Size ProjectorSystemWebAppDelegate::GetMinimumWindowSize() const {
 
 bool ProjectorSystemWebAppDelegate::IsAppEnabled() const {
   return IsProjectorAppEnabled(profile_);
+}
+
+Browser* ProjectorSystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
+    Profile* profile,
+    web_app::WebAppProvider* provider,
+    const GURL& url,
+    const apps::AppLaunchParams& params) const {
+  Browser* browser =
+      ash::FindSystemWebAppBrowser(profile, ash::SystemWebAppType::PROJECTOR);
+  // If the Projector app is not already open or we're not launching with files
+  // then proceed as usual.
+  if (!browser || params.launch_files.empty()) {
+    return SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
+        profile, provider, url, params);
+  }
+  // Otherwise, the app is already open and we're launching files. Suppose the
+  // user clicks on a share link for a transcoding screencast. The app's URL
+  // would be set to chrome://projector/app/screencastId. However, calling
+  // LaunchSystemWebAppAsync() always launches the app at the default start url
+  // of chrome://projector/app/. The launch event would reload the app back to
+  // the gallery view! To prevent this bug, we must match the app's current url
+  // to avoid a visible app reload. In general, launch events should be
+  // invisible to the user.
+  content::WebContents* web_contents =
+      browser->tab_strip_model()->GetActiveWebContents();
+  return SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
+      profile, provider, web_contents->GetURL(), params);
 }

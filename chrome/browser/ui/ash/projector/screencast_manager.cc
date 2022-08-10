@@ -14,6 +14,7 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ui/ash/projector/projector_drivefs_provider.h"
+#include "chrome/browser/ui/ash/projector/projector_utils.h"
 
 namespace ash {
 
@@ -51,7 +52,12 @@ void OnVideoFilePathLocated(
     return;
   }
 
-  // TODO(b/237089852): Launch the file.
+  const base::FilePath& mounted_path =
+      ProjectorDriveFsProvider::GetDriveFsMountPointPath();
+  const base::FilePath& video_path = mounted_path.Append(relative_drivefs_path);
+  // TODO(b/205334821): Find the video duration and validate the media file.
+  LaunchProjectorAppWithFiles({video_path});
+
   std::move(callback).Run(std::move(video), /*error_message=*/std::string());
 }
 
@@ -66,10 +72,8 @@ void ScreencastManager::GetVideo(
     ProjectorAppClient::OnGetVideoCallback callback) const {
   auto video = std::make_unique<ProjectorScreencastVideo>();
   video->file_id = video_file_id;
-  // TODO(b/237089852):
-  // 1. Find the video duration.
-  // 2. Launch the app with the video file.
-  // 3. Handle the resource key once LocateFilesByItemIds() supports it.
+  // TODO(b/237089852): Handle the resource key once LocateFilesByItemIds()
+  // supports it.
 
   drive::DriveIntegrationService* integration_service =
       ProjectorDriveFsProvider::GetActiveDriveIntegrationService();

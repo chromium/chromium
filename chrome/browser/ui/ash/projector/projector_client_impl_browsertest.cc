@@ -14,6 +14,7 @@
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "base/bind.h"
 #include "base/callback_forward.h"
+#include "base/files/file_path.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
@@ -27,8 +28,10 @@
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/projector/projector_app_client_impl.h"
+#include "chrome/browser/ui/ash/projector/projector_utils.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -193,6 +196,66 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, OpenProjectorApp) {
   ASSERT_TRUE(app_browser);
   content::WebContents* tab =
       app_browser->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(tab);
+  EXPECT_EQ(tab->GetController().GetVisibleEntry()->GetPageType(),
+            content::PAGE_TYPE_NORMAL);
+}
+
+// This test covers launching the Projector app with files for the first time.
+IN_PROC_BROWSER_TEST_F(ProjectorClientTest, LaunchProjectorAppWithFiles) {
+  auto* profile = browser()->profile();
+  SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
+
+  base::FilePath file1("test1"), file2("test2");
+  LaunchProjectorAppWithFiles({file1, file2});
+  FlushSystemWebAppLaunchesForTesting(profile);
+
+  // Verify that Projector App is opened.
+  Browser* app_browser =
+      FindSystemWebAppBrowser(profile, SystemWebAppType::PROJECTOR);
+  ASSERT_TRUE(app_browser);
+  content::WebContents* tab =
+      app_browser->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(tab);
+  EXPECT_EQ(tab->GetController().GetVisibleEntry()->GetPageType(),
+            content::PAGE_TYPE_NORMAL);
+}
+
+// This test covers launching the Projector app with files when the app is
+// already open. The launch event should recycle the existing window and should
+// not open a new window.
+IN_PROC_BROWSER_TEST_F(ProjectorClientTest,
+                       LaunchProjectorAppWithFilesWhenAppAlreadyOpen) {
+  const size_t starting_browser_count = chrome::GetTotalBrowserCount();
+
+  auto* profile = browser()->profile();
+  SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
+
+  // Launch the app for the first time.
+  client()->OpenProjectorApp();
+  FlushSystemWebAppLaunchesForTesting(profile);
+
+  // Verify that Projector App is opened.
+  Browser* app_browser1 =
+      FindSystemWebAppBrowser(profile, SystemWebAppType::PROJECTOR);
+  ASSERT_TRUE(app_browser1);
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), starting_browser_count + 1);
+
+  base::FilePath file1("test1"), file2("test2");
+  // Launch the app again with files. This operation should recycle the same
+  // window.
+  LaunchProjectorAppWithFiles({file1, file2});
+  FlushSystemWebAppLaunchesForTesting(profile);
+
+  // Verify that the Projector App is still open.
+  Browser* app_browser2 =
+      FindSystemWebAppBrowser(profile, SystemWebAppType::PROJECTOR);
+  // Launching the app with files should not open a new window.
+  EXPECT_EQ(app_browser1, app_browser2);
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), starting_browser_count + 1);
+
+  content::WebContents* tab =
+      app_browser2->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(tab);
   EXPECT_EQ(tab->GetController().GetVisibleEntry()->GetPageType(),
             content::PAGE_TYPE_NORMAL);

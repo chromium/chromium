@@ -22,6 +22,11 @@ class ProjectorSystemWebAppDelegate : public ash::SystemWebAppDelegate {
   bool ShouldCaptureNavigations() const override;
   gfx::Size GetMinimumWindowSize() const override;
   bool IsAppEnabled() const override;
+  Browser* LaunchAndNavigateSystemWebApp(
+      Profile* profile,
+      web_app::WebAppProvider* provider,
+      const GURL& url,
+      const apps::AppLaunchParams& params) const override;
 };
 
 #endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_PROJECTOR_SYSTEM_WEB_APP_INFO_H_

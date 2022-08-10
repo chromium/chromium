@@ -45,6 +45,7 @@ class ProjectorMessageHandler : public content::WebUIMessageHandler,
   base::WeakPtr<ProjectorMessageHandler> GetWeakPtr();
 
   // content::WebUIMessageHandler:
+  // TODO(b/237337607): chrome.send() is banned on ash. Migrate to Mojo instead.
   void RegisterMessages() override;
 
   // ProjectorAppClient:Observer:
