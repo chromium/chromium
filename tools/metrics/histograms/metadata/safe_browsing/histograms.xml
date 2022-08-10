@@ -2683,20 +2683,6 @@ failing to fetch the updates which puts users' security at risk. -->
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsingFCMService.IncomingMessageHasValidToken"
-    enum="Boolean" expires_after="2022-09-18">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Whether the incoming message has a token that was previously registered with
-    the FCM handler. Recorded on every FCM message received by the Safe Browsing
-    FCM handler.
-
-    Warning: This histogram was expired in M91 and restored in M92. Data may be
-    missing in M91.
-  </summary>
-</histogram>
-
 </histograms>
 
 </histogram-configuration>

@@ -179,31 +179,6 @@ TEST_F(BinaryFCMServiceTest, RoutesMessages) {
   EXPECT_EQ(response2.request_token(), "");
 }
 
-TEST_F(BinaryFCMServiceTest, EmitsMessageHasValidTokenHistogram) {
-  gcm::IncomingMessage incoming_message;
-  enterprise_connectors::ContentAnalysisResponse message;
-
-  message.set_request_token("token1");
-  std::string serialized_message;
-  ASSERT_TRUE(message.SerializeToString(&serialized_message));
-  base::Base64Encode(serialized_message, &serialized_message);
-  incoming_message.data["proto"] = serialized_message;
-
-  {
-    base::HistogramTester histograms;
-    binary_fcm_service_->OnMessage("app_id", incoming_message);
-    histograms.ExpectUniqueSample(
-        "SafeBrowsingFCMService.IncomingMessageHasValidToken", false, 1);
-  }
-  {
-    binary_fcm_service_->SetCallbackForToken("token1", base::DoNothing());
-    base::HistogramTester histograms;
-    binary_fcm_service_->OnMessage("app_id", incoming_message);
-    histograms.ExpectUniqueSample(
-        "SafeBrowsingFCMService.IncomingMessageHasValidToken", true, 1);
-  }
-}
-
 TEST_F(BinaryFCMServiceTest, UnregisterToken) {
   // Get an instance ID
   std::string received_instance_id = BinaryFCMService::kInvalidId;

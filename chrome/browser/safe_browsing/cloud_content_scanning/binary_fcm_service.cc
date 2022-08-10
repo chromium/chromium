@@ -197,8 +197,6 @@ void BinaryFCMService::OnMessage(const std::string& app_id,
 
   auto callback_it = message_token_map_.find(response.request_token());
   bool has_valid_token = (callback_it != message_token_map_.end());
-  base::UmaHistogramBoolean(
-      "SafeBrowsingFCMService.IncomingMessageHasValidToken", has_valid_token);
   if (!has_valid_token)
     return;
 
