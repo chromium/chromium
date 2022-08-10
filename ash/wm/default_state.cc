@@ -562,16 +562,15 @@ void DefaultState::ReenterToCurrentState(
     window_state->SetRestoreBoundsInParent(stored_bounds_);
   }
 
-  // When reentering a state, use the saved `snap_ratio_`.
-  if (window_state->IsSnapped()) {
-    UpdateBoundsFromState(window_state, state_in_previous_mode->GetType(),
-                          window_state->snap_ratio().has_value()
-                              ? window_state->snap_ratio()
-                              : absl::make_optional(kDefaultSnapRatio));
-  } else {
-    UpdateBoundsFromState(window_state, state_in_previous_mode->GetType(),
-                          absl::nullopt);
-  }
+  // If reentering a snapped state, use the saved `snap_ratio()`.
+  bool is_snapped = state_type_ == WindowStateType::kPrimarySnapped ||
+                    state_type_ == WindowStateType::kSecondarySnapped;
+  UpdateBoundsFromState(window_state, state_in_previous_mode->GetType(),
+                        is_snapped
+                            ? (window_state->snap_ratio().has_value()
+                                   ? window_state->snap_ratio()
+                                   : absl::make_optional(kDefaultSnapRatio))
+                            : absl::nullopt);
   UpdateMinimizedState(window_state, state_in_previous_mode->GetType());
 
   // Then restore the restore bounds to their previous value.
