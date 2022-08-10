@@ -21,8 +21,6 @@ assert(is_chromeos_ash, "ChromeOS Settings is ChromeOS only")
 
 preprocessed_folder = "preprocessed"
 preprocessed_ts_folder = "preprocessed_ts"
-web_components_manifest = "web_components_manifest.json"
-non_web_component_files_manifest = "non_web_component_files_manifest.json"
 browser_settings_tsc_manifest = "browser_settings_tsc_manifest.json"
 external_mojo_manifest = "external_mojo_manifest.json"
 
@@ -46,8 +44,6 @@ if (optimize_webui) {
     deps = [
       ":build_ts",
       ":preprocess_browser_settings_tsc",
-      ":preprocess_gen_js_files",
-      ":preprocess_src_js_files",
       "//chrome/browser/resources/nearby_share/shared:preprocess_v3",
       "//ui/webui/resources:preprocess",
       "//ui/webui/resources/cr_components/app_management:build_ts",
@@ -98,9 +94,6 @@ if (optimize_webui) {
 }
 
 # TypeScript Build Configuration
-# TODO(crbug/1315757) Gradually remove JS files from pending_src_js_files
-# and pending_gen_js_files, and add them as input files here.
-# Eventually, ts_library() will be the only build path for all JS/TS files.
 ts_library("build_ts") {
   tsconfig_base = "tsconfig_base.json"
   deps = [
@@ -146,25 +139,6 @@ html_to_wrapper("generate_web_component_html_wrapper_files") {
   in_folder = "../"
   in_files = web_component_html_files
   out_folder = get_path_info("../", "gen_dir")
-}
-
-# TODO(crbug/1315757) Transfer these JS files into ts_library() when
-# ready for TS conversion
-preprocess_if_expr("preprocess_src_js_files") {
-  defines = chrome_grit_defines
-  in_folder = "../"
-  out_folder = "$target_gen_dir/$preprocessed_folder"
-  out_manifest = "$target_gen_dir/$non_web_component_files_manifest"
-  in_files = pending_src_js_files
-}
-
-preprocess_if_expr("preprocess_gen_js_files") {
-  defines = chrome_grit_defines
-  deps = [ ":generate_web_components" ]
-  in_folder = get_path_info("../", "gen_dir")
-  out_folder = "$target_gen_dir/$preprocessed_folder"
-  out_manifest = "$target_gen_dir/$web_components_manifest"
-  in_files = pending_gen_js_files
 }
 
 # Generate all WebUI mojom files and copy them to preprocessed_ts_folder to be
@@ -340,15 +314,11 @@ generate_grd("build_grd") {
     deps += [
       ":build_ts",
       ":preprocess_browser_settings_tsc",
-      ":preprocess_gen_js_files",
-      ":preprocess_src_js_files",
       "//chrome/browser/resources/nearby_share/shared:build_v3_grdp",
       "//ui/webui/resources/cr_components/app_management:build_ts",
     ]
     grdp_files += [ "$root_gen_dir/chrome/browser/resources/nearby_share/shared/nearby_share_resources_v3.grdp" ]
     manifest_files += [
-      "$target_gen_dir/$web_components_manifest",
-      "$target_gen_dir/$non_web_component_files_manifest",
       "$target_gen_dir/$browser_settings_tsc_manifest",
       "$target_gen_dir/build_ts.manifest",
     ]
