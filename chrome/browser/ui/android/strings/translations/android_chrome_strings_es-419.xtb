@@ -200,6 +200,7 @@ Si borras el historial de navegación por completo o de un sitio específico, ta
 <translation id="2046634576464120978">No se pudo completar el registro.</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2052422354554967744">Search the internet</translation>
+<translation id="2053105195397337973">Estamos explorando formas de restringir el seguimiento, a la vez que habilitamos a los sitios para frenar el fraude y el spam de anuncios.</translation>
 <translation id="2056878612599315956">Se pausó el sitio</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{No se pudo realizar 1 descarga}other{No se pudieron realizar # descargas}}</translation>
 <translation id="2067805253194386918">texto</translation>
@@ -234,6 +235,7 @@ Si borras el historial de navegación por completo o de un sitio específico, ta
 <translation id="2239812875700136898">Controla tus historias desde las opciones del botón Descubre</translation>
 <translation id="2248941474044011069">Las contraseñas se encriptan en tu dispositivo antes de guardarse en el Administrador de contraseñas de Google</translation>
 <translation id="2259659629660284697">Exportar contraseñas…</translation>
+<translation id="2276231040576210443">En la <ph name="BEGIN_LINK1" />configuración<ph name="END_LINK1" />, puedes elegir los datos para sincronizar en cualquier momento. Es posible que Google personalice la Búsqueda y otros servicios en función de tu historial.</translation>
 <translation id="2276696007612801991">Para verificar las contraseñas, accede a tu Cuenta de Google</translation>
 <translation id="2278052315791335171">Si borras esta contraseña, no se quitará tu cuenta de <ph name="SITE" />.</translation>
 <translation id="2279146068164892489">¿Quieres abrir la app de <ph name="APPNAME" />?</translation>
@@ -396,6 +398,7 @@ Si borras el historial de navegación por completo o de un sitio específico, ta
 <translation id="3114507951000454849">Lee las noticias de hoy <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">te vinculaste con</translation>
 <translation id="3123734510202723619">Anuncios</translation>
+<translation id="3130863904455712965">Historial y más</translation>
 <translation id="3134784203083076891">"</translation>
 <translation id="314939179385989105">Página principal de Chrome</translation>
 <translation id="3166827708714933426">Accesos directos a ventanas y pestañas</translation>
@@ -543,6 +546,7 @@ Si borras el historial de navegación por completo o de un sitio específico, ta
 <translation id="3981902534690264083">Los anunciantes pueden entender el rendimiento de los anuncios.</translation>
 <translation id="3985215325736559418">¿No quieres descargar <ph name="FILE_NAME" /> de nuevo?</translation>
 <translation id="3987993985790029246">Copiar vínculo</translation>
+<translation id="3999683152997576765">Puedes ver y quitar los temas de interés que usan los sitios para mostrarte anuncios. Chrome estima tus intereses en función de tu historial de navegación reciente.</translation>
 <translation id="4000212216660919741">Página principal sin conexión</translation>
 <translation id="4016425174436051808">No se puede seguir. Se produjo un error.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}other{# h}}</translation>
@@ -1298,6 +1302,7 @@ Los tokens de confianza mejoran la privacidad en la Web y no pueden usarse para 
 <translation id="8037801708772278989">Se verificó recién</translation>
 <translation id="804335162455518893">No se encontró la tarjeta SD</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> pestaña de incógnito}other{<ph name="TAB_COUNT_NORMAL" /> pestañas de incógnito}}</translation>
+<translation id="8048728378294435881">Crea una copia de seguridad de tus datos y úsalos en cualquier dispositivo.</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB disponibles</translation>
 <translation id="8058655154417507695">Año de vencimiento</translation>
 <translation id="8058746566562539958">Abrir en una nueva pestaña de Chrome</translation>

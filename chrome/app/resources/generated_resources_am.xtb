@@ -1135,6 +1135,7 @@
 <translation id="2048653237708779538">እርምጃ አይገኝም</translation>
 <translation id="2050339315714019657">በቁመት</translation>
 <translation id="2052572566310583903">በሌሎች መሣሪያዎችዎ ላይ ተጭነዋል</translation>
+<translation id="2053105195397337973">ጣቢያዎችን በማንቃት ወቅት የማስታወቂያ አይፈለጌ መልዕክት እና መጭበርበርን እንዲያቆሙ እያስቻልን ክትትልን የምንገድብባቸውን መንገዶች እያሰስን ነው።</translation>
 <translation id="2053312383184521053">የስራ-ፈት ሁኔታ ውሂብ</translation>
 <translation id="2054240652864153171">በ<ph name="PARTITION_SITE_NAME" /> ላይ የተከፋፈለው የ<ph name="SITE_NAME" /> የጣቢያ ውሂብ ይጽዳ?</translation>
 <translation id="2055585478631012616">ክፍት ትሮችን ጨምሮ ከእነዚህ ጣቢያዎች ዘግተው እንዲወጡ ይደረጋሉ</translation>
@@ -1877,6 +1878,7 @@
 <translation id="2727633948226935816">ዳግም አታስታውሰኝ</translation>
 <translation id="2727712005121231835">ትክክለኛ መጠን</translation>
 <translation id="2729314457178420145">እርስዎን ከGoogle.com ሊያስወጣዎት የሚችለውን የአሰሳ ውሂብ (<ph name="URL" />) በተጨማሪ ያጽዱ። <ph name="LEARN_MORE" /></translation>
+<translation id="2729327310379176711">Chrome ክትትልን ለመቀነስ እና እያሰሱ ባሉበት ጊዜ ይበልጥ ደህንነትዎን ለመጠበቅ አዲስ መንገዶችን እያገኘ ነው። እንዲሁም Chrome <ph name="ESTIMATE_INTERESTS_LINK" /> እና እነሱን እንዲያስተዳድሯቸው ያስችልዎታል። ከዚያ የሚጎበኟቸው ጣቢያዎች ማስታወቂያዎችን ለእርስዎ ለማሳየት Chromeን ስለእርስዎ ዝንባሌዎች መጠየቅ ይችላሉ።</translation>
 <translation id="2730029791981212295">የLinux መተግበሪያዎችን እና ፋይሎችን በምትኬ ማስቀመጥ</translation>
 <translation id="2730901670247399077">የስሜት ገላጭ ምስል አስተያየት ጥቆማዎች</translation>
 <translation id="273093730430620027">ይህ ገጽ ካሜራዎን እየደረሰበት ነው።</translation>
@@ -3796,6 +3798,7 @@
 <translation id="4579581181964204535"><ph name="HOST_NAME" />ን cast ማድረግ አልተቻለም።</translation>
 <translation id="4579876313423027742">ለአሳሽ ማሳወቂያዎች፣ ወደ <ph name="LINK_BEGIN" />የChrome አሳሽ ቅንብሮች<ph name="LINK_END" /> ይሂዱ</translation>
 <translation id="4580596421317071374">በዚህ መሣሪያ ላይ የይለፍ ቃላት በ<ph name="GOOGLE_PASSWORD_MANAGER" /> ላይ ይቀመጣሉ።</translation>
+<translation id="4580626299762849806">የይለፍ ቃላትን ማምጣት አልተቻለም። <ph name="FILENAME" />ን ይፈትሹ እና በአግባቡ ቅርጸት እንደተሰራለት ያረጋግጡ።</translation>
 <translation id="4581774856936278355">Linux እንደነበረ መመለስ ላይ ስህተት</translation>
 <translation id="4582297591746054421">ጣቢያዎች እንደ እርስዎ የቀዱትን የጽሑፍ ቅርጸት ማቆየት ያሉ ባህሪያትን ለማግኘት አብዛኛውን ጊዜ ቅንጥብ ሰሌዳዎን ያነብባሉ</translation>
 <translation id="4582563038311694664">ሁሉንም ቅንብሮች ዳግም አስጀምር</translation>
@@ -4966,6 +4969,7 @@
 <translation id="5747552184818312860">ጊዜው አልፎበታል</translation>
 <translation id="5747785204778348146">ገንቢ - ያልተረጋጋ</translation>
 <translation id="5747809636523347288">ይ&amp;ለጥፉና ወደ <ph name="URL" /> ይሂዱ</translation>
+<translation id="5751345516399502412">የእንደ ሞደም መሰካት ዝግጁነትን ፈትሽ</translation>
 <translation id="5755022574660047665">ማህደረ ትውስታዎች ከGoogle ፎቶዎች</translation>
 <translation id="5756163054456765343">የእገዛ ማዕከል</translation>
 <translation id="5757375109985023827">አስቀድመው ለማየት ትር ይምረጡ</translation>
@@ -5101,6 +5105,7 @@
 <translation id="5877064549588274448">ሰርጥ ተለውጧል። ለውጦችን ለመተግበር መሳሪያዎን ዳግም ያስጀምሩ።</translation>
 <translation id="5877584842898320529">የተመረጠው አታሚ የለም ወይም በትክክል አልተጫነም። <ph name="BR" /> አታሚዎን ይፈትሹት ወይም ሌላ አታሚ ለመምረጥ ይሞክሩ።</translation>
 <translation id="5878945009165002849">የመግቢያ መጠይቆችን ከማንነት አገልግሎቶች ያግዱ</translation>
+<translation id="5882449899683447569">የሆነ ችግር ተፈጥሯል እና የእርስዎ የይለፍ ቃላት አልመጡም</translation>
 <translation id="5882919346125742463">የታወቁ አውታረ መረቦች</translation>
 <translation id="5883356647197510494">በራስ-ሰር የታገዱ <ph name="PERMISSION_1" />፣ <ph name="PERMISSION_2" /></translation>
 <translation id="5884474295213649357">ይህ ትር ከአንድ የዩኤስቢ መሣሪያ ጋር የተገናኘ ነው።</translation>
@@ -7225,6 +7230,7 @@
 <translation id="7939062555109487992">የላቁ አማራጮች</translation>
 <translation id="7939328347457537652">የመሣሪያ ማረጋገጫዎችን ያስተዳድሩ</translation>
 <translation id="7939412583708276221">ለማንኛውም አስቀምጥ</translation>
+<translation id="7941179291434537290">የእንደ ሞደም መሰካት ዝግጁነት፦</translation>
 <translation id="7942349550061667556">ቀይ</translation>
 <translation id="7943368935008348579">PDFዎችን አውርድ</translation>
 <translation id="7943837619101191061">አካባቢ አክል...</translation>
@@ -7757,6 +7763,7 @@ nil</translation>
 <translation id="8439506636278576865">በዚህ ቋንቋ ውስጥ ያሉ ገጾችን ለመተርጎም ያቅርቡ</translation>
 <translation id="8440630305826533614">Linux መተግበሪያዎች</translation>
 <translation id="844063558976952706">ሁሌም በዚህ ጣቢያ ላይ</translation>
+<translation id="8441313165929432954">እንደ ሞደም መሰካትን አንቃ/አሰናክል</translation>
 <translation id="8443795068008423036">እባክዎ መሣሪያዎ የተዘመነ መሆኑን ያረጋግጡ እና እንደገና ይሞክሩ</translation>
 <translation id="8446884382197647889">ተጨማሪ ለመረዳት</translation>
 <translation id="8447409163267621480">Ctrl ወይም Alt ያካትቱ</translation>

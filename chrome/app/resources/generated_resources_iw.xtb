@@ -1138,6 +1138,7 @@
 <translation id="2048653237708779538">הפעולה לא זמינה</translation>
 <translation id="2050339315714019657">לאורך</translation>
 <translation id="2052572566310583903">מותקנת במכשירים אחרים שלך</translation>
+<translation id="2053105195397337973">אנחנו בוחנים דרכים חדשות להגביל את יכולת המעקב ולעזור לאתרים למנוע ספאם פרסומי והונאות.</translation>
 <translation id="2053312383184521053">נתוני מצב של חוסר פעילות</translation>
 <translation id="2054240652864153171">לנקות את נתוני האתר של <ph name="SITE_NAME" /> שחולקו למחיצות ב-<ph name="PARTITION_SITE_NAME" />?</translation>
 <translation id="2055585478631012616">המערכת תוציא אותך מהאתרים האלה, כולל בכרטיסיות הפתוחות</translation>
@@ -4975,6 +4976,7 @@
 <translation id="5747552184818312860">מועד תפוגה</translation>
 <translation id="5747785204778348146">מפתח - לא יציב</translation>
 <translation id="5747809636523347288">הד&amp;בקה ומעבר אל <ph name="URL" /></translation>
+<translation id="5751345516399502412">‏בדיקת המוּכנוּת לשיתוף אינטרנט (tethering)</translation>
 <translation id="5755022574660047665">‏זיכרונות מ-Google Photos</translation>
 <translation id="5756163054456765343">מרכז עזרה</translation>
 <translation id="5757375109985023827">בחירת כרטיסייה לתצוגה מקדימה</translation>
@@ -7235,6 +7237,7 @@
 <translation id="7939062555109487992">אפשרויות מתקדמות</translation>
 <translation id="7939328347457537652">ניהול אישורי מכשירים</translation>
 <translation id="7939412583708276221">שמירה בכל מקרה</translation>
+<translation id="7941179291434537290">‏המוּכנוּת לשיתוף אינטרנט (tethering):</translation>
 <translation id="7942349550061667556">אדום</translation>
 <translation id="7943368935008348579">‏הורדת קובצי ה-PDF</translation>
 <translation id="7943837619101191061">הוספת מיקום...</translation>
@@ -7764,6 +7767,7 @@
 <translation id="8439506636278576865">הצעות לתרגום דפים שנכתבו בשפה זו</translation>
 <translation id="8440630305826533614">‏אפליקציות Linux</translation>
 <translation id="844063558976952706">תמיד באתר זה</translation>
+<translation id="8441313165929432954">‏הפעלה/השבתה של שיתוף אינטרנט (tethering)</translation>
 <translation id="8443795068008423036">צריך לוודא שהמכשיר מעודכן ולנסות שוב</translation>
 <translation id="8446884382197647889">למידע נוסף</translation>
 <translation id="8447409163267621480">‏יש לכלול את Ctrl או Alt</translation>

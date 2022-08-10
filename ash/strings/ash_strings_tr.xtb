@@ -100,6 +100,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1455242230282523554">Dil ayarlarını gösterin</translation>
 <translation id="1460620680449458626">Ses kapalı.</translation>
 <translation id="1467432559032391204">Sola</translation>
+<translation id="146902737843070955">Yöneticiniz bu değişikliği istedi</translation>
 <translation id="147310119694673958">Telefon pili %<ph name="BATTERY_PERCENTAGE" /></translation>
 <translation id="1479909375538722835">Kayan erişilebilirlik menüsü</translation>
 <translation id="1480845547124508962"><ph name="CURRENT_TIME" />, Takvim görünümünü açmak için Enter tuşuna basın</translation>
@@ -837,6 +838,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="5779721926447984944">Sabitlenmiş dosyalar</translation>
 <translation id="5788127256798019331">Play dosyaları</translation>
 <translation id="5790085346892983794">Başarılı</translation>
+<translation id="5804651031882187592">"SIM kilidi" ayarını devre dışı bırakın</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> ağını etkinleştirmek için tıklayın</translation>
 <translation id="5825969630400862129">Bağlı cihaz ayarları</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> adlı alıcıya <ph name="ROUTE_TITLE" /> yayınını durdur</translation>

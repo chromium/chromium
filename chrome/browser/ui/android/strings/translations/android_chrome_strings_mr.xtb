@@ -200,6 +200,7 @@
 <translation id="2046634576464120978">नोंदणी करता आली नाही</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2052422354554967744">इंटरनेटवर शोधा</translation>
+<translation id="2053105195397337973">आम्ही साइट जाहिरात स्पॅम आणि घोटाळा थांबवण्यासाठी सक्षम करत असताना ट्रॅकिंग प्रतिबंधित करण्याचे मार्ग एक्सप्लोर करत आहोत.</translation>
 <translation id="2056878612599315956">साइट थांबवली</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{एक डाउनलोड करता आले नाही}other{# डाउनलोड करता आले नाहीत}}</translation>
 <translation id="2067805253194386918">मजकूर</translation>
@@ -234,6 +235,7 @@
 <translation id="2239812875700136898">Discover साठी पर्याय बटणावरून तुमच्या स्टोरी नियंत्रित करा</translation>
 <translation id="2248941474044011069">तुमचे पासवर्ड हे Google पासवर्ड व्यवस्थापक यामध्ये सेव्ह केले जाण्यापूर्वी तुमच्या डिव्हाइसवर एंक्रिप्ट केले जातात</translation>
 <translation id="2259659629660284697">पासवर्ड एक्सपोर्ट करा…</translation>
+<translation id="2276231040576210443">तुम्ही काय सिंक करायचे हे <ph name="BEGIN_LINK1" />सेटिंग्ज<ph name="END_LINK1" /> मध्ये कधीही निवडू शकता. Google तुमच्या इतिहासाच्या आधारे Search आणि इतर सेवा पर्सनलाइझ करू शकते.</translation>
 <translation id="2276696007612801991">तुमचे पासवर्ड तपासण्यासाठी तुमच्या Google खात्यामध्ये साइन इन करा</translation>
 <translation id="2278052315791335171">हा पासवर्ड हटवल्यामुळे तुमचे <ph name="SITE" /> वरील खाते हटवले जाणार नाही</translation>
 <translation id="2279146068164892489"><ph name="APPNAME" /> साठी अ‍ॅप उघडायचे आहे का?</translation>
@@ -396,6 +398,7 @@
 <translation id="3114507951000454849">आजच्या बातम्या वाचा <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">यासह लिंक केलेले</translation>
 <translation id="3123734510202723619">घोषणा</translation>
+<translation id="3130863904455712965">इतिहास आणि आणखी बरेच काही</translation>
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">Chrome चे होम पेज</translation>
 <translation id="3166827708714933426">टॅब आणि विंडो शॉर्टकट</translation>
@@ -543,6 +546,7 @@
 <translation id="3981902534690264083">जाहिरातदार जाहिराती कशा परफॉर्म करतात हे समजून घेऊ शकतात</translation>
 <translation id="3985215325736559418">तुम्ही <ph name="FILE_NAME" /> पुन्हा डाउनलोड करू इच्छिता?</translation>
 <translation id="3987993985790029246">लिंक कॉपी करा</translation>
+<translation id="3999683152997576765">तुम्हाला जाहिराती दाखवण्यासाठी साइट जे स्वारस्याचे विषय वापरतात, ते तुम्ही पाहू आणि काढून टाकू शकता. तुमच्या अलीकडील ब्राउझिंग इतिहासाच्या आधारे Chrome तुमच्या स्वारस्यांचा अंदाज लावते.</translation>
 <translation id="4000212216660919741">ऑफलाइन होम</translation>
 <translation id="4016425174436051808">फॉलो करू शकत नाही. काहीतरी चूक झाली.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# तास}other{# तास}}</translation>
@@ -750,7 +754,7 @@
 <translation id="5132942445612118989">सर्व डिव्हाइसवर तुमचे पासवर्ड, इतिहास आणि बरेच काही सिंक करा</translation>
 <translation id="5139940364318403933">Google ड्राइव्ह कसे वापरावे ते जाणून घ्या</translation>
 <translation id="5142281402488957685">नवीन बातम्यांसाठी, रिफ्रेश करण्याकरिता खाली खेचा</translation>
-<translation id="5152843274749979095">कोणतेही समर्थित ॲप्स इंस्टॉल केले नाहीत</translation>
+<translation id="5152843274749979095">कोणतीही सपोर्ट असलेली ॲप्स इंस्टॉल केली नाहीत</translation>
 <translation id="5161254044473106830">शीर्षक आवश्यक</translation>
 <translation id="5170568018924773124">फोल्डरमध्ये दर्शवा</translation>
 <translation id="5171045022955879922">URL शोधा किंवा टाइप करा</translation>
@@ -779,6 +783,7 @@
 <translation id="5308380583665731573">कनेक्‍ट करा</translation>
 <translation id="5317780077021120954">सेव्ह करा</translation>
 <translation id="5319359161174645648">Google Chrome ची शिफारस करते</translation>
+<translation id="5321849971085220133">ट्रॅकिंग कमी करण्यासाठी आणि तुम्ही ब्राउझ करत असताना तुम्हाला आणखी सुरक्षित ठेवण्यासाठी Chrome नवीन मार्ग शोधत आहे. Chrome <ph name="BEGIN_LINK" />तुमच्या स्वारस्यांचा अंदाज लावणे<ph name="END_LINK" /> हेदेखील करते आणि तुम्हाला ते व्यवस्थापित करू देते. त्यानंतर, तुम्ही भेट देता त्या साइट तुम्हाला जाहिराती दाखवण्यासाठी Chrome ला तुमच्या स्वारस्यांबद्दल विचारू शकतात.</translation>
 <translation id="5324858694974489420">पालक सेटिंग्ज</translation>
 <translation id="5326921373682845375">प्रीलोड केलेली पेज एंक्रिप्ट केलेली असल्यामुळे आणि पेजशी लिंक करणारी साइट ही Google साइट असल्यामुळे, ही पेज खाजगीरीत्या प्रीलोड करताना Google सर्व्हरना नवीन माहिती मिळत नाही.</translation>
 <translation id="5329858041417644019">तुमचे ब्राउझर व्यवस्थापित केलेले नाही</translation>
@@ -1298,6 +1303,7 @@
 <translation id="8037801708772278989">नुकतेच तपासले</translation>
 <translation id="804335162455518893">SD कार्ड आढळले नाही</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> गुप्त मोड टॅब}other{<ph name="TAB_COUNT_NORMAL" /> गुप्त मोड टॅब}}</translation>
+<translation id="8048728378294435881">तुमच्या आशयाचा बॅकअप घ्या आणि तो कोणत्याही डिव्हाइसवर वापरा</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB उपलब्ध</translation>
 <translation id="8058655154417507695">कालबाह्य होण्याचे वर्ष</translation>
 <translation id="8058746566562539958">नवीन Chrome टॅबमध्‍ये उघडा</translation>

@@ -200,6 +200,7 @@
 <translation id="2046634576464120978">登録できませんでした</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2052422354554967744">インターネットを検索する</translation>
+<translation id="2053105195397337973">Google では、サイトが広告のスパムと不正行為を防止できるようにしながら、トラッキングを制限する方法を模索しています。</translation>
 <translation id="2056878612599315956">サイト一時停止中</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 件のダウンロードが失敗しました}other{# 件のダウンロードが失敗しました}}</translation>
 <translation id="2067805253194386918">テキスト</translation>
@@ -234,6 +235,7 @@
 <translation id="2239812875700136898">Discover ボタンのオプションから記事を管理できます</translation>
 <translation id="2248941474044011069">Google パスワード マネージャーに保存する前にデバイス上でパスワードを暗号化します</translation>
 <translation id="2259659629660284697">パスワードをエクスポート…</translation>
+<translation id="2276231040576210443">同期する項目はいつでも [<ph name="BEGIN_LINK1" />設定<ph name="END_LINK1" />] で選択できます。Google では、履歴に基づいて検索やその他のサービスをカスタマイズすることがあります。</translation>
 <translation id="2276696007612801991">パスワードを確認するには、Google アカウントにログインしてください</translation>
 <translation id="2278052315791335171">このパスワードを削除しても、<ph name="SITE" /> のアカウントは削除されません</translation>
 <translation id="2279146068164892489"><ph name="APPNAME" /> 用のアプリを開きますか？</translation>
@@ -396,6 +398,7 @@
 <translation id="3114507951000454849">今日のニュースをチェック <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">リンクされました:</translation>
 <translation id="3123734510202723619">お知らせ</translation>
+<translation id="3130863904455712965">履歴、その他</translation>
 <translation id="3134784203083076891">」</translation>
 <translation id="314939179385989105">Chrome のホームページ</translation>
 <translation id="3166827708714933426">タブとウィンドウのショートカット</translation>
@@ -543,6 +546,7 @@
 <translation id="3981902534690264083">広告主は広告のパフォーマンスを把握できます</translation>
 <translation id="3985215325736559418"><ph name="FILE_NAME" /> をもう一度ダウンロードしますか？</translation>
 <translation id="3987993985790029246">リンクのコピー</translation>
+<translation id="3999683152997576765">サイトでの広告表示に使用される興味 / 関心のトピックを表示、削除できます。Chrome では最近の閲覧履歴に基づいてユーザーの興味 / 関心を推定します。</translation>
 <translation id="4000212216660919741">オフライン ホーム</translation>
 <translation id="4016425174436051808">フォローできません。エラーが発生しました。</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# 時間}other{# 時間}}</translation>
@@ -779,6 +783,7 @@
 <translation id="5308380583665731573">接続</translation>
 <translation id="5317780077021120954">保存</translation>
 <translation id="5319359161174645648">Google は Chrome を推奨しています</translation>
+<translation id="5321849971085220133">Chrome では、ブラウジング時のトラッキングを抑制して、セキュリティを強化する新しい方法を検討しています。また、ユーザーの興味 / 関心を<ph name="BEGIN_LINK" />推定<ph name="END_LINK" />して管理できるようにします。これにより、アクセスしたサイトでユーザーの興味 / 関心を Chrome にリクエストして、広告を表示することができます。</translation>
 <translation id="5324858694974489420">保護者設定</translation>
 <translation id="5326921373682845375">プリロードされたページが暗号化されており、ページへリンクしているサイトが Google のサイトであるため、これらのページを非公開でプリロードする際に Google サーバーは新しい情報を受信しません。</translation>
 <translation id="5329858041417644019">ご使用のブラウザは管理されていません</translation>
@@ -1298,6 +1303,7 @@
 <translation id="8037801708772278989">前回の確認: たった今</translation>
 <translation id="804335162455518893">SD カードが見つかりません</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> 個のシークレット タブ}other{<ph name="TAB_COUNT_NORMAL" /> 個のシークレット タブ}}</translation>
+<translation id="8048728378294435881">データをバックアップして、他のデバイスで使用</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB 利用可</translation>
 <translation id="8058655154417507695">有効期限（年）</translation>
 <translation id="8058746566562539958">新しい Chrome タブで開く</translation>

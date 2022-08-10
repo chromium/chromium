@@ -1142,6 +1142,7 @@
 <translation id="2048653237708779538">Дія недоступна</translation>
 <translation id="2050339315714019657">Портретна</translation>
 <translation id="2052572566310583903">Установлено на інших ваших пристроях</translation>
+<translation id="2053105195397337973">Ми досліджуємо способи обмежити відстеження, водночас допомагаючи сайтам протидіяти рекламному спаму та шахрайству.</translation>
 <translation id="2053312383184521053">Дані про неактивний стан</translation>
 <translation id="2054240652864153171">Очистити дані сайту <ph name="SITE_NAME" />, розділені на сайті <ph name="PARTITION_SITE_NAME" />?</translation>
 <translation id="2055585478631012616">Ви вийдете з облікового запису на цих сайтах, зокрема у відкритих вкладках</translation>
@@ -4976,6 +4977,7 @@
 <translation id="5747552184818312860">Діє до</translation>
 <translation id="5747785204778348146">Для розробників (нестабільна)</translation>
 <translation id="5747809636523347288">Вставити й перейти за посиланням <ph name="URL" /></translation>
+<translation id="5751345516399502412">Перевірити готовність до використання телефона як модема</translation>
 <translation id="5755022574660047665">Спогади з Google Фото</translation>
 <translation id="5756163054456765343">Довідковий центр</translation>
 <translation id="5757375109985023827">Виберіть вкладку для перегляду</translation>
@@ -7238,6 +7240,7 @@
 <translation id="7939062555109487992">Розширені параметри</translation>
 <translation id="7939328347457537652">Керувати сертифікатами на пристрої</translation>
 <translation id="7939412583708276221">Усе ж зберегти</translation>
+<translation id="7941179291434537290">Готовність до використання телефона як модема:</translation>
 <translation id="7942349550061667556">Червоний</translation>
 <translation id="7943368935008348579">Завантажувати файли PDF</translation>
 <translation id="7943837619101191061">Додати розташування…</translation>
@@ -7765,6 +7768,7 @@
 <translation id="8439506636278576865">Пропонувати переклад сторінок цією мовою</translation>
 <translation id="8440630305826533614">Додатки Linux</translation>
 <translation id="844063558976952706">Завжди на цьому сайті</translation>
+<translation id="8441313165929432954">Увімкнути/вимкнути використання телефона як модема</translation>
 <translation id="8443795068008423036">Переконайтеся, що пристрій оновлений, і повторіть спробу</translation>
 <translation id="8446884382197647889">Докладніше</translation>
 <translation id="8447409163267621480">Натискайте Ctrl або Alt</translation>

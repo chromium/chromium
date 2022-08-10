@@ -100,6 +100,7 @@
 <translation id="1455242230282523554">言語設定を表示</translation>
 <translation id="1460620680449458626">音量はミュートされています。</translation>
 <translation id="1467432559032391204">左</translation>
+<translation id="146902737843070955">管理者がこの変更をリクエストしました</translation>
 <translation id="147310119694673958">スマートフォンのバッテリー <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1479909375538722835">フローティング ユーザー補助機能メニュー</translation>
 <translation id="1480845547124508962"><ph name="CURRENT_TIME" />、カレンダー表示を開くには Enter キーを押してください</translation>
@@ -837,6 +838,7 @@
 <translation id="5779721926447984944">固定したファイル</translation>
 <translation id="5788127256798019331">Play ファイル</translation>
 <translation id="5790085346892983794">完了</translation>
+<translation id="5804651031882187592">[SIM をロックする] 設定をオフにする</translation>
 <translation id="5805809050170488595">クリックすると <ph name="NETWORK_NAME" /> が有効になります</translation>
 <translation id="5825969630400862129">接続済みデバイスの設定</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> の「<ph name="ROUTE_TITLE" />」を停止します</translation>

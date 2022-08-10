@@ -200,6 +200,7 @@ Wanneer jy jou blaaigeskiedenis uitvee — alles of vir ’n spesifieke werf —
 <translation id="2046634576464120978">Kon nie registreer nie</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2052422354554967744">Deursoek die internet</translation>
+<translation id="2053105195397337973">Ons verken tans maniere om nasporing te beperk terwyl ons werwe in staat stel om advertensie-strooipos en -bedrog te stop.</translation>
 <translation id="2056878612599315956">Werf is onderbreek</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{Kon 1 item nie aflaai nie}other{Kon # items nie aflaai nie}}</translation>
 <translation id="2067805253194386918">teks</translation>
@@ -234,6 +235,7 @@ Wanneer jy jou blaaigeskiedenis uitvee — alles of vir ’n spesifieke werf —
 <translation id="2239812875700136898">Beheer jou berigte vanaf die "Opsies vir Ontdek"-knoppie</translation>
 <translation id="2248941474044011069">Jou wagwoorde word op jou toestel geënkripteer voordat hulle in Google Wagwoordbestuurder gestoor word</translation>
 <translation id="2259659629660284697">Voer wagwoorde uit …</translation>
+<translation id="2276231040576210443">Jy kan altyd in <ph name="BEGIN_LINK1" />instellings<ph name="END_LINK1" /> kies wat om te sinkroniseer. Google kan Search en ander dienste op grond van jou geskiedenis personaliseer.</translation>
 <translation id="2276696007612801991">Meld by jou Google-rekening aan om jou wagwoorde na te gaan</translation>
 <translation id="2278052315791335171">Jou rekening op <ph name="SITE" /> sal nie uitgevee word as hierdie wagwoord uitgevee word nie</translation>
 <translation id="2279146068164892489">Maak program oop vir <ph name="APPNAME" />?</translation>
@@ -396,6 +398,7 @@ Wanneer jy jou blaaigeskiedenis uitvee — alles of vir ’n spesifieke werf —
 <translation id="3114507951000454849">Lees vandag se nuus <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">gekoppel met</translation>
 <translation id="3123734510202723619">Aankondigings</translation>
+<translation id="3130863904455712965">Geskiedenis en meer</translation>
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">Chrome se tuisblad</translation>
 <translation id="3166827708714933426">Oortjie- en vensterkortpaaie</translation>
@@ -543,6 +546,7 @@ Wanneer jy jou blaaigeskiedenis uitvee — alles of vir ’n spesifieke werf —
 <translation id="3981902534690264083">Adverteerders kan verstaan hoe advertensies presteer</translation>
 <translation id="3985215325736559418">Wil jy <ph name="FILE_NAME" /> weer aflaai?</translation>
 <translation id="3987993985790029246">Kopieer skakel</translation>
+<translation id="3999683152997576765">Jy kan onderwerpe van belangstelling wat werwe gebruik om vir jou advertensies te wys, sien en verwyder. Chrome skat jou belangstellings op grond van jou onlangse blaaigeskiedenis.</translation>
 <translation id="4000212216660919741">Vanlyn tuisblad</translation>
 <translation id="4016425174436051808">Kan nie volg nie. Iets was fout.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# uur}other{# uur}}</translation>
@@ -1298,6 +1302,7 @@ Vertrouenstokens verbeter privaatheid op die web en kan nie gebruik word om uit 
 <translation id="8037801708772278989">Sopas nagegaan</translation>
 <translation id="804335162455518893">Kon nie SD-kaart kry nie</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> incognito-oortjie}other{<ph name="TAB_COUNT_NORMAL" /> incognito-oortjies}}</translation>
+<translation id="8048728378294435881">Rugsteun jou goed en gebruik dit op enige toestel</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB beskikbaar</translation>
 <translation id="8058655154417507695">Vervaljaar</translation>
 <translation id="8058746566562539958">Open in nuwe Chrome-oortjie</translation>

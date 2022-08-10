@@ -1136,6 +1136,7 @@
 <translation id="2048653237708779538">کنش دردسترس نیست</translation>
 <translation id="2050339315714019657">عمودی</translation>
 <translation id="2052572566310583903">در دیگر دستگاه‌هایتان نصب شده است</translation>
+<translation id="2053105195397337973">در تلاشیم روش‌هایی برای محدود کردن ردیابی پیدا کنیم که هم‌زمان به سایت‌ها امکان بدهند هرزآگهی و تقلب را متوقف کنند.</translation>
 <translation id="2053312383184521053">داده‌های حالت بیکار</translation>
 <translation id="2054240652864153171">داده‌های سایت <ph name="SITE_NAME" /> که در <ph name="PARTITION_SITE_NAME" /> بخش‌بندی شده پاک شود؟</translation>
 <translation id="2055585478631012616">از سیستم این سایت‌ها (ازجمله در برگه‌های باز) خارج خواهید شد</translation>
@@ -3803,6 +3804,7 @@
 <translation id="4579581181964204535">ارسال محتوای <ph name="HOST_NAME" /> امکان‌پذیر نیست.</translation>
 <translation id="4579876313423027742">‏برای اعلان‌های مرور، به <ph name="LINK_BEGIN" />تنظیمات مرورگر Chrome<ph name="LINK_END" /> بروید</translation>
 <translation id="4580596421317071374">گذرواژه‌ها در <ph name="GOOGLE_PASSWORD_MANAGER" /> در این دستگاه ذخیره می‌شود.</translation>
+<translation id="4580626299762849806">گذرواژه‌ها وارد نشد. <ph name="FILENAME" /> را بررسی کنید و مطمئن شوید درست قالب‌بندی شده باشد.</translation>
 <translation id="4581774856936278355">‏خطا هنگام بازیابی Linux</translation>
 <translation id="4582297591746054421">سایت‌ها معمولاً بریده‌دان را برای ارائه ویژگی‌هایی مانند حفظ قالب نوشتاری که کپی می‌کنید می‌خوانند</translation>
 <translation id="4582563038311694664">بازنشانی همه تنظیمات</translation>
@@ -4974,6 +4976,7 @@
 <translation id="5747552184818312860">تاریخ انقضا</translation>
 <translation id="5747785204778348146">برنامه‌نویس - ناپایدار</translation>
 <translation id="5747809636523347288">جای‌گذاری و رفتن به <ph name="URL" /></translation>
+<translation id="5751345516399502412">بررسی آمادگی برای اشتراک‌گذاری اینترنت</translation>
 <translation id="5755022574660047665">‏خاطرات ذخیره‌شده در Google Photos</translation>
 <translation id="5756163054456765343">مرکز را&amp;هنمایی</translation>
 <translation id="5757375109985023827">برگه‌ای برای پیش‌نمایش انتخاب کنید</translation>
@@ -5110,6 +5113,7 @@
 <translation id="5877064549588274448">کانال تغییر کرد. برای اعمال تغییرات دستگاه خود را مجدداً راه‌اندازی کنید.</translation>
 <translation id="5877584842898320529">چاپگر انتخابی موجود نیست یا به‌درستی نصب نشده است. <ph name="BR" /> چاپگر خود را بررسی کنید یا چاپگر دیگری را انتخاب کنید.</translation>
 <translation id="5878945009165002849">مسدود کردن پیام‌واره‌های ورود به سیستم سرویس‌های تعیین هویت</translation>
+<translation id="5882449899683447569">مشکلی پیش آمد و گذرواژه‌هایتان وارد نشد</translation>
 <translation id="5882919346125742463">شبکه‌های شناخته‌شده</translation>
 <translation id="5883356647197510494"><ph name="PERMISSION_1" /> و <ph name="PERMISSION_2" /> به‌طور خودکار مسدود شده‌اند</translation>
 <translation id="5884474295213649357">‏این برگه به دستگاه USB متصل است.</translation>
@@ -7234,6 +7238,7 @@
 <translation id="7939062555109487992">گزینه‌های پیشرفته</translation>
 <translation id="7939328347457537652">مدیریت گواهینامه‌های دستگاه</translation>
 <translation id="7939412583708276221">درهر حال حفظ شود</translation>
+<translation id="7941179291434537290">آمادگی برای اشتراک‌گذاری اینترنت:</translation>
 <translation id="7942349550061667556">قرمز</translation>
 <translation id="7943368935008348579">‏بارگیری فایل‌های PDF</translation>
 <translation id="7943837619101191061">انتخاب پوشه برای افزودن...</translation>
@@ -7761,6 +7766,7 @@
 <translation id="8439506636278576865">ترجمه صفحات نوشته شده به این زبان پیشنهاد داده شود</translation>
 <translation id="8440630305826533614">‏برنامه‌های Linux</translation>
 <translation id="844063558976952706">همیشه در این سایت</translation>
+<translation id="8441313165929432954">فعال/ غیرفعال کردن اشتراک‌گذاری اینترنت</translation>
 <translation id="8443795068008423036">لطفاً مطمئن شوید دستگاهتان به‌روز باشد و دوباره امتحان کنید</translation>
 <translation id="8446884382197647889">بیشتر بدانید</translation>
 <translation id="8447409163267621480">‏باید شامل Ctrl یا Alt باشد</translation>

@@ -1138,6 +1138,7 @@
 <translation id="2048653237708779538">చర్య అందుబాటులో లేదు</translation>
 <translation id="2050339315714019657">పోర్ట్రెయిట్</translation>
 <translation id="2052572566310583903">మీ ఇతర పరికరాలలో ఇన్‌స్టాల్ చేయబడింది</translation>
+<translation id="2053105195397337973">యాడ్ స్పామ్, మోసాన్ని ఆపివేసేలా సైట్‌లను ఎనేబుల్ చేస్తూ, ట్రాకింగ్‌ను పరిమితం చేసే మార్గాల కోసం మేము అన్వేషిస్తున్నాము.</translation>
 <translation id="2053312383184521053">నిష్క్రియ స్థితి డేటా</translation>
 <translation id="2054240652864153171"><ph name="PARTITION_SITE_NAME" />లో విభజించిన <ph name="SITE_NAME" /> సైట్ డేటాను క్లియర్ చేయాలా?</translation>
 <translation id="2055585478631012616">అలాగే మీరు తెరిచిన ట్యాబ్‌లతో సహా, ఆయా సైట్‌ల నుండి పూర్తిగా సైన్ అవుట్ చేయబడతారు</translation>
@@ -1882,6 +1883,7 @@
 <translation id="2727633948226935816">నాకు మళ్లీ గుర్తు చేయవద్దు</translation>
 <translation id="2727712005121231835">అసలు పరిమాణం</translation>
 <translation id="2729314457178420145">అలాగే బ్రౌజింగ్ డేటాను (<ph name="URL" />) క్లియర్ చేస్తుంది, దీని వలన మీరు Google.com నుండి సైన్ అవుట్ చేయబడవచ్చు. <ph name="LEARN_MORE" /></translation>
+<translation id="2729327310379176711">మీరు బ్రౌజ్ చేస్తున్నప్పుడు ట్రాకింగ్‌ను తగ్గించడం ద్వారా మిమ్మల్ని మరింత సురక్షితంగా ఉంచడానికి Chrome కొత్త మార్గాల కోసం వెతుకుతోంది. Chrome <ph name="ESTIMATE_INTERESTS_LINK" />, వాటిని మేనేజ్ చేయడానికి మిమ్మల్ని అనుమతిస్తుంది. ఆపై, మీరు సందర్శించే సైట్‌లు మీకు యాడ్‌లను చూపించడానికి మీ ఆసక్తుల గురించి Chromeను అడగవచ్చు.</translation>
 <translation id="2730029791981212295">Linux యాప్‌లు, ఫైళ్లను బ్యాకప్ చేస్తోంది</translation>
 <translation id="2730901670247399077">ఎమోజి సూచనలు</translation>
 <translation id="273093730430620027">ఈ పేజీ మీ కెమెరాను యాక్సెస్‌ చేస్తోంది.</translation>
@@ -4570,6 +4572,7 @@
 <translation id="5350293332385664455">Google Assistantను ఆఫ్ చేయండి</translation>
 <translation id="535123479159372765">ఇతర పరికరం నుండి కాపీ చేసిన వచనం</translation>
 <translation id="5352033265844765294">టైమ్ స్టాంపింగ్</translation>
+<translation id="5352257124367865087">సైట్ అనుమతులను మేనేజ్ చేయండి</translation>
 <translation id="5353252989841766347">Chrome నుండి పాస్‌వర్డ్‌లను ఎగుమతి చేయండి</translation>
 <translation id="5355099869024327351">మీకు నోటిఫికేషన్‌లను చూపించడానికి అసిస్టెంట్‌ను అనుమతించండి</translation>
 <translation id="5355191726083956201">మెరుగైన రక్షణ ఆన్‌లో ఉంది</translation>
@@ -4975,6 +4978,7 @@
 <translation id="5747552184818312860">గడువు ముగింపు</translation>
 <translation id="5747785204778348146">డెవలపర్ - అస్థిరం</translation>
 <translation id="5747809636523347288">అతికించి <ph name="URL" />కు వెళ్ళండి</translation>
+<translation id="5751345516399502412">టెథరింగ్ సంసిద్ధతను చెక్ చేయండి</translation>
 <translation id="5755022574660047665">Google Photos నుండి జ్ఞాపకాలు</translation>
 <translation id="5756163054456765343">స&amp;హాయ కేంద్రం</translation>
 <translation id="5757375109985023827">ప్రివ్యూ చేయడానికి ట్యాబ్‌ను ఎంచుకోండి</translation>
@@ -5070,6 +5074,7 @@
 <translation id="5843706793424741864">ఫారెన్‌హీట్</translation>
 <translation id="5844574845205796324">అన్వేషించడానికి కొత్త కంటెంట్‌ను సూచించండి</translation>
 <translation id="5846200638699387931">రిలేషన్ సింటాక్స్ ఎర్రర్: <ph name="ERROR_LINE" /></translation>
+<translation id="5846504156837627898">సైట్ అనుమతులను మేనేజ్ చేయండి</translation>
 <translation id="5846807460505171493">అప్‌డేట్‌లను, యాప్‌లను ఇన్‌స్టాల్ చేయండి. మీరు కొనసాగడం ద్వారా ఈ పరికరం ఆటోమేటిక్‌గా Google, మీ క్యారియర్, మీ పరికర తయారీదారు నుండి సెల్యులార్ డేటాతో కూడా అప్‌డేట్‌లు, యాప్‌లను డౌన్‌లోడ్ చేసి, ఇన్‌స్టాల్ చేయవచ్చని మీరు అంగీకరిస్తున్నారు. ఈ యాప్‌లలో కొన్ని, యాప్‌లోని కొనుగోళ్లను ఆఫర్ చేయవచ్చు.</translation>
 <translation id="5849212445710944278">ఇప్పటికే జోడించబడింది</translation>
 <translation id="5851868085455377790">జారీ చేసినవారు</translation>
@@ -5635,6 +5640,7 @@
 <translation id="6398715114293939307">Google Play Storeను తీసివేయండి</translation>
 <translation id="6398765197997659313">ఫుల్-స్క్రీన్‌ నుండి నిష్క్రమించండి</translation>
 <translation id="6399774419735315745">గూఢచారి</translation>
+<translation id="6400360390396538896">ఎల్లప్పుడూ <ph name="ORIGIN" />ను అనుమతించండి</translation>
 <translation id="6401458660421980302">ఈ ట్యాబ్‌ను మరొక పరికరానికి పంపడానికి, అక్కడ Chromeకు సైన్ ఇన్ చేయండి</translation>
 <translation id="6401597285454423070">మీ కంప్యూటర్ విశ్వసనీయ ప్లాట్‌ఫామ్ మాడ్యూల్ (TPM) సెక్యూరిటీ పరికరాన్ని కలిగి ఉంది, ఇది ChromeOSలో అనేక కీలకమైన సెక్యూరిటీ ఫీచర్‌లను అమలు చేయడానికి ఉపయోగించబడుతుంది. మరింత తెలుసుకోవడానికి Chromebook సహాయ కేంద్రాన్ని సందర్శించండి: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6404187344102273690">Chromebook గేమింగ్</translation>
@@ -6308,7 +6314,7 @@
 <translation id="7022562585984256452">మీ హోమ్ పేజీ సెట్ చేయబడింది.</translation>
 <translation id="7025082428878635038">సంజ్ఞలతో నావిగేట్ చేయడానికి కొత్త మార్గాన్ని మీకు అందిస్తున్నాము</translation>
 <translation id="7025190659207909717">మొబైల్ డేటా సేవ నిర్వహణ</translation>
-<translation id="7025895441903756761">భద్రత, గోప్యత</translation>
+<translation id="7025895441903756761">సెక్యూరిటీ, గోప్యత</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{అన్నింటినీ &amp;అజ్ఞాత విండోలో తెరువు}=1{&amp;అజ్ఞాత విండోలో తెరువు}other{అన్నింటినీ ({COUNT}) &amp;అజ్ఞాత విండోలో తెరువు}}</translation>
 <translation id="7029307918966275733">Crostini ఇన్‌స్టాల్ చేయబడలేదు. క్రెడిట్‌లను చూడడానికి దయచేసి Crostiniని ఇన్‌స్టాల్ చేయండి.</translation>
 <translation id="7029809446516969842">పాస్‌వర్డ్‌లు</translation>
@@ -6486,7 +6492,7 @@
 <translation id="7227458944009118910">కింద లిస్ట్ చేయబడిన యాప్‌లు ప్రోటోకాల్ లింక్‌లను కూడా హ్యాండిల్ చేయగలవు. ఇతర యాప్‌లు అనుమతి కోసం అడుగుతాయి.</translation>
 <translation id="7228523857728654909">స్క్రీన్ లాక్ మరియు సైన్ ఇన్</translation>
 <translation id="7230222852462421043">&amp;విండోను రీస్టోర్ చేయండి</translation>
-<translation id="7231260028442989757">మీ ఫోన్ నోటిఫికేషన్‌లను చూడండి, విస్మరించండి, వాటికి రిప్లయి చేయండి</translation>
+<translation id="7231260028442989757">మీ ఫోన్ నోటిఫికేషన్‌లను చూడండి, విస్మరించండి, వాటికి రిప్లయి ఇవ్వండి</translation>
 <translation id="7232750842195536390">పేరు మార్చడం విఫలమైంది</translation>
 <translation id="723343421145275488"><ph name="VISUAL_SEARCH_PROVIDER" />‌ ఇమేజ్ సెర్చ్</translation>
 <translation id="7234010996000898150">Linux పునరుద్ధరణను రద్దు చేస్తోంది</translation>
@@ -7232,6 +7238,7 @@
 <translation id="7939062555109487992">అధునాతన ఎంపికలు</translation>
 <translation id="7939328347457537652">పరికర సర్టిఫికెట్‌లను మేనేజ్ చేయండి</translation>
 <translation id="7939412583708276221">ఏదేమైనా ఉంచు</translation>
+<translation id="7941179291434537290">టెథరింగ్ సంసిద్ధత:</translation>
 <translation id="7942349550061667556">ఎరుపు</translation>
 <translation id="7943368935008348579">PDFలను డౌన్‌లోడ్ చేయండి</translation>
 <translation id="7943837619101191061">స్థానాన్ని జోడించు...</translation>
@@ -7756,6 +7763,7 @@
 <translation id="8439506636278576865">ఈ భాషలో పేజీలకు అనువాదం అందించు</translation>
 <translation id="8440630305826533614">Linux యాప్‌లు</translation>
 <translation id="844063558976952706">ఎల్లప్పుడూ ఈ సైట్‌లో</translation>
+<translation id="8441313165929432954">టెథరింగ్‌ను ఎనేబుల్/డిజేబుల్ చేయండి</translation>
 <translation id="8443795068008423036">దయచేసి మీ పరికరం అప్‌డేట్ అయ్యి ఉందని నిర్ధారించుకొని, మళ్లీ ట్రై చేయండి</translation>
 <translation id="8446884382197647889">మరింత తెలుసుకోండి</translation>
 <translation id="8447409163267621480">Ctrl లేదా Altను చేర్చండి</translation>

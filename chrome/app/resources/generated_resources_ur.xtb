@@ -3792,6 +3792,7 @@
 <translation id="4579581181964204535"><ph name="HOST_NAME" /> کاسٹ کرنے سے قاصر۔</translation>
 <translation id="4579876313423027742">‏براؤزر کی اطلاعات کے لیے، <ph name="LINK_BEGIN" />Chrome براؤزر کی ترتیبات<ph name="LINK_END" /> پر جائیں</translation>
 <translation id="4580596421317071374">اس آلے پر پاس ورڈز <ph name="GOOGLE_PASSWORD_MANAGER" /> میں محفوظ ہوتے ہیں۔</translation>
+<translation id="4580626299762849806">پاس ورڈز درآمد کرنے سے قاصر۔ <ph name="FILENAME" /> چیک کریں اور یقینی بنائیں کہ اسے درست طریقے سے فارمیٹ کیا گیا ہے۔</translation>
 <translation id="4581774856936278355">‏Linux کو بحال کرنے کے دوران خرابی</translation>
 <translation id="4582297591746054421">آپ کے کاپی کردہ ٹیکسٹ کی فارمیٹنگ برقرار رکھنے جیسی خصوصیات کے لیے سائٹس عام طور پر آپ کی کلپ بورڈ پڑھتی ہیں</translation>
 <translation id="4582563038311694664">سبھی ترتیبات کو دوبارہ سیٹ کریں</translation>
@@ -5099,6 +5100,7 @@
 <translation id="5877064549588274448">چینل تبدیل ہو گیا ہے۔ تبدیلیوں کو لاگو کرنے کیلئے اپنے آلہ کو دوبارہ شروع کریں۔</translation>
 <translation id="5877584842898320529">منتخب کردہ پرنٹر دستیاب نہیں ہے یا صحیح سے انسٹال نہیں ہوا ہے۔ <ph name="BR" /> اپنا پرنٹر چیک کریں یا دوسرا پرنٹر منتخب کر کے آزمائيں۔</translation>
 <translation id="5878945009165002849">شناختی سروسز سے سائن ان کے پرامپٹس مسدود کریں</translation>
+<translation id="5882449899683447569">کچھ غلط ہو گیا اور آپ کے پاس ورڈز درآمد نہیں ہوئے</translation>
 <translation id="5882919346125742463">معلوم نیٹ ورکس</translation>
 <translation id="5883356647197510494"><ph name="PERMISSION_1" />، <ph name="PERMISSION_2" /> کو خودکار طور پر مسدود کر دیا گیا</translation>
 <translation id="5884474295213649357">‏یہ ٹیب ایک USB آلہ سے منسلک ہے۔</translation>

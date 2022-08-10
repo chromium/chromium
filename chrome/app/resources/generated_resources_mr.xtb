@@ -1138,6 +1138,7 @@
 <translation id="2048653237708779538">कृती उपलब्ध नाही</translation>
 <translation id="2050339315714019657">पोर्ट्रेट</translation>
 <translation id="2052572566310583903">तुमच्या इतर डिव्हाइसवर इंस्टॉल केले</translation>
+<translation id="2053105195397337973">आम्ही साइट जाहिरात स्पॅम आणि घोटाळा थांबवण्यासाठी सक्षम करत असताना ट्रॅकिंग प्रतिबंधित करण्याचे मार्ग एक्सप्लोर करत आहोत.</translation>
 <translation id="2053312383184521053">निष्क्रिय स्थिती डेटा</translation>
 <translation id="2054240652864153171"><ph name="PARTITION_SITE_NAME" /> वर विभागणी केलेल्या <ph name="SITE_NAME" /> चा साइट डेटा साफ करायचा आहे का?</translation>
 <translation id="2055585478631012616">उघड्या असलेल्या टॅबच्या समावेशासह तुम्हाला या साइटमधून साइन आउट केले जाईल.</translation>
@@ -1642,7 +1643,7 @@
 <translation id="2489918096470125693">&amp;फोल्डर जोडा...</translation>
 <translation id="2489931062851778802">या की <ph name="DEVICE_NAME" /> वर एंटर करा</translation>
 <translation id="2490481887078769936">सूचीमधून '<ph name="FILE_NAME" />' काढून टाकले</translation>
-<translation id="249113932447298600">क्षमस्व, <ph name="DEVICE_LABEL" /> डिव्हाइस आत्ता समर्थित नाही.</translation>
+<translation id="249113932447298600">क्षमस्व, <ph name="DEVICE_LABEL" /> डिव्हाइसला आता सपोर्ट नाही.</translation>
 <translation id="2492461744635776704">सर्टिफिकेटवर स्वाक्षरी करण्याची विनंती तयार करत आहे</translation>
 <translation id="2493126929778606526">तुमचे सर्वोत्तम फोटो, आपोआप निवडले</translation>
 <translation id="2495524171012645395">अलीकडे पाहिलेल्या पाककृती</translation>
@@ -1882,6 +1883,7 @@
 <translation id="2727633948226935816">मला पुन्‍हा स्‍मरण करून देऊ नका</translation>
 <translation id="2727712005121231835">वास्तविक आकार</translation>
 <translation id="2729314457178420145">तसेच ब्राउझिंग डेटा (<ph name="URL" />) साफ करा ज्यामुळे तुम्ही कदाचित Google.com वरून साइन आउट व्हाल. <ph name="LEARN_MORE" /></translation>
+<translation id="2729327310379176711">ट्रॅकिंग कमी करण्यासाठी आणि तुम्ही ब्राउझ करत असताना तुम्हाला आणखी सुरक्षित ठेवण्यासाठी Chrome नवीन मार्ग शोधत आहे. Chrome <ph name="ESTIMATE_INTERESTS_LINK" /> हेदेखील करते आणि तुम्हाला ते व्यवस्थापित करू देते. त्यानंतर, तुम्ही भेट देता त्या साइट तुम्हाला जाहिराती दाखवण्यासाठी Chrome ला तुमच्या स्वारस्यांबद्दल विचारू शकतात.</translation>
 <translation id="2730029791981212295">Linux अ‍ॅप्स आणि फाइलचा बॅकअप घेत आहे</translation>
 <translation id="2730901670247399077">इमोजी सूचना</translation>
 <translation id="273093730430620027">हे पृष्ठ आपल्या कॅमेर्‍यावर प्रवेश करत आहे.</translation>
@@ -2506,7 +2508,7 @@
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" ला हे एक्स्टेंशन काढायचे आहे.</translation>
 <translation id="3345135638360864351">या साइट ॲक्सेस करण्याची तुमची विनंती <ph name="NAME" /> कडे पाठवली जाऊ शकली नाही. कृपया पुन्हा प्रयत्न करा.</translation>
 <translation id="3345634917232014253">सुरक्षा तपासणी क्षणभरापूर्वी रन केली गेली</translation>
-<translation id="3345886924813989455">समर्थित ब्राउझर आढळला नाही</translation>
+<translation id="3345886924813989455">सपोर्ट असलेला ब्राउझर आढळला नाही</translation>
 <translation id="3347086966102161372">इमेज पत्ता कॉपी करा</translation>
 <translation id="3348038390189153836">काढण्यायोग्य डिव्हाइस आढळले</translation>
 <translation id="3348131053948466246">सुचवलेल्या इमोजी. नेव्हिगेट करण्यासाठी वर किंवा खाली दाबा आणि घालण्यासाठी एंटर करा.</translation>
@@ -3722,7 +3724,7 @@
 <translation id="451102079304155829">कार्ट</translation>
 <translation id="4513872120116766993">अंदाजानुसार लिखाण</translation>
 <translation id="4513946894732546136">फीडबॅक</translation>
-<translation id="451407183922382411"><ph name="COMPANY_NAME" />ने समर्थित करा</translation>
+<translation id="451407183922382411"><ph name="COMPANY_NAME" /> द्वारे प्रायोजित</translation>
 <translation id="4514610446763173167">प्ले करण्यासाठी किंवा थांबवण्यासाठी व्हिडिओ टॉगल करा</translation>
 <translation id="451515744433878153">काढून टाका</translation>
 <translation id="4515872537870654449">सेवेसाठी Dell शी संपर्क साधा. फॅन काम करत नसल्यास डॉक बंद होईल.</translation>
@@ -4568,6 +4570,7 @@
 <translation id="5350293332385664455">Google Assistant बंद करा</translation>
 <translation id="535123479159372765">दुसर्‍या डिव्हाइसवरून कॉपी केलेला मजकूर</translation>
 <translation id="5352033265844765294">वेळ स्टॅम्पिंग</translation>
+<translation id="5352257124367865087">साइट परवानग्या व्यवस्थापित करा</translation>
 <translation id="5353252989841766347">Chrome मधून पासवर्ड एक्सपोर्ट करा</translation>
 <translation id="5355099869024327351">असिस्टंटला तुम्हाला सूचना दाखवू द्या</translation>
 <translation id="5355191726083956201">सुधारित संरक्षण सुरू आहे</translation>
@@ -4973,6 +4976,7 @@
 <translation id="5747552184818312860">कालबाह्य होईल</translation>
 <translation id="5747785204778348146">डेव्हलपर - अस्थिर</translation>
 <translation id="5747809636523347288">पेस्ट करा आणि <ph name="URL" /> वर जा</translation>
+<translation id="5751345516399502412">टेदरिंगची सज्जता तपासा</translation>
 <translation id="5755022574660047665">Google Photos मधील मेमरी</translation>
 <translation id="5756163054456765343">म&amp;दत केंद्र</translation>
 <translation id="5757375109985023827">पूर्वावलोकन करण्यासाठी टॅब निवडा</translation>
@@ -5068,6 +5072,7 @@
 <translation id="5843706793424741864">फॅरेनहाइट</translation>
 <translation id="5844574845205796324">एक्सप्लोर करण्यासाठी नवीन आशय सुचवा</translation>
 <translation id="5846200638699387931">रिलेशन सिंटॅक्स एरर: <ph name="ERROR_LINE" /></translation>
+<translation id="5846504156837627898">साइट परवानग्या व्यवस्थापित करा</translation>
 <translation id="5846807460505171493">अपडेट आणि अ‍ॅप्स इंस्टॉल करा. सुरू ठेवून, तुम्ही सहमती दर्शवता की हे डिव्हाइस शक्यतो मोबाइल डेटा वापरून Google, तुमचा वाहक आणि तुमच्या डिव्हाइसच्या उत्पादकाकडूनदेखील अपडेट आणि अ‍ॅप्स आपोआप डाउनलोड आणि इंस्टॉल करू शकते. यांपैकी काही अ‍ॅप्स अ‍ॅप्समधील खरेदीचा पर्याय देऊ करू शकतात.</translation>
 <translation id="5849212445710944278">आधीच जोडला आहे</translation>
 <translation id="5851868085455377790">जारीकर्ता</translation>
@@ -5634,6 +5639,7 @@
 <translation id="6398715114293939307">Google Play स्टोअर काढून टाका</translation>
 <translation id="6398765197997659313">पूर्ण स्क्रीनमधून निर्गमन करा</translation>
 <translation id="6399774419735315745">गुप्तचर</translation>
+<translation id="6400360390396538896">नेहमी सुरू <ph name="ORIGIN" /></translation>
 <translation id="6401458660421980302">हा टॅब दुसर्‍या डिव्हाइसवर पाठवण्यासाठी, तेथे Chrome मध्ये साइन इन करा</translation>
 <translation id="6401597285454423070">तुमच्या कॉंप्युटरमध्ये विश्वासू प्लॅटफॉर्म मॉड्यूल (TPM) सुरक्षा डिव्हाइस आहे, जे ChromeOS मध्ये अनेक महत्त्वाची सुरक्षा वैशिष्ट्ये लागू करण्यासाठी वापरले जाते. अधिक जाणून घेण्यासाठी Chromebook मदत केंद्र ला भेट द्या: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6404187344102273690">Chromebook गेमिंग</translation>
@@ -7230,6 +7236,7 @@
 <translation id="7939062555109487992">प्रगत पर्याय</translation>
 <translation id="7939328347457537652">डिव्हाइस सर्टिफिकेट व्यवस्थापित करा</translation>
 <translation id="7939412583708276221">तरीही राहू द्या</translation>
+<translation id="7941179291434537290">टेदरिंगची सज्जता:</translation>
 <translation id="7942349550061667556">लाल</translation>
 <translation id="7943368935008348579">PDF डाउनलोड करा</translation>
 <translation id="7943837619101191061">स्थान जोडा...</translation>
@@ -7757,6 +7764,7 @@
 <translation id="8439506636278576865">या भाषेमध्ये पेज भाषांतरीत करण्यासाठी ऑफर</translation>
 <translation id="8440630305826533614">Linux ॲप्स</translation>
 <translation id="844063558976952706">नेहमी या साइटवर</translation>
+<translation id="8441313165929432954">टेदरिंग सुरू/बंद करा</translation>
 <translation id="8443795068008423036">कृपया तुमचे डिव्हाइस अप टू डेट असल्याची खात्री करा आणि पुन्हा प्रयत्न करा</translation>
 <translation id="8446884382197647889">अधिक जाणून घ्या</translation>
 <translation id="8447409163267621480">एकतर Ctrl किंवा Alt समाविष्‍ट करा</translation>

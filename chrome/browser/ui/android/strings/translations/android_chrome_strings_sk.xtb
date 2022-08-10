@@ -200,6 +200,7 @@ Keď odstránite históriu prehliadania (buď celú, alebo pre konkrétny web), 
 <translation id="2046634576464120978">Nepodarilo sa registrovať</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2052422354554967744">Vyhľadávanie na internete</translation>
+<translation id="2053105195397337973">Skúmame spôsoby, ako obmedziť sledovanie a zároveň umožniť webom bojovať proti reklamnému spamu a podvodom.</translation>
 <translation id="2056878612599315956">Web je pozastavený</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{Sťahovanie 1 položky zlyhalo}few{Sťahovanie # položiek zlyhalo}many{# downloads failed}other{Sťahovanie # položiek zlyhalo}}</translation>
 <translation id="2067805253194386918">text</translation>
@@ -234,6 +235,7 @@ Keď odstránite históriu prehliadania (buď celú, alebo pre konkrétny web), 
 <translation id="2239812875700136898">Ovládajte svoje príbehy po stlačení tlačidla Možnosti kanála Objaviť</translation>
 <translation id="2248941474044011069">Heslá sú šifrované v zariadení ešte pred ich uložením do správcu hesiel Google</translation>
 <translation id="2259659629660284697">Exportovať heslá…</translation>
+<translation id="2276231040576210443">Položky, ktoré chcete synchronizovať, môžete kedykoľvek vybrať v <ph name="BEGIN_LINK1" />nastaveniach<ph name="END_LINK1" />. Google môže prispôsobiť Vyhľadávanie a ďalšie služby na základe vašej histórie.</translation>
 <translation id="2276696007612801991">Ak si chcete skontrolovať heslá, prihláste sa do svojho účtu Google</translation>
 <translation id="2278052315791335171">Odstránením tohto hesla nevymažete svoj účet na webe <ph name="SITE" /></translation>
 <translation id="2279146068164892489">Chcete otvoriť aplikáciu <ph name="APPNAME" />?</translation>
@@ -396,6 +398,7 @@ Keď odstránite históriu prehliadania (buď celú, alebo pre konkrétny web), 
 <translation id="3114507951000454849">Prečítajte si dnešné správy <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">prepojená s kartou</translation>
 <translation id="3123734510202723619">Oznámenia</translation>
+<translation id="3130863904455712965">História a ďalšie nastavenia</translation>
 <translation id="3134784203083076891">“</translation>
 <translation id="314939179385989105">Domovská stránky Chromu</translation>
 <translation id="3166827708714933426">Skratky pre karty a okná</translation>
@@ -543,6 +546,7 @@ Keď odstránite históriu prehliadania (buď celú, alebo pre konkrétny web), 
 <translation id="3981902534690264083">Inzerenti môžu zistiť, akú výkonnosť dosahujú reklamy</translation>
 <translation id="3985215325736559418">Chcete znova stiahnuť súbor <ph name="FILE_NAME" />?</translation>
 <translation id="3987993985790029246">Kopírovať odkaz</translation>
+<translation id="3999683152997576765">Môžete si prezrieť témy záujmu, pomocou ktorých vám weby zobrazujú reklamy, a odstrániť ich. Chrome odhaduje záujmy na základe nedávnej histórie prehliadania.</translation>
 <translation id="4000212216660919741">Offline domov</translation>
 <translation id="4016425174436051808">Nedá sa sledovať. Vyskytol sa problém.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# hod.}few{# hod.}many{# hod.}other{# hod.}}</translation>
@@ -1299,6 +1303,7 @@ Tokeny dôveryhodnosti zlepšujú ochranu súkromia na internete a nedá sa pod
 <translation id="8037801708772278989">Kontrola prebehla pred chvíľou</translation>
 <translation id="804335162455518893">SD karta sa nenašla</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> karta inkognito}few{<ph name="TAB_COUNT_NORMAL" /> karty inkognito}many{<ph name="TAB_COUNT_NORMAL" /> incognito tabs}other{<ph name="TAB_COUNT_NORMAL" /> kariet inkognito}}</translation>
+<translation id="8048728378294435881">Zálohujte svoj obsah a používajte ho v ľubovoľnom zariadení</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB k dispozícii</translation>
 <translation id="8058655154417507695">Rok ukončenia platnosti</translation>
 <translation id="8058746566562539958">Otvoriť v Chrome na novej karte</translation>

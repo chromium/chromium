@@ -783,6 +783,7 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="5308380583665731573">Ühendamine</translation>
 <translation id="5317780077021120954">Salvesta</translation>
 <translation id="5319359161174645648">Google soovitab Chrome'i</translation>
+<translation id="5321849971085220133">Chrome otsib uusi viise, kuidas vähendada jälgimist ja kaitsta teid sirvimisel veelgi paremini. Chrome <ph name="BEGIN_LINK" />prognoosib teie huvisid<ph name="END_LINK" /> ja võimaldab teil neid hallata. Seejärel saavad teie külastatavad saidid küsida Chrome'ilt teie huvide kohta, et teile reklaame kuvada.</translation>
 <translation id="5324858694974489420">Vanemlikud seaded</translation>
 <translation id="5326921373682845375">Kuna eellaaditud saidid on krüpteeritud ja lehtedele linkiv sait on Google'i sait, ei võta Google'i serverid nende lehtede privaatsel eellaadimisel vastu uut teavet.</translation>
 <translation id="5329858041417644019">Teie brauserit ei hallata</translation>

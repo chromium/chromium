@@ -100,6 +100,7 @@
 <translation id="1455242230282523554">ഭാഷാ ക്രമീകരണം കാണിക്കുക</translation>
 <translation id="1460620680449458626">വോളിയം മ്യൂട്ട് ചെയ്‌തിരിക്കുന്നു.</translation>
 <translation id="1467432559032391204">ഇടത്</translation>
+<translation id="146902737843070955">നിങ്ങളുടെ അഡ്‌മിൻ ഈ മാറ്റം അഭ്യർത്ഥിച്ചു</translation>
 <translation id="147310119694673958">ഫോൺ ബാറ്ററി <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1479909375538722835">ഫ്ലോട്ടിംഗ് ഉപയോഗസഹായി മെനു</translation>
 <translation id="1480845547124508962"><ph name="CURRENT_TIME" />, Calendar കാഴ്‌ച തുറക്കാൻ Enter കീ അമർത്തുക</translation>
@@ -307,7 +308,7 @@
 <translation id="2791421900609674576">നിർത്തിയ ഇടത്ത് നിന്ന് തുടരാനാകുന്ന തരത്തിൽ നിങ്ങൾക്ക് നിർദ്ദേശങ്ങൾ കാണാം.  നിർദ്ദേശങ്ങൾ നീക്കം ചെയ്യാൻ സ്പർശിച്ച് പിടിക്കുക.</translation>
 <translation id="2792498699870441125">Alt+തിരയൽ</translation>
 <translation id="2797741504905337289">ഷെൽഫ് പാർട്ടി</translation>
-<translation id="2805756323405976993">ആപ്സ്</translation>
+<translation id="2805756323405976993">ആപ്പുകൾ</translation>
 <translation id="2814448776515246190">ഭാഗികമായി ക്യാപ്‌ചർ ചെയ്യൽ</translation>
 <translation id="2819276065543622893">നിങ്ങൾ ഇപ്പോൾ സൈൻ ഔട്ട് ചെയ്യും.</translation>
 <translation id="2822551631199737692">ക്യാമറ ഉപയോഗിക്കുന്നു</translation>
@@ -837,6 +838,7 @@
 <translation id="5779721926447984944">പിൻ ചെയ്ത ഫയലുകൾ</translation>
 <translation id="5788127256798019331">Play ഫയലുകൾ</translation>
 <translation id="5790085346892983794">വിജയകരം</translation>
+<translation id="5804651031882187592">"സിം ലോക്ക് ചെയ്യുക" ക്രമീകരണം ഓഫാക്കുക</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> സജീവമാക്കാൻ ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="5825969630400862129">കണക്റ്റ് ചെയ്തിരിക്കുന്ന ഉപകരണങ്ങൾക്കുള്ള ക്രമീകരണം</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />-ൽ <ph name="ROUTE_TITLE" /> നിർത്തുക</translation>

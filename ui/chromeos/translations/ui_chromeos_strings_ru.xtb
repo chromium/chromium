@@ -288,6 +288,7 @@
 <translation id="3522708245912499433">Португальский</translation>
 <translation id="3524311639100184459">Внимание! Эти файлы – временные. Они могут быть автоматически удалены, чтобы освободить место на диске.  <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Папка</translation>
+<translation id="3548125359243647069">PIN-код был введен неверно слишком много раз.</translation>
 <translation id="3549797760399244642">Перейти на drive.google.com…</translation>
 <translation id="3553048479571901246">Чтобы открыть файлы с помощью приложения "<ph name="APP_NAME" />", скопируйте их в папку "Файлы Windows".</translation>
 <translation id="3556731189587832921">Английский (США), международная раскладка (ПК)</translation>
@@ -613,6 +614,7 @@
 <translation id="6267547857941397424">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, телефон – <ph name="PHONE_NAME" />, уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, заряд батареи – <ph name="BATTERY_STATUS" /> %, подключение</translation>
 <translation id="6269630227984243955">Малайский</translation>
 <translation id="6287852322318138013">Выберите программу, в которой необходимо открыть этот файл</translation>
+<translation id="6295542640242147836">Блокировка SIM-карты</translation>
 <translation id="6296410173147755564">Недействительный PUK-код.</translation>
 <translation id="6312403991423642364">Неизвестная ошибка сети</translation>
 <translation id="6317608858038767920">Пользовательский DNS-сервер <ph name="INPUT_INDEX" /></translation>
@@ -721,6 +723,7 @@
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> ГБ</translation>
 <translation id="7191454237977785534">Сохранить файл как</translation>
 <translation id="7229570126336867161">Необходимо наличие EV-DO</translation>
+<translation id="7230898482850090046">Администратор отправил вам запрос на отключение блокировки SIM-карты.</translation>
 <translation id="7238097264433196391">Название диска</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, подробная информация</translation>
 <translation id="7246947237293279874">FTP-прокси</translation>
@@ -752,6 +755,7 @@
 <translation id="7505167922889582512">Показывать скрытые файлы</translation>
 <translation id="7514365320538308">Скачать</translation>
 <translation id="751507702149411736">Белорусский</translation>
+<translation id="7521790570754130607">Для использования мобильного интернета нужен PIN-код</translation>
 <translation id="7532029025027028521">Персидский, транслитерация</translation>
 <translation id="7544830582642184299">Приложения Linux смогут получать доступ к файлам Google Диска. Изменения вступят в силу на всех ваших устройствах.</translation>
 <translation id="7547009467130558110">Сникер</translation>
@@ -776,6 +780,7 @@
 <translation id="76959938259365003">Не удалось очистить корзину.</translation>
 <translation id="770015031906360009">Греческий</translation>
 <translation id="7705251383879779343">Скопировано: <ph name="FILE_NAME" />.</translation>
+<translation id="7708271999969613024">Чтобы использовать эту сеть, введите 8-значный PUK-код, предоставленный оператором связи.</translation>
 <translation id="7711920809702896782">Информация об изображении</translation>
 <translation id="7724603315864178912">Вырезать</translation>
 <translation id="7730494089396812859">Показать данные о резервных копиях в облаке</translation>
@@ -870,6 +875,7 @@
 <translation id="8437209419043462667">США</translation>
 <translation id="8452135315243592079">SIM-карта не обнаружена</translation>
 <translation id="8456681095658380701">Недопустимое название</translation>
+<translation id="8457767749626250697">SIM-карта заблокирована</translation>
 <translation id="8459404855768962328">Если вы скопируете этот объект, то его увидят все пользователи, у которых есть доступ к общей папке "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="8461467696380332069">Нажмите на файл правой кнопкой мыши и выберите "Закрепить на панели запуска".</translation>
 <translation id="8461914792118322307">Настройки прокси-сервера</translation>

@@ -149,6 +149,7 @@
 <translation id="2115956742084455574">Incorrect code</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, version <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB of <ph name="TOTAL_MEMORY" /> GB available</translation>
+<translation id="2130871201950918186">System will restart in five seconds.</translation>
 <translation id="2138109643290557664">Float on by</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> photos</translation>
@@ -211,6 +212,7 @@
 <translation id="2536159006530886390">Cannot connect to Internet.</translation>
 <translation id="2570743873672969996">Running <ph name="TEST_NAME" /> test…</translation>
 <translation id="2584559707064218956">To set up, go to Settings</translation>
+<translation id="2597774443162333062">Files will be sent to Google for debugging</translation>
 <translation id="2619761439309613843">Daily Refresh</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="2638662041295312666">Sign-in image</translation>
@@ -672,6 +674,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="6659594942844771486">Tab</translation>
 <translation id="6692996468359469499">Get info related to your selection</translation>
 <translation id="6704062477274546131">DNS resolution</translation>
+<translation id="6719240409382354629">Preparing to restart…</translation>
 <translation id="6723839937902243910">Power</translation>
 <translation id="6723847290197874913">Keyboard backlight</translation>
 <translation id="672609503628871915">See what's new</translation>
@@ -889,6 +892,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="8747900814994928677">Confirm change</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos album</translation>
+<translation id="8778600430213950389">Something went wrong. This is most likely due to a hardware issue. Replace the main board and try the repair process again.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">This network may have a captive portal</translation>
 <translation id="8798099450830957504">Default</translation>
@@ -942,6 +946,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="910415269708673980">Refresh ticket for <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Scanning page <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Unlock</translation>
+<translation id="9118126012493516930">Can't complete repair</translation>
 <translation id="9122602430962285795">To reconnect, go to Settings</translation>
 <translation id="9126720536733509015">Save multiple pages to one PDF</translation>
 <translation id="9137526406337347448">Google Services</translation>

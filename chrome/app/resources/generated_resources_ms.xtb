@@ -3807,6 +3807,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4579581181964204535">Tidak dapat menghantar <ph name="HOST_NAME" />.</translation>
 <translation id="4579876313423027742">Untuk pemberitahuan penyemak imbas, pergi ke <ph name="LINK_BEGIN" />Tetapan penyemak imbas Chrome<ph name="LINK_END" /></translation>
 <translation id="4580596421317071374">Kata laluan disimpan pada <ph name="GOOGLE_PASSWORD_MANAGER" /> pada peranti ini.</translation>
+<translation id="4580626299762849806">Tidak dapat mengimport kata laluan. Semak dan pastikan <ph name="FILENAME" /> diformatkan dengan betul.</translation>
 <translation id="4581774856936278355">Ralat semasa memulihkan Linux</translation>
 <translation id="4582297591746054421">Tapak biasanya membaca papan keratan anda untuk ciri seperti mengekalkan format teks yang anda salin</translation>
 <translation id="4582563038311694664">Tetapkan semula semua tetapan</translation>
@@ -5115,6 +5116,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5877064549588274448">Saluran berubah. Mulakan semula peranti anda untuk menggunakan perubahan.</translation>
 <translation id="5877584842898320529">Pencetak yang dipilih tidak tersedia atau tidak dipasang dengan betul. <ph name="BR" /> Periksa pencetak anda atau cuba pilih pencetak lain.</translation>
 <translation id="5878945009165002849">Sekat gesaan log masuk daripada perkhidmatan identiti</translation>
+<translation id="5882449899683447569">Kesilapan telah berlaku dan kata laluan anda tidak diimport</translation>
 <translation id="5882919346125742463">Rangkaian Yang Diketahui</translation>
 <translation id="5883356647197510494"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> disekat secara automatik</translation>
 <translation id="5884474295213649357">Tab ini disambungkan ke peranti USB.</translation>
@@ -5656,7 +5658,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="641469293210305670">Pasang Kemas Kini dan Apl</translation>
 <translation id="6414878884710400018">Buka Pilihan Sistem</translation>
 <translation id="6414888972213066896">Anda telah bertanya kepada ibu bapa anda sama ada OK untuk melawat tapak ini</translation>
-<translation id="6415900369006735853">Sambung ke Internet melalui telefon anda</translation>
+<translation id="6415900369006735853">Sambung kepada Internet melalui telefon anda</translation>
 <translation id="6416743254476733475">Benarkan atau sekat pada komputer anda.</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
 <translation id="6417468503703810114">Tindakan lalai</translation>

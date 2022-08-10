@@ -288,6 +288,7 @@
 <translation id="3522708245912499433">葡萄牙语</translation>
 <translation id="3524311639100184459">警告：这些都是临时文件，可能会被系统自动删除以释放磁盘空间。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">文件夹</translation>
+<translation id="3548125359243647069">您输错 PIN 码的次数过多。</translation>
 <translation id="3549797760399244642">转到 drive.google.com...</translation>
 <translation id="3553048479571901246">如需使用 <ph name="APP_NAME" /> 打开文件，请先将文件复制到“Windows 文件”文件夹。</translation>
 <translation id="3556731189587832921">英语（美国）国际 PC 键盘</translation>
@@ -608,6 +609,7 @@
 <translation id="6267547857941397424">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="PHONE_NAME" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，剩余电量为 <ph name="BATTERY_STATUS" />%，连接</translation>
 <translation id="6269630227984243955">马来语</translation>
 <translation id="6287852322318138013">选择用于打开此文件的应用</translation>
+<translation id="6295542640242147836">锁定 SIM 卡</translation>
 <translation id="6296410173147755564">PUK 无效</translation>
 <translation id="6312403991423642364">未知网络错误</translation>
 <translation id="6317608858038767920">自定义域名服务器 <ph name="INPUT_INDEX" /></translation>
@@ -716,6 +718,7 @@
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">文件另存为</translation>
 <translation id="7229570126336867161">需要 EVDO</translation>
+<translation id="7230898482850090046">您的管理员要求您关闭“锁定 SIM 卡”设置</translation>
 <translation id="7238097264433196391">驱动器名称</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />，详细信息</translation>
 <translation id="7246947237293279874">FTP 代理</translation>
@@ -747,6 +750,7 @@
 <translation id="7505167922889582512">显示隐藏文件</translation>
 <translation id="7514365320538308">下载</translation>
 <translation id="751507702149411736">白俄罗斯语</translation>
+<translation id="7521790570754130607">必须输入 PIN 码才能使用移动流量</translation>
 <translation id="7532029025027028521">波斯语音译</translation>
 <translation id="7544830582642184299">授权 Linux 应用访问您 Google 云端硬盘中的文件。相关更改会同步到您的其他设备。</translation>
 <translation id="7547009467130558110">运动鞋</translation>
@@ -771,6 +775,7 @@
 <translation id="76959938259365003">未能清空回收站。</translation>
 <translation id="770015031906360009">希腊语</translation>
 <translation id="7705251383879779343">已复制 <ph name="FILE_NAME" />。</translation>
+<translation id="7708271999969613024">若要使用此网络，您需输入运营商提供的 8 位数个人解锁密钥 (PUK)。</translation>
 <translation id="7711920809702896782">图片信息</translation>
 <translation id="7724603315864178912">剪切</translation>
 <translation id="7730494089396812859">显示云端备份详情</translation>
@@ -865,6 +870,7 @@
 <translation id="8437209419043462667">美国英语</translation>
 <translation id="8452135315243592079">缺少 SIM 卡</translation>
 <translation id="8456681095658380701">名称无效</translation>
+<translation id="8457767749626250697">您的 SIM 卡已锁定</translation>
 <translation id="8459404855768962328">复制此内容会将其分享给所有能看到共享文件夹“<ph name="DESTINATION_NAME" />”的人。</translation>
 <translation id="8461467696380332069">右键点击某个文件，然后选择“固定到任务栏”，以便在任务栏中快速访问您的文件。</translation>
 <translation id="8461914792118322307">代理</translation>

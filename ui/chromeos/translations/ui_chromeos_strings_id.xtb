@@ -284,10 +284,12 @@
 <translation id="3479552764303398839">Jangan sekarang</translation>
 <translation id="3486821258960016770">Mongolia</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> kesalahan.</translation>
+<translation id="3495810061346586977">File ini bersifat rahasia dan tunduk pada pembatasan oleh kebijakan administrator. <ph name="BEGIN_LINK_HELP" />Pelajari lebih lanjut<ph name="END_LINK_HELP" /></translation>
 <translation id="3509680540198371098">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Detail</translation>
 <translation id="3522708245912499433">Portugis</translation>
 <translation id="3524311639100184459">Perhatian: File ini bersifat sementara dan dapat dihapus secara otomatis untuk mengosongkan ruang disk.  <ph name="BEGIN_LINK" />Pelajari Lebih Lanjut<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Folder</translation>
+<translation id="3548125359243647069">Terlalu sering memasukkan PIN yang salah.</translation>
 <translation id="3549797760399244642">Buka drive.google.com...</translation>
 <translation id="3553048479571901246">Untuk membuka file dengan <ph name="APP_NAME" />, salin ke folder file Windows terlebih dulu.</translation>
 <translation id="3556731189587832921">Inggris (AS) dengan keyboard International PC</translation>
@@ -613,6 +615,7 @@
 <translation id="6267547857941397424">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Baterai Ponsel <ph name="BATTERY_STATUS" />%, Sambungkan</translation>
 <translation id="6269630227984243955">Malaysia</translation>
 <translation id="6287852322318138013">Pilih aplikasi untuk membuka file ini</translation>
+<translation id="6295542640242147836">Kunci SIM</translation>
 <translation id="6296410173147755564">PUK tidak valid</translation>
 <translation id="6312403991423642364">Kesalahan jaringan tidak dikenal</translation>
 <translation id="6317608858038767920">Server nama khusus <ph name="INPUT_INDEX" /></translation>
@@ -721,6 +724,7 @@
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Simpan file sebagai</translation>
 <translation id="7229570126336867161">Memerlukan EVDO</translation>
+<translation id="7230898482850090046">Administrator telah meminta Anda untuk menonaktifkan setelan "Kunci SIM"</translation>
 <translation id="7238097264433196391">Nama drive</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, Detail</translation>
 <translation id="7246947237293279874">Proxy FTP</translation>
@@ -752,6 +756,7 @@
 <translation id="7505167922889582512">Tampilkan file tersembunyi</translation>
 <translation id="7514365320538308">Download</translation>
 <translation id="751507702149411736">Belarusian</translation>
+<translation id="7521790570754130607">Perlu PIN untuk menggunakan data seluler</translation>
 <translation id="7532029025027028521">Transliterasi Farsi</translation>
 <translation id="7544830582642184299">Beri aplikasi Linux izin untuk mengakses file di Google Drive Anda. Perubahan akan disinkronkan ke perangkat lainnya.</translation>
 <translation id="7547009467130558110">Sneaker</translation>
@@ -776,6 +781,7 @@
 <translation id="76959938259365003">Gagal mengosongkan sampah.</translation>
 <translation id="770015031906360009">Yunani</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> disalin.</translation>
+<translation id="7708271999969613024">Untuk menggunakan jaringan ini, Anda harus memasukkan Kunci Pembuka Blokir Pribadi (PUK) 8 digit yang diberikan oleh operator.</translation>
 <translation id="7711920809702896782">Info gambar</translation>
 <translation id="7724603315864178912">Potong</translation>
 <translation id="7730494089396812859">Tampilkan detail cadangan Awan</translation>
@@ -870,6 +876,7 @@
 <translation id="8437209419043462667">AS</translation>
 <translation id="8452135315243592079">Kartu SIM tidak ada</translation>
 <translation id="8456681095658380701">Nama tidak valid</translation>
+<translation id="8457767749626250697">SIM Anda terkunci</translation>
 <translation id="8459404855768962328">Menyalin item ini akan membagikannya ke siapa saja yang dapat melihat folder bersama '<ph name="DESTINATION_NAME" />'.</translation>
 <translation id="8461467696380332069">Klik kanan file, lalu pilih "Sematkan ke Rak" untuk mendapatkan akses cepat ke file Anda di rak.</translation>
 <translation id="8461914792118322307">Proxy</translation>

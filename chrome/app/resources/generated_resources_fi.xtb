@@ -1883,6 +1883,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2727633948226935816">Älä muistuta uudelleen</translation>
 <translation id="2727712005121231835">Todellinen koko</translation>
 <translation id="2729314457178420145">Poista lisäksi selaustiedot (<ph name="URL" />). Tämä saattaa kirjata sinut ulos Google.comista. <ph name="LEARN_MORE" /></translation>
+<translation id="2729327310379176711">Chrome etsii uusia tapoja vähentää seurantaa ja pitää sinut entistä paremmin turvassa selatessasi. Chrome myös <ph name="ESTIMATE_INTERESTS_LINK" /> ja antaa sinun ylläpitää niitä. Avaamasi sivustot voivat sitten kysyä Chromelta kiinnostuksen kohteitasi näyttääkseen sinulle mainoksia.</translation>
 <translation id="2730029791981212295">Varmuuskopioidaan Linux-sovelluksia ja ‑tiedostoja</translation>
 <translation id="2730901670247399077">Emojiehdotukset</translation>
 <translation id="273093730430620027">Tämä sivu käyttää kameraasi.</translation>
@@ -4567,6 +4568,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5350293332385664455">Laita Google Assistant pois päältä</translation>
 <translation id="535123479159372765">Toiselta laitteelta kopioitu teksti</translation>
 <translation id="5352033265844765294">Aikaleimaus</translation>
+<translation id="5352257124367865087">Muuta sivustolupia</translation>
 <translation id="5353252989841766347">Vie salasanat Chromesta</translation>
 <translation id="5355099869024327351">Anna Assistantin näyttää ilmoituksia</translation>
 <translation id="5355191726083956201">Parannettu suojaus on päällä</translation>
@@ -5068,6 +5070,7 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="5844574845205796324">Ehdota uutta sisältöä tutkittavaksi</translation>
 <translation id="5846200638699387931">Suhteen syntaksivirhe: <ph name="ERROR_LINE" /></translation>
+<translation id="5846504156837627898">Muuta sivustolupia</translation>
 <translation id="5846807460505171493">Asenna ja päivitä sovelluksia. Jatkamalla hyväksyt, että laite voi automaattisesti ladata ja asentaa Googlen, operaattorisi tai laitevalmistajan päivityksiä ja sovelluksia, mahdollisesti mobiilidatayhteyden välityksellä. Jotkin näistä sovelluksista tarjoavat sovelluksen sisäisiä ostoksia.</translation>
 <translation id="5849212445710944278">Lisätty aiemmin</translation>
 <translation id="5851868085455377790">Myöntäjä</translation>
@@ -5632,6 +5635,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6398715114293939307">Poista Google Play Kauppa</translation>
 <translation id="6398765197997659313">Poistu koko näytön tilasta</translation>
 <translation id="6399774419735315745">Vakooja</translation>
+<translation id="6400360390396538896">Aina: <ph name="ORIGIN" /></translation>
 <translation id="6401458660421980302">Jos haluat lähettää tämän välilehden toiselle laitteelle, kirjaudu Chromeen sieltä</translation>
 <translation id="6401597285454423070">Tietokoneesi sisältää Trusted Platform Module (TPM) ‑turvalaitteen, jonka avulla otetaan käyttöön monia tärkeitä turvallisuusominaisuuksia Chrome-käyttöjärjestelmässä. Lisätietoja löydät Chromebook-ohjekeskuksesta: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6404187344102273690">Pelaaminen Chromebookilla</translation>

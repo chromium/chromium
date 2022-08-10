@@ -284,10 +284,12 @@
 <translation id="3479552764303398839">Ne most</translation>
 <translation id="3486821258960016770">mongol</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> hiba.</translation>
+<translation id="3495810061346586977">Ez a fájl bizalmas, és az adminisztrátori szabályzat vonatkoznak rá. <ph name="BEGIN_LINK_HELP" />További információ<ph name="END_LINK_HELP" />.</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_INDEX" />. hálózat (összesen <ph name="NETWORK_COUNT" />), <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, jelerősség: <ph name="SIGNAL_STRENGTH" />%, részletek</translation>
 <translation id="3522708245912499433">portugál</translation>
 <translation id="3524311639100184459">Figyelem: Ezek ideiglenes fájlok, és automatikusan törlésre kerülnek azért, hogy tárhely szabaduljon fel.  <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="3527085408025491307">Mappa</translation>
+<translation id="3548125359243647069">Túl sokszor lett megadva helytelen PIN-kód.</translation>
 <translation id="3549797760399244642">Ugrás ide: drive.google.com...</translation>
 <translation id="3553048479571901246">Fájlok <ph name="APP_NAME" /> alkalmazással való megnyitásához először másolja be őket a Windows-fájlok mappába.</translation>
 <translation id="3556731189587832921">angol (USA) billentyűzet nemzetközi PC kiosztással</translation>
@@ -613,6 +615,7 @@
 <translation id="6267547857941397424"><ph name="NETWORK_INDEX" />. hálózat (összesen <ph name="NETWORK_COUNT" />), <ph name="PHONE_NAME" />, jelerősség: <ph name="SIGNAL_STRENGTH" />%, telefon akkumulátora: <ph name="BATTERY_STATUS" />%, csatlakozás</translation>
 <translation id="6269630227984243955">maláj</translation>
 <translation id="6287852322318138013">Válasszon egy alkalmazást a fájl megnyitásához</translation>
+<translation id="6295542640242147836">SIM zárolása</translation>
 <translation id="6296410173147755564">Érvénytelen PUK-kód</translation>
 <translation id="6312403991423642364">Ismeretlen hálózati hiba</translation>
 <translation id="6317608858038767920">Egyéni névszerver: <ph name="INPUT_INDEX" /></translation>
@@ -721,6 +724,7 @@
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Mentés másként</translation>
 <translation id="7229570126336867161">EVDO szükséges</translation>
+<translation id="7230898482850090046">A rendszergazda a „SIM zárolása” beállítás kikapcsolására kérte.</translation>
 <translation id="7238097264433196391">Meghajtó neve</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, részletek</translation>
 <translation id="7246947237293279874">FTP-proxy</translation>
@@ -752,6 +756,7 @@
 <translation id="7505167922889582512">Rejtett fájlok megjelenítése</translation>
 <translation id="7514365320538308">Letöltés</translation>
 <translation id="751507702149411736">fehérorosz</translation>
+<translation id="7521790570754130607">A mobiladatok használatához PIN-kód megadása szükséges.</translation>
 <translation id="7532029025027028521">perzsa, betű szerinti átírás</translation>
 <translation id="7544830582642184299">A Linux-alkalmazások engedélyt kapnak arra, hogy hozzáférjenek az Ön fájljaihoz a Google Drive-fiókjában. A változtatások minden eszközön szinkronizálódnak.</translation>
 <translation id="7547009467130558110">Sportcipő</translation>
@@ -776,6 +781,7 @@
 <translation id="76959938259365003">Nem sikerült kiüríteni a kukát.</translation>
 <translation id="770015031906360009">görög</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> a vágólapra másolva.</translation>
+<translation id="7708271999969613024">A hálózat használatához meg kell adnia a szolgáltatótól kapott nyolcjegyű PUK-kódot.</translation>
 <translation id="7711920809702896782">Képfájl adatai</translation>
 <translation id="7724603315864178912">Kivágás</translation>
 <translation id="7730494089396812859">Felhőbe történő biztonsági mentés részleteinek megjelenítése</translation>
@@ -870,6 +876,7 @@
 <translation id="8437209419043462667">USA</translation>
 <translation id="8452135315243592079">Hiányzó SIM-kártya</translation>
 <translation id="8456681095658380701">Érvénytelen név</translation>
+<translation id="8457767749626250697">A SIM zárolva van</translation>
 <translation id="8459404855768962328">A másolása esetén az elemet mindenkivel megosztja, aki látja a következő megosztott mappát: <ph name="DESTINATION_NAME" />.</translation>
 <translation id="8461467696380332069">Ha gyorsan hozzá szeretne férni a fájljaihoz a polcon, kattintson valamelyik fájlra a jobb egérgombbal, és válassza a „Rögzítés a polcra” lehetőséget.</translation>
 <translation id="8461914792118322307">Proxy</translation>

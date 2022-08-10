@@ -1869,6 +1869,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2727633948226935816">Nu-mi mai reaminti</translation>
 <translation id="2727712005121231835">Dimensiunea actuală</translation>
 <translation id="2729314457178420145">Șterge și datele de navigare (<ph name="URL" />), acțiune care te poate deconecta de la Google.com. <ph name="LEARN_MORE" /></translation>
+<translation id="2729327310379176711">Chrome caută noi modalități de a reduce urmărirea și de a te proteja mai bine în timp ce navighezi. În plus, Chrome <ph name="ESTIMATE_INTERESTS_LINK" /> și îți dă posibilitatea să le gestionezi. Apoi, site-urile pe care le accesezi pot solicita informații despre interesele tale de la Chrome pentru a-ți afișa anunțuri.</translation>
 <translation id="2730029791981212295">Se face backup pentru aplicațiile și fișierele Linux</translation>
 <translation id="2730901670247399077">Sugestii de emoji</translation>
 <translation id="273093730430620027">Această pagină vă accesează camera.</translation>
@@ -4556,6 +4557,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5350293332385664455">Dezactivează Asistentul Google</translation>
 <translation id="535123479159372765">Text copiat de pe alt dispozitiv</translation>
 <translation id="5352033265844765294">Marcare temporală</translation>
+<translation id="5352257124367865087">Gestionează permisiunile site-urilor</translation>
 <translation id="5353252989841766347">Exportă parolele din Chrome</translation>
 <translation id="5355099869024327351">Permite Asistentului să afișeze notificări</translation>
 <translation id="5355191726083956201">Protecția îmbunătățită este activată</translation>
@@ -5056,6 +5058,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="5844574845205796324">Sugerează conținut nou de explorat</translation>
 <translation id="5846200638699387931">Eroare de sintaxă a relației: <ph name="ERROR_LINE" /></translation>
+<translation id="5846504156837627898">Gestionează permisiunile site-urilor</translation>
 <translation id="5846807460505171493">Instalează actualizări și aplicații. Dacă alegi să continui, accepți ca acest dispozitiv să descarce și să instaleze automat actualizări și aplicații de la Google, de la operatorul tău și de la producătorul dispozitivului, posibil folosind datele mobile. Unele dintre aceste aplicații pot oferi achiziții în aplicație.</translation>
 <translation id="5849212445710944278">Adăugat deja</translation>
 <translation id="5851868085455377790">Emitent</translation>
@@ -5621,6 +5624,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6398715114293939307">Elimină Magazinul Google Play</translation>
 <translation id="6398765197997659313">Ieși din ecranul complet</translation>
 <translation id="6399774419735315745">Spioană</translation>
+<translation id="6400360390396538896">Activat permanent <ph name="ORIGIN" /></translation>
 <translation id="6401458660421980302">Pentru a trimite această filă pe alt dispozitiv, conectează-te la Chrome pe dispozitivul respectiv</translation>
 <translation id="6401597285454423070">Computerul conține un dispozitiv de securitate Trusted Platform Module (TPM), care este folosit pentru a implementa numeroase funcții esențiale de securitate în sistemul de operare Chrome. Accesează Centrul de ajutor Chromebook pentru a afla mai multe: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6404187344102273690">Jocuri video de pe Chromebook</translation>

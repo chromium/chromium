@@ -3789,6 +3789,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4579581181964204535">Non se puido emitir <ph name="HOST_NAME" />.</translation>
 <translation id="4579876313423027742">Para acceder ás notificacións do navegador, vai á <ph name="LINK_BEGIN" />configuración do navegador Chrome<ph name="LINK_END" /></translation>
 <translation id="4580596421317071374">Os contrasinais gárdanse no <ph name="GOOGLE_PASSWORD_MANAGER" /> neste dispositivo.</translation>
+<translation id="4580626299762849806">Non se puideron importar os contrasinais. Comproba o ficheiro <ph name="FILENAME" /> e asegúrate de que teña o formato correcto.</translation>
 <translation id="4581774856936278355">Produciuse un erro ao restaurar Linux</translation>
 <translation id="4582297591746054421">Os sitios adoitan acceder ao portapapeis para ofrecerche determinadas funcións (por exemplo, conservar o formato do texto copiado)</translation>
 <translation id="4582563038311694664">Restablecer toda a configuración</translation>
@@ -5092,6 +5093,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5877064549588274448">Canle cambiada. Reinicia o dispositivo para aplicar os cambios.</translation>
 <translation id="5877584842898320529">A impresora seleccionada non está dispoñible ou non está instalada correctamente. <ph name="BR" /> Comproba a impresora ou tenta seleccionar outra.</translation>
 <translation id="5878945009165002849">Bloquear as solicitudes de inicio de sesión dos servizos de identidade</translation>
+<translation id="5882449899683447569">Produciuse un erro e non se importaron os contrasinais</translation>
 <translation id="5882919346125742463">Redes coñecidas</translation>
 <translation id="5883356647197510494">Bloqueáronse automaticamente os seguintes permisos: <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /></translation>
 <translation id="5884474295213649357">Esta pestana está conectada a un dispositivo USB.</translation>

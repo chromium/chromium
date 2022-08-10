@@ -100,6 +100,7 @@
 <translation id="1455242230282523554">Показать языковые настройки</translation>
 <translation id="1460620680449458626">Сейчас звук выключен.</translation>
 <translation id="1467432559032391204">Слева</translation>
+<translation id="146902737843070955">Запрос на это изменение поступил от администратора.</translation>
 <translation id="147310119694673958">Батарея телефона: <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="1479909375538722835">Плавающее меню специальных возможностей</translation>
 <translation id="1480845547124508962"><ph name="CURRENT_TIME" />, чтобы открыть календарь, нажмите Ввод</translation>
@@ -837,6 +838,7 @@
 <translation id="5779721926447984944">Закрепленные файлы</translation>
 <translation id="5788127256798019331">Файлы Google Play</translation>
 <translation id="5790085346892983794">Выполнено</translation>
+<translation id="5804651031882187592">Отключите блокировку SIM-карты</translation>
 <translation id="5805809050170488595">Нажмите, чтобы активировать <ph name="NETWORK_NAME" /></translation>
 <translation id="5825969630400862129">Настройки подключенных устройств</translation>
 <translation id="5837036133683224804">Остановить трансляцию <ph name="ROUTE_TITLE" /> на устройство "<ph name="RECEIVER_NAME" />"</translation>
@@ -1195,7 +1197,7 @@
 <translation id="7893503627044934815">Скрыть файл</translation>
 <translation id="7895348134893321514">Быстрый доступ</translation>
 <translation id="7897375687985782769">Вы нажали сочетание клавиш для поворота экрана. Выполнить это действие?</translation>
-<translation id="7901405293566323524">Интерфейс Phone Hub</translation>
+<translation id="7901405293566323524">Управление телефоном</translation>
 <translation id="7902625623987030061">Коснитесь сканера отпечатков.</translation>
 <translation id="7904094684485781019">Администратор этого аккаунта запретил множественный вход</translation>
 <translation id="7911118814695487383">Linux</translation>

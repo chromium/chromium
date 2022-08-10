@@ -284,10 +284,12 @@
 <translation id="3479552764303398839">Nid nawr</translation>
 <translation id="3486821258960016770">Mongoleg</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> o wallau.</translation>
+<translation id="3495810061346586977">Mae'r ffeil hon yn gyfrinachol ac yn amodol ar gyfyngiadau gan bolisi gweinyddwr. <ph name="BEGIN_LINK_HELP" />Dysgu rhagor<ph name="END_LINK_HELP" /></translation>
 <translation id="3509680540198371098">Rhwydwaith <ph name="NETWORK_INDEX" /> o <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Cryfder Signal <ph name="SIGNAL_STRENGTH" />%, Manylion</translation>
 <translation id="3522708245912499433">Portiwgaleg</translation>
 <translation id="3524311639100184459">Rhybudd: Mae'r ffeiliau hyn dros dro a gellir eu dileu yn awtomatig i greu rhagor o le ar y disg.  <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Ffolder</translation>
+<translation id="3548125359243647069">Rhoddwyd y PIN anghywir gormod o weithiau.</translation>
 <translation id="3549797760399244642">Ewch i drive.google.com...</translation>
 <translation id="3553048479571901246">Er mwyn agor ffeiliau gyda <ph name="APP_NAME" />, copïwch nhw yn gyntaf i'r ffolder ffeiliau Windows.</translation>
 <translation id="3556731189587832921">Saesneg (UDA) gyda bysellfwrdd PC Rhyngwladol</translation>
@@ -612,6 +614,7 @@
 <translation id="6267547857941397424">Rhwydwaith <ph name="NETWORK_INDEX" /> o <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, Cryfder y Signal <ph name="SIGNAL_STRENGTH" />%, Batri'r Ffôn <ph name="BATTERY_STATUS" />%, Cysylltu</translation>
 <translation id="6269630227984243955">Maleieg</translation>
 <translation id="6287852322318138013">Dewiswch ap i agor y ffeil hon</translation>
+<translation id="6295542640242147836">Cloi SIM</translation>
 <translation id="6296410173147755564">PUK annilys</translation>
 <translation id="6312403991423642364">Gwall rhwydwaith anhysbys</translation>
 <translation id="6317608858038767920">Gweinydd enw personol <ph name="INPUT_INDEX" /></translation>
@@ -720,6 +723,7 @@
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Cadw'r ffeil fel</translation>
 <translation id="7229570126336867161">Angen EVDO</translation>
+<translation id="7230898482850090046">Mae eich gweinyddwr wedi gofyn i chi ddiffodd y gosodiad "Cloi SIM".</translation>
 <translation id="7238097264433196391">Enw'r gyriant</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, Manylion</translation>
 <translation id="7246947237293279874">Dirprwy Weinydd FTP</translation>
@@ -751,6 +755,7 @@
 <translation id="7505167922889582512">Dangos ffeiliau sydd wedi'u cuddio</translation>
 <translation id="7514365320538308">Lawrlwytho</translation>
 <translation id="751507702149411736">Belarwsiyn</translation>
+<translation id="7521790570754130607">Mae angen PIN i ddefnyddio data symudol</translation>
 <translation id="7532029025027028521">Trawslythrennu Perseg</translation>
 <translation id="7544830582642184299">Rhowch ganiatâd i apiau Linux gael mynediad at ffeiliau yn eich Google Drive. Bydd newidiadau yn cysoni â'ch dyfeisiau eraill.</translation>
 <translation id="7547009467130558110">Esgid ymarfer</translation>
@@ -775,6 +780,7 @@
 <translation id="76959938259365003">Wedi methu â gwagio'r bin sbwriel.</translation>
 <translation id="770015031906360009">Groeg</translation>
 <translation id="7705251383879779343">Copïwyd <ph name="FILE_NAME" />.</translation>
+<translation id="7708271999969613024">I ddefnyddio'r rhwydwaith hwn, mae angen i chi nodi'r Allwedd Ddadrwystro Bersonol 8 digid (PUK) a ddarperir gan y cludwr.</translation>
 <translation id="7711920809702896782">Gwybodaeth am y llun</translation>
 <translation id="7724603315864178912">Torri</translation>
 <translation id="7730494089396812859">Dangos manylion copïau wrth gefn yn y Cwmwl</translation>
@@ -869,6 +875,7 @@
 <translation id="8437209419043462667">UDA</translation>
 <translation id="8452135315243592079">Cerdyn SIM ar goll</translation>
 <translation id="8456681095658380701">Enw annilys</translation>
+<translation id="8457767749626250697">Mae eich SIM wedi'i gloi</translation>
 <translation id="8459404855768962328">Bydd copïo'r eitem hon yn ei rhannu â phawb sy'n gallu gweld y ffolder gyffredin '<ph name="DESTINATION_NAME" />'.</translation>
 <translation id="8461467696380332069">De-gliciwch ffeil, a dewiswch "Pinio i'r silff" i gael mynediad cyflym at eich ffeiliau yn y silff.</translation>
 <translation id="8461914792118322307">Dirprwy weinydd</translation>

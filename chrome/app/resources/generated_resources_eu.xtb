@@ -1127,6 +1127,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2048653237708779538">Ekintza ez dago erabilgarri</translation>
 <translation id="2050339315714019657">Bertikala</translation>
 <translation id="2052572566310583903">Beste gailuetan instalatuta daukazu</translation>
+<translation id="2053105195397337973">Webguneei spama eta iruzurrak saihesteko aukera gaitu bitartean webguneen jarraipenak mugatzeko moduak arakatzen ari gara.</translation>
 <translation id="2053312383184521053">Jarduerarik gabeko egoeraren datuak</translation>
 <translation id="2054240652864153171"><ph name="PARTITION_SITE_NAME" /> webgunean zatituta dagoen <ph name="SITE_NAME" /> webguneko datuak garbitu nahi dituzu?</translation>
 <translation id="2055585478631012616">Webgune horietako saioa amaituko da, baita irekita dauden fitxetakoa ere</translation>
@@ -1868,6 +1869,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2727633948226935816">Ez gogorarazi berriro</translation>
 <translation id="2727712005121231835">Benetako tamaina</translation>
 <translation id="2729314457178420145">Garbitu arakatze-datuak ere (<ph name="URL" />); baliteke Google.com webguneko saioa amaitzea. <ph name="LEARN_MORE" /></translation>
+<translation id="2729327310379176711">Jarraipena murrizteko eta arakatu bitartean seguruago egon zaitezen modu berriak bilatzen ari ditu Chrome-k. Halaber, <ph name="ESTIMATE_INTERESTS_LINK" />, eta haiek kudeatzeko aukera ematen. Interesak igarri ondoren, bisitatzen dituzun webguneek zein interes dituzun galde diezaiokete Chrome-ri, iragarkiak erakuste aldera.</translation>
 <translation id="2730029791981212295">Linux-eko aplikazio eta fitxategien babeskopia egiten</translation>
 <translation id="2730901670247399077">Iradokitako emojiak</translation>
 <translation id="273093730430620027">Orria zure kamera atzitzen ari da.</translation>
@@ -4957,6 +4959,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5747552184818312860">Iraungitze-data</translation>
 <translation id="5747785204778348146">Garatzailea; egoera ezegonkorra</translation>
 <translation id="5747809636523347288">It&amp;satsi eta joan "<ph name="URL" />" helbidera</translation>
+<translation id="5751345516399502412">Egiaztatu konexioa partekatzeko aukeraren erabilgarritasuna</translation>
 <translation id="5755022574660047665">Google Argazkiak zerbitzuko oroitzapenak</translation>
 <translation id="5756163054456765343">&amp;Laguntza-zentroa</translation>
 <translation id="5757375109985023827">Hautatu fitxa bat haren aurrebista ikusteko</translation>
@@ -7212,6 +7215,7 @@ Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-eteng
 <translation id="7939062555109487992">Aukera aurreratuak</translation>
 <translation id="7939328347457537652">Kudeatu gailuen ziurtagiriak</translation>
 <translation id="7939412583708276221">Gorde hala ere</translation>
+<translation id="7941179291434537290">Konexioa partekatzeko aukeraren erabilgarritasuna:</translation>
 <translation id="7942349550061667556">Gorria</translation>
 <translation id="7943368935008348579">Deskargatu PDFak</translation>
 <translation id="7943837619101191061">Gehitu kokapena…</translation>
@@ -7738,6 +7742,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8439506636278576865">Eskaini hizkuntza honetako orriak itzultzea</translation>
 <translation id="8440630305826533614">Linux aplikazioak</translation>
 <translation id="844063558976952706">Beti webgune honetan</translation>
+<translation id="8441313165929432954">Gaitu/desgaitu konexioa partekatzeko aukera</translation>
 <translation id="8443795068008423036">Ziurtatu gailua eguneratuta dagoela eta saiatu berriro</translation>
 <translation id="8446884382197647889">Lortu informazio gehiago</translation>
 <translation id="8447409163267621480">Erabili Ktrl edo Alt</translation>

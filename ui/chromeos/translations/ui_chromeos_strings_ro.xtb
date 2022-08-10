@@ -289,6 +289,7 @@
 <translation id="3522708245912499433">Portugheză</translation>
 <translation id="3524311639100184459">Atenție: aceste fișiere sunt temporare și pot fi șterse automat pentru a elibera spațiu pe disc.  <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Dosar</translation>
+<translation id="3548125359243647069">Codul PIN a fost introdus greșit de prea multe ori.</translation>
 <translation id="3549797760399244642">Accesați drive.google.com...</translation>
 <translation id="3553048479571901246">Pentru a deschide fișiere cu <ph name="APP_NAME" />, mai întâi copiază-le în dosarul cu fișiere Windows.</translation>
 <translation id="3556731189587832921">Engleză (S.U.A.) cu tastatură internațională pentru PC</translation>
@@ -614,6 +615,7 @@
 <translation id="6267547857941397424">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, bateria telefonului: <ph name="BATTERY_STATUS" /> %, conectează-te</translation>
 <translation id="6269630227984243955">Malaieză</translation>
 <translation id="6287852322318138013">Selectați o aplicație pentru deschiderea acestui fișier</translation>
+<translation id="6295542640242147836">Blochează cardul SIM</translation>
 <translation id="6296410173147755564">PUK nevalid</translation>
 <translation id="6312403991423642364">Eroare de rețea necunoscută</translation>
 <translation id="6317608858038767920">Server de nume personalizat <ph name="INPUT_INDEX" /></translation>
@@ -722,6 +724,7 @@
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Salvează fișierul ca</translation>
 <translation id="7229570126336867161">Este necesar EVDO</translation>
+<translation id="7230898482850090046">Administratorul a solicitat să dezactivezi setarea Blochează cardul SIM</translation>
 <translation id="7238097264433196391">Numele unității</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, detalii</translation>
 <translation id="7246947237293279874">Proxy FTP</translation>
@@ -753,6 +756,7 @@
 <translation id="7505167922889582512">Afișează fișierele ascunse</translation>
 <translation id="7514365320538308">Descarcă</translation>
 <translation id="751507702149411736">Belarusă</translation>
+<translation id="7521790570754130607">Pentru a folosi datele mobile, este necesar codul PIN</translation>
 <translation id="7532029025027028521">Persană, transliterație</translation>
 <translation id="7544830582642184299">Acordă aplicațiilor Linux permisiunea de a accesa fișiere din Google Drive. Modificările se vor sincroniza cu celelalte dispozitive care îți aparțin.</translation>
 <translation id="7547009467130558110">Adidas</translation>
@@ -777,6 +781,7 @@
 <translation id="76959938259365003">Nu s-a golit coșul de gunoi.</translation>
 <translation id="770015031906360009">Greacă</translation>
 <translation id="7705251383879779343">Copiate: <ph name="FILE_NAME" />.</translation>
+<translation id="7708271999969613024">Pentru a folosi această rețea, trebuie să introduci cheia personală de deblocare (PUK) din 8 cifre oferită de operator.</translation>
 <translation id="7711920809702896782">Informații despre fișierul imagine</translation>
 <translation id="7724603315864178912">Decupează</translation>
 <translation id="7730494089396812859">Afișează detaliile pentru backupul în cloud</translation>
@@ -871,6 +876,7 @@
 <translation id="8437209419043462667">S.U.A.</translation>
 <translation id="8452135315243592079">Lipsește cardul SIM</translation>
 <translation id="8456681095658380701">Nume nevalid</translation>
+<translation id="8457767749626250697">Cardul SIM este blocat</translation>
 <translation id="8459404855768962328">În cazul în care copiezi elementul, acesta va putea fi accesat de toată lumea care vede dosarul comun <ph name="DESTINATION_NAME" />.</translation>
 <translation id="8461467696380332069">Dă clic dreapta pe un fișier și selectează „Fixați pe raft” pentru acces rapid la fișierele din raft.</translation>
 <translation id="8461914792118322307">Proxy</translation>

@@ -25,6 +25,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 Behörigheter som du redan har gett webbplatser och appar kan gälla för det här kontot. Du kan hantera dina Google-konton i <ph name="SETTINGS_LINK_BEGIN" />inställningarna<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1640672724030957280">Hämtar ...</translation>
 <translation id="1708666629004767631">Det finns en ny, ännu säkrare version av Chromium.</translation>
+<translation id="17264556997921157">Du kan se och ta bort intressanta ämnen som används på webbplatser för att visa annonser för dig. Uppskattningen av vad du är intresserad av görs utifrån den senaste webbhistoriken i Chromium.</translation>
 <translation id="1774152462503052664">Låt Chromium köras i bakgrunden</translation>
 <translation id="1779356040007214683">Vi har gjort Chromium säkrare genom att inaktivera vissa tillägg som inte finns i <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> och som kan ha lagts till utan att du vet om det.</translation>
 <translation id="1808667845054772817">Installera om Chromium</translation>

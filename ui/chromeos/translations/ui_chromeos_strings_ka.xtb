@@ -244,6 +244,7 @@
 <translation id="3138624403379688522">PIN-კოდი არასწორია. <ph name="RETRIES" /> მცდელობა დაგრჩათ.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (აპარატურულად მხარდაჭერილი)</translation>
 <translation id="3188257591659621405">ჩემი ფაილები</translation>
+<translation id="3194553149358267393">ბოლოდროინდელი აუდიოფაილები არ არის</translation>
 <translation id="3197563288998582412">UK Dvorak</translation>
 <translation id="3202131003361292969">მდებარეობა</translation>
 <translation id="3205852408225871810">პორტუგალიური (ბრაზილია)</translation>
@@ -302,6 +303,7 @@
 <translation id="3606220979431771195">თურქული-F</translation>
 <translation id="3616113530831147358">აუდიო</translation>
 <translation id="3619115746895587757">კაპუჩინო</translation>
+<translation id="3619593063686672873">ბოლოდროინდელი ვიდეოები არ არის</translation>
 <translation id="3620292326130836921">ყველაფერი გადატანილია სარეზერვო მეხსიერებაში!</translation>
 <translation id="3634507049637220048">ქსელი <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, მართავს თქვენი ადმინისტრატორი, დეტალები</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> ერთეული გადატანილია.</translation>
@@ -400,6 +402,7 @@
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> ფაილი</translation>
 <translation id="457386861538956877">მეტი…</translation>
 <translation id="4579744207439506346"><ph name="ENTRY_NAME" /> დაემატა არჩეულს.</translation>
+<translation id="4583436353463424810">ბოლოდროინდელი დოკუმენტები არ არის</translation>
 <translation id="4594543368593301662">ნაჩვენებია შედეგები მოთხოვნაზე „<ph name="SEARCH_TERM" />“.</translation>
 <translation id="4599600860674643278">ფილტრი გადაყენებულია.</translation>
 <translation id="4603392156942865207">მიმდინარეობს „<ph name="FILE_NAME" />“-ის კოპირება „<ph name="FOLDER_NAME" />“-ში</translation>
@@ -488,6 +491,7 @@
 <translation id="516592729076796170">შეერთებული შტატების დვორაკი პროგრამისტებისთვის</translation>
 <translation id="5172749059808361023">შეზღუდვის დეტალები</translation>
 <translation id="5177526793333269655">ესკიზების ხედი</translation>
+<translation id="5181896909298187506">ბოლოდროინდელი ფაილები არ არის</translation>
 <translation id="5194713942430106590">დააწკაპუნეთ სვეტის ზრდადი მიმდევრობით დასალაგებლად.</translation>
 <translation id="5211614973734216083">ფარერული</translation>
 <translation id="5218183485292899140">შვეიცარია საფრანგეთი</translation>
@@ -744,6 +748,7 @@
 <translation id="7408870451288633753">ჩეხური</translation>
 <translation id="7417453074306512035">ეთიოპიური კლავიატურა</translation>
 <translation id="7417705661718309329">Google რუკა</translation>
+<translation id="7458955835361612701">ბოლოდროინდელი სურათები არ არის</translation>
 <translation id="7460898608667578234">უკრაინული</translation>
 <translation id="7469894403370665791">ამ ქსელთან ავტომატური დაკავშირება</translation>
 <translation id="7486315294984620427">Parallels Desktop-ში ფაილის ჩავლებით გადასატანად ის უნდა დააკოპიროთ Windows ფაილებში.</translation>

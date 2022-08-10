@@ -289,6 +289,7 @@
 <translation id="3522708245912499433">португалски</translation>
 <translation id="3524311639100184459">Опрез: Ове датотеке су привремене и могу да се избришу аутоматски како би се ослободио простор на диску.  <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Фолдер</translation>
+<translation id="3548125359243647069">Превише пута сте унели погрешан PIN.</translation>
 <translation id="3549797760399244642">Иди на drive.google.com...</translation>
 <translation id="3553048479571901246">Да бисте отварали датотеке помоћу апликације <ph name="APP_NAME" />, прво их копирајте у директоријум са Windows датотекама.</translation>
 <translation id="3556731189587832921">енглески (САД) са интернационалном тастатуром за рачунар</translation>
@@ -614,6 +615,7 @@
 <translation id="6267547857941397424"><ph name="NETWORK_INDEX" />. мрежа од <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, јачина сигнала <ph name="SIGNAL_STRENGTH" />%, батерија телефона <ph name="BATTERY_STATUS" />%, повежи</translation>
 <translation id="6269630227984243955">малајски</translation>
 <translation id="6287852322318138013">Изаберите апликацију за отварање ове датотеке</translation>
+<translation id="6295542640242147836">Закључај SIM</translation>
 <translation id="6296410173147755564">Неважећи PUK</translation>
 <translation id="6312403991423642364">Непозната грешка на мрежи</translation>
 <translation id="6317608858038767920">Прилагођени сервер имена <ph name="INPUT_INDEX" /></translation>
@@ -722,6 +724,7 @@
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Сачувај датотеку као</translation>
 <translation id="7229570126336867161">Потребан је EVDO</translation>
+<translation id="7230898482850090046">Администратор је затражио да искључите подешавање Закључај SIM</translation>
 <translation id="7238097264433196391">Назив диска</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, детаљи</translation>
 <translation id="7246947237293279874">FTP прокси</translation>
@@ -753,6 +756,7 @@
 <translation id="7505167922889582512">Прикажи скривене датотеке</translation>
 <translation id="7514365320538308">Преузми</translation>
 <translation id="751507702149411736">белоруски</translation>
+<translation id="7521790570754130607">Неопходан је PIN да би се користили мобилни подаци</translation>
 <translation id="7532029025027028521">персијски, транслитерација</translation>
 <translation id="7544830582642184299">Дозволите да Linux апликације приступају фајловима на Google диску. Промене ће се синхронизовати са другим уређајима.</translation>
 <translation id="7547009467130558110">Патика</translation>
@@ -777,6 +781,7 @@
 <translation id="76959938259365003">Пражњење отпада није успело.</translation>
 <translation id="770015031906360009">грчки</translation>
 <translation id="7705251383879779343">Копираних ставки: <ph name="FILE_NAME" />.</translation>
+<translation id="7708271999969613024">Да бисте користили ову мрежу, треба да унесете осмоцифрену личну шифру за откључавање (PUK) коју пружа мобилни оператер.</translation>
 <translation id="7711920809702896782">Информације о датотеци слике</translation>
 <translation id="7724603315864178912">Исеци</translation>
 <translation id="7730494089396812859">Прикажите детаље о прављењу резервних копија у клауду</translation>
@@ -871,6 +876,7 @@
 <translation id="8437209419043462667">америчка</translation>
 <translation id="8452135315243592079">SIM картица недостаје</translation>
 <translation id="8456681095658380701">Неважеће име</translation>
+<translation id="8457767749626250697">SIM је закључан</translation>
 <translation id="8459404855768962328">Копирањем ове ставке делите је са свима који могу да виде дељени фолдер <ph name="DESTINATION_NAME" />.</translation>
 <translation id="8461467696380332069">Кликните десним тастером на фајл и изаберите „Закачи на полицу“ ради брзог приступа фајловима на полици.</translation>
 <translation id="8461914792118322307">Прокси</translation>

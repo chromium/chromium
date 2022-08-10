@@ -1887,6 +1887,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2727633948226935816">Nebepriminti</translation>
 <translation id="2727712005121231835">Faktinis dydis</translation>
 <translation id="2729314457178420145">Taip pat išvalyti naršymo duomenis (<ph name="URL" />). Tai padarius galite būti atjungti nuo Google.com. <ph name="LEARN_MORE" /></translation>
+<translation id="2729327310379176711">„Chrome“ ieško naujų būdų sumažinti stebėjimą ir užtikrinti dar didesnę jūsų saugą naršant. Be to, „Chrome“ <ph name="ESTIMATE_INTERESTS_LINK" /> ir leidžia juos tvarkyti. Tada svetainėse, kuriose lankotės, gali būti prašoma „Chrome“ jūsų pomėgių skelbimams rodyti.</translation>
 <translation id="2730029791981212295">Kuriama atsarginė „Linux“ programų ir failų kopija</translation>
 <translation id="2730901670247399077">Jaustukų pasiūlymai</translation>
 <translation id="273093730430620027">Šis puslapis gali pasiekti jūsų fotoaparatą.</translation>
@@ -3809,6 +3810,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4579581181964204535">Nepavyko perduoti <ph name="HOST_NAME" />.</translation>
 <translation id="4579876313423027742">Jei reikia naršyklės pranešimų, eikite į <ph name="LINK_BEGIN" />„Chrome“ naršyklės nustatymų skiltį<ph name="LINK_END" /></translation>
 <translation id="4580596421317071374">Slaptažodžiai išsaugomi skiltyje „<ph name="GOOGLE_PASSWORD_MANAGER" />“ šiame įrenginyje</translation>
+<translation id="4580626299762849806">Nepavyko importuoti slaptažodžių. Patikrinkite failą <ph name="FILENAME" /> ir įsitikinkite, kad jis tinkamai suformatuotas.</translation>
 <translation id="4581774856936278355">Atkuriant „Linux“ įvyko klaida</translation>
 <translation id="4582297591746054421">Paprastai svetainėse nuskaitoma jūsų iškarpinė ieškant tam tikrų funkcijų, pvz., norint išlaikyti nukopijuoto teksto formatavimą</translation>
 <translation id="4582563038311694664">Nustatyti visus nustatymus iš naujo</translation>
@@ -4574,6 +4576,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5350293332385664455">Išjungti „Google“ padėjėją</translation>
 <translation id="535123479159372765">Tekstas nukopijuotas iš kito įrenginio</translation>
 <translation id="5352033265844765294">Laiko žymėjimas</translation>
+<translation id="5352257124367865087">Tvarkyti svetainių leidimus</translation>
 <translation id="5353252989841766347">Slaptažodžių eksportavimas iš „Chrome“</translation>
 <translation id="5355099869024327351">Padėjėjui leidžiama rodyti pranešimus</translation>
 <translation id="5355191726083956201">Sustiprinta apsauga įjungta</translation>
@@ -5076,6 +5079,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5843706793424741864">Farenheito laipsniai</translation>
 <translation id="5844574845205796324">Siūlyti naują naršytiną turinį</translation>
 <translation id="5846200638699387931">Ryšio sintaksės klaida: <ph name="ERROR_LINE" /></translation>
+<translation id="5846504156837627898">Tvarkyti svetainių leidimus</translation>
 <translation id="5846807460505171493">Įdiekite naujinių ir programų. Tęsdami sutinkate, kad šis įrenginys taip pat gali automatiškai atsisiųsti ir įdiegti naujinius bei programas iš „Google“, jūsų operatoriaus ir įrenginio gamintojo, naudodamas mobiliojo ryšio duomenis. Kai kuriose iš šių programų gali būti teikiama pirkimo programoje paslauga.</translation>
 <translation id="5849212445710944278">Jau pridėta</translation>
 <translation id="5851868085455377790">Išdavėjas</translation>
@@ -5116,6 +5120,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5877064549588274448">Kanalas pakeistas. Kad pritaikytumėte pakeitimus, iš naujo paleiskite įrenginį.</translation>
 <translation id="5877584842898320529">Pasirinktas spausdintuvas nepasiekiamas arba netinkamai įdiegtas. <ph name="BR" /> Patikrinkite spausdintuvą arba pabandykite pasirinkti kitą spausdintuvą.</translation>
 <translation id="5878945009165002849">Blokuoti raginimus prisijungti iš tapatybės nustatymo paslaugų</translation>
+<translation id="5882449899683447569">Kažkas nutiko ir slaptažodžiai nebuvo importuoti</translation>
 <translation id="5882919346125742463">Žinomi tinklai</translation>
 <translation id="5883356647197510494">Automatiškai užblokuota: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5884474295213649357">Šis skirtukas susietas su USB įrenginiu.</translation>
@@ -5640,6 +5645,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="6398715114293939307">Pašalinti „Google Play“ parduotuvę</translation>
 <translation id="6398765197997659313">Išeiti iš viso ekrano režimo</translation>
 <translation id="6399774419735315745">Slaptoji agentė</translation>
+<translation id="6400360390396538896">Visada įjungta <ph name="ORIGIN" /></translation>
 <translation id="6401458660421980302">Jei norite siųsti šį skirtuką į kitą įrenginį, prisijunkite prie „Chrome“ čia</translation>
 <translation id="6401597285454423070">Jūsų kompiuteryje yra patikimos platformos modulio (TPM) saugos įrenginys, kuris naudojamas „Chrome“ OS įdiegiant daug svarbių saugos funkcijų. Jei reikia daugiau informacijos, apsilankykite „Chromebook“ pagalbos centre adresu https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6404187344102273690">„Chromebook“ žaidimai</translation>

@@ -284,10 +284,12 @@
 <translation id="3479552764303398839">Ne dabar</translation>
 <translation id="3486821258960016770">Mongolų k.</translation>
 <translation id="3495304270784461826">Klaidų: <ph name="COUNT" />.</translation>
+<translation id="3495810061346586977">Šis failas yra konfidencialus ir jam taikomi administratoriaus politikos apribojimai. <ph name="BEGIN_LINK_HELP" />Sužinokite daugiau<ph name="END_LINK_HELP" /></translation>
 <translation id="3509680540198371098"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalo stiprumas <ph name="SIGNAL_STRENGTH" /> %, išsami informacija</translation>
 <translation id="3522708245912499433">Portugalų</translation>
 <translation id="3524311639100184459">Perspėjimas: šie failai yra laikini ir gali būti automatiškai ištrinti, kad būtų atlaisvinta vietos diske.  <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Aplankas</translation>
+<translation id="3548125359243647069">Per daug kartų įvestas netinkamas PIN kodas.</translation>
 <translation id="3549797760399244642">Eiti į drive.google.com...</translation>
 <translation id="3553048479571901246">Jei norite atidaryti failus naudodami programą „<ph name="APP_NAME" />“, pirmiausia nukopijuokite juos į „Windows“ failų aplanką.</translation>
 <translation id="3556731189587832921">Anglų k. (JAV) su tarptautine AK klaviatūra</translation>
@@ -613,6 +615,7 @@
 <translation id="6267547857941397424"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, signalo stiprumas <ph name="SIGNAL_STRENGTH" /> %, telefono akumuliatorius <ph name="BATTERY_STATUS" /> %, prisijungti</translation>
 <translation id="6269630227984243955">Malajų k.</translation>
 <translation id="6287852322318138013">Pasirinkite programą, kad atidarytumėte šį failą</translation>
+<translation id="6295542640242147836">Užrakinti SIM kortelę</translation>
 <translation id="6296410173147755564">Netinkamas PUK kodas</translation>
 <translation id="6312403991423642364">Nežinoma tinklo klaida</translation>
 <translation id="6317608858038767920">Tinkintas vardų serveris <ph name="INPUT_INDEX" /></translation>
@@ -721,6 +724,7 @@
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Išsaugoti failą kaip</translation>
 <translation id="7229570126336867161">Reikia EVDO</translation>
+<translation id="7230898482850090046">Administratorius pateikė užklausą išjungti nustatymą „Užrakinti SIM kortelę“</translation>
 <translation id="7238097264433196391">Atmintuko pavadinimas</translation>
 <translation id="7238643356913091553">„<ph name="NETWORK_NAME" />“, išsami informacija</translation>
 <translation id="7246947237293279874">FTP tarpinis serveris</translation>
@@ -752,6 +756,7 @@
 <translation id="7505167922889582512">Rodyti paslėptus failus</translation>
 <translation id="7514365320538308">Atsisiųsti</translation>
 <translation id="751507702149411736">Baltarusių</translation>
+<translation id="7521790570754130607">Norint naudoti mobiliojo ryšio duomenis, būtinas PIN kodas</translation>
 <translation id="7532029025027028521">Persų k. transliteracija</translation>
 <translation id="7544830582642184299">Suteikite „Linux“ programoms leidimą pasiekti failus „Google“ diske. Pakeitimai bus sinchronizuoti su kitais jūsų įrenginiais.</translation>
 <translation id="7547009467130558110">Sportbatis</translation>
@@ -776,6 +781,7 @@
 <translation id="76959938259365003">Nepavyko išvalyti šiukšliadėžės.</translation>
 <translation id="770015031906360009">Graikų</translation>
 <translation id="7705251383879779343">Nukopijuota: <ph name="FILE_NAME" />.</translation>
+<translation id="7708271999969613024">Jei norite naudoti šį tinklą, turite įvesti operatoriaus pateiktą aštuonių skaitmenų asmeninį blokavimo panaikinimo raktą (angl. „Personal Unblocking Key“, PUK).</translation>
 <translation id="7711920809702896782">Vaizdo informacija</translation>
 <translation id="7724603315864178912">Iškirpti</translation>
 <translation id="7730494089396812859">Rodyti išsamią atsarginių kopijų kūrimo debesyje informaciją</translation>
@@ -870,6 +876,7 @@
 <translation id="8437209419043462667">JAV</translation>
 <translation id="8452135315243592079">Nėra SIM kortelės</translation>
 <translation id="8456681095658380701">Netinkamas pavadinimas</translation>
+<translation id="8457767749626250697">SIM kortelė užrakinta</translation>
 <translation id="8459404855768962328">Nukopijavus šį elementą jis bus bendrinamas su visais, kurie gali peržiūrėti bendrinamą aplanką „<ph name="DESTINATION_NAME" />“.</translation>
 <translation id="8461467696380332069">Spustelėkite failą dešiniuoju klavišu ir pasirinkite „Prisegti prie lentynos“, kad sparčiai pasiektumėte failus lentynoje.</translation>
 <translation id="8461914792118322307">Tarpinis serveris</translation>

@@ -100,6 +100,7 @@
 <translation id="1455242230282523554">언어 설정 표시</translation>
 <translation id="1460620680449458626">음소거되어 있습니다.</translation>
 <translation id="1467432559032391204">왼쪽</translation>
+<translation id="146902737843070955">관리자가 요청한 변경사항입니다.</translation>
 <translation id="147310119694673958">휴대전화 배터리 <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1479909375538722835">플로팅 접근성 메뉴</translation>
 <translation id="1480845547124508962"><ph name="CURRENT_TIME" />, Enter 키를 눌러 캘린더 보기를 여세요.</translation>
@@ -837,6 +838,7 @@
 <translation id="5779721926447984944">고정된 파일</translation>
 <translation id="5788127256798019331">Play 파일</translation>
 <translation id="5790085346892983794">완료</translation>
+<translation id="5804651031882187592">'SIM 잠금' 설정 사용 중지</translation>
 <translation id="5805809050170488595">클릭하여 <ph name="NETWORK_NAME" /> 활성화</translation>
 <translation id="5825969630400862129">연결된 기기 설정</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />에서 <ph name="ROUTE_TITLE" /> 중지</translation>

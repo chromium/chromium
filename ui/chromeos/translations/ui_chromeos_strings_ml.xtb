@@ -289,6 +289,7 @@
 <translation id="3522708245912499433">പോര്‍ച്ചുഗീസ്</translation>
 <translation id="3524311639100184459">മുന്നറിയിപ്പ്: ഇവ താൽക്കാലിക ഫയലുകളാണ് ഡിസ്ക്കിൽ ഇടമുണ്ടാക്കാൻ സ്വയമേവ ഇല്ലാതാക്കിയേക്കാം.  <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">ഫോൾഡർ</translation>
+<translation id="3548125359243647069">തെറ്റായ പിൻ നിരവധി തവണ നൽകി.</translation>
 <translation id="3549797760399244642">drive.google.com-ലേക്ക് പോകുക...</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" /> ഉപയോഗിച്ച് ഫയലുകൾ തുറക്കാൻ, ആദ്യം അവയെ Windows ഫയലുകൾ എന്ന ഫോൾഡറിലേക്ക് പകർത്തുക.</translation>
 <translation id="3556731189587832921">അന്താരാഷ്ട്ര PC കീബോർഡ് ഉള്ള ഇംഗ്ലീഷ് (യുഎസ്)</translation>
@@ -614,6 +615,7 @@
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" />-ൽ <ph name="NETWORK_INDEX" /> നെറ്റ്‌വർക്ക്, <ph name="PHONE_NAME" />, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />%, ഫോൺ ബാറ്ററി <ph name="BATTERY_STATUS" />%, കണക്‌റ്റ് ചെയ്യുക</translation>
 <translation id="6269630227984243955">മലെയ്</translation>
 <translation id="6287852322318138013">ഈ ഫയൽ തുറക്കാനായി ഒരു ആപ്പ് തിരഞ്ഞെടുക്കുക</translation>
+<translation id="6295542640242147836">സിം ലോക്ക് ചെയ്യുക</translation>
 <translation id="6296410173147755564">PUK അസാധുവാണ്</translation>
 <translation id="6312403991423642364">അറിയാത്ത നെറ്റ്‌വര്‍ക്ക് പിശക്</translation>
 <translation id="6317608858038767920">ഇഷ്‌ടാനുസൃത nameserver <ph name="INPUT_INDEX" /></translation>
@@ -722,6 +724,7 @@
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">ഇതായി ഫയൽ സംരക്ഷിക്കുക</translation>
 <translation id="7229570126336867161">EVDO ആവശ്യമുണ്ട്</translation>
+<translation id="7230898482850090046">"സിം ലോക്ക് ചെയ്യുക" ക്രമീകരണം ഓഫാക്കാൻ നിങ്ങളുടെ അഡ്‌മിൻ അഭ്യർത്ഥിച്ചു</translation>
 <translation id="7238097264433196391">ഡ്രൈവിൻ്റെ പേര്</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, വിശദാംശങ്ങൾ</translation>
 <translation id="7246947237293279874">FTP പ്രോക്‌സി</translation>
@@ -753,6 +756,7 @@
 <translation id="7505167922889582512">ഒളിപ്പിച്ചിരിക്കുന്ന ഫയലുകൾ കാണിക്കുക</translation>
 <translation id="7514365320538308">ഡൗൺലോഡ് ചെയ്യുക</translation>
 <translation id="751507702149411736">ബെലാറുഷ്യൻ</translation>
+<translation id="7521790570754130607">മൊബൈൽ ഡാറ്റ ഉപയോഗിക്കാൻ ഒരു പിൻ ആവശ്യമാണ്</translation>
 <translation id="7532029025027028521">പേർഷ്യൻ ലിപ്യന്തരണം</translation>
 <translation id="7544830582642184299">നിങ്ങളുടെ Google Drive-ലെ ഫയലുകൾ ആക്‌സസ് ചെയ്യാൻ Linux ആപ്പുകൾക്ക് അനുമതി നൽകുക. മാറ്റങ്ങൾ, നിങ്ങളുടെ മറ്റ് ഉപകരണങ്ങളിലേക്ക് സമന്വയിപ്പിക്കും.</translation>
 <translation id="7547009467130558110">സ്‌നീക്കർ</translation>
@@ -777,6 +781,7 @@
 <translation id="76959938259365003">ട്രാഷിലുള്ളവ എല്ലാം ഇല്ലാതാക്കാനായില്ല.</translation>
 <translation id="770015031906360009">ഗ്രീക്ക്</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> പകർത്തി.</translation>
+<translation id="7708271999969613024">ഈ നെറ്റ്‌വർക്ക് ഉപയോഗിക്കുന്നതിന്, സേവനദാതാവ് നൽകിയ 8 അക്ക പേഴ്‌സണൽ അൺബ്ലോക്കിംഗ് കീ (PUK) നൽകേണ്ടതുണ്ട്.</translation>
 <translation id="7711920809702896782">ചിത്രത്തിന്റെ വിവരം</translation>
 <translation id="7724603315864178912">മുറിക്കുക</translation>
 <translation id="7730494089396812859">ക്ലൗഡ് ബാക്കപ്പ് വിശദാംശങ്ങൾ കാണിക്കുക</translation>
@@ -871,6 +876,7 @@
 <translation id="8437209419043462667">യുഎസ്</translation>
 <translation id="8452135315243592079">സിം കാർഡ് കാണുന്നില്ല</translation>
 <translation id="8456681095658380701">അസാധുവായ പേര്</translation>
+<translation id="8457767749626250697">നിങ്ങളുടെ സിം ലോക്ക് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="8459404855768962328">ഈ ഇനം പകർത്തുന്നതിലൂടെ, '<ph name="DESTINATION_NAME" />' എന്ന പങ്കിട്ട ഫോൾഡർ കാണാനാകുന്ന എല്ലാവരുമായും അത് പങ്കിടും.</translation>
 <translation id="8461467696380332069">ഷെൽഫിലെ നിങ്ങളുടെ ഫയലുകളിലേക്ക് അതിവേഗ ആക്‌സസ് ലഭിക്കാൻ, ഫയലിൽ വലത്-ക്ലിക്ക് ചെയ്ത് "ഷെൽഫിലേക്ക് പിൻ ചെയ്യുക" തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="8461914792118322307">പ്രോക്സി</translation>

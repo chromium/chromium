@@ -289,6 +289,7 @@
 <translation id="3522708245912499433">portugalščina</translation>
 <translation id="3524311639100184459">Pozor: Te datoteke so začasne in bodo morda samodejno izbrisane, da se sprosti prostor na disku.  <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Mapa</translation>
+<translation id="3548125359243647069">Prevečkrat ste vnesli napačno kodo PIN.</translation>
 <translation id="3549797760399244642">Pojdite na drive.google.com ...</translation>
 <translation id="3553048479571901246">Če želite datoteke odpreti z aplikacijo <ph name="APP_NAME" />, jih najprej kopirajte v mapo z datotekami sistema Windows.</translation>
 <translation id="3556731189587832921">angleščina (ZDA) z mednarodno računalniško tipkovnico</translation>
@@ -614,6 +615,7 @@
 <translation id="6267547857941397424">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, moč signala je <ph name="SIGNAL_STRENGTH" /> %, stanje baterije telefona je <ph name="BATTERY_STATUS" /> %, vzpostavitev povezave</translation>
 <translation id="6269630227984243955">malajščina</translation>
 <translation id="6287852322318138013">Izberite aplikacijo za odpiranje te datoteke</translation>
+<translation id="6295542640242147836">Zaklepanje kartice SIM</translation>
 <translation id="6296410173147755564">Neveljavna koda PUK</translation>
 <translation id="6312403991423642364">Neznana napaka v omrežju</translation>
 <translation id="6317608858038767920">Imenski strežnik po meri <ph name="INPUT_INDEX" /></translation>
@@ -722,6 +724,7 @@
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Shrani datoteko kot</translation>
 <translation id="7229570126336867161">Potreben je EVDO</translation>
+<translation id="7230898482850090046">Skrbnik je zahteval, da izklopite nastavitev zaklepanja kartice SIM.</translation>
 <translation id="7238097264433196391">Ime pogona</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, podrobnosti</translation>
 <translation id="7246947237293279874">Proxy FTP</translation>
@@ -753,6 +756,7 @@
 <translation id="7505167922889582512">Prikaz skritih datotek</translation>
 <translation id="7514365320538308">Prenos</translation>
 <translation id="751507702149411736">beloruščina</translation>
+<translation id="7521790570754130607">Če želite uporabljati prenos podatkov v mobilnem omrežju, potrebujete kodo PIN.</translation>
 <translation id="7532029025027028521">transkripcija perzijščine</translation>
 <translation id="7544830582642184299">Aplikacijam za Linux dovolite dostop do datotek v Googlu Drive. Spremembe bodo sinhronizirane z drugimi napravami.</translation>
 <translation id="7547009467130558110">Športni copat</translation>
@@ -777,6 +781,7 @@
 <translation id="76959938259365003">Smetnjaka ni bilo mogoče izprazniti.</translation>
 <translation id="770015031906360009">grščina</translation>
 <translation id="7705251383879779343">Kopirano: <ph name="FILE_NAME" />.</translation>
+<translation id="7708271999969613024">Če želite uporabiti to omrežje, morate vnesti 8-mestno osebno kodo za odblokiranje (PUK), ki jo zagotovi operater.</translation>
 <translation id="7711920809702896782">Podatki o sliki</translation>
 <translation id="7724603315864178912">Izreži</translation>
 <translation id="7730494089396812859">Prikaz podrobnosti varnostnega kopiranja v oblak</translation>
@@ -871,6 +876,7 @@
 <translation id="8437209419043462667">Združene države</translation>
 <translation id="8452135315243592079">Ni kartice SIM</translation>
 <translation id="8456681095658380701">Neveljavno ime</translation>
+<translation id="8457767749626250697">Vaša kartica SIM je zaklenjena</translation>
 <translation id="8459404855768962328">Če boste kopirali ta element, bo deljen z vsemi osebami, ki jim je vidna deljena mapa »<ph name="DESTINATION_NAME" />«.</translation>
 <translation id="8461467696380332069">Z desnim gumbom kliknite datoteko in izberite »Pripni na polico« za hiter dostop do datotek na polici.</translation>
 <translation id="8461914792118322307">Proxy</translation>

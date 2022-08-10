@@ -1142,6 +1142,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2048653237708779538">Dejanje ni na voljo</translation>
 <translation id="2050339315714019657">Pokončno</translation>
 <translation id="2052572566310583903">Nameščeno v vaših drugih napravah</translation>
+<translation id="2053105195397337973">Raziskujemo načine, kako omejiti sledenje, hkrati pa spletnim mestom omogočiti preprečevanje prevar in prikazovanja vsiljenih oglasov.</translation>
 <translation id="2053312383184521053">Podatki o stanju nedejavnosti</translation>
 <translation id="2054240652864153171">Želite izbrisati podatke spletnega mesta <ph name="SITE_NAME" />, razdeljenega na <ph name="PARTITION_SITE_NAME" />?</translation>
 <translation id="2055585478631012616">Odjavljeni boste s teh spletnih mest, vključno s tistimi na odprtih zavihkih</translation>
@@ -2598,7 +2599,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3433621910545056227">Ojej!  Sistemu ni uspelo zakleniti atributov časa namestitve naprave.</translation>
 <translation id="3434107140712555581">Akumulator: <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="3434272557872943250">Če ste za otroka vklopili dodatno beleženje dejavnosti v spletu in aplikacijah, bodo ti podatki morda shranjeni v njegovem računu Google. Preberite več o teh nastavitvah in njihovem prilagajanju na families.google.com.</translation>
-<translation id="3434475275396485144">To nastavitev upravlja skrbnik telefona</translation>
+<translation id="3434475275396485144">To nastavitev upravlja skrbnik telefona.</translation>
 <translation id="3434512374684753970">Zvok in video</translation>
 <translation id="3435688026795609344">Razširitev »<ph name="EXTENSION_NAME" />« zahteva to: <ph name="CODE_TYPE" /></translation>
 <translation id="3435738964857648380">Varnost</translation>
@@ -4575,6 +4576,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="5350293332385664455">Izklop Pomočnika Google</translation>
 <translation id="535123479159372765">Besedilo je kopirano iz druge naprave</translation>
 <translation id="5352033265844765294">Časovno žigosanje</translation>
+<translation id="5352257124367865087">Upravljanje dovoljenj spletnih mest</translation>
 <translation id="5353252989841766347">Izvoz gesel iz Chroma</translation>
 <translation id="5355099869024327351">Dovoli Pomočniku, da vam prikazuje obvestila</translation>
 <translation id="5355191726083956201">Izboljšana zaščita je vklopljena</translation>
@@ -4982,6 +4984,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="5747552184818312860">Poteče</translation>
 <translation id="5747785204778348146">Razvijalska različica – ni stabilna</translation>
 <translation id="5747809636523347288">&amp;Prilepi in pojdi na <ph name="URL" /></translation>
+<translation id="5751345516399502412">Preveri pripravljenost za povezavo računalnika z internetom prek mobilnega telefona</translation>
 <translation id="5755022574660047665">spomini iz Googla Foto</translation>
 <translation id="5756163054456765343">Center za pomoč</translation>
 <translation id="5757375109985023827">Izberite zavihek za predogled</translation>
@@ -5077,6 +5080,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="5844574845205796324">Predlagaj nove vsebine za raziskovanje</translation>
 <translation id="5846200638699387931">Napaka v sintaksi razmerja: <ph name="ERROR_LINE" /></translation>
+<translation id="5846504156837627898">Upravljanje dovoljenj spletnih mest</translation>
 <translation id="5846807460505171493">Nameščanje posodobitev in aplikacij. Če nadaljujete, se strinjate, da lahko ta naprava tudi samodejno prenese in namesti posodobitve ter aplikacije, ki jih zagotavljajo Google, vaš operater in proizvajalec vaše naprave – morda s prenosom podatkov v mobilnih omrežjih. Nekatere od teh aplikacij morda ponujajo nakupe v aplikaciji.</translation>
 <translation id="5849212445710944278">Je že dodano</translation>
 <translation id="5851868085455377790">Izdajatelj</translation>
@@ -5642,6 +5646,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6398715114293939307">Odstranitev Trgovine Google Play</translation>
 <translation id="6398765197997659313">Izhod iz celozaslonskega načina</translation>
 <translation id="6399774419735315745">Vohunka</translation>
+<translation id="6400360390396538896">Vedno vklopljeno <ph name="ORIGIN" /></translation>
 <translation id="6401458660421980302">Če želite ta zavihek poslati v drugo napravo, se v njej prijavite v Chrome.</translation>
 <translation id="6401597285454423070">V računalnik je vgrajen modul TPM (Trusted Platform Module), ki je varnostna naprava, potrebna za številne nujne varnostne funkcije v sistemu Chrome OS. Več o njem lahko preberete v centru za pomoč za Chromebook: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6404187344102273690">Igranje iger v Chromebookih</translation>
@@ -7246,6 +7251,7 @@ Pritisnite dodeljeno stikalo ali tipko, če želite odstraniti dodelitev.</trans
 <translation id="7939062555109487992">Dodatne možnosti</translation>
 <translation id="7939328347457537652">Upravljanje potrdil v napravi</translation>
 <translation id="7939412583708276221">Vseeno obdrži</translation>
+<translation id="7941179291434537290">Pripravljenost za povezavo računalnika z internetom prek mobilnega telefona:</translation>
 <translation id="7942349550061667556">Rdeča</translation>
 <translation id="7943368935008348579">Prenos datotek PDF</translation>
 <translation id="7943837619101191061">Dodaj mesto ...</translation>
@@ -7773,6 +7779,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8439506636278576865">Ponudi prevajanje strani v tem jeziku</translation>
 <translation id="8440630305826533614">Aplikacije za Linux</translation>
 <translation id="844063558976952706">Vedno na tem mestu</translation>
+<translation id="8441313165929432954">Omogočanje/onemogočanje povezave računalnika z internetom prek mobilnega telefona</translation>
 <translation id="8443795068008423036">Preverite, ali je naprava posodobljena, in poskusite znova.</translation>
 <translation id="8446884382197647889">Več o tem</translation>
 <translation id="8447409163267621480">Vključevati morajo ali Ctrl ali Alt</translation>

@@ -227,6 +227,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="1199814941632954229">Izdaju se certifikati za ove profile certifikata</translation>
 <translation id="120069043972472860">Ne može se gledati</translation>
 <translation id="1201402288615127009">Naprijed</translation>
+<translation id="1201564082781748151">Ako zaboravite lozinku, lokalni podaci se mogu vratiti</translation>
 <translation id="1202596434010270079">Aplikacija za kiosk je ažurirana. Uklonite USB disk.</translation>
 <translation id="120368089816228251">Muzička nota</translation>
 <translation id="1203942045716040624">Dijeljeni radnik: <ph name="SCRIPT_URL" /></translation>
@@ -271,6 +272,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="1243436884219965846">Pregled lozinki</translation>
 <translation id="1244265436519979884">Vraćanje Linuxa je trenutno u toku</translation>
 <translation id="1244303850296295656">Greška ekstenzije</translation>
+<translation id="1245628370644070008">Oporavak lokalnih podataka</translation>
 <translation id="1246863218384630739">Instaliranje virtualnog računara <ph name="VM_NAME" /> nije uspjelo: URL slike je rezultirao kodom greške <ph name="HTTP_ERROR" />. Kontaktirajte administratora.</translation>
 <translation id="1251366534849411931">Očekivana početna vitičasta zagrada: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Ovim će se obrisati <ph name="TOTAL_USAGE" /> podataka koje su pohranile web lokacije i instalirane aplikacije</translation>
@@ -1138,7 +1140,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2048653237708779538">Radnja nije dostupna</translation>
 <translation id="2050339315714019657">Uspravno</translation>
 <translation id="2052572566310583903">Instalirano na vašim drugim uređajima</translation>
-<translation id="2053105195397337973">Istražujemo načine ograničavanja praćenja uz omogućivanje web-lokacijama da spriječe neželjene oglase i prijevare.</translation>
+<translation id="2053105195397337973">Istražujemo načine da ograničimo praćenje omogućavajući web lokacijama da zaustave neželjene oglase i prevare.</translation>
 <translation id="2053312383184521053">Podaci o stanju neaktivnosti</translation>
 <translation id="2054240652864153171">Obrisati podatke web lokacije za <ph name="SITE_NAME" /> podijeljene na <ph name="PARTITION_SITE_NAME" />?</translation>
 <translation id="2055585478631012616">Odjavit ćete se s ovih web lokacija, uključujući otvorene kartice</translation>
@@ -1330,6 +1332,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="222447520299472966">Morate odabrati najmanje jedan album Umjetničke galerije</translation>
 <translation id="2224551243087462610">Uređivanje naziva foldera</translation>
 <translation id="2225864335125757863">Odmah promijenite ove lozinke da zaštitite račun:</translation>
+<translation id="2225927550500503913">Virtuelna kartica je uključena</translation>
 <translation id="2226449515541314767">Ovoj web lokaciji je blokirana puna kontrola nad MIDI uređajima.</translation>
 <translation id="2226826835915474236">Neaktivne prečice</translation>
 <translation id="2226907662744526012">Otključaj automatski nakon unosa PIN-a</translation>
@@ -4978,7 +4981,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5747552184818312860">Ističe</translation>
 <translation id="5747785204778348146">Programer - nestabilno</translation>
 <translation id="5747809636523347288">Za&amp;lijepi i idi na <ph name="URL" /></translation>
-<translation id="5751345516399502412">Provjera spremnosti za modemsko povezivanje</translation>
+<translation id="5751345516399502412">Provjeri spremnost dijeljenja internetske veze</translation>
 <translation id="5755022574660047665">uspomene s Google Fotografija</translation>
 <translation id="5756163054456765343">C&amp;entar za pomoć</translation>
 <translation id="5757375109985023827">Odaberite karticu da je pregledate</translation>
@@ -5245,6 +5248,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6003582434972667631">Temu je postavila vaša organizacija</translation>
 <translation id="6006484371116297560">Klasično</translation>
 <translation id="6007240208646052708">Glasovno pretraživanje nije dostupno na vašem jeziku.</translation>
+<translation id="6010651352520077187">Kada je uključen, Google Prevodilac će ponuditi prevođenje web lokacija na vaš željeni jezik. Također može automatski prevoditi web lokacije.</translation>
 <translation id="6011193465932186973">Otisak prsta</translation>
 <translation id="6011449291337289699">Brisanje podataka web lokacije</translation>
 <translation id="6011908034087870826">Slanje linka na uređaj <ph name="DEVICE_NAME" /></translation>
@@ -5557,6 +5561,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="630948338437014525">uspomene</translation>
 <translation id="6309510305002439352">Mikrofon je isključen</translation>
 <translation id="6310141306111263820">Instaliranje profila eSIM-a nije uspjelo. Kontaktirajte svog mobilnog operatera da dobijete pomoć.</translation>
+<translation id="6311165245110979290">Virtuelna kartica je dostupna</translation>
 <translation id="6311220991371174222">Chrome se ne može pokrenuti jer je došlo do greške prilikom otvaranja vašeg profila. Pokušajte ponovo pokrenuti Chrome.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Sigurnosna provjera je izvršena prije 1 dan}one{Sigurnosna provjera je izvršena prije {NUM_DAYS} dana}few{Sigurnosna provjera je izvršena prije {NUM_DAYS} dana}other{Sigurnosna provjera je izvršena prije {NUM_DAYS} dana}}</translation>
 <translation id="6312638141433622592">Ponudi prikaz članaka u načinu rada za čitanje kada je to podržano</translation>
@@ -5785,6 +5790,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="6532206849875187177">Sigurnost i prijava</translation>
 <translation id="6532527800157340614">Prijava nije uspjela jer preuzimanje tokena za pristup nije uspjelo. Provjerite mrežnu vezu i pokušajte ponovo.</translation>
 <translation id="6532663472409656417">Uređaj prijavljenog preduzeća</translation>
+<translation id="6533315466883598769">Koristite Google Prevodioca</translation>
 <translation id="6535331821390304775">Uvijek dozvolite web lokaciji <ph name="ORIGIN" /> da otvara linkove ove vrste u povezanoj aplikaciji</translation>
 <translation id="653659894138286600">Skeniranje dokumenata i slika</translation>
 <translation id="6537613839935722475">Naziv može sadržavati slova, brojeve i crtice (-)</translation>
@@ -7243,7 +7249,7 @@ Pritisnite dodijeljeni prekidač ili tipku da uklonite dodjeljivanje.</translati
 <translation id="7939062555109487992">Napredne opcije</translation>
 <translation id="7939328347457537652">Upravljaj certifikatima uređaja</translation>
 <translation id="7939412583708276221">Ipak zadrži</translation>
-<translation id="7941179291434537290">Spremnost za modemsko povezivanje:</translation>
+<translation id="7941179291434537290">Spremnost dijeljenja internetske veze:</translation>
 <translation id="7942349550061667556">Crvena</translation>
 <translation id="7943368935008348579">Preuzimaj PDF-ove</translation>
 <translation id="7943837619101191061">Dodaj lokaciju...</translation>
@@ -7771,7 +7777,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8439506636278576865">Ponudi prijevod stranica na ovom jeziku</translation>
 <translation id="8440630305826533614">Linux aplikacije</translation>
 <translation id="844063558976952706">Uvijek na ovoj web-lokaciji</translation>
-<translation id="8441313165929432954">Omogućivanje / onemogućivanje modemskog povezivanja</translation>
+<translation id="8441313165929432954">Omogući/onemogući dijeljenje internetske veze</translation>
 <translation id="8443795068008423036">Provjerite je li uređaj ažuriran i pokušajte ponovo</translation>
 <translation id="8446884382197647889">Saznajte više</translation>
 <translation id="8447409163267621480">Uključite Ctrl ili Alt</translation>

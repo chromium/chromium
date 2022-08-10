@@ -289,6 +289,7 @@
 <translation id="3522708245912499433">portugalski</translation>
 <translation id="3524311639100184459">Oprez: Ove datoteke su privremene i mogu da se izbrišu automatski kako bi se oslobodio prostor na disku.  <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Folder</translation>
+<translation id="3548125359243647069">Previše puta ste uneli pogrešan PIN.</translation>
 <translation id="3549797760399244642">Idi na drive.google.com...</translation>
 <translation id="3553048479571901246">Da biste otvarali datoteke pomoću aplikacije <ph name="APP_NAME" />, prvo ih kopirajte u direktorijum sa Windows datotekama.</translation>
 <translation id="3556731189587832921">engleski (SAD) sa internacionalnom tastaturom za računar</translation>
@@ -614,6 +615,7 @@
 <translation id="6267547857941397424"><ph name="NETWORK_INDEX" />. mreža od <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, baterija telefona <ph name="BATTERY_STATUS" />%, poveži</translation>
 <translation id="6269630227984243955">malajski</translation>
 <translation id="6287852322318138013">Izaberite aplikaciju za otvaranje ove datoteke</translation>
+<translation id="6295542640242147836">Zaključaj SIM</translation>
 <translation id="6296410173147755564">Nevažeći PUK</translation>
 <translation id="6312403991423642364">Nepoznata greška na mreži</translation>
 <translation id="6317608858038767920">Prilagođeni server imena <ph name="INPUT_INDEX" /></translation>
@@ -722,6 +724,7 @@
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Sačuvaj datoteku kao</translation>
 <translation id="7229570126336867161">Potreban je EVDO</translation>
+<translation id="7230898482850090046">Administrator je zatražio da isključite podešavanje Zaključaj SIM</translation>
 <translation id="7238097264433196391">Naziv diska</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, detalji</translation>
 <translation id="7246947237293279874">FTP proksi</translation>
@@ -753,6 +756,7 @@
 <translation id="7505167922889582512">Prikaži skrivene datoteke</translation>
 <translation id="7514365320538308">Preuzmi</translation>
 <translation id="751507702149411736">beloruski</translation>
+<translation id="7521790570754130607">Neophodan je PIN da bi se koristili mobilni podaci</translation>
 <translation id="7532029025027028521">persijski, transliteracija</translation>
 <translation id="7544830582642184299">Dozvolite da Linux aplikacije pristupaju fajlovima na Google disku. Promene će se sinhronizovati sa drugim uređajima.</translation>
 <translation id="7547009467130558110">Patika</translation>
@@ -777,6 +781,7 @@
 <translation id="76959938259365003">Pražnjenje otpada nije uspelo.</translation>
 <translation id="770015031906360009">grčki</translation>
 <translation id="7705251383879779343">Kopiranih stavki: <ph name="FILE_NAME" />.</translation>
+<translation id="7708271999969613024">Da biste koristili ovu mrežu, treba da unesete osmocifrenu ličnu šifru za otključavanje (PUK) koju pruža mobilni operater.</translation>
 <translation id="7711920809702896782">Informacije o datoteci slike</translation>
 <translation id="7724603315864178912">Iseci</translation>
 <translation id="7730494089396812859">Prikažite detalje o pravljenju rezervnih kopija u klaudu</translation>
@@ -871,6 +876,7 @@
 <translation id="8437209419043462667">američka</translation>
 <translation id="8452135315243592079">SIM kartica nedostaje</translation>
 <translation id="8456681095658380701">Nevažeće ime</translation>
+<translation id="8457767749626250697">SIM je zaključan</translation>
 <translation id="8459404855768962328">Kopiranjem ove stavke delite je sa svima koji mogu da vide deljeni folder <ph name="DESTINATION_NAME" />.</translation>
 <translation id="8461467696380332069">Kliknite desnim tasterom na fajl i izaberite „Zakači na policu“ radi brzog pristupa fajlovima na polici.</translation>
 <translation id="8461914792118322307">Proksi</translation>

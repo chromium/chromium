@@ -100,6 +100,7 @@
 <translation id="1455242230282523554">ಭಾಷೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="1460620680449458626">ವಾಲ್ಯೂಮ್ ಅನ್ನು ಮ್ಯೂಟ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="1467432559032391204">ಎಡಕ್ಕೆ</translation>
+<translation id="146902737843070955">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಈ ಬದಲಾವಣೆಯನ್ನು ವಿನಂತಿಸಿದ್ದಾರೆ</translation>
 <translation id="147310119694673958">ಫೋನ್ ಬ್ಯಾಟರಿ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1479909375538722835">ಫ್ಲೋಟಿಂಗ್ ಪ್ರವೇಶಿಸುವಿಕೆ ಮೆನು</translation>
 <translation id="1480845547124508962"><ph name="CURRENT_TIME" />, ಕ್ಯಾಲೆಂಡರ್ ವೀಕ್ಷಣೆಯನ್ನು ತೆರೆಯಲು Enter ಕೀ ಒತ್ತಿರಿ</translation>
@@ -837,6 +838,7 @@
 <translation id="5779721926447984944">ಪಿನ್ ಮಾಡಲಾದ ಫೈಲ್‌ಗಳು</translation>
 <translation id="5788127256798019331">Play ಫೈಲ್‌ಗಳು</translation>
 <translation id="5790085346892983794">ಯಶಸ್ವಿಯಾಗಿದೆ</translation>
+<translation id="5804651031882187592">"SIM ಅನ್ನು ಲಾಕ್ ಮಾಡಿ" ಎಂಬ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಆಫ್ ಮಾಡಿ</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> ಸಕ್ರಿಯಗೊಳಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="5825969630400862129">ಕನೆಕ್ಟ್ ಮಾಡಿದ ಸಾಧನಗಳ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> ನಲ್ಲಿ <ph name="ROUTE_TITLE" /> ನಿಲ್ಲಿಸಿ</translation>

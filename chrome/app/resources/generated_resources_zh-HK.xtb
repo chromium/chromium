@@ -1139,7 +1139,7 @@
 <translation id="2048653237708779538">無法執行操作</translation>
 <translation id="2050339315714019657">直向</translation>
 <translation id="2052572566310583903">您在其他裝置上安裝的應用程式</translation>
-<translation id="2053105195397337973">我們正在研究如何限制追蹤行為，同時讓網站能夠防範廣告垃圾內容和詐欺行為。</translation>
+<translation id="2053105195397337973">我們正在探索方法，讓網站阻止垃圾廣告和欺詐行為，同時限制追蹤功能。</translation>
 <translation id="2053312383184521053">閒置狀態數據</translation>
 <translation id="2054240652864153171">要清除 <ph name="SITE_NAME" /> 在 <ph name="PARTITION_SITE_NAME" /> 上分割的網站資料嗎？</translation>
 <translation id="2055585478631012616">您將會從這些網站 (包括已開啟的分頁) 登出</translation>
@@ -4976,7 +4976,7 @@
 <translation id="5747552184818312860">到期日</translation>
 <translation id="5747785204778348146">開發人員版 - 不穩定</translation>
 <translation id="5747809636523347288">貼上並前往 <ph name="URL" /> (&amp;S)</translation>
-<translation id="5751345516399502412">檢查網路共用完備性</translation>
+<translation id="5751345516399502412">檢查網絡共享準備工作</translation>
 <translation id="5755022574660047665">來自「Google 相片」的回憶</translation>
 <translation id="5756163054456765343">說明中心(&amp;E)</translation>
 <translation id="5757375109985023827">選取要預覽的分頁</translation>
@@ -7236,7 +7236,7 @@
 <translation id="7939062555109487992">進階選項</translation>
 <translation id="7939328347457537652">管理裝置憑證</translation>
 <translation id="7939412583708276221">保留</translation>
-<translation id="7941179291434537290">網路共用完備性：</translation>
+<translation id="7941179291434537290">網絡共享準備工作：</translation>
 <translation id="7942349550061667556">紅色</translation>
 <translation id="7943368935008348579">下載 PDF</translation>
 <translation id="7943837619101191061">新增位置…</translation>
@@ -7764,7 +7764,7 @@
 <translation id="8439506636278576865">翻譯這個語言的網頁</translation>
 <translation id="8440630305826533614">Linux 應用程式</translation>
 <translation id="844063558976952706">永遠在這個網站上使用</translation>
-<translation id="8441313165929432954">啟用/停用網路共用</translation>
+<translation id="8441313165929432954">啟用/停用網絡共享</translation>
 <translation id="8443795068008423036">請確保裝置為最新版本，然後再試一次</translation>
 <translation id="8446884382197647889">瞭解詳情</translation>
 <translation id="8447409163267621480">必須以 Ctrl 或 Alt 鍵開頭</translation>

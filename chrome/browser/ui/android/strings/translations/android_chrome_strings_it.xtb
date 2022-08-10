@@ -200,6 +200,7 @@ Quando elimini la cronologia di navigazione (l'intera cronologia o soltanto quel
 <translation id="2046634576464120978">Registrazione non riuscita</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2052422354554967744">Cercare su Internet</translation>
+<translation id="2053105195397337973">Stiamo esaminando dei metodi per limitare il monitoraggio e consentire ai siti di contrastare spam negli annunci e attività fraudolente.</translation>
 <translation id="2056878612599315956">Sito in pausa</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 download non riuscito}other{# download non riusciti}}</translation>
 <translation id="2067805253194386918">testo</translation>
@@ -234,6 +235,7 @@ Quando elimini la cronologia di navigazione (l'intera cronologia o soltanto quel
 <translation id="2239812875700136898">Controlla le notizie utilizzando il pulsante Opzioni per Discover</translation>
 <translation id="2248941474044011069">Le tue password vengono criptate sul dispositivo prima di essere salvate in Gestore delle password di Google</translation>
 <translation id="2259659629660284697">Esporta password…</translation>
+<translation id="2276231040576210443">Puoi scegliere in qualsiasi momento i dati da sincronizzare nelle <ph name="BEGIN_LINK1" />impostazioni<ph name="END_LINK1" />. Google potrebbe personalizzare la Ricerca e altri servizi in base alla tua cronologia.</translation>
 <translation id="2276696007612801991">Accedi al tuo Account Google per controllare le tue password</translation>
 <translation id="2278052315791335171">L'eliminazione di questa password non comporta l'eliminazione del tuo account su <ph name="SITE" /></translation>
 <translation id="2279146068164892489">Aprire l'app per <ph name="APPNAME" />?</translation>
@@ -396,6 +398,7 @@ Quando elimini la cronologia di navigazione (l'intera cronologia o soltanto quel
 <translation id="3114507951000454849">Leggi le notizie di oggi <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">collegata con</translation>
 <translation id="3123734510202723619">Annunci</translation>
+<translation id="3130863904455712965">Cronologia e altro ancora</translation>
 <translation id="3134784203083076891">"</translation>
 <translation id="314939179385989105">Pagina iniziale di Chrome</translation>
 <translation id="3166827708714933426">Scorciatoie di finestre e schede</translation>
@@ -543,6 +546,7 @@ Quando elimini la cronologia di navigazione (l'intera cronologia o soltanto quel
 <translation id="3981902534690264083">Gli inserzionisti possono conoscere il rendimento degli annunci</translation>
 <translation id="3985215325736559418">Scaricare di nuovo <ph name="FILE_NAME" />?</translation>
 <translation id="3987993985790029246">Copia link</translation>
+<translation id="3999683152997576765">Puoi visualizzare e rimuovere argomenti di interesse usati dai siti per mostrarti annunci. Chrome stima i tuoi interessi in base alla tua recente cronologia di navigazione.</translation>
 <translation id="4000212216660919741">Home page offline</translation>
 <translation id="4016425174436051808">Non è possibile seguire. Si è verificato un errore.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ora}other{# ore}}</translation>
@@ -1298,6 +1302,7 @@ I token attendibili migliorano la privacy sul Web e non possono essere usati per
 <translation id="8037801708772278989">Controllo appena eseguito</translation>
 <translation id="804335162455518893">Scheda SD non trovata</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> scheda di navigazione in incognito}other{<ph name="TAB_COUNT_NORMAL" /> schede di navigazione in incognito}}</translation>
+<translation id="8048728378294435881">Esegui il backup dei tuoi dati e usali su qualsiasi dispositivo</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB disponibili</translation>
 <translation id="8058655154417507695">Anno di scadenza</translation>
 <translation id="8058746566562539958">Apri in nuova scheda di Chrome</translation>

@@ -1126,6 +1126,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2048653237708779538">Bu amal ishlamaydi</translation>
 <translation id="2050339315714019657">Bo‘yiga</translation>
 <translation id="2052572566310583903">Boshqa qurilmalaringizda oʻrnatilgan</translation>
+<translation id="2053105195397337973">Biz saytlarda spam va firibgarlik reklamalaridan himoyani yoqish orqali kuzatuv mexanizmlarini taqiqlash yoʻllarini oʻrganib chiqmoqdamiz.</translation>
 <translation id="2053312383184521053">Harakatsiz holat ma’lumotlari</translation>
 <translation id="2054240652864153171"><ph name="PARTITION_SITE_NAME" /> saytida boʻlingan <ph name="SITE_NAME" /> maʼlumotlari oʻchirilsinmi?</translation>
 <translation id="2055585478631012616">Bu saytlardagi hisobingizdan avtomatik chiqarilasiz (shuningdek, ochiq varaqlardan ham)</translation>
@@ -4965,6 +4966,7 @@ Bu amal uchun bir nechta kalit tugma belgilash mumkin.</translation>
 <translation id="5747552184818312860">Amal qilish muddati</translation>
 <translation id="5747785204778348146">Dasturchilar kanali (barqaror emas)</translation>
 <translation id="5747809636523347288">Joyla&amp;sh va ochish: <ph name="URL" /></translation>
+<translation id="5751345516399502412">Modem rejimiga tayyorlikni tekshirish</translation>
 <translation id="5755022574660047665">Google Photos xizmatidan xotiralar</translation>
 <translation id="5756163054456765343">&amp;Yordam markazi</translation>
 <translation id="5757375109985023827">Razm solish uchun varaqni tanlang</translation>
@@ -7224,6 +7226,7 @@ Tayinlovni bekor qilish uchun belgilangan kalit yoki tugmani bosing.</translatio
 <translation id="7939062555109487992">Kengaytirilgan sozlamalar</translation>
 <translation id="7939328347457537652">Qurilma sertifikatlarini boshqarish</translation>
 <translation id="7939412583708276221">Baribir davom etsin</translation>
+<translation id="7941179291434537290">Modem rejimiga tayyorlik:</translation>
 <translation id="7942349550061667556">Qizil</translation>
 <translation id="7943368935008348579">PDF fayllarni yuklab olish</translation>
 <translation id="7943837619101191061">Joylashuv jildini qo‘shish...</translation>
@@ -7750,6 +7753,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8439506636278576865">Bu tildagi sahifalarni tarjima qilish taklif qilinsin</translation>
 <translation id="8440630305826533614">Linux ilovalari</translation>
 <translation id="844063558976952706">Doim bu saytda</translation>
+<translation id="8441313165929432954">Modem rejimini yoqish/faolsizlantirish</translation>
 <translation id="8443795068008423036">Qurilma eng oxirgi tizimda ekanini tekshiring va qaytadan urining</translation>
 <translation id="8446884382197647889">Batafsil</translation>
 <translation id="8447409163267621480">Tugmalar birikmasi Ctrl yoki Alt tugmasi bilan boshlanishi lozim</translation>

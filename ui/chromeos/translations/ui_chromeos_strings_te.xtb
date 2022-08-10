@@ -289,6 +289,7 @@
 <translation id="3522708245912499433">పోర్చుగీస్</translation>
 <translation id="3524311639100184459">హెచ్చరిక: ఈ ఫైల్స్ తాత్కాలికమైనవి, డిస్క్ స్పేస్‌ను ఖాళీ చేయడం కోసం ఆటోమేటిక్‌గా ఇవి తొలగించబడవచ్చు.  <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">ఫోల్డర్</translation>
+<translation id="3548125359243647069">చాలా ఎక్కువ సార్లు తప్పు PIN ఎంటర్ చేయబడింది.</translation>
 <translation id="3549797760399244642">drive.google.comకు వెళ్లండి...</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" />తో ఫైళ్లను తెరవడానికి ముందుగా వాటిని Windows ఫైళ్ల ఫోల్డర్‌కు కాపీ చేయండి.</translation>
 <translation id="3556731189587832921">అంతర్జాతీయ PC కీబోర్డ్‌తో ఇంగ్లీష్ (US)</translation>
@@ -614,6 +615,7 @@
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="PHONE_NAME" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, ఫోన్ బ్యాటరీ <ph name="BATTERY_STATUS" />%, కనెక్ట్ చేయండి</translation>
 <translation id="6269630227984243955">మలయ్</translation>
 <translation id="6287852322318138013">ఈ ఫైల్‌ను తెరవడానికి యాప్‌ను ఎంచుకోండి</translation>
+<translation id="6295542640242147836">లాక్ SIM</translation>
 <translation id="6296410173147755564">చెల్లని PUK</translation>
 <translation id="6312403991423642364">తెలియని నెట్‌వర్క్ ఎర్రర్</translation>
 <translation id="6317608858038767920">అనుకూల నేమ్‌సర్వర్ <ph name="INPUT_INDEX" /></translation>
@@ -722,6 +724,7 @@
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">ఫైల్‌ను ఇలా సేవ్ చేయి</translation>
 <translation id="7229570126336867161">EVDO అవసరం</translation>
+<translation id="7230898482850090046">మీరు "లాక్ SIM" సెట్టింగ్‌ను ఆఫ్ చేయవలసిందిగా మీ అడ్మినిస్ట్రేటర్ రిక్వెస్ట్ చేశారు</translation>
 <translation id="7238097264433196391">డ్రైవ్ పేరు</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, వివరాలు</translation>
 <translation id="7246947237293279874">FTP ప్రాక్సీ</translation>
@@ -753,6 +756,7 @@
 <translation id="7505167922889582512">దాచిన ఫైళ్లను చూపు</translation>
 <translation id="7514365320538308">డౌన్‌లోడ్ చేయి</translation>
 <translation id="751507702149411736">బెలారుషియన్</translation>
+<translation id="7521790570754130607">మొబైల్ డేటాను ఉపయోగించడానికి PIN అవసరం</translation>
 <translation id="7532029025027028521">పర్షియన్ ట్రాన్స్‌లిటరేషన్</translation>
 <translation id="7544830582642184299">మీ Google Driveలో ఫైల్స్‌ను యాక్సెస్ చేయడానికి Linux యాప్‌లకు అనుమతి ఇవ్వండి. మార్పులు మీ ఇతర పరికరాలలో కూడా సింక్ చేయబడతాయి.</translation>
 <translation id="7547009467130558110">స్నీకర్</translation>
@@ -777,6 +781,7 @@
 <translation id="76959938259365003">ట్రాష్‌ను ఖాళీ చేయడంలో విఫలమైంది.</translation>
 <translation id="770015031906360009">గ్రీక్</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> కాపీ చేయబడింది.</translation>
+<translation id="7708271999969613024">ఈ నెట్‌వర్క్‌ను ఉపయోగించడానికి, క్యారియర్ అందించిన 8 అంకెల పర్సనల్ అన్‌బ్లాకింగ్ కీ (PUK)ని మీరు ఎంటర్ చేయాల్సి ఉంటుంది.</translation>
 <translation id="7711920809702896782">చిత్రం సమాచారం</translation>
 <translation id="7724603315864178912">కత్తిరించండి</translation>
 <translation id="7730494089396812859">Cloud బ్యాకప్ వివరాలను చూపు</translation>
@@ -871,6 +876,7 @@
 <translation id="8437209419043462667">యుఎస్</translation>
 <translation id="8452135315243592079">SIM కార్డ్ లేదు</translation>
 <translation id="8456681095658380701">చెల్లని పేరు</translation>
+<translation id="8457767749626250697">మీ SIM లాక్ చేయబడింది</translation>
 <translation id="8459404855768962328">ఈ ఐటెమ్‌ను కాపీ చేస్తే అది షేర్ చేయబడిన ఫోల్డర్ '<ph name="DESTINATION_NAME" />'ను చూడగలిగే ప్రతి ఒక్కరితో షేర్ చేయబడుతుంది.</translation>
 <translation id="8461467696380332069">ఫైల్ మీద 'కుడి క్లిక్' చేసి, "షెల్ఫ్‌కు పిన్ చేయి"ని ఎంచుకోవడం ద్వారా షెల్ఫ్‌లోని మీ ఫైల్స్‌కు త్వరిత యాక్సెస్‌ను పొందండి.</translation>
 <translation id="8461914792118322307">ప్రాక్సీ</translation>

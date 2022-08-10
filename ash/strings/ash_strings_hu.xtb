@@ -100,6 +100,7 @@
 <translation id="1455242230282523554">Nyelvi beállítások megjelenítése</translation>
 <translation id="1460620680449458626">Hang némítva.</translation>
 <translation id="1467432559032391204">Balra</translation>
+<translation id="146902737843070955">A rendszergazda kérelmezte ezt a módosítást</translation>
 <translation id="147310119694673958">Telefon akkumulátora: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1479909375538722835">Kisegítő lehetőségek lebegő menüje</translation>
 <translation id="1480845547124508962"><ph name="CURRENT_TIME" />. Nyomja meg az Enter gombot a Naptár nézet megnyitásához.</translation>
@@ -838,6 +839,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="5779721926447984944">Kitűzött fájlok</translation>
 <translation id="5788127256798019331">Play-fájlok</translation>
 <translation id="5790085346892983794">Siker</translation>
+<translation id="5804651031882187592">Kapcsolja ki a „SIM zárolása” beállítást</translation>
 <translation id="5805809050170488595">Kattintson a(z) <ph name="NETWORK_NAME" /> aktiválásához</translation>
 <translation id="5825969630400862129">Csatlakoztatott eszközök beállításai</translation>
 <translation id="5837036133683224804">A(z) <ph name="ROUTE_TITLE" /> leállítása itt: <ph name="RECEIVER_NAME" /></translation>

@@ -1124,6 +1124,7 @@
 <translation id="2048653237708779538">操作できません</translation>
 <translation id="2050339315714019657">縦</translation>
 <translation id="2052572566310583903">他のデバイスにインストール済み</translation>
+<translation id="2053105195397337973">Google では、サイトが広告のスパムと不正行為を防止できるようにしながら、トラッキングを制限する方法を模索しています。</translation>
 <translation id="2053312383184521053">アイドル状態のデータ</translation>
 <translation id="2054240652864153171"><ph name="PARTITION_SITE_NAME" /> で分割された <ph name="SITE_NAME" /> のサイトデータを削除しますか？</translation>
 <translation id="2055585478631012616">開いているすべてのタブで、これらのサイトからログアウトします</translation>
@@ -1862,6 +1863,7 @@
 <translation id="2727633948226935816">今後表示しない</translation>
 <translation id="2727712005121231835">実際のサイズ</translation>
 <translation id="2729314457178420145">閲覧履歴データ（<ph name="URL" />）も削除します。これにより、Google.com からログアウトします。<ph name="LEARN_MORE" /></translation>
+<translation id="2729327310379176711">Chrome では、ブラウジング時のトラッキングを抑制して、セキュリティを強化する新しい方法を検討しています。また、<ph name="ESTIMATE_INTERESTS_LINK" />して管理できるようにします。これにより、アクセスしたサイトでユーザーの興味 / 関心を Chrome にリクエストして、広告を表示することができます。</translation>
 <translation id="2730029791981212295">Linux アプリとファイルのバックアップ</translation>
 <translation id="2730901670247399077">絵文字候補</translation>
 <translation id="273093730430620027">このページはカメラにアクセスしています。</translation>
@@ -3778,6 +3780,7 @@
 <translation id="4579581181964204535"><ph name="HOST_NAME" /> をキャストできません。</translation>
 <translation id="4579876313423027742">ブラウザの通知は、<ph name="LINK_BEGIN" />Chrome ブラウザの設定<ph name="LINK_END" />で確認できます</translation>
 <translation id="4580596421317071374">パスワードは、このデバイスの <ph name="GOOGLE_PASSWORD_MANAGER" /> に保存されています。</translation>
+<translation id="4580626299762849806">パスワードをインポートできません。<ph name="FILENAME" /> で形式が正しいかどうかを確認してください。</translation>
 <translation id="4581774856936278355">Linux の復元中にエラーが発生しました</translation>
 <translation id="4582297591746054421">多くのサイトは、コピーしたテキストの書式を保持するなどのためにクリップボードを読み取ります。</translation>
 <translation id="4582563038311694664">すべての設定をリセット</translation>
@@ -4541,6 +4544,7 @@
 <translation id="5350293332385664455">Google アシスタントをオフにする</translation>
 <translation id="535123479159372765">他のデバイスからテキストがコピーされました</translation>
 <translation id="5352033265844765294">タイム スタンプ</translation>
+<translation id="5352257124367865087">サイトの権限を管理</translation>
 <translation id="5353252989841766347">Chrome からパスワードをエクスポート</translation>
 <translation id="5355099869024327351">アシスタントによる通知の表示を許可する</translation>
 <translation id="5355191726083956201">保護強化機能がオンになっています</translation>
@@ -4945,6 +4949,7 @@
 <translation id="5747552184818312860">有効期限</translation>
 <translation id="5747785204778348146">Dev - 不安定</translation>
 <translation id="5747809636523347288">貼り付けて <ph name="URL" /> に移動</translation>
+<translation id="5751345516399502412">テザリングの準備ができているかどうかを確認する</translation>
 <translation id="5755022574660047665">Google フォトの「思い出」</translation>
 <translation id="5756163054456765343">ヘルプセンター(&amp;E)</translation>
 <translation id="5757375109985023827">プレビューするタブを選択します</translation>
@@ -5040,6 +5045,7 @@
 <translation id="5843706793424741864">華氏</translation>
 <translation id="5844574845205796324">提案されるコンテンツの範囲を拡大する</translation>
 <translation id="5846200638699387931">関係を表す構文にエラーがあります: <ph name="ERROR_LINE" /></translation>
+<translation id="5846504156837627898">サイトの権限を管理</translation>
 <translation id="5846807460505171493">アップデートやアプリをインストールします。続行すると、Google、ご利用の携帯通信会社、デバイスの製造元からのアップデートやアプリもデバイスで自動的にダウンロードおよびインストールされる場合があることについて、同意したものと見なされます（ダウンロードの際にはモバイルデータ通信が使用される可能性もあります）。こうしたアプリの一部ではアプリ内購入が提案される場合もあります。</translation>
 <translation id="5849212445710944278">すでに追加されています</translation>
 <translation id="5851868085455377790">発行元</translation>
@@ -5080,6 +5086,7 @@
 <translation id="5877064549588274448">チャンネルが変更されました。変更を適用するには、デバイスを再起動してください。</translation>
 <translation id="5877584842898320529">選択したプリンタは利用できないか、正しくインストールされていません。<ph name="BR" />プリンタを確認するか、別のプリンタを選択してみてください。</translation>
 <translation id="5878945009165002849">ID サービスからのログイン メッセージをブロックする</translation>
+<translation id="5882449899683447569">エラーが発生したため、パスワードはインポートされませんでした</translation>
 <translation id="5882919346125742463">既知のネットワーク</translation>
 <translation id="5883356647197510494"><ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />を自動ブロックしました</translation>
 <translation id="5884474295213649357">このタブは USB デバイスに接続されています。</translation>
@@ -5601,6 +5608,7 @@
 <translation id="6398715114293939307">Google Play ストアを削除</translation>
 <translation id="6398765197997659313">全画面表示を終了</translation>
 <translation id="6399774419735315745">スパイ</translation>
+<translation id="6400360390396538896"><ph name="ORIGIN" /> では常に許可</translation>
 <translation id="6401458660421980302">このタブを別のデバイスに送信するには、送信先のデバイスで Chrome にログインしてください</translation>
 <translation id="6401597285454423070">ご使用のパソコンには Trusted Platform Module（TPM）セキュリティ デバイスが組み込まれています。これは Chrome OS の多くの重要なセキュリティ機能を実装するために使用されます。詳しくは、Chromebook ヘルプセンター（https://support.google.com/chromebook/?p=tpm）をご覧ください。</translation>
 <translation id="6404187344102273690">Chromebook のゲームプレイ</translation>
@@ -5617,7 +5625,7 @@
 <translation id="641469293210305670">アップデートとアプリのインストール</translation>
 <translation id="6414878884710400018">システム環境設定を開く</translation>
 <translation id="6414888972213066896">このサイトを開いてもよいかの問い合わせを保護者に送信しました</translation>
-<translation id="6415900369006735853">スマートフォンを使用してインターネットに接続します</translation>
+<translation id="6415900369006735853">スマートフォンを使ってインターネットに接続します</translation>
 <translation id="6416743254476733475">パソコンで許可またはブロックしてください。</translation>
 <translation id="6417265370957905582">Google アシスタント</translation>
 <translation id="6417468503703810114">デフォルトの動作</translation>
@@ -7194,6 +7202,7 @@
 <translation id="7939062555109487992">詳細オプション</translation>
 <translation id="7939328347457537652">デバイス証明書の管理</translation>
 <translation id="7939412583708276221">続行する</translation>
+<translation id="7941179291434537290">テザリングの準備:</translation>
 <translation id="7942349550061667556">赤</translation>
 <translation id="7943368935008348579">PDF をダウンロードする</translation>
 <translation id="7943837619101191061">位置情報を追加...</translation>
@@ -7721,6 +7730,7 @@
 <translation id="8439506636278576865">この言語のページで翻訳ツールを表示する</translation>
 <translation id="8440630305826533614">Linux アプリ</translation>
 <translation id="844063558976952706">常にこのサイトのプラグインを実行する</translation>
+<translation id="8441313165929432954">テザリングを有効または無効にする</translation>
 <translation id="8443795068008423036">デバイスが最新の状態になっていることを確認してから、もう一度お試しください</translation>
 <translation id="8446884382197647889">詳細</translation>
 <translation id="8447409163267621480">Ctrl キーまたは Alt キーが必要です</translation>

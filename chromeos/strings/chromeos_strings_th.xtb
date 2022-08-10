@@ -149,6 +149,7 @@
 <translation id="2115956742084455574">รหัสไม่ถูกต้อง</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" /> เวอร์ชัน <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">ใช้ได้ <ph name="AVAILABLE_MEMORY" /> GB จาก <ph name="TOTAL_MEMORY" /> GB</translation>
+<translation id="2130871201950918186">ระบบจะรีสตาร์ทใน 5 วินาที</translation>
 <translation id="2138109643290557664">ล่องลอยผ่านไป</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> ภาพ</translation>
@@ -211,6 +212,7 @@
 <translation id="2536159006530886390">เชื่อมต่ออินเทอร์เน็ตไม่ได้</translation>
 <translation id="2570743873672969996">กำลังทำการทดสอบ <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">ไปที่การตั้งค่าเพื่อตั้งค่า</translation>
+<translation id="2597774443162333062">ระบบจะส่งไฟล์ไปยัง Google เพื่อแก้ไขข้อบกพร่อง</translation>
 <translation id="2619761439309613843">รีเฟรชทุกวัน</translation>
 <translation id="2620436844016719705">ระบบ</translation>
 <translation id="2638662041295312666">รูปภาพการลงชื่อเข้าใช้</translation>
@@ -672,6 +674,7 @@
 <translation id="6659594942844771486">แท็บ</translation>
 <translation id="6692996468359469499">ดูข้อมูลที่เกี่ยวข้องกับการเลือกของคุณ</translation>
 <translation id="6704062477274546131">การแปลง DNS</translation>
+<translation id="6719240409382354629">กำลังเตรียมรีสตาร์ท...</translation>
 <translation id="6723839937902243910">พลังงาน</translation>
 <translation id="6723847290197874913">ไฟแบ็กไลต์ของแป้นพิมพ์</translation>
 <translation id="672609503628871915">ดูว่ามีอะไรใหม่</translation>
@@ -889,6 +892,7 @@
 <translation id="8747900814994928677">ยืนยันการเปลี่ยนแปลง</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">อัลบั้มใน Google Photos</translation>
+<translation id="8778600430213950389">เกิดข้อผิดพลาด ซึ่งน่าจะมาจากปัญหาเกี่ยวกับฮาร์ดแวร์ โปรดเปลี่ยนเมนบอร์ดแล้วลองขั้นตอนการซ่อมอีกครั้ง</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">เครือข่ายนี้อาจมีแคพทีฟพอร์ทัล</translation>
 <translation id="8798099450830957504">ค่าเริ่มต้น</translation>
@@ -942,6 +946,7 @@
 <translation id="910415269708673980">รีเฟรชตั๋วสำหรับ <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">กำลังสแกนหน้า <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">ปลดล็อก</translation>
+<translation id="9118126012493516930">ซ่อมไม่สำเร็จ</translation>
 <translation id="9122602430962285795">ไปที่การตั้งค่าเพื่อเชื่อมต่ออีกครั้ง</translation>
 <translation id="9126720536733509015">บันทึกหลายหน้าเป็น PDF ไฟล์เดียว</translation>
 <translation id="9137526406337347448">Google Services</translation>

@@ -1887,6 +1887,7 @@ Mae Voice Match yn helpu Google Assistant i adnabod llais <ph name="SUPERVISED_U
 <translation id="2727633948226935816">Peidio â fy atgoffa eto</translation>
 <translation id="2727712005121231835">Maint Gwirioneddol</translation>
 <translation id="2729314457178420145">Clirio data pori (<ph name="URL" />) hefyd a allai eich allgofnodi o Google.com. <ph name="LEARN_MORE" /></translation>
+<translation id="2729327310379176711">Mae Chrome yn dod o hyd i ffyrdd newydd o leihau olrhain a'ch cadw hyd yn oed yn fwy diogel wrth i chi bori. Mae Chrome hefyd yn <ph name="ESTIMATE_INTERESTS_LINK" /> ac yn eich galluogi i'w rheoli. Yna, gall gwefannau rydych yn ymweld â nhw ofyn i Chrome am eich diddordebau i ddangos hysbysebion i chi.</translation>
 <translation id="2730029791981212295">Wrthi'n gwneud copïau wrth gefn o apiau a ffeiliau Linux</translation>
 <translation id="2730901670247399077">Awgrymiadau Emoji</translation>
 <translation id="273093730430620027">Mae'r dudalen hon yn cyrchu'ch camera.</translation>
@@ -3809,6 +3810,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="4579581181964204535">Methu â chastio <ph name="HOST_NAME" />.</translation>
 <translation id="4579876313423027742">Am hysbysiadau porwr, ewch i <ph name="LINK_BEGIN" />Osodiadau Porwr Chrome<ph name="LINK_END" /></translation>
 <translation id="4580596421317071374">Mae cyfrineiriau'n cael eu cadw o dan <ph name="GOOGLE_PASSWORD_MANAGER" /> ar y ddyfais hon.</translation>
+<translation id="4580626299762849806">Methu â mewnforio cyfrineiriau. Gwiriwch <ph name="FILENAME" /> a gwnewch yn siŵr ei fod wedi'i fformatio'n gywir.</translation>
 <translation id="4581774856936278355">Bu gwall wrth adfer Linux</translation>
 <translation id="4582297591746054421">Mae gwefannau fel arfer yn darllen eich clipfwrdd ar gyfer nodweddion megis cadw fformat y testun y gwnaethoch ei gopïo</translation>
 <translation id="4582563038311694664">Ailosod pob gosodiad</translation>
@@ -4574,6 +4576,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="5350293332385664455">Diffodd Google Assistant</translation>
 <translation id="535123479159372765">Copïwyd y testun o ddyfais arall</translation>
 <translation id="5352033265844765294">Stampio Amser</translation>
+<translation id="5352257124367865087">Rheoli caniatadau gwefan</translation>
 <translation id="5353252989841766347">Allforio Cyfrineiriau O Chrome</translation>
 <translation id="5355099869024327351">Caniatáu i'r Assistant ddangos hysbysiadau i chi</translation>
 <translation id="5355191726083956201">Mae Gwell Amddiffyniad wedi'i droi ymlaen</translation>
@@ -5075,6 +5078,7 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="5844574845205796324">Argymell cynnwys newydd i'w archwilio</translation>
 <translation id="5846200638699387931">Gwall cystrawen perthynas: <ph name="ERROR_LINE" /></translation>
+<translation id="5846504156837627898">Rheoli Caniatadau Gwefan</translation>
 <translation id="5846807460505171493">Gosod diweddariadau ac apiau. Drwy barhau, rydych yn cytuno y gall y ddyfais hon hefyd lawrlwytho a gosod diweddariadau ac apiau yn awtomatig gan Google, eich cludwr, a gwneuthurwr eich dyfais, gan ddefnyddio data symudol o bosib. Mae'n bosib y bydd rhai o'r apiau hyn yn cynnig pryniannau o fewn yr ap.</translation>
 <translation id="5849212445710944278">Mae'r cerdyn eisoes wedi'i ychwanegu</translation>
 <translation id="5851868085455377790">Cyhoeddwr</translation>
@@ -5115,6 +5119,7 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="5877064549588274448">Newidiwyd y sianel. Ailgychwynnwch eich dyfais i weithredu newidiadau.</translation>
 <translation id="5877584842898320529">Nid yw'r argraffydd a ddewiswyd ar gael neu nid yw wedi'i osod yn gywir. <ph name="BR" /> Gwiriwch eich argraffydd neu rhowch gynnig ar ddewis argraffydd arall.</translation>
 <translation id="5878945009165002849">Rhwystro anogwyr mewngofnodi o wasanaethau hunaniaeth</translation>
+<translation id="5882449899683447569">Aeth rhywbeth o'i le ac ni fewnforiwyd eich cyfrineiriau</translation>
 <translation id="5882919346125742463">Rhwydweithiau Hysbys</translation>
 <translation id="5883356647197510494">Rhwystrwyd <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> yn awtomatig</translation>
 <translation id="5884474295213649357">Mae'r tab hwn wedi'i gysylltu â dyfais USB.</translation>
@@ -5639,6 +5644,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="6398715114293939307">Tynnu o Google Play Store</translation>
 <translation id="6398765197997659313">Gadael y sgrîn lawn</translation>
 <translation id="6399774419735315745">Ysbiwraig</translation>
+<translation id="6400360390396538896">Bob amser ar <ph name="ORIGIN" /></translation>
 <translation id="6401458660421980302">I anfon y tab hwn i ddyfais arall, mewngofnodwch i Chrome yno</translation>
 <translation id="6401597285454423070">Mae eich cyfrifiadur yn cynnwys dyfais ddiogelwch Modiwl Platfform Cymeradwy (TPM), a ddefnyddir i weithredu llawer o nodweddion diogelwch critigol yn ChromeOS. Ewch i Ganolfan Gymorth Chromebook i ddysgu rhagor: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6404187344102273690">Chwarae Gemau ar Chromebook</translation>

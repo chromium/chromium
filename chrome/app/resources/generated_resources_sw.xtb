@@ -1135,6 +1135,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2048653237708779538">Kitendo hakipatikani</translation>
 <translation id="2050339315714019657">Wima</translation>
 <translation id="2052572566310583903">Imesakinishwa kwenye vifaa vyako vingine</translation>
+<translation id="2053105195397337973">Tunachunguza njia za kupunguza ufuatiliaji huku tukiziruhusu tovuti zizuie matangazo taka na ulaghai.</translation>
 <translation id="2053312383184521053">Data ya Wakati wa Hali Tulivu</translation>
 <translation id="2054240652864153171">Ungependa kufuta data ya tovuti ya <ph name="SITE_NAME" /> iliyogawanywa kwenye <ph name="PARTITION_SITE_NAME" />?</translation>
 <translation id="2055585478631012616">Utaondolewa kwenye akaunti za tovuti hizi, ikiwemo vichupo ambavyo umefungua</translation>
@@ -4565,6 +4566,7 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="5350293332385664455">Zima programu ya Mratibu wa Google</translation>
 <translation id="535123479159372765">Maandishi yamenakiliwa kutoka kwenye kifaa kingine</translation>
 <translation id="5352033265844765294">Uwekaji Saa</translation>
+<translation id="5352257124367865087">Dhibiti ruhusa za tovuti</translation>
 <translation id="5353252989841766347">Hamisha Manenosiri Kutoka Chrome</translation>
 <translation id="5355099869024327351">Ruhusu programu ya Mratibu ikuonyeshe arifa</translation>
 <translation id="5355191726083956201">Umewasha Kipengele cha Ulinzi Ulioboreshwa</translation>
@@ -4970,6 +4972,7 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="5747552184818312860">Muda wake unakwisha</translation>
 <translation id="5747785204778348146">Msanidi programu - sio imara</translation>
 <translation id="5747809636523347288">Ba&amp;ndika na ufungue <ph name="URL" /></translation>
+<translation id="5751345516399502412">Kagua Utayari wa Kipengele cha Kusambaza Mtandao</translation>
 <translation id="5755022574660047665">kumbukumbu kutoka huduma ya Picha kwenye Google</translation>
 <translation id="5756163054456765343">Kituo cha Usaidizi</translation>
 <translation id="5757375109985023827">Chagua kichupo cha kukagua kwanza</translation>
@@ -5065,6 +5068,7 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="5843706793424741864">Farenhaiti</translation>
 <translation id="5844574845205796324">Pendekeza maudhui mapya ya kugundua</translation>
 <translation id="5846200638699387931">Hitilafu ya sintaksia ya uhusiano: <ph name="ERROR_LINE" /></translation>
+<translation id="5846504156837627898">Dhibiti Ruhusa za Tovuti</translation>
 <translation id="5846807460505171493">Sakinisha masasisho na programu Kwa kuendelea, unakubali kuwa kifaa hiki kinaweza pia kupakua na kusakinisha kiotomatiki programu na masasisho kutoka Google, mtoa huduma wako na mtengenezaji wake, kwa kutumia data ya mtandao wa simu panapowezekana. Baadhi ya programu hizi zinaweza kuwa na ununuzi wa ndani ya programu.</translation>
 <translation id="5849212445710944278">Tayari limeongezwa</translation>
 <translation id="5851868085455377790">Mtoaji</translation>
@@ -5629,6 +5633,7 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="6398715114293939307">Ondoa Duka la Google Play</translation>
 <translation id="6398765197997659313">Ondoka kwenye Skrini nzima</translation>
 <translation id="6399774419735315745">Jasusi</translation>
+<translation id="6400360390396538896">Kila wakati kwenye <ph name="ORIGIN" /></translation>
 <translation id="6401458660421980302">Ili utume kichupo hiki kwenda kwenye kifaa kingine, ingia katika Chrome kwenye kifaa hicho</translation>
 <translation id="6401597285454423070">Kompyuta yako ina kifaa cha usalama cha Sehemu ya Mfumo Unaoaminika (TPM), ambacho kinatumiwa kutekeleza vipengele vingi muhimu vya usalama kwenye Mfumo wa Uendeshaji wa Chrome. Tembelea Kituo cha Usaidizi cha Chromebook ili upate malezo zaidi: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6404187344102273690">Michezo ya video ya Chromebook</translation>
@@ -7228,6 +7233,7 @@ Bonyeza swichi au kitufe ulichokabidhi ili uondoe kitendo ulichokabidhi.</transl
 <translation id="7939062555109487992">Chaguo mahiri</translation>
 <translation id="7939328347457537652">Dhibiti vyeti vya kifaa</translation>
 <translation id="7939412583708276221">Hata hivyo weka</translation>
+<translation id="7941179291434537290">Utayari wa Kusambaza Mtandao:</translation>
 <translation id="7942349550061667556">Nyekundu</translation>
 <translation id="7943368935008348579">Pakua PDF</translation>
 <translation id="7943837619101191061">Ongeza Eneo...</translation>
@@ -7755,6 +7761,7 @@ Sidhani tovuti hii inapaswa kuzuiwa!</translation>
 <translation id="8439506636278576865">Jitolee kutafsiri kurasa katika lugha hii</translation>
 <translation id="8440630305826533614">Programu za Linux</translation>
 <translation id="844063558976952706">Kila wakati kwenye tovuti hii</translation>
+<translation id="8441313165929432954">Washa au Zima Kipengele cha Kusambaza mtandao</translation>
 <translation id="8443795068008423036">Tafadhali hakikisha kuwa kifaa chako kimesasishwa kisha ujaribu tena</translation>
 <translation id="8446884382197647889">Pata Maelezo Zaidi</translation>
 <translation id="8447409163267621480">Jumuisha kitufe cha Ctrl au Alt</translation>

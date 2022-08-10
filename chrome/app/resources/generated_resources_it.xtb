@@ -223,6 +223,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1199814941632954229">Fornitura dei certificati in corso per questi profili di certificati</translation>
 <translation id="120069043972472860">Inguardabile</translation>
 <translation id="1201402288615127009">Avanti</translation>
+<translation id="1201564082781748151">I dati locali possono essere ripristinati se dimentichi la password</translation>
 <translation id="1202596434010270079">L'app kiosk è stata aggiornata. Rimuovi la chiavetta USB.</translation>
 <translation id="120368089816228251">Nota musicale</translation>
 <translation id="1203942045716040624">Worker condiviso: <ph name="SCRIPT_URL" /></translation>
@@ -267,6 +268,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1243436884219965846">Controlla le password</translation>
 <translation id="1244265436519979884">È in corso il ripristino di Linux</translation>
 <translation id="1244303850296295656">Errore delle estensioni</translation>
+<translation id="1245628370644070008">Ripristino dei dati locali</translation>
 <translation id="1246863218384630739">Impossibile installare <ph name="VM_NAME" />: l'URL dell'immagine ha restituito un codice di errore <ph name="HTTP_ERROR" />. Contatta l'amministratore.</translation>
 <translation id="1251366534849411931">Parentesi graffa aperta prevista: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Verranno cancellati <ph name="TOTAL_USAGE" /> di dati memorizzati da siti e app installate</translation>
@@ -1127,6 +1129,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2048653237708779538">Azione non disponibile</translation>
 <translation id="2050339315714019657">Verticale</translation>
 <translation id="2052572566310583903">Installata su altri dispositivi</translation>
+<translation id="2053105195397337973">Stiamo esaminando dei metodi per limitare il monitoraggio e consentire ai siti di contrastare spam negli annunci e attività fraudolente.</translation>
 <translation id="2053312383184521053">Dati sullo stato di inattività</translation>
 <translation id="2054240652864153171">Vuoi cancellare i dati del sito <ph name="SITE_NAME" /> partizionati su <ph name="PARTITION_SITE_NAME" />?</translation>
 <translation id="2055585478631012616">Uscirai da questi siti (schede aperte incluse)</translation>
@@ -1318,6 +1321,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="222447520299472966">Deve essere selezionato almeno un album Galleria d'arte</translation>
 <translation id="2224551243087462610">Modifica nome cartella</translation>
 <translation id="2225864335125757863">Modifica subito le password per tenere al sicuro il tuo account:</translation>
+<translation id="2225927550500503913">Carta virtuale attivata</translation>
 <translation id="2226449515541314767">A questo sito è stato impedito il controllo totale dei dispositivi MIDI.</translation>
 <translation id="2226826835915474236">Scorciatoie non attive</translation>
 <translation id="2226907662744526012">Sblocca automaticamente dopo aver inserito il PIN</translation>
@@ -3789,6 +3793,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4579581181964204535">Impossibile trasmettere <ph name="HOST_NAME" />.</translation>
 <translation id="4579876313423027742">Per le notifiche del browser, vai a <ph name="LINK_BEGIN" />Impostazioni del browser Chrome<ph name="LINK_END" /></translation>
 <translation id="4580596421317071374">Le password vengono salvate in <ph name="GOOGLE_PASSWORD_MANAGER" /> su questo dispositivo.</translation>
+<translation id="4580626299762849806">Impossibile importare le password. Controlla il file <ph name="FILENAME" /> e verifica che sia formattato correttamente.</translation>
 <translation id="4581774856936278355">Errore durante il ripristino di Linux</translation>
 <translation id="4582297591746054421">In genere, i siti leggono gli appunti per funzionalità come il mantenimento della formattazione del testo copiato</translation>
 <translation id="4582563038311694664">Ripristina tutte le impostazioni</translation>
@@ -4957,6 +4962,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5747552184818312860">Scadenza</translation>
 <translation id="5747785204778348146">Sviluppatore - non stabile</translation>
 <translation id="5747809636523347288">I&amp;ncolla e vai all'indirizzo <ph name="URL" /></translation>
+<translation id="5751345516399502412">Controlla disponibilità del tethering</translation>
 <translation id="5755022574660047665">ricordi di Google Foto</translation>
 <translation id="5756163054456765343">Centro assistenza</translation>
 <translation id="5757375109985023827">Seleziona una scheda da visualizzare in anteprima</translation>
@@ -5092,6 +5098,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5877064549588274448">Canale cambiato. Riavvia il dispositivo per applicare le modifiche.</translation>
 <translation id="5877584842898320529">La stampante selezionata non è disponibile o non è installata correttamente. <ph name="BR" /> Controlla la stampante o prova a selezionarne un'altra.</translation>
 <translation id="5878945009165002849">Blocca le richieste di accesso da servizi di identità</translation>
+<translation id="5882449899683447569">Si è verificato un problema e le tue password non sono state importate</translation>
 <translation id="5882919346125742463">Reti note</translation>
 <translation id="5883356647197510494">Autorizzazioni bloccate automaticamente: <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /></translation>
 <translation id="5884474295213649357">La scheda è connessa a un dispositivo USB.</translation>
@@ -5220,6 +5227,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6003582434972667631">Il tema è impostato dalla tua organizzazione</translation>
 <translation id="6006484371116297560">Classico</translation>
 <translation id="6007240208646052708">La ricerca vocale nella tua lingua non è disponibile.</translation>
+<translation id="6010651352520077187">Quando l'opzione è attiva, Google Traduttore propone di tradurre i siti nella tua lingua preferita. Può anche tradurre automaticamente i siti.</translation>
 <translation id="6011193465932186973">Impronta digitale</translation>
 <translation id="6011449291337289699">Cancella i dati del sito</translation>
 <translation id="6011908034087870826">Invio del link a <ph name="DEVICE_NAME" /> in corso…</translation>
@@ -5532,6 +5540,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="630948338437014525">ricordi</translation>
 <translation id="6309510305002439352">Microfono disattivato</translation>
 <translation id="6310141306111263820">Impossibile installare il profilo eSIM. Per assistenza, contatta il tuo operatore.</translation>
+<translation id="6311165245110979290">Carta virtuale disponibile</translation>
 <translation id="6311220991371174222">Impossibile avviare Chrome perché si è verificato un errore durante l'apertura del profilo. Prova a riavviare il browser.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Il controllo di sicurezza è stato eseguito 1 giorno fa}other{Il controllo di sicurezza è stato eseguito {NUM_DAYS} giorni fa}}</translation>
 <translation id="6312638141433622592">Chiedi di mostrare gli articoli in modalità Reader, se supportata</translation>
@@ -5759,6 +5768,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6532206849875187177">Sicurezza e accesso</translation>
 <translation id="6532527800157340614">Impossibile accedere perché non è stato possibile recuperare il token di accesso. Controlla la connessione di rete e riprova.</translation>
 <translation id="6532663472409656417">Dispositivo aziendale registrato</translation>
+<translation id="6533315466883598769">Usa Google Traduttore</translation>
 <translation id="6535331821390304775">Consenti sempre a <ph name="ORIGIN" /> di aprire link di questo tipo nell'app associata</translation>
 <translation id="653659894138286600">Scansiona documenti e immagini</translation>
 <translation id="6537613839935722475">Il nome può contenere lettere, numeri e trattini (-)</translation>
@@ -7213,6 +7223,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7939062555109487992">Opzioni avanzate</translation>
 <translation id="7939328347457537652">Gestisci certificati dispositivo</translation>
 <translation id="7939412583708276221">Mantieni comunque</translation>
+<translation id="7941179291434537290">Disponibilità tethering:</translation>
 <translation id="7942349550061667556">Rosso</translation>
 <translation id="7943368935008348579">Scarica PDF</translation>
 <translation id="7943837619101191061">Aggiungi posizione...</translation>
@@ -7740,6 +7751,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8439506636278576865">Proponi di tradurre pagine in questa lingua</translation>
 <translation id="8440630305826533614">App Linux</translation>
 <translation id="844063558976952706">Sempre su questo sito</translation>
+<translation id="8441313165929432954">Attiva/disattiva tethering</translation>
 <translation id="8443795068008423036">Assicurati che il dispositivo sia aggiornato e riprova</translation>
 <translation id="8446884382197647889">Scopri di più</translation>
 <translation id="8447409163267621480">Includi CTRL o ALT</translation>

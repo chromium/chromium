@@ -289,6 +289,7 @@
 <translation id="3522708245912499433">ပေါ်တူဂီ</translation>
 <translation id="3524311639100184459">သတိ- ဤဖိုင်များသည် ယာယီဖြစ်ပြီး ဒစ်ခ်နေရာလွတ်ပြုလုပ်ရန် အလိုအလျောက် ဖျက်နိုင်ပါသည်။  <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">ဖိုင်တွဲ</translation>
+<translation id="3548125359243647069">ပင်နံပါတ်အမှားကို အကြိမ်များစွာ ထည့်ထားသည်။</translation>
 <translation id="3549797760399244642">drive.google.com သို့သွားရန်...</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" /> ဖြင့် ဖိုင်များဖွင့်ရန် ၎င်းတို့ကို ဝင်းဒိုး ဖိုင်တွဲသို့ ဦးစွာမိတ္တူကူးပါ။</translation>
 <translation id="3556731189587832921">နိုင်ငံတကာ PC ကီးဘုတ်ဖြင့် အင်္ဂလိပ် (ယူအက်စ်)</translation>
@@ -613,6 +614,7 @@
 <translation id="6267547857941397424">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="PHONE_NAME" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ ဖုန်းဘက်ထရီ <ph name="BATTERY_STATUS" />%၊ ချိတ်ဆက်ရန်</translation>
 <translation id="6269630227984243955">မလေး</translation>
 <translation id="6287852322318138013">ဒီဖိုင်ကို ဖွင့်ရန် အက်ပ် တစ်ခုကို ရွေးပါ</translation>
+<translation id="6295542640242147836">ဆင်းမ်လော့ခ်ချရန်</translation>
 <translation id="6296410173147755564">PUK မမှန်ပါ</translation>
 <translation id="6312403991423642364">ကွန်ရက်အမှားအကြောင်း မသိပါ</translation>
 <translation id="6317608858038767920">စိတ်ကြိုက် အမည်ဆာဗာ <ph name="INPUT_INDEX" /></translation>
@@ -721,6 +723,7 @@
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">ဖိုင်ကို အဖြစ် သိမ်းရန်</translation>
 <translation id="7229570126336867161">EVDO လိုအပ်</translation>
+<translation id="7230898482850090046">"ဆင်းမ်လော့ခ်ချရန်" ဆက်တင်ကို ပိတ်ရန်အတွက် သင့်စီမံခန့်ခွဲသူက တောင်းဆိုထားသည်</translation>
 <translation id="7238097264433196391">ဒရိုက်ဗ်အမည်</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />၊ အသေးစိတ်များ</translation>
 <translation id="7246947237293279874">FTP ပရောက်စီ</translation>
@@ -752,6 +755,7 @@
 <translation id="7505167922889582512">ဖျောက်ထားသော ဖိုင်များ ပြရန်</translation>
 <translation id="7514365320538308">ဒေါင်းလုဒ်</translation>
 <translation id="751507702149411736">ဘယ်လာရုရှမ်း</translation>
+<translation id="7521790570754130607">မိုဘိုင်းဒေတာသုံးရန် ပင်နံပါတ် လိုအပ်သည်</translation>
 <translation id="7532029025027028521">ပါရှား အက္ခရာဖလှယ်ခြင်း</translation>
 <translation id="7544830582642184299">သင်၏ Google Drive ရှိ ဖိုင်များကို Linux အက်ပ်များအား အသုံးပြုခွင့်ပေးမည်။ ပြောင်းလဲမှုများကို သင်၏အခြားစက်များနှင့် စင့်ခ်လုပ်သွားပါမည်။</translation>
 <translation id="7547009467130558110">ပတ္တူဖိနပ်</translation>
@@ -776,6 +780,7 @@
 <translation id="76959938259365003">အမှိုက်ပုံးရှင်း၍မရပါ။</translation>
 <translation id="770015031906360009">ဂရိ</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> ကို မိတ္တူကူးထားသည်။</translation>
+<translation id="7708271999969613024">ဤကွန်ရက်သုံးရန် မိုဘိုင်းဖုန်းကုမ္ပဏီက ပေးထားသည့် ဂဏန်း ၈ လုံးပါသော ‘ပင်နံပါတ် ပြန်ဖွင့်သည့်ကုဒ်’ (PUK) ကို ထည့်ရမည်။</translation>
 <translation id="7711920809702896782">ဓာတ်ပုံအချက်အလက်</translation>
 <translation id="7724603315864178912">ဖြတ်တောက်</translation>
 <translation id="7730494089396812859">မိုးတိမ်အရံသိမ်းဆည်းခြင်း အသေးစိတ်များကို ပြသမည်</translation>
@@ -870,6 +875,7 @@
 <translation id="8437209419043462667">US</translation>
 <translation id="8452135315243592079">ဆင်းမ်ကတ် မရှိပါ</translation>
 <translation id="8456681095658380701">အမည် မမှန်</translation>
+<translation id="8457767749626250697">သင့်ဆင်းမ်ကို လော့ခ်ချထားသည်</translation>
 <translation id="8459404855768962328">ဤဖိုင်ကို မိတ္တူကူးသောအခါ မျှဝေထားသောဖိုင်တွဲ ‘<ph name="DESTINATION_NAME" />’ ကို ကြည့်ခွင့်ရသူတိုင်းနှင့် မျှဝေပါမည်။</translation>
 <translation id="8461467696380332069">ဖိုင်ကို ညာဘက်ခလုတ်နှိပ်ပြီး စင်ပေါ်ရှိ သင့်ဖိုင်များကို အမြန်သုံးခွင့်အတွက် "စင်တွင်ပင်ထိုးရန်" ကို ရွေးပါ။</translation>
 <translation id="8461914792118322307">ပရောက်စီ</translation>

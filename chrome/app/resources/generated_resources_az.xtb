@@ -1867,6 +1867,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2727633948226935816">Daha yadıma salmayın</translation>
 <translation id="2727712005121231835">Aktual Ölçü</translation>
 <translation id="2729314457178420145">Həmçinin baxış datasını (<ph name="URL" />) silin, bunun nəticəsində Google.com ünvanından çıxa bilərsiniz. <ph name="LEARN_MORE" /></translation>
+<translation id="2729327310379176711">Chrome izləməni azaltmaq və gözdən keçirərkən sizi daha da təhlükəsiz saxlamaq üçün yeni yollar tapır. Chrome həmçinin <ph name="ESTIMATE_INTERESTS_LINK" /> və onları idarə etmənizə imkan verir. Sonra ziyarət etdiyiniz saytlar sizə reklam göstərmək üçün Chrome'dan maraqlarınızı tələb edə bilər.</translation>
 <translation id="2730029791981212295">Linux tətbiq və faylları yedəklənir</translation>
 <translation id="2730901670247399077">Emoji təklifləri</translation>
 <translation id="273093730430620027">Bu səhifə kameranıza daxil olur.</translation>
@@ -3786,6 +3787,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4579581181964204535"><ph name="HOST_NAME" /> hostunu yayımlamaq mümkün olmadı.</translation>
 <translation id="4579876313423027742">Brauzer bildirişləri üçün <ph name="LINK_BEGIN" />Chrome brauzer Ayarlarına<ph name="LINK_END" /> keçin</translation>
 <translation id="4580596421317071374">Parollar bu cihazda <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməsində saxlanılır.</translation>
+<translation id="4580626299762849806">Parolları import etmək mümkün deyil. <ph name="FILENAME" /> faylını yoxlayın və doğru formatda olduğuna əmin olun.</translation>
 <translation id="4581774856936278355">Linux bərpa edilərkən xəta baş verdi</translation>
 <translation id="4582297591746054421">Saytlar adətən kopyaladığınız mətnin formatını saxlamaq kimi xüsusiyyətlər üçün mübadilə buferinizi oxuyur</translation>
 <translation id="4582563038311694664">Bütün ayarları sıfırlayın</translation>
@@ -4551,6 +4553,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5350293332385664455">Google Assistenti deaktiv edin</translation>
 <translation id="535123479159372765">Mətn başqa cihazdan kopyalanıb</translation>
 <translation id="5352033265844765294">Zaman Möhürləməsi</translation>
+<translation id="5352257124367865087">Sayt icazələrini idarə edin</translation>
 <translation id="5353252989841766347">Parolları Chrome'dan eksport edin</translation>
 <translation id="5355099869024327351">Assistentə bildirişləri göstərmək icazəsi verir</translation>
 <translation id="5355191726083956201">Qabaqcıl Qoruma aktivdir</translation>
@@ -5051,6 +5054,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5843706793424741864">Farenheyt</translation>
 <translation id="5844574845205796324">Araşdırmaq üçün yeni məzmun təklif edin</translation>
 <translation id="5846200638699387931">Əlaqə sintaksis xətası: <ph name="ERROR_LINE" /></translation>
+<translation id="5846504156837627898">Sayt İcazələrini idarə edin</translation>
 <translation id="5846807460505171493">Yeniləmələri və tətbiqləri quraşdırın. Davam edərək razılaşırsınız ki, bu cihaz Google, operatorunuz və cihaz istehsalçınızdan avtomatik olaraq yeniləmələri və tətbiqləri endirə və quraşdıra bilər, bu zaman mobil datadan istifadə edilə bilər. Bu tətbiqlərin bəzilərində tətbiqdaxili satınalmalar təklif edilə bilər.</translation>
 <translation id="5849212445710944278">Artıq əlavə edilib</translation>
 <translation id="5851868085455377790">Emitent</translation>
@@ -5091,6 +5095,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5877064549588274448">Kanal dəyişdi. Dəyişiklikləri tətbiq etmək üçün cihazınızı yenidən başladın.</translation>
 <translation id="5877584842898320529">Seçilmiş printer əlçatan deyil və ya düzgün quraşdırılmayıb. <ph name="BR" /> Printerinizi yoxlayın və ya başqa printer seçin.</translation>
 <translation id="5878945009165002849">Kimlik xidmətlərindən daxil olma sorğularını bloklayın</translation>
+<translation id="5882449899683447569">Xəta baş verdi və parollarınız import edilmədi</translation>
 <translation id="5882919346125742463">Tanış Şəbəkələr</translation>
 <translation id="5883356647197510494"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> avtomatik bloklanıb</translation>
 <translation id="5884474295213649357">Bu panel USB cihazına qoşuludur.</translation>
@@ -5613,6 +5618,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6398715114293939307">Google Play Mağazanı Silin</translation>
 <translation id="6398765197997659313">Tam ekrandan çıxın</translation>
 <translation id="6399774419735315745">Cəsus</translation>
+<translation id="6400360390396538896">Həmişə aktiv <ph name="ORIGIN" /></translation>
 <translation id="6401458660421980302">Bu tabı başqa cihaza göndərmək üçün orada Chrome'a daxil olun</translation>
 <translation id="6401597285454423070">Kompüteriniz ChromeOS'da bir çox kritik təhlükəsizlik funksiyalarının tətbiqi üçün istifadə olunan Trusted Platform Module (TPM) təhlükəsizlik cihazından ibarətdir. Ətraflı məlumat üçün Chromebook Yardım Mərkəzinə daxil olun: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6404187344102273690">Chromebook Oyun</translation>

@@ -100,6 +100,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1455242230282523554">Dangos y gosodiadau iaith</translation>
 <translation id="1460620680449458626">Mae'r sain wedi'i ddistewi.</translation>
 <translation id="1467432559032391204">Wedi gadael</translation>
+<translation id="146902737843070955">Mae eich gweinyddwr wedi gofyn am y newid hwn</translation>
 <translation id="147310119694673958">Batri'r ffôn <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1479909375538722835">Dewislen hygyrchedd symudol</translation>
 <translation id="1480845547124508962"><ph name="CURRENT_TIME" />, Pwyswch yr allwedd Enter i agor y wedd Calendar</translation>
@@ -837,6 +838,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="5779721926447984944">Wedi pinio ffeiliau</translation>
 <translation id="5788127256798019331">Ffeiliau Play</translation>
 <translation id="5790085346892983794">Llwyddiant</translation>
+<translation id="5804651031882187592">Diffodd y gosodiad "Cloi SIM"</translation>
 <translation id="5805809050170488595">Cliciwch i weithredu <ph name="NETWORK_NAME" /></translation>
 <translation id="5825969630400862129">Gosodiadau dyfeisiau cysylltiedig</translation>
 <translation id="5837036133683224804">Stopio <ph name="ROUTE_TITLE" /> ar <ph name="RECEIVER_NAME" /></translation>

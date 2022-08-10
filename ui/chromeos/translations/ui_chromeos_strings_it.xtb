@@ -244,6 +244,7 @@
 <translation id="3138624403379688522">PIN non valido. Hai ancora <ph name="RETRIES" /> tentativi a disposizione.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (con supporto hardware)</translation>
 <translation id="3188257591659621405">I miei file</translation>
+<translation id="3194553149358267393">Nessun file audio recente</translation>
 <translation id="3197563288998582412">Dvorak Regno Unito</translation>
 <translation id="3202131003361292969">Percorso</translation>
 <translation id="3205852408225871810">Portoghese (Brasile)</translation>
@@ -284,6 +285,7 @@
 <translation id="3479552764303398839">Non adesso</translation>
 <translation id="3486821258960016770">Mongolo</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> errori.</translation>
+<translation id="3495810061346586977">Questo file è riservato e soggetto a limitazioni stabilite dal criterio dell'amministratore. <ph name="BEGIN_LINK_HELP" />Scopri di più<ph name="END_LINK_HELP" /></translation>
 <translation id="3509680540198371098">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />%, dettagli</translation>
 <translation id="3522708245912499433">Portoghese</translation>
 <translation id="3524311639100184459">Attenzione: questi file sono temporanei e potrebbero essere eliminati automaticamente per liberare spazio su disco.  <ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /></translation>
@@ -300,6 +302,7 @@
 <translation id="3606220979431771195">Turco F</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
+<translation id="3619593063686672873">Nessun video recente</translation>
 <translation id="3620292326130836921">Backup di tutti i contenuti completato.</translation>
 <translation id="3634507049637220048">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, gestita dall'amministratore, dettagli</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> elementi spostati.</translation>
@@ -398,6 +401,7 @@
 <translation id="4572815280350369984">File <ph name="FILE_TYPE" /></translation>
 <translation id="457386861538956877">Altro...</translation>
 <translation id="4579744207439506346">Elemento <ph name="ENTRY_NAME" /> aggiunto alla selezione,</translation>
+<translation id="4583436353463424810">Nessun documento recente</translation>
 <translation id="4594543368593301662">Risultati visualizzati per <ph name="SEARCH_TERM" />.</translation>
 <translation id="4599600860674643278">Il filtro è stato reimpostato.</translation>
 <translation id="4603392156942865207">Copia di <ph name="FILE_NAME" /> in <ph name="FOLDER_NAME" /></translation>
@@ -486,6 +490,7 @@
 <translation id="516592729076796170">US Programmer Dvorak</translation>
 <translation id="5172749059808361023">Dettagli limitazioni</translation>
 <translation id="5177526793333269655">Visualizzazione Miniature</translation>
+<translation id="5181896909298187506">Nessun file recente</translation>
 <translation id="5194713942430106590">Fai clic per ordinare la colonna in ordine decrescente.</translation>
 <translation id="5211614973734216083">Faroese</translation>
 <translation id="5218183485292899140">Francese svizzero</translation>
@@ -740,6 +745,7 @@
 <translation id="7408870451288633753">Ceco</translation>
 <translation id="7417453074306512035">Tastiera Etiope</translation>
 <translation id="7417705661718309329">Mappa Google</translation>
+<translation id="7458955835361612701">Nessuna immagine recente</translation>
 <translation id="7460898608667578234">Ucraino</translation>
 <translation id="7469894403370665791">Collegati automaticamente a questa rete</translation>
 <translation id="7486315294984620427">Per trascinare file in Parallels Desktop, devi prima copiarli in File di Windows.</translation>

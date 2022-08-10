@@ -1885,6 +1885,7 @@
 <translation id="2727633948226935816">다시 표시하지 않음</translation>
 <translation id="2727712005121231835">실제 크기</translation>
 <translation id="2729314457178420145">인터넷 사용 기록(<ph name="URL" />)도 삭제합니다. 이렇게 하면 Google.com에서 로그아웃될 수 있습니다. <ph name="LEARN_MORE" /></translation>
+<translation id="2729327310379176711">Chrome은 사용자 추적을 줄이고 안전은 강화하는 새로운 브라우징 방식을 모색 중입니다. 또한 Chrome은 <ph name="ESTIMATE_INTERESTS_LINK" />하고 내가 직접 이를 관리할 수 있도록 합니다. 이후 방문하는 사이트에서는 Chrome이 알려주는 내 관심분야에 따라 광고를 표시할 수 있습니다.</translation>
 <translation id="2730029791981212295">Linux 앱 및 파일 백업 중</translation>
 <translation id="2730901670247399077">추천 그림 이모티콘</translation>
 <translation id="273093730430620027">카메라에 액세스하는 페이지입니다.</translation>
@@ -3805,6 +3806,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4579581181964204535"><ph name="HOST_NAME" />을(를) 전송할 수 없습니다.</translation>
 <translation id="4579876313423027742">브라우저 알림의 경우 <ph name="LINK_BEGIN" />Chrome 브라우저 설정<ph name="LINK_END" />으로 이동하세요.</translation>
 <translation id="4580596421317071374">비밀번호는 이 기기의 <ph name="GOOGLE_PASSWORD_MANAGER" />에 저장됩니다.</translation>
+<translation id="4580626299762849806">비밀번호를 가져올 수 없습니다. <ph name="FILENAME" />를 확인하고 형식이 올바른지 확인하세요.</translation>
 <translation id="4581774856936278355">Linux 복원 중 오류 발생</translation>
 <translation id="4582297591746054421">사이트에서는 일반적으로 복사한 텍스트 형식 유지와 같은 기능을 사용하기 위해 클립보드를 읽어 옵니다.</translation>
 <translation id="4582563038311694664">모든 설정 초기화</translation>
@@ -4570,6 +4572,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5350293332385664455">Google 어시스턴트 사용 중지</translation>
 <translation id="535123479159372765">다른 기기에서 텍스트가 복사됨</translation>
 <translation id="5352033265844765294">시간 기록</translation>
+<translation id="5352257124367865087">사이트 권한 관리</translation>
 <translation id="5353252989841766347">Chrome에서 비밀번호 내보내기</translation>
 <translation id="5355099869024327351">어시스턴트에서 알림을 표시할 수 있도록 허용</translation>
 <translation id="5355191726083956201">향상된 보호 모드를 사용 중입니다.</translation>
@@ -5071,6 +5074,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5843706793424741864">화씨</translation>
 <translation id="5844574845205796324">둘러볼 새 콘텐츠 추천</translation>
 <translation id="5846200638699387931">관계 구문 오류: <ph name="ERROR_LINE" /></translation>
+<translation id="5846504156837627898">사이트 권한 관리</translation>
 <translation id="5846807460505171493">업데이트 및 앱을 설치합니다. 계속하면 이 기기에서 Google, 이동통신사, 기기 제조업체로부터 업데이트와 앱을 자동으로 다운로드하고 설치할 수 있으며 모바일 데이터를 사용할 수도 있음에 동의하는 것으로 간주됩니다. 일부 앱에서는 인앱 구매가 제공될 수도 있습니다.</translation>
 <translation id="5849212445710944278">이미 추가됨</translation>
 <translation id="5851868085455377790">발행기관</translation>
@@ -5111,6 +5115,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5877064549588274448">채널이 변경되었습니다. 변경사항을 적용하려면 기기를 다시 시작하세요.</translation>
 <translation id="5877584842898320529">선택한 프린터가 사용할 수 없거나 제대로 설치되어 있지 않습니다. <ph name="BR" /> 프린터를 확인하거나 다른 프린터를 선택해 보세요.</translation>
 <translation id="5878945009165002849">ID 서비스의 로그인 메시지를 차단합니다.</translation>
+<translation id="5882449899683447569">오류가 발생하여 비밀번호를 가져올 수 없습니다.</translation>
 <translation id="5882919346125742463">알려진 네트워크</translation>
 <translation id="5883356647197510494"><ph name="PERMISSION_1" /> 및 <ph name="PERMISSION_2" /> 자동으로 차단됨</translation>
 <translation id="5884474295213649357">이 탭이 USB 기기에 연결되었습니다.</translation>
@@ -5635,6 +5640,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6398715114293939307">Google Play 스토어 삭제</translation>
 <translation id="6398765197997659313">전체화면 닫기</translation>
 <translation id="6399774419735315745">스파이</translation>
+<translation id="6400360390396538896"><ph name="ORIGIN" />에서 항상 사용</translation>
 <translation id="6401458660421980302">이 탭을 다른 기기로 보내려면 해당 기기에서 Chrome에 로그인하세요.</translation>
 <translation id="6401597285454423070">컴퓨터에 TPM(신뢰할 수 있는 플랫폼 모듈) 보안 기기가 있습니다. 이 기기는 ChromeOS에서 여러 중요한 보안 기능을 구현하는 데 사용됩니다. 자세히 알아보려면 Chromebook 고객센터의 다음 페이지를 방문하세요. https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6404187344102273690">Chromebook 게임</translation>

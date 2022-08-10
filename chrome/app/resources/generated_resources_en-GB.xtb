@@ -225,6 +225,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1199814941632954229">Certificates are being provisioned for these certificate profiles</translation>
 <translation id="120069043972472860">Unwatchable</translation>
 <translation id="1201402288615127009">Next</translation>
+<translation id="1201564082781748151">Local data can be restored if you forget your password</translation>
 <translation id="1202596434010270079">Kiosk app has been updated. Please remove the USB stick.</translation>
 <translation id="120368089816228251">Music note</translation>
 <translation id="1203942045716040624">Shared worker: <ph name="SCRIPT_URL" /></translation>
@@ -269,6 +270,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1243436884219965846">Review passwords</translation>
 <translation id="1244265436519979884">Linux restore currently in progress</translation>
 <translation id="1244303850296295656">Extension error</translation>
+<translation id="1245628370644070008">Local data recovery</translation>
 <translation id="1246863218384630739">Couldn't install <ph name="VM_NAME" />: Image URL returned a <ph name="HTTP_ERROR" /> error code. Please contact your administrator.</translation>
 <translation id="1251366534849411931">Expected opening curly bracket: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">This will clear <ph name="TOTAL_USAGE" /> of data stored by sites and installed apps</translation>
@@ -1331,6 +1333,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="222447520299472966">A minimum of one Art gallery album needs to be selected</translation>
 <translation id="2224551243087462610">Edit folder name</translation>
 <translation id="2225864335125757863">Change these passwords immediately to keep your account safe:</translation>
+<translation id="2225927550500503913">Virtual card turned on</translation>
 <translation id="2226449515541314767">This site has been blocked from having full control of MIDI devices.</translation>
 <translation id="2226826835915474236">Inactive shortcuts</translation>
 <translation id="2226907662744526012">Unlock automatically once PIN is entered</translation>
@@ -5246,6 +5249,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6003582434972667631">Theme is set by your organisation</translation>
 <translation id="6006484371116297560">Classic</translation>
 <translation id="6007240208646052708">Voice search in your language is not available.</translation>
+<translation id="6010651352520077187">When on, Google Translate will offer to translate sites into your preferred language. It can also automatically translate sites.</translation>
 <translation id="6011193465932186973">Fingerprint</translation>
 <translation id="6011449291337289699">Clear site data</translation>
 <translation id="6011908034087870826">Sending link to <ph name="DEVICE_NAME" /></translation>
@@ -5558,6 +5562,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="630948338437014525">memories</translation>
 <translation id="6309510305002439352">Microphone turned off</translation>
 <translation id="6310141306111263820">Couldn't install eSIM profile. For help, please contact your operator.</translation>
+<translation id="6311165245110979290">Virtual card available</translation>
 <translation id="6311220991371174222">Cannot start Chrome because something went wrong when opening your profile. Try to restart Chrome.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Safety check ran 1 day ago}other{Safety check ran {NUM_DAYS} days ago}}</translation>
 <translation id="6312638141433622592">Offer to show articles in reader mode, when supported</translation>
@@ -5786,6 +5791,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6532206849875187177">Security and sign-in</translation>
 <translation id="6532527800157340614">Sign-in failed because your access token could not be retrieved. Please check your network connection and try again.</translation>
 <translation id="6532663472409656417">Enterprise enrolled</translation>
+<translation id="6533315466883598769">Use Google Translate</translation>
 <translation id="6535331821390304775">Always allow <ph name="ORIGIN" /> to open links of this type in the associated app</translation>
 <translation id="653659894138286600">Scan documents and images</translation>
 <translation id="6537613839935722475">The name can use letters, numbers and hyphens (-)</translation>

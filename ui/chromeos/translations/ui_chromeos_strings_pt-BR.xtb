@@ -289,6 +289,7 @@
 <translation id="3522708245912499433">Português</translation>
 <translation id="3524311639100184459">Atenção: esses arquivos são temporários e podem ser excluídos automaticamente para liberar espaço em disco.  <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Pasta</translation>
+<translation id="3548125359243647069">Um PIN incorreto foi digitado muitas vezes.</translation>
 <translation id="3549797760399244642">Ir para drive.google.com...</translation>
 <translation id="3553048479571901246">Para abrir arquivos usando <ph name="APP_NAME" />, primeiro os copie para a pasta de arquivos do Windows.</translation>
 <translation id="3556731189587832921">Inglês (EUA) com teclado internacional de PC</translation>
@@ -614,6 +615,7 @@
 <translation id="6267547857941397424">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" />%, bateria do smartphone em <ph name="BATTERY_STATUS" />%, conectar</translation>
 <translation id="6269630227984243955">Malaio</translation>
 <translation id="6287852322318138013">Selecione um aplicativo para abrir este arquivo</translation>
+<translation id="6295542640242147836">Bloquear chip</translation>
 <translation id="6296410173147755564">PUK inválida</translation>
 <translation id="6312403991423642364">Erro de rede desconhecido</translation>
 <translation id="6317608858038767920">Servidor de nomes personalizado <ph name="INPUT_INDEX" /></translation>
@@ -722,6 +724,7 @@
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Salvar arquivo como</translation>
 <translation id="7229570126336867161">EVDO ausente</translation>
+<translation id="7230898482850090046">O administrador solicitou que você desative a configuração "Bloquear chip"</translation>
 <translation id="7238097264433196391">Nome do drive</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, detalhes</translation>
 <translation id="7246947237293279874">Proxy FTP</translation>
@@ -753,6 +756,7 @@
 <translation id="7505167922889582512">Mostrar arquivos ocultos</translation>
 <translation id="7514365320538308">Fazer o download</translation>
 <translation id="751507702149411736">Bielorrusso</translation>
+<translation id="7521790570754130607">É necessário ter um PIN para usar os dados móveis</translation>
 <translation id="7532029025027028521">Persa (transliteração)</translation>
 <translation id="7544830582642184299">Conceda aos apps do Linux permissão para acessar os arquivos no seu Google Drive. As modificações serão sincronizadas com seus outros dispositivos.</translation>
 <translation id="7547009467130558110">Tênis</translation>
@@ -777,6 +781,7 @@
 <translation id="76959938259365003">Falha ao esvaziar a lixeira.</translation>
 <translation id="770015031906360009">Grego</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> copiado.</translation>
+<translation id="7708271999969613024">Para usar essa rede, é necessário digitar a chave de desbloqueio pessoal (PUK) de oito dígitos fornecida pela sua operadora.</translation>
 <translation id="7711920809702896782">Informações sobre a imagem</translation>
 <translation id="7724603315864178912">Recortar</translation>
 <translation id="7730494089396812859">Exibir detalhes do backup em nuvem</translation>
@@ -871,6 +876,7 @@
 <translation id="8437209419043462667">EUA</translation>
 <translation id="8452135315243592079">Chip ausente</translation>
 <translation id="8456681095658380701">Nome inválido</translation>
+<translation id="8457767749626250697">Seu chip está bloqueado</translation>
 <translation id="8459404855768962328">Se você copiar esse item, ele será compartilhado com todos que podem ver a pasta compartilhada "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="8461467696380332069">Clique com o botão direito do mouse em um arquivo e selecione "Fixar na estante" para ter acesso rápido a ele pela estante.</translation>
 <translation id="8461914792118322307">Proxy</translation>

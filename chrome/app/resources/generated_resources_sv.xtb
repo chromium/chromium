@@ -1139,6 +1139,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2048653237708779538">Åtgärden är inte tillgänglig</translation>
 <translation id="2050339315714019657">Stående</translation>
 <translation id="2052572566310583903">Installerade på dina andra enheter</translation>
+<translation id="2053105195397337973">Vi utforskar nya sätt att begränsa spårning samtidigt som webbplatser kan motverka spam och bedrägeri.</translation>
 <translation id="2053312383184521053">Data om läget inaktiv</translation>
 <translation id="2054240652864153171">Vill du rensa webbplatsdata för <ph name="SITE_NAME" /> på <ph name="PARTITION_SITE_NAME" />?</translation>
 <translation id="2055585478631012616">Du loggas ut från webbplatserna i fråga, även på öppna flikar</translation>
@@ -4975,6 +4976,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5747552184818312860">Upphör att gälla</translation>
 <translation id="5747785204778348146">Utvecklare – instabil</translation>
 <translation id="5747809636523347288">Kli&amp;stra in och besök <ph name="URL" /></translation>
+<translation id="5751345516399502412">Kontrollera beredskap för internetdelning</translation>
 <translation id="5755022574660047665">minnen från Google Foto</translation>
 <translation id="5756163054456765343">Hjälpc&amp;enter</translation>
 <translation id="5757375109985023827">Välj en flik för att förhandsgranska</translation>
@@ -7232,6 +7234,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7939062555109487992">Avancerade alternativ</translation>
 <translation id="7939328347457537652">Hantera enhetscertifikat</translation>
 <translation id="7939412583708276221">Behåll ändå</translation>
+<translation id="7941179291434537290">Beredskap för internetdelning:</translation>
 <translation id="7942349550061667556">Röd</translation>
 <translation id="7943368935008348579">Ladda ned PDF-filer</translation>
 <translation id="7943837619101191061">Lägg till plats ...</translation>
@@ -7759,6 +7762,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8439506636278576865">Erbjud att översätta sidor på detta språk</translation>
 <translation id="8440630305826533614">Linux-appar</translation>
 <translation id="844063558976952706">Alltid på den här webbplatsen</translation>
+<translation id="8441313165929432954">Aktivera/inaktivera internetdelning</translation>
 <translation id="8443795068008423036">Kontrollera att enheten är uppdaterad och försök igen.</translation>
 <translation id="8446884382197647889">Läs mer</translation>
 <translation id="8447409163267621480">Ctrl- eller alt-tangenten måste finnas med</translation>

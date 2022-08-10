@@ -200,6 +200,7 @@ Barcha yoki ayrim saytlar uchun — ochilgan sahifalar tarixi oʻchirilganida �
 <translation id="2046634576464120978">Registratsiya qilinmadi</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2052422354554967744">Internetdan qidirish</translation>
+<translation id="2053105195397337973">Biz saytlarda spam va firibgarlik reklamalaridan himoyani yoqish orqali kuzatuv mexanizmlarini taqiqlash yoʻllarini oʻrganib chiqmoqdamiz.</translation>
 <translation id="2056878612599315956">Sayt pauzalangan</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 ta fayl yuklab olinmadi}other{# ta fayl yuklab olinmadi}}</translation>
 <translation id="2067805253194386918">matn</translation>
@@ -234,6 +235,7 @@ Barcha yoki ayrim saytlar uchun — ochilgan sahifalar tarixi oʻchirilganida �
 <translation id="2239812875700136898">Parametrlar orqali Discover yangiliklarini boshqarish tugmasi</translation>
 <translation id="2248941474044011069">Parollaringiz Google Parollar menejeriga saqlanishidan oldin qurilmangizda shifrlangan</translation>
 <translation id="2259659629660284697">Parollarni eksport qilish…</translation>
+<translation id="2276231040576210443">Nimani sinxronlashni istalgan vaqtda <ph name="BEGIN_LINK1" />sozlamalar<ph name="END_LINK1" /> orqali tanlash mumkin. Brauzer tarixi asosida Google Qidiruv va boshqa xizmatlarni moslashtirishi mumkin.</translation>
 <translation id="2276696007612801991">Parollaringizni tekshirish uchun Google hisobingizga kiring</translation>
 <translation id="2278052315791335171">Bu parol olib tashlangani bilan <ph name="SITE" /> hisobingiz oʻchib ketmaydi</translation>
 <translation id="2279146068164892489"><ph name="APPNAME" /> ilovasi ochilsinmi?</translation>
@@ -396,6 +398,7 @@ Barcha yoki ayrim saytlar uchun — ochilgan sahifalar tarixi oʻchirilganida �
 <translation id="3114507951000454849">Bugungi yangiliklar bilan tanishing <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">ulandi</translation>
 <translation id="3123734510202723619">Xabarnomalar</translation>
+<translation id="3130863904455712965">Tarix va boshqa</translation>
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">Chrome bosh sahifasi</translation>
 <translation id="3166827708714933426">Varaq va oynalar bilan ishlash</translation>
@@ -543,6 +546,7 @@ Barcha yoki ayrim saytlar uchun — ochilgan sahifalar tarixi oʻchirilganida �
 <translation id="3981902534690264083">Reklama beruvchilar reklamalar qanday chiqishini oʻrganishi mumkin</translation>
 <translation id="3985215325736559418"><ph name="FILE_NAME" /> fayli qaytadan yuklab olinsinmi?</translation>
 <translation id="3987993985790029246">Nusxalash</translation>
+<translation id="3999683152997576765">Saytlar reklamani chiqarish uchun ishlatadigan sizga qiziq mavzularni koʻrishingiz va olib tashlashingiz mumkin. Chrome siz ochgan saytlar asosida sizga qiziq boʻlishi mumkin mavzularni taxmin qiladi.</translation>
 <translation id="4000212216660919741">Uy oflayn</translation>
 <translation id="4016425174436051808">Obuna qilinmadi. Xatolik yuz berdi.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# soat}other{# soat}}</translation>
@@ -1299,6 +1303,7 @@ Ishonch tokenlari Internetdagi maxfiylikni oshiradi va shaxsiy maʼlumotlaringiz
 <translation id="8037801708772278989">Hozirgina tekshirildi</translation>
 <translation id="804335162455518893">SD karta topilmadi</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ta inkognito varaq}other{<ph name="TAB_COUNT_NORMAL" /> ta inkognito varaq}}</translation>
+<translation id="8048728378294435881">Maʼlumotlaringizni zaxiralang va istalgan qurilmada oching</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB bo‘sh</translation>
 <translation id="8058655154417507695">Muddati tugaydigan yil</translation>
 <translation id="8058746566562539958">Yangi Chrome oynasida ochish</translation>

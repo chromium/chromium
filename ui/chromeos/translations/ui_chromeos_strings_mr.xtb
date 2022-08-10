@@ -289,6 +289,7 @@
 <translation id="3522708245912499433">पोर्तुगीज</translation>
 <translation id="3524311639100184459">सावधान: या फाइल तात्पुरत्या आहेत आणि डिस्कवरील जागा मोकळी करण्यासाठी त्या आपोआप हटवल्या जाऊ शकतात.  <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">फोल्डर</translation>
+<translation id="3548125359243647069">बऱ्याच वेळा चुकीचा पिन एंटर करण्यात आला.</translation>
 <translation id="3549797760399244642">drive.google.com वर जा...</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" /> सोबत फाइल उघडण्यासाठी, प्रथम त्या Windows फाइल फोल्डरमध्ये कॉपी करा.</translation>
 <translation id="3556731189587832921">आंतरराष्ट्रीय पीसी कीबोर्डसह इंग्रजी (यूएस)</translation>
@@ -614,6 +615,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="PHONE_NAME" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, फोन बॅटरी <ph name="BATTERY_STATUS" />%, कनेक्ट करा</translation>
 <translation id="6269630227984243955">मलय</translation>
 <translation id="6287852322318138013">ही फाईल उघडण्यासाठी ॲप निवडा</translation>
+<translation id="6295542640242147836">सिम लॉक करा</translation>
 <translation id="6296410173147755564">चुकीचा PUK</translation>
 <translation id="6312403991423642364">अज्ञात नेटवर्क एरर</translation>
 <translation id="6317608858038767920">कस्टम नेमसर्व्हर <ph name="INPUT_INDEX" /></translation>
@@ -722,6 +724,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">या फॉरमॅटमध्ये फाइल सेव्ह करा</translation>
 <translation id="7229570126336867161">EVDO आवश्यक आहे</translation>
+<translation id="7230898482850090046">तुमच्या अ‍ॅडमिनिस्ट्रेटरने तुम्हाला "सिम लॉक करा" सेटिंग बंद करण्याची विनंती केली आहे</translation>
 <translation id="7238097264433196391">ड्राइव्हचे नाव</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, तपशील</translation>
 <translation id="7246947237293279874">FTP प्रॉक्सी</translation>
@@ -753,6 +756,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="7505167922889582512">लपविलेल्या फाइल दर्शवा</translation>
 <translation id="7514365320538308">डाउनलोड करा</translation>
 <translation id="751507702149411736">बेलारुशियन</translation>
+<translation id="7521790570754130607">मोबाइल डेटा वापरण्यासाठी पिन आवश्यक आहे</translation>
 <translation id="7532029025027028521">पर्शियन लिप्यंतरण</translation>
 <translation id="7544830582642184299">Linux ॲप्सना तुमच्या Google Drive मधील फाइल ॲक्सेस करण्याची परवानगी द्या. बदल तुमच्या इतर डिव्हाइसवर सिंक होतील.</translation>
 <translation id="7547009467130558110">स्नीकर</translation>
@@ -777,6 +781,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="76959938259365003">ट्रॅश रिकामा करता आला नाही.</translation>
 <translation id="770015031906360009">ग्रीक</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> कॉपी केला.</translation>
+<translation id="7708271999969613024">हे नेटवर्क वापरण्यासाठी, तुम्ही वाहकाने पुरवलेली आठ अंकी वैयक्तिक अनब्लॉकिंग की (PUK) एंटर करणे आवश्यक आहे.</translation>
 <translation id="7711920809702896782">इमेज माहिती</translation>
 <translation id="7724603315864178912">कट करा</translation>
 <translation id="7730494089396812859">क्लाउड बॅकअप तपशील दर्शवा</translation>
@@ -871,6 +876,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="8437209419043462667">यूएस</translation>
 <translation id="8452135315243592079">गहाळ सिम कार्ड</translation>
 <translation id="8456681095658380701">चुकीचे नाव</translation>
+<translation id="8457767749626250697">तुमचे सिम लॉक केलेले आहे</translation>
 <translation id="8459404855768962328">हा आयटम कॉपी केल्याने, शेअर केलेले '<ph name="DESTINATION_NAME" />' हे फोल्डर पाहू शकणाऱ्या प्रत्येकासोबत तो शेअर होईल.</translation>
 <translation id="8461467696380332069">शेल्फमधील तुमच्या फाइल झटपट अ‍ॅक्सेस करण्यासाठी फाइलवर राइट क्लिक करा आणि "शेल्फवर पिन करा" निवडा.</translation>
 <translation id="8461914792118322307">प्रॉक्सी</translation>

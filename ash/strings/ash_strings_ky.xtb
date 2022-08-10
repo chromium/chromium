@@ -100,6 +100,7 @@
 <translation id="1455242230282523554">Тил жөндөөлөрүн көрсөтүү</translation>
 <translation id="1460620680449458626">Үнү өчүрүлгөн.</translation>
 <translation id="1467432559032391204">Сол</translation>
+<translation id="146902737843070955">Бул өзгөртүүнү киргизүүнү администратор суранды</translation>
 <translation id="147310119694673958">Телефондун батареясы: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1479909375538722835">Калкыма атайын мүмкүнчүлүктөр менюсу</translation>
 <translation id="1480845547124508962"><ph name="CURRENT_TIME" />, Жылнааманы ачуу үчүн Enter баскычын басыңыз</translation>
@@ -837,6 +838,7 @@
 <translation id="5779721926447984944">Кадалган файлдар</translation>
 <translation id="5788127256798019331">Google Play файлдары</translation>
 <translation id="5790085346892983794">Ийгилик</translation>
+<translation id="5804651031882187592">"SIM картаны кулпулоо" параметрин өчүрүү</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> тармагын жандыруу үчүн басыңыз</translation>
 <translation id="5825969630400862129">Туташтырылган түзмөктөрдүн жөндөөлөрү</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> бөлмөсүндөгү <ph name="ROUTE_TITLE" /> токтотулсун</translation>

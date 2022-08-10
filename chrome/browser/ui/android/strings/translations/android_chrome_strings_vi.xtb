@@ -200,6 +200,7 @@ Khi xoá nhật ký duyệt web (tất cả hoặc một trang cụ thể), bạ
 <translation id="2046634576464120978">Không đăng ký được</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2052422354554967744">Tìm kiếm trên Internet</translation>
+<translation id="2053105195397337973">Chúng tôi đang nghiên cứu các cách để hạn chế hoạt động theo dõi, đồng thời giúp các trang web ngăn chặn hành vi lừa đảo và quảng cáo không liên quan.</translation>
 <translation id="2056878612599315956">Đã tạm dừng trang web</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 tệp tải xuống không thành công}other{# tệp tải xuống không thành công}}</translation>
 <translation id="2067805253194386918">văn bản</translation>
@@ -234,6 +235,7 @@ Khi xoá nhật ký duyệt web (tất cả hoặc một trang cụ thể), bạ
 <translation id="2239812875700136898">Kiểm soát các tin bài của bạn bằng các Tùy chọn của nút Khám phá</translation>
 <translation id="2248941474044011069">Mật khẩu của bạn được mã hoá trên thiết bị trước khi lưu vào Trình quản lý mật khẩu của Google.</translation>
 <translation id="2259659629660284697">Xuất mật khẩu...</translation>
+<translation id="2276231040576210443">Bạn luôn có thể chọn nội dung cần đồng bộ hoá trong phần <ph name="BEGIN_LINK1" />cài đặt<ph name="END_LINK1" />. Google có thể cá nhân hoá dịch vụ Tìm kiếm và các dịch vụ khác dựa trên nhật ký của bạn.</translation>
 <translation id="2276696007612801991">Đăng nhập vào Tài khoản Google của bạn để kiểm tra mật khẩu</translation>
 <translation id="2278052315791335171">Thao tác xóa mật khẩu này sẽ không xóa tài khoản của bạn trên <ph name="SITE" /></translation>
 <translation id="2279146068164892489">Mở ứng dụng <ph name="APPNAME" />?</translation>
@@ -396,6 +398,7 @@ Khi xoá nhật ký duyệt web (tất cả hoặc một trang cụ thể), bạ
 <translation id="3114507951000454849">Đọc tin tức hôm nay <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">đã liên kết với</translation>
 <translation id="3123734510202723619">Thông báo</translation>
+<translation id="3130863904455712965">Nhật ký và nhiều nội dung khác</translation>
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">Trang chủ của Chrome</translation>
 <translation id="3166827708714933426">Phím tắt dành cho thẻ và cửa sổ</translation>
@@ -543,6 +546,7 @@ Khi xoá nhật ký duyệt web (tất cả hoặc một trang cụ thể), bạ
 <translation id="3981902534690264083">Nhà quảng cáo có thể nắm được hiệu suất của quảng cáo</translation>
 <translation id="3985215325736559418">Bạn có muốn tải lại <ph name="FILE_NAME" /> xuống không?</translation>
 <translation id="3987993985790029246">Sao chép đường liên kết</translation>
+<translation id="3999683152997576765">Bạn có thể xem và xoá những chủ đề quan tâm mà các trang web dựa vào để hiện quảng cáo cho bạn. Chrome ước đoán các mối quan tâm dựa trên nhật ký duyệt web gần đây của bạn.</translation>
 <translation id="4000212216660919741">Nhà ở chế độ không kết nối Internet</translation>
 <translation id="4016425174436051808">Không thể theo dõi. Đã xảy ra lỗi.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# giờ}other{# giờ}}</translation>
@@ -1299,6 +1303,7 @@ Mã thông báo tin cậy giúp cải thiện quyền riêng tư trên web và 
 <translation id="8037801708772278989">Vừa kiểm tra xong</translation>
 <translation id="804335162455518893">Không tìm thấy thẻ SD</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> thẻ ẩn danh}other{<ph name="TAB_COUNT_NORMAL" /> thẻ ẩn danh}}</translation>
+<translation id="8048728378294435881">Sao lưu và sử dụng dữ liệu của bạn trên mọi thiết bị</translation>
 <translation id="8051695050440594747">Còn <ph name="MEGABYTES" /> MB</translation>
 <translation id="8058655154417507695">Năm hết hạn</translation>
 <translation id="8058746566562539958">Mở trong thẻ Chrome mới</translation>

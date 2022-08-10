@@ -100,6 +100,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1455242230282523554">Näytä kieliasetukset</translation>
 <translation id="1460620680449458626">Äänet on mykistetty.</translation>
 <translation id="1467432559032391204">Vasemmalla</translation>
+<translation id="146902737843070955">Järjestelmänvalvoja on pyytänyt tätä muutosta</translation>
 <translation id="147310119694673958">Puhelimen akku <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="1479909375538722835">Kelluva esteettömyysvalikko</translation>
 <translation id="1480845547124508962"><ph name="CURRENT_TIME" />, Avaa kalenterinäkymä painamalla Enter</translation>
@@ -837,6 +838,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="5779721926447984944">Kiinnitetyt tiedostot</translation>
 <translation id="5788127256798019331">Play-tiedostot</translation>
 <translation id="5790085346892983794">Onnistui</translation>
+<translation id="5804651031882187592">Laita "Lukitse SIM-kortti" ‐asetus pois päältä</translation>
 <translation id="5805809050170488595">Aktivoi <ph name="NETWORK_NAME" /> klikkaamalla</translation>
 <translation id="5825969630400862129">Yhdistettyjen laitteiden asetukset</translation>
 <translation id="5837036133683224804">Lopeta <ph name="ROUTE_TITLE" /> – <ph name="RECEIVER_NAME" /></translation>

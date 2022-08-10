@@ -200,6 +200,7 @@
 <translation id="2046634576464120978">রেজিস্ট্রেশন করা যায়নি</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2052422354554967744">ইন্টারনেটে সার্চ করুন</translation>
+<translation id="2053105195397337973">বিভিন্ন সাইটে বিজ্ঞাপন স্প্যাম এবং জালিয়াতি বন্ধ করার ফিচার চালু করার মাধ্যমে ট্র্যাক করা কমাতে আমরা নতুন উপায় নিয়ে আসছি।</translation>
 <translation id="2056878612599315956">সাইট পজ করা আছে</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{১টি ডাউনলোড করা যায়নি}one{#টি ডাউনলোড করা যায়নি}other{#টি ডাউনলোড করা যায়নি}}</translation>
 <translation id="2067805253194386918">টেক্সট</translation>
@@ -234,6 +235,7 @@
 <translation id="2239812875700136898">'Discover-এর বিকল্প' বোতামে ক্লিক করে আপনার ফিডের কন্টেন্ট নিয়ন্ত্রণ করুন</translation>
 <translation id="2248941474044011069">Google পাসওয়ার্ড ম্যানেজারে সেভ করার আগে আপনার পাসওয়ার্ড ডিভাইসে এনক্রিপ্ট করা হয়</translation>
 <translation id="2259659629660284697">পাসওয়ার্ড এক্সপোর্ট করুন...</translation>
+<translation id="2276231040576210443"><ph name="BEGIN_LINK1" />সেটিংসে<ph name="END_LINK1" /> কোন ধরনের ডেটা সিঙ্ক করা হবে তা আপনি সবসময় বেছে নিতে পারবেন। আপনার ইতিহাসের উপরে ভিত্তি করে, সার্চ ও অন্যান্য পরিষেবা পছন্দমতো করে তুলতে Google এই ডেটা ব্যবহার করতে পারে।</translation>
 <translation id="2276696007612801991">আপনার পাসওয়ার্ড চেক করতে Google অ্যাকাউন্টে সাইন-ইন করুন</translation>
 <translation id="2278052315791335171">এই পাসওয়ার্ডটি মুছে দিলেও, <ph name="SITE" />-এ আপনার অ্যাকাউন্ট মুছে যাবে না</translation>
 <translation id="2279146068164892489"><ph name="APPNAME" /> অ্যাপ খুলবেন?</translation>
@@ -396,6 +398,7 @@
 <translation id="3114507951000454849">আজকের খবর পড়ুন <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">এর সাথে লিঙ্ক করা হয়েছে</translation>
 <translation id="3123734510202723619">ঘোষণা</translation>
+<translation id="3130863904455712965">ইতিহাস ও আরও অনেক কিছু</translation>
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">Chrome-এর হোমপেজ</translation>
 <translation id="3166827708714933426">ট্যাব এবং উইন্ডোর শর্টকাটগুলি</translation>
@@ -545,6 +548,7 @@
 <translation id="3981902534690264083">বিজ্ঞাপনদাতারা বুঝতে পারেন বিজ্ঞাপনগুলি কীভাবে কাজ করে</translation>
 <translation id="3985215325736559418">আপনি কি আবার <ph name="FILE_NAME" /> ডাউনলোড করতে চান?</translation>
 <translation id="3987993985790029246">লিঙ্ক কপি করুন</translation>
+<translation id="3999683152997576765">আগ্রহের যেসব বিষয়ের উপর ভিত্তি করে সাইট আপনাকে বিজ্ঞাপন দেখায়, আপনি সেগুলি দেখতে ও সরিয়ে দিতে পারবেন। Chrome আপনার সাম্প্রতিক ব্রাউজিং ইতিহাসের উপর ভিত্তি করে আপনার আগ্রহ সম্পর্কে ধারণা করতে পারে।</translation>
 <translation id="4000212216660919741">অফলাইন হোম</translation>
 <translation id="4016425174436051808">ফলো করা যাচ্ছে না। কোনও সমস্যা হয়েছে।</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ঘণ্টা}one{# ঘণ্টা}other{# ঘণ্টা}}</translation>
@@ -1301,6 +1305,7 @@
 <translation id="8037801708772278989">এখনই চেক করা হয়েছে</translation>
 <translation id="804335162455518893">এসডি কার্ড পাওয়া যায়নি</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" />টি ছদ্মবেশী ট্যাব}one{<ph name="TAB_COUNT_NORMAL" />টি ছদ্মবেশী ট্যাব}other{<ph name="TAB_COUNT_NORMAL" />টি ছদ্মবেশী ট্যাব}}</translation>
+<translation id="8048728378294435881">আপনার ডেটার ব্যাক-আপ নিন এবং যেকোনও ডিভাইসে তা ব্যবহার করুন</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> এমবি উপলভ্য</translation>
 <translation id="8058655154417507695">মেয়াদ শেষের বছর</translation>
 <translation id="8058746566562539958">নতুন Chrome ট্যাবে খুলুন</translation>

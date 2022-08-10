@@ -2400,6 +2400,13 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
       Se il criterio <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" /> non viene configurato, questo criterio non ha alcun effetto.</translation>
 <translation id="3397883909301547525">Non mostrare consigli delle app in Avvio app di <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3399859571630358395">Viene forzata la disattivazione della funzionalità Accoppiamento rapido (accoppiamento rapido tramite Bluetooth)</translation>
+<translation id="3408078762098350617">Consente di controllare l'esperienza utente delle funzionalità disattivate elencate nel criterio <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />.
+
+      Se il criterio viene impostato su "blocked", le funzionalità disattivate non saranno utilizzabili, ma rimarranno visibili per gli utenti.
+
+      Se il criterio viene impostato su "hidden", le funzionalità disattivate saranno inutilizzabili e non visibili per gli utenti.
+
+      Se il criterio non viene configurato o presenta un valore non valido, la modalità di disattivazione delle funzionalità di sistema sarà "blocked".</translation>
 <translation id="341285788698114069">Questo criterio consente di stabilire la priorità del processo audio su Windows.
       Se il criterio viene attivato, il processo audio verrà eseguito con priorità sopra la norma.
       Se il criterio viene disattivato, il processo audio verrà eseguito con priorità normale.
@@ -5507,6 +5514,13 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
       Se il criterio non viene configurato, non vengono applicate limitazioni imposte da tale criterio al gruppo di app che gli utenti possono attivare nella schermata di blocco.</translation>
 <translation id="6882028194958060206">Applica l'impostazione dei contenuti Flash a tutti i contenuti (deprecato)</translation>
 <translation id="6889123056995503704">Gli utenti decidono il comportamento del downgrade del canale</translation>
+<translation id="6893442532580358855">La configurazione del criterio consente di impedire il caricamento delle pagine web con URL vietati. Consente di fornire un elenco di pattern URL che specificano gli URL vietati. Se il criterio non viene configurato, nessun URL è vietato nel browser. I pattern URL devono avere il formato indicato all'indirizzo https://www.chromium.org/administrators/url-blocklist-filter-format. È possibile definire fino a 1000 eccezioni nel criterio <ph name="URL_ALLOWLIST_POLICY_NAME" />.
+
+      A partire da <ph name="PRODUCT_NAME" /> 73, puoi bloccare gli URL javascript://*. Tuttavia, questa operazione interessa solo il codice JavaScript inserito nella barra degli indirizzi o, ad esempio, nei bookmarklet. Gli URL JavaScript in-page con un caricamento dinamico dei dati non sono soggetti a questo criterio. Ad esempio, se example.com/abc viene bloccato, example.com può comunque caricare example.com/abc tramite XMLHTTPRequest.
+
+      A partire dalla versione 92 di <ph name="PRODUCT_NAME" />, questo criterio è supportato anche nella modalità headless.
+
+      Nota: il blocco degli URL interni chrome://* e chrome-untrusted://* può causare errori imprevisti o essere aggirato in casi speciali. Anziché bloccare determinati URL interni, controlla se sono disponibili criteri più specifici. Casi comuni: anziché bloccare chrome://settings/certificates, usa il criterio <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME" />. Anziché bloccare chrome-untrusted://crosh, usa il criterio <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />.</translation>
 <translation id="6894178810167845842">URL della pagina Nuova scheda</translation>
 <translation id="6897730193187922386">Elimina messaggi relativi al ritiro di <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="6899705656741990703">Rileva automaticamente impostazioni proxy</translation>

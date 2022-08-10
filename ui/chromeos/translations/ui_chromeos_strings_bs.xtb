@@ -244,6 +244,7 @@
 <translation id="3138624403379688522">Nevažeći PIN. Broj preostalih pokušaja: <ph name="RETRIES" /></translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (podržano hardverom)</translation>
 <translation id="3188257591659621405">Moji fajlovi</translation>
+<translation id="3194553149358267393">Nema nedavnih audio fajlova</translation>
 <translation id="3197563288998582412">UK Dvorak</translation>
 <translation id="3202131003361292969">Putanja</translation>
 <translation id="3205852408225871810">portugalski (Brazil)</translation>
@@ -302,6 +303,7 @@
 <translation id="3606220979431771195">Turska-f</translation>
 <translation id="3616113530831147358">Zvuk</translation>
 <translation id="3619115746895587757">Kapućino</translation>
+<translation id="3619593063686672873">Nema nedavnih videozapisa</translation>
 <translation id="3620292326130836921">Napravljene su sigurnosne kopije za sve fajlove!</translation>
 <translation id="3634507049637220048">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, upravlja vaš administrator, detalji</translation>
 <translation id="3645233063072417428">Broj premještenih stavki: <ph name="NUMBER_OF_ITEMS" />.</translation>
@@ -400,6 +402,7 @@
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> fajl</translation>
 <translation id="457386861538956877">Više...</translation>
 <translation id="4579744207439506346">Unos <ph name="ENTRY_NAME" /> je dodan u odabir.</translation>
+<translation id="4583436353463424810">Nema nedavnih dokumenata</translation>
 <translation id="4594543368593301662">Prikazuju se rezultati za <ph name="SEARCH_TERM" />.</translation>
 <translation id="4599600860674643278">Filter je poništen</translation>
 <translation id="4603392156942865207">Kopiranje fajla <ph name="FILE_NAME" /> u folder <ph name="FOLDER_NAME" /></translation>
@@ -488,6 +491,7 @@
 <translation id="516592729076796170">SAD programer Dvorak</translation>
 <translation id="5172749059808361023">Detalji o ograničenju</translation>
 <translation id="5177526793333269655">Prikaz minijatura</translation>
+<translation id="5181896909298187506">Nema nedavnih fajlova</translation>
 <translation id="5194713942430106590">Kliknite da poredate kolonu uzlaznim poretkom.</translation>
 <translation id="5211614973734216083">farski</translation>
 <translation id="5218183485292899140">Švicarska francuska</translation>
@@ -745,6 +749,7 @@
 <translation id="7408870451288633753">češki</translation>
 <translation id="7417453074306512035">Etiopijska tastatura</translation>
 <translation id="7417705661718309329">Google Mapa</translation>
+<translation id="7458955835361612701">Nema nedavnih slika</translation>
 <translation id="7460898608667578234">Ukrajinska</translation>
 <translation id="7469894403370665791">Automatski se poveži na ovu mrežu</translation>
 <translation id="7486315294984620427">Da ispustite fajlove u Parallels Desktop, fajl se mora kopirati u fajlove Windowsa.</translation>

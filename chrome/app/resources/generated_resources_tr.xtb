@@ -1866,6 +1866,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2727633948226935816">Bir daha hatırlatma</translation>
 <translation id="2727712005121231835">Gerçek Boyut</translation>
 <translation id="2729314457178420145">Ayrıca tarama verilerini (<ph name="URL" />) temizle. Bu işlem Google.com oturumunuzu kapatabilir. <ph name="LEARN_MORE" /></translation>
+<translation id="2729327310379176711">Chrome, siteler arası izlemeyi azaltmanın ve internette gezinirken daha da güvende olmanızı sağlamanın yeni yollarını buluyor. Chrome ayrıca <ph name="ESTIMATE_INTERESTS_LINK" /> ve bunları yönetmenize olanak verir. Ardından, ziyaret ettiğiniz siteler size reklam göstermek için Chrome'dan ilgi alanlarınız hakkında bilgi isteyebilir.</translation>
 <translation id="2730029791981212295">Linux uygulamaları ve dosyalar yedekleniyor</translation>
 <translation id="2730901670247399077">Emoji önerileri</translation>
 <translation id="273093730430620027">Bu sayfa kameranıza erişiyor.</translation>
@@ -3787,6 +3788,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4579581181964204535"><ph name="HOST_NAME" /> yayınlanamıyor.</translation>
 <translation id="4579876313423027742">Tarayıcı bildirimleri için <ph name="LINK_BEGIN" />Chrome tarayıcı ayarlarına<ph name="LINK_END" /> gidin</translation>
 <translation id="4580596421317071374">Şifreler bu cihazda <ph name="GOOGLE_PASSWORD_MANAGER" /> uygulamasına kaydedilir.</translation>
+<translation id="4580626299762849806">Şifreler içe aktarılamıyor. <ph name="FILENAME" /> dosyasını kontrol edip doğru biçimlendirildiğinden emin olun.</translation>
 <translation id="4581774856936278355">Linux geri yüklenirken hata oluştu</translation>
 <translation id="4582297591746054421">Kopyaladığınız metnin biçimini koruma gibi özelliklerin kullanılması için siteler genellikle panonuzu okur</translation>
 <translation id="4582563038311694664">Tüm ayarları sıfırla</translation>
@@ -4552,6 +4554,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="5350293332385664455">Google Asistan'ı kapat</translation>
 <translation id="535123479159372765">Metin diğer cihazdan kopyalandı</translation>
 <translation id="5352033265844765294">Zaman Damgası</translation>
+<translation id="5352257124367865087">Site izinlerini yönet</translation>
 <translation id="5353252989841766347">Şifreleri Chrome'dan Aktar</translation>
 <translation id="5355099869024327351">Asistan'ın bildirimleri göstermesini sağlayın</translation>
 <translation id="5355191726083956201">Gelişmiş Koruma açık</translation>
@@ -5053,6 +5056,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5843706793424741864">Fahrenhayt</translation>
 <translation id="5844574845205796324">Keşfetmek için yeni içerik öner</translation>
 <translation id="5846200638699387931">İlişki söz dizimi hatası: <ph name="ERROR_LINE" /></translation>
+<translation id="5846504156837627898">Site İzinlerini Yönet</translation>
 <translation id="5846807460505171493">Güncellemeleri ve uygulamaları yükle. Devam ederek bu cihazın Google'dan, operatörünüzden ve cihazınızın üreticisinden (muhtemelen hücresel veri kullanarak) gönderilen güncelleme ve uygulamaları otomatik olarak indirip yükleyebileceğini kabul etmiş olursunuz. Bu uygulamalardan bazıları uygulama içi satın alma seçenekleri sunabilir.</translation>
 <translation id="5849212445710944278">Zaten eklendi</translation>
 <translation id="5851868085455377790">Sertifikayı Veren</translation>
@@ -5093,6 +5097,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5877064549588274448">Kanal değişti. Değişikliklerin uygulanması için cihazınızı yeniden başlatın.</translation>
 <translation id="5877584842898320529">Seçilen yazıcı kullanılamıyor veya doğru yüklenmemiş. <ph name="BR" /> Yazıcınızı kontrol edin veya başka yazıcı seçmeyi deneyin.</translation>
 <translation id="5878945009165002849">Kimlik hizmetlerinden gelen oturum açma istemlerini engelleyin</translation>
+<translation id="5882449899683447569">Bir hata oluştuğundan verileriniz içe aktarılamadı</translation>
 <translation id="5882919346125742463">Bilinen Ağlar</translation>
 <translation id="5883356647197510494">Otomatik olarak engellendi: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5884474295213649357">Bu sekme bir USB cihazına bağlı.</translation>
@@ -5617,6 +5622,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6398715114293939307">Google Play Store'u kaldır</translation>
 <translation id="6398765197997659313">Tam ekrandan çık</translation>
 <translation id="6399774419735315745">Casus</translation>
+<translation id="6400360390396538896">Her zaman açık <ph name="ORIGIN" /></translation>
 <translation id="6401458660421980302">Bu sekmeyi başka bir cihaza göndermek için ilgili cihazda Chrome'da oturum açın.</translation>
 <translation id="6401597285454423070">Bilgisayarınızda, ChromeOS'deki pek çok kritik güvenlik özelliğini uygulamak için kullanılan bir Güvenilir Platform Modülü (TPM) güvenlik cihazı bulunmaktadır. Daha fazla bilgi edinmek için Chromebook Yardım Merkezi'ni ziyaret edin: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6404187344102273690">Chromebook'larda Oyun Deneyimi</translation>

@@ -1129,6 +1129,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2048653237708779538">Darbība nav pieejama</translation>
 <translation id="2050339315714019657">Portrets</translation>
 <translation id="2052572566310583903">Instalēta citās jūsu ierīcēs</translation>
+<translation id="2053105195397337973">Mēs pētām iespējas ierobežot izsekošanu, vienlaikus ļaujot vietnēs novērst nevēlamas reklāmas un krāpšanu.</translation>
 <translation id="2053312383184521053">Dati par neaktīvu stāvokli</translation>
 <translation id="2054240652864153171">Vai notīrīt vietnes <ph name="SITE_NAME" /> (<ph name="PARTITION_SITE_NAME" /> nodalījuma) datus?</translation>
 <translation id="2055585478631012616">Jūs tiksiet izrakstīts no šīm vietnēm, tostarp atvērtajās cilnēs</translation>
@@ -1870,6 +1871,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2727633948226935816">Turpmāk vairs neatgādināt</translation>
 <translation id="2727712005121231835">Faktiskais izmērs</translation>
 <translation id="2729314457178420145">Arī notīrīt pārlūkošanas datus (<ph name="URL" />). Tādējādi varat tikt izrakstīts no vietnes Google.com. <ph name="LEARN_MORE" /></translation>
+<translation id="2729327310379176711">Pārlūkā Chrome tiek meklētas jaunas iespējas, kā samazināt izsekošanu un gādāt par vēl lielāku drošību pārlūkošanas laikā. Turklāt pārlūkā Chrome tiek <ph name="ESTIMATE_INTERESTS_LINK" />, kā arī jums tiek ļauts tās pārvaldīt. Pēc tam jūsu apmeklētās vietnes var lūgt pārlūkam Chrome atklāt jūsu intereses, lai rādītu jums reklāmas.</translation>
 <translation id="2730029791981212295">Notiek Linux lietotņu un failu dublēšana</translation>
 <translation id="2730901670247399077">Emocijzīmju ieteikumi</translation>
 <translation id="273093730430620027">Šī lapa piekļūst jūsu kamerai.</translation>
@@ -4959,6 +4961,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5747552184818312860">Termiņš</translation>
 <translation id="5747785204778348146">Izstrādātāju — nav stabila</translation>
 <translation id="5747809636523347288">Ielīmēt un doties uz <ph name="URL" /></translation>
+<translation id="5751345516399502412">Pārbaudīt piesaistes gatavību</translation>
 <translation id="5755022574660047665">atmiņas no Google fotoattēliem</translation>
 <translation id="5756163054456765343">P&amp;alīdzības centrs</translation>
 <translation id="5757375109985023827">Atlasiet cilni, kuru priekšskatīt</translation>
@@ -7218,6 +7221,7 @@ Lai noņemtu piešķīrumu, nospiediet piešķirto slēdzi vai taustiņu.</trans
 <translation id="7939062555109487992">Papildopcijas</translation>
 <translation id="7939328347457537652">Pārvaldīt ierīces sertifikātus</translation>
 <translation id="7939412583708276221">Tik un tā saglabāt</translation>
+<translation id="7941179291434537290">Piesaistes gatavība:</translation>
 <translation id="7942349550061667556">Sarkana</translation>
 <translation id="7943368935008348579">Lejupielādēt PDF failus</translation>
 <translation id="7943837619101191061">Pievienot atrašanās vietu...</translation>
@@ -7745,6 +7749,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8439506636278576865">Piedāvāt tulkot lapas šajā valodā</translation>
 <translation id="8440630305826533614">Linux lietotnes</translation>
 <translation id="844063558976952706">Vienmēr šajā vietnē</translation>
+<translation id="8441313165929432954">Piesaistes iespējošana/atspējošana</translation>
 <translation id="8443795068008423036">Gādājiet, lai ierīce būtu atjaunināta, un mēģiniet vēlreiz.</translation>
 <translation id="8446884382197647889">Uzziniet vairāk</translation>
 <translation id="8447409163267621480">Jāiekļauj “Ctrl” vai “Alt”</translation>

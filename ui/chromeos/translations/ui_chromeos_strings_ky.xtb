@@ -289,6 +289,7 @@
 <translation id="3522708245912499433">Португалча</translation>
 <translation id="3524311639100184459">Эскертүү: Бул файлдар убактылуу жана дискте орун бошотуу үчүн автоматтык түрдө жок кылынышы мүмкүн.  <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Куржун</translation>
+<translation id="3548125359243647069">Туура эмес PIN код өтө көп жолу киргизилди.</translation>
 <translation id="3549797760399244642">drive.google.com дегенге өтүңүз…</translation>
 <translation id="3553048479571901246">Файлдарды <ph name="APP_NAME" /> колдонмосунда ачуу үчүн алгач аларды Windows папкасына көчүрүңүз.</translation>
 <translation id="3556731189587832921">Англисче (АКШ) жана жеке компьютерлер үчүн эл аралык баскычтоп</translation>
@@ -613,6 +614,7 @@
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="PHONE_NAME" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" />%, Телефондун батареясы <ph name="BATTERY_STATUS" />%, Туташуу</translation>
 <translation id="6269630227984243955">Малайча</translation>
 <translation id="6287852322318138013">Бул файлды ачуу үчүн колдонмо тандаңыз</translation>
+<translation id="6295542640242147836">SIM картаны кулпулоо</translation>
 <translation id="6296410173147755564">PUK туура эмес</translation>
 <translation id="6312403991423642364">Белгисиз тармак катасы</translation>
 <translation id="6317608858038767920">Сервердин ыңгайлаштырылган аталышы: <ph name="INPUT_INDEX" /></translation>
@@ -721,6 +723,7 @@
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> Гб</translation>
 <translation id="7191454237977785534">Файлды төмөнкүдөй сактоо</translation>
 <translation id="7229570126336867161">EVDO керек</translation>
+<translation id="7230898482850090046">Администраторуңуз сизден "SIM картаны кулпулоо" параметрин күйгүзүүнү суранды</translation>
 <translation id="7238097264433196391">Дисктин аталышы</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, Чоо-жайы</translation>
 <translation id="7246947237293279874">FTP проксиси</translation>
@@ -752,6 +755,7 @@
 <translation id="7505167922889582512">Жашыруун файлдарды көрсөтүү</translation>
 <translation id="7514365320538308">Жүктөп алуу</translation>
 <translation id="751507702149411736">Беларусча</translation>
+<translation id="7521790570754130607">Мобилдик трафикти колдонуу үчүн PIN код керектелет</translation>
 <translation id="7532029025027028521">Фарсиче (транслитерация)</translation>
 <translation id="7544830582642184299">Linux колдонмолоруна Google Drive'дагы файлдарга кирүүгө уруксат бериңиз. Киргизилген өзгөртүүлөр башка түзмөктөрүңүздө шайкештирилет.</translation>
 <translation id="7547009467130558110">Спорт бут кийими</translation>
@@ -776,6 +780,7 @@
 <translation id="76959938259365003">Таштанды бошотулган жок.</translation>
 <translation id="770015031906360009">Грекче</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> көчүрүлдү.</translation>
+<translation id="7708271999969613024">Бул тармакты колдонуу үчүн байланыш операторуңуз берген 8 орундуу Жеке бөгөттөн чыгаруу ачкычын (PUK) киргизиңиз.</translation>
 <translation id="7711920809702896782">Сүрөт тууралуу маалымат</translation>
 <translation id="7724603315864178912">Кесүү</translation>
 <translation id="7730494089396812859">Булуттагы камдык көчүрмө чоо-жайын көрсөтүү</translation>
@@ -870,6 +875,7 @@
 <translation id="8437209419043462667">АКШ</translation>
 <translation id="8452135315243592079">SIM-картасы жок</translation>
 <translation id="8456681095658380701">Жараксыз ат</translation>
+<translation id="8457767749626250697">SIM картаңыз кулпуланды</translation>
 <translation id="8459404855768962328">Эгер бул нерсени көчүрсөңүз, ал "<ph name="DESTINATION_NAME" />" бөлүшүлгөн папкасын көрө алган адамдардын баары менен бөлүшүлөт.</translation>
 <translation id="8461467696380332069">Текчедеги файлдарды ыкчам ачуу мүмкүнчүлүгү үчүн курсорду файлдын үстүнө алып келип, чычкандын оң баскычын басып, "Текчеге кадоо" дегенди тандаңыз.</translation>
 <translation id="8461914792118322307">Прокси</translation>

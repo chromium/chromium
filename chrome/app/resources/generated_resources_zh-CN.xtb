@@ -4543,6 +4543,7 @@
 <translation id="5350293332385664455">关闭 Google 助理</translation>
 <translation id="535123479159372765">从其他设备复制的文字</translation>
 <translation id="5352033265844765294">时间戳</translation>
+<translation id="5352257124367865087">管理网站权限</translation>
 <translation id="5353252989841766347">从 Chrome 中导出密码</translation>
 <translation id="5355099869024327351">允许 Google 助理向您显示通知</translation>
 <translation id="5355191726083956201">已开启增强型保护</translation>
@@ -5041,6 +5042,7 @@
 <translation id="5843706793424741864">华氏度</translation>
 <translation id="5844574845205796324">建议新内容以供探索</translation>
 <translation id="5846200638699387931">相关语法错误：<ph name="ERROR_LINE" /></translation>
+<translation id="5846504156837627898">管理网站权限</translation>
 <translation id="5846807460505171493">安装更新和应用。继续操作即表示您同意：此设备也可自动下载和安装来自 Google、您的运营商和设备制造商的更新和应用（此过程可能会使用移动数据网络）。部分应用可能会提供应用内购商品。</translation>
 <translation id="5849212445710944278">此前已添加</translation>
 <translation id="5851868085455377790">颁发者</translation>
@@ -5604,6 +5606,7 @@
 <translation id="6398715114293939307">移除 Google Play 商店</translation>
 <translation id="6398765197997659313">退出全屏模式</translation>
 <translation id="6399774419735315745">间谍</translation>
+<translation id="6400360390396538896">在 <ph name="ORIGIN" /> 上始终允许</translation>
 <translation id="6401458660421980302">若要将此标签页发送到另一设备，请在该设备上登录 Chrome</translation>
 <translation id="6401597285454423070">您的计算机包含可信平台模块 (TPM) 安全设备，该设备可用于在 Chrome 操作系统中实现许多关键的安全功能。如需了解详情，请访问 Chromebook 帮助中心：https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6404187344102273690">Chromebook 游戏体验</translation>

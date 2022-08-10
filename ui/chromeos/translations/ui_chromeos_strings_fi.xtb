@@ -288,6 +288,7 @@
 <translation id="3522708245912499433">portugali</translation>
 <translation id="3524311639100184459">Varoitus: Nämä tiedostot ovat tilapäisiä ja ne voidaan poistaa automaattisesti levytilan vapauttamiseksi.  <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Kansio</translation>
+<translation id="3548125359243647069">Väärä PIN-koodi on syötetty liian monta kertaa.</translation>
 <translation id="3549797760399244642">Siirry osoitteeseen drive.google.com...</translation>
 <translation id="3553048479571901246">Jos haluat avata tiedoston sovelluksella <ph name="APP_NAME" />, kopioi se ensin Windowsin tiedostot ‑kansioon.</translation>
 <translation id="3556731189587832921">englanti (Yhdysvallat), kansainvälinen PC-näppäimistö</translation>
@@ -613,6 +614,7 @@
 <translation id="6267547857941397424">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" /> %, puhelimen akun varaus <ph name="BATTERY_STATUS" /> %, yhdistä</translation>
 <translation id="6269630227984243955">malaiji</translation>
 <translation id="6287852322318138013">Valitse sovellus, jolla haluat avata tämän tiedoston</translation>
+<translation id="6295542640242147836">Lukitse SIM-kortti</translation>
 <translation id="6296410173147755564">Väärä PUK-koodi</translation>
 <translation id="6312403991423642364">Tuntematon verkkovirhe</translation>
 <translation id="6317608858038767920">Oma nimipalvelin <ph name="INPUT_INDEX" /></translation>
@@ -721,6 +723,7 @@
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> Gt</translation>
 <translation id="7191454237977785534">Tallenna tiedosto nimellä</translation>
 <translation id="7229570126336867161">EVDO tarvitaan</translation>
+<translation id="7230898482850090046">Järjestelmänvalvoja on pyytänyt sinua laittamaan "Lukitse SIM-kortti" ‐asetuksen pois päältä</translation>
 <translation id="7238097264433196391">Driven nimi</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, tiedot</translation>
 <translation id="7246947237293279874">FTP-välityspalvelin</translation>
@@ -752,6 +755,7 @@
 <translation id="7505167922889582512">Näytä piilotetut tiedostot</translation>
 <translation id="7514365320538308">Lataa</translation>
 <translation id="751507702149411736">valkovenäjä</translation>
+<translation id="7521790570754130607">Mobiilidatan käyttö edellyttää PIN-koodia</translation>
 <translation id="7532029025027028521">translitteroitu persia</translation>
 <translation id="7544830582642184299">Myönnä Linux-sovelluksille pääsy Google Driveesi tallennettuihin tiedostoihin. Muutokset synkronoidaan muille laitteillesi.</translation>
 <translation id="7547009467130558110">Lenkkari</translation>
@@ -776,6 +780,7 @@
 <translation id="76959938259365003">Roskakorin tyhjentäminen epäonnistui.</translation>
 <translation id="770015031906360009">kreikka</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> kopioitu.</translation>
+<translation id="7708271999969613024">Jos haluat käyttää tätä verkkoa, sinun on lisättävä operaattorilta saamasi 8-numeroinen PUK-koodi.</translation>
 <translation id="7711920809702896782">Kuvan tiedot</translation>
 <translation id="7724603315864178912">Leikkaa</translation>
 <translation id="7730494089396812859">Näytä pilvivarmuuskopioinnin tiedot.</translation>
@@ -870,6 +875,7 @@
 <translation id="8437209419043462667">USA</translation>
 <translation id="8452135315243592079">SIM-kortti puuttuu.</translation>
 <translation id="8456681095658380701">Nimi ei kelpaa</translation>
+<translation id="8457767749626250697">SIM-kortti on lukittu</translation>
 <translation id="8459404855768962328">Kun tämä kopioidaan, se jaetaan kaikille, jotka voivat nähdä jaetun kansion "<ph name="DESTINATION_NAME" />"</translation>
 <translation id="8461467696380332069">Klikkaa tiedostoa kakkospainikkeella ja valitse Kiinnitä hyllyyn, niin löydät tiedostot nopeasti hyllystä.</translation>
 <translation id="8461914792118322307">Välityspalvelin</translation>

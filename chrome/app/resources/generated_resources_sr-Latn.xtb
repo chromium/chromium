@@ -4556,6 +4556,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5350293332385664455">Isključite Google pomoćnik</translation>
 <translation id="535123479159372765">Tekst je kopiran sa nekog drugog uređaja</translation>
 <translation id="5352033265844765294">Označavanje vremena</translation>
+<translation id="5352257124367865087">Upravljajte dozvolama za sajt</translation>
 <translation id="5353252989841766347">Izvezite lozinke iz Chrome-a</translation>
 <translation id="5355099869024327351">Omogućite Pomoćniku da vam prikazuje obaveštenja</translation>
 <translation id="5355191726083956201">Poboljšana zaštita je uključena</translation>
@@ -5057,6 +5058,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5843706793424741864">Farenhajt</translation>
 <translation id="5844574845205796324">Predlaži nov sadržaj za istraživanje</translation>
 <translation id="5846200638699387931">Sintaksička greška odnosa vrednosti: <ph name="ERROR_LINE" /></translation>
+<translation id="5846504156837627898">Upravljajte dozvolama za sajt</translation>
 <translation id="5846807460505171493">Instalirajte ažuriranja i aplikacije. Ako nastavite, slažete se da ovaj uređaj može i da automatski preuzima i instalira ažuriranja i aplikacije od Google-a, mobilnog operatera i proizvođača ovog uređaja, uz moguće korišćenje mobilnih podataka. Neke od ovih aplikacija mogu da nude kupovine u aplikaciji.</translation>
 <translation id="5849212445710944278">Već je dodato</translation>
 <translation id="5851868085455377790">Izdavalac</translation>
@@ -5622,6 +5624,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6398715114293939307">Uklonite Google Play prodavnicu</translation>
 <translation id="6398765197997659313">Izađi iz režima celog ekrana</translation>
 <translation id="6399774419735315745">Špijunka</translation>
+<translation id="6400360390396538896">Uvek na <ph name="ORIGIN" /></translation>
 <translation id="6401458660421980302">Da biste poslali ovu karticu na drugi uređaj, prijavite se u Chrome na tom uređaju</translation>
 <translation id="6401597285454423070">Računar sadrži bezbednosni uređaj sa modulom pouzdane platforme (TPM), koji se koristi za primenu mnogih bezbednosnih funkcija od suštinske važnosti u Chrome OS-u. Posetite Centar za pomoć za Chromebook da biste saznali više: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6404187344102273690">Igranje igara na Chromebook-u</translation>

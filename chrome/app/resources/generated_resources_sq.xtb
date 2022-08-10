@@ -1124,6 +1124,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2048653237708779538">Veprimi nuk ofrohet</translation>
 <translation id="2050339315714019657">Portret (vertikal</translation>
 <translation id="2052572566310583903">Instaluar në pajisje të tjera</translation>
+<translation id="2053105195397337973">Po eksplorojmë mënyra për të kufizuar gjurmimin ndërkohë që bëjmë të mundur që sajtet të ndalojnë reklamat e bezdisshme dhe mashtrimet.</translation>
 <translation id="2053312383184521053">Të dhënat e gjendjes së qetë</translation>
 <translation id="2054240652864153171">Të pastrohen të dhënat e sajtit për <ph name="SITE_NAME" /> të ndara në <ph name="PARTITION_SITE_NAME" />?</translation>
 <translation id="2055585478631012616">Do të nxirresh nga këto sajte, duke përfshirë edhe në skedat e hapura</translation>
@@ -4957,6 +4958,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5747552184818312860">Skadon</translation>
 <translation id="5747785204778348146">Programimi - i paqëndrueshëm</translation>
 <translation id="5747809636523347288">Ngj&amp;it dhe shko te <ph name="URL" /></translation>
+<translation id="5751345516399502412">Kontrollo gatishmërinë e ndarjes së internetit</translation>
 <translation id="5755022574660047665">kujtime nga "Fotografitë e Google"</translation>
 <translation id="5756163054456765343">Qendra e n&amp;dihmës</translation>
 <translation id="5757375109985023827">Zgjidh një skedë për ta shikuar paraprakisht</translation>
@@ -7212,6 +7214,7 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7939062555109487992">Opsionet e përparuara</translation>
 <translation id="7939328347457537652">Menaxho certifikatat e pajisjes</translation>
 <translation id="7939412583708276221">Mbaje gjithsesi</translation>
+<translation id="7941179291434537290">Gatishmëria e ndarjes së internetit:</translation>
 <translation id="7942349550061667556">E kuqe</translation>
 <translation id="7943368935008348579">Shkarko PDF-të</translation>
 <translation id="7943837619101191061">Shto një vendndodhje...</translation>
@@ -7738,6 +7741,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8439506636278576865">Ofro të përkthesh faqet në këtë gjuhë</translation>
 <translation id="8440630305826533614">Aplikacionet për Linux</translation>
 <translation id="844063558976952706">Gjithmonë në këtë sajt</translation>
+<translation id="8441313165929432954">Aktivizo/çaktivizo ndarjen e internetit</translation>
 <translation id="8443795068008423036">Sigurohu që pajisja jote të jetë e përditësuar dhe provo përsëri</translation>
 <translation id="8446884382197647889">Mëso më shumë</translation>
 <translation id="8447409163267621480">Përfshi ose Ctrl, ose Alt</translation>

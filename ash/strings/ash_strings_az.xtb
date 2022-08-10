@@ -100,6 +100,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1455242230282523554">Dil ayarlarını göstərin</translation>
 <translation id="1460620680449458626">Səssizdədir.</translation>
 <translation id="1467432559032391204">Sol</translation>
+<translation id="146902737843070955">Administratorunuz bu dəyişikliyi tələb edib</translation>
 <translation id="147310119694673958">Telefonun batareyası: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1479909375538722835">Üzən əlçatımlılıq menyusu</translation>
 <translation id="1480845547124508962"><ph name="CURRENT_TIME" />, Təqvim görünüşünü açmaq üçün Enter düyməsini basın</translation>
@@ -837,6 +838,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="5779721926447984944">Bərkidilmiş fayllar</translation>
 <translation id="5788127256798019331">Faylları oxudun</translation>
 <translation id="5790085346892983794">Uğur</translation>
+<translation id="5804651031882187592">"SIM'i kilidləyin" ayarını deaktiv edin</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> şəbəkəsini aktiv etmək üçün toxunun</translation>
 <translation id="5825969630400862129">Qoşulmuş cihazların ayarları</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> pəncərəsində <ph name="ROUTE_TITLE" /> dayandırma düyməsi</translation>

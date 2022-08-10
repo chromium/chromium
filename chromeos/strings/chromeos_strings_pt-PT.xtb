@@ -149,6 +149,7 @@
 <translation id="2115956742084455574">Código incorreto</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versão <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB de <ph name="TOTAL_MEMORY" /> GB disponíveis.</translation>
+<translation id="2130871201950918186">O sistema vai ser reiniciado dentro de 5 segundos.</translation>
 <translation id="2138109643290557664">A flutuar</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> fotos</translation>
@@ -211,6 +212,7 @@
 <translation id="2536159006530886390">Não é possível estabelecer ligação à Internet.</translation>
 <translation id="2570743873672969996">A executar o teste <ph name="TEST_NAME" />…</translation>
 <translation id="2584559707064218956">Para configurar, aceda às Definições</translation>
+<translation id="2597774443162333062">Os ficheiros vão ser enviados para a Google para depuração</translation>
 <translation id="2619761439309613843">Atualização diária</translation>
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2638662041295312666">Imagem do início de sessão</translation>
@@ -672,6 +674,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="6659594942844771486">Separador</translation>
 <translation id="6692996468359469499">Obtenha informações relacionadas com a sua seleção</translation>
 <translation id="6704062477274546131">Resolução de DNS</translation>
+<translation id="6719240409382354629">A preparar para reiniciar…</translation>
 <translation id="6723839937902243910">Alimentação</translation>
 <translation id="6723847290197874913">Retroiluminação do teclado</translation>
 <translation id="672609503628871915">Descobrir as novidades mais recentes</translation>
@@ -889,6 +892,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="8747900814994928677">Confirme a alteração</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Álbum do Google Fotos</translation>
+<translation id="8778600430213950389">Algo correu mal. Isto deve-se, muito provavelmente, a um problema de hardware. Substitua a placa principal e tente realizar novamente o processo de reparação.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Esta rede pode ter um portal cativo</translation>
 <translation id="8798099450830957504">Predefinição</translation>
@@ -942,6 +946,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="910415269708673980">Atualize a permissão para <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">A digitalizar a página <ph name="PAGE_NUMBER" />…</translation>
 <translation id="9111102763498581341">Desbloquear</translation>
+<translation id="9118126012493516930">Não é possível concluir a reparação</translation>
 <translation id="9122602430962285795">Para restabelecer ligação, aceda a Definições</translation>
 <translation id="9126720536733509015">Guardar várias páginas num PDF</translation>
 <translation id="9137526406337347448">Serviços Google</translation>

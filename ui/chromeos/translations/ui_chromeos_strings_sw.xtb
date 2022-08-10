@@ -288,6 +288,7 @@
 <translation id="3522708245912499433">Kireno</translation>
 <translation id="3524311639100184459">Tahadhari: Faili hizi ni za muda na huenda zikafutwa kiotomatiki ili upate nafasi zaidi ya hifadhi kwenye diski.  <ph name="BEGIN_LINK" />Pata Maelezo Zaidi<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Folda</translation>
+<translation id="3548125359243647069">Umeweka PIN isiyo sahihi mara nyingi mno.</translation>
 <translation id="3549797760399244642">Nenda kwenye drive.google.com...</translation>
 <translation id="3553048479571901246">Ili ufungue faili ukitumia <ph name="APP_NAME" />, zinakili kwanza kwenye folda ya faili za Windows.</translation>
 <translation id="3556731189587832921">Kiingereza (Marekani) kwenye kibodi ya Kimataifa (PC)</translation>
@@ -613,6 +614,7 @@
 <translation id="6267547857941397424">Mtandao wa <ph name="NETWORK_INDEX" /> kati ya <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, Uthabiti wa Mtandao <ph name="SIGNAL_STRENGTH" />%, Betri ya Simu <ph name="BATTERY_STATUS" />%, Unganisha</translation>
 <translation id="6269630227984243955">Kimalei</translation>
 <translation id="6287852322318138013">Chagua programu ili ufungue faili hii</translation>
+<translation id="6295542640242147836">Kufunga SIM</translation>
 <translation id="6296410173147755564">PUK si sahihi</translation>
 <translation id="6312403991423642364">Hitilafu isiyojulikana ya mtandao</translation>
 <translation id="6317608858038767920">Nameserver maalum ya <ph name="INPUT_INDEX" /></translation>
@@ -721,6 +723,7 @@
 <translation id="7189874332498648577">GB <ph name="NUMBER_OF_GB" /></translation>
 <translation id="7191454237977785534">Hifadhi faili kama</translation>
 <translation id="7229570126336867161">Inahitaji EVDO</translation>
+<translation id="7230898482850090046">Msimamizi wako amekuomba uzime mipangilio ya "Kufunga SIM"</translation>
 <translation id="7238097264433196391">Jina la Hifadhi</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, Maelezo</translation>
 <translation id="7246947237293279874">Seva Mbadala ya FTP</translation>
@@ -752,6 +755,7 @@
 <translation id="7505167922889582512">Onyesha faili zilizofichwa</translation>
 <translation id="7514365320538308">Pakua</translation>
 <translation id="751507702149411736">Kibelarusi</translation>
+<translation id="7521790570754130607">Unahitaji PIN ili uweze kutumia data ya mtandao wa simu</translation>
 <translation id="7532029025027028521">Unukuzi wa mfumo wa kuandika Kiajemi</translation>
 <translation id="7544830582642184299">Ruhusu programu za Linux zifikie faili katika Hifadhi yako ya Google. Mabadiliko yatasawazishwa kwenye vifaa vyako vingine.</translation>
 <translation id="7547009467130558110">Raba</translation>
@@ -776,6 +780,7 @@
 <translation id="76959938259365003">Imeshindwa kufuta data iliyopo kwenye tupio.</translation>
 <translation id="770015031906360009">Kigiriki</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> imenakiliwa.</translation>
+<translation id="7708271999969613024">Ili utumie mtandao huu, unahitaji kuweka Nambari Binafsi ya Kufungua (PUK) yenye tarakimu 8 uliyopewa na mtoa huduma.</translation>
 <translation id="7711920809702896782">Maelezo ya picha</translation>
 <translation id="7724603315864178912">Kata</translation>
 <translation id="7730494089396812859">Onyesha maelezo ya hifadhi rudufu ya Wingu</translation>
@@ -870,6 +875,7 @@
 <translation id="8437209419043462667">Kimarekani</translation>
 <translation id="8452135315243592079">Hakuna SIM kadi</translation>
 <translation id="8456681095658380701">Jina batili</translation>
+<translation id="8457767749626250697">SIM yako imefungwa</translation>
 <translation id="8459404855768962328">Hatua ya kunakili kipengee hiki itakishiriki na kila mtu anayeweza kuona folda ya pamoja iitwayo '<ph name="DESTINATION_NAME" />'.</translation>
 <translation id="8461467696380332069">Bofya kulia kwenye faili kisha uchague "Bandika kwenye rafu" ili uweze kufikia faili zako zilizo kwenye rafu kwa haraka.</translation>
 <translation id="8461914792118322307">Proksi</translation>

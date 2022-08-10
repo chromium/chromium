@@ -100,6 +100,7 @@
 <translation id="1455242230282523554">ဘာသာစကားဆက်တင်များကို ပြရန်</translation>
 <translation id="1460620680449458626">အသံ တိတ်ထားသည်။</translation>
 <translation id="1467432559032391204">ဘယ်</translation>
+<translation id="146902737843070955">သင့်စီမံခန့်ခွဲသူက ဤပြောင်းလဲမှုအတွက် တောင်းဆိုထားသည်</translation>
 <translation id="147310119694673958">ဖုန်းဘက်ထရီ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1479909375538722835">မျောနေသော အများသုံးစွဲနိုင်မှု မီနူး</translation>
 <translation id="1480845547124508962"><ph name="CURRENT_TIME" />၊ Calendar ပြသမှုဖွင့်ရန် Enter ခလုတ် နှိပ်ပါ</translation>
@@ -837,6 +838,7 @@
 <translation id="5779721926447984944">ပင်ထိုးထားသော ဖိုင်များ</translation>
 <translation id="5788127256798019331">Play ဖိုင်များ</translation>
 <translation id="5790085346892983794">အောင်မြင်ခြင်း</translation>
+<translation id="5804651031882187592">"ဆင်းမ်လော့ခ်ချရန်" ဆက်တင်ကို ပိတ်ပါ</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> စတင်ရန် နှိပ်ပါ</translation>
 <translation id="5825969630400862129">ချိတ်ဆက်ထားသည့် စက်ဆက်တင်များ</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> တွင် <ph name="ROUTE_TITLE" /> ကို ရပ်ရန်</translation>
