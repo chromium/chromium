@@ -3429,6 +3429,21 @@
             ]
         }
     ],
+    "DeprecateAssistantStylusFeatures": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DeprecateAssistantStylusFeatures"
+                    ]
+                }
+            ]
+        }
+    ],
     "DeprioritizeTimersUntilDOMContentLoadedExperiment": [
         {
             "platforms": [
