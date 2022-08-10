@@ -467,7 +467,8 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
     gfx::RectF dst;
   };
 
-  // Initializes the widget that contains the DesksBarView contents.
+  // Initializes the widget that contains the `DesksBarView` contents. Also will
+  // update the save desk buttons visibility after we initialize `DesksBarView`.
   void MaybeInitDesksWidget();
 
   // Gets the layout of the overview items. Layout is done in 2 stages

@@ -1872,13 +1872,13 @@ void OverviewGrid::UpdateSaveDeskButtons() {
       window_list_.empty() ||
       (window_list_.size() == 1u && window_list_.front()->animating_to_close());
 
-  // Do not create or show the save desk as template button if there are no
-  // windows in this grid, during a window drag or in tablet mode, or the desks
-  // templates grid is visible.
+  // Do not create or show the save desk buttons if there are no
+  // windows in this grid, during a window drag or in tablet mode, the desks
+  // templates grid is visible, or if the desks bar hasn't been created yet.
   const bool target_visible =
       !no_items && !overview_session_->GetCurrentDraggedOverviewItem() &&
       !Shell::Get()->tablet_mode_controller()->InTabletMode() &&
-      !IsShowingDesksTemplatesGrid();
+      !IsShowingDesksTemplatesGrid() && desks_widget_;
 
   const bool visibility_changed =
       target_visible != IsSaveDeskButtonContainerVisible();
@@ -2132,6 +2132,8 @@ void OverviewGrid::MaybeInitDesksWidget() {
   // the container.
   auto* window = desks_widget_->GetNativeWindow();
   window->parent()->StackChildAtBottom(window);
+
+  UpdateSaveDeskButtons();
 }
 
 std::vector<gfx::RectF> OverviewGrid::GetWindowRects(

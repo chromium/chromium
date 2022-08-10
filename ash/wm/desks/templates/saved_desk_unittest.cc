@@ -1172,6 +1172,70 @@ TEST_F(SavedDeskTest, SaveDeskAsTemplateButtonShowsDesksTemplatesGrid) {
   EXPECT_TRUE(GetOverviewGridList()[0]->IsShowingDesksTemplatesGrid());
 }
 
+// SaveDeskButtonContainerVisibilityObserver waits for the save desk buttons on
+// the observed root window to become visible.
+class SaveDeskButtonContainerVisibilityObserver : public aura::WindowObserver {
+ public:
+  explicit SaveDeskButtonContainerVisibilityObserver(aura::Window* root_window)
+      : root_window_(root_window) {
+    root_window_->AddObserver(this);
+  }
+  SaveDeskButtonContainerVisibilityObserver(
+      const SaveDeskButtonContainerVisibilityObserver&) = delete;
+  SaveDeskButtonContainerVisibilityObserver& operator=(
+      const SaveDeskButtonContainerVisibilityObserver&) = delete;
+  ~SaveDeskButtonContainerVisibilityObserver() override {
+    DCHECK(root_window_);
+    root_window_->RemoveObserver(this);
+  }
+
+  void Wait() { run_loop_.Run(); }
+
+  void OnWindowVisibilityChanged(aura::Window* window, bool visible) override {
+    if (visible && window->GetId() == kShellWindowId_SaveDeskButtonContainer)
+      run_loop_.Quit();
+  }
+
+ private:
+  base::RunLoop run_loop_;
+  raw_ptr<aura::Window> root_window_;
+};
+
+// Tests that the desks bar is created before the save desk buttons are visible.
+// Regression test for https://crbug.com/1349971.
+TEST_F(SavedDeskTest, DesksBarLoadsBeforeSaveDeskButtons) {
+  ui::ScopedAnimationDurationScaleMode animation_scale(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  auto test_window = CreateAppWindow();
+  ASSERT_FALSE(WindowState::Get(test_window.get())->IsMaximized());
+
+  aura::Window* root_window = Shell::GetPrimaryRootWindow();
+
+  SaveDeskButtonContainerVisibilityObserver button_container_observer(
+      root_window);
+  EnterOverview();
+  button_container_observer.Wait();
+
+  // Ensure we are in overview.
+  auto* overview_controller = Shell::Get()->overview_controller();
+  ASSERT_TRUE(overview_controller->InOverviewSession());
+
+  // Check to see that the desks bar has been created. Previously, there was a
+  // crash caused by the save desk buttons being clicked before the desks bar
+  // was created and initialized.
+  const auto* desks_bar_view =
+      GetOverviewGridForRoot(root_window)->desks_bar_view();
+  ASSERT_NE(desks_bar_view, nullptr);
+
+  // Click on the button to save a desk. We should transition into the desk
+  // library and there should be no crash.
+  auto* save_for_later_button = GetSaveDeskForLaterButtonForRoot(root_window);
+  ClickOnView(save_for_later_button);
+  WaitForDesksTemplatesUI();
+  EXPECT_TRUE(GetOverviewGridList()[0]->IsShowingDesksTemplatesGrid());
+}
+
 // Tests that saving a template nudges the correct name view.
 TEST_F(SavedDeskTest, SaveTemplateNudgesNameView) {
   // Other templates were added earlier.
