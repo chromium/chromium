@@ -193,14 +193,13 @@ class MediaGalleriesPreferencesTest : public testing::Test {
         new ListPrefUpdate(prefs, prefs::kMediaGalleriesRememberedGalleries));
     base::Value* list = update->Get();
 
-    for (auto& entry : list->GetListDeprecated()) {
-      base::DictionaryValue* dict;
-
-      if (entry.GetAsDictionary(&dict)) {
+    for (auto& entry : list->GetList()) {
+      if (entry.is_dict()) {
+        base::Value::Dict& dict = entry.GetDict();
         // Setting the prefs version to 2 which is the version before
         // default_gallery_type was added.
-        dict->SetInteger(kMediaGalleriesPrefsVersionKey, 2);
-        dict->RemoveKey(kMediaGalleriesDefaultGalleryTypeKey);
+        dict.Set(kMediaGalleriesPrefsVersionKey, 2);
+        dict.Remove(kMediaGalleriesDefaultGalleryTypeKey);
       }
     }
     update.reset();
