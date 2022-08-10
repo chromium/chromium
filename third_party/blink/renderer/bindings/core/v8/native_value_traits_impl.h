@@ -585,11 +585,43 @@ struct CORE_EXPORT NativeValueTraits<DOMArrayBufferBase>
 };
 
 template <>
+struct CORE_EXPORT
+    NativeValueTraits<IDLBufferSourceTypeNoSizeLimit<DOMArrayBufferBase>>
+    : public NativeValueTraitsBase<DOMArrayBufferBase*> {
+  // BufferSourceTypeNoSizeLimit must be used only as arguments.
+  static DOMArrayBufferBase* NativeValue(v8::Isolate* isolate,
+                                         v8::Local<v8::Value> value,
+                                         ExceptionState& exception_state) =
+      delete;
+
+  static DOMArrayBufferBase* ArgumentValue(v8::Isolate* isolate,
+                                           int argument_index,
+                                           v8::Local<v8::Value> value,
+                                           ExceptionState& exception_state);
+};
+
+template <>
 struct CORE_EXPORT NativeValueTraits<IDLNullable<DOMArrayBufferBase>>
     : public NativeValueTraitsBase<DOMArrayBufferBase*> {
   static DOMArrayBufferBase* NativeValue(v8::Isolate* isolate,
                                          v8::Local<v8::Value> value,
                                          ExceptionState& exception_state);
+
+  static DOMArrayBufferBase* ArgumentValue(v8::Isolate* isolate,
+                                           int argument_index,
+                                           v8::Local<v8::Value> value,
+                                           ExceptionState& exception_state);
+};
+
+template <>
+struct CORE_EXPORT NativeValueTraits<
+    IDLNullable<IDLBufferSourceTypeNoSizeLimit<DOMArrayBufferBase>>>
+    : public NativeValueTraitsBase<DOMArrayBufferBase*> {
+  // BufferSourceTypeNoSizeLimit must be used only as arguments.
+  static DOMArrayBufferBase* NativeValue(v8::Isolate* isolate,
+                                         v8::Local<v8::Value> value,
+                                         ExceptionState& exception_state) =
+      delete;
 
   static DOMArrayBufferBase* ArgumentValue(v8::Isolate* isolate,
                                            int argument_index,
@@ -672,6 +704,22 @@ struct NativeValueTraits<
 
 template <typename T>
 struct NativeValueTraits<
+    IDLBufferSourceTypeNoSizeLimit<MaybeShared<T>>,
+    typename std::enable_if_t<std::is_base_of<DOMArrayBufferView, T>::value>>
+    : public NativeValueTraitsBase<MaybeShared<T>> {
+  // BufferSourceTypeNoSizeLimit must be used only as arguments.
+  static MaybeShared<T> NativeValue(v8::Isolate* isolate,
+                                    v8::Local<v8::Value> value,
+                                    ExceptionState& exception_state) = delete;
+
+  static MaybeShared<T> ArgumentValue(v8::Isolate* isolate,
+                                      int argument_index,
+                                      v8::Local<v8::Value> value,
+                                      ExceptionState& exception_state);
+};
+
+template <typename T>
+struct NativeValueTraits<
     IDLNullable<MaybeShared<T>>,
     typename std::enable_if_t<std::is_base_of<DOMArrayBufferView, T>::value>>
     : public NativeValueTraitsBase<MaybeShared<T>> {
@@ -687,11 +735,45 @@ struct NativeValueTraits<
 
 template <typename T>
 struct NativeValueTraits<
+    IDLNullable<IDLBufferSourceTypeNoSizeLimit<MaybeShared<T>>>,
+    typename std::enable_if_t<std::is_base_of<DOMArrayBufferView, T>::value>>
+    : public NativeValueTraitsBase<MaybeShared<T>> {
+  // BufferSourceTypeNoSizeLimit must be used only as arguments.
+  static MaybeShared<T> NativeValue(v8::Isolate* isolate,
+                                    v8::Local<v8::Value> value,
+                                    ExceptionState& exception_state) = delete;
+
+  static MaybeShared<T> ArgumentValue(v8::Isolate* isolate,
+                                      int argument_index,
+                                      v8::Local<v8::Value> value,
+                                      ExceptionState& exception_state);
+};
+
+template <typename T>
+struct NativeValueTraits<
     T,
     typename std::enable_if_t<
         std::is_base_of<FlexibleArrayBufferView, T>::value>>
     : public NativeValueTraitsBase<T> {
   // FlexibleArrayBufferView must be used only as arguments.
+  static T NativeValue(v8::Isolate* isolate,
+                       v8::Local<v8::Value> value,
+                       ExceptionState& exception_state) = delete;
+
+  static T ArgumentValue(v8::Isolate* isolate,
+                         int argument_index,
+                         v8::Local<v8::Value> value,
+                         ExceptionState& exception_state);
+};
+
+template <typename T>
+struct NativeValueTraits<
+    IDLBufferSourceTypeNoSizeLimit<T>,
+    typename std::enable_if_t<
+        std::is_base_of<FlexibleArrayBufferView, T>::value>>
+    : public NativeValueTraitsBase<T> {
+  // BufferSourceTypeNoSizeLimit and FlexibleArrayBufferView must be used only
+  // as arguments.
   static T NativeValue(v8::Isolate* isolate,
                        v8::Local<v8::Value> value,
                        ExceptionState& exception_state) = delete;
