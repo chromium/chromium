@@ -140,6 +140,8 @@ blink_core_sources_loader = [
   "threadable_loader_client.h",
   "threaded_icon_loader.cc",
   "threaded_icon_loader.h",
+  "url_matcher.cc",
+  "url_matcher.h",
   "web_associated_url_loader_impl.cc",
   "web_associated_url_loader_impl.h",
   "web_bundle/script_web_bundle.cc",
@@ -196,6 +198,7 @@ blink_core_tests_loader = [
   "resource_load_observer_for_frame_test.cc",
   "threadable_loader_test.cc",
   "threaded_icon_loader_test.cc",
+  "url_matcher_test.cc",
   "web_associated_url_loader_impl_test.cc",
   "web_bundle/script_web_bundle_rule_test.cc",
 ]

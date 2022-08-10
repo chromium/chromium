@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
+#include "third_party/blink/renderer/core/loader/url_matcher.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/scrolling/root_scroller_controller.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -231,43 +232,6 @@ bool CheckAndRecordIfShouldLazilyLoadFrame(const Document& document,
   return false;
 }
 
-using AllowedListForLazyLoading =
-    WTF::Vector<std::pair<scoped_refptr<const SecurityOrigin>, WTF::String>>;
-
-// The format of params from Finch experiment is like below:
-// "https://www.exampole.com(:443)|/embed,https://www.exampole.com|embed=true"
-// Expecting the param is a comma separated string, and each string is
-// separated by the vertical bar. The left side of the vertical bar is a
-// host name, and the right side is a part of path or search params.
-// Both are the indicators of html embeds.
-AllowedListForLazyLoading
-ParseFieldParamForAutomaticLazyFrameLoadingToEmbeds() {
-  AllowedListForLazyLoading allowed_list;
-  WTF::Vector<WTF::String> parsed_strings;
-  WTF::String(
-      base::GetFieldTrialParamValueByFeature(
-          features::kAutomaticLazyFrameLoadingToEmbedUrls, "allowed_websites")
-          .c_str())
-      .Split(",", /*allow_empty_entries=*/false, parsed_strings);
-  WTF::Vector<WTF::String> site_info;
-  for (const auto& it : parsed_strings) {
-    it.Split("|", /*allow_empty_entries=*/false, site_info);
-    DCHECK_EQ(site_info.size(), 2u)
-        << "Got unexpected AutomaticLazyFrameLoadingToEmbeds entry: " << it;
-
-    allowed_list.push_back(std::make_pair(
-        SecurityOrigin::CreateFromString(site_info[0]), site_info[1]));
-  }
-
-  return allowed_list;
-}
-
-const AllowedListForLazyLoading& AllowedWebsitesForLazyLoading() {
-  DEFINE_STATIC_LOCAL(AllowedListForLazyLoading, allowed_websites,
-                      (ParseFieldParamForAutomaticLazyFrameLoadingToEmbeds()));
-  return allowed_websites;
-}
-
 // Checks if the passed url is the same origin with the document.
 // This is called in order to limit LazyEmbeds/Ads to apply only cross-origin
 // frames.
@@ -296,24 +260,12 @@ bool IsEligibleForLazyEmbeds(const KURL& url, const Document& document) {
     return false;
   }
 
-  scoped_refptr<const SecurityOrigin> origin = SecurityOrigin::Create(url);
-  for (const auto& it : AllowedWebsitesForLazyLoading()) {
-    // TODO(sisidovski): IsSameOriginWith is more strict but we skip the port
-    // number check in order to avoid hardcoding port numbers to corresponding
-    // WPT test suites. To check port numbers, we need to set them to the
-    // allowlist which is passed by Chrome launch flag or Finch params. But,
-    // WPT server could have multiple ports, and it's difficult to expect which
-    // ports are available and set to the feature params before starting the
-    // test. That will affect the test reliability.
-    if ((origin.get()->Protocol() == it.first->Protocol() &&
-         origin.get()->Host() == it.first->Host()) &&
-        (url.GetPath().Contains(it.second) ||
-         url.Query().Contains(it.second))) {
-      return true;
-    }
-  }
+  DEFINE_STATIC_LOCAL(UrlMatcher, url_matcher,
+                      (UrlMatcher(base::GetFieldTrialParamValueByFeature(
+                          features::kAutomaticLazyFrameLoadingToEmbedUrls,
+                          "allowed_websites"))));
 
-  return false;
+  return url_matcher.Match(url);
 }
 
 const base::TimeDelta GetLazyEmbedsTimeoutMs() {
