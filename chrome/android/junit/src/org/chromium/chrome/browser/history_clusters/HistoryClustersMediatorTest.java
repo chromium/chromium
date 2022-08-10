@@ -706,6 +706,21 @@ public class HistoryClustersMediatorTest {
                         eq(TabLaunchType.FROM_CHROME_UI), eq(mTab2));
     }
 
+    @Test
+    public void testHideAfterDelete() {
+        Promise<HistoryClustersResult> promise = new Promise<>();
+        doReturn(promise).when(mBridge).queryClusters("query");
+
+        mMediator.setQueryState(QueryState.forQuery("query", ""));
+        mMediator.startQuery("query");
+        fulfillPromise(promise, mHistoryClustersResultWithQuery);
+
+        mMediator.deleteVisits(Arrays.asList(mVisit1));
+        assertEquals(ItemType.CLUSTER, mModelList.get(0).type);
+        PropertyModel clusterModel = mModelList.get(0).model;
+        clusterModel.get(HistoryClustersItemProperties.CLICK_HANDLER).onClick(null);
+    }
+
     private <T> void fulfillPromise(Promise<T> promise, T result) {
         promise.fulfill(result);
         ShadowLooper.idleMainLooper();

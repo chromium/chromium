@@ -55,7 +55,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 class HistoryClustersMediator extends RecyclerView.OnScrollListener implements SearchDelegate {
     @VisibleForTesting
@@ -70,15 +69,13 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
     private static class VisitMetadata {
         public final ListItem visitListItem;
         public final ListItem clusterListItem;
-        public final ListItem relatedSearchesListItem;
-        public AtomicInteger visitCount;
+        public final List<ListItem> visitsAndRelatedSearches;
 
         private VisitMetadata(ListItem visitListItem, ListItem clusterListItem,
-                ListItem relatedSearchesListItem, AtomicInteger visitCount) {
+                List<ListItem> visitsAndRelatedSearches) {
             this.visitListItem = visitListItem;
             this.clusterListItem = clusterListItem;
-            this.relatedSearchesListItem = relatedSearchesListItem;
-            this.visitCount = visitCount;
+            this.visitsAndRelatedSearches = visitsAndRelatedSearches;
         }
     }
 
@@ -102,8 +99,8 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
     private QueryState mQueryState;
     private final ListItem mMoreProgressItem;
     private final HistoryClustersMetricsLogger mMetricsLogger;
-    private Map<String, PropertyModel> mLabelToModelMap = new LinkedHashMap<>();
-    private Map<ClusterVisit, VisitMetadata> mVisitMetadataMap = new HashMap<>();
+    private final Map<String, PropertyModel> mLabelToModelMap = new LinkedHashMap<>();
+    private final Map<ClusterVisit, VisitMetadata> mVisitMetadataMap = new HashMap<>();
     private final AccessibilityUtil mAccessibilityUtil;
     private final boolean mIsScrollToLoadDisabled;
 
@@ -318,13 +315,23 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
     private void removeVisit(ClusterVisit visit) {
         VisitMetadata visitMetadata = mVisitMetadataMap.get(visit);
         if (visitMetadata == null) return;
-        mModelList.remove(visitMetadata.visitListItem);
-        if (visitMetadata.visitCount.decrementAndGet() == 0) {
-            mModelList.remove(visitMetadata.clusterListItem);
-            if (visitMetadata.relatedSearchesListItem != null) {
-                mModelList.remove(visitMetadata.relatedSearchesListItem);
-            }
+        ListItem visitListItem = visitMetadata.visitListItem;
+        assert mModelList.indexOf(visitListItem) != -1
+                && visitMetadata.visitsAndRelatedSearches.indexOf(visitListItem) != -1;
+        mModelList.remove(visitListItem);
+        visitMetadata.visitsAndRelatedSearches.remove(visitListItem);
+        if (visitMetadata.visitsAndRelatedSearches.size() == 1
+                && visitMetadata.visitsAndRelatedSearches.get(0).type
+                        == ItemType.RELATED_SEARCHES) {
+            mModelList.remove(visitMetadata.visitsAndRelatedSearches.get(0));
+            visitMetadata.visitsAndRelatedSearches.clear();
         }
+
+        if (visitMetadata.visitsAndRelatedSearches.isEmpty()) {
+            mModelList.remove(visitMetadata.clusterListItem);
+        }
+
+        mVisitMetadataMap.remove(visit);
     }
 
     private Tab createNewTab(GURL gurl, boolean incognito, Tab parentTab) {
@@ -407,8 +414,7 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
                 relatedSearchesItem = new ListItem(ItemType.RELATED_SEARCHES, relatedSearchesModel);
             }
 
-            AtomicInteger visitCount = new AtomicInteger(cluster.getVisits().size());
-            for (int i = 0; i < visitCount.get(); i++) {
+            for (int i = 0; i < cluster.getVisits().size(); i++) {
                 ClusterVisit visit = cluster.getVisits().get(i);
                 PropertyModel visitModel =
                         new PropertyModel.Builder(HistoryClustersItemProperties.ALL_KEYS)
@@ -438,8 +444,8 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
                 }
 
                 ListItem listItem = new ListItem(ItemType.VISIT, visitModel);
-                mVisitMetadataMap.put(visit,
-                        new VisitMetadata(listItem, clusterItem, relatedSearchesItem, visitCount));
+                mVisitMetadataMap.put(
+                        visit, new VisitMetadata(listItem, clusterItem, visitsAndRelatedSearches));
                 visitsAndRelatedSearches.add(listItem);
             }
 
