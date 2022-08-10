@@ -982,6 +982,9 @@ extern const char kLargeFaviconFromGoogleDescription[];
 extern const char kLensCameraAssistedSearchName[];
 extern const char kLensCameraAssistedSearchDescription[];
 
+extern const char kLensOnQuickActionSearchWidgetName[];
+extern const char kLensOnQuickActionSearchWidgetDescription[];
+
 extern const char kLocationBarModelOptimizationsName[];
 extern const char kLocationBarModelOptimizationsDescription[];
 

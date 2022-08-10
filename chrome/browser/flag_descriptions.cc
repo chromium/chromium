@@ -1744,6 +1744,12 @@ const char kLensCameraAssistedSearchDescription[] =
     "Enable an entry point to Google Lens to allow users to search what they "
     "see using their mobile camera.";
 
+const char kLensOnQuickActionSearchWidgetName[] =
+    "Google Lens in Chrome's Quick Action Search Widget";
+const char kLensOnQuickActionSearchWidgetDescription[] =
+    "Enable an entry point to Google Lens to allow users to search what they "
+    "see using their mobile camera in the Quick Action Search Widget.";
+
 const char kLogJsConsoleMessagesName[] =
     "Log JS console messages in system logs";
 const char kLogJsConsoleMessagesDescription[] =
