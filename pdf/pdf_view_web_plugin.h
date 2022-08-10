@@ -46,6 +46,7 @@
 
 namespace blink {
 class WebAssociatedURLLoader;
+class WebInputEvent;
 class WebURL;
 class WebURLRequest;
 struct WebAssociatedURLLoaderOptions;
@@ -451,6 +452,8 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   bool Paste(const blink::WebString& value);
   bool Undo();
   bool Redo();
+
+  bool HandleWebInputEvent(const blink::WebInputEvent& event);
 
   // Helper method for converting IME text to input events.
   // TODO(crbug.com/1253665): Consider handling composition events.

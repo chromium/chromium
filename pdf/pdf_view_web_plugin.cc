@@ -542,7 +542,7 @@ void PdfViewWebPlugin::UpdateFocus(bool focused,
   blink::WebKeyboardEvent simulated_event(blink::WebInputEvent::Type::kKeyDown,
                                           modifiers, base::TimeTicks());
   simulated_event.windows_key_code = ui::KeyboardCode::VKEY_TAB;
-  PdfViewPluginBase::HandleInputEvent(simulated_event);
+  HandleWebInputEvent(simulated_event);
 }
 
 void PdfViewWebPlugin::UpdateVisibility(bool visibility) {}
@@ -552,8 +552,8 @@ blink::WebInputEventResult PdfViewWebPlugin::HandleInputEvent(
     ui::Cursor* cursor) {
   // TODO(crbug.com/1302059): The input events received by the Pepper plugin
   // already have the viewport-to-DIP scale applied. The scaling done here
-  // should be moved into `PdfViewPluginBase::HandleInputEvent()` once the
-  // Pepper plugin is removed.
+  // should be moved into `HandleWebInputEvent()` once the Pepper plugin is
+  // removed.
   std::unique_ptr<blink::WebInputEvent> scaled_event =
       ui::ScaleWebInputEvent(event.Event(), viewport_to_dip_scale_);
 
@@ -561,7 +561,7 @@ blink::WebInputEventResult PdfViewWebPlugin::HandleInputEvent(
       scaled_event ? *scaled_event : event.Event();
 
   const blink::WebInputEventResult result =
-      PdfViewPluginBase::HandleInputEvent(event_to_handle)
+      HandleWebInputEvent(event_to_handle)
           ? blink::WebInputEventResult::kHandledApplication
           : blink::WebInputEventResult::kNotHandled;
 
@@ -1685,6 +1685,34 @@ bool PdfViewWebPlugin::Redo() {
 
   engine_->Redo();
   return true;
+}
+
+bool PdfViewWebPlugin::HandleWebInputEvent(const blink::WebInputEvent& event) {
+  // Ignore user input in read-only mode.
+  if (engine_->IsReadOnly())
+    return false;
+
+  // `engine_` expects input events in device coordinates.
+  std::unique_ptr<blink::WebInputEvent> transformed_event =
+      ui::TranslateAndScaleWebInputEvent(
+          event, gfx::Vector2dF(-available_area().x() / device_scale(), 0),
+          device_scale());
+
+  const blink::WebInputEvent& event_to_handle =
+      transformed_event ? *transformed_event : event;
+
+  if (engine_->HandleInputEvent(event_to_handle))
+    return true;
+
+  // Middle click is used for scrolling and is handled by the container page.
+  if (blink::WebInputEvent::IsMouseEventType(event_to_handle.GetType()) &&
+      static_cast<const blink::WebMouseEvent&>(event_to_handle).button ==
+          blink::WebPointerProperties::Button::kMiddle) {
+    return false;
+  }
+
+  // Return true for unhandled clicks so the plugin takes focus.
+  return event_to_handle.GetType() == blink::WebInputEvent::Type::kMouseDown;
 }
 
 void PdfViewWebPlugin::HandleImeCommit(const blink::WebString& text) {

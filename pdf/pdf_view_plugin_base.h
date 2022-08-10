@@ -26,10 +26,6 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/rect.h"
 
-namespace blink {
-class WebInputEvent;
-}  // namespace blink
-
 namespace gfx {
 class PointF;
 class Vector2d;
@@ -138,8 +134,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   // Runs when document load completes.
   virtual void OnDocumentLoadComplete() = 0;
-
-  bool HandleInputEvent(const blink::WebInputEvent& event);
 
   // Enqueues a "message" event carrying `message` to the embedder. Messages are
   // guaranteed to be received in the order that they are sent. This method is

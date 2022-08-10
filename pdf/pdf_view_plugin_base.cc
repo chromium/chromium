@@ -274,34 +274,6 @@ void PdfViewPluginBase::DocumentFocusChanged(bool document_has_focus) {
   SendMessage(std::move(message));
 }
 
-bool PdfViewPluginBase::HandleInputEvent(const blink::WebInputEvent& event) {
-  // Ignore user input in read-only mode.
-  if (engine()->IsReadOnly())
-    return false;
-
-  // `engine()` expects input events in device coordinates.
-  std::unique_ptr<blink::WebInputEvent> transformed_event =
-      ui::TranslateAndScaleWebInputEvent(
-          event, gfx::Vector2dF(-available_area_.x() / device_scale(), 0),
-          device_scale());
-
-  const blink::WebInputEvent& event_to_handle =
-      transformed_event ? *transformed_event : event;
-
-  if (engine()->HandleInputEvent(event_to_handle))
-    return true;
-
-  // Middle click is used for scrolling and is handled by the container page.
-  if (blink::WebInputEvent::IsMouseEventType(event_to_handle.GetType()) &&
-      static_cast<const blink::WebMouseEvent&>(event_to_handle).button ==
-          blink::WebPointerProperties::Button::kMiddle) {
-    return false;
-  }
-
-  // Return true for unhandled clicks so the plugin takes focus.
-  return event_to_handle.GetType() == blink::WebInputEvent::Type::kMouseDown;
-}
-
 void PdfViewPluginBase::SendLoadingProgress(double percentage) {
   DCHECK(percentage == -1 || (percentage >= 0 && percentage <= 100));
   last_progress_sent_ = percentage;
