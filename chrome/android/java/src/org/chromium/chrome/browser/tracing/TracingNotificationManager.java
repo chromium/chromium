@@ -115,7 +115,7 @@ public class TracingNotificationManager {
                         .setContentTitle(title)
                         .setContentText(message)
                         .setOngoing(true)
-                        .addAction(R.drawable.ic_stop_white_36dp, MSG_STOP,
+                        .addAction(R.drawable.ic_stop_white_24dp, MSG_STOP,
                                 TracingNotificationServiceImpl.getStopRecordingIntent(context));
         showNotification(sTracingActiveNotificationBuilder.build());
     }

@@ -163,28 +163,28 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
 
         private MediaActionButtonsManager() {
             mPreviousTrack = createRemoteAction(MediaSessionAction.PREVIOUS_TRACK,
-                    R.drawable.ic_skip_previous_white_36dp, R.string.accessibility_previous_track);
-            mPlay = createRemoteAction(MediaSessionAction.PLAY, R.drawable.ic_play_arrow_white_36dp,
+                    R.drawable.ic_skip_previous_white_24dp, R.string.accessibility_previous_track);
+            mPlay = createRemoteAction(MediaSessionAction.PLAY, R.drawable.ic_play_arrow_white_24dp,
                     R.string.accessibility_play);
-            mPause = createRemoteAction(MediaSessionAction.PAUSE, R.drawable.ic_pause_white_36dp,
+            mPause = createRemoteAction(MediaSessionAction.PAUSE, R.drawable.ic_pause_white_24dp,
                     R.string.accessibility_pause);
             mReplay = createRemoteAction(MediaSessionAction.PLAY, R.drawable.ic_replay_white_24dp,
                     R.string.accessibility_replay);
             mNextTrack = createRemoteAction(MediaSessionAction.NEXT_TRACK,
-                    R.drawable.ic_skip_next_white_36dp, R.string.accessibility_next_track);
+                    R.drawable.ic_skip_next_white_24dp, R.string.accessibility_next_track);
             mHangUp = createRemoteAction(MediaSessionAction.HANG_UP,
-                    R.drawable.ic_call_end_white_36dp, R.string.accessibility_hang_up);
+                    R.drawable.ic_call_end_white_24dp, R.string.accessibility_hang_up);
             mMicrophone = new ToggleRemoteAction(
                     createRemoteAction(MediaSessionAction.TOGGLE_MICROPHONE,
-                            R.drawable.ic_mic_white_36dp, R.string.accessibility_mute_microphone),
+                            R.drawable.ic_mic_white_24dp, R.string.accessibility_mute_microphone),
                     createRemoteAction(MediaSessionAction.TOGGLE_MICROPHONE,
-                            R.drawable.ic_mic_off_white_36dp,
+                            R.drawable.ic_mic_off_white_24dp,
                             R.string.accessibility_unmute_microphone));
-            mCamera = new ToggleRemoteAction(createRemoteAction(MediaSessionAction.TOGGLE_CAMERA,
-                                                     R.drawable.ic_videocam_white_36dp,
-                                                     R.string.accessibility_turn_off_camera),
+            mCamera = new ToggleRemoteAction(
                     createRemoteAction(MediaSessionAction.TOGGLE_CAMERA,
-                            R.drawable.ic_videocam_off_white_36dp,
+                            R.drawable.ic_videocam_24dp, R.string.accessibility_turn_off_camera),
+                    createRemoteAction(MediaSessionAction.TOGGLE_CAMERA,
+                            R.drawable.ic_videocam_off_white_24dp,
                             R.string.accessibility_turn_on_camera));
 
             mPlaybackState = PlaybackState.END_OF_VIDEO;

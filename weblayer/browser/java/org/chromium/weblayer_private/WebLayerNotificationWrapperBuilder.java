@@ -78,27 +78,27 @@ public final class WebLayerNotificationWrapperBuilder extends NotificationWrappe
      * resources. This is useful when {@link Icon} is not available.
      */
     private int getFallbackAndroidResource(int appResourceId) {
-        if (appResourceId == R.drawable.ic_play_arrow_white_36dp) {
+        if (appResourceId == R.drawable.ic_play_arrow_white_24dp) {
             return android.R.drawable.ic_media_play;
         }
-        if (appResourceId == R.drawable.ic_pause_white_36dp) {
+        if (appResourceId == R.drawable.ic_pause_white_24dp) {
             return android.R.drawable.ic_media_pause;
         }
-        if (appResourceId == R.drawable.ic_stop_white_36dp) {
+        if (appResourceId == R.drawable.ic_stop_white_24dp) {
             // There's no ic_media_stop. This standin is at least a square. In practice this
             // shouldn't ever come up as stop is only used in (Chrome) cast notifications.
             return android.R.drawable.checkbox_off_background;
         }
-        if (appResourceId == R.drawable.ic_skip_previous_white_36dp) {
+        if (appResourceId == R.drawable.ic_skip_previous_white_24dp) {
             return android.R.drawable.ic_media_previous;
         }
-        if (appResourceId == R.drawable.ic_skip_next_white_36dp) {
+        if (appResourceId == R.drawable.ic_skip_next_white_24dp) {
             return android.R.drawable.ic_media_next;
         }
-        if (appResourceId == R.drawable.ic_fast_forward_white_36dp) {
+        if (appResourceId == R.drawable.ic_fast_forward_white_24dp) {
             return android.R.drawable.ic_media_ff;
         }
-        if (appResourceId == R.drawable.ic_fast_rewind_white_36dp) {
+        if (appResourceId == R.drawable.ic_fast_rewind_white_24dp) {
             return android.R.drawable.ic_media_rew;
         }
         if (appResourceId == R.drawable.audio_playing) {

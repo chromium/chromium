@@ -331,28 +331,28 @@ public class MediaNotificationController {
         mActionToButtonInfo = new SparseArray<>();
 
         mActionToButtonInfo.put(MediaSessionAction.PLAY,
-                new MediaButtonInfo(R.drawable.ic_play_arrow_white_36dp,
+                new MediaButtonInfo(R.drawable.ic_play_arrow_white_24dp,
                         R.string.accessibility_play, ACTION_PLAY, MEDIA_ACTION_PLAY));
         mActionToButtonInfo.put(MediaSessionAction.PAUSE,
-                new MediaButtonInfo(R.drawable.ic_pause_white_36dp, R.string.accessibility_pause,
+                new MediaButtonInfo(R.drawable.ic_pause_white_24dp, R.string.accessibility_pause,
                         ACTION_PAUSE, MEDIA_ACTION_PAUSE));
         mActionToButtonInfo.put(MediaSessionAction.STOP,
-                new MediaButtonInfo(R.drawable.ic_stop_white_36dp, R.string.accessibility_stop,
+                new MediaButtonInfo(R.drawable.ic_stop_white_24dp, R.string.accessibility_stop,
                         ACTION_STOP, MEDIA_ACTION_STOP));
         mActionToButtonInfo.put(MediaSessionAction.PREVIOUS_TRACK,
-                new MediaButtonInfo(R.drawable.ic_skip_previous_white_36dp,
+                new MediaButtonInfo(R.drawable.ic_skip_previous_white_24dp,
                         R.string.accessibility_previous_track, ACTION_PREVIOUS_TRACK,
                         MEDIA_ACTION_PREVIOUS_TRACK));
         mActionToButtonInfo.put(MediaSessionAction.NEXT_TRACK,
-                new MediaButtonInfo(R.drawable.ic_skip_next_white_36dp,
+                new MediaButtonInfo(R.drawable.ic_skip_next_white_24dp,
                         R.string.accessibility_next_track, ACTION_NEXT_TRACK,
                         MEDIA_ACTION_NEXT_TRACK));
         mActionToButtonInfo.put(MediaSessionAction.SEEK_FORWARD,
-                new MediaButtonInfo(R.drawable.ic_fast_forward_white_36dp,
+                new MediaButtonInfo(R.drawable.ic_fast_forward_white_24dp,
                         R.string.accessibility_seek_forward, ACTION_SEEK_FORWARD,
                         MEDIA_ACTION_SEEK_FORWARD));
         mActionToButtonInfo.put(MediaSessionAction.SEEK_BACKWARD,
-                new MediaButtonInfo(R.drawable.ic_fast_rewind_white_36dp,
+                new MediaButtonInfo(R.drawable.ic_fast_rewind_white_24dp,
                         R.string.accessibility_seek_backward, ACTION_SEEK_BACKWARD,
                         MEDIA_ACTION_SEEK_BACKWARD));
 
