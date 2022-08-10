@@ -20,6 +20,10 @@ ACCOUNT_CAPABILITY(kIsSubjectToParentalControlsCapabilityName,
                    IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME,
                    "accountcapabilities/guydolldmfya")
 
+ACCOUNT_CAPABILITY(kIsAllowedForMachineLearningCapabilityName,
+                   IS_ALLOWED_FOR_MACHINE_LEARNING_CAPABILITY_NAME,
+                   "accountcapabilities/g42tslldmfya")
+
 ACCOUNT_CAPABILITY(kCanOfferExtendedChromeSyncPromosCapabilityName,
                    CAN_OFFER_EXTENDED_CHROME_SYNC_PROMOS_CAPABILITY_NAME,
                    "accountcapabilities/gi2tklldmfya")

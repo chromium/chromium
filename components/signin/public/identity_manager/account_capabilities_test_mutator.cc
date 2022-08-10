@@ -42,6 +42,12 @@ void AccountCapabilitiesTestMutator::set_is_subject_to_parental_controls(
       value;
 }
 
+void AccountCapabilitiesTestMutator::set_is_allowed_for_machine_learning(
+    bool value) {
+  capabilities_->capabilities_map_[kIsAllowedForMachineLearningCapabilityName] =
+      value;
+}
+
 void AccountCapabilitiesTestMutator::set_can_toggle_auto_updates(bool value) {
   capabilities_->capabilities_map_[kCanToggleAutoUpdatesName] = value;
 }
