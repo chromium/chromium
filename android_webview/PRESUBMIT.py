@@ -27,7 +27,7 @@ def _CheckNo_Context_bindService_Added(input_api, output_api):
   """
   errors = []
   run_with_pattern_part_api = input_api.re.compile(
-      r'.*bindService.*')
+      r'.*\.bindService\(.*')
 
   def _FilterFile(affected_file):
     skipFiles = (input_api.DEFAULT_FILES_TO_SKIP +
