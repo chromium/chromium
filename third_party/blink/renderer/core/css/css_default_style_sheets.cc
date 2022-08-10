@@ -135,11 +135,11 @@ CSSDefaultStyleSheets::CSSDefaultStyleSheets()
   default_svg_style_->CompactRulesIfNeeded();
   default_html_quirks_style_->CompactRulesIfNeeded();
   default_print_style_->CompactRulesIfNeeded();
-  DCHECK(default_html_style_->UniversalRules()->IsEmpty());
-  DCHECK(default_mathml_style_->UniversalRules()->IsEmpty());
-  DCHECK(default_svg_style_->UniversalRules()->IsEmpty());
-  DCHECK(default_html_quirks_style_->UniversalRules()->IsEmpty());
-  DCHECK(default_print_style_->UniversalRules()->IsEmpty());
+  DCHECK(default_html_style_->UniversalRules().empty());
+  DCHECK(default_mathml_style_->UniversalRules().empty());
+  DCHECK(default_svg_style_->UniversalRules().empty());
+  DCHECK(default_html_quirks_style_->UniversalRules().empty());
+  DCHECK(default_print_style_->UniversalRules().empty());
 #endif
 }
 

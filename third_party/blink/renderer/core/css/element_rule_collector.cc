@@ -331,7 +331,7 @@ static bool RulesApplicableInCurrentTreeScope(
 
 template <bool perf_trace_enabled>
 void ElementRuleCollector::CollectMatchingRulesForListInternal(
-    const HeapVector<RuleData>* rules,
+    base::span<const RuleData> rules,
     const MatchRequest& match_request,
     const RuleSet* rule_set,
     const CSSStyleSheet* style_sheet,
@@ -355,10 +355,12 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
   unsigned fast_rejected = 0;
   unsigned matched = 0;
   SelectorStatisticsCollector selector_statistics_collector;
-  if (perf_trace_enabled)
-    selector_statistics_collector.ReserveCapacity(rules->size());
+  if (perf_trace_enabled) {
+    selector_statistics_collector.ReserveCapacity(
+        static_cast<wtf_size_t>(rules.size()));
+  }
 
-  for (const RuleData& rule_data : *rules) {
+  for (const RuleData& rule_data : rules) {
     if (perf_trace_enabled) {
       selector_statistics_collector.EndCollectionForCurrentRule();
       selector_statistics_collector.BeginCollectionForRule(&rule_data);
@@ -444,7 +446,7 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
   if (!style_engine.Stats())
     return;
 
-  unsigned rejected = rules->size() - fast_rejected - matched;
+  size_t rejected = rules.size() - fast_rejected - matched;
   INCREMENT_STYLE_STATS_COUNTER(style_engine, rules_rejected, rejected);
   INCREMENT_STYLE_STATS_COUNTER(style_engine, rules_fast_rejected,
                                 fast_rejected);
@@ -452,7 +454,7 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
 }
 
 void ElementRuleCollector::CollectMatchingRulesForList(
-    const HeapVector<RuleData>* rules,
+    base::span<const RuleData> rules,
     const MatchRequest& match_request,
     const RuleSet* rule_set,
     const CSSStyleSheet* style_sheet,
@@ -463,7 +465,7 @@ void ElementRuleCollector::CollectMatchingRulesForList(
   // instead of inside CollectMatchingRulesForListInternal(), we're usually
   // inlined into the caller (which saves on stack setup and call overhead
   // in that common case).
-  if (!rules || rules->IsEmpty())
+  if (rules.empty())
     return;
 
   // To reduce branching overhead for the common case, we use a template
@@ -612,10 +614,11 @@ void ElementRuleCollector::CollectMatchingRules(
               : attribute_name;
       for (const auto bundle : match_request.AllRuleSets()) {
         if (bundle.rule_set->HasAnyAttrRules()) {
-          const HeapVector<RuleData>* list =
+          base::span<const RuleData> list =
               bundle.rule_set->AttrRules(lower_name);
-          if (list && !bundle.rule_set->CanIgnoreEntireList(
-                          list, lower_name, attributes[attr_idx].Value())) {
+          if (!list.empty() &&
+              !bundle.rule_set->CanIgnoreEntireList(
+                  list, lower_name, attributes[attr_idx].Value())) {
             CollectMatchingRulesForList(bundle.rule_set->AttrRules(lower_name),
                                         match_request, bundle.rule_set,
                                         bundle.style_sheet,

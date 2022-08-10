@@ -197,61 +197,60 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
 
   const RuleFeatureSet& Features() const { return features_; }
 
-  const HeapVector<RuleData>* IdRules(const AtomicString& key) const {
+  base::span<const RuleData> IdRules(const AtomicString& key) const {
     auto it = id_rules_.find(key);
-    return it != id_rules_.end() ? it->value : nullptr;
+    return it != id_rules_.end() ? *it->value : base::span<const RuleData>{};
   }
-  const HeapVector<RuleData>* ClassRules(const AtomicString& key) const {
+  base::span<const RuleData> ClassRules(const AtomicString& key) const {
     auto it = class_rules_.find(key);
-    return it != class_rules_.end() ? it->value : nullptr;
+    return it != class_rules_.end() ? *it->value : base::span<const RuleData>{};
   }
   bool HasAnyAttrRules() const { return !attr_rules_.IsEmpty(); }
-  const HeapVector<RuleData>* AttrRules(const AtomicString& key) const {
+  base::span<const RuleData> AttrRules(const AtomicString& key) const {
     auto it = attr_rules_.find(key);
-    return it != attr_rules_.end() ? it->value : nullptr;
+    return it != attr_rules_.end() ? *it->value : base::span<const RuleData>{};
   }
-  bool CanIgnoreEntireList(const HeapVector<RuleData>* list,
+  bool CanIgnoreEntireList(base::span<const RuleData> list,
                            const AtomicString& key,
                            const AtomicString& value) const;
-  const HeapVector<RuleData>* TagRules(const AtomicString& key) const {
+  base::span<const RuleData> TagRules(const AtomicString& key) const {
     auto it = tag_rules_.find(key);
-    return it != tag_rules_.end() ? it->value : nullptr;
+    return it != tag_rules_.end() ? *it->value : base::span<const RuleData>{};
   }
-  const HeapVector<RuleData>* UAShadowPseudoElementRules(
+  base::span<const RuleData> UAShadowPseudoElementRules(
       const AtomicString& key) const {
     auto it = ua_shadow_pseudo_element_rules_.find(key);
-    return it != ua_shadow_pseudo_element_rules_.end() ? it->value : nullptr;
+    return it != ua_shadow_pseudo_element_rules_.end()
+               ? *it->value
+               : base::span<const RuleData>{};
   }
-  const HeapVector<RuleData>* LinkPseudoClassRules() const {
-    return &link_pseudo_class_rules_;
+  base::span<const RuleData> LinkPseudoClassRules() const {
+    return link_pseudo_class_rules_;
   }
-  const HeapVector<RuleData>* CuePseudoRules() const {
-    return &cue_pseudo_rules_;
+  base::span<const RuleData> CuePseudoRules() const {
+    return cue_pseudo_rules_;
   }
-  const HeapVector<RuleData>* FocusPseudoClassRules() const {
-    return &focus_pseudo_class_rules_;
+  base::span<const RuleData> FocusPseudoClassRules() const {
+    return focus_pseudo_class_rules_;
   }
-  const HeapVector<RuleData>* FocusVisiblePseudoClassRules() const {
-    return &focus_visible_pseudo_class_rules_;
+  base::span<const RuleData> FocusVisiblePseudoClassRules() const {
+    return focus_visible_pseudo_class_rules_;
   }
-  const HeapVector<RuleData>* SpatialNavigationInterestPseudoClassRules()
-      const {
-    return &spatial_navigation_interest_class_rules_;
+  base::span<const RuleData> SpatialNavigationInterestPseudoClassRules() const {
+    return spatial_navigation_interest_class_rules_;
   }
-  const HeapVector<RuleData>* UniversalRules() const {
-    return &universal_rules_;
+  base::span<const RuleData> UniversalRules() const { return universal_rules_; }
+  base::span<const RuleData> ShadowHostRules() const {
+    return shadow_host_rules_;
   }
-  const HeapVector<RuleData>* ShadowHostRules() const {
-    return &shadow_host_rules_;
+  base::span<const RuleData> PartPseudoRules() const {
+    return part_pseudo_rules_;
   }
-  const HeapVector<RuleData>* PartPseudoRules() const {
-    return &part_pseudo_rules_;
+  base::span<const RuleData> VisitedDependentRules() const {
+    return visited_dependent_rules_;
   }
-  const HeapVector<RuleData>* VisitedDependentRules() const {
-    return &visited_dependent_rules_;
-  }
-  const HeapVector<RuleData>* SelectorFragmentAnchorRules() const {
-    return &selector_fragment_anchor_rules_;
+  base::span<const RuleData> SelectorFragmentAnchorRules() const {
+    return selector_fragment_anchor_rules_;
   }
   const HeapVector<Member<StyleRulePage>>& PageRules() const {
     return page_rules_;
@@ -280,8 +279,8 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
       const {
     return position_fallback_rules_;
   }
-  const HeapVector<RuleData>* SlottedPseudoElementRules() const {
-    return &slotted_pseudo_element_rules_;
+  base::span<const RuleData> SlottedPseudoElementRules() const {
+    return slotted_pseudo_element_rules_;
   }
 
   bool HasCascadeLayers() const { return implicit_outer_layer_; }

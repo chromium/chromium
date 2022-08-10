@@ -653,11 +653,12 @@ static wtf_size_t GetMinimumRulesetSizeForSubstringMatcher() {
              : std::numeric_limits<wtf_size_t>::max();
 }
 
-bool RuleSet::CanIgnoreEntireList(const HeapVector<RuleData>* list,
+bool RuleSet::CanIgnoreEntireList(base::span<const RuleData> list,
                                   const AtomicString& key,
                                   const AtomicString& value) const {
-  DCHECK_EQ(attr_rules_.find(key)->value, list);
-  if (list->size() < GetMinimumRulesetSizeForSubstringMatcher()) {
+  DCHECK_EQ(attr_rules_.find(key)->value->size(), list.size());
+  DCHECK_EQ(attr_rules_.find(key)->value->data(), list.data());
+  if (list.size() < GetMinimumRulesetSizeForSubstringMatcher()) {
     // Too small to build up a tree, so always check.
     DCHECK_EQ(attr_substring_matchers_.find(key),
               attr_substring_matchers_.end());

@@ -212,7 +212,7 @@ class CORE_EXPORT ElementRuleCollector {
   };
 
   template <bool perf_trace_enabled>
-  void CollectMatchingRulesForListInternal(const HeapVector<RuleData>*,
+  void CollectMatchingRulesForListInternal(base::span<const RuleData>,
                                            const MatchRequest&,
                                            const RuleSet*,
                                            const CSSStyleSheet*,
@@ -220,7 +220,7 @@ class CORE_EXPORT ElementRuleCollector {
                                            const SelectorChecker&,
                                            PartRequest* = nullptr);
 
-  void CollectMatchingRulesForList(const HeapVector<RuleData>*,
+  void CollectMatchingRulesForList(base::span<const RuleData>,
                                    const MatchRequest&,
                                    const RuleSet*,
                                    const CSSStyleSheet*,
