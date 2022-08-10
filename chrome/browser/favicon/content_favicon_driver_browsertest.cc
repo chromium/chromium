@@ -1114,3 +1114,79 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest,
   ASSERT_TRUE(url_loader_interceptor.was_loaded(icon_url));
   url_loader_interceptor.Reset();
 }
+
+// TODO(crbug.com/1300214): Different origins should not share the same cache.
+// Test that different origins share the underlying favicon cache over http.
+IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest, CrossOriginCacheHTTP) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  TestURLLoaderInterceptor url_loader_interceptor;
+  GURL icon_url = embedded_test_server()->GetURL("a.com", "/favicon/icon.png");
+  GURL url_a = embedded_test_server()->GetURL(
+      "a.com", "/favicon/page_with_favicon_by_url.html?url=" + icon_url.spec());
+  GURL url_b = embedded_test_server()->GetURL(
+      "b.com", "/favicon/page_with_favicon_by_url.html?url=" + icon_url.spec());
+
+  // Initial visit to a.com in order to populate the cache.
+  {
+    PendingTaskWaiter waiter(web_contents());
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser(), url_a, WindowOpenDisposition::CURRENT_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+    waiter.Wait();
+  }
+  EXPECT_TRUE(url_loader_interceptor.was_loaded(icon_url));
+  EXPECT_FALSE(url_loader_interceptor.did_bypass_cache(icon_url));
+  EXPECT_EQ(network::mojom::RequestDestination::kImage,
+            url_loader_interceptor.destination(icon_url));
+  url_loader_interceptor.Reset();
+
+  // Initial visit to b.com should reuse the existing cache.
+  {
+    PendingTaskWaiter waiter(web_contents());
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser(), url_b, WindowOpenDisposition::CURRENT_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+    waiter.Wait();
+  }
+  EXPECT_FALSE(url_loader_interceptor.was_loaded(icon_url));
+  EXPECT_FALSE(url_loader_interceptor.did_bypass_cache(icon_url));
+}
+
+// TODO(crbug.com/1300214): Different origins should not share the same cache.
+// Test that different origins share the underlying favicon cache over https.
+IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest, CrossOriginCacheHTTPS) {
+  net::EmbeddedTestServer ssl_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  ssl_server.AddDefaultHandlers(GetChromeTestDataDir());
+  ASSERT_TRUE(ssl_server.Start());
+  TestURLLoaderInterceptor url_loader_interceptor;
+  GURL icon_url = ssl_server.GetURL("a.com", "/favicon/icon.png");
+  GURL url_a = ssl_server.GetURL(
+      "a.com", "/favicon/page_with_favicon_by_url.html?url=" + icon_url.spec());
+  GURL url_b = ssl_server.GetURL(
+      "b.com", "/favicon/page_with_favicon_by_url.html?url=" + icon_url.spec());
+
+  // Initial visit to a.com in order to populate the cache.
+  {
+    PendingTaskWaiter waiter(web_contents());
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser(), url_a, WindowOpenDisposition::CURRENT_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+    waiter.Wait();
+  }
+  EXPECT_TRUE(url_loader_interceptor.was_loaded(icon_url));
+  EXPECT_FALSE(url_loader_interceptor.did_bypass_cache(icon_url));
+  EXPECT_EQ(network::mojom::RequestDestination::kImage,
+            url_loader_interceptor.destination(icon_url));
+  url_loader_interceptor.Reset();
+
+  // Initial visit to b.com should reuse the existing cache.
+  {
+    PendingTaskWaiter waiter(web_contents());
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser(), url_b, WindowOpenDisposition::CURRENT_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+    waiter.Wait();
+  }
+  EXPECT_FALSE(url_loader_interceptor.was_loaded(icon_url));
+  EXPECT_FALSE(url_loader_interceptor.did_bypass_cache(icon_url));
+}
