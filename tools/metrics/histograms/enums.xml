@@ -18314,7 +18314,7 @@ Called by update_net_error_codes.py.-->
   <int value="66" label="Native file system read guard"/>
   <int value="67" label="Storage Access Grants"/>
   <int value="68" label="Camera pan tilt zoom"/>
-  <int value="69" label="Window placement"/>
+  <int value="69" label="Window management"/>
   <int value="70" label="Insecure private network requests"/>
   <int value="71" label="Font Access"/>
   <int value="74" label="Display Capture"/>

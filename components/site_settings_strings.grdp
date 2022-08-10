@@ -211,11 +211,11 @@
   <message name="IDS_SITE_SETTINGS_TYPE_ZOOM_LEVELS_MID_SENTENCE" desc="The label used for the zoom levels site settings controls when used mid-sentence.">
     zoom levels
   </message>
-  <message name="IDS_SITE_SETTINGS_TYPE_WINDOW_PLACEMENT" desc="The label used for the window placement site settings controls.">
-    Window placement
+  <message name="IDS_SITE_SETTINGS_TYPE_WINDOW_MANAGEMENT" desc="The label used for the window management site settings controls.">
+    Window management
   </message>
-  <message name="IDS_SITE_SETTINGS_TYPE_WINDOW_PLACEMENT_MID_SENTENCE" desc="The label used for the window placement site settings controls when used mid-sentence.">
-    window placement
+  <message name="IDS_SITE_SETTINGS_TYPE_WINDOW_MANAGEMENT_MID_SENTENCE" desc="The label used for the window management site settings controls when used mid-sentence.">
+    window management
   </message>
   </if>
 </grit-part>

@@ -211,8 +211,8 @@ base::span<const PageInfoUI::PermissionUIInfo> GetContentSettingsUIInfo() {
     {ContentSettingsType::SERIAL_GUARD, IDS_SITE_SETTINGS_TYPE_SERIAL_PORTS,
      IDS_SITE_SETTINGS_TYPE_SERIAL_PORTS_MID_SENTENCE},
     {ContentSettingsType::WINDOW_PLACEMENT,
-     IDS_SITE_SETTINGS_TYPE_WINDOW_PLACEMENT,
-     IDS_SITE_SETTINGS_TYPE_WINDOW_PLACEMENT_MID_SENTENCE},
+     IDS_SITE_SETTINGS_TYPE_WINDOW_MANAGEMENT,
+     IDS_SITE_SETTINGS_TYPE_WINDOW_MANAGEMENT_MID_SENTENCE},
 #endif
   };
   return kPermissionUIInfo;
@@ -331,7 +331,7 @@ std::u16string GetPermissionAskStateString(ContentSettingsType type) {
       message_id = IDS_PAGE_INFO_STATE_TEXT_AR_ASK;
       break;
     case ContentSettingsType::WINDOW_PLACEMENT:
-      message_id = IDS_PAGE_INFO_STATE_TEXT_WINDOW_PLACEMENT_ASK;
+      message_id = IDS_PAGE_INFO_STATE_TEXT_WINDOW_MANAGEMENT_ASK;
       break;
     case ContentSettingsType::LOCAL_FONTS:
       message_id = IDS_PAGE_INFO_STATE_TEXT_FONT_ACCESS_ASK;

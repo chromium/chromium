@@ -229,7 +229,7 @@ std::u16string PermissionRequest::GetMessageTextFragment() const {
       message_id = IDS_VR_PERMISSION_FRAGMENT;
       break;
     case RequestType::kWindowPlacement:
-      message_id = IDS_WINDOW_PLACEMENT_PERMISSION_FRAGMENT;
+      message_id = IDS_WINDOW_MANAGEMENT_PERMISSION_FRAGMENT;
       break;
   }
   DCHECK_NE(0, message_id);

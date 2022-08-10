@@ -126,8 +126,8 @@ Do you want to allow <ph name="EMBEDDED_URL">$1<ex>news.site</ex></ph> to use co
 
 This will otherwise be blocked by your privacy settings. This will allow the content you interacted with to work correctly, but may allow <ph name="EMBEDDED_URL">$1<ex>news.site</ex></ph> to track your activity.
   </message>
-  <message name="IDS_WINDOW_PLACEMENT_PERMISSION_FRAGMENT" desc="Permission request shown if the user is visiting a site that wants to place windows. Follows a prompt: 'This site would like to:'">
-    Use info about your screens to open and place windows
+  <message name="IDS_WINDOW_MANAGEMENT_PERMISSION_FRAGMENT" desc="Permission request shown if the user is visiting a site that wants to manage windows. Follows a prompt: 'This site would like to:'">
+    Manage windows on all your displays
   </message>
   <message name="IDS_FONT_ACCESS_PERMISSION_FRAGMENT" desc="Permission request shown if the user is visiting a site that wants to access locally installed font data. Follows a prompt: 'This site would like to:'">
     Use the fonts on your computer so you can create high-fidelity content

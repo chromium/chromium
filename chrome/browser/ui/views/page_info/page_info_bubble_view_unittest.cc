@@ -584,7 +584,7 @@ TEST_F(PageInfoBubbleViewOffTheRecordTest, ResetBlockedInIncognitoPermission) {
   // Show state label for user managed permission, indicating that permission
   // is in the default ask state now. Autoblocked permission doesn't change.
   EXPECT_FALSE(api_->GetStateLabelAt(0));
-  EXPECT_EQ(u"Can ask to use info about your screens",
+  EXPECT_EQ(u"Can ask to manage windows on all your displays",
             api_->GetStateLabelAt(1)->GetText());
 
   // In the ask state, the toggle is in the off state, indicating that
