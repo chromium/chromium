@@ -223,12 +223,13 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
   // Creates a CRL issued and signed by |crl_issuer|, marking |revoked_serials|
   // as revoked, and registers it to be served by the test server.
   // Returns the full URL to retrieve the CRL from the test server.
-  GURL CreateAndServeCrl(EmbeddedTestServer* test_server,
-                         CertBuilder* crl_issuer,
-                         const std::vector<uint64_t>& revoked_serials,
-                         DigestAlgorithm digest = DigestAlgorithm::Sha256) {
+  GURL CreateAndServeCrl(
+      EmbeddedTestServer* test_server,
+      CertBuilder* crl_issuer,
+      const std::vector<uint64_t>& revoked_serials,
+      absl::optional<SignatureAlgorithm> signature_algorithm = absl::nullopt) {
     std::string crl = BuildCrl(crl_issuer->GetSubject(), crl_issuer->GetKey(),
-                               revoked_serials, digest);
+                               revoked_serials, signature_algorithm);
     std::string crl_path = MakeRandomPath(".crl");
     test_server->RegisterRequestHandler(
         base::BindRepeating(&test_server::HandlePrefixedRequest, crl_path,

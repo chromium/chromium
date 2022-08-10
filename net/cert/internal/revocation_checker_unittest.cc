@@ -120,7 +120,7 @@ TEST(RevocationChecker, ValidCRL) {
 
   std::string crl_data_as_string_for_some_reason =
       BuildCrl(root->GetSubject(), root->GetKey(),
-               /*revoked_serials=*/{}, DigestAlgorithm::Sha256);
+               /*revoked_serials=*/{});
   std::vector<uint8_t> crl_data(crl_data_as_string_for_some_reason.begin(),
                                 crl_data_as_string_for_some_reason.end());
 
@@ -193,9 +193,9 @@ TEST(RevocationChecker, RevokedCRL) {
   policy.networking_allowed = true;
   policy.crl_allowed = true;
 
-  std::string crl_data_as_string_for_some_reason = BuildCrl(
-      root->GetSubject(), root->GetKey(),
-      /*revoked_serials=*/{leaf->GetSerialNumber()}, DigestAlgorithm::Sha256);
+  std::string crl_data_as_string_for_some_reason =
+      BuildCrl(root->GetSubject(), root->GetKey(),
+               /*revoked_serials=*/{leaf->GetSerialNumber()});
   std::vector<uint8_t> crl_data(crl_data_as_string_for_some_reason.begin(),
                                 crl_data_as_string_for_some_reason.end());
 
@@ -390,7 +390,7 @@ TEST(RevocationChecker, SkipEntireInvalidCRLDistributionPoints) {
 
   std::string crl_data_as_string_for_some_reason =
       BuildCrl(root->GetSubject(), root->GetKey(),
-               /*revoked_serials=*/{}, DigestAlgorithm::Sha256);
+               /*revoked_serials=*/{});
   std::vector<uint8_t> crl_data(crl_data_as_string_for_some_reason.begin(),
                                 crl_data_as_string_for_some_reason.end());
 
@@ -476,7 +476,7 @@ TEST(RevocationChecker, SkipUnsupportedCRLDistPointWithNonUriFullname) {
 
   std::string crl_data_as_string_for_some_reason =
       BuildCrl(root->GetSubject(), root->GetKey(),
-               /*revoked_serials=*/{}, DigestAlgorithm::Sha256);
+               /*revoked_serials=*/{});
   std::vector<uint8_t> crl_data(crl_data_as_string_for_some_reason.begin(),
                                 crl_data_as_string_for_some_reason.end());
 
@@ -546,7 +546,7 @@ TEST(RevocationChecker, SkipUnsupportedCRLDistPointWithReasons) {
 
   std::string crl_data_as_string_for_some_reason =
       BuildCrl(root->GetSubject(), root->GetKey(),
-               /*revoked_serials=*/{}, DigestAlgorithm::Sha256);
+               /*revoked_serials=*/{});
   std::vector<uint8_t> crl_data(crl_data_as_string_for_some_reason.begin(),
                                 crl_data_as_string_for_some_reason.end());
 
@@ -648,7 +648,7 @@ TEST(RevocationChecker, SkipUnsupportedCRLDistPointWithCrlIssuer) {
 
   std::string crl_data_as_string_for_some_reason =
       BuildCrl(root->GetSubject(), root->GetKey(),
-               /*revoked_serials=*/{}, DigestAlgorithm::Sha256);
+               /*revoked_serials=*/{});
   std::vector<uint8_t> crl_data(crl_data_as_string_for_some_reason.begin(),
                                 crl_data_as_string_for_some_reason.end());
 

@@ -112,9 +112,10 @@ scoped_refptr<net::X509Certificate> MakeCert(
     const std::vector<uint8_t>& public_key_spki) {
   auto issuer = std::make_unique<net::CertBuilder>(/*orig_cert=*/nullptr,
                                                    /*issuer=*/nullptr);
+  issuer->GenerateRSAKey();
   auto cert_builder =
       net::CertBuilder::FromSubjectPublicKeyInfo(public_key_spki, issuer.get());
-  cert_builder->SetSignatureAlgorithmRsaPkca1(net::DigestAlgorithm::Sha256);
+  cert_builder->SetSignatureAlgorithm(net::SignatureAlgorithm::kRsaPkcs1Sha256);
   cert_builder->SetValidity(base::Time::Now(),
                             base::Time::Now() + base::Days(30));
   return cert_builder->GetX509Certificate();

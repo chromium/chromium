@@ -10,13 +10,14 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
-#include "base/strings/string_piece.h"
+#include "base/strings/string_piece_forward.h"
 #include "net/base/ip_address.h"
 #include "net/cert/pki/parse_certificate.h"
 #include "net/cert/pki/signature_algorithm.h"
 #include "net/cert/x509_certificate.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
+#include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
 
 class GURL;
@@ -86,6 +87,22 @@ class CertBuilder {
   // www.example.com.
   static void CreateSimpleChain(std::unique_ptr<CertBuilder>* out_leaf,
                                 std::unique_ptr<CertBuilder>* out_root);
+
+  // Returns a compatible signature algorithm for |key|.
+  static absl::optional<SignatureAlgorithm> DefaultSignatureAlgorithmForKey(
+      EVP_PKEY* key);
+
+  // Signs |tbs_data| with |key| using |signature_algorithm| appending the
+  // signature onto |out_signature| and returns true if successful.
+  static bool SignData(SignatureAlgorithm signature_algorithm,
+                       base::StringPiece tbs_data,
+                       EVP_PKEY* key,
+                       CBB* out_signature);
+
+  // Returns a DER encoded AlgorithmIdentifier TLV for |signature_algorithm|
+  // empty string on error.
+  static std::string SignatureAlgorithmToDer(
+      SignatureAlgorithm signature_algorithm);
 
   // Sets a value for the indicated X.509 (v3) extension.
   void SetExtension(const der::Input& oid,
@@ -163,13 +180,24 @@ class CertBuilder {
   // introducing AKI/SKI chain building issues.
   void SetAuthorityKeyIdentifier(const std::string& authority_key_identifier);
 
-  // Sets the signature algorithm for the certificate to either
-  // sha256WithRSAEncryption or sha1WithRSAEncryption.
-  void SetSignatureAlgorithmRsaPkca1(DigestAlgorithm digest);
-
-  void SetSignatureAlgorithm(std::string algorithm_tlv);
+  // Sets the signature algorithm to use in generating the certificate's
+  // signature. The signature algorithm should be compatible with
+  // the type of |issuer_->GetKey()|. If this method is not called, and the
+  // CertBuilder was initialized from a template cert, the signature algorithm
+  // of that cert will be used, or if there was no template cert, a default
+  // algorithm will be used base on the signing key type.
+  void SetSignatureAlgorithm(SignatureAlgorithm signature_algorithm);
 
   void SetRandomSerialNumber();
+
+  // Sets the private key for the generated certificate to an EC key. If a key
+  // was already set, it will be replaced.
+  void GenerateECKey();
+
+  // Sets the private key for the generated certificate to a 2048-bit RSA key.
+  // RSA key generation is expensive, so this should not be used unless an RSA
+  // key is specifically needed. If a key was already set, it will be replaced.
+  void GenerateRSAKey();
 
   // Returns the CertBuilder that issues this certificate. (Will be |this| if
   // certificate is self-signed.)
@@ -197,7 +225,7 @@ class CertBuilder {
   // |not_before| and |not_after|, returning true on success.
   bool GetValidity(base::Time* not_before, base::Time* not_after) const;
 
-  // Returns the (RSA) key for the generated certificate.
+  // Returns the key for the generated certificate.
   EVP_PKEY* GetKey();
 
   // Returns an X509Certificate for the generated certificate.
@@ -230,9 +258,6 @@ class CertBuilder {
   // be re-generated next time the DER is accessed.
   void Invalidate();
 
-  // Sets the |key_| to a 2048-bit RSA key.
-  void GenerateKey();
-
   // Generates a random Subject Key Identifier for the certificate. This is
   // necessary for Windows, which otherwises uses SKI/AKI matching for lookups
   // with greater precedence than subject/issuer name matching, and on newer
@@ -252,9 +277,8 @@ class CertBuilder {
   void InitFromCert(const der::Input& cert);
 
   // Assembles the CertBuilder into a TBSCertificate.
-  void BuildTBSCertificate(std::string* out);
-
-  bool AddSignatureAlgorithm(CBB* cbb);
+  void BuildTBSCertificate(base::StringPiece signature_algorithm_tlv,
+                           std::string* out);
 
   void GenerateCertificate();
 
@@ -265,8 +289,9 @@ class CertBuilder {
 
   std::string validity_tlv_;
   std::string subject_tlv_;
-  std::string signature_algorithm_tlv_;
+  absl::optional<SignatureAlgorithm> signature_algorithm_;
   uint64_t serial_number_ = 0;
+  int default_pkey_id_ = EVP_PKEY_EC;
 
   std::map<std::string, ExtensionValue> extensions_;
 

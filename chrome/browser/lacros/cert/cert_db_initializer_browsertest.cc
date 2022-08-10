@@ -181,9 +181,10 @@ void DeleteCaCert(Profile* profile) {
 [[nodiscard]] std::vector<uint8_t> GenerateClientCertForPublicKey(
     const std::vector<uint8_t>& public_key_spki) {
   net::CertBuilder issuer(/*orig_cert=*/nullptr, /*issuer=*/nullptr);
+  issuer.GenerateRSAKey();
   auto cert_builder =
       net::CertBuilder::FromSubjectPublicKeyInfo(public_key_spki, &issuer);
-  cert_builder->SetSignatureAlgorithmRsaPkca1(net::DigestAlgorithm::Sha256);
+  cert_builder->SetSignatureAlgorithm(net::SignatureAlgorithm::kRsaPkcs1Sha256);
   cert_builder->SetValidity(base::Time::Now(),
                             base::Time::Now() + base::Days(30));
 

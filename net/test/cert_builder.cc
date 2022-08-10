@@ -7,9 +7,11 @@
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "crypto/ec_private_key.h"
 #include "crypto/openssl_util.h"
 #include "crypto/rsa_private_key.h"
 #include "net/cert/asn1_util.h"
+#include "net/cert/pki/verify_signed_data.h"
 #include "net/cert/x509_util.h"
 #include "net/der/encode_values.h"
 #include "net/der/input.h"
@@ -49,6 +51,26 @@ std::string Sha1WithRSAEncryption() {
                                             0x01, 0x01, 0x05, 0x05, 0x00};
   return std::string(std::begin(kSha1WithRSAEncryption),
                      std::end(kSha1WithRSAEncryption));
+}
+
+std::string Md5WithRSAEncryption() {
+  const uint8_t kMd5WithRSAEncryption[] = {0x30, 0x0d, 0x06, 0x09, 0x2a,
+                                           0x86, 0x48, 0x86, 0xf7, 0x0d,
+                                           0x01, 0x01, 0x04, 0x05, 0x00};
+  return std::string(std::begin(kMd5WithRSAEncryption),
+                     std::end(kMd5WithRSAEncryption));
+}
+
+std::string EcdsaWithSha256() {
+  const uint8_t kDer[] = {0x30, 0x0a, 0x06, 0x08, 0x2a, 0x86,
+                          0x48, 0xce, 0x3d, 0x04, 0x03, 0x02};
+  return std::string(std::begin(kDer), std::end(kDer));
+}
+
+std::string EcdsaWithSha1() {
+  const uint8_t kDer[] = {0x30, 0x09, 0x06, 0x07, 0x2a, 0x86,
+                          0x48, 0xce, 0x3d, 0x04, 0x01};
+  return std::string(std::begin(kDer), std::end(kDer));
 }
 
 // Adds bytes (specified as a StringPiece) to the given CBB.
@@ -171,17 +193,26 @@ void CertBuilder::CreateSimpleChain(
   // Build slightly modified variants of |orig_certs|.
   *out_root =
       std::make_unique<CertBuilder>(orig_certs[2]->cert_buffer(), nullptr);
+  (*out_root)->SetSignatureAlgorithm(SignatureAlgorithm::kEcdsaSha256);
+  (*out_root)->GenerateECKey();
+
   *out_intermediate = std::make_unique<CertBuilder>(
       orig_certs[1]->cert_buffer(), out_root->get());
   (*out_intermediate)->EraseExtension(der::Input(kCrlDistributionPointsOid));
   (*out_intermediate)->EraseExtension(der::Input(kAuthorityInfoAccessOid));
+  (*out_intermediate)->SetSignatureAlgorithm(SignatureAlgorithm::kEcdsaSha256);
+  (*out_intermediate)->GenerateECKey();
+
   *out_leaf = std::make_unique<CertBuilder>(orig_certs[0]->cert_buffer(),
                                             out_intermediate->get());
   (*out_leaf)->SetSubjectAltName(kHostname);
   (*out_leaf)->EraseExtension(der::Input(kCrlDistributionPointsOid));
   (*out_leaf)->EraseExtension(der::Input(kAuthorityInfoAccessOid));
+  (*out_leaf)->SetSignatureAlgorithm(SignatureAlgorithm::kEcdsaSha256);
+  (*out_leaf)->GenerateECKey();
 }
 
+// static
 void CertBuilder::CreateSimpleChain(std::unique_ptr<CertBuilder>* out_leaf,
                                     std::unique_ptr<CertBuilder>* out_root) {
   const char kHostname[] = "www.example.com";
@@ -194,10 +225,120 @@ void CertBuilder::CreateSimpleChain(std::unique_ptr<CertBuilder>* out_leaf,
 
   // Build slightly modified variants of |orig_certs|.
   *out_root = std::make_unique<CertBuilder>(orig_root->cert_buffer(), nullptr);
+  (*out_root)->SetSignatureAlgorithm(SignatureAlgorithm::kEcdsaSha256);
+  (*out_root)->GenerateECKey();
 
   *out_leaf =
       std::make_unique<CertBuilder>(orig_leaf->cert_buffer(), out_root->get());
   (*out_leaf)->SetSubjectAltName(kHostname);
+  (*out_leaf)->SetSignatureAlgorithm(SignatureAlgorithm::kEcdsaSha256);
+  (*out_leaf)->GenerateECKey();
+}
+
+// static
+absl::optional<SignatureAlgorithm> CertBuilder::DefaultSignatureAlgorithmForKey(
+    EVP_PKEY* key) {
+  if (EVP_PKEY_id(key) == EVP_PKEY_RSA)
+    return SignatureAlgorithm::kRsaPkcs1Sha256;
+  if (EVP_PKEY_id(key) == EVP_PKEY_EC)
+    return SignatureAlgorithm::kEcdsaSha256;
+  return absl::nullopt;
+}
+
+// static
+bool CertBuilder::SignData(SignatureAlgorithm signature_algorithm,
+                           base::StringPiece tbs_data,
+                           EVP_PKEY* key,
+                           CBB* out_signature) {
+  if (!key)
+    return false;
+
+  int expected_pkey_id = 1;
+  const EVP_MD* digest;
+
+  switch (signature_algorithm) {
+    case SignatureAlgorithm::kRsaPkcs1Md5:
+      expected_pkey_id = EVP_PKEY_RSA;
+      digest = EVP_md5();
+      break;
+    case SignatureAlgorithm::kRsaPkcs1Sha1:
+      expected_pkey_id = EVP_PKEY_RSA;
+      digest = EVP_sha1();
+      break;
+    case SignatureAlgorithm::kRsaPkcs1Sha256:
+      expected_pkey_id = EVP_PKEY_RSA;
+      digest = EVP_sha256();
+      break;
+    case SignatureAlgorithm::kRsaPkcs1Sha384:
+      expected_pkey_id = EVP_PKEY_RSA;
+      digest = EVP_sha384();
+      break;
+    case SignatureAlgorithm::kRsaPkcs1Sha512:
+      expected_pkey_id = EVP_PKEY_RSA;
+      digest = EVP_sha512();
+      break;
+
+    case SignatureAlgorithm::kEcdsaSha1:
+      expected_pkey_id = EVP_PKEY_EC;
+      digest = EVP_sha1();
+      break;
+    case SignatureAlgorithm::kEcdsaSha256:
+      expected_pkey_id = EVP_PKEY_EC;
+      digest = EVP_sha256();
+      break;
+    case SignatureAlgorithm::kEcdsaSha384:
+      expected_pkey_id = EVP_PKEY_EC;
+      digest = EVP_sha384();
+      break;
+    case SignatureAlgorithm::kEcdsaSha512:
+      expected_pkey_id = EVP_PKEY_EC;
+      digest = EVP_sha512();
+      break;
+
+    case SignatureAlgorithm::kRsaPssSha256:
+    case SignatureAlgorithm::kRsaPssSha384:
+    case SignatureAlgorithm::kRsaPssSha512:
+    case SignatureAlgorithm::kRsaPkcs1Md2:
+    case SignatureAlgorithm::kRsaPkcs1Md4:
+    case SignatureAlgorithm::kDsaSha1:
+    case SignatureAlgorithm::kDsaSha256:
+      // Unsupported algorithms.
+      return false;
+  }
+
+  const uint8_t* tbs_bytes = reinterpret_cast<const uint8_t*>(tbs_data.data());
+  bssl::ScopedEVP_MD_CTX ctx;
+  uint8_t* sig_out;
+  size_t sig_len;
+
+  return expected_pkey_id == EVP_PKEY_id(key) &&
+         EVP_DigestSignInit(ctx.get(), nullptr, digest, nullptr, key) &&
+         EVP_DigestSign(ctx.get(), nullptr, &sig_len, tbs_bytes,
+                        tbs_data.size()) &&
+         CBB_reserve(out_signature, &sig_out, sig_len) &&
+         EVP_DigestSign(ctx.get(), sig_out, &sig_len, tbs_bytes,
+                        tbs_data.size()) &&
+         CBB_did_write(out_signature, sig_len);
+}
+
+// static
+std::string CertBuilder::SignatureAlgorithmToDer(
+    SignatureAlgorithm signature_algorithm) {
+  switch (signature_algorithm) {
+    case SignatureAlgorithm::kRsaPkcs1Md5:
+      return Md5WithRSAEncryption();
+    case SignatureAlgorithm::kRsaPkcs1Sha1:
+      return Sha1WithRSAEncryption();
+    case SignatureAlgorithm::kRsaPkcs1Sha256:
+      return Sha256WithRSAEncryption();
+    case SignatureAlgorithm::kEcdsaSha1:
+      return EcdsaWithSha1();
+    case SignatureAlgorithm::kEcdsaSha256:
+      return EcdsaWithSha256();
+    default:
+      ADD_FAILURE();
+      return std::string();
+  }
 }
 
 void CertBuilder::SetExtension(const der::Input& oid,
@@ -544,25 +685,9 @@ void CertBuilder::SetAuthorityKeyIdentifier(
   SetExtension(der::Input(kAuthorityKeyIdentifierOid), FinishCBB(cbb.get()));
 }
 
-void CertBuilder::SetSignatureAlgorithmRsaPkca1(DigestAlgorithm digest) {
-  switch (digest) {
-    case DigestAlgorithm::Sha256: {
-      SetSignatureAlgorithm(Sha256WithRSAEncryption());
-      break;
-    }
-
-    case DigestAlgorithm::Sha1: {
-      SetSignatureAlgorithm(Sha1WithRSAEncryption());
-      break;
-    }
-
-    default:
-      ASSERT_TRUE(false);
-  }
-}
-
-void CertBuilder::SetSignatureAlgorithm(std::string algorithm_tlv) {
-  signature_algorithm_tlv_ = std::move(algorithm_tlv);
+void CertBuilder::SetSignatureAlgorithm(
+    SignatureAlgorithm signature_algorithm) {
+  signature_algorithm_ = signature_algorithm;
   Invalidate();
 }
 
@@ -625,8 +750,16 @@ bool CertBuilder::GetValidity(base::Time* not_before,
 }
 
 EVP_PKEY* CertBuilder::GetKey() {
-  if (!key_)
-    GenerateKey();
+  if (!key_) {
+    switch (default_pkey_id_) {
+      case EVP_PKEY_RSA:
+        GenerateRSAKey();
+        break;
+      case EVP_PKEY_EC:
+        GenerateECKey();
+        break;
+    }
+  }
   return key_.get();
 }
 
@@ -670,11 +803,16 @@ void CertBuilder::Invalidate() {
   cert_.reset();
 }
 
-void CertBuilder::GenerateKey() {
-  ASSERT_FALSE(key_);
+void CertBuilder::GenerateECKey() {
+  auto private_key = crypto::ECPrivateKey::Create();
+  key_ = bssl::UpRef(private_key->key());
+  Invalidate();
+}
 
+void CertBuilder::GenerateRSAKey() {
   auto private_key = crypto::RSAPrivateKey::Create(2048);
   key_ = bssl::UpRef(private_key->key());
+  Invalidate();
 }
 
 void CertBuilder::GenerateSubjectKeyIdentifier() {
@@ -736,7 +874,10 @@ void CertBuilder::InitFromCert(const der::Input& cert) {
   // signature
   der::Input signature_algorithm_tlv;
   ASSERT_TRUE(tbs_certificate.ReadRawTLV(&signature_algorithm_tlv));
-  signature_algorithm_tlv_ = signature_algorithm_tlv.AsString();
+  auto signature_algorithm =
+      ParseSignatureAlgorithm(signature_algorithm_tlv, nullptr);
+  ASSERT_TRUE(signature_algorithm);
+  signature_algorithm_ = *signature_algorithm;
 
   // issuer
   ASSERT_TRUE(tbs_certificate.SkipTag(der::kSequence));
@@ -748,8 +889,14 @@ void CertBuilder::InitFromCert(const der::Input& cert) {
 
   // subject
   ASSERT_TRUE(tbs_certificate.SkipTag(der::kSequence));
+
   // subjectPublicKeyInfo
-  ASSERT_TRUE(tbs_certificate.SkipTag(der::kSequence));
+  der::Input spki_tlv;
+  ASSERT_TRUE(tbs_certificate.ReadRawTLV(&spki_tlv));
+  bssl::UniquePtr<EVP_PKEY> public_key;
+  ASSERT_TRUE(ParsePublicKey(spki_tlv, &public_key));
+  default_pkey_id_ = EVP_PKEY_id(public_key.get());
+
   // issuerUniqueID
   ASSERT_TRUE(tbs_certificate.SkipOptionalTag(der::ContextSpecificPrimitive(1),
                                               &unused));
@@ -773,7 +920,8 @@ void CertBuilder::InitFromCert(const der::Input& cert) {
   }
 }
 
-void CertBuilder::BuildTBSCertificate(std::string* out) {
+void CertBuilder::BuildTBSCertificate(base::StringPiece signature_algorithm_tlv,
+                                      std::string* out) {
   bssl::ScopedCBB cbb;
   CBB tbs_cert, version, extensions_context, extensions;
 
@@ -785,10 +933,11 @@ void CertBuilder::BuildTBSCertificate(std::string* out) {
   // Always use v3 certificates.
   ASSERT_TRUE(CBB_add_asn1_uint64(&version, 2));
   ASSERT_TRUE(CBB_add_asn1_uint64(&tbs_cert, GetSerialNumber()));
-  ASSERT_TRUE(AddSignatureAlgorithm(&tbs_cert));
+  ASSERT_TRUE(CBBAddBytes(&tbs_cert, signature_algorithm_tlv));
   ASSERT_TRUE(CBBAddBytes(&tbs_cert, issuer_->GetSubject()));
   ASSERT_TRUE(CBBAddBytes(&tbs_cert, validity_tlv_));
   ASSERT_TRUE(CBBAddBytes(&tbs_cert, GetSubject()));
+  ASSERT_TRUE(GetKey());
   ASSERT_TRUE(EVP_marshal_public_key(&tbs_cert, GetKey()));
 
   // Serialize all the extensions.
@@ -826,60 +975,33 @@ void CertBuilder::BuildTBSCertificate(std::string* out) {
   *out = FinishCBB(cbb.get());
 }
 
-bool CertBuilder::AddSignatureAlgorithm(CBB* cbb) {
-  return CBBAddBytes(cbb, signature_algorithm_tlv_);
-}
-
 void CertBuilder::GenerateCertificate() {
   ASSERT_FALSE(cert_);
 
+  absl::optional<SignatureAlgorithm> signature_algorithm = signature_algorithm_;
+  if (!signature_algorithm)
+    signature_algorithm = DefaultSignatureAlgorithmForKey(issuer_->GetKey());
+  ASSERT_TRUE(signature_algorithm.has_value());
+
+  std::string signature_algorithm_tlv =
+      SignatureAlgorithmToDer(*signature_algorithm);
+  ASSERT_FALSE(signature_algorithm_tlv.empty());
+
   std::string tbs_cert;
-  BuildTBSCertificate(&tbs_cert);
-  const uint8_t* tbs_cert_bytes =
-      reinterpret_cast<const uint8_t*>(tbs_cert.data());
-
-  // Determine the correct digest algorithm to use (assumes RSA PKCS#1
-  // signatures).
-  auto signature_algorithm =
-      ParseSignatureAlgorithm(der::Input(&signature_algorithm_tlv_), nullptr);
-  ASSERT_TRUE(signature_algorithm);
-  const EVP_MD* md = nullptr;
-  switch (*signature_algorithm) {
-    case SignatureAlgorithm::kRsaPkcs1Sha256:
-      md = EVP_sha256();
-      break;
-
-    case SignatureAlgorithm::kRsaPkcs1Sha1:
-      md = EVP_sha1();
-      break;
-
-    default:
-      ASSERT_TRUE(false) << "Only rsaEncryptionWithSha256 or "
-                            "rsaEncryptionWithSha1 are supported";
-      break;
-  }
+  BuildTBSCertificate(signature_algorithm_tlv, &tbs_cert);
 
   // Sign the TBSCertificate and write the entire certificate.
   bssl::ScopedCBB cbb;
   CBB cert, signature;
-  bssl::ScopedEVP_MD_CTX ctx;
-  uint8_t* sig_out;
-  size_t sig_len;
 
   ASSERT_TRUE(CBB_init(cbb.get(), tbs_cert.size()));
   ASSERT_TRUE(CBB_add_asn1(cbb.get(), &cert, CBS_ASN1_SEQUENCE));
   ASSERT_TRUE(CBBAddBytes(&cert, tbs_cert));
-  ASSERT_TRUE(AddSignatureAlgorithm(&cert));
+  ASSERT_TRUE(CBBAddBytes(&cert, signature_algorithm_tlv));
   ASSERT_TRUE(CBB_add_asn1(&cert, &signature, CBS_ASN1_BITSTRING));
   ASSERT_TRUE(CBB_add_u8(&signature, 0 /* no unused bits */));
   ASSERT_TRUE(
-      EVP_DigestSignInit(ctx.get(), nullptr, md, nullptr, issuer_->GetKey()));
-  ASSERT_TRUE(EVP_DigestSign(ctx.get(), nullptr, &sig_len, tbs_cert_bytes,
-                             tbs_cert.size()));
-  ASSERT_TRUE(CBB_reserve(&signature, &sig_out, sig_len));
-  ASSERT_TRUE(EVP_DigestSign(ctx.get(), sig_out, &sig_len, tbs_cert_bytes,
-                             tbs_cert.size()));
-  ASSERT_TRUE(CBB_did_write(&signature, sig_len));
+      SignData(*signature_algorithm, tbs_cert, issuer_->GetKey(), &signature));
 
   auto cert_der = FinishCBB(cbb.get());
   cert_ =
