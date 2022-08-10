@@ -202,11 +202,11 @@ FirstPartySetsHandlerImpl* FirstPartySetsHandlerImpl::GetInstance() {
 absl::optional<FirstPartySetsHandler::PolicyParsingError>
 FirstPartySetsHandler::ValidateEnterprisePolicy(
     const base::Value::Dict& policy) {
-  // Call ParseSetsFromEnterprisePolicy to determine if the all sets in the
-  // policy are valid First-Party Sets. A nullptr is provided since we don't
-  // have use for the actual parsed sets.
-  return FirstPartySetParser::ParseSetsFromEnterprisePolicy(
-      policy, /*out_sets=*/nullptr);
+  base::expected<FirstPartySetParser::ParsedPolicySetLists,
+                 FirstPartySetParser::PolicyParsingError>
+      parsed = FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy);
+  return parsed.has_value() ? absl::nullopt
+                            : absl::make_optional(parsed.error());
 }
 
 void FirstPartySetsHandlerImpl::GetCustomizationForPolicy(
@@ -554,15 +554,15 @@ FirstPartySetsHandler::PolicyCustomization
 FirstPartySetsHandlerImpl::GetCustomizationForPolicyInternal(
     const base::Value::Dict& policy) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  FirstPartySetParser::ParsedPolicySetLists parsed_policy;
-  absl::optional<FirstPartySetParser::PolicyParsingError> error =
-      FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy,
-                                                         &parsed_policy);
+  base::expected<FirstPartySetParser::ParsedPolicySetLists,
+                 FirstPartySetParser::PolicyParsingError>
+      parsed_policy =
+          FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy);
   // Provide empty customization if the policy is malformed.
-  return error.has_value()
-             ? FirstPartySetsHandlerImpl::PolicyCustomization()
-             : FirstPartySetsHandlerImpl::ComputeEnterpriseCustomizations(
-                   sets_.value(), parsed_policy);
+  return parsed_policy.has_value()
+             ? FirstPartySetsHandlerImpl::ComputeEnterpriseCustomizations(
+                   sets_.value(), parsed_policy.value())
+             : FirstPartySetsHandlerImpl::PolicyCustomization();
 }
 
 }  // namespace content

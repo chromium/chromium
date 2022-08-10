@@ -17,6 +17,7 @@
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
+#include "base/types/expected.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/first_party_set_entry.h"
@@ -76,38 +77,37 @@ const char kFirstPartySetPolicyAdditionsField[] = "additions";
 // Uses `elements` to check disjointness of sets; outputs the set as `out_set`;
 // and augments `elements` to include the elements of the set that was parsed.
 //
-// Returns a nullopt if parsing and validation were successful, otherwise it
-// returns an optional with an appropriate FirstPartySetParser::ParseError.
-absl::optional<FirstPartySetParser::ParseError> ParseSet(
-    const base::Value& value,
-    base::flat_set<net::SchemefulSite>& elements,
-    FirstPartySetParser::SingleSet& out_set) {
+// Returns the parsed set if parsing and validation were successful; otherwise,
+// returns an appropriate FirstPartySetParser::ParseError.
+base::expected<FirstPartySetParser::SingleSet, FirstPartySetParser::ParseError>
+ParseSet(const base::Value& value,
+         base::flat_set<net::SchemefulSite>& elements) {
   if (!value.is_dict())
-    return FirstPartySetParser::ParseError::kInvalidType;
+    return base::unexpected(FirstPartySetParser::ParseError::kInvalidType);
 
   // Confirm that the set has an owner, and the owner is a string.
   const std::string* maybe_owner =
       value.GetDict().FindString(kFirstPartySetOwnerField);
   if (!maybe_owner)
-    return FirstPartySetParser::ParseError::kInvalidType;
+    return base::unexpected(FirstPartySetParser::ParseError::kInvalidType);
 
   absl::optional<net::SchemefulSite> canonical_owner =
       Canonicalize(std::move(*maybe_owner), false /* emit_errors */);
   if (!canonical_owner.has_value())
-    return FirstPartySetParser::ParseError::kInvalidOrigin;
+    return base::unexpected(FirstPartySetParser::ParseError::kInvalidOrigin);
 
   // An owner may not be a member of another set.
   if (elements.contains(*canonical_owner))
-    return FirstPartySetParser::ParseError::kNonDisjointSets;
+    return base::unexpected(FirstPartySetParser::ParseError::kNonDisjointSets);
 
   // Confirm that the members field is present, and is an array of strings.
   const base::Value* maybe_members_list =
       value.FindListKey(kFirstPartySetMembersField);
   if (!maybe_members_list)
-    return FirstPartySetParser::ParseError::kInvalidType;
+    return base::unexpected(FirstPartySetParser::ParseError::kInvalidType);
 
   if (maybe_members_list->GetListDeprecated().empty())
-    return FirstPartySetParser::ParseError::kSingletonSet;
+    return base::unexpected(FirstPartySetParser::ParseError::kSingletonSet);
 
   std::vector<std::pair<net::SchemefulSite, net::FirstPartySetEntry>> sites;
   sites.emplace_back(
@@ -118,11 +118,11 @@ absl::optional<FirstPartySetParser::ParseError> ParseSet(
     // Members may not be a member of another set, and may not be an owner of
     // another set.
     if (!item.is_string())
-      return FirstPartySetParser::ParseError::kInvalidType;
+      return base::unexpected(FirstPartySetParser::ParseError::kInvalidType);
     absl::optional<net::SchemefulSite> member =
         Canonicalize(item.GetString(), false /* emit_errors */);
     if (!member.has_value())
-      return FirstPartySetParser::ParseError::kInvalidOrigin;
+      return base::unexpected(FirstPartySetParser::ParseError::kInvalidOrigin);
 
     if (*member == *canonical_owner ||
         base::ranges::any_of(
@@ -131,11 +131,12 @@ absl::optional<FirstPartySetParser::ParseError> ParseSet(
                     site_and_entry) {
               return site_and_entry.first == member;
             })) {
-      return FirstPartySetParser::ParseError::kRepeatedDomain;
+      return base::unexpected(FirstPartySetParser::ParseError::kRepeatedDomain);
     }
 
     if (elements.contains(*member))
-      return FirstPartySetParser::ParseError::kNonDisjointSets;
+      return base::unexpected(
+          FirstPartySetParser::ParseError::kNonDisjointSets);
 
     sites.emplace_back(
         *member,
@@ -148,41 +149,33 @@ absl::optional<FirstPartySetParser::ParseError> ParseSet(
     DCHECK(inserted);
   }
 
-  out_set = FirstPartySetParser::SingleSet(sites);
-  return absl::nullopt;
+  return FirstPartySetParser::SingleSet(sites);
 }
 
 // Parses each set in `policy_sets` by calling ParseSet on each one.
 //
-// Returns a PolicyParsingError if ParseSet returns an error, which contains the
-// error that ParseSet returned along with the type of policy set that was being
-// parsed and the index of the set that caused the error.
-//
-// If no call to ParseSet returns an error, `out_list` is populated with the
-// list of parsed sets.
-absl::optional<FirstPartySetParser::PolicyParsingError> GetPolicySetsFromList(
-    const base::Value::List* policy_sets,
-    base::flat_set<net::SchemefulSite>& elements,
-    FirstPartySetParser::PolicySetType set_type,
-    std::vector<FirstPartySetParser::SingleSet>& out_list) {
+// Returns the parsed sets if successful; otherwise returns the first error.
+base::expected<std::vector<FirstPartySetParser::SingleSet>,
+               FirstPartySetParser::PolicyParsingError>
+GetPolicySetsFromList(const base::Value::List* policy_sets,
+                      base::flat_set<net::SchemefulSite>& elements,
+                      FirstPartySetParser::PolicySetType set_type) {
   if (!policy_sets) {
-    out_list = {};
-    return absl::nullopt;
+    return {};
   }
 
   std::vector<FirstPartySetParser::SingleSet> parsed_sets;
   for (int i = 0; i < static_cast<int>(policy_sets->size()); i++) {
-    FirstPartySetParser::SingleSet out_set;
-    if (absl::optional<FirstPartySetParser::ParseError> error =
-            ParseSet((*policy_sets)[i], elements, out_set);
-        error.has_value()) {
-      return FirstPartySetParser::PolicyParsingError{error.value(), set_type,
-                                                     i};
+    base::expected<FirstPartySetParser::SingleSet,
+                   FirstPartySetParser::ParseError>
+        parsed = ParseSet((*policy_sets)[i], elements);
+    if (!parsed.has_value()) {
+      return base::unexpected(
+          FirstPartySetParser::PolicyParsingError{parsed.error(), set_type, i});
     }
-    parsed_sets.push_back(out_set);
+    parsed_sets.push_back(parsed.value());
   }
-  out_list = parsed_sets;
-  return absl::nullopt;
+  return parsed_sets;
 }
 
 }  // namespace
@@ -291,11 +284,11 @@ FirstPartySetParser::SetsMap FirstPartySetParser::ParseSetsFromStream(
         trimmed, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
     if (!maybe_value.has_value())
       return {};
-    FirstPartySetParser::SingleSet output;
-    if (absl::optional<FirstPartySetParser::ParseError> error =
-            ParseSet(*maybe_value, elements, output);
-        error.has_value()) {
-      if (*error == FirstPartySetParser::ParseError::kInvalidOrigin) {
+    base::expected<FirstPartySetParser::SingleSet,
+                   FirstPartySetParser::ParseError>
+        parsed = ParseSet(*maybe_value, elements);
+    if (!parsed.has_value()) {
+      if (parsed.error() == FirstPartySetParser::ParseError::kInvalidOrigin) {
         // Ignore sets that include an invalid domain (which might have been
         // caused by a PSL update), but don't let that break other sets.
         continue;
@@ -304,40 +297,36 @@ FirstPartySetParser::SetsMap FirstPartySetParser::ParseSetsFromStream(
       return {};
     }
     for (const std::pair<net::SchemefulSite, net::FirstPartySetEntry>&
-             site_and_entry : output) {
+             site_and_entry : parsed.value()) {
       map.emplace_back(site_and_entry.first, site_and_entry.second);
     }
   }
   return map;
 }
 
-absl::optional<FirstPartySetParser::PolicyParsingError>
+base::expected<FirstPartySetParser::ParsedPolicySetLists,
+               FirstPartySetParser::PolicyParsingError>
 FirstPartySetParser::ParseSetsFromEnterprisePolicy(
-    const base::Value::Dict& policy,
-    ParsedPolicySetLists* out_sets) {
-  std::vector<SingleSet> parsed_replacements, parsed_additions;
+    const base::Value::Dict& policy) {
   base::flat_set<net::SchemefulSite> elements;
 
-  if (absl::optional<PolicyParsingError> error = GetPolicySetsFromList(
+  base::expected<std::vector<SingleSet>, PolicyParsingError>
+      parsed_replacements = GetPolicySetsFromList(
           policy.FindList(kFirstPartySetPolicyReplacementsField), elements,
-          PolicySetType::kReplacement, parsed_replacements);
-      error.has_value()) {
-    return error.value();
+          PolicySetType::kReplacement);
+  if (!parsed_replacements.has_value()) {
+    return base::unexpected(parsed_replacements.error());
   }
 
-  if (absl::optional<PolicyParsingError> error = GetPolicySetsFromList(
-          policy.FindList(kFirstPartySetPolicyAdditionsField), elements,
-          PolicySetType::kAddition, parsed_additions);
-      error.has_value()) {
-    return error.value();
+  base::expected<std::vector<SingleSet>, PolicyParsingError> parsed_additions =
+      GetPolicySetsFromList(policy.FindList(kFirstPartySetPolicyAdditionsField),
+                            elements, PolicySetType::kAddition);
+  if (!parsed_additions.has_value()) {
+    return base::unexpected(parsed_additions.error());
   }
 
-  if (out_sets) {
-    *out_sets = ParsedPolicySetLists(std::move(parsed_replacements),
-                                     std::move(parsed_additions));
-  }
-
-  return absl::nullopt;
+  return ParsedPolicySetLists(std::move(parsed_replacements.value()),
+                              std::move(parsed_additions.value()));
 }
 
 }  // namespace content

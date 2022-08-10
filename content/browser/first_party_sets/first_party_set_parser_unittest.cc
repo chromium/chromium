@@ -512,11 +512,10 @@ TEST(ParseSetsFromEnterprisePolicyTest, Accepts_MissingSetLists) {
               }
             )")
                                  .value();
-  FirstPartySetParser::ParsedPolicySetLists out_sets;
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(
-                  policy_value.GetDict(), &out_sets),
-              Eq(absl::nullopt));
-  EXPECT_THAT(out_sets, FirstPartySetParser::ParsedPolicySetLists({}, {}));
+  EXPECT_THAT(
+      FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
+          .value(),
+      FirstPartySetParser::ParsedPolicySetLists({}, {}));
 }
 
 TEST(ParseSetsFromEnterprisePolicyTest, Accepts_EmptyLists) {
@@ -527,45 +526,10 @@ TEST(ParseSetsFromEnterprisePolicyTest, Accepts_EmptyLists) {
               }
             )")
                                  .value();
-  FirstPartySetParser::ParsedPolicySetLists out_sets;
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(
-                  policy_value.GetDict(), &out_sets),
-              Eq(absl::nullopt));
-  EXPECT_THAT(out_sets, FirstPartySetParser::ParsedPolicySetLists({}, {}));
-}
-
-TEST(ParseSetsFromEnterprisePolicyTest, ValidPolicy_NullOutParam) {
-  base::Value policy_value = base::JSONReader::Read(R"(
-              {
-                "replacements": [],
-                "additions": []
-              }
-            )")
-                                 .value();
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(
-                  policy_value.GetDict(), nullptr),
-              Eq(absl::nullopt));
-}
-
-TEST(ParseSetsFromEnterprisePolicyTest, InvalidPolicy_NullOutParam) {
-  base::Value policy_value = base::JSONReader::Read(R"(
-              {
-                "replacements": [],
-                "additions": [
-                  {
-                    "owner": "https://owner1.test",
-                    "members": ["https://owner1.test"]
-                  }
-                ]
-              }
-            )")
-                                 .value();
-  FirstPartySetParser::PolicyParsingError expected_error{
-      FirstPartySetParser::ParseError::kRepeatedDomain,
-      FirstPartySetParser::PolicySetType::kAddition, 0};
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(
-                  policy_value.GetDict(), nullptr),
-              expected_error);
+  EXPECT_THAT(
+      FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
+          .value(),
+      FirstPartySetParser::ParsedPolicySetLists({}, {}));
 }
 
 TEST(ParseSetsFromEnterprisePolicyTest, InvalidTypeError_MissingOwner) {
@@ -580,13 +544,12 @@ TEST(ParseSetsFromEnterprisePolicyTest, InvalidTypeError_MissingOwner) {
               }
             )")
                                  .value();
-  FirstPartySetParser::ParsedPolicySetLists out_sets;
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(
-                  policy_value.GetDict(), &out_sets),
-              FirstPartySetParser::PolicyParsingError(
-                  {FirstPartySetParser::ParseError::kInvalidType,
-                   FirstPartySetParser::PolicySetType::kReplacement, 0}));
-  EXPECT_THAT(out_sets, FirstPartySetParser::ParsedPolicySetLists({}, {}));
+  EXPECT_THAT(
+      FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
+          .error(),
+      FirstPartySetParser::PolicyParsingError(
+          {FirstPartySetParser::ParseError::kInvalidType,
+           FirstPartySetParser::PolicySetType::kReplacement, 0}));
 }
 
 TEST(ParseSetsFromEnterprisePolicyTest, InvalidTypeError_MissingMembers) {
@@ -601,13 +564,12 @@ TEST(ParseSetsFromEnterprisePolicyTest, InvalidTypeError_MissingMembers) {
               }
             )")
                                  .value();
-  FirstPartySetParser::ParsedPolicySetLists out_sets;
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(
-                  policy_value.GetDict(), &out_sets),
-              FirstPartySetParser::PolicyParsingError(
-                  {FirstPartySetParser::ParseError::kInvalidType,
-                   FirstPartySetParser::PolicySetType::kReplacement, 0}));
-  EXPECT_THAT(out_sets, FirstPartySetParser::ParsedPolicySetLists({}, {}));
+  EXPECT_THAT(
+      FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
+          .error(),
+      FirstPartySetParser::PolicyParsingError(
+          {FirstPartySetParser::ParseError::kInvalidType,
+           FirstPartySetParser::PolicySetType::kReplacement, 0}));
 }
 
 TEST(ParseSetsFromEnterprisePolicyTest, InvalidTypeError_WrongOwnerType) {
@@ -623,13 +585,12 @@ TEST(ParseSetsFromEnterprisePolicyTest, InvalidTypeError_WrongOwnerType) {
               }
             )")
                                  .value();
-  FirstPartySetParser::ParsedPolicySetLists out_sets;
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(
-                  policy_value.GetDict(), &out_sets),
-              FirstPartySetParser::PolicyParsingError(
-                  {FirstPartySetParser::ParseError::kInvalidType,
-                   FirstPartySetParser::PolicySetType::kReplacement, 0}));
-  EXPECT_THAT(out_sets, FirstPartySetParser::ParsedPolicySetLists({}, {}));
+  EXPECT_THAT(
+      FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
+          .error(),
+      FirstPartySetParser::PolicyParsingError(
+          {FirstPartySetParser::ParseError::kInvalidType,
+           FirstPartySetParser::PolicySetType::kReplacement, 0}));
 }
 
 TEST(ParseSetsFromEnterprisePolicyTest,
@@ -646,13 +607,12 @@ TEST(ParseSetsFromEnterprisePolicyTest,
               }
             )")
                                  .value();
-  FirstPartySetParser::ParsedPolicySetLists out_sets;
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(
-                  policy_value.GetDict(), &out_sets),
-              FirstPartySetParser::PolicyParsingError(
-                  {FirstPartySetParser::ParseError::kInvalidType,
-                   FirstPartySetParser::PolicySetType::kReplacement, 0}));
-  EXPECT_THAT(out_sets, FirstPartySetParser::ParsedPolicySetLists({}, {}));
+  EXPECT_THAT(
+      FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
+          .error(),
+      FirstPartySetParser::PolicyParsingError(
+          {FirstPartySetParser::ParseError::kInvalidType,
+           FirstPartySetParser::PolicySetType::kReplacement, 0}));
 }
 
 TEST(ParseSetsFromEnterprisePolicyTest, InvalidTypeError_WrongMemberType) {
@@ -669,13 +629,12 @@ TEST(ParseSetsFromEnterprisePolicyTest, InvalidTypeError_WrongMemberType) {
         }
             )")
                                  .value();
-  FirstPartySetParser::ParsedPolicySetLists out_sets;
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(
-                  policy_value.GetDict(), &out_sets),
-              FirstPartySetParser::PolicyParsingError(
-                  {FirstPartySetParser::ParseError::kInvalidType,
-                   FirstPartySetParser::PolicySetType::kReplacement, 0}));
-  EXPECT_THAT(out_sets, FirstPartySetParser::ParsedPolicySetLists({}, {}));
+  EXPECT_THAT(
+      FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
+          .error(),
+      FirstPartySetParser::PolicyParsingError(
+          {FirstPartySetParser::ParseError::kInvalidType,
+           FirstPartySetParser::PolicySetType::kReplacement, 0}));
 }
 
 TEST(ParseSetsFromEnterprisePolicyTest, InvalidOriginError_OwnerOpaque) {
@@ -691,13 +650,12 @@ TEST(ParseSetsFromEnterprisePolicyTest, InvalidOriginError_OwnerOpaque) {
               }
             )")
                                  .value();
-  FirstPartySetParser::ParsedPolicySetLists out_sets;
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(
-                  policy_value.GetDict(), &out_sets),
-              FirstPartySetParser::PolicyParsingError(
-                  {FirstPartySetParser::ParseError::kInvalidOrigin,
-                   FirstPartySetParser::PolicySetType::kReplacement, 0}));
-  EXPECT_THAT(out_sets, FirstPartySetParser::ParsedPolicySetLists({}, {}));
+  EXPECT_THAT(
+      FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
+          .error(),
+      FirstPartySetParser::PolicyParsingError(
+          {FirstPartySetParser::ParseError::kInvalidOrigin,
+           FirstPartySetParser::PolicySetType::kReplacement, 0}));
 }
 
 TEST(ParseSetsFromEnterprisePolicyTest, InvalidOriginError_MemberOpaque) {
@@ -713,13 +671,12 @@ TEST(ParseSetsFromEnterprisePolicyTest, InvalidOriginError_MemberOpaque) {
               }
             )")
                                  .value();
-  FirstPartySetParser::ParsedPolicySetLists out_sets;
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(
-                  policy_value.GetDict(), &out_sets),
-              FirstPartySetParser::PolicyParsingError(
-                  {FirstPartySetParser::ParseError::kInvalidOrigin,
-                   FirstPartySetParser::PolicySetType::kReplacement, 0}));
-  EXPECT_THAT(out_sets, FirstPartySetParser::ParsedPolicySetLists({}, {}));
+  EXPECT_THAT(
+      FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
+          .error(),
+      FirstPartySetParser::PolicyParsingError(
+          {FirstPartySetParser::ParseError::kInvalidOrigin,
+           FirstPartySetParser::PolicySetType::kReplacement, 0}));
 }
 
 TEST(ParseSetsFromEnterprisePolicyTest, InvalidOriginError_OwnerNonHttps) {
@@ -735,13 +692,12 @@ TEST(ParseSetsFromEnterprisePolicyTest, InvalidOriginError_OwnerNonHttps) {
               }
             )")
                                  .value();
-  FirstPartySetParser::ParsedPolicySetLists out_sets;
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(
-                  policy_value.GetDict(), &out_sets),
-              FirstPartySetParser::PolicyParsingError(
-                  {FirstPartySetParser::ParseError::kInvalidOrigin,
-                   FirstPartySetParser::PolicySetType::kReplacement, 0}));
-  EXPECT_THAT(out_sets, FirstPartySetParser::ParsedPolicySetLists({}, {}));
+  EXPECT_THAT(
+      FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
+          .error(),
+      FirstPartySetParser::PolicyParsingError(
+          {FirstPartySetParser::ParseError::kInvalidOrigin,
+           FirstPartySetParser::PolicySetType::kReplacement, 0}));
 }
 
 TEST(ParseSetsFromEnterprisePolicyTest, InvalidOriginError_MemberNonHttps) {
@@ -757,13 +713,12 @@ TEST(ParseSetsFromEnterprisePolicyTest, InvalidOriginError_MemberNonHttps) {
               }
             )")
                                  .value();
-  FirstPartySetParser::ParsedPolicySetLists out_sets;
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(
-                  policy_value.GetDict(), &out_sets),
-              FirstPartySetParser::PolicyParsingError(
-                  {FirstPartySetParser::ParseError::kInvalidOrigin,
-                   FirstPartySetParser::PolicySetType::kReplacement, 0}));
-  EXPECT_THAT(out_sets, FirstPartySetParser::ParsedPolicySetLists({}, {}));
+  EXPECT_THAT(
+      FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
+          .error(),
+      FirstPartySetParser::PolicyParsingError(
+          {FirstPartySetParser::ParseError::kInvalidOrigin,
+           FirstPartySetParser::PolicySetType::kReplacement, 0}));
 }
 
 TEST(ParseSetsFromEnterprisePolicyTest,
@@ -780,13 +735,12 @@ TEST(ParseSetsFromEnterprisePolicyTest,
               }
             )")
                                  .value();
-  FirstPartySetParser::ParsedPolicySetLists out_sets;
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(
-                  policy_value.GetDict(), &out_sets),
-              FirstPartySetParser::PolicyParsingError(
-                  {FirstPartySetParser::ParseError::kInvalidOrigin,
-                   FirstPartySetParser::PolicySetType::kReplacement, 0}));
-  EXPECT_THAT(out_sets, FirstPartySetParser::ParsedPolicySetLists({}, {}));
+  EXPECT_THAT(
+      FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
+          .error(),
+      FirstPartySetParser::PolicyParsingError(
+          {FirstPartySetParser::ParseError::kInvalidOrigin,
+           FirstPartySetParser::PolicySetType::kReplacement, 0}));
 }
 
 TEST(ParseSetsFromEnterprisePolicyTest,
@@ -803,13 +757,12 @@ TEST(ParseSetsFromEnterprisePolicyTest,
               }
             )")
                                  .value();
-  FirstPartySetParser::ParsedPolicySetLists out_sets;
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(
-                  policy_value.GetDict(), &out_sets),
-              FirstPartySetParser::PolicyParsingError(
-                  {FirstPartySetParser::ParseError::kInvalidOrigin,
-                   FirstPartySetParser::PolicySetType::kReplacement, 0}));
-  EXPECT_THAT(out_sets, FirstPartySetParser::ParsedPolicySetLists({}, {}));
+  EXPECT_THAT(
+      FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
+          .error(),
+      FirstPartySetParser::PolicyParsingError(
+          {FirstPartySetParser::ParseError::kInvalidOrigin,
+           FirstPartySetParser::PolicySetType::kReplacement, 0}));
 }
 
 TEST(ParseSetsFromEnterprisePolicyTest, SingletonSetError_EmptyMembers) {
@@ -825,13 +778,12 @@ TEST(ParseSetsFromEnterprisePolicyTest, SingletonSetError_EmptyMembers) {
               }
             )")
                                  .value();
-  FirstPartySetParser::ParsedPolicySetLists out_sets;
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(
-                  policy_value.GetDict(), &out_sets),
-              FirstPartySetParser::PolicyParsingError(
-                  {FirstPartySetParser::ParseError::kSingletonSet,
-                   FirstPartySetParser::PolicySetType::kReplacement, 0}));
-  EXPECT_THAT(out_sets, FirstPartySetParser::ParsedPolicySetLists({}, {}));
+  EXPECT_THAT(
+      FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
+          .error(),
+      FirstPartySetParser::PolicyParsingError(
+          {FirstPartySetParser::ParseError::kSingletonSet,
+           FirstPartySetParser::PolicySetType::kReplacement, 0}));
 }
 
 TEST(ParseSetsFromEnterprisePolicyTest,
@@ -848,13 +800,12 @@ TEST(ParseSetsFromEnterprisePolicyTest,
               }
             )")
                                  .value();
-  FirstPartySetParser::ParsedPolicySetLists out_sets;
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(
-                  policy_value.GetDict(), &out_sets),
-              FirstPartySetParser::PolicyParsingError(
-                  {FirstPartySetParser::ParseError::kRepeatedDomain,
-                   FirstPartySetParser::PolicySetType::kReplacement, 0}));
-  EXPECT_THAT(out_sets, FirstPartySetParser::ParsedPolicySetLists({}, {}));
+  EXPECT_THAT(
+      FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
+          .error(),
+      FirstPartySetParser::PolicyParsingError(
+          {FirstPartySetParser::ParseError::kRepeatedDomain,
+           FirstPartySetParser::PolicySetType::kReplacement, 0}));
 }
 
 TEST(ParseSetsFromEnterprisePolicyTest, NonDisjointError_WithinReplacements) {
@@ -874,13 +825,12 @@ TEST(ParseSetsFromEnterprisePolicyTest, NonDisjointError_WithinReplacements) {
               }
             )")
                                  .value();
-  FirstPartySetParser::ParsedPolicySetLists out_sets;
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(
-                  policy_value.GetDict(), &out_sets),
-              FirstPartySetParser::PolicyParsingError(
-                  {FirstPartySetParser::ParseError::kNonDisjointSets,
-                   FirstPartySetParser::PolicySetType::kReplacement, 1}));
-  EXPECT_THAT(out_sets, FirstPartySetParser::ParsedPolicySetLists({}, {}));
+  EXPECT_THAT(
+      FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
+          .error(),
+      FirstPartySetParser::PolicyParsingError(
+          {FirstPartySetParser::ParseError::kNonDisjointSets,
+           FirstPartySetParser::PolicySetType::kReplacement, 1}));
 }
 
 TEST(ParseSetsFromEnterprisePolicyTest, NonDisjointError_WithinAdditions) {
@@ -900,13 +850,12 @@ TEST(ParseSetsFromEnterprisePolicyTest, NonDisjointError_WithinAdditions) {
               }
             )")
                                  .value();
-  FirstPartySetParser::ParsedPolicySetLists out_sets;
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(
-                  policy_value.GetDict(), &out_sets),
-              FirstPartySetParser::PolicyParsingError(
-                  {FirstPartySetParser::ParseError::kNonDisjointSets,
-                   FirstPartySetParser::PolicySetType::kAddition, 1}));
-  EXPECT_THAT(out_sets, FirstPartySetParser::ParsedPolicySetLists({}, {}));
+  EXPECT_THAT(
+      FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
+          .error(),
+      FirstPartySetParser::PolicyParsingError(
+          {FirstPartySetParser::ParseError::kNonDisjointSets,
+           FirstPartySetParser::PolicySetType::kAddition, 1}));
 }
 
 TEST(ParseSetsFromEnterprisePolicyTest, NonDisjointError_AcrossBothLists) {
@@ -927,13 +876,12 @@ TEST(ParseSetsFromEnterprisePolicyTest, NonDisjointError_AcrossBothLists) {
               }
             )")
                                  .value();
-  FirstPartySetParser::ParsedPolicySetLists out_sets;
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(
-                  policy_value.GetDict(), &out_sets),
-              FirstPartySetParser::PolicyParsingError(
-                  {FirstPartySetParser::ParseError::kNonDisjointSets,
-                   FirstPartySetParser::PolicySetType::kAddition, 0}));
-  EXPECT_THAT(out_sets, FirstPartySetParser::ParsedPolicySetLists({}, {}));
+  EXPECT_THAT(
+      FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
+          .error(),
+      FirstPartySetParser::PolicyParsingError(
+          {FirstPartySetParser::ParseError::kNonDisjointSets,
+           FirstPartySetParser::PolicySetType::kAddition, 0}));
 }
 
 TEST(ParseSetsFromEnterprisePolicyTest, SuccessfulMapping_SameList) {
@@ -957,26 +905,23 @@ TEST(ParseSetsFromEnterprisePolicyTest, SuccessfulMapping_SameList) {
               }
             )")
                                  .value();
-  FirstPartySetParser::ParsedPolicySetLists out_sets;
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(
-                  policy_value.GetDict(), &out_sets),
-              Eq(absl::nullopt));
   EXPECT_THAT(
-      out_sets.replacements,
-      ElementsAre(
-          FirstPartySetParser::SetsMap({
-              {owner1,
-               net::FirstPartySetEntry(owner1, net::SiteType::kPrimary)},
-              {member1,
-               net::FirstPartySetEntry(owner1, net::SiteType::kAssociated)},
-          }),
-          FirstPartySetParser::SetsMap({
-              {owner2,
-               net::FirstPartySetEntry(owner2, net::SiteType::kPrimary)},
-              {member2,
-               net::FirstPartySetEntry(owner2, net::SiteType::kAssociated)},
-          })));
-  EXPECT_THAT(out_sets.additions, IsEmpty());
+      FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
+          .value(),
+      FirstPartySetParser::ParsedPolicySetLists(
+          {FirstPartySetParser::SetsMap({
+               {owner1,
+                net::FirstPartySetEntry(owner1, net::SiteType::kPrimary)},
+               {member1,
+                net::FirstPartySetEntry(owner1, net::SiteType::kAssociated)},
+           }),
+           FirstPartySetParser::SetsMap({
+               {owner2,
+                net::FirstPartySetEntry(owner2, net::SiteType::kPrimary)},
+               {member2,
+                net::FirstPartySetEntry(owner2, net::SiteType::kAssociated)},
+           })},
+          {}));
 }
 
 TEST(ParseSetsFromEnterprisePolicyTest, SuccessfulMapping_CrossList) {
@@ -1008,33 +953,28 @@ TEST(ParseSetsFromEnterprisePolicyTest, SuccessfulMapping_CrossList) {
               }
             )")
                                  .value();
-  FirstPartySetParser::ParsedPolicySetLists out_sets;
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(
-                  policy_value.GetDict(), &out_sets),
-              Eq(absl::nullopt));
   EXPECT_THAT(
-      out_sets.replacements,
-      ElementsAre(
-          FirstPartySetParser::SetsMap({
-              {owner1,
-               net::FirstPartySetEntry(owner1, net::SiteType::kPrimary)},
-              {member1,
-               net::FirstPartySetEntry(owner1, net::SiteType::kAssociated)},
-          }),
-          FirstPartySetParser::SetsMap({
-              {owner2,
-               net::FirstPartySetEntry(owner2, net::SiteType::kPrimary)},
-              {member2,
-               net::FirstPartySetEntry(owner2, net::SiteType::kAssociated)},
-          })));
-
-  EXPECT_THAT(
-      out_sets.additions,
-      ElementsAre(FirstPartySetParser::SetsMap({
-          {owner3, net::FirstPartySetEntry(owner3, net::SiteType::kPrimary)},
-          {member3,
-           net::FirstPartySetEntry(owner3, net::SiteType::kAssociated)},
-      })));
+      FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
+          .value(),
+      FirstPartySetParser::ParsedPolicySetLists(
+          {FirstPartySetParser::SetsMap({
+               {owner1,
+                net::FirstPartySetEntry(owner1, net::SiteType::kPrimary)},
+               {member1,
+                net::FirstPartySetEntry(owner1, net::SiteType::kAssociated)},
+           }),
+           FirstPartySetParser::SetsMap({
+               {owner2,
+                net::FirstPartySetEntry(owner2, net::SiteType::kPrimary)},
+               {member2,
+                net::FirstPartySetEntry(owner2, net::SiteType::kAssociated)},
+           })},
+          {FirstPartySetParser::SetsMap({
+              {owner3,
+               net::FirstPartySetEntry(owner3, net::SiteType::kPrimary)},
+              {member3,
+               net::FirstPartySetEntry(owner3, net::SiteType::kAssociated)},
+          })}));
 }
 
 }  // namespace content
