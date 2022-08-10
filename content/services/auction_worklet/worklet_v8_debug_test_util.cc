@@ -219,7 +219,8 @@ void ScopedInspectorSupport::ConnectDebuggerSessionOnV8Thread(
   *result = test_channel.get();
 
   auto session = v8_state_->v8_helper_->inspector()->connect(
-      context_group_id, test_channel.get(), v8_inspector::StringView());
+      context_group_id, test_channel.get(), v8_inspector::StringView(),
+      v8_inspector::V8Inspector::kFullyTrusted);
   test_channel->SetInspectorSession(session.get());
   v8_state_->output_channels_.push_back(std::move(test_channel));
   v8_state_->inspector_sessions_.push_back(std::move(session));
