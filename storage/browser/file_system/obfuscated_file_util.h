@@ -210,24 +210,24 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtil
   // Gets the topmost directory specific to this BucketLocator and type. This
   // will contain both the directory database's files and all the backing file
   // subdirectories.
-  // Returns the topmost origin directory if `type_string` is empty.
+  // Returns the topmost origin directory if `type` is empty.
   // Returns a base::FileError if the directory is undefined.
   base::FileErrorOr<base::FilePath> GetDirectoryForBucketAndType(
       const BucketLocator& bucket_locator,
-      const std::string& type_string,
+      const absl::optional<FileSystemType>& type,
       bool create);
 
   // Gets the topmost directory specific to this StorageKey and type.  This will
   // contain both the directory database's files and all the backing file
   // subdirectories.
-  // Returns the topmost origin directory if `type_string` is empty.
+  // Returns the topmost origin directory if `type` is empty.
   // Returns an empty path if the directory is undefined.
   // If the directory is defined, it will be returned, even if
   // there is a file system error (e.g. the directory doesn't exist on disk and
   // `create` is false).
   base::FileErrorOr<base::FilePath> GetDirectoryForStorageKeyAndType(
       const blink::StorageKey& storage_key,
-      const std::string& type_string,
+      const absl::optional<FileSystemType>& type,
       bool create);
 
   // Deletes the topmost directory specific to this StorageKey and type. This

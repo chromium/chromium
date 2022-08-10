@@ -138,11 +138,9 @@ class QuotaBackendImplTest : public testing::Test,
     ASSERT_TRUE(file_util_->InitOriginDatabase(origin, true /* create */));
     ASSERT_TRUE(file_util_->origin_database_ != nullptr);
 
-    std::string type_string =
-        SandboxFileSystemBackendDelegate::GetTypeString(type);
     base::FileErrorOr<base::FilePath> path =
-        file_util_->GetDirectoryForStorageKeyAndType(
-            blink::StorageKey(origin), type_string, true /* create */);
+        file_util_->GetDirectoryForStorageKeyAndType(blink::StorageKey(origin),
+                                                     type, true /* create */);
     ASSERT_FALSE(path.is_error());
 
     ASSERT_TRUE(file_system_usage_cache_.UpdateUsage(

@@ -120,15 +120,13 @@ base::File::Error OpenSandboxFileSystemOnFileTaskRunner(
   base::File::Error error;
   if (bucket_locator.has_value()) {
     base::FileErrorOr<base::FilePath> path =
-        file_util->GetDirectoryForBucketAndType(
-            bucket_locator.value(),
-            SandboxFileSystemBackendDelegate::GetTypeString(type), create);
+        file_util->GetDirectoryForBucketAndType(bucket_locator.value(), type,
+                                                create);
     error = (path.is_error()) ? path.error() : base::File::FILE_OK;
   } else {
     base::FileErrorOr<base::FilePath> path =
         file_util->GetDirectoryForStorageKeyAndType(
-            blink::StorageKey(url::Origin::Create(origin_url)),
-            SandboxFileSystemBackendDelegate::GetTypeString(type), create);
+            blink::StorageKey(url::Origin::Create(origin_url)), type, create);
     error = (path.is_error()) ? path.error() : base::File::FILE_OK;
   }
   if (error != base::File::FILE_OK) {
@@ -245,8 +243,8 @@ SandboxFileSystemBackendDelegate::GetBaseDirectoryForStorageKeyAndType(
     FileSystemType type,
     bool create) {
   base::FileErrorOr<base::FilePath> path =
-      obfuscated_file_util()->GetDirectoryForStorageKeyAndType(
-          storage_key, GetTypeString(type), create);
+      obfuscated_file_util()->GetDirectoryForStorageKeyAndType(storage_key,
+                                                               type, create);
   if (path.is_error())
     return base::FilePath();
   return path.value();
@@ -258,8 +256,8 @@ SandboxFileSystemBackendDelegate::GetBaseDirectoryForBucketAndType(
     FileSystemType type,
     bool create) {
   base::FileErrorOr<base::FilePath> path =
-      obfuscated_file_util()->GetDirectoryForBucketAndType(
-          bucket_locator, GetTypeString(type), create);
+      obfuscated_file_util()->GetDirectoryForBucketAndType(bucket_locator, type,
+                                                           create);
   if (path.is_error())
     return base::FilePath();
   return path.value();
@@ -690,8 +688,8 @@ SandboxFileSystemBackendDelegate::GetUsageCachePathForStorageKeyAndType(
     const blink::StorageKey& storage_key,
     FileSystemType type) {
   base::FileErrorOr<base::FilePath> base_path =
-      sandbox_file_util->GetDirectoryForStorageKeyAndType(
-          storage_key, GetTypeString(type), false /* create */);
+      sandbox_file_util->GetDirectoryForStorageKeyAndType(storage_key, type,
+                                                          false /* create */);
   if (base_path.is_error()) {
     return base_path;
   }
@@ -713,8 +711,8 @@ SandboxFileSystemBackendDelegate::GetUsageCachePathForBucketAndType(
     const BucketLocator& bucket_locator,
     FileSystemType type) {
   base::FileErrorOr<base::FilePath> base_path =
-      sandbox_file_util->GetDirectoryForBucketAndType(
-          bucket_locator, GetTypeString(type), /*create=*/false);
+      sandbox_file_util->GetDirectoryForBucketAndType(bucket_locator, type,
+                                                      /*create=*/false);
   if (base_path.is_error()) {
     return base_path;
   }
