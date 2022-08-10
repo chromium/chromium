@@ -688,10 +688,11 @@ void ExtensionAppsBase::LaunchAppWithIntent(
       ConvertMojomWindowInfoToWindowInfo(window_info), std::move(callback));
 }
 
-void ExtensionAppsBase::Uninstall(const std::string& app_id,
-                                  apps::mojom::UninstallSource uninstall_source,
-                                  bool clear_site_data,
-                                  bool report_abuse) {
+void ExtensionAppsBase::Uninstall(
+    const std::string& app_id,
+    apps::mojom::UninstallSource mojom_uninstall_source,
+    bool clear_site_data,
+    bool report_abuse) {
   // TODO(crbug.com/1009248): We need to add the error code, which could be used
   // by ExtensionFunction, ManagementUninstallFunctionBase on the callback
   // OnExtensionUninstallDialogClosed
@@ -710,8 +711,11 @@ void ExtensionAppsBase::Uninstall(const std::string& app_id,
   std::u16string error;
   extensions::ExtensionSystem::Get(profile())
       ->extension_service()
-      ->UninstallExtension(
-          app_id, GetExtensionUninstallReason(uninstall_source), &error);
+      ->UninstallExtension(app_id,
+                           GetExtensionUninstallReason(
+                               ConvertMojomUninstallSourceToUninstallSource(
+                                   mojom_uninstall_source)),
+                           &error);
 
   if (!report_abuse)
     return;

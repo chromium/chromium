@@ -84,7 +84,7 @@ class LacrosWebAppsController : public crosapi::mojom::AppController,
 
   // crosapi::mojom::AppController:
   void Uninstall(const std::string& app_id,
-                 apps::mojom::UninstallSource uninstall_source,
+                 apps::UninstallSource uninstall_source,
                  bool clear_site_data,
                  bool report_abuse) override;
   void PauseApp(const std::string& app_id) override;

@@ -149,7 +149,7 @@ mojom("mojom") {
         },
         {
           mojom = "crosapi.mojom.UninstallSource"
-          cpp = "::apps::mojom::UninstallSource"
+          cpp = "::apps::UninstallSource"
         },
         {
           mojom = "crosapi.mojom.CapabilityAccess"

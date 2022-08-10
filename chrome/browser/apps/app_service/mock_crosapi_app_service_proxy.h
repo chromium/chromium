@@ -11,6 +11,7 @@
 
 #include "base/run_loop.h"
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 
 namespace apps {
@@ -41,9 +42,8 @@ class MockCrosapiAppServiceProxy : public crosapi::mojom::AppServiceProxy {
                        crosapi::mojom::IntentPtr intent) override;
   void ShowAppManagementPage(const std::string& app_id) override;
   void SetSupportedLinksPreference(const std::string& app_id) override;
-  void UninstallSilently(
-      const std::string& app_id,
-      apps::mojom::UninstallSource uninstall_source) override;
+  void UninstallSilently(const std::string& app_id,
+                         UninstallSource uninstall_source) override;
 
   std::vector<crosapi::mojom::LaunchParamsPtr> launched_apps_;
   std::vector<std::string> supported_link_apps_;

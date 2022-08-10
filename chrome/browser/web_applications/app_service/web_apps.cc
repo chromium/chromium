@@ -380,8 +380,10 @@ void WebApps::Uninstall(const std::string& app_id,
     return;
   }
 
-  publisher_helper().UninstallWebApp(web_app, uninstall_source, clear_site_data,
-                                     report_abuse);
+  publisher_helper().UninstallWebApp(
+      web_app,
+      apps::ConvertMojomUninstallSourceToUninstallSource(uninstall_source),
+      clear_site_data, report_abuse);
 }
 
 void WebApps::PauseApp(const std::string& app_id) {

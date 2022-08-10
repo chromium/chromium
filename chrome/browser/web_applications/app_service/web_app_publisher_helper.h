@@ -92,7 +92,7 @@ typedef base::IdTypeU32<ShortcutIdTypeMarker> ShortcutId;
 
 void UninstallImpl(WebAppProvider* provider,
                    const std::string& app_id,
-                   apps::mojom::UninstallSource uninstall_source,
+                   apps::UninstallSource uninstall_source,
                    gfx::NativeWindow parent_window);
 
 class WebAppPublisherHelper : public AppRegistrarObserver,
@@ -139,7 +139,7 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
   // Converts |uninstall_source| to a |WebappUninstallSource|.
   static webapps::WebappUninstallSource
   ConvertUninstallSourceToWebAppUninstallSource(
-      apps::mojom::UninstallSource uninstall_source);
+      apps::UninstallSource uninstall_source);
 
   // Must be called before profile keyed services are destroyed.
   void Shutdown();
@@ -185,7 +185,7 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
   // If |report_abuse| is true, the app will be reported for abuse to the Web
   // Store.
   void UninstallWebApp(const WebApp* web_app,
-                       apps::mojom::UninstallSource uninstall_source,
+                       apps::UninstallSource uninstall_source,
                        bool clear_site_data,
                        bool report_abuse);
 

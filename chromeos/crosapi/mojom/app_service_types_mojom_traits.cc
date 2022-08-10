@@ -660,43 +660,43 @@ bool EnumTraits<crosapi::mojom::PatternMatchType, apps::PatternMatchType>::
   return false;
 }
 
-crosapi::mojom::UninstallSource EnumTraits<
-    crosapi::mojom::UninstallSource,
-    apps::mojom::UninstallSource>::ToMojom(apps::mojom::UninstallSource input) {
+crosapi::mojom::UninstallSource
+EnumTraits<crosapi::mojom::UninstallSource, apps::UninstallSource>::ToMojom(
+    apps::UninstallSource input) {
   switch (input) {
-    case apps::mojom::UninstallSource::kUnknown:
+    case apps::UninstallSource::kUnknown:
       return crosapi::mojom::UninstallSource::kUnknown;
-    case apps::mojom::UninstallSource::kAppList:
+    case apps::UninstallSource::kAppList:
       return crosapi::mojom::UninstallSource::kAppList;
-    case apps::mojom::UninstallSource::kAppManagement:
+    case apps::UninstallSource::kAppManagement:
       return crosapi::mojom::UninstallSource::kAppManagement;
-    case apps::mojom::UninstallSource::kShelf:
+    case apps::UninstallSource::kShelf:
       return crosapi::mojom::UninstallSource::kShelf;
-    case apps::mojom::UninstallSource::kMigration:
+    case apps::UninstallSource::kMigration:
       return crosapi::mojom::UninstallSource::kMigration;
   }
 
   NOTREACHED();
 }
 
-bool EnumTraits<crosapi::mojom::UninstallSource, apps::mojom::UninstallSource>::
+bool EnumTraits<crosapi::mojom::UninstallSource, apps::UninstallSource>::
     FromMojom(crosapi::mojom::UninstallSource input,
-              apps::mojom::UninstallSource* output) {
+              apps::UninstallSource* output) {
   switch (input) {
     case crosapi::mojom::UninstallSource::kUnknown:
-      *output = apps::mojom::UninstallSource::kUnknown;
+      *output = apps::UninstallSource::kUnknown;
       return true;
     case crosapi::mojom::UninstallSource::kAppList:
-      *output = apps::mojom::UninstallSource::kAppList;
+      *output = apps::UninstallSource::kAppList;
       return true;
     case crosapi::mojom::UninstallSource::kAppManagement:
-      *output = apps::mojom::UninstallSource::kAppManagement;
+      *output = apps::UninstallSource::kAppManagement;
       return true;
     case crosapi::mojom::UninstallSource::kShelf:
-      *output = apps::mojom::UninstallSource::kShelf;
+      *output = apps::UninstallSource::kShelf;
       return true;
     case crosapi::mojom::UninstallSource::kMigration:
-      *output = apps::mojom::UninstallSource::kMigration;
+      *output = apps::UninstallSource::kMigration;
       return true;
   }
 

@@ -56,6 +56,6 @@ void MockCrosapiAppServiceProxy::SetSupportedLinksPreference(
 
 void MockCrosapiAppServiceProxy::UninstallSilently(
     const std::string& app_id,
-    apps::mojom::UninstallSource uninstall_source) {}
+    UninstallSource uninstall_source) {}
 
 }  // namespace apps

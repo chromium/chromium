@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -70,7 +71,7 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsControllerTest, Uninstall) {
   std::unique_ptr<LacrosExtensionAppsController> controller =
       LacrosExtensionAppsController::MakeForChromeApps();
   controller->Uninstall(lacros_extensions_util::MuxId(profile(), extension),
-                        apps::mojom::UninstallSource::kAppList,
+                        apps::UninstallSource::kAppList,
                         /*clear_site_data=*/true,
                         /*report_abuse=*/true);
 

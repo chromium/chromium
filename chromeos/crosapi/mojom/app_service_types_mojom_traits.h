@@ -226,12 +226,10 @@ struct EnumTraits<crosapi::mojom::PatternMatchType, apps::PatternMatchType> {
 };
 
 template <>
-struct EnumTraits<crosapi::mojom::UninstallSource,
-                  apps::mojom::UninstallSource> {
-  static crosapi::mojom::UninstallSource ToMojom(
-      apps::mojom::UninstallSource input);
+struct EnumTraits<crosapi::mojom::UninstallSource, apps::UninstallSource> {
+  static crosapi::mojom::UninstallSource ToMojom(apps::UninstallSource input);
   static bool FromMojom(crosapi::mojom::UninstallSource input,
-                        apps::mojom::UninstallSource* output);
+                        apps::UninstallSource* output);
 };
 
 template <>

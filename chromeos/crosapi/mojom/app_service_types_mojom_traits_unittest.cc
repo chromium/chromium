@@ -667,46 +667,46 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripIntentFilters) {
 
 // Test that serialization and deserialization works with uninstall source.
 TEST(AppServiceTypesMojomTraitsTest, RoundTripUninstallSource) {
-  apps::mojom::UninstallSource input;
+  apps::UninstallSource input;
   {
-    input = apps::mojom::UninstallSource::kUnknown;
-    apps::mojom::UninstallSource output;
+    input = apps::UninstallSource::kUnknown;
+    apps::UninstallSource output;
     ASSERT_TRUE(
         mojo::test::SerializeAndDeserialize<crosapi::mojom::UninstallSource>(
             input, output));
-    EXPECT_EQ(output, apps::mojom::UninstallSource::kUnknown);
+    EXPECT_EQ(output, apps::UninstallSource::kUnknown);
   }
   {
-    input = apps::mojom::UninstallSource::kAppList;
-    apps::mojom::UninstallSource output;
+    input = apps::UninstallSource::kAppList;
+    apps::UninstallSource output;
     ASSERT_TRUE(
         mojo::test::SerializeAndDeserialize<crosapi::mojom::UninstallSource>(
             input, output));
-    EXPECT_EQ(output, apps::mojom::UninstallSource::kAppList);
+    EXPECT_EQ(output, apps::UninstallSource::kAppList);
   }
   {
-    input = apps::mojom::UninstallSource::kAppManagement;
-    apps::mojom::UninstallSource output;
+    input = apps::UninstallSource::kAppManagement;
+    apps::UninstallSource output;
     ASSERT_TRUE(
         mojo::test::SerializeAndDeserialize<crosapi::mojom::UninstallSource>(
             input, output));
-    EXPECT_EQ(output, apps::mojom::UninstallSource::kAppManagement);
+    EXPECT_EQ(output, apps::UninstallSource::kAppManagement);
   }
   {
-    input = apps::mojom::UninstallSource::kShelf;
-    apps::mojom::UninstallSource output;
+    input = apps::UninstallSource::kShelf;
+    apps::UninstallSource output;
     ASSERT_TRUE(
         mojo::test::SerializeAndDeserialize<crosapi::mojom::UninstallSource>(
             input, output));
-    EXPECT_EQ(output, apps::mojom::UninstallSource::kShelf);
+    EXPECT_EQ(output, apps::UninstallSource::kShelf);
   }
   {
-    input = apps::mojom::UninstallSource::kMigration;
-    apps::mojom::UninstallSource output;
+    input = apps::UninstallSource::kMigration;
+    apps::UninstallSource output;
     ASSERT_TRUE(
         mojo::test::SerializeAndDeserialize<crosapi::mojom::UninstallSource>(
             input, output));
-    EXPECT_EQ(output, apps::mojom::UninstallSource::kMigration);
+    EXPECT_EQ(output, apps::UninstallSource::kMigration);
   }
 }
 

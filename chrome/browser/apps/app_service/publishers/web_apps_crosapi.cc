@@ -247,8 +247,9 @@ void WebAppsCrosapi::Uninstall(const std::string& app_id,
     return;
   }
 
-  controller_->Uninstall(app_id, uninstall_source, clear_site_data,
-                         report_abuse);
+  controller_->Uninstall(
+      app_id, ConvertMojomUninstallSourceToUninstallSource(uninstall_source),
+      clear_site_data, report_abuse);
 }
 
 void WebAppsCrosapi::GetMenuModel(const std::string& app_id,

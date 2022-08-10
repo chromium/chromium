@@ -420,8 +420,9 @@ void StandaloneBrowserExtensionApps::Uninstall(
   if (!controller_.is_bound())
     return;
 
-  controller_->Uninstall(app_id, uninstall_source, clear_site_data,
-                         report_abuse);
+  controller_->Uninstall(
+      app_id, ConvertMojomUninstallSourceToUninstallSource(uninstall_source),
+      clear_site_data, report_abuse);
 }
 
 void StandaloneBrowserExtensionApps::SetWindowMode(
