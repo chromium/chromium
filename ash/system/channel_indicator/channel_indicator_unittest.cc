@@ -70,37 +70,40 @@ TEST_P(ChannelIndicatorViewTest, Visible) {
   UnifiedSystemTray* tray =
       StatusAreaWidgetTestHelper::GetStatusAreaWidget()->unified_system_tray();
   ChannelIndicatorView* channel_indicator_view = tray->channel_indicator_view();
-  DCHECK(channel_indicator_view);
 
-  // The `ChannelIndicatorView` should be visible for BETA, DEV, and CANARY
-  // channels, not visible otherwise.
-  EXPECT_EQ(channel_indicator_view->GetVisible(),
-            channel_indicator_utils::IsDisplayableChannel(
-                shell_delegate->GetChannel()));
-
-  // If the view is visible, verify what we display depending on the session
-  // state.
-  if (channel_indicator_view->GetVisible()) {
-    // User is not logged in, view should display text, no image.
-    SetSessionState(session_manager::SessionState::LOGIN_PRIMARY);
-    EXPECT_TRUE(channel_indicator_view->IsLabelVisibleForTesting());
-    EXPECT_FALSE(channel_indicator_view->IsImageViewVisibleForTesting());
-
-    // User is logged in, view should display image, no text.
-    SetSessionState(session_manager::SessionState::ACTIVE);
-    EXPECT_FALSE(channel_indicator_view->IsLabelVisibleForTesting());
-    EXPECT_TRUE(channel_indicator_view->IsImageViewVisibleForTesting());
-
-    // User locks the session, view should display text, no image.
-    SetSessionState(session_manager::SessionState::LOCKED);
-    EXPECT_TRUE(channel_indicator_view->IsLabelVisibleForTesting());
-    EXPECT_FALSE(channel_indicator_view->IsImageViewVisibleForTesting());
-
-    // User is logged in again, view should display image, no text.
-    SetSessionState(session_manager::SessionState::ACTIVE);
-    EXPECT_FALSE(channel_indicator_view->IsLabelVisibleForTesting());
-    EXPECT_TRUE(channel_indicator_view->IsImageViewVisibleForTesting());
+  // If the channel is not displayable, there should be no view and the test is
+  // complete.
+  if (!channel_indicator_utils::IsDisplayableChannel(
+          shell_delegate->GetChannel())) {
+    EXPECT_FALSE(channel_indicator_view);
+    EXPECT_FALSE(tray->ShouldChannelIndicatorBeShown());
+    return;
   }
+
+  // Otherwise the view exists, should be shown, and is visible.
+  EXPECT_TRUE(channel_indicator_view);
+  EXPECT_TRUE(tray->ShouldChannelIndicatorBeShown());
+  EXPECT_TRUE(channel_indicator_view->GetVisible());
+
+  // User is not logged in, view should display text, no image.
+  SetSessionState(session_manager::SessionState::LOGIN_PRIMARY);
+  EXPECT_TRUE(channel_indicator_view->IsLabelVisibleForTesting());
+  EXPECT_FALSE(channel_indicator_view->IsImageViewVisibleForTesting());
+
+  // User is logged in, view should display image, no text.
+  SetSessionState(session_manager::SessionState::ACTIVE);
+  EXPECT_FALSE(channel_indicator_view->IsLabelVisibleForTesting());
+  EXPECT_TRUE(channel_indicator_view->IsImageViewVisibleForTesting());
+
+  // User locks the session, view should display text, no image.
+  SetSessionState(session_manager::SessionState::LOCKED);
+  EXPECT_TRUE(channel_indicator_view->IsLabelVisibleForTesting());
+  EXPECT_FALSE(channel_indicator_view->IsImageViewVisibleForTesting());
+
+  // User is logged in again, view should display image, no text.
+  SetSessionState(session_manager::SessionState::ACTIVE);
+  EXPECT_FALSE(channel_indicator_view->IsLabelVisibleForTesting());
+  EXPECT_TRUE(channel_indicator_view->IsImageViewVisibleForTesting());
 }
 
 }  // namespace ash

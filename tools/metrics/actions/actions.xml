@@ -32796,6 +32796,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Tray_ShowChannelInfo">
+  <owner>rtinkoff@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <description>
+    Records when the channel indicator icon is displayed in the system tray.
+    This is ChromeOS-specific.
+  </description>
+</action>
+
 <action name="Tray_ShowChannelInfoAdditionalDetails">
   <owner>rtinkoff@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>

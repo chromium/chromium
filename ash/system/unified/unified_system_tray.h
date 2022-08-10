@@ -215,6 +215,9 @@ class ASH_EXPORT UnifiedSystemTray
   // Whether the bubble is currently showing the calendar view.
   bool IsShowingCalendarView() const;
 
+  // Returns whether the channel indicator should be shown.
+  bool ShouldChannelIndicatorBeShown() const;
+
   std::u16string GetAccessibleNameForQuickSettingsBubble();
 
   AshMessagePopupCollection* GetMessagePopupCollection();
