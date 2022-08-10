@@ -75,13 +75,13 @@ class DisplayItemListTest : public testing::Test {
   }
 };
 
-#define EXPECT_TRACED_RECT(x, y, width, height, rect_list)              \
-  do {                                                                  \
-    ASSERT_EQ(4u, rect_list->GetListDeprecated().size());               \
-    EXPECT_EQ(x, rect_list->GetListDeprecated()[0].GetIfDouble());      \
-    EXPECT_EQ(y, rect_list->GetListDeprecated()[1].GetIfDouble());      \
-    EXPECT_EQ(width, rect_list->GetListDeprecated()[2].GetIfDouble());  \
-    EXPECT_EQ(height, rect_list->GetListDeprecated()[3].GetIfDouble()); \
+#define EXPECT_TRACED_RECT(x, y, width, height, rect_list) \
+  do {                                                     \
+    ASSERT_EQ(4u, rect_list->size());                      \
+    EXPECT_EQ(x, (*rect_list)[0].GetIfDouble());           \
+    EXPECT_EQ(y, (*rect_list)[1].GetIfDouble());           \
+    EXPECT_EQ(width, (*rect_list)[2].GetIfDouble());       \
+    EXPECT_EQ(height, (*rect_list)[3].GetIfDouble());      \
   } while (false)
 
 // AddToValue should not crash if there are different numbers of visual_rect
@@ -106,34 +106,35 @@ TEST_F(DisplayItemListTest, TraceEmptyVisualRect) {
   // Pass: we don't crash
   std::unique_ptr<base::Value> root = ToBaseValue(list.get(), true);
 
-  const base::DictionaryValue* root_dict;
-  ASSERT_TRUE(root->GetAsDictionary(&root_dict));
-  const base::DictionaryValue* params_dict;
-  ASSERT_TRUE(root_dict->GetDictionary("params", &params_dict));
-  const base::ListValue* items;
-  ASSERT_TRUE(params_dict->GetList("items", &items));
-  ASSERT_EQ(2u, items->GetListDeprecated().size());
+  const base::Value::Dict* root_dict = root->GetIfDict();
+  ASSERT_NE(nullptr, root_dict);
+  const base::Value::Dict* params_dict = root_dict->FindDict("params");
+  ASSERT_NE(nullptr, params_dict);
+  const base::Value::List* items = params_dict->FindList("items");
+  ASSERT_NE(nullptr, items);
+  ASSERT_EQ(2u, items->size());
 
-  const base::Value* item_value;
-  const base::DictionaryValue* item_dict;
-  const base::ListValue* visual_rect;
-  std::string name;
+  const base::Value::Dict* item_dict;
+  const base::Value::List* visual_rect;
+  const std::string* name;
 
-  item_value = &items->GetListDeprecated()[0];
-  ASSERT_TRUE(item_value->is_dict());
-  item_dict = &base::Value::AsDictionaryValue(*item_value);
-  ASSERT_TRUE(item_dict->GetList("visual_rect", &visual_rect));
+  item_dict = ((*items)[0]).GetIfDict();
+  ASSERT_NE(nullptr, item_dict);
+  visual_rect = item_dict->FindList("visual_rect");
+  ASSERT_NE(nullptr, visual_rect);
   EXPECT_TRACED_RECT(0, 0, 0, 0, visual_rect);
-  EXPECT_TRUE(item_dict->GetString("name", &name));
-  EXPECT_EQ("DrawRect", name);
+  name = item_dict->FindString("name");
+  ASSERT_NE(nullptr, name);
+  EXPECT_EQ("DrawRect", *name);
 
-  item_value = &items->GetListDeprecated()[1];
-  ASSERT_TRUE(item_value->is_dict());
-  item_dict = &base::Value::AsDictionaryValue(*item_value);
-  ASSERT_TRUE(item_dict->GetList("visual_rect", &visual_rect));
+  item_dict = ((*items)[1]).GetIfDict();
+  ASSERT_NE(nullptr, item_dict);
+  visual_rect = item_dict->FindList("visual_rect");
+  ASSERT_NE(nullptr, visual_rect);
   EXPECT_TRACED_RECT(8, 9, 10, 10, visual_rect);
-  EXPECT_TRUE(item_dict->GetString("name", &name));
-  EXPECT_EQ("DrawRect", name);
+  name = item_dict->FindString("name");
+  ASSERT_NE(nullptr, name);
+  EXPECT_EQ("DrawRect", *name);
 }
 
 TEST_F(DisplayItemListTest, SingleUnpairedRange) {
@@ -460,45 +461,50 @@ TEST_F(DisplayItemListTest, AsValueWithNoOps) {
 
   // Pass |true| to ask for PaintOps even though there are none.
   std::unique_ptr<base::Value> root = ToBaseValue(list.get(), true);
-  const base::DictionaryValue* root_dict;
-  ASSERT_TRUE(root->GetAsDictionary(&root_dict));
+  const base::Value::Dict* root_dict = root->GetIfDict();
+  ASSERT_NE(nullptr, root_dict);
   // The traced value has a params dictionary as its root.
   {
-    const base::DictionaryValue* params_dict;
-    ASSERT_TRUE(root_dict->GetDictionary("params", &params_dict));
+    const base::Value::Dict* params_dict = root_dict->FindDict("params");
+    ASSERT_NE(nullptr, params_dict);
 
     // The real contents of the traced value is in here.
     {
-      const base::ListValue* params_list;
+      const base::Value::List* params_list;
 
       // The layer_rect field is present by empty.
-      ASSERT_TRUE(params_dict->GetList("layer_rect", &params_list));
+      params_list = params_dict->FindList("layer_rect");
+      ASSERT_NE(nullptr, params_list);
       EXPECT_TRACED_RECT(0, 0, 0, 0, params_list);
 
       // The items list is there but empty.
-      ASSERT_TRUE(params_dict->GetList("items", &params_list));
-      EXPECT_EQ(0u, params_list->GetListDeprecated().size());
+      params_list = params_dict->FindList("items");
+      ASSERT_NE(nullptr, params_list);
+      EXPECT_EQ(0u, params_list->size());
     }
   }
 
   // Pass |false| to not include PaintOps.
   root = ToBaseValue(list.get(), false);
-  ASSERT_TRUE(root->GetAsDictionary(&root_dict));
+  root_dict = root->GetIfDict();
+  ASSERT_NE(nullptr, root_dict);
   // The traced value has a params dictionary as its root.
   {
-    const base::DictionaryValue* params_dict;
-    ASSERT_TRUE(root_dict->GetDictionary("params", &params_dict));
+    const base::Value::Dict* params_dict = root_dict->FindDict("params");
+    ASSERT_NE(nullptr, params_dict);
 
     // The real contents of the traced value is in here.
     {
-      const base::ListValue* params_list;
+      const base::Value::List* params_list;
 
       // The layer_rect field is present by empty.
-      ASSERT_TRUE(params_dict->GetList("layer_rect", &params_list));
+      params_list = params_dict->FindList("layer_rect");
+      ASSERT_NE(nullptr, params_list);
       EXPECT_TRACED_RECT(0, 0, 0, 0, params_list);
 
       // The items list is not there since we asked for no ops.
-      ASSERT_FALSE(params_dict->GetList("items", &params_list));
+      params_list = params_dict->FindList("items");
+      ASSERT_EQ(nullptr, params_list);
     }
   }
 }
@@ -542,24 +548,25 @@ TEST_F(DisplayItemListTest, AsValueWithOps) {
 
   // Pass |true| to ask for PaintOps to be included.
   std::unique_ptr<base::Value> root = ToBaseValue(list.get(), true);
-  const base::DictionaryValue* root_dict;
-  ASSERT_TRUE(root->GetAsDictionary(&root_dict));
+  const base::Value::Dict* root_dict = root->GetIfDict();
+  ASSERT_NE(nullptr, root_dict);
   // The traced value has a params dictionary as its root.
   {
-    const base::DictionaryValue* params_dict;
-    ASSERT_TRUE(root_dict->GetDictionary("params", &params_dict));
+    const base::Value::Dict* params_dict = root_dict->FindDict("params");
+    ASSERT_NE(nullptr, params_dict);
 
     // The real contents of the traced value is in here.
     {
-      const base::ListValue* layer_rect_list;
+      const base::Value::List* layer_rect_list =
+          params_dict->FindList("layer_rect");
       // The layer_rect field is present and has the bounds of the rtree.
-      ASSERT_TRUE(params_dict->GetList("layer_rect", &layer_rect_list));
+      ASSERT_NE(nullptr, layer_rect_list);
       EXPECT_TRACED_RECT(2, 3, 8, 9, layer_rect_list);
 
       // The items list has 3 things in it since we built 3 visual rects.
-      const base::ListValue* items;
-      ASSERT_TRUE(params_dict->GetList("items", &items));
-      ASSERT_EQ(7u, items->GetListDeprecated().size());
+      const base::Value::List* items = params_dict->FindList("items");
+      ASSERT_NE(nullptr, items);
+      ASSERT_EQ(7u, items->size());
 
       const char* expected_names[] = {"Save",      "Concat",   "SaveLayer",
                                       "Translate", "DrawRect", "Restore",
@@ -567,43 +574,45 @@ TEST_F(DisplayItemListTest, AsValueWithOps) {
       bool expected_has_skp[] = {false, true, true, true, true, false, false};
 
       for (int i = 0; i < 7; ++i) {
-        const base::Value& item_value = items->GetListDeprecated()[i];
+        const base::Value& item_value = (*items)[i];
         ASSERT_TRUE(item_value.is_dict());
-        const base::DictionaryValue& item_dict =
-            base::Value::AsDictionaryValue(item_value);
+        const base::Value::Dict& item_dict = item_value.GetDict();
 
-        const base::ListValue* visual_rect;
-        ASSERT_TRUE(item_dict.GetList("visual_rect", &visual_rect));
+        const base::Value::List* visual_rect =
+            item_dict.FindList("visual_rect");
+        ASSERT_NE(nullptr, visual_rect);
         EXPECT_TRACED_RECT(2, 3, 8, 9, visual_rect);
 
-        std::string name;
-        EXPECT_TRUE(item_dict.GetString("name", &name));
-        EXPECT_EQ(expected_names[i], name);
+        const std::string* name = item_dict.FindString("name");
+        EXPECT_NE(nullptr, name);
+        EXPECT_EQ(expected_names[i], *name);
 
-        EXPECT_EQ(
-            expected_has_skp[i],
-            item_dict.GetString("skp64", static_cast<std::string*>(nullptr)));
+        EXPECT_EQ(expected_has_skp[i],
+                  item_dict.FindString("skp64") != nullptr);
       }
     }
   }
 
   // Pass |false| to not include PaintOps.
   root = ToBaseValue(list.get(), false);
-  ASSERT_TRUE(root->GetAsDictionary(&root_dict));
+  root_dict = root->GetIfDict();
+  ASSERT_NE(nullptr, root_dict);
   // The traced value has a params dictionary as its root.
   {
-    const base::DictionaryValue* params_dict;
-    ASSERT_TRUE(root_dict->GetDictionary("params", &params_dict));
+    const base::Value::Dict* params_dict = root_dict->FindDict("params");
+    ASSERT_NE(nullptr, params_dict);
 
     // The real contents of the traced value is in here.
     {
-      const base::ListValue* params_list;
+      const base::Value::List* params_list;
       // The layer_rect field is present and has the bounds of the rtree.
-      ASSERT_TRUE(params_dict->GetList("layer_rect", &params_list));
+      params_list = params_dict->FindList("layer_rect");
+      ASSERT_NE(nullptr, params_list);
       EXPECT_TRACED_RECT(2, 3, 8, 9, params_list);
 
       // The items list is not present since we asked for no ops.
-      ASSERT_FALSE(params_dict->GetList("items", &params_list));
+      params_list = params_dict->FindList("items");
+      ASSERT_EQ(nullptr, params_list);
     }
   }
 }
