@@ -13,13 +13,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
+#include "chromeos/ash/components/dbus/shill/shill_property_changed_observer.h"
+#include "chromeos/ash/components/dbus/shill/shill_service_client.h"
 #include "chromeos/ash/components/network/managed_state.h"
 #include "chromeos/ash/components/network/network_handler_callbacks.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/dbus/shill/shill_manager_client.h"
-#include "chromeos/dbus/shill/shill_property_changed_observer.h"
-#include "chromeos/dbus/shill/shill_service_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::internal {

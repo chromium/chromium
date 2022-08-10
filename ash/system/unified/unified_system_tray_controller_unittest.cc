@@ -15,7 +15,7 @@
 #include "ash/system/unified/unified_system_tray_view.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/scoped_refptr.h"
-#include "chromeos/dbus/shill/shill_clients.h"
+#include "chromeos/ash/components/dbus/shill/shill_clients.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "components/prefs/testing_pref_service.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"

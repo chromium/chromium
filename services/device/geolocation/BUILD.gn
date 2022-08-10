@@ -199,6 +199,6 @@ source_set("test_support") {
   ]
 
   if (is_chromeos_ash) {
-    deps += [ "//chromeos/dbus/shill" ]
+    deps += [ "//chromeos/ash/components/dbus/shill" ]
   }
 }

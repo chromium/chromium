@@ -13,7 +13,6 @@ component("dbus") {
     "//chromeos/dbus/common",
     "//chromeos/dbus/constants",
     "//chromeos/dbus/init",
-    "//chromeos/dbus/shill",
     "//dbus",
   ]
   deps = [ "//base" ]
@@ -50,7 +49,6 @@ source_set("unit_tests") {
     "//chromeos/dbus/dlcservice:unit_tests",
     "//chromeos/dbus/power:power_manager_proto",
     "//chromeos/dbus/power:test_support",
-    "//chromeos/dbus/shill:test_support",
     "//chromeos/dbus/tpm_manager",
     "//chromeos/dbus/tpm_manager:tpm_manager_proto",
     "//chromeos/dbus/u2f",

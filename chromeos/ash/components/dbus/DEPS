@@ -11,6 +11,7 @@ include_rules = [
   "+components/policy/proto",
   "+dbus",
   "+crypto",
+  "+net",
   "+testing",
   "+third_party/cros_system_api",
   "+url",

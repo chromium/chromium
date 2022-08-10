@@ -13,7 +13,7 @@ include_rules = [
 
 specific_include_rules = {
   ".*test\.cc": [
-    "+chromeos/dbus",
+    "+chromeos/ash/components/dbus",
     "+services/network/test",
     "+testing",
   ],

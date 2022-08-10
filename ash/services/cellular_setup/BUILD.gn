@@ -21,8 +21,8 @@ static_library("cellular_setup") {
   deps = [
     "//ash/services/cellular_setup/public/mojom",
     "//base",
+    "//chromeos/ash/components/dbus/shill",
     "//chromeos/ash/components/network",
-    "//chromeos/dbus/shill",
     "//dbus",
     "//url",
   ]
@@ -116,8 +116,8 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chromeos/ash/components/dbus/hermes",
+    "//chromeos/ash/components/dbus/shill",
     "//chromeos/ash/components/network:test_support",
-    "//chromeos/dbus/shill",
     "//components/user_manager:test_support",
     "//dbus",
     "//testing/gmock",

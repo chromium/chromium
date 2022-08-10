@@ -29,7 +29,7 @@
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
-#include "chromeos/dbus/shill/fake_shill_profile_client.h"
+#include "chromeos/ash/components/dbus/shill/fake_shill_profile_client.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/proto/chrome_settings.pb.h"
 #include "components/user_manager/user_names.h"

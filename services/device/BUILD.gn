@@ -240,8 +240,8 @@ source_set("tests") {
     ]
     deps += [
       "//chromeos/ash/components/dbus/biod:test_support",
+      "//chromeos/ash/components/dbus/shill",
       "//chromeos/ash/components/network:test_support",
-      "//chromeos/dbus:test_support",
       "//services/device/bluetooth:bluetooth_system_tests",
       "//services/device/fingerprint",
       "//third_party/protobuf:protobuf_lite",

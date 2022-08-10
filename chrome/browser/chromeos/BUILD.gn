@@ -298,6 +298,7 @@ source_set("chromeos") {
     "//chromeos/ash/components/dbus/services",
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/dbus/session_manager:login_manager_proto",
+    "//chromeos/ash/components/dbus/shill",
     "//chromeos/ash/components/dbus/smbprovider",
     "//chromeos/ash/components/dbus/spaced",
     "//chromeos/ash/components/dbus/system_clock",

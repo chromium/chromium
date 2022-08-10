@@ -44,8 +44,8 @@ source_set("hermes_fakes") {
   deps = [
     ":hermes_clients",
     "//base",
+    "//chromeos/ash/components/dbus/shill",
     "//chromeos/dbus/constants",
-    "//chromeos/dbus/shill",
     "//dbus",
   ]
 

@@ -5190,6 +5190,7 @@ static_library("browser") {
       "//chromeos/ash/components/dbus/cryptohome",
       "//chromeos/ash/components/dbus/image_loader",
       "//chromeos/ash/components/dbus/session_manager",
+      "//chromeos/ash/components/dbus/shill",
       "//chromeos/ash/components/dbus/update_engine",
       "//chromeos/ash/components/dbus/userdataauth:userdataauth",
       "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",

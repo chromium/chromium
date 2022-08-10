@@ -6,7 +6,7 @@
 
 #include "base/run_loop.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chromeos/dbus/shill/shill_service_client.h"
+#include "chromeos/ash/components/dbus/shill/shill_service_client.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/test/browser_test.h"
 #include "mojo/public/cpp/bindings/remote.h"
