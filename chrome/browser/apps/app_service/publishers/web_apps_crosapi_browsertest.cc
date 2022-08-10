@@ -113,6 +113,16 @@ class WebAppsCrosapiBrowserTest
   ~WebAppsCrosapiBrowserTest() override = default;
 
  protected:
+  void SetUpOnMainThread() override {
+    crosapi::AshRequiresLacrosBrowserTestBase::SetUpOnMainThread();
+    if (!HasLacrosArgument()) {
+      return;
+    }
+
+    web_app::AppTypeInitializationWaiter(profile(), apps::AppType::kWeb)
+        .Await();
+  }
+
   std::string InstallWebApp(const std::string& start_url,
                             apps::WindowMode mode) {
     crosapi::mojom::StandaloneBrowserTestControllerAsyncWaiter waiter(
