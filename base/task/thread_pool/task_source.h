@@ -149,6 +149,9 @@ class BASE_EXPORT TaskSource : public RefCountedThreadSafe<TaskSource> {
 
   // Returns a TaskSourceSortKey representing the priority of the TaskSource.
   virtual TaskSourceSortKey GetSortKey(bool disable_fair_scheduling) const = 0;
+  // Returns a Timeticks object representing the next delayed runtime of the
+  // TaskSource.
+  virtual TimeTicks GetDelayedSortKey() const = 0;
 
   // Support for IntrusiveHeap.
   void SetHeapHandle(const HeapHandle& handle);

@@ -120,6 +120,7 @@ class BASE_EXPORT Sequence : public TaskSource {
   size_t GetRemainingConcurrency() const override;
   TaskSourceSortKey GetSortKey(
       bool disable_fair_scheduling = false) const override;
+  TimeTicks GetDelayedSortKey() const override;
 
   // Returns a token that uniquely identifies this Sequence.
   const SequenceToken& token() const { return token_; }
@@ -169,6 +170,8 @@ class BASE_EXPORT Sequence : public TaskSource {
   bool HasReadyTasks(TimeTicks now) const;
 
   bool IsEmpty() const;
+
+  TimeTicks GetReadyTime() const;
 
   // Releases reference to TaskRunner.
   void ReleaseTaskRunner();

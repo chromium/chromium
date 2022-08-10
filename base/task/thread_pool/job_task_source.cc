@@ -376,6 +376,12 @@ TaskSourceSortKey JobTaskSource::GetSortKey(
                            TS_UNCHECKED_READ(state_).Load().worker_count());
 }
 
+// This function isn't expected to be called since a job is never delayed.
+// However, the class still needs to provide an override.
+TimeTicks JobTaskSource::GetDelayedSortKey() const {
+  return TimeTicks();
+}
+
 Task JobTaskSource::Clear(TaskSource::Transaction* transaction) {
   Cancel();
   // Nothing is cleared since other workers might still racily run tasks. For

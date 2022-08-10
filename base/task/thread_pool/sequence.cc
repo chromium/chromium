@@ -293,6 +293,10 @@ TaskSourceSortKey Sequence::GetSortKey(
                            ready_time_.load(std::memory_order_relaxed));
 }
 
+TimeTicks Sequence::GetDelayedSortKey() const {
+  return GetReadyTime();
+}
+
 Task Sequence::Clear(TaskSource::Transaction* transaction) {
   CheckedAutoLockMaybe auto_lock(transaction ? nullptr : &lock_);
   // See comment on TaskSource::task_runner_ for lifetime management details.
@@ -345,6 +349,10 @@ Sequence::SequenceLocation Sequence::GetCurrentLocationForTesting() {
 
 bool Sequence::IsEmpty() const {
   return queue_.empty() && delayed_queue_.empty();
+}
+
+TimeTicks Sequence::GetReadyTime() const {
+  return ready_time_.load(std::memory_order_relaxed);
 }
 
 }  // namespace internal

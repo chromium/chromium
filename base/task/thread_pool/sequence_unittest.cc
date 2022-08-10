@@ -739,5 +739,135 @@ TEST(ThreadPoolSequenceTest, TestPushDelayedTaskMethodUsage) {
       { sequence_transaction.PushDelayedTask(std::move(task_a)); });
 }
 
+// Verifies the delayed sort key of a sequence that contains one delayed task.
+// We will also test for the case where we push a delayed task with a runtime
+// earlier than the queue_time of an already pushed immediate task.
+TEST(ThreadPoolSequenceTest, GetDelayedSortKeyMixedtasks) {
+  TimeTicks now = TimeTicks::Now();
+
+  testing::StrictMock<MockTask> mock_task_a;
+  testing::StrictMock<MockTask> mock_task_b;
+
+  scoped_refptr<Sequence> sequence = MakeRefCounted<Sequence>(
+      TaskTraits(), nullptr, TaskSourceExecutionMode::kParallel);
+  Sequence::Transaction sequence_transaction(sequence->BeginTransaction());
+
+  // Create a first delayed task.
+  sequence_transaction.PushDelayedTask(
+      CreateDelayedTask(&mock_task_a, Milliseconds(10), now));
+
+  // Get the delayed sort key (first time).
+  const TimeTicks sort_key_1 = sequence->GetDelayedSortKey();
+
+  // Time advances by 11ms.
+  now += Milliseconds(11);
+
+  // Push an immediate task that should run after the delayed task.
+  auto immediate_task = CreateTask(&mock_task_b, now);
+  sequence_transaction.PushImmediateTask(std::move(immediate_task));
+
+  // Get the delayed sort key (second time).
+  const TimeTicks sort_key_2 = sequence->GetDelayedSortKey();
+
+  // Take the delayed task from the sequence, so that its next delayed runtime
+  // is available for the check below.
+  auto registered_task_source =
+      RegisteredTaskSource::CreateForTesting(sequence);
+  registered_task_source.WillRunTask();
+  absl::optional<Task> take_delayed_task =
+      registered_task_source.TakeTask(&sequence_transaction);
+  ExpectMockTask(&mock_task_a, &take_delayed_task.value());
+  EXPECT_FALSE(take_delayed_task->queue_time.is_null());
+
+  // For correctness.
+  registered_task_source.DidProcessTask(&sequence_transaction);
+  registered_task_source.WillReEnqueue(now, &sequence_transaction);
+
+  // Verify that sort_key_1 is equal to the delayed task latest run time.
+  EXPECT_EQ(take_delayed_task->latest_delayed_run_time(), sort_key_1);
+
+  // Verify that the sort key didn't change after pushing the immediate task.
+  EXPECT_EQ(sort_key_1, sort_key_2);
+
+  // Get the delayed sort key (third time).
+  const TimeTicks sort_key_3 = sequence->GetDelayedSortKey();
+
+  // Take the immediate task from the sequence, so that its queue time
+  // is available for the check below.
+  registered_task_source.WillRunTask();
+  absl::optional<Task> take_immediate_task =
+      registered_task_source.TakeTask(&sequence_transaction);
+  ExpectMockTask(&mock_task_b, &take_immediate_task.value());
+  EXPECT_FALSE(take_immediate_task->queue_time.is_null());
+
+  // Verify that sort_key_1 is equal to the immediate task queue time.
+  EXPECT_EQ(take_immediate_task->queue_time, sort_key_3);
+
+  // DidProcessTask for correctness.
+  registered_task_source.DidProcessTask(&sequence_transaction);
+}
+
+// Test for the case where we push a delayed task to run earlier than the
+// already posted delayed task.
+TEST(ThreadPoolSequenceTest, GetDelayedSortKeyDelayedtasks) {
+  TimeTicks now = TimeTicks::Now();
+
+  testing::StrictMock<MockTask> mock_task_a;
+  testing::StrictMock<MockTask> mock_task_b;
+
+  scoped_refptr<Sequence> sequence = MakeRefCounted<Sequence>(
+      TaskTraits(), nullptr, TaskSourceExecutionMode::kParallel);
+  Sequence::Transaction sequence_transaction(sequence->BeginTransaction());
+
+  // Create a first delayed task.
+  sequence_transaction.PushDelayedTask(
+      CreateDelayedTask(&mock_task_a, Milliseconds(15), now));
+
+  // Get the delayed sort key (first time).
+  const TimeTicks sort_key_1 = sequence->GetDelayedSortKey();
+
+  // Create a first delayed task.
+  sequence_transaction.PushDelayedTask(
+      CreateDelayedTask(&mock_task_b, Milliseconds(10), now));
+
+  // Get the delayed sort key (second time).
+  const TimeTicks sort_key_2 = sequence->GetDelayedSortKey();
+
+  // Time advances by 11ms
+  now += Milliseconds(11);
+
+  auto registered_task_source =
+      RegisteredTaskSource::CreateForTesting(sequence);
+  registered_task_source.OnBecomeReady();
+  registered_task_source.WillRunTask();
+  absl::optional<Task> task =
+      registered_task_source.TakeTask(&sequence_transaction);
+  ExpectMockTask(&mock_task_b, &task.value());
+  EXPECT_FALSE(task->queue_time.is_null());
+
+  // Verify that sort_key_2 is equal to the last posted task latest delayed run
+  // time.
+  EXPECT_EQ(task->latest_delayed_run_time(), sort_key_2);
+
+  // Time advances by 5ms
+  now += Milliseconds(5);
+
+  // For correctness.
+  registered_task_source.DidProcessTask(&sequence_transaction);
+  registered_task_source.WillReEnqueue(now, &sequence_transaction);
+
+  registered_task_source.WillRunTask();
+  task = registered_task_source.TakeTask(&sequence_transaction);
+  ExpectMockTask(&mock_task_a, &task.value());
+  EXPECT_FALSE(task->queue_time.is_null());
+
+  // Verify that sort_key_1 is equal to the first posted task latest delayed run
+  // time.
+  EXPECT_EQ(task->latest_delayed_run_time(), sort_key_1);
+
+  // DidProcessTask for correctness.
+  registered_task_source.DidProcessTask(&sequence_transaction);
+}
+
 }  // namespace internal
 }  // namespace base
