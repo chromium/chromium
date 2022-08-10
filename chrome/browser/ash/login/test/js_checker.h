@@ -235,6 +235,8 @@ class JSChecker {
     web_contents_ = web_contents;
   }
 
+  content::WebContents* web_contents() { return web_contents_; }
+
  private:
   void GetBoolImpl(const std::string& expression, bool* result);
   void GetIntImpl(const std::string& expression, int* result);

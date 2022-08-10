@@ -69,6 +69,29 @@ LockScreenReauthDialogTestHelper::ShowDialogAndWait() {
   return dialog_test_helper;
 }
 
+// static
+absl::optional<LockScreenReauthDialogTestHelper>
+LockScreenReauthDialogTestHelper::StartSamlAndWaitForIdpPageLoad() {
+  absl::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
+      LockScreenReauthDialogTestHelper::ShowDialogAndWait();
+  if (!reauth_dialog_helper.has_value()) {
+    return absl::nullopt;
+  }
+
+  reauth_dialog_helper->ForceSamlRedirect();
+
+  // Expect the 'Verify Account' screen (the first screen the dialog shows) to
+  // be visible and proceed to the SAML page.
+  reauth_dialog_helper->WaitForVerifyAccountScreen();
+  reauth_dialog_helper->ClickVerifyButton();
+
+  reauth_dialog_helper->WaitForSamlScreen();
+  reauth_dialog_helper->ExpectVerifyAccountScreenHidden();
+
+  reauth_dialog_helper->WaitForIdpPageLoad();
+  return reauth_dialog_helper;
+}
+
 bool LockScreenReauthDialogTestHelper::ShowDialogAndWaitImpl() {
   // Check precondition: Screen is locked.
   if (!session_manager::SessionManager::Get()->IsScreenLocked()) {

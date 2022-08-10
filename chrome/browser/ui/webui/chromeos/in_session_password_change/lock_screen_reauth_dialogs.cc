@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/chromeos/in_session_password_change/base_lock_dialog.h"
@@ -110,6 +111,24 @@ gfx::Size LockScreenStartReauthDialog::CalculateLockScreenReauthDialogSize(
   return CalculateOobeDialogSizeForPrimaryDisplay();
 }
 
+void LockScreenStartReauthDialog::RequestMediaAccessPermission(
+    content::WebContents* web_contents,
+    const content::MediaStreamRequest& request,
+    content::MediaResponseCallback callback) {
+  // This is required for accessing the camera for SAML logins.
+  MediaCaptureDevicesDispatcher::GetInstance()->ProcessMediaAccessRequest(
+      web_contents, request, std::move(callback), nullptr /* extension */);
+}
+
+bool LockScreenStartReauthDialog::CheckMediaAccessPermission(
+    content::RenderFrameHost* render_frame_host,
+    const GURL& security_origin,
+    blink::mojom::MediaStreamType type) {
+  // This is required for accessing the camera for SAML logins.
+  return MediaCaptureDevicesDispatcher::GetInstance()
+      ->CheckMediaAccessPermission(render_frame_host, security_origin, type);
+}
+
 void LockScreenStartReauthDialog::Show() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (g_dialog) {
@@ -159,6 +178,13 @@ int LockScreenStartReauthDialog::GetDialogWidth() {
   gfx::Size ret;
   GetDialogSize(&ret);
   return ret.width();
+}
+
+content::WebContents* LockScreenStartReauthDialog::GetWebContents() {
+  auto* web_ui = webui();
+  if (!web_ui)
+    return nullptr;
+  return web_ui->GetWebContents();
 }
 
 void LockScreenStartReauthDialog::DeleteLockScreenNetworkDialog() {

@@ -36,6 +36,12 @@ class LockScreenReauthDialogTestHelper {
   // Returns an empty `absl::optional` if the operation fails.
   static absl::optional<LockScreenReauthDialogTestHelper> ShowDialogAndWait();
 
+  // Triggers the online re-authentication dialog, clicks through VerifyAccount
+  // screen and waits for IdP page to load. Returns an empty `absl::optional` if
+  // the operation fails.
+  static absl::optional<LockScreenReauthDialogTestHelper>
+  StartSamlAndWaitForIdpPageLoad();
+
   ~LockScreenReauthDialogTestHelper();
 
   // Non-copyable, movable.

@@ -291,6 +291,12 @@ int InSessionPasswordSyncManager::GetDialogWidth() {
   return lock_screen_start_reauth_dialog_->GetDialogWidth();
 }
 
+content::WebContents* InSessionPasswordSyncManager::GetDialogWebContents() {
+  if (!lock_screen_start_reauth_dialog_)
+    return nullptr;
+  return lock_screen_start_reauth_dialog_->GetWebContents();
+}
+
 bool InSessionPasswordSyncManager::IsReauthDialogLoadedForTesting(
     base::OnceClosure callback) {
   if (is_dialog_loaded_for_testing_)

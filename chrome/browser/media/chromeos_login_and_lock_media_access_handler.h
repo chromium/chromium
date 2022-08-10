@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_MEDIA_CHROMEOS_LOGIN_MEDIA_ACCESS_HANDLER_H_
-#define CHROME_BROWSER_MEDIA_CHROMEOS_LOGIN_MEDIA_ACCESS_HANDLER_H_
+#ifndef CHROME_BROWSER_MEDIA_CHROMEOS_LOGIN_AND_LOCK_MEDIA_ACCESS_HANDLER_H_
+#define CHROME_BROWSER_MEDIA_CHROMEOS_LOGIN_AND_LOCK_MEDIA_ACCESS_HANDLER_H_
 
 #include "chrome/browser/media/media_access_handler.h"
 
-// MediaAccessHandler for media requests coming from SAML login pages on
-// ChromeOS.
-class ChromeOSLoginMediaAccessHandler : public MediaAccessHandler {
+// MediaAccessHandler for media requests coming from SAML IdP pages on the
+// login/lock screen on ChromeOS.
+class ChromeOSLoginAndLockMediaAccessHandler : public MediaAccessHandler {
  public:
-  ChromeOSLoginMediaAccessHandler();
-  ~ChromeOSLoginMediaAccessHandler() override;
+  ChromeOSLoginAndLockMediaAccessHandler();
+  ~ChromeOSLoginAndLockMediaAccessHandler() override;
 
   // MediaAccessHandler implementation.
   bool SupportsStreamType(content::WebContents* web_contents,
@@ -29,4 +29,4 @@ class ChromeOSLoginMediaAccessHandler : public MediaAccessHandler {
                      const extensions::Extension* extension) override;
 };
 
-#endif  // CHROME_BROWSER_MEDIA_CHROMEOS_LOGIN_MEDIA_ACCESS_HANDLER_H_
+#endif  // CHROME_BROWSER_MEDIA_CHROMEOS_LOGIN_AND_LOCK_MEDIA_ACCESS_HANDLER_H_

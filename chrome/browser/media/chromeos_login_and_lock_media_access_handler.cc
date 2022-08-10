@@ -2,47 +2,59 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/media/chromeos_login_media_access_handler.h"
+#include "chrome/browser/media/chromeos_login_and_lock_media_access_handler.h"
 
 #include <string>
 
 #include "ash/components/settings/cros_settings_names.h"
 #include "base/logging.h"
 #include "base/values.h"
+#include "chrome/browser/ash/login/saml/in_session_password_sync_manager.h"
+#include "chrome/browser/ash/login/saml/in_session_password_sync_manager_factory.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
-#include "chrome/browser/ash/login/ui/webui_login_view.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
-#include "chrome/common/url_constants.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "content/public/browser/render_frame_host.h"
 #include "url/gurl.h"
 
-ChromeOSLoginMediaAccessHandler::ChromeOSLoginMediaAccessHandler() {}
+ChromeOSLoginAndLockMediaAccessHandler::
+    ChromeOSLoginAndLockMediaAccessHandler() = default;
 
-ChromeOSLoginMediaAccessHandler::~ChromeOSLoginMediaAccessHandler() {}
+ChromeOSLoginAndLockMediaAccessHandler::
+    ~ChromeOSLoginAndLockMediaAccessHandler() = default;
 
-bool ChromeOSLoginMediaAccessHandler::SupportsStreamType(
+bool ChromeOSLoginAndLockMediaAccessHandler::SupportsStreamType(
     content::WebContents* web_contents,
     const blink::mojom::MediaStreamType type,
     const extensions::Extension* extension) {
   if (!web_contents)
     return false;
+  // Check if the `web_contents` corresponds to the login screen.
   auto* host = ash::LoginDisplayHost::default_host();
-  return host && web_contents == host->GetOobeWebContents();
+  if (host && web_contents == host->GetOobeWebContents()) {
+    return true;
+  }
+  // Check if the `web_contents` corresponds to the reauthentication dialog that
+  // is shown on the lock screen. This is the case when there is an active user
+  // profile and InSessionPasswordSyncManager for this profile is showing reauth
+  // dialog with the same `web_contents`.
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  if (!profile)
+    return false;
+  auto* password_sync_manager =
+      ash::InSessionPasswordSyncManagerFactory::GetForProfile(profile);
+  return !!password_sync_manager &&
+         web_contents == password_sync_manager->GetDialogWebContents();
 }
 
-bool ChromeOSLoginMediaAccessHandler::CheckMediaAccessPermission(
+bool ChromeOSLoginAndLockMediaAccessHandler::CheckMediaAccessPermission(
     content::RenderFrameHost* render_frame_host,
     const GURL& security_origin,
     blink::mojom::MediaStreamType type,
     const extensions::Extension* extension) {
   if (type != blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE)
     return false;
-
-  // When creating new user (including supervised user), we must be able to use
-  // the camera to capture a user image.
-  if (security_origin.spec() == chrome::kChromeUIOobeURL)
-    return true;
 
   const ash::CrosSettings* const settings = ash::CrosSettings::Get();
   if (!settings)
@@ -55,7 +67,7 @@ bool ChromeOSLoginMediaAccessHandler::CheckMediaAccessPermission(
     return false;
 
   DCHECK(list_value->is_list());
-  for (const auto& base_value : list_value->GetListDeprecated()) {
+  for (const auto& base_value : list_value->GetList()) {
     const std::string* value = base_value.GetIfString();
     if (value) {
       const ContentSettingsPattern pattern =
@@ -73,7 +85,7 @@ bool ChromeOSLoginMediaAccessHandler::CheckMediaAccessPermission(
   return false;
 }
 
-void ChromeOSLoginMediaAccessHandler::HandleRequest(
+void ChromeOSLoginAndLockMediaAccessHandler::HandleRequest(
     content::WebContents* web_contents,
     const content::MediaStreamRequest& request,
     content::MediaResponseCallback callback,

@@ -117,6 +117,9 @@ class InSessionPasswordSyncManager
   // Get lockscreen reauth dialog width.
   int GetDialogWidth();
 
+  // Get web contents of lockscreen reauth dialog.
+  content::WebContents* GetDialogWebContents();
+
   // Check if reauth dialog is loaded and ready for testing.
   bool IsReauthDialogLoadedForTesting(base::OnceClosure callback);
 

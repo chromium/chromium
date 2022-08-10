@@ -35,10 +35,20 @@ class LockScreenStartReauthDialog
   LockScreenStartReauthDialog(LockScreenStartReauthDialog const&) = delete;
   ~LockScreenStartReauthDialog() override;
 
+  // content::WebDialogDelegate
+  void RequestMediaAccessPermission(
+      content::WebContents* web_contents,
+      const content::MediaStreamRequest& request,
+      content::MediaResponseCallback callback) override;
+  bool CheckMediaAccessPermission(content::RenderFrameHost* render_frame_host,
+                                  const GURL& security_origin,
+                                  blink::mojom::MediaStreamType type) override;
+
   void Show();
   void Dismiss();
   bool IsRunning();
   int GetDialogWidth();
+  content::WebContents* GetWebContents();
 
   void DismissLockScreenNetworkDialog();
   void DismissLockScreenCaptivePortalDialog();
