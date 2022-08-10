@@ -46,18 +46,18 @@ class SigninFirstRunViewBinder {
                     model.get(SigninFirstRunProperties.IS_SELECTED_ACCOUNT_SUPERVISED);
             view.getSelectedAccountView().setEnabled(!isSelectedAccountSupervised);
             updateVisibility(view, model);
-        } else if (propertyKey == SigninFirstRunProperties.ARE_NATIVE_AND_POLICY_LOADED) {
-            final boolean areNativeAndPolicyLoaded =
-                    model.get(SigninFirstRunProperties.ARE_NATIVE_AND_POLICY_LOADED);
+        } else if (propertyKey == SigninFirstRunProperties.SHOW_INITIAL_LOAD_PROGRESS_SPINNER) {
+            final boolean showInitialLoadProgressSpinner =
+                    model.get(SigninFirstRunProperties.SHOW_INITIAL_LOAD_PROGRESS_SPINNER);
             final ProgressBar initialLoadProgressSpinner = view.getInitialLoadProgressSpinnerView();
-            if (areNativeAndPolicyLoaded) {
-                TransitionManager.beginDelayedTransition(view);
-                initialLoadProgressSpinner.setVisibility(View.GONE);
-            } else {
+            if (showInitialLoadProgressSpinner) {
                 // The progress spinner is shown at the beginning when layout inflation may not be
                 // complete. So it is not possible to use TransitionManager with a startDelay in
                 // this case.
                 initialLoadProgressSpinner.animate().alpha(1.0f).setStartDelay(500);
+            } else {
+                TransitionManager.beginDelayedTransition(view);
+                initialLoadProgressSpinner.setVisibility(View.GONE);
             }
             updateVisibility(view, model);
         } else if (propertyKey == SigninFirstRunProperties.FRE_POLICY) {
@@ -96,11 +96,11 @@ class SigninFirstRunViewBinder {
     }
 
     private static void updateVisibility(SigninFirstRunView view, PropertyModel model) {
-        final boolean areNativeAndPolicyLoaded =
-                model.get(SigninFirstRunProperties.ARE_NATIVE_AND_POLICY_LOADED);
-        if (areNativeAndPolicyLoaded) view.onNativeAndPoliciesLoaded();
+        final boolean showInitialLoadProgressSpinner =
+                model.get(SigninFirstRunProperties.SHOW_INITIAL_LOAD_PROGRESS_SPINNER);
+        if (!showInitialLoadProgressSpinner) view.applyVariationsExperiment();
 
-        final int selectedAccountVisibility = areNativeAndPolicyLoaded
+        final int selectedAccountVisibility = !showInitialLoadProgressSpinner
                         && model.get(SigninFirstRunProperties.SELECTED_ACCOUNT_DATA) != null
                         && model.get(SigninFirstRunProperties.IS_SIGNIN_SUPPORTED)
                 ? View.VISIBLE
@@ -112,14 +112,15 @@ class SigninFirstRunViewBinder {
                 selectedAccountVisibility == View.VISIBLE && isSelectedAccountSupervised
                         ? View.INVISIBLE
                         : View.VISIBLE);
-        final int dismissButtonVisibility = areNativeAndPolicyLoaded
+        final int dismissButtonVisibility = !showInitialLoadProgressSpinner
                         && model.get(SigninFirstRunProperties.IS_SIGNIN_SUPPORTED)
                         && !isSelectedAccountSupervised
                 ? View.VISIBLE
                 : View.GONE;
         view.getDismissButtonView().setVisibility(dismissButtonVisibility);
 
-        final int otherElementsVisibility = areNativeAndPolicyLoaded ? View.VISIBLE : View.GONE;
+        final int otherElementsVisibility =
+                showInitialLoadProgressSpinner ? View.GONE : View.VISIBLE;
         view.getContinueButtonView().setVisibility(otherElementsVisibility);
         view.getFooterView().setVisibility(otherElementsVisibility);
     }

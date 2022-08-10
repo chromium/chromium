@@ -159,7 +159,7 @@ public class SigninFirstRunMediator
     }
 
     void onNativeAndPolicyLoaded(boolean hasPolicies) {
-        mModel.set(SigninFirstRunProperties.ARE_NATIVE_AND_POLICY_LOADED, true);
+        mModel.set(SigninFirstRunProperties.SHOW_INITIAL_LOAD_PROGRESS_SPINNER, false);
 
         boolean isSigninDisabledByPolicy = false;
         boolean isMetricsReportingDisabledByPolicy = false;
@@ -250,8 +250,8 @@ public class SigninFirstRunMediator
             mDelegate.advanceToNextPage();
             return;
         }
-        assert mModel.get(SigninFirstRunProperties.ARE_NATIVE_AND_POLICY_LOADED)
-            : "The continue button shouldn't be visible before the native is not initialized!";
+        assert !mModel.get(SigninFirstRunProperties.SHOW_INITIAL_LOAD_PROGRESS_SPINNER)
+            : "The continue button shouldn't be visible while the load spinner is shown!";
         mDelegate.recordFreProgressHistogram(
                 TextUtils.equals(mDefaultAccountName, mSelectedAccountName)
                         ? MobileFreProgress.WELCOME_SIGNIN_WITH_DEFAULT_ACCOUNT
@@ -295,8 +295,8 @@ public class SigninFirstRunMediator
      */
     private void onDismissClicked() {
         if (isContinueOrDismissClicked()) return;
-        assert mModel.get(SigninFirstRunProperties.ARE_NATIVE_AND_POLICY_LOADED)
-            : "The dismiss button shouldn't be visible before the native is not initialized!";
+        assert !mModel.get(SigninFirstRunProperties.SHOW_INITIAL_LOAD_PROGRESS_SPINNER)
+            : "The dismiss button shouldn't be visible while the load spinner is shown!";
         mDelegate.recordFreProgressHistogram(MobileFreProgress.WELCOME_DISMISS);
         mDelegate.acceptTermsOfService(mAllowCrashUpload);
         if (IdentityServicesProvider.get()

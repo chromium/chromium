@@ -98,7 +98,7 @@ public class SigninFirstRunView extends RelativeLayout {
     }
 
     /** Updates the title and the subtitle for UI variations on native and policy load. **/
-    void onNativeAndPoliciesLoaded() {
+    void applyVariationsExperiment() {
         Pair<Integer, Integer> titleAndSubtitleId =
                 FREMobileIdentityConsistencyFieldTrial.getVariationTitleAndSubtitle();
         mTitle.setText(titleAndSubtitleId.first);
