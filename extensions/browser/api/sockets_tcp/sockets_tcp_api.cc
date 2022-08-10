@@ -18,7 +18,6 @@
 #include "extensions/browser/api/socket/tcp_socket.h"
 #include "extensions/browser/api/socket/tls_socket.h"
 #include "extensions/browser/api/sockets_tcp/tcp_socket_event_dispatcher.h"
-#include "extensions/common/api/sockets/sockets_manifest_data.h"
 #include "extensions/common/api/sockets_tcp.h"
 #include "net/base/net_errors.h"
 
@@ -129,7 +128,7 @@ ExtensionFunction::ResponseAction SocketsTcpCreateFunction::Work() {
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   ResumableTCPSocket* socket =
-      new ResumableTCPSocket(browser_context(), extension_id());
+      new ResumableTCPSocket(browser_context(), GetOriginId());
 
   sockets_tcp::SocketProperties* properties = params->properties.get();
   if (properties) {
@@ -185,8 +184,7 @@ ExtensionFunction::ResponseAction SocketsTcpSetPausedFunction::Work() {
   if (socket->paused() != params->paused) {
     socket->set_paused(params->paused);
     if (socket->IsConnected() && !params->paused) {
-      socket_event_dispatcher->OnSocketResume(extension_id(),
-                                              params->socket_id);
+      socket_event_dispatcher->OnSocketResume(GetOriginId(), params->socket_id);
     }
   }
 
@@ -291,7 +289,7 @@ ExtensionFunction::ResponseAction SocketsTcpConnectFunction::Work() {
   content::SocketPermissionRequest param(SocketPermissionRequest::TCP_CONNECT,
                                          params_->peer_address,
                                          params_->peer_port);
-  if (!SocketsManifestData::CheckRequest(extension(), param)) {
+  if (!CheckRequest(param)) {
     return RespondNow(Error(kPermissionError));
   }
 
@@ -322,7 +320,7 @@ void SocketsTcpConnectFunction::StartConnect() {
 
 void SocketsTcpConnectFunction::OnCompleted(int net_result) {
   if (net_result == net::OK) {
-    socket_event_dispatcher_->OnSocketConnect(extension_id(),
+    socket_event_dispatcher_->OnSocketConnect(GetOriginId(),
                                               params_->socket_id);
   }
 
@@ -525,7 +523,7 @@ void SocketsTcpSecureFunction::TlsConnectDone(
   auto socket =
       std::make_unique<TLSSocket>(std::move(tls_socket), local_addr, peer_addr,
                                   std::move(receive_pipe_handle),
-                                  std::move(send_pipe_handle), extension_id());
+                                  std::move(send_pipe_handle), GetOriginId());
   socket->set_persistent(persistent_);
   socket->set_paused(paused_);
   ReplaceSocket(params_->socket_id, socket.release());

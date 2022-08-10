@@ -584,10 +584,16 @@
     "dependencies": ["permission:socket"],
     "contexts": ["blessed_extension"]
   },
-  "sockets.tcp": {
+  "sockets.tcp": [{
     "dependencies": ["manifest:sockets"],
     "contexts": ["blessed_extension"]
-  },
+  },{
+    "channel": "stable",
+    "contexts": ["webui_untrusted"],
+    "matches": [
+      "chrome-untrusted://terminal/*"
+    ]
+  }],
   "sockets.tcpServer": {
     "dependencies": ["manifest:sockets"],
     "contexts": ["blessed_extension"]

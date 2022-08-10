@@ -18,10 +18,12 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/common/socket_permission_request.h"
 #include "extensions/browser/api/api_resource_manager.h"
 #include "extensions/browser/api/async_api_function.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/common/api/socket.h"
+#include "extensions/common/permissions/api_permission.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -137,6 +139,16 @@ class SocketApiFunction : public ExtensionFunction {
   // Convenience wrapper for ErrorWithArguments(), where the arguments are just
   // one integer value.
   ResponseValue ErrorWithCode(int error_code, const std::string& error);
+
+  // Either extension_id() or url origin for CrOS Terminal.
+  std::string GetOriginId() const;
+
+  // Checks extension()->permissions_data(), or returns true for CrOS Terminal.
+  bool CheckPermission(const APIPermission::CheckParam& param) const;
+
+  // Checks SocketsManifestData::CheckRequest() if extension(), or returns true
+  // for CrOS Terminal.
+  bool CheckRequest(const content::SocketPermissionRequest& param) const;
 
   virtual std::unique_ptr<SocketResourceManagerInterface>
   CreateSocketResourceManager();
