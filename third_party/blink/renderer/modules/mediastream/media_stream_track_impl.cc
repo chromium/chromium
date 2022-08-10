@@ -954,7 +954,7 @@ void MediaStreamTrackImpl::SendLogMessage(const WTF::String& message) {
           message.Utf8().c_str(), kind().Utf8().c_str(), id().Utf8().c_str(),
           label().Utf8().c_str(), enabled() ? "true" : "false",
           muted() ? "true" : "false", readyState().Utf8().c_str(),
-          component_->Source()->Remote() ? "true" : "false")
+          component_->Remote() ? "true" : "false")
           .Utf8());
 }
 

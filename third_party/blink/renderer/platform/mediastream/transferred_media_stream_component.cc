@@ -45,6 +45,14 @@ int TransferredMediaStreamComponent::UniqueId() const {
   return 0;
 }
 
+bool TransferredMediaStreamComponent::Remote() const {
+  if (component_) {
+    return component_->Remote();
+  }
+  // TODO(crbug.com/1288839): Return the transferred value
+  return false;
+}
+
 bool TransferredMediaStreamComponent::Enabled() const {
   if (component_) {
     return component_->Enabled();

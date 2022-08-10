@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/mediastream/media_constraints.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_track_platform.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -49,7 +50,6 @@
 
 namespace blink {
 
-class MediaStreamSource;
 class WebLocalFrame;
 
 class PLATFORM_EXPORT MediaStreamComponentImpl final
@@ -82,6 +82,7 @@ class PLATFORM_EXPORT MediaStreamComponentImpl final
 
   String Id() const override { return id_; }
   int UniqueId() const override { return unique_id_; }
+  bool Remote() const override { return Source()->Remote(); }
   bool Enabled() const override { return enabled_; }
   void SetEnabled(bool enabled) override { enabled_ = enabled; }
   WebMediaStreamTrack::ContentHintType ContentHint() override {

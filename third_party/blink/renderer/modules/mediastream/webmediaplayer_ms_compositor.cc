@@ -214,7 +214,7 @@ WebMediaPlayerMSCompositor::WebMediaPlayerMSCompositor(
     video_components = media_stream_descriptor->VideoComponents();
 
   const bool remote_video =
-      video_components.size() && video_components[0]->Source()->Remote();
+      video_components.size() && video_components[0]->Remote();
 
   if (remote_video && Platform::Current()->RTCSmoothnessAlgorithmEnabled()) {
     base::AutoLock auto_lock(current_frame_lock_);

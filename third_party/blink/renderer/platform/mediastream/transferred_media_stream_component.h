@@ -39,6 +39,7 @@ class PLATFORM_EXPORT TransferredMediaStreamComponent final
 
   String Id() const override;
   int UniqueId() const override;
+  bool Remote() const override;
   bool Enabled() const override;
   void SetEnabled(bool enabled) override;
   WebMediaStreamTrack::ContentHintType ContentHint() override;
