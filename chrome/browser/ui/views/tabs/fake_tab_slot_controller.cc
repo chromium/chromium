@@ -106,10 +106,6 @@ absl::optional<int> FakeTabSlotController::GetCustomBackgroundId(
   return absl::nullopt;
 }
 
-gfx::Rect FakeTabSlotController::GetTabAnimationTargetBounds(const Tab* tab) {
-  return tab->bounds();
-}
-
 std::u16string FakeTabSlotController::GetAccessibleTabName(
     const Tab* tab) const {
   return std::u16string();

@@ -94,12 +94,6 @@ class GM2TabStyle : public TabStyleViews {
   float GetHoverInterpolatedSeparatorOpacity(bool for_layout,
                                              const Tab* other_tab) const;
 
-  // Helper that returns an interpolated opacity if the tab is
-  // mid-bounds-animation. Used only for the first and last tabs, since those
-  // are the primary cases where separator opacity is likely to change during
-  // a bounds animation.
-  float GetBoundsInterpolatedSeparatorOpacity() const;
-
   // Returns whether we shoould extend the hit test region for Fitts' Law.
   bool ShouldExtendHitTest() const;
 
@@ -668,10 +662,6 @@ float GM2TabStyle::GetSeparatorOpacity(bool for_layout, bool leading) const {
     // sufficient contrast against the empty gap, so this contingency isn't
     // needed. Therefore, the separator is hidden only for tabs with visible
     // backgrounds.
-    // TODO(crbug.com/876599): This value should be interpolated because the
-    // separator may be going from shown (the default) to hidden (when animating
-    // past an empty gap like this). This should behave similarly to
-    // GetBoundsInterpolatedSeparatorOpacity(), but not just for the end slots.
     if (adjacent_tab->IsSelected())
       return 0.0f;
   }
@@ -686,11 +676,11 @@ float GM2TabStyle::GetSeparatorOpacity(bool for_layout, bool leading) const {
   }
 
   // If the tab does not have a visible background and is in the first slot,
-  // make sure the opacity is interpolated correctly when it animates into
-  // position, since the separator is likely going from shown (the default) to
-  // hidden (in the first slot). See GetBoundsInterpolatedSeparatorOpacity().
+  // do not show the separator. This once was interpolated based on the tab's
+  // progress through animating into this slot, but that was removed because the
+  // visual impact was minimal and
   if (!adjacent_tab && leading)
-    return GetBoundsInterpolatedSeparatorOpacity();
+    return 0.0f;
 
   return GetHoverInterpolatedSeparatorOpacity(for_layout, adjacent_tab);
 }
@@ -711,22 +701,6 @@ float GM2TabStyle::GetHoverInterpolatedSeparatorOpacity(
   };
   const float hover_value = GetHoverAnimationValue();
   return 1.0f - std::max(hover_value, adjacent_hover_value(other_tab));
-}
-
-float GM2TabStyle::GetBoundsInterpolatedSeparatorOpacity() const {
-  // When the bounds of a tab are animating, fade the separator based on how
-  // close to the target bounds this tab is. This function is only called
-  // when the target bounds are an end slot. That means this function will fade
-  // the separators in or out as a tab animtes into the end slot, but it will
-  // not be called if the tab is animating out of the end slot. In that case,
-  // the separator will snap to full opacity immediately, which is visually
-  // consistent with other bounds animations.
-  const gfx::Rect target_bounds =
-      tab_->controller()->GetTabAnimationTargetBounds(tab_);
-  const int tab_width = std::max(tab_->width(), target_bounds.width());
-  return static_cast<float>(
-             std::min(std::abs(tab_->x() - target_bounds.x()), tab_width)) /
-         tab_width;
 }
 
 bool GM2TabStyle::ShouldExtendHitTest() const {

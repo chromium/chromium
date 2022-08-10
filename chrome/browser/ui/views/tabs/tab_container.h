@@ -18,7 +18,6 @@
 #include "ui/views/view_model.h"
 
 class TabStrip;
-class TabStripLayoutHelper;
 
 // A View that contains a sequence of Tabs for the TabStrip.
 
@@ -43,6 +42,9 @@ class TabContainer : public views::View, public BrowserRootView::DropTarget {
   virtual void MoveTab(int from_model_index, int to_model_index) = 0;
   virtual void RemoveTab(int index, bool was_active) = 0;
   virtual void SetTabPinned(int model_index, TabPinned pinned) = 0;
+  // Changes the active tab from |prev_active_index| to |new_active_index|.
+  virtual void SetActiveTab(absl::optional<size_t> prev_active_index,
+                            absl::optional<size_t> new_active_index) = 0;
 
   // `view` is no longer being dragged. This TabContainer takes ownership of it
   // in the view hierarchy.
@@ -67,15 +69,12 @@ class TabContainer : public views::View, public BrowserRootView::DropTarget {
   virtual void NotifyTabGroupEditorBubbleClosed() = 0;
 
   virtual int GetModelIndexOf(const TabSlotView* slot_view) const = 0;
-
-  // TODO (1346023): Move callers down into TabContainer so this
-  // encapsulation-breaking getter can be removed.
-  virtual views::ViewModelT<Tab>* GetTabsViewModel() = 0;
-
-  // Returns the tab at `index` from the viewmodel.
   virtual Tab* GetTabAtModelIndex(int index) const = 0;
-
   virtual int GetTabCount() const = 0;
+
+  // Returns the model index of the first tab after (or including) `tab` which
+  // is not closing.
+  virtual int GetModelIndexOfFirstNonClosingTab(Tab* tab) const = 0;
 
   virtual void UpdateHoverCard(
       Tab* tab,
@@ -130,12 +129,22 @@ class TabContainer : public views::View, public BrowserRootView::DropTarget {
 
   virtual bool InTabClose() = 0;
 
-  // TODO (1346023): Move callers down into TabContainer so these
-  // encapsulation-breaking getters can be removed.
-  virtual TabStripLayoutHelper* GetLayoutHelper() const = 0;
   virtual std::map<tab_groups::TabGroupId, std::unique_ptr<TabGroupViews>>&
   GetGroupViews() = 0;
-  virtual views::BoundsAnimator& GetBoundsAnimator() = 0;
+
+  // Returns the current width of the active tab.
+  virtual int GetActiveTabWidth() const = 0;
+
+  // Returns the current width of inactive tabs.
+  virtual int GetInactiveTabWidth() const = 0;
+
+  // Returns ideal bounds for the tab at `model_index` in this TabContainer's
+  // coordinate space.
+  virtual gfx::Rect GetIdealBounds(int model_index) const = 0;
+
+  // Returns ideal bounds for the group header associated with `group` in this
+  // TabContainer's coordinate space.
+  virtual gfx::Rect GetIdealBounds(tab_groups::TabGroupId group) const = 0;
 
   // Views::View:
   // We're changing visibility of this to public for TabContainer.

@@ -82,7 +82,6 @@ class FakeTabSlotController : public TabSlotController {
   SkColor GetTabForegroundColor(TabActive active) const override;
   absl::optional<int> GetCustomBackgroundId(
       BrowserFrameActiveState active_state) const override;
-  gfx::Rect GetTabAnimationTargetBounds(const Tab* tab) override;
   std::u16string GetAccessibleTabName(const Tab* tab) const override;
   float GetHoverOpacityForTab(float range_parameter) const override;
   float GetHoverOpacityForRadialHighlight() const override;

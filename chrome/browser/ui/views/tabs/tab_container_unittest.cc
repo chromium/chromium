@@ -189,8 +189,8 @@ class TabContainerTest : public ChromeViewsTestBase {
     tab_strip_controller_->RemoveTabFromGroup(model_index);
 
     bool group_is_empty = true;
-    for (Tab* tab : tab_container_->GetLayoutHelper()->GetTabs()) {
-      if (tab->group() == old_group)
+    for (int i = 0; i < tab_container_->GetTabCount(); i++) {
+      if (tab_container_->GetTabAtModelIndex(i)->group() == old_group)
         group_is_empty = false;
     }
 
@@ -304,8 +304,7 @@ TEST_F(TabContainerTest, ExitsClosingModeAtStandardWidth) {
 
   // Create just enough tabs so tabs are not full size.
   const int standard_width = TabStyleViews::GetStandardWidth();
-  while (tab_container_->GetLayoutHelper()->active_tab_width() ==
-         standard_width) {
+  while (tab_container_->GetActiveTabWidth() == standard_width) {
     AddTab(0);
     tab_container_->CompleteAnimationAndLayout();
   }
@@ -322,15 +321,13 @@ TEST_F(TabContainerTest, ExitsClosingModeAtStandardWidth) {
   // constraining tab widths to below full size.
   tab_container_->RemoveTab(tab_container_->GetTabCount() - 2, false);
   tab_container_->CompleteAnimationAndLayout();
-  ASSERT_LT(tab_container_->GetLayoutHelper()->active_tab_width(),
-            standard_width);
+  ASSERT_LT(tab_container_->GetActiveTabWidth(), standard_width);
 
   // Close the last tab; tab closing mode should allow tabs to resize to full
   // size.
   tab_container_->RemoveTab(tab_container_->GetTabCount() - 1, false);
   tab_container_->CompleteAnimationAndLayout();
-  EXPECT_EQ(tab_container_->GetLayoutHelper()->active_tab_width(),
-            standard_width);
+  EXPECT_EQ(tab_container_->GetActiveTabWidth(), standard_width);
 }
 
 // Verifies child view order matches model order.

@@ -21,7 +21,6 @@ enum class BrowserFrameActiveState;
 
 namespace gfx {
 class Point;
-class Rect;
 }  // namespace gfx
 namespace tab_groups {
 enum class TabGroupColorId;
@@ -195,11 +194,6 @@ class TabSlotController {
   // customized, directly or indirectly, by the theme.
   virtual absl::optional<int> GetCustomBackgroundId(
       BrowserFrameActiveState active_state) const = 0;
-
-  // If the given tab is animating to its target destination, this returns the
-  // target bounds. If the tab isn't moving this will return the current bounds
-  // of the given tab.
-  virtual gfx::Rect GetTabAnimationTargetBounds(const Tab* tab) = 0;
 
   // Returns the accessible tab name for this tab.
   virtual std::u16string GetAccessibleTabName(const Tab* tab) const = 0;

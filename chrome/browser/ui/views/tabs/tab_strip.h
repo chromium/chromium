@@ -206,12 +206,12 @@ class TabStrip : public views::View,
   // Cover method for TabStripController::GetCount.
   int GetModelCount() const;
 
+  // Returns the number of pinned tabs.
+  int GetModelPinnedTabCount() const;
+
   TabStripController* controller() const { return controller_.get(); }
 
   TabDragContext* GetDragContext();
-
-  // Returns the number of pinned tabs.
-  int GetPinnedTabCount() const;
 
   // Returns true if Tabs in this TabStrip are currently changing size or
   // position.
@@ -307,7 +307,6 @@ class TabStrip : public views::View,
   std::u16string GetAccessibleTabName(const Tab* tab) const override;
   absl::optional<int> GetCustomBackgroundId(
       BrowserFrameActiveState active_state) const override;
-  gfx::Rect GetTabAnimationTargetBounds(const Tab* tab) override;
   float GetHoverOpacityForTab(float range_parameter) const override;
   float GetHoverOpacityForRadialHighlight() const override;
   std::u16string GetGroupTitle(
@@ -408,14 +407,6 @@ class TabStrip : public views::View,
   // Determines whether a group can be shifted by one in the direction of
   // |offset| and moves it if possible.
   void ShiftGroupRelative(const tab_groups::TabGroupId& group, int offset);
-
-  // Retrieves the ideal bounds for the Tab at the specified index.
-  const gfx::Rect& ideal_bounds(int tab_data_index) const {
-    return tab_container_->GetTabsViewModel()->ideal_bounds(tab_data_index);
-  }
-
-  // Retrieves the ideal bounds for the Tab Group Header at the specified group.
-  const gfx::Rect& ideal_bounds(tab_groups::TabGroupId group) const;
 
   // views::View:
   void OnMouseEntered(const ui::MouseEvent& event) override;
