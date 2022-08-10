@@ -123,6 +123,12 @@ const char kOobeGuestAcceptedTos[] = "oobe.guest_accepted_tos";
 // Indicates that the reven board was updated from CloudReady to Flex.
 const char kOobeRevenUpdatedToFlex[] = "OobeRevenUpdatedToFlex";
 
+// This pref should be true if there was a language change from the UI,
+// it's value will be written into the OOBE.WelcomeScreen.UserChangedLocale
+// metric when we exit the WelcomeScreen.
+const char kOobeLocaleChangedOnWelcomeScreen[] =
+    "OobeLocaleChangedOnWelcomeScreen";
+
 // A string pref containing url parameter name which can be used on SAML IdP web
 // page to autofill the username field.
 const char kUrlParameterToAutofillSAMLUsername[] =

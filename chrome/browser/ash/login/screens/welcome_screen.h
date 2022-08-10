@@ -201,11 +201,6 @@ class WelcomeScreen : public BaseScreen,
   // Chromad to cloud device migration. If so, this screen should be skipped.
   bool is_chromad_migration_oobe_flow_ = false;
 
-  // This local flag should be true if there was a language change from the UI,
-  // it's value will be written into the OOBE.WelcomeScreen.UserChangedLocale
-  // metric when we exit the WelcomeScreen.
-  bool is_locale_changed_ = false;
-
   // WeakPtrFactory used to schedule and cancel tasks related to language update
   // in this object.
   base::WeakPtrFactory<WelcomeScreen> language_weak_ptr_factory_{this};

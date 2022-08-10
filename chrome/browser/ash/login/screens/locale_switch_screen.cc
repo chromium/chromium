@@ -6,6 +6,7 @@
 
 #include "base/time/time.h"
 #include "chrome/browser/ash/base/locale_util.h"
+#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -64,6 +65,18 @@ bool LocaleSwitchScreen::MaybeSkip(WizardContext& wizard_context) {
     exit_callback_.Run(Result::NOT_APPLICABLE);
     return true;
   }
+
+  // Skip GAIA language sync if user specifically set language through the UI
+  // on the welcome screen.
+  PrefService* local_state = g_browser_process->local_state();
+  if (local_state->GetBoolean(prefs::kOobeLocaleChangedOnWelcomeScreen)) {
+    VLOG(1) << "Skipping GAIA language sync because user chose specific"
+            << " locale on the Welcome Screen.";
+    local_state->ClearPref(prefs::kOobeLocaleChangedOnWelcomeScreen);
+    exit_callback_.Run(Result::NOT_APPLICABLE);
+    return true;
+  }
+
   user_manager::User* user = user_manager::UserManager::Get()->GetActiveUser();
   if (user->HasGaiaAccount()) {
     return false;

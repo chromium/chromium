@@ -24,6 +24,7 @@
 #include "chrome/browser/ash/login/active_directory_migration_utils.h"
 #include "chrome/browser/ash/login/configuration_keys.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
+#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/ui/input_events_blocker.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
@@ -276,7 +277,10 @@ void WelcomeScreen::SetApplicationLocale(const std::string& locale,
                               std::move(callback),
                               ProfileManager::GetActiveUserProfile());
   if (is_from_ui) {
-    is_locale_changed_ = true;
+    // Write into the local state to save data about locale changes in case of
+    // reboot of device after forced update.
+    PrefService* local_state = g_browser_process->local_state();
+    local_state->SetBoolean(prefs::kOobeLocaleChangedOnWelcomeScreen, true);
   }
 }
 
@@ -327,7 +331,7 @@ void WelcomeScreen::SetDeviceRequisition(const std::string& requisition) {
   if (policy::EnrollmentRequisitionManager::IsRemoraRequisition()) {
     // CfM devices default to static timezone.
     g_browser_process->local_state()->SetInteger(
-        prefs::kResolveDeviceTimezoneByGeolocationMethod,
+        ::prefs::kResolveDeviceTimezoneByGeolocationMethod,
         static_cast<int>(chromeos::system::TimeZoneResolverManager::
                              TimeZoneResolveMethod::DISABLED));
   }
@@ -375,7 +379,7 @@ void WelcomeScreen::ShowImpl() {
 
   // TODO(crbug.com/1105387): Part of initial screen logic.
   PrefService* prefs = g_browser_process->local_state();
-  if (prefs->GetBoolean(prefs::kDebuggingFeaturesRequested)) {
+  if (prefs->GetBoolean(::prefs::kDebuggingFeaturesRequested)) {
     OnEnableDebugging();
     return;
   }
@@ -629,8 +633,10 @@ void WelcomeScreen::UpdateChromadMigrationOobeFlow(bool exists) {
 }
 
 void WelcomeScreen::Exit(Result result) const {
-  base::UmaHistogramBoolean(kWelcomeScreenLocaleChangeMetric,
-                            is_locale_changed_);
+  PrefService* local_state = g_browser_process->local_state();
+  base::UmaHistogramBoolean(
+      kWelcomeScreenLocaleChangeMetric,
+      local_state->GetBoolean(prefs::kOobeLocaleChangedOnWelcomeScreen));
   exit_callback_.Run(result);
 }
 
