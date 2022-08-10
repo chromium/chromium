@@ -1154,7 +1154,12 @@ void PaintArtifactCompositor::SetNeedsUpdate(
   UMA_HISTOGRAM_ENUMERATION("Blink.Paint.PaintArtifactCompositorUpdateReason",
                             reason,
                             PaintArtifactCompositorUpdateReason::kCount);
-  needs_update_ = true;
+  if (!needs_update_) {
+    needs_update_ = true;
+    UMA_HISTOGRAM_ENUMERATION(
+        "Blink.Paint.PaintArtifactCompositorUpdateFirstReason", reason,
+        PaintArtifactCompositorUpdateReason::kCount);
+  }
 }
 
 }  // namespace blink

@@ -1927,13 +1927,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.Paint.PaintArtifactCompositorUpdateFirstReason"
+    enum="PaintArtifactCompositorUpdateReason" expires_after="2022-12-01">
+  <owner>pdr@chromium.org</owner>
+  <owner>rego@chromium.org</owner>
+  <owner>paint-dev@chromium.org</owner>
+  <summary>
+    Records the first reason to set PaintArtifactCompositor as needing update.
+  </summary>
+</histogram>
+
 <histogram name="Blink.Paint.PaintArtifactCompositorUpdateReason"
     enum="PaintArtifactCompositorUpdateReason" expires_after="2022-12-01">
   <owner>pdr@chromium.org</owner>
   <owner>rego@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
-    Records the reaons to set PaintArtifactCompositor as needing update.
+    Records the reason to set PaintArtifactCompositor as needing update.
   </summary>
 </histogram>
 
