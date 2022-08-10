@@ -381,7 +381,9 @@ void MediaDialogView::OnSodaInstalled(speech::LanguageCode language_code) {
   live_caption_title_->SetText(GetLiveCaptionTitle(profile_->GetPrefs()));
 }
 
-void MediaDialogView::OnSodaError(speech::LanguageCode language_code) {
+void MediaDialogView::OnSodaInstallError(
+    speech::LanguageCode language_code,
+    speech::SodaInstaller::ErrorCode error_code) {
   // Check that language code matches the selected language for Live Caption or
   // is LanguageCode::kNone (signifying the SODA binary failed).
   if (!prefs::IsLanguageCodeForLiveCaption(language_code,

@@ -157,7 +157,8 @@ void SodaInstallerImpl::OnEvent(Events event, const std::string& id) {
         base::UmaHistogramBoolean(kSodaBinaryInstallationResult, false);
       }
 
-      NotifyOnSodaError(language_code);
+      NotifyOnSodaInstallError(
+          language_code, speech::SodaInstaller::ErrorCode::kUnspecifiedError);
       break;
     case Events::COMPONENT_CHECKING_FOR_UPDATES:
     case Events::COMPONENT_UPDATED:

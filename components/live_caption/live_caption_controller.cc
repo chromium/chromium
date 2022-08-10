@@ -163,7 +163,9 @@ void LiveCaptionController::OnSodaInstalled(
   CreateUI();
 }
 
-void LiveCaptionController::OnSodaError(speech::LanguageCode language_code) {
+void LiveCaptionController::OnSodaInstallError(
+    speech::LanguageCode language_code,
+    speech::SodaInstaller::ErrorCode error_code) {
   // Check that language code matches the selected language for Live Caption or
   // is LanguageCode::kNone (signifying the SODA binary failed).
   if (!prefs::IsLanguageCodeForLiveCaption(language_code, profile_prefs_) &&

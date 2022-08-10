@@ -4,6 +4,8 @@
 
 #include "components/soda/soda_installer_impl_chromeos.h"
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
@@ -14,17 +16,23 @@
 #include "components/live_caption/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/soda/pref_names.h"
+#include "components/soda/soda_installer.h"
 #include "media/base/media_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 
+namespace speech {
 namespace {
 
 constexpr char kSodaDlcName[] = "libsoda";
 constexpr char kSodaEnglishUsDlcName[] = "libsoda-model-en-us";
 
-}  // namespace
+SodaInstaller::ErrorCode DlcCodeToSodaErrorCode(const std::string& code) {
+  return (code == dlcservice::kErrorNeedReboot)
+             ? SodaInstaller::ErrorCode::kNeedsReboot
+             : SodaInstaller::ErrorCode::kUnspecifiedError;
+}
 
-namespace speech {
+}  // namespace
 
 SodaInstallerImplChromeOS::SodaInstallerImplChromeOS() = default;
 
@@ -142,7 +150,8 @@ void SodaInstallerImplChromeOS::OnSodaInstalled(
   } else {
     soda_binary_installed_ = false;
     soda_progress_ = 0.0;
-    NotifyOnSodaError(LanguageCode::kNone);
+    NotifyOnSodaInstallError(LanguageCode::kNone,
+                             DlcCodeToSodaErrorCode(install_result.error));
     base::UmaHistogramTimes(kSodaBinaryInstallationFailureTimeTaken,
                             base::Time::Now() - start_time);
   }
@@ -169,7 +178,8 @@ void SodaInstallerImplChromeOS::OnLanguageInstalled(
   } else {
     // TODO: Notify the observer of the specific language pack that failed
     // to install. ChromeOS currently only supports the en-US language pack.
-    NotifyOnSodaError(language_code);
+    NotifyOnSodaInstallError(language_code,
+                             DlcCodeToSodaErrorCode(install_result.error));
 
     base::UmaHistogramTimes(
         GetInstallationFailureTimeMetricForLanguagePack(language_code),

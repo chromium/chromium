@@ -192,7 +192,9 @@ void AccessibilityHandler::OnSodaProgress(speech::LanguageCode language_code,
           progress)));
 }
 
-void AccessibilityHandler::OnSodaError(speech::LanguageCode language_code) {
+void AccessibilityHandler::OnSodaInstallError(
+    speech::LanguageCode language_code,
+    speech::SodaInstaller::ErrorCode error_code) {
   if (language_code != speech::LanguageCode::kNone &&
       language_code != GetDictationLocale()) {
     return;

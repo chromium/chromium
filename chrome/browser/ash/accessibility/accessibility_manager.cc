@@ -2114,7 +2114,9 @@ void AccessibilityManager::OnSodaInstalled(speech::LanguageCode language_code) {
   OnSodaInstallUpdated(100);
 }
 
-void AccessibilityManager::OnSodaError(speech::LanguageCode language_code) {
+void AccessibilityManager::OnSodaInstallError(
+    speech::LanguageCode language_code,
+    speech::SodaInstaller::ErrorCode error_code) {
   if (language_code != speech::LanguageCode::kNone &&
       language_code != GetDictationLanguageCode()) {
     return;

@@ -626,8 +626,9 @@ void AccessibilityDetailedView::OnSodaInstalled(
   MaybeShowSodaMessage(SodaFeature::kLiveCaption, language_code, message);
 }
 
-void AccessibilityDetailedView::OnSodaError(
-    speech::LanguageCode language_code) {
+void AccessibilityDetailedView::OnSodaInstallError(
+    speech::LanguageCode language_code,
+    speech::SodaInstaller::ErrorCode error_code) {
   std::u16string message = l10n_util::GetStringUTF16(
       IDS_ASH_ACCESSIBILITY_SETTING_SUBTITLE_SODA_DOWNLOAD_ERROR);
   MaybeShowSodaMessage(SodaFeature::kDictation, language_code, message);

@@ -25,6 +25,12 @@ namespace speech {
 // trying to access the SodaInstaller instance.
 class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstaller {
  public:
+  // Error codes passed to the observers.
+  enum class ErrorCode {
+    kUnspecifiedError,  // a default error.
+    kNeedsReboot,       // libsoda requires an OS reboot on ChromeOS.
+  };
+
   // Observer of the SODA (Speech On-Device API) installation.
   class Observer : public base::CheckedObserver {
    public:
@@ -35,7 +41,8 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstaller {
     // Called if there is an error in the SODA installation. If the language
     // code is LanguageCode::kNone, the error is for the SODA binary; otherwise
     // it is for the language pack.
-    virtual void OnSodaError(LanguageCode language_code) = 0;
+    virtual void OnSodaInstallError(LanguageCode language_code,
+                                    ErrorCode error_code) = 0;
 
     // Called during the SODA installation. Progress is the weighted average of
     // the combined download percentage of the SODA binary and the language pack
@@ -113,7 +120,8 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstaller {
   void NotifySodaInstalledForTesting(
       LanguageCode language_code = LanguageCode::kNone);
   void NotifySodaErrorForTesting(
-      LanguageCode language_code = LanguageCode::kNone);
+      LanguageCode language_code = LanguageCode::kNone,
+      ErrorCode error = ErrorCode::kUnspecifiedError);
   void UninstallSodaForTesting();
   void NotifySodaProgressForTesting(
       int progress,
@@ -139,7 +147,8 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstaller {
   // Notifies the observers that there is an error in the SODA installation.
   // If the language code is LanguageCode::kNone, the error is for the SODA
   // binary; otherwise it is for the language pack.
-  void NotifyOnSodaError(LanguageCode language_code);
+  void NotifyOnSodaInstallError(LanguageCode language_code,
+                                ErrorCode error_code);
 
   // Notifies the observers of the combined progress as the SODA binary and
   // language pack are installed. Progress is the download percentage out of

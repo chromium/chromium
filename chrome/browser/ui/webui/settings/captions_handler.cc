@@ -93,7 +93,9 @@ void CaptionsHandler::OnSodaInstalled(speech::LanguageCode language_code) {
                     base::Value(speech::GetLanguageName(language_code)));
 }
 
-void CaptionsHandler::OnSodaError(speech::LanguageCode language_code) {
+void CaptionsHandler::OnSodaInstallError(
+    speech::LanguageCode language_code,
+    speech::SodaInstaller::ErrorCode error_code) {
   // If multi-language is disabled and the language code received is not for
   // Live Caption (perhaps it is downloading because another feature, such as
   // dictation on ChromeOS, has a different language selected), then return

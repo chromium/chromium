@@ -358,7 +358,9 @@ void AudioDetailedView::OnSodaInstalled(speech::LanguageCode language_code) {
   MaybeShowSodaMessage(language_code, message);
 }
 
-void AudioDetailedView::OnSodaError(speech::LanguageCode language_code) {
+void AudioDetailedView::OnSodaInstallError(
+    speech::LanguageCode language_code,
+    speech::SodaInstaller::ErrorCode error_code) {
   std::u16string message = l10n_util::GetStringUTF16(
       IDS_ASH_ACCESSIBILITY_SETTING_SUBTITLE_SODA_DOWNLOAD_ERROR);
   MaybeShowSodaMessage(language_code, message);

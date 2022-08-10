@@ -176,7 +176,8 @@ void SodaInstaller::NotifySodaInstalledForTesting(LanguageCode language_code) {
     NotifyOnSodaInstalled(language_code);
 }
 
-void SodaInstaller::NotifySodaErrorForTesting(LanguageCode language_code) {
+void SodaInstaller::NotifySodaErrorForTesting(LanguageCode language_code,
+                                              ErrorCode error_code) {
   // TODO: Call the actual functions in SodaInstallerImpl and
   // SodaInstallerImpleChromeOS that do this logic rather than faking it.
   if (language_code == LanguageCode::kNone) {
@@ -189,7 +190,7 @@ void SodaInstaller::NotifySodaErrorForTesting(LanguageCode language_code) {
     if (base::Contains(language_pack_progress_, language_code))
       language_pack_progress_.erase(language_code);
   }
-  NotifyOnSodaError(language_code);
+  NotifyOnSodaInstallError(language_code, error_code);
 }
 
 void SodaInstaller::UninstallSodaForTesting() {
@@ -236,9 +237,10 @@ void SodaInstaller::NotifyOnSodaInstalled(LanguageCode language_code) {
     observer.OnSodaInstalled(language_code);
 }
 
-void SodaInstaller::NotifyOnSodaError(LanguageCode language_code) {
+void SodaInstaller::NotifyOnSodaInstallError(LanguageCode language_code,
+                                             ErrorCode error_code) {
   for (Observer& observer : observers_)
-    observer.OnSodaError(language_code);
+    observer.OnSodaInstallError(language_code, error_code);
 }
 
 void SodaInstaller::NotifyOnSodaProgress(LanguageCode language_code,
