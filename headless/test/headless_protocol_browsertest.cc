@@ -95,22 +95,25 @@ void HeadlessProtocolBrowserTest::BindingCreated(
 void HeadlessProtocolBrowserTest::OnBindingCalled(
     const runtime::BindingCalledParams& params) {
   std::string json_message = params.GetPayload();
-  std::unique_ptr<base::Value> message =
-      base::JSONReader::ReadDeprecated(json_message);
-  const base::DictionaryValue* message_dict;
-  const base::DictionaryValue* params_dict;
-  std::string method;
-  int id;
-  if (!message || !message->GetAsDictionary(&message_dict) ||
-      !message_dict->GetString("method", &method) ||
-      !message_dict->GetDictionary("params", &params_dict) ||
-      !message_dict->GetInteger("id", &id)) {
+  absl::optional<base::Value> message = base::JSONReader::Read(json_message);
+
+  if (!message || !message->is_dict()) {
     LOG(ERROR) << "Poorly formed message " << json_message;
     FinishTest();
     return;
   }
 
-  if (method != "DONE") {
+  const base::Value::Dict& message_dict = message->GetDict();
+
+  const std::string* method = message_dict.FindString("method");
+  if (!method || !message_dict.FindDict("params") ||
+      !message_dict.FindInt("id")) {
+    LOG(ERROR) << "Poorly formed message " << json_message;
+    FinishTest();
+    return;
+  }
+
+  if (*method != "DONE") {
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
             kDumpDevToolsProtocol)) {
       LOG(INFO) << "FromJS: " << json_message;
@@ -120,8 +123,9 @@ void HeadlessProtocolBrowserTest::OnBindingCalled(
     return;
   }
 
-  std::string test_result;
-  message_dict->GetString("result", &test_result);
+  const std::string* maybe_test_result = message_dict.FindString("result");
+  const std::string test_result =
+      maybe_test_result ? *maybe_test_result : std::string();
   static const base::FilePath kTestsDirectory(
       FILE_PATH_LITERAL("headless/test/data/protocol"));
 
