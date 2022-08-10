@@ -223,6 +223,10 @@ const base::Feature kAutocorrectParamsTuning{"AutocorrectParamsTuning",
 const base::Feature kAutozoomNudgeSessionReset{
     "AutozoomNudgeSessionReset", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables loading avatar images from the cloud on ChromeOS.
+const base::Feature kAvatarsCloudMigration{"AvatarsCloudMigration",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables the persistent desks bar at the top of the screen in clamshell mode
 // when there are more than one desk.
 const base::Feature kBentoBar{"BentoBar", base::FEATURE_DISABLED_BY_DEFAULT};

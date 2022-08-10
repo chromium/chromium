@@ -4566,6 +4566,11 @@ const char kAutocorrectParamsTuningName[] = "CrOS autocorrect params tuning";
 const char kAutocorrectParamsTuningDescription[] =
     "Enables params tuning experiment for autocorrect on ChromeOS.";
 
+const char kAvatarsCloudMigrationName[] =
+    "Loading CrOS avatar images from the cloud";
+const char kAvatarsCloudMigrationDescription[] =
+    "Enables loading avatar images from the cloud on ChromeOS.";
+
 const char kBluetoothFixA2dpPacketSizeName[] = "Bluetooth fix A2DP packet size";
 const char kBluetoothFixA2dpPacketSizeDescription[] =
     "Fixes Bluetooth A2DP packet size to a smaller default value to improve "

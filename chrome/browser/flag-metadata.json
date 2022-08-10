@@ -1799,6 +1799,11 @@
     "expiry_milestone": 106
   },
   {
+    "name": "enable-cros-avatars-cloud-migration",
+    "owners": [ "updowndota", "angelaxiao", "assistive-eng@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "enable-cros-diacritics-on-physical-keyboard-longpress",
     "owners": ["jhtin", "essential-inputs-team@google.com" ],
     "expiry_milestone": 106

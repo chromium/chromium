@@ -2618,6 +2618,9 @@ extern const char kAutocompleteExtendedSuggestionsDescription[];
 extern const char kAutocorrectParamsTuningName[];
 extern const char kAutocorrectParamsTuningDescription[];
 
+extern const char kAvatarsCloudMigrationName[];
+extern const char kAvatarsCloudMigrationDescription[];
+
 extern const char kBluetoothFixA2dpPacketSizeName[];
 extern const char kBluetoothFixA2dpPacketSizeDescription[];
 

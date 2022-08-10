@@ -102,6 +102,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kAutocorrectParamsTuning;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kAutozoomNudgeSessionReset;
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kAvatarsCloudMigration;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kBentoBar;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kBluetoothFixA2dpPacketSize;

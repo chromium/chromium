@@ -60962,6 +60962,7 @@ from previous Chrome versions.
   <int value="1230555479"
       label="AutofillEnableUnmaskCardRequestSetInstrumentId:disabled"/>
   <int value="1234601252" label="ForceUseAPDownloadProtection:enabled"/>
+  <int value="1235197204" label="AvatarsCloudMigration:enabled"/>
   <int value="1235800887" label="V8Ignition:enabled"/>
   <int value="1235940786" label="ChromeHomePersistentIph:enabled"/>
   <int value="1236772382" label="BiometricAuthenticationInSettings:disabled"/>
@@ -61930,6 +61931,7 @@ from previous Chrome versions.
   <int value="1862207743" label="enable-android-spellchecker"/>
   <int value="1863622457" label="WebAuthentication:enabled"/>
   <int value="1864062646" label="ChromeWhatsNewUI:disabled"/>
+  <int value="1864412948" label="AvatarsCloudMigration:disabled"/>
   <int value="1865068568" label="disable-audio-support-for-desktop-share"/>
   <int value="1865799183" label="javascript-harmony"/>
   <int value="1865851774" label="MessagesForAndroidInstantApps:disabled"/>
