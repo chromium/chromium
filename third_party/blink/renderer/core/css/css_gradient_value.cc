@@ -265,18 +265,29 @@ static void ReplaceColorHintsWithColorStops(
     }
 
     GradientStop new_stops[9];
-    // Position the new color stops.
+    // Position the new color stops. These must be in the range
+    // [offset_left, offset_right], and in non-decreasing order, even in the
+    // face of floating-point rounding.
     if (left_dist > right_dist) {
       for (size_t y = 0; y < 7; ++y)
-        new_stops[y].offset = offset_left + left_dist * (7 + y) / 13;
-      new_stops[7].offset = offset + right_dist / 3;
-      new_stops[8].offset = offset + right_dist * 2 / 3;
+        new_stops[y].offset = offset_left + left_dist * ((7.0f + y) / 13.0f);
+      new_stops[7].offset = offset + right_dist * (1.0f / 3.0f);
+      new_stops[8].offset = offset + right_dist * (2.0f / 3.0f);
     } else {
-      new_stops[0].offset = offset_left + left_dist / 3;
-      new_stops[1].offset = offset_left + left_dist * 2 / 3;
+      new_stops[0].offset = offset_left + left_dist * (1.0f / 3.0f);
+      new_stops[1].offset = offset_left + left_dist * (2.0f / 3.0f);
       for (size_t y = 0; y < 7; ++y)
-        new_stops[y + 2].offset = offset + right_dist * y / 13;
+        new_stops[y + 2].offset = offset + right_dist * (y / 13.0f);
     }
+
+#if DCHECK_IS_ON()
+    // Verify that offset_left <= x_0 <= x_1 <= ... <= x_8 <= offset_right.
+    DCHECK_GE(new_stops[0].offset, offset_left);
+    for (int i = 1; i < 8; ++i) {
+      DCHECK_GE(new_stops[i].offset, new_stops[i - 1].offset);
+    }
+    DCHECK_GE(offset_right, new_stops[8].offset);
+#endif  // DCHECK_IS_ON()
 
     // calculate colors for the new color hints.
     // The color weighting for the new color stops will be
