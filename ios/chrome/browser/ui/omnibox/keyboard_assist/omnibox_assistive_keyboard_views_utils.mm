@@ -20,6 +20,9 @@
 NSString* const kVoiceSearchInputAccessoryViewID =
     @"kVoiceSearchInputAccessoryViewID";
 
+NSString* const kPasteSearchInputAccessoryViewID =
+    @"kPasteSearchInputAccessoryViewID";
+
 const CGFloat kPasteButtonSize = 36.0;
 
 namespace {
@@ -93,6 +96,9 @@ UIPasteControl* OmniboxAssistiveKeyboardPasteControl(
   UIPasteControl* pasteControl =
       [[UIPasteControl alloc] initWithConfiguration:pasteControlConfiguration];
   pasteControl.target = pasteTarget;
+  pasteControl.accessibilityLabel =
+      l10n_util::GetNSString(IDS_IOS_KEYBOARD_ACCESSORY_VIEW_PASTE_SEARCH);
+  pasteControl.accessibilityIdentifier = kPasteSearchInputAccessoryViewID;
   // Set content size category to extra small to reduce the size of the paste
   // icon.
   [pasteControl setMaximumContentSizeCategory:UIContentSizeCategoryExtraSmall];
