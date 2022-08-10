@@ -372,7 +372,8 @@ void MediaClientImpl::OnVmCameraMicActiveChanged(
           ash::VmCameraMicManager::kCameraAndMicNotification));
 }
 
-void MediaClientImpl::OnCameraPrivacySwitchStatusChanged(
+void MediaClientImpl::OnCameraHWPrivacySwitchStatusChanged(
+    int32_t camera_id,
     cros::mojom::CameraPrivacySwitchState state) {
   // Show camera privacy switch toast.
   switch (state) {

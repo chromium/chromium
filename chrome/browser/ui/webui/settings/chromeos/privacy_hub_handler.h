@@ -27,7 +27,8 @@ class PrivacyHubHandler : public content::WebUIMessageHandler,
   void RegisterMessages() override;
 
   // media::CameraPrivacySwitchObserver
-  void OnCameraPrivacySwitchStatusChanged(
+  void OnCameraHWPrivacySwitchStatusChanged(
+      int32_t camera_id,
       cros::mojom::CameraPrivacySwitchState state) override;
 
   // ui::MicrophoneMuteSwitchMonitor::Observer

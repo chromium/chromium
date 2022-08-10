@@ -48,7 +48,8 @@ void PrivacyHubHandler::RegisterMessages() {
           base::Unretained(this)));
 }
 
-void PrivacyHubHandler::OnCameraPrivacySwitchStatusChanged(
+void PrivacyHubHandler::OnCameraHWPrivacySwitchStatusChanged(
+    int32_t camera_id,
     cros::mojom::CameraPrivacySwitchState state) {
   camera_privacy_switch_state_ = state;
   if (IsJavascriptAllowed()) {

@@ -18,7 +18,7 @@ class TestPrivacyHubHandler : public PrivacyHubHandler {
 
   using PrivacyHubHandler::HandleInitialCameraSwitchState;
   using PrivacyHubHandler::HandleInitialMicrophoneSwitchState;
-  using PrivacyHubHandler::OnCameraPrivacySwitchStatusChanged;
+  using PrivacyHubHandler::OnCameraHWPrivacySwitchStatusChanged;
 };
 
 using cps = cros::mojom::CameraPrivacySwitchState;
@@ -121,7 +121,8 @@ class PrivacyHubHandlerCameraTest : public PrivacyHubHandlerTest,
 };
 
 TEST_P(PrivacyHubHandlerCameraTest, CameraHardwarePrivacySwitchChanged) {
-  privacy_hub_handler_.OnCameraPrivacySwitchStatusChanged(GetParam());
+  privacy_hub_handler_.OnCameraHWPrivacySwitchStatusChanged(/*camera_id=*/0,
+                                                            GetParam());
 
   const base::Value data =
       GetLastWebUIListenerData("camera-hardware-toggle-changed");

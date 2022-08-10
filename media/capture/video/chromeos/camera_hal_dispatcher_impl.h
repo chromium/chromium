@@ -96,7 +96,8 @@ class FailedCameraHalServerCallbacks final
                                   bool opened,
                                   cros::mojom::CameraClientType type) override;
   void CameraPrivacySwitchStateChange(
-      cros::mojom::CameraPrivacySwitchState state) override;
+      cros::mojom::CameraPrivacySwitchState state,
+      int32_t camera_id) override;
   void CameraSWPrivacySwitchStateChange(
       cros::mojom::CameraPrivacySwitchState state) override;
 
@@ -108,8 +109,13 @@ class CAPTURE_EXPORT CameraPrivacySwitchObserver
  public:
   ~CameraPrivacySwitchObserver() override = default;
 
-  virtual void OnCameraPrivacySwitchStatusChanged(
-      cros::mojom::CameraPrivacySwitchState state) = 0;
+  // If |camera_id| is unknown, |camera_id| will be set -1.
+  virtual void OnCameraHWPrivacySwitchStatusChanged(
+      int32_t camera_id,
+      cros::mojom::CameraPrivacySwitchState state) {}
+
+  virtual void OnCameraSWPrivacySwitchStatusChanged(
+      cros::mojom::CameraPrivacySwitchState state) {}
 };
 
 // The CameraHalDispatcherImpl hosts and waits on the unix domain socket
@@ -166,7 +172,7 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   // Adds an observer to get notified when the camera privacy switch status
   // changed. Please note that for some devices, the signal will only be
   // detectable when the camera is currently on due to hardware limitations.
-  // Returns the current state of the camera privacy switch.
+  // Returns the current state of the camera HW privacy switch.
   cros::mojom::CameraPrivacySwitchState AddCameraPrivacySwitchObserver(
       CameraPrivacySwitchObserver* observer);
 
@@ -182,16 +188,6 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   // Sets the camera software privacy switch state.
   void SetCameraSWPrivacySwitchState(
       cros::mojom::CameraPrivacySwitchState state);
-
-  // Adds an observer to get notified when the camera software privacy switch
-  // status changed.
-  cros::mojom::CameraPrivacySwitchState AddCameraSWPrivacySwitchObserver(
-      CameraPrivacySwitchObserver* observer);
-
-  // Removes the observer. A previously-added observer must be removed before
-  // being destroyed.
-  void RemoveCameraSWPrivacySwitchObserver(
-      CameraPrivacySwitchObserver* observer);
 
   // Called by vm_permission_service to register the token used for
   // pluginvm.
@@ -231,7 +227,8 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
                                   bool opened,
                                   cros::mojom::CameraClientType type) final;
   void CameraPrivacySwitchStateChange(
-      cros::mojom::CameraPrivacySwitchState state) final;
+      cros::mojom::CameraPrivacySwitchState state,
+      int32_t camera_id) final;
   void CameraSWPrivacySwitchStateChange(
       cros::mojom::CameraPrivacySwitchState state) final;
 
@@ -335,24 +332,18 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   scoped_refptr<base::ObserverListThreadSafe<CameraActiveClientObserver>>
       active_client_observers_;
 
-  // current_privacy_switch_state_ and current_sw_privacy_switch_state_ can be
-  // accessed from the UI thread besides proxy_thread_
-  base::Lock privacy_switch_lock_;
-  cros::mojom::CameraPrivacySwitchState current_privacy_switch_state_
-      GUARDED_BY(privacy_switch_lock_);
-
-  base::Lock sw_privacy_switch_lock_;
-  cros::mojom::CameraPrivacySwitchState current_sw_privacy_switch_state_
-      GUARDED_BY(sw_privacy_switch_lock_);
+  // |current_hw_privacy_switch_state_| can be accessed from the UI thread
+  // besides |proxy_thread_|.
+  base::Lock hw_privacy_switch_lock_;
+  cros::mojom::CameraPrivacySwitchState current_hw_privacy_switch_state_
+      GUARDED_BY(hw_privacy_switch_lock_) =
+          cros::mojom::CameraPrivacySwitchState::UNKNOWN;
 
   cros::mojom::CameraAutoFramingState current_auto_framing_state_ =
       cros::mojom::CameraAutoFramingState::OFF;
 
   scoped_refptr<base::ObserverListThreadSafe<CameraPrivacySwitchObserver>>
-      privacy_switch_observers_ GUARDED_BY(privacy_switch_lock_);
-
-  scoped_refptr<base::ObserverListThreadSafe<CameraPrivacySwitchObserver>>
-      sw_privacy_switch_observers_ GUARDED_BY(sw_privacy_switch_lock_);
+      privacy_switch_observers_;
 
   bool sensor_enabled_ = true;
   std::map<CameraClientObserver*, std::unique_ptr<CameraClientObserver>>

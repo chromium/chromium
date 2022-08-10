@@ -90,7 +90,8 @@ class VmCameraMicManager : public media::CameraActiveClientObserver,
                             bool is_active) override;
 
   // media::CameraPrivacySwitchObserver
-  void OnCameraPrivacySwitchStatusChanged(
+  void OnCameraHWPrivacySwitchStatusChanged(
+      int32_t camera_id,
       cros::mojom::CameraPrivacySwitchState state) override;
 
   // CrasAudioHandler::AudioObserver

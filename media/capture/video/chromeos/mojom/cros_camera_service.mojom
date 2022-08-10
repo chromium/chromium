@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next min version: 9
+// Next min version: 10
 
 module cros.mojom;
 
@@ -120,7 +120,7 @@ interface CameraHalDispatcher {
 
 // The CrOS camera HAL v3 Mojo server.
 //
-// Next method ID: 2
+// Next method ID: 5
 interface CameraHalServer {
   // A caller calls CreateChannel to create a new Mojo channel to the camera
   // HAL v3 adapter.  Upon successfully binding of |camera_module_receiver|, the
@@ -150,20 +150,21 @@ interface CameraHalServer {
 // CameraHalDispatcher for any changes on the server side, for example when a
 // CameraHalClient opens or closes a camera device.
 //
-// Next method ID: 2
+// Next method ID: 3
 interface CameraHalServerCallbacks {
-  // Fired when a CameraHalClient opens or closes a camera device. When a
-  // CameraHalClient loses mojo connection to CameraHalServer, CameraHalServer
-  // would also use this to notify that cameras are closed (not being used).
+  // Fired when a CameraHalClient opens or closes a camera device. |camera_id|
+  // is always >=0, which represents a unique id of a physical camera.
   CameraDeviceActivityChange@0(int32 camera_id,
                                bool opened,
                                CameraClientType type);
 
   // Fired when the camera privacy switch status is changed. If the device has
   // such switch, this callback will be fired immediately for once to notify its
-  // current status when the callbacks are registered.
+  // current status when the callbacks are registered. |camera_id| is always
+  // >=0, which represents a unique id of a physical camera.
   [MinVersion=5]
-  CameraPrivacySwitchStateChange@1(CameraPrivacySwitchState state);
+  CameraPrivacySwitchStateChange@1(CameraPrivacySwitchState state,
+                                   [MinVersion=9] int32 camera_id);
 
   // Fired when the camera software privacy switch status is changed.
   [MinVersion=8]

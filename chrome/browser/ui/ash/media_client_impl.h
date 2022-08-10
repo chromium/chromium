@@ -70,7 +70,8 @@ class MediaClientImpl : public ash::MediaClient,
   void OnVmCameraMicActiveChanged(ash::VmCameraMicManager* manager) override;
 
   // media::CameraPrivacySwitchObserver:
-  void OnCameraPrivacySwitchStatusChanged(
+  void OnCameraHWPrivacySwitchStatusChanged(
+      int32_t camera_id,
       cros::mojom::CameraPrivacySwitchState state) override;
 
   // media::CameraActiveClientObserver:

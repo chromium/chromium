@@ -394,8 +394,8 @@ void VmCameraMicManager::MaybeSubscribeToCameraService(
   // OnActiveClientChange() will be called automatically after the
   // subscription, so there is no need to get the current status here.
   camera->AddActiveClientObserver(this);
-  OnCameraPrivacySwitchStatusChanged(
-      camera->AddCameraPrivacySwitchObserver(this));
+  OnCameraHWPrivacySwitchStatusChanged(
+      /*camera_id=*/-1, camera->AddCameraPrivacySwitchObserver(this));
 }
 
 void VmCameraMicManager::UpdateVmInfo(VmType vm,
@@ -446,7 +446,8 @@ void VmCameraMicManager::SetCameraAccessing(VmType vm, bool accessing) {
   UpdateVmInfo(vm, &VmInfo::SetCameraAccessing, accessing);
 }
 
-void VmCameraMicManager::OnCameraPrivacySwitchStatusChanged(
+void VmCameraMicManager::OnCameraHWPrivacySwitchStatusChanged(
+    int32_t camera_id,
     cros::mojom::CameraPrivacySwitchState state) {
   using cros::mojom::CameraPrivacySwitchState;
   bool is_on;
