@@ -1,5 +1,17 @@
 # ChromeOS Personalization Hub
 
+## User Types and Profiles
+
+ChromeOS Personalization features interact differently with different user
+types. It is important for feature development to consider how the different
+user types will be affected.
+
+see: [`//components/user_manager/user_type.h`](../../../components/user_manager/user_type.h)
+
+For a more in depth explanation, see:
+
+[Profiles, Sessions, Users, and more for ChromeOS Personalization](go/chromeos-personalization-user-types)
+
 ## Environment Setup
 ### VSCode
 
