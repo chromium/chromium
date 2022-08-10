@@ -79,6 +79,13 @@ bool IsAutoDisableAccessibilityEnabled() {
   return base::FeatureList::IsEnabled(::features::kAutoDisableAccessibility);
 }
 
+const base::Feature kTextBasedAudioDescription{
+    "TextBasedAudioDescription", base::FEATURE_DISABLED_BY_DEFAULT};
+
+bool IsTextBasedAudioDescriptionEnabled() {
+  return base::FeatureList::IsEnabled(::features::kTextBasedAudioDescription);
+}
+
 #if BUILDFLAG(IS_WIN)
 const base::Feature kIChromeAccessible{"IChromeAccessible",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
@@ -224,13 +231,6 @@ const base::Feature kPdfOcr{"PdfOcr", base::FEATURE_DISABLED_BY_DEFAULT};
 
 bool IsPdfOcrEnabled() {
   return base::FeatureList::IsEnabled(::features::kPdfOcr);
-}
-
-const base::Feature kTextBasedAudioDescription{
-    "TextBasedAudioDescription", base::FEATURE_DISABLED_BY_DEFAULT};
-
-bool IsTextBasedAudioDescriptionEnabled() {
-  return base::FeatureList::IsEnabled(::features::kTextBasedAudioDescription);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
