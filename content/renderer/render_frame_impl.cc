@@ -58,6 +58,7 @@
 #include "content/common/debug_utils.h"
 #include "content/common/frame.mojom.h"
 #include "content/common/frame_messages.mojom.h"
+#include "content/common/main_frame_counter.h"
 #include "content/common/navigation_client.mojom.h"
 #include "content/common/navigation_gesture.h"
 #include "content/common/navigation_params_utils.h"
@@ -1886,6 +1887,9 @@ RenderFrameImpl::~RenderFrameImpl() {
 
   web_media_stream_device_observer_.reset();
 
+  if (initialized_ && is_main_frame_)
+    MainFrameCounter::DecrementCount();
+
   base::trace_event::TraceLog::GetInstance()->RemoveProcessLabel(routing_id_);
   g_routing_id_frame_map.Get().erase(routing_id_);
   agent_scheduling_group_.RemoveRoute(routing_id_);
@@ -1894,6 +1898,8 @@ RenderFrameImpl::~RenderFrameImpl() {
 void RenderFrameImpl::Initialize(blink::WebFrame* parent) {
   initialized_ = true;
   is_main_frame_ = !parent;
+  if (is_main_frame_)
+    MainFrameCounter::IncrementCount();
 
   TRACE_EVENT1("navigation,rail", "RenderFrameImpl::Initialize", "routing_id",
                routing_id_);

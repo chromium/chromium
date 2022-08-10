@@ -25,6 +25,7 @@
 #include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -454,7 +455,7 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
   }
 }
 
-void PartitionAllocSupport::OnForegrounded() {
+void PartitionAllocSupport::OnForegrounded(bool has_main_frame) {
 #if defined(PA_THREAD_CACHE_SUPPORTED) && \
     BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   {
@@ -463,7 +464,10 @@ void PartitionAllocSupport::OnForegrounded() {
       return;
   }
 
-  ::partition_alloc::ThreadCache::SetLargestCachedSize(largest_cached_size_);
+  if (!base::FeatureList::IsEnabled(
+          features::kLowerMemoryLimitForNonMainRenderers) ||
+      has_main_frame)
+    ::partition_alloc::ThreadCache::SetLargestCachedSize(largest_cached_size_);
 #endif  // defined(PA_THREAD_CACHE_SUPPORTED) &&
         // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }

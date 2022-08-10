@@ -252,6 +252,7 @@ target(link_target_type, "renderer") {
     "//content/child",
     "//content/common",
     "//content/common:buildflags",
+    "//content/common:main_frame_counter",
     "//content/gpu:gpu_sources",
     "//content/public/child:child_sources",
     "//content/services/auction_worklet:auction_worklet",

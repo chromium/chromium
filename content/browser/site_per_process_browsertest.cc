@@ -112,6 +112,7 @@
 #include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "content/shell/browser/shell.h"
+#include "content/shell/common/main_frame_counter_test_impl.h"
 #include "content/shell/common/shell_switches.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/did_commit_navigation_interceptor.h"
@@ -194,6 +195,20 @@ using ::testing::ElementsAre;
 namespace content {
 
 namespace {
+
+void VerifyChildProcessHasMainFrame(
+    mojo::Remote<mojom::MainFrameCounterTest>& main_frame_counter,
+    bool expected_state) {
+  main_frame_counter.FlushForTesting();
+  base::RunLoop run_loop;
+  main_frame_counter->HasMainFrame(base::BindOnce(
+      [](base::RunLoop* loop, bool expected_state, bool has_main_frame) {
+        EXPECT_EQ(expected_state, has_main_frame);
+        loop->Quit();
+      },
+      &run_loop, expected_state));
+  run_loop.Run();
+}
 
 using CrashVisibility = CrossProcessFrameConnector::CrashVisibility;
 
@@ -586,6 +601,17 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, CrossSiteIframe) {
         web_contents()->GetRenderWidgetHostViewsInWebContentsTree();
     EXPECT_EQ(2U, views_set.size());
   }
+  mojo::Remote<mojom::MainFrameCounterTest> main_frame_counter;
+  shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->BindReceiver(
+      main_frame_counter.BindNewPipeAndPassReceiver());
+
+  VerifyChildProcessHasMainFrame(main_frame_counter, true);
+
+  mojo::Remote<mojom::MainFrameCounterTest> main_frame_counter_child;
+  rph->BindReceiver(main_frame_counter_child.BindNewPipeAndPassReceiver());
+
+  VerifyChildProcessHasMainFrame(main_frame_counter_child, false);
+
   RenderFrameProxyHost* proxy_to_parent =
       child->render_manager()->GetProxyToParent();
   EXPECT_TRUE(proxy_to_parent);
@@ -632,6 +658,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, CrossSiteIframe) {
   EXPECT_NE(shell()->web_contents()->GetPrimaryMainFrame()->GetProcess(),
             child->current_frame_host()->GetProcess());
   EXPECT_NE(rph, child->current_frame_host()->GetProcess());
+  VerifyChildProcessHasMainFrame(main_frame_counter, true);
   {
     std::set<RenderWidgetHostViewBase*> views_set =
         web_contents()->GetRenderWidgetHostViewsInWebContentsTree();
@@ -654,6 +681,61 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, CrossSiteIframe) {
       "Where A = http://a.com/\n"
       "      C = http://bar.com/",
       DepictFrameTree(root));
+}
+
+// Ensure that processes for iframes correctly track whether or not they have a
+// local main frame.
+IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
+                       CrossSiteIframeMainFrameCount) {
+  GURL main_url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(a,a,a(a,a))"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+
+  TestNavigationObserver observer(shell()->web_contents());
+
+  EXPECT_EQ(
+      " Site A\n"
+      "   |--Site A\n"
+      "   |--Site A\n"
+      "   +--Site A\n"
+      "        |--Site A\n"
+      "        +--Site A\n"
+      "Where A = http://a.com/",
+      DepictFrameTree(root));
+
+  mojo::Remote<mojom::MainFrameCounterTest> main_frame_counter;
+  shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->BindReceiver(
+      main_frame_counter.BindNewPipeAndPassReceiver());
+  VerifyChildProcessHasMainFrame(main_frame_counter, true);
+
+  GURL url = embedded_test_server()->GetURL(
+      "b.com", "/cross_site_iframe_factory.html?b(a,a)");
+  {
+    RenderFrameDeletedObserver deleted_observer(
+        root->child_at(2)->current_frame_host());
+    EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(2), url));
+    deleted_observer.WaitUntilDeleted();
+  }
+
+  EXPECT_EQ(
+      " Site A ------------ proxies for B\n"
+      "   |--Site A ------- proxies for B\n"
+      "   |--Site A ------- proxies for B\n"
+      "   +--Site B ------- proxies for A\n"
+      "        |--Site A -- proxies for B\n"
+      "        +--Site A -- proxies for B\n"
+      "Where A = http://a.com/\n"
+      "      B = http://b.com/",
+      DepictFrameTree(root));
+
+  VerifyChildProcessHasMainFrame(main_frame_counter, true);
+
+  mojo::Remote<mojom::MainFrameCounterTest> main_frame_counter_child;
+  root->child_at(2)->current_frame_host()->GetProcess()->BindReceiver(
+      main_frame_counter_child.BindNewPipeAndPassReceiver());
+  VerifyChildProcessHasMainFrame(main_frame_counter_child, false);
 }
 
 // Ensure that title updates affect the correct NavigationEntry after a new

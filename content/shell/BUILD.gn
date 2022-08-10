@@ -150,6 +150,8 @@ static_library("content_shell_lib") {
     "browser/shell_speech_recognition_manager_delegate.h",
     "browser/shell_web_contents_view_delegate.h",
     "browser/shell_web_contents_view_delegate_creator.h",
+    "common/main_frame_counter_test_impl.cc",
+    "common/main_frame_counter_test_impl.h",
     "common/power_monitor_test_impl.cc",
     "common/power_monitor_test_impl.h",
     "common/shell_content_client.cc",
@@ -251,6 +253,7 @@ static_library("content_shell_lib") {
     "//components/web_cache/renderer",
     "//content:content_resources",
     "//content:dev_ui_content_resources",
+    "//content/common:main_frame_counter",
     "//content/public/common",
     "//content/test:content_test_mojo_bindings",
     "//content/test:test_support",
@@ -850,7 +853,10 @@ if (is_mac) {
 }
 
 mojom("content_browsertests_mojom") {
-  sources = [ "common/power_monitor_test.mojom" ]
+  sources = [
+    "common/main_frame_counter_test.mojom",
+    "common/power_monitor_test.mojom",
+  ]
   public_deps = [ "//sandbox/policy/mojom" ]
 }
 

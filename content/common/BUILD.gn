@@ -410,6 +410,17 @@ source_set("common") {
   }
 }
 
+# This is used by content/shell as well, which we don't want to depend on the
+# entire content/common.
+component("main_frame_counter") {
+  defines = [ "IS_MAIN_FRAME_COUNTER_IMPL" ]
+  sources = [
+    "main_frame_counter.cc",
+    "main_frame_counter.h",
+  ]
+  deps = [ "//base:base" ]
+}
+
 if (is_linux || is_chromeos) {
   source_set("set_process_title_linux") {
     public = [ "set_process_title_linux.h" ]
