@@ -212,6 +212,8 @@ class WaylandEventSource : public PlatformEventSource,
   // Ensure a valid instance of the PointerScrollData class member.
   PointerScrollData& EnsurePointerScrollData();
 
+  void ProcessPointerScrollData();
+
   // Set the target to the event, then dispatch the event.
   void SetTargetAndDispatchEvent(Event* event, EventTarget* target);
 
