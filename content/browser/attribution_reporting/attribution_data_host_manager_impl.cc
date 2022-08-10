@@ -203,7 +203,7 @@ struct AttributionDataHostManagerImpl::NavigationRedirectSourceRegistrations {
 
   // The final, committed destination of the navigation associated with this.
   // This can be set before or after all `pending_source_data` is received.
-  url::Origin destination;
+  net::SchemefulSite destination;
 
   // The time the first registration header was received for the redirect chain.
   // Will not change over the course of the redirect chain.
@@ -323,14 +323,17 @@ void AttributionDataHostManagerImpl::NotifyNavigationForDataHost(
     return;
   }
   NavigationRedirectSourceRegistrations& registrations = redirect_it->second;
-  registrations.destination = destination_origin;
-  const net::SchemefulSite destination_site(destination_origin);
+  registrations.destination = net::SchemefulSite(destination_origin);
 
   for (StorableSource& source : registrations.sources) {
     // The reporting origin has mis-configured the destination, ignore the
     // source.
-    if (source.common_info().ConversionDestination() != destination_site)
+    // TODO(apaseltiner): Report a DevTools/internals issue if the destinations
+    // aren't matched.
+    if (source.common_info().ConversionDestination() !=
+        registrations.destination) {
       continue;
+    }
 
     // Process the registration if the destination matched.
     attribution_manager_->HandleSource(std::move(source));
@@ -382,6 +385,8 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
   FrozenContext& context = receivers_.current_context();
   DCHECK(network::IsOriginPotentiallyTrustworthy(context.context_origin));
 
+  // TODO(apaseltiner): Report a DevTools/internals issue if the destinations
+  // aren't matched.
   if (context.source_type == AttributionSourceType::kNavigation &&
       net::SchemefulSite(data->destination) != context.destination) {
     RecordSourceDataHandleStatus(DataHandleStatus::kContextError);
@@ -700,6 +705,7 @@ void AttributionDataHostManagerImpl::OnRedirectSourceParsed(
 
   absl::optional<StorableSource> source;
   if (result.has_value() && result->is_dict()) {
+    // TODO(apaseltiner): Report a DevTools/internals issue if parsing fails.
     source = ParseSourceRegistration(
         std::move(result->GetDict()), /*source_time=*/base::Time::Now(),
         std::move(reporting_origin), registrations.source_origin,
@@ -716,8 +722,12 @@ void AttributionDataHostManagerImpl::OnRedirectSourceParsed(
   }
 
   // Process the registration if it was valid.
-  if (source)
+  // TODO(apaseltiner): Report a DevTools/internals issue if the destinations
+  // aren't matched.
+  if (source && source->common_info().ConversionDestination() ==
+                    registrations.destination) {
     attribution_manager_->HandleSource(std::move(*source));
+  }
 
   if (registrations.pending_source_data == 0u) {
     // We have finished processing all sources on this redirect chain, cleanup

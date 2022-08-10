@@ -1289,6 +1289,29 @@ TEST_F(AttributionDataHostManagerImplTest,
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
+       NavigationRedirectSource_DestinationMismatchIgnoredAfterFinished) {
+  EXPECT_CALL(mock_manager_, HandleSource).Times(0);
+
+  auto reporter = url::Origin::Create(GURL("https://report.test"));
+  auto source_site = url::Origin::Create(GURL("https://source.test"));
+
+  const blink::AttributionSrcToken attribution_src_token;
+  data_host_manager_.NotifyNavigationRedirectRegistation(
+      attribution_src_token, kRegisterSourceJson, reporter, source_site);
+
+  data_host_manager_.NotifyNavigationForDataHost(
+      attribution_src_token, source_site,
+      url::Origin::Create(GURL("https://destination2.example")));
+
+  // Wait for parsing to finish. Note that this relies on the DataDecoder
+  // callback not being invoked in the same callstack as the call to
+  // `NotifyNavigationRedirectRegistation()` above. If flakes result, perhaps
+  // due to a change in the DataDecoder implementation, consider replacing this
+  // with a mock whose callback sequencing we can explicitly control.
+  task_environment_.FastForwardBy(base::TimeDelta());
+}
+
+TEST_F(AttributionDataHostManagerImplTest,
        NavigationRedirectSource_NavigationFailed) {
   EXPECT_CALL(mock_manager_, HandleSource).Times(0);
 
