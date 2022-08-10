@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/read_later/reading_list_model_factory.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
+#include "chrome/browser/ui/tabs/tab.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -194,81 +195,31 @@ std::unique_ptr<TabGroupModel> TabGroupModelFactory::Create(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// WebContentsData
+// Tab
 
 // An object to own a WebContents that is in a tabstrip, as well as other
 // various properties it has.
-class TabStripModel::WebContentsData {
+class TabStripModel::Tab : public TabBase<content::WebContents> {
  public:
-  explicit WebContentsData(std::unique_ptr<WebContents> a_contents);
-  WebContentsData(const WebContentsData&) = delete;
-  WebContentsData& operator=(const WebContentsData&) = delete;
+  explicit Tab(std::unique_ptr<content::WebContents> content)
+      : TabBase<content::WebContents>(std::move(content)) {}
 
-  // Changes the WebContents that this WebContentsData tracks.
-  std::unique_ptr<WebContents> ReplaceWebContents(
-      std::unique_ptr<WebContents> contents);
-  WebContents* web_contents() { return contents_.get(); }
-
-  // See comments on fields.
-  WebContents* opener() const { return opener_; }
-  void set_opener(WebContents* value) {
-    DCHECK_NE(value, web_contents()) << "A tab should not be its own opener.";
-    opener_ = value;
-  }
-  void set_reset_opener_on_active_tab_change(bool value) {
-    reset_opener_on_active_tab_change_ = value;
-  }
-  bool reset_opener_on_active_tab_change() const {
-    return reset_opener_on_active_tab_change_;
-  }
-  bool pinned() const { return pinned_; }
-  void set_pinned(bool value) { pinned_ = value; }
-  bool blocked() const { return blocked_; }
-  void set_blocked(bool value) { blocked_ = value; }
-  absl::optional<tab_groups::TabGroupId> group() const { return group_; }
-  void set_group(absl::optional<tab_groups::TabGroupId> value) {
-    group_ = value;
-  }
+  // Changes the WebContents that this Tab tracks.
+  std::unique_ptr<content::WebContents> ReplaceWebContents(
+      std::unique_ptr<content::WebContents> contents);
+  WebContents* web_contents() { return contents(); }
 
   void WriteIntoTrace(perfetto::TracedValue context) const {
     auto dict = std::move(context).WriteDictionary();
-    dict.Add("web_contents", contents_);
-    dict.Add("pinned", pinned_);
-    dict.Add("blocked", blocked_);
+    dict.Add("web_contents", contents());
+    dict.Add("pinned", pinned());
+    dict.Add("blocked", blocked());
   }
-
- private:
-  // The WebContents owned by this WebContentsData.
-  std::unique_ptr<WebContents> contents_;
-
-  // The opener is used to model a set of tabs spawned from a single parent tab.
-  // The relationship is discarded easily, e.g. when the user switches to a tab
-  // not part of the set. This property is used to determine what tab to
-  // activate next when one is closed.
-  raw_ptr<WebContents> opener_ = nullptr;
-
-  // True if |opener_| should be reset when any active tab change occurs (rather
-  // than just one outside the current tree of openers).
-  bool reset_opener_on_active_tab_change_ = false;
-
-  // Whether the tab is pinned.
-  bool pinned_ = false;
-
-  // Whether the tab interaction is blocked by a modal dialog.
-  bool blocked_ = false;
-
-  // The group that contains this tab, if any.
-  absl::optional<tab_groups::TabGroupId> group_ = absl::nullopt;
 };
 
-TabStripModel::WebContentsData::WebContentsData(
-    std::unique_ptr<WebContents> contents)
-    : contents_(std::move(contents)) {}
-
-std::unique_ptr<WebContents> TabStripModel::WebContentsData::ReplaceWebContents(
-    std::unique_ptr<WebContents> contents) {
-  contents_.swap(contents);
-  return contents;
+std::unique_ptr<content::WebContents> TabStripModel::Tab::ReplaceWebContents(
+    std::unique_ptr<content::WebContents> contents) {
+  return ReplaceContents(std::move(contents));
 }
 
 TabStripModel::DetachedWebContents::DetachedWebContents(
@@ -492,7 +443,7 @@ TabStripModel::DetachWebContentsImpl(int index_before_any_removals,
 
   UngroupTab(index_at_time_of_removal);
 
-  std::unique_ptr<WebContentsData> old_data =
+  std::unique_ptr<Tab> old_data =
       std::move(contents_data_[index_at_time_of_removal]);
   contents_data_.erase(contents_data_.begin() + index_at_time_of_removal);
 
@@ -1805,8 +1756,7 @@ int TabStripModel::InsertWebContentsAtImpl(
   // since the old contents and the new contents will be the same...
   WebContents* active_contents = GetActiveWebContents();
   WebContents* raw_contents = contents.get();
-  std::unique_ptr<WebContentsData> data =
-      std::make_unique<WebContentsData>(std::move(contents));
+  std::unique_ptr<Tab> data = std::make_unique<Tab>(std::move(contents));
   data->set_pinned(pin);
   if ((add_types & ADD_INHERIT_OPENER) && active_contents) {
     if (active) {
@@ -2135,8 +2085,7 @@ void TabStripModel::MoveWebContentsAtImpl(int index,
 
   CHECK_LT(index, static_cast<int>(contents_data_.size()));
   CHECK_LT(to_position, static_cast<int>(contents_data_.size()));
-  std::unique_ptr<WebContentsData> moved_data =
-      std::move(contents_data_[index]);
+  std::unique_ptr<Tab> moved_data = std::move(contents_data_[index]);
   WebContents* web_contents = moved_data->web_contents();
   contents_data_.erase(contents_data_.begin() + index);
   contents_data_.insert(contents_data_.begin() + to_position,
@@ -2526,12 +2475,11 @@ void TabStripModel::FixOpeners(int index) {
 
   // Sanity check that none of the tabs' openers refer |old_contents| or
   // themselves.
-  DCHECK(!std::any_of(
-      contents_data_.begin(), contents_data_.end(),
-      [old_contents](const std::unique_ptr<WebContentsData>& data) {
-        return data->opener() == old_contents ||
-               data->opener() == data->web_contents();
-      }));
+  DCHECK(!std::any_of(contents_data_.begin(), contents_data_.end(),
+                      [old_contents](const std::unique_ptr<Tab>& data) {
+                        return data->opener() == old_contents ||
+                               data->opener() == data->web_contents();
+                      }));
 }
 
 void TabStripModel::EnsureGroupContiguity(int index) {
