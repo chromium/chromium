@@ -304,7 +304,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemOperationRunner {
   void FinishOperation(OperationID id);
 
   // Not owned; whatever owns this has to make sure context outlives this.
-  raw_ptr<FileSystemContext, DanglingUntriaged> file_system_context_;
+  raw_ptr<FileSystemContext> file_system_context_;
 
   using Operations =
       std::map<OperationID, std::unique_ptr<FileSystemOperation>>;

@@ -513,6 +513,7 @@ void FileSystemAccessManagerImpl::ResolveDefaultDirectory(
 
 void FileSystemAccessManagerImpl::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  operation_runner_.Reset();
   permission_context_ = nullptr;
 }
 
