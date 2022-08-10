@@ -72,6 +72,7 @@ static_library("libphonenumber_without_metadata") {
   public_deps = [ ":proto" ]
   deps = [
     ":proto",
+    "//third_party/abseil-cpp:absl",
     "//third_party/icu",
     "//third_party/protobuf:protobuf_lite",
   ]
