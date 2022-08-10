@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -69,6 +70,8 @@ class UnitTestTestSuite {
   std::unique_ptr<TestHostResolver> test_host_resolver_;
 
   base::RepeatingCallback<std::unique_ptr<ContentClients>()> create_clients_;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 }  // namespace content

@@ -135,13 +135,7 @@ UnitTestTestSuite::UnitTestTestSuite(
   listeners.Append(CreateTestEventListener());
   listeners.Append(new CheckForLeakedWebUIRegistrations);
 
-  // The ThreadPool created by the test launcher is never destroyed.
-  // Similarly, the FeatureList created here is never destroyed so it
-  // can safely be accessed by the ThreadPool.
-  std::unique_ptr<base::FeatureList> feature_list =
-      std::make_unique<base::FeatureList>();
-  feature_list->InitializeFromCommandLine(enabled, disabled);
-  base::FeatureList::SetInstance(std::move(feature_list));
+  scoped_feature_list_.InitFromCommandLine(enabled, disabled);
 
   // Do this here even though TestBlinkWebUnitTestSupport calls it since a
   // multi process unit test won't get to create TestBlinkWebUnitTestSupport.
