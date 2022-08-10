@@ -66,11 +66,6 @@ class SupportedLinksInfoBarDelegateBrowserTest
 
 IN_PROC_BROWSER_TEST_F(SupportedLinksInfoBarDelegateBrowserTest,
                        AcceptInfoBarChangesSupportedLinks) {
-  if (!apps::SupportedLinksInfoBarDelegate::
-          IsSetSupportedLinksPreferenceSupported()) {
-    GTEST_SKIP() << "Ash version not supported";
-  }
-
   base::HistogramTester histogram_tester;
   Browser* browser = OpenTestWebApp();
   auto* contents = browser->tab_strip_model()->GetActiveWebContents();
@@ -101,11 +96,6 @@ IN_PROC_BROWSER_TEST_F(SupportedLinksInfoBarDelegateBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SupportedLinksInfoBarDelegateBrowserTest,
                        InfoBarNotShownForPreferredApp) {
-  if (!apps::SupportedLinksInfoBarDelegate::
-          IsSetSupportedLinksPreferenceSupported()) {
-    GTEST_SKIP() << "Ash version not supported";
-  }
-
   app_service_proxy()->SetSupportedLinksPreference(test_web_app_id());
   if (web_app::IsWebAppsCrosapiEnabled() ||
       !base::FeatureList::IsEnabled(
@@ -123,11 +113,6 @@ IN_PROC_BROWSER_TEST_F(SupportedLinksInfoBarDelegateBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SupportedLinksInfoBarDelegateBrowserTest,
                        InfoBarNotShownAfterDismiss) {
-  if (!apps::SupportedLinksInfoBarDelegate::
-          IsSetSupportedLinksPreferenceSupported()) {
-    GTEST_SKIP() << "Ash version not supported";
-  }
-
   {
     auto* browser = OpenTestWebApp();
     auto* contents = browser->tab_strip_model()->GetActiveWebContents();
@@ -150,11 +135,6 @@ IN_PROC_BROWSER_TEST_F(SupportedLinksInfoBarDelegateBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SupportedLinksInfoBarDelegateBrowserTest,
                        InfoBarNotShownAfterIgnored) {
-  if (!apps::SupportedLinksInfoBarDelegate::
-          IsSetSupportedLinksPreferenceSupported()) {
-    GTEST_SKIP() << "Ash version not supported";
-  }
-
   for (int i = 0; i < 3; i++) {
     auto* browser = OpenTestWebApp();
     auto* contents = browser->tab_strip_model()->GetActiveWebContents();
@@ -177,11 +157,6 @@ IN_PROC_BROWSER_TEST_F(SupportedLinksInfoBarDelegateBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SupportedLinksInfoBarDelegateBrowserTest,
                        InfoBarDismissedWhenOpenedInChrome) {
-  if (!apps::SupportedLinksInfoBarDelegate::
-          IsSetSupportedLinksPreferenceSupported()) {
-    GTEST_SKIP() << "Ash version not supported";
-  }
-
   Browser* browser = OpenTestWebApp();
   auto* contents = browser->tab_strip_model()->GetActiveWebContents();
   apps::SupportedLinksInfoBarDelegate::MaybeShowSupportedLinksInfoBar(

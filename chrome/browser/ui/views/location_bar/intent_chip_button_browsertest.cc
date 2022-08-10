@@ -38,11 +38,6 @@
 #include "components/services/app_service/public/cpp/preferred_apps_test_util.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/app_service.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
-#endif
-
 class IntentChipButtonBrowserTest
     : public web_app::WebAppNavigationBrowserTest {
  public:
@@ -78,21 +73,6 @@ class IntentChipButtonBrowserTest
     ui::MouseEvent e(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
                      ui::EventTimeForNow(), 0, 0);
     test_api.NotifyClick(e);
-  }
-
-  bool HasRequiredAshVersionForLacros() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // For Lacros tests, we need a version of Ash which is new enough to send
-    // Preferred Apps over crosapi.
-    if (chromeos::LacrosService::Get()->GetInterfaceVersion(
-            crosapi::mojom::AppServiceProxy::Uuid_) <
-        static_cast<int>(crosapi::mojom::AppServiceProxy::MethodMinVersions::
-                             kAddPreferredAppMinVersion)) {
-      LOG(WARNING) << "Unsupported ash version.";
-      return false;
-    }
-#endif
-    return true;
   }
 
   // Installs a web app on the same host as InstallTestWebApp(), but with "/" as
@@ -133,9 +113,6 @@ class IntentChipButtonBrowserTest
 
 IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest,
                        NavigationToInScopeLinkShowsIntentChip) {
-  if (!HasRequiredAshVersionForLacros())
-    GTEST_SKIP() << "Ash version is too old to support Intent Picker";
-
   InstallTestWebApp();
 
   const GURL in_scope_url =
@@ -154,9 +131,6 @@ IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest,
                        NavigationToOutOfScopeLinkDoesNotShowsIntentChip) {
-  if (!HasRequiredAshVersionForLacros())
-    GTEST_SKIP() << "Ash version is too old to support Intent Picker";
-
   InstallTestWebApp();
 
   const GURL out_of_scope_url =
@@ -168,9 +142,6 @@ IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest,
                        IconVisibilityAfterTabSwitching) {
-  if (!HasRequiredAshVersionForLacros())
-    GTEST_SKIP() << "Ash version is too old to support Intent Picker";
-
   InstallTestWebApp();
 
   const GURL in_scope_url =
@@ -196,9 +167,6 @@ IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest,
 // Using the Intent Chip for an app which is set as preferred should launch
 // directly into the app. Preferred apps are only available on ChromeOS.
 IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest, OpensAppForPreferredApp) {
-  if (!HasRequiredAshVersionForLacros())
-    GTEST_SKIP() << "Ash version is too old to support Intent Picker";
-
   InstallTestWebApp();
   SetSupportedLinksPreference();
 
@@ -215,9 +183,6 @@ IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest, OpensAppForPreferredApp) {
 
 IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest,
                        ShowsIntentChipExpandedForPreferredApp) {
-  if (!HasRequiredAshVersionForLacros())
-    GTEST_SKIP() << "Ash version is too old to support Intent Picker";
-
   InstallTestWebApp();
   SetSupportedLinksPreference();
 
@@ -254,9 +219,6 @@ class IntentChipButtonSkipIntentPickerBrowserTest
 
 IN_PROC_BROWSER_TEST_F(IntentChipButtonSkipIntentPickerBrowserTest,
                        ClickingChipOpensApp) {
-  if (!HasRequiredAshVersionForLacros())
-    GTEST_SKIP() << "Ash version is too old to support Intent Picker";
-
   InstallTestWebApp();
 
   const GURL in_scope_url =
@@ -280,9 +242,6 @@ IN_PROC_BROWSER_TEST_F(IntentChipButtonSkipIntentPickerBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_F(IntentChipButtonSkipIntentPickerBrowserTest,
                        MAYBE_ShowsIntentPickerWhenMultipleApps) {
-  if (!HasRequiredAshVersionForLacros())
-    GTEST_SKIP() << "Ash version is too old to support Intent Picker";
-
   InstallTestWebApp();
   InstallOverlappingApp();
 
@@ -306,9 +265,6 @@ IN_PROC_BROWSER_TEST_F(IntentChipButtonSkipIntentPickerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(IntentChipButtonSkipIntentPickerBrowserTest,
                        ShowsIntentChipCollapsed) {
-  if (!HasRequiredAshVersionForLacros())
-    GTEST_SKIP() << "Ash version is too old to support Intent Picker";
-
   InstallTestWebApp();
 
   const GURL in_scope_url =
@@ -391,9 +347,6 @@ class IntentChipButtonIPHBubbleBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(IntentChipButtonIPHBubbleBrowserTest, ShowAndCloseIPH) {
-  if (!HasRequiredAshVersionForLacros())
-    GTEST_SKIP() << "Ash version is too old to support Intent Picker";
-
   InstallTestWebApp();
 
   const GURL in_scope_url =
@@ -457,9 +410,6 @@ class IntentChipButtonAppIconBrowserTest : public IntentChipButtonBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(IntentChipButtonAppIconBrowserTest, ShowsAppIconInChip) {
-  if (!HasRequiredAshVersionForLacros())
-    GTEST_SKIP() << "Ash version is too old to support Intent Picker";
-
   InstallTestWebApp();
   InstallOverlappingApp();
 
