@@ -91,7 +91,6 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/history/HistoryAdapterAccessibilityTest.java",
   "junit/src/org/chromium/chrome/browser/history/HistoryAdapterTest.java",
   "junit/src/org/chromium/chrome/browser/history/HistoryDeletionBridgeTest.java",
-  "junit/src/org/chromium/chrome/browser/history_clusters/HistoryClustersMediatorTest.java",
   "junit/src/org/chromium/chrome/browser/incognito/IncognitoTabSnapshotControllerTest.java",
   "junit/src/org/chromium/chrome/browser/infobar/IPHInfoBarSupportTest.java",
   "junit/src/org/chromium/chrome/browser/init/AsyncInitTaskRunnerTest.java",

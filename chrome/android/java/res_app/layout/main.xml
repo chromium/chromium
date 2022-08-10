@@ -138,6 +138,16 @@
                 android:background="?android:selectableItemBackground"
                 />
 
+            <TextView
+                android:id="@+id/tv_refresh"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="刷新"
+                android:textSize="12sp"
+                android:padding="8dp"
+                android:background="?android:selectableItemBackground"
+                />
+
         </LinearLayout>
 
     </LinearLayout>

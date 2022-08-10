@@ -98,8 +98,7 @@ public class IncognitoTabLauncher extends Activity {
     public static void updateComponentEnabledState() {
         // TODO(peconn): Update state in a few more places (eg CustomTabsConnection#warmup).
         boolean enable =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.ALLOW_NEW_INCOGNITO_TAB_INTENTS)
-                && IncognitoUtils.isIncognitoModeEnabled();
+                ChromeFeatureList.isEnabled(ChromeFeatureList.ALLOW_NEW_INCOGNITO_TAB_INTENTS);
 
         PostTask.postTask(TaskTraits.USER_VISIBLE, () -> setComponentEnabled(enable));
     }

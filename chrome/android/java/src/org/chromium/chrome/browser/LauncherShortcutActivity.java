@@ -17,7 +17,6 @@ import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 
@@ -64,23 +63,12 @@ public class LauncherShortcutActivity extends Activity {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N_MR1) return;
 
         SharedPreferencesManager preferences = SharedPreferencesManager.getInstance();
-        boolean incognitoEnabled = IncognitoUtils.isIncognitoModeEnabled();
-        boolean incognitoShortcutAdded =
-                preferences.readBoolean(ChromePreferenceKeys.INCOGNITO_SHORTCUT_ADDED, false);
 
-        // Add the shortcut regardless of whether it was previously added in case the locale has
-        // changed since the last addition.
-        // TODO(https://crbug.com/1068847): Investigate better locale change handling.
-        if (incognitoEnabled) {
-            boolean success = LauncherShortcutActivity.addIncognitoLauncherShortcut(context);
+        boolean success = LauncherShortcutActivity.addIncognitoLauncherShortcut(context);
 
-            // Save a shared preference indicating the incognito shortcut has been added.
-            if (success) {
-                preferences.writeBoolean(ChromePreferenceKeys.INCOGNITO_SHORTCUT_ADDED, true);
-            }
-        } else if (!incognitoEnabled && incognitoShortcutAdded) {
-            LauncherShortcutActivity.removeIncognitoLauncherShortcut(context);
-            preferences.writeBoolean(ChromePreferenceKeys.INCOGNITO_SHORTCUT_ADDED, false);
+        // Save a shared preference indicating the incognito shortcut has been added.
+        if (success) {
+            preferences.writeBoolean(ChromePreferenceKeys.INCOGNITO_SHORTCUT_ADDED, true);
         }
     }
 

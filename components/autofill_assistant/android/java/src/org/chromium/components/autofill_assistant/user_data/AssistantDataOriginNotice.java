@@ -80,8 +80,6 @@ public class AssistantDataOriginNotice {
     }
 
     private void onDataOriginLinkClicked(int unusedLink) {
-        new GmsIntegrator(mAccountEmail, mActivity)
-                .launchAccountIntent(ACCOUNT_SETTINGS_SCREEN_ID, mWindowAndroid, unused -> {});
     }
 
     private void showDataOriginDialog(View unusedView) {

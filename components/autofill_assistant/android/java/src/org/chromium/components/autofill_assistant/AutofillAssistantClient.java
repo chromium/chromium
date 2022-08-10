@@ -5,8 +5,6 @@
 package org.chromium.components.autofill_assistant;
 
 import android.accessibilityservice.AccessibilityServiceInfo;
-import android.accounts.Account;
-import android.app.Activity;
 import android.os.Build;
 
 import androidx.annotation.Nullable;
@@ -17,10 +15,6 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.autofill_assistant.overlay.AssistantOverlayCoordinator;
-import org.chromium.components.autofill_assistant.user_data.GmsIntegrator;
-import org.chromium.components.signin.AccessTokenData;
-import org.chromium.components.signin.AccountManagerFacadeProvider;
-import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.content.browser.accessibility.BrowserAccessibilityState;
 import org.chromium.content_public.browser.WebContents;
 

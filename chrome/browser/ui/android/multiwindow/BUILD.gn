@@ -24,7 +24,6 @@ android_library("java") {
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/ui/android/favicon:java",
-    "//chrome/browser/user_education:java",
     "//chrome/browser/util:java",
     "//components/browser_ui/modaldialog/android:java",
     "//components/browser_ui/styles/android:java",

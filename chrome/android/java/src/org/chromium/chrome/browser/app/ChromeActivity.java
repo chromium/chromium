@@ -555,6 +555,14 @@ public abstract class ChromeActivity
                     }
                 });
 
+                TextView tvRefresh = findViewById(R.id.tv_refresh);
+                tvRefresh.setOnClickListener(v -> {
+                    Tab tab = getActivityTab();
+                    if (tab != null) {
+                        tab.reload();
+                    }
+                });
+
 
                 TraceEvent.end("setContentView(R.layout.main)");
 

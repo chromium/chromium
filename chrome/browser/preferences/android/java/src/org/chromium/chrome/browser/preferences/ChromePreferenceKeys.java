@@ -706,9 +706,7 @@ public final class ChromePreferenceKeys {
             "com.google.android.apps.chrome.ChromeMobileApplication.BOOT_TIMESTAMP";
 
     /**
-     * Key prefix for base promo component. Used in {@link
-     * org.chromium.components.browser_ui.widget.promo.PromoCardCoordinator} to store related state
-     * or statistics.
+     * Key prefix for base promo component.
      */
     public static final KeyPrefix PROMO_IS_DISMISSED =
             new KeyPrefix("Chrome.PromoCard.IsDismissed.*");

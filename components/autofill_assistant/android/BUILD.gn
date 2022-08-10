@@ -191,12 +191,9 @@ android_library("public_java") {
   ]
 
   sources = [
-    "public/java/src/org/chromium/components/autofill_assistant/AssistantAddressEditorGms.java",
-    "public/java/src/org/chromium/components/autofill_assistant/AssistantContactEditorAccount.java",
     "public/java/src/org/chromium/components/autofill_assistant/AssistantFeatures.java",
     "public/java/src/org/chromium/components/autofill_assistant/AssistantModuleInstallUi.java",
     "public/java/src/org/chromium/components/autofill_assistant/AssistantOnboardingHelper.java",
-    "public/java/src/org/chromium/components/autofill_assistant/AssistantPaymentInstrumentEditorGms.java",
     "public/java/src/org/chromium/components/autofill_assistant/AutofillAssistantActionHandler.java",
     "public/java/src/org/chromium/components/autofill_assistant/AutofillAssistantDirectAction.java",
     "public/java/src/org/chromium/components/autofill_assistant/AutofillAssistantMetrics.java",
@@ -239,7 +236,6 @@ android_library("public_dependencies_java") {
     "public/java/src/org/chromium/components/autofill_assistant/AssistantBrowserControlsFactory.java",
     "public/java/src/org/chromium/components/autofill_assistant/AssistantDependencies.java",
     "public/java/src/org/chromium/components/autofill_assistant/AssistantEditor.java",
-    "public/java/src/org/chromium/components/autofill_assistant/AssistantFeedbackUtil.java",
     "public/java/src/org/chromium/components/autofill_assistant/AssistantInfoPageUtil.java",
     "public/java/src/org/chromium/components/autofill_assistant/AssistantIsGsaFunction.java",
     "public/java/src/org/chromium/components/autofill_assistant/AssistantIsMsbbEnabledFunction.java",
@@ -340,14 +336,12 @@ android_library("autofill_assistant_public_java") {
 
   sources = [
     "java/src/org/chromium/components/autofill_assistant/header/AnimatedPoodle.java",
-    "java/src/org/chromium/components/autofill_assistant/user_data/GmsIntegrator.java",
   ]
 
   # Add the actual implementation where necessary so that downstream targets
   # can provide their own implementations.
   jar_excluded_patterns = [
     "*/AnimatedPoodle.class",
-    "*/GmsIntegrator.class",
   ]
 }
 
@@ -364,7 +358,6 @@ android_library("autofill_assistant_public_impl_java") {
 
   sources = [
     "java/src/org/chromium/components/autofill_assistant/header/AnimatedPoodle.java",
-    "java/src/org/chromium/components/autofill_assistant/user_data/GmsIntegrator.java",
   ]
 }
 

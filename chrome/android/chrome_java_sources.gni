@@ -128,7 +128,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/compositor/layouts/Layout.java",
   "java/src/org/chromium/chrome/browser/compositor/layouts/LayoutManagerChrome.java",
   "java/src/org/chromium/chrome/browser/compositor/layouts/LayoutManagerChromePhone.java",
-  "java/src/org/chromium/chrome/browser/compositor/layouts/LayoutManagerChromeTablet.java",
   "java/src/org/chromium/chrome/browser/compositor/layouts/LayoutManagerHost.java",
   "java/src/org/chromium/chrome/browser/compositor/layouts/LayoutManagerImpl.java",
   "java/src/org/chromium/chrome/browser/compositor/layouts/LayoutProvider.java",

@@ -62,7 +62,6 @@ import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChromePhone;
-import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChromeTablet;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.cookies.CookiesFetcher;
 import org.chromium.chrome.browser.crypto.CipherFactory;
@@ -80,7 +79,6 @@ import org.chromium.chrome.browser.incognito.IncognitoProfileDestroyer;
 import org.chromium.chrome.browser.incognito.IncognitoStartup;
 import org.chromium.chrome.browser.incognito.IncognitoTabLauncher;
 import org.chromium.chrome.browser.incognito.IncognitoTabSnapshotController;
-import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -503,33 +501,11 @@ public class ChromeTabbedActivity extends ChromeActivity
         }
     }
 
-    private void setupCompositorContentPreNativeForTablet() {
-        if (!isTablet()) return;
-
-        try (TraceEvent e = TraceEvent.scoped(
-                     "ChromeTabbedActivity.setupCompositorContentPreNativeForTablet")) {
-            CompositorViewHolder compositorViewHolder = getCompositorViewHolderSupplier().get();
-
-            // clang-format off
-            mLayoutManager = new LayoutManagerChromeTablet(compositorViewHolder, mContentContainer,
-                    getTabContentManagerSupplier(),
-                    mOverviewModeBehaviorSupplier,
-                    getLifecycleDispatcher());
-            mLayoutStateProviderSupplier.set(mLayoutManager);
-            // clang-format on
-            mOverviewModeController = mLayoutManager;
-        }
-    }
-
     private void setupCompositorContentPostNative() {
         try (TraceEvent e = TraceEvent.scoped(
                      "ChromeTabbedActivity.setupCompositorContentPostNative")) {
             if (!isLayoutManagerCreated()) {
-                if (isTablet()) {
-                    setupCompositorContentPreNativeForTablet();
-                } else {
-                    setupCompositorContentPreNativeForPhone();
-                }
+                setupCompositorContentPreNativeForPhone();
             }
 
             mLayoutManager.setEnableAnimations(DeviceClassManager.enableAnimations());
@@ -1075,29 +1051,6 @@ public class ChromeTabbedActivity extends ChromeActivity
                     if (!TextUtils.equals(externalAppId, getPackageName())) {
                         assert false : "Only Chrome is allowed to open incognito tabs";
                         Log.e(TAG, "Only Chrome is allowed to open incognito tabs");
-                        return;
-                    }
-
-                    if (!IncognitoUtils.isIncognitoModeEnabled()) {
-                        // The incognito launcher shortcut is manipulated in #onDeferredStartup(),
-                        // so it's possible for a user to invoke the shortcut before it's disabled.
-                        // Quick actions search widget is installed on the home screen and may
-                        // need to be updated before the incognito button is removed.
-                        // Opening an incognito tab while incognito mode is disabled from somewhere
-                        // besides the launcher shortcut of from quick action search widget is an
-                        // error.
-                        if (fromAppWidget || fromLauncherShortcut) {
-                            // We are using the message introduced for quick action search widget
-                            // for both the widget and the launcher shortcut here.
-                            Toast.makeText(ChromeTabbedActivity.this,
-                                         R.string.quick_action_search_widget_message_no_incognito,
-                                         Toast.LENGTH_LONG)
-                                    .show();
-                        } else {
-                            assert false : "Tried to open incognito tab while incognito disabled";
-                            Log.e(TAG, "Tried to open incognito tab while incognito disabled");
-                        }
-
                         return;
                     }
 

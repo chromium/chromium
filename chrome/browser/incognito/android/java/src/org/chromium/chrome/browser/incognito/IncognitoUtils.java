@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.incognito;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKey;
@@ -20,23 +19,6 @@ public class IncognitoUtils {
     private static Boolean sIsEnabledForTesting;
 
     private IncognitoUtils() {}
-
-    /**
-     * @return true if incognito mode is enabled.
-     */
-    public static boolean isIncognitoModeEnabled() {
-        if (sIsEnabledForTesting != null) {
-            return sIsEnabledForTesting;
-        }
-        return IncognitoUtilsJni.get().getIncognitoModeEnabled();
-    }
-
-    /**
-     * @return true if incognito mode is managed by policy.
-     */
-    public static boolean isIncognitoModeManaged() {
-        return IncognitoUtilsJni.get().getIncognitoModeManaged();
-    }
 
     /**
      * Returns either a regular profile or a (primary/non-primary) Incognito profile.
@@ -116,11 +98,5 @@ public class IncognitoUtils {
     @VisibleForTesting
     public static void setEnabledForTesting(Boolean enabled) {
         sIsEnabledForTesting = enabled;
-    }
-
-    @NativeMethods
-    interface Natives {
-        boolean getIncognitoModeEnabled();
-        boolean getIncognitoModeManaged();
     }
 }
