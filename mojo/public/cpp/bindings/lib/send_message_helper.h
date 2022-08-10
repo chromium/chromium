@@ -18,12 +18,12 @@ namespace internal {
 // trace events can be performed without affecting the binary size of the
 // generated bindings.
 COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
-void SendMessage(MessageReceiverWithResponder& receiver,
-                 Message& message,
-                 std::unique_ptr<MessageReceiver> responder);
+void SendMojoMessage(MessageReceiverWithResponder& receiver,
+                     Message& message,
+                     std::unique_ptr<MessageReceiver> responder);
 
 COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
-void SendMessage(MessageReceiver& receiver, Message& message);
+void SendMojoMessage(MessageReceiver& receiver, Message& message);
 
 }  // namespace internal
 }  // namespace mojo

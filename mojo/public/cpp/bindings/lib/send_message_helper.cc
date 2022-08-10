@@ -12,7 +12,7 @@
 namespace mojo {
 namespace internal {
 
-void SendMessage(MessageReceiver& receiver, Message& message) {
+void SendMojoMessage(MessageReceiver& receiver, Message& message) {
   uint64_t flow_id = message.GetTraceId();
   bool is_sync_non_response = message.has_flag(Message::kFlagIsSync) &&
                               !message.has_flag(Message::kFlagIsResponse);
@@ -29,9 +29,9 @@ void SendMessage(MessageReceiver& receiver, Message& message) {
   }
 }
 
-void SendMessage(MessageReceiverWithResponder& receiver,
-                 Message& message,
-                 std::unique_ptr<MessageReceiver> responder) {
+void SendMojoMessage(MessageReceiverWithResponder& receiver,
+                     Message& message,
+                     std::unique_ptr<MessageReceiver> responder) {
   uint64_t flow_id = message.GetTraceId();
   bool is_sync_non_response = message.has_flag(Message::kFlagIsSync) &&
                               !message.has_flag(Message::kFlagIsResponse);

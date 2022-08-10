@@ -235,7 +235,7 @@ bool {{proxy_name}}::{{method.name}}(
 {%-     for param in method.response_parameters -%}
           , out_param_{{param.name}}
 {%-     endfor %}));
-  ::mojo::internal::SendMessage(*receiver_, message, std::move(responder));
+  ::mojo::internal::SendMojoMessage(*receiver_, message, std::move(responder));
 #if BUILDFLAG(MOJO_TRACE_ENABLED)
   {{interface_macros.trace_event(prefix="out_param_",
                                  method_parameters=method.response_parameters,
@@ -289,11 +289,11 @@ void {{proxy_name}}::{{method.name}}(
   std::unique_ptr<mojo::MessageReceiver> responder(
       new {{class_name}}_{{method.name}}_ForwardToCallback(
           std::move(callback)));
-  ::mojo::internal::SendMessage(*receiver_, message, std::move(responder));
+  ::mojo::internal::SendMojoMessage(*receiver_, message, std::move(responder));
 {%- else %}
   // This return value may be ignored as false implies the Connector has
   // encountered an error, which will be visible through other means.
-  ::mojo::internal::SendMessage(*receiver_, message);
+  ::mojo::internal::SendMojoMessage(*receiver_, message);
 {%- endif %}
 }
 {%- endfor %}
@@ -424,8 +424,8 @@ void {{class_name}}_{{method.name}}_ProxyToResponder::Run(
 
   message.set_request_id(request_id_);
   message.set_trace_nonce(trace_nonce_);
-  ::mojo::internal::SendMessage(*responder_, message);
-  // SendMessage fails silently if the responder connection is closed,
+  ::mojo::internal::SendMojoMessage(*responder_, message);
+  // SendMojoMessage() fails silently if the responder connection is closed,
   // or if the message is malformed.
   //
   // TODO(darin): If Accept() returns false due to a malformed message, that
