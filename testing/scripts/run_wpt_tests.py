@@ -523,6 +523,25 @@ class Chrome(Product):
                 or self._path_from_target(default_binary))
 
 
+class ChromeiOS(Product):
+    name = 'chrome_ios'
+
+    @property
+    def wpt_args(self):
+        wpt_args = list(super().wpt_args)
+        wpt_args.extend([
+            '--processes=%d' % self._options.processes,
+        ])
+        return wpt_args
+
+    @property
+    def expectations(self):
+        expectations = list(super().expectations)
+        expectations.append(
+            self._path_finder.path_from_web_tests('WPTOverrideExpectations'))
+        return expectations
+
+
 @contextlib.contextmanager
 def _install_apk(device, path):
     """Helper context manager for ensuring a device uninstalls an APK."""
@@ -781,7 +800,7 @@ def _make_product_registry():
     respective classes.
     """
     product_registry = {}
-    product_classes = [Chrome]
+    product_classes = [Chrome, ChromeiOS]
     if _ANDROID_ENABLED:
         product_classes.extend([ChromeAndroid, WebView, WebLayer])
     for product_cls in product_classes:
