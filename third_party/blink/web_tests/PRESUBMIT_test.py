@@ -65,6 +65,24 @@ class PresubmitTest(unittest.TestCase):
             self.assertEqual("error", messages[i].type)
             self.assertIn("\"%s\"" % file.LocalPath(), messages[i].message)
 
+    def testCheckForDoctypeHTMLExceptions(self):
+        """This test makes sure that we don't raise <!DOCTYPE html> errors
+        for WPT importer.
+        """
+        error_file = MockAffectedFile(
+            "some/dir/doctype_error.html",
+            ["<html>", "<body>", "<p>Test</p>", "</body>", "</html>"])
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [error_file]
+        mock_input_api.change.author_email = \
+            "wpt-autoroller@chops-service-accounts.iam.gserviceaccount.com"
+
+        messages = PRESUBMIT._CheckForDoctypeHTML(mock_input_api,
+                                                  MockOutputApi())
+
+        self.assertEqual(1, len(messages))
+        self.assertEqual("warning", messages[0].type)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -257,6 +257,7 @@ class MockChange(object):
 
   def __init__(self, changed_files):
     self._changed_files = changed_files
+    self.author_email = None
     self.footers = defaultdict(list)
 
   def LocalPaths(self):

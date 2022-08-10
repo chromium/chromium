@@ -17,6 +17,7 @@ import re
 from html.parser import HTMLParser
 
 USE_PYTHON3 = True
+WPT_IMPORTER_EMAIL = "wpt-autoroller@chops-service-accounts.iam.gserviceaccount.com"
 
 
 def _CheckTestharnessResults(input_api, output_api):
@@ -340,6 +341,9 @@ def _CheckForDoctypeHTML(input_api, output_api):
     if input_api.no_diffs:
         return results
 
+    # These tests are being imported from WPT, so <!DOCTYPE html> is not required yet.
+    no_errors = (input_api.change.author_email == WPT_IMPORTER_EMAIL)
+
     for f in input_api.AffectedFiles(include_deletes=False):
         path = f.LocalPath()
         fname = os.path.basename(path)
@@ -353,7 +357,10 @@ def _CheckForDoctypeHTML(input_api, output_api):
                     "to the name of your test." % path
 
             if f.Action() == "A" or _IsDoctypeHTMLSet(f.OldContents()):
-                results.append(output_api.PresubmitError(error))
+                if no_errors:
+                    results.append(output_api.PresubmitPromptWarning(error))
+                else:
+                    results.append(output_api.PresubmitError(error))
 
     return results
 
