@@ -4,9 +4,9 @@
 
 /**
  * @fileoverview
- * 'settings-safety-unused-site-permissions' is the settings page containing the
- * safety check unused site permissions module showing the unused sites that has
- * some granted permissions.
+ * 'settings-safety-notification-permissions' is the settings page containing
+ * the safety check notification permissions module showing the sites that sends
+ * high volume of notifications.
  */
 
 import './safety_check_child.js';
@@ -17,18 +17,18 @@ import {routes} from '../route.js';
 import {Router} from '../router.js';
 
 import {SafetyCheckIconStatus, SettingsSafetyCheckChildElement} from './safety_check_child.js';
-import {getTemplate} from './safety_check_unused_site_permissions.html.js';
+import {getTemplate} from './safety_check_notification_permissions.html.js';
 
-export interface SettingsSafetyCheckUnusedSitePermissionsElement {
+export interface SettingsSafetyCheckNotificationPermissionsElement {
   $: {
     'safetyCheckChild': SettingsSafetyCheckChildElement,
   };
 }
 
-export class SettingsSafetyCheckUnusedSitePermissionsElement extends
+export class SettingsSafetyCheckNotificationPermissionsElement extends
     PolymerElement {
   static get is() {
-    return 'settings-safety-check-unused-site-permissions';
+    return 'settings-safety-check-notification-permissions';
   }
 
   static get template() {
@@ -50,18 +50,18 @@ export class SettingsSafetyCheckUnusedSitePermissionsElement extends
 
   private onButtonClick_() {
     Router.getInstance().navigateTo(
-        routes.SITE_SETTINGS, /* dynamicParams= */ undefined,
+        routes.SITE_SETTINGS_NOTIFICATIONS, /* dynamicParams= */ undefined,
         /* removeSearch= */ true);
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    'settings-safety-check-unused-site-permissions':
-        SettingsSafetyCheckUnusedSitePermissionsElement;
+    'settings-safety-check-notification-permissions':
+        SettingsSafetyCheckNotificationPermissionsElement;
   }
 }
 
 customElements.define(
-    SettingsSafetyCheckUnusedSitePermissionsElement.is,
-    SettingsSafetyCheckUnusedSitePermissionsElement);
+    SettingsSafetyCheckNotificationPermissionsElement.is,
+    SettingsSafetyCheckNotificationPermissionsElement);

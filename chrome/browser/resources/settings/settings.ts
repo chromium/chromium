@@ -73,6 +73,7 @@ export {SafetyCheckIconStatus, SettingsSafetyCheckChildElement} from './safety_c
 export {SettingsSafetyCheckChromeCleanerChildElement} from './safety_check_page/safety_check_chrome_cleaner_child.js';
 // </if>
 export {SettingsSafetyCheckExtensionsChildElement} from './safety_check_page/safety_check_extensions_child.js';
+export {SettingsSafetyCheckNotificationPermissionsElement} from './safety_check_page/safety_check_notification_permissions.js';
 export {SettingsSafetyCheckPageElement} from './safety_check_page/safety_check_page.js';
 export {SettingsSafetyCheckPasswordsChildElement} from './safety_check_page/safety_check_passwords_child.js';
 export {SettingsSafetyCheckSafeBrowsingChildElement} from './safety_check_page/safety_check_safe_browsing_child.js';

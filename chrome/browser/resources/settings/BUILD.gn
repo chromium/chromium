@@ -201,6 +201,7 @@ build_webui("build") {
     "reset_page/reset_profile_dialog.ts",
     "safety_check_page/safety_check_child.ts",
     "safety_check_page/safety_check_extensions_child.ts",
+    "safety_check_page/safety_check_notification_permissions.ts",
     "safety_check_page/safety_check_page.ts",
     "safety_check_page/safety_check_passwords_child.ts",
     "safety_check_page/safety_check_safe_browsing_child.ts",
