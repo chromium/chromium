@@ -2,13 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
-
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './consumer_auto_update_toggle_dialog.html.js';
 
-/** @polymer */
+interface SettingsConsumerAutoUpdateToggleDialogElement {
+  $: {
+    dialog: CrDialogElement,
+  };
+}
+
 class SettingsConsumerAutoUpdateToggleDialogElement extends PolymerElement {
   static get is() {
     return 'settings-consumer-auto-update-toggle-dialog';
@@ -18,15 +22,13 @@ class SettingsConsumerAutoUpdateToggleDialogElement extends PolymerElement {
     return getTemplate();
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.$.dialog.showModal();
   }
 
-  /** @private */
-  onTurnOffTap_() {
+  private onTurnOffTap_() {
     this.dispatchEvent(new CustomEvent('set-consumer-auto-update', {
       bubbles: true,
       composed: true,
@@ -37,8 +39,7 @@ class SettingsConsumerAutoUpdateToggleDialogElement extends PolymerElement {
     this.$.dialog.close();
   }
 
-  /** @private */
-  onKeepUpdatesTap_() {
+  private onKeepUpdatesTap_() {
     this.dispatchEvent(new CustomEvent('set-consumer-auto-update', {
       bubbles: true,
       composed: true,
@@ -47,6 +48,13 @@ class SettingsConsumerAutoUpdateToggleDialogElement extends PolymerElement {
       },
     }));
     this.$.dialog.close();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-consumer-auto-update-toggle-dialog':
+        SettingsConsumerAutoUpdateToggleDialogElement;
   }
 }
 

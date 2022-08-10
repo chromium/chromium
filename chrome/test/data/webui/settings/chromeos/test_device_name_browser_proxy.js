@@ -6,7 +6,6 @@ import {SetDeviceNameResult} from 'chrome://os-settings/chromeos/os_settings.js'
 
 import {TestBrowserProxy} from '../../test_browser_proxy.js';
 
-/** @implements {DeviceNameBrowserProxy} */
 export class TestDeviceNameBrowserProxy extends TestBrowserProxy {
   constructor() {
     super([

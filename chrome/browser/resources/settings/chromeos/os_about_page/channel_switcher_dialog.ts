@@ -9,19 +9,26 @@
  * release channel to notify parents of this dialog.
  */
 
-import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
 import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
-import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import '../../settings_shared.css.js';
 
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, BrowserChannel, isTargetChannelMoreStable} from './about_page_browser_proxy.js';
 import {getTemplate} from './channel_switcher_dialog.html.js';
+
+interface SettingsChannelSwitcherDialogElement {
+  $: {
+    dialog: CrDialogElement,
+    warningSelector: IronSelectorElement,
+  };
+}
 
 const WarningMessage = {
   NONE: -1,
@@ -30,7 +37,6 @@ const WarningMessage = {
   UNSTABLE: 2,
 };
 
-/** @polymer */
 class SettingsChannelSwitcherDialogElement extends PolymerElement {
   static get is() {
     return 'settings-channel-switcher-dialog';
@@ -42,22 +48,17 @@ class SettingsChannelSwitcherDialogElement extends PolymerElement {
 
   static get properties() {
     return {
-      /** @private */
       browserChannelEnum_: {
         type: Object,
         value: BrowserChannel,
       },
 
-      /** @private {!BrowserChannel} */
       currentChannel_: String,
 
-      /** @private {!BrowserChannel} */
       targetChannel_: String,
 
       /**
        * Controls which of the two action buttons is visible.
-       * @private {?{changeChannel: boolean, changeChannelAndPowerwash:
-       *     boolean}}
        */
       shouldShowButtons_: {
         type: Object,
@@ -66,72 +67,76 @@ class SettingsChannelSwitcherDialogElement extends PolymerElement {
     };
   }
 
+  private browserChannelEnum_: typeof BrowserChannel;
+  private currentChannel_: BrowserChannel;
+  private targetChannel_: BrowserChannel;
+  private shouldShowButtons_: {
+    changeChannel: boolean,
+    changeChannelAndPowerwash: boolean,
+  }|null;
+
+  private browserProxy_: AboutPageBrowserProxy;
+
   constructor() {
     super();
 
-    /** @private {AboutPageBrowserProxy} */
     this.browserProxy_ = AboutPageBrowserProxyImpl.getInstance();
   }
 
-  /** @override */
-  ready() {
+  override ready() {
     super.ready();
 
     this.browserProxy_.getChannelInfo().then(info => {
       this.currentChannel_ = info.currentChannel;
       this.targetChannel_ = info.targetChannel;
       // Pre-populate radio group with target channel.
-      const radioGroup = this.shadowRoot.querySelector('cr-radio-group');
+      const radioGroup = this.shadowRoot!.querySelector('cr-radio-group')!;
       radioGroup.selected = this.targetChannel_;
       radioGroup.focus();
     });
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.$.dialog.showModal();
   }
 
-  /** @private */
-  onCancelTap_() {
+  private onCancelTap_() {
     this.$.dialog.close();
   }
 
-  /** @private */
-  onChangeChannelTap_() {
+  private onChangeChannelTap_() {
     const selectedChannel =
-        this.shadowRoot.querySelector('cr-radio-group').selected;
+        this.shadowRoot!.querySelector('cr-radio-group')!.selected as
+        BrowserChannel;
     this.browserProxy_.setChannel(selectedChannel, false);
     this.$.dialog.close();
     this.fireTargetChannelChangedEvent_(selectedChannel);
   }
 
-  /** @private */
-  onChangeChannelAndPowerwashTap_() {
+  private onChangeChannelAndPowerwashTap_() {
     const selectedChannel =
-        this.shadowRoot.querySelector('cr-radio-group').selected;
+        this.shadowRoot!.querySelector('cr-radio-group')!.selected as
+        BrowserChannel;
     this.browserProxy_.setChannel(selectedChannel, true);
     this.$.dialog.close();
     this.fireTargetChannelChangedEvent_(selectedChannel);
   }
 
-  /** @private */
-  fireTargetChannelChangedEvent_(detail = {}) {
+  private fireTargetChannelChangedEvent_(detail = {}) {
     const event = new CustomEvent(
         'target-channel-changed', {bubbles: true, composed: true, detail});
     this.dispatchEvent(event);
   }
 
   /**
-   * @param {boolean} changeChannel Whether the changeChannel button should be
-   *     visible.
-   * @param {boolean} changeChannelAndPowerwash Whether the
-   *     changeChannelAndPowerwash button should be visible.
-   * @private
+   * @param changeChannel Whether the changeChannel button should be visible.
+   * @param changeChannelAndPowerwash Whether the changeChannelAndPowerwash
+   *    button should be visible.
    */
-  updateButtons_(changeChannel, changeChannelAndPowerwash) {
+  private updateButtons_(
+      changeChannel: boolean, changeChannelAndPowerwash: boolean) {
     if (changeChannel || changeChannelAndPowerwash) {
       // Ensure that at most one button is visible at any given time.
       assert(changeChannel !== changeChannelAndPowerwash);
@@ -143,10 +148,10 @@ class SettingsChannelSwitcherDialogElement extends PolymerElement {
     };
   }
 
-  /** @private */
-  onChannelSelectionChanged_() {
+  private onChannelSelectionChanged_() {
     const selectedChannel =
-        this.shadowRoot.querySelector('cr-radio-group').selected;
+        this.shadowRoot!.querySelector('cr-radio-group')!.selected as
+        BrowserChannel;
 
     // Selected channel is the same as the target channel so only show 'cancel'.
     if (selectedChannel === this.targetChannel_) {
@@ -184,14 +189,14 @@ class SettingsChannelSwitcherDialogElement extends PolymerElement {
     }
   }
 
-  /**
-   * @param {string} format
-   * @param {string} replacement
-   * @return {string}
-   * @private
-   */
-  substituteString_(format, replacement) {
+  private substituteString_(format: string, replacement: string): string {
     return loadTimeData.substituteString(format, replacement);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-channel-switcher-dialog': SettingsChannelSwitcherDialogElement;
   }
 }
 

@@ -83,12 +83,12 @@ pending_gen_js_files = [
 # TODO(crbug/1292025) Files that have their HTML wrapper file generated
 # by html_to_wrapper() go here.
 web_component_files = [
-  "chromeos/os_about_page/channel_switcher_dialog.js",
-  "chromeos/os_about_page/consumer_auto_update_toggle_dialog.js",
-  "chromeos/os_about_page/detailed_build_info.js",
-  "chromeos/os_about_page/edit_hostname_dialog.js",
-  "chromeos/os_about_page/os_about_page.js",
-  "chromeos/os_about_page/update_warning_dialog.js",
+  "chromeos/os_about_page/channel_switcher_dialog.ts",
+  "chromeos/os_about_page/consumer_auto_update_toggle_dialog.ts",
+  "chromeos/os_about_page/detailed_build_info.ts",
+  "chromeos/os_about_page/edit_hostname_dialog.ts",
+  "chromeos/os_about_page/os_about_page.ts",
+  "chromeos/os_about_page/update_warning_dialog.ts",
 ]
 
 # Files that are passed as input to html_to_wrapper().
@@ -147,9 +147,9 @@ non_web_component_files = [
   "chromeos/os_a11y_page/switch_access_subpage_browser_proxy.js",
   "chromeos/os_a11y_page/text_to_speech_page_browser_proxy.js",
   "chromeos/os_a11y_page/tts_subpage_browser_proxy.js",
-  "chromeos/os_about_page/about_page_browser_proxy.js",
-  "chromeos/os_about_page/device_name_browser_proxy.js",
-  "chromeos/os_about_page/device_name_util.js",
+  "chromeos/os_about_page/about_page_browser_proxy.ts",
+  "chromeos/os_about_page/device_name_browser_proxy.ts",
+  "chromeos/os_about_page/device_name_util.ts",
   "chromeos/os_apps_page/android_apps_browser_proxy.js",
   "chromeos/os_apps_page/app_management_page/actions.js",
   "chromeos/os_apps_page/app_management_page/api_listener.js",
@@ -183,6 +183,10 @@ non_web_component_files = [
   "chromeos/personalization_page/change_picture_browser_proxy.js",
   "chromeos/personalization_page/personalization_hub_browser_proxy.js",
   "chromeos/personalization_page/wallpaper_browser_proxy.js",
+
+  # Files below are from Browser Settings and shared with ChromeOS Settings
+  "i18n_setup.ts",
+  "lifetime_browser_proxy.ts",
   "router.js",
 ]
 

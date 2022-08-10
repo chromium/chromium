@@ -27,9 +27,9 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
 import {parseHtmlSubset} from 'chrome://resources/js/parse_html_subset.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
@@ -45,27 +45,33 @@ import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_ob
 import {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, AboutPageUpdateInfo, BrowserChannel, browserChannelToI18nId, RegulatoryInfo, TPMFirmwareUpdateStatusChangedEvent, UpdateStatus, UpdateStatusChangedEvent} from './about_page_browser_proxy.js';
 import {getTemplate} from './os_about_page.html.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {DeepLinkingBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- * @implements {MainPageBehaviorInterface}
- * @implements {RouteObserverBehaviorInterface}
- * @implements {I18nBehaviorInterface}
- */
-const OsSettingsAboutPageBase = mixinBehaviors(
-    [
-      DeepLinkingBehavior,
-      WebUIListenerBehavior,
-      MainPageBehavior,
-      RouteObserverBehavior,
-      I18nBehavior,
-    ],
-    PolymerElement);
+declare global {
+  interface HTMLElementEventMap {
+    'target-channel-changed': CustomEvent<BrowserChannel>;
+  }
+}
 
-/** @polymer */
-class OsSettingsAboutPageElement extends OsSettingsAboutPageBase {
+interface OsSettingsAboutPageElement {
+  $: {
+    updateStatusMessageInner: HTMLDivElement,
+    'product-logo': HTMLImageElement,
+  };
+}
+
+const OsSettingsAboutPageBaseElement =
+    mixinBehaviors(
+        [
+          DeepLinkingBehavior,
+          MainPageBehavior,
+          RouteObserverBehavior,
+        ],
+        I18nMixin(WebUIListenerMixin(PolymerElement))) as {
+      new (): PolymerElement & DeepLinkingBehaviorInterface &
+          WebUIListenerMixinInterface & MainPageBehaviorInterface &
+          RouteObserverBehaviorInterface & I18nMixinInterface,
+    };
+
+class OsSettingsAboutPageElement extends OsSettingsAboutPageBaseElement {
   static get is() {
     return 'os-settings-about-page';
   }
@@ -78,14 +84,12 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBase {
     return {
       /**
        * Whether the about page is being rendered in dark mode.
-       * @private
        */
       isDarkModeActive_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private {?UpdateStatusChangedEvent} */
       currentUpdateStatusEvent_: {
         type: Object,
         value: {
@@ -100,7 +104,6 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBase {
       /**
        * Whether the browser/ChromeOS is managed by their organization
        * through enterprise policies.
-       * @private
        */
       isManaged_: {
         type: Boolean,
@@ -111,7 +114,6 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBase {
 
       /**
        * The domain of the organization managing the device.
-       * @private
        */
       deviceManager_: {
         type: String,
@@ -120,96 +122,78 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBase {
         },
       },
 
-      /** @private */
       hasCheckedForUpdates_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private {!BrowserChannel} */
       currentChannel_: String,
 
-      /** @private {!BrowserChannel} */
       targetChannel_: String,
 
-      /** @private */
       isLts_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private {?RegulatoryInfo} */
       regulatoryInfo_: Object,
 
-      /** @private */
       hasEndOfLife_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private */
       hasDeferredUpdate_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private */
       eolMessageWithMonthAndYear_: {
         type: String,
         value: '',
       },
 
-      /** @private */
       hasInternetConnection_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private */
       firmwareUpdateCount_: {
         type: Number,
         value: 0,
       },
 
-      /** @private */
       showCrostini: Boolean,
 
-      /** @private */
       showCrostiniLicense_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private */
       showUpdateStatus_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private */
       showButtonContainer_: Boolean,
 
-      /** @private */
       showRelaunch_: {
         type: Boolean,
         value: false,
         computed: 'computeShowRelaunch_(currentUpdateStatusEvent_)',
       },
 
-      /** @private */
       showCheckUpdates_: {
         type: Boolean,
         computed: 'computeShowCheckUpdates_(' +
             'currentUpdateStatusEvent_, hasCheckedForUpdates_, hasEndOfLife_)',
       },
 
-      /** @protected */
       showFirmwareUpdatesApp_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('isFirmwareUpdaterAppEnabled'),
       },
 
-      /** @private {!Map<string, string>} */
       focusConfig_: {
         type: Object,
         value() {
@@ -223,28 +207,23 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBase {
         },
       },
 
-      /** @private */
       showUpdateWarningDialog_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private */
       showTPMFirmwareUpdateLineItem_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private */
       showTPMFirmwareUpdateDialog_: Boolean,
 
-      /** @private {!AboutPageUpdateInfo|undefined} */
       updateInfo_: Object,
 
       /**
        * Whether the deep link to the check for OS update setting was unable
        * to be shown.
-       * @private
        */
       isPendingOsUpdateDeepLink_: {
         type: Boolean,
@@ -253,7 +232,6 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBase {
 
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!Setting>}
        */
       supportedSettingIds: {
         type: Object,
@@ -279,22 +257,52 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBase {
     ];
   }
 
+  private isDarkModeActive_: boolean;
+  private currentUpdateStatusEvent_: UpdateStatusChangedEvent;
+  private isManaged_: boolean;
+  private deviceManager_: string;
+  private hasCheckedForUpdates_: boolean;
+  private currentChannel_: BrowserChannel;
+  private targetChannel_: BrowserChannel;
+  private isLts_: boolean;
+  private regulatoryInfo_: RegulatoryInfo|null;
+  private hasEndOfLife_: boolean;
+  private hasDeferredUpdate_: boolean;
+  private eolMessageWithMonthAndYear_: string;
+  private hasInternetConnection_: boolean;
+  private firmwareUpdateCount_: number;
+  private showCrostini: boolean;
+  private showCrostiniLicense_: boolean;
+  private showUpdateStatus_: boolean;
+  private showButtonContainer_: boolean;
+  private showRelaunch_: boolean;
+  private showCheckUpdates_: boolean;
+  protected showFirmwareUpdatesApp_: boolean;
+  private focusConfig_: Map<string, string>;
+  private showUpdateWarningDialog_: boolean;
+  private showTPMFirmwareUpdateLineItem_: boolean;
+  private showTPMFirmwareUpdateDialog_: boolean;
+  private updateInfo_?: AboutPageUpdateInfo;
+  private isPendingOsUpdateDeepLink_: boolean;
+  override supportedSettingIds: Set<Setting>;
+
+  private aboutBrowserProxy_: AboutPageBrowserProxy;
+
   constructor() {
     super();
 
-    /** @private {!AboutPageBrowserProxy} */
     this.aboutBrowserProxy_ = AboutPageBrowserProxyImpl.getInstance();
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.aboutBrowserProxy_.pageReady();
 
-    this.addEventListener('target-channel-changed', e => {
-      this.targetChannel_ = e.detail;
-    });
+    this.addEventListener(
+        'target-channel-changed', (e: CustomEvent<BrowserChannel>) => {
+          this.targetChannel_ = e.detail;
+        });
 
     this.aboutBrowserProxy_.getChannelInfo().then(info => {
       this.currentChannel_ = info.currentChannel;
@@ -328,12 +336,7 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBase {
     }
   }
 
-  /**
-   * @override
-   * @param {!Route} newRoute
-   * @param {!Route=} oldRoute
-   */
-  currentRouteChanged(newRoute, oldRoute) {
+  override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
     // super.currentRouteChanged() does not produce desired results since
     // RouteObserverBehavior has higher precedence than MainPageBehavior given
     // this element's behavior list order. In order to trigger the
@@ -356,13 +359,11 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBase {
     });
   }
 
-  /** @override */
-  containsRoute(route) {
+  override containsRoute(route: Route) {
     return !route || routes.ABOUT.contains(route);
   }
 
-  /** @private */
-  startListening_() {
+  private startListening_() {
     this.addWebUIListener(
         'update-status-changed', this.onUpdateStatusChanged_.bind(this));
     this.aboutBrowserProxy_.refreshUpdateStatus();
@@ -372,11 +373,7 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBase {
     this.aboutBrowserProxy_.refreshTPMFirmwareUpdateStatus();
   }
 
-  /**
-   * @param {!UpdateStatusChangedEvent} event
-   * @private
-   */
-  onUpdateStatusChanged_(event) {
+  private onUpdateStatusChanged_(event: UpdateStatusChangedEvent) {
     if (event.status === UpdateStatus.CHECKING) {
       this.hasCheckedForUpdates_ = true;
     } else if (event.status === UpdateStatus.NEED_PERMISSION_TO_UPDATE) {
@@ -387,47 +384,37 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBase {
     this.currentUpdateStatusEvent_ = event;
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onLearnMoreClick_(event) {
+  private onLearnMoreClick_(event: Event) {
     // Stop the propagation of events, so that clicking on links inside
     // actionable items won't trigger action.
     event.stopPropagation();
   }
 
-  /** @private */
-  onReleaseNotesTap_() {
+  private onReleaseNotesTap_() {
     this.aboutBrowserProxy_.launchReleaseNotes();
   }
 
-  /** @private */
-  onHelpClick_() {
+  private onHelpClick_() {
     this.aboutBrowserProxy_.openOsHelpPage();
   }
 
-  /** @private */
-  onDiagnosticsClick_() {
+  private onDiagnosticsClick_() {
     this.aboutBrowserProxy_.openDiagnostics();
     recordSettingChange(Setting.kDiagnostics);
   }
 
-  /** @private */
-  onFirmwareUpdatesClick_() {
+  private onFirmwareUpdatesClick_() {
     assert(this.showFirmwareUpdatesApp_);
     this.aboutBrowserProxy_.openFirmwareUpdatesPage();
     recordSettingChange(Setting.kFirmwareUpdates);
   }
 
-  /** @private */
-  onRelaunchClick_() {
+  private onRelaunchClick_() {
     recordSettingChange();
     LifetimeBrowserProxyImpl.getInstance().relaunch();
   }
 
-  /** @private */
-  updateShowUpdateStatus_() {
+  private updateShowUpdateStatus_() {
     // Do not show the "updated" status or error states from a previous update
     // attempt if we haven't checked yet or the update warning dialog is shown
     // to user.
@@ -455,9 +442,8 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBase {
   /**
    * Hide the button container if all buttons are hidden, otherwise the
    * container displays an unwanted border (see separator class).
-   * @private
    */
-  updateShowButtonContainer_() {
+  private updateShowButtonContainer_() {
     this.showButtonContainer_ = this.showRelaunch_ || this.showCheckUpdates_;
 
     // Check if we have yet to focus the check for update button.
@@ -472,32 +458,19 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBase {
     });
   }
 
-  /** @private */
-  computeShowRelaunch_() {
+  private computeShowRelaunch_() {
     return this.checkStatus_(UpdateStatus.NEARLY_UPDATED);
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowLearnMoreLink_() {
+  private shouldShowLearnMoreLink_(): boolean {
     return this.currentUpdateStatusEvent_.status === UpdateStatus.FAILED;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowFirmwareUpdatesBadge_() {
+  private shouldShowFirmwareUpdatesBadge_(): boolean {
     return this.showFirmwareUpdatesApp_ && this.firmwareUpdateCount_ > 0;
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getUpdateStatusMessage_() {
+  private getUpdateStatusMessage_(): string {
     switch (this.currentUpdateStatusEvent_.status) {
       case UpdateStatus.CHECKING:
       case UpdateStatus.NEED_PERMISSION_TO_UPDATE:
@@ -516,7 +489,7 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBase {
         return this.i18nAdvanced('aboutUpgradeUpToDate');
       case UpdateStatus.UPDATING:
         assert(typeof this.currentUpdateStatusEvent_.progress === 'number');
-        const progressPercent = this.currentUpdateStatusEvent_.progress + '%';
+        const progressPercent = this.currentUpdateStatusEvent_.progress! + '%';
 
         if (this.currentChannel_ !== this.targetChannel_) {
           return this.i18nAdvanced('aboutUpgradeUpdatingChannelSwitch', {
@@ -532,7 +505,7 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBase {
             substitutions: [this.deviceManager_, progressPercent],
           });
         }
-        if (this.currentUpdateStatusEvent_.progress > 0) {
+        if (this.currentUpdateStatusEvent_.progress! > 0) {
           // NOTE(dbeam): some platforms (i.e. Mac) always send 0% while
           // updating (they don't support incremental upgrade progress). Though
           // it's certainly quite possible to validly end up here with 0% on
@@ -552,9 +525,10 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBase {
       case UpdateStatus.DEFERRED:
         return this.i18nAdvanced('aboutUpgradeNotUpToDate');
       default:
-        function formatMessage(msg) {
-          return parseHtmlSubset('<b>' + msg + '</b>', ['br', 'pre'])
-              .firstChild.innerHTML;
+        function formatMessage(msg: string) {
+          return (parseHtmlSubset('<b>' + msg + '</b>', ['br', 'pre'])
+                      .firstChild as HTMLElement)
+              .innerHTML;
         }
         let result = '';
         const message = this.currentUpdateStatusEvent_.message;
@@ -569,11 +543,7 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBase {
     }
   }
 
-  /**
-   * @return {?string}
-   * @private
-   */
-  getUpdateStatusIcon_() {
+  private getUpdateStatusIcon_(): string|null {
     // If Chrome OS has reached end of life, display a special icon and
     // ignore UpdateStatus.
     if (this.hasEndOfLife_) {
@@ -598,11 +568,7 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBase {
     }
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getFirmwareUpdatesIcon_() {
+  private getFirmwareUpdatesIcon_(): string {
     if (this.firmwareUpdateCount_ === 0) {
       return '';
     }
@@ -614,11 +580,7 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBase {
     return `os-settings:counter-${updateBadgeId}`;
   }
 
-  /**
-   * @return {?string}
-   * @private
-   */
-  getThrobberSrcIfUpdating_() {
+  private getThrobberSrcIfUpdating_(): string|null {
     if (this.hasEndOfLife_) {
       return null;
     }
@@ -634,38 +596,23 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBase {
     }
   }
 
-  /**
-   * @param {!UpdateStatus} status
-   * @return {boolean}
-   * @private
-   */
-  checkStatus_(status) {
+  private checkStatus_(status: UpdateStatus): boolean {
     return this.currentUpdateStatusEvent_.status === status;
   }
 
-  /** @private */
-  onManagementPageClick_() {
+  private onManagementPageClick_() {
     window.open('chrome://management');
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  isPowerwash_() {
-    return this.currentUpdateStatusEvent_.powerwash;
+  private isPowerwash_(): boolean {
+    return !!this.currentUpdateStatusEvent_.powerwash;
   }
 
-  /** @private */
-  onDetailedBuildInfoClick_() {
+  private onDetailedBuildInfoClick_() {
     Router.getInstance().navigateTo(routes.DETAILED_BUILD_INFO);
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getRelaunchButtonText_() {
+  private getRelaunchButtonText_(): string {
     if (this.checkStatus_(UpdateStatus.NEARLY_UPDATED)) {
       if (this.isPowerwash_()) {
         return this.i18nAdvanced('aboutRelaunchAndPowerwash');
@@ -676,30 +623,23 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBase {
     return '';
   }
 
-  /** @private */
-  onCheckUpdatesClick_() {
+  private onCheckUpdatesClick_() {
     this.onUpdateStatusChanged_({status: UpdateStatus.CHECKING});
     this.aboutBrowserProxy_.requestUpdate();
     this.$.updateStatusMessageInner.focus();
   }
 
-  /** @private */
-  onApplyDeferredUpdateClick_() {
+  private onApplyDeferredUpdateClick_() {
     this.aboutBrowserProxy_.applyDeferredUpdate();
     this.$.updateStatusMessageInner.focus();
   }
 
-  /** @private */
-  onApplyAndSetAutoUpdateClick_() {
+  private onApplyAndSetAutoUpdateClick_() {
     this.aboutBrowserProxy_.setConsumerAutoUpdate(true);
     this.onApplyDeferredUpdateClick_();
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeShowCheckUpdates_() {
+  private computeShowCheckUpdates_(): boolean {
     // Disable update button if the device is end of life.
     if (this.hasEndOfLife_) {
       return false;
@@ -716,77 +656,55 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBase {
   }
 
   /**
-   * @param {boolean} showCrostiniLicense True if Crostini is enabled and
+   * @param showCrostiniLicense True if Crostini is enabled and
    * Crostini UI is allowed.
-   * @return {string}
-   * @private
    */
-  getAboutProductOsLicense_(showCrostiniLicense) {
+  private getAboutProductOsLicense_(showCrostiniLicense: boolean): string {
     return showCrostiniLicense ?
         this.i18nAdvanced('aboutProductOsWithLinuxLicense') :
         this.i18nAdvanced('aboutProductOsLicense');
   }
 
   /**
-   * @param {boolean} enabled True if Crostini is enabled.
-   * @private
+   * @param enabled True if Crostini is enabled.
    */
-  handleCrostiniEnabledChanged_(enabled) {
+  private handleCrostiniEnabledChanged_(enabled: boolean) {
     this.showCrostiniLicense_ = enabled && this.showCrostini;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowSafetyInfo_() {
+  private shouldShowSafetyInfo_(): boolean {
     return loadTimeData.getBoolean('shouldShowSafetyInfo');
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowRegulatoryInfo_() {
+  private shouldShowRegulatoryInfo_(): boolean {
     return this.regulatoryInfo_ !== null;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowRegulatoryOrSafetyInfo_() {
+  private shouldShowRegulatoryOrSafetyInfo_(): boolean {
     return this.shouldShowSafetyInfo_() || this.shouldShowRegulatoryInfo_();
   }
 
-  /** @private */
-  onUpdateWarningDialogClose_() {
+  private onUpdateWarningDialogClose_() {
     this.showUpdateWarningDialog_ = false;
     // Shows 'check for updates' button in case that the user cancels the
     // dialog and then intends to check for update again.
     this.hasCheckedForUpdates_ = false;
   }
 
-  /**
-   * @param {!TPMFirmwareUpdateStatusChangedEvent} event
-   * @private
-   */
-  onTPMFirmwareUpdateStatusChanged_(event) {
+  private onTPMFirmwareUpdateStatusChanged_(
+      event: TPMFirmwareUpdateStatusChangedEvent) {
     this.showTPMFirmwareUpdateLineItem_ = event.updateAvailable;
   }
 
-  /** @private */
-  onTPMFirmwareUpdateClick_() {
+  private onTPMFirmwareUpdateClick_() {
     this.showTPMFirmwareUpdateDialog_ = true;
   }
 
-  /** @private */
-  onPowerwashDialogClose_() {
+  private onPowerwashDialogClose_() {
     this.showTPMFirmwareUpdateDialog_ = false;
   }
 
-  /** @private */
-  onProductLogoClick_() {
+  private onProductLogoClick_() {
     this.$['product-logo'].animate(
         {
           transform: ['none', 'rotate(-10turn)'],
@@ -798,31 +716,28 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBase {
   }
 
   // <if expr="_google_chrome">
-  /** @private */
-  onReportIssueClick_() {
+  private onReportIssueClick_() {
     this.aboutBrowserProxy_.openFeedbackDialog();
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getReportIssueLabel_() {
+  private getReportIssueLabel_(): string {
     return loadTimeData.getBoolean('isOsFeedbackEnabled') ?
         this.i18nAdvanced('aboutSendFeedback') :
         this.i18nAdvanced('aboutReportAnIssue');
   }
   // </if>
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowIcons_() {
+  private shouldShowIcons_(): boolean {
     if (this.hasEndOfLife_) {
       return true;
     }
     return this.showUpdateStatus_;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'os-settings-about-page': OsSettingsAboutPageElement;
   }
 }
 

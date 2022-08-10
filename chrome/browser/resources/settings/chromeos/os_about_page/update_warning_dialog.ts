@@ -8,24 +8,25 @@
  * agrees to download update using mobile data.
  */
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
-import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import '../../settings_shared.css.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, AboutPageUpdateInfo} from './about_page_browser_proxy.js';
 import {getTemplate} from './update_warning_dialog.html.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const SettingsUpdateWarningDialogElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+interface SettingsUpdateWarningDialogElement {
+  $: {
+    dialog: CrDialogElement,
+  };
+}
 
-/** @polymer */
+const SettingsUpdateWarningDialogElementBase = I18nMixin(PolymerElement) as {
+  new (): PolymerElement & I18nMixinInterface,
+};
+
 class SettingsUpdateWarningDialogElement extends
     SettingsUpdateWarningDialogElementBase {
   static get is() {
@@ -38,7 +39,6 @@ class SettingsUpdateWarningDialogElement extends
 
   static get properties() {
     return {
-      /** @type {!AboutPageUpdateInfo|undefined} */
       updateInfo: {
         type: Object,
         observer: 'updateInfoChanged_',
@@ -46,44 +46,53 @@ class SettingsUpdateWarningDialogElement extends
     };
   }
 
+  updateInfo?: AboutPageUpdateInfo;
+
+  private browserProxy_: AboutPageBrowserProxy;
+
   constructor() {
     super();
 
-    /** @private {AboutPageBrowserProxy} */
     this.browserProxy_ = AboutPageBrowserProxyImpl.getInstance();
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.$.dialog.showModal();
   }
 
-  /** @private */
-  onCancelTap_() {
+  private onCancelTap_() {
     this.$.dialog.close();
   }
 
-  /** @private */
-  onContinueTap_() {
-    if (!this.updateInfo || !this.updateInfo.version || !this.updateInfo.size){
+  private onContinueTap_() {
+    if (!this.updateInfo || !this.updateInfo.version || !this.updateInfo.size) {
       console.warn('ERROR: requestUpdateOverCellular arguments are undefined');
       return;
     }
     this.browserProxy_.requestUpdateOverCellular(
-        /** @type {!string} */ (this.updateInfo.version),
-        /** @type {!string} */ (this.updateInfo.size));
+        this.updateInfo.version, this.updateInfo.size);
     this.$.dialog.close();
   }
 
-  /** @private */
-  updateInfoChanged_() {
-    this.shadowRoot.querySelector('#update-warning-message').innerHTML =
+  private updateInfoChanged_() {
+    if (!this.updateInfo || this.updateInfo.size === undefined) {
+      console.warn('ERROR: Update size is undefined');
+      return;
+    }
+
+    this.shadowRoot!.querySelector('#update-warning-message')!.innerHTML =
         this.i18n(
             'aboutUpdateWarningMessage',
             // Convert bytes to megabytes
             Math.floor(Number(this.updateInfo.size) / (1024 * 1024)));
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-update-warning-dialog': SettingsUpdateWarningDialogElement;
   }
 }
 

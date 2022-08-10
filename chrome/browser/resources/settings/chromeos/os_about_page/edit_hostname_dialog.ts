@@ -7,41 +7,39 @@
  * user to edit the device hostname.
  */
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
-import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
 import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
 import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import '../../settings_shared.css.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DeviceNameBrowserProxy, DeviceNameBrowserProxyImpl} from './device_name_browser_proxy.js';
 import {SetDeviceNameResult} from './device_name_util.js';
 import {getTemplate} from './edit_hostname_dialog.html.js';
 
-/** @type {number} */
 const MAX_INPUT_LENGTH = 15;
 
-/** @type {number} */
 const MIN_INPUT_LENGTH = 1;
 
 const UNALLOWED_CHARACTERS = '[^0-9A-Za-z-]+';
 
-/** @type {RegExp} */
 const EMOJI_REGEX_EXP =
     /(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])/gi;
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const EditHostnameDialogElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+interface EditHostnameDialogElement {
+  $: {
+    dialog: CrDialogElement,
+  };
+}
 
-/** @polymer */
+const EditHostnameDialogElementBase = I18nMixin(PolymerElement) as {
+  new (): PolymerElement & I18nMixinInterface,
+};
+
 class EditHostnameDialogElement extends EditHostnameDialogElementBase {
   static get is() {
     return 'edit-hostname-dialog';
@@ -53,51 +51,49 @@ class EditHostnameDialogElement extends EditHostnameDialogElementBase {
 
   static get properties() {
     return {
-      /** @private {string} */
       deviceName_: {
         type: String,
         value: '',
         observer: 'onDeviceNameChanged_',
       },
 
-      /** @private {boolean} */
       isInputInvalid_: {
         type: Boolean,
         value: false,
         reflectToAttribute: true,
       },
 
-      /** @private {string} */
       inputCountString_: {
         type: String,
         computed: 'computeInputCountString_(deviceName_)',
       },
-
     };
   }
+
+  private deviceName_: string;
+  private isInputInvalid_: boolean;
+  private inputCountString_: string;
+
+  private deviceNameBrowserProxy_: DeviceNameBrowserProxy;
 
   constructor() {
     super();
 
-    /** @private {DeviceNameBrowserProxy} */
     this.deviceNameBrowserProxy_ = DeviceNameBrowserProxyImpl.getInstance();
   }
 
   /**
    * Returns a formatted string containing the current number of characters
    * entered in the input compared to the maximum number of characters allowed.
-   * @return {string}
-   * @private
    */
-  computeInputCountString_() {
+  private computeInputCountString_(): string {
     return this.i18n(
         'aboutDeviceNameInputCharacterCount',
         this.deviceName_.length.toLocaleString(),
         MAX_INPUT_LENGTH.toLocaleString());
   }
 
-  /** @private */
-  onCancelTap_() {
+  private onCancelTap_() {
     this.$.dialog.close();
   }
 
@@ -105,11 +101,8 @@ class EditHostnameDialogElement extends EditHostnameDialogElementBase {
    * Observer for deviceName_ that sanitizes its value by removing any
    * Emojis and truncating it to MAX_INPUT_LENGTH. This method will be
    * recursively called until deviceName_ is fully sanitized.
-   * @param {string} newValue
-   * @param {string} oldValue
-   * @private
    */
-  onDeviceNameChanged_(newValue, oldValue) {
+  private onDeviceNameChanged_(_newValue: string, oldValue: string) {
     if (oldValue) {
       const sanitizedOldValue = oldValue.replace(EMOJI_REGEX_EXP, '');
       // If sanitizedOldValue.length > MAX_INPUT_LENGTH, the user attempted to
@@ -132,8 +125,7 @@ class EditHostnameDialogElement extends EditHostnameDialogElementBase {
     }
   }
 
-  /** @private */
-  onDoneTap_() {
+  private onDoneTap_() {
     this.deviceNameBrowserProxy_.attemptSetDeviceName(this.deviceName_)
         .then(result => {
           this.handleSetDeviceNameResponse_(result);
@@ -141,14 +133,16 @@ class EditHostnameDialogElement extends EditHostnameDialogElementBase {
     this.$.dialog.close();
   }
 
-  /**
-   * @param {SetDeviceNameResult} result
-   * @private
-   */
-  handleSetDeviceNameResponse_(result) {
+  private handleSetDeviceNameResponse_(result: SetDeviceNameResult) {
     if (result !== SetDeviceNameResult.UPDATE_SUCCESSFUL) {
       console.error('ERROR IN UPDATE', result);
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'edit-hostname-dialog': EditHostnameDialogElement;
   }
 }
 

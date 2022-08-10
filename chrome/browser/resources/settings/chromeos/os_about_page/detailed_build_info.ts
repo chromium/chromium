@@ -20,8 +20,8 @@ import './edit_hostname_dialog.js';
 import {CrPolicyIndicatorType} from 'chrome://resources/cr_elements/policy/cr_policy_indicator_behavior.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
+import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
@@ -30,32 +30,32 @@ import {Route} from '../../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
 import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
-import {RouteObserverBehavior} from '../route_observer_behavior.js';
+import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
 import {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, browserChannelToI18nId, ChannelInfo, VersionInfo} from './about_page_browser_proxy.js';
 import {getTemplate} from './detailed_build_info.html.js';
 import {DeviceNameBrowserProxy, DeviceNameBrowserProxyImpl, DeviceNameMetadata} from './device_name_browser_proxy.js';
 import {DeviceNameState} from './device_name_util.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- * @implements {DeepLinkingBehaviorInterface}
- * @implements {PrefsBehaviorInterface}
- */
-const SettingsDetailedBuildInfoBase = mixinBehaviors(
-    [
-      DeepLinkingBehavior,
-      WebUIListenerBehavior,
-      I18nBehavior,
-      PrefsBehavior,
-      RouteObserverBehavior,
-    ],
-    PolymerElement);
+declare global {
+  interface HTMLElementEventMap {
+    'set-consumer-auto-update': CustomEvent<{item: boolean}>;
+  }
+}
 
-/** @polymer */
+const SettingsDetailedBuildInfoBase =
+    mixinBehaviors(
+        [
+          DeepLinkingBehavior,
+          PrefsBehavior,
+          RouteObserverBehavior,
+        ],
+        I18nMixin(WebUIListenerMixin(PolymerElement))) as {
+      new (): PolymerElement & DeepLinkingBehaviorInterface &
+          WebUIListenerMixinInterface & I18nMixinInterface &
+          PrefsBehaviorInterface & RouteObserverBehaviorInterface,
+    };
+
 class SettingsDetailedBuildInfoElement extends SettingsDetailedBuildInfoBase {
   static get is() {
     return 'settings-detailed-build-info';
@@ -73,31 +73,22 @@ class SettingsDetailedBuildInfoElement extends SettingsDetailedBuildInfoBase {
         notify: true,
       },
 
-      /** @private {!VersionInfo} */
       versionInfo_: Object,
 
-      /** @private {!ChannelInfo} */
       channelInfo_: Object,
 
-      /** @private {!DeviceNameMetadata} */
       deviceNameMetadata_: Object,
 
-      /** @private */
       currentlyOnChannelText_: String,
 
-      /** @private */
       showChannelSwitcherDialog_: Boolean,
 
-      /** @private */
       showEditHostnameDialog_: Boolean,
 
-      /** @private */
       canChangeChannel_: Boolean,
 
-      /** @private */
       isManagedAutoUpdateEnabled_: Boolean,
 
-      /** @private */
       showConsumerAutoUpdateToggleDialog_: Boolean,
 
       eolMessageWithMonthAndYear: {
@@ -107,7 +98,6 @@ class SettingsDetailedBuildInfoElement extends SettingsDetailedBuildInfoBase {
 
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!Setting>}
        */
       supportedSettingIds: {
         type: Object,
@@ -118,13 +108,11 @@ class SettingsDetailedBuildInfoElement extends SettingsDetailedBuildInfoBase {
         ]),
       },
 
-      /** @private */
       shouldHideEolInfo_: {
         type: Boolean,
         computed: 'computeShouldHideEolInfo_(eolMessageWithMonthAndYear)',
       },
 
-      /** @private */
       isHostnameSettingEnabled_: {
         type: Boolean,
         value() {
@@ -136,7 +124,6 @@ class SettingsDetailedBuildInfoElement extends SettingsDetailedBuildInfoBase {
       /**
        * Whether the browser/ChromeOS is managed by their organization
        * through enterprise policies.
-       * @private
        */
       isManaged_: {
         type: Boolean,
@@ -148,7 +135,6 @@ class SettingsDetailedBuildInfoElement extends SettingsDetailedBuildInfoBase {
 
       /**
        * Whether or not the consumer auto update toggling is allowed.
-       * @private
        */
       isConsumerAutoUpdateTogglingAllowed_: {
         type: Boolean,
@@ -160,7 +146,6 @@ class SettingsDetailedBuildInfoElement extends SettingsDetailedBuildInfoBase {
 
       /**
        * Whether or not to show the consumer auto update toggle.
-       * @private
        */
       showConsumerAutoUpdateToggle_: {
         type: Boolean,
@@ -173,24 +158,41 @@ class SettingsDetailedBuildInfoElement extends SettingsDetailedBuildInfoBase {
     };
   }
 
+  private versionInfo_: VersionInfo;
+  private channelInfo_: ChannelInfo;
+  private deviceNameMetadata_: DeviceNameMetadata;
+  private currentlyOnChannelText_: string;
+  private showChannelSwitcherDialog_: boolean;
+  private showEditHostnameDialog_: boolean;
+  private canChangeChannel_: boolean;
+  private isManagedAutoUpdateEnabled_: boolean;
+  private showConsumerAutoUpdateToggleDialog_: boolean;
+  private eolMessageWithMonthAndYear: string;
+  override supportedSettingIds: Set<Setting>;
+  private shouldHideEolInfo_: boolean;
+  private isHostnameSettingEnabled_: boolean;
+  private isManaged_: boolean;
+  private isConsumerAutoUpdateTogglingAllowed_: boolean;
+  private showConsumerAutoUpdateToggle_: boolean;
+
+  private aboutPageBrowserProxy_: AboutPageBrowserProxy;
+  private deviceNameBrowserProxy_: DeviceNameBrowserProxy;
+
   constructor() {
     super();
 
-    /** @private {!AboutPageBrowserProxy} */
     this.aboutPageBrowserProxy_ = AboutPageBrowserProxyImpl.getInstance();
-
-    /** @private {!DeviceNameBrowserProxy} */
     this.deviceNameBrowserProxy_ = DeviceNameBrowserProxyImpl.getInstance();
   }
 
-  /** @override */
-  ready() {
+  override ready() {
     super.ready();
     this.aboutPageBrowserProxy_.pageReady();
 
-    this.addEventListener('set-consumer-auto-update', e => {
-      this.aboutPageBrowserProxy_.setConsumerAutoUpdate(e.detail.item);
-    });
+    this.addEventListener(
+        'set-consumer-auto-update', (event: CustomEvent<{item: boolean}>) => {
+          this.aboutPageBrowserProxy_.setConsumerAutoUpdate(event.detail.item);
+        });
 
     if (this.isManaged_) {
       this.syncManagedAutoUpdateToggle_();
@@ -211,16 +213,12 @@ class SettingsDetailedBuildInfoElement extends SettingsDetailedBuildInfoBase {
     if (this.isHostnameSettingEnabled_) {
       this.addWebUIListener(
           'settings.updateDeviceNameMetadata',
-          (data) => this.updateDeviceNameMetadata_(data));
+          (data: DeviceNameMetadata) => this.updateDeviceNameMetadata_(data));
       this.deviceNameBrowserProxy_.notifyReadyForDeviceName();
     }
   }
 
-  /**
-   * @param {!Route} route
-   * @param {!Route} oldRoute
-   */
-  currentRouteChanged(route, oldRoute) {
+  override currentRouteChanged(route: Route, _oldRoute?: Route) {
     // Does not apply to this page.
     if (route !== routes.DETAILED_BUILD_INFO) {
       return;
@@ -229,16 +227,11 @@ class SettingsDetailedBuildInfoElement extends SettingsDetailedBuildInfoBase {
     this.attemptDeepLink();
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeShouldHideEolInfo_() {
+  private computeShouldHideEolInfo_(): boolean {
     return this.isManaged_ || !this.eolMessageWithMonthAndYear;
   }
 
-  /** @private */
-  updateChannelInfo_() {
+  private updateChannelInfo_() {
     // canChangeChannel() call is expected to be low-latency, so fetch this
     // value by itself to ensure UI consistency (see https://crbug.com/848750).
     this.aboutPageBrowserProxy_.canChangeChannel().then(canChangeChannel => {
@@ -256,34 +249,24 @@ class SettingsDetailedBuildInfoElement extends SettingsDetailedBuildInfoBase {
     });
   }
 
-  /** @private */
-  syncManagedAutoUpdateToggle_() {
+  private syncManagedAutoUpdateToggle_() {
     this.aboutPageBrowserProxy_.isManagedAutoUpdateEnabled().then(
         isManagedAutoUpdateEnabled => {
           this.isManagedAutoUpdateEnabled_ = isManagedAutoUpdateEnabled;
         });
   }
 
-  /** @private */
-  syncConsumerAutoUpdateToggle_() {
+  private syncConsumerAutoUpdateToggle_() {
     this.aboutPageBrowserProxy_.isConsumerAutoUpdateEnabled().then(enabled => {
       this.aboutPageBrowserProxy_.setConsumerAutoUpdate(enabled);
     });
   }
 
-  /**
-   * @param {!DeviceNameMetadata} data
-   * @private
-   */
-  updateDeviceNameMetadata_(data) {
+  private updateDeviceNameMetadata_(data: DeviceNameMetadata) {
     this.deviceNameMetadata_ = data;
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getDeviceNameText_() {
+  private getDeviceNameText_(): string {
     if (!this.deviceNameMetadata_) {
       return '';
     }
@@ -291,11 +274,7 @@ class SettingsDetailedBuildInfoElement extends SettingsDetailedBuildInfoBase {
     return this.deviceNameMetadata_.deviceName;
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getDeviceNameEditButtonA11yDescription_() {
+  private getDeviceNameEditButtonA11yDescription_(): string {
     if (!this.deviceNameMetadata_) {
       return '';
     }
@@ -304,11 +283,7 @@ class SettingsDetailedBuildInfoElement extends SettingsDetailedBuildInfoBase {
         'aboutDeviceNameEditBtnA11yDescription', this.getDeviceNameText_());
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  canEditDeviceName_() {
+  private canEditDeviceName_(): boolean {
     if (!this.deviceNameMetadata_) {
       return false;
     }
@@ -317,27 +292,15 @@ class SettingsDetailedBuildInfoElement extends SettingsDetailedBuildInfoBase {
         DeviceNameState.CAN_BE_MODIFIED;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowPolicyIndicator_() {
+  private shouldShowPolicyIndicator_(): boolean {
     return this.getDeviceNameIndicatorType_() !== CrPolicyIndicatorType.NONE;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowConsumerAutoUpdateToggle_() {
+  private shouldShowConsumerAutoUpdateToggle_(): boolean {
     return !this.isManaged_;
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getDeviceNameIndicatorType_() {
+  private getDeviceNameIndicatorType_(): string {
     if (!this.deviceNameMetadata_) {
       return CrPolicyIndicatorType.NONE;
     }
@@ -355,12 +318,8 @@ class SettingsDetailedBuildInfoElement extends SettingsDetailedBuildInfoBase {
     return CrPolicyIndicatorType.NONE;
   }
 
-  /**
-   * @param {boolean} canChangeChannel
-   * @return {string}
-   * @private
-   */
-  getChangeChannelIndicatorSourceName_(canChangeChannel) {
+  private getChangeChannelIndicatorSourceName_(canChangeChannel: boolean):
+      string {
     if (canChangeChannel) {
       // the indicator should be invisible.
       return '';
@@ -370,12 +329,8 @@ class SettingsDetailedBuildInfoElement extends SettingsDetailedBuildInfoBase {
         loadTimeData.getString('ownerEmail');
   }
 
-  /**
-   * @param {boolean} canChangeChannel
-   * @return {CrPolicyIndicatorType}
-   * @private
-   */
-  getChangeChannelIndicatorType_(canChangeChannel) {
+  private getChangeChannelIndicatorType_(canChangeChannel: boolean):
+      CrPolicyIndicatorType {
     if (canChangeChannel) {
       return CrPolicyIndicatorType.NONE;
     }
@@ -384,35 +339,22 @@ class SettingsDetailedBuildInfoElement extends SettingsDetailedBuildInfoBase {
         CrPolicyIndicatorType.OWNER;
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onChangeChannelTap_(e) {
+  private onChangeChannelTap_(e: Event) {
     e.preventDefault();
     this.showChannelSwitcherDialog_ = true;
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onEditHostnameTap_(e) {
+  private onEditHostnameTap_(e: Event) {
     e.preventDefault();
     this.showEditHostnameDialog_ = true;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  copyToClipBoardEnabled_() {
+  private copyToClipBoardEnabled_(): boolean {
     return !!this.versionInfo_ && !!this.channelInfo_;
   }
 
-  /** @private */
-  onCopyBuildDetailsToClipBoardTap_() {
-    const buildInfo = {
+  private onCopyBuildDetailsToClipBoardTap_() {
+    const buildInfo: {[key: string]: string|boolean} = {
       'application_label': loadTimeData.getString('aboutBrowserVersion'),
       'platform': this.versionInfo_.osVersion,
       'aboutChannelLabel': this.channelInfo_.targetChannel,
@@ -425,27 +367,22 @@ class SettingsDetailedBuildInfoElement extends SettingsDetailedBuildInfoBase {
           loadTimeData.getBoolean('aboutIsDeveloperMode'),
     };
 
-    const entries = [];
+    const entries: string[] = [];
     for (const key in buildInfo) {
-      entries.push(this.i18n(key) + ': ' + buildInfo[key]);
+      entries.push(this.i18n(key) + ': ' + String(buildInfo[key]));
     }
 
     navigator.clipboard.writeText(entries.join('\n'));
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onConsumerAutoUpdateToggled_(e) {
+  private onConsumerAutoUpdateToggled_(_event: Event) {
     if (!this.isConsumerAutoUpdateTogglingAllowed_) {
       return;
     }
     this.showDialogOrFlushConsumerAutoUpdateToggle();
   }
 
-  /** @private */
-  onConsumerAutoUpdateToggledSettingsBox_() {
+  private onConsumerAutoUpdateToggledSettingsBox_() {
     if (!this.isConsumerAutoUpdateTogglingAllowed_) {
       return;
     }
@@ -456,8 +393,7 @@ class SettingsDetailedBuildInfoElement extends SettingsDetailedBuildInfoBase {
     this.showDialogOrFlushConsumerAutoUpdateToggle();
   }
 
-  /** @private */
-  showDialogOrFlushConsumerAutoUpdateToggle() {
+  private showDialogOrFlushConsumerAutoUpdateToggle() {
     if (!this.getPref('settings.consumer_auto_update_toggle').value) {
       // Only show dialog when turning the toggle off.
       this.showConsumerAutoUpdateToggleDialog_ = true;
@@ -467,31 +403,30 @@ class SettingsDetailedBuildInfoElement extends SettingsDetailedBuildInfoBase {
     this.aboutPageBrowserProxy_.setConsumerAutoUpdate(true);
   }
 
-  /** @private */
-  onConsumerAutoUpdateToggleDialogClosed_() {
+  private onConsumerAutoUpdateToggleDialogClosed_() {
     this.showConsumerAutoUpdateToggleDialog_ = false;
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onVisitBuildDetailsPageTap_(e) {
+  private onVisitBuildDetailsPageTap_(e: Event) {
     e.preventDefault();
     window.open('chrome://version');
   }
 
-  /** @private */
-  onChannelSwitcherDialogClosed_() {
+  private onChannelSwitcherDialogClosed_() {
     this.showChannelSwitcherDialog_ = false;
-    focusWithoutInk(assert(this.shadowRoot.querySelector('cr-button')));
+    focusWithoutInk(assert(this.shadowRoot!.querySelector('cr-button'))!);
     this.updateChannelInfo_();
   }
 
-  /** @private */
-  onEditHostnameDialogClosed_() {
+  private onEditHostnameDialogClosed_() {
     this.showEditHostnameDialog_ = false;
-    focusWithoutInk(assert(this.shadowRoot.querySelector('cr-button')));
+    focusWithoutInk(assert(this.shadowRoot!.querySelector('cr-button'))!);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-detailed-build-info': SettingsDetailedBuildInfoElement;
   }
 }
 
