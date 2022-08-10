@@ -277,7 +277,8 @@ IN_PROC_BROWSER_TEST_F(LoginApitest, LockManagedGuestSessionNotActive) {
   RunTest(kLockManagedGuestSessionNotActive);
 }
 
-IN_PROC_BROWSER_TEST_F(LoginApitest, UnlockManagedGuestSession) {
+// Flaky. https://crbug.com/1351338
+IN_PROC_BROWSER_TEST_F(LoginApitest, DISABLED_UnlockManagedGuestSession) {
   SetUpDeviceLocalAccountPolicy();
   LogInWithPassword();
 
