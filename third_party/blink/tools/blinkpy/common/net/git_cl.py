@@ -14,18 +14,15 @@ import re
 import six
 
 from blinkpy.common.checkout.git import Git
-from blinkpy.common.net.results_fetcher import Build, filter_latest_builds
 from blinkpy.common.net.luci_auth import LuciAuth
+from blinkpy.common.net.results_fetcher import Build, filter_latest_builds
+from blinkpy.common.net.rpc import BuildbucketClient
 
 _log = logging.getLogger(__name__)
 
 # A refresh token may be needed for some commands, such as git cl try,
 # in order to authenticate with buildbucket.
 _COMMANDS_THAT_TAKE_REFRESH_TOKEN = ('try', )
-
-# These characters always appear at the beginning of the SearchBuilds response
-# from BuildBucket.
-SEARCHBUILDS_RESPONSE_PREFIX = b")]}'"
 
 
 class CLStatus(
@@ -67,8 +64,14 @@ class TryJobStatus(
 
 
 class GitCL(object):
-    def __init__(self, host, auth_refresh_token_json=None, cwd=None):
+    def __init__(self,
+                 host,
+                 auth_refresh_token_json=None,
+                 cwd=None,
+                 bb_client=None):
         self._host = host
+        self.bb_client = bb_client or BuildbucketClient(
+            host.web, LuciAuth(host))
         self._auth_refresh_token_json = auth_refresh_token_json
         self._cwd = cwd
         self._git_executable_name = Git.find_executable_name(
@@ -270,12 +273,9 @@ class GitCL(object):
         """Returns a dict mapping Build objects to TryJobStatus objects."""
         if not issue_number:
             issue_number = self.get_issue_number()
-        raw_results_json = self.fetch_raw_try_job_results(
-            issue_number, patchset)
+        builds = self.fetch_raw_try_job_results(issue_number, patchset)
         build_to_status = {}
-        if 'builds' not in raw_results_json:
-            return build_to_status
-        for build in raw_results_json['builds']:
+        for build in builds:
             builder_name = build['builder']['builder']
             if builder_names and builder_name not in builder_names:
                 continue
@@ -305,8 +305,7 @@ class GitCL(object):
         https://cs.chromium.org/chromium/infra/go/src/go.chromium.org/luci/buildbucket/proto/rpc.proto
 
         The response is a list of dicts of the following form:
-        {
-            "builds": [
+            [
                 {
                     "status": <status>
                     "builder": {
@@ -321,53 +320,23 @@ class GitCL(object):
                         ... more tags
                     ]
                 },
-                ... more builds
-        }
+                ... more builds,
+            ]
 
         This method returns the JSON representation of the above response.
         """
         if not patchset:
             patchset = self._get_latest_patchset()
-
-        luci_token = LuciAuth(self._host).get_access_token()
-        hed = {
-            'Authorization': 'Bearer ' + luci_token,
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
+        predicate = {
+            'gerritChanges': [{
+                'host': 'chromium-review.googlesource.com',
+                'project': 'chromium/src',
+                'change': issue_number,
+                'patchset': patchset,
+            }],
         }
-        data = {
-            'predicate': {
-                'gerritChanges': [{
-                    'host': 'chromium-review.googlesource.com',
-                    'project': 'chromium/src',
-                    'change': issue_number,
-                    'patchset': patchset
-                }]
-            },
-            'fields':
-            'builds.*.builder.builder,builds.*.status,builds.*.tags,builds.*.number,builds.*.id'
-        }
-        url = 'https://cr-buildbucket.appspot.com/prpc/buildbucket.v2.Builds/SearchBuilds'
-        if six.PY3:
-            req_body = json.dumps(data).encode("utf-8")
-        else:
-            req_body = json.dumps(data)
-        _log.debug("Sending SearchBuilds request. Url: %s with Body: %s" %
-                   (url, req_body))
-        response = self._host.web.request(
-            'POST', url, data=req_body, headers=hed)
-        if response.getcode() == 200:
-            response_body = response.read()
-            if response_body.startswith(SEARCHBUILDS_RESPONSE_PREFIX):
-                response_body = response_body[len(SEARCHBUILDS_RESPONSE_PREFIX
-                                                  ):]
-            return json.loads(response_body)
-
-        _log.error(
-            "Failed to fetch tryjob results from buildbucket (status=%s)" %
-            response.status)
-        _log.debug("Full SearchBuilds response: %s" % str(response))
-        return None
+        return self.bb_client.search_builds(
+            predicate, ['builder.builder', 'status', 'tags', 'number', 'id'])
 
     @staticmethod
     def _build(result_dict):

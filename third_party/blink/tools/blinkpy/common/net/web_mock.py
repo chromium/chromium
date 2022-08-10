@@ -33,6 +33,7 @@ class MockWeb(object):
     def __init__(self, urls=None, responses=None):
         self.urls = urls or {}
         self.urls_fetched = []
+        self.requests = []
         self.responses = responses or []
 
     def get_binary(self, url, return_none_on_404=False, retries=0):  # pylint: disable=unused-argument
@@ -44,6 +45,7 @@ class MockWeb(object):
         return 'MOCK Web result, 404 Not found'
 
     def request(self, method, url, data=None, headers=None):  # pylint: disable=unused-argument
+        self.requests.append((url, data))
         return MockResponse(self.responses.pop(0))
 
 

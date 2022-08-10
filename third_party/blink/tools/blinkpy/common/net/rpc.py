@@ -26,6 +26,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import collections
 import logging
 import json
 from urllib.parse import urlunsplit
@@ -38,6 +39,25 @@ _log = logging.getLogger(__name__)
 
 # These characters always appear at the beginning of the RPC response.
 RESPONSE_PREFIX = b")]}'"
+
+# Represents a combination of builder and build number.
+# If build number is None, this represents the latest build for a given builder.
+Build = collections.namedtuple('Build',
+                               ['builder_name', 'build_number', 'build_id'],
+                               defaults=[None, None])
+
+
+class RPCError(Exception):
+    """Base type for all pRPC errors."""
+
+    def __init__(self, message, method, request=None, code=None):
+        message = '%s: %s' % (method, message)
+        if code:
+            message += ' (code: %d)' % code
+        super().__init__(message)
+        self.method = method
+        self.code = code
+        self.request = request
 
 
 class BaseRPC:
@@ -66,7 +86,7 @@ class BaseRPC:
             '',  # No fragment
         ))
 
-    def luci_rpc(self, method, data):
+    def _luci_rpc(self, method, data):
         """Fetches json data through Luci RPCs
 
         Args:
@@ -97,33 +117,158 @@ class BaseRPC:
         _log.debug("Full RPC response: %s" % str(response))
         return None
 
-    def luci_rpc_paginated(self, method, data, field, count=1000):
-        """Retrieve entities from a pRPC endpoint with paginated results.
+    def _luci_rpc_paginated(self,
+                            method,
+                            data,
+                            field,
+                            page_size=None,
+                            count=1000):
+        """Retrieve entities from a pRPC method with paginated results.
 
-        Some methods receive a response token like:
+        Some methods receive a request like:
             {..., "pageSize": ..., "pageToken": ...}
 
         and reply with a payload like:
             {<repeated field>: [<entity1>, ...], "nextPageToken": ...}
 
-        This method automatically makes a sequence of requests needed to gather
-        the requested number of entities. Generally, the payload should not
-        change between requests.
+        This method automatically makes a sequence of requests to gather the
+        requested number of entities. Generally, the method parameters should
+        not change between requests except for the "pageToken" field.
+
+        Arguments:
+            method: The RPC method name (conventionally Pascal case).
+            data: JSON-encodable parameters to send to the RPC endpoint.
+            field: Name of the repeated field that should be extracted from each
+                response body.
+            page_size: Number of entities to retrieve per request. The server
+                may return fewer if the page size is larger than the maximum
+                supported (typically 1000). Defaults to `count` to try to get
+                all the data in one request.
+            count: Total number of entities to attempt to retrieve. The actual
+                number returned may be fewer, depending on how many entities
+                exist.
+
+        Returns:
+            A list of up to `count` entities. The shape of each entry depends
+            on the method.
 
         See Also:
             https://source.chromium.org/chromium/infra/infra/+/master:go/src/go.chromium.org/luci/buildbucket/proto/builds_service.proto
             https://source.chromium.org/chromium/infra/infra/+/master:go/src/go.chromium.org/luci/resultdb/proto/v1/resultdb.proto
         """
         entities = []
-        while data.get('pageToken', True) and count > 0:
-            response = self.luci_rpc(method, data)
+        data['pageSize'] = page_size or count
+        while data.get('pageToken', True) and count - len(entities) > 0:
+            response = self._luci_rpc(method, data)
             if not isinstance(response, dict):
                 break
-            new_entities = response.get(field) or []
-            entities.extend(new_entities)
-            count -= len(new_entities)
+            entities.extend(response.get(field) or [])
             data['pageToken'] = response.get('nextPageToken')
         return entities[:count]
+
+
+class BuildbucketClient(BaseRPC):
+    def __init__(self,
+                 web,
+                 luci_auth,
+                 hostname='cr-buildbucket.appspot.com',
+                 service='buildbucket.v2.Builds'):
+        super().__init__(web, luci_auth, hostname, service)
+        self._batch_requests = []
+
+    def _make_get_build_body(self, build=None, bucket='try',
+                             build_fields=None):
+        request = {}
+        if build.build_id:
+            request['id'] = str(build.build_id)
+        if build.builder_name:
+            request['builder'] = {
+                'project': 'chromium',
+                'bucket': bucket,
+                'builder': build.builder_name
+            }
+        if build.build_number:
+            request['buildNumber'] = build.build_number
+        if build_fields:
+            # The `builds.*` prefix is not needed for retrieving an individual
+            # build.
+            request['fields'] = ','.join(build_fields)
+        return request
+
+    def _make_search_builds_body(self, predicate, build_fields=None):
+        request = {'predicate': predicate}
+        if build_fields:
+            request['fields'] = ','.join('builds.*.%s' % field
+                                         for field in build_fields)
+        return request
+
+    def get_build(self, build=None, bucket='try', build_fields=None):
+        return self._luci_rpc(
+            'GetBuild', self._make_get_build_body(build, bucket, build_fields))
+
+    def search_builds(self,
+                      predicate,
+                      build_fields=None,
+                      page_size=None,
+                      count=1000):
+        return self._luci_rpc_paginated('SearchBuilds',
+                                        self._make_search_builds_body(
+                                            predicate, build_fields),
+                                        'builds',
+                                        page_size=page_size,
+                                        count=count)
+
+    def add_get_build_req(self, build=None, bucket='try', build_fields=None):
+        self._batch_requests.append(
+            ('getBuild', self._make_get_build_body(build, bucket,
+                                                   build_fields), None, None))
+
+    def add_search_builds_req(self, predicate, build_fields=None, count=1000):
+        # No `page_size` argument, since it does not make sense to unpaginate
+        # data in a batch request. Just try to extract the repeated field and
+        # truncate it to `count` items, at most.
+        self._batch_requests.append(
+            ('searchBuilds',
+             self._make_search_builds_body(predicate,
+                                           build_fields), 'builds', count))
+
+    def execute_batch(self):
+        """Execute the current batch request and yield the results.
+
+        Once called, the client will clear its internal request buffer.
+
+        Raises:
+            RPCError: If the server returns an error object for any individual
+                response.
+        """
+        if not self._batch_requests:
+            return
+        batch_requests, self._batch_requests = self._batch_requests, []
+        request = {
+            'requests': [{
+                method: body
+            } for method, body, _, _ in batch_requests]
+        }
+        batch_response = self._luci_rpc('Batch', request) or {}
+        responses = batch_response.get('responses') or []
+        for request, response_body in zip(batch_requests, responses):
+            method, request_body, field, count = request
+            error = response_body.get('error')
+            if error:
+                message = error.get('message', 'unknown error')
+                # Avoid the built-in `str.capitalize`, since it lowercases the
+                # remaining letters.
+                raise RPCError(message, method[0].upper() + method[1:],
+                               request, error.get('code'))
+            unwrapped_response = response_body[method]
+            if field:
+                yield from unwrapped_response[field][:count]
+            else:
+                yield unwrapped_response
+
+    def clear_batch(self):
+        """Clear the current batch request."""
+        self._batch_requests.clear()
 
 
 class ResultDBClient(BaseRPC):
@@ -137,12 +282,14 @@ class ResultDBClient(BaseRPC):
     def _get_invocations(self, build_ids):
         return ['invocations/build-%s' % build_id for build_id in build_ids]
 
-    def query_artifacts(self, build_ids, predicate, count=1000):
+    def query_artifacts(self, build_ids, predicate, page_size=None,
+                        count=1000):
         request = {
             'invocations': self._get_invocations(build_ids),
             'predicate': predicate,
         }
-        return self.luci_rpc_paginated('QueryArtifacts',
-                                       request,
-                                       'artifacts',
-                                       count=count)
+        return self._luci_rpc_paginated('QueryArtifacts',
+                                        request,
+                                        'artifacts',
+                                        page_size=page_size,
+                                        count=count)

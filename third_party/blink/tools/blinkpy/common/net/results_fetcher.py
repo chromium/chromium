@@ -37,7 +37,7 @@ import time
 
 from blinkpy.common.memoized import memoized
 from blinkpy.common.net.luci_auth import LuciAuth
-from blinkpy.common.net.rpc import ResultDBClient
+from blinkpy.common.net.rpc import Build, ResultDBClient
 from blinkpy.common.net.web_test_results import WebTestResults
 from blinkpy.common.system.filesystem import FileSystem
 from blinkpy.web_tests.builder_list import BuilderList
@@ -53,19 +53,6 @@ PREDICATE_UNEXPECTED_RESULTS = {
     "expectancy": "VARIANTS_WITH_ONLY_UNEXPECTED_RESULTS",
     "excludeExonerated": True
 }
-
-
-class Build(collections.namedtuple('Build', ('builder_name', 'build_number',
-                                             'build_id'))):
-    """Represents a combination of builder and build number.
-
-    If build number is None, this represents the latest build
-    for a given builder.
-    """
-
-    def __new__(cls, builder_name, build_number=None, build_id=None):
-        return super(Build, cls).__new__(cls, builder_name,
-                                         build_number, build_id)
 
 
 class TestResultsFetcher(object):
