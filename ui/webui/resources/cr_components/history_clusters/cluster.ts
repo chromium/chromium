@@ -37,6 +37,7 @@ const HistoryClusterElementBase = I18nMixin(PolymerElement);
 interface HistoryClusterElement {
   $: {
     label: HTMLElement,
+    labelSidePanel: HTMLElement,
     container: HTMLElement,
   };
 }
@@ -63,6 +64,15 @@ class HistoryClusterElement extends HistoryClusterElementBase {
       index: {
         type: Number,
         value: -1,  // Initialized to an invalid value.
+      },
+
+      /**
+       * Whether the cluster is in the side panel.
+       */
+      inSidePanel: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('inSidePanel'),
+        reflectToAttribute: true,
       },
 
       /**
@@ -113,6 +123,7 @@ class HistoryClusterElement extends HistoryClusterElementBase {
 
   cluster: Cluster;
   index: number;
+  inSidePanel: boolean;
   query: string;
   private callbackRouter_: PageCallbackRouter;
   private expanded_: boolean;
@@ -300,8 +311,9 @@ class HistoryClusterElement extends HistoryClusterElementBase {
       return 'no_label';
     }
 
+    const label = this.inSidePanel ? this.$.labelSidePanel : this.$.label;
     insertHighlightedTextWithMatchesIntoElement(
-        this.$.label, this.cluster.label!, this.cluster.labelMatchPositions);
+        label, this.cluster.label!, this.cluster.labelMatchPositions);
     return this.cluster.label!;
   }
 
