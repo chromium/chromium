@@ -56,21 +56,5 @@
       "test_isolate_uses_emulator": false,
       "use_goma": true
     }
-  },
-  "fuchsia-builder-perf-x64": {
-    "gn_args": {
-      "ffmpeg_branding": "Chrome",
-      "fuchsia_additional_boot_images": [
-        "//third_party/fuchsia-sdk/images-internal/chromebook-x64-release/"
-      ],
-      "is_chrome_branded": true,
-      "is_official_build": true,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
-      "target_cpu": "x64",
-      "target_os": "fuchsia",
-      "test_isolate_uses_emulator": false,
-      "use_goma": true
-    }
   }
 }
