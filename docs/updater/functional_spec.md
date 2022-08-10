@@ -382,6 +382,10 @@ Refer to chrome/updater/protos/omaha\_settings.proto for more details.
 Policies may be set by platform-specific means (group policy on Windows, managed
 preferences on macOS), or by communication with the device management server.
 
+For device management, the enterprise policies for Google applications are
+downloaded from the device management server periodically and stored at
+`%ProgramFiles(x86)%\Google\Policies` in the Windows file system.
+
 TODO(crbug.com/1339451): Document how conflicts between multiple policy sources
 are resolved.
 
