@@ -774,8 +774,20 @@
         </description>
       </entry>
       <entry name="minimized" value="101" since="36">
-        <description summary="surface is minized">
+        <description summary="surface is minimized">
           The window has been minimized.
+        </description>
+      </entry>
+      <entry name="snapped_primary" value="102">
+        <description summary="window is snapped in primary position">
+          The window is snapped to the left if the display is in landscape mode
+          and at the top in portrait mode.
+        </description>
+      </entry>
+      <entry name="snapped_secondary" value="103">
+        <description summary="window is snapped in secondary position">
+          The window is snapped to the right if the display is in landscape mode
+          and at the bottom in portrait mode.
         </description>
       </entry>
     </enum>
