@@ -493,12 +493,6 @@
           'hard_timeout': 1200,
         },
       },
-      'win10.20h2-blink-rel-dummy': {
-        'swarming': {
-          'shards': 6,
-          'hard_timeout': 1200,
-        },
-      },
       'win11-blink-rel': {
         'swarming': {
           'hard_timeout': 1200,
@@ -770,12 +764,6 @@
         },
       },
       'win10.20h2-blink-rel': {
-        'swarming': {
-          'shards': 9,
-          'hard_timeout': 1200,
-        },
-      },
-      'win10.20h2-blink-rel-dummy': {
         'swarming': {
           'shards': 9,
           'hard_timeout': 1200,

@@ -3907,17 +3907,6 @@
           'isolated_scripts': 'chromium_webkit_isolated_scripts',
         },
       },
-      'win10.20h2-blink-rel-dummy': {
-        'mixins': [
-            'win10',
-        ],
-        'swarming': {
-          'hard_timeout': 900,
-        },
-        'test_suites': {
-          'isolated_scripts': 'chromium_webkit_isolated_scripts',
-        },
-      }
     },
   },
   {
