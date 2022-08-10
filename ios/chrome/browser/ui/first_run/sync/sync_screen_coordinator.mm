@@ -106,7 +106,7 @@
   if (!authenticationService->GetPrimaryIdentity(
           signin::ConsentLevel::kSignin)) {
     // Don't show sync screen if no logged-in user account.
-    [self.delegate willFinishPresenting];
+    [self.delegate screenWillFinishPresenting];
     return;
   }
 
@@ -120,7 +120,7 @@
           syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY) ||
       syncSetupService->IsFirstSetupComplete();
   if (shouldSkipSyncScreen) {
-    [self.delegate willFinishPresenting];
+    [self.delegate screenWillFinishPresenting];
     return;
   }
 
@@ -203,7 +203,7 @@
   // user entered it before canceling the sync opt-in flow, and also to set
   // sync as requested.
   syncService->StopAndClear();
-  [self.delegate willFinishPresenting];
+  [self.delegate screenWillFinishPresenting];
 }
 
 - (void)didTapURLInDisclaimer:(NSURL*)URL {
@@ -234,12 +234,12 @@
       base::UmaHistogramEnumeration("FirstRun.Stage",
                                     first_run::kSyncScreenCompletionWithSync);
     }
-    [self.delegate willFinishPresenting];
+    [self.delegate screenWillFinishPresenting];
   }
 }
 
 - (void)userRemoved {
-  [self.delegate willFinishPresenting];
+  [self.delegate screenWillFinishPresenting];
 }
 
 #pragma mark - PolicyWatcherBrowserAgentObserving
@@ -285,7 +285,7 @@
 - (void)dismissSignedOutModalAndSkipScreens:(BOOL)skipScreens {
   [self.enterprisePromptCoordinator stop];
   self.enterprisePromptCoordinator = nil;
-  [self.delegate skipAll];
+  [self.delegate skipAllScreens];
 }
 
 // Starts syncing or opens `advancedSettings`.

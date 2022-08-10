@@ -116,7 +116,7 @@ TEST_F(SyncScreenCoordinatorTest, TestStart) {
 // Tests that calling the delegate immidiately to stop the coordinator when
 // there's no user identity.
 TEST_F(SyncScreenCoordinatorTest, TestStartWithoutIdentity) {
-  OCMExpect([delegate_ willFinishPresenting]);
+  OCMExpect([delegate_ screenWillFinishPresenting]);
   [coordinator_ start];
 
   EXPECT_OCMOCK_VERIFY(delegate_);
@@ -134,7 +134,7 @@ TEST_F(SyncScreenCoordinatorTest, TestStartWithSyncActivated) {
 
   auth_service_->SignIn(identity, nil);
 
-  OCMExpect([delegate_ willFinishPresenting]);
+  OCMExpect([delegate_ screenWillFinishPresenting]);
   [coordinator_ start];
 
   EXPECT_OCMOCK_VERIFY(delegate_);
@@ -153,7 +153,7 @@ TEST_F(SyncScreenCoordinatorTest, TestStartWithSyncPolicyDisabled) {
 
   auth_service_->SignIn(identity, nil);
 
-  OCMExpect([delegate_ willFinishPresenting]);
+  OCMExpect([delegate_ screenWillFinishPresenting]);
   [coordinator_ start];
 
   EXPECT_OCMOCK_VERIFY(delegate_);

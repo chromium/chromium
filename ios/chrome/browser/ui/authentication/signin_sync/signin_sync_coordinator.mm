@@ -171,7 +171,7 @@
     // performed with irregular states. We expect sync to be disabled when the
     // FRE is displayed in a regular situation (i.e., first launch after
     // install).
-    [self.delegate willFinishPresenting];
+    [self.delegate screenWillFinishPresenting];
     return;
   }
 
@@ -419,9 +419,9 @@
   }
 
   if (skipRemainingScreens) {
-    [self.delegate skipAll];
+    [self.delegate skipAllScreens];
   } else {
-    [self.delegate willFinishPresenting];
+    [self.delegate screenWillFinishPresenting];
   }
 }
 

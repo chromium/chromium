@@ -119,7 +119,7 @@
     // Don't show sign in screen if there is already an account signed in (for
     // example going through the FRE then killing the app and restarting the
     // FRE). Don't record any metric as the user didn't take any action.
-    [self.delegate willFinishPresenting];
+    [self.delegate screenWillFinishPresenting];
     return;
   }
 
@@ -306,9 +306,9 @@
                                 self.hadIdentitiesAtStartup);
   }
   if (skipRemainingScreens) {
-    [self.delegate skipAll];
+    [self.delegate skipAllScreens];
   } else {
-    [self.delegate willFinishPresenting];
+    [self.delegate screenWillFinishPresenting];
   }
 }
 

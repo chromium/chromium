@@ -90,7 +90,7 @@
 
 #pragma mark - FirstRunScreenDelegate
 
-- (void)willFinishPresenting {
+- (void)screenWillFinishPresenting {
   [self.childCoordinator stop];
   self.childCoordinator = nil;
   // Usually, finishing presenting the first FRE screen signifies that the user
@@ -106,7 +106,7 @@
   [self presentScreen:[self.screenProvider nextScreenType]];
 }
 
-- (void)skipAll {
+- (void)skipAllScreens {
   [self.childCoordinator stop];
   self.childCoordinator = nil;
   [self willFinishPresentingScreens];

@@ -9,10 +9,10 @@
 @protocol FirstRunScreenDelegate <NSObject>
 
 // Called when one screen finished presenting.
-- (void)willFinishPresenting;
+- (void)screenWillFinishPresenting;
 
 // Called when user want to skip all screens after.
-- (void)skipAll;
+- (void)skipAllScreens;
 
 @end
 

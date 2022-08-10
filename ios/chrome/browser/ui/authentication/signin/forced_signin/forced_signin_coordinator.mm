@@ -148,13 +148,13 @@
 
 // This is called before finishing the presentation of a screen.
 // Stops the child coordinator and prepares the next screen to present.
-- (void)willFinishPresenting {
+- (void)screenWillFinishPresenting {
   [self.childCoordinator stop];
   self.childCoordinator = nil;
   [self presentScreen:[self.screenProvider nextScreenType]];
 }
 
-- (void)skipAll {
+- (void)skipAllScreens {
   [self finishPresentingScreens];
 }
 

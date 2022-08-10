@@ -72,7 +72,7 @@
                 openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]
                 options:{}
       completionHandler:nil];
-  [self.delegate willFinishPresenting];
+  [self.delegate screenWillFinishPresenting];
 }
 
 - (void)didTapSecondaryActionButton {
@@ -80,7 +80,7 @@
       "FirstRun.Stage",
       first_run::kDefaultBrowserScreenCompletionWithoutSettings);
   LogUserInteractionWithFirstRunPromo(NO);
-  [self.delegate willFinishPresenting];
+  [self.delegate screenWillFinishPresenting];
 }
 
 @end

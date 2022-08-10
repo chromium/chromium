@@ -197,7 +197,7 @@
 // Calls the mediator and the delegate when the coordinator is finished.
 - (void)finishPresentingWithSignIn:(BOOL)signIn {
   [self.mediator finishPresentingWithSignIn:signIn];
-  [self.delegate willFinishPresenting];
+  [self.delegate screenWillFinishPresenting];
 }
 
 // Shows the UMA dialog so the user can manage metric reporting.
