@@ -17,7 +17,7 @@ namespace chromeos::trash_service {
 // A class that manages the lifetime and mojo connection of the Trash service.
 class TrashInfoParser {
  public:
-  explicit TrashInfoParser(base::OnceCallback<void()> disconnect_callback);
+  TrashInfoParser();
   ~TrashInfoParser();
 
   TrashInfoParser(const TrashInfoParser&) = delete;
@@ -25,6 +25,8 @@ class TrashInfoParser {
 
   void ParseTrashInfoFile(const base::FilePath& path,
                           ParseTrashInfoCallback callback);
+
+  void SetDisconnectHandler(base::OnceCallback<void()> disconnect_callback);
 
  private:
   void OnGotFile(ParseTrashInfoCallback callback, base::File file);

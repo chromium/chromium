@@ -19,14 +19,19 @@ base::File GetReadOnlyFileFromPath(const base::FilePath& path) {
 
 }  // namespace
 
-TrashInfoParser::TrashInfoParser(
-    base::OnceCallback<void()> disconnect_callback) {
+TrashInfoParser::TrashInfoParser() {
   auto trash_pending_remote = LaunchTrashService();
   service_ = mojo::Remote<mojom::TrashService>(std::move(trash_pending_remote));
-  service_.set_disconnect_handler(std::move(disconnect_callback));
 }
 
 TrashInfoParser::~TrashInfoParser() = default;
+
+void TrashInfoParser::SetDisconnectHandler(
+    base::OnceCallback<void()> disconnect_callback) {
+  if (service_) {
+    service_.set_disconnect_handler(std::move(disconnect_callback));
+  }
+}
 
 void TrashInfoParser::ParseTrashInfoFile(const base::FilePath& path,
                                          ParseTrashInfoCallback callback) {

@@ -1011,6 +1011,8 @@ source_set("ash") {
     "file_manager/speedometer.h",
     "file_manager/trash_common_util.cc",
     "file_manager/trash_common_util.h",
+    "file_manager/trash_info_validator.cc",
+    "file_manager/trash_info_validator.h",
     "file_manager/trash_io_task.cc",
     "file_manager/trash_io_task.h",
     "file_manager/url_util.cc",
