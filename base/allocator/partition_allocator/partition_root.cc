@@ -415,25 +415,51 @@ static size_t PartitionPurgeSlotSpan(
     }
   }
 
-  // Next, walk the slots and for any not in use, consider where the system page
-  // boundaries occur. We can release any system pages back to the system as
-  // long as we don't interfere with a freelist pointer or an adjacent slot.
+  // Next, walk the slots and for any not in use, consider which system pages
+  // are no longer needed. We can release any system pages back to the system as
+  // long as we don't interfere with a freelist pointer or an adjacent used
+  // slot.
   for (size_t i = 0; i < num_slots; ++i) {
-    if (slot_usage[i])
+    if (slot_usage[i]) {
       continue;
+    }
+
     // The first address we can safely discard is just after the freelist
     // pointer. There's one quirk: if the freelist pointer is actually nullptr,
     // we can discard that pointer value too.
     uintptr_t begin_addr = slot_span_start + (i * slot_size);
     uintptr_t end_addr = begin_addr + slot_size;
+
+    bool can_discard_free_list_pointer = false;
 #if !BUILDFLAG(IS_WIN)
-    if (i != last_slot)
+    if (i != last_slot) {
       begin_addr += sizeof(internal::PartitionFreelistEntry);
+    } else {
+      can_discard_free_list_pointer = true;
+    }
 #else
     begin_addr += sizeof(internal::PartitionFreelistEntry);
 #endif
-    begin_addr = RoundUpToSystemPage(begin_addr);
+
+    uintptr_t rounded_up_begin_addr = RoundUpToSystemPage(begin_addr);
+    uintptr_t rounded_down_begin_addr = RoundDownToSystemPage(begin_addr);
     end_addr = RoundDownToSystemPage(end_addr);
+
+    // |rounded_up_begin_addr| could be greater than |end_addr| only if slot
+    // size was less than system page size, or if free list pointer crossed the
+    // page boundary. Neither is possible here.
+    PA_DCHECK(rounded_up_begin_addr <= end_addr);
+
+    if (rounded_down_begin_addr < rounded_up_begin_addr && i != 0 &&
+        !slot_usage[i - 1] && can_discard_free_list_pointer) {
+      // This slot contains a partial page in the beginning. The rest of that
+      // page is contained in the slot[i-1], which is also discardable.
+      // Therefore we can discard this page.
+      begin_addr = rounded_down_begin_addr;
+    } else {
+      begin_addr = rounded_up_begin_addr;
+    }
+
     if (begin_addr < end_addr) {
       size_t partial_slot_bytes = end_addr - begin_addr;
       discardable_bytes += partial_slot_bytes;
@@ -443,6 +469,7 @@ static size_t PartitionPurgeSlotSpan(
       }
     }
   }
+
   return discardable_bytes;
 }
 

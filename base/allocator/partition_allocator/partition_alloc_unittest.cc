@@ -2795,6 +2795,58 @@ TEST_P(PartitionAllocTest, PurgeDiscardableNonPageSizedAlloc) {
       allocator.root()->Alloc(requested_size - kExtraAllocSize, type_name);
   memset(ptr1, 'A', requested_size - kExtraAllocSize);
   memset(ptr2, 'A', requested_size - kExtraAllocSize);
+  allocator.root()->Free(ptr1);
+  allocator.root()->Free(ptr2);
+  {
+    MockPartitionStatsDumper dumper;
+    allocator.root()->DumpStats("mock_allocator", false /* detailed dump */,
+                                &dumper);
+    EXPECT_TRUE(dumper.IsMemoryAllocationRecorded());
+
+    const PartitionBucketMemoryStats* stats =
+        dumper.GetBucketStats(requested_size);
+    EXPECT_TRUE(stats);
+    EXPECT_TRUE(stats->is_valid);
+    EXPECT_EQ(0u, stats->decommittable_bytes);
+#if BUILDFLAG(IS_WIN)
+    EXPECT_EQ(3 * SystemPageSize(), stats->discardable_bytes);
+#else
+    EXPECT_EQ(4 * SystemPageSize(), stats->discardable_bytes);
+#endif
+    EXPECT_EQ(requested_size * 2, stats->active_bytes);
+    EXPECT_EQ(10 * SystemPageSize(), stats->resident_bytes);
+  }
+  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset, true);
+  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + SystemPageSize(), true);
+  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 2), true);
+  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 3), true);
+  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 4), true);
+  allocator.root()->PurgeMemory(PurgeFlags::kDiscardUnusedSystemPages);
+  // Except for Windows, the first page is discardable because the freelist
+  // pointer on this page is nullptr. Note that CHECK_PAGE_IN_CORE only executes
+  // checks for Linux and ChromeOS, not for Windows.
+  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset, false);
+  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + SystemPageSize(), false);
+  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 2), true);
+  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 3), false);
+  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 4), false);
+
+  allocator.root()->Free(ptr3);
+  allocator.root()->Free(ptr4);
+}
+
+TEST_P(PartitionAllocTest, PurgeDiscardableNonPageSizedAllocOnSlotBoundary) {
+  const size_t requested_size = 2.5 * SystemPageSize();
+  char* ptr1 = static_cast<char*>(
+      allocator.root()->Alloc(requested_size - kExtraAllocSize, type_name));
+  void* ptr2 =
+      allocator.root()->Alloc(requested_size - kExtraAllocSize, type_name);
+  void* ptr3 =
+      allocator.root()->Alloc(requested_size - kExtraAllocSize, type_name);
+  void* ptr4 =
+      allocator.root()->Alloc(requested_size - kExtraAllocSize, type_name);
+  memset(ptr1, 'A', requested_size - kExtraAllocSize);
+  memset(ptr2, 'A', requested_size - kExtraAllocSize);
   allocator.root()->Free(ptr2);
   allocator.root()->Free(ptr1);
   {
@@ -2808,7 +2860,11 @@ TEST_P(PartitionAllocTest, PurgeDiscardableNonPageSizedAlloc) {
     EXPECT_TRUE(stats);
     EXPECT_TRUE(stats->is_valid);
     EXPECT_EQ(0u, stats->decommittable_bytes);
+#if BUILDFLAG(IS_WIN)
     EXPECT_EQ(3 * SystemPageSize(), stats->discardable_bytes);
+#else
+    EXPECT_EQ(4 * SystemPageSize(), stats->discardable_bytes);
+#endif
     EXPECT_EQ(requested_size * 2, stats->active_bytes);
     EXPECT_EQ(10 * SystemPageSize(), stats->resident_bytes);
   }
@@ -2820,7 +2876,10 @@ TEST_P(PartitionAllocTest, PurgeDiscardableNonPageSizedAlloc) {
   allocator.root()->PurgeMemory(PurgeFlags::kDiscardUnusedSystemPages);
   CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset, true);
   CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + SystemPageSize(), false);
-  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 2), true);
+  // Except for Windows, the third page is discardable because the freelist
+  // pointer on this page is nullptr. Note that CHECK_PAGE_IN_CORE only executes
+  // checks for Linux and ChromeOS, not for Windows.
+  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 2), false);
   CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 3), false);
   CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 4), false);
 
