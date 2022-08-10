@@ -43,6 +43,14 @@ class SavedDeskPresenterTestApi {
       delete;
   ~SavedDeskPresenterTestApi();
 
+  // When Save & Recall closes windows, they might object and present a blocking
+  // dialog. This function waits until that dialog is detected.
+  static void WaitForSaveAndRecallBlockingDialog();
+
+  // Fire window watcher's timer to automatically transition into the saved desk
+  // library. This will DCHECK if the timer is not active.
+  static void FireWindowWatcherTimer();
+
   void SetOnUpdateUiClosure(base::OnceClosure closure);
 
   // If there are outstanding operations on the desk model, this blocks until
@@ -163,6 +171,7 @@ SavedDeskItemView* GetItemViewFromTemplatesGrid(size_t grid_item_index);
 views::Button* GetZeroStateDesksTemplatesButton();
 views::Button* GetExpandedStateDesksTemplatesButton();
 views::Button* GetSaveDeskAsTemplateButton();
+views::Button* GetSaveDeskForLaterButton();
 views::Button* GetTemplateItemButton(int index);
 views::Button* GetTemplateItemDeleteButton(int index);
 views::Button* GetSavedDeskDialogAcceptButton();

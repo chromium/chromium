@@ -386,6 +386,10 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
     auto_add_windows_enabled_ = enabled;
   }
 
+  void set_allow_empty_desk_without_exiting(bool enabled) {
+    allow_empty_desk_without_exiting_ = enabled;
+  }
+
  private:
   friend class DesksAcceleratorsTest;
   friend class OverviewTestBase;
@@ -500,6 +504,10 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   // When true, windows added to the observed desk are automatically added to
   // the overview session.
   bool auto_add_windows_enabled_ = true;
+
+  // When true, the overview session is not exited when the last window is
+  // removed.
+  bool allow_empty_desk_without_exiting_ = false;
 
   base::ScopedObservation<TabletModeController, TabletModeObserver>
       tablet_mode_observation_{this};

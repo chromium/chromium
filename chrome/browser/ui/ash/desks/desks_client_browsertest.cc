@@ -22,8 +22,10 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/templates/saved_desk_metrics_util.h"
+#include "ash/wm/desks/templates/saved_desk_presenter.h"
 #include "ash/wm/desks/templates/saved_desk_test_util.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
+#include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_test_util.h"
@@ -286,6 +288,12 @@ void ClickSaveDeskAsTemplateButton() {
   ClickSaveDeskAsTemplateButton(/*wait_for_ui=*/true);
 }
 
+void ClickSaveDeskForLaterButton() {
+  views::Button* save_desk_for_later_button = ash::GetSaveDeskForLaterButton();
+  DCHECK(save_desk_for_later_button);
+  ClickButton(save_desk_for_later_button);
+}
+
 void ClickZeroStateTemplatesButton() {
   views::Button* zero_state_templates_button =
       ash::GetZeroStateDesksTemplatesButton();
@@ -475,6 +483,28 @@ class DesksTemplatesClientTest : public extensions::PlatformAppBrowserTest {
     return launch_in_browser
                ? web_app::LaunchBrowserForWebAppInTab(profile(), app_id)
                : web_app::LaunchWebAppBrowserAndWait(profile(), app_id);
+  }
+
+  // This navigates the browser to a page that will show a close confirmation
+  // dialog when closed.
+  void SetupBrowserToConfirmClose(Browser* browser) {
+    std::string page_that_requires_close_confirmation =
+        "<html><head>"
+        "<script>window.onbeforeunload = function() { return \"x\"; };</script>"
+        "</head><body></body></html>";
+
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser,
+        GURL("data:text/html, " + page_that_requires_close_confirmation)));
+
+    // Note that the `onbeforeunload` handler will not run for a page that
+    // hasn't been interacted with. To meet that requirement, we'll click on the
+    // page.
+    aura::Window* window = browser->window()->GetNativeWindow();
+    ui::test::EventGenerator event_generator(window->GetRootWindow());
+    event_generator.MoveMouseToInHost(
+        window->GetBoundsInScreen().CenterPoint());
+    event_generator.ClickLeftButton();
   }
 
   // extensions::PlatformAppBrowserTest:
@@ -2573,6 +2603,63 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientLacrosTest, SystemUILaunchBrowser) {
 
   ash::ToggleOverview();
   ash::WaitForOverviewExitAnimation();
+}
+
+using SaveAndRecallBrowserTest = DesksTemplatesClientTest;
+
+IN_PROC_BROWSER_TEST_F(SaveAndRecallBrowserTest,
+                       SystemUIBlockingDialogAccepted) {
+  SetupBrowserToConfirmClose(browser());
+
+  // We'll now save the desk as Save & Recall. After saving desks, this
+  // operation will try to automatically close windows.
+
+  ash::ToggleOverview();
+  ash::WaitForOverviewEnterAnimation();
+  ClickSaveDeskForLaterButton();
+  ash::WaitForDesksTemplatesUI();
+
+  ash::SavedDeskPresenterTestApi::WaitForSaveAndRecallBlockingDialog();
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+
+  // Send a key to OK the close dialog.
+  ash::SendKey(ui::VKEY_RETURN);
+  content::RunAllTasksUntilIdle();
+
+  EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
+
+  // Verify that we are in the library and that there's one saved desk.
+  auto* overview_grid = ash::GetOverviewSession()->GetGridWithRootWindow(
+      ash::Shell::GetPrimaryRootWindow());
+  ASSERT_TRUE(overview_grid);
+  EXPECT_TRUE(overview_grid->IsShowingDesksTemplatesGrid());
+
+  std::vector<const ash::DeskTemplate*> templates = GetAllEntries();
+  EXPECT_EQ(1u, templates.size());
+}
+
+IN_PROC_BROWSER_TEST_F(SaveAndRecallBrowserTest,
+                       SystemUIBlockingDialogRejected) {
+  SetupBrowserToConfirmClose(browser());
+
+  ash::ToggleOverview();
+  ash::WaitForOverviewEnterAnimation();
+  ClickSaveDeskForLaterButton();
+  ash::WaitForDesksTemplatesUI();
+
+  ash::SavedDeskPresenterTestApi::WaitForSaveAndRecallBlockingDialog();
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+
+  // Send escape to cancel the dialog (keep the browser running).
+  ash::SendKey(ui::VKEY_ESCAPE);
+  content::RunAllTasksUntilIdle();
+
+  ash::SavedDeskPresenterTestApi::FireWindowWatcherTimer();
+
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+
+  // We should be in overview mode.
+  ASSERT_TRUE(ash::Shell::Get()->overview_controller()->overview_session());
 }
 
 class DesksTemplatesClientArcTest : public InProcessBrowserTest {

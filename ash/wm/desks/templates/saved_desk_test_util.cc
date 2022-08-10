@@ -79,6 +79,18 @@ SavedDeskPresenterTestApi::SavedDeskPresenterTestApi(
 
 SavedDeskPresenterTestApi::~SavedDeskPresenterTestApi() = default;
 
+// static
+void SavedDeskPresenterTestApi::WaitForSaveAndRecallBlockingDialog() {
+  base::RunLoop loop;
+  SavedDeskPresenter::SetModalDialogCallbackForTesting(loop.QuitClosure());
+  loop.Run();
+}
+
+// static
+void SavedDeskPresenterTestApi::FireWindowWatcherTimer() {
+  SavedDeskPresenter::FireWindowWatcherTimerForTesting();
+}
+
 void SavedDeskPresenterTestApi::SetOnUpdateUiClosure(
     base::OnceClosure closure) {
   DCHECK(!presenter_->on_update_ui_closure_for_testing_);
@@ -197,6 +209,11 @@ views::Button* GetSaveDeskAsTemplateButton() {
   if (!overview_grid)
     return nullptr;
   return overview_grid->GetSaveDeskAsTemplateButton();
+}
+
+views::Button* GetSaveDeskForLaterButton() {
+  const auto* overview_grid = GetPrimaryOverviewGrid();
+  return overview_grid ? overview_grid->GetSaveDeskForLaterButton() : nullptr;
 }
 
 views::Button* GetTemplateItemButton(int index) {

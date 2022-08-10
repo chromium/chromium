@@ -66,6 +66,12 @@ enum class OverviewEnterExitType {
   // button tray. It's also used to address https://crbug.com/1027179. This
   // should not be used for exiting overview mode.
   kImmediateEnter,
+  // Used when it's desired to enter overview mode immediately without
+  // animations. Additionally, the overview controller will not automatically
+  // move focus over to the overview focus widget (which is something that
+  // happens on a timer with `kImmediateEnter`). Behaves otherwise like
+  // `kImmediateEnter`.
+  kImmediateEnterWithoutFocus,
   // Used only when it's desired to exit overview mode immediately without
   // animations. This is used when performing the desk switch animation when
   // the source desk is in overview mode, while the target desk is not.
