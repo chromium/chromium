@@ -162,12 +162,9 @@ class DisplayPrefsTest : public AshTestBase {
 
     DCHECK(!name.empty());
 
-    base::Value* pref_data = update.Get();
-    base::Value layout_value(base::Value::Type::DICTIONARY);
-    if (const base::Value* value = pref_data->FindKey(name))
-      layout_value = value->Clone();
-    if (display::DisplayLayoutToJson(display_layout, &layout_value))
-      pref_data->SetPath(name, std::move(layout_value));
+    base::Value::Dict& pref_data = update->GetDict();
+    base::Value::Dict* layout_dict = pref_data.EnsureDict(name);
+    display::DisplayLayoutToJson(display_layout, *layout_dict);
   }
 
   void StoreDisplayPropertyForList(const display::DisplayIdList& list,
@@ -176,14 +173,13 @@ class DisplayPrefsTest : public AshTestBase {
     std::string name = display::DisplayIdListToString(list);
 
     DictionaryPrefUpdate update(local_state(), prefs::kSecondaryDisplays);
-    base::Value* pref_data = update.Get();
-
-    if (base::Value* existing_layout_value = pref_data->FindKey(name)) {
-      existing_layout_value->SetKey(key, std::move(value));
+    base::Value::Dict& pref_data = update->GetDict();
+    if (base::Value::Dict* existing_layout_value = pref_data.FindDict(name)) {
+      existing_layout_value->Set(key, std::move(value));
     } else {
-      base::Value layout_value(base::Value::Type::DICTIONARY);
-      layout_value.SetBoolKey(key, true);
-      pref_data->SetPath(name, std::move(layout_value));
+      base::Value::Dict layout_dict;
+      layout_dict.Set(key, true);
+      pref_data.SetByDottedPath(name, std::move(layout_dict));
     }
   }
 

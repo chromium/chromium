@@ -184,12 +184,7 @@ bool JsonToDisplayLayout(const base::Value::Dict& dict, DisplayLayout* layout) {
   return AddLegacyValuesFromValue(dict, layout);
 }
 
-bool DisplayLayoutToJson(const DisplayLayout& layout, base::Value* value) {
-  if (!value->is_dict())
-    return false;
-
-  base::Value::Dict& dict = value->GetDict();
-
+void DisplayLayoutToJson(const DisplayLayout& layout, base::Value::Dict& dict) {
   dict.Set(kDefaultUnifiedKey, layout.default_unified);
   dict.Set(kPrimaryIdKey, base::NumberToString(layout.primary_id));
 
@@ -206,8 +201,6 @@ bool DisplayLayoutToJson(const DisplayLayout& layout, base::Value* value) {
     placement_list.Append(std::move(placement_value));
   }
   dict.Set(kDisplayPlacementKey, std::move(placement_list));
-
-  return true;
 }
 
 }  // namespace display

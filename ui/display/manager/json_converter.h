@@ -19,8 +19,9 @@ DISPLAY_MANAGER_EXPORT bool JsonToDisplayLayout(const base::Value::Dict& dict,
 DISPLAY_MANAGER_EXPORT bool JsonToDisplayLayout(const base::Value& value,
                                                 DisplayLayout* layout);
 
-DISPLAY_MANAGER_EXPORT bool DisplayLayoutToJson(const DisplayLayout& layout,
-                                                base::Value* value);
+// This will modify `dict` in place.
+DISPLAY_MANAGER_EXPORT void DisplayLayoutToJson(const DisplayLayout& layout,
+                                                base::Value::Dict& dict);
 
 }  // namespace display
 

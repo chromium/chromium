@@ -28,8 +28,8 @@ TEST(JsonConverterTest, JsonFromToDisplayLayout) {
   layout.placement_list[1].position = DisplayPlacement::LEFT;
   layout.placement_list[1].offset = 30;
 
-  base::Value value(base::Value::Type::DICTIONARY);
-  DisplayLayoutToJson(layout, &value);
+  base::Value::Dict value;
+  DisplayLayoutToJson(layout, value);
 
   const char data[] =
       "{\n"
@@ -51,7 +51,7 @@ TEST(JsonConverterTest, JsonFromToDisplayLayout) {
   ASSERT_TRUE(result.has_value())
       << result.error().message << " at " << result.error().line << ":"
       << result.error().column;
-  EXPECT_EQ(value, *result);
+  EXPECT_EQ(base::Value(std::move(value)), *result);
 
   DisplayLayout read_layout;
   EXPECT_TRUE(JsonToDisplayLayout(*result, &read_layout));
