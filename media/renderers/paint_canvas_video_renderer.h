@@ -102,12 +102,11 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
                                            bool premultiply_alpha = true,
                                            FilterMode filter = kFilterNone);
 
-  // Copy the contents of |video_frame| to |texture| of |destination_gl|.
-  //
-  // The format of |video_frame| must be VideoFrame::NATIVE_TEXTURE.
-  bool CopyVideoFrameTexturesToGLTexture(
+  // Copy the contents of `video_frame` to `texture` of `destination_gl`.
+  bool CopyVideoFrameToWebGLTexture(
       viz::RasterContextProvider* raster_context_provider,
       gpu::gles2::GLES2Interface* destination_gl,
+      bool gpu_teximage_is_slow,
       scoped_refptr<VideoFrame> video_frame,
       unsigned int target,
       unsigned int texture,
@@ -115,8 +114,8 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
       unsigned int format,
       unsigned int type,
       int level,
-      bool premultiply_alpha,
-      bool flip_y);
+      bool unpack_premultiply_alpha,
+      bool unpack_flip_y);
 
   // TODO(776222): Remove this function from PaintCanvasVideoRenderer.
   static bool PrepareVideoFrameForWebGL(
@@ -125,26 +124,6 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
       scoped_refptr<VideoFrame> video_frame,
       unsigned int target,
       unsigned int texture);
-
-  // Copy the CPU-side YUV contents of |video_frame| to texture |texture| in
-  // context |destination_gl|.
-  // |level|, |internal_format|, |type| specify target texture |texture|.
-  // The format of |video_frame| must be mappable.
-  // |context_3d| has a GrContext that may be used during the copy.
-  // CorrectLastImageDimensions() ensures that the source texture will be
-  // cropped to |visible_rect|. Returns true on success.
-  bool CopyVideoFrameYUVDataToGLTexture(
-      viz::RasterContextProvider* raster_context_provider,
-      gpu::gles2::GLES2Interface* destination_gl,
-      scoped_refptr<VideoFrame> video_frame,
-      unsigned int target,
-      unsigned int texture,
-      unsigned int internal_format,
-      unsigned int format,
-      unsigned int type,
-      int level,
-      bool premultiply_alpha,
-      bool flip_y);
 
   // Calls texImage2D where the texture image data source is the contents of
   // |video_frame|. Texture |texture| needs to be created and bound to |target|
@@ -247,7 +226,38 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
                          viz::RasterContextProvider* raster_context_provider,
                          const gpu::MailboxHolder& dest_holder);
 
-  bool UploadVideoFrameToGLTexture(
+  // If `video_frame` is backed by textures, copy it to `texture` in
+  // `destination_gl`.
+  bool CopyVideoFrameToWebGLTexture_ViaCopyToSharedImage(
+      viz::RasterContextProvider* raster_context_provider,
+      gpu::gles2::GLES2Interface* destination_gl,
+      scoped_refptr<VideoFrame> video_frame,
+      unsigned int target,
+      unsigned int texture,
+      unsigned int internal_format,
+      unsigned int format,
+      unsigned int type,
+      int level,
+      bool premultiply_alpha,
+      bool flip_y);
+  // If `video_frame` is mappable, copy it to `yuv_cache_`, and then copy that
+  // to `texture` in `destination_gl`.
+  bool CopyVideoFrameToWebGLTexture_ViaUploadToYUVCache(
+      viz::RasterContextProvider* raster_context_provider,
+      gpu::gles2::GLES2Interface* destination_gl,
+      scoped_refptr<VideoFrame> video_frame,
+      unsigned int target,
+      unsigned int texture,
+      unsigned int internal_format,
+      unsigned int format,
+      unsigned int type,
+      int level,
+      bool premultiply_alpha,
+      bool flip_y);
+  // Helper function that calls VideoFrameYUVConverter to copy `video_frame`
+  // directly to `texture` in `destination_gl`.  This uses legacy mailboxes and
+  // is incompatible with OOP-R canvas.
+  bool CopyVideoFrameToWebGLTexture_Direct(
       viz::RasterContextProvider* raster_context_provider,
       gpu::gles2::GLES2Interface* destination_gl,
       scoped_refptr<VideoFrame> video_frame,

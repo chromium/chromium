@@ -1360,18 +1360,19 @@ void PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels(
   }
 }
 
-bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
-    viz::RasterContextProvider* raster_context_provider,
-    gpu::gles2::GLES2Interface* destination_gl,
-    scoped_refptr<VideoFrame> video_frame,
-    unsigned int target,
-    unsigned int texture,
-    unsigned int internal_format,
-    unsigned int format,
-    unsigned int type,
-    int level,
-    bool premultiply_alpha,
-    bool flip_y) {
+bool PaintCanvasVideoRenderer::
+    CopyVideoFrameToWebGLTexture_ViaCopyToSharedImage(
+        viz::RasterContextProvider* raster_context_provider,
+        gpu::gles2::GLES2Interface* destination_gl,
+        scoped_refptr<VideoFrame> video_frame,
+        unsigned int target,
+        unsigned int texture,
+        unsigned int internal_format,
+        unsigned int format,
+        unsigned int type,
+        int level,
+        bool premultiply_alpha,
+        bool flip_y) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(video_frame);
   DCHECK(video_frame->HasTextures());
@@ -1392,9 +1393,9 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
     // accurate.
     if ((media::IsOpaque(video_frame->format()) || premultiply_alpha) &&
         level == 0 && video_frame->NumTextures() > 1) {
-      if (UploadVideoFrameToGLTexture(raster_context_provider, destination_gl,
-                                      video_frame.get(), target, texture,
-                                      internal_format, format, type, flip_y)) {
+      if (CopyVideoFrameToWebGLTexture_Direct(
+              raster_context_provider, destination_gl, video_frame.get(),
+              target, texture, internal_format, format, type, flip_y)) {
         return true;
       }
     }
@@ -1456,7 +1457,7 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
   return true;
 }
 
-bool PaintCanvasVideoRenderer::UploadVideoFrameToGLTexture(
+bool PaintCanvasVideoRenderer::CopyVideoFrameToWebGLTexture_Direct(
     viz::RasterContextProvider* raster_context_provider,
     gpu::gles2::GLES2Interface* destination_gl,
     scoped_refptr<VideoFrame> video_frame,
@@ -1609,7 +1610,43 @@ bool PaintCanvasVideoRenderer::PrepareVideoFrameForWebGL(
   return true;
 }
 
-bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
+bool PaintCanvasVideoRenderer::CopyVideoFrameToWebGLTexture(
+    viz::RasterContextProvider* raster_context_provider,
+    gpu::gles2::GLES2Interface* destination_gl,
+    bool gpu_teximage_is_slow,
+    scoped_refptr<VideoFrame> video_frame,
+    unsigned int target,
+    unsigned int texture,
+    unsigned int internal_format,
+    unsigned int format,
+    unsigned int type,
+    int level,
+    bool unpack_premultiply_alpha,
+    bool unpack_flip_y) {
+  // Go through the fast path doing a GPU-GPU textures copy without a readback
+  // to system memory if possible.  Otherwise, it will fall back to the normal
+  // SW path.
+  if (video_frame->HasTextures() &&
+      CopyVideoFrameToWebGLTexture_ViaCopyToSharedImage(
+          raster_context_provider, destination_gl, video_frame, target, texture,
+          internal_format, format, type, level, unpack_premultiply_alpha,
+          unpack_flip_y)) {
+    return true;
+  }
+
+  if (!video_frame->HasTextures() && media::IsOpaque(video_frame->format()) &&
+      !gpu_teximage_is_slow &&
+      CopyVideoFrameToWebGLTexture_ViaUploadToYUVCache(
+          raster_context_provider, destination_gl, video_frame, target, texture,
+          internal_format, format, type, level, unpack_premultiply_alpha,
+          unpack_flip_y)) {
+    return true;
+  }
+
+  return false;
+}
+
+bool PaintCanvasVideoRenderer::CopyVideoFrameToWebGLTexture_ViaUploadToYUVCache(
     viz::RasterContextProvider* raster_context_provider,
     gpu::gles2::GLES2Interface* destination_gl,
     scoped_refptr<VideoFrame> video_frame,
@@ -1651,9 +1688,9 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
   // accurate.
   if ((media::IsOpaque(video_frame->format()) || premultiply_alpha) &&
       level == 0) {
-    if (UploadVideoFrameToGLTexture(raster_context_provider, destination_gl,
-                                    video_frame, target, texture,
-                                    internal_format, format, type, flip_y)) {
+    if (CopyVideoFrameToWebGLTexture_Direct(
+            raster_context_provider, destination_gl, video_frame, target,
+            texture, internal_format, format, type, flip_y)) {
       return true;
     }
   }
