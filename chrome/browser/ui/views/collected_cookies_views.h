@@ -109,7 +109,7 @@ class CollectedCookiesViews : public views::DialogDelegateView,
   static void RecordDialogAction(CookiesInUseDialogAction action);
 
   // The web contents.
-  raw_ptr<content::WebContents> web_contents_;
+  base::WeakPtr<content::WebContents> web_contents_;
 
   // Assorted views.
   raw_ptr<views::Label> allowed_label_ = nullptr;

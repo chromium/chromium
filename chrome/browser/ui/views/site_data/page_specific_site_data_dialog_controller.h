@@ -26,8 +26,6 @@ class PageSpecificSiteDataDialogController
     : public content::WebContentsUserData<
           PageSpecificSiteDataDialogController> {
  public:
-  ~PageSpecificSiteDataDialogController() override;
-
   // TODO(crbug.com/1344787): Don't use this method, it will be deprecated with
   // the CollectedCookiesViews after kPageSpecificSiteDataDialog is finished.
   static CollectedCookiesViews* GetDialogViewForTesting(

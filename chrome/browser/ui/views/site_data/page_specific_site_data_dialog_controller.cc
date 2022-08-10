@@ -12,14 +12,6 @@
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/views/widget/widget.h"
 
-PageSpecificSiteDataDialogController::~PageSpecificSiteDataDialogController() {
-  if (!tracker_.view())
-    return;  // Dialog already destroyed.
-
-  // Destroyed while the Widget is still alive, close immediately.
-  tracker_.view()->GetWidget()->CloseNow();
-}
-
 // static
 views::View* PageSpecificSiteDataDialogController::GetDialogView(
     content::WebContents* web_contents) {
@@ -84,6 +76,10 @@ PageSpecificSiteDataDialogController::PageSpecificSiteDataDialogController(
 }
 
 views::View* PageSpecificSiteDataDialogController::GetDialogView() {
+  // TODO(crbug.com/1344787): Revisit this after the new dialog is launched.
+  // Consider not using the view tracker here but using instead a flag to
+  // track if the widget is open and a CancelableCallback to track that the
+  // widget is closed.
   return tracker_.view();
 }
 

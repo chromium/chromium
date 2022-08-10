@@ -275,8 +275,6 @@ END_METADATA
 // CollectedCookiesViews, public:
 
 CollectedCookiesViews::~CollectedCookiesViews() {
-  web_contents_->RemoveUserData(
-      PageSpecificSiteDataDialogController::UserDataKey());
   allowed_cookies_tree_->SetModel(nullptr);
   blocked_cookies_tree_->SetModel(nullptr);
 }
@@ -313,7 +311,7 @@ gfx::Size CollectedCookiesViews::GetMinimumSize() const {
 // CollectedCookiesViews, private:
 
 CollectedCookiesViews::CollectedCookiesViews(content::WebContents* web_contents)
-    : web_contents_(web_contents) {
+    : web_contents_(web_contents->GetWeakPtr()) {
   SetButtons(ui::DIALOG_BUTTON_OK);
   SetButtonLabel(ui::DIALOG_BUTTON_OK, l10n_util::GetStringUTF16(IDS_DONE));
   SetModalType(ui::MODAL_TYPE_CHILD);
@@ -385,11 +383,21 @@ void CollectedCookiesViews::OnDialogClosed() {
   // infobars::ContentInfoBarManager is also torn down in response to
   // WebContentsDestroyed(), it may already be null. Since the tab is going away
   // anyway, we can just omit showing an infobar, which prevents any attempt to
-  // access a null infobars::ContentInfoBarManager.
-  if (status_changed_ && !web_contents_->IsBeingDestroyed()) {
+  // access a null infobars::ContentInfoBarManager. Same applies to removing the
+  // webcontents' user data.
+  if (!web_contents_ || web_contents_->IsBeingDestroyed())
+    return;
+
+  if (status_changed_)
     CollectedCookiesInfoBarDelegate::Create(
-        infobars::ContentInfoBarManager::FromWebContents(web_contents_));
-  }
+        infobars::ContentInfoBarManager::FromWebContents(web_contents_.get()));
+
+  // Reset the dialog reference in the user data. If the dialog is opened again,
+  // a new instance should be created. When the dialog is destroyed because of
+  // the web contents being destroyed, no need to remove the user data because
+  // it will be destroyed.
+  web_contents_->RemoveUserData(
+      PageSpecificSiteDataDialogController::UserDataKey());
 }
 
 std::unique_ptr<views::View> CollectedCookiesViews::CreateAllowedPane() {
