@@ -16,7 +16,6 @@
 const CheckingDownloadingUpdateBase = Polymer.mixinBehaviors(
     [OobeI18nBehavior, OobeDialogHostBehavior], Polymer.Element);
 
-
 /**
  * @polymer
  */
@@ -114,6 +113,10 @@ const CheckingDownloadingUpdateBase = Polymer.mixinBehaviors(
     };
   }
 
+  static get observers() {
+    return ['playAnimation_(checkingForUpdate)'];
+  }
+
   computeProgressMessage_(
       hasEstimate, defaultProgressMessage, estimatedTimeLeftMsg_) {
     if (hasEstimate) {
@@ -154,6 +157,15 @@ const CheckingDownloadingUpdateBase = Polymer.mixinBehaviors(
    */
   isCheckingOrUpdateCompleted_(checkingForUpdate, updateCompleted) {
     return checkingForUpdate || updateCompleted;
+  }
+
+  /**
+   * @private
+   * @param {Boolean} checkingForUpdate If the screen is currently checking for
+   *     updates.
+   */
+  playAnimation_(checkingForUpdate) {
+    this.$.checkingAnimation.playing = checkingForUpdate;
   }
 }
 

@@ -59,6 +59,11 @@
         height: 264px;
         width: 264px;
       }
+
+      #checkingAnimation {
+        height: 300px;
+        width: 334px;
+      }
     </style>
     <oobe-adaptive-dialog hidden="[[!checkingForUpdate]]"
         aria-live="polite" id="checking-for-updates-dialog" footer-shrinkable>
@@ -77,8 +82,9 @@
           indeterminate="[[checkingForUpdate]]">
       </paper-progress>
       <div slot="content" class="flex layout vertical center-justified center">
-        <img class="update-illustration oobe-illustration"
-            src="/images/updating.svg">
+        <oobe-cr-lottie id="checkingAnimation"
+            animation-url="animations/checking_for_update.json">
+        </oobe-cr-lottie>
       </div>
     </oobe-adaptive-dialog>
 

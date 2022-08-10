@@ -161,6 +161,10 @@ class Update extends UpdateBase {
     };
   }
 
+  static get observers() {
+    return ['playAnimation_(uiStep)'];
+  }
+
   constructor() {
     super();
     this.updateStatusMessagePercent = '';
@@ -198,7 +202,9 @@ class Update extends UpdateBase {
    * @param {Object} data Screen init payload.
    */
   onBeforeShow(data) {
-    this.isOptOutEnabled = data['is_opt_out_enabled'];
+    if (data && 'is_opt_out_enabled' in data) {
+      this.isOptOutEnabled = data['is_opt_out_enabled'];
+    }
   }
 
   /**
@@ -303,6 +309,14 @@ class Update extends UpdateBase {
     return this.i18n(
         isOptOutEnabled ? 'slideUpdateAdditionalSettingsText' :
                           'slideUpdateText');
+  }
+
+  /**
+   * @private
+   * @param {UpdateUIState} uiStep which UIState is shown now.
+   */
+  playAnimation_(uiStep) {
+    this.$.checkingAnimation.playing = (uiStep === UpdateUIState.CHECKING);
   }
 }
 

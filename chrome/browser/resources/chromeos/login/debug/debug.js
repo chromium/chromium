@@ -357,20 +357,6 @@ cr.define('cr.ui.login.debug', function() {
     {
       id: 'oobe-update',
       kind: ScreenKind.NORMAL,
-      states: [
-        {
-          // Checking for update
-          id: 'check-update',
-        },
-        {
-          // Ask for permission to update over celluar
-          id: 'require-permission-celluar',
-          trigger: (screen) => {
-            screen.onBeforeShow();
-            screen.setUpdateState('cellular');
-          },
-        },
-      ],
     },
     {
       id: 'auto-enrollment-check',
