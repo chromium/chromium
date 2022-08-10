@@ -484,6 +484,41 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Storage.SharedStorage.AsyncIterator.EntriesQueuedCount"
+    units="Entries" expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Count of database entries queued to be sent to the async iterator. Recorded
+    in `SharedStorageIterator::DidReadEntries()`.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.AsyncIterator.IteratedEntriesBenchmarks"
+    units="BenchmarksMet" expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    For each of a set of benchmark percentages, we record that benchmark when
+    the async iterator first iterates through at least that percentage of queued
+    entries. Recorded in `SharedStorageIterator::NextHelper()`.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.AsyncIterator.ReceivedEntriesBenchmarks"
+    units="BenchmarksMet" expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    For each of a set of benchmark percentages, we record that benchmark when
+    the async iterator first receives from the database at least that percentage
+    of queued entries. Recorded in `SharedStorageIterator::DidReadEntries()`.
+  </summary>
+</histogram>
+
 <histogram name="Storage.SharedStorage.Database.Destruction"
     units="BooleanDestroyed" expires_after="2023-01-31">
   <owner>cammie@chromium.org</owner>
@@ -547,6 +582,47 @@ chromium-metrics-reviews@google.com.
     SharedStorageDatabase::InitStatus::kInitFailure on disk. Recorded by
     SharedStorageManager::RecordShutdownMetrics() when the StoragePartitionImpl
     is destroyed.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.Worklet.DestroyedStatus"
+    enum="SharedStorageWorkletDestroyedStatus" expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Whether or not the worklet entered keep-alive phase before destruction, and
+    if it did enter keep-alive, whether the keep-alive was terminated by
+    operations finishing or due to timeout. Recorded in the destructor of
+    `SharedStorageWokletHost`.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.Worklet.Error.Type"
+    enum="SharedStorageWorkletErrorType" expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Type of error encountered by the SharedStorageWorklet in either
+    `addModule()`, `run()`, or `selectURL()`. Recorded after an exception is
+    thrown, after a callback is run with `/*success=*/false`, after a call to
+    `ReportBadMessage()`, and/or just before the rejected promise is returned,
+    via the utility method `LogWorkletError()`.
+  </summary>
+</histogram>
+
+<histogram
+    name="Storage.SharedStorage.Worklet.Timing.KeepAliveEndedDueToOperationsFinished.KeepAliveDuration"
+    units="ms" expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures the time from entering keep alive until the start of the call to
+    `FinishKeepAlive()` for keep-alives that are terminated when operations end
+    (i.e. excludes worklets whose keep-alives are terminated via timeout).
+    Recorded in `SharedStorageWokletHost::FinishKeepAlive()`.
   </summary>
 </histogram>
 

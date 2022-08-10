@@ -19,6 +19,8 @@
 
 namespace shared_storage_worklet {
 
+extern const int kSharedStorageIteratorBenchmarkStep;
+
 // The async iterator type for sharedStorage.keys()/entries().
 class SharedStorageIterator final
     : public gin::Wrappable<SharedStorageIterator>,
@@ -29,9 +31,9 @@ class SharedStorageIterator final
     kKeyValue,
   };
 
-  explicit SharedStorageIterator(
-      Mode mode,
-      mojom::SharedStorageWorkletServiceClient* client);
+  SharedStorageIterator(Mode mode,
+                        mojom::SharedStorageWorkletServiceClient* client);
+
   ~SharedStorageIterator() override;
 
   static gin::WrapperInfo kWrapperInfo;
@@ -53,13 +55,18 @@ class SharedStorageIterator final
   void DidReadEntries(bool success,
                       const std::string& error_message,
                       std::vector<mojom::SharedStorageKeyAndOrValuePtr> entries,
-                      bool has_more_entries) override;
+                      bool has_more_entries,
+                      int total_queued_to_send) override;
 
   v8::Local<v8::Object> CreateIteratorResult(
       v8::Isolate* isolate,
       const mojom::SharedStorageKeyAndOrValuePtr& entry);
 
   v8::Local<v8::Object> CreateIteratorResultDone(v8::Isolate* isolate);
+
+  // Checks if `value` meets `benchmark` percentage, for purposes of histogram
+  // logging.
+  bool MeetsBenchmark(int value, int benchmark);
 
   Mode mode_;
 
@@ -84,6 +91,25 @@ class SharedStorageIterator final
   // entries. After the state is set to false, no further DidReadEntries()
   // listener callbacks are expected.
   bool waiting_for_more_entries_ = true;
+
+  // The total number of entries that the database has queued to send via this
+  // iterator.
+  int total_entries_queued_ = 0;
+
+  // The number of entries that the iterator has received from the database so
+  // far.
+  int entries_received_ = 0;
+
+  // The number of entries that the iterator has iterated through.
+  int entries_iterated_ = 0;
+
+  // The lowest benchmark for received entries that is currently unmet and so
+  // has not been logged.
+  int next_benchmark_for_receipt_ = 0;
+
+  // The lowest benchmark for iterated entries that is currently unmet and so
+  // has not been logged.
+  int next_benchmark_for_iteration_ = kSharedStorageIteratorBenchmarkStep;
 
   mojo::Receiver<mojom::SharedStorageEntriesListener> receiver_{this};
 };

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/statistics_recorder.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -34,6 +35,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
+#include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 
 namespace content {
 
@@ -49,6 +51,15 @@ const char kFencedFramePath[] = "/fenced_frames/title0.html";
 
 const char kPageWithBlankIframePath[] = "/page_with_blank_iframe.html";
 
+const char kDestroyedStatusHistogram[] =
+    "Storage.SharedStorage.Worklet.DestroyedStatus";
+
+const char kTimingKeepAliveDurationHistogram[] =
+    "Storage.SharedStorage.Worklet.Timing."
+    "KeepAliveEndedDueToOperationsFinished.KeepAliveDuration";
+
+const char kErrorTypeHistogram[] = "Storage.SharedStorage.Worklet.Error.Type";
+
 const double kBudgetAllowed = 5.0;
 
 const char kSelectFrom8URLsScript[] = R"(
@@ -63,6 +74,27 @@ const char kSelectFrom8URLsScript[] = R"(
     sharedStorage.selectURL(
         'test-url-selection-operation', urls, {data: {'mockResult': 1}});
   )";
+
+void WaitForHistogram(const std::string& histogram_name) {
+  // Continue if histogram was already recorded.
+  if (base::StatisticsRecorder::FindHistogram(histogram_name))
+    return;
+
+  // Else, wait until the histogram is recorded.
+  base::RunLoop run_loop;
+  auto histogram_observer =
+      std::make_unique<base::StatisticsRecorder::ScopedHistogramSampleObserver>(
+          histogram_name,
+          base::BindLambdaForTesting(
+              [&](const char* histogram_name, uint64_t name_hash,
+                  base::HistogramBase::Sample sample) { run_loop.Quit(); }));
+  run_loop.Run();
+}
+
+void WaitForHistograms(const std::vector<std::string>& histogram_names) {
+  for (const auto& name : histogram_names)
+    WaitForHistogram(name);
+}
 
 }  // namespace
 
@@ -431,12 +463,19 @@ class SharedStorageBrowserTest : public ContentBrowserTest {
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
+  base::HistogramTester histogram_tester_;
 
   raw_ptr<TestSharedStorageWorkletHostManager, DanglingUntriaged>
       test_worklet_host_manager_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, AddModule_Success) {
+  // The test assumes pages get deleted after navigation. To ensure this,
+  // disable back/forward cache.
+  content::DisableBackForwardCacheForTesting(
+      shell()->web_contents(),
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
   EXPECT_TRUE(NavigateToURL(shell(),
                             https_server()->GetURL("a.test", kSimplePagePath)));
 
@@ -453,6 +492,14 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, AddModule_Success) {
             base::UTF16ToUTF8(console_observer.messages()[0].message));
   EXPECT_EQ("Finish executing simple_module.js",
             base::UTF16ToUTF8(console_observer.messages()[1].message));
+
+  // Navigate again to record histograms.
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
+  WaitForHistograms({kDestroyedStatusHistogram});
+
+  histogram_tester_.ExpectUniqueSample(
+      kDestroyedStatusHistogram,
+      blink::SharedStorageWorkletDestroyedStatus::kDidNotEnterKeepAlive, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, AddModule_ScriptNotFound) {
@@ -534,6 +581,12 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
                        AddModule_MultipleAddModuleFailure) {
+  // The test assumes pages get deleted after navigation. To ensure this,
+  // disable back/forward cache.
+  content::DisableBackForwardCacheForTesting(
+      shell()->web_contents(),
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
   EXPECT_TRUE(NavigateToURL(shell(),
                             https_server()->GetURL("a.test", kSimplePagePath)));
 
@@ -559,6 +612,14 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
             base::UTF16ToUTF8(console_observer.messages()[0].message));
   EXPECT_EQ("Finish executing simple_module.js",
             base::UTF16ToUTF8(console_observer.messages()[1].message));
+
+  // Navigate again to record histograms.
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
+  WaitForHistograms({kDestroyedStatusHistogram});
+
+  histogram_tester_.ExpectUniqueSample(
+      kDestroyedStatusHistogram,
+      blink::SharedStorageWorkletDestroyedStatus::kDidNotEnterKeepAlive, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, RunOperation_Success) {
@@ -600,6 +661,12 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, RunOperation_Success) {
 
 IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
                        RunOperation_Failure_RunOperationBeforeAddModule) {
+  // The test assumes pages get deleted after navigation. To ensure this,
+  // disable back/forward cache.
+  content::DisableBackForwardCacheForTesting(
+      shell()->web_contents(),
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
   EXPECT_TRUE(NavigateToURL(shell(),
                             https_server()->GetURL("a.test", kSimplePagePath)));
 
@@ -633,6 +700,18 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
             base::UTF16ToUTF8(console_observer.messages()[1].message));
   EXPECT_EQ("Finish executing simple_module.js",
             base::UTF16ToUTF8(console_observer.messages()[2].message));
+
+  // Navigate again to record histograms.
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
+  WaitForHistograms({kDestroyedStatusHistogram, kErrorTypeHistogram});
+
+  histogram_tester_.ExpectUniqueSample(
+      kDestroyedStatusHistogram,
+      blink::SharedStorageWorkletDestroyedStatus::kDidNotEnterKeepAlive, 1);
+
+  histogram_tester_.ExpectUniqueSample(
+      kErrorTypeHistogram,
+      blink::SharedStorageWorkletErrorType::kRunNonWebVisible, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
@@ -726,6 +805,12 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, WorkletDestroyed) {
 
   EXPECT_EQ(0u, test_worklet_host_manager().GetAttachedWorkletHostsCount());
   EXPECT_EQ(0u, test_worklet_host_manager().GetKeepAliveWorkletHostsCount());
+
+  WaitForHistograms({kDestroyedStatusHistogram});
+
+  histogram_tester_.ExpectUniqueSample(
+      kDestroyedStatusHistogram,
+      blink::SharedStorageWorkletDestroyedStatus::kDidNotEnterKeepAlive, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, TwoWorklets) {
@@ -774,6 +859,14 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, TwoWorklets) {
             base::UTF16ToUTF8(console_observer.messages()[1].message));
   EXPECT_EQ("Finish executing simple_module.js",
             base::UTF16ToUTF8(console_observer.messages()[2].message));
+
+  // Navigate again to record histograms.
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
+  WaitForHistograms({kDestroyedStatusHistogram});
+
+  histogram_tester_.ExpectUniqueSample(
+      kDestroyedStatusHistogram,
+      blink::SharedStorageWorkletDestroyedStatus::kDidNotEnterKeepAlive, 2);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -825,6 +918,16 @@ IN_PROC_BROWSER_TEST_F(
   // Expect no console logging, as messages logged during keep-alive are
   // dropped.
   EXPECT_EQ(0u, console_observer.messages().size());
+
+  WaitForHistograms(
+      {kDestroyedStatusHistogram, kTimingKeepAliveDurationHistogram});
+
+  histogram_tester_.ExpectUniqueSample(
+      kDestroyedStatusHistogram,
+      blink::SharedStorageWorkletDestroyedStatus::
+          kKeepAliveEndedDueToOperationsFinished,
+      1);
+  histogram_tester_.ExpectTotalCount(kTimingKeepAliveDurationHistogram, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
@@ -871,6 +974,14 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
 
   EXPECT_EQ(0u, test_worklet_host_manager().GetAttachedWorkletHostsCount());
   EXPECT_EQ(0u, test_worklet_host_manager().GetKeepAliveWorkletHostsCount());
+
+  WaitForHistograms({kDestroyedStatusHistogram});
+
+  histogram_tester_.ExpectUniqueSample(
+      kDestroyedStatusHistogram,
+      blink::SharedStorageWorkletDestroyedStatus::kKeepAliveEndedDueToTimeout,
+      1);
+  histogram_tester_.ExpectTotalCount(kTimingKeepAliveDurationHistogram, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -931,6 +1042,16 @@ IN_PROC_BROWSER_TEST_F(
   // Expect no more console logging, as messages logged during keep-alive was
   // dropped.
   EXPECT_EQ(2u, console_observer.messages().size());
+
+  WaitForHistograms(
+      {kDestroyedStatusHistogram, kTimingKeepAliveDurationHistogram});
+
+  histogram_tester_.ExpectUniqueSample(
+      kDestroyedStatusHistogram,
+      blink::SharedStorageWorkletDestroyedStatus::
+          kKeepAliveEndedDueToOperationsFinished,
+      1);
+  histogram_tester_.ExpectTotalCount(kTimingKeepAliveDurationHistogram, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, KeepAlive_SubframeWorklet) {
@@ -1004,6 +1125,21 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, KeepAlive_SubframeWorklet) {
   EXPECT_EQ(1u, console_observer.messages().size());
   EXPECT_EQ("Executing simple_module2.js",
             base::UTF16ToUTF8(console_observer.messages()[0].message));
+
+  // Navigate again to record histograms.
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
+  WaitForHistograms(
+      {kDestroyedStatusHistogram, kTimingKeepAliveDurationHistogram});
+
+  histogram_tester_.ExpectBucketCount(
+      kDestroyedStatusHistogram,
+      blink::SharedStorageWorkletDestroyedStatus::
+          kKeepAliveEndedDueToOperationsFinished,
+      1);
+  histogram_tester_.ExpectBucketCount(
+      kDestroyedStatusHistogram,
+      blink::SharedStorageWorkletDestroyedStatus::kDidNotEnterKeepAlive, 1);
+  histogram_tester_.ExpectTotalCount(kTimingKeepAliveDurationHistogram, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,

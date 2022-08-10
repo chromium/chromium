@@ -7,6 +7,7 @@
 #include <inttypes.h>
 
 #include <algorithm>
+#include <climits>
 #include <memory>
 #include <string>
 #include <vector>
@@ -418,22 +419,58 @@ SharedStorageDatabase::OperationResult SharedStorageDatabase::Keys(
     if (db_status_ == InitStatus::kUnattempted) {
       keys_listener->DidReadEntries(
           /*success=*/true,
-          /*error_message=*/"", /*entries=*/{}, /*has_more_entries=*/false);
+          /*error_message=*/"", /*entries=*/{}, /*has_more_entries=*/false,
+          /*total_queued_to_send=*/0);
       return OperationResult::kSuccess;
     } else {
       keys_listener->DidReadEntries(
           /*success=*/false, "SQL database had initialization failure.",
-          /*entries=*/{}, /*has_more_entries=*/false);
+          /*entries=*/{}, /*has_more_entries=*/false,
+          /*total_queued_to_send=*/0);
       return OperationResult::kInitFailure;
     }
+  }
+
+  static constexpr char kCountSql[] =
+      "SELECT COUNT(*) FROM values_mapping WHERE context_origin=?";
+
+  sql::Statement count_statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kCountSql));
+  std::string origin_str(SerializeOrigin(context_origin));
+  count_statement.BindString(0, origin_str);
+
+  int64_t key_count = 0;
+  if (count_statement.Step())
+    key_count = count_statement.ColumnInt64(0);
+
+  if (!count_statement.Succeeded()) {
+    keys_listener->DidReadEntries(
+        /*success=*/false, "SQL database could not retrieve key count.",
+        /*entries=*/{}, /*has_more_entries=*/false, /*total_queued_to_send=*/0);
+    return OperationResult::kSqlError;
+  }
+
+  if (key_count > INT_MAX) {
+    keys_listener->DidReadEntries(
+        /*success=*/false, "Unexpectedly found more than INT_MAX keys.",
+        /*entries=*/{}, /*has_more_entries=*/false, /*total_queued_to_send=*/0);
+    return OperationResult::kTooManyFound;
+  }
+
+  if (!key_count) {
+    keys_listener->DidReadEntries(
+        /*success=*/true,
+        /*error_message=*/"", /*entries=*/{}, /*has_more_entries=*/false,
+        /*total_queued_to_send=*/0);
+    return OperationResult::kSuccess;
   }
 
   static constexpr char kSelectSql[] =
       "SELECT key FROM values_mapping WHERE context_origin=? ORDER BY key";
 
-  sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kSelectSql));
-  std::string origin_str(SerializeOrigin(context_origin));
-  statement.BindString(0, origin_str);
+  sql::Statement select_statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kSelectSql));
+  select_statement.BindString(0, origin_str);
 
   bool has_more_entries = true;
   absl::optional<std::u16string> saved_first_key_for_next_batch;
@@ -450,32 +487,34 @@ SharedStorageDatabase::OperationResult SharedStorageDatabase::Keys(
       saved_first_key_for_next_batch.reset();
     }
 
-    while (statement.Step()) {
+    while (select_statement.Step()) {
       if (keys.size() < max_iterator_batch_size_) {
         keys.push_back(
             shared_storage_worklet::mojom::SharedStorageKeyAndOrValue::New(
-                statement.ColumnString16(0), u""));
+                select_statement.ColumnString16(0), u""));
       } else {
         // Cache the current key to use as the start of the next batch, as we're
         // already passing through this step and the next iteration of
         // `statement.Step()`, if there is one, during the next iteration of the
         // outer while loop, will give us the subsequent key.
-        saved_first_key_for_next_batch = statement.ColumnString16(0);
+        saved_first_key_for_next_batch = select_statement.ColumnString16(0);
         has_more_entries = true;
         break;
       }
     }
 
-    if (!statement.Succeeded()) {
+    if (!select_statement.Succeeded()) {
       keys_listener->DidReadEntries(
           /*success=*/false,
           "SQL database encountered an error while retrieving keys.",
-          /*entries=*/{}, /*has_more_entries=*/false);
+          /*entries=*/{}, /*has_more_entries=*/false,
+          static_cast<int>(key_count));
       return OperationResult::kSqlError;
     }
 
     keys_listener->DidReadEntries(/*success=*/true, /*error_message=*/"",
-                                  std::move(keys), has_more_entries);
+                                  std::move(keys), has_more_entries,
+                                  static_cast<int>(key_count));
   }
 
   return OperationResult::kSuccess;
@@ -497,23 +536,59 @@ SharedStorageDatabase::OperationResult SharedStorageDatabase::Entries(
     if (db_status_ == InitStatus::kUnattempted) {
       entries_listener->DidReadEntries(
           /*success=*/true,
-          /*error_message=*/"", /*entries=*/{}, /*has_more_entries=*/false);
+          /*error_message=*/"", /*entries=*/{}, /*has_more_entries=*/false,
+          /*total_queued_to_send=*/0);
       return OperationResult::kSuccess;
     } else {
       entries_listener->DidReadEntries(
           /*success=*/false, "SQL database had initialization failure.",
-          /*entries=*/{}, /*has_more_entries=*/false);
+          /*entries=*/{}, /*has_more_entries=*/false,
+          /*total_queued_to_send=*/0);
       return OperationResult::kInitFailure;
     }
+  }
+
+  static constexpr char kCountSql[] =
+      "SELECT COUNT(*) FROM values_mapping WHERE context_origin=?";
+
+  sql::Statement count_statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kCountSql));
+  std::string origin_str(SerializeOrigin(context_origin));
+  count_statement.BindString(0, origin_str);
+
+  int64_t entry_count = 0;
+  if (count_statement.Step())
+    entry_count = count_statement.ColumnInt64(0);
+
+  if (!count_statement.Succeeded()) {
+    entries_listener->DidReadEntries(
+        /*success=*/false, "SQL database could not retrieve entry count.",
+        /*entries=*/{}, /*has_more_entries=*/false, /*total_queued_to_send=*/0);
+    return OperationResult::kSqlError;
+  }
+
+  if (entry_count > INT_MAX) {
+    entries_listener->DidReadEntries(
+        /*success=*/false, "Unexpectedly found more than INT_MAX entries.",
+        /*entries=*/{}, /*has_more_entries=*/false, /*total_queued_to_send=*/0);
+    return OperationResult::kTooManyFound;
+  }
+
+  if (!entry_count) {
+    entries_listener->DidReadEntries(
+        /*success=*/true,
+        /*error_message=*/"", /*entries=*/{}, /*has_more_entries=*/false,
+        /*total_queued_to_send=*/0);
+    return OperationResult::kSuccess;
   }
 
   static constexpr char kSelectSql[] =
       "SELECT key,value FROM values_mapping WHERE context_origin=? "
       "ORDER BY key";
 
-  sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kSelectSql));
-  std::string origin_str(SerializeOrigin(context_origin));
-  statement.BindString(0, origin_str);
+  sql::Statement select_statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kSelectSql));
+  select_statement.BindString(0, origin_str);
 
   bool has_more_entries = true;
   absl::optional<std::u16string> saved_first_key_for_next_batch;
@@ -534,34 +609,37 @@ SharedStorageDatabase::OperationResult SharedStorageDatabase::Entries(
       saved_first_value_for_next_batch.reset();
     }
 
-    while (statement.Step()) {
+    while (select_statement.Step()) {
       if (entries.size() < max_iterator_batch_size_) {
         entries.push_back(
             shared_storage_worklet::mojom::SharedStorageKeyAndOrValue::New(
-                statement.ColumnString16(0), statement.ColumnString16(1)));
+                select_statement.ColumnString16(0),
+                select_statement.ColumnString16(1)));
       } else {
         // Cache the current key and value to use as the start of the next
         // batch, as we're already passing through this step and the next
         // iteration of `statement.Step()`, if there is one, during the next
         // iteration of the outer while loop, will give us the subsequent
         // key-value pair.
-        saved_first_key_for_next_batch = statement.ColumnString16(0);
-        saved_first_value_for_next_batch = statement.ColumnString16(1);
+        saved_first_key_for_next_batch = select_statement.ColumnString16(0);
+        saved_first_value_for_next_batch = select_statement.ColumnString16(1);
         has_more_entries = true;
         break;
       }
     }
 
-    if (!statement.Succeeded()) {
+    if (!select_statement.Succeeded()) {
       entries_listener->DidReadEntries(
           /*success=*/false,
           "SQL database encountered an error while retrieving entries.",
-          /*entries=*/{}, /*has_more_entries=*/false);
+          /*entries=*/{}, /*has_more_entries=*/false,
+          static_cast<int>(entry_count));
       return OperationResult::kSqlError;
     }
 
     entries_listener->DidReadEntries(/*success=*/true, /*error_message=*/"",
-                                     std::move(entries), has_more_entries);
+                                     std::move(entries), has_more_entries,
+                                     static_cast<int>(entry_count));
   }
 
   return OperationResult::kSuccess;

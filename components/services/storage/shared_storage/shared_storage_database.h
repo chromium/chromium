@@ -108,6 +108,8 @@ class SharedStorageDatabase {
             // `GetCreationTime()`, or the data from `per_origin_mapping` could
             // not be found via `GetOriginInfo()`, because the key or origin
             // doesn't exist in the database.
+    kTooManyFound = 8,  // Result if the number of keys/entries retrieved for
+                        // `Keys()`/`Entries()` exceeds INT_MAX.
   };
 
   // Bundles a retrieved string from the database along with a field indicating

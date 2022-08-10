@@ -87799,6 +87799,36 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   </int>
 </enum>
 
+<enum name="SharedStorageWorkletDestroyedStatus">
+  <int value="0" label="DidNotEnterKeepAlive"/>
+  <int value="1" label="KeepAliveEndedDueToOperationsFinished"/>
+  <int value="2" label="KeepAliveEndedDueToTimeout"/>
+  <int value="3" label="Other">
+    Keep alive entered but reason for termination not given.
+  </int>
+</enum>
+
+<enum name="SharedStorageWorkletErrorType">
+  <int value="0" label="AddModuleWebVisible">
+    Errors in `addModule()` visible to the document.
+  </int>
+  <int value="1" label="AddModuleNonWebVisible">
+    Errors in `addModule()` not visible to the document.
+  </int>
+  <int value="2" label="RunWebVisible">
+    Errors in `run()` visible to the document.
+  </int>
+  <int value="3" label="RunNonWebVisible">
+    Errors in `run()` not visible to the document.
+  </int>
+  <int value="4" label="kSelectURLWebVisible">
+    Errors in `selectURL()` visible to the document.
+  </int>
+  <int value="5" label="kSelectURLNonWebVisible">
+    Errors in `selectURL()` not visible to the document.
+  </int>
+</enum>
+
 <enum name="ShareOptionLocation">
   <int value="0" label="TOOLBAR"/>
   <int value="1" label="MENU">Share option chosen to be shown in the menu.</int>

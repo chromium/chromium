@@ -20,9 +20,14 @@ interface SharedStorageEntriesListener {
   // Called by the SharedStorageWorkletServiceClient remote (i.e. in the browser
   // process) when some entries have been obtained. `has_more_entries` is false
   // when all the entries have been obtained, and indicates that the callback
-  // will not be called again.
+  // will not be called again. `total_queued_to_send` indicates the total
+  // number of entries that the database had prepared to send for this origin
+  // via this iterator (including any already sent on previous calls to
+  // `DidReadEntries()`), even if this call indicates that an error was
+  // encountered in retrieving the keys/entries.
   DidReadEntries(
       bool success, string error_message,
       array<SharedStorageKeyAndOrValue> entries,
-      bool has_more_entries);
+      bool has_more_entries,
+      int32 total_queued_to_send);
 };

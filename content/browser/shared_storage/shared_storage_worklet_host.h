@@ -6,12 +6,14 @@
 #define CONTENT_BROWSER_SHARED_STORAGE_SHARED_STORAGE_WORKLET_HOST_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
 #include "content/common/content_export.h"
 #include "content/common/shared_storage_worklet_service.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage.mojom.h"
 #include "url/origin.h"
 
@@ -145,8 +147,9 @@ class CONTENT_EXPORT SharedStorageWorkletHost
 
   // Run `keep_alive_finished_callback_` to destroy `this`. Called when the last
   // pending operation has finished, or when a timeout is reached after entering
-  // the keep-alive phase.
-  void FinishKeepAlive();
+  // the keep-alive phase. `timeout_reached` indicates whether or not the
+  // keep-alive is being terminated due to the timeout being reached.
+  void FinishKeepAlive(bool timeout_reached);
 
   // Increment `pending_operations_count_`. Called when receiving an
   // `addModule()`, `selectURL()`, or `run()`.
@@ -212,6 +215,14 @@ class CONTENT_EXPORT SharedStorageWorkletHost
 
   // Timer for starting and ending the keep-alive phase.
   base::OneShotTimer keep_alive_timer_;
+
+  base::TimeTicks enter_keep_alive_time_;
+
+  // Tracks whether the worklet has ever been kept-alive (in order to be
+  // recorded in a histogram via the destructor), and if so, what caused the
+  // keep-alive to be terminated.
+  blink::SharedStorageWorkletDestroyedStatus destroyed_status_ =
+      blink::SharedStorageWorkletDestroyedStatus::kDidNotEnterKeepAlive;
 
   // Set when the worklet host enters keep-alive phase.
   KeepAliveFinishedCallback keep_alive_finished_callback_;

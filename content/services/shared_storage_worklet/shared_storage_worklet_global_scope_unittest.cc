@@ -1767,7 +1767,7 @@ TEST_F(SharedStorageObjectMethodTest,
 
   remote_listener->DidReadEntries(
       /*success=*/true, /*error_message=*/{}, CreateBatchResult({}),
-      /*has_more_entries=*/false);
+      /*has_more_entries=*/false, /*total_queued_to_send=*/0);
   task_environment_.RunUntilIdle();
 
   EXPECT_TRUE(finished());
@@ -1795,7 +1795,7 @@ TEST_F(SharedStorageObjectMethodTest,
   remote_listener->DidReadEntries(
       /*success=*/false, /*error_message=*/"Internal error 12345",
       CreateBatchResult({}),
-      /*has_more_entries=*/true);
+      /*has_more_entries=*/true, /*total_queued_to_send=*/0);
   task_environment_.RunUntilIdle();
 
   EXPECT_TRUE(finished());
@@ -1828,7 +1828,7 @@ TEST_F(SharedStorageObjectMethodTest,
   remote_listener->DidReadEntries(
       /*success=*/true, /*error_message=*/{},
       CreateBatchResult({{u"key0", u"value0"}}),
-      /*has_more_entries=*/true);
+      /*has_more_entries=*/true, /*total_queued_to_send=*/3);
   task_environment_.RunUntilIdle();
 
   EXPECT_FALSE(finished());
@@ -1838,7 +1838,7 @@ TEST_F(SharedStorageObjectMethodTest,
   remote_listener->DidReadEntries(
       /*success=*/true, /*error_message=*/{},
       CreateBatchResult({{u"key1", u"value1"}, {u"key2", u"value2"}}),
-      /*has_more_entries=*/false);
+      /*has_more_entries=*/false, /*total_queued_to_send=*/3);
   task_environment_.RunUntilIdle();
 
   EXPECT_TRUE(finished());
@@ -1868,7 +1868,7 @@ TEST_F(SharedStorageObjectMethodTest,
   remote_listener->DidReadEntries(
       /*success=*/true, /*error_message=*/{},
       CreateBatchResult({{u"key0", u"value0"}}),
-      /*has_more_entries=*/true);
+      /*has_more_entries=*/true, /*total_queued_to_send=*/3);
   task_environment_.RunUntilIdle();
 
   EXPECT_FALSE(finished());
@@ -1878,7 +1878,7 @@ TEST_F(SharedStorageObjectMethodTest,
   remote_listener->DidReadEntries(
       /*success=*/false, /*error_message=*/"Internal error 12345",
       CreateBatchResult({}),
-      /*has_more_entries=*/true);
+      /*has_more_entries=*/true, /*total_queued_to_send=*/3);
   task_environment_.RunUntilIdle();
 
   EXPECT_TRUE(finished());
@@ -1912,7 +1912,7 @@ TEST_F(SharedStorageObjectMethodTest,
   remote_listener->DidReadEntries(
       /*success=*/true, /*error_message=*/{},
       CreateBatchResult({{u"key0", u"value0"}, {u"key1", u"value1"}}),
-      /*has_more_entries=*/false);
+      /*has_more_entries=*/false, /*total_queued_to_send=*/2);
   task_environment_.RunUntilIdle();
 
   EXPECT_TRUE(finished());
@@ -1955,7 +1955,7 @@ TEST_F(SharedStorageObjectMethodTest,
   remote_listener->DidReadEntries(
       /*success=*/true, /*error_message=*/{},
       CreateBatchResult({{u"key0", /*value=*/{}}}),
-      /*has_more_entries=*/true);
+      /*has_more_entries=*/true, /*total_queued_to_send=*/6);
   task_environment_.RunUntilIdle();
 
   EXPECT_FALSE(finished());
@@ -1964,7 +1964,7 @@ TEST_F(SharedStorageObjectMethodTest,
   remote_listener->DidReadEntries(
       /*success=*/true, /*error_message=*/{},
       CreateBatchResult({{u"key1", /*value=*/{}}, {u"key2", /*value=*/{}}}),
-      /*has_more_entries=*/true);
+      /*has_more_entries=*/true, /*total_queued_to_send=*/6);
   task_environment_.RunUntilIdle();
 
   EXPECT_FALSE(finished());
@@ -1975,7 +1975,7 @@ TEST_F(SharedStorageObjectMethodTest,
   remote_listener->DidReadEntries(
       /*success=*/true, /*error_message=*/{},
       CreateBatchResult({{u"key3", /*value=*/{}}}),
-      /*has_more_entries=*/false);
+      /*has_more_entries=*/false, /*total_queued_to_send=*/6);
   task_environment_.RunUntilIdle();
 
   EXPECT_TRUE(finished());

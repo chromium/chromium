@@ -4,6 +4,7 @@
 
 #include "content/browser/shared_storage/shared_storage_worklet_host.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "components/services/storage/shared_storage/public/mojom/shared_storage.mojom.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
@@ -87,6 +88,9 @@ SharedStorageWorkletHost::SharedStorageWorkletHost(
       main_frame_origin_(document_service.main_frame_origin()) {}
 
 SharedStorageWorkletHost::~SharedStorageWorkletHost() {
+  base::UmaHistogramEnumeration("Storage.SharedStorage.Worklet.DestroyedStatus",
+                                destroyed_status_);
+
   if (!page_)
     return;
 
@@ -233,7 +237,10 @@ void SharedStorageWorkletHost::EnterKeepAliveOnDocumentDestroyed(
   keep_alive_timer_.Start(
       FROM_HERE, GetKeepAliveTimeout(),
       base::BindOnce(&SharedStorageWorkletHost::FinishKeepAlive,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), /*timeout_reached=*/true));
+
+  enter_keep_alive_time_ = base::TimeTicks::Now();
+  destroyed_status_ = blink::SharedStorageWorkletDestroyedStatus::kOther;
 }
 
 void SharedStorageWorkletHost::SharedStorageSet(
@@ -421,7 +428,7 @@ void SharedStorageWorkletHost::SharedStorageKeys(
         listener(std::move(pending_listener));
     listener->DidReadEntries(
         /*success=*/false, kSharedStorageDisabledMessage,
-        /*entries=*/{}, /*has_more_entries=*/false);
+        /*entries=*/{}, /*has_more_entries=*/false, /*total_queued_to_send=*/0);
     return;
   }
 
@@ -440,7 +447,7 @@ void SharedStorageWorkletHost::SharedStorageEntries(
         listener(std::move(pending_listener));
     listener->DidReadEntries(
         /*success=*/false, kSharedStorageDisabledMessage,
-        /*entries=*/{}, /*has_more_entries=*/false);
+        /*entries=*/{}, /*has_more_entries=*/false, /*total_queued_to_send=*/0);
     return;
   }
 
@@ -507,12 +514,16 @@ void SharedStorageWorkletHost::OnAddModuleOnWorkletFinished(
 void SharedStorageWorkletHost::OnRunOperationOnWorkletFinished(
     bool success,
     const std::string& error_message) {
-  if (!success && document_service_) {
-    DCHECK(!IsInKeepAlivePhase());
-    devtools_instrumentation::LogWorkletMessage(
-        static_cast<RenderFrameHostImpl&>(
-            document_service_->render_frame_host()),
-        blink::mojom::ConsoleMessageLevel::kError, error_message);
+  if (!success) {
+    LogSharedStorageWorkletError(
+        blink::SharedStorageWorkletErrorType::kRunNonWebVisible);
+    if (document_service_) {
+      DCHECK(!IsInKeepAlivePhase());
+      devtools_instrumentation::LogWorkletMessage(
+          static_cast<RenderFrameHostImpl&>(
+              document_service_->render_frame_host()),
+          blink::mojom::ConsoleMessageLevel::kError, error_message);
+    }
   }
 
   DecrementPendingOperationsCount();
@@ -532,6 +543,8 @@ void SharedStorageWorkletHost::
     // it.
     mojo::ReportBadMessage(
         "Unexpected index number returned from selectURL().");
+    LogSharedStorageWorkletError(
+        blink::SharedStorageWorkletErrorType::kSelectURLNonWebVisible);
 
     unresolved_urns_.erase(it);
     DecrementPendingOperationsCount();
@@ -577,12 +590,16 @@ void SharedStorageWorkletHost::OnRunURLSelectionOperationOnWorkletFinished(
                 document_service_->render_frame_host()),
             blink::mojom::ConsoleMessageLevel::kError,
             "Insufficient budget for selectURL().");
+        LogSharedStorageWorkletError(
+            blink::SharedStorageWorkletErrorType::kSelectURLNonWebVisible);
       } else if (!script_execution_succeeded) {
         devtools_instrumentation::LogWorkletMessage(
             static_cast<RenderFrameHostImpl&>(
                 document_service_->render_frame_host()),
             blink::mojom::ConsoleMessageLevel::kError,
             script_execution_error_message);
+        LogSharedStorageWorkletError(
+            blink::SharedStorageWorkletErrorType::kSelectURLNonWebVisible);
       }
     }
 
@@ -597,7 +614,20 @@ bool SharedStorageWorkletHost::IsInKeepAlivePhase() const {
   return !!keep_alive_finished_callback_;
 }
 
-void SharedStorageWorkletHost::FinishKeepAlive() {
+void SharedStorageWorkletHost::FinishKeepAlive(bool timeout_reached) {
+  if (timeout_reached) {
+    destroyed_status_ =
+        blink::SharedStorageWorkletDestroyedStatus::kKeepAliveEndedDueToTimeout;
+  } else {
+    destroyed_status_ = blink::SharedStorageWorkletDestroyedStatus::
+        kKeepAliveEndedDueToOperationsFinished;
+    DCHECK(!enter_keep_alive_time_.is_null());
+    base::UmaHistogramTimes(
+        "Storage.SharedStorage.Worklet.Timing."
+        "KeepAliveEndedDueToOperationsFinished.KeepAliveDuration",
+        base::TimeTicks::Now() - enter_keep_alive_time_);
+  }
+
   // This will remove this worklet host from the manager.
   std::move(keep_alive_finished_callback_).Run(this);
 
@@ -616,7 +646,7 @@ void SharedStorageWorkletHost::DecrementPendingOperationsCount() {
   if (!IsInKeepAlivePhase() || pending_operations_count_)
     return;
 
-  FinishKeepAlive();
+  FinishKeepAlive(/*timeout_reached=*/false);
 }
 
 base::TimeDelta SharedStorageWorkletHost::GetKeepAliveTimeout() const {

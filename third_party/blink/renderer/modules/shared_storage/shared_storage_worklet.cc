@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/shared_storage/shared_storage_worklet.h"
 
+#include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
@@ -30,8 +31,11 @@ ScriptPromise SharedStorageWorklet::addModule(ScriptState* script_state,
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   CHECK(execution_context->IsWindow());
 
-  if (!CheckBrowsingContextIsValid(*script_state, exception_state))
+  if (!CheckBrowsingContextIsValid(*script_state, exception_state)) {
+    LogSharedStorageWorkletError(
+        SharedStorageWorkletErrorType::kAddModuleWebVisible);
     return ScriptPromise();
+  }
 
   KURL script_source_url = execution_context->CompleteURL(module_url);
 
@@ -40,6 +44,8 @@ ScriptPromise SharedStorageWorklet::addModule(ScriptState* script_state,
 
   if (!CheckSharedStoragePermissionsPolicy(*script_state, *execution_context,
                                            *resolver)) {
+    LogSharedStorageWorkletError(
+        SharedStorageWorkletErrorType::kAddModuleWebVisible);
     return promise;
   }
 
@@ -47,6 +53,8 @@ ScriptPromise SharedStorageWorklet::addModule(ScriptState* script_state,
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
         script_state->GetIsolate(), DOMExceptionCode::kDataError,
         "The module script url is invalid."));
+    LogSharedStorageWorkletError(
+        SharedStorageWorkletErrorType::kAddModuleWebVisible);
     return promise;
   }
 
@@ -58,6 +66,8 @@ ScriptPromise SharedStorageWorklet::addModule(ScriptState* script_state,
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
         script_state->GetIsolate(), DOMExceptionCode::kDataError,
         "Only same origin module script is allowed."));
+    LogSharedStorageWorkletError(
+        SharedStorageWorkletErrorType::kAddModuleWebVisible);
     return promise;
   }
 
@@ -76,6 +86,8 @@ ScriptPromise SharedStorageWorklet::addModule(ScriptState* script_state,
                   resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
                       script_state->GetIsolate(),
                       DOMExceptionCode::kOperationError, error_message));
+                  LogSharedStorageWorkletError(
+                      SharedStorageWorkletErrorType::kAddModuleWebVisible);
                   return;
                 }
 

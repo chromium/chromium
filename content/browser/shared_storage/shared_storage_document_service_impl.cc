@@ -62,6 +62,8 @@ void SharedStorageDocumentServiceImpl::AddModuleOnWorklet(
     // This could indicate a compromised renderer, so let's terminate it.
     receiver_.ReportBadMessage(
         "Attempted to load a cross-origin module script.");
+    LogSharedStorageWorkletError(
+        blink::SharedStorageWorkletErrorType::kAddModuleNonWebVisible);
     return;
   }
 
@@ -109,6 +111,8 @@ void SharedStorageDocumentServiceImpl::RunURLSelectionOperationOnWorklet(
     receiver_.ReportBadMessage(
         "Attempted to execute RunURLSelectionOperationOnWorklet within a "
         "fenced frame.");
+    LogSharedStorageWorkletError(
+        blink::SharedStorageWorkletErrorType::kSelectURLNonWebVisible);
     return;
   }
 
@@ -117,6 +121,8 @@ void SharedStorageDocumentServiceImpl::RunURLSelectionOperationOnWorklet(
     receiver_.ReportBadMessage(
         "Attempted to execute RunURLSelectionOperationOnWorklet with invalid "
         "URLs array length.");
+    LogSharedStorageWorkletError(
+        blink::SharedStorageWorkletErrorType::kSelectURLNonWebVisible);
     return;
   }
 
@@ -128,6 +134,8 @@ void SharedStorageDocumentServiceImpl::RunURLSelectionOperationOnWorklet(
       receiver_.ReportBadMessage(
           base::StrCat({"Invalid fenced frame URL '",
                         url_with_metadata->url.possibly_invalid_spec(), "'"}));
+      LogSharedStorageWorkletError(
+          blink::SharedStorageWorkletErrorType::kSelectURLNonWebVisible);
       return;
     }
 
@@ -139,6 +147,8 @@ void SharedStorageDocumentServiceImpl::RunURLSelectionOperationOnWorklet(
             base::StrCat({"Invalid reporting URL '",
                           metadata_pair.second.possibly_invalid_spec(),
                           "' for '", metadata_pair.first, "'"}));
+        LogSharedStorageWorkletError(
+            blink::SharedStorageWorkletErrorType::kSelectURLNonWebVisible);
         return;
       }
     }

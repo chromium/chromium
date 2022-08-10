@@ -396,7 +396,8 @@ void TestSharedStorageEntriesListener::DidReadEntries(
     const std::string& error_message,
     std::vector<shared_storage_worklet::mojom::SharedStorageKeyAndOrValuePtr>
         entries,
-    bool has_more_entries) {
+    bool has_more_entries,
+    int total_queued_to_send) {
   if (!success) {
     error_message_ = error_message;
     return;

@@ -4,6 +4,8 @@
 
 #include "content/services/shared_storage_worklet/shared_storage_iterator.h"
 
+#include "base/metrics/histogram_functions.h"
+#include "base/numerics/checked_math.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/services/shared_storage_worklet/worklet_v8_helper.h"
 #include "gin/arguments.h"
@@ -14,10 +16,14 @@
 
 namespace shared_storage_worklet {
 
+const int kSharedStorageIteratorBenchmarkStep = 10;
+
 SharedStorageIterator::SharedStorageIterator(
     Mode mode,
     mojom::SharedStorageWorkletServiceClient* client)
     : mode_(mode) {
+  base::UmaHistogramExactLinear(
+      "Storage.SharedStorage.AsyncIterator.IteratedEntriesBenchmarks", 0, 101);
   switch (mode_) {
     case Mode::kKey:
       client->SharedStorageKeys(receiver_.BindNewPipeAndPassRemote(
@@ -81,6 +87,18 @@ v8::Local<v8::Promise> SharedStorageIterator::NextHelper(
 
     resolver->Resolve(context, CreateIteratorResult(isolate, next_entry))
         .ToChecked();
+
+    base::CheckedNumeric<int> count = entries_iterated_;
+    entries_iterated_ = (++count).ValueOrDie();
+
+    while (next_benchmark_for_iteration_ <= 100 &&
+           MeetsBenchmark(entries_iterated_, next_benchmark_for_iteration_)) {
+      base::UmaHistogramExactLinear(
+          "Storage.SharedStorage.AsyncIterator.IteratedEntriesBenchmarks",
+          next_benchmark_for_iteration_, 101);
+      next_benchmark_for_iteration_ += kSharedStorageIteratorBenchmarkStep;
+    }
+
     return promise;
   }
 
@@ -102,7 +120,8 @@ void SharedStorageIterator::DidReadEntries(
     bool success,
     const std::string& error_message,
     std::vector<mojom::SharedStorageKeyAndOrValuePtr> entries,
-    bool has_more_entries) {
+    bool has_more_entries,
+    int total_queued_to_send) {
   DCHECK(waiting_for_more_entries_);
   DCHECK(!has_error_);
   DCHECK(!(success && entries.empty() && has_more_entries));
@@ -110,6 +129,25 @@ void SharedStorageIterator::DidReadEntries(
   if (!success) {
     has_error_ = true;
     error_message_ = error_message;
+  }
+
+  if (!total_entries_queued_) {
+    total_entries_queued_ = total_queued_to_send;
+    base::UmaHistogramCounts10000(
+        "Storage.SharedStorage.AsyncIterator.EntriesQueuedCount",
+        total_entries_queued_);
+  }
+
+  base::CheckedNumeric<int> count = entries_received_;
+  count += entries.size();
+  entries_received_ = count.ValueOrDie();
+
+  while (next_benchmark_for_receipt_ <= 100 &&
+         MeetsBenchmark(entries_received_, next_benchmark_for_receipt_)) {
+    base::UmaHistogramExactLinear(
+        "Storage.SharedStorage.AsyncIterator.ReceivedEntriesBenchmarks",
+        next_benchmark_for_receipt_, 101);
+    next_benchmark_for_receipt_ += kSharedStorageIteratorBenchmarkStep;
   }
 
   pending_entries_.insert(pending_entries_.end(),
@@ -168,6 +206,19 @@ v8::Local<v8::Object> SharedStorageIterator::CreateIteratorResultDone(
   gin::Dictionary dict(isolate, obj);
   dict.Set<bool>("done", true);
   return obj;
+}
+
+bool SharedStorageIterator::MeetsBenchmark(int value, int benchmark) {
+  DCHECK_GE(benchmark, 0);
+  DCHECK_LE(benchmark, 100);
+  DCHECK_EQ(benchmark % kSharedStorageIteratorBenchmarkStep, 0);
+  DCHECK_GE(total_entries_queued_, 0);
+
+  if (benchmark == 0 || (total_entries_queued_ == 0 && value == 0))
+    return true;
+
+  DCHECK_GT(total_entries_queued_, 0);
+  return (100 * value) / total_entries_queued_ >= benchmark;
 }
 
 }  // namespace shared_storage_worklet

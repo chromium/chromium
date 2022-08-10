@@ -84,6 +84,7 @@ bool Serialize(ScriptState* script_state,
 
 void OnVoidOperationFinished(ScriptPromiseResolver* resolver,
                              SharedStorage* shared_storage,
+                             blink::SharedStorageVoidOperation caller,
                              bool success,
                              const String& error_message) {
   DCHECK(resolver);
@@ -94,6 +95,10 @@ void OnVoidOperationFinished(ScriptPromiseResolver* resolver,
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
         script_state->GetIsolate(), DOMExceptionCode::kOperationError,
         error_message));
+    if (caller == blink::SharedStorageVoidOperation::kRun) {
+      LogSharedStorageWorkletError(
+          SharedStorageWorkletErrorType::kRunWebVisible);
+    }
     return;
   }
 
@@ -183,7 +188,8 @@ ScriptPromise SharedStorage::set(ScriptState* script_state,
       ->SharedStorageSet(
           key, value, ignore_if_present,
           WTF::Bind(&OnVoidOperationFinished, WrapPersistent(resolver),
-                    WrapPersistent(this)));
+                    WrapPersistent(this),
+                    blink::SharedStorageVoidOperation::kSet));
 
   return promise;
 }
@@ -225,7 +231,8 @@ ScriptPromise SharedStorage::append(ScriptState* script_state,
       ->SharedStorageAppend(
           key, value,
           WTF::Bind(&OnVoidOperationFinished, WrapPersistent(resolver),
-                    WrapPersistent(this)));
+                    WrapPersistent(this),
+                    blink::SharedStorageVoidOperation::kAppend));
 
   return promise;
 }
@@ -258,7 +265,8 @@ ScriptPromise SharedStorage::Delete(ScriptState* script_state,
   GetSharedStorageDocumentService(execution_context)
       ->SharedStorageDelete(
           key, WTF::Bind(&OnVoidOperationFinished, WrapPersistent(resolver),
-                         WrapPersistent(this)));
+                         WrapPersistent(this),
+                         blink::SharedStorageVoidOperation::kDelete));
 
   return promise;
 }
@@ -281,9 +289,9 @@ ScriptPromise SharedStorage::clear(ScriptState* script_state,
   }
 
   GetSharedStorageDocumentService(execution_context)
-      ->SharedStorageClear(WTF::Bind(&OnVoidOperationFinished,
-                                     WrapPersistent(resolver),
-                                     WrapPersistent(this)));
+      ->SharedStorageClear(WTF::Bind(
+          &OnVoidOperationFinished, WrapPersistent(resolver),
+          WrapPersistent(this), blink::SharedStorageVoidOperation::kClear));
 
   return promise;
 }
@@ -307,8 +315,11 @@ ScriptPromise SharedStorage::selectURL(
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   CHECK(execution_context->IsWindow());
 
-  if (!CheckBrowsingContextIsValid(*script_state, exception_state))
+  if (!CheckBrowsingContextIsValid(*script_state, exception_state)) {
+    LogSharedStorageWorkletError(
+        SharedStorageWorkletErrorType::kSelectURLWebVisible);
     return ScriptPromise();
+  }
 
   LocalFrame* frame = To<LocalDOMWindow>(execution_context)->GetFrame();
   DCHECK(frame);
@@ -322,6 +333,8 @@ ScriptPromise SharedStorage::selectURL(
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
         script_state->GetIsolate(), DOMExceptionCode::kInvalidAccessError,
         "sharedStorage.selectURL() is not allowed in fenced frame."));
+    LogSharedStorageWorkletError(
+        SharedStorageWorkletErrorType::kSelectURLWebVisible);
     return promise;
   }
 
@@ -332,6 +345,8 @@ ScriptPromise SharedStorage::selectURL(
   // consider this a higher priority error.
   if (!CheckSharedStoragePermissionsPolicy(*script_state, *execution_context,
                                            *resolver)) {
+    LogSharedStorageWorkletError(
+        SharedStorageWorkletErrorType::kSelectURLWebVisible);
     return promise;
   }
 
@@ -339,6 +354,8 @@ ScriptPromise SharedStorage::selectURL(
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
         script_state->GetIsolate(), DOMExceptionCode::kDataError,
         "Length of the \"urls\" parameter is not valid."));
+    LogSharedStorageWorkletError(
+        SharedStorageWorkletErrorType::kSelectURLWebVisible);
     return promise;
   }
 
@@ -361,6 +378,8 @@ ScriptPromise SharedStorage::selectURL(
       resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
           script_state->GetIsolate(), DOMExceptionCode::kDataError,
           "The url \"" + url_with_metadata->url() + "\" is invalid."));
+      LogSharedStorageWorkletError(
+          SharedStorageWorkletErrorType::kSelectURLWebVisible);
       return promise;
     }
 
@@ -379,6 +398,8 @@ ScriptPromise SharedStorage::selectURL(
         resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
             script_state->GetIsolate(), DOMExceptionCode::kDataError,
             "selectURL could not get reportingMetadata object attributes"));
+        LogSharedStorageWorkletError(
+            SharedStorageWorkletErrorType::kSelectURLWebVisible);
         return promise;
       }
 
@@ -394,6 +415,8 @@ ScriptPromise SharedStorage::selectURL(
               script_state->GetIsolate(), DOMExceptionCode::kDataError,
               "selectURL reportingMetadata object attributes must be "
               "strings"));
+          LogSharedStorageWorkletError(
+              SharedStorageWorkletErrorType::kSelectURLWebVisible);
           return promise;
         }
 
@@ -406,6 +429,8 @@ ScriptPromise SharedStorage::selectURL(
               script_state->GetIsolate(), DOMExceptionCode::kDataError,
               "selectURL reportingMetadata object attributes must be "
               "strings"));
+          LogSharedStorageWorkletError(
+              SharedStorageWorkletErrorType::kSelectURLWebVisible);
           return promise;
         }
 
@@ -419,6 +444,8 @@ ScriptPromise SharedStorage::selectURL(
                   String::NumberToStringECMAScript(index) +
                   " has an invalid or non-HTTPS report_url parameter \"" +
                   report_url_string + "\"."));
+          LogSharedStorageWorkletError(
+              SharedStorageWorkletErrorType::kSelectURLWebVisible);
           return promise;
         }
 
@@ -433,8 +460,11 @@ ScriptPromise SharedStorage::selectURL(
   }
 
   Vector<uint8_t> serialized_data;
-  if (!Serialize(script_state, options, exception_state, serialized_data))
+  if (!Serialize(script_state, options, exception_state, serialized_data)) {
+    LogSharedStorageWorkletError(
+        SharedStorageWorkletErrorType::kSelectURLWebVisible);
     return promise;
+  }
 
   GetSharedStorageDocumentService(execution_context)
       ->RunURLSelectionOperationOnWorklet(
@@ -451,6 +481,8 @@ ScriptPromise SharedStorage::selectURL(
                   resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
                       script_state->GetIsolate(),
                       DOMExceptionCode::kOperationError, error_message));
+                  LogSharedStorageWorkletError(
+                      SharedStorageWorkletErrorType::kSelectURLWebVisible);
                   return;
                 }
 
@@ -476,12 +508,16 @@ ScriptPromise SharedStorage::run(
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   CHECK(execution_context->IsWindow());
 
-  if (!CheckBrowsingContextIsValid(*script_state, exception_state))
+  if (!CheckBrowsingContextIsValid(*script_state, exception_state)) {
+    LogSharedStorageWorkletError(SharedStorageWorkletErrorType::kRunWebVisible);
     return ScriptPromise();
+  }
 
   Vector<uint8_t> serialized_data;
-  if (!Serialize(script_state, options, exception_state, serialized_data))
+  if (!Serialize(script_state, options, exception_state, serialized_data)) {
+    LogSharedStorageWorkletError(SharedStorageWorkletErrorType::kRunWebVisible);
     return ScriptPromise();
+  }
 
   ScriptPromiseResolver* resolver =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
@@ -489,6 +525,7 @@ ScriptPromise SharedStorage::run(
 
   if (!CheckSharedStoragePermissionsPolicy(*script_state, *execution_context,
                                            *resolver)) {
+    LogSharedStorageWorkletError(SharedStorageWorkletErrorType::kRunWebVisible);
     return promise;
   }
 
@@ -496,7 +533,8 @@ ScriptPromise SharedStorage::run(
       ->RunOperationOnWorklet(
           name, std::move(serialized_data),
           WTF::Bind(&OnVoidOperationFinished, WrapPersistent(resolver),
-                    WrapPersistent(this)));
+                    WrapPersistent(this),
+                    blink::SharedStorageVoidOperation::kRun));
 
   return promise;
 }

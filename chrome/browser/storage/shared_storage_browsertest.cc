@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/profiles/profile.h"
@@ -19,6 +20,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
@@ -34,6 +36,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
+#include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 
 namespace storage {
 
@@ -41,6 +44,15 @@ namespace {
 
 constexpr char kSimpleTestHost[] = "a.test";
 constexpr char kSimplePagePath[] = "/simple.html";
+constexpr char kCrossOriginHost[] = "b.test";
+constexpr char kErrorTypeHistogram[] =
+    "Storage.SharedStorage.Worklet.Error.Type";
+constexpr char kEntriesQueuedCountHistogram[] =
+    "Storage.SharedStorage.AsyncIterator.EntriesQueuedCount";
+constexpr char kReceivedEntriesBenchmarksHistogram[] =
+    "Storage.SharedStorage.AsyncIterator.ReceivedEntriesBenchmarks";
+constexpr char kIteratedEntriesBenchmarksHistogram[] =
+    "Storage.SharedStorage.AsyncIterator.IteratedEntriesBenchmarks";
 
 // With `WebContentsConsoleObserver`, we can only wait for the last message in a
 // group.
@@ -61,29 +73,30 @@ std::string GetSharedStorageDisabledErrorMessage() {
                        content::GetSharedStorageDisabledMessage(), "\"\n"});
 }
 
+void WaitForHistogram(const std::string& histogram_name) {
+  // Continue if histogram was already recorded.
+  if (base::StatisticsRecorder::FindHistogram(histogram_name))
+    return;
+
+  // Else, wait until the histogram is recorded.
+  base::RunLoop run_loop;
+  auto histogram_observer =
+      std::make_unique<base::StatisticsRecorder::ScopedHistogramSampleObserver>(
+          histogram_name,
+          base::BindLambdaForTesting(
+              [&](const char* histogram_name, uint64_t name_hash,
+                  base::HistogramBase::Sample sample) { run_loop.Quit(); }));
+  run_loop.Run();
+}
+
+void WaitForHistograms(const std::vector<std::string>& histogram_names) {
+  for (const auto& name : histogram_names)
+    WaitForHistogram(name);
+}
+
 }  // namespace
 
-struct SharedStorageChromeBrowserParams {
-  bool enable_privacy_sandbox;
-  bool allow_third_party_cookies;
-};
-
-// Used by `testing::PrintToStringParamName()`.
-std::string PrintToString(const SharedStorageChromeBrowserParams& p) {
-  return base::StrCat(
-      {"PrivacySandbox", p.enable_privacy_sandbox ? "Enabled" : "Disabled",
-       "_3PCookies", p.allow_third_party_cookies ? "Allowed" : "Blocked"});
-}
-
-std::vector<SharedStorageChromeBrowserParams>
-GetSharedStorageChromeBrowserParams() {
-  return std::vector<SharedStorageChromeBrowserParams>(
-      {{true, true}, {true, false}, {false, true}, {false, false}});
-}
-
-class SharedStorageChromeBrowserTest
-    : public InProcessBrowserTest,
-      public testing::WithParamInterface<SharedStorageChromeBrowserParams> {
+class SharedStorageChromeBrowserTest : public InProcessBrowserTest {
  public:
   SharedStorageChromeBrowserTest() {
     base::test::TaskEnvironment task_environment;
@@ -103,17 +116,12 @@ class SharedStorageChromeBrowserTest
     content::SetupCrossSiteRedirector(https_server());
     CHECK(https_server()->Start());
 
-    SetPrefsAsParametrized();
+    InitPrefs();
   }
 
   ~SharedStorageChromeBrowserTest() override = default;
 
   net::EmbeddedTestServer* https_server() { return &https_server_; }
-
-  bool SuccessExpected() {
-    return GetParam().enable_privacy_sandbox &&
-           GetParam().allow_third_party_cookies;
-  }
 
   void SetPrefs(bool enable_privacy_sandbox, bool allow_third_party_cookies) {
     browser()->profile()->GetPrefs()->SetBoolean(
@@ -129,13 +137,111 @@ class SharedStorageChromeBrowserTest
                 : content_settings::CookieControlsMode::kBlockThirdParty));
   }
 
-  void SetPrefsAsParametrized() {
-    SetPrefs(GetParam().enable_privacy_sandbox,
-             GetParam().allow_third_party_cookies);
+  // Virtual so derived classes can initialize differently. For the base class,
+  // enables Privacy Sandbox and allows 3P cookies.
+  virtual void InitPrefs() {
+    SetPrefs(/*enable_privacy_sandbox=*/true,
+             /*allow_third_party_cookies*/ true);
   }
 
   content::WebContents* GetActiveWebContents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  bool ExecuteScriptInWorklet(
+      const content::ToRenderFrameHost& execution_target,
+      const std::string& script,
+      const std::string& last_script_message) {
+    content::WebContentsConsoleObserver add_module_console_observer(
+        GetActiveWebContents());
+    add_module_console_observer.SetFilter(
+        MakeFilter({"Finish executing customizable_module.js"}));
+
+    base::StringPairs run_function_body_replacement;
+    run_function_body_replacement.push_back(
+        std::make_pair("{{RUN_FUNCTION_BODY}}", script));
+
+    std::string host =
+        execution_target.render_frame_host()->GetLastCommittedOrigin().host();
+
+    GURL module_script_url = https_server()->GetURL(
+        host, net::test_server::GetFilePathWithReplacements(
+                  "/shared_storage/customizable_module.js",
+                  run_function_body_replacement));
+
+    EXPECT_TRUE(content::ExecJs(
+        execution_target,
+        content::JsReplace("sharedStorage.worklet.addModule($1)",
+                           module_script_url)));
+
+    add_module_console_observer.Wait();
+
+    EXPECT_EQ(1u, content::GetAttachedWorkletHostsCountForRenderFrameHost(
+                      execution_target));
+    EXPECT_EQ(0u, content::GetKeepAliveWorkletHostsCountForRenderFrameHost(
+                      execution_target));
+    EXPECT_EQ(1u, add_module_console_observer.messages().size());
+    EXPECT_EQ(
+        "Finish executing customizable_module.js",
+        base::UTF16ToUTF8(add_module_console_observer.messages()[0].message));
+
+    content::WebContentsConsoleObserver script_console_observer(
+        GetActiveWebContents());
+    script_console_observer.SetFilter(MakeFilter(
+        {last_script_message, content::GetSharedStorageDisabledMessage()}));
+
+    content::EvalJsResult result = content::EvalJs(execution_target, R"(
+        sharedStorage.run('test-operation');
+      )");
+
+    script_console_observer.Wait();
+    EXPECT_EQ(1u, script_console_observer.messages().size());
+
+    EXPECT_EQ(last_script_message,
+              base::UTF16ToUTF8(script_console_observer.messages()[0].message));
+
+    return result.error.empty();
+  }
+
+ protected:
+  base::HistogramTester histogram_tester_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
+};
+
+struct SharedStorageChromeBrowserParams {
+  bool enable_privacy_sandbox;
+  bool allow_third_party_cookies;
+};
+
+// Used by `testing::PrintToStringParamName()`.
+std::string PrintToString(const SharedStorageChromeBrowserParams& p) {
+  return base::StrCat(
+      {"PrivacySandbox", p.enable_privacy_sandbox ? "Enabled" : "Disabled",
+       "_3PCookies", p.allow_third_party_cookies ? "Allowed" : "Blocked"});
+}
+
+std::vector<SharedStorageChromeBrowserParams>
+GetSharedStorageChromeBrowserParams() {
+  return std::vector<SharedStorageChromeBrowserParams>(
+      {{true, true}, {true, false}, {false, true}, {false, false}});
+}
+
+class SharedStoragePrefBrowserTest
+    : public SharedStorageChromeBrowserTest,
+      public testing::WithParamInterface<SharedStorageChromeBrowserParams> {
+ public:
+  bool SuccessExpected() {
+    return GetParam().enable_privacy_sandbox &&
+           GetParam().allow_third_party_cookies;
+  }
+
+  // Sets prefs as parametrized.
+  void InitPrefs() override {
+    SetPrefs(GetParam().enable_privacy_sandbox,
+             GetParam().allow_third_party_cookies);
   }
 
   void AddSimpleModuleWithPermissionBypassed(
@@ -163,21 +269,21 @@ class SharedStorageChromeBrowserTest
     content::SetBypassIsSharedStorageAllowed(/*allow=*/false);
   }
 
-  bool ExecuteScriptInWorklet(
+  bool ExecuteScriptInWorkletWithOuterPermissionsBypassed(
       const content::ToRenderFrameHost& execution_target,
       const std::string& script,
       const std::string& last_script_message) {
+    content::WebContentsConsoleObserver add_module_console_observer(
+        GetActiveWebContents());
+    add_module_console_observer.SetFilter(
+        MakeFilter({"Finish executing customizable_module.js"}));
+
     base::StringPairs run_function_body_replacement;
     run_function_body_replacement.push_back(
         std::make_pair("{{RUN_FUNCTION_BODY}}", script));
 
     std::string host =
         execution_target.render_frame_host()->GetLastCommittedOrigin().host();
-
-    content::WebContentsConsoleObserver add_module_console_observer(
-        GetActiveWebContents());
-    add_module_console_observer.SetFilter(
-        MakeFilter({"Finish executing customizable_module.js"}));
 
     GURL module_script_url = https_server()->GetURL(
         host, net::test_server::GetFilePathWithReplacements(
@@ -233,19 +339,15 @@ class SharedStorageChromeBrowserTest
 
     return result.error.empty();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    SharedStorageChromeBrowserTest,
+    SharedStoragePrefBrowserTest,
     testing::ValuesIn(GetSharedStorageChromeBrowserParams()),
     testing::PrintToStringParamName());
 
-IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, AddModule) {
+IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, AddModule) {
   NavigateParams params(
       browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
       ui::PageTransition::PAGE_TRANSITION_LINK);
@@ -263,6 +365,14 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, AddModule) {
     EXPECT_EQ("a JavaScript error: \"Error: sharedStorage is disabled\"\n",
               result.error);
     EXPECT_EQ(0u, console_observer.messages().size());
+
+    content::FetchHistogramsFromChildProcesses();
+    metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+    WaitForHistograms({kErrorTypeHistogram});
+
+    histogram_tester_.ExpectUniqueSample(
+        kErrorTypeHistogram,
+        blink::SharedStorageWorkletErrorType::kAddModuleWebVisible, 1);
     return;
   }
 
@@ -276,7 +386,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, AddModule) {
             base::UTF16ToUTF8(console_observer.messages()[0].message));
 }
 
-IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, RunOperation) {
+IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, RunOperation) {
   NavigateParams params(
       browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
       ui::PageTransition::PAGE_TRANSITION_LINK);
@@ -297,6 +407,14 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, RunOperation) {
   if (!SuccessExpected()) {
     // Shared Storage will be disabled.
     EXPECT_EQ(GetSharedStorageDisabledErrorMessage(), run_op_result.error);
+
+    content::FetchHistogramsFromChildProcesses();
+    metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+    WaitForHistograms({kErrorTypeHistogram});
+
+    histogram_tester_.ExpectUniqueSample(
+        kErrorTypeHistogram,
+        blink::SharedStorageWorkletErrorType::kRunWebVisible, 1);
     return;
   }
 
@@ -310,8 +428,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, RunOperation) {
             base::UTF16ToUTF8(run_op_console_observer.messages()[0].message));
 }
 
-IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
-                       RunURLSelectionOperation) {
+IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, RunURLSelectionOperation) {
   NavigateParams params(
       browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
       ui::PageTransition::PAGE_TRANSITION_LINK);
@@ -337,6 +454,14 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
   if (!SuccessExpected()) {
     // Shared Storage will be disabled.
     EXPECT_EQ(GetSharedStorageDisabledErrorMessage(), run_url_op_result.error);
+
+    content::FetchHistogramsFromChildProcesses();
+    metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+    WaitForHistograms({kErrorTypeHistogram});
+
+    histogram_tester_.ExpectUniqueSample(
+        kErrorTypeHistogram,
+        blink::SharedStorageWorkletErrorType::kSelectURLWebVisible, 1);
     return;
   }
 
@@ -353,7 +478,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
       base::UTF16ToUTF8(run_url_op_console_observer.messages()[0].message));
 }
 
-IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, Set) {
+IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, Set) {
   NavigateParams params(
       browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
       ui::PageTransition::PAGE_TRANSITION_LINK);
@@ -376,7 +501,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, Set) {
   EXPECT_TRUE(set_result.error.empty());
 }
 
-IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, Append) {
+IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, Append) {
   NavigateParams params(
       browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
       ui::PageTransition::PAGE_TRANSITION_LINK);
@@ -400,7 +525,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, Append) {
   EXPECT_TRUE(append_result.error.empty());
 }
 
-IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, Delete) {
+IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, Delete) {
   NavigateParams params(
       browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
       ui::PageTransition::PAGE_TRANSITION_LINK);
@@ -424,7 +549,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, Delete) {
   EXPECT_TRUE(delete_result.error.empty());
 }
 
-IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, Clear) {
+IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, Clear) {
   NavigateParams params(
       browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
       ui::PageTransition::PAGE_TRANSITION_LINK);
@@ -448,71 +573,79 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, Clear) {
   EXPECT_TRUE(clear_result.error.empty());
 }
 
-IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, WorkletSet) {
+IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletSet) {
   NavigateParams params(
       browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
       ui::PageTransition::PAGE_TRANSITION_LINK);
   ui_test_utils::NavigateToURL(&params);
 
   // If `set()` fails due to Shared Storage being disabled, there will be a
-  // console message verified in the helper `ExecuteScriptInWorklet()` rather
-  // than an error message since it is wrapped in a `console.log()` call.
-  EXPECT_TRUE(ExecuteScriptInWorklet(GetActiveWebContents(), R"(
+  // console message verified in the helper
+  // `ExecuteScriptInWorkletWithOuterPermissionsBypassed()` rather than an error
+  // message since it is wrapped in a `console.log()` call.
+  EXPECT_TRUE(ExecuteScriptInWorkletWithOuterPermissionsBypassed(
+      GetActiveWebContents(), R"(
       console.log(await sharedStorage.set('key0', 'value0'));
       console.log('Finished script');
     )",
-                                     "Finished script"));
+      "Finished script"));
 }
 
-IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, WorkletAppend) {
+IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletAppend) {
   NavigateParams params(
       browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
       ui::PageTransition::PAGE_TRANSITION_LINK);
   ui_test_utils::NavigateToURL(&params);
 
   // If `append()` fails due to Shared Storage being disabled, there will be a
-  // console message verified in the helper `ExecuteScriptInWorklet()` rather
-  // than an error message since it is wrapped in a `console.log()` call.
-  EXPECT_TRUE(ExecuteScriptInWorklet(GetActiveWebContents(), R"(
+  // console message verified in the helper
+  // `ExecuteScriptInWorkletWithOuterPermissionsBypassed()` rather than an error
+  // message since it is wrapped in a `console.log()` call.
+  EXPECT_TRUE(ExecuteScriptInWorkletWithOuterPermissionsBypassed(
+      GetActiveWebContents(), R"(
       console.log(await sharedStorage.append('key0', 'value0'));
       console.log('Finished script');
     )",
-                                     "Finished script"));
+      "Finished script"));
 }
 
-IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, WorkletDelete) {
+IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletDelete) {
   NavigateParams params(
       browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
       ui::PageTransition::PAGE_TRANSITION_LINK);
   ui_test_utils::NavigateToURL(&params);
 
   // If `delete()` fails due to Shared Storage being disabled, there will be a
-  // console message verified in the helper `ExecuteScriptInWorklet()` rather
-  // than an error message since it is wrapped in a `console.log()` call.
-  EXPECT_TRUE(ExecuteScriptInWorklet(GetActiveWebContents(), R"(
+  // console message verified in the helper
+  // `ExecuteScriptInWorkletWithOuterPermissionsBypassed()` rather than an error
+  // message since it is wrapped in a `console.log()` call.
+  EXPECT_TRUE(ExecuteScriptInWorkletWithOuterPermissionsBypassed(
+      GetActiveWebContents(), R"(
       console.log(await sharedStorage.delete('key0'));
       console.log('Finished script');
     )",
-                                     "Finished script"));
+      "Finished script"));
 }
 
-IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, WorkletClear) {
+IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletClear) {
   NavigateParams params(
       browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
       ui::PageTransition::PAGE_TRANSITION_LINK);
   ui_test_utils::NavigateToURL(&params);
 
   // If `clear()` fails due to Shared Storage being disabled, there will be a
-  // console message verified in the helper `ExecuteScriptInWorklet()` rather
-  // than an error message since it is wrapped in a `console.log()` call.
-  EXPECT_TRUE(ExecuteScriptInWorklet(GetActiveWebContents(), R"(
+  // console message verified in the helper
+  // `ExecuteScriptInWorkletWithOuterPermissionsBypassed()` rather than an error
+  // message since it is wrapped in a `console.log()` call.
+  EXPECT_TRUE(ExecuteScriptInWorkletWithOuterPermissionsBypassed(
+      GetActiveWebContents(), R"(
       console.log(await sharedStorage.clear());
       console.log('Finished script');
     )",
-                                     "Finished script"));
+      "Finished script"));
 }
 
-IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, WorkletGet) {
+IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletGet) {
   NavigateParams params(
       browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
       ui::PageTransition::PAGE_TRANSITION_LINK);
@@ -533,62 +666,1010 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, WorkletGet) {
     )";
 
   // If `get()` fails due to Shared Storage being disabled, there will be a
-  // console message verified in the helper `ExecuteScriptInWorklet()` rather
-  // than an error message since it is wrapped in a `console.log()` call.
-  EXPECT_TRUE(ExecuteScriptInWorklet(GetActiveWebContents(), script,
-                                     "Finished script"));
+  // console message verified in the helper
+  // `ExecuteScriptInWorkletWithOuterPermissionsBypassed()` rather than an error
+  // message since it is wrapped in a `console.log()` call.
+  EXPECT_TRUE(ExecuteScriptInWorkletWithOuterPermissionsBypassed(
+      GetActiveWebContents(), script, "Finished script"));
 }
 
-IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, WorkletKeys) {
+IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletKeys) {
   NavigateParams params(
       browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
       ui::PageTransition::PAGE_TRANSITION_LINK);
   ui_test_utils::NavigateToURL(&params);
 
   // If `keys()` fails due to Shared Storage being disabled, there will be a
-  // console message verified in the helper `ExecuteScriptInWorklet()` rather
-  // than an error message since it is wrapped in a `console.log()` call.
-  EXPECT_TRUE(ExecuteScriptInWorklet(GetActiveWebContents(), R"(
+  // console message verified in the helper
+  // `ExecuteScriptInWorkletWithOuterPermissionsBypassed()` rather than an error
+  // message since it is wrapped in a `console.log()` call.
+  EXPECT_TRUE(ExecuteScriptInWorkletWithOuterPermissionsBypassed(
+      GetActiveWebContents(), R"(
       for await (const key of sharedStorage.keys()) {
         console.log(key);
       }
       console.log('Finished script');
     )",
-                                     "Finished script"));
+      "Finished script"));
 }
 
-IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, WorkletEntries) {
+IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletEntries) {
   NavigateParams params(
       browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
       ui::PageTransition::PAGE_TRANSITION_LINK);
   ui_test_utils::NavigateToURL(&params);
 
   // If `entries()` fails due to Shared Storage being disabled, there will be a
-  // console message verified in the helper `ExecuteScriptInWorklet()` rather
-  // than an error message since it is wrapped in a `console.log()` call.
-  EXPECT_TRUE(ExecuteScriptInWorklet(GetActiveWebContents(), R"(
+  // console message verified in the helper
+  // `ExecuteScriptInWorkletWithOuterPermissionsBypassed()` rather than an error
+  // message since it is wrapped in a `console.log()` call.
+  EXPECT_TRUE(ExecuteScriptInWorkletWithOuterPermissionsBypassed(
+      GetActiveWebContents(), R"(
       for await (const [key, value] of sharedStorage.entries()) {
         console.log(key + ';' + value);
       }
       console.log('Finished script');
     )",
-                                     "Finished script"));
+      "Finished script"));
 }
 
-IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, WorkletLength) {
+IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletLength) {
   NavigateParams params(
       browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
       ui::PageTransition::PAGE_TRANSITION_LINK);
   ui_test_utils::NavigateToURL(&params);
 
   // If `length()` fails due to Shared Storage being disabled, there will be a
-  // console message verified in the helper `ExecuteScriptInWorklet()` rather
-  // than an error message since it is wrapped in a `console.log()` call.
-  EXPECT_TRUE(ExecuteScriptInWorklet(GetActiveWebContents(), R"(
+  // console message verified in the helper
+  // `ExecuteScriptInWorkletWithOuterPermissionsBypassed()` rather than an error
+  // message since it is wrapped in a `console.log()` call.
+  EXPECT_TRUE(ExecuteScriptInWorkletWithOuterPermissionsBypassed(
+      GetActiveWebContents(), R"(
       console.log(await sharedStorage.length());
       console.log('Finished script');
     )",
+      "Finished script"));
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
+                       WorkletKeysEntries_AllIterated) {
+  NavigateParams params(
+      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
+      ui::PageTransition::PAGE_TRANSITION_LINK);
+  ui_test_utils::NavigateToURL(&params);
+
+  EXPECT_TRUE(ExecuteScriptInWorklet(GetActiveWebContents(), R"(
+      for (let i = 0; i < 150; ++i) {
+        sharedStorage.set('key' + i.toString().padStart(3, '0'),
+                          'value' + i.toString().padStart(3, '0'));
+      }
+      for await (const key of sharedStorage.keys()) {
+        console.log(key);
+      }
+      for await (const [key, value] of sharedStorage.entries()) {
+        console.log(key + ';' + value);
+      }
+      console.log('Finished script');
+    )",
                                      "Finished script"));
+
+  content::FetchHistogramsFromChildProcesses();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  WaitForHistograms({kEntriesQueuedCountHistogram,
+                     kReceivedEntriesBenchmarksHistogram,
+                     kIteratedEntriesBenchmarksHistogram});
+
+  histogram_tester_.ExpectUniqueSample(kEntriesQueuedCountHistogram, 150, 2);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 0,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 10,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 20,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 30,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 40,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 50,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 60,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 70,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 80,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 90,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 100,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 0,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 10,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 20,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 30,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 40,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 50,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 60,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 70,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 80,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 90,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 100,
+                                      2);
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
+                       WorkletKeysEntries_PartiallyIterated) {
+  NavigateParams params(
+      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
+      ui::PageTransition::PAGE_TRANSITION_LINK);
+  ui_test_utils::NavigateToURL(&params);
+
+  EXPECT_TRUE(ExecuteScriptInWorklet(GetActiveWebContents(), R"(
+      for (let i = 0; i < 300; ++i) {
+        sharedStorage.set('key' + i.toString().padStart(3, '0'),
+                          'value' + i.toString().padStart(3, '0'));
+      }
+      var keys = sharedStorage.keys();
+      for (let i = 0; i < 150; ++i) {
+        let key_dict = await keys.next();
+        console.log(key_dict['value']);
+      }
+      var entries = sharedStorage.entries();
+      for (let i = 0; i < 101; ++i) {
+        let entry_dict = await entries.next();
+        console.log(entry_dict['value']);
+      }
+      var keys2 = sharedStorage.keys();
+      for (let i = 0; i < 243; ++i) {
+        let key_dict = await keys2.next();
+        console.log(key_dict['value']);
+      }
+      var entries = sharedStorage.entries();
+      for (let i = 0; i < 299; ++i) {
+        let entry_dict = await entries.next();
+        console.log(entry_dict['value']);
+      }
+      console.log('Finished script');
+    )",
+                                     "Finished script"));
+
+  content::FetchHistogramsFromChildProcesses();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  WaitForHistograms({kEntriesQueuedCountHistogram,
+                     kReceivedEntriesBenchmarksHistogram,
+                     kIteratedEntriesBenchmarksHistogram});
+
+  histogram_tester_.ExpectUniqueSample(kEntriesQueuedCountHistogram, 300, 4);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 0,
+                                      4);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 10,
+                                      4);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 20,
+                                      4);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 30,
+                                      4);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 40,
+                                      4);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 50,
+                                      4);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 60,
+                                      4);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 70,
+                                      4);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 80,
+                                      4);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 90,
+                                      4);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 100,
+                                      4);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 0,
+                                      4);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 10,
+                                      4);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 20,
+                                      4);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 30,
+                                      4);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 40,
+                                      3);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 50,
+                                      3);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 60,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 70,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 80,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 90,
+                                      1);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 100,
+                                      0);
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
+                       WorkletKeysEntries_AllIteratedLessThanTenKeys) {
+  NavigateParams params(
+      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
+      ui::PageTransition::PAGE_TRANSITION_LINK);
+  ui_test_utils::NavigateToURL(&params);
+
+  EXPECT_TRUE(ExecuteScriptInWorklet(GetActiveWebContents(), R"(
+      for (let i = 0; i < 5; ++i) {
+        sharedStorage.set('key' + i.toString().padStart(3, '0'),
+                          'value' + i.toString().padStart(3, '0'));
+      }
+      for await (const key of sharedStorage.keys()) {
+        console.log(key);
+      }
+      for await (const [key, value] of sharedStorage.entries()) {
+        console.log(key + ';' + value);
+      }
+      console.log('Finished script');
+    )",
+                                     "Finished script"));
+
+  content::FetchHistogramsFromChildProcesses();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  WaitForHistograms({kEntriesQueuedCountHistogram,
+                     kReceivedEntriesBenchmarksHistogram,
+                     kIteratedEntriesBenchmarksHistogram});
+
+  histogram_tester_.ExpectUniqueSample(kEntriesQueuedCountHistogram, 5, 2);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 0,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 10,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 20,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 30,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 40,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 50,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 60,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 70,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 80,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 90,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 100,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 0,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 10,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 20,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 30,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 40,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 50,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 60,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 70,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 80,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 90,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 100,
+                                      2);
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
+                       WorkletKeysEntries_PartiallyIteratedLessThanTenKeys) {
+  NavigateParams params(
+      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
+      ui::PageTransition::PAGE_TRANSITION_LINK);
+  ui_test_utils::NavigateToURL(&params);
+
+  EXPECT_TRUE(ExecuteScriptInWorklet(GetActiveWebContents(), R"(
+      for (let i = 0; i < 5; ++i) {
+        sharedStorage.set('key' + i.toString().padStart(3, '0'),
+                          'value' + i.toString().padStart(3, '0'));
+      }
+      var keys = sharedStorage.keys();
+      for (let i = 0; i < 4; ++i) {
+        let key_dict = await keys.next();
+        console.log(key_dict['value']);
+      }
+      var entries = sharedStorage.entries();
+      for (let i = 0; i < 2; ++i) {
+        let entry_dict = await entries.next();
+        console.log(entry_dict['value']);
+      }
+      var keys2 = sharedStorage.keys();
+      for (let i = 0; i < 3; ++i) {
+        let key_dict = await keys2.next();
+        console.log(key_dict['value']);
+      }
+      var entries = sharedStorage.entries();
+      for (let i = 0; i < 1; ++i) {
+        let entry_dict = await entries.next();
+        console.log(entry_dict['value']);
+      }
+      console.log('Finished script');
+    )",
+                                     "Finished script"));
+
+  content::FetchHistogramsFromChildProcesses();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  WaitForHistograms({kEntriesQueuedCountHistogram,
+                     kReceivedEntriesBenchmarksHistogram,
+                     kIteratedEntriesBenchmarksHistogram});
+
+  histogram_tester_.ExpectUniqueSample(kEntriesQueuedCountHistogram, 5, 4);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 0,
+                                      4);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 10,
+                                      4);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 20,
+                                      4);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 30,
+                                      4);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 40,
+                                      4);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 50,
+                                      4);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 60,
+                                      4);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 70,
+                                      4);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 80,
+                                      4);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 90,
+                                      4);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 100,
+                                      4);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 0,
+                                      4);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 10,
+                                      4);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 20,
+                                      4);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 30,
+                                      3);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 40,
+                                      3);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 50,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 60,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 70,
+                                      1);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 80,
+                                      1);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 90,
+                                      0);
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
+                       WorkletKeysEntries_AllIteratedNoKeys) {
+  NavigateParams params(
+      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
+      ui::PageTransition::PAGE_TRANSITION_LINK);
+  ui_test_utils::NavigateToURL(&params);
+
+  EXPECT_TRUE(ExecuteScriptInWorklet(GetActiveWebContents(), R"(
+      sharedStorage.set('key', 'value');
+      sharedStorage.delete('key');
+      for await (const key of sharedStorage.keys()) {
+        console.log(key);
+      }
+      for await (const [key, value] of sharedStorage.entries()) {
+        console.log(key + ';' + value);
+      }
+      console.log('Finished script');
+    )",
+                                     "Finished script"));
+
+  content::FetchHistogramsFromChildProcesses();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  WaitForHistograms({kEntriesQueuedCountHistogram,
+                     kReceivedEntriesBenchmarksHistogram,
+                     kIteratedEntriesBenchmarksHistogram});
+
+  histogram_tester_.ExpectUniqueSample(kEntriesQueuedCountHistogram, 0, 2);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 0,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 10,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 20,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 30,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 40,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 50,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 60,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 70,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 80,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 90,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kReceivedEntriesBenchmarksHistogram, 100,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 0,
+                                      2);
+  histogram_tester_.ExpectBucketCount(kIteratedEntriesBenchmarksHistogram, 10,
+                                      0);
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
+                       AddModule_InvalidScriptUrlError) {
+  NavigateParams params(
+      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
+      ui::PageTransition::PAGE_TRANSITION_LINK);
+  ui_test_utils::NavigateToURL(&params);
+
+  std::string invalid_url = "http://#";
+  content::EvalJsResult result = content::EvalJs(
+      GetActiveWebContents(),
+      content::JsReplace("sharedStorage.worklet.addModule($1)", invalid_url));
+
+  EXPECT_EQ(
+      base::StrCat(
+          {"a JavaScript error: \"Error: The module script url is invalid.\n",
+           "    at __const_std::string&_script__:1:24):\n",
+           "        {sharedStorage.worklet.addModule(\"", invalid_url, "\")\n",
+           "                               ^^^^^\n"}),
+      result.error);
+
+  content::FetchHistogramsFromChildProcesses();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  WaitForHistograms({kErrorTypeHistogram});
+
+  histogram_tester_.ExpectUniqueSample(
+      kErrorTypeHistogram,
+      blink::SharedStorageWorkletErrorType::kAddModuleWebVisible, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
+                       AddModule_CrossOriginScriptError) {
+  NavigateParams params(
+      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
+      ui::PageTransition::PAGE_TRANSITION_LINK);
+  ui_test_utils::NavigateToURL(&params);
+
+  GURL script_url = https_server()->GetURL(kCrossOriginHost,
+                                           "/shared_storage/simple_module.js");
+  content::EvalJsResult result = content::EvalJs(
+      GetActiveWebContents(),
+      content::JsReplace("sharedStorage.worklet.addModule($1)", script_url));
+
+  EXPECT_EQ(
+      base::StrCat({"a JavaScript error: \"Error: Only same origin module ",
+                    "script is allowed.",
+                    "\n    at __const_std::string&_script__:1:24):\n        ",
+                    "{sharedStorage.worklet.addModule(\"",
+                    script_url.spec().substr(0, 38),
+                    "\n                               ^^^^^\n"}),
+      result.error);
+
+  content::FetchHistogramsFromChildProcesses();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  WaitForHistograms({kErrorTypeHistogram});
+
+  histogram_tester_.ExpectUniqueSample(
+      kErrorTypeHistogram,
+      blink::SharedStorageWorkletErrorType::kAddModuleWebVisible, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
+                       AddModule_LoadFailureError) {
+  NavigateParams params(
+      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
+      ui::PageTransition::PAGE_TRANSITION_LINK);
+  ui_test_utils::NavigateToURL(&params);
+
+  GURL script_url = https_server()->GetURL(
+      kSimpleTestHost, "/shared_storage/nonexistent_module.js");
+  content::EvalJsResult result = content::EvalJs(
+      GetActiveWebContents(),
+      content::JsReplace("sharedStorage.worklet.addModule($1)", script_url));
+
+  EXPECT_EQ(
+      base::StrCat({"a JavaScript error: \"Error: Failed to load ",
+                    script_url.spec(), " HTTP status = 404 Not Found.\"\n"}),
+      result.error);
+
+  content::FetchHistogramsFromChildProcesses();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  WaitForHistograms({kErrorTypeHistogram});
+
+  histogram_tester_.ExpectUniqueSample(
+      kErrorTypeHistogram,
+      blink::SharedStorageWorkletErrorType::kAddModuleWebVisible, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
+                       AddModule_UnexpectedRedirectError) {
+  NavigateParams params(
+      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
+      ui::PageTransition::PAGE_TRANSITION_LINK);
+  ui_test_utils::NavigateToURL(&params);
+
+  GURL script_url = https_server()->GetURL(
+      kSimpleTestHost, "/server-redirect?shared_storage/simple_module.js");
+  content::EvalJsResult result = content::EvalJs(
+      GetActiveWebContents(),
+      content::JsReplace("sharedStorage.worklet.addModule($1)", script_url));
+
+  EXPECT_EQ(
+      base::StrCat({"a JavaScript error: \"Error: Unexpected redirect on ",
+                    script_url.spec(), ".\"\n"}),
+      result.error);
+
+  content::FetchHistogramsFromChildProcesses();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  WaitForHistograms({kErrorTypeHistogram});
+
+  histogram_tester_.ExpectUniqueSample(
+      kErrorTypeHistogram,
+      blink::SharedStorageWorkletErrorType::kAddModuleWebVisible, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
+                       AddModule_EmptyResultError) {
+  NavigateParams params(
+      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
+      ui::PageTransition::PAGE_TRANSITION_LINK);
+  ui_test_utils::NavigateToURL(&params);
+
+  GURL script_url = https_server()->GetURL(
+      kSimpleTestHost, "/shared_storage/erroneous_module.js");
+  content::EvalJsResult result = content::EvalJs(
+      GetActiveWebContents(),
+      content::JsReplace("sharedStorage.worklet.addModule($1)", script_url));
+
+  EXPECT_EQ(base::StrCat({"a JavaScript error: \"Error: ", script_url.spec(),
+                          ":6 Uncaught ReferenceError: ",
+                          "undefinedVariable is not defined.\"\n"}),
+            result.error);
+
+  content::FetchHistogramsFromChildProcesses();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  WaitForHistograms({kErrorTypeHistogram});
+
+  histogram_tester_.ExpectUniqueSample(
+      kErrorTypeHistogram,
+      blink::SharedStorageWorkletErrorType::kAddModuleWebVisible, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
+                       AddModule_MultipleAddModuleError) {
+  NavigateParams params(
+      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
+      ui::PageTransition::PAGE_TRANSITION_LINK);
+  ui_test_utils::NavigateToURL(&params);
+
+  GURL script_url = https_server()->GetURL(kSimpleTestHost,
+                                           "/shared_storage/simple_module.js");
+
+  EXPECT_TRUE(content::ExecJs(
+      GetActiveWebContents(),
+      content::JsReplace("sharedStorage.worklet.addModule($1)", script_url)));
+  content::EvalJsResult result = content::EvalJs(
+      GetActiveWebContents(),
+      content::JsReplace("sharedStorage.worklet.addModule($1)", script_url));
+
+  EXPECT_EQ(base::StrCat({"a JavaScript error: \"Error: ",
+                          "sharedStorage.worklet.addModule() can only ",
+                          "be invoked once per browsing context.\"\n"}),
+            result.error);
+
+  content::FetchHistogramsFromChildProcesses();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  WaitForHistograms({kErrorTypeHistogram});
+
+  histogram_tester_.ExpectUniqueSample(
+      kErrorTypeHistogram,
+      blink::SharedStorageWorkletErrorType::kAddModuleWebVisible, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest, Run_NotLoadedError) {
+  NavigateParams params(
+      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
+      ui::PageTransition::PAGE_TRANSITION_LINK);
+  ui_test_utils::NavigateToURL(&params);
+
+  EXPECT_TRUE(content::ExecJs(GetActiveWebContents(),
+                              R"(
+      sharedStorage.run(
+          'test-operation', {data: {}});
+    )"));
+
+  content::FetchHistogramsFromChildProcesses();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  WaitForHistograms({kErrorTypeHistogram});
+
+  histogram_tester_.ExpectUniqueSample(
+      kErrorTypeHistogram,
+      blink::SharedStorageWorkletErrorType::kRunNonWebVisible, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest, Run_NotRegisteredError) {
+  NavigateParams params(
+      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
+      ui::PageTransition::PAGE_TRANSITION_LINK);
+  ui_test_utils::NavigateToURL(&params);
+
+  GURL script_url = https_server()->GetURL(kSimpleTestHost,
+                                           "/shared_storage/simple_module.js");
+  EXPECT_TRUE(content::ExecJs(
+      GetActiveWebContents(),
+      content::JsReplace("sharedStorage.worklet.addModule($1)", script_url)));
+
+  EXPECT_TRUE(content::ExecJs(GetActiveWebContents(),
+                              R"(
+      sharedStorage.run(
+          'test-operation-1', {data: {}});
+    )"));
+
+  content::FetchHistogramsFromChildProcesses();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  WaitForHistograms({kErrorTypeHistogram});
+
+  histogram_tester_.ExpectUniqueSample(
+      kErrorTypeHistogram,
+      blink::SharedStorageWorkletErrorType::kRunNonWebVisible, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest, Run_FunctionError) {
+  NavigateParams params(
+      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
+      ui::PageTransition::PAGE_TRANSITION_LINK);
+  ui_test_utils::NavigateToURL(&params);
+
+  GURL script_url = https_server()->GetURL(
+      kSimpleTestHost, "/shared_storage/erroneous_module2.js");
+  EXPECT_TRUE(content::ExecJs(
+      GetActiveWebContents(),
+      content::JsReplace("sharedStorage.worklet.addModule($1)", script_url)));
+
+  EXPECT_TRUE(content::ExecJs(GetActiveWebContents(),
+                              R"(
+      sharedStorage.run(
+          'test-operation', {data: {}});
+    )"));
+
+  content::FetchHistogramsFromChildProcesses();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  WaitForHistograms({kErrorTypeHistogram});
+
+  histogram_tester_.ExpectUniqueSample(
+      kErrorTypeHistogram,
+      blink::SharedStorageWorkletErrorType::kRunNonWebVisible, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest, Run_NotAPromiseError) {
+  NavigateParams params(
+      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
+      ui::PageTransition::PAGE_TRANSITION_LINK);
+  ui_test_utils::NavigateToURL(&params);
+
+  GURL script_url = https_server()->GetURL(
+      kSimpleTestHost, "/shared_storage/erroneous_module3.js");
+  EXPECT_TRUE(content::ExecJs(
+      GetActiveWebContents(),
+      content::JsReplace("sharedStorage.worklet.addModule($1)", script_url)));
+
+  EXPECT_TRUE(content::ExecJs(GetActiveWebContents(),
+                              R"(
+      sharedStorage.run(
+          'test-operation', {data: {}});
+    )"));
+
+  content::FetchHistogramsFromChildProcesses();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  WaitForHistograms({kErrorTypeHistogram});
+
+  histogram_tester_.ExpectUniqueSample(
+      kErrorTypeHistogram,
+      blink::SharedStorageWorkletErrorType::kRunNonWebVisible, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest, Run_ScriptError) {
+  NavigateParams params(
+      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
+      ui::PageTransition::PAGE_TRANSITION_LINK);
+  ui_test_utils::NavigateToURL(&params);
+
+  GURL script_url = https_server()->GetURL(
+      kSimpleTestHost, "/shared_storage/erroneous_module4.js");
+  EXPECT_TRUE(content::ExecJs(
+      GetActiveWebContents(),
+      content::JsReplace("sharedStorage.worklet.addModule($1)", script_url)));
+
+  EXPECT_TRUE(content::ExecJs(GetActiveWebContents(),
+                              R"(
+      sharedStorage.run(
+          'test-operation', {data: {}});
+    )"));
+
+  content::FetchHistogramsFromChildProcesses();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  WaitForHistograms({kErrorTypeHistogram});
+
+  histogram_tester_.ExpectUniqueSample(
+      kErrorTypeHistogram,
+      blink::SharedStorageWorkletErrorType::kRunNonWebVisible, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
+                       Run_UnexpectedCustomDataError) {
+  NavigateParams params(
+      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
+      ui::PageTransition::PAGE_TRANSITION_LINK);
+  ui_test_utils::NavigateToURL(&params);
+
+  GURL script_url = https_server()->GetURL(
+      kSimpleTestHost, "/shared_storage/erroneous_module5.js");
+  EXPECT_TRUE(content::ExecJs(
+      GetActiveWebContents(),
+      content::JsReplace("sharedStorage.worklet.addModule($1)", script_url)));
+
+  EXPECT_TRUE(content::ExecJs(GetActiveWebContents(),
+                              R"(
+      sharedStorage.run(
+          'test-operation', {data: {'customField': 'customValue123'}});
+    )"));
+
+  content::FetchHistogramsFromChildProcesses();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  WaitForHistograms({kErrorTypeHistogram});
+
+  histogram_tester_.ExpectUniqueSample(
+      kErrorTypeHistogram,
+      blink::SharedStorageWorkletErrorType::kRunNonWebVisible, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
+                       SelectUrl_NotLoadedError) {
+  NavigateParams params(
+      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
+      ui::PageTransition::PAGE_TRANSITION_LINK);
+  ui_test_utils::NavigateToURL(&params);
+
+  content::EvalJsResult result = content::EvalJs(GetActiveWebContents(),
+                                                 R"(
+      sharedStorage.selectURL(
+          'test-url-selection-operation-1',
+          [{url: "fenced_frames/title0.html"}], {data: {}});
+    )");
+
+  EXPECT_EQ(base::StrCat({"a JavaScript error: \"Error: ",
+                          "sharedStorage.worklet.addModule() has to be ",
+                          "called before sharedStorage.selectURL().\"\n"}),
+            result.error);
+
+  content::FetchHistogramsFromChildProcesses();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  WaitForHistograms({kErrorTypeHistogram});
+
+  histogram_tester_.ExpectUniqueSample(
+      kErrorTypeHistogram,
+      blink::SharedStorageWorkletErrorType::kSelectURLWebVisible, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
+                       SelectUrl_NotRegisteredError) {
+  NavigateParams params(
+      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
+      ui::PageTransition::PAGE_TRANSITION_LINK);
+  ui_test_utils::NavigateToURL(&params);
+
+  GURL script_url = https_server()->GetURL(kSimpleTestHost,
+                                           "/shared_storage/simple_module.js");
+  EXPECT_TRUE(content::ExecJs(
+      GetActiveWebContents(),
+      content::JsReplace("sharedStorage.worklet.addModule($1)", script_url)));
+
+  EXPECT_TRUE(content::ExecJs(GetActiveWebContents(),
+                              R"(
+      sharedStorage.selectURL(
+          'test-url-selection-operation-1',
+          [{url: "fenced_frames/title0.html"}], {data: {}});
+    )"));
+
+  content::FetchHistogramsFromChildProcesses();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  WaitForHistograms({kErrorTypeHistogram});
+
+  histogram_tester_.ExpectUniqueSample(
+      kErrorTypeHistogram,
+      blink::SharedStorageWorkletErrorType::kSelectURLNonWebVisible, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
+                       SelectUrl_FunctionError) {
+  NavigateParams params(
+      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
+      ui::PageTransition::PAGE_TRANSITION_LINK);
+  ui_test_utils::NavigateToURL(&params);
+
+  GURL script_url = https_server()->GetURL(
+      kSimpleTestHost, "/shared_storage/erroneous_module2.js");
+  EXPECT_TRUE(content::ExecJs(
+      GetActiveWebContents(),
+      content::JsReplace("sharedStorage.worklet.addModule($1)", script_url)));
+
+  EXPECT_TRUE(content::ExecJs(GetActiveWebContents(),
+                              R"(
+      sharedStorage.selectURL(
+          'test-url-selection-operation',
+          [{url: "fenced_frames/title0.html"}], {data: {}});
+    )"));
+
+  content::FetchHistogramsFromChildProcesses();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  WaitForHistograms({kErrorTypeHistogram});
+
+  histogram_tester_.ExpectUniqueSample(
+      kErrorTypeHistogram,
+      blink::SharedStorageWorkletErrorType::kSelectURLNonWebVisible, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
+                       SelectUrl_NotAPromiseError) {
+  NavigateParams params(
+      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
+      ui::PageTransition::PAGE_TRANSITION_LINK);
+  ui_test_utils::NavigateToURL(&params);
+
+  GURL script_url = https_server()->GetURL(
+      kSimpleTestHost, "/shared_storage/erroneous_module3.js");
+  EXPECT_TRUE(content::ExecJs(
+      GetActiveWebContents(),
+      content::JsReplace("sharedStorage.worklet.addModule($1)", script_url)));
+
+  EXPECT_TRUE(content::ExecJs(GetActiveWebContents(),
+                              R"(
+      sharedStorage.selectURL(
+          'test-url-selection-operation',
+          [{url: "fenced_frames/title0.html"}], {data: {}});
+    )"));
+
+  content::FetchHistogramsFromChildProcesses();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  WaitForHistograms({kErrorTypeHistogram});
+
+  histogram_tester_.ExpectUniqueSample(
+      kErrorTypeHistogram,
+      blink::SharedStorageWorkletErrorType::kSelectURLNonWebVisible, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest, SelectUrl_ScriptError) {
+  NavigateParams params(
+      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
+      ui::PageTransition::PAGE_TRANSITION_LINK);
+  ui_test_utils::NavigateToURL(&params);
+
+  GURL script_url = https_server()->GetURL(
+      kSimpleTestHost, "/shared_storage/erroneous_module4.js");
+  EXPECT_TRUE(content::ExecJs(
+      GetActiveWebContents(),
+      content::JsReplace("sharedStorage.worklet.addModule($1)", script_url)));
+
+  EXPECT_TRUE(content::ExecJs(GetActiveWebContents(),
+                              R"(
+      sharedStorage.selectURL(
+          'test-url-selection-operation',
+          [{url: "fenced_frames/title0.html"}], {data: {}});
+    )"));
+
+  content::FetchHistogramsFromChildProcesses();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  WaitForHistograms({kErrorTypeHistogram});
+
+  histogram_tester_.ExpectUniqueSample(
+      kErrorTypeHistogram,
+      blink::SharedStorageWorkletErrorType::kSelectURLNonWebVisible, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
+                       SelectUrl_UnexpectedCustomDataError) {
+  NavigateParams params(
+      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
+      ui::PageTransition::PAGE_TRANSITION_LINK);
+  ui_test_utils::NavigateToURL(&params);
+
+  GURL script_url = https_server()->GetURL(
+      kSimpleTestHost, "/shared_storage/erroneous_module5.js");
+  EXPECT_TRUE(content::ExecJs(
+      GetActiveWebContents(),
+      content::JsReplace("sharedStorage.worklet.addModule($1)", script_url)));
+
+  EXPECT_TRUE(content::ExecJs(GetActiveWebContents(),
+                              R"(
+      sharedStorage.selectURL(
+          'test-url-selection-operation',
+          [{url: "fenced_frames/title0.html"}],
+          {data: {'customField': 'customValue123'}});
+    )"));
+
+  content::FetchHistogramsFromChildProcesses();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  WaitForHistograms({kErrorTypeHistogram});
+
+  histogram_tester_.ExpectUniqueSample(
+      kErrorTypeHistogram,
+      blink::SharedStorageWorkletErrorType::kSelectURLNonWebVisible, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
+                       SelectUrl_OutOfRangeError) {
+  NavigateParams params(
+      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
+      ui::PageTransition::PAGE_TRANSITION_LINK);
+  ui_test_utils::NavigateToURL(&params);
+
+  GURL script_url = https_server()->GetURL(
+      kSimpleTestHost, "/shared_storage/erroneous_module6.js");
+  EXPECT_TRUE(content::ExecJs(
+      GetActiveWebContents(),
+      content::JsReplace("sharedStorage.worklet.addModule($1)", script_url)));
+
+  EXPECT_TRUE(content::ExecJs(GetActiveWebContents(),
+                              R"(
+      sharedStorage.selectURL(
+          'test-url-selection-operation-1',
+          [{url: "fenced_frames/title0.html"}], {data: {}});
+    )"));
+
+  content::FetchHistogramsFromChildProcesses();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  WaitForHistograms({kErrorTypeHistogram});
+
+  histogram_tester_.ExpectUniqueSample(
+      kErrorTypeHistogram,
+      blink::SharedStorageWorkletErrorType::kSelectURLNonWebVisible, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
+                       SelectUrl_ReturnValueToIntError) {
+  NavigateParams params(
+      browser(), https_server()->GetURL(kSimpleTestHost, kSimplePagePath),
+      ui::PageTransition::PAGE_TRANSITION_LINK);
+  ui_test_utils::NavigateToURL(&params);
+
+  GURL script_url = https_server()->GetURL(
+      kSimpleTestHost, "/shared_storage/erroneous_module6.js");
+  EXPECT_TRUE(content::ExecJs(
+      GetActiveWebContents(),
+      content::JsReplace("sharedStorage.worklet.addModule($1)", script_url)));
+
+  EXPECT_TRUE(content::ExecJs(GetActiveWebContents(),
+                              R"(
+      sharedStorage.selectURL(
+          'test-url-selection-operation-2',
+          [{url: "fenced_frames/title0.html"}], {data: {}});
+    )"));
+
+  content::FetchHistogramsFromChildProcesses();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  WaitForHistograms({kErrorTypeHistogram});
+
+  histogram_tester_.ExpectUniqueSample(
+      kErrorTypeHistogram,
+      blink::SharedStorageWorkletErrorType::kSelectURLNonWebVisible, 1);
 }
 
 }  // namespace storage
