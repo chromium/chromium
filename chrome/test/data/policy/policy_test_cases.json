@@ -19169,5 +19169,41 @@
         }
       }
     ]
+  },
+  "PersistentQuotaEnabled": {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "policy.persistent_quota_enabled": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": { "PersistentQuotaEnabled": false },
+        "prefs": {
+          "policy.persistent_quota_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": { "PersistentQuotaEnabled": true },
+        "prefs": {
+          "policy.persistent_quota_enabled": {
+            "value": true
+          }
+        }
+      }
+    ]
   }
 }

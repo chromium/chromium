@@ -14,7 +14,6 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/containers/span.h"
-#include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/location.h"
 #include "base/sequence_checker.h"
@@ -64,8 +63,7 @@ base::span<const FileSystemType> QuotaStorageTypeToFileSystemTypes(
     blink::mojom::StorageType storage_type) {
   using StorageType = blink::mojom::StorageType;
 
-  if (base::FeatureList::IsEnabled(
-          blink::features::kPersistentQuotaIsTemporaryQuota)) {
+  if (blink::features::IsPersistentQuotaIsTemporaryQuota()) {
     DCHECK_NE(storage_type, StorageType::kPersistent);
     if (storage_type == StorageType::kTemporary)
       return kTemporaryAndPersistent;

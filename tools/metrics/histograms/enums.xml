@@ -32147,6 +32147,7 @@ Called by update_document_policy_enum.py.-->
   <int value="999" label="KerberosDomainAutocomplete"/>
   <int value="1000" label="KerberosDefaultConfiguration"/>
   <int value="1001" label="UnmanagedDeviceSignalsConsentFlowEnabled"/>
+  <int value="1002" label="PersistentQuotaEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

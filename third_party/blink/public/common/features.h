@@ -534,6 +534,7 @@ BLINK_COMMON_EXPORT extern const base::Feature kCORSErrorsIssueOnly;
 // Makes Persistent quota the same as Temporary quota.
 BLINK_COMMON_EXPORT
 extern const base::Feature kPersistentQuotaIsTemporaryQuota;
+BLINK_COMMON_EXPORT bool IsPersistentQuotaIsTemporaryQuota();
 
 // If enabled, the ResourceLoadScheculer will take the current network state
 // into consideration, when it plans to delay a low-priority throttleable

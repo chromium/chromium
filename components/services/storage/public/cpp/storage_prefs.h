@@ -13,6 +13,8 @@ extern const char kWebSQLAccess[];
 
 extern const char kWebSQLNonSecureContextEnabled[];
 
+extern const char kPersistentQuotaEnabled[];
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 }  // namespace storage

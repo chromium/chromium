@@ -32555,7 +32555,38 @@ Regardless of the value, the user will be able to decide whether or not to keep 
 
 This policy has no effect if the option to keep existing browsing data is not available; this happens if enterprise profile separation is strictly enforced, or if the data would be from an already managed profile.
 ''',
-    }
+    },
+    {
+      'name': 'PersistentQuotaEnabled',
+      'owners': ['ayui@chromium.org', 'chrome-owp-storage@google.com'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['chrome.*:106-107', 'chrome_os:106-107', 'android:106-107'],
+      'future_on': ['fuchsia'],
+      'features': {
+        'dynamic_refresh' : False,
+        'per_profile' : True,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable persistent quota.',
+        },
+        {
+          'value': False,
+          'caption': 'Disable persistent quota.',
+        }
+      ],
+      'example_value': False,
+      'default': False,
+      'id': 1002,
+      'caption': '''Force persistent quota to be enabled''',
+      'tags': [],
+      'desc': '''Starting M106 persistent quota will no longer be supported. This policy will re-enable persistent quota functionality until M107.
+      If this policy is set to enabled, webkitRequestFileSystem with persistent type will operate with persistent quota.
+      If this policy is unset or disabled, webkitRequestFileSystem with persistent type will operate with temporary quota.
+      ''',
+    },
   ],
   'messages': {
     # Messages that are not associated to any policies.
@@ -33561,6 +33592,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 438, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 1001,
+  'highest_id_currently_used': 1002,
   'highest_atomic_group_id_currently_used': 43
 }

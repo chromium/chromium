@@ -4,7 +4,6 @@
 
 #include "storage/browser/file_system/file_system_util.h"
 
-#include "base/feature_list.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
@@ -13,8 +12,7 @@ namespace storage {
 
 blink::mojom::StorageType FileSystemTypeToQuotaStorageType(
     FileSystemType type) {
-  if (base::FeatureList::IsEnabled(
-          blink::features::kPersistentQuotaIsTemporaryQuota) &&
+  if (blink::features::IsPersistentQuotaIsTemporaryQuota() &&
       (type == kFileSystemTypeTemporary || type == kFileSystemTypePersistent)) {
     return blink::mojom::StorageType::kTemporary;
   }

@@ -1149,6 +1149,13 @@ const base::Feature kCORSErrorsIssueOnly{"CORSErrorsIssueOnly",
 const base::Feature kPersistentQuotaIsTemporaryQuota{
     "PersistentQuotaIsTemporaryQuota", base::FEATURE_DISABLED_BY_DEFAULT};
 
+bool IsPersistentQuotaIsTemporaryQuota() {
+  return !base::CommandLine::ForCurrentProcess()->HasSwitch(
+             switches::kPersistentQuotaEnabled) &&
+         base::FeatureList::IsEnabled(
+             features::kPersistentQuotaIsTemporaryQuota);
+}
+
 const base::Feature kDelayLowPriorityRequestsAccordingToNetworkState{
     "DelayLowPriorityRequestsAccordingToNetworkState",
     base::FEATURE_DISABLED_BY_DEFAULT};

@@ -177,5 +177,8 @@ extern const char kEventPathPolicy[] = "event-path-policy";
 extern const char kEventPathPolicy_ForceDisable[] = "0";
 extern const char kEventPathPolicy_ForceEnable[] = "1";
 
+// Controls whether persistent quota is force enabled.
+const char kPersistentQuotaEnabled[] = "persistent-quota-enabled";
+
 }  // namespace switches
 }  // namespace blink

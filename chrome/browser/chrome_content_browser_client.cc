@@ -2414,6 +2414,11 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
             blink::switches::kWebSQLNonSecureContextEnabled);
       }
 
+      // Enable persistent quota if enabled by enterprise policy.
+      if (prefs->GetBoolean(storage::kPersistentQuotaEnabled)) {
+        command_line->AppendSwitch(blink::switches::kPersistentQuotaEnabled);
+      }
+
 #if !BUILDFLAG(IS_ANDROID)
       InstantService* instant_service =
           InstantServiceFactory::GetForProfile(profile);
