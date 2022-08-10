@@ -27,6 +27,8 @@ extern const base::Feature kAccountIdMigration;
 extern const base::Feature kAllowSyncOffForChildAccounts;
 #endif
 
+extern const base::Feature kNewSigninRequestHeaderCheckOrder;
+
 extern const char kClearTokenService[];
 
 extern const char kDisableSigninScopedDeviceId[];

@@ -20,6 +20,12 @@ const base::Feature kAllowSyncOffForChildAccounts{
     "AllowSyncOffForChildAccounts", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
+// If enabled, performs the URL-based check first when proving that the
+// X-Chrome-Connected header is not needed in request headers on HTTP
+// redirects. The hypothesis is that this order of checks is faster to perform.
+const base::Feature kNewSigninRequestHeaderCheckOrder{
+    "NewSigninRequestHeaderCheckOrder", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Clears the token service before using it. This allows simulating the
 // expiration of credentials during testing.
 const char kClearTokenService[] = "clear-token-service";
