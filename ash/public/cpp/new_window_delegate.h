@@ -31,6 +31,7 @@ class ASH_PUBLIC_EXPORT NewWindowDelegate {
     kFeedbackSourceAsh,
     kFeedbackSourceAssistant,
     kFeedbackSourceQuickAnswers,
+    kFeedbackSourceChannelIndicator,
   };
 
   virtual ~NewWindowDelegate();

@@ -62,7 +62,9 @@ enum HelpSource {
 //
 // WARNING: The below enum MUST never be renamed, modified or reordered, as
 // they're written to logs. You can only insert a new element immediately
-// before the last.
+// before the last. Also, 'FeedbackSource' in
+// 'tools/metrics/histograms/enums.xml' MUST be kept in sync with the enum
+// below.
 enum FeedbackSource {
   kFeedbackSourceArcApp = 0,
   kFeedbackSourceAsh,
@@ -89,6 +91,7 @@ enum FeedbackSource {
   kFeedbackSourceProjectorApp,
   kFeedbackSourceDesksTemplates,
   kFeedbackSourceFilesApp,
+  kFeedbackSourceChannelIndicator,
 
   // Must be last.
   kFeedbackSourceCount,

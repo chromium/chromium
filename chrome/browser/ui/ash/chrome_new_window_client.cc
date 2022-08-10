@@ -124,6 +124,9 @@ chrome::FeedbackSource MapToChromeSource(
       return chrome::FeedbackSource::kFeedbackSourceAssistant;
     case ash::NewWindowDelegate::FeedbackSource::kFeedbackSourceQuickAnswers:
       return chrome::FeedbackSource::kFeedbackSourceQuickAnswers;
+    case ash::NewWindowDelegate::FeedbackSource::
+        kFeedbackSourceChannelIndicator:
+      return chrome::FeedbackSource::kFeedbackSourceChannelIndicator;
   }
 }
 

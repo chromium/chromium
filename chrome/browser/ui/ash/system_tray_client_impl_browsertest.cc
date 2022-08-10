@@ -34,6 +34,7 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/pref_names.h"
@@ -540,4 +541,43 @@ IN_PROC_BROWSER_TEST_F(SystemTrayClientShowCalendarTest, UnofficialEventUrl) {
       event_url, date, opened_pwa, final_url);
   EXPECT_TRUE(opened_pwa);
   EXPECT_EQ(final_url.spec(), GURL(kOfficialCalendarEventUrl).spec());
+}
+
+class SystemTrayClientShowChannelInfoGiveFeedbackTest
+    : public ash::LoginManagerTest {
+ public:
+  SystemTrayClientShowChannelInfoGiveFeedbackTest() {
+    login_mixin_.AppendRegularUsers(1);
+    account_id_ = login_mixin_.users()[0].account_id;
+  }
+
+  SystemTrayClientShowChannelInfoGiveFeedbackTest(
+      const SystemTrayClientShowCalendarTest&) = delete;
+  SystemTrayClientShowChannelInfoGiveFeedbackTest& operator=(
+      const SystemTrayClientShowChannelInfoGiveFeedbackTest&) = delete;
+
+  ~SystemTrayClientShowChannelInfoGiveFeedbackTest() override = default;
+
+ protected:
+  AccountId account_id_;
+  ash::LoginManagerMixin login_mixin_{&mixin_host_};
+};
+
+IN_PROC_BROWSER_TEST_F(SystemTrayClientShowChannelInfoGiveFeedbackTest,
+                       RecordFeedbackSourceChannelIndicator) {
+  base::HistogramTester histograms;
+  auto tray_test_api = ash::SystemTrayTestApi::Create();
+
+  LoginUser(account_id_);
+
+  histograms.ExpectBucketCount("Feedback.RequestSource",
+                               chrome::kFeedbackSourceChannelIndicator,
+                               /*expected_count=*/0);
+  ash::Shell::Get()
+      ->system_tray_model()
+      ->client()
+      ->ShowChannelInfoGiveFeedback();
+  histograms.ExpectBucketCount("Feedback.RequestSource",
+                               chrome::kFeedbackSourceChannelIndicator,
+                               /*expected_count=*/1);
 }

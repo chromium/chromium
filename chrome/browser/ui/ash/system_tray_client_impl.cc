@@ -773,12 +773,15 @@ void SystemTrayClientImpl::ShowCalendarEvent(
 }
 
 void SystemTrayClientImpl::ShowChannelInfoAdditionalDetails() {
+  base::RecordAction(
+      base::UserMetricsAction("Tray_ShowChannelInfoAdditionalDetails"));
   ShowSettingsSubPageForActiveUser(
       std::string(chromeos::settings::mojom::kDetailedBuildInfoSubpagePath));
 }
 
 void SystemTrayClientImpl::ShowChannelInfoGiveFeedback() {
-  ash::NewWindowDelegate::GetInstance()->OpenFeedbackPage();
+  ash::NewWindowDelegate::GetInstance()->OpenFeedbackPage(
+      ash::NewWindowDelegate::kFeedbackSourceChannelIndicator);
 }
 
 bool SystemTrayClientImpl::IsUserFeedbackEnabled() {

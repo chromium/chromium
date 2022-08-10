@@ -32796,6 +32796,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Tray_ShowChannelInfoAdditionalDetails">
+  <owner>rtinkoff@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <description>
+    Records when the user presses the OS version button from the quick settings
+    channel indicator UI. This is ChromeOS-specific.
+  </description>
+</action>
+
 <action name="Tray_ShowPowerOptions">
   <owner>michaelpg@chromium.org</owner>
   <description>
