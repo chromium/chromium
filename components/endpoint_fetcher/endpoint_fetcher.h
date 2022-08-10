@@ -15,6 +15,7 @@
 #include "components/signin/public/identity_manager/scope_set.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/data_decoder/public/cpp/json_sanitizer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 struct ResourceRequest;
@@ -29,9 +30,16 @@ class IdentityManager;
 class GoogleServiceAuthError;
 class GURL;
 
+enum class FetchErrorType {
+  kAuthError = 0,
+  kNetError = 1,
+  kResultParseError = 2,
+};
+
 struct EndpointResponse {
   std::string response;
-  // TODO(crbug.com/993393) Add more detailed error messaging
+  int http_status_code{-1};
+  absl::optional<FetchErrorType> error_type;
 };
 
 using EndpointFetcherCallback =
@@ -133,7 +141,8 @@ class EndpointFetcher {
                           signin::AccessTokenInfo access_token_info);
   void OnResponseFetched(EndpointFetcherCallback callback,
                          std::unique_ptr<std::string> response_body);
-  void OnSanitizationResult(EndpointFetcherCallback endpoint_fetcher_callback,
+  void OnSanitizationResult(std::unique_ptr<EndpointResponse> response,
+                            EndpointFetcherCallback endpoint_fetcher_callback,
                             data_decoder::JsonSanitizer::Result result);
 
   enum AuthType { CHROME_API_KEY, OAUTH, NO_AUTH };

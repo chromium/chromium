@@ -117,9 +117,11 @@ class EndpointFetcherTest : public testing::Test {
 TEST_F(EndpointFetcherTest, FetchResponse) {
   SignIn();
   SetMockResponse(GURL(kEndpoint), kExpectedResponse, net::HTTP_OK, net::OK);
-  EXPECT_CALL(
-      endpoint_fetcher_callback(),
-      Run(Pointee(Field(&EndpointResponse::response, kExpectedResponse))));
+  EXPECT_CALL(endpoint_fetcher_callback(),
+              Run(Pointee(AllOf(
+                  Field(&EndpointResponse::response, kExpectedResponse),
+                  Field(&EndpointResponse::http_status_code, net::HTTP_OK),
+                  Field(&EndpointResponse::error_type, absl::nullopt)))));
   endpoint_fetcher()->Fetch(endpoint_fetcher_callback().Get());
   base::RunLoop().RunUntilIdle();
 }
@@ -127,10 +129,13 @@ TEST_F(EndpointFetcherTest, FetchResponse) {
 TEST_F(EndpointFetcherTest, FetchMalformedResponse) {
   SignIn();
   SetMockResponse(GURL(kEndpoint), kMalformedResponse, net::HTTP_OK, net::OK);
-  EXPECT_CALL(
-      endpoint_fetcher_callback(),
-      Run(Pointee(Field(&EndpointResponse::response,
-                        testing::StartsWith(kExpectedSanitizationError)))));
+  EXPECT_CALL(endpoint_fetcher_callback(),
+              Run(Pointee(AllOf(
+                  Field(&EndpointResponse::response,
+                        testing::StartsWith(kExpectedSanitizationError)),
+                  Field(&EndpointResponse::http_status_code, net::HTTP_OK),
+                  Field(&EndpointResponse::error_type,
+                        FetchErrorType::kResultParseError)))));
   endpoint_fetcher()->Fetch(endpoint_fetcher_callback().Get());
   base::RunLoop().RunUntilIdle();
 }
@@ -141,7 +146,22 @@ TEST_F(EndpointFetcherTest, FetchEndpointResponseError) {
                   net::ERR_FAILED);
   EXPECT_CALL(
       endpoint_fetcher_callback(),
-      Run(Pointee(Field(&EndpointResponse::response, kExpectedResponseError))));
+      Run(Pointee(AllOf(
+          Field(&EndpointResponse::response, kExpectedResponseError),
+          Field(&EndpointResponse::http_status_code, -1),
+          Field(&EndpointResponse::error_type, FetchErrorType::kNetError)))));
+  endpoint_fetcher()->Fetch(endpoint_fetcher_callback().Get());
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(EndpointFetcherTest, FetchRedirectionResponse) {
+  SignIn();
+  SetMockResponse(GURL(kEndpoint), kExpectedResponse, net::HTTP_FOUND, net::OK);
+  EXPECT_CALL(endpoint_fetcher_callback(),
+              Run(Pointee(AllOf(
+                  Field(&EndpointResponse::response, kExpectedResponse),
+                  Field(&EndpointResponse::http_status_code, net::HTTP_FOUND),
+                  Field(&EndpointResponse::error_type, absl::nullopt)))));
   endpoint_fetcher()->Fetch(endpoint_fetcher_callback().Get());
   base::RunLoop().RunUntilIdle();
 }
@@ -151,7 +171,10 @@ TEST_F(EndpointFetcherTest, FetchOAuthError) {
   identity_test_env().SetAutomaticIssueOfAccessTokens(false);
   EXPECT_CALL(
       endpoint_fetcher_callback(),
-      Run(Pointee(Field(&EndpointResponse::response, kExpectedAuthError))));
+      Run(Pointee(AllOf(
+          Field(&EndpointResponse::response, kExpectedAuthError),
+          Field(&EndpointResponse::http_status_code, -1),
+          Field(&EndpointResponse::error_type, FetchErrorType::kAuthError)))));
   endpoint_fetcher()->Fetch(endpoint_fetcher_callback().Get());
   identity_test_env().WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
       GoogleServiceAuthError(GoogleServiceAuthError::SERVICE_UNAVAILABLE));
@@ -159,9 +182,12 @@ TEST_F(EndpointFetcherTest, FetchOAuthError) {
 }
 
 TEST_F(EndpointFetcherTest, FetchOAuthNoPrimaryAccount) {
-  EXPECT_CALL(endpoint_fetcher_callback(),
-              Run(Pointee(Field(&EndpointResponse::response,
-                                kExpectedPrimaryAccountError))));
+  EXPECT_CALL(
+      endpoint_fetcher_callback(),
+      Run(Pointee(AllOf(
+          Field(&EndpointResponse::response, kExpectedPrimaryAccountError),
+          Field(&EndpointResponse::http_status_code, -1),
+          Field(&EndpointResponse::error_type, FetchErrorType::kAuthError)))));
   endpoint_fetcher()->Fetch(endpoint_fetcher_callback().Get());
   base::RunLoop().RunUntilIdle();
 }

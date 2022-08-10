@@ -11,9 +11,11 @@
 #include "components/version_info/channel.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/google_api_keys.h"
+#include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace {
 const char kContentTypeKey[] = "Content-Type";
@@ -152,6 +154,8 @@ void EndpointFetcher::Fetch(EndpointFetcherCallback endpoint_fetcher_callback) {
     auto response = std::make_unique<EndpointResponse>();
     VLOG(1) << __func__ << " No primary accounts found";
     response->response = "No primary accounts found";
+    response->error_type =
+        absl::make_optional<FetchErrorType>(FetchErrorType::kAuthError);
     // TODO(crbug.com/993393) Add more detailed error messaging
     std::move(endpoint_fetcher_callback).Run(std::move(response));
     return;
@@ -177,6 +181,8 @@ void EndpointFetcher::OnAuthTokenFetched(
   if (error.state() != GoogleServiceAuthError::NONE) {
     auto response = std::make_unique<EndpointResponse>();
     response->response = "There was an authentication error";
+    response->error_type =
+        absl::make_optional<FetchErrorType>(FetchErrorType::kAuthError);
     // TODO(crbug.com/993393) Add more detailed error messaging
     std::move(endpoint_fetcher_callback).Run(std::move(response));
     return;
@@ -246,26 +252,37 @@ void EndpointFetcher::PerformRequest(
 void EndpointFetcher::OnResponseFetched(
     EndpointFetcherCallback endpoint_fetcher_callback,
     std::unique_ptr<std::string> response_body) {
+  int http_status_code = -1;
+  if (simple_url_loader_->ResponseInfo() &&
+      simple_url_loader_->ResponseInfo()->headers) {
+    http_status_code =
+        simple_url_loader_->ResponseInfo()->headers->response_code();
+  }
   int net_error_code = simple_url_loader_->NetError();
   // The EndpointFetcher and its members will be destroyed after
   // any of the below callbacks. Do not access The EndpointFetcher
   // or its members after the callbacks.
   simple_url_loader_.reset();
+
+  auto response = std::make_unique<EndpointResponse>();
+  response->http_status_code = http_status_code;
+  if (net_error_code != net::OK) {
+    response->error_type =
+        absl::make_optional<FetchErrorType>(FetchErrorType::kNetError);
+  }
+
   if (response_body) {
     if (sanitize_response_) {
       data_decoder::JsonSanitizer::Sanitize(
           std::move(*response_body),
           base::BindOnce(&EndpointFetcher::OnSanitizationResult,
-                         weak_ptr_factory_.GetWeakPtr(),
+                         weak_ptr_factory_.GetWeakPtr(), std::move(response),
                          std::move(endpoint_fetcher_callback)));
     } else {
-      auto response = std::make_unique<EndpointResponse>();
       response->response = *response_body;
       std::move(endpoint_fetcher_callback).Run(std::move(response));
     }
   } else {
-    auto response = std::make_unique<EndpointResponse>();
-    // TODO(crbug.com/993393) Add more detailed error messaging
     std::string net_error = net::ErrorToString(net_error_code);
     VLOG(1) << __func__ << " with response error: " << net_error;
     response->response = "There was a response error";
@@ -274,16 +291,21 @@ void EndpointFetcher::OnResponseFetched(
 }
 
 void EndpointFetcher::OnSanitizationResult(
+    std::unique_ptr<EndpointResponse> response,
     EndpointFetcherCallback endpoint_fetcher_callback,
     data_decoder::JsonSanitizer::Result result) {
-  auto response = std::make_unique<EndpointResponse>();
-  if (result.value.has_value())
+  if (result.value.has_value()) {
     response->response = result.value.value();
-  else if (result.error.has_value())
+  } else if (result.error.has_value()) {
+    response->error_type =
+        absl::make_optional<FetchErrorType>(FetchErrorType::kResultParseError);
     response->response =
         "There was a sanitization error: " + result.error.value();
-  else
+  } else {
+    response->error_type =
+        absl::make_optional<FetchErrorType>(FetchErrorType::kResultParseError);
     response->response = "There was an unknown sanitization error";
+  }
   // The EndpointFetcher and its members will be destroyed after
   // any the below callback. Do not access The EndpointFetcher
   // or its members after the callback.

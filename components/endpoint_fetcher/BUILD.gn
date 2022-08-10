@@ -15,7 +15,7 @@ source_set("endpoint_fetcher") {
     "//components/signin/public/identity_manager",
     "//components/version_info:channel",
     "//google_apis",
-    "//net/traffic_annotation",
+    "//net",
     "//services/data_decoder/public/cpp",
     "//services/network/public/cpp",
   ]
