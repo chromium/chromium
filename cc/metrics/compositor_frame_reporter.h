@@ -243,6 +243,17 @@ class CC_EXPORT CompositorFrameReporter {
     base::TimeTicks swap_start_;
   };
 
+  // Wrapper for all level of breakdown stages' prediction
+  struct CC_EXPORT CompositorLatencyInfo {
+    CompositorLatencyInfo();
+    explicit CompositorLatencyInfo(base::TimeDelta init_value);
+    ~CompositorLatencyInfo();
+
+    std::vector<base::TimeDelta> top_level_stages;
+    // TODO(crbug.com/1334823): add viz and blink breakdown
+    base::TimeDelta total_latency;
+  };
+
   CompositorFrameReporter(const ActiveTrackers& active_trackers,
                           const viz::BeginFrameArgs& args,
                           bool should_report_histograms,
@@ -344,12 +355,8 @@ class CC_EXPORT CompositorFrameReporter {
         is_accompanied_by_main_thread_update;
   }
 
-  void set_is_forked(bool is_forked) {
-    is_forked_ = is_forked;
-  }
-  void set_is_backfill(bool is_backfill) {
-    is_backfill_ = is_backfill;
-  }
+  void set_is_forked(bool is_forked) { is_forked_ = is_forked; }
+  void set_is_backfill(bool is_backfill) { is_backfill_ = is_backfill; }
 
   const viz::BeginFrameId& frame_id() const { return args_.frame_id; }
 
@@ -370,8 +377,9 @@ class CC_EXPORT CompositorFrameReporter {
   // This function is called to calculate breakdown stage duration's prediction
   // based on the `previous_predictions` and update the `previous_predictions`
   // to the new prediction calculated.
-  void CalculateStageLatencyPrediction(
-      std::vector<base::TimeDelta>& previous_predictions);
+  void CalculateCompositorLatencyPrediction(
+      CompositorLatencyInfo& previous_predictions,
+      base::TimeDelta prediction_deviation_threshold);
 
   // Sets EventLatency stage duration predictions based on previous trace
   // durations using exponentially weighted averages.
@@ -382,8 +390,15 @@ class CC_EXPORT CompositorFrameReporter {
   ReporterType get_reporter_type() { return reporter_type_; }
 
   void set_reporter_type_to_impl() { reporter_type_ = ReporterType::kImpl; }
-
   void set_reporter_type_to_main() { reporter_type_ = ReporterType::kMain; }
+
+  const std::vector<std::string>& high_latency_substages_for_testing_() {
+    return high_latency_substages_;
+  }
+
+  void ClearHighLatencySubstagesForTesting() {
+    high_latency_substages_.clear();
+  }
 
  protected:
   void set_has_partial_update(bool has_partial_update) {
@@ -436,6 +451,10 @@ class CC_EXPORT CompositorFrameReporter {
   // Erase and return only the EventMetrics objects which depend on main thread
   // updates (see comments on EventMetrics::requires_main_thread_update_).
   EventMetrics::List TakeMainBlockedEventsMetrics();
+
+  void FindHighLatencyAttribution(
+      CompositorLatencyInfo& previous_predictions,
+      CompositorLatencyInfo& current_stage_durations);
 
   // Whether UMA histograms should be reported or not.
   const bool should_report_histograms_;
@@ -525,6 +544,8 @@ class CC_EXPORT CompositorFrameReporter {
       owned_partial_update_dependents_;
 
   const GlobalMetricsTrackers global_trackers_;
+
+  std::vector<std::string> high_latency_substages_;
 
   ReporterType reporter_type_;
 

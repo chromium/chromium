@@ -202,8 +202,9 @@ class CompositorFrameReporterTest : public testing::Test {
   TotalFrameCounter total_frame_counter_;
   std::unique_ptr<CompositorFrameReporter> pipeline_reporter_;
 
+  // Number of breakdown stages of the current PipelineReporter
   const int kNumOfStages =
-      static_cast<int>(CompositorFrameReporter::StageType::kStageTypeCount);
+      static_cast<int>(CompositorFrameReporter::StageType::kStageTypeCount) - 1;
   const int kNumDispatchStages =
       static_cast<int>(EventMetrics::DispatchStage::kMaxValue);
   const base::TimeDelta kLatencyPredictionDeviationThreshold =
@@ -813,34 +814,54 @@ TEST_F(CompositorFrameReporterTest, StageLatencyGeneralPrediction) {
   pipeline_reporter_->TerminateFrame(
       CompositorFrameReporter::FrameTerminationStatus::kPresentedFrame, Now());
 
-  int kNumOfStages =
-      static_cast<int>(CompositorFrameReporter::StageType::kStageTypeCount);
-
   // predictions when this is the very first prediction
-  std::vector<base::TimeDelta> expected_latency_predictions1(
-      kNumOfStages - 1, base::Microseconds(3));
-  expected_latency_predictions1.push_back(base::Microseconds(21));
+  CompositorFrameReporter::CompositorLatencyInfo expected_latency_predictions1;
+  expected_latency_predictions1.top_level_stages =
+      std::vector<base::TimeDelta>(kNumOfStages, base::Microseconds(3));
+  expected_latency_predictions1.total_latency = base::Microseconds(21);
 
   // predictions when there exists a previous prediction
-  std::vector<base::TimeDelta> expected_latency_predictions2 = {
+  CompositorFrameReporter::CompositorLatencyInfo expected_latency_predictions2;
+  expected_latency_predictions2.top_level_stages = {
       base::Microseconds(1), base::Microseconds(0), base::Microseconds(3),
       base::Microseconds(0), base::Microseconds(2), base::Microseconds(3),
-      base::Microseconds(0), base::Microseconds(12)};
+      base::Microseconds(0)};
+  expected_latency_predictions2.total_latency = base::Microseconds(12);
 
-  std::vector<base::TimeDelta> actual_latency_predictions1(
-      kNumOfStages, base::Microseconds(-1));
-  pipeline_reporter_->CalculateStageLatencyPrediction(
-      actual_latency_predictions1);
+  // expected attribution for all 3 cases above
+  std::vector<std::string> expected_latency_attributions = {};
 
-  std::vector<base::TimeDelta> actual_latency_predictions2 = {
+  CompositorFrameReporter::CompositorLatencyInfo actual_latency_predictions1(
+      base::Microseconds(-1));
+  pipeline_reporter_->CalculateCompositorLatencyPrediction(
+      actual_latency_predictions1, kLatencyPredictionDeviationThreshold);
+  std::vector<std::string> actual_latency_attributions1 =
+      pipeline_reporter_->high_latency_substages_for_testing_();
+  pipeline_reporter_->ClearHighLatencySubstagesForTesting();
+
+  CompositorFrameReporter::CompositorLatencyInfo actual_latency_predictions2;
+  actual_latency_predictions2.top_level_stages = {
       base::Microseconds(1), base::Microseconds(0), base::Microseconds(4),
       base::Microseconds(0), base::Microseconds(2), base::Microseconds(3),
-      base::Microseconds(0), base::Microseconds(10)};
-  pipeline_reporter_->CalculateStageLatencyPrediction(
-      actual_latency_predictions2);
+      base::Microseconds(0)};
+  actual_latency_predictions2.total_latency = base::Microseconds(10);
+  pipeline_reporter_->CalculateCompositorLatencyPrediction(
+      actual_latency_predictions2, kLatencyPredictionDeviationThreshold);
+  std::vector<std::string> actual_latency_attributions2 =
+      pipeline_reporter_->high_latency_substages_for_testing_();
+  pipeline_reporter_->ClearHighLatencySubstagesForTesting();
 
-  EXPECT_EQ(expected_latency_predictions1, actual_latency_predictions1);
-  EXPECT_EQ(expected_latency_predictions2, actual_latency_predictions2);
+  EXPECT_EQ(expected_latency_predictions1.top_level_stages,
+            actual_latency_predictions1.top_level_stages);
+  EXPECT_EQ(expected_latency_predictions1.total_latency,
+            actual_latency_predictions1.total_latency);
+  EXPECT_EQ(expected_latency_predictions2.top_level_stages,
+            actual_latency_predictions2.top_level_stages);
+  EXPECT_EQ(expected_latency_predictions2.total_latency,
+            actual_latency_predictions2.total_latency);
+
+  EXPECT_EQ(expected_latency_attributions, actual_latency_attributions1);
+  EXPECT_EQ(expected_latency_attributions, actual_latency_attributions2);
 
   pipeline_reporter_ = nullptr;
 }
@@ -879,35 +900,55 @@ TEST_F(CompositorFrameReporterTest, StageLatencyAllZeroPrediction) {
 
   AdvanceNowByUs(0);
   pipeline_reporter_->TerminateFrame(
-      CompositorFrameReporter::FrameTerminationStatus::kPresentedFrame, Now());
-
-  int kNumOfStages =
-      static_cast<int>(CompositorFrameReporter::StageType::kStageTypeCount);
+      CompositorFrameReporter::FrameTerminationStatus::kDidNotProduceFrame,
+      Now());
 
   // predictions when this is the very first prediction
-  std::vector<base::TimeDelta> expected_latency_predictions1(
-      kNumOfStages, base::Microseconds(-1));
+  CompositorFrameReporter::CompositorLatencyInfo expected_latency_predictions1(
+      base::Microseconds(-1));
 
   // predictions when there exists a previous prediction
-  std::vector<base::TimeDelta> expected_latency_predictions2 = {
+  CompositorFrameReporter::CompositorLatencyInfo expected_latency_predictions2;
+  expected_latency_predictions2.top_level_stages = {
       base::Microseconds(1), base::Microseconds(0), base::Microseconds(4),
       base::Microseconds(0), base::Microseconds(2), base::Microseconds(3),
-      base::Microseconds(0), base::Microseconds(10)};
+      base::Microseconds(0)};
+  expected_latency_predictions2.total_latency = base::Microseconds(10);
 
-  std::vector<base::TimeDelta> actual_latency_predictions1(
-      kNumOfStages, base::Microseconds(-1));
-  pipeline_reporter_->CalculateStageLatencyPrediction(
-      actual_latency_predictions1);
+  // expected attribution for all 3 cases above
+  std::vector<std::string> expected_latency_attributions = {};
 
-  std::vector<base::TimeDelta> actual_latency_predictions2 = {
+  CompositorFrameReporter::CompositorLatencyInfo actual_latency_predictions1(
+      base::Microseconds(-1));
+  pipeline_reporter_->CalculateCompositorLatencyPrediction(
+      actual_latency_predictions1, kLatencyPredictionDeviationThreshold);
+  std::vector<std::string> actual_latency_attributions1 =
+      pipeline_reporter_->high_latency_substages_for_testing_();
+  pipeline_reporter_->ClearHighLatencySubstagesForTesting();
+
+  CompositorFrameReporter::CompositorLatencyInfo actual_latency_predictions2;
+  actual_latency_predictions2.top_level_stages = {
       base::Microseconds(1), base::Microseconds(0), base::Microseconds(4),
       base::Microseconds(0), base::Microseconds(2), base::Microseconds(3),
-      base::Microseconds(0), base::Microseconds(10)};
-  pipeline_reporter_->CalculateStageLatencyPrediction(
-      actual_latency_predictions2);
+      base::Microseconds(0)};
+  actual_latency_predictions2.total_latency = base::Microseconds(10);
+  pipeline_reporter_->CalculateCompositorLatencyPrediction(
+      actual_latency_predictions2, kLatencyPredictionDeviationThreshold);
+  std::vector<std::string> actual_latency_attributions2 =
+      pipeline_reporter_->high_latency_substages_for_testing_();
+  pipeline_reporter_->ClearHighLatencySubstagesForTesting();
 
-  EXPECT_EQ(expected_latency_predictions1, actual_latency_predictions1);
-  EXPECT_EQ(expected_latency_predictions2, actual_latency_predictions2);
+  EXPECT_EQ(expected_latency_predictions1.top_level_stages,
+            actual_latency_predictions1.top_level_stages);
+  EXPECT_EQ(expected_latency_predictions1.total_latency,
+            actual_latency_predictions1.total_latency);
+  EXPECT_EQ(expected_latency_predictions2.top_level_stages,
+            actual_latency_predictions2.top_level_stages);
+  EXPECT_EQ(expected_latency_predictions2.total_latency,
+            actual_latency_predictions2.total_latency);
+
+  EXPECT_EQ(expected_latency_attributions, actual_latency_attributions1);
+  EXPECT_EQ(expected_latency_attributions, actual_latency_attributions2);
 
   pipeline_reporter_ = nullptr;
 }
@@ -929,7 +970,7 @@ TEST_F(CompositorFrameReporterTest, StageLatencyLargeDurationPrediction) {
   pipeline_reporter_->StartStage(
       CompositorFrameReporter::StageType::kEndCommitToActivation, Now());
 
-  AdvanceNowByUs(1000000);
+  AdvanceNowByUs(10000000);
   pipeline_reporter_->StartStage(
       CompositorFrameReporter::StageType::kActivation, Now());
 
@@ -948,37 +989,272 @@ TEST_F(CompositorFrameReporterTest, StageLatencyLargeDurationPrediction) {
   pipeline_reporter_->TerminateFrame(
       CompositorFrameReporter::FrameTerminationStatus::kPresentedFrame, Now());
 
-  int kNumOfStages =
-      static_cast<int>(CompositorFrameReporter::StageType::kStageTypeCount);
-
   // predictions when this is the very first prediction
-  std::vector<base::TimeDelta> expected_latency_predictions1 = {
+  CompositorFrameReporter::CompositorLatencyInfo expected_latency_predictions1;
+  expected_latency_predictions1.top_level_stages = {
       base::Microseconds(10000000), base::Microseconds(5000000),
-      base::Microseconds(6000000),  base::Microseconds(1000000),
+      base::Microseconds(6000000),  base::Microseconds(10000000),
       base::Microseconds(0),        base::Microseconds(2000000),
-      base::Microseconds(10000000), base::Microseconds(34000000)};
+      base::Microseconds(10000000)};
+  expected_latency_predictions1.total_latency = base::Microseconds(43000000);
 
   // predictions when there exists a previous prediction
-  std::vector<base::TimeDelta> expected_latency_predictions2 = {
+  CompositorFrameReporter::CompositorLatencyInfo expected_latency_predictions2;
+  expected_latency_predictions2.top_level_stages = {
       base::Microseconds(2500000), base::Microseconds(1250000),
-      base::Microseconds(1500003), base::Microseconds(250000),
+      base::Microseconds(1500003), base::Microseconds(2500000),
       base::Microseconds(1),       base::Microseconds(500002),
-      base::Microseconds(2500000), base::Microseconds(8500007)};
+      base::Microseconds(2500000)};
+  expected_latency_predictions2.total_latency = base::Microseconds(10750007);
 
-  std::vector<base::TimeDelta> actual_latency_predictions1(
-      kNumOfStages, base::Microseconds(-1));
-  pipeline_reporter_->CalculateStageLatencyPrediction(
-      actual_latency_predictions1);
+  // expected attribution for cases 1 above
+  std::vector<std::string> expected_latency_attributions1 = {};
 
-  std::vector<base::TimeDelta> actual_latency_predictions2 = {
+  // expected attribution for case 2 above
+  std::vector<std::string> expected_latency_attributions2 = {
+      "EndCommitToActivation",
+      "SubmitCompositorFrameToPresentationCompositorFrame"};
+
+  CompositorFrameReporter::CompositorLatencyInfo actual_latency_predictions1(
+      base::Microseconds(-1));
+  pipeline_reporter_->CalculateCompositorLatencyPrediction(
+      actual_latency_predictions1, kLatencyPredictionDeviationThreshold);
+  std::vector<std::string> actual_latency_attributions1 =
+      pipeline_reporter_->high_latency_substages_for_testing_();
+  pipeline_reporter_->ClearHighLatencySubstagesForTesting();
+
+  CompositorFrameReporter::CompositorLatencyInfo actual_latency_predictions2;
+  actual_latency_predictions2.top_level_stages = {
       base::Microseconds(1), base::Microseconds(0), base::Microseconds(4),
       base::Microseconds(0), base::Microseconds(2), base::Microseconds(3),
-      base::Microseconds(0), base::Microseconds(10)};
-  pipeline_reporter_->CalculateStageLatencyPrediction(
-      actual_latency_predictions2);
+      base::Microseconds(0)};
+  actual_latency_predictions2.total_latency = base::Microseconds(10);
+  pipeline_reporter_->CalculateCompositorLatencyPrediction(
+      actual_latency_predictions2, kLatencyPredictionDeviationThreshold);
+  std::vector<std::string> actual_latency_attributions2 =
+      pipeline_reporter_->high_latency_substages_for_testing_();
+  pipeline_reporter_->ClearHighLatencySubstagesForTesting();
 
-  EXPECT_EQ(expected_latency_predictions1, actual_latency_predictions1);
-  EXPECT_EQ(expected_latency_predictions2, actual_latency_predictions2);
+  EXPECT_EQ(expected_latency_predictions1.top_level_stages,
+            actual_latency_predictions1.top_level_stages);
+  EXPECT_EQ(expected_latency_predictions1.total_latency,
+            actual_latency_predictions1.total_latency);
+  EXPECT_EQ(expected_latency_predictions2.top_level_stages,
+            actual_latency_predictions2.top_level_stages);
+  EXPECT_EQ(expected_latency_predictions2.total_latency,
+            actual_latency_predictions2.total_latency);
+
+  EXPECT_EQ(expected_latency_attributions1, actual_latency_attributions1);
+  EXPECT_EQ(expected_latency_attributions2, actual_latency_attributions2);
+
+  pipeline_reporter_ = nullptr;
+}
+
+TEST_F(CompositorFrameReporterTest, StageLatencyMultiplePrediction) {
+  CompositorFrameReporter::CompositorLatencyInfo actual_latency_predictions(
+      base::Microseconds(-1));
+  CompositorFrameReporter::CompositorLatencyInfo expected_latency_predictions;
+
+  // First compositor reporter (general)
+  pipeline_reporter_->StartStage(
+      CompositorFrameReporter::StageType::kBeginImplFrameToSendBeginMainFrame,
+      Now());
+
+  AdvanceNowByUs(16000);
+  pipeline_reporter_->StartStage(
+      CompositorFrameReporter::StageType::kEndActivateToSubmitCompositorFrame,
+      Now());
+
+  AdvanceNowByUs(1500);
+  pipeline_reporter_->StartStage(
+      CompositorFrameReporter::StageType::
+          kSubmitCompositorFrameToPresentationCompositorFrame,
+      Now());
+
+  AdvanceNowByUs(833000);
+  pipeline_reporter_->TerminateFrame(
+      CompositorFrameReporter::FrameTerminationStatus::kPresentedFrame, Now());
+
+  expected_latency_predictions.top_level_stages = {
+      base::Microseconds(16000), base::Microseconds(0),
+      base::Microseconds(0),     base::Microseconds(0),
+      base::Microseconds(0),     base::Microseconds(1500),
+      base::Microseconds(833000)};
+  expected_latency_predictions.total_latency = base::Microseconds(850500);
+
+  pipeline_reporter_->CalculateCompositorLatencyPrediction(
+      actual_latency_predictions, kLatencyPredictionDeviationThreshold);
+
+  EXPECT_EQ(expected_latency_predictions.top_level_stages,
+            actual_latency_predictions.top_level_stages);
+  EXPECT_EQ(expected_latency_predictions.total_latency,
+            actual_latency_predictions.total_latency);
+
+  // Second compositor reporter (without subtmit stage)
+  pipeline_reporter_ = CreatePipelineReporter();
+  pipeline_reporter_->StartStage(
+      CompositorFrameReporter::StageType::kBeginImplFrameToSendBeginMainFrame,
+      Now());
+
+  AdvanceNowByUs(16000);
+  pipeline_reporter_->TerminateFrame(
+      CompositorFrameReporter::FrameTerminationStatus::kDidNotProduceFrame,
+      Now());
+
+  expected_latency_predictions.top_level_stages = {
+      base::Microseconds(16000), base::Microseconds(0),
+      base::Microseconds(0),     base::Microseconds(0),
+      base::Microseconds(0),     base::Microseconds(1500),
+      base::Microseconds(833000)};
+  expected_latency_predictions.total_latency = base::Microseconds(850500);
+
+  pipeline_reporter_->CalculateCompositorLatencyPrediction(
+      actual_latency_predictions, kLatencyPredictionDeviationThreshold);
+
+  EXPECT_EQ(expected_latency_predictions.top_level_stages,
+            actual_latency_predictions.top_level_stages);
+  EXPECT_EQ(expected_latency_predictions.total_latency,
+            actual_latency_predictions.total_latency);
+
+  // Third compositor reporter (prediction and actual latency does not differ
+  // by 8)
+  pipeline_reporter_ = CreatePipelineReporter();
+  pipeline_reporter_->StartStage(
+      CompositorFrameReporter::StageType::kBeginImplFrameToSendBeginMainFrame,
+      Now());
+
+  AdvanceNowByUs(16500);
+  pipeline_reporter_->StartStage(
+      CompositorFrameReporter::StageType::kEndActivateToSubmitCompositorFrame,
+      Now());
+
+  AdvanceNowByUs(2000);
+  pipeline_reporter_->StartStage(
+      CompositorFrameReporter::StageType::
+          kSubmitCompositorFrameToPresentationCompositorFrame,
+      Now());
+
+  AdvanceNowByUs(833000);
+  pipeline_reporter_->TerminateFrame(
+      CompositorFrameReporter::FrameTerminationStatus::kPresentedFrame, Now());
+
+  expected_latency_predictions.top_level_stages = {
+      base::Microseconds(16125), base::Microseconds(0),
+      base::Microseconds(0),     base::Microseconds(0),
+      base::Microseconds(0),     base::Microseconds(1625),
+      base::Microseconds(833000)};
+  expected_latency_predictions.total_latency = base::Microseconds(850750);
+
+  pipeline_reporter_->CalculateCompositorLatencyPrediction(
+      actual_latency_predictions, kLatencyPredictionDeviationThreshold);
+
+  EXPECT_EQ(expected_latency_predictions.top_level_stages,
+            actual_latency_predictions.top_level_stages);
+  EXPECT_EQ(expected_latency_predictions.total_latency,
+            actual_latency_predictions.total_latency);
+
+  // Fourth compositor reporter (total duration is 0)
+  pipeline_reporter_ = CreatePipelineReporter();
+  pipeline_reporter_->StartStage(
+      CompositorFrameReporter::StageType::kBeginImplFrameToSendBeginMainFrame,
+      Now());
+
+  AdvanceNowByUs(0);
+  pipeline_reporter_->StartStage(
+      CompositorFrameReporter::StageType::kSendBeginMainFrameToCommit, Now());
+
+  AdvanceNowByUs(0);
+  pipeline_reporter_->StartStage(CompositorFrameReporter::StageType::kCommit,
+                                 Now());
+
+  AdvanceNowByUs(0);
+  pipeline_reporter_->StartStage(
+      CompositorFrameReporter::StageType::kEndCommitToActivation, Now());
+
+  AdvanceNowByUs(0);
+  pipeline_reporter_->StartStage(
+      CompositorFrameReporter::StageType::
+          kSubmitCompositorFrameToPresentationCompositorFrame,
+      Now());
+
+  AdvanceNowByUs(0);
+  pipeline_reporter_->TerminateFrame(
+      CompositorFrameReporter::FrameTerminationStatus::kDidNotProduceFrame,
+      Now());
+
+  expected_latency_predictions.top_level_stages = {
+      base::Microseconds(16125), base::Microseconds(0),
+      base::Microseconds(0),     base::Microseconds(0),
+      base::Microseconds(0),     base::Microseconds(1625),
+      base::Microseconds(833000)};
+  expected_latency_predictions.total_latency = base::Microseconds(850750);
+
+  pipeline_reporter_->CalculateCompositorLatencyPrediction(
+      actual_latency_predictions, kLatencyPredictionDeviationThreshold);
+
+  EXPECT_EQ(expected_latency_predictions.top_level_stages,
+            actual_latency_predictions.top_level_stages);
+  EXPECT_EQ(expected_latency_predictions.total_latency,
+            actual_latency_predictions.total_latency);
+
+  // Fifth compositor reporter (prediction and actual latency differ by a lot)
+  pipeline_reporter_ = CreatePipelineReporter();
+  pipeline_reporter_->StartStage(
+      CompositorFrameReporter::StageType::kBeginImplFrameToSendBeginMainFrame,
+      Now());
+
+  AdvanceNowByUs(16000);
+  pipeline_reporter_->StartStage(
+      CompositorFrameReporter::StageType::kSendBeginMainFrameToCommit, Now());
+
+  AdvanceNowByUs(60000);
+  pipeline_reporter_->StartStage(CompositorFrameReporter::StageType::kCommit,
+                                 Now());
+
+  AdvanceNowByUs(6000);
+  pipeline_reporter_->StartStage(
+      CompositorFrameReporter::StageType::kEndCommitToActivation, Now());
+
+  AdvanceNowByUs(3000);
+  pipeline_reporter_->StartStage(
+      CompositorFrameReporter::StageType::kActivation, Now());
+
+  AdvanceNowByUs(300);
+  pipeline_reporter_->StartStage(
+      CompositorFrameReporter::StageType::kEndActivateToSubmitCompositorFrame,
+      Now());
+
+  AdvanceNowByUs(39000);
+  pipeline_reporter_->StartStage(
+      CompositorFrameReporter::StageType::
+          kSubmitCompositorFrameToPresentationCompositorFrame,
+      Now());
+
+  AdvanceNowByUs(833000);
+  pipeline_reporter_->TerminateFrame(
+      CompositorFrameReporter::FrameTerminationStatus::kDidNotProduceFrame,
+      Now());
+
+  expected_latency_predictions.top_level_stages = {
+      base::Microseconds(16093), base::Microseconds(15000),
+      base::Microseconds(1500),  base::Microseconds(750),
+      base::Microseconds(75),    base::Microseconds(10968),
+      base::Microseconds(833000)};
+  expected_latency_predictions.total_latency = base::Microseconds(877387);
+
+  std::vector<std::string> expected_latency_attributions = {
+      "SendBeginMainFrameToCommit"};
+
+  pipeline_reporter_->CalculateCompositorLatencyPrediction(
+      actual_latency_predictions, kLatencyPredictionDeviationThreshold);
+  std::vector<std::string> actual_latency_attributions =
+      pipeline_reporter_->high_latency_substages_for_testing_();
+
+  EXPECT_EQ(expected_latency_predictions.top_level_stages,
+            actual_latency_predictions.top_level_stages);
+  EXPECT_EQ(expected_latency_predictions.total_latency,
+            actual_latency_predictions.total_latency);
+  EXPECT_EQ(expected_latency_attributions, actual_latency_attributions);
 
   pipeline_reporter_ = nullptr;
 }
@@ -1072,12 +1348,12 @@ TEST_F(CompositorFrameReporterTest, EventLatencyDispatchPredictions) {
   pipeline_reporter_ = nullptr;
 }
 
-// Tests that when a new frame with missing dispatch stages is presented to the
-// user, event latency predictions are reported properly.
+// Tests that when a new frame with missing dispatch stages is presented to
+// the user, event latency predictions are reported properly.
 TEST_F(CompositorFrameReporterTest,
        EventLatencyDispatchPredictionsWithMissingStages) {
-  // Invalid EventLatency stage durations will cause program to crash, validity
-  // checked in event_latency_tracing_recorder.cc.
+  // Invalid EventLatency stage durations will cause program to crash,
+  // validity checked in event_latency_tracing_recorder.cc.
   std::vector<int> dispatch_times = {400, 600, 700, -1, -1};
   std::unique_ptr<EventMetrics> event_metrics_ptrs[] = {
       CreateScrollUpdateEventMetricsWithDispatchTimes(

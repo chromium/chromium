@@ -23,11 +23,11 @@ using StageType = CompositorFrameReporter::StageType;
 using FrameTerminationStatus = CompositorFrameReporter::FrameTerminationStatus;
 
 constexpr char kTraceCategory[] = "cc,benchmark";
-constexpr int kNumOfStages = static_cast<int>(StageType::kStageTypeCount);
+constexpr int kNumOfStages = static_cast<int>(StageType::kStageTypeCount) - 1;
 constexpr int kNumDispatchStages =
     static_cast<int>(EventMetrics::DispatchStage::kMaxValue);
 constexpr base::TimeDelta kDefaultLatencyPredictionDeviationThreshold =
-    base::Milliseconds(8.33);
+    viz::BeginFrameArgs::DefaultInterval() / 2;
 }  // namespace
 
 CompositorFrameReportingController::CompositorFrameReportingController(
@@ -37,8 +37,8 @@ CompositorFrameReportingController::CompositorFrameReportingController(
     : should_report_histograms_(should_report_histograms),
       layer_tree_host_id_(layer_tree_host_id),
       latency_ukm_reporter_(std::make_unique<LatencyUkmReporter>()),
-      previous_latency_predictions_main_(kNumOfStages, base::Microseconds(-1)),
-      previous_latency_predictions_impl_(kNumOfStages, base::Microseconds(-1)),
+      previous_latency_predictions_main_(base::Microseconds(-1)),
+      previous_latency_predictions_impl_(base::Microseconds(-1)),
       event_latency_predictions_(
           CompositorFrameReporter::EventLatencyInfo(kNumDispatchStages,
                                                     kNumOfStages)) {
@@ -483,18 +483,20 @@ void CompositorFrameReportingController::DidPresentCompositorFrame(
     reporter->TerminateFrame(termination_status,
                              details.presentation_feedback.timestamp);
 
-    base::TimeDelta frame_interval =
+    base::TimeDelta latency_prediction_deviation_threshold =
         details.presentation_feedback.interval.is_zero()
             ? kDefaultLatencyPredictionDeviationThreshold
             : (details.presentation_feedback.interval) / 2;
     switch (reporter->get_reporter_type()) {
       case CompositorFrameReporter::ReporterType::kImpl:
-        reporter->CalculateStageLatencyPrediction(
-            previous_latency_predictions_impl_);
+        reporter->CalculateCompositorLatencyPrediction(
+            previous_latency_predictions_impl_,
+            latency_prediction_deviation_threshold);
         break;
       case CompositorFrameReporter::ReporterType::kMain:
-        reporter->CalculateStageLatencyPrediction(
-            previous_latency_predictions_main_);
+        reporter->CalculateCompositorLatencyPrediction(
+            previous_latency_predictions_main_,
+            latency_prediction_deviation_threshold);
         break;
     }
 
@@ -516,8 +518,8 @@ void CompositorFrameReportingController::DidPresentCompositorFrame(
 
       // TODO(crbug.com/1334827): Consider using a separate container to
       // differentiate event predictions with and without a main dispatch stage.
-      reporter->CalculateEventLatencyPrediction(event_latency_predictions_,
-                                                frame_interval);
+      reporter->CalculateEventLatencyPrediction(
+          event_latency_predictions_, latency_prediction_deviation_threshold);
 
       // For presented frames, if `reporter` was cloned from another reporter,
       // and the original reporter is still alive, then check whether the cloned
