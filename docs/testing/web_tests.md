@@ -220,14 +220,21 @@ on this.
 
 There are two ways to run web tests with additional command-line arguments:
 
-### --flag-specific or --additional-driver-flag:
+### --flag-specific
 
 ```bash
-# Actually we prefer --flag-specific in some cases. See below for details.
-third_party/blink/tools/run_web_tests.py --additional-driver-flag=--blocking-repaint
+third_party/blink/tools/run_web_tests.py --flag-specific=blocking-repaint
+```
+It requires that `web_tests/FlagSpecificConfig` contains an entry like:
+
+```json
+{
+  "name": "blocking-repaint",
+  "args": ["--blocking-repaint", "--another-flag"]
+}
 ```
 
-This tells the test harness to pass `--blocking-repaint` to the
+This tells the test harness to pass `--blocking-repaint --another-flag` to the
 content_shell binary.
 
 It will also look for flag-specific expectations in
@@ -239,38 +246,16 @@ is always merged into the used expectations.
 It will also look for baselines in `web_tests/flag-specific/blocking-repaint`.
 The baselines in this directory override the fallback baselines.
 
-By default, name of the expectation file name under
-`web_tests/FlagExpectations` and name of the baseline directory under
-`web_tests/flag-specific` uses the first flag of --additional-driver-flag
-with leading '-'s stripped.
-
-You can also customize the name in `web_tests/FlagSpecificConfig` when
-the name is too long or when we need to match multiple additional args:
-
-```json
-{
-  "name": "short-name",
-  "args": ["--blocking-repaint", "--another-flag"]
-}
-```
-
-`web_tests/FlagSpecificConfig` is preferred when you need multiple flags,
-or the flag is long.
-
-With the config, you can use `--flag-specific=short-name` as a shortcut
-of `--additional-driver-flag=--blocking-repaint --additional-driver-flag=--another-flag`.
-
-`--additional-driver-flags` still works with `web_tests/FlagSpecificConfig`.
-For example, when at least `--additional-driver-flag=--blocking-repaint` and
-`--additional-driver-flag=--another-flag` are specified, `short-name` will
-be used as name of the flag specific expectation file and the baseline directory.
-
 *** note
 [BUILD.gn](../../BUILD.gn) assumes flag-specific builders always runs on linux bots, so
 flag-specific test expectations and baselines are only downloaded to linux bots.
 If you need run flag-specific builders on other platforms, please update
 BUILD.gn to download flag-specific related data to that platform.
 ***
+
+You can also use `--additional-driver-flag` to specify additional command-line
+arguments to content_shell, but the test harness won't use any flag-specific
+test expectations or baselines.
 
 ### Virtual test suites
 

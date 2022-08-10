@@ -716,13 +716,6 @@ class TestPort(Port):
                 sample_files[cp[0]] = sample_file
         return sample_files
 
-    def _flag_specific_expectations_path(self):
-        flags = [f[2:] for f in self._specified_additional_driver_flags()]
-        if not flags:
-            return None
-        return self._filesystem.join(self.web_tests_dir(), 'FlagExpectations',
-                                     flags[0])
-
     def look_for_new_crash_logs(self, crashed_processes, start_time):
         del start_time
         crash_logs = {}

@@ -361,9 +361,15 @@ class PortTestCase(LoggingTestCase):
     def test_used_expectations_files(self):
         options = optparse.Values({
             'additional_expectations': ['/tmp/foo'],
-            'additional_driver_flag': ['flag-specific']
+            'additional_driver_flag': ['--flag-not-affecting'],
+            'flag_specific':
+            'a',
         })
         port = self.make_port(options=options)
+        port.host.filesystem.write_text_file(
+            port.host.filesystem.join(port.web_tests_dir(),
+                                      'FlagSpecificConfig'),
+            '[{"name": "a", "args": ["--aa"]}]')
         self.assertEqual(list(port.used_expectations_files()), [
             port.path_to_generic_test_expectations_file(),
             port.path_to_webdriver_expectations_file(),
@@ -372,7 +378,7 @@ class PortTestCase(LoggingTestCase):
                                       'StaleTestExpectations'),
             port.host.filesystem.join(port.web_tests_dir(), 'SlowTests'),
             port.host.filesystem.join(port.web_tests_dir(), 'FlagExpectations',
-                                      'flag-specific'),
+                                      'a'),
             '/tmp/foo',
         ])
 

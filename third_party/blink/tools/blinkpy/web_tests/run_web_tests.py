@@ -188,6 +188,18 @@ def parse_args(args):
         'Results Options',
         [
             optparse.make_option(
+                '--flag-specific',
+                dest='flag_specific',
+                action='store',
+                default=None,
+                help=
+                ('Name of a flag-specific configuration defined in FlagSpecificConfig. '
+                 'It is like a shortcut of --additional-driver-flag, '
+                 '--additional-expectations and --additional-platform-directory. '
+                 'When setting up flag-specific testing on bots, we should use '
+                 'this option instead of the discrete options. '
+                 'See crbug.com/1238155 for details.')),
+            optparse.make_option(
                 '--additional-driver-flag',
                 '--additional-drt-flag',
                 dest='additional_driver_flag',
@@ -196,14 +208,6 @@ def parse_args(args):
                 help=
                 ('Additional command line flag to pass to the driver. Specify multiple '
                  'times to add multiple flags.')),
-            optparse.make_option(
-                '--flag-specific',
-                dest='flag_specific',
-                action='store',
-                default=None,
-                help=
-                ('Name of a flag-specific configuration defined in FlagSpecificConfig, '
-                 ' as a shortcut of --additional-driver-flag options.')),
             optparse.make_option(
                 '--additional-expectations',
                 action='append',

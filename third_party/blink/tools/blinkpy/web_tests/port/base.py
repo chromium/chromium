@@ -297,29 +297,17 @@ class Port(object):
 
     @memoized
     def flag_specific_config_name(self):
-        """Returns the name of the flag-specific configuration which best matches
-           self._specified_additional_driver_flags(), or the first specified flag
-           with leading '-'s stripped if no match in the configuration is found.
+        """Returns the name of the flag-specific configuration if it's specified in
+           --flag-specific option, or None. The name must be defined in
+           FlagSpecificConfig or an AssertionError will be raised.
         """
-        specified_flags = self._specified_additional_driver_flags()
-        if not specified_flags:
-            return None
-
-        best_match = None
-        configs = self._flag_specific_configs()
-        for name in configs:
-            # To match the specified flags must start with all config args.
-            args = configs[name]
-            if specified_flags[:len(args)] != args:
-                continue
-            # The first config matching the highest number of specified flags wins.
-            if not best_match or len(configs[best_match]) < len(args):
-                best_match = name
-
-        if best_match:
-            return best_match
-        # If no match, fallback to the old mode: using the name of the first specified flag.
-        return specified_flags[0].lstrip('-')
+        config_name = self.get_option('flag_specific')
+        if config_name:
+            configs = self._flag_specific_configs()
+            assert config_name in configs, '{} is not defined in FlagSpecificConfig'.format(
+                config_name)
+            return config_name
+        return None
 
     @memoized
     def _flag_specific_configs(self):
@@ -367,12 +355,9 @@ class Port(object):
         if self._filesystem.exists(flag_file):
             flags = self._filesystem.read_text_file(flag_file).split()
 
-        flag_specific_option = self.get_option('flag_specific')
+        flag_specific_option = self.flag_specific_config_name()
         if flag_specific_option:
-            configs = self._flag_specific_configs()
-            assert flag_specific_option in configs, '{} is not defined in FlagSpecificConfig'.format(
-                flag_specific_option)
-            flags += configs[flag_specific_option]
+            flags += self._flag_specific_configs()[flag_specific_option]
 
         flags += self.get_option('additional_driver_flag', [])
         return flags
@@ -492,7 +477,7 @@ class Port(object):
         return baseline_search_paths[0]
 
     def baseline_flag_specific_dir(self):
-        """If --additional-driver-flag is specified, returns the absolute path to the flag-specific
+        """If --flag-specific is specified, returns the absolute path to the flag-specific
            platform-independent results. Otherwise returns None."""
         config_name = self.flag_specific_config_name()
         if not config_name:

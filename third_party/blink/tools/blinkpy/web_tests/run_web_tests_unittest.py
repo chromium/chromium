@@ -2718,15 +2718,18 @@ class RebaselineTest(unittest.TestCase, StreamTestingMixin):
             # in blinkpy.web_tests.port.test. This is added so that we also
             # check that the text baseline isn't written if it matches.
             'text-image-checksum_fail-txt')
+        host.filesystem.write_text_file(
+            test.WEB_TEST_DIR + '/FlagSpecificConfig',
+            '[{"name": "flag", "args": ["--flag-arg"]}]')
         details, log_stream, _ = logging_run([
-            '--additional-driver-flag=--flag', '--reset-results',
+            '--flag-specific=flag', '--reset-results',
             'failures/unexpected/text-image-checksum.html'
         ],
                                              tests_included=True,
                                              host=host)
         written_files = host.filesystem.written_files
         self.assertEqual(details.exit_code, 0)
-        self.assertEqual(len(written_files.keys()), 7)
+        self.assertEqual(len(written_files.keys()), 8)
         # We should create new image baseline only.
         self.assert_baselines(
             written_files,
@@ -2745,15 +2748,18 @@ class RebaselineTest(unittest.TestCase, StreamTestingMixin):
             # in blinkpy.web_tests.port.test. This is added so that we also
             # check that the text baseline isn't written if it matches.
             'text-image-checksum_fail-txt')
+        host.filesystem.write_text_file(
+            test.WEB_TEST_DIR + '/FlagSpecificConfig',
+            '[{"name": "flag", "args": ["--flag-arg"]}]')
         details, log_stream, _ = logging_run([
-            '--additional-driver-flag=--flag', '--copy-baselines',
+            '--flag-specific=flag', '--copy-baselines',
             'failures/unexpected/text-image-checksum.html'
         ],
                                              tests_included=True,
                                              host=host)
         written_files = host.filesystem.written_files
         self.assertEqual(details.exit_code, 1)
-        self.assertEqual(len(written_files.keys()), 11)
+        self.assertEqual(len(written_files.keys()), 12)
         self.assert_contains(
             log_stream,
             'Copying baseline to "flag-specific/flag/failures/unexpected/text-image-checksum-expected.png"'
@@ -2775,6 +2781,9 @@ class RebaselineTest(unittest.TestCase, StreamTestingMixin):
             # that the flag-specific text baseline is removed if the actual
             # result is the same as this fallback baseline.
             'text-image-checksum_fail-txt')
+        host.filesystem.write_text_file(
+            test.WEB_TEST_DIR + '/FlagSpecificConfig',
+            '[{"name": "flag", "args": ["--flag-arg"]}]')
         flag_specific_baseline_txt = (
             test.WEB_TEST_DIR +
             '/flag-specific/flag/failures/unexpected/text-image-checksum-expected.txt'
@@ -2784,7 +2793,7 @@ class RebaselineTest(unittest.TestCase, StreamTestingMixin):
             'existing-baseline-different-from-fallback')
 
         details, log_stream, _ = logging_run([
-            '--additional-driver-flag=--flag', '--reset-results',
+            '--flag-specific=flag', '--reset-results',
             'failures/unexpected/text-image-checksum.html'
         ],
                                              tests_included=True,
@@ -2792,7 +2801,7 @@ class RebaselineTest(unittest.TestCase, StreamTestingMixin):
         self.assertEqual(details.exit_code, 0)
         self.assertFalse(host.filesystem.exists(flag_specific_baseline_txt))
         written_files = host.filesystem.written_files
-        self.assertEqual(len(written_files.keys()), 8)
+        self.assertEqual(len(written_files.keys()), 9)
         # We should create new image baseline only.
         self.assert_baselines(
             written_files,
