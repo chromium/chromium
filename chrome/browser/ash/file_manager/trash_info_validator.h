@@ -14,7 +14,7 @@
 #include "chrome/browser/ash/file_manager/trash_common_util.h"
 #include "chromeos/ash/components/trash_service/public/cpp/trash_info_parser.h"
 
-namespace file_manager {
+namespace file_manager::trash {
 
 // On a successful parse of .trashinfo files, returns the restoration path,
 // deletion date and actual location of the trashed file.
@@ -64,8 +64,9 @@ class TrashInfoValidator {
   //   - Resides in an enabled trash directory
   //   - The file resides in the info directory
   //   - Has an identical item in the files directory with no .trashinfo suffix
-  // On confirming the above it then calls the TrashService to retrieve the
-  // parsed trashinfo data. The `trash_info_path` must be absolute.
+  // In the event the above fails, the `callback` will be invoked with an error,
+  // on success it then calls the TrashService to retrieve the parsed trashinfo
+  // data. The `trash_info_path` must be absolute.
   void ValidateAndParseTrashInfo(const base::FilePath& trash_info_path,
                                  ValidateAndParseTrashInfoCallback callback);
 
@@ -94,7 +95,7 @@ class TrashInfoValidator {
                          base::Time deletion_date);
 
   // A map containing paths which are enabled for trashing.
-  io_task::TrashPathsMap enabled_trash_locations_;
+  trash::TrashPathsMap enabled_trash_locations_;
 
   // Holds the connection open to the `TrashService`. This is a sandboxed
   // process that performs parsing of the trashinfo files.
@@ -103,6 +104,6 @@ class TrashInfoValidator {
   base::WeakPtrFactory<TrashInfoValidator> weak_ptr_factory_{this};
 };
 
-}  // namespace file_manager
+}  // namespace file_manager::trash
 
 #endif  // CHROME_BROWSER_ASH_FILE_MANAGER_TRASH_INFO_VALIDATOR_H_

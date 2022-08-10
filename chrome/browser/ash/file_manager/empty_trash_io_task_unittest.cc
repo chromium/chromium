@@ -63,8 +63,10 @@ class EmptyTrashIOTaskTest : public TrashBaseTest {
         trash_parent_path.Append(relative_trash_folder);
     EXPECT_TRUE(EnsureTrashDirectorySetup(trash_directory));
 
-    trash_subdirectories.emplace_back(trash_directory.Append(kFilesFolderName));
-    trash_subdirectories.emplace_back(trash_directory.Append(kInfoFolderName));
+    trash_subdirectories.emplace_back(
+        trash_directory.Append(trash::kFilesFolderName));
+    trash_subdirectories.emplace_back(
+        trash_directory.Append(trash::kInfoFolderName));
     return trash_directory;
   }
 
@@ -72,12 +74,14 @@ class EmptyTrashIOTaskTest : public TrashBaseTest {
     TrashDirectoriesAndSubDirectories directories;
 
     // Setup ~/MyFiles/.Trash
-    directories.trash_directories.emplace_back(SetupTrashDirectory(
-        my_files_dir_, kTrashFolderName, directories.trash_subdirectories));
+    directories.trash_directories.emplace_back(
+        SetupTrashDirectory(my_files_dir_, trash::kTrashFolderName,
+                            directories.trash_subdirectories));
 
     // Setup ~/MyFiles/Downloads/.Trash
-    directories.trash_directories.emplace_back(SetupTrashDirectory(
-        downloads_dir_, kTrashFolderName, directories.trash_subdirectories));
+    directories.trash_directories.emplace_back(
+        SetupTrashDirectory(downloads_dir_, trash::kTrashFolderName,
+                            directories.trash_subdirectories));
 
     // Setup /media/fuse/termina_hash_pengiun/.local/share/Trash
     directories.trash_directories.emplace_back(SetupTrashDirectory(

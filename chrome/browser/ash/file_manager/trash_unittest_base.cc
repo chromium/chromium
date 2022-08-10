@@ -19,8 +19,7 @@
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/test/test_file_system_context.h"
 
-namespace file_manager {
-namespace io_task {
+namespace file_manager::io_task {
 
 TrashBaseTest::TrashBaseTest() = default;
 
@@ -132,14 +131,16 @@ storage::FileSystemURL TrashBaseTest::CreateFileSystemURL(
 
 const base::FilePath TrashBaseTest::GenerateInfoPath(
     const std::string& file_name) {
-  return GenerateTrashPath(downloads_dir_.Append(kTrashFolderName),
-                           kInfoFolderName, file_name);
+  return trash::GenerateTrashPath(
+      downloads_dir_.Append(trash::kTrashFolderName), trash::kInfoFolderName,
+      file_name);
 }
 
 const base::FilePath TrashBaseTest::GenerateFilesPath(
     const std::string& file_name) {
-  return GenerateTrashPath(downloads_dir_.Append(kTrashFolderName),
-                           kFilesFolderName, file_name);
+  return trash::GenerateTrashPath(
+      downloads_dir_.Append(trash::kTrashFolderName), trash::kFilesFolderName,
+      file_name);
 }
 
 const std::string TrashBaseTest::CreateTrashInfoContentsFromPath(
@@ -168,15 +169,14 @@ const std::string TrashBaseTest::CreateTrashInfoContentsFromPath(
 
 bool TrashBaseTest::EnsureTrashDirectorySetup(
     const base::FilePath& parent_path) {
-  base::FilePath trash_path = parent_path.Append(kTrashFolderName);
-  if (!base::CreateDirectory(trash_path.Append(kInfoFolderName))) {
+  base::FilePath trash_path = parent_path.Append(trash::kTrashFolderName);
+  if (!base::CreateDirectory(trash_path.Append(trash::kInfoFolderName))) {
     return false;
   }
-  if (!base::CreateDirectory(trash_path.Append(kFilesFolderName))) {
+  if (!base::CreateDirectory(trash_path.Append(trash::kFilesFolderName))) {
     return false;
   }
   return true;
 }
 
-}  // namespace io_task
-}  // namespace file_manager
+}  // namespace file_manager::io_task

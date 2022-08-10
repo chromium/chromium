@@ -12,8 +12,7 @@
 
 class Profile;
 
-namespace file_manager {
-namespace io_task {
+namespace file_manager::trash {
 
 // Constant representing the Trash folder name.
 extern const char kTrashFolderName[];
@@ -89,7 +88,6 @@ TrashPathsMap GenerateEnabledTrashLocationsForProfile(
     Profile* profile,
     const base::FilePath& base_path);
 
-}  // namespace io_task
-}  // namespace file_manager
+}  // namespace file_manager::trash
 
 #endif  // CHROME_BROWSER_ASH_FILE_MANAGER_TRASH_COMMON_UTIL_H_

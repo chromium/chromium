@@ -13,7 +13,6 @@
 #include "content/public/browser/browser_thread.h"
 
 namespace file_manager::io_task {
-
 namespace {
 
 storage::FileSystemOperationRunner::OperationID
@@ -63,20 +62,20 @@ void EmptyTrashIOTask::Execute(IOTask::ProgressCallback progress_callback,
   complete_callback_ = std::move(complete_callback);
 
   enabled_trash_locations_ =
-      GenerateEnabledTrashLocationsForProfile(profile_, base_path_);
+      trash::GenerateEnabledTrashLocationsForProfile(profile_, base_path_);
   progress_.state = State::kInProgress;
 
-  TrashPathsMap::const_iterator it = enabled_trash_locations_.cbegin();
+  trash::TrashPathsMap::const_iterator it = enabled_trash_locations_.cbegin();
   if (it == enabled_trash_locations_.end()) {
     Complete(State::kSuccess);
     return;
   }
 
-  RemoveTrashSubDirectory(it, kFilesFolderName);
+  RemoveTrashSubDirectory(it, trash::kFilesFolderName);
 }
 
 void EmptyTrashIOTask::RemoveTrashSubDirectory(
-    TrashPathsMap::const_iterator& trash_location,
+    trash::TrashPathsMap::const_iterator& trash_location,
     const std::string& folder_name_to_remove) {
   const base::FilePath& trash_parent_path = trash_location->first;
   const base::FilePath trash_path =
@@ -104,7 +103,7 @@ void EmptyTrashIOTask::RemoveTrashSubDirectory(
 }
 
 void EmptyTrashIOTask::OnRemoveTrashSubDirectory(
-    TrashPathsMap::const_iterator& it,
+    trash::TrashPathsMap::const_iterator& it,
     const std::string& removed_folder_name,
     base::File::Error status) {
   progress_.outputs[progress_.outputs.size() - 1].error = status;
@@ -113,8 +112,8 @@ void EmptyTrashIOTask::OnRemoveTrashSubDirectory(
     Complete(State::kError);
     return;
   }
-  if (removed_folder_name == kFilesFolderName) {
-    RemoveTrashSubDirectory(it, kInfoFolderName);
+  if (removed_folder_name == trash::kFilesFolderName) {
+    RemoveTrashSubDirectory(it, trash::kInfoFolderName);
     return;
   }
   it++;
@@ -123,7 +122,7 @@ void EmptyTrashIOTask::OnRemoveTrashSubDirectory(
     return;
   }
 
-  RemoveTrashSubDirectory(it, kFilesFolderName);
+  RemoveTrashSubDirectory(it, trash::kFilesFolderName);
 }
 
 // Calls the completion callback for the task. `progress_` should not be

@@ -16,8 +16,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
-namespace file_manager {
-namespace io_task {
+namespace file_manager::io_task {
 
 namespace {
 
@@ -78,7 +77,8 @@ void RestoreIOTask::Execute(IOTask::ProgressCallback progress_callback,
   }
 
   progress_.state = State::kInProgress;
-  validator_ = std::make_unique<TrashInfoValidator>(profile_, base_path_);
+  validator_ =
+      std::make_unique<trash::TrashInfoValidator>(profile_, base_path_);
   validator_->SetDisconnectHandler(base::BindOnce(
       &RestoreIOTask::Complete, weak_ptr_factory_.GetWeakPtr(), State::kError));
 
@@ -111,7 +111,7 @@ void RestoreIOTask::ValidateTrashInfo(size_t idx) {
 
 void RestoreIOTask::EnsureParentRestorePathExists(
     size_t idx,
-    base::FileErrorOr<ParsedTrashInfoData> parsed_data) {
+    base::FileErrorOr<trash::ParsedTrashInfoData> parsed_data) {
   if (parsed_data.is_error()) {
     progress_.sources[idx].error = parsed_data.error();
     Complete(State::kError);
@@ -265,5 +265,4 @@ void RestoreIOTask::SetCurrentOperationID(
   operation_id_.emplace(id);
 }
 
-}  // namespace io_task
-}  // namespace file_manager
+}  // namespace file_manager::io_task

@@ -49,12 +49,13 @@ class EmptyTrashIOTask : public IOTask {
  private:
   // Removes the entire trash subdirectory (e.g. .Trash/files) recursively. It
   // only iterates over the enabled trash locations.
-  void RemoveTrashSubDirectory(TrashPathsMap::const_iterator& trash_location,
-                               const std::string& folder_name_to_remove);
+  void RemoveTrashSubDirectory(
+      trash::TrashPathsMap::const_iterator& trash_location,
+      const std::string& folder_name_to_remove);
 
   // After removing the trash directory, continue iterating until there are no
   // more enabled trash directories left.
-  void OnRemoveTrashSubDirectory(TrashPathsMap::const_iterator& it,
+  void OnRemoveTrashSubDirectory(trash::TrashPathsMap::const_iterator& it,
                                  const std::string& removed_folder_name,
                                  base::File::Error status);
 
@@ -73,7 +74,7 @@ class EmptyTrashIOTask : public IOTask {
   raw_ptr<Profile> profile_;
 
   // A map containing paths which are enabled for trashing.
-  TrashPathsMap enabled_trash_locations_;
+  trash::TrashPathsMap enabled_trash_locations_;
 
   // Stores the id of the restore operation if one is in progress. Used to stop
   // the empty trash operation.

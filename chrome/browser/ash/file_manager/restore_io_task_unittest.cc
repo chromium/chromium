@@ -28,8 +28,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
-namespace file_manager {
-namespace io_task {
+namespace file_manager::io_task {
 namespace {
 
 using ::base::test::RunClosure;
@@ -155,9 +154,10 @@ TEST_F(RestoreIOTaskTest, MetadataWithNoCorrespondingFileShouldError) {
   EnsureTrashDirectorySetup(downloads_dir_);
 
   std::string foo_contents = base::RandBytesAsString(kTestFileSize);
-  const base::FilePath file_path = downloads_dir_.Append(kTrashFolderName)
-                                       .Append(kInfoFolderName)
-                                       .Append("foo.txt.trashinfo");
+  const base::FilePath file_path =
+      downloads_dir_.Append(trash::kTrashFolderName)
+          .Append(trash::kInfoFolderName)
+          .Append("foo.txt.trashinfo");
   ASSERT_TRUE(base::WriteFile(file_path, foo_contents));
 
   base::RunLoop run_loop;
@@ -191,12 +191,13 @@ TEST_F(RestoreIOTaskTest, RestorePathsShouldNotReferenceParent) {
   std::string foo_metadata_contents =
       GenerateTrashInfoContents("/../../../bad/actor/foo.txt");
 
-  const base::FilePath trash_path = downloads_dir_.Append(kTrashFolderName);
+  const base::FilePath trash_path =
+      downloads_dir_.Append(trash::kTrashFolderName);
   const base::FilePath info_file_path =
-      trash_path.Append(kInfoFolderName).Append("foo.txt.trashinfo");
+      trash_path.Append(trash::kInfoFolderName).Append("foo.txt.trashinfo");
   ASSERT_TRUE(base::WriteFile(info_file_path, foo_metadata_contents));
   const base::FilePath files_path =
-      trash_path.Append(kFilesFolderName).Append("foo.txt");
+      trash_path.Append(trash::kFilesFolderName).Append("foo.txt");
   ASSERT_TRUE(base::WriteFile(files_path, foo_contents));
 
   base::RunLoop run_loop;
@@ -228,12 +229,13 @@ TEST_F(RestoreIOTaskTest, ValidRestorePathShouldSucceedAndCreateDirectory) {
   std::string foo_metadata_contents =
       GenerateTrashInfoContents("/Downloads/bar/foo.txt");
 
-  const base::FilePath trash_path = downloads_dir_.Append(kTrashFolderName);
+  const base::FilePath trash_path =
+      downloads_dir_.Append(trash::kTrashFolderName);
   const base::FilePath info_file_path =
-      trash_path.Append(kInfoFolderName).Append("foo.txt.trashinfo");
+      trash_path.Append(trash::kInfoFolderName).Append("foo.txt.trashinfo");
   ASSERT_TRUE(base::WriteFile(info_file_path, foo_metadata_contents));
   const base::FilePath files_path =
-      trash_path.Append(kFilesFolderName).Append("foo.txt");
+      trash_path.Append(trash::kFilesFolderName).Append("foo.txt");
   ASSERT_TRUE(base::WriteFile(files_path, foo_contents));
 
   base::RunLoop run_loop;
@@ -264,12 +266,13 @@ TEST_F(RestoreIOTaskTest, ItemWithExistingConflictAreRenamed) {
   std::string foo_metadata_contents =
       GenerateTrashInfoContents("/Downloads/bar/foo.txt");
 
-  const base::FilePath trash_path = downloads_dir_.Append(kTrashFolderName);
+  const base::FilePath trash_path =
+      downloads_dir_.Append(trash::kTrashFolderName);
   const base::FilePath info_file_path =
-      trash_path.Append(kInfoFolderName).Append("foo.txt.trashinfo");
+      trash_path.Append(trash::kInfoFolderName).Append("foo.txt.trashinfo");
   ASSERT_TRUE(base::WriteFile(info_file_path, foo_metadata_contents));
   const base::FilePath files_path =
-      trash_path.Append(kFilesFolderName).Append("foo.txt");
+      trash_path.Append(trash::kFilesFolderName).Append("foo.txt");
   ASSERT_TRUE(base::WriteFile(files_path, foo_contents));
 
   // Create conflicting item at same place restore is going to happen at.
@@ -369,12 +372,13 @@ TEST_F(RestoreIOTaskDisconnectMojoTest,
 
   std::string foo_contents = base::RandBytesAsString(kTestFileSize);
 
-  const base::FilePath trash_path = downloads_dir_.Append(kTrashFolderName);
+  const base::FilePath trash_path =
+      downloads_dir_.Append(trash::kTrashFolderName);
   const base::FilePath info_file_path =
-      trash_path.Append(kInfoFolderName).Append("foo.txt.trashinfo");
+      trash_path.Append(trash::kInfoFolderName).Append("foo.txt.trashinfo");
   ASSERT_TRUE(base::WriteFile(info_file_path, foo_contents));
   const base::FilePath files_path =
-      trash_path.Append(kFilesFolderName).Append("foo.txt");
+      trash_path.Append(trash::kFilesFolderName).Append("foo.txt");
   ASSERT_TRUE(base::WriteFile(files_path, foo_contents));
 
   base::RunLoop run_loop;
@@ -397,5 +401,4 @@ TEST_F(RestoreIOTaskDisconnectMojoTest,
 }
 
 }  // namespace
-}  // namespace io_task
-}  // namespace file_manager
+}  // namespace file_manager::io_task

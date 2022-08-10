@@ -9,8 +9,7 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 
-namespace file_manager {
-namespace io_task {
+namespace file_manager::trash {
 
 constexpr char kTrashFolderName[] = ".Trash";
 constexpr char kInfoFolderName[] = "info";
@@ -104,5 +103,4 @@ TrashPathsMap GenerateEnabledTrashLocationsForProfile(
   return enabled_trash_locations;
 }
 
-}  // namespace io_task
-}  // namespace file_manager
+}  // namespace file_manager::trash

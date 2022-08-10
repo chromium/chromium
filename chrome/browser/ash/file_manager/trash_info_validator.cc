@@ -14,7 +14,7 @@
 
 class Profile;
 
-namespace file_manager {
+namespace file_manager::trash {
 
 namespace {
 
@@ -28,7 +28,7 @@ void RunCallbackWithError(base::File::Error error,
 TrashInfoValidator::TrashInfoValidator(Profile* profile,
                                        const base::FilePath& base_path) {
   enabled_trash_locations_ =
-      io_task::GenerateEnabledTrashLocationsForProfile(profile, base_path);
+      trash::GenerateEnabledTrashLocationsForProfile(profile, base_path);
 
   parser_ = std::make_unique<chromeos::trash_service::TrashInfoParser>();
 }
@@ -47,7 +47,7 @@ void TrashInfoValidator::ValidateAndParseTrashInfo(
     const base::FilePath& trash_info_path,
     ValidateAndParseTrashInfoCallback callback) {
   // Validates the supplied file ends in a .trashinfo extension.
-  if (trash_info_path.FinalExtension() != io_task::kTrashInfoExtension) {
+  if (trash_info_path.FinalExtension() != kTrashInfoExtension) {
     RunCallbackWithError(base::File::FILE_ERROR_INVALID_URL,
                          std::move(callback));
     return;
@@ -74,7 +74,7 @@ void TrashInfoValidator::ValidateAndParseTrashInfo(
   // Ensure the corresponding file that this metadata file refers to actually
   // exists.
   base::FilePath trashed_file_location =
-      trash_folder_location.Append(io_task::kFilesFolderName)
+      trash_folder_location.Append(kFilesFolderName)
           .Append(trash_info_path.BaseName().RemoveFinalExtension());
 
   base::ThreadPool::PostTaskAndReplyWithResult(
@@ -143,4 +143,4 @@ void TrashInfoValidator::OnTrashInfoParsed(
       base::FileErrorOr<ParsedTrashInfoData>(std::move(parsed_data)));
 }
 
-}  // namespace file_manager
+}  // namespace file_manager::trash

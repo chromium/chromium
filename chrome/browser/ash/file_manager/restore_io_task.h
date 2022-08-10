@@ -19,8 +19,7 @@
 
 class Profile;
 
-namespace file_manager {
-namespace io_task {
+namespace file_manager::io_task {
 
 // This class represents a task restoring from trash. A restore task attempts to
 // restore files from a supported Trash folder back to it's original path. If
@@ -54,7 +53,7 @@ class RestoreIOTask : public IOTask {
   // actually exists. In the event the file path has been removed, recreate it.
   void EnsureParentRestorePathExists(
       size_t idx,
-      base::FileErrorOr<ParsedTrashInfoData> parsed_data);
+      base::FileErrorOr<trash::ParsedTrashInfoData> parsed_data);
 
   void OnParentRestorePathExists(size_t idx,
                                  const base::FilePath& trashed_file_location,
@@ -100,7 +99,7 @@ class RestoreIOTask : public IOTask {
   absl::optional<storage::FileSystemOperationRunner::OperationID> operation_id_;
 
   // Validates and parses .trashinfo files.
-  std::unique_ptr<TrashInfoValidator> validator_ = nullptr;
+  std::unique_ptr<trash::TrashInfoValidator> validator_ = nullptr;
 
   ProgressCallback progress_callback_;
   CompleteCallback complete_callback_;
@@ -108,7 +107,6 @@ class RestoreIOTask : public IOTask {
   base::WeakPtrFactory<RestoreIOTask> weak_ptr_factory_{this};
 };
 
-}  // namespace io_task
-}  // namespace file_manager
+}  // namespace file_manager::io_task
 
 #endif  // CHROME_BROWSER_ASH_FILE_MANAGER_RESTORE_IO_TASK_H_

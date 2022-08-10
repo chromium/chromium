@@ -21,8 +21,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
-namespace file_manager {
-namespace io_task {
+namespace file_manager::io_task {
 
 inline constexpr size_t kTestFileSize = 32;
 
@@ -84,7 +83,6 @@ class TrashBaseTest : public testing::Test {
   scoped_refptr<storage::FileSystemContext> file_system_context_;
 };
 
-}  // namespace io_task
-}  // namespace file_manager
+}  // namespace file_manager::io_task
 
 #endif  // CHROME_BROWSER_ASH_FILE_MANAGER_TRASH_IO_TASK_H_
