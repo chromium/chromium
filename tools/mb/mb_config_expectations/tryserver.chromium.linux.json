@@ -12,8 +12,9 @@
   "cast_shell_audio_linux": {
     "gn_args": {
       "dcheck_always_on": true,
+      "enable_cast_receiver": true,
       "is_cast_audio_only": true,
-      "is_chromecast": true,
+      "is_castos": true,
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
@@ -34,7 +35,8 @@
   "cast_shell_linux_arm64": {
     "gn_args": {
       "dcheck_always_on": false,
-      "is_chromecast": true,
+      "enable_cast_receiver": true,
+      "is_castos": true,
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 1,
@@ -44,7 +46,8 @@
   },
   "cast_shell_linux_dbg": {
     "gn_args": {
-      "is_chromecast": true,
+      "enable_cast_receiver": true,
+      "is_castos": true,
       "is_component_build": true,
       "is_debug": true,
       "symbol_level": 1,

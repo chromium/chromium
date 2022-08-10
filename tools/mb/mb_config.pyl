@@ -1947,19 +1947,19 @@
     ],
 
     'cast_arm64_release_bot': [
-      'cast', 'release_bot', 'arm64', 'minimal_symbols',
+      'cast_receiver', 'cast_os', 'release_bot', 'arm64', 'minimal_symbols',
     ],
 
     'cast_arm64_release_bot_reclient': [
-      'cast', 'release_bot_reclient', 'arm64', 'minimal_symbols',
+      'cast_receiver', 'cast_os', 'release_bot_reclient', 'arm64', 'minimal_symbols',
     ],
 
     'cast_audio_release_bot_reclient': [
-      'cast', 'cast_audio', 'release_bot_reclient', 'minimal_symbols',
+      'cast_receiver', 'cast_os', 'cast_audio', 'release_bot_reclient', 'minimal_symbols',
     ],
 
     'cast_audio_release_trybot': [
-      'cast', 'cast_audio', 'release_trybot',
+      'cast_receiver', 'cast_os', 'cast_audio', 'release_trybot',
     ],
 
     'cast_binary_size': [
@@ -1967,11 +1967,11 @@
     ],
 
     'cast_debug_bot': [
-      'cast', 'debug_bot',
+      'cast_receiver', 'cast_os', 'debug_bot',
     ],
 
     'cast_debug_bot_reclient': [
-      'cast', 'debug_bot_reclient',
+      'cast_receiver', 'cast_os', 'debug_bot_reclient',
     ],
 
     # Cast Linux takes very long in linking, possibly due to being on GCE
