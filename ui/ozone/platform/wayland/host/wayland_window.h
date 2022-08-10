@@ -149,7 +149,7 @@ class WaylandWindow : public PlatformWindow,
   }
   void set_frame_insets_px(gfx::Insets insets) { frame_insets_px_ = insets; }
 
-  bool can_submit_frames() const { return can_submit_frames_; }
+  bool received_configure_event() const { return received_configure_event_; }
 
   // Remove WaylandOutput associated with WaylandSurface of this window.
   void RemoveEnteredOutput(uint32_t output_id);
@@ -335,6 +335,8 @@ class WaylandWindow : public PlatformWindow,
   }
 #endif
 
+  bool has_pending_configures() const { return !pending_configures_.empty(); }
+
  protected:
   WaylandWindow(PlatformWindowDelegate* delegate,
                 WaylandConnection* connection);
@@ -370,8 +372,6 @@ class WaylandWindow : public PlatformWindow,
 
   // Applies pending bounds.
   virtual void ApplyPendingBounds();
-
-  bool HasPendingConfigures() const;
 
   gfx::Rect pending_bounds_dip() const { return pending_bounds_dip_; }
   void set_pending_bounds_dip(const gfx::Rect rect) {
@@ -414,7 +414,7 @@ class WaylandWindow : public PlatformWindow,
   raw_ptr<WaylandWindow> child_window_ = nullptr;
 
   std::unique_ptr<WaylandFrameManager> frame_manager_;
-  bool can_submit_frames_ = false;
+  bool received_configure_event_ = false;
 
   // |root_surface_| is a surface for the opaque background. Its z-order is
   // INT32_MIN.

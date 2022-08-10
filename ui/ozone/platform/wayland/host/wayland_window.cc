@@ -254,7 +254,7 @@ void WaylandWindow::Show(bool inactive) {
 }
 
 void WaylandWindow::Hide() {
-  can_submit_frames_ = false;
+  received_configure_event_ = false;
 
   // Mutter compositor crashes if we don't remove subsurface roles when hiding.
   if (primary_subsurface_) {
@@ -323,9 +323,9 @@ gfx::Rect WaylandWindow::GetBoundsInDIP() const {
 }
 
 void WaylandWindow::OnSurfaceConfigureEvent() {
-  if (can_submit_frames_)
+  if (received_configure_event_)
     return;
-  can_submit_frames_ = true;
+  received_configure_event_ = true;
   frame_manager_->MaybeProcessPendingFrame();
 }
 
@@ -1061,10 +1061,6 @@ void WaylandWindow::ApplyPendingBounds() {
   for (auto& configure : pending_configures_)
     configure.set = true;
   UpdateBoundsInDIP(pending_configures_.back().bounds_dip);
-}
-
-bool WaylandWindow::HasPendingConfigures() const {
-  return !pending_configures_.empty();
 }
 
 }  // namespace ui

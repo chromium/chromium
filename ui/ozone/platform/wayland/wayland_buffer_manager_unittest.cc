@@ -15,6 +15,7 @@
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -38,6 +39,7 @@
 #include "ui/ozone/platform/wayland/test/test_overlay_prioritized_surface.h"
 #include "ui/ozone/platform/wayland/test/test_zwp_linux_buffer_params.h"
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
+#include "ui/platform_window/platform_window_init_properties.h"
 
 using testing::_;
 using testing::Truly;
@@ -1124,6 +1126,120 @@ TEST_P(WaylandBufferManagerTest, TestCommitBufferConditionsAckConfigured) {
 
     Sync();
   }
+}
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(1346534): Lacros fractional scale is still buggy, at least until
+// migration of WaylandWindow to use DIP instead of pixels to store window
+// bounds (see crbug.com/1306688). Rounding issues may lead to bounds
+// mismatches when processing visual updates (i.e: set_geometry/ack_configure
+// are not sent). Enable this back once those issues get fixed.
+#define MAYBE_CommitBufferConditionsWithDeferredAckConfigure \
+  DISABLED_CommitBufferConditionsWithDeferredAckConfigure
+#else
+#define MAYBE_CommitBufferConditionsWithDeferredAckConfigure \
+  CommitBufferConditionsWithDeferredAckConfigure
+#endif
+
+// Verifies toplevel surfaces do not have buffers attached until configured,
+// even when the initial configure sequence is not acked in response to
+// xdg_surface.configure event, i.e: done asynchronously when UpdateVisualSize()
+// is called by they FrameManager).
+//
+// Regression test for https://crbug.com/1313023.
+TEST_P(WaylandBufferManagerTest,
+       MAYBE_CommitBufferConditionsWithDeferredAckConfigure) {
+  constexpr gfx::Rect kNormalBounds{800, 800};
+  constexpr gfx::Rect kRestoredBounds{500, 500};
+  constexpr uint32_t kDmabufBufferId = 1;
+
+  testing::Mock::VerifyAndClearExpectations(&delegate_);
+  PlatformWindowInitProperties properties;
+  properties.type = PlatformWindowType::kWindow;
+  properties.bounds = kNormalBounds;
+  auto window = WaylandWindow::Create(&delegate_, connection_.get(),
+                                      std::move(properties));
+  ASSERT_TRUE(window);
+  ASSERT_NE(window->GetWidget(), gfx::kNullAcceleratedWidget);
+  auto widget = window->GetWidget();
+
+  // Set restored bounds to a value different from the initial window bounds in
+  // order to force WaylandWindow::ProcessPendingBoundsDip() to defer the very
+  // first configure ack to be done in the subsequent UpdateVisualSize() call.
+  window->SetRestoredBoundsInDIP(kRestoredBounds);
+
+  // Disable auto immediate visual size update (when, for example, calling into
+  // WaylandWindow::SetBoundsInPixels) so that we can emulate deferred call to
+  // WaylandToplevelWindow::UpdateVisualSize() with mismatching parameters, when
+  // processing initial frame sent by the GPU.
+  window->set_update_visual_size_immediately_for_testing(false);
+  window->set_apply_pending_state_on_update_visual_size_for_testing(false);
+
+  Sync();
+
+  gfx::Insets insets;
+  window->SetDecorationInsets(&insets);
+  window->Show(false);
+  Sync();
+
+  auto* mock_surface = server_.GetObject<wl::MockSurface>(
+      window->root_surface()->GetSurfaceId());
+  MockSurfaceGpu mock_surface_gpu(buffer_manager_gpu_.get(), widget);
+
+  auto* linux_dmabuf = server_.zwp_linux_dmabuf_v1();
+  EXPECT_CALL(*linux_dmabuf, CreateParams(_, _, _)).Times(1);
+
+  CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/,
+                                                    kDmabufBufferId);
+
+  Sync();
+
+  auto* xdg_surface = mock_surface->xdg_surface();
+  ASSERT_TRUE(xdg_surface);
+  ASSERT_FALSE(window->IsSurfaceConfigured());
+
+  ProcessCreatedBufferResourcesWithExpectation(1u /* expected size */,
+                                               false /* fail */);
+
+  // Emulate the following steps:
+  //
+  // 1. A CommitBuffer request coming from the GPU service, with frame
+  //    bounds that do not match the one stored in |pending_configures_| at Host
+  //    side (filled when processing 0x0 initial configure sequence sent by the
+  //    Wayland compositor.
+  // 2. The initial configure sequence (i.e: with 0x0 size which means the
+  //    client must suggest the initial geometry of the surface.
+  // 3. And then a CommitBuffer with the expected bounds (ie: suggested to the
+  //    Wayland compositor through a set_geometry/ack_configure sequence when
+  //    processing (2).
+  //
+  // And ensures the xdg and wl_surface objects received the correct requests
+  // amount. I.e: No buffer attaches before setting geometry + acking initial
+  // configure sequence, etc.
+
+  EXPECT_CALL(*xdg_surface, SetWindowGeometry(kRestoredBounds)).Times(1);
+  EXPECT_CALL(*xdg_surface, AckConfigure(1)).Times(1);
+  EXPECT_CALL(*mock_surface, Attach(_, 0, 0)).Times(1);
+  EXPECT_CALL(*mock_surface, Frame(_)).Times(1);
+  EXPECT_CALL(*mock_surface, Commit()).Times(1);
+
+  buffer_manager_gpu_->CommitBuffer(widget, kDmabufBufferId, kDmabufBufferId,
+                                    gfx::Rect{55, 55}, gfx::RoundedCornersF(),
+                                    kDefaultScale, gfx::Rect{55, 55});
+  ActivateSurface(mock_surface->xdg_surface());
+
+  Sync();
+
+  buffer_manager_gpu_->CommitBuffer(widget, kDmabufBufferId, kDmabufBufferId,
+                                    kRestoredBounds, gfx::RoundedCornersF(),
+                                    kDefaultScale, kRestoredBounds);
+  Sync();
+
+  SetPointerFocusedWindow(nullptr);
+  window.reset();
+  DestroyBufferAndSetTerminateExpectation(kDmabufBufferId, false /*fail*/);
+
+  Sync();
 }
 
 // The buffer that is not originally attached to any of the surfaces,

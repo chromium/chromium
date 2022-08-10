@@ -106,7 +106,7 @@ bool WaylandToplevelWindow::CreateShellToplevel() {
 }
 
 void WaylandToplevelWindow::ApplyPendingBounds() {
-  if (HasPendingConfigures()) {
+  if (has_pending_configures()) {
     DCHECK(shell_toplevel_);
     WaylandWindow::ApplyPendingBounds();
   }
@@ -464,11 +464,17 @@ void WaylandToplevelWindow::UpdateVisualSize(const gfx::Size& size_px,
   if (!shell_toplevel_)
     return;
 
-  if (!ProcessVisualSizeUpdate(size_px, scale_factor) &&
-      set_geometry_on_next_frame_) {
-    auto size_dip = gfx::ScaleToRoundedSize(size_px, 1.f / scale_factor);
-    SetWindowGeometry(gfx::Rect(size_dip));
-    set_geometry_on_next_frame_ = false;
+  if (!ProcessVisualSizeUpdate(size_px, scale_factor)) {
+    // Early-out if shell surface is still not configure at this point, which
+    // indicates it is not mapped yet, which should happen in an upcoming frame.
+    if (!shell_toplevel()->IsConfigured())
+      return;
+
+    if (set_geometry_on_next_frame_) {
+      auto size_dip = gfx::ScaleToRoundedSize(size_px, 1.f / scale_factor);
+      SetWindowGeometry(gfx::Rect(size_dip));
+      set_geometry_on_next_frame_ = false;
+    }
   }
 
   // UpdateVisualSize() indicates a frame update, which means we can forward new
