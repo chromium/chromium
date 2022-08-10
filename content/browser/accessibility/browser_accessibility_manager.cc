@@ -30,6 +30,12 @@
 #include "ui/accessibility/ax_tree_serializer.h"
 #include "ui/base/buildflags.h"
 
+#if defined(AX_FAIL_FAST_BUILD)
+#include "base/command_line.h"
+#include "content/public/browser/ax_inspect_factory.h"
+#include "content/public/common/content_switches.h"
+#endif
+
 namespace content {
 
 namespace {
@@ -729,6 +735,30 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
 
   // Allow derived classes to do event post-processing.
   FinalizeAccessibilityEvents();
+
+#if defined(AX_FAIL_FAST_BUILD)
+  // When running a debugging/sanitizer build with
+  // --force-renderer-accessibility, exercise the properties for every node, to
+  // ensure no crashes or assertions are triggered. This helpfully runs for all
+  // web tests on builder linux-blink-web-tests-force-accessibility-rel, as well
+  // as for some clusterfuzz runs.
+  static int g_max_ax_tree_exercise_iterations = 3;  // Avoid timeouts.
+  static int count = 0;
+  if (GetRoot()->GetChildCount() > 0 &&
+      !GetRoot()->GetBoolAttribute(ax::mojom::BoolAttribute::kBusy) &&
+      ++count <= g_max_ax_tree_exercise_iterations) {
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    if (command_line->HasSwitch(::switches::kForceRendererAccessibility)) {
+      std::unique_ptr<ui::AXTreeFormatter> formatter(
+          AXInspectFactory::CreatePlatformFormatter());
+      formatter->SetPropertyFilters({{"*", ui::AXPropertyFilter::ALLOW}});
+      std::string formatted_tree = formatter->Format(GetRoot());
+      VLOG(1) << "\n\n******** Formatted tree ********\n\n"
+              << formatted_tree << "\n*********************************\n\n";
+    }
+  }
+#endif
+
   return true;
 }
 

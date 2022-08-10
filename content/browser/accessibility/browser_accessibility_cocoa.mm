@@ -1222,10 +1222,10 @@ bool content::IsNSRange(id value) {
   } else if (_owner->IsTextField() &&
              _owner->HasState(ax::mojom::State::kMultiline)) {
     cocoa_role = NSAccessibilityTextAreaRole;
-  } else if (role == ax::mojom::Role::kImage && _owner->GetChildCount()) {
+  } else if (ui::IsImage(_owner->GetRole()) && _owner->GetChildCount()) {
     // An image map is an image with children, and exposed on Mac as a group.
     cocoa_role = NSAccessibilityGroupRole;
-  } else if (role == ax::mojom::Role::kImage &&
+  } else if (ui::IsImage(_owner->GetRole()) &&
              _owner->HasExplicitlyEmptyName()) {
     cocoa_role = NSAccessibilityUnknownRole;
   } else if (_owner->IsRootWebAreaForPresentationalIframe()) {

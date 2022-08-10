@@ -331,8 +331,10 @@ const char* BuildDescriptionFromHeaders(AXPlatformNodeDelegate* delegate,
   std::vector<std::string> names;
   for (const auto& node_id : ids) {
     if (AXPlatformNode* header = delegate->GetFromNodeID(node_id)) {
-      if (AtkObject* atk_header = header->GetNativeViewAccessible())
-        names.push_back(atk_object_get_name(atk_header));
+      if (AtkObject* atk_header = header->GetNativeViewAccessible()) {
+        if (const gchar* name = atk_object_get_name(atk_header))
+          names.push_back(name);
+      }
     }
   }
 
