@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -28,6 +29,8 @@ import org.chromium.browserfragment.TabObserver;
  */
 public class BrowserFragmentShellActivity extends AppCompatActivity {
     private static final String TAG = "BrowserFragmentShell";
+
+    private static final String BROWSER_FRAGMENT_TAG = "BROWSER_FRAGMENT_TAG";
 
     private Context mContext;
 
@@ -82,13 +85,17 @@ public class BrowserFragmentShellActivity extends AppCompatActivity {
         });
 
         ListenableFuture<TabManager> tabManagerFuture = fragment.getTabManager();
+        AsyncFunction<TabManager, Tab> getActiveTabTask = tabManager -> {
+            mTabManager = tabManager;
+            return tabManager.getActiveTab();
+        };
+        ListenableFuture<Tab> activeTabFuture = Futures.transformAsync(
+                tabManagerFuture, getActiveTabTask, mContext.getMainExecutor());
 
-        Futures.addCallback(tabManagerFuture, new FutureCallback<TabManager>() {
+        Futures.addCallback(activeTabFuture, new FutureCallback<Tab>() {
             @Override
-            public void onSuccess(TabManager tabManager) {
-                mTabManager = tabManager;
-                Tab tab = tabManager.getActiveTab();
-                tab.getNavigationController().navigate("https://google.com");
+            public void onSuccess(Tab activeTab) {
+                activeTab.getNavigationController().navigate("https://google.com");
             }
             @Override
             public void onFailure(Throwable thrown) {}
@@ -97,33 +104,42 @@ public class BrowserFragmentShellActivity extends AppCompatActivity {
         getSupportFragmentManager()
                 .beginTransaction()
                 .setReorderingAllowed(true)
-                .add(R.id.fragment_container_view, fragment)
+                .add(R.id.fragment_container_view, fragment, BROWSER_FRAGMENT_TAG)
                 .commit();
     }
 
     @Override
     public void onBackPressed() {
-        if (mTabManager == null) {
-            // BrowserFragment not yet initialized.
+        BrowserFragment fragment = (BrowserFragment) getSupportFragmentManager().findFragmentByTag(
+                BROWSER_FRAGMENT_TAG);
+        if (fragment == null || mTabManager == null) {
+            // BrowserFragment not initialized.
             super.onBackPressed();
+            return;
         }
-        Tab activeTab = mTabManager.getActiveTab();
-        if (activeTab == null) {
-            // TODO(swestphal): Check if there are any tabs?
-            super.onBackPressed();
-        }
-        TabNavigationController navigationController = activeTab.getNavigationController();
+        ListenableFuture<Tab> activeTabFuture = mTabManager.getActiveTab();
 
-        ListenableFuture<Boolean> canGoBackFuture = navigationController.canGoBack();
-
-        Futures.addCallback(canGoBackFuture, new FutureCallback<Boolean>() {
+        Futures.addCallback(activeTabFuture, new FutureCallback<Tab>() {
             @Override
-            public void onSuccess(Boolean canGoBack) {
-                if (canGoBack) {
-                    navigationController.goBack();
-                } else {
-                    BrowserFragmentShellActivity.super.onBackPressed();
-                }
+            public void onSuccess(Tab activeTab) {
+                TabNavigationController tabNavigationController =
+                        activeTab.getNavigationController();
+
+                Futures.addCallback(
+                        tabNavigationController.canGoBack(), new FutureCallback<Boolean>() {
+                            @Override
+                            public void onSuccess(Boolean canGoBack) {
+                                if (canGoBack) {
+                                    tabNavigationController.goBack();
+                                    return;
+                                }
+                                BrowserFragmentShellActivity.super.onBackPressed();
+                            }
+                            @Override
+                            public void onFailure(Throwable thrown) {
+                                BrowserFragmentShellActivity.super.onBackPressed();
+                            }
+                        }, mContext.getMainExecutor());
             }
             @Override
             public void onFailure(Throwable thrown) {

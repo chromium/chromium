@@ -6,10 +6,15 @@ package org.chromium.browserfragment;
 
 import android.os.RemoteException;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.concurrent.futures.CallbackToFutureAdapter;
+
+import com.google.common.util.concurrent.ListenableFuture;
 
 import org.chromium.browserfragment.interfaces.IBrowserFragmentDelegate;
-import org.chromium.browserfragment.interfaces.ITabProxy;
+import org.chromium.browserfragment.interfaces.ITabCallback;
+import org.chromium.browserfragment.interfaces.ITabParams;
 
 /**
  * Class for interaction with Browser Tabs.
@@ -20,24 +25,43 @@ import org.chromium.browserfragment.interfaces.ITabProxy;
 public class TabManager {
     private IBrowserFragmentDelegate mDelegate;
 
+    private final class TabCallback extends ITabCallback.Stub {
+        private CallbackToFutureAdapter.Completer<Tab> mCompleter;
+
+        TabCallback(CallbackToFutureAdapter.Completer<Tab> completer) {
+            mCompleter = completer;
+        }
+
+        @Override
+        public void onResult(@Nullable ITabParams tabParams) {
+            if (tabParams != null) {
+                mCompleter.set(new Tab(tabParams));
+                return;
+            }
+            mCompleter.set(null);
+        }
+    };
+
     TabManager(IBrowserFragmentDelegate delegate) {
         mDelegate = delegate;
     }
 
     /**
-     * Returns the currently active Tab; null if no Tab is active.
+     * Returns a ListenableFuture for the currently active Tab; The tab can be null if no Tab is
+     * active.
      *
-     * @return the currently active Tab.
+     * @return ListenableFuture for the active Tab.
      */
-    @Nullable
-    public Tab getActiveTab() {
-        try {
-            ITabProxy tabProxy = mDelegate.getActiveTab();
-            if (tabProxy != null) {
-                return new Tab(tabProxy);
+    @NonNull
+    public ListenableFuture<Tab> getActiveTab() {
+        return CallbackToFutureAdapter.getFuture(completer -> {
+            try {
+                mDelegate.getActiveTab(new TabCallback(completer));
+            } catch (RemoteException e) {
+                completer.setException(e);
             }
-        } catch (RemoteException e) {
-        }
-        return null;
+            // Debug string.
+            return "Active Tab Future";
+        });
     }
 }

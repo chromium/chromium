@@ -8,6 +8,7 @@ import android.os.RemoteException;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.browserfragment.interfaces.ITabParams;
 import org.chromium.browserfragment.interfaces.ITabProxy;
 
 /**
@@ -17,15 +18,20 @@ public class Tab {
     private ITabProxy mTabProxy;
     private TabNavigationController mTabNavigationController;
 
-    Tab(ITabProxy tabProxy) {
-        mTabProxy = tabProxy;
+    private String mGuid;
 
-        try {
-            mTabNavigationController =
-                    new TabNavigationController(mTabProxy.getNavigationController());
-        } catch (RemoteException e) {
-            // TODO(swestphal): Raise exception.
-        }
+    Tab(@NonNull ITabParams tabParams) {
+        assert tabParams.tabProxy != null;
+        assert tabParams.tabGuid != null;
+        assert tabParams.navigationControllerProxy != null;
+
+        mTabProxy = tabParams.tabProxy;
+        mGuid = tabParams.tabGuid;
+        mTabNavigationController = new TabNavigationController(tabParams.navigationControllerProxy);
+    }
+
+    public String getGuid() {
+        return mGuid;
     }
 
     /**
@@ -46,5 +52,18 @@ public class Tab {
     @NonNull
     public TabNavigationController getNavigationController() {
         return mTabNavigationController;
+    }
+
+    @Override
+    public int hashCode() {
+        return mGuid.hashCode();
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj instanceof Tab) {
+            return this == obj || mGuid.equals(((Tab) obj).getGuid());
+        }
+        return false;
     }
 }

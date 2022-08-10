@@ -6,7 +6,6 @@ package org.chromium.browserfragment.interfaces;
 
 import org.chromium.browserfragment.interfaces.ITabNavigationControllerProxy;
 
-interface ITabProxy {
+oneway interface ITabProxy {
   void setActive() = 1;
-  ITabNavigationControllerProxy getNavigationController() = 2;
 }

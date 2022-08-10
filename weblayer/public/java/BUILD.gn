@@ -182,8 +182,10 @@ android_aidl("browserfragment_aidl") {
     "org/chromium/browserfragment/interfaces/IBrowserSandboxCallback.aidl",
     "org/chromium/browserfragment/interfaces/IBrowserSandboxService.aidl",
     "org/chromium/browserfragment/interfaces/IRequestNavigationCallback.aidl",
+    "org/chromium/browserfragment/interfaces/ITabCallback.aidl",
     "org/chromium/browserfragment/interfaces/ITabNavigationControllerProxy.aidl",
     "org/chromium/browserfragment/interfaces/ITabObserverDelegate.aidl",
+    "org/chromium/browserfragment/interfaces/ITabParams.aidl",
     "org/chromium/browserfragment/interfaces/ITabProxy.aidl",
   ]
 }
@@ -227,6 +229,7 @@ android_library("browserfragment_sandbox_java") {
     "org/chromium/weblayer/BrowserFragmentTabDelegate.java",
     "org/chromium/weblayer/BrowserSandboxService.java",
     "org/chromium/weblayer/TabNavigationControllerProxy.java",
+    "org/chromium/weblayer/TabParams.java",
     "org/chromium/weblayer/TabProxy.java",
   ]
   resources_package = "org.chromium.weblayer"

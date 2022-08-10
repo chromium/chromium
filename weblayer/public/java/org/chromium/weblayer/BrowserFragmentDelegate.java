@@ -13,12 +13,11 @@ import android.os.RemoteException;
 import android.view.SurfaceControlViewHost;
 import android.view.WindowManager;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.browserfragment.interfaces.IBrowserFragmentDelegate;
 import org.chromium.browserfragment.interfaces.IBrowserFragmentDelegateClient;
+import org.chromium.browserfragment.interfaces.ITabCallback;
 import org.chromium.browserfragment.interfaces.ITabObserverDelegate;
-import org.chromium.browserfragment.interfaces.ITabProxy;
+import org.chromium.browserfragment.interfaces.ITabParams;
 
 /**
  * This class acts as a proxy between the embedding app's BrowserFragment and
@@ -85,13 +84,19 @@ class BrowserFragmentDelegate extends IBrowserFragmentDelegate.Stub {
     }
 
     @Override
-    @Nullable
-    public ITabProxy getActiveTab() {
-        Tab activeTab = mTabDelegate.getActiveTab();
-        if (activeTab != null) {
-            return new TabProxy(activeTab);
-        }
-        return null;
+    public void getActiveTab(ITabCallback tabCallback) {
+        mHandler.post(() -> {
+            Tab activeTab = mFragment.getBrowser().getActiveTab();
+            try {
+                if (activeTab != null) {
+                    ITabParams tabParams = TabParams.buildParcelable(activeTab);
+                    tabCallback.onResult(tabParams);
+                } else {
+                    tabCallback.onResult(null);
+                }
+            } catch (RemoteException e) {
+            }
+        });
     }
 
     @Override

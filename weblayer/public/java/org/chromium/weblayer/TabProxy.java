@@ -7,7 +7,6 @@ package org.chromium.weblayer;
 import android.os.Handler;
 import android.os.Looper;
 
-import org.chromium.browserfragment.interfaces.ITabNavigationControllerProxy;
 import org.chromium.browserfragment.interfaces.ITabProxy;
 
 /**
@@ -17,17 +16,12 @@ import org.chromium.browserfragment.interfaces.ITabProxy;
 class TabProxy extends ITabProxy.Stub {
     private Handler mHandler = new Handler(Looper.getMainLooper());
 
-    private final ITabNavigationControllerProxy mTabNavigationControllerProxy;
-
     private int mTabId;
     private String mGuid;
 
     TabProxy(Tab tab) {
         mTabId = tab.getId();
         mGuid = tab.getGuid();
-
-        mTabNavigationControllerProxy =
-                new TabNavigationControllerProxy(tab.getNavigationController());
     }
 
     private Tab getTab() {
@@ -40,10 +34,5 @@ class TabProxy extends ITabProxy.Stub {
             Tab tab = getTab();
             tab.getBrowser().setActiveTab(tab);
         });
-    }
-
-    @Override
-    public ITabNavigationControllerProxy getNavigationController() {
-        return mTabNavigationControllerProxy;
     }
 }

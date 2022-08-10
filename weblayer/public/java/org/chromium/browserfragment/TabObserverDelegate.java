@@ -12,7 +12,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.ObserverList;
 import org.chromium.browserfragment.interfaces.ITabObserverDelegate;
-import org.chromium.browserfragment.interfaces.ITabProxy;
+import org.chromium.browserfragment.interfaces.ITabParams;
 
 /**
  * TabObserverDelegate notifies TabObservers of Tab-events in weblayer.
@@ -41,9 +41,12 @@ class TabObserverDelegate extends ITabObserverDelegate.Stub {
     }
 
     @Override
-    public void notifyActiveTabChanged(@Nullable ITabProxy activeTab) {
+    public void notifyActiveTabChanged(@Nullable ITabParams tabParams) {
         mHandler.post(() -> {
-            Tab tab = new Tab(activeTab);
+            Tab tab = null;
+            if (tabParams != null) {
+                tab = new Tab(tabParams);
+            }
             for (TabObserver observer : mTabObservers) {
                 observer.onActiveTabChanged(tab);
             }
@@ -51,9 +54,9 @@ class TabObserverDelegate extends ITabObserverDelegate.Stub {
     }
 
     @Override
-    public void notifyTabAdded(@NonNull ITabProxy tabProxy) {
+    public void notifyTabAdded(@NonNull ITabParams tabParams) {
         mHandler.post(() -> {
-            Tab tab = new Tab(tabProxy);
+            Tab tab = new Tab(tabParams);
             for (TabObserver observer : mTabObservers) {
                 observer.onTabAdded(tab);
             }
@@ -61,9 +64,9 @@ class TabObserverDelegate extends ITabObserverDelegate.Stub {
     }
 
     @Override
-    public void notifyTabRemoved(@NonNull ITabProxy tabProxy) {
+    public void notifyTabRemoved(@NonNull ITabParams tabParams) {
         mHandler.post(() -> {
-            Tab tab = new Tab(tabProxy);
+            Tab tab = new Tab(tabParams);
             for (TabObserver observer : mTabObservers) {
                 observer.onTabRemoved(tab);
             }
