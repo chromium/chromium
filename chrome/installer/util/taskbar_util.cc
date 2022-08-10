@@ -11,7 +11,9 @@
 
 #include "base/files/file_path.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/win/registry.h"
 #include "base/win/windows_version.h"
+#include "chrome/install_static/install_util.h"
 
 namespace {
 
@@ -22,6 +24,8 @@ constexpr GUID CLSID_TaskbandPin = {
     0x1cba,
     0x4233,
     {0xb8, 0xbb, 0x53, 0x57, 0x73, 0xd4, 0x84, 0x49}};
+
+constexpr wchar_t kInstallerPinned[] = L"InstallerPinned";
 
 // Undocumented COM interface for manipulating taskbar pinned list.
 class __declspec(uuid("0DD79AE2-D156-45D4-9EEB-3B549769E940")) IPinnedList3
@@ -128,6 +132,27 @@ absl::optional<bool> IsShortcutPinnedToTaskbar(const base::FilePath& shortcut) {
 
   ScopedPIDLFromPath item_id_list(shortcut.value().data());
   HRESULT hr = pinned_list->IsPinned(item_id_list.Get());
-  // S_OK means `shortcut` is pinned, S_FALSE mean it's not pinned.
+  // S_OK means `shortcut` is pinned, S_FALSE means it's not pinned.
   return SUCCEEDED(hr) ? absl::optional<bool>(hr == S_OK) : absl::nullopt;
+}
+
+bool SetInstallerPinnedChromeToTaskbar(bool installed) {
+  base::win::RegKey key;
+  if (key.Create(HKEY_CURRENT_USER, install_static::GetRegistryPath().c_str(),
+                 KEY_SET_VALUE) == ERROR_SUCCESS) {
+    return installed ? key.WriteValue(kInstallerPinned, 1) == ERROR_SUCCESS
+                     : key.DeleteValue(kInstallerPinned) == ERROR_SUCCESS;
+  }
+  return false;
+}
+
+bool GetInstallerPinnedChromeToTaskbar() {
+  base::win::RegKey key;
+  if (key.Open(HKEY_CURRENT_USER, install_static::GetRegistryPath().c_str(),
+               KEY_QUERY_VALUE | KEY_WOW64_32KEY) == ERROR_SUCCESS) {
+    DWORD installer_pinned = 0;
+    LONG result = key.ReadValueDW(kInstallerPinned, &installer_pinned);
+    return (result == ERROR_SUCCESS) && (installer_pinned != 0);
+  }
+  return false;
 }

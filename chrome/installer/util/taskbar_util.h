@@ -34,4 +34,17 @@ bool UnpinShortcutFromTaskbar(const base::FilePath& shortcut);
 // cause jank.
 absl::optional<bool> IsShortcutPinnedToTaskbar(const base::FilePath& shortcut);
 
+// Sets HKCU\Software\
+// [kCompanyPathName\]kProductPathName[install_suffix]:InstallerPinned
+// registry key to record when the installer pins a shortcut to Chrome
+// on the taskbar, on a fresh install. This is on a per-user basis, so for a
+// system level install, each user who runs Chrome for the first time will have
+// this set. The value is deleted if Chrome detects that the user has unpinned
+// Chrome from the taskbar.
+// Returns true if registry key operation was successful, false otherwise.
+bool SetInstallerPinnedChromeToTaskbar(bool installed);
+
+// Returns whether the current user has an installer-pinned shortcut to Chrome.
+bool GetInstallerPinnedChromeToTaskbar();
+
 #endif  // CHROME_INSTALLER_UTIL_TASKBAR_UTIL_H_

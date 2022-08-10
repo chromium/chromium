@@ -151,6 +151,7 @@ if (is_win) {
       "setup_singleton_unittest.cc",
       "setup_util_unittest.cc",
       "setup_util_unittest.h",
+      "taskbar_util_unittest.cc",
       "update_active_setup_version_work_item_unittest.cc",
       "user_experiment_unittest.cc",
       "user_hive_visitor_unittest.cc",
