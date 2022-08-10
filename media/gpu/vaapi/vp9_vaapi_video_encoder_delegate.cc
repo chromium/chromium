@@ -17,8 +17,8 @@
 #include "media/gpu/macros.h"
 #include "media/gpu/vaapi/vaapi_common.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
+#include "media/gpu/video_rate_control.h"
 #include "media/gpu/vp9_svc_layers.h"
-#include "media/gpu/vpx_rate_control.h"
 #include "third_party/libvpx/source/libvpx/vp9/ratectrl_rtc.h"
 
 namespace media {

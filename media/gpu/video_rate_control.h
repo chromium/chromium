@@ -2,35 +2,35 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_GPU_VPX_RATE_CONTROL_H_
-#define MEDIA_GPU_VPX_RATE_CONTROL_H_
+#ifndef MEDIA_GPU_VIDEO_RATE_CONTROL_H_
+#define MEDIA_GPU_VIDEO_RATE_CONTROL_H_
 
 #include <memory>
 
 #include "base/logging.h"
 
 namespace media {
-// VPXRateControl is an interface to compute proper quantization
+// VideoRateControl is an interface to compute proper quantization
 // parameter and loop filter level for vp8 and vp9.
 // T is a libvpx::VP(8|9)RateControlRtcConfig
 // S is a libvpx::VP(8|9)RateControlRTC
-// U is a libvpx::VP(8|9)RateControlRtcConfig
+// U is a libvpx::VP(8|9)FrameParamsQpRTC
 template <typename T, typename S, typename U>
-class VPXRateControl {
+class VideoRateControl {
  public:
-  // Creates VPXRateControl using libvpx implementation.
-  static std::unique_ptr<VPXRateControl> Create(const T& config) {
+  // Creates VideoRateControl using libvpx implementation.
+  static std::unique_ptr<VideoRateControl> Create(const T& config) {
     auto impl = S::Create(config);
     if (!impl) {
-      DLOG(ERROR) << "Failed creating libvpx's VPxRateControlRTC";
+      DLOG(ERROR) << "Failed creating video RateControlRTC";
       return nullptr;
     }
-    return std::make_unique<VPXRateControl>(std::move(impl));
+    return std::make_unique<VideoRateControl>(std::move(impl));
   }
 
-  VPXRateControl() = default;
-  explicit VPXRateControl(std::unique_ptr<S> impl) : impl_(std::move(impl)) {}
-  virtual ~VPXRateControl() = default;
+  VideoRateControl() = default;
+  explicit VideoRateControl(std::unique_ptr<S> impl) : impl_(std::move(impl)) {}
+  virtual ~VideoRateControl() = default;
 
   virtual void UpdateRateControl(const T& rate_control_config) {
     impl_->UpdateRateControl(rate_control_config);
@@ -52,4 +52,4 @@ class VPXRateControl {
 };
 
 }  // namespace media
-#endif  // MEDIA_GPU_VPX_RATE_CONTROL_H_
+#endif  // MEDIA_GPU_VIDEO_RATE_CONTROL_H_
