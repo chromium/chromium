@@ -105,3 +105,9 @@ self.addEventListener('canmakepayment', event => {
       break;
   }
 });
+
+// Respond 'true' to the 'abortpayment' event to allow tests to use abort() to
+// close an ongoing PaymentRequest.
+self.addEventListener('abortpayment', event => {
+  event.respondWith(true);
+});
