@@ -2332,7 +2332,7 @@ if (!is_android) {
       "data/webui/ntp4_browsertest.h",
       "data/webui/webui_resource_browsertest.cc",
       "gpu/webgl_infobar_browsertest.cc",
-      "interaction/interaction_sequence_browser_util_browsertest.cc",
+      "interaction/webui_interaction_test_util_browsertest.cc",
       "v8/wasm_trap_handler_browsertest.cc",
     ]
 
@@ -6833,7 +6833,7 @@ test("unit_tests") {
       "../renderer/searchbox/searchbox_unittest.cc",
       "../utility/importer/bookmark_html_reader_unittest.cc",
       "../utility/importer/bookmarks_file_importer_unittest.cc",
-      "interaction/interaction_sequence_browser_util_unittest.cc",
+      "interaction/webui_interaction_test_util_unittest.cc",
     ]
 
     sources += [
@@ -8888,10 +8888,10 @@ if (!is_android) {
       "base/web_ui_browser_test.h",
       "base/web_ui_test_data_source.cc",
       "base/web_ui_test_data_source.h",
-      "interaction/interaction_sequence_browser_util.cc",
-      "interaction/interaction_sequence_browser_util.h",
       "interaction/interaction_test_util_browser.cc",
       "interaction/interaction_test_util_browser.h",
+      "interaction/webui_interaction_test_util.cc",
+      "interaction/webui_interaction_test_util.h",
       "permissions/permission_request_manager_test_api.cc",
       "permissions/permission_request_manager_test_api.h",
     ]
@@ -9503,9 +9503,9 @@ if (!is_android) {
         "../browser/ui/views/user_education/help_bubble_factory_views_interactive_uitest.cc",
         "../browser/ui/views/user_education/help_bubble_view_interactive_uitest.cc",
         "../browser/ui/views/user_education/tutorial_interactive_uitest.cc",
-        "interaction/interaction_sequence_browser_util_interactive_uitest.cc",
         "interaction/interaction_sequence_interactive_uitest.cc",
         "interaction/interaction_test_util_interactive_uitest.cc",
+        "interaction/webui_interaction_test_util_interactive_uitest.cc",
       ]
       deps += [
         "//components/live_caption:utils",

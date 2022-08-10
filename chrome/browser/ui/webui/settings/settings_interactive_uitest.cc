@@ -10,7 +10,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/interaction/interaction_sequence_browser_util.h"
+#include "chrome/test/interaction/webui_interaction_test_util.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
@@ -21,10 +21,9 @@
 #endif
 
 namespace {
-DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kInteractionSequenceBrowserUtilTestId);
-DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kInteractionSequenceBrowserUtilTestId2);
-DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(
-    kInteractionSequenceBrowserUtilCustomEventId);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebUIInteractionTestUtilTestId);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebUIInteractionTestUtilTestId2);
+DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kWebUIInteractionTestUtilCustomEventId);
 }  // namespace
 
 class SettingsInteractiveUiTest : public InProcessBrowserTest {
@@ -53,18 +52,18 @@ class SettingsInteractiveUiTest : public InProcessBrowserTest {
 
   // Helper function to wait for element in DOM visible.
   // This function will be implemented by a test util framework later.
-  auto WaitFor(const InteractionSequenceBrowserUtil::DeepQuery& element,
+  auto WaitFor(const WebUIInteractionTestUtil::DeepQuery& element,
                const ui::InteractionSequence::StepType type =
                    ui::InteractionSequence::StepType::kShown) {
     return ui::InteractionSequence::StepBuilder()
-        .SetElementID(kInteractionSequenceBrowserUtilTestId)
+        .SetElementID(kWebUIInteractionTestUtilTestId)
         .SetStartCallback(base::BindLambdaForTesting(
             // FIXME: type has to be copied.
             [&, type](ui::InteractionSequence*,
                       ui::TrackedElement* tracked_elem) {
               auto* util = tracked_elem->AsA<TrackedElementWebPage>()->owner();
 
-              InteractionSequenceBrowserUtil::StateChange state_change;
+              WebUIInteractionTestUtil::StateChange state_change;
               state_change.where = element;
               if (type == ui::InteractionSequence::StepType::kShown) {
                 state_change.test_function =
@@ -73,7 +72,7 @@ class SettingsInteractiveUiTest : public InProcessBrowserTest {
                 state_change.test_function =
                     "(el, err) => !el || el.offsetParent === null";
               }
-              state_change.event = kInteractionSequenceBrowserUtilCustomEventId;
+              state_change.event = kWebUIInteractionTestUtilCustomEventId;
               util->SendEventOnStateChange(state_change);
             }))
         .Build();
@@ -81,11 +80,11 @@ class SettingsInteractiveUiTest : public InProcessBrowserTest {
 
   // Click has to set after a WaitFor step, or reset SetType.
   // This function will be implemented by a test util framework later.
-  auto Click(const InteractionSequenceBrowserUtil::DeepQuery& element) {
+  auto Click(const WebUIInteractionTestUtil::DeepQuery& element) {
     return ui::InteractionSequence::StepBuilder()
         .SetType(ui::InteractionSequence::StepType::kCustomEvent,
-                 kInteractionSequenceBrowserUtilCustomEventId)
-        .SetElementID(kInteractionSequenceBrowserUtilTestId)
+                 kWebUIInteractionTestUtilCustomEventId)
+        .SetElementID(kWebUIInteractionTestUtilTestId)
         .SetStartCallback(base::BindLambdaForTesting(
             [&](ui::InteractionSequence*, ui::TrackedElement* tracked_elem) {
               auto* util = tracked_elem->AsA<TrackedElementWebPage>()->owner();
@@ -101,24 +100,23 @@ IN_PROC_BROWSER_TEST_F(SettingsInteractiveUiTest,
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
 
   const GURL cookie_setting_url("chrome://settings/privacy");
-  const InteractionSequenceBrowserUtil::DeepQuery cookies_link_row = {
+  const WebUIInteractionTestUtil::DeepQuery cookies_link_row = {
       "settings-ui", "settings-main", "settings-basic-page",
       "settings-privacy-page", "cr-link-row#cookiesLinkRow"};
-  const InteractionSequenceBrowserUtil::DeepQuery
-      cookies_setting_page_help_icon = {
-          "settings-ui",
-          "settings-main",
-          "settings-basic-page",
-          "settings-privacy-page",
-          "settings-subpage",
-          "div#headerLine cr-icon-button[iron-icon='cr:help-outline']"};
+  const WebUIInteractionTestUtil::DeepQuery cookies_setting_page_help_icon = {
+      "settings-ui",
+      "settings-main",
+      "settings-basic-page",
+      "settings-privacy-page",
+      "settings-subpage",
+      "div#headerLine cr-icon-button[iron-icon='cr:help-outline']"};
 
-  auto util = InteractionSequenceBrowserUtil::ForExistingTabInBrowser(
-      browser(), kInteractionSequenceBrowserUtilTestId);
+  auto util = WebUIInteractionTestUtil::ForExistingTabInBrowser(
+      browser(), kWebUIInteractionTestUtilTestId);
   util->LoadPage(cookie_setting_url);
-  auto util2 = InteractionSequenceBrowserUtil::ForNextTabInContext(
+  auto util2 = WebUIInteractionTestUtil::ForNextTabInContext(
       browser()->window()->GetElementContext(),
-      kInteractionSequenceBrowserUtilTestId2);
+      kWebUIInteractionTestUtilTestId2);
 
   auto sequence =
       ui::InteractionSequence::Builder()
@@ -133,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(SettingsInteractiveUiTest,
           .AddStep(Click(cookies_setting_page_help_icon))
           // Verify the new page opened.
           .AddStep(ui::InteractionSequence::StepBuilder()
-                       .SetElementID(kInteractionSequenceBrowserUtilTestId2)
+                       .SetElementID(kWebUIInteractionTestUtilTestId2)
                        .SetStartCallback(base::BindLambdaForTesting(
                            [&](ui::InteractionSequence*,
                                ui::TrackedElement* element) {
@@ -163,12 +161,12 @@ IN_PROC_BROWSER_TEST_F(ThemeSettingsInteractiveUiTest,
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
 
   const GURL appearance_setting_url("chrome://settings/appearance");
-  const InteractionSequenceBrowserUtil::DeepQuery reset_to_default_btn = {
+  const WebUIInteractionTestUtil::DeepQuery reset_to_default_btn = {
       "settings-ui", "settings-main", "settings-basic-page",
       "settings-appearance-page", "cr-button#useDefault"};
 
-  auto util = InteractionSequenceBrowserUtil::ForExistingTabInBrowser(
-      browser(), kInteractionSequenceBrowserUtilTestId);
+  auto util = WebUIInteractionTestUtil::ForExistingTabInBrowser(
+      browser(), kWebUIInteractionTestUtilTestId);
   util->LoadPage(appearance_setting_url);
 
   auto sequence =
@@ -178,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(ThemeSettingsInteractiveUiTest,
           .SetContext(browser()->window()->GetElementContext())
           // Verify the current theme is not set as default.
           .AddStep(ui::InteractionSequence::StepBuilder()
-                       .SetElementID(kInteractionSequenceBrowserUtilTestId)
+                       .SetElementID(kWebUIInteractionTestUtilTestId)
                        .SetStartCallback(base::BindLambdaForTesting(
                            [&](ui::InteractionSequence*,
                                ui::TrackedElement* element) {
@@ -196,8 +194,8 @@ IN_PROC_BROWSER_TEST_F(ThemeSettingsInteractiveUiTest,
                            ui::InteractionSequence::StepType::kHidden))
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kCustomEvent,
-                                kInteractionSequenceBrowserUtilCustomEventId)
-                       .SetElementID(kInteractionSequenceBrowserUtilTestId)
+                                kWebUIInteractionTestUtilCustomEventId)
+                       .SetElementID(kWebUIInteractionTestUtilTestId)
                        .SetStartCallback(base::BindLambdaForTesting(
                            [&](ui::InteractionSequence*, ui::TrackedElement*) {
                              auto* theme_service =

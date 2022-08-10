@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/test/interaction/interaction_sequence_browser_util.h"
+#include "chrome/test/interaction/webui_interaction_test_util.h"
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
@@ -43,15 +42,13 @@ DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kMouseDownCustomEvent);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kMouseUpCustomEvent);
 }  // namespace
 
-class InteractionSequenceBrowserUtilInteractiveUiTest
-    : public InProcessBrowserTest {
+class WebUIInteractionTestUtilInteractiveUiTest : public InProcessBrowserTest {
  public:
-  InteractionSequenceBrowserUtilInteractiveUiTest() = default;
-  ~InteractionSequenceBrowserUtilInteractiveUiTest() override = default;
-  InteractionSequenceBrowserUtilInteractiveUiTest(
-      const InteractionSequenceBrowserUtilInteractiveUiTest&) = delete;
-  void operator=(const InteractionSequenceBrowserUtilInteractiveUiTest&) =
-      delete;
+  WebUIInteractionTestUtilInteractiveUiTest() = default;
+  ~WebUIInteractionTestUtilInteractiveUiTest() override = default;
+  WebUIInteractionTestUtilInteractiveUiTest(
+      const WebUIInteractionTestUtilInteractiveUiTest&) = delete;
+  void operator=(const WebUIInteractionTestUtilInteractiveUiTest&) = delete;
 
   void SetUp() override {
     set_open_about_blank_on_browser_launch(true);
@@ -71,19 +68,19 @@ class InteractionSequenceBrowserUtilInteractiveUiTest
 };
 
 IN_PROC_BROWSER_TEST_F(
-    InteractionSequenceBrowserUtilInteractiveUiTest,
+    WebUIInteractionTestUtilInteractiveUiTest,
     NavigateMenuAndBringUpDownloadsPageThenOpenMoreActionsMenu) {
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
 
-  auto download_page = InteractionSequenceBrowserUtil::ForExistingTabInBrowser(
+  auto download_page = WebUIInteractionTestUtil::ForExistingTabInBrowser(
       browser(), kPrimaryTabPageElementId);
   auto test_util = CreateInteractionTestUtil();
   const ui::ElementContext context = browser()->window()->GetElementContext();
-  const InteractionSequenceBrowserUtil::DeepQuery kButtonQuery = {
+  const WebUIInteractionTestUtil::DeepQuery kButtonQuery = {
       "downloads-manager", "downloads-toolbar#toolbar",
       "cr-icon-button#moreActions"};
-  const InteractionSequenceBrowserUtil::DeepQuery kDialogQuery = {
+  const WebUIInteractionTestUtil::DeepQuery kDialogQuery = {
       "downloads-manager", "downloads-toolbar#toolbar",
       "cr-action-menu#moreActionsMenu", "dialog#dialog"};
 
@@ -138,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(
                                      .GetBool());
                              download_page->EvaluateAt(kButtonQuery,
                                                        "el => el.click()");
-                             InteractionSequenceBrowserUtil::StateChange change;
+                             WebUIInteractionTestUtil::StateChange change;
                              change.where = kDialogQuery;
                              change.event =
                                  kDownloadsMoreActionsVisibleEventType;
@@ -157,18 +154,18 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // This test checks that we can attach to a WebUI that isn't embedded in a tab.
-IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(WebUIInteractionTestUtilInteractiveUiTest,
                        OpenTabSearchMenuAndAccessWebUI) {
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
 
-  std::unique_ptr<InteractionSequenceBrowserUtil> tab_search_page;
+  std::unique_ptr<WebUIInteractionTestUtil> tab_search_page;
   auto test_util = CreateInteractionTestUtil();
   const ui::ElementContext context = browser()->window()->GetElementContext();
 
   // Poke into the doc to find something that's not at the top level, just to
   // verify we can.
-  const InteractionSequenceBrowserUtil::DeepQuery kTabSearchListQuery = {
+  const WebUIInteractionTestUtil::DeepQuery kTabSearchListQuery = {
       "tab-search-app", "#tabsList"};
 
   auto sequence =
@@ -185,23 +182,22 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilInteractiveUiTest,
                              test_util->PressButton(element);
                            }))
                        .Build())
-          .AddStep(
-              ui::InteractionSequence::StepBuilder()
-                  .SetType(ui::InteractionSequence::StepType::kShown)
-                  .SetElementID(kTabSearchBubbleElementId)
-                  .SetStartCallback(base::BindLambdaForTesting(
-                      [&](ui::InteractionSequence*,
-                          ui::TrackedElement* element) {
-                        auto* const web_view =
-                            views::AsViewClass<WebUIBubbleDialogView>(
-                                element->AsA<views::TrackedElementViews>()
-                                    ->view())
-                                ->web_view();
-                        tab_search_page =
-                            InteractionSequenceBrowserUtil::ForNonTabWebView(
-                                web_view, kTabSearchPageElementId);
-                      }))
-                  .Build())
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kShown)
+                       .SetElementID(kTabSearchBubbleElementId)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](ui::InteractionSequence*,
+                               ui::TrackedElement* element) {
+                             auto* const web_view =
+                                 views::AsViewClass<WebUIBubbleDialogView>(
+                                     element->AsA<views::TrackedElementViews>()
+                                         ->view())
+                                     ->web_view();
+                             tab_search_page =
+                                 WebUIInteractionTestUtil::ForNonTabWebView(
+                                     web_view, kTabSearchPageElementId);
+                           }))
+                       .Build())
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
                        .SetElementID(kTabSearchPageElementId)
@@ -220,12 +216,12 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilInteractiveUiTest,
 }
 
 // This test checks that when a WebUI is hidden, its element goes away.
-IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(WebUIInteractionTestUtilInteractiveUiTest,
                        OpenTabSearchMenuAndTestVisibility) {
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
 
-  std::unique_ptr<InteractionSequenceBrowserUtil> tab_search_page;
+  std::unique_ptr<WebUIInteractionTestUtil> tab_search_page;
   auto test_util = CreateInteractionTestUtil();
   const ui::ElementContext context = browser()->window()->GetElementContext();
   base::raw_ptr<WebUIBubbleDialogView> bubble_view = nullptr;
@@ -254,7 +250,7 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilInteractiveUiTest,
                         bubble_view = views::AsViewClass<WebUIBubbleDialogView>(
                             element->AsA<views::TrackedElementViews>()->view());
                         tab_search_page =
-                            InteractionSequenceBrowserUtil::ForNonTabWebView(
+                            WebUIInteractionTestUtil::ForNonTabWebView(
                                 bubble_view->web_view(),
                                 kTabSearchPageElementId);
                       }))
@@ -296,12 +292,12 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilInteractiveUiTest,
 }
 
 // This test checks that we can attach to a WebUI that is embedded in a tab.
-IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(WebUIInteractionTestUtilInteractiveUiTest,
                        CompareScreenshot_TabWebUI) {
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
 
-  auto download_page = InteractionSequenceBrowserUtil::ForExistingTabInBrowser(
+  auto download_page = WebUIInteractionTestUtil::ForExistingTabInBrowser(
       browser(), kPrimaryTabPageElementId);
   auto test_util = CreateInteractionTestUtil();
   const ui::ElementContext context = browser()->window()->GetElementContext();
@@ -334,37 +330,36 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilInteractiveUiTest,
                              test_util->SelectMenuItem(element);
                            }))
                        .Build())
-          .AddStep(
-              ui::InteractionSequence::StepBuilder()
-                  .SetType(ui::InteractionSequence::StepType::kShown)
-                  .SetElementID(kPrimaryTabPageElementId)
-                  .SetTransitionOnlyOnEvent(true)
-                  .SetStartCallback(base::BindLambdaForTesting(
-                      [&](ui::InteractionSequence*,
-                          ui::TrackedElement* element) {
-                        EXPECT_TRUE(
-                            InteractionSequenceBrowserUtil::CompareScreenshot(
-                                element, std::string(), "3654539"));
-                      }))
-                  .Build())
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kShown)
+                       .SetElementID(kPrimaryTabPageElementId)
+                       .SetTransitionOnlyOnEvent(true)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](ui::InteractionSequence*,
+                               ui::TrackedElement* element) {
+                             EXPECT_TRUE(
+                                 WebUIInteractionTestUtil::CompareScreenshot(
+                                     element, std::string(), "3654539"));
+                           }))
+                       .Build())
           .Build();
 
   EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
 }
 
-IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(WebUIInteractionTestUtilInteractiveUiTest,
                        GetElementBoundsInScreen) {
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
 
-  auto download_page = InteractionSequenceBrowserUtil::ForExistingTabInBrowser(
+  auto download_page = WebUIInteractionTestUtil::ForExistingTabInBrowser(
       browser(), kPrimaryTabPageElementId);
   auto test_util = CreateInteractionTestUtil();
   const ui::ElementContext context = browser()->window()->GetElementContext();
-  const InteractionSequenceBrowserUtil::DeepQuery kButtonQuery = {
+  const WebUIInteractionTestUtil::DeepQuery kButtonQuery = {
       "downloads-manager", "downloads-toolbar#toolbar",
       "cr-icon-button#moreActions"};
-  const InteractionSequenceBrowserUtil::DeepQuery kDialogQuery = {
+  const WebUIInteractionTestUtil::DeepQuery kDialogQuery = {
       "downloads-manager", "downloads-toolbar#toolbar",
       "cr-action-menu#moreActionsMenu", "dialog#dialog"};
 
@@ -428,19 +423,19 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilInteractiveUiTest,
   EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
 }
 
-IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(WebUIInteractionTestUtilInteractiveUiTest,
                        UseElementBoundsInScreenToSendInput) {
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
 
-  auto download_page = InteractionSequenceBrowserUtil::ForExistingTabInBrowser(
+  auto download_page = WebUIInteractionTestUtil::ForExistingTabInBrowser(
       browser(), kPrimaryTabPageElementId);
   auto test_util = CreateInteractionTestUtil();
   const ui::ElementContext context = browser()->window()->GetElementContext();
-  const InteractionSequenceBrowserUtil::DeepQuery kButtonQuery = {
+  const WebUIInteractionTestUtil::DeepQuery kButtonQuery = {
       "downloads-manager", "downloads-toolbar#toolbar",
       "cr-icon-button#moreActions"};
-  const InteractionSequenceBrowserUtil::DeepQuery kDialogQuery = {
+  const WebUIInteractionTestUtil::DeepQuery kDialogQuery = {
       "downloads-manager", "downloads-toolbar#toolbar",
       "cr-action-menu#moreActionsMenu", "dialog#dialog"};
 
@@ -567,7 +562,7 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilInteractiveUiTest,
                             base::BindLambdaForTesting([&]() {
                               send_custom_event(kMouseUpCustomEvent);
                             })));
-                        InteractionSequenceBrowserUtil::StateChange change;
+                        WebUIInteractionTestUtil::StateChange change;
                         change.where = kDialogQuery;
                         change.event = kDownloadsMoreActionsVisibleEventType;
                         change.test_function = "el => el.open";

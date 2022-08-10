@@ -41,8 +41,8 @@ ImportLockDialogViewBrowserTest.*
 InlineLoginHelperBrowserTest.InvokeUi_*
 IntentPickerDialogTest.*
 IntentPickerDialogGridViewTest.*
-InteractionSequenceBrowserUtilInteractiveUiTest.CompareScreenshot_*
-InteractionSequenceBrowserUtilTest.CompareScreenshot_*
+WebUIInteractionTestUtilInteractiveUiTest.CompareScreenshot_*
+WebUIInteractionTestUtilTest.CompareScreenshot_*
 LocalCardMigrationBrowserUiTest.*
 NewTabPageTest.*
 OneTimePermissionPromptBubbleViewBrowserTest.*

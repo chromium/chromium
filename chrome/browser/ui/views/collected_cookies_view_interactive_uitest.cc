@@ -10,7 +10,7 @@
 #include "chrome/browser/ui/views/collected_cookies_views.h"
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/interaction/interaction_sequence_browser_util.h"
+#include "chrome/test/interaction/webui_interaction_test_util.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
@@ -27,7 +27,7 @@
 #endif
 
 namespace {
-DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kInteractionSequenceBrowserUtilTestId);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebUIInteractionTestUtilTestId);
 }  // namespace
 
 class CollectedCookiesViewInteractiveUiTest : public InProcessBrowserTest {
@@ -88,8 +88,8 @@ IN_PROC_BROWSER_TEST_F(CollectedCookiesViewInteractiveUiTest,
 
   Browser* browser = CreateIncognitoBrowser();
 
-  auto util = InteractionSequenceBrowserUtil::ForExistingTabInBrowser(
-      browser, kInteractionSequenceBrowserUtilTestId);
+  auto util = WebUIInteractionTestUtil::ForExistingTabInBrowser(
+      browser, kWebUIInteractionTestUtilTestId);
   util->LoadPage(third_party_cookie_page_url);
 
   auto sequence =
@@ -99,7 +99,7 @@ IN_PROC_BROWSER_TEST_F(CollectedCookiesViewInteractiveUiTest,
           .SetContext(browser->window()->GetElementContext())
           // Wait for page loaded.
           .AddStep(ui::InteractionSequence::StepBuilder()
-                       .SetElementID(kInteractionSequenceBrowserUtilTestId)
+                       .SetElementID(kWebUIInteractionTestUtilTestId)
                        .Build())
           .AddStep(Click(kLocationIconElementId))
           .AddStep(Click(PageInfoMainView::kCookieButtonElementId))
