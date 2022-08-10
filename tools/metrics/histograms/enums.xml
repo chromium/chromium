@@ -70911,6 +70911,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="-1985729288" label="recipe_tasks"/>
   <int value="-1870686922" label="drive"/>
   <int value="-1810591528" label="shopping_tasks"/>
+  <int value="-1690248410" label="photos"/>
   <int value="-505117227" label="dummy2"/>
   <int value="301684683" label="kaleidoscope (deprecated)"/>
   <int value="1976054971" label="dummy"/>
