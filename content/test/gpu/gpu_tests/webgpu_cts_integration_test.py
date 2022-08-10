@@ -348,7 +348,7 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       response = json.loads(response)
       response_type = response['type']
 
-      if response == MESSAGE_TYPE_TEST_STARTED:
+      if response_type == MESSAGE_TYPE_TEST_STARTED:
         # If we ever want the adapter information from WebGPU, we would
         # retrieve it from the message here. However, to avoid pylint
         # complaining about unused variables, don't grab it until we actually
