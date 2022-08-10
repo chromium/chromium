@@ -747,6 +747,7 @@ message EventLatency {
 
   optional EventType event_type = 1;
   optional bool has_high_latency = 2;
+  repeated string high_latency_stage = 3;
 }
 
 message ProcessSingleton {

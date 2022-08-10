@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <ostream>
+#include <string>
 #include <utility>
 
 #include "base/check.h"
@@ -270,6 +271,10 @@ EventMetrics::~EventMetrics() {
 
 const char* EventMetrics::GetTypeName() const {
   return kInterestingEvents[static_cast<int>(type_)].name;
+}
+
+void EventMetrics::SetHighLatencyStage(const std::string& stage) {
+  high_latency_stages_.push_back(stage);
 }
 
 void EventMetrics::SetDispatchStageTimestamp(DispatchStage stage) {

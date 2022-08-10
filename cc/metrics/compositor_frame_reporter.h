@@ -153,6 +153,7 @@ class CC_EXPORT CompositorFrameReporter {
     base::TimeDelta transition_duration;
     std::vector<base::TimeDelta> compositor_durations;
     base::TimeDelta total_duration;
+    std::string transition_name;
     EventLatencyInfo(const int num_dispatch_stages,
                      const int num_compositor_stages);
     EventLatencyInfo(const EventLatencyInfo&);
@@ -392,12 +393,16 @@ class CC_EXPORT CompositorFrameReporter {
   void set_reporter_type_to_impl() { reporter_type_ = ReporterType::kImpl; }
   void set_reporter_type_to_main() { reporter_type_ = ReporterType::kMain; }
 
-  const std::vector<std::string>& high_latency_substages_for_testing_() {
+  const std::vector<std::string>& high_latency_substages_for_testing() {
     return high_latency_substages_;
   }
 
   void ClearHighLatencySubstagesForTesting() {
     high_latency_substages_.clear();
+  }
+
+  std::vector<std::unique_ptr<EventMetrics>>& events_metrics_for_testing() {
+    return events_metrics_;
   }
 
  protected:
@@ -455,6 +460,11 @@ class CC_EXPORT CompositorFrameReporter {
   void FindHighLatencyAttribution(
       CompositorLatencyInfo& previous_predictions,
       CompositorLatencyInfo& current_stage_durations);
+
+  void FindEventLatencyAttribution(
+      EventMetrics* event_metrics,
+      CompositorFrameReporter::EventLatencyInfo& predicted_event_latency,
+      CompositorFrameReporter::EventLatencyInfo& actual_event_latency);
 
   // Whether UMA histograms should be reported or not.
   const bool should_report_histograms_;

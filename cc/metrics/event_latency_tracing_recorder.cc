@@ -18,9 +18,45 @@ namespace {
 constexpr char kTracingCategory[] = "cc,benchmark,input";
 constexpr base::TimeDelta high_latency_threshold = base::Milliseconds(90);
 
-// Returns the name of the event dispatch breakdown of EventLatency trace events
-// between `start_stage` and `end_stage`.
-constexpr const char* GetDispatchBreakdownName(
+constexpr perfetto::protos::pbzero::EventLatency::EventType ToProtoEnum(
+    EventMetrics::EventType event_type) {
+#define CASE(event_type, proto_event_type)  \
+  case EventMetrics::EventType::event_type: \
+    return perfetto::protos::pbzero::EventLatency::proto_event_type
+  switch (event_type) {
+    CASE(kMousePressed, MOUSE_PRESSED);
+    CASE(kMouseReleased, MOUSE_RELEASED);
+    CASE(kMouseWheel, MOUSE_WHEEL);
+    CASE(kKeyPressed, KEY_PRESSED);
+    CASE(kKeyReleased, KEY_RELEASED);
+    CASE(kTouchPressed, TOUCH_PRESSED);
+    CASE(kTouchReleased, TOUCH_RELEASED);
+    CASE(kTouchMoved, TOUCH_MOVED);
+    CASE(kGestureScrollBegin, GESTURE_SCROLL_BEGIN);
+    CASE(kGestureScrollUpdate, GESTURE_SCROLL_UPDATE);
+    CASE(kGestureScrollEnd, GESTURE_SCROLL_END);
+    CASE(kGestureDoubleTap, GESTURE_DOUBLE_TAP);
+    CASE(kGestureLongPress, GESTURE_LONG_PRESS);
+    CASE(kGestureLongTap, GESTURE_LONG_TAP);
+    CASE(kGestureShowPress, GESTURE_SHOW_PRESS);
+    CASE(kGestureTap, GESTURE_TAP);
+    CASE(kGestureTapCancel, GESTURE_TAP_CANCEL);
+    CASE(kGestureTapDown, GESTURE_TAP_DOWN);
+    CASE(kGestureTapUnconfirmed, GESTURE_TAP_UNCONFIRMED);
+    CASE(kGestureTwoFingerTap, GESTURE_TWO_FINGER_TAP);
+    CASE(kFirstGestureScrollUpdate, FIRST_GESTURE_SCROLL_UPDATE);
+    CASE(kMouseDragged, MOUSE_DRAGGED);
+    CASE(kGesturePinchBegin, GESTURE_PINCH_BEGIN);
+    CASE(kGesturePinchEnd, GESTURE_PINCH_END);
+    CASE(kGesturePinchUpdate, GESTURE_PINCH_UPDATE);
+    CASE(kInertialGestureScrollUpdate, INERTIAL_GESTURE_SCROLL_UPDATE);
+  }
+}
+
+}  // namespace
+
+// static
+const char* EventLatencyTracingRecorder::GetDispatchBreakdownName(
     EventMetrics::DispatchStage start_stage,
     EventMetrics::DispatchStage end_stage) {
   switch (start_stage) {
@@ -54,9 +90,8 @@ constexpr const char* GetDispatchBreakdownName(
   }
 }
 
-// Returns the name of EventLatency breakdown between `dispatch_stage` and
-// `compositor_stage`.
-constexpr const char* GetDispatchToCompositorBreakdownName(
+// static
+const char* EventLatencyTracingRecorder::GetDispatchToCompositorBreakdownName(
     EventMetrics::DispatchStage dispatch_stage,
     CompositorFrameReporter::StageType compositor_stage) {
   switch (dispatch_stage) {
@@ -112,9 +147,8 @@ constexpr const char* GetDispatchToCompositorBreakdownName(
   }
 }
 
-// Returns the name of EventLatency breakdown between `dispatch_stage` and
-// termination for events not associated with a frame update.
-constexpr const char* GetDispatchToTerminationBreakdownName(
+// static
+const char* EventLatencyTracingRecorder::GetDispatchToTerminationBreakdownName(
     EventMetrics::DispatchStage dispatch_stage) {
   switch (dispatch_stage) {
     case EventMetrics::DispatchStage::kArrivedInRendererCompositor:
@@ -132,43 +166,6 @@ constexpr const char* GetDispatchToTerminationBreakdownName(
       return "";
   }
 }
-
-constexpr perfetto::protos::pbzero::EventLatency::EventType ToProtoEnum(
-    EventMetrics::EventType event_type) {
-#define CASE(event_type, proto_event_type)  \
-  case EventMetrics::EventType::event_type: \
-    return perfetto::protos::pbzero::EventLatency::proto_event_type
-  switch (event_type) {
-    CASE(kMousePressed, MOUSE_PRESSED);
-    CASE(kMouseReleased, MOUSE_RELEASED);
-    CASE(kMouseWheel, MOUSE_WHEEL);
-    CASE(kKeyPressed, KEY_PRESSED);
-    CASE(kKeyReleased, KEY_RELEASED);
-    CASE(kTouchPressed, TOUCH_PRESSED);
-    CASE(kTouchReleased, TOUCH_RELEASED);
-    CASE(kTouchMoved, TOUCH_MOVED);
-    CASE(kGestureScrollBegin, GESTURE_SCROLL_BEGIN);
-    CASE(kGestureScrollUpdate, GESTURE_SCROLL_UPDATE);
-    CASE(kGestureScrollEnd, GESTURE_SCROLL_END);
-    CASE(kGestureDoubleTap, GESTURE_DOUBLE_TAP);
-    CASE(kGestureLongPress, GESTURE_LONG_PRESS);
-    CASE(kGestureLongTap, GESTURE_LONG_TAP);
-    CASE(kGestureShowPress, GESTURE_SHOW_PRESS);
-    CASE(kGestureTap, GESTURE_TAP);
-    CASE(kGestureTapCancel, GESTURE_TAP_CANCEL);
-    CASE(kGestureTapDown, GESTURE_TAP_DOWN);
-    CASE(kGestureTapUnconfirmed, GESTURE_TAP_UNCONFIRMED);
-    CASE(kGestureTwoFingerTap, GESTURE_TWO_FINGER_TAP);
-    CASE(kFirstGestureScrollUpdate, FIRST_GESTURE_SCROLL_UPDATE);
-    CASE(kMouseDragged, MOUSE_DRAGGED);
-    CASE(kGesturePinchBegin, GESTURE_PINCH_BEGIN);
-    CASE(kGesturePinchEnd, GESTURE_PINCH_END);
-    CASE(kGesturePinchUpdate, GESTURE_PINCH_UPDATE);
-    CASE(kInertialGestureScrollUpdate, INERTIAL_GESTURE_SCROLL_UPDATE);
-  }
-}
-
-}  // namespace
 
 // static
 void EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
@@ -195,6 +192,12 @@ void EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
         bool has_high_latency =
             (termination_time - generated_timestamp) > high_latency_threshold;
         event_latency->set_has_high_latency(has_high_latency);
+        for (auto stage : event_metrics->GetHighLatencyStages()) {
+          // TODO(crbug.com/1334827): Consider changing the high_latency_stage
+          // type from a string to enum type in chrome_track_event.proto,
+          // similar to event_type.
+          event_latency->add_high_latency_stage(stage);
+        }
       });
 
   // Event dispatch stages.

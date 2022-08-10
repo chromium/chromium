@@ -6,6 +6,7 @@
 #define CC_METRICS_EVENT_METRICS_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -106,6 +107,12 @@ class CC_EXPORT EventMetrics {
   // Returns a string representing event type.
   const char* GetTypeName() const;
 
+  void SetHighLatencyStage(const std::string& stage);
+  const std::vector<std::string>& GetHighLatencyStages() const {
+    return high_latency_stages_;
+  }
+  void ClearHighLatencyStagesForTesting() { high_latency_stages_.clear(); }
+
   void SetDispatchStageTimestamp(DispatchStage stage);
   base::TimeTicks GetDispatchStageTimestamp(DispatchStage stage) const;
 
@@ -166,6 +173,8 @@ class CC_EXPORT EventMetrics {
       const base::TickClock* tick_clock);
 
   EventType type_;
+
+  std::vector<std::string> high_latency_stages_;
 
   const raw_ptr<const base::TickClock> tick_clock_;
 

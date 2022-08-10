@@ -15,6 +15,23 @@ class EventMetrics;
 
 class EventLatencyTracingRecorder {
  public:
+  // Returns the name of the event dispatch breakdown of EventLatency trace
+  // events between `start_stage` and `end_stage`.
+  static const char* GetDispatchBreakdownName(
+      EventMetrics::DispatchStage start_stage,
+      EventMetrics::DispatchStage end_stage);
+
+  // Returns the name of EventLatency breakdown between `dispatch_stage` and
+  // `compositor_stage`.
+  static const char* GetDispatchToCompositorBreakdownName(
+      EventMetrics::DispatchStage dispatch_stage,
+      CompositorFrameReporter::StageType compositor_stage);
+
+  // Returns the name of EventLatency breakdown between `dispatch_stage` and
+  // termination for events not associated with a frame update.
+  static const char* GetDispatchToTerminationBreakdownName(
+      EventMetrics::DispatchStage dispatch_stage);
+
   static void RecordEventLatencyTraceEvent(
       EventMetrics* event_metrics,
       base::TimeTicks termination_time,
