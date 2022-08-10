@@ -332,7 +332,7 @@
   },
   "cast_runner_pkg":{
     "label": "//fuchsia_web/runners:cast_runner_pkg",
-    "type": "additonal_compile_target",
+    "type": "additional_compile_target",
   },
   "cast_runner_unittests": {
     "label": "//fuchsia_web/runners:cast_runner_unittests",
@@ -2003,7 +2003,7 @@
   },
   "web_runner_pkg": {
     "label": "//fuchsia_web/runners:web_runner_pkg",
-    "type": "additonal_compile_target",
+    "type": "additional_compile_target",
   },
   "webapk_client_junit_tests": {
     "label": "//chrome/android/webapk/libs/client:webapk_client_junit_tests",
