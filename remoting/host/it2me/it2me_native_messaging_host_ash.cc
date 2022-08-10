@@ -6,6 +6,7 @@
 
 #include "remoting/host/it2me/it2me_native_messaging_host_ash.h"
 
+#include "base/callback.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/lazy_instance.h"
@@ -147,7 +148,7 @@ void It2MeNativeMessageHostAsh::PostMessageFromNativeHost(
     const std::string& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::string type;
-  base::Value contents;
+  base::Value::Dict contents;
   if (!ParseNativeMessageJson(message, type, contents)) {
     CloseChannel(std::string());
     return;
@@ -198,9 +199,9 @@ void It2MeNativeMessageHostAsh::HandleDisconnectResponse() {
 }
 
 void It2MeNativeMessageHostAsh::HandleHostStateChangeMessage(
-    base::Value message) {
+    base::Value::Dict message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const std::string* new_state = message.FindStringKey(kState);
+  const std::string* new_state = message.FindString(kState);
   if (!new_state) {
     LOG(ERROR) << "Missing |" << kState << "| value in message.";
     CloseChannel(ErrorCodeToString(protocol::ErrorCode::INCOMPATIBLE_PROTOCOL));
@@ -211,14 +212,14 @@ void It2MeNativeMessageHostAsh::HandleHostStateChangeMessage(
     remote_->OnHostStateStarting();
   } else if (*new_state == kHostStateDisconnected) {
     const std::string* disconnect_reason =
-        message.FindStringKey(kDisconnectReason);
+        message.FindString(kDisconnectReason);
     remote_->OnHostStateDisconnected(
         disconnect_reason ? *disconnect_reason
                           : ErrorCodeToString(protocol::ErrorCode::OK));
   } else if (*new_state == kHostStateRequestedAccessCode) {
     remote_->OnHostStateRequestedAccessCode();
   } else if (*new_state == kHostStateReceivedAccessCode) {
-    const std::string* access_code = message.FindStringKey(kAccessCode);
+    const std::string* access_code = message.FindString(kAccessCode);
     if (!access_code) {
       LOG(ERROR) << "Missing |" << kAccessCode << "| value in message.";
       CloseChannel(
@@ -226,7 +227,7 @@ void It2MeNativeMessageHostAsh::HandleHostStateChangeMessage(
       return;
     }
     absl::optional<int> access_code_lifetime =
-        message.FindIntKey(kAccessCodeLifetime);
+        message.FindInt(kAccessCodeLifetime);
     if (!access_code_lifetime) {
       LOG(ERROR) << "Missing |" << kAccessCodeLifetime << "| value in message.";
       CloseChannel(
@@ -238,7 +239,7 @@ void It2MeNativeMessageHostAsh::HandleHostStateChangeMessage(
   } else if (*new_state == kHostStateConnecting) {
     remote_->OnHostStateConnecting();
   } else if (*new_state == kHostStateConnected) {
-    const std::string* remote_username = message.FindStringKey(kClient);
+    const std::string* remote_username = message.FindString(kClient);
     if (!remote_username) {
       LOG(ERROR) << "Missing |" << kClient << "| value in message.";
       CloseChannel(
@@ -248,7 +249,7 @@ void It2MeNativeMessageHostAsh::HandleHostStateChangeMessage(
     remote_->OnHostStateConnected(*remote_username);
   } else if (*new_state == kHostStateError) {
     const std::string* error_code_string =
-        message.FindStringKey(kErrorMessageCode);
+        message.FindString(kErrorMessageCode);
     if (!error_code_string) {
       LOG(ERROR) << "Missing |" << kErrorMessageCode << "| value in message.";
       CloseChannel(
@@ -275,10 +276,10 @@ void It2MeNativeMessageHostAsh::HandleHostStateChangeMessage(
 }
 
 void It2MeNativeMessageHostAsh::HandleNatPolicyChangedMessage(
-    base::Value message) {
+    base::Value::Dict message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   absl::optional<bool> nat_enabled =
-      message.FindBoolKey(kNatPolicyChangedMessageNatEnabled);
+      message.FindBool(kNatPolicyChangedMessageNatEnabled);
   if (!nat_enabled.has_value()) {
     LOG(ERROR) << "Missing |" << kNatPolicyChangedMessageNatEnabled
                << "| value in message.";
@@ -287,7 +288,7 @@ void It2MeNativeMessageHostAsh::HandleNatPolicyChangedMessage(
   }
 
   absl::optional<bool> relay_enabled =
-      message.FindBoolKey(kNatPolicyChangedMessageRelayEnabled);
+      message.FindBool(kNatPolicyChangedMessageRelayEnabled);
   if (!nat_enabled.has_value()) {
     LOG(ERROR) << "Missing |" << kNatPolicyChangedMessageRelayEnabled
                << "| value in message.";
@@ -301,15 +302,15 @@ void It2MeNativeMessageHostAsh::HandleNatPolicyChangedMessage(
   remote_->OnNatPolicyChanged(std::move(nat_policy));
 }
 
-void It2MeNativeMessageHostAsh::HandlePolicyErrorMessage(base::Value message) {
+void It2MeNativeMessageHostAsh::HandlePolicyErrorMessage(
+    base::Value::Dict message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   remote_->OnPolicyError();
 }
 
-void It2MeNativeMessageHostAsh::HandleErrorMessage(base::Value message) {
+void It2MeNativeMessageHostAsh::HandleErrorMessage(base::Value::Dict message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const std::string* error_code_string =
-      message.FindStringKey(kErrorMessageCode);
+  const std::string* error_code_string = message.FindString(kErrorMessageCode);
   if (!error_code_string) {
     LOG(ERROR) << "Missing |" << kErrorMessageCode << "| value in message.";
     CloseChannel(ErrorCodeToString(protocol::ErrorCode::INCOMPATIBLE_PROTOCOL));

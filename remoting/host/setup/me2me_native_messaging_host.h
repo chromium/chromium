@@ -112,7 +112,7 @@ class Me2MeNativeMessagingHost : public extensions::NativeMessageHost {
   void SendCredentialsResponse(base::Value::Dict response,
                                const std::string& user_email,
                                const std::string& refresh_token);
-  void SendMessageToClient(base::Value message) const;
+  void SendMessageToClient(base::Value::Dict message) const;
 
   void OnError(const std::string& error_message);
 

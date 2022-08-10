@@ -77,28 +77,29 @@ void RemoteWebAuthnNativeMessagingHost::OnMessage(const std::string& message) {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
   std::string type;
-  base::Value request;
+  base::Value::Dict request;
   if (!ParseNativeMessageJson(message, type, request)) {
     return;
   }
 
-  base::Value response = CreateNativeMessageResponse(request);
-  if (response.is_none()) {
+  absl::optional<base::Value::Dict> response =
+      CreateNativeMessageResponse(request);
+  if (!response.has_value()) {
     return;
   }
 
   if (type == kHelloMessage) {
-    ProcessHello(std::move(response));
+    ProcessHello(std::move(*response));
   } else if (type == kIsUvpaaMessageType) {
-    ProcessIsUvpaa(request, std::move(response));
+    ProcessIsUvpaa(request, std::move(*response));
   } else if (type == kGetRemoteStateMessageType) {
-    ProcessGetRemoteState(std::move(response));
+    ProcessGetRemoteState(std::move(*response));
   } else if (type == kCreateMessageType) {
-    ProcessCreate(request, std::move(response));
+    ProcessCreate(request, std::move(*response));
   } else if (type == kGetMessageType) {
-    ProcessGet(request, std::move(response));
+    ProcessGet(request, std::move(*response));
   } else if (type == kCancelMessageType) {
-    ProcessCancel(request, std::move(response));
+    ProcessCancel(request, std::move(*response));
   } else {
     LOG(ERROR) << "Unsupported request type: " << type;
   }
@@ -122,7 +123,8 @@ RemoteWebAuthnNativeMessagingHost::task_runner() const {
   return task_runner_;
 }
 
-void RemoteWebAuthnNativeMessagingHost::ProcessHello(base::Value response) {
+void RemoteWebAuthnNativeMessagingHost::ProcessHello(
+    base::Value::Dict response) {
   // Hello request: {id: string, type: 'hello'}
   // Hello response: {id: string, type: 'helloResponse', hostVersion: string}
 
@@ -133,8 +135,8 @@ void RemoteWebAuthnNativeMessagingHost::ProcessHello(base::Value response) {
 }
 
 void RemoteWebAuthnNativeMessagingHost::ProcessIsUvpaa(
-    const base::Value& request,
-    base::Value response) {
+    const base::Value::Dict& request,
+    base::Value::Dict response) {
   // IsUvpaa request: {id: string, type: 'isUvpaa'}
   // IsUvpaa response:
   //   {id: string, type: 'isUvpaaResponse', isAvailable: boolean}
@@ -152,8 +154,8 @@ void RemoteWebAuthnNativeMessagingHost::ProcessIsUvpaa(
 }
 
 void RemoteWebAuthnNativeMessagingHost::ProcessCreate(
-    const base::Value& request,
-    base::Value response) {
+    const base::Value::Dict& request,
+    base::Value::Dict response) {
   // Create request: {id: string, type: 'create', requestData: string}
   // Create response: {
   //   id: string, type: 'createResponse', responseData?: string,
@@ -181,8 +183,9 @@ void RemoteWebAuthnNativeMessagingHost::ProcessCreate(
                      base::Unretained(this), std::move(response)));
 }
 
-void RemoteWebAuthnNativeMessagingHost::ProcessGet(const base::Value& request,
-                                                   base::Value response) {
+void RemoteWebAuthnNativeMessagingHost::ProcessGet(
+    const base::Value::Dict& request,
+    base::Value::Dict response) {
   // Get request: {id: string, type: 'get', requestData: string}
   // Get response: {
   //   id: string, type: 'getResponse', responseData?: string,
@@ -210,8 +213,8 @@ void RemoteWebAuthnNativeMessagingHost::ProcessGet(const base::Value& request,
 }
 
 void RemoteWebAuthnNativeMessagingHost::ProcessCancel(
-    const base::Value& request,
-    base::Value response) {
+    const base::Value::Dict& request,
+    base::Value::Dict response) {
   // Cancel request: {id: string, type: 'cancel'}
   // Cancel response:
   //   {id: string, type: 'cancelResponse', wasCanceled: boolean}
@@ -221,10 +224,10 @@ void RemoteWebAuthnNativeMessagingHost::ProcessCancel(
     return;
   }
 
-  const base::Value* message_id = request.FindKey(kMessageId);
+  const base::Value* message_id = request.Find(kMessageId);
   if (!message_id) {
     LOG(ERROR) << "Message ID not found in cancel request.";
-    response.SetBoolKey(kCancelResponseWasCanceledKey, false);
+    response.Set(kCancelResponseWasCanceledKey, false);
     SendMessageToClient(std::move(response));
     return;
   }
@@ -232,7 +235,7 @@ void RemoteWebAuthnNativeMessagingHost::ProcessCancel(
   auto it = id_to_request_canceller_.find(*message_id);
   if (it == id_to_request_canceller_.end()) {
     LOG(ERROR) << "No cancelable request found for message ID " << *message_id;
-    response.SetBoolKey(kCancelResponseWasCanceledKey, false);
+    response.Set(kCancelResponseWasCanceledKey, false);
     SendMessageToClient(std::move(response));
     return;
   }
@@ -245,7 +248,7 @@ void RemoteWebAuthnNativeMessagingHost::ProcessCancel(
 }
 
 void RemoteWebAuthnNativeMessagingHost::ProcessGetRemoteState(
-    base::Value response) {
+    base::Value::Dict response) {
   // GetRemoteState request: {id: string, type: 'getRemoteState'}
   // GetRemoteState response: {id: string, type: 'getRemoteStateResponse'}
 
@@ -279,16 +282,17 @@ void RemoteWebAuthnNativeMessagingHost::OnIpcDisconnected() {
   }
 }
 
-void RemoteWebAuthnNativeMessagingHost::OnIsUvpaaResponse(base::Value response,
-                                                          bool is_available) {
+void RemoteWebAuthnNativeMessagingHost::OnIsUvpaaResponse(
+    base::Value::Dict response,
+    bool is_available) {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
-  response.SetBoolKey(kIsUvpaaResponseIsAvailableKey, is_available);
+  response.Set(kIsUvpaaResponseIsAvailableKey, is_available);
   SendMessageToClient(std::move(response));
 }
 
 void RemoteWebAuthnNativeMessagingHost::OnCreateResponse(
-    base::Value response,
+    base::Value::Dict response,
     mojom::WebAuthnCreateResponsePtr remote_response) {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
@@ -298,13 +302,13 @@ void RemoteWebAuthnNativeMessagingHost::OnCreateResponse(
   if (!remote_response.is_null()) {
     switch (remote_response->which()) {
       case mojom::WebAuthnCreateResponse::Tag::kErrorDetails:
-        response.SetKey(
+        response.Set(
             kWebAuthnErrorKey,
             MojoErrorToErrorDict(remote_response->get_error_details()));
         break;
       case mojom::WebAuthnCreateResponse::Tag::kResponseData:
-        response.SetStringKey(kCreateResponseDataKey,
-                              remote_response->get_response_data());
+        response.Set(kCreateResponseDataKey,
+                     remote_response->get_response_data());
         break;
       default:
         NOTREACHED() << "Unexpected create response tag: "
@@ -312,7 +316,7 @@ void RemoteWebAuthnNativeMessagingHost::OnCreateResponse(
     }
   }
 
-  const base::Value* message_id = response.FindKey(kMessageId);
+  const base::Value* message_id = response.Find(kMessageId);
   if (message_id) {
     RemoveRequestCancellerByMessageId(*message_id);
   }
@@ -321,7 +325,7 @@ void RemoteWebAuthnNativeMessagingHost::OnCreateResponse(
 }
 
 void RemoteWebAuthnNativeMessagingHost::OnGetResponse(
-    base::Value response,
+    base::Value::Dict response,
     mojom::WebAuthnGetResponsePtr remote_response) {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
@@ -331,13 +335,12 @@ void RemoteWebAuthnNativeMessagingHost::OnGetResponse(
   if (!remote_response.is_null()) {
     switch (remote_response->which()) {
       case mojom::WebAuthnGetResponse::Tag::kErrorDetails:
-        response.SetKey(
+        response.Set(
             kWebAuthnErrorKey,
             MojoErrorToErrorDict(remote_response->get_error_details()));
         break;
       case mojom::WebAuthnGetResponse::Tag::kResponseData:
-        response.SetStringKey(kGetResponseDataKey,
-                              remote_response->get_response_data());
+        response.Set(kGetResponseDataKey, remote_response->get_response_data());
         break;
       default:
         NOTREACHED() << "Unexpected get response tag: "
@@ -345,7 +348,7 @@ void RemoteWebAuthnNativeMessagingHost::OnGetResponse(
     }
   }
 
-  const base::Value* message_id = response.FindKey(kMessageId);
+  const base::Value* message_id = response.Find(kMessageId);
   if (message_id) {
     RemoveRequestCancellerByMessageId(*message_id);
   }
@@ -353,16 +356,17 @@ void RemoteWebAuthnNativeMessagingHost::OnGetResponse(
   SendMessageToClient(std::move(response));
 }
 
-void RemoteWebAuthnNativeMessagingHost::OnCancelResponse(base::Value response,
-                                                         bool was_canceled) {
+void RemoteWebAuthnNativeMessagingHost::OnCancelResponse(
+    base::Value::Dict response,
+    bool was_canceled) {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
-  const base::Value* message_id = response.FindKey(kMessageId);
+  const base::Value* message_id = response.Find(kMessageId);
   if (message_id) {
     RemoveRequestCancellerByMessageId(*message_id);
   }
 
-  response.SetBoolKey(kCancelResponseWasCanceledKey, was_canceled);
+  response.Set(kCancelResponseWasCanceledKey, was_canceled);
   SendMessageToClient(std::move(response));
 }
 
@@ -388,9 +392,8 @@ void RemoteWebAuthnNativeMessagingHost::SendNextRemoteState(bool is_remoted) {
 
   auto response = std::move(get_remote_state_responses_.front());
   get_remote_state_responses_.pop();
-  DCHECK(response.is_dict());
 
-  response.SetBoolKey(kGetRemoteStateResponseIsRemotedKey, is_remoted);
+  response.Set(kGetRemoteStateResponseIsRemotedKey, is_remoted);
   SendMessageToClient(std::move(response));
   if (!get_remote_state_responses_.empty()) {
     QueryNextRemoteState();
@@ -416,9 +419,8 @@ bool RemoteWebAuthnNativeMessagingHost::EnsureIpcConnection() {
 }
 
 void RemoteWebAuthnNativeMessagingHost::SendMessageToClient(
-    base::Value message) {
+    base::Value::Dict message) {
   DCHECK(task_runner_->BelongsToCurrentThread());
-  DCHECK(!message.is_none());
 
   std::string message_json;
   if (!base::JSONWriter::Write(message, &message_json)) {
@@ -429,28 +431,28 @@ void RemoteWebAuthnNativeMessagingHost::SendMessageToClient(
 }
 
 const base::Value* RemoteWebAuthnNativeMessagingHost::FindMessageIdOrSendError(
-    base::Value& response) {
-  const base::Value* message_id = response.FindKey(kMessageId);
+    base::Value::Dict& response) {
+  const base::Value* message_id = response.Find(kMessageId);
   if (message_id) {
     return message_id;
   }
-  response.SetKey(kWebAuthnErrorKey,
-                  CreateWebAuthnExceptionDetailsDict(
-                      "NotSupportedError", "Message ID not found in request."));
+  response.Set(kWebAuthnErrorKey,
+               CreateWebAuthnExceptionDetailsDict(
+                   "NotSupportedError", "Message ID not found in request."));
   SendMessageToClient(std::move(response));
   return nullptr;
 }
 
 const std::string*
 RemoteWebAuthnNativeMessagingHost::FindRequestDataOrSendError(
-    const base::Value& request,
+    const base::Value::Dict& request,
     const std::string& request_data_key,
-    base::Value& response) {
-  const std::string* request_data = request.FindStringKey(request_data_key);
+    base::Value::Dict& response) {
+  const std::string* request_data = request.FindString(request_data_key);
   if (request_data) {
     return request_data;
   }
-  response.SetKey(
+  response.Set(
       kWebAuthnErrorKey,
       CreateWebAuthnExceptionDetailsDict(
           "NotSupportedError", "Request data not found in the request."));
@@ -508,8 +510,8 @@ void RemoteWebAuthnNativeMessagingHost::OnRequestCancellerDisconnected(
 void RemoteWebAuthnNativeMessagingHost::SendClientDisconnectedMessage() {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
-  base::Value message(base::Value::Type::DICTIONARY);
-  message.SetStringKey(kMessageType, kClientDisconnectedMessageType);
+  base::Value::Dict message;
+  message.Set(kMessageType, kClientDisconnectedMessageType);
   SendMessageToClient(std::move(message));
 }
 

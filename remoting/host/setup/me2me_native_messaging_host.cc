@@ -177,7 +177,7 @@ void Me2MeNativeMessagingHost::ProcessHello(base::Value::Dict message,
     supported_features_list.Append(feature);
   }
   response.Set("supportedFeatures", std::move(supported_features_list));
-  SendMessageToClient(base::Value(std::move(response)));
+  SendMessageToClient(std::move(response));
 }
 
 void Me2MeNativeMessagingHost::ProcessClearPairedClients(
@@ -236,7 +236,7 @@ void Me2MeNativeMessagingHost::ProcessGetHostName(base::Value::Dict message,
   DCHECK(task_runner()->BelongsToCurrentThread());
 
   response.Set("hostname", net::GetHostName());
-  SendMessageToClient(base::Value(std::move(response)));
+  SendMessageToClient(std::move(response));
 }
 
 void Me2MeNativeMessagingHost::ProcessGetPinHash(base::Value::Dict message,
@@ -258,7 +258,7 @@ void Me2MeNativeMessagingHost::ProcessGetPinHash(base::Value::Dict message,
     return;
   }
   response.Set("hash", MakeHostPinHash(std::move(*host_id), std::move(*pin)));
-  SendMessageToClient(base::Value(std::move(response)));
+  SendMessageToClient(std::move(response));
 }
 
 void Me2MeNativeMessagingHost::ProcessGenerateKeyPair(
@@ -269,7 +269,7 @@ void Me2MeNativeMessagingHost::ProcessGenerateKeyPair(
   scoped_refptr<RsaKeyPair> key_pair = RsaKeyPair::Generate();
   response.Set("privateKey", key_pair->ToString());
   response.Set("publicKey", key_pair->GetPublicKey());
-  SendMessageToClient(base::Value(std::move(response)));
+  SendMessageToClient(std::move(response));
 }
 
 void Me2MeNativeMessagingHost::ProcessUpdateDaemonConfig(
@@ -428,7 +428,7 @@ void Me2MeNativeMessagingHost::ProcessGetDaemonState(
       response.Set("state", "UNKNOWN");
       break;
   }
-  SendMessageToClient(base::Value(std::move(response)));
+  SendMessageToClient(std::move(response));
 }
 
 void Me2MeNativeMessagingHost::ProcessGetHostClientId(
@@ -438,7 +438,7 @@ void Me2MeNativeMessagingHost::ProcessGetHostClientId(
 
   response.Set("clientId", google_apis::GetOAuth2ClientID(
                                google_apis::CLIENT_REMOTING_HOST));
-  SendMessageToClient(base::Value(std::move(response)));
+  SendMessageToClient(std::move(response));
 }
 
 void Me2MeNativeMessagingHost::ProcessGetCredentialsFromAuthCode(
@@ -488,7 +488,7 @@ void Me2MeNativeMessagingHost::SendConfigResponse(
   } else {
     response.Set("config", base::Value());
   }
-  SendMessageToClient(base::Value(std::move(response)));
+  SendMessageToClient(std::move(response));
 }
 
 void Me2MeNativeMessagingHost::SendPairedClientsResponse(
@@ -497,7 +497,7 @@ void Me2MeNativeMessagingHost::SendPairedClientsResponse(
   DCHECK(task_runner()->BelongsToCurrentThread());
 
   response.Set("pairedClients", std::move(pairings));
-  SendMessageToClient(base::Value(std::move(response)));
+  SendMessageToClient(std::move(response));
 }
 
 void Me2MeNativeMessagingHost::SendUsageStatsConsentResponse(
@@ -508,7 +508,7 @@ void Me2MeNativeMessagingHost::SendUsageStatsConsentResponse(
   response.Set("supported", consent.supported);
   response.Set("allowed", consent.allowed);
   response.Set("setByPolicy", consent.set_by_policy);
-  SendMessageToClient(base::Value(std::move(response)));
+  SendMessageToClient(std::move(response));
 }
 
 void Me2MeNativeMessagingHost::SendAsyncResult(
@@ -527,7 +527,7 @@ void Me2MeNativeMessagingHost::SendAsyncResult(
       response.Set("result", "CANCELLED");
       break;
   }
-  SendMessageToClient(base::Value(std::move(response)));
+  SendMessageToClient(std::move(response));
 }
 
 void Me2MeNativeMessagingHost::SendBooleanResult(base::Value::Dict response,
@@ -535,7 +535,7 @@ void Me2MeNativeMessagingHost::SendBooleanResult(base::Value::Dict response,
   DCHECK(task_runner()->BelongsToCurrentThread());
 
   response.Set("result", result);
-  SendMessageToClient(base::Value(std::move(response)));
+  SendMessageToClient(std::move(response));
 }
 
 void Me2MeNativeMessagingHost::SendCredentialsResponse(
@@ -548,10 +548,11 @@ void Me2MeNativeMessagingHost::SendCredentialsResponse(
     response.Set("userEmail", user_email);
   }
   response.Set("refreshToken", refresh_token);
-  SendMessageToClient(base::Value(std::move(response)));
+  SendMessageToClient(std::move(response));
 }
 
-void Me2MeNativeMessagingHost::SendMessageToClient(base::Value message) const {
+void Me2MeNativeMessagingHost::SendMessageToClient(
+    base::Value::Dict message) const {
   DCHECK(task_runner()->BelongsToCurrentThread());
   std::string message_json;
   base::JSONWriter::Write(message, &message_json);

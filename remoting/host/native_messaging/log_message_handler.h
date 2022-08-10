@@ -25,16 +25,9 @@ namespace remoting {
 // over a Native Messaging channel.
 class LogMessageHandler {
  public:
-  using Delegate = base::RepeatingCallback<void(base::Value message)>;
-  using DelegateDeprecated =
-      base::RepeatingCallback<void(std::unique_ptr<base::Value> message)>;
+  using Delegate = base::RepeatingCallback<void(base::Value::Dict message)>;
 
   explicit LogMessageHandler(const Delegate& delegate);
-
-  // DEPRECATED.
-  // TODO(yuweih): Migrate all call sites to use the new Delegate callback
-  // signature and delete this constructor.
-  explicit LogMessageHandler(const DelegateDeprecated& delegate);
   ~LogMessageHandler();
 
   // When set to true, if a message is logged on the caller thread, the message

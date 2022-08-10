@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace remoting {
 
@@ -16,20 +17,21 @@ namespace remoting {
 // parsed. If parsing fails, the out params will not be affected.
 bool ParseNativeMessageJson(const std::string& message,
                             std::string& message_type,
-                            base::Value& parsed_message);
+                            base::Value::Dict& parsed_message);
 
-// Creates a response for |request|. Returns a none value if the request is
-// malformed.
+// Creates and returns a response for |request|. Returns nullopt if the request
+// is malformed.
 // For a request like this: {id: "abc", type: "hello"}, the response will be:
 // {id: "abc", type: "helloResponse"}.
-base::Value CreateNativeMessageResponse(const base::Value& request);
+absl::optional<base::Value::Dict> CreateNativeMessageResponse(
+    const base::Value::Dict& request);
 
 // Adds hello response fields to |response|, which should be created by calling
 // CreateNativeMessageResponse(). The supported features field will be absent if
 // |supported_features| is none (or default).
 void ProcessNativeMessageHelloResponse(
-    base::Value& response,
-    base::Value supported_features = base::Value());
+    base::Value::Dict& response,
+    base::Value::List supported_features = base::Value::List());
 }  // namespace remoting
 
 #endif  // REMOTING_HOST_NATIVE_MESSAGING_NATIVE_MESSAGING_HELPERS_H_

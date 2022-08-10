@@ -38,9 +38,9 @@ namespace {
 
 constexpr int kInvalidMessageId = -1;
 
-int GetMessageId(const base::Value& message) {
-  const auto* message_id = message.FindPath(kMessageId);
-  return message_id ? message_id->GetInt() : kInvalidMessageId;
+int GetMessageId(const base::Value::Dict& message) {
+  absl::optional<int> message_id = message.FindInt(kMessageId);
+  return message_id.value_or(kInvalidMessageId);
 }
 
 protocol::ErrorCode SupportSessionErrorToProtocolError(
@@ -90,7 +90,7 @@ class It2MeNativeMessagingHostLacros : public extensions::NativeMessageHost,
 
  private:
   void ProcessHello(int message_id);
-  void ProcessConnect(int message_id, base::Value message);
+  void ProcessConnect(int message_id, base::Value::Dict message);
   void ProcessDisconnect(int message_id);
   void SendMessageToClient(base::Value::Dict message) const;
   void SendErrorAndExit(const protocol::ErrorCode error_code,
@@ -126,7 +126,7 @@ It2MeNativeMessagingHostLacros::~It2MeNativeMessagingHostLacros() = default;
 void It2MeNativeMessagingHostLacros::OnMessage(const std::string& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::string type;
-  base::Value contents;
+  base::Value::Dict contents;
   if (!ParseNativeMessageJson(message, type, contents)) {
     client_->CloseChannel(std::string());
     return;
@@ -354,7 +354,7 @@ void It2MeNativeMessagingHostLacros::ProcessHello(int message_id) {
 }
 
 void It2MeNativeMessagingHostLacros::ProcessConnect(int message_id,
-                                                    base::Value message) {
+                                                    base::Value::Dict message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (message_id != kInvalidMessageId) {
@@ -364,15 +364,14 @@ void It2MeNativeMessagingHostLacros::ProcessConnect(int message_id,
   mojom::SupportSessionParamsPtr session_params =
       mojom::SupportSessionParams::New();
 
-  const std::string* user_name = message.GetDict().FindString(kUserName);
+  const std::string* user_name = message.FindString(kUserName);
   if (!user_name) {
     SendErrorAndExit(protocol::ErrorCode::INCOMPATIBLE_PROTOCOL, message_id);
     return;
   }
   session_params->user_name = *user_name;
 
-  const std::string* access_token =
-      message.GetDict().FindString(kAuthServiceWithToken);
+  const std::string* access_token = message.FindString(kAuthServiceWithToken);
   if (!access_token) {
     SendErrorAndExit(protocol::ErrorCode::INCOMPATIBLE_PROTOCOL, message_id);
     return;

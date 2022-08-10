@@ -41,13 +41,6 @@ LogMessageHandler::LogMessageHandler(const Delegate& delegate)
   g_log_message_handler = this;
 }
 
-LogMessageHandler::LogMessageHandler(const DelegateDeprecated& delegate)
-    : LogMessageHandler(base::BindRepeating(
-          [](const DelegateDeprecated& delegate, base::Value value) {
-            delegate.Run(base::Value::ToUniquePtrValue(std::move(value)));
-          },
-          delegate)) {}
-
 LogMessageHandler::~LogMessageHandler() {
   base::AutoLock lock(g_log_message_handler_lock.Get());
   if (logging::GetLogMessageHandler() != &LogMessageHandler::OnLogMessage) {
@@ -131,12 +124,12 @@ void LogMessageHandler::SendLogMessageToClient(
   std::string message = str.substr(message_start);
   base::TrimWhitespaceASCII(message, base::TRIM_ALL, &message);
 
-  base::Value dictionary(base::Value::Type::DICTIONARY);
-  dictionary.SetStringKey("type", kDebugMessageTypeName);
-  dictionary.SetStringKey("severity", severity_string);
-  dictionary.SetStringKey("message", message);
-  dictionary.SetStringKey("file", file);
-  dictionary.SetIntKey("line", line);
+  base::Value::Dict dictionary;
+  dictionary.Set("type", kDebugMessageTypeName);
+  dictionary.Set("severity", severity_string);
+  dictionary.Set("message", message);
+  dictionary.Set("file", file);
+  dictionary.Set("line", line);
 
   // Protect against this instance being torn down after the delegate is run.
   base::WeakPtr<LogMessageHandler> self = weak_ptr_factory_.GetWeakPtr();
