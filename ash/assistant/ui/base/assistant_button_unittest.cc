@@ -22,6 +22,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
@@ -90,32 +91,6 @@ TEST_F(AssistantButtonTest, IconColor) {
       *button->GetImage(views::Button::STATE_NORMAL).bitmap()));
 }
 
-TEST_F(AssistantButtonTest, IconColorTypeDefaultLight) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{features::kNotificationsRefresh,
-                             chromeos::features::kDarkLightMode});
-
-  AssistantButton::InitParams params;
-  params.size_in_dip = kSizeInDip;
-  params.icon_size_in_dip = kIconSizeInDip;
-  params.accessible_name_id = IDS_ASH_ASSISTANT_DIALOG_PLATE_KEYBOARD_ACCNAME;
-  params.icon_color_type = ColorProvider::ContentLayerType::kIconColorPrimary;
-
-  std::unique_ptr<AssistantButton> button = AssistantButton::Create(
-      nullptr, vector_icons::kKeyboardIcon,
-      AssistantButtonId::kKeyboardInputToggle, std::move(params));
-
-  EXPECT_TRUE(gfx::test::AreBitmapsEqual(
-      *gfx::CreateVectorIcon(vector_icons::kKeyboardIcon, kIconSizeInDip,
-                             ash::features::IsProductivityLauncherEnabled()
-                                 ? gfx::kGoogleGrey200
-                                 : gfx::kGoogleGrey900)
-           .bitmap(),
-      *button->GetImage(views::Button::STATE_NORMAL).bitmap()));
-}
-
 TEST_F(AssistantButtonTest, IconColorType) {
   base::test::ScopedFeatureList scoped_feature_list_enable_dark_light_mode(
       chromeos::features::kDarkLightMode);
@@ -130,7 +105,7 @@ TEST_F(AssistantButtonTest, IconColorType) {
   params.size_in_dip = kSizeInDip;
   params.icon_size_in_dip = kIconSizeInDip;
   params.accessible_name_id = IDS_ASH_ASSISTANT_DIALOG_PLATE_KEYBOARD_ACCNAME;
-  params.icon_color_type = ColorProvider::ContentLayerType::kIconColorPrimary;
+  params.icon_color_type = cros_tokens::kColorPrimary;
 
   std::unique_ptr<views::Widget> widget = CreateTestWidget();
   AssistantButton* button =
@@ -174,7 +149,7 @@ TEST_F(AssistantButtonTest, FocusAndHoverColor) {
   params.size_in_dip = kSizeInDip;
   params.icon_size_in_dip = kIconSizeInDip;
   params.accessible_name_id = IDS_ASH_ASSISTANT_DIALOG_PLATE_KEYBOARD_ACCNAME;
-  params.icon_color_type = ColorProvider::ContentLayerType::kIconColorPrimary;
+  params.icon_color_type = cros_tokens::kColorPrimaryDark;
 
   std::unique_ptr<views::Widget> widget = CreateTestWidget();
   AssistantButton* button =
@@ -231,7 +206,7 @@ TEST_F(AssistantButtonTest, FocusAndHoverColorDarkLightMode) {
   params.size_in_dip = kSizeInDip;
   params.icon_size_in_dip = kIconSizeInDip;
   params.accessible_name_id = IDS_ASH_ASSISTANT_DIALOG_PLATE_KEYBOARD_ACCNAME;
-  params.icon_color_type = ColorProvider::ContentLayerType::kIconColorPrimary;
+  params.icon_color_type = cros_tokens::kColorPrimary;
 
   std::unique_ptr<views::Widget> widget = CreateTestWidget();
   AssistantButton* button =

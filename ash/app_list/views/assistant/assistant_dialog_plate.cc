@@ -14,11 +14,10 @@
 #include "ash/assistant/ui/base/assistant_button.h"
 #include "ash/assistant/ui/dialog_plate/mic_view.h"
 #include "ash/assistant/util/animation_util.h"
+#include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_interaction_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
-#include "ash/public/cpp/style/color_provider.h"
-#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
@@ -27,6 +26,8 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/callback_layer_animation_observer.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
@@ -82,6 +83,34 @@ void HideKeyboardIfEnabled() {
 
   if (keyboard_controller->IsEnabled())
     keyboard_controller->HideKeyboardImplicitlyByUser();
+}
+
+// Returns the primary color adjusted for enabled features.
+ui::ColorId GetPrimaryColor() {
+  if (features::IsDarkLightModeEnabled())
+    return cros_tokens::kColorPrimary;
+
+  if (features::IsProductivityLauncherEnabled()) {
+    // Productivity launcher is default dark.
+    return cros_tokens::kColorPrimaryDark;
+  }
+
+  // The old behavior is default light.
+  return cros_tokens::kColorPrimaryLight;
+}
+
+// Returns the secondary color adjusted for enabled features.
+ui::ColorId GetSecondaryColor() {
+  if (features::IsDarkLightModeEnabled())
+    return cros_tokens::kColorSecondary;
+
+  if (features::IsProductivityLauncherEnabled()) {
+    // Productivity launcher is default dark.
+    return cros_tokens::kColorSecondaryDark;
+  }
+
+  // The old behavior is default light.
+  return cros_tokens::kColorSecondaryLight;
 }
 
 }  // namespace
@@ -297,13 +326,9 @@ void AssistantDialogPlate::RequestFocus() {
 void AssistantDialogPlate::OnThemeChanged() {
   views::View::OnThemeChanged();
 
-  ScopedAssistantLightModeAsDefault scoped_light_mode_as_default;
-
-  textfield_->SetTextColor(ColorProvider::Get()->GetContentLayerColor(
-      ColorProvider::ContentLayerType::kTextColorPrimary));
+  textfield_->SetTextColor(GetColorProvider()->GetColor(GetPrimaryColor()));
   textfield_->set_placeholder_text_color(
-      ColorProvider::Get()->GetContentLayerColor(
-          ColorProvider::ContentLayerType::kTextColorSecondary));
+      GetColorProvider()->GetColor(GetSecondaryColor()));
 }
 
 views::View* AssistantDialogPlate::FindFirstFocusableView() {
@@ -448,7 +473,7 @@ void AssistantDialogPlate::InitVoiceLayoutContainer() {
   AssistantButton::InitParams params;
   params.size_in_dip = kButtonSizeDip;
   params.icon_size_in_dip = kIconSizeDip;
-  params.icon_color_type = ColorProvider::ContentLayerType::kIconColorPrimary;
+  params.icon_color_type = GetPrimaryColor();
   params.accessible_name_id = IDS_ASH_ASSISTANT_DIALOG_PLATE_KEYBOARD_ACCNAME;
   params.tooltip_id = IDS_ASH_ASSISTANT_DIALOG_PLATE_KEYBOARD_TOOLTIP;
   keyboard_input_toggle_ =

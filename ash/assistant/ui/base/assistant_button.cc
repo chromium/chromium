@@ -86,25 +86,29 @@ std::unique_ptr<AssistantButton> AssistantButton::Create(
         l10n_util::GetStringUTF16(params.tooltip_id.value()));
   }
 
-  ScopedAssistantLightModeAsDefault scoped_assistant_light_mode_as_default;
+  button->SetPreferredSize(gfx::Size(params.size_in_dip, params.size_in_dip));
+
   gfx::IconDescription icon_description(icon, params.icon_size_in_dip,
                                         gfx::kPlaceholderColor);
-  icon_description.color = params.icon_color_type.has_value()
-                               ? ColorProvider::Get()->GetContentLayerColor(
-                                     params.icon_color_type.value())
-                               : params.icon_color;
 
   if (params.icon_color_type.has_value()) {
+    // If we have an `icon_color_type`, that color needs to be resolved in
+    // OnThemeChanged(). Since we can't do anything else now, just set the data
+    // and return the button.
     button->icon_color_type_ = params.icon_color_type.value();
     // We cannot copy IconDescription as copy assignment operator of
     // IconDescription is deleted since it has a non-static reference member,
     // icon.
     button->icon_description_.emplace(icon_description);
+    return button;
   }
+
+  // `icon_color` does not change so we can set the color and icon for the
+  // button now.
+  icon_description.color = params.icon_color;
 
   button->SetImage(views::Button::STATE_NORMAL,
                    gfx::CreateVectorIcon(icon_description));
-  button->SetPreferredSize(gfx::Size(params.size_in_dip, params.size_in_dip));
   return button;
 }
 
@@ -135,8 +139,8 @@ void AssistantButton::OnPaintBackground(gfx::Canvas* canvas) {
   if (should_show_focus_ring) {
     cc::PaintFlags circle_flags;
     circle_flags.setAntiAlias(true);
-    circle_flags.setColor(ColorProvider::Get()->GetControlsLayerColor(
-        ColorProvider::ControlsLayerType::kFocusRingColor));
+    circle_flags.setColor(
+        GetColorProvider()->GetColor(cros_tokens::kFocusRingColor));
     circle_flags.setStyle(cc::PaintFlags::kStroke_Style);
     circle_flags.setStrokeWidth(kFocusRingStrokeWidth);
     canvas->DrawCircle(GetLocalBounds().CenterPoint(),
@@ -162,9 +166,9 @@ void AssistantButton::OnThemeChanged() {
   if (!icon_color_type_.has_value() || !icon_description_.has_value())
     return;
 
-  ScopedAssistantLightModeAsDefault scoped_assistant_light_mode_as_default;
-  icon_description_->color =
-      ColorProvider::Get()->GetContentLayerColor(icon_color_type_.value());
+  // This might be the first time the image is rendered since `icon_color_type_`
+  // may not resolvable until now.
+  icon_description_->color = GetColorProvider()->GetColor(*icon_color_type_);
   SetImage(views::Button::STATE_NORMAL,
            gfx::CreateVectorIcon(icon_description_.value()));
 }

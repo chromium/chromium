@@ -12,6 +12,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/button/image_button.h"
@@ -52,7 +53,7 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantButton
     SkColor icon_color = gfx::kGoogleGrey700;
     // If both icon_color and icon_color_type are specified, icon_color_type
     // will be used.
-    absl::optional<ColorProvider::ContentLayerType> icon_color_type;
+    absl::optional<ui::ColorId> icon_color_type;
 
     // ID of the localization string for the button's accessible name.
     absl::optional<int> accessible_name_id;
@@ -93,7 +94,7 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantButton
 
   // |icon_color_type_| and |icon_description_| are stored only when
   // icon_color_type is specified in InitParams.
-  absl::optional<ColorProvider::ContentLayerType> icon_color_type_;
+  absl::optional<ui::ColorId> icon_color_type_;
   absl::optional<gfx::IconDescription> icon_description_;
 };
 

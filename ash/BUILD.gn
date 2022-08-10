@@ -3179,6 +3179,7 @@ test("ash_unittests") {
     "//ui/chromeos",
     "//ui/chromeos/events",
     "//ui/chromeos/styles:cros_styles_views",
+    "//ui/chromeos/styles:cros_tokens_color_mappings",
     "//ui/compositor",
     "//ui/compositor:test_support",
     "//ui/compositor_extra:compositor_extra",
