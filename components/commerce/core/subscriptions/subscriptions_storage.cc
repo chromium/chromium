@@ -31,4 +31,6 @@ void SubscriptionsStorage::UpdateStorage(
     base::OnceCallback<void(bool)> callback,
     std::unique_ptr<std::vector<CommerceSubscription>> remote_subscriptions) {}
 
+void SubscriptionsStorage::DeleteAll() {}
+
 }  // namespace commerce

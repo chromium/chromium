@@ -47,6 +47,9 @@ class SubscriptionsStorage {
       SubscriptionType type,
       base::OnceCallback<void(bool)> callback,
       std::unique_ptr<std::vector<CommerceSubscription>> remote_subscriptions);
+
+  // Delete all local subscriptions.
+  virtual void DeleteAll();
 };
 
 }  // namespace commerce

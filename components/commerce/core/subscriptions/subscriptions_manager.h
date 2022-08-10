@@ -12,14 +12,13 @@
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/scoped_observation.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/primary_account_change_event.h"
 
 namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
-
-namespace signin {
-class IdentityManager;
-}  // namespace signin
 
 namespace commerce {
 
@@ -28,18 +27,19 @@ class SubscriptionsStorage;
 enum class SubscriptionType;
 struct CommerceSubscription;
 
-class SubscriptionsManager {
+class SubscriptionsManager : public signin::IdentityManager::Observer {
  public:
   SubscriptionsManager(
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   // Used for tests. The passed in objects are ordinarily created with
   // parameters from the non-test constructor.
-  SubscriptionsManager(std::unique_ptr<SubscriptionsServerProxy> server_proxy,
+  SubscriptionsManager(signin::IdentityManager* identity_manager,
+                       std::unique_ptr<SubscriptionsServerProxy> server_proxy,
                        std::unique_ptr<SubscriptionsStorage> storage);
   SubscriptionsManager(const SubscriptionsManager&) = delete;
   SubscriptionsManager& operator=(const SubscriptionsManager&) = delete;
-  ~SubscriptionsManager();
+  ~SubscriptionsManager() override;
 
   void Subscribe(
       std::unique_ptr<std::vector<CommerceSubscription>> subscriptions,
@@ -112,6 +112,9 @@ class SubscriptionsManager {
       base::OnceCallback<void(bool)> callback,
       bool succeeded);
 
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event_details) override;
+
   // Hold coming requests until previous ones have finished to avoid race
   // conditions.
   std::queue<Request> pending_requests_;
@@ -122,6 +125,10 @@ class SubscriptionsManager {
 
   // Whether there is any request running.
   bool has_request_running_ = false;
+
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      scoped_identity_manager_observation_{this};
 
   std::unique_ptr<SubscriptionsServerProxy> server_proxy_;
 

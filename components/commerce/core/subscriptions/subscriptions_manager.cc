@@ -17,12 +17,14 @@ namespace commerce {
 SubscriptionsManager::SubscriptionsManager(
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : SubscriptionsManager(std::make_unique<SubscriptionsServerProxy>(
+    : SubscriptionsManager(identity_manager,
+                           std::make_unique<SubscriptionsServerProxy>(
                                identity_manager,
                                std::move(url_loader_factory)),
                            std::make_unique<SubscriptionsStorage>()) {}
 
 SubscriptionsManager::SubscriptionsManager(
+    signin::IdentityManager* identity_manager,
     std::unique_ptr<SubscriptionsServerProxy> server_proxy,
     std::unique_ptr<SubscriptionsStorage> storage)
     : server_proxy_(std::move(server_proxy)),
@@ -32,6 +34,7 @@ SubscriptionsManager::SubscriptionsManager(
 // android implementation to shopping service.
 #if !BUILDFLAG(IS_ANDROID)
   InitSubscriptions();
+  scoped_identity_manager_observation_.Observe(identity_manager);
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
@@ -92,6 +95,7 @@ void SubscriptionsManager::Unsubscribe(
 
 void SubscriptionsManager::InitSubscriptions() {
   init_succeeded_ = false;
+  storage_->DeleteAll();
   if (base::FeatureList::IsEnabled(commerce::kShoppingList)) {
     pending_requests_.push(Request(
         SubscriptionType::kPriceTrack, AsyncOperation::kInit,
@@ -201,6 +205,11 @@ void SubscriptionsManager::HandleManageSubscriptionsResponse(
   } else {
     GetRemoteSubscriptionsAndUpdateStorage(type, std::move(callback));
   }
+}
+
+void SubscriptionsManager::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event_details) {
+  InitSubscriptions();
 }
 
 bool SubscriptionsManager::GetInitSucceededForTesting() {

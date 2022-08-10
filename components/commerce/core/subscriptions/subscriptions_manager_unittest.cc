@@ -16,6 +16,7 @@
 #include "components/commerce/core/subscriptions/subscriptions_manager.h"
 #include "components/commerce/core/subscriptions/subscriptions_server_proxy.h"
 #include "components/commerce/core/subscriptions/subscriptions_storage.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -124,6 +125,7 @@ class MockSubscriptionsStorage : public SubscriptionsStorage {
        base::OnceCallback<void(bool)> callback,
        std::unique_ptr<std::vector<CommerceSubscription>> remote_subscriptions),
       (override));
+  MOCK_METHOD(void, DeleteAll, (), (override));
 
   // Mock the local fetch responses for Get* requests. |subscription_id| is used
   // to generate a CommerceSubscription to be returned.
@@ -168,7 +170,8 @@ class SubscriptionsManagerTest : public testing::Test {
 
   void CreateManagerAndVerify(bool init_succeeded) {
     subscriptions_manager_ = std::make_unique<SubscriptionsManager>(
-        std::move(mock_server_proxy_), std::move(mock_storage_));
+        identity_test_env_.identity_manager(), std::move(mock_server_proxy_),
+        std::move(mock_storage_));
     ASSERT_EQ(init_succeeded,
               subscriptions_manager_->GetInitSucceededForTesting());
   }
@@ -184,6 +187,7 @@ class SubscriptionsManagerTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
+  signin::IdentityTestEnvironment identity_test_env_;
   base::test::ScopedFeatureList test_features_;
   std::unique_ptr<MockSubscriptionsServerProxy> mock_server_proxy_;
   std::unique_ptr<MockSubscriptionsStorage> mock_storage_;
@@ -193,6 +197,7 @@ class SubscriptionsManagerTest : public testing::Test {
 TEST_F(SubscriptionsManagerTest, TestInitSucceeded) {
   mock_server_proxy_->MockGetResponses("111");
   mock_storage_->MockUpdateResponses(true);
+  EXPECT_CALL(*mock_storage_, DeleteAll).Times(1);
   EXPECT_CALL(*mock_server_proxy_, Get).Times(1);
   EXPECT_CALL(*mock_storage_,
               UpdateStorage(_, _, AreExpectedSubscriptions("111")))
@@ -204,6 +209,7 @@ TEST_F(SubscriptionsManagerTest, TestInitSucceeded) {
 TEST_F(SubscriptionsManagerTest, TestInitFailed) {
   mock_server_proxy_->MockGetResponses("111");
   mock_storage_->MockUpdateResponses(false);
+  EXPECT_CALL(*mock_storage_, DeleteAll).Times(1);
   EXPECT_CALL(*mock_server_proxy_, Get).Times(1);
   EXPECT_CALL(*mock_storage_,
               UpdateStorage(_, _, AreExpectedSubscriptions("111")))
@@ -220,6 +226,7 @@ TEST_F(SubscriptionsManagerTest, TestSubscribe) {
 
   {
     InSequence s;
+    EXPECT_CALL(*mock_storage_, DeleteAll);
     EXPECT_CALL(*mock_server_proxy_, Get);
     EXPECT_CALL(*mock_storage_,
                 UpdateStorage(_, _, AreExpectedSubscriptions("111")));
@@ -255,6 +262,7 @@ TEST_F(SubscriptionsManagerTest, TestSubscribe_ServerManageFailed) {
 
   {
     InSequence s;
+    EXPECT_CALL(*mock_storage_, DeleteAll);
     EXPECT_CALL(*mock_server_proxy_, Get);
     EXPECT_CALL(*mock_storage_,
                 UpdateStorage(_, _, AreExpectedSubscriptions("111")));
@@ -289,6 +297,7 @@ TEST_F(SubscriptionsManagerTest, TestSubscribe_InitFailed) {
 
   {
     InSequence s;
+    EXPECT_CALL(*mock_storage_, DeleteAll);
     EXPECT_CALL(*mock_server_proxy_, Get);
     EXPECT_CALL(*mock_storage_,
                 UpdateStorage(_, _, AreExpectedSubscriptions("111")));
@@ -318,6 +327,7 @@ TEST_F(SubscriptionsManagerTest, TestSubscribe_HasRequestRunning) {
 
   {
     InSequence s;
+    EXPECT_CALL(*mock_storage_, DeleteAll);
     EXPECT_CALL(*mock_server_proxy_, Get);
     EXPECT_CALL(*mock_storage_,
                 UpdateStorage(_, _, AreExpectedSubscriptions("111")));
@@ -346,6 +356,7 @@ TEST_F(SubscriptionsManagerTest, TestSubscribe_HasPendingUnsubscribeRequest) {
   {
     InSequence s;
     // Init calls.
+    EXPECT_CALL(*mock_storage_, DeleteAll);
     EXPECT_CALL(*mock_server_proxy_, Get);
     EXPECT_CALL(*mock_storage_,
                 UpdateStorage(_, _, AreExpectedSubscriptions("111")));
@@ -415,6 +426,7 @@ TEST_F(SubscriptionsManagerTest, TestUnsubscribe) {
 
   {
     InSequence s;
+    EXPECT_CALL(*mock_storage_, DeleteAll);
     EXPECT_CALL(*mock_server_proxy_, Get);
     EXPECT_CALL(*mock_storage_,
                 UpdateStorage(_, _, AreExpectedSubscriptions("111")));
@@ -450,6 +462,7 @@ TEST_F(SubscriptionsManagerTest, TestUnsubscribe_InitFailed) {
 
   {
     InSequence s;
+    EXPECT_CALL(*mock_storage_, DeleteAll);
     EXPECT_CALL(*mock_server_proxy_, Get);
     EXPECT_CALL(*mock_storage_,
                 UpdateStorage(_, _, AreExpectedSubscriptions("111")));
@@ -469,6 +482,29 @@ TEST_F(SubscriptionsManagerTest, TestUnsubscribe_InitFailed) {
   // Use a RunLoop in case the callback is posted on a different thread.
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(true, callback_executed);
+}
+
+TEST_F(SubscriptionsManagerTest, TestIdentityChange) {
+  mock_server_proxy_->MockGetResponses("111");
+  mock_storage_->MockUpdateResponses(true);
+
+  {
+    InSequence s;
+    // First init on manager instantiation.
+    EXPECT_CALL(*mock_storage_, DeleteAll);
+    EXPECT_CALL(*mock_server_proxy_, Get);
+    EXPECT_CALL(*mock_storage_,
+                UpdateStorage(_, _, AreExpectedSubscriptions("111")));
+    // Second init on primary account change.
+    EXPECT_CALL(*mock_storage_, DeleteAll);
+    EXPECT_CALL(*mock_server_proxy_, Get);
+    EXPECT_CALL(*mock_storage_,
+                UpdateStorage(_, _, AreExpectedSubscriptions("111")));
+  }
+
+  CreateManagerAndVerify(true);
+  identity_test_env_.MakePrimaryAccountAvailable("mock_email@gmail.com",
+                                                 signin::ConsentLevel::kSync);
 }
 
 }  // namespace commerce

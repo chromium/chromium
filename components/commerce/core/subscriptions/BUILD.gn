@@ -34,6 +34,7 @@ source_set("subscriptions_unit_tests") {
     ":subscriptions",
     "//base/test:test_support",
     "//components/commerce/core:feature_list",
+    "//components/signin/public/identity_manager:test_support",
     "//services/network/public/cpp:cpp",
     "//testing/gmock",
     "//testing/gtest",
