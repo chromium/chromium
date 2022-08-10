@@ -27,11 +27,25 @@ class SystemExtensionsRegistryManager;
 
 class SystemExtensionsInstallManager {
  public:
+  // Observer for installation and uninstallation steps events. This should be
+  // used for classes that need to perform an action in response to an
+  // installation step.
+  // TODO(b/241308071): Once it's implemented, suggest using
+  // SystemExtensionsRegistry::Observer for clients that only care about when
+  // a System Extension is installed or uninstalled.
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnServiceWorkerRegistered(
         const SystemExtensionId& system_extension_id,
         blink::ServiceWorkerStatusCode status_code) {}
+
+    virtual void OnServiceWorkerUnregistered(
+        const SystemExtensionId& system_extension_id,
+        bool succeeded) {}
+
+    virtual void OnSystemExtensionAssetsDeleted(
+        const SystemExtensionId& system_extension_id,
+        bool succeeded) {}
   };
 
   SystemExtensionsInstallManager(
@@ -44,6 +58,12 @@ class SystemExtensionsInstallManager {
       const SystemExtensionsInstallManager&) = delete;
   ~SystemExtensionsInstallManager();
 
+  void AddObserver(Observer* observer) { observers_.AddObserver(observer); }
+
+  void RemoveObserver(Observer* observer) {
+    observers_.RemoveObserver(observer);
+  }
+
   using OnceInstallCallback =
       base::OnceCallback<void(InstallStatusOrSystemExtensionId)>;
   void InstallUnpackedExtensionFromDir(
@@ -54,11 +74,15 @@ class SystemExtensionsInstallManager {
     return on_command_line_install_finished_;
   }
 
-  void AddObserver(Observer* observer) { observers_.AddObserver(observer); }
-
-  void RemoveObserver(Observer* observer) {
-    observers_.RemoveObserver(observer);
-  }
+  // Uninstallation always succeeds.
+  //
+  // Currently only two operations can fail, unregistering the Service Worker,
+  // and deleting the System Extension's assets. Regardless of these operations
+  // failing, the System Extension will be considered uninstalled. Both of these
+  // failure cases will be handled by a garbage collector outside of this class.
+  // TODO(b/241198799): Change this comment once the garbage collector is
+  // implemented.
+  void Uninstall(const SystemExtensionId& system_extension_id);
 
  private:
   // Helper class to run blocking IO operations on a separate thread.
@@ -67,6 +91,7 @@ class SystemExtensionsInstallManager {
     bool CopyExtensionAssets(const base::FilePath& unpacked_extension_dir,
                              const base::FilePath& dest_dir,
                              const base::FilePath& system_extensions_dir);
+    bool RemoveExtensionAssets(const base::FilePath& system_extension_dir);
   };
 
   void InstallFromCommandLineIfNecessary();
@@ -83,12 +108,17 @@ class SystemExtensionsInstallManager {
                                   SystemExtension system_extension,
                                   bool did_succeed);
   void RegisterServiceWorker(const SystemExtensionId& id);
-  void OnRegisterServiceWorker(const SystemExtensionId& id,
-                               blink::ServiceWorkerStatusCode status_code);
   void DispatchWindowManagerStartEvent(const SystemExtensionId& id,
                                        int64_t version_id,
                                        int process_id,
                                        int thread_id);
+
+  void NotifyServiceWorkerRegistered(
+      const SystemExtensionId& id,
+      blink::ServiceWorkerStatusCode status_code);
+  void NotifyServiceWorkerUnregistered(const SystemExtensionId& id,
+                                       bool succeeded);
+  void NotifyAssetsRemoved(const SystemExtensionId&, bool succeeded);
 
   // Safe because this class is owned by SystemExtensionsProvider which is owned
   // by the profile.

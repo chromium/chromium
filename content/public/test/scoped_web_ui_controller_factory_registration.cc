@@ -73,14 +73,14 @@ ScopedWebUIConfigRegistration::ScopedWebUIConfigRegistration(
     std::unique_ptr<WebUIConfig> webui_config)
     : webui_config_origin_(url::Origin::Create(webui_origin)) {
   auto& config_map = WebUIConfigMap::GetInstance();
-  replaced_webui_config_ = config_map.RemoveForTesting(webui_config_origin_);
+  replaced_webui_config_ = config_map.RemoveConfig(webui_config_origin_);
 
   if (webui_config != nullptr)
     AddWebUIConfig(std::move(webui_config));
 }
 
 ScopedWebUIConfigRegistration::~ScopedWebUIConfigRegistration() {
-  WebUIConfigMap::GetInstance().RemoveForTesting(webui_config_origin_);
+  WebUIConfigMap::GetInstance().RemoveConfig(webui_config_origin_);
 
   // If we replaced a WebUIConfig, re-register it to keep the global state
   // clean for future tests.

@@ -25,11 +25,15 @@ class SystemExtensionsRegistryManager {
       const SystemExtensionsRegistryManager&) = delete;
   ~SystemExtensionsRegistryManager();
 
+  // Returns the registry this class uses to store SystemExtension instances.
+  SystemExtensionsRegistry& registry() { return registry_; }
+
   // Adds the `system_extension` to the SystemExtensionRegistry.
   void AddSystemExtension(SystemExtension system_extension);
 
-  // Returns the registry this class uses to store SystemExtension instances.
-  SystemExtensionsRegistry& registry() { return registry_; }
+  // Removes the System Extension with `system_extension_id` from the registry
+  // if it exists.
+  void RemoveSystemExtension(const SystemExtensionId& system_extension_id);
 
  private:
   SystemExtensionsMutableRegistry registry_;

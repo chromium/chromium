@@ -106,7 +106,7 @@ WebUIConfig* WebUIConfigMap::GetConfig(BrowserContext* browser_context,
   return config.get();
 }
 
-std::unique_ptr<WebUIConfig> WebUIConfigMap::RemoveForTesting(
+std::unique_ptr<WebUIConfig> WebUIConfigMap::RemoveConfig(
     const url::Origin& origin) {
   auto it = configs_map_.find(origin);
   if (it == configs_map_.end())

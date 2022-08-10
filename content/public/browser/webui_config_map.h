@@ -55,7 +55,7 @@ class CONTENT_EXPORT WebUIConfigMap {
 
   // Removes and returns the WebUIConfig with |origin|. Returns nullptr if
   // there is no WebUIConfig with |origin|.
-  std::unique_ptr<WebUIConfig> RemoveForTesting(const url::Origin& origin);
+  std::unique_ptr<WebUIConfig> RemoveConfig(const url::Origin& origin);
 
   // Returns the size of the map, i.e. how many WebUIConfigs are registered.
   size_t GetSizeForTesting() { return configs_map_.size(); }

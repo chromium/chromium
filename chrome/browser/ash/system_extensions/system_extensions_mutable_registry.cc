@@ -20,6 +20,11 @@ void SystemExtensionsMutableRegistry::AddSystemExtension(
   system_extensions_[id] = std::move(system_extension);
 }
 
+void SystemExtensionsMutableRegistry::RemoveSystemExtension(
+    const SystemExtensionId& system_extension_id) {
+  system_extensions_.erase(system_extension_id);
+}
+
 std::vector<SystemExtensionId> SystemExtensionsMutableRegistry::GetIds() {
   std::vector<SystemExtensionId> extension_ids;
   for (const auto& [id, system_extension] : system_extensions_) {

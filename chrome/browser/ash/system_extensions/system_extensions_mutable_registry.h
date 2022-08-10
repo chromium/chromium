@@ -29,6 +29,10 @@ class SystemExtensionsMutableRegistry : public SystemExtensionsRegistry {
   // Adds |system_extension| to the map of installed System Extensions.
   void AddSystemExtension(SystemExtension system_extension);
 
+  // Removes the System Extension with `system_extension_id` from the
+  // map of installed System Extensions.
+  void RemoveSystemExtension(const SystemExtensionId& system_extension_id);
+
   // SystemExtensionsRegistry
   std::vector<SystemExtensionId> GetIds() override;
   const SystemExtension* GetById(

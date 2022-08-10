@@ -17,4 +17,9 @@ void SystemExtensionsRegistryManager::AddSystemExtension(
   registry_.AddSystemExtension(std::move(system_extension));
 }
 
+void SystemExtensionsRegistryManager::RemoveSystemExtension(
+    const SystemExtensionId& system_extension_id) {
+  registry_.RemoveSystemExtension(system_extension_id);
+}
+
 }  // namespace ash
