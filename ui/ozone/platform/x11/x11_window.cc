@@ -536,8 +536,10 @@ void X11Window::SetBoundsInPixels(const gfx::Rect& bounds) {
     req.y = new_bounds_in_pixels.y();
   }
 
-  if (origin_changed || size_changed)
+  if (origin_changed || size_changed) {
+    bounds_change_in_flight_ = true;
     connection_->ConfigureWindow(req);
+  }
 
   // Assume that the resize will go through as requested, which should be the
   // case if we're running without a window manager.  If there's a window
@@ -666,15 +668,16 @@ void X11Window::ToggleFullscreen() {
   bool origin_changed = bounds_in_pixels_.origin() != new_bounds_px.origin();
   bounds_in_pixels_ = new_bounds_px;
 
-  // If there is a restore in flight, then set a flag to ignore the single
-  // configure event (hopefully) coming from that restore.  This prevents any
-  // in-flight restore requests from changing the bounds in a way that conflicts
-  // with the `bounds_in_pixels_` setting above.  This is not perfect, and if
-  // there is some other in-flight bounds change for some reason, or if the
-  // ordering of events from the WM behaves differently, this will not prevent
-  // the issue.  See: http://crbug.com/1227451
-  ignore_next_configure_ = restore_in_flight_;
-
+  // If there is a restore and/or bounds change in flight, then set a flag to
+  // ignore the next one or two configure events (hopefully) coming from those
+  // requests. This prevents any in-flight restore requests from changing the
+  // bounds in a way that conflicts with the `bounds_in_pixels_` setting above.
+  // This is not perfect, and if there is some other in-flight bounds change for
+  // some reason, or if the ordering of events from the WM behaves differently,
+  // this will not prevent the issue.  See: http://crbug.com/1227451
+  ignore_next_configures_ = restore_in_flight_ ? 1 : 0;
+  if (bounds_change_in_flight_)
+    ignore_next_configures_++;
   // This must be the final call in this function, as `this` may be deleted
   // during the observation of this event.
   platform_window_delegate_->OnBoundsChanged({origin_changed});
@@ -2266,14 +2269,23 @@ void X11Window::OnConfigureEvent(const x11::ConfigureNotifyEvent& configure,
     pending_counter_value_ = 0;
   }
 
-  // During a Restore() -> ToggleFullscreen() sequence, ignore the configure
-  // event from the restore if we're waiting on fullscreen.  After
+  // During a Restore() -> ToggleFullscreen() or Restore() -> SetBounds() ->
+  // ToggleFullscreen() sequence, ignore the configure events from the Restore
+  // and SetBounds requests, if we're waiting on fullscreen.  After
   // OnXWindowStateChanged unsets this flag, there will be a configuration event
   // that will set the bounds to the final fullscreen bounds.
-  if (ignore_next_configure_) {
-    ignore_next_configure_ = false;
+  if (ignore_next_configures_ > 0) {
+    ignore_next_configures_--;
     return;
   }
+
+  // Note: This OnConfigureEvent might not necessarily correspond to a previous
+  // SetBounds request. Due to limitations in X11 there isn't a way to
+  // match events to its original request. For now, we assume that the next
+  // OnConfigureEvent event after a SetBounds (ConfigureWindow) request is from
+  // that request. This would break in some scenarios (for example calling
+  // SetBounds more than once quickly). See crbug.com/1227451.
+  bounds_change_in_flight_ = false;
 
   // It's possible that the X window may be resized by some other means than
   // from within aura (e.g. the X window manager can change the size). Make

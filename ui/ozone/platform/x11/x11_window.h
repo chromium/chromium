@@ -490,10 +490,14 @@ class X11Window : public PlatformWindow,
   // cross-display fullscreening, there is a Restore() (called by BrowserView)
   // that may cause configuration bounds updates that make this window appear to
   // temporarily be on a different screen than its destination screen.  This
-  // restore only happens if the window is maximized.
-  bool ignore_next_configure_ = false;
+  // restore only happens if the window is maximized. The integer represents how
+  // many events to ignore.
+  int ignore_next_configures_ = 0;
   // True between Restore() and the next OnXWindowStateChanged().
   bool restore_in_flight_ = false;
+  // True between SetBoundsInPixels (when the bounds actually change) and the
+  // next OnConfigureEvent.
+  bool bounds_change_in_flight_ = false;
 
   base::CancelableOnceClosure delayed_resize_task_;
 
