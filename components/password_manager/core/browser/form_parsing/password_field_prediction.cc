@@ -21,25 +21,14 @@ namespace password_manager {
 
 namespace {
 
-bool AreSecondaryPredictionsEnabled() {
-  return base::FeatureList::IsEnabled(
-      features::kSecondaryServerFieldPredictions);
-}
-
 ServerFieldType GetServerType(const AutofillField& field) {
   // The main server predictions is in `field.server_type()` but the server can
   // send additional predictions in `field.server_predictions()`. This function
-  // chooses relevant for Password Manager predictions. Choosing additional
-  // predictions from `field.server_predictions()` is gated on the
-  // `kSecondaryServerFieldPredictions` flag. This is because the server only
-  // recently started to send down these predictions (http://cl/340884706).
-  // Having a feature flag here allows us to run experiments to measure the
-  // impact of these new predictions.
+  // chooses relevant for Password Manager predictions.
 
   // 1. If there is cvc prediction returns it.
   for (const auto& predictions : field.server_predictions()) {
-    if (predictions.type() == autofill::CREDIT_CARD_VERIFICATION_CODE &&
-        AreSecondaryPredictionsEnabled()) {
+    if (predictions.type() == autofill::CREDIT_CARD_VERIFICATION_CODE) {
       return autofill::CREDIT_CARD_VERIFICATION_CODE;
     }
   }
@@ -47,8 +36,7 @@ ServerFieldType GetServerType(const AutofillField& field) {
   // 2. If there is password related prediction returns it.
   for (const auto& predictions : field.server_predictions()) {
     auto type = static_cast<ServerFieldType>(predictions.type());
-    if (DeriveFromServerFieldType(type) != CredentialFieldType::kNone &&
-        AreSecondaryPredictionsEnabled()) {
+    if (DeriveFromServerFieldType(type) != CredentialFieldType::kNone) {
       return type;
     }
   }

@@ -180,10 +180,6 @@ const base::Feature kPasswordScriptsFetching = {
 const base::Feature kRecoverFromNeverSaveAndroid = {
     "RecoverFromNeverSaveAndroid", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables considering secondary server field predictions during form parsing.
-const base::Feature kSecondaryServerFieldPredictions = {
-    "SecondaryServerFieldPredictions", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables the password strength indicator.
 const base::Feature kPasswordStrengthIndicator = {
     "PasswordStrengthIndicator", base::FEATURE_DISABLED_BY_DEFAULT};

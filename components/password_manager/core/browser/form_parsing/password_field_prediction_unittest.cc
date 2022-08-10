@@ -40,23 +40,7 @@ namespace password_manager {
 
 namespace {
 
-// The boolean parameter determines the feature state of
-// `kSecondaryServerFieldPredictions`.
-class FormPredictionsTest : public ::testing::TestWithParam<bool> {
- public:
-  FormPredictionsTest() {
-    feature_list_.InitWithFeatureState(
-        features::kSecondaryServerFieldPredictions,
-        AreSecondaryPredictionsEnabled());
-  }
-
-  bool AreSecondaryPredictionsEnabled() const { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_P(FormPredictionsTest, ConvertToFormPredictions) {
+TEST(FormPredictionsTest, ConvertToFormPredictions) {
   struct TestField {
     std::string name;
     std::string form_control_type;
@@ -74,18 +58,12 @@ TEST_P(FormPredictionsTest, ConvertToFormPredictions) {
        CONFIRMATION_PASSWORD, true},
       // username in |additional_types| takes precedence if the feature is
       // enabled.
-      {"email",
-       "text",
-       EMAIL_ADDRESS,
-       AreSecondaryPredictionsEnabled() ? USERNAME : EMAIL_ADDRESS,
-       false,
-       {USERNAME}},
+      {"email", "text", EMAIL_ADDRESS, USERNAME, false, {USERNAME}},
       // cvc in |additional_types| takes precedence if the feature is enabled.
       {"cvc",
        "password",
        PASSWORD,
-       AreSecondaryPredictionsEnabled() ? CREDIT_CARD_VERIFICATION_CODE
-                                        : PASSWORD,
+       CREDIT_CARD_VERIFICATION_CODE,
        false,
        {CREDIT_CARD_VERIFICATION_CODE}},
       // non-password, non-cvc types in |additional_types| are ignored.
@@ -234,7 +212,6 @@ TEST(FormPredictionsTest, DeriveFromServerFieldType) {
               DeriveFromServerFieldType(test_case.server_type));
   }
 }
-INSTANTIATE_TEST_SUITE_P(All, FormPredictionsTest, testing::Bool());
 }  // namespace
 
 }  // namespace password_manager
