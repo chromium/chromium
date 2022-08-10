@@ -944,8 +944,7 @@ FrameTreeNode::GetFencedFrameMode() {
     case blink::features::FencedFramesImplementationType::kShadowDOM: {
       FrameTreeNode* node = this;
       while (!node->IsFencedFrameRoot()) {
-        FrameTreeNode* next_node = parent()->frame_tree_node();
-        node = next_node;
+        node = node->parent()->frame_tree_node();
       }
       return node->pending_frame_policy_.fenced_frame_mode;
     }
