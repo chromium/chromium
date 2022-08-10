@@ -93,6 +93,9 @@ class DlpFilesController {
   std::map<std::string, std::set<std::string>> GetDlpRestrictionDetails(
       const std::string& sourceUrl);
 
+  // Returns whether a dlp policy matches for the `source_url`.
+  bool IsDlpPolicyMatched(const std::string& source_url);
+
  private:
   void ReturnDisallowedTransfers(
       base::flat_map<std::string, storage::FileSystemURL> files_map,

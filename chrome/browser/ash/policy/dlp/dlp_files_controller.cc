@@ -225,6 +225,28 @@ DlpFilesController::GetDlpRestrictionDetails(const std::string& sourceUrl) {
   return {};
 }
 
+bool DlpFilesController::IsDlpPolicyMatched(const std::string& source_url) {
+  bool restricted = false;
+  policy::DlpRulesManager* dlp_rules_manager =
+      policy::DlpRulesManagerFactory::GetForPrimaryProfile();
+  if (dlp_rules_manager) {
+    policy::DlpRulesManager::Level level =
+        dlp_rules_manager->IsRestrictedByAnyRule(
+            GURL(source_url), policy::DlpRulesManager::Restriction::kFiles);
+
+    switch (level) {
+      case policy::DlpRulesManager::Level::kBlock:
+        restricted = true;
+        break;
+      case policy::DlpRulesManager::Level::kWarn:
+        // TODO(crbug.com/1172959): Implement Warning mode for Files restriction
+        break;
+      default:;
+    }
+  }
+  return restricted;
+}
+
 void DlpFilesController::ReturnDisallowedTransfers(
     base::flat_map<std::string, storage::FileSystemURL> files_map,
     GetDisallowedTransfersCallback result_callback,

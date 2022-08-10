@@ -37,10 +37,6 @@ class DlpFilesPolicyServiceProvider
                   const std::string& method_name,
                   bool success);
 
-  // org.chromium.DlpFilesPolicyService.IsRestricted implementation.
-  void IsRestricted(dbus::MethodCall* method_call,
-                    dbus::ExportedObject::ResponseSender response_sender);
-
   // org.chromium.DlpFilesPolicyService.IsDlpPolicyMatched implementation.
   void IsDlpPolicyMatched(dbus::MethodCall* method_call,
                           dbus::ExportedObject::ResponseSender response_sender);
@@ -59,7 +55,7 @@ class DlpFilesPolicyServiceProvider
 
   // DlpFilesController is responsible for checking whether any of the selected
   // files is restricted according to the DataLeakPrevention policy.
-  absl::optional<policy::DlpFilesController> dlp_files_controller_;
+  policy::DlpFilesController dlp_files_controller_;
 
   base::WeakPtrFactory<DlpFilesPolicyServiceProvider> weak_ptr_factory_{this};
 };
