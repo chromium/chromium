@@ -4138,11 +4138,6 @@
     "expiry_milestone": 108
   },
   {
-    "name": "lazily-create-web-state-on-restoration",
-    "owners": ["olivierrobin", "sdefresne"],
-    "expiry_milestone": 105
-  },
-  {
     "name": "leak-detection-unauthenticated",
     "owners": ["rgod@google.com", "vasilii"],
     "expiry_milestone": 102
