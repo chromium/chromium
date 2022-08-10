@@ -207,7 +207,8 @@ base::Value::Dict SearchEnginesHandler::CreateDictionaryForEngine(
   Profile* profile = Profile::FromWebUI(web_ui());
   dict.Set("url",
            template_url->url_ref().DisplayURL(UIThreadSearchTermsData()));
-  dict.Set("urlLocked", template_url->prepopulate_id() > 0);
+  dict.Set("urlLocked", ((template_url->prepopulate_id() > 0) ||
+                         (template_url->starter_pack_id() > 0)));
   GURL icon_url = template_url->favicon_url();
   if (icon_url.is_valid())
     dict.Set("iconURL", icon_url.spec());
