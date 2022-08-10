@@ -3,11 +3,17 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/signin/signin_features.h"
+#include "base/feature_list.h"
 
 #if BUILDFLAG(IS_ANDROID)
 // Enables the FamilyLink feedback collection in Chrome Settings feedback tool.
 const base::Feature kEnableFamilyInfoFeedback{"EnableFamilyInfoFeedback",
                                               base::FEATURE_ENABLED_BY_DEFAULT};
+#endif
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+// Enables the new style, "For You" First Run Experience
+const base::Feature kForYouFre{"ForYouFre", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
 // Enables the client-side processing of the HTTP response header

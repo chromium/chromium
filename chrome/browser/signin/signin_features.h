@@ -11,6 +11,10 @@
 extern const base::Feature kEnableFamilyInfoFeedback;
 #endif
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+extern const base::Feature kForYouFre;
+#endif
+
 extern const base::Feature kProcessGaiaRemoveLocalAccountHeader;
 
 extern const base::Feature kSyncPromoAfterSigninIntercept;
