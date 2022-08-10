@@ -16,7 +16,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "net/base/completion_once_callback.h"
@@ -36,7 +35,6 @@
 #include "net/log/net_log_with_source.h"
 #include "net/socket/connection_attempts.h"
 #include "net/websockets/websocket_handshake_stream_base.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crypto {
 class SecureHash;
@@ -106,6 +104,8 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   const std::string& method() const { return method_; }
 
   const std::string& key() const { return cache_key_; }
+
+  HttpCache::ActiveEntry* entry() { return entry_; }
 
   // Returns the LoadState of the writer transaction of a given ActiveEntry. In
   // other words, returns the LoadState of this transaction without asking the
@@ -608,13 +608,6 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // forwarded might need to set these headers again to avoid being blocked.
   void UpdateSecurityHeadersBeforeForwarding();
 
-  HttpCache::ActiveEntry* entry() {
-    // SafeRef lacks a method to extract the pointer so we have to convert it to
-    // a reference then back to a pointer. This will CHECK() if `safe_entry_` is
-    // not set.
-    return &*safe_entry_.value();
-  }
-
   State next_state_{STATE_NONE};
 
   // Used for tracing.
@@ -638,16 +631,7 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // |external_validation_| contains the value of those headers.
   ValidationHeaders external_validation_;
   base::WeakPtr<HttpCache> cache_;
-  // This member is temporarily an optional SafeRef. The name has been
-  // temporarily changed from `entry_` to `safe_entry_` to ensure that no
-  // references are missed. It is wrapped in an optional because SafeRef cannot
-  // be null. There are many unchecked calls to safe_entry_.value(). The safety
-  // of these rely on the fact that absl::optional's implementation of value()
-  // aborts when not set.
-  // TODO(ricea): Change this back to a raw_ptr<ActiveEntry, DangingUntriaged>
-  // or possibly a WeakPtr.
-  absl::optional<base::SafeRef<HttpCache::ActiveEntry>> safe_entry_;
-
+  raw_ptr<HttpCache::ActiveEntry, DanglingUntriaged> entry_ = nullptr;
   HttpCache::ActiveEntry* new_entry_ = nullptr;
   std::unique_ptr<HttpTransaction> network_trans_;
   CompletionOnceCallback callback_;  // Consumer's callback.

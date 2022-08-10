@@ -147,11 +147,6 @@ bool HttpCache::ActiveEntry::TransactionInReaders(
   return readers.count(transaction) > 0;
 }
 
-base::SafeRef<HttpCache::ActiveEntry> HttpCache::ActiveEntry::GetSafeRef()
-    const {
-  return weak_factory_.GetSafeRef();
-}
-
 //-----------------------------------------------------------------------------
 
 // This structure keeps track of work items that are attempting to create or
