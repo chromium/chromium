@@ -209,8 +209,6 @@
 #include "ash/webui/scanning/url_constants.h"
 #include "ash/webui/shimless_rma/shimless_rma.h"
 #include "ash/webui/shimless_rma/url_constants.h"
-#include "ash/webui/shortcut_customization_ui/shortcut_customization_app_ui.h"
-#include "ash/webui/shortcut_customization_ui/url_constants.h"
 #include "ash/webui/system_extensions_internals_ui/system_extensions_internals_ui.h"
 #include "ash/webui/system_extensions_internals_ui/url_constants.h"
 #include "base/system/sys_info.h"
@@ -1028,10 +1026,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   }
   if (url.host_piece() == ash::kChromeUIMediaAppHost)
     return &NewComponentUI<ash::MediaAppUI, ChromeMediaAppUIDelegate>;
-  if (features::IsShortcutCustomizationAppEnabled()) {
-    if (url.host_piece() == ash::kChromeUIShortcutCustomizationAppHost)
-      return &NewWebUI<ash::ShortcutCustomizationAppUI>;
-  }
   if (ash::features::IsFirmwareUpdaterAppEnabled()) {
     if (url.host_piece() == ash::kChromeUIFirmwareUpdateAppHost)
       return &NewWebUI<ash::FirmwareUpdateAppUI>;

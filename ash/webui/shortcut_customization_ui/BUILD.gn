@@ -18,6 +18,7 @@ static_library("shortcut_customization_ui") {
     "//ash/webui/resources:shortcut_customization_app_resources",
     "//ash/webui/shortcut_customization_ui/backend",
     "//ash/webui/shortcut_customization_ui/mojom",
+    "//ash/webui/system_apps/public:system_web_app_config",
     "//content/public/browser",
     "//ui/resources:webui_generated_resources_grd_grit",
     "//ui/webui",
