@@ -977,9 +977,9 @@ TEST_F(TranslatePrefsTest, InvalidNeverPromptSites) {
 TEST_F(TranslatePrefsTest, MigrateInvalidNeverPromptSites) {
   ListPrefUpdate update(&prefs_,
                         TranslatePrefs::kPrefNeverPromptSitesDeprecated);
-  base::Value* never_prompt_list = update.Get();
-  never_prompt_list->Append(1);
-  never_prompt_list->Append("unmigrated.com");
+  base::Value::List& never_prompt_list = update->GetList();
+  never_prompt_list.Append(1);
+  never_prompt_list.Append("unmigrated.com");
   translate_prefs_->MigrateNeverPromptSites();
   EXPECT_THAT(translate_prefs_->GetNeverPromptSitesBetween(
                   base::Time::Now() - base::Days(1), base::Time::Max()),

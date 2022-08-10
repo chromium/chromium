@@ -200,7 +200,8 @@ TEST_F(TranslateInfoBarDelegateTest, IsTranslatableLanguage) {
       .WillByDefault(Return(&accept_languages));
   ListPrefUpdate update(pref_service_.get(),
                         translate::prefs::kBlockedLanguages);
-  update->Append(kSourceLanguage);
+  base::Value::List& update_list = update->GetList();
+  update_list.Append(kSourceLanguage);
   pref_service_->SetString(language::prefs::kAcceptLanguages, kSourceLanguage);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   pref_service_->SetString(language::prefs::kPreferredLanguages,
@@ -210,7 +211,7 @@ TEST_F(TranslateInfoBarDelegateTest, IsTranslatableLanguage) {
   EXPECT_FALSE(delegate->IsTranslatableLanguageByPrefs());
 
   // Remove kSourceLanguage from the blocked languages.
-  update->EraseListValue(base::Value(kSourceLanguage));
+  update_list.EraseValue(base::Value(kSourceLanguage));
   EXPECT_TRUE(delegate->IsTranslatableLanguageByPrefs());
 }
 

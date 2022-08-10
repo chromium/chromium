@@ -308,7 +308,7 @@ void TranslatePrefs::BlockLanguage(base::StringPiece input_language) {
     std::string canonical_lang(input_language);
     language::ToTranslateLanguageSynonym(&canonical_lang);
     ListPrefUpdate update(prefs_, translate::prefs::kBlockedLanguages);
-    update->Append(std::move(canonical_lang));
+    update->GetList().Append(std::move(canonical_lang));
   }
   // Remove the blocked language from the always translate list if present.
   SetLanguageAlwaysTranslateState(input_language, false);
@@ -323,7 +323,7 @@ void TranslatePrefs::UnblockLanguage(base::StringPiece input_language) {
   std::string canonical_lang(input_language);
   language::ToTranslateLanguageSynonym(&canonical_lang);
   ListPrefUpdate update(prefs_, translate::prefs::kBlockedLanguages);
-  update->EraseListValue(base::Value(std::move(canonical_lang)));
+  update->GetList().EraseValue(base::Value(std::move(canonical_lang)));
 }
 
 void TranslatePrefs::ResetEmptyBlockedLanguagesToDefaults() {
@@ -693,7 +693,7 @@ void TranslatePrefs::RemoveLanguagePairFromAlwaysTranslateList(
   // Get translate version of language codes.
   std::string translate_source_language(source_language);
   language::ToTranslateLanguageSynonym(&translate_source_language);
-  update.Get()->RemoveKey(translate_source_language);
+  update->GetDict().Remove(translate_source_language);
 }
 
 void TranslatePrefs::SetLanguageAlwaysTranslateState(
@@ -1038,16 +1038,12 @@ bool TranslatePrefs::IsValueOnNeverPromptList(const char* pref_id,
 void TranslatePrefs::AddValueToNeverPromptList(const char* pref_id,
                                                base::StringPiece value) {
   ListPrefUpdate update(prefs_, pref_id);
-  base::Value* never_prompt_list = update.Get();
-  if (!never_prompt_list) {
-    NOTREACHED() << "Unregistered never-translate pref";
-    return;
-  }
+  base::Value::List& never_prompt_list = update->GetList();
 
   if (IsValueOnNeverPromptList(pref_id, value)) {
     return;
   }
-  never_prompt_list->Append(value);
+  never_prompt_list.Append(value);
 }
 
 void TranslatePrefs::RemoveValueFromNeverPromptList(const char* pref_id,
