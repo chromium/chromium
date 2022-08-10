@@ -1324,12 +1324,18 @@ void InterestGroupAuction::OnBidScored(
   if (debug_loss_report_url.has_value() &&
       !IsUrlValid(debug_loss_report_url.value())) {
     mojo::ReportBadMessage("Invalid seller debugging loss report URL");
+    // We must reset bid because the following function might end up calling
+    // `InterestGroupAuction` destructor, and thus releases `Bid` raw ptrs
+    // underlying memory and leaving them as dangling. This applies for the
+    // following `bid.reset()` statements in this function.
+    bid.reset();
     OnBiddingAndScoringComplete(AuctionResult::kBadMojoMessage);
     return;
   }
   if (debug_win_report_url.has_value() &&
       !IsUrlValid(debug_win_report_url.value())) {
     mojo::ReportBadMessage("Invalid seller debugging win report URL");
+    bid.reset();
     OnBiddingAndScoringComplete(AuctionResult::kBadMojoMessage);
     return;
   }
@@ -1351,6 +1357,7 @@ void InterestGroupAuction::OnBidScored(
 
   // A score <= 0 means the seller rejected the bid.
   if (score <= 0) {
+    bid.reset();
     MaybeCompleteBiddingAndScoringPhase();
     return;
   }
@@ -1360,6 +1367,7 @@ void InterestGroupAuction::OnBidScored(
   // top-level auctions must not.
   if (component_auction_modified_bid_params.is_null() != (parent_ == nullptr)) {
     mojo::ReportBadMessage("Invalid component_auction_modified_bid_params");
+    bid.reset();
     OnBiddingAndScoringComplete(AuctionResult::kBadMojoMessage);
     return;
   }
@@ -1368,6 +1376,7 @@ void InterestGroupAuction::OnBidScored(
       component_auction_modified_bid_params->has_bid &&
       !IsValidBid(component_auction_modified_bid_params->bid)) {
     mojo::ReportBadMessage("Invalid component_auction_modified_bid_params bid");
+    bid.reset();
     OnBiddingAndScoringComplete(AuctionResult::kBadMojoMessage);
     return;
   }
@@ -1414,6 +1423,7 @@ void InterestGroupAuction::OnBidScored(
         std::move(bid), std::move(component_auction_modified_bid_params));
   }
 
+  bid.reset();
   MaybeCompleteBiddingAndScoringPhase();
 }
 
