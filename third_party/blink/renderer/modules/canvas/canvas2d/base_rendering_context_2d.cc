@@ -463,7 +463,7 @@ void BaseRenderingContext2D::setStrokeStyle(
       color_string = style->GetAsString();
       if (color_string == GetState().UnparsedStrokeColor())
         return;
-      Color parsed_color = 0;
+      Color parsed_color = Color::kTransparent;
       if (!ParseColorOrCurrentColor(parsed_color, color_string))
         return;
       if (GetState().StrokeStyle()->IsEquivalentRGBA(parsed_color.Rgb())) {
@@ -522,7 +522,7 @@ void BaseRenderingContext2D::setFillStyle(
       color_string = style->GetAsString();
       if (color_string == GetState().UnparsedFillColor())
         return;
-      Color parsed_color = 0;
+      Color parsed_color = Color::kTransparent;
       if (!ParseColorOrCurrentColor(parsed_color, color_string))
         return;
       if (GetState().FillStyle()->IsEquivalentRGBA(parsed_color.Rgb())) {
@@ -653,14 +653,16 @@ void BaseRenderingContext2D::setShadowBlur(double blur) {
 }
 
 String BaseRenderingContext2D::shadowColor() const {
-  return Color(GetState().ShadowColor()).Serialized();
+  // TODO(https://1351544): CanvasRenderingContext2DState's shadow color should
+  // be a Color, not an SkColor or SkColor4f.
+  return Color::FromSkColor(GetState().ShadowColor()).Serialized();
 }
 
 void BaseRenderingContext2D::setShadowColor(const String& color_string) {
   Color color;
   if (!ParseColorOrCurrentColor(color, color_string))
     return;
-  if (GetState().ShadowColor() == color)
+  if (Color::FromSkColor(GetState().ShadowColor()) == color)
     return;
   if (identifiability_study_helper_.ShouldUpdateBuilder()) {
     identifiability_study_helper_.UpdateBuilder(CanvasOps::kSetShadowColor,

@@ -143,9 +143,10 @@ namespace {
 DOMPlugin* MakeFakePlugin(String plugin_name, LocalDOMWindow* window) {
   String description = "Portable Document Format";
   String filename = "internal-pdf-viewer";
-  auto* plugin_info = MakeGarbageCollected<PluginInfo>(
-      plugin_name, filename, description, /*background_color=*/0,
-      /*may_use_external_handler=*/false);
+  auto* plugin_info =
+      MakeGarbageCollected<PluginInfo>(plugin_name, filename, description,
+                                       /*background_color=*/Color::kTransparent,
+                                       /*may_use_external_handler=*/false);
   Vector<String> extensions{"pdf"};
   for (const char* mime_type : {"application/pdf", "text/pdf"}) {
     auto* mime_info = MakeGarbageCollected<MimeClassInfo>(

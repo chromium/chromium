@@ -48,7 +48,7 @@ class CanvasStyle final : public GarbageCollected<CanvasStyle> {
 
   String GetColorAsString() const {
     DCHECK_EQ(type_, kColorRGBA);
-    return Color(rgba_).Serialized();
+    return Color::FromRGBA32(rgba_).Serialized();
   }
   CanvasGradient* GetCanvasGradient() const { return gradient_.Get(); }
   CanvasPattern* GetCanvasPattern() const { return pattern_; }
@@ -66,6 +66,9 @@ class CanvasStyle final : public GarbageCollected<CanvasStyle> {
   enum Type { kColorRGBA, kGradient, kImagePattern };
 
   Type type_;
+
+  // TODO(https://1351544): The CanvasStyle should be Color, not an SkColor or
+  // an SkColor4f.
   RGBA32 rgba_;
 
   Member<CanvasGradient> gradient_;
