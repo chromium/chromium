@@ -5,15 +5,14 @@
 #ifndef IOS_CHROME_BROWSER_PUSH_NOTIFICATION_PUSH_NOTIFICATION_SERVICE_H_
 #define IOS_CHROME_BROWSER_PUSH_NOTIFICATION_PUSH_NOTIFICATION_SERVICE_H_
 
-#import "components/keyed_service/core/keyed_service.h"
 #import "ios/chrome/browser/push_notification/push_notification_configuration.h"
 
 // Service responsible for establishing connection and interacting
 // with the push notification server.
-class PushNotificationService : public KeyedService {
+class PushNotificationService {
  public:
   PushNotificationService();
-  ~PushNotificationService() override;
+  virtual ~PushNotificationService();
 
   // Initializes the device's connection and registers it to the push
   // notification server. `completion_handler` is invoked asynchronously when

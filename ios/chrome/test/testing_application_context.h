@@ -72,6 +72,7 @@ class TestingApplicationContext : public ApplicationContext {
   id<SingleSignOnService> GetSSOService() override;
   segmentation_platform::OTRWebStateObserver*
   GetSegmentationOTRWebStateObserver() override;
+  PushNotificationService* GetPushNotificationService() override;
 
  private:
   base::ThreadChecker thread_checker_;
@@ -92,6 +93,7 @@ class TestingApplicationContext : public ApplicationContext {
   std::unique_ptr<network::TestNetworkConnectionTracker>
       test_network_connection_tracker_;
   __strong id<SingleSignOnService> single_sign_on_service_ = nil;
+  std::unique_ptr<PushNotificationService> push_notification_service_;
 };
 
 #endif  // IOS_CHROME_TEST_TESTING_APPLICATION_CONTEXT_H_

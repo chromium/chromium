@@ -60,11 +60,13 @@
 #include "ios/chrome/browser/prefs/ios_chrome_pref_service_factory.h"
 #import "ios/chrome/browser/promos_manager/features.h"
 #import "ios/chrome/browser/promos_manager/promos_manager.h"
+#import "ios/chrome/browser/push_notification/push_notification_service.h"
 #include "ios/chrome/browser/segmentation_platform/otr_web_state_observer.h"
 #include "ios/chrome/browser/update_client/ios_chrome_update_query_params_delegate.h"
 #include "ios/chrome/common/channel_info.h"
 #include "ios/components/security_interstitials/safe_browsing/safe_browsing_service_impl.h"
 #include "ios/public/provider/chrome/browser/app_distribution/app_distribution_api.h"
+#import "ios/public/provider/chrome/browser/push_notification/push_notification_api.h"
 #include "ios/public/provider/chrome/browser/signin/signin_sso_api.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
@@ -493,6 +495,15 @@ ApplicationContextImpl::GetSegmentationOTRWebStateObserver() {
             GetChromeBrowserStateManager());
   }
   return segmentation_otr_web_state_observer_.get();
+}
+
+PushNotificationService* ApplicationContextImpl::GetPushNotificationService() {
+  if (!push_notification_service_) {
+    push_notification_service_ = ios::provider::CreatePushNotificationService();
+    DCHECK(push_notification_service_);
+  }
+
+  return push_notification_service_.get();
 }
 
 void ApplicationContextImpl::SetApplicationLocale(const std::string& locale) {

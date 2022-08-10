@@ -84,6 +84,7 @@ class ApplicationContextImpl : public ApplicationContext {
   id<SingleSignOnService> GetSSOService() override;
   segmentation_platform::OTRWebStateObserver*
   GetSegmentationOTRWebStateObserver() override;
+  PushNotificationService* GetPushNotificationService() override;
 
  private:
   // Sets the locale used by the application.
@@ -135,6 +136,8 @@ class ApplicationContextImpl : public ApplicationContext {
 
   std::unique_ptr<segmentation_platform::OTRWebStateObserver>
       segmentation_otr_web_state_observer_;
+
+  std::unique_ptr<PushNotificationService> push_notification_service_;
 };
 
 #endif  // IOS_CHROME_BROWSER_APPLICATION_CONTEXT_IMPL_H_

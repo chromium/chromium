@@ -18,6 +18,9 @@ namespace {
 NSString* const kTestPushNotificationErrorDomain =
     @"test_push_notification_error_domain";
 
+}  // namespace
+
+// Implementation of the PushNotificationService for use by unit tests
 class TestPushNotificationService final : public PushNotificationService {
  public:
   // PushNotificationService implementation.
@@ -56,10 +59,7 @@ void TestPushNotificationService::UnregisterDevice(
       }));
 }
 
-}  // namespace
-
-std::unique_ptr<PushNotificationService> CreatePushNotificationService(
-    PushNotificationConfiguration* config) {
+std::unique_ptr<PushNotificationService> CreatePushNotificationService() {
   return std::make_unique<TestPushNotificationService>();
 }
 }  // namespace provider

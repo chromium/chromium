@@ -60,8 +60,7 @@ void ChromiumPushNotificationService::UnregisterDevice(
 
 }  // namespace
 
-std::unique_ptr<PushNotificationService> CreatePushNotificationService(
-    PushNotificationConfiguration* config) {
+std::unique_ptr<PushNotificationService> CreatePushNotificationService() {
   return std::make_unique<ChromiumPushNotificationService>();
 }
 

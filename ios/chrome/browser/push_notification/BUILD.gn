@@ -12,9 +12,5 @@ source_set("push_notification_service") {
     "push_notification_util.h",
     "push_notification_util.mm",
   ]
-  deps = [
-    "//base",
-    "//components/keyed_service/core",
-  ]
-  frameworks = [ "UIKit.framework" ]
+  deps = [ "//base" ]
 }
