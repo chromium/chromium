@@ -122,7 +122,7 @@ TEST_F(PasswordImporterTest, CSVImport) {
   EXPECT_EQ(kTestPassword, imported_passwords()[0].password);
 }
 
-TEST_F(PasswordImporterTest, CSVImportLargeFile) {
+TEST_F(PasswordImporterTest, CSVImportLargeFileShouldFail) {
   base::HistogramTester histogram_tester;
   // content has more than kMaxFileSizeBytes (150KB) of bytes.
   std::string content(150 * 1024 + 100, '*');
