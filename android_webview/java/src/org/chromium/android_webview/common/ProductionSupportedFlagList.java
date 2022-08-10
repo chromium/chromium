@@ -344,6 +344,8 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(BlinkSchedulerFeatures.THREADED_SCROLL_PREVENT_RENDERING_STARVATION,
                     "Enable rendering starvation-prevention during threaded scrolling."
                             + " See https://crbug.com/1315279."),
+            Flag.baseFeature(BaseFeatures.NO_WAKE_UPS_FOR_CANCELED_TASKS,
+                    "Controls whether or not canceled delayed tasks are removed from task queues."),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };

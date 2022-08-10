@@ -56269,6 +56269,7 @@ from previous Chrome versions.
   <int value="-1714128884" label="disable-launcher-search-provider-api"/>
   <int value="-1713602121" label="BentoOffline:enabled"/>
   <int value="-1713564656" label="ProtectSyncCredentialOnReauth:enabled"/>
+  <int value="-1712124814" label="NoWakeUpsForCanceledTasks:disabled"/>
   <int value="-1711751318" label="enable-data-reduction-proxy-lo-fi-preview"/>
   <int value="-1710772665" label="disable-my-files-navigation"/>
   <int value="-1710314754"
@@ -58967,6 +58968,7 @@ from previous Chrome versions.
   <int value="-24217468" label="QuickAnswersTextAnnotator:enabled"/>
   <int value="-23804418"
       label="NTPArticleSuggestionsExpandableHeader:disabled"/>
+  <int value="-23772747" label="NoWakeUpsForCanceledTasks:enabled"/>
   <int value="-23090520" label="disable-search-button-in-omnibox"/>
   <int value="-22544408" label="enable-video-player-chromecast-support"/>
   <int value="-22506564" label="OptimizeDataUrls:disabled"/>
