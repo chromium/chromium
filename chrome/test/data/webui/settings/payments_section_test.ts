@@ -416,7 +416,7 @@ suite('PaymentsSection', function() {
           assertTrue(creditCardDialog.$.saveButton.disabled);
 
           // Add a name.
-          creditCardDialog.set('creditCard.name', 'Jane Doe');
+          creditCardDialog.set('name_', 'Jane Doe');
           flush();
 
           assertEquals('hidden', getComputedStyle(expiredError).visibility);
@@ -430,6 +430,29 @@ suite('PaymentsSection', function() {
         .then(function(event) {
           assertEquals(creditCard.guid, event.detail.guid);
         });
+  });
+
+  test('verifyNotEditedEntryAfterCancel', async function() {
+    const creditCard = createCreditCardEntry();
+    let creditCardDialog = createCreditCardDialog(creditCard);
+
+    await whenAttributeIs(creditCardDialog.$.dialog, 'open', '');
+
+    // Edit a entry.
+    creditCardDialog.set('name_', 'EditedName');
+    creditCardDialog.set('nickname_', 'NickName');
+    creditCardDialog.set('cardNumber_', '0000000000001234');
+    flush();
+
+    creditCardDialog.$.cancelButton.click();
+    await eventToPromise('close', creditCardDialog);
+
+    creditCardDialog = createCreditCardDialog(creditCard);
+    await whenAttributeIs(creditCardDialog.$.dialog, 'open', '');
+
+    assertEquals(creditCardDialog.get('name_'), creditCard.name);
+    assertEquals(creditCardDialog.get('cardNumber_'), creditCard.cardNumber);
+    assertEquals(creditCardDialog.get('nickname_'), creditCard.nickname);
   });
 
   test('verifyCancelCreditCardEdit', function(done) {

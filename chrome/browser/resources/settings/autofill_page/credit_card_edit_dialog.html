@@ -77,7 +77,7 @@
       <div slot="title">[[title_]]</div>
       <div slot="body">
         <cr-input id="numberInput" label="$i18n{creditCardNumber}"
-            value="{{creditCard.cardNumber}}" autofocus>
+            value="{{cardNumber_}}" autofocus>
         </cr-input>
         <!-- aria-hidden for creditCardExpiration label since
           creditCardExpirationMonth and creditCardExpirationYear provide
@@ -104,15 +104,15 @@
         <div id="expiredError">$i18n{creditCardExpired}</div>
         <!-- Place cardholder name field and nickname field after expiration.-->
         <cr-input id="nameInput" label="$i18n{creditCardName}"
-            value="{{creditCard.name}}" spellcheck="false">
+            value="{{name_}}" spellcheck="false">
         </cr-input>
         <cr-input id="nicknameInput" label="$i18n{creditCardNickname}"
-            value="{{creditCard.nickname}}" spellcheck="false" maxlength="25"
+            value="{{nickname_}}" spellcheck="false" maxlength="25"
             on-input="validateNickname_"
             invalid="[[nicknameInvalid_]]"
             error-message="$i18n{creditCardNicknameInvalid}">
             <div id="charCount" slot="suffix">
-              [[computeNicknameCharCount_(creditCard.nickname)]]/25
+              [[computeNicknameCharCount_(nickname_)]]/25
             </div>
         </cr-input>
         <div id="saved-to-this-device-only-label">
@@ -124,8 +124,8 @@
             on-click="onCancelButtonTap_">$i18n{cancel}</cr-button>
         <cr-button id="saveButton" class="action-button"
             on-click="onSaveButtonTap_"
-            disabled="[[!saveEnabled_(nicknameInvalid_, creditCard.*,
-                expired_)]]">
+            disabled="[[!saveEnabled_(nicknameInvalid_,
+                expired_, name_, cardNumber_, nickname_)]]">
           $i18n{save}
         </cr-button>
       </div>
