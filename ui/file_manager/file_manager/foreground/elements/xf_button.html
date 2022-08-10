@@ -57,7 +57,7 @@
     position: relative;
   }
 
-  :host(:not([data-category='dismiss'])) {
+  :host(:not([data-category='dismiss']):not([data-category='learn-more'])) {
     width: 36px;
   }
 
@@ -65,9 +65,26 @@
     display: none;
   }
 
-  :host(:not([data-category='dismiss'])) #dismiss {
+  :host([data-category='learn-more']) #icon {
     display: none;
+  }
+
+  #dismiss {
+    display: none;
+  }
+
+  #learn-more {
+    display: none;
+  }
+
+  :host([data-category='dismiss']) #dismiss {
+    display: unset;
+  }
+
+  :host([data-category='learn-more']) #learn-more {
+    display: unset;
   }
 </style>
 <cr-button id='dismiss'>$i18n{DRIVE_WELCOME_DISMISS}</cr-button>
+<cr-button id='learn-more'>$i18n{LEARN_MORE_LABEL}</cr-button>
 <cr-icon-button id='icon'></cr-icon-button>

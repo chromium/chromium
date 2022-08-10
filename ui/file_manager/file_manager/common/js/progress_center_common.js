@@ -132,6 +132,13 @@ export class ProgressCenterItem {
      * @type {number}
      */
     this.remainingTime;
+
+    /**
+     * Link to be opened when users click the "Learn more" button.
+     * The "Learn more" button won't be displayed if this is falsy.
+     * @type {?string}
+     */
+    this.learnMoreLink;
   }
 
   /**

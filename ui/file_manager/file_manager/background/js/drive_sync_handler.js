@@ -350,6 +350,8 @@ export class DriveSyncHandlerImpl extends EventTarget {
           break;
         case 'no_server_space':
           item.message = strf('SYNC_NO_SERVER_SPACE');
+          item.learnMoreLink = str('GOOGLE_DRIVE_MANAGE_STORAGE_URL');
+
           // This error will reappear every time sync is retried, so we use
           // a fixed ID to avoid spamming the user.
           item.id = DriveSyncHandlerImpl.DRIVE_SYNC_ERROR_PREFIX +
@@ -357,6 +359,8 @@ export class DriveSyncHandlerImpl extends EventTarget {
           break;
         case 'no_server_space_organization':
           item.message = strf('SYNC_NO_SERVER_SPACE_ORGANIZATION');
+          item.learnMoreLink = str('GOOGLE_DRIVE_MANAGE_STORAGE_URL');
+
           // This error will reappear every time sync is retried, so we use
           // a fixed ID to avoid spamming the user.
           item.id = DriveSyncHandlerImpl.DRIVE_SYNC_ERROR_ORGANIZATION_PREFIX +

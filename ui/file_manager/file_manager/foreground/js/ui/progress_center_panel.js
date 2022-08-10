@@ -310,10 +310,11 @@ export class ProgressCenterPanel {
       panelItem.signalCallback = (signal) => {
         if (signal === 'cancel' && item.cancelCallback) {
           item.cancelCallback();
-        }
-        if (signal === 'dismiss') {
+        } else if (signal === 'dismiss') {
           this.feedbackHost_.removePanelItem(panelItem);
           this.dismissErrorItemCallback(item.id);
+        } else if (signal === 'learn-more') {
+          window.open(item.learnMoreLink, '_blank');
         }
       };
       panelItem.progress = item.progressRateInPercent.toString();
@@ -350,6 +351,9 @@ export class ProgressCenterPanel {
           this.feedbackHost_.removePanelItem(panelItem);
           break;
         case ProgressItemState.ERROR:
+          if (item.learnMoreLink) {
+            panelItem.dataset.learnMoreLink = item.learnMoreLink;
+          }
           panelItem.panelType = panelItem.panelTypeError;
           panelItem.primaryText = item.message;
           panelItem.secondaryText = '';

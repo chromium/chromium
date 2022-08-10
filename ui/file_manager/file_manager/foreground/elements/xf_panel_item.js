@@ -157,6 +157,12 @@ export class PanelItem extends HTMLElement {
         secondaryButton.onclick = assert(this.onclick);
         secondaryButton.dataset.category = 'dismiss';
         buttonSpacer.insertAdjacentElement('afterend', secondaryButton);
+        if (this.dataset.learnMoreLink) {
+          primaryButton = document.createElement('xf-button');
+          primaryButton.id = 'primary-action';
+          primaryButton.dataset.category = 'learn-more';
+          buttonSpacer.insertAdjacentElement('afterend', primaryButton);
+        }
         break;
       case this.panelTypeInfo:
         break;
