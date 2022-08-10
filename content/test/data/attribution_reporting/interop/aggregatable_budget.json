@@ -23,6 +23,7 @@
           }
         }]
       },
+      // Should deactivate the first source.
       {
         "timestamp": "1643235583000",
         "registration_request": {
@@ -46,6 +47,7 @@
       }
     ],
     "triggers": [
+      // Should be dropped due to insufficient aggregatable budget.
       {
         "timestamp": "1643235574000",
         "registration_request": {
@@ -74,6 +76,8 @@
           }
         }]
       },
+      // Should result in an aggregatable report because there's sufficient
+      // aggregatable budget.
       {
         "timestamp": "1643235575000",
         "registration_request": {
@@ -97,6 +101,7 @@
           }
         }]
       },
+      // Should be dropped due to insufficient aggregatable budget.
       {
         "timestamp": "1643235576000",
         "registration_request": {
@@ -120,6 +125,8 @@
           }
         }]
       },
+      // Should result in an aggregatable report because there's sufficient
+      // aggregatable budget.
       {
         "timestamp": "1643235577000",
         "registration_request": {
@@ -143,6 +150,8 @@
           }
         }]
       },
+      // Should result in an aggregatable report because the aggregatable
+      // budget is separate for the second source.
       {
         "timestamp": "1643235584000",
         "registration_request": {

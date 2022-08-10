@@ -23,6 +23,7 @@
           }
         }]
       },
+      // Should deactivate the first source.
       {
         "timestamp": "1643235575000",
         "registration_request": {
@@ -74,6 +75,7 @@
           }
         }]
       },
+      // Should deactivate the second source.
       {
         "timestamp": "1643235581000",
         "registration_request": {
@@ -93,6 +95,8 @@
       }
     ],
     "triggers": [
+      // Should result in an event-level report becasue the attribution limit
+      // is not reached.
       {
         "timestamp": "1643235574000",
         "registration_request": {
@@ -112,6 +116,8 @@
           }
         }]
       },
+      // Should result in an event-level report because the attribution limit
+      // is separate for a different source site.
       {
         "timestamp": "1643235576000",
         "registration_request": {
@@ -131,6 +137,8 @@
           }
         }]
       },
+      // Should result in an event-level report because the attribution limit
+      // is separate for a different destination site.
       {
         "timestamp": "1643235578000",
         "registration_request": {
@@ -150,6 +158,8 @@
           }
         }]
       },
+      // Should result in an event-level report because the attribution limit
+      // is separate for a different reporting origin.
       {
         "timestamp": "1643235580000",
         "registration_request": {
@@ -169,6 +179,7 @@
           }
         }]
       },
+      // Should be dropped due to attribution limit that ignores source type.
       {
         "timestamp": "1643235582000",
         "registration_request": {
@@ -188,6 +199,8 @@
           }
         }]
       },
+      // Should result in an event-level report because the first report falls
+      // outside the rate limit window.
       {
         "timestamp": "1645827574000",
         "registration_request": {
