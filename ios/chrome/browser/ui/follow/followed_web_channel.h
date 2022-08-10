@@ -7,11 +7,11 @@
 
 #import <Foundation/Foundation.h>
 
-#include "ios/chrome/browser/ui/follow/follow_block_types.h"
-
 @class CrURL;
 
 // A view model representing a followed web channel.
+// TODO(crbug.com/1346506): remove this class when code has been converted
+// to use FollowedWebSite instead.
 @interface FollowedWebChannel : NSObject
 
 // Title of the web channel.
@@ -28,12 +28,6 @@
 
 // YES if the web channel is available.
 @property(nonatomic, assign) BOOL available;
-
-// Used to request to unfollow this web channel.
-@property(nonatomic, copy) FollowRequestBlock unfollowRequestBlock;
-
-// Used to request to refollow this web channel, if it has been unfollowed.
-@property(nonatomic, copy) FollowRequestBlock refollowRequestBlock;
 
 @end
 

@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
+#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 
-#include <cstddef>
-
-#include "base/check.h"
-#include "components/metrics/metrics_provider.h"
+#import "base/check.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -64,10 +61,6 @@ ChromeIdentityService* ChromeBrowserProvider::GetChromeIdentityService() {
 }
 
 UserFeedbackProvider* ChromeBrowserProvider::GetUserFeedbackProvider() const {
-  return nullptr;
-}
-
-FollowProvider* ChromeBrowserProvider::GetFollowProvider() const {
   return nullptr;
 }
 

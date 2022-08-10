@@ -5,22 +5,11 @@
 #ifndef IOS_PUBLIC_PROVIDER_CHROME_BROWSER_CHROME_BROWSER_PROVIDER_H_
 #define IOS_PUBLIC_PROVIDER_CHROME_BROWSER_CHROME_BROWSER_PROVIDER_H_
 
-#include <CoreGraphics/CoreGraphics.h>
-#import <Foundation/Foundation.h>
-#include <stddef.h>
-
 #include <memory>
-#include <string>
-#include <vector>
 
-#include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 
-class FollowProvider;
 class UserFeedbackProvider;
-
-@class UITextField;
-@class UIView;
 
 namespace ios {
 
@@ -74,9 +63,6 @@ class ChromeBrowserProvider {
 
   // Returns an instance of the user feedback provider.
   virtual UserFeedbackProvider* GetUserFeedbackProvider() const;
-
-  // Returns an instance of the Follow provider;
-  virtual FollowProvider* GetFollowProvider() const;
 
   // Adds and removes observers.
   void AddObserver(Observer* observer);

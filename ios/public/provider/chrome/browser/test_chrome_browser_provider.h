@@ -26,14 +26,12 @@ class TestChromeBrowserProvider : public ChromeBrowserProvider {
 
   // ChromeBrowserProvider:
   TestUserFeedbackProvider* GetUserFeedbackProvider() const override;
-  FollowProvider* GetFollowProvider() const override;
 
  private:
   // ChromeBrowserProvider:
   std::unique_ptr<ChromeIdentityService> CreateChromeIdentityService() override;
 
   std::unique_ptr<TestUserFeedbackProvider> user_feedback_provider_;
-  std::unique_ptr<FollowProvider> follow_provider_;
 };
 
 }  // namespace ios

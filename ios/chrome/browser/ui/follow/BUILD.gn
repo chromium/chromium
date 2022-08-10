@@ -5,9 +5,6 @@
 source_set("follow") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "follow_block_types.h",
-    "follow_web_page_urls.h",
-    "follow_web_page_urls.mm",
     "followed_web_channel.h",
     "followed_web_channel.mm",
   ]

@@ -1363,10 +1363,6 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
   [self.firstFollowCoordinator start];
 }
 
-- (void)showFirstFollowUIForWebChannel:(FollowedWebChannel*)followedWebChannel {
-  NOTREACHED();
-}
-
 #pragma mark - FindInPageCommands
 
 - (void)openFindInPage {

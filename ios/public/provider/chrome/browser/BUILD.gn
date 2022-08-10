@@ -10,15 +10,8 @@ source_set("browser") {
     "chrome_browser_provider.h",
     "chrome_browser_provider.mm",
   ]
-  deps = [
-    "//components/metrics",
-    "//ios/public/provider/chrome/browser/signin",
-    "//ios/web/public",
-    "//ios/web/public/js_messaging",
-    "//url",
-  ]
+  deps = [ "//ios/public/provider/chrome/browser/signin" ]
   public_deps = [ "//base" ]
-  frameworks = [ "CoreLocation.framework" ]
 }
 
 group("provider_api") {
@@ -59,12 +52,9 @@ source_set("test_support") {
   deps = [
     ":browser",
     "//base",
-    "//ios/chrome/browser/ui/ntp:logo",
-    "//ios/public/provider/chrome/browser/follow",
     "//ios/public/provider/chrome/browser/signin",
     "//ios/public/provider/chrome/browser/signin:test_support",
     "//ios/public/provider/chrome/browser/user_feedback:test_support",
-    "//testing/gtest",
   ]
 }
 
