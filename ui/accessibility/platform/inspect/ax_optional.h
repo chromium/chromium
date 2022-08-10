@@ -18,7 +18,12 @@ template <typename ValueType>
 class AX_EXPORT AXOptional final {
  public:
   static constexpr AXOptional Unsupported() { return AXOptional(kUnsupported); }
-  static constexpr AXOptional Error() { return AXOptional(kError); }
+  static constexpr AXOptional Error(const char* error_text = nullptr) {
+    return error_text ? AXOptional(kError, error_text) : AXOptional(kError);
+  }
+  static constexpr AXOptional Error(const std::string& error_text) {
+    return AXOptional(kError, error_text);
+  }
   static constexpr AXOptional NotApplicable() {
     return AXOptional(kNotApplicable);
   }
@@ -31,11 +36,11 @@ class AX_EXPORT AXOptional final {
   }
 
   explicit constexpr AXOptional(ValueType value_)
-      : value_(value_), flag_(kValue) {}
+      : value_(value_), state_(kValue) {}
 
-  bool constexpr IsUnsupported() const { return flag_ == kUnsupported; }
-  bool constexpr IsNotApplicable() const { return flag_ == kNotApplicable; }
-  bool constexpr IsError() const { return flag_ == kError; }
+  bool constexpr IsUnsupported() const { return state_ == kUnsupported; }
+  bool constexpr IsNotApplicable() const { return state_ == kNotApplicable; }
+  bool constexpr IsError() const { return state_ == kError; }
 
   template <typename T = ValueType>
   bool constexpr IsNotNull(
@@ -49,8 +54,11 @@ class AX_EXPORT AXOptional final {
     return true;
   }
 
-  bool constexpr HasValue() { return flag_ == kValue; }
+  bool constexpr HasValue() { return state_ == kValue; }
   constexpr const ValueType& operator*() const { return value_; }
+
+  bool HasStateText() const { return !state_text_.empty(); }
+  std::string StateText() const { return state_text_; }
 
   std::string ToString() const {
     if (IsNotNull())
@@ -85,12 +93,14 @@ class AX_EXPORT AXOptional final {
     kUnsupported,
   };
 
-  explicit constexpr AXOptional(State flag_) : value_(nullptr), flag_(flag_) {}
-  explicit constexpr AXOptional(ValueType value_, State flag_)
-      : value_(value_), flag_(flag_) {}
+  explicit constexpr AXOptional(State state, const std::string& state_text = {})
+      : value_(nullptr), state_(state), state_text_(state_text) {}
+  explicit constexpr AXOptional(ValueType value, State state)
+      : value_(value), state_(state) {}
 
   ValueType value_;
-  State flag_;
+  State state_;
+  std::string state_text_;
 };
 
 }  // namespace ui

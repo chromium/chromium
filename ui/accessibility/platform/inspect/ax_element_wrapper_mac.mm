@@ -24,6 +24,9 @@ namespace ui {
 
 using base::SysNSStringToUTF8;
 
+constexpr char kUnsupportedObject[] =
+    "Only AXUIElementRef and BrowserAccessibilityCocoa are supported.";
+
 // static
 bool AXElementWrapper::IsValidElement(const id node) {
   return AXElementWrapper(node).IsValidElement();
@@ -65,7 +68,7 @@ id AXElementWrapper::AsId() const {
 
 std::string AXElementWrapper::DOMId() const {
   const id domid_value =
-      GetAttributeValue(base::SysUTF8ToNSString("AXDOMIdentifier"));
+      *GetAttributeValue(base::SysUTF8ToNSString("AXDOMIdentifier"));
   return base::SysNSStringToUTF8(static_cast<NSString*>(domid_value));
 }
 
@@ -98,7 +101,7 @@ NSSize AXElementWrapper::Size() const {
     return NSMakeSize(0, 0);
   }
 
-  id value = GetAttributeValue(NSAccessibilitySizeAttribute);
+  id value = *GetAttributeValue(NSAccessibilitySizeAttribute);
   if (value && CFGetTypeID(value) == AXValueGetTypeID()) {
     AXValueType type = AXValueGetType(static_cast<AXValueRef>(value));
     if (type == kAXValueCGSizeType) {
@@ -122,7 +125,7 @@ NSPoint AXElementWrapper::Position() const {
     return NSMakePoint(0, 0);
   }
 
-  id value = GetAttributeValue(NSAccessibilityPositionAttribute);
+  id value = *GetAttributeValue(NSAccessibilityPositionAttribute);
   if (value && CFGetTypeID(value) == AXValueGetTypeID()) {
     AXValueType type = AXValueGetType(static_cast<AXValueRef>(value));
     if (type == kAXValueCGPointType) {
@@ -171,30 +174,30 @@ NSArray* AXElementWrapper::ParameterizedAttributeNames() const {
   return nil;
 }
 
-id AXElementWrapper::GetAttributeValue(NSString* attribute) const {
+AXOptionalNSObject AXElementWrapper::GetAttributeValue(
+    NSString* attribute) const {
   if (IsNSAccessibilityElement())
-    return [node_ accessibilityAttributeValue:attribute];
+    return AXOptionalNSObject([node_ accessibilityAttributeValue:attribute]);
 
   if (IsAXUIElement()) {
     CFTypeRef value_ref;
     AXError result = AXUIElementCopyAttributeValue(
         static_cast<AXUIElementRef>(node_), static_cast<CFStringRef>(attribute),
         &value_ref);
-    if (AXSuccess(result, "AXGetAttributeValue(" +
-                              base::SysNSStringToUTF8(attribute) + ")"))
-      return static_cast<id>(value_ref);
-    return nil;
+    return ToOptional(
+        static_cast<id>(value_ref), result,
+        "AXGetAttributeValue(" + base::SysNSStringToUTF8(attribute) + ")");
   }
 
-  NOTREACHED()
-      << "Only AXUIElementRef and BrowserAccessibilityCocoa are supported.";
-  return nil;
+  return AXOptionalNSObject::Error(kUnsupportedObject);
 }
 
-id AXElementWrapper::GetParameterizedAttributeValue(NSString* attribute,
-                                                    id parameter) const {
+AXOptionalNSObject AXElementWrapper::GetParameterizedAttributeValue(
+    NSString* attribute,
+    id parameter) const {
   if (IsNSAccessibilityElement())
-    return [node_ accessibilityAttributeValue:attribute forParameter:parameter];
+    return AXOptionalNSObject([node_ accessibilityAttributeValue:attribute
+                                                    forParameter:parameter]);
 
   if (IsAXUIElement()) {
     // Convert NSValue parameter to CFTypeRef if needed.
@@ -211,16 +214,13 @@ id AXElementWrapper::GetParameterizedAttributeValue(NSString* attribute,
     AXError result = AXUIElementCopyParameterizedAttributeValue(
         static_cast<AXUIElementRef>(node_), static_cast<CFStringRef>(attribute),
         parameter_ref, &value_ref);
-    if (AXSuccess(result, "GetParameterizedAttributeValue(" +
-                              base::SysNSStringToUTF8(attribute) + ")"))
-      return static_cast<id>(value_ref);
 
-    return nil;
+    return ToOptional(static_cast<id>(value_ref), result,
+                      "GetParameterizedAttributeValue(" +
+                          base::SysNSStringToUTF8(attribute) + ")");
   }
 
-  NOTREACHED()
-      << "Only AXUIElementRef and BrowserAccessibilityCocoa are supported.";
-  return nil;
+  return AXOptionalNSObject::Error(kUnsupportedObject);
 }
 
 absl::optional<id> AXElementWrapper::PerformSelector(
@@ -301,10 +301,10 @@ void AXElementWrapper::PerformAction(NSString* action) const {
       << "Only AXUIElementRef and BrowserAccessibilityCocoa are supported.";
 }
 
-bool AXElementWrapper::AXSuccess(AXError result,
-                                 const std::string& message) const {
+std::string AXElementWrapper::AXErrorMessage(AXError result,
+                                             const std::string& message) const {
   if (result == kAXErrorSuccess) {
-    return true;
+    return {};
   }
 
   std::string error;
@@ -334,8 +334,27 @@ bool AXElementWrapper::AXSuccess(AXError result,
       error = "unknown error";
       break;
   }
-  LOG(WARNING) << message << ": " << error;
+  return {message + ": " + error};
+}
+
+bool AXElementWrapper::AXSuccess(AXError result,
+                                 const std::string& message) const {
+  std::string message_text = AXErrorMessage(result, message);
+  if (message_text.empty())
+    return true;
+
+  LOG(WARNING) << message_text;
   return false;
+}
+
+AXOptionalNSObject AXElementWrapper::ToOptional(
+    id value,
+    AXError result,
+    const std::string& message) const {
+  if (result == kAXErrorSuccess)
+    return AXOptionalNSObject(value);
+
+  return AXOptionalNSObject::Error(AXErrorMessage(result, message));
 }
 
 }  // namespace ui

@@ -7,16 +7,12 @@
 
 #include "base/memory/raw_ptr.h"
 #include "ui/accessibility/ax_export.h"
-#include "ui/accessibility/platform/inspect/ax_optional.h"
 #include "ui/accessibility/platform/inspect/ax_tree_indexer_mac.h"
 
 namespace ui {
 
 class AXElementWrapper;
 class AXPropertyNode;
-
-// Optional tri-state id object.
-using AXOptionalNSObject = AXOptional<id>;
 
 // Invokes a script instruction describing a call unit which represents
 // a sequence of calls.

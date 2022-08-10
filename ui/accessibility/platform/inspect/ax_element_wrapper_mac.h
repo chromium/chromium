@@ -11,8 +11,12 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/platform/inspect/ax_inspect.h"
+#include "ui/accessibility/platform/inspect/ax_optional.h"
 
 namespace ui {
+
+// Optional tri-state id object.
+using AXOptionalNSObject = AXOptional<id>;
 
 // A wrapper around AXUIElement or NSAccessibilityElement object.
 class AX_EXPORT AXElementWrapper final {
@@ -65,8 +69,9 @@ class AX_EXPORT AXElementWrapper final {
   NSArray* ParameterizedAttributeNames() const;
 
   // Returns (parameterized) attribute value on the object.
-  id GetAttributeValue(NSString* attribute) const;
-  id GetParameterizedAttributeValue(NSString* attribute, id parameter) const;
+  AXOptionalNSObject GetAttributeValue(NSString* attribute) const;
+  AXOptionalNSObject GetParameterizedAttributeValue(NSString* attribute,
+                                                    id parameter) const;
 
   // Performs the given selector on the object and returns the result. If
   // the object does not conform to the NSAccessibility protocol or the selector
@@ -136,8 +141,14 @@ class AX_EXPORT AXElementWrapper final {
   template <typename... Args>
   void SetInvocationArguments(NSInvocation*, int) const {}
 
+  // Generates an error message from the given error.
+  std::string AXErrorMessage(AXError, const std::string& message) const;
+
   // Returns true on success, otherwise returns false and logs error.
-  bool AXSuccess(AXError, const std::string& message) const;
+  bool AXSuccess(AXError result, const std::string& message) const;
+
+  // Converts the given value and the error object into AXOptional object.
+  AXOptionalNSObject ToOptional(id, AXError, const std::string& message) const;
 
   const id node_;
 };

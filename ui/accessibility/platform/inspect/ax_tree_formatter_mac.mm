@@ -33,10 +33,11 @@ namespace ui {
 
 namespace {
 
-const char kLocalPositionDictAttr[] = "LocalPosition";
+constexpr char kLocalPositionDictAttr[] = "LocalPosition";
 
-const char kFailedToParseError[] = "_const_ERROR:FAILED_TO_PARSE";
-const char kNotApplicable[] = "_const_n/a";
+constexpr char kFailedPrefix[] = "_const_ERROR:";
+constexpr char kFailedToParseError[] = "_const_ERROR:FAILED_TO_PARSE";
+constexpr char kNotApplicable[] = "_const_n/a";
 
 }  // namespace
 
@@ -144,7 +145,9 @@ std::string AXTreeFormatterMac::EvaluateScript(
 
     base::Value result;
     if (value.IsError()) {
-      result = base::Value(kFailedToParseError);
+      result = value.HasStateText()
+                   ? base::Value(kFailedPrefix + value.StateText())
+                   : base::Value(kFailedToParseError);
     } else if (value.IsNotApplicable()) {
       result = base::Value(kNotApplicable);
     } else {
@@ -222,7 +225,7 @@ void AXTreeFormatterMac::AddProperties(const AXElementWrapper& ax_element,
     for (NSString* attribute : attributes) {
       dict->SetPath(SysNSStringToUTF8(attribute),
                     AXNSObjectToBaseValue(
-                        ax_element.GetAttributeValue(attribute), indexer));
+                        *ax_element.GetAttributeValue(attribute), indexer));
     }
     return;
   }

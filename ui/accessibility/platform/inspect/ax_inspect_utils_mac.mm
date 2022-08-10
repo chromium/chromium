@@ -173,7 +173,7 @@ std::pair<AXUIElementRef, int> FindAXUIElement(const AXTreeSelector& selector) {
             // AXWebArea role.
             AXElementWrapper ax_node(static_cast<id>(node));
             NSString* role =
-                ax_node.GetAttributeValue(NSAccessibilityRoleAttribute);
+                *ax_node.GetAttributeValue(NSAccessibilityRoleAttribute);
             return SysNSStringToUTF8(role) == "AXWebArea";
           }));
     }
@@ -194,52 +194,16 @@ AXUIElementRef FindAXWindowChild(AXUIElementRef parent,
   id window = [children objectAtIndex:0];
 
   AXElementWrapper ax_window(window);
-  NSString* role = ax_window.GetAttributeValue(NSAccessibilityRoleAttribute);
+  NSString* role = *ax_window.GetAttributeValue(NSAccessibilityRoleAttribute);
   if (SysNSStringToUTF8(role) != "AXWindow")
     return nil;
 
   NSString* window_title =
-      ax_window.GetAttributeValue(NSAccessibilityTitleAttribute);
+      *ax_window.GetAttributeValue(NSAccessibilityTitleAttribute);
   if (base::MatchPattern(SysNSStringToUTF8(window_title), pattern))
     return static_cast<AXUIElementRef>(window);
 
   return nil;
-}
-
-AX_EXPORT bool AXSuccess(AXError result, const std::string& message) {
-  if (result == kAXErrorSuccess) {
-    return true;
-  }
-
-  std::string error;
-  switch (result) {
-    case kAXErrorAttributeUnsupported:
-      error = "attribute unsupported";
-      break;
-    case kAXErrorParameterizedAttributeUnsupported:
-      error = "parameterized attribute unsupported";
-      break;
-    case kAXErrorNoValue:
-      error = "no value";
-      break;
-    case kAXErrorIllegalArgument:
-      error = "illegal argument";
-      break;
-    case kAXErrorInvalidUIElement:
-      error = "invalid UIElement";
-      break;
-    case kAXErrorCannotComplete:
-      error = "cannot complete";
-      break;
-    case kAXErrorNotImplemented:
-      error = "not implemented";
-      break;
-    default:
-      error = "unknown error";
-      break;
-  }
-  LOG(WARNING) << message << ": " << error;
-  return false;
 }
 
 }  // namespace ui

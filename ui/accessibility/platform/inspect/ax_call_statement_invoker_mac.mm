@@ -200,9 +200,11 @@ AXOptionalNSObject AXCallStatementInvoker::InvokeForAXElement(
         return rvalue;
       }
       // Getter. Make sure to expose null values in ax scripts.
-      id value = ax_element.GetAttributeValue(attribute);
-      return IsDumpingTree() ? AXOptionalNSObject::NotNullOrNotApplicable(value)
-                             : AXOptionalNSObject(value);
+      AXOptionalNSObject optional_value =
+          ax_element.GetAttributeValue(attribute);
+      return IsDumpingTree()
+                 ? AXOptionalNSObject::NotNullOrNotApplicable(*optional_value)
+                 : optional_value;
     }
   }
 
@@ -211,8 +213,7 @@ AXOptionalNSObject AXCallStatementInvoker::InvokeForAXElement(
     if (property_node.IsMatching(base::SysNSStringToUTF8(attribute))) {
       AXOptionalNSObject param = ParamFrom(property_node);
       if (param.IsNotNull()) {
-        return AXOptionalNSObject(
-            ax_element.GetParameterizedAttributeValue(attribute, *param));
+        return ax_element.GetParameterizedAttributeValue(attribute, *param);
       }
       return param;
     }
