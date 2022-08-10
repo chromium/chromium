@@ -130,10 +130,12 @@ void ToolbarActionsModel::OnExtensionManagementSettingsChanged() {
 }
 
 void ToolbarActionsModel::OnExtensionPermissionsUpdated(
-    const extensions::UpdatedExtensionPermissionsInfo& info) {
-  if (HasAction(info.extension->id())) {
+    const extensions::Extension& extension,
+    const extensions::PermissionSet& permissions,
+    extensions::PermissionsManager::UpdateReason reason) {
+  if (HasAction(extension.id())) {
     for (Observer& observer : observers_)
-      observer.OnToolbarActionUpdated(info.extension->id());
+      observer.OnToolbarActionUpdated(extension.id());
   }
 }
 

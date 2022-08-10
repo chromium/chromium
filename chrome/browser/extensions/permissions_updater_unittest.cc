@@ -158,10 +158,12 @@ TEST_F(PermissionsUpdaterTest, GrantAndRevokeOptionalPermissions) {
         .GrantOptionalPermissions(*extension, delta, base::DoNothing());
     waiter.WaitForExtensionPermissionsUpdate(base::BindOnce(
         [](scoped_refptr<const Extension> extension, PermissionSet* delta,
-           const UpdatedExtensionPermissionsInfo& info) {
-          ASSERT_EQ(extension.get(), info.extension);
-          ASSERT_EQ(UpdatedExtensionPermissionsInfo::ADDED, info.reason);
-          ASSERT_EQ(*delta, info.permissions);
+           const Extension& actual_extension,
+           const PermissionSet& actual_permissions,
+           PermissionsManager::UpdateReason actual_reason) {
+          ASSERT_EQ(extension.get()->id(), actual_extension.id());
+          ASSERT_EQ(*delta, actual_permissions);
+          ASSERT_EQ(PermissionsManager::UpdateReason::kAdded, actual_reason);
         },
         extension, &delta));
 
@@ -194,10 +196,12 @@ TEST_F(PermissionsUpdaterTest, GrantAndRevokeOptionalPermissions) {
                                    base::DoNothing());
     waiter.WaitForExtensionPermissionsUpdate(base::BindOnce(
         [](scoped_refptr<const Extension> extension, PermissionSet* delta,
-           const UpdatedExtensionPermissionsInfo& info) {
-          ASSERT_EQ(extension.get(), info.extension);
-          ASSERT_EQ(UpdatedExtensionPermissionsInfo::REMOVED, info.reason);
-          ASSERT_EQ(*delta, info.permissions);
+           const Extension& actual_extension,
+           const PermissionSet& actual_permissions,
+           PermissionsManager::UpdateReason actual_reason) {
+          ASSERT_EQ(extension.get()->id(), actual_extension.id());
+          ASSERT_EQ(*delta, actual_permissions);
+          ASSERT_EQ(PermissionsManager::UpdateReason::kRemoved, actual_reason);
         },
         extension, &delta));
 

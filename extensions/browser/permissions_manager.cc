@@ -185,12 +185,6 @@ KeyedService* PermissionsManagerFactory::BuildServiceInstanceFor(
 
 }  // namespace
 
-UpdatedExtensionPermissionsInfo::UpdatedExtensionPermissionsInfo(
-    const Extension* extension,
-    const PermissionSet& permissions,
-    Reason reason)
-    : reason(reason), extension(extension), permissions(permissions) {}
-
 // Implementation of UserPermissionsSettings.
 PermissionsManager::UserPermissionsSettings::UserPermissionsSettings() =
     default;
@@ -573,9 +567,11 @@ PermissionsManager::GetEffectivePermissionsToGrant(
 }
 
 void PermissionsManager::NotifyExtensionPermissionsUpdated(
-    const UpdatedExtensionPermissionsInfo& info) {
+    const Extension& extension,
+    const PermissionSet& permissions,
+    UpdateReason reason) {
   for (Observer& observer : observers_) {
-    observer.OnExtensionPermissionsUpdated(info);
+    observer.OnExtensionPermissionsUpdated(extension, permissions, reason);
   }
 }
 

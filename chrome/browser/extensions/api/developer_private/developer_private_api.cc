@@ -656,9 +656,11 @@ void DeveloperPrivateEventRouter::OnUserPermissionsSettingsChanged(
 }
 
 void DeveloperPrivateEventRouter::OnExtensionPermissionsUpdated(
-    const UpdatedExtensionPermissionsInfo& info) {
+    const Extension& extension,
+    const PermissionSet& permissions,
+    PermissionsManager::UpdateReason reason) {
   BroadcastItemStateChanged(developer::EVENT_TYPE_PERMISSIONS_CHANGED,
-                            info.extension->id());
+                            extension.id());
 }
 
 void DeveloperPrivateEventRouter::OnProfilePrefChanged() {

@@ -143,7 +143,9 @@ class DeveloperPrivateEventRouter : public ExtensionRegistryObserver,
   void OnUserPermissionsSettingsChanged(
       const PermissionsManager::UserPermissionsSettings& settings) override;
   void OnExtensionPermissionsUpdated(
-      const UpdatedExtensionPermissionsInfo& info) override;
+      const Extension& extension,
+      const PermissionSet& permissions,
+      PermissionsManager::UpdateReason reason) override;
 
   // Handles a profile preference change.
   void OnProfilePrefChanged();

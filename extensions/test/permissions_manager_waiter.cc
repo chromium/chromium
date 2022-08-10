@@ -22,7 +22,10 @@ void PermissionsManagerWaiter::WaitForExtensionPermissionsUpdate() {
 }
 
 void PermissionsManagerWaiter::WaitForExtensionPermissionsUpdate(
-    base::OnceCallback<void(const UpdatedExtensionPermissionsInfo&)> callback) {
+    base::OnceCallback<void(const Extension& extension,
+                            const PermissionSet& permissions,
+                            PermissionsManager::UpdateReason reason)>
+        callback) {
   extension_permissions_update_callback_ = std::move(callback);
   WaitForExtensionPermissionsUpdate();
 }
@@ -33,9 +36,12 @@ void PermissionsManagerWaiter::OnUserPermissionsSettingsChanged(
 }
 
 void PermissionsManagerWaiter::OnExtensionPermissionsUpdated(
-    const UpdatedExtensionPermissionsInfo& info) {
+    const Extension& extension,
+    const PermissionSet& permissions,
+    PermissionsManager::UpdateReason reason) {
   if (extension_permissions_update_callback_) {
-    std::move(extension_permissions_update_callback_).Run(info);
+    std::move(extension_permissions_update_callback_)
+        .Run(extension, permissions, reason);
   }
   extension_permissions_update_run_loop_.Quit();
 }

@@ -13,6 +13,10 @@ namespace extensions {
 
 class PermissionsManagerWaiter : public PermissionsManager::Observer {
  public:
+  using ExtensionPermissionUpdateCallback =
+      base::OnceCallback<void(const Extension& extension,
+                              const PermissionSet& permissions,
+                              PermissionsManager::UpdateReason reason)>;
   explicit PermissionsManagerWaiter(PermissionsManager* manager);
   PermissionsManagerWaiter(const PermissionsManagerWaiter&) = delete;
   const PermissionsManagerWaiter& operator=(const PermissionsManagerWaiter&) =
@@ -22,25 +26,25 @@ class PermissionsManagerWaiter : public PermissionsManager::Observer {
   // Waits until permissions change.
   void WaitForUserPermissionsSettingsChange();
   void WaitForExtensionPermissionsUpdate();
-  // `callback` is called after waiting for an update.
+  // Waits until extension permissions change and then calls `callback`.
   void WaitForExtensionPermissionsUpdate(
-      base::OnceCallback<void(const UpdatedExtensionPermissionsInfo&)>
-          callback);
+      ExtensionPermissionUpdateCallback callback);
 
  private:
   // PermissionsManager::Observer:
   void OnUserPermissionsSettingsChanged(
       const PermissionsManager::UserPermissionsSettings& settings) override;
   void OnExtensionPermissionsUpdated(
-      const UpdatedExtensionPermissionsInfo& info) override;
+      const Extension& extension,
+      const PermissionSet& permissions,
+      PermissionsManager::UpdateReason reason) override;
 
   base::RunLoop user_permissions_settings_changed_run_loop_;
   base::RunLoop extension_permissions_update_run_loop_;
   base::ScopedObservation<extensions::PermissionsManager,
                           extensions::PermissionsManager::Observer>
       manager_observation_{this};
-  base::OnceCallback<void(const UpdatedExtensionPermissionsInfo&)>
-      extension_permissions_update_callback_;
+  ExtensionPermissionUpdateCallback extension_permissions_update_callback_;
 };
 
 }  // namespace extensions

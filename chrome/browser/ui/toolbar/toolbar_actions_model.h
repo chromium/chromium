@@ -157,7 +157,9 @@ class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
 
   // extensions::PermissionsManager::Observer:
   void OnExtensionPermissionsUpdated(
-      const extensions::UpdatedExtensionPermissionsInfo& info) override;
+      const extensions::Extension& extension,
+      const extensions::PermissionSet& permissions,
+      extensions::PermissionsManager::UpdateReason reason) override;
 
   // KeyedService:
   void Shutdown() override;

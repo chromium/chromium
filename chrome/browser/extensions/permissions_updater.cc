@@ -651,29 +651,27 @@ void PermissionsUpdater::NotifyPermissionsUpdated(
     return;
   }
 
-  UpdatedExtensionPermissionsInfo::Reason reason;
+  PermissionsManager::UpdateReason reason;
   events::HistogramValue histogram_value = events::UNKNOWN;
   const char* event_name = NULL;
   Profile* profile = Profile::FromBrowserContext(browser_context);
 
   if (event_type == REMOVED) {
-    reason = UpdatedExtensionPermissionsInfo::REMOVED;
+    reason = PermissionsManager::UpdateReason::kRemoved;
     histogram_value = events::PERMISSIONS_ON_REMOVED;
     event_name = permissions::OnRemoved::kEventName;
   } else if (event_type == ADDED) {
-    reason = UpdatedExtensionPermissionsInfo::ADDED;
+    reason = PermissionsManager::UpdateReason::kAdded;
     histogram_value = events::PERMISSIONS_ON_ADDED;
     event_name = permissions::OnAdded::kEventName;
   } else {
     DCHECK_EQ(POLICY, event_type);
-    reason = UpdatedExtensionPermissionsInfo::POLICY;
+    reason = PermissionsManager::UpdateReason::kPolicy;
   }
 
   // Notify other APIs or interested parties.
-  UpdatedExtensionPermissionsInfo info =
-      UpdatedExtensionPermissionsInfo(extension.get(), *changed, reason);
   PermissionsManager::Get(browser_context)
-      ->NotifyExtensionPermissionsUpdated(info);
+      ->NotifyExtensionPermissionsUpdated(*extension, *changed, reason);
 
   // Send the new permissions to the renderers.
   for (RenderProcessHost::iterator host_iterator(
