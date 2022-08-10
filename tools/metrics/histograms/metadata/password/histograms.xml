@@ -1612,6 +1612,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.ImportDuration" units="ms"
+    expires_after="2023-02-01">
+  <owner>eliaskh@chromium.org</owner>
+  <owner>natiahlyi@google.com</owner>
+  <summary>
+    Tracks the time it takes to import credentials in passwords import flow. The
+    time that is tracked is the time needed to process the credentials, checking
+    for conflicts, generating status and storing them. This metric doesn't
+    include the time needed to read the CSV file. Recorded when the import flow
+    finished importing all credentials within password settings.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.ImportedPasswordsPerUserInCSV" units="units"
     expires_after="2023-01-01">
   <owner>vasilii@chromium.org</owner>

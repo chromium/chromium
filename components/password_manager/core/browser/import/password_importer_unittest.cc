@@ -10,6 +10,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/password_manager/core/browser/import/csv_password_sequence.h"
 #include "components/password_manager/core/browser/test_password_store.h"
@@ -102,11 +103,17 @@ TEST_F(PasswordImporterTest, CSVImport) {
       "Url,Username,Password\n"
       "http://accounts.google.com/a/LoginAuth,test@gmail.com,test1\n";
 
+  base::HistogramTester histogram_tester;
+
   base::FilePath input_path =
       temp_directory_.GetPath().AppendASCII(kTestFileName);
   ASSERT_EQ(static_cast<int>(strlen(kTestCSVInput)),
             base::WriteFile(input_path, kTestCSVInput, strlen(kTestCSVInput)));
   ASSERT_NO_FATAL_FAILURE(StartImportAndWaitForCompletion(input_path));
+
+  histogram_tester.ExpectTotalCount("PasswordManager.ImportDuration", 1);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.ImportedPasswordsPerUserInCSV", 1);
 
   ASSERT_EQ(1u, imported_passwords().size());
   EXPECT_EQ(GURL(kTestOriginURL), imported_passwords()[0].url);
@@ -116,6 +123,7 @@ TEST_F(PasswordImporterTest, CSVImport) {
 }
 
 TEST_F(PasswordImporterTest, CSVImportLargeFile) {
+  base::HistogramTester histogram_tester;
   // content has more than kMaxFileSizeBytes (150KB) of bytes.
   std::string content(150 * 1024 + 100, '*');
 
@@ -126,11 +134,16 @@ TEST_F(PasswordImporterTest, CSVImportLargeFile) {
   ASSERT_NO_FATAL_FAILURE(StartImportAndWaitForCompletion(temp_file_path));
 
   EXPECT_THAT(imported_passwords(), IsEmpty());
+  histogram_tester.ExpectTotalCount("PasswordManager.ImportDuration", 0);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.ImportedPasswordsPerUserInCSV", 0);
+
   EXPECT_EQ(PasswordImporter::Status::LARGE_FILE, GetImportStatus());
   base::DeleteFile(temp_file_path);
 }
 
 TEST_F(PasswordImporterTest, CSVImportNonExistingFile) {
+  base::HistogramTester histogram_tester;
   base::FilePath src_dir;
   ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &src_dir));
   static const base::FilePath kTestsDirectory(FILE_PATH_LITERAL(
@@ -140,15 +153,22 @@ TEST_F(PasswordImporterTest, CSVImportNonExistingFile) {
 
   ASSERT_NO_FATAL_FAILURE(StartImportAndWaitForCompletion(input_path));
 
+  histogram_tester.ExpectTotalCount("PasswordManager.ImportDuration", 0);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.ImportedPasswordsPerUserInCSV", 0);
   EXPECT_THAT(imported_passwords(), IsEmpty());
   EXPECT_EQ(PasswordImporter::Status::IO_ERROR, GetImportStatus());
 }
 
 TEST_F(PasswordImporterTest, ImportIOErrorDueToUnreadableFile) {
+  base::HistogramTester histogram_tester;
   base::FilePath non_existent_input_file(FILE_PATH_LITERAL("nonexistent.csv"));
   ASSERT_NO_FATAL_FAILURE(
       StartImportAndWaitForCompletion(non_existent_input_file));
 
+  histogram_tester.ExpectTotalCount("PasswordManager.ImportDuration", 0);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.ImportedPasswordsPerUserInCSV", 0);
   ASSERT_EQ(0u, imported_passwords().size());
 }
 
