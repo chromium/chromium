@@ -847,8 +847,7 @@ public class ContextualSearchManager
                 mSearchPanel.getSearchBarControl().getQuickActionControl().hasQuickAction();
         mReceivedContextualCardsEntityData = !quickActionShown && receivedCaptionOrThumbnail;
         ContextualSearchUma.logContextualCardsDataShown(mReceivedContextualCardsEntityData);
-        mSearchPanel.getPanelMetrics().setWasContextualCardsDataShown(
-                mReceivedContextualCardsEntityData, resolvedSearchTerm.cardTagEnum());
+        mSearchPanel.getPanelMetrics().setCardShown(resolvedSearchTerm.cardTagEnum());
         ContextualSearchUma.logQuickActionShown(
                 quickActionShown, resolvedSearchTerm.quickActionCategory());
         mSearchPanel.getPanelMetrics().setWasQuickActionShown(
@@ -1529,9 +1528,6 @@ public class ContextualSearchManager
         if (!selection.isEmpty()) {
             if (selectionValid && mSearchPanel != null) {
                 mSearchPanel.updateBasePageSelectionYPx(y);
-                if (!mSearchPanel.isShowing()) {
-                    mSearchPanel.getPanelMetrics().onSelectionEstablished(selection);
-                }
                 showSelectionAsSearchInBar(selection);
 
                 if (type == SelectionType.LONG_PRESS) {

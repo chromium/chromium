@@ -206,9 +206,6 @@ public class ContextualSearchUnbatchedTest extends ContextualSearchInstrumentati
         Assert.assertTrue("Translation was not forced with the current request URL: "
                         + mManager.getRequest().getSearchUrl(),
                 mManager.getRequest().isTranslationForced());
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        "Search.ContextualSearch.TranslationNeeded"));
     }
 
     @Test

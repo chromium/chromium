@@ -186,15 +186,6 @@ public class ContextualSearchUma {
     }
 
     /**
-     * Logs the duration from opening the panel beyond peek until the panel is closed.
-     * @param durationMs The duration to record.
-     */
-    public static void logPanelOpenDuration(long durationMs) {
-        RecordHistogram.recordMediumTimesHistogram(
-                "Search.ContextualSearchPanelOpenDuration", durationMs);
-    }
-
-    /**
      * Logs a user action for the duration of viewing the panel that describes the amount of time
      * the user viewed the bar and panel overall.
      * @param durationMs The duration to record.
@@ -209,16 +200,6 @@ public class ContextualSearchUma {
         } else {
             RecordUserAction.record("ContextualSearch.ViewMoreThanTenSeconds");
         }
-    }
-
-    /**
-     * Logs whether the promo was seen.
-     * Logs multiple histograms, with and without the original triggering gesture.
-     * @param wasPanelSeen Whether the panel was seen.
-     * @param wasTap Whether the gesture that originally caused the panel to show was a Tap.
-     */
-    public static void logPromoSeen(boolean wasPanelSeen, boolean wasTap) {
-        logHistogramByGesture(wasPanelSeen, wasTap, "Search.ContextualSearchPromoSeenByGesture");
     }
 
     /**
@@ -448,17 +429,6 @@ public class ContextualSearchUma {
     public static void logResolveReceived(boolean fromTapGesture) {
         RecordHistogram.recordBooleanHistogram(
                 "Search.ContextualSearch.ResolveReceived", fromTapGesture);
-    }
-
-    /**
-     * Logs that the user needs a translation of the selection. The user may or may not actually
-     * see a translation - this only logs that it's needed.
-     * @param fromTapGesture Whether the gesture that originally established the selection
-     *        was Tap.
-     */
-    public static void logTranslationNeeded(boolean fromTapGesture) {
-        RecordHistogram.recordBooleanHistogram(
-                "Search.ContextualSearch.TranslationNeeded", fromTapGesture);
     }
 
     /**

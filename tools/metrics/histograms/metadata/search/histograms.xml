@@ -352,7 +352,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearch.TranslationNeeded"
-    enum="ContextualSearchGestureIsTap" expires_after="2022-08-05">
+    enum="ContextualSearchGestureIsTap" expires_after="M106">
+  <obsolete>
+    Removed 08/2022
+  </obsolete>
   <owner>donnd@chromium.org</owner>
   <owner>contextual-search-eng@google.com</owner>
   <summary>
@@ -712,7 +715,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearchPanelOpenDuration" units="ms"
-    expires_after="M103">
+    expires_after="M106">
+  <obsolete>
+    Removed 08/2022
+  </obsolete>
   <owner>donnd@chromium.org</owner>
   <owner>contextual-search-eng@google.com</owner>
   <summary>
@@ -805,7 +811,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearchPromoSeenByGesture"
-    enum="ContextualSearchSeenByGesture" expires_after="M103">
+    enum="ContextualSearchSeenByGesture" expires_after="M106">
+  <obsolete>
+    Removed as of 08/2022
+  </obsolete>
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>

@@ -23,23 +23,16 @@ public class ContextualSearchPanelMetrics {
     private boolean mDidSearchInvolvePromo;
     private boolean mWasSearchContentViewSeen;
     private boolean mIsPromoActive;
-    private boolean mHasExpanded;
-    private boolean mHasMaximized;
     private boolean mHasExitedPeeking;
     private boolean mHasExitedExpanded;
     private boolean mHasExitedMaximized;
     private boolean mIsSerpNavigation;
     private boolean mWasActivatedByTap;
-    private boolean mWasPanelOpenedBeyondPeek;
-    private boolean mWasContextualCardsDataShown;
     @ResolvedSearchTerm.CardTag
     private int mCardTag;
     private boolean mWasQuickActionShown;
     private int mQuickActionCategory;
     private boolean mWasQuickActionClicked;
-    private int mSelectionLength;
-    // Whether any Tap suppression heuristic was satisfied when the panel was shown.
-    private boolean mWasAnyHeuristicSatisfiedOnPanelShow;
     // Time when the panel was triggered (not reset by a chained search).
     // Panel transitions are animated so mPanelTriggerTimeNs will be less than mFirstPeekTimeNs.
     private long mPanelTriggerTimeFromTapNs;
@@ -49,16 +42,8 @@ public class ContextualSearchPanelMetrics {
     // Time when a search request was started. Reset by chained searches.
     // Used to log the time it takes for a Search Result to become available.
     private long mSearchRequestStartTimeNs;
-    // Time when the panel was opened beyond peeked. Reset when the panel is closed.
-    // Used to log how long the panel was open.
-    private long mPanelOpenedBeyondPeekTimeNs;
-    // Duration that the panel was opened beyond peeked. Reset when the panel is closed.
-    // Used to log how long the panel was open.
-    private long mPanelOpenedBeyondPeekDurationMs;
     // The current set of heuristics that should be logged with results seen when the panel closes.
     private ContextualSearchHeuristics mResultsSeenExperiments;
-    // Whether interaction Outcomes are valid, because we showed the panel.
-    private boolean mAreOutcomesValid;
     /** Whether the Search was prefetched or not. */
     private boolean mWasPrefetch;
     /**
@@ -86,29 +71,14 @@ public class ContextualSearchPanelMetrics {
                 && (!isSameState || isStartingSearch);
         boolean isFirstExitFromExpanded = fromState == PanelState.EXPANDED && !mHasExitedExpanded
                 && !isSameState;
-        boolean isFirstExitFromMaximized = fromState == PanelState.MAXIMIZED && !mHasExitedMaximized
-                && !isSameState;
-        boolean isContentVisible =
-                toState == PanelState.MAXIMIZED || toState == PanelState.EXPANDED;
-        boolean isExitingPanelOpenedBeyondPeeked = mWasPanelOpenedBeyondPeek && !isContentVisible;
-
-        if (isExitingPanelOpenedBeyondPeeked) {
-            assert mPanelOpenedBeyondPeekTimeNs != 0;
-            mPanelOpenedBeyondPeekDurationMs = (System.nanoTime() - mPanelOpenedBeyondPeekTimeNs)
-                    / TimeUtils.NANOSECONDS_PER_MILLISECOND;
-            ContextualSearchUma.logPanelOpenDuration(mPanelOpenedBeyondPeekDurationMs);
-            mPanelOpenedBeyondPeekTimeNs = 0;
-            mWasPanelOpenedBeyondPeek = false;
-        }
+        boolean isFirstExitFromMaximized =
+                fromState == PanelState.MAXIMIZED && !mHasExitedMaximized && !isSameState;
 
         if (isEndingSearch) {
             long panelViewDurationMs =
                     (System.nanoTime() - mFirstPeekTimeNs) / TimeUtils.NANOSECONDS_PER_MILLISECOND;
             ContextualSearchUma.logPanelViewDurationAction(panelViewDurationMs);
-            if (mIsPromoActive) {
-                // The user is exiting still in the promo, without choosing an option.
-                ContextualSearchUma.logPromoSeen(mWasSearchContentViewSeen, mWasActivatedByTap);
-            } else {
+            if (!mIsPromoActive) {
                 ContextualSearchUma.logResultsSeen(mWasSearchContentViewSeen, mWasActivatedByTap);
             }
 
@@ -125,7 +95,6 @@ public class ContextualSearchPanelMetrics {
                         mWasSearchContentViewSeen, mWasActivatedByTap);
                 if (!isChained) mResultsSeenExperiments = null;
             }
-            mPanelOpenedBeyondPeekDurationMs = 0;
 
             if (mWasActivatedByTap) {
                 ContextualSearchUma.logTapResultsSeen(mWasSearchContentViewSeen);
@@ -141,12 +110,6 @@ public class ContextualSearchPanelMetrics {
         if (isStartingSearch) {
             mFirstPeekTimeNs = System.nanoTime();
             mWasActivatedByTap = reason == StateChangeReason.TEXT_SELECT_TAP;
-            if (mWasActivatedByTap && mResultsSeenExperiments != null) {
-                mWasAnyHeuristicSatisfiedOnPanelShow =
-                        mResultsSeenExperiments.isAnyConditionSatisfiedForAggregrateLogging();
-            } else {
-                mWasAnyHeuristicSatisfiedOnPanelShow = false;
-            }
         }
 
         @StateChangeReason
@@ -163,11 +126,6 @@ public class ContextualSearchPanelMetrics {
             mHasExitedMaximized = true;
         }
 
-        if (toState == PanelState.EXPANDED) {
-            mHasExpanded = true;
-        } else if (toState == PanelState.MAXIMIZED) {
-            mHasMaximized = true;
-        }
         if (reason == StateChangeReason.SERP_NAVIGATION) {
             mIsSerpNavigation = true;
         }
@@ -175,18 +133,14 @@ public class ContextualSearchPanelMetrics {
         if (isEndingSearch) {
             mDidSearchInvolvePromo = false;
             mWasSearchContentViewSeen = false;
-            mHasExpanded = false;
-            mHasMaximized = false;
             mHasExitedPeeking = false;
             mHasExitedExpanded = false;
             mHasExitedMaximized = false;
             mIsSerpNavigation = false;
-            mWasContextualCardsDataShown = false;
             mWasQuickActionShown = false;
             mQuickActionCategory = QuickActionCategory.NONE;
             mCardTag = ResolvedSearchTerm.CardTag.CT_NONE;
             mWasQuickActionClicked = false;
-            mWasAnyHeuristicSatisfiedOnPanelShow = false;
             mPanelTriggerTimeFromTapNs = 0;
             mDidFirstNonEmptyPaint = false;
             mWasPrefetch = false;
@@ -205,9 +159,6 @@ public class ContextualSearchPanelMetrics {
      */
     public void setWasSearchContentViewSeen() {
         mWasSearchContentViewSeen = true;
-        mWasPanelOpenedBeyondPeek = true;
-        mPanelOpenedBeyondPeekTimeNs = System.nanoTime();
-        mPanelOpenedBeyondPeekDurationMs = 0;
     }
 
     /**
@@ -218,12 +169,9 @@ public class ContextualSearchPanelMetrics {
     }
 
     /**
-     * @param wasContextualCardsDataShown Whether Contextual Cards data was shown in the Contextual
-     *                                    Search Bar.
+     * @param cardTag The indicator tag for the kind of card shown.
      */
-    public void setWasContextualCardsDataShown(
-            boolean wasContextualCardsDataShown, @ResolvedSearchTerm.CardTag int cardTag) {
-        mWasContextualCardsDataShown = wasContextualCardsDataShown;
+    public void setCardShown(@ResolvedSearchTerm.CardTag int cardTag) {
         mCardTag = cardTag;
     }
 
@@ -248,13 +196,6 @@ public class ContextualSearchPanelMetrics {
      */
     public void onPanelTriggeredFromTap() {
         mPanelTriggerTimeFromTapNs = System.nanoTime();
-    }
-
-    /**
-     * @param selection The text that is selected when a selection is established.
-     */
-    public void onSelectionEstablished(String selection) {
-        mSelectionLength = selection.length();
     }
 
     /**
