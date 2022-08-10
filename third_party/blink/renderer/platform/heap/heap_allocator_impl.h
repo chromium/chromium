@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_HEAP_ALLOCATOR_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_HEAP_ALLOCATOR_IMPL_H_
 
+#include "base/bits.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_table_backing.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector_backing.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -16,6 +17,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/partition_allocator.h"
 #include "v8/include/cppgc/explicit-management.h"
 #include "v8/include/cppgc/heap-consistency.h"
+#include "v8/include/cppgc/internal/api-constants.h"
 #include "v8/include/cppgc/trace-trait.h"
 #include "v8/include/cppgc/visitor.h"
 
@@ -60,8 +62,12 @@ class PLATFORM_EXPORT HeapAllocator {
   static size_t QuantizedSize(size_t count) {
     CHECK_LE(count, MaxElementCountInBackingStore<T>());
     // Oilpan's internal size is independent of MaxElementCountInBackingStore()
-    // and the required size to match capacity needs.
-    return count * sizeof(T);
+    // and the required size to match capacity needs. Align the size by Oilpan
+    // allocation granularity. This also helps us with ASAN API for container
+    // annotation, which requires 8-byte alignment for the range.
+    return base::bits::AlignUp<size_t>(
+        count * sizeof(T),
+        cppgc::internal::api_constants::kAllocationGranularity);
   }
 
   template <typename T>

@@ -3265,7 +3265,7 @@ TEST_F(HeapTest, ContainerAnnotationOnTinyBacking) {
   HeapVector<uint32_t> vector;
   DCHECK_EQ(0u, vector.capacity());
   vector.ReserveCapacity(1);
-  DCHECK_EQ(1u, vector.capacity());
+  DCHECK_LE(1u, vector.capacity());
   // The following push_back() should not crash, even with container
   // annotations. The critical path expands the backing without allocating a new
   // one.
