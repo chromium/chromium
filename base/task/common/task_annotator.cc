@@ -212,14 +212,6 @@ TaskAnnotator::ScopedSetIpcHash::ScopedSetIpcHash(
 TaskAnnotator::ScopedSetIpcHash::ScopedSetIpcHash(
     uint32_t ipc_hash,
     const char* ipc_interface_name) {
-  TRACE_EVENT_BEGIN(
-      "base", "ScopedSetIpcHash", [&](perfetto::EventContext ctx) {
-        auto* mojo_event = ctx.event()->set_chrome_mojo_event_info();
-        if (ipc_hash > 0)
-          mojo_event->set_ipc_hash(ipc_hash);
-        if (ipc_interface_name != nullptr)
-          mojo_event->set_mojo_interface_tag(ipc_interface_name);
-      });
   auto* tls_ipc_hash = GetTLSForCurrentScopedIpcHash();
   auto* current_ipc_hash = tls_ipc_hash->Get();
   old_scoped_ipc_hash_ = current_ipc_hash;
@@ -243,7 +235,6 @@ TaskAnnotator::ScopedSetIpcHash::~ScopedSetIpcHash() {
   auto* tls_ipc_hash = GetTLSForCurrentScopedIpcHash();
   DCHECK_EQ(this, tls_ipc_hash->Get());
   tls_ipc_hash->Set(old_scoped_ipc_hash_.get());
-  TRACE_EVENT_END("base");
 }
 
 }  // namespace base
