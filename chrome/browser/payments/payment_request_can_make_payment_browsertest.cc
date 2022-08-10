@@ -62,6 +62,23 @@ class PaymentRequestCanMakePaymentQueryTest
   }
 };
 
+// A user has installed a payment app that responds "false" to the
+// "canmakepayment" event. PaymentRequest.canMakePayment() should  return true,
+// but PaymentRequest.hasEnrolledInstrument() should return false.
+IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryTest,
+                       CanMakePayment_False) {
+  std::string method;
+  InstallPaymentApp("a.com", "can_make_payment_false_responder.js", &method);
+
+  NavigateTo("/payment_request_can_make_payment_query_test.html");
+
+  CallCanMakePaymentWithMethod(method);
+  ExpectBodyContains("true");
+
+  CallHasEnrolledInstrumentWithMethod(method);
+  ExpectBodyContains("false");
+}
+
 // A payment method is required, user has installed the payment app, the
 // payment app responds true to the "canmakepayment" event.
 IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryTest,
