@@ -63,6 +63,8 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
   bool IsColumnContainerMainSizeDefinite() const;
   bool IsContainerCrossSizeDefinite() const;
 
+  NGConstraintSpace BuildSpaceForIntrinsicInlineSize(
+      const NGBlockNode& flex_item) const;
   NGConstraintSpace BuildSpaceForFlexBasis(const NGBlockNode& flex_item) const;
   NGConstraintSpace BuildSpaceForIntrinsicBlockSize(
       const NGBlockNode& flex_item) const;
@@ -116,7 +118,9 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
              NGFlexLayoutAlgorithm::FlexFractionParts,
              bool>
   FindLargestFractions() const;
+
   MinMaxSizesResult ComputeMinMaxSizeOfSingleLineRowContainer();
+  MinMaxSizesResult ComputeMinMaxSizeOfMultilineColumnContainer();
   // This implements 9.9.3. Flex Item Intrinsic Size Contributions, from
   // https://drafts.csswg.org/css-flexbox/#intrinsic-item-contributions.
   MinMaxSizesResult ComputeItemContributions(const NGConstraintSpace& space,
@@ -182,6 +186,13 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
 #if DCHECK_IS_ON()
   void CheckFlexLines(HeapVector<NGFlexLine>& flex_line_outputs) const;
 #endif
+
+  // These are used when determining the max-content width of a column-wrap flex
+  // container. Note: |item_inline_available_size_override_| has to be
+  // initialized before is_cross_size_definite_, and probably before some other
+  // data members too.
+  LogicalSize ChildAvailableSize() const;
+  absl::optional<LayoutUnit> item_inline_available_size_override_;
 
   const bool is_column_;
   const bool is_horizontal_flow_;

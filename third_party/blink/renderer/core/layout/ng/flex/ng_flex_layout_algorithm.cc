@@ -349,6 +349,19 @@ bool NGFlexLayoutAlgorithm::WillChildCrossSizeBeContainerCrossSize(
          DoesItemStretch(child);
 }
 
+NGConstraintSpace NGFlexLayoutAlgorithm::BuildSpaceForIntrinsicInlineSize(
+    const NGBlockNode& child) const {
+  NGMinMaxConstraintSpaceBuilder builder(ConstraintSpace(), Style(), child,
+                                         /* is_new_fc */ true);
+  builder.SetAvailableBlockSize(ChildAvailableSize().block_size);
+  builder.SetPercentageResolutionBlockSize(child_percentage_size_.block_size);
+  builder.SetReplacedPercentageResolutionBlockSize(
+      child_percentage_size_.block_size);
+  if (!is_column_ && WillChildCrossSizeBeContainerCrossSize(child))
+    builder.SetBlockAutoBehavior(NGAutoBehavior::kStretchExplicit);
+  return builder.ToConstraintSpace();
+}
+
 NGConstraintSpace NGFlexLayoutAlgorithm::BuildSpaceForIntrinsicBlockSize(
     const NGBlockNode& flex_item) const {
   const ComputedStyle& child_style = flex_item.Style();
@@ -2129,16 +2142,8 @@ NGFlexLayoutAlgorithm::FindLargestFractions() const {
   FlexFractionParts max_content_largest_fraction(Style());
   for (const FlexItem& item : algorithm_.all_items_) {
     const NGBlockNode& child = item.ng_input_node_;
-    NGMinMaxConstraintSpaceBuilder builder(ConstraintSpace(), Style(), child,
-                                           /* is_new_fc */ true);
-    builder.SetAvailableBlockSize(ChildAvailableSize().block_size);
-    builder.SetPercentageResolutionBlockSize(child_percentage_size_.block_size);
-    builder.SetReplacedPercentageResolutionBlockSize(
-        child_percentage_size_.block_size);
-    if (!is_column_ && WillChildCrossSizeBeContainerCrossSize(child))
-      builder.SetBlockAutoBehavior(NGAutoBehavior::kStretchExplicit);
-    const NGConstraintSpace space = builder.ToConstraintSpace();
 
+    const NGConstraintSpace space = BuildSpaceForIntrinsicInlineSize(child);
     const MinMaxSizesResult min_max_content_contributions =
         ComputeItemContributions(space, item);
     depends_on_block_constraints |=
@@ -2154,6 +2159,54 @@ NGFlexLayoutAlgorithm::FindLargestFractions() const {
 
   return std::tuple(min_content_largest_fraction, max_content_largest_fraction,
                     depends_on_block_constraints);
+}
+
+MinMaxSizesResult
+NGFlexLayoutAlgorithm::ComputeMinMaxSizeOfMultilineColumnContainer() {
+  NGFlexChildIterator iterator(Node());
+  MinMaxSizes largest_inline_size_contributions;
+  for (NGBlockNode child = iterator.NextChild(); child;
+       child = iterator.NextChild()) {
+    if (child.IsOutOfFlowPositioned())
+      continue;
+
+    auto space = BuildSpaceForIntrinsicInlineSize(child);
+    MinMaxSizesResult child_contributions =
+        ComputeMinAndMaxContentContribution(Style(), child, space);
+    NGBoxStrut child_margins =
+        ComputeMarginsFor(space, child.Style(), ConstraintSpace());
+    child_contributions.sizes += child_margins.InlineSum();
+
+    largest_inline_size_contributions.Encompass(child_contributions.sizes);
+  }
+
+  // The algorithm for determining the max-content width of a column-wrap
+  // container is simply: Run layout on the container but give the items an
+  // overridden available size, equal to the largest max-content width of any
+  // item, when they are laid out. The container's max-content width is then
+  // the farthest outer inline-end point of all the items.
+  item_inline_available_size_override_ =
+      largest_inline_size_contributions.max_size;
+  HeapVector<NGFlexLine> flex_line_outputs;
+  HeapVector<Member<LayoutBox>> dummy_oof_children;
+  PlaceFlexItems(&flex_line_outputs, &dummy_oof_children);
+  if (!flex_line_outputs.IsEmpty()) {
+    largest_inline_size_contributions.max_size =
+        flex_line_outputs.back().line_cross_size +
+        flex_line_outputs.back().cross_axis_offset -
+        flex_line_outputs.front().cross_axis_offset;
+  }
+
+  DCHECK_GE(largest_inline_size_contributions.min_size, 0);
+  DCHECK_LE(largest_inline_size_contributions.min_size,
+            largest_inline_size_contributions.max_size);
+
+  largest_inline_size_contributions += BorderScrollbarPadding().InlineSum();
+
+  // This always depends on block constraints because if block constraints
+  // change, this flexbox could get a different number of columns.
+  return {largest_inline_size_contributions,
+          /* depends_on_block_constraints */ true};
 }
 
 MinMaxSizesResult
@@ -2220,7 +2273,7 @@ MinMaxSizesResult NGFlexLayoutAlgorithm::ComputeMinMaxSizes(
     // TODO(crbug.com/240765): Implement all the cases here.
     if (is_column_) {
       if (algorithm_.IsMultiline()) {
-        // multiline column flexbox
+        return ComputeMinMaxSizeOfMultilineColumnContainer();
       } else {
         // singleline column flexbox
       }
@@ -2242,16 +2295,7 @@ MinMaxSizesResult NGFlexLayoutAlgorithm::ComputeMinMaxSizes(
       continue;
     number_of_items++;
 
-    NGMinMaxConstraintSpaceBuilder builder(ConstraintSpace(), Style(), child,
-                                           /* is_new_fc */ true);
-    builder.SetAvailableBlockSize(ChildAvailableSize().block_size);
-    builder.SetPercentageResolutionBlockSize(child_percentage_size_.block_size);
-    builder.SetReplacedPercentageResolutionBlockSize(
-        child_percentage_size_.block_size);
-    if (!is_column_ && WillChildCrossSizeBeContainerCrossSize(child))
-      builder.SetBlockAutoBehavior(NGAutoBehavior::kStretchExplicit);
-    const auto space = builder.ToConstraintSpace();
-
+    const NGConstraintSpace space = BuildSpaceForIntrinsicInlineSize(child);
     MinMaxSizesResult child_result =
         ComputeMinAndMaxContentContribution(Style(), child, space);
     NGBoxStrut child_margins =
@@ -2549,5 +2593,14 @@ void NGFlexLayoutAlgorithm::CheckFlexLines(
   }
 }
 #endif
+
+LogicalSize NGFlexLayoutAlgorithm::ChildAvailableSize() const {
+  LogicalSize available_size = NGLayoutAlgorithm::ChildAvailableSize();
+  if (UNLIKELY(item_inline_available_size_override_.has_value())) {
+    DCHECK_EQ(container_builder_.InlineSize(), kIndefiniteSize);
+    available_size.inline_size = *item_inline_available_size_override_;
+  }
+  return available_size;
+}
 
 }  // namespace blink
