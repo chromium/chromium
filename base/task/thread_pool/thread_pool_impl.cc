@@ -410,7 +410,7 @@ void ThreadPoolImpl::EndBestEffortFence() {
 bool ThreadPoolImpl::PostTaskWithSequenceNow(Task task,
                                              scoped_refptr<Sequence> sequence) {
   auto transaction = sequence->BeginTransaction();
-  const bool sequence_should_be_queued = transaction.WillPushTask();
+  const bool sequence_should_be_queued = transaction.ShouldBeQueued();
   RegisteredTaskSource task_source;
   if (sequence_should_be_queued) {
     task_source = task_tracker_->RegisterTaskSource(sequence);
@@ -420,7 +420,7 @@ bool ThreadPoolImpl::PostTaskWithSequenceNow(Task task,
   }
   if (!task_tracker_->WillPostTaskNow(task, transaction.traits().priority()))
     return false;
-  transaction.PushTask(std::move(task));
+  transaction.PushImmediateTask(std::move(task));
   if (task_source) {
     const TaskTraits traits = transaction.traits();
     GetThreadGroupForTraits(traits)->PushTaskSourceAndWakeUpWorkers(

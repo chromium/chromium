@@ -110,6 +110,13 @@ RegisteredTaskSource& RegisteredTaskSource::operator=(
   return *this;
 }
 
+void RegisteredTaskSource::OnBecomeReady() {
+#if DCHECK_IS_ON()
+  DCHECK_EQ(run_step_, State::kInitial);
+#endif  // DCHECK_IS_ON()
+  task_source_->OnBecomeReady();
+}
+
 TaskSource::RunStatus RegisteredTaskSource::WillRunTask() {
   TaskSource::RunStatus run_status = task_source_->WillRunTask();
 #if DCHECK_IS_ON()
@@ -141,6 +148,15 @@ bool RegisteredTaskSource::DidProcessTask(
   run_step_ = State::kInitial;
 #endif  // DCHECK_IS_ON()
   return task_source_->DidProcessTask(transaction);
+}
+
+bool RegisteredTaskSource::WillReEnqueue(TimeTicks now,
+                                         TaskSource::Transaction* transaction) {
+  DCHECK(!transaction || transaction->task_source() == get());
+#if DCHECK_IS_ON()
+  DCHECK_EQ(State::kInitial, run_step_);
+#endif  // DCHECK_IS_ON()
+  return task_source_->WillReEnqueue(now, transaction);
 }
 
 RegisteredTaskSource::RegisteredTaskSource(

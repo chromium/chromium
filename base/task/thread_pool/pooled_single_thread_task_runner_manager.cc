@@ -131,8 +131,12 @@ class WorkerThreadDelegate : public WorkerThread::Delegate {
 
   void DidProcessTask(RegisteredTaskSource task_source) override {
     if (task_source) {
-      EnqueueTaskSource(TransactionWithRegisteredTaskSource::FromTaskSource(
-          std::move(task_source)));
+      auto task_source_with_transaction =
+          TransactionWithRegisteredTaskSource::FromTaskSource(
+              std::move(task_source));
+      task_source_with_transaction.task_source.WillReEnqueue(
+          TimeTicks::Now(), &task_source_with_transaction.transaction);
+      EnqueueTaskSource(std::move(task_source_with_transaction));
     }
   }
 
@@ -143,7 +147,7 @@ class WorkerThreadDelegate : public WorkerThread::Delegate {
 
     // |task| will be pushed to |sequence|, and |sequence| will be queued
     // to |priority_queue_| iff |sequence_should_be_queued| is true.
-    const bool sequence_should_be_queued = transaction.WillPushTask();
+    const bool sequence_should_be_queued = transaction.ShouldBeQueued();
     RegisteredTaskSource task_source;
     if (sequence_should_be_queued) {
       task_source = task_tracker_->RegisterTaskSource(sequence);
@@ -153,7 +157,7 @@ class WorkerThreadDelegate : public WorkerThread::Delegate {
     }
     if (!task_tracker_->WillPostTaskNow(task, transaction.traits().priority()))
       return false;
-    transaction.PushTask(std::move(task));
+    transaction.PushImmediateTask(std::move(task));
     if (task_source) {
       bool should_wakeup =
           EnqueueTaskSource({std::move(task_source), std::move(transaction)});
@@ -355,7 +359,7 @@ class WorkerThreadCOMDelegate : public WorkerThreadDelegate {
       if (task_tracker()->WillPostTask(
               &pump_message_task, TaskShutdownBehavior::SKIP_ON_SHUTDOWN)) {
         auto transaction = message_pump_sequence_->BeginTransaction();
-        const bool sequence_should_be_queued = transaction.WillPushTask();
+        const bool sequence_should_be_queued = transaction.ShouldBeQueued();
         DCHECK(sequence_should_be_queued)
             << "GetWorkFromWindowsMessageQueue() does not expect "
                "queueing of pump tasks.";
@@ -363,7 +367,7 @@ class WorkerThreadCOMDelegate : public WorkerThreadDelegate {
             std::move(message_pump_sequence_));
         if (!registered_task_source)
           return nullptr;
-        transaction.PushTask(std::move(pump_message_task));
+        transaction.PushImmediateTask(std::move(pump_message_task));
         return registered_task_source;
       }
     }

@@ -358,6 +358,15 @@ bool JobTaskSource::DidProcessTask(TaskSource::Transaction* /*transaction*/) {
          GetMaxConcurrency(state_before_sub.worker_count() - 1);
 }
 
+// This is a no-op and should always return true.
+bool JobTaskSource::WillReEnqueue(TimeTicks now,
+                                  TaskSource::Transaction* /*transaction*/) {
+  return true;
+}
+
+// This is a no-op.
+void JobTaskSource::OnBecomeReady() {}
+
 TaskSourceSortKey JobTaskSource::GetSortKey(
     bool disable_fair_scheduling) const {
   if (disable_fair_scheduling) {

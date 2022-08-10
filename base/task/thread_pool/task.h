@@ -50,8 +50,6 @@ struct BASE_EXPORT Task : public PendingTask {
 
   Task& operator=(Task&& other);
 
-  void SetScheduled();
-
   // Required by IntrusiveHeap.
   void SetHeapHandle(const HeapHandle& handle) {}
 

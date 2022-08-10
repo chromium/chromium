@@ -162,6 +162,10 @@ void ThreadGroup::ReEnqueueTaskSourceLockRequired(
   ThreadGroup* destination_thread_group = delegate_->GetThreadGroupForTraits(
       transaction_with_task_source.transaction.traits());
 
+  bool push_to_immediate_queue =
+      transaction_with_task_source.task_source.WillReEnqueue(
+          TimeTicks::Now(), &transaction_with_task_source.transaction);
+
   if (destination_thread_group == this) {
     // Another worker that was running a task from this task source may have
     // reenqueued it already, in which case its heap_handle will be valid. It
@@ -174,8 +178,10 @@ void ThreadGroup::ReEnqueueTaskSourceLockRequired(
       // reenqueue it inside the scope of the lock.
       auto sort_key = transaction_with_task_source.task_source->GetSortKey(
           disable_fair_scheduling_);
-      priority_queue_.Push(std::move(transaction_with_task_source.task_source),
-                           sort_key);
+      if (push_to_immediate_queue) {
+        priority_queue_.Push(
+            std::move(transaction_with_task_source.task_source), sort_key);
+      }
     }
     // This is called unconditionally to ensure there are always workers to run
     // task sources in the queue. Some ThreadGroup implementations only invoke

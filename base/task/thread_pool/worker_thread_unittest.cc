@@ -203,7 +203,7 @@ class ThreadPoolWorkerTest : public testing::TestWithParam<int> {
                   TimeTicks::Now(), TimeDelta());
         EXPECT_TRUE(outer_->task_tracker_.WillPostTask(
             &task, sequence->shutdown_behavior()));
-        sequence_transaction.PushTask(std::move(task));
+        sequence_transaction.PushImmediateTask(std::move(task));
       }
       auto registered_task_source =
           outer_->task_tracker_.RegisterTaskSource(sequence);
@@ -239,15 +239,19 @@ class ThreadPoolWorkerTest : public testing::TestWithParam<int> {
         EXPECT_FALSE(registered_task_source);
       } else {
         EXPECT_TRUE(registered_task_source);
+        EXPECT_TRUE(registered_task_source.WillReEnqueue(TimeTicks::Now()));
 
         // Verify the number of Tasks in |registered_task_source|.
         for (int i = 0; i < outer_->TasksPerSequence() - 1; ++i) {
           registered_task_source.WillRunTask();
           IgnoreResult(registered_task_source.TakeTask());
-          EXPECT_EQ(i == outer_->TasksPerSequence() - 2,
-                    !registered_task_source.DidProcessTask());
+          if (i < outer_->TasksPerSequence() - 2) {
+            EXPECT_TRUE(registered_task_source.DidProcessTask());
+            EXPECT_TRUE(registered_task_source.WillReEnqueue(TimeTicks::Now()));
+          } else {
+            EXPECT_FALSE(registered_task_source.DidProcessTask());
+          }
         }
-
         scoped_refptr<TaskSource> task_source =
             registered_task_source.Unregister();
         {
@@ -485,7 +489,7 @@ class ControllableCleanupDelegate : public WorkerThreadDefaultDelegate {
               TimeTicks::Now(), TimeDelta());
     EXPECT_TRUE(
         task_tracker_->WillPostTask(&task, sequence->shutdown_behavior()));
-    sequence->BeginTransaction().PushTask(std::move(task));
+    sequence->BeginTransaction().PushImmediateTask(std::move(task));
     auto registered_task_source =
         task_tracker_->RegisterTaskSource(std::move(sequence));
     EXPECT_TRUE(registered_task_source);
