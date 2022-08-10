@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/buildflag.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
@@ -1338,7 +1339,14 @@ class DestructedAndTraced final : public GarbageCollected<DestructedAndTraced> {
 size_t DestructedAndTraced::n_destructed = 0;
 size_t DestructedAndTraced::n_traced = 0;
 
-TEST_F(IncrementalMarkingTest, ConservativeGCOfWeakContainer) {
+// Flaky <https://crbug.com/1351511>.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_ConservativeGCOfWeakContainer \
+  DISABLED_ConservativeGCOfWeakContainer
+#else
+#define MAYBE_ConservativeGCOfWeakContainer ConservativeGCOfWeakContainer
+#endif
+TEST_F(IncrementalMarkingTest, MAYBE_ConservativeGCOfWeakContainer) {
   // Regression test: https://crbug.com/1108676
   //
   // Test ensures that on-stack references to weak containers (e.g. iterators)
