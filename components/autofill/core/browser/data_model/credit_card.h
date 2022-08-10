@@ -403,6 +403,12 @@ class CreditCard : public AutofillDataModel {
       std::u16string customized_nickname = std::u16string(),
       int obfuscation_length = 4) const;
 
+  // A label for the card formatted as 'Product description  ****LastFour' like
+  // 'ABC Bank XYZ Card  ****1234'. Check that product description exists before
+  // calling this method. By default, the `obfuscation_length` is set to 4.
+  std::u16string ProductDescriptionAndLastFourdigits(
+      int obfuscation_length = 4) const;
+
   // Sets the name_on_card_ value based on the saved name parts.
   void SetNameOnCardFromSeparateParts();
 

@@ -228,33 +228,110 @@ TEST(CreditCardTest, NicknameAndLastFourDigitsStrings) {
       credit_card2.NicknameAndLastFourDigitsForTesting());
 }
 
-TEST(CreditCardTest, CardIdentifierStringsForAutofillDisplay) {
+// Test that card identifier string falls back to issuer network when both
+// nickname and product description are unavailable.
+TEST(CreditCardTest,
+     CardIdentifierStringsForAutofillDisplay_NoNicknameNoProductDescription) {
   base::test::ScopedFeatureList scoped_feature_list;
-  std::u16string valid_nickname = u"My Visa Card";
-  std::u16string invalid_nickname = u"Nickname length exceeds 25 characters";
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillEnableCardProductName);
 
-  // Case 1: Nickname name is invalid -> show network name.
-  CreditCard credit_card1(base::GenerateGUID(), "https://www.example.com/");
-  test::SetCreditCardInfo(&credit_card1, "John Dillinger",
+  CreditCard credit_card(base::GenerateGUID(), "https://www.example.com/");
+  test::SetCreditCardInfo(&credit_card, "John Dillinger",
                           "5105 1051 0510 5100" /* Mastercard */, "01", "2020",
                           "1");
-  credit_card1.SetNickname(invalid_nickname);
-  EXPECT_FALSE(credit_card1.HasNonEmptyValidNickname());
+  EXPECT_FALSE(credit_card.HasNonEmptyValidNickname());
   EXPECT_EQ(UTF8ToUTF16(std::string("Mastercard  ") +
                         test::ObfuscatedCardDigitsAsUTF8("5100")),
-            credit_card1.CardIdentifierStringForAutofillDisplay());
+            credit_card.CardIdentifierStringForAutofillDisplay());
+}
 
-  // Case 2: Experiment is on and nickname is valid -> show nickname.
-  CreditCard credit_card2(base::GenerateGUID(), "https://www.example.com/");
-  test::SetCreditCardInfo(&credit_card2, "John Dillinger",
+// Test that card identifier string falls back to issuer network when nickname
+// is invalid and product description is unavailable.
+TEST(
+    CreditCardTest,
+    CardIdentifierStringsForAutofillDisplay_InvalidNicknameNoProductDescription) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillEnableCardProductName);
+
+  CreditCard credit_card(base::GenerateGUID(), "https://www.example.com/");
+  test::SetCreditCardInfo(&credit_card, "John Dillinger",
                           "5105 1051 0510 5100" /* Mastercard */, "01", "2020",
                           "1");
-  credit_card2.SetNickname(valid_nickname);
-  EXPECT_TRUE(credit_card2.HasNonEmptyValidNickname());
+  credit_card.SetNickname(u"Nickname length exceeds 25 characters");
+  EXPECT_FALSE(credit_card.HasNonEmptyValidNickname());
+  EXPECT_EQ(UTF8ToUTF16(std::string("Mastercard  ") +
+                        test::ObfuscatedCardDigitsAsUTF8("5100")),
+            credit_card.CardIdentifierStringForAutofillDisplay());
+}
+
+// Test that card identifier string falls back to product description when
+// nickname is unavailable.
+TEST(CreditCardTest,
+     CardIdentifierStringsForAutofillDisplay_NoNicknameWithProductDescription) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillEnableCardProductName);
+
+  std::u16string product_description = u"ABC bank XYZ card";
+
+  CreditCard credit_card(base::GenerateGUID(), "https://www.example.com/");
+  test::SetCreditCardInfo(&credit_card, "John Dillinger",
+                          "5105 1051 0510 5100" /* Mastercard */, "01", "2020",
+                          "1");
+  credit_card.set_product_description(product_description);
+  EXPECT_FALSE(credit_card.HasNonEmptyValidNickname());
+  EXPECT_EQ(product_description +
+                UTF8ToUTF16(std::string("  ") +
+                            test::ObfuscatedCardDigitsAsUTF8("5100")),
+            credit_card.CardIdentifierStringForAutofillDisplay());
+}
+
+// Test that card identifier string falls back to product description when
+// nickname is invalid.
+TEST(
+    CreditCardTest,
+    CardIdentifierStringsForAutofillDisplay_InvalidNicknameWithProductDescription) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillEnableCardProductName);
+
+  std::u16string product_description = u"ABC bank XYZ card";
+
+  CreditCard credit_card(base::GenerateGUID(), "https://www.example.com/");
+  test::SetCreditCardInfo(&credit_card, "John Dillinger",
+                          "5105 1051 0510 5100" /* Mastercard */, "01", "2020",
+                          "1");
+  credit_card.SetNickname(u"Nickname length exceeds 25 characters");
+  credit_card.set_product_description(product_description);
+  EXPECT_FALSE(credit_card.HasNonEmptyValidNickname());
+  EXPECT_EQ(product_description +
+                UTF8ToUTF16(std::string("  ") +
+                            test::ObfuscatedCardDigitsAsUTF8("5100")),
+            credit_card.CardIdentifierStringForAutofillDisplay());
+}
+
+// Test that card identifier string shows nickname when it is valid.
+TEST(CreditCardTest,
+     CardIdentifierStringsForAutofillDisplay_WithValidNickname) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillEnableCardProductName);
+
+  std::u16string valid_nickname = u"My Visa Card";
+
+  CreditCard credit_card(base::GenerateGUID(), "https://www.example.com/");
+  test::SetCreditCardInfo(&credit_card, "John Dillinger",
+                          "5105 1051 0510 5100" /* Mastercard */, "01", "2020",
+                          "1");
+  credit_card.SetNickname(valid_nickname);
+  credit_card.set_product_description(u"ABC bank XYZ card");
+  EXPECT_TRUE(credit_card.HasNonEmptyValidNickname());
   EXPECT_EQ(
       valid_nickname + UTF8ToUTF16(std::string("  ") +
                                    test::ObfuscatedCardDigitsAsUTF8("5100")),
-      credit_card2.CardIdentifierStringForAutofillDisplay());
+      credit_card.CardIdentifierStringForAutofillDisplay());
 }
 
 TEST(CreditCardTest, AssignmentOperator) {

@@ -952,6 +952,12 @@ std::u16string CreditCard::CardIdentifierStringForAutofillDisplay(
     int obfuscation_length) const {
   if (HasNonEmptyValidNickname() || !customized_nickname.empty()) {
     return NicknameAndLastFourDigits(customized_nickname, obfuscation_length);
+  } else if (base::FeatureList::IsEnabled(
+                 features::kAutofillEnableCardProductName) &&
+             !product_description_.empty()) {
+    // If product description is available, format card label as 'Product
+    // description  ****2345'.
+    return ProductDescriptionAndLastFourdigits(obfuscation_length);
   }
   return NetworkAndLastFourDigits(obfuscation_length);
 }
@@ -1113,6 +1119,18 @@ std::u16string CreditCard::NicknameAndLastFourDigits(
 
   return (customized_nickname.empty() ? nickname_ : customized_nickname) +
          u"  " +
+         internal::GetObfuscatedStringForCardDigits(digits, obfuscation_length);
+}
+
+std::u16string CreditCard::ProductDescriptionAndLastFourdigits(
+    int obfuscation_length) const {
+  DCHECK(!product_description_.empty());
+  const std::u16string digits = LastFourDigits();
+  // If digits are empty, return product description.
+  if (digits.empty())
+    return product_description_;
+
+  return product_description_ + u"  " +
          internal::GetObfuscatedStringForCardDigits(digits, obfuscation_length);
 }
 
