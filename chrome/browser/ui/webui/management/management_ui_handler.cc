@@ -17,6 +17,7 @@
 #include "base/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
@@ -289,8 +290,8 @@ void AddDeviceReportingElement(base::Value::List* report_sources,
                                const std::string& message_id,
                                const DeviceReportingType& type) {
   base::Value::Dict data;
-  data.Set("messageId", base::Value(message_id));
-  data.Set("reportingType", base::Value(ToJSDeviceReportingType(type)));
+  data.Set("messageId", message_id);
+  data.Set("reportingType", ToJSDeviceReportingType(type));
   report_sources->Append(std::move(data));
 }
 
@@ -446,7 +447,8 @@ base::Value::List GetPermissionsForExtension(
   return permission_messages;
 }
 
-base::Value GetPowerfulExtensions(const extensions::ExtensionSet& extensions) {
+base::Value::List GetPowerfulExtensions(
+    const extensions::ExtensionSet& extensions) {
   base::Value::List powerful_extensions;
 
   for (const auto& extension : extensions) {
@@ -456,15 +458,14 @@ base::Value GetPowerfulExtensions(const extensions::ExtensionSet& extensions) {
     // Only show extension on page if there is at least one permission
     // message to show.
     if (!permission_messages.empty()) {
-      std::unique_ptr<base::DictionaryValue> extension_to_add =
+      base::Value::Dict extension_to_add =
           extensions::util::GetExtensionInfo(extension.get());
-      extension_to_add->SetKey("permissions",
-                               base::Value(std::move(permission_messages)));
-      powerful_extensions.Append(std::move(*extension_to_add));
+      extension_to_add.Set("permissions", std::move(permission_messages));
+      powerful_extensions.Append(std::move(extension_to_add));
     }
   }
 
-  return base::Value(std::move(powerful_extensions));
+  return powerful_extensions;
 }
 
 const char* GetReportingTypeValue(ReportingType reportingType) {
@@ -676,11 +677,10 @@ void ManagementUIHandler::AddReportingInfo(base::Value::List* report_sources) {
     }
 
     base::Value::Dict data;
-    data.Set("messageId", base::Value(report_definition.message));
-    data.Set(
-        "reportingType",
-        base::Value(GetReportingTypeValue(report_definition.reporting_type)));
-    report_sources->Append(base::Value(std::move(data)));
+    data.Set("messageId", report_definition.message);
+    data.Set("reportingType",
+             GetReportingTypeValue(report_definition.reporting_type));
+    report_sources->Append(std::move(data));
   }
 }
 
@@ -785,7 +785,8 @@ void ManagementUIHandler::AddDeviceReportingInfoForTesting(
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-base::Value ManagementUIHandler::GetContextualManagedData(Profile* profile) {
+base::Value::Dict ManagementUIHandler::GetContextualManagedData(
+    Profile* profile) {
   base::Value::Dict response;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::string enterprise_manager = GetDeviceManager();
@@ -861,10 +862,11 @@ base::Value ManagementUIHandler::GetContextualManagedData(Profile* profile) {
   AsyncUpdateLogo();
   if (!fetched_image_.empty())
     response.Set(kCustomerLogo, base::Value(fetched_image_));
-  return base::Value(std::move(response));
+  return response;
 }
 
-base::Value ManagementUIHandler::GetThreatProtectionInfo(Profile* profile) {
+base::Value::Dict ManagementUIHandler::GetThreatProtectionInfo(
+    Profile* profile) {
   base::Value::List info;
 
   constexpr struct {
@@ -922,7 +924,7 @@ base::Value ManagementUIHandler::GetThreatProtectionInfo(Profile* profile) {
                        IDS_MANAGEMENT_THREAT_PROTECTION_DESCRIPTION_BY,
                        base::UTF8ToUTF16(enterprise_manager)));
   result.Set("info", std::move(info));
-  return base::Value(std::move(result));
+  return result;
 }
 
 base::Value::List ManagementUIHandler::GetManagedWebsitesInfo(
@@ -1058,12 +1060,12 @@ void ManagementUIHandler::HandleGetExtensions(const base::Value::List& args) {
       extensions::ExtensionRegistry::Get(Profile::FromWebUI(web_ui()))
           ->enabled_extensions();
 
-  base::Value powerful_extensions = GetPowerfulExtensions(extensions);
+  base::Value::List powerful_extensions = GetPowerfulExtensions(extensions);
 
   // The number of extensions to be reported in chrome://management with
   // powerful permissions.
   base::UmaHistogramCounts1000(kPowerfulExtensionsCountHistogram,
-                               powerful_extensions.GetListDeprecated().size());
+                               powerful_extensions.size());
 
   ResolveJavascriptCallback(args[0] /* callback_id */, powerful_extensions);
 }
@@ -1099,11 +1101,9 @@ void ManagementUIHandler::HandleGetDeviceReportingInfo(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   base::Value::List report_sources = GetDeviceReportingInfo(
       GetDeviceCloudPolicyManager(), Profile::FromWebUI(web_ui()));
-  ResolveJavascriptCallback(args[0] /* callback_id */,
-                            base::Value(std::move(report_sources)));
+  ResolveJavascriptCallback(args[0] /* callback_id */, report_sources);
 #else
-  ResolveJavascriptCallback(args[0] /* callback_id */,
-                            base::Value(report_sources_.Clone()));
+  ResolveJavascriptCallback(args[0] /* callback_id */, report_sources_);
 #endif
 }
 
@@ -1128,7 +1128,7 @@ void ManagementUIHandler::HandleGetContextualManagedData(
     const base::Value::List& args) {
   AllowJavascript();
   auto result = GetContextualManagedData(Profile::FromWebUI(web_ui()));
-  ResolveJavascriptCallback(args[0] /* callback_id */, std::move(result));
+  ResolveJavascriptCallback(args[0] /* callback_id */, result);
 }
 
 void ManagementUIHandler::HandleGetThreatProtectionInfo(
@@ -1145,7 +1145,7 @@ void ManagementUIHandler::HandleGetManagedWebsites(
 
   ResolveJavascriptCallback(
       args[0] /* callback_id */,
-      base::Value(GetManagedWebsitesInfo(Profile::FromWebUI(web_ui()))));
+      GetManagedWebsitesInfo(Profile::FromWebUI(web_ui())));
 }
 
 void ManagementUIHandler::HandleInitBrowserReportingInfo(
@@ -1153,15 +1153,13 @@ void ManagementUIHandler::HandleInitBrowserReportingInfo(
   base::Value::List report_sources;
   AllowJavascript();
   AddReportingInfo(&report_sources);
-  ResolveJavascriptCallback(args[0] /* callback_id */,
-                            base::Value(std::move(report_sources)));
+  ResolveJavascriptCallback(args[0] /* callback_id */, report_sources);
 }
 
 void ManagementUIHandler::NotifyBrowserReportingInfoUpdated() {
   base::Value::List report_sources;
   AddReportingInfo(&report_sources);
-  FireWebUIListener("browser-reporting-info-updated",
-                    base::Value(std::move(report_sources)));
+  FireWebUIListener("browser-reporting-info-updated", report_sources);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

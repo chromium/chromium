@@ -166,8 +166,7 @@ base::Value::Dict SearchEnginesHandler::GetSearchEnginesList() {
 
 void SearchEnginesHandler::OnModelChanged() {
   AllowJavascript();
-  FireWebUIListener("search-engines-changed",
-                    base::Value(GetSearchEnginesList()));
+  FireWebUIListener("search-engines-changed", GetSearchEnginesList());
 }
 
 void SearchEnginesHandler::OnItemsChanged(size_t start, size_t length) {
@@ -231,14 +230,13 @@ base::Value::Dict SearchEnginesHandler::CreateDictionaryForEngine(
             template_url->GetExtensionId(),
             extensions::ExtensionRegistry::EVERYTHING);
     if (extension) {
-      std::unique_ptr<base::DictionaryValue> ext_info =
+      base::Value::Dict ext_info =
           extensions::util::GetExtensionInfo(extension);
-      ext_info->SetBoolKey("canBeDisabled",
-                           !extensions::ExtensionSystem::Get(profile)
-                                ->management_policy()
-                                ->MustRemainEnabled(extension, nullptr));
-      dict.Set("extension",
-               base::Value::FromUniquePtrValue(std::move(ext_info)));
+      ext_info.Set("canBeDisabled",
+                   !extensions::ExtensionSystem::Get(profile)
+                        ->management_policy()
+                        ->MustRemainEnabled(extension, nullptr));
+      dict.Set("extension", std::move(ext_info));
     }
   }
   return dict;
@@ -249,7 +247,7 @@ void SearchEnginesHandler::HandleGetSearchEnginesList(
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
   AllowJavascript();
-  ResolveJavascriptCallback(callback_id, base::Value(GetSearchEnginesList()));
+  ResolveJavascriptCallback(callback_id, GetSearchEnginesList());
 }
 
 void SearchEnginesHandler::HandleSetDefaultSearchEngine(

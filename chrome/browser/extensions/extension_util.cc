@@ -10,7 +10,6 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
-#include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -253,19 +252,18 @@ bool IsExtensionIdle(const std::string& extension_id,
   return true;
 }
 
-std::unique_ptr<base::DictionaryValue> GetExtensionInfo(
-    const Extension* extension) {
+base::Value::Dict GetExtensionInfo(const Extension* extension) {
   DCHECK(extension);
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue);
+  base::Value::Dict dict;
 
-  dict->SetStringKey("id", extension->id());
-  dict->SetStringKey("name", extension->name());
+  dict.Set("id", extension->id());
+  dict.Set("name", extension->name());
 
   GURL icon = extensions::ExtensionIconSource::GetIconURL(
       extension, extension_misc::EXTENSION_ICON_SMALLISH,
       ExtensionIconSet::MATCH_BIGGER,
       false);  // Not grayscale.
-  dict->SetStringKey("icon", icon.spec());
+  dict.Set("icon", icon.spec());
 
   return dict;
 }

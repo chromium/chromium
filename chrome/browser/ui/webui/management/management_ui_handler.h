@@ -153,8 +153,8 @@ class ManagementUIHandler : public content::WebUIMessageHandler,
                                  Profile* profile);
   void AddReportingInfo(base::Value::List* report_sources);
 
-  base::Value GetContextualManagedData(Profile* profile);
-  base::Value GetThreatProtectionInfo(Profile* profile);
+  base::Value::Dict GetContextualManagedData(Profile* profile);
+  base::Value::Dict GetThreatProtectionInfo(Profile* profile);
   base::Value::List GetManagedWebsitesInfo(Profile* profile) const;
   virtual policy::PolicyService* GetPolicyService();
 
