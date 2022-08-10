@@ -22,18 +22,13 @@ import './passwords_shared.css.js';
 
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
-import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 
-// <if expr="is_chromeos">
-import {BlockingRequestManager} from './blocking_request_manager.js';
-// </if>
 import {MergePasswordsStoreCopiesMixin, MergePasswordsStoreCopiesMixinInterface} from './merge_passwords_store_copies_mixin.js';
 import {SavedPasswordEditedEvent} from './password_edit_dialog.js';
 import {PasswordRemovalMixin, PasswordRemovalMixinInterface} from './password_removal_mixin.js';
@@ -104,11 +99,6 @@ export class PasswordViewElement extends PasswordViewElementBase {
     return {
       id_: Number,
 
-      activeDialogAnchorStack_: {
-        type: Array,
-        value: () => [],
-      },
-
       toastText_: {
         type: String,
         value: '',
@@ -164,34 +154,13 @@ export class PasswordViewElement extends PasswordViewElementBase {
    * the observer.
    */
   private id_: number|null|undefined;
-  private activeDialogAnchorStack_: HTMLElement[];
   private toastText_: string;
   credential: chrome.passwordsPrivate.PasswordUiEntry|null;
   private isPasswordNotesEnabled_: boolean;
   private isPasswordVisible_: boolean;
   private password_: string;
   private recentlyEdited_: boolean;
-  // <if expr="is_chromeos">
-  private showPasswordPromptDialog_: boolean;
-  // </if>
   private showEditDialog_: boolean;
-
-  // <if expr="is_chromeos">
-  override connectedCallback() {
-    super.connectedCallback();
-
-    // If the user's account supports the password check, an auth token will be
-    // required in order for them to view or export passwords. Otherwise there
-    // is no additional security so |tokenRequestManager| will immediately
-    // resolve requests.
-    if (loadTimeData.getBoolean('userCannotManuallyEnterPassword')) {
-      this.tokenRequestManager = new BlockingRequestManager();
-    } else {
-      this.tokenRequestManager =
-          new BlockingRequestManager(() => this.openPasswordPromptDialog_());
-    }
-  }
-  // </if>
 
   override currentRouteChanged(route: Route): void {
     if (route !== routes.PASSWORD_VIEW) {
@@ -327,40 +296,6 @@ export class PasswordViewElement extends PasswordViewElementBase {
     }
     Router.getInstance().updateRouteParams(newParams);
   }
-
-  // <if expr="is_chromeos">
-  /**
-   * When this event fired, it means that the password-prompt-dialog succeeded
-   * in creating a fresh token in the quickUnlockPrivate API. Because new tokens
-   * can only ever be created immediately following a GAIA password check, the
-   * passwordsPrivate API can now safely grant requests for secure data (i.e.
-   * saved passwords) for a limited time. This observer resolves the request,
-   * triggering a callback that requires a fresh auth token to succeed and that
-   * was provided to the BlockingRequestManager by another DOM element seeking
-   * secure data.
-   *
-   * @param e Contains newly created auth token
-   *     chrome.quickUnlockPrivate.TokenInfo. Note that its precise value is not
-   *     relevant here, only the facts that it's created.
-   */
-  private onTokenObtained_(
-      e: CustomEvent<chrome.quickUnlockPrivate.TokenInfo>) {
-    assert(e.detail);
-    this.tokenRequestManager.resolve();
-  }
-
-  private onPasswordPromptClose_() {
-    this.showPasswordPromptDialog_ = false;
-    const toFocus = this.activeDialogAnchorStack_.pop();
-    assert(toFocus);
-    focusWithoutInk(toFocus);
-  }
-
-  private openPasswordPromptDialog_() {
-    this.activeDialogAnchorStack_.push(getDeepActiveElement() as HTMLElement);
-    this.showPasswordPromptDialog_ = true;
-  }
-  // </if>
 
   /** Handler for tapping the show/hide button. */
   private onShowPasswordButtonClick_() {

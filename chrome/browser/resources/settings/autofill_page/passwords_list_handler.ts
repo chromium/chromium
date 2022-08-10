@@ -9,6 +9,9 @@
  */
 
 import '../i18n_setup.js';
+// <if expr="is_chromeos">
+import '../controls/password_prompt_dialog.js';
+// </if>
 import './password_edit_dialog.js';
 import './password_move_to_account_dialog.js';
 import './password_remove_dialog.js';

@@ -12,6 +12,9 @@ import 'chrome://resources/cr_elements/cr_icons_css.m.js';
 import 'chrome://resources/js/action_link.js';
 import '../settings_shared.css.js';
 import '../site_favicon.js';
+// <if expr="is_chromeos">
+import '../controls/password_prompt_dialog.js';
+// </if>
 import './passwords_shared.css.js';
 
 import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';

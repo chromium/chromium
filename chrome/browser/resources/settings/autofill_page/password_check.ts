@@ -25,25 +25,14 @@ import '../controls/password_prompt_dialog.js';
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
-import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
-// <if expr="is_chromeos">
-import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-// </if>
 import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-// <if expr="is_chromeos">
-import {loadTimeData} from '../i18n_setup.js';
-// </if>
 
 import {PrefsMixin, PrefsMixinInterface} from '../prefs/prefs_mixin.js';
 import {routes} from '../route.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 
-// <if expr="is_chromeos">
-import {BlockingRequestManager} from './blocking_request_manager.js';
-// </if>
 import {MergePasswordsStoreCopiesMixin, MergePasswordsStoreCopiesMixinInterface} from './merge_passwords_store_copies_mixin.js';
 import {getTemplate} from './password_check.html.js';
 import {PasswordCheckListItemElement} from './password_check_list_item.js';
@@ -174,10 +163,6 @@ export class SettingsPasswordCheckElement extends
         type: Object,
         value: new Set(),
       },
-
-      // <if expr="is_chromeos">
-      showPasswordPromptDialog_: Boolean,
-      // </if>
     };
   }
 
@@ -198,26 +183,12 @@ export class SettingsPasswordCheckElement extends
   private iconHaloClass_: string;
   private clickedChangePasswordIds_: Set<number>;
 
-  // <if expr="is_chromeos">
-  private showPasswordPromptDialog_: boolean;
-  // </if>
-
-  private activeDialogAnchorStack_: HTMLElement[]|null;
   private activeListItem_: PasswordCheckListItemElement|null;
   startCheckAutomaticallySucceeded: boolean = false;
   private setSavedPasswordsListener_: SavedPasswordListChangedListener|null;
 
   constructor() {
     super();
-
-    /**
-     * A stack of the elements that triggered dialog to open and should
-     * therefore receive focus when that dialog is closed. The bottom of the
-     * stack is the element that triggered the earliest open dialog and top of
-     * the stack is the element that triggered the most recent (i.e. active)
-     * dialog. If no dialog is open, the stack is empty.
-     */
-    this.activeDialogAnchorStack_ = null;
 
     /**
      * The password_check_list_item that the user is interacting with now.
@@ -234,19 +205,6 @@ export class SettingsPasswordCheckElement extends
 
   override connectedCallback() {
     super.connectedCallback();
-
-    // <if expr="is_chromeos">
-    // If the user's account supports the password check, an auth token will be
-    // required in order for them to view or export passwords. Otherwise there
-    // is no additional security so |tokenRequestManager_| will immediately
-    // resolve requests.
-    this.tokenRequestManager =
-        loadTimeData.getBoolean('userCannotManuallyEnterPassword') ?
-        new BlockingRequestManager() :
-        new BlockingRequestManager(() => this.openPasswordPromptDialog_());
-
-    // </if>
-    this.activeDialogAnchorStack_ = [];
 
     const setSavedPasswordsListener: SavedPasswordListChangedListener =
         _list => {
@@ -369,7 +327,6 @@ export class SettingsPasswordCheckElement extends
       event: CustomEvent<{moreActionsButton: HTMLElement}>) {
     const target = event.detail.moreActionsButton;
     this.$.moreActionsMenu.showAt(target);
-    this.activeDialogAnchorStack_!.push(target);
     this.activeListItem_ = event.target as PasswordCheckListItemElement;
     this.activePassword_ = this.activeListItem_!.item;
   }
@@ -379,7 +336,6 @@ export class SettingsPasswordCheckElement extends
                                      this.activeListItem_!.showPassword();
     this.$.moreActionsMenu.close();
     this.activePassword_ = null;
-    this.activeDialogAnchorStack_!.pop();
   }
 
   private onEditPasswordClick_() {
@@ -424,22 +380,14 @@ export class SettingsPasswordCheckElement extends
 
   private onPasswordRemoveDialogClosed_() {
     this.showPasswordRemoveDialog_ = false;
-    const toFocus = this.activeDialogAnchorStack_!.pop();
-    assert(toFocus);
-    focusWithoutInk(toFocus);
   }
 
   private onPasswordEditDialogClosed_() {
     this.showPasswordEditDialog_ = false;
-    const toFocus = this.activeDialogAnchorStack_!.pop();
-    assert(toFocus);
-    focusWithoutInk(toFocus);
   }
 
   private onAlreadyChangedClick_(event: CustomEvent<HTMLElement>) {
-    const target = event.detail;
     // Setting required properties for Password Check Edit dialog
-    this.activeDialogAnchorStack_!.push(target);
     this.activeListItem_ = event.target as PasswordCheckListItemElement;
     this.activePassword_ = this.activeListItem_.item;
 
@@ -448,9 +396,6 @@ export class SettingsPasswordCheckElement extends
 
   private onEditDisclaimerClosed_() {
     this.showPasswordEditDisclaimer_ = false;
-    const toFocus = this.activeDialogAnchorStack_!.pop();
-    assert(toFocus);
-    focusWithoutInk(toFocus);
   }
 
   private computeShowHideMenuTitle(): string {
@@ -796,33 +741,6 @@ export class SettingsPasswordCheckElement extends
       boolean {
     return this.clickedChangePasswordIds_.has(item.id);
   }
-
-  // <if expr="is_chromeos">
-  /**
-   * Copied from passwords_section.js.
-   * TODO(crbug.com/1074228): Extract to a separate behavior
-   *
-   * @param e Contains newly created auth token
-   *     chrome.quickUnlockPrivate.TokenInfo. Note that its precise value is
-   *     not relevant here, only the facts that it's created.
-   */
-  private onTokenObtained_(e: CustomEvent<any>) {
-    assert(e.detail);
-    this.tokenRequestManager.resolve();
-  }
-
-  private onPasswordPromptClosed_() {
-    this.showPasswordPromptDialog_ = false;
-    const toFocus = this.activeDialogAnchorStack_!.pop();
-    assert(toFocus);
-    focusWithoutInk(toFocus);
-  }
-
-  private openPasswordPromptDialog_() {
-    this.activeDialogAnchorStack_!.push(getDeepActiveElement() as HTMLElement);
-    this.showPasswordPromptDialog_ = true;
-  }
-  // </if>
 }
 
 declare global {

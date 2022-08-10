@@ -10,11 +10,8 @@
  */
 
 // clang-format off
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {BlockingRequestManager} from 'chrome://settings/lazy_load.js';
 import {PasswordManagerImpl} from 'chrome://settings/settings.js';
-import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {createPasswordEntry, PasswordSectionElementFactory} from './passwords_and_autofill_fake_data.js';
 import {runCancelExportTest, runExportFlowErrorRetryTest, runExportFlowErrorTest, runExportFlowFastTest, runExportFlowSlowTest, runFireCloseEventAfterExportCompleteTest,runStartExportTest} from './passwords_export_dialog_test.js';
@@ -144,41 +141,6 @@ suite('PasswordsSection_Cros', function() {
         .querySelector<HTMLElement>('#exportPasswordsButton')!.click();
     return requestPromise;
   });
-
-  // TODO(crbug.com/1274569): add test for edit-dialog requesting token when
-  // switching from ADD to EDIT mode when other tests are fixed.
-
-
-  // Note (rbpotter): this passes locally, but may still be flaky (see
-  // https://www.crbug.com/1021474)
-  test.skip('password-prompt-dialog appears on auth token request', function() {
-    const passwordsSection =
-        elementFactory.createPasswordsSection(passwordManager, [], []);
-    assertTrue(!passwordsSection.shadowRoot!.querySelector(
-        'settings-password-prompt-dialog'));
-    passwordsSection.tokenRequestManager.request(fail);
-    flush();
-    assertTrue(!!passwordsSection.shadowRoot!.querySelector(
-        'settings-password-prompt-dialog'));
-  });
-
-  // Note (rbpotter): this fails locally, possibly out of date
-  test.skip(
-      'user is not prompted for password if they cannot enter it',
-      function(done) {
-        loadTimeData.overrideValues({userCannotManuallyEnterPassword: true});
-        const passwordsSection = document.createElement('passwords-section');
-        document.body.appendChild(passwordsSection);
-        flush();
-        assertTrue(!passwordsSection.shadowRoot!.querySelector(
-            'settings-password-prompt-dialog'));
-        passwordsSection.tokenRequestManager.request(() => {
-          flush();
-          assertTrue(!passwordsSection.shadowRoot!.querySelector(
-              'settings-password-prompt-dialog'));
-          done();
-        });
-      });
 
   // Test that tapping "Export passwords..." notifies the browser.
   test('startExport', function() {

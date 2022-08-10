@@ -51,9 +51,6 @@ import {PrefsMixin, PrefsMixinInterface} from '../prefs/prefs_mixin.js';
 import {routes} from '../route.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 
-// <if expr="is_chromeos">
-import {BlockingRequestManager} from './blocking_request_manager.js';
-// </if>
 import {MergePasswordsStoreCopiesMixin, MergePasswordsStoreCopiesMixinInterface} from './merge_passwords_store_copies_mixin.js';
 // <if expr="is_win">
 import {PasskeysBrowserProxy, PasskeysBrowserProxyImpl} from './passkeys_browser_proxy.js';
@@ -61,7 +58,6 @@ import {PasskeysBrowserProxy, PasskeysBrowserProxyImpl} from './passkeys_browser
 import {PasswordCheckMixin, PasswordCheckMixinInterface} from './password_check_mixin.js';
 import {AddCredentialFromSettingsUserInteractions, PasswordEditDialogElement} from './password_edit_dialog.js';
 import {PasswordCheckReferrer, PasswordExceptionListChangedListener, PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
-import {PasswordRequestorMixin, PasswordRequestorMixinInterface} from './password_requestor_mixin.js';
 import {PasswordsListHandlerElement} from './passwords_list_handler.js';
 import {getTemplate} from './passwords_section.html.js';
 import {UserUtilMixin, UserUtilMixinInterface} from './user_util_mixin.js';
@@ -110,15 +106,14 @@ export interface PasswordsSectionElement {
 }
 
 const PasswordsSectionElementBase =
-    UserUtilMixin(
-        MergePasswordsStoreCopiesMixin(PasswordRequestorMixin(PrefsMixin(
-            GlobalScrollTargetMixin(RouteObserverMixin(WebUIListenerMixin(
-                I18nMixin(PasswordCheckMixin(PolymerElement))))))))) as {
+    UserUtilMixin(MergePasswordsStoreCopiesMixin(PrefsMixin(
+        GlobalScrollTargetMixin(RouteObserverMixin(WebUIListenerMixin(
+            I18nMixin(PasswordCheckMixin(PolymerElement)))))))) as {
       new (): PolymerElement & PasswordCheckMixinInterface &
           I18nMixinInterface & WebUIListenerMixinInterface &
           RouteObserverMixinInterface & GlobalScrollTargetMixinInterface &
-          PrefsMixinInterface & PasswordRequestorMixinInterface &
-          MergePasswordsStoreCopiesMixinInterface & UserUtilMixinInterface,
+          PrefsMixinInterface & MergePasswordsStoreCopiesMixinInterface &
+          UserUtilMixinInterface,
     };
 
 export class PasswordsSectionElement extends PasswordsSectionElementBase {
@@ -269,10 +264,6 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
         value: () => [],
       },
 
-      // <if expr="is_chromeos">
-      showPasswordPromptDialog_: Boolean,
-      // </if>
-
       showPasswordsExportDialog_: Boolean,
       showPasswordsImportDialog_: Boolean,
 
@@ -309,16 +300,11 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   private hidePasswordsLink_: boolean;
   private showImportPasswords_: boolean;
 
-  // <if expr="is_chromeos">
-  private showPasswordPromptDialog_: boolean;
-  // </if>
-
   private showPasswordsExportDialog_: boolean;
   private showPasswordsImportDialog_: boolean;
   private showAddPasswordDialog_: boolean;
   private showAddPasswordButton_: boolean;
 
-  private activeDialogAnchorStack_: HTMLElement[];
   private passwordManager_: PasswordManagerProxy =
       PasswordManagerImpl.getInstance();
   // <if expr="is_win">
@@ -327,19 +313,6 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   // </if>
   private setPasswordExceptionsListener_: PasswordExceptionListChangedListener|
       null = null;
-
-  constructor() {
-    super();
-
-    /**
-     * A stack of the elements that triggered dialog to open and should
-     * therefore receive focus when that dialog is closed. The bottom of the
-     * stack is the element that triggered the earliest open dialog and top of
-     * the stack is the element that triggered the most recent (i.e. active)
-     * dialog. If no dialog is open, the stack is empty.
-     */
-    this.activeDialogAnchorStack_ = [];
-  }
 
   override ready() {
     super.ready();
@@ -370,19 +343,6 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     this.setPasswordExceptionsListener_ = exceptionList => {
       this.passwordExceptions = exceptionList;
     };
-
-    // <if expr="is_chromeos">
-    // If the user's account supports the password check, an auth token will be
-    // required in order for them to view or export passwords. Otherwise there
-    // is no additional security so |tokenRequestManager| will immediately
-    // resolve requests.
-    if (loadTimeData.getBoolean('userCannotManuallyEnterPassword')) {
-      this.tokenRequestManager = new BlockingRequestManager();
-    } else {
-      this.tokenRequestManager =
-          new BlockingRequestManager(() => this.openPasswordPromptDialog_());
-    }
-    // </if>
 
     // Request initial data.
     this.passwordManager_.getExceptionList(this.setPasswordExceptionsListener_);
@@ -523,39 +483,6 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     return this.passwordManager_;
   }
 
-  // <if expr="is_chromeos">
-  /**
-   * When this event fired, it means that the password-prompt-dialog succeeded
-   * in creating a fresh token in the quickUnlockPrivate API. Because new tokens
-   * can only ever be created immediately following a GAIA password check, the
-   * passwordsPrivate API can now safely grant requests for secure data (i.e.
-   * saved passwords) for a limited time. This observer resolves the request,
-   * triggering a callback that requires a fresh auth token to succeed and that
-   * was provided to the BlockingRequestManager by another DOM element seeking
-   * secure data.
-   *
-   * @param e - Contain newly created auth token
-   *     chrome.quickUnlockPrivate.TokenInfo. Note that its precise value is not
-   *     relevant here, only the facts that it's created.
-   */
-  private onTokenObtained_(e: CustomEvent<any>) {
-    assert(e.detail);
-    this.tokenRequestManager.resolve();
-  }
-
-  private onPasswordPromptClosed_() {
-    this.showPasswordPromptDialog_ = false;
-    const toFocus = this.activeDialogAnchorStack_.pop();
-    assert(toFocus);
-    focusWithoutInk(toFocus);
-  }
-
-  private openPasswordPromptDialog_() {
-    this.activeDialogAnchorStack_.push(getDeepActiveElement() as HTMLElement);
-    this.showPasswordPromptDialog_ = true;
-  }
-  // </if>
-
   private passwordFilter_():
       ((entry: chrome.passwordsPrivate.PasswordUiEntry) => boolean) {
     return password => [password.urls.shown, password.username].some(
@@ -603,7 +530,6 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     const target = this.shadowRoot!.querySelector('#exportImportMenuButton') as
         HTMLElement;
     this.$.exportImportMenu.showAt(target);
-    this.activeDialogAnchorStack_.push(target);
   }
 
   /**
@@ -616,9 +542,6 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
 
   private onPasswordsImportDialogClosed_() {
     this.showPasswordsImportDialog_ = false;
-    const toFocus = this.activeDialogAnchorStack_.pop();
-    assert(toFocus);
-    focusWithoutInk(toFocus);
   }
 
   /**
@@ -631,9 +554,6 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
 
   private onPasswordsExportDialogClosed_() {
     this.showPasswordsExportDialog_ = false;
-    const toFocus = this.activeDialogAnchorStack_.pop();
-    assert(toFocus);
-    focusWithoutInk(toFocus);
   }
 
   private onAddPasswordTap_() {
@@ -642,8 +562,6 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
         AddCredentialFromSettingsUserInteractions.ADD_DIALOG_OPENED,
         AddCredentialFromSettingsUserInteractions.COUNT);
     this.showAddPasswordDialog_ = true;
-    this.activeDialogAnchorStack_.push(
-        this.shadowRoot!.querySelector('#addPasswordButton')!);
   }
 
   private onAddPasswordDialogClosed_() {
@@ -652,9 +570,6 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
         AddCredentialFromSettingsUserInteractions.ADD_DIALOG_CLOSED,
         AddCredentialFromSettingsUserInteractions.COUNT);
     this.showAddPasswordDialog_ = false;
-    const toFocus = this.activeDialogAnchorStack_.pop();
-    assert(toFocus);
-    focusWithoutInk(toFocus);
   }
 
   private showImportOrExportPasswords_(): boolean {

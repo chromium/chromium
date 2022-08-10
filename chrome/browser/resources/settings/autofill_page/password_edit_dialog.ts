@@ -295,6 +295,16 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
     this.initDialog_();
   }
 
+  // <if expr="is_chromeos">
+  override onPasswordPromptClose(event: CloseEvent) {
+    super.onPasswordPromptClose(event);
+    // In chromeOS closing the password prompt dialog while the edit dialog is
+    // open also closes the edit dialog. This happens when add dialog wants to
+    // switch to edit dialog.
+    event.stopPropagation();
+  }
+  // </if>
+
   private initDialog_() {
     if (this.existingEntry) {
       this.websiteUrls_ = this.existingEntry.urls;

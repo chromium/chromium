@@ -841,4 +841,54 @@ suite('PasswordEditDialog', function() {
         assertAddDialogParts(addDialog);
       });
   // </if>
+
+  // <if expr="is_chromeos">
+  test(
+      'requestsPlaintextPasswordAndSwitchesToEditModeOnViewPasswordClickInCros',
+      async function() {
+        const existingEntry = createPasswordEntry(
+            {url: 'website.com', username: 'username', id: 0});
+        const addDialog =
+            elementFactory.createPasswordEditDialog(null, [existingEntry]);
+        assertFalse(isElementVisible(addDialog.$.viewExistingPasswordLink));
+
+        await updateWebsiteInput(
+            addDialog, passwordManager, existingEntry.urls.shown);
+        addDialog.$.usernameInput.value = existingEntry.username;
+        assertTrue(isElementVisible(addDialog.$.viewExistingPasswordLink));
+
+        addDialog.$.viewExistingPasswordLink.click();
+        await flushTasks();
+
+        const passwordDialog = addDialog.shadowRoot!.querySelector(
+            'settings-password-prompt-dialog');
+        assertTrue(!!passwordDialog);
+
+        // if the user clicks cancel, add dialog is still visible.
+        passwordDialog.dispatchEvent(new CustomEvent('close'));
+        await flushTasks();
+        debugger;
+
+        assertAddDialogParts(addDialog);
+        assertFalse(!!addDialog.shadowRoot!.querySelector(
+            'settings-password-prompt-dialog'));
+
+        // if the user re-clicks view exiting password and auths, edit dialog is
+        // visible.
+        existingEntry.password = 'plaintext password';
+        passwordManager.setPlaintextPassword(existingEntry.password);
+        addDialog.$.viewExistingPasswordLink.click();
+
+        const {id, reason} =
+            await passwordManager.whenCalled('requestPlaintextPassword');
+        assertEquals(existingEntry.id, id);
+        assertEquals(chrome.passwordsPrivate.PlaintextReason.EDIT, reason);
+        await flushTasks();
+
+        assertEditDialogParts(addDialog);
+        assertEquals(existingEntry.urls.link, addDialog.$.websiteInput.value);
+        assertEquals(existingEntry.username, addDialog.$.usernameInput.value);
+        assertEquals(existingEntry.password, addDialog.$.passwordInput.value);
+      });
+  // </if>
 });
