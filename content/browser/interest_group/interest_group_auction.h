@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -23,6 +24,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
+#include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -292,6 +294,9 @@ class CONTENT_EXPORT InterestGroupAuction {
   // Always invoked asynchronously.
   using AuctionPhaseCompletionCallback = base::OnceCallback<void(bool success)>;
 
+  using PrivateAggregationRequests =
+      std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>;
+
   // All passed in raw pointers must remain valid until the InterestGroupAuction
   // is destroyed. `config` is typically owned by the AuctionRunner's
   // `owned_auction_config_` field. `parent` should be the parent
@@ -385,6 +390,14 @@ class CONTENT_EXPORT InterestGroupAuction {
   // May only be called once, since it takes ownership of stored reporting
   // URLs.
   std::vector<GURL> TakeReportUrls();
+
+  // Retrieves all requests to the Private Aggregation API returned by
+  // GenerateBid(), ScoreAd(), ReportWin() and ReportResult(). The return value
+  // is keyed by reporting origin of the associated requests. May only be called
+  // after an auction has completed (successfully or not). May only be called
+  // once, since it takes ownership of stored reporting URLs.
+  std::map<url::Origin, PrivateAggregationRequests>
+  TakePrivateAggregationRequests();
 
   // Retrieves any errors from the auction. May only be called once, since it
   // takes ownership of stored errors.
@@ -497,6 +510,7 @@ class CONTENT_EXPORT InterestGroupAuction {
                    bool has_scoring_signals_data_version,
                    const absl::optional<GURL>& debug_loss_report_url,
                    const absl::optional<GURL>& debug_win_report_url,
+                   PrivateAggregationRequests pa_requests,
                    const std::vector<std::string>& errors);
 
   // Invoked when the bid becomes the new highest scoring other bid, to handle
@@ -531,12 +545,14 @@ class CONTENT_EXPORT InterestGroupAuction {
       const absl::optional<std::string>& signals_for_winner,
       const absl::optional<GURL>& seller_report_url,
       const base::flat_map<std::string, GURL>& seller_ad_beacon_map,
+      PrivateAggregationRequests pa_requests,
       const std::vector<std::string>& error_msgs);
   void LoadBidderWorkletToReportBidWin(const std::string& signals_for_winner);
   void ReportBidWin(const std::string& signals_for_winner);
   void OnReportBidWinComplete(
       const absl::optional<GURL>& bidder_report_url,
       const base::flat_map<std::string, GURL>& bidder_ad_beacon_map,
+      PrivateAggregationRequests pa_requests,
       const std::vector<std::string>& error_msgs);
 
   // Called when the component SellerWorklet with the bidder that won an
@@ -718,6 +734,12 @@ class CONTENT_EXPORT InterestGroupAuction {
   // method if there is one. Returned to `callback_` to deal with, so the
   // auction itself can be deleted at the end of the auction.
   std::vector<GURL> report_urls_;
+
+  // Stores all pending Private Aggregation API report requests until they have
+  // been flushed. Keyed by the origin of the script that issued the request
+  // (i.e. the reporting origin).
+  std::map<url::Origin, PrivateAggregationRequests>
+      private_aggregation_requests_;
 
   // All errors reported by worklets thus far.
   std::vector<std::string> errors_;

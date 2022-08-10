@@ -52,6 +52,8 @@ source_set("auction_worklet") {
     "debug_command_queue.h",
     "for_debugging_only_bindings.cc",
     "for_debugging_only_bindings.h",
+    "private_aggregation_bindings.cc",
+    "private_aggregation_bindings.h",
     "register_ad_beacon_bindings.cc",
     "register_ad_beacon_bindings.h",
     "report_bindings.cc",

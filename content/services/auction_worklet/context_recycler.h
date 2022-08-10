@@ -16,6 +16,7 @@
 namespace auction_worklet {
 
 class ForDebuggingOnlyBindings;
+class PrivateAggregationBindings;
 class RegisterAdBeaconBindings;
 class ReportBindings;
 class SetBidBindings;
@@ -51,6 +52,11 @@ class CONTENT_EXPORT ContextRecycler {
     return for_debugging_only_bindings_.get();
   }
 
+  void AddPrivateAggregationBindings();
+  PrivateAggregationBindings* private_aggregation_bindings() {
+    return private_aggregation_bindings_.get();
+  }
+
   void AddRegisterAdBeaconBindings();
   RegisterAdBeaconBindings* register_ad_beacon_bindings() {
     return register_ad_beacon_bindings_.get();
@@ -84,6 +90,7 @@ class CONTENT_EXPORT ContextRecycler {
   v8::Global<v8::Context> context_;
 
   std::unique_ptr<ForDebuggingOnlyBindings> for_debugging_only_bindings_;
+  std::unique_ptr<PrivateAggregationBindings> private_aggregation_bindings_;
   std::unique_ptr<RegisterAdBeaconBindings> register_ad_beacon_bindings_;
   std::unique_ptr<ReportBindings> report_bindings_;
   std::unique_ptr<SetBidBindings> set_bid_bindings_;

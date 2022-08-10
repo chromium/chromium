@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/callback.h"
@@ -14,6 +15,7 @@
 #include "base/time/time.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/auction_config.h"
@@ -54,13 +56,14 @@ void AuctionRunner::FailAuction() {
 
   UpdateInterestGroupsPostAuction();
 
-  std::move(callback_).Run(this, /*render_url=*/absl::nullopt,
-                           /*winning_group_key=*/absl::nullopt,
-                           /*ad_component_urls=*/{},
-                           /*report_urls=*/{},
-                           std::move(debug_loss_report_urls),
-                           std::move(debug_win_report_urls),
-                           /*ad_beacon_map=*/{}, auction_.TakeErrors());
+  std::move(callback_).Run(
+      this, /*render_url=*/absl::nullopt,
+      /*winning_group_key=*/absl::nullopt,
+      /*ad_component_urls=*/{},
+      /*report_urls=*/{}, std::move(debug_loss_report_urls),
+      std::move(debug_win_report_urls),
+      /*ad_beacon_map=*/{}, auction_.TakePrivateAggregationRequests(),
+      auction_.TakeErrors());
 }
 
 AuctionRunner::AuctionRunner(
@@ -156,7 +159,8 @@ void AuctionRunner::OnReportingPhaseComplete(bool success) {
       this, std::move(winning_group_key), auction_.top_bid()->bid->render_url,
       auction_.top_bid()->bid->ad_components, auction_.TakeReportUrls(),
       std::move(debug_loss_report_urls), std::move(debug_win_report_urls),
-      auction_.TakeAdBeaconMap(), auction_.TakeErrors());
+      auction_.TakeAdBeaconMap(), auction_.TakePrivateAggregationRequests(),
+      auction_.TakeErrors());
 }
 
 void AuctionRunner::UpdateInterestGroupsPostAuction() {

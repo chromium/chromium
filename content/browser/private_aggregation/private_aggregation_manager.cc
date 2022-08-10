@@ -11,9 +11,9 @@
 namespace content {
 
 PrivateAggregationManager* PrivateAggregationManager::GetManager(
-    BrowserContext* browser_context) {
+    BrowserContext& browser_context) {
   return static_cast<StoragePartitionImpl*>(
-             browser_context->GetDefaultStoragePartition())
+             browser_context.GetDefaultStoragePartition())
       ->GetPrivateAggregationManager();
 }
 

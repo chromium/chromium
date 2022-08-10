@@ -5,16 +5,20 @@
 #ifndef CONTENT_BROWSER_INTEREST_GROUP_AD_AUCTION_SERVICE_IMPL_H_
 #define CONTENT_BROWSER_INTEREST_GROUP_AD_AUCTION_SERVICE_IMPL_H_
 
+#include <map>
 #include <memory>
 #include <set>
+#include <vector>
 
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/memory/raw_ptr.h"
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/browser/interest_group/auction_runner.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/document_service.h"
+#include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
@@ -32,6 +36,7 @@ namespace content {
 class InterestGroupManagerImpl;
 class RenderFrameHost;
 class RenderFrameHostImpl;
+class PrivateAggregationManager;
 
 // Implements the AdAuctionService service called by Blink code.
 class CONTENT_EXPORT AdAuctionServiceImpl final
@@ -102,6 +107,15 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
                                      interest_group_api_operation,
                                  const url::Origin& origin) const;
 
+  // Sends requests for the Private Aggregation API to its manager. Does nothing
+  // if the manager is unavailable. The map should be keyed by reporting origin
+  // of the corresponding requests.
+  void SendPrivateAggregationRequests(
+      std::map<
+          url::Origin,
+          std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>>
+          private_aggregation_requests) const;
+
   // Deletes `auction`.
   void OnAuctionComplete(
       RunAdAuctionCallback callback,
@@ -113,6 +127,10 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
       std::vector<GURL> debug_loss_report_urls,
       std::vector<GURL> debug_win_report_urls,
       ReportingMetadata ad_beacon_map,
+      std::map<
+          url::Origin,
+          std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>>
+          private_aggregation_requests,
       std::vector<std::string> errors);
 
   InterestGroupManagerImpl& GetInterestGroupManager() const;
@@ -139,6 +157,10 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   AuctionWorkletManager auction_worklet_manager_;
 
   std::set<std::unique_ptr<AuctionRunner>, base::UniquePtrComparator> auctions_;
+
+  // Safe to keep as it will outlive the associated `RenderFrameHost` and
+  // therefore `this`, being tied to the lifetime of the `StoragePartition`.
+  const raw_ptr<PrivateAggregationManager> private_aggregation_manager_;
 };
 
 }  // namespace content

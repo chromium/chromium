@@ -46,30 +46,6 @@ const base::Time kExampleTime = base::Time::FromJavaTime(1652984901234);
 
 constexpr char kExampleOriginUrl[] = "https://origin.example";
 
-class MockPrivateAggregationBudgeter : public PrivateAggregationBudgeter {
- public:
-  MOCK_METHOD(void,
-              ConsumeBudget,
-              (int,
-               const PrivateAggregationBudgetKey&,
-               base::OnceCallback<void(bool)>),
-              (override));
-};
-
-class MockPrivateAggregationHost : public PrivateAggregationHost {
- public:
-  MockPrivateAggregationHost()
-      : PrivateAggregationHost(
-            /*on_report_request_received=*/base::DoNothing()) {}
-
-  MOCK_METHOD(bool,
-              BindNewReceiver,
-              (url::Origin,
-               PrivateAggregationBudgetKey::Api,
-               mojo::PendingReceiver<mojom::PrivateAggregationHost>),
-              (override));
-};
-
 class PrivateAggregationManagerImplUnderTest
     : public PrivateAggregationManagerImpl {
  public:

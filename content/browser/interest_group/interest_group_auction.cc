@@ -7,16 +7,20 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <iterator>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/callback.h"
+#include "base/check.h"
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -32,6 +36,7 @@
 #include "content/browser/interest_group/storage_interest_group.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
+#include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
@@ -357,19 +362,21 @@ class InterestGroupAuction::BuyerHelper {
           /*debug_win_report_url=*/absl::nullopt,
           /*set_priority=*/0,
           /*has_set_priority=*/false,
+          /*pa_requests=*/{},
           {base::StrCat({bid_state->bidder.interest_group.bidding_url->spec(),
                          " crashed while trying to run generateBid()."})});
       return;
     }
 
     // Otherwise, use error message from the worklet.
-    OnGenerateBidComplete(
-        bid_state, auction_worklet::mojom::BidderWorkletBidPtr(),
-        /*bidding_signals_data_version=*/0,
-        /*has_bidding_signals_data_version=*/false,
-        /*debug_loss_report_url=*/absl::nullopt,
-        /*debug_win_report_url=*/absl::nullopt,
-        /*set_priority=*/0, /*has_set_priority=*/false, errors);
+    OnGenerateBidComplete(bid_state,
+                          auction_worklet::mojom::BidderWorkletBidPtr(),
+                          /*bidding_signals_data_version=*/0,
+                          /*has_bidding_signals_data_version=*/false,
+                          /*debug_loss_report_url=*/absl::nullopt,
+                          /*debug_win_report_url=*/absl::nullopt,
+                          /*set_priority=*/0, /*has_set_priority=*/false,
+                          /*pa_requests=*/{}, errors);
   }
 
   // Invoked whenever the AuctionWorkletManager has provided a BidderWorket
@@ -426,6 +433,7 @@ class InterestGroupAuction::BuyerHelper {
       const absl::optional<GURL>& debug_win_report_url,
       double set_priority,
       bool has_set_priority,
+      PrivateAggregationRequests pa_requests,
       const std::vector<std::string>& errors) {
     DCHECK(!state->made_bid);
     DCHECK_GT(num_outstanding_bids_, 0);
@@ -442,6 +450,19 @@ class InterestGroupAuction::BuyerHelper {
           blink::InterestGroupKey(state->bidder.interest_group.owner,
                                   state->bidder.interest_group.name),
           set_priority);
+    }
+
+    DCHECK(base::ranges::none_of(
+        pa_requests,
+        [](const auction_worklet::mojom::PrivateAggregationRequestPtr&
+               request_ptr) { return request_ptr.is_null(); }));
+    if (!pa_requests.empty()) {
+      PrivateAggregationRequests& pa_requests_for_bidder =
+          auction_->private_aggregation_requests_[state->bidder.interest_group
+                                                      .owner];
+      pa_requests_for_bidder.insert(pa_requests_for_bidder.end(),
+                                    std::move_iterator(pa_requests.begin()),
+                                    std::move_iterator(pa_requests.end()));
     }
 
     auction_->errors_.insert(auction_->errors_.end(), errors.begin(),
@@ -959,6 +980,23 @@ std::vector<GURL> InterestGroupAuction::TakeReportUrls() {
   return std::move(report_urls_);
 }
 
+std::map<url::Origin, InterestGroupAuction::PrivateAggregationRequests>
+InterestGroupAuction::TakePrivateAggregationRequests() {
+  for (auto& component_auction : component_auctions_) {
+    std::map<url::Origin, PrivateAggregationRequests> requests_map =
+        component_auction->TakePrivateAggregationRequests();
+    for (auto& [origin, requests] : requests_map) {
+      DCHECK(!requests.empty());
+      PrivateAggregationRequests& destination_vector =
+          private_aggregation_requests_[origin];
+      destination_vector.insert(destination_vector.end(),
+                                std::move_iterator(requests.begin()),
+                                std::move_iterator(requests.end()));
+    }
+  }
+  return std::move(private_aggregation_requests_);
+}
+
 std::vector<std::string> InterestGroupAuction::TakeErrors() {
   for (auto& component_auction : component_auctions_) {
     std::vector<std::string> errors = component_auction->TakeErrors();
@@ -1259,6 +1297,7 @@ void InterestGroupAuction::OnBidScored(
     bool has_data_version,
     const absl::optional<GURL>& debug_loss_report_url,
     const absl::optional<GURL>& debug_win_report_url,
+    PrivateAggregationRequests pa_requests,
     const std::vector<std::string>& errors) {
   DCHECK_GT(bids_being_scored_, 0);
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "seller_worklet_score_ad",
@@ -1266,6 +1305,19 @@ void InterestGroupAuction::OnBidScored(
   bid->bid_state->EndTracing();
 
   --bids_being_scored_;
+
+  DCHECK(base::ranges::none_of(
+      pa_requests,
+      [](const auction_worklet::mojom::PrivateAggregationRequestPtr&
+             request_ptr) { return request_ptr.is_null(); }));
+  if (!pa_requests.empty()) {
+    DCHECK(config_);
+    PrivateAggregationRequests& pa_requests_for_seller =
+        private_aggregation_requests_[config_->seller];
+    pa_requests_for_seller.insert(pa_requests_for_seller.end(),
+                                  std::move_iterator(pa_requests.begin()),
+                                  std::move_iterator(pa_requests.end()));
+  }
 
   // If `debug_loss_report_url` or `debug_win_report_url` is not a valid HTTPS
   // URL, the auction should fail because the worklet is compromised.
@@ -1539,6 +1591,7 @@ void InterestGroupAuction::OnReportSellerResultComplete(
     const absl::optional<std::string>& signals_for_winner,
     const absl::optional<GURL>& seller_report_url,
     const base::flat_map<std::string, GURL>& seller_ad_beacon_map,
+    PrivateAggregationRequests pa_requests,
     const std::vector<std::string>& errors) {
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "seller_worklet_report_result",
                                   trace_id_);
@@ -1551,6 +1604,19 @@ void InterestGroupAuction::OnReportSellerResultComplete(
   // winning component seller from reloading its worklet. It could also trigger
   // an error if it crashes at this point, failing the auction unnecessarily.
   seller_worklet_handle_.reset();
+
+  DCHECK(base::ranges::none_of(
+      pa_requests,
+      [](const auction_worklet::mojom::PrivateAggregationRequestPtr&
+             request_ptr) { return request_ptr.is_null(); }));
+  if (!pa_requests.empty()) {
+    DCHECK(config_);
+    PrivateAggregationRequests& pa_requests_for_seller =
+        private_aggregation_requests_[config_->seller];
+    pa_requests_for_seller.insert(pa_requests_for_seller.end(),
+                                  std::move_iterator(pa_requests.begin()),
+                                  std::move_iterator(pa_requests.end()));
+  }
 
   if (!seller_ad_beacon_map.empty()) {
     for (const auto& element : seller_ad_beacon_map) {
@@ -1640,6 +1706,7 @@ void InterestGroupAuction::ReportBidWin(const std::string& signals_for_winner) {
 void InterestGroupAuction::OnReportBidWinComplete(
     const absl::optional<GURL>& bidder_report_url,
     const base::flat_map<std::string, GURL>& bidder_ad_beacon_map,
+    PrivateAggregationRequests pa_requests,
     const std::vector<std::string>& errors) {
   // There should be at most one other report URL at this point.
   DCHECK_LE(report_urls_.size(), 1u);
@@ -1650,6 +1717,19 @@ void InterestGroupAuction::OnReportBidWinComplete(
   // The winning bidder worklet is no longer needed. Unload it to prevent a
   // fatal error notification.
   top_bid_->bid->bid_state->worklet_handle.reset();
+
+  DCHECK(base::ranges::none_of(
+      pa_requests,
+      [](const auction_worklet::mojom::PrivateAggregationRequestPtr&
+             request_ptr) { return request_ptr.is_null(); }));
+  if (!pa_requests.empty()) {
+    DCHECK(config_);
+    PrivateAggregationRequests& pa_requests_for_bidder =
+        private_aggregation_requests_[top_bid_->bid->interest_group->owner];
+    pa_requests_for_bidder.insert(pa_requests_for_bidder.end(),
+                                  std::move_iterator(pa_requests.begin()),
+                                  std::move_iterator(pa_requests.end()));
+  }
 
   if (!bidder_ad_beacon_map.empty()) {
     for (const auto& element : bidder_ad_beacon_map) {
@@ -1695,7 +1775,8 @@ void InterestGroupAuction::OnWinningComponentSellerWorkletFatalError(
     // currently fail the auction.
     OnReportSellerResultComplete(/*signals_for_winner=*/absl::nullopt,
                                  /*seller_report_url=*/absl::nullopt,
-                                 /*seller_ad_beacon_map=*/{}, errors);
+                                 /*seller_ad_beacon_map=*/{},
+                                 /*pa_requests=*/{}, errors);
   }
 }
 
@@ -1715,7 +1796,8 @@ void InterestGroupAuction::OnWinningBidderWorkletFatalError(
     // An error while reloading the worklet to call ReportWin() does not
     // currently fail the auction.
     OnReportBidWinComplete(/*bidder_report_url=*/absl::nullopt,
-                           /*bidder_ad_beacon_map=*/{}, errors);
+                           /*bidder_ad_beacon_map=*/{},
+                           /*pa_requests=*/{}, errors);
   }
 }
 

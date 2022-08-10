@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_INTEREST_GROUP_AUCTION_RUNNER_H_
 #define CONTENT_BROWSER_INTEREST_GROUP_AUCTION_RUNNER_H_
 
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -14,6 +15,7 @@
 #include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/browser/interest_group/interest_group_auction.h"
 #include "content/common/content_export.h"
+#include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom-forward.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
@@ -38,6 +40,9 @@ class InterestGroupManagerImpl;
 // the code to assign unique tracing IDs is not threadsafe.
 class CONTENT_EXPORT AuctionRunner {
  public:
+  using PrivateAggregationRequests =
+      std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>;
+
   // Invoked when a FLEDGE auction is complete.
   //
   // `winning_group_id` owner and name of the winning interest group (if any).
@@ -68,6 +73,8 @@ class CONTENT_EXPORT AuctionRunner {
       std::vector<GURL> debug_loss_report_urls,
       std::vector<GURL> debug_win_report_urls,
       ReportingMetadata ad_beacon_map,
+      std::map<url::Origin, PrivateAggregationRequests>
+          private_aggregation_requests,
       std::vector<std::string> errors)>;
 
   // Returns true if `origin` is allowed to use the interest group API. Will be

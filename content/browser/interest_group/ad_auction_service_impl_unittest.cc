@@ -19,15 +19,19 @@
 #include "base/synchronization/lock.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/browser/interest_group/auction_process_manager.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/interest_group/interest_group_storage.h"
+#include "content/browser/private_aggregation/private_aggregation_manager_impl.h"
+#include "content/browser/private_aggregation/private_aggregation_test_utils.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -4965,6 +4969,82 @@ function scoreAd(
   EXPECT_EQ(ConvertFencedFrameURNToURL(*auction_result),
             GURL("https://example.com/render"));
   EXPECT_EQ(99, GetPriority(kOriginA, kInterestGroupName));
+}
+
+TEST_F(AdAuctionServiceImplTest, PrivateAggregationReportForwarded) {
+  constexpr char kBiddingScript[] = R"(
+function generateBid(
+    interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+    browserSignals) {
+  privateAggregation.sendHistogramReport({bucket: 1, value: 2});
+  return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
+}
+)";
+
+  constexpr char kDecisionScript[] = R"(
+function scoreAd(
+    adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
+  return bid;
+}
+)";
+
+  class TestPrivateAggregationManagerImpl
+      : public PrivateAggregationManagerImpl {
+   public:
+    TestPrivateAggregationManagerImpl(
+        std::unique_ptr<PrivateAggregationBudgeter> budgeter,
+        std::unique_ptr<PrivateAggregationHost> host)
+        : PrivateAggregationManagerImpl(std::move(budgeter),
+                                        std::move(host),
+                                        /*storage_partition=*/nullptr) {}
+  };
+
+  base::MockRepeatingCallback<void(AggregatableReportRequest,
+                                   PrivateAggregationBudgetKey)>
+      mock_callback;
+
+  static_cast<StoragePartitionImpl*>(
+      browser_context()->GetDefaultStoragePartition())
+      ->OverridePrivateAggregationManagerForTesting(
+          std::make_unique<TestPrivateAggregationManagerImpl>(
+              std::make_unique<MockPrivateAggregationBudgeter>(),
+              std::make_unique<PrivateAggregationHost>(
+                  /*on_report_request_received=*/mock_callback.Get())));
+
+  network_responder_->RegisterScriptResponse(kBiddingUrlPath, kBiddingScript);
+  network_responder_->RegisterScriptResponse(kDecisionUrlPath, kDecisionScript);
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
+  interest_group.priority = 2;
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
+
+  blink::AuctionConfig auction_config;
+  auction_config.seller = kOriginA;
+  auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
+  auction_config.non_shared_params.interest_group_buyers = {kOriginA};
+
+  EXPECT_CALL(mock_callback, Run)
+      .WillRepeatedly(
+          testing::Invoke([this](AggregatableReportRequest request,
+                                 PrivateAggregationBudgetKey budget_key) {
+            ASSERT_EQ(request.payload_contents().contributions.size(), 1u);
+            EXPECT_EQ(request.payload_contents().contributions[0].bucket, 1);
+            EXPECT_EQ(request.payload_contents().contributions[0].value, 2);
+            EXPECT_EQ(request.shared_info().reporting_origin, kOriginA);
+            EXPECT_EQ(budget_key.api(),
+                      PrivateAggregationBudgetKey::Api::kFledge);
+            EXPECT_EQ(budget_key.origin(), kOriginA);
+          }));
+
+  absl::optional<GURL> auction_result =
+      RunAdAuctionAndFlush(std::move(auction_config));
+  ASSERT_NE(auction_result, absl::nullopt);
 }
 
 class AdAuctionServiceImplNumAuctionLimitTest

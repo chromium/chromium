@@ -4,6 +4,7 @@
 
 module auction_worklet.mojom;
 
+import "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
 import "third_party/blink/public/mojom/devtools/devtools_agent.mojom";
@@ -134,6 +135,8 @@ interface SellerWorklet {
   //  API that will be replaced with standardized reporting APIs once available.
   //  It must be a valid HTTPS URL.
   //
+  // `pa_requests` The various requests made to the Private Aggregation API.
+  //
   // `errors` are various error messages to be used for debugging. These are too
   //  sensitive for the renderers to see. `errors` should not be assumed to be
   //  empty if `score` is positive, nor should it be assumed to be non-empty if
@@ -156,6 +159,7 @@ interface SellerWorklet {
               bool has_scoring_signals_data_version,
               url.mojom.Url? debug_loss_report_url,
               url.mojom.Url? debug_win_report_url,
+              array<PrivateAggregationRequest> pa_requests,
               array<string> errors);
 
   // Hint to the worklet to send a network request for any needed trusted
@@ -222,6 +226,8 @@ interface SellerWorklet {
   // `ad_beacon_map` The map of ad reporting events to URLs for fenced frame
   //  reporting.
   //
+  // `pa_requests` The various requests made to the Private Aggregation API.
+  //
   // `errors` are various error messages to be used for debugging. These are too
   //  sensitive for the renderers to see. `errors` should not be assumed to be
   //  empty if the other values are populated, nor should it be assumed to be
@@ -243,6 +249,7 @@ interface SellerWorklet {
           (string? signals_for_winner,
            url.mojom.Url? report_url,
            map<string, url.mojom.Url> ad_beacon_map,
+           array<PrivateAggregationRequest> pa_requests,
            array<string> error_msgs);
 
   // Establishes a debugger connection to the worklet.

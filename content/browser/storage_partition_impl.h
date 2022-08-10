@@ -144,6 +144,9 @@ class CONTENT_EXPORT StoragePartitionImpl
       std::unique_ptr<AggregationService> aggregation_service);
   void OverrideAttributionManagerForTesting(
       std::unique_ptr<AttributionManager> attribution_manager);
+  void OverridePrivateAggregationManagerForTesting(
+      std::unique_ptr<PrivateAggregationManagerImpl>
+          private_aggregation_manager);
 
   // Returns the StoragePartitionConfig that represents this StoragePartition.
   const StoragePartitionConfig& GetConfig();

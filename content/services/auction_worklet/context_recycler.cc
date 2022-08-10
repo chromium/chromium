@@ -4,8 +4,12 @@
 
 #include "content/services/auction_worklet/context_recycler.h"
 
+#include <memory>
+
 #include "base/check.h"
+#include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/for_debugging_only_bindings.h"
+#include "content/services/auction_worklet/private_aggregation_bindings.h"
 #include "content/services/auction_worklet/register_ad_beacon_bindings.h"
 #include "content/services/auction_worklet/report_bindings.h"
 #include "content/services/auction_worklet/set_bid_bindings.h"
@@ -27,6 +31,13 @@ void ContextRecycler::AddForDebuggingOnlyBindings() {
   for_debugging_only_bindings_ =
       std::make_unique<ForDebuggingOnlyBindings>(v8_helper_);
   AddBindings(for_debugging_only_bindings_.get());
+}
+
+void ContextRecycler::AddPrivateAggregationBindings() {
+  DCHECK(!private_aggregation_bindings_);
+  private_aggregation_bindings_ =
+      std::make_unique<PrivateAggregationBindings>(v8_helper_);
+  AddBindings(private_aggregation_bindings_.get());
 }
 
 void ContextRecycler::AddRegisterAdBeaconBindings() {

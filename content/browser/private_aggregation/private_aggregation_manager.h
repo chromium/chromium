@@ -23,7 +23,7 @@ class PrivateAggregationManager {
  public:
   virtual ~PrivateAggregationManager() = default;
 
-  static PrivateAggregationManager* GetManager(BrowserContext* browser_context);
+  static PrivateAggregationManager* GetManager(BrowserContext& browser_context);
 
   // Binds a new pending receiver for a worklet, allowing messages to be sent
   // and processed. However, the receiver is not bound if the `worklet_origin`

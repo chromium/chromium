@@ -4,6 +4,7 @@
 
 module auction_worklet.mojom;
 
+import "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
 import "third_party/blink/public/mojom/devtools/devtools_agent.mojom";
@@ -161,6 +162,8 @@ interface BidderWorklet {
   //  update to the interest group priority.
   //  TODO(https://crbug.com/657632): Update when optional integers supported.
   //
+  // `pa_requests` The various requests made to the Private Aggregation API.
+  //
   // `errors` The various error messages to be used for debugging. These are too
   //  sensitive for the renderer to see. There may be errors even when a bid
   //  is offered, and there may be no errors when there's no bid. Includes
@@ -182,6 +185,7 @@ interface BidderWorklet {
           url.mojom.Url? debug_win_report_url,
           double set_priority,
           bool has_set_priority,
+          array<PrivateAggregationRequest> pa_requests,
           array<string> errors);
 
   // Sends pending bidding signals URL requests, if any. Unlike with
@@ -252,6 +256,8 @@ interface BidderWorklet {
   // `ad_beacon_map` The map of ad reporting events to URLs for fenced frame
   //  reporting.
   //
+  // `pa_requests` The various requests made to the Private Aggregation API.
+  //
   // `errors` is an array of any errors that occurred while attempting
   //  to run the worklet's reportWin() method. These are too sensitive for
   //  the renderer to see. There may be errors even when a `report_url` is
@@ -272,6 +278,7 @@ interface BidderWorklet {
             uint64 trace_id) => (
                 url.mojom.Url? report_url,
                 map<string, url.mojom.Url> ad_beacon_map,
+                array<PrivateAggregationRequest> pa_requests,
                 array<string> errors);
 
   // Establishes a debugger connection to the worklet.

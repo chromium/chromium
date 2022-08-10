@@ -2823,6 +2823,13 @@ void StoragePartitionImpl::OverrideAttributionManagerForTesting(
   attribution_manager_ = std::move(attribution_manager);
 }
 
+void StoragePartitionImpl::OverridePrivateAggregationManagerForTesting(
+    std::unique_ptr<PrivateAggregationManagerImpl>
+        private_aggregation_manager) {
+  DCHECK(initialized_);
+  private_aggregation_manager_ = std::move(private_aggregation_manager);
+}
+
 void StoragePartitionImpl::GetQuotaSettings(
     storage::OptionalQuotaSettingsCallback callback) {
   if (g_test_quota_settings) {

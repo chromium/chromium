@@ -24,7 +24,9 @@
 #include "base/trace_event/trace_event.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/for_debugging_only_bindings.h"
+#include "content/services/auction_worklet/private_aggregation_bindings.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
+#include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/auction_worklet/register_ad_beacon_bindings.h"
 #include "content/services/auction_worklet/report_bindings.h"
 #include "content/services/auction_worklet/set_bid_bindings.h"
@@ -356,6 +358,7 @@ void BidderWorklet::V8State::ReportWin(
   ContextRecycler context_recycler(v8_helper_.get());
   context_recycler.AddReportBindings();
   context_recycler.AddRegisterAdBeaconBindings();
+  context_recycler.AddPrivateAggregationBindings();
   ContextRecyclerScope context_recycler_scope(context_recycler);
   v8::Local<v8::Context> context = context_recycler_scope.GetContext();
 
@@ -365,9 +368,10 @@ void BidderWorklet::V8State::ReportWin(
       !AppendJsonValueOrNull(v8_helper_.get(), context, per_buyer_signals_json,
                              &args) ||
       !v8_helper_->AppendJsonValue(context, seller_signals_json, &args)) {
-    PostReportWinCallbackToUserThread(
-        std::move(callback), /*report_url=*/absl::nullopt,
-        /*ad_beacon_map=*/{}, /*errors=*/std::vector<std::string>());
+    PostReportWinCallbackToUserThread(std::move(callback),
+                                      /*report_url=*/absl::nullopt,
+                                      /*ad_beacon_map=*/{}, /*pa_requests=*/{},
+                                      /*errors=*/std::vector<std::string>());
     return;
   }
 
@@ -396,9 +400,10 @@ void BidderWorklet::V8State::ReportWin(
       (bidding_signals_data_version.has_value() &&
        !browser_signals_dict.Set("dataVersion",
                                  bidding_signals_data_version.value()))) {
-    PostReportWinCallbackToUserThread(
-        std::move(callback), /*report_url=*/absl::nullopt,
-        /*ad_beacon_map=*/{}, /*errors=*/std::vector<std::string>());
+    PostReportWinCallbackToUserThread(std::move(callback),
+                                      /*report_url=*/absl::nullopt,
+                                      /*ad_beacon_map=*/{}, /*pa_requests=*/{},
+                                      /*errors=*/std::vector<std::string>());
     return;
   }
   args.push_back(browser_signals);
@@ -419,9 +424,14 @@ void BidderWorklet::V8State::ReportWin(
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "report_win", trace_id);
 
   if (script_failed) {
+    // Keep Private Aggregation API requests since `reportWin()` might use it to
+    // detect script timeout or failures.
     PostReportWinCallbackToUserThread(
         std::move(callback), /*report_url=*/absl::nullopt,
-        /*ad_beacon_map=*/{}, std::move(errors_out));
+        /*ad_beacon_map=*/{},
+        context_recycler.private_aggregation_bindings()
+            ->TakePrivateAggregationRequests(),
+        std::move(errors_out));
     return;
   }
 
@@ -430,6 +440,8 @@ void BidderWorklet::V8State::ReportWin(
   PostReportWinCallbackToUserThread(
       std::move(callback), context_recycler.report_bindings()->report_url(),
       context_recycler.register_ad_beacon_bindings()->TakeAdBeaconMap(),
+      context_recycler.private_aggregation_bindings()
+          ->TakePrivateAggregationRequests(),
       std::move(errors_out));
 }
 
@@ -461,6 +473,7 @@ void BidderWorklet::V8State::GenerateBid(
   // repeated calls to this worklet, or to calls to any other worklet.
   ContextRecycler context_recycler(v8_helper_.get());
   context_recycler.AddForDebuggingOnlyBindings();
+  context_recycler.AddPrivateAggregationBindings();
   context_recycler.AddSetBidBindings();
   context_recycler.AddSetPriorityBindings();
 
@@ -638,11 +651,13 @@ void BidderWorklet::V8State::GenerateBid(
   if (!context_recycler.set_bid_bindings()->has_bid()) {
     // If we either don't have a valid return value, or we have no return value
     // and no intermediate result was given through setBid, return an error.
-    // Keep debug loss reports since `generateBid()` might use it to detect
-    // script timeout or failures.
+    // Keep debug loss reports and Private Aggregation API requests since
+    // `generateBid()` might use them to detect script timeout or failures.
     PostErrorBidCallbackToUserThread(
         std::move(callback), std::move(errors_out),
-        context_recycler.for_debugging_only_bindings()->TakeLossReportUrl());
+        context_recycler.for_debugging_only_bindings()->TakeLossReportUrl(),
+        context_recycler.private_aggregation_bindings()
+            ->TakePrivateAggregationRequests());
     return;
   }
 
@@ -654,6 +669,8 @@ void BidderWorklet::V8State::GenerateBid(
           context_recycler.for_debugging_only_bindings()->TakeLossReportUrl(),
           context_recycler.for_debugging_only_bindings()->TakeWinReportUrl(),
           context_recycler.set_priority_bindings()->set_priority(),
+          context_recycler.private_aggregation_bindings()
+              ->TakePrivateAggregationRequests(),
           std::move(errors_out)));
 }
 
@@ -688,17 +705,20 @@ void BidderWorklet::V8State::PostReportWinCallbackToUserThread(
     ReportWinCallbackInternal callback,
     const absl::optional<GURL>& report_url,
     base::flat_map<std::string, GURL> ad_beacon_map,
+    PrivateAggregationRequests pa_requests,
     std::vector<std::string> errors) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
   user_thread_->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(report_url),
-                                std::move(ad_beacon_map), std::move(errors)));
+                                std::move(ad_beacon_map),
+                                std::move(pa_requests), std::move(errors)));
 }
 
 void BidderWorklet::V8State::PostErrorBidCallbackToUserThread(
     GenerateBidCallbackInternal callback,
     std::vector<std::string> error_msgs,
-    absl::optional<GURL> debug_loss_report_url) {
+    absl::optional<GURL> debug_loss_report_url,
+    PrivateAggregationRequests private_aggregation_requests) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
   user_thread_->PostTask(
       FROM_HERE,
@@ -706,7 +726,9 @@ void BidderWorklet::V8State::PostErrorBidCallbackToUserThread(
                      /*bidding_signals_data_version=*/absl::nullopt,
                      /*debug_loss_report_url=*/std::move(debug_loss_report_url),
                      /*debug_win_report_url=*/absl::nullopt,
-                     /*set_priority=*/absl::nullopt, std::move(error_msgs)));
+                     /*set_priority=*/absl::nullopt,
+                     std::move(private_aggregation_requests),
+                     std::move(error_msgs)));
 }
 
 void BidderWorklet::ResumeIfPaused() {
@@ -899,6 +921,7 @@ void BidderWorklet::DeliverBidCallbackOnUserThread(
     absl::optional<GURL> debug_loss_report_url,
     absl::optional<GURL> debug_win_report_url,
     absl::optional<double> set_priority,
+    PrivateAggregationRequests pa_requests,
     std::vector<std::string> error_msgs) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
 
@@ -912,7 +935,7 @@ void BidderWorklet::DeliverBidCallbackOnUserThread(
       .Run(std::move(bid), bidding_signals_data_version.value_or(0),
            bidding_signals_data_version.has_value(), debug_loss_report_url,
            debug_win_report_url, set_priority.value_or(0),
-           set_priority.has_value(), error_msgs);
+           set_priority.has_value(), std::move(pa_requests), error_msgs);
   generate_bid_tasks_.erase(task);
 }
 
@@ -920,12 +943,14 @@ void BidderWorklet::DeliverReportWinOnUserThread(
     ReportWinTaskList::iterator task,
     absl::optional<GURL> report_url,
     base::flat_map<std::string, GURL> ad_beacon_map,
+    PrivateAggregationRequests pa_requests,
     std::vector<std::string> errors) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
   errors.insert(errors.end(), load_code_error_msgs_.begin(),
                 load_code_error_msgs_.end());
   std::move(task->callback)
-      .Run(std::move(report_url), std::move(ad_beacon_map), errors);
+      .Run(std::move(report_url), std::move(ad_beacon_map),
+           std::move(pa_requests), std::move(errors));
   report_win_tasks_.erase(task);
 }
 
