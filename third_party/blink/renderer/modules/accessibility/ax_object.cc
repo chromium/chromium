@@ -2756,14 +2756,6 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
 
   if (included_in_tree_changed) {
     if (AXObject* parent = CachedParentObject()) {
-      // TODO(aleventhal) Reenable DCHECK. It fails on PDF tests.
-      // DCHECK(!ax_object_cache_->IsFrozen())
-      // << "Attempting to change children on an ancestor is dangerous during "
-      //    "serialization, because the ancestor may have already been "
-      //    "visited. Reaching this line indicates that AXObjectCacheImpl did "
-      //    "not handle a signal and call ChilldrenChanged() earlier."
-      //     << "\nChild: " << ToString(true)
-      //     << "\nParent: " << parent->ToString(true);
       // Defers a ChildrenChanged() on the first included ancestor.
       // Must defer it, otherwise it can cause reentry into
       // UpdateCachedAttributeValuesIfNeeded() on |this|.
