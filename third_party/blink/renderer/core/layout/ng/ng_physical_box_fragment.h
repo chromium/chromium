@@ -333,15 +333,6 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   }
   const NGPhysicalBoxFragment* InlineContainerFragmentIfOutlineOwner() const;
 
-  // Returns the |ComputedStyle| to use for painting outlines. When |this| is
-  // a block in a continuation-chain, it may need to paint outlines if its
-  // ancestor inline boxes in the DOM tree has outlines.
-  const ComputedStyle* StyleForContinuationOutline() const {
-    if (const auto* layout_object = GetLayoutObject())
-      return layout_object->StyleForContinuationOutline();
-    return nullptr;
-  }
-
   // Fragment offset is this fragment's offset from parent.
   // Needed to compensate for LayoutInline Legacy code offsets.
   void AddSelfOutlineRects(const PhysicalOffset& additional_offset,

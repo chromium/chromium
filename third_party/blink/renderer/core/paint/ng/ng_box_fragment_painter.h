@@ -150,8 +150,6 @@ class CORE_EXPORT NGBoxFragmentPainter : public BoxPainterBase {
   void PaintBackplate(NGInlineCursor* descendants,
                       const PaintInfo&,
                       const PhysicalOffset& paint_offset);
-  void PaintInlineChildBoxUsingLegacyFallback(const NGPhysicalFragment&,
-                                              const PaintInfo&);
   void PaintBlockFlowContents(const PaintInfo&,
                               const PhysicalOffset& paint_offset);
   void PaintTextItem(const NGInlineCursor& cursor,
@@ -254,14 +252,13 @@ class CORE_EXPORT NGBoxFragmentPainter : public BoxPainterBase {
                                  const NGInlineCursor& children,
                                  const PhysicalOffset& accumulated_offset);
 
-  // Hit tests a box fragment, which is a child of either |box_fragment_|, or
-  // one of its child line box fragments.
+  // Hit tests a child inline box fragment.
   // @param physical_offset Physical offset of the given box fragment in the
   // paint layer.
-  bool HitTestChildBoxFragment(const HitTestContext& hit_test,
-                               const NGPhysicalBoxFragment& fragment,
-                               const NGInlineBackwardCursor& cursor,
-                               const PhysicalOffset& physical_offset);
+  bool HitTestInlineChildBoxFragment(const HitTestContext& hit_test,
+                                     const NGPhysicalBoxFragment& fragment,
+                                     const NGInlineBackwardCursor& cursor,
+                                     const PhysicalOffset& physical_offset);
   bool HitTestChildBoxItem(const HitTestContext& hit_test,
                            const NGPhysicalBoxFragment& container,
                            const NGFragmentItem& item,
