@@ -219,11 +219,12 @@ class BrowserToPageConnector {
  private:
   void SendProtocolMessageToPage(const char* method,
                                  std::unique_ptr<base::Value> params) {
-    base::DictionaryValue message;
-    message.SetInteger("id", page_message_id_++);
-    message.SetString("method", method);
-    message.SetKey("params",
-                   base::Value::FromUniquePtrValue(std::move(params)));
+    base::Value::Dict message_dict;
+    message_dict.Set("id", page_message_id_++);
+    message_dict.Set("method", method);
+    message_dict.Set("params",
+                     base::Value::FromUniquePtrValue(std::move(params)));
+    base::Value message(std::move(message_dict));
     std::string json_message;
     base::JSONWriter::Write(message, &json_message);
     page_host_->DispatchProtocolMessage(

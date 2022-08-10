@@ -27,28 +27,27 @@ class FontPreferencesBrowserTest : public DevToolsProtocolTest {
 
  protected:
   std::string GetFirstPlatformFontForBody() {
-    std::unique_ptr<base::DictionaryValue> params =
-        std::make_unique<base::DictionaryValue>();
-    params->SetInteger("depth", 0);
+    base::Value::Dict params1;
+    params1.Set("depth", 0);
     const base::Value::Dict* result =
-        SendCommand("DOM.getDocument", std::move(params));
+        SendCommand("DOM.getDocument", std::move(params1));
 
     absl::optional<int> body_node_id =
         result->FindIntByDottedPath("root.nodeId");
     DCHECK(body_node_id);
 
-    params = std::make_unique<base::DictionaryValue>();
-    params->SetInteger("nodeId", *body_node_id);
-    params->SetString("selector", "body");
-    result = SendCommand("DOM.querySelector", std::move(params));
+    base::Value::Dict params2;
+    params2.Set("nodeId", *body_node_id);
+    params2.Set("selector", "body");
+    result = SendCommand("DOM.querySelector", std::move(params2));
     DCHECK(result);
     body_node_id = result->FindInt("nodeId");
     DCHECK(body_node_id);
 
-    params = std::make_unique<base::DictionaryValue>();
-    params->SetInteger("nodeId", *body_node_id);
+    base::Value::Dict params3;
+    params3.Set("nodeId", *body_node_id);
     const base::Value::Dict* font_info =
-        SendCommand("CSS.getPlatformFontsForNode", std::move(params));
+        SendCommand("CSS.getPlatformFontsForNode", std::move(params3));
     DCHECK(font_info);
     const base::Value::List* font_list = font_info->FindList("fonts");
     DCHECK(font_list);
