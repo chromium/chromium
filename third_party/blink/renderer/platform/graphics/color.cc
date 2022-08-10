@@ -36,17 +36,12 @@
 
 namespace blink {
 
-// VS 2015 and above allow these definitions and in this case require them
-#if !defined(COMPILER_MSVC) || _MSC_VER >= 1900
-// FIXME: Use C++11 enum classes to avoid static data member initializer
-// definition problems.
-const RGBA32 Color::kBlack;
-const RGBA32 Color::kWhite;
-const RGBA32 Color::kDarkGray;
-const RGBA32 Color::kGray;
-const RGBA32 Color::kLightGray;
-const RGBA32 Color::kTransparent;
-#endif
+const Color Color::kBlack = Color(0xFF000000);
+const Color Color::kWhite = Color(0xFFFFFFFF);
+const Color Color::kDarkGray = Color(0xFF808080);
+const Color Color::kGray = Color(0xFFA0A0A0);
+const Color Color::kLightGray = Color(0xFFC0C0C0);
+const Color Color::kTransparent = Color(0x00000000);
 
 namespace {
 

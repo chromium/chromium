@@ -2522,19 +2522,19 @@ RGBA32 AXNodeObject::ColorValue() const {
 RGBA32 AXNodeObject::BackgroundColor() const {
   LayoutObject* layout_object = GetLayoutObject();
   if (!layout_object)
-    return Color::kTransparent;
+    return Color::kTransparent.Rgb();
 
   if (IsWebArea()) {
     LocalFrameView* view = DocumentFrameView();
     if (view)
       return view->BaseBackgroundColor().Rgb();
     else
-      return Color::kWhite;
+      return Color::kWhite.Rgb();
   }
 
   const ComputedStyle* style = layout_object->Style();
   if (!style || !style->HasBackground())
-    return Color::kTransparent;
+    return Color::kTransparent.Rgb();
 
   return style->VisitedDependentColor(GetCSSPropertyBackgroundColor()).Rgb();
 }

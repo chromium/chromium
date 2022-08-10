@@ -26,7 +26,7 @@ void PaintChunker::ResetChunks(Vector<PaintChunk>* chunks) {
 bool PaintChunker::IsInInitialState() const {
   if (current_properties_ != PropertyTreeState::Uninitialized())
     return false;
-  DCHECK_EQ(candidate_background_color_.Rgb(), Color::kTransparent);
+  DCHECK(candidate_background_color_ == Color::kTransparent);
   DCHECK_EQ(candidate_background_area_, 0u);
   DCHECK(will_force_new_chunk_);
   DCHECK(!chunks_ || chunks_->IsEmpty());

@@ -1741,7 +1741,7 @@ CSSValue* ConsumeColor(CSSParserTokenRange& range,
     CSSIdentifierValue* color = ConsumeIdent(range);
     return color;
   }
-  RGBA32 color = Color::kTransparent;
+  RGBA32 color = Color::kTransparent.Rgb();
   if (!ParseHexColor(range, color, accept_quirky_colors) &&
       !ParseColorFunction(range, context, color)) {
     return ConsumeInternalLightDark(ConsumeColor, range, context,

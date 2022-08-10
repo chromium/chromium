@@ -133,7 +133,7 @@ RGBA32 CanvasStyle::PaintColor() const {
   if (type_ == kColorRGBA)
     return rgba_;
   DCHECK(type_ == kGradient || type_ == kImagePattern);
-  return Color::kBlack;
+  return Color::kBlack.Rgb();
 }
 
 void CanvasStyle::Trace(Visitor* visitor) const {

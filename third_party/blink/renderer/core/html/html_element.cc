@@ -1658,7 +1658,7 @@ static RGBA32 ParseColorStringWithCrazyLegacyRules(const String& color_string) {
   }
 
   if (!digit_buffer.size())
-    return Color::kBlack;
+    return Color::kBlack.Rgb();
 
   // Pad the buffer out to at least the next multiple of three in size.
   digit_buffer.push_back('0');

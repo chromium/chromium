@@ -76,7 +76,7 @@ class PLATFORM_EXPORT Color {
   DISALLOW_NEW();
 
  public:
-  constexpr Color() : color_(Color::kTransparent) {}
+  constexpr Color() : color_(0) {}
   constexpr Color(RGBA32 color) : color_(color) {}
   Color(int r, int g, int b) : color_(MakeRGB(r, g, b)) {}
   Color(int r, int g, int b, int a) : color_(MakeRGBA(r, g, b, a)) {}
@@ -146,12 +146,12 @@ class PLATFORM_EXPORT Color {
   static bool ParseHexColor(const LChar*, unsigned, RGBA32&);
   static bool ParseHexColor(const UChar*, unsigned, RGBA32&);
 
-  static const RGBA32 kBlack = 0xFF000000;
-  static const RGBA32 kWhite = 0xFFFFFFFF;
-  static const RGBA32 kDarkGray = 0xFF808080;
-  static const RGBA32 kGray = 0xFFA0A0A0;
-  static const RGBA32 kLightGray = 0xFFC0C0C0;
-  static const RGBA32 kTransparent = 0x00000000;
+  static const Color kBlack;
+  static const Color kWhite;
+  static const Color kDarkGray;
+  static const Color kGray;
+  static const Color kLightGray;
+  static const Color kTransparent;
 
  private:
   void GetHueMaxMin(double&, double&, double&) const;

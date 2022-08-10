@@ -2294,7 +2294,7 @@ void LocalFrame::UpdateAdHighlight() {
   if (IsAdRoot() && GetPage()->GetSettings().GetHighlightAds())
     SetSubframeColorOverlay(SkColorSetARGB(128, 255, 0, 0));
   else
-    SetSubframeColorOverlay(Color::kTransparent);
+    SetSubframeColorOverlay(SK_ColorTRANSPARENT);
 }
 
 void LocalFrame::PauseSubresourceLoading(

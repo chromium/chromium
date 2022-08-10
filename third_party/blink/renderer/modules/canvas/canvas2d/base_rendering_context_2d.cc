@@ -226,7 +226,7 @@ void BaseRenderingContext2D::beginLayer() {
   setShadowOffsetX(0);
   setShadowOffsetY(0);
   setShadowBlur(0);
-  GetState().SetShadowColor(Color::kTransparent);
+  GetState().SetShadowColor(SK_ColorTRANSPARENT);
   DCHECK(!GetState().ShouldDrawShadows());
   setGlobalAlpha(1.0);
   setGlobalCompositeOperation("source-over");

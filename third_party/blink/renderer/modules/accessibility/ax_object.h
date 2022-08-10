@@ -591,10 +591,10 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   //
 
   virtual const AtomicString& AccessKey() const { return g_null_atom; }
-  virtual RGBA32 BackgroundColor() const { return Color::kTransparent; }
-  virtual RGBA32 GetColor() const { return Color::kBlack; }
+  virtual RGBA32 BackgroundColor() const { return Color::kTransparent.Rgb(); }
+  virtual RGBA32 GetColor() const { return Color::kBlack.Rgb(); }
   // Used by objects of role ColorWellRole.
-  virtual RGBA32 ColorValue() const { return Color::kTransparent; }
+  virtual RGBA32 ColorValue() const { return Color::kTransparent.Rgb(); }
   virtual bool CanvasHasFallbackContent() const { return false; }
   // Returns the font family that was cascaded onto ComputedStyle. This may
   // contain non-user-friendly internal names.

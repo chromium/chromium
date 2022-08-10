@@ -309,7 +309,7 @@ bool ThemePainterDefault::PaintMenuListButton(const Element& element,
   WebThemeEngine::ExtraParams extra_params;
   extra_params.menu_list.has_border = false;
   extra_params.menu_list.has_border_radius = style.HasBorderRadius();
-  extra_params.menu_list.background_color = Color::kTransparent;
+  extra_params.menu_list.background_color = SK_ColorTRANSPARENT;
   extra_params.menu_list.fill_content_area = false;
   SetupMenuListArrow(document, style, rect, extra_params);
 
