@@ -436,16 +436,10 @@ void OmahaService::StartInternal() {
   }
   last_server_date_ = [defaults integerForKey:kLastServerDateKey];
   if (last_server_date_ == 0) {
-    if (lastSentVersion) {
-      // If there is a record of the last sent version but no record of the
-      // last server date, this client has upgraded from a version of Chrome
-      // that did not support saving the last server date. Send -2 ("unknown").
-      last_server_date_ = -2;
-    } else {
-      // If there is neither a last server date nor last sent version, this is
-      // a fresh install. Send -1 ("first active").
-      last_server_date_ = -1;
-    }
+    // If there is no last server date, this is a first active. However, it
+    // may be following a reinstall. To avoid overcounting from neutrinos,
+    // transmit -2 ("unknown").
+    last_server_date_ = -2;
   }
 
   application_install_date_ =
