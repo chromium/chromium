@@ -39,6 +39,7 @@ class BruschettaMountProvider : public guest_os::GuestOsMountProvider {
   void OnRunning(PrepareCallback callback, BruschettaResult result);
   Profile* profile_;
   guest_os::GuestId guest_id_;
+  base::CallbackListSubscription unmount_subscription_;
   base::WeakPtrFactory<BruschettaMountProvider> weak_ptr_factory_{this};
 };
 

@@ -153,10 +153,20 @@ void GuestOsSessionTracker::OnVmStopped(
     return;
   }
   vms_.erase(signal.name());
-  base::EraseIf(guests_,
-                [name = signal.name()](std::pair<GuestId, GuestInfo> pair) {
-                  return pair.first.vm_name == name;
-                });
+  std::vector<GuestId> ids;
+  for (const auto& pair : guests_) {
+    if (pair.first.vm_name != signal.name()) {
+      continue;
+    }
+    ids.push_back(pair.first);
+  }
+  for (const auto& id : ids) {
+    guests_.erase(id);
+    auto cb_list = container_shutdown_callbacks_.find(id);
+    if (cb_list != container_shutdown_callbacks_.end()) {
+      cb_list->second->Notify();
+    }
+  }
 }
 
 // ash::CiceroneClient::Observer overrides.
@@ -204,10 +214,14 @@ void GuestOsSessionTracker::OnContainerShutdown(
   }
   GuestId id{VmType::UNKNOWN, signal.vm_name(), signal.container_name()};
   guests_.erase(id);
+  auto cb_list = container_shutdown_callbacks_.find(id);
+  if (cb_list != container_shutdown_callbacks_.end()) {
+    cb_list->second->Notify();
+  }
 }
 
 base::CallbackListSubscription GuestOsSessionTracker::RunOnceContainerStarted(
-    GuestId id,
+    const GuestId& id,
     base::OnceCallback<void(GuestInfo)> callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto iter = guests_.find(id);
@@ -225,6 +239,17 @@ base::CallbackListSubscription GuestOsSessionTracker::RunOnceContainerStarted(
 void GuestOsSessionTracker::AddGuestForTesting(const GuestId& id,
                                                const GuestInfo& info) {
   guests_.insert_or_assign(id, info);
+}
+
+base::CallbackListSubscription GuestOsSessionTracker::RunOnShutdown(
+    const GuestId& id,
+    base::OnceCallback<void()> callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  auto& cb_list = container_shutdown_callbacks_[id];
+  if (!cb_list) {
+    cb_list = std::make_unique<base::OnceCallbackList<void()>>();
+  }
+  return cb_list->Add(std::move(callback));
 }
 
 }  // namespace guest_os

@@ -53,8 +53,14 @@ class GuestOsSessionTracker : protected ash::ConciergeClient::VmObserver,
   // RunOnceContainerStarted hangs forever. We need to list running containers
   // and adopt them, the same as we do for VMs.
   base::CallbackListSubscription RunOnceContainerStarted(
-      GuestId id,
+      const GuestId& id,
       base::OnceCallback<void(GuestInfo)> callback);
+
+  // Runs `callback` when the guest identified by `id` shuts down. To cancel the
+  // callback (e.g. upon timeout) destroy the returned subscription.
+  base::CallbackListSubscription RunOnShutdown(
+      const GuestId& id,
+      base::OnceCallback<void()> callback);
 
   // Returns information about a running guest. Returns nullopt if the guest
   // isn't recognised e.g. it's not running. If you just want to check if a
@@ -100,6 +106,8 @@ class GuestOsSessionTracker : protected ash::ConciergeClient::VmObserver,
   base::flat_map<GuestId,
                  std::unique_ptr<base::OnceCallbackList<void(GuestInfo)>>>
       container_start_callbacks_;
+  base::flat_map<GuestId, std::unique_ptr<base::OnceCallbackList<void()>>>
+      container_shutdown_callbacks_;
 
   base::WeakPtrFactory<GuestOsSessionTracker> weak_ptr_factory_{this};
 };

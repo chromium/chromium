@@ -59,9 +59,9 @@ void BruschettaMountProvider::OnRunning(PrepareCallback callback,
     std::move(callback).Run(false, 0, 0, base::FilePath());
     return;
   }
+  auto* tracker = guest_os::GuestOsSessionTracker::GetForProfile(profile_);
 
-  auto info = guest_os::GuestOsSessionTracker::GetForProfile(profile_)->GetInfo(
-      guest_id_);
+  auto info = tracker->GetInfo(guest_id_);
   if (!info) {
     // Shouldn't happen unless you managed to shutdown the VM at the same
     // instant as you booted it.
@@ -69,6 +69,9 @@ void BruschettaMountProvider::OnRunning(PrepareCallback callback,
     std::move(callback).Run(false, 0, 0, base::FilePath());
     return;
   }
+  unmount_subscription_ = tracker->RunOnShutdown(
+      guest_id_, base::BindOnce(&BruschettaMountProvider::Unmount,
+                                weak_ptr_factory_.GetWeakPtr()));
   std::move(callback).Run(true, info->cid, info->sftp_vsock_port,
                           info->homedir);
 }

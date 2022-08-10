@@ -199,4 +199,27 @@ TEST_F(GuestOsSessionTrackerTest, RunOnceContainerStartedCancel) {
   EXPECT_FALSE(called);
 }
 
+TEST_F(GuestOsSessionTrackerTest, RunOnContainerShutdown) {
+  FakeConciergeClient()->NotifyVmStarted(vm_started_signal_);
+  FakeCiceroneClient()->NotifyContainerStarted(container_started_signal_);
+  GuestId id{VmType::UNKNOWN, "vm_name", "penguin"};
+  bool called = false;
+  auto _ = tracker_.RunOnShutdown(
+      id, base::BindLambdaForTesting([&called]() { called = true; }));
+  FakeCiceroneClient()->NotifyContainerShutdownSignal(
+      container_shutdown_signal_);
+  EXPECT_TRUE(called);
+}
+
+TEST_F(GuestOsSessionTrackerTest, RunOnVmShutdown) {
+  FakeConciergeClient()->NotifyVmStarted(vm_started_signal_);
+  FakeCiceroneClient()->NotifyContainerStarted(container_started_signal_);
+  GuestId id{VmType::UNKNOWN, "vm_name", "penguin"};
+  bool called = false;
+  auto _ = tracker_.RunOnShutdown(
+      id, base::BindLambdaForTesting([&called]() { called = true; }));
+  FakeConciergeClient()->NotifyVmStopped(vm_shutdown_signal_);
+  EXPECT_TRUE(called);
+}
+
 }  // namespace guest_os
