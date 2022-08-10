@@ -86,9 +86,10 @@ class FloatingAccessibilityView : public views::BoxLayoutView,
   void FocusOnDetailedViewButton();
 
  private:
+  friend class FloatingAccessibilityControllerTest;
+
   void OnA11yTrayButtonPressed();
   void OnPositionButtonPressed();
-  void OnImeButtonPressed();
 
   // views::ViewObserver:
   void OnViewVisibilityChanged(views::View* observed_view,
@@ -103,7 +104,7 @@ class FloatingAccessibilityView : public views::BoxLayoutView,
   // Button to move the view around corners.
   FloatingMenuButton* position_button_ = nullptr;
   // Button to list all available keyboard languages.
-  FloatingMenuButton* ime_button_ = nullptr;
+  ImeMenuTray* ime_button_ = nullptr;
 
   Delegate* const delegate_;
 };

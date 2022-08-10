@@ -5,6 +5,7 @@
 #include "ash/system/accessibility/floating_accessibility_view.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/ime/ime_controller_impl.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/system_tray.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -17,6 +18,7 @@
 #include "ash/system/accessibility/dictation_button_tray.h"
 #include "ash/system/accessibility/floating_menu_button.h"
 #include "ash/system/accessibility/select_to_speak/select_to_speak_tray.h"
+#include "ash/system/ime_menu/ime_menu_tray.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/virtual_keyboard/virtual_keyboard_tray.h"
 #include "base/bind.h"
@@ -162,14 +164,14 @@ FloatingAccessibilityView::FloatingAccessibilityView(Delegate* delegate)
           kPanelPositionButtonSize, false, /* is_a11y_togglable */ false));
 
   if (IsKioskImeButtonEnabled()) {
+    Shell::Get()->ime_controller()->SetExtraInputOptionsEnabledState(
+        /*is_extra_input_options_enabled*/ false, /*is_emoji_enabled*/ false,
+        /*is_handwriting_enabled*/ false, /*is_voice_enabled*/ false);
     std::unique_ptr<views::View> ime_button_container =
-        CreateButtonRowContainer(kUnifiedTopShortcutSpacing);
-    ime_button_ =
-        ime_button_container->AddChildView(std::make_unique<FloatingMenuButton>(
-            base::BindRepeating(&FloatingAccessibilityView::OnImeButtonPressed,
-                                base::Unretained(this)),
-            kShelfGlobeIcon, IDS_ASH_STATUS_TRAY_IME,
-            /*flip_for_rtl*/ true));
+        CreateButtonRowContainer(kPanelPositionButtonPadding);
+    ime_button_ = ime_button_container->AddChildView(
+        std::make_unique<ImeMenuTray>(shelf));
+    ime_button_container->SetVisible(true);
 
     AddChildView(std::move(ime_button_container));
     AddChildView(CreateSeparator());
@@ -199,6 +201,13 @@ void FloatingAccessibilityView::Initialize() {
     feature_view->CalculateTargetBounds();
     feature_view->UpdateLayout();
     feature_view->AddObserver(this);
+  }
+  if (IsKioskImeButtonEnabled()) {
+    ime_button_->Initialize();
+    ime_button_->CalculateTargetBounds();
+    ime_button_->UpdateLayout();
+    ime_button_->AddObserver(this);
+    ime_button_->SetVisible(true);
   }
 }
 
@@ -263,10 +272,6 @@ void FloatingAccessibilityView::OnPositionButtonPressed() {
       ->accessibility_controller()
       ->TriggerAccessibilityAlertWithMessage(
           GetDescriptionForMovedToPosition(new_position));
-}
-
-void FloatingAccessibilityView::OnImeButtonPressed() {
-  ime_button_->SetToggled(!ime_button_->GetToggled());
 }
 
 void FloatingAccessibilityView::OnViewVisibilityChanged(
