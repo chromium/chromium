@@ -931,7 +931,7 @@ AXObject* AXObjectCacheImpl::Get(const Node* node) {
       // Layout object is irrelevant, but node object can still be relevant.
       if (!node_id) {
         DCHECK(layout_id);  // One of of node_id, layout_id is non-zero.
-        Invalidate(layout_object->GetDocument(), layout_id);
+        Invalidate(node->GetDocument(), layout_id);
       } else {
         layout_object = nullptr;
         layout_id = 0;
@@ -943,7 +943,7 @@ AXObject* AXObjectCacheImpl::Get(const Node* node) {
     // Change from AXLayoutObject -> AXNodeObject.
     // The node is in a display locked subtree, but we've previously put it in
     // the cache with its layout object.
-    Invalidate(layout_object->GetDocument(), layout_id);
+    Invalidate(node->GetDocument(), layout_id);
   } else if (layout_object && node_id && !layout_id && !IsDisplayLocked(node)) {
     // Change from AXNodeObject -> AXLayoutObject.
     // Has a layout object but no layout_id, meaning that when the AXObject was

@@ -4587,8 +4587,10 @@ bool AXNodeObject::OnNativeFocusAction() {
   // objects may have been deferred by display-locking.
   Document* document = GetDocument();
   Node* node = GetNode();
-  if (document && node)
-    document->UpdateStyleAndLayoutTreeForNode(node);
+  if (!document || !node)
+    return false;
+
+  document->UpdateStyleAndLayoutTreeForNode(node);
 
   if (!CanSetFocusAttribute())
     return false;
@@ -5378,7 +5380,8 @@ String AXNodeObject::Description(
     const AXObject* datetime_ancestor = DatetimeAncestor();
     ax::mojom::blink::NameFrom datetime_ancestor_name_from;
     datetime_ancestor->GetName(datetime_ancestor_name_from, nullptr);
-    description_objects->clear();
+    if (description_objects)
+      description_objects->clear();
     String ancestor_description = DatetimeAncestor()->Description(
         datetime_ancestor_name_from, description_from, description_objects);
     if (!result.IsEmpty() && !ancestor_description.IsEmpty())

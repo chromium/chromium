@@ -2960,6 +2960,9 @@ const AXObject* AXObject::InertRoot() const {
 
   while (object && !object->IsAXNodeObject())
     object = object->ParentObject();
+
+  DCHECK(object);
+
   Node* node = object->GetNode();
   auto* element = DynamicTo<Element>(node);
   if (!element)
