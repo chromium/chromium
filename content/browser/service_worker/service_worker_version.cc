@@ -2390,14 +2390,20 @@ bool ServiceWorkerVersion::IsStartWorkerAllowed() const {
     return false;
   }
 
+  auto* browser_context = context_->wrapper()->browser_context();
+  // Check that the browser context is not nullptr.  It becomes nullptr
+  // when the service worker process manager is being shutdown.
+  if (!browser_context) {
+    return false;
+  }
+
   // Check that the worker is allowed on the given scope. It's possible a worker
   // was previously allowed and installed, but later content settings changed to
   // disallow this scope. Since this worker might not be used for a specific
   // tab, pass a null callback as WebContents getter.
   if (!GetContentClient()->browser()->AllowServiceWorker(
           scope_, net::SiteForCookies::FromUrl(scope_),
-          url::Origin::Create(scope_), script_url_,
-          context_->wrapper()->browser_context())) {
+          url::Origin::Create(scope_), script_url_, browser_context)) {
     return false;
   }
 
