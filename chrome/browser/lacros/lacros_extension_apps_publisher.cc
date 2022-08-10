@@ -206,7 +206,11 @@ class LacrosExtensionAppsPublisher::ProfileTracker
 
   // AppWindowRegistry::Observer overrides.
   void OnAppWindowAdded(extensions::AppWindow* app_window) override {
+    // Only chrome app windows are added to the dock.
     if (!which_type_.IsChromeApps())
+      return;
+    // The extension also has to match.
+    if (!which_type_.Matches(app_window->GetExtension()))
       return;
     std::string muxed_id =
         lacros_extensions_util::MuxId(profile_, app_window->GetExtension());
@@ -218,10 +222,15 @@ class LacrosExtensionAppsPublisher::ProfileTracker
   }
 
   void OnAppWindowRemoved(extensions::AppWindow* app_window) override {
+    // Only chrome app windows are added to the dock.
     if (!which_type_.IsChromeApps())
       return;
+    // The extension also has to match. As the extension may be destroyed at
+    // this point, we use presence in app_window_id_cache_ to decide whether to
+    // continue.
     auto it = app_window_id_cache_.find(app_window);
-    DCHECK(it != app_window_id_cache_.end());
+    if (it == app_window_id_cache_.end())
+      return;
 
     std::string muxed_id = apps::MuxId(profile_, app_window->extension_id());
     std::string window_id = it->second;
