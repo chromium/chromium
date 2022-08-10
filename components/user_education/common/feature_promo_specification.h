@@ -28,6 +28,8 @@ struct VectorIcon;
 
 namespace user_education {
 
+class FeaturePromoHandle;
+
 // Specifies the parameters for a feature promo and its associated bubble.
 class FeaturePromoSpecification {
  public:
@@ -43,6 +45,20 @@ class FeaturePromoSpecification {
   using AnchorElementFilter = base::RepeatingCallback<ui::TrackedElement*(
       const ui::ElementTracker::ElementList& elements)>;
 
+  // The callback type when creating a custom action IPH. The parameters are
+  // `context`, which provides the context of the window in which the promo was
+  // shown, and `promo_handle`, which holds the promo open until it is
+  // destroyed.
+  //
+  // Typically, if you are taking an additional sequence of actions in response
+  // to the custom callback, you will want to move `promo_handle` into longer-
+  // term storage until that sequence is complete, to prevent additional IPH or
+  // similar promos from being able to trigger in the interim. If you do not
+  // care, simply let `promo_handle` expire at the end of the callback.
+  using CustomActionCallback =
+      base::RepeatingCallback<void(ui::ElementContext context,
+                                   FeaturePromoHandle promo_handle)>;
+
   // Describes the type of promo. Used to configure defaults for the promo's
   // bubble.
   enum class PromoType {
@@ -54,6 +70,8 @@ class FeaturePromoSpecification {
     kSnooze,
     // A tutorial promo.
     kTutorial,
+    // A promo where the non-default button is replaced by a custom action.
+    kCustomAction,
     // A simple promo that acts like a toast but without the required
     // accessibility data.
     kLegacy,
@@ -128,6 +146,14 @@ class FeaturePromoSpecification {
       int body_text_string_id,
       TutorialIdentifier tutorial_id);
 
+  // Specifies a promo that triggers a custom action.
+  static FeaturePromoSpecification CreateForCustomAction(
+      const base::Feature& feature,
+      ui::ElementIdentifier anchor_element_id,
+      int body_text_string_id,
+      int custom_action_string_id,
+      CustomActionCallback custom_action_callback);
+
   // Specifies a text-only promo without additional accessibility information.
   // Deprecated. Only included for backwards compatibility with existing
   // promos. This is the only case in which |feature| can be null, and if it is
@@ -182,6 +208,14 @@ class FeaturePromoSpecification {
   const DemoPageInfo& demo_page_info() const { return demo_page_info_; }
   FeaturePromoSpecification& SetDemoPageInfo(DemoPageInfo demo_page_info);
   const TutorialIdentifier& tutorial_id() const { return tutorial_id_; }
+  const std::u16string custom_action_caption() const {
+    return custom_action_caption_;
+  }
+
+  // Used to claim the callback when creating the bubble.
+  CustomActionCallback custom_action_callback() const {
+    return custom_action_callback_;
+  }
 
  private:
   static constexpr HelpBubbleArrow kDefaultBubbleArrow =
@@ -236,6 +270,12 @@ class FeaturePromoSpecification {
 
   // Tutorial identifier if the user decides to view a tutorial.
   TutorialIdentifier tutorial_id_;
+
+  // Custom action button text.
+  std::u16string custom_action_caption_;
+
+  // Custom action button action.
+  CustomActionCallback custom_action_callback_;
 };
 
 }  // namespace user_education

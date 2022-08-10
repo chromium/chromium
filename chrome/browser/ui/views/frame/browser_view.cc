@@ -191,6 +191,7 @@
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/translate_manager.h"
+#include "components/user_education/common/feature_promo_handle.h"
 #include "components/user_education/common/help_bubble_factory_registry.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "components/version_info/channel.h"
@@ -4476,10 +4477,10 @@ bool BrowserView::CloseFeaturePromo(const base::Feature& iph_feature) {
          feature_promo_controller_->CloseBubble(iph_feature);
 }
 
-user_education::FeaturePromoController::PromoHandle
-BrowserView::CloseFeaturePromoAndContinue(const base::Feature& iph_feature) {
+user_education::FeaturePromoHandle BrowserView::CloseFeaturePromoAndContinue(
+    const base::Feature& iph_feature) {
   if (!IsFeaturePromoActive(iph_feature))
-    return user_education::FeaturePromoController::PromoHandle();
+    return user_education::FeaturePromoHandle();
   return feature_promo_controller_->CloseBubbleAndContinuePromo(iph_feature);
 }
 

@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "components/user_education/common/feature_promo_controller.h"
+#include "components/user_education/common/feature_promo_handle.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/color/color_provider_manager.h"
@@ -373,13 +374,13 @@ bool TestBrowserWindow::CloseFeaturePromo(const base::Feature& iph_feature) {
          feature_promo_controller_->CloseBubble(iph_feature);
 }
 
-user_education::FeaturePromoController::PromoHandle
+user_education::FeaturePromoHandle
 TestBrowserWindow::CloseFeaturePromoAndContinue(
     const base::Feature& iph_feature) {
   return feature_promo_controller_
              ? feature_promo_controller_->CloseBubbleAndContinuePromo(
                    iph_feature)
-             : user_education::FeaturePromoController::PromoHandle();
+             : user_education::FeaturePromoHandle();
 }
 
 void TestBrowserWindow::NotifyFeatureEngagementEvent(const char* event_name) {}

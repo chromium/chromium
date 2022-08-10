@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 #include "components/user_education/common/feature_promo_controller.h"
+#include <string>
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
+#include "base/callback_forward.h"
 #include "base/callback_list.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
@@ -25,41 +27,6 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace user_education {
-
-FeaturePromoController::PromoHandle::PromoHandle() = default;
-
-FeaturePromoController::PromoHandle::PromoHandle(
-    base::WeakPtr<FeaturePromoController> controller,
-    const base::Feature* feature)
-    : controller_(std::move(controller)), feature_(feature) {
-  DCHECK(feature_);
-}
-
-FeaturePromoController::PromoHandle::PromoHandle(PromoHandle&& other)
-    : controller_(std::move(other.controller_)),
-      feature_(std::exchange(other.feature_, nullptr)) {}
-
-FeaturePromoController::PromoHandle::~PromoHandle() {
-  Release();
-}
-
-FeaturePromoController::PromoHandle&
-FeaturePromoController::PromoHandle::operator=(PromoHandle&& other) {
-  if (this != &other) {
-    Release();
-    controller_ = std::move(other.controller_);
-    feature_ = std::exchange(other.feature_, nullptr);
-  }
-
-  return *this;
-}
-
-void FeaturePromoController::PromoHandle::Release() {
-  if (controller_)
-    controller_->FinishContinuedPromo(feature_);
-  controller_.reset();
-  feature_ = nullptr;
-}
 
 FeaturePromoController::FeaturePromoController() = default;
 FeaturePromoController::~FeaturePromoController() = default;
@@ -255,14 +222,13 @@ bool FeaturePromoControllerCommon::DismissNonCriticalBubbleInRegion(
   return false;
 }
 
-FeaturePromoController::PromoHandle
-FeaturePromoControllerCommon::CloseBubbleAndContinuePromo(
+FeaturePromoHandle FeaturePromoControllerCommon::CloseBubbleAndContinuePromo(
     const base::Feature& iph_feature) {
   DCHECK_EQ(current_iph_feature_, &iph_feature);
   continuing_after_bubble_closed_ = true;
   const bool result = CloseBubble(iph_feature);
   DCHECK(result);
-  return PromoHandle(GetAsWeakPtr(), &iph_feature);
+  return FeaturePromoHandle(GetAsWeakPtr(), &iph_feature);
 }
 
 base::WeakPtr<FeaturePromoController>
@@ -342,22 +308,33 @@ std::unique_ptr<HelpBubble> FeaturePromoControllerCommon::ShowPromoBubbleImpl(
         weak_ptr_factory_.GetWeakPtr(), base::Unretained(spec.feature()));
   }
 
-  if (spec.promo_type() == FeaturePromoSpecification::PromoType::kSnooze) {
-    CHECK(spec.feature());
-    create_params.buttons = CreateSnoozeButtons(*spec.feature());
-  } else if (spec.promo_type() ==
-             FeaturePromoSpecification::PromoType::kTutorial) {
-    CHECK(spec.feature());
-    create_params.buttons =
-        CreateTutorialButtons(*spec.feature(), spec.tutorial_id());
-    create_params.force_close_button = true;
-    create_params.close_button_alt_text =
-        l10n_util::GetStringUTF16(IDS_CLOSE_PROMO);
-
-    create_params.dismiss_callback = base::BindOnce(
-        &FeaturePromoControllerCommon::OnTutorialHelpBubbleDismissed,
-        weak_ptr_factory_.GetWeakPtr(), base::Unretained(spec.feature()),
-        spec.tutorial_id());
+  switch (spec.promo_type()) {
+    case FeaturePromoSpecification::PromoType::kSnooze:
+      CHECK(spec.feature());
+      create_params.buttons = CreateSnoozeButtons(*spec.feature());
+      break;
+    case FeaturePromoSpecification::PromoType::kTutorial:
+      CHECK(spec.feature());
+      create_params.buttons =
+          CreateTutorialButtons(*spec.feature(), spec.tutorial_id());
+      create_params.force_close_button = true;
+      create_params.close_button_alt_text =
+          l10n_util::GetStringUTF16(IDS_CLOSE_PROMO);
+      create_params.dismiss_callback = base::BindOnce(
+          &FeaturePromoControllerCommon::OnTutorialHelpBubbleDismissed,
+          weak_ptr_factory_.GetWeakPtr(), base::Unretained(spec.feature()),
+          spec.tutorial_id());
+      break;
+    case FeaturePromoSpecification::PromoType::kCustomAction:
+      CHECK(spec.feature());
+      create_params.buttons = CreateCustomActionButtons(
+          *spec.feature(), spec.custom_action_caption(),
+          spec.custom_action_callback());
+      break;
+    case FeaturePromoSpecification::PromoType::kUnspecifiied:
+    case FeaturePromoSpecification::PromoType::kToast:
+    case FeaturePromoSpecification::PromoType::kLegacy:
+      break;
   }
 
   bool had_screen_reader_promo = false;
@@ -391,13 +368,13 @@ std::unique_ptr<HelpBubble> FeaturePromoControllerCommon::ShowPromoBubbleImpl(
 }
 
 void FeaturePromoControllerCommon::FinishContinuedPromo(
-    const base::Feature* iph_feature) {
+    const base::Feature& iph_feature) {
   DCHECK(continuing_after_bubble_closed_);
-  if (iph_feature_bypassing_tracker_ != iph_feature)
-    feature_engagement_tracker_->Dismissed(*iph_feature);
+  if (iph_feature_bypassing_tracker_ != &iph_feature)
+    feature_engagement_tracker_->Dismissed(iph_feature);
   else
     iph_feature_bypassing_tracker_ = nullptr;
-  if (current_iph_feature_ == iph_feature) {
+  if (current_iph_feature_ == &iph_feature) {
     current_iph_feature_ = nullptr;
     continuing_after_bubble_closed_ = false;
   }
@@ -437,6 +414,12 @@ void FeaturePromoControllerCommon::OnHelpBubbleDismissed(
     const base::Feature* feature) {
   if (snooze_service_ && iph_feature_bypassing_tracker_ != feature)
     snooze_service_->OnUserDismiss(*feature);
+}
+
+void FeaturePromoControllerCommon::OnCustomAction(
+    const base::Feature* feature,
+    FeaturePromoSpecification::CustomActionCallback callback) {
+  callback.Run(GetAnchorContext(), CloseBubbleAndContinuePromo(*feature));
 }
 
 void FeaturePromoControllerCommon::OnTutorialHelpBubbleSnoozed(
@@ -500,6 +483,34 @@ FeaturePromoControllerCommon::CreateSnoozeButtons(
       &FeaturePromoControllerCommon::OnHelpBubbleSnoozed,
       weak_ptr_factory_.GetWeakPtr(), base::Unretained(&feature));
   buttons.push_back(std::move(snooze_button));
+
+  HelpBubbleButtonParams dismiss_button;
+  dismiss_button.text = l10n_util::GetStringUTF16(IDS_PROMO_DISMISS_BUTTON);
+  dismiss_button.is_default = true;
+  dismiss_button.callback = base::BindOnce(
+      &FeaturePromoControllerCommon::OnHelpBubbleDismissed,
+      weak_ptr_factory_.GetWeakPtr(), base::Unretained(&feature));
+  buttons.push_back(std::move(dismiss_button));
+
+  return buttons;
+}
+
+std::vector<HelpBubbleButtonParams>
+FeaturePromoControllerCommon::CreateCustomActionButtons(
+    const base::Feature& feature,
+    const std::u16string& custom_action_caption,
+    FeaturePromoSpecification::CustomActionCallback custom_action_callback) {
+  std::vector<HelpBubbleButtonParams> buttons;
+  CHECK(!custom_action_callback.is_null());
+
+  HelpBubbleButtonParams action_button;
+  action_button.text = custom_action_caption;
+  action_button.is_default = false;
+  action_button.callback =
+      base::BindOnce(&FeaturePromoControllerCommon::OnCustomAction,
+                     weak_ptr_factory_.GetWeakPtr(), base::Unretained(&feature),
+                     custom_action_callback);
+  buttons.push_back(std::move(action_button));
 
   HelpBubbleButtonParams dismiss_button;
   dismiss_button.text = l10n_util::GetStringUTF16(IDS_PROMO_DISMISS_BUTTON);

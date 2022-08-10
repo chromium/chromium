@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/callback_forward.h"
 #include "base/feature_list.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -125,6 +126,21 @@ FeaturePromoSpecification FeaturePromoSpecification::CreateForTutorialPromo(
                                  anchor_element_id, body_text_string_id);
   DCHECK(!tutorial_id.empty());
   spec.tutorial_id_ = tutorial_id;
+  return spec;
+}
+
+// static
+FeaturePromoSpecification FeaturePromoSpecification::CreateForCustomAction(
+    const base::Feature& feature,
+    ui::ElementIdentifier anchor_element_id,
+    int body_text_string_id,
+    int custom_action_string_id,
+    CustomActionCallback custom_action_callback) {
+  FeaturePromoSpecification spec(&feature, PromoType::kCustomAction,
+                                 anchor_element_id, body_text_string_id);
+  spec.custom_action_caption_ =
+      l10n_util::GetStringUTF16(custom_action_string_id);
+  spec.custom_action_callback_ = custom_action_callback;
   return spec;
 }
 

@@ -27,6 +27,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/feature_engagement/test/mock_tracker.h"
 #include "components/user_education/common/feature_promo_controller.h"
+#include "components/user_education/common/feature_promo_handle.h"
 #include "components/user_education/common/feature_promo_registry.h"
 #include "components/user_education/common/feature_promo_snooze_service.h"
 #include "components/user_education/common/feature_promo_specification.h"
@@ -62,13 +63,16 @@ base::Feature kTestIPHFeature{"TestIPHFeature",
                               base::FEATURE_ENABLED_BY_DEFAULT};
 base::Feature kOneOffIPHFeature("AnyContextIPHFeature",
                                 base::FEATURE_ENABLED_BY_DEFAULT);
-base::Feature kTutorialIPHFeature{"SecondIPHFeature",
+base::Feature kTutorialIPHFeature{"TutorialTestIPHFeature",
                                   base::FEATURE_ENABLED_BY_DEFAULT};
+base::Feature kCustomActionIPHFeature{"CustomActionTestIPHFeature",
+                                      base::FEATURE_ENABLED_BY_DEFAULT};
 constexpr char kTestTutorialIdentifier[] = "Test Tutorial";
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOneOffIPHElementId);
 }  // namespace
 
 using user_education::FeaturePromoController;
+using user_education::FeaturePromoHandle;
 using user_education::FeaturePromoRegistry;
 using user_education::FeaturePromoSnoozeService;
 using user_education::FeaturePromoSpecification;
@@ -125,6 +129,14 @@ class BrowserFeaturePromoControllerTest : public TestWithBrowserView {
         FeaturePromoSpecification::CreateForTutorialPromo(
             kTutorialIPHFeature, kAppMenuButtonElementId, IDS_REOPEN_TAB_PROMO,
             kTestTutorialIdentifier));
+
+    registry()->RegisterFeature(
+        FeaturePromoSpecification::CreateForCustomAction(
+            kCustomActionIPHFeature, kAppMenuButtonElementId,
+            IDS_REOPEN_TAB_PROMO, IDS_REOPEN_TAB_PROMO,
+            base::BindRepeating(
+                &BrowserFeaturePromoControllerTest::OnCustomPromoAction,
+                base::Unretained(this))));
 
     // Make sure the browser view is visible for the tests.
     browser_view()->GetWidget()->Show();
@@ -185,9 +197,20 @@ class BrowserFeaturePromoControllerTest : public TestWithBrowserView {
         &kTestIPHFeature, kAppMenuButtonElementId, IDS_REOPEN_TAB_PROMO);
   }
 
+  void OnCustomPromoAction(ui::ElementContext context,
+                           FeaturePromoHandle promo_handle) {
+    ++custom_callback_count_;
+    EXPECT_TRUE(promo_handle.is_valid());
+    EXPECT_TRUE(controller_->IsPromoActive(kCustomActionIPHFeature, true));
+    EXPECT_EQ(browser()->window()->GetElementContext(), context);
+    promo_handle.Release();
+    EXPECT_FALSE(controller_->IsPromoActive(kCustomActionIPHFeature, true));
+  }
+
   raw_ptr<BrowserFeaturePromoController> controller_;
   raw_ptr<NiceMock<feature_engagement::test::MockTracker>> mock_tracker_;
   BrowserFeaturePromoController::TestLock lock_;
+  int custom_callback_count_ = 0;
 
  private:
   static std::unique_ptr<KeyedService> MakeTestTracker(
@@ -516,7 +539,7 @@ TEST_F(BrowserFeaturePromoControllerTest,
   // bubble, but doesn't yet tell the backend the promo finished.
 
   EXPECT_CALL(close_callback, Run()).Times(1);
-  FeaturePromoController::PromoHandle promo_handle =
+  FeaturePromoHandle promo_handle =
       controller_->CloseBubbleAndContinuePromo(kTestIPHFeature);
   EXPECT_FALSE(controller_->IsPromoActive(kTestIPHFeature));
   EXPECT_TRUE(controller_->IsPromoActive(kTestIPHFeature,
@@ -538,7 +561,7 @@ TEST_F(BrowserFeaturePromoControllerTest, PromoHandleDismissesPromoOnRelease) {
   EXPECT_CALL(*mock_tracker_, Dismissed).Times(0);
   ASSERT_TRUE(controller_->MaybeShowPromo(kTestIPHFeature));
 
-  FeaturePromoController::PromoHandle promo_handle =
+  FeaturePromoHandle promo_handle =
       controller_->CloseBubbleAndContinuePromo(kTestIPHFeature);
 
   // Check handle destruction causes the backend to be notified.
@@ -559,14 +582,14 @@ TEST_F(BrowserFeaturePromoControllerTest,
   EXPECT_CALL(*mock_tracker_, Dismissed).Times(0);
   ASSERT_TRUE(controller_->MaybeShowPromo(kTestIPHFeature));
 
-  FeaturePromoController::PromoHandle promo_handle =
+  FeaturePromoHandle promo_handle =
       controller_->CloseBubbleAndContinuePromo(kTestIPHFeature);
 
   // Check handle destruction causes the backend to be notified.
 
   EXPECT_TRUE(promo_handle);
   EXPECT_CALL(*mock_tracker_, Dismissed(Ref(kTestIPHFeature))).Times(1);
-  promo_handle = FeaturePromoController::PromoHandle();
+  promo_handle = FeaturePromoHandle();
   EXPECT_CALL(*mock_tracker_, Dismissed).Times(0);
   EXPECT_FALSE(promo_handle);
 }
@@ -579,7 +602,7 @@ TEST_F(BrowserFeaturePromoControllerTest,
   EXPECT_CALL(*mock_tracker_, Dismissed).Times(0);
   ASSERT_TRUE(controller_->MaybeShowPromo(kTestIPHFeature));
 
-  FeaturePromoController::PromoHandle promo_handle =
+  FeaturePromoHandle promo_handle =
       controller_->CloseBubbleAndContinuePromo(kTestIPHFeature);
 
   // Check handle destruction causes the backend to be notified.
@@ -601,13 +624,13 @@ TEST_F(BrowserFeaturePromoControllerTest,
   EXPECT_CALL(*mock_tracker_, Dismissed).Times(0);
   ASSERT_TRUE(controller_->MaybeShowPromo(kTestIPHFeature));
 
-  FeaturePromoController::PromoHandle promo_handle =
+  FeaturePromoHandle promo_handle =
       controller_->CloseBubbleAndContinuePromo(kTestIPHFeature);
 
   // Check handle destruction causes the backend to be notified.
 
   EXPECT_TRUE(promo_handle);
-  FeaturePromoController::PromoHandle promo_handle2(std::move(promo_handle));
+  FeaturePromoHandle promo_handle2(std::move(promo_handle));
   EXPECT_TRUE(promo_handle2);
   EXPECT_FALSE(promo_handle);
   EXPECT_CALL(*mock_tracker_, Dismissed(Ref(kTestIPHFeature))).Times(1);
@@ -624,13 +647,13 @@ TEST_F(BrowserFeaturePromoControllerTest,
   EXPECT_CALL(*mock_tracker_, Dismissed).Times(0);
   ASSERT_TRUE(controller_->MaybeShowPromo(kTestIPHFeature));
 
-  FeaturePromoController::PromoHandle promo_handle =
+  FeaturePromoHandle promo_handle =
       controller_->CloseBubbleAndContinuePromo(kTestIPHFeature);
 
   // Check handle destruction causes the backend to be notified.
 
   EXPECT_TRUE(promo_handle);
-  FeaturePromoController::PromoHandle promo_handle2;
+  FeaturePromoHandle promo_handle2;
   promo_handle2 = std::move(promo_handle);
   EXPECT_TRUE(promo_handle2);
   EXPECT_FALSE(promo_handle);
@@ -808,6 +831,45 @@ TEST_F(BrowserFeaturePromoControllerTest, StartsTutorial) {
           ->tutorial_service();
   EXPECT_TRUE(tutorial_service.IsRunningTutorial());
   tutorial_service.AbortTutorial(absl::nullopt);
+}
+
+// Test that a feature promo can perform a custom action.
+TEST_F(BrowserFeaturePromoControllerTest, PerformsCustomAction) {
+  // Launch a feature promo that has a tutorial.
+  EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kCustomActionIPHFeature)))
+      .Times(1)
+      .WillOnce(Return(true));
+  ASSERT_TRUE(controller_->MaybeShowPromo(kCustomActionIPHFeature));
+
+  // Simulate clicking the "Show Tutorial" button.
+  auto* const bubble = GetPromoBubble();
+  ASSERT_TRUE(bubble);
+  views::test::WidgetDestroyedWaiter waiter(bubble->GetWidget());
+  views::test::InteractionTestUtilSimulatorViews::PressButton(
+      bubble->GetNonDefaultButtonForTesting(0));
+  waiter.Wait();
+
+  EXPECT_EQ(1, custom_callback_count_);
+}
+
+// Test that a feature promo does not perform a custom action when the default
+// "Got it" button is clicked.
+TEST_F(BrowserFeaturePromoControllerTest, DoesNotPerformCustomAction) {
+  // Launch a feature promo that has a tutorial.
+  EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kCustomActionIPHFeature)))
+      .Times(1)
+      .WillOnce(Return(true));
+  ASSERT_TRUE(controller_->MaybeShowPromo(kCustomActionIPHFeature));
+
+  // Simulate clicking the "Show Tutorial" button.
+  auto* const bubble = GetPromoBubble();
+  ASSERT_TRUE(bubble);
+  views::test::WidgetDestroyedWaiter waiter(bubble->GetWidget());
+  views::test::InteractionTestUtilSimulatorViews::PressButton(
+      bubble->GetDefaultButtonForTesting());
+  waiter.Wait();
+
+  EXPECT_EQ(0, custom_callback_count_);
 }
 
 TEST_F(BrowserFeaturePromoControllerTest, GetAnchorContext) {

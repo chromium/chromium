@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/feature_engagement/public/tracker.h"
+#include "components/user_education/common/feature_promo_handle.h"
 #include "components/user_education/common/feature_promo_registry.h"
 #include "components/user_education/common/feature_promo_specification.h"
 #include "components/user_education/common/help_bubble.h"
@@ -45,41 +46,6 @@ class TutorialService;
 class FeaturePromoController {
  public:
   using BubbleCloseCallback = base::OnceClosure;
-
-  // Represents a promo that has been continued after its bubble has been
-  // hidden, as a result of calling CloseBubbleAndContinuePromo().
-  //
-  // The promo is considered still active until the handle is released or
-  // destroyed and no other promos will be allowed to show.
-  //
-  // PromoHandle is a value-typed, movable smart reference; default constructed
-  // instances are falsy (i.e. operator bool and is_valid() return false), as
-  // are any instances that have been moved or released.
-  class PromoHandle {
-   public:
-    PromoHandle();
-    PromoHandle(base::WeakPtr<FeaturePromoController> controller,
-                const base::Feature* feature);
-    PromoHandle(PromoHandle&&);
-    ~PromoHandle();
-
-    PromoHandle& operator=(PromoHandle&&);
-
-    explicit operator bool() const { return is_valid(); }
-    bool operator!() const { return !is_valid(); }
-
-    // Returns whether the handle refers to a valid promo. Returns null for
-    // default-constructed objects and after being moved or released.
-    bool is_valid() const { return feature_; }
-
-    // Releases the promo and resets the handle. After release, operator bool
-    // will return false regardless of the previous state.
-    void Release();
-
-   private:
-    base::WeakPtr<FeaturePromoController> controller_;
-    raw_ptr<const base::Feature> feature_ = nullptr;
-  };
 
   FeaturePromoController();
   FeaturePromoController(const FeaturePromoController& other) = delete;
@@ -133,16 +99,18 @@ class FeaturePromoController {
 
   // Like CloseBubble() but does not end the promo yet. The caller takes
   // ownership of the promo (e.g. to show a highlight in a menu or on a
-  // button). The returned PromoHandle represents this ownership.
-  virtual PromoHandle CloseBubbleAndContinuePromo(
+  // button). The returned FeaturePromoHandle represents this ownership.
+  virtual FeaturePromoHandle CloseBubbleAndContinuePromo(
       const base::Feature& iph_feature) = 0;
 
   // Returns a weak pointer to this object.
   virtual base::WeakPtr<FeaturePromoController> GetAsWeakPtr() = 0;
 
  protected:
-  // Called when PromoHandle is destroyed to finish the promo.
-  virtual void FinishContinuedPromo(const base::Feature* iph_feature) = 0;
+  friend class FeaturePromoHandle;
+
+  // Called when FeaturePromoHandle is destroyed to finish the promo.
+  virtual void FinishContinuedPromo(const base::Feature& iph_feature) = 0;
 };
 
 // Manages display of in-product help promos. All IPH displays in Top
@@ -159,7 +127,7 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
       TutorialService* tutorial_service);
   ~FeaturePromoControllerCommon() override;
 
-  // Only for security or privacy critical promos. Immedialy shows a
+  // Only for security or privacy critical promos. Immediately shows a
   // promo with |params|, cancelling any normal promo and blocking any
   // further promos until it's done.
   //
@@ -197,7 +165,7 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
       FeaturePromoSpecification::StringReplacements body_text_replacements = {},
       BubbleCloseCallback close_callback = BubbleCloseCallback()) override;
   bool CloseBubble(const base::Feature& iph_feature) override;
-  PromoHandle CloseBubbleAndContinuePromo(
+  FeaturePromoHandle CloseBubbleAndContinuePromo(
       const base::Feature& iph_feature) override;
   base::WeakPtr<FeaturePromoController> GetAsWeakPtr() override;
 
@@ -286,7 +254,7 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
 
  private:
   // FeaturePromoController:
-  void FinishContinuedPromo(const base::Feature* iph_feature) override;
+  void FinishContinuedPromo(const base::Feature& iph_feature) override;
 
   // Returns whether we can play a screen reader prompt for the "focus help
   // bubble" promo.
@@ -334,6 +302,10 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   // Called when a tutorial launched via StartTutorial() aborts.
   void OnTutorialAborted(const base::Feature* iph_feature);
 
+  // Called when the user opts to take a custom action.
+  void OnCustomAction(const base::Feature* iph_feature,
+                      FeaturePromoSpecification::CustomActionCallback callback);
+
   // Create appropriate buttons for a snoozable promo on the current platform.
   std::vector<HelpBubbleButtonParams> CreateSnoozeButtons(
       const base::Feature& feature);
@@ -342,6 +314,12 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   std::vector<HelpBubbleButtonParams> CreateTutorialButtons(
       const base::Feature& feature,
       TutorialIdentifier tutorial_id);
+
+  // Create appropriate buttons for a custom action promo.
+  std::vector<HelpBubbleButtonParams> CreateCustomActionButtons(
+      const base::Feature& feature,
+      const std::u16string& custom_action_caption,
+      FeaturePromoSpecification::CustomActionCallback custom_action_callback);
 
   // The feature promo registry to use.
   const raw_ptr<FeaturePromoRegistry> registry_;
@@ -363,7 +341,7 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
 
   // Promo that is being continued during a tutorial launched from the promo
   // bubble.
-  PromoHandle tutorial_promo_handle_;
+  FeaturePromoHandle tutorial_promo_handle_;
 
   base::OnceClosure bubble_closed_callback_;
   base::CallbackListSubscription bubble_closed_subscription_;

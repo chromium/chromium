@@ -9,6 +9,8 @@ source_set("common") {
   sources = [
     "feature_promo_controller.cc",
     "feature_promo_controller.h",
+    "feature_promo_handle.cc",
+    "feature_promo_handle.h",
     "feature_promo_registry.cc",
     "feature_promo_registry.h",
     "feature_promo_snooze_service.cc",
