@@ -94,9 +94,26 @@ A tool that allow you to run different browsers under specific usage scenarios a
 * Profile the code that runs and/or is causing wake-ups. (chromium only)
 
 ```
-./benchmark.py --scenarios idle_on_wiki:chrome idle_on_wiki:safari
-./benchmark.py --profile_mode cpu_time --scenarios idle_on_wiki:chromium
+./benchmark.py --scenarios idle_on_wiki:chrome idle_on_wiki:safari --power_sampler=/path/to/power_sampler
+./benchmark.py --profile_mode cpu_time --scenarios idle_on_wiki:chromium --power_sampler=/path/to/power_sampler
 ```
+
+## Comparing benchmark executions
+
+To compare the results of two benchmark runs, first generate a `summary.csv` file for each execution using the `analyze.py` tool. Assuming the baseline benchmark was output to `/tools/mac/power/output/<baseline_timestamp>/<scenario_name>` and the alternative was output to `/tools/mac/power/output/<alternative_timestamp>/<scenario_name>`:
+
+```
+./analyze.py --data_dir=/tools/mac/power/output/<baseline_timestamp>
+./analyze.py --data_dir=/tools/mac/power/output/<alternative_timestamp>
+```
+
+Will create a `summary.csv` file in each of these directories. These can be passed to `compare.py`:
+
+```
+./compare.py --output_dir=/path/to/output/folder/ --baseline_dir=/tools/mac/power/output/<baseline_timestamp>/<scenario_name> --alternative_dir=/tools/mac/power/output/<alternative_timestamp>/<scenario_name>
+```
+
+Will create a `/path/to/output/folder/comparison_summary.csv` file containing information about the difference in metrics between both executions.
 
 ## export_dtrace.py
 
@@ -138,6 +155,15 @@ For example:
 
 It's interesting to gather power metrics, profiles and traces for specific
 scenarios to understand their performance characteristics.
+
+Currently supported scenarios are:
+* `idle`
+* `meet`
+* `idle_on_wiki`
+* `idle_on_youtube`
+* `navigation_top_sites`
+* `navigation_heavy_sites`
+* `zero_window`
 
 # Tests
 

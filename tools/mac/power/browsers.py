@@ -167,7 +167,8 @@ def MakeBrowserDriver(browser_name: str,
                       variation: str,
                       chrome_user_dir=None,
                       output_dir=None,
-                      tracing_mode=False) -> BrowserDriver:
+                      tracing_mode=False,
+                      extra_command_line=None) -> BrowserDriver:
   """Creates browser driver by name.
 
   Args:
@@ -194,6 +195,9 @@ def MakeBrowserDriver(browser_name: str,
       chrome_extra_arg += [
           f'--trace-startup-file={os.path.abspath(trace_path)}'
       ]
+
+    if extra_command_line:
+      chrome_extra_arg += [extra_command_line]
 
     if browser_name == "chrome":
       return Chrome(variation, extra_args=chrome_extra_arg)

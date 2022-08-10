@@ -79,6 +79,10 @@ def main():
                       default=False,
                       help='Print verbose output.')
 
+  parser.add_argument('--extra-command-line',
+                      dest='extra_command_line',
+                      action='store')
+
   args = parser.parse_args()
 
   if args.verbose:
@@ -102,11 +106,13 @@ def main():
 
     # Measure or Profile all defined scenarios.
     def BrowserFactory(browser_name, variation):
-      return browsers.MakeBrowserDriver(browser_name,
-                                        variation,
-                                        chrome_user_dir=args.chrome_user_dir,
-                                        output_dir=output_dir,
-                                        tracing_mode=args.tracing_mode)
+      return browsers.MakeBrowserDriver(
+          browser_name,
+          variation,
+          chrome_user_dir=args.chrome_user_dir,
+          output_dir=output_dir,
+          tracing_mode=args.tracing_mode,
+          extra_command_line=args.extra_command_line)
 
     for scenario in IterScenarios(args.scenarios,
                                   BrowserFactory,

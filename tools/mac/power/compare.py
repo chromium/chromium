@@ -74,13 +74,13 @@ def percent_difference(first_value: pd.DataFrame, second_value: pd.DataFrame):
   values/columns.
 
   The result is to be read as :
-    |first_value| is X% smaller/larger than |second_value|.
+    |second_value| is X% smaller/larger than |first_value|.
 
-  Ex: percent_difference(20, 10) --> 50
-  Ex: percent_difference(10, 50) --> -500
+  Ex: percent_difference(20, 10) --> -50
+  Ex: percent_difference(10, 50) --> 500
   """
 
-  return ((first_value - second_value) / first_value) * 100
+  return ((second_value - first_value) / first_value) * 100
 
 
 def compare(data_dir: str, baseline_summary: str, alternative_summary: str):
