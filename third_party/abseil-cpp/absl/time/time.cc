@@ -316,7 +316,7 @@ timespec ToTimespec(Time t) {
 timeval ToTimeval(Time t) {
   timeval tv;
   timespec ts = absl::ToTimespec(t);
-  tv.tv_sec = ts.tv_sec;
+  tv.tv_sec = static_cast<decltype(tv.tv_sec)>(ts.tv_sec);
   if (tv.tv_sec != ts.tv_sec) {  // narrowing
     if (ts.tv_sec < 0) {
       tv.tv_sec = std::numeric_limits<decltype(tv.tv_sec)>::min();

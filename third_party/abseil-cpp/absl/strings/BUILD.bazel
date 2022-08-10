@@ -1279,3 +1279,18 @@ cc_test(
         "@com_google_googletest//:gtest_main",
     ],
 )
+
+cc_binary(
+    name = "atod_manual_test",
+    testonly = 1,
+    srcs = ["atod_manual_test.cc"],
+    copts = ABSL_TEST_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    visibility = ["//visibility:private"],
+    deps = [
+        ":str_format",
+        ":strings",
+        "//absl/base",
+        "//absl/types:optional",
+    ],
+)

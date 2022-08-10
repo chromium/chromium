@@ -326,7 +326,7 @@ static struct SynchEvent {     // this is a trivial hash table for the events
 static SynchEvent *EnsureSynchEvent(std::atomic<intptr_t> *addr,
                                     const char *name, intptr_t bits,
                                     intptr_t lockbit) {
-  uint32_t h = reinterpret_cast<intptr_t>(addr) % kNSynchEvent;
+  uint32_t h = reinterpret_cast<uintptr_t>(addr) % kNSynchEvent;
   SynchEvent *e;
   // first look for existing SynchEvent struct..
   synch_event_mu.Lock();
@@ -379,7 +379,7 @@ static void UnrefSynchEvent(SynchEvent *e) {
 // is clear before doing so).
 static void ForgetSynchEvent(std::atomic<intptr_t> *addr, intptr_t bits,
                              intptr_t lockbit) {
-  uint32_t h = reinterpret_cast<intptr_t>(addr) % kNSynchEvent;
+  uint32_t h = reinterpret_cast<uintptr_t>(addr) % kNSynchEvent;
   SynchEvent **pe;
   SynchEvent *e;
   synch_event_mu.Lock();
@@ -403,7 +403,7 @@ static void ForgetSynchEvent(std::atomic<intptr_t> *addr, intptr_t bits,
 // "addr", if any.  The pointer returned is valid until the UnrefSynchEvent() is
 // called.
 static SynchEvent *GetSynchEvent(const void *addr) {
-  uint32_t h = reinterpret_cast<intptr_t>(addr) % kNSynchEvent;
+  uint32_t h = reinterpret_cast<uintptr_t>(addr) % kNSynchEvent;
   SynchEvent *e;
   synch_event_mu.Lock();
   for (e = synch_event[h];
@@ -431,8 +431,10 @@ static void PostSynchEvent(void *obj, int ev) {
     char buffer[ABSL_ARRAYSIZE(pcs) * 24];
     int pos = snprintf(buffer, sizeof (buffer), " @");
     for (int i = 0; i != n; i++) {
-      int b = snprintf(&buffer[pos], sizeof(buffer) - pos, " %p", pcs[i]);
-      if (b < 0 || static_cast<size_t>(b) >= sizeof(buffer) - pos) {
+      int b = snprintf(&buffer[pos], sizeof(buffer) - static_cast<size_t>(pos),
+                       " %p", pcs[i]);
+      if (b < 0 ||
+          static_cast<size_t>(b) >= sizeof(buffer) - static_cast<size_t>(pos)) {
         break;
       }
       pos += b;
@@ -1278,15 +1280,17 @@ static char *StackString(void **pcs, int n, char *buf, int maxlen,
   char sym[kSymLen];
   int len = 0;
   for (int i = 0; i != n; i++) {
+    if (len >= maxlen)
+      return buf;
+    size_t count = static_cast<size_t>(maxlen - len);
     if (symbolize) {
       if (!symbolizer(pcs[i], sym, kSymLen)) {
         sym[0] = '\0';
       }
-      snprintf(buf + len, maxlen - len, "%s\t@ %p %s\n",
-               (i == 0 ? "\n" : ""),
-               pcs[i], sym);
+      snprintf(buf + len, count, "%s\t@ %p %s\n", (i == 0 ? "\n" : ""), pcs[i],
+               sym);
     } else {
-      snprintf(buf + len, maxlen - len, " %p", pcs[i]);
+      snprintf(buf + len, count, " %p", pcs[i]);
     }
     len += strlen(&buf[len]);
   }
@@ -1371,12 +1375,12 @@ static GraphId DeadlockCheck(Mutex *mu) {
       bool symbolize = number_of_reported_deadlocks <= 2;
       ABSL_RAW_LOG(ERROR, "Potential Mutex deadlock: %s",
                    CurrentStackString(b->buf, sizeof (b->buf), symbolize));
-      int len = 0;
+      size_t len = 0;
       for (int j = 0; j != all_locks->n; j++) {
         void* pr = deadlock_graph->Ptr(all_locks->locks[j].id);
         if (pr != nullptr) {
           snprintf(b->buf + len, sizeof (b->buf) - len, " %p", pr);
-          len += static_cast<int>(strlen(&b->buf[len]));
+          len += strlen(&b->buf[len]);
         }
       }
       ABSL_RAW_LOG(ERROR,
@@ -1909,7 +1913,7 @@ static void CheckForMutexCorruption(intptr_t v, const char* label) {
   // Test for either of two situations that should not occur in v:
   //   kMuWriter and kMuReader
   //   kMuWrWait and !kMuWait
-  const uintptr_t w = v ^ kMuWait;
+  const uintptr_t w = static_cast<uintptr_t>(v ^ kMuWait);
   // By flipping that bit, we can now test for:
   //   kMuWriter and kMuReader in w
   //   kMuWrWait and kMuWait in w

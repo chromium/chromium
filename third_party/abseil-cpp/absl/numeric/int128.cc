@@ -209,15 +209,16 @@ std::ostream& operator<<(std::ostream& os, uint128 v) {
   // Add the requisite padding.
   std::streamsize width = os.width(0);
   if (static_cast<size_t>(width) > rep.size()) {
+    const size_t count = static_cast<size_t>(width) - rep.size();
     std::ios::fmtflags adjustfield = flags & std::ios::adjustfield;
     if (adjustfield == std::ios::left) {
-      rep.append(width - rep.size(), os.fill());
+      rep.append(count, os.fill());
     } else if (adjustfield == std::ios::internal &&
                (flags & std::ios::showbase) &&
                (flags & std::ios::basefield) == std::ios::hex && v != 0) {
-      rep.insert(2, width - rep.size(), os.fill());
+      rep.insert(2, count, os.fill());
     } else {
-      rep.insert(0, width - rep.size(), os.fill());
+      rep.insert(0, count, os.fill());
     }
   }
 
@@ -306,22 +307,23 @@ std::ostream& operator<<(std::ostream& os, int128 v) {
   // Add the requisite padding.
   std::streamsize width = os.width(0);
   if (static_cast<size_t>(width) > rep.size()) {
+    const size_t count = static_cast<size_t>(width) - rep.size();
     switch (flags & std::ios::adjustfield) {
       case std::ios::left:
-        rep.append(width - rep.size(), os.fill());
+        rep.append(count, os.fill());
         break;
       case std::ios::internal:
         if (print_as_decimal && (rep[0] == '+' || rep[0] == '-')) {
-          rep.insert(1, width - rep.size(), os.fill());
+          rep.insert(1, count, os.fill());
         } else if ((flags & std::ios::basefield) == std::ios::hex &&
                    (flags & std::ios::showbase) && v != 0) {
-          rep.insert(2, width - rep.size(), os.fill());
+          rep.insert(2, count, os.fill());
         } else {
-          rep.insert(0, width - rep.size(), os.fill());
+          rep.insert(0, count, os.fill());
         }
         break;
       default:  // std::ios::right
-        rep.insert(0, width - rep.size(), os.fill());
+        rep.insert(0, count, os.fill());
         break;
     }
   }

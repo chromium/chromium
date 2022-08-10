@@ -389,8 +389,63 @@ TEST(NumbersTest, Atoi) {
 
 TEST(NumbersTest, Atod) {
   double d;
-  EXPECT_TRUE(absl::SimpleAtod("nan", &d));
+
+  // NaN can be spelled in multiple ways.
+  EXPECT_TRUE(absl::SimpleAtod("NaN", &d));
   EXPECT_TRUE(std::isnan(d));
+  EXPECT_TRUE(absl::SimpleAtod("nAN", &d));
+  EXPECT_TRUE(std::isnan(d));
+  EXPECT_TRUE(absl::SimpleAtod("-nan", &d));
+  EXPECT_TRUE(std::isnan(d));
+
+  // Likewise for Infinity.
+  EXPECT_TRUE(absl::SimpleAtod("inf", &d));
+  EXPECT_TRUE(std::isinf(d) && (d > 0));
+  EXPECT_TRUE(absl::SimpleAtod("+Infinity", &d));
+  EXPECT_TRUE(std::isinf(d) && (d > 0));
+  EXPECT_TRUE(absl::SimpleAtod("-INF", &d));
+  EXPECT_TRUE(std::isinf(d) && (d < 0));
+
+  // Leading and/or trailing whitespace is OK.
+  EXPECT_TRUE(absl::SimpleAtod("  \t\r\n  2.718", &d));
+  EXPECT_EQ(d, 2.718);
+  EXPECT_TRUE(absl::SimpleAtod("  3.141  ", &d));
+  EXPECT_EQ(d, 3.141);
+
+  // Leading or trailing not-whitespace is not OK.
+  EXPECT_FALSE(absl::SimpleAtod("n 0", &d));
+  EXPECT_FALSE(absl::SimpleAtod("0n ", &d));
+
+  // Multiple leading 0s are OK.
+  EXPECT_TRUE(absl::SimpleAtod("000123", &d));
+  EXPECT_EQ(d, 123);
+  EXPECT_TRUE(absl::SimpleAtod("000.456", &d));
+  EXPECT_EQ(d, 0.456);
+
+  // An absent leading 0 (for a fraction < 1) is OK.
+  EXPECT_TRUE(absl::SimpleAtod(".5", &d));
+  EXPECT_EQ(d, 0.5);
+  EXPECT_TRUE(absl::SimpleAtod("-.707", &d));
+  EXPECT_EQ(d, -0.707);
+
+  // Unary + is OK.
+  EXPECT_TRUE(absl::SimpleAtod("+6.0221408e+23", &d));
+  EXPECT_EQ(d, 6.0221408e+23);
+
+  // Underscores are not OK.
+  EXPECT_FALSE(absl::SimpleAtod("123_456", &d));
+
+  // The decimal separator must be '.' and is never ','.
+  EXPECT_TRUE(absl::SimpleAtod("8.9", &d));
+  EXPECT_FALSE(absl::SimpleAtod("8,9", &d));
+
+  // Some parsing algorithms don't always round correctly (but absl::SimpleAtod
+  // should). This test case comes from
+  // https://github.com/serde-rs/json/issues/707
+  //
+  // See also atod_manual_test.cc for running many more test cases.
+  EXPECT_TRUE(absl::SimpleAtod("122.416294033786585", &d));
+  EXPECT_EQ(d, 122.416294033786585);
 }
 
 TEST(NumbersTest, Prefixes) {
