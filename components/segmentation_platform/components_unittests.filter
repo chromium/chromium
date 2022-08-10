@@ -30,6 +30,7 @@ SegmentResultProviderTest.*
 SegmentScoreProviderTest.*
 SegmentSelectorTest.*
 ServiceProxyImplTest.*
+ShoppingUserModelTest.*
 SignalDatabaseImplTest.*
 SignalFilterProcessorTest.*
 SignalKeyInternalTest.*

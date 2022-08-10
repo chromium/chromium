@@ -12,6 +12,8 @@ static_library("default_model") {
     "price_tracking_action_model.h",
     "query_tiles_model.cc",
     "query_tiles_model.h",
+    "shopping_user_model.cc",
+    "shopping_user_model.h",
   ]
   deps = [
     "//base",
@@ -31,6 +33,7 @@ source_set("unit_tests") {
     "low_user_engagement_model_unittest.cc",
     "price_tracking_action_model_unittest.cc",
     "query_tiles_model_unittest.cc",
+    "shopping_user_model_unittest.cc",
   ]
 
   deps = [

@@ -53,9 +53,11 @@ enum SegmentId {
   OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER = 17;
   // Target for price tracking action when shown as a contextual page action.
   OPTIMIZATION_TARGET_CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING = 18;
+  // Target for segmentation: Determine users who are interested in shopping.
+  OPTIMIZATION_TARGET_SEGMENTATION_SHOPPING_USER = 19;
   // Add new entries to OptimizationTarget proto.
 
-  // New entries should start from a 1000 if OptimizationTarget does not have a
-  // corresponding type.
+  // New entries should start from a 1000 if OptimizationTarget does not
+  // have a corresponding type.
   MAX_OPTIMIZATION_TARGET = 999;
 };
