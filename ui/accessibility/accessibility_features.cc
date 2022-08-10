@@ -146,7 +146,7 @@ bool IsEnhancedNetworkVoicesEnabled() {
 }
 
 const base::Feature kAccessibilityOSSettingsVisibility{
-    "AccessibilityOSSettingsVisibility", base::FEATURE_ENABLED_BY_DEFAULT};
+    "AccessibilityOSSettingsVisibility", base::FEATURE_DISABLED_BY_DEFAULT};
 
 bool IsAccessibilityOSSettingsVisibilityEnabled() {
   return base::FeatureList::IsEnabled(

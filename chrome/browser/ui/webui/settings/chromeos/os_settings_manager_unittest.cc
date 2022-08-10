@@ -31,6 +31,7 @@
 #include "chromeos/ash/components/local_search_service/search_metrics_reporter.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/accessibility_features.h"
 
 namespace chromeos {
 namespace settings {
@@ -45,6 +46,9 @@ class OsSettingsManagerTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+      {features::kAccessibilityOSSettingsVisibility}, {});
+
     ASSERT_TRUE(profile_manager_.SetUp());
     TestingProfile* profile =
         profile_manager_.CreateTestingProfile("TestingProfile");
@@ -78,6 +82,7 @@ class OsSettingsManagerTest : public testing::Test {
           std::make_unique<local_search_service::LocalSearchServiceProxy>(
               /*for_testing=*/true);
   std::unique_ptr<OsSettingsManager> manager_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(OsSettingsManagerTest, Initialization) {
