@@ -452,6 +452,7 @@ viz_source_set("unit_tests") {
   sources = [
     "debugger/viz_debugger_unittests/viz_debugger_internal.cc",
     "debugger/viz_debugger_unittests/viz_debugger_internal.h",
+    "debugger/viz_debugger_unittests/viz_debugger_multithread_unittest.cc",
     "debugger/viz_debugger_unittests/viz_debugger_rwlock_unittest.cc",
     "debugger/viz_debugger_unittests/viz_debugger_unittest.cc",
     "debugger/viz_debugger_unittests/viz_debugger_unittest_base.cc",
