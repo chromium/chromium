@@ -191,10 +191,9 @@ class LoginShelfButton : public PillButton {
                    const gfx::VectorIcon& icon)
       : PillButton(std::move(callback),
                    l10n_util::GetStringUTF16(text_resource_id),
-                   PillButton::Type::kIcon,
+                   PillButton::Type::kIconLarge,
                    &icon,
-                   PillButton::kPillButtonHorizontalSpacing,
-                   ShelfConfig::Get()->control_size()),
+                   PillButton::kPillButtonHorizontalSpacing),
         text_resource_id_(text_resource_id),
         icon_(icon) {
     SetFocusBehavior(FocusBehavior::ALWAYS);
@@ -669,9 +668,6 @@ void LoginShelfView::OnThemeChanged() {
 }
 
 void LoginShelfView::OnShelfConfigUpdated() {
-  for (LoginShelfButton* button : login_shelf_buttons_)
-    button->UpdateButtonHeight(ShelfConfig::Get()->control_size());
-
   views::InstallRoundRectHighlightPathGenerator(
       kiosk_apps_button_, gfx::Insets(),
       ShelfConfig::Get()->control_border_radius());

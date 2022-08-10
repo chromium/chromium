@@ -18,13 +18,15 @@ class ASH_EXPORT PillButton : public views::LabelButton {
  public:
   METADATA_HEADER(PillButton);
 
-  static constexpr int kPillButtonHeight = 32;
   static constexpr int kPillButtonHorizontalSpacing = 16;
 
   // Types of the PillButton.
   enum class Type {
     // PillButton with an icon, default text and background colors.
     kIcon,
+    // PillButton with an icon, default text and background colors,
+    // `kPillButtonLargeHeight` as the button height.
+    kIconLarge,
     // PillButton without an icon, default text and background colors.
     kIconless,
     // PillButton without an icon, `kButtonLabelColorPrimary` as the text color
@@ -52,7 +54,6 @@ class ASH_EXPORT PillButton : public views::LabelButton {
              Type type,
              const gfx::VectorIcon* icon,
              int horizontal_spacing = kPillButtonHorizontalSpacing,
-             int height = kPillButtonHeight,
              bool use_light_colors = false,
              bool rounded_highlight_path = true);
   PillButton(const PillButton&) = delete;
@@ -71,14 +72,14 @@ class ASH_EXPORT PillButton : public views::LabelButton {
   void SetButtonTextColor(const SkColor text_color);
   void SetIconColor(const SkColor icon_color);
 
-  // Updates the button height and layout.
-  void UpdateButtonHeight(int height);
-
   // Sets the button's label to use the default label font, which is smaller
   // and less heavily weighted.
   void SetUseDefaultLabelFont();
 
  private:
+  // Initialize the button layout according to the button type.
+  void InitializeButtonLayout();
+
   // Returns the spacing on the side where the icon locates. The value is set
   // smaller to make the spacing on two sides visually look the same.
   int GetHorizontalSpacingWithIcon() const;
@@ -93,9 +94,6 @@ class ASH_EXPORT PillButton : public views::LabelButton {
   // Horizontal spacing of this button. `kPillButtonHorizontalSpacing` will be
   // set as the default value.
   int horizontal_spacing_;
-
-  // The height of the pill button.
-  int height_ = 0;
 
   // The flag that indicates if highlight path is used for focus ring.
   const bool rounded_highlight_path_;
