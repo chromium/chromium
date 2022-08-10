@@ -795,10 +795,10 @@ TEST_P(PrefHashFilterTest, FilterUntrackedPrefUpdate) {
 
 TEST_P(PrefHashFilterTest, MultiplePrefsFilterSerializeData) {
   base::DictionaryValue root_dict;
-  base::Value* int_value1 = root_dict.SetInteger(kAtomicPref, 1);
-  root_dict.SetInteger(kAtomicPref2, 2);
-  root_dict.SetInteger(kAtomicPref3, 3);
-  root_dict.SetInteger("untracked", 4);
+  base::Value* int_value1 = root_dict.GetDict().Set(kAtomicPref, 1);
+  root_dict.GetDict().Set(kAtomicPref2, 2);
+  root_dict.GetDict().Set(kAtomicPref3, 3);
+  root_dict.GetDict().Set("untracked", 4);
   base::Value* dict_value =
       root_dict.SetKey(kSplitPref, base::Value(base::Value::Type::DICTIONARY));
   dict_value->SetBoolKey("a", true);
@@ -810,7 +810,7 @@ TEST_P(PrefHashFilterTest, MultiplePrefsFilterSerializeData) {
   ASSERT_EQ(0u, mock_pref_hash_store_->stored_paths_count());
 
   // Update kAtomicPref3 again, nothing should be stored still.
-  base::Value* int_value5 = root_dict.SetInteger(kAtomicPref3, 5);
+  base::Value* int_value5 = root_dict.GetDict().Set(kAtomicPref3, 5);
   ASSERT_EQ(0u, mock_pref_hash_store_->stored_paths_count());
 
   // On FilterSerializeData, only kAtomicPref, kAtomicPref3, and kSplitPref
@@ -992,7 +992,8 @@ TEST_P(PrefHashFilterTest, InitialValueTrustedUnknown) {
 }
 
 TEST_P(PrefHashFilterTest, InitialValueChanged) {
-  base::Value* int_value = pref_store_contents_->SetInteger(kAtomicPref, 1234);
+  base::Value* int_value =
+      pref_store_contents_->GetDict().Set(kAtomicPref, 1234);
 
   base::Value* dict_value = pref_store_contents_->SetKey(
       kSplitPref, base::Value(base::Value::Type::DICTIONARY));
@@ -1153,10 +1154,11 @@ TEST_P(PrefHashFilterTest, InitialValueUnchangedLegacyId) {
 }
 
 TEST_P(PrefHashFilterTest, DontResetReportOnly) {
-  base::Value* int_value1 = pref_store_contents_->SetInteger(kAtomicPref, 1);
-  base::Value* int_value2 = pref_store_contents_->SetInteger(kAtomicPref2, 2);
+  base::Value* int_value1 = pref_store_contents_->GetDict().Set(kAtomicPref, 1);
+  base::Value* int_value2 =
+      pref_store_contents_->GetDict().Set(kAtomicPref2, 2);
   base::Value* report_only_val =
-      pref_store_contents_->SetInteger(kReportOnlyPref, 3);
+      pref_store_contents_->GetDict().Set(kReportOnlyPref, 3);
   base::Value* report_only_split_val = pref_store_contents_->SetKey(
       kReportOnlySplitPref, base::Value(base::Value::Type::DICTIONARY));
   report_only_split_val->SetIntKey("a", 1234);
@@ -1226,8 +1228,8 @@ TEST_P(PrefHashFilterTest, CallFilterSerializeDataCallbacks) {
   base::DictionaryValue root_dict;
   base::DictionaryValue dict_value;
   dict_value.SetBoolean("a", true);
-  root_dict.SetInteger(kAtomicPref, 1);
-  root_dict.SetInteger(kAtomicPref2, 2);
+  root_dict.GetDict().Set(kAtomicPref, 1);
+  root_dict.GetDict().Set(kAtomicPref2, 2);
   root_dict.SetKey(kSplitPref, std::move(dict_value));
 
   // Skip updating kAtomicPref2.
@@ -1270,7 +1272,7 @@ TEST_P(PrefHashFilterTest, CallFilterSerializeDataCallbacks) {
 
 TEST_P(PrefHashFilterTest, CallFilterSerializeDataCallbacksWithFailure) {
   base::DictionaryValue root_dict;
-  root_dict.SetInteger(kAtomicPref, 1);
+  root_dict.GetDict().Set(kAtomicPref, 1);
 
   // Only update kAtomicPref.
   pref_hash_filter_->FilterUpdate(kAtomicPref);
@@ -1296,12 +1298,12 @@ TEST_P(PrefHashFilterTest, CallFilterSerializeDataCallbacksWithFailure) {
 }
 
 TEST_P(PrefHashFilterTest, ExternalValidationValueChanged) {
-  pref_store_contents_->SetInteger(kAtomicPref, 1234);
+  pref_store_contents_->GetDict().Set(kAtomicPref, 1234);
 
   base::DictionaryValue dict_value;
   dict_value.SetString("a", "foo");
-  dict_value.SetInteger("b", 1234);
-  dict_value.SetInteger("c", 56);
+  dict_value.GetDict().Set("b", 1234);
+  dict_value.GetDict().Set("c", 56);
   dict_value.SetBoolean("d", false);
   pref_store_contents_->SetKey(kSplitPref, std::move(dict_value));
 

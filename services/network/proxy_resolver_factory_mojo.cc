@@ -47,10 +47,10 @@ namespace network {
 namespace {
 
 base::Value NetLogErrorParams(int line_number, const std::string& message) {
-  base::DictionaryValue dict;
-  dict.SetInteger("line_number", line_number);
-  dict.SetString("message", message);
-  return std::move(dict);
+  base::Value::Dict dict;
+  dict.Set("line_number", line_number);
+  dict.Set("message", message);
+  return base::Value(std::move(dict));
 }
 
 // Implementation for myIpAddress() and myIpAddressEx() that is expected to run
