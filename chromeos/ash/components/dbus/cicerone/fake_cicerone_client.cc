@@ -355,6 +355,7 @@ void FakeCiceroneClient::SetUpLxdContainerUser(
     const vm_tools::cicerone::SetUpLxdContainerUserRequest& request,
     DBusMethodCallback<vm_tools::cicerone::SetUpLxdContainerUserResponse>
         callback) {
+  setup_lxd_container_user_request_ = request;
   last_container_username_ = request.container_username();
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,

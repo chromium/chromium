@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "content/public/browser/browser_thread.h"
@@ -105,8 +106,10 @@ void CrostiniSshfs::MountCrostiniFiles(const guest_os::GuestId& container_id,
   }
 
   auto* manager = CrostiniManagerFactory::GetForProfile(profile_);
-  absl::optional<ContainerInfo> info = manager->GetContainerInfo(container_id);
-  if (!info) {
+  bool running =
+      guest_os::GuestOsSessionTracker::GetForProfile(profile_)->IsRunning(
+          in_progress_mount_->container_id);
+  if (!running) {
     LOG(ERROR) << "Unable to mount files for a container that's not running";
     Finish(CrostiniSshfsResult::kContainerNotRunning);
     return;
@@ -129,9 +132,8 @@ void CrostiniSshfs::OnGetContainerSshKeys(
     return;
   }
 
-  auto* manager = CrostiniManagerFactory::GetForProfile(profile_);
-  absl::optional<ContainerInfo> info =
-      manager->GetContainerInfo(in_progress_mount_->container_id);
+  auto info = guest_os::GuestOsSessionTracker::GetForProfile(profile_)->GetInfo(
+      in_progress_mount_->container_id);
   if (!info) {
     LOG(ERROR) << "Got ssh keys for a container that's not running. Aborting.";
     Finish(CrostiniSshfsResult::kGetContainerInfoFailed);
@@ -141,18 +143,14 @@ void CrostiniSshfs::OnGetContainerSshKeys(
   // Add ourselves as an observer so we can continue once the path is mounted.
   auto* dmgr = ash::disks::DiskMountManager::GetInstance();
 
-  // Construct sshfs:// source path.
-  in_progress_mount_->source_path = base::StringPrintf(
-      "sshfs://%s@%s:", info->username.c_str(), hostname.c_str());
-
-  // If we have a vsock port and cid, use sftp:// over vsock instead.
   if (info->sftp_vsock_port != 0) {
-    absl::optional<VmInfo> vm_info =
-        manager->GetVmInfo(in_progress_mount_->container_id.vm_name);
-    if (vm_info) {
-      in_progress_mount_->source_path = base::StringPrintf(
-          "sftp://%" PRId64 ":%u", vm_info->info.cid(), info->sftp_vsock_port);
-    }
+    // If we have a vsock port and cid, use sftp:// over vsock instead.
+    in_progress_mount_->source_path = base::StringPrintf(
+        "sftp://%" PRId64 ":%u", info->cid, info->sftp_vsock_port);
+  } else {
+    // otherwise construct sshfs:// source path.
+    in_progress_mount_->source_path = base::StringPrintf(
+        "sshfs://%s@%s:", info->username.c_str(), hostname.c_str());
   }
   in_progress_mount_->container_homedir = info->homedir;
 

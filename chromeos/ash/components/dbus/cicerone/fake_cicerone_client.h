@@ -9,6 +9,7 @@
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
+#include "chromeos/ash/components/dbus/cicerone/cicerone_service.pb.h"
 
 namespace ash {
 
@@ -408,6 +409,11 @@ class COMPONENT_EXPORT(CICERONE) FakeCiceroneClient : public CiceroneClient {
     send_stop_lxd_container_response_delay_ = delay;
   }
 
+  vm_tools::cicerone::SetUpLxdContainerUserRequest
+  get_setup_lxd_container_user_request() {
+    return setup_lxd_container_user_request_;
+  }
+
   // Returns true if the method has been invoked at least once, false otherwise.
   bool configure_for_arc_sideload_called() {
     return configure_for_arc_sideload_called_;
@@ -553,6 +559,9 @@ class COMPONENT_EXPORT(CICERONE) FakeCiceroneClient : public CiceroneClient {
   base::TimeDelta send_set_up_lxd_container_user_response_delay_;
   base::TimeDelta send_start_lxd_container_response_delay_;
   base::TimeDelta send_stop_lxd_container_response_delay_;
+
+  vm_tools::cicerone::SetUpLxdContainerUserRequest
+      setup_lxd_container_user_request_;
 
   vm_tools::cicerone::OsRelease lxd_container_os_release_;
 

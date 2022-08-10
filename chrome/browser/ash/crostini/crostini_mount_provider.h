@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_CROSTINI_CROSTINI_MOUNT_PROVIDER_H_
 #define CHROME_BROWSER_ASH_CROSTINI_CROSTINI_MOUNT_PROVIDER_H_
 
+#include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_simple_types.h"
@@ -55,6 +56,7 @@ class CrostiniMountProvider : public guest_os::GuestOsMountProvider,
                           &CrostiniManager::AddContainerShutdownObserver,
                           &CrostiniManager::RemoveContainerShutdownObserver>
       container_shutdown_observer_{this};
+  base::CallbackListSubscription subscription_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

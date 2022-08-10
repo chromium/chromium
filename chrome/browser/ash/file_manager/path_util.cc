@@ -33,6 +33,7 @@
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/smb_client/smb_service.h"
@@ -493,8 +494,8 @@ bool ConvertFileSystemURLToPathInsideVM(
   } else if (id == GetCrostiniMountPointName(profile)) {
     // Crostini.
     if (map_crostini_home) {
-      absl::optional<crostini::ContainerInfo> container_info =
-          crostini::CrostiniManager::GetForProfile(profile)->GetContainerInfo(
+      auto container_info =
+          guest_os::GuestOsSessionTracker::GetForProfile(profile)->GetInfo(
               crostini::DefaultContainerId());
       if (!container_info) {
         return false;
@@ -548,8 +549,8 @@ bool ConvertPathInsideVMToFileSystemURL(
   base::FilePath relative_path;
 
   if (map_crostini_home) {
-    absl::optional<crostini::ContainerInfo> container_info =
-        crostini::CrostiniManager::GetForProfile(profile)->GetContainerInfo(
+    auto container_info =
+        guest_os::GuestOsSessionTracker::GetForProfile(profile)->GetInfo(
             crostini::DefaultContainerId());
     if (container_info &&
         AppendRelativePath(container_info->homedir, inside, &relative_path)) {

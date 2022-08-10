@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chromeos/dbus/permission_broker/permission_broker_client.h"
@@ -154,8 +155,8 @@ void CrostiniPortForwarder::TryActivatePort(
     const PortRuleKey& key,
     const guest_os::GuestId& container_id,
     base::OnceCallback<void(bool)> result_callback) {
-  auto info =
-      CrostiniManager::GetForProfile(profile_)->GetContainerInfo(container_id);
+  auto info = guest_os::GuestOsSessionTracker::GetForProfile(profile_)->GetInfo(
+      container_id);
   if (!info) {
     LOG(ERROR) << "Inactive container to make port rules for.";
     std::move(result_callback).Run(false);
@@ -201,9 +202,10 @@ void CrostiniPortForwarder::TryDeactivatePort(
     const PortRuleKey& key,
     const guest_os::GuestId& container_id,
     base::OnceCallback<void(bool)> result_callback) {
-  auto info =
-      CrostiniManager::GetForProfile(profile_)->GetContainerInfo(container_id);
-  if (!info) {
+  bool running =
+      guest_os::GuestOsSessionTracker::GetForProfile(profile_)->IsRunning(
+          container_id);
+  if (!running) {
     LOG(ERROR) << "Inactive container to make port rules for.";
     std::move(result_callback).Run(false);
     return;

@@ -46,11 +46,13 @@
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/guest_os/guest_os_stability_monitor.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service_factory.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_wayland_server.h"
+#include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/browser/ash/policy/handlers/powerwash_requirements_checker.h"
 #include "chrome/browser/ash/scheduler_configuration_manager.h"
 #include "chrome/browser/browser_process.h"
@@ -567,8 +569,10 @@ void CrostiniManager::CrostiniRestarter::StartLxdContainerFinished(
   // are finished. Also, a lot of unit tests don't inject a fake container so
   // it's possible in tests to end up here without a running container. Don't
   // try mounting sshfs in that case.
-  auto info = crostini_manager_->GetContainerInfo(container_id_);
-  if (container_id_ == DefaultContainerId() && info) {
+  bool running =
+      guest_os::GuestOsSessionTracker::GetForProfile(profile_)->IsRunning(
+          container_id_);
+  if (container_id_ == DefaultContainerId() && running) {
     crostini_manager_->MountCrostiniFiles(container_id_, base::DoNothing(),
                                           true);
   }
@@ -1190,23 +1194,17 @@ void CrostiniManager::SetUncleanStartupForTesting(bool is_unclean_startup) {
   is_unclean_startup_ = is_unclean_startup;
 }
 
-absl::optional<ContainerInfo> CrostiniManager::GetContainerInfo(
-    const guest_os::GuestId& container_id) {
-  if (!IsVmRunning(container_id.vm_name)) {
-    return absl::nullopt;
-  }
-  auto range = running_containers_.equal_range(container_id.vm_name);
-  for (auto it = range.first; it != range.second; ++it) {
-    if (it->second.name == container_id.container_name) {
-      return it->second;
-    }
-  }
-  return absl::nullopt;
-}
-
 void CrostiniManager::AddRunningContainerForTesting(std::string vm_name,
                                                     ContainerInfo info) {
-  running_containers_.emplace(std::move(vm_name), info);
+  auto* tracker = guest_os::GuestOsSessionTracker::GetForProfile(profile_);
+  guest_os::GuestId id{guest_os::VmType::TERMINA, vm_name, info.name};
+  guest_os::GuestInfo guest_info{id,
+                                 0,
+                                 info.username,
+                                 info.homedir,
+                                 info.ipv4_address,
+                                 info.sftp_vsock_port};
+  tracker->AddGuestForTesting(id, guest_info);  // IN-TEST
 }
 
 void CrostiniManager::UpdateLaunchMetricsForEnterpriseReporting() {
@@ -2523,7 +2521,6 @@ void CrostiniManager::OnStartTerminaVm(
     LOG(ERROR) << "Failed to start VM: " << response->failure_reason();
     // If we thought vms and containers were running before, they aren't now.
     running_vms_.erase(vm_name);
-    running_containers_.erase(vm_name);
     std::move(callback).Run(/*success=*/false);
     return;
   }
@@ -2537,7 +2534,6 @@ void CrostiniManager::OnStartTerminaVm(
       VmInfo{VmState::STARTING, std::move(response->vm_info())};
   // If we thought a container was running for this VM, we're wrong. This can
   // happen if the vm was formerly running, then stopped via crosh.
-  running_containers_.erase(vm_name);
 
   if (wait_for_tremplin) {
     VLOG(1) << "Awaiting TremplinStartedSignal for " << owner_id_ << ", "
@@ -2657,7 +2653,6 @@ void CrostiniManager::OnVmStoppedCleanup(const std::string& vm_name) {
 
   // Remove from running_vms_, and other vm-keyed state.
   running_vms_.erase(vm_name);
-  running_containers_.erase(vm_name);
   InvokeAndErasePendingCallbacks(
       &export_lxd_container_callbacks_, vm_name,
       CrostiniResult::CONTAINER_EXPORT_IMPORT_FAILED_VM_STOPPED, 0, 0);
@@ -2702,11 +2697,6 @@ void CrostiniManager::OnContainerStarted(
   }
 
   VLOG(1) << "Container " << signal.container_name() << " started";
-  running_containers_.emplace(
-      signal.vm_name(),
-      ContainerInfo(signal.container_name(), signal.container_username(),
-                    signal.container_homedir(), signal.ipv4_address(),
-                    signal.sftp_vsock_port()));
   InvokeAndErasePendingContainerCallbacks(
       &start_container_callbacks_, container_id, CrostiniResult::SUCCESS);
 
@@ -2757,7 +2747,7 @@ void CrostiniManager::OnContainerShutdown(
   }
   shutdown_container_callbacks_.erase(range_callbacks.first,
                                       range_callbacks.second);
-  RemoveStoppedContainer(container_id);
+  HandleContainerShutdown(container_id);
 }
 
 void CrostiniManager::OnInstallLinuxPackageProgress(
@@ -3039,7 +3029,7 @@ void CrostiniManager::OnStopLxdContainer(
       break;
 
     case vm_tools::cicerone::StopLxdContainerResponse::STOPPED:
-      RemoveStoppedContainer(container_id);
+      HandleContainerShutdown(container_id);
       std::move(callback).Run(CrostiniResult::SUCCESS);
       break;
 
@@ -3266,8 +3256,10 @@ void CrostiniManager::OnLxdContainerStarting(
       (version != ContainerOsVersion::kOtherOs &&
        version != ContainerOsVersion::kUnknown);
 
-  if (result == CrostiniResult::SUCCESS && !GetContainerInfo(container_id) &&
-      is_garcon_required) {
+  bool running =
+      guest_os::GuestOsSessionTracker::GetForProfile(profile_)->IsRunning(
+          container_id);
+  if (result == CrostiniResult::SUCCESS && !running && is_garcon_required) {
     VLOG(1) << "Awaiting ContainerStarted signal from Garcon, did not yet have "
                "information for container "
             << container_id.container_name;
@@ -3297,7 +3289,7 @@ void CrostiniManager::OnLxdContainerStopping(
       result = CrostiniResult::CONTAINER_STOP_CANCELLED;
       break;
     case vm_tools::cicerone::LxdContainerStoppingSignal::STOPPED:
-      RemoveStoppedContainer(container_id);
+      HandleContainerShutdown(container_id);
       result = CrostiniResult::SUCCESS;
       break;
     case vm_tools::cicerone::LxdContainerStoppingSignal::STOPPING:
@@ -3809,7 +3801,6 @@ void CrostiniManager::OnShuttingDown() {
 
 void CrostiniManager::SuspendImminent(
     power_manager::SuspendImminent::Reason reason) {
-  auto info = GetContainerInfo(DefaultContainerId());
   if (!crostini_sshfs_->IsSshfsMounted(DefaultContainerId())) {
     return;
   }
@@ -3827,7 +3818,10 @@ void CrostiniManager::SuspendDone(base::TimeDelta sleep_duration) {
   // https://crbug.com/968060.  Sshfs is unmounted before suspend,
   // call RestartCrostini to force remount if container is running.
   guest_os::GuestId container_id = DefaultContainerId();
-  if (GetContainerInfo(container_id)) {
+  bool running =
+      guest_os::GuestOsSessionTracker::GetForProfile(profile_)->IsRunning(
+          container_id);
+  if (running) {
     // TODO(crbug/1142321): Double-check if anything breaks if we change this
     // to just remount the sshfs mounts, in particular check 9p mounts.
     RestartCrostini(container_id, base::DoNothing());
@@ -3956,21 +3950,13 @@ void CrostiniManager::CallRestarterStartLxdContainerFinishedForTesting(
   restarter_it->second->StartLxdContainerFinished(result);
 }
 
-void CrostiniManager::RemoveStoppedContainer(
+void CrostiniManager::HandleContainerShutdown(
     const guest_os::GuestId& container_id) {
   // Run all ContainerShutdown observers
   for (auto& observer : container_shutdown_observers_) {
     observer.OnContainerShutdown(container_id);
   }
-  // Remove from running containers multimap.
-  auto range_containers = running_containers_.equal_range(container_id.vm_name);
-  for (auto it = range_containers.first; it != range_containers.second; ++it) {
-    if (it->second.name == container_id.container_name) {
-      running_containers_.erase(it);
-      break;
-    }
-  }
-  if (running_containers_.empty()) {
+  if (!IsVmRunning(kCrostiniDefaultVmName)) {
     auto* engagement_metrics_service =
         CrostiniEngagementMetricsService::Factory::GetForProfile(profile_);
     // This is null in unit tests.

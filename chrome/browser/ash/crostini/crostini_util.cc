@@ -26,6 +26,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -500,7 +501,7 @@ bool ShouldStopVm(Profile* profile, const guest_os::GuestId& container_id) {
        guest_os::GetContainers(profile, kCrostiniDefaultVmType)) {
     if (container.container_name != container_id.container_name &&
         container.vm_name == container_id.vm_name) {
-      if (CrostiniManager::GetForProfile(profile)->GetContainerInfo(
+      if (guest_os::GuestOsSessionTracker::GetForProfile(profile)->IsRunning(
               container)) {
         return false;
       }

@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
@@ -765,8 +766,8 @@ void CrostiniHandler::HandleRequestContainerInfo(
     base::Value::Dict container_info_value;
     container_info_value.Set(kIdKey, container_id.ToDictValue());
     auto info =
-        crostini::CrostiniManager::GetForProfile(profile_)->GetContainerInfo(
-            container_id);
+        guest_os::GuestOsSessionTracker::GetForProfile(profile_)->GetInfo(
+            crostini::DefaultContainerId());
     if (info) {
       container_info_value.Set(kIpv4Key, info->ipv4_address);
     }

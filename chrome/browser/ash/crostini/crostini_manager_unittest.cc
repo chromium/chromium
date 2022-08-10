@@ -23,6 +23,7 @@
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/crostini/fake_crostini_features.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_wayland_server.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -889,11 +890,10 @@ TEST_F(CrostiniManagerRestartTest, RestartSuccess) {
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
   EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
   EXPECT_EQ(1, restart_crostini_callback_count_);
-
-  absl::optional<ContainerInfo> container_info =
-      crostini_manager()->GetContainerInfo(container_id());
-  EXPECT_EQ(container_info.value().username,
+  auto req = fake_cicerone_client_->get_setup_lxd_container_user_request();
+  EXPECT_EQ(req.container_username(),
             DefaultContainerUserNameForProfile(profile()));
+
   ExpectRestarterUmaCount(1);
   histogram_tester_.ExpectTotalCount("Crostini.RestarterTimeInState2.Start", 1);
   histogram_tester_.ExpectTotalCount(
@@ -929,10 +929,6 @@ TEST_F(CrostiniManagerRestartTest, UncleanRestartReportsMetricToUncleanBucket) {
   EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
   EXPECT_EQ(1, restart_crostini_callback_count_);
 
-  absl::optional<ContainerInfo> container_info =
-      crostini_manager()->GetContainerInfo(container_id());
-  EXPECT_EQ(container_info.value().username,
-            DefaultContainerUserNameForProfile(profile()));
   histogram_tester_.ExpectTotalCount("Crostini.Restarter.Started", 1);
   histogram_tester_.ExpectTotalCount("Crostini.RestarterResult", 1);
   histogram_tester_.ExpectTotalCount("Crostini.Installer.Started", 0);
@@ -958,10 +954,6 @@ TEST_F(CrostiniManagerRestartTest, RestartDelayAndSuccessWhenVmStopping) {
   EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
   EXPECT_EQ(1, restart_crostini_callback_count_);
 
-  absl::optional<ContainerInfo> container_info =
-      crostini_manager()->GetContainerInfo(container_id());
-  EXPECT_EQ(container_info.value().username,
-            DefaultContainerUserNameForProfile(profile()));
   ExpectRestarterUmaCount(1);
 }
 
@@ -977,10 +969,8 @@ TEST_F(CrostiniManagerRestartTest, RestartSuccessWithOptions) {
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
   EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
   EXPECT_EQ(1, restart_crostini_callback_count_);
-
-  absl::optional<ContainerInfo> container_info =
-      crostini_manager()->GetContainerInfo(container_id());
-  EXPECT_EQ(container_info.value().username, "helloworld");
+  auto req = fake_cicerone_client_->get_setup_lxd_container_user_request();
+  EXPECT_EQ(req.container_username(), "helloworld");
   ExpectRestarterUmaCount(1);
 }
 
@@ -1521,7 +1511,6 @@ TEST_F(CrostiniManagerRestartTest, IsContainerRunningFalseIfVmNotStarted) {
   EXPECT_EQ(1, restart_crostini_callback_count_);
 
   EXPECT_TRUE(crostini_manager()->IsVmRunning(kVmName));
-  EXPECT_TRUE(crostini_manager()->GetContainerInfo(container_id()));
 
   // Now call StartTerminaVm again. The default response state is "STARTING",
   // so no container should be considered running.
@@ -1534,7 +1523,6 @@ TEST_F(CrostiniManagerRestartTest, IsContainerRunningFalseIfVmNotStarted) {
   run_loop2.Run();
   EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
   EXPECT_TRUE(crostini_manager()->IsVmRunning(kVmName));
-  EXPECT_FALSE(crostini_manager()->GetContainerInfo(container_id()));
   ExpectRestarterUmaCount(1);
 }
 

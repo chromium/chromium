@@ -6,8 +6,10 @@
 
 #include <memory>
 
+#include "base/bind.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 
@@ -51,15 +53,23 @@ void CrostiniMountProvider::OnRestarted(PrepareCallback callback,
     return;
   }
   auto* manager = CrostiniManager::GetForProfile(profile_);
-  auto vm_info = manager->GetVmInfo(container_id_.vm_name);
-  auto container_info = manager->GetContainerInfo(container_id_);
   if (!container_shutdown_observer_.IsObserving()) {
     container_shutdown_observer_.Observe(manager);
   }
-
-  std::move(callback).Run(true, vm_info->info.cid(),
-                          container_info->sftp_vsock_port,
-                          container_info->homedir);
+  // The container's finished booting but we need to wait for the session
+  // tracker to update which races against CrostiniManager calling us.
+  subscription_ =
+      guest_os::GuestOsSessionTracker::GetForProfile(profile_)
+          ->RunOnceContainerStarted(container_id_,
+                                    base::BindOnce(
+                                        [](PrepareCallback callback,
+                                           guest_os::GuestInfo container_info) {
+                                          std::move(callback).Run(
+                                              true, container_info.cid,
+                                              container_info.sftp_vsock_port,
+                                              container_info.homedir);
+                                        },
+                                        std::move(callback)));
 }
 
 std::unique_ptr<guest_os::GuestOsFileWatcher>

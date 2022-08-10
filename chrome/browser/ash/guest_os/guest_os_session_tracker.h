@@ -57,8 +57,12 @@ class GuestOsSessionTracker : protected ash::ConciergeClient::VmObserver,
       base::OnceCallback<void(GuestInfo)> callback);
 
   // Returns information about a running guest. Returns nullopt if the guest
-  // isn't recognised e.g. it's not running.
+  // isn't recognised e.g. it's not running. If you just want to check if a
+  // guest is running or not and don't need the info, use `IsRunning` instead
   absl::optional<GuestInfo> GetInfo(const GuestId& id);
+
+  // Returns true if a guest is running, false otherwise.
+  bool IsRunning(const GuestId& id);
 
   void AddGuestForTesting(const GuestId& id, const GuestInfo& info);
 

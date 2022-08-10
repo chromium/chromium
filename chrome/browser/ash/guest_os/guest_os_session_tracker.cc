@@ -132,6 +132,10 @@ absl::optional<GuestInfo> GuestOsSessionTracker::GetInfo(const GuestId& id) {
   return iter->second;
 }
 
+bool GuestOsSessionTracker::IsRunning(const GuestId& id) {
+  return guests_.contains(id);
+}
+
 // ash::ConciergeClient::VmObserver overrides.
 void GuestOsSessionTracker::OnVmStarted(
     const vm_tools::concierge::VmStartedSignal& signal) {
