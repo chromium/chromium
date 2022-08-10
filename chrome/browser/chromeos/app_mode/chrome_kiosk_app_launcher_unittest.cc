@@ -17,6 +17,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/ui/apps/chrome_app_delegate.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/app_window/app_window.h"
@@ -270,6 +271,31 @@ TEST_F(ChromeKioskAppLauncherTest, ShouldSucceedWithSecondaryApp) {
   EXPECT_TRUE(registry()->enabled_extensions().Contains(kTestPrimaryAppId));
   EXPECT_TRUE(registry()->enabled_extensions().Contains(kSecondaryAppId));
   EXPECT_TRUE(registry()->disabled_extensions().Contains(kExtraSecondaryAppId));
+}
+
+TEST_F(ChromeKioskAppLauncherTest, ShouldSucceedWithAppService) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kKioskEnableAppService);
+
+  TestKioskExtensionBuilder primary_app_builder(Manifest::TYPE_PLATFORM_APP,
+                                                kTestPrimaryAppId);
+  primary_app_builder.set_version("1.0");
+  scoped_refptr<const extensions::Extension> primary_app =
+      primary_app_builder.Build();
+  service()->AddExtension(primary_app.get());
+
+  CreateLauncher(/*is_network_ready=*/true);
+
+  TestFuture<LaunchResult> future;
+  launcher_->LaunchApp(future.GetCallback());
+
+  SimulateAppWindowLaunch(primary_app.get());
+
+  ASSERT_THAT(future.Get(), Eq(LaunchResult::kSuccess));
+
+  EXPECT_THAT(app_launch_tracker_->launched_apps(),
+              ElementsAre(kTestPrimaryAppId));
+  EXPECT_TRUE(registry()->enabled_extensions().Contains(kTestPrimaryAppId));
 }
 
 }  // namespace ash

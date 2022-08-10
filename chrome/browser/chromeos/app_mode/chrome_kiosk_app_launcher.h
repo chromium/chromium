@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_app_service_launcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom.h"
 #include "extensions/browser/app_window/app_window.h"
@@ -35,6 +36,9 @@ class ChromeKioskAppLauncher : public extensions::AppWindowRegistry::Observer {
   // AppWindowRegistry::Observer:
   void OnAppWindowAdded(extensions::AppWindow* app_window) override;
 
+  // |KioskAppServiceLauncher| callback.
+  void OnAppServiceAppLaunched(bool success);
+
   void WaitForAppWindow();
 
   void ReportLaunchSuccess();
@@ -60,7 +64,11 @@ class ChromeKioskAppLauncher : public extensions::AppWindowRegistry::Observer {
                           extensions::AppWindowRegistry::Observer>
       app_window_observation_{this};
 
+  std::unique_ptr<KioskAppServiceLauncher> app_service_launcher_;
+
   LaunchCallback on_ready_callback_;
+
+  base::WeakPtrFactory<ChromeKioskAppLauncher> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

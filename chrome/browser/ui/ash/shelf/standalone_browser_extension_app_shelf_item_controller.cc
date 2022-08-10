@@ -41,9 +41,9 @@ StandaloneBrowserExtensionAppShelfItemController::
     activation_client_observation_.Observe(activation_client);
 
   // Lacros is mutually exclusive with multi-signin. As such, there can only be
-  // a single ash profile active. We grab it from the shelf.
+  // a single ash profile active. We grab it from the profile manager.
   apps::AppServiceProxy* proxy = apps::AppServiceProxyFactory::GetForProfile(
-      ChromeShelfController::instance()->profile());
+      ProfileManager::GetPrimaryUserProfile());
 
   icon_loader_releaser_ = proxy->LoadIconFromIconKey(
       apps::AppType::kStandaloneBrowserChromeApp, shelf_id.app_id,

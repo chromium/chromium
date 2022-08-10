@@ -5351,6 +5351,8 @@ static_library("browser") {
       "chromeos/app_mode/chrome_kiosk_external_loader_broker.h",
       "chromeos/app_mode/kiosk_app_external_loader.cc",
       "chromeos/app_mode/kiosk_app_external_loader.h",
+      "chromeos/app_mode/kiosk_app_service_launcher.cc",
+      "chromeos/app_mode/kiosk_app_service_launcher.h",
       "chromeos/app_mode/kiosk_settings_navigation_throttle.cc",
       "chromeos/app_mode/kiosk_settings_navigation_throttle.h",
       "chromeos/app_mode/startup_app_launcher_update_checker.cc",

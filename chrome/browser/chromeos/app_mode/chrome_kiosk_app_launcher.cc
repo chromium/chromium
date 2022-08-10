@@ -4,13 +4,18 @@
 
 #include "chrome/browser/chromeos/app_mode/chrome_kiosk_app_launcher.h"
 
+#include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/syslog_logging.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_app_service_launcher.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
+#include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
@@ -91,12 +96,20 @@ void ChromeKioskAppLauncher::LaunchApp(LaunchCallback callback) {
 
   SYSLOG(INFO) << "Attempt to launch app.";
 
-  // Always open the app in a window.
-  ::OpenApplication(
-      profile_,
-      apps::AppLaunchParams(
-          extension->id(), apps::LaunchContainer::kLaunchContainerWindow,
-          WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromKiosk));
+  if (base::FeatureList::IsEnabled(features::kKioskEnableAppService)) {
+    app_service_launcher_ = std::make_unique<KioskAppServiceLauncher>(profile_);
+    app_service_launcher_->CheckAndMaybeLaunchApp(
+        extension->id(),
+        base::BindOnce(&ChromeKioskAppLauncher::OnAppServiceAppLaunched,
+                       weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    // Always open the app in a window.
+    ::OpenApplication(
+        profile_,
+        apps::AppLaunchParams(
+            extension->id(), apps::LaunchContainer::kLaunchContainerWindow,
+            WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromKiosk));
+  }
 
   WaitForAppWindow();
 }
@@ -116,6 +129,12 @@ void ChromeKioskAppLauncher::OnAppWindowAdded(
   if (app_window->extension_id() == app_id_) {
     app_window_observation_.Reset();
     ReportLaunchSuccess();
+  }
+}
+
+void ChromeKioskAppLauncher::OnAppServiceAppLaunched(bool success) {
+  if (!success) {
+    ReportLaunchFailure(LaunchResult::kUnableToLaunch);
   }
 }
 
