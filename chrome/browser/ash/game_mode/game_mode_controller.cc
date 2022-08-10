@@ -36,21 +36,23 @@ GameModeController::~GameModeController() {
 }
 
 void GameModeController::OnWindowFocused(aura::Window* gained_focus,
-                                                 aura::Window* lost_focus) {
-  if (!gained_focus) {
-    focused_.reset();
+                                         aura::Window* lost_focus) {
+  auto maybe_keep_focused = std::move(focused_);
+
+  if (!gained_focus)
     return;
-  }
 
   auto* widget = views::Widget::GetTopLevelWidgetForNativeView(gained_focus);
+  // |widget| can be nullptr in tests.
+  if (!widget)
+    return;
+
   aura::Window* window = widget->GetNativeWindow();
   auto* window_state = ash::WindowState::Get(window);
 
   if (window_state && BorealisWindowManager::IsBorealisWindow(window)) {
-    focused_ =
-        std::make_unique<WindowTracker>(window_state, std::move(focused_));
-  } else {
-    focused_.reset();
+    focused_ = std::make_unique<WindowTracker>(window_state,
+                                               std::move(maybe_keep_focused));
   }
 }
 

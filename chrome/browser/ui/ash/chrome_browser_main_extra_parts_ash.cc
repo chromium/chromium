@@ -15,6 +15,7 @@
 #include "base/command_line.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/game_mode/game_mode_controller.h"
 #include "chrome/browser/ash/login/signin/signin_error_notifier_factory.h"
 #include "chrome/browser/ash/night_light/night_light_client.h"
 #include "chrome/browser/ash/policy/display/display_resolution_handler.h"
@@ -303,6 +304,7 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
       std::make_unique<quick_answers::QuickAnswersClient>(
           g_browser_process->shared_url_loader_factory(),
           QuickAnswersController::Get()->GetQuickAnswersDelegate()));
+  game_mode_controller_ = std::make_unique<game_mode::GameModeController>();
 
   // Initialize TabScrubberChromeOS after the Ash Shell has been initialized.
   TabScrubberChromeOS::GetInstance();
@@ -341,6 +343,7 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   tab_cluster_ui_client_.reset();
 
   // Initialized in PostProfileInit (which may not get called in some tests).
+  game_mode_controller_.reset();
   quick_answers_controller_.reset();
   ash_web_view_factory_.reset();
   network_portal_notification_controller_.reset();

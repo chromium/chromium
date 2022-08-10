@@ -20,6 +20,10 @@ namespace chromeos {
 class NetworkPortalNotificationController;
 }
 
+namespace game_mode {
+class GameModeController;
+}
+
 namespace policy {
 class DisplaySettingsHandler;
 }
@@ -113,6 +117,7 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
   std::unique_ptr<ProjectorClientImpl> projector_client_;
   std::unique_ptr<ProjectorAppClientImpl> projector_app_client_;
   std::unique_ptr<QuickAnswersController> quick_answers_controller_;
+  std::unique_ptr<game_mode::GameModeController> game_mode_controller_;
   // TODO(stevenjb): Move NetworkPortalNotificationController to c/b/ui/ash and
   // elim chromeos:: namespace. https://crbug.com/798569.
   std::unique_ptr<chromeos::NetworkPortalNotificationController>
