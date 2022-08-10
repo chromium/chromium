@@ -2245,20 +2245,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Blink.ServiceDocumentUpdate.UpdateTime"
-    units="microseconds" expires_after="2022-09-11">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
-
+<histogram base="true" name="Blink.ServiceDocumentUpdate.UpdateTime.{Period}"
+    units="microseconds" expires_after="2023-01-15">
   <owner>schenney@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
     Time spent preparing the document to service browser driven behaviors.
     Examples include accessibility, intersection observer, display locking and
-    spell checking. Includes time spent in style update and layout.
+    spell checking. Includes time spent in style update and layout. {Period}
 
     This histogram does not record metrics on machines with low-resolution
     clocks.
@@ -2267,6 +2261,11 @@ chromium-metrics-reviews@google.com.
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
   </summary>
+  <token key="Period">
+    <variant name="AggregatedPreFCP"/>
+    <variant name="PostFCP"/>
+    <variant name="PreFCP"/>
+  </token>
 </histogram>
 
 <histogram name="Blink.Sms.BackendAvailability"
@@ -2892,20 +2891,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Blink.UserDrivenDocumentUpdate.UpdateTime"
-    units="microseconds" expires_after="2022-09-11">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
-
+<histogram base="true"
+    name="Blink.UserDrivenDocumentUpdate.UpdateTime.{Period}"
+    units="microseconds" expires_after="2023-01-15">
   <owner>schenney@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
     Time spent preparing the document to service user driven behaviors. Examples
     include inspector, selection, editing, find-in-page and focus. Includes time
-    spent in style update and layout.
+    spent in style update and layout. {Period}
 
     This histogram does not record metrics on machines with low-resolution
     clocks.
@@ -2914,6 +2908,11 @@ chromium-metrics-reviews@google.com.
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
   </summary>
+  <token key="Period">
+    <variant name="AggregatedPreFCP"/>
+    <variant name="PostFCP"/>
+    <variant name="PreFCP"/>
+  </token>
 </histogram>
 
 <histogram name="Blink.VisibleBeforeLoaded.LazyLoadEligibleFrames.BelowTheFold"
