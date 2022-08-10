@@ -69,6 +69,7 @@ const CGFloat kTouchDownAlpha = 0.25f;
       _config = config;
       self.queryLabel.text = config.query;
       self.accessibilityLabel = config.query;
+      self.accessibilityTraits |= UIAccessibilityTraitLink;
       self.isAccessibilityElement = YES;
     }
 
