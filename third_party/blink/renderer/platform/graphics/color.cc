@@ -177,7 +177,7 @@ RGBA32 MakeRGBA32FromFloats(float r, float g, float b, float a) {
          ColorFloatToRGBAByte(g) << 8 | ColorFloatToRGBAByte(b);
 }
 
-SkColor4f Color::toSkColor4f() {
+SkColor4f Color::toSkColor4f() const {
   float r, g, b, a;
   GetRGBA(r, g, b, a);
   return SkColor4f{r, g, b, a};
@@ -459,12 +459,12 @@ void Color::GetHWB(double& hue, double& white, double& black) const {
 Color ColorFromPremultipliedARGB(RGBA32 pixel_color) {
   int alpha = AlphaChannel(pixel_color);
   if (alpha && alpha < 255) {
-    return Color::CreateUnchecked(RedChannel(pixel_color) * 255 / alpha,
-                                  GreenChannel(pixel_color) * 255 / alpha,
-                                  BlueChannel(pixel_color) * 255 / alpha,
-                                  alpha);
-  } else
-    return Color(pixel_color);
+    return Color::FromRGBA(RedChannel(pixel_color) * 255 / alpha,
+                           GreenChannel(pixel_color) * 255 / alpha,
+                           BlueChannel(pixel_color) * 255 / alpha, alpha);
+  } else {
+    return Color::FromRGBA32(pixel_color);
+  }
 }
 
 RGBA32 PremultipliedARGBFromColor(const Color& color) {
@@ -472,13 +472,13 @@ RGBA32 PremultipliedARGBFromColor(const Color& color) {
 
   unsigned alpha = color.Alpha();
   if (alpha < 255) {
-    pixel_color =
-        Color::CreateUnchecked((color.Red() * alpha + 254) / 255,
-                               (color.Green() * alpha + 254) / 255,
-                               (color.Blue() * alpha + 254) / 255, alpha)
-            .Rgb();
-  } else
+    pixel_color = Color::FromRGBA((color.Red() * alpha + 254) / 255,
+                                  (color.Green() * alpha + 254) / 255,
+                                  (color.Blue() * alpha + 254) / 255, alpha)
+                      .Rgb();
+  } else {
     pixel_color = color.Rgb();
+  }
 
   return pixel_color;
 }

@@ -40,6 +40,7 @@ class Color;
 
 typedef unsigned RGBA32;  // RGBA quadruplet
 
+// TODO(crbug.com/1351544): Remove these functions.
 PLATFORM_EXPORT RGBA32 MakeRGB(int r, int g, int b);
 PLATFORM_EXPORT RGBA32 MakeRGBA(int r, int g, int b, int a);
 
@@ -76,8 +77,15 @@ class PLATFORM_EXPORT Color {
   DISALLOW_NEW();
 
  public:
+  // The default constructor creates a transparent color.
   constexpr Color() : color_(0) {}
+
+  // TODO(crbug.com/1351544): Make this constructor explicit and private.
   constexpr Color(RGBA32 color) : color_(color) {}
+
+  // TODO(crbug.com/1351544): Replace these constructors with explicit From
+  // functions below. Replace the CreateUnchecked functions with FromRGB and
+  // FromRGBA.
   Color(int r, int g, int b) : color_(MakeRGB(r, g, b)) {}
   Color(int r, int g, int b, int a) : color_(MakeRGBA(r, g, b, a)) {}
   // Color is currently limited to 32bit RGBA. Perhaps some day we'll support
@@ -87,7 +95,6 @@ class PLATFORM_EXPORT Color {
   // Creates a new color from the specific CMYK and alpha values.
   Color(float c, float m, float y, float k, float a)
       : color_(MakeRGBAFromCMYKA(c, m, y, k, a)) {}
-
   static constexpr Color CreateUnchecked(int r, int g, int b) {
     RGBA32 color = 0xFF000000 | r << 16 | g << 8 | b;
     return Color(color);
@@ -96,12 +103,38 @@ class PLATFORM_EXPORT Color {
     RGBA32 color = a << 24 | r << 16 | g << 8 | b;
     return Color(color);
   }
-  // TODO(crbug.com/1308932): These two functions are just helpers for while
-  // we're converting platform/graphics to float color
+
+  // Create a color using rgb() syntax.
+  static constexpr Color FromRGB(int r, int g, int b) {
+    return Color(MakeRGB(r, g, b));
+  }
+
+  // Create a color using rgba() syntax.
+  static constexpr Color FromRGBA(int r, int g, int b, int a) {
+    return Color(MakeRGBA(r, g, b, a));
+  }
+
+  // Create a color using the hsl() syntax.
+  static constexpr Color FromHSLA(double h, double s, double l, double a) {
+    return Color(MakeRGBAFromHSLA(h, s, l, a));
+  }
+
+  // Create a color using the hwb() syntax.
+  static constexpr Color FromHWBA(double h, double w, double b, double a) {
+    return Color(MakeRGBAFromHWBA(h, w, b, a));
+  }
+
+  // TODO(crbug.com/1308932): These three functions are just helpers for while
+  // we're converting platform/graphics to float color.
   static Color FromSkColor4f(SkColor4f fc) {
     return MakeRGBA32FromFloats(fc.fR, fc.fG, fc.fB, fc.fA);
   }
-  SkColor4f toSkColor4f();
+  static constexpr Color FromSkColor(SkColor color) { return Color(color); }
+  static constexpr Color FromRGBA32(RGBA32 color) { return Color(color); }
+
+  // Convert a Color to SkColor4f, for use in painting and compositing. Once a
+  // Color has been converted to SkColor4f it should not be converted back.
+  SkColor4f toSkColor4f() const;
 
   // Returns the color serialized according to HTML5:
   // http://www.whatwg.org/specs/web-apps/current-work/#serialization-of-a-color
@@ -131,6 +164,8 @@ class PLATFORM_EXPORT Color {
   void GetHSL(double& h, double& s, double& l) const;
   void GetHWB(double& h, double& w, double& b) const;
 
+  // TODO(crbug.com/1308932): Remove this function, and replace its use with
+  // toSkColor4f.
   explicit operator SkColor() const;
 
   Color Light() const;
