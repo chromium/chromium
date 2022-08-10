@@ -43,13 +43,7 @@ ContextualSearchManager::ContextualSearchManager(JNIEnv* env,
   Profile* profile = ProfileManager::GetActiveUserProfile();
   delegate_ = std::make_unique<ContextualSearchDelegate>(
       profile->GetURLLoaderFactory(),
-      TemplateURLServiceFactory::GetForProfile(profile),
-      base::BindRepeating(
-          &ContextualSearchManager::OnSearchTermResolutionResponse,
-          base::Unretained(this)),
-      base::BindRepeating(
-          &ContextualSearchManager::OnTextSurroundingSelectionAvailable,
-          base::Unretained(this)));
+      TemplateURLServiceFactory::GetForProfile(profile));
 }
 
 ContextualSearchManager::~ContextualSearchManager() {
@@ -74,8 +68,11 @@ void ContextualSearchManager::StartSearchTermResolutionRequest(
       NativeContextualSearchContext::FromJavaContextualSearchContext(
           j_contextual_search_context);
   // Calls back to OnSearchTermResolutionResponse.
-  delegate_->StartSearchTermResolutionRequest(contextual_search_context,
-                                              base_web_contents);
+  delegate_->StartSearchTermResolutionRequest(
+      contextual_search_context, base_web_contents,
+      base::BindRepeating(
+          &ContextualSearchManager::OnSearchTermResolutionResponse,
+          base::Unretained(this)));
 }
 
 void ContextualSearchManager::GatherSurroundingText(
@@ -89,8 +86,11 @@ void ContextualSearchManager::GatherSurroundingText(
   base::WeakPtr<NativeContextualSearchContext> contextual_search_context =
       NativeContextualSearchContext::FromJavaContextualSearchContext(
           j_contextual_search_context);
-  delegate_->GatherAndSaveSurroundingText(contextual_search_context,
-                                          base_web_contents);
+  delegate_->GatherAndSaveSurroundingText(
+      contextual_search_context, base_web_contents,
+      base::BindRepeating(
+          &ContextualSearchManager::OnTextSurroundingSelectionAvailable,
+          base::Unretained(this)));
 }
 
 void ContextualSearchManager::OnSearchTermResolutionResponse(

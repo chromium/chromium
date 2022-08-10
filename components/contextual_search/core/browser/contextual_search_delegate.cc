@@ -103,67 +103,65 @@ const net::HttpRequestHeaders GetDiscourseContext(
 // Handles tasks for the ContextualSearchManager in a separable, testable way.
 ContextualSearchDelegate::ContextualSearchDelegate(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    TemplateURLService* template_url_service,
-    ContextualSearchDelegate::SearchTermResolutionCallback search_term_callback,
-    ContextualSearchDelegate::SurroundingTextCallback surrounding_text_callback)
+    TemplateURLService* template_url_service)
     : url_loader_factory_(std::move(url_loader_factory)),
       template_url_service_(template_url_service),
-      field_trial_(std::make_unique<ContextualSearchFieldTrial>()),
-      search_term_callback_(std::move(search_term_callback)),
-      surrounding_text_callback_(std::move(surrounding_text_callback)) {}
+      field_trial_(std::make_unique<ContextualSearchFieldTrial>()) {}
 
 ContextualSearchDelegate::~ContextualSearchDelegate() = default;
 
 void ContextualSearchDelegate::GatherAndSaveSurroundingText(
-    base::WeakPtr<ContextualSearchContext> contextual_search_context,
-    content::WebContents* web_contents) {
+    base::WeakPtr<ContextualSearchContext> context,
+    content::WebContents* web_contents,
+    SurroundingTextCallback callback) {
   DCHECK(web_contents);
-  blink::mojom::LocalFrame::GetTextSurroundingSelectionCallback callback =
-      base::BindOnce(
+  blink::mojom::LocalFrame::GetTextSurroundingSelectionCallback
+      get_text_callback = base::BindOnce(
           &ContextualSearchDelegate::OnTextSurroundingSelectionAvailable,
-          AsWeakPtr());
-  context_ = contextual_search_context;
-  if (context_ == nullptr)
+          AsWeakPtr(), context, callback);
+  if (!context)
     return;
 
-  context_->SetBasePageEncoding(web_contents->GetEncoding());
-  int surroundingTextSize = context_->CanResolve()
+  context->SetBasePageEncoding(web_contents->GetEncoding());
+  int surroundingTextSize = context->CanResolve()
                                 ? field_trial_->GetResolveSurroundingSize()
                                 : field_trial_->GetSampleSurroundingSize();
   RenderFrameHost* focused_frame = web_contents->GetFocusedFrame();
   if (focused_frame) {
-    focused_frame->RequestTextSurroundingSelection(std::move(callback),
+    focused_frame->RequestTextSurroundingSelection(std::move(get_text_callback),
                                                    surroundingTextSize);
   } else {
-    std::move(callback).Run(std::u16string(), 0, 0);
+    std::move(get_text_callback).Run(std::u16string(), 0, 0);
   }
 }
 
 void ContextualSearchDelegate::StartSearchTermResolutionRequest(
-    base::WeakPtr<ContextualSearchContext> contextual_search_context,
-    content::WebContents* web_contents) {
+    base::WeakPtr<ContextualSearchContext> context,
+    content::WebContents* web_contents,
+    SearchTermResolutionCallback callback) {
   DCHECK(web_contents);
-  if (context_ == nullptr)
+  if (!context)
     return;
 
-  DCHECK(context_.get() == contextual_search_context.get());
-  DCHECK(context_->CanResolve());
+  DCHECK(context->CanResolve());
 
   // Immediately cancel any request that's in flight, since we're building a new
   // context (and the response disposes of any existing context).
   url_loader_.reset();
 
   // Decide if the URL should be sent with the context.
-  if (context_->CanSendBasePageUrl())
-    context_->SetBasePageUrl(web_contents->GetLastCommittedURL());
+  if (context->CanSendBasePageUrl())
+    context->SetBasePageUrl(web_contents->GetLastCommittedURL());
 
   // Issue the resolve request.
-  ResolveSearchTermFromContext();
+  ResolveSearchTermFromContext(context, std::move(callback));
 }
 
-void ContextualSearchDelegate::ResolveSearchTermFromContext() {
-  DCHECK(context_ != nullptr);
-  GURL request_url(BuildRequestUrl(context_.get()));
+void ContextualSearchDelegate::ResolveSearchTermFromContext(
+    base::WeakPtr<ContextualSearchContext> context,
+    SearchTermResolutionCallback callback) {
+  DCHECK(context);
+  GURL request_url(BuildRequestUrl(context.get()));
   DCHECK(request_url.is_valid());
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
@@ -171,7 +169,7 @@ void ContextualSearchDelegate::ResolveSearchTermFromContext() {
 
   // Populates the discourse context and adds it to the HTTP header of the
   // search term resolution request.
-  resource_request->headers.CopyFrom(GetDiscourseContext(*context_));
+  resource_request->headers.CopyFrom(GetDiscourseContext(*context));
 
   // Disable cookies for this request.
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
@@ -219,12 +217,14 @@ void ContextualSearchDelegate::ResolveSearchTermFromContext() {
   url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
       base::BindOnce(&ContextualSearchDelegate::OnUrlLoadComplete,
-                     base::Unretained(this)));
+                     base::Unretained(this), context, std::move(callback)));
 }
 
 void ContextualSearchDelegate::OnUrlLoadComplete(
+    base::WeakPtr<ContextualSearchContext> context,
+    SearchTermResolutionCallback callback,
     std::unique_ptr<std::string> response_body) {
-  if (!context_)
+  if (!context)
     return;
 
   int response_code = ResolvedSearchTerm::kResponseCodeUninitialized;
@@ -236,16 +236,16 @@ void ContextualSearchDelegate::OnUrlLoadComplete(
       std::make_unique<ResolvedSearchTerm>(response_code);
   if (response_body && response_code == net::HTTP_OK) {
     resolved_search_term =
-        GetResolvedSearchTermFromJson(response_code, *response_body);
+        GetResolvedSearchTermFromJson(*context, response_code, *response_body);
   }
-  search_term_callback_.Run(*resolved_search_term);
+  callback.Run(*resolved_search_term);
 }
 
 std::unique_ptr<ResolvedSearchTerm>
 ContextualSearchDelegate::GetResolvedSearchTermFromJson(
+    const ContextualSearchContext& context,
     int response_code,
     const std::string& json_string) {
-  DCHECK(context_ != nullptr);
   std::string search_term;
   std::string display_text;
   std::string alternate_term;
@@ -278,13 +278,13 @@ ContextualSearchDelegate::GetResolvedSearchTermFromJson(
     // the new and old selection.
     if (mention_start >= mention_end ||
         (mention_end - mention_start) > kContextualSearchMaxSelection ||
-        mention_end <= context_->GetStartOffset() ||
-        mention_start >= context_->GetEndOffset()) {
+        mention_end <= context.GetStartOffset() ||
+        mention_start >= context.GetEndOffset()) {
       start_adjust = 0;
       end_adjust = 0;
     } else {
-      start_adjust = mention_start - context_->GetStartOffset();
-      end_adjust = mention_end - context_->GetEndOffset();
+      start_adjust = mention_start - context.GetStartOffset();
+      end_adjust = mention_end - context.GetEndOffset();
     }
   }
   bool is_invalid =
@@ -325,7 +325,7 @@ std::string ContextualSearchDelegate::BuildRequestUrl(
   }
 
   int mainFunctionVersion = kContextualSearchRequestVersion;
-  if (context_->GetRelatedSearches())
+  if (context->GetRelatedSearches())
     mainFunctionVersion = kRelatedSearchesVersion;
 
   TemplateURLRef::SearchTermsArgs::ContextualSearchParams params(
@@ -358,16 +358,18 @@ std::string ContextualSearchDelegate::BuildRequestUrl(
 }
 
 void ContextualSearchDelegate::OnTextSurroundingSelectionAvailable(
+    base::WeakPtr<ContextualSearchContext> context,
+    SurroundingTextCallback callback,
     const std::u16string& surrounding_text,
     uint32_t start_offset,
     uint32_t end_offset) {
-  if (context_ == nullptr)
+  if (!context)
     return;
 
   // Sometimes the surroundings are 0, 0, '', so run the callback with empty
   // data in that case. See https://crbug.com/393100.
   if (start_offset == 0 && end_offset == 0 && surrounding_text.length() == 0) {
-    surrounding_text_callback_.Run(std::string(), std::u16string(), 0, 0);
+    callback.Run(std::string(), std::u16string(), 0, 0);
     return;
   }
 
@@ -378,8 +380,7 @@ void ContextualSearchDelegate::OnTextSurroundingSelectionAvailable(
   start_offset = std::min(surrounding_length, start_offset);
   end_offset = std::min(surrounding_length, end_offset);
 
-  context_->SetSelectionSurroundings(start_offset, end_offset,
-                                     surrounding_text);
+  context->SetSelectionSurroundings(start_offset, end_offset, surrounding_text);
 
   // Call the Java surrounding callback with a shortened copy of the
   // surroundings to use as a sample of the surrounding text.
@@ -393,9 +394,8 @@ void ContextualSearchDelegate::OnTextSurroundingSelectionAvailable(
       SampleSurroundingText(surrounding_text, sample_padding_each_side,
                             &selection_start, &selection_end);
   DCHECK(selection_start <= selection_end);
-  surrounding_text_callback_.Run(context_->GetBasePageEncoding(),
-                                 sample_surrounding_text, selection_start,
-                                 selection_end);
+  callback.Run(context->GetBasePageEncoding(), sample_surrounding_text,
+               selection_start, selection_end);
 }
 
 // Decodes the given response from the search term resolution request and sets
@@ -531,7 +531,7 @@ void ContextualSearchDelegate::DecodeSearchTermFromJsonResponse(
 void ContextualSearchDelegate::ExtractMentionsStartEnd(
     const base::Value::List& mentions_list,
     int* start_result,
-    int* end_result) {
+    int* end_result) const {
   if (mentions_list.size() >= 1 && mentions_list[0].is_int())
     *start_result = std::max(0, mentions_list[0].GetInt());
   if (mentions_list.size() >= 2 && mentions_list[1].is_int())
@@ -542,7 +542,7 @@ std::u16string ContextualSearchDelegate::SampleSurroundingText(
     const std::u16string& surrounding_text,
     int padding_each_side,
     size_t* start,
-    size_t* end) {
+    size_t* end) const {
   std::u16string result_text = surrounding_text;
   size_t start_offset = *start;
   size_t end_offset = *end;

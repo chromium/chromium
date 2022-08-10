@@ -44,32 +44,32 @@ class ContextualSearchDelegate
       void(const std::string&, const std::u16string&, size_t, size_t)>
       SurroundingTextCallback;
 
-  // Constructs a delegate that will always call back to the given callbacks
-  // when search term resolution or surrounding text responses are available.
+  // Constructs a delegate that uses the given url_loader_factory and
+  // template_url_service for all contextual search requests.
   ContextualSearchDelegate(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      TemplateURLService* template_url_service,
-      SearchTermResolutionCallback search_term_callback,
-      SurroundingTextCallback surrounding_callback);
+      TemplateURLService* template_url_service);
 
   ContextualSearchDelegate(const ContextualSearchDelegate&) = delete;
   ContextualSearchDelegate& operator=(const ContextualSearchDelegate&) = delete;
 
   virtual ~ContextualSearchDelegate();
 
-  // Gathers surrounding text and saves it locally in the given context.
+  // Gathers surrounding text and saves it in the given context. The given
+  // callback will be run when the surrounding text becomes available.
   void GatherAndSaveSurroundingText(
       base::WeakPtr<ContextualSearchContext> contextual_search_context,
-      content::WebContents* web_contents);
+      content::WebContents* web_contents,
+      SurroundingTextCallback callback);
 
   // Starts an asynchronous search term resolution request.
-  // The given context includes some content from a web page and must be able
+  // The given context may include some content from a web page and must be able
   // to resolve.
-  // When the response is available the callback specified in the constructor
-  // is run.
+  // When the response is available the given callback will be run.
   void StartSearchTermResolutionRequest(
       base::WeakPtr<ContextualSearchContext> contextual_search_context,
-      content::WebContents* web_contents);
+      content::WebContents* web_contents,
+      SearchTermResolutionCallback callback);
 
  private:
   // Friend our test which allows our private methods to be used in helper
@@ -95,23 +95,31 @@ class ContextualSearchDelegate
   FRIEND_TEST_ALL_PREFIXES(ContextualSearchDelegateTest,
                            DecodeSearchTermFromJsonResponse);
 
-  void OnUrlLoadComplete(std::unique_ptr<std::string> response_body);
-
   // Resolves the search term specified by the current context.
-  // Only needed for tests.  TODO(donnd): make private and friend?
-  void ResolveSearchTermFromContext();
+  void ResolveSearchTermFromContext(
+      base::WeakPtr<ContextualSearchContext> context,
+      SearchTermResolutionCallback callback);
+
+  // Handles the contextual search response included in |response_body|. Calls
+  // |callback| with the resulting ResolvedSearchTerm.
+  void OnUrlLoadComplete(base::WeakPtr<ContextualSearchContext> context,
+                         SearchTermResolutionCallback callback,
+                         std::unique_ptr<std::string> response_body);
 
   // Builds and returns the search term resolution request URL.
   // |context| is used to help build the query.
   std::string BuildRequestUrl(ContextualSearchContext* context);
 
   void OnTextSurroundingSelectionAvailable(
+      base::WeakPtr<ContextualSearchContext> context,
+      SurroundingTextCallback callback,
       const std::u16string& surrounding_text,
       uint32_t start_offset,
       uint32_t end_offset);
 
   // Builds a Resolved Search Term by decoding the given JSON string.
   std::unique_ptr<ResolvedSearchTerm> GetResolvedSearchTermFromJson(
+      const ContextualSearchContext& context,
       int response_code,
       const std::string& json_string);
 
@@ -140,7 +148,7 @@ class ContextualSearchDelegate
   // |mentions_list| must be a list.
   void ExtractMentionsStartEnd(const base::Value::List& mentions_list,
                                int* start_result,
-                               int* end_result);
+                               int* end_result) const;
 
   // Generates a subset of the given surrounding_text string, for usage from
   // Java.
@@ -157,13 +165,7 @@ class ContextualSearchDelegate
   std::u16string SampleSurroundingText(const std::u16string& surrounding_text,
                                        int padding_each_side,
                                        size_t* start,
-                                       size_t* end);
-
-  // For testing.
-  void SetContextForTesting(
-      const base::WeakPtr<ContextualSearchContext>& context) {
-    context_ = context;
-  }
+                                       size_t* end) const;
 
   // The current request in progress, or NULL.
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
@@ -176,16 +178,6 @@ class ContextualSearchDelegate
 
   // The field trial helper instance, always set up by the constructor.
   std::unique_ptr<ContextualSearchFieldTrial> field_trial_;
-
-  // The callback for notifications of completed URL fetches.
-  SearchTermResolutionCallback search_term_callback_;
-
-  // The callback for notifications of surrounding text being available.
-  SurroundingTextCallback surrounding_text_callback_;
-
-  // Used to hold the context until an upcoming search term request is started.
-  // Owned by the Java ContextualSearchContext.
-  base::WeakPtr<ContextualSearchContext> context_;
 };
 
 #endif  // COMPONENTS_CONTEXTUAL_SEARCH_CORE_BROWSER_CONTEXTUAL_SEARCH_DELEGATE_H_
