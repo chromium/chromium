@@ -204,6 +204,7 @@ TEST_F(OmniboxPopupMediatorTest, Init) {
 // Tests that update matches with no matches returns one suggestion group with
 // zero suggestions.
 TEST_F(OmniboxPopupMediatorTest, UpdateMatchesEmpty) {
+  SetVisibleSuggestionCount(0);
   AutocompleteResult empty_results = AutocompleteResult();
   [mediator_ updateMatches:empty_results];
   EXPECT_EQ(1ul, resultConsumerGroups_.count);
@@ -213,6 +214,7 @@ TEST_F(OmniboxPopupMediatorTest, UpdateMatchesEmpty) {
 
 // Tests that the number of suggestions matches the number of matches.
 TEST_F(OmniboxPopupMediatorTest, UpdateMatchesCount) {
+  SetVisibleSuggestionCount(0);
   AutocompleteResult results = AutocompleteResult();
   results.AppendMatches(GetAutocompleteMatches());
   [mediator_ updateMatches:results];
@@ -226,6 +228,7 @@ TEST_F(OmniboxPopupMediatorTest, UpdateMatchesSorting) {
   std::unique_ptr<base::test::ScopedFeatureList> feature_list =
       std::make_unique<base::test::ScopedFeatureList>();
   feature_list->InitAndDisableFeature(omnibox::kAdaptiveSuggestionsCount);
+  SetVisibleSuggestionCount(0);
 
   AutocompleteResult results = AutocompleteResult();
   results.AppendMatches(GetAutocompleteMatches());

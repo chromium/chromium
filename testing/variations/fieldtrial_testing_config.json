@@ -43,6 +43,27 @@
             ]
         }
     ],
+    "AdaptiveSuggestionsPhoneiOS": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "OmniboxMaxURLMatches": "5",
+                        "UIMaxAutocompleteMatches": "10"
+                    },
+                    "enable_features": [
+                        "OmniboxAdaptiveSuggestionsCount",
+                        "OmniboxMaxURLMatches",
+                        "OmniboxUIExperimentMaxAutocompleteMatches"
+                    ]
+                }
+            ]
+        }
+    ],
     "AlignWakeUps": [
         {
             "platforms": [
