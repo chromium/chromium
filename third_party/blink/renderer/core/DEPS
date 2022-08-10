@@ -85,6 +85,7 @@ include_rules = [
     "+third_party/blink/renderer/core",
     "-third_party/blink/renderer/modules",
     "+third_party/skia/include",
+    "+ui/accessibility/accessibility_features.h",
     "+ui/accessibility/ax_enums.mojom-blink-forward.h",
     "+ui/accessibility/ax_enums.mojom-blink.h",
     "+ui/accessibility/ax_event.h",

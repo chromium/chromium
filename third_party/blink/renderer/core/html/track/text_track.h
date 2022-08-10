@@ -66,6 +66,7 @@ class CORE_EXPORT TextTrack : public EventTargetWithInlineData,
   TextTrackList* TrackList() { return track_list_; }
 
   bool IsVisualKind() const;
+  bool IsSpokenKind() const;
 
   static const AtomicString& SubtitlesKeyword();
   static const AtomicString& CaptionsKeyword();
