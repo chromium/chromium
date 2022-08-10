@@ -368,6 +368,7 @@ void SearchBoxView::HandleQueryChange(const std::u16string& query,
       // Set 'user_initiated_model_update_time_' when initiating a new query.
       user_initiated_model_update_time_ = current_time;
     } else if (!current_query_.empty() && query.empty()) {
+      base::RecordAction(base::UserMetricsAction("AppList_LeaveSearch"));
       // Reset 'user_initiated_model_update_time_' when clearing the search_box.
       user_initiated_model_update_time_ = base::TimeTicks();
     } else if (query != current_query_ &&
@@ -394,15 +395,6 @@ void SearchBoxView::HandleQueryChange(const std::u16string& query,
   // repaint when this changes.
   if (query_empty_changed)
     SchedulePaint();
-
-  // Temporarily remove from observer to ignore notifications caused by us.
-  search_box_model_observer_.Reset();
-
-  SearchBoxModel* const search_box_model =
-      AppListModelProvider::Get()->search_model()->search_box();
-
-  search_box_model->Update(query, initiated_by_user);
-  search_box_model_observer_.Observe(search_box_model);
 
   delegate_->QueryChanged(trimmed_query, initiated_by_user);
 
@@ -1249,16 +1241,6 @@ void SearchBoxView::UpdateSearchBoxForSelectedResult(
       search_box()->SetText(selected_result->title());
     }
   }
-}
-
-void SearchBoxView::Update() {
-  const std::u16string text =
-      AppListModelProvider::Get()->search_model()->search_box()->text();
-  search_box()->SetText(text);
-  UpdateButtonsVisibility();
-  std::u16string trimmed_text;
-  base::TrimWhitespace(text, base::TrimPositions::TRIM_ALL, &trimmed_text);
-  delegate_->QueryChanged(trimmed_text, false);
 }
 
 void SearchBoxView::SearchEngineChanged() {

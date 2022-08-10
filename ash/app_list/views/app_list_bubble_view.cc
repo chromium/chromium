@@ -614,6 +614,7 @@ void AppListBubbleView::Layout() {
 void AppListBubbleView::QueryChanged(const std::u16string& trimmed_query,
                                      bool initiated_by_user) {
   if (current_page_ != AppListBubblePage::kNone) {
+    search_page_->search_view()->UpdateForNewSearch(!trimmed_query.empty());
     if (!trimmed_query.empty())
       ShowPage(AppListBubblePage::kSearch);
     else

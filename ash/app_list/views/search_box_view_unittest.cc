@@ -1,4 +1,3 @@
-
 // Copyright 2014 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -22,7 +21,9 @@
 #include "ash/app_list/views/productivity_launcher_search_view.h"
 #include "ash/app_list/views/result_selection_controller.h"
 #include "ash/app_list/views/search_box_view_delegate.h"
+#include "ash/app_list/views/search_result_list_view.h"
 #include "ash/app_list/views/search_result_page_view.h"
+#include "ash/app_list/views/search_result_tile_item_list_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
@@ -139,32 +140,21 @@ class SearchBoxViewTest : public views::test::WidgetTest,
       // Initialize SearchBoxView like clamshell productivity launcher.
       view = std::make_unique<SearchBoxView>(this, &view_delegate_,
                                              /*app_list_view=*/nullptr);
-    } else {
-      // Initialize SearchBoxView like peeking launcher.
-      app_list_view_ = new AppListView(&view_delegate_);
-      app_list_view_->InitView(GetContext());
-      view = std::make_unique<SearchBoxView>(this, &view_delegate_,
-                                             app_list_view_);
-    }
-
-    if (IsProductivityLauncherEnabled())
       view->InitializeForBubbleLauncher();
-    else
-      view->InitializeForFullscreenLauncher();
-    view_ = widget_->GetContentsView()->AddChildView(std::move(view));
+      view_ = widget_->GetContentsView()->AddChildView(std::move(view));
 
-    if (IsProductivityLauncherEnabled()) {
       productivity_launcher_search_view_ =
           widget_->GetContentsView()->AddChildView(
               std::make_unique<ProductivityLauncherSearchView>(
                   &view_delegate_, /*dialog_controller=*/nullptr, view_));
+      widget_->Show();
     } else {
-      counter_view_ = widget_->GetContentsView()->AddChildView(
-          std::make_unique<KeyPressCounterView>(app_list_view_));
-      counter_view_->Init();
-      SetContentsView(counter_view_);
+      // Initialize SearchBoxView like peeking launcher.
+      app_list_view_ = new AppListView(&view_delegate_);
+      app_list_view_->InitView(GetContext());
+      view_ = app_list_view_->search_box_view();
+      app_list_view_->Show(AppListViewState::kPeeking, false);
     }
-    widget_->Show();
   }
 
   void TearDown() override {
@@ -238,16 +228,20 @@ class SearchBoxViewTest : public views::test::WidgetTest,
 
   SearchModel::SearchResults* results() { return GetSearchModel()->results(); }
 
+  SearchResultPageView* GetSearchResultPageView() {
+    DCHECK(!IsProductivityLauncherEnabled());
+    return app_list_view()
+        ->app_list_main_view()
+        ->contents_view()
+        ->search_result_page_view();
+  }
   SearchResultBaseView* GetFirstResultView() {
     if (IsProductivityLauncherEnabled()) {
       return productivity_launcher_search_view_
           ->result_container_views_for_test()[kBestMatchIndex]
           ->GetFirstResultView();
     }
-    return view()
-        ->contents_view()
-        ->search_result_page_view()
-        ->first_result_view();
+    return GetSearchResultPageView()->first_result_view();
   }
 
   ResultSelectionController* GetResultSelectionController() {
@@ -255,32 +249,32 @@ class SearchBoxViewTest : public views::test::WidgetTest,
       return productivity_launcher_search_view_
           ->result_selection_controller_for_test();
     }
-    return view()
-        ->contents_view()
-        ->search_result_page_view()
-        ->result_selection_controller();
+    return GetSearchResultPageView()->result_selection_controller();
   }
 
   void OnSearchResultContainerResultsChanged() {
     if (IsProductivityLauncherEnabled()) {
       productivity_launcher_search_view_
           ->OnSearchResultContainerResultsChanged();
+    } else {
+      return GetSearchResultPageView()->OnSearchResultContainerResultsChanged();
     }
-    view()
-        ->contents_view()
-        ->search_result_page_view()
-        ->OnSearchResultContainerResultsChanged();
   }
 
   void SimulateQuery(const std::u16string& query) {
     view()->search_box()->InsertText(
-        u"test",
+        query,
         ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   }
 
   // Overridden from SearchBoxViewDelegate:
   void QueryChanged(const std::u16string& trimmed_query,
-                    bool initiated_by_user) override {}
+                    bool initiated_by_user) override {
+    if (IsProductivityLauncherEnabled()) {
+      productivity_launcher_search_view_->UpdateForNewSearch(
+          !trimmed_query.empty());
+    }
+  }
   void AssistantButtonPressed() override {}
   void CloseButtonPressed() override {}
   void ActiveChanged(SearchBoxViewBase* sender) override {}
@@ -301,6 +295,18 @@ class SearchBoxViewTest : public views::test::WidgetTest,
 
 // Run search box view tests with and without productivity launcher enabled.
 INSTANTIATE_TEST_SUITE_P(All, SearchBoxViewTest, testing::Bool());
+
+class SearchBoxViewWithSuggestedContentTest : public SearchBoxViewTest {
+ public:
+  void SetUp() override {
+    view_delegate_.SetShouldShowSuggestedContentInfo(true);
+    SearchBoxViewTest::SetUp();
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SearchBoxViewWithSuggestedContentTest,
+                         testing::Values(false));
 
 TEST_P(SearchBoxViewTest, SearchBoxTextUsesAppListSearchBoxTextColor) {
   EXPECT_EQ(view()->search_box()->GetTextColor(),
@@ -424,6 +430,7 @@ TEST_P(SearchBoxViewTest, ChangeSelectionWhileResultsAreChanging) {
   const SearchResultBaseView* selection =
       GetResultSelectionController()->selected_result();
 
+  ASSERT_TRUE(selection);
   EXPECT_EQ(GetFirstResultView(), selection);
   ASSERT_TRUE(selection->result());
   EXPECT_EQ(u"tester", selection->result()->title());
@@ -715,20 +722,9 @@ TEST_P(SearchBoxViewTest, NewSearchQueryActionRecordedWhenUserType) {
   EXPECT_EQ(2, user_action_tester.GetActionCount("AppList_SearchQueryStarted"));
 }
 
-TEST_P(SearchBoxViewTest, NavigateSuggestedContentInfo) {
-  // PrivacyContainerViews are deprecated for productivity launcher.
-  if (IsProductivityLauncherEnabled())
-    return;
-  // Create a new contents view that contains a suggested content info.
-  view_delegate()->SetShouldShowSuggestedContentInfo(true);
-  auto* contents_view = widget()->GetContentsView()->AddChildView(
-      std::make_unique<KeyPressCounterView>(app_list_view()));
-  contents_view->Init();
-  SetContentsView(contents_view);
-
+TEST_P(SearchBoxViewWithSuggestedContentTest, NavigateSuggestedContentInfo) {
   PrivacyContainerView* const privacy_container_view =
-      contents_view->search_result_page_view()
-          ->GetPrivacyContainerViewForTest();
+      GetSearchResultPageView()->GetPrivacyContainerViewForTest();
   ASSERT_TRUE(privacy_container_view);
 
   // Set up the search box.
@@ -771,20 +767,10 @@ TEST_P(SearchBoxViewTest, NavigateSuggestedContentInfo) {
   EXPECT_FALSE(selection);
 }
 
-TEST_P(SearchBoxViewTest, KeyboardEventClosesSuggestedContentInfo) {
-  // PrivacyContainerViews are deprecated for productivity launcher.
-  if (IsProductivityLauncherEnabled())
-    return;
-  // Create a new contents view that contains a suggested content info.
-  view_delegate()->SetShouldShowSuggestedContentInfo(true);
-  auto* contents_view = widget()->GetContentsView()->AddChildView(
-      std::make_unique<KeyPressCounterView>(app_list_view()));
-  contents_view->Init();
-  SetContentsView(contents_view);
-
+TEST_P(SearchBoxViewWithSuggestedContentTest,
+       KeyboardEventClosesSuggestedContentInfo) {
   PrivacyContainerView* const privacy_container_view =
-      contents_view->search_result_page_view()
-          ->GetPrivacyContainerViewForTest();
+      GetSearchResultPageView()->GetPrivacyContainerViewForTest();
   ASSERT_TRUE(privacy_container_view);
 
   // Set up the search box.
@@ -793,7 +779,7 @@ TEST_P(SearchBoxViewTest, KeyboardEventClosesSuggestedContentInfo) {
                      std::u16string());
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(contents_view->search_result_page_view()
+  EXPECT_EQ(GetSearchResultPageView()
                 ->result_selection_controller()
                 ->selected_result(),
             privacy_container_view->GetResultViewAt(0));
@@ -805,20 +791,10 @@ TEST_P(SearchBoxViewTest, KeyboardEventClosesSuggestedContentInfo) {
   EXPECT_FALSE(view_delegate()->ShouldShowSuggestedContentInfo());
 }
 
-TEST_P(SearchBoxViewTest, SuggestedContentActionNotOverriddenByNewResults) {
-  // PrivacyContainerView is being deprecated for Productivity Launcher.
-  if (IsProductivityLauncherEnabled())
-    return;
-  // Create a new contents view that contains a privacy notice.
-  view_delegate()->SetShouldShowSuggestedContentInfo(true);
-  auto* contents_view = widget()->GetContentsView()->AddChildView(
-      std::make_unique<KeyPressCounterView>(app_list_view()));
-  contents_view->Init();
-  SetContentsView(contents_view);
-
+TEST_P(SearchBoxViewWithSuggestedContentTest,
+       SuggestedContentActionNotOverriddenByNewResults) {
   PrivacyContainerView* const privacy_container_view =
-      contents_view->search_result_page_view()
-          ->GetPrivacyContainerViewForTest();
+      GetSearchResultPageView()->GetPrivacyContainerViewForTest();
   ASSERT_TRUE(privacy_container_view);
 
   // Set up the search box.
@@ -828,7 +804,7 @@ TEST_P(SearchBoxViewTest, SuggestedContentActionNotOverriddenByNewResults) {
   base::RunLoop().RunUntilIdle();
 
   ResultSelectionController* const selection_controller =
-      contents_view->search_result_page_view()->result_selection_controller();
+      GetResultSelectionController();
   const SearchResultBaseView* selection =
       selection_controller->selected_result();
   EXPECT_EQ(selection, privacy_container_view->GetResultViewAt(0));
@@ -851,20 +827,10 @@ TEST_P(SearchBoxViewTest, SuggestedContentActionNotOverriddenByNewResults) {
   EXPECT_EQ(selection->result()->title(), u"test");
 }
 
-TEST_P(SearchBoxViewTest, SuggestedContentSelectionDoesNotChangeSearchBoxText) {
-  // PrivacyContainerView is being deprecated for Productivity Launcher.
-  if (IsProductivityLauncherEnabled())
-    return;
-  // Create a new contents view that contains a suggested content info.
-  view_delegate()->SetShouldShowSuggestedContentInfo(true);
-  auto* contents_view = widget()->GetContentsView()->AddChildView(
-      std::make_unique<KeyPressCounterView>(app_list_view()));
-  contents_view->Init();
-  SetContentsView(contents_view);
-
+TEST_P(SearchBoxViewWithSuggestedContentTest,
+       SuggestedContentSelectionDoesNotChangeSearchBoxText) {
   PrivacyContainerView* const privacy_container_view =
-      contents_view->search_result_page_view()
-          ->GetPrivacyContainerViewForTest();
+      GetSearchResultPageView()->GetPrivacyContainerViewForTest();
   ASSERT_TRUE(privacy_container_view);
 
   // Set up the search box.
@@ -874,7 +840,7 @@ TEST_P(SearchBoxViewTest, SuggestedContentSelectionDoesNotChangeSearchBoxText) {
   base::RunLoop().RunUntilIdle();
 
   ResultSelectionController* const selection_controller =
-      contents_view->search_result_page_view()->result_selection_controller();
+      GetResultSelectionController();
   EXPECT_EQ(selection_controller->selected_result(),
             privacy_container_view->GetResultViewAt(0));
   EXPECT_TRUE(view()->search_box()->GetText().empty());
@@ -949,14 +915,13 @@ class SearchBoxViewAutocompleteTest : public SearchBoxViewTest {
   // Sets up the test by creating a SearchResult and displaying an autocomplete
   // suggestion.
   void SetupAutocompleteBehaviorTest() {
+    // Send H, E to the SearchBoxView textfield, then trigger an autocomplete.
+    KeyPress(ui::VKEY_H);
+    KeyPress(ui::VKEY_E);
     // Add a search result with a non-empty title field.
     CreateSearchResult(ash::SearchResultDisplayType::kList, 1.0,
                        u"hello world!", std::u16string());
     base::RunLoop().RunUntilIdle();
-
-    // Send H, E to the SearchBoxView textfield, then trigger an autocomplete.
-    KeyPress(ui::VKEY_H);
-    KeyPress(ui::VKEY_E);
     ProcessAutocomplete();
   }
 };
@@ -972,6 +937,9 @@ TEST_P(SearchBoxViewAutocompleteTest,
   // Search result tile tests are not relevant for productivity launcher.
   if (IsProductivityLauncherEnabled())
     return;
+
+  SimulateQuery(u"he");
+
   // Add two SearchResults, one tile and one list result. Initialize their title
   // field to a non-empty string.
   CreateSearchResult(ash::SearchResultDisplayType::kList, 1.0, u"hello list",
@@ -980,11 +948,7 @@ TEST_P(SearchBoxViewAutocompleteTest,
                      std::u16string());
   base::RunLoop().RunUntilIdle();
 
-  // Send H, E to the SearchBoxView textfield, then trigger an autocomplete.
-  KeyPress(ui::VKEY_H);
-  KeyPress(ui::VKEY_E);
   ProcessAutocomplete();
-
   EXPECT_EQ(view()->search_box()->GetText(), u"hello tile");
   EXPECT_EQ(view()->search_box()->GetSelectedText(), u"llo tile");
 }
@@ -996,6 +960,9 @@ TEST_P(SearchBoxViewAutocompleteTest,
   // Search result tile tests are not relevant for productivity launcher.
   if (IsProductivityLauncherEnabled())
     return;
+
+  SimulateQuery(u"he");
+
   // Add two SearchResults, one tile and one list result. Initialize their title
   // field to a non-empty string.
   CreateSearchResult(ash::SearchResultDisplayType::kTile, 1.0, u"hello tile",
@@ -1004,9 +971,6 @@ TEST_P(SearchBoxViewAutocompleteTest,
                      std::u16string());
   base::RunLoop().RunUntilIdle();
 
-  // Send H, E to the SearchBoxView textfield, then trigger an autocomplete.
-  KeyPress(ui::VKEY_H);
-  KeyPress(ui::VKEY_E);
   ProcessAutocomplete();
   EXPECT_EQ(view()->search_box()->GetText(), u"hello tile");
   EXPECT_EQ(view()->search_box()->GetSelectedText(), u"llo tile");
@@ -1019,6 +983,9 @@ TEST_P(SearchBoxViewAutocompleteTest,
   // Search result tile tests are not relevant for productivity launcher.
   if (IsProductivityLauncherEnabled())
     return;
+
+  SimulateQuery(u"he");
+
   // Add two SearchResults, one tile and one list result. The tile should
   // display first, despite having a lower score. Initialize their details field
   // to a non-empty string.
@@ -1028,9 +995,6 @@ TEST_P(SearchBoxViewAutocompleteTest,
                      u"hello tile");
   base::RunLoop().RunUntilIdle();
 
-  // Send H, E to the SearchBoxView textfield, then trigger an autocomplete.
-  KeyPress(ui::VKEY_H);
-  KeyPress(ui::VKEY_E);
   ProcessAutocomplete();
   EXPECT_EQ(view()->search_box()->GetText(), u"hello tile");
   EXPECT_EQ(view()->search_box()->GetSelectedText(), u"llo tile");
@@ -1043,6 +1007,9 @@ TEST_P(SearchBoxViewAutocompleteTest,
   // Search result tile tests are not relevant for productivity launcher.
   if (IsProductivityLauncherEnabled())
     return;
+
+  SimulateQuery(u"he");
+
   // Add two SearchResults, one tile and one list result. Initialize their
   // details field to a non-empty string.
   CreateSearchResult(ash::SearchResultDisplayType::kTile, 1.0, std::u16string(),
@@ -1051,9 +1018,6 @@ TEST_P(SearchBoxViewAutocompleteTest,
                      u"hello list");
   base::RunLoop().RunUntilIdle();
 
-  // Send H, E to the SearchBoxView textfield, then trigger an autocomplete.
-  KeyPress(ui::VKEY_H);
-  KeyPress(ui::VKEY_E);
   ProcessAutocomplete();
   EXPECT_EQ(view()->search_box()->GetText(), u"hello tile");
   EXPECT_EQ(view()->search_box()->GetSelectedText(), u"llo tile");
@@ -1063,13 +1027,12 @@ TEST_P(SearchBoxViewAutocompleteTest,
 // result title or details do not have a matching prefix.
 TEST_P(SearchBoxViewAutocompleteTest,
        SearchBoxDoesNotAutocompleteWrongCharacter) {
+  // Send Z to the SearchBoxView textfield, then trigger an autocomplete.
+  KeyPress(ui::VKEY_Z);
   // Add a search result with non-empty details and title fields.
   CreateSearchResult(ash::SearchResultDisplayType::kList, 1.0, u"title",
                      u"details");
   base::RunLoop().RunUntilIdle();
-
-  // Send Z to the SearchBoxView textfield, then trigger an autocomplete.
-  KeyPress(ui::VKEY_Z);
   ProcessAutocomplete();
   // The text should not be autocompleted.
   EXPECT_EQ(view()->search_box()->GetText(), u"z");
@@ -1078,14 +1041,11 @@ TEST_P(SearchBoxViewAutocompleteTest,
 // Tests that autocomplete suggestion will remain if next key in the suggestion
 // is typed.
 TEST_P(SearchBoxViewAutocompleteTest, SearchBoxAutocompletesAcceptsNextChar) {
+  SimulateQuery(u"he");
   // Add a search result with a non-empty title field.
   CreateSearchResult(ash::SearchResultDisplayType::kList, 1.0, u"hello world!",
                      std::u16string());
   base::RunLoop().RunUntilIdle();
-
-  // Send H, E to the SearchBoxView textfield, then trigger an autocomplete.
-  KeyPress(ui::VKEY_H);
-  KeyPress(ui::VKEY_E);
   ProcessAutocomplete();
 
   // After typing L, the highlighted text will be replaced by L.
@@ -1118,7 +1078,7 @@ TEST_P(SearchBoxViewAutocompleteTest, SearchBoxAcceptsAutocompleteForClick) {
   // Search box autocomplete suggestion is accepted, but it should not
   // trigger another query, thus it is not reflected in Search Model.
   EXPECT_EQ(u"hello world!", view()->search_box()->GetText());
-  EXPECT_EQ(u"he", GetSearchModel()->search_box()->text());
+  EXPECT_EQ(u"he", view()->current_query());
 }
 
 TEST_P(SearchBoxViewAutocompleteTest, SearchBoxAcceptsAutocompleteForTap) {
@@ -1137,20 +1097,20 @@ TEST_P(SearchBoxViewAutocompleteTest, SearchBoxAcceptsAutocompleteForTap) {
   // Search box autocomplete suggestion is accepted, but it should not
   // trigger another query, thus it is not reflected in Search Model.
   EXPECT_EQ(u"hello world!", view()->search_box()->GetText());
-  EXPECT_EQ(u"he", GetSearchModel()->search_box()->text());
+  EXPECT_EQ(u"he", view()->current_query());
 }
 
 // Tests that autocomplete is not handled if IME is using composition text.
 TEST_P(SearchBoxViewAutocompleteTest, SearchBoxAutocompletesNotHandledForIME) {
+  // Simulate uncomposited text. The autocomplete should be handled.
+  KeyPress(ui::VKEY_H);
+  KeyPress(ui::VKEY_E);
+  view()->set_highlight_range_for_test(gfx::Range(2, 2));
   // Add a search result with a non-empty title field.
   CreateSearchResult(ash::SearchResultDisplayType::kList, 1.0, u"hello world!",
                      std::u16string());
   base::RunLoop().RunUntilIdle();
 
-  // Simulate uncomposited text. The autocomplete should be handled.
-  KeyPress(ui::VKEY_H);
-  KeyPress(ui::VKEY_E);
-  view()->set_highlight_range_for_test(gfx::Range(2, 2));
   ProcessAutocomplete();
 
   std::u16string selected_text = view()->search_box()->GetSelectedText();

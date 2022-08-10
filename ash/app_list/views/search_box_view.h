@@ -165,6 +165,8 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
     highlight_range_ = range;
   }
 
+  const std::u16string& current_query() const { return current_query_; }
+
   // Update search box view background when result container visibility changes.
   void OnResultContainerVisibilityChanged(bool visible);
 
@@ -218,7 +220,6 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
                           const ui::GestureEvent& gesture_event) override;
 
   // Overridden from SearchBoxModelObserver:
-  void Update() override;
   void SearchEngineChanged() override;
   void ShowAssistantChanged() override;
 

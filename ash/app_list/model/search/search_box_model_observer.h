@@ -13,9 +13,6 @@ namespace ash {
 class APP_LIST_MODEL_EXPORT SearchBoxModelObserver
     : public base::CheckedObserver {
  public:
-  // Invoked when text or voice search flag is changed.
-  virtual void Update() = 0;
-
   // Invoked when the search engine is changed.
   virtual void SearchEngineChanged() = 0;
 

@@ -1653,16 +1653,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Apps.AppListSearchCommenced" units="searches"
-    expires_after="2022-12-01">
-  <owner>yulunwu@chromium.org</owner>
-  <owner>tapted@chromium.org</owner>
-  <summary>
-    The number of searches that are started in the app list. This is gathered
-    each time the app list search box transitions from empty to non-empty.
-  </summary>
-</histogram>
-
 <histogram name="Apps.AppListSearchQueryLength" units="characters"
     expires_after="2022-08-01">
   <obsolete>

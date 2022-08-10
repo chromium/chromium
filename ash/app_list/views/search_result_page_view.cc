@@ -251,7 +251,6 @@ SearchResultPageView::SearchResultPageView() : contents_view_(new views::View) {
 
   AppListModelProvider* const model_provider = AppListModelProvider::Get();
   model_provider->AddObserver(this);
-  search_box_observation_.Observe(model_provider->search_model()->search_box());
 }
 
 SearchResultPageView::~SearchResultPageView() {
@@ -369,8 +368,8 @@ void SearchResultPageView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
     node_data->role = ax::mojom::Role::kListBox;
 
   std::u16string value;
-  std::u16string query =
-      AppListModelProvider::Get()->search_model()->search_box()->text();
+  SearchBoxView* search_box = AppListPage::contents_view()->GetSearchBoxView();
+  const std::u16string& query = search_box->current_query();
   if (!query.empty()) {
     if (last_search_result_count_ == 1) {
       value = l10n_util::GetStringFUTF16(
@@ -400,6 +399,14 @@ void SearchResultPageView::OnThemeChanged() {
   // SchedulePaint() marks the entire SearchResultPageView's bounds as dirty.
   SchedulePaint();
   AppListPage::OnThemeChanged();
+}
+
+void SearchResultPageView::UpdateForNewSearch() {
+  notify_a11y_results_changed_timer_.Stop();
+  if (productivity_launcher_search_view_) {
+    productivity_launcher_search_view_->UpdateForNewSearch(
+        ShouldShowSearchResultView());
+  }
 }
 
 void SearchResultPageView::UpdateResultContainersVisibility() {
@@ -683,8 +690,6 @@ int SearchResultPageView::GetCornerRadiusForSearchResultsState(
 void SearchResultPageView::OnActiveAppListModelsChanged(
     AppListModel* model,
     SearchModel* search_model) {
-  search_box_observation_.Reset();
-  search_box_observation_.Observe(search_model->search_box());
   for (auto* container : result_container_views_)
     container->SetResults(search_model->results());
 }
@@ -742,14 +747,6 @@ void SearchResultPageView::OnSearchResultContainerResultsChanged() {
       first_result_view_);
 }
 
-void SearchResultPageView::Update() {
-  notify_a11y_results_changed_timer_.Stop();
-}
-
-void SearchResultPageView::SearchEngineChanged() {}
-
-void SearchResultPageView::ShowAssistantChanged() {}
-
 bool SearchResultPageView::CanSelectSearchResults() const {
   if (!GetVisible())
     return false;
@@ -781,11 +778,9 @@ SearchResultListView* SearchResultPageView::GetSearchResultListViewForTest() {
 }
 
 bool SearchResultPageView::ShouldShowSearchResultView() const {
-  SearchModel* search_model = AppListModelProvider::Get()->search_model();
+  SearchBoxView* search_box = AppListPage::contents_view()->GetSearchBoxView();
   return (!features::IsProductivityLauncherEnabled() ||
-          !base::TrimWhitespace(search_model->search_box()->text(),
-                                base::TrimPositions::TRIM_ALL)
-               .empty());
+          search_box->HasValidQuery());
 }
 
 void SearchResultPageView::OnHidden() {

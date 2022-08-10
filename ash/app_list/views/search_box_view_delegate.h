@@ -17,7 +17,8 @@ class SearchBoxViewBase;
 
 class SearchBoxViewDelegate {
  public:
-  // Invoked when query text in the search box changes.
+  // Invoked when query text in the search box changes, just before initiating
+  // search request for the query.
   // `trimmed_query` - the search boxt textfiled contents with whitespace
   // trimmed (which will generally match the query sent to search providers).
   // `initiated_by_user` - whether the query changed as a result of user input

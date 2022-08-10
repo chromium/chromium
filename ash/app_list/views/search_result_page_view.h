@@ -11,8 +11,6 @@
 
 #include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/model/app_list_model.h"
-#include "ash/app_list/model/search/search_box_model.h"
-#include "ash/app_list/model/search/search_box_model_observer.h"
 #include "ash/app_list/views/app_list_page.h"
 #include "ash/app_list/views/result_selection_controller.h"
 #include "ash/app_list/views/search_result_container_view.h"
@@ -37,8 +35,7 @@ class SystemShadow;
 class ASH_EXPORT SearchResultPageView
     : public AppListPage,
       public AppListModelProvider::Observer,
-      public SearchResultContainerView::Delegate,
-      public SearchBoxModelObserver {
+      public SearchResultContainerView::Delegate {
  public:
   SearchResultPageView();
 
@@ -96,11 +93,6 @@ class ASH_EXPORT SearchResultPageView
   void OnSearchResultContainerResultsChanging() override;
   void OnSearchResultContainerResultsChanged() override;
 
-  // Overridden from SearchBoxModelObserver:
-  void Update() override;
-  void SearchEngineChanged() override;
-  void ShowAssistantChanged() override;
-
   // Whether any results are available for selection within the search result
   // UI.
   bool CanSelectSearchResults() const;
@@ -125,6 +117,10 @@ class ASH_EXPORT SearchResultPageView
 
   // Hide zero state search result view when ProductivityLauncher is enabled.
   bool ShouldShowSearchResultView() const;
+
+  // Called when the app list search query changes and new search is about to
+  // start or cleared.
+  void UpdateForNewSearch();
 
   // Sets visibility of result container and separator views so only containers
   // that contain some results are shown.
@@ -248,9 +244,6 @@ class ASH_EXPORT SearchResultPageView
 
   // The controller that manages dialogs modal to the search results page.
   std::unique_ptr<SearchResultPageDialogController> dialog_controller_;
-
-  base::ScopedObservation<SearchBoxModel, SearchBoxModelObserver>
-      search_box_observation_{this};
 };
 
 }  // namespace ash

@@ -15,7 +15,6 @@
 
 #include "ash/app_list/app_list_test_view_delegate.h"
 #include "ash/app_list/model/app_list_test_model.h"
-#include "ash/app_list/model/search/search_box_model.h"
 #include "ash/app_list/model/search/test_search_result.h"
 #include "ash/app_list/views/app_list_folder_view.h"
 #include "ash/app_list/views/app_list_item_view.h"
@@ -2571,8 +2570,8 @@ TEST_F(AppListViewTest, DISABLED_SearchResultsTest) {
       search_text,
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   // Check that the current search is using |search_text|.
-  EXPECT_EQ(search_text, GetSearchModel()->search_box()->text());
   EXPECT_EQ(search_text, main_view->search_box_view()->search_box()->GetText());
+  EXPECT_EQ(search_text, main_view->search_box_view()->current_query());
   contents_view->Layout();
   EXPECT_TRUE(
       contents_view->IsStateActive(ash::AppListState::kStateSearchResults));
@@ -2592,9 +2591,9 @@ TEST_F(AppListViewTest, DISABLED_SearchResultsTest) {
       new_search_text,
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   // Check that the current search is using |new_search_text|.
-  EXPECT_EQ(new_search_text, GetSearchModel()->search_box()->text());
   EXPECT_EQ(new_search_text,
             main_view->search_box_view()->search_box()->GetText());
+  EXPECT_EQ(search_text, main_view->search_box_view()->current_query());
   contents_view->Layout();
   EXPECT_TRUE(IsStateShown(ash::AppListState::kStateSearchResults));
   EXPECT_TRUE(CheckSearchBoxWidget(contents_view->GetSearchBoxBounds(
