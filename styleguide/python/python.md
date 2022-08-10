@@ -14,9 +14,11 @@ will use), but we are increasingly seeing people running 3.9 locally as well.
 We (often) use a tool called [vpython] to manage Python packages; vpython
 is a wrapper around virtualenv. However, it is not safe to use vpython
 regardless of context, as it can have performance issues. All tests are
-run under vpython, so it is safe there, but you should not use vpython
-during PRESUBMIT checks, gclient runhooks, or during the build unless
-a [//build/OWNER](../../build/OWNERS) has told you that it is okay to do so.
+run under vpython, so it is safe there, and vpython is the default for
+running scripts during PRESUBMIT checks (input_api.python3_executable points to
+vpython3 and is used in GetPythonUnitTests), but you should not use vpython
+during gclient runhooks, or during the build unless a
+[//build/OWNER](../../build/OWNERS) has told you that it is okay to do so.
 
 Also, there is some performance overhead to using vpython, so prefer not
 to use vpython unless you need it (to pick up packages not available in the
@@ -26,7 +28,9 @@ source tree).
 aren't as useful as you might think in Chromium, because
 most of our python invocations come from other tools like Ninja or
 the swarming infrastructure, and they also don't work on Windows.
-So, don't expect them to help you.
+So, don't expect them to help you. That said, a python 3 shebang is one way to
+indicate to the presubmit system that test scripts should be run under Python 3
+rather than Python 2.
 
 However, if your script is executable, you should still use one, and for
 Python you should use `#!/usr/bin/env python3` or `#!/usr/bin/env vpython3`
@@ -65,6 +69,25 @@ You can propose changes to this style guide by sending an email to
 can request review for a change to this file. If there's no consensus,
 [`//styleguide/python/OWNERS`](https://chromium.googlesource.com/chromium/src/+/main/styleguide/python/OWNERS)
 get to decide.
+
+## Portability
+
+There are a couple of differences in how text files are handled on Windows that
+can lead to portability problems. These differences are:
+
+* The default encoding when reading/writing text files is cp1252 on Windows and
+utf-8 on Linux, which can lead to Windows-only test failures. These can be
+avoided by always specifying `encoding='utf-8'` when opening text files.
+
+* The default behavior when writing text files on Windows is to emit \r\n
+(carriage return line feed) line endings. This can lead to cryptic Windows-only
+test failures and is generally undesirable. This can be avoided by always
+specifying `newline=''` when opening text files for writing.
+
+That is, use these forms when opening text files in Python:
+
+* reading: with open(filename, 'r', encoding='utf-8') as f:
+* writing: with open(filename, 'w', encoding='utf-8', newline='') as f:
 
 ## Tools
 
