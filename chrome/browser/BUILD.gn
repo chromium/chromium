@@ -4796,8 +4796,6 @@ static_library("browser") {
       "media/chromeos_login_and_lock_media_access_handler.h",
       "media/public_session_media_access_handler.cc",
       "media/public_session_media_access_handler.h",
-      "media/public_session_tab_capture_access_handler.cc",
-      "media/public_session_tab_capture_access_handler.h",
       "media/webrtc/desktop_media_list_ash.cc",
       "media/webrtc/desktop_media_list_ash.h",
       "media/webrtc/window_icon_util_chromeos.cc",
