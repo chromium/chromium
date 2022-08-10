@@ -515,6 +515,7 @@ const char kChromeUIEnterpriseProfileWelcomeHost[] =
     "enterprise-profile-welcome";
 const char kChromeUIEnterpriseProfileWelcomeURL[] =
     "chrome://enterprise-profile-welcome/";
+const char kChromeUIIntroHost[] = "intro";
 const char kChromeUIProfileCustomizationHost[] = "profile-customization";
 const char kChromeUIProfileCustomizationURL[] =
     "chrome://profile-customization";

@@ -1,0 +1,24 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//chrome/browser/resources/tools/build_webui.gni")
+
+assert(!is_chromeos_ash && !is_android)
+
+build_webui("build") {
+  grd_prefix = "intro"
+
+  static_files = [ "intro.html" ]
+
+  web_component_files = [ "app.ts" ]
+
+  non_web_component_files = [ "browser_proxy.ts" ]
+
+  ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
+  ts_deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+  ]
+}

@@ -1,0 +1,37 @@
+<style>
+  :host {
+    --view-min-size: 620px;
+    color: var(--cr-primary-text-color);
+  }
+
+  cr-view-manager {
+    display: flex;
+    font-size: 100%;
+    margin: 0;
+  }
+
+  [slot='view'] {
+    min-height: var(--view-min-size);
+    min-width: var(--view-min-size);
+  }
+</style>
+<cr-view-manager id="viewManager">
+  <!-- TODO(crbug.com/1347507): On load, transition to "splash" and trigger the
+       animation -->
+  <div id="splash" slot="view">
+    <!-- TODO(crbug.com/1347507): Use <cr_lottie> -->
+    🏐 Faster. Safer. Yours.
+  </div>
+
+  <!-- TODO(crbug.com/1347507): Implement this as an element?-->
+  <div id="signInPromo" slot="view" >
+    <p>🚧 $i18n{message}  🚧</p>
+
+    <!-- TODO(crbug.com/1347507): Don't hardcode strings-->
+    <button on-click="onContinueWithAccountClick_">sign in</button>
+    |
+    <button on-click="onContinueWithoutAccountClick_">
+      continue without an account
+    </button>
+  </div>
+</cr-view-manager>
