@@ -81,6 +81,7 @@ build_webui("build") {
       "enterprise_profile_welcome/enterprise_profile_welcome_browser_proxy.ts",
       "profile_customization/profile_customization_browser_proxy.ts",
       "signin_error/signin_error.ts",
+      "signin_icons.ts",
     ]
   }
   if (enable_dice_support) {

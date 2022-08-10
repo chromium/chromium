@@ -44,9 +44,10 @@
     width: 100%;
   }
 
-  .work-badge {
-    --badge-width: 20px;
+  .avatar-badge {
+    --badge-icon-size: 15px;
     --badge-offset: -4px;
+    --badge-width: 20px;
     background-color: var(--signin-work-badge-background-color);
     border: 2px solid var(--header-background-color);
     border-radius: 50%;
@@ -57,27 +58,29 @@
     width: var(--badge-width);
   }
 
-  .in-dialog-design .work-badge {
+  .in-dialog-design .avatar-badge {
+    --badge-icon-size: 16px;
     --badge-width: 26px;
     border: 1px solid var(--google-grey-300);
     bottom: 0;
   }
 
-  .work-badge > iron-icon {
-    --work-icon-size: 15px;
+  .avatar-badge > iron-icon {
     bottom: 0;
     color: var(--signin-work-badge-foreground-color);
-    height: var(--work-icon-size);
+    height: var(--badge-icon-size);
     left: 0;
     margin: auto;
     position: absolute;
     right: 0;
     top: 0;
-    width: var(--work-icon-size);
+    width: var(--badge-icon-size);
   }
 
-  .in-dialog-design .work-badge > iron-icon {
-    --work-icon-size: 16px;
+  .avatar-badge > cr-icon-button {
+    --cr-icon-button-icon-size: var(--badge-icon-size);
+    --cr-icon-button-size: var(--badge-width);
+    margin: auto;
   }
 
   #body {
@@ -151,7 +154,7 @@
   }
 
   @media (prefers-color-scheme: dark) {
-    .in-dialog-design .work-badge {
+    .in-dialog-design .avatar-badge {
       border: 1px solid var(--google-grey-500);
     }
 
@@ -168,20 +171,24 @@
   <div id="header">
     <div id="avatarContainer">
       <img id="avatar" alt="" src="[[pictureUrl_]]">
-      <div class="work-badge" id="badge" hidden="[[!isManaged_]]">
-        <iron-icon class="icon" icon="cr:domain"></iron-icon>
-      </div>
+      <template is="dom-if" if="[[!isLocalProfileCreation_]]">
+        <div class="avatar-badge" id="workBadge" hidden="[[!isManaged_]]">
+          <iron-icon class="icon" icon="cr:domain"></iron-icon>
+        </div>
+      </template>
+      <template is="dom-if" if="[[isLocalProfileCreation_]]">
+        <div class="avatar-badge">
+          <cr-icon-button id="customizeAvatarIcon" iron-icon="signin:create"
+              on-click="onCustomizeAvatarClick_">
+          </cr-icon-button>
+        </div>
+      </template>
     </div>
   </div>
 
   <div id="body">
     <div id="title">
-      <template is="dom-if" if="[[!profileCustomizationInDialogDesign_]]">
-        [[welcomeTitle_]]
-      </template>
-      <template is="dom-if" if="[[profileCustomizationInDialogDesign_]]">
-        $i18n{profileCustomizationTitle}
-      </template>
+      [[welcomeTitle_]]
     </div>
     <template is="dom-if" if="[[!profileCustomizationInDialogDesign_]]">
       <div id="content">$i18n{profileCustomizationText}</div>
@@ -204,7 +211,7 @@
         on-click="onDoneCustomizationClicked_" autofocus>
       $i18n{profileCustomizationDoneLabel}
     </cr-button>
-    <template is="dom-if" if="[[profileCustomizationInDialogDesign_]]">
+    <template is="dom-if" if="[[shouldShowCancelButton_()]]">
       <cr-button id="skipButton" class="cancel-button"
           on-click="onSkipCustomizationClicked_">
         $i18n{profileCustomizationSkipLabel}

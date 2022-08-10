@@ -1,0 +1,17 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
+
+const element = document.createElement('iron-iconset-svg');
+element.name = 'signin';
+element.innerHTML = `
+<svg>
+  <defs>
+    <g id="create" viewBox="0 0 24 24">
+      <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+    </g>
+  </defs>
+</svg>`;
+document.head.appendChild(element);
