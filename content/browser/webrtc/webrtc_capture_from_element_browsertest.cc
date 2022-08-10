@@ -88,22 +88,16 @@ IN_PROC_BROWSER_TEST_F(WebRtcCaptureFromElementBrowserTest,
                   kCanvasCaptureColorTestHtmlFile);
 }
 
-// TODO(https://crbug.com/1334876): Flaky.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-#define MAYBE_VerifyCanvasWebGLCaptureColor \
-  DISABLED_VerifyCanvasWebGLCaptureColor
-#else
-#define MAYBE_VerifyCanvasWebGLCaptureColor VerifyCanvasWebGLCaptureColor
-#endif
 IN_PROC_BROWSER_TEST_F(WebRtcCaptureFromElementBrowserTest,
-                       MAYBE_VerifyCanvasWebGLCaptureColor) {
-#if !BUILDFLAG(IS_MAC)
-  // TODO(crbug.com/706009): Make this test pass on mac.  Behavior is not buggy
-  // (verified manually) on mac, but for some reason this test fails on the mac
-  // bot.
-  MakeTypicalCall("testCanvasWebGLCaptureColors(true);",
+                       VerifyCanvasWebGLCaptureOpaqueColor) {
+  MakeTypicalCall("testCanvasWebGLCaptureOpaqueColors(true);",
                   kCanvasCaptureColorTestHtmlFile);
-#endif
+}
+
+IN_PROC_BROWSER_TEST_F(WebRtcCaptureFromElementBrowserTest,
+                       VerifyCanvasWebGLCaptureAlphaColor) {
+  MakeTypicalCall("testCanvasWebGLCaptureAlphaColors(true);",
+                  kCanvasCaptureColorTestHtmlFile);
 }
 
 // TODO(https://crbug.com/1350300): Flaky.
