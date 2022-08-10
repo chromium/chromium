@@ -5929,6 +5929,22 @@
           ]
         },
       },
+      'win10-32-on-64-updater-tester-dbg': {
+        'mixins': [
+          'win10',
+          'x86-64',
+        ],
+        'test_suites': {
+          'gtest_tests': 'updater_gtests_win',
+        },
+        'swarming': {
+          'dimension_sets': [
+            {
+              'integrity': 'high',
+            }
+          ]
+        },
+      },
       'win10-updater-tester-dbg': {
         'mixins': [
           'win10',
