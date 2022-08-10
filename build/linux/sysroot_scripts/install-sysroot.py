@@ -155,7 +155,7 @@ def InstallSysroot(target_platform, target_arch):
   if sha1sum != tarball_sha1sum:
     raise Error('Tarball sha1sum is wrong.'
                 'Expected %s, actual: %s' % (tarball_sha1sum, sha1sum))
-  subprocess.check_call(['tar', 'xf', tarball, '-C', sysroot])
+  subprocess.check_call(['tar', 'mxf', tarball, '-C', sysroot])
   os.remove(tarball)
 
   with open(stamp, 'w') as s:
