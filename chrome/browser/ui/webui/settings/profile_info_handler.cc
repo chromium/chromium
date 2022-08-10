@@ -103,7 +103,7 @@ void ProfileInfoHandler::HandleGetProfileInfo(const base::Value::List& args) {
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
 
-  ResolveJavascriptCallback(callback_id, *GetAccountNameAndIcon());
+  ResolveJavascriptCallback(callback_id, GetAccountNameAndIcon());
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -129,11 +129,10 @@ void ProfileInfoHandler::PushProfileStatsCount(
 #endif
 
 void ProfileInfoHandler::PushProfileInfo() {
-  FireWebUIListener(kProfileInfoChangedEventName, *GetAccountNameAndIcon());
+  FireWebUIListener(kProfileInfoChangedEventName, GetAccountNameAndIcon());
 }
 
-std::unique_ptr<base::DictionaryValue>
-ProfileInfoHandler::GetAccountNameAndIcon() {
+base::Value::Dict ProfileInfoHandler::GetAccountNameAndIcon() {
   std::string name;
   std::string icon_url;
 
@@ -165,9 +164,9 @@ ProfileInfoHandler::GetAccountNameAndIcon() {
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  auto response = std::make_unique<base::DictionaryValue>();
-  response->SetStringKey("name", name);
-  response->SetStringKey("iconUrl", icon_url);
+  base::Value::Dict response;
+  response.Set("name", name);
+  response.Set("iconUrl", icon_url);
   return response;
 }
 

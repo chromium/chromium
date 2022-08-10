@@ -84,11 +84,10 @@ class ProtocolHandlersHandler
 
   // Populates a JSON object describing the set of protocol handlers for the
   // given protocol.
-  void GetHandlersForProtocol(const std::string& protocol,
-                              base::Value::Dict* value);
+  base::Value::Dict GetHandlersForProtocol(const std::string& protocol);
 
   // Returns a JSON list of the ignored protocol handlers.
-  void GetIgnoredHandlers(base::ListValue* handlers);
+  base::Value::List GetIgnoredHandlers();
 
   // Called when the JS PasswordManager object is initialized.
   void UpdateHandlerList();
@@ -113,9 +112,9 @@ class ProtocolHandlersHandler
   custom_handlers::ProtocolHandler ParseAppHandlerFromArgs(
       const base::Value::List& args) const;
 
-  // Returns a DictionaryValue describing the set of app protocol handlers for
+  // Returns a Value::Dict describing the set of app protocol handlers for
   // the given |protocol| in the given |handlers| list.
-  std::unique_ptr<base::DictionaryValue> GetAppHandlersForProtocol(
+  base::Value::Dict GetAppHandlersForProtocol(
       const std::string& protocol,
       custom_handlers::ProtocolHandlerRegistry::ProtocolHandlerList handlers);
 

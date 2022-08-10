@@ -148,7 +148,7 @@ class PeopleHandler : public SettingsPageUIHandler,
 
   // Returns a newly created dictionary with a number of properties that
   // correspond to the status of sync.
-  base::Value GetSyncStatusDictionary() const;
+  base::Value::Dict GetSyncStatusDictionary() const;
 
   // Helper routine that gets the SyncService associated with the parent
   // profile.
@@ -195,7 +195,7 @@ class PeopleHandler : public SettingsPageUIHandler,
 
   void HandleGetStoredAccounts(const base::Value::List& args);
   void HandleStartSyncingWithEmail(const base::Value::List& args);
-  base::Value GetStoredAccountsList();
+  base::Value::List GetStoredAccountsList();
 
   // Pushes the updated sync prefs to JavaScript.
   void PushSyncPrefs();

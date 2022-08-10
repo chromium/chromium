@@ -381,9 +381,9 @@ void SafetyCheckHandler::HandleGetParentRanDisplayString(
   // such strings.
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // String update for Chrome Cleaner.
-  base::DictionaryValue event;
-  event.SetIntKey(kNewState, static_cast<int>(chrome_cleaner_status_));
-  event.SetStringKey(
+  base::Value::Dict event;
+  event.Set(kNewState, static_cast<int>(chrome_cleaner_status_));
+  event.Set(
       kDisplayString,
       GetStringForChromeCleaner(
           chrome_cleaner_status_,
@@ -513,10 +513,10 @@ void SafetyCheckHandler::OnPasswordsCheckResult(PasswordsStatus status,
                                                 Weak weak,
                                                 Done done,
                                                 Total total) {
-  base::DictionaryValue event;
-  event.SetIntKey(kNewState, static_cast<int>(status));
-  event.SetStringKey(kDisplayString, GetStringForPasswords(status, compromised,
-                                                           weak, done, total));
+  base::Value::Dict event;
+  event.Set(kNewState, static_cast<int>(status));
+  event.Set(kDisplayString,
+            GetStringForPasswords(status, compromised, weak, done, total));
   FireWebUIListener(kPasswordsEvent, event);
   if (status != PasswordsStatus::kChecking) {
     base::UmaHistogramEnumeration("Settings.SafetyCheck.PasswordsResult",
@@ -531,11 +531,11 @@ void SafetyCheckHandler::OnExtensionsCheckResult(
     Blocklisted blocklisted,
     ReenabledUser reenabled_user,
     ReenabledAdmin reenabled_admin) {
-  base::DictionaryValue event;
-  event.SetIntKey(kNewState, static_cast<int>(status));
-  event.SetStringKey(kDisplayString,
-                     GetStringForExtensions(status, Blocklisted(blocklisted),
-                                            reenabled_user, reenabled_admin));
+  base::Value::Dict event;
+  event.Set(kNewState, static_cast<int>(status));
+  event.Set(kDisplayString,
+            GetStringForExtensions(status, Blocklisted(blocklisted),
+                                   reenabled_user, reenabled_admin));
   FireWebUIListener(kExtensionsEvent, event);
   if (status != ExtensionsStatus::kChecking) {
     base::UmaHistogramEnumeration("Settings.SafetyCheck.ExtensionsResult",
@@ -548,12 +548,11 @@ void SafetyCheckHandler::OnExtensionsCheckResult(
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 void SafetyCheckHandler::OnChromeCleanerCheckResult(
     SafetyCheckHandler::ChromeCleanerResult result) {
-  base::DictionaryValue event;
-  event.SetIntKey(kNewState, static_cast<int>(result.status));
-  event.SetStringKey(
-      kDisplayString,
-      GetStringForChromeCleaner(result.status, result.cct_completion_time,
-                                timestamp_delegate_->GetSystemTime()));
+  base::Value::Dict event;
+  event.Set(kNewState, static_cast<int>(result.status));
+  event.Set(kDisplayString,
+            GetStringForChromeCleaner(result.status, result.cct_completion_time,
+                                      timestamp_delegate_->GetSystemTime()));
   FireWebUIListener(kChromeCleanerEvent, event);
   chrome_cleaner_status_ = result.status;
 }
@@ -1093,8 +1092,8 @@ void SafetyCheckHandler::FireBasicSafetyCheckWebUiListener(
     const std::string& event_name,
     int new_state,
     const std::u16string& display_string) {
-  base::DictionaryValue event;
-  event.SetIntKey(kNewState, new_state);
-  event.SetStringKey(kDisplayString, display_string);
+  base::Value::Dict event;
+  event.Set(kNewState, new_state);
+  event.Set(kDisplayString, display_string);
   FireWebUIListener(event_name, event);
 }
