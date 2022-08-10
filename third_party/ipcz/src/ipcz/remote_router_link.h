@@ -53,6 +53,9 @@ class RemoteRouterLink : public RouterLink {
   RouterLinkState* GetLinkState() const override;
   Ref<Router> GetLocalPeer() override;
   RemoteRouterLink* AsRemoteRouterLink() override;
+  void AllocateParcelData(size_t num_bytes,
+                          bool allow_partial,
+                          Parcel& parcel) override;
   void AcceptParcel(Parcel& parcel) override;
   void AcceptRouteClosure(SequenceNumber sequence_length) override;
   void AcceptRouteDisconnected() override;

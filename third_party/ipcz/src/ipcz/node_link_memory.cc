@@ -61,6 +61,10 @@ constexpr size_t kMinFragmentSize = 64;
 // onto a different allocation scheme which does not use a BlockAllocator.
 constexpr size_t kMaxFragmentSizeForBlockAllocation = 16 * 1024;
 
+// The minimum fallback fragment size to attempt for best-effort allocations
+// when the requested size cannot be accommodated.
+constexpr size_t kMinBestEffortFallbackBlockSize = 4096;
+
 // The number of fixed RouterLinkState locations in the primary buffer. This
 // limits the maximum number of initial portals supported by the ConnectNode()
 // API. Note that these states reside in a fixed location at the end of the
@@ -281,6 +285,23 @@ Fragment NodeLinkMemory::AllocateFragment(size_t size) {
     }
   }
   return fragment;
+}
+
+Fragment NodeLinkMemory::AllocateFragmentBestEffort(size_t size) {
+  // TODO: Support an alternative allocation scheme for larger requests.
+  const size_t ideal_block_size = GetBlockSizeForFragmentSize(size);
+  const size_t largest_block_size =
+      std::min(ideal_block_size, kMaxFragmentSizeForBlockAllocation);
+  const size_t smallest_block_size = kMinBestEffortFallbackBlockSize;
+  for (size_t block_size = largest_block_size;
+       block_size >= smallest_block_size; block_size /= 2) {
+    const Fragment fragment = AllocateFragment(block_size);
+    if (!fragment.is_null()) {
+      return fragment;
+    }
+  }
+
+  return {};
 }
 
 bool NodeLinkMemory::FreeFragment(const Fragment& fragment) {

@@ -561,8 +561,26 @@ bool NodeLink::OnAcceptParcel(msg::AcceptParcel& accept) {
     return false;
   }
 
-  parcel.SetInlinedData(
-      std::vector<uint8_t>(parcel_data.begin(), parcel_data.end()));
+  const FragmentDescriptor descriptor = accept.params().parcel_fragment;
+  if (!descriptor.is_null()) {
+    // The parcel's data resides in a shared memory fragment.
+    const Fragment fragment = memory().GetFragment(descriptor);
+    if (fragment.is_pending()) {
+      // We don't have this buffer yet, but we expect to receive it ASAP. Defer
+      // acceptance until then.
+      WaitForParcelFragmentToResolve(for_sublink, parcel, descriptor,
+                                     is_split_parcel);
+      return true;
+    }
+
+    if (!parcel.AdoptDataFragment(WrapRefCounted(&memory()), fragment)) {
+      return false;
+    }
+  } else {
+    // The parcel's data was inlined within the AcceptParcel message.
+    parcel.SetInlinedData(
+        std::vector<uint8_t>(parcel_data.begin(), parcel_data.end()));
+  }
 
   if (is_split_parcel) {
     return AcceptParcelWithoutDriverObjects(for_sublink, parcel);
@@ -779,6 +797,41 @@ void NodeLink::OnTransportError() {
 
   Ref<NodeLink> self = WrapRefCounted(this);
   node_->DropLink(remote_node_name_);
+}
+
+void NodeLink::WaitForParcelFragmentToResolve(
+    SublinkId for_sublink,
+    Parcel& parcel,
+    const FragmentDescriptor& descriptor,
+    bool is_split_parcel) {
+  // ParcelWrapper wraps a Parcel in a RefCounted object so the reference can
+  // be captured by a copyable lambda below.
+  struct ParcelWrapper : public RefCounted {
+    explicit ParcelWrapper(Parcel parcel) : parcel(std::move(parcel)) {}
+    Parcel parcel;
+  };
+
+  auto wrapper = MakeRefCounted<ParcelWrapper>(std::move(parcel));
+  memory().WaitForBufferAsync(
+      descriptor.buffer_id(), [this_link = WrapRefCounted(this), for_sublink,
+                               is_split_parcel, wrapper, descriptor]() {
+        Ref<NodeLinkMemory> memory = WrapRefCounted(&this_link->memory());
+        const Fragment fragment = memory->GetFragment(descriptor);
+        Parcel& parcel = wrapper->parcel;
+        if (!fragment.is_addressable() ||
+            !parcel.AdoptDataFragment(std::move(memory), fragment)) {
+          // The fragment is out of bounds or had an invalid header. Either way
+          // it doesn't look good for the remote node.
+          this_link->OnTransportError();
+          return;
+        }
+
+        if (is_split_parcel) {
+          this_link->AcceptParcelWithoutDriverObjects(for_sublink, parcel);
+        } else {
+          this_link->AcceptCompleteParcel(for_sublink, parcel);
+        }
+      });
 }
 
 bool NodeLink::AcceptParcelWithoutDriverObjects(SublinkId for_sublink,

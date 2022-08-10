@@ -46,6 +46,11 @@ class IPCZ_ALIGN(8) NodeName {
     return std::tie(high_, low_) < std::tie(rhs.high_, rhs.low_);
   }
 
+  // Convenient store-release and load-acquire operations for dealing with
+  // NodeNames in shared memory.
+  void StoreRelease(const NodeName& name);
+  NodeName LoadAcquire();
+
   // Support for absl::Hash.
   template <typename H>
   friend H AbslHashValue(H h, const NodeName& name) {

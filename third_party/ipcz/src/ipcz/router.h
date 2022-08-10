@@ -76,6 +76,16 @@ class Router : public RefCounted {
   // `this` and `router`.
   bool HasLocalPeer(Router& router);
 
+  // Allocates an outbound parcel with the intention of eventually sending it
+  // from this Router via SendOutboundParcel(). This will always try to allocate
+  // exactly `num_bytes` capacity unless `allow_partial` is true; in which case
+  // the allocated size may be less than requested. If available, this will also
+  // attempt to allocate the parcel data as a fragment of the router's outward
+  // link memory.
+  IpczResult AllocateOutboundParcel(size_t num_bytes,
+                                    bool allow_partial,
+                                    Parcel& parcel);
+
   // Attempts to send an outbound parcel originating from this Router. Called
   // only as a direct result of a Put() or EndPut() call on the router's owning
   // portal.

@@ -85,7 +85,14 @@ IpczResult Portal::Put(absl::Span<const uint8_t> data,
   }
 
   Parcel parcel;
-  parcel.SetInlinedData(std::vector<uint8_t>(data.begin(), data.end()));
+  const IpczResult allocate_result = router_->AllocateOutboundParcel(
+      data.size(), /*allow_partial=*/false, parcel);
+  if (allocate_result != IPCZ_RESULT_OK) {
+    return allocate_result;
+  }
+
+  memcpy(parcel.data_view().data(), data.data(), data.size());
+  parcel.CommitData(data.size());
   parcel.SetObjects(std::move(objects));
   const IpczResult result = router_->SendOutboundParcel(parcel);
   if (result == IPCZ_RESULT_OK) {

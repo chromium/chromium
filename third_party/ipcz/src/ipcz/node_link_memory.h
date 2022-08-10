@@ -105,6 +105,11 @@ class NodeLinkMemory : public RefCounted {
   // return a null Fragment if there was no readily available capacity.
   Fragment AllocateFragment(size_t size);
 
+  // Attempts to allocate a Fragment of at least `size` bytes. If there are no
+  // readily available fragments large enough, this may return a fragment
+  // smaller than `size`.
+  Fragment AllocateFragmentBestEffort(size_t size);
+
   // Frees a Fragment previously allocated through this NodeLinkMemory. Returns
   // true on success. Returns false if `fragment` does not represent an
   // allocated fragment within this NodeLinkMemory.

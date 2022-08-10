@@ -107,6 +107,23 @@ bool Router::HasLocalPeer(Router& router) {
          outward_edge_.primary_link()->GetLocalPeer() == &router;
 }
 
+IpczResult Router::AllocateOutboundParcel(size_t num_bytes,
+                                          bool allow_partial,
+                                          Parcel& parcel) {
+  Ref<RouterLink> outward_link;
+  {
+    absl::MutexLock lock(&mutex_);
+    outward_link = outward_edge_.primary_link();
+  }
+
+  if (outward_link) {
+    outward_link->AllocateParcelData(num_bytes, allow_partial, parcel);
+  } else {
+    parcel.AllocateData(num_bytes, allow_partial, nullptr);
+  }
+  return IPCZ_RESULT_OK;
+}
+
 IpczResult Router::SendOutboundParcel(Parcel& parcel) {
   Ref<RouterLink> link;
   {

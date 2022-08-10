@@ -252,8 +252,14 @@ IPCZ_MSG_BEGIN(AcceptParcel, IPCZ_MSG_ID(20), IPCZ_MSG_VERSION(0))
   // parcel sequence (and the receiving portal's inbound parcel sequence.)
   IPCZ_MSG_PARAM(SequenceNumber, sequence_number)
 
-  // Free-form array of application-provided data bytes for this parcel.
+  // Free-form array of application-provided data bytes for this parcel. This
+  // field is only meaningful if `parcel_fragment` is null.
   IPCZ_MSG_PARAM_ARRAY(uint8_t, parcel_data)
+
+  // An optional shared memory fragment containing this parcel's data. If this
+  // is null, the parcel data is instead inlined via the `parcel_data` array
+  // above.
+  IPCZ_MSG_PARAM(FragmentDescriptor, parcel_fragment)
 
   // Array of handle types, with each corresponding to a single IpczHandle
   // attached to the parcel.

@@ -42,7 +42,8 @@ bool BlockAllocatorPool::Add(BufferId buffer_id,
   if (previous_tail) {
     previous_tail->next = new_entry;
   } else {
-    active_entry_ = new_entry;
+    // Balanced by a load-acquire in Allocate().
+    active_entry_.store(new_entry, std::memory_order_release);
   }
 
   return true;
@@ -50,8 +51,9 @@ bool BlockAllocatorPool::Add(BufferId buffer_id,
 
 Fragment BlockAllocatorPool::Allocate() {
   // For the fast common case, we always start by trying to reuse the most
-  // recently used allocator.
-  Entry* entry = active_entry_.load(std::memory_order_relaxed);
+  // recently used allocator. This load-acquire is balanced by a store-release
+  // below (via compare_exchange_weak) and in Add() above.
+  Entry* entry = active_entry_.load(std::memory_order_acquire);
   if (!entry) {
     return {};
   }
@@ -77,6 +79,7 @@ Fragment BlockAllocatorPool::Allocate() {
         // is only meant as a helpful hint for future allocations, we don't
         // really care whether it succeeds.
         active_entry_.compare_exchange_weak(starting_entry, entry,
+                                            std::memory_order_release,
                                             std::memory_order_relaxed);
       }
 

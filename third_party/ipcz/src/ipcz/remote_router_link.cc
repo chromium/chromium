@@ -4,6 +4,7 @@
 
 #include "ipcz/remote_router_link.h"
 
+#include <algorithm>
 #include <sstream>
 #include <utility>
 
@@ -14,6 +15,7 @@
 #include "ipcz/portal.h"
 #include "ipcz/router.h"
 #include "util/log.h"
+#include "util/safe_math.h"
 
 namespace ipcz {
 
@@ -104,6 +106,12 @@ RemoteRouterLink* RemoteRouterLink::AsRemoteRouterLink() {
   return this;
 }
 
+void RemoteRouterLink::AllocateParcelData(size_t num_bytes,
+                                          bool allow_partial,
+                                          Parcel& parcel) {
+  parcel.AllocateData(num_bytes, allow_partial, &node_link()->memory());
+}
+
 void RemoteRouterLink::AcceptParcel(Parcel& parcel) {
   const absl::Span<Ref<APIObject>> objects = parcel.objects_view();
 
@@ -152,22 +160,36 @@ void RemoteRouterLink::AcceptParcel(Parcel& parcel) {
   // Allocate all the arrays in the message. Note that each allocation may
   // relocate the parcel data in memory, so views into these arrays should not
   // be acquired until all allocations are complete.
-  accept.params().parcel_data =
-      accept.AllocateArray<uint8_t>(parcel.data_view().size());
+  if (parcel.data_fragment().is_null() ||
+      parcel.data_fragment_memory() != &node_link()->memory()) {
+    // Only inline parcel data within the message when we don't have a separate
+    // data fragment allocated already, or if the allocated fragment is on the
+    // wrong link. The latter case is possible if the transmitting Router
+    // switched links since the Parcel's data was allocated.
+    accept.params().parcel_data =
+        accept.AllocateArray<uint8_t>(parcel.data_view().size());
+  } else {
+    // The data for this parcel already exists in this link's memory, so we only
+    // stash a reference to it in the message. This relinquishes ownership of
+    // the fragment, effectively passing it to the recipient.
+    accept.params().parcel_fragment = parcel.data_fragment().descriptor();
+    parcel.ReleaseDataFragment();
+  }
   accept.params().handle_types =
       accept.AllocateArray<HandleType>(objects.size());
   accept.params().new_routers =
       accept.AllocateArray<RouterDescriptor>(num_portals);
 
-  const absl::Span<uint8_t> parcel_data =
+  const absl::Span<uint8_t> inline_parcel_data =
       accept.GetArrayView<uint8_t>(accept.params().parcel_data);
   const absl::Span<HandleType> handle_types =
       accept.GetArrayView<HandleType>(accept.params().handle_types);
   const absl::Span<RouterDescriptor> new_routers =
       accept.GetArrayView<RouterDescriptor>(accept.params().new_routers);
 
-  if (!parcel_data.empty()) {
-    memcpy(parcel_data.data(), parcel.data_view().data(), parcel.data_size());
+  if (!inline_parcel_data.empty()) {
+    memcpy(inline_parcel_data.data(), parcel.data_view().data(),
+           parcel.data_size());
   }
 
   // Serialize attached objects. We accumulate the Routers of all attached
@@ -304,10 +326,7 @@ bool RemoteRouterLink::TryLockForBypass(const NodeName& bypass_request_source) {
     return false;
   }
 
-  state->allowed_bypass_request_source = bypass_request_source;
-
-  // Balanced by an acquire in CanNodeRequestBypass().
-  std::atomic_thread_fence(std::memory_order_release);
+  state->allowed_bypass_request_source.StoreRelease(bypass_request_source);
   return true;
 }
 
@@ -337,11 +356,13 @@ bool RemoteRouterLink::FlushOtherSideIfWaiting() {
 bool RemoteRouterLink::CanNodeRequestBypass(
     const NodeName& bypass_request_source) {
   RouterLinkState* state = GetLinkState();
+  if (!state) {
+    return false;
+  }
 
-  // Balanced by a release in TryLockForBypass().
-  std::atomic_thread_fence(std::memory_order_acquire);
-  return state && state->is_locked_by(side_.opposite()) &&
-         state->allowed_bypass_request_source == bypass_request_source;
+  NodeName allowed_source = state->allowed_bypass_request_source.LoadAcquire();
+  return state->is_locked_by(side_.opposite()) &&
+         allowed_source == bypass_request_source;
 }
 
 void RemoteRouterLink::Deactivate() {

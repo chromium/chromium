@@ -255,6 +255,14 @@ class NodeLink : public msg::NodeMessageListener {
   bool OnAcceptRelayedMessage(msg::AcceptRelayedMessage& accept) override;
   void OnTransportError() override;
 
+  // Invoked when we receive a Parcel whose data fragment resides in a buffer
+  // not yet known to the local node. This schedules the parcel for acceptance
+  // as soon as that buffer is available.
+  void WaitForParcelFragmentToResolve(SublinkId for_sublink,
+                                      Parcel& parcel,
+                                      const FragmentDescriptor& descriptor,
+                                      bool is_split_parcel);
+
   bool AcceptParcelWithoutDriverObjects(SublinkId for_sublink, Parcel& parcel);
   bool AcceptParcelDriverObjects(SublinkId for_sublink, Parcel& parcel);
   bool AcceptSplitParcel(SublinkId for_sublink,
