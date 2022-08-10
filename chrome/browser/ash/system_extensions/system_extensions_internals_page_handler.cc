@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/system_extensions/system_extensions_internals_page_handler.h"
 
+#include "base/callback_helpers.h"
 #include "base/debug/stack_trace.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_profile_utils.h"
@@ -49,6 +50,28 @@ void SystemExtensionsInternalsPageHandler::
       system_extension_dir,
       base::BindOnce(&SystemExtensionsInternalsPageHandler::OnInstallFinished,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void SystemExtensionsInternalsPageHandler::IsSystemExtensionInstalled(
+    IsSystemExtensionInstalledCallback callback) {
+  auto& registry = SystemExtensionsProvider::Get(profile_).registry();
+
+  const bool is_installed = !registry.GetIds().empty();
+  std::move(callback).Run(is_installed);
+}
+
+void SystemExtensionsInternalsPageHandler::UninstallSystemExtension(
+    UninstallSystemExtensionCallback callback) {
+  auto scoped_callback_runner = base::ScopedClosureRunner(std::move(callback));
+
+  auto& provider = SystemExtensionsProvider::Get(profile_);
+  auto& registry = provider.registry();
+  const auto ids = registry.GetIds();
+
+  if (ids.empty())
+    return;
+
+  provider.install_manager().Uninstall(ids[0]);
 }
 
 void SystemExtensionsInternalsPageHandler::OnInstallFinished(

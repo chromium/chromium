@@ -31,6 +31,10 @@ class SystemExtensionsInternalsPageHandler
   void InstallSystemExtensionFromDownloadsDir(
       const base::SafeBaseName& system_extension_dir_name,
       InstallSystemExtensionFromDownloadsDirCallback callback) override;
+  void IsSystemExtensionInstalled(
+      IsSystemExtensionInstalledCallback callback) override;
+  void UninstallSystemExtension(
+      UninstallSystemExtensionCallback callback) override;
 
  private:
   void OnInstallFinished(

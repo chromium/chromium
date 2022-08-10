@@ -8,9 +8,11 @@
 </head>
 <p>Choose a directory with a System Extension to sideload it. The System Extension directory must be in Downloads for ChromeOS to be able to find it.</p>
 <button id="choose-directory">Choose directory</button>
+<button id="uninstall" >Uninstall System Extension</button>
 <dialog id="result-dialog">
   <p>System Extension installed</p>
 </dialog>
+<p id="installed-status"></p>
 <!-- Needed for js browser tests -->
 <script src="chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js"></script>
 <script type="module" src="index.js"></script>

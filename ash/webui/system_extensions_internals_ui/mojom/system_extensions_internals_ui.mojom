@@ -12,4 +12,12 @@ interface PageHandler {
   // a folder located at the top level of the default Downloads directory.
   InstallSystemExtensionFromDownloadsDir(
     mojo_base.mojom.SafeBaseName system_extension_dir_name) => (bool success);
+
+  // Returns whether a system extension is installed or not. Note that we
+  // currently only support one system extension being installed at a time, so
+  // a boolean is enough.
+  IsSystemExtensionInstalled() => (bool is_installed);
+
+  // Uninstalls the currently installed System Extension.
+  UninstallSystemExtension() => ();
 };
