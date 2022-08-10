@@ -2014,6 +2014,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.D3D11.UnusedPictureBufferCount.MultiTexture"
+    units="instances" expires_after="2022-11-01">
+  <owner>liberato@chromium.org</owner>
+  <owner>tmathmeyer@chromium.org</owner>
+  <summary>
+    This histogram lets us count how many PictureBuffers we've overallocated
+    when we're allocating each texture separately. This case is relatively
+    simple to optimize compared to SingleTexture.
+  </summary>
+</histogram>
+
+<histogram name="Media.D3D11.UnusedPictureBufferCount.SingleTexture"
+    units="instances" expires_after="2022-11-01">
+  <owner>liberato@chromium.org</owner>
+  <owner>tmathmeyer@chromium.org</owner>
+  <summary>
+    This histogram lets us count how many PictureBuffers we've overallocated
+    when we're allocating in contiguous blocks. This case is harder to optimize
+    than the MultiTexture variant, but it is good to know the proportion of the
+    two of them to determine usage.
+  </summary>
+</histogram>
+
 <histogram name="Media.DetectedAudioCodecHash" enum="FFmpegCodecHashes"
     expires_after="never">
 <!-- expires-never: Codec support planning metric. -->

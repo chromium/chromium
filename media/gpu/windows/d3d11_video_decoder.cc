@@ -145,6 +145,9 @@ D3D11VideoDecoder::~D3D11VideoDecoder() {
   // from |impl_| will be cancelled by |weak_factory_| when we return.
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  // Log whatever usage we measured, if any.
+  LogPictureBufferUsage();
+
   impl_.Reset();
 
   // Explicitly destroy the decoder, since it can reference picture buffers.
@@ -544,6 +547,17 @@ void D3D11VideoDecoder::DoDecode() {
     return;
   }
 
+  // Periodically measure picture buffer usage.  We could do this on every free,
+  // but it's not that important that we should run it so often.
+  if (picture_buffers_.size() > 0) {
+    if (!decode_count_until_picture_buffer_measurement_) {
+      MeasurePictureBufferUsage();
+      decode_count_until_picture_buffer_measurement_ = picture_buffers_.size();
+    } else {
+      decode_count_until_picture_buffer_measurement_--;
+    }
+  }
+
   if (!current_buffer_) {
     if (input_buffer_queue_.empty()) {
       return;
@@ -736,6 +750,10 @@ void D3D11VideoDecoder::CreatePictureBuffers() {
     gl::HDRMetadataHelperWin hdr_metadata_helper(device_);
     display_metadata = hdr_metadata_helper.GetDisplayMetadata();
   }
+
+  // Since we are about to allocate new picture buffers, record whatever usage
+  // we had for the outgoing ones, if any.
+  LogPictureBufferUsage();
 
   // Drop any old pictures.
   for (auto& buffer : picture_buffers_)
@@ -934,6 +952,43 @@ void D3D11VideoDecoder::PostDecoderStatus(DecoderStatus status) {
 
   // Also clear |input_buffer_queue_| since the callbacks have been consumed.
   input_buffer_queue_.clear();
+}
+
+void D3D11VideoDecoder::MeasurePictureBufferUsage() {
+  // Count the total number of buffers that are currently unused by either the
+  // client or the decoder.  These are buffers that we didn't need to allocate.
+  int unused_buffers = 0;
+  for (const auto& buffer : picture_buffers_) {
+    if (!buffer->in_client_use() && !buffer->in_picture_use())
+      unused_buffers++;
+  }
+
+  if (!min_unused_buffers_ || unused_buffers < *min_unused_buffers_) {
+    min_unused_buffers_ = unused_buffers;
+  }
+}
+
+void D3D11VideoDecoder::LogPictureBufferUsage() {
+  if (!min_unused_buffers_)
+    return;
+
+  // Record these separately because (a) we could potentially fix the
+  // MultiTexture case pretty easily, and (b) we have no idea how often we're in
+  // one mode vs the other.  This will let us know if there is enough usage of
+  // MultiTexture and also enough unused textures that it's worth fixing.  Note
+  // that this assumes that we would lazily allocate buffers but not free them,
+  // and is a lower bound on savings.
+  if (use_single_video_decoder_texture_) {
+    UMA_HISTOGRAM_COUNTS_100(
+        "Media.D3D11VideoDecoder.UnusedPictureBufferCount.SingleTexture",
+        *min_unused_buffers_);
+  } else {
+    UMA_HISTOGRAM_COUNTS_100(
+        "Media.D3D11VideoDecoder.UnusedPictureBufferCount.MultiTexture",
+        *min_unused_buffers_);
+  }
+
+  min_unused_buffers_.reset();
 }
 
 // static

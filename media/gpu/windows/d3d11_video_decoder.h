@@ -150,6 +150,15 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
   // gpu main thread.
   void CreatePictureBuffers();
 
+  // Measure the number of picture buffers that are currently unused, and see if
+  // it's smaller than the minimum we've seen since we've allocated them.
+  void MeasurePictureBufferUsage();
+
+  // Log the current measurement of picture buffer usage, as measured by
+  // `MeasurePictureBufferUsage()`, and clear the measurement.  Do nothing,
+  // successfully, if no measurement has been made.
+  void LogPictureBufferUsage();
+
   // Create a D3D11VideoDecoder, if possible, based on the current config.
   D3D11Status::Or<ComD3D11VideoDecoder> CreateD3D11Decoder();
 
@@ -316,6 +325,17 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
   // The currently configured chroma sampling format on the accelerator. When
   // this changes we need to recreate the decoder.
   VideoChromaSampling chroma_sampling_ = VideoChromaSampling::k420;
+
+  // If set, this is the minimum number of picture buffers that we've seen
+  // since the last time it was logged to UMA that are unused by both the
+  // client and the decoder.  If unset, then no measurement has been made.
+  absl::optional<int> min_unused_buffers_;
+
+  // Picture buffer usage is measured periodically after some number of decodes.
+  // This tracks how many until the next measurement.  It's used strictly to
+  // rate limit the measurements, so we don't spent too much time counting
+  // unused picture buffers.
+  int decode_count_until_picture_buffer_measurement_ = 0;
 
   base::WeakPtrFactory<D3D11VideoDecoder> weak_factory_{this};
 };
