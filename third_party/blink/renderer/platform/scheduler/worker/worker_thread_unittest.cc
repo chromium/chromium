@@ -161,13 +161,6 @@ TEST_F(WorkerThreadTest, TestShutdown) {
   thread_.reset();
 }
 
-TEST_F(WorkerThreadTest, GetTaskExecutorForCurrentThreadInPostedTask) {
-  RunOnWorkerThread(FROM_HERE, base::BindOnce([]() {
-                      EXPECT_THAT(base::GetTaskExecutorForCurrentThread(),
-                                  testing::NotNull());
-                    }));
-}
-
 }  // namespace worker_thread_unittest
 }  // namespace scheduler
 }  // namespace blink
