@@ -152,12 +152,12 @@ struct AttributionDataHostManagerImpl::FrozenContext {
   AttributionSourceType source_type;
 
   // For receivers with `source_type` `AttributionSourceType::kNavigation`,
-  // the final committed origin of the navigation associated with the data
+  // the final committed site of the navigation associated with the data
   // host.
   //
   // For receivers with `source_type` `AttributionSourceType::kEvent`,
   // this is opaque by default.
-  url::Origin destination;
+  net::SchemefulSite destination;
 
   RegistrationType registration_type = RegistrationType::kNone;
 
@@ -307,7 +307,7 @@ void AttributionDataHostManagerImpl::NotifyNavigationForDataHost(
         this, std::move(it->second.data_host),
         FrozenContext{.context_origin = source_origin,
                       .source_type = AttributionSourceType::kNavigation,
-                      .destination = destination_origin,
+                      .destination = net::SchemefulSite(destination_origin),
                       .register_time = it->second.register_time});
 
     navigation_data_host_map_.erase(it);
@@ -382,12 +382,10 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
   FrozenContext& context = receivers_.current_context();
   DCHECK(network::IsOriginPotentiallyTrustworthy(context.context_origin));
 
-  if (context.source_type == AttributionSourceType::kNavigation) {
-    if (net::SchemefulSite(data->destination) !=
-        net::SchemefulSite(context.destination)) {
-      RecordSourceDataHandleStatus(DataHandleStatus::kContextError);
-      return;
-    }
+  if (context.source_type == AttributionSourceType::kNavigation &&
+      net::SchemefulSite(data->destination) != context.destination) {
+    RecordSourceDataHandleStatus(DataHandleStatus::kContextError);
+    return;
   }
 
   if (context.registration_type == RegistrationType::kTrigger) {
