@@ -54,15 +54,6 @@ std::string URLDataSource::URLToRequestPath(const GURL& url) {
   return std::string();
 }
 
-std::string URLDataSource::GetMimeType(const GURL& url) {
-  return GetMimeType(URLDataSource::URLToRequestPath(url));
-}
-
-std::string URLDataSource::GetMimeType(const std::string& path) {
-  NOTREACHED();
-  return std::string();
-}
-
 bool URLDataSource::ShouldReplaceExistingSource() {
   return true;
 }
