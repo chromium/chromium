@@ -366,6 +366,29 @@ PaintInfo FloatPaintInfo(const PaintInfo& paint_info) {
   return float_paint_info;
 }
 
+// Helper function for painting a child fragment, when there's any likelihood
+// that we need legacy fallback. If it's guaranteed that legacy fallback won't
+// be necessary, on the other hand, there's no need to call this function. In
+// such cases, call sites may just as well invoke NGBoxFragmentPainter::Paint()
+// on their own.
+void PaintFragment(const NGPhysicalBoxFragment& fragment,
+                   const PaintInfo& paint_info) {
+  if (fragment.CanTraverse()) {
+    NGBoxFragmentPainter(fragment).Paint(paint_info);
+    return;
+  }
+
+  auto* layout_object = fragment.GetLayoutObject();
+  DCHECK(layout_object);
+  if (fragment.IsPaintedAtomically() && fragment.IsLegacyLayoutRoot()) {
+    ObjectPainter(*layout_object).PaintAllPhasesAtomically(paint_info);
+  } else {
+    // TODO(ikilpatrick): Once FragmentItem ships we should call the
+    // NGBoxFragmentPainter directly for NG objects.
+    layout_object->Paint(paint_info);
+  }
+}
+
 }  // anonymous namespace
 
 PhysicalRect NGBoxFragmentPainter::InkOverflowIncludingFilters() const {
@@ -806,17 +829,7 @@ void NGBoxFragmentPainter::PaintBlockChild(
     return;
   }
 
-  auto* layout_object = child_fragment.GetLayoutObject();
-  DCHECK(layout_object);
-  if (child_fragment.IsPaintedAtomically() &&
-      child_fragment.IsLegacyLayoutRoot()) {
-    ObjectPainter(*layout_object)
-        .PaintAllPhasesAtomically(paint_info_for_descendants);
-  } else {
-    // TODO(ikilpatrick): Once FragmentItem ships we should call the
-    // NGBoxFragmentPainter directly for NG objects.
-    layout_object->Paint(paint_info_for_descendants);
-  }
+  PaintFragment(box_child_fragment, paint_info_for_descendants);
 }
 
 void NGBoxFragmentPainter::PaintFloatingItems(const PaintInfo& paint_info,
@@ -835,12 +848,7 @@ void NGBoxFragmentPainter::PaintFloatingItems(const PaintInfo& paint_info,
     }
     if (child_fragment->IsFloating()) {
       PaintInfo float_paint_info = FloatPaintInfo(paint_info);
-      if (child_fragment->CanTraverse()) {
-        NGBoxFragmentPainter(*child_fragment).Paint(float_paint_info);
-      } else {
-        ObjectPainter(*child_fragment->GetLayoutObject())
-            .PaintAllPhasesAtomically(float_paint_info);
-      }
+      PaintFragment(*child_fragment, float_paint_info);
     } else if (child_fragment->IsBlockInInline() &&
                child_fragment->HasFloatingDescendantsForPaint()) {
       NGBoxFragmentPainter(*child_fragment).Paint(paint_info);
@@ -870,35 +878,15 @@ void NGBoxFragmentPainter::PaintFloatingChildren(
     if (child_fragment.HasSelfPaintingLayer())
       continue;
 
-    if (child_fragment.CanTraverse()) {
-      if (child_fragment.IsFloating()) {
-        NGBoxFragmentPainter(To<NGPhysicalBoxFragment>(child_fragment))
-            .Paint(FloatPaintInfo(*local_paint_info));
-        continue;
-      }
-
-      // Any non-floated children which paint atomically shouldn't be traversed.
-      if (child_fragment.IsPaintedAtomically())
-        continue;
-    } else {
-      if (child_fragment.IsFloating()) {
-        // TODO(kojii): The float is outside of the inline formatting context
-        // and that it maybe another NG inline formatting context, NG block
-        // layout, or legacy. NGBoxFragmentPainter can handle only the first
-        // case. In order to cover more tests for other two cases, we always
-        // fallback to legacy, which will forward back to NGBoxFragmentPainter
-        // if the float is for NGBoxFragmentPainter. We can shortcut this for
-        // the first case when we're more stable.
-
-        ObjectPainter(*child_fragment.GetLayoutObject())
-            .PaintAllPhasesAtomically(FloatPaintInfo(*local_paint_info));
-        continue;
-      }
-
-      // Any children which paint atomically shouldn't be traversed.
-      if (child_fragment.IsPaintedAtomically())
-        continue;
+    if (child_fragment.IsFloating()) {
+      PaintFragment(To<NGPhysicalBoxFragment>(child_fragment),
+                    FloatPaintInfo(*local_paint_info));
+      continue;
     }
+
+    // Any non-floated children which paint atomically shouldn't be traversed.
+    if (child_fragment.IsPaintedAtomically())
+      continue;
 
     // The selection paint traversal is special. We will visit all fragments
     // (including floats) in the normal paint traversal. There isn't any point
@@ -1669,7 +1657,7 @@ void NGBoxFragmentPainter::PaintBoxItem(
           child_fragment.GetLayoutObject();
       DCHECK(child_layout_object);
       DCHECK(child_layout_object->IsAtomicInlineLevel());
-      ObjectPainter(*child_layout_object).PaintAllPhasesAtomically(paint_info);
+      PaintFragment(To<NGPhysicalBoxFragment>(child_fragment), paint_info);
       return;
     }
     NGBoxFragmentPainter(child_fragment).PaintAllPhasesAtomically(paint_info);
