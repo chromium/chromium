@@ -32,6 +32,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/services/filesystem/public/mojom/types.mojom.h"
+#include "net/base/features.h"
 #include "net/base/io_buffer.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_backend.h"
@@ -54,7 +55,6 @@
 #include "storage/common/database/database_identifier.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
 #include "url/gurl.h"
@@ -188,7 +188,7 @@ class ObfuscatedFileUtilTest : public testing::Test,
         usage_(-1) {
     if (is_third_party_context()) {
       scoped_feature_list_.InitAndEnableFeature(
-          blink::features::kThirdPartyStoragePartitioning);
+          net::features::kThirdPartyStoragePartitioning);
       // Once we enable third-party storage partitioning, we can create a
       // third-party StorageKey and re-assign the StorageKey value in the
       // SandboxFileSystem with this value in SetUp for default buckets.

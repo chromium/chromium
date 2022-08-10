@@ -27,11 +27,11 @@
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
 #include "content/browser/indexed_db/indexed_db_quota_client.h"
+#include "net/base/features.h"
 #include "storage/browser/test/mock_quota_manager.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 #include "url/origin.h"
@@ -61,7 +61,7 @@ class IndexedDBQuotaClientTest : public testing::Test,
         special_storage_policy_(
             base::MakeRefCounted<storage::MockSpecialStoragePolicy>()) {
     scoped_feature_list_.InitWithFeatureState(
-        blink::features::kThirdPartyStoragePartitioning,
+        net::features::kThirdPartyStoragePartitioning,
         IsThirdPartyStoragePartitioningEnabled());
     // This cannot be created above as the kThirdPartyStoragePartitioning must
     // be set.

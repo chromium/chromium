@@ -27,12 +27,12 @@
 #include "content/browser/indexed_db/indexed_db_leveldb_env.h"
 #include "content/browser/indexed_db/mock_indexed_db_callbacks.h"
 #include "content/browser/indexed_db/mock_indexed_db_database_callbacks.h"
+#include "net/base/features.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "storage/browser/test/mock_quota_manager_proxy.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 using blink::IndexedDBDatabaseMetadata;
@@ -117,7 +117,7 @@ class IndexedDBTest : public testing::Test,
             base::SequencedTaskRunnerHandle::Get(),
             base::SequencedTaskRunnerHandle::Get())) {
     scoped_feature_list_.InitWithFeatureState(
-        blink::features::kThirdPartyStoragePartitioning,
+        net::features::kThirdPartyStoragePartitioning,
         IsThirdPartyStoragePartitioningEnabled());
 
     kNormalFirstPartyStorageKey =

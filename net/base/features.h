@@ -477,6 +477,7 @@ NET_EXPORT extern const int kStorageAccessAPIDefaultImplicitGrantLimit;
 NET_EXPORT extern const base::FeatureParam<int>
     kStorageAccessAPIImplicitGrantLimit;
 
+NET_EXPORT extern const base::Feature kThirdPartyStoragePartitioning;
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

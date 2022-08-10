@@ -40,10 +40,10 @@
 #include "content/browser/indexed_db/mock_indexed_db_callbacks.h"
 #include "content/browser/indexed_db/mock_indexed_db_database_callbacks.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "net/base/features.h"
 #include "storage/browser/test/mock_quota_manager_proxy.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/indexeddb/web_idb_types.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
@@ -238,7 +238,7 @@ class IndexedDBFactoryTestWithStoragePartitioning
  public:
   IndexedDBFactoryTestWithStoragePartitioning() {
     feature_list_.InitWithFeatureState(
-        blink::features::kThirdPartyStoragePartitioning,
+        net::features::kThirdPartyStoragePartitioning,
         IsThirdPartyStoragePartitioningEnabled());
   }
 

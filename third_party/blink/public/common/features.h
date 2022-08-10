@@ -523,8 +523,6 @@ BLINK_COMMON_EXPORT extern const base::Feature kUsePageViewportInLCP;
 // other sinks connected do not use alpha.
 BLINK_COMMON_EXPORT extern const base::Feature kAllowDropAlphaForMediaStream;
 
-BLINK_COMMON_EXPORT extern const base::Feature kThirdPartyStoragePartitioning;
-
 BLINK_COMMON_EXPORT extern const base::Feature kDesktopPWAsSubApps;
 
 // Suppresses console errors for CORS problems which report an associated

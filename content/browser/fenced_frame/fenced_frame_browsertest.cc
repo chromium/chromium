@@ -40,6 +40,7 @@
 #include "content/test/resource_load_observer.h"
 #include "content/test/test_content_browser_client.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
+#include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/default_handlers.h"
@@ -1743,7 +1744,7 @@ class FencedFrameParameterizedBrowserTest
                     blink::features::FencedFramesImplementationType::kShadowDOM
                 ? "shadow_dom"
                 : "mparch"}}},
-         {blink::features::kThirdPartyStoragePartitioning, {}},
+         {net::features::kThirdPartyStoragePartitioning, {}},
          {net::features::kNoncedPartitionedCookies, {}},
          {features::kPrivacySandboxAdsAPIsOverride, {}}},
         {/* disabled_features */});

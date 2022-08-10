@@ -336,4 +336,9 @@ constexpr int kStorageAccessAPIDefaultImplicitGrantLimit = 5;
 const base::FeatureParam<int> kStorageAccessAPIImplicitGrantLimit{
     &kStorageAccessAPI, "storage-access-api-implicit-grant-limit",
     kStorageAccessAPIDefaultImplicitGrantLimit};
+
+// Enables partitioning of third party storage (IndexedDB, CacheStorage, etc.)
+// by the top level site to reduce fingerprinting.
+const base::Feature kThirdPartyStoragePartitioning{
+    "ThirdPartyStoragePartitioning", base::FEATURE_DISABLED_BY_DEFAULT};
 }  // namespace net::features

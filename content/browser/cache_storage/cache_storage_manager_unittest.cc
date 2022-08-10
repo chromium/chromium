@@ -50,6 +50,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/features.h"
 #include "net/disk_cache/disk_cache.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "storage/browser/blob/blob_storage_context.h"
@@ -61,7 +62,6 @@
 #include "storage/common/quota/padding_key.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
@@ -864,10 +864,10 @@ class CacheStorageManagerStorageKeyAndBucketTestP
 
     if (ThirdPartyStoragePartitioningEnabled()) {
       scoped_feature_list_.InitAndEnableFeature(
-          blink::features::kThirdPartyStoragePartitioning);
+          net::features::kThirdPartyStoragePartitioning);
     } else {
       scoped_feature_list_.InitAndDisableFeature(
-          blink::features::kThirdPartyStoragePartitioning);
+          net::features::kThirdPartyStoragePartitioning);
     }
 
     switch (test_case_) {
@@ -2490,7 +2490,7 @@ TEST_P(CacheStorageManagerTestP, StoragePutPartialContentForBackgroundFetch) {
 TEST_P(CacheStorageManagerTestP, DeleteStorageKeyData) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      blink::features::kThirdPartyStoragePartitioning);
+      net::features::kThirdPartyStoragePartitioning);
 
   const auto partitioned_storage_key1 =
       blink::StorageKey(url::Origin::Create(GURL("http://example1.com")),

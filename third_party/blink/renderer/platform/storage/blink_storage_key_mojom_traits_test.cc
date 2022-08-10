@@ -7,8 +7,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
+#include "net/base/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/storage_key/storage_key_mojom_traits.h"
 #include "third_party/blink/public/mojom/storage_key/ancestor_chain_bit.mojom-blink.h"
@@ -162,7 +162,7 @@ TEST(BlinkStorageKeyMojomTraitsTest,
   for (const bool toggle : {false, true}) {
     base::test::ScopedFeatureList scope_feature_list;
     scope_feature_list.InitWithFeatureState(
-        features::kThirdPartyStoragePartitioning, toggle);
+        net::features::kThirdPartyStoragePartitioning, toggle);
     Vector<StorageKey> storage_keys = {
         StorageKey(url_origin1),
         StorageKey(url_origin2),

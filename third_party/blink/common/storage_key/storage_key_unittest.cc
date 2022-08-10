@@ -9,10 +9,10 @@
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
+#include "net/base/features.h"
 #include "net/base/schemeful_site.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/storage_key/ancestor_chain_bit.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -112,7 +112,7 @@ TEST(StorageKeyTest, Equivalence) {
 TEST(StorageKeyTest, EquivalencePartitioned) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      features::kThirdPartyStoragePartitioning);
+      net::features::kThirdPartyStoragePartitioning);
 
   url::Origin origin1 = url::Origin::Create(GURL("https://example.com"));
   url::Origin origin2 = url::Origin::Create(GURL("https://test.example"));
@@ -150,7 +150,7 @@ TEST(StorageKeyTest, SerializeFirstParty) {
   for (const bool toggle : {false, true}) {
     base::test::ScopedFeatureList scope_feature_list;
     scope_feature_list.InitWithFeatureState(
-        features::kThirdPartyStoragePartitioning, toggle);
+        net::features::kThirdPartyStoragePartitioning, toggle);
 
     struct {
       const char* origin_str;
@@ -179,7 +179,7 @@ TEST(StorageKeyTest, SerializeFirstPartyForLocalStorage) {
   for (const bool toggle : {false, true}) {
     base::test::ScopedFeatureList scope_feature_list;
     scope_feature_list.InitWithFeatureState(
-        features::kThirdPartyStoragePartitioning, toggle);
+        net::features::kThirdPartyStoragePartitioning, toggle);
 
     struct {
       const char* origin_str;
@@ -210,7 +210,7 @@ TEST(StorageKeyTest, SerializeFirstPartyForLocalStorage) {
 TEST(StorageKeyTest, SerializePartitioned) {
   base::test::ScopedFeatureList scope_feature_list;
   scope_feature_list.InitAndEnableFeature(
-      features::kThirdPartyStoragePartitioning);
+      net::features::kThirdPartyStoragePartitioning);
 
   net::SchemefulSite SiteExample(GURL("https://example.com"));
   net::SchemefulSite SiteTest(GURL("https://test.example"));
@@ -379,7 +379,7 @@ TEST(StorageKeyTest, SerializeDeserialize) {
 TEST(StorageKeyTest, SerializeDeserializePartitioned) {
   base::test::ScopedFeatureList scope_feature_list;
   scope_feature_list.InitAndEnableFeature(
-      features::kThirdPartyStoragePartitioning);
+      net::features::kThirdPartyStoragePartitioning);
 
   net::SchemefulSite SiteExample(GURL("https://example.com"));
   net::SchemefulSite SiteTest(GURL("https://test.example"));
@@ -471,7 +471,7 @@ TEST(StorageKeyTest, IsThirdPartyStoragePartitioningEnabled) {
   EXPECT_FALSE(StorageKey::IsThirdPartyStoragePartitioningEnabled());
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      features::kThirdPartyStoragePartitioning);
+      net::features::kThirdPartyStoragePartitioning);
   EXPECT_TRUE(StorageKey::IsThirdPartyStoragePartitioningEnabled());
 }
 
@@ -495,7 +495,7 @@ TEST(StorageKeyTest, TopLevelSiteGetter) {
 TEST(StorageKeyTest, TopLevelSiteGetterWithPartitioningEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      features::kThirdPartyStoragePartitioning);
+      net::features::kThirdPartyStoragePartitioning);
 
   url::Origin origin1 = url::Origin::Create(GURL("https://example.com"));
   url::Origin origin2 = url::Origin::Create(GURL("https://test.example"));
@@ -535,7 +535,7 @@ TEST(StorageKeyTest, AncestorChainBitGetter) {
 TEST(StorageKeyTest, AncestorChainBitGetterWithPartitioningEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      features::kThirdPartyStoragePartitioning);
+      net::features::kThirdPartyStoragePartitioning);
   std::string same_site_string =
       "https://example.com/^0https://test.example^30";
   std::string cross_site_string =
@@ -557,7 +557,7 @@ TEST(StorageKeyTest, AncestorChainBitGetterWithPartitioningEnabled) {
 TEST(StorageKeyTest, IsThirdPartyContext) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      features::kThirdPartyStoragePartitioning);
+      net::features::kThirdPartyStoragePartitioning);
 
   const url::Origin kOrigin = url::Origin::Create(GURL("https://www.foo.com"));
   const url::Origin kInsecureOrigin =
@@ -604,7 +604,7 @@ TEST(StorageKeyTest, IsThirdPartyContext) {
 TEST(StorageKeyTest, ToNetSiteForCookies) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      features::kThirdPartyStoragePartitioning);
+      net::features::kThirdPartyStoragePartitioning);
 
   const url::Origin kOrigin = url::Origin::Create(GURL("https://www.foo.com"));
   const url::Origin kInsecureOrigin =
@@ -666,7 +666,7 @@ TEST(StorageKeyTest, CopyWithForceEnabledThirdPartyStoragePartitioning) {
   for (const bool toggle : {false, true}) {
     base::test::ScopedFeatureList scope_feature_list;
     scope_feature_list.InitWithFeatureState(
-        features::kThirdPartyStoragePartitioning, toggle);
+        net::features::kThirdPartyStoragePartitioning, toggle);
 
     const StorageKey storage_key = StorageKey::CreateWithOptionalNonce(
         kOrigin, net::SchemefulSite(kOtherOrigin), nullptr,

@@ -16,8 +16,8 @@
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "net/base/features.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
-#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
 namespace {
@@ -210,7 +210,8 @@ StorageKey StorageKey::CreateFromStringForTesting(const std::string& origin) {
 
 // static
 bool StorageKey::IsThirdPartyStoragePartitioningEnabled() {
-  return base::FeatureList::IsEnabled(features::kThirdPartyStoragePartitioning);
+  return base::FeatureList::IsEnabled(
+      net::features::kThirdPartyStoragePartitioning);
 }
 
 // static

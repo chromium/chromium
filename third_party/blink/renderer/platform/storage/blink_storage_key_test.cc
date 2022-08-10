@@ -7,8 +7,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
+#include "net/base/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/network/blink_schemeful_site.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "url/gurl.h"
@@ -100,7 +100,7 @@ TEST(BlinkStorageKeyTest, BlinkStorageKeyRoundTripConversion) {
   for (const bool toggle : {false, true}) {
     base::test::ScopedFeatureList scope_feature_list;
     scope_feature_list.InitWithFeatureState(
-        features::kThirdPartyStoragePartitioning, toggle);
+        net::features::kThirdPartyStoragePartitioning, toggle);
     Vector<BlinkStorageKey> keys = {
         BlinkStorageKey(),
         BlinkStorageKey(origin1),
@@ -134,7 +134,7 @@ TEST(BlinkStorageKey, StorageKeyRoundTripConversion) {
   for (const bool toggle : {false, true}) {
     base::test::ScopedFeatureList scope_feature_list;
     scope_feature_list.InitWithFeatureState(
-        features::kThirdPartyStoragePartitioning, toggle);
+        net::features::kThirdPartyStoragePartitioning, toggle);
     Vector<StorageKey> storage_keys = {
         StorageKey(url_origin1),
         StorageKey(url_origin2),
@@ -191,7 +191,7 @@ TEST(BlinkStorageKey, TopLevelSiteGetter) {
 TEST(BlinkStorageKeyTest, TopLevelSiteGetterWithPartitioningEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      features::kThirdPartyStoragePartitioning);
+      net::features::kThirdPartyStoragePartitioning);
 
   scoped_refptr<const SecurityOrigin> origin1 =
       SecurityOrigin::CreateFromString("https://example.com");
@@ -218,7 +218,7 @@ TEST(BlinkStorageKeyTest, CopyWithForceEnabledThirdPartyStoragePartitioning) {
   for (const bool toggle : {false, true}) {
     base::test::ScopedFeatureList scope_feature_list;
     scope_feature_list.InitWithFeatureState(
-        features::kThirdPartyStoragePartitioning, toggle);
+        net::features::kThirdPartyStoragePartitioning, toggle);
 
     BlinkStorageKey storage_key(origin1, BlinkSchemefulSite(origin2), nullptr,
                                 mojom::blink::AncestorChainBit::kCrossSite);

@@ -17,6 +17,7 @@
 #include "content/test/navigation_simulator_impl.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
+#include "net/base/features.h"
 #include "net/base/isolation_info.h"
 #include "net/cookies/site_for_cookies.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
@@ -122,7 +123,7 @@ TEST_F(RenderFrameHostImplTest, CrossSiteAncestorInFrameTree) {
   // Enable 3p partitioning to accurately test AncestorChainBit.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      blink::features::kThirdPartyStoragePartitioning);
+      net::features::kThirdPartyStoragePartitioning);
 
   // Load site A into the main frame.
   GURL parent_url = GURL("https://parent.example.test/");
@@ -784,10 +785,10 @@ class RenderFrameHostImplThirdPartyStorageTest
     contents()->GetPrimaryMainFrame()->InitializeRenderFrameIfNeeded();
     if (ThirdPartyStoragePartitioningEnabled()) {
       scoped_feature_list_.InitAndEnableFeature(
-          blink::features::kThirdPartyStoragePartitioning);
+          net::features::kThirdPartyStoragePartitioning);
     } else {
       scoped_feature_list_.InitAndDisableFeature(
-          blink::features::kThirdPartyStoragePartitioning);
+          net::features::kThirdPartyStoragePartitioning);
     }
   }
   bool ThirdPartyStoragePartitioningEnabled() { return GetParam(); }

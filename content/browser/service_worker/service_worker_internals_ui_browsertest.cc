@@ -26,6 +26,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
@@ -707,7 +708,7 @@ class ServiceWorkerInternalsUIBrowserTestWithStoragePartitioning
  public:
   ServiceWorkerInternalsUIBrowserTestWithStoragePartitioning() {
     scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kThirdPartyStoragePartitioning);
+        net::features::kThirdPartyStoragePartitioning);
   }
 
  private:

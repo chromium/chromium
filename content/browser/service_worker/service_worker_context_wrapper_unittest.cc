@@ -19,8 +19,8 @@
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
+#include "net/base/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 #include "url/origin.h"
@@ -214,7 +214,7 @@ TEST_F(ServiceWorkerContextWrapperTest, DeleteRegistrationsForSameKey) {
 TEST_F(ServiceWorkerContextWrapperTest, DeleteRegistrationsForPartitionedKeys) {
   base::test::ScopedFeatureList scope_feature_list_;
   scope_feature_list_.InitAndEnableFeature(
-      blink::features::kThirdPartyStoragePartitioning);
+      net::features::kThirdPartyStoragePartitioning);
 
   wrapper_->context()->WaitForRegistrationsInitializedForTest();
 

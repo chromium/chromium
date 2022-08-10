@@ -18,9 +18,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "components/services/storage/service_worker/service_worker_database.pb.h"
+#include "net/base/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 #include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
@@ -438,7 +438,7 @@ TEST(ServiceWorkerDatabaseTest, GetStorageKeysWithRegistrations) {
   // inserted as partitioned.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      blink::features::kThirdPartyStoragePartitioning);
+      net::features::kThirdPartyStoragePartitioning);
 
   GURL origin5 = GURL("https://example.org");
   net::SchemefulSite top_level_site1(GURL("https://toplevel.com"));
@@ -533,7 +533,7 @@ TEST(ServiceWorkerDatabaseTest, GetStorageKeysWithRegistrations) {
   // Now re-enable kThirdPartyStoragePartitioning and check for the partitioned
   // keys.
   scoped_feature_list.InitAndEnableFeature(
-      blink::features::kThirdPartyStoragePartitioning);
+      net::features::kThirdPartyStoragePartitioning);
 
   keys.clear();
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
@@ -743,7 +743,7 @@ TEST(ServiceWorkerDatabaseTest, GetAllRegistrations) {
   // inserted as partitioned.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      blink::features::kThirdPartyStoragePartitioning);
+      net::features::kThirdPartyStoragePartitioning);
 
   GURL origin5("https://www5.example.com");
   net::SchemefulSite top_level_site1(GURL("https://toplevel.com"));
@@ -813,7 +813,7 @@ TEST(ServiceWorkerDatabaseTest, GetAllRegistrations) {
 
   // Re-enable partitioning and check for the partitioned keys.
   scoped_feature_list.InitAndEnableFeature(
-      blink::features::kThirdPartyStoragePartitioning);
+      net::features::kThirdPartyStoragePartitioning);
 
   registrations.clear();
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,

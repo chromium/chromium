@@ -6767,10 +6767,10 @@ class RenderFrameHostImplBrowserTestWithStoragePartitioning
   RenderFrameHostImplBrowserTestWithStoragePartitioning() {
     if (ThirdPartyStoragePartitioningEnabled()) {
       scoped_feature_list_.InitAndEnableFeature(
-          blink::features::kThirdPartyStoragePartitioning);
+          net::features::kThirdPartyStoragePartitioning);
     } else {
       scoped_feature_list_.InitAndDisableFeature(
-          blink::features::kThirdPartyStoragePartitioning);
+          net::features::kThirdPartyStoragePartitioning);
     }
   }
   bool ThirdPartyStoragePartitioningEnabled() { return GetParam(); }

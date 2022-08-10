@@ -47,11 +47,11 @@
 #include "content/public/browser/storage_usage_info.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/buildflags/buildflags.h"
+#include "net/base/features.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_util.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
@@ -1767,7 +1767,7 @@ std::unique_ptr<CookiesTreeModel> CookiesTreeModel::CreateForProfileDeprecated(
   // types of quota managed storage. If not, the quota node type is excluded as
   // it is represented by other types.
   bool use_quota_only = base::FeatureList::IsEnabled(
-      blink::features::kThirdPartyStoragePartitioning);
+      net::features::kThirdPartyStoragePartitioning);
 
   // Types managed by Quota:
   auto database_helper =
