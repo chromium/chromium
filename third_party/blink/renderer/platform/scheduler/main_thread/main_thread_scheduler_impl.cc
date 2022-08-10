@@ -888,10 +888,6 @@ void MainThreadSchedulerImpl::OnShutdownTaskQueue(
   task_runners_.erase(task_queue.get());
 }
 
-bool MainThreadSchedulerImpl::CanExceedIdleDeadlineIfRequired() const {
-  return idle_helper_.CanExceedIdleDeadlineIfRequired();
-}
-
 void MainThreadSchedulerImpl::AddTaskObserver(
     base::TaskObserver* task_observer) {
   helper_.AddTaskObserver(task_observer);

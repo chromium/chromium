@@ -37,9 +37,6 @@ class SimpleMainThreadScheduler : public MainThreadScheduler {
   // Always return false.
   bool ShouldYieldForHighPriorityWork() override;
 
-  // Always return false.
-  bool CanExceedIdleDeadlineIfRequired() const override;
-
   // Those tasks are simply ignored (we assume there's no idle period).
   void PostIdleTask(const base::Location&, Thread::IdleTask) override;
   void PostDelayedIdleTask(const base::Location&,

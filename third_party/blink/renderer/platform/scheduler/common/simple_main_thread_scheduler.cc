@@ -21,10 +21,6 @@ bool SimpleMainThreadScheduler::ShouldYieldForHighPriorityWork() {
   return false;
 }
 
-bool SimpleMainThreadScheduler::CanExceedIdleDeadlineIfRequired() const {
-  return false;
-}
-
 void SimpleMainThreadScheduler::PostIdleTask(const base::Location& location,
                                              Thread::IdleTask task) {}
 

@@ -153,11 +153,6 @@ WorkerThreadScheduler::CompositorTaskRunner() {
   return compositor_task_runner_;
 }
 
-bool WorkerThreadScheduler::CanExceedIdleDeadlineIfRequired() const {
-  DCHECK(initialized_);
-  return idle_helper_.CanExceedIdleDeadlineIfRequired();
-}
-
 bool WorkerThreadScheduler::ShouldYieldForHighPriorityWork() {
   // We don't consider any work as being high priority on workers.
   return false;

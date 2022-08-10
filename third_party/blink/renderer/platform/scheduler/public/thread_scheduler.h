@@ -55,16 +55,6 @@ class PLATFORM_EXPORT ThreadScheduler {
   // work.  Must be called on the associated WebThread.
   virtual bool ShouldYieldForHighPriorityWork() = 0;
 
-  // Returns true if a currently running idle task could exceed its deadline
-  // without impacting user experience too much. This should only be used if
-  // there is a task which cannot be pre-empted and is likely to take longer
-  // than the largest expected idle task deadline. It should NOT be polled to
-  // check whether more work can be performed on the current idle task after
-  // its deadline has expired - post a new idle task for the continuation of
-  // the work in this case.
-  // Must be called from the associated WebThread.
-  virtual bool CanExceedIdleDeadlineIfRequired() const = 0;
-
   // Schedule an idle task to run the associated WebThread. For non-critical
   // tasks which may be reordered relative to other task types and may be
   // starved for an arbitrarily long time if no idle time is available.

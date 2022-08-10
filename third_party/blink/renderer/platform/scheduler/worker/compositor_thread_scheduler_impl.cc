@@ -86,10 +86,6 @@ CompositorThreadSchedulerImpl::DefaultTaskRunner() {
   return GetHelper().DefaultTaskRunner();
 }
 
-bool CompositorThreadSchedulerImpl::CanExceedIdleDeadlineIfRequired() const {
-  return false;
-}
-
 bool CompositorThreadSchedulerImpl::ShouldYieldForHighPriorityWork() {
   return false;
 }

@@ -46,7 +46,6 @@ class PLATFORM_EXPORT CompositorThreadSchedulerImpl
   // WebThreadScheduler:
   scoped_refptr<base::SingleThreadTaskRunner> V8TaskRunner() override;
   bool ShouldYieldForHighPriorityWork() override;
-  bool CanExceedIdleDeadlineIfRequired() const override;
   void AddTaskObserver(base::TaskObserver* task_observer) override;
   void RemoveTaskObserver(base::TaskObserver* task_observer) override;
   void PostIdleTask(const base::Location&, Thread::IdleTask) override;

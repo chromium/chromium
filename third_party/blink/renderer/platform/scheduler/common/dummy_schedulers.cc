@@ -256,7 +256,6 @@ class DummyWebMainThreadScheduler : public WebThreadScheduler,
 
   // ThreadScheduler implementation:
   bool ShouldYieldForHighPriorityWork() override { return false; }
-  bool CanExceedIdleDeadlineIfRequired() const override { return false; }
   void PostIdleTask(const base::Location&, Thread::IdleTask) override {}
   void PostDelayedIdleTask(const base::Location&,
                            base::TimeDelta delay,
