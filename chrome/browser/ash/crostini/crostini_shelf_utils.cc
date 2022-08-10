@@ -58,7 +58,7 @@ bool MatchingString(const std::string& search_string,
 enum class FindAppIdResult { NoMatch, UniqueMatch, NonUniqueMatch };
 // Looks for an app where prefs_key is set to search_value. Returns the apps id
 // if there was only one app matching, otherwise returns an empty string.
-FindAppIdResult FindAppId(const base::Value* prefs,
+FindAppIdResult FindAppId(const base::Value::Dict& prefs,
                           base::StringPiece prefs_key,
                           base::StringPiece search_value,
                           std::string* result,
@@ -66,7 +66,7 @@ FindAppIdResult FindAppId(const base::Value* prefs,
                           bool need_display = false,
                           bool ignore_space = false) {
   result->clear();
-  for (const auto item : prefs->DictItems()) {
+  for (const auto item : prefs) {
     if (require_startup_notify &&
         !item.second
              .FindKeyOfType(guest_os::prefs::kAppStartupNotifyKey,
@@ -130,11 +130,8 @@ std::string GetCrostiniShelfAppId(const Profile* profile,
   if (!profile || !profile->GetPrefs())
     return std::string();
 
-  const base::Value* apps =
-      profile->GetPrefs()->GetDictionary(guest_os::prefs::kGuestOsRegistry);
-
-  if (!apps)
-    return std::string();
+  const base::Value::Dict& apps =
+      profile->GetPrefs()->GetValueDict(guest_os::prefs::kGuestOsRegistry);
 
   std::string app_id;
 
@@ -222,9 +219,9 @@ bool IsCrostiniShelfAppId(const Profile* profile,
   // TODO(timloh): We need to handle desktop files that have been removed.
   // For example, running windows with a no-longer-valid app id will try to
   // use the ExtensionContextMenuModel.
-  const auto* apps =
-      profile->GetPrefs()->GetDictionary(guest_os::prefs::kGuestOsRegistry);
-  return apps != nullptr && apps->FindKey(shelf_app_id) != nullptr;
+  const auto& apps =
+      profile->GetPrefs()->GetValueDict(guest_os::prefs::kGuestOsRegistry);
+  return apps.contains(shelf_app_id);
 }
 
 }  // namespace crostini
