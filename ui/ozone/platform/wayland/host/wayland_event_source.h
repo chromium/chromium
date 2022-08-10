@@ -189,7 +189,6 @@ class WaylandEventSource : public PlatformEventSource,
   // WaylandWindowObserver:
   void OnWindowRemoved(WaylandWindow* window) override;
 
-  void UpdateKeyboardModifiers(int modifier, bool down);
   void HandleTouchFocusChange(WaylandWindow* window,
                               bool focused,
                               absl::optional<PointerId> id = absl::nullopt);

@@ -23,6 +23,14 @@
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
 #include "ui/ozone/test/mock_platform_window_delegate.h"
 
+#if BUILDFLAG(USE_XKBCOMMON)
+#include "base/memory/free_deleter.h"
+#include "base/memory/platform_shared_memory_region.h"
+#include "base/memory/shared_memory_mapping.h"
+#include "base/memory/unsafe_shared_memory_region.h"
+#include "ui/events/keycodes/scoped_xkb.h"  // nogncheck
+#endif
+
 using ::testing::_;
 using ::testing::SaveArg;
 using ::testing::Values;
@@ -279,7 +287,39 @@ TEST_P(WaylandTouchTest, KeyboardFlagsSet) {
   wl::TestKeyboard* keyboard = server_.seat()->keyboard();
   ASSERT_TRUE(keyboard);
 
+#if BUILDFLAG(USE_XKBCOMMON)
+  // Set up XKB bits and set the keymap to the client.
+  std::unique_ptr<xkb_context, ui::XkbContextDeleter> xkb_context(
+      xkb_context_new(XKB_CONTEXT_NO_FLAGS));
+  std::unique_ptr<xkb_keymap, ui::XkbKeymapDeleter> xkb_keymap(
+      xkb_keymap_new_from_names(xkb_context.get(), nullptr /*names*/,
+                                XKB_KEYMAP_COMPILE_NO_FLAGS));
+  std::unique_ptr<xkb_state, ui::XkbStateDeleter> xkb_state(
+      xkb_state_new(xkb_keymap.get()));
+
+  std::unique_ptr<char, base::FreeDeleter> keymap_string(
+      xkb_keymap_get_as_string(xkb_keymap.get(), XKB_KEYMAP_FORMAT_TEXT_V1));
+  DCHECK(keymap_string.get());
+  size_t keymap_size = strlen(keymap_string.get()) + 1;
+
+  base::UnsafeSharedMemoryRegion shared_keymap_region =
+      base::UnsafeSharedMemoryRegion::Create(keymap_size);
+  base::WritableSharedMemoryMapping shared_keymap = shared_keymap_region.Map();
+  base::subtle::PlatformSharedMemoryRegion platform_shared_keymap =
+      base::UnsafeSharedMemoryRegion::TakeHandleForSerialization(
+          std::move(shared_keymap_region));
+  DCHECK(shared_keymap.IsValid());
+
+  memcpy(shared_keymap.memory(), keymap_string.get(), keymap_size);
+  wl_keyboard_send_keymap(
+      keyboard->resource(), WL_KEYBOARD_KEYMAP_FORMAT_XKB_V1,
+      platform_shared_keymap.GetPlatformHandle().fd, keymap_size);
+#endif
+
   // Press 'control' key.
+  wl_keyboard_send_modifiers(keyboard->resource(), 3, 4 /* mods_depressed*/,
+                             0 /* mods_latched */, 0 /* mods_locked */,
+                             0 /* group */);
   wl_keyboard_send_key(keyboard->resource(), ++serial, ++timestamp,
                        29 /* Control */, WL_KEYBOARD_KEY_STATE_PRESSED);
   Sync();
@@ -309,6 +349,9 @@ TEST_P(WaylandTouchTest, KeyboardFlagsSet) {
   EXPECT_TRUE(event->flags() & ui::EF_CONTROL_DOWN);
 
   // Release 'control' key.
+  wl_keyboard_send_modifiers(keyboard->resource(), 3, 0 /* mods_depressed*/,
+                             0 /* mods_latched */, 0 /* mods_locked */,
+                             0 /* group */);
   wl_keyboard_send_key(keyboard->resource(), ++serial, ++timestamp,
                        29 /* Control */, WL_KEYBOARD_KEY_STATE_RELEASED);
   Sync();

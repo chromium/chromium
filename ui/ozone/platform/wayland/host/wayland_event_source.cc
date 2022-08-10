@@ -201,11 +201,6 @@ uint32_t WaylandEventSource::OnKeyboardKeyEvent(
   int state_before_event = keyboard_modifiers_;
 #endif
 
-  if (!repeat) {
-    int flag = ModifierDomKeyToEventFlag(dom_key);
-    UpdateKeyboardModifiers(flag, type == ET_KEY_PRESSED);
-  }
-
   KeyEvent event(type, key_code, dom_code,
                  keyboard_modifiers_ | (repeat ? EF_IS_REPEAT : 0), dom_key,
                  timestamp);
@@ -626,25 +621,6 @@ void WaylandEventSource::OnWindowRemoved(WaylandWindow* window) {
   base::EraseIf(touch_points_, [window](const auto& point) {
     return point.second->window == window;
   });
-}
-
-// Currently EF_MOD3_DOWN means that the CapsLock key is currently down, and
-// EF_CAPS_LOCK_ON means the caps lock state is enabled (and the key may or
-// may not be down, but usually isn't). There does need to be two different
-// flags, since the physical CapsLock key is subject to remapping, but the
-// caps lock state (which can be triggered in a variety of ways) is not.
-//
-// TODO(crbug.com/1076661): This is likely caused by some CrOS-specific code.
-// Get rid of this function once it is properly guarded under OS_CHROMEOS.
-void WaylandEventSource::UpdateKeyboardModifiers(int modifier, bool down) {
-  if (modifier == EF_NONE)
-    return;
-
-  if (modifier == EF_CAPS_LOCK_ON) {
-    modifier = (modifier & ~EF_CAPS_LOCK_ON) | EF_MOD3_DOWN;
-  }
-  keyboard_modifiers_ = down ? (keyboard_modifiers_ | modifier)
-                             : (keyboard_modifiers_ & ~modifier);
 }
 
 void WaylandEventSource::HandleTouchFocusChange(WaylandWindow* window,
