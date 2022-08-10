@@ -113,8 +113,9 @@ void GetTopLevel(wl_client* client, wl_resource* resource, uint32_t id) {
     wl_client_post_no_memory(client);
     return;
   }
-  surface->set_xdg_toplevel(std::make_unique<MockXdgTopLevel>(
-      xdg_toplevel_resource, &kMockXdgToplevelImpl));
+  surface->set_xdg_toplevel(
+      std::make_unique<testing::NiceMock<MockXdgTopLevel>>(
+          xdg_toplevel_resource, &kMockXdgToplevelImpl));
 }
 
 void GetTopLevelV6(wl_client* client, wl_resource* resource, uint32_t id) {
@@ -130,8 +131,9 @@ void GetTopLevelV6(wl_client* client, wl_resource* resource, uint32_t id) {
     wl_client_post_no_memory(client);
     return;
   }
-  surface->set_xdg_toplevel(std::make_unique<MockXdgTopLevel>(
-      xdg_toplevel_resource, &kMockZxdgToplevelV6Impl));
+  surface->set_xdg_toplevel(
+      std::make_unique<testing::NiceMock<MockXdgTopLevel>>(
+          xdg_toplevel_resource, &kMockZxdgToplevelV6Impl));
 }
 
 void GetXdgPopup(struct wl_client* client,

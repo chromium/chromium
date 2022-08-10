@@ -1683,7 +1683,9 @@ gfx::Size X11Window::AdjustSizeForDisplay(
 }
 
 void X11Window::CreateXWindow(const PlatformWindowInitProperties& properties) {
-  auto bounds = properties.bounds;
+  auto bounds =
+      platform_window_delegate_->ConvertRectToPixels(properties.bounds);
+
   gfx::Size adjusted_size_in_pixels = AdjustSizeForDisplay(bounds.size());
   bounds.set_size(adjusted_size_in_pixels);
   const auto override_redirect =

@@ -14,7 +14,7 @@ PlatformScreen::PlatformScreen() = default;
 PlatformScreen::~PlatformScreen() = default;
 
 gfx::AcceleratedWidget PlatformScreen::GetLocalProcessWidgetAtPoint(
-    const gfx::Point& point,
+    const gfx::Point& point_in_dip,
     const std::set<gfx::AcceleratedWidget>& ignore) const {
   NOTIMPLEMENTED_LOG_ONCE();
   return gfx::kNullAcceleratedWidget;

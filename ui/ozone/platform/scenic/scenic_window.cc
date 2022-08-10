@@ -64,7 +64,7 @@ ScenicWindow::ScenicWindow(ScenicWindowManager* window_manager,
       node_(&scenic_session_),
       input_node_(&scenic_session_),
       render_node_(&scenic_session_),
-      bounds_(properties.bounds) {
+      bounds_(delegate_->ConvertRectToPixels(properties.bounds)) {
   if (view_controller_) {
     view_controller_.set_error_handler(
         fit::bind_member(this, &ScenicWindow::OnViewControllerDisconnected));

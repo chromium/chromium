@@ -24,7 +24,7 @@ void EGLWindowDeleter::operator()(wl_egl_window* egl_window) {
 
 std::unique_ptr<wl_egl_window, EGLWindowDeleter> CreateWaylandEglWindow(
     WaylandWindow* window) {
-  gfx::Size size = window->GetBoundsInPixels().size();
+  gfx::Size size = window->size_px();
   return std::unique_ptr<wl_egl_window, EGLWindowDeleter>(wl_egl_window_create(
       window->root_surface()->surface(), size.width(), size.height()));
 }
@@ -117,7 +117,7 @@ GLSurfaceWayland::~GLSurfaceWayland() {
 void GLSurfaceWayland::UpdateVisualSize() {
   window_->ui_task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&WaylandWindow::UpdateVisualSize,
-                                window_->AsWeakPtr(), size_, scale_factor_));
+                                window_->AsWeakPtr(), size_));
 }
 
 }  // namespace ui

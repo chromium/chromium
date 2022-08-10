@@ -138,6 +138,10 @@ zaura_output* WaylandOutput::get_zaura_output() {
   return aura_output_ ? aura_output_->wl_object() : nullptr;
 }
 
+void WaylandOutput::SetScaleFactorForTesting(float scale_factor) {
+  scale_factor_ = scale_factor;
+}
+
 void WaylandOutput::TriggerDelegateNotifications() {
   if (xdg_output_ && connection_->surface_submission_in_pixel_coordinates()) {
     DCHECK(!physical_size_.IsEmpty());

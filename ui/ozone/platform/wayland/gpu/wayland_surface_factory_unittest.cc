@@ -215,12 +215,12 @@ class WaylandSurfaceFactoryTest : public WaylandTest {
                             int z_order) {
     gl_surface->ScheduleOverlayPlane(
         image, nullptr,
-        gfx::OverlayPlaneData(
-            z_order, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE,
-            gfx::RectF(window_->GetBoundsInPixels()), {}, false,
-            gfx::Rect(window_->GetBoundsInPixels().size()), 1.0f,
-            gfx::OverlayPriorityHint::kNone, gfx::RRectF(),
-            gfx::ColorSpace::CreateSRGB(), absl::nullopt));
+        gfx::OverlayPlaneData(z_order,
+                              gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE,
+                              gfx::RectF(window_->GetBoundsInPixels()), {},
+                              false, gfx::Rect(window_->size_px()), 1.0f,
+                              gfx::OverlayPriorityHint::kNone, gfx::RRectF(),
+                              gfx::ColorSpace::CreateSRGB(), absl::nullopt));
   }
 };
 
@@ -252,10 +252,10 @@ TEST_P(WaylandSurfaceFactoryTest,
   std::vector<scoped_refptr<FakeGLImageNativePixmap>> fake_gl_image;
   for (int i = 0; i < 4; ++i) {
     auto native_pixmap = surface_factory_->CreateNativePixmap(
-        widget_, nullptr, window_->GetBoundsInPixels().size(),
-        gfx::BufferFormat::BGRA_8888, gfx::BufferUsage::SCANOUT);
+        widget_, nullptr, window_->size_px(), gfx::BufferFormat::BGRA_8888,
+        gfx::BufferUsage::SCANOUT);
     fake_gl_image.push_back(base::MakeRefCounted<FakeGLImageNativePixmap>(
-        native_pixmap, window_->GetBoundsInPixels().size()));
+        native_pixmap, window_->size_px()));
   }
 
   auto* root_surface = server_.GetObject<wl::MockSurface>(
@@ -542,10 +542,10 @@ TEST_P(WaylandSurfaceFactoryTest,
   std::vector<scoped_refptr<FakeGLImageNativePixmap>> fake_gl_image;
   for (int i = 0; i < 5; ++i) {
     auto native_pixmap = surface_factory_->CreateNativePixmap(
-        widget_, nullptr, window_->GetBoundsInPixels().size(),
-        gfx::BufferFormat::BGRA_8888, gfx::BufferUsage::SCANOUT);
+        widget_, nullptr, window_->size_px(), gfx::BufferFormat::BGRA_8888,
+        gfx::BufferUsage::SCANOUT);
     fake_gl_image.push_back(base::MakeRefCounted<FakeGLImageNativePixmap>(
-        native_pixmap, window_->GetBoundsInPixels().size()));
+        native_pixmap, window_->size_px()));
   }
 
   auto* root_surface = server_.GetObject<wl::MockSurface>(
@@ -788,7 +788,7 @@ TEST_P(WaylandSurfaceFactoryTest, Canvas) {
     auto canvas = CreateCanvas(widget_);
     ASSERT_TRUE(canvas);
 
-    auto bounds_px = window_->GetBoundsInPixels();
+    auto bounds_px = window_->GetBoundsInDIP();
     bounds_px = gfx::ScaleToRoundedRect(bounds_px, scale_factor);
 
     canvas->ResizeCanvas(bounds_px.size(), scale_factor);
@@ -830,7 +830,7 @@ TEST_P(WaylandSurfaceFactoryTest, CanvasResize) {
   auto canvas = CreateCanvas(widget_);
   ASSERT_TRUE(canvas);
 
-  canvas->ResizeCanvas(window_->GetBoundsInPixels().size(), 1);
+  canvas->ResizeCanvas(window_->GetBoundsInDIP().size(), 1);
   auto* sk_canvas = canvas->GetCanvas();
   DCHECK(sk_canvas);
   canvas->ResizeCanvas(gfx::Size(100, 50), 1);
@@ -928,8 +928,8 @@ TEST_P(WaylandSurfaceFactoryCompositorV3, SurfaceDamageTest) {
   gfx::RectF crop_uv = {0.1f, 0.2f, 0.5, 0.5f};
   gfx::RectF expected_combined_uv = {0.2, 0.2, 0.8, 0.64};
   gfx::Rect expected_surface_dmg = gfx::ToEnclosingRect(
-      gfx::ScaleRect(expected_combined_uv, window_->GetBoundsInPixels().width(),
-                     window_->GetBoundsInPixels().height()));
+      gfx::ScaleRect(expected_combined_uv, window_->size_px().width(),
+                     window_->size_px().height()));
 
   // Create buffers and FakeGlImageNativePixmap.
   std::vector<scoped_refptr<FakeGLImageNativePixmap>> fake_gl_image;

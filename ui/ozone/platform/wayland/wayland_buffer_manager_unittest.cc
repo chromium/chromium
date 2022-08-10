@@ -404,7 +404,7 @@ TEST_P(WaylandBufferManagerTest, CreateAndDestroyBuffer) {
 
     buffer_manager_gpu_->CommitBuffer(
         widget, kBufferId1, kBufferId1, window_->GetBoundsInPixels(),
-        gfx::RoundedCornersF(), kDefaultScale, window_->GetBoundsInPixels());
+        gfx::RoundedCornersF(), kDefaultScale, gfx::Rect(window_->size_px()));
 
     CreateDmabufBasedBufferAndSetTerminateExpectation(true /*fail*/,
                                                       kBufferId1);
@@ -427,7 +427,7 @@ TEST_P(WaylandBufferManagerTest, CreateAndDestroyBuffer) {
 
     buffer_manager_gpu_->CommitBuffer(
         widget, kBufferId1, kBufferId1, window_->GetBoundsInPixels(),
-        gfx::RoundedCornersF(), kDefaultScale, window_->GetBoundsInPixels());
+        gfx::RoundedCornersF(), kDefaultScale, gfx::Rect(window_->size_px()));
 
     DestroyBufferAndSetTerminateExpectation(kBufferId1, false /*fail*/);
   }
@@ -449,7 +449,7 @@ TEST_P(WaylandBufferManagerTest, CreateAndDestroyBuffer) {
     // Attach to a surface.
     buffer_manager_gpu_->CommitBuffer(
         widget, kBufferId1, kBufferId1, window_->GetBoundsInPixels(),
-        gfx::RoundedCornersF(), kDefaultScale, window_->GetBoundsInPixels());
+        gfx::RoundedCornersF(), kDefaultScale, gfx::Rect(window_->size_px()));
 
     // Created non-attached buffer as well.
     CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/,
@@ -490,7 +490,7 @@ TEST_P(WaylandBufferManagerTest, CommitBufferNonExistingBufferId) {
 
   buffer_manager_gpu_->CommitBuffer(
       window_->GetWidget(), 1u, 5u, window_->GetBoundsInPixels(),
-      gfx::RoundedCornersF(), kDefaultScale, window_->GetBoundsInPixels());
+      gfx::RoundedCornersF(), kDefaultScale, gfx::Rect(window_->size_px()));
 
   Sync();
 }
@@ -557,7 +557,7 @@ TEST_P(WaylandBufferManagerTest, CommitBufferNullWidget) {
   SetTerminateCallbackExpectationAndDestroyChannel(&callback_, true /*fail*/);
   buffer_manager_gpu_->CommitBuffer(
       gfx::kNullAcceleratedWidget, 1u, kBufferId, window_->GetBoundsInPixels(),
-      gfx::RoundedCornersF(), kDefaultScale, window_->GetBoundsInPixels());
+      gfx::RoundedCornersF(), kDefaultScale, gfx::Rect(window_->size_px()));
 
   Sync();
 }
@@ -600,7 +600,7 @@ TEST_P(WaylandBufferManagerTest, EnsureCorrectOrderOfCallbacks) {
 
   const gfx::AcceleratedWidget widget = window_->GetWidget();
   const gfx::Rect bounds = gfx::Rect({0, 0}, kDefaultSize);
-  window_->SetBoundsInPixels(bounds);
+  window_->SetBoundsInDIP(bounds);
 
   MockSurfaceGpu mock_surface_gpu(buffer_manager_gpu_.get(), widget_);
 
@@ -715,7 +715,7 @@ TEST_P(WaylandBufferManagerTest,
 
   const gfx::AcceleratedWidget widget = window_->GetWidget();
   const gfx::Rect bounds = gfx::Rect({0, 0}, kDefaultSize);
-  window_->SetBoundsInPixels(bounds);
+  window_->SetBoundsInDIP(bounds);
 
   MockSurfaceGpu mock_surface_gpu(buffer_manager_gpu_.get(), widget_);
 
@@ -842,7 +842,7 @@ TEST_P(WaylandBufferManagerTest,
 
   const gfx::AcceleratedWidget widget = window_->GetWidget();
   const gfx::Rect bounds = gfx::Rect({0, 0}, kDefaultSize);
-  window_->SetBoundsInPixels(bounds);
+  window_->SetBoundsInDIP(bounds);
 
   MockSurfaceGpu mock_surface_gpu(buffer_manager_gpu_.get(), widget_);
 
@@ -1003,7 +1003,7 @@ TEST_P(WaylandBufferManagerTest, TestCommitBufferConditions) {
 
   buffer_manager_gpu_->CommitBuffer(
       widget, kDmabufBufferId, kDmabufBufferId, window_->GetBoundsInPixels(),
-      gfx::RoundedCornersF(), kDefaultScale, window_->GetBoundsInPixels());
+      gfx::RoundedCornersF(), kDefaultScale, gfx::Rect(window_->size_px()));
   Sync();
 
   EXPECT_CALL(*mock_surface, Attach(_, _, _)).Times(1);
@@ -1037,7 +1037,7 @@ TEST_P(WaylandBufferManagerTest, TestCommitBufferConditions) {
 
   buffer_manager_gpu_->CommitBuffer(
       widget, kDmabufBufferId2, kDmabufBufferId2, window_->GetBoundsInPixels(),
-      gfx::RoundedCornersF(), kDefaultScale, window_->GetBoundsInPixels());
+      gfx::RoundedCornersF(), kDefaultScale, gfx::Rect(window_->size_px()));
 
   Sync();
 
@@ -1253,7 +1253,7 @@ TEST_P(WaylandBufferManagerTest, AnonymousBufferAttachedAndReleased) {
 
   const gfx::AcceleratedWidget widget = window_->GetWidget();
   const gfx::Rect bounds = gfx::Rect({0, 0}, kDefaultSize);
-  window_->SetBoundsInPixels(bounds);
+  window_->SetBoundsInDIP(bounds);
 
   MockSurfaceGpu mock_surface_gpu(buffer_manager_gpu_.get(), widget_);
 
@@ -1990,7 +1990,7 @@ TEST_P(WaylandBufferManagerTest, FencedRelease) {
 
   const gfx::AcceleratedWidget widget = window_->GetWidget();
   const gfx::Rect bounds = gfx::Rect({0, 0}, kDefaultSize);
-  window_->SetBoundsInPixels(bounds);
+  window_->SetBoundsInDIP(bounds);
 
   MockSurfaceGpu mock_surface_gpu(buffer_manager_gpu_.get(), widget_);
 
@@ -2467,7 +2467,7 @@ TEST_P(WaylandBufferManagerTest, FeedbacksAreDiscardedIfClientMisbehaves) {
 
   const gfx::AcceleratedWidget widget = window_->GetWidget();
   const gfx::Rect bounds = gfx::Rect({0, 0}, kDefaultSize);
-  window_->SetBoundsInPixels(bounds);
+  window_->SetBoundsInDIP(bounds);
 
   MockSurfaceGpu mock_surface_gpu(buffer_manager_gpu_.get(), widget_);
 

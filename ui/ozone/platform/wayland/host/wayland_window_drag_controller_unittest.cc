@@ -867,7 +867,7 @@ TEST_P(WaylandWindowDragControllerTest, DragExitAttached_TOUCH) {
 using BoundsChange = PlatformWindowDelegate::BoundsChange;
 
 TEST_P(WaylandWindowDragControllerTest, RestoreDuringWindowDragSession) {
-  const gfx::Rect original_bounds = window_->GetBoundsInPixels();
+  const gfx::Rect original_bounds = window_->GetBoundsInDIP();
   wl::ScopedWlArray states({XDG_TOPLEVEL_STATE_ACTIVATED});
 
   // Maximize and check restored bounds is correctly set.

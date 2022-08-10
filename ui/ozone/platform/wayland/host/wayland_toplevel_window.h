@@ -74,6 +74,7 @@ class WaylandToplevelWindow : public WaylandWindow,
   void NotifyStartupComplete(const std::string& startup_id) override;
   void SetAspectRatio(const gfx::SizeF& aspect_ratio) override;
   void SetBoundsInPixels(const gfx::Rect& bounds) override;
+  void SetBoundsInDIP(const gfx::Rect& bounds) override;
 
   // Sets the window's origin.
   void SetOrigin(const gfx::Point& origin);
@@ -105,7 +106,7 @@ class WaylandToplevelWindow : public WaylandWindow,
                                    bool is_fullscreen,
                                    bool is_activated) override;
   void HandleSurfaceConfigure(uint32_t serial) override;
-  void UpdateVisualSize(const gfx::Size& size_px, float scale_factor) override;
+  void UpdateVisualSize(const gfx::Size& size_px) override;
   bool OnInitialize(PlatformWindowInitProperties properties) override;
   bool IsActive() const override;
   bool IsSurfaceConfigured() override;

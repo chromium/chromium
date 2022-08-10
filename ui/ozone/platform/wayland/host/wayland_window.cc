@@ -130,12 +130,8 @@ void WaylandWindow::UpdateWindowScale(bool update_bounds) {
   float new_scale = output->scale_factor();
   ui_scale_ = output->GetUIScaleFactor();
 
-  float old_scale = window_scale();
-  window_scale_ = new_scale;
-
-  // We need to keep DIP size of the window the same whenever the scale changes.
-  if (update_bounds)
-    UpdateBoundsInDIP(gfx::ScaleToEnclosedRect(bounds_px_, 1.0 / old_scale));
+  if (SetWindowScale(new_scale))
+    delegate_->OnBoundsChanged({true});
 
   // Propagate update to the child windows
   if (child_window_)
@@ -146,9 +142,12 @@ gfx::AcceleratedWidget WaylandWindow::GetWidget() const {
   return accelerated_widget_;
 }
 
-void WaylandWindow::SetWindowScale(float new_scale) {
+bool WaylandWindow::SetWindowScale(float new_scale) {
   DCHECK_GE(new_scale, 0.f);
+  bool changed = window_scale_ != new_scale;
   window_scale_ = new_scale;
+  size_px_ = gfx::ScaleToEnclosingRect(bounds_dip_, new_scale).size();
+  return changed;
 }
 
 uint32_t WaylandWindow::GetPreferredEnteredOutputId() {
@@ -299,27 +298,24 @@ void WaylandWindow::PrepareForShutdown() {
 }
 
 void WaylandWindow::SetBoundsInPixels(const gfx::Rect& bounds_px) {
-  gfx::Rect adjusted_bounds_px = AdjustBoundsToConstraintsPx(bounds_px);
-  if (bounds_px_ == adjusted_bounds_px)
-    return;
-  bool origin_changed = bounds_px_.origin() != adjusted_bounds_px.origin();
-  bounds_px_ = adjusted_bounds_px;
-
-  if (update_visual_size_immediately_for_testing_)
-    UpdateVisualSize(bounds_px.size(), window_scale());
-  delegate_->OnBoundsChanged({origin_changed});
+  // TODO(crbug.com/): This is currently used only by unit tests.
+  // Figure out how to migrate to test only methods.
+  auto bounds_dip = delegate_->ConvertRectToDIP(bounds_px);
+  SetBoundsInDIP(bounds_dip);
 }
 
 gfx::Rect WaylandWindow::GetBoundsInPixels() const {
-  return bounds_px_;
+  // TODO(crbug.com/): This is currently used only by unit tests.
+  // Figure out how to migrate to test only methods.
+  return delegate_->ConvertRectToPixels(bounds_dip_);
 }
 
-void WaylandWindow::SetBoundsInDIP(const gfx::Rect& bounds) {
-  SetBoundsInPixels(delegate_->ConvertRectToPixels(bounds));
+void WaylandWindow::SetBoundsInDIP(const gfx::Rect& bounds_dip) {
+  UpdateBoundsInDIP(bounds_dip);
 }
 
 gfx::Rect WaylandWindow::GetBoundsInDIP() const {
-  return delegate_->ConvertRectToDIP(bounds_px_);
+  return bounds_dip_;
 }
 
 void WaylandWindow::OnSurfaceConfigureEvent() {
@@ -554,8 +550,7 @@ void WaylandWindow::HandlePopupConfigure(const gfx::Rect& bounds_dip) {
   NOTREACHED() << "Only shell popups must receive HandlePopupConfigure calls.";
 }
 
-void WaylandWindow::UpdateVisualSize(const gfx::Size& size_px,
-                                     float scale_factor) {
+void WaylandWindow::UpdateVisualSize(const gfx::Size& size_px) {
   if (visual_size_px_ == size_px)
     return;
   visual_size_px_ = size_px;
@@ -616,10 +611,16 @@ void WaylandWindow::OnDragSessionClose(DragOperation operation) {
 }
 
 void WaylandWindow::UpdateBoundsInDIP(const gfx::Rect& bounds_dip) {
-  // This method is used to update the content size by calling WindowWindow's
-  // SetBounds, instead of WaylandToplevelWindow's override, which sends a
-  // request to the compositor.
-  WaylandWindow::SetBoundsInPixels(delegate_->ConvertRectToPixels(bounds_dip));
+  gfx::Rect adjusted_bounds_dip = AdjustBoundsToConstraintsDIP(bounds_dip);
+  if (bounds_dip_ == adjusted_bounds_dip)
+    return;
+  bool origin_changed = bounds_dip_.origin() != bounds_dip.origin();
+  bounds_dip_ = adjusted_bounds_dip;
+  size_px_ = delegate_->ConvertRectToPixels(bounds_dip).size();
+
+  if (update_visual_size_immediately_for_testing_)
+    UpdateVisualSize(size_px());
+  delegate_->OnBoundsChanged({origin_changed});
 }
 
 bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
@@ -639,10 +640,11 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
         UseTestConfigForPlatformWindows());
   }
 
+  bounds_dip_ = properties.bounds;
   // Properties contain DIP bounds but the buffer scale is initially 1 so it's
   // OK to assign.  The bounds will be recalculated when the buffer scale
   // changes.
-  bounds_px_ = properties.bounds;
+  size_px_ = bounds_dip_.size();
   opacity_ = properties.opacity;
   type_ = properties.type;
 
@@ -663,7 +665,7 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
   PlatformEventSource::GetInstance()->AddPlatformEventDispatcher(this);
   delegate_->OnAcceleratedWidgetAvailable(GetWidget());
 
-  std::vector<gfx::Rect> region{gfx::Rect{bounds_px_.size()}};
+  std::vector<gfx::Rect> region{gfx::Rect{size_px_}};
   root_surface_->SetOpaqueRegion(&region);
   root_surface_->ApplyPendingState();
   connection_->ScheduleFlush();
@@ -960,7 +962,8 @@ void WaylandWindow::ProcessPendingBoundsDip(uint32_t serial) {
     // for a frame update, which will invoke UpdateVisualSize().
     LOG_IF(WARNING, pending_configures_.size() > 100u)
         << "The queue of configures is longer than 100!";
-    pending_configures_.push_back({pending_bounds_dip_, serial});
+    pending_configures_.push_back(
+        {pending_bounds_dip_, pending_size_px_, serial});
     // The Wayland compositor can generate xdg-shell.configure events more
     // frequently than frame updates from gpu process. Throttle
     // ApplyPendingBounds() such that we forward new bounds to
@@ -1026,24 +1029,17 @@ gfx::Rect WaylandWindow::AdjustBoundsToConstraintsDIP(
   return adjusted_bounds_dip;
 }
 
-bool WaylandWindow::ProcessVisualSizeUpdate(const gfx::Size& size_px,
-                                            float scale_factor) {
+bool WaylandWindow::ProcessVisualSizeUpdate(const gfx::Size& size_px) {
   // TODO(crbug.com/1307501): Optimize this to be less expensive. Maybe
   // precompute in pixels for configure events. pending_configures_ can have 10s
   // of elements in it for several frames under some conditions.
   // The `pending_configures_` should store px size instead of dip.
-  auto result = std::find_if(
-      pending_configures_.begin(), pending_configures_.end(),
-      [this, &size_px, &scale_factor](auto& configure) {
-        // Since size_px comes from SetBounds via UpdateVisualSize in
-        // WaylandTopLevelWindow, we also need to adjust it for bounds to see if
-        // we match.
-        return AdjustBoundsToConstraintsPx(
-                   gfx::ScaleToEnclosingRect(configure.bounds_dip,
-                                             scale_factor))
-                       .size() == size_px &&
-               configure.set;
-      });
+  auto result =
+      std::find_if(pending_configures_.begin(), pending_configures_.end(),
+                   [&size_px](auto& configure) {
+                     // Should we adjust?
+                     return configure.size_px == size_px && configure.set;
+                   });
 
   if (result != pending_configures_.end()) {
     auto serial = result->serial;
@@ -1060,6 +1056,7 @@ void WaylandWindow::ApplyPendingBounds() {
   DCHECK(!pending_configures_.empty());
   for (auto& configure : pending_configures_)
     configure.set = true;
+  // Do not call SetBoundsInDIP which may be overridden by a subclass.
   UpdateBoundsInDIP(pending_configures_.back().bounds_dip);
 }
 

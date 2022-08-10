@@ -136,7 +136,7 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
   // positioning. Useful for such backends as Wayland as it provides flexibility
   // in positioning child windows, which must be repositioned if the originally
   // intended position caused the surface to be constrained.
-  virtual absl::optional<OwnedWindowAnchor> GetOwnedWindowAnchorAndRectInPx();
+  virtual absl::optional<OwnedWindowAnchor> GetOwnedWindowAnchorAndRectInDIP();
 
   // Enables or disables frame rate throttling.
   virtual void SetFrameRateThrottleEnabled(bool enabled);

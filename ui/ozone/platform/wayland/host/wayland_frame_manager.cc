@@ -145,8 +145,7 @@ void WaylandFrameManager::MaybeProcessPendingFrame() {
   // ack_configure requests being issued.
   const wl::WaylandOverlayConfig& config = frame->root_config;
   if (!frame->buffer_lost && !!config.buffer_id) {
-    window_->UpdateVisualSize(gfx::ToRoundedSize(config.bounds_rect.size()),
-                              config.surface_scale_factor);
+    window_->UpdateVisualSize(gfx::ToRoundedSize(config.bounds_rect.size()));
   }
 
   // Skip this frame if:

@@ -93,9 +93,8 @@ bool WaylandToplevelWindow::CreateShellToplevel() {
                             ZAURA_SURFACE_FRAME_TYPE_SHADOW);
   }
 
-  // TODO(oshima): Change to use DIP.
   if (screen_coordinates_enabled_)
-    SetBoundsInPixels(GetBoundsInPixels());
+    SetBoundsInDIP(GetBoundsInDIP());
 
   // This could be the proper time to update window mask using
   // NonClientView::GetWindowMask, since |non_client_view| is not created yet
@@ -417,6 +416,8 @@ void WaylandToplevelWindow::HandleAuraToplevelConfigure(int32_t x,
   }
 
   set_pending_bounds_dip(AdjustBoundsToConstraintsDIP(bounds_dip));
+  set_pending_size_px(
+      delegate()->ConvertRectToPixels(pending_bounds_dip()).size());
 
   // Store the restored bounds if current state differs from the normal state.
   // It can be client or compositor side change from normal to something else.
@@ -442,36 +443,38 @@ void WaylandToplevelWindow::SetBoundsInPixels(const gfx::Rect& bounds) {
   }
 }
 
+void WaylandToplevelWindow::SetBoundsInDIP(const gfx::Rect& bounds_dip) {
+  WaylandWindow::SetBoundsInDIP(bounds_dip);
+  if (shell_toplevel_ && screen_coordinates_enabled_)
+    shell_toplevel_->RequestWindowBounds(bounds_dip);
+}
+
 void WaylandToplevelWindow::SetOrigin(const gfx::Point& origin) {
-  // TODO(crbug.com/1306688): Using UpdateBoundsInDIP changes the size of the
-  // window due to the rounding.  Change this to use SetBoundsInDIP when
-  // `bounds_px_` becomes `bounds_dip_`.
-  gfx::Point origin_px =
-      gfx::ScaleToFlooredPoint(origin, window_scale(), window_scale());
-  WaylandWindow::SetBoundsInPixels(
-      gfx::Rect(origin_px, GetBoundsInPixels().size()));
+  gfx::Rect new_bounds(origin, GetBoundsInDIP().size());
+  WaylandWindow::SetBoundsInDIP(new_bounds);
 }
 
 void WaylandToplevelWindow::HandleSurfaceConfigure(uint32_t serial) {
   ProcessPendingBoundsDip(serial);
   set_pending_bounds_dip({});
+  set_pending_size_px({});
 }
 
-void WaylandToplevelWindow::UpdateVisualSize(const gfx::Size& size_px,
-                                             float scale_factor) {
-  WaylandWindow::UpdateVisualSize(size_px, scale_factor);
+void WaylandToplevelWindow::UpdateVisualSize(const gfx::Size& size_px) {
+  WaylandWindow::UpdateVisualSize(size_px);
 
   if (!shell_toplevel_)
     return;
 
-  if (!ProcessVisualSizeUpdate(size_px, scale_factor)) {
+  if (!ProcessVisualSizeUpdate(size_px)) {
     // Early-out if shell surface is still not configure at this point, which
     // indicates it is not mapped yet, which should happen in an upcoming frame.
     if (!shell_toplevel()->IsConfigured())
       return;
 
     if (set_geometry_on_next_frame_) {
-      auto size_dip = gfx::ScaleToRoundedSize(size_px, 1.f / scale_factor);
+      auto size_dip = gfx::ScaleToRoundedSize(size_px, 1.f / window_scale());
+      // TODO(crbug.com/3814157): Use DIP bounds instead.
       SetWindowGeometry(gfx::Rect(size_dip));
       set_geometry_on_next_frame_ = false;
     }

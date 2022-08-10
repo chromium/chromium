@@ -37,7 +37,7 @@ FlatlandWindow::FlatlandWindow(FlatlandWindowManager* window_manager,
       view_ref_(std::move(properties.view_ref_pair.view_ref)),
       view_controller_(std::move(properties.view_controller)),
       flatland_("Chromium FlatlandWindow"),
-      bounds_(properties.bounds) {
+      bounds_(delegate->ConvertRectToPixels(properties.bounds)) {
   if (view_controller_) {
     view_controller_.set_error_handler(
         fit::bind_member(this, &FlatlandWindow::OnViewControllerDisconnected));

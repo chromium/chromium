@@ -86,6 +86,8 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
   wl_output* get_output() { return output_.get(); }
   zaura_output* get_zaura_output();
 
+  void SetScaleFactorForTesting(float scale_factor);
+
  private:
   static constexpr int32_t kDefaultScaleFactor = 1;
 

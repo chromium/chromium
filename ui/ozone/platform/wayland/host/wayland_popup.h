@@ -29,7 +29,7 @@ class WaylandPopup : public WaylandWindow {
   void Show(bool inactive) override;
   void Hide() override;
   bool IsVisible() const override;
-  void SetBoundsInPixels(const gfx::Rect& bounds) override;
+  void SetBoundsInDIP(const gfx::Rect& bounds) override;
 
  private:
   // WaylandWindow overrides:
@@ -41,7 +41,7 @@ class WaylandPopup : public WaylandWindow {
   bool IsSurfaceConfigured() override;
   void SetWindowGeometry(gfx::Rect bounds) override;
   void AckConfigure(uint32_t serial) override;
-  void UpdateVisualSize(const gfx::Size& size_px, float scale_factor) override;
+  void UpdateVisualSize(const gfx::Size& size_px) override;
   void ApplyPendingBounds() override;
   void UpdateWindowMask() override;
 
