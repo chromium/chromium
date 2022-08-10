@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>baseurl test page</title>
+<body>
+  <a href='foo.html' id='link_rel1'>txt</a>
+  <!-- Note: link_rel2 below is relative to the origin (it starts with a /), and
+       not the path, of the document, and so will be different from link_rel1.
+    -->
+  <a href='/foo.html' id='link_rel2'>txt</a>
+  <script>
+    let original_link_rel1 = link_rel1.href;
+    let original_link_rel2 = link_rel2.href;
+    window.addEventListener('message', (event) => {
+      // Verify the original link values haven't changed after the parent
+      // changes its baseURI.
+      const links_unchanged =
+          original_link_rel1 === link_rel1.href &&
+          original_link_rel2 === link_rel2.href;
+      event.source.postMessage(
+            {'base_uri': document.baseURI,
+             'links_unchanged': links_unchanged },
+            event.origin);
+    }, false);
+
+    // When the content is loaded with document.write, the following value is
+    // used to verify when the content has finished loading.
+    window.script_loaded = true;
+  </script>
+</body>
