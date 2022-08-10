@@ -6,11 +6,7 @@
 #include "ash/public/cpp/network_config_service.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/test_controller_ash.h"
-#include "chrome/test/base/chromeos/ash_browser_test_starter.h"
-#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/browser/ash/crosapi/ash_requires_lacros_browsertestbase.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom-test-utils.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_observer.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
@@ -24,38 +20,17 @@ constexpr char kVpnExtensionName[] = "vpn_extension";
 
 }  // namespace
 
-class VpnExtensionObserverBrowserTest : public InProcessBrowserTest {
+class VpnExtensionObserverBrowserTest
+    : public crosapi::AshRequiresLacrosBrowserTestBase {
  public:
-  void SetUpInProcessBrowserTestFixture() override {
-    if (!ash_starter_.HasLacrosArgument()) {
-      return;
-    }
-    ASSERT_TRUE(ash_starter_.PrepareEnvironmentForLacros());
-  }
-
-  void SetUpOnMainThread() override {
-    if (!ash_starter_.HasLacrosArgument()) {
-      return;
-    }
-    auto* manager = crosapi::CrosapiManager::Get();
-    test_controller_ash_ = std::make_unique<crosapi::TestControllerAsh>();
-    manager->crosapi_ash()->SetTestControllerForTesting(
-        test_controller_ash_.get());
-    ash_starter_.StartLacros(this);
-  }
-
   std::string LoadVpnExtension(const std::string& extension_name) {
     crosapi::mojom::StandaloneBrowserTestControllerAsyncWaiter waiter(
-        test_controller_ash_->GetStandaloneBrowserTestController().get());
+        GetStandaloneBrowserTestController());
 
     std::string extension_id;
     waiter.LoadVpnExtension(extension_name, &extension_id);
     return extension_id;
   }
-
- protected:
-  test::AshBrowserTestStarter ash_starter_;
-  std::unique_ptr<crosapi::TestControllerAsh> test_controller_ash_;
 };
 
 class ExtensionEventWaiter
@@ -87,10 +62,8 @@ class ExtensionEventWaiter
   mojo::Remote<cros_network::mojom::CrosNetworkConfig> cros_network_config_;
 };
 
-// TODO(1339457): This test is flaky.
-IN_PROC_BROWSER_TEST_F(VpnExtensionObserverBrowserTest,
-                       DISABLED_LoadVpnExtension) {
-  if (!ash_starter_.HasLacrosArgument()) {
+IN_PROC_BROWSER_TEST_F(VpnExtensionObserverBrowserTest, LoadVpnExtension) {
+  if (!HasLacrosArgument()) {
     return;
   }
   auto waiter = std::make_unique<ExtensionEventWaiter>();

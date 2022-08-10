@@ -13,16 +13,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/test_controller_ash.h"
+#include "chrome/browser/ash/crosapi/ash_requires_lacros_browsertestbase.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/apps/app_dialog/app_uninstall_dialog_view.h"
 #include "chrome/browser/web_applications/test/app_registration_waiter.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/test/base/chromeos/ash_browser_test_starter.h"
-#include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom-test-utils.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/test/browser_test.h"
@@ -107,7 +103,8 @@ void SelectContextMenuForApp(const std::string& app_id, size_t index) {
 
 }  // namespace
 
-class WebAppsCrosapiBrowserTest : public InProcessBrowserTest {
+class WebAppsCrosapiBrowserTest
+    : public crosapi::AshRequiresLacrosBrowserTestBase {
  public:
   WebAppsCrosapiBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
@@ -116,29 +113,10 @@ class WebAppsCrosapiBrowserTest : public InProcessBrowserTest {
   ~WebAppsCrosapiBrowserTest() override = default;
 
  protected:
-  void SetUpInProcessBrowserTestFixture() override {
-    if (!ash_starter_.HasLacrosArgument()) {
-      return;
-    }
-    ASSERT_TRUE(ash_starter_.PrepareEnvironmentForLacros());
-  }
-
-  void SetUpOnMainThread() override {
-    if (!ash_starter_.HasLacrosArgument()) {
-      return;
-    }
-    auto* manager = crosapi::CrosapiManager::Get();
-    test_controller_ash_ = std::make_unique<crosapi::TestControllerAsh>();
-    manager->crosapi_ash()->SetTestControllerForTesting(
-        test_controller_ash_.get());
-
-    ash_starter_.StartLacros(this);
-  }
-
   std::string InstallWebApp(const std::string& start_url,
                             apps::WindowMode mode) {
     crosapi::mojom::StandaloneBrowserTestControllerAsyncWaiter waiter(
-        test_controller_ash_->GetStandaloneBrowserTestController().get());
+        GetStandaloneBrowserTestController());
     std::string app_id;
     waiter.InstallWebApp(start_url, mode, &app_id);
     web_app::AppRegistrationWaiter(browser()->profile(), app_id).Await();
@@ -151,16 +129,12 @@ class WebAppsCrosapiBrowserTest : public InProcessBrowserTest {
     return apps::AppServiceProxyFactory::GetForProfile(profile());
   }
 
-  const test::AshBrowserTestStarter& ash_starter() { return ash_starter_; }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  test::AshBrowserTestStarter ash_starter_;
-  std::unique_ptr<crosapi::TestControllerAsh> test_controller_ash_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppsCrosapiBrowserTest, PinUsingContextMenu) {
-  if (!ash_starter().HasLacrosArgument()) {
+  if (!HasLacrosArgument()) {
     return;
   }
 
@@ -228,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsCrosapiBrowserTest, PinUsingContextMenu) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppsCrosapiBrowserTest, Uninstall) {
-  if (!ash_starter().HasLacrosArgument()) {
+  if (!HasLacrosArgument()) {
     return;
   }
 

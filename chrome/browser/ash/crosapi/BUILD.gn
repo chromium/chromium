@@ -350,6 +350,8 @@ source_set("test_support") {
   testonly = true
 
   sources = [
+    "ash_requires_lacros_browsertestbase.cc",
+    "ash_requires_lacros_browsertestbase.h",
     "fake_browser_manager.cc",
     "fake_browser_manager.h",
     "input_method_test_interface_ash.cc",

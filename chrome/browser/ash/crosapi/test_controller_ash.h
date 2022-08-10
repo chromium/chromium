@@ -9,10 +9,12 @@
 #include <string>
 #include <vector>
 
+#include "base/one_shot_event.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "ui/base/models/simple_menu_model.h"
 
 namespace crosapi {
@@ -101,6 +103,12 @@ class TestControllerAsh : public mojom::TestController,
     return standalone_browser_test_controller_;
   }
 
+  // Signals when standalone browser test controller becomes bound.
+  const base::OneShotEvent& on_standalone_browser_test_controller_bound()
+      const {
+    return on_standalone_browser_test_controller_bound_;
+  }
+
  private:
   class OverviewWaiter;
 
@@ -135,6 +143,8 @@ class TestControllerAsh : public mojom::TestController,
   // Controller to send commands to the connected lacros crosapi client.
   mojo::Remote<mojom::StandaloneBrowserTestController>
       standalone_browser_test_controller_;
+
+  base::OneShotEvent on_standalone_browser_test_controller_bound_;
 };
 
 class TestShillControllerAsh : public crosapi::mojom::TestShillController {

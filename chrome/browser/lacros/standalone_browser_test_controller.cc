@@ -54,6 +54,7 @@ StandaloneBrowserTestController::StandaloneBrowserTestController(
     mojo::Remote<crosapi::mojom::TestController>& test_controller) {
   test_controller->RegisterStandaloneBrowserTestController(
       controller_receiver_.BindNewPipeAndPassRemoteWithVersion());
+  test_controller.FlushAsync();
 }
 
 StandaloneBrowserTestController::~StandaloneBrowserTestController() = default;

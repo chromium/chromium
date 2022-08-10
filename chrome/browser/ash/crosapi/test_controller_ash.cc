@@ -365,6 +365,9 @@ void TestControllerAsh::RegisterStandaloneBrowserTestController(
   standalone_browser_test_controller_.Bind(std::move(controller));
   standalone_browser_test_controller_.set_disconnect_handler(base::BindOnce(
       &TestControllerAsh::OnControllerDisconnected, base::Unretained(this)));
+
+  if (!on_standalone_browser_test_controller_bound_.is_signaled())
+    on_standalone_browser_test_controller_bound_.Signal();
 }
 
 void TestControllerAsh::WaiterFinished(OverviewWaiter* waiter) {

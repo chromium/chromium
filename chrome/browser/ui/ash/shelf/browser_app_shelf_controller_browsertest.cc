@@ -22,9 +22,8 @@
 #include "chrome/browser/apps/app_service/browser_app_instance.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_observer.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_registry.h"
+#include "chrome/browser/ash/crosapi/ash_requires_lacros_browsertestbase.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/test_controller_ash.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
@@ -34,8 +33,6 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
-#include "chrome/test/base/chromeos/ash_browser_test_starter.h"
-#include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom-test-utils.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
@@ -170,7 +167,8 @@ std::ostream& operator<<(std::ostream& os, const ExpectedAppMenuItem& i) {
   return os << i.command_id << ", " << i.title;
 }
 
-class BrowserAppShelfControllerBrowserTest : public InProcessBrowserTest {
+class BrowserAppShelfControllerBrowserTest
+    : public crosapi::AshRequiresLacrosBrowserTestBase {
  public:
   BrowserAppShelfControllerBrowserTest() {
     scoped_feature_list_.InitAndEnableFeature(ash::features::kLacrosPrimary);
@@ -193,23 +191,11 @@ class BrowserAppShelfControllerBrowserTest : public InProcessBrowserTest {
                                   GURL(start_url));
   }
 
-  void SetUpInProcessBrowserTestFixture() override {
-    if (!ash_starter_.HasLacrosArgument()) {
-      return;
-    }
-    ASSERT_TRUE(ash_starter_.PrepareEnvironmentForLacros());
-  }
-
   void SetUpOnMainThread() override {
-    if (!ash_starter_.HasLacrosArgument()) {
+    crosapi::AshRequiresLacrosBrowserTestBase::SetUpOnMainThread();
+    if (!HasLacrosArgument()) {
       return;
     }
-    auto* manager = crosapi::CrosapiManager::Get();
-    test_controller_ash_ = std::make_unique<crosapi::TestControllerAsh>();
-    manager->crosapi_ash()->SetTestControllerForTesting(
-        test_controller_ash_.get());
-
-    ash_starter_.StartLacros(this);
 
     auto* registry = AppServiceProxy()->BrowserAppInstanceRegistry();
     ASSERT_NE(registry, nullptr);
@@ -232,7 +218,7 @@ class BrowserAppShelfControllerBrowserTest : public InProcessBrowserTest {
   std::string InstallWebApp(const std::string& start_url,
                             apps::WindowMode mode) {
     crosapi::mojom::StandaloneBrowserTestControllerAsyncWaiter waiter(
-        test_controller_ash_->GetStandaloneBrowserTestController().get());
+        GetStandaloneBrowserTestController());
     std::string app_id;
     waiter.InstallWebApp(start_url, mode, &app_id);
 
@@ -321,14 +307,11 @@ class BrowserAppShelfControllerBrowserTest : public InProcessBrowserTest {
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  test::AshBrowserTestStarter ash_starter_;
   apps::BrowserAppInstanceRegistry* registry_{nullptr};
-
-  std::unique_ptr<crosapi::TestControllerAsh> test_controller_ash_;
 };
 
 IN_PROC_BROWSER_TEST_F(BrowserAppShelfControllerBrowserTest, TabbedApps) {
-  if (!ash_starter_.HasLacrosArgument()) {
+  if (!HasLacrosArgument()) {
     return;
   }
 
@@ -442,7 +425,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppShelfControllerBrowserTest, TabbedApps) {
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserAppShelfControllerBrowserTest, WindowedApps) {
-  if (!ash_starter_.HasLacrosArgument()) {
+  if (!HasLacrosArgument()) {
     return;
   }
 
@@ -538,7 +521,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppShelfControllerBrowserTest, WindowedApps) {
 
 IN_PROC_BROWSER_TEST_F(BrowserAppShelfControllerBrowserTest,
                        ActivateAndMinimizeTabs) {
-  if (!ash_starter_.HasLacrosArgument()) {
+  if (!HasLacrosArgument()) {
     return;
   }
 
@@ -617,7 +600,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppShelfControllerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(BrowserAppShelfControllerBrowserTest,
                        ActivateAndMinimizeWindows) {
-  if (!ash_starter_.HasLacrosArgument()) {
+  if (!HasLacrosArgument()) {
     return;
   }
 
@@ -670,7 +653,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppShelfControllerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(BrowserAppShelfControllerBrowserTest,
                        MultipleInstancesShowMenu) {
-  if (!ash_starter_.HasLacrosArgument()) {
+  if (!HasLacrosArgument()) {
     return;
   }
 
