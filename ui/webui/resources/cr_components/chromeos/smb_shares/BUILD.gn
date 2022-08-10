@@ -19,7 +19,7 @@ js_library("add_smb_share_dialog") {
   deps = [
     ":smb_browser_proxy",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
-    "//ui/webui/resources/cr_elements/cr_checkbox:cr_checkbox.m",
+    "//ui/webui/resources/cr_elements/cr_checkbox:cr_checkbox",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
     "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
     "//ui/webui/resources/js:cr.m",

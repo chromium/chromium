@@ -8,12 +8,33 @@
  * interaction. By default it assumes there will be child(ren) passed in to be
  * used as labels. If no label will be provided, a .no-label class should be
  * added to hide the spacing between the checkbox and the label container.
+ *
+ * List of customizable styles:
+ *  --cr-checkbox-border-size
+ *  --cr-checkbox-checked-box-background-color
+ *  --cr-checkbox-checked-box-color
+ *  --cr-checkbox-label-color
+ *  --cr-checkbox-label-padding-start
+ *  --cr-checkbox-mark-color
+ *  --cr-checkbox-ripple-checked-color
+ *  --cr-checkbox-ripple-size
+ *  --cr-checkbox-ripple-unchecked-color
+ *  --cr-checkbox-size
+ *  --cr-checkbox-unchecked-box-color
  */
+import '//resources/polymer/v3_0/paper-styles/color.js';
+import '../shared_vars_css.m.js';
+
+import {PaperRippleBehavior} from '//resources/polymer/v3_0/paper-behaviors/paper-ripple-behavior.js';
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 Polymer({
   is: 'cr-checkbox',
 
+  _template: html`{__html_template__}`,
+
   behaviors: [
-    Polymer.PaperRippleBehavior,
+    PaperRippleBehavior,
   ],
 
   properties: {
@@ -155,11 +176,10 @@ Polymer({
   // customize the element's ripple
   _createRipple() {
     this._rippleContainer = this.$.checkbox;
-    const ripple = Polymer.PaperRippleBehavior._createRipple();
+    const ripple = PaperRippleBehavior._createRipple();
     ripple.id = 'ink';
     ripple.setAttribute('recenters', '');
     ripple.classList.add('circle', 'toggle-ink');
     return ripple;
   },
 });
-/* #ignore */ console.warn('crbug/1173575, non-JS module files deprecated.');

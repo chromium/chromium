@@ -165,7 +165,7 @@ preprocessed_folder = "$target_gen_dir/preprocessed"
 
 checked_in_dts_files = [
   "cr_elements/cr_button/cr_button.m.d.ts",
-  "cr_elements/cr_checkbox/cr_checkbox.m.d.ts",
+  "cr_elements/cr_checkbox/cr_checkbox.d.ts",
   "cr_elements/cr_container_shadow_behavior.m.d.ts",
   "cr_elements/cr_dialog/cr_dialog.m.d.ts",
   "cr_elements/cr_icon_button/cr_icon_button.d.ts",

@@ -8,7 +8,7 @@
  */
 import './album_list.js';
 import './art_album_dialog.js';
-import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
+import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import '../../settings_shared.css.js';
 

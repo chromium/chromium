@@ -1,26 +1,3 @@
-<link rel="import" href="../../html/polymer.html">
-
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-behaviors/paper-ripple-behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
-<link rel="import" href="../shared_vars_css.html">
-
-<!--
-List of customizable styles:
-
-  --cr-checkbox-border-size
-  --cr-checkbox-checked-box-background-color
-  --cr-checkbox-checked-box-color
-  --cr-checkbox-label-color
-  --cr-checkbox-label-padding-start
-  --cr-checkbox-mark-color
-  --cr-checkbox-ripple-checked-color
-  --cr-checkbox-ripple-size
-  --cr-checkbox-ripple-unchecked-color
-  --cr-checkbox-size
-  --cr-checkbox-unchecked-box-color
--->
-<dom-module id="cr-checkbox">
-  <template>
     <style>
       :host {
         -webkit-tap-highlight-color: transparent;
@@ -172,6 +149,3 @@ List of customizable styles:
       <slot></slot>
     </div>
     <div id="ariaDescription" aria-hidden="true">[[ariaDescription]]</div>
-  </template>
-  <script src="cr_checkbox.js"></script>
-</dom-module>

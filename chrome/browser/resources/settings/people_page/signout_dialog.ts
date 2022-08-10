@@ -7,7 +7,7 @@
  * user to turn off sync and sign out of Chromium.
  */
 import '//resources/cr_elements/cr_button/cr_button.m.js';
-import '//resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
+import '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import '//resources/cr_elements/shared_style_css.m.js';

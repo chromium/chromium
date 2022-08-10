@@ -89,7 +89,7 @@ js_library("add_items_dialog") {
     "//ui/webui/resources/cr_elements:cr_scrollable_behavior.m",
     "//ui/webui/resources/cr_elements:find_shortcut_behavior",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
-    "//ui/webui/resources/cr_elements/cr_checkbox:cr_checkbox.m",
+    "//ui/webui/resources/cr_elements/cr_checkbox:cr_checkbox",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
   ]
   externs_list = [ "//ui/webui/resources/cr_elements/cr_search_field/cr_search_field_externs.js" ]
@@ -122,7 +122,7 @@ js_library("cr_checkbox_with_policy") {
     "//third_party/polymer/v3_0/components-chromium/iron-icon:iron-icon",
     "//third_party/polymer/v3_0/components-chromium/paper-tooltip:paper-tooltip",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_checkbox:cr_checkbox.m",
+    "//ui/webui/resources/cr_elements/cr_checkbox:cr_checkbox",
   ]
 }
 
