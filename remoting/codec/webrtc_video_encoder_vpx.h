@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "remoting/codec/encoder_bitrate_filter.h"
 #include "remoting/codec/scoped_vpx_codec.h"
+#include "remoting/codec/video_encoder_active_map.h"
 #include "remoting/codec/webrtc_video_encoder.h"
 #include "third_party/libvpx/source/libvpx/vpx/vpx_encoder.h"
 
@@ -99,9 +100,8 @@ class WebrtcVideoEncoderVpx : public WebrtcVideoEncoder {
   // VPX image descriptor and pixel buffer.
   scoped_vpx_image image_;
 
-  // Active map used to optimize out processing of un-changed macroblocks.
-  std::unique_ptr<uint8_t[]> active_map_;
-  webrtc::DesktopSize active_map_size_;
+  // Active map used to optimize out processing of unchanged macroblocks.
+  VideoEncoderActiveMap active_map_;
 
   raw_ptr<const base::TickClock> clock_;
 

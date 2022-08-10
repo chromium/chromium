@@ -9,6 +9,8 @@ source_set("encoder") {
     "encoder_bitrate_filter.h",
     "video_encoder.cc",
     "video_encoder.h",
+    "video_encoder_active_map.cc",
+    "video_encoder_active_map.h",
     "video_encoder_helper.cc",
     "video_encoder_helper.h",
     "video_encoder_verbatim.cc",

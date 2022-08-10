@@ -32,10 +32,6 @@ namespace {
 // Number of bytes in an RGBx pixel.
 constexpr int kBytesPerRgbPixel = 4;
 
-// Defines the dimension of a macro block. This is used to compute the active
-// map for the encoder.
-constexpr int kMacroBlockSize = 16;
-
 // Magic encoder profile numbers for I420 and I444 input formats.
 constexpr int kVp9I420ProfileNumber = 0;
 constexpr int kVp9I444ProfileNumber = 1;
@@ -268,9 +264,9 @@ void WebrtcVideoEncoderVpx::Encode(std::unique_ptr<webrtc::DesktopFrame> frame,
   UpdateConfig(params);
 
   vpx_active_map_t act_map;
-  act_map.rows = active_map_size_.height();
-  act_map.cols = active_map_size_.width();
-  act_map.active_map = active_map_.get();
+  act_map.rows = active_map_.height();
+  act_map.cols = active_map_.width();
+  act_map.active_map = active_map_.data();
 
   webrtc::DesktopRegion updated_region;
   // Convert the updated capture data ready for encode.
@@ -278,12 +274,12 @@ void WebrtcVideoEncoderVpx::Encode(std::unique_ptr<webrtc::DesktopFrame> frame,
 
   // Update active map based on updated region.
   if (params.clear_active_map)
-    ClearActiveMap();
+    active_map_.Clear();
 
   if (params.key_frame)
     updated_region.SetRect(webrtc::DesktopRect::MakeSize(frame_size));
 
-  SetActiveMapFromRegion(updated_region);
+  active_map_.Update(updated_region);
 
   // Apply active map to the encoder.
   if (vpx_codec_control(codec_.get(), VP8E_SET_ACTIVEMAP, &act_map)) {
@@ -303,17 +299,12 @@ void WebrtcVideoEncoderVpx::Encode(std::unique_ptr<webrtc::DesktopFrame> frame,
     return;
   }
 
-  if (!lossless_encode_) {
-    // VP8 doesn't return active map, so we assume it's the same on the output
-    // as on the input.
-    if (use_vp9_) {
-      ret = vpx_codec_control(codec_.get(), VP9E_GET_ACTIVEMAP, &act_map);
-      DCHECK_EQ(ret, VPX_CODEC_OK)
-          << "Failed to fetch active map: " << vpx_codec_err_to_string(ret)
-          << "\n";
-    }
-
-    UpdateRegionFromActiveMap(&updated_region);
+  // VP8 doesn't return an active map so we assume it hasn't changed.
+  if (use_vp9_ && !lossless_encode_) {
+    ret = vpx_codec_control(codec_.get(), VP9E_GET_ACTIVEMAP, &act_map);
+    DCHECK_EQ(ret, VPX_CODEC_OK)
+        << "Failed to fetch active map: " << vpx_codec_err_to_string(ret)
+        << "\n";
   }
 
   // Read the encoded data.
@@ -392,12 +383,7 @@ void WebrtcVideoEncoderVpx::Configure(const webrtc::DesktopSize& size) {
   }
 
   // Initialize active map.
-  active_map_size_ = webrtc::DesktopSize(
-      (size.width() + kMacroBlockSize - 1) / kMacroBlockSize,
-      (size.height() + kMacroBlockSize - 1) / kMacroBlockSize);
-  active_map_.reset(
-      new uint8_t[active_map_size_.width() * active_map_size_.height()]);
-  ClearActiveMap();
+  active_map_.Initialize(size);
 
   // Fetch a default configuration for the desired codec.
   const vpx_codec_iface_t* interface =
@@ -554,57 +540,6 @@ void WebrtcVideoEncoderVpx::PrepareImage(
       NOTREACHED();
       break;
   }
-}
-
-void WebrtcVideoEncoderVpx::ClearActiveMap() {
-  DCHECK(active_map_);
-  // Clear active map first.
-  memset(active_map_.get(), 0,
-         active_map_size_.width() * active_map_size_.height());
-}
-
-void WebrtcVideoEncoderVpx::SetActiveMapFromRegion(
-    const webrtc::DesktopRegion& updated_region) {
-  // Mark updated areas active.
-  for (webrtc::DesktopRegion::Iterator r(updated_region); !r.IsAtEnd();
-       r.Advance()) {
-    const webrtc::DesktopRect& rect = r.rect();
-    int left = rect.left() / kMacroBlockSize;
-    int right = (rect.right() - 1) / kMacroBlockSize;
-    int top = rect.top() / kMacroBlockSize;
-    int bottom = (rect.bottom() - 1) / kMacroBlockSize;
-    DCHECK_LT(right, active_map_size_.width());
-    DCHECK_LT(bottom, active_map_size_.height());
-
-    uint8_t* map = active_map_.get() + top * active_map_size_.width();
-    for (int y = top; y <= bottom; ++y) {
-      for (int x = left; x <= right; ++x)
-        map[x] = 1;
-      map += active_map_size_.width();
-    }
-  }
-}
-
-void WebrtcVideoEncoderVpx::UpdateRegionFromActiveMap(
-    webrtc::DesktopRegion* updated_region) {
-  const uint8_t* map = active_map_.get();
-  for (int y = 0; y < active_map_size_.height(); ++y) {
-    for (int x0 = 0; x0 < active_map_size_.width();) {
-      int x1 = x0;
-      for (; x1 < active_map_size_.width(); ++x1) {
-        if (map[y * active_map_size_.width() + x1] == 0)
-          break;
-      }
-      if (x1 > x0) {
-        updated_region->AddRect(webrtc::DesktopRect::MakeLTRB(
-            kMacroBlockSize * x0, kMacroBlockSize * y, kMacroBlockSize * x1,
-            kMacroBlockSize * (y + 1)));
-      }
-      x0 = x1 + 1;
-    }
-  }
-  updated_region->IntersectWith(
-      webrtc::DesktopRect::MakeWH(image_->d_w, image_->d_h));
 }
 
 }  // namespace remoting
