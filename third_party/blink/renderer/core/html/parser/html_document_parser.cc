@@ -811,6 +811,7 @@ bool HTMLDocumentParser::PumpTokenizer() {
   base::ElapsedTimer chunk_parsing_timer;
   unsigned tokens_parsed = 0;
   base::TimeDelta time_executing_script;
+  base::TimeDelta time_in_next_token;
   while (!should_yield) {
     if (task_runner_state_->ShouldProcessPreloads())
       FlushPendingPreloads();
@@ -834,7 +835,14 @@ bool HTMLDocumentParser::PumpTokenizer() {
       RUNTIME_CALL_TIMER_SCOPE(
           V8PerIsolateData::MainThreadIsolate(),
           RuntimeCallStats::CounterId::kHTMLTokenizerNextToken);
-      if (!tokenizer_->NextToken(input_.Current(), Token()))
+      absl::optional<base::ElapsedTimer> next_token_timer;
+      if (metrics_reporter_)
+        next_token_timer.emplace();
+      const bool has_next_token =
+          tokenizer_->NextToken(input_.Current(), Token());
+      if (next_token_timer)
+        time_in_next_token += next_token_timer->Elapsed();
+      if (!has_next_token)
         break;
       budget--;
       tokens_parsed++;
@@ -878,7 +886,8 @@ bool HTMLDocumentParser::PumpTokenizer() {
 
   if (tokens_parsed && metrics_reporter_) {
     metrics_reporter_->AddChunk(
-        chunk_parsing_timer.Elapsed() - time_executing_script, tokens_parsed);
+        chunk_parsing_timer.Elapsed() - time_executing_script, tokens_parsed,
+        time_in_next_token);
   }
 
   if (is_stopped_or_parsing_fragment)

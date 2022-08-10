@@ -159,6 +159,7 @@ TEST_F(HTMLMetricsTest, MAYBE_HistogramReportsTwoChunks) {
 
   // Should have one of each metric.
   histogram_tester.ExpectTotalCount("Blink.HTMLParsing.ChunkCount2", 1);
+  histogram_tester.ExpectTotalCount("Blink.HTMLParsing.NextTokenTimeTotal", 1);
   histogram_tester.ExpectTotalCount("Blink.HTMLParsing.ParsingTimeMax3", 1);
   histogram_tester.ExpectTotalCount("Blink.HTMLParsing.ParsingTimeMin3", 1);
   histogram_tester.ExpectTotalCount("Blink.HTMLParsing.ParsingTimeTotal3", 1);
@@ -183,12 +184,15 @@ TEST_F(HTMLMetricsTest, MAYBE_HistogramReportsTwoChunks) {
                                       203, 1);
 
   // For parse times, expect that the times have moved from the default.
+  std::vector<base::Bucket> next_token_time_buckets =
+      histogram_tester.GetAllSamples("Blink.HTMLParsing.NextTokenTimeTotal");
   std::vector<base::Bucket> parsing_time_max_buckets =
       histogram_tester.GetAllSamples("Blink.HTMLParsing.ParsingTimeMax3");
   std::vector<base::Bucket> parsing_time_min_buckets =
       histogram_tester.GetAllSamples("Blink.HTMLParsing.ParsingTimeMin3");
   std::vector<base::Bucket> parsing_time_total_buckets =
       histogram_tester.GetAllSamples("Blink.HTMLParsing.ParsingTimeTotal3");
+  EXPECT_EQ(next_token_time_buckets.size(), 1u);
   EXPECT_EQ(parsing_time_max_buckets.size(), 1u);
   EXPECT_EQ(parsing_time_min_buckets.size(), 1u);
   EXPECT_EQ(parsing_time_total_buckets.size(), 1u);
@@ -239,11 +243,14 @@ TEST_F(HTMLMetricsTest, UkmStoresValuesCorrectly) {
   base::TimeDelta first_yield_time = base::Microseconds(80);
   base::TimeDelta second_yield_time = base::Microseconds(70);
 
-  reporter.AddChunk(first_parse_time, first_tokens_parsed);
+  reporter.AddChunk(first_parse_time, first_tokens_parsed,
+                    base::Microseconds(10));
   reporter.AddYieldInterval(first_yield_time);
-  reporter.AddChunk(second_parse_time, second_tokens_parsed);
+  reporter.AddChunk(second_parse_time, second_tokens_parsed,
+                    base::Microseconds(1));
   reporter.AddYieldInterval(second_yield_time);
-  reporter.AddChunk(third_parse_time, third_tokens_parsed);
+  reporter.AddChunk(third_parse_time, third_tokens_parsed,
+                    base::Microseconds(1));
   reporter.ReportMetricsAtParseEnd();
 
   // Check we have a single entry

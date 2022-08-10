@@ -1203,6 +1203,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.HTMLParsing.NextTokenTimeTotal" units="microseconds"
+    expires_after="2023-06-30">
+  <owner>sky@chromium.org</owner>
+  <owner>masonf@chromium.org</owner>
+  <owner>dom-dev@chromium.org</owner>
+  <summary>
+    While parsing a page, the total amount of time spent in
+    HTMLTokenizer::NextToken, in microseconds. This is a sub-interval of the
+    various Blink.HTMLParsing.ParsingTime histograms.
+
+    This histogram does not record metrics on machines with low-resolution
+    clocks.
+  </summary>
+</histogram>
+
 <histogram name="Blink.HTMLParsing.ParsingTimeMax3" units="microseconds"
     expires_after="2023-06-30">
   <owner>masonf@chromium.org</owner>
