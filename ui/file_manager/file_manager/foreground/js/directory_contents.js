@@ -683,38 +683,15 @@ export class FileListContext {
      * @public {!Array<string>}
      * @const
      */
-    this.prefetchPropertyNames = FileListContext.createPrefetchPropertyNames_();
+    this.prefetchPropertyNames = Array.from(new Set([
+      ...constants.LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES,
+      ...constants.ACTIONS_MODEL_METADATA_PREFETCH_PROPERTY_NAMES,
+      ...constants.FILE_SELECTION_METADATA_PREFETCH_PROPERTY_NAMES,
+      ...constants.DLP_METADATA_PREFETCH_PROPERTY_NAMES,
+    ]));
 
     /** @public {!VolumeManager} */
     this.volumeManager = volumeManager;
-  }
-
-  /**
-   * @return {!Array<string>}
-   * @private
-   */
-  static createPrefetchPropertyNames_() {
-    const set = {};
-    for (let i = 0;
-         i < constants.LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES.length;
-         i++) {
-      set[constants.LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES[i]] = true;
-    }
-    for (let i = 0;
-         i < constants.ACTIONS_MODEL_METADATA_PREFETCH_PROPERTY_NAMES.length;
-         i++) {
-      set[constants.ACTIONS_MODEL_METADATA_PREFETCH_PROPERTY_NAMES[i]] = true;
-    }
-    for (let i = 0;
-         i < constants.FILE_SELECTION_METADATA_PREFETCH_PROPERTY_NAMES.length;
-         i++) {
-      set[constants.FILE_SELECTION_METADATA_PREFETCH_PROPERTY_NAMES[i]] = true;
-    }
-    for (let i = 0; i < constants.DLP_METADATA_PREFETCH_PROPERTY_NAMES.length;
-         i++) {
-      set[constants.DLP_METADATA_PREFETCH_PROPERTY_NAMES[i]] = true;
-    }
-    return Object.keys(set);
   }
 }
 
