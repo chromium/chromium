@@ -360,6 +360,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
       HashMap<AtomicString, std::unique_ptr<base::SubstringSetMatcher>>;
 
   void AddToRuleSet(const AtomicString& key, RuleMap&, const RuleData&);
+  void AddToRuleSet(HeapVector<RuleData>&, const RuleData&);
   void AddPageRule(StyleRulePage*);
   void AddViewportRule(StyleRuleViewport*);
   void AddFontFaceRule(StyleRuleFontFace*);

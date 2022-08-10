@@ -132,6 +132,13 @@ void RuleSet::AddToRuleSet(const AtomicString& key,
   if (!rules)
     rules = MakeGarbageCollected<HeapVector<RuleData>>();
   rules->push_back(rule_data);
+  need_compaction_ = true;
+}
+
+void RuleSet::AddToRuleSet(HeapVector<RuleData>& rules,
+                           const RuleData& rule_data) {
+  rules.push_back(rule_data);
+  need_compaction_ = true;
 }
 
 static void ExtractSelectorValues(const CSSSelector* selector,
@@ -272,19 +279,16 @@ bool RuleSet::FindBestRuleSetAndAdd(const CSSSelector& component,
 
   // Prefer rule sets in order of most likely to apply infrequently.
   if (!id.IsEmpty()) {
-    need_compaction_ = true;
     AddToRuleSet(id, id_rules_, rule_data);
     return true;
   }
 
   if (!class_name.IsEmpty()) {
-    need_compaction_ = true;
     AddToRuleSet(class_name, class_rules_, rule_data);
     return true;
   }
 
   if (!attr_name.IsEmpty()) {
-    need_compaction_ = true;
     AddToRuleSet(attr_name, attr_rules_, rule_data);
     if (attr_name == html_names::kStyleAttr) {
       has_bucket_for_style_attr_ = true;
@@ -297,7 +301,6 @@ bool RuleSet::FindBestRuleSetAndAdd(const CSSSelector& component,
     // and have a relation of ShadowPseudo between them. Therefore we should
     // never be a situation where ExtractSelectorValues finds id and
     // className in addition to custom pseudo.
-    need_compaction_ = true;
     DCHECK(id.IsEmpty());
     DCHECK(class_name.IsEmpty());
     AddToRuleSet(custom_pseudo_element_name, ua_shadow_pseudo_element_rules_,
@@ -306,60 +309,57 @@ bool RuleSet::FindBestRuleSetAndAdd(const CSSSelector& component,
   }
 
   if (!part_name.IsEmpty()) {
-    part_pseudo_rules_.push_back(rule_data);
+    AddToRuleSet(part_pseudo_rules_, rule_data);
     return true;
   }
 
   switch (pseudo_type) {
     case CSSSelector::kPseudoCue:
-      cue_pseudo_rules_.push_back(rule_data);
+      AddToRuleSet(cue_pseudo_rules_, rule_data);
       return true;
     case CSSSelector::kPseudoLink:
     case CSSSelector::kPseudoVisited:
     case CSSSelector::kPseudoAnyLink:
     case CSSSelector::kPseudoWebkitAnyLink:
-      link_pseudo_class_rules_.push_back(rule_data);
+      AddToRuleSet(link_pseudo_class_rules_, rule_data);
       return true;
     case CSSSelector::kPseudoSpatialNavigationInterest:
-      spatial_navigation_interest_class_rules_.push_back(rule_data);
+      AddToRuleSet(spatial_navigation_interest_class_rules_, rule_data);
       return true;
     case CSSSelector::kPseudoFocus:
-      focus_pseudo_class_rules_.push_back(rule_data);
+      AddToRuleSet(focus_pseudo_class_rules_, rule_data);
       return true;
     case CSSSelector::kPseudoSelectorFragmentAnchor:
-      selector_fragment_anchor_rules_.push_back(rule_data);
+      AddToRuleSet(selector_fragment_anchor_rules_, rule_data);
       return true;
     case CSSSelector::kPseudoFocusVisible:
-      focus_visible_pseudo_class_rules_.push_back(rule_data);
+      AddToRuleSet(focus_visible_pseudo_class_rules_, rule_data);
       return true;
     case CSSSelector::kPseudoPlaceholder:
     case CSSSelector::kPseudoFileSelectorButton:
       if (it->FollowsPart()) {
-        need_compaction_ = true;
-        part_pseudo_rules_.push_back(rule_data);
+        AddToRuleSet(part_pseudo_rules_, rule_data);
       } else if (it->FollowsSlotted()) {
-        slotted_pseudo_element_rules_.push_back(rule_data);
+        AddToRuleSet(slotted_pseudo_element_rules_, rule_data);
       } else {
         const auto& name = pseudo_type == CSSSelector::kPseudoFileSelectorButton
                                ? shadow_element_names::kPseudoFileUploadButton
                                : shadow_element_names::kPseudoInputPlaceholder;
-        need_compaction_ = true;
         AddToRuleSet(name, ua_shadow_pseudo_element_rules_, rule_data);
       }
       return true;
     case CSSSelector::kPseudoHost:
     case CSSSelector::kPseudoHostContext:
-      shadow_host_rules_.push_back(rule_data);
+      AddToRuleSet(shadow_host_rules_, rule_data);
       return true;
     case CSSSelector::kPseudoSlotted:
-      slotted_pseudo_element_rules_.push_back(rule_data);
+      AddToRuleSet(slotted_pseudo_element_rules_, rule_data);
       return true;
     default:
       break;
   }
 
   if (!tag_name.IsEmpty()) {
-    need_compaction_ = true;
     AddToRuleSet(tag_name, tag_rules_, rule_data);
     return true;
   }
@@ -393,7 +393,7 @@ void RuleSet::AddRule(StyleRule* rule,
   if (!FindBestRuleSetAndAdd(rule_data.Selector(), rule_data)) {
     // If we didn't find a specialized map to stick it in, file under universal
     // rules.
-    universal_rules_.push_back(rule_data);
+    AddToRuleSet(universal_rules_, rule_data);
   }
 
   // If the rule has CSSSelector::kMatchLink, it means that there is a :visited
@@ -405,7 +405,7 @@ void RuleSet::AddRule(StyleRule* rule,
     RuleData visited_dependent(rule, rule_data.SelectorIndex(),
                                rule_data.GetPosition(), extra_specificity,
                                add_rule_flags | kRuleIsVisitedDependent);
-    visited_dependent_rules_.push_back(visited_dependent);
+    AddToRuleSet(visited_dependent_rules_, visited_dependent);
   }
 
   AddRuleToLayerIntervals(cascade_layer, rule_data.GetPosition());
