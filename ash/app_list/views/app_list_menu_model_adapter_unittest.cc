@@ -7,37 +7,20 @@
 #include "ash/public/cpp/app_menu_constants.h"
 #include "base/callback.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/views/test/views_test_base.h"
 
 namespace ash {
-
-class AppListMenuModelAdapterTest : public views::ViewsTestBase {
- public:
-  AppListMenuModelAdapterTest() {}
-
-  AppListMenuModelAdapterTest(const AppListMenuModelAdapterTest&) = delete;
-  AppListMenuModelAdapterTest& operator=(const AppListMenuModelAdapterTest&) =
-      delete;
-
-  ~AppListMenuModelAdapterTest() override = default;
-
-  void SetUp() override {
-    views::ViewsTestBase::SetUp();
-    app_list_menu_model_adapter_ = std::make_unique<AppListMenuModelAdapter>(
-        "test-app-id", std::make_unique<ui::SimpleMenuModel>(nullptr), nullptr,
-        ui::MenuSourceType::MENU_SOURCE_TYPE_LAST, AppLaunchedMetricParams(),
-        AppListMenuModelAdapter::FULLSCREEN_APP_GRID, base::OnceClosure(),
-        false /* is_tablet_mode */);
-  }
-
-  std::unique_ptr<AppListMenuModelAdapter> app_list_menu_model_adapter_;
-};
+namespace {
 
 // Tests that NOTIFICATION_CONTAINER is enabled. This ensures that the
 // container is able to handle gesture events.
-TEST_F(AppListMenuModelAdapterTest, NotificationContainerEnabled) {
-  EXPECT_TRUE(
-      app_list_menu_model_adapter_->IsCommandEnabled(NOTIFICATION_CONTAINER));
+TEST(AppListMenuModelAdapterTest, NotificationContainerEnabled) {
+  AppListMenuModelAdapter adapter(
+      "test-app-id", std::make_unique<ui::SimpleMenuModel>(nullptr), nullptr,
+      ui::MenuSourceType::MENU_SOURCE_TYPE_LAST, AppLaunchedMetricParams(),
+      AppListMenuModelAdapter::FULLSCREEN_APP_GRID, base::OnceClosure(),
+      false /* is_tablet_mode */);
+  EXPECT_TRUE(adapter.IsCommandEnabled(NOTIFICATION_CONTAINER));
 }
 
+}  // namespace
 }  // namespace ash
