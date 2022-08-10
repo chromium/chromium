@@ -585,6 +585,135 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ActivateOnLinkClick) {
   EXPECT_TRUE(prerender_observer.was_activated());
 }
 
+// Tests that clicking a link annotated with "target=_blank" cannot activate a
+// prerender.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ActivateOnLinkClick_TargetBlank) {
+  const GURL kInitialUrl = GetUrl("/simple_links.html");
+  const GURL kPrerenderingUrl = GetUrl("/title2.html");
+
+  // Navigate to an initial page which has a link to `kPrerenderingUrl`.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Start prerendering `kPrerenderingUrl`.
+  int prerender_host_id = AddPrerender(kPrerenderingUrl);
+  test::PrerenderHostObserver prerender_observer(*web_contents(),
+                                                 prerender_host_id);
+
+  // Click the link annotated with "target=_blank". This should not activate the
+  // prerendered page.
+  TestNavigationObserver nav_observer(kPrerenderingUrl);
+  nav_observer.StartWatchingNewWebContents();
+  const std::string kLinkClickScript = R"(
+      clickSameSiteNewWindowLink();
+  )";
+  EXPECT_TRUE(ExecJs(web_contents(), kLinkClickScript));
+  nav_observer.WaitForNavigationFinished();
+  EXPECT_EQ(nav_observer.last_navigation_url(), kPrerenderingUrl);
+  EXPECT_FALSE(prerender_observer.was_activated());
+
+  // The navigation occurred in a new WebContents, so the original WebContents
+  // should still be showing the initial trigger page.
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), kInitialUrl);
+  // Also, the prerendered page should still be alive.
+  EXPECT_TRUE(HasHostForUrl(kPrerenderingUrl));
+
+  // Navigate to `kPrerenderingUrl` on the original WebContents. This should
+  // activate the prerendered page.
+  NavigatePrimaryPage(kPrerenderingUrl);
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), kPrerenderingUrl);
+  EXPECT_TRUE(prerender_observer.was_activated());
+  ExpectFinalStatusForSpeculationRule(PrerenderHost::FinalStatus::kActivated);
+}
+
+// Tests that clicking a link annotated with "target=_blank rel=noopener" cannot
+// activate a prerender.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       ActivateOnLinkClick_TargetBlankWithNoopener) {
+  const GURL kInitialUrl = GetUrl("/simple_links.html");
+  const GURL kPrerenderingUrl = GetUrl("/title2.html");
+
+  // Navigate to an initial page which has a link to `kPrerenderingUrl`.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Start prerendering `kPrerenderingUrl`.
+  int prerender_host_id = AddPrerender(kPrerenderingUrl);
+  test::PrerenderHostObserver prerender_observer(*web_contents(),
+                                                 prerender_host_id);
+
+  // Click the link annotated with "target=_blank rel=noopener". This should not
+  // activate the prerendered page.
+  TestNavigationObserver nav_observer(kPrerenderingUrl);
+  nav_observer.StartWatchingNewWebContents();
+  const std::string kLinkClickScript = R"(
+      clickSameSiteNewWindowWithNoopenerLink();
+  )";
+  EXPECT_TRUE(ExecJs(web_contents(), kLinkClickScript));
+  nav_observer.WaitForNavigationFinished();
+  EXPECT_EQ(nav_observer.last_navigation_url(), kPrerenderingUrl);
+  EXPECT_FALSE(prerender_observer.was_activated());
+
+  // The navigation occurred in a new WebContents, so the original WebContents
+  // should still be showing the initial trigger page.
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), kInitialUrl);
+  // Also, the prerendered page should still be alive.
+  EXPECT_TRUE(HasHostForUrl(kPrerenderingUrl));
+
+  // Navigate to `kPrerenderingUrl` on the original WebContents. This should
+  // activate the prerendered page.
+  NavigatePrimaryPage(kPrerenderingUrl);
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), kPrerenderingUrl);
+  EXPECT_TRUE(prerender_observer.was_activated());
+  ExpectFinalStatusForSpeculationRule(PrerenderHost::FinalStatus::kActivated);
+}
+
+// Tests that clicking a link annotated with "target=_blank rel=opener" cannot
+// activate a prerender.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       ActivateOnLinkClick_TargetBlankWithOpener) {
+  const GURL kInitialUrl = GetUrl("/simple_links.html");
+  const GURL kPrerenderingUrl = GetUrl("/title2.html");
+
+  // Navigate to an initial page which has a link to `kPrerenderingUrl`.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Start prerendering `kPrerenderingUrl`.
+  int prerender_host_id = AddPrerender(kPrerenderingUrl);
+  test::PrerenderHostObserver prerender_observer(*web_contents(),
+                                                 prerender_host_id);
+
+  // Click the link annotated with "target=_blank rel=opener". This should not
+  // activate the prerendered page.
+  TestNavigationObserver nav_observer(kPrerenderingUrl);
+  nav_observer.StartWatchingNewWebContents();
+  const std::string kLinkClickScript = R"(
+      clickSameSiteNewWindowWithOpenerLink();
+  )";
+  EXPECT_TRUE(ExecJs(web_contents(), kLinkClickScript));
+  nav_observer.WaitForNavigationFinished();
+  EXPECT_EQ(nav_observer.last_navigation_url(), kPrerenderingUrl);
+  EXPECT_FALSE(prerender_observer.was_activated());
+
+  // The navigation occurred in a new WebContents, so the original WebContents
+  // should still be showing the initial trigger page.
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), kInitialUrl);
+  // Also, the prerendered page should still be alive.
+  EXPECT_TRUE(HasHostForUrl(kPrerenderingUrl));
+
+  // Navigate to `kPrerenderingUrl` on the original WebContents. The page opened
+  // with "rel=opener" should prevent it from activating the prerendered page.
+  NavigatePrimaryPage(kPrerenderingUrl);
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), kPrerenderingUrl);
+  EXPECT_FALSE(prerender_observer.was_activated());
+
+  // The prerendered page should be destroyed as the trigger page navigated
+  // away.
+  prerender_observer.WaitForDestroyed();
+  EXPECT_EQ(GetHostForUrl(kPrerenderingUrl),
+            RenderFrameHost::kNoFrameTreeNodeId);
+  ExpectFinalStatusForSpeculationRule(
+      PrerenderHost::FinalStatus::kTriggerDestroyed);
+}
+
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ResponseHeaders) {
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl = GetUrl("/set-header?X-Foo: bar");
