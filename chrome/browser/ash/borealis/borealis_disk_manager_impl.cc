@@ -95,21 +95,17 @@ struct BorealisDiskManagerImpl::BorealisDiskInfo {
 
 BorealisDiskManagerImpl::BorealisDiskManagerImpl(const BorealisContext* context)
     : context_(context),
-      request_count_(0),
+      service_(borealis::BorealisService::GetForProfile(context_->profile())),
       free_space_provider_(std::make_unique<FreeSpaceProvider>()),
       weak_factory_(this) {
-  borealis::BorealisService::GetForProfile(context_->profile())
-      ->DiskManagerDispatcher()
-      .SetDiskManagerDelegate(this);
+  service_->DiskManagerDispatcher().SetDiskManagerDelegate(this);
 }
 
 BorealisDiskManagerImpl::~BorealisDiskManagerImpl() {
   if (DiskManagementVersion() == DiskManagementVersion::CROSDISK) {
     RecordBorealisDiskClientNumRequestsPerSessionHistogram(request_count_);
   }
-  borealis::BorealisService::GetForProfile(context_->profile())
-      ->DiskManagerDispatcher()
-      .RemoveDiskManagerDelegate(this);
+  service_->DiskManagerDispatcher().RemoveDiskManagerDelegate(this);
 }
 
 // Helper function that returns how many bytes the |available_space| would
