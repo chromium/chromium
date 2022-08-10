@@ -200,6 +200,7 @@
 <translation id="2046634576464120978">ਰਜਿਸਟਰੇਸ਼ਨ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2052422354554967744">ਇੰਟਰਨੈੱਟ ਖੋਜੋ</translation>
+<translation id="2053105195397337973">ਅਸੀਂ ਸਾਈਟਾਂ ਨੂੰ ਵਿਗਿਆਪਨ ਸੰਬੰਧੀ ਸਪੈਮ ਅਤੇ ਧੋਖਾਧੜੀ ਰੋਕਣ ਯੋਗ ਬਣਾਉਂਦੇ ਹੋਏ ਟਰੈਕਿੰਗ ਨੂੰ ਪ੍ਰਤਿਬੰਧਿਤ ਕਰਨ ਦੇ ਤਰੀਕਿਆਂ ਦੀ ਪੜਚੋਲ ਕਰ ਰਹੇ ਹਾਂ।</translation>
 <translation id="2056878612599315956">ਸਾਈਟ ਰੋਕੀ ਗਈ</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 ਡਾਊਨਲੋਡ ਅਸਫਲ ਰਿਹਾ}one{# ਡਾਊਨਲੋਡ ਅਸਫਲ ਰਿਹਾ}other{# ਡਾਊਨਲੋਡ ਅਸਫਲ ਰਹੇ}}</translation>
 <translation id="2067805253194386918">ਲਿਖਤ</translation>
@@ -542,6 +543,7 @@
 <translation id="3981902534690264083">ਵਿਗਿਆਪਨਦਾਤਾ ਸਮਝ ਸਕਦੇ ਹਨ ਕਿ ਵਿਗਿਆਪਨ ਕਿਵੇਂ ਦੀ ਕਾਰਗੁਜ਼ਾਰੀ ਕਰਦੇ ਹਨ</translation>
 <translation id="3985215325736559418">ਕੀ ਤੁਸੀਂ <ph name="FILE_NAME" /> ਨੂੰ ਦੁਬਾਰਾ ਡਾਊਨਲੋਡ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="3987993985790029246">ਲਿੰਕ ਕਾਪੀ ਕਰੋ</translation>
+<translation id="3999683152997576765">ਤੁਸੀਂ ਦਿਲਚਸਪੀ ਵਾਲੇ ਉਨ੍ਹਾਂ ਵਿਸ਼ਿਆਂ ਨੂੰ ਦੇਖ ਅਤੇ ਹਟਾ ਸਕਦੇ ਹੋ ਜਿਨ੍ਹਾਂ ਨੂੰ ਸਾਈਟਾਂ ਵੱਲੋਂ ਤੁਹਾਨੂੰ ਵਿਗਿਆਪਨ ਦਿਖਾਉਣ ਲਈ ਵਰਤਿਆ ਜਾਂਦਾ ਹੈ। Chrome ਤੁਹਾਡੇ ਹਾਲੀਆ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਦੇ ਆਧਾਰ 'ਤੇ ਤੁਹਾਡੀਆਂ ਦਿਲਚਸਪੀਆਂ ਦਾ ਅੰਦਾਜ਼ਾ ਲਗਾਉਂਦਾ ਹੈ।</translation>
 <translation id="4000212216660919741">ਆਫ਼ਲਾਈਨ ਹੋਮ</translation>
 <translation id="4016425174436051808">ਅਨੁਸਰਣ ਕਰਨਾ ਸ਼ੁਰੂ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ। ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ।</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ਘੰਟਾ}one{# ਘੰਟਾ}other{# ਘੰਟੇ}}</translation>

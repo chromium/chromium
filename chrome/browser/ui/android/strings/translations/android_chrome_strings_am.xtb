@@ -200,6 +200,7 @@
 <translation id="2046634576464120978">ምዝገባው አልተሳካም</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2052422354554967744">በይነመረቡን ፈልግ</translation>
+<translation id="2053105195397337973">ጣቢያዎችን በማንቃት ወቅት የማስታወቂያ አይፈለጌ መልዕክት እና መጭበርበርን እንዲያቆሙ እያስቻልን ክትትልን የምንገድብባቸውን መንገዶች እያሰስን ነው።</translation>
 <translation id="2056878612599315956">ጣቢያ ባለበት ቆሟል</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 ማውረድ አልተሳካም}one{# ማውረዶች አልተሳኩም}other{# ማውረዶች አልተሳኩም}}</translation>
 <translation id="2067805253194386918">ጽሑፍ</translation>
@@ -542,6 +543,7 @@
 <translation id="3981902534690264083">ማስታወቂያ ሰሪዎች ማስታወቂያዎች እንዴት እንደሚሰሩ መረዳት ይችላሉ</translation>
 <translation id="3985215325736559418"><ph name="FILE_NAME" />ን እንደገና ማውረድ ይፈእልጋሉ?</translation>
 <translation id="3987993985790029246">አገናኝ ቅዳ</translation>
+<translation id="3999683152997576765">ማስታወቂያዎችን ለእርስዎ ለማሳየት የሚጠቀሙባቸውን የዝንባሌ ጣቢያዎች ርዕሶች ማየት እና ማስወገድ ይችላሉ። Chrome በቅርብ ጊዜ የአሰሳ ታሪክዎ ላይ ተመስርቶ የእርስዎን ዝንባሌዎች ይገምታል።</translation>
 <translation id="4000212216660919741">ከመስመር ውጭ መነሻ</translation>
 <translation id="4016425174436051808">መከተል አልተቻለም የሆነ ችግር ተፈጥሯል።</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ሰዓ}one{# ሰዓቶች}other{# ሰዓቶች}}</translation>
@@ -779,6 +781,7 @@
 <translation id="5308380583665731573">ይገናኙ</translation>
 <translation id="5317780077021120954">አስቀምጥ</translation>
 <translation id="5319359161174645648">Google Chromeን ይመክራል</translation>
+<translation id="5321849971085220133">Chrome ክትትልን ለመቀነስ እና እያሰሱ ባሉበት ጊዜ ይበልጥ ደህንነትዎን ለመጠበቅ አዲስ መንገዶችን እያገኘ ነው። እንዲሁም Chrome <ph name="BEGIN_LINK" />የእርስዎን ዝንባሌዎች ይገምታል<ph name="END_LINK" /> እና እነሱን እንዲያስተዳድሯቸው ያስችልዎታል። ከዚያ የሚጎበኟቸው ጣቢያዎች ማስታወቂያዎችን ለእርስዎ ለማሳየት Chromeን ስለእርስዎ ዝንባሌዎች መጠየቅ ይችላሉ።</translation>
 <translation id="5324858694974489420">የወላጅ መቆጣጠሪያዎች</translation>
 <translation id="5326921373682845375">ቅድሚያ የተጫኑ ገጾች የተመሠጠሩ ስለሆኑ እና ከገጾቹ ጋር የሚያገናኘው ጣቢያ የGoogle ጣቢያ ስለሆነ እነዚህ ገጾች በግል ቅድሚያ ሲጫኑ የGoogle አገልጋዮች አዲስ መረጃ አይደርሳቸውም።</translation>
 <translation id="5329858041417644019">የእርስዎ አሳሽ አይተዳደርም</translation>

@@ -4000,6 +4000,13 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 
       Se il criterio non è configurato, gli utenti non possono giocare sul dispositivo <ph name="PRODUCT_OS_NAME" /> registrato, ma possono farlo in altre circostanze.</translation>
 <translation id="529457411593078576">Attiva i TdS alla prima esecuzione di CCT</translation>
+<translation id="529541406739235505">L'impostazione del criterio consente agli utenti di scegliere uno dei metodi di immissione per le sessioni <ph name="PRODUCT_OS_NAME" /> specificate.
+
+       Se il criterio non viene configurato o se è impostato su un elenco vuoto, gli utenti possono selezionare tutti i metodi di immissione supportati.
+
+       A partire dalla versione M105, i metodi di immissione consentiti vengono attivati automaticamente nella sessione kiosk.
+
+      Nota: se il metodo di immissione corrente non è supportato, il criterio passa automaticamente al layout della tastiera hardware (se consentito) o alla prima voce valida in questo elenco. I metodi non supportati o non validi vengono ignorati.</translation>
 <translation id="5297948043665200363">Consenti all'utente di mantenere l'accesso dopo che il suo account non è più autenticato</translation>
 <translation id="5298949392804966105">Nessuna limitazione per gli account gestiti</translation>
 <translation id="530134925949808452">L'ora del giorno, in ora locale, in cui viene rinnovata la quota di utilizzo.</translation>

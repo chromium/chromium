@@ -3991,6 +3991,13 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 
       Si cette règle n'est pas configurée, les utilisateurs ne peuvent pas jouer à ce jeu sur les appareils équipés de <ph name="PRODUCT_OS_NAME" />, mais ils le peuvent dans d'autres circonstances.</translation>
 <translation id="529457411593078576">Activer les conditions d'utilisation à la première exécution des onglets personnalisés Chrome</translation>
+<translation id="529541406739235505">Permet aux utilisateurs de sélectionner l'un des modes de saisie que vous spécifiez pour les sessions <ph name="PRODUCT_OS_NAME" />.
+
+       Si cette règle n'est pas configurée ou qu'aucun mode de saisie n'est indiqué dans la liste, les utilisateurs peuvent en choisir un parmi tous ceux compatibles.
+
+       À partir de la version M105, les modes de saisie autorisés sont automatiquement activés dans la session kiosque.
+
+      Remarque : Si le mode de saisie actuel n'est pas compatible, la disposition du clavier matériel (si elle est autorisée) ou la première entrée valide dans cette liste est utilisée. Les modes de saisie non valides ou incompatibles sont ignorés.</translation>
 <translation id="5297948043665200363">Autoriser l'utilisateur à rester connecté une fois que son compte n'est plus authentifié</translation>
 <translation id="5298949392804966105">Aucune restriction pour les comptes gérés</translation>
 <translation id="530134925949808452">Heure locale à laquelle le quota d'utilisation est renouvelé.</translation>

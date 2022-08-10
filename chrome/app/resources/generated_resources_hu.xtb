@@ -1132,6 +1132,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2048653237708779538">A művelet nem végezhető el</translation>
 <translation id="2050339315714019657">Álló</translation>
 <translation id="2052572566310583903">Más eszközökön telepítve</translation>
+<translation id="2053105195397337973">Olyan módszerek kidolgozásán fáradozunk, melyekkel korlátozható a nyomon követés úgy, hogy közben a webhelyek is gátat vethetnek a hirdetési spameknek és a csalásnak.</translation>
 <translation id="2053312383184521053">Tétlen állapot adatai</translation>
 <translation id="2054240652864153171">Törli a(z) <ph name="SITE_NAME" /> webhelyadatait (particionálva itt: <ph name="PARTITION_SITE_NAME" />)?</translation>
 <translation id="2055585478631012616">A rendszer kijelentkezteti ezekről a webhelyekről (a megnyitott lapok esetében is)</translation>
@@ -1875,6 +1876,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2727633948226935816">Ne emlékeztessen újra</translation>
 <translation id="2727712005121231835">Valós méret</translation>
 <translation id="2729314457178420145">A böngészési adatok (<ph name="URL" />) törlésével együtt, ami kiléptetheti a google.com webhelyéről. <ph name="LEARN_MORE" />.</translation>
+<translation id="2729327310379176711">A Chrome új módokat keres a nyomon követés csökkentésére és a még biztonságosabb böngészésre. A Chrome <ph name="ESTIMATE_INTERESTS_LINK" />, és lehetővé teszi a kezelésüket is. Ezután a felkeresett webhelyek az Ön érdeklődési köreinek megosztására kérhetik a Chrome-ot, hogy hirdetéseket jelenítsenek meg.</translation>
 <translation id="2730029791981212295">Linux-alkalmazások és -fájlok biztonsági mentése</translation>
 <translation id="2730901670247399077">Javasolt emojik</translation>
 <translation id="273093730430620027">Ez az oldal hozzáfér az Ön kamerájához.</translation>

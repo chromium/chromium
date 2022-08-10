@@ -200,6 +200,7 @@ Når du sletter din browserhistorik – det hele eller for et specifikt website 
 <translation id="2046634576464120978">Tilmeldingen mislykkedes</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2052422354554967744">Søg på internettet</translation>
+<translation id="2053105195397337973">Vi undersøger mulighederne for at begrænse sporing og samtidig give websites mulighed for at forhindre annoncespam og -svindel.</translation>
 <translation id="2056878612599315956">Websitet er sat på pause</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 download mislykkedes}one{# download mislykkedes}other{# downloads mislykkedes}}</translation>
 <translation id="2067805253194386918">tekst</translation>
@@ -542,6 +543,7 @@ Når du sletter din browserhistorik – det hele eller for et specifikt website 
 <translation id="3981902534690264083">Annoncører kan få indblik i, hvordan annoncer klarer sig</translation>
 <translation id="3985215325736559418">Vil du downloade <ph name="FILE_NAME" /> igen?</translation>
 <translation id="3987993985790029246">Kopiér linket</translation>
+<translation id="3999683152997576765">Du kan se og fjerne interesseområder, som websites bruger til at vise annoncer. Chrome estimerer dine interesser på baggrund af din seneste browserhistorik.</translation>
 <translation id="4000212216660919741">Hjemmet er offline</translation>
 <translation id="4016425174436051808">Indholdet kan ikke følges. Der opstod en fejl.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# t.}one{# t.}other{# t.}}</translation>
@@ -779,6 +781,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5308380583665731573">Opret forbindelse</translation>
 <translation id="5317780077021120954">Gem</translation>
 <translation id="5319359161174645648">Google anbefaler Chrome</translation>
+<translation id="5321849971085220133">Chrome finder nye metoder til at reducere sporing og beskytte dig endnu bedre, når du browser. Chrome <ph name="BEGIN_LINK" />estimerer også dine interesser<ph name="END_LINK" /> og giver dig mulighed for at administrere dem. Derefter kan de websites, du besøger, anmode Chrome om dine interesser for at vise dig annoncer.</translation>
 <translation id="5324858694974489420">Indstillinger for børnesikring</translation>
 <translation id="5326921373682845375">Fordi de forudindlæste sider er krypterede, og det website, der linker til siderne, er et Google-website, modtager Googles servere ikke nye oplysninger, når disse sider forudindlæses privat.</translation>
 <translation id="5329858041417644019">Din browser administreres ikke</translation>

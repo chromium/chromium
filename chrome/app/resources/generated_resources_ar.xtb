@@ -133,7 +133,7 @@
 <translation id="1126809382673880764">‏لا يوفّر لك هذا الوضع حماية من الإضافات أو عمليات التنزيل أو المواقع الإلكترونية الضارة. وستظل تستفيد من ميزة "التصفّح الآمن" عند توفّرها في خدمات Google الأخرى، مثل Gmail و"بحث Google".</translation>
 <translation id="1128090040635299943">‏يجري الآن إعداد نظام التشغيل Linux. ستستغرق عملية الإعداد بضع دقائق.</translation>
 <translation id="1128591060186966949">تعديل محرّك البحث</translation>
-<translation id="1129420403709586868">عرض الصور والوسائط من هاتفك</translation>
+<translation id="1129420403709586868">يمكنك عرض الصور والوسائط من هاتفك.</translation>
 <translation id="1129850422003387628">إدارة التطبيقات</translation>
 <translation id="113050636487300043">اختَر اسمًا ومظهرًا ملوّنًا لكل ملف شخصي للتمييز بينها.</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - جزء من مجموعة <ph name="GROUP_NAME" /></translation>
@@ -1124,6 +1124,7 @@
 <translation id="2048653237708779538">الإجراء غير متاح</translation>
 <translation id="2050339315714019657">رأسي</translation>
 <translation id="2052572566310583903">التطبيق مثبَّت على أجهزتك الأخرى.</translation>
+<translation id="2053105195397337973">نستكشف طرقًا للحد من تتبّع البيانات ونشاط التصفّح، مع السماح للمواقع الإلكترونية بحظر الرسائل الإعلانية غير المرغوب فيها ومنع الاحتيال.</translation>
 <translation id="2053312383184521053">بيانات حالة الخمول</translation>
 <translation id="2054240652864153171">هل تريد محو بيانات الموقع الإلكتروني <ph name="SITE_NAME" /> التي تم تقسيمها على <ph name="PARTITION_SITE_NAME" />؟</translation>
 <translation id="2055585478631012616">سيتم تسجيل خروجك من هذه المواقع الإلكترونية، بما في ذلك ضمن علامات التبويب المفتوحة.</translation>
@@ -5615,7 +5616,7 @@
 <translation id="641469293210305670">تثبيت التطبيقات والتحديثات</translation>
 <translation id="6414878884710400018">فتح الإعدادات المفضّلة للنظام</translation>
 <translation id="6414888972213066896">لقد سألت والديك ما إذا كانت زيارة هذا الموقع مناسبةً لك</translation>
-<translation id="6415900369006735853">الاتصال بالإنترنت من خلال هاتفك</translation>
+<translation id="6415900369006735853">يمكنك الاتصال بالإنترنت من خلال هاتفك.</translation>
 <translation id="6416743254476733475">السماح أو الحظر على جهاز الكمبيوتر</translation>
 <translation id="6417265370957905582">‏مساعد Google</translation>
 <translation id="6417468503703810114">الإعداد التلقائي</translation>
@@ -7309,7 +7310,7 @@
 <translation id="8037357227543935929">الطلب (تلقائي)</translation>
 <translation id="803771048473350947">ملف</translation>
 <translation id="8041089156583427627">إرسال تعليقات</translation>
-<translation id="8041267120753677077">تشغيل تطبيقات هاتفك</translation>
+<translation id="8041267120753677077">يمكنك بث تطبيقات هاتفك.</translation>
 <translation id="8042142357103597104">درجة تعتيم النص</translation>
 <translation id="8042331986490021244">‏يتم تشفير كلمات المرور على جهازك قبل حفظها في "مدير كلمات المرور" من Google.</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> لا يستجيب.</translation>

@@ -1118,6 +1118,7 @@
 <translation id="2048653237708779538">操作できません</translation>
 <translation id="2050339315714019657">縦</translation>
 <translation id="2052572566310583903">他のデバイスにインストール済み</translation>
+<translation id="2053105195397337973">Google では、サイトが広告のスパムと不正行為を防止できるようにしながら、トラッキングを制限する方法を模索しています。</translation>
 <translation id="2053312383184521053">アイドル状態のデータ</translation>
 <translation id="2054240652864153171"><ph name="PARTITION_SITE_NAME" /> で分割された <ph name="SITE_NAME" /> のサイトデータを削除しますか？</translation>
 <translation id="2055585478631012616">開いているすべてのタブで、これらのサイトからログアウトします</translation>
@@ -1856,6 +1857,7 @@
 <translation id="2727633948226935816">今後表示しない</translation>
 <translation id="2727712005121231835">実際のサイズ</translation>
 <translation id="2729314457178420145">閲覧履歴データ（<ph name="URL" />）も削除します。これにより、Google.com からログアウトします。<ph name="LEARN_MORE" /></translation>
+<translation id="2729327310379176711">Chrome では、ブラウジング時のトラッキングを抑制して、セキュリティを強化する新しい方法を検討しています。また、<ph name="ESTIMATE_INTERESTS_LINK" />して管理できるようにします。これにより、アクセスしたサイトでユーザーの興味 / 関心を Chrome にリクエストして、広告を表示することができます。</translation>
 <translation id="2730029791981212295">Linux アプリとファイルのバックアップ</translation>
 <translation id="2730901670247399077">絵文字候補</translation>
 <translation id="273093730430620027">このページはカメラにアクセスしています。</translation>
@@ -5595,7 +5597,7 @@
 <translation id="641469293210305670">アップデートとアプリのインストール</translation>
 <translation id="6414878884710400018">システム環境設定を開く</translation>
 <translation id="6414888972213066896">このサイトを開いてもよいかの問い合わせを保護者に送信しました</translation>
-<translation id="6415900369006735853">スマートフォンを使用してインターネットに接続します</translation>
+<translation id="6415900369006735853">スマートフォンを使ってインターネットに接続します</translation>
 <translation id="6416743254476733475">パソコンで許可またはブロックしてください。</translation>
 <translation id="6417265370957905582">Google アシスタント</translation>
 <translation id="6417468503703810114">デフォルトの動作</translation>

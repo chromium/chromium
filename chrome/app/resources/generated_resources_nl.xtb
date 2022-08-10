@@ -1121,6 +1121,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2048653237708779538">Actie niet beschikbaar</translation>
 <translation id="2050339315714019657">Staand</translation>
 <translation id="2052572566310583903">Geïnstalleerd op je andere apparaten</translation>
+<translation id="2053105195397337973">We testen nieuwe manieren om tracking te beperken en tegelijkertijd te zorgen dat sites advertentiespam en fraude kunnen bestrijden.</translation>
 <translation id="2053312383184521053">Gegevens van inactieve status</translation>
 <translation id="2054240652864153171">Sitegegevens wissen voor <ph name="SITE_NAME" /> gepartitioneerd op <ph name="PARTITION_SITE_NAME" />?</translation>
 <translation id="2055585478631012616">Je wordt uitgelogd bij deze sites, ook in geopende tabbladen</translation>
@@ -2318,7 +2319,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3151539355209957474">Begintijd</translation>
 <translation id="3151562827395986343">Geschiedenis, cookies, cache en meer wissen</translation>
 <translation id="3151786313568798007">Stand</translation>
-<translation id="3152356229013609796">Meldingen van je telefoon bekijken, sluiten en beantwoorden</translation>
+<translation id="3152356229013609796">Bekijk, sluit en beantwoord meldingen van je telefoon</translation>
 <translation id="3157387275655328056">Toevoegen aan leeslijst</translation>
 <translation id="3157931365184549694">Herstellen</translation>
 <translation id="3158033540161634471">Je vingerafdruk instellen</translation>
@@ -2716,7 +2717,7 @@ Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="3559533181353831840">Nog ongeveer <ph name="TIME_LEFT" /></translation>
 <translation id="3560034655160545939">&amp;Spellingcontrole</translation>
 <translation id="3562423906127931518">Dit proces kan enkele minuten duren. De Linux-container wordt ingesteld.</translation>
-<translation id="3562655211539199254">Recente Chrome-tabbladen van je telefoon bekijken</translation>
+<translation id="3562655211539199254">Bekijk recente Chrome-tabbladen van je telefoon</translation>
 <translation id="3563432852173030730">Kiosk-app kan niet worden gedownload.</translation>
 <translation id="3564334271939054422">Het is mogelijk dat je de inlogpagina moet bezoeken van het wifi-netwerk dat je gebruikt (<ph name="NETWORK_ID" />).</translation>
 <translation id="3564848315152754834">USB-beveiligingssleutel</translation>
@@ -5606,7 +5607,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="641469293210305670">Updates en apps installeren</translation>
 <translation id="6414878884710400018">Systeemvoorkeuren openen</translation>
 <translation id="6414888972213066896">Je hebt je ouder of voogd gevraagd of je deze site mag bezoeken</translation>
-<translation id="6415900369006735853">Verbinding maken met internet via je telefoon</translation>
+<translation id="6415900369006735853">Maak verbinding met internet via je telefoon</translation>
 <translation id="6416743254476733475">Toestaan of blokkeren op je computer.</translation>
 <translation id="6417265370957905582">Google Assistent</translation>
 <translation id="6417468503703810114">Standaardgedrag</translation>
@@ -6439,7 +6440,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7228523857728654909">Schermvergrendeling en inloggen</translation>
 <translation id="7230222852462421043">Venste&amp;r herstellen</translation>
 <translation id="7230787553283372882">Tekstgrootte aanpassen</translation>
-<translation id="7231260028442989757">Meldingen van je telefoon bekijken, sluiten en beantwoorden</translation>
+<translation id="7231260028442989757">Bekijk, sluit en beantwoord meldingen van je telefoon</translation>
 <translation id="7232750842195536390">Kan naam niet wijzigen</translation>
 <translation id="723343421145275488">Afbeeldingen zoeken met <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="7234010996000898150">Linux herstellen annuleren</translation>
@@ -6747,7 +6748,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7535730537657706072">Sluit alle incognitotabbladen om de incognito-browsegeschiedenis op je apparaat te wissen</translation>
 <translation id="7537451260744431038">Sites mogen geen cookies gebruiken om de browsefunctionaliteit te verbeteren, bijvoorbeeld door je ingelogd te houden of door artikelen in je winkelwagen te onthouden</translation>
 <translation id="7538932151125743389">Serienummers van het Chrome OS-apparaat en component lezen.</translation>
-<translation id="7540972813190816353">Er is een fout opgetreden bij het ​​controleren op updates: <ph name="ERROR" /></translation>
+<translation id="7540972813190816353">Er is een fout opgetreden bij het ​​zoeken naar updates: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> heeft dit apparaat teruggezet naar een oudere versie. Sla belangrijke bestanden op en start opnieuw op. Alle gegevens op het apparaat worden verwijderd.</translation>
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> met <ph name="APP_NAME" />-app</translation>
 <translation id="754207240458482646">Gesynchroniseerd met andere apparaten in je account. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
@@ -7287,7 +7288,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8037357227543935929">Vragen (standaard)</translation>
 <translation id="803771048473350947">Archief</translation>
 <translation id="8041089156583427627">Feedback sturen</translation>
-<translation id="8041267120753677077">Apps van je telefoon streamen</translation>
+<translation id="8041267120753677077">Stream apps van je telefoon</translation>
 <translation id="8042142357103597104">Ondoorzichtigheid van tekst</translation>
 <translation id="8042331986490021244">Je wachtwoorden worden versleuteld op je apparaat voordat ze worden opgeslagen in Google Wachtwoordmanager</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> reageert niet.</translation>

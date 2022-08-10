@@ -200,6 +200,7 @@ Dzēšot pārlūkošanas vēsturi (visu vai konkrētas vietnes vēsturi), tiek d
 <translation id="2046634576464120978">Reģistrēšanās neizdevās</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2052422354554967744">Meklēšana internetā</translation>
+<translation id="2053105195397337973">Mēs pētām iespējas ierobežot izsekošanu, vienlaikus ļaujot vietnēs novērst nevēlamas reklāmas un krāpšanu.</translation>
 <translation id="2056878612599315956">Vietne apturēta</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 lejupielāde neizdevās}zero{# lejupielādes neizdevās}one{# lejupielāde neizdevās}other{# lejupielādes neizdevās}}</translation>
 <translation id="2067805253194386918">teksts</translation>
@@ -542,6 +543,7 @@ Dzēšot pārlūkošanas vēsturi (visu vai konkrētas vietnes vēsturi), tiek d
 <translation id="3981902534690264083">Reklāmdevēji var izprast reklāmu veiktspēju</translation>
 <translation id="3985215325736559418">Vai vēlaties vēlreiz lejupielādēt failu <ph name="FILE_NAME" />?</translation>
 <translation id="3987993985790029246">Saites kopēšana</translation>
+<translation id="3999683152997576765">Varat skatīt un noņemt interešu tēmas, kas vietnēs tiek izmantotas reklāmu rādīšanai. Pārlūkā Chrome tiek aptuveni noteiktas jūsu intereses, ņemot vērā neseno pārlūkošanas vēsturi.</translation>
 <translation id="4000212216660919741">Bezsaistes sākums</translation>
 <translation id="4016425174436051808">Nevar sekot. Radās kļūda.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}zero{# h}one{# h}other{# h}}</translation>
@@ -779,6 +781,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="5308380583665731573">Pievienošana</translation>
 <translation id="5317780077021120954">Saglabāt</translation>
 <translation id="5319359161174645648">Google iesaka pārlūku Chrome</translation>
+<translation id="5321849971085220133">Pārlūkā Chrome tiek meklētas jaunas iespējas, kā samazināt izsekošanu un gādāt par vēl lielāku drošību pārlūkošanas laikā. Turklāt pārlūkā Chrome tiek <ph name="BEGIN_LINK" />aptuveni noteiktas jūsu intereses<ph name="END_LINK" />, kā arī jums tiek ļauts tās pārvaldīt. Pēc tam jūsu apmeklētās vietnes var lūgt pārlūkam Chrome atklāt jūsu intereses, lai rādītu jums reklāmas.</translation>
 <translation id="5324858694974489420">Vecāku iestatījumi</translation>
 <translation id="5326921373682845375">Tā kā iepriekš ielādētās lapas ir šifrētas un vietne, kas novirza uz lapām, ir Google vietne, Google serveri nesaņem jaunu informāciju, ja šīs lapas tiek iepriekš ielādētas privāti.</translation>
 <translation id="5329858041417644019">Jūsu pārlūks netiek pārvaldīts</translation>

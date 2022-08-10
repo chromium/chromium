@@ -1134,6 +1134,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2048653237708779538">Handlingen er ikke tilgængelig</translation>
 <translation id="2050339315714019657">Stående</translation>
 <translation id="2052572566310583903">Installeret på dine andre enheder</translation>
+<translation id="2053105195397337973">Vi undersøger mulighederne for at begrænse sporing og samtidig give websites mulighed for at forhindre annoncespam og -svindel.</translation>
 <translation id="2053312383184521053">Data for inaktiv tilstand</translation>
 <translation id="2054240652864153171">Vil du rydde websitedata for <ph name="SITE_NAME" />, der er opdelt på <ph name="PARTITION_SITE_NAME" />?</translation>
 <translation id="2055585478631012616">Du logges ud af disse websites, også i åbne faner</translation>
@@ -1878,6 +1879,7 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="2727633948226935816">Påmind mig ikke igen</translation>
 <translation id="2727712005121231835">Faktisk størrelse</translation>
 <translation id="2729314457178420145">Ryd også browserdata (<ph name="URL" />), hvilket muligvis logger dig ud af Google.com. <ph name="LEARN_MORE" /></translation>
+<translation id="2729327310379176711">Chrome finder nye metoder til at reducere sporing og beskytte dig endnu bedre, når du browser. Chrome <ph name="ESTIMATE_INTERESTS_LINK" /> og giver dig mulighed for at administrere dem. Derefter kan de websites, du besøger, anmode Chrome om dine interesser for at vise dig annoncer.</translation>
 <translation id="2730029791981212295">Sikkerhedskopierer Linux-apps og -filer</translation>
 <translation id="2730901670247399077">Forslag til emojis</translation>
 <translation id="273093730430620027">Denne side har adgang til dit kamera.</translation>
@@ -3006,7 +3008,7 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="3819800052061700452">&amp;Fuld skærm</translation>
 <translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Vis}one{Vis}other{Vis alle}}</translation>
 <translation id="3820749202859700794">SECG elliptisk kurve secp521r1 (også kaldet NIST P-521)</translation>
-<translation id="3821074617718452587">Phone Hub-notifikationer</translation>
+<translation id="3821074617718452587">Telefonstyring-notifikationer</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{En udvidelse er blevet godkendt}one{# udvidelse er blevet godkendt}other{# udvidelser er blevet godkendt}}</translation>
 <translation id="3823310065043511710">Du bør have mindst <ph name="INSTALL_SIZE" /> ledig plads for at installere Linux.</translation>
 <translation id="3824621460022590830">Tokenet for tilmelding af enhed er ugyldigt. Kontakt enhedens ejer eller administrator. Fejlkode: <ph name="ERROR_CODE" />.</translation>
@@ -5401,7 +5403,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6181431612547969857">Downloaden blev blokeret</translation>
 <translation id="6184099524311454384">Søg i faner</translation>
 <translation id="6185132558746749656">Enhedslokation</translation>
-<translation id="6190953336330058278">Phone Hub-apps</translation>
+<translation id="6190953336330058278">Telefonstyring-apps</translation>
 <translation id="6195005504600220730">Læs oplysninger om din browser, dit operativsystem og din enhed</translation>
 <translation id="6195693561221576702">Enheden kan ikke konfigureres i offlinedemotilstand.</translation>
 <translation id="6196640612572343990">Bloker cookies fra tredjeparter</translation>
@@ -6891,7 +6893,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7650582458329409456">{COUNT,plural, =1{1 fingeraftryk er konfigureret}one{{COUNT} fingeraftryk er konfigureret}other{{COUNT} fingeraftryk er konfigureret}}</translation>
 <translation id="7650677314924139716">Den aktuelle indstilling for dataforbrug er Kun Wi-Fi</translation>
 <translation id="7650920359639954963">Ikke aktiveret: <ph name="REASON" /></translation>
-<translation id="7651784568388208829">Fortsættelse af opgave i Phone Hub</translation>
+<translation id="7651784568388208829">Fortsættelse af opgave i Telefonstyring</translation>
 <translation id="765293928828334535">Apps, udvidelser og brugerscripts kan ikke tilføjes fra dette website</translation>
 <translation id="7652954539215530680">Opret en pinkode</translation>
 <translation id="7654941827281939388">Denne konto er allerede i brug på denne computer.</translation>
@@ -7161,7 +7163,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="789722939441020330">Tillad ikke, at websites automatisk downloader flere filer</translation>
 <translation id="7897900149154324287">For fremtiden skal du sørge for at skubbe din flytbare enhed ud i appen Filer, før du kobler den fra. Hvis ikke du gør dette, kan du risikere at miste data.</translation>
 <translation id="7898725031477653577">Oversæt altid</translation>
-<translation id="7901405293566323524">Phone Hub</translation>
+<translation id="7901405293566323524">Telefonstyring</translation>
 <translation id="7903290522161827520">Leder du efter browserkomponenter? Gå til</translation>
 <translation id="7903345046358933331">Siden svarer ikke. Du kan vente på, at den svarer, eller lukke den.</translation>
 <translation id="7903429136755645827">Klik for at tilpasse dine spilindstillinger</translation>

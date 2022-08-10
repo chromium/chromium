@@ -1136,6 +1136,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2048653237708779538">Dejanje ni na voljo</translation>
 <translation id="2050339315714019657">Pokončno</translation>
 <translation id="2052572566310583903">Nameščeno v vaših drugih napravah</translation>
+<translation id="2053105195397337973">Raziskujemo načine, kako omejiti sledenje, hkrati pa spletnim mestom omogočiti preprečevanje prevar in prikazovanja vsiljenih oglasov.</translation>
 <translation id="2053312383184521053">Podatki o stanju nedejavnosti</translation>
 <translation id="2054240652864153171">Želite izbrisati podatke spletnega mesta <ph name="SITE_NAME" />, razdeljenega na <ph name="PARTITION_SITE_NAME" />?</translation>
 <translation id="2055585478631012616">Odjavljeni boste s teh spletnih mest, vključno s tistimi na odprtih zavihkih</translation>
@@ -2594,7 +2595,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3433621910545056227">Ojej!  Sistemu ni uspelo zakleniti atributov časa namestitve naprave.</translation>
 <translation id="3434107140712555581">Akumulator: <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="3434272557872943250">Če ste za otroka vklopili dodatno beleženje dejavnosti v spletu in aplikacijah, bodo ti podatki morda shranjeni v njegovem računu Google. Preberite več o teh nastavitvah in njihovem prilagajanju na families.google.com.</translation>
-<translation id="3434475275396485144">To nastavitev upravlja skrbnik telefona</translation>
+<translation id="3434475275396485144">To nastavitev upravlja skrbnik telefona.</translation>
 <translation id="3434512374684753970">Zvok in video</translation>
 <translation id="3435688026795609344">Razširitev »<ph name="EXTENSION_NAME" />« zahteva to: <ph name="CODE_TYPE" /></translation>
 <translation id="3435738964857648380">Varnost</translation>
