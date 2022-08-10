@@ -665,23 +665,29 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Power.BacklightLevelOnAC" units="%" expires_after="2023-05-12">
+<histogram name="Power.BacklightLevel{PrivacyScreenState}{PowerSource}"
+    units="%" expires_after="2023-05-12">
   <owner>puthik@chromium.org</owner>
+  <owner>mqg@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
-    The level of the backlight as a percentage when the user is on AC. Sampled
-    every 30 seconds. Chrome OS only.
-  </summary>
-</histogram>
-
-<histogram name="Power.BacklightLevelOnBattery" units="%"
-    expires_after="2023-05-12">
-  <owner>puthik@chromium.org</owner>
-  <owner>chromeos-platform-power@google.com</owner>
-  <summary>
-    The level of the backlight as a percentage when the user is on battery.
+    The level of the backlight as a percentage when the privacy screen is in
+    {PrivacyScreenState} state and the device is powered by {PowerSource}.
     Sampled every 30 seconds. Chrome OS only.
   </summary>
+  <token key="PrivacyScreenState">
+    <variant name=""
+        summary="All Chrome OS, irrespective of whether privacy screens are
+                 present, or privacy screen state."/>
+    <variant name="PrivacyScreenDisabled"
+        summary="Chrome OS with privacy screens only."/>
+    <variant name="PrivacyScreenEnabled"
+        summary="Chrome OS with privacy screens only."/>
+  </token>
+  <token key="PowerSource">
+    <variant name="OnAC"/>
+    <variant name="OnBattery"/>
+  </token>
 </histogram>
 
 <histogram name="Power.BatteryChargeHealth" units="%"
