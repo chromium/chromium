@@ -179,10 +179,8 @@ template("generate_bindings") {
 generate_bindings("generate_bindings_all") {
   visibility += [ "//third_party/blink/public/mojom/*" ]
 
-  targets = [ "enumeration" ]
-  outputs = generated_enumeration_sources_in_core +
-            generated_enumeration_sources_in_modules +
-            generated_enumeration_sources_for_testing_in_core
+  targets = []
+  outputs = []
   targets += [ "callback_function" ]
   outputs += generated_callback_function_sources_in_core +
              generated_callback_function_sources_in_modules +
@@ -196,6 +194,13 @@ generate_bindings("generate_bindings_all") {
              generated_dictionary_sources_for_testing_in_core
   if (use_blink_extensions_chromeos) {
     outputs += generated_dictionary_sources_in_extensions_chromeos
+  }
+  targets += [ "enumeration" ]
+  outputs += generated_enumeration_sources_in_core +
+             generated_enumeration_sources_in_modules +
+             generated_enumeration_sources_for_testing_in_core
+  if (use_blink_extensions_chromeos) {
+    outputs += generated_enumeration_sources_in_extensions_chromeos
   }
   targets += [ "interface" ]
   outputs += generated_interface_sources_in_core +

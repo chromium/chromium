@@ -482,6 +482,8 @@ generated_enumeration_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_referrer_policy.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_refresh_policy.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_refresh_policy.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_render_blocking_status_type.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_render_blocking_status_type.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_replace_state.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_replace_state.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_request_cache.cc",
