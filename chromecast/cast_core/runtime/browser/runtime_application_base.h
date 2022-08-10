@@ -129,6 +129,10 @@ class RuntimeApplicationBase : public RuntimeApplication,
       cast::v2::SetVisibilityRequest request,
       cast::v2::RuntimeApplicationServiceHandler::SetVisibility::Reactor*
           reactor);
+  void HandleSetTouchInput(
+      cast::v2::SetTouchInputRequest request,
+      cast::v2::RuntimeApplicationServiceHandler::SetTouchInput::Reactor*
+          reactor);
 
   // RuntimeMessagePortApplicationService handlers:
   void HandlePostMessage(cast::web::Message request,
@@ -144,6 +148,7 @@ class RuntimeApplicationBase : public RuntimeApplication,
   // Sets content window state.
   void SetMediaState(cast::common::MediaState::Type media_state);
   void SetVisibility(cast::common::Visibility::Type visibility);
+  void SetTouchInput(cast::common::TouchInput::Type touch_input);
 
   const std::string cast_session_id_;
   const cast::common::ApplicationConfig app_config_;
@@ -171,6 +176,8 @@ class RuntimeApplicationBase : public RuntimeApplication,
   cast::common::MediaState::Type media_state_ =
       cast::common::MediaState::LOAD_BLOCKED;
   cast::common::Visibility::Type visibility_ = cast::common::Visibility::HIDDEN;
+  cast::common::TouchInput::Type touch_input_ =
+      cast::common::TouchInput::DISABLED;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<RuntimeApplicationBase> weak_factory_{this};

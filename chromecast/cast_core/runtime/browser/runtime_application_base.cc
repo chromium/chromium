@@ -108,6 +108,12 @@ void RuntimeApplicationBase::Load(cast::runtime::LoadApplicationRequest request,
               task_runner_,
               base::BindRepeating(&RuntimeApplicationBase::HandleSetVisibility,
                                   weak_factory_.GetWeakPtr())));
+  grpc_server_
+      ->SetHandler<cast::v2::RuntimeApplicationServiceHandler::SetTouchInput>(
+          base::BindPostTask(
+              task_runner_,
+              base::BindRepeating(&RuntimeApplicationBase::HandleSetTouchInput,
+                                  weak_factory_.GetWeakPtr())));
   grpc_server_->SetHandler<
       cast::v2::RuntimeMessagePortApplicationServiceHandler::PostMessage>(
       base::BindPostTask(
@@ -136,8 +142,12 @@ void RuntimeApplicationBase::Launch(
     cast::runtime::LaunchApplicationRequest request,
     StatusCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  LOG(INFO) << "Launching application: " << *this;
 
+  if (!cast_web_view_ || !cast_web_view_->window()) {
+    std::move(callback).Run(grpc::Status(grpc::StatusCode::INTERNAL,
+                                         "Cast web view is not initialized"));
+    return;
+  }
   if (request.core_application_service_info().grpc_endpoint().empty()) {
     std::move(callback).Run(
         grpc::Status(grpc::StatusCode::INVALID_ARGUMENT,
@@ -150,6 +160,8 @@ void RuntimeApplicationBase::Launch(
     return;
   }
 
+  LOG(INFO) << "Launching application: " << *this;
+
   // Create stubs for Core*ApplicationServices.
   auto core_channel = grpc::CreateChannel(
       request.core_application_service_info().grpc_endpoint(),
@@ -161,14 +173,9 @@ void RuntimeApplicationBase::Launch(
   cast_media_service_grpc_endpoint_.emplace(
       request.cast_media_service_info().grpc_endpoint());
 
-  // Fallback to UNBLOCK if media_state is not defined.
-  SetMediaState(request.media_state() == cast::common::MediaState::UNDEFINED
-                    ? cast::common::MediaState::UNBLOCKED
-                    : request.media_state());
-  // Fallback to FULL_SCREEN if visibility is not defined.
-  SetVisibility(request.visibility() == cast::common::Visibility::UNDEFINED
-                    ? cast::common::Visibility::FULL_SCREEN
-                    : request.visibility());
+  SetMediaState(request.media_state());
+  SetVisibility(request.visibility());
+  SetTouchInput(request.touch_input());
 
   // Report that Cast application launch is initiated.
   std::move(callback).Run(grpc::Status::OK);
@@ -324,8 +331,11 @@ void RuntimeApplicationBase::OnPageLoaded() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   LOG(INFO) << "Application started: " << *this;
 
-  // Create the window and show the web view.
   cast_web_view_->window()->AddObserver(this);
+  cast_web_view_->window()->EnableTouchInput(touch_input_ ==
+                                             cast::common::TouchInput::ENABLED);
+
+  // Create the window and show the web view.
   if (visibility_ == cast::common::Visibility::FULL_SCREEN) {
     LOG(INFO) << "Loading application in full screen: " << *this;
     cast_web_view_->window()->GrantScreenAccess();
@@ -397,6 +407,15 @@ void RuntimeApplicationBase::HandleSetVisibility(
   reactor->Write(cast::v2::SetVisibilityResponse());
 }
 
+void RuntimeApplicationBase::HandleSetTouchInput(
+    cast::v2::SetTouchInputRequest request,
+    cast::v2::RuntimeApplicationServiceHandler::SetTouchInput::Reactor*
+        reactor) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  SetTouchInput(request.touch_input());
+  reactor->Write(cast::v2::SetTouchInputResponse());
+}
+
 CastWebView::Scoped RuntimeApplicationBase::CreateCastWebView() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   mojom::CastWebViewParamsPtr params = mojom::CastWebViewParams::New();
@@ -414,12 +433,7 @@ CastWebView::Scoped RuntimeApplicationBase::CreateCastWebView() {
 void RuntimeApplicationBase::SetMediaState(
     cast::common::MediaState::Type media_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!cast_web_view_) {
-    return;
-  }
-
-  if (media_state == media_state_) {
-    // No actual update happened.
+  if (media_state == cast::common::MediaState::UNDEFINED) {
     return;
   }
 
@@ -427,20 +441,25 @@ void RuntimeApplicationBase::SetMediaState(
   LOG(INFO) << "Media state updated: state="
             << cast::common::MediaState::Type_Name(media_state_) << ", "
             << *this;
+
+  if (!cast_web_view_ || !cast_web_view_->cast_web_contents()) {
+    return;
+  }
+
   switch (media_state_) {
     case cast::common::MediaState::LOAD_BLOCKED:
-      GetCastWebContents()->BlockMediaLoading(true);
-      GetCastWebContents()->BlockMediaStarting(true);
+      cast_web_view_->cast_web_contents()->BlockMediaLoading(true);
+      cast_web_view_->cast_web_contents()->BlockMediaStarting(true);
       break;
 
     case cast::common::MediaState::START_BLOCKED:
-      GetCastWebContents()->BlockMediaLoading(false);
-      GetCastWebContents()->BlockMediaStarting(true);
+      cast_web_view_->cast_web_contents()->BlockMediaLoading(false);
+      cast_web_view_->cast_web_contents()->BlockMediaStarting(true);
       break;
 
     case cast::common::MediaState::UNBLOCKED:
-      GetCastWebContents()->BlockMediaLoading(false);
-      GetCastWebContents()->BlockMediaStarting(false);
+      cast_web_view_->cast_web_contents()->BlockMediaLoading(false);
+      cast_web_view_->cast_web_contents()->BlockMediaStarting(false);
       break;
 
     default:
@@ -451,19 +470,20 @@ void RuntimeApplicationBase::SetMediaState(
 void RuntimeApplicationBase::SetVisibility(
     cast::common::Visibility::Type visibility) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!cast_web_view_) {
-    return;
-  }
-
-  if (visibility == visibility_) {
+  if (visibility == cast::common::Visibility::UNDEFINED) {
     // No actual update happened.
     return;
   }
-  visibility_ = visibility;
 
+  visibility_ = visibility;
   LOG(INFO) << "Visibility updated: state="
             << cast::common::Visibility::Type_Name(visibility_) << ", "
             << *this;
+
+  if (!cast_web_view_ || !cast_web_view_->window()) {
+    return;
+  }
+
   switch (visibility_) {
     case cast::common::Visibility::FULL_SCREEN:
       cast_web_view_->window()->RequestVisibility(
@@ -479,6 +499,27 @@ void RuntimeApplicationBase::SetVisibility(
     default:
       NOTREACHED();
   }
+}
+
+void RuntimeApplicationBase::SetTouchInput(
+    cast::common::TouchInput::Type touch_input) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (touch_input == cast::common::TouchInput::UNDEFINED) {
+    // No actual update happened.
+    return;
+  }
+
+  touch_input_ = touch_input;
+  LOG(INFO) << "Touch input updated: state= "
+            << cast::common::TouchInput::Type_Name(touch_input_) << ", "
+            << *this;
+
+  if (!cast_web_view_ || !cast_web_view_->window()) {
+    return;
+  }
+
+  cast_web_view_->window()->EnableTouchInput(touch_input_ ==
+                                             cast::common::TouchInput::ENABLED);
 }
 
 void RuntimeApplicationBase::StopApplication(
