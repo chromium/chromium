@@ -20,6 +20,14 @@ This is the brief version. Googlers can search internally for further
 reading.
 ***
 
+*** aside
+MTECheckedPtr is one particular incarnation of `raw_ptr`, and so the
+primary documentation is kept here in `//base/memory/`. However, the
+implementation is woven deeply into PartitionAlloc, and inevitably
+some dirty PA-internal details may bubble up here when discussing
+how MTECheckedPtr works.
+***
+
 MTECheckedPtr is a Chromium-specific implementation of ARM's
 [MTE concept][arm-mte]. When MTECheckedPtr is enabled,
 
@@ -84,4 +92,22 @@ When MTECheckedPtr *is* enabled (not the default for anybody),
 both of the above degrade the `raw_ptr<T, D>` into the no-op version
 of `raw_ptr`.
 
+## Appendix: PA-Internal Tag Locations
+
+[The top-level PartitionAlloc documentation][pa-readme]
+mentions the space in which
+MTECheckedPtr's tags reside - in the space labeled "Bitmaps(?)" in the
+super page diagram, before the first usable slot span. This diagram
+only applies to *normal* buckets and not to *direct map* buckets.
+
+While direct map super pages also cordon off the first partition page
+and offer access to the core metadata within, reservations are always
+permissible immediately after, and there are no bitmaps (whether
+from *Scan or MTECheckedPtr) following that first partition page.
+In implementing MTECheckedPtr support for direct maps, we decided
+not to add this extra headroom for bitmaps; instead, the tag is
+placed directly in `SubsequentPageMetadata`, colocated with the core
+metadata in the first partition page.
+
 [arm-mte]: https://community.arm.com/arm-community-blogs/b/architectures-and-processors-blog/posts/enhancing-memory-safety
+[pa-readme]: ../allocator/partition_allocator/PartitionAlloc.md#layout-in-memory

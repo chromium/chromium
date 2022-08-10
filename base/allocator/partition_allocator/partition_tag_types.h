@@ -8,7 +8,7 @@
 #include <cstdint>
 
 // This header defines the types for MTECheckedPtr. Canonical
-// documentation available at `//base/memory/mtecheckedptr.md`.
+// documentation available at `//base/memory/raw_ptr_mtecheckedptr.md`.
 
 namespace partition_alloc {
 
