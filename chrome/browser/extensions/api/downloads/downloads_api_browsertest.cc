@@ -339,30 +339,11 @@ class DownloadExtensionTest : public ExtensionApiTest {
   };
 
   void LoadExtension(const char* name, bool enable_file_access = false) {
-    // Store the created Extension object so that we can attach it to
-    // ExtensionFunctions.  Also load the extension in incognito profiles for
-    // testing incognito.
-    extension_ = ExtensionBrowserTest::LoadExtension(
-        test_data_dir_.AppendASCII(name),
-        {.allow_in_incognito = true, .allow_file_access = enable_file_access});
-    CHECK(extension_);
-    content::WebContents* tab = chrome::AddSelectedTabWithURL(
-        current_browser(),
-        extension_->GetResourceURL("empty.html"),
-        ui::PAGE_TRANSITION_LINK);
-    EXPECT_TRUE(content::WaitForLoadStop(tab));
-    EventRouter::Get(current_browser()->profile())
-        ->AddEventListener(downloads::OnCreated::kEventName,
-                           tab->GetPrimaryMainFrame()->GetProcess(),
-                           GetExtensionId());
-    EventRouter::Get(current_browser()->profile())
-        ->AddEventListener(downloads::OnChanged::kEventName,
-                           tab->GetPrimaryMainFrame()->GetProcess(),
-                           GetExtensionId());
-    EventRouter::Get(current_browser()->profile())
-        ->AddEventListener(downloads::OnErased::kEventName,
-                           tab->GetPrimaryMainFrame()->GetProcess(),
-                           GetExtensionId());
+    extension_ = LoadExtensionInternal(name, enable_file_access);
+  }
+
+  void LoadSecondExtension(const char* name) {
+    second_extension_ = LoadExtensionInternal(name, false);
   }
 
   content::RenderProcessHost* AddFilenameDeterminer() {
@@ -475,6 +456,7 @@ class DownloadExtensionTest : public ExtensionApiTest {
   std::string GetExtensionId() {
     return extension_->id();
   }
+  std::string GetSecondExtensionId() { return second_extension_->id(); }
 
   std::string GetFilename(const char* path) {
     std::string result = downloads_directory().AppendASCII(path).AsUTF8Unsafe();
@@ -633,14 +615,12 @@ class DownloadExtensionTest : public ExtensionApiTest {
   }
 
   bool RunFunction(ExtensionFunction* function, const std::string& args) {
-    scoped_refptr<ExtensionFunction> delete_function(function);
-    SetUpExtensionFunction(function);
-    bool result = extension_function_test_utils::RunFunction(
-        function, args, current_browser(), GetFlags());
-    if (!result) {
-      LOG(ERROR) << function->GetError();
-    }
-    return result;
+    return RunFunctionInternal(extension_, function, args);
+  }
+
+  bool RunFunctionInSecondExtension(ExtensionFunction* function,
+                                    const std::string& args) {
+    return RunFunctionInternal(second_extension_, function, args);
   }
 
   api_test_utils::RunFunctionFlags GetFlags() {
@@ -656,7 +636,7 @@ class DownloadExtensionTest : public ExtensionApiTest {
   std::unique_ptr<base::Value> RunFunctionAndReturnResult(
       scoped_refptr<ExtensionFunction> function,
       const std::string& args) {
-    SetUpExtensionFunction(function.get());
+    SetUpExtensionFunction(extension_, function.get());
     return extension_function_test_utils::RunFunctionAndReturnSingleResult(
         function.get(), args, current_browser(), GetFlags());
   }
@@ -664,7 +644,15 @@ class DownloadExtensionTest : public ExtensionApiTest {
   std::string RunFunctionAndReturnError(
       scoped_refptr<ExtensionFunction> function,
       const std::string& args) {
-    SetUpExtensionFunction(function.get());
+    SetUpExtensionFunction(extension_, function.get());
+    return extension_function_test_utils::RunFunctionAndReturnError(
+        function.get(), args, current_browser(), GetFlags());
+  }
+
+  std::string RunFunctionAndReturnErrorInSecondExtension(
+      scoped_refptr<ExtensionFunction> function,
+      const std::string& args) {
+    SetUpExtensionFunction(second_extension_, function.get());
     return extension_function_test_utils::RunFunctionAndReturnError(
         function.get(), args, current_browser(), GetFlags());
   }
@@ -672,7 +660,7 @@ class DownloadExtensionTest : public ExtensionApiTest {
   bool RunFunctionAndReturnString(scoped_refptr<ExtensionFunction> function,
                                   const std::string& args,
                                   std::string* result_string) {
-    SetUpExtensionFunction(function.get());
+    SetUpExtensionFunction(extension_, function.get());
     std::unique_ptr<base::Value> result(
         RunFunctionAndReturnResult(function, args));
     EXPECT_TRUE(result.get());
@@ -696,12 +684,13 @@ class DownloadExtensionTest : public ExtensionApiTest {
   const Extension* extension() { return extension_; }
 
  private:
-  void SetUpExtensionFunction(ExtensionFunction* function) {
-    if (extension_) {
+  void SetUpExtensionFunction(const raw_ptr<const Extension>& extension,
+                              ExtensionFunction* function) {
+    if (extension) {
       const GURL url = current_browser_ == incognito_browser_ &&
-                               !IncognitoInfo::IsSplitMode(extension_)
+                               !IncognitoInfo::IsSplitMode(extension)
                            ? GURL(url::kAboutBlankURL)
-                           : extension_->GetResourceURL("empty.html");
+                           : extension->GetResourceURL("empty.html");
       // Watch and wait for the navigation to take place.
       auto observer = std::make_unique<content::TestNavigationObserver>(url);
       observer->WatchExistingWebContents();
@@ -710,14 +699,56 @@ class DownloadExtensionTest : public ExtensionApiTest {
       content::WebContents* tab = chrome::AddSelectedTabWithURL(
           current_browser(), url, ui::PAGE_TRANSITION_LINK);
       observer->WaitForNavigationFinished();
-      function->set_extension(extension_.get());
+      function->set_extension(extension.get());
       function->SetRenderFrameHost(tab->GetPrimaryMainFrame());
       function->set_source_process_id(
           tab->GetPrimaryMainFrame()->GetProcess()->GetID());
     }
   }
 
+  bool RunFunctionInternal(const raw_ptr<const Extension>& extension,
+                           ExtensionFunction* function,
+                           const std::string& args) {
+    scoped_refptr<ExtensionFunction> delete_function(function);
+    SetUpExtensionFunction(extension, function);
+    bool result = extension_function_test_utils::RunFunction(
+        function, args, current_browser(), GetFlags());
+    if (!result) {
+      LOG(ERROR) << function->GetError();
+    }
+    return result;
+  }
+
+  raw_ptr<const Extension> LoadExtensionInternal(const char* name,
+                                                 bool enable_file_access) {
+    // Store the created Extension object so that we can attach it to
+    // ExtensionFunctions.  Also load the extension in incognito profiles for
+    // testing incognito.
+    raw_ptr<const Extension> extension = ExtensionBrowserTest::LoadExtension(
+        test_data_dir_.AppendASCII(name),
+        {.allow_in_incognito = true, .allow_file_access = enable_file_access});
+    CHECK(extension);
+    content::WebContents* tab = chrome::AddSelectedTabWithURL(
+        current_browser(), extension->GetResourceURL("empty.html"),
+        ui::PAGE_TRANSITION_LINK);
+    EXPECT_TRUE(content::WaitForLoadStop(tab));
+    EventRouter::Get(current_browser()->profile())
+        ->AddEventListener(downloads::OnCreated::kEventName,
+                           tab->GetPrimaryMainFrame()->GetProcess(),
+                           extension->id());
+    EventRouter::Get(current_browser()->profile())
+        ->AddEventListener(downloads::OnChanged::kEventName,
+                           tab->GetPrimaryMainFrame()->GetProcess(),
+                           extension->id());
+    EventRouter::Get(current_browser()->profile())
+        ->AddEventListener(downloads::OnErased::kEventName,
+                           tab->GetPrimaryMainFrame()->GetProcess(),
+                           extension->id());
+    return extension;
+  }
+
   raw_ptr<const Extension> extension_;
+  raw_ptr<const Extension> second_extension_;
   raw_ptr<Browser> incognito_browser_;
   raw_ptr<Browser> current_browser_;
   std::unique_ptr<DownloadsEventsListener> events_listener_;
@@ -4590,12 +4621,8 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   EXPECT_TRUE(DownloadCoreServiceFactory::GetForBrowserContext(
                   current_browser()->profile())
                   ->IsDownloadUiEnabled());
-  // TODO(benjhayden) Test that existing shelves are hidden.
-  // TODO(benjhayden) Test multiple extensions.
-  // TODO(benjhayden) Test disabling extensions.
   // TODO(benjhayden) Test that browsers associated with other profiles are not
   // affected.
-  // TODO(benjhayden) Test incognito.
 }
 
 // TODO(benjhayden) Figure out why DisableExtension() does not fire
@@ -4800,6 +4827,38 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(IsDownloadToolbarButtonShowing());
 
   GoOnTheRecord();
+  EXPECT_TRUE(IsDownloadToolbarButtonShowing());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    DownloadExtensionBubbleEnabledTest,
+    DownloadExtensionBubbleEnabledTest_SetUiOptionsMultipleExtensions) {
+  LoadExtension("downloads_split");
+  EXPECT_TRUE(RunFunction(new DownloadsSetUiOptionsFunction(),
+                          R"([{"enabled": false}])"));
+  DownloadManager::DownloadVector items;
+  CreateTwoDownloads(&items);
+  ScopedItemVectorCanceller delete_items(&items);
+  EXPECT_FALSE(IsDownloadToolbarButtonShowing());
+
+  LoadSecondExtension("downloads_spanning");
+  // Returns error because the first extension has disabled the UI.
+  EXPECT_STREQ(errors::kUiDisabled, RunFunctionAndReturnErrorInSecondExtension(
+                                        new DownloadsSetUiOptionsFunction(),
+                                        R"([{"enabled": true}])")
+                                        .c_str());
+  // Two extensions can set the UI to disabled at the same time. No error should
+  // be returned.
+  EXPECT_TRUE(RunFunctionInSecondExtension(new DownloadsSetUiOptionsFunction(),
+                                           R"([{"enabled": false}])"));
+
+  DisableExtension(GetExtensionId());
+  items[0]->Pause();
+  // The UI keeps disabled because the second extension has set it to disabled.
+  EXPECT_FALSE(IsDownloadToolbarButtonShowing());
+
+  DisableExtension(GetSecondExtensionId());
+  items[0]->Cancel(true);
   EXPECT_TRUE(IsDownloadToolbarButtonShowing());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
