@@ -63,14 +63,13 @@ class Controller : public ScriptExecutorDelegate,
  public:
   // |web_contents|, |client|, |tick_clock| and |script_executor_ui_delegate|
   // must remain valid for the lifetime of the instance. Controller will take
-  // ownership of |service| and |web_controller| if specified, otherwise will
-  // create and own a default instance.
+  // ownership of |service| if specified, otherwise will create and own the
+  // default service.
   Controller(content::WebContents* web_contents,
              Client* client,
              const base::TickClock* tick_clock,
              base::WeakPtr<RuntimeManager> runtime_manager,
              std::unique_ptr<Service> service,
-             std::unique_ptr<WebController> web_controller,
              ukm::UkmRecorder* ukm_recorder,
              AnnotateDomModelService* annotate_dom_model_service);
 
@@ -314,15 +313,15 @@ class Controller : public ScriptExecutorDelegate,
   const raw_ptr<const base::TickClock> tick_clock_;
   base::WeakPtr<RuntimeManager> runtime_manager_;
 
+  // Lazily instantiate in GetWebController().
+  std::unique_ptr<WebController> web_controller_;
+
   // An instance to suppress keyboard. If this is not nullptr, the keyboard
   // is suppressed.
   std::unique_ptr<SuppressKeyboardRAII> suppress_keyboard_raii_;
 
+  // Lazily instantiate in GetService().
   std::unique_ptr<Service> service_;
-
-  // Lazily instantiate in GetWebController().
-  std::unique_ptr<WebController> web_controller_;
-
   std::unique_ptr<TriggerContext> trigger_context_;
 
   AutofillAssistantState state_ = AutofillAssistantState::INACTIVE;

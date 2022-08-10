@@ -708,8 +708,7 @@ void ClientAndroid::CreateController(
       GetWebContents(), /* client= */ this,
       base::DefaultTickClock::GetInstance(),
       RuntimeManager::GetForWebContents(GetWebContents())->GetWeakPtr(),
-      std::move(service), /* web_controller= */ nullptr,
-      ukm::UkmRecorder::Get(), annotate_dom_model_service_);
+      std::move(service), ukm::UkmRecorder::Get(), annotate_dom_model_service_);
   ui_controller_ = std::make_unique<UiController>(
       /* client= */ this, controller_.get(), std::move(tts_controller));
   ui_controller_->StartListening();
