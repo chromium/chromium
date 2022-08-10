@@ -86,7 +86,7 @@ public class TabSelectionEditorUngroupActionUnitTest {
     @SmallTest
     public void testUngroupActionDisabled() {
         List<Integer> tabIds = new ArrayList<>();
-        mAction.onSelectionStateChanged(tabIds);
+        mAction.onSelectionStateChange(tabIds);
         Assert.assertEquals(
                 false, mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ENABLED));
         Assert.assertEquals(
@@ -106,7 +106,7 @@ public class TabSelectionEditorUngroupActionUnitTest {
         Set<Integer> tabIdsSet = new LinkedHashSet<>(tabIds);
         when(mSelectionDelegate.getSelectedItems()).thenReturn(tabIdsSet);
 
-        mAction.onSelectionStateChanged(tabIds);
+        mAction.onSelectionStateChange(tabIds);
         Assert.assertEquals(
                 true, mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ENABLED));
         Assert.assertEquals(

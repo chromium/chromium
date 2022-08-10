@@ -86,14 +86,14 @@ public class TabSelectionEditorGroupActionUnitTest {
     @SmallTest
     public void testGroupActionDisabled() {
         List<Integer> tabIds = new ArrayList<>();
-        mAction.onSelectionStateChanged(tabIds);
+        mAction.onSelectionStateChange(tabIds);
         Assert.assertEquals(
                 false, mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ENABLED));
         Assert.assertEquals(
                 0, mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ITEM_COUNT));
 
         tabIds.add(1);
-        mAction.onSelectionStateChanged(tabIds);
+        mAction.onSelectionStateChange(tabIds);
         Assert.assertEquals(
                 false, mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ENABLED));
         Assert.assertEquals(
@@ -114,7 +114,7 @@ public class TabSelectionEditorGroupActionUnitTest {
         Set<Integer> tabIdsSet = new LinkedHashSet<>(tabIds);
         when(mSelectionDelegate.getSelectedItems()).thenReturn(tabIdsSet);
 
-        mAction.onSelectionStateChanged(tabIds);
+        mAction.onSelectionStateChange(tabIds);
         Assert.assertEquals(
                 true, mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ENABLED));
         Assert.assertEquals(

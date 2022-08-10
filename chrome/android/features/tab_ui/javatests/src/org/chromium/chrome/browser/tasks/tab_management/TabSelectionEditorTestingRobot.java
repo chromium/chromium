@@ -128,6 +128,16 @@ public class TabSelectionEditorTestingRobot {
             return this;
         }
 
+        public TabSelectionEditorTestingRobot.Action clickToolbarActionView(int id) {
+            onView(inTabSelectionEditor(withId(id))).perform(click());
+            return this;
+        }
+
+        public TabSelectionEditorTestingRobot.Action clickToolbarMenuItem(String text) {
+            onView(withText(text)).perform(click());
+            return this;
+        }
+
         public TabSelectionEditorTestingRobot.Action clickToolbarNavigationButton() {
             onView(inTabSelectionEditor(
                            allOf(withContentDescription(
@@ -212,6 +222,12 @@ public class TabSelectionEditorTestingRobot {
             return this;
         }
 
+        public TabSelectionEditorTestingRobot.Result verifyToolbarActionViewWithText(
+                int id, String text) {
+            onView(inTabSelectionEditor(withId(id))).check(matches(withText(text)));
+            return this;
+        }
+
         public TabSelectionEditorTestingRobot.Result verifyToolbarActionButtonDisabled() {
             onView(inTabSelectionEditor(
                            allOf(withId(R.id.action_button), withParent(withId(R.id.action_bar)))))
@@ -219,10 +235,20 @@ public class TabSelectionEditorTestingRobot {
             return this;
         }
 
+        public TabSelectionEditorTestingRobot.Result verifyToolbarActionViewDisabled(int id) {
+            onView(inTabSelectionEditor(withId(id))).check(matches(not(isEnabled())));
+            return this;
+        }
+
         public TabSelectionEditorTestingRobot.Result verifyToolbarActionButtonEnabled() {
             onView(inTabSelectionEditor(
                            allOf(withId(R.id.action_button), withParent(withId(R.id.action_bar)))))
                     .check(matches(isEnabled()));
+            return this;
+        }
+
+        public TabSelectionEditorTestingRobot.Result verifyToolbarActionViewEnabled(int id) {
+            onView(inTabSelectionEditor(withId(id))).check(matches(isEnabled()));
             return this;
         }
 

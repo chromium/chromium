@@ -36,7 +36,7 @@ import org.chromium.chrome.test.util.browser.Features;
 @Config(manifest = Config.NONE)
 @Features.EnableFeatures(ChromeFeatureList.START_SURFACE_ANDROID)
 @Features.DisableFeatures({ChromeFeatureList.WEB_FEED, ChromeFeatureList.FEED_INTERACTIVE_REFRESH,
-        ChromeFeatureList.SHOPPING_LIST})
+        ChromeFeatureList.SHOPPING_LIST, ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
 public class StartSurfaceCoordinatorUnitTest {
     private static final long MILLISECONDS_PER_MINUTE = TimeUtils.SECONDS_PER_MINUTE * 1000;
 
@@ -53,6 +53,7 @@ public class StartSurfaceCoordinatorUnitTest {
         MockitoAnnotations.initMocks(this);
         UmaRecorderHolder.resetForTesting();
         mCoordinator = mTestRule.getCoordinator();
+        mCoordinator.initWithNative();
     }
 
     @Test

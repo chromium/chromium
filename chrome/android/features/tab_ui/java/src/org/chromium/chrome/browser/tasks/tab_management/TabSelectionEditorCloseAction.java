@@ -33,7 +33,7 @@ public class TabSelectionEditorCloseAction extends TabSelectionEditorAction {
     }
 
     @Override
-    public void onSelectionStateChanged(List<Integer> tabIds) {
+    public void onSelectionStateChange(List<Integer> tabIds) {
         setEnabledAndItemCount(!tabIds.isEmpty(), tabIds.size());
     }
 

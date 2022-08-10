@@ -103,9 +103,9 @@ public class TabSelectionEditorMenuAdapter implements ListModelChangeProcessor.V
         } else if (key == TabSelectionEditorActionProperties.ON_CLICK_LISTENER) {
             menuItem.setOnClickListener(
                     actionModel.get(TabSelectionEditorActionProperties.ON_CLICK_LISTENER));
-        } else if (key == TabSelectionEditorActionProperties.ON_SELECTION_STATE_CHANGED) {
-            menuItem.setOnSelectionStateChanged(
-                    actionModel.get(TabSelectionEditorActionProperties.ON_SELECTION_STATE_CHANGED));
+        } else if (key == TabSelectionEditorActionProperties.ON_SELECTION_STATE_CHANGE) {
+            menuItem.setOnSelectionStateChange(
+                    actionModel.get(TabSelectionEditorActionProperties.ON_SELECTION_STATE_CHANGE));
         }
     }
 }

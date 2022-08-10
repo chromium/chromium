@@ -297,7 +297,5 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
         Assert.assertFalse(LibraryLoader.getInstance().isLoaded());
         when(mLibraryLoader.isInitialized()).thenReturn(true);
         Assert.assertTrue(ReturnToChromeUtil.isStartSurfaceEnabled(mActivity));
-
-        mCoordinator.initWithNative();
     }
 }

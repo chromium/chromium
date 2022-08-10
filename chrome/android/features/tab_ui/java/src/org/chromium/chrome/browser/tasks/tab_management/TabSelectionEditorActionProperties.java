@@ -39,9 +39,9 @@ public class TabSelectionEditorActionProperties {
     public static final WritableObjectPropertyKey<Runnable> ON_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<Callback<List<Integer>>>
-            ON_SELECTION_STATE_CHANGED = new WritableObjectPropertyKey<>();
+            ON_SELECTION_STATE_CHANGE = new WritableObjectPropertyKey<>();
 
     public static final PropertyKey[] ALL_KEYS = {MENU_ITEM_ID, SHOW_MODE, BUTTON_TYPE,
             ICON_POSITION, TITLE_RESOURCE_ID, CONTENT_DESCRIPTION_RESOURCE_ID, ICON, ENABLED,
-            ITEM_COUNT, TEXT_TINT, ICON_TINT, ON_CLICK_LISTENER, ON_SELECTION_STATE_CHANGED};
+            ITEM_COUNT, TEXT_TINT, ICON_TINT, ON_CLICK_LISTENER, ON_SELECTION_STATE_CHANGE};
 }

@@ -12,6 +12,8 @@ import android.widget.Toolbar;
 import androidx.collection.ArrayMap;
 import androidx.collection.ArraySet;
 
+import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -20,7 +22,8 @@ import java.util.Set;
  * A view holder for a toolbar {@link Menu}. The {@code mMenu} contains a list of {@link MenuItem}s
  * from the {@link TabSelectionEditorMenuItem}s viewholder.
  */
-public class TabSelectionEditorMenu implements Toolbar.OnMenuItemClickListener {
+public class TabSelectionEditorMenu
+        implements Toolbar.OnMenuItemClickListener, SelectionDelegate.SelectionObserver<Integer> {
     private Context mContext;
     private Menu mMenu;
     private Map<Integer, TabSelectionEditorMenuItem> mMenuItems = new ArrayMap<>();
@@ -76,9 +79,10 @@ public class TabSelectionEditorMenu implements Toolbar.OnMenuItemClickListener {
      * Delegates selection updates to each menu item.
      * @param selectedItems the currently selected items.
      */
-    public void onSelectionStateChanged(List<Integer> selectedItems) {
+    @Override
+    public void onSelectionStateChange(List<Integer> selectedItems) {
         for (TabSelectionEditorMenuItem menuItem : mMenuItems.values()) {
-            menuItem.onSelectionStateChanged(selectedItems);
+            menuItem.onSelectionStateChange(selectedItems);
         }
     }
 

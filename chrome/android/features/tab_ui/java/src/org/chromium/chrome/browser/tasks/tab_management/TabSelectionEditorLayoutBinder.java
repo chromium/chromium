@@ -53,6 +53,9 @@ public class TabSelectionEditorLayoutBinder {
                 == propertyKey) {
             view.getToolbar().setActionButtonDescriptionResourceId(model.get(
                     TabSelectionEditorProperties.TOOLBAR_ACTION_BUTTON_DESCRIPTION_RESOURCE_ID));
+        } else if (TabSelectionEditorProperties.TOOLBAR_ACTION_BUTTON_VISIBILITY == propertyKey) {
+            view.getToolbar().setActionButtonVisibility(
+                    model.get(TabSelectionEditorProperties.TOOLBAR_ACTION_BUTTON_VISIBILITY));
         }
     }
 }

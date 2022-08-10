@@ -77,6 +77,7 @@ class TabSelectionEditorCoordinator {
          * @param actionButtonEnablingThreshold The minimum threshold to enable the action button.
          *         If it's -1 use the default value.
          * @param navigationProvider The {@link TabSelectionEditorNavigationProvider} that specifies
+         *         the back action.
          */
         void configureToolbar(@Nullable String actionButtonText,
                 @Nullable Integer actionButtonDescriptionResourceId,
@@ -84,8 +85,15 @@ class TabSelectionEditorCoordinator {
                 int actionButtonEnablingThreshold,
                 @Nullable TabSelectionEditorNavigationProvider navigationProvider);
 
-        // TODO(ckitagawa): Create a method to pass a list of TabSelectionEditorActions as an
-        // alternative configuration which get bound in the mediator.
+        /**
+         * Configure the Toolbar for TabSelectionEditor with multiple actions. Requires
+         * {@link ChromeFeatureList.TAB_SELECTION_EDITOR_V2} to be enabled.
+         * @param actions The {@link TabSelectionEditorAction} to make available.
+         * @param navigationProvider The {@link TabSelectionEditorNavigationProvider} that specifies
+         *         the back action.
+         */
+        void configureToolbarWithMenuItems(List<TabSelectionEditorAction> actions,
+                @Nullable TabSelectionEditorNavigationProvider navigationProvider);
 
         /**
          * @return Whether the TabSelectionEditor is visible.
@@ -140,6 +148,8 @@ class TabSelectionEditorCoordinator {
                             .inflate(R.layout.tab_selection_editor_layout, parentView, false)
                             .findViewById(R.id.selectable_list);
 
+            // TODO(ckitagawa): Modify this initializer to support group selection
+            // if requested.
             mTabListCoordinator = new TabListCoordinator(mode, context, mTabModelSelector,
                     tabContentManager::getTabThumbnailWithCallback, null, false, null, null,
                     TabProperties.UiType.SELECTABLE, this::getSelectionDelegate, null,
@@ -184,14 +194,9 @@ class TabSelectionEditorCoordinator {
             mTabSelectionEditorLayoutChangeProcessor = PropertyModelChangeProcessor.create(
                     mModel, mTabSelectionEditorLayout, TabSelectionEditorLayoutBinder::bind, false);
 
-            // TODO(ckitagawa): Create an empty PropertyListModel here and pass to the mediator.
-            // Instantiate a TabSelectionEditorMenu wrapping the menu from the
-            // TabSelectionEditorLayout's toolbar. Ensure onMenuItemClick and
-            // onSelectionStateChanged events are forwarded. The mediator will
-            // bind the TabSelectionEditorActions in the new configure call.
-
             mTabSelectionEditorMediator = new TabSelectionEditorMediator(mContext,
-                    mTabModelSelector, this::resetWithListOfTabs, mModel, mSelectionDelegate);
+                    mTabModelSelector, this::resetWithListOfTabs, mModel, mSelectionDelegate,
+                    mTabSelectionEditorLayout.getToolbar());
         }
     }
 

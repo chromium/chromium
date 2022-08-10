@@ -77,7 +77,7 @@ public class TabSelectionEditorCloseActionUnitTest {
     @Test
     @SmallTest
     public void testCloseActionNoTabs() {
-        mAction.onSelectionStateChanged(new ArrayList<Integer>());
+        mAction.onSelectionStateChange(new ArrayList<Integer>());
         Assert.assertEquals(
                 false, mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ENABLED));
         Assert.assertEquals(
@@ -98,7 +98,7 @@ public class TabSelectionEditorCloseActionUnitTest {
         Set<Integer> tabIdsSet = new LinkedHashSet<>(tabIds);
         when(mSelectionDelegate.getSelectedItems()).thenReturn(tabIdsSet);
 
-        mAction.onSelectionStateChanged(tabIds);
+        mAction.onSelectionStateChange(tabIds);
         Assert.assertEquals(
                 true, mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ENABLED));
         Assert.assertEquals(

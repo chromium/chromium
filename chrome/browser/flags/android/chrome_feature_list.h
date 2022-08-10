@@ -155,6 +155,7 @@ extern const base::Feature kTabGroupsUiImprovementsAndroid;
 extern const base::Feature kTabGroupsForTablets;
 extern const base::Feature kTabGridLayoutAndroid;
 extern const base::Feature kTabReparenting;
+extern const base::Feature kTabSelectionEditorV2;
 extern const base::Feature kTabStripImprovements;
 extern const base::Feature kTabSwitcherOnReturn;
 extern const base::Feature kTabToGTSAnimation;

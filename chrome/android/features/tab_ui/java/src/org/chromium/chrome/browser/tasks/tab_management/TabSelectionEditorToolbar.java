@@ -26,7 +26,7 @@ import java.util.List;
  */
 class TabSelectionEditorToolbar extends SelectableListToolbar<Integer> {
     private static final List<Integer> sEmptyIntegerList = Collections.emptyList();
-    private Button mGroupButton;
+    private Button mActionButton;
     private Integer mActionButtonDescriptionResourceId;
     @ColorInt
     private int mBackgroundColor;
@@ -41,7 +41,7 @@ class TabSelectionEditorToolbar extends SelectableListToolbar<Integer> {
         super.onFinishInflate();
 
         showNavigationButton();
-        mGroupButton = (Button) findViewById(R.id.action_button);
+        mActionButton = (Button) findViewById(R.id.action_button);
         mNumberRollView.setStringForZero(R.string.tab_selection_editor_toolbar_select_tabs);
     }
 
@@ -63,7 +63,7 @@ class TabSelectionEditorToolbar extends SelectableListToolbar<Integer> {
         super.onSelectionStateChange(selectedItems);
         int selectedItemsSize = selectedItems.size();
         boolean enabled = selectedItemsSize >= mActionButtonEnablingThreshold;
-        mGroupButton.setEnabled(enabled);
+        mActionButton.setEnabled(enabled);
 
         String contentDescription = null;
         if (enabled && mActionButtonDescriptionResourceId != null) {
@@ -71,7 +71,7 @@ class TabSelectionEditorToolbar extends SelectableListToolbar<Integer> {
                     mActionButtonDescriptionResourceId, selectedItemsSize, selectedItemsSize);
         }
 
-        mGroupButton.setContentDescription(contentDescription);
+        mActionButton.setContentDescription(contentDescription);
     }
 
     @Override
@@ -93,12 +93,12 @@ class TabSelectionEditorToolbar extends SelectableListToolbar<Integer> {
     }
 
     /**
-     * Sets a {@link android.view.View.OnClickListener} to respond to {@code mGroupButton} clicking
+     * Sets a {@link android.view.View.OnClickListener} to respond to {@code mActionButton} clicking
      * event.
      * @param listener The listener to set.
      */
     public void setActionButtonOnClickListener(OnClickListener listener) {
-        mGroupButton.setOnClickListener(listener);
+        mActionButton.setOnClickListener(listener);
     }
 
     /**
@@ -106,7 +106,7 @@ class TabSelectionEditorToolbar extends SelectableListToolbar<Integer> {
      * @param tint New {@link ColorStateList} to use.
      */
     public void setButtonTint(ColorStateList tint) {
-        mGroupButton.setTextColor(tint);
+        mActionButton.setTextColor(tint);
         TintedDrawable navigation = (TintedDrawable) getNavigationIcon();
         navigation.setTint(tint);
     }
@@ -132,7 +132,7 @@ class TabSelectionEditorToolbar extends SelectableListToolbar<Integer> {
      * @param text The text to display.
      */
     public void setActionButtonText(String text) {
-        mGroupButton.setText(text);
+        mActionButton.setText(text);
     }
 
     /**
@@ -154,5 +154,13 @@ class TabSelectionEditorToolbar extends SelectableListToolbar<Integer> {
             : "Quantity strings (plurals) with one integer format argument is needed";
 
         mActionButtonDescriptionResourceId = template;
+    }
+
+    /**
+     * Set visibility of the action button.
+     * @param visibility The visibility state.
+     */
+    public void setActionButtonVisibility(int visibility) {
+        mActionButton.setVisibility(visibility);
     }
 }

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.IntDef;
@@ -112,10 +114,14 @@ public abstract class TabSelectionEditorAction {
                         .with(TabSelectionEditorActionProperties.ICON, icon)
                         .with(TabSelectionEditorActionProperties.ENABLED, false)
                         .with(TabSelectionEditorActionProperties.ITEM_COUNT, 0)
+                        .with(TabSelectionEditorActionProperties.TEXT_TINT,
+                                ColorStateList.valueOf(Color.TRANSPARENT))
+                        .with(TabSelectionEditorActionProperties.ICON_TINT,
+                                ColorStateList.valueOf(Color.TRANSPARENT))
                         .with(TabSelectionEditorActionProperties.ON_CLICK_LISTENER,
                                 this::performAction)
-                        .with(TabSelectionEditorActionProperties.ON_SELECTION_STATE_CHANGED,
-                                this::onSelectionStateChanged)
+                        .with(TabSelectionEditorActionProperties.ON_SELECTION_STATE_CHANGE,
+                                this::onSelectionStateChange)
                         .build();
 
         if (contentDescriptionResourceId == null) return;
@@ -147,7 +153,7 @@ public abstract class TabSelectionEditorAction {
      * @param tabIds the list of selected tab ids.
      * @return Whether the action should be enabled.
      */
-    public abstract void onSelectionStateChanged(List<Integer> tabIds);
+    public abstract void onSelectionStateChange(List<Integer> tabIds);
 
     /**
      * Processes the selected tabs from the selection list. Override this and call

@@ -38,7 +38,7 @@ public class TabSelectionEditorGroupAction extends TabSelectionEditorAction {
     }
 
     @Override
-    public void onSelectionStateChanged(List<Integer> tabIds) {
+    public void onSelectionStateChange(List<Integer> tabIds) {
         assert mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter()
                         instanceof TabGroupModelFilter;
 
