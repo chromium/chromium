@@ -16,7 +16,9 @@ namespace blink {
 
 class CheckPseudoHasArgumentContextTest : public PageTestBase {
  protected:
-  const int kMax = std::numeric_limits<int>::max();
+  const int kDepthMax = CheckPseudoHasArgumentContext::kInfiniteDepth;
+  const int kAdjacentMax =
+      CheckPseudoHasArgumentContext::kInfiniteAdjacentDistance;
 
   void TestArgumentContext(
       const String& selector_text,
@@ -75,6 +77,18 @@ class CheckPseudoHasArgumentContextTest : public PageTestBase {
                     << ", current_element: " << current_element_id
                     << ", current_depth: " << current_depth << ")";
     }
+  }
+
+  CheckPseudoHasArgumentTraversalType GetTraversalType(
+      const char* selector_text) const {
+    CSSSelectorList selector_list =
+        css_test_helpers::ParseSelectorList(selector_text);
+
+    EXPECT_EQ(selector_list.First()->GetPseudoType(), CSSSelector::kPseudoHas);
+
+    CheckPseudoHasArgumentContext context(
+        selector_list.First()->SelectorList()->First());
+    return context.TraversalType();
   }
 
   template <unsigned length>
@@ -142,28 +156,28 @@ class CheckPseudoHasArgumentContextTest : public PageTestBase {
 TEST_F(CheckPseudoHasArgumentContextTest, TestArgumentMatchContext) {
   TestArgumentContext(":has(.a)", CSSSelector::kRelativeDescendant,
                       /* expected_adjacent_distance_limit */ 0,
-                      /* expected_depth_limit */ kMax, kSubtree);
+                      /* expected_depth_limit */ kDepthMax, kSubtree);
   TestArgumentContext(":has(.a ~ .b)", CSSSelector::kRelativeDescendant,
                       /* expected_adjacent_distance_limit */ 0,
-                      /* expected_depth_limit */ kMax, kSubtree);
+                      /* expected_depth_limit */ kDepthMax, kSubtree);
   TestArgumentContext(":has(.a ~ .b > .c)", CSSSelector::kRelativeDescendant,
                       /* expected_adjacent_distance_limit */ 0,
-                      /* expected_depth_limit */ kMax, kSubtree);
+                      /* expected_depth_limit */ kDepthMax, kSubtree);
   TestArgumentContext(":has(.a > .b)", CSSSelector::kRelativeDescendant,
                       /* expected_adjacent_distance_limit */ 0,
-                      /* expected_depth_limit */ kMax, kSubtree);
+                      /* expected_depth_limit */ kDepthMax, kSubtree);
   TestArgumentContext(":has(.a + .b)", CSSSelector::kRelativeDescendant,
                       /* expected_adjacent_distance_limit */ 0,
-                      /* expected_depth_limit */ kMax, kSubtree);
+                      /* expected_depth_limit */ kDepthMax, kSubtree);
   TestArgumentContext(":has(> .a .b)", CSSSelector::kRelativeChild,
                       /* expected_adjacent_distance_limit */ 0,
-                      /* expected_depth_limit */ kMax, kSubtree);
+                      /* expected_depth_limit */ kDepthMax, kSubtree);
   TestArgumentContext(":has(> .a ~ .b .c)", CSSSelector::kRelativeChild,
                       /* expected_adjacent_distance_limit */ 0,
-                      /* expected_depth_limit */ kMax, kSubtree);
+                      /* expected_depth_limit */ kDepthMax, kSubtree);
   TestArgumentContext(":has(> .a + .b .c)", CSSSelector::kRelativeChild,
                       /* expected_adjacent_distance_limit */ 0,
-                      /* expected_depth_limit */ kMax, kSubtree);
+                      /* expected_depth_limit */ kDepthMax, kSubtree);
   TestArgumentContext(":has(> .a)", CSSSelector::kRelativeChild,
                       /* expected_adjacent_distance_limit */ 0,
                       /* expected_depth_limit */ 1, kFixedDepthDescendants);
@@ -180,83 +194,85 @@ TEST_F(CheckPseudoHasArgumentContextTest, TestArgumentMatchContext) {
                       /* expected_adjacent_distance_limit */ 0,
                       /* expected_depth_limit */ 2, kFixedDepthDescendants);
   TestArgumentContext(":has(~ .a .b)", CSSSelector::kRelativeIndirectAdjacent,
-                      /* expected_adjacent_distance_limit */ kMax,
-                      /* expected_depth_limit */ kMax, kAllNextSiblingSubtrees);
-  TestArgumentContext(":has(~ .a + .b > .c ~ .d .e)",
-                      CSSSelector::kRelativeIndirectAdjacent,
-                      /* expected_adjacent_distance_limit */ kMax,
-                      /* expected_depth_limit */ kMax, kAllNextSiblingSubtrees);
+                      /* expected_adjacent_distance_limit */ kAdjacentMax,
+                      /* expected_depth_limit */ kDepthMax,
+                      kAllNextSiblingSubtrees);
+  TestArgumentContext(
+      ":has(~ .a + .b > .c ~ .d .e)", CSSSelector::kRelativeIndirectAdjacent,
+      /* expected_adjacent_distance_limit */ kAdjacentMax,
+      /* expected_depth_limit */ kDepthMax, kAllNextSiblingSubtrees);
   TestArgumentContext(":has(~ .a)", CSSSelector::kRelativeIndirectAdjacent,
-                      /* expected_adjacent_distance_limit */ kMax,
+                      /* expected_adjacent_distance_limit */ kAdjacentMax,
                       /* expected_depth_limit */ 0, kAllNextSiblings);
   TestArgumentContext(":has(~ .a ~ .b)", CSSSelector::kRelativeIndirectAdjacent,
-                      /* expected_adjacent_distance_limit */ kMax,
+                      /* expected_adjacent_distance_limit */ kAdjacentMax,
                       /* expected_depth_limit */ 0, kAllNextSiblings);
   TestArgumentContext(":has(~ .a + .b)", CSSSelector::kRelativeIndirectAdjacent,
-                      /* expected_adjacent_distance_limit */ kMax,
+                      /* expected_adjacent_distance_limit */ kAdjacentMax,
                       /* expected_depth_limit */ 0, kAllNextSiblings);
   TestArgumentContext(":has(~ .a + .b ~ .c)",
                       CSSSelector::kRelativeIndirectAdjacent,
-                      /* expected_adjacent_distance_limit */ kMax,
+                      /* expected_adjacent_distance_limit */ kAdjacentMax,
                       /* expected_depth_limit */ 0, kAllNextSiblings);
   TestArgumentContext(":has(~ .a > .b)", CSSSelector::kRelativeIndirectAdjacent,
-                      /* expected_adjacent_distance_limit */ kMax,
+                      /* expected_adjacent_distance_limit */ kAdjacentMax,
                       /* expected_depth_limit */ 1,
                       kAllNextSiblingsFixedDepthDescendants);
   TestArgumentContext(
       ":has(~ .a + .b > .c ~ .d > .e)", CSSSelector::kRelativeIndirectAdjacent,
-      /* expected_adjacent_distance_limit */ kMax,
+      /* expected_adjacent_distance_limit */ kAdjacentMax,
       /* expected_depth_limit */ 2, kAllNextSiblingsFixedDepthDescendants);
-  TestArgumentContext(":has(+ .a ~ .b .c)",
-                      CSSSelector::kRelativeDirectAdjacent,
-                      /* expected_adjacent_distance_limit */ kMax,
-                      /* expected_depth_limit */ kMax, kAllNextSiblingSubtrees);
-  TestArgumentContext(":has(+ .a ~ .b > .c + .d .e)",
-                      CSSSelector::kRelativeDirectAdjacent,
-                      /* expected_adjacent_distance_limit */ kMax,
-                      /* expected_depth_limit */ kMax, kAllNextSiblingSubtrees);
+  TestArgumentContext(
+      ":has(+ .a ~ .b .c)", CSSSelector::kRelativeDirectAdjacent,
+      /* expected_adjacent_distance_limit */ kAdjacentMax,
+      /* expected_depth_limit */ kDepthMax, kAllNextSiblingSubtrees);
+  TestArgumentContext(
+      ":has(+ .a ~ .b > .c + .d .e)", CSSSelector::kRelativeDirectAdjacent,
+      /* expected_adjacent_distance_limit */ kAdjacentMax,
+      /* expected_depth_limit */ kDepthMax, kAllNextSiblingSubtrees);
   TestArgumentContext(":has(+ .a ~ .b)", CSSSelector::kRelativeDirectAdjacent,
-                      /* expected_adjacent_distance_limit */ kMax,
+                      /* expected_adjacent_distance_limit */ kAdjacentMax,
                       /* expected_depth_limit */ 0, kAllNextSiblings);
   TestArgumentContext(":has(+ .a + .b ~ .c)",
                       CSSSelector::kRelativeDirectAdjacent,
-                      /* expected_adjacent_distance_limit */ kMax,
+                      /* expected_adjacent_distance_limit */ kAdjacentMax,
                       /* expected_depth_limit */ 0, kAllNextSiblings);
   TestArgumentContext(
       ":has(+ .a ~ .b > .c)", CSSSelector::kRelativeDirectAdjacent,
-      /* expected_adjacent_distance_limit */ kMax,
+      /* expected_adjacent_distance_limit */ kAdjacentMax,
       /* expected_depth_limit */ 1, kAllNextSiblingsFixedDepthDescendants);
   TestArgumentContext(
       ":has(+ .a ~ .b > .c + .d > .e)", CSSSelector::kRelativeDirectAdjacent,
-      /* expected_adjacent_distance_limit */ kMax,
+      /* expected_adjacent_distance_limit */ kAdjacentMax,
       /* expected_depth_limit */ 2, kAllNextSiblingsFixedDepthDescendants);
   TestArgumentContext(":has(+ .a .b)", CSSSelector::kRelativeDirectAdjacent,
                       /* expected_adjacent_distance_limit */ 1,
-                      /* expected_depth_limit */ kMax, kOneNextSiblingSubtree);
-  TestArgumentContext(":has(+ .a > .b .c)",
-                      CSSSelector::kRelativeDirectAdjacent,
-                      /* expected_adjacent_distance_limit */ 1,
-                      /* expected_depth_limit */ kMax, kOneNextSiblingSubtree);
-  TestArgumentContext(":has(+ .a .b > .c)",
-                      CSSSelector::kRelativeDirectAdjacent,
-                      /* expected_adjacent_distance_limit */ 1,
-                      /* expected_depth_limit */ kMax, kOneNextSiblingSubtree);
-  TestArgumentContext(":has(+ .a .b ~ .c)",
-                      CSSSelector::kRelativeDirectAdjacent,
-                      /* expected_adjacent_distance_limit */ 1,
-                      /* expected_depth_limit */ kMax, kOneNextSiblingSubtree);
-  TestArgumentContext(":has(+ .a + .b .c)",
-                      CSSSelector::kRelativeDirectAdjacent,
-                      /* expected_adjacent_distance_limit */ 2,
-                      /* expected_depth_limit */ kMax, kOneNextSiblingSubtree);
-  TestArgumentContext(":has(+ .a > .b + .c .d)",
-                      CSSSelector::kRelativeDirectAdjacent,
-                      /* expected_adjacent_distance_limit */ 1,
-                      /* expected_depth_limit */ kMax, kOneNextSiblingSubtree);
-  TestArgumentContext(":has(+ .a + .b > .c .d)",
-                      CSSSelector::kRelativeDirectAdjacent,
-                      /* expected_adjacent_distance_limit */ 2,
-                      /* expected_depth_limit */ kMax, kOneNextSiblingSubtree);
+                      /* expected_depth_limit */ kDepthMax,
+                      kOneNextSiblingSubtree);
+  TestArgumentContext(
+      ":has(+ .a > .b .c)", CSSSelector::kRelativeDirectAdjacent,
+      /* expected_adjacent_distance_limit */ 1,
+      /* expected_depth_limit */ kDepthMax, kOneNextSiblingSubtree);
+  TestArgumentContext(
+      ":has(+ .a .b > .c)", CSSSelector::kRelativeDirectAdjacent,
+      /* expected_adjacent_distance_limit */ 1,
+      /* expected_depth_limit */ kDepthMax, kOneNextSiblingSubtree);
+  TestArgumentContext(
+      ":has(+ .a .b ~ .c)", CSSSelector::kRelativeDirectAdjacent,
+      /* expected_adjacent_distance_limit */ 1,
+      /* expected_depth_limit */ kDepthMax, kOneNextSiblingSubtree);
+  TestArgumentContext(
+      ":has(+ .a + .b .c)", CSSSelector::kRelativeDirectAdjacent,
+      /* expected_adjacent_distance_limit */ 2,
+      /* expected_depth_limit */ kDepthMax, kOneNextSiblingSubtree);
+  TestArgumentContext(
+      ":has(+ .a > .b + .c .d)", CSSSelector::kRelativeDirectAdjacent,
+      /* expected_adjacent_distance_limit */ 1,
+      /* expected_depth_limit */ kDepthMax, kOneNextSiblingSubtree);
+  TestArgumentContext(
+      ":has(+ .a + .b > .c .d)", CSSSelector::kRelativeDirectAdjacent,
+      /* expected_adjacent_distance_limit */ 2,
+      /* expected_depth_limit */ kDepthMax, kOneNextSiblingSubtree);
   TestArgumentContext(":has(+ .a)", CSSSelector::kRelativeDirectAdjacent,
                       /* expected_adjacent_distance_limit */ 1,
                       /* expected_depth_limit */ 0, kOneNextSibling);
@@ -279,6 +295,122 @@ TEST_F(CheckPseudoHasArgumentContextTest, TestArgumentMatchContext) {
       ":has(+ .a + .b > .c ~ .d > .e)", CSSSelector::kRelativeDirectAdjacent,
       /* expected_adjacent_distance_limit */ 2,
       /* expected_depth_limit */ 2, kOneNextSiblingFixedDepthDescendants);
+}
+
+TEST_F(CheckPseudoHasArgumentContextTest, TestTraversalType) {
+  CheckPseudoHasArgumentTraversalType traversal_type;
+
+  // traversal scope: kSubtree
+  // adjacent distance: 0
+  // depth: Max
+  traversal_type = GetTraversalType(":has(.a)");
+  EXPECT_EQ(traversal_type, 0x00003fffu);
+  EXPECT_EQ(GetTraversalType(":has(.a ~ .b)"), traversal_type);
+  EXPECT_EQ(GetTraversalType(":has(.a ~ .b > .c)"), traversal_type);
+  EXPECT_EQ(GetTraversalType(":has(.a > .b)"), traversal_type);
+  EXPECT_EQ(GetTraversalType(":has(.a + .b)"), traversal_type);
+  EXPECT_EQ(GetTraversalType(":has(> .a .b)"), traversal_type);
+  EXPECT_EQ(GetTraversalType(":has(> .a ~ .b .c)"), traversal_type);
+  EXPECT_EQ(GetTraversalType(":has(> .a + .b .c)"), traversal_type);
+
+  // traversal scope: kAllNextSiblings
+  // adjacent distance: Max
+  // depth: 0
+  traversal_type = GetTraversalType(":has(~ .a)");
+  EXPECT_EQ(traversal_type, 0x1fffc000u);
+  EXPECT_EQ(GetTraversalType(":has(~ .a ~ .b)"), traversal_type);
+  EXPECT_EQ(GetTraversalType(":has(~ .a + .b)"), traversal_type);
+  EXPECT_EQ(GetTraversalType(":has(~ .a + .b ~ .c)"), traversal_type);
+  EXPECT_EQ(GetTraversalType(":has(+ .a ~ .b)"), traversal_type);
+  EXPECT_EQ(GetTraversalType(":has(+ .a + .b ~ .c)"), traversal_type);
+
+  // traversal scope: kOneNextSiblingSubtree
+  // adjacent distance: 1
+  // depth: Max
+  traversal_type = GetTraversalType(":has(+ .a .b)");
+  EXPECT_EQ(traversal_type, 0x20007fffu);
+  EXPECT_EQ(GetTraversalType(":has(+ .a > .b .c)"), traversal_type);
+  EXPECT_EQ(GetTraversalType(":has(+ .a .b > .c)"), traversal_type);
+  EXPECT_EQ(GetTraversalType(":has(+ .a .b ~ .c)"), traversal_type);
+  EXPECT_EQ(GetTraversalType(":has(+ .a > .b + .c .d)"), traversal_type);
+
+  // traversal scope: kOneNextSiblingSubtree
+  // adjacent distance: 2
+  // depth: Max
+  traversal_type = GetTraversalType(":has(+ .a + .b .c)");
+  EXPECT_EQ(traversal_type, 0x2000bfffu);
+  EXPECT_EQ(GetTraversalType(":has(+ .a + .b > .c .d)"), traversal_type);
+
+  // traversal scope: kAllNextSiblingSubtrees
+  // adjacent distance: Max
+  // depth: Max
+  traversal_type = GetTraversalType(":has(~ .a .b)");
+  EXPECT_EQ(traversal_type, 0x3fffffffu);
+  EXPECT_EQ(GetTraversalType(":has(~ .a + .b > .c ~ .d .e)"), traversal_type);
+  EXPECT_EQ(GetTraversalType(":has(+ .a ~ .b .c)"), traversal_type);
+  EXPECT_EQ(GetTraversalType(":has(+ .a ~ .b > .c + .d .e)"), traversal_type);
+
+  // traversal scope: kOneNextSibling
+  // adjacent distance: 1
+  // depth: 0
+  traversal_type = GetTraversalType(":has(+ .a)");
+  EXPECT_EQ(traversal_type, 0x40004000u);
+
+  // traversal scope: kOneNextSibling
+  // adjacent distance: 2
+  // depth: 0
+  traversal_type = GetTraversalType(":has(+ .a + .b)");
+  EXPECT_EQ(traversal_type, 0x40008000u);
+
+  // traversal scope: kOneNextSibling
+  // adjacent distance: 3
+  // depth: 0
+  traversal_type = GetTraversalType(":has(+ .a + .b + .c)");
+  EXPECT_EQ(traversal_type, 0x4000c000u);
+
+  // traversal scope: kFixedDepthDescendants
+  // adjacent distance: 0
+  // depth: 1
+  traversal_type = GetTraversalType(":has(> .a)");
+  EXPECT_EQ(traversal_type, 0x50000001u);
+  EXPECT_EQ(GetTraversalType(":has(> .a + .b)"), traversal_type);
+  EXPECT_EQ(GetTraversalType(":has(> .a ~ .b)"), traversal_type);
+
+  // traversal scope: kFixedDepthDescendants
+  // adjacent distance: 0
+  // depth: 2
+  traversal_type = GetTraversalType(":has(> .a > .b)");
+  EXPECT_EQ(traversal_type, 0x50000002u);
+  EXPECT_EQ(GetTraversalType(":has(> .a ~ .b > .c)"), traversal_type);
+
+  // traversal scope: kOneNextSiblingFixedDepthDescendants
+  // adjacent distance: 1
+  // depth: 1
+  traversal_type = GetTraversalType(":has(+ .a > .b)");
+  EXPECT_EQ(traversal_type, 0x60004001u);
+  EXPECT_EQ(GetTraversalType(":has(+ .a > .b ~ .c)"), traversal_type);
+
+  // traversal scope: kOneNextSiblingFixedDepthDescendants
+  // adjacent distance: 2
+  // depth: 2
+  traversal_type = GetTraversalType(":has(+ .a + .b > .c ~ .d > .e)");
+  EXPECT_EQ(traversal_type, 0x60008002u);
+  EXPECT_EQ(GetTraversalType(":has(+ .a + .b > .c ~ .d > .e ~ .f)"),
+            traversal_type);
+
+  // traversal scope: kAllNextSiblingsFixedDepthDescendants
+  // adjacent distance: Max
+  // depth: 1
+  traversal_type = GetTraversalType(":has(~ .a > .b)");
+  EXPECT_EQ(traversal_type, 0x7fffc001u);
+  EXPECT_EQ(GetTraversalType(":has(+ .a ~ .b > .c)"), traversal_type);
+
+  // traversal scope: kAllNextSiblingsFixedDepthDescendants
+  // adjacent distance: Max
+  // depth: 2
+  traversal_type = GetTraversalType(":has(~ .a > .b > .c)");
+  EXPECT_EQ(traversal_type, 0x7fffc002u);
+  EXPECT_EQ(GetTraversalType(":has(+ .a ~ .b > .c + .d > .e)"), traversal_type);
 }
 
 TEST_F(CheckPseudoHasArgumentContextTest, TestTraversalIteratorCase1) {

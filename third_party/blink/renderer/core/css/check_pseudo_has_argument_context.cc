@@ -95,6 +95,8 @@ CheckPseudoHasArgumentContext::CheckPseudoHasArgumentContext(
     }
   }
   DCHECK_NE(leftmost_relation_, CSSSelector::kSubSelector);
+  DCHECK_LE(adjacent_distance_limit_, kInfiniteAdjacentDistance);
+  DCHECK_LE(depth_limit_, kInfiniteDepth);
 
   switch (leftmost_relation_) {
     case CSSSelector::kRelativeDescendant:

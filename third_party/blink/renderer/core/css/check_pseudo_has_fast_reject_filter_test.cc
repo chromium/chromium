@@ -58,6 +58,10 @@ class CheckPseudoHasFastRejectFilterTest : public PageTestBase {
 TEST_F(CheckPseudoHasFastRejectFilterTest, CheckFastReject) {
   CheckPseudoHasFastRejectFilter filter;
 
+  EXPECT_FALSE(filter.BloomFilterAllocated());
+  filter.AllocateBloomFilter();
+  EXPECT_TRUE(filter.BloomFilterAllocated());
+
   AddElementIdentifierHashes(
       filter, {{/* tag_name */ "div", /* id */ "d1", /* class_names */ "a",
                 /* attribute_name */ "attr1", /* attribute_value */ "val1"},

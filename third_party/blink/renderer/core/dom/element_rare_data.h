@@ -244,6 +244,12 @@ class ElementSuperRareData : public GarbageCollected<ElementSuperRareData> {
   void SetAffectedByLogicalCombinationsInHas() {
     has_invalidation_flags_.affected_by_logical_combinations_in_has = true;
   }
+  bool AffectedByMultipleHas() const {
+    return has_invalidation_flags_.affected_by_multiple_has;
+  }
+  void SetAffectedByMultipleHas() {
+    has_invalidation_flags_.affected_by_multiple_has = true;
+  }
 
   void Trace(blink::Visitor*) const;
 
@@ -513,6 +519,12 @@ class ElementRareData final : public NodeRareData {
   }
   void SetAffectedByLogicalCombinationsInHas() {
     EnsureSuperRareData().SetAffectedByLogicalCombinationsInHas();
+  }
+  bool AffectedByMultipleHas() const {
+    return super_rare_data_ ? super_rare_data_->AffectedByMultipleHas() : false;
+  }
+  void SetAffectedByMultipleHas() {
+    EnsureSuperRareData().SetAffectedByMultipleHas();
   }
 
   AccessibleNode* GetAccessibleNode() const {

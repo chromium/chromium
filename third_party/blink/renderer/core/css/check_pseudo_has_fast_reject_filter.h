@@ -50,8 +50,12 @@ class CORE_EXPORT CheckPseudoHasFastRejectFilter {
 
   bool FastReject(const Vector<unsigned>& pseudo_has_argument_hashes) const;
 
+  void AllocateBloomFilter();
+  bool BloomFilterAllocated() const { return filter_.get(); }
+
  private:
-  WTF::BloomFilter<12> filter_;
+  using FastRejectFilter = WTF::BloomFilter<12>;
+  std::unique_ptr<FastRejectFilter> filter_;
 };
 
 }  // namespace blink

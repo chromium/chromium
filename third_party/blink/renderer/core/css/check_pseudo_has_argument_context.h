@@ -58,7 +58,18 @@ enum CheckPseudoHasArgumentTraversalScope {
   //            (.e.g. :has(~ .a > .b), :has(+ .a ~ .b > .c),
   //                   :has(~ .a > .b ~ .c), :has(+ .a ~ .b > .c ~ .d),
   kAllNextSiblingsFixedDepthDescendants,
+
+  kTraversalScopeMax = kAllNextSiblingsFixedDepthDescendants,
 };
+
+// Unique value of each traversal type. The value can be used as a key of
+// fast reject filter cache.
+//
+// These 3 values are stored by dividing the 4-byte field by:
+// - depth limit : 0 ~ 13 (14bits)
+// - adjacent distance limit : 14 ~ 27 (14 bits)
+// - traversal scope : 28 ~ 31 (4 bits)
+using CheckPseudoHasArgumentTraversalType = uint32_t;
 
 class CORE_EXPORT CheckPseudoHasArgumentContext {
   STACK_ALLOCATED();
@@ -98,9 +109,24 @@ class CORE_EXPORT CheckPseudoHasArgumentContext {
     return pseudo_has_argument_hashes_;
   }
 
+  CheckPseudoHasArgumentTraversalType TraversalType() const {
+    return depth_limit_ | (adjacent_distance_limit_ << kDepthBits) |
+           (traversal_scope_ << (kDepthBits + kAdjacentBits));
+  }
+
  private:
-  const static int kInfiniteDepth = std::numeric_limits<int>::max();
-  const static int kInfiniteAdjacentDistance = std::numeric_limits<int>::max();
+  const static size_t kDepthBits = 14;
+  const static size_t kAdjacentBits = 14;
+  const static size_t kTraversalScopeBits = 4;
+
+  const static int kInfiniteDepth = (1 << kDepthBits) - 1;
+  const static int kInfiniteAdjacentDistance = (1 << kAdjacentBits) - 1;
+
+  static_assert(kTraversalScopeMax <= ((1 << kTraversalScopeBits) - 1),
+                "traversal scope size check");
+  static_assert((kDepthBits + kAdjacentBits + kTraversalScopeBits) <=
+                    sizeof(CheckPseudoHasArgumentTraversalType) * 8,
+                "traversal type size check");
 
   inline const CSSSelector* GetCurrentRelationAndNextCompound(
       const CSSSelector* compound_selector,
@@ -236,6 +262,8 @@ class CORE_EXPORT CheckPseudoHasArgumentContext {
   const CSSSelector* has_argument_;
 
   Vector<unsigned> pseudo_has_argument_hashes_;
+
+  friend class CheckPseudoHasArgumentContextTest;
 };
 
 // Subtree traversal iterator class for :has() argument checking. To solve the

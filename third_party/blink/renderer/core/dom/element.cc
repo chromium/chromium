@@ -6143,6 +6143,14 @@ void Element::SetAffectedByLogicalCombinationsInHas() {
   EnsureElementRareData().SetAffectedByLogicalCombinationsInHas();
 }
 
+bool Element::AffectedByMultipleHas() const {
+  return HasRareData() ? GetElementRareData()->AffectedByMultipleHas() : false;
+}
+
+void Element::SetAffectedByMultipleHas() {
+  EnsureElementRareData().SetAffectedByMultipleHas();
+}
+
 bool Element::UpdateForceLegacyLayout(const ComputedStyle& new_style,
                                       const ComputedStyle* old_style) {
   // ::first-letter may cause structure discrepancies between DOM and layout

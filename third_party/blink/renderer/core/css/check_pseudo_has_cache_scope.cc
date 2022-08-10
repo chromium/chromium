@@ -52,6 +52,25 @@ ElementCheckPseudoHasResultMap& CheckPseudoHasCacheScope::GetResultMap(
   return *entry.stored_value->value;
 }
 
+// static
+ElementCheckPseudoHasFastRejectFilterMap&
+CheckPseudoHasCacheScope::GetFastRejectFilterMap(
+    const Document* document,
+    CheckPseudoHasArgumentTraversalType traversal_type) {
+  DCHECK(document);
+  DCHECK(document->GetCheckPseudoHasCacheScope());
+
+  auto entry = document->GetCheckPseudoHasCacheScope()
+                   ->GetFastRejectFilterCache()
+                   .insert(traversal_type, nullptr);
+  if (entry.is_new_entry) {
+    entry.stored_value->value =
+        MakeGarbageCollected<ElementCheckPseudoHasFastRejectFilterMap>();
+  }
+  DCHECK(entry.stored_value->value);
+  return *entry.stored_value->value;
+}
+
 CheckPseudoHasCacheScope::Context::Context(
     const Document* document,
     const CheckPseudoHasArgumentContext& argument_context)
@@ -64,6 +83,9 @@ CheckPseudoHasCacheScope::Context::Context(
       cache_allowed_ = true;
       result_map_ = &CheckPseudoHasCacheScope::GetResultMap(
           document, argument_context.HasArgument());
+      fast_reject_filter_map_ =
+          &CheckPseudoHasCacheScope::GetFastRejectFilterMap(
+              document, argument_context.TraversalType());
       break;
     default:
       cache_allowed_ = false;
@@ -223,6 +245,23 @@ bool CheckPseudoHasCacheScope::Context::AlreadyChecked(Element* element) const {
       break;
   }
   return false;
+}
+
+CheckPseudoHasFastRejectFilter&
+CheckPseudoHasCacheScope::Context::EnsureFastRejectFilter(Element* element,
+                                                          bool& is_new_entry) {
+  DCHECK(element);
+  DCHECK(cache_allowed_);
+  DCHECK(fast_reject_filter_map_);
+
+  auto entry = fast_reject_filter_map_->insert(element, nullptr);
+  is_new_entry = entry.is_new_entry;
+  if (entry.is_new_entry) {
+    entry.stored_value->value =
+        std::make_unique<CheckPseudoHasFastRejectFilter>();
+  }
+  DCHECK(entry.stored_value->value);
+  return *entry.stored_value->value.get();
 }
 
 }  // namespace blink

@@ -40,14 +40,15 @@ inline unsigned GetAttributeHash(const AtomicString& attribute_name) {
 
 void CheckPseudoHasFastRejectFilter::AddElementIdentifierHashes(
     const Element& element) {
-  filter_.Add(GetTagHash(element.LocalNameForSelectorMatching()));
+  DCHECK(filter_.get());
+  filter_->Add(GetTagHash(element.LocalNameForSelectorMatching()));
   if (element.HasID())
-    filter_.Add(GetIdHash(element.IdForStyleResolution()));
+    filter_->Add(GetIdHash(element.IdForStyleResolution()));
   if (element.HasClass()) {
     const SpaceSplitString& class_names = element.ClassNames();
     wtf_size_t count = class_names.size();
     for (wtf_size_t i = 0; i < count; ++i)
-      filter_.Add(GetClassHash(class_names[i]));
+      filter_->Add(GetClassHash(class_names[i]));
   }
   AttributeCollection attributes = element.AttributesWithoutUpdate();
   for (const auto& attribute_item : attributes) {
@@ -56,16 +57,17 @@ void CheckPseudoHasFastRejectFilter::AddElementIdentifierHashes(
       continue;
     auto lower = attribute_name.IsLowerASCII() ? attribute_name
                                                : attribute_name.LowerASCII();
-    filter_.Add(GetAttributeHash(lower));
+    filter_->Add(GetAttributeHash(lower));
   }
 }
 
 bool CheckPseudoHasFastRejectFilter::FastReject(
     const Vector<unsigned>& pseudo_has_argument_hashes) const {
+  DCHECK(filter_.get());
   if (pseudo_has_argument_hashes.IsEmpty())
     return false;
   for (unsigned hash : pseudo_has_argument_hashes) {
-    if (!filter_.MayContain(hash))
+    if (!filter_->MayContain(hash))
       return true;
   }
   return false;
@@ -113,6 +115,12 @@ void CheckPseudoHasFastRejectFilter::CollectPseudoHasArgumentHashes(
     default:
       break;
   }
+}
+
+void CheckPseudoHasFastRejectFilter::AllocateBloomFilter() {
+  if (filter_)
+    return;
+  filter_ = std::make_unique<FastRejectFilter>();
 }
 
 }  // namespace blink

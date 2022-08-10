@@ -947,6 +947,43 @@ bool SkipCheckingHasArgument(
   return false;
 }
 
+void AddElementIdentifierHashesInTraversalScopeAndSetAffectedByHasFlags(
+    CheckPseudoHasFastRejectFilter& fast_reject_filter,
+    Element& has_anchor_element,
+    CheckPseudoHasArgumentContext& argument_context,
+    bool update_affected_by_has_flags) {
+  for (CheckPseudoHasArgumentTraversalIterator iterator(has_anchor_element,
+                                                        argument_context);
+       !iterator.AtEnd(); ++iterator) {
+    fast_reject_filter.AddElementIdentifierHashes(*iterator.CurrentElement());
+    if (update_affected_by_has_flags) {
+      SetAffectedByHasFlagsForElementAtDepth(
+          argument_context, iterator.CurrentElement(), iterator.CurrentDepth());
+    }
+  }
+}
+
+void SetAllElementsInTraversalScopeAsChecked(
+    Element* has_anchor_element,
+    CheckPseudoHasArgumentContext& argument_context,
+    CheckPseudoHasCacheScope::Context& cache_scope_context) {
+  // Find last element and last depth of the argument traversal iterator.
+  Element* last_element = has_anchor_element;
+  int last_depth = 0;
+  if (argument_context.AdjacentDistanceLimit() > 0)
+    last_element = ElementTraversal::NextSibling(*last_element);
+  if (last_element) {
+    if (argument_context.DepthLimit() > 0) {
+      last_element = ElementTraversal::FirstChild(*last_element);
+      last_depth = 1;
+    }
+  }
+  if (!last_element)
+    return;
+  cache_scope_context.SetAllTraversedElementsAsChecked(last_element,
+                                                       last_depth);
+}
+
 enum EarlyBreakOnHasArgumentChecking {
   kBreakEarlyAndReturnAsMatched,
   kBreakEarlyAndMoveToNextArgument,
@@ -958,7 +995,7 @@ EarlyBreakOnHasArgumentChecking CheckEarlyBreakForHasArgument(
     Element* has_anchor_element,
     CheckPseudoHasArgumentContext& argument_context,
     CheckPseudoHasCacheScope::Context& cache_scope_context,
-    bool update_affected_by_has_flags) {
+    bool& update_affected_by_has_flags) {
   if (!cache_scope_context.CacheAllowed())
     return kNoEarlyBreak;
 
@@ -978,6 +1015,48 @@ EarlyBreakOnHasArgumentChecking CheckEarlyBreakForHasArgument(
     }
     return previous_result & kMatched ? kBreakEarlyAndReturnAsMatched
                                       : kBreakEarlyAndMoveToNextArgument;
+  }
+
+  // Check fast reject filter to reject :has() argument checking early.
+
+  bool is_new_entry;
+  CheckPseudoHasFastRejectFilter& fast_reject_filter =
+      cache_scope_context.EnsureFastRejectFilter(has_anchor_element,
+                                                 is_new_entry);
+
+  // Filter is not actually created on the first check to avoid unnecessary
+  // filter creation overhead. If the :has() anchor element has the
+  // AffectedByMultipleHas flag set, use fast reject filter even if on the first
+  // check since there can be more checks on the anchor element.
+  if (is_new_entry && !has_anchor_element->AffectedByMultipleHas())
+    return kNoEarlyBreak;
+
+  // The bloom filter in the fast reject filter is allocated and initialized on
+  // the second check. We can check fast rejection with the filter after the
+  // allocation and initialization.
+  if (!fast_reject_filter.BloomFilterAllocated()) {
+    if (update_affected_by_has_flags) {
+      // Mark the :has() anchor element as affected by multiple :has() pseudo
+      // classes so that we can always use fast reject filter for the anchor
+      // element.
+      has_anchor_element->SetAffectedByMultipleHas();
+    }
+
+    fast_reject_filter.AllocateBloomFilter();
+    AddElementIdentifierHashesInTraversalScopeAndSetAffectedByHasFlags(
+        fast_reject_filter, *has_anchor_element, argument_context,
+        update_affected_by_has_flags);
+  }
+
+  // affected-by-has flags were already set while adding element identifier
+  // hashes (AddElementIdentifierHashesInTraversalScopeAndSetAffectedByHasFlags)
+  update_affected_by_has_flags = false;
+
+  if (fast_reject_filter.FastReject(
+          argument_context.GetPseudoHasArgumentHashes())) {
+    SetAllElementsInTraversalScopeAsChecked(
+        has_anchor_element, argument_context, cache_scope_context);
+    return kBreakEarlyAndMoveToNextArgument;
   }
 
   return kNoEarlyBreak;
