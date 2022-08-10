@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
 
 #include <sys/types.h>
-#include <iterator>
 #include <string>
 
 #include "base/bind.h"
@@ -15,7 +14,9 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
+#include "base/notreached.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
@@ -83,18 +84,6 @@ DlpFilesController::DlpFileMetadata::DlpFileMetadata(
     const std::string& source_url,
     bool is_dlp_restricted)
     : source_url(source_url), is_dlp_restricted(is_dlp_restricted) {}
-
-DlpFilesController::DlpFileRestrictionDetails::DlpFileRestrictionDetails() =
-    default;
-
-DlpFilesController::DlpFileRestrictionDetails::DlpFileRestrictionDetails(
-    DlpFileRestrictionDetails&&) = default;
-DlpFilesController::DlpFileRestrictionDetails&
-DlpFilesController::DlpFileRestrictionDetails::operator=(
-    DlpFilesController::DlpFileRestrictionDetails&&) = default;
-
-DlpFilesController::DlpFileRestrictionDetails::~DlpFileRestrictionDetails() =
-    default;
 
 DlpFilesController::DlpFilesController() = default;
 
@@ -224,64 +213,16 @@ void DlpFilesController::IsFilesTransferRestricted(
   std::move(result_callback).Run(std::move(restricted_files_sources));
 }
 
-std::vector<DlpFilesController::DlpFileRestrictionDetails>
+std::map<std::string, std::set<std::string>>
 DlpFilesController::GetDlpRestrictionDetails(const std::string& sourceUrl) {
   policy::DlpRulesManager* dlp_rules_manager =
       policy::DlpRulesManagerFactory::GetForPrimaryProfile();
   if (!dlp_rules_manager) {
     return {};
   }
-
-  const GURL source(sourceUrl);
-  const DlpRulesManager::AggregatedDestinations destinations =
-      dlp_rules_manager->GetAggregatedDestinations(
-          source, DlpRulesManager::Restriction::kFiles);
-  const DlpRulesManager::AggregatedComponents components =
-      dlp_rules_manager->GetAggregatedComponents(
-          source, DlpRulesManager::Restriction::kFiles);
-
-  std::vector<DlpFilesController::DlpFileRestrictionDetails> result;
-  auto destination_it = destinations.begin();
-  auto component_it = components.begin();
-  while (destination_it != destinations.end() &&
-         component_it != components.end()) {
-    DlpFileRestrictionDetails details;
-    details.level = std::min(destination_it->first, component_it->first);
-    if (destination_it->first <= component_it->first) {
-      base::ranges::move(destination_it->second.begin(),
-                         destination_it->second.end(),
-                         std::back_inserter(details.urls));
-      ++destination_it;
-    }
-    if (destination_it->first > component_it->first) {
-      base::ranges::move(component_it->second.begin(),
-                         component_it->second.end(),
-                         std::back_inserter(details.components));
-      ++component_it;
-    }
-    result.emplace_back(std::move(details));
-  }
-
-  while (destination_it != destinations.end()) {
-    DlpFileRestrictionDetails details;
-    details.level = destination_it->first;
-    base::ranges::move(destination_it->second.begin(),
-                       destination_it->second.end(),
-                       std::back_inserter(details.urls));
-    ++destination_it;
-    result.emplace_back(std::move(details));
-  }
-
-  while (component_it != components.end()) {
-    DlpFileRestrictionDetails details;
-    details.level = component_it->first;
-    base::ranges::move(component_it->second.begin(), component_it->second.end(),
-                       std::back_inserter(details.components));
-    ++component_it;
-    result.emplace_back(std::move(details));
-  }
-
-  return result;
+  // TODO(crbug.com/1346254): Call DlpRulesManager to get the restricted
+  // destinations and components; aggregate and convert to string format.
+  return {};
 }
 
 void DlpFilesController::ReturnDisallowedTransfers(

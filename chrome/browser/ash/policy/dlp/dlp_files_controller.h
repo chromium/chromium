@@ -7,10 +7,9 @@
 
 #include <vector>
 
-#include "base/callback_forward.h"
+#include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom-forward.h"
@@ -47,26 +46,6 @@ class DlpFilesController {
     std::string source_url;
     // Whether the file is under any DLP rule or not.
     bool is_dlp_restricted;
-  };
-
-  // DlpFileRestrictionDetails keeps aggregated information about DLP rules
-  // that apply to a file. It consists of the level (e.g. block, warn) and
-  // destinations for which this level applies (URLs and/or components).
-  struct DlpFileRestrictionDetails {
-    DlpFileRestrictionDetails();
-    DlpFileRestrictionDetails(const DlpFileRestrictionDetails&) = delete;
-    DlpFileRestrictionDetails& operator=(const DlpFileRestrictionDetails&) =
-        delete;
-    DlpFileRestrictionDetails(DlpFileRestrictionDetails&&);
-    DlpFileRestrictionDetails& operator=(DlpFileRestrictionDetails&&);
-    ~DlpFileRestrictionDetails();
-
-    // The level for which the restriction is enforced.
-    DlpRulesManager::Level level;
-    // List of URLs for which the restriction is enforced.
-    std::vector<std::string> urls;
-    // List of components for which the restriction is enforced.
-    std::vector<DlpRulesManager::Component> components;
   };
 
   using GetDisallowedTransfersCallback =
@@ -110,8 +89,8 @@ class DlpFilesController {
       std::string destination,
       IsFilesTransferRestrictedCallback result_callback);
 
-  // Returns restriction information for `sourceUrl`.
-  std::vector<DlpFileRestrictionDetails> GetDlpRestrictionDetails(
+  // TODO(crbug.com/1346254): Add comments when implementation is complete.
+  std::map<std::string, std::set<std::string>> GetDlpRestrictionDetails(
       const std::string& sourceUrl);
 
  private:

@@ -15,6 +15,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
@@ -393,70 +394,6 @@ TEST_F(DlpFilesControllerTest, GetDlpMetadata_FileNotAvailable) {
   files_controller_.GetDlpMetadata(files_to_check, future.GetCallback());
   EXPECT_TRUE(future.Wait());
   EXPECT_EQ(dlp_metadata, future.Take());
-}
-
-TEST_F(DlpFilesControllerTest, GetDlpRestrictionDetails_Mixed) {
-  DlpRulesManager::AggregatedDestinations destinations;
-  destinations[DlpRulesManager::Level::kBlock].insert(kExample2);
-  destinations[DlpRulesManager::Level::kAllow].insert(kExample3);
-
-  DlpRulesManager::AggregatedComponents components;
-  components[DlpRulesManager::Level::kBlock].insert(
-      DlpRulesManager::Component::kUsb);
-  components[DlpRulesManager::Level::kWarn].insert(
-      DlpRulesManager::Component::kDrive);
-
-  EXPECT_CALL(*rules_manager_, GetAggregatedDestinations)
-      .WillOnce(testing::Return(destinations));
-  EXPECT_CALL(*rules_manager_, GetAggregatedComponents)
-      .WillOnce(testing::Return(components));
-
-  auto result = files_controller_.GetDlpRestrictionDetails(kExample1);
-
-  ASSERT_EQ(result.size(), 3);
-  // Warn:
-  std::vector<std::string> expected_urls;
-  std::vector<DlpRulesManager::Component> expected_components;
-  expected_components.push_back(DlpRulesManager::Component::kDrive);
-  EXPECT_EQ(result[0].level, DlpRulesManager::Level::kWarn);
-  EXPECT_EQ(result[0].urls, expected_urls);
-  EXPECT_EQ(result[0].components, expected_components);
-  // Block:
-  expected_urls.push_back(kExample2);
-  expected_components.clear();
-  expected_components.push_back(DlpRulesManager::Component::kUsb);
-  EXPECT_EQ(result[1].level, DlpRulesManager::Level::kBlock);
-  EXPECT_EQ(result[1].urls, expected_urls);
-  EXPECT_EQ(result[1].components, expected_components);
-  // Allow:
-  expected_urls.clear();
-  expected_urls.push_back(kExample3);
-  expected_components.clear();
-  EXPECT_EQ(result[2].level, DlpRulesManager::Level::kAllow);
-  EXPECT_EQ(result[2].urls, expected_urls);
-  EXPECT_EQ(result[2].components, expected_components);
-}
-
-TEST_F(DlpFilesControllerTest, GetDlpRestrictionDetails_Components) {
-  DlpRulesManager::AggregatedDestinations destinations;
-  DlpRulesManager::AggregatedComponents components;
-  components[DlpRulesManager::Level::kBlock].insert(
-      DlpRulesManager::Component::kUsb);
-
-  EXPECT_CALL(*rules_manager_, GetAggregatedDestinations)
-      .WillOnce(testing::Return(destinations));
-  EXPECT_CALL(*rules_manager_, GetAggregatedComponents)
-      .WillOnce(testing::Return(components));
-
-  auto result = files_controller_.GetDlpRestrictionDetails(kExample1);
-
-  ASSERT_EQ(result.size(), 1);
-  std::vector<std::string> expected_urls;
-  std::vector<DlpRulesManager::Component> expected_components;
-  expected_components.push_back(DlpRulesManager::Component::kUsb);
-  EXPECT_EQ(result[0].level, DlpRulesManager::Level::kBlock);
-  EXPECT_EQ(result[0].urls, expected_urls);
-  EXPECT_EQ(result[0].components, expected_components);
 }
 
 class DlpFilesExternalDestinationTest
