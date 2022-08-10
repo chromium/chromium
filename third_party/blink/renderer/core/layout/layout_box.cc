@@ -3182,12 +3182,8 @@ PhysicalOffset LayoutBox::OffsetFromContainerInternal(
     offset += To<LayoutInline>(o)->OffsetForInFlowPositionedInline(*this);
   }
 
-  if (AnchorScrollObject()) {
-    LayoutBox::AnchorScrollData data =
-        To<LayoutBox>(this)->ComputeAnchorScrollData();
-    offset -=
-        PhysicalOffset::FromVector2dFFloor(data.accumulated_scroll_offset);
-  }
+  if (AnchorScrollObject())
+    offset += ComputeAnchorScrollOffset();
 
   return offset;
 }
@@ -3801,6 +3797,8 @@ bool LayoutBox::MapToVisualRectInAncestorSpaceInternal(
     // LayoutObject::setStyle, the relative position flag on the LayoutObject
     // has been cleared, so use the one on the style().
     container_offset += OffsetForInFlowPosition();
+  } else if (UNLIKELY(AnchorScrollObject())) {
+    container_offset += ComputeAnchorScrollOffset();
   }
 
   if (skip_info.FilterSkipped()) {
@@ -8154,6 +8152,11 @@ LayoutBox::AnchorScrollData LayoutBox::ComputeAnchorScrollData() const {
 
   return {inner_most_scroll_container_layer, outer_most_scroll_container_layer,
           accumulated_scroll_offset, accumulated_scroll_origin};
+}
+
+PhysicalOffset LayoutBox::ComputeAnchorScrollOffset() const {
+  return -PhysicalOffset::FromVector2dFFloor(
+      ComputeAnchorScrollData().accumulated_scroll_offset);
 }
 
 }  // namespace blink

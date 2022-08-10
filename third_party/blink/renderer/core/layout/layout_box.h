@@ -2147,6 +2147,10 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   };
   AnchorScrollData ComputeAnchorScrollData() const;
 
+  // Utility function that returns and rounds accumulated_scroll_offset of
+  // AnchorScrollData as a PhysicalOffset.
+  PhysicalOffset ComputeAnchorScrollOffset() const;
+
  protected:
   ~LayoutBox() override;
 

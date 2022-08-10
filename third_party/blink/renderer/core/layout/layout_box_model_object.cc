@@ -1137,13 +1137,7 @@ PhysicalOffset LayoutBoxModelObject::AdjustedPositionRelativeTo(
       }
     } else if (UNLIKELY(IsBox() &&
                         To<LayoutBox>(this)->AnchorScrollContainer())) {
-      // TODO(crbug.com/1309178): This is copied from
-      // LayoutBox::OffsetFromContainerInternal(). Consider unifying them into a
-      // utility function if it gets more usage.
-      LayoutBox::AnchorScrollData data =
-          To<LayoutBox>(this)->ComputeAnchorScrollData();
-      reference_point -=
-          PhysicalOffset::FromVector2dFFloor(data.accumulated_scroll_offset);
+      reference_point += To<LayoutBox>(this)->ComputeAnchorScrollOffset();
     }
 
     if (offset_parent_object->IsLayoutInline()) {

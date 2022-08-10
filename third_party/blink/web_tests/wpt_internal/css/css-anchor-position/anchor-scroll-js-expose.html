@@ -7,8 +7,8 @@
 <style>
 #container {
   position: absolute;
-  top: 0;
-  left: 0;
+  top: 0px;
+  left: 0px;
 }
 #scroller {
   margin-left: 100px;
@@ -18,11 +18,12 @@
   overflow: scroll;
 }
 #anchor-container {
-  width: 1000px;
+  width: 2000px;
   height: 1000px;
 }
 #anchor {
   margin: 400px;
+  margin-left: 1400px;
   width: 100px;
   height: 100px;
   background-color: yellow;
@@ -41,16 +42,16 @@
 
 <div id="container">
   <div id="scroller">
-    <div id="anchor-container">
-      <div id="anchor"></div>
-    </div>
+    <div id="anchor"></div>
   </div>
   <div id="anchored">Text</div>
 </div>
 
 <script>
+// Move both the anchor and the anchored elements into the visible area of the
+// scroller.
 scroller.scrollTop = 300;
-scroller.scrollLeft = 300;
+scroller.scrollLeft = 1300;
 
 test(() => {
   let rect = anchored.getBoundingClientRect();
@@ -72,4 +73,12 @@ test(() => {
   assert_equals(anchored.offsetLeft, 200);
   assert_equals(anchored.offsetTop, 100);
 }, 'Element.offset* return adjusted offsets');
+
+promise_test(() => new Promise(resolve => {
+  let observer = new IntersectionObserver(entryList => {
+    if (entryList.some(entry => entry.isIntersecting))
+      resolve();
+  });
+  observer.observe(anchored);
+}), 'IntersectionObserver should fire when anchor-scroll moves element into visible area');
 </script>

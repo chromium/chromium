@@ -1326,4 +1326,70 @@ TEST_P(VisualRectMappingTest, PerspectiveWithAnonymousTable) {
   EXPECT_EQ(gfx::Rect(1, -1, 8, 12), ToEnclosingRect(rect));
 }
 
+TEST_P(VisualRectMappingTest, AnchorScroll) {
+  // CSS anchor positioning doesn't work with legacy layout
+  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
+    return;
+
+  ScopedCSSAnchorPositioningForTest enabled_scope(true);
+
+  GetDocument().SetBaseURLOverride(KURL("http://test.com"));
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #cb {
+        position: relative;
+        overflow: hidden;
+        width: min-content;
+        height: min-content;
+      }
+
+      #scroller {
+        overflow: scroll;
+        width: 300px;
+        height: 300px;
+      }
+
+      #anchor {
+        anchor-name: --anchor;
+        margin-top: 100px;
+        margin-left: 500px;
+        margin-right: 500px;
+        width: 50px;
+        height: 50px;
+      }
+
+      #anchored {
+        position: absolute;
+        left: anchor(--anchor left);
+        bottom: anchor(--anchor top);
+        width: 50px;
+        height: 50px;
+        anchor-scroll: --anchor;
+      }
+    </style>
+    <div id=cb>
+      <div id=scroller>
+        <div id=anchor></div>
+      </div>
+      <div id=anchored></div>
+   </div>
+  )HTML");
+
+  LayoutBox& ancestor = *To<LayoutBox>(GetDocument().body()->GetLayoutObject());
+  LayoutBox& anchored = *GetLayoutBoxByElementId("anchored");
+
+  // #anchored is fully clipped by #cb at the initial scroll position
+  CheckVisualRect(anchored, ancestor, PhysicalRect(0, 0, 50, 50),
+                  PhysicalRect());
+
+  auto* scrollable_area =
+      GetScrollableArea(To<LayoutBlock>(GetLayoutBoxByElementId("scroller")));
+  scrollable_area->ScrollToAbsolutePosition(gfx::PointF(400, 0));
+  UpdateAllLifecyclePhasesForTest();
+
+  // #anchored is moved into view and should have a non-empty visual rect
+  CheckVisualRect(anchored, ancestor, PhysicalRect(0, 0, 50, 50),
+                  PhysicalRect(100, 50, 50, 50));
+}
+
 }  // namespace blink
