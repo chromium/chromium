@@ -116,19 +116,18 @@ void PluginPrefs::SetPrefs(PrefService* prefs) {
     ListPrefUpdate update(prefs_, prefs::kPluginsPluginsList);
     base::Value* saved_plugins_list = update.Get();
     if (saved_plugins_list) {
-      for (auto& plugin_value : saved_plugins_list->GetListDeprecated()) {
-        base::DictionaryValue* plugin;
-        if (!plugin_value.GetAsDictionary(&plugin)) {
+      for (auto& plugin_value : saved_plugins_list->GetList()) {
+        if (!plugin_value.is_dict()) {
           LOG(WARNING) << "Invalid entry in " << prefs::kPluginsPluginsList;
           continue;  // Oops, don't know what to do with this item.
         }
+        base::Value::Dict& plugin = plugin_value.GetDict();
 
-        std::string path;
         // The plugin list constains all the plugin files in addition to the
         // plugin groups.
-        if (plugin->GetString("path", &path)) {
+        if (const std::string* path = plugin.FindString("path")) {
           // Files have a path attribute, groups don't.
-          base::FilePath plugin_path = base::FilePath::FromUTF8Unsafe(path);
+          base::FilePath plugin_path = base::FilePath::FromUTF8Unsafe(*path);
 
           // The path to the internal plugin directory changes everytime Chrome
           // is auto-updated, since it contains the current version number. For
@@ -164,8 +163,8 @@ void PluginPrefs::SetPrefs(PrefService* prefs) {
             // |last_internal_dir|. We don't need to update it.
             if (!relative_path.empty()) {
               plugin_path = cur_internal_dir.Append(relative_path);
-              path = plugin_path.AsUTF8Unsafe();
-              plugin->SetString("path", path);
+              std::string updated_path = plugin_path.AsUTF8Unsafe();
+              plugin.Set("path", updated_path);
             }
           }
         }
