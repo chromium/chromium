@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <cctype>
 #include <cstdint>
+#include <iterator>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -21,8 +22,10 @@
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -421,6 +424,53 @@ absl::optional<file_manager::io_task::OperationType> IOTaskTypeToChromeEnum(
       return {};
   }
   NOTREACHED() << "Unknown I/O task type " << type;
+  return {};
+}
+
+extensions::api::file_manager_private::DlpLevel DlpRulesManagerLevelToApiEnum(
+    policy::DlpRulesManager::Level level) {
+  using extensions::api::file_manager_private::DlpLevel;
+  switch (level) {
+    case policy::DlpRulesManager::Level::kAllow:
+      return DlpLevel::DLP_LEVEL_ALLOW;
+    case policy::DlpRulesManager::Level::kBlock:
+      return DlpLevel::DLP_LEVEL_BLOCK;
+    case policy::DlpRulesManager::Level::kWarn:
+    case policy::DlpRulesManager::Level::kReport:
+      NOTIMPLEMENTED()
+          << "Warn and Report DLP levels for Files are not supported yet.";
+      // TODO(https://crbug.com/1172959): Implement Warn level for Files.
+      // TODO: Implement Report level for Files.
+      return DlpLevel::DLP_LEVEL_NONE;
+    case policy::DlpRulesManager::Level::kNotSet:
+      NOTREACHED() << "DLP level not set.";
+      return DlpLevel::DLP_LEVEL_NONE;
+  }
+  NOTREACHED() << "Unknown DLP level.";
+  return {};
+}
+
+extensions::api::file_manager_private::VolumeType
+DlpRulesManagerComponentToApiEnum(
+    policy::DlpRulesManager::Component component) {
+  using extensions::api::file_manager_private::VolumeType;
+  using Component = policy::DlpRulesManager::Component;
+  switch (component) {
+    case policy::DlpRulesManager::Component::kArc:
+      return VolumeType::VOLUME_TYPE_ANDROID_FILES;
+    case policy::DlpRulesManager::Component::kCrostini:
+      return VolumeType::VOLUME_TYPE_CROSTINI;
+    case policy::DlpRulesManager::Component::kPluginVm:
+      return VolumeType::VOLUME_TYPE_GUEST_OS;
+    case policy::DlpRulesManager::Component::kUsb:
+      return VolumeType::VOLUME_TYPE_REMOVABLE;
+    case policy::DlpRulesManager::Component::kDrive:
+      return VolumeType::VOLUME_TYPE_DRIVE;
+    case policy::DlpRulesManager::Component::kUnknownComponent:
+      NOTREACHED() << "DLP component not set.";
+      return {};
+  }
+  NOTREACHED() << "Unknown component type.";
   return {};
 }
 
@@ -1127,7 +1177,7 @@ ExtensionFunction::ResponseAction
 FileManagerPrivateGetDlpRestrictionDetailsFunction::Run() {
   if (!base::FeatureList::IsEnabled(
           features::kDataLeakPreventionFilesRestriction)) {
-    return RespondNow(NoArguments());
+    return RespondNow(OneArgument(base::Value(base::Value::Type::LIST)));
   }
 
   policy::DlpRulesManager* rules_manager =
@@ -1140,9 +1190,30 @@ FileManagerPrivateGetDlpRestrictionDetailsFunction::Run() {
   const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  // TODO(crbug.com/1346254): Call DlpFilesController to get the details.
+  std::unique_ptr<policy::DlpFilesController> files_controller =
+      std::make_unique<policy::DlpFilesController>();
+  const std::vector<policy::DlpFilesController::DlpFileRestrictionDetails>
+      dlp_restriction_details =
+          files_controller->GetDlpRestrictionDetails(params->source_url);
 
-  return RespondNow(OneArgument(base::Value(base::Value::Type::LIST)));
+  using extensions::api::file_manager_private::DlpRestrictionDetails;
+  std::vector<DlpRestrictionDetails> converted_list;
+
+  for (const auto& [level, urls, components] : dlp_restriction_details) {
+    DlpRestrictionDetails details;
+    details.level = DlpRulesManagerLevelToApiEnum(level);
+    base::ranges::move(urls.begin(), urls.end(),
+                       std::back_inserter(details.urls));
+    for (const auto& component : components) {
+      details.components.push_back(
+          DlpRulesManagerComponentToApiEnum(component));
+    }
+    converted_list.emplace_back(std::move(details));
+  }
+
+  return RespondNow(ArgumentList(
+      api::file_manager_private::GetDlpRestrictionDetails::Results::Create(
+          converted_list)));
 }
 
 FileManagerPrivateInternalStartCopyFunction::

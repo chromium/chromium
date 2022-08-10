@@ -118,6 +118,30 @@ chrome.test.getConfig(config => {
         }
       ]);
       break;
+    case 'restriction_details':
+      chrome.test.runTests([async function getDlpRestrictionDetails() {
+        chrome.fileManagerPrivate.getDlpRestrictionDetails(
+            'https://example1.com',
+            chrome.test.callbackPass(dlpRestrictionDetails => {
+              chrome.test.assertEq(
+                  [
+                    {
+                      'components': [
+                        'android_files', 'crostini', 'guest_os', 'removable'
+                      ],
+                      'level': 'block',
+                      'urls': ['https://external.com']
+                    },
+                    {
+                      'components': ['drive'],
+                      'level': 'allow',
+                      'urls': ['https://internal.com']
+                    }
+                  ],
+                  dlpRestrictionDetails);
+            }));
+      }]);
+      break;
     case 'default':
       chrome.test.runTests([
         async function getDlpMetadata() {
@@ -141,13 +165,6 @@ chrome.test.getConfig(config => {
                     ],
                     dlpMetadata);
               }))
-        },
-        async function getDlpRestrictionDetails() {
-          chrome.fileManagerPrivate.getDlpRestrictionDetails(
-              'https://example1.com',
-              chrome.test.callbackPass(dlpRestrictionDetails => {
-                chrome.test.assertEq([], dlpRestrictionDetails);
-              }));
         }
       ]);
       break;

@@ -777,11 +777,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest, DlpMetadata) {
       base::BindRepeating(&FileManagerPrivateApiDlpTest::SetDlpRulesManager,
                           base::Unretained(this)));
   ASSERT_TRUE(policy::DlpRulesManagerFactory::GetForPrimaryProfile());
-  EXPECT_CALL(*mock_rules_manager_, IsFilesPolicyEnabled).Times(2);
-  // TODO(crbug.com/1346254): When implementation is completed, add following
-  // checks: EXPECT_CALL(*mock_rules_manager_,
-  // GetAggregatedComponents).Times(1); EXPECT_CALL(*mock_rules_manager_,
-  // GetAggregatedDestinations).Times(1);
+  EXPECT_CALL(*mock_rules_manager_, IsFilesPolicyEnabled).Times(1);
 
   AddLocalFileSystem(browser()->profile(), temp_dir_.GetPath());
 
@@ -825,6 +821,40 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest, DlpMetadata) {
 
   EXPECT_TRUE(RunExtensionTest("file_browser/dlp_metadata",
                                {.custom_arg = "default"},
+                               {.load_as_component = true}));
+}
+
+IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest, DlpRestrictionDetails) {
+  policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
+      browser()->profile(),
+      base::BindRepeating(&FileManagerPrivateApiDlpTest::SetDlpRulesManager,
+                          base::Unretained(this)));
+  ASSERT_TRUE(policy::DlpRulesManagerFactory::GetForPrimaryProfile());
+  EXPECT_CALL(*mock_rules_manager_, IsFilesPolicyEnabled).Times(1);
+
+  policy::DlpRulesManager::AggregatedDestinations destinations;
+  destinations[policy::DlpRulesManager::Level::kBlock].insert(
+      "https://external.com");
+  destinations[policy::DlpRulesManager::Level::kAllow].insert(
+      "https://internal.com");
+  policy::DlpRulesManager::AggregatedComponents components;
+  components[policy::DlpRulesManager::Level::kBlock].insert(
+      policy::DlpRulesManager::Component::kArc);
+  components[policy::DlpRulesManager::Level::kBlock].insert(
+      policy::DlpRulesManager::Component::kCrostini);
+  components[policy::DlpRulesManager::Level::kBlock].insert(
+      policy::DlpRulesManager::Component::kPluginVm);
+  components[policy::DlpRulesManager::Level::kBlock].insert(
+      policy::DlpRulesManager::Component::kUsb);
+  components[policy::DlpRulesManager::Level::kAllow].insert(
+      policy::DlpRulesManager::Component::kDrive);
+  EXPECT_CALL(*mock_rules_manager_, GetAggregatedDestinations)
+      .WillOnce(testing::Return(destinations));
+  EXPECT_CALL(*mock_rules_manager_, GetAggregatedComponents)
+      .WillOnce(testing::Return(components));
+
+  EXPECT_TRUE(RunExtensionTest("file_browser/dlp_metadata",
+                               {.custom_arg = "restriction_details"},
                                {.load_as_component = true}));
 }
 
