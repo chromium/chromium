@@ -100,10 +100,8 @@ crbug.com/1254933 css3/filters/filterRegions.html [ Failure ]
 crbug.com/1254940 http/tests/security/contentSecurityPolicy/nonces/scriptnonce-redirect.html [ Failure ]
 
 # Test fails:
-crbug.com/1254942 [ Win ] http/tests/security/subresourceIntegrity/revalidation-failed-script.html [ Failure ]
-crbug.com/1254942 [ Mac11 ] http/tests/security/subresourceIntegrity/revalidation-failed-script.html [ Failure ]
-crbug.com/1254942 [ Win ] http/tests/security/subresourceIntegrity/empty-after-revalidate-script.html [ Failure ]
-crbug.com/1254942 [ Mac11 ] http/tests/security/subresourceIntegrity/empty-after-revalidate-script.html [ Failure ]
+crbug.com/1254942 http/tests/security/subresourceIntegrity/revalidation-failed-script.html [ Failure Pass ]
+crbug.com/1254942 http/tests/security/subresourceIntegrity/empty-after-revalidate-script.html [ Failure Pass ]
 
 # Two paint failures:
 crbug.com/1254943 paint/invalidation/overflow/resize-child-within-overflow.html [ Failure ]
