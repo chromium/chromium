@@ -437,8 +437,182 @@ void FillGlobalMotionParams(
   }
 }
 
+// Section 5.11. Tile Group OBU syntax
+void FillTileGroupParams(
+    v4l2_ctrl_av1_tile_group* tile_group_params,
+    std::vector<struct v4l2_ctrl_av1_tile_group_entry>*
+        tile_group_entry_vectors,
+    const base::span<const uint8_t> frame_obu_data,
+    const libgav1::TileInfo& tile_info,
+    const libgav1::Vector<libgav1::TileBuffer>& tile_buffers) {
+  // TODO(stevecho): This could happen in rare cases (for example, if there is a
+  // Metadata OBU after the TileGroup OBU). We currently do not have a reason to
+  // handle those cases. This is also the case in libgav1 at the moment.
+  CHECK(!tile_buffers.empty());
+  const size_t tile_columns = tile_info.tile_columns;
+
+  CHECK_GT(tile_columns, 0u);
+  const uint16_t num_tiles = base::checked_cast<uint16_t>(tile_buffers.size());
+
+  conditionally_set_flags(&tile_group_params->flags, num_tiles > 1,
+                          V4L2_AV1_TILE_GROUP_FLAG_START_AND_END_PRESENT);
+
+  if (num_tiles >= 1) {
+    tile_group_params->tg_start = 0;
+    tile_group_params->tg_end = num_tiles - 1;
+  }
+
+  for (uint16_t tile_index = 0; tile_index < num_tiles; ++tile_index) {
+    struct v4l2_ctrl_av1_tile_group_entry tile_group_entry_params = {};
+
+    CHECK(tile_buffers[tile_index].data >= frame_obu_data.data());
+    tile_group_entry_params.tile_offset = base::checked_cast<uint32_t>(
+        tile_buffers[tile_index].data - frame_obu_data.data());
+
+    tile_group_entry_params.tile_size = tile_buffers[tile_index].size;
+
+    // The tiles are row-major. We use the number of columns |tile_columns|
+    // to compute computation of the row and column for a given tile.
+    tile_group_entry_params.tile_row =
+        tile_index / base::checked_cast<uint16_t>(tile_columns);
+    tile_group_entry_params.tile_col =
+        tile_index % base::checked_cast<uint16_t>(tile_columns);
+
+    tile_group_entry_vectors->push_back(tile_group_entry_params);
+  }
+}
+
+}  // namespace
+
+Av1Decoder::Av1Decoder(std::unique_ptr<IvfParser> ivf_parser,
+                       std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,
+                       std::unique_ptr<V4L2Queue> OUTPUT_queue,
+                       std::unique_ptr<V4L2Queue> CAPTURE_queue)
+    : VideoDecoder::VideoDecoder(std::move(v4l2_ioctl),
+                                 std::move(OUTPUT_queue),
+                                 std::move(CAPTURE_queue)),
+      ivf_parser_(std::move(ivf_parser)),
+      buffer_pool_(std::make_unique<libgav1::BufferPool>(
+          /*on_frame_buffer_size_changed=*/nullptr,
+          /*get_frame_buffer=*/nullptr,
+          /*release_frame_buffer=*/nullptr,
+          /*callback_private_data=*/nullptr)),
+      state_(std::make_unique<libgav1::DecoderState>()) {}
+
+Av1Decoder::~Av1Decoder() {
+  // We destroy the state explicitly to ensure it's destroyed before the
+  // |buffer_pool_|. The |buffer_pool_| checks that all the allocated frames
+  // are released in its destructor.
+  state_.reset();
+  DCHECK(buffer_pool_);
+}
+
+// static
+std::unique_ptr<Av1Decoder> Av1Decoder::Create(
+    const base::MemoryMappedFile& stream) {
+  constexpr uint32_t kDriverCodecFourcc = V4L2_PIX_FMT_AV1_FRAME;
+
+  VLOG(2) << "Attempting to create decoder with codec "
+          << media::FourccToString(kDriverCodecFourcc);
+
+  // Set up video parser.
+  auto ivf_parser = std::make_unique<media::IvfParser>();
+  media::IvfFileHeader file_header{};
+
+  if (!ivf_parser->Initialize(stream.data(), stream.length(), &file_header)) {
+    LOG(ERROR) << "Couldn't initialize IVF parser";
+    return nullptr;
+  }
+
+  const auto driver_codec_fourcc =
+      media::v4l2_test::FileFourccToDriverFourcc(file_header.fourcc);
+
+  if (driver_codec_fourcc != kDriverCodecFourcc) {
+    VLOG(2) << "File fourcc (" << media::FourccToString(driver_codec_fourcc)
+            << ") does not match expected fourcc("
+            << media::FourccToString(kDriverCodecFourcc) << ").";
+    return nullptr;
+  }
+
+  auto v4l2_ioctl = std::make_unique<V4L2IoctlShim>();
+
+  // MM21 is an uncompressed opaque format that is produced by MediaTek
+  // video decoders.
+  constexpr uint32_t kUncompressedFourcc = v4l2_fourcc('M', 'M', '2', '1');
+
+  // TODO(stevecho): this might need some driver patches to support AV1F
+  if (!v4l2_ioctl->VerifyCapabilities(kDriverCodecFourcc,
+                                      kUncompressedFourcc)) {
+    LOG(ERROR) << "Device doesn't support the provided FourCCs.";
+    return nullptr;
+  }
+
+  LOG(INFO) << "Ivf file header: " << file_header.width << " x "
+            << file_header.height;
+
+  // TODO(stevecho): might need to consider using more than 1 file descriptor
+  // (fd) & buffer with the output queue for 4K60 requirement.
+  // https://buganizer.corp.google.com/issues/202214561#comment31
+  auto OUTPUT_queue = std::make_unique<V4L2Queue>(
+      V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE, kDriverCodecFourcc,
+      gfx::Size(file_header.width, file_header.height), /*num_planes=*/1,
+      V4L2_MEMORY_MMAP, /*num_buffers=*/1);
+
+  // TODO(stevecho): enable V4L2_MEMORY_DMABUF memory for CAPTURE queue.
+  // |num_planes| represents separate memory buffers, not planes for Y, U, V.
+  // https://www.kernel.org/doc/html/v5.16/userspace-api/media/v4l/pixfmt-v4l2-mplane.html#c.V4L.v4l2_plane_pix_format
+  auto CAPTURE_queue = std::make_unique<V4L2Queue>(
+      V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE, kUncompressedFourcc,
+      gfx::Size(file_header.width, file_header.height), /*num_planes=*/2,
+      V4L2_MEMORY_MMAP, /*num_buffers=*/10);
+
+  return base::WrapUnique(
+      new Av1Decoder(std::move(ivf_parser), std::move(v4l2_ioctl),
+                     std::move(OUTPUT_queue), std::move(CAPTURE_queue)));
+}
+
+Av1Decoder::ParsingResult Av1Decoder::ReadNextFrame(
+    libgav1::RefCountedBufferPtr& current_frame) {
+  if (!obu_parser_ || !obu_parser_->HasData()) {
+    if (!ivf_parser_->ParseNextFrame(&ivf_frame_header_, &ivf_frame_data_))
+      return ParsingResult::kEOStream;
+
+    // The ObuParser has run out of data or did not exist in the first place. It
+    // has no "replace the current buffer with a new buffer of a different size"
+    // method; we must make a new parser.
+    // (std::nothrow) is required for the base class Allocable of
+    // libgav1::ObuParser
+    obu_parser_ = base::WrapUnique(new (std::nothrow) libgav1::ObuParser(
+        ivf_frame_data_, ivf_frame_header_.frame_size, /*operating_point=*/0,
+        buffer_pool_.get(), state_.get()));
+    if (current_sequence_header_)
+      obu_parser_->set_sequence_header(*current_sequence_header_);
+  }
+
+  const libgav1::StatusCode code = obu_parser_->ParseOneFrame(&current_frame);
+  if (code != libgav1::kStatusOk) {
+    LOG(ERROR) << "Error parsing OBU stream: " << libgav1::GetErrorString(code);
+    return ParsingResult::kFailed;
+  }
+  return ParsingResult::kOk;
+}
+
+void Av1Decoder::CopyFrameData(const libgav1::ObuFrameHeader& frame_hdr,
+                               std::unique_ptr<V4L2Queue>& queue) {
+  CHECK_EQ(queue->num_buffers(), 1u)
+      << "Only 1 buffer is expected to be used for OUTPUT queue for now.";
+
+  CHECK_EQ(queue->num_planes(), 1u)
+      << "Number of planes is expected to be 1 for OUTPUT queue.";
+
+  scoped_refptr<MmapedBuffer> buffer = queue->GetBuffer(0);
+
+  buffer->mmaped_planes()[0].CopyIn(ivf_frame_data_,
+                                    ivf_frame_header_.frame_size);
+}
+
 // 5.9.2. Uncompressed header syntax
-void FillFrameParams(
+void Av1Decoder::SetupFrameParams(
     struct v4l2_ctrl_av1_frame_header* v4l2_frame_params,
     const absl::optional<libgav1::ObuSequenceHeader>& seq_header,
     const libgav1::ObuFrameHeader& frm_header) {
@@ -631,180 +805,6 @@ void FillFrameParams(
       base::checked_cast<__u8>(frm_header.skip_mode_frame[1]);
 }
 
-// Section 5.11. Tile Group OBU syntax
-void FillTileGroupParams(
-    v4l2_ctrl_av1_tile_group* tile_group_params,
-    std::vector<struct v4l2_ctrl_av1_tile_group_entry>*
-        tile_group_entry_vectors,
-    const base::span<const uint8_t> frame_obu_data,
-    const libgav1::TileInfo& tile_info,
-    const libgav1::Vector<libgav1::TileBuffer>& tile_buffers) {
-  // TODO(stevecho): This could happen in rare cases (for example, if there is a
-  // Metadata OBU after the TileGroup OBU). We currently do not have a reason to
-  // handle those cases. This is also the case in libgav1 at the moment.
-  CHECK(!tile_buffers.empty());
-  const size_t tile_columns = tile_info.tile_columns;
-
-  CHECK_GT(tile_columns, 0u);
-  const uint16_t num_tiles = base::checked_cast<uint16_t>(tile_buffers.size());
-
-  conditionally_set_flags(&tile_group_params->flags, num_tiles > 1,
-                          V4L2_AV1_TILE_GROUP_FLAG_START_AND_END_PRESENT);
-
-  if (num_tiles >= 1) {
-    tile_group_params->tg_start = 0;
-    tile_group_params->tg_end = num_tiles - 1;
-  }
-
-  for (uint16_t tile_index = 0; tile_index < num_tiles; ++tile_index) {
-    struct v4l2_ctrl_av1_tile_group_entry tile_group_entry_params = {};
-
-    CHECK(tile_buffers[tile_index].data >= frame_obu_data.data());
-    tile_group_entry_params.tile_offset = base::checked_cast<uint32_t>(
-        tile_buffers[tile_index].data - frame_obu_data.data());
-
-    tile_group_entry_params.tile_size = tile_buffers[tile_index].size;
-
-    // The tiles are row-major. We use the number of columns |tile_columns|
-    // to compute computation of the row and column for a given tile.
-    tile_group_entry_params.tile_row =
-        tile_index / base::checked_cast<uint16_t>(tile_columns);
-    tile_group_entry_params.tile_col =
-        tile_index % base::checked_cast<uint16_t>(tile_columns);
-
-    tile_group_entry_vectors->push_back(tile_group_entry_params);
-  }
-}
-
-}  // namespace
-
-Av1Decoder::Av1Decoder(std::unique_ptr<IvfParser> ivf_parser,
-                       std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,
-                       std::unique_ptr<V4L2Queue> OUTPUT_queue,
-                       std::unique_ptr<V4L2Queue> CAPTURE_queue)
-    : VideoDecoder::VideoDecoder(std::move(v4l2_ioctl),
-                                 std::move(OUTPUT_queue),
-                                 std::move(CAPTURE_queue)),
-      ivf_parser_(std::move(ivf_parser)),
-      buffer_pool_(std::make_unique<libgav1::BufferPool>(
-          /*on_frame_buffer_size_changed=*/nullptr,
-          /*get_frame_buffer=*/nullptr,
-          /*release_frame_buffer=*/nullptr,
-          /*callback_private_data=*/nullptr)),
-      state_(std::make_unique<libgav1::DecoderState>()) {}
-
-Av1Decoder::~Av1Decoder() {
-  // We destroy the state explicitly to ensure it's destroyed before the
-  // |buffer_pool_|. The |buffer_pool_| checks that all the allocated frames
-  // are released in its destructor.
-  state_.reset();
-  DCHECK(buffer_pool_);
-}
-
-// static
-std::unique_ptr<Av1Decoder> Av1Decoder::Create(
-    const base::MemoryMappedFile& stream) {
-  constexpr uint32_t kDriverCodecFourcc = V4L2_PIX_FMT_AV1_FRAME;
-
-  VLOG(2) << "Attempting to create decoder with codec "
-          << media::FourccToString(kDriverCodecFourcc);
-
-  // Set up video parser.
-  auto ivf_parser = std::make_unique<media::IvfParser>();
-  media::IvfFileHeader file_header{};
-
-  if (!ivf_parser->Initialize(stream.data(), stream.length(), &file_header)) {
-    LOG(ERROR) << "Couldn't initialize IVF parser";
-    return nullptr;
-  }
-
-  const auto driver_codec_fourcc =
-      media::v4l2_test::FileFourccToDriverFourcc(file_header.fourcc);
-
-  if (driver_codec_fourcc != kDriverCodecFourcc) {
-    VLOG(2) << "File fourcc (" << media::FourccToString(driver_codec_fourcc)
-            << ") does not match expected fourcc("
-            << media::FourccToString(kDriverCodecFourcc) << ").";
-    return nullptr;
-  }
-
-  auto v4l2_ioctl = std::make_unique<V4L2IoctlShim>();
-
-  // MM21 is an uncompressed opaque format that is produced by MediaTek
-  // video decoders.
-  constexpr uint32_t kUncompressedFourcc = v4l2_fourcc('M', 'M', '2', '1');
-
-  // TODO(stevecho): this might need some driver patches to support AV1F
-  if (!v4l2_ioctl->VerifyCapabilities(kDriverCodecFourcc,
-                                      kUncompressedFourcc)) {
-    LOG(ERROR) << "Device doesn't support the provided FourCCs.";
-    return nullptr;
-  }
-
-  LOG(INFO) << "Ivf file header: " << file_header.width << " x "
-            << file_header.height;
-
-  // TODO(stevecho): might need to consider using more than 1 file descriptor
-  // (fd) & buffer with the output queue for 4K60 requirement.
-  // https://buganizer.corp.google.com/issues/202214561#comment31
-  auto OUTPUT_queue = std::make_unique<V4L2Queue>(
-      V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE, kDriverCodecFourcc,
-      gfx::Size(file_header.width, file_header.height), /*num_planes=*/1,
-      V4L2_MEMORY_MMAP, /*num_buffers=*/1);
-
-  // TODO(stevecho): enable V4L2_MEMORY_DMABUF memory for CAPTURE queue.
-  // |num_planes| represents separate memory buffers, not planes for Y, U, V.
-  // https://www.kernel.org/doc/html/v5.16/userspace-api/media/v4l/pixfmt-v4l2-mplane.html#c.V4L.v4l2_plane_pix_format
-  auto CAPTURE_queue = std::make_unique<V4L2Queue>(
-      V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE, kUncompressedFourcc,
-      gfx::Size(file_header.width, file_header.height), /*num_planes=*/2,
-      V4L2_MEMORY_MMAP, /*num_buffers=*/10);
-
-  return base::WrapUnique(
-      new Av1Decoder(std::move(ivf_parser), std::move(v4l2_ioctl),
-                     std::move(OUTPUT_queue), std::move(CAPTURE_queue)));
-}
-
-Av1Decoder::ParsingResult Av1Decoder::ReadNextFrame(
-    libgav1::RefCountedBufferPtr& current_frame) {
-  if (!obu_parser_ || !obu_parser_->HasData()) {
-    if (!ivf_parser_->ParseNextFrame(&ivf_frame_header_, &ivf_frame_data_))
-      return ParsingResult::kEOStream;
-
-    // The ObuParser has run out of data or did not exist in the first place. It
-    // has no "replace the current buffer with a new buffer of a different size"
-    // method; we must make a new parser.
-    // (std::nothrow) is required for the base class Allocable of
-    // libgav1::ObuParser
-    obu_parser_ = base::WrapUnique(new (std::nothrow) libgav1::ObuParser(
-        ivf_frame_data_, ivf_frame_header_.frame_size, /*operating_point=*/0,
-        buffer_pool_.get(), state_.get()));
-    if (current_sequence_header_)
-      obu_parser_->set_sequence_header(*current_sequence_header_);
-  }
-
-  const libgav1::StatusCode code = obu_parser_->ParseOneFrame(&current_frame);
-  if (code != libgav1::kStatusOk) {
-    LOG(ERROR) << "Error parsing OBU stream: " << libgav1::GetErrorString(code);
-    return ParsingResult::kFailed;
-  }
-  return ParsingResult::kOk;
-}
-
-void Av1Decoder::CopyFrameData(const libgav1::ObuFrameHeader& frame_hdr,
-                               std::unique_ptr<V4L2Queue>& queue) {
-  CHECK_EQ(queue->num_buffers(), 1u)
-      << "Only 1 buffer is expected to be used for OUTPUT queue for now.";
-
-  CHECK_EQ(queue->num_planes(), 1u)
-      << "Number of planes is expected to be 1 for OUTPUT queue.";
-
-  scoped_refptr<MmapedBuffer> buffer = queue->GetBuffer(0);
-
-  buffer->mmaped_planes()[0].CopyIn(ivf_frame_data_,
-                                    ivf_frame_header_.frame_size);
-}
-
 std::set<int> Av1Decoder::RefreshReferenceSlots(
     uint8_t refresh_frame_flags,
     libgav1::RefCountedBufferPtr current_frame,
@@ -949,8 +949,8 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame(std::vector<char>& y_plane,
 
   struct v4l2_ctrl_av1_frame_header v4l2_frame_params = {};
 
-  FillFrameParams(&v4l2_frame_params, current_sequence_header_,
-                  current_frame_header);
+  SetupFrameParams(&v4l2_frame_params, current_sequence_header_,
+                   current_frame_header);
 
   // TODO(stevecho): V4L2_CID_STATELESS_AV1_FRAME_HEADER is trending to be
   // changed to V4L2_CID_STATELESS_AV1_FRAME
