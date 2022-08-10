@@ -70,20 +70,20 @@ bool JsonToPromoData(const base::Value& value,
                      absl::optional<PromoData>* data) {
   *data = absl::nullopt;
 
-  const base::DictionaryValue* dict = nullptr;
-  if (!value.GetAsDictionary(&dict)) {
+  if (!value.is_dict()) {
     DVLOG(1) << "Parse error: top-level dictionary not found";
     return false;
   }
+  const base::Value::Dict& dict = value.GetDict();
 
-  const base::DictionaryValue* update = nullptr;
-  if (!dict->GetDictionary("update", &update)) {
+  const base::Value::Dict* update = dict.FindDict("update");
+  if (!update) {
     DVLOG(1) << "Parse error: no update";
     return false;
   }
 
-  const base::DictionaryValue* promos = nullptr;
-  if (!update->GetDictionary("promos", &promos)) {
+  const base::Value::Dict* promos = update->FindDict("promos");
+  if (!promos) {
     DVLOG(1) << "Parse error: no promos";
     return false;
   }
@@ -91,22 +91,22 @@ bool JsonToPromoData(const base::Value& value,
   PromoData result;
   *data = result;
 
-  std::string middle;
-  if (!promos->GetString("middle", &middle)) {
+  const std::string* middle = promos->FindString("middle");
+  if (!middle) {
     DVLOG(1) << "No middle promo";
     return false;
   }
 
-  const base::Value* middle_announce_payload = promos->FindKeyOfType(
-      "middle_announce_payload", base::Value::Type::DICTIONARY);
+  const base::Value::Dict* middle_announce_payload =
+      promos->FindDict("middle_announce_payload");
   if (middle_announce_payload) {
     JSONStringValueSerializer serializer(&result.middle_slot_json);
     serializer.Serialize(*middle_announce_payload);
   }
 
-  std::string log_url;
+  const std::string* maybe_log_url = promos->FindString("log_url");
   // Emergency promos don't have these, so it's OK if this key is missing.
-  promos->GetString("log_url", &log_url);
+  std::string log_url = maybe_log_url ? *maybe_log_url : std::string();
 
   GURL promo_log_url;
   if (!log_url.empty())
@@ -114,14 +114,17 @@ bool JsonToPromoData(const base::Value& value,
 
   std::string promo_id;
   if (CanBlockPromos()) {
-    if (!promos->GetString("id", &promo_id))
+    const std::string* maybe_promo_id = promos->FindString("id");
+    if (maybe_promo_id)
+      promo_id = *maybe_promo_id;
+    else
       net::GetValueForKeyInQuery(promo_log_url, "id", &promo_id);
   }
 
   // Emergency promos may not have IDs, which is OK. They also can't be
   // dismissed (because of this).
 
-  result.promo_html = middle;
+  result.promo_html = *middle;
   result.promo_log_url = promo_log_url;
   result.promo_id = promo_id;
 
