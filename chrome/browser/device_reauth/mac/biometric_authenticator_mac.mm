@@ -5,7 +5,6 @@
 #include "chrome/browser/device_reauth/mac/biometric_authenticator_mac.h"
 
 #include "base/bind.h"
-#include "base/callback.h"
 #include "base/notreached.h"
 #include "components/device_reauth/biometric_authenticator.h"
 #include "device/fido/mac/touch_id_context.h"
@@ -37,18 +36,29 @@ void BiometricAuthenticatorMac::AuthenticateWithMessage(
     const std::u16string message,
     AuthenticateCallback callback) {
   if (!NeedsToAuthenticate()) {
+    DCHECK(callback_.is_null());
     std::move(callback).Run(/*success=*/true);
     return;
   }
 
-  // TODO(crbug.com/1350994): Clean the touchIdContext object after
-  // authentication is done.
+  if (callback_) {
+    std::move(callback_).Run(/*success=*/false);
+  }
+
   touch_id_auth_context_ = device::fido::mac::TouchIdContext::Create();
-  base::OnceCallback<bool(bool)> record_authentication_result =
-      base::BindOnce(&BiometricAuthenticatorMac::RecordAuthenticationResult,
-                     base::Unretained(this));
+  callback_ = std::move(callback);
 
   touch_id_auth_context_->PromptTouchId(
       message,
-      std::move(record_authentication_result).Then(std::move(callback)));
+      base::BindOnce(&BiometricAuthenticatorMac::OnAuthenticationCompleted,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void BiometricAuthenticatorMac::OnAuthenticationCompleted(bool result) {
+  if (callback_.is_null()) {
+    return;
+  }
+
+  std::move(callback_).Run(RecordAuthenticationResult(result));
+  touch_id_auth_context_ = nullptr;
 }
