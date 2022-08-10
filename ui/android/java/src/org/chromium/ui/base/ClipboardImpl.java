@@ -517,7 +517,10 @@ public class ClipboardImpl
     public void copyUrlToClipboard(GURL url) {
         ClipData clip =
                 new ClipData("url", new String[] {URL_MIME_TYPE}, new ClipData.Item(url.getSpec()));
-        if (setPrimaryClipNoException(clip)) {
+        if (setPrimaryClipNoException(clip) && Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
+            // According to
+            // https://developer.android.com/about/versions/13/features/copy-paste?hl=en#duplicate-notifications,
+            // the toast should not been shown on Android T and T+.
             Toast.makeText(mContext, R.string.link_copied, Toast.LENGTH_SHORT).show();
         }
     }
