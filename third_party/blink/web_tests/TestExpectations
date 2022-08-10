@@ -3366,7 +3366,7 @@ crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protoc
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 [ Win10.20h2 ] external/wpt/custom-elements/form-associated/ElementInternals-target-element-is-held-strongly.html [ Timeout ]
-crbug.com/626703 [ Mac11-arm64 ] external/wpt/html/browsers/browsing-the-web/remote-context-helper-tests/navigation-same-document.window.html [ Timeout Failure ]
+crbug.com/626703 [ Mac11-arm64 ] external/wpt/html/browsers/browsing-the-web/remote-context-helper-tests/navigation-same-document.window.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/custom-elements/throw-on-dynamic-markup-insertion-counter-construct-xml-parser.xhtml [ Crash ]
 crbug.com/626703 [ Linux ] external/wpt/custom-elements/throw-on-dynamic-markup-insertion-counter-reactions-xml-parser.xhtml [ Crash ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/custom-elements/throw-on-dynamic-markup-insertion-counter-reactions-xml-parser.xhtml [ Crash ]

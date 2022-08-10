@@ -1261,7 +1261,6 @@ crbug.com/1050754 external/wpt/paint-timing/with-first-paint/first-contentful-im
 crbug.com/1050754 external/wpt/paint-timing/with-first-paint/first-contentful-paint.html [ Pass ]
 crbug.com/1050754 external/wpt/paint-timing/with-first-paint/mask-image.html [ Pass ]
 crbug.com/1050754 external/wpt/paint-timing/with-first-paint/sibling-painting-first-image.html [ Failure ]
-crbug.com/1050754 external/wpt/payment-handler/can-make-payment-event.https.html [ Failure Timeout ]
 crbug.com/1050754 external/wpt/payment-handler/respond-with-minimal-ui.https.html [ Failure Timeout ]
 crbug.com/1050754 external/wpt/payment-request/constructor_convert_method_data.https.html [ Pass Timeout ]
 crbug.com/1050754 external/wpt/payment-request/payment-request-hasenrolledinstrument-method-protection.tentative.https.html [ Pass Timeout ]

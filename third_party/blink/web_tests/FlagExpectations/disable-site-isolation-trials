@@ -49,6 +49,7 @@ crbug.com/1209223 external/wpt/html/browsers/browsing-the-web/navigating-across-
 crbug.com/1209223 external/wpt/html/browsers/browsing-the-web/navigating-across-documents/javascript-url-security-check-same-origin-domain.sub.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/custom-elements/form-associated/ElementInternals-target-element-is-held-strongly.html [ Timeout ]
 crbug.com/626703 external/wpt/custom-elements/throw-on-dynamic-markup-insertion-counter-construct-xml-parser.xhtml [ Crash ]
 crbug.com/626703 external/wpt/custom-elements/throw-on-dynamic-markup-insertion-counter-reactions-xml-parser.xhtml [ Crash ]
 crbug.com/626703 external/wpt/css/css-sizing/aspect-ratio/grid-aspect-ratio-040.html [ Crash ]
