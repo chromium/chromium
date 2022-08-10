@@ -74,9 +74,7 @@ void BrowserControlsNavigationStateHandler::DidFinishNavigation(
 void BrowserControlsNavigationStateHandler::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url) {
-  const bool is_main_frame =
-      render_frame_host->GetMainFrame() == render_frame_host;
-  if (is_main_frame)
+  if (render_frame_host->IsInPrimaryMainFrame())
     ScheduleStopDelayedForceShow();
 }
 
@@ -84,12 +82,8 @@ void BrowserControlsNavigationStateHandler::DidFailLoad(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url,
     int error_code) {
-  const bool is_main_frame =
-      render_frame_host->GetMainFrame() == render_frame_host;
-  if (is_main_frame)
+  if (render_frame_host->IsInPrimaryMainFrame()) {
     ScheduleStopDelayedForceShow();
-  if (render_frame_host->IsActive() &&
-      (render_frame_host == web_contents()->GetPrimaryMainFrame())) {
     UpdateState();
   }
 }
