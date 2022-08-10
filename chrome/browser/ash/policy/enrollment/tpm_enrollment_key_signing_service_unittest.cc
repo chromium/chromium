@@ -6,12 +6,12 @@
 
 #include <utility>
 
-#include "ash/components/attestation/attestation_flow_utils.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/components/attestation/attestation_flow_utils.h"
 #include "chromeos/ash/components/dbus/attestation/attestation.pb.h"
 #include "chromeos/ash/components/dbus/attestation/attestation_client.h"
 #include "components/policy/proto/device_management_backend.pb.h"

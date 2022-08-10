@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_ATTESTATION_FAKE_ATTESTATION_FLOW_H_
-#define ASH_COMPONENTS_ATTESTATION_FAKE_ATTESTATION_FLOW_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_ATTESTATION_FAKE_ATTESTATION_FLOW_H_
+#define CHROMEOS_ASH_COMPONENTS_ATTESTATION_FAKE_ATTESTATION_FLOW_H_
 
 #include <string>
 
-#include "ash/components/attestation/attestation_flow.h"
+#include "chromeos/ash/components/attestation/attestation_flow.h"
 
 class AccountId;
 
@@ -34,4 +34,4 @@ class FakeAttestationFlow : public AttestationFlow {
 }  // namespace attestation
 }  // namespace ash
 
-#endif  // ASH_COMPONENTS_ATTESTATION_FAKE_ATTESTATION_FLOW_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_ATTESTATION_FAKE_ATTESTATION_FLOW_H_

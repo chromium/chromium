@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_ATTESTATION_ATTESTATION_FLOW_H_
-#define ASH_COMPONENTS_ATTESTATION_ATTESTATION_FLOW_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_ATTESTATION_ATTESTATION_FLOW_H_
+#define CHROMEOS_ASH_COMPONENTS_ATTESTATION_ATTESTATION_FLOW_H_
 
 #include <memory>
 #include <string>
@@ -27,7 +27,7 @@ class AttestationClient;
 namespace attestation {
 
 // Interface for access to the Privacy CA server.
-class COMPONENT_EXPORT(ASH_ATTESTATION) ServerProxy {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION) ServerProxy {
  public:
   using DataCallback =
       base::OnceCallback<void(bool success, const std::string& data)>;
@@ -59,7 +59,7 @@ class COMPONENT_EXPORT(ASH_ATTESTATION) ServerProxy {
 //    flow.GetCertificate(ENTERPRISE_USER_CERTIFICATE, false, callback);
 //
 // This class is not thread safe.
-class COMPONENT_EXPORT(ASH_ATTESTATION) AttestationFlow {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION) AttestationFlow {
  public:
   using CertificateCallback =
       base::OnceCallback<void(AttestationStatus status,
@@ -292,4 +292,4 @@ class COMPONENT_EXPORT(ASH_ATTESTATION) AttestationFlow {
 }  // namespace attestation
 }  // namespace ash
 
-#endif  // ASH_COMPONENTS_ATTESTATION_ATTESTATION_FLOW_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_ATTESTATION_ATTESTATION_FLOW_H_

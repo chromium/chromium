@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/attestation/attestation_flow_utils.h"
 #include "ash/constants/ash_switches.h"
 #include "base/test/scoped_chromeos_version_info.h"
 #include "build/build_config.h"
@@ -25,6 +24,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/network_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/update_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/welcome_screen_handler.h"
+#include "chromeos/ash/components/attestation/attestation_flow_utils.h"
 #include "chromeos/ash/components/dbus/attestation/fake_attestation_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"

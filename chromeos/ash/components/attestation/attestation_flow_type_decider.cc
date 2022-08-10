@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/attestation/attestation_flow_type_decider.h"
+#include "chromeos/ash/components/attestation/attestation_flow_type_decider.h"
 
 #include <utility>
 
-#include "ash/components/attestation/attestation_flow.h"
-#include "ash/components/attestation/attestation_flow_status_reporter.h"
 #include "base/bind.h"
+#include "chromeos/ash/components/attestation/attestation_flow.h"
+#include "chromeos/ash/components/attestation/attestation_flow_status_reporter.h"
 
 #include "base/logging.h"
 

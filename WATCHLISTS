@@ -734,9 +734,9 @@
       'filepath': 'chromeos/',
     },
     'chromeos_attestation': {
-      'filepath': 'ash/components/attestation/|'\
-                  'chrome/browser/ash/attestation/|'\
-                  'chrome/browser/extensions/api/enterprise_platform_keys_private/',
+      'filepath': 'chrome/browser/ash/attestation/|'\
+                  'chrome/browser/extensions/api/enterprise_platform_keys_private/|'\
+                  'chromeos/ash/components/attestation/',
     },
     'chromeos_bluetooth': {
       'filepath': 'ash/system/bluetooth/'\

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_ATTESTATION_ATTESTATION_FLOW_FACTORY_H_
-#define ASH_COMPONENTS_ATTESTATION_ATTESTATION_FLOW_FACTORY_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_ATTESTATION_ATTESTATION_FLOW_FACTORY_H_
+#define CHROMEOS_ASH_COMPONENTS_ATTESTATION_ATTESTATION_FLOW_FACTORY_H_
 
 #include <memory>
 
@@ -18,7 +18,8 @@ class ServerProxy;
 
 // A factory that creates a default attestation flow we should try first and a
 // fallback solution if necessary.
-class COMPONENT_EXPORT(ASH_ATTESTATION) AttestationFlowFactory {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION)
+    AttestationFlowFactory {
  public:
   AttestationFlowFactory();
   virtual ~AttestationFlowFactory();
@@ -50,4 +51,4 @@ class COMPONENT_EXPORT(ASH_ATTESTATION) AttestationFlowFactory {
 }  // namespace attestation
 }  // namespace ash
 
-#endif  // ASH_COMPONENTS_ATTESTATION_ATTESTATION_FLOW_FACTORY_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_ATTESTATION_ATTESTATION_FLOW_FACTORY_H_

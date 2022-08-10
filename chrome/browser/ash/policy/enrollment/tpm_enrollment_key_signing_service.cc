@@ -7,8 +7,8 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/attestation/attestation_flow_utils.h"
 #include "base/bind.h"
+#include "chromeos/ash/components/attestation/attestation_flow_utils.h"
 #include "chromeos/ash/components/dbus/attestation/attestation.pb.h"
 #include "chromeos/ash/components/dbus/attestation/attestation_client.h"
 #include "chromeos/ash/components/dbus/attestation/interface.pb.h"

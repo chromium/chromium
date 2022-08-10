@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/attestation/attestation_flow_integrated.h"
+#include "chromeos/ash/components/attestation/attestation_flow_integrated.h"
 
 #include <memory>
 #include <string>
 #include <utility>
 
-#include "ash/components/attestation/attestation_flow_factory.h"
-#include "ash/components/attestation/attestation_flow_utils.h"
-#include "ash/components/attestation/mock_attestation_flow.h"
 #include "ash/components/cryptohome/cryptohome_parameters.h"
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -20,6 +17,9 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/timer/timer.h"
+#include "chromeos/ash/components/attestation/attestation_flow_factory.h"
+#include "chromeos/ash/components/attestation/attestation_flow_utils.h"
+#include "chromeos/ash/components/attestation/mock_attestation_flow.h"
 #include "chromeos/ash/components/dbus/attestation/attestation_client.h"
 #include "chromeos/ash/components/dbus/attestation/interface.pb.h"
 #include "chromeos/dbus/constants/attestation_constants.h"

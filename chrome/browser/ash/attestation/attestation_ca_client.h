@@ -9,7 +9,7 @@
 #include <map>
 #include <string>
 
-#include "ash/components/attestation/attestation_flow.h"
+#include "chromeos/ash/components/attestation/attestation_flow.h"
 #include "chromeos/dbus/constants/attestation_constants.h"
 
 namespace network {

@@ -572,7 +572,6 @@ static_library("test_support") {
       "//ui/chromeos/resources:resources_grit",
     ]
     deps += [
-      "//ash/components/attestation:test_support",
       "//ash/components/cryptohome",
       "//ash/constants",
       "//chrome/browser/ash/crosapi",
@@ -580,6 +579,7 @@ static_library("test_support") {
       "//chrome/browser/chromeos",
       "//chrome/browser/chromeos:print_job_info_proto",
       "//chrome/browser/ui/ash/system_web_apps",
+      "//chromeos/ash/components/attestation:test_support",
       "//chromeos/ash/components/dbus/concierge",
       "//chromeos/dbus",
       "//chromeos/dbus/power",
@@ -4109,8 +4109,6 @@ if (!is_android) {
         "//ash/components/arc:prefs",
         "//ash/components/arc/enterprise",
         "//ash/components/arc/session:arc_base_enums",
-        "//ash/components/attestation",
-        "//ash/components/attestation:test_support",
         "//ash/components/audio",
         "//ash/components/cryptohome",
         "//ash/components/disks",
@@ -4179,6 +4177,8 @@ if (!is_android) {
         "//chrome/services/wilco_dtc_supportd/public/mojom",
         "//chromeos:test_support",
         "//chromeos/ash/components/assistant:buildflags",
+        "//chromeos/ash/components/attestation",
+        "//chromeos/ash/components/attestation:test_support",
         "//chromeos/ash/components/dbus/attestation",
         "//chromeos/ash/components/dbus/attestation:attestation_proto",
         "//chromeos/ash/components/dbus/authpolicy",

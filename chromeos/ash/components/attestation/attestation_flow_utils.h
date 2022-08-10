@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_ATTESTATION_ATTESTATION_FLOW_UTILS_H_
-#define ASH_COMPONENTS_ATTESTATION_ATTESTATION_FLOW_UTILS_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_ATTESTATION_ATTESTATION_FLOW_UTILS_H_
+#define CHROMEOS_ASH_COMPONENTS_ATTESTATION_ATTESTATION_FLOW_UTILS_H_
 
 #include <string>
 
@@ -22,7 +22,7 @@ namespace attestation {
 //   request_origin - For content protection profiles, certificate requests
 //                    are origin-specific.  This string must uniquely identify
 //                    the origin of the request.
-COMPONENT_EXPORT(ASH_ATTESTATION)
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION)
 std::string GetKeyNameForProfile(
     AttestationCertificateProfile certificate_profile,
     const std::string& request_origin);
@@ -30,4 +30,4 @@ std::string GetKeyNameForProfile(
 }  // namespace attestation
 }  // namespace ash
 
-#endif  // ASH_COMPONENTS_ATTESTATION_ATTESTATION_FLOW_UTILS_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_ATTESTATION_ATTESTATION_FLOW_UTILS_H_
