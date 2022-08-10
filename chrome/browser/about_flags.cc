@@ -4861,7 +4861,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-cros-virtual-keyboard-multitouch",
      flag_descriptions::kVirtualKeyboardMultitouchName,
      flag_descriptions::kVirtualKeyboardMultitouchDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kVirtualKeyboardMultitouch)},
+     FEATURE_VALUE_TYPE(chromeos::features::kVirtualKeyboardMultitouch)},
     {"enable-cros-virtual-keyboard-round-corners",
      flag_descriptions::kVirtualKeyboardRoundCornersName,
      flag_descriptions::kVirtualKeyboardRoundCornersDescription, kOsCrOS,

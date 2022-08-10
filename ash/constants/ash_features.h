@@ -645,6 +645,8 @@ extern const base::Feature kUserActivityPrediction;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kVirtualKeyboardBorderedKey;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kVirtualKeyboardMultitouch;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kVirtualKeyboardRoundCorners;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kWakeOnWifiAllowed;

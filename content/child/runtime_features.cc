@@ -399,8 +399,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
                kThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes},
           {"TopicsAPI", features::kPrivacySandboxAdsAPIsOverride,
            kSetOnlyIfOverridden},
-          {"TouchActionEffectiveAtPointerDown",
-           features::kVirtualKeyboardMultitouch},
           {"UserAgentClientHint", blink::features::kUserAgentClientHint},
           {"ViewportHeightClientHintHeader",
            blink::features::kViewportHeightClientHintHeader},

@@ -38,8 +38,6 @@ COMPONENT_EXPORT(UI_BASE_FEATURES)
 extern const base::Feature kSystemKeyboardLock;
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 extern const base::Feature kUiCompositorScrollWithLayers;
-COMPONENT_EXPORT(UI_BASE_FEATURES)
-extern const base::Feature kVirtualKeyboardMultitouch;
 
 COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsUiGpuRasterizationEnabled();
 

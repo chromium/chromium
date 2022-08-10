@@ -95,10 +95,6 @@ const base::Feature kLacrosResourcesFileSharing = {
     "LacrosResourcesFileSharing", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-// Enable or disable multitouch for virtual keyboard on ChromeOS.
-const base::Feature kVirtualKeyboardMultitouch{
-    "VirtualKeyboardMultitouch", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Update of the virtual keyboard settings UI as described in
 // https://crbug.com/876901.
 const base::Feature kInputMethodSettingsUiUpdate = {

@@ -1596,6 +1596,10 @@ const base::Feature kUserActivityPrediction{"UserActivityPrediction",
 const base::Feature kVirtualKeyboardBorderedKey{
     "VirtualKeyboardBorderedKey", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enable or disable multitouch for virtual keyboard on ChromeOS.
+const base::Feature kVirtualKeyboardMultitouch{
+    "VirtualKeyboardMultitouch", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enable or disable round corners for virtual keyboard on ChromeOS.
 const base::Feature kVirtualKeyboardRoundCorners{
     "VirtualKeyboardRoundCorners", base::FEATURE_DISABLED_BY_DEFAULT};
