@@ -795,7 +795,7 @@
                   'chrome/browser/resources/chromeos/',
     },
     'chromeos_wifi_sync': {
-      'filepath': 'chromeos/components/sync_wifi/',
+      'filepath': 'chromeos/ash/components/sync_wifi/',
     },
     'chrometto_proto_extensions': {
       'filepath': 'base/tracing/protos/',

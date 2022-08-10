@@ -141,7 +141,7 @@
 #include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ui/app_list/arc/arc_package_sync_model_type_controller.h"
 #include "chrome/browser/ui/app_list/arc/arc_package_syncable_service.h"
-#include "chromeos/components/sync_wifi/wifi_configuration_sync_service.h"
+#include "chromeos/ash/components/sync_wifi/wifi_configuration_sync_service.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using content::BrowserThread;

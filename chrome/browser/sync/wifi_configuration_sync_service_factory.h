@@ -9,21 +9,19 @@
 
 class Profile;
 
+namespace ash::sync_wifi {
+class WifiConfigurationSyncService;
+}
+
 namespace base {
 template <typename T>
 struct DefaultSingletonTraits;
 }  // namespace base
 
-namespace chromeos {
-namespace sync_wifi {
-class WifiConfigurationSyncService;
-}  // namespace sync_wifi
-}  // namespace chromeos
-
 class WifiConfigurationSyncServiceFactory
     : public BrowserContextKeyedServiceFactory {
  public:
-  static chromeos::sync_wifi::WifiConfigurationSyncService* GetForProfile(
+  static ash::sync_wifi::WifiConfigurationSyncService* GetForProfile(
       Profile* profile,
       bool create);
   static WifiConfigurationSyncServiceFactory* GetInstance();

@@ -16,7 +16,7 @@ static_library("network_config") {
     "//chromeos/ash/components/dbus/hermes",
     "//chromeos/ash/components/dbus/shill",
     "//chromeos/ash/components/network",
-    "//chromeos/components/sync_wifi:network_eligibility_checker",
+    "//chromeos/ash/components/sync_wifi:network_eligibility_checker",
     "//chromeos/login/login_state",
     "//chromeos/services/network_config/public/cpp",
     "//chromeos/services/network_config/public/mojom",

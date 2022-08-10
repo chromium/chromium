@@ -36,7 +36,7 @@
 #include "chromeos/ash/components/network/onc/onc_translation_tables.h"
 #include "chromeos/ash/components/network/prohibited_technologies_handler.h"
 #include "chromeos/ash/components/network/proxy/ui_proxy_config_service.h"
-#include "chromeos/components/sync_wifi/network_eligibility_checker.h"
+#include "chromeos/ash/components/sync_wifi/network_eligibility_checker.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-shared.h"

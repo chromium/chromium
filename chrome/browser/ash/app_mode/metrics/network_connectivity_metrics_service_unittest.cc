@@ -11,7 +11,7 @@
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
-#include "chromeos/components/sync_wifi/network_test_helper.h"
+#include "chromeos/ash/components/sync_wifi/network_test_helper.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
@@ -88,7 +88,7 @@ class NetworkConnectivityMetricsServiceTest : public testing::Test {
 
   base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
-  chromeos::sync_wifi::NetworkTestHelper helper_;
+  sync_wifi::NetworkTestHelper helper_;
   std::unique_ptr<ScopedTestingLocalState> local_state_;
 };
 
