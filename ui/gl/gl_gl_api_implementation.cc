@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -241,26 +242,23 @@ void SetCurrentGL(CurrentGL* current) {
   g_current_gl_context_tls->Set(new_current);
 }
 
-GLApi::GLApi() {
-}
+GLApi::GLApi() = default;
 
-GLApi::~GLApi() {
-}
+GLApi::~GLApi() = default;
 
 GLApiBase::GLApiBase() : driver_(nullptr) {}
 
-GLApiBase::~GLApiBase() {
-}
+GLApiBase::~GLApiBase() = default;
 
 void GLApiBase::InitializeBase(DriverGL* driver) {
   driver_ = driver;
 }
 
-RealGLApi::RealGLApi() {
-}
+RealGLApi::RealGLApi()
+    : logging_enabled_(base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kEnableGPUServiceLogging)) {}
 
-RealGLApi::~RealGLApi() {
-}
+RealGLApi::~RealGLApi() = default;
 
 void RealGLApi::Initialize(DriverGL* driver) {
   InitializeBase(driver);
@@ -426,8 +424,11 @@ void RealGLApi::glReadPixelsFn(GLint x,
 }
 
 void RealGLApi::glClearFn(GLbitfield mask) {
-  if (!g_null_draw_bindings_enabled)
+  if (!g_null_draw_bindings_enabled) {
     GLApiBase::glClearFn(mask);
+  } else if (logging_enabled_) {
+    LOG(WARNING) << "Skipped glClear()";
+  }
 }
 
 void RealGLApi::glClearColorFn(GLclampf red,
@@ -446,16 +447,22 @@ void RealGLApi::glClearColorFn(GLclampf red,
 }
 
 void RealGLApi::glDrawArraysFn(GLenum mode, GLint first, GLsizei count) {
-  if (!g_null_draw_bindings_enabled)
+  if (!g_null_draw_bindings_enabled) {
     GLApiBase::glDrawArraysFn(mode, first, count);
+  } else if (logging_enabled_) {
+    LOG(WARNING) << "Skipped glDrawArrays()";
+  }
 }
 
 void RealGLApi::glDrawElementsFn(GLenum mode,
                                  GLsizei count,
                                  GLenum type,
                                  const void* indices) {
-  if (!g_null_draw_bindings_enabled)
+  if (!g_null_draw_bindings_enabled) {
     GLApiBase::glDrawElementsFn(mode, count, type, indices);
+  } else if (logging_enabled_) {
+    LOG(WARNING) << "Skipped glDrawElements()";
+  }
 }
 
 void RealGLApi::glClearDepthFn(GLclampd depth) {
@@ -561,17 +568,14 @@ void RealGLApi::set_version(std::unique_ptr<GLVersionInfo> version) {
   version_ = std::move(version);
 }
 
-TraceGLApi::~TraceGLApi() {
-}
+TraceGLApi::~TraceGLApi() = default;
 
 LogGLApi::LogGLApi(GLApi* gl_api) : gl_api_(gl_api) {}
 
-LogGLApi::~LogGLApi() {}
+LogGLApi::~LogGLApi() = default;
 
-NoContextGLApi::NoContextGLApi() {
-}
+NoContextGLApi::NoContextGLApi() = default;
 
-NoContextGLApi::~NoContextGLApi() {
-}
+NoContextGLApi::~NoContextGLApi() = default;
 
 }  // namespace gl

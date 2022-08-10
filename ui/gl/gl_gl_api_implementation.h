@@ -149,6 +149,7 @@ class GL_EXPORT RealGLApi : public GLApiBase {
   // Compute |filtered_exts_| & |filtered_exts_str_| from |disabled_ext_|.
   void InitializeFilteredExtensionsIfNeeded();
 
+  const bool logging_enabled_;
   std::vector<std::string> disabled_exts_;
   // Filtered GL_EXTENSIONS we return to glGetString(i) calls.
   std::vector<std::string> filtered_exts_;
