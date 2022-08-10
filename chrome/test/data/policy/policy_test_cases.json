@@ -8004,13 +8004,14 @@
   },
   "KeepFullscreenWithoutNotificationUrlAllowList": {
     "os": [
-      "chromeos_ash"
+      "chromeos_ash",
+      "chromeos_lacros"
     ],
     "policy_pref_mapping_tests": [
       {
         "policies": {},
         "prefs": {
-          "ash.keep_fullscreen_without_notification_url_allow_list": {
+          "keep_fullscreen_without_notification_url_allow_list": {
             "default_value": []
           }
         }
@@ -8022,7 +8023,7 @@
           ]
         },
         "prefs": {
-          "ash.keep_fullscreen_without_notification_url_allow_list": {
+          "keep_fullscreen_without_notification_url_allow_list": {
             "value": [
               "*"
             ]

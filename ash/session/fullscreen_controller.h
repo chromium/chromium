@@ -12,6 +12,10 @@
 
 class PrefRegistrySimple;
 
+namespace chromeos {
+class KeepFullscreenForUrlChecker;
+}  // namespace chromeos
+
 namespace ash {
 
 class SessionControllerImpl;
@@ -25,13 +29,17 @@ class FullscreenController : public chromeos::PowerManagerClient::Observer {
 
   ~FullscreenController() override;
 
-  static void MaybeExitFullscreen();
-
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-  static bool ShouldExitFullscreenBeforeLock();
+  // Checks the window state, user pref and, if required, sends a request to
+  // Lacros to determine whether it should exit full screen mode before the
+  // session is locked. |callback| will be invoked to signal readiness for
+  // session lock.
+  void MaybeExitFullscreenBeforeLock(base::OnceClosure callback);
 
  private:
+  void MaybeShowNotification();
+
   // chromeos::PowerManagerClient::Observer:
   void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;
   void ScreenIdleStateChanged(
@@ -41,11 +49,12 @@ class FullscreenController : public chromeos::PowerManagerClient::Observer {
   void LidEventReceived(chromeos::PowerManagerClient::LidState state,
                         base::TimeTicks timestamp) override;
 
-  void MaybeShowNotification();
-
   const SessionControllerImpl* const session_controller_;
 
   std::unique_ptr<FullscreenNotificationBubble> bubble_;
+
+  std::unique_ptr<chromeos::KeepFullscreenForUrlChecker>
+      keep_fullscreen_checker_;
 
   // Whether the screen brightness is low enough to make display dark.
   bool device_in_dark_ = false;

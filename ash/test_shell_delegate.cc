@@ -67,6 +67,11 @@ void TestShellDelegate::SetTabScrubberChromeOSEnabled(bool enabled) {
   tab_scrubber_enabled_ = enabled;
 }
 
+void TestShellDelegate::ShouldExitFullscreenBeforeLock(
+    ShouldExitFullscreenCallback callback) {
+  std::move(callback).Run(should_exit_fullscreen_before_lock_);
+}
+
 bool TestShellDelegate::ShouldWaitForTouchPressAck(gfx::NativeWindow window) {
   return should_wait_for_touch_ack_;
 }
@@ -84,6 +89,11 @@ void TestShellDelegate::BindMultiDeviceSetup(
 
 void TestShellDelegate::SetCanGoBack(bool can_go_back) {
   can_go_back_ = can_go_back;
+}
+
+void TestShellDelegate::SetShouldExitFullscreenBeforeLock(
+    bool should_exit_fullscreen_before_lock) {
+  should_exit_fullscreen_before_lock_ = should_exit_fullscreen_before_lock;
 }
 
 void TestShellDelegate::SetShouldWaitForTouchAck(

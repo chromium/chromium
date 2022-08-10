@@ -16,14 +16,21 @@ source_set("wm") {
     "desks/desks_helper.h",
     "features.cc",
     "features.h",
+    "fullscreen/keep_fullscreen_for_url_checker.cc",
+    "fullscreen/keep_fullscreen_for_url_checker.h",
+    "fullscreen/pref_names.cc",
+    "fullscreen/pref_names.h",
   ]
 
   deps = [
     "//base",
     "//build:chromeos_buildflags",
     "//chromeos/ui/base",
+    "//components/prefs",
+    "//components/url_matcher",
     "//ui/aura",
     "//ui/base",
+    "//url",
   ]
 
   if (is_chromeos_ash) {

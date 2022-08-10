@@ -7462,6 +7462,7 @@ test("unit_tests") {
       "../browser/lacros/account_manager/signin_helper_lacros_unittest.cc",
       "../browser/lacros/cert/client_cert_store_lacros_unittest.cc",
       "../browser/lacros/force_installed_tracker_lacros_unittest.cc",
+      "../browser/lacros/fullscreen_controller_client_lacros_unittest.cc",
       "../browser/lacros/lacros_memory_pressure_evaluator_unittest.cc",
       "../browser/lacros/lacros_url_handling_unittest.cc",
       "../browser/lacros/metrics_reporting_observer_unittest.cc",
@@ -7490,6 +7491,7 @@ test("unit_tests") {
       "//chromeos/lacros:test_support",
       "//chromeos/startup",
       "//chromeos/ui/base",
+      "//chromeos/ui/wm",
       "//components/account_manager_core",
       "//components/account_manager_core:test_support",
     ]

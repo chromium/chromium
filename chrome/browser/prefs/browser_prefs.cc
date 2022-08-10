@@ -285,6 +285,7 @@
 #include "chrome/browser/policy/networking/policy_cert_service.h"
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/ui/webui/certificates_handler.h"
+#include "chromeos/ui/wm/fullscreen/pref_names.h"
 #if defined(USE_CUPS)
 #include "chrome/browser/extensions/api/printing/printing_api_handler.h"
 #endif  // defined(USE_CUPS)
@@ -1422,6 +1423,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   registry->RegisterBooleanPref(prefs::kInsightsExtensionEnabled, false);
   // By default showing Sync Consent is set to true. It can changed by policy.
   registry->RegisterBooleanPref(prefs::kEnableSyncConsent, true);
+  registry->RegisterListPref(
+      chromeos::prefs::kKeepFullscreenWithoutNotificationUrlAllowList,
+      PrefRegistry::PUBLIC);
 #if defined(USE_CUPS)
   extensions::PrintingAPIHandler::RegisterProfilePrefs(registry);
 #endif  // defined(USE_CUPS)

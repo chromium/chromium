@@ -18,6 +18,7 @@
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "extensions/browser/app_window/native_app_window.h"
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "ui/base/ui_base_types.h"  // WindowShowState
@@ -42,7 +43,6 @@ namespace extensions {
 class AppDelegate;
 class AppWebContentsHelper;
 class Extension;
-class NativeAppWindow;
 class PlatformAppBrowserTest;
 
 struct DraggableRegion;
@@ -383,6 +383,11 @@ class AppWindow : public content::WebContentsDelegate,
   void SetAppWindowContentsForTesting(
       std::unique_ptr<AppWindowContents> contents) {
     app_window_contents_ = std::move(contents);
+  }
+
+  void SetNativeAppWindowForTesting(
+      std::unique_ptr<NativeAppWindow> native_app_window) {
+    native_app_window_ = std::move(native_app_window);
   }
 
   bool DidFinishFirstNavigation() { return did_finish_first_navigation_; }

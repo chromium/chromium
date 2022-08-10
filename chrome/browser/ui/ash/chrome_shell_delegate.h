@@ -67,6 +67,8 @@ class ChromeShellDelegate : public ash::ShellDelegate {
   void ForceSkipWarningUserOnClose(
       const std::vector<aura::Window*>& windows) override;
   std::string GetVersionString() override;
+  void ShouldExitFullscreenBeforeLock(
+      ShouldExitFullscreenCallback callback) override;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_CHROME_SHELL_DELEGATE_H_

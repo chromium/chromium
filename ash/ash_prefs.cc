@@ -60,6 +60,7 @@
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
+#include "chromeos/ui/wm/fullscreen/pref_names.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/live_caption/pref_names.h"
 #include "components/soda/constants.h"
@@ -128,6 +129,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
     registry->RegisterBooleanPref(chromeos::prefs::kSuggestedContentEnabled,
                                   true);
     registry->RegisterBooleanPref(::prefs::kLiveCaptionEnabled, false);
+    registry->RegisterListPref(
+        chromeos::prefs::kKeepFullscreenWithoutNotificationUrlAllowList);
     registry->RegisterStringPref(::prefs::kLiveCaptionLanguageCode,
                                  speech::kUsEnglishLocale);
     registry->RegisterStringPref(language::prefs::kApplicationLocale,

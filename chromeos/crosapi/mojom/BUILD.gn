@@ -44,6 +44,7 @@ mojom("mojom") {
     "file_manager.mojom",
     "file_system_provider.mojom",
     "force_installed_tracker.mojom",
+    "fullscreen_controller.mojom",
     "geolocation.mojom",
     "holding_space_service.mojom",
     "identity_manager.mojom",

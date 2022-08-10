@@ -369,10 +369,7 @@ void SessionControllerImpl::SetUserSessionOrder(
 }
 
 void SessionControllerImpl::PrepareForLock(PrepareForLockCallback callback) {
-  if (FullscreenController::ShouldExitFullscreenBeforeLock())
-    FullscreenController::MaybeExitFullscreen();
-
-  std::move(callback).Run();
+  fullscreen_controller_->MaybeExitFullscreenBeforeLock(std::move(callback));
 }
 
 void SessionControllerImpl::StartLock(StartLockCallback callback) {

@@ -18,6 +18,7 @@
 #include "chrome/browser/lacros/drivefs_cache.h"
 #include "chrome/browser/lacros/field_trial_observer.h"
 #include "chrome/browser/lacros/force_installed_tracker_lacros.h"
+#include "chrome/browser/lacros/fullscreen_controller_client_lacros.h"
 #include "chrome/browser/lacros/lacros_butter_bar.h"
 #include "chrome/browser/lacros/lacros_extension_apps_controller.h"
 #include "chrome/browser/lacros/lacros_extension_apps_publisher.h"
@@ -85,6 +86,8 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
   download_controller_client_ =
       std::make_unique<DownloadControllerClientLacros>();
   file_system_provider_ = std::make_unique<LacrosFileSystemProvider>();
+  fullscreen_controller_client_ =
+      std::make_unique<FullscreenControllerClientLacros>();
   kiosk_session_service_ = std::make_unique<KioskSessionServiceLacros>();
   network_change_manager_bridge_ =
       std::make_unique<NetworkChangeManagerBridge>();

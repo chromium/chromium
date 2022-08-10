@@ -39,6 +39,7 @@ import "chromeos/crosapi/mojom/field_trial.mojom";
 import "chromeos/crosapi/mojom/file_manager.mojom";
 import "chromeos/crosapi/mojom/file_system_provider.mojom";
 import "chromeos/crosapi/mojom/force_installed_tracker.mojom";
+import "chromeos/crosapi/mojom/fullscreen_controller.mojom";
 import "chromeos/crosapi/mojom/geolocation.mojom";
 import "chromeos/crosapi/mojom/holding_space_service.mojom";
 import "chromeos/crosapi/mojom/identity_manager.mojom";
@@ -124,8 +125,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 94
-// Next method id: 98
+// Next version: 95
+// Next method id: 99
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -326,6 +327,11 @@ interface Crosapi {
   [MinVersion=53]
   BindForceInstalledTracker@57(
     pending_receiver<ForceInstalledTracker> receiver);
+
+  // Binds the full screen controller which determines whether to keep or exit
+  // full screen mode.
+  [MinVersion=94] BindFullscreenController@98(
+      pending_receiver<FullscreenController> receiver);
 
   // Binds the GeolocationService interface for getting network access point
   // information.
