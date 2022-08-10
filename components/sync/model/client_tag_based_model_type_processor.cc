@@ -654,20 +654,6 @@ void ClientTagBasedModelTypeProcessor::OnCommitCompleted(
       continue;
     }
 
-    // TODO(crbug.com/1299874): remove once test flakiness investigation
-    // complete.
-#if DCHECK_IS_ON()
-    if (!CommitOnlyTypes().Has(type_) &&
-        data.response_version <= entity->metadata().server_version()) {
-      DLOG(ERROR) << data.response_version << " vs "
-                  << entity->metadata().server_version() << " for "
-                  << ModelTypeToDebugString(type_) << ", last updated from: ";
-      entity->PrintLastServerVersionUpdateStackTrace();
-      ReportError(ModelError(
-          FROM_HERE, "Received an update with unexpected server version"));
-      return;
-    }
-#endif
     entity->ReceiveCommitResponse(data, CommitOnlyTypes().Has(type_));
 
     if (CommitOnlyTypes().Has(type_)) {

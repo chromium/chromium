@@ -151,7 +151,6 @@ void ProcessorEntity::RecordIgnoredRemoteUpdate(
          metadata_.server_id() == update.entity.id);
   metadata_.set_server_id(update.entity.id);
   metadata_.set_server_version(update.response_version);
-  OnServerVersionUpdated();
   // Either these already matched, acked was just bumped to squash a pending
   // commit and this should follow, or the pending commit needs to be requeued.
   commit_requested_sequence_number_ = metadata_.acked_sequence_number();
@@ -271,6 +270,7 @@ void ProcessorEntity::ReceiveCommitResponse(const CommitResponseData& data,
   DCHECK_GT(data.sequence_number, metadata_.acked_sequence_number());
   // Version is not valid for commit only types, as it's stripped before being
   // sent to the server, so it cannot behave correctly.
+  // TODO(crbug.com/1351666): do not use DCHECK to verify the server response.
   DCHECK(commit_only || data.response_version > metadata_.server_version())
       << data.response_version << " vs " << metadata_.server_version();
 
@@ -278,7 +278,6 @@ void ProcessorEntity::ReceiveCommitResponse(const CommitResponseData& data,
   metadata_.set_server_id(data.id);
   metadata_.set_acked_sequence_number(data.sequence_number);
   metadata_.set_server_version(data.response_version);
-  OnServerVersionUpdated();
   if (!IsUnsynced()) {
     // Clear pending commit data if there hasn't been another commit request
     // since the one that is currently getting acked.
@@ -335,20 +334,6 @@ void ProcessorEntity::UpdateSpecificsHash(
   } else {
     metadata_.clear_specifics_hash();
   }
-}
-
-void ProcessorEntity::PrintLastServerVersionUpdateStackTrace() const {
-#if DCHECK_IS_ON()
-  if (debug_stack_last_version_update_) {
-    debug_stack_last_version_update_->Print();
-  }
-#endif
-}
-
-void ProcessorEntity::OnServerVersionUpdated() {
-#if DCHECK_IS_ON()
-  debug_stack_last_version_update_ = base::debug::StackTrace();
-#endif
 }
 
 }  // namespace syncer

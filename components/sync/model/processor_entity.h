@@ -12,10 +12,8 @@
 #include <string>
 #include <utility>
 
-#include "base/debug/stack_trace.h"
 #include "base/time/time.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sync_pb {
 class EntitySpecifics;
@@ -149,9 +147,6 @@ class ProcessorEntity {
   // Returns the estimate of dynamically allocated memory in bytes.
   size_t EstimateMemoryUsage() const;
 
-  // TODO(crbug.com/1299874): remove once test flakiness is fixed.
-  void PrintLastServerVersionUpdateStackTrace() const;
-
  private:
   friend class ProcessorEntityTest;
 
@@ -164,9 +159,6 @@ class ProcessorEntity {
 
   // Update hash string for EntitySpecifics in the metadata.
   void UpdateSpecificsHash(const sync_pb::EntitySpecifics& specifics);
-
-  // TODO(crbug.com/1299874): remove once test flakiness is fixed.
-  void OnServerVersionUpdated();
 
   // Storage key. Should always be available.
   std::string storage_key_;
@@ -184,11 +176,6 @@ class ProcessorEntity {
   // The time when this entity transition from being synced to being unsynced
   // (i.e. a local change happened).
   base::Time unsynced_time_;
-
-#if DCHECK_IS_ON()
-  // TODO(crbug.com/1299874): remove once test flakiness is fixed.
-  absl::optional<base::debug::StackTrace> debug_stack_last_version_update_;
-#endif
 };
 
 }  // namespace syncer
