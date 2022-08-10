@@ -188,9 +188,7 @@ xcode = struct(
     # Xcode14 beta 4 will be used to build Main iOS
     x14main = xcode_enum("14a5284g"),
     # A newer Xcode 14 version used on beta bots.
-    x14betabots = xcode_enum("14a5284g"),
-    # Xcode14 beta 5 used on beta bots.
-    x14beta5bots = xcode_enum("14a5294e"),
+    x14betabots = xcode_enum("14a5294e"),
     # in use by ios-webkit-tot
     x13wk = xcode_enum("13a1030dwk"),
 )
