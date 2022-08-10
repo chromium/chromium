@@ -26,8 +26,10 @@
 // as to fill the top space (horizontally and vertically) while preserving
 // aspect ratio and constraining the bottom of the image so as to ensure 25% or
 // 35% of the top space of the view is covered. Defaults to NO.
-// Must be set before the view is loaded.
 @property(nonatomic, assign) BOOL shouldBannerFillTopSpace;
+
+// When set to YES, the banner is hidden. Defaults to NO.
+@property(nonatomic, assign) BOOL shouldHideBanner;
 
 // The label of the headline below the image. Must be set before the view is
 // loaded. This is declared public so the accessibility can be enabled.

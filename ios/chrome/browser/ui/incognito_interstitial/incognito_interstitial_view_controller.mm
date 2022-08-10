@@ -49,6 +49,7 @@ const CGFloat kNavigationBarOpacityDenominator = 100;
   self.bannerName = @"incognito_interstitial_screen_banner";
   self.isTallBanner = YES;
   self.shouldBannerFillTopSpace = YES;
+  self.shouldHideBanner = IsCompactHeight(self.traitCollection);
 
   self.titleText = l10n_util::GetNSString(IDS_IOS_INCOGNITO_INTERSTITIAL_TITLE);
   self.primaryActionString = l10n_util::GetNSString(
@@ -100,9 +101,9 @@ const CGFloat kNavigationBarOpacityDenominator = 100;
   incognitoView.translatesAutoresizingMaskIntoConstraints = NO;
   [NSLayoutConstraint activateConstraints:@[
     [incognitoView.leadingAnchor
-        constraintEqualToAnchor:self.view.leadingAnchor],
+        constraintEqualToAnchor:self.specificContentView.leadingAnchor],
     [incognitoView.trailingAnchor
-        constraintEqualToAnchor:self.view.trailingAnchor],
+        constraintEqualToAnchor:self.specificContentView.trailingAnchor],
     [incognitoView.topAnchor
         constraintEqualToAnchor:self.specificContentView.topAnchor],
     [incognitoView.bottomAnchor
@@ -122,10 +123,9 @@ const CGFloat kNavigationBarOpacityDenominator = 100;
   ]];
 }
 
-- (NSUInteger)supportedInterfaceOrientations {
-  return (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)
-             ? [super supportedInterfaceOrientations]
-             : UIInterfaceOrientationMaskPortrait;
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  self.shouldHideBanner = IsCompactHeight(self.traitCollection);
+  [super traitCollectionDidChange:previousTraitCollection];
 }
 
 #pragma mark - UIScrollViewDelegate
@@ -133,6 +133,11 @@ const CGFloat kNavigationBarOpacityDenominator = 100;
 // This override allows scroll detection of the scroll view contained within the
 // underlying PromoStyleViewController.
 - (void)scrollViewDidScroll:(UIScrollView*)scrollView {
+  // Constrain vertical content offset to positive values only.
+  CGPoint contentOffset = scrollView.contentOffset;
+  contentOffset.y = fmax(0, contentOffset.y);
+  scrollView.contentOffset = contentOffset;
+
   [super scrollViewDidScroll:scrollView];
 
   CGFloat navigationBarOpacity =
@@ -164,13 +169,16 @@ const CGFloat kNavigationBarOpacityDenominator = 100;
     self.navigationBar.standardAppearance = appearance;
     self.navigationBar.scrollEdgeAppearance = appearance;
   } else {
-    UIImage* navigationBarBackgroundImage = ImageWithColor(
-        [backgroundColor colorWithAlphaComponent:backgroundAlpha * opacity]);
-    UIImage* navigationBarShadowImage = ImageWithColor(
-        [shadowColor colorWithAlphaComponent:shadowAlpha * opacity]);
+    UIImage* whiteImage = ImageWithColor(UIColor.whiteColor);
+    UIImage* navigationBarBackgroundImage = [whiteImage
+        imageWithTintColor:[backgroundColor
+                               colorWithAlphaComponent:backgroundAlpha *
+                                                       opacity]];
+    UIImage* navigationBarShadowImage = [whiteImage
+        imageWithTintColor:[shadowColor
+                               colorWithAlphaComponent:shadowAlpha * opacity]];
     [self.navigationBar setBackgroundImage:navigationBarBackgroundImage
                              forBarMetrics:UIBarMetricsDefault];
-
     self.navigationBar.shadowImage = navigationBarShadowImage;
   }
 
