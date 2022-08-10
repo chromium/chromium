@@ -8,6 +8,7 @@
 #include "components/sync/protocol/app_list_specifics.pb.h"
 #include "components/sync/protocol/app_specifics.pb.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
+#include "components/sync/protocol/contact_info_specifics.pb.h"
 #include "components/sync/protocol/gaia_password_reuse.pb.h"
 #include "components/sync/protocol/get_updates_caller_info.pb.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
@@ -44,6 +45,9 @@ const char* ProtoEnumToString(sync_pb::BookmarkSpecifics::Type type);
 
 const char* ProtoEnumToString(
     sync_pb::CommitResponse::ResponseType response_type);
+
+const char* ProtoEnumToString(
+    sync_pb::ContactInfoSpecifics::VerificationStatus verification_status);
 
 const char* ProtoEnumToString(
     sync_pb::GetUpdatesCallerInfo::GetUpdatesSource updates_source);

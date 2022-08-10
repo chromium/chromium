@@ -106,6 +106,22 @@ const char* ProtoEnumToString(
 }
 
 const char* ProtoEnumToString(
+    sync_pb::ContactInfoSpecifics::VerificationStatus verification_status) {
+  ASSERT_ENUM_BOUNDS(sync_pb::ContactInfoSpecifics, VerificationStatus,
+                     VERIFICATION_STATUS_UNSPECIFIED, SERVER_PARSED);
+  switch (verification_status) {
+    ENUM_CASE(sync_pb::ContactInfoSpecifics, VERIFICATION_STATUS_UNSPECIFIED);
+    ENUM_CASE(sync_pb::ContactInfoSpecifics, PARSED);
+    ENUM_CASE(sync_pb::ContactInfoSpecifics, FORMATTED);
+    ENUM_CASE(sync_pb::ContactInfoSpecifics, OBSERVED);
+    ENUM_CASE(sync_pb::ContactInfoSpecifics, USER_VERIFIED);
+    ENUM_CASE(sync_pb::ContactInfoSpecifics, SERVER_PARSED);
+  }
+  NOTREACHED();
+  return "";
+}
+
+const char* ProtoEnumToString(
     sync_pb::GetUpdatesCallerInfo::GetUpdatesSource updates_source) {
   ASSERT_ENUM_BOUNDS(sync_pb::GetUpdatesCallerInfo, GetUpdatesSource, UNKNOWN,
                      PROGRAMMATIC);

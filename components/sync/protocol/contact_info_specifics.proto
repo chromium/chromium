@@ -1,0 +1,149 @@
+// Copyright 2022 The Chromium Authors.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// If you change or add any fields in this file, update proto_visitors.h and
+// potentially proto_enum_conversions.{h, cc}.
+
+syntax = "proto2";
+
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+
+option optimize_for = LITE_RUNTIME;
+
+package sync_pb;
+
+message ContactInfoSpecifics {
+  // Represents the validation status of a stored value.
+  enum VerificationStatus {
+    // No verification status assigned.
+    VERIFICATION_STATUS_UNSPECIFIED = 0;
+    // The value token was parsed from a parent token.
+    // For example, the first name was derived by splitting a full name into
+    // its components.
+    PARSED = 1;
+    // Value was built from its subcomponents.
+    // For example, the full name was built from the first, middle and last
+    // name.
+    FORMATTED = 2;
+    // The value was observed in a form transmission.
+    // For example, the user filled a form that contained at NAME_FULL field.
+    // The value of NAME_FULL will be stored as OBSERVED.
+    OBSERVED = 3;
+    // The user used the settings UI to verify and store this token.
+    // This is currently only applicable to the full name, since users cannot
+    // edit individual components of their name.
+    USER_VERIFIED = 4;
+    // The token was parsed remotely.
+    SERVER_PARSED = 5;
+  }
+
+  // Metadata that is attached to every token type.
+  message TokenMetadata {
+    optional VerificationStatus status = 1;
+  }
+
+  // A token with a string interpretation of the value.
+  message StringToken {
+    optional string value = 1;
+    optional TokenMetadata metadata = 2;
+  }
+
+  // A token with an integer interpretation of the value.
+  message IntegerToken {
+    optional int64 value = 1;
+    optional TokenMetadata metadata = 2;
+  }
+
+  // A globally unique, immutable UUID represented in lowercase.
+  optional string guid = 1;
+  // Represents where the profile originated from, which can be either from the
+  // settings or a website.
+  // This field exists only for compatibility purposes with Autofill.
+  optional string source = 2;
+  // The number of time this profile has been used.
+  optional int64 use_count = 3;
+
+  // The last time this profile was used.
+  optional int64 use_date_windows_epoch_micros = 4;
+
+  // A user chosen profile label that is used to identify the profile.
+  // The value of the label can be freely chosen by the user.
+  optional string profile_label = 5;
+
+  // Contact info name fields.
+  optional StringToken name_honorific = 6;
+  optional StringToken name_first = 7;
+  optional StringToken name_middle = 8;
+  optional StringToken name_last = 9;
+  // Sometimes the last name is composed of two names as it is common for
+  // Hispanic/Latinx names. In the unstructured representation of the last name,
+  // there may be even a conjunction between the first and the second last
+  // name. For example, the more-complete version of Pablo Picasso's surname is
+  // "Ruiz y Picasso" containing a first last name, a conjunction (the y) and a
+  // second last name.
+  optional StringToken name_last_first = 10;
+  optional StringToken name_last_conjunction = 11;
+  optional StringToken name_last_second = 12;
+  optional StringToken name_full = 13;
+  // This value contains the combination of the full name and the honorific
+  // prefix.
+  optional StringToken name_full_with_honorific = 14;
+
+  // Contact info additional fields.
+  optional StringToken email_address = 15;
+  optional StringToken company_name = 16;
+
+  // Address fields: These are user-provided values with no particular
+  // guarantees about their format.
+  optional StringToken address_city = 17;
+  optional StringToken address_state = 18;
+  optional StringToken address_zip = 19;
+  optional StringToken address_country = 20;
+
+  // Additional address fields for i18n.
+  // Includes all of the lines of a street address, including newlines, e.g.
+  //   123 Main Street,
+  //   Apt. #42
+  optional StringToken address_street_address = 21;
+  // A sorting code is similar to a postal code. However, whereas a postal code
+  // normally refers to a single geographical location, a sorting code often
+  // does not. Instead, a sorting code is assigned to an organization, which
+  // might be geographically distributed. The most prominent example of a
+  // sorting code system is CEDEX in France.
+  optional StringToken address_sorting_code = 22;
+  // A dependent locality is a subunit of a locality, where a "locality" is
+  // roughly equivalent to a city. Examples of dependent localities include
+  // inner-city districts and suburbs.
+  optional StringToken address_dependent_locality = 23;
+  // A BCP 47 language code.
+  optional StringToken address_language_code = 24;
+  // The street name of the address, without a house number.
+  optional StringToken address_thoroughfare_name = 25;
+  // The house number, which may be alphanumeric.
+  optional StringToken address_thoroughfare_number = 26;
+  // Describes a crossing street as it is used in some countries to describe a
+  // location.
+  optional StringToken address_dependent_thoroughfare_name = 27;
+  // Contains both the thoroughfare and the dependent thoroughfare name.
+  optional StringToken address_thoroughfare_and_dependent_thoroughfare_name =
+      28;
+  // A premise name corresponds to the name of a place or a building below the
+  // granularity of a street.
+  optional StringToken address_premise_name = 29;
+  // Contains the floor, staircase or apartment number within a building.
+  optional StringToken address_subpremise_name = 30;
+  // The apartment number within a building.
+  optional StringToken address_apt_num = 31;
+  // The floor number within a building.
+  optional StringToken address_floor = 32;
+
+  // Phone.
+  optional StringToken phone_home_whole_number = 33;
+
+  // Birthdate fields.
+  optional IntegerToken birthdate_day = 34;
+  optional IntegerToken birthdate_month = 35;  // Between 1 and 12.
+  optional IntegerToken birthdate_year = 36;   // 4 digits.
+}
