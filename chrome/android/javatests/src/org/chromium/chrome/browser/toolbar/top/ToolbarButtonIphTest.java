@@ -35,10 +35,12 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
+import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features;
@@ -115,7 +117,12 @@ public class ToolbarButtonIphTest {
         when(mTracker.shouldTriggerHelpUIWithSnooze(FeatureConstants.PRICE_DROP_NTP_FEATURE))
                 .thenReturn(new TriggerDetails(true, false));
 
-        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ChromeActivity activity = mActivityTestRule.getActivity();
+            ToolbarManager toolbarManager = activity.getToolbarManager();
+            toolbarManager.showPriceDropIPH();
+        });
+
         ViewInteraction toolbarTabButtonInteraction = onView(withId(R.id.tab_switcher_button));
         toolbarTabButtonInteraction.check(ViewAssertions.matches(withHighlight(true)));
 
