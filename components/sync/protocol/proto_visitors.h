@@ -12,6 +12,7 @@
 #include "components/sync/protocol/arc_package_specifics.pb.h"
 #include "components/sync/protocol/autofill_offer_specifics.pb.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
+#include "components/sync/protocol/autofill_wallet_usage_specifics.pb.h"
 #include "components/sync/protocol/bookmark_specifics.pb.h"
 #include "components/sync/protocol/contact_info_specifics.pb.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
@@ -247,6 +248,20 @@ VISIT_PROTO_FIELDS(const sync_pb::AutofillSpecifics& proto) {
   VISIT(value);
   VISIT_REP(usage_timestamp);
   VISIT(profile);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::AutofillWalletUsageSpecifics& proto) {
+  VISIT(guid);
+  VISIT_ENUM(virtual_card_usage_data);
+  VISIT_REP(retrieval_time_unix_epoch_micros);
+}
+
+VISIT_PROTO_FIELDS(
+    const sync_pb::AutofillWalletUsageSpecifics::VirtualCardUsageData& proto) {
+  VISIT(instrument_id);
+  VISIT(virtual_card_last_four);
+  VISIT(merchant_url);
+  VISIT(merchant_app_package);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::AutofillWalletSpecifics& proto) {
