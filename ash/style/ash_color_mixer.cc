@@ -40,6 +40,28 @@ constexpr int kDisabledColorOpacity = SK_AlphaOPAQUE * 0.38f;
 
 void AddShieldAndBaseColors(ui::ColorMixer& mixer,
                             const ui::ColorProviderManager::Key& key) {
+  if (ash::features::IsJellyEnabled()) {
+    // Generally, shield and base colors are cros.sys.sys-base-elevated.  That
+    // is cros.sys.surface3 @ 90%.  So, map all shield colors to surface3 and
+    // keep all the opacities.
+    //
+    // New users should use cros.sys.sys-base-elevated directly.
+    mixer[kColorAshShieldAndBase20] =
+        ui::SetAlpha(cros_tokens::kCrosSysSurface3, kAlpha20);
+    mixer[kColorAshShieldAndBase40] =
+        ui::SetAlpha(cros_tokens::kCrosSysSurface3, kAlpha40);
+    mixer[kColorAshShieldAndBase60] =
+        ui::SetAlpha(cros_tokens::kCrosSysSurface3, kAlpha60);
+    mixer[kColorAshShieldAndBase80] =
+        ui::SetAlpha(cros_tokens::kCrosSysSurface3, kAlpha80);
+    mixer[kColorAshShieldAndBase90] =
+        ui::SetAlpha(cros_tokens::kCrosSysSurface3, kAlpha90);
+    mixer[kColorAshShieldAndBase95] =
+        ui::SetAlpha(cros_tokens::kCrosSysSurface3, kAlpha95);
+    mixer[kColorAshShieldAndBaseOpaque] = {cros_tokens::kCrosSysSurface3};
+    return;
+  }
+
   const bool use_dark_color =
       features::IsDarkLightModeEnabled()
           ? key.color_mode == ui::ColorProviderManager::ColorMode::kDark
@@ -52,6 +74,7 @@ void AddShieldAndBaseColors(ui::ColorMixer& mixer,
   // the value of `use_color` here.
   const SkColor background_color =
       key.user_color.value_or(default_background_color);
+
   mixer[kColorAshShieldAndBase20] = {SkColorSetA(background_color, kAlpha20)};
   mixer[kColorAshShieldAndBase40] = {SkColorSetA(background_color, kAlpha40)};
   mixer[kColorAshShieldAndBase60] = {SkColorSetA(background_color, kAlpha60)};
