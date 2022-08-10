@@ -509,7 +509,7 @@ void TruncateAndAddStringAttribute(
     uint32_t max_len = kMaxStringAttributeLength) {
   if (value.IsEmpty())
     return;
-  std::string value_utf8 = value.Utf8(kStrictUTF8Conversion);
+  std::string value_utf8 = value.Utf8();
   if (value_utf8.size() > max_len) {
     std::string truncated;
     base::TruncateUTF8ToByteSize(value_utf8, max_len, &truncated);

@@ -194,7 +194,6 @@ std::string AXPlatformNodeBase::GetName() const {
       name += extra_text;
     }
 
-    DCHECK(base::IsStringUTF8AllowingNoncharacters(name)) << "Invalid UTF8";
     return name;
   }
   return std::string();
