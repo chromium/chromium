@@ -178,7 +178,6 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
   void ScrollAnimationAbort() override;
 
   ElementId ImplOnlyScrollAnimatingElement() const override;
-  void ImplOnlyScrollAnimatingElementRemoved() override;
 
   // This should only be called from the main thread.
   ScrollOffsetAnimations& scroll_offset_animations();
