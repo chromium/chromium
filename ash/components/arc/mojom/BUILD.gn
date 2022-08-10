@@ -26,7 +26,6 @@ mojom("mojom") {
     "clipboard.mojom",
     "compatibility_mode.mojom",
     "crash_collector.mojom",
-    "dark_theme.mojom",
     "digital_goods.mojom",
     "disk_quota.mojom",
     "enterprise_reporting.mojom",
