@@ -111,7 +111,6 @@ class SliderContainerElement final : public HTMLDivElement {
 
   bool has_touch_event_handler_ = false;
   bool touch_started_ = false;
-  bool touch_moved_ = false;
   Direction sliding_direction_ = Direction::kNoMove;
   LayoutPoint start_point_;
 };
