@@ -22,11 +22,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/libgav1/src/src/obu_parser.h"
 
-// TODO(stevecho): Remove ANALYZER_ALLOW_UNUSED() later if this is added later
-// in base/logging.h for Chromium. Note that this already exists in
-// base/logging.h for ChromeOS.
-#define ANALYZER_ALLOW_UNUSED(var) static_cast<void>(var);
-
 // TODO(stevecho): RESTORATION_TILESIZE_MAX in the spec is not available in the
 // AV1 uAPI. It was recommended to be added in the userspace code. If the uAPI
 // stays as it is for upstreaming, then #ifndef can be removed. If the uAPI ends

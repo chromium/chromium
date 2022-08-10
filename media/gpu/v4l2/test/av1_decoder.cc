@@ -803,6 +803,25 @@ void Av1Decoder::SetupFrameParams(
       base::checked_cast<__u8>(frm_header.skip_mode_frame[0]);
   v4l2_frame_params->skip_mode_frame[1] =
       base::checked_cast<__u8>(frm_header.skip_mode_frame[1]);
+
+  // TODO(b/230891887): use uint64_t when v4l2_timeval_to_ns() function is used.
+  constexpr uint32_t kInvalidSurface = std::numeric_limits<uint32_t>::max();
+
+  for (size_t i = 0; i < std::size(frm_header.reference_frame_index); ++i) {
+    const auto idx = frm_header.reference_frame_index[i];
+    LOG_ASSERT(idx < kAv1NumRefFrames) << "Invalid reference frame index.\n";
+
+    constexpr size_t kTimestampToNanoSecs = 1000;
+
+    // |reference_frame_ts| is needed to use previously decoded frames
+    // from reference frames list.
+    const auto reference_frame_ts =
+        ref_frames_[idx]
+            ? ref_frames_[idx]->frame_number() * kTimestampToNanoSecs
+            : kInvalidSurface;
+
+    v4l2_frame_params->reference_frame_ts[idx] = reference_frame_ts;
+  }
 }
 
 std::set<int> Av1Decoder::RefreshReferenceSlots(
@@ -914,29 +933,6 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame(std::vector<char>& y_plane,
   if (!v4l2_ioctl_->QBuf(OUTPUT_queue_, 0))
     LOG(FATAL) << "VIDIOC_QBUF failed for OUTPUT queue.";
 
-  // TODO(b/230891887): use uint64_t when v4l2_timeval_to_ns() function is used.
-  constexpr uint32_t kInvalidSurface = std::numeric_limits<uint32_t>::max();
-
-  for (const auto ref_frame_index :
-       current_frame_header.reference_frame_index) {
-    LOG_ASSERT(ref_frame_index < kAv1NumRefFrames)
-        << "Invalid reference frame index.\n";
-
-    constexpr size_t kTimestampToNanoSecs = 1000;
-
-    // |reference_id| is needed to use previously decoded frames
-    // from reference frames list.
-    const auto reference_id =
-        ref_frames_[ref_frame_index]
-            ? ref_frames_[ref_frame_index]->frame_number() *
-                  kTimestampToNanoSecs
-            : kInvalidSurface;
-
-    // TODO(stevecho): add setup for frame parameters using |reference_id|
-    // when av1 kernel header is ready.
-    ANALYZER_ALLOW_UNUSED(reference_id);
-  }
-
   std::vector<struct v4l2_ext_control> ext_ctrl_vectors;
 
   struct v4l2_ctrl_av1_sequence v4l2_seq_params = {};
@@ -1007,12 +1003,6 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame(std::vector<char>& y_plane,
                    static_cast<char*>(buffer->mmaped_planes()[1].start_addr),
                    CAPTURE_queue_->coded_size());
 
-  if (!v4l2_ioctl_->DQBuf(OUTPUT_queue_, &index))
-    LOG(FATAL) << "VIDIOC_DQBUF failed for OUTPUT queue.";
-
-  if (!v4l2_ioctl_->MediaRequestIocReinit(OUTPUT_queue_))
-    LOG(FATAL) << "MEDIA_REQUEST_IOC_REINIT failed.";
-
   const std::set<int> reusable_buffer_ids =
       RefreshReferenceSlots(current_frame_header.refresh_frame_flags,
                             current_frame, CAPTURE_queue_->GetBuffer(index),
@@ -1025,6 +1015,12 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame(std::vector<char>& y_plane,
     if (!libgav1::IsIntraFrame(current_frame_header.frame_type))
       CAPTURE_queue_->set_last_queued_buffer_index(reusable_buffer_id);
   }
+
+  if (!v4l2_ioctl_->DQBuf(OUTPUT_queue_, &index))
+    LOG(FATAL) << "VIDIOC_DQBUF failed for OUTPUT queue.";
+
+  if (!v4l2_ioctl_->MediaRequestIocReinit(OUTPUT_queue_))
+    LOG(FATAL) << "MEDIA_REQUEST_IOC_REINIT failed.";
 
   return VideoDecoder::kOk;
 }
