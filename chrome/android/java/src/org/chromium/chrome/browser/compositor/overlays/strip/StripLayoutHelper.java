@@ -183,7 +183,6 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     private float mLeftMargin;
     private float mRightMargin;
     private final boolean mIncognito;
-    private float mBrightness;
     // Whether the CascadingStripStacker should be used.
     private boolean mShouldCascadeTabs;
     private boolean mIsFirstLayoutPass;
@@ -252,7 +251,6 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                 res.getString(R.string.accessibility_toolbar_btn_new_incognito_tab));
         mContext = context;
         mIncognito = incognito;
-        mBrightness = 1.f;
 
         // Create tab menu
         mTabMenu = new ListPopupWindow(mContext);
@@ -326,28 +324,6 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     public float getNewTabButtonTouchTargetOffset() {
         boolean isRtl = LocalizationUtils.isLayoutRtl();
         return isRtl ? NEW_TAB_BUTTON_TOUCH_TARGET_OFFSET : -NEW_TAB_BUTTON_TOUCH_TARGET_OFFSET;
-    }
-
-    /**
-     * @return The brightness of background tabs in the tabstrip.
-     */
-    public float getBackgroundTabBrightness() {
-        // TODO(crbug.com/1347591): Remove unused brightness code.
-        return mInReorderMode ? 0.75f : 1.0f;
-    }
-
-    /**
-     * Sets the brightness for the entire tabstrip.
-     */
-    public void setBrightness(float brightness) {
-        mBrightness = brightness;
-    }
-
-    /**
-     * @return The brightness of the entire tabstrip.
-     */
-    public float getBrightness() {
-        return mBrightness;
     }
 
     /**
@@ -1752,13 +1728,15 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                 ANIM_TAB_MOVE_MS);
         mRunningAnimator.start();
 
-        // 3. Clear any tab group margins if they are enabled.
+        // 3. Un-dim the background tabs.
+        setBackgroundTabsDimmed(false);
+
+        // 4. Clear any tab group margins if they are enabled.
         if (isTabGroupsEnabled()) {
             resetTabGroupMargins();
-            setBackgroundTabsDimmed(false);
         }
 
-        // 4. Request an update.
+        // 5. Request an update.
         mUpdateHost.requestUpdate();
     }
 
@@ -1838,7 +1816,8 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         for (int i = 0; i < mStripTabs.length; i++) {
             final StripLayoutTab tab = mStripTabs[i];
 
-            if (mTabGroupModelFilter.getRootId(getTabById(tab.getId())) == groupId) {
+            if (mTabGroupModelFilter.getRootId(getTabById(tab.getId())) == groupId
+                    && tab != mInteractingTab) {
                 tab.setBrightness(dimmed ? BACKGROUND_TAB_BRIGHTNESS_DIMMED
                                          : BACKGROUND_TAB_BRIGHTNESS_DEFAULT);
             }
@@ -1919,7 +1898,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         if (mHoveringOverGroup != hoveringOverGroup) {
             // 1.a. Reset hover variables.
             mHoveringOverGroup = hoveringOverGroup;
-            mHoverStartTime = 0L;
+            mHoverStartTime = INVALID_TIME;
             mHoverStartOffset = 0;
 
             // 1.b. Set tab group dim as necessary.

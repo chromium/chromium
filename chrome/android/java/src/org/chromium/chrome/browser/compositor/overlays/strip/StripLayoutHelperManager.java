@@ -462,20 +462,6 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
         return getActiveStripLayoutHelper().getRightFadeOpacity();
     }
 
-    /**
-     * @return The brightness of background tabs in the tabstrip.
-     */
-    public float getBackgroundTabBrightness() {
-        return getActiveStripLayoutHelper().getBackgroundTabBrightness();
-    }
-
-    /**
-     * @return The brightness of the entire tabstrip.
-     */
-    public float getBrightness() {
-        return getActiveStripLayoutHelper().getBrightness();
-    }
-
     /** Update the title cache for the available tabs in the model. */
     private void updateTitleCacheForInit() {
         LayerTitleCache titleCache = mLayerTitleCacheSupplier.get();

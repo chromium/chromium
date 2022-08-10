@@ -53,8 +53,6 @@ class TabStripSceneLayer : public SceneLayer {
                            jfloat width,
                            jfloat height,
                            jfloat y_offset,
-                           jfloat background_tab_brightness,
-                           jfloat brightness,
                            jboolean should_readd_background);
 
   void UpdateStripScrim(JNIEnv* env,
@@ -148,8 +146,6 @@ class TabStripSceneLayer : public SceneLayer {
   scoped_refptr<cc::UIResourceLayer> right_fade_;
   scoped_refptr<cc::UIResourceLayer> model_selector_button_;
 
-  float background_tab_brightness_;
-  float brightness_;
   unsigned write_index_;
   TabHandleLayerList tab_handle_layers_;
   raw_ptr<SceneLayer> content_tree_;
