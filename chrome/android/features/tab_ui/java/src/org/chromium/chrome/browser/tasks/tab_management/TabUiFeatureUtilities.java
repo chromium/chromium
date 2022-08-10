@@ -212,7 +212,7 @@ public class TabUiFeatureUtilities {
         return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
                 && CachedFeatureFlags.isEnabled(ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS)
                 && CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_STRIP_IMPROVEMENTS)
-                && CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_GROUPS_ANDROID);
+                && CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_GROUPS_FOR_TABLETS);
     }
 
     /**
