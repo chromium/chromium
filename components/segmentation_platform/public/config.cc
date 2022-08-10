@@ -16,10 +16,6 @@ Config::Config() = default;
 
 Config::~Config() = default;
 
-Config::Config(const Config& other) = default;
-
-Config& Config::operator=(const Config& other) = default;
-
 std::string Config::GetSegmentationFilterName() const {
   return base::StrCat({"Segmentation_", segmentation_uma_name});
 }

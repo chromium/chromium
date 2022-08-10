@@ -12,12 +12,17 @@
 #include "components/segmentation_platform/public/field_trial_register.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 
+namespace content {
+class BrowserContext;
+}
+
 namespace segmentation_platform {
 struct Config;
 class ModelProvider;
 
 // Returns a Config created from the finch feature params.
-std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig();
+std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
+    content::BrowserContext* context);
 
 // Returns a default model provider for the `target`.
 class DefaultModelsRegister {

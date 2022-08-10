@@ -52,13 +52,13 @@ class MockFieldTrialRegister : public FieldTrialRegister {
                     int subsegment_rank));
 };
 
-Config CreateTestConfig() {
-  Config config;
-  config.segmentation_key = "test_key";
-  config.segmentation_uma_name = "TestKey";
-  config.segment_selection_ttl = base::Days(28);
-  config.unknown_selection_ttl = base::Days(14);
-  config.segments = {
+std::unique_ptr<Config> CreateTestConfig() {
+  auto config = std::make_unique<Config>();
+  config->segmentation_key = "test_key";
+  config->segmentation_uma_name = "TestKey";
+  config->segment_selection_ttl = base::Days(28);
+  config->unknown_selection_ttl = base::Days(14);
+  config->segments = {
       SEGMENT_ID_ENTRY(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB),
       SEGMENT_ID_ENTRY(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE)};
   return config;
@@ -95,11 +95,11 @@ class SegmentSelectorTest : public testing::Test {
   SegmentSelectorTest() : provider_factory_(&model_providers_) {}
   ~SegmentSelectorTest() override = default;
 
-  void SetUpWithConfig(const Config& config) {
+  void SetUpWithConfig(std::unique_ptr<Config> config) {
     clock_.SetNow(base::Time::Now());
-    config_ = config;
+    config_ = std::move(config);
     std::vector<proto::SegmentId> all_segments;
-    for (auto it : config.segments)
+    for (auto it : config_->segments)
       all_segments.push_back(it.first);
     default_manager_ =
         std::make_unique<DefaultModelManager>(&provider_factory_, all_segments);
@@ -108,7 +108,7 @@ class SegmentSelectorTest : public testing::Test {
     prefs_ = prefs_moved.get();
     segment_selector_ = std::make_unique<SegmentSelectorImpl>(
         segment_database_.get(), &signal_storage_config_,
-        std::move(prefs_moved), &config_, &field_trial_register_, &clock_,
+        std::move(prefs_moved), config_.get(), &field_trial_register_, &clock_,
         PlatformOptions::CreateDefault(), default_manager_.get());
     segment_selector_->OnPlatformInitialized(nullptr);
   }
@@ -139,7 +139,7 @@ class SegmentSelectorTest : public testing::Test {
     segment_database_->SetBucketDuration(segment_id, 1, proto::TimeUnit::DAY);
 
     segment_database_->AddDiscreteMapping(
-        segment_id, mapping, num_mapping_pairs, config_.segmentation_key);
+        segment_id, mapping, num_mapping_pairs, config_->segmentation_key);
   }
 
   void CompleteModelExecution(SegmentId segment_id, float score) {
@@ -151,7 +151,7 @@ class SegmentSelectorTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   TestModelProviderFactory::Data model_providers_;
   TestModelProviderFactory provider_factory_;
-  Config config_;
+  std::unique_ptr<Config> config_;
   MockFieldTrialRegister field_trial_register_;
   base::SimpleTestClock clock_;
   std::unique_ptr<test::TestSegmentInfoDatabase> segment_database_;
@@ -185,9 +185,9 @@ TEST_F(SegmentSelectorTest, FindBestSegmentFlowWithTwoSegments) {
 }
 
 TEST_F(SegmentSelectorTest, RunSelectionOnDemand) {
-  Config config = CreateTestConfig();
-  config.on_demand_execution = true;
-  SetUpWithConfig(config);
+  auto config = CreateTestConfig();
+  config->on_demand_execution = true;
+  SetUpWithConfig(std::move(config));
   EXPECT_CALL(signal_storage_config_, MeetsSignalCollectionRequirement(_, _))
       .WillRepeatedly(Return(true));
 
@@ -232,9 +232,9 @@ TEST_F(SegmentSelectorTest, RunSelectionOnDemand) {
 }
 
 TEST_F(SegmentSelectorTest, RunSelectionOnDemandCallbackInvokedOnFailure) {
-  Config config = CreateTestConfig();
-  config.on_demand_execution = true;
-  SetUpWithConfig(config);
+  auto config = CreateTestConfig();
+  config->on_demand_execution = true;
+  SetUpWithConfig(std::move(config));
   EXPECT_CALL(signal_storage_config_, MeetsSignalCollectionRequirement(_, _))
       .WillRepeatedly(Return(true));
 
@@ -268,9 +268,9 @@ TEST_F(SegmentSelectorTest, RunSelectionOnDemandCallbackInvokedOnFailure) {
 }
 
 TEST_F(SegmentSelectorTest, NewSegmentResultOverridesThePreviousBest) {
-  Config config = CreateTestConfig();
-  config.unknown_selection_ttl = base::TimeDelta();
-  SetUpWithConfig(config);
+  auto config = CreateTestConfig();
+  config->unknown_selection_ttl = base::TimeDelta();
+  SetUpWithConfig(std::move(config));
 
   // Setup test with two models.
   SegmentId segment_id1 = SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
@@ -295,7 +295,7 @@ TEST_F(SegmentSelectorTest, NewSegmentResultOverridesThePreviousBest) {
             prefs_->selection->segment_id);
 
   // Model 1 completes with a good score. Model 2 results are expired.
-  clock_.Advance(config_.segment_selection_ttl * 1.2f);
+  clock_.Advance(config_->segment_selection_ttl * 1.2f);
   CompleteModelExecution(segment_id1, 0.6);
   ASSERT_EQ(SegmentId::OPTIMIZATION_TARGET_UNKNOWN,
             prefs_->selection->segment_id);
@@ -307,7 +307,7 @@ TEST_F(SegmentSelectorTest, NewSegmentResultOverridesThePreviousBest) {
 
   // Model 2 runs with a better score. The selection should update to model 2
   // after both models are run.
-  clock_.Advance(config_.segment_selection_ttl * 1.2f);
+  clock_.Advance(config_->segment_selection_ttl * 1.2f);
   CompleteModelExecution(segment_id1, 0.6);
   CompleteModelExecution(segment_id2, 0.5);
   ASSERT_TRUE(prefs_->selection.has_value());
@@ -315,7 +315,7 @@ TEST_F(SegmentSelectorTest, NewSegmentResultOverridesThePreviousBest) {
 
   // Run the models again after few days later, but segment selection TTL hasn't
   // expired. Result will not update.
-  clock_.Advance(config_.segment_selection_ttl * 0.8f);
+  clock_.Advance(config_->segment_selection_ttl * 0.8f);
   CompleteModelExecution(segment_id1, 0.8);
   CompleteModelExecution(segment_id2, 0.5);
   ASSERT_TRUE(prefs_->selection.has_value());
@@ -323,7 +323,7 @@ TEST_F(SegmentSelectorTest, NewSegmentResultOverridesThePreviousBest) {
 
   // Rerun both models which report zero-ish scores. The previous selection
   // should be retained.
-  clock_.Advance(config_.segment_selection_ttl * 1.2f);
+  clock_.Advance(config_->segment_selection_ttl * 1.2f);
   CompleteModelExecution(segment_id1, 0.1);
   CompleteModelExecution(segment_id2, 0.1);
   ASSERT_TRUE(prefs_->selection.has_value());
@@ -331,10 +331,10 @@ TEST_F(SegmentSelectorTest, NewSegmentResultOverridesThePreviousBest) {
 }
 
 TEST_F(SegmentSelectorTest, UnknownSegmentTtlExpiryForBooleanModel) {
-  Config config = CreateTestConfig();
-  config.segments = {SEGMENT_ID_ENTRY(
+  auto config = CreateTestConfig();
+  config->segments = {SEGMENT_ID_ENTRY(
       SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID)};
-  SetUpWithConfig(config);
+  SetUpWithConfig(std::move(config));
 
   SegmentId segment_id =
       SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID;
@@ -352,26 +352,26 @@ TEST_F(SegmentSelectorTest, UnknownSegmentTtlExpiryForBooleanModel) {
 
   // Advance by less than UNKNOWN segment TTL and result should not change,
   // UNKNOWN segment TTL is less than selection TTL.
-  clock_.Advance(config_.unknown_selection_ttl * 0.8f);
+  clock_.Advance(config_->unknown_selection_ttl * 0.8f);
   CompleteModelExecution(segment_id, 0.9);
   ASSERT_EQ(SegmentId::OPTIMIZATION_TARGET_UNKNOWN,
             prefs_->selection->segment_id);
 
   // Advance clock so that the time is between UNKNOWN segment TTL and selection
   // TTL.
-  clock_.Advance(config_.unknown_selection_ttl * 0.4f);
+  clock_.Advance(config_->unknown_selection_ttl * 0.4f);
   CompleteModelExecution(segment_id, 0.9);
   ASSERT_EQ(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID,
             prefs_->selection->segment_id);
 
   // Advance by more than UNKNOWN segment TTL and result should not change.
-  clock_.Advance(config_.unknown_selection_ttl * 1.2f);
+  clock_.Advance(config_->unknown_selection_ttl * 1.2f);
   CompleteModelExecution(segment_id, 0);
   ASSERT_EQ(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID,
             prefs_->selection->segment_id);
 
   // Advance by segment selection TTL and result should change.
-  clock_.Advance(config_.segment_selection_ttl * 1.2f);
+  clock_.Advance(config_->segment_selection_ttl * 1.2f);
   CompleteModelExecution(segment_id, 0);
   ASSERT_EQ(SegmentId::OPTIMIZATION_TARGET_UNKNOWN,
             prefs_->selection->segment_id);
@@ -387,7 +387,7 @@ TEST_F(SegmentSelectorTest, DoesNotMeetSignalCollectionRequirement) {
       ->set_result_time_to_live(7);
   segment_database_->SetBucketDuration(segment_id1, 1, proto::TimeUnit::DAY);
   segment_database_->AddDiscreteMapping(segment_id1, mapping1, 4,
-                                        config_.segmentation_key);
+                                        config_->segmentation_key);
 
   EXPECT_CALL(signal_storage_config_, MeetsSignalCollectionRequirement(_, _))
       .WillRepeatedly(Return(false));
@@ -417,7 +417,7 @@ TEST_F(SegmentSelectorTest,
   // Construct a segment selector. It should read result from last session.
   segment_selector_ = std::make_unique<SegmentSelectorImpl>(
       segment_database_.get(), &signal_storage_config_, std::move(prefs_moved),
-      &config_, &field_trial_register_, &clock_,
+      config_.get(), &field_trial_register_, &clock_,
       PlatformOptions::CreateDefault(), default_manager_.get());
   segment_selector_->OnPlatformInitialized(nullptr);
 
@@ -476,14 +476,14 @@ TEST_F(SegmentSelectorTest, SubsegmentRecording) {
       SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER;
 
   // Create config with Feed segment.
-  Config config = CreateTestConfig();
-  config.segments.insert(SEGMENT_ID_ENTRY(kSubsegmentEnabledTarget));
+  auto config = CreateTestConfig();
+  config->segments.insert(SEGMENT_ID_ENTRY(kSubsegmentEnabledTarget));
   // Previous selection result is not available at this time, so it should
   // record unselected.
   EXPECT_CALL(field_trial_register_,
               RegisterFieldTrial(base::StringPiece("Segmentation_TestKey"),
                                  base::StringPiece("Unselected")));
-  SetUpWithConfig(config);
+  SetUpWithConfig(std::move(config));
 
   // Store model metadata, model scores and selection results.
   SegmentId segment_id0 = SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE;
@@ -506,7 +506,7 @@ TEST_F(SegmentSelectorTest, SubsegmentRecording) {
   segment_database_->AddDiscreteMapping(
       kSubsegmentEnabledTarget, kFeedUserScoreToSubGroup.data(),
       kFeedUserScoreToSubGroup.size(),
-      config_.segmentation_key + kSubsegmentDiscreteMappingSuffix);
+      config_->segmentation_key + kSubsegmentDiscreteMappingSuffix);
 
   // Set up a selected segment in prefs.
   SelectedSegment from_history(segment_id0);
@@ -521,7 +521,7 @@ TEST_F(SegmentSelectorTest, SubsegmentRecording) {
   // Construct a segment selector. It should read result from last session.
   segment_selector_ = std::make_unique<SegmentSelectorImpl>(
       segment_database_.get(), &signal_storage_config_, std::move(prefs_moved),
-      &config_, &field_trial_register_, &clock_,
+      config_.get(), &field_trial_register_, &clock_,
       PlatformOptions::CreateDefault(), default_manager_.get());
 
   // When segment result is missing, unknown subsegment is recorded, otherwise

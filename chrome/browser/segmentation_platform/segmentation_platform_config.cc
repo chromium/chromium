@@ -20,16 +20,20 @@
 #include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
+#include "content/public/browser/browser_context.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/feature_guide/notifications/feature_notification_guide_service.h"
 #include "chrome/browser/flags/android/cached_feature_flags.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/segmentation_platform/default_model/chrome_start_model_android.h"
 #include "chrome/browser/ui/android/start_surface/start_surface_android.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/shopping_service.h"
 #include "components/query_tiles/switches.h"
 #include "components/segmentation_platform/embedder/default_model/query_tiles_model.h"
+#include "components/segmentation_platform/embedder/input_delegate/price_tracking_input_delegate.h"
 #endif
 
 namespace segmentation_platform {
@@ -182,7 +186,8 @@ bool IsEnabledContextualPageActions() {
          base::FeatureList::IsEnabled(commerce::kShoppingList);
 }
 
-std::unique_ptr<Config> GetConfigForContextualPageActions() {
+std::unique_ptr<Config> GetConfigForContextualPageActions(
+    content::BrowserContext* context) {
   auto config = std::make_unique<Config>();
   config->segmentation_key = kContextualPageActionsKey;
   config->segmentation_uma_name =
@@ -192,6 +197,16 @@ std::unique_ptr<Config> GetConfigForContextualPageActions() {
       base::FeatureList::IsEnabled(commerce::kShoppingList)) {
     config->segments.insert(SEGMENT_ID_ENTRY(
         SegmentId::OPTIMIZATION_TARGET_CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING));
+
+    auto shopping_service_getter = base::BindRepeating(
+        commerce::ShoppingServiceFactory::GetForBrowserContextIfExists,
+        context);
+    auto price_tracking_input_delegate =
+        std::make_unique<processing::PriceTrackingInputDelegate>(
+            shopping_service_getter);
+    config
+        ->input_delegates[proto::CustomInput_FillPolicy_PRICE_TRACKING_HINTS] =
+        std::move(price_tracking_input_delegate);
   }
   config->on_demand_execution = true;
   return config;
@@ -295,7 +310,8 @@ void AppendConfigsFromExperiments(
 
 }  // namespace
 
-std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig() {
+std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
+    content::BrowserContext* context) {
   std::vector<std::unique_ptr<Config>> configs;
   if (base::FeatureList::IsEnabled(
           segmentation_platform::features::kSegmentationPlatformDummyFeature)) {
@@ -307,7 +323,7 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig() {
     configs.emplace_back(GetConfigForAdaptiveToolbar());
   }
   if (IsEnabledContextualPageActions()) {
-    configs.emplace_back(GetConfigForContextualPageActions());
+    configs.emplace_back(GetConfigForContextualPageActions(context));
   }
   if (IsStartSurfaceBehaviouralTargetingEnabled()) {
     configs.emplace_back(GetConfigForChromeStartAndroid());

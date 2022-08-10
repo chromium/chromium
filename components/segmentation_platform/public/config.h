@@ -8,7 +8,10 @@
 #include <string>
 #include <unordered_map>
 
+#include "base/containers/flat_map.h"
 #include "base/time/time.h"
+#include "components/segmentation_platform/public/input_delegate.h"
+#include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "components/segmentation_platform/public/trigger.h"
 
@@ -54,8 +57,9 @@ struct Config {
   Config();
   ~Config();
 
-  Config(const Config& other);
-  Config& operator=(const Config& other);
+  // Disallow copy/assign.
+  Config(const Config& other) = delete;
+  Config& operator=(const Config& other) = delete;
 
   // The key is used to distinguish between different types of segmentation
   // usages. Currently it is mainly used by the segment selector to find the
@@ -93,6 +97,15 @@ struct Config {
   // executions instead of returning result from previous sessions. The
   // selection TTLs are ignored in this config.
   bool on_demand_execution = false;
+
+  // List of custom  inputs provided for running the segments. The delegate will
+  // be invoked for input based on the model metadata's input processing config.
+  // Note: 2 configs cannot provide input delegates for the same FillPolicy. To
+  // share the delegate implementation, the delegates need to be provided by
+  // `SegmentationPlatformServiceFactory`.
+  base::flat_map<proto::CustomInput::FillPolicy,
+                 std::unique_ptr<processing::InputDelegate>>
+      input_delegates;
 
   // Returns the filter name that will be shown in the metrics for this
   // segmentation config.

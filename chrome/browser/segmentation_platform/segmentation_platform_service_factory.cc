@@ -10,7 +10,6 @@
 #include "base/task/thread_pool.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -20,10 +19,7 @@
 #include "chrome/browser/segmentation_platform/segmentation_platform_profile_observer.h"
 #include "chrome/browser/segmentation_platform/ukm_database_client.h"
 #include "chrome/common/chrome_constants.h"
-#include "components/commerce/core/shopping_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/metrics_services_manager/metrics_services_manager.h"
-#include "components/segmentation_platform/embedder/input_delegate/price_tracking_input_delegate.h"
 #include "components/segmentation_platform/internal/dummy_segmentation_platform_service.h"
 #include "components/segmentation_platform/internal/segmentation_platform_service_impl.h"
 #include "components/segmentation_platform/internal/ukm_data_manager.h"
@@ -39,20 +35,19 @@ namespace {
 const char kSegmentationPlatformProfileObserverKey[] =
     "segmentation_platform_profile_observer";
 
-void SetUpInputDelegates(
-    content::BrowserContext* context,
-    processing::InputDelegateHolder* input_delegate_holder) {
-  // It is safe to dereference the BrowserContext pointer for obtaining the
-  // shopping service since the lifetime of the input delegate doesn't exceed
-  // the lifetime of the platform service.
-  auto shopping_service_getter = base::BindRepeating(
-      commerce::ShoppingServiceFactory::GetForBrowserContextIfExists, context);
-  auto price_tracking_input_delegate =
-      std::make_unique<processing::PriceTrackingInputDelegate>(
-          shopping_service_getter);
-  input_delegate_holder->SetDelegate(
-      proto::CustomInput_FillPolicy_PRICE_TRACKING_HINTS,
-      std::move(price_tracking_input_delegate));
+std::unique_ptr<processing::InputDelegateHolder> SetUpInputDelegates(
+    std::vector<std::unique_ptr<Config>>& configs) {
+  auto input_delegate_holder =
+      std::make_unique<processing::InputDelegateHolder>();
+  for (auto& config : configs) {
+    for (auto& id : config->input_delegates) {
+      input_delegate_holder->SetDelegate(id.first, std::move(id.second));
+    }
+  }
+
+  // Add shareable input delegates here.
+
+  return input_delegate_holder;
 }
 
 }  // namespace
@@ -107,11 +102,9 @@ KeyedService* SegmentationPlatformServiceFactory::BuildServiceInstanceFor(
   params->ukm_data_manager =
       UkmDatabaseClient::GetInstance().GetUkmDataManager();
   params->profile_prefs = profile->GetPrefs();
-  params->configs = GetSegmentationPlatformConfig();
+  params->configs = GetSegmentationPlatformConfig(context);
+  params->input_delegate_holder = SetUpInputDelegates(params->configs);
   params->field_trial_register = std::make_unique<FieldTrialRegisterImpl>();
-  params->input_delegate_holder =
-      std::make_unique<processing::InputDelegateHolder>();
-  SetUpInputDelegates(context, params->input_delegate_holder.get());
   auto* service = new SegmentationPlatformServiceImpl(std::move(params));
 
   // Profile manager can be null in unit tests.
