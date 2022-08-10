@@ -187,10 +187,10 @@ class SelectionColumn<T extends Selectable> implements Column<T> {
 
 class Source {
   sourceEventId: bigint;
-  impressionOrigin: string;
+  sourceOrigin: string;
   attributionDestination: string;
   reportingOrigin: string;
-  impressionTime: Date;
+  sourceTime: Date;
   expiryTime: Date;
   sourceType: string;
   filterData: string;
@@ -202,10 +202,10 @@ class Source {
 
   constructor(mojo: WebUISource) {
     this.sourceEventId = mojo.sourceEventId;
-    this.impressionOrigin = originToText(mojo.impressionOrigin);
+    this.sourceOrigin = originToText(mojo.sourceOrigin);
     this.attributionDestination = mojo.attributionDestination;
     this.reportingOrigin = originToText(mojo.reportingOrigin);
-    this.impressionTime = new Date(mojo.impressionTime);
+    this.sourceTime = new Date(mojo.sourceTime);
     this.expiryTime = new Date(mojo.expiryTime);
     this.sourceType = sourceTypeToText(mojo.sourceType);
     this.priority = mojo.priority;
@@ -229,19 +229,16 @@ class SourceTableModel extends TableModel<Source> {
       new ValueColumn<Source, bigint>(
           'Source Event ID', (e) => e.sourceEventId),
       new ValueColumn<Source, string>('Status', (e) => e.status),
-      new ValueColumn<Source, string>(
-          'Source Origin', (e) => e.impressionOrigin),
+      new ValueColumn<Source, string>('Source Origin', (e) => e.sourceOrigin),
       new ValueColumn<Source, string>(
           'Destination', (e) => e.attributionDestination),
       new ValueColumn<Source, string>('Report To', (e) => e.reportingOrigin),
-      new DateColumn<Source>(
-          'Source Registration Time', (e) => e.impressionTime),
+      new DateColumn<Source>('Source Registration Time', (e) => e.sourceTime),
       new DateColumn<Source>('Expiry Time', (e) => e.expiryTime),
       new ValueColumn<Source, string>('Source Type', (e) => e.sourceType),
       new ValueColumn<Source, bigint>('Priority', (e) => e.priority),
       new CodeColumn<Source>('Filter Data', (e) => e.filterData),
-      new CodeColumn<Source>(
-          'Aggregation Keys', (e) => e.aggregationKeys),
+      new CodeColumn<Source>('Aggregation Keys', (e) => e.aggregationKeys),
       new ValueColumn<Source, string>('Debug Key', (e) => e.debugKey),
       new ValueColumn<Source, string>('Dedup Keys', (e) => e.dedupKeys),
     ];

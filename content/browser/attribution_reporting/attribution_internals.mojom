@@ -88,11 +88,11 @@ struct DebugKey {
 // Struct representing a stored attribution source that will be displayed by WebUI.
 struct WebUISource {
   uint64 source_event_id;
-  url.mojom.Origin impression_origin;
+  url.mojom.Origin source_origin;
   // Replace SchemefulSite with string if this struct is ever reused elsewhere.
   string attribution_destination;
   url.mojom.Origin reporting_origin;
-  double impression_time;
+  double source_time;
   double expiry_time;
   SourceType source_type;
   int64 priority;
