@@ -296,6 +296,16 @@ bool FlatlandSysmemBufferCollection::Initialize(
       min_buffer_count);
 }
 
+void FlatlandSysmemBufferCollection::InitializeForTesting(
+    gfx::BufferUsage usage) {
+  if (usage == gfx::BufferUsage::SCANOUT) {
+    // Scanout buffers need to be registered with flatland.
+    fuchsia::ui::composition::BufferCollectionExportToken export_token;
+    zx::eventpair::create(0, &export_token.value,
+                          &flatland_import_token_.value);
+  }
+}
+
 scoped_refptr<gfx::NativePixmap>
 FlatlandSysmemBufferCollection::CreateNativePixmap(size_t buffer_index) {
   CHECK_LT(buffer_index, num_buffers());
@@ -458,6 +468,8 @@ bool FlatlandSysmemBufferCollection::CreateVkImage(
 
 fuchsia::ui::composition::BufferCollectionImportToken
 FlatlandSysmemBufferCollection::GetFlatlandImportToken() const {
+  DCHECK(HasFlatlandImportToken());
+
   fuchsia::ui::composition::BufferCollectionImportToken import_dup;
   zx_status_t status = flatland_import_token_.value.duplicate(
       ZX_RIGHT_SAME_RIGHTS, &import_dup.value);
@@ -465,6 +477,10 @@ FlatlandSysmemBufferCollection::GetFlatlandImportToken() const {
     ZX_DLOG(ERROR, status) << "BufferCollectionImportToken duplicate failed";
   }
   return import_dup;
+}
+
+bool FlatlandSysmemBufferCollection::HasFlatlandImportToken() const {
+  return flatland_import_token_.value.is_valid();
 }
 
 void FlatlandSysmemBufferCollection::AddOnDeletedCallback(

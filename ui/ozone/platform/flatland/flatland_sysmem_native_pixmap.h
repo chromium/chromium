@@ -43,9 +43,8 @@ class FlatlandSysmemNativePixmap : public gfx::NativePixmap {
   }
   const gfx::NativePixmapHandle& PeekHandle() const;
 
-  // Returns true if overlay planes are supported and ScheduleOverlayPlane() can
-  // be called.
-  bool SupportsOverlayPlane(gfx::AcceleratedWidget widget) const;
+  // Returns true if overlay planes are supported.
+  bool SupportsOverlayPlane() const;
 
  private:
   ~FlatlandSysmemNativePixmap() override;

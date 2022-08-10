@@ -64,6 +64,9 @@ class FlatlandSysmemBufferCollection
                   VkDevice vk_device,
                   size_t min_buffer_count);
 
+  // Does minimum initialization needed for tests based on |usage|.
+  void InitializeForTesting(gfx::BufferUsage usage);
+
   // Creates a NativePixmap with the specified index. The returned
   // NativePixmap holds a reference to the collection, so that the collection
   // is not deleted until all NativePixmaps are destroyed.
@@ -90,6 +93,8 @@ class FlatlandSysmemBufferCollection
   // Returns a duplicate of |flatland_import_token_| so Images can be created.
   fuchsia::ui::composition::BufferCollectionImportToken GetFlatlandImportToken()
       const;
+  bool HasFlatlandImportToken() const;
+
   void AddOnDeletedCallback(base::OnceClosure on_deleted);
 
  private:

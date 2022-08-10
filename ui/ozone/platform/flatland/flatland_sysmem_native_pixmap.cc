@@ -75,6 +75,7 @@ bool FlatlandSysmemNativePixmap::ScheduleOverlayPlane(
     const gfx::OverlayPlaneData& overlay_plane_data,
     std::vector<gfx::GpuFence> acquire_fences,
     std::vector<gfx::GpuFence> release_fences) {
+  NOTREACHED();
   return false;
 }
 
@@ -86,9 +87,8 @@ const gfx::NativePixmapHandle& FlatlandSysmemNativePixmap::PeekHandle() const {
   return handle_;
 }
 
-bool FlatlandSysmemNativePixmap::SupportsOverlayPlane(
-    gfx::AcceleratedWidget widget) const {
-  return false;
+bool FlatlandSysmemNativePixmap::SupportsOverlayPlane() const {
+  return collection_->HasFlatlandImportToken();
 }
 
 }  // namespace ui

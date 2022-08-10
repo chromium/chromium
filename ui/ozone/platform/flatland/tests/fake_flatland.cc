@@ -80,6 +80,7 @@ void FakeFlatland::NotImplemented_(const std::string& name) {
 }
 
 void FakeFlatland::Present(fuchsia::ui::composition::PresentArgs args) {
+  DCHECK(present_handler_);
   present_handler_.Run(std::move(args));
 }
 

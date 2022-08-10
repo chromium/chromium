@@ -31,6 +31,7 @@
 #include "ui/ozone/platform/flatland/flatland_sysmem_buffer_collection.h"
 #include "ui/ozone/platform/flatland/flatland_window.h"
 #include "ui/ozone/platform/flatland/flatland_window_manager.h"
+#include "ui/ozone/platform/flatland/overlay_manager_flatland.h"
 #include "ui/ozone/platform/scenic/mojom/scenic_gpu_service.mojom.h"
 #include "ui/ozone/platform_selection.h"
 #include "ui/ozone/public/gpu_platform_support_host.h"
@@ -193,7 +194,7 @@ class OzonePlatformFlatland : public OzonePlatform,
       surface_factory_->Initialize(std::move(flatland_gpu_host_remote));
     }
 
-    // TODO(crbug.com/1146006): Add overlay manager.
+    overlay_manager_ = std::make_unique<OverlayManagerFlatland>();
   }
 
   const PlatformRuntimeProperties& GetPlatformRuntimeProperties() override {

@@ -36,6 +36,8 @@ source_set("flatland") {
     "flatland_window.h",
     "flatland_window_manager.cc",
     "flatland_window_manager.h",
+    "overlay_manager_flatland.cc",
+    "overlay_manager_flatland.h",
     "ozone_platform_flatland.cc",
     "ozone_platform_flatland.h",
     "vulkan_implementation_flatland.cc",

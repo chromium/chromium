@@ -7,6 +7,7 @@
 #include <fuchsia/ui/composition/cpp/fidl.h>
 #include <vector>
 
+#include "base/callback_helpers.h"
 #include "base/fuchsia/scoped_service_publisher.h"
 #include "base/fuchsia/test_component_context_for_process.h"
 #include "base/logging.h"
@@ -90,6 +91,8 @@ TEST_F(FlatlandSurfaceTest, Initialization) {
 }
 
 TEST_F(FlatlandSurfaceTest, PresentPrimaryPlane) {
+  fake_flatland_.SetPresentHandler(base::DoNothing());
+
   FlatlandSurface* surface = CreateFlatlandSurface();
 
   auto buffer_collection_id = gfx::SysmemBufferCollectionId::Create();
@@ -98,6 +101,7 @@ TEST_F(FlatlandSurfaceTest, PresentPrimaryPlane) {
   handle.buffer_index = 0;
   auto collection = base::MakeRefCounted<FlatlandSysmemBufferCollection>(
       buffer_collection_id);
+  collection->InitializeForTesting(gfx::BufferUsage::SCANOUT);
   auto primary_plane_pixmap = base::MakeRefCounted<FlatlandSysmemNativePixmap>(
       collection, std::move(handle));
   surface->Present(
