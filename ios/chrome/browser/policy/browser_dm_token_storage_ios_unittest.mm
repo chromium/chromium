@@ -47,6 +47,11 @@ class BrowserDMTokenStorageIOSTest : public PlatformTest {
     // Cleanup any policies left from the test.
     [[NSUserDefaults standardUserDefaults]
         removeObjectForKey:kPolicyLoaderIOSConfigurationKey];
+
+    // Cleanup registerDefaults usage.
+    [[NSUserDefaults standardUserDefaults]
+        setVolatileDomain:@{}
+                  forName:NSRegistrationDomain];
   }
 
  private:
