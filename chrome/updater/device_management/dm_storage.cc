@@ -16,21 +16,15 @@
 #include "base/files/important_file_writer.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
-#include "base/path_service.h"
 #include "base/strings/sys_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/updater/device_management/dm_cached_policy_info.h"
 #include "chrome/updater/device_management/dm_message.h"
 #include "chrome/updater/protos/omaha_settings.pb.h"
-#include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-#if BUILDFLAG(IS_WIN)
-#include "base/base_paths_win.h"
-#endif  // BUILDFLAG(IS_WIN)
 
 namespace updater {
 
@@ -50,9 +44,6 @@ constexpr char kPolicyInfoFileName[] = "CachedPolicyInfo";
 // This is the standard name for the file that PersistPolicies() uses for each
 // {policy_type} that it receives from the DMServer.
 constexpr char kPolicyFileName[] = "PolicyFetchResponse";
-
-// Policy subfolder in the updater installation path.
-constexpr char kPolicyCacheSubfolder[] = "Policies";
 
 // Deletes the child directories in cache root if they do not appear in
 // set |policy_types_base64|.
@@ -79,7 +70,7 @@ bool DeleteObsoletePolicies(const base::FilePath& cache_root,
 }  // namespace
 
 #if BUILDFLAG(IS_LINUX)
-// crbug.com/1276162 - implement.
+// TODO(crbug.com/1276162) - implement.
 DMStorage::DMStorage(const base::FilePath& policy_cache_root)
     : policy_cache_root_(policy_cache_root) {
   NOTIMPLEMENTED();
@@ -216,28 +207,12 @@ DMStorage::GetOmahaPolicySettings() const {
   return omaha_settings;
 }
 
+#if BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/1276162) - implement.
 scoped_refptr<DMStorage> GetDefaultDMStorage() {
-#if BUILDFLAG(IS_WIN)
-  base::FilePath program_filesx86_dir;
-  if (!base::PathService::Get(base::DIR_PROGRAM_FILESX86,
-                              &program_filesx86_dir)) {
-    return nullptr;
-  }
-
-  return base::MakeRefCounted<DMStorage>(
-      program_filesx86_dir.AppendASCII(COMPANY_SHORTNAME_STRING)
-          .AppendASCII(kPolicyCacheSubfolder));
-
-#else   // BUILDFLAG(IS_WIN)
-
-  const absl::optional<base::FilePath> updater_versioned_path =
-      GetVersionedDataDirectory(GetUpdaterScope());
-  if (!updater_versioned_path)
-    return nullptr;
-  base::FilePath policy_cache_folder =
-      updater_versioned_path->AppendASCII(kPolicyCacheSubfolder);
-  return base::MakeRefCounted<DMStorage>(policy_cache_folder);
-#endif  // BUILDFLAG(IS_WIN)
+  NOTIMPLEMENTED();
+  return nullptr;
 }
+#endif
 
 }  // namespace updater

@@ -15,8 +15,10 @@
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_ioobject.h"
 #include "base/mac/scoped_nsobject.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "chrome/updater/mac/mac_util.h"
 #include "chrome/updater/updater_branding.h"
 
 namespace updater {
@@ -150,5 +152,17 @@ bool TokenService::DeleteDmToken() {
 
 DMStorage::DMStorage(const base::FilePath& policy_cache_root)
     : DMStorage(policy_cache_root, std::make_unique<TokenService>()) {}
+
+scoped_refptr<DMStorage> GetDefaultDMStorage() {
+  absl::optional<base::FilePath> sys_library_path =
+      GetLibraryFolderPath(UpdaterScope::kSystem);
+  if (!sys_library_path)
+    return nullptr;
+
+  return base::MakeRefCounted<DMStorage>(
+      sys_library_path->AppendASCII(COMPANY_SHORTNAME_STRING)
+          .Append(FILE_PATH_LITERAL(KEYSTONE_NAME))
+          .AppendASCII("DeviceManagement"));
+}
 
 }  // namespace updater

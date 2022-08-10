@@ -145,9 +145,8 @@ class DMStorage : public base::RefCountedThreadSafe<DMStorage> {
 };
 
 // Returns the DMStorage under which the Device Management policies are
-// persisted. For Windows, this is `%ProgramFiles(x86)%\{CompanyName}\Policies`
-// for security.
-// For other platforms, this is `{UpdaterVersionedPath}\Policies`.
+// persisted. For Windows, this is `%ProgramFiles(x86)%\{CompanyName}\Policies`.
+// For macOS, this is `/Library/{CompanyName}/{KEYSTONE_NAME}/DeviceManagement`.
 scoped_refptr<DMStorage> GetDefaultDMStorage();
 
 }  // namespace updater

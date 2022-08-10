@@ -6,8 +6,13 @@
 
 #include <string>
 
+#include "base/base_paths_win.h"
+#include "base/files/file_path.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/path_service.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/win/registry.h"
+#include "chrome/updater/updater_branding.h"
 #include "chrome/updater/win/win_constants.h"
 #include "chrome/updater/win/win_util.h"
 
@@ -105,5 +110,17 @@ std::string TokenService::GetDmToken() const {
 
 DMStorage::DMStorage(const base::FilePath& policy_cache_root)
     : DMStorage(policy_cache_root, std::make_unique<TokenService>()) {}
+
+scoped_refptr<DMStorage> GetDefaultDMStorage() {
+  base::FilePath program_filesx86_dir;
+  if (!base::PathService::Get(base::DIR_PROGRAM_FILESX86,
+                              &program_filesx86_dir)) {
+    return nullptr;
+  }
+
+  return base::MakeRefCounted<DMStorage>(
+      program_filesx86_dir.AppendASCII(COMPANY_SHORTNAME_STRING)
+          .AppendASCII("Policies"));
+}
 
 }  // namespace updater
