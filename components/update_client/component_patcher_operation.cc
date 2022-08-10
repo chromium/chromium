@@ -57,14 +57,14 @@ DeltaUpdateOp::DeltaUpdateOp() = default;
 
 DeltaUpdateOp::~DeltaUpdateOp() = default;
 
-void DeltaUpdateOp::Run(const base::DictionaryValue* command_args,
+void DeltaUpdateOp::Run(const base::Value::Dict& command_args,
                         const base::FilePath& input_dir,
                         const base::FilePath& unpack_dir,
                         scoped_refptr<CrxInstaller> installer,
                         ComponentPatcher::Callback callback) {
   callback_ = std::move(callback);
-  const std::string* output_rel_path = command_args->FindStringKey(kOutput);
-  const std::string* sha256_value = command_args->FindStringKey(kSha256);
+  const std::string* output_rel_path = command_args.FindString(kOutput);
+  const std::string* sha256_value = command_args.FindString(kSha256);
   if (!output_rel_path || !sha256_value) {
     DoneRunning(UnpackerError::kDeltaBadCommands, 0);
     return;
@@ -112,10 +112,10 @@ DeltaUpdateOpCopy::DeltaUpdateOpCopy() = default;
 DeltaUpdateOpCopy::~DeltaUpdateOpCopy() = default;
 
 UnpackerError DeltaUpdateOpCopy::DoParseArguments(
-    const base::DictionaryValue* command_args,
+    const base::Value::Dict& command_args,
     const base::FilePath& input_dir,
     scoped_refptr<CrxInstaller> installer) {
-  const std::string* input_rel_path = command_args->FindStringKey(kInput);
+  const std::string* input_rel_path = command_args.FindString(kInput);
   if (!input_rel_path)
     return UnpackerError::kDeltaBadCommands;
 
@@ -137,10 +137,10 @@ DeltaUpdateOpCreate::DeltaUpdateOpCreate() = default;
 DeltaUpdateOpCreate::~DeltaUpdateOpCreate() = default;
 
 UnpackerError DeltaUpdateOpCreate::DoParseArguments(
-    const base::DictionaryValue* command_args,
+    const base::Value::Dict& command_args,
     const base::FilePath& input_dir,
     scoped_refptr<CrxInstaller> installer) {
-  const std::string* patch_rel_path = command_args->FindStringKey(kPatch);
+  const std::string* patch_rel_path = command_args.FindString(kPatch);
   if (!patch_rel_path)
     return UnpackerError::kDeltaBadCommands;
 
@@ -166,11 +166,11 @@ DeltaUpdateOpPatch::DeltaUpdateOpPatch(const std::string& operation,
 DeltaUpdateOpPatch::~DeltaUpdateOpPatch() = default;
 
 UnpackerError DeltaUpdateOpPatch::DoParseArguments(
-    const base::DictionaryValue* command_args,
+    const base::Value::Dict& command_args,
     const base::FilePath& input_dir,
     scoped_refptr<CrxInstaller> installer) {
-  const std::string* patch_rel_path = command_args->FindStringKey(kPatch);
-  const std::string* input_rel_path = command_args->FindStringKey(kInput);
+  const std::string* patch_rel_path = command_args.FindString(kPatch);
+  const std::string* input_rel_path = command_args.FindString(kInput);
   if (!patch_rel_path || !input_rel_path)
     return UnpackerError::kDeltaBadCommands;
 

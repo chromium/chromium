@@ -26,19 +26,20 @@ namespace {
 
 // Deserialize the commands file (present in delta update packages). The top
 // level must be a list.
-base::ListValue* ReadCommands(const base::FilePath& unpack_path) {
+absl::optional<base::Value::List> ReadCommands(
+    const base::FilePath& unpack_path) {
   const base::FilePath commands =
       unpack_path.Append(FILE_PATH_LITERAL("commands.json"));
   if (!base::PathExists(commands))
-    return nullptr;
+    return absl::nullopt;
 
   JSONFileValueDeserializer deserializer(commands);
   std::unique_ptr<base::Value> root =
       deserializer.Deserialize(nullptr, nullptr);
 
   return (root.get() && root->is_list())
-             ? static_cast<base::ListValue*>(root.release())
-             : nullptr;
+             ? absl::make_optional(std::move(root->GetList()))
+             : absl::nullopt;
 }
 
 }  // namespace
@@ -62,29 +63,28 @@ void ComponentPatcher::Start(Callback callback) {
 }
 
 void ComponentPatcher::StartPatching() {
-  commands_.reset(ReadCommands(input_dir_));
+  commands_ = ReadCommands(input_dir_);
   if (!commands_) {
     DonePatching(UnpackerError::kDeltaBadCommands, 0);
   } else {
-    next_command_ = commands_->GetListDeprecated().begin();
+    next_command_ = commands_->begin();
     PatchNextFile();
   }
 }
 
 void ComponentPatcher::PatchNextFile() {
-  if (next_command_ == commands_->GetListDeprecated().end()) {
+  if (next_command_ == commands_->end()) {
     DonePatching(UnpackerError::kNone, 0);
     return;
   }
-  const base::DictionaryValue* command_args;
-  if (!next_command_->GetAsDictionary(&command_args)) {
+  if (!next_command_->is_dict()) {
     DonePatching(UnpackerError::kDeltaBadCommands, 0);
     return;
   }
+  const base::Value::Dict& command_args = next_command_->GetDict();
 
-  std::string operation;
-  if (command_args->GetString(kOp, &operation)) {
-    current_operation_ = CreateDeltaUpdateOp(operation, patcher_);
+  if (const std::string* operation = command_args.FindString(kOp)) {
+    current_operation_ = CreateDeltaUpdateOp(*operation, patcher_);
   }
 
   if (!current_operation_) {

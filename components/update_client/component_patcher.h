@@ -27,12 +27,11 @@
 #ifndef COMPONENTS_UPDATE_CLIENT_COMPONENT_PATCHER_H_
 #define COMPONENTS_UPDATE_CLIENT_COMPONENT_PATCHER_H_
 
-#include <memory>
-
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
 #include "components/update_client/component_unpacker.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // TODO(crbug.com/1349158): Remove this class once Puffin patches are fully
 // implemented.
@@ -97,8 +96,8 @@ class ComponentPatcher : public base::RefCountedThreadSafe<ComponentPatcher> {
   scoped_refptr<CrxInstaller> installer_;
   scoped_refptr<Patcher> patcher_;
   Callback callback_;
-  std::unique_ptr<base::ListValue> commands_;
-  base::ListValue::const_iterator next_command_;
+  absl::optional<base::Value::List> commands_;
+  base::Value::List::const_iterator next_command_;
   scoped_refptr<DeltaUpdateOp> current_operation_;
 };
 

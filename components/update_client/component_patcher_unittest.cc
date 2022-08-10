@@ -80,17 +80,15 @@ TEST_F(ComponentPatcherOperationTest, CheckCreateOperation) {
       test_file("binary_output.bin"),
       input_dir_.GetPath().Append(FILE_PATH_LITERAL("binary_output.bin"))));
 
-  std::unique_ptr<base::DictionaryValue> command_args =
-      std::make_unique<base::DictionaryValue>();
-  command_args->SetString("output", "output.bin");
-  command_args->SetString("sha256", binary_output_hash);
-  command_args->SetString("op", "create");
-  command_args->SetString("patch", "binary_output.bin");
+  base::Value::Dict command_args;
+  command_args.Set("output", "output.bin");
+  command_args.Set("sha256", binary_output_hash);
+  command_args.Set("op", "create");
+  command_args.Set("patch", "binary_output.bin");
 
   TestCallback callback;
   scoped_refptr<DeltaUpdateOp> op = base::MakeRefCounted<DeltaUpdateOpCreate>();
-  op->Run(command_args.get(), input_dir_.GetPath(), unpack_dir_.GetPath(),
-          nullptr,
+  op->Run(command_args, input_dir_.GetPath(), unpack_dir_.GetPath(), nullptr,
           base::BindOnce(&TestCallback::Set, base::Unretained(&callback)));
   task_environment_.RunUntilIdle();
 
@@ -108,16 +106,15 @@ TEST_F(ComponentPatcherOperationTest, CheckCopyOperation) {
       test_file("binary_output.bin"),
       installed_dir_.GetPath().Append(FILE_PATH_LITERAL("binary_output.bin"))));
 
-  std::unique_ptr<base::DictionaryValue> command_args =
-      std::make_unique<base::DictionaryValue>();
-  command_args->SetString("output", "output.bin");
-  command_args->SetString("sha256", binary_output_hash);
-  command_args->SetString("op", "copy");
-  command_args->SetString("input", "binary_output.bin");
+  base::Value::Dict command_args;
+  command_args.Set("output", "output.bin");
+  command_args.Set("sha256", binary_output_hash);
+  command_args.Set("op", "copy");
+  command_args.Set("input", "binary_output.bin");
 
   TestCallback callback;
   scoped_refptr<DeltaUpdateOp> op = base::MakeRefCounted<DeltaUpdateOpCopy>();
-  op->Run(command_args.get(), input_dir_.GetPath(), unpack_dir_.GetPath(),
+  op->Run(command_args, input_dir_.GetPath(), unpack_dir_.GetPath(),
           installer_.get(),
           base::BindOnce(&TestCallback::Set, base::Unretained(&callback)));
   task_environment_.RunUntilIdle();
@@ -139,13 +136,12 @@ TEST_F(ComponentPatcherOperationTest, CheckCourgetteOperation) {
                              input_dir_.GetPath().Append(FILE_PATH_LITERAL(
                                  "binary_courgette_patch.bin"))));
 
-  std::unique_ptr<base::DictionaryValue> command_args =
-      std::make_unique<base::DictionaryValue>();
-  command_args->SetString("output", "output.bin");
-  command_args->SetString("sha256", binary_output_hash);
-  command_args->SetString("op", "courgette");
-  command_args->SetString("input", "binary_input.bin");
-  command_args->SetString("patch", "binary_courgette_patch.bin");
+  base::Value::Dict command_args;
+  command_args.Set("output", "output.bin");
+  command_args.Set("sha256", binary_output_hash);
+  command_args.Set("op", "courgette");
+  command_args.Set("input", "binary_input.bin");
+  command_args.Set("patch", "binary_courgette_patch.bin");
 
   scoped_refptr<Patcher> patcher =
       base::MakeRefCounted<PatchChromiumFactory>(
@@ -154,7 +150,7 @@ TEST_F(ComponentPatcherOperationTest, CheckCourgetteOperation) {
 
   TestCallback callback;
   scoped_refptr<DeltaUpdateOp> op = CreateDeltaUpdateOp("courgette", patcher);
-  op->Run(command_args.get(), input_dir_.GetPath(), unpack_dir_.GetPath(),
+  op->Run(command_args, input_dir_.GetPath(), unpack_dir_.GetPath(),
           installer_.get(),
           base::BindOnce(&TestCallback::Set, base::Unretained(&callback)));
   task_environment_.RunUntilIdle();
@@ -176,13 +172,12 @@ TEST_F(ComponentPatcherOperationTest, CheckBsdiffOperation) {
                              input_dir_.GetPath().Append(FILE_PATH_LITERAL(
                                  "binary_bsdiff_patch.bin"))));
 
-  std::unique_ptr<base::DictionaryValue> command_args =
-      std::make_unique<base::DictionaryValue>();
-  command_args->SetString("output", "output.bin");
-  command_args->SetString("sha256", binary_output_hash);
-  command_args->SetString("op", "courgette");
-  command_args->SetString("input", "binary_input.bin");
-  command_args->SetString("patch", "binary_bsdiff_patch.bin");
+  base::Value::Dict command_args;
+  command_args.Set("output", "output.bin");
+  command_args.Set("sha256", binary_output_hash);
+  command_args.Set("op", "courgette");
+  command_args.Set("input", "binary_input.bin");
+  command_args.Set("patch", "binary_bsdiff_patch.bin");
 
   // The operation needs a Patcher to access the PatchService.
   scoped_refptr<Patcher> patcher =
@@ -192,7 +187,7 @@ TEST_F(ComponentPatcherOperationTest, CheckBsdiffOperation) {
 
   TestCallback callback;
   scoped_refptr<DeltaUpdateOp> op = CreateDeltaUpdateOp("bsdiff", patcher);
-  op->Run(command_args.get(), input_dir_.GetPath(), unpack_dir_.GetPath(),
+  op->Run(command_args, input_dir_.GetPath(), unpack_dir_.GetPath(),
           installer_.get(),
           base::BindOnce(&TestCallback::Set, base::Unretained(&callback)));
   task_environment_.RunUntilIdle();
