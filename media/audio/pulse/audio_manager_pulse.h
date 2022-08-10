@@ -104,8 +104,8 @@ class MEDIA_EXPORT AudioManagerPulse : public AudioManagerBase {
   // Updates |native_input_sample_rate_| and |native_channel_count_|.
   void UpdateNativeAudioHardwareInfo();
 
-  raw_ptr<pa_threaded_mainloop, DanglingUntriaged> input_mainloop_;
-  raw_ptr<pa_context, DanglingUntriaged> input_context_;
+  raw_ptr<pa_threaded_mainloop> input_mainloop_;
+  raw_ptr<pa_context> input_context_;
   raw_ptr<AudioDeviceNames> devices_;
   int native_input_sample_rate_;
   int native_channel_count_;

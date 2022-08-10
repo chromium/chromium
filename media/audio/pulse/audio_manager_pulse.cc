@@ -55,7 +55,8 @@ void AudioManagerPulse::ShutdownOnAudioThread() {
   AudioManagerBase::ShutdownOnAudioThread();
   // The Pulse objects are the last things to be destroyed since
   // AudioManagerBase::ShutdownOnAudioThread() needs them.
-  pulse::DestroyPulse(input_mainloop_, input_context_);
+  pulse::DestroyPulse(input_mainloop_.ExtractAsDangling(),
+                      input_context_.ExtractAsDangling());
 }
 
 bool AudioManagerPulse::HasAudioOutputDevices() {
