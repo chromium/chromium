@@ -111,8 +111,7 @@ bool ChromeIOSTranslateClient::ShowTranslateUI(
   translate::TranslateInfoBarDelegate::Create(
       step != translate::TRANSLATE_STEP_BEFORE_TRANSLATE,
       translate_manager_->GetWeakPtr(),
-      InfoBarManagerImpl::FromWebState(web_state_),
-      web_state_->GetBrowserState()->IsOffTheRecord(), step, source_language,
+      InfoBarManagerImpl::FromWebState(web_state_), step, source_language,
       target_language, error_type, triggered_from_menu);
 
   return true;

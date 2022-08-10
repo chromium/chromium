@@ -133,8 +133,6 @@ class TranslateMessage {
  private:
   void RevertTranslationAndUpdateMessage();
 
-  bool IsIncognito() const;
-
   base::android::ScopedJavaLocalRef<jobjectArray> ConstructLanguagePickerMenu(
       JNIEnv* env,
       OverflowMenuItemId overflow_menu_item_id,

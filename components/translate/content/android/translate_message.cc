@@ -22,10 +22,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/translate/content/android/jni_headers/TranslateMessage_jni.h"
 #include "components/translate/core/browser/language_state.h"
-#include "components/translate/core/browser/translate_client.h"
 #include "components/translate/core/browser/translate_download_manager.h"
-#include "components/translate/core/browser/translate_driver.h"
-#include "components/translate/core/browser/translate_manager.h"
 #include "components/translate/core/browser/translate_metrics_logger.h"
 #include "components/translate/core/browser/translate_ui_delegate.h"
 #include "components/translate/core/common/translate_constants.h"
@@ -319,7 +316,7 @@ TranslateMessage::BuildOverflowMenu(JNIEnv* env) {
   overflow_menu_item_ids[item_count++] =
       static_cast<int>(OverflowMenuItemId::kInvalid);
 
-  if (!IsIncognito() &&
+  if (!ui_delegate_->IsIncognito() &&
       ui_delegate_->GetSourceLanguageCode() != kUnknownLanguageCode) {
     // "Always translate pages in <source language>".
     CHECK_GT(std::extent<decltype(titles)>::value, item_count);
@@ -481,14 +478,6 @@ void TranslateMessage::RevertTranslationAndUpdateMessage() {
                     ui_delegate_->GetTargetLanguageCode());
 
   ui_delegate_->RevertTranslation();
-}
-
-bool TranslateMessage::IsIncognito() const {
-  if (!translate_manager_)
-    return false;
-  TranslateClient* client = translate_manager_->translate_client();
-  TranslateDriver* driver = client->GetTranslateDriver();
-  return driver ? driver->IsIncognito() : false;
 }
 
 base::android::ScopedJavaLocalRef<jobjectArray>

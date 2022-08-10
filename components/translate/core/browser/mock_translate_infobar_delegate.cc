@@ -50,14 +50,12 @@ void MockTranslateInfoBarDelegate::GetContentLanguagesCodes(
 
 MockTranslateInfoBarDelegate::MockTranslateInfoBarDelegate(
     const base::WeakPtr<translate::TranslateManager>& translate_manager,
-    bool is_off_the_record,
     translate::TranslateStep step,
     const std::string& source_language,
     const std::string& target_language,
     translate::TranslateErrors::Type error_type,
     bool triggered_from_menu)
     : translate::TranslateInfoBarDelegate(translate_manager,
-                                          is_off_the_record,
                                           step,
                                           source_language,
                                           target_language,
@@ -82,7 +80,7 @@ MockTranslateInfoBarDelegateFactory::MockTranslateInfoBarDelegateFactory(
   manager_ = std::make_unique<translate::TranslateManager>(
       client_.get(), ranker_.get(), language_model_.get());
   delegate_ = std::make_unique<MockTranslateInfoBarDelegate>(
-      manager_->GetWeakPtr(), false,
+      manager_->GetWeakPtr(),
       translate::TranslateStep::TRANSLATE_STEP_BEFORE_TRANSLATE,
       source_language, target_language, translate::TranslateErrors::Type::NONE,
       false);
@@ -95,7 +93,7 @@ std::unique_ptr<MockTranslateInfoBarDelegate>
 MockTranslateInfoBarDelegateFactory::CreateMockTranslateInfoBarDelegate(
     translate::TranslateStep step) {
   return std::make_unique<MockTranslateInfoBarDelegate>(
-      manager_->GetWeakPtr(), false, step, "fr", "en",
+      manager_->GetWeakPtr(), step, "fr", "en",
       translate::TranslateErrors::Type::NONE, false);
 }
 

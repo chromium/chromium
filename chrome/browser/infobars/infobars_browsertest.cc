@@ -355,9 +355,8 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
           ChromeTranslateClient::FromWebContents(GetWebContents());
       translate::TranslateInfoBarDelegate::Create(
           false, translate_client->GetTranslateManager()->GetWeakPtr(),
-          GetInfoBarManager(), false,
-          translate::TRANSLATE_STEP_BEFORE_TRANSLATE, "ja", "en",
-          translate::TranslateErrors::NONE, false);
+          GetInfoBarManager(), translate::TRANSLATE_STEP_BEFORE_TRANSLATE, "ja",
+          "en", translate::TranslateErrors::NONE, false);
 #endif
       break;
     }

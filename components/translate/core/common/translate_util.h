@@ -40,6 +40,24 @@ bool IsTFLiteLanguageDetectionEnabled();
 // prediction is reliable.
 float GetTFLiteLanguageDetectionThreshold();
 
+// Feature flag used to control the auto-always and auto-never snackbar
+// parameters (i.e. threshold and maximum-number-of).
+extern const base::Feature kTranslateAutoSnackbars;
+
+// The number of times the user should consecutively translate for "Always
+// Translate" to automatically trigger.
+int GetAutoAlwaysThreshold();
+
+// The number of times the user should consecutively dismiss the translate UI
+// for "Never Translate" to automatically trigger.
+int GetAutoNeverThreshold();
+
+// The maximum number of times "Always Translate" is automatically triggered.
+int GetMaximumNumberOfAutoAlways();
+
+// The maximum number of times "Never Translate" is automatically triggered.
+int GetMaximumNumberOfAutoNever();
+
 }  // namespace translate
 
 #endif  // COMPONENTS_TRANSLATE_CORE_COMMON_TRANSLATE_UTIL_H_

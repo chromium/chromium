@@ -31,10 +31,6 @@ class InfoBarManager;
 
 namespace translate {
 
-// Feature flag used to control the auto-always and auto-never snackbar
-// parameters (i.e. threshold and maximum-number-of).
-extern const base::Feature kTranslateAutoSnackbars;
-
 // Feature flag for "Translate Compact Infobar UI" project.
 extern const base::Feature kTranslateCompactUI;
 
@@ -61,13 +57,6 @@ class TranslateInfoBarDelegate : public infobars::InfoBarDelegate {
 
   static const size_t kNoIndex;
 
-  // Get the threshold and maximum number of occurences that parameterize
-  // automatic always- and never-translate.
-  static int GetAutoAlwaysThreshold();
-  static int GetAutoNeverThreshold();
-  static int GetMaximumNumberOfAutoAlways();
-  static int GetMaximumNumberOfAutoNever();
-
   TranslateInfoBarDelegate(const TranslateInfoBarDelegate&) = delete;
   TranslateInfoBarDelegate& operator=(const TranslateInfoBarDelegate&) = delete;
 
@@ -88,7 +77,6 @@ class TranslateInfoBarDelegate : public infobars::InfoBarDelegate {
   static void Create(bool replace_existing_infobar,
                      const base::WeakPtr<TranslateManager>& translate_manager,
                      infobars::InfoBarManager* infobar_manager,
-                     bool is_off_the_record,
                      translate::TranslateStep step,
                      const std::string& source_language,
                      const std::string& target_language,
@@ -105,8 +93,6 @@ class TranslateInfoBarDelegate : public infobars::InfoBarDelegate {
   virtual std::u16string language_name_at(size_t index) const;
 
   translate::TranslateStep translate_step() const { return step_; }
-
-  bool is_off_the_record() { return is_off_the_record_; }
 
   TranslateErrors::Type error_type() const { return error_type_; }
 
@@ -182,12 +168,6 @@ class TranslateInfoBarDelegate : public infobars::InfoBarDelegate {
   // If true, this method has the side effect of mutating some prefs.
   bool ShouldAutoNeverTranslate();
 
-  int GetTranslationAutoAlwaysCount();
-  int GetTranslationAutoNeverCount();
-
-  void IncrementTranslationAutoAlwaysCount();
-  void IncrementTranslationAutoNeverCount();
-
   // The following methods are called by the infobar that displays the status
   // while translating and also the one displaying the error message.
   std::u16string GetMessageInfoBarButtonText();
@@ -248,7 +228,6 @@ class TranslateInfoBarDelegate : public infobars::InfoBarDelegate {
  protected:
   TranslateInfoBarDelegate(
       const base::WeakPtr<TranslateManager>& translate_manager,
-      bool is_off_the_record,
       translate::TranslateStep step,
       const std::string& source_language,
       const std::string& target_language,
@@ -259,7 +238,6 @@ class TranslateInfoBarDelegate : public infobars::InfoBarDelegate {
   friend class TranslateInfoBarDelegateTest;
   typedef std::pair<std::string, std::u16string> LanguageNamePair;
 
-  bool is_off_the_record_;
   translate::TranslateStep step_;
 
   TranslateUIDelegate ui_delegate_;

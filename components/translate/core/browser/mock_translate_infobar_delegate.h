@@ -36,7 +36,6 @@ class MockTranslateInfoBarDelegate
  public:
   MockTranslateInfoBarDelegate(
       const base::WeakPtr<translate::TranslateManager>& translate_manager,
-      bool is_off_the_record,
       translate::TranslateStep step,
       const std::string& source_language,
       const std::string& target_language,

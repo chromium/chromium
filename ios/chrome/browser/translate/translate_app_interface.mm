@@ -13,6 +13,7 @@
 #include "components/translate/core/browser/translate_prefs.h"
 #include "components/translate/core/common/language_detection_details.h"
 #include "components/translate/core/common/translate_switches.h"
+#import "components/translate/core/common/translate_util.h"
 #import "components/translate/ios/browser/js_translate_manager.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/translate/chrome_ios_translate_client.h"
@@ -280,19 +281,19 @@ class TranslateAppInterfaceHelper {
 }
 
 + (int)infobarAutoAlwaysThreshold {
-  return translate::TranslateInfoBarDelegate::GetAutoAlwaysThreshold();
+  return translate::GetAutoAlwaysThreshold();
 }
 
 + (int)infobarAutoNeverThreshold {
-  return translate::TranslateInfoBarDelegate::GetAutoNeverThreshold();
+  return translate::GetAutoNeverThreshold();
 }
 
 + (int)infobarMaximumNumberOfAutoAlways {
-  return translate::TranslateInfoBarDelegate::GetMaximumNumberOfAutoAlways();
+  return translate::GetMaximumNumberOfAutoAlways();
 }
 
 + (int)infobarMaximumNumberOfAutoNever {
-  return translate::TranslateInfoBarDelegate::GetMaximumNumberOfAutoNever();
+  return translate::GetMaximumNumberOfAutoNever();
 }
 
 #pragma mark private methods

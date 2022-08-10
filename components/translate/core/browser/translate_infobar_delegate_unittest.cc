@@ -116,7 +116,7 @@ class TranslateInfoBarDelegateTest : public ::testing::Test {
   std::unique_ptr<TranslateInfoBarDelegate> ConstructInfoBarDelegate() {
     return std::unique_ptr<TranslateInfoBarDelegate>(
         new TranslateInfoBarDelegate(
-            manager_->GetWeakPtr(), /*is_off_the_record=*/false,
+            manager_->GetWeakPtr(),
             TranslateStep::TRANSLATE_STEP_BEFORE_TRANSLATE, kSourceLanguage,
             kTargetLanguage, TranslateErrors::Type::NONE,
             /*triggered_from_menu=*/false));
@@ -137,8 +137,7 @@ TEST_F(TranslateInfoBarDelegateTest, CreateTranslateInfobarDelegate) {
   // Create the initial InfoBar
   TranslateInfoBarDelegate::Create(
       /*replace_existing_infobar=*/false, manager_->GetWeakPtr(),
-      infobar_manager_.get(),
-      /*is_off_the_record=*/false, TranslateStep::TRANSLATE_STEP_TRANSLATING,
+      infobar_manager_.get(), TranslateStep::TRANSLATE_STEP_TRANSLATING,
       kSourceLanguage, kTargetLanguage, TranslateErrors::Type::NONE,
       /*triggered_from_menu=*/false);
 
@@ -148,7 +147,6 @@ TEST_F(TranslateInfoBarDelegateTest, CreateTranslateInfobarDelegate) {
   EXPECT_FALSE(delegate->is_error());
   EXPECT_EQ(TranslateStep::TRANSLATE_STEP_TRANSLATING,
             delegate->translate_step());
-  EXPECT_FALSE(delegate->is_off_the_record());
   EXPECT_FALSE(delegate->triggered_from_menu());
   EXPECT_EQ(delegate->target_language_code(), kTargetLanguage);
   EXPECT_EQ(delegate->source_language_code(), kSourceLanguage);
@@ -156,8 +154,7 @@ TEST_F(TranslateInfoBarDelegateTest, CreateTranslateInfobarDelegate) {
   // Create another one and replace the old one
   TranslateInfoBarDelegate::Create(
       /*replace_existing_infobar=*/true, manager_->GetWeakPtr(),
-      infobar_manager_.get(),
-      /*is_off_the_record=*/true, TranslateStep::TRANSLATE_STEP_AFTER_TRANSLATE,
+      infobar_manager_.get(), TranslateStep::TRANSLATE_STEP_AFTER_TRANSLATE,
       kSourceLanguage, kTargetLanguage, TranslateErrors::Type::NONE,
       /*triggered_from_menu=*/false);
 
@@ -170,10 +167,8 @@ TEST_F(TranslateInfoBarDelegateTest, CreateTranslateInfobarDelegate) {
   // Create but don't replace existing one.
   TranslateInfoBarDelegate::Create(
       /*replace_existing_infobar=*/false, manager_->GetWeakPtr(),
-      infobar_manager_.get(),
-      /*is_off_the_record=*/false,
-      TranslateStep::TRANSLATE_STEP_BEFORE_TRANSLATE, kSourceLanguage,
-      kTargetLanguage, TranslateErrors::Type::NONE,
+      infobar_manager_.get(), TranslateStep::TRANSLATE_STEP_BEFORE_TRANSLATE,
+      kSourceLanguage, kTargetLanguage, TranslateErrors::Type::NONE,
       /*triggered_from_menu=*/false);
 
   EXPECT_EQ(infobar_manager_->infobar_count(), 1u);
@@ -234,8 +229,7 @@ TEST_F(TranslateInfoBarDelegateTest, ShouldAutoAlwaysTranslate) {
 
   TranslateInfoBarDelegate::Create(
       /*replace_existing_infobar=*/true, manager_->GetWeakPtr(),
-      infobar_manager_.get(),
-      /*is_off_the_record=*/false, TranslateStep::TRANSLATE_STEP_TRANSLATING,
+      infobar_manager_.get(), TranslateStep::TRANSLATE_STEP_TRANSLATING,
       kSourceLanguage, kTargetLanguage, TranslateErrors::Type::NONE,
       /*triggered_from_menu=*/false);
   TranslateInfoBarDelegate* delegate =
@@ -269,8 +263,7 @@ TEST_F(TranslateInfoBarDelegateTest, ShouldNotAutoAlwaysTranslateUnknown) {
 
   TranslateInfoBarDelegate::Create(
       /*replace_existing_infobar=*/true, manager_->GetWeakPtr(),
-      infobar_manager_.get(),
-      /*is_off_the_record=*/false, TranslateStep::TRANSLATE_STEP_TRANSLATING,
+      infobar_manager_.get(), TranslateStep::TRANSLATE_STEP_TRANSLATING,
       kUnknownLanguageCode, kTargetLanguage, TranslateErrors::Type::NONE,
       /*triggered_from_menu=*/false);
   TranslateInfoBarDelegate* delegate =
@@ -289,12 +282,12 @@ TEST_F(TranslateInfoBarDelegateTest, ShouldNotAutoAlwaysTranslateUnknown) {
 }
 
 TEST_F(TranslateInfoBarDelegateTest, ShouldNotAutoAlwaysTranslate) {
-  // Create an off record info bar.
+  // Simulate being off-the-record.
+  driver_.set_incognito();
   TranslateInfoBarDelegate::Create(
       /*replace_existing_infobar=*/false, manager_->GetWeakPtr(),
-      infobar_manager_.get(), /*is_off_the_record=*/true,
-      TranslateStep::TRANSLATE_STEP_TRANSLATING, kSourceLanguage,
-      kTargetLanguage, TranslateErrors::Type::NONE,
+      infobar_manager_.get(), TranslateStep::TRANSLATE_STEP_TRANSLATING,
+      kSourceLanguage, kTargetLanguage, TranslateErrors::Type::NONE,
       /*triggered_from_menu=*/false);
 
   EXPECT_EQ(infobar_manager_->infobar_count(), 1u);
@@ -324,8 +317,7 @@ TEST_F(TranslateInfoBarDelegateTest, ShouldAutoNeverTranslate) {
 
   TranslateInfoBarDelegate::Create(
       /*replace_existing_infobar=*/true, manager_->GetWeakPtr(),
-      infobar_manager_.get(),
-      /*is_off_the_record=*/false, TranslateStep::TRANSLATE_STEP_TRANSLATING,
+      infobar_manager_.get(), TranslateStep::TRANSLATE_STEP_TRANSLATING,
       kSourceLanguage, kTargetLanguage, TranslateErrors::Type::NONE,
       /*triggered_from_menu=*/false);
   TranslateInfoBarDelegate* delegate =
@@ -343,12 +335,12 @@ TEST_F(TranslateInfoBarDelegateTest, ShouldAutoNeverTranslate) {
 }
 
 TEST_F(TranslateInfoBarDelegateTest, ShouldAutoNeverTranslate_Not) {
-  // Create an off record info bar.
+  // Simulate being off-the-record.
+  driver_.set_incognito();
   TranslateInfoBarDelegate::Create(
       /*replace_existing_infobar=*/false, manager_->GetWeakPtr(),
-      infobar_manager_.get(), /*is_off_the_record=*/true,
-      TranslateStep::TRANSLATE_STEP_TRANSLATING, kSourceLanguage,
-      kTargetLanguage, TranslateErrors::Type::NONE,
+      infobar_manager_.get(), TranslateStep::TRANSLATE_STEP_TRANSLATING,
+      kSourceLanguage, kTargetLanguage, TranslateErrors::Type::NONE,
       /*triggered_from_menu=*/false);
 
   EXPECT_EQ(infobar_manager_->infobar_count(), 1u);

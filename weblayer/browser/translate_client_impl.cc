@@ -86,8 +86,7 @@ bool TranslateClientImpl::ShowTranslateUI(
   translate::TranslateInfoBarDelegate::Create(
       step != translate::TRANSLATE_STEP_BEFORE_TRANSLATE,
       translate_manager_->GetWeakPtr(),
-      infobars::ContentInfoBarManager::FromWebContents(web_contents()),
-      web_contents()->GetBrowserContext()->IsOffTheRecord(), step,
+      infobars::ContentInfoBarManager::FromWebContents(web_contents()), step,
       source_language, target_language, error_type, triggered_from_menu);
   return true;
 #else
