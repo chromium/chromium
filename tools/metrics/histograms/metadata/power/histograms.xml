@@ -1037,7 +1037,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Power.DarkMode{prefers-color-scheme}.InferredDarkPageColorScheme"
-    enum="BooleanIsDarkColorScheme" expires_after="2022-09-24">
+    enum="BooleanIsDarkColorScheme" expires_after="2023-09-24">
   <owner>michaelbai@chromium.org</owner>
   <owner>pdr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
