@@ -52,6 +52,7 @@ namespace content {
 
 class MockRenderProcessHostFactory;
 class ProcessLock;
+class SiteInfo;
 class SiteInstance;
 class StoragePartition;
 
@@ -193,6 +194,9 @@ class MockRenderProcessHost : public RenderProcessHost {
                       const ProcessLock& process_lock) override;
   ProcessLock GetProcessLock() const override;
   bool IsProcessLockedToSiteForTesting() override;
+  void DelayProcessShutdown(const base::TimeDelta& subframe_shutdown_timeout,
+                            const base::TimeDelta& unload_handler_timeout,
+                            const SiteInfo& site_info) override {}
   void StopTrackingProcessForShutdownDelay() override {}
   void BindCacheStorage(
       const network::CrossOriginEmbedderPolicy&,

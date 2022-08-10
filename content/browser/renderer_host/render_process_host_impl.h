@@ -549,7 +549,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // correspond to the frame that triggered this shutdown delay.
   void DelayProcessShutdown(const base::TimeDelta& subframe_shutdown_timeout,
                             const base::TimeDelta& unload_handler_timeout,
-                            const SiteInfo& site_info);
+                            const SiteInfo& site_info) override;
   bool IsProcessShutdownDelayedForTesting();
   // Remove the host from the delayed-shutdown tracker, if present. This does
   // not decrement |shutdown_delay_ref_count_|; if it was incremented by a
