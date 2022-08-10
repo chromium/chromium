@@ -1008,6 +1008,8 @@ static_library("extensions") {
       "clipboard_extension_helper_chromeos.h",
       "extension_keeplist_chromeos.cc",
       "extension_keeplist_chromeos.h",
+      "system_display/display_info_provider_chromeos.cc",
+      "system_display/display_info_provider_chromeos.h",
       "system_display/display_info_provider_utils.cc",
       "system_display/display_info_provider_utils.h",
       "system_display/system_display_serialization.cc",
@@ -1124,8 +1126,6 @@ static_library("extensions") {
       "extension_assets_manager_chromeos.h",
       "extension_garbage_collector_chromeos.cc",
       "extension_garbage_collector_chromeos.h",
-      "system_display/display_info_provider_chromeos.cc",
-      "system_display/display_info_provider_chromeos.h",
       "updater/chromeos_extension_cache_delegate.cc",
       "updater/chromeos_extension_cache_delegate.h",
       "updater/extension_cache_impl.cc",
@@ -1236,8 +1236,6 @@ static_library("extensions") {
       "chrome_kiosk_delegate.cc",
       "preinstalled_apps.cc",
       "preinstalled_apps.h",
-      "system_display/display_info_provider_lacros.cc",
-      "system_display/display_info_provider_lacros.h",
     ]
     deps += [
       "//chromeos/lacros",
