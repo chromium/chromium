@@ -14,6 +14,7 @@ group("orchestrator_all") {
     # profile information
     ":code_coverage_merge_results_py",
     ":code_coverage_merge_steps_py",
+    ":process_perf_results_py",
     ":standard_gtest_merge_py",
     ":standard_isolated_script_merge_py",
   ]
@@ -70,4 +71,8 @@ python_library("code_coverage_merge_results_py") {
 
 python_library("code_coverage_merge_steps_py") {
   pydeps_file = "//testing/merge_scripts/code_coverage/merge_steps.pydeps"
+}
+
+python_library("process_perf_results_py") {
+  pydeps_file = "//tools/perf/process_perf_results.pydeps"
 }
