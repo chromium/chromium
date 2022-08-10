@@ -25,6 +25,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "device/fido/features.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/extension_features.h"
 #include "net/dns/mock_host_resolver.h"
@@ -55,10 +56,16 @@ class CryptotokenBrowserTest : public base::test::WithFeatureOverride,
   CryptotokenBrowserTest()
       : base::test::WithFeatureOverride(
             extensions_features::kU2FSecurityKeyAPI) {
+    // Enable the feature flag to load the cryptoken component extension at
+    // startup.
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{extensions_features::kLoadCryptoTokenExtension},
+        /*disabled_features=*/{
 #if BUILDFLAG(IS_WIN)
-    // Don't dispatch requests to the native Windows API.
-    scoped_feature_list_.InitAndDisableFeature(device::kWebAuthUseNativeWinApi);
+          // Don't dispatch requests to the native Windows API.
+          device::kWebAuthUseNativeWinApi
 #endif
+        });
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -266,9 +273,7 @@ class CryptotokenBrowserTest : public base::test::WithFeatureOverride,
     return true;
   }
 
-#if BUILDFLAG(IS_WIN)
   base::test::ScopedFeatureList scoped_feature_list_;
-#endif
   std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
 };
 
@@ -404,6 +409,30 @@ IN_PROC_BROWSER_TEST_P(CryptotokenBrowserTest, SandboxedPageDoesNotSign) {
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(CryptotokenBrowserTest);
+
+// Test that `kLoadCryptoTokenExtension` controls loading of the component
+// extension.
+class CryptotokenLoadBrowserTest : public base::test::WithFeatureOverride,
+                                   public InProcessBrowserTest {
+ protected:
+  CryptotokenLoadBrowserTest()
+      : base::test::WithFeatureOverride(
+            extensions_features::kLoadCryptoTokenExtension) {}
+
+  void SetUp() override {
+    ComponentLoader::EnableBackgroundExtensionsForTesting();
+    InProcessBrowserTest::SetUp();
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(CryptotokenLoadBrowserTest, IsLoaded) {
+  EXPECT_EQ(ExtensionRegistry::Get(browser()->profile())
+                    ->GenerateInstalledExtensionsSet()
+                    ->GetByID(kCryptoTokenExtensionId) != nullptr,
+            IsParamFeatureEnabled());
+}
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(CryptotokenLoadBrowserTest);
 
 }  // namespace
 }  // namespace extensions

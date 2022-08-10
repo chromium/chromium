@@ -44,6 +44,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_l10n_util.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/manifest_constants.h"
@@ -548,8 +549,11 @@ void ComponentLoader::AddDefaultComponentExtensionsWithBackgroundPages(
 
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-  Add(IDR_CRYPTOTOKEN_MANIFEST,
-      base::FilePath(FILE_PATH_LITERAL("cryptotoken")));
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kLoadCryptoTokenExtension)) {
+    Add(IDR_CRYPTOTOKEN_MANIFEST,
+        base::FilePath(FILE_PATH_LITERAL("cryptotoken")));
+  }
 }
 
 void ComponentLoader::

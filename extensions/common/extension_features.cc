@@ -46,9 +46,14 @@ const base::Feature kReportKeepaliveUkm{"ReportKeepaliveUkm",
 const base::Feature kAllowSharedArrayBuffersUnconditionally{
     "AllowSharedArrayBuffersUnconditionally", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables the CryptoToken component extension, which implements the deprecated
-// U2F Security Key API. Once this flag is default disabled sites can continue
-// to use CryptoToken via a Deprecation Trail with the same name.
+// Loads the CryptoToken component extension, which implements the deprecated
+// U2F Security Key API.
+// TODO(1224886): Delete together with CryptoToken code.
+const base::Feature kLoadCryptoTokenExtension{
+    "LoadCryptoTokenExtension", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables the CryptoToken component extension to receive messages. This flag
+// has no effect unless `kLoadCryptoTokenExtension` is also enabled.
 // TODO(1224886): Delete together with CryptoToken code.
 const base::Feature kU2FSecurityKeyAPI{"U2FSecurityKeyAPI",
                                        base::FEATURE_DISABLED_BY_DEFAULT};

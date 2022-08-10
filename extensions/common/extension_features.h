@@ -22,6 +22,8 @@ extern const base::Feature kReportKeepaliveUkm;
 
 extern const base::Feature kAllowSharedArrayBuffersUnconditionally;
 
+extern const base::Feature kLoadCryptoTokenExtension;
+
 extern const base::Feature kU2FSecurityKeyAPI;
 
 extern const base::Feature kStructuredCloningForMV3Messaging;
