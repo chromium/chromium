@@ -16,7 +16,7 @@
 
 namespace apps {
 
-// An publisher parent class (in the App Service sense) for all app publishers.
+// A publisher parent class (in the App Service sense) for all app publishers.
 // This class has NOTIMPLEMENTED() implementations of mandatory methods from the
 // apps::mojom::Publisher class to simplify the process of adding a new
 // publisher.
