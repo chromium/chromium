@@ -1324,7 +1324,10 @@ void DesksBarView::NudgeDeskName(int desk_index) {
 
   // Set `name_view`'s accessible name to the default desk name since its text
   // is cleared.
-  name_view->SetAccessibleName(DesksController::GetDeskDefaultName(desk_index));
+  if (name_view->GetAccessibleName().empty()) {
+    name_view->SetAccessibleName(
+        DesksController::GetDeskDefaultName(desk_index));
+  }
 
   auto* highlight_controller = GetHighlightController();
   if (highlight_controller->IsFocusHighlightVisible())
