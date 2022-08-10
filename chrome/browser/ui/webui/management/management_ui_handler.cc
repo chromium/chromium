@@ -17,7 +17,7 @@
 #include "base/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
-#include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
@@ -725,7 +725,7 @@ void ManagementUIHandler::AddProxyServerPrivacyDisclosure(
     base::Value::Dict* response) const {
   bool showProxyDisclosure = false;
   ash::NetworkHandler* network_handler = ash::NetworkHandler::Get();
-  base::Value proxy_settings(base::Value::Type::DICTIONARY);
+  base::Value::Dict proxy_settings;
   // |ui_proxy_config_service| may be missing in tests. If the device is offline
   // (no network connected) the |DefaultNetwork| is null.
   if (ash::NetworkHandler::HasUiProxyConfigService() &&
@@ -736,15 +736,16 @@ void ManagementUIHandler::AddProxyServerPrivacyDisclosure(
         network_handler->network_state_handler()->DefaultNetwork()->guid(),
         &proxy_settings);
   }
-  if (!proxy_settings.DictEmpty()) {
+  if (!proxy_settings.empty()) {
     // Proxies can be specified by web server url, via a PAC script or via the
     // web proxy auto-discovery protocol. Chrome also supports the "direct"
     // mode, in which no proxy is used.
-    base::Value* proxy_specification_mode = proxy_settings.FindPath(
-        {::onc::network_config::kType, ::onc::kAugmentationActiveSetting});
-    showProxyDisclosure =
-        proxy_specification_mode &&
-        proxy_specification_mode->GetString() != ::onc::proxy::kDirect;
+    std::string* proxy_specification_mode =
+        proxy_settings.FindStringByDottedPath(base::JoinString(
+            {::onc::network_config::kType, ::onc::kAugmentationActiveSetting},
+            "."));
+    showProxyDisclosure = proxy_specification_mode &&
+                          *proxy_specification_mode != ::onc::proxy::kDirect;
   }
   response->Set("showProxyServerPrivacyDisclosure", showProxyDisclosure);
 }

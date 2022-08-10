@@ -8,6 +8,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -84,7 +85,7 @@ TEST_F(NetworkPrefStateObserverTest, LoginUser) {
       NetworkHandler::GetUiProxyConfigService();
   ASSERT_TRUE(device_ui_proxy_config_service);
   // There should be no proxy config available.
-  base::Value ui_proxy_config(base::Value::Type::DICTIONARY);
+  base::Value::Dict ui_proxy_config;
   EXPECT_FALSE(device_ui_proxy_config_service->MergeEnforcedProxyConfig(
       kNetworkId, &ui_proxy_config));
 
@@ -95,7 +96,7 @@ TEST_F(NetworkPrefStateObserverTest, LoginUser) {
       NetworkHandler::GetUiProxyConfigService();
   ASSERT_TRUE(profile_ui_proxy_config_service);
   ASSERT_NE(device_ui_proxy_config_service, profile_ui_proxy_config_service);
-  ui_proxy_config = base::Value(base::Value::Type::DICTIONARY);
+  ui_proxy_config = base::Value::Dict();
   EXPECT_FALSE(profile_ui_proxy_config_service->MergeEnforcedProxyConfig(
       kNetworkId, &ui_proxy_config));
 
@@ -108,12 +109,12 @@ TEST_F(NetworkPrefStateObserverTest, LoginUser) {
   base::RunLoop().RunUntilIdle();
 
   // Mode should now be MODE_PAC_SCRIPT.
-  ui_proxy_config = base::Value(base::Value::Type::DICTIONARY);
+  ui_proxy_config = base::Value::Dict();
   EXPECT_TRUE(
       NetworkHandler::GetUiProxyConfigService()->MergeEnforcedProxyConfig(
           kNetworkId, &ui_proxy_config));
-  base::Value* mode = ui_proxy_config.FindPath(
-      {::onc::network_config::kType, ::onc::kAugmentationActiveSetting});
+  base::Value* mode = ui_proxy_config.FindByDottedPath(base::JoinString(
+      {::onc::network_config::kType, ::onc::kAugmentationActiveSetting}, "."));
   ASSERT_TRUE(mode);
   EXPECT_EQ(base::Value(::onc::proxy::kPAC), *mode);
 }

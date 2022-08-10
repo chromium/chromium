@@ -327,17 +327,18 @@ void ManagedNetworkConfigurationHandlerImpl::SetManagedActiveProxyValues(
     base::Value* dictionary) {
   DCHECK(ui_proxy_config_service_);
   const std::string proxy_settings_key = ::onc::network_config::kProxySettings;
-  base::Value* proxy_settings = dictionary->FindKeyOfType(
-      proxy_settings_key, base::Value::Type::DICTIONARY);
+  base::Value::Dict* proxy_settings =
+      dictionary->GetDict().FindDict(proxy_settings_key);
 
   if (!proxy_settings) {
-    proxy_settings = dictionary->SetKey(
-        proxy_settings_key, base::Value(base::Value::Type::DICTIONARY));
+    proxy_settings = dictionary->GetDict()
+                         .Set(proxy_settings_key, base::Value::Dict())
+                         ->GetIfDict();
   }
   ui_proxy_config_service_->MergeEnforcedProxyConfig(guid, proxy_settings);
 
-  if (proxy_settings->DictEmpty())
-    dictionary->RemoveKey(proxy_settings_key);
+  if (proxy_settings->empty())
+    dictionary->GetDict().Remove(proxy_settings_key);
 }
 
 void ManagedNetworkConfigurationHandlerImpl::SetShillProperties(
