@@ -140,6 +140,14 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   bool ShouldCompleteRequestImmediately();
 
+  // Computes the login state of accounts. It uses the IDP-provided signal, if
+  // it had been populated. Otherwise, it uses the browser knowledge on which
+  // accounts are returning and which are not. In either case, this method also
+  // reorders accounts so that those that are considered returning users are
+  // before users that are not returning.
+  void ComputeLoginStateAndReorderAccounts(
+      IdpNetworkRequestManager::AccountList& accounts);
+
   std::unique_ptr<IdpNetworkRequestManager> network_manager_;
   std::unique_ptr<IdentityRequestDialogController> request_dialog_controller_;
 

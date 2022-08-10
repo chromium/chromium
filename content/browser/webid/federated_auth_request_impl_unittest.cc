@@ -98,6 +98,32 @@ static const std::initializer_list<IdentityRequestAccount> kAccounts{{
     GURL()              // picture
 }};
 
+static const std::initializer_list<IdentityRequestAccount> kMultipleAccounts{
+    {
+        "nico_the_great",                 // id
+        "nicolas_the_great@idp.example",  // email
+        "Nicolas The Great",              // name
+        "Nicolas",                        // given_name
+        GURL(),                           // picture
+        LoginState::kSignUp               // login_state
+    },
+    {
+        "account_id",         // id
+        "email@idp.example",  // email
+        "This Is Me",         // name
+        "Name",               // given_name
+        GURL(),               // picture
+        LoginState::kSignIn   // login_state
+    },
+    {
+        "other_account_id",         // id
+        "other_email@idp.example",  // email
+        "Name",                     // name
+        "Given Name",               // given_name
+        GURL(),                     // picture
+        LoginState::kSignUp         // login_state
+    }};
+
 static const std::set<std::string> kManifestList{kProviderUrlFull};
 
 // Parameters for a call to RequestToken.
@@ -839,6 +865,11 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     CheckUKMSessionID(ukm_recorder()->GetEntriesByName(FedCmEntry::kEntryName));
     CheckUKMSessionID(
         ukm_recorder()->GetEntriesByName(FedCmIdpEntry::kEntryName));
+  }
+
+  void ComputeLoginStateAndReorderAccounts(
+      IdpNetworkRequestManager::AccountList& accounts) {
+    federated_auth_request_impl_->ComputeLoginStateAndReorderAccounts(accounts);
   }
 
  protected:
@@ -1977,6 +2008,23 @@ TEST_F(FederatedAuthRequestImplTest,
       FetchedEndpoint::MANIFEST | FetchedEndpoint::CLIENT_METADATA |
           FetchedEndpoint::MANIFEST_LIST | FetchedEndpoint::ACCOUNTS};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
+}
+
+// Test that the accounts are reordered so that accounts with a LoginState equal
+// to kSignIn are listed before accounts with a LoginState equal to kSignUp.
+TEST_F(FederatedAuthRequestImplTest, ReorderMultipleAccounts) {
+  // Run an auth test to initialize variables.
+  RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
+              kConfigurationValid);
+
+  AccountList multiple_accounts = kMultipleAccounts;
+  ComputeLoginStateAndReorderAccounts(multiple_accounts);
+
+  // Check the account order using the account ids.
+  ASSERT_EQ(multiple_accounts.size(), 3u);
+  EXPECT_EQ(multiple_accounts[0].id, "account_id");
+  EXPECT_EQ(multiple_accounts[1].id, "nico_the_great");
+  EXPECT_EQ(multiple_accounts[2].id, "other_account_id");
 }
 
 }  // namespace content

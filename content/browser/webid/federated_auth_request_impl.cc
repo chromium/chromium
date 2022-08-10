@@ -705,38 +705,7 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
       WebContents* rp_web_contents =
           WebContents::FromRenderFrameHost(&render_frame_host());
 
-      // Populate the accounts login state.
-      for (auto& account : accounts) {
-        // Record when IDP and browser have different user sign-in states.
-        bool idp_claimed_sign_in = account.login_state == LoginState::kSignIn;
-        bool browser_observed_sign_in =
-            sharing_permission_delegate_->HasSharingPermission(
-                origin(), url::Origin::Create(provider_), account.id);
-
-        if (idp_claimed_sign_in == browser_observed_sign_in) {
-          fedcm_metrics_->RecordSignInStateMatchStatus(
-              SignInStateMatchStatus::kMatch);
-        } else if (idp_claimed_sign_in) {
-          fedcm_metrics_->RecordSignInStateMatchStatus(
-              SignInStateMatchStatus::kIdpClaimedSignIn);
-        } else {
-          fedcm_metrics_->RecordSignInStateMatchStatus(
-              SignInStateMatchStatus::kBrowserObservedSignIn);
-        }
-
-        // We set the login state based on the IDP response if it sends
-        // back an approved_clients list. If it does not, we need to set
-        // it here based on browser state.
-        if (account.login_state)
-          continue;
-        LoginState login_state = LoginState::kSignUp;
-        // Consider this a sign-in if we have seen a successful sign-up for
-        // this account before.
-        if (browser_observed_sign_in) {
-          login_state = LoginState::kSignIn;
-        }
-        account.login_state = login_state;
-      }
+      ComputeLoginStateAndReorderAccounts(accounts);
 
       bool screen_reader_is_on =
           rp_web_contents->GetAccessibilityMode().has_mode(
@@ -751,6 +720,7 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
       // TODO(cbiesinger): Check that the URLs are valid.
       ClientIdData data{GURL(client_metadata_.terms_of_service_url),
                         GURL(client_metadata_.privacy_policy_url)};
+
       show_accounts_dialog_time_ = base::TimeTicks::Now();
       fedcm_metrics_->RecordShowAccountsDialogTime(show_accounts_dialog_time_ -
                                                    start_time_);
@@ -768,6 +738,50 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
       NOTREACHED();
     }
   }
+}
+
+void FederatedAuthRequestImpl::ComputeLoginStateAndReorderAccounts(
+    IdpNetworkRequestManager::AccountList& accounts) {
+  // Populate the accounts login state.
+  for (auto& account : accounts) {
+    // Record when IDP and browser have different user sign-in states.
+    bool idp_claimed_sign_in = account.login_state == LoginState::kSignIn;
+    bool browser_observed_sign_in =
+        sharing_permission_delegate_->HasSharingPermission(
+            origin(), url::Origin::Create(provider_), account.id);
+
+    if (idp_claimed_sign_in == browser_observed_sign_in) {
+      fedcm_metrics_->RecordSignInStateMatchStatus(
+          SignInStateMatchStatus::kMatch);
+    } else if (idp_claimed_sign_in) {
+      fedcm_metrics_->RecordSignInStateMatchStatus(
+          SignInStateMatchStatus::kIdpClaimedSignIn);
+    } else {
+      fedcm_metrics_->RecordSignInStateMatchStatus(
+          SignInStateMatchStatus::kBrowserObservedSignIn);
+    }
+
+    // We set the login state based on the IDP response if it sends
+    // back an approved_clients list. If it does not, we need to set
+    // it here based on browser state.
+    if (account.login_state)
+      continue;
+    LoginState login_state = LoginState::kSignUp;
+    // Consider this a sign-in if we have seen a successful sign-up for
+    // this account before.
+    if (browser_observed_sign_in) {
+      login_state = LoginState::kSignIn;
+    }
+    account.login_state = login_state;
+  }
+
+  // Now that the login states have been computed, order accounts so that the
+  // returning accounts go first and the other accounts go afterwards. Since the
+  // number of accounts is likely very small, sorting by login_state should be
+  // fast.
+  std::sort(accounts.begin(), accounts.end(), [](const auto& a, const auto& b) {
+    return a.login_state < b.login_state;
+  });
 }
 
 void FederatedAuthRequestImpl::OnAccountSelected(const std::string& account_id,
