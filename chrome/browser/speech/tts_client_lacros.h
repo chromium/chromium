@@ -14,6 +14,7 @@
 #include "chromeos/crosapi/mojom/tts.mojom.h"
 #include "content/public/browser/tts_controller.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
+#include "extensions/browser/event_router.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/network_change_notifier.h"
 
@@ -27,7 +28,8 @@ class BrowserContext;
 class TtsClientLacros
     : public extensions::BrowserContextKeyedAPI,
       public crosapi::mojom::TtsClient,
-      public net::NetworkChangeNotifier::NetworkChangeObserver {
+      public net::NetworkChangeNotifier::NetworkChangeObserver,
+      public extensions::EventRouter::Observer {
  public:
   explicit TtsClientLacros(content::BrowserContext* context);
   TtsClientLacros(const TtsClientLacros&) = delete;
@@ -58,10 +60,18 @@ class TtsClientLacros
   void OnNetworkChanged(
       net::NetworkChangeNotifier::ConnectionType type) override;
 
+ // extensions::EventRouter::Observer:
+  void OnListenerAdded(const extensions::EventListenerInfo& details) override;
+  void OnListenerRemoved(const extensions::EventListenerInfo& details) override;
+
+  bool IsLoadedTtsEngine(const std::string& extension_id) const;
   // Notifies Ash about Lacros voices change.
   void NotifyLacrosVoicesChanged();
 
   void OnGetAllVoices(std::vector<crosapi::mojom::TtsVoicePtr> mojo_voices);
+
+  // KeyedServivce:
+  void Shutdown() override;
 
   raw_ptr<content::BrowserContext> browser_context_;  // not owned.
   base::UnguessableToken browser_context_id_;

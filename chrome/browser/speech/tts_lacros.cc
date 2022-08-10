@@ -10,10 +10,19 @@
 #include "chrome/browser/speech/tts_client_lacros.h"
 #include "chrome/browser/speech/tts_crosapi_util.h"
 
+namespace {
+bool g_enable_for_test = false;
+}
+
 // static
 TtsPlatformImplLacros* TtsPlatformImplLacros::GetInstance() {
   static base::NoDestructor<TtsPlatformImplLacros> tts_platform;
   return tts_platform.get();
+}
+
+// static
+void TtsPlatformImplLacros::EnablePlatformSupportForTesting() {
+  g_enable_for_test = true;
 }
 
 TtsPlatformImplLacros::TtsPlatformImplLacros() {
@@ -34,7 +43,7 @@ void TtsPlatformImplLacros::OnProfileManagerDestroying() {
 }
 
 bool TtsPlatformImplLacros::PlatformImplSupported() {
-  return tts_crosapi_util::ShouldEnableLacrosTtsSupport();
+  return tts_crosapi_util::ShouldEnableLacrosTtsSupport() || g_enable_for_test;
 }
 
 bool TtsPlatformImplLacros::PlatformImplInitialized() {

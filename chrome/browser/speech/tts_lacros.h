@@ -25,6 +25,13 @@ class TtsPlatformImplLacros : public content::TtsPlatform,
  public:
   static TtsPlatformImplLacros* GetInstance();
 
+  // Note: This is a temporary workaround for enabling Lacros tts support
+  // feature when running Lacros tts extension api lacros browser tests.
+  // TODO(crbug.com/1227543): Migrate to enable tts lacros support feature
+  // flag in Ash before running lacros browser test once the Lacros testing
+  // infrasture adds that support.
+  static void EnablePlatformSupportForTesting();
+
   TtsPlatformImplLacros(const TtsPlatformImplLacros&) = delete;
   TtsPlatformImplLacros& operator=(const TtsPlatformImplLacros&) = delete;
 

@@ -12,12 +12,14 @@
 #include "base/unguessable_token.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/speech/extension_api/tts_engine_extension_api.h"
 #include "chrome/browser/speech/tts_client_factory_lacros.h"
 #include "chrome/browser/speech/tts_crosapi_util.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/tts_controller.h"
 #include "content/public/browser/tts_platform.h"
+#include "extensions/browser/event_router.h"
 
 namespace {
 
@@ -49,6 +51,12 @@ TtsClientLacros::TtsClientLacros(content::BrowserContext* browser_context)
 
   net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
 
+  extensions::EventRouter* event_router = extensions::EventRouter::Get(
+      Profile::FromBrowserContext(browser_context_));
+  DCHECK(event_router);
+  event_router->RegisterObserver(this, tts_engine_events::kOnSpeak);
+  event_router->RegisterObserver(this, tts_engine_events::kOnStop);
+
   // Push Lacros voices to Ash.
   NotifyLacrosVoicesChanged();
 }
@@ -73,6 +81,11 @@ void TtsClientLacros::GetAllVoices(
     out_voices->push_back(voice);
 }
 
+void TtsClientLacros::Shutdown() {
+  extensions::EventRouter::Get(Profile::FromBrowserContext(browser_context_))
+      ->UnregisterObserver(this);
+}
+
 TtsClientLacros::~TtsClientLacros() {
   net::NetworkChangeNotifier::RemoveNetworkChangeObserver(this);
 }
@@ -93,6 +106,34 @@ void TtsClientLacros::OnNetworkChanged(
     is_offline_ = is_offline;
     NotifyLacrosVoicesChanged();
   }
+}
+
+void TtsClientLacros::OnListenerAdded(
+    const extensions::EventListenerInfo& details) {
+  if (!IsLoadedTtsEngine(details.extension_id))
+    return;
+
+  NotifyLacrosVoicesChanged();
+}
+
+void TtsClientLacros::OnListenerRemoved(
+    const extensions::EventListenerInfo& details) {
+  if (details.event_name != tts_engine_events::kOnSpeak &&
+      details.event_name != tts_engine_events::kOnStop) {
+    return;
+  }
+
+  NotifyLacrosVoicesChanged();
+}
+
+bool TtsClientLacros::IsLoadedTtsEngine(const std::string& extension_id) const {
+  extensions::EventRouter* event_router = extensions::EventRouter::Get(
+      Profile::FromBrowserContext(browser_context_));
+  DCHECK(event_router);
+  return event_router->ExtensionHasEventListener(extension_id,
+                                                 tts_engine_events::kOnSpeak) &&
+         event_router->ExtensionHasEventListener(extension_id,
+                                                 tts_engine_events::kOnStop);
 }
 
 void TtsClientLacros::NotifyLacrosVoicesChanged() {
