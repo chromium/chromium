@@ -53,6 +53,12 @@ void MediaAppPageHandler::ToggleBrowserFullscreenMode(
   std::move(callback).Run();
 }
 
+void MediaAppPageHandler::MaybeTriggerPdfHats(
+    MaybeTriggerPdfHatsCallback callback) {
+  media_app_ui_->delegate()->MaybeTriggerPdfHats();
+  std::move(callback).Run();
+}
+
 void MediaAppPageHandler::IsFileArcWritable(
     mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token,
     IsFileArcWritableCallback callback) {

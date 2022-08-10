@@ -255,6 +255,12 @@ mediaApp.ClientApiDelegate.prototype.openUrlInBrowserTab = function(url) {};
  * @type {function()|undefined}
  */
 mediaApp.ClientApiDelegate.prototype.reloadMainFrame = function() {};
+/**
+ * Indicates to the WebUI Controller that a trigger for displaying the PDF HaTS
+ * survey has occurred.
+ * @type {function()|undefined}
+ */
+mediaApp.ClientApiDelegate.prototype.maybeTriggerPdfHats = function() {};
 
 /**
  * The client Api for interacting with the media app instance.

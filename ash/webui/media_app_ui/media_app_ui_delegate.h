@@ -28,6 +28,9 @@ class MediaAppUIDelegate {
   // Toggles fullscreen mode on the Browser* hosting this MediaApp instance.
   virtual void ToggleBrowserFullscreenMode() = 0;
 
+  // Indicate that a trigger for displaying the PDF HaTS survey has occurred.
+  virtual void MaybeTriggerPdfHats() = 0;
+
   // Checks whether file represented by the provided transfer token is within a
   // filesystem that ARC is able to write to.
   virtual void IsFileArcWritable(

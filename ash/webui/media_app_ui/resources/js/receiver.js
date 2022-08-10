@@ -381,6 +381,9 @@ const DELEGATE = {
   reloadMainFrame() {
     parentMessagePipe.sendMessage(Message.RELOAD_MAIN_FRAME);
   },
+  maybeTriggerPdfHats() {
+    parentMessagePipe.sendMessage(Message.MAYBE_TRIGGER_PDF_HATS);
+  },
   // TODO(b/219631600): Implement openUrlInBrowserTab() for LacrOS if needed.
 };
 

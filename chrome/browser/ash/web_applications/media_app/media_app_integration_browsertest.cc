@@ -5,6 +5,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/webui/media_app_ui/buildflags.h"
 #include "ash/webui/media_app_ui/test/media_app_ui_browsertest.h"
 #include "ash/webui/media_app_ui/url_constants.h"
@@ -27,11 +28,13 @@
 #include "chrome/browser/ash/file_manager/app_service_file_tasks.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "chrome/browser/ash/login/test/network_portal_detector_mixin.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
 #include "chrome/browser/ash/web_applications/media_app/media_web_app_info.h"
 #include "chrome/browser/error_reporting/mock_chrome_js_error_report_processor.h"
 #include "chrome/browser/extensions/component_loader.h"
+#include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
@@ -58,6 +61,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/message_center/public/cpp/notification.h"
 
 using ash::SystemWebAppType;
 using platform_util::OpenOperationResult;
@@ -130,6 +134,11 @@ class MediaAppIntegrationTest : public ash::SystemWebAppIntegrationTest {
     // Use a fake audio stream. Some tests make noise otherwise, and could fight
     // with parallel tests for access to the audio device.
     command_line->AppendSwitch(switches::kDisableAudioOutput);
+
+    // Enable HaTS testing.
+    command_line->AppendSwitchASCII(
+        ash::switches::kForceHappinessTrackingSystem,
+        features::kHappinessTrackingMediaAppPdf.name);
   }
 
   void MediaAppLaunchWithFile();
@@ -141,6 +150,9 @@ class MediaAppIntegrationTest : public ash::SystemWebAppIntegrationTest {
 
   // Helper to initiate a test by launching with no files (zero state).
   content::WebContents* LaunchWithNoFiles();
+
+ protected:
+  ash::NetworkPortalDetectorMixin network_portal_detector_{&mixin_host_};
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -1713,6 +1725,57 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, ToggleBrowserFullscreen) {
 
   EXPECT_EQ("success", ExtractStringInGlobalScope(web_ui, kToggleFullscreen));
   EXPECT_FALSE(app_browser->window()->IsFullscreen());
+}
+
+// Tests that invoking the maybeTriggerPdfHats() MediaApp delegate method fires
+// the notification that asks the user whether to complete a HaTS survey.
+// Note kForceHappinessTrackingSystem is set in the test fixture to ignore the
+// "dice roll" that would normally only show the prompt by chance.
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MaybeTriggerPdfHats) {
+  content::WebContents* web_ui = LaunchWithOneTestFile(kFilePdfTall);
+
+  constexpr char kMaybeTriggerPdfHats[] = R"(
+      (async function triggerPdfHats() {
+        await customLaunchData.delegate.maybeTriggerPdfHats();
+        domAutomationController.send("success");
+      })();
+  )";
+
+  struct NotificationWatcher : public NotificationDisplayService::Observer {
+    base::RunLoop run_loop;
+    std::string seen_notification_id;
+
+    void OnNotificationDisplayed(
+        const message_center::Notification& notification,
+        const NotificationCommon::Metadata* const metadata) override {
+      seen_notification_id = notification.id();
+      if (run_loop.IsRunningOnCurrentThread()) {
+        run_loop.Quit();
+      }
+    }
+
+    void OnNotificationClosed(const std::string& notification_id) override {}
+    void OnNotificationDisplayServiceDestroyed(
+        NotificationDisplayService* service) override {}
+  } notification_watcher;
+
+  auto* notification_display_service =
+      NotificationDisplayService::GetForProfile(profile());
+  notification_display_service->AddObserver(&notification_watcher);
+
+  // Notifications only fire if the device is "online". Simulate that.
+  network_portal_detector_.SimulateDefaultNetworkState(
+      ash::NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+
+  EXPECT_EQ("success",
+            ExtractStringInGlobalScope(web_ui, kMaybeTriggerPdfHats));
+
+  if (notification_watcher.seen_notification_id.empty()) {
+    notification_watcher.run_loop.Run();
+  }
+  notification_display_service->RemoveObserver(&notification_watcher);
+
+  EXPECT_EQ(notification_watcher.seen_notification_id, "hats_notification");
 }
 
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, GuestCanReadLocalFonts) {

@@ -20,6 +20,8 @@ interface PageHandler {
   OpenFeedbackDialog() => (string? error_message);
   // Toggles "browser" fullscreen mode for the window.
   ToggleBrowserFullscreenMode() => ();
+  // Indicate that a trigger for displaying the PDF HaTS survey has occurred.
+  MaybeTriggerPdfHats() => ();
   // Checks if the file path for the file represented by the provided transfer
   // token is in a filesystem that ARC is able to write to. Returns false if
   // |token| can't be resolved to a path.

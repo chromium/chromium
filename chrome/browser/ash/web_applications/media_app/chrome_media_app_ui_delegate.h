@@ -7,11 +7,16 @@
 
 #include "ash/webui/media_app_ui/media_app_ui_delegate.h"
 #include "base/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom.h"
+
+namespace ash {
+class HatsNotificationController;
+}
 
 namespace content {
 class WebUI;
@@ -32,6 +37,7 @@ class ChromeMediaAppUIDelegate : public ash::MediaAppUIDelegate {
   // MediaAppUIDelegate:
   absl::optional<std::string> OpenFeedbackDialog() override;
   void ToggleBrowserFullscreenMode() override;
+  void MaybeTriggerPdfHats() override;
   void IsFileArcWritable(
       mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token,
       base::OnceCallback<void(bool)> is_file_arc_writable_callback) override;
@@ -49,6 +55,9 @@ class ChromeMediaAppUIDelegate : public ash::MediaAppUIDelegate {
                         absl::optional<storage::FileSystemURL> url);
 
   content::WebUI* web_ui_;  // Owns |this|.
+
+  scoped_refptr<ash::HatsNotificationController> hats_notification_controller_;
+
   base::WeakPtrFactory<ChromeMediaAppUIDelegate> weak_ptr_factory_{this};
 };
 

@@ -378,6 +378,9 @@ extern const base::Feature kHappinessTrackingPersonalizationScreensaver;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kHappinessTrackingPersonalizationWallpaper;
 
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kHappinessTrackingMediaAppPdf;
+
 #endif
 
 COMPONENT_EXPORT(CHROME_FEATURES)

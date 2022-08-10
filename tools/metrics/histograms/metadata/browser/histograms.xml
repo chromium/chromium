@@ -99,6 +99,7 @@ chromium-metrics-reviews@google.com.
     <variant name=".Audio"/>
     <variant name=".Ent"/>
     <variant name=".General"/>
+    <variant name=".MediaAppPdf"/>
     <variant name=".OnboardingExperience"/>
     <variant name=".Performance"/>
     <variant name=".PersonalizationAvatar"/>

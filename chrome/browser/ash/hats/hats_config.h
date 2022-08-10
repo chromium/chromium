@@ -56,6 +56,7 @@ extern const HatsConfig kHatsAudioSurvey;
 extern const HatsConfig kHatsPersonalizationAvatarSurvey;
 extern const HatsConfig kHatsPersonalizationScreensaverSurvey;
 extern const HatsConfig kHatsPersonalizationWallpaperSurvey;
+extern const HatsConfig kHatsMediaAppPdfSurvey;
 
 }  // namespace ash
 

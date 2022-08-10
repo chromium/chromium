@@ -302,6 +302,8 @@ extern const char kHatsPersonalizationScreensaverSurveyCycleEndTs[];
 extern const char kHatsPersonalizationScreensaverSurveyIsSelected[];
 extern const char kHatsPersonalizationWallpaperSurveyCycleEndTs[];
 extern const char kHatsPersonalizationWallpaperSurveyIsSelected[];
+extern const char kHatsMediaAppPdfCycleEndTs[];
+extern const char kHatsMediaAppPdfIsSelected[];
 extern const char kEolStatus[];
 extern const char kEndOfLifeDate[];
 extern const char kEolNotificationDismissed[];

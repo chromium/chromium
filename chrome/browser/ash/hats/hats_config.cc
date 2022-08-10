@@ -147,4 +147,14 @@ const HatsConfig kHatsPersonalizationWallpaperSurvey = {
         kHatsPersonalizationWallpaperSurveyCycleEndTs,  // cycle_end_timestamp_pref_name
 };
 
+// MediaApp PDF Editing experience survey -- shown after a user clicks `Save`
+// after editing a PDF in the MediaApp (Gallery), and the save is complete.
+const HatsConfig kHatsMediaAppPdfSurvey = {
+    ::features::kHappinessTrackingMediaAppPdf,        // feature
+    "Browser.ChromeOS.HatsSatisfaction.MediaAppPdf",  // histogram_name
+    base::Days(7),                                    // new_device_threshold
+    prefs::kHatsMediaAppPdfIsSelected,                // hatsIsSelectedPrefName
+    prefs::kHatsMediaAppPdfCycleEndTs,  // hatsCycleEndTimestampPrefName
+};
+
 }  // namespace ash

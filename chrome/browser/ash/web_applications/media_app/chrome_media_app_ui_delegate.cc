@@ -16,6 +16,8 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "chrome/browser/ash/hats/hats_config.h"
+#include "chrome/browser/ash/hats/hats_notification_controller.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
@@ -63,6 +65,17 @@ void ChromeMediaAppUIDelegate::ToggleBrowserFullscreenMode() {
       chrome::FindBrowserWithWebContents(web_ui_->GetWebContents());
   if (browser) {
     chrome::ToggleFullscreenMode(browser);
+  }
+}
+
+void ChromeMediaAppUIDelegate::MaybeTriggerPdfHats() {
+  Profile* profile = Profile::FromWebUI(web_ui_);
+  const base::flat_map<std::string, std::string> product_specific_data;
+
+  if (ash::HatsNotificationController::ShouldShowSurveyToProfile(
+          profile, ash::kHatsMediaAppPdfSurvey)) {
+    hats_notification_controller_ = new ash::HatsNotificationController(
+        profile, ash::kHatsMediaAppPdfSurvey, product_specific_data);
   }
 }
 
