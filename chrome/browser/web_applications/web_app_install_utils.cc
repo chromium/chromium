@@ -639,7 +639,7 @@ std::vector<GURL> GetFileHandlingIcons(const WebAppInstallInfo& web_app_info) {
   return urls;
 }
 
-base::flat_set<GURL> RemoveDuplicates(const std::vector<GURL>& from_urls) {
+base::flat_set<GURL> RemoveDuplicates(std::vector<GURL> from_urls) {
   return base::flat_set<GURL>{from_urls};
 }
 
@@ -659,7 +659,7 @@ base::flat_set<GURL> GetValidIconUrlsToDownload(
 
   RemoveInvalidUrls(std::ref(icon_urls));
 
-  return RemoveDuplicates(icon_urls);
+  return RemoveDuplicates(std::move(icon_urls));
 }
 
 void PopulateOtherIcons(WebAppInstallInfo* web_app_info,
