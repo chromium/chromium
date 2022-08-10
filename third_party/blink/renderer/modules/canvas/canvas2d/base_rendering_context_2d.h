@@ -523,6 +523,49 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
            image_type == CanvasRenderingContext2DState::kNonOpaqueImage;
   }
 
+  // Blend modes that require compositing with layers when shadows are drawn.
+  ALWAYS_INLINE bool BlendModeRequiresLayersForShadows(SkBlendMode blendMode) {
+    return blendMode == SkBlendMode::kDstOver ||
+           blendMode == SkBlendMode::kMultiply ||
+           blendMode == SkBlendMode::kOverlay ||
+           blendMode == SkBlendMode::kDarken ||
+           blendMode == SkBlendMode::kLighten ||
+           blendMode == SkBlendMode::kColorDodge ||
+           blendMode == SkBlendMode::kColorBurn ||
+           blendMode == SkBlendMode::kHardLight ||
+           blendMode == SkBlendMode::kSoftLight ||
+           blendMode == SkBlendMode::kDifference ||
+           blendMode == SkBlendMode::kExclusion ||
+           blendMode == SkBlendMode::kHue ||
+           blendMode == SkBlendMode::kSaturation ||
+           blendMode == SkBlendMode::kColor ||
+           blendMode == SkBlendMode::kLuminosity;
+  }
+
+  ALWAYS_INLINE bool BlendModeRequiresCompositedDraw(SkBlendMode blendMode) {
+    // Blend modes that require CompositedDraw in every case.
+    if (IsFullCanvasCompositeMode(blendMode))
+      return true;
+    const CanvasRenderingContext2DState& state = GetState();
+    // Blend modes that require CompositedDraw if shadows are drawn.
+    return state.ShouldDrawShadows() &&
+           BlendModeRequiresLayersForShadows(blendMode);
+  }
+
+  ALWAYS_INLINE bool ShouldUseCompositedDraw(
+      CanvasRenderingContext2DState::PaintType paint_type,
+      CanvasRenderingContext2DState::ImageType image_type) {
+    const CanvasRenderingContext2DState& state = GetState();
+    if (BlendModeRequiresCompositedDraw(state.GlobalComposite()))
+      return true;
+    if (StateHasFilter())
+      return true;
+    if (state.ShouldDrawShadows() &&
+        ShouldUseDropShadowPaintFilter(paint_type, image_type))
+      return true;
+    return false;
+  }
+
   template <OverdrawOp CurrentOverdrawOp,
             typename DrawFunc,
             typename DrawCoversClipBoundsFunc>
@@ -653,9 +696,7 @@ void BaseRenderingContext2D::DrawInternal(
     CanvasPerformanceMonitor::DrawType draw_type) {
   const CanvasRenderingContext2DState& state = GetState();
   SkBlendMode global_composite = state.GlobalComposite();
-  if (IsFullCanvasCompositeMode(global_composite) || StateHasFilter() ||
-      (state.ShouldDrawShadows() &&
-       ShouldUseDropShadowPaintFilter(paint_type, image_type))) {
+  if (ShouldUseCompositedDraw(paint_type, image_type)) {
     CompositedDraw(draw_func, GetPaintCanvasForDraw(clip_bounds, draw_type),
                    paint_type, image_type);
   } else if (global_composite == SkBlendMode::kSrc) {
@@ -742,9 +783,7 @@ void BaseRenderingContext2D::CompositedDraw(
 
   sk_sp<PaintFilter> canvas_filter = StateGetFilter();
   const CanvasRenderingContext2DState& state = GetState();
-  DCHECK(IsFullCanvasCompositeMode(state.GlobalComposite()) || canvas_filter ||
-         (state.ShouldDrawShadows() &&
-          ShouldUseDropShadowPaintFilter(paint_type, image_type)));
+  DCHECK(ShouldUseCompositedDraw(paint_type, image_type));
   SkM44 ctm = c->getLocalToDevice();
   c->setMatrix(SkM44());
   cc::PaintFlags composite_flags;
@@ -768,11 +807,14 @@ void BaseRenderingContext2D::CompositedDraw(
       shadow_flags.setAlpha(255);
       // Saving the shadow layer before setting the matrix, so the shadow offset
       // does not get modified by the transformation matrix
+      shadow_flags.setBlendMode(state.GlobalComposite());
       c->saveLayer(nullptr, &shadow_flags);
+      foreground_flags.setBlendMode(SkBlendMode::kSrcOver);
       c->setMatrix(ctm);
       draw_func(c, &foreground_flags);
     } else {
-      DCHECK(IsFullCanvasCompositeMode(state.GlobalComposite()));
+      DCHECK(IsFullCanvasCompositeMode(state.GlobalComposite()) ||
+             BlendModeRequiresCompositedDraw(state.GlobalComposite()));
       c->saveLayer(nullptr, &composite_flags);
       shadow_flags.setBlendMode(SkBlendMode::kSrcOver);
       c->setMatrix(ctm);
