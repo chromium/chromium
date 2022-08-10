@@ -124,6 +124,16 @@ class LogsPrefWriter {
   size_t unsent_logs_count_ = 0;
 };
 
+bool GetString(const base::Value::Dict& dict,
+               base::StringPiece key,
+               std::string& out) {
+  const std::string* value = dict.FindString(key);
+  if (!value)
+    return false;
+  out = *value;
+  return true;
+}
+
 }  // namespace
 
 UnsentLogStore::LogInfo::LogInfo() = default;
@@ -326,7 +336,7 @@ void UnsentLogStore::TrimAndPersistUnsentLogs(bool overwrite_in_memory_store) {
 }
 
 void UnsentLogStore::LoadPersistedUnsentLogs() {
-  ReadLogsFromPrefList(*local_state_->GetList(log_data_pref_name_));
+  ReadLogsFromPrefList(local_state_->GetValueList(log_data_pref_name_));
   RecordMetaDataMetrics();
 }
 
@@ -379,27 +389,24 @@ void UnsentLogStore::Purge() {
     local_state_->ClearPref(metadata_pref_name_);
 }
 
-void UnsentLogStore::ReadLogsFromPrefList(const base::Value& list_value) {
-  if (list_value.GetListDeprecated().empty()) {
+void UnsentLogStore::ReadLogsFromPrefList(const base::Value::List& list_value) {
+  if (list_value.empty()) {
     metrics_->RecordLogReadStatus(UnsentLogStoreMetrics::LIST_EMPTY);
     return;
   }
 
-  const size_t log_count = list_value.GetListDeprecated().size();
+  const size_t log_count = list_value.size();
 
   DCHECK(list_.empty());
   list_.resize(log_count);
 
   for (size_t i = 0; i < log_count; ++i) {
-    const base::Value& value = list_value.GetListDeprecated()[i];
-    const base::DictionaryValue* dict = nullptr;
-    if (value.is_dict())
-      dict = &base::Value::AsDictionaryValue(value);
+    const base::Value::Dict* dict = list_value[i].GetIfDict();
     LogInfo info;
-    if (!dict || !dict->GetString(kLogDataKey, &info.compressed_log_data) ||
-        !dict->GetString(kLogHashKey, &info.hash) ||
-        !dict->GetString(kLogTimestampKey, &info.timestamp) ||
-        !dict->GetString(kLogSignatureKey, &info.signature)) {
+    if (!dict || !GetString(*dict, kLogDataKey, info.compressed_log_data) ||
+        !GetString(*dict, kLogHashKey, info.hash) ||
+        !GetString(*dict, kLogTimestampKey, info.timestamp) ||
+        !GetString(*dict, kLogSignatureKey, info.signature)) {
       // Something is wrong, so we don't try to get any persisted logs.
       list_.clear();
       metrics_->RecordLogReadStatus(
@@ -413,12 +420,12 @@ void UnsentLogStore::ReadLogsFromPrefList(const base::Value& list_value) {
     // timestamp doesn't need to be decoded.
 
     // Extract user id of the log if it exists.
-    std::string user_id_str;
-    if (dict->GetString(kLogUserIdKey, &user_id_str)) {
+    const std::string* user_id_str = dict->FindString(kLogUserIdKey);
+    if (user_id_str) {
       uint64_t user_id;
 
       // Only initialize the metadata if conversion was successful.
-      if (base::StringToUint64(DecodeFromBase64(user_id_str), &user_id))
+      if (base::StringToUint64(DecodeFromBase64(*user_id_str), &user_id))
         info.log_metadata.user_id = user_id;
     }
 
@@ -436,13 +443,12 @@ void UnsentLogStore::WriteToMetricsPref(
     return;
 
   DictionaryPrefUpdate update(local_state_, metadata_pref_name_);
-  base::Value* pref_data = update.Get();
-  pref_data->SetKey(kLogUnsentCountKey, base::Value(unsent_samples_count));
-  pref_data->SetKey(kLogSentCountKey, base::Value(sent_samples_count));
+  base::Value::Dict& pref_data = update->GetDict();
+  pref_data.Set(kLogUnsentCountKey, unsent_samples_count);
+  pref_data.Set(kLogSentCountKey, sent_samples_count);
   // Round up to kb.
-  pref_data->SetKey(
-      kLogPersistedSizeInKbKey,
-      base::Value(static_cast<int>(std::ceil(unsent_persisted_size / 1024.0))));
+  pref_data.Set(kLogPersistedSizeInKbKey,
+                static_cast<int>(std::ceil(unsent_persisted_size / 1024.0)));
 }
 
 void UnsentLogStore::RecordMetaDataMetrics() {

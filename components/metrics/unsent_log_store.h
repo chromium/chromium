@@ -145,7 +145,7 @@ class UnsentLogStore : public LogStore {
   FRIEND_TEST_ALL_PREFIXES(UnsentLogStoreTest, UnsentLogMetadataMetrics);
 
   // Reads the list of logs from |list|.
-  void ReadLogsFromPrefList(const base::Value& list);
+  void ReadLogsFromPrefList(const base::Value::List& list);
 
   // Writes the unsent log info to the |metadata_pref_name_| preference.
   void WriteToMetricsPref(base::HistogramBase::Count unsent_samples_count,
