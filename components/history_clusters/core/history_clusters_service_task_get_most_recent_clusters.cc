@@ -54,9 +54,15 @@ void HistoryClustersServiceTaskGetMostRecentClusters::Start() {
     // If visits can't be clustered, either because `backend_` is null, or all
     // unclustered visits have already been clustered and returned, then return
     // persisted clusters.
-    weak_history_clusters_service_->NotifyDebugMessage(
-        "HistoryClustersService::QueryClusters Error: ClusteringBackend is "
-        "nullptr. Returning empty cluster vector.");
+    if (!backend_) {
+      weak_history_clusters_service_->NotifyDebugMessage(
+          "HistoryClustersServiceTaskGetMostRecentClusters::Start() Error: "
+          "ClusteringBackend is nullptr. Returning most recent clusters.");
+    } else {
+      weak_history_clusters_service_->NotifyDebugMessage(
+          "HistoryClustersServiceTaskGetMostRecentClusters::Start() exhausted "
+          "unclustered visits. Returning most recent clusters.");
+    }
     ReturnMostRecentPersistedClusters(continuation_params_.continuation_time);
 
   } else {
