@@ -29,6 +29,7 @@
 #include "sql/statement.h"
 #include "sql/transaction.h"
 #include "third_party/sqlite/sqlite3.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_APPLE)
 #include "base/mac/backup_util.h"
@@ -662,6 +663,32 @@ bool FaviconDatabase::GetFaviconLastUpdatedTime(favicon_base::FaviconID icon_id,
         base::Microseconds(statement.ColumnInt64(0)));
   }
   return true;
+}
+
+favicon_base::FaviconID FaviconDatabase::GetFaviconIDForFaviconURL(
+    const GURL& icon_url,
+    favicon_base::IconType icon_type,
+    const url::Origin& page_origin) {
+  // Look to see if there even is any relevant cached entry.
+  auto const icon_id = GetFaviconIDForFaviconURL(icon_url, icon_type);
+  if (!icon_id) {
+    return icon_id;
+  }
+
+  // Check existing mappings to see if any are for the same origin.
+  sql::Statement statement(db_.GetCachedStatement(
+      SQL_FROM_HERE, "SELECT page_url FROM icon_mapping WHERE icon_id=?"));
+  statement.BindInt64(0, icon_id);
+  while (statement.Step()) {
+    const auto candidate_origin =
+        url::Origin::Create(GURL(statement.ColumnString(0)));
+    if (candidate_origin == page_origin) {
+      return icon_id;
+    }
+  }
+
+  // Act as if there is no entry in the cache if no mapping exists.
+  return 0;
 }
 
 favicon_base::FaviconID FaviconDatabase::GetFaviconIDForFaviconURL(

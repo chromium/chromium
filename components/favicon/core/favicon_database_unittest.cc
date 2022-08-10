@@ -25,6 +25,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/sqlite/sqlite3.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 using testing::AllOf;
 using testing::ElementsAre;
@@ -1445,6 +1446,65 @@ TEST_F(FaviconDatabaseTest, SetFaviconsOutOfDateBetween) {
   EXPECT_EQ(base::Time(), GetLastUpdated(&db, icon1));
   EXPECT_EQ(base::Time(), GetLastUpdated(&db, icon2));
   EXPECT_EQ(base::Time(), GetLastUpdated(&db, icon3));
+}
+
+// Test that GetFaviconIDForFaviconURL can filter by origin.
+TEST_F(FaviconDatabaseTest, GetFaviconIDForFaviconURLOriginFilter) {
+  // Setup DB with `kPageUrl1` mapped to `kIconUrl1`.
+  FaviconDatabase db;
+  ASSERT_EQ(sql::INIT_OK, db.Init(file_name_));
+  db.BeginTransaction();
+  scoped_refptr<base::RefCountedStaticMemory> favicon1(
+      new base::RefCountedStaticMemory(kBlob1, sizeof(kBlob1)));
+  const auto icon_id = db.AddFavicon(
+      kIconUrl1, favicon_base::IconType::kFavicon, favicon1,
+      FaviconBitmapType::ON_VISIT, base::Time::Now(), gfx::Size());
+  db.AddIconMapping(kPageUrl1, icon_id);
+  ASSERT_NE(0, icon_id);
+
+  // We should be able to find the `icon_id` via the non-filtered function.
+  auto icon_id_found =
+      db.GetFaviconIDForFaviconURL(kIconUrl1, favicon_base::IconType::kFavicon);
+  ASSERT_EQ(icon_id, icon_id_found);
+
+  // We should be able to find the `icon_id` via a the origin of `kPageUrl1`.
+  icon_id_found =
+      db.GetFaviconIDForFaviconURL(kIconUrl1, favicon_base::IconType::kFavicon,
+                                   url::Origin::Create(kPageUrl1));
+  ASSERT_EQ(icon_id, icon_id_found);
+
+  // We shouldn't be able to find the `icon_id` via a the origin of `kPageUrl2`.
+  icon_id_found =
+      db.GetFaviconIDForFaviconURL(kIconUrl1, favicon_base::IconType::kFavicon,
+                                   url::Origin::Create(kPageUrl2));
+  ASSERT_EQ(0, icon_id_found);
+
+  // We shouldn't be able to find the `icon_id` via a the origin of `kPageUrl3`.
+  icon_id_found =
+      db.GetFaviconIDForFaviconURL(kIconUrl1, favicon_base::IconType::kFavicon,
+                                   url::Origin::Create(kPageUrl3));
+  ASSERT_EQ(0, icon_id_found);
+
+  // If we map `kPageUrl2` then the situation changes.
+  db.AddIconMapping(kPageUrl2, icon_id);
+
+  // We should be able to find the `icon_id` via a the origin of `kPageUrl1`.
+  icon_id_found =
+      db.GetFaviconIDForFaviconURL(kIconUrl1, favicon_base::IconType::kFavicon,
+                                   url::Origin::Create(kPageUrl1));
+  ASSERT_EQ(icon_id, icon_id_found);
+
+  // We should be able to find the `icon_id` via a the origin of `kPageUrl2`.
+  icon_id_found =
+      db.GetFaviconIDForFaviconURL(kIconUrl1, favicon_base::IconType::kFavicon,
+                                   url::Origin::Create(kPageUrl2));
+  ASSERT_EQ(icon_id, icon_id_found);
+
+  // We shouldn't be able to find the `icon_id` via a the origin of `kPageUrl3`.
+  icon_id_found =
+      db.GetFaviconIDForFaviconURL(kIconUrl1, favicon_base::IconType::kFavicon,
+                                   url::Origin::Create(kPageUrl3));
+  ASSERT_EQ(0, icon_id_found);
 }
 
 }  // namespace favicon

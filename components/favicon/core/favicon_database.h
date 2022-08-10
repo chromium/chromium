@@ -22,6 +22,10 @@ class RefCountedMemory;
 class Time;
 }  // namespace base
 
+namespace url {
+class Origin;
+}  // namespace url
+
 namespace favicon {
 
 // The minimum number of days after which last_requested field gets updated.
@@ -146,9 +150,19 @@ class FaviconDatabase {
   // Returns true if successful.
   bool TouchOnDemandFavicon(const GURL& icon_url, base::Time time);
 
-  // Returns the id of the entry in the favicon database with the specified url
-  // and icon type.
-  // Returns 0 if no entry exists for the specified url.
+  // Returns the id of the entry in the favicon database with the specified
+  // `icon_url` and `icon_type` that has an existing mapping to `page_origin`
+  // (and 0 if no entry exists). See crbug.com/1300214 for more context.
+  favicon_base::FaviconID GetFaviconIDForFaviconURL(
+      const GURL& icon_url,
+      favicon_base::IconType icon_type,
+      const url::Origin& page_origin);
+
+  // Returns the id of the entry in the favicon database with the specified
+  // `icon_url` and `icon_type` (and 0 if no entry exists). This function does
+  // not respect cross-origin partitioning and returns an entry from the cache
+  // without verifying it was stored for the origin requesting it. This can leak
+  // navigation history, see crbug.com/1300214 for more context.
   favicon_base::FaviconID GetFaviconIDForFaviconURL(
       const GURL& icon_url,
       favicon_base::IconType icon_type);
