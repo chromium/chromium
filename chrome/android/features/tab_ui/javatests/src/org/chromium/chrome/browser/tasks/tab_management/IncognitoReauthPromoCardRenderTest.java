@@ -5,9 +5,11 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.chromium.base.test.util.Batch.PER_CLASS;
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
@@ -45,8 +47,6 @@ import java.io.IOException;
 
 /**
  * Render tests for incognito re-auth promo message card.
- *
- * TODO(crbug.com/1227656): Add render tests for snack bar when integrated with review action.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
@@ -68,6 +68,7 @@ public class IncognitoReauthPromoCardRenderTest {
     public void setUp() {
         IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(true);
         IncognitoReauthPromoMessageService.setIsPromoEnabledForTesting(true);
+        IncognitoReauthPromoMessageService.sTriggerReviewActionWithoutReauthForTesting = true;
         mActivityTestRule.startMainActivityOnBlankPage();
 
         CriteriaHelper.pollUiThread(
@@ -76,8 +77,9 @@ public class IncognitoReauthPromoCardRenderTest {
 
     @After
     public void tearDown() {
-        IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(false);
-        IncognitoReauthPromoMessageService.setIsPromoEnabledForTesting(false);
+        IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(null);
+        IncognitoReauthPromoMessageService.setIsPromoEnabledForTesting(null);
+        IncognitoReauthPromoMessageService.sTriggerReviewActionWithoutReauthForTesting = null;
     }
 
     @Test
@@ -108,5 +110,21 @@ public class IncognitoReauthPromoCardRenderTest {
         onView(withId(R.id.large_message_card_item)).check(matches(isDisplayed()));
         mRenderTestRule.render(
                 cta.findViewById(R.id.large_message_card_item), "incognito_reauth_promo_landscape");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testRenderReauthPromoMessageCard_Snackbar() throws IOException {
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+
+        createTabs(cta, true, 1);
+        enterTabSwitcher(cta);
+        CriteriaHelper.pollUiThread(TabSwitcherCoordinator::hasAppendedMessagesForTesting);
+        onView(withId(R.id.large_message_card_item)).check(matches(isDisplayed()));
+        onView(withText(R.string.incognito_reauth_lock_action_text)).perform(click());
+        onView(withId(R.id.snackbar)).check(matches(isDisplayed()));
+        onView(withText(R.string.incognito_reauth_snackbar_text)).check(matches(isDisplayed()));
+        mRenderTestRule.render(cta.findViewById(R.id.snackbar), "incognito_reauth_promo_snackbar");
     }
 }

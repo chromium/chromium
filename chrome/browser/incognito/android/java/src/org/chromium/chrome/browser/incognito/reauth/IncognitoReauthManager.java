@@ -98,7 +98,7 @@ public class IncognitoReauthManager {
     }
 
     @VisibleForTesting
-    public static void setIsIncognitoReauthFeatureAvailableForTesting(boolean isAvailable) {
+    public static void setIsIncognitoReauthFeatureAvailableForTesting(Boolean isAvailable) {
         sIsIncognitoReauthFeatureAvailableForTesting = isAvailable;
     }
 

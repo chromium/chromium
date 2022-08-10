@@ -10,6 +10,7 @@ import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -66,6 +67,7 @@ public class TabGridIncognitoReauthPromoTest {
     public void setUp() {
         IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(true);
         IncognitoReauthPromoMessageService.setIsPromoEnabledForTesting(true);
+        IncognitoReauthPromoMessageService.sTriggerReviewActionWithoutReauthForTesting = true;
         mActivityTestRule.startMainActivityOnBlankPage();
 
         Layout layout = mActivityTestRule.getActivity().getLayoutManager().getOverviewLayout();
@@ -76,8 +78,9 @@ public class TabGridIncognitoReauthPromoTest {
 
     @After
     public void tearDown() {
-        IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(false);
-        IncognitoReauthPromoMessageService.setIsPromoEnabledForTesting(false);
+        IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(null);
+        IncognitoReauthPromoMessageService.setIsPromoEnabledForTesting(null);
+        IncognitoReauthPromoMessageService.sTriggerReviewActionWithoutReauthForTesting = null;
     }
 
     @Test
@@ -91,6 +94,25 @@ public class TabGridIncognitoReauthPromoTest {
         assertTrue(cta.getTabModelSelector().getCurrentModel().isIncognito());
         CriteriaHelper.pollUiThread(TabSwitcherCoordinator::hasAppendedMessagesForTesting);
         onView(withId(R.id.large_message_card_item)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    public void testSnackBarShown_WhenClickingReviewActionProvider() {
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+
+        createTabs(cta, true, 1);
+        enterTabSwitcher(cta);
+
+        assertTrue(cta.getTabModelSelector().getCurrentModel().isIncognito());
+        CriteriaHelper.pollUiThread(TabSwitcherCoordinator::hasAppendedMessagesForTesting);
+        onView(withId(R.id.large_message_card_item)).check(matches(isDisplayed()));
+
+        onView(withText(R.string.incognito_reauth_lock_action_text)).perform(click());
+        onView(withId(R.id.snackbar)).check(matches(isDisplayed()));
+        onView(withText(R.string.incognito_reauth_snackbar_text)).check(matches(isDisplayed()));
+
+        onView(withId(R.id.large_message_card_item)).check(doesNotExist());
     }
 
     @Test

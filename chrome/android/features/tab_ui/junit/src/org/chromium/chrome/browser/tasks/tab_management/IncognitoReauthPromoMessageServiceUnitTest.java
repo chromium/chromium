@@ -21,6 +21,7 @@ import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.INCOG
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.INCOGNITO_REAUTH_PROMO_SHOW_COUNT;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.Build.VERSION_CODES;
 
 import androidx.test.filters.SmallTest;
@@ -51,7 +52,9 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
+import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
@@ -71,6 +74,8 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
     @Mock
     private Context mContextMock;
     @Mock
+    private Resources mResourcesMock;
+    @Mock
     private SnackbarManager mSnackbarManagerMock;
     @Mock
     private ActivityLifecycleDispatcher mActivityLifecycleDispatcherMock;
@@ -84,6 +89,8 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
     private ReauthenticatorBridge mReauthenticatorBridgeMock;
     @Captor
     private ArgumentCaptor<LifecycleObserver> mLifecycleObserverArgumentCaptor;
+    @Captor
+    private ArgumentCaptor<Snackbar> mSnackbarArgumentCaptor;
 
     private SharedPreferencesManager mSharedPreferenceManager;
     private IncognitoReauthPromoMessageService mIncognitoReauthPromoMessageService;
@@ -339,7 +346,6 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
                 mIncognitoReauthPromoMessageService.getObserversForTesting().hasObserver(
                         mMessageObserverMock));
         doNothing().when(mMessageObserverMock).messageInvalidate(MessageType.FOR_TESTING);
-
         IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(/*isAvailable=*/true);
         when(mReauthenticatorBridgeMock.canUseAuthentication()).thenReturn(true);
         doAnswer(invocation -> {
@@ -349,6 +355,16 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
         })
                 .when(mReauthenticatorBridgeMock)
                 .reauthenticate(notNull(), /*useLastValidReauth=*/eq(false));
+
+        // Setup snackbar interaction.
+        final String snackBarTestString = "This is written inside the snackbar.";
+        when(mContextMock.getString(R.string.incognito_reauth_snackbar_text))
+                .thenReturn(snackBarTestString);
+        when(mContextMock.getResources()).thenReturn(mResourcesMock);
+        when(mResourcesMock.getColor(R.color.snackbar_background_color_baseline_dark))
+                .thenReturn(R.color.snackbar_background_color_baseline_dark);
+        doNothing().when(mSnackbarManagerMock).showSnackbar(mSnackbarArgumentCaptor.capture());
+
         IncognitoReauthPromoMessageService.setIsPromoEnabledForTesting(true);
         mIncognitoReauthPromoMessageService.review();
         IncognitoReauthPromoMessageService.setIsPromoEnabledForTesting(false);
@@ -359,6 +375,12 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
         verify(mPrefServiceMock, times(1))
                 .setBoolean(Pref.INCOGNITO_REAUTHENTICATION_FOR_ANDROID, true);
         verify(mMessageObserverMock, times(1)).messageInvalidate(MessageType.FOR_TESTING);
+
+        verify(mContextMock, times(1)).getString(R.string.incognito_reauth_snackbar_text);
+        verify(mContextMock, times(1)).getResources();
+        verify(mResourcesMock, times(1)).getColor(R.color.snackbar_background_color_baseline_dark);
+        verify(mSnackbarManagerMock, times(1)).showSnackbar(mSnackbarArgumentCaptor.getValue());
+
         assertFalse(
                 mSharedPreferenceManager.readBoolean(INCOGNITO_REAUTH_PROMO_CARD_ENABLED, true));
     }
