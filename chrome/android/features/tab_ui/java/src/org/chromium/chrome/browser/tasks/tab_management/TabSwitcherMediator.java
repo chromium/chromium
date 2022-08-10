@@ -188,6 +188,13 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
          * Release the thumbnail {@link Bitmap} but keep the {@link TabGridView}.
          */
         void softCleanup();
+
+        /**
+         * Check to see if there are any not viewed price drops when the user leaves the tab
+         * switcher. This is done only before the coordinator is destroyed to reduce the amount of
+         * calls to ShoppingPersistedTabData.
+         */
+        void hardCleanup();
     }
 
     /**
@@ -434,8 +441,10 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         mContainerView = containerView;
 
         mSoftClearTabListRunnable = mResetHandler::softCleanup;
-        mClearTabListRunnable =
-                () -> mResetHandler.resetWithTabList(null, false, mShowTabsInMruOrder);
+        mClearTabListRunnable = () -> {
+            mResetHandler.hardCleanup();
+            mResetHandler.resetWithTabList(null, false, mShowTabsInMruOrder);
+        };
         mHandler = new Handler();
         mTabContentManager = tabContentManager;
 

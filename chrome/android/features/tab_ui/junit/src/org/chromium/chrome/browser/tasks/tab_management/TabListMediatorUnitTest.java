@@ -169,6 +169,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 /**
  * Tests for {@link TabListMediator}.
  */
@@ -253,6 +254,8 @@ public class TabListMediatorUnitTest {
     @Mock
     RecyclerView mRecyclerView;
     @Mock
+    TabListRecyclerView mTabListRecyclerView;
+    @Mock
     RecyclerView.Adapter mAdapter;
     @Mock
     TabGroupModelFilter mTabGroupModelFilter;
@@ -305,6 +308,8 @@ public class TabListMediatorUnitTest {
     ArgumentCaptor<ComponentCallbacks> mComponentCallbacksCaptor;
     @Captor
     ArgumentCaptor<TemplateUrlService.TemplateUrlServiceObserver> mTemplateUrlServiceObserver;
+    @Captor
+    ArgumentCaptor<RecyclerView.OnScrollListener> mOnScrollListenerCaptor;
     @Mock
     EndpointFetcher.Natives mEndpointFetcherJniMock;
     @Mock
@@ -3145,6 +3150,31 @@ public class TabListMediatorUnitTest {
                         -1));
     }
 
+    @Test
+    public void testPriceDropSeen() throws TimeoutException {
+        setPriceTrackingEnabledForTesting(true);
+        PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
+        PriceTrackingUtilities.SHARED_PREFERENCES_MANAGER.writeBoolean(
+                PriceTrackingUtilities.TRACK_PRICES_ON_TABS, true);
+
+        doReturn(false).when(mTab1).isIncognito();
+        doReturn(false).when(mTab2).isIncognito();
+
+        List<Tab> tabs = new ArrayList<>();
+        tabs.add(mTabModel.getTabAt(0));
+        tabs.add(mTabModel.getTabAt(1));
+
+        mMediator.resetWithListOfTabs(PseudoTab.getListOfPseudoTab(tabs),
+                /*quickMode =*/false, /*mruMode =*/false);
+
+        prepareRecyclerViewForScroll();
+        mMediator.registerOnScrolledListener(mRecyclerView);
+        verify(mRecyclerView).addOnScrollListener(mOnScrollListenerCaptor.capture());
+        mOnScrollListenerCaptor.getValue().onScrolled(
+                mRecyclerView, /*dx =*/mTabModel.getCount(), /*dy =*/0);
+        assertEquals(2, mMediator.getViewedTabIdsForTesting().size());
+    }
+
     private void setUpCloseButtonDescriptionString(boolean isGroup) {
         if (isGroup) {
             doAnswer(invocation -> {
@@ -3400,11 +3430,23 @@ public class TabListMediatorUnitTest {
         doReturn(mPriceDrop).when(mShoppingPersistedTabData).getPriceDrop();
     }
 
+    private void prepareRecyclerViewForScroll() {
+        View seenView = mock(View.class);
+        for (int i = 0; i < mTabModel.getCount(); i++) {
+            when(mRecyclerView.getChildAt(i)).thenReturn(seenView);
+        }
+
+        doReturn(true).when(mGridLayoutManager).isViewPartiallyVisible(seenView, false, true);
+        doReturn(mTabModel.getCount()).when(mRecyclerView).getChildCount();
+    }
+
     private static void setPriceTrackingEnabledForTesting(boolean value) {
         FeatureList.TestValues testValues = new FeatureList.TestValues();
         testValues.addFeatureFlagOverride(ChromeFeatureList.COMMERCE_PRICE_TRACKING, true);
         testValues.addFieldTrialParamOverride(ChromeFeatureList.COMMERCE_PRICE_TRACKING,
                 PriceTrackingFeatures.PRICE_TRACKING_PARAM, String.valueOf(value));
+        testValues.addFieldTrialParamOverride(ChromeFeatureList.COMMERCE_PRICE_TRACKING,
+                PriceTrackingFeatures.PRICE_DROP_IPH_ENABLED_PARAM, String.valueOf(value));
         FeatureList.setTestValues(testValues);
     }
 }

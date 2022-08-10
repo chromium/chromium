@@ -805,6 +805,11 @@ public class TabSwitcherCoordinator
         mTabListCoordinator.softCleanup();
     }
 
+    @Override
+    public void hardCleanup() {
+        mTabListCoordinator.hardCleanup();
+    }
+
     // ResetHandler implementation.
     @Override
     public void onDestroy() {

@@ -402,6 +402,10 @@ public class TabListCoordinator
         mMediator.softCleanup();
     }
 
+    void hardCleanup() {
+        mMediator.hardCleanup();
+    }
+
     void prepareTabSwitcherView() {
         if (mGlobalLayoutListener != null) {
             mRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mGlobalLayoutListener);
@@ -409,6 +413,7 @@ public class TabListCoordinator
         registerLayoutChangeListener();
         mRecyclerView.prepareTabSwitcherView();
         mMediator.prepareTabSwitcherView();
+        mMediator.registerOnScrolledListener(mRecyclerView);
     }
 
     private void registerLayoutChangeListener() {
