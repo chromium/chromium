@@ -2054,16 +2054,16 @@ const FeatureEntry::FeatureParam
         {"open_ntp_instead_of_start", "true"}};
 
 const FeatureEntry::FeatureVariation kStartSurfaceAndroidVariations[] = {
-    {"Canidate A", kStartSurfaceAndroid_CandidateA,
+    {"Candidate A", kStartSurfaceAndroid_CandidateA,
      std::size(kStartSurfaceAndroid_CandidateA), nullptr},
-    {"Canidate A + Sync check", kStartSurfaceAndroid_CandidateA_SyncCheck,
+    {"Candidate A + Sync check", kStartSurfaceAndroid_CandidateA_SyncCheck,
      std::size(kStartSurfaceAndroid_CandidateA_SyncCheck), nullptr},
-    {"Canidate A + Sign in promo backgrounded time limit",
+    {"Candidate A + Sign in promo backgrounded time limit",
      kStartSurfaceAndroid_CandidateA_SigninPromoTimeLimit,
      std::size(kStartSurfaceAndroid_CandidateA_SigninPromoTimeLimit), nullptr},
-    {"Canidate B", kStartSurfaceAndroid_CandidateB,
+    {"Candidate B", kStartSurfaceAndroid_CandidateB,
      std::size(kStartSurfaceAndroid_CandidateB), nullptr},
-    {"Canidate B + Always show Incognito icon",
+    {"Candidate B + Always show Incognito icon",
      kStartSurfaceAndroid_CandidateB_AlwaysShowIncognito,
      std::size(kStartSurfaceAndroid_CandidateB_AlwaysShowIncognito), nullptr},
     {"Single Surface", kStartSurfaceAndroid_SingleSurface,
