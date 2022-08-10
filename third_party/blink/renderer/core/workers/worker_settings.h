@@ -43,10 +43,6 @@ class CORE_EXPORT WorkerSettings {
     return generic_font_family_settings_;
   }
 
-  void MakeGenericFontFamilySettingsAtomic() {
-    generic_font_family_settings_.MakeAtomic();
-  }
-
  private:
   void CopyFlagValuesFromSettings(Settings*);
 

@@ -45,42 +45,6 @@ GenericFontFamilySettings::GenericFontFamilySettings(
       fantasy_font_family_map_(other.fantasy_font_family_map_),
       math_font_family_map_(other.math_font_family_map_) {}
 
-void GenericFontFamilySettings::IsolatedCopyTo(
-    GenericFontFamilySettings& dest) const {
-  DCHECK(!IsIsolated());
-  auto copy_to_vector = [](const ScriptFontFamilyMap& map,
-                           IsolatedCopyVector& vector) {
-    for (const auto& kv : map)
-      vector.emplace_back(kv.key, kv.value.GetString().IsolatedCopy());
-  };
-
-  dest.isolated_copy_ = std::make_unique<IsolatedCopyVector[]>(8);
-  copy_to_vector(standard_font_family_map_, dest.isolated_copy_[0]);
-  copy_to_vector(serif_font_family_map_, dest.isolated_copy_[1]);
-  copy_to_vector(fixed_font_family_map_, dest.isolated_copy_[2]);
-  copy_to_vector(sans_serif_font_family_map_, dest.isolated_copy_[3]);
-  copy_to_vector(cursive_font_family_map_, dest.isolated_copy_[4]);
-  copy_to_vector(fantasy_font_family_map_, dest.isolated_copy_[5]);
-  copy_to_vector(math_font_family_map_, dest.isolated_copy_[6]);
-}
-
-void GenericFontFamilySettings::MakeAtomic() {
-  DCHECK(IsIsolated());
-  auto copy_from_vector = [](ScriptFontFamilyMap& map,
-                             const IsolatedCopyVector& vector) {
-    for (const auto& kv : vector)
-      map.insert(kv.first, AtomicString(kv.second));
-  };
-  copy_from_vector(standard_font_family_map_, isolated_copy_[0]);
-  copy_from_vector(serif_font_family_map_, isolated_copy_[1]);
-  copy_from_vector(fixed_font_family_map_, isolated_copy_[2]);
-  copy_from_vector(sans_serif_font_family_map_, isolated_copy_[3]);
-  copy_from_vector(cursive_font_family_map_, isolated_copy_[4]);
-  copy_from_vector(fantasy_font_family_map_, isolated_copy_[5]);
-  copy_from_vector(math_font_family_map_, isolated_copy_[6]);
-  isolated_copy_.reset();
-}
-
 GenericFontFamilySettings& GenericFontFamilySettings::operator=(
     const GenericFontFamilySettings& other) {
   standard_font_family_map_ = other.standard_font_family_map_;
