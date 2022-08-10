@@ -114,6 +114,8 @@ if (is_win || is_mac || is_linux) {
       "prefs.cc",
       "prefs.h",
       "prefs_impl.h",
+      "refresh_dm_policies_task.cc",
+      "refresh_dm_policies_task.h",
       "registration_data.cc",
       "registration_data.h",
       "remove_uninstalled_apps_task.cc",

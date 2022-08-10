@@ -38,6 +38,7 @@
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/policy/service.h"
 #include "chrome/updater/prefs.h"
+#include "chrome/updater/refresh_dm_policies_task.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/remove_uninstalled_apps_task.h"
 #include "chrome/updater/update_block_check.h"
@@ -301,6 +302,9 @@ void UpdateServiceImpl::RunPeriodicTasks(base::OnceClosure callback) {
                                      base::MakeRefCounted<UpdateUsageStatsTask>(
                                          GetUpdaterScope(), persisted_data_)));
 
+  new_tasks.push_back(
+      base::BindOnce(&RefreshDMPoliciesTask::Run,
+                     base::MakeRefCounted<RefreshDMPoliciesTask>(config_)));
   new_tasks.push_back(base::BindOnce(
       &CheckForUpdatesTask::Run,
       base::MakeRefCounted<CheckForUpdatesTask>(

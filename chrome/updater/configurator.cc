@@ -213,6 +213,10 @@ scoped_refptr<PolicyService> Configurator::GetPolicyService() const {
   return policy_service_;
 }
 
+void Configurator::ResetPolicyService() {
+  policy_service_ = PolicyService::Create(external_constants_);
+}
+
 crx_file::VerifierFormat Configurator::GetCrxVerifierFormat() const {
   return external_constants_->CrxVerifierFormat();
 }
