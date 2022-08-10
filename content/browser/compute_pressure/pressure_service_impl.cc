@@ -76,7 +76,8 @@ void PressureServiceImpl::AddObserver(
     return;
   }
 
-  if (!render_frame_host().IsActive()) {
+  if (!render_frame_host().IsActive() ||
+      render_frame_host().IsNestedWithinFencedFrame()) {
     std::move(callback).Run(blink::mojom::PressureStatus::kSecurityError);
     return;
   }

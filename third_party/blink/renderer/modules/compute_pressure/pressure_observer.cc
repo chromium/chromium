@@ -238,7 +238,8 @@ void PressureObserver::DidAddObserver(ScriptPromiseResolver* resolver,
     case mojom::blink::PressureStatus::kSecurityError:
       resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
           script_state->GetIsolate(), DOMExceptionCode::kSecurityError,
-          "Security error. Make sure the page is visible."));
+          "Security error. Make sure the page is visible and that observation "
+          "is not requested from a fenced frame."));
       return;
   }
 
