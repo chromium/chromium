@@ -4,6 +4,7 @@
 
 #include "base/check_op.h"
 #include "base/strings/utf_string_conversions.h"
+#include "pdf/document_layout.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_test_base.h"
 #include "pdf/test/test_client.h"
@@ -223,7 +224,7 @@ TEST_F(FindTextTest, SelectFindResultAndSwitchToTwoUpView) {
     EXPECT_CALL(client,
                 NotifyNumberOfFindResultsChanged(4, /*final_result=*/true));
   }
-  engine->SetTwoUpView(true);
+  engine->SetDocumentLayout(DocumentLayout::PageSpread::kTwoUpOdd);
 
   {
     InSequence sequence;

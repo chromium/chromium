@@ -312,7 +312,7 @@ class PDFEngine {
   virtual void RotateCounterclockwise() = 0;
   virtual bool IsReadOnly() const = 0;
   virtual void SetReadOnly(bool enable) = 0;
-  virtual void SetTwoUpView(bool enable) = 0;
+  virtual void SetDocumentLayout(DocumentLayout::PageSpread page_spread) = 0;
   virtual void DisplayAnnotations(bool display) = 0;
 
   // Applies the document layout options proposed by a call to

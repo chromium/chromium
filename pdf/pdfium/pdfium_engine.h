@@ -114,7 +114,7 @@ class PDFiumEngine : public PDFEngine,
   void RotateCounterclockwise() override;
   bool IsReadOnly() const override;
   void SetReadOnly(bool enable) override;
-  void SetTwoUpView(bool enable) override;
+  void SetDocumentLayout(DocumentLayout::PageSpread page_spread) override;
   void DisplayAnnotations(bool display) override;
   gfx::Size ApplyDocumentLayout(
       const DocumentLayout::Options& options) override;

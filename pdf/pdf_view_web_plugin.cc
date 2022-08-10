@@ -1242,7 +1242,9 @@ void PdfViewWebPlugin::HandleSetPresentationModeMessage(
 
 void PdfViewWebPlugin::HandleSetTwoUpViewMessage(
     const base::Value::Dict& message) {
-  engine_->SetTwoUpView(message.FindBool("enableTwoUpView").value());
+  engine_->SetDocumentLayout(message.FindBool("enableTwoUpView").value()
+                                 ? DocumentLayout::PageSpread::kTwoUpOdd
+                                 : DocumentLayout::PageSpread::kOneUp);
 }
 
 void PdfViewWebPlugin::HandleStopScrollingMessage(
