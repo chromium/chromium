@@ -40,68 +40,93 @@
  * When using iron-icon's, more than one icon can be specified by setting
  * the |ironIcon| property to a comma-delimited list of keys.
  */
-import {Polymer, html} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import '../shared_vars_css.m.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 
-Polymer({
-  is: 'cr-icon-button',
+import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-  _template: html`{__html_template__}`,
+export class CrIconButtonElement extends PolymerElement {
+  static get is() {
+    return 'cr-icon-button';
+  }
 
-  properties: {
-    disabled: {
-      type: Boolean,
-      value: false,
-      reflectToAttribute: true,
-      observer: 'disabledChanged_',
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
+  static get properties() {
+    return {
+      disabled: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+        observer: 'disabledChanged_',
+      },
+
+      /**
+       * Use this property in order to configure the "tabindex" attribute.
+       */
+      customTabIndex: {
+        type: Number,
+        observer: 'applyTabIndex_',
+      },
+
+      ironIcon: {
+        type: String,
+        observer: 'onIronIconChanged_',
+        reflectToAttribute: true,
+      },
+
+      /** @private */
+      multipleIcons_: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
+    };
+  }
+
+  constructor() {
+    super();
     /**
-     * Use this property in order to configure the "tabindex" attribute.
+     * It is possible to activate a tab when the space key is pressed down. When
+     * this element has focus, the keyup event for the space key should not
+     * perform a 'click'. |spaceKeyDown_| tracks when a space pressed and
+     * handled by this element. Space keyup will only result in a 'click' when
+     * |spaceKeyDown_| is true. |spaceKeyDown_| is set to false when element
+     * loses focus.
+     * @private {boolean}
      */
-    customTabIndex: {
-      type: Number,
-      observer: 'applyTabIndex_',
-    },
+    this.spaceKeyDown_ = false;
+  }
 
-    ironIcon: {
-      type: String,
-      observer: 'onIronIconChanged_',
-      reflectToAttribute: true,
-    },
+  /** @override */
+  ready() {
+    super.ready();
+    this.setAttribute('aria-disabled', 'false');
+    if (!this.hasAttribute('role')) {
+      this.setAttribute('role', 'button');
+    }
+    if (!this.hasAttribute('tabindex')) {
+      this.setAttribute('tabindex', '0');
+    }
 
-    /** @private */
-    multipleIcons_: {
-      type: Boolean,
-      reflectToAttribute: true,
-    },
-  },
+    this.addEventListener('blur', this.onBlur_.bind(this));
+    this.addEventListener('click', this.onClick_.bind(this));
+    this.addEventListener(
+        'keydown', e => this.onKeyDown_(/** @type {!KeyboardEvent} */ (e)));
+    this.addEventListener(
+        'keyup', e => this.onKeyUp_(/** @type {!KeyboardEvent} */ (e)));
+  }
 
-  hostAttributes: {
-    'aria-disabled': 'false',
-    role: 'button',
-    tabindex: 0,
-  },
-
-  listeners: {
-    blur: 'onBlur_',
-    click: 'onClick_',
-    keydown: 'onKeyDown_',
-    keyup: 'onKeyUp_',
-  },
-
-  /**
-   * It is possible to activate a tab when the space key is pressed down. When
-   * this element has focus, the keyup event for the space key should not
-   * perform a 'click'. |spaceKeyDown_| tracks when a space pressed and handled
-   * by this element. Space keyup will only result in a 'click' when
-   * |spaceKeyDown_| is true. |spaceKeyDown_| is set to false when element loses
-   * focus.
-   * @private {boolean}
-   */
-  spaceKeyDown_: false,
+  /** @param {string} className */
+  toggleClass(className) {
+    if (this.classList.contains(className)) {
+      this.classList.remove(className);
+    } else {
+      this.classList.add(className);
+    }
+  }
 
   /**
    * @param {boolean} newValue
@@ -117,7 +142,7 @@ Polymer({
     }
     this.setAttribute('aria-disabled', this.disabled ? 'true' : 'false');
     this.applyTabIndex_();
-  },
+  }
 
   /**
    * Updates the tabindex HTML attribute to the actual value.
@@ -129,12 +154,12 @@ Polymer({
       value = this.disabled ? -1 : 0;
     }
     this.setAttribute('tabindex', value);
-  },
+  }
 
   /** @private */
   onBlur_() {
     this.spaceKeyDown_ = false;
-  },
+  }
 
   /**
    * @param {!Event} e
@@ -144,7 +169,7 @@ Polymer({
     if (this.disabled) {
       e.stopImmediatePropagation();
     }
-  },
+  }
 
   /** @private */
   onIronIconChanged_() {
@@ -163,7 +188,7 @@ Polymer({
             .forEach(child => child.setAttribute('role', 'none'));
       }
     });
-  },
+  }
 
   /**
    * @param {!KeyboardEvent} e
@@ -185,7 +210,7 @@ Polymer({
     } else if (e.key === ' ') {
       this.spaceKeyDown_ = true;
     }
-  },
+  }
 
   /**
    * @param {!KeyboardEvent} e
@@ -201,5 +226,7 @@ Polymer({
       this.spaceKeyDown_ = false;
       this.click();
     }
-  },
-});
+  }
+}
+
+customElements.define(CrIconButtonElement.is, CrIconButtonElement);

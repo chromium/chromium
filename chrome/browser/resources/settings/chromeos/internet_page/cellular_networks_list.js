@@ -607,10 +607,10 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
   /*
    * Returns the add esim button. If the device does not have an EUICC, no eSIM
    * slot, or policies prohibit users from adding a network, null is returned.
-   * @return {?CrIconButtonElement}
+   * @return {?HTMLElement}
    */
   getAddEsimButton() {
-    return /** @type {?CrIconButtonElement} */ (
+    return /** @type {?HTMLElement} */ (
         this.shadowRoot.querySelector('#addESimButton'));
   }
 
