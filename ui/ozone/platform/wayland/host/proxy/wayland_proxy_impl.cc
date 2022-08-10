@@ -117,4 +117,9 @@ void WaylandProxyImpl::OnWindowConfigured(ui::WaylandWindow* window) {
                                 window->IsSurfaceConfigured());
 }
 
+void WaylandProxyImpl::OnWindowRoleAssigned(ui::WaylandWindow* window) {
+  DCHECK(delegate_);
+  delegate_->OnWindowRoleAssigned(window->GetWidget());
+}
+
 }  // namespace wl

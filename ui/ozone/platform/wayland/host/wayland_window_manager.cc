@@ -29,6 +29,11 @@ void WaylandWindowManager::NotifyWindowConfigured(WaylandWindow* window) {
     observer.OnWindowConfigured(window);
 }
 
+void WaylandWindowManager::NotifyWindowRoleAssigned(WaylandWindow* window) {
+  for (WaylandWindowObserver& observer : observers_)
+    observer.OnWindowRoleAssigned(window);
+}
+
 void WaylandWindowManager::GrabLocatedEvents(WaylandWindow* window) {
   DCHECK_NE(located_events_grabber_, window);
 

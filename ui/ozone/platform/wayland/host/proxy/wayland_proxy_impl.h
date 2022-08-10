@@ -46,6 +46,7 @@ class WaylandProxyImpl : public WaylandProxy, public ui::WaylandWindowObserver {
   void OnWindowAdded(ui::WaylandWindow* window) override;
   void OnWindowRemoved(ui::WaylandWindow* window) override;
   void OnWindowConfigured(ui::WaylandWindow* window) override;
+  void OnWindowRoleAssigned(ui::WaylandWindow* window) override;
 
   const raw_ptr<ui::WaylandConnection> connection_;
 

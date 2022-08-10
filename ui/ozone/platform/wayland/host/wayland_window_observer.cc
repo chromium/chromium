@@ -14,6 +14,8 @@ void WaylandWindowObserver::OnWindowRemoved(WaylandWindow* window) {}
 
 void WaylandWindowObserver::OnWindowConfigured(WaylandWindow* window) {}
 
+void WaylandWindowObserver::OnWindowRoleAssigned(WaylandWindow* window) {}
+
 void WaylandWindowObserver::OnSubsurfaceAdded(WaylandWindow* window,
                                               WaylandSubsurface* subsurface) {}
 

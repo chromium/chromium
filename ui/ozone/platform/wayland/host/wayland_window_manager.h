@@ -36,6 +36,9 @@ class WaylandWindowManager {
   // WaylandBufferManagerHost can start attaching buffers to the |surface_|.
   void NotifyWindowConfigured(WaylandWindow* window);
 
+  // Notifies observers that the window's wayland role has been assigned.
+  void NotifyWindowRoleAssigned(WaylandWindow* window);
+
   // Stores the window that should grab the located events.
   void GrabLocatedEvents(WaylandWindow* event_grabber);
 

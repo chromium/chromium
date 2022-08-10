@@ -45,6 +45,9 @@ class COMPONENT_EXPORT(WAYLAND_PROXY) WaylandProxy {
     virtual void OnWindowConfigured(gfx::AcceleratedWidget widget,
                                     bool is_configured) = 0;
 
+    // Invoked when an existing surface is assigned a role.
+    virtual void OnWindowRoleAssigned(gfx::AcceleratedWidget widget) = 0;
+
    protected:
     virtual ~Delegate() = default;
   };

@@ -168,6 +168,8 @@ bool ZXDGPopupV6WrapperImpl::Initialize(const ShellPopupParams& params) {
       parent_xdg_surface->zxdg_surface(), positioner.get()));
   if (!zxdg_popup_v6_)
     return false;
+  connection_->wayland_window_manager()->NotifyWindowRoleAssigned(
+      wayland_window_);
 
   GrabIfPossible(connection_, wayland_window_->parent_window());
 

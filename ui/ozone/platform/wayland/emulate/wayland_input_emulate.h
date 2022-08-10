@@ -76,16 +76,20 @@ class WaylandInputEmulate : public wl::WaylandProxy::Delegate {
                     const gfx::Point& touch_screen_loc);
 
  private:
+  struct TestWindow;
+
   // Pending emulated events. Can be ET_MOUSE_MOVED,
   // ET_MOUSE_PRESSED/ET_MOUSE_RELEASED, ET_KEY_PRESSED/ET_KEY_RELEASED, or
   // ET_TOUCH_PRESSED/ET_TOUCH_MOVED/ET_TOUCH_RELEASED.
   struct PendingEvent {
     PendingEvent(ui::EventType event_type,
-                 gfx::AcceleratedWidget target_widget);
+                 gfx::AcceleratedWidget target_widget,
+                 WaylandInputEmulate*);
     ~PendingEvent();
 
     ui::EventType type;
     gfx::AcceleratedWidget widget;
+    base::WeakPtr<TestWindow> test_window;
 
     // Set for type == ET_MOUSE_MOVED. Locations are
     // in surface local, and pixel screen coordinates respectively.
@@ -108,16 +112,8 @@ class WaylandInputEmulate : public wl::WaylandProxy::Delegate {
   // A container that tracks created WaylandWindows and keeps some fundamental
   // bits to make emulation work flawlessly.
   struct TestWindow {
-    TestWindow(gfx::AcceleratedWidget target_widget,
-               WaylandInputEmulate* emulate);
+    TestWindow();
     ~TestWindow();
-
-    // Widget that this TestWindow represents. This corresponds to a
-    // WaylandWindow created on the Ozone/Wayland side.
-    gfx::AcceleratedWidget widget;
-
-    // Non-owned pointer to input emulation.
-    raw_ptr<WaylandInputEmulate> emulate = nullptr;
 
     // Control flag that says if the buffer has been attached and a consequent
     // frame callback has been received. This is required to be able to know
@@ -127,19 +123,15 @@ class WaylandInputEmulate : public wl::WaylandProxy::Delegate {
     // call.
     bool buffer_attached_and_configured = false;
 
-    // Pending events to be sent for this TestWindow. These are sent after
-    // buffer_attached_and_configured is set to true.
-    base::circular_deque<std::unique_ptr<PendingEvent>> pending_events;
-
     // Frame callback that invokes WaylandInputEmulate::FrameCallbackHandler.
     raw_ptr<struct wl_callback> frame_callback = nullptr;
 
     // The attached buffer.
     raw_ptr<wl_buffer> buffer = nullptr;
 
-    // If the window has been configured at least once then we should not queue
-    // events.
-    bool configured_at_least_once = false;
+    // True if the window was created or assigned a role and is now waiting for
+    // a buffer to be committed.
+    bool waiting_for_buffer_commit = false;
 
     base::WeakPtrFactory<TestWindow> weak_factory{this};
   };
@@ -149,6 +141,7 @@ class WaylandInputEmulate : public wl::WaylandProxy::Delegate {
   void OnWindowRemoved(gfx::AcceleratedWidget widget) override;
   void OnWindowConfigured(gfx::AcceleratedWidget widget,
                           bool is_configured) override;
+  void OnWindowRoleAssigned(gfx::AcceleratedWidget widget) override;
 
   // weston_test_listener.
   static void HandlePointerPosition(void* data,
@@ -180,10 +173,25 @@ class WaylandInputEmulate : public wl::WaylandProxy::Delegate {
                                    struct wl_callback* callback,
                                    uint32_t time);
 
-  // Stores existing windows.
+  // Returns true if there is at least one window that has been created but that
+  // does not yet have a buffer committed.
+  bool AnyWindowWaitingForBufferCommit();
+
+  // Dispatches all pending events.
+  void DispatchPendingEvents();
+
+  // Window creation is asynchronous in wayland. First we create the window,
+  // then we must attach and commit a buffer before the server will treat it
+  // properly w.r.t. input events. This member stores all windows that have been
+  // created.
   base::flat_map<gfx::AcceleratedWidget,
                  std::unique_ptr<WaylandInputEmulate::TestWindow>>
       windows_;
+
+  // Stores pending events in a global queue. We will not dispatch any pending
+  // events while there are windows that are still in the process of being
+  // created.
+  base::circular_deque<std::unique_ptr<PendingEvent>> pending_events_;
 
   base::ObserverList<WaylandInputEmulate::Observer> observers_;
 
