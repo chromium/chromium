@@ -51,10 +51,11 @@ namespace content {
 // NOTE: Depending on the process model, the cross-origin iframes are likely to
 // be hosted in a different renderer process than the main document, so a given
 // page is hosted in multiple renderer processes at the same time.
-// RenderViewHost / RenderView / blink::Page (which are all 1:1:1) represent a
-// part of a given content::Page in a given renderer process (note, however,
-// that like RenderFrameHosts, these objects at the moment can be reused for a
-// new content::Page for a cross-document same-site main-frame navigation).
+// RenderViewHost / `blink::WebView` / blink::Page (which are all 1:1:1)
+// represent a part of a given content::Page in a given renderer process (note,
+// however, that like RenderFrameHosts, these objects at the moment can be
+// reused for a new content::Page for a cross-document same-site main-frame
+// navigation).
 class CONTENT_EXPORT Page : public base::SupportsUserData {
  public:
   ~Page() override = default;

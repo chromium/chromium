@@ -124,9 +124,9 @@ void PageImpl::OnTextAutosizerPageInfoChanged(
     blink::mojom::TextAutosizerPageInfoPtr page_info) {
   OPTIONAL_TRACE_EVENT0("content", "PageImpl::OnTextAutosizerPageInfoChanged");
 
-  // Keep a copy of |page_info| in case we create a new RenderView before
-  // the next update, so that the PageImpl can tell the newly created RenderView
-  // about the autosizer info.
+  // Keep a copy of `page_info` in case we create a new `blink::WebView` before
+  // the next update, so that the PageImpl can tell the newly created
+  // `blink::WebView` about the autosizer info.
   text_autosizer_page_info_.main_frame_width = page_info->main_frame_width;
   text_autosizer_page_info_.main_frame_layout_width =
       page_info->main_frame_layout_width;

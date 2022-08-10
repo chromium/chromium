@@ -439,10 +439,10 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // an inner FrameTree.
   void SetRWHViewForInnerFrameTree(RenderWidgetHostViewChildFrame* child_rwhv);
 
-  // Executes a PageBroadcast Mojo method to every RenderView in the FrameTree.
-  // This should only be called in the top-level RenderFrameHostManager.
-  // The |callback| is called synchronously and the |instance_to_skip| won't
-  // be referenced after this method returns.
+  // Executes a PageBroadcast Mojo method to every `blink::WebView` in the
+  // FrameTree. This should only be called in the top-level
+  // RenderFrameHostManager. The `callback` is called synchronously and the
+  // `instance_to_skip` won't be referenced after this method returns.
   void ExecutePageBroadcastMethod(PageBroadcastMethodCallback callback,
                                   SiteInstance* instance_to_skip = nullptr);
 

@@ -3471,8 +3471,8 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
 
   // This should trigger a BrowsingInstance swap. The main frame gets a new
   // unrelated BrowsingInstance, and clears the opener.
-  // Note: We need to wait for the RenderView deletion to be propagated in the
-  // renderer for window.opener to be cleared. To avoid flakes, we check the
+  // Note: We need to wait for the `blink::WebView` deletion to be propagated in
+  // the renderer for window.opener to be cleared. To avoid flakes, we check the
   // opener at the end of this test.
   RenderFrameHostImpl* main_rfh = current_frame_host();
   SiteInstanceImpl* main_si = main_rfh->GetSiteInstance();

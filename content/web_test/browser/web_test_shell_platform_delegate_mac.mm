@@ -116,9 +116,9 @@ void WebTestShellPlatformDelegate::MainFrameCreated(Shell* shell) {
   // RenderWidgetHostView to be created would leave the WebContents with invalid
   // sizes (such as the window screen rect).
   //
-  // We use the signal that the RenderView has been created in the renderer as
-  // a proxy for knowing when the top level RenderWidgetHostView is created,
-  // since they are created at the same time.
+  // We use the signal that the `blink::WebView` has been created in the
+  // renderer as a proxy for knowing when the top level RenderWidgetHostView is
+  // created, since they are created at the same time.
   DCHECK(shell->web_contents()->GetPrimaryMainFrame()->GetView());
   ResizeWebContent(shell, shell_data.initial_size);
 }

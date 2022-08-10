@@ -322,8 +322,8 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
   // which sends it back up to the plugin as if it came from the user.
   void SimulateInputEvent(const ppapi::InputEventData& input_event);
 
-  // Simulates an IME event at the level of RenderView which sends it back up to
-  // the plugin as if it came from the user.
+  // Simulates an IME event at the level of `blink::WebView` which sends it back
+  // up to the plugin as if it came from the user.
   bool SimulateIMEEvent(const ppapi::InputEventData& input_event);
   void SimulateImeSetCompositionEvent(const ppapi::InputEventData& input_event);
 

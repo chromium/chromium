@@ -103,11 +103,12 @@ interface WebTestRenderFrame {
   DumpFrameLayout() => (string frame_layout_dump);
 
   // Sets the test config for a web test that is being started.  This message
-  // is sent once to each RenderView that hosts parts of the main test window.
-  // The `starting_test` indicates if this is the first call to this IPC method
+  // is sent once to each `blink::WebView` that hosts parts of the main test
+  // window.
+  // `starting_test` indicates if this is the first call to this IPC method
   // for the given test. After the initial call, this may be called for new
-  // RenderViews created to host frames for the main window, either as OOPIFs or
-  // to handle cross-site navigations.
+  // `blink::WebView`s created to host frames for the main window, either as
+  // OOPIFs or to handle cross-site navigations.
   SetTestConfiguration(WebTestRunTestConfiguration config, bool starting_test);
 
   // Notifies a frame that has been navigated away. This is called only on main

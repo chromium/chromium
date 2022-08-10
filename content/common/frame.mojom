@@ -122,16 +122,16 @@ struct CreateViewParams {
 
   CreateMainFrameUnion main_frame;
 
-  // Whether the RenderView should initially be hidden.
+  // Whether the `blink::WebView` should initially be hidden.
   bool hidden;
 
-  // Prerender2: Whether the RenderView is for a prerendered page.
+  // Prerender2: Whether the `blink::WebView` is for a prerendered page.
   bool is_prerendering;
 
-  // When true, all RenderWidgets under this RenderView will never be shown to
-  // the user, and thus never composited, and will not need to produce pixels
-  // for display. This allows the renderer to optimize and avoid resources used
-  // for displaying graphical output.
+  // When true, all RenderWidgets under this `blink::WebView` will never be
+  // shown to the user, and thus never composited, and will not need to produce
+  // pixels for display. This allows the renderer to optimize and avoid
+  // resources used for displaying graphical output.
   bool never_composited;
 
   // Whether the window associated with this view was created by another window.

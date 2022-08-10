@@ -221,11 +221,12 @@ class WebContents : public PageNavigator,
       kOkayToHaveRendererProcess,
 
       // Ensures that the created WebContents are backed by an OS process which
-      // has an initialized RenderView.
+      // has an initialized `blink::WebView`.
       //
       // TODO(lukasza): https://crbug.com/848366: Remove
       // kInitializeAndWarmupRendererProcess value - warming up the renderer by
-      // initializing the RenderView is redundant with the warm-up that can be
+      // initializing the `blink::WebView` is redundant with the warm-up that
+      // can be
       // achieved by either 1) warming up the spare renderer before creating
       // WebContents and/or 2) speculative RenderFrameHost used internally
       // during a navigation.

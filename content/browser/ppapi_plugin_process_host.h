@@ -72,10 +72,10 @@ class PpapiPluginProcessHost : public BrowserChildProcessHostDelegate,
       const absl::optional<url::Origin>& origin_lock);
 
   // Notification that a PP_Instance has been created and the associated
-  // renderer related data including the RenderView/Process pair for the given
+  // renderer related data including the RenderFrame/Process pair for the given
   // plugin. This is necessary so that when the plugin calls us with a
-  // PP_Instance we can find the RenderView associated with it without trusting
-  // the plugin.
+  // PP_Instance we can find the `RenderFrame` associated with it without
+  // trusting the plugin.
   static void DidCreateOutOfProcessInstance(
       int plugin_process_id,
       int32_t pp_instance,

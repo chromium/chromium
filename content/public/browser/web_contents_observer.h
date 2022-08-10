@@ -215,8 +215,8 @@ class CONTENT_EXPORT WebContentsObserver {
   virtual void OnCaptureHandleConfigUpdate(
       const blink::mojom::CaptureHandleConfig& config) {}
 
-  // This method is invoked when the RenderView of the current RenderViewHost
-  // is ready, e.g. because we recreated it after a crash.
+  // This method is invoked when the `blink::WebView` of the current
+  // RenderViewHost is ready, e.g. because we recreated it after a crash.
   virtual void RenderViewReady() {}
 
   // This method is invoked when a RenderViewHost of the WebContents is

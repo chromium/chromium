@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Browser tests targeted at the RenderView that run in browser context.
+// Browser tests targeted at the `blink::WebView` that run in browser context.
 // Note that these tests rely on single-process mode, and hence may be
 // disabled in some configurations (check gyp files).
 

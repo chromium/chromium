@@ -459,10 +459,10 @@ void FrameTree::CreateProxiesForSiteInstance(
       // (when source is not a main frame). In the former case, we should use
       // root's current BrowsingContextState, while in the latter case we should
       // use BrowsingContextState from the main RenderFrameHost of the subframe
-      // being navigated. We want to ensure that the RenderView is created in
-      // the right SiteInstance if it doesn't exist, before creating the other
-      // proxies; if the RenderView doesn't exist, the only way to do this is to
-      // also create a proxy for the main frame as well.
+      // being navigated. We want to ensure that the `blink::WebView` is created
+      // in the right SiteInstance if it doesn't exist, before creating the
+      // other proxies; if the `blink::WebView` doesn't exist, the only way to
+      // do this is to also create a proxy for the main frame as well.
       root()->render_manager()->CreateRenderFrameProxy(
           site_instance,
           source ? source->parent()->GetMainFrame()->browsing_context_state()

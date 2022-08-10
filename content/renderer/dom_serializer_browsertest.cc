@@ -130,8 +130,8 @@ class MAYBE_DomSerializerTests : public ContentBrowserTest,
         shell()->web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL(),
         contents, base_url);
     navigation_observer.Wait();
-    // After navigations, the RenderView for the new document might be a new
-    // one.
+    // After navigations, the `blink::WebView` for the new document might be a
+    // new one.
     main_frame_token_ =
         shell()->web_contents()->GetPrimaryMainFrame()->GetFrameToken();
   }

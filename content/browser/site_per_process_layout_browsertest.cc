@@ -1301,8 +1301,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, TextAutosizerPageInfo) {
 
   GURL c_url = embedded_test_server()->GetURL("c.com", "/title1.html");
   // The following is a hack so we can get an IPC watcher connected to the
-  // RenderProcessHost for C before the RenderView is created for it, and the
-  // TextAutosizerPageInfo IPC is sent to it.
+  // RenderProcessHost for C before the `blink::WebView` is created for it, and
+  // the TextAutosizerPageInfo IPC is sent to it.
   scoped_refptr<SiteInstance> c_site =
       web_contents()->GetSiteInstance()->GetRelatedSiteInstance(c_url);
   // Force creation of a render process for c's SiteInstance, this will get

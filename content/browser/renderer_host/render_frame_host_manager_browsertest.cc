@@ -3373,9 +3373,9 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
 }
 
 // Tests that navigating cross-process and reusing an existing RenderViewHost
-// (whose process has been killed/crashed) recreates properly the RenderView and
-// `blink::RemoteFrame` on the renderer side.
-// See https://crbug.com/544271
+// (whose process has been killed/crashed) recreates properly the
+// `blink::WebView` and `blink::RemoteFrame` on the renderer side. See
+// https://crbug.com/544271
 IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
                        RenderViewInitAfterProcessKill) {
   StartEmbeddedServer();
@@ -3409,7 +3409,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
       popup_root->current_frame_host()->render_view_host()->IsRenderViewLive());
 
   // Navigate the main tab to the site of the popup. This will cause the
-  // RenderView for b.com in the main tab to be recreated. If the issue
+  // `blink::WebView` for b.com in the main tab to be recreated. If the issue
   // is not fixed, this will result in process crash and failing test.
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("b.com", "/title3.html")));

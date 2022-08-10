@@ -107,15 +107,11 @@ class OverlayStateServiceProvider;
 class OverlayStateServiceProviderImpl;
 #endif
 
-// The RenderThreadImpl class represents the main thread, where RenderView
-// instances live.  The RenderThread supports an API that is used by its
-// consumer to talk indirectly to the RenderViews and supporting objects.
-// Likewise, it provides an API for the RenderViews to talk back to the main
-// process (i.e., their corresponding WebContentsImpl).
-//
-// Most of the communication occurs in the form of IPC messages.  They are
+// The RenderThreadImpl class represents the main thread, where `blink::WebView`
+// instances live.  Most of the communication occurs in the form of mojo IPC
+// messages, however there is still some legacy IPC messages.  They are
 // routed to the RenderThread according to the routing IDs of the messages.
-// The routing IDs correspond to RenderView instances.
+// The routing IDs correspond to `RenderFrameImpl` instances.
 class CONTENT_EXPORT RenderThreadImpl
     : public RenderThread,
       public ChildThreadImpl,
@@ -304,8 +300,8 @@ class CONTENT_EXPORT RenderThreadImpl
   SharedMainThreadContextProvider();
 
   // For producing custom V8 histograms. Custom histograms are produced if all
-  // RenderViews share the same host, and the host is in the pre-specified set
-  // of hosts we want to produce custom diagrams for. The name for a custom
+  // `blink::WebView`s share the same host, and the host is in the pre-specified
+  // set of hosts we want to produce custom diagrams for. The name for a custom
   // diagram is the name of the corresponding generic diagram plus a
   // host-specific suffix.
   class CONTENT_EXPORT HistogramCustomizer {
@@ -317,15 +313,15 @@ class CONTENT_EXPORT RenderThreadImpl
 
     ~HistogramCustomizer();
 
-    // Called when a top frame of a RenderView navigates. This function updates
-    // RenderThreadImpl's information about whether all RenderViews are
-    // displaying a page from the same host. |host| is the host where a
-    // RenderView navigated, and |view_count| is the number of RenderViews in
-    // this process.
+    // Called when a top frame of a `blink::WebView` navigates. This function
+    // updates RenderThreadImpl's information about whether all
+    // `blink::WebView`s are displaying a page from the same host. |host| is the
+    // host where a `blink::WebView` navigated, and |view_count| is the number
+    // of `blink::WebView`s in this process.
     void RenderViewNavigatedToHost(const std::string& host, size_t view_count);
 
-    // Used for customizing some histograms if all RenderViews share the same
-    // host. Returns the current custom histogram name to use for
+    // Used for customizing some histograms if all `blink::WebView`s share the
+    // same host. Returns the current custom histogram name to use for
     // |histogram_name|, or |histogram_name| if it shouldn't be customized.
     std::string ConvertToCustomHistogramName(const char* histogram_name) const;
 
@@ -341,12 +337,12 @@ class CONTENT_EXPORT RenderThreadImpl
     bool IsAlexaTop10NonGoogleSite(const std::string& host);
 
     // Used for updating the information on which is the common host which all
-    // RenderView's share (if any). If there is no common host, this function is
-    // called with an empty string.
+    // `blink::WebView`'s share (if any). If there is no common host, this
+    // function is called with an empty string.
     void SetCommonHost(const std::string& host);
 
-    // The current common host of the RenderViews; empty string if there is no
-    // common host.
+    // The current common host of the `blink::WebView`s; empty string if there
+    // is no common host.
     std::string common_host_;
     // The corresponding suffix.
     std::string common_host_histogram_suffix_;

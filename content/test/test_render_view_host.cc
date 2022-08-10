@@ -370,8 +370,8 @@ bool TestRenderViewHost::CreateRenderView(
     int proxy_route_id,
     bool window_was_created_with_opener) {
   DCHECK(!IsRenderViewLive());
-  // Mark the RenderView as live, though there's nothing to do here since we
-  // don't yet use mojo to talk to the RenderView.
+  // Mark the `blink::WebView` as live, though there's nothing to do here since
+  // we don't yet use mojo to talk to the RenderView.
   renderer_view_created_ = true;
 
   // When the RenderViewHost has a main frame host attached, the RenderView

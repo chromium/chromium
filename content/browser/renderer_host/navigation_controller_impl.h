@@ -252,8 +252,8 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // case, we know there is no content displayed in the page.
   bool IsUnmodifiedBlankTab();
 
-  // The session storage namespace that all child RenderViews associated with
-  // |partition_config| should use.
+  // The session storage namespace that all child `blink::WebView`s associated
+  // with `partition_config` should use.
   SessionStorageNamespace* GetSessionStorageNamespace(
       const StoragePartitionConfig& partition_config);
 
@@ -689,8 +689,8 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // Removes all entries except the last committed entry.  If there is a new
   // pending navigation it is preserved. In contrast to
   // PruneAllButLastCommitted() this does not update the session history of the
-  // RenderView.  Callers must ensure that |CanPruneAllButLastCommitted| returns
-  // true before calling this.
+  // `blink::WebView`.  Callers must ensure that `CanPruneAllButLastCommitted`
+  // returns true before calling this.
   void PruneAllButLastCommittedInternal();
 
   // Inserts up to |max_index| entries from |source| into this. This does NOT

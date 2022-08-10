@@ -158,14 +158,14 @@ typedef base::Thread* (*RendererMainThreadFactoryFunction)(
 //
 // This object communicates back and forth with the RenderProcess object
 // running in the renderer process. Each RenderProcessHost and RenderProcess
-// keeps a list of RenderView (renderer) and WebContentsImpl (browser) which
-// are correlated with IDs. This way, the Views and the corresponding ViewHosts
-// communicate through the two process objects.
+// keeps a list of `blink::WebView` (renderer) and WebContentsImpl (browser)
+// which are correlated with IDs. This way, the Views and the corresponding
+// ViewHosts communicate through the two process objects.
 //
 // A RenderProcessHost is also associated with one and only one
 // StoragePartition.  This allows us to implement strong storage isolation
-// because all the IPCs from the RenderViews (renderer) will only ever be able
-// to access the partition they are assigned to.
+// because all the IPCs from the `blink::WebView`s (renderer) will only ever be
+// able to access the partition they are assigned to.
 class CONTENT_EXPORT RenderProcessHostImpl
     : public RenderProcessHost,
       public ChildProcessLauncher::Client,
@@ -732,7 +732,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   bool is_self_deleted_;
 #endif
 
-  // The count of currently swapped out but pending RenderViews.  We have
+  // The count of currently swapped out but pending `blink::WebView`s.  We have
   // started to swap these in, so the renderer process should not exit if
   // this count is non-zero.
   int32_t pending_views_;
@@ -1081,11 +1081,11 @@ class CONTENT_EXPORT RenderProcessHostImpl
   base::ObserverList<RenderProcessHostInternalObserver> internal_observers_;
 
   // True if the process can be shut down suddenly.  If this is true, then we're
-  // sure that all the RenderViews in the process can be shutdown suddenly.  If
-  // it's false, then specific RenderViews might still be allowed to be shutdown
-  // suddenly by checking their SuddenTerminationAllowed() flag.  This can occur
-  // if one WebContents has an unload event listener but another WebContents in
-  // the same process doesn't.
+  // sure that all the `blink::WebView`s in the process can be shutdown
+  // suddenly.  If it's false, then specific `blink::WebView`s might still be
+  // allowed to be shutdown suddenly by checking their
+  // SuddenTerminationAllowed() flag.  This can occur if one WebContents has an
+  // unload event listener but another WebContents in the same process doesn't.
   bool sudden_termination_allowed_;
 
   // Set to true if this process is blocked and shouldn't be sent input events.

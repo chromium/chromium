@@ -318,7 +318,7 @@ std::u16string RenderWidgetHostViewBase::GetSelectedText() {
 void RenderWidgetHostViewBase::SetBackgroundColor(SkColor color) {
   // TODO(danakj): OPAQUE colors only make sense for main frame widgets,
   // as child frames are always transparent background. We should move this to
-  // RenderView instead.
+  // `blink::WebView` instead.
   DCHECK(SkColorGetA(color) == SK_AlphaOPAQUE ||
          SkColorGetA(color) == SK_AlphaTRANSPARENT);
   if (default_background_color_ == color)

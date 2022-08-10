@@ -1363,7 +1363,8 @@ TEST_F(RenderWidgetHostTest, Background) {
     EXPECT_EQ(unsigned{SK_ColorBLUE}, *view->GetBackgroundColor());
   }
   {
-    // The owner delegate will be called to pass it over IPC to the RenderView.
+    // The owner delegate will be called to pass it over IPC to the
+    // `blink::WebView`.
     EXPECT_CALL(mock_owner_delegate_, SetBackgroundOpaque(false));
     view->SetBackgroundColor(SK_ColorTRANSPARENT);
 #if BUILDFLAG(IS_MAC)
@@ -2152,7 +2153,7 @@ class RenderWidgetHostInitialSizeTest : public RenderWidgetHostTest {
 
 TEST_F(RenderWidgetHostInitialSizeTest, InitialSize) {
   // Having an initial size set means that the size information had been sent
-  // with the reqiest to new up the RenderView and so subsequent
+  // with the request to new up the `blink::WebView` and so subsequent
   // SynchronizeVisualProperties calls should not result in new IPC (unless the
   // size has actually changed).
   EXPECT_FALSE(host_->SynchronizeVisualProperties());

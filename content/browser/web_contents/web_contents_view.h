@@ -89,7 +89,8 @@ class WebContentsView {
   // trying to find a specific window.
   virtual void SetPageTitle(const std::u16string& title) = 0;
 
-  // Invoked when the WebContents is notified that the RenderView is ready.
+  // Invoked when the WebContents is notified that the `blink::WebView` is
+  // ready.
   virtual void RenderViewReady() = 0;
 
   // Invoked when the WebContents is notified that the RenderViewHost has been

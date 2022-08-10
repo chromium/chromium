@@ -19,8 +19,9 @@ namespace content {
 
 class RenderViewHostImpl;
 
-// A class responsible for managing the main lifecycle state of the blink::Page
-// and communicating in to the RenderView. 1:1 with RenderViewHostImpl.
+// A class responsible for managing the main lifecycle state of the
+// `blink::Page` and communicating in to the `blink::WebView`. 1:1 with
+// `RenderViewHostImpl`.
 class CONTENT_EXPORT PageLifecycleStateManager {
  public:
   class CONTENT_EXPORT TestDelegate {

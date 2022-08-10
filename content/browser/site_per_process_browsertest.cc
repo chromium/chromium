@@ -5371,9 +5371,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 // B process to process the subframe's detached event and the disconnect
 // of the blink::WebView's blink::mojom::PageBroadcast mojo channel. In the bug,
 // the latter crashed while detaching the subframe's LocalFrame (triggered as
-// part of closing the RenderView), because this tried to access the subframe's
-// WebFrameWidget (from RenderFrameImpl::didChangeSelection), which had already
-// been cleared by the former.
+// part of closing the `blink::WebView`), because this tried to access the
+// subframe's WebFrameWidget (from RenderFrameImpl::didChangeSelection), which
+// had already been cleared by the former.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                        CloseSubframeWidgetAndViewOnProcessExit) {
   GURL main_url(embedded_test_server()->GetURL(
@@ -5394,17 +5394,17 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // Prevent b.com process from terminating right away once the subframe
   // navigates away from b.com below.  This is necessary so that the renderer
-  // process has time to process the closings of RenderWidget and RenderView,
-  // which is where the original bug was triggered.  Incrementing the keep alive
-  // ref count will cause RenderProcessHostImpl::Cleanup to forego process
-  // termination.
+  // process has time to process the closings of RenderWidget and
+  // `blink::WebView`, which is where the original bug was triggered.
+  // Incrementing the keep alive ref count will cause
+  // RenderProcessHostImpl::Cleanup to forego process termination.
   RenderProcessHost* subframe_process =
       root->child_at(0)->current_frame_host()->GetProcess();
   subframe_process->IncrementKeepAliveRefCount(0);
 
   // Navigate the subframe away from b.com.  Since this is the last active
-  // frame in the b.com process, this causes the RenderWidget and RenderView to
-  // be closed.
+  // frame in the b.com process, this causes the RenderWidget and
+  // `blink::WebView` to be closed.
   EXPECT_TRUE(NavigateToURLFromRenderer(
       root->child_at(0),
       embedded_test_server()->GetURL("a.com", "/title1.html")));
@@ -6365,8 +6365,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // Navigate popup to b.com to recreate the b.com process.  When creating
   // opener proxies, |rvh| should be reused as a swapped out RVH.  In
-  // https://crbug.com/627893, recreating the opener RenderView was hitting a
-  // CHECK(params.swapped_out) in the renderer process, since its
+  // https://crbug.com/627893, recreating the opener `blink::WebView` was
+  // hitting a CHECK(params.swapped_out) in the renderer process, since its
   // RenderViewHost was brought into an active state by the navigation to
   // |stall_url| above, even though it never committed.
   GURL b_url(embedded_test_server()->GetURL("b.com", "/title3.html"));
@@ -6645,10 +6645,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 }
 
 // Test that when canceling a pending RenderFrameHost in the middle of a
-// redirect, and then killing the corresponding RenderView's renderer process,
-// the RenderViewHost isn't reused in an improper state later.  Previously this
-// led to a crash in CreateRenderView when recreating the RenderView due to a
-// stale main frame routing ID.  See https://crbug.com/627400.
+// redirect, and then killing the corresponding `blink::WebView`'s renderer
+// process, the RenderViewHost isn't reused in an improper state later.
+// Previously this led to a crash in CreateRenderView when recreating the
+// `blink::WebView` due to a stale main frame routing ID.  See
+// https://crbug.com/627400.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                        ReuseNonLiveRenderViewHostAfterCancelPending) {
   GURL a_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
@@ -6685,9 +6686,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   crash_observer.Wait();
 
   // Navigate the second popup to b.com.  This used to crash when creating the
-  // RenderView, because it reused the RenderViewHost created by the canceled
-  // navigation to b.com, and that RenderViewHost had a stale main frame
-  // routing ID and active state.
+  // `blink::WebView`, because it reused the RenderViewHost created by the
+  // canceled navigation to b.com, and that RenderViewHost had a stale main
+  // frame routing ID and active state.
   EXPECT_TRUE(NavigateToURLInSameBrowsingInstance(popup2, b_url));
 }
 

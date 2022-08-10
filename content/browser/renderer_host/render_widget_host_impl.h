@@ -111,8 +111,9 @@ class VisibleTimeRequestTrigger;
 // embedders of content, and adds things only visible to content.
 //
 // Several core rendering primitives are mirrored between the browser and
-// renderer. These are RenderWidget, RenderFrame and RenderView. Their browser
-// counterparts are RenderWidgetHost, RenderFrameHost and RenderViewHost.
+// renderer. These are `blink::WidgetBase`, `RenderFrame` and `blink::WebView`.
+// Their browser counterparts are `RenderWidgetHost`, `RenderFrameHost` and
+// `RenderViewHost`.
 //
 // For simplicity and clarity, we want the object ownership graph in the
 // renderer to mirror the object ownership graph in the browser. The IPC message
@@ -125,7 +126,7 @@ class VisibleTimeRequestTrigger;
 //
 // RenderWidget represents a surface that can paint and receive input. It is
 // used in four contexts:
-//   * Main frame for webpage (root is RenderView)
+//   * Main frame for webpage (root is `blink::WebView`)
 //   * Child frame for webpage (root is RenderFrame)
 //   * Popups (root is RenderWidget)
 //   * Pepper Fullscreen (root is RenderWidget)

@@ -148,16 +148,16 @@ class CONTENT_EXPORT RenderViewHostImpl
   // GpuSwitchingObserver implementation.
   void OnGpuSwitched(gl::GpuPreference active_gpu_heuristic) override;
 
-  // Set up the RenderView child process. Virtual because it is overridden by
-  // TestRenderViewHost.
-  // |opener_route_id| parameter indicates which RenderView created this
+  // Set up the `blink::WebView` child process. Virtual because it is overridden
+  // by TestRenderViewHost.
+  // `opener_route_id` parameter indicates which `blink::WebView` created this
   //   (MSG_ROUTING_NONE if none).
-  // |window_was_opened_by_another_window| is true if this top-level frame was
-  // created by another window, as opposed to independently created (through
-  // the browser UI, etc). This is true even when the window is opened with
-  // "noopener", and even if the opener has been closed since.
-  // |proxy_route_id| is only used when creating a RenderView in an inactive
-  //   state.
+  // `window_was_opened_by_another_window` is true if this top-level frame was
+  //   created by another window, as opposed to independently created (through
+  //   the browser UI, etc). This is true even when the window is opened with
+  //   "noopener", and even if the opener has been closed since.
+  // `proxy_route_id` is only used when creating a `blink::WebView` in an
+  //   inactive state.
   virtual bool CreateRenderView(
       const absl::optional<blink::FrameToken>& opener_frame_token,
       int proxy_route_id,
@@ -175,11 +175,11 @@ class CONTENT_EXPORT RenderViewHostImpl
     return is_waiting_for_page_close_completion_;
   }
 
-  // Returns true if the RenderView is active and has not crashed.
+  // Returns true if the `blink::WebView` is active and has not crashed.
   bool IsRenderViewLive() const;
 
-  // Called when the RenderView in the renderer process has been created, at
-  // which point IsRenderViewLive() becomes true, and the mojo connections to
+  // Called when the `blink::WebView` in the renderer process has been created,
+  // at which point IsRenderViewLive() becomes true, and the mojo connections to
   // the renderer process for this view now exist.
   void RenderViewCreated(RenderFrameHostImpl* local_main_frame);
 
@@ -194,10 +194,10 @@ class CONTENT_EXPORT RenderViewHostImpl
   // given BrowsingInstance, so the main BrowsingContextState stays the same
   // during the entire lifetime of a RenderViewHost: cross-SiteInstanceGroup
   // same-BrowsingInstance navigations might change the representation of the
-  // main frame in a given RenderView from RenderFrame to `blink::RemoteFrame`
-  // and back, while cross-BrowsingInstances result in creating a new unrelated
-  // RenderViewHost. This is not true in the legacy BCS mode, so there the
-  // |main_browsing_context_state_| is null.
+  // main frame in a given `blink::WebView` from RenderFrame to
+  // `blink::RemoteFrame` and back, while cross-BrowsingInstances result in
+  // creating a new unrelated RenderViewHost. This is not true in the legacy BCS
+  // mode, so there the `main_browsing_context_state_` is null.
   const absl::optional<base::SafeRef<BrowsingContextState>>&
   main_browsing_context_state() const {
     return main_browsing_context_state_;
@@ -388,7 +388,7 @@ class CONTENT_EXPORT RenderViewHostImpl
   // The RenderWidgetHost.
   const std::unique_ptr<RenderWidgetHostImpl> render_widget_host_;
 
-  // Our delegate, which wants to know about changes in the RenderView.
+  // Our delegate, which wants to know about changes in the `blink::WebView`.
   raw_ptr<RenderViewHostDelegate> delegate_;
 
   // ID to use when registering/unregistering this object with its FrameTree.
@@ -405,8 +405,8 @@ class CONTENT_EXPORT RenderViewHostImpl
   // Routing ID for this RenderViewHost.
   const int routing_id_;
 
-  // Whether the renderer-side RenderView is created. Becomes false when the
-  // renderer crashes.
+  // Whether the renderer-side `blink::WebView` is created. Becomes false when
+  // the renderer crashes.
   bool renderer_view_created_ = false;
 
   // Routing ID for the main frame's RenderFrameHost.

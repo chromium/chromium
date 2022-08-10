@@ -24,13 +24,13 @@ class RenderFrameHost;
 class RenderProcessHost;
 class RenderWidgetHost;
 
-// A RenderViewHost is responsible for creating and talking to a RenderView
-// object in a child process. It exposes a high level API to users, for things
-// like loading pages, adjusting the display and other browser functionality,
-// which it translates into IPC messages sent over the IPC channel with the
-// RenderView. It responds to all IPC messages sent by that RenderView and
-// cracks them, calling a delegate object back with higher level types where
-// possible.
+// A RenderViewHost is responsible for creating and talking to a
+// `blink::WebView` object in a child process. It exposes a high level API to
+// users, for things like loading pages, adjusting the display and other browser
+// functionality, which it translates into IPC messages sent over the IPC
+// channel with the `blink::WebView`. It responds to all IPC messages sent by
+// that `blink::WebView` and cracks them, calling a delegate object back with
+// higher level types where possible.
 //
 // The intent of this interface is to provide a view-agnostic communication
 // conduit with a renderer. This is so we can build HTML views not only as
@@ -69,7 +69,7 @@ class CONTENT_EXPORT RenderViewHost {
   // change.
   virtual int GetRoutingID() const = 0;
 
-  // Instructs the RenderView to send back updates to the preferred size.
+  // Instructs the `blink::WebView` to send back updates to the preferred size.
   virtual void EnablePreferredSizeMode() = 0;
 
   using TraceProto = perfetto::protos::pbzero::RenderViewHost;

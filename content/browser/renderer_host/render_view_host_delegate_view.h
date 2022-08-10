@@ -53,10 +53,10 @@ class CONTENT_EXPORT RenderViewHostDelegateView {
                                const ContextMenuParams& params) {}
 
   // The user started dragging content of the specified type within the
-  // RenderView. Contextual information about the dragged content is supplied
-  // by DropData. If the delegate's view cannot start the drag for /any/
-  // reason, it must inform the renderer that the drag has ended; otherwise,
-  // this results in bugs like http://crbug.com/157134.
+  // `blink::WebView`. Contextual information about the dragged content is
+  // supplied by DropData. If the delegate's view cannot start the drag for
+  // /any/ reason, it must inform the renderer that the drag has ended;
+  // otherwise, this results in bugs like http://crbug.com/157134.
   virtual void StartDragging(
       const DropData& drop_data,
       blink::DragOperationsMask allowed_ops,

@@ -1425,7 +1425,7 @@ void RenderFrameHostManager::DiscardSpeculativeRenderFrameHostForShutdown() {
   // No need to call `DeleteRenderFrame()`. When a RenderFrame or
   // `blink::RemoteFrame` is detached, it also detaches any associated
   // provisional RenderFrame, whether this due to a child frame being removed
-  // from the frame tree or the entire RenderView being torn down.
+  // from the frame tree or the entire `blink::WebView` being torn down.
   //
   // When the LifecycleStateImpl is kSpeculative, there is no need to transition
   // to kReadyToBeDeleted as speculative RenderFrameHosts don't run any unload
@@ -1675,10 +1675,10 @@ RenderFrameHostManager::ShouldSwapBrowsingInstancesForNavigation(
     return ShouldSwapBrowsingInstance::kYes_ForceSwap;
   }
 
-  // We can't switch a RenderView between view source and non-view source mode
-  // without screwing up the session history sometimes (when navigating between
-  // "view-source:http://foo.com/" and "http://foo.com/", Blink doesn't treat
-  // it as a new navigation). So require a BrowsingInstance switch.
+  // We can't switch a `blink::WebView` between view source and non-view source
+  // mode without screwing up the session history sometimes (when navigating
+  // between "view-source:http://foo.com/" and "http://foo.com/", Blink doesn't
+  // treat it as a new navigation). So require a BrowsingInstance switch.
   if (current_is_view_source_mode != destination_is_view_source_mode)
     return ShouldSwapBrowsingInstance::kYes_ForceSwap;
 
@@ -3120,8 +3120,8 @@ void RenderFrameHostManager::EnsureRenderViewInitialized(
   if (render_view_host->IsRenderViewLive())
     return;
 
-  // If the proxy in |instance| doesn't exist, this RenderView is not swapped
-  // out and shouldn't be reinitialized here.
+  // If the proxy in `group` doesn't exist, this `blink::WebView` is not
+  // swapped out and shouldn't be reinitialized here.
   RenderFrameProxyHost* proxy =
       render_frame_host_->browsing_context_state()->GetRenderFrameProxyHost(
           group);
@@ -3160,7 +3160,7 @@ bool RenderFrameHostManager::InitRenderView(
     RenderViewHostImpl* render_view_host,
     RenderFrameProxyHost* proxy) {
   // Ensure the renderer process is initialized before creating the
-  // RenderView.
+  // `blink::WebView`.
   if (!render_view_host->GetAgentSchedulingGroup().Init())
     return false;
 
@@ -3380,8 +3380,8 @@ bool RenderFrameHostManager::ReinitializeMainRenderFrame(
   CreateOpenerProxies(render_frame_host->GetSiteInstance(), frame_tree_node_,
                       render_frame_host_->browsing_context_state());
 
-  // Main frames need both the RenderView and RenderFrame reinitialized, so
-  // use InitRenderView.
+  // Main frames need both the `blink::WebView` and `RenderFrame` reinitialized,
+  // so use `InitRenderView`.
   DCHECK(!render_frame_host->browsing_context_state()->GetRenderFrameProxyHost(
       render_frame_host->GetSiteInstance()->group()));
   if (!InitRenderView(render_frame_host->GetSiteInstance()->group(),
@@ -3608,7 +3608,7 @@ void RenderFrameHostManager::CommitPending(
   if (is_main_frame && old_view && old_rvh != new_rvh) {
     // Note that this hides the RenderWidget but does not hide the Page. If it
     // did hide the Page then making a new RenderFrameHost on another call to
-    // here would need to make sure it showed the RenderView when the
+    // here would need to make sure it showed the `blink::WebView` when the
     // RenderWidget was created as visible.
     old_view->Hide();
   }
@@ -3722,8 +3722,8 @@ void RenderFrameHostManager::CommitPending(
 
     // If this frame has opened popups, we need to clear the opened popup's
     // opener. This is done here on the browser side. A similar mechanism occurs
-    // in the renderer process when the RenderView of this frame is destroyed,
-    // via blink::OpenedFrameTracker.
+    // in the renderer process when the `blink::WebView` of this frame is
+    // destroyed, via blink::OpenedFrameTracker.
     frame_tree_node_->ClearOpenerReferences();
 
     // We've just cleared other frames' "opener" referencing this frame, we now
@@ -3999,8 +3999,6 @@ absl::optional<blink::FrameToken> RenderFrameHostManager::GetOpenerFrameToken(
 void RenderFrameHostManager::ExecutePageBroadcastMethod(
     PageBroadcastMethodCallback callback,
     SiteInstance* instance_to_skip) {
-  // TODO(dcheng): Now that RenderView and RenderWidget are increasingly
-  // separated, it might be possible/desirable to just route to the view.
   DCHECK(!frame_tree_node_->parent());
 
   // When calling a PageBroadcast Mojo method for an inner WebContents, we don't

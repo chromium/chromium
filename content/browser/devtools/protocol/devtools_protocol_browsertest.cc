@@ -1596,8 +1596,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, BrowserCreateAndCloseTarget) {
   ASSERT_TRUE(target_id);
   EXPECT_EQ(2u, shell()->windows().size());
 
-  // TODO(eseckler): Since the RenderView is closed asynchronously, we currently
-  // don't verify that the command actually closes the shell.
+  // TODO(eseckler): Since the `blink::WebView` is closed asynchronously, we
+  // currently don't verify that the command actually closes the shell.
   params = base::Value::Dict();
   params.Set("targetId", *target_id);
   SendCommandSync("Target.closeTarget", std::move(params));

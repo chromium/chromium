@@ -23,7 +23,7 @@ class PluginModule;
 
 // This class wraps a dispatcher and has the same lifetime. A dispatcher has
 // the same lifetime as a plugin module, which is longer than any particular
-// RenderView or plugin instance.
+// `blink::WebView` or plugin instance.
 class HostDispatcherWrapper {
  public:
   HostDispatcherWrapper(PluginModule* module,

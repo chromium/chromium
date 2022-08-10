@@ -50,17 +50,17 @@ class RenderViewHostDelegate {
   // there is no corresponding delegate.
   virtual RenderViewHostDelegateView* GetDelegateView();
 
-  // The RenderView has been constructed.
+  // The `blink::WebView` has been constructed.
   virtual void RenderViewReady(RenderViewHost* render_view_host) {}
 
-  // The process containing the RenderView exited somehow (either cleanly,
+  // The process containing the `blink::WebView` exited somehow (either cleanly,
   // crash, or user kill).
   virtual void RenderViewTerminated(RenderViewHost* render_view_host,
                                     base::TerminationStatus status,
                                     int error_code) {}
 
-  // The RenderView is going to be deleted. This is called when each
-  // RenderView is going to be destroyed
+  // The `blink::WebView` is going to be deleted. This is called when each
+  // `blink::WebView` is going to be destroyed
   virtual void RenderViewDeleted(RenderViewHost* render_view_host) {}
 
   // The page is trying to close the RenderView's representation in the client.
@@ -118,9 +118,9 @@ class RenderViewHostDelegate {
   // Returns true if the render view is rendering a guest.
   virtual bool IsGuest();
 
-  // Called on RenderView creation to get the initial base background color
-  // for this RenderView. Nullopt means a color is not set, and the blink
-  // default color should be used.
+  // Called on `blink::WebView` creation to get the initial base background
+  // color for this `blink::WebView`. Nullopt means a color is not set, and the
+  // blink default color should be used.
   virtual absl::optional<SkColor> GetBaseBackgroundColor();
 
   virtual const base::Location& GetCreatorLocation() = 0;

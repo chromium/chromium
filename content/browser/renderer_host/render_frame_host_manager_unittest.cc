@@ -812,7 +812,7 @@ class EnableViewSourceLocalFrame : public content::FakeLocalFrame,
 // When there is an error with the specified page, renderer exits view-source
 // mode. See WebFrameImpl::DidFail(). We check by this test that
 // EnableViewSourceMode message is sent on every navigation regardless
-// RenderView is being newly created or reused.
+// `blink::WebView` is being newly created or reused.
 TEST_P(RenderFrameHostManagerTest, AlwaysSendEnableViewSourceMode) {
   const GURL kChromeUrl(GetWebUIURL("foo"));
   const GURL kUrl("http://foo/");

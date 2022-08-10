@@ -135,7 +135,7 @@ class CONTENT_EXPORT BackForwardCache {
     TEST_USES_UNLOAD_EVENT,
 
     // This test expects that same-site navigations won't result in a
-    // RenderFrameHost / RenderFrame / RenderView / RenderWidget change.
+    // RenderFrameHost / RenderFrame / `blink::WebView` / RenderWidget change.
     // But when same-site BackForwardCache is enabled, the change usually does
     // happen. Even so, there will still be valid navigations that don't result
     // in those objects changing, so we should keep the test as is, just with

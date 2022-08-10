@@ -522,12 +522,12 @@ bool RenderViewHostImpl::CreateRenderView(
   params->blink_page_broadcast =
       page_broadcast_.BindNewEndpointAndPassReceiver();
 
-  // The renderer process's `RenderView` is owned by this lifecycle of
+  // The renderer process's `blink::WebView` is owned by this lifecycle of
   // the `page_broadcast_` channel.
   GetAgentSchedulingGroup().CreateView(std::move(params));
 
-  // Set the bit saying we've made the RenderView in the renderer and notify
-  // content public observers.
+  // Set the bit saying we've made the `blink::WebView` in the renderer and
+  // notify content public observers.
   RenderViewCreated(main_rfh);
 
   // This must be posted after the RenderViewHost is marked live, with
@@ -540,9 +540,9 @@ void RenderViewHostImpl::SetMainFrameRoutingId(int routing_id) {
   main_frame_routing_id_ = routing_id;
   GetWidget()->UpdatePriority();
   // TODO(crbug.com/419087): If a local main frame is no longer attached to this
-  // RenderView then the RenderWidgetHostImpl owned by this class should be
-  // informed that its renderer widget is no longer created. The RenderViewHost
-  // will need to track its own live-ness then.
+  // `blink::WebView` then the RenderWidgetHostImpl owned by this class should
+  // be informed that its renderer widget is no longer created. The
+  // RenderViewHost will need to track its own live-ness then.
 }
 
 void RenderViewHostImpl::SetFrameTree(FrameTree& frame_tree) {
@@ -679,8 +679,8 @@ void RenderViewHostImpl::RenderViewCreated(
   renderer_view_created_ = true;
   if (local_main_frame) {
     // If there is a main frame in this RenderViewHost, then the renderer-side
-    // main frame will be created along with the RenderView. The RenderFrameHost
-    // initializes its RenderWidgetHost as well, if it exists.
+    // main frame will be created along with the `blink::WebView`. The
+    // RenderFrameHost initializes its RenderWidgetHost as well, if it exists.
     local_main_frame->RenderFrameCreated();
   }
 }

@@ -91,7 +91,7 @@ blink::LocalFrameToken FrameTokenFromCurrentContext() {
   // RendererWebAudioDevice can be created without a valid frame/document. In
   // that case, FrameForCurrentContext() below will be invalid.
 
-  // We can perform look-ups to determine which RenderView is starting the
+  // We can perform look-ups to determine which `blink::WebView` is starting the
   // audio device.  The reason for all this is because the creator of the
   // WebAudio objects might not be the actual source of the audio (e.g.,
   // an extension creates a object that is passed and used within a page).

@@ -124,7 +124,7 @@ const char* const kEditCommands[] = {
 // The route the message takes is:
 // RenderWidgetHostViewMac -> RenderViewHost ->
 // | IPC | ->
-// RenderView -> currently focused WebFrame.
+// `blink::WebView` -> currently focused WebFrame.
 // The WebFrame is in the Chrome glue layer and forwards the message to WebCore.
 void EditCommandImp(id self, SEL _cmd, id sender) {
   // Make sure |self| is the right type.

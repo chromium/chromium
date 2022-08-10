@@ -1819,8 +1819,8 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
   // Once a RenderFrame is created in the renderer, there are three possible
   // clean-up paths:
   // 1. The RenderFrame can be the main frame. In this case, closing the
-  //    associated RenderView will clean up the resources associated with the
-  //    main RenderFrame.
+  //    associated `blink::WebView` will clean up the resources associated with
+  //    the main RenderFrame.
   // 2. The RenderFrame can be unloaded. In this case, the browser sends a
   //    mojom::FrameNavigationControl::UnloadFrame message for the RenderFrame
   //    to replace itself with a `blink::RemoteFrame`and release its associated
@@ -1865,7 +1865,7 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
   //
   // Note that this logic is fairly subtle. It needs to include all subframes
   // and all speculative frames, but it should exclude case #1 (a main
-  // RenderFrame owned by the RenderView). It can't simply check
+  // RenderFrame owned by the `blink::WebView`). It can't simply check
   // |frame_tree_node_->render_manager()->speculative_frame_host()| for
   // equality against |this|. The speculative frame host is unset before the
   // speculative frame host is destroyed, so this condition would never be
@@ -7480,8 +7480,8 @@ void RenderFrameHostImpl::CreateNewWindow(
           .InitWithNewEndpointAndPassReceiver());
 
   // With this path, RenderViewHostImpl::CreateRenderView is never called
-  // because RenderView is already created on the renderer side. Thus we need to
-  // establish the connection here.
+  // because `blink::WebView` is already created on the renderer side. Thus we
+  // need to establish the connection here.
   mojo::PendingAssociatedRemote<blink::mojom::PageBroadcast> page_broadcast;
   mojo::PendingAssociatedReceiver<blink::mojom::PageBroadcast>
       page_broadcast_receiver =
@@ -9806,7 +9806,8 @@ bool RenderFrameHostImpl::IsRenderFrameLive() {
   bool is_live =
       GetProcess()->IsInitializedAndNotDead() && is_render_frame_created();
 
-  // Sanity check: the RenderView should always be live if the RenderFrame is.
+  // Sanity check: the `blink::WebView` should always be live if the RenderFrame
+  // is.
   DCHECK(!is_live || render_view_host_->IsRenderViewLive());
 
   return is_live;
@@ -10384,8 +10385,8 @@ void RenderFrameHostImpl::CreateAudioOutputStreamFactory(
       BrowserMainLoop::GetInstance()->media_stream_manager();
 
   // This message can be received before navigation commit, because the renderer
-  // requests this when initializing the main frame of RenderView which happens
-  // before commit. Use FrameTree::is_prerendering() rather than
+  // requests this when initializing the main frame of `blink::WebView` which
+  // happens before commit. Use FrameTree::is_prerendering() rather than
   // lifecycle_state() because prerendering lifecycle state only is set after
   // navigation commit.
   bool restricted_mode = frame_tree()->is_prerendering();

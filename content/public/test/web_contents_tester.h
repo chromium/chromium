@@ -74,8 +74,9 @@ class WebContentsTester {
   static WebContents* CreateTestWebContents(
       const WebContents::CreateParams& params);
 
-  // Simulates the appropriate RenderView (pending if any, current otherwise)
-  // sending a navigate notification for the NavigationController pending entry.
+  // Simulates the appropriate `blink::WebView` (pending if any, current
+  // otherwise) sending a navigate notification for the NavigationController
+  // pending entry.
   virtual void CommitPendingNavigation() = 0;
 
   // Creates a pending navigation to the given URL with the default parameters
