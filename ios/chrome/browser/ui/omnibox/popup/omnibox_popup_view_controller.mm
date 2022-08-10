@@ -230,7 +230,7 @@ const CGFloat kVisibleSuggestionThreshold = 0.6;
 
 #pragma mark - OmniboxSuggestionCommands
 
-- (void)highlightNextSuggestion {
+- (void)highlightPreviousSuggestion {
   NSIndexPath* path = self.highlightedIndexPath;
   if (path == nil) {
     // When nothing is highlighted, pressing Up Arrow doesn't do anything.
@@ -271,7 +271,7 @@ const CGFloat kVisibleSuggestionThreshold = 0.6;
                                   inSection:self.highlightedIndexPath.section];
 }
 
-- (void)highlightPreviousSuggestion {
+- (void)highlightNextSuggestion {
   if (!self.highlightedIndexPath) {
     // Initialize the highlighted row to -1, so that pressing down when nothing
     // is highlighted highlights the first row (at index 0).

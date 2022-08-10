@@ -11,10 +11,10 @@
 // omnibox.
 @protocol OmniboxSuggestionCommands<NSObject>
 
-// Moves the highlight up.
-- (void)highlightPreviousSuggestion;
 // Moves the highlight down.
 - (void)highlightNextSuggestion;
+// Moves the highlight up.
+- (void)highlightPreviousSuggestion;
 
 @end
 

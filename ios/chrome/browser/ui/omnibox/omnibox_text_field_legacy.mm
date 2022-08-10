@@ -731,11 +731,11 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 }
 
 - (void)keyCommandUp {
-  [self.suggestionCommandsEndpoint highlightNextSuggestion];
+  [self.suggestionCommandsEndpoint highlightPreviousSuggestion];
 }
 
 - (void)keyCommandDown {
-  [self.suggestionCommandsEndpoint highlightPreviousSuggestion];
+  [self.suggestionCommandsEndpoint highlightNextSuggestion];
 }
 
 #pragma mark preedit and inline autocomplete key commands

@@ -77,7 +77,7 @@ import UIKit
 // MARK: OmniboxSuggestionCommands
 
 extension PopupModel: OmniboxSuggestionCommands {
-  public func highlightNextSuggestion() {
+  public func highlightPreviousSuggestion() {
     // Pressing Up Arrow when there are no suggestions does nothing.
     if sections.isEmpty || sections.first!.matches.isEmpty {
       return
@@ -120,7 +120,7 @@ extension PopupModel: OmniboxSuggestionCommands {
       self, didHighlightRow: UInt(indexPath.row), inSection: UInt(indexPath.section))
   }
 
-  public func highlightPreviousSuggestion() {
+  public func highlightNextSuggestion() {
     // Pressing Down Arrow when there are no suggestions does nothing.
     if sections.isEmpty || sections.first!.matches.isEmpty {
       return
