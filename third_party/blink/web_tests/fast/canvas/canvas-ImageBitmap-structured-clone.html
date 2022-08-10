@@ -88,7 +88,7 @@ var image1 = new ImageData(new Uint8ClampedArray(
             12, 34, 56, 127]),
             imageWidth1, imageHeight1);
 var image2 = new ImageData(new Uint8ClampedArray([255, 128, 64, 127]), imageWidth2, imageHeight2);
-var context = document.getElementById("canvas").getContext("2d");
+var context = document.getElementById("canvas").getContext("2d", {willReadFrequently: true});
 
 var p1 = createImageBitmap(image1).then(function(image) {imageBitmap1 = image});
 var p2 = createImageBitmap(image2, {imageOrientation: "none", premultiplyAlpha: "none"}).then(function(image) {imageBitmap2 = image});

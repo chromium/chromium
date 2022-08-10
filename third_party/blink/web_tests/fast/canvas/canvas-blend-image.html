@@ -4,7 +4,7 @@
 var canvas = document.createElement('canvas');
 canvas.width = 200;
 canvas.height = 200;
-ctx = canvas.getContext('2d');
+ctx = canvas.getContext('2d', {willReadFrequently: true});
 
 // Create the image for blending test with images.
 var img = document.createElement('canvas');

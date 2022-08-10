@@ -1,0 +1,29 @@
+<!DOCTYPE HTML>
+<html>
+<body>
+    <script src="../../resources/js-test.js"></script>
+    <script type="text/javascript" src="canvas-blending-helpers.js"></script>
+    <script type="text/javascript">
+
+        description("Verify that reading back from a canvas2D multiple times without using willReadFrequently produces a console warning.");
+
+        const wrfCanvas = document.createElement("canvas");
+        const wrfCtx = wrfCanvas.getContext("2d", {willReadFrequently: true});
+        wrfCtx.fillStyle = "magenta";
+        wrfCtx.fillRect(0, 0, 10, 10);
+        const pixel1 = wrfCtx.getImageData(0, 0, 1, 1).data;
+        debug(`First pixel of canvas with willReadFrequently set to true: ${pixel1}`);
+        const pixel2 = wrfCtx.getImageData(20, 20, 1, 1).data;
+        debug(`Second pixel of canvas with willReadFrequently set to true: ${pixel2}`);
+
+        const nonWrfCanvas = document.createElement("canvas");
+        const nonWrfCtx = nonWrfCanvas.getContext("2d", {willReadFrequently: false});
+        nonWrfCtx.fillStyle = "magenta";
+        nonWrfCtx.fillRect(0, 0, 10, 10);
+        const pixel3 = nonWrfCtx.getImageData(0, 0, 1, 1).data;
+        debug(`First pixel of canvas with willReadFrequently set to false: ${pixel3}`);
+        const pixel4 = nonWrfCtx.getImageData(20, 20, 1, 1).data;
+        debug(`Second pixel of canvas with willReadFrequently set to false: ${pixel4}`);
+    </script>
+</body>
+</html>

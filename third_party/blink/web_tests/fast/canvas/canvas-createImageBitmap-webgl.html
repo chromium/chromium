@@ -17,7 +17,7 @@
     var canvas = document.createElement("canvas");
     canvas.width = 200;
     canvas.height = 200;
-    var ctx = canvas.getContext("2d");
+    var ctx = canvas.getContext("2d", {willReadFrequently: true});
     function shouldBeGreen(x, y) {
         d = ctx.getImageData(x, y, 1, 1).data;
         shouldBeTrue("d[0] == 0");

@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/canvas/text_metrics.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_filter.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_pattern.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/path_2d.h"
@@ -2003,6 +2004,25 @@ ImageData* BaseRenderingContext2D::getImageDataInternal(
   // that those get drawn here
   FinalizeFrame();
 
+  num_readbacks_performed_++;
+  if (num_readbacks_performed_ == 2 && GetCanvasRenderingContextHost() &&
+      GetCanvasRenderingContextHost()->RenderingContext()) {
+    bool will_read_frequently_enabled = GetCanvasRenderingContextHost()
+                                            ->RenderingContext()
+                                            ->CreationAttributes()
+                                            .will_read_frequently;
+    if (!will_read_frequently_enabled) {
+      const String& message =
+          "Canvas2D: Multiple readback operations using getImageData are "
+          "faster with the willReadFrequently attribute set to true. See: "
+          "https://html.spec.whatwg.org/multipage/"
+          "canvas.html#concept-canvas-will-read-frequently";
+      GetTopExecutionContext()->AddConsoleMessage(
+          MakeGarbageCollected<ConsoleMessage>(
+              mojom::blink::ConsoleMessageSource::kRendering,
+              mojom::blink::ConsoleMessageLevel::kWarning, message));
+    }
+  }
   if (!base::FeatureList::IsEnabled(features::kCanvas2dStaysGPUOnReadback)) {
     // GetImagedata is faster in Unaccelerated canvases.
     // In Desynchronized canvas disabling the acceleration will break

@@ -26,7 +26,7 @@
             var sigma = 5;
             canvas.width = 10;
             canvas.height = 10;
-            context = canvas.getContext("2d");
+            context = canvas.getContext("2d", {willReadFrequently: true});
 
             for (var i = 0; i < blendModes.length; ++i) {
                 debug("Testing blend mode " + blendModes[i]);

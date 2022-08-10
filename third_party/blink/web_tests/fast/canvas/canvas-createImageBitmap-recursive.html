@@ -45,14 +45,14 @@ var imageHeight = 20;
 var aCanvas = document.createElement("canvas");
 aCanvas.width = imageWidth;
 aCanvas.height = imageHeight;
-var aCtx = aCanvas.getContext("2d");
+var aCtx = aCanvas.getContext("2d", {willReadFrequently: true});
 aCtx.fillStyle = 'rgb(0, 255, 0)';
 aCtx.fillRect(0, 0, 20, 20);
 
 var canvas = document.createElement("canvas");
 canvas.setAttribute("width", "50");
 canvas.setAttribute("height", "50");
-var ctx = canvas.getContext("2d");
+var ctx = canvas.getContext("2d", {willReadFrequently: true});
 
 image = new Image();
 image.onload = imageLoaded;
