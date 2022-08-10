@@ -56,8 +56,7 @@ size_t PrefetchMainframeBodyLengthLimit();
 // Whether idle sockets should be closed after every prefetch.
 bool PrefetchCloseIdleSockets();
 
-// Whether a spare renderer should be started after all prefetching and NSP is
-// complete.
+// Whether a spare renderer should be started after prefetching.
 bool PrefetchStartsSpareRenderer();
 
 // The amount of time |PrefetchService| will keep an owned |PrefetchContainer|

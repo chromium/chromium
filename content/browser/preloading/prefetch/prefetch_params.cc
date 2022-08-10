@@ -63,7 +63,7 @@ bool PrefetchAllowAllDomains() {
 bool PrefetchAllowAllDomainsForExtendedPreloading() {
   return base::GetFieldTrialParamByFeatureAsBool(
       features::kPrefetchUseContentRefactor,
-      "allow_all_domains_for_extended_preloading", false);
+      "allow_all_domains_for_extended_preloading", true);
 }
 
 int PrefetchServiceMaximumNumberOfConcurrentPrefetches() {
@@ -117,6 +117,14 @@ size_t PrefetchMainframeBodyLengthLimit() {
 bool PrefetchCloseIdleSockets() {
   return base::GetFieldTrialParamByFeatureAsBool(
       features::kPrefetchUseContentRefactor, "close_idle_sockets", true);
+}
+
+bool PrefetchStartsSpareRenderer() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+             "isolated-prerender-start-spare-renderer") ||
+         base::GetFieldTrialParamByFeatureAsBool(
+             features::kPrefetchUseContentRefactor, "start_spare_renderer",
+             true);
 }
 
 base::TimeDelta PrefetchContainerLifetimeInPrefetchService() {

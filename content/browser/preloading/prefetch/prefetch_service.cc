@@ -117,6 +117,10 @@ bool ShouldConsiderDecoyRequestForStatus(PrefetchStatus status) {
 }
 
 bool ShouldStartSpareRenderer() {
+  if (!PrefetchStartsSpareRenderer()) {
+    return false;
+  }
+
   for (RenderProcessHost::iterator iter(RenderProcessHost::AllHostsIterator());
        !iter.IsAtEnd(); iter.Advance()) {
     if (iter.GetCurrentValue()->IsUnused()) {
