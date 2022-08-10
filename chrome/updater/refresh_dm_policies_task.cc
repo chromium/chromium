@@ -8,9 +8,11 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/check.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/device_management/dm_client.h"
@@ -24,8 +26,10 @@
 
 namespace updater {
 
-RefreshDMPoliciesTask::RefreshDMPoliciesTask(scoped_refptr<Configurator> config)
-    : config_(config) {}
+RefreshDMPoliciesTask::RefreshDMPoliciesTask(
+    scoped_refptr<Configurator> config,
+    scoped_refptr<base::SequencedTaskRunner> main_task_runner)
+    : config_(config), main_task_runner_(main_task_runner) {}
 
 RefreshDMPoliciesTask::~RefreshDMPoliciesTask() = default;
 
@@ -41,8 +45,7 @@ void RefreshDMPoliciesTask::Run(base::OnceClosure callback) {
     return;
   }
 
-  FetchPolicy();
-  std::move(callback).Run();
+  FetchPolicy(std::move(callback));
   return;
 
 #else   // BUILDFLAG(IS_WIN)
@@ -50,19 +53,21 @@ void RefreshDMPoliciesTask::Run(base::OnceClosure callback) {
   // `RefreshDMPoliciesTask::FetchPolicy` can block and therefore is running
   // under a task runner with `base::MayBlock()`.
   base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
-      ->PostTaskAndReply(
-          FROM_HERE, base::BindOnce(&RefreshDMPoliciesTask::FetchPolicy, this),
-          std::move(callback));
+      ->PostTask(FROM_HERE, base::BindOnce(&RefreshDMPoliciesTask::FetchPolicy,
+                                           this, std::move(callback)));
 #endif  // BUILDFLAG(IS_WIN)
 }
 
-void RefreshDMPoliciesTask::FetchPolicy() {
+void RefreshDMPoliciesTask::FetchPolicy(base::OnceClosure callback) {
   VLOG(1) << __func__;
 
   DMClient::FetchPolicy(
       DMClient::CreateDefaultConfigurator(config_->GetPolicyService()),
       GetDefaultDMStorage(),
-      base::BindOnce(&RefreshDMPoliciesTask::OnRequestComplete, this));
+      base::BindPostTask(
+          main_task_runner_,
+          base::BindOnce(&RefreshDMPoliciesTask::OnRequestComplete, this)
+              .Then(std::move(callback))));
 }
 
 void RefreshDMPoliciesTask::OnRequestComplete(

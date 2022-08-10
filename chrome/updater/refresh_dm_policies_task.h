@@ -11,6 +11,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/device_management/dm_client.h"
 #include "chrome/updater/device_management/dm_response_validator.h"
@@ -23,20 +24,23 @@ namespace updater {
 class RefreshDMPoliciesTask
     : public base::RefCountedThreadSafe<RefreshDMPoliciesTask> {
  public:
-  explicit RefreshDMPoliciesTask(scoped_refptr<Configurator> config);
+  RefreshDMPoliciesTask(
+      scoped_refptr<Configurator> config,
+      scoped_refptr<base::SequencedTaskRunner> main_task_runner);
   void Run(base::OnceClosure callback);
 
  private:
   friend class base::RefCountedThreadSafe<RefreshDMPoliciesTask>;
   virtual ~RefreshDMPoliciesTask();
 
-  void FetchPolicy();
+  void FetchPolicy(base::OnceClosure callback);
   void OnRequestComplete(
       DMClient::RequestResult result,
       const std::vector<PolicyValidationResult>& validation_results);
 
   SEQUENCE_CHECKER(sequence_checker_);
   scoped_refptr<Configurator> config_;
+  scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
 };
 
 }  // namespace updater

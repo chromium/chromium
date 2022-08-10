@@ -302,9 +302,9 @@ void UpdateServiceImpl::RunPeriodicTasks(base::OnceClosure callback) {
                                      base::MakeRefCounted<UpdateUsageStatsTask>(
                                          GetUpdaterScope(), persisted_data_)));
 
-  new_tasks.push_back(
-      base::BindOnce(&RefreshDMPoliciesTask::Run,
-                     base::MakeRefCounted<RefreshDMPoliciesTask>(config_)));
+  new_tasks.push_back(base::BindOnce(
+      &RefreshDMPoliciesTask::Run,
+      base::MakeRefCounted<RefreshDMPoliciesTask>(config_, main_task_runner_)));
   new_tasks.push_back(base::BindOnce(
       &CheckForUpdatesTask::Run,
       base::MakeRefCounted<CheckForUpdatesTask>(
