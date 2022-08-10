@@ -51,8 +51,6 @@ const gfx::VectorIcon& TypeToVectorIcon(CrosApiSearchResult::OmniboxType type) {
       return ash::kSearchIcon;
     case CrosApiSearchResult::OmniboxType::kHistory:
       return ash::kHistoryIcon;
-    case CrosApiSearchResult::OmniboxType::kCalculator:
-      return ash::kEqualIcon;
     default:
       NOTREACHED();
       return ash::kOmniboxGenericIcon;
@@ -180,8 +178,6 @@ ash::SearchResultType OmniboxResult::GetSearchResultType() const {
       return ash::OMNIBOX_SEARCH_SUGGEST_ENTITY;
     case CrosApiSearchResult::MetricsType::kNavSuggest:
       return ash::OMNIBOX_NAVSUGGEST;
-    case CrosApiSearchResult::MetricsType::kCalculator:
-      return ash::OMNIBOX_CALCULATOR;
 
     default:
       return ash::SEARCH_RESULT_TYPE_BOUNDARY;

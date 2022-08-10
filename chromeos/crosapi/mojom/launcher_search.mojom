@@ -119,11 +119,11 @@ struct SearchResult {
     [Default] kUnset = 0,
     kRichImageDeprecated = 1,
     kFaviconDeprecated = 2,
-    kBookmark = 3,
+    kCalculatorDeprecated = 7,
+    kBookmark = 3,  // A special kind of domain type.
     kDomain = 4,
     kSearch = 5,
     kHistory = 6,
-    kCalculator = 7,
     [MinVersion=1] kOpenTab = 8,
   };
 

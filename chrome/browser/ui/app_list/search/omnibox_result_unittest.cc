@@ -284,7 +284,7 @@ TEST_F(OmniboxResultTest, Priority) {
       "https://url1.com", AutocompleteMatchType::SEARCH_SUGGEST_ENTITY,
       GURL("http://website/rich_image.jpg"));
   const auto other_result = CreateOmniboxResult(
-      "https://url1.com", AutocompleteMatchType::CALCULATOR);
+      "https://url1.com", AutocompleteMatchType::SEARCH_OTHER_ENGINE);
 
   EXPECT_GT(rich_entity_result->dedup_priority(),
             history_result->dedup_priority());
@@ -420,10 +420,10 @@ TEST_F(OmniboxResultTest, RichEntityIcon) {
 
 // Test that results have generic icons for their result type.
 TEST_F(OmniboxResultTest, GenericIcon) {
-  const auto calculator_result = CreateOmniboxResult(
-      "https://example.com", AutocompleteMatchType::CALCULATOR);
-  EXPECT_TRUE(ImageSkiasEqual(SystemIcon(ash::kEqualIcon),
-                              calculator_result->icon().icon));
+  const auto domain_result = CreateOmniboxResult(
+      "https://example.com", AutocompleteMatchType::HISTORY_URL);
+  EXPECT_TRUE(ImageSkiasEqual(SystemIcon(ash::kOmniboxGenericIcon),
+                              domain_result->icon().icon));
 
   const auto search_result = CreateOmniboxResult(
       "https://example.com", AutocompleteMatchType::SEARCH_SUGGEST);

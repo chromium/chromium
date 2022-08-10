@@ -80,18 +80,11 @@ SearchResult::OmniboxType MatchTypeToOmniboxType(
     case AutocompleteMatchType::SEARCH_SUGGEST_PERSONALIZED:
       return SearchResult::OmniboxType::kHistory;
 
-    case AutocompleteMatchType::CALCULATOR:
-      return SearchResult::OmniboxType::kCalculator;
-
     case AutocompleteMatchType::OPEN_TAB:
       return SearchResult::OmniboxType::kOpenTab;
 
-    case AutocompleteMatchType::EXTENSION_APP_DEPRECATED:
-    case AutocompleteMatchType::TILE_SUGGESTION:
-    case AutocompleteMatchType::TILE_NAVSUGGEST:
-    case AutocompleteMatchType::NULL_RESULT_MESSAGE:
-    case AutocompleteMatchType::NUM_TYPES:
-      // Not reached.
+    default:
+      NOTREACHED();
       return SearchResult::OmniboxType::kDomain;
   }
 }
