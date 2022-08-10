@@ -281,6 +281,10 @@ bool operator<(const Section& a, const Section& b) {
          std::tie(b.field_type_group_, b.prefix_);
 }
 
+bool Section::is_from_autocomplete() const {
+  return absl::holds_alternative<Autocomplete>(prefix_);
+}
+
 void Section::set_field_type_group(FieldTypeGroupSuffix field_type_group) {
   field_type_group_ = field_type_group;
 }

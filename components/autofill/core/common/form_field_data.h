@@ -119,6 +119,8 @@ class Section {
   Section(const Section& section);
   ~Section();
 
+  bool is_from_autocomplete() const;
+
   void set_field_type_group(FieldTypeGroupSuffix field_type_group);
   void SetPrefixToCreditCard();
   bool SetPrefixFromAutocomplete(const Autocomplete& autocomplete_section,

@@ -2101,23 +2101,20 @@ void FormStructure::IdentifySectionsWithNewMethod() {
     if (current_type == previous_type)
       already_saw_current_type = false;
 
-    // Boolean flag that is set to true when the |field| has
-    // autocomplete-section attribute defined.
-    bool autocomplete_section_attribute_present = field->section != Section();
+    // Boolean flag that is set to true when the section of the `field` is
+    // derived from the autocomplete attribute and its section is different than
+    // the previous field's section.
+    bool different_autocomplete_section_than_previous_field_section =
+        field->section.is_from_autocomplete() &&
+        (field_index == 0 ||
+         fields_[field_index - 1]->section != field->section);
 
-    // Boolean flag that is set to true when the |field| has
-    // autocomplete-section attribute defined and is different than the
-    // previous field.
-    bool different_autocomplete_section_than_previous =
-        (autocomplete_section_attribute_present &&
-         (!field_index || fields_[field_index - 1]->section != field->section));
-
-    // Start a new section if the |current_type| was already seen or the
-    // autocomplete-section attribute is defined for the |field| which is
-    // different than the previous field's.
+    // Start a new section if the `current_type` was already seen or the section
+    // is derived from the autocomplete attribute which is different than the
+    // previous field's section.
     if (current_type != UNKNOWN_TYPE &&
         (already_saw_current_type ||
-         different_autocomplete_section_than_previous)) {
+         different_autocomplete_section_than_previous_field_section)) {
       // Keep track of seen_types if the new section is hidden. The next
       // visible section might be the continuation of the previous visible
       // section.
@@ -2126,15 +2123,17 @@ void FormStructure::IdentifySectionsWithNewMethod() {
         last_visible_section = current_section;
       }
 
-      if (!is_hidden_section && (!autocomplete_section_attribute_present ||
-                                 different_autocomplete_section_than_previous))
+      if (!is_hidden_section &&
+          (!field->section.is_from_autocomplete() ||
+           different_autocomplete_section_than_previous_field_section)) {
         seen_types.clear();
+      }
 
-      if (autocomplete_section_attribute_present &&
+      if (field->section.is_from_autocomplete() &&
           !previous_autocomplete_section_present) {
         // If this field is the first field within the section with a defined
         // autocomplete section, then change the section attribute of all the
-        // parsed fields in the current section to |field->section|.
+        // parsed fields in the current section to `field->section`.
         int i = static_cast<int>(field_index - 1);
         while (i >= 0 && fields_[i]->section == current_section) {
           fields_[i]->section = field->section;
@@ -2147,11 +2146,11 @@ void FormStructure::IdentifySectionsWithNewMethod() {
 
       // The section described in the autocomplete section attribute
       // overrides the value determined by the heuristic.
-      if (autocomplete_section_attribute_present)
+      if (field->section.is_from_autocomplete())
         current_section = field->section;
 
       previous_autocomplete_section_present =
-          autocomplete_section_attribute_present;
+          field->section.is_from_autocomplete();
     }
 
     // Only consider a type "seen" if it was not ignored. Some forms have
