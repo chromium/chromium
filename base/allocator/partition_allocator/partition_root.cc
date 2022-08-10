@@ -337,10 +337,10 @@ static size_t PartitionPurgeSlotSpan(
   // slots are not in use.
   for (PartitionFreelistEntry* entry = slot_span->get_freelist_head(); entry;
        /**/) {
-    size_t slot_index =
-        (SlotStartPtr2Addr(entry) - slot_span_start) / slot_size;
-    PA_DCHECK(slot_index < num_slots);
-    slot_usage[slot_index] = 0;
+    size_t slot_number =
+        bucket->GetSlotNumber(SlotStartPtr2Addr(entry) - slot_span_start);
+    PA_DCHECK(slot_number < num_slots);
+    slot_usage[slot_number] = 0;
 #if !BUILDFLAG(IS_WIN)
     // If we have a slot where the encoded next pointer is 0, we can actually
     // discard that entry because touching a discarded page is guaranteed to
@@ -348,7 +348,7 @@ static size_t PartitionPurgeSlotSpan(
     // effective on big-endian machines because the masking function is
     // negation.)
     if (entry->IsEncodedNextPtrZero())
-      last_slot = slot_index;
+      last_slot = slot_number;
 #endif
     entry = entry->GetNext(slot_size);
   }
