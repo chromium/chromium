@@ -379,6 +379,8 @@ executable("decode_test") {
     "test/h264_dpb.h",
     "test/h264_vaapi_wrapper.cc",
     "test/h264_vaapi_wrapper.h",
+    "test/h265_dpb.cc",
+    "test/h265_dpb.h",
     "test/macros.h",
     "test/scoped_va_config.cc",
     "test/scoped_va_config.h",
