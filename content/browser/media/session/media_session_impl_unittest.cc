@@ -734,6 +734,19 @@ TEST_F(MediaSessionImplTest, SessionInfoAudioSink) {
   EXPECT_FALSE(info->audio_sink_id.has_value());
 }
 
+TEST_F(MediaSessionImplTest, SessionInfoPresentation) {
+  EXPECT_FALSE(media_session::test::GetMediaSessionInfoSync(GetMediaSession())
+                   ->has_presentation);
+
+  GetMediaSession()->OnPresentationsChanged(true);
+  EXPECT_TRUE(media_session::test::GetMediaSessionInfoSync(GetMediaSession())
+                  ->has_presentation);
+
+  GetMediaSession()->OnPresentationsChanged(false);
+  EXPECT_FALSE(media_session::test::GetMediaSessionInfoSync(GetMediaSession())
+                   ->has_presentation);
+}
+
 TEST_F(MediaSessionImplTest, RaiseActivatesWebContents) {
   MockWebContentsDelegate delegate;
   web_contents()->SetDelegate(&delegate);

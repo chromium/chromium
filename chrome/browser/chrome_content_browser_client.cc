@@ -204,6 +204,7 @@
 #include "components/live_caption/caption_util.h"
 #include "components/media_router/browser/presentation/presentation_service_delegate_impl.h"
 #include "components/media_router/browser/presentation/receiver_presentation_service_delegate_impl.h"
+#include "components/media_router/browser/presentation/web_contents_presentation_manager.h"
 #include "components/metrics/client_info.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/net_log/chrome_net_log.h"
@@ -4355,6 +4356,24 @@ ChromeContentBrowserClient::GetReceiverPresentationServiceDelegate(
     }
   }
   return nullptr;
+}
+
+void ChromeContentBrowserClient::AddPresentationObserver(
+    content::PresentationObserver* observer,
+    content::WebContents* web_contents) {
+  if (media_router::MediaRouterEnabled(web_contents->GetBrowserContext())) {
+    media_router::WebContentsPresentationManager::Get(web_contents)
+        ->AddObserver(observer);
+  }
+}
+
+void ChromeContentBrowserClient::RemovePresentationObserver(
+    content::PresentationObserver* observer,
+    content::WebContents* web_contents) {
+  if (media_router::MediaRouterEnabled(web_contents->GetBrowserContext())) {
+    media_router::WebContentsPresentationManager::Get(web_contents)
+        ->RemoveObserver(observer);
+  }
 }
 
 std::vector<std::unique_ptr<content::NavigationThrottle>>

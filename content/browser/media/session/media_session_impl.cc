@@ -304,6 +304,9 @@ void MediaSessionImpl::WebContentsDestroyed() {
   one_shot_players_.clear();
 
   AbandonSystemAudioFocusIfNeeded();
+
+  content::GetContentClient()->browser()->RemovePresentationObserver(
+      this, web_contents());
 }
 
 void MediaSessionImpl::RenderFrameDeleted(RenderFrameHost* rfh) {
@@ -999,6 +1002,14 @@ void MediaSessionImpl::Initialize() {
   DCHECK(web_contents());
   DidUpdateFaviconURL(web_contents()->GetPrimaryMainFrame(),
                       web_contents()->GetFaviconURLs());
+
+  content::GetContentClient()->browser()->AddPresentationObserver(
+      this, web_contents());
+}
+
+void MediaSessionImpl::OnPresentationsChanged(bool has_presentation) {
+  has_presentation_ = has_presentation;
+  RebuildAndNotifyMediaSessionInfoChanged();
 }
 
 AudioFocusDelegate::AudioFocusResult MediaSessionImpl::RequestSystemAudioFocus(
@@ -1107,6 +1118,7 @@ MediaSessionImpl::GetMediaSessionInfoSync() {
   }
 
   info->muted = is_muted_;
+  info->has_presentation = has_presentation_;
 
   return info;
 }

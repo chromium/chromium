@@ -27,6 +27,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -37,6 +38,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
+#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
@@ -173,6 +175,9 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
   void SetUp() override {
     SessionManagerClient::InitializeFakeInMemory();
     FakeSessionManagerClient::Get()->set_arc_available(true);
+    // `media_router::kMediaRouter` is disabled because it has unmet
+    // dependencies and is unrelated to this unit test.
+    feature_list_.InitAndDisableFeature(media_router::kMediaRouter);
 
     BrowserWithTestWindowTest::SetUp();
     InitExtensionService(profile());
@@ -486,6 +491,7 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
 
   ArcAppTest arc_test_;
   std::unique_ptr<arc::FakeIntentHelperHost> intent_helper_host_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(NoteTakingHelperTest, PaletteNotEnabled) {

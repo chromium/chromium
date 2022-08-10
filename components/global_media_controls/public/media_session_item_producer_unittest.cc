@@ -192,7 +192,17 @@ class MediaSessionItemProducerTest : public testing::Test {
     session_info->playback_state =
         playing ? media_session::mojom::MediaPlaybackState::kPlaying
                 : media_session::mojom::MediaPlaybackState::kPaused;
+    SimulateMediaSessionInfoChanged(id, std::move(session_info));
+  }
 
+  void SimulateSessionHasPresentation(const base::UnguessableToken& id) {
+    MediaSessionInfoPtr session_info(MediaSessionInfo::New());
+    session_info->has_presentation = true;
+    SimulateMediaSessionInfoChanged(id, std::move(session_info));
+  }
+
+  void SimulateMediaSessionInfoChanged(const base::UnguessableToken& id,
+                                       MediaSessionInfoPtr session_info) {
     auto item_itr = sessions().find(id.ToString());
     EXPECT_NE(sessions().end(), item_itr);
     item_itr->second.MediaSessionInfoChanged(std::move(session_info));
@@ -681,6 +691,15 @@ TEST_F(MediaSessionItemProducerTest, HidingNotification_TimerParams) {
   // If we pause again, it should hide after kTimerInMinutes.
   SimulatePlaybackStateChanged(id, false);
   AdvanceClockMinutes(kTimerInMinutes + 1);
+  EXPECT_FALSE(HasActiveItems());
+}
+
+TEST_F(MediaSessionItemProducerTest, HidesSessionWithPresentation) {
+  const base::UnguessableToken id = SimulatePlayingControllableMedia();
+  EXPECT_TRUE(HasActiveItems());
+  SimulateSessionHasPresentation(id);
+  // The presentation gets its own item, so MediaSessionItemProducer's item has
+  // become redundant and gets hidden.
   EXPECT_FALSE(HasActiveItems());
 }
 

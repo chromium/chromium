@@ -22,6 +22,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/page_user_data.h"
+#include "content/public/browser/presentation_observer.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -71,7 +72,8 @@ class MediaSessionAndroid;
 // work with it.
 class MediaSessionImpl : public MediaSession,
                          public WebContentsObserver,
-                         public WebContentsUserData<MediaSessionImpl> {
+                         public WebContentsUserData<MediaSessionImpl>,
+                         public PresentationObserver {
  public:
   enum class State { ACTIVE, SUSPENDED, INACTIVE };
 
@@ -286,6 +288,9 @@ class MediaSessionImpl : public MediaSession,
 
   // Mute or unmute the media player.
   void SetMute(bool mute) override;
+
+  // PresentationObserver:
+  void OnPresentationsChanged(bool has_presentation) override;
 
   // Downloads the bitmap version of a MediaImage at least |minimum_size_px|
   // and closest to |desired_size_px|. If the download failed, was too small or
@@ -595,6 +600,9 @@ class MediaSessionImpl : public MediaSession,
   int duration_update_allowance_ = 0;
 
   bool should_throttle_duration_update_ = false;
+
+  // Whether the associated WebContents is connected to a presentation.
+  bool has_presentation_ = false;
 
   absl::optional<PlayerIdentifier> guarding_player_id_;
 

@@ -161,14 +161,6 @@ class MediaNotificationServiceTest : public ChromeRenderViewHostTestHarness {
     service_->cast_notification_producer_->OnRoutesUpdated(routes);
   }
 
-  MediaNotificationService::PresentationManagerObservation*
-  GetPresentationObservation(const base::UnguessableToken& id) {
-    auto it = service_->presentation_manager_observations_.find(id.ToString());
-    return (it == service_->presentation_manager_observations_.end())
-               ? nullptr
-               : &it->second;
-  }
-
   MediaNotificationService* service() { return service_.get(); }
 
  private:
@@ -263,28 +255,6 @@ class MediaNotificationServiceCastTest : public MediaNotificationServiceTest {
   std::unique_ptr<MockWebContentsPresentationManager> presentation_manager_;
   base::test::ScopedFeatureList feature_list_;
 };
-
-TEST_F(MediaNotificationServiceCastTest,
-       HideNotification_NewCastSessionStarted) {
-  // If a new cast session starts, hide the media dialog.
-  base::UnguessableToken id = SimulatePlayingControllableMedia();
-  NiceMock<global_media_controls::test::MockMediaDialogDelegate>
-      dialog_delegate;
-  SimulateDialogOpened(&dialog_delegate);
-  EXPECT_TRUE(HasOpenDialog());
-
-  auto presentation_manager =
-      std::make_unique<MockWebContentsPresentationManager>();
-  auto media_route = CreateMediaRoute("id");
-  auto* observation = GetPresentationObservation(id);
-  observation->SetPresentationManagerForTesting(
-      presentation_manager.get()->GetWeakPtr());
-
-  EXPECT_CALL(dialog_delegate, HideMediaDialog());
-  presentation_manager->NotifyMediaRoutesChanged({media_route});
-
-  task_environment()->RunUntilIdle();
-}
 
 TEST_F(MediaNotificationServiceCastTest,
        ShowCastSessionsForPresentationRequest) {

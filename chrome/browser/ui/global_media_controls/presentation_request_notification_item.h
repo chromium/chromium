@@ -15,6 +15,10 @@
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "ui/gfx/image/image_skia.h"
 
+namespace content {
+class MediaSession;
+}  // namespace content
+
 namespace global_media_controls {
 class MediaItemManager;
 }  // namespace global_media_controls
@@ -62,6 +66,8 @@ class PresentationRequestNotificationItem final
   base::WeakPtr<PresentationRequestNotificationItem> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
+
+  static void SetMediaSessionForTest(content::MediaSession* media_session);
 
   const std::string& id() const { return id_; }
   media_router::StartPresentationContext* context() const {

@@ -65,8 +65,8 @@ class MediaNotificationService
       base::RepeatingCallback<void(bool)> callback) override;
 
   // global_media_controls::MediaSessionItemProducerObserver:
-  void OnMediaSessionItemCreated(const std::string& id) override;
-  void OnMediaSessionItemDestroyed(const std::string& id) override;
+  void OnMediaSessionItemCreated(const std::string& id) override {}
+  void OnMediaSessionItemDestroyed(const std::string& id) override {}
   void OnMediaSessionActionButtonPressed(
       const std::string& id,
       media_session::mojom::MediaSessionAction action) override;
@@ -119,33 +119,6 @@ class MediaNotificationService
   FRIEND_TEST_ALL_PREFIXES(MediaNotificationServiceCastTest,
                            ShowSupplementalNotifications);
 
-  class PresentationManagerObservation : public content::PresentationObserver {
-   public:
-    PresentationManagerObservation(base::RepeatingClosure cast_started_callback,
-                                   content::WebContents* web_contents);
-    PresentationManagerObservation(const PresentationManagerObservation&) =
-        delete;
-    PresentationManagerObservation& operator=(
-        const PresentationManagerObservation&) = delete;
-    ~PresentationManagerObservation() override;
-
-    // content::PresentationObserver:
-    void OnPresentationsChanged(bool has_presentation) override;
-
-    void SetPresentationManagerForTesting(
-        base::WeakPtr<media_router::WebContentsPresentationManager>
-            presentation_manager);
-
-   private:
-    base::RepeatingClosure cast_started_callback_;
-    base::WeakPtr<media_router::WebContentsPresentationManager>
-        presentation_manager_;
-  };
-
-  // Called by PresentationManagerObservation when casting starts for its
-  // WebContents.
-  void OnCastStarted(content::WebContents* web_contents);
-
   // True if there are cast notifications associated with |web_contents|.
   bool HasCastNotificationsForWebContents(
       content::WebContents* web_contents) const;
@@ -163,11 +136,6 @@ class MediaNotificationService
   std::unique_ptr<CastMediaNotificationProducer> cast_notification_producer_;
   std::unique_ptr<PresentationRequestNotificationProducer>
       presentation_request_notification_producer_;
-
-  // Observes media_router::WebContentsPresentationManagers so we can dismiss
-  // the dialog when casting starts.
-  std::map<std::string, PresentationManagerObservation>
-      presentation_manager_observations_;
 
   // Used to initialize a MediaRouterUI.
   std::unique_ptr<media_router::StartPresentationContext> context_;

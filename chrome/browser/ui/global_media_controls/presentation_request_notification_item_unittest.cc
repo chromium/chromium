@@ -9,9 +9,65 @@
 #include "components/media_message_center/mock_media_notification_view.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/media_session.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+class MockMediaSession : public content::MediaSession {
+ public:
+  MOCK_METHOD(void,
+              DidReceiveAction,
+              (media_session::mojom::MediaSessionAction action),
+              (override));
+  MOCK_METHOD(void,
+              SetDuckingVolumeMultiplier,
+              (double multiplier),
+              (override));
+  MOCK_METHOD(void,
+              SetAudioFocusGroupId,
+              (const base::UnguessableToken& group_id),
+              (override));
+  MOCK_METHOD(void, Suspend, (SuspendType suspend_type), (override));
+  MOCK_METHOD(void, Resume, (SuspendType suspend_type), (override));
+  MOCK_METHOD(void, StartDucking, (), (override));
+  MOCK_METHOD(void, StopDucking, (), (override));
+  MOCK_METHOD(void,
+              GetMediaSessionInfo,
+              (GetMediaSessionInfoCallback callback),
+              (override));
+  MOCK_METHOD(void, GetDebugInfo, (GetDebugInfoCallback callback), (override));
+  MOCK_METHOD(void,
+              AddObserver,
+              (mojo::PendingRemote<media_session::mojom::MediaSessionObserver>
+                   observer),
+              (override));
+  MOCK_METHOD(void, PreviousTrack, (), (override));
+  MOCK_METHOD(void, NextTrack, (), (override));
+  MOCK_METHOD(void, SkipAd, (), (override));
+  MOCK_METHOD(void, Seek, (base::TimeDelta seek_time), (override));
+  MOCK_METHOD(void, Stop, (SuspendType suspend_type), (override));
+  MOCK_METHOD(void,
+              GetMediaImageBitmap,
+              (const media_session::MediaImage& image,
+               int minimum_size_px,
+               int desired_size_px,
+               GetMediaImageBitmapCallback callback),
+              (override));
+  MOCK_METHOD(void, SeekTo, (base::TimeDelta seek_time), (override));
+  MOCK_METHOD(void, ScrubTo, (base::TimeDelta seek_time), (override));
+  MOCK_METHOD(void, EnterPictureInPicture, (), (override));
+  MOCK_METHOD(void, ExitPictureInPicture, (), (override));
+  MOCK_METHOD(void,
+              SetAudioSinkId,
+              (const absl::optional<std::string>& id),
+              (override));
+  MOCK_METHOD(void, ToggleMicrophone, (), (override));
+  MOCK_METHOD(void, ToggleCamera, (), (override));
+  MOCK_METHOD(void, HangUp, (), (override));
+  MOCK_METHOD(void, Raise, (), (override));
+  MOCK_METHOD(void, SetMute, (bool mute), (override));
+};
 
 class PresentationRequestNotificationItemTest
     : public ChromeRenderViewHostTestHarness {
@@ -23,11 +79,25 @@ class PresentationRequestNotificationItemTest
       const PresentationRequestNotificationItemTest&) = delete;
   ~PresentationRequestNotificationItemTest() override = default;
 
+  void SetUp() override {
+    ChromeRenderViewHostTestHarness::SetUp();
+    PresentationRequestNotificationItem::SetMediaSessionForTest(
+        &media_session_);
+  }
+
+  void TearDown() override {
+    PresentationRequestNotificationItem::SetMediaSessionForTest(nullptr);
+    ChromeRenderViewHostTestHarness::TearDown();
+  }
+
   content::PresentationRequest CreatePresentationRequest() {
     return content::PresentationRequest(
         main_rfh()->GetGlobalId(), {GURL("http://presentation.com")},
         url::Origin::Create(GURL("http://google2.com")));
   }
+
+ private:
+  MockMediaSession media_session_;
 };
 
 TEST_F(PresentationRequestNotificationItemTest, NotificationHeader) {

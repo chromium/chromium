@@ -68,6 +68,7 @@
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_manager.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
+#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -1198,12 +1199,17 @@ class ChromeShelfControllerTest : public ChromeShelfControllerTestBase,
                                   public ::testing::WithParamInterface<bool> {
  public:
   ChromeShelfControllerTest() {
+    // `media_router::kMediaRouter` is disabled because it has unmet
+    // dependencies and is unrelated to this unit test.
     if (ShouldEnableSyncSettingsCategorization()) {
-      feature_list_.InitAndEnableFeature(
-          chromeos::features::kSyncSettingsCategorization);
+      feature_list_.InitWithFeatures(
+          /*enabled=*/{chromeos::features::kSyncSettingsCategorization},
+          /*disabled=*/{media_router::kMediaRouter});
     } else {
-      feature_list_.InitAndDisableFeature(
-          chromeos::features::kSyncSettingsCategorization);
+      feature_list_.InitWithFeatures(
+          /*enabled=*/{},
+          /*disabled=*/{chromeos::features::kSyncSettingsCategorization,
+                        media_router::kMediaRouter});
     }
   }
   ~ChromeShelfControllerTest() override = default;
@@ -1387,9 +1393,13 @@ class MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest
     : public ChromeShelfControllerTestBase {
  protected:
   MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest() {
-    // Lacros does not support the ChromeOS Legacy multi profile feature.
-    scoped_feature_list_.InitAndDisableFeature(
-        chromeos::features::kLacrosSupport);
+    // `kLacrosSupport` is disabled since Lacros does not support the ChromeOS
+    // Legacy multi profile feature.
+    // `kMediaRouter` is disabled because it has unmet dependencies and is
+    // unrelated to this unit test.
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled=*/{}, /*disabled=*/{chromeos::features::kLacrosSupport,
+                                      media_router::kMediaRouter});
   }
   MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest(
       const MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest&) =

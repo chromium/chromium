@@ -9,7 +9,7 @@ import "mojo/public/mojom/base/time.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
-// Next MinVersion: 14
+// Next MinVersion: 15
 
 [Stable, Extensible]
 enum MediaPlaybackState {
@@ -193,6 +193,9 @@ struct MediaSessionInfo {
 
   // Tracks whether the media player is muted.
   [MinVersion=12] bool muted;
+
+  // Tracks whether the associated WebContents has a presentation.
+  [MinVersion=14] bool has_presentation;
 };
 
 // Contains debugging information about a MediaSession. This will be displayed

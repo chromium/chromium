@@ -20,6 +20,8 @@
 
 namespace {
 
+content::MediaSession* g_media_session_for_test = nullptr;
+
 content::WebContents* GetWebContentsFromPresentationRequest(
     const content::PresentationRequest& request) {
   auto* rfh = content::RenderFrameHost::FromID(request.render_frame_host_id);
@@ -45,6 +47,13 @@ absl::optional<gfx::ImageSkia> GetCorrectColorTypeImage(
   return gfx::ImageSkia::CreateFrom1xBitmap(color_type_copy);
 }
 
+content::MediaSession* GetMediaSession(content::WebContents* web_contents) {
+  if (g_media_session_for_test) {
+    return g_media_session_for_test;
+  }
+  return content::MediaSession::Get(web_contents);
+}
+
 }  // namespace
 
 PresentationRequestNotificationItem::PresentationRequestNotificationItem(
@@ -67,7 +76,7 @@ PresentationRequestNotificationItem::PresentationRequestNotificationItem(
   // the page has no media players.
   auto* web_contents = GetWebContentsFromPresentationRequest(request_);
   DCHECK(web_contents);
-  auto* media_session = content::MediaSession::Get(web_contents);
+  auto* media_session = GetMediaSession(web_contents);
   DCHECK(media_session);
   media_session->AddObserver(observer_receiver_.BindNewPipeAndPassRemote());
 }
@@ -104,7 +113,7 @@ void PresentationRequestNotificationItem::MediaSessionImagesChanged(
                          std::vector<media_session::MediaImage>>& images) {
   auto* web_contents = GetWebContentsFromPresentationRequest(request_);
   DCHECK(web_contents);
-  auto* media_session = content::MediaSession::Get(web_contents);
+  auto* media_session = GetMediaSession(web_contents);
   DCHECK(media_session);
   media_session::MediaImageManager manager(
       global_media_controls::kMediaItemArtworkMinSize,
@@ -150,6 +159,12 @@ void PresentationRequestNotificationItem::MediaSessionImagesChanged(
 
   if (should_synchronously_update_view)
     UpdateViewWithImages();
+}
+
+// static
+void PresentationRequestNotificationItem::SetMediaSessionForTest(
+    content::MediaSession* media_session) {
+  g_media_session_for_test = media_session;
 }
 
 media_message_center::SourceType
