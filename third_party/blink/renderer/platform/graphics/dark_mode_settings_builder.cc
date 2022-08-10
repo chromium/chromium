@@ -130,19 +130,6 @@ T Clamp(T value, T min_value, T max_value) {
   return std::max(min_value, std::min(value, max_value));
 }
 
-bool GetIncreaseTextContrast(const SwitchParams& switch_params) {
-  switch (features::kForceDarkIncreaseTextContrastParam.Get()) {
-    case ForceDarkIncreaseTextContrast::kUseBlinkSettings:
-      return GetIntegerSwitchParamValue<int>(switch_params,
-                                             "IncreaseTextContrast", 0);
-    case ForceDarkIncreaseTextContrast::kFalse:
-      return false;
-    case ForceDarkIncreaseTextContrast::kTrue:
-      return true;
-  }
-  NOTREACHED();
-}
-
 DarkModeSettings BuildDarkModeSettings() {
   SwitchParams switch_params = ParseDarkModeSettings();
 
@@ -161,8 +148,6 @@ DarkModeSettings BuildDarkModeSettings() {
       Clamp<float>(GetFloatSwitchParamValue(switch_params, "ContrastPercent",
                                             kDefaultDarkModeContrastPercent),
                    -1.0f, 1.0f);
-
-  settings.increase_text_contrast = GetIncreaseTextContrast(switch_params);
 
   return settings;
 }

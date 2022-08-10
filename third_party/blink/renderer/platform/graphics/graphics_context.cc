@@ -125,8 +125,6 @@ class GraphicsContext::DarkModeFlags final {
     flags_ = &flags;
   }
 
-  bool applied_dark_mode() const { return !!dark_mode_flags_; }
-
   // NOLINTNEXTLINE(google-explicit-constructor)
   operator const cc::PaintFlags&() const { return *flags_; }
 
@@ -612,25 +610,17 @@ void GraphicsContext::DrawTextPasses(const AutoDarkMode& auto_dark_mode,
   TextDrawingModeFlags mode_flags = TextDrawingMode();
 
   if (mode_flags & kTextModeFill) {
-    const cc::PaintFlags& flags = ImmutableState()->FillFlags();
-    DarkModeFlags dark_flags(this, auto_dark_mode, flags);
-    if (UNLIKELY(ShouldDrawDarkModeTextContrastOutline(flags, dark_flags))) {
-      cc::PaintFlags outline_flags(flags);
-      outline_flags.setStyle(cc::PaintFlags::kStroke_Style);
-      outline_flags.setStrokeWidth(1);
-      draw_text(outline_flags);
-    }
-    draw_text(dark_flags);
+    draw_text(ImmutableState()->FillFlags());
   }
 
   if ((mode_flags & kTextModeStroke) && GetStrokeStyle() != kNoStroke &&
       StrokeThickness() > 0) {
-    cc::PaintFlags flags(ImmutableState()->StrokeFlags());
+    cc::PaintFlags stroke_flags(ImmutableState()->StrokeFlags());
     if (mode_flags & kTextModeFill) {
       // shadow was already applied during fill pass
-      flags.setLooper(nullptr);
+      stroke_flags.setLooper(nullptr);
     }
-    draw_text(DarkModeFlags(this, auto_dark_mode, flags));
+    draw_text(stroke_flags);
   }
 }
 
@@ -642,28 +632,10 @@ void GraphicsContext::DrawTextInternal(const Font& font,
                                        const AutoDarkMode& auto_dark_mode) {
   DrawTextPasses(auto_dark_mode, [&](const cc::PaintFlags& flags) {
     font.DrawText(canvas_, text_info, point, device_scale_factor_, node_id,
-                  flags,
+                  DarkModeFlags(this, auto_dark_mode, flags),
                   printing_ ? Font::DrawType::kGlyphsAndClusters
                             : Font::DrawType::kGlyphsOnly);
   });
-}
-
-bool GraphicsContext::ShouldDrawDarkModeTextContrastOutline(
-    const cc::PaintFlags& original_flags,
-    const DarkModeFlags& dark_flags) const {
-  if (!dark_flags.applied_dark_mode())
-    return false;
-  if (!GetCurrentDarkModeSettings().increase_text_contrast)
-    return false;
-
-  // To avoid outlining all text, only draw an outline that improves contrast.
-  // 90000 represents a difference of roughly 175 in all three channels.
-  // TODO(pdr): Calculate a contrast ratio using luminance (see:
-  // https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum.html).
-  constexpr int kMinimumDifferenceSq = 90000;
-  Color dark_color(static_cast<const cc::PaintFlags&>(dark_flags).getColor());
-  Color original_color(original_flags.getColor());
-  return DifferenceSquared(dark_color, original_color) > kMinimumDifferenceSq;
 }
 
 void GraphicsContext::DrawText(const Font& font,

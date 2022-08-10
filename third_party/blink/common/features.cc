@@ -637,20 +637,6 @@ const base::FeatureParam<int> kForceDarkForegroundLightnessThresholdParam{
 const base::FeatureParam<int> kForceDarkBackgroundLightnessThresholdParam{
     &kForceWebContentsDarkMode, "background_lightness_threshold", -1};
 
-const base::FeatureParam<ForceDarkIncreaseTextContrast>::Option
-    forcedark_increase_text_contrast_options[] = {
-        {ForceDarkIncreaseTextContrast::kUseBlinkSettings,
-         "use_blink_settings_for_method"},
-        {ForceDarkIncreaseTextContrast::kFalse, "false"},
-        {ForceDarkIncreaseTextContrast::kTrue, "true"}};
-
-// Should text contrast be increased.
-const base::FeatureParam<ForceDarkIncreaseTextContrast>
-    kForceDarkIncreaseTextContrastParam{
-        &kForceWebContentsDarkMode, "increase_text_contrast",
-        ForceDarkIncreaseTextContrast::kUseBlinkSettings,
-        &forcedark_increase_text_contrast_options};
-
 // Instructs WebRTC to honor the Min/Max Video Encode Accelerator dimensions.
 const base::Feature kWebRtcUseMinMaxVEADimensions {
   "WebRtcUseMinMaxVEADimensions",

@@ -39,14 +39,6 @@ enum class ForceDarkImageBehavior {
   kInvertSelectively
 };
 
-// Specifies algorithm for increasing text contrast.
-enum class ForceDarkIncreaseTextContrast {
-  // Same as ForceDarkInversionMethod::kUseBlinkSettings above.
-  kUseBlinkSettings,
-  kFalse,
-  kTrue
-};
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_FORCEDARK_FORCEDARK_SWITCHES_H_

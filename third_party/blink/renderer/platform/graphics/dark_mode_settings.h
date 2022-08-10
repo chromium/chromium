@@ -46,9 +46,6 @@ struct DarkModeSettings {
   //
   // Warning: This behavior is the opposite of foreground_brightness_threshold!
   int background_brightness_threshold = 0;
-
-  // True if text contrast should be increased by painting an outline.
-  bool increase_text_contrast = false;
 };
 
 }  // namespace blink

@@ -297,13 +297,6 @@
              "--dark-mode-settings=ImagePolicy=1"]
   },
   {
-    "prefix": "dark-mode-increase-text-contrast",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["dark-mode/colors"],
-    "args": ["--blink-settings=preferredColorScheme=0,forceDarkModeEnabled=true",
-             "--dark-mode-settings=IncreaseTextContrast=1"]
-  },
-  {
     "prefix": "presentation",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [],
