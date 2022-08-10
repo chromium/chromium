@@ -43,7 +43,7 @@ void CommerceTabHelper::DidFinishNavigation(
 void CommerceTabHelper::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url) {
-  if (!shopping_service_)
+  if (!shopping_service_ || !render_frame_host->IsInPrimaryMainFrame())
     return;
 
   shopping_service_->DidFinishLoad(web_wrapper_.get());
