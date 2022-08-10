@@ -626,6 +626,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.DNS.DnsConfig.Nsswitch.NisServiceInHosts"
+    enum="BooleanIncluded" expires_after="2022-11-27">
+  <owner>horo@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Whether or not NIS service is registered in the &quot;hosts:&quot; database
+    of an nsswitch.conf. Recorded when a resolv.conf file is successfully read
+    by Chrome and the DNS configuration read from the resolv.conf file is
+    considered compatible with Chrome.
+  </summary>
+</histogram>
+
 <histogram name="Net.DNS.DnsConfig.Nsswitch.NumServices" units="#services"
     expires_after="2022-01-15">
   <owner>ericorth@chromium.org</owner>

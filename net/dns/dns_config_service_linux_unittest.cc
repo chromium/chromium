@@ -23,6 +23,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_waitable_event.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -40,6 +41,9 @@
 namespace net {
 
 namespace {
+
+const char kNsswitchNisServiceInHostsHistogramName[] =
+    "Net.DNS.DnsConfig.Nsswitch.NisServiceInHosts";
 
 // MAXNS is normally 3, but let's test 4 if possible.
 const char* const kNameserversIPv4[] = {
@@ -879,6 +883,28 @@ TEST_F(DnsConfigServiceLinuxTest, RejectsNsswitchResolve) {
   EXPECT_TRUE(config->unhandled_options);
 }
 
+TEST_F(DnsConfigServiceLinuxTest, HistogramNoNisServiceInHosts) {
+  auto res = std::make_unique<struct __res_state>();
+  InitializeResState(res.get());
+  resolv_reader_->set_value(std::move(res));
+
+  nsswitch_reader_->set_value(
+      {NsswitchReader::ServiceSpecification(NsswitchReader::Service::kFiles),
+       NsswitchReader::ServiceSpecification(NsswitchReader::Service::kDns)});
+
+  base::HistogramTester histogram_tester;
+  CallbackHelper callback_helper;
+  service_.ReadConfig(callback_helper.GetCallback());
+  absl::optional<DnsConfig> config = callback_helper.WaitForResult();
+  EXPECT_TRUE(resolv_reader_->closed());
+  histogram_tester.ExpectBucketCount(kNsswitchNisServiceInHostsHistogramName,
+                                     false, 1);
+
+  ASSERT_TRUE(config.has_value());
+  EXPECT_TRUE(config->IsValid());
+  EXPECT_FALSE(config->unhandled_options);
+}
+
 TEST_F(DnsConfigServiceLinuxTest, AcceptsNsswitchNis) {
   auto res = std::make_unique<struct __res_state>();
   InitializeResState(res.get());
@@ -889,10 +915,13 @@ TEST_F(DnsConfigServiceLinuxTest, AcceptsNsswitchNis) {
        NsswitchReader::ServiceSpecification(NsswitchReader::Service::kNis),
        NsswitchReader::ServiceSpecification(NsswitchReader::Service::kDns)});
 
+  base::HistogramTester histogram_tester;
   CallbackHelper callback_helper;
   service_.ReadConfig(callback_helper.GetCallback());
   absl::optional<DnsConfig> config = callback_helper.WaitForResult();
   EXPECT_TRUE(resolv_reader_->closed());
+  histogram_tester.ExpectBucketCount(kNsswitchNisServiceInHostsHistogramName,
+                                     true, 1);
 
   ASSERT_TRUE(config.has_value());
   EXPECT_TRUE(config->IsValid());

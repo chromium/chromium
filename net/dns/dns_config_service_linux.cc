@@ -20,11 +20,13 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/sequence_checker.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -204,11 +206,12 @@ enum class IncompatibleNsswitchReason {
 void RecordIncompatibleNsswitchReason(
     IncompatibleNsswitchReason reason,
     absl::optional<NsswitchReader::Service> service_token) {
-  UMA_HISTOGRAM_ENUMERATION("Net.DNS.DnsConfig.Nsswitch.IncompatibleReason",
-                            reason);
+  base::UmaHistogramEnumeration("Net.DNS.DnsConfig.Nsswitch.IncompatibleReason",
+                                reason);
   if (service_token) {
-    UMA_HISTOGRAM_ENUMERATION("Net.DNS.DnsConfig.Nsswitch.IncompatibleService",
-                              service_token.value());
+    base::UmaHistogramEnumeration(
+        "Net.DNS.DnsConfig.Nsswitch.IncompatibleService",
+        service_token.value());
   }
 }
 
@@ -371,12 +374,12 @@ class DnsConfigServiceLinux::Watcher : public DnsConfigService::Watcher {
 
  private:
   void OnResolvFilePathWatcherChange(const base::FilePath& path, bool error) {
-    UMA_HISTOGRAM_BOOLEAN("Net.DNS.DnsConfig.Resolv.FileChange", true);
+    base::UmaHistogramBoolean("Net.DNS.DnsConfig.Resolv.FileChange", true);
     OnConfigChanged(!error);
   }
 
   void OnNsswitchFilePathWatcherChange(const base::FilePath& path, bool error) {
-    UMA_HISTOGRAM_BOOLEAN("Net.DNS.DnsConfig.Nsswitch.FileChange", true);
+    base::UmaHistogramBoolean("Net.DNS.DnsConfig.Nsswitch.FileChange", true);
     OnConfigChanged(!error);
   }
 
@@ -453,14 +456,14 @@ class DnsConfigServiceLinux::ConfigReader : public SerialWorker {
         }
       }
 
-      UMA_HISTOGRAM_BOOLEAN("Net.DNS.DnsConfig.Resolv.Read",
-                            dns_config_.has_value());
+      base::UmaHistogramBoolean("Net.DNS.DnsConfig.Resolv.Read",
+                                dns_config_.has_value());
       if (!dns_config_.has_value())
         return;
-      UMA_HISTOGRAM_BOOLEAN("Net.DNS.DnsConfig.Resolv.Valid",
-                            dns_config_->IsValid());
-      UMA_HISTOGRAM_BOOLEAN("Net.DNS.DnsConfig.Resolv.Compatible",
-                            !dns_config_->unhandled_options);
+      base::UmaHistogramBoolean("Net.DNS.DnsConfig.Resolv.Valid",
+                                dns_config_->IsValid());
+      base::UmaHistogramBoolean("Net.DNS.DnsConfig.Resolv.Compatible",
+                                !dns_config_->unhandled_options);
 
       // Override `fallback_period` value to match default setting on
       // Windows.
@@ -469,12 +472,16 @@ class DnsConfigServiceLinux::ConfigReader : public SerialWorker {
       if (dns_config_ && !dns_config_->unhandled_options) {
         std::vector<NsswitchReader::ServiceSpecification> nsswitch_hosts =
             nsswitch_reader_->ReadAndParseHosts();
-        UMA_HISTOGRAM_COUNTS_100("Net.DNS.DnsConfig.Nsswitch.NumServices",
-                                 nsswitch_hosts.size());
+        base::UmaHistogramCounts100("Net.DNS.DnsConfig.Nsswitch.NumServices",
+                                    nsswitch_hosts.size());
         dns_config_->unhandled_options =
             !IsNsswitchConfigCompatible(nsswitch_hosts);
-        UMA_HISTOGRAM_BOOLEAN("Net.DNS.DnsConfig.Nsswitch.Compatible",
-                              !dns_config_->unhandled_options);
+        base::UmaHistogramBoolean("Net.DNS.DnsConfig.Nsswitch.Compatible",
+                                  !dns_config_->unhandled_options);
+        base::UmaHistogramBoolean(
+            "Net.DNS.DnsConfig.Nsswitch.NisServiceInHosts",
+            base::Contains(nsswitch_hosts, NsswitchReader::Service::kNis,
+                           &NsswitchReader::ServiceSpecification::service));
       }
     }
 
