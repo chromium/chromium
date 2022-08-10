@@ -10,6 +10,10 @@
 
 namespace blink {
 
+TransferredMediaStreamComponent::TransferredMediaStreamComponent(
+    const TransferredValues& data)
+    : data_(data) {}
+
 MediaStreamComponent* TransferredMediaStreamComponent::Clone(
     std::unique_ptr<MediaStreamTrackPlatform> cloned_platform_track) const {
   if (component_) {
@@ -33,8 +37,7 @@ String TransferredMediaStreamComponent::Id() const {
   if (component_) {
     return component_->Id();
   }
-  // TODO(https://crbug.com/1288839): Return the transferred value.
-  return "";
+  return data_.id;
 }
 
 int TransferredMediaStreamComponent::UniqueId() const {

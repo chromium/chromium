@@ -24,7 +24,13 @@ class PLATFORM_EXPORT TransferredMediaStreamComponent final
     : public GarbageCollected<TransferredMediaStreamComponent>,
       public MediaStreamComponent {
  public:
-  TransferredMediaStreamComponent() = default;
+  // For carrying deserialized data to the TransferredMediaStreamComponent
+  // constructor.
+  struct TransferredValues {
+    String id;
+  };
+
+  explicit TransferredMediaStreamComponent(const TransferredValues& data);
 
   TransferredMediaStreamComponent(const TransferredMediaStreamComponent&) =
       delete;
@@ -63,6 +69,7 @@ class PLATFORM_EXPORT TransferredMediaStreamComponent final
 
  private:
   Member<MediaStreamComponent> component_;
+  TransferredValues data_;
 };
 
 }  // namespace blink
