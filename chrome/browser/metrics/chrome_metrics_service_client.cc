@@ -173,6 +173,10 @@
 #include "chrome/notification_helper/notification_helper_constants.h"
 #endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+#include "components/metrics/motherboard_metrics_provider.h"
+#endif
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 #include "third_party/crashpad/crashpad/client/crashpad_info.h"
 #endif
@@ -715,6 +719,11 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
 
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<metrics::CPUMetricsProvider>());
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+  metrics_service_->RegisterMetricsProvider(
+      std::make_unique<metrics::MotherboardMetricsProvider>());
+#endif
 
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<metrics::EntropyStateProvider>(local_state));

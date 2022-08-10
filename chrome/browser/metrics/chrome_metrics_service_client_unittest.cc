@@ -164,6 +164,11 @@ TEST_F(ChromeMetricsServiceClientTest, TestRegisterMetricsServiceProviders) {
     expected_providers++;
   }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+  // MotherboardMetricProvider.
+  expected_providers++;
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   expected_providers++;  // ExtensionsMetricsProvider.
 #endif                   // defined(ENABLE_EXTENSIONS)

@@ -191,6 +191,15 @@ static_library("metrics") {
   if (is_fuchsia) {
     sources += [ "drive_metrics_provider_fuchsia.cc" ]
   }
+
+  if (is_win || is_linux) {
+    sources += [
+      "motherboard.cc",
+      "motherboard.h",
+      "motherboard_metrics_provider.cc",
+      "motherboard_metrics_provider.h",
+    ]
+  }
 }
 
 if (is_android) {
@@ -548,6 +557,12 @@ source_set("unit_tests") {
       ":content",
       "//content/test:test_support",
       "//extensions/buildflags",
+    ]
+  }
+
+  if (is_win || is_linux) {
+    sources += [
+      "motherboard_metrics_provider_unittest.cc",
     ]
   }
 }
