@@ -9,7 +9,10 @@
 
 #include "components/autofill_assistant/browser/public/autofill_assistant.h"
 #include "components/version_info/channel.h"
-#include "content/public/browser/browser_context.h"
+
+namespace content {
+class BrowserContext;
+}  // namespace content
 
 namespace autofill_assistant {
 

@@ -10,6 +10,7 @@
 #include "base/containers/span.h"
 #include "base/hash/legacy_hash.h"
 #include "base/strings/string_util.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace autofill_assistant {

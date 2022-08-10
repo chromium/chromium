@@ -8,6 +8,7 @@
 
 #include "components/autofill_assistant/browser/autofill_assistant_impl.h"
 #include "components/autofill_assistant/browser/common_dependencies.h"
+#include "content/public/browser/browser_context.h"
 
 namespace autofill_assistant {
 

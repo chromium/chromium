@@ -28,9 +28,13 @@ static_library("public") {
 
   deps = [
     ":proto",
-    "//base",
     "//components/autofill_assistant/browser/public/fast_checkout/proto:proto",
     "//components/autofill_assistant/browser/public/password_change/proto:proto",
+    "//url",
+  ]
+
+  public_deps = [
+    "//base",
     "//components/version_info:channel",
     "//content/public/browser",
   ]
