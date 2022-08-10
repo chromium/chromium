@@ -17,7 +17,7 @@ from _helpers import *
 
 
 @pytest.mark.asyncio
-async def test_iframe_navigateToPageWithHash_contextInfoUpdated(websocket,
+async def test_nestedBrowsingContext_navigateToPageWithHash_contextInfoUpdated(websocket,
       iframe_id):
     url = "data:text/html,<h2>test</h2>"
     url_with_hash_1 = url + "#1"
@@ -45,7 +45,7 @@ async def test_iframe_navigateToPageWithHash_contextInfoUpdated(websocket,
 
 
 @pytest.mark.asyncio
-async def test_iframe_navigateWaitNone_navigated(websocket, iframe_id):
+async def test_nestedBrowsingContext_navigateWaitNone_navigated(websocket, iframe_id):
     await subscribe(websocket, ["browsingContext.domContentLoaded",
                                 "browsingContext.load"])
     # Send command.
@@ -84,7 +84,7 @@ async def test_iframe_navigateWaitNone_navigated(websocket, iframe_id):
 
 
 @pytest.mark.asyncio
-async def test_iframe_navigateWaitInteractive_navigated(websocket, iframe_id):
+async def test_nestedBrowsingContext_navigateWaitInteractive_navigated(websocket, iframe_id):
     await subscribe(websocket, ["browsingContext.domContentLoaded",
                                 "browsingContext.load"])
 
@@ -125,7 +125,7 @@ async def test_iframe_navigateWaitInteractive_navigated(websocket, iframe_id):
 
 
 @pytest.mark.asyncio
-async def test_iframe_navigateWaitComplete_navigated(websocket, iframe_id):
+async def test_nestedBrowsingContext_navigateWaitComplete_navigated(websocket, iframe_id):
     await subscribe(websocket, ["browsingContext.domContentLoaded",
                                 "browsingContext.load"])
 
@@ -166,7 +166,7 @@ async def test_iframe_navigateWaitComplete_navigated(websocket, iframe_id):
 
 
 @pytest.mark.asyncio
-async def test_iframe_navigateSameDocumentNavigation_navigated(
+async def test_nestedBrowsingContext_navigateSameDocumentNavigation_navigated(
       websocket, iframe_id):
     url = "data:text/html,<h2>test</h2>"
     url_with_hash_1 = url + "#1"

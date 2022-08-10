@@ -14,17 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Protocol } from 'devtools-protocol';
 import { StubTransport } from '../../../tests/stubTransport.spec';
 
 import * as sinon from 'sinon';
 
 import { BrowsingContextProcessor } from './browsingContextProcessor';
-import { CdpConnection, CdpClient } from '../../../cdp';
-import { TargetContext } from './targetContext';
+import { CdpConnection } from '../../../cdp';
 import { BrowsingContext } from '../protocol/bidiProtocolTypes';
 import { BidiServer, IBidiServer } from '../../utils/bidiServer';
 import { EventManager, IEventManager } from '../events/EventManager';
+import { BrowsingContextImpl } from './browsingContextImpl';
 
 describe('BrowsingContextProcessor', function () {
   let mockCdpServer: StubTransport;
@@ -67,29 +66,26 @@ describe('BrowsingContextProcessor', function () {
     );
 
     // Actual `Context.create` logic involves several CDP calls, so mock it to avoid all the simulations.
-    TargetContext.create = sinon.fake(
-      async (
-        targetInfo: Protocol.Target.TargetInfo,
-        sessionId: string,
-        cdpClient: CdpClient,
-        bidiServer: IBidiServer,
-        eventManager: IEventManager
-      ) => {}
-    );
+    BrowsingContextImpl.createTargetContext = sinon.fake(() => {
+      return sinon.createStubInstance(BrowsingContextImpl);
+    });
   });
 
   describe('handle events', async function () {
     it('`Target.attachedToTarget` creates Context', async function () {
-      sinon.assert.notCalled(TargetContext.create as sinon.SinonSpy);
+      sinon.assert.notCalled(
+        BrowsingContextImpl.createTargetContext as sinon.SinonSpy
+      );
       await mockCdpServer.emulateIncomingMessage(
         TARGET_ATTACHED_TO_TARGET_EVENT
       );
       sinon.assert.calledOnceWithExactly(
-        TargetContext.create as sinon.SinonSpy,
-        CDP_TARGET_INFO,
-        SESSION_ID,
+        BrowsingContextImpl.createTargetContext as sinon.SinonSpy,
+        NEW_CONTEXT_ID,
+        null,
         sinon.match.any, // cdpClient.
         sinon.match.any, // bidiServer.
+        SESSION_ID,
         sinon.match.any // eventManager.
       );
     });

@@ -39,10 +39,12 @@ export class ScriptEvaluator {
    * target's `globalThis`.
    * @param cdpObject CDP remote object to be serialized.
    * @param resultOwnership indicates desired OwnershipModel.
+   * @param executionContext point to the execution context
    */
   public async serializeCdpObject(
     cdpObject: Protocol.Runtime.RemoteObject,
-    resultOwnership: Script.OwnershipModel
+    resultOwnership: Script.OwnershipModel,
+    executionContext: number
   ): Promise<CommonDataTypes.RemoteValue> {
     const cdpWebDriverValue: Protocol.Runtime.CallFunctionOnResponse =
       await this.#cdpClient.Runtime.callFunctionOn({
@@ -50,7 +52,7 @@ export class ScriptEvaluator {
         awaitPromise: false,
         arguments: [cdpObject],
         generateWebDriverValue: true,
-        objectId: await this.#getDummyContextId(),
+        objectId: await this.#getDummyObject(executionContext),
       });
     return await this.#cdpToBidiValue(cdpWebDriverValue, resultOwnership);
   }
@@ -62,7 +64,8 @@ export class ScriptEvaluator {
    * @returns string The stringified object.
    */
   async stringifyObject(
-    cdpObject: Protocol.Runtime.RemoteObject
+    cdpObject: Protocol.Runtime.RemoteObject,
+    executionContext: number
   ): Promise<string> {
     let stringifyResult = await this.#cdpClient.Runtime.callFunctionOn({
       functionDeclaration: String(function (
@@ -73,7 +76,7 @@ export class ScriptEvaluator {
       awaitPromise: false,
       arguments: [cdpObject],
       returnByValue: true,
-      objectId: await this.#getDummyContextId(),
+      objectId: await this.#getDummyObject(executionContext),
     });
     return stringifyResult.result.value;
   }
@@ -81,14 +84,16 @@ export class ScriptEvaluator {
   // TODO(sadym): `dummyContextObject` needed for the running context.
   // Use the proper `executionContextId` instead:
   // https://github.com/GoogleChromeLabs/chromium-bidi/issues/52
-  async #getDummyContextId(): Promise<string> {
+  async #getDummyObject(executionContext: number): Promise<string> {
     const dummyContextObject = await this.#cdpClient.Runtime.evaluate({
       expression: '(()=>{return {}})()',
+      contextId: executionContext,
     });
     return dummyContextObject.result.objectId!;
   }
 
   public async callFunction(
+    executionContext: number,
     functionDeclaration: string,
     _this: Script.ArgumentValue,
     _arguments: Script.ArgumentValue[],
@@ -102,11 +107,13 @@ export class ScriptEvaluator {
         return f.apply(deserializedThis, deserializedArgs);
       }}`;
 
-    const thisAndArgumentsList = [await this.#deserializeToCdpArg(_this)];
+    const thisAndArgumentsList = [
+      await this.#deserializeToCdpArg(_this, executionContext),
+    ];
     thisAndArgumentsList.push(
       ...(await Promise.all(
         _arguments.map(async (a) => {
-          return await this.#deserializeToCdpArg(a);
+          return await this.#deserializeToCdpArg(a, executionContext);
         })
       ))
     );
@@ -116,7 +123,7 @@ export class ScriptEvaluator {
       awaitPromise,
       arguments: thisAndArgumentsList, // this, arguments.
       generateWebDriverValue: true,
-      objectId: await this.#getDummyContextId(),
+      objectId: await this.#getDummyObject(executionContext),
     });
 
     if (cdpCallFunctionResult.exceptionDetails) {
@@ -125,7 +132,8 @@ export class ScriptEvaluator {
         exceptionDetails: await this.#serializeCdpExceptionDetails(
           cdpCallFunctionResult.exceptionDetails,
           this.#callFunctionStacktraceLineOffset,
-          resultOwnership
+          resultOwnership,
+          executionContext
         ),
         realm: 'TODO: ADD',
       };
@@ -143,7 +151,8 @@ export class ScriptEvaluator {
   async #serializeCdpExceptionDetails(
     cdpExceptionDetails: Protocol.Runtime.ExceptionDetails,
     lineOffset: number,
-    resultOwnership: Script.OwnershipModel
+    resultOwnership: Script.OwnershipModel,
+    executionContext: number
   ): Promise<Script.ExceptionDetails> {
     const callFrames = cdpExceptionDetails.stackTrace?.callFrames.map(
       (frame) => ({
@@ -159,10 +168,14 @@ export class ScriptEvaluator {
     const exception = await this.serializeCdpObject(
       // Exception should always be there.
       cdpExceptionDetails.exception!,
-      resultOwnership
+      resultOwnership,
+      executionContext
     );
 
-    const text = await this.stringifyObject(cdpExceptionDetails.exception!);
+    const text = await this.stringifyObject(
+      cdpExceptionDetails.exception!,
+      executionContext
+    );
 
     return {
       exception,
@@ -203,11 +216,13 @@ export class ScriptEvaluator {
   }
 
   public async scriptEvaluate(
+    executionContext: number,
     expression: string,
     awaitPromise: boolean,
     resultOwnership: Script.OwnershipModel
   ): Promise<Script.EvaluateResult> {
     let cdpEvaluateResult = await this.#cdpClient.Runtime.evaluate({
+      contextId: executionContext,
       expression,
       awaitPromise,
       generateWebDriverValue: true,
@@ -220,7 +235,8 @@ export class ScriptEvaluator {
           exceptionDetails: await this.#serializeCdpExceptionDetails(
             cdpEvaluateResult.exceptionDetails,
             this.#evaluateStacktraceLineOffset,
-            resultOwnership
+            resultOwnership,
+            executionContext
           ),
           realm: 'TODO: ADD',
         },
@@ -236,7 +252,8 @@ export class ScriptEvaluator {
   }
 
   async #deserializeToCdpArg(
-    argumentValue: Script.ArgumentValue
+    argumentValue: Script.ArgumentValue,
+    executionContext: number
   ): Promise<Protocol.Runtime.CallArgument> {
     if ('handle' in argumentValue) {
       return { objectId: argumentValue.handle };
@@ -299,7 +316,8 @@ export class ScriptEvaluator {
         // TODO(sadym): if non of the nested keys and values has remote
         //  reference, serialize to `unserializableValue` without CDP roundtrip.
         const keyValueArray = await this.#flattenKeyValuePairs(
-          argumentValue.value
+          argumentValue.value,
+          executionContext
         );
         let argEvalResult = await this.#cdpClient.Runtime.callFunctionOn({
           functionDeclaration: String(function (
@@ -314,7 +332,7 @@ export class ScriptEvaluator {
           awaitPromise: false,
           arguments: keyValueArray,
           returnByValue: false,
-          objectId: await this.#getDummyContextId(),
+          objectId: await this.#getDummyObject(executionContext),
         });
 
         // TODO(sadym): dispose nested objects.
@@ -325,7 +343,8 @@ export class ScriptEvaluator {
         // TODO(sadym): if non of the nested keys and values has remote
         //  reference, serialize to `unserializableValue` without CDP roundtrip.
         const keyValueArray = await this.#flattenKeyValuePairs(
-          argumentValue.value
+          argumentValue.value,
+          executionContext
         );
 
         let argEvalResult = await this.#cdpClient.Runtime.callFunctionOn({
@@ -347,7 +366,7 @@ export class ScriptEvaluator {
           awaitPromise: false,
           arguments: keyValueArray,
           returnByValue: false,
-          objectId: await this.#getDummyContextId(),
+          objectId: await this.#getDummyObject(executionContext),
         });
 
         // TODO(sadym): dispose nested objects.
@@ -357,7 +376,10 @@ export class ScriptEvaluator {
       case 'array': {
         // TODO(sadym): if non of the nested items has remote reference,
         //  serialize to `unserializableValue` without CDP roundtrip.
-        const args = await this.#flattenValueList(argumentValue.value);
+        const args = await this.#flattenValueList(
+          argumentValue.value,
+          executionContext
+        );
 
         let argEvalResult = await this.#cdpClient.Runtime.callFunctionOn({
           functionDeclaration: String(function (...args: unknown[]) {
@@ -366,7 +388,7 @@ export class ScriptEvaluator {
           awaitPromise: false,
           arguments: args,
           returnByValue: false,
-          objectId: await this.#getDummyContextId(),
+          objectId: await this.#getDummyObject(executionContext),
         });
 
         // TODO(sadym): dispose nested objects.
@@ -376,7 +398,10 @@ export class ScriptEvaluator {
       case 'set': {
         // TODO(sadym): if non of the nested items has remote reference,
         //  serialize to `unserializableValue` without CDP roundtrip.
-        const args = await this.#flattenValueList(argumentValue.value);
+        const args = await this.#flattenValueList(
+          argumentValue.value,
+          executionContext
+        );
 
         let argEvalResult = await this.#cdpClient.Runtime.callFunctionOn({
           functionDeclaration: String(function (...args: unknown[]) {
@@ -385,7 +410,7 @@ export class ScriptEvaluator {
           awaitPromise: false,
           arguments: args,
           returnByValue: false,
-          objectId: await this.#getDummyContextId(),
+          objectId: await this.#getDummyObject(executionContext),
         });
         return { objectId: argEvalResult.result.objectId };
       }
@@ -400,7 +425,8 @@ export class ScriptEvaluator {
   }
 
   async #flattenKeyValuePairs(
-    value: CommonDataTypes.MappingLocalValue
+    value: CommonDataTypes.MappingLocalValue,
+    executionContext: number
   ): Promise<Protocol.Runtime.CallArgument[]> {
     const keyValueArray: Protocol.Runtime.CallArgument[] = [];
     for (let pair of value) {
@@ -414,10 +440,10 @@ export class ScriptEvaluator {
         keyArg = { value: key };
       } else {
         // Key is a serialized value.
-        keyArg = await this.#deserializeToCdpArg(key);
+        keyArg = await this.#deserializeToCdpArg(key, executionContext);
       }
 
-      valueArg = await this.#deserializeToCdpArg(value);
+      valueArg = await this.#deserializeToCdpArg(value, executionContext);
 
       keyValueArray.push(keyArg);
       keyValueArray.push(valueArg);
@@ -426,12 +452,13 @@ export class ScriptEvaluator {
   }
 
   async #flattenValueList(
-    list: CommonDataTypes.ListLocalValue
+    list: CommonDataTypes.ListLocalValue,
+    executionContext: number
   ): Promise<Protocol.Runtime.CallArgument[]> {
     const result: Protocol.Runtime.CallArgument[] = [];
 
     for (let value of list) {
-      result.push(await this.#deserializeToCdpArg(value));
+      result.push(await this.#deserializeToCdpArg(value, executionContext));
     }
 
     return result;
