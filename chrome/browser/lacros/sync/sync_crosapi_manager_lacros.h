@@ -9,6 +9,7 @@
 
 class Profile;
 class SyncExplicitPassphraseClientLacros;
+class SyncUserSettingsClientLacros;
 
 // Controls lifetime of sync-related Crosapi clients.
 class SyncCrosapiManagerLacros {
@@ -24,6 +25,7 @@ class SyncCrosapiManagerLacros {
   // from the client code.
   std::unique_ptr<SyncExplicitPassphraseClientLacros>
       sync_explicit_passphrase_client_;
+  std::unique_ptr<SyncUserSettingsClientLacros> sync_user_settings_client_;
 };
 
 #endif  // CHROME_BROWSER_LACROS_SYNC_SYNC_CROSAPI_MANAGER_LACROS_H_

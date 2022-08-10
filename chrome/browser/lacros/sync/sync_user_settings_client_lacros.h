@@ -23,9 +23,6 @@ class SyncUserSettingsClientLacros
  public:
   // |sync_service| must not be null. |sync_service_remote| must not be null and
   // must be bound.
-  // TODO(crbug.com/1330894): ensure |sync_service_remote| has
-  // BindUserSettingsClient() method (may not have due to Ash/Lacros version
-  // scew), probably as a part of object owning |this|.
   SyncUserSettingsClientLacros(
       syncer::SyncService* sync_service,
       mojo::Remote<crosapi::mojom::SyncService>* sync_service_remote);
