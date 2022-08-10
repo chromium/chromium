@@ -72,8 +72,7 @@ void LensInternalsUIMessageHandler::HandleRefreshDebugData(
   }
 
   const base::Value& callback_id = args[0];
-  ResolveJavascriptCallback(
-      callback_id, base::Value(std::move(debug_data_as_vector_of_values)));
+  ResolveJavascriptCallback(callback_id, debug_data_as_vector_of_values);
 }
 
 void LensInternalsUIMessageHandler::HandleStopDebugMode(

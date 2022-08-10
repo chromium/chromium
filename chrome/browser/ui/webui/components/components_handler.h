@@ -49,7 +49,7 @@ class ComponentsHandler : public content::WebUIMessageHandler,
   static std::u16string ServiceStatusToString(
       update_client::ComponentState state);
 
-  std::unique_ptr<base::ListValue> LoadComponents();
+  base::Value::List LoadComponents();
   void OnDemandUpdate(const std::string& component_id);
 
   // Weak pointer; injected for testing.

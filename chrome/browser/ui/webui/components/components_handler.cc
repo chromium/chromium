@@ -65,9 +65,8 @@ void ComponentsHandler::HandleRequestComponentsData(
   AllowJavascript();
   const base::Value& callback_id = args[0];
 
-  base::DictionaryValue result;
-  result.GetDict().Set("components",
-                       base::Value::FromUniquePtrValue(LoadComponents()));
+  base::Value::Dict result;
+  result.Set("components", LoadComponents());
 
 #if BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -75,7 +74,7 @@ void ComponentsHandler::HandleRequestComponentsData(
 #else
   const bool showSystemFlagsLink = true;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  result.GetDict().Set("showOsLink", showSystemFlagsLink);
+  result.Set("showOsLink", showSystemFlagsLink);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   ResolveJavascriptCallback(callback_id, result);
@@ -101,16 +100,15 @@ void ComponentsHandler::HandleCheckUpdate(const base::Value::List& args) {
 }
 
 void ComponentsHandler::OnEvent(Events event, const std::string& id) {
-  base::DictionaryValue parameters;
-  parameters.GetDict().Set("event", ComponentEventToString(event));
+  base::Value::Dict parameters;
+  parameters.Set("event", ComponentEventToString(event));
   if (!id.empty()) {
     if (event == Events::COMPONENT_UPDATED) {
       update_client::CrxUpdateItem item;
       if (component_updater_->GetComponentDetails(id, &item) && item.component)
-        parameters.GetDict().Set("version",
-                                 item.component->version.GetString());
+        parameters.Set("version", item.component->version.GetString());
     }
-    parameters.GetDict().Set("id", id);
+    parameters.Set("id", id);
   }
   FireWebUIListener("component-event", parameters);
 }
@@ -195,12 +193,12 @@ void ComponentsHandler::OnDemandUpdate(const std::string& component_id) {
       component_updater::Callback());
 }
 
-std::unique_ptr<base::ListValue> ComponentsHandler::LoadComponents() {
+base::Value::List ComponentsHandler::LoadComponents() {
   const std::vector<std::string> component_ids =
       component_updater_->GetComponentIDs();
 
   // Construct DictionaryValues to return to UI.
-  auto component_list = std::make_unique<base::ListValue>();
+  base::Value::List component_list;
   for (const auto& component_id : component_ids) {
     update_client::CrxUpdateItem item;
     if (component_updater_->GetComponentDetails(component_id, &item)) {
@@ -211,7 +209,7 @@ std::unique_ptr<base::ListValue> ComponentsHandler::LoadComponents() {
         component_entry.Set("name", item.component->name);
         component_entry.Set("version", item.component->version.GetString());
       }
-      component_list->GetList().Append(std::move(component_entry));
+      component_list.Append(std::move(component_entry));
     }
   }
 

@@ -126,7 +126,7 @@ void FlagsUIHandler::SendExperimentalFeatures() {
   results.Set(flags_ui::kShowDevChannelPromotion, false);
 #endif
   ResolveJavascriptCallback(base::Value(experimental_features_callback_id_),
-                            base::Value(std::move(results)));
+                            results);
   experimental_features_callback_id_.clear();
 }
 

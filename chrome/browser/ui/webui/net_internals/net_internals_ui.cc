@@ -198,8 +198,7 @@ void NetInternalsMessageHandler::OnHSTSQuery(const base::Value::List& list) {
 void NetInternalsMessageHandler::ResolveCallbackWithResult(
     const std::string& callback_id,
     base::Value::Dict result) {
-  ResolveJavascriptCallback(base::Value(callback_id),
-                            base::Value(std::move(result)));
+  ResolveJavascriptCallback(base::Value(callback_id), result);
 }
 
 void NetInternalsMessageHandler::OnHSTSAdd(const base::Value::List& list) {

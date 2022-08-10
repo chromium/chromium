@@ -11,14 +11,15 @@ namespace media_router {
 
 namespace {
 
-base::Value CastProviderStateToValue(const mojom::CastProviderState& state) {
-  base::Value result(base::Value::Type::LIST);
+base::Value::List CastProviderStateToValue(
+    const mojom::CastProviderState& state) {
+  base::Value::List result;
   for (const mojom::CastSessionStatePtr& session : state.session_state) {
-    base::Value session_value(base::Value::Type::DICTIONARY);
-    session_value.SetStringKey("sink_id", session->sink_id);
-    session_value.SetStringKey("app_id", session->app_id);
-    session_value.SetStringKey("session_id", session->session_id);
-    session_value.SetStringKey("route_description", session->route_description);
+    base::Value::Dict session_value;
+    session_value.Set("sink_id", session->sink_id);
+    session_value.Set("app_id", session->app_id);
+    session_value.Set("session_id", session->session_id);
+    session_value.Set("route_description", session->route_description);
     result.Append(std::move(session_value));
   }
   return result;
@@ -90,12 +91,14 @@ void MediaRouterInternalsWebUIMessageHandler::HandleGetLogs(
 void MediaRouterInternalsWebUIMessageHandler::OnProviderState(
     base::Value callback_id,
     mojom::ProviderStatePtr state) {
-  base::Value result;
   if (state && state->is_cast_provider_state() &&
       state->get_cast_provider_state()) {
-    result = CastProviderStateToValue(*(state->get_cast_provider_state()));
+    ResolveJavascriptCallback(
+        callback_id,
+        CastProviderStateToValue(*(state->get_cast_provider_state())));
+  } else {
+    ResolveJavascriptCallback(callback_id, base::Value());
   }
-  ResolveJavascriptCallback(callback_id, result);
 }
 
 }  // namespace media_router
