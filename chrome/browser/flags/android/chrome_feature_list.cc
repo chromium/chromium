@@ -254,6 +254,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kBookmarksImprovedSaveFlow,
     &kBookmarksRefresh,
     &kBackGestureRefactorAndroid,
+    &kOptimizeLayoutsForPullRefresh,
     &kPostTaskFocusTab,
     &kProbabilisticCryptidRenderer,
     &kReachedCodeProfiler,
@@ -725,6 +726,9 @@ const base::Feature kBookmarksRefresh{"BookmarksRefresh",
 
 const base::Feature kBackGestureRefactorAndroid{
     "BackGestureRefactorAndroid", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kOptimizeLayoutsForPullRefresh{
+    "OptimizeLayoutsForPullRefresh", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kPostTaskFocusTab{"PostTaskFocusTab",
                                       base::FEATURE_DISABLED_BY_DEFAULT};

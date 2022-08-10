@@ -116,6 +116,7 @@ extern const base::Feature kPageAnnotationsService;
 extern const base::Feature kBookmarksImprovedSaveFlow;
 extern const base::Feature kBookmarksRefresh;
 extern const base::Feature kBackGestureRefactorAndroid;
+extern const base::Feature kOptimizeLayoutsForPullRefresh;
 extern const base::Feature kPostTaskFocusTab;
 extern const base::Feature kProbabilisticCryptidRenderer;
 extern const base::Feature kReachedCodeProfiler;
