@@ -116,8 +116,7 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
   // Entry point to create a ReadableByteStream from other C++ APIs.
   static ReadableStream* CreateByteStream(
       ScriptState*,
-      UnderlyingByteSourceBase* underlying_byte_source,
-      ExceptionState&);
+      UnderlyingByteSourceBase* underlying_byte_source);
 
   // CreateReadableByteStream():
   // https://streams.spec.whatwg.org/#abstract-opdef-createreadablebytestream

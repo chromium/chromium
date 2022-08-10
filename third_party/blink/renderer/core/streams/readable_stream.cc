@@ -1324,17 +1324,20 @@ ReadableStream* ReadableStream::Create(ScriptState* script_state,
 // static
 ReadableStream* ReadableStream::CreateByteStream(
     ScriptState* script_state,
-    UnderlyingByteSourceBase* underlying_byte_source,
-    ExceptionState& exception_state) {
+    UnderlyingByteSourceBase* underlying_byte_source) {
   auto* pull_algorithm =
       MakeGarbageCollected<PullAlgorithm>(underlying_byte_source);
   auto* cancel_algorithm =
       MakeGarbageCollected<CancelAlgorithm>(underlying_byte_source);
+
+  // Construction of the byte stream cannot fail because the trivial start
+  // algorithm will not throw.
+  NonThrowableExceptionState exception_state;
   auto* stream =
       CreateByteStream(script_state, CreateTrivialStartAlgorithm(),
                        pull_algorithm, cancel_algorithm, exception_state);
   DCHECK(stream);
-  DCHECK(!exception_state.HadException());
+
   ReadableStreamController* controller = stream->readable_stream_controller_;
   pull_algorithm->SetController(To<ReadableByteStreamController>(controller));
   return stream;

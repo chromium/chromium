@@ -595,10 +595,9 @@ class ReadableByteStreamTest : public testing::Test {
   ReadableStream* Stream() const { return stream_; }
 
   void Init(ScriptState* script_state,
-            UnderlyingByteSourceBase* underlying_byte_source,
-            ExceptionState& exception_state) {
-    stream_ = ReadableStream::CreateByteStream(
-        script_state, underlying_byte_source, exception_state);
+            UnderlyingByteSourceBase* underlying_byte_source) {
+    stream_ =
+        ReadableStream::CreateByteStream(script_state, underlying_byte_source);
   }
 
   // This takes the |stream| property of ReadableStream and copies it onto the
@@ -684,8 +683,7 @@ class MockUnderlyingByteSource : public UnderlyingByteSourceBase {
 TEST_F(ReadableByteStreamTest, Construct) {
   V8TestingScope scope;
   Init(scope.GetScriptState(),
-       MakeGarbageCollected<TestUnderlyingByteSource>(scope.GetScriptState()),
-       ASSERT_NO_EXCEPTION);
+       MakeGarbageCollected<TestUnderlyingByteSource>(scope.GetScriptState()));
   EXPECT_TRUE(Stream());
 }
 
@@ -693,7 +691,7 @@ TEST_F(ReadableByteStreamTest, PullIsCalled) {
   V8TestingScope scope;
   auto* mock =
       MakeGarbageCollected<MockUnderlyingByteSource>(scope.GetScriptState());
-  Init(scope.GetScriptState(), mock, ASSERT_NO_EXCEPTION);
+  Init(scope.GetScriptState(), mock);
   // Need to run microtasks so the startAlgorithm promise resolves.
   v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
   CopyStreamToGlobal(scope);
@@ -713,7 +711,7 @@ TEST_F(ReadableByteStreamTest, CancelIsCalled) {
   V8TestingScope scope;
   auto* mock =
       MakeGarbageCollected<MockUnderlyingByteSource>(scope.GetScriptState());
-  Init(scope.GetScriptState(), mock, ASSERT_NO_EXCEPTION);
+  Init(scope.GetScriptState(), mock);
   // Need to run microtasks so the startAlgorithm promise resolves.
   v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
   CopyStreamToGlobal(scope);
@@ -770,8 +768,7 @@ TEST_F(ReadableByteStreamTest, ThrowFromPull) {
   V8TestingScope scope;
   auto* script_state = scope.GetScriptState();
   Init(script_state,
-       MakeGarbageCollected<ThrowFromPullUnderlyingByteSource>(script_state),
-       ASSERT_NO_EXCEPTION);
+       MakeGarbageCollected<ThrowFromPullUnderlyingByteSource>(script_state));
 
   auto* reader =
       Stream()->GetBYOBReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
@@ -801,8 +798,7 @@ TEST_F(ReadableByteStreamTest, ThrowFromCancel) {
   V8TestingScope scope;
   auto* script_state = scope.GetScriptState();
   Init(script_state,
-       MakeGarbageCollected<ThrowFromCancelUnderlyingByteSource>(script_state),
-       ASSERT_NO_EXCEPTION);
+       MakeGarbageCollected<ThrowFromCancelUnderlyingByteSource>(script_state));
 
   auto* reader =
       Stream()->GetBYOBReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
