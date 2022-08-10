@@ -38,6 +38,10 @@ export class UIController {
   constructor() {
     /** @private {?number} */
     this.showHintsTimeoutId_ = null;
+
+    /** @private {number} */
+    this.showHintsTimeoutMs_ =
+        UIController.HintsTimeouts.STANDARD_HINT_TIMEOUT_MS_;
   }
 
   /**
@@ -83,7 +87,7 @@ export class UIController {
     // If a HintContext was provided, set a timeout to show hints.
     const hints = UIController.GetHintsForContext_(context);
     this.showHintsTimeoutId_ =
-        setTimeout(() => this.showHints_(hints), UIController.HINT_TIMEOUT_MS_);
+        setTimeout(() => this.showHints_(hints), this.showHintsTimeoutMs_);
   }
 
   /** @private */
@@ -105,6 +109,18 @@ export class UIController {
   }
 
   /**
+   * In some circumstances we shouldn't show the hints too quickly because
+   * it is distracting to the user.
+   * @param {boolean} longerDuration Whether to wait for a longer time before
+   *     showing hints.
+   */
+  setHintsTimeoutDuration(longerDuration) {
+    this.showHintsTimeoutMs_ = longerDuration ?
+        UIController.HintsTimeouts.LONGER_HINT_TIMEOUT_MS_ :
+        UIController.HintsTimeouts.STANDARD_HINT_TIMEOUT_MS_;
+  }
+
+  /**
    * @param {!HintContext} context
    * @return {!Array<!HintType>}
    * @private
@@ -116,10 +132,13 @@ export class UIController {
 
 /**
  * The amount of time to wait before showing hints.
- * @private {number}
+ * @private {!Object<string, number>}
  * @const
  */
-UIController.HINT_TIMEOUT_MS_ = 2 * 1000;
+UIController.HintsTimeouts = {
+  STANDARD_HINT_TIMEOUT_MS_: 2 * 1000,
+  LONGER_HINT_TIMEOUT_MS_: 6 * 1000,
+};
 
 /**
  * Maps HintContexts to hints that should be shown for that context.

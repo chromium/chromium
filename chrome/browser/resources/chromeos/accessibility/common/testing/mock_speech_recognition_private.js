@@ -24,6 +24,12 @@ let MockStartOptions;
  */
 let MockStopOptions;
 
+/** @enum {string} */
+const SpeechRecognitionType = {
+  ON_DEVICE: 'onDevice',
+  NETWORK: 'network',
+};
+
 /** A mock SpeechRecognitionPrivate API for tests. */
 class MockSpeechRecognitionPrivate {
   /** @constructor */
@@ -36,6 +42,8 @@ class MockSpeechRecognitionPrivate {
       locale: undefined,
       interimResults: undefined,
     };
+    /** @private {!SpeechRecognitionType} */
+    this.speechRecognitionType_ = SpeechRecognitionType.NETWORK;
 
     // Event listeners.
     /** @private {?function({}):void} */
@@ -100,7 +108,7 @@ class MockSpeechRecognitionPrivate {
 
   /**
    * @param {!MockStartOptions} props
-   * @param {function(): void} callback
+   * @param {function(SpeechRecognitionType): void} callback
    */
   start(props, callback) {
     chrome.runtime.lastError = null;
@@ -123,7 +131,7 @@ class MockSpeechRecognitionPrivate {
         props.interimResults :
         this.properties_.interimResults;
 
-    callback();
+    callback(this.speechRecognitionType_);
   }
 
   /**
@@ -219,5 +227,10 @@ class MockSpeechRecognitionPrivate {
   /** @return {boolean} */
   interimResults() {
     return this.properties_.interimResults;
+  }
+
+  /** @param {!SpeechRecognitionType} type */
+  setSpeechRecognitionType(type) {
+    this.speechRecognitionType_ = type;
   }
 }

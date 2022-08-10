@@ -116,11 +116,32 @@ AX_TEST_F('DictationE2ETest', 'TimesOutWithNoImeContext', async function() {
   assertFalse(Boolean(this.mockInputIme.getLastCommittedParameters()));
 });
 
-AX_TEST_F('DictationE2ETest', 'TimesOutWithNoSpeech', async function() {
+AX_TEST_F('DictationE2ETest', 'TimesOutWithNoSpeechNetwork', async function() {
+  this.mockSpeechRecognitionPrivate.setSpeechRecognitionType(
+      SpeechRecognitionType.NETWORK);
   this.mockSetTimeoutMethod();
   this.toggleDictationOn();
 
-  const callback = this.getCallbackWithDelay(Dictation.Timeouts.NO_SPEECH_MS);
+  const callback =
+      this.getCallbackWithDelay(Dictation.Timeouts.NO_SPEECH_NETWORK_MS);
+  assertNotNullNorUndefined(callback);
+
+  // Triggering the timeout should cause a request to toggle Dictation, but
+  // nothing should be committed after AccessibilityPrivate toggle is received.
+  callback();
+  this.clearSetTimeoutData();
+  assertFalse(this.getDictationActive());
+  assertFalse(Boolean(this.mockInputIme.getLastCommittedParameters()));
+});
+
+AX_TEST_F('DictationE2ETest', 'TimesOutWithNoSpeechOnDevice', async function() {
+  this.mockSpeechRecognitionPrivate.setSpeechRecognitionType(
+      SpeechRecognitionType.ON_DEVICE);
+  this.mockSetTimeoutMethod();
+  this.toggleDictationOn();
+
+  const callback =
+      this.getCallbackWithDelay(Dictation.Timeouts.NO_SPEECH_ONDEVICE_MS);
   assertNotNullNorUndefined(callback);
 
   // Triggering the timeout should cause a request to toggle Dictation, but
@@ -161,7 +182,8 @@ AX_TEST_F('DictationE2ETest', 'TimesOutAfterFinalResults', async function() {
   this.mockInputIme.clearLastParameters();
 
   // The timeout should be set based on the final result.
-  const callback = this.getCallbackWithDelay(Dictation.Timeouts.NO_SPEECH_MS);
+  const callback =
+      this.getCallbackWithDelay(Dictation.Timeouts.NO_SPEECH_NETWORK_MS);
 
   // Triggering the timeout should stop listening.
   callback();
