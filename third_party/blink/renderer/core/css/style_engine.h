@@ -307,6 +307,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
     return global_rule_set_->GetRuleFeatureSet()
         .HasViewportDependentMediaQueries();
   }
+  bool HasViewportDependentPropertyRegistrations();
 
   class InApplyAnimationUpdateScope {
     STACK_ALLOCATED();

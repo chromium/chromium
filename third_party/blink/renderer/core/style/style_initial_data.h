@@ -49,6 +49,8 @@ class CORE_EXPORT StyleInitialData : public RefCounted<StyleInitialData> {
     return variables_.GetValue(name).value_or(nullptr);
   }
 
+  unsigned GetViewportUnitFlags() const { return viewport_unit_flags_; }
+
  private:
   StyleInitialData(Document&, const PropertyRegistry&);
 
@@ -56,6 +58,19 @@ class CORE_EXPORT StyleInitialData : public RefCounted<StyleInitialData> {
   // the initial style, and then shared with all other styles that directly or
   // indirectly inherit from that.
   StyleVariables variables_;
+  // This is equal to `PropertyRegistry::GetViewportUnitFlags()` at the time the
+  // `StyleInitialData` was created.
+  //
+  // Since StyleInitialData is only (re)created during style resolution, this
+  // tells us whether ComputedStyles from that process depend on viewport units
+  // or not, which in turns tells us if we need to recalculate any styles when
+  // we resize.
+  //
+  // PropertyRegistry::GetViewportUnitFlags on the other hand, can change
+  // immediately via JavaScript, and is also affected by active style updates.
+  // Hence this is not useful for understanding whether or not any current
+  // ComputedStyles need to be invalidated by a resize.
+  unsigned viewport_unit_flags_ = 0;
 };
 
 }  // namespace blink

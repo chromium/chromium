@@ -26,6 +26,9 @@ StyleInitialData::StyleInitialData(Document& document,
     variables_.SetData(entry.key, std::move(computed_initial_data));
     variables_.SetValue(entry.key, computed_initial_value);
   }
+
+  viewport_unit_flags_ = registry.GetViewportUnitFlags();
+  document.AddViewportUnitFlags(viewport_unit_flags_);
 }
 
 bool StyleInitialData::operator==(const StyleInitialData& other) const {

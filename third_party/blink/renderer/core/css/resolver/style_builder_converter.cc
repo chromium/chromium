@@ -2123,9 +2123,18 @@ static const CSSValue& ComputeRegisteredPropertyValue(
 const CSSValue& StyleBuilderConverter::ConvertRegisteredPropertyInitialValue(
     const Document& document,
     const CSSValue& value) {
+  CSSToLengthConversionData::FontSizes font_sizes;
+  CSSToLengthConversionData::ViewportSize viewport_size(
+      document.GetLayoutView());
+  CSSToLengthConversionData::ContainerSizes container_sizes;
+  CSSToLengthConversionData conversion_data(
+      /* style */ nullptr, WritingMode::kHorizontalTb, font_sizes,
+      viewport_size, container_sizes,
+      /* zoom */ 1.0f);
+
   return ComputeRegisteredPropertyValue(
-      document, nullptr /* state */, CSSToLengthConversionData(), value,
-      document.BaseURL(), document.Encoding());
+      document, nullptr /* state */, conversion_data, value, document.BaseURL(),
+      document.Encoding());
 }
 
 const CSSValue& StyleBuilderConverter::ConvertRegisteredPropertyValue(

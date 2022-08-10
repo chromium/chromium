@@ -882,9 +882,19 @@ void SetNeedsStyleRecalcForViewportUnits(TreeScope& tree_scope,
 void StyleEngine::InvalidateViewportUnitStylesIfNeeded() {
   if (!viewport_unit_dirty_flags_)
     return;
-  SetNeedsStyleRecalcForViewportUnits(GetDocument(),
-                                      viewport_unit_dirty_flags_);
-  viewport_unit_dirty_flags_ = 0;
+  unsigned dirty_flags = 0;
+  std::swap(viewport_unit_dirty_flags_, dirty_flags);
+
+  // If there are registered custom properties which depend on the invalidated
+  // viewport units, it can potentially affect every element.
+  if (initial_data_ && (initial_data_->GetViewportUnitFlags() & dirty_flags)) {
+    InvalidateInitialData();
+    MarkAllElementsForStyleRecalc(StyleChangeReasonForTracing::Create(
+        style_change_reason::kViewportUnits));
+    return;
+  }
+
+  SetNeedsStyleRecalcForViewportUnits(GetDocument(), dirty_flags);
 }
 
 void StyleEngine::InvalidateStyleAndLayoutForFontUpdates() {
@@ -1702,6 +1712,12 @@ void StyleEngine::InvalidateSlottedElements(HTMLSlotElement& slot) {
                                     style_change_reason::kStyleSheetChange));
     }
   }
+}
+
+bool StyleEngine::HasViewportDependentPropertyRegistrations() {
+  UpdateActiveStyle();
+  const PropertyRegistry* registry = GetDocument().GetPropertyRegistry();
+  return registry && registry->GetViewportUnitFlags();
 }
 
 void StyleEngine::ScheduleInvalidationsForRuleSets(

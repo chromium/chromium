@@ -20,7 +20,9 @@ bool DocumentLayoutUpgrade::ShouldUpgrade() {
 }
 
 bool ParentLayoutUpgrade::ShouldUpgrade() {
-  return document_.GetStyleEngine().HasViewportDependentMediaQueries() ||
+  StyleEngine& style_engine = document_.GetStyleEngine();
+  return style_engine.HasViewportDependentMediaQueries() ||
+         style_engine.HasViewportDependentPropertyRegistrations() ||
          NodeLayoutUpgrade(owner_).ShouldUpgrade();
 }
 
