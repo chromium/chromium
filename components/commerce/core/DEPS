@@ -4,6 +4,7 @@ include_rules = [
   "+components/flags_ui",
   "+components/keyed_service",
   "+components/optimization_guide",
+  "+components/power_bookmarks/core",
   "+components/prefs",
   "+third_party/re2",
   "+components/endpoint_fetcher/endpoint_fetcher.h",

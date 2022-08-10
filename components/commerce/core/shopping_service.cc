@@ -77,14 +77,14 @@ ShoppingService::ShoppingService(
     opt_guide_->RegisterOptimizationTypes(types);
   }
 
-  if (bookmark_model) {
-    shopping_bookmark_observer_ =
-        std::make_unique<ShoppingBookmarkModelObserver>(bookmark_model);
-  }
-
   if (identity_manager) {
     subscriptions_manager_ = std::make_unique<SubscriptionsManager>(
         identity_manager, std::move(url_loader_factory));
+  }
+
+  if (bookmark_model) {
+    shopping_bookmark_observer_ =
+        std::make_unique<ShoppingBookmarkModelObserver>(bookmark_model, this);
   }
 }
 
@@ -542,6 +542,10 @@ void ShoppingService::Unsubscribe(
   CHECK(subscriptions_manager_);
   subscriptions_manager_->Unsubscribe(std::move(subscriptions),
                                       std::move(callback));
+}
+
+base::WeakPtr<ShoppingService> ShoppingService::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void ShoppingService::Shutdown() {

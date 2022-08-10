@@ -41,6 +41,8 @@ import java.util.HashSet;
 import java.util.List;
 
 /** Utilities for use in power bookmarks. */
+// TODO(1351830): We should add a JNI layer for the native version of these utilities in
+//                price_tracking_utils and use those instead.
 public class PowerBookmarkUtils {
     /**
      * Possible results for the validation of client and server-side subscriptions. These need to

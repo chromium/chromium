@@ -183,6 +183,9 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
       std::unique_ptr<std::vector<CommerceSubscription>> subscriptions,
       base::OnceCallback<void(bool)> callback);
 
+  // Get a weak pointer for this service instance.
+  base::WeakPtr<ShoppingService> AsWeakPtr();
+
   void Shutdown() override;
 
  private:

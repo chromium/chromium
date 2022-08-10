@@ -32,4 +32,26 @@ void MockShoppingService::SetResponseForGetMerchantInfoForUrl(
   merchant_info_ = std::move(merchant_info);
 }
 
+void MockShoppingService::Subscribe(
+    std::unique_ptr<std::vector<CommerceSubscription>> subscriptions,
+    base::OnceCallback<void(bool)> callback) {
+  std::move(callback).Run(subscribe_callback_value_);
+}
+
+void MockShoppingService::SetSubscribeCallbackValue(
+    bool subscribe_should_succeed) {
+  subscribe_callback_value_ = subscribe_should_succeed;
+}
+
+void MockShoppingService::Unsubscribe(
+    std::unique_ptr<std::vector<CommerceSubscription>> subscriptions,
+    base::OnceCallback<void(bool)> callback) {
+  std::move(callback).Run(unsubscribe_callback_value_);
+}
+
+void MockShoppingService::SetUnsubscribeCallbackValue(
+    bool unsubscribe_should_succeed) {
+  unsubscribe_callback_value_ = unsubscribe_should_succeed;
+}
+
 }  // namespace commerce

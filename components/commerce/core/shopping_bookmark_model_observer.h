@@ -6,16 +6,22 @@
 #define COMPONENTS_COMMERCE_CORE_SHOPPING_BOOKMARK_MODEL_OBSERVER_H_
 
 #include <map>
+#include <set>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+
+class GURL;
 
 namespace bookmarks {
 class BookmarkNode;
 }  // namespace bookmarks
 
 namespace commerce {
+
+class ShoppingService;
 
 // A utility class that watches for changes in bookmark URLs. In the case that
 // the bookmark was a shopping item, the meta should be removed since we can't
@@ -27,7 +33,8 @@ namespace commerce {
 class ShoppingBookmarkModelObserver
     : public bookmarks::BaseBookmarkModelObserver {
  public:
-  explicit ShoppingBookmarkModelObserver(bookmarks::BookmarkModel* model);
+  ShoppingBookmarkModelObserver(bookmarks::BookmarkModel* model,
+                                ShoppingService* shopping_service);
   ShoppingBookmarkModelObserver(const ShoppingBookmarkModelObserver&) = delete;
   ShoppingBookmarkModelObserver& operator=(
       const ShoppingBookmarkModelObserver&) = delete;
@@ -42,7 +49,15 @@ class ShoppingBookmarkModelObserver
   void BookmarkNodeChanged(bookmarks::BookmarkModel* model,
                            const bookmarks::BookmarkNode* node) override;
 
+  void BookmarkNodeRemoved(bookmarks::BookmarkModel* model,
+                           const bookmarks::BookmarkNode* parent,
+                           size_t old_index,
+                           const bookmarks::BookmarkNode* node,
+                           const std::set<GURL>& removed_urls) override;
+
  private:
+  base::raw_ptr<ShoppingService> shopping_service_;
+
   // A map of bookmark ID to its current URL. This is used to detect incoming
   // changes to the URL since there isn't an explicit event for it.
   std::map<int64_t, GURL> node_to_url_map_;
