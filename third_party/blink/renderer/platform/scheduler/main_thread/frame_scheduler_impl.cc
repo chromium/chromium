@@ -559,10 +559,7 @@ FrameSchedulerImpl::CreateResourceLoadingMaybeUnfreezableTaskRunnerHandle() {
 std::unique_ptr<ResourceLoadingTaskRunnerHandleImpl>
 FrameSchedulerImpl::CreateResourceLoadingTaskRunnerHandleImpl() {
   if (main_thread_scheduler_->scheduling_settings()
-          .use_resource_fetch_priority ||
-      (parent_page_scheduler_ && parent_page_scheduler_->IsLoading() &&
-       main_thread_scheduler_->scheduling_settings()
-           .use_resource_priorities_only_during_loading)) {
+          .use_resource_fetch_priority) {
     scoped_refptr<MainThreadTaskQueue> task_queue =
         frame_task_queue_controller_->NewResourceLoadingTaskQueue();
     resource_loading_task_queue_priorities_.insert(

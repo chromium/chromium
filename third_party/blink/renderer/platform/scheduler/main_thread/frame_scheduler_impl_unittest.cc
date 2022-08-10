@@ -2258,58 +2258,6 @@ TEST_F(ResourceFetchPriorityExperimentTest, DidChangePriority) {
             TaskQueue::QueuePriority::kHighPriority);
 }
 
-class ResourceFetchPriorityExperimentOnlyWhenLoadingTest
-    : public FrameSchedulerImplTest {
- public:
-  ResourceFetchPriorityExperimentOnlyWhenLoadingTest()
-      : FrameSchedulerImplTest({kUseResourceFetchPriorityOnlyWhenLoading}, {}) {
-    base::FieldTrialParams params{{"HIGHEST", "HIGH"}, {"MEDIUM", "NORMAL"},
-                                  {"LOW", "NORMAL"},   {"LOWEST", "LOW"},
-                                  {"IDLE", "LOW"},     {"THROTTLED", "LOW"}};
-
-    const char kStudyName[] = "ResourceFetchPriorityExperiment";
-    const char kGroupName[] = "GroupName2";
-
-    base::AssociateFieldTrialParams(kStudyName, kGroupName, params);
-    base::FieldTrialList::CreateFieldTrial(kStudyName, kGroupName);
-  }
-};
-
-TEST_F(ResourceFetchPriorityExperimentOnlyWhenLoadingTest, DidChangePriority) {
-  std::unique_ptr<FrameSchedulerImpl> main_frame_scheduler =
-      CreateFrameScheduler(page_scheduler_.get(),
-                           frame_scheduler_delegate_.get(),
-                           /*is_in_embedded_frame_tree=*/false,
-                           FrameScheduler::FrameType::kMainFrame);
-
-  std::unique_ptr<ResourceLoadingTaskRunnerHandleImpl> handle =
-      GetResourceLoadingTaskRunnerHandleImpl();
-  scoped_refptr<MainThreadTaskQueue> task_queue = handle->task_queue();
-
-  EXPECT_EQ(task_queue->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-
-  // Experiment is only enabled during the loading phase.
-  DidChangeResourceLoadingPriority(task_queue, net::RequestPriority::LOWEST);
-  EXPECT_EQ(task_queue->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-
-  // Main thread scheduler is in the loading use case.
-  main_frame_scheduler->OnFirstContentfulPaintInMainFrame();
-  ASSERT_EQ(scheduler_->current_use_case(), UseCase::kLoading);
-
-  handle = GetResourceLoadingTaskRunnerHandleImpl();
-  task_queue = handle->task_queue();
-
-  DidChangeResourceLoadingPriority(task_queue, net::RequestPriority::LOWEST);
-  EXPECT_EQ(task_queue->GetQueuePriority(),
-            TaskQueue::QueuePriority::kLowPriority);
-
-  DidChangeResourceLoadingPriority(task_queue, net::RequestPriority::HIGHEST);
-  EXPECT_EQ(task_queue->GetQueuePriority(),
-            TaskQueue::QueuePriority::kHighPriority);
-}
-
 TEST_F(
     FrameSchedulerImplTest,
     DidChangeResourceLoadingPriority_ResourceFecthPriorityExperimentDisabled) {

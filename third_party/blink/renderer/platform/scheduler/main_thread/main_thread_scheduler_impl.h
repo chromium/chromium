@@ -129,7 +129,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     // Use resource fetch priority for resource loading tasks
     // (crbug.com/860545).
     bool use_resource_fetch_priority;
-    bool use_resource_priorities_only_during_loading;
 
     // Prioritize compositing and loading tasks until first contentful paint.
     // (crbug.com/971191)

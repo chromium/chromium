@@ -83,13 +83,6 @@ const base::Feature kAdFrameExperimentOnlyWhenLoading{
 const base::Feature kUseResourceFetchPriority{
     "BlinkSchedulerResourceFetchPriority", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables using a resource's fetch priority to determine the priority of the
-// resource's loading tasks posted to blink's scheduler only for resources
-// requested during the loading phase.
-const base::Feature kUseResourceFetchPriorityOnlyWhenLoading{
-    "BlinkSchedulerResourceFetchPriorityOnlyWhenLoading",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enables setting the priority of cross-origin task queues to
 // low priority.
 const base::Feature kLowPriorityForCrossOrigin{
