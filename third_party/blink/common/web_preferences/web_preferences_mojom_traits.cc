@@ -88,6 +88,7 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
       data.privileged_webgl_extensions_enabled();
   out->webgl_errors_to_console_enabled = data.webgl_errors_to_console_enabled();
   out->hide_scrollbars = data.hide_scrollbars();
+  out->enable_webkit_scrollbar_styling = data.enable_webkit_scrollbar_styling();
   out->accelerated_2d_canvas_enabled = data.accelerated_2d_canvas_enabled();
   out->canvas_2d_layers_enabled = data.canvas_2d_layers_enabled();
   out->antialiased_2d_canvas_disabled = data.antialiased_2d_canvas_disabled();

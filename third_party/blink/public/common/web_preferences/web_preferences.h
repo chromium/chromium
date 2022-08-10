@@ -88,6 +88,8 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   bool privileged_webgl_extensions_enabled;
   bool webgl_errors_to_console_enabled;
   bool hide_scrollbars;
+  // If false, ignore ::-webkit-scrollbar-* CSS pseudo-elements in stylesheets.
+  bool enable_webkit_scrollbar_styling = true;
   bool accelerated_2d_canvas_enabled;
   bool canvas_2d_layers_enabled = false;
   bool antialiased_2d_canvas_disabled;

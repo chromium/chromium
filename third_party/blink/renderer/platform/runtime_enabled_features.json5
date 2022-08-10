@@ -2606,6 +2606,12 @@
       name: "WebHIDOnServiceWorkers",
       depends_on: ["WebHID"],
     },
+    // Legacy ::-webkit-scrollbar* pseudo element styling. Enabled for stable
+    // but configurable via WebPreferences.
+    {
+      name: "WebKitScrollbarStyling",
+      status: "stable",
+    },
     {
       name: "WebNFC",
       status: {"Android": "stable", "default": "test"},
