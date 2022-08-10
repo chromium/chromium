@@ -3420,6 +3420,11 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   };
   [self.contentArea addSubview:animatedView];
   [animatedView animateFrom:origin withCompletion:completionBlock];
+  // Manually set the NTP frame here in case `-didLayoutSubviews` is not called
+  // to set the incognito NTP frame.
+  if (self.isNTPActiveForCurrentWebState && self.webUsageEnabled) {
+    newPage.frame = [self ntpFrameForWebState:self.currentWebState];
+  }
 }
 
 #pragma mark - IncognitoReauthConsumer
