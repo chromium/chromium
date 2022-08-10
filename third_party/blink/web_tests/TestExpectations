@@ -2395,7 +2395,7 @@ crbug.com/922618 external/wpt/html/semantics/document-metadata/the-link-element/
 crbug.com/922618 external/wpt/html/semantics/document-metadata/the-link-element/link-multiple-load-events.html [ Timeout ]
 
 # crbug.com/1095379: These are flaky-slow, but are already present in SlowTests
-crbug.com/73609 http/tests/media/video-play-stall.html [ Pass Timeout ]
+crbug.com/73609 http/tests/media/video-play-stall.html [ Pass Timeout Failure ]
 crbug.com/518987 http/tests/xmlhttprequest/navigation-abort-detaches-frame.html [ Pass Timeout ]
 crbug.com/538717 [ Win ] http/tests/permissions/chromium/test-request-worker.html [ Pass Timeout ]
 crbug.com/829740 fast/history/history-back-twice-with-subframes-assert.html [ Pass Timeout ]
@@ -6145,6 +6145,8 @@ crbug.com/1249176 [ Mac11-arm64 ] media/video-replaces-poster.html [ Skip ]
 crbug.com/1249176 [ Mac12-arm64 ] media/video-replaces-poster.html [ Skip ]
 crbug.com/1249176 [ Mac11-arm64 ] virtual/gpu-rasterization/images/color-jpeg-with-color-profile.html [ Failure ]
 crbug.com/1249176 [ Mac12-arm64 ] virtual/gpu-rasterization/images/color-jpeg-with-color-profile.html [ Failure ]
+crbug.com/1249176 [ Mac11-arm64 ] media/controls/overflow-menu-focus.html [ Failure Pass ]
+crbug.com/1249176 [ Mac12-arm64 ] media/controls/overflow-menu-focus.html [ Failure Pass ]
 
 # Failures that surfaced on the mac12-arm64 waterfall
 crbug.com/1249176 [ Mac12-arm64 ] media/color-profile-video-seek.html [ Failure ]
@@ -6169,7 +6171,7 @@ crbug.com/1249176 [ Mac12 ] external/wpt/html/browsers/browsing-the-web/back-for
 crbug.com/1249176 [ Mac12 ] fast/dom/Element/scrollTop-scrollLeft-body.html [ Failure Pass ]
 crbug.com/1249176 [ Mac12-arm64 ] external/wpt/html/rendering/replaced-elements/embedded-content/cross-domain-iframe-in-multicol.sub.html [ Failure Pass ]
 crbug.com/1249176 [ Mac12-arm64 ] fast/js/instanceof-test.html [ Failure Pass ]
-crbug.com/1249176 [ Mac12-arm64 ] media/controls/overflow-menu-focus.html [ Failure Pass ]
+
 # Sheriff 2022-07-04
 crbug.com/1341689 [ Linux ] media/controls/overflow-menu-focus.html [ Failure Pass ]
 
