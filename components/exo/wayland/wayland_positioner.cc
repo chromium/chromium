@@ -133,6 +133,8 @@ struct ConstraintAdjustment {
   bool flip;
   bool slide;
   bool resize;
+
+  bool allows_all() const { return flip && slide && resize; }
 };
 
 // Decodes an adjustment bit field into the structure.
@@ -311,7 +313,7 @@ std::pair<Range1D, ConstraintAdjustment> DetermineBestConstraintAdjustment(
 
   // If no solution can be found, allow all transformations. Unfortunately the
   // default setting is not valid, because it has a 0x0 dimension.
-  if (!found_solution) {
+  if (!found_solution && !valid_adjustments.allows_all()) {
     ConstraintAdjustment allow_all = {
         .flip = true,
         .slide = true,
@@ -322,6 +324,9 @@ std::pair<Range1D, ConstraintAdjustment> DetermineBestConstraintAdjustment(
                                              avoid_occlusion);
   }
 
+  DCHECK(found_solution)
+      << "Computation is returning without a valid solution. This will result "
+         "in undefined placement.";
   return {best.position, best.adjustment};
 }
 
