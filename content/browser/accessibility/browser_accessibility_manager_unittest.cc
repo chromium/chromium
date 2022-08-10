@@ -19,6 +19,7 @@
 #include "content/public/browser/ax_event_notification_details.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_tree.h"
 
 namespace content {
@@ -80,8 +81,9 @@ void BrowserAccessibilityManagerTest::SetUp() {
       std::make_unique<TestBrowserAccessibilityDelegate>();
 }
 
-// Temporarily disabled due to bug http://crbug.com/765490
-TEST_F(BrowserAccessibilityManagerTest, DISABLED_TestFatalError) {
+#if !defined(AX_FAIL_FAST_BUILD)
+// Don't run test for fail fast builds, where it will assert.
+TEST_F(BrowserAccessibilityManagerTest, TestFatalError) {
   // Test that BrowserAccessibilityManager raises a fatal error
   // (which will crash the renderer) if the same id is used in
   // two places in the tree.
@@ -130,6 +132,7 @@ TEST_F(BrowserAccessibilityManagerTest, DISABLED_TestFatalError) {
       test_browser_accessibility_delegate_.get()));
   ASSERT_TRUE(test_browser_accessibility_delegate_->got_fatal_error());
 }
+#endif
 
 // This test depends on hypertext, which is only used on
 // Linux and Windows.

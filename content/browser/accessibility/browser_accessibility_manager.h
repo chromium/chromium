@@ -684,10 +684,6 @@ class CONTENT_EXPORT BrowserAccessibilityManager
 #endif  // DCHECK_IS_ON()
 
  private:
-  // Helper that calls AXTree::Unserialize(). On failure it populates crash data
-  // with error information.
-  bool Unserialize(const ui::AXTreeUpdate& tree_update);
-
   void BuildAXTreeHitTestCacheInternal(
       const BrowserAccessibility* node,
       std::vector<const BrowserAccessibility*>* storage);
