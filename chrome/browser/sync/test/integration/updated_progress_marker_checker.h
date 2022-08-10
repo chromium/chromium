@@ -7,7 +7,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
-#include "components/sync/driver/sync_service_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Waits until all local changes have been committed and progress markers are
@@ -15,10 +14,14 @@
 // construction of this object.
 //
 // It relies on the test-only 'self-notify' to trigger an extra GetUpdate cycle
-// after every commit.
+// after every commit. It means that it doesn't support well commit-only data
+// types and the types which might have disabled invalidations (like Sessions on
+// Android).
 //
 // Because of these limitations, we intend to eventually migrate all tests off
-// of this checker.  Please do not use it in new tests.
+// of this checker. Please do not use it in new tests.
+//
+// TODO(crbug.com/1174031): replace the checker with more specific checkers.
 class UpdatedProgressMarkerChecker : public SingleClientStatusChangeChecker {
  public:
   explicit UpdatedProgressMarkerChecker(syncer::SyncServiceImpl* service);
