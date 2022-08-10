@@ -75,7 +75,8 @@ autofill::ServerFieldType ServerFieldTypeFromString(const std::string& str,
 //   { "type": "NAME_FIRST", "value": "Satsuki" },
 //   { "type": "NAME_LAST", "value": "Yumizuka" },
 //  ],
-NSError* PrepareAutofillProfileWithValues(const base::Value* autofill_profile) {
+NSError* PrepareAutofillProfileWithValues(
+    const base::Value::List* autofill_profile) {
   if (!autofill_profile) {
     return testing::NSErrorWithLocalizedDescription(
         @"Unable to find autofill profile in parsed JSON value.");
@@ -86,24 +87,21 @@ NSError* PrepareAutofillProfileWithValues(const base::Value* autofill_profile) {
   autofill::CreditCard credit_card(base::GenerateGUID(),
                                    "https://www.example.com/");
 
-  base::Value::ConstListView profile_entries_list =
-      autofill_profile->GetListDeprecated();
-
   // For each type-value dictionary in the autofill profile list, validate it,
   // then add it to the appropriate profile.
-  for (const auto& it_entry : profile_entries_list) {
-    const base::DictionaryValue* entry = nullptr;
-    if (!it_entry.GetAsDictionary(&entry)) {
+  for (const auto& profile_list_item : *autofill_profile) {
+    const base::Value::Dict* entry = profile_list_item.GetIfDict();
+    if (!entry) {
       return testing::NSErrorWithLocalizedDescription(
           @"Failed to extract an entry!");
     }
 
-    const base::Value* type_container = entry->FindKey("type");
-    if (base::Value::Type::STRING != type_container->type()) {
+    const base::Value* type_container = entry->Find("type");
+    if (!type_container->is_string()) {
       return testing::NSErrorWithLocalizedDescription(@"Type is not a string!");
     }
-    const base::Value* value_container = entry->FindKey("value");
-    if (base::Value::Type::STRING != value_container->type()) {
+    const base::Value* value_container = entry->Find("value");
+    if (!value_container->is_string()) {
       return testing::NSErrorWithLocalizedDescription(
           @"Value is not a string!");
     }
@@ -156,8 +154,9 @@ NSError* PrepareAutofillProfileWithValues(const base::Value* autofill_profile) {
   }
 
   base::Value recipeRoot = std::move(readResult).value();
-  const base::Value* autofillProfile =
-      recipeRoot.FindKeyOfType("autofillProfile", base::Value::Type::LIST);
+
+  const base::Value::List* autofillProfile =
+      recipeRoot.GetDict().FindList("autofillProfile");
   return PrepareAutofillProfileWithValues(autofillProfile);
 }
 

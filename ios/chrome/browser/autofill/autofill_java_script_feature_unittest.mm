@@ -381,13 +381,19 @@ TEST_F(AutofillJavaScriptFeatureTest, FillActiveFormField) {
   NSString* focus_element_javascript =
       [NSString stringWithFormat:@"%@.focus()", get_element_javascript];
   web::test::ExecuteJavaScript(focus_element_javascript, web_state());
-  auto data = std::make_unique<base::DictionaryValue>();
-  data->SetString("name", "email");
-  data->SetString("identifier", "email");
-  data->SetInteger("unique_renderer_id", 2);
-  data->SetString("value", "newemail@com");
+  base::Value::Dict data;
+  data.Set("name", "email");
+  data.Set("identifier", "email");
+  data.Set("unique_renderer_id", 2);
+  data.Set("value", "newemail@com");
   __block BOOL success = NO;
-  feature()->FillActiveFormField(main_web_frame(), std::move(data),
+
+  // TODO(crbug.com/1346447) move FillActiveFormField to base::Value::Dict.
+  base::Value dictValue(std::move(data));
+  std::unique_ptr<base::DictionaryValue> dictValuePtr =
+      base::DictionaryValue::From(
+          base::Value::ToUniquePtrValue(std::move(dictValue)));
+  feature()->FillActiveFormField(main_web_frame(), std::move(dictValuePtr),
                                  base::BindOnce(^(BOOL result) {
                                    success = result;
                                  }));
@@ -522,28 +528,33 @@ TEST_F(AutofillJavaScriptFeatureTest, FillFormUsingRendererIDs) {
        "field.value = 'to_be_erased';",
       web_state());
 
-  auto autofillData = std::make_unique<base::DictionaryValue>();
-  autofillData->SetKey("formName", base::Value("testform"));
-  autofillData->SetKey("formRendererID", base::Value(1));
+  base::Value::Dict autofillData;
+  autofillData.Set("formName", "testform");
+  autofillData.Set("formRendererID", 1);
 
-  base::Value fieldsData(base::Value::Type::DICTIONARY);
-  base::Value firstFieldData(base::Value::Type::DICTIONARY);
-  firstFieldData.SetStringKey("name", "firstname");
-  firstFieldData.SetStringKey("identifier", "firstname");
-  firstFieldData.SetStringKey("value", "Cool User");
-  fieldsData.SetKey("2", std::move(firstFieldData));
+  base::Value::Dict fieldsData;
+  base::Value::Dict firstFieldData;
+  firstFieldData.Set("name", "firstname");
+  firstFieldData.Set("identifier", "firstname");
+  firstFieldData.Set("value", "Cool User");
+  fieldsData.Set("2", std::move(firstFieldData));
 
-  base::Value secondFieldData(base::Value::Type::DICTIONARY);
-  secondFieldData.SetStringKey("name", "email");
-  secondFieldData.SetStringKey("identifier", "email");
-  secondFieldData.SetStringKey("value", "coolemail@com");
-  fieldsData.SetKey("3", std::move(secondFieldData));
+  base::Value::Dict secondFieldData;
+  secondFieldData.Set("name", "email");
+  secondFieldData.Set("identifier", "email");
+  secondFieldData.Set("value", "coolemail@com");
+  fieldsData.Set("3", std::move(secondFieldData));
 
-  autofillData->SetKey("fields", std::move(fieldsData));
+  autofillData.Set("fields", std::move(fieldsData));
 
   __block NSString* filling_result = nil;
   __block BOOL block_was_called = NO;
-  feature()->FillForm(main_web_frame(), std::move(autofillData),
+
+  base::Value autofillDataValue(std::move(autofillData));
+  std::unique_ptr<base::DictionaryValue> autofillDataDictionaryValue =
+      base::DictionaryValue::From(
+          base::Value::ToUniquePtrValue(std::move(autofillDataValue)));
+  feature()->FillForm(main_web_frame(), std::move(autofillDataDictionaryValue),
                       FieldRendererId(2), base::BindOnce(^(NSString* result) {
                         filling_result = [result copy];
                         block_was_called = YES;
@@ -574,11 +585,15 @@ TEST_F(AutofillJavaScriptFeatureTest, ClearForm) {
     NSString* focusScript =
         [NSString stringWithFormat:@"%@.focus()", getFieldScript];
     web::test::ExecuteJavaScript(focusScript, web_state());
-    auto data = std::make_unique<base::DictionaryValue>();
-    data->SetInteger("unique_renderer_id", field_data.second);
-    data->SetString("value", "testvalue");
+    base::Value::Dict data;
+    data.Set("unique_renderer_id", field_data.second);
+    data.Set("value", "testvalue");
     __block BOOL success = NO;
-    feature()->FillActiveFormField(main_web_frame(), std::move(data),
+    base::Value dictValue(std::move(data));
+    std::unique_ptr<base::DictionaryValue> dictValuePtr =
+        base::DictionaryValue::From(
+            base::Value::ToUniquePtrValue(std::move(dictValue)));
+    feature()->FillActiveFormField(main_web_frame(), std::move(dictValuePtr),
                                    base::BindOnce(^(BOOL result) {
                                      success = result;
                                    }));

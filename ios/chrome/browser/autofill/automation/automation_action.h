@@ -11,13 +11,12 @@
 // AutomationAction consumes description of actions in base::Value format,
 // generated in json by an extension and executes them on the current
 // active web page. AutomationAction is an abstract superclass for a class
-// cluster, the class method -actionWithValueDictionary: returns concrete
+// cluster, the class method -actionWithValueDict: returns concrete
 // subclasses for the various possible actions.
 @interface AutomationAction : NSObject
 
 // Returns an concrete instance of a subclass of AutomationAction.
-+ (instancetype)actionWithValueDictionary:
-    (const base::DictionaryValue&)actionDictionary;
++ (instancetype)actionWithValueDict:(base::Value::Dict)actionDictionary;
 
 // Prevents creating rogue instances, the init methods are private.
 - (instancetype)init NS_UNAVAILABLE;

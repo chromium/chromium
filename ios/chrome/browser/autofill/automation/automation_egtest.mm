@@ -117,21 +117,15 @@ base::Value RecipeJsonToValue(const std::string& recipe_json) {
   _startURL = GURL(startURLString);
 
   // Extract the actions.
-  base::Value* actionValue =
-      recipeRoot.FindKeyOfType("actions", base::Value::Type::LIST);
-  GREYAssert(actionValue, @"Test file is missing actions.");
+  base::Value::List* actions = recipeRoot.GetDict().FindList("actions");
+  GREYAssert(actions, @"Test file is missing actions.");
+  GREYAssert(!actions->empty(), @"Test file has empty actions.");
 
-  base::Value::ConstListView actionsValues(actionValue->GetListDeprecated());
-  GREYAssert(actionsValues.size(), @"Test file has empty actions.");
-
-  _actions = [[NSMutableArray alloc] initWithCapacity:actionsValues.size()];
-  for (auto const& actionValue : actionsValues) {
-    GREYAssert(actionValue.is_dict(),
-               @"Expecting each action to be a dictionary in the JSON file.");
+  _actions = [[NSMutableArray alloc] initWithCapacity:actions->size()];
+  for (base::Value& action : *actions) {
+    GREYAssert(action.is_dict(), @"Expecting each action to be a ...");
     [_actions addObject:[AutomationAction
-                            actionWithValueDictionary:
-                                static_cast<const base::DictionaryValue&>(
-                                    actionValue)]];
+                            actionWithValueDict:std::move(action.GetDict())]];
   }
 }
 

@@ -40,10 +40,11 @@ const char kTestPageUrl[] = "/components/test/data/autofill/"
 // then using JS to assert that the web page has been populated as a result
 // of the click.
 - (void)testAutomationActionClick {
-  base::DictionaryValue dict = base::DictionaryValue();
-  dict.SetKey("type", base::Value("click"));
-  dict.SetKey("selector", base::Value("//*[@id=\"fill_form\"]"));
-  AutomationAction* action = [AutomationAction actionWithValueDictionary:dict];
+  base::Value::Dict dict;
+  dict.Set("type", "click");
+  dict.Set("selector", "//*[@id=\"fill_form\"]");
+  AutomationAction* action =
+      [AutomationAction actionWithValueDict:std::move(dict)];
   [action execute];
 
   base::Value result = [ChromeEarlGrey
@@ -59,32 +60,32 @@ const char kTestPageUrl[] = "/components/test/data/autofill/"
 // populates the name field after a few seconds, and using waitFor to verify
 // this eventually happens.
 - (void)testAutomationActionClickAndWaitFor {
-  base::DictionaryValue clickDict = base::DictionaryValue();
-  clickDict.SetKey("type", base::Value("click"));
-  clickDict.SetKey("selector", base::Value("//*[@id=\"fill_form_delay\"]"));
+  base::Value::Dict clickDict;
+  clickDict.Set("type", "click");
+  clickDict.Set("selector", "//*[@id=\"fill_form_delay\"]");
   AutomationAction* clickAction =
-      [AutomationAction actionWithValueDictionary:clickDict];
+      [AutomationAction actionWithValueDict:std::move(clickDict)];
   [clickAction execute];
 
-  base::DictionaryValue waitForDict = base::DictionaryValue();
-  waitForDict.SetKey("type", base::Value("waitFor"));
-  base::Value assertions = base::Value(base::Value::Type::LIST);
-  assertions.Append(base::Value(
+  base::Value::Dict waitForDict;
+  waitForDict.Set("type", "waitFor");
+  base::Value::List assertions = base::Value::List();
+  assertions.Append(
       "return document.getElementsByName(\"name_address\")[0].value == \"Jane "
-      "Smith\";"));
-  waitForDict.SetKey("assertions", std::move(assertions));
+      "Smith\";");
+  waitForDict.Set("assertions", std::move(assertions));
   AutomationAction* waitForAction =
-      [AutomationAction actionWithValueDictionary:waitForDict];
+      [AutomationAction actionWithValueDict:std::move(waitForDict)];
   [waitForAction execute];
 }
 
 - (void)testAutomationActionSelectDropdown {
-  base::DictionaryValue selectDict = base::DictionaryValue();
-  selectDict.SetKey("type", base::Value("select"));
-  selectDict.SetKey("selector", base::Value("//*[@name=\"cc_month_exp\"]"));
-  selectDict.SetKey("index", base::Value(5));
+  base::Value::Dict selectDict;
+  selectDict.Set("type", "select");
+  selectDict.Set("selector", "//*[@name=\"cc_month_exp\"]");
+  selectDict.Set("index", 5);
   AutomationAction* selectAction =
-      [AutomationAction actionWithValueDictionary:selectDict];
+      [AutomationAction actionWithValueDict:std::move(selectDict)];
   [selectAction execute];
 
   base::Value result = [ChromeEarlGrey

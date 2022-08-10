@@ -22,18 +22,17 @@
 #endif
 
 @interface AutomationAction () {
-  std::unique_ptr<const base::DictionaryValue> _actionDictionary;
+  base::Value::Dict _actionDictionary;
 }
 
-@property(nonatomic, readonly)
-    const std::unique_ptr<const base::DictionaryValue>& actionDictionary;
+@property(nonatomic, readonly) const base::Value::Dict& actionDictionary;
 
 // Selects the proper subclass in the class cluster for the given type. Called
 // from the class method creating the actions.
 + (Class)classForType:(NSString*)type;
 
-- (instancetype)initWithValueDictionary:
-    (const base::DictionaryValue&)actionDictionary NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithValueDict:(base::Value::Dict)actionDictionary
+    NS_DESIGNATED_INITIALIZER;
 @end
 
 // An action that always fails.
@@ -141,17 +140,13 @@
 
 @implementation AutomationAction
 
-+ (instancetype)actionWithValueDictionary:
-    (const base::DictionaryValue&)actionDictionary {
-  const base::Value* typeValue =
-      actionDictionary.FindKeyOfType("type", base::Value::Type::STRING);
-  GREYAssert(typeValue, @"Type is missing in action.");
++ (instancetype)actionWithValueDict:(base::Value::Dict)actionDictionary {
+  const std::string* type = actionDictionary.FindString("type");
+  GREYAssert(type, @"Type is missing in action.");
+  GREYAssert(!type->empty(), @"Type is an empty value.");
 
-  const std::string type(typeValue->GetString());
-  GREYAssert(!type.empty(), @"Type is an empty value.");
-
-  return [[[self classForType:base::SysUTF8ToNSString(type)] alloc]
-      initWithValueDictionary:actionDictionary];
+  return [[[self classForType:base::SysUTF8ToNSString(*type)] alloc]
+      initWithValueDict:std::move(actionDictionary)];
 }
 
 + (Class)classForType:(NSString*)type {
@@ -171,11 +166,10 @@
   return classForType[type] ?: [AutomationActionUnrecognized class];
 }
 
-- (instancetype)initWithValueDictionary:
-    (const base::DictionaryValue&)actionDictionary {
+- (instancetype)initWithValueDict:(base::Value::Dict)actionDictionary {
   self = [super init];
   if (self) {
-    _actionDictionary = actionDictionary.DeepCopyWithoutEmptyChildren();
+    _actionDictionary = std::move(actionDictionary);
   }
   return self;
 }
@@ -184,7 +178,7 @@
   GREYAssert(NO, @"Should not be called!");
 }
 
-- (const std::unique_ptr<const base::DictionaryValue>&)actionDictionary {
+- (const base::Value::Dict&)actionDictionary {
   return _actionDictionary;
 }
 
@@ -226,25 +220,21 @@
 // dictionary. Will raise a test failure if the key is missing or the value is
 // empty.
 - (std::string)stringFromDictionaryWithKey:(const std::string&)key {
-  const base::Value* expectedTypeValue(
-      self.actionDictionary->FindKeyOfType(key, base::Value::Type::STRING));
-  GREYAssert(expectedTypeValue, @"%s is missing in action.", key.c_str());
+  const std::string* expectedType = self.actionDictionary.FindString(key);
+  GREYAssert(expectedType, @"%s is missing in action.", key.c_str());
+  GREYAssert(!expectedType->empty(), @"%s is an empty value", key.c_str());
 
-  const std::string expectedType(expectedTypeValue->GetString());
-  GREYAssert(!expectedType.empty(), @"%s is an empty value", key.c_str());
-
-  return expectedType;
+  return *expectedType;
 }
 
 // Returns an int corrensponding to the given key in the action
 // dictionary. Will raise a test failure if the key is missing or the value is
 // empty.
 - (int)intFromDictionaryWithKey:(const std::string&)key {
-  const base::Value* expectedTypeValue(
-      self.actionDictionary->FindKeyOfType(key, base::Value::Type::INTEGER));
+  absl::optional<int> expectedTypeValue = self.actionDictionary.FindInt(key);
   GREYAssert(expectedTypeValue, @"%s is missing in action.", key.c_str());
 
-  return expectedTypeValue->GetInt();
+  return *expectedTypeValue;
 }
 
 // Runs the JS code passed in against the target element specified by the
@@ -289,17 +279,14 @@
 @implementation AutomationActionWaitFor
 
 - (void)execute {
-  const base::Value* assertionsValue(self.actionDictionary->FindKeyOfType(
-      "assertions", base::Value::Type::LIST));
-  GREYAssert(assertionsValue, @"Assertions key is missing in action.");
-
-  base::Value::ConstListView assertionsValues(
-      assertionsValue->GetListDeprecated());
-  GREYAssert(assertionsValues.size(), @"Assertions list is empty.");
+  const base::Value::List* assertionsValues =
+      self.actionDictionary.FindList("assertions");
+  GREYAssert(assertionsValues, @"Assertions key is missing in action.");
+  GREYAssert(assertionsValues->size(), @"Assertions list is empty.");
 
   std::vector<std::string> state_assertions;
 
-  for (auto const& assertionValue : assertionsValues) {
+  for (auto const& assertionValue : *assertionsValues) {
     const std::string assertionString(assertionValue.GetString());
     GREYAssert(!assertionString.empty(), @"assertionString is an empty value.");
     state_assertions.push_back(assertionString);
@@ -418,11 +405,9 @@
 @implementation AutomationActionUnrecognized
 
 - (void)execute {
-  const base::Value* typeValue =
-      self.actionDictionary->FindKeyOfType("type", base::Value::Type::STRING);
-  const std::string type(typeValue->GetString());
-
-  GREYAssert(NO, @"Unknown action of type %s", type.c_str());
+  const std::string* type = self.actionDictionary.FindString("type");
+  GREYAssert(type, @"Unknown action; missing type string");
+  GREYAssert(NO, @"Unknown action of type %s", type->c_str());
 }
 
 @end
