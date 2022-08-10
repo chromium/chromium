@@ -60,7 +60,10 @@ class SendResultsFatalException(SendResultException):
 
 def LuciAuthTokenGeneratorCallback():
   args = ['luci-auth', 'token']
-  p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  p = subprocess.Popen(args,
+                       stdout=subprocess.PIPE,
+                       stderr=subprocess.PIPE,
+                       universal_newlines=True)
   if p.wait() == 0:
     return p.stdout.read().strip()
   raise RuntimeError(
