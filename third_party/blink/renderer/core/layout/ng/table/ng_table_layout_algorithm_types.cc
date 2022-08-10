@@ -120,7 +120,7 @@ NGTableTypes::Column NGTableTypes::CreateColumn(
 // Note: this method calls NGBlockNode::ComputeMinMaxSizes.
 NGTableTypes::CellInlineConstraint NGTableTypes::CreateCellInlineConstraint(
     const NGBlockNode& node,
-    WritingMode table_writing_mode,
+    WritingDirectionMode table_writing_direction,
     bool is_fixed_layout,
     const NGBoxStrut& cell_border,
     const NGBoxStrut& cell_padding) {
@@ -129,6 +129,7 @@ NGTableTypes::CellInlineConstraint NGTableTypes::CreateCellInlineConstraint(
   absl::optional<LayoutUnit> css_max_inline_size;
   absl::optional<float> css_percentage_inline_size;
   const auto& style = node.Style();
+  const auto table_writing_mode = table_writing_direction.GetWritingMode();
   const bool is_parallel =
       IsParallelWritingMode(table_writing_mode, style.GetWritingMode());
 
@@ -137,10 +138,12 @@ NGTableTypes::CellInlineConstraint NGTableTypes::CreateCellInlineConstraint(
   absl::optional<MinMaxSizes> cached_min_max_sizes;
   auto MinMaxSizesFunc = [&]() -> MinMaxSizes {
     if (!cached_min_max_sizes) {
+      const auto cell_writing_direction = style.GetWritingDirection();
       NGConstraintSpaceBuilder builder(table_writing_mode,
-                                       style.GetWritingDirection(),
+                                       cell_writing_direction,
                                        /* is_new_fc */ true);
-      builder.SetTableCellBorders(cell_border);
+      builder.SetTableCellBorders(cell_border, cell_writing_direction,
+                                  table_writing_direction);
       builder.SetIsTableCell(true);
       builder.SetCacheSlot(NGCacheSlot::kMeasure);
       if (!is_parallel) {

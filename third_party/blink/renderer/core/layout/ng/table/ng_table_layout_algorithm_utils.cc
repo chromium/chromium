@@ -194,13 +194,14 @@ NGTableTypes::Row ComputeMinimumRowBlockSize(
        cell = To<NGBlockNode>(cell.NextSibling())) {
     colspan_cell_tabulator->FindNextFreeColumn();
     const ComputedStyle& cell_style = cell.Style();
+    const auto cell_writing_direction = cell_style.GetWritingDirection();
     const NGBoxStrut cell_borders = table_borders.CellBorder(
         cell, row_index, colspan_cell_tabulator->CurrentColumn(), section_index,
         table_writing_direction);
 
     NGConstraintSpaceBuilder space_builder(
-        table_writing_direction.GetWritingMode(),
-        cell.Style().GetWritingDirection(), /* is_new_fc */ true);
+        table_writing_direction.GetWritingMode(), cell_writing_direction,
+        /* is_new_fc */ true);
 
     // We want these values to match the "layout" pass as close as possible.
     NGTableAlgorithmUtils::SetupTableCellConstraintSpaceBuilder(
@@ -387,14 +388,12 @@ void ComputeSectionInlineConstraints(
     const NGBlockNode& section,
     bool is_fixed_layout,
     bool is_first_section,
-    WritingMode table_writing_mode,
+    WritingDirectionMode table_writing_direction,
     const NGTableBorders& table_borders,
     wtf_size_t section_index,
     wtf_size_t* row_index,
     NGTableTypes::CellInlineConstraints* cell_inline_constraints,
     NGTableTypes::ColspanCells* colspan_cell_inline_constraints) {
-  WritingDirectionMode table_writing_direction =
-      section.Style().GetWritingDirection();
   NGColspanCellTabulator colspan_cell_tabulator;
   bool is_first_row = true;
   for (NGBlockNode row = To<NGBlockNode>(section.FirstChild()); row;
@@ -422,9 +421,9 @@ void ComputeSectionInlineConstraints(
         NGBoxStrut cell_padding = table_borders.CellPaddingForMeasure(
             cell.Style(), table_writing_direction);
         NGTableTypes::CellInlineConstraint cell_constraint =
-            NGTableTypes::CreateCellInlineConstraint(cell, table_writing_mode,
-                                                     is_fixed_layout,
-                                                     cell_border, cell_padding);
+            NGTableTypes::CreateCellInlineConstraint(
+                cell, table_writing_direction, is_fixed_layout, cell_border,
+                cell_padding);
         if (colspan == 1) {
           absl::optional<NGTableTypes::CellInlineConstraint>& constraint =
               (*cell_inline_constraints)[colspan_cell_tabulator
@@ -534,7 +533,8 @@ void NGTableAlgorithmUtils::SetupTableCellConstraintSpaceBuilder(
   builder->SetPercentageResolutionSize(
       {percentage_inline_size, kIndefiniteSize});
 
-  builder->SetTableCellBorders(cell_borders);
+  builder->SetTableCellBorders(cell_borders, cell_style.GetWritingDirection(),
+                               table_writing_direction);
   builder->SetTableCellAlignmentBaseline(alignment_baseline);
   builder->SetTableCellColumnIndex(start_column);
   builder->SetIsRestrictedBlockSizeTableCell(
@@ -575,9 +575,8 @@ NGTableAlgorithmUtils::ComputeColumnConstraints(
     const NGTableGroupedChildren& grouped_children,
     const NGTableBorders& table_borders,
     const NGBoxStrut& border_padding) {
-  bool is_fixed_layout = table.Style().IsFixedTableLayout();
-  WritingMode table_writing_mode = table.Style().GetWritingMode();
-  LogicalSize border_spacing = table.Style().TableBorderSpacing();
+  const auto& table_style = table.Style();
+  bool is_fixed_layout = table_style.IsFixedTableLayout();
 
   NGTableTypes::CellInlineConstraints cell_inline_constraints;
   NGTableTypes::ColspanCells colspan_cell_constraints;
@@ -594,16 +593,16 @@ NGTableAlgorithmUtils::ComputeColumnConstraints(
   for (NGBlockNode section : grouped_children) {
     if (!section.IsEmptyTableSection()) {
       ComputeSectionInlineConstraints(
-          section, is_fixed_layout, is_first_section, table_writing_mode,
-          table_borders, section_index, &row_index, &cell_inline_constraints,
-          &colspan_cell_constraints);
+          section, is_fixed_layout, is_first_section,
+          table_style.GetWritingDirection(), table_borders, section_index,
+          &row_index, &cell_inline_constraints, &colspan_cell_constraints);
       is_first_section = false;
     }
     section_index++;
   }
   ApplyCellConstraintsToColumnConstraints(
-      cell_inline_constraints, border_spacing.inline_size, is_fixed_layout,
-      &colspan_cell_constraints, column_constraints.get());
+      cell_inline_constraints, table_style.TableBorderSpacing().inline_size,
+      is_fixed_layout, &colspan_cell_constraints, column_constraints.get());
 
   return column_constraints;
 }

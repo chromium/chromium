@@ -349,13 +349,18 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
       space_.EnsureRareData()->SetClearanceOffset(clearance_offset);
   }
 
-  void SetTableCellBorders(const NGBoxStrut& table_cell_borders) {
+  void SetTableCellBorders(const NGBoxStrut& table_cell_borders,
+                           WritingDirectionMode cell_writing_direction,
+                           WritingDirectionMode table_writing_direction) {
 #if DCHECK_IS_ON()
     DCHECK(!is_table_cell_borders_set_);
     is_table_cell_borders_set_ = true;
 #endif
-    if (table_cell_borders != NGBoxStrut())
-      space_.EnsureRareData()->SetTableCellBorders(table_cell_borders);
+    if (table_cell_borders != NGBoxStrut()) {
+      space_.EnsureRareData()->SetTableCellBorders(
+          table_cell_borders.ConvertToPhysical(table_writing_direction)
+              .ConvertToLogical(cell_writing_direction));
+    }
   }
 
   void SetTableCellAlignmentBaseline(
