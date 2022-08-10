@@ -118,7 +118,12 @@ RuleData::RuleData(StyleRule* rule,
       valid_property_filter_(
           static_cast<std::underlying_type_t<ValidPropertyFilter>>(
               DetermineValidPropertyFilter(add_rule_flags, Selector()))),
-      descendant_selector_identifier_hashes_() {
+      descendant_selector_identifier_hashes_() {}
+
+void RuleData::ComputeBloomFilterHashes() {
+#if DCHECK_IS_ON()
+  marker_ = 0;
+#endif
   SelectorFilter::CollectIdentifierHashes(
       Selector(), descendant_selector_identifier_hashes_,
       kMaximumIdentifierCount);
@@ -127,17 +132,22 @@ RuleData::RuleData(StyleRule* rule,
 void RuleSet::AddToRuleSet(const AtomicString& key,
                            RuleMap& map,
                            const RuleData& rule_data) {
-  Member<HeapVector<RuleData>>& rules =
-      map.insert(key, nullptr).stored_value->value;
-  if (!rules)
-    rules = MakeGarbageCollected<HeapVector<RuleData>>();
-  rules->push_back(rule_data);
+  if (map.IsCompacted()) {
+    // This normally should not happen, but may with UA stylesheets;
+    // see class comment on RuleMap.
+    map.Uncompact();
+  }
+  map.Add(key, rule_data);
+  // Don't call ComputeBloomFilterHashes() here; RuleMap needs that space for
+  // group information, and will call ComputeBloomFilterHashes() itself on
+  // compaction.
   need_compaction_ = true;
 }
 
 void RuleSet::AddToRuleSet(HeapVector<RuleData>& rules,
                            const RuleData& rule_data) {
   rules.push_back(rule_data);
+  rules.back().ComputeBloomFilterHashes();
   need_compaction_ = true;
 }
 
@@ -629,10 +639,92 @@ CascadeLayer* RuleSet::GetOrAddSubLayer(CascadeLayer* cascade_layer,
   return cascade_layer->GetOrAddSubLayer(name);
 }
 
-void RuleSet::CompactRuleMap(RuleMap& map) {
-  for (auto& [key, value] : map) {
-    value->ShrinkToFit();
+void RuleMap::Add(const AtomicString& key, const RuleData& rule_data) {
+  RuleMap::Extent& rules =
+      buckets.insert(key, RuleMap::Extent()).stored_value->value;
+  if (rules.length == 0)
+    rules.bucket_number = num_buckets++;
+  RuleData rule_data_copy = rule_data;
+  rule_data_copy.SetBucketInformation(rules.bucket_number,
+                                      /*order_in_bucket=*/rules.length++);
+  backing.push_back(std::move(rule_data_copy));
+}
+
+void RuleMap::Compact() {
+  if (compacted) {
+    return;
   }
+  if (backing.IsEmpty()) {
+    // Nothing to do.
+    compacted = true;
+    return;
+  }
+
+  backing.ShrinkToFit();
+
+  // Order by (bucket_number, order_in_bucket) by way of a simple
+  // in-place counting sort (which is O(n), because our highest bucket
+  // number is always less than or equal to the number of elements).
+  // First, we make an array that contains the number of elements in each
+  // bucket, indexed by the bucket number.
+  std::unique_ptr<unsigned[]> counts(new unsigned[num_buckets]());
+  for (const RuleData& rule_data : backing) {
+    ++counts[rule_data.GetBucketNumber()];
+  }
+
+  // Do the prefix sum. After this, counts[i] is the desired start index
+  // for the i-th bucket.
+  unsigned sum = 0;
+  for (wtf_size_t i = 0; i < num_buckets; ++i) {
+    DCHECK_GT(counts[i], 0U);
+    unsigned new_sum = sum + counts[i];
+    counts[i] = sum;
+    sum = new_sum;
+  }
+
+  // Store that information into each bucket.
+  for (auto& [key, value] : buckets) {
+    value.start_index = counts[value.bucket_number];
+  }
+
+  // Now put each element into its right place. Every iteration, we will
+  // either swap an element into its final destination, or, when we
+  // encounter one that is already in its correct place (possibly
+  // because we put it there earlier), skip to the next array slot.
+  // These will happen exactly n times each, giving us our O(n) runtime.
+  for (wtf_size_t i = 0; i < backing.size();) {
+    const RuleData& rule_data = backing[i];
+    wtf_size_t correct_pos =
+        counts[rule_data.GetBucketNumber()] + rule_data.GetOrderInBucket();
+    if (i == correct_pos) {
+      ++i;
+    } else {
+      using std::swap;
+      swap(backing[i], backing[correct_pos]);
+    }
+  }
+
+  // Now that we don't need the grouping information anymore, we can compute
+  // the Bloom filter hashes that want to stay in the same memory area.
+  for (RuleData& rule_data : backing) {
+    rule_data.ComputeBloomFilterHashes();
+  }
+
+  compacted = true;
+}
+
+void RuleMap::Uncompact() {
+  num_buckets = 0;
+  for (auto& [key, value] : buckets) {
+    unsigned i = 0;
+    for (RuleData& rule_data : GetRulesFromExtent(value)) {
+      rule_data.SetBucketInformation(/*bucket_number=*/num_buckets,
+                                     /*order_in_bucket=*/i++);
+    }
+    value.bucket_number = num_buckets++;
+    value.length = i;
+  }
+  compacted = false;
 }
 
 static wtf_size_t GetMinimumRulesetSizeForSubstringMatcher() {
@@ -656,8 +748,10 @@ static wtf_size_t GetMinimumRulesetSizeForSubstringMatcher() {
 bool RuleSet::CanIgnoreEntireList(base::span<const RuleData> list,
                                   const AtomicString& key,
                                   const AtomicString& value) const {
-  DCHECK_EQ(attr_rules_.find(key)->value->size(), list.size());
-  DCHECK_EQ(attr_rules_.find(key)->value->data(), list.data());
+  DCHECK_EQ(attr_rules_.Find(key).size(), list.size());
+  if (!list.empty()) {
+    DCHECK_EQ(attr_rules_.Find(key).data(), list.data());
+  }
   if (list.size() < GetMinimumRulesetSizeForSubstringMatcher()) {
     // Too small to build up a tree, so always check.
     DCHECK_EQ(attr_substring_matchers_.find(key),
@@ -681,14 +775,14 @@ bool RuleSet::CanIgnoreEntireList(base::span<const RuleData> list,
 void RuleSet::CreateSubstringMatchers(
     RuleMap& attr_map,
     RuleSet::SubstringMatcherMap& substring_matcher_map) {
-  for (const auto& [/*AtomicString*/ attr, /*Member<RuleSet>*/ ruleset] :
-       attr_map) {
-    if (ruleset->size() < GetMinimumRulesetSizeForSubstringMatcher()) {
+  for (const auto& [/*AtomicString*/ attr,
+                    /*base::span<const RuleData>*/ ruleset] : attr_map) {
+    if (ruleset.size() < GetMinimumRulesetSizeForSubstringMatcher()) {
       continue;
     }
     std::vector<MatcherStringPattern> patterns;
     int rule_index = 0;
-    for (const RuleData& rule : *ruleset) {
+    for (const RuleData& rule : ruleset) {
       AtomicString id;
       AtomicString class_name;
       AtomicString attr_name;
@@ -750,12 +844,12 @@ void RuleSet::CreateSubstringMatchers(
 
 void RuleSet::CompactRules() {
   DCHECK(need_compaction_);
-  CompactRuleMap(id_rules_);
-  CompactRuleMap(class_rules_);
-  CompactRuleMap(attr_rules_);
+  id_rules_.Compact();
+  class_rules_.Compact();
+  attr_rules_.Compact();
   CreateSubstringMatchers(attr_rules_, attr_substring_matchers_);
-  CompactRuleMap(tag_rules_);
-  CompactRuleMap(ua_shadow_pseudo_element_rules_);
+  tag_rules_.Compact();
+  ua_shadow_pseudo_element_rules_.Compact();
   link_pseudo_class_rules_.ShrinkToFit();
   cue_pseudo_rules_.ShrinkToFit();
   focus_pseudo_class_rules_.ShrinkToFit();
@@ -803,14 +897,18 @@ bool IsRuleListSorted(const RuleList& rules) {
 }  // namespace
 
 void RuleSet::AssertRuleListsSorted() const {
-  for (const auto& item : id_rules_)
-    DCHECK(IsRuleListSorted(*item.value));
-  for (const auto& item : class_rules_)
-    DCHECK(IsRuleListSorted(*item.value));
-  for (const auto& item : tag_rules_)
-    DCHECK(IsRuleListSorted(*item.value));
-  for (const auto& item : ua_shadow_pseudo_element_rules_)
-    DCHECK(IsRuleListSorted(*item.value));
+  for (const auto& item : id_rules_) {
+    DCHECK(IsRuleListSorted(item.value));
+  }
+  for (const auto& item : class_rules_) {
+    DCHECK(IsRuleListSorted(item.value));
+  }
+  for (const auto& item : tag_rules_) {
+    DCHECK(IsRuleListSorted(item.value));
+  }
+  for (const auto& item : ua_shadow_pseudo_element_rules_) {
+    DCHECK(IsRuleListSorted(item.value));
+  }
   DCHECK(IsRuleListSorted(link_pseudo_class_rules_));
   DCHECK(IsRuleListSorted(cue_pseudo_rules_));
   DCHECK(IsRuleListSorted(focus_pseudo_class_rules_));
