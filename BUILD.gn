@@ -1010,6 +1010,7 @@ if (is_chromeos_ash) {
       "//components/exo/wayland:wayland_client_integration_tests",
       "//components/exo/wayland:wayland_client_perftests",
       "//components/exo/wayland:wayland_client_tests",
+      "//components/policy/test_support:fake_dmserver",
       "//media:media_unittests",
       "//media/capture:capture_unittests",
       "//sandbox/linux:chrome_sandbox",
