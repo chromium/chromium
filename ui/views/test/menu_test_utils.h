@@ -39,6 +39,9 @@ class TestMenuDelegate : public MenuDelegate {
   bool is_drop_performed() { return is_drop_performed_; }
   int will_hide_menu_count() { return will_hide_menu_count_; }
   MenuItemView* will_hide_menu() { return will_hide_menu_; }
+  void set_should_execute_command_without_closing_menu(bool val) {
+    should_execute_command_without_closing_menu_ = val;
+  }
 
   // MenuDelegate:
   bool ShowContextMenu(MenuItemView* source,
@@ -54,6 +57,8 @@ class TestMenuDelegate : public MenuDelegate {
   int GetDragOperations(MenuItemView* sender) override;
   void WriteDragData(MenuItemView* sender, OSExchangeData* data) override;
   void WillHideMenu(MenuItemView* menu) override;
+  bool ShouldExecuteCommandWithoutClosingMenu(int id,
+                                              const ui::Event& e) override;
 
  private:
   // Performs the drop operation and updates |output_drag_op| accordingly.
@@ -82,6 +87,8 @@ class TestMenuDelegate : public MenuDelegate {
   raw_ptr<MenuItemView> will_hide_menu_ = nullptr;
 
   bool is_drop_performed_ = false;
+
+  bool should_execute_command_without_closing_menu_ = false;
 };
 
 // Test api which caches the currently active MenuController. Can be used to

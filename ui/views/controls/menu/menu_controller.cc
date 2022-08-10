@@ -938,7 +938,13 @@ void MenuController::OnGestureEvent(SubmenuView* source,
   } else if (event->type() == ui::ET_GESTURE_TAP) {
     if (!part.is_scroll() && part.menu &&
         !(part.should_submenu_show && part.menu->HasSubmenu())) {
-      if (part.menu->GetDelegate()->IsTriggerableEvent(part.menu, *event)) {
+      const int command = part.menu->GetCommand();
+      if (part.menu->GetDelegate()->ShouldExecuteCommandWithoutClosingMenu(
+              command, *event)) {
+        item_selected_by_touch_ = true;
+        part.menu->GetDelegate()->ExecuteCommand(command, 0);
+      } else if (part.menu->GetDelegate()->IsTriggerableEvent(part.menu,
+                                                              *event)) {
         item_selected_by_touch_ = true;
         Accept(part.menu, event->flags());
       }
@@ -1606,7 +1612,13 @@ bool MenuController::OnKeyPressed(const ui::KeyEvent& event) {
           handled_key_code = true;
           if (!SendAcceleratorToHotTrackedView(event.flags()) &&
               pending_state_.item->GetEnabled()) {
-            Accept(pending_state_.item, event.flags());
+            const int command = pending_state_.item->GetCommand();
+            if (pending_state_.item->GetDelegate()
+                    ->ShouldExecuteCommandWithoutClosingMenu(command, event)) {
+              pending_state_.item->GetDelegate()->ExecuteCommand(command, 0);
+            } else {
+              Accept(pending_state_.item, event.flags());
+            }
           }
         }
       }

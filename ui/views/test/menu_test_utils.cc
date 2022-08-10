@@ -60,6 +60,12 @@ void TestMenuDelegate::WillHideMenu(MenuItemView* menu) {
   will_hide_menu_ = menu;
 }
 
+bool TestMenuDelegate::ShouldExecuteCommandWithoutClosingMenu(
+    int id,
+    const ui::Event& e) {
+  return should_execute_command_without_closing_menu_;
+}
+
 void TestMenuDelegate::PerformDrop(const ui::DropTargetEvent& event,
                                    ui::mojom::DragOperation& output_drag_op) {
   is_drop_performed_ = true;
