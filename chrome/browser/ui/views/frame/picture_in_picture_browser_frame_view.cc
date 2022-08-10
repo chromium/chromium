@@ -33,7 +33,9 @@ constexpr int kTopControlsHeight = 30;
 constexpr int kWindowBorderThickness = 5;
 constexpr int kResizeAreaCornerSize = 10;
 
-constexpr int kMinWindowWidth = 500;
+// The window has a standard Chrome minimum size and does not have a maximum
+// size.
+constexpr gfx::Size kMinWindowSize(500, 500);
 
 class BackToTabButton : public OverlayWindowImageButton {
  public:
@@ -146,10 +148,6 @@ int PictureInPictureBrowserFrameView::GetThemeBackgroundXInset() const {
   return 0;
 }
 
-void PictureInPictureBrowserFrameView::UpdateMinimumSize() {
-  GetWidget()->OnSizeConstraintsChanged();
-}
-
 gfx::Rect PictureInPictureBrowserFrameView::GetBoundsForClientView() const {
   return bounds();
 }
@@ -196,13 +194,7 @@ void PictureInPictureBrowserFrameView::UpdateWindowTitle() {
 }
 
 gfx::Size PictureInPictureBrowserFrameView::GetMinimumSize() const {
-  // TODO(https://crbug.com/1346734): Calculate the size as OverlayWindowViews.
-  return gfx::Size(kMinWindowWidth, kMinWindowWidth);
-}
-
-gfx::Size PictureInPictureBrowserFrameView::GetMaximumSize() const {
-  // TODO(https://crbug.com/1346734): Calculate the size as OverlayWindowViews.
-  return browser_view()->GetMaximumSize();
+  return kMinWindowSize;
 }
 
 void PictureInPictureBrowserFrameView::OnThemeChanged() {

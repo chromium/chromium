@@ -33,7 +33,6 @@ class PictureInPictureBrowserFrameView : public BrowserNonClientFrameView {
       const gfx::Size& tabstrip_minimum_size) const override;
   int GetTopInset(bool restored) const override;
   int GetThemeBackgroundXInset() const override;
-  void UpdateMinimumSize() override;
   void UpdateThrobber(bool running) override {}
   gfx::Rect GetBoundsForClientView() const override;
   gfx::Rect GetWindowBoundsForClientBounds(
@@ -45,7 +44,6 @@ class PictureInPictureBrowserFrameView : public BrowserNonClientFrameView {
   void UpdateWindowTitle() override;
   void SizeConstraintsChanged() override {}
   gfx::Size GetMinimumSize() const override;
-  gfx::Size GetMaximumSize() const override;
   void OnThemeChanged() override;
 
   // Gets the bounds of the controls.
