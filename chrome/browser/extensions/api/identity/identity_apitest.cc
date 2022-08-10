@@ -122,9 +122,8 @@ const char kGetAuthTokenResultAfterConsentApprovedHistogramName[] =
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void InitNetwork() {
-  const ash::NetworkState* default_network = chromeos::NetworkHandler::Get()
-                                                 ->network_state_handler()
-                                                 ->DefaultNetwork();
+  const ash::NetworkState* default_network =
+      ash::NetworkHandler::Get()->network_state_handler()->DefaultNetwork();
 
   auto* portal_detector = new ash::NetworkPortalDetectorTestImpl();
   portal_detector->SetDefaultNetworkForTesting(default_network->guid());

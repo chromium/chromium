@@ -54,12 +54,9 @@ absl::optional<dbus::ObjectPath> GetCurrentEuiccPath();
 
 // TODO(https://crbug.com/1164001): remove when the migration is finished.
 namespace chromeos {
-using ::ash::GenerateProfilesFromHermes;
-using ::ash::GenerateStubCellularServicePath;
 using ::ash::GetCurrentEuiccPath;
 using ::ash::GetSimSlotInfosWithUpdatedEid;
 using ::ash::IsSimPrimary;
-using ::ash::IsStubCellularServicePath;
 }  // namespace chromeos
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_CELLULAR_UTILS_H_

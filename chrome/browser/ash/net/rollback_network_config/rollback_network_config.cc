@@ -349,17 +349,16 @@ class RollbackNetworkConfig::Importer : public DeviceSettingsService::Observer,
 
 RollbackNetworkConfig::Importer::Importer() {
   DeviceSettingsService::Get()->AddObserver(this);
-  chromeos::NetworkHandler::Get()
-      ->managed_network_configuration_handler()
-      ->AddObserver(this);
+  NetworkHandler::Get()->managed_network_configuration_handler()->AddObserver(
+      this);
 }
 
 RollbackNetworkConfig::Importer::~Importer() {
   if (DeviceSettingsService::Get()) {
     DeviceSettingsService::Get()->RemoveObserver(this);
   }
-  if (chromeos::NetworkHandler::Get()) {
-    chromeos::NetworkHandler::Get()
+  if (NetworkHandler::Get()) {
+    NetworkHandler::Get()
         ->managed_network_configuration_handler()
         ->RemoveObserver(this);
   }

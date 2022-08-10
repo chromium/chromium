@@ -53,10 +53,4 @@ base::Value TranslateShillServiceToONCPart(
 }  // namespace onc
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos::onc {
-using ::ash::onc::TranslateONCObjectToShill;
-using ::ash::onc::TranslateShillServiceToONCPart;
-}  // namespace chromeos::onc
-
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_ONC_ONC_TRANSLATOR_H_

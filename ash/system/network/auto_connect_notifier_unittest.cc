@@ -50,7 +50,7 @@ class AutoConnectNotifierTest : public AshTestBase {
     NetworkCertLoader::Initialize();
     NetworkCertLoader::ForceAvailableForNetworkAuthForTesting();
     network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
-    CHECK(chromeos::NetworkHandler::Get()->auto_connect_handler());
+    CHECK(NetworkHandler::Get()->auto_connect_handler());
     network_config_helper_ = std::make_unique<
         chromeos::network_config::CrosNetworkConfigTestHelper>();
 
@@ -119,7 +119,7 @@ class AutoConnectNotifierTest : public AshTestBase {
 };
 
 TEST_F(AutoConnectNotifierTest, NoExplicitConnectionRequested) {
-  chromeos::NetworkHandler::Get()
+  NetworkHandler::Get()
       ->auto_connect_handler()
       ->NotifyAutoConnectInitiatedForTest(
           AutoConnectHandler::AUTO_CONNECT_REASON_POLICY_APPLIED);
@@ -131,7 +131,7 @@ TEST_F(AutoConnectNotifierTest, NoExplicitConnectionRequested) {
 
 TEST_F(AutoConnectNotifierTest, AutoConnectDueToLoginOnly) {
   NotifyConnectToNetworkRequested();
-  chromeos::NetworkHandler::Get()
+  NetworkHandler::Get()
       ->auto_connect_handler()
       ->NotifyAutoConnectInitiatedForTest(
           AutoConnectHandler::AUTO_CONNECT_REASON_LOGGED_IN);
@@ -143,7 +143,7 @@ TEST_F(AutoConnectNotifierTest, AutoConnectDueToLoginOnly) {
 
 TEST_F(AutoConnectNotifierTest, NoConnectionBeforeTimerExpires) {
   NotifyConnectToNetworkRequested();
-  chromeos::NetworkHandler::Get()
+  NetworkHandler::Get()
       ->auto_connect_handler()
       ->NotifyAutoConnectInitiatedForTest(
           AutoConnectHandler::AUTO_CONNECT_REASON_POLICY_APPLIED);
@@ -164,7 +164,7 @@ TEST_F(AutoConnectNotifierTest, ConnectToConnectedNetwork) {
   SuccessfullyJoinWifiNetwork();
 
   NotifyConnectToNetworkRequested();
-  chromeos::NetworkHandler::Get()
+  NetworkHandler::Get()
       ->auto_connect_handler()
       ->NotifyAutoConnectInitiatedForTest(
           AutoConnectHandler::AUTO_CONNECT_REASON_POLICY_APPLIED);
@@ -176,7 +176,7 @@ TEST_F(AutoConnectNotifierTest, ConnectToConnectedNetwork) {
 
 TEST_F(AutoConnectNotifierTest, ToastDisplayed) {
   NotifyConnectToNetworkRequested();
-  chromeos::NetworkHandler::Get()
+  NetworkHandler::Get()
       ->auto_connect_handler()
       ->NotifyAutoConnectInitiatedForTest(
           AutoConnectHandler::AUTO_CONNECT_REASON_POLICY_APPLIED);

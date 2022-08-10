@@ -62,8 +62,8 @@ class SystemProxyHandlerTest : public testing::Test {
 
     system_proxy_handler_->SetSystemProxyManagerForTesting(
         system_proxy_manager_.get());
-    chromeos::NetworkHandler::Get()->InitializePrefServices(
-        profile_->GetPrefs(), local_state_.Get());
+    ash::NetworkHandler::Get()->InitializePrefServices(profile_->GetPrefs(),
+                                                       local_state_.Get());
   }
 
   void TearDown() override {

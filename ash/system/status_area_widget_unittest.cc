@@ -314,7 +314,7 @@ class UnifiedStatusAreaWidgetTest : public AshTestBase {
 
   void TearDown() override {
     // This roughly matches production shutdown order.
-    chromeos::NetworkHandler::Get()->ShutdownPrefServices();
+    NetworkHandler::Get()->ShutdownPrefServices();
     AshTestBase::TearDown();
   }
 

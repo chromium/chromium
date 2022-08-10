@@ -73,7 +73,7 @@ class DeviceScheduledUpdateCheckerForTest
  public:
   DeviceScheduledUpdateCheckerForTest(
       ash::CrosSettings* cros_settings,
-      chromeos::NetworkStateHandler* network_state_handler,
+      ash::NetworkStateHandler* network_state_handler,
       std::unique_ptr<ScheduledTaskExecutor> task_executor)
       : DeviceScheduledUpdateChecker(cros_settings,
                                      network_state_handler,

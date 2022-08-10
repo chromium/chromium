@@ -40,11 +40,11 @@ void DeviceWiFiAllowedHandler::OnWiFiPolicyChanged() {
   bool wifi_allowed = true;
   cros_settings_->GetBoolean(ash::kDeviceWiFiAllowed, &wifi_allowed);
   if (!wifi_allowed) {
-    chromeos::NetworkHandler::Get()
+    ash::NetworkHandler::Get()
         ->prohibited_technologies_handler()
         ->AddGloballyProhibitedTechnology(shill::kTypeWifi);
   } else {
-    chromeos::NetworkHandler::Get()
+    ash::NetworkHandler::Get()
         ->prohibited_technologies_handler()
         ->RemoveGloballyProhibitedTechnology(shill::kTypeWifi);
   }

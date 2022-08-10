@@ -10,11 +10,11 @@
 #include "ash/components/tether/active_host.h"
 #include "ash/components/tether/crash_recovery_manager.h"
 #include "base/callback.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/ash/components/network/network_state_handler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
+
+class NetworkStateHandler;
 
 namespace tether {
 

@@ -29,7 +29,7 @@ class DeviceScheduledUpdateChecker
  public:
   DeviceScheduledUpdateChecker(
       ash::CrosSettings* cros_settings,
-      chromeos::NetworkStateHandler* network_state_handler,
+      ash::NetworkStateHandler* network_state_handler,
       std::unique_ptr<ScheduledTaskExecutor> update_check_executor);
 
   DeviceScheduledUpdateChecker(const DeviceScheduledUpdateChecker&) = delete;

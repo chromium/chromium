@@ -17,9 +17,9 @@
 #include "extensions/browser/api/networking_private/networking_private_delegate_factory.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
+using ::ash::NetworkHandler;
 using ::ash::NetworkState;
-using chromeos::NetworkHandler;
-using chromeos::NetworkStateHandler;
+using ::ash::NetworkStateHandler;
 
 namespace crosapi {
 

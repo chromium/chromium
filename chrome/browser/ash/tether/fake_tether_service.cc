@@ -21,7 +21,7 @@ FakeTetherService::FakeTetherService(
     device_sync::DeviceSyncClient* device_sync_client,
     secure_channel::SecureChannelClient* secure_channel_client,
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
-    chromeos::NetworkStateHandler* network_state_handler,
+    NetworkStateHandler* network_state_handler,
     session_manager::SessionManager* session_manager)
     : TetherService(profile,
                     power_manager_client,
@@ -33,7 +33,7 @@ FakeTetherService::FakeTetherService(
 
 void FakeTetherService::StartTetherIfPossible() {
   if (GetTetherTechnologyState() !=
-      chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED) {
+      NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED) {
     return;
   }
 

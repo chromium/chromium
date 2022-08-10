@@ -108,8 +108,8 @@ bool EnsureCanUpdate(bool interactive,
     return false;
   }
 
-  chromeos::NetworkStateHandler* network_state_handler =
-      chromeos::NetworkHandler::Get()->network_state_handler();
+  ash::NetworkStateHandler* network_state_handler =
+      ash::NetworkHandler::Get()->network_state_handler();
   const ash::NetworkState* network = network_state_handler->DefaultNetwork();
   const bool metered = network_state_handler->default_network_is_metered();
   // Don't allow an update if we're currently offline or connected

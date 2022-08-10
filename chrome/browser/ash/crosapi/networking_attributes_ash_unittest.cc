@@ -183,9 +183,8 @@ class NetworkingAttributesAshTest : public testing::Test {
     testing::Mock::VerifyAndClearExpectations(&observer);
 
     const ash::DeviceState* device_state =
-        chromeos::NetworkHandler::Get()
-            ->network_state_handler()
-            ->GetDeviceState(kWifiDevicePath);
+        ash::NetworkHandler::Get()->network_state_handler()->GetDeviceState(
+            kWifiDevicePath);
     EXPECT_EQ(device_state->mac_address(), kFormattedMacAddress);
     EXPECT_EQ(device_state->GetIpAddressByType(shill::kTypeIPv4), kIpv4Address);
     EXPECT_EQ(device_state->GetIpAddressByType(shill::kTypeIPv6), kIpv6Address);

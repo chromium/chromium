@@ -213,7 +213,7 @@ class ArcNetHostImpl : public KeyedService,
       base::OnceCallback<void(const std::string&)> callback,
       const std::string& error_name);
 
-  // Callback for chromeos::NetworkHandler::GetShillProperties
+  // Callback for ash::NetworkHandler::GetShillProperties
   void ReceiveShillProperties(const std::string& service_path,
                               absl::optional<base::Value> shill_properties);
 

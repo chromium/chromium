@@ -229,8 +229,7 @@ class NetworkPortalDetectorImpl : public NetworkPortalDetector,
 
   content::NotificationRegistrar registrar_;
 
-  base::ScopedObservation<chromeos::NetworkStateHandler,
-                          NetworkStateHandlerObserver>
+  base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
 
   // Test time ticks used by unit tests.

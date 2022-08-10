@@ -65,7 +65,7 @@ class ShellNetworkController : public ash::NetworkStateHandlerObserver {
   void HandleConnectionSuccess();
   void HandleConnectionError(const std::string& error_name);
 
-  // Current status of communication with the chromeos::NetworkStateHandler.
+  // Current status of communication with the ash::NetworkStateHandler.
   // This is tracked to avoid sending duplicate requests before the handler has
   // acknowledged the initial connection attempt.
   State state_;

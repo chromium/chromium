@@ -106,7 +106,7 @@ class NetworkFeaturePodControllerTest : public AshTestBase {
                                       shill::kTypeEthernet, "stub_eth_device");
 
     network_state_handler()->SetTetherTechnologyState(
-        chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED);
+        NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED);
 
     base::RunLoop().RunUntilIdle();
   }
@@ -248,7 +248,7 @@ class NetworkFeaturePodControllerTest : public AshTestBase {
     return &network_config_helper_.network_state_helper();
   }
 
-  chromeos::NetworkStateHandler* network_state_handler() {
+  NetworkStateHandler* network_state_handler() {
     return network_state_helper()->network_state_handler();
   }
 

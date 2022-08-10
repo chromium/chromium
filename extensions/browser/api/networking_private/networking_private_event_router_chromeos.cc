@@ -22,9 +22,9 @@
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 using ::ash::DeviceState;
+using ::ash::NetworkHandler;
 using ::ash::NetworkState;
-using chromeos::NetworkHandler;
-using chromeos::NetworkStateHandler;
+using ::ash::NetworkStateHandler;
 
 namespace extensions {
 

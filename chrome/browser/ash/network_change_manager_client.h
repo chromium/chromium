@@ -114,8 +114,7 @@ class NetworkChangeManagerClient
   // Service path for the current default network.
   std::string service_path_;
 
-  base::ScopedObservation<chromeos::NetworkStateHandler,
-                          NetworkStateHandlerObserver>
+  base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
 
   net::NetworkChangeNotifierPosix* network_change_notifier_;

@@ -99,8 +99,6 @@ bool HasUserPasswordSubsitutionVariable(const base::Value* network_configs);
 
 // TODO(https://crbug.com/1164001): remove when the migration is finished.
 namespace chromeos::onc {
-using ::ash::onc::ConvertOncProxySettingsToProxyConfig;
-using ::ash::onc::GetPolicyForNetwork;
 using ::ash::onc::ImportNetworksForUser;
 using ::ash::onc::NetworkTypePatternFromOncType;
 }  // namespace chromeos::onc

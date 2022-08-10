@@ -433,7 +433,7 @@ class NetworkListViewControllerTest : public AshTestBase {
   // hotspot, and associates the two networks.
   void AddTetherNetworkState() {
     network_state_handler()->SetTetherTechnologyState(
-        chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED);
+        NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED);
     network_state_handler()->AddTetherNetworkState(
         kTetherGuid, kTetherName, kTetherCarrier, /*battery_percentage=*/100,
         kSignalStrength, /*has_connected_to_host=*/false);
@@ -528,7 +528,7 @@ class NetworkListViewControllerTest : public AshTestBase {
         .IsRunning();
   }
 
-  chromeos::NetworkStateHandler* network_state_handler() {
+  NetworkStateHandler* network_state_handler() {
     return network_state_helper()->network_state_handler();
   }
 
@@ -606,7 +606,7 @@ TEST_F(NetworkListViewControllerTest, MobileDataSectionIsShown) {
 
   // Tether device is prohibited.
   network_state_handler()->SetTetherTechnologyState(
-      chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_PROHIBITED);
+      NetworkStateHandler::TechnologyState::TECHNOLOGY_PROHIBITED);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(nullptr, GetMobileSubHeader());
   histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
@@ -614,7 +614,7 @@ TEST_F(NetworkListViewControllerTest, MobileDataSectionIsShown) {
 
   // Tether device is uninitialized but is primary user.
   network_state_handler()->SetTetherTechnologyState(
-      chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_UNINITIALIZED);
+      NetworkStateHandler::TechnologyState::TECHNOLOGY_UNINITIALIZED);
   base::RunLoop().RunUntilIdle();
   EXPECT_NE(nullptr, GetMobileSubHeader());
   histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
@@ -1004,7 +1004,7 @@ TEST_F(NetworkListViewControllerTest, HasCorrectTetherStatusMessage) {
 
   // Tether is enabled but no devices are added.
   network_state_handler()->SetTetherTechnologyState(
-      chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED);
+      NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_NE(nullptr, GetMobileStatusMessage());
@@ -1017,7 +1017,7 @@ TEST_F(NetworkListViewControllerTest, HasCorrectTetherStatusMessage) {
 
   // Tether network is uninitialized and Bluetooth state enabling.
   network_state_handler()->SetTetherTechnologyState(
-      chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_UNINITIALIZED);
+      NetworkStateHandler::TechnologyState::TECHNOLOGY_UNINITIALIZED);
   base::RunLoop().RunUntilIdle();
 
   SetBluetoothAdapterState(BluetoothSystemState::kEnabling);

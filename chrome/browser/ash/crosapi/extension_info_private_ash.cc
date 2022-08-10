@@ -38,7 +38,7 @@
 #include "extensions/common/error_utils.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-using chromeos::NetworkHandler;
+using ash::NetworkHandler;
 
 namespace crosapi {
 

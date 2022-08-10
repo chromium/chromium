@@ -3954,9 +3954,9 @@ class DeviceStatusCollectorNetworkTest : public DeviceStatusCollectorTest {
     // Flush out pending state updates.
     base::RunLoop().RunUntilIdle();
 
-    chromeos::NetworkStateHandler::NetworkStateList state_list;
-    chromeos::NetworkStateHandler* network_state_handler =
-        chromeos::NetworkHandler::Get()->network_state_handler();
+    ash::NetworkStateHandler::NetworkStateList state_list;
+    ash::NetworkStateHandler* network_state_handler =
+        ash::NetworkHandler::Get()->network_state_handler();
     network_state_handler->GetNetworkListByType(
         ash::NetworkTypePattern::Default(),
         true,   // configured_only

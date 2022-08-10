@@ -141,7 +141,7 @@ void ShellBrowserMainParts::PostCreateMainMessageLoop() {
   // Depends on CrosDisksClient.
   ash::disks::DiskMountManager::Initialize();
 
-  chromeos::NetworkHandler::Initialize();
+  ash::NetworkHandler::Initialize();
   network_controller_ = std::make_unique<ShellNetworkController>(
       base::CommandLine::ForCurrentProcess()->GetSwitchValueNative(
           switches::kAppShellPreferredNetwork));
@@ -306,7 +306,7 @@ void ShellBrowserMainParts::PostDestroyThreads() {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   network_controller_.reset();
-  chromeos::NetworkHandler::Shutdown();
+  ash::NetworkHandler::Shutdown();
   ash::disks::DiskMountManager::Shutdown();
   chromeos::PowerManagerClient::Shutdown();
   chromeos::CrosDisksClient::Shutdown();

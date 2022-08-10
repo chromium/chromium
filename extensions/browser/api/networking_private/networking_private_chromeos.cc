@@ -40,16 +40,16 @@
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 using ::ash::NetworkCertificateHandler;
+using ::ash::NetworkHandler;
+using ::ash::NetworkStateHandler;
 using ::ash::NetworkTypePattern;
-using chromeos::NetworkHandler;
-using chromeos::NetworkStateHandler;
 using extensions::NetworkingPrivateDelegate;
 
 namespace private_api = extensions::api::networking_private;
 
 namespace {
 
-chromeos::NetworkStateHandler* GetStateHandler() {
+NetworkStateHandler* GetStateHandler() {
   return NetworkHandler::Get()->network_state_handler();
 }
 
@@ -680,7 +680,7 @@ void NetworkingPrivateChromeOS::SelectCellularMobileNetwork(
 
 void NetworkingPrivateChromeOS::GetEnabledNetworkTypes(
     EnabledNetworkTypesCallback callback) {
-  chromeos::NetworkStateHandler* state_handler = GetStateHandler();
+  NetworkStateHandler* state_handler = GetStateHandler();
 
   base::Value network_list(base::Value::Type::LIST);
 

@@ -45,7 +45,7 @@ class DeviceNamePolicyHandlerImpl : public DeviceNamePolicyHandler,
   DeviceNamePolicyHandlerImpl(
       ash::CrosSettings* cros_settings,
       chromeos::system::StatisticsProvider* statistics_provider,
-      chromeos::NetworkStateHandler* handler);
+      ash::NetworkStateHandler* handler);
 
   // NetworkStateHandlerObserver overrides
   void DefaultNetworkChanged(const ash::NetworkState* network) override;
@@ -71,8 +71,8 @@ class DeviceNamePolicyHandlerImpl : public DeviceNamePolicyHandler,
 
   ash::CrosSettings* cros_settings_;
   chromeos::system::StatisticsProvider* statistics_provider_;
-  chromeos::NetworkStateHandler* handler_;
-  base::ScopedObservation<chromeos::NetworkStateHandler,
+  ash::NetworkStateHandler* handler_;
+  base::ScopedObservation<ash::NetworkStateHandler,
                           ash::NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
 

@@ -30,9 +30,4 @@ void COMPONENT_EXPORT(CHROMEOS_NETWORK)
 
 }  // namespace ash::hermes_metrics
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-namespace hermes_metrics = ::ash::hermes_metrics;
-}
-
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_HERMES_METRICS_UTIL_H_

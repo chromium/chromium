@@ -140,7 +140,7 @@ class NetworkStateNotifier : public NetworkConnectionObserver,
   // Tracks GUIDs of activating cellular networks for activation notification.
   std::set<std::string> cellular_activating_guids_;
 
-  base::ScopedObservation<chromeos::NetworkStateHandler,
+  base::ScopedObservation<ash::NetworkStateHandler,
                           ash::NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
 

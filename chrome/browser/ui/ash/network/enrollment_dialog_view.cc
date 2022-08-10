@@ -260,7 +260,7 @@ bool CreateEnrollmentDialog(const std::string& network_id) {
   if (!policy)
     return false;
 
-  client_cert::ClientCertConfig cert_config;
+  ash::client_cert::ClientCertConfig cert_config;
   OncToClientCertConfig(onc_source, policy->GetDict(), &cert_config);
 
   if (cert_config.client_cert_type != onc::client_cert::kPattern)

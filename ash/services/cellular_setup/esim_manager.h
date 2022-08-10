@@ -11,8 +11,6 @@
 #include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_profile_client.h"
 #include "chromeos/ash/components/network/cellular_esim_profile_handler.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/ash/components/network/network_state_handler.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -28,6 +26,7 @@ class CellularESimInstaller;
 class CellularESimUninstallHandler;
 class CellularInhibitor;
 class NetworkConnectionHandler;
+class NetworkStateHandler;
 
 namespace cellular_setup {
 

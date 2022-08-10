@@ -150,7 +150,7 @@ class ActiveNetworkIconTest : public AshTestBase {
   NetworkStateTestHelper& network_state_helper() {
     return network_config_helper_.network_state_helper();
   }
-  chromeos::NetworkStateHandler* network_state_handler() {
+  NetworkStateHandler* network_state_handler() {
     return network_state_helper().network_state_handler();
   }
   ActiveNetworkIcon* active_network_icon() {

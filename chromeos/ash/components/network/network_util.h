@@ -157,12 +157,6 @@ std::string TranslateShillTypeToONC(const std::string& type);
 
 // TODO(https://crbug.com/1164001): remove when the migration is finished.
 namespace chromeos {
-using ::ash::CellTower;
-using ::ash::CellTowerVector;
-using ::ash::CellularScanResult;
-using ::ash::CellularSIMSlotInfo;
-using ::ash::WifiAccessPoint;
-using ::ash::WifiAccessPointVector;
 namespace network_util = ::ash::network_util;
 }  // namespace chromeos
 

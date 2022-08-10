@@ -236,7 +236,7 @@ base::Value TranslateNetworkStateToONC(const NetworkState* network) {
       ->managed_network_configuration_handler()
       ->FindPolicyByGUID(user_id_hash, network->guid(), &onc_source);
 
-  base::Value onc_dictionary = TranslateShillServiceToONCPart(
+  base::Value onc_dictionary = onc::TranslateShillServiceToONCPart(
       shill_dictionary, onc_source, &onc::kNetworkWithStateSignature, network);
 
   // Remove IPAddressConfigType/NameServersConfigType as these were

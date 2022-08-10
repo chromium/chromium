@@ -41,8 +41,7 @@ bool WifiConfigurationSyncServiceFactory::ShouldRunInProfile(
   // Run when signed in to a real account.  Skip during tests when network stack
   // has not been initialized.
   return profile && ash::ProfileHelper::IsRegularProfile(profile) &&
-         !profile->IsOffTheRecord() &&
-         chromeos::NetworkHandler::IsInitialized();
+         !profile->IsOffTheRecord() && ash::NetworkHandler::IsInitialized();
 }
 
 WifiConfigurationSyncServiceFactory::WifiConfigurationSyncServiceFactory()

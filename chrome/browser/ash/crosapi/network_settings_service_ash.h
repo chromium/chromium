@@ -97,7 +97,7 @@ class NetworkSettingsServiceAsh : public crosapi::mojom::NetworkSettingsService,
   PrefService* local_state_;
   ProfileManager* profile_manager_ = nullptr;
 
-  base::ScopedObservation<chromeos::NetworkStateHandler,
+  base::ScopedObservation<ash::NetworkStateHandler,
                           ash::NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
 

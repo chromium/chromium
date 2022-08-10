@@ -1230,9 +1230,9 @@ CrostiniManager::CrostiniManager(Profile* profile)
   if (ash::AnomalyDetectorClient::Get()) {  // May be null in tests.
     ash::AnomalyDetectorClient::Get()->AddObserver(this);
   }
-  if (chromeos::NetworkHandler::IsInitialized()) {
+  if (ash::NetworkHandler::IsInitialized()) {
     network_state_handler_observer_.Observe(
-        chromeos::NetworkHandler::Get()->network_state_handler());
+        ash::NetworkHandler::Get()->network_state_handler());
   }
   if (chromeos::PowerManagerClient::Get()) {
     chromeos::PowerManagerClient::Get()->AddObserver(this);
@@ -3782,8 +3782,8 @@ void CrostiniManager::OnPendingAppListUpdates(
 // TODO(danielng): Consider handling instant tethering.
 void CrostiniManager::ActiveNetworksChanged(
     const std::vector<const ash::NetworkState*>& active_networks) {
-  chromeos::NetworkStateHandler::NetworkStateList active_physical_networks;
-  chromeos::NetworkHandler::Get()
+  ash::NetworkStateHandler::NetworkStateList active_physical_networks;
+  ash::NetworkHandler::Get()
       ->network_state_handler()
       ->GetActiveNetworkListByType(ash::NetworkTypePattern::Physical(),
                                    &active_physical_networks);
@@ -3793,7 +3793,7 @@ void CrostiniManager::ActiveNetworksChanged(
   if (!network)
     return;
   const ash::DeviceState* device =
-      chromeos::NetworkHandler::Get()->network_state_handler()->GetDeviceState(
+      ash::NetworkHandler::Get()->network_state_handler()->GetDeviceState(
           network->device_path());
   if (!device)
     return;

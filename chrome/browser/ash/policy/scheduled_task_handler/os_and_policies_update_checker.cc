@@ -15,7 +15,7 @@
 namespace policy {
 
 OsAndPoliciesUpdateChecker::OsAndPoliciesUpdateChecker(
-    chromeos::NetworkStateHandler* network_state_handler)
+    ash::NetworkStateHandler* network_state_handler)
     : network_state_handler_(network_state_handler),
       update_check_task_executor_(
           update_checker_internal::

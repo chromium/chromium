@@ -556,7 +556,7 @@ void NetworkStateNotifier::ShowConnectErrorNotification(
       network_name = *esim_name;
   }
   if (network_name.empty() && shill_properties) {
-    network_name = shill_property_util::GetNameFromProperties(
+    network_name = ash::shill_property_util::GetNameFromProperties(
         service_path, shill_properties.value());
   }
 

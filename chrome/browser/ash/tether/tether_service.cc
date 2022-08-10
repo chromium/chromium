@@ -96,7 +96,7 @@ TetherService::TetherService(
     device_sync::DeviceSyncClient* device_sync_client,
     secure_channel::SecureChannelClient* secure_channel_client,
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
-    chromeos::NetworkStateHandler* network_state_handler,
+    NetworkStateHandler* network_state_handler,
     session_manager::SessionManager* session_manager)
     : profile_(profile),
       power_manager_client_(power_manager_client),
@@ -141,7 +141,7 @@ TetherService::~TetherService() {
 
 void TetherService::StartTetherIfPossible() {
   if (GetTetherTechnologyState() !=
-      chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED) {
+      NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED) {
     return;
   }
 
@@ -155,9 +155,9 @@ void TetherService::StartTetherIfPossible() {
       notification_presenter_.get(),
       gms_core_notifications_state_tracker_.get(), profile_->GetPrefs(),
       network_state_handler_,
-      chromeos::NetworkHandler::Get()->managed_network_configuration_handler(),
+      NetworkHandler::Get()->managed_network_configuration_handler(),
       NetworkConnect::Get(),
-      chromeos::NetworkHandler::Get()->network_connection_handler(), adapter_,
+      NetworkHandler::Get()->network_connection_handler(), adapter_,
       session_manager_);
 }
 
@@ -286,20 +286,20 @@ void TetherService::DevicePropertiesUpdated(const DeviceState* device) {
 
 void TetherService::UpdateEnabledState() {
   bool was_pref_enabled = IsEnabledByPreference();
-  chromeos::NetworkStateHandler::TechnologyState tether_technology_state =
+  NetworkStateHandler::TechnologyState tether_technology_state =
       network_state_handler_->GetTechnologyState(NetworkTypePattern::Tether());
 
   // If |was_pref_enabled| differs from the new Tether TechnologyState, the
   // settings toggle has been changed. Update the kInstantTetheringEnabled user
   // pref accordingly.
   bool is_enabled;
-  if (was_pref_enabled && tether_technology_state ==
-                              chromeos::NetworkStateHandler::TechnologyState::
-                                  TECHNOLOGY_AVAILABLE) {
+  if (was_pref_enabled &&
+      tether_technology_state ==
+          NetworkStateHandler::TechnologyState::TECHNOLOGY_AVAILABLE) {
     is_enabled = false;
-  } else if (!was_pref_enabled && tether_technology_state ==
-                                      chromeos::NetworkStateHandler::
-                                          TechnologyState::TECHNOLOGY_ENABLED) {
+  } else if (!was_pref_enabled &&
+             tether_technology_state ==
+                 NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED) {
     is_enabled = true;
   } else {
     is_enabled = was_pref_enabled;
@@ -367,11 +367,11 @@ void TetherService::UpdateTetherTechnologyState() {
   if (!adapter_)
     return;
 
-  chromeos::NetworkStateHandler::TechnologyState new_tether_technology_state =
+  NetworkStateHandler::TechnologyState new_tether_technology_state =
       GetTetherTechnologyState();
 
   if (new_tether_technology_state ==
-      chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED) {
+      NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED) {
     // If Tether should be enabled, notify NetworkStateHandler before starting
     // up the component. This ensures that it is not possible to add Tether
     // networks before the network stack is ready for them.
@@ -389,8 +389,7 @@ void TetherService::UpdateTetherTechnologyState() {
   }
 }
 
-chromeos::NetworkStateHandler::TechnologyState
-TetherService::GetTetherTechnologyState() {
+NetworkStateHandler::TechnologyState TetherService::GetTetherTechnologyState() {
   TetherFeatureState new_feature_state = GetTetherFeatureState();
   if (new_feature_state != previous_feature_state_) {
     PA_LOG(INFO) << "Tether state has changed. New state: "
@@ -410,27 +409,22 @@ TetherService::GetTetherTechnologyState() {
     case NO_AVAILABLE_HOSTS:
     case CELLULAR_DISABLED:
     case BETTER_TOGETHER_SUITE_DISABLED:
-      return chromeos::NetworkStateHandler::TechnologyState::
-          TECHNOLOGY_UNAVAILABLE;
+      return NetworkStateHandler::TechnologyState::TECHNOLOGY_UNAVAILABLE;
 
     case PROHIBITED:
-      return chromeos::NetworkStateHandler::TechnologyState::
-          TECHNOLOGY_PROHIBITED;
+      return NetworkStateHandler::TechnologyState::TECHNOLOGY_PROHIBITED;
 
     case BLUETOOTH_DISABLED:
-      return chromeos::NetworkStateHandler::TechnologyState::
-          TECHNOLOGY_UNINITIALIZED;
+      return NetworkStateHandler::TechnologyState::TECHNOLOGY_UNINITIALIZED;
 
     case USER_PREFERENCE_DISABLED:
-      return chromeos::NetworkStateHandler::TechnologyState::
-          TECHNOLOGY_AVAILABLE;
+      return NetworkStateHandler::TechnologyState::TECHNOLOGY_AVAILABLE;
 
     case ENABLED:
-      return chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED;
+      return NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED;
 
     default:
-      return chromeos::NetworkStateHandler::TechnologyState::
-          TECHNOLOGY_UNAVAILABLE;
+      return NetworkStateHandler::TechnologyState::TECHNOLOGY_UNAVAILABLE;
   }
 }
 

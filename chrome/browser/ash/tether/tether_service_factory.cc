@@ -58,7 +58,7 @@ TetherServiceFactory::~TetherServiceFactory() {}
 
 KeyedService* TetherServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  DCHECK(chromeos::NetworkHandler::IsInitialized());
+  DCHECK(NetworkHandler::IsInitialized());
 
   if (!IsFeatureAllowed(context))
     return nullptr;
@@ -73,7 +73,7 @@ KeyedService* TetherServiceFactory::BuildServiceInstanceFor(
         secure_channel::SecureChannelClientProvider::GetInstance()->GetClient(),
         multidevice_setup::MultiDeviceSetupClientFactory::GetForProfile(
             Profile::FromBrowserContext(context)),
-        chromeos::NetworkHandler::Get()->network_state_handler(),
+        NetworkHandler::Get()->network_state_handler(),
         session_manager::SessionManager::Get());
 
     int num_tether_networks = 0;
@@ -91,7 +91,7 @@ KeyedService* TetherServiceFactory::BuildServiceInstanceFor(
       secure_channel::SecureChannelClientProvider::GetInstance()->GetClient(),
       multidevice_setup::MultiDeviceSetupClientFactory::GetForProfile(
           Profile::FromBrowserContext(context)),
-      chromeos::NetworkHandler::Get()->network_state_handler(),
+      NetworkHandler::Get()->network_state_handler(),
       session_manager::SessionManager::Get());
 }
 

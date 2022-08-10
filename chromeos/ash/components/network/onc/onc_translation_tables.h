@@ -99,12 +99,9 @@ bool TranslateStringToONC(const StringTranslationEntry table[],
 // TODO(https://crbug.com/1164001): remove when the migration is finished.
 namespace chromeos::onc {
 using ::ash::onc::kNetworkTechnologyTable;
-using ::ash::onc::kNetworkTypeTable;
 using ::ash::onc::kVPNTypeTable;
-using ::ash::onc::kWiFiSecurityTable;
 using ::ash::onc::StringTranslationEntry;
 using ::ash::onc::TranslateStringToONC;
-using ::ash::onc::TranslateStringToShill;
 }  // namespace chromeos::onc
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_ONC_ONC_TRANSLATION_TABLES_H_

@@ -264,7 +264,7 @@ class VpnServiceAsh : public crosapi::mojom::VpnService,
   // Ids of enabled vpn extensions.
   base::flat_set<std::string> vpn_extensions_;
 
-  base::ScopedObservation<chromeos::NetworkStateHandler,
+  base::ScopedObservation<ash::NetworkStateHandler,
                           ash::NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
 

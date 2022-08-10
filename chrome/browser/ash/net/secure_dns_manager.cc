@@ -94,9 +94,8 @@ void SecureDnsManager::OnPrefChanged() {
       registrar_.prefs()->GetString(prefs::kDnsOverHttpsMode),
       registrar_.prefs()->GetString(prefs::kDnsOverHttpsTemplates));
 
-  chromeos::NetworkHandler::Get()
-      ->network_configuration_handler()
-      ->SetManagerProperty(shill::kDNSProxyDOHProvidersProperty, doh_providers);
+  NetworkHandler::Get()->network_configuration_handler()->SetManagerProperty(
+      shill::kDNSProxyDOHProvidersProperty, doh_providers);
 }
 
 }  // namespace ash

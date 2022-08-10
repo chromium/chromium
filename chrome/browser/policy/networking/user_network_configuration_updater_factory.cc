@@ -89,7 +89,7 @@ KeyedService* UserNetworkConfigurationUpdaterFactory::BuildServiceInstanceFor(
   return UserNetworkConfigurationUpdaterAsh::CreateForUserPolicy(
              profile, *user,
              profile->GetProfilePolicyConnector()->policy_service(),
-             chromeos::NetworkHandler::Get()
+             ash::NetworkHandler::Get()
                  ->managed_network_configuration_handler())
       .release();
 }

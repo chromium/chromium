@@ -275,9 +275,4 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ShillPropertyHandler
 
 }  // namespace ash::internal
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos::internal {
-using ::ash::internal::ShillPropertyHandler;
-}
-
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_SHILL_PROPERTY_HANDLER_H_

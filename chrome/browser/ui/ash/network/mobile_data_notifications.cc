@@ -26,9 +26,9 @@
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 
+using ::ash::NetworkHandler;
 using ::ash::NetworkState;
-using chromeos::NetworkHandler;
-using chromeos::NetworkStateHandler;
+using ::ash::NetworkStateHandler;
 using session_manager::SessionManager;
 using user_manager::UserManager;
 

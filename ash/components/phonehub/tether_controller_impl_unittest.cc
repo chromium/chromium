@@ -183,7 +183,7 @@ class TetherControllerImplTest : public testing::Test {
 
   void TearDown() override {
     controller_->RemoveObserver(&fake_observer_);
-    chromeos::NetworkHandler::Shutdown();
+    NetworkHandler::Shutdown();
     testing::Test::TearDown();
   }
 

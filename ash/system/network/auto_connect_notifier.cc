@@ -21,8 +21,6 @@
 #include "chromeos/ash/components/network/network_type_pattern.h"
 #include "ui/base/l10n/l10n_util.h"
 
-using chromeos::NetworkHandler;
-
 namespace ash {
 
 namespace {

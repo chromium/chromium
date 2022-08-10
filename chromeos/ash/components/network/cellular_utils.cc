@@ -166,7 +166,7 @@ absl::optional<dbus::ObjectPath> GetCurrentEuiccPath() {
     return euicc_paths[0];
 
   bool use_second_euicc =
-      base::FeatureList::IsEnabled(chromeos::features::kCellularUseSecondEuicc);
+      base::FeatureList::IsEnabled(features::kCellularUseSecondEuicc);
   return use_second_euicc ? euicc_paths[1] : euicc_paths[0];
 }
 

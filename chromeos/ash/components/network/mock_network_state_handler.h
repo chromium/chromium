@@ -32,9 +32,4 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) MockNetworkStateHandler
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-using ::ash::MockNetworkStateHandler;
-}
-
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_MOCK_NETWORK_STATE_HANDLER_H_

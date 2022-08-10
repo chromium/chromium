@@ -46,7 +46,7 @@ constexpr char kTaskTimeFieldName[] = "update_check_time";
 // so it's safe to use "this" with any callbacks.
 DeviceScheduledUpdateChecker::DeviceScheduledUpdateChecker(
     ash::CrosSettings* cros_settings,
-    chromeos::NetworkStateHandler* network_state_handler,
+    ash::NetworkStateHandler* network_state_handler,
     std::unique_ptr<ScheduledTaskExecutor> update_check_executor)
     : cros_settings_(cros_settings),
       cros_settings_subscription_(cros_settings_->AddSettingsObserver(

@@ -20,8 +20,6 @@
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_platform_keys_helpers.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service.h"
 #include "chrome/browser/platform_keys/platform_keys.h"
-// TODO(https://crbug.com/1164001): forward declare NetworkStateHandler
-// after //chromeos/network is moved to ash.
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -225,8 +223,7 @@ class CertProvisioningSchedulerImpl
   // |platform_keys_service_| can be nullptr if it has been shut down.
   platform_keys::PlatformKeysService* platform_keys_service_ = nullptr;
   NetworkStateHandler* network_state_handler_ = nullptr;
-  base::ScopedObservation<chromeos::NetworkStateHandler,
-                          NetworkStateHandlerObserver>
+  base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
 
   PrefChangeRegistrar pref_change_registrar_;

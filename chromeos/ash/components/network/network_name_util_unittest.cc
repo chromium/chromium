@@ -94,7 +94,7 @@ TEST_F(NetworkNameUtilTest, EsimNetworkGetNetworkName) {
                  kTestServiceProviderName, hermes::profile::State::kActive,
                  kTestESimCellularServicePath);
 
-  const chromeos::NetworkState* network =
+  const NetworkState* network =
       network_state_test_helper_.network_state_handler()->GetNetworkState(
           kTestESimCellularServicePath);
 
@@ -107,7 +107,7 @@ TEST_F(NetworkNameUtilTest, EsimNetworkGetNetworkName) {
 TEST_F(NetworkNameUtilTest, EsimNetworNetworkNamePriority) {
   AddESimProfile("", "", kTestServiceProviderName,
                  hermes::profile::State::kActive, kTestESimCellularServicePath);
-  const chromeos::NetworkState* network =
+  const NetworkState* network =
       network_state_test_helper_.network_state_handler()->GetNetworkState(
           kTestESimCellularServicePath);
 
@@ -119,7 +119,7 @@ TEST_F(NetworkNameUtilTest, EsimNetworNetworkNamePriority) {
 
 TEST_F(NetworkNameUtilTest, EthernetNetworkGetNetworkName) {
   AddEthernet();
-  const chromeos::NetworkState* network =
+  const NetworkState* network =
       network_state_test_helper_.network_state_handler()->GetNetworkState(
           kTestEthServicePath);
 
@@ -141,7 +141,7 @@ TEST_F(NetworkNameUtilTest, NameComesFromHermes) {
       base::Value(kTestNameFromShill));
   base::RunLoop().RunUntilIdle();
 
-  const chromeos::NetworkState* network =
+  const NetworkState* network =
       network_state_test_helper_.network_state_handler()->GetNetworkState(
           kTestESimCellularServicePath);
 

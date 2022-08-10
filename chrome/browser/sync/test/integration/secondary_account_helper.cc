@@ -47,9 +47,8 @@ base::CallbackListSubscription SetUpSigninClient(
 void InitNetwork() {
   auto* portal_detector = new ash::NetworkPortalDetectorTestImpl();
 
-  const ash::NetworkState* default_network = chromeos::NetworkHandler::Get()
-                                                 ->network_state_handler()
-                                                 ->DefaultNetwork();
+  const ash::NetworkState* default_network =
+      ash::NetworkHandler::Get()->network_state_handler()->DefaultNetwork();
 
   portal_detector->SetDefaultNetworkForTesting(default_network->guid());
 

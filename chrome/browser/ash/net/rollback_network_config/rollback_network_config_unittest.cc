@@ -162,21 +162,20 @@ void PrintErrorAndMessageAndFail(const std::string& error_name,
   FAIL();
 }
 
-chromeos::NetworkStateHandler* network_state_handler() {
-  return chromeos::NetworkHandler::Get()->network_state_handler();
+NetworkStateHandler* network_state_handler() {
+  return NetworkHandler::Get()->network_state_handler();
 }
 
 ash::ManagedNetworkConfigurationHandler*
 managed_network_configuration_handler() {
-  return chromeos::NetworkHandler::Get()
-      ->managed_network_configuration_handler();
+  return NetworkHandler::Get()->managed_network_configuration_handler();
 }
 
 ShillServiceClient* shill_service_client() {
   return ShillServiceClient::Get();
 }
 
-const ash::NetworkState* GetNetworkState(const std::string& guid) {
+const NetworkState* GetNetworkState(const std::string& guid) {
   return network_state_handler()->GetNetworkStateFromGuid(guid);
 }
 

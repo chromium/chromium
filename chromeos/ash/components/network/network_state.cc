@@ -199,7 +199,7 @@ bool NetworkState::PropertyChanged(const std::string& key,
     return true;
   } else if (key == shill::kUIDataProperty) {
     std::unique_ptr<NetworkUIData> ui_data =
-        chromeos::shill_property_util::GetUIDataFromValue(value);
+        shill_property_util::GetUIDataFromValue(value);
     if (!ui_data)
       return false;
     onc_source_ = ui_data->onc_source();

@@ -313,7 +313,7 @@ class MinimumVersionPolicyHandler : public BuildStateObserver,
   // current network and time to reach the deadline.
   std::unique_ptr<ash::UpdateRequiredNotification> notification_handler_;
 
-  base::ScopedObservation<chromeos::NetworkStateHandler,
+  base::ScopedObservation<ash::NetworkStateHandler,
                           ash::NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
 

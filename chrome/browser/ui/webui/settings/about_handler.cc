@@ -106,7 +106,7 @@ struct RegulatoryLabel {
 std::u16string GetAllowedConnectionTypesMessage() {
   if (help_utils_chromeos::IsUpdateOverCellularAllowed(
           /*interactive=*/true)) {
-    const bool metered = chromeos::NetworkHandler::Get()
+    const bool metered = ash::NetworkHandler::Get()
                              ->network_state_handler()
                              ->default_network_is_metered();
     return metered
@@ -485,8 +485,8 @@ void AboutHandler::HandleCheckInternetConnection(
   CHECK_EQ(1U, args.size());
   const std::string& callback_id = args[0].GetString();
 
-  chromeos::NetworkStateHandler* network_state_handler =
-      chromeos::NetworkHandler::Get()->network_state_handler();
+  ash::NetworkStateHandler* network_state_handler =
+      ash::NetworkHandler::Get()->network_state_handler();
   const ash::NetworkState* network = network_state_handler->DefaultNetwork();
   ResolveJavascriptCallback(base::Value(callback_id),
                             base::Value(network && network->IsOnline()));

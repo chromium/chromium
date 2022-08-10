@@ -8,8 +8,6 @@
 #include "ash/services/cellular_setup/public/cpp/esim_manager_test_observer.h"
 #include "ash/services/cellular_setup/public/mojom/esim_manager.mojom.h"
 #include "base/test/task_environment.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/ash/components/network/network_state_handler.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -22,6 +20,7 @@ class CellularESimUninstallHandler;
 class NetworkConfigurationHandler;
 class NetworkDeviceHandler;
 class NetworkProfileHandler;
+class NetworkStateHandler;
 class FakeNetworkConnectionHandler;
 class TestCellularESimProfileHandler;
 

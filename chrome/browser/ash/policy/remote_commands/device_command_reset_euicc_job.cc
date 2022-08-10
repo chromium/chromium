@@ -77,7 +77,7 @@ void DeviceCommandResetEuiccJob::RunImpl(CallbackWithResult succeeded_callback,
 
   SYSLOG(INFO) << "Executing EUICC reset memory remote command";
   ash::CellularESimUninstallHandler* uninstall_handler =
-      chromeos::NetworkHandler::Get()->cellular_esim_uninstall_handler();
+      ash::NetworkHandler::Get()->cellular_esim_uninstall_handler();
   uninstall_handler->ResetEuiccMemory(
       *euicc_path,
       base::BindOnce(

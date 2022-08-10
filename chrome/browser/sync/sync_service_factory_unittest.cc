@@ -74,9 +74,9 @@ class SyncServiceFactoryTest : public testing::Test {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   SyncServiceFactoryTest() {
     // Fake network stack is required for WIFI_CONFIGURATIONS datatype.
-    chromeos::NetworkHandler::Initialize();
+    ash::NetworkHandler::Initialize();
   }
-  ~SyncServiceFactoryTest() override { chromeos::NetworkHandler::Shutdown(); }
+  ~SyncServiceFactoryTest() override { ash::NetworkHandler::Shutdown(); }
 #else
   SyncServiceFactoryTest() = default;
   ~SyncServiceFactoryTest() override = default;

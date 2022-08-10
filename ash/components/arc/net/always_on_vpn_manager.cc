@@ -33,7 +33,7 @@ AlwaysOnVpnManager::~AlwaysOnVpnManager() {
       registrar_.prefs()->GetString(prefs::kAlwaysOnVpnPackage);
   bool lockdown = registrar_.prefs()->GetBoolean(prefs::kAlwaysOnVpnLockdown);
   if (lockdown && !package.empty()) {
-    chromeos::NetworkHandler::Get()
+    ash::NetworkHandler::Get()
         ->network_configuration_handler()
         ->SetManagerProperty(shill::kAlwaysOnVpnPackageProperty,
                              base::Value(std::string()));
@@ -49,7 +49,7 @@ void AlwaysOnVpnManager::OnPrefChanged() {
     always_on_vpn_package =
         registrar_.prefs()->GetString(prefs::kAlwaysOnVpnPackage);
   }
-  chromeos::NetworkHandler::Get()
+  ash::NetworkHandler::Get()
       ->network_configuration_handler()
       ->SetManagerProperty(shill::kAlwaysOnVpnPackageProperty,
                            base::Value(always_on_vpn_package));

@@ -79,7 +79,7 @@ class TetherService
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   // Attempt to start the Tether module. Only succeeds if all conditions to
-  // reach chromeos::NetworkStateHandler::TechnologyState::ENABLED are reached.
+  // reach NetworkStateHandler::TechnologyState::ENABLED are reached.
   // Should only be called once a user is logged in.
   virtual void StartTetherIfPossible();
 

@@ -82,7 +82,7 @@ class MobileDataNotifications
 
   base::OneShotTimer one_shot_notification_check_delay_;
 
-  base::ScopedObservation<chromeos::NetworkStateHandler,
+  base::ScopedObservation<ash::NetworkStateHandler,
                           ash::NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
 

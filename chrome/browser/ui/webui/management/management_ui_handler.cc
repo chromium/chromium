@@ -724,18 +724,17 @@ void ManagementUIHandler::AddUpdateRequiredEolInfo(
 void ManagementUIHandler::AddProxyServerPrivacyDisclosure(
     base::Value::Dict* response) const {
   bool showProxyDisclosure = false;
-  chromeos::NetworkHandler* network_handler = chromeos::NetworkHandler::Get();
+  ash::NetworkHandler* network_handler = ash::NetworkHandler::Get();
   base::Value proxy_settings(base::Value::Type::DICTIONARY);
   // |ui_proxy_config_service| may be missing in tests. If the device is offline
   // (no network connected) the |DefaultNetwork| is null.
-  if (chromeos::NetworkHandler::HasUiProxyConfigService() &&
+  if (ash::NetworkHandler::HasUiProxyConfigService() &&
       network_handler->network_state_handler()->DefaultNetwork()) {
     // Check if proxy is enforced by user policy, a forced install extension or
     // ONC policies. This will only read managed settings.
-    chromeos::NetworkHandler::GetUiProxyConfigService()
-        ->MergeEnforcedProxyConfig(
-            network_handler->network_state_handler()->DefaultNetwork()->guid(),
-            &proxy_settings);
+    ash::NetworkHandler::GetUiProxyConfigService()->MergeEnforcedProxyConfig(
+        network_handler->network_state_handler()->DefaultNetwork()->guid(),
+        &proxy_settings);
   }
   if (!proxy_settings.DictEmpty()) {
     // Proxies can be specified by web server url, via a PAC script or via the

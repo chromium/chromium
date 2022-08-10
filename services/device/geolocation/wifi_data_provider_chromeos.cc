@@ -15,7 +15,7 @@
 #include "chromeos/ash/components/network/network_handler.h"
 #include "services/device/geolocation/wifi_data_provider_handle.h"
 
-using chromeos::NetworkHandler;
+using ::ash::NetworkHandler;
 
 namespace device {
 

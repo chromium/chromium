@@ -84,7 +84,7 @@ EuiccStatusUploader::EuiccStatusUploader(
       local_state_(local_state),
       is_device_managed_callback_(std::move(is_device_active_callback)),
       retry_entry_(&kBackOffPolicy) {
-  if (!chromeos::NetworkHandler::IsInitialized()) {
+  if (!ash::NetworkHandler::IsInitialized()) {
     LOG(WARNING) << "NetworkHandler is not initialized.";
     return;
   }
@@ -93,7 +93,7 @@ EuiccStatusUploader::EuiccStatusUploader(
   hermes_euicc_observation_.Observe(ash::HermesEuiccClient::Get());
   cloud_policy_client_observation_.Observe(client_);
 
-  auto* network_handler = chromeos::NetworkHandler::Get();
+  auto* network_handler = ash::NetworkHandler::Get();
   network_handler->managed_cellular_pref_handler()->AddObserver(this);
   managed_network_configuration_handler_ =
       network_handler->managed_network_configuration_handler();
@@ -101,10 +101,9 @@ EuiccStatusUploader::EuiccStatusUploader(
 }
 
 EuiccStatusUploader::~EuiccStatusUploader() {
-  if (chromeos::NetworkHandler::IsInitialized())
-    chromeos::NetworkHandler::Get()
-        ->managed_cellular_pref_handler()
-        ->RemoveObserver(this);
+  if (ash::NetworkHandler::IsInitialized())
+    ash::NetworkHandler::Get()->managed_cellular_pref_handler()->RemoveObserver(
+        this);
   OnManagedNetworkConfigurationHandlerShuttingDown();
 }
 
@@ -191,7 +190,7 @@ base::Value EuiccStatusUploader::GetCurrentEuiccStatus() const {
 
   base::Value esim_profiles(base::Value::Type::LIST);
 
-  for (const auto& esim_profile : chromeos::NetworkHandler::Get()
+  for (const auto& esim_profile : ash::NetworkHandler::Get()
                                       ->cellular_esim_profile_handler()
                                       ->GetESimProfiles()) {
     // Do not report non-provisioned cellular networks.
@@ -199,7 +198,7 @@ base::Value EuiccStatusUploader::GetCurrentEuiccStatus() const {
       continue;
 
     const std::string* smdp_address =
-        chromeos::NetworkHandler::Get()
+        ash::NetworkHandler::Get()
             ->managed_cellular_pref_handler()
             ->GetSmdpAddressFromIccid(esim_profile.iccid());
     // Report only managed profiles with a SMDP address.

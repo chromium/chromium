@@ -229,7 +229,7 @@ void SetRandomMACPolicy(::onc::ONCSource onc_source,
   // If the feature flag is not enabled, we set each MAC Address Policy
   // to Hardware (non-randomized).
   if (!base::FeatureList::IsEnabled(
-          chromeos::features::kWifiConnectMacAddressRandomization)) {
+          features::kWifiConnectMacAddressRandomization)) {
     shill_dictionary->SetKey(shill::kWifiRandomMACPolicy,
                              base::Value(shill::kWifiRandomMacPolicyHardware));
     return;

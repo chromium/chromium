@@ -108,7 +108,7 @@ class NetworkingPrivateAsh : public mojom::NetworkingPrivate,
   // Lacros observers to be notified of relevant events.
   mojo::RemoteSet<mojom::NetworkingPrivateDelegateObserver> observers_;
   // We observe network state to forward its events to our Lacros observers.
-  base::ScopedObservation<chromeos::NetworkStateHandler,
+  base::ScopedObservation<ash::NetworkStateHandler,
                           ash::NetworkStateHandlerObserver>
       network_state_observation_{this};
   base::ScopedObservation<ash::NetworkCertificateHandler,

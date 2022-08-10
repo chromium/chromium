@@ -27,11 +27,10 @@
 namespace {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 GURL GetProbeUrl(const GURL& default_url) {
-  DCHECK_EQ(chromeos::NetworkHandler::Get()->task_runner(),
+  DCHECK_EQ(ash::NetworkHandler::Get()->task_runner(),
             base::ThreadTaskRunnerHandle::Get().get());
-  const ash::NetworkState* network = chromeos::NetworkHandler::Get()
-                                         ->network_state_handler()
-                                         ->DefaultNetwork();
+  const ash::NetworkState* network =
+      ash::NetworkHandler::Get()->network_state_handler()->DefaultNetwork();
   return network && !network->probe_url().is_empty() ? network->probe_url()
                                                      : default_url;
 }
@@ -69,9 +68,9 @@ void CaptivePortalDetector::DetectCaptivePortal(
   detection_callback_ = std::move(detection_callback);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chromeos::NetworkHandler::IsInitialized()) {
+  if (ash::NetworkHandler::IsInitialized()) {
     base::PostTaskAndReplyWithResult(
-        chromeos::NetworkHandler::Get()->task_runner(), FROM_HERE,
+        ash::NetworkHandler::Get()->task_runner(), FROM_HERE,
         base::BindOnce(&GetProbeUrl, url),
         base::BindOnce(&CaptivePortalDetector::StartProbe,
                        weak_factory_.GetWeakPtr(), traffic_annotation));

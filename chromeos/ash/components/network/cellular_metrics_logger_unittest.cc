@@ -100,7 +100,7 @@ class CellularMetricsLoggerTest : public testing::Test {
 
     cellular_inhibitor_ = std::make_unique<CellularInhibitor>();
     mock_managed_network_configuration_manager_ = base::WrapUnique(
-        new testing::NiceMock<ash::MockManagedNetworkConfigurationHandler>);
+        new testing::NiceMock<MockManagedNetworkConfigurationHandler>);
     cellular_esim_profile_handler_ =
         std::make_unique<TestCellularESimProfileHandler>();
     network_config_helper_ = std::make_unique<
@@ -278,7 +278,7 @@ class CellularMetricsLoggerTest : public testing::Test {
   std::unique_ptr<TestCellularESimProfileHandler>
       cellular_esim_profile_handler_;
   std::unique_ptr<CellularMetricsLogger> cellular_metrics_logger_;
-  std::unique_ptr<ash::MockManagedNetworkConfigurationHandler>
+  std::unique_ptr<MockManagedNetworkConfigurationHandler>
       mock_managed_network_configuration_manager_;
 };
 

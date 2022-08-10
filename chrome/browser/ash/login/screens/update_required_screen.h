@@ -121,8 +121,7 @@ class UpdateRequiredScreen : public BaseScreen,
   base::RepeatingClosure exit_callback_;
   std::unique_ptr<ErrorScreensHistogramHelper> histogram_helper_;
 
-  base::ScopedObservation<chromeos::NetworkStateHandler,
-                          NetworkStateHandlerObserver>
+  base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
 
   // Whether the screen is shown.

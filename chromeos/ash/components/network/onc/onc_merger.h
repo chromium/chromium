@@ -49,10 +49,4 @@ base::Value MergeSettingsAndPoliciesToAugmented(
 
 }  // namespace ash::onc
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos::onc {
-using ::ash::onc::MergeSettingsAndPoliciesToAugmented;
-using ::ash::onc::MergeSettingsAndPoliciesToEffective;
-}  // namespace chromeos::onc
-
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_ONC_ONC_MERGER_H_

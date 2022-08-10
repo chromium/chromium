@@ -49,9 +49,4 @@ class TestCellularESimProfileHandler : public CellularESimProfileHandler {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-using ::ash::TestCellularESimProfileHandler;
-}
-
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_TEST_CELLULAR_ESIM_PROFILE_HANDLER_H_

@@ -54,8 +54,8 @@ mojom::State RmadStateToMojo(rmad::RmadState::StateCase rmadState) {
 // Metered networks are excluded for RMA to avoid any cost to the owner who
 // does not have control of the device during RMA.
 bool HaveAllowedNetworkConnection() {
-  chromeos::NetworkStateHandler* network_state_handler =
-      chromeos::NetworkHandler::Get()->network_state_handler();
+  NetworkStateHandler* network_state_handler =
+      NetworkHandler::Get()->network_state_handler();
   const NetworkState* network = network_state_handler->DefaultNetwork();
   // TODO(gavindodd): Confirm that metered networks should be excluded. This
   // should only be true for cellular networks which are already blocked.

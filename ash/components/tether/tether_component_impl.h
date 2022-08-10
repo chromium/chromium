@@ -12,8 +12,6 @@
 #include "ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/ash/components/network/network_state_handler.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
@@ -36,6 +34,7 @@ class DeviceSyncClient;
 class ManagedNetworkConfigurationHandler;
 class NetworkConnect;
 class NetworkConnectionHandler;
+class NetworkStateHandler;
 
 namespace tether {
 

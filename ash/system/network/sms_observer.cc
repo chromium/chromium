@@ -18,8 +18,6 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/message_center/message_center.h"
 
-using chromeos::NetworkHandler;
-
 namespace ash {
 
 const char SmsObserver::kNotificationPrefix[] = "chrome://network/sms";

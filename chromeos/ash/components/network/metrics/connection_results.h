@@ -133,9 +133,4 @@ UserInitiatedConnectResult NetworkConnectionErrorToConnectResult(
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-using ::ash::ShillConnectResult;
-}
-
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_METRICS_CONNECTION_RESULTS_H_

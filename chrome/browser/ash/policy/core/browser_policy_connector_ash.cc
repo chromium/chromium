@@ -251,9 +251,8 @@ void BrowserPolicyConnectorAsh::Init(
   device_network_configuration_updater_ =
       DeviceNetworkConfigurationUpdaterAsh::CreateForDevicePolicy(
           GetPolicyService(),
-          chromeos::NetworkHandler::Get()
-              ->managed_network_configuration_handler(),
-          chromeos::NetworkHandler::Get()->network_device_handler(),
+          ash::NetworkHandler::Get()->managed_network_configuration_handler(),
+          ash::NetworkHandler::Get()->network_device_handler(),
           ash::CrosSettings::Get(),
           DeviceNetworkConfigurationUpdaterAsh::DeviceAssetIDFetcher());
   // NetworkCertLoader may be not initialized in tests.
@@ -279,7 +278,7 @@ void BrowserPolicyConnectorAsh::Init(
   device_dock_mac_address_source_handler_ =
       std::make_unique<DeviceDockMacAddressHandler>(
           ash::CrosSettings::Get(),
-          chromeos::NetworkHandler::Get()->network_device_handler());
+          ash::NetworkHandler::Get()->network_device_handler());
 
   device_wifi_allowed_handler_ =
       std::make_unique<DeviceWiFiAllowedHandler>(ash::CrosSettings::Get());
@@ -291,7 +290,7 @@ void BrowserPolicyConnectorAsh::Init(
   device_scheduled_update_checker_ =
       std::make_unique<DeviceScheduledUpdateChecker>(
           ash::CrosSettings::Get(),
-          chromeos::NetworkHandler::Get()->network_state_handler(),
+          ash::NetworkHandler::Get()->network_state_handler(),
           std::make_unique<ScheduledTaskExecutorImpl>(
               update_checker_internal::kUpdateCheckTimerTag));
 

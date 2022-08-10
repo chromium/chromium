@@ -114,8 +114,7 @@ class AuthPolicyCredentialsManager : public KeyedService,
   bool is_observing_network_ = false;
   KerberosFilesHandler kerberos_files_handler_;
 
-  base::ScopedObservation<chromeos::NetworkStateHandler,
-                          NetworkStateHandlerObserver>
+  base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
 
   // Stores message ids of shown notifications. Each notification is shown at

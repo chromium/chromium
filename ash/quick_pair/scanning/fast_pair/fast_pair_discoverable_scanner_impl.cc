@@ -92,13 +92,12 @@ FastPairDiscoverableScannerImpl::FastPairDiscoverableScannerImpl(
       found_callback_(std::move(found_callback)),
       lost_callback_(std::move(lost_callback)) {
   observation_.Observe(scanner_.get());
-  chromeos::NetworkHandler::Get()->network_state_handler()->AddObserver(
-      this, FROM_HERE);
+  NetworkHandler::Get()->network_state_handler()->AddObserver(this, FROM_HERE);
 }
 
 FastPairDiscoverableScannerImpl::~FastPairDiscoverableScannerImpl() {
-  chromeos::NetworkHandler::Get()->network_state_handler()->RemoveObserver(
-      this, FROM_HERE);
+  NetworkHandler::Get()->network_state_handler()->RemoveObserver(this,
+                                                                 FROM_HERE);
 }
 
 void FastPairDiscoverableScannerImpl::OnDeviceFound(

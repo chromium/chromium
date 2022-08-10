@@ -87,20 +87,17 @@ std::u16string NetworkStateHelper::GetCurrentNetworkName() const {
 }
 
 bool NetworkStateHelper::IsConnected() const {
-  chromeos::NetworkStateHandler* nsh =
-      chromeos::NetworkHandler::Get()->network_state_handler();
+  NetworkStateHandler* nsh = NetworkHandler::Get()->network_state_handler();
   return nsh->ConnectedNetworkByType(NetworkTypePattern::Default()) != nullptr;
 }
 
 bool NetworkStateHelper::IsConnectedToEthernet() const {
-  chromeos::NetworkStateHandler* nsh =
-      chromeos::NetworkHandler::Get()->network_state_handler();
+  NetworkStateHandler* nsh = NetworkHandler::Get()->network_state_handler();
   return nsh->ConnectedNetworkByType(NetworkTypePattern::Ethernet()) != nullptr;
 }
 
 bool NetworkStateHelper::IsConnecting() const {
-  chromeos::NetworkStateHandler* nsh =
-      chromeos::NetworkHandler::Get()->network_state_handler();
+  NetworkStateHandler* nsh = NetworkHandler::Get()->network_state_handler();
   return nsh->ConnectingNetworkByType(NetworkTypePattern::Default()) != nullptr;
 }
 

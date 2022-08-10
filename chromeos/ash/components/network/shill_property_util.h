@@ -98,9 +98,4 @@ bool IsLoggableShillProperty(const std::string& key);
 }  // namespace shill_property_util
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-namespace shill_property_util = ::ash::shill_property_util;
-}
-
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_SHILL_PROPERTY_UTIL_H_

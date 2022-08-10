@@ -148,9 +148,4 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedState {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-using ::ash::ManagedState;
-}
-
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_MANAGED_STATE_H_

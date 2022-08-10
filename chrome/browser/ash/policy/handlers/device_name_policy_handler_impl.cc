@@ -39,12 +39,12 @@ DeviceNamePolicyHandlerImpl::DeviceNamePolicyHandlerImpl(
     : DeviceNamePolicyHandlerImpl(
           cros_settings,
           chromeos::system::StatisticsProvider::GetInstance(),
-          chromeos::NetworkHandler::Get()->network_state_handler()) {}
+          ash::NetworkHandler::Get()->network_state_handler()) {}
 
 DeviceNamePolicyHandlerImpl::DeviceNamePolicyHandlerImpl(
     ash::CrosSettings* cros_settings,
     chromeos::system::StatisticsProvider* statistics_provider,
-    chromeos::NetworkStateHandler* handler)
+    ash::NetworkStateHandler* handler)
     : cros_settings_(cros_settings),
       statistics_provider_(statistics_provider),
       handler_(handler),
@@ -61,7 +61,7 @@ DeviceNamePolicyHandlerImpl::DeviceNamePolicyHandlerImpl(
           weak_factory_.GetWeakPtr()));
 
   network_state_handler_observer_.Observe(
-      chromeos::NetworkHandler::Get()->network_state_handler());
+      ash::NetworkHandler::Get()->network_state_handler());
 
   // Fire it once so we're sure we get an invocation on startup.
   OnDeviceHostnamePropertyChanged();

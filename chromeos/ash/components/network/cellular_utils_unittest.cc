@@ -43,7 +43,7 @@ class CellularUtilsTest : public testing::Test {
 
 TEST_F(CellularUtilsTest, GetCurrentEuiccPath) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(ash::features::kCellularUseSecondEuicc);
+  feature_list.InitAndEnableFeature(features::kCellularUseSecondEuicc);
   HermesManagerClient::Get()->GetTestInterface()->ClearEuiccs();
   EXPECT_FALSE(GetCurrentEuiccPath());
   // Verify that use-second-euicc flag should be ignored when Hermes only

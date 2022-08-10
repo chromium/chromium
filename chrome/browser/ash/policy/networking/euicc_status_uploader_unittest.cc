@@ -224,7 +224,7 @@ class EuiccStatusUploaderTest : public testing::Test {
               kAddProfileWithService);
 
       if (test_profile.managed) {
-        chromeos::NetworkHandler::Get()
+        ash::NetworkHandler::Get()
             ->managed_cellular_pref_handler()
             ->AddIccidSmdpPair(test_profile.iccid, test_profile.smdp_address);
       }
@@ -472,14 +472,14 @@ TEST_F(EuiccStatusUploaderTest, UnexpectedNetworkHandlerShutdown) {
 
   // NetworkHandler::Shutdown() has already been called before
   // EuiccStatusUploader is deleted
-  chromeos::NetworkHandler::Shutdown();
+  ash::NetworkHandler::Shutdown();
 
   // No requests made as NetworkHandler is not available.
   UpdateUploader(status_uploader.get());
   EXPECT_EQ(GetRequestCount(), 2);
 
   // Need to reinitialize before exiting test.
-  chromeos::NetworkHandler::Initialize();
+  ash::NetworkHandler::Initialize();
 }
 
 }  // namespace policy

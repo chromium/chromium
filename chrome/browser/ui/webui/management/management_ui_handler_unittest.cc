@@ -1093,8 +1093,8 @@ TEST_F(ManagementUIHandlerTests, ShowProxyServerDisclosure) {
   ResetTestConfig();
   // Set pref to use a proxy.
   PrefProxyConfigTrackerImpl::RegisterProfilePrefs(user_prefs_.registry());
-  chromeos::NetworkHandler::Get()->InitializePrefServices(&user_prefs_,
-                                                          &local_state_);
+  ash::NetworkHandler::Get()->InitializePrefServices(&user_prefs_,
+                                                     &local_state_);
   base::Value policy_prefs_config = ProxyConfigDictionary::CreateAutoDetect();
   user_prefs_.SetUserPref(
       proxy_config::prefs::kProxy,
@@ -1111,16 +1111,15 @@ TEST_F(ManagementUIHandlerTests, ProxyServerDisclosureDeviceOffline) {
   ResetTestConfig();
   // Simulate network disconnected state.
   PrefProxyConfigTrackerImpl::RegisterProfilePrefs(user_prefs_.registry());
-  chromeos::NetworkHandler::Get()->InitializePrefServices(&user_prefs_,
-                                                          &local_state_);
-  chromeos::NetworkStateHandler::NetworkStateList networks;
-  chromeos::NetworkHandler::Get()
-      ->network_state_handler()
-      ->GetNetworkListByType(ash::NetworkTypePattern::Default(),
-                             true,   // configured_only
-                             false,  // visible_only,
-                             0,      // no limit to number of results
-                             &networks);
+  ash::NetworkHandler::Get()->InitializePrefServices(&user_prefs_,
+                                                     &local_state_);
+  ash::NetworkStateHandler::NetworkStateList networks;
+  ash::NetworkHandler::Get()->network_state_handler()->GetNetworkListByType(
+      ash::NetworkTypePattern::Default(),
+      true,   // configured_only
+      false,  // visible_only,
+      0,      // no limit to number of results
+      &networks);
   chromeos::ShillServiceClient::TestInterface* service =
       chromeos::ShillServiceClient::Get()->GetTestInterface();
   for (const auto* const network : networks) {
@@ -1134,15 +1133,15 @@ TEST_F(ManagementUIHandlerTests, ProxyServerDisclosureDeviceOffline) {
 
   EXPECT_FALSE(GetShowProxyServerPrivacyDisclosure());
 
-  chromeos::NetworkHandler::Get()->NetworkHandler::ShutdownPrefServices();
+  ash::NetworkHandler::Get()->NetworkHandler::ShutdownPrefServices();
 }
 
 TEST_F(ManagementUIHandlerTests, HideProxyServerDisclosureForDirectProxy) {
   ResetTestConfig();
   // Set pref not to use proxy.
   PrefProxyConfigTrackerImpl::RegisterProfilePrefs(user_prefs_.registry());
-  chromeos::NetworkHandler::Get()->InitializePrefServices(&user_prefs_,
-                                                          &local_state_);
+  ash::NetworkHandler::Get()->InitializePrefServices(&user_prefs_,
+                                                     &local_state_);
   base::Value policy_prefs_config = ProxyConfigDictionary::CreateDirect();
   user_prefs_.SetUserPref(
       proxy_config::prefs::kProxy,
@@ -1154,7 +1153,7 @@ TEST_F(ManagementUIHandlerTests, HideProxyServerDisclosureForDirectProxy) {
 
   EXPECT_FALSE(GetShowProxyServerPrivacyDisclosure());
 
-  chromeos::NetworkHandler::Get()->NetworkHandler::ShutdownPrefServices();
+  ash::NetworkHandler::Get()->NetworkHandler::ShutdownPrefServices();
 }
 
 #endif

@@ -51,9 +51,9 @@ NetworkSettingsServiceAsh::NetworkSettingsServiceAsh(PrefService* local_state)
     profile_manager_->AddObserver(this);
   }
   // Uninitialized in unit_tests.
-  if (chromeos::NetworkHandler::IsInitialized()) {
+  if (ash::NetworkHandler::IsInitialized()) {
     network_state_handler_observer_.Observe(
-        chromeos::NetworkHandler::Get()->network_state_handler());
+        ash::NetworkHandler::Get()->network_state_handler());
   }
   observers_.set_disconnect_handler(base::BindRepeating(
       &NetworkSettingsServiceAsh::OnDisconnect, base::Unretained(this)));

@@ -123,7 +123,7 @@ ash::UpdateSeverity GetUpdateSeverity(ash::UpdateType update_type,
 const ash::NetworkState* GetNetworkState(const std::string& network_id) {
   if (network_id.empty())
     return nullptr;
-  return chromeos::NetworkHandler::Get()
+  return ash::NetworkHandler::Get()
       ->network_state_handler()
       ->GetNetworkStateFromGuid(network_id);
 }
@@ -564,7 +564,7 @@ void SystemTrayClientImpl::ShowNetworkConfigure(const std::string& network_id) {
   if (SessionManager::Get()->IsScreenLocked())
     return;
 
-  DCHECK(chromeos::NetworkHandler::IsInitialized());
+  DCHECK(ash::NetworkHandler::IsInitialized());
   const ash::NetworkState* network_state = GetNetworkState(network_id);
   if (!network_state) {
     LOG(ERROR) << "Network not found: " << network_id;

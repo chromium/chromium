@@ -41,7 +41,7 @@ class OsAndPoliciesUpdateChecker : public ash::UpdateEngineClient::Observer,
                                    public ash::NetworkStateHandlerObserver {
  public:
   explicit OsAndPoliciesUpdateChecker(
-      chromeos::NetworkStateHandler* network_state_handler);
+      ash::NetworkStateHandler* network_state_handler);
 
   OsAndPoliciesUpdateChecker(const OsAndPoliciesUpdateChecker&) = delete;
   OsAndPoliciesUpdateChecker& operator=(const OsAndPoliciesUpdateChecker&) =
@@ -116,8 +116,8 @@ class OsAndPoliciesUpdateChecker : public ash::UpdateEngineClient::Observer,
   UpdateCheckCompletionCallback update_check_completion_cb_;
 
   // Not owned.
-  chromeos::NetworkStateHandler* const network_state_handler_;
-  base::ScopedObservation<chromeos::NetworkStateHandler,
+  ash::NetworkStateHandler* const network_state_handler_;
+  base::ScopedObservation<ash::NetworkStateHandler,
                           ash::NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
 

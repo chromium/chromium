@@ -243,8 +243,8 @@ void DeviceActivityController::OnMachineStatisticsLoaded(
       psm_device_active_secret, chrome_passed_device_params_, local_state));
 
   da_client_network_ = std::make_unique<DeviceActivityClient>(
-      chromeos::NetworkHandler::Get()->network_state_handler(),
-      url_loader_factory, std::make_unique<PsmDelegateImpl>(),
+      NetworkHandler::Get()->network_state_handler(), url_loader_factory,
+      std::make_unique<PsmDelegateImpl>(),
       std::make_unique<base::RepeatingTimer>(), kFresnelBaseUrl,
       google_apis::GetFresnelAPIKey(), std::move(use_cases));
 }

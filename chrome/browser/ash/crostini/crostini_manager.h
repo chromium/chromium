@@ -930,7 +930,7 @@ class CrostiniManager : public KeyedService,
                  guest_os::GuestOsTerminalProviderRegistry::Id>
       terminal_provider_ids_;
 
-  base::ScopedObservation<chromeos::NetworkStateHandler,
+  base::ScopedObservation<ash::NetworkStateHandler,
                           ash::NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
 

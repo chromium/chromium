@@ -17,7 +17,7 @@ namespace ui {
 namespace {
 
 const ash::NetworkState* GetNetworkState(const std::string& network_id) {
-  return chromeos::NetworkHandler::Get()
+  return ash::NetworkHandler::Get()
       ->network_state_handler()
       ->GetNetworkStateFromGuid(network_id);
 }

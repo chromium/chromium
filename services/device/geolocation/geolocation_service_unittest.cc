@@ -52,7 +52,7 @@ class GeolocationServiceUnitTest : public DeviceServiceTestBase {
   void SetUp() override {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     chromeos::shill_clients::InitializeFakes();
-    chromeos::NetworkHandler::Initialize();
+    ash::NetworkHandler::Initialize();
 #endif
     network_change_notifier_ = net::NetworkChangeNotifier::CreateMockIfNeeded();
     // We need to initialize the above *before* the base fixture instantiates
@@ -73,7 +73,7 @@ class GeolocationServiceUnitTest : public DeviceServiceTestBase {
     DeviceServiceTestBase::TearDown();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    chromeos::NetworkHandler::Shutdown();
+    ash::NetworkHandler::Shutdown();
     chromeos::shill_clients::Shutdown();
 #endif
 

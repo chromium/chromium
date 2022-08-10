@@ -47,7 +47,7 @@ class CellularSetupNotifierTest : public NoSessionAshTestBase {
     NetworkCertLoader::Initialize();
     chromeos::shill_clients::InitializeFakes();
     hermes_clients::InitializeFakes();
-    chromeos::NetworkHandler::Initialize();
+    NetworkHandler::Initialize();
     network_config_helper_ = std::make_unique<
         chromeos::network_config::CrosNetworkConfigTestHelper>();
 
@@ -66,7 +66,7 @@ class CellularSetupNotifierTest : public NoSessionAshTestBase {
   void TearDown() override {
     AshTestBase::TearDown();
     network_config_helper_.reset();
-    chromeos::NetworkHandler::Shutdown();
+    NetworkHandler::Shutdown();
     hermes_clients::Shutdown();
     chromeos::shill_clients::Shutdown();
     NetworkCertLoader::Shutdown();

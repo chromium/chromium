@@ -42,8 +42,8 @@ void ReportUpdateFailure(const VersionUpdater::OsUpdateStatusCallback& callback,
 // the appropriate status. |interactive| indicates whether the user is actively
 // checking for updates.
 bool IsUpdateAllowed() {
-  chromeos::NetworkStateHandler* network_state_handler =
-      chromeos::NetworkHandler::Get()->network_state_handler();
+  NetworkStateHandler* network_state_handler =
+      NetworkHandler::Get()->network_state_handler();
   const NetworkState* network = network_state_handler->DefaultNetwork();
   // Don't allow an update if device is currently offline or connected
   // to a network for which data is metered.

@@ -99,7 +99,7 @@ class DeviceNamePolicyHandlerImplTest : public testing::Test {
 
     handler_ = base::WrapUnique(new DeviceNamePolicyHandlerImpl(
         ash::CrosSettings::Get(), &fake_statistics_provider_,
-        chromeos::NetworkHandler::Get()->network_state_handler()));
+        ash::NetworkHandler::Get()->network_state_handler()));
     handler_->AddObserver(&fake_observer_);
     base::RunLoop().RunUntilIdle();
   }
