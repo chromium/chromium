@@ -41,6 +41,9 @@ tast_disabled_tests_from_chrome_all = [
   # crbug.com/1263233
   "security.SharedFilesystemState",
 
+  # https://crbug.com/1350205
+  "ui.ChromeCrashEarly",
+
   # https://crbug.com/1269880: Flaky.
   "ui.ChromeCrashReporterMetrics.success_crashpad",
 
