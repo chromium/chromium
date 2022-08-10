@@ -302,7 +302,7 @@ void NGBoxFragmentBuilder::RemoveOldLegacyOOFFlexItem(
   DCHECK(object.Parent()->IsFlexibleBox());
   DCHECK(object.Parent()->IsOutOfFlowPositioned());
   for (wtf_size_t idx = 0; idx < children_.size(); idx++) {
-    const ChildWithOffset& child = children_[idx];
+    const NGLogicalLink& child = children_[idx];
     if (child.fragment->GetLayoutObject() == &object) {
       children_.EraseAt(idx);
       return;
@@ -502,7 +502,7 @@ const NGLayoutResult* NGBoxFragmentBuilder::ToBoxFragment(
     WritingMode block_or_line_writing_mode) {
 #if DCHECK_IS_ON()
   if (ItemsBuilder()) {
-    for (const ChildWithOffset& child : Children()) {
+    for (const NGLogicalLink& child : Children()) {
       DCHECK(child.fragment);
       const NGPhysicalFragment& fragment = *child.fragment;
       DCHECK(fragment.IsLineBox() ||

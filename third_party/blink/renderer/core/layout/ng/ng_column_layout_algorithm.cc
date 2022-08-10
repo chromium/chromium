@@ -845,8 +845,8 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::LayoutRow(
       NGOutOfFlowLayoutPart::ColumnBalancingInfo column_balancing_info;
       for (wtf_size_t i = 0; i < new_columns.size(); i++) {
         auto& new_column = new_columns[i];
-        column_balancing_info.columns.emplace_back(new_column.offset,
-                                                   &new_column.Fragment());
+        column_balancing_info.columns.push_back(
+            NGLogicalLink{&new_column.Fragment(), new_column.offset});
 
         // Because the current set of columns haven't been added to the builder
         // yet, any OOF descendants won't have been propagated up yet. Instead,

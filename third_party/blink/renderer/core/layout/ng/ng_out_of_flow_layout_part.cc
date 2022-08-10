@@ -1042,7 +1042,7 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(
     LayoutUnit additional_column_block_size;
     // Then append the new fragmentainers.
     for (wtf_size_t i = old_fragment_count; i < new_fragment_count; i++) {
-      NGContainerFragmentBuilder::ChildWithOffset child =
+      const NGLogicalLink& child =
           limited_multicol_container_builder.Children()[i];
       algorithm.AppendNewChildFragment(*child.fragment, child.offset);
       additional_column_block_size +=
@@ -2160,7 +2160,7 @@ void NGOutOfFlowLayoutPart::ReplaceFragment(
     // We're currently laying out |containing_block|, and it's a multicol
     // container. Search inside fragmentainer children in the builder.
     auto& children = FragmentationContextChildren();
-    for (const NGContainerFragmentBuilder::ChildWithOffset& child : children) {
+    for (const NGLogicalLink& child : children) {
       if (ReplaceFragmentainerChild(*child.fragment))
         return;
     }

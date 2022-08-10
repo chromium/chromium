@@ -1876,7 +1876,7 @@ void NGFlexLayoutAlgorithm::AdjustButtonBaseline(
     return;
   }
   DCHECK_EQ(children.size(), 1u);
-  const NGContainerFragmentBuilder::ChildWithOffset& child = children[0];
+  const NGLogicalLink& child = children[0];
   DCHECK(!child.fragment->IsLineBox());
   const NGConstraintSpace& space = ConstraintSpace();
   NGBoxFragment fragment(space.GetWritingDirection(),

@@ -573,6 +573,7 @@ blink_core_sources_layout = [
   "ng/ng_length_utils.cc",
   "ng/ng_length_utils.h",
   "ng/ng_link.h",
+  "ng/ng_logical_link.h",
   "ng/ng_out_of_flow_layout_part.cc",
   "ng/ng_out_of_flow_layout_part.h",
   "ng/ng_out_of_flow_positioned_node.cc",

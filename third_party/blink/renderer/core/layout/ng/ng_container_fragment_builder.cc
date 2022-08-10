@@ -26,17 +26,12 @@ bool IsInlineContainerForNode(const NGBlockNode& node,
 
 }  // namespace
 
-void NGContainerFragmentBuilder::ChildWithOffset::Trace(
-    Visitor* visitor) const {
-  visitor->Trace(fragment);
-}
-
 void NGContainerFragmentBuilder::ReplaceChild(
     wtf_size_t index,
     const NGPhysicalFragment& new_child,
     const LogicalOffset offset) {
   DCHECK_LT(index, children_.size());
-  children_[index] = ChildWithOffset(offset, std::move(&new_child));
+  children_[index] = NGLogicalLink{std::move(&new_child), offset};
 }
 
 // Propagate data in |child| to this fragment. The |child| will then be added as
@@ -178,7 +173,7 @@ void NGContainerFragmentBuilder::AddChildInternal(
   // In order to know where list-markers are within the children list (for the
   // |NGSimplifiedLayoutAlgorithm|) we always place them as the first child.
   if (child->IsListMarker()) {
-    children_.push_front(ChildWithOffset(child_offset, std::move(child)));
+    children_.push_front(NGLogicalLink{std::move(child), child_offset});
     return;
   }
 
@@ -187,13 +182,12 @@ void NGContainerFragmentBuilder::AddChildInternal(
     // ::placeholder earlier.
     const wtf_size_t size = children_.size();
     if (size > 0) {
-      children_.insert(size - 1,
-                       ChildWithOffset(child_offset, std::move(child)));
+      children_.insert(size - 1, NGLogicalLink{std::move(child), child_offset});
       return;
     }
   }
 
-  children_.emplace_back(child_offset, std::move(child));
+  children_.push_back(NGLogicalLink{std::move(child), child_offset});
 }
 
 void NGContainerFragmentBuilder::AddOutOfFlowChildCandidate(
