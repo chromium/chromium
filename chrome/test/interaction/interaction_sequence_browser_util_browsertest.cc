@@ -1119,6 +1119,113 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
 }
 
 IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
+                       ExecuteCanChangePageState) {
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+
+  auto util = InteractionSequenceBrowserUtil::ForExistingTabInBrowser(
+      browser(), kInteractionSequenceBrowserUtilTestId);
+  auto sequence =
+      ui::InteractionSequence::Builder()
+          .SetCompletedCallback(completed.Get())
+          .SetAbortedCallback(aborted.Get())
+          .SetContext(browser()->window()->GetElementContext())
+          .AddStep(
+              ui::InteractionSequence::StepBuilder()
+                  .SetType(ui::InteractionSequence::StepType::kShown)
+                  .SetElementID(kInteractionSequenceBrowserUtilTestId)
+                  .SetStartCallback(base::BindLambdaForTesting(
+                      [&](ui::InteractionSequence* sequence,
+                          ui::TrackedElement* element) {
+                        // This is an artificial value that is not
+                        // initially true.
+                        const char kCheckFunction[] = "() => !!window.value";
+                        EXPECT_FALSE(util->Evaluate(kCheckFunction).GetBool());
+
+                        // Prepare to send an event when the condition
+                        // becomes true.
+                        InteractionSequenceBrowserUtil::StateChange
+                            state_change;
+                        state_change.test_function = kCheckFunction;
+                        state_change.event =
+                            kInteractionTestUtilCustomEventType;
+                        util->SendEventOnStateChange(state_change);
+
+                        // Immediately set a truthy value.
+                        util->Execute("() => { window.value = 1; }");
+                      }))
+                  .Build())
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kCustomEvent,
+                                kInteractionTestUtilCustomEventType)
+                       .SetElementID(kInteractionSequenceBrowserUtilTestId)
+                       .Build())
+          .Build();
+
+  EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
+                       ExecuteAtCanChangePageState) {
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+
+  auto util = InteractionSequenceBrowserUtil::ForExistingTabInBrowser(
+      browser(), kInteractionSequenceBrowserUtilTestId);
+  const GURL url = embedded_test_server()->GetURL(kDocumentWithLinksURL);
+  util->LoadPage(url);
+  const InteractionSequenceBrowserUtil::DeepQuery kQuery = {"a#title1"};
+
+  auto sequence =
+      ui::InteractionSequence::Builder()
+          .SetCompletedCallback(completed.Get())
+          .SetAbortedCallback(aborted.Get())
+          .SetContext(browser()->window()->GetElementContext())
+          .AddStep(
+              ui::InteractionSequence::StepBuilder()
+                  .SetType(ui::InteractionSequence::StepType::kShown)
+                  .SetElementID(kInteractionSequenceBrowserUtilTestId)
+                  .SetStartCallback(base::BindLambdaForTesting(
+                      [&](ui::InteractionSequence* sequence,
+                          ui::TrackedElement* element) {
+                        // This is an artificial value that is not
+                        // initially true.
+                        const char kCheckFunction[] =
+                            "el => (el.innerText === 'abcde')";
+
+                        // Verify that the check function is false.
+                        EXPECT_FALSE(
+                            util->EvaluateAt(kQuery, kCheckFunction).GetBool());
+
+                        // Set up a condition check for a text string that
+                        // doesn't exist in the document.
+                        InteractionSequenceBrowserUtil::StateChange
+                            state_change;
+                        state_change.type = InteractionSequenceBrowserUtil::
+                            StateChange::Type::kConditionTrue;
+                        state_change.where = kQuery;
+                        state_change.test_function = kCheckFunction;
+                        state_change.event =
+                            kInteractionTestUtilCustomEventType;
+                        util->SendEventOnStateChange(state_change);
+
+                        // Set the expected text using ExecuteAt().
+                        // The check function should become true.
+                        util->ExecuteAt(kQuery,
+                                        "el => { el.innerText = 'abcde'; }");
+                      }))
+                  .Build())
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kCustomEvent,
+                                kInteractionTestUtilCustomEventType)
+                       .SetElementID(kInteractionSequenceBrowserUtilTestId)
+                       .Build())
+          .Build();
+
+  EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
                        NavigatePageFromScriptCreatesNewElement) {
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);

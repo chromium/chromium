@@ -282,6 +282,16 @@ class InteractionSequenceBrowserUtil : private content::WebContentsObserver,
   // monitor the result.
   base::Value Evaluate(const std::string& function);
 
+  // Executes `function` in the target WebContents. Identical to `Evaluate()`
+  // except that the return value of the function is discarded and no effort is
+  // made to wait for the code to actually execute.
+  //
+  // Execute can be more efficient than Evaluate because it does not hold the
+  // test fixture up waiting for completion; the trade-off is that if there is
+  // an error during execution it will not immediately crash the test (though it
+  // should still be visible in the logs).
+  void Execute(const std::string& function);
+
   // Watches for a state change in the current page, then sends an event when
   // the condition is met or (optionally) if the timeout is hit. The page must
   // be fully loaded.
@@ -314,11 +324,21 @@ class InteractionSequenceBrowserUtil : private content::WebContentsObserver,
   //   (el, err) => !err && !!el
   base::Value EvaluateAt(const DeepQuery& where, const std::string& function);
 
+  // Same as EvaluateAt except that `function` is executed, the return value is
+  // discarded, and no effort is made to wait for or return the result.
+  //
+  // ExecuteAt can be more efficient than Evaluate because it does not hold the
+  // test fixture up waiting for completion; the trade-off is that if there is
+  // an error during execution it will not immediately crash the test (though it
+  // should still be visible in the logs).
+  void ExecuteAt(const DeepQuery& where, const std::string& function);
+
   // The following are convenience methods that do not use the Shadow DOM and
   // allow only a single selector (behavior if the selected node has a shadow
   // DOM is undefined).
   bool Exists(const std::string& selector);
   base::Value EvaluateAt(const std::string& where, const std::string& function);
+  void ExecuteAt(const std::string& where, const std::string& function);
 
   // Gets the screen bounds for the given element at `where`. The second method
   // is a convenience method if you do not need to use the Shadow DOM.

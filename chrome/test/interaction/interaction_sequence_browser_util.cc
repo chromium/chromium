@@ -6,6 +6,7 @@
 
 #include <set>
 #include <sstream>
+#include <string>
 
 #include "base/callback_helpers.h"
 #include "base/json/json_reader.h"
@@ -109,6 +110,19 @@ std::string GetExistsQuery(const char* on_missing_selector,
                             on_missing_selector, on_found);
 }
 
+// Common execution code for `EvalJsLocal()` and `ExecuteJsLocal()`.
+// Executes `script` on `host`.
+void ExecuteScript(content::RenderFrameHost* host, const std::string& script) {
+  const std::u16string script16 = base::UTF8ToUTF16(script);
+  if (host->GetLifecycleState() !=
+      content::RenderFrameHost::LifecycleState::kPrerendering) {
+    host->ExecuteJavaScriptWithUserGestureForTests(
+        script16, base::NullCallback());  // IN-TEST
+  } else {
+    host->ExecuteJavaScriptForTests(script16, base::NullCallback());  // IN-TEST
+  }
+}
+
 // Our replacement for content::EvalJs() that uses the same underlying logic as
 // ExecuteScriptAndExtract*(), because EvalJs() is not compatible with Content
 // Security Policy of many internal pages we want to test :(
@@ -141,14 +155,8 @@ content::EvalJsResult EvalJsLocal(
   if (!host->IsRenderFrameLive())
     return content::EvalJsResult(base::Value(), "Error: frame has crashed.");
 
-  const std::u16string script16 = base::UTF8ToUTF16(runner_script);
-  if (host->GetLifecycleState() !=
-      content::RenderFrameHost::LifecycleState::kPrerendering) {
-    host->ExecuteJavaScriptWithUserGestureForTests(
-        script16, base::NullCallback());  // IN-TEST
-  } else {
-    host->ExecuteJavaScriptForTests(script16, base::NullCallback());  // IN-TEST
-  }
+  // This will queue up a message to be returned from the runner.
+  ExecuteScript(host, runner_script);
 
   std::string json;
   if (!dom_message_queue.WaitForMessage(&json))
@@ -174,6 +182,16 @@ content::EvalJsResult EvalJsLocal(
   auto& result = parsed_json->GetList()[1].GetList();
 
   return content::EvalJsResult(std::move(result[0]), result[1].GetString());
+}
+
+// As EvalJsLocal but does not wait for a response; errors will appear in the
+// test log.
+void ExecuteJsLocal(const content::ToRenderFrameHost& execution_target,
+                    const std::string& function) {
+  content::RenderFrameHost* const host = execution_target.render_frame_host();
+  CHECK(host->IsRenderFrameLive());
+  std::string runner_script = base::StringPrintf("(%s)();", function.c_str());
+  ExecuteScript(host, runner_script);
 }
 
 std::string CreateDeepQuery(
@@ -635,6 +653,11 @@ base::Value InteractionSequenceBrowserUtil::Evaluate(
   return std::move(value);
 }
 
+void InteractionSequenceBrowserUtil::Execute(const std::string& function) {
+  CHECK(is_page_loaded());
+  ExecuteJsLocal(web_contents(), function);
+}
+
 void InteractionSequenceBrowserUtil::SendEventOnStateChange(
     const StateChange& configuration) {
   CHECK(current_element_);
@@ -688,6 +711,12 @@ base::Value InteractionSequenceBrowserUtil::EvaluateAt(
   return Evaluate(full_query);
 }
 
+void InteractionSequenceBrowserUtil::ExecuteAt(const DeepQuery& where,
+                                               const std::string& function) {
+  const std::string full_query = CreateDeepQuery(where, function);
+  Execute(full_query);
+}
+
 bool InteractionSequenceBrowserUtil::Exists(const std::string& selector) {
   return Exists(DeepQuery{selector});
 }
@@ -696,6 +725,11 @@ base::Value InteractionSequenceBrowserUtil::EvaluateAt(
     const std::string& selector,
     const std::string& function) {
   return EvaluateAt(DeepQuery{selector}, function);
+}
+
+void InteractionSequenceBrowserUtil::ExecuteAt(const std::string& selector,
+                                               const std::string& function) {
+  ExecuteAt(DeepQuery{selector}, function);
 }
 
 gfx::Rect InteractionSequenceBrowserUtil::GetElementBoundsInScreen(
