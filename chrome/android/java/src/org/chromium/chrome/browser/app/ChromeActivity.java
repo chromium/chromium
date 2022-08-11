@@ -1267,7 +1267,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         super.onNewIntentWithNative(intent);
         getLaunchCauseMetrics().onReceivedIntent();
-        if (mIntentHandler.shouldIgnoreIntent(intent, /*startedActivity=*/false)) return;
+        if (mIntentHandler.shouldIgnoreIntent(intent, /*startedActivity=*/false, isCustomTab())) {
+            return;
+        }
 
         // We send this intent so that we can enter WebVr presentation mode if needed. This
         // call doesn't consume the intent because it also has the url that we need to load.

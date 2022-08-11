@@ -14,6 +14,9 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 import static org.chromium.chrome.browser.customtabs.CustomTabsTestUtils.createTestBitmap;
@@ -65,6 +68,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
@@ -91,6 +95,7 @@ import org.chromium.chrome.browser.AppHooksImpl;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.TabsOpenedFromExternalAppTest;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.browserservices.SessionDataHolder;
@@ -2062,5 +2067,41 @@ public class CustomTabActivityTest {
         Assert.assertEquals(String.format("<%s> not recorded correctly.", histogramName),
                 umaRecorded ? 1 : 0,
                 RecordHistogram.getHistogramTotalCountForTesting(histogramName));
+    }
+
+    @Test
+    @SmallTest
+    public void doesNotLaunchJavaScriptUrls_dispatchToCustomTabActivity() {
+        Context context = InstrumentationRegistry.getTargetContext();
+        String javaScriptUrl = "javascript: alert('Hello');";
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Intent intent =
+                    CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, javaScriptUrl);
+
+            Activity activity = Mockito.mock(Activity.class);
+            @LaunchIntentDispatcher.Action
+            int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(activity, intent);
+            assertEquals(LaunchIntentDispatcher.Action.CONTINUE, result);
+            verify(activity, never()).startActivity(any(), any());
+        });
+    }
+
+    @Test
+    @SmallTest
+    public void doesNotLaunchJavaScriptUrls_dispatch() {
+        Context context = InstrumentationRegistry.getTargetContext();
+        String javaScriptUrl = "javascript: alert('Hello');";
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Intent intent =
+                    CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, javaScriptUrl);
+
+            Activity activity = Mockito.mock(Activity.class);
+            @LaunchIntentDispatcher.Action
+            int result = LaunchIntentDispatcher.dispatch(activity, intent);
+            assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
+            verify(activity, never()).startActivity(any(), any());
+        });
     }
 }

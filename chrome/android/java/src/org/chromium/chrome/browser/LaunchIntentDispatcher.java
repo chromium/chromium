@@ -115,8 +115,11 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
     public static @Action int dispatchToCustomTabActivity(Activity currentActivity, Intent intent) {
         LaunchIntentDispatcher dispatcher = new LaunchIntentDispatcher(currentActivity, intent);
         if (!isCustomTabIntent(dispatcher.mIntent)) return Action.CONTINUE;
-        dispatcher.launchCustomTabActivity();
-        return Action.FINISH_ACTIVITY;
+        if (dispatcher.launchCustomTabActivity(new IntentHandler(currentActivity, dispatcher))) {
+            return Action.FINISH_ACTIVITY;
+        } else {
+            return Action.CONTINUE;
+        }
     }
 
     private LaunchIntentDispatcher(Activity activity, Intent intent) {
@@ -187,7 +190,7 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
 
         // Check if we should launch a Custom Tab.
         if (isCustomTabIntent) {
-            launchCustomTabActivity();
+            launchCustomTabActivity(intentHandler);
             return Action.FINISH_ACTIVITY;
         }
 
@@ -347,17 +350,24 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
 
     /**
      * Handles launching a {@link CustomTabActivity}, which will sit on top of a client's activity
-     * in the same task.
+     * in the same task. Returns whether an Activity was launched (or brought to the foreground).
      */
-    private void launchCustomTabActivity() {
+    private boolean launchCustomTabActivity(IntentHandler intentHandler) {
         CustomTabsConnection.getInstance().onHandledIntent(
                 CustomTabsSessionToken.getSessionTokenFromIntent(mIntent), mIntent);
+
+        boolean startedActivity = false;
+        boolean isCustomTab = true;
+        if (intentHandler.shouldIgnoreIntent(mIntent, startedActivity, isCustomTab)) {
+            return false;
+        }
+
         if (!clearTopIntentsForCustomTabsEnabled(mIntent)) {
             // The old way of delivering intents relies on calling the activity directly via a
             // static reference. It doesn't allow using CLEAR_TOP, and also doesn't work when an
             // intent brings the task to foreground. The condition above is a temporary safety net.
             boolean handled = getSessionDataHolder().handleIntent(mIntent);
-            if (handled) return;
+            if (handled) return true;
         }
         maybePrefetchDnsInBackground();
 
@@ -372,10 +382,11 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
         // Samsung devices, see https://crbug.com/796548.
         try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
             if (TwaSplashController.handleIntent(mActivity, launchIntent)) {
-                return;
+                return true;
             }
 
             mActivity.startActivity(launchIntent, null);
+            return true;
         }
     }
 

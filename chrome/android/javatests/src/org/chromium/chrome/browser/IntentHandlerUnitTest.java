@@ -578,6 +578,45 @@ public class IntentHandlerUnitTest {
         assertTrue(mIntentHandler.shouldIgnoreIntent(intent, /*startedActivity=*/true));
     }
 
+    /**
+     * Test that IntentHandler#shouldIgnoreIntent() returns true for Incognito non-Custom Tab
+     * Intents.
+     */
+    @Test
+    @SmallTest
+    @Feature({"Android-AppBase"})
+    public void testShouldIgnoreIncognitoIntent() {
+        Intent intent = new Intent(GOOGLE_URL);
+        intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, true);
+        assertTrue(mIntentHandler.shouldIgnoreIntent(intent, /*startedActivity=*/true));
+    }
+
+    /**
+     * Test that IntentHandler#shouldIgnoreIntent() returns false for Incognito non-Custom Tab
+     * Intents if they come from Chrome.
+     */
+    @Test
+    @SmallTest
+    @Feature({"Android-AppBase"})
+    public void testShouldIgnoreIncognitoIntent_trusted() {
+        Context context = InstrumentationRegistry.getTargetContext();
+        Intent intent = IntentHandler.createTrustedOpenNewTabIntent(context, true);
+        assertFalse(mIntentHandler.shouldIgnoreIntent(intent, /*startedActivity=*/true));
+    }
+
+    /**
+     * Test that IntentHandler#shouldIgnoreIntent() returns false for Incognito Custom Tab Intents.
+     */
+    @Test
+    @SmallTest
+    @Feature({"Android-AppBase"})
+    public void testShouldIgnoreIncognitoIntent_customTab() {
+        Intent intent = new Intent(GOOGLE_URL);
+        intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, true);
+        assertFalse(mIntentHandler.shouldIgnoreIntent(
+                intent, /*startedActivity=*/true, /*isCustomTab=*/true));
+    }
+
     @Test
     @SmallTest
     public void testIgnoreUnauthenticatedBringToFront() {

@@ -929,6 +929,18 @@ public class IntentHandler {
      * @return true if the intent should be ignored.
      */
     public boolean shouldIgnoreIntent(Intent intent, boolean startedActivity) {
+        return shouldIgnoreIntent(intent, startedActivity, /*isCustomTab=*/false);
+    }
+
+    /**
+     * Returns true if the app should ignore a given intent.
+     *
+     * @param intent Intent to check.
+     * @param startedActivity True if the Activity was not running prior to receiving the Intent.
+     * @param isCustomTab True if the Intent will end up in a Custom Tab.
+     * @return true if the intent should be ignored.
+     */
+    public boolean shouldIgnoreIntent(Intent intent, boolean startedActivity, boolean isCustomTab) {
         // Although not documented to, many/most methods that retrieve values from an Intent may
         // throw. Because we can't control what packages might send to us, we should catch any
         // Throwable and then fail closed (safe). This is ugly, but resolves top crashers in the
@@ -944,18 +956,8 @@ public class IntentHandler {
             boolean isInternal = notSecureIsIntentChromeOrFirstParty(intent);
             boolean isFromChrome = wasIntentSenderChrome(intent);
 
-            // "Open new incognito tab" is currently limited to Chrome.
-            //
-            // The pending incognito URL check is to handle the case where the user is shown an
-            // Android intent picker while in incognito and they select the current Chrome instance
-            // from the list.  In this case, we do not apply our Chrome token as the user has the
-            // option to select apps outside of our control, so we rely on this in memory check
-            // instead.
-            if (!isFromChrome
-                    && IntentUtils.safeGetBooleanExtra(
-                            intent, EXTRA_OPEN_NEW_INCOGNITO_TAB, false)
-                    && (getPendingIncognitoUrl() == null
-                            || !getPendingIncognitoUrl().equals(intent.getDataString()))) {
+            if (IntentUtils.safeGetBooleanExtra(intent, EXTRA_OPEN_NEW_INCOGNITO_TAB, false)
+                    && !isAllowedIncognitoIntent(isFromChrome, isCustomTab, intent)) {
                 return true;
             }
 
@@ -997,6 +999,22 @@ public class IntentHandler {
         } catch (Throwable t) {
             return true;
         }
+    }
+
+    private static boolean isAllowedIncognitoIntent(
+            boolean isChrome, boolean isCustomTab, Intent intent) {
+        // "Open new incognito tab" is currently limited to Chrome for the Chrome app. It can be
+        // launched by external apps if it's a Custom Tab, although there are additional checks in
+        // IncognitoCustomTabIntentDataProvider#isValidIncognitoIntent.
+        if (isChrome || isCustomTab) return true;
+
+        // The pending incognito URL check is to handle the case where the user is shown an
+        // Android intent picker while in incognito and they select the current Chrome instance
+        // from the list.  In this case, we do not apply our Chrome token as the user has the
+        // option to select apps outside of our control, so we rely on this in memory check
+        // instead.
+        String pendingUrl = getPendingIncognitoUrl();
+        return pendingUrl != null && pendingUrl.equals(intent.getDataString());
     }
 
     private static boolean intentHasUnsafeInternalScheme(String scheme, String url, Intent intent) {
