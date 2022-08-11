@@ -3241,8 +3241,9 @@ bool RenderViewContextMenu::IsRegionSearchEnabled() const {
 
   if (!base::FeatureList::IsEnabled(
           lens::features::kEnableRegionSearchOnPdfViewer) &&
-      IsFrameInPdfViewer(GetRenderFrameHost()))
+      IsFrameInPdfViewer(GetRenderFrameHost())) {
     return false;
+  }
 
   const TemplateURL* provider = service->GetDefaultSearchProvider();
   const bool provider_supports_image_search =
@@ -3587,14 +3588,12 @@ void RenderViewContextMenu::ExecRegionSearch(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (!lens_region_search_controller_) {
     Browser* browser = GetBrowser();
-    WebContents* web_contents;
+    WebContents* web_contents = source_web_contents_;
     if (base::FeatureList::IsEnabled(
             lens::features::kEnableRegionSearchOnPdfViewer)) {
-      // We don't use |source_web_contents_| here because it doesn't work with
+      // We don't use `source_web_contents_` here because it doesn't work with
       // the PDF reader.
       web_contents = browser->tab_strip_model()->GetActiveWebContents();
-    } else {
-      web_contents = source_web_contents_;
     }
     lens_region_search_controller_ =
         std::make_unique<lens::LensRegionSearchController>(web_contents,
