@@ -111,11 +111,11 @@ void AccuracyService::CheckAccuracyStatus(const GURL& url,
                                           AccuracyCheckCallback callback) {
   DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
 
-  const base::Value* last_interactions =
-      pref_service_->Get(GetPreviousInteractionsPrefName(disable_ui_));
+  const base::Value::List& last_interactions =
+      pref_service_->GetValueList(GetPreviousInteractionsPrefName(disable_ui_));
   const base::Value opt_out_value(
       static_cast<int>(AccuracyTipInteraction::kOptOut));
-  if (base::Contains(last_interactions->GetListDeprecated(), opt_out_value)) {
+  if (base::Contains(last_interactions, opt_out_value)) {
     return std::move(callback).Run(AccuracyTipStatus::kOptOut);
   }
 
@@ -162,8 +162,7 @@ void AccuracyService::MaybeShowAccuracyTip(content::WebContents* web_contents) {
   }
 
   bool show_opt_out =
-      pref_service_->GetList(GetPreviousInteractionsPrefName(disable_ui_))
-          ->GetListDeprecated()
+      pref_service_->GetValueList(GetPreviousInteractionsPrefName(disable_ui_))
           .size() >= static_cast<size_t>(features::kNumIgnorePrompts.Get());
 
   url_for_last_shown_tip_ = web_contents->GetLastCommittedURL();
@@ -182,10 +181,9 @@ void AccuracyService::MaybeShowAccuracyTip(content::WebContents* web_contents) {
 
 void AccuracyService::MaybeShowSurvey() {
   if (CanShowSurvey()) {
-    auto* interactions_list =
-        pref_service_->GetList(GetPreviousInteractionsPrefName(disable_ui_));
-    const int last_interaction =
-        interactions_list->GetListDeprecated().back().GetInt();
+    const auto& interactions_list = pref_service_->GetValueList(
+        GetPreviousInteractionsPrefName(disable_ui_));
+    const int last_interaction = interactions_list.back().GetInt();
     const bool ukm_enabled = pref_service_->GetBoolean(
         unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled);
     std::string url_parameter_for_hats =
@@ -289,8 +287,7 @@ bool AccuracyService::CanShowSurvey() {
     return false;
 
   int interactions_count =
-      pref_service_->GetList(GetPreviousInteractionsPrefName(disable_ui_))
-          ->GetListDeprecated()
+      pref_service_->GetValueList(GetPreviousInteractionsPrefName(disable_ui_))
           .size();
   return interactions_count >= features::kMinPromptCountRequiredForSurvey.Get();
 }
