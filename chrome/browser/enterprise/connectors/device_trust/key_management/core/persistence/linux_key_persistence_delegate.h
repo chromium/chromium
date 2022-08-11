@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_KEY_MANAGEMENT_CORE_PERSISTENCE_LINUX_KEY_PERSISTENCE_DELEGATE_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_KEY_MANAGEMENT_CORE_PERSISTENCE_LINUX_KEY_PERSISTENCE_DELEGATE_H_
 
+#include <memory>
+#include <vector>
+
 #include "base/files/file.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -14,6 +17,8 @@ class FilePath;
 }  // namespace base
 
 namespace enterprise_connectors {
+
+class SigningKeyPair;
 
 // Linux implementation of the KeyPersistenceDelegate interface.
 class LinuxKeyPersistenceDelegate : public KeyPersistenceDelegate {
@@ -25,9 +30,8 @@ class LinuxKeyPersistenceDelegate : public KeyPersistenceDelegate {
   bool CheckRotationPermissions() override;
   bool StoreKeyPair(KeyPersistenceDelegate::KeyTrustLevel trust_level,
                     std::vector<uint8_t> wrapped) override;
-  KeyPersistenceDelegate::KeyInfo LoadKeyPair() override;
-  std::unique_ptr<crypto::UnexportableKeyProvider> GetUnexportableKeyProvider()
-      override;
+  std::unique_ptr<SigningKeyPair> LoadKeyPair() override;
+  std::unique_ptr<SigningKeyPair> CreateKeyPair() override;
 
  private:
   friend class LinuxKeyPersistenceDelegateTest;

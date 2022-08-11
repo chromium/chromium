@@ -5,8 +5,12 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/mac_key_persistence_delegate.h"
 
 #include "base/notreached.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/signing_key_pair.h"
+#include "components/policy/proto/device_management_backend.pb.h"
 
 namespace enterprise_connectors {
+
+using BPKUR = enterprise_management::BrowserPublicKeyUploadRequest;
 
 MacKeyPersistenceDelegate::~MacKeyPersistenceDelegate() = default;
 
@@ -21,14 +25,13 @@ bool MacKeyPersistenceDelegate::StoreKeyPair(KeyTrustLevel trust_level,
   return false;
 }
 
-KeyPersistenceDelegate::KeyInfo MacKeyPersistenceDelegate::LoadKeyPair() {
+std::unique_ptr<SigningKeyPair> MacKeyPersistenceDelegate::LoadKeyPair() {
   NOTIMPLEMENTED();
-  return invalid_key_info();
+  return nullptr;
 }
 
-std::unique_ptr<crypto::UnexportableKeyProvider>
-MacKeyPersistenceDelegate::GetUnexportableKeyProvider() {
-  // Mac OS does not expose TPM support.
+std::unique_ptr<SigningKeyPair> MacKeyPersistenceDelegate::CreateKeyPair() {
+  NOTIMPLEMENTED();
   return nullptr;
 }
 

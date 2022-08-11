@@ -4,13 +4,19 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/linux_key_persistence_delegate.h"
 
+#include <string>
+
 #include "base/base64.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/ec_signing_key.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/signing_key_pair.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using BPKUR = enterprise_management::BrowserPublicKeyUploadRequest;
 
 namespace {
 
@@ -56,11 +62,34 @@ std::vector<uint8_t> ParseKeyWrapped(base::StringPiece encoded_wrapped) {
   return std::vector<uint8_t>(decoded_key.begin(), decoded_key.end());
 }
 
+void ValidateSigningKey(enterprise_connectors::SigningKeyPair* key_pair,
+                        BPKUR::KeyTrustLevel trust_level) {
+  ASSERT_TRUE(key_pair);
+
+  EXPECT_EQ(trust_level, key_pair->trust_level());
+
+  if (trust_level == BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED) {
+    ASSERT_TRUE(!key_pair->key());
+    return;
+  }
+
+  EXPECT_EQ(BPKUR::CHROME_BROWSER_OS_KEY, trust_level);
+  ASSERT_TRUE(key_pair->key());
+
+  // Extract a pubkey should work.
+  std::vector<uint8_t> pubkey = key_pair->key()->GetSubjectPublicKeyInfo();
+  ASSERT_GT(pubkey.size(), 0u);
+
+  // Signing should work.
+  auto signed_data = key_pair->key()->SignSlowly(
+      base::as_bytes(base::make_span("data to sign")));
+  ASSERT_TRUE(signed_data.has_value());
+  ASSERT_GT(signed_data->size(), 0u);
+}
+
 }  // namespace
 
 namespace enterprise_connectors {
-
-using BPKUR = enterprise_management::BrowserPublicKeyUploadRequest;
 
 class LinuxKeyPersistenceDelegateTest : public testing::Test {
  public:
@@ -145,107 +174,103 @@ TEST_F(LinuxKeyPersistenceDelegateTest, StoreKeyPair_ValidHWKeyPair) {
   EXPECT_EQ(kValidHWKeyFileContent, GetFileContents());
 }
 
-// Tests trying to load a key when there is no file.
+// Tests trying to load a signing key pair when there is no file.
 TEST_F(LinuxKeyPersistenceDelegateTest, LoadKeyPair_NoKeyFile) {
-  auto [trust_level, wrapped] = persistence_delegate_.LoadKeyPair();
-  EXPECT_EQ(trust_level, BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED);
-  EXPECT_TRUE(wrapped.empty());
+  auto key_pair = persistence_delegate_.LoadKeyPair();
+  EXPECT_FALSE(key_pair);
 }
 
-// Tests loading a valid OS key from a key file.
+// Tests loading a valid OS signing key pair from a file.
 TEST_F(LinuxKeyPersistenceDelegateTest, LoadKeyPair_ValidOSKeyFile) {
   ASSERT_TRUE(CreateFile(kValidOSKeyFileContent));
-  auto [trust_level, wrapped] = persistence_delegate_.LoadKeyPair();
-  EXPECT_EQ(trust_level, BPKUR::CHROME_BROWSER_OS_KEY);
-  EXPECT_FALSE(wrapped.empty());
-  EXPECT_EQ(wrapped, ParseKeyWrapped(kValidKeyWrappedBase64));
+  auto key_pair = persistence_delegate_.LoadKeyPair();
+  ValidateSigningKey(key_pair.get(), BPKUR::CHROME_BROWSER_OS_KEY);
 }
 
-// Tests loading a valid hardware key from a key file.
+// Tests that loading a Hardware key pair fails since hardware keys
+// are not supported on linux.
 TEST_F(LinuxKeyPersistenceDelegateTest, LoadKeyPair_ValidHWKeyFile) {
   ASSERT_TRUE(CreateFile(kValidHWKeyFileContent));
-  auto [trust_level, wrapped] = persistence_delegate_.LoadKeyPair();
-  EXPECT_EQ(trust_level, BPKUR::CHROME_BROWSER_HW_KEY);
-  EXPECT_FALSE(wrapped.empty());
-  EXPECT_EQ(wrapped, ParseKeyWrapped(kValidKeyWrappedBase64));
+  auto key_pair = persistence_delegate_.LoadKeyPair();
+  EXPECT_FALSE(key_pair);
 }
 
-// Tests loading a key from a key file with an invalid trust level.
+// Tests loading a key pair from a key file with an invalid trust level.
 TEST_F(LinuxKeyPersistenceDelegateTest, LoadKeyPair_InvalidTrustLevel) {
   ASSERT_TRUE(CreateFile(kInvalidTrustLevelKeyFileContent));
-  auto [trust_level, wrapped] = persistence_delegate_.LoadKeyPair();
-  EXPECT_EQ(trust_level, BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED);
-  EXPECT_TRUE(wrapped.empty());
+  auto key_pair = persistence_delegate_.LoadKeyPair();
+  EXPECT_FALSE(key_pair);
 }
 
-// Tests loading a key from a key file when the signing key property is missing.
+// Tests loading a key pair from a key file when the signing key property is
+// missing.
 TEST_F(LinuxKeyPersistenceDelegateTest, LoadKeyPair_MissingSigningKey) {
   const char file_content[] = "{\"trustLevel\":\"2\"}";
 
   ASSERT_TRUE(CreateFile(file_content));
-  auto [trust_level, wrapped] = persistence_delegate_.LoadKeyPair();
-  EXPECT_EQ(trust_level, BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED);
-  EXPECT_TRUE(wrapped.empty());
+  auto key_pair = persistence_delegate_.LoadKeyPair();
+  EXPECT_FALSE(key_pair);
 }
 
-// Tests loading a key from a key file when the trust level property is missing.
+// Tests loading a key pair from a key file when the trust level property is
+// missing.
 TEST_F(LinuxKeyPersistenceDelegateTest, LoadKeyPair_MissingTrustLevel) {
   const std::string file_content =
       base::StringPrintf("{\"signingKey\":\"%s\"}", kValidKeyWrappedBase64);
 
   ASSERT_TRUE(CreateFile(file_content));
-  auto [trust_level, wrapped] = persistence_delegate_.LoadKeyPair();
-  EXPECT_EQ(trust_level, BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED);
-  EXPECT_TRUE(wrapped.empty());
+  auto key_pair = persistence_delegate_.LoadKeyPair();
+  EXPECT_FALSE(key_pair);
 }
 
-// Tests loading a key from a key file when the file content is invalid (not a
-// JSON dictionary).
+// Tests loading a key pair from a key file when the file content is invalid
+// (not a JSON dictionary).
 TEST_F(LinuxKeyPersistenceDelegateTest, LoadKeyPair_InvalidContent) {
   const char file_content[] = "just some text";
 
   ASSERT_TRUE(CreateFile(file_content));
-  auto [trust_level, wrapped] = persistence_delegate_.LoadKeyPair();
-  EXPECT_EQ(trust_level, BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED);
-  EXPECT_TRUE(wrapped.empty());
+  auto key_pair = persistence_delegate_.LoadKeyPair();
+  EXPECT_FALSE(key_pair);
 }
 
-// Tests loading a key from a key file when there is a valid key, but the key
-// file contains random trailing values.
+// Tests loading a key pair from a key file when there is a valid key, but the
+// key file contains random trailing values.
 TEST_F(LinuxKeyPersistenceDelegateTest, LoadKeyPair_TrailingGibberish) {
   const std::string file_content = base::StringPrintf(
       "{\"signingKey\":\"%s\",\"trustLevel\":\"2\"}someother random content",
       kValidKeyWrappedBase64);
 
   ASSERT_TRUE(CreateFile(file_content));
-  auto [trust_level, wrapped] = persistence_delegate_.LoadKeyPair();
-  EXPECT_EQ(trust_level, BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED);
-  EXPECT_TRUE(wrapped.empty());
+  auto key_pair = persistence_delegate_.LoadKeyPair();
+  EXPECT_FALSE(key_pair);
 }
 
-// Tests loading a key from a key file when the key value is not a valid
+// Tests loading a key pair from a key file when the key value is not a valid
 // base64 encoded string.
 TEST_F(LinuxKeyPersistenceDelegateTest, LoadKeyPair_KeyNotBase64) {
   const std::string file_content = base::StringPrintf(
       "{\"signingKey\":\"%s\",\"trustLevel\":\"2\"}", kInvalidBase64String);
 
   ASSERT_TRUE(CreateFile(file_content));
-  auto [trust_level, wrapped] = persistence_delegate_.LoadKeyPair();
-  EXPECT_EQ(trust_level, BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED);
-  EXPECT_TRUE(wrapped.empty());
+  auto key_pair = persistence_delegate_.LoadKeyPair();
+  EXPECT_FALSE(key_pair);
 }
 
 // Tests the flow of both storing and loading a key.
 TEST_F(LinuxKeyPersistenceDelegateTest, StoreAndLoadKeyPair) {
   ASSERT_TRUE(CreateFile(""));
-  auto trust_level = BPKUR::CHROME_BROWSER_HW_KEY;
+  auto trust_level = BPKUR::CHROME_BROWSER_OS_KEY;
   auto wrapped = ParseKeyWrapped(kValidKeyWrappedBase64);
   EXPECT_TRUE(persistence_delegate_.StoreKeyPair(trust_level, wrapped));
 
-  auto [loaded_trust_level, loaded_wrapped] =
-      persistence_delegate_.LoadKeyPair();
-  EXPECT_EQ(trust_level, loaded_trust_level);
-  EXPECT_EQ(wrapped, loaded_wrapped);
+  auto key_pair = persistence_delegate_.LoadKeyPair();
+  ValidateSigningKey(key_pair.get(), trust_level);
+}
+
+// Test creating a key pair returns the correct trust level and a signing key.
+TEST_F(LinuxKeyPersistenceDelegateTest, CreateKeyPair) {
+  auto key_pair = persistence_delegate_.CreateKeyPair();
+  ValidateSigningKey(key_pair.get(), key_pair->trust_level());
 }
 
 }  // namespace enterprise_connectors

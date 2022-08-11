@@ -7,7 +7,12 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate.h"
 
+#include <memory>
+#include <vector>
+
 namespace enterprise_connectors {
+
+class SigningKeyPair;
 
 // Windows implementation of the KeyPersistenceDelegate interface.
 class WinKeyPersistenceDelegate : public KeyPersistenceDelegate {
@@ -18,9 +23,8 @@ class WinKeyPersistenceDelegate : public KeyPersistenceDelegate {
   bool CheckRotationPermissions() override;
   bool StoreKeyPair(KeyPersistenceDelegate::KeyTrustLevel trust_level,
                     std::vector<uint8_t> wrapped) override;
-  KeyPersistenceDelegate::KeyInfo LoadKeyPair() override;
-  std::unique_ptr<crypto::UnexportableKeyProvider> GetUnexportableKeyProvider()
-      override;
+  std::unique_ptr<SigningKeyPair> LoadKeyPair() override;
+  std::unique_ptr<SigningKeyPair> CreateKeyPair() override;
 };
 
 }  // namespace enterprise_connectors

@@ -26,6 +26,8 @@ source_set("browser") {
 
   deps = [
     "//chrome/browser/enterprise/connectors/device_trust/key_management/core",
+    "//chrome/browser/enterprise/connectors/device_trust/key_management/core:util",
+    "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence",
     "//components/policy/core/common",
     "//crypto",
     "//services/network/public/cpp",
@@ -67,6 +69,7 @@ source_set("unit_tests") {
     "//chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands",
     "//chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands:test_support",
     "//chrome/browser/enterprise/connectors/device_trust/key_management/core",
+    "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence",
     "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence:test_support",
     "//components/enterprise",
     "//components/enterprise:test_support",

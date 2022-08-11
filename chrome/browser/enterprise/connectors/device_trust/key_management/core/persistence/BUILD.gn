@@ -13,8 +13,10 @@ source_set("persistence") {
   deps = [ "//base" ]
 
   public_deps = [
+    "//chrome/browser/enterprise/connectors/device_trust/key_management/core",
     "//components/policy/proto",
     "//crypto",
+    "//third_party/abseil-cpp:absl",
   ]
 
   if (is_win) {
@@ -40,7 +42,6 @@ source_set("persistence") {
     deps += [
       "//build:branding_buildflags",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core:constants",
-      "//third_party/abseil-cpp:absl",
     ]
 
     friend = [ ":unit_tests" ]
@@ -81,6 +82,7 @@ if (is_linux) {
     deps = [
       ":persistence",
       "//base",
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/core",
       "//components/policy/proto",
       "//testing/gtest",
     ]

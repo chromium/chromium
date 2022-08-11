@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/ec_signing_key.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/mock_key_persistence_delegate.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/signing_key_pair.h"
 #include "crypto/signature_verifier.h"
 #include "crypto/unexportable_key.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -19,21 +20,19 @@ namespace test {
 
 namespace {
 
-std::vector<uint8_t> GenerateHardwareWrapped() {
+std::unique_ptr<crypto::UnexportableSigningKey> GenerateHardwareSigningKey() {
   auto provider = crypto::GetUnexportableKeyProvider();
   DCHECK(provider);
   auto acceptable_algorithms = {crypto::SignatureVerifier::ECDSA_SHA256};
   auto signing_key = provider->GenerateSigningKeySlowly(acceptable_algorithms);
   DCHECK(signing_key);
-  return signing_key->GetWrappedKey();
+  return signing_key;
 }
 
-std::vector<uint8_t> GenerateECWrapped() {
-  ECSigningKeyProvider ec_key_provider;
+std::unique_ptr<crypto::UnexportableSigningKey> GenerateECSigningKey() {
+  auto ec_key_provider = std::make_unique<ECSigningKeyProvider>();
   auto acceptable_algorithms = {crypto::SignatureVerifier::ECDSA_SHA256};
-  auto signing_key =
-      ec_key_provider.GenerateSigningKeySlowly(acceptable_algorithms);
-  return signing_key->GetWrappedKey();
+  return ec_key_provider->GenerateSigningKeySlowly(acceptable_algorithms);
 }
 
 }  // namespace
@@ -56,19 +55,21 @@ ScopedKeyPersistenceDelegateFactory::
     CreateMockedHardwareDelegateWithLoadingSideEffect(
         base::RepeatingClosure& side_effect) {
   if (hw_wrapped_key_.empty()) {
-    hw_wrapped_key_ = GenerateHardwareWrapped();
+    hw_wrapped_key_ = GenerateHardwareSigningKey()->GetWrappedKey();
   }
 
   auto mocked_delegate = std::make_unique<MockKeyPersistenceDelegate>();
   ON_CALL(*mocked_delegate.get(), LoadKeyPair)
       .WillByDefault(testing::DoAll(
           testing::Invoke([&side_effect]() { side_effect.Run(); }),
-          testing::Return(KeyPersistenceDelegate::KeyInfo(
-              BPKUR::CHROME_BROWSER_HW_KEY, hw_wrapped_key_))));
-  ON_CALL(*mocked_delegate.get(), GetUnexportableKeyProvider)
+          testing::Invoke([]() {
+            return std::make_unique<SigningKeyPair>(
+                GenerateHardwareSigningKey(), BPKUR::CHROME_BROWSER_HW_KEY);
+          })));
+  ON_CALL(*mocked_delegate.get(), CreateKeyPair)
       .WillByDefault(testing::Invoke([]() {
-        // This is mocked via crypto::ScopedMockUnexportableKeyProvider.
-        return crypto::GetUnexportableKeyProvider();
+        return std::make_unique<SigningKeyPair>(GenerateHardwareSigningKey(),
+                                                BPKUR::CHROME_BROWSER_HW_KEY);
       }));
   return mocked_delegate;
 }
@@ -76,15 +77,20 @@ ScopedKeyPersistenceDelegateFactory::
 std::unique_ptr<MockKeyPersistenceDelegate>
 ScopedKeyPersistenceDelegateFactory::CreateMockedECDelegate() {
   if (ec_wrapped_key_.empty()) {
-    ec_wrapped_key_ = GenerateECWrapped();
+    ec_wrapped_key_ = GenerateECSigningKey()->GetWrappedKey();
   }
 
   auto mocked_delegate = std::make_unique<MockKeyPersistenceDelegate>();
   ON_CALL(*mocked_delegate.get(), LoadKeyPair)
-      .WillByDefault(testing::Return(KeyPersistenceDelegate::KeyInfo(
-          BPKUR::CHROME_BROWSER_OS_KEY, ec_wrapped_key_)));
-  ON_CALL(*mocked_delegate.get(), GetUnexportableKeyProvider)
-      .WillByDefault(testing::Invoke([]() { return nullptr; }));
+      .WillByDefault(testing::Invoke([]() {
+        return std::make_unique<SigningKeyPair>(GenerateECSigningKey(),
+                                                BPKUR::CHROME_BROWSER_OS_KEY);
+      }));
+  ON_CALL(*mocked_delegate.get(), CreateKeyPair)
+      .WillByDefault(testing::Invoke([]() {
+        return std::make_unique<SigningKeyPair>(GenerateECSigningKey(),
+                                                BPKUR::CHROME_BROWSER_OS_KEY);
+      }));
   return mocked_delegate;
 }
 

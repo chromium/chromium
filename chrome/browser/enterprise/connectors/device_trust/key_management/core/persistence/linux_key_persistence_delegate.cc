@@ -10,7 +10,7 @@
 #include <sys/stat.h>
 
 #include <string>
-#include <vector>
+#include <utility>
 
 #include "base/base64.h"
 #include "base/files/file.h"
@@ -24,8 +24,11 @@
 #include "base/syslog_logging.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/ec_signing_key.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/shared_command_constants.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/signing_key_pair.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "crypto/unexportable_key.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 using BPKUR = enterprise_management::BrowserPublicKeyUploadRequest;
@@ -150,28 +153,23 @@ bool LinuxKeyPersistenceDelegate::StoreKeyPair(
   return write_result;
 }
 
-KeyPersistenceDelegate::KeyInfo LinuxKeyPersistenceDelegate::LoadKeyPair() {
+std::unique_ptr<SigningKeyPair> LinuxKeyPersistenceDelegate::LoadKeyPair() {
   std::string file_content;
   if (!base::ReadFileToStringWithMaxSize(GetSigningKeyFilePath(), &file_content,
                                          kMaxBufferSize)) {
-    return invalid_key_info();
+    return nullptr;
   }
 
   // Get dictionary key info.
   auto keyinfo = base::JSONReader::Read(file_content);
   if (!keyinfo || !keyinfo->is_dict()) {
-    return invalid_key_info();
+    return nullptr;
   }
 
   // Get the trust level.
   auto stored_trust_level = keyinfo->FindIntKey(kSigningKeyTrustLevel);
-  KeyTrustLevel trust_level = BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED;
-  if (stored_trust_level == BPKUR::CHROME_BROWSER_HW_KEY) {
-    trust_level = BPKUR::CHROME_BROWSER_HW_KEY;
-  } else if (stored_trust_level == BPKUR::CHROME_BROWSER_OS_KEY) {
-    trust_level = BPKUR::CHROME_BROWSER_OS_KEY;
-  } else {
-    return invalid_key_info();
+  if (stored_trust_level != BPKUR::CHROME_BROWSER_OS_KEY) {
+    return nullptr;
   }
 
   // Get the key.
@@ -179,21 +177,37 @@ KeyPersistenceDelegate::KeyInfo LinuxKeyPersistenceDelegate::LoadKeyPair() {
   std::string decoded_key;
 
   if (!encoded_key) {
-    return invalid_key_info();
+    return nullptr;
   }
 
   if (!base::Base64Decode(*encoded_key, &decoded_key)) {
-    return invalid_key_info();
+    return nullptr;
+  }
+  std::vector<uint8_t> wrapped =
+      std::vector<uint8_t>(decoded_key.begin(), decoded_key.end());
+
+  auto provider = std::make_unique<ECSigningKeyProvider>();
+  auto signing_key = provider->FromWrappedSigningKeySlowly(wrapped);
+  if (!signing_key) {
+    return nullptr;
   }
 
-  std::vector<uint8_t> key(decoded_key.begin(), decoded_key.end());
-  return std::make_pair(trust_level, key);
+  return std::make_unique<SigningKeyPair>(std::move(signing_key),
+                                          BPKUR::CHROME_BROWSER_OS_KEY);
 }
 
-std::unique_ptr<crypto::UnexportableKeyProvider>
-LinuxKeyPersistenceDelegate::GetUnexportableKeyProvider() {
-  // TODO (http://b/210343211)
-  return nullptr;
+std::unique_ptr<SigningKeyPair> LinuxKeyPersistenceDelegate::CreateKeyPair() {
+  // TODO (http://b/210343211): TPM support for linux.
+  auto provider = std::make_unique<ECSigningKeyProvider>();
+  auto algorithm = {crypto::SignatureVerifier::ECDSA_SHA256};
+  auto signing_key = provider->GenerateSigningKeySlowly(algorithm);
+
+  if (!signing_key) {
+    return nullptr;
+  }
+
+  return std::make_unique<SigningKeyPair>(std::move(signing_key),
+                                          BPKUR::CHROME_BROWSER_OS_KEY);
 }
 
 // static

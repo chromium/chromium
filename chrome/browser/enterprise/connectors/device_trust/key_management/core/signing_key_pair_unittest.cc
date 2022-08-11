@@ -8,16 +8,13 @@
 #include <vector>
 
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/ec_signing_key.h"
-#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate.h"
-#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/mock_key_persistence_delegate.h"
-#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/scoped_key_persistence_delegate_factory.h"
-#include "crypto/unexportable_key.h"
+#include "crypto/scoped_mock_unexportable_key_provider.h"
+#include "crypto/signature_verifier.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using BPKUP = enterprise_management::BrowserPublicKeyUploadResponse;
 using BPKUR = enterprise_management::BrowserPublicKeyUploadRequest;
-using testing::Return;
 
 namespace enterprise_connectors {
 
@@ -41,47 +38,41 @@ void ValidateSigningKey(SigningKeyPair* key_pair,
   ASSERT_GT(signed_data->size(), 0u);
 }
 
+std::unique_ptr<crypto::UnexportableSigningKey> GenerateSigningKey(
+    BPKUR::KeyTrustLevel trust_level) {
+  std::unique_ptr<crypto::UnexportableKeyProvider> provider;
+  if (trust_level == BPKUR::CHROME_BROWSER_HW_KEY) {
+    provider = crypto::GetUnexportableKeyProvider();
+  } else {
+    provider = std::make_unique<ECSigningKeyProvider>();
+  }
+  DCHECK(provider);
+  auto acceptable_algorithms = {crypto::SignatureVerifier::ECDSA_SHA256};
+  return provider->GenerateSigningKeySlowly(acceptable_algorithms);
+}
+
 }  // namespace
 
 class SigningKeyPairTest : public testing::Test {
  protected:
-  test::ScopedKeyPersistenceDelegateFactory factory_;
+  crypto::ScopedMockUnexportableKeyProvider scoped_key_provider_;
 };
 
-// Tests that the SigningKeyPair::Create factory function returns nothing if no
-// key was persisted.
-TEST_F(SigningKeyPairTest, Create_NoKey) {
-  testing::StrictMock<test::MockKeyPersistenceDelegate>
-      mock_persistence_delegate;
-  EXPECT_CALL(mock_persistence_delegate, LoadKeyPair())
-      .WillOnce(Return(KeyPersistenceDelegate::KeyInfo(
-          BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED, std::vector<uint8_t>())));
-  EXPECT_FALSE(SigningKeyPair::Create(&mock_persistence_delegate));
-}
-
-// Tests that the SigningKeyPair::Create factory function returns a properly
-// initialized hardware-backed SigningKeyPair if a hardware-backed key was
-// available.
-TEST_F(SigningKeyPairTest, Create_WithHwKey) {
-  auto mocked_delegate = factory_.CreateMockedHardwareDelegate();
-
-  EXPECT_CALL(*mocked_delegate, LoadKeyPair());
-  EXPECT_CALL(*mocked_delegate, GetUnexportableKeyProvider());
-
-  auto key_pair = SigningKeyPair::Create(mocked_delegate.get());
-
+// Tests that the SigningKeyPair instance is correctly initialized with a
+// hardware-backed SigningKeyPair if it was available.
+TEST_F(SigningKeyPairTest, SigningKeyPairInstance_WithHwKey) {
+  auto key_pair = std::make_unique<SigningKeyPair>(
+      GenerateSigningKey(BPKUR::CHROME_BROWSER_HW_KEY),
+      BPKUR::CHROME_BROWSER_HW_KEY);
   ValidateSigningKey(key_pair.get(), BPKUR::CHROME_BROWSER_HW_KEY);
 }
 
-// Tests that the SigningKeyPair::Create factory function returns a properly
-// initialized crypto::ECPrivateKey-backed SigningKeyPair if that is what was
-// available.
+// Tests that the SigningKeyPair instance is correctly initialized with a
+// crypto::ECPrivateKey-backed SigningKeyPair if it was available.
 TEST_F(SigningKeyPairTest, Create_WithECPrivateKey) {
-  auto mocked_delegate = factory_.CreateMockedECDelegate();
-  EXPECT_CALL(*mocked_delegate, LoadKeyPair);
-
-  auto key_pair = SigningKeyPair::Create(mocked_delegate.get());
-
+  auto key_pair = std::make_unique<SigningKeyPair>(
+      GenerateSigningKey(BPKUR::CHROME_BROWSER_OS_KEY),
+      BPKUR::CHROME_BROWSER_OS_KEY);
   ValidateSigningKey(key_pair.get(), BPKUR::CHROME_BROWSER_OS_KEY);
 }
 

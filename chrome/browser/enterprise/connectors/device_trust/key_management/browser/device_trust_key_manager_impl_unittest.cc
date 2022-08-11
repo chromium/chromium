@@ -48,13 +48,6 @@ constexpr char kKeyCreationResultHistogram[] =
 constexpr char kKeyRotationResultHistogram[] =
     "Enterprise.DeviceTrust.Key.RotationResult";
 
-enterprise_connectors::test::MockKeyPersistenceDelegate::KeyInfo
-CreateEmptyKey() {
-  return {enterprise_management::BrowserPublicKeyUploadRequest::
-              KEY_TRUST_LEVEL_UNSPECIFIED,
-          std::vector<uint8_t>()};
-}
-
 }  // namespace
 
 class DeviceTrustKeyManagerImplTest : public testing::Test {
@@ -75,7 +68,6 @@ class DeviceTrustKeyManagerImplTest : public testing::Test {
     auto mock_persistence_delegate =
         persistence_delegate_factory_.CreateMockedHardwareDelegate();
     EXPECT_CALL(*mock_persistence_delegate, LoadKeyPair());
-    EXPECT_CALL(*mock_persistence_delegate, GetUnexportableKeyProvider());
 
     persistence_delegate_factory_.set_next_instance(
         std::move(mock_persistence_delegate));
@@ -85,7 +77,7 @@ class DeviceTrustKeyManagerImplTest : public testing::Test {
     auto mock_persistence_delegate =
         std::make_unique<test::MockKeyPersistenceDelegate>();
     EXPECT_CALL(*mock_persistence_delegate, LoadKeyPair())
-        .WillOnce(testing::Return(CreateEmptyKey()));
+        .WillOnce(Invoke([]() { return nullptr; }));
 
     persistence_delegate_factory_.set_next_instance(
         std::move(mock_persistence_delegate));
@@ -698,7 +690,6 @@ TEST_F(DeviceTrustKeyManagerImplTest, RotateKey_AtLoadKey_Success) {
   auto mock_persistence_delegate =
       persistence_delegate_factory_
           .CreateMockedHardwareDelegateWithLoadingSideEffect(start_rotate);
-  EXPECT_CALL(*mock_persistence_delegate, GetUnexportableKeyProvider());
   EXPECT_CALL(*mock_persistence_delegate, LoadKeyPair());
 
   persistence_delegate_factory_.set_next_instance(
@@ -756,7 +747,6 @@ TEST_F(DeviceTrustKeyManagerImplTest, RotateKey_AtLoadKey_Fails) {
   auto mock_persistence_delegate =
       persistence_delegate_factory_
           .CreateMockedHardwareDelegateWithLoadingSideEffect(start_rotate);
-  EXPECT_CALL(*mock_persistence_delegate, GetUnexportableKeyProvider());
   EXPECT_CALL(*mock_persistence_delegate, LoadKeyPair());
 
   persistence_delegate_factory_.set_next_instance(

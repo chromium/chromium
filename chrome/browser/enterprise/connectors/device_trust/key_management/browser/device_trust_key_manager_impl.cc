@@ -15,6 +15,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/key_rotation_launcher.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/metrics_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/signing_key_pair.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/signing_key_util.h"
 #include "crypto/unexportable_key.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -149,7 +150,7 @@ void DeviceTrustKeyManagerImpl::LoadKey(bool create_on_fail) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   state_ = InitializationState::kLoadingKey;
   background_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&SigningKeyPair::LoadPersistedKey),
+      FROM_HERE, base::BindOnce(&LoadPersistedKey),
       base::BindOnce(&DeviceTrustKeyManagerImpl::OnKeyLoaded,
                      weak_factory_.GetWeakPtr(), create_on_fail));
 }

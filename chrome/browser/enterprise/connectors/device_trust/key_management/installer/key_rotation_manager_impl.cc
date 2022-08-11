@@ -12,7 +12,6 @@
 #include "base/check.h"
 #include "base/syslog_logging.h"
 #include "base/threading/platform_thread.h"
-#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/ec_signing_key.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/key_network_delegate.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/util.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate.h"
@@ -50,7 +49,7 @@ KeyRotationManagerImpl::KeyRotationManagerImpl(
   DCHECK(network_delegate_);
   DCHECK(persistence_delegate_);
 
-  key_pair_ = SigningKeyPair::Create(persistence_delegate_.get());
+  key_pair_ = persistence_delegate_->LoadKeyPair();
 }
 
 KeyRotationManagerImpl::~KeyRotationManagerImpl() = default;
@@ -73,28 +72,8 @@ void KeyRotationManagerImpl::Rotate(
     return;
   }
 
-  // Create a new key pair.  First try creating a hardware-backed key. If that
-  // does not work, try a less secure type.
-  KeyTrustLevel new_trust_level = BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED;
-  auto acceptable_algorithms = {
-      crypto::SignatureVerifier::ECDSA_SHA256,
-      crypto::SignatureVerifier::RSA_PKCS1_SHA256,
-  };
-
-  std::unique_ptr<crypto::UnexportableKeyProvider> provider =
-      persistence_delegate_->GetUnexportableKeyProvider();
-  auto new_key_pair =
-      provider ? provider->GenerateSigningKeySlowly(acceptable_algorithms)
-               : nullptr;
-  if (new_key_pair) {
-    new_trust_level = BPKUR::CHROME_BROWSER_HW_KEY;
-  } else {
-    new_trust_level = BPKUR::CHROME_BROWSER_OS_KEY;
-    ECSigningKeyProvider ec_signing_provider;
-    new_key_pair =
-        ec_signing_provider.GenerateSigningKeySlowly(acceptable_algorithms);
-  }
-  if (!new_key_pair) {
+  auto new_key_pair = persistence_delegate_->CreateKeyPair();
+  if (!new_key_pair || new_key_pair->is_empty()) {
     RecordRotationStatus(nonce,
                          RotationStatus::FAILURE_CANNOT_GENERATE_NEW_KEY);
     SYSLOG(ERROR) << "Device trust key rotation failed. Could not generate a "
@@ -103,8 +82,8 @@ void KeyRotationManagerImpl::Rotate(
     return;
   }
 
-  if (!persistence_delegate_->StoreKeyPair(new_trust_level,
-                                           new_key_pair->GetWrappedKey())) {
+  if (!persistence_delegate_->StoreKeyPair(
+          new_key_pair->trust_level(), new_key_pair->key()->GetWrappedKey())) {
     RecordRotationStatus(nonce, RotationStatus::FAILURE_CANNOT_STORE_KEY);
     SYSLOG(ERROR) << "Device trust key rotation failed. Could not write to "
                      "signing key storage.";
@@ -114,7 +93,7 @@ void KeyRotationManagerImpl::Rotate(
 
   enterprise_management::DeviceManagementRequest request;
   if (!BuildUploadPublicKeyRequest(
-          new_trust_level, new_key_pair, nonce,
+          *new_key_pair, nonce,
           request.mutable_browser_public_key_upload_request())) {
     RecordRotationStatus(nonce, RotationStatus::FAILURE_CANNOT_BUILD_REQUEST);
     SYSLOG(ERROR) << "Device trust key rotation failed. Could not build the "
@@ -128,20 +107,18 @@ void KeyRotationManagerImpl::Rotate(
 
   // Any attempt to reuse a nonce will result in an INVALID_SIGNATURE error
   // being returned by the server.
-  auto upload_key_callback =
-      base::BindOnce(&KeyRotationManagerImpl::OnDmServerResponse,
-                     weak_factory_.GetWeakPtr(), nonce, new_trust_level,
-                     std::move(new_key_pair), std::move(result_callback));
+  auto upload_key_callback = base::BindOnce(
+      &KeyRotationManagerImpl::OnDmServerResponse, weak_factory_.GetWeakPtr(),
+      nonce, std::move(new_key_pair), std::move(result_callback));
   network_delegate_->SendPublicKeyToDmServer(
       dm_server_url, dm_token, request_str, std::move(upload_key_callback));
 }
 
 bool KeyRotationManagerImpl::BuildUploadPublicKeyRequest(
-    KeyTrustLevel new_trust_level,
-    const std::unique_ptr<crypto::UnexportableSigningKey>& new_key_pair,
+    const SigningKeyPair& new_key_pair,
     const std::string& nonce,
     enterprise_management::BrowserPublicKeyUploadRequest* request) {
-  std::vector<uint8_t> pubkey = new_key_pair->GetSubjectPublicKeyInfo();
+  std::vector<uint8_t> pubkey = new_key_pair.key()->GetSubjectPublicKeyInfo();
 
   // Build the buffer to sign.  It consists of the public key of the new key
   // pair followed by the nonce.  The nonce vector may be empty.
@@ -158,22 +135,21 @@ bool KeyRotationManagerImpl::BuildUploadPublicKeyRequest(
   absl::optional<std::vector<uint8_t>> signature =
       key_pair_ && key_pair_->key() && !nonce.empty()
           ? key_pair_->key()->SignSlowly(buffer)
-          : new_key_pair->SignSlowly(buffer);
+          : new_key_pair.key()->SignSlowly(buffer);
   if (!signature.has_value())
     return false;
 
   request->set_public_key(pubkey.data(), pubkey.size());
   request->set_signature(signature->data(), signature->size());
-  request->set_key_trust_level(new_trust_level);
-  request->set_key_type(AlgorithmToType(new_key_pair->Algorithm()));
+  request->set_key_trust_level(new_key_pair.trust_level());
+  request->set_key_type(AlgorithmToType(new_key_pair.key()->Algorithm()));
 
   return true;
 }
 
 void KeyRotationManagerImpl::OnDmServerResponse(
     const std::string& nonce,
-    KeyTrustLevel trust_level,
-    std::unique_ptr<crypto::UnexportableSigningKey> new_key_pair,
+    std::unique_ptr<SigningKeyPair> new_key_pair,
     base::OnceCallback<void(bool)> result_callback,
     KeyNetworkDelegate::HttpResponseCode response_code) {
   RecordUploadCode(nonce, response_code);
@@ -205,9 +181,7 @@ void KeyRotationManagerImpl::OnDmServerResponse(
     std::move(result_callback).Run(false);
     return;
   }
-
-  key_pair_ =
-      std::make_unique<SigningKeyPair>(std::move(new_key_pair), trust_level);
+  key_pair_ = std::move(new_key_pair);
   RecordRotationStatus(nonce, RotationStatus::SUCCESS);
   std::move(result_callback).Run(true);
 }

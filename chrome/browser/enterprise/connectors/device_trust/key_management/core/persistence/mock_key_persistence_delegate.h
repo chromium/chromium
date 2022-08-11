@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_KEY_MANAGEMENT_CORE_PERSISTENCE_MOCK_KEY_PERSISTENCE_DELEGATE_H_
 
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/signing_key_pair.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace enterprise_connectors {
@@ -23,9 +24,12 @@ class MockKeyPersistenceDelegate : public KeyPersistenceDelegate {
               StoreKeyPair,
               (KeyPersistenceDelegate::KeyTrustLevel, std::vector<uint8_t>),
               (override));
-  MOCK_METHOD(KeyPersistenceDelegate::KeyInfo, LoadKeyPair, (), (override));
-  MOCK_METHOD(std::unique_ptr<crypto::UnexportableKeyProvider>,
-              GetUnexportableKeyProvider,
+  MOCK_METHOD(std::unique_ptr<enterprise_connectors::SigningKeyPair>,
+              LoadKeyPair,
+              (),
+              (override));
+  MOCK_METHOD(std::unique_ptr<enterprise_connectors::SigningKeyPair>,
+              CreateKeyPair,
               (),
               (override));
 };

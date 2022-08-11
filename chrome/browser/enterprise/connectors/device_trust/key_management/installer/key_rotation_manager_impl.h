@@ -15,10 +15,6 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/key_rotation_manager.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
-namespace crypto {
-class UnexportableSigningKey;
-}  // namespace crypto
-
 namespace enterprise_connectors {
 
 class KeyPersistenceDelegate;
@@ -44,23 +40,19 @@ class KeyRotationManagerImpl : public KeyRotationManager {
   // for this device. `nonce` is an opaque binary blob and should not be
   // treated as an ASCII or UTF-8 string.
   bool BuildUploadPublicKeyRequest(
-      KeyTrustLevel new_trust_level,
-      const std::unique_ptr<crypto::UnexportableSigningKey>& new_key_pair,
+      const SigningKeyPair& new_key_pair,
       const std::string& nonce,
       enterprise_management::BrowserPublicKeyUploadRequest* request);
 
   // Gets the `response_code` from the upload key request and continues
   // the key rotation process. `rotate_callback` returns the rotation result.
   // The `nonce` is an opaque binary blob and should not be treated as an
-  // ASCII or UTF-8 string. The `trust_level` is the trust level of the
-  // key_pair, and the `new_key_pair`refers to the key pair that is created
-  // during the rotation process.
-  void OnDmServerResponse(
-      const std::string& nonce,
-      KeyTrustLevel trust_level,
-      std::unique_ptr<crypto::UnexportableSigningKey> new_key_pair,
-      base::OnceCallback<void(bool)> result_callback,
-      KeyNetworkDelegate::HttpResponseCode response_code);
+  // ASCII or UTF-8 string. The `new_key_pair` refers to the key pair that is
+  // created during the rotation process.
+  void OnDmServerResponse(const std::string& nonce,
+                          std::unique_ptr<SigningKeyPair> new_key_pair,
+                          base::OnceCallback<void(bool)> result_callback,
+                          KeyNetworkDelegate::HttpResponseCode response_code);
 
   std::unique_ptr<KeyNetworkDelegate> network_delegate_;
   std::unique_ptr<KeyPersistenceDelegate> persistence_delegate_;

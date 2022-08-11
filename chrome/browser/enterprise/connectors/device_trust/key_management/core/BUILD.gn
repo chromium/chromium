@@ -16,7 +16,6 @@ source_set("core") {
   deps = [ "//base" ]
 
   public_deps = [
-    "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence",
     "//components/policy/proto",
     "//crypto",
   ]
@@ -27,18 +26,31 @@ source_set("constants") {
   sources = [ "shared_command_constants.cc" ]
 }
 
+source_set("util") {
+  public = [ "signing_key_util.h" ]
+  sources = [ "signing_key_util.cc" ]
+  deps = [
+    ":core",
+    "//base",
+    "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
     "ec_signing_key_unittest.cc",
     "signing_key_pair_unittest.cc",
+    "signing_key_util_unittest.cc",
   ]
 
   deps = [
     ":core",
+    ":util",
     "//base",
     "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence:test_support",
     "//crypto",
+    "//crypto:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]
