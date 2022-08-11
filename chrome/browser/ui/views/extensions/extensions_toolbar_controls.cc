@@ -9,7 +9,6 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/extensions/extension_action_view_controller.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "content/public/browser/web_contents.h"
@@ -28,11 +27,6 @@ ExtensionsToolbarControls::ExtensionsToolbarControls(
   request_access_button_->SetVisible(false);
   // TODO(emiliapaz): Consider changing AddMainItem() to receive a unique_ptr.
   AddMainItem(extensions_button.release());
-
-  const int radius = ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
-      views::Emphasis::kMaximum, extensions_button_->GetPreferredSize());
-  SetBackground(views::CreateThemedRoundedRectBackground(
-      kColorExtensionsToolbarControlsBackground, radius));
 }
 
 ExtensionsToolbarControls::~ExtensionsToolbarControls() = default;
@@ -45,6 +39,16 @@ void ExtensionsToolbarControls::UpdateControls(
     content::WebContents* current_web_contents) {
   UpdateSiteAccessButton(actions, current_web_contents);
   UpdateRequestAccessButton(actions, site_setting, current_web_contents);
+
+  // Display background only when multiple buttons are visible. Since
+  // the extensions button is always visible, check if any of the other
+  // buttons is too.
+  SetBackground(site_access_button_->GetVisible() ||
+                        request_access_button_->GetVisible()
+                    ? views::CreateThemedRoundedRectBackground(
+                          kColorExtensionsToolbarControlsBackground,
+                          extensions_button_->GetPreferredSize().height())
+                    : nullptr);
 
   // Resets the layout since layout animation does not handle host view
   // visibility changing. This should be called after any visibility changes.
