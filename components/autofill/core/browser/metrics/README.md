@@ -50,17 +50,17 @@ located, as well as how hard it was to find **all** metrics for a given feature.
 
 ### The new way
 
-**Don't** use a class, but **do** use the `autofill::metrics` namespace. Then,
+**Don't** use a class, but **do** use the `autofill::autofill_metrics` namespace. Then,
 combine all metrics that are part of a single feature together, so they're not
 intertwined with the rest of Autofill's metrics.
 
 *cool_feature_metrics.h*:
 
+(Put this header file under components/autofill/core/browser/metrics/[optional_sub_directory])
 ```c++ {.good}
 // [Copyright notice and include guards]
 
-namespace autofill {
-namespace metrics {
+namespace autofill::autofill_metrics {
 
 enum class CoolFeatureInteractionMetric {
   // User accepted the cool feature.
@@ -72,10 +72,9 @@ enum class CoolFeatureInteractionMetric {
   kMaxValue = kIgnored,
 };
 
-static void LogCoolFeatureInteraction(CoolFeatureInteractionMetric metric);
+void LogCoolFeatureInteraction(CoolFeatureInteractionMetric metric);
 
-}  // namespace metrics
-}  // namespace autofill
+}  // namespace autofill::autofill_metrics
 ```
 
 *cool_feature_metrics.cc*:
@@ -83,12 +82,10 @@ static void LogCoolFeatureInteraction(CoolFeatureInteractionMetric metric);
 ```c++ {.good}
 // [Copyright notice]
 
-#include "components/autofill/core/browser/metrics/cool_feature_metrics.h"
+#include "components/autofill/core/browser/metrics/[optional_sub_directory]/cool_feature_metrics.h"
 
-namespace autofill {
-namespace metrics {
+namespace autofill::autofill_metrics {
 
-// static
 void LogCoolFeatureInteraction(CoolFeatureInteractionMetric metric) {
   base::UmaHistogramEnumeration("Autofill.CoolFeatureInteraction", metric);
 }
@@ -96,9 +93,8 @@ void LogCoolFeatureInteraction(CoolFeatureInteractionMetric metric) {
 // If there are other metrics related to this feature, they'd go here, and it
 // would be very obvious they're related!
 
-}  // namespace metrics
-}  // namespace autofill
+}  // namespace autofill::autofill_metrics
 ```
 
 The calling code of this function would be
-`autofill::metrics::LogCoolFeatureInteraction(~)`.
+`autofill::autofill_metrics::LogCoolFeatureInteraction(~)`.
