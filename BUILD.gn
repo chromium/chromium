@@ -1585,12 +1585,9 @@ if (!is_ios) {
 
   script_test("blink_python_tests") {
     script = "//testing/scripts/run_isolated_script_test.py"
-    args = [
-      "@WrappedPath(" +
-          rebase_path("//third_party/blink/tools/run_blinkpy_tests.py",
-                      root_build_dir) + ")",
-      "--coverage",
-    ]
+    args = [ "@WrappedPath(" +
+             rebase_path("//third_party/blink/tools/run_blinkpy_tests.py",
+                         root_build_dir) + ")" ]
 
     data = [
       # These tests use //build/android/devil_chromium.py even when !is_android,
