@@ -56159,6 +56159,7 @@ from previous Chrome versions.
   <int value="-1818565030"
       label="AutofillUseConsistentPopupSettingsIcons:disabled"/>
   <int value="-1818135677" label="DisableLacrosTtsSupport:enabled"/>
+  <int value="-1817721380" label="RemoveCanceledTasksInTaskQueue2:disabled"/>
   <int value="-1817209284" label="PayWithGoogleV1:enabled"/>
   <int value="-1816066138" label="CastAllowAllIPs:enabled"/>
   <int value="-1813088913" label="CCTResizable90MaximumHeight:disabled"/>
@@ -59616,6 +59617,7 @@ from previous Chrome versions.
   <int value="353898777" label="ClipboardHistoryScreenshotNudge:disabled"/>
   <int value="354466842" label="UachOverrideBlank:enabled"/>
   <int value="354631905" label="RecoverFromNeverSaveAndroid:disabled"/>
+  <int value="354662118" label="RemoveCanceledTasksInTaskQueue2:enabled"/>
   <int value="355367368" label="SharesheetCopyToClipboard:disabled"/>
   <int value="357138275" label="enable-floating-virtual-keyboard:disabled"/>
   <int value="357165937" label="ShareToGoogleCollections:enabled"/>

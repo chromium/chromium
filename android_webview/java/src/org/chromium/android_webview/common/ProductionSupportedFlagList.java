@@ -345,6 +345,8 @@ public final class ProductionSupportedFlagList {
                     "Enable rendering starvation-prevention during threaded scrolling."
                             + " See https://crbug.com/1315279."),
             Flag.baseFeature(BaseFeatures.NO_WAKE_UPS_FOR_CANCELED_TASKS,
+                    "Controls whether wake ups are possible for canceled tasks."),
+            Flag.baseFeature(BaseFeatures.REMOVE_CANCELED_TASKS_IN_TASK_QUEUE,
                     "Controls whether or not canceled delayed tasks are removed from task queues."),
             Flag.baseFeature(BlinkFeatures.THROTTLE_INTERSECTION_OBSERVER_UMA,
                     "Reduces fine-grained UMA metrics for IntersectionObserver."),
