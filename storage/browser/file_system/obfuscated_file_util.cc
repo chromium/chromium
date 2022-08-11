@@ -147,15 +147,6 @@ bool DatabaseKey::operator<(const DatabaseKey& other) const {
 
 // end DatabaseKey implementation.
 
-// TODO(https://crbug.com/1248104): This class will eventually interface with
-// Storage Buckets instead of directly interfacing with LevelDB. Thus, the below
-// functions were converted from url::Origin to blink::StorageKey to prepare for
-// Storage Partitioning of the FileSystem APIs. However, it is important to note
-// that, until the refactor to use Storage Buckets, the LevelDB structure above
-// is still used, and the entries are still keyed per-origin (achieved by
-// storage_key.origin()) and per-type. Going forward, OriginRecords will be
-// retrieved from the database and converted into StorageKey values until
-// Storage Buckets are implemented instead.
 class ObfuscatedFileEnumerator final
     : public FileSystemFileUtil::AbstractFileEnumerator {
  public:
@@ -254,6 +245,14 @@ class ObfuscatedFileEnumerator final
   base::File::Info current_platform_file_info_;
 };
 
+// NOTE: currently, ObfuscatedFileUtil still relies on SandboxOriginDatabases
+// for first-party StorageKeys/default buckets. The AbstractStorageKeyEnumerator
+// class is only used in these cases. While this class stores and iterates
+// through StorageKeys types, it works by retrieving OriginRecords from the
+// SandboxOriginDatabase and converting those origins into first-party
+// StorageKey values (e.g. blink::StorageKey(origin)). The goal is to eventually
+// deprecate SandboxOriginDatabases and AbstractStorageKeyEnumerators and rely
+// entirely on Storage Buckets.
 class ObfuscatedStorageKeyEnumerator
     : public ObfuscatedFileUtil::AbstractStorageKeyEnumerator {
  public:
