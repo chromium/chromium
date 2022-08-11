@@ -214,14 +214,6 @@ class HistoryURLProvider : public HistoryProvider {
   // See base/trace_event/memory_usage_estimator.h for more info.
   size_t EstimateMemoryUsage() const override;
 
-  // Runs the history query on the history thread, called by the history
-  // system. The history database MAY BE NULL in which case it is not
-  // available and we should return no data. Also schedules returning the
-  // results to the main thread
-  void ExecuteWithDB(HistoryURLProviderParams* params,
-                     history::HistoryBackend* backend,
-                     history::URLDatabase* db);
-
  private:
   FRIEND_TEST_ALL_PREFIXES(HistoryURLProviderTest, HUPScoringExperiment);
   FRIEND_TEST_ALL_PREFIXES(HistoryURLProviderTest, DoTrimHttpScheme);
@@ -255,6 +247,14 @@ class HistoryURLProvider : public HistoryProvider {
   static ACMatchClassifications ClassifyDescription(
       const std::u16string& input_text,
       const std::u16string& description);
+
+  // Runs the history query on the history thread, called by the history
+  // system. The history database MAY BE NULL in which case it is not
+  // available and we should return no data. Also schedules returning the
+  // results to the main thread
+  void ExecuteWithDB(HistoryURLProviderParams* params,
+                     history::HistoryBackend* backend,
+                     history::URLDatabase* db);
 
   // Actually runs the autocomplete job on the given database, which is
   // guaranteed not to be NULL.  Used by both autocomplete passes, and therefore

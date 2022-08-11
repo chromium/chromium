@@ -544,28 +544,6 @@ size_t HistoryURLProvider::EstimateMemoryUsage() const {
   return res;
 }
 
-void HistoryURLProvider::ExecuteWithDB(HistoryURLProviderParams* params,
-                                       history::HistoryBackend* backend,
-                                       history::URLDatabase* db) {
-  // We may get called with a null database if it couldn't be properly
-  // initialized.
-  if (!db) {
-    params->failed = true;
-  } else if (!params->cancel_flag.IsSet()) {
-    base::TimeTicks beginning_time = base::TimeTicks::Now();
-
-    DoAutocomplete(backend, db, params);
-
-    UMA_HISTOGRAM_TIMES("Autocomplete.HistoryAsyncQueryTime",
-                        base::TimeTicks::Now() - beginning_time);
-  }
-
-  // Return the results (if any) to the originating sequence.
-  params->origin_task_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(&HistoryURLProvider::QueryComplete, this, params));
-}
-
 // Note: This object can get leaked on shutdown if there are pending
 // requests on the database (which hold a reference to us). Normally, these
 // messages get flushed for each thread. We do a round trip from main, to
@@ -601,6 +579,28 @@ ACMatchClassifications HistoryURLProvider::ClassifyDescription(
   return ClassifyTermMatches(term_matches, description.size(),
                              ACMatchClassification::MATCH,
                              ACMatchClassification::NONE);
+}
+
+void HistoryURLProvider::ExecuteWithDB(HistoryURLProviderParams* params,
+                                       history::HistoryBackend* backend,
+                                       history::URLDatabase* db) {
+  // We may get called with a null database if it couldn't be properly
+  // initialized.
+  if (!db) {
+    params->failed = true;
+  } else if (!params->cancel_flag.IsSet()) {
+    base::TimeTicks beginning_time = base::TimeTicks::Now();
+
+    DoAutocomplete(backend, db, params);
+
+    UMA_HISTOGRAM_TIMES("Autocomplete.HistoryAsyncQueryTime",
+                        base::TimeTicks::Now() - beginning_time);
+  }
+
+  // Return the results (if any) to the originating sequence.
+  params->origin_task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(&HistoryURLProvider::QueryComplete, this, params));
 }
 
 void HistoryURLProvider::DoAutocomplete(history::HistoryBackend* backend,
