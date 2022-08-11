@@ -157,11 +157,6 @@ int CreateTrendingQueriesTrial(
     feature_list->RegisterFieldTrialOverride(
         kTrendingQueriesModule.name, base::FeatureList::OVERRIDE_ENABLE_FEATURE,
         trial.get());
-    if (!base::FeatureList::IsEnabled(kContentSuggestionsUIModuleRefresh)) {
-      feature_list->RegisterFieldTrialOverride(
-          kContentSuggestionsUIModuleRefresh.name,
-          base::FeatureList::OVERRIDE_ENABLE_FEATURE, trial.get());
-    }
   }
 
   return kCurrentTrialVersion;
