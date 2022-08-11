@@ -2138,30 +2138,6 @@ bool PaintLayer::HitTestClippedOutByClipPath(
   return !clipper->HitTestClipContent(reference_box, location);
 }
 
-bool PaintLayer::IntersectsDamageRect(
-    const PhysicalRect& layer_bounds,
-    const PhysicalRect& damage_rect,
-    const PhysicalOffset& offset_from_root) const {
-  // Always examine the canvas and the root.
-  // FIXME: Could eliminate the isDocumentElement() check if we fix background
-  // painting so that the LayoutView paints the root's background.
-  if (IsRootLayer() || GetLayoutObject().IsDocumentElement())
-    return true;
-
-  // If we aren't an inline flow, and our layer bounds do intersect the damage
-  // rect, then we can go ahead and return true.
-  LayoutView* view = GetLayoutObject().View();
-  DCHECK(view);
-  if (view && !GetLayoutObject().IsLayoutInline()) {
-    if (layer_bounds.Intersects(damage_rect))
-      return true;
-  }
-
-  // Otherwise we need to compute the bounding box of this single layer and see
-  // if it intersects the damage rect.
-  return PhysicalBoundingBox(offset_from_root).Intersects(damage_rect);
-}
-
 PhysicalRect PaintLayer::LocalBoundingBox() const {
   PhysicalRect rect = GetLayoutObject().PhysicalVisualOverflowRect();
   if (GetLayoutObject().IsEffectiveRootScroller() || IsRootLayer()) {
@@ -2182,16 +2158,6 @@ PhysicalRect PaintLayer::PhysicalBoundingBox(
     const PhysicalOffset& offset_from_root) const {
   PhysicalRect result = LocalBoundingBox();
   result.Move(offset_from_root);
-  return result;
-}
-
-PhysicalRect PaintLayer::FragmentsBoundingBox(
-    const PaintLayer* ancestor_layer) const {
-  if (!EnclosingPaginationLayer())
-    return PhysicalBoundingBox(ancestor_layer);
-
-  PhysicalRect result = LocalBoundingBox();
-  ConvertFromFlowThreadToVisualBoundingBoxInAncestor(ancestor_layer, result);
   return result;
 }
 

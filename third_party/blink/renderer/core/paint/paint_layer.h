@@ -340,15 +340,10 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
                HitTestResult&,
                const PhysicalRect& hit_test_area);
 
-  bool IntersectsDamageRect(const PhysicalRect& layer_bounds,
-                            const PhysicalRect& damage_rect,
-                            const PhysicalOffset& offset_from_root) const;
-
   // Bounding box relative to some ancestor layer. Pass offsetFromRoot if known.
   PhysicalRect PhysicalBoundingBox(
       const PhysicalOffset& offset_from_root) const;
   PhysicalRect PhysicalBoundingBox(const PaintLayer* ancestor_layer) const;
-  PhysicalRect FragmentsBoundingBox(const PaintLayer* ancestor_layer) const;
 
   // Static position is set in parent's coordinate space.
   LayoutUnit StaticInlinePosition() const { return static_inline_position_; }
