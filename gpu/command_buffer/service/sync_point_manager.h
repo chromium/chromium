@@ -10,12 +10,13 @@
 #include <functional>
 #include <memory>
 #include <queue>
-#include <unordered_map>
 #include <vector>
 
 #include "base/atomic_sequence_num.h"
 #include "base/callback.h"
 #include "base/check.h"
+#include "base/containers/flat_map.h"
+#include "base/containers/queue.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/condition_variable.h"
@@ -143,7 +144,7 @@ class GPU_EXPORT SyncPointOrderData
   // Queue of unprocessed order numbers. Order numbers are enqueued in
   // GenerateUnprocessedOrderNumber, and dequeued in
   // FinishProcessingOrderNumber.
-  std::queue<uint32_t> unprocessed_order_nums_;
+  base::queue<uint32_t> unprocessed_order_nums_;
 
   // In situations where we are waiting on fence syncs that do not exist, we
   // validate by making sure the order number does not pass the order number
@@ -319,13 +320,11 @@ class GPU_EXPORT SyncPointManager {
                                      CommandBufferId command_buffer_id);
 
  private:
-  using ClientStateMap = std::unordered_map<CommandBufferId,
-                                            scoped_refptr<SyncPointClientState>,
-                                            CommandBufferId::Hasher>;
+  using ClientStateMap =
+      base::flat_map<CommandBufferId, scoped_refptr<SyncPointClientState>>;
 
-  using OrderDataMap = std::unordered_map<SequenceId,
-                                          scoped_refptr<SyncPointOrderData>,
-                                          SequenceId::Hasher>;
+  using OrderDataMap =
+      base::flat_map<SequenceId, scoped_refptr<SyncPointOrderData>>;
 
   scoped_refptr<SyncPointOrderData> GetSyncPointOrderData(
       SequenceId sequence_id);
