@@ -473,7 +473,10 @@ fuchsia_package_installer("web_engine_with_webui_installer") {
 
 # TODO(crbug.com/1081525): Move to ../common/test.
 source_set("browsertest_core") {
-  visibility += [ "//fuchsia_web/runners:*" ]
+  visibility += [
+    "//fuchsia_web/runners:*",
+    "//fuchsia_web/webinstance_host:*",
+  ]
   testonly = true
   sources = [
     "test/frame_for_test.cc",
@@ -666,10 +669,6 @@ test("web_engine_integration_tests") {
     "web_engine_integration_test.cc",
     "web_engine_integration_test_base.cc",
     "web_engine_integration_test_base.h",
-
-    # TODO(crbug.com/1081525): Move to //fuchsia_web/webinstance_host/ and
-    # remove the deps below.
-    "web_instance_host_integration_test.cc",
   ]
   data = [ "test/data" ]
   deps = [
@@ -679,7 +678,7 @@ test("web_engine_integration_tests") {
     "//components/version_info",
     "//fuchsia_web/common/test:run_all_integration_tests",
     "//fuchsia_web/common/test:test_support",
-    "//fuchsia_web/webinstance_host",
+    "//fuchsia_web/webinstance_host:webinstance_host_integration_test",
     "//media",
     "//media/fuchsia/audio:test_support",
     "//media/fuchsia/camera:test_support",
