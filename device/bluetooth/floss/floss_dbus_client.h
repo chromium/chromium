@@ -30,6 +30,9 @@ extern DEVICE_BLUETOOTH_EXPORT const char kManagerInterface[];
 extern DEVICE_BLUETOOTH_EXPORT const char kManagerObject[];
 extern DEVICE_BLUETOOTH_EXPORT const char kAdapterObjectFormat[];
 
+// Other interfaces
+extern DEVICE_BLUETOOTH_EXPORT const char kSocketManagerInterface[];
+
 namespace adapter {
 extern DEVICE_BLUETOOTH_EXPORT const char kGetAddress[];
 extern DEVICE_BLUETOOTH_EXPORT const char kGetName[];
@@ -84,6 +87,28 @@ extern DEVICE_BLUETOOTH_EXPORT const char kCallbackInterface[];
 extern DEVICE_BLUETOOTH_EXPORT const char kOnHciDeviceChanged[];
 extern DEVICE_BLUETOOTH_EXPORT const char kOnHciEnabledChanged[];
 }  // namespace manager
+
+namespace socket_manager {
+extern DEVICE_BLUETOOTH_EXPORT const char kRegisterCallback[];
+extern DEVICE_BLUETOOTH_EXPORT const char kListenUsingInsecureL2capChannel[];
+extern DEVICE_BLUETOOTH_EXPORT const char
+    kListenUsingInsecureRfcommWithServiceRecord[];
+extern DEVICE_BLUETOOTH_EXPORT const char kListenUsingL2capChannel[];
+extern DEVICE_BLUETOOTH_EXPORT const char kListenUsingRfcommWithServiceRecord[];
+extern DEVICE_BLUETOOTH_EXPORT const char kCreateInsecureL2capChannel[];
+extern DEVICE_BLUETOOTH_EXPORT const char
+    kCreateInsecureRfcommSocketToServiceRecord[];
+extern DEVICE_BLUETOOTH_EXPORT const char kCreateL2capChannel[];
+extern DEVICE_BLUETOOTH_EXPORT const char kCreateRfcommSocketToServiceRecord[];
+extern DEVICE_BLUETOOTH_EXPORT const char kAccept[];
+extern DEVICE_BLUETOOTH_EXPORT const char kClose[];
+extern DEVICE_BLUETOOTH_EXPORT const char kCallbackInterface[];
+
+extern DEVICE_BLUETOOTH_EXPORT const char kOnIncomingSocketReady[];
+extern DEVICE_BLUETOOTH_EXPORT const char kOnIncomingSocketClosed[];
+extern DEVICE_BLUETOOTH_EXPORT const char kOnHandleIncomingConnection[];
+extern DEVICE_BLUETOOTH_EXPORT const char kOnOutgoingConnectionResult[];
+}  // namespace socket_manager
 
 // BluetoothDevice structure for DBus apis.
 struct DEVICE_BLUETOOTH_EXPORT FlossDeviceId {

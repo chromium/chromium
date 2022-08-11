@@ -23,6 +23,8 @@ const char kManagerInterface[] = "org.chromium.bluetooth.Manager";
 const char kManagerObject[] = "/org/chromium/bluetooth/Manager";
 const char kAdapterObjectFormat[] = "/org/chromium/bluetooth/hci%d/adapter";
 
+const char kSocketManagerInterface[] = "org.chromium.bluetooth.SocketManager";
+
 namespace adapter {
 const char kGetAddress[] = "GetAddress";
 const char kGetName[] = "GetName";
@@ -79,6 +81,32 @@ const char kCallbackInterface[] = "org.chromium.bluetooth.ManagerCallback";
 const char kOnHciDeviceChanged[] = "OnHciDeviceChanged";
 const char kOnHciEnabledChanged[] = "OnHciEnabledChanged";
 }  // namespace manager
+
+namespace socket_manager {
+const char kRegisterCallback[] = "RegisterCallback";
+const char kListenUsingInsecureL2capChannel[] =
+    "ListenUsingInsecureL2capChannel";
+const char kListenUsingInsecureRfcommWithServiceRecord[] =
+    "ListenUsingInsecureRfcommWithServiceRecord";
+const char kListenUsingL2capChannel[] = "ListenUsingL2capChannel";
+const char kListenUsingRfcommWithServiceRecord[] =
+    "ListenUsingRfcommWithServiceRecord";
+const char kCreateInsecureL2capChannel[] = "CreateInsecureL2capChannel";
+const char kCreateInsecureRfcommSocketToServiceRecord[] =
+    "CreateInsecureRfcommSocketToServiceRecord";
+const char kCreateL2capChannel[] = "CreateL2capChannel";
+const char kCreateRfcommSocketToServiceRecord[] =
+    "CreateRfcommSocketToServiceRecord";
+const char kAccept[] = "Accept";
+const char kClose[] = "Close";
+const char kCallbackInterface[] =
+    "org.chromium.bluetooth.SocketManagerCallback";
+
+const char kOnIncomingSocketReady[] = "OnIncomingSocketReady";
+const char kOnIncomingSocketClosed[] = "OnIncomingSocketClosed";
+const char kOnHandleIncomingConnection[] = "OnHandleIncomingConnection";
+const char kOnOutgoingConnectionResult[] = "OnOutgoingConnectionResult";
+}  // namespace socket_manager
 
 namespace {
 constexpr char kDeviceIdNameKey[] = "name";
