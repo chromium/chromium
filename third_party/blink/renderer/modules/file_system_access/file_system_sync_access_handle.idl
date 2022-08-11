@@ -27,9 +27,9 @@
 [
   RaisesException, Measure
 ] unsigned long long read([AllowShared] ArrayBufferView buffer,
-                           FileSystemReadWriteOptions options);
+                           optional FileSystemReadWriteOptions options = {});
 [
   RaisesException, Measure
 ] unsigned long long write([AllowShared] ArrayBufferView buffer,
-                           FileSystemReadWriteOptions options);
+                           optional FileSystemReadWriteOptions options = {});
 };

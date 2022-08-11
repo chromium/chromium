@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(fivedots): Replace link with explainer, once it lands.
-// https://docs.google.com/document/d/1g7ZCqZ5NdiU7oqyCpsc2iZ7rRAY1ZXO-9VoG4LfP7fM
+// TODO(fivedots): Replace link with one pointing to spec, once it lands.
+// https://github.com/whatwg/fs/blob/main/AccessHandle.md
 
 dictionary FileSystemReadWriteOptions {
-  [EnforceRange] unsigned long long at;
+  [EnforceRange] unsigned long long at = 0;
 };
