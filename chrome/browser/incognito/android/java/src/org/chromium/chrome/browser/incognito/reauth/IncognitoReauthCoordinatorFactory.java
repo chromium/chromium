@@ -200,7 +200,7 @@ public class IncognitoReauthCoordinatorFactory {
                         incognitoReauthCallback, getSeeOtherTabsRunnable(), mModalDialogManager,
                         getIncognitoReauthMenuDelegate(), backPressedCallback)
                 : new TabSwitcherIncognitoReauthCoordinator(mContext, mIncognitoReauthManager,
-                        incognitoReauthCallback, getSeeOtherTabsRunnable(),
+                        incognitoReauthCallback, getSeeOtherTabsRunnable(), getBackPressRunnable(),
                         mTabSwitcherCustomViewManager, mIncognitoReauthTopToolbarDelegate);
     }
 }

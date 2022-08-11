@@ -24,6 +24,8 @@ class TabSwitcherIncognitoReauthCoordinator extends IncognitoReauthCoordinatorBa
     private final @NonNull IncognitoReauthTopToolbarDelegate mIncognitoReauthTopToolbarDelegate;
     /** The {@link Context} to use for fetching Incognito re-auth resources. */
     private final @NonNull Context mContext;
+    /** A runnable to handle back presses which shows the regular overview mode. */
+    private final @NonNull Runnable mBackPressRunnable;
     /**
      * A token returned by {@link IncognitoReauthTopToolbarDelegate} that needs to be used to
      * re-enable the new tab button control state.
@@ -38,21 +40,23 @@ class TabSwitcherIncognitoReauthCoordinator extends IncognitoReauthCoordinatorBa
      *                               after an authentication attempt.
      * @param seeOtherTabsRunnable A {@link Runnable} which is run when the user clicks on
      *                            "See other tabs" option.
+     * @param backPressRunnable A {@link Runnable} which is run when the user presses back while the
+     *         re-auth view is shown.
      * @param tabSwitcherCustomViewManager A {@link TabSwitcherCustomViewManager} which allows to
      *         pass the re-auth view to the tab switcher
      * @param incognitoReauthTopToolbarDelegate A {@link IncognitoReauthTopToolbarDelegate} which
-     *         allows to disable/enable top toolbar elements when re-auth is shown.
      */
     public TabSwitcherIncognitoReauthCoordinator(@NonNull Context context,
             @NonNull IncognitoReauthManager incognitoReauthManager,
             @NonNull IncognitoReauthCallback incognitoReauthCallback,
-            @NonNull Runnable seeOtherTabsRunnable,
+            @NonNull Runnable seeOtherTabsRunnable, @NonNull Runnable backPressRunnable,
             @NonNull TabSwitcherCustomViewManager tabSwitcherCustomViewManager,
             @NonNull IncognitoReauthTopToolbarDelegate incognitoReauthTopToolbarDelegate) {
         super(context, incognitoReauthManager, incognitoReauthCallback, seeOtherTabsRunnable);
         mContext = context;
         mTabSwitcherCustomViewManager = tabSwitcherCustomViewManager;
         mIncognitoReauthTopToolbarDelegate = incognitoReauthTopToolbarDelegate;
+        mBackPressRunnable = backPressRunnable;
     }
 
     /**
@@ -61,7 +65,8 @@ class TabSwitcherIncognitoReauthCoordinator extends IncognitoReauthCoordinatorBa
     @Override
     public void show() {
         prepareToshow(/*menuButtonDelegate= */ null, /*fullscreen= */ false);
-        boolean success = mTabSwitcherCustomViewManager.requestView(getIncognitoReauthView());
+        boolean success = mTabSwitcherCustomViewManager.requestView(
+                getIncognitoReauthView(), mBackPressRunnable);
         assert success : "Unable to signal showing the re-auth screen to tab switcher.";
         mNewTabInteractabilityToken = mIncognitoReauthTopToolbarDelegate.disableNewTabButton();
     }

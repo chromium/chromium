@@ -128,6 +128,17 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
     private boolean mIsOnHomepage;
 
     /**
+     * A custom view that can be supplied by clients to be shown inside the tab grid.
+     * Only one client at a time is supported. The custom view is set to null when the client
+     * signals the mediator for removal.
+     */
+    private @Nullable View mCustomView;
+    /**
+     * A back press {@link Runnable} that can be supplied by clients when adding a custom view.
+     */
+    private @Nullable Runnable mCustomViewBackPressRunnable;
+
+    /**
      * In cases where a didSelectTab was due to switching models with a toggle,
      * we don't change tab grid visibility.
      */
@@ -791,6 +802,11 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
             return true;
         }
 
+        if (mCustomViewBackPressRunnable != null) {
+            mCustomViewBackPressRunnable.run();
+            return true;
+        }
+
         if (!mContainerViewModel.get(IS_VISIBLE)) return false;
 
         if (mTabGridDialogController != null && mTabGridDialogController.handleBackPressed()) {
@@ -886,10 +902,17 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
      * view inside the tab switcher.
      *
      * @param customView A {@link View} view that needs to be shown.
+     * @param backPressRunnable A {@link Runnable} which can be supplied if clients also wish to
+     *         handle back presses while the custom view is shown. A null value can be passed to not
+     *         intercept back presses.
      */
     @Override
-    public void addCustomView(@NonNull View customView) {
+    public void addCustomView(@NonNull View customView, @Nullable Runnable backPressRunnable) {
+        assert mCustomView == null : "Only one client at a time is supported to add a custom view.";
         mContainerView.addView(customView);
+        mCustomView = customView;
+        mCustomViewBackPressRunnable = backPressRunnable;
+        notifyBackPressStateChangedInternal();
     }
 
     /**
@@ -903,7 +926,12 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
      */
     @Override
     public void removeCustomView(@NonNull View customView) {
+        assert mCustomView
+                != null : "No client previously passed a custom view that needs removal.";
         mContainerView.removeView(customView);
+        mCustomView = null;
+        mCustomViewBackPressRunnable = null;
+        notifyBackPressStateChangedInternal();
     }
 
     /**
@@ -1040,9 +1068,17 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         mBackPressChangedSupplier.set(shouldInterceptBackPress());
     }
 
+    /**
+     * A method to indicate whether back press should be intercepted. The respective interceptors
+     * should also take care of invoking #notifyBackPressStateChangedInternal each time their
+     * decision to intercept back press has changed.
+     *
+     * @return A boolean to indicate if back press should be intercepted or not.
+     */
     @VisibleForTesting
     boolean shouldInterceptBackPress() {
         if (isDialogVisible()) return true;
+        if (mCustomViewBackPressRunnable != null) return true;
 
         if (!mContainerViewModel.get(IS_VISIBLE)) return false;
 

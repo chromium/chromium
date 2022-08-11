@@ -49,6 +49,8 @@ public class TabSwitcherIncognitoReauthCoordinatorTest {
     @Mock
     private Runnable mSeeOtherTabsRunnableMock;
     @Mock
+    private Runnable mBackPressRunnableMock;
+    @Mock
     private TabSwitcherCustomViewManager mTabSwitcherCustomViewManagerMock;
     @Mock
     private IncognitoReauthTopToolbarDelegate mIncognitoReauthTopToolbarDelegateMock;
@@ -62,10 +64,10 @@ public class TabSwitcherIncognitoReauthCoordinatorTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mTabSwitcherIncognitoReauthCoordinator =
-                new TabSwitcherIncognitoReauthCoordinator(mContextMock, mIncognitoReauthManagerMock,
-                        mIncognitoReauthCallbackMock, mSeeOtherTabsRunnableMock,
-                        mTabSwitcherCustomViewManagerMock, mIncognitoReauthTopToolbarDelegateMock);
+        mTabSwitcherIncognitoReauthCoordinator = new TabSwitcherIncognitoReauthCoordinator(
+                mContextMock, mIncognitoReauthManagerMock, mIncognitoReauthCallbackMock,
+                mSeeOtherTabsRunnableMock, mBackPressRunnableMock,
+                mTabSwitcherCustomViewManagerMock, mIncognitoReauthTopToolbarDelegateMock);
     }
 
     @After
@@ -82,14 +84,16 @@ public class TabSwitcherIncognitoReauthCoordinatorTest {
         mTabSwitcherIncognitoReauthCoordinator.setIncognitoReauthViewForTesting(
                 mIncognitoReauthViewMock);
 
-        when(mTabSwitcherCustomViewManagerMock.requestView(mIncognitoReauthViewMock))
+        when(mTabSwitcherCustomViewManagerMock.requestView(
+                     mIncognitoReauthViewMock, mBackPressRunnableMock))
                 .thenReturn(true);
         when(mIncognitoReauthTopToolbarDelegateMock.disableNewTabButton())
                 .thenReturn(/*token= */ 1);
 
         mTabSwitcherIncognitoReauthCoordinator.show();
 
-        verify(mTabSwitcherCustomViewManagerMock, times(1)).requestView(mIncognitoReauthViewMock);
+        verify(mTabSwitcherCustomViewManagerMock, times(1))
+                .requestView(mIncognitoReauthViewMock, mBackPressRunnableMock);
         verify(mIncognitoReauthTopToolbarDelegateMock, times(1)).disableNewTabButton();
     }
 
