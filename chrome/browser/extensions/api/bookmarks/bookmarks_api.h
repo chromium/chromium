@@ -158,7 +158,6 @@ class BookmarksFunction : public ExtensionFunction,
   const bookmarks::BookmarkNode* CreateBookmarkNode(
       bookmarks::BookmarkModel* model,
       const api::bookmarks::CreateDetails& details,
-      const bookmarks::BookmarkNode::MetaInfoMap* meta_info,
       std::string* error);
 
   // Helper that checks if bookmark editing is enabled.

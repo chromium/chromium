@@ -129,7 +129,6 @@ const BookmarkNode* BookmarksFunction::GetBookmarkNodeFromId(
 const BookmarkNode* BookmarksFunction::CreateBookmarkNode(
     BookmarkModel* model,
     const CreateDetails& details,
-    const BookmarkNode::MetaInfoMap* meta_info,
     std::string* error) {
   int64_t parent_id;
 
@@ -172,9 +171,9 @@ const BookmarkNode* BookmarksFunction::CreateBookmarkNode(
 
   const BookmarkNode* node;
   if (url_string.length()) {
-    node = model->AddNewURL(parent, index, title, url, meta_info);
+    node = model->AddNewURL(parent, index, title, url);
   } else {
-    node = model->AddFolder(parent, index, title, meta_info);
+    node = model->AddFolder(parent, index, title);
     model->SetDateFolderModified(parent, base::Time::Now());
   }
 
@@ -598,7 +597,7 @@ ExtensionFunction::ResponseValue BookmarksCreateFunction::RunOnReady() {
   BookmarkModel* model =
       BookmarkModelFactory::GetForBrowserContext(GetProfile());
   const BookmarkNode* node =
-      CreateBookmarkNode(model, params->bookmark, nullptr, &error);
+      CreateBookmarkNode(model, params->bookmark, &error);
   if (!node)
     return Error(error);
 
