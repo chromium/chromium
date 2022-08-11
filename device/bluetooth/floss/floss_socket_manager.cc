@@ -127,6 +127,26 @@ FlossDBusClient::ReadDBusParam<FlossSocketManager::FlossListeningSocket>(
     absl::optional<FlossSocketManager::FlossListeningSocket>* socket);
 
 template <>
+void FlossDBusClient::WriteDBusParam(
+    dbus::MessageWriter* writer,
+    const FlossSocketManager::FlossListeningSocket& socket) {
+  dbus::MessageWriter array(nullptr);
+  dbus::MessageWriter dict(nullptr);
+
+  writer->OpenArray("{sv}", &array);
+
+  WriteDictEntry(&array, kListeningPropId, socket.id);
+  WriteDictEntry(&array, kListeningPropSockType, socket.type);
+  WriteDictEntry(&array, kListeningPropFlags, socket.flags);
+  WriteDictEntry(&array, kListeningPropPsm, socket.psm);
+  WriteDictEntry(&array, kListeningPropChannel, socket.channel);
+  WriteDictEntry(&array, kListeningPropName, socket.name);
+  WriteDictEntry(&array, kListeningPropUuid, socket.uuid);
+
+  writer->CloseContainer(&array);
+}
+
+template <>
 bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
                                     FlossSocketManager::FlossSocket* socket) {
   dbus::MessageReader array(nullptr);

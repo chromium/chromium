@@ -83,6 +83,30 @@ class FlossSocketManagerTest : public testing::Test {
     sockmgr_->Init(bus_.get(), kSocketManagerInterface, adapter_path_.value());
   }
 
+  void SetupListeningSocket() {
+    // First listen on something. This will push the socket callbacks into a
+    // map.
+    EXPECT_CALL(
+        *sockmgr_proxy_.get(),
+        DoCallMethodWithErrorResponse(
+            HasMemberOf(socket_manager::kListenUsingRfcommWithServiceRecord), _,
+            _))
+        .WillOnce(
+            Invoke(this, &FlossSocketManagerTest::HandleReturnSocketResult));
+
+    sockmgr_->ListenUsingRfcomm(
+        "Foo", device::BluetoothUUID("F00D"), Security::kSecure,
+        base::BindOnce(&FlossSocketManagerTest::SockStatusCb,
+                       weak_ptr_factory_.GetWeakPtr()),
+        base::BindRepeating(&FlossSocketManagerTest::SockConnectionStateChanged,
+                            weak_ptr_factory_.GetWeakPtr()),
+        base::BindRepeating(&FlossSocketManagerTest::SockConnectionAccepted,
+                            weak_ptr_factory_.GetWeakPtr()));
+
+    // We should call accept here but that state is tracked on the daemon side.
+    // Opting not to simply because we have it mocked away...
+  }
+
   void HandleRegisterCallback(
       ::dbus::MethodCall* method_call,
       int timeout_ms,
@@ -114,10 +138,22 @@ class FlossSocketManagerTest : public testing::Test {
     std::move(*cb).Run(response.get(), nullptr);
   }
 
+  void HandleReturnSuccess(::dbus::MethodCall* method_call,
+                           int timeout_ms,
+                           ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+    auto response = ::dbus::Response::CreateEmpty();
+    ::dbus::MessageWriter msg(response.get());
+
+    BtifStatus status = BtifStatus::kSuccess;
+    FlossDBusClient::WriteAllDBusParams(&msg, status);
+
+    std::move(*cb).Run(response.get(), nullptr);
+  }
+
   void SendOutgoingConnectionResult(
       FlossSocketManager::SocketId id,
       BtifStatus status,
-      absl::optional<FlossSocketManager::FlossSocket> socket,
+      const absl::optional<FlossSocketManager::FlossSocket>& socket,
       dbus::ExportedObject::ResponseSender response) {
     dbus::MethodCall method_call(socket_manager::kCallbackInterface,
                                  socket_manager::kOnOutgoingConnectionResult);
@@ -126,6 +162,43 @@ class FlossSocketManagerTest : public testing::Test {
     FlossDBusClient::WriteAllDBusParams(&writer, id, status, socket);
 
     sockmgr_->OnOutgoingConnectionResult(&method_call, std::move(response));
+  }
+
+  void SendIncomingSocketReady(
+      const FlossSocketManager::FlossListeningSocket& server_socket,
+      BtifStatus status,
+      dbus::ExportedObject::ResponseSender response) {
+    dbus::MethodCall method_call(socket_manager::kCallbackInterface,
+                                 socket_manager::kOnIncomingSocketReady);
+    method_call.SetSerial(serial_++);
+    dbus::MessageWriter writer(&method_call);
+    FlossDBusClient::WriteAllDBusParams(&writer, server_socket, status);
+
+    sockmgr_->OnIncomingSocketReady(&method_call, std::move(response));
+  }
+
+  void SendIncomingSocketClosed(FlossSocketManager::SocketId id,
+                                BtifStatus status,
+                                dbus::ExportedObject::ResponseSender response) {
+    dbus::MethodCall method_call(socket_manager::kCallbackInterface,
+                                 socket_manager::kOnIncomingSocketReady);
+    method_call.SetSerial(serial_++);
+    dbus::MessageWriter writer(&method_call);
+    FlossDBusClient::WriteAllDBusParams(&writer, id, status);
+
+    sockmgr_->OnIncomingSocketClosed(&method_call, std::move(response));
+  }
+
+  void SendIncomingConnection(FlossSocketManager::SocketId id,
+                              const FlossSocketManager::FlossSocket& socket,
+                              dbus::ExportedObject::ResponseSender response) {
+    dbus::MethodCall method_call(socket_manager::kCallbackInterface,
+                                 socket_manager::kOnIncomingSocketReady);
+    method_call.SetSerial(serial_++);
+    dbus::MessageWriter writer(&method_call);
+    FlossDBusClient::WriteAllDBusParams(&writer, id, socket);
+
+    sockmgr_->OnHandleIncomingConnection(&method_call, std::move(response));
   }
 
   void SockStatusCb(DBusResult<BtifStatus> result) {
@@ -140,11 +213,13 @@ class FlossSocketManagerTest : public testing::Test {
       FlossSocketManager::ServerSocketState state,
       FlossSocketManager::FlossListeningSocket socket,
       BtifStatus status) {
-    // No-op
+    last_state_ = state;
+    last_server_socket_ = socket;
+    last_status_ = status;
   }
 
   void SockConnectionAccepted(FlossSocketManager::FlossSocket&& socket) {
-    // No -op
+    last_incoming_socket_ = std::move(socket);
   }
 
   void ExpectNormalResponse(std::unique_ptr<dbus::Response> response) {
@@ -155,7 +230,11 @@ class FlossSocketManagerTest : public testing::Test {
   int adapter_index_ = 2;
   int serial_ = 1;
   dbus::ObjectPath adapter_path_;
+
+  FlossSocketManager::ServerSocketState last_state_;
+  FlossSocketManager::FlossListeningSocket last_server_socket_;
   BtifStatus last_status_;
+  FlossSocketManager::FlossSocket last_incoming_socket_;
 
   uint32_t callback_id_ctr_ = 1;
   uint64_t socket_id_ctr_ = 1;
@@ -336,6 +415,131 @@ TEST_F(FlossSocketManagerTest, ConnectToSockets) {
     EXPECT_EQ(BtifStatus::kSuccess, callback_status);
     EXPECT_EQ(uuid, found_uuid);
   }
+}
+
+// Really basic calls to accept and close
+TEST_F(FlossSocketManagerTest, AcceptAndCloseConnection) {
+  Init();
+
+  EXPECT_CALL(
+      *sockmgr_proxy_.get(),
+      DoCallMethodWithErrorResponse(HasMemberOf(socket_manager::kAccept), _, _))
+      .WillOnce(Invoke(this, &FlossSocketManagerTest::HandleReturnSuccess));
+
+  last_status_ = BtifStatus::kNotReady;
+  sockmgr_->Accept(socket_id_ctr_, 42,
+                   base::BindOnce(&FlossSocketManagerTest::SockStatusCb,
+                                  weak_ptr_factory_.GetWeakPtr()));
+  EXPECT_EQ(BtifStatus::kSuccess, last_status_);
+
+  EXPECT_CALL(
+      *sockmgr_proxy_.get(),
+      DoCallMethodWithErrorResponse(HasMemberOf(socket_manager::kClose), _, _))
+      .WillOnce(Invoke(this, &FlossSocketManagerTest::HandleReturnSuccess));
+
+  last_status_ = BtifStatus::kNotReady;
+  sockmgr_->Close(socket_id_ctr_,
+                  base::BindOnce(&FlossSocketManagerTest::SockStatusCb,
+                                 weak_ptr_factory_.GetWeakPtr()));
+  EXPECT_EQ(BtifStatus::kSuccess, last_status_);
+}
+
+// Handle state changes from calling accept and close.
+TEST_F(FlossSocketManagerTest, IncomingStateChanges) {
+  Init();
+  SetupListeningSocket();
+
+  // With a bad id, callbacks will never be dispatched.
+  FlossSocketManager::FlossListeningSocket bad_socket;
+  bad_socket.id = 123456789;
+
+  // Good id is the last socket ctr we used.
+  FlossSocketManager::FlossListeningSocket good_socket;
+  good_socket.id = socket_id_ctr_ - 1;
+  good_socket.name = "Foo";
+  good_socket.uuid = device::BluetoothUUID("F00D");
+
+  // Empty out the last seen status and socket.
+  last_status_ = BtifStatus::kNotReady;
+  last_server_socket_ = FlossSocketManager::FlossListeningSocket();
+  last_state_ = FlossSocketManager::ServerSocketState::kClosed;
+
+  EXPECT_FALSE(last_server_socket_.is_valid());
+  // Send an invalid update. Should result in no callbacks being called.
+  SendIncomingSocketReady(
+      bad_socket, BtifStatus::kSuccess,
+      base::BindOnce(&FlossSocketManagerTest::ExpectNormalResponse,
+                     weak_ptr_factory_.GetWeakPtr()));
+  EXPECT_EQ(BtifStatus::kNotReady, last_status_);
+  EXPECT_FALSE(last_server_socket_.is_valid());
+
+  // Send a successful ready to a valid socket.
+  SendIncomingSocketReady(
+      good_socket, BtifStatus::kSuccess,
+      base::BindOnce(&FlossSocketManagerTest::ExpectNormalResponse,
+                     weak_ptr_factory_.GetWeakPtr()));
+  EXPECT_EQ(BtifStatus::kSuccess, last_status_);
+  EXPECT_EQ(last_state_, FlossSocketManager::ServerSocketState::kReady);
+  EXPECT_TRUE(last_server_socket_.is_valid());
+
+  // Empty out the last seen status and socket.
+  last_status_ = BtifStatus::kNotReady;
+  last_server_socket_ = FlossSocketManager::FlossListeningSocket();
+
+  // Send an invalid update. Should result in no callbacks being called.
+  SendIncomingSocketClosed(
+      bad_socket.id, BtifStatus::kSuccess,
+      base::BindOnce(&FlossSocketManagerTest::ExpectNormalResponse,
+                     weak_ptr_factory_.GetWeakPtr()));
+  EXPECT_EQ(BtifStatus::kNotReady, last_status_);
+  EXPECT_FALSE(last_server_socket_.is_valid());
+
+  // Send a successful close to a valid socket.
+  SendIncomingSocketClosed(
+      good_socket.id, BtifStatus::kSuccess,
+      base::BindOnce(&FlossSocketManagerTest::ExpectNormalResponse,
+                     weak_ptr_factory_.GetWeakPtr()));
+  EXPECT_EQ(BtifStatus::kSuccess, last_status_);
+  EXPECT_EQ(last_server_socket_.id, good_socket.id);
+  EXPECT_EQ(last_state_, FlossSocketManager::ServerSocketState::kClosed);
+
+  // Try sending a ready to the same socket and nothing should happen.
+  last_status_ = BtifStatus::kNotReady;
+  SendIncomingSocketReady(
+      good_socket, BtifStatus::kSuccess,
+      base::BindOnce(&FlossSocketManagerTest::ExpectNormalResponse,
+                     weak_ptr_factory_.GetWeakPtr()));
+  EXPECT_EQ(BtifStatus::kNotReady, last_status_);
+}
+
+// Handle incoming socket connections.
+TEST_F(FlossSocketManagerTest, IncomingConnections) {
+  Init();
+  SetupListeningSocket();
+
+  // With a bad id, callbacks will never be dispatched.
+  FlossSocketManager::FlossSocket bad_socket;
+  bad_socket.id = 123456789;
+
+  // Good id is the last socket ctr we used.
+  FlossSocketManager::FlossSocket good_socket;
+  good_socket.id = socket_id_ctr_ - 1;
+
+  last_incoming_socket_ = FlossSocketManager::FlossSocket();
+  EXPECT_FALSE(last_incoming_socket_.is_valid());
+
+  SendIncomingConnection(
+      bad_socket.id, bad_socket,
+      base::BindOnce(&FlossSocketManagerTest::ExpectNormalResponse,
+                     weak_ptr_factory_.GetWeakPtr()));
+  EXPECT_FALSE(last_incoming_socket_.is_valid());
+
+  SendIncomingConnection(
+      good_socket.id, good_socket,
+      base::BindOnce(&FlossSocketManagerTest::ExpectNormalResponse,
+                     weak_ptr_factory_.GetWeakPtr()));
+  EXPECT_TRUE(last_incoming_socket_.is_valid());
+  EXPECT_EQ(last_incoming_socket_.id, good_socket.id);
 }
 
 }  // namespace floss

@@ -58,7 +58,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossSocketManager : public FlossDBusClient {
 
   // Represents a listening socket.
   struct FlossListeningSocket {
-    SocketId id;
+    SocketId id = FlossSocketManager::kInvalidSocketId;
     SocketType type;
     int flags;
     absl::optional<int> psm;
@@ -69,11 +69,13 @@ class DEVICE_BLUETOOTH_EXPORT FlossSocketManager : public FlossDBusClient {
     FlossListeningSocket();
     FlossListeningSocket(const FlossListeningSocket&);
     ~FlossListeningSocket();
+
+    bool is_valid() const { return id != FlossSocketManager::kInvalidSocketId; }
   };
 
   // Represents a connecting socket (either incoming or outgoing).
   struct FlossSocket {
-    SocketId id;
+    SocketId id = FlossSocketManager::kInvalidSocketId;
     FlossDeviceId remote_device;
     SocketType type;
     int flags;
