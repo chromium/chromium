@@ -60,7 +60,7 @@ class GeneratePasswordForFormFieldActionTest : public testing::Test {
 
 TEST_F(GeneratePasswordForFormFieldActionTest, GeneratedPassword) {
   ON_CALL(mock_action_delegate_, RetrieveElementFormAndFieldData)
-      .WillByDefault(RunOnceCallback<1>(ClientStatus(ACTION_APPLIED),
+      .WillByDefault(RunOnceCallback<1>(ClientStatus(ACTION_APPLIED), nullptr,
                                         autofill::FormData(),
                                         autofill::FormFieldData()));
   GeneratePasswordForFormFieldProto* generate_password_proto =
@@ -84,7 +84,7 @@ TEST_F(GeneratePasswordForFormFieldActionTest, GeneratedPassword) {
 
 TEST_F(GeneratePasswordForFormFieldActionTest, FormDataIsNotRetrieved) {
   ON_CALL(mock_action_delegate_, RetrieveElementFormAndFieldData)
-      .WillByDefault(RunOnceCallback<1>(ClientStatus(INVALID_SELECTOR),
+      .WillByDefault(RunOnceCallback<1>(ClientStatus(INVALID_SELECTOR), nullptr,
                                         autofill::FormData(),
                                         autofill::FormFieldData()));
 
@@ -107,7 +107,7 @@ TEST_F(GeneratePasswordForFormFieldActionTest, FormDataIsNotRetrieved) {
 
 TEST_F(GeneratePasswordForFormFieldActionTest, GeneratePasswordFails) {
   ON_CALL(mock_action_delegate_, RetrieveElementFormAndFieldData)
-      .WillByDefault(RunOnceCallback<1>(ClientStatus(ACTION_APPLIED),
+      .WillByDefault(RunOnceCallback<1>(ClientStatus(ACTION_APPLIED), nullptr,
                                         autofill::FormData(),
                                         autofill::FormFieldData()));
   GeneratePasswordForFormFieldProto* generate_password_proto =

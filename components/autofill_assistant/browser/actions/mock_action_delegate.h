@@ -104,6 +104,7 @@ class MockActionDelegate : public ActionDelegate {
       RetrieveElementFormAndFieldData,
       void(const Selector& selector,
            base::OnceCallback<void(const ClientStatus&,
+                                   content::RenderFrameHost* rfh,
                                    const autofill::FormData&,
                                    const autofill::FormFieldData&)> callback));
   MOCK_METHOD1(StoreScrolledToElement,

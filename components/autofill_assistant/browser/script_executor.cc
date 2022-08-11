@@ -480,6 +480,7 @@ void ScriptExecutor::SetBrowseDomainsAllowlist(
 void ScriptExecutor::RetrieveElementFormAndFieldData(
     const Selector& selector,
     base::OnceCallback<void(const ClientStatus&,
+                            content::RenderFrameHost* rfh,
                             const autofill::FormData&,
                             const autofill::FormFieldData&)> callback) {
   delegate_->GetWebController()->RetrieveElementFormAndFieldData(

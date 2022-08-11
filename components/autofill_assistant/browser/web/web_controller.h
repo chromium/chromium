@@ -201,11 +201,13 @@ class WebController {
       const ElementFinderResult& element,
       base::OnceCallback<void(const ClientStatus&)> callback);
 
-  // Return |FormData| and |FormFieldData| for the element identified with
-  // |selector|. The result is returned asynchronously through |callback|.
+  // Return |FormData| and |FormFieldData| from |RenderFrameHost| for the
+  // element identified with |selector|. The result is returned asynchronously
+  // through |callback|.
   virtual void RetrieveElementFormAndFieldData(
       const Selector& selector,
       base::OnceCallback<void(const ClientStatus&,
+                              content::RenderFrameHost* rfh,
                               const autofill::FormData& form_data,
                               const autofill::FormFieldData& field_data)>
           callback);
@@ -460,6 +462,7 @@ class WebController {
   void OnSelectorObserverFinished(SelectorObserver* observer);
   void OnFindElementForRetrieveElementFormAndFieldData(
       base::OnceCallback<void(const ClientStatus&,
+                              content::RenderFrameHost* rfh,
                               const autofill::FormData& form_data,
                               const autofill::FormFieldData& field_data)>
           callback,
@@ -500,6 +503,7 @@ class WebController {
   void OnGetFormAndFieldDataForRetrieving(
       std::unique_ptr<ElementFinderResult> element,
       base::OnceCallback<void(const ClientStatus&,
+                              content::RenderFrameHost* rfh,
                               const autofill::FormData& form_data,
                               const autofill::FormFieldData& field_data)>
           callback,

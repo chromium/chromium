@@ -964,6 +964,7 @@ void WebController::FillCardForm(
 void WebController::RetrieveElementFormAndFieldData(
     const Selector& selector,
     base::OnceCallback<void(const ClientStatus&,
+                            content::RenderFrameHost* rfh,
                             const autofill::FormData& form_data,
                             const autofill::FormFieldData& field_data)>
         callback) {
@@ -977,6 +978,7 @@ void WebController::RetrieveElementFormAndFieldData(
 
 void WebController::OnFindElementForRetrieveElementFormAndFieldData(
     base::OnceCallback<void(const ClientStatus&,
+                            content::RenderFrameHost* rfh,
                             const autofill::FormData& form_data,
                             const autofill::FormFieldData& field_data)>
         callback,
@@ -985,8 +987,8 @@ void WebController::OnFindElementForRetrieveElementFormAndFieldData(
   if (!element_status.ok()) {
     DVLOG(1) << __func__
              << " Failed to find the element for getting Autofill data.";
-    std::move(callback).Run(element_status, autofill::FormData(),
-                            autofill::FormFieldData());
+    std::move(callback).Run(element_status, element_result->render_frame_host(),
+                            autofill::FormData(), autofill::FormFieldData());
     return;
   }
 
@@ -1092,6 +1094,7 @@ void WebController::OnGetFormAndFieldDataForFilling(
 void WebController::OnGetFormAndFieldDataForRetrieving(
     std::unique_ptr<ElementFinderResult> element,
     base::OnceCallback<void(const ClientStatus&,
+                            content::RenderFrameHost* rfh,
                             const autofill::FormData& form_data,
                             const autofill::FormFieldData& field_data)>
         callback,
@@ -1099,7 +1102,8 @@ void WebController::OnGetFormAndFieldDataForRetrieving(
     ContentAutofillDriver* driver,
     const autofill::FormData& form_data,
     const autofill::FormFieldData& form_field) {
-  std::move(callback).Run(form_status, form_data, form_field);
+  std::move(callback).Run(form_status, element->render_frame_host(), form_data,
+                          form_field);
 }
 
 void WebController::SelectOption(

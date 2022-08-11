@@ -47,7 +47,8 @@ class MockWebsiteLoginManager : public WebsiteLoginManager {
 
   MOCK_METHOD(absl::optional<std::string>,
               GeneratePassword,
-              (autofill::FormSignature form_signature,
+              (content::RenderFrameHost * rfh,
+               autofill::FormSignature form_signature,
                autofill::FieldSignature field_signature,
                uint64_t max_length),
               (override));

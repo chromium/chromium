@@ -429,4 +429,12 @@ TEST_F(WebsiteLoginManagerImplTest, SaveSubmittedPasswordFailure) {
   EXPECT_FALSE(manager_->SaveSubmittedPassword());
 }
 
+TEST_F(WebsiteLoginManagerImplTest, GeneratePasswordForNullRenderFrameHost) {
+  EXPECT_EQ(
+      absl::nullopt,
+      // The arguments other than the `render_frame_host` are arbitrary.
+      manager_->GeneratePassword(/*rfh=*/nullptr, autofill::FormSignature(123),
+                                 autofill::FieldSignature(456), 10));
+}
+
 }  // namespace autofill_assistant

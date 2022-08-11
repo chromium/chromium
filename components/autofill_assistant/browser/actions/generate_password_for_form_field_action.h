@@ -42,6 +42,7 @@ class GeneratePasswordForFormFieldAction : public Action {
   void OnGetFormAndFieldDataForGeneration(
       const std::string& memory_key,
       const ClientStatus& status,
+      content::RenderFrameHost* rfh,
       const autofill::FormData& form_data,
       const autofill::FormFieldData& field_data);
 

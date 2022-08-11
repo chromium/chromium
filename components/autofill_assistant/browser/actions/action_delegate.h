@@ -238,11 +238,13 @@ class ActionDelegate {
   virtual void GetFullCard(const autofill::CreditCard* credit_card,
                            GetFullCardCallback callback) = 0;
 
-  // Return |FormData| and |FormFieldData| for the element identified with
-  // |selector|. The result is returned asynchronously through |callback|.
+  // Return |FormData| and |FormFieldData| from |RenderFrameHost| for the
+  // element identified with |selector|. The result is returned asynchronously
+  // through |callback|.
   virtual void RetrieveElementFormAndFieldData(
       const Selector& selector,
       base::OnceCallback<void(const ClientStatus&,
+                              content::RenderFrameHost* rfh,
                               const autofill::FormData&,
                               const autofill::FormFieldData&)> callback) = 0;
 

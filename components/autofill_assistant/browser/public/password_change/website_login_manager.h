@@ -17,6 +17,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
+namespace content {
+class RenderFrameHost;
+}
+
 namespace autofill_assistant {
 
 // Common interface for implementations that fetch login details for websites.
@@ -69,13 +73,13 @@ class WebsiteLoginManager {
       const Login& login,
       base::OnceCallback<void(absl::optional<base::Time>)> callback) = 0;
 
-  // Generates new strong password. |form/field_signature| are used to fetch
-  // password requirements. |max_length| is the "max_length" attribute of input
-  // field that limits the length of value.
-  // Stores the generated password in `generated_password` and
-  // returns |absl::nullopt| if the password cannot be generated for some
-  // reason.
+  // Generates new strong password. |rfh| and |form/field_signature| are used to
+  // fetch password requirements. |max_length| is the "max_length" attribute of
+  // input field that limits the length of value. Stores the generated password
+  // in `generated_password` and returns |absl::nullopt| if the password cannot
+  // be generated for some reason.
   virtual absl::optional<std::string> GeneratePassword(
+      content::RenderFrameHost* rfh,
       autofill::FormSignature form_signature,
       autofill::FieldSignature field_signature,
       uint64_t max_length) = 0;

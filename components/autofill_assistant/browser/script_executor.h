@@ -180,6 +180,7 @@ class ScriptExecutor : public ActionDelegate,
   void RetrieveElementFormAndFieldData(
       const Selector& selector,
       base::OnceCallback<void(const ClientStatus&,
+                              content::RenderFrameHost* rfh,
                               const autofill::FormData& form_data,
                               const autofill::FormFieldData& field_data)>
           callback) override;

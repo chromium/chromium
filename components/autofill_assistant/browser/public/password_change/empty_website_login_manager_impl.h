@@ -40,6 +40,7 @@ class EmptyWebsiteLoginManagerImpl : public WebsiteLoginManager {
                             const std::string& new_password,
                             base::OnceCallback<void(bool)> callback) override;
   absl::optional<std::string> GeneratePassword(
+      content::RenderFrameHost* rfh,
       autofill::FormSignature form_signature,
       autofill::FieldSignature field_signature,
       uint64_t max_length) override;
