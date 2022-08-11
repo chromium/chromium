@@ -33060,7 +33060,7 @@ The recommended way to configure policy on Windows is via GPO, although provisio
     'DeviceKeylockerForStorageEncryptionEnabled': 'keylocker_for_storage_encryption_enabled.enabled',
     'DeviceRunAutomaticCleanupOnLogin': 'device_run_automatic_cleanup_on_login.value',
     'DeviceEncryptedReportingPipelineEnabled': 'device_reporting.encrypted_reporting_pipeline_enabled',
-    'DeviceAutofillSAMLUsername': 'saml_settings.url_parameter_to_autofill_saml_username'
+    'DeviceAutofillSAMLUsername': 'saml_username.url_parameter_to_autofill_saml_username'
   },
   'policy_atomic_group_definitions': [
     {

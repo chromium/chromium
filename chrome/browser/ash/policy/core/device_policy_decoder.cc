@@ -366,6 +366,10 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
                     POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
                     base::Value(container.transfer_saml_cookies()), nullptr);
     }
+  }
+
+  if (policy.has_saml_username()) {
+    const em::SAMLUsernameProto& container(policy.saml_username());
     if (container.has_url_parameter_to_autofill_saml_username()) {
       policies->Set(
           key::kDeviceAutofillSAMLUsername, POLICY_LEVEL_MANDATORY,

@@ -416,7 +416,7 @@ TEST_F(DevicePolicyDecoderTest, DecodeDeviceAutofillSAMLUsername) {
                                     key::kDeviceAutofillSAMLUsername);
 
   base::Value autofill_saml_username_value("login_hint");
-  device_policy.mutable_saml_settings()
+  device_policy.mutable_saml_username()
       ->set_url_parameter_to_autofill_saml_username(
           autofill_saml_username_value.GetString());
 
