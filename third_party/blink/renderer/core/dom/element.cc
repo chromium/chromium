@@ -2738,7 +2738,6 @@ void Element::HidePopUpInternal(HidePopupFocusBehavior focus_behavior,
 
   GetPopupData()->setInvoker(nullptr);
   GetPopupData()->setNeedsRepositioningForSelectMenu(false);
-  GetPopupData()->setFocusBehavior(focus_behavior);
   // Stop matching :top-layer:
   GetPopupData()->setVisibilityState(PopupVisibilityState::kTransitioning);
   PseudoStateChanged(CSSSelector::kPseudoTopLayer);
@@ -2787,8 +2786,7 @@ void Element::HidePopUpInternal(HidePopupFocusBehavior focus_behavior,
       GetPopupData()->previouslyFocusedElement();
   if (previously_focused_element) {
     GetPopupData()->setPreviouslyFocusedElement(nullptr);
-    if (GetPopupData()->focusBehavior() ==
-        HidePopupFocusBehavior::kFocusPreviousElement) {
+    if (focus_behavior == HidePopupFocusBehavior::kFocusPreviousElement) {
       FocusOptions* focus_options = FocusOptions::Create();
       focus_options->setPreventScroll(true);
       previously_focused_element->Focus(focus_options);

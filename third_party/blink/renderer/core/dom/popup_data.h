@@ -43,11 +43,6 @@ class PopupData final : public GarbageCollected<PopupData> {
         << "Remove PopupData rather than setting kNone type";
   }
 
-  HidePopupFocusBehavior focusBehavior() const { return focus_behavior_; }
-  void setFocusBehavior(HidePopupFocusBehavior focus_behavior) {
-    focus_behavior_ = focus_behavior;
-  }
-
   Element* invoker() const { return invoker_; }
   void setInvoker(Element* element) { invoker_ = element; }
 
@@ -110,7 +105,6 @@ class PopupData final : public GarbageCollected<PopupData> {
   bool had_defaultopen_when_parsed_ = false;
   PopupVisibilityState visibility_state_ = PopupVisibilityState::kHidden;
   PopupValueType type_ = PopupValueType::kNone;
-  HidePopupFocusBehavior focus_behavior_ = HidePopupFocusBehavior::kNone;
   WeakMember<Element> invoker_;
   WeakMember<Element> previously_focused_element_;
   // We hold a strong reference to the animation finished listener, so that we
