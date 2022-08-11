@@ -227,6 +227,8 @@ class PartialTranslateBubbleView : public LocationBarBubbleDelegateView,
   raw_ptr<views::Combobox> target_language_combobox_ = nullptr;
 
   raw_ptr<views::TabbedPane> tabbed_pane_ = nullptr;
+  raw_ptr<views::View> tab_view_top_row_ = nullptr;
+  raw_ptr<views::Label> partial_text_label_ = nullptr;
 
   raw_ptr<views::LabelButton> advanced_reset_button_source_ = nullptr;
   raw_ptr<views::LabelButton> advanced_reset_button_target_ = nullptr;

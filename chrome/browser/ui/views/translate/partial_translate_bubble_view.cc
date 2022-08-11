@@ -433,6 +433,11 @@ void PartialTranslateBubbleView::ConfirmAdvancedOptions() {
     tabbed_pane_->GetTabAt(1)->SetTitleText(target_language_name);
     model_->Translate();
     tabbed_pane_->SelectTabAt(1);
+
+    // Update max width of text selection label to match width of bubble, which
+    // changes with the lengths of the languages displayed in the tabbed pane.
+    partial_text_label_->SizeToFit(
+        tab_view_top_row_->GetPreferredSize().width());
     SwitchView(PartialTranslateBubbleModel::VIEW_STATE_AFTER_TRANSLATE);
     if (from_source_language_view) {
       translate::ReportPartialTranslateBubbleUiAction(
@@ -495,54 +500,18 @@ std::unique_ptr<views::View> PartialTranslateBubbleView::CreateView() {
   auto inner_view = std::make_unique<views::View>();
   inner_view->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kHorizontal);
-  auto* horizontal_view = view->AddChildView(std::move(inner_view));
-
-  auto partial_text_row = std::make_unique<views::View>();
-  partial_text_row->SetLayoutManager(std::make_unique<views::FlexLayout>());
-  auto partial_text_label = std::make_unique<views::Label>(
-      text_selection_, views::style::CONTEXT_DIALOG_BODY_TEXT,
-      views::style::STYLE_PRIMARY);
-  const int vertical_spacing =
-      provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL);
-  partial_text_label->SetLineHeight(vertical_spacing * 5);
-  partial_text_label->SetHorizontalAlignment(
-      gfx::HorizontalAlignment::ALIGN_LEFT);
-  partial_text_label->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kUnbounded));
-  partial_text_label->SetProperty(views::kMarginsKey,
-                                  gfx::Insets::TLBR(0, 0, vertical_spacing, 0));
-  partial_text_row->AddChildView(std::move(partial_text_label));
-  view->AddChildView(std::move(partial_text_row));
-
-  // Button to trigger full page translation.
-  auto button_row = std::make_unique<views::BoxLayoutView>();
-  button_row->SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kEnd);
-  auto full_page_button = std::make_unique<views::MdTextButton>(
-      base::BindRepeating(&PartialTranslateBubbleView::TranslateFullPage,
-                          base::Unretained(this)),
-      l10n_util::GetStringUTF16(
-          IDS_PARTIAL_TRANSLATE_BUBBLE_TRANSLATE_FULL_PAGE));
-  full_page_button->SetID(BUTTON_ID_FULL_PAGE_TRANSLATE);
-  button_row->AddChildView(std::move(full_page_button));
-  button_row->SetProperty(
-      views::kMarginsKey,
-      gfx::Insets::TLBR(0, 0, 0,
-                        provider->GetDistanceMetric(
-                            views::DISTANCE_RELATED_CONTROL_HORIZONTAL)));
-  view->AddChildView(std::move(button_row));
+  tab_view_top_row_ = view->AddChildView(std::move(inner_view));
 
   views::View* icon = nullptr;
   if (!UseGoogleTranslateBranding()) {
-    icon = horizontal_view->AddChildView(CreateTranslateIcon());
+    icon = tab_view_top_row_->AddChildView(CreateTranslateIcon());
   }
 
   // Tabbed pane for language selection. Can't use unique_ptr because
   // tabs have to be added after the tabbed_pane is added to the parent,
   // when we release ownership of the unique_ptr.
   auto tabbed_pane = std::make_unique<views::TabbedPane>();
-  tabbed_pane_ = horizontal_view->AddChildView(std::move(tabbed_pane));
+  tabbed_pane_ = tab_view_top_row_->AddChildView(std::move(tabbed_pane));
 
   // NOTE: Panes must be added after |tabbed_pane| has been added to its
   // parent.
@@ -559,9 +528,10 @@ std::unique_ptr<views::View> PartialTranslateBubbleView::CreateView() {
   tabbed_pane_->set_listener(this);
 
   auto* padding_view =
-      horizontal_view->AddChildView(std::make_unique<views::View>());
-  auto* options_menu = horizontal_view->AddChildView(CreateOptionsMenuButton());
-  horizontal_view->AddChildView(CreateCloseButton());
+      tab_view_top_row_->AddChildView(std::make_unique<views::View>());
+  auto* options_menu =
+      tab_view_top_row_->AddChildView(CreateOptionsMenuButton());
+  tab_view_top_row_->AddChildView(CreateCloseButton());
 
   if (icon) {
     icon->SetProperty(
@@ -584,6 +554,39 @@ std::unique_ptr<views::View> PartialTranslateBubbleView::CreateView() {
       views::kMarginsKey,
       gfx::Insets::VH(0, provider->GetDistanceMetric(
                              views::DISTANCE_RELATED_BUTTON_HORIZONTAL)));
+
+  // Text selection.
+  auto partial_text_label = std::make_unique<views::Label>(
+      text_selection_, views::style::CONTEXT_DIALOG_BODY_TEXT,
+      views::style::STYLE_PRIMARY);
+  partial_text_label->SetMultiLine(true);
+  partial_text_label->SizeToFit(tab_view_top_row_->GetPreferredSize().width());
+
+  const int vertical_spacing =
+      provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL);
+  const int horizontal_spacing =
+      provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_HORIZONTAL);
+  partial_text_label->SetHorizontalAlignment(
+      gfx::HorizontalAlignment::ALIGN_LEFT);
+  partial_text_label->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets::TLBR(vertical_spacing, 0, vertical_spacing,
+                        horizontal_spacing));
+  partial_text_label_ = view->AddChildView(std::move(partial_text_label));
+
+  // Button to trigger full page translation.
+  auto button_row = std::make_unique<views::BoxLayoutView>();
+  button_row->SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kEnd);
+  auto full_page_button = std::make_unique<views::MdTextButton>(
+      base::BindRepeating(&PartialTranslateBubbleView::TranslateFullPage,
+                          base::Unretained(this)),
+      l10n_util::GetStringUTF16(
+          IDS_PARTIAL_TRANSLATE_BUBBLE_TRANSLATE_FULL_PAGE));
+  full_page_button->SetID(BUTTON_ID_FULL_PAGE_TRANSLATE);
+  button_row->AddChildView(std::move(full_page_button));
+  button_row->SetProperty(views::kMarginsKey,
+                          gfx::Insets::TLBR(0, 0, 0, horizontal_spacing));
+  view->AddChildView(std::move(button_row));
 
   return view;
 }
