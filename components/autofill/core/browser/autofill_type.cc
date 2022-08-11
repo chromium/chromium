@@ -201,6 +201,9 @@ FieldTypeGroup GroupTypeOfHtmlFieldType(HtmlFieldType field_type,
     case HTML_TYPE_MERCHANT_PROMO_CODE:
       return FieldTypeGroup::kNoGroup;
 
+    case HTML_TYPE_IBAN:
+      return FieldTypeGroup::kNoGroup;
+
     case HTML_TYPE_UNSPECIFIED:
     case HTML_TYPE_UNRECOGNIZED:
       return FieldTypeGroup::kNoGroup;
@@ -374,6 +377,7 @@ ServerFieldType AutofillType::GetStorableType() const {
     case HTML_TYPE_TRANSACTION_CURRENCY:
     case HTML_TYPE_ONE_TIME_CODE:
     case HTML_TYPE_MERCHANT_PROMO_CODE:
+    case HTML_TYPE_IBAN:
       return UNKNOWN_TYPE;
 
     case HTML_TYPE_UNRECOGNIZED:

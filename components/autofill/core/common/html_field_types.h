@@ -91,6 +91,9 @@ enum HtmlFieldType {
   // Promo code for merchant sites.
   HTML_TYPE_MERCHANT_PROMO_CODE,
 
+  // International Bank Account Number (IBAN) for banking and merchant sites.
+  HTML_TYPE_IBAN,
+
   // Non-standard autocomplete types.
   HTML_TYPE_UNRECOGNIZED,
 };

@@ -156,6 +156,7 @@ absl::optional<HtmlFieldType> ParseNonStandarizedAutocompleteAttribute(
           {"company", HTML_TYPE_ORGANIZATION},
           {"first-name", HTML_TYPE_GIVEN_NAME},
           {"gift-code", HTML_TYPE_MERCHANT_PROMO_CODE},
+          {"iban", HTML_TYPE_IBAN},
           {"locality", HTML_TYPE_ADDRESS_LEVEL2},
           {"promo-code", HTML_TYPE_MERCHANT_PROMO_CODE},
           {"promotional-code", HTML_TYPE_MERCHANT_PROMO_CODE},
