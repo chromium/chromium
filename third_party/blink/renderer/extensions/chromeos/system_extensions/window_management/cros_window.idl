@@ -4,7 +4,7 @@
 
 // WindowState reflects which of the mutually exclusive states of maximized,
 // minimized, or fullscreen that the CrosWindow is in.
-enum WindowState {
+enum CrosWindowState {
   "normal",     // The window is at the default size or user-selected size.
   "fullscreen", // The window is running as a full screen application.
   "maximized",  // The window fills the screen on which it is displayed not
@@ -29,7 +29,7 @@ interface CrosWindow {
 
   readonly attribute DOMString title;
   readonly attribute DOMString appId;
-  readonly attribute WindowState windowState;
+  readonly attribute CrosWindowState windowState;
   readonly attribute boolean isFocused;
   readonly attribute CrosWindowVisibilityState visibilityState;
 
