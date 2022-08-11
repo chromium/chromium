@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/layout/layout_video.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer_entry.h"
+#include "ui/accessibility/accessibility_features.h"
 
 namespace blink {
 
@@ -222,7 +223,13 @@ void TextTrackContainer::UpdateDisplay(HTMLMediaElement& media_element,
     if (!cue->track() || !cue->track()->IsRendered() || !cue->IsActive())
       continue;
 
-    cue->UpdateDisplay(*this);
+    if (features::IsTextBasedAudioDescriptionEnabled() &&
+        cue->track()->IsSpokenKind()) {
+      cue->UpdateSpeech(*this);
+    } else {
+      cue->UpdateDisplay(*this);
+    }
+
     cue->UpdatePastAndFutureNodes(movie_time);
   }
 

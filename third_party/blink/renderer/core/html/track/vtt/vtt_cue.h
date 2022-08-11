@@ -136,6 +136,7 @@ class CORE_EXPORT VTTCue final : public TextTrackCue {
   DocumentFragment* getCueAsHTML();
 
   void UpdateDisplay(HTMLDivElement& container) override;
+  void UpdateSpeech(HTMLDivElement& container) override;
 
   void UpdatePastAndFutureNodes(double movie_time) override;
 

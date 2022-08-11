@@ -746,6 +746,11 @@ void VTTCue::RemoveDisplayTree(RemovalNotification removal_notification) {
   display_tree_->remove(ASSERT_NO_EXCEPTION);
 }
 
+void VTTCue::UpdateSpeech(HTMLDivElement& container) {
+  // TODO: handle vocalization
+  // Text to be vocalized can be accessed through the variable text_
+}
+
 void VTTCue::UpdateDisplay(HTMLDivElement& container) {
   DCHECK(track() && track()->IsRendered() && IsActive());
 

@@ -80,6 +80,9 @@ class CORE_EXPORT TextTrackCue : public EventTargetWithInlineData {
   // already been added.
   virtual void UpdateDisplay(HTMLDivElement& container) = 0;
 
+  // Vocalizes text that reaches this method.
+  virtual void UpdateSpeech(HTMLDivElement& container) = 0;
+
   // Marks the nodes of the display tree as past or future relative to
   // movieTime. If |updateDisplay| has not been called there is no display
   // tree and nothing is done.
