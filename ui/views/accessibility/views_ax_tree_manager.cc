@@ -24,15 +24,14 @@
 namespace views {
 
 ViewsAXTreeManager::ViewsAXTreeManager(Widget* widget)
-    : ui::AXTreeManager(ui::AXTreeID::CreateNewAXTreeID(),
-                        std::make_unique<ui::AXTree>()),
-      widget_(widget),
-      tree_source_(cache_.GetOrCreate(widget), ax_tree_id_, &cache_),
+    : widget_(widget),
+      tree_id_(ui::AXTreeID::CreateNewAXTreeID()),
+      tree_source_(cache_.GetOrCreate(widget), tree_id_, &cache_),
       tree_serializer_(&tree_source_),
-      event_generator_(ax_tree()) {
+      event_generator_(&ax_tree_) {
   DCHECK(widget);
-  ui::AXTreeManagerMap::GetInstance().AddTreeManager(ax_tree_id_, this);
-  views::WidgetAXTreeIDMap::GetInstance().AddWidget(ax_tree_id_, widget);
+  ui::AXTreeManagerMap::GetInstance().AddTreeManager(tree_id_, this);
+  views::WidgetAXTreeIDMap::GetInstance().AddWidget(tree_id_, widget);
   views_event_observer_.Observe(AXEventManager::Get());
   widget_observer_.Observe(widget);
 
@@ -50,7 +49,7 @@ ViewsAXTreeManager::~ViewsAXTreeManager() {
   event_generator_.ReleaseTree();
   views_event_observer_.Reset();
   widget_observer_.Reset();
-  ui::AXTreeManagerMap::GetInstance().RemoveTreeManager(ax_tree_id_);
+  ui::AXTreeManagerMap::GetInstance().RemoveTreeManager(tree_id_);
 }
 
 void ViewsAXTreeManager::SetGeneratedEventCallbackForTesting(
@@ -75,14 +74,14 @@ ui::AXNode* ViewsAXTreeManager::GetNodeFromTree(
 
 ui::AXNode* ViewsAXTreeManager::GetNodeFromTree(
     const ui::AXNodeID node_id) const {
-  if (!widget_ || !widget_->GetRootView() || !ax_tree_)
+  if (!widget_ || !widget_->GetRootView())
     return nullptr;
 
-  return ax_tree_->GetFromId(node_id);
+  return ax_tree_.GetFromId(node_id);
 }
 
 ui::AXTreeID ViewsAXTreeManager::GetTreeID() const {
-  return ax_tree_id_;
+  return tree_id_;
 }
 
 ui::AXTreeID ViewsAXTreeManager::GetParentTreeID() const {
@@ -92,10 +91,10 @@ ui::AXTreeID ViewsAXTreeManager::GetParentTreeID() const {
 }
 
 ui::AXNode* ViewsAXTreeManager::GetRootAsAXNode() const {
-  if (!widget_ || !widget_->GetRootView() || !ax_tree_)
+  if (!widget_ || !widget_->GetRootView())
     return nullptr;
 
-  return ax_tree_->root();
+  return ax_tree_.root();
 }
 
 ui::AXNode* ViewsAXTreeManager::GetParentNodeFromParentTreeAsAXNode() const {
@@ -175,12 +174,12 @@ void ViewsAXTreeManager::SerializeTreeUpdates() {
 
 void ViewsAXTreeManager::UnserializeTreeUpdates(
     const std::vector<ui::AXTreeUpdate>& updates) {
-  if (!widget_ || !widget_->GetRootView() || !ax_tree_)
+  if (!widget_ || !widget_->GetRootView())
     return;
 
   for (const ui::AXTreeUpdate& update : updates) {
-    if (!ax_tree_->Unserialize(update)) {
-      NOTREACHED() << ax_tree_->error();
+    if (!ax_tree_.Unserialize(update)) {
+      NOTREACHED() << ax_tree_.error();
       return;
     }
   }
@@ -189,7 +188,7 @@ void ViewsAXTreeManager::UnserializeTreeUpdates(
   // AXEventGenerator to generate events based on the updates.
   for (const ui::AXEventGenerator::TargetedEvent& targeted_event :
        event_generator_) {
-    if (ui::AXNode* node = ax_tree_->GetFromId(targeted_event.node_id))
+    if (ui::AXNode* node = ax_tree().GetFromId(targeted_event.node_id))
       FireGeneratedEvent(targeted_event.event_params.event, *node);
   }
   event_generator_.ClearEvents();

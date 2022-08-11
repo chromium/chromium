@@ -70,6 +70,9 @@ class VIEWS_EXPORT ViewsAXTreeManager : public ui::AXTreeManager,
   ViewsAXTreeManager(const ViewsAXTreeManager& manager) = delete;
   ViewsAXTreeManager& operator=(const ViewsAXTreeManager& manager) = delete;
 
+  // Returns a reference to the managed AXTree.
+  const ui::AXTree& ax_tree() const { return ax_tree_; }
+
   // For testing only, register a function to be called when a generated event
   // is fired from this ViewsAXTreeManager.
   void SetGeneratedEventCallbackForTesting(
@@ -128,6 +131,13 @@ class VIEWS_EXPORT ViewsAXTreeManager : public ui::AXTreeManager,
   // The cache that maps objects in the Views tree to AXAuraObjWrapper objects
   // that are used to serialize the Views tree.
   AXAuraObjCache cache_;
+
+  // The ID for this AXTree.
+  ui::AXTreeID tree_id_;
+
+  // The AXTree that mirrors the Views tree and which is created by
+  // deserializing the updates from |tree_source_|.
+  ui::AXTree ax_tree_;
 
   // The tree source that enables us to serialize the Views tree.
   AXTreeSourceViews tree_source_;

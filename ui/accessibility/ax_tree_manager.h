@@ -5,25 +5,18 @@
 #ifndef UI_ACCESSIBILITY_AX_TREE_MANAGER_H_
 #define UI_ACCESSIBILITY_AX_TREE_MANAGER_H_
 
-#include "base/scoped_observation.h"
 #include "ui/accessibility/ax_export.h"
-#include "ui/accessibility/ax_tree.h"
+#include "ui/accessibility/ax_node.h"
+#include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_observer.h"
 
 namespace ui {
-
-class AXNode;
 
 // Abstract interface for a class that owns an AXTree and manages its
 // connections to other AXTrees in the same page or desktop (parent and child
 // trees).
 class AX_EXPORT AXTreeManager {
  public:
-  AXTreeManager(const AXTreeManager&) = delete;
-  AXTreeManager& operator=(const AXTreeManager&) = delete;
-
-  virtual ~AXTreeManager();
-
   // Returns the AXNode with the given |node_id| from the tree that has the
   // given |tree_id|. This allows for callers to access nodes outside of their
   // own tree. Returns nullptr if |tree_id| or |node_id| is not found.
@@ -63,16 +56,6 @@ class AX_EXPORT AXTreeManager {
   // TODO(benjamin.beaudry) Instead of this, implement GetTreeData() on all
   // AXTreeManager subclasses, and have callers use GetTreeData().ToString();
   virtual std::string ToString() const = 0;
-
-  const AXTreeID& ax_tree_id() const { return ax_tree_id_; }
-  AXTree* ax_tree() const { return ax_tree_.get(); }
-
- protected:
-  AXTreeManager();
-  explicit AXTreeManager(const AXTreeID& tree_id, std::unique_ptr<AXTree> tree);
-
-  AXTreeID ax_tree_id_;
-  std::unique_ptr<AXTree> ax_tree_;
 };
 
 }  // namespace ui
