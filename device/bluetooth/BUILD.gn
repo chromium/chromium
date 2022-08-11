@@ -460,6 +460,8 @@ component("bluetooth") {
           "chromeos/bluetooth_connection_logger.h",
           "chromeos/bluetooth_utils.cc",
           "chromeos/bluetooth_utils.h",
+          "chromeos_platform_features.cc",
+          "chromeos_platform_features.h",
         ]
         deps += [ "//services/data_decoder/public/mojom" ]
         if (is_chromeos_lacros) {
