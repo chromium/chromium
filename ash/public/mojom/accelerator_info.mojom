@@ -1,0 +1,66 @@
+// Copyright 2022 The Chromium Authors.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.mojom;
+
+import "ui/base/accelerators/mojom/accelerator.mojom";
+
+// AcceleratorInfo is a representation of an Accelerator with more information
+// regarding the accelerator. This is used only by Ash clients, hence why this
+// is not in ui/*.
+
+// Contains all sources of shortcuts, new sources must added to this enum.
+enum AcceleratorSource {
+  // Accelerators that are owned by ash and handled in
+  // accelerator_controller_impl.cc.
+  kAsh,
+  // Event rewriters that are owned by ash and handled in
+  // event_rewriter_chromeos.cc.
+  kEventRewriter,
+  // Accelerators that are owned by the browser and sources from
+  // accelerator_table.cc.
+  kBrowser,
+  // Ambient accelerators such as Ctrl-C are not owned by any specific source.
+  kAmbient,
+  // Arc++ specific accelerators owned by Android apps.
+  kAndroid,
+};
+
+// Enum of all possible types of accelerators.
+// Must be kept in sync with ash/public/cpp/accelerator_configuration.h.
+enum AcceleratorType {
+  // System default accelerator.
+  kDefault,
+  // User defined accelerator, this is a custom accelerator.
+  kUser,
+  // Deprecated accelerator.
+  kDeprecated,
+  // Developer-specific accelerators.
+  kDeveloper,
+  // Accelerator used for debugging.
+  kDebug,
+};
+
+// Represents the states of an accelerator.
+// Must be kept in sync with ash/public/cpp/accelerator_configuration.h.
+enum AcceleratorState {
+  // Accelerator is available to be used.
+  kEnabled,
+  // Accelerator disabled due to a conflict with another accelerator.
+  kDisabledByConflict,
+  // Accelerator disabled due to user manually disabling it.
+  kDisabledByUser,
+};
+
+// Represents an accelerator in its entirety. Includes the keys, state, type,
+// and whether the accelerator is locked.
+struct AcceleratorInfo {
+  // Underlying accelerator struct, contains keycode and modifier.
+  ui.mojom.Accelerator accelerator;
+  AcceleratorType type;
+  AcceleratorState state;
+  // True if the accelerator can not be customized by the user.
+  // False if the accelerator can be customized by the user.
+  bool locked;
+};

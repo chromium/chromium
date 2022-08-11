@@ -4,7 +4,7 @@
 
 module ash.shortcut_customization.mojom;
 
-import "ash/public/mojom/accelerator_keys.mojom";
+import "ash/public/mojom/accelerator_info.mojom";
 
 // Provides methods to allow the Shortcut Customization SWA to call on the
 // shortcut provider implementor. Interface is implemented by C++ accelerator

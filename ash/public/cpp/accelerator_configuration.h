@@ -9,27 +9,11 @@
 #include <vector>
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "ash/public/mojom/accelerator_keys.mojom.h"
+#include "ash/public/mojom/accelerator_info.mojom.h"
 #include "base/callback.h"
 #include "ui/base/accelerators/accelerator.h"
 
 namespace ash {
-
-// Represents the type of accelerator.
-enum class AcceleratorType {
-  kDefault,     // System default
-  kUser,        // User added accelerator
-  kDeprecated,  // Deprecated accelerator
-  kDeveloper,   // Accelerator used for developer mode
-  kDebug,       // Used only for debugging
-};
-
-// Represents the current state of an accelerator.
-enum class AcceleratorState {
-  kEnabled,             // Accelerator available
-  kDisabledByConflict,  // Accelerator is disabled due to a conflict
-  kDisabledByUser,      // User disabled the shortcut e.g. disabling a default
-};
 
 // Error codes associated with mutating accelerators.
 enum class AcceleratorConfigResult {
@@ -43,16 +27,16 @@ enum class AcceleratorConfigResult {
 };
 
 struct ASH_PUBLIC_EXPORT AcceleratorInfo {
-  AcceleratorInfo(AcceleratorType type,
+  AcceleratorInfo(ash::mojom::AcceleratorType type,
                   ui::Accelerator accelerator,
                   bool locked)
       : type(type), accelerator(accelerator), locked(locked) {}
-  AcceleratorType type;
+  ash::mojom::AcceleratorType type;
   ui::Accelerator accelerator;
   // Whether the accelerator can be modified.
   bool locked = true;
   // Accelerators are enabled by default.
-  AcceleratorState state = AcceleratorState::kEnabled;
+  ash::mojom::AcceleratorState state = ash::mojom::AcceleratorState::kEnabled;
 };
 
 using AcceleratorAction = uint32_t;
