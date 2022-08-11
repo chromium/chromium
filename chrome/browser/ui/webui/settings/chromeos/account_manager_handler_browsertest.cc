@@ -293,10 +293,9 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
   ASSERT_EQ(1UL, account_manager_accounts.size());
 
   // Call "getAccounts".
-  base::Value args(base::Value::Type::LIST);
+  base::Value::List args;
   args.Append(kHandleFunctionName);
-  web_ui()->HandleReceivedMessage(kGetAccountsMessage,
-                                  &base::Value::AsListValue(args));
+  web_ui()->HandleReceivedMessage(kGetAccountsMessage, args);
 
   const content::TestWebUI::CallData& call_data = *web_ui()->call_data().back();
   EXPECT_EQ("cr.webUIResponse", call_data.function_name());
@@ -343,10 +342,9 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
   base::RunLoop().RunUntilIdle();
 
   // Call "getAccounts".
-  base::Value args(base::Value::Type::LIST);
+  base::Value::List args;
   args.Append(kHandleFunctionName);
-  web_ui()->HandleReceivedMessage(kGetAccountsMessage,
-                                  &base::Value::AsListValue(args));
+  web_ui()->HandleReceivedMessage(kGetAccountsMessage, args);
 
   const content::TestWebUI::CallData& call_data = *web_ui()->call_data().back();
   EXPECT_EQ("cr.webUIResponse", call_data.function_name());
@@ -524,10 +522,9 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTestWithArcAccountRestrictions,
                                                           false);
 
   // Call "getAccounts".
-  base::Value args(base::Value::Type::LIST);
+  base::Value::List args;
   args.Append(kHandleFunctionName);
-  web_ui()->HandleReceivedMessage(kGetAccountsMessage,
-                                  &base::Value::AsListValue(args));
+  web_ui()->HandleReceivedMessage(kGetAccountsMessage, args);
 
   // Wait for the async calls to finish.
   base::RunLoop().RunUntilIdle();
@@ -600,10 +597,9 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTestWithArcAccountRestrictions,
   }
 
   // Call "getAccounts".
-  base::Value args(base::Value::Type::LIST);
+  base::Value::List args;
   args.Append(kHandleFunctionName);
-  web_ui()->HandleReceivedMessage(kGetAccountsMessage,
-                                  &base::Value::AsListValue(args));
+  web_ui()->HandleReceivedMessage(kGetAccountsMessage, args);
 
   // Wait for the async calls to finish.
   base::RunLoop().RunUntilIdle();
@@ -617,11 +613,10 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTestWithArcAccountRestrictions,
   ASSERT_TRUE(secondary_1_dict.has_value());
 
   // Call "changeArcAvailability".
-  base::Value args_1(base::Value::Type::LIST);
+  base::Value::List args_1;
   args_1.Append(secondary_1_dict.value().Clone());  // account
   args_1.Append(false);                             // is_available
-  web_ui()->HandleReceivedMessage("changeArcAvailability",
-                                  &base::Value::AsListValue(args_1));
+  web_ui()->HandleReceivedMessage("changeArcAvailability", args_1);
 
   // Wait for the async calls to finish.
   base::RunLoop().RunUntilIdle();

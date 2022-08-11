@@ -100,10 +100,10 @@ TEST_P(EnterpriseProfileWelcomeHandleProceedTest, HandleProceed) {
       GetParam().profile_creation_required_by_policy,
       /*show_link_data_option=*/true, mock_proceed_callback.Get());
 
-  base::ListValue args;
+  base::Value::List args;
   args.Append(GetParam().should_link_data);
   EXPECT_CALL(mock_proceed_callback, Run(GetParam().expected_choice));
-  web_ui()->HandleReceivedMessage("proceed", &args);
+  web_ui()->HandleReceivedMessage("proceed", args);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

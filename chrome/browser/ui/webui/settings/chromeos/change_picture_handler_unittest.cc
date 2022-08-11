@@ -108,20 +108,20 @@ class ChangePictureHandlerTest : public testing::Test {
   }
 
   void SelectNewDefaultImage(int default_image_index) {
-    base::ListValue args;
+    base::Value::List args;
     args.Append(
         default_user_image::GetDefaultImageUrl(default_image_index).spec());
     args.Append("default");
 
-    web_ui_->HandleReceivedMessage("selectImage", &args);
+    web_ui_->HandleReceivedMessage("selectImage", args);
   }
 
   void SelectProfileImage() {
-    base::ListValue args;
+    base::Value::List args;
     args.Append("empty url");
     args.Append("profile");
 
-    web_ui_->HandleReceivedMessage("selectImage", &args);
+    web_ui_->HandleReceivedMessage("selectImage", args);
   }
 
   void SelectImageFromFile(const base::FilePath& path) {

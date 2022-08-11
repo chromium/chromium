@@ -342,10 +342,9 @@ class MultideviceHandlerTest : public testing::Test {
   void CallGetPageContentData() {
     size_t call_data_count_before_call = test_web_ui()->call_data().size();
 
-    base::Value args(base::Value::Type::LIST);
+    base::Value::List args;
     args.Append("handlerFunctionName");
-    test_web_ui()->HandleReceivedMessage("getPageContentData",
-                                         &base::Value::AsListValue(args));
+    test_web_ui()->HandleReceivedMessage("getPageContentData", args);
 
     EXPECT_EQ(call_data_count_before_call + 1u,
               test_web_ui()->call_data().size());
@@ -361,8 +360,8 @@ class MultideviceHandlerTest : public testing::Test {
   void CallRemoveHostDevice() {
     size_t num_remote_host_device_calls_before_call =
         fake_multidevice_setup_client()->num_remove_host_device_called();
-    base::ListValue empty_args;
-    test_web_ui()->HandleReceivedMessage("removeHostDevice", &empty_args);
+    base::Value::List empty_args;
+    test_web_ui()->HandleReceivedMessage("removeHostDevice", empty_args);
     EXPECT_EQ(num_remote_host_device_calls_before_call + 1u,
               fake_multidevice_setup_client()->num_remove_host_device_called());
   }
@@ -370,10 +369,9 @@ class MultideviceHandlerTest : public testing::Test {
   void CallGetAndroidSmsInfo(bool expected_enabled, const GURL& expected_url) {
     size_t call_data_count_before_call = test_web_ui()->call_data().size();
 
-    base::ListValue args;
+    base::Value::List args;
     args.Append("handlerFunctionName");
-    test_web_ui()->HandleReceivedMessage("getAndroidSmsInfo",
-                                         &base::Value::AsListValue(args));
+    test_web_ui()->HandleReceivedMessage("getAndroidSmsInfo", args);
 
     ASSERT_EQ(call_data_count_before_call + 1u,
               test_web_ui()->call_data().size());
@@ -399,15 +397,14 @@ class MultideviceHandlerTest : public testing::Test {
                       kAvailableButNotGranted,
             phonehub::MultideviceFeatureAccessManager::AccessProhibitedReason::
                 kUnknown);
-    base::ListValue empty_args;
+    base::Value::List empty_args;
     test_web_ui()->HandleReceivedMessage("attemptNotificationSetup",
-                                         &empty_args);
+                                         empty_args);
   }
 
   void CallCancelNotificationSetup() {
-    base::ListValue empty_args;
-    test_web_ui()->HandleReceivedMessage("cancelNotificationSetup",
-                                         &empty_args);
+    base::Value::List empty_args;
+    test_web_ui()->HandleReceivedMessage("cancelNotificationSetup", empty_args);
   }
 
   void CallAttemptAppsSetup(bool has_access_been_granted) {
@@ -416,13 +413,13 @@ class MultideviceHandlerTest : public testing::Test {
                                       AccessStatus::kAccessGranted
                                 : phonehub::MultideviceFeatureAccessManager::
                                       AccessStatus::kAvailableButNotGranted);
-    base::ListValue empty_args;
-    test_web_ui()->HandleReceivedMessage("attemptAppsSetup", &empty_args);
+    base::Value::List empty_args;
+    test_web_ui()->HandleReceivedMessage("attemptAppsSetup", empty_args);
   }
 
   void CallCancelAppsSetup() {
-    base::ListValue empty_args;
-    test_web_ui()->HandleReceivedMessage("cancelAppsSetup", &empty_args);
+    base::Value::List empty_args;
+    test_web_ui()->HandleReceivedMessage("cancelAppsSetup", empty_args);
   }
 
   void CallAttemptCameraRollSetup(bool has_camera_roll_access_been_granted) {
@@ -433,16 +430,16 @@ class MultideviceHandlerTest : public testing::Test {
                       kAccessGranted
                 : phonehub::MultideviceFeatureAccessManager::AccessStatus::
                       kAvailableButNotGranted);
-    base::ListValue args;
+    base::Value::List args;
     args.Append(/*camera_roll=*/true);
     args.Append(/*notifications=*/false);
-    test_web_ui()->HandleReceivedMessage("attemptCombinedFeatureSetup", &args);
+    test_web_ui()->HandleReceivedMessage("attemptCombinedFeatureSetup", args);
   }
 
   void CallCancelCameraRollSetup() {
-    base::ListValue empty_args;
+    base::Value::List empty_args;
     test_web_ui()->HandleReceivedMessage("cancelCombinedFeatureSetup",
-                                         &empty_args);
+                                         empty_args);
   }
 
   void SimulateHostStatusUpdate(
@@ -607,15 +604,15 @@ class MultideviceHandlerTest : public testing::Test {
   }
 
   void CallRetryPendingHostSetup(bool success) {
-    base::ListValue empty_args;
-    test_web_ui()->HandleReceivedMessage("retryPendingHostSetup", &empty_args);
+    base::Value::List empty_args;
+    test_web_ui()->HandleReceivedMessage("retryPendingHostSetup", empty_args);
     fake_multidevice_setup_client()->InvokePendingRetrySetHostNowCallback(
         success);
   }
 
   void CallSetUpAndroidSms() {
-    base::ListValue empty_args;
-    test_web_ui()->HandleReceivedMessage("setUpAndroidSms", &empty_args);
+    base::Value::List empty_args;
+    test_web_ui()->HandleReceivedMessage("setUpAndroidSms", empty_args);
   }
 
   void CallSetFeatureEnabledState(multidevice_setup::mojom::Feature feature,
@@ -624,16 +621,15 @@ class MultideviceHandlerTest : public testing::Test {
                                   bool success) {
     size_t call_data_count_before_call = test_web_ui()->call_data().size();
 
-    base::Value args(base::Value::Type::LIST);
+    base::Value::List args;
     args.Append("handlerFunctionName");
     args.Append(static_cast<int>(feature));
     args.Append(enabled);
     if (auth_token)
       args.Append(*auth_token);
 
-    base::ListValue empty_args;
-    test_web_ui()->HandleReceivedMessage("setFeatureEnabledState",
-                                         &base::Value::AsListValue(args));
+    base::Value::List empty_args;
+    test_web_ui()->HandleReceivedMessage("setFeatureEnabledState", args);
     fake_multidevice_setup_client()
         ->InvokePendingSetFeatureEnabledStateCallback(
             feature /* expected_feature */, enabled /* expected_enabled */,
@@ -842,10 +838,9 @@ class MultideviceHandlerTest : public testing::Test {
 TEST_F(MultideviceHandlerTest, PageContentDataRequestedWithNullManagers) {
   SetUpHandlerWithEmptyManagers();
 
-  base::Value args(base::Value::Type::LIST);
+  base::Value::List args;
   args.Append("handlerFunctionName");
-  test_web_ui()->HandleReceivedMessage("getPageContentData",
-                                       &base::Value::AsListValue(args));
+  test_web_ui()->HandleReceivedMessage("getPageContentData", args);
 }
 
 TEST_F(MultideviceHandlerTest, NotificationSetupFlow) {
@@ -1007,113 +1002,113 @@ TEST_F(MultideviceHandlerTest, LogUmaMetricsForSetupFlow) {
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount(kDialogIntroActionHistogram, 0);
 
-  base::ListValue set_up_screen_args;
+  base::Value::List set_up_screen_args;
   set_up_screen_args.Append(/*irrelivant_set_up_dialog=*/0);
   set_up_screen_args.Append(/*action_cancel=*/3);
   test_web_ui()->HandleReceivedMessage("logPhoneHubPermissionSetUpScreenAction",
-                                       &set_up_screen_args);
+                                       set_up_screen_args);
   histogram_tester.ExpectTotalCount(kDialogIntroActionHistogram, 0);
 
-  set_up_screen_args.ClearList();
+  set_up_screen_args.clear();
   set_up_screen_args.Append(/*intro_screen_index=*/1);
   set_up_screen_args.Append(/*learn_more=*/2);
   test_web_ui()->HandleReceivedMessage("logPhoneHubPermissionSetUpScreenAction",
-                                       &set_up_screen_args);
+                                       set_up_screen_args);
   histogram_tester.ExpectBucketCount(kDialogIntroActionHistogram,
                                      /*learn_more=*/2, 1);
 
-  set_up_screen_args.ClearList();
+  set_up_screen_args.clear();
   set_up_screen_args.Append(/*intro_screen_index=*/1);
   set_up_screen_args.Append(/*cancel=*/3);
   test_web_ui()->HandleReceivedMessage("logPhoneHubPermissionSetUpScreenAction",
-                                       &set_up_screen_args);
+                                       set_up_screen_args);
   histogram_tester.ExpectBucketCount(kDialogIntroActionHistogram,
                                      /*cancel=*/3, 1);
 
-  set_up_screen_args.ClearList();
+  set_up_screen_args.clear();
   set_up_screen_args.Append(/*intro_screen_index=*/1);
   set_up_screen_args.Append(/*next=*/5);
   test_web_ui()->HandleReceivedMessage("logPhoneHubPermissionSetUpScreenAction",
-                                       &set_up_screen_args);
+                                       set_up_screen_args);
   histogram_tester.ExpectBucketCount(kDialogIntroActionHistogram,
                                      /*done=*/5, 1);
 
-  set_up_screen_args.ClearList();
+  set_up_screen_args.clear();
   set_up_screen_args.Append(/*finish_on_phone_screen_index=*/2);
   set_up_screen_args.Append(/*learn_more=*/2);
   test_web_ui()->HandleReceivedMessage("logPhoneHubPermissionSetUpScreenAction",
-                                       &set_up_screen_args);
+                                       set_up_screen_args);
   histogram_tester.ExpectBucketCount(kDialogFinishOnPhoneActionHistogram,
                                      /*learn_more=*/2, 1);
 
-  set_up_screen_args.ClearList();
+  set_up_screen_args.clear();
   set_up_screen_args.Append(/*finish_on_phone_screen_index=*/2);
   set_up_screen_args.Append(/*cancel=*/3);
   test_web_ui()->HandleReceivedMessage("logPhoneHubPermissionSetUpScreenAction",
-                                       &set_up_screen_args);
+                                       set_up_screen_args);
   histogram_tester.ExpectBucketCount(kDialogFinishOnPhoneActionHistogram,
                                      /*cancel=*/3, 1);
 
-  set_up_screen_args.ClearList();
+  set_up_screen_args.clear();
   set_up_screen_args.Append(/*connecting_screen_index=*/3);
   set_up_screen_args.Append(/*cancel=*/3);
   test_web_ui()->HandleReceivedMessage("logPhoneHubPermissionSetUpScreenAction",
-                                       &set_up_screen_args);
+                                       set_up_screen_args);
   histogram_tester.ExpectBucketCount(kDialogConnectingActionHistogram,
                                      /*cancel=*/3, 1);
 
-  set_up_screen_args.ClearList();
+  set_up_screen_args.clear();
   set_up_screen_args.Append(/*connected_screen_index=*/6);
   set_up_screen_args.Append(/*done=*/4);
   test_web_ui()->HandleReceivedMessage("logPhoneHubPermissionSetUpScreenAction",
-                                       &set_up_screen_args);
+                                       set_up_screen_args);
   histogram_tester.ExpectBucketCount(kDialogSetupFinishedActionHistogram,
                                      /*done=*/4, 1);
 
-  set_up_screen_args.ClearList();
+  set_up_screen_args.clear();
   set_up_screen_args.Append(/*connection_error_screen_index=*/4);
   set_up_screen_args.Append(/*try_again=*/5);
   test_web_ui()->HandleReceivedMessage("logPhoneHubPermissionSetUpScreenAction",
-                                       &set_up_screen_args);
+                                       set_up_screen_args);
   histogram_tester.ExpectBucketCount(kDialogConnectionErrorActionHistogram,
                                      /*try_again=*/5, 1);
 
-  set_up_screen_args.ClearList();
+  set_up_screen_args.clear();
   set_up_screen_args.Append(/*connection_error_screen_index=*/4);
   set_up_screen_args.Append(/*cancel=*/3);
   test_web_ui()->HandleReceivedMessage("logPhoneHubPermissionSetUpScreenAction",
-                                       &set_up_screen_args);
+                                       set_up_screen_args);
   histogram_tester.ExpectBucketCount(kDialogConnectionErrorActionHistogram,
                                      /*cancel=*/3, 1);
 
-  set_up_screen_args.ClearList();
+  set_up_screen_args.clear();
   set_up_screen_args.Append(/*connection_time_out_screen_index=*/5);
   set_up_screen_args.Append(/*try_again=*/5);
   test_web_ui()->HandleReceivedMessage("logPhoneHubPermissionSetUpScreenAction",
-                                       &set_up_screen_args);
+                                       set_up_screen_args);
   histogram_tester.ExpectBucketCount(kDialogConnectionTimeOutActionHistogram,
                                      /*try_again=*/5, 1);
 
-  set_up_screen_args.ClearList();
+  set_up_screen_args.clear();
   set_up_screen_args.Append(/*connection_time_out_screen_index=*/5);
   set_up_screen_args.Append(/*cancel=*/3);
   test_web_ui()->HandleReceivedMessage("logPhoneHubPermissionSetUpScreenAction",
-                                       &set_up_screen_args);
+                                       set_up_screen_args);
   histogram_tester.ExpectBucketCount(kDialogConnectionTimeOutActionHistogram,
                                      /*cancel=*/3, 1);
 
-  set_up_screen_args.ClearList();
+  set_up_screen_args.clear();
   set_up_screen_args.Append(/*set_a_pin_screen_index=*/7);
   set_up_screen_args.Append(/*cancel=*/3);
   test_web_ui()->HandleReceivedMessage("logPhoneHubPermissionSetUpScreenAction",
-                                       &set_up_screen_args);
+                                       set_up_screen_args);
   histogram_tester.ExpectBucketCount(kDialogSetAPinOrPasswordHistogram,
                                      /*cancel=*/3, 1);
 
-  set_up_screen_args.ClearList();
+  set_up_screen_args.clear();
   set_up_screen_args.Append(/*camera_roll_setup=*/3);
   test_web_ui()->HandleReceivedMessage(
-      "logPhoneHubPermissionSetUpButtonClicked", &set_up_screen_args);
+      "logPhoneHubPermissionSetUpButtonClicked", set_up_screen_args);
   histogram_tester.ExpectBucketCount(kSetupButtonInSettingsClikedHistogram,
                                      /*camera_roll_setup=*/3, 1);
 }

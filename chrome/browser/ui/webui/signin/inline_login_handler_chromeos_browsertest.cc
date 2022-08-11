@@ -272,15 +272,15 @@ class InlineLoginHandlerChromeOSTest
   }
 
   void CompleteConsentLogForChildUser(const std::string& secondary_email) {
-    base::ListValue call_args;
+    base::Value::List call_args;
     call_args.Append(secondary_email);
     call_args.Append(kToSVersion);
 
-    base::ListValue list_args;
+    base::Value::List list_args;
     list_args.Append(kConsentLoggedCallback);
     list_args.Append(std::move(call_args));
 
-    web_ui()->HandleReceivedMessage("consentLogged", &list_args);
+    web_ui()->HandleReceivedMessage("consentLogged", list_args);
   }
 
   ash::FakeChromeUserManager* GetFakeUserManager() const {
@@ -322,9 +322,9 @@ IN_PROC_BROWSER_TEST_P(InlineLoginHandlerChromeOSTest,
       ->AddObserver(&observer);
 
   // Call "completeLogin".
-  base::ListValue args;
+  base::Value::List args;
   args.Append(GetCompleteLoginArgs(kSecondaryAccount1Email));
-  web_ui()->HandleReceivedMessage(kCompleteLoginMessage, &args);
+  web_ui()->HandleReceivedMessage(kCompleteLoginMessage, args);
 
   if (GetDeviceAccountInfo().user_type ==
       user_manager::UserType::USER_TYPE_CHILD) {
@@ -350,9 +350,9 @@ IN_PROC_BROWSER_TEST_P(InlineLoginHandlerChromeOSTest,
       ->AddObserver(&observer);
 
   // Call "completeLogin".
-  base::ListValue args;
+  base::Value::List args;
   args.Append(GetCompleteLoginArgs(GetDeviceAccountInfo().email));
-  web_ui()->HandleReceivedMessage(kCompleteLoginMessage, &args);
+  web_ui()->HandleReceivedMessage(kCompleteLoginMessage, args);
 
   // Wait until account is added.
   base::RunLoop run_loop;
@@ -428,10 +428,9 @@ class InlineLoginHandlerChromeOSTestWithArcRestrictions
 
   const base::span<const base::Value> CallGetAccountsNotAvailableInArc() {
     // Call "getAccountsNotAvailableInArc".
-    base::Value args(base::Value::Type::LIST);
+    base::Value::List args;
     args.Append(kHandleFunctionName);
-    web_ui()->HandleReceivedMessage(kGetAccountsNotAvailableInArcMessage,
-                                    &base::Value::AsListValue(args));
+    web_ui()->HandleReceivedMessage(kGetAccountsNotAvailableInArcMessage, args);
     base::RunLoop().RunUntilIdle();
 
     const content::TestWebUI::CallData& call_data =
@@ -459,9 +458,9 @@ IN_PROC_BROWSER_TEST_P(InlineLoginHandlerChromeOSTestWithArcRestrictions,
       &apps_availability_observer);
 
   // Call "completeLogin".
-  base::ListValue args;
+  base::Value::List args;
   args.Append(GetCompleteLoginArgs(kSecondaryAccount1Email));
-  web_ui()->HandleReceivedMessage(kCompleteLoginMessage, &args);
+  web_ui()->HandleReceivedMessage(kCompleteLoginMessage, args);
 
   if (GetDeviceAccountInfo().user_type ==
       user_manager::UserType::USER_TYPE_CHILD) {
@@ -500,9 +499,9 @@ IN_PROC_BROWSER_TEST_P(InlineLoginHandlerChromeOSTestWithArcRestrictions,
       &apps_availability_observer);
 
   // Call "completeLogin".
-  base::ListValue args;
+  base::Value::List args;
   args.Append(GetCompleteLoginArgs(GetDeviceAccountInfo().email));
-  web_ui()->HandleReceivedMessage(kCompleteLoginMessage, &args);
+  web_ui()->HandleReceivedMessage(kCompleteLoginMessage, args);
 
   // Wait until account is added.
   base::RunLoop run_loop;
@@ -551,10 +550,9 @@ IN_PROC_BROWSER_TEST_P(InlineLoginHandlerChromeOSTestWithArcRestrictions,
   EXPECT_TRUE(ValuesListContainAccount(result, kSecondaryAccount2Email));
 
   // Call "makeAvailableInArc".
-  base::Value args_1(base::Value::Type::LIST);
+  base::Value::List args_1;
   args_1.Append(ValuesListGetAccount(result, kSecondaryAccount2Email).value());
-  web_ui()->HandleReceivedMessage(kMakeAvailableInArcMessage,
-                                  &base::Value::AsListValue(args_1));
+  web_ui()->HandleReceivedMessage(kMakeAvailableInArcMessage, args_1);
 
   // Call "getAccountsNotAvailableInArc".
   const base::span<const base::Value> result_1 =

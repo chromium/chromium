@@ -39,11 +39,6 @@ void TestWebUI::HandleReceivedMessage(const std::string& handler_name,
   }
 }
 
-void TestWebUI::HandleReceivedMessage(const std::string& handler_name,
-                                      const base::ListValue* args) {
-  HandleReceivedMessage(handler_name, args->GetList());
-}
-
 WebContents* TestWebUI::GetWebContents() {
   return web_contents_;
 }

@@ -75,11 +75,10 @@ TEST_F(BluetoothHandlerTest, GetIsDeviceBlockedByPolicy) {
 
   size_t call_data_count_before_call = test_web_ui()->call_data().size();
 
-  base::Value args(base::Value::Type::LIST);
+  base::Value::List args;
   args.Append("handlerFunctionName");
   args.Append(kDeviceAddress);
-  test_web_ui()->HandleReceivedMessage("isDeviceBlockedByPolicy",
-                                       &base::Value::AsListValue(args));
+  test_web_ui()->HandleReceivedMessage("isDeviceBlockedByPolicy", args);
 
   ASSERT_EQ(call_data_count_before_call + 1u,
             test_web_ui()->call_data().size());
@@ -96,9 +95,9 @@ TEST_F(BluetoothHandlerTest, GetRequestFastPairDeviceSupport) {
 
   size_t call_data_count_before_call = test_web_ui()->call_data().size();
 
-  base::Value args(base::Value::Type::LIST);
+  base::Value::List args;
   test_web_ui()->HandleReceivedMessage("requestFastPairDeviceSupportStatus",
-                                       &base::Value::AsListValue(args));
+                                       args);
 
   ASSERT_EQ(call_data_count_before_call + 1u,
             test_web_ui()->call_data().size());

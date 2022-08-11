@@ -48,16 +48,16 @@ class AnnotatorMessageHandlerTest : public testing::Test {
   }
 
   void SendUndoRedoAvailableChanged(bool undo_available, bool redo_available) {
-    base::ListValue list_args;
+    base::Value::List list_args;
     list_args.Append(base::Value(undo_available));
     list_args.Append(base::Value(redo_available));
-    web_ui().HandleReceivedMessage("onUndoRedoAvailabilityChanged", &list_args);
+    web_ui().HandleReceivedMessage("onUndoRedoAvailabilityChanged", list_args);
   }
 
   void SendCanvasInitialized(bool success) {
-    base::ListValue list_args;
+    base::Value::List list_args;
     list_args.Append(base::Value(success));
-    web_ui().HandleReceivedMessage("onCanvasInitialized", &list_args);
+    web_ui().HandleReceivedMessage("onCanvasInitialized", list_args);
   }
 
   content::TestWebUI& web_ui() { return web_ui_; }

@@ -44,10 +44,10 @@ class DiagnosticsMetricsMessageHandlerTest : public testing::Test {
   }
 
   void SendRecordNavigation(NavigationView from, NavigationView to) {
-    base::ListValue args;
+    base::Value::List args;
     args.Append(base::Value(static_cast<int>(from)));
     args.Append(base::Value(static_cast<int>(to)));
-    web_ui_.HandleReceivedMessage(kRecordNavigation, &args);
+    web_ui_.HandleReceivedMessage(kRecordNavigation, args);
 
     task_environment_.RunUntilIdle();
   }
@@ -185,31 +185,31 @@ TEST_F(DiagnosticsMetricsMessageHandlerTest,
 
 TEST_F(DiagnosticsMetricsMessageHandlerTest,
        HandleRecordNavigationWithoutArgs) {
-  base::ListValue args;
+  base::Value::List args;
 
   NavigationView expected_view = NavigationView::kSystem;
   InitializeHandler(expected_view);
 
   EXPECT_NO_FATAL_FAILURE(
-      web_ui_.HandleReceivedMessage(kRecordNavigation, &args));
+      web_ui_.HandleReceivedMessage(kRecordNavigation, args));
   EXPECT_EQ(expected_view, handler_->GetCurrentViewForTesting());
 }
 
 TEST_F(DiagnosticsMetricsMessageHandlerTest, HandleRecordNavigationWithOneArg) {
-  base::ListValue args;
+  base::Value::List args;
   args.Append(base::Value(0));
 
   NavigationView expected_view = NavigationView::kSystem;
   InitializeHandler(expected_view);
 
   EXPECT_NO_FATAL_FAILURE(
-      web_ui_.HandleReceivedMessage(kRecordNavigation, &args));
+      web_ui_.HandleReceivedMessage(kRecordNavigation, args));
   EXPECT_EQ(expected_view, handler_->GetCurrentViewForTesting());
 }
 
 TEST_F(DiagnosticsMetricsMessageHandlerTest,
        HandleRecordNavigationWithInvalidArgs) {
-  base::ListValue args;
+  base::Value::List args;
   args.Append(base::Value("0"));
   args.Append(base::Value());
 
@@ -217,13 +217,13 @@ TEST_F(DiagnosticsMetricsMessageHandlerTest,
   InitializeHandler(expected_view);
 
   EXPECT_NO_FATAL_FAILURE(
-      web_ui_.HandleReceivedMessage(kRecordNavigation, &args));
+      web_ui_.HandleReceivedMessage(kRecordNavigation, args));
   EXPECT_EQ(expected_view, handler_->GetCurrentViewForTesting());
 }
 
 TEST_F(DiagnosticsMetricsMessageHandlerTest,
        HandleRecordNavigationWithMatchingArgs) {
-  base::ListValue args;
+  base::Value::List args;
   args.Append(base::Value(1));
   args.Append(base::Value(1));
 
@@ -231,13 +231,13 @@ TEST_F(DiagnosticsMetricsMessageHandlerTest,
   InitializeHandler(expected_view);
 
   EXPECT_NO_FATAL_FAILURE(
-      web_ui_.HandleReceivedMessage(kRecordNavigation, &args));
+      web_ui_.HandleReceivedMessage(kRecordNavigation, args));
   EXPECT_EQ(expected_view, handler_->GetCurrentViewForTesting());
 }
 
 TEST_F(DiagnosticsMetricsMessageHandlerTest,
        HandleRecordNavigationWithOutOfRangeArgs) {
-  base::ListValue args;
+  base::Value::List args;
   args.Append(base::Value(-100));
   args.Append(base::Value(100));
 
@@ -245,7 +245,7 @@ TEST_F(DiagnosticsMetricsMessageHandlerTest,
   InitializeHandler(expected_view);
 
   EXPECT_NO_FATAL_FAILURE(
-      web_ui_.HandleReceivedMessage(kRecordNavigation, &args));
+      web_ui_.HandleReceivedMessage(kRecordNavigation, args));
   EXPECT_EQ(expected_view, handler_->GetCurrentViewForTesting());
 }
 }  // namespace metrics

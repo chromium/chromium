@@ -159,10 +159,10 @@ class ProjectorMessageHandlerUnitTest : public testing::Test {
 };
 
 TEST_F(ProjectorMessageHandlerUnitTest, GetAccounts) {
-  base::ListValue list_args;
+  base::Value::List list_args;
   list_args.Append(kGetAccountsCallback);
 
-  web_ui().HandleReceivedMessage("getAccounts", &list_args);
+  web_ui().HandleReceivedMessage("getAccounts", list_args);
 
   // We expect that there was only one callback to the WebUI.
   EXPECT_EQ(web_ui().call_data().size(), 1u);
@@ -195,11 +195,11 @@ TEST_F(ProjectorMessageHandlerUnitTest, CanStartProjectorSession) {
   ON_CALL(controller(), GetNewScreencastPrecondition)
       .WillByDefault(testing::Return(precondition));
 
-  base::ListValue list_args;
+  base::Value::List list_args;
   list_args.Append(kGetNewScreencastPreconditionCallback);
 
   web_ui().HandleReceivedMessage("getNewScreencastPreconditionState",
-                                 &list_args);
+                                 list_args);
 
   // We expect that there was only one callback to the WebUI.
   EXPECT_EQ(web_ui().call_data().size(), 1u);
@@ -217,13 +217,13 @@ TEST_F(ProjectorMessageHandlerUnitTest, CanStartProjectorSession) {
 TEST_F(ProjectorMessageHandlerUnitTest, GetOAuthTokenForAccount) {
   mock_app_client().SetAutomaticIssueOfAccessTokens(false);
 
-  base::ListValue list_args;
+  base::Value::List list_args;
   list_args.Append(kGetOAuthTokenCallback);
-  base::ListValue args;
+  base::Value::List args;
   args.Append(kTestUserEmail);
   list_args.Append(std::move(args));
 
-  web_ui().HandleReceivedMessage("getOAuthTokenForAccount", &list_args);
+  web_ui().HandleReceivedMessage("getOAuthTokenForAccount", list_args);
   mock_app_client().WaitForAccessRequest(kTestUserEmail);
 
   EXPECT_EQ(web_ui().call_data().size(), 1u);
@@ -236,9 +236,9 @@ TEST_F(ProjectorMessageHandlerUnitTest, GetOAuthTokenForAccount) {
 TEST_F(ProjectorMessageHandlerUnitTest, SendXhr) {
   const std::string& test_response_body = "{}";
 
-  base::ListValue list_args;
+  base::Value::List list_args;
   list_args.Append(kSendXhrCallback);
-  base::ListValue args;
+  base::Value::List args;
   args.Append(kTestXhrUrl);
   args.Append(kTestXhrMethod);
   args.Append(kTestXhrRequestBody);
@@ -255,7 +255,7 @@ TEST_F(ProjectorMessageHandlerUnitTest, SendXhr) {
 
   base::RunLoop run_loop;
   message_handler()->SetXhrRequestRunLoopQuitClosure(run_loop.QuitClosure());
-  web_ui().HandleReceivedMessage("sendXhr", &list_args);
+  web_ui().HandleReceivedMessage("sendXhr", list_args);
   run_loop.Run();
 
   EXPECT_EQ(web_ui().call_data().size(), 1u);
@@ -283,9 +283,9 @@ TEST_F(ProjectorMessageHandlerUnitTest, SendXhr) {
 }
 
 TEST_F(ProjectorMessageHandlerUnitTest, SendXhrWithUnSupportedUrl) {
-  base::ListValue list_args;
+  base::Value::List list_args;
   list_args.Append(kSendXhrCallback);
-  base::ListValue args;
+  base::Value::List args;
   args.Append(kTestXhrUnsupportedUrl);
   args.Append(kTestXhrMethod);
   args.Append(kTestXhrRequestBody);
@@ -299,7 +299,7 @@ TEST_F(ProjectorMessageHandlerUnitTest, SendXhrWithUnSupportedUrl) {
 
   base::RunLoop run_loop;
   message_handler()->SetXhrRequestRunLoopQuitClosure(run_loop.QuitClosure());
-  web_ui().HandleReceivedMessage("sendXhr", &list_args);
+  web_ui().HandleReceivedMessage("sendXhr", list_args);
   run_loop.Run();
 
   EXPECT_EQ(web_ui().call_data().size(), 1u);
@@ -364,10 +364,10 @@ TEST_F(ProjectorMessageHandlerUnitTest, ShouldDownloadSoda) {
   ON_CALL(mock_app_client(), ShouldDownloadSoda())
       .WillByDefault(testing::Return(true));
 
-  base::ListValue list_args;
+  base::Value::List list_args;
   list_args.Append(base::Value(kShouldDownloadSodaCallback));
 
-  web_ui().HandleReceivedMessage("shouldDownloadSoda", &list_args);
+  web_ui().HandleReceivedMessage("shouldDownloadSoda", list_args);
 
   const content::TestWebUI::CallData& call_data = FetchCallData(0);
   EXPECT_EQ(call_data.function_name(), kWebUIResponse);
@@ -379,10 +379,10 @@ TEST_F(ProjectorMessageHandlerUnitTest, ShouldDownloadSoda) {
 TEST_F(ProjectorMessageHandlerUnitTest, InstallSoda) {
   ON_CALL(mock_app_client(), InstallSoda()).WillByDefault(testing::Return());
 
-  base::ListValue list_args;
+  base::Value::List list_args;
   list_args.Append(base::Value(kInstallSodaCallback));
 
-  web_ui().HandleReceivedMessage("installSoda", &list_args);
+  web_ui().HandleReceivedMessage("installSoda", list_args);
 
   const content::TestWebUI::CallData& call_data = FetchCallData(0);
   EXPECT_EQ(call_data.function_name(), kWebUIResponse);
@@ -401,10 +401,10 @@ TEST_F(ProjectorMessageHandlerUnitTest, GetPendingScreencasts) {
   ON_CALL(mock_app_client(), GetPendingScreencasts())
       .WillByDefault(testing::ReturnRef(expectedScreencasts));
 
-  base::ListValue list_args;
+  base::Value::List list_args;
   list_args.Append(kGetPendingScreencastsCallback);
 
-  web_ui().HandleReceivedMessage("getPendingScreencasts", &list_args);
+  web_ui().HandleReceivedMessage("getPendingScreencasts", list_args);
 
   // We expect that there was only one callback to the WebUI.
   EXPECT_EQ(web_ui().call_data().size(), 1u);
@@ -435,15 +435,15 @@ TEST_F(ProjectorMessageHandlerUnitTest, OnScreencastsStateChange) {
 }
 
 TEST_F(ProjectorMessageHandlerUnitTest, CreationFlowEnabled) {
-  base::ListValue list_args;
+  base::Value::List list_args;
   list_args.Append(base::Value(kSetUserPrefCallback));
 
-  base::ListValue func_args;
+  base::Value::List func_args;
   func_args.Append(base::Value(ash::prefs::kProjectorCreationFlowEnabled));
   func_args.Append(base::Value(true));
   list_args.Append(std::move(func_args));
 
-  web_ui().HandleReceivedMessage("setUserPref", &list_args);
+  web_ui().HandleReceivedMessage("setUserPref", list_args);
 
   const content::TestWebUI::CallData& call_data = FetchCallData(0);
   EXPECT_EQ(call_data.function_name(), kWebUIResponse);
@@ -451,13 +451,13 @@ TEST_F(ProjectorMessageHandlerUnitTest, CreationFlowEnabled) {
   EXPECT_EQ(call_data.arg2()->GetBool(), true);
 
   // Now let's try to read the user's pref.
-  list_args.ClearList();
+  list_args.clear();
   list_args.Append(base::Value(kGetUserPrefCallback));
-  func_args.ClearList();
+  func_args.clear();
   func_args.Append(ash::prefs::kProjectorCreationFlowEnabled);
   list_args.Append(std::move(func_args));
 
-  web_ui().HandleReceivedMessage("getUserPref", &list_args);
+  web_ui().HandleReceivedMessage("getUserPref", list_args);
 
   const content::TestWebUI::CallData& get_pref_call_data = FetchCallData(1);
   EXPECT_EQ(get_pref_call_data.function_name(), kWebUIResponse);
@@ -470,16 +470,16 @@ TEST_F(ProjectorMessageHandlerUnitTest, CreationFlowEnabled) {
 }
 
 TEST_F(ProjectorMessageHandlerUnitTest, ExcludeTranscriptDialogShownPref) {
-  base::ListValue list_args;
+  base::Value::List list_args;
   list_args.Append(base::Value(kSetUserPrefCallback));
 
-  base::ListValue func_args;
+  base::Value::List func_args;
   func_args.Append(
       base::Value(ash::prefs::kProjectorExcludeTranscriptDialogShown));
   func_args.Append(base::Value(true));
   list_args.Append(std::move(func_args));
 
-  web_ui().HandleReceivedMessage("setUserPref", &list_args);
+  web_ui().HandleReceivedMessage("setUserPref", list_args);
 
   const content::TestWebUI::CallData& call_data = FetchCallData(0);
   EXPECT_EQ(call_data.function_name(), kWebUIResponse);
@@ -487,13 +487,13 @@ TEST_F(ProjectorMessageHandlerUnitTest, ExcludeTranscriptDialogShownPref) {
   EXPECT_EQ(call_data.arg2()->GetBool(), true);
 
   // Now let's try to read the user's pref.
-  list_args.ClearList();
+  list_args.clear();
   list_args.Append(base::Value(kGetUserPrefCallback));
-  func_args.ClearList();
+  func_args.clear();
   func_args.Append(ash::prefs::kProjectorExcludeTranscriptDialogShown);
   list_args.Append(std::move(func_args));
 
-  web_ui().HandleReceivedMessage("getUserPref", &list_args);
+  web_ui().HandleReceivedMessage("getUserPref", list_args);
 
   const content::TestWebUI::CallData& get_pref_call_data = FetchCallData(1);
   EXPECT_EQ(get_pref_call_data.function_name(), kWebUIResponse);
@@ -506,17 +506,17 @@ TEST_F(ProjectorMessageHandlerUnitTest, ExcludeTranscriptDialogShownPref) {
 }
 
 TEST_F(ProjectorMessageHandlerUnitTest, SetCreationFlowEnabledInvalidValue) {
-  base::ListValue list_args;
+  base::Value::List list_args;
   list_args.Append(base::Value(kSetUserPrefCallback));
 
-  base::ListValue func_args;
+  base::Value::List func_args;
   func_args.Append(ash::prefs::kProjectorCreationFlowEnabled);
 
   // The value provided is not a boolean. Therefore it will fail.
   func_args.Append(base::Value("temp"));
   list_args.Append(func_args.Clone());
 
-  web_ui().HandleReceivedMessage("setUserPref", &list_args);
+  web_ui().HandleReceivedMessage("setUserPref", list_args);
 
   const content::TestWebUI::CallData& call_data = FetchCallData(0);
   EXPECT_EQ(call_data.function_name(), kWebUIResponse);
@@ -533,10 +533,10 @@ TEST_F(ProjectorMessageHandlerUnitTest, SetCreationFlowEnabledInvalidValue) {
 }
 
 TEST_F(ProjectorMessageHandlerUnitTest, OpenFeedbackDialog) {
-  base::ListValue list_args;
+  base::Value::List list_args;
   list_args.Append(base::Value(kOpenFeedbackDialogCallback));
 
-  web_ui().HandleReceivedMessage("openFeedbackDialog", &list_args);
+  web_ui().HandleReceivedMessage("openFeedbackDialog", list_args);
 
   const content::TestWebUI::CallData& call_data = FetchCallData(0);
   EXPECT_EQ(call_data.function_name(), kWebUIResponse);
@@ -544,15 +544,15 @@ TEST_F(ProjectorMessageHandlerUnitTest, OpenFeedbackDialog) {
 }
 
 TEST_F(ProjectorMessageHandlerUnitTest, SetCreationFlowEnabledUnsupportedPref) {
-  base::ListValue list_args;
+  base::Value::List list_args;
   list_args.Append(base::Value(kSetUserPrefCallback));
 
-  base::ListValue func_args;
+  base::Value::List func_args;
   func_args.Append("invalidUserPref");
   func_args.Append(base::Value(true));
   list_args.Append(func_args.Clone());
 
-  web_ui().HandleReceivedMessage("setUserPref", &list_args);
+  web_ui().HandleReceivedMessage("setUserPref", list_args);
 
   const content::TestWebUI::CallData& call_data = FetchCallData(0);
   EXPECT_EQ(call_data.function_name(), kWebUIResponse);
@@ -582,14 +582,14 @@ TEST_F(ProjectorMessageHandlerUnitTest, GetVideo) {
                 /*error_message=*/std::string());
           });
 
-  base::ListValue list_args;
+  base::Value::List list_args;
   list_args.Append(kGetVideoCallback);
-  base::ListValue args;
+  base::Value::List args;
   args.Append(kVideoFileId);
   args.Append(kResourceKey);
   list_args.Append(std::move(args));
 
-  web_ui().HandleReceivedMessage("getVideo", &list_args);
+  web_ui().HandleReceivedMessage("getVideo", list_args);
 
   // We expect that there was only one callback to the WebUI.
   EXPECT_EQ(web_ui().call_data().size(), 1u);
@@ -613,14 +613,14 @@ TEST_F(ProjectorMessageHandlerUnitTest, GetVideoFail) {
         std::move(callback).Run(/*video=*/nullptr, /*error_message=*/"error1");
       });
 
-  base::ListValue list_args;
+  base::Value::List list_args;
   list_args.Append(kGetVideoCallback);
-  base::ListValue args;
+  base::Value::List args;
   args.Append(kVideoFileId);
   args.Append(base::Value());
   list_args.Append(std::move(args));
 
-  web_ui().HandleReceivedMessage("getVideo", &list_args);
+  web_ui().HandleReceivedMessage("getVideo", list_args);
 
   // We expect that there was only one callback to the WebUI.
   EXPECT_EQ(web_ui().call_data().size(), 1u);
@@ -656,13 +656,13 @@ TEST_P(ProjectorStorageDirNameValidationTest, StorageDirNameBackSlash) {
             NewScreencastPreconditionState::kEnabled, {})));
   }
 
-  base::ListValue list_args;
+  base::Value::List list_args;
   list_args.Append(kStartProjectorSessionCallback);
-  base::ListValue args;
+  base::Value::List args;
   args.Append(std::get<0>(GetParam()));
   list_args.Append(std::move(args));
 
-  web_ui().HandleReceivedMessage("startProjectorSession", &list_args);
+  web_ui().HandleReceivedMessage("startProjectorSession", list_args);
 
   // We expect that there was only one callback to the WebUI.
   EXPECT_EQ(web_ui().call_data().size(), 1u);
@@ -704,13 +704,13 @@ TEST_P(ProjectorSessionStartUnitTest, ProjectorSessionTest) {
   EXPECT_CALL(controller(), StartProjectorSession("folderId"))
       .Times(success ? 1 : 0);
 
-  base::ListValue list_args;
+  base::Value::List list_args;
   list_args.Append(kStartProjectorSessionCallback);
-  base::ListValue args;
+  base::Value::List args;
   args.Append("folderId");
   list_args.Append(std::move(args));
 
-  web_ui().HandleReceivedMessage("startProjectorSession", &list_args);
+  web_ui().HandleReceivedMessage("startProjectorSession", list_args);
 
   // We expect that there was only one callback to the WebUI.
   EXPECT_EQ(web_ui().call_data().size(), 1u);
@@ -748,15 +748,15 @@ class ProjectorOnboardingFlowPrefTest
 
 TEST_P(ProjectorOnboardingFlowPrefTest, OnboardingFlowPrefTest) {
   // Set the user preference.
-  base::ListValue set_list_args;
+  base::Value::List set_list_args;
   set_list_args.Append(base::Value(kSetUserPrefCallback));
-  base::ListValue func_args;
+  base::Value::List func_args;
   func_args.Append(base::Value(GetParam()));
   func_args.Append(base::Value(5));
   set_list_args.Append(std::move(func_args));
 
   // Set the value of the preference passed to the test as a parameter.
-  web_ui().HandleReceivedMessage("setUserPref", &set_list_args);
+  web_ui().HandleReceivedMessage("setUserPref", set_list_args);
 
   const content::TestWebUI::CallData& set_call_data = FetchCallData(0);
   EXPECT_EQ(set_call_data.function_name(), kWebUIResponse);
@@ -766,12 +766,12 @@ TEST_P(ProjectorOnboardingFlowPrefTest, OnboardingFlowPrefTest) {
   EXPECT_EQ(set_call_data.arg2()->GetBool(), true);
 
   // Fetch the pref just set
-  base::ListValue get_list_args;
+  base::Value::List get_list_args;
   get_list_args.Append(base::Value(kGetUserPrefCallback));
-  base::ListValue get_func_args;
+  base::Value::List get_func_args;
   get_func_args.Append(base::Value(GetParam()));
   get_list_args.Append(std::move(get_func_args));
-  web_ui().HandleReceivedMessage("getUserPref", &get_list_args);
+  web_ui().HandleReceivedMessage("getUserPref", get_list_args);
 
   // Check that getUserPref succeeded.
   const content::TestWebUI::CallData& get_call_data = FetchCallData(1);

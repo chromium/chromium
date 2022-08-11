@@ -125,8 +125,8 @@ class ProfilePickerHandlerTest : public testing::Test {
 
   void InitializeMainViewAndVerifyProfileList(
       const std::vector<ProfileAttributesEntry*>& ordered_profile_entries) {
-    base::ListValue empty_args;
-    web_ui()->HandleReceivedMessage("mainViewInitialize", &empty_args);
+    base::Value::List empty_args;
+    web_ui()->HandleReceivedMessage("mainViewInitialize", empty_args);
     VerifyProfileListWasPushed(ordered_profile_entries);
   }
 
@@ -312,8 +312,8 @@ TEST_F(ProfilePickerHandlerTest, HandleGetAvailableAccounts_Empty) {
   CompleteFacadeGetAccounts({});
 
   // Send message to the handler.
-  base::ListValue empty_args;
-  web_ui()->HandleReceivedMessage("getAvailableAccounts", &empty_args);
+  base::Value::List empty_args;
+  web_ui()->HandleReceivedMessage("getAvailableAccounts", empty_args);
 
   // Check that the handler replied.
   ASSERT_TRUE(!web_ui()->call_data().empty());
@@ -345,8 +345,8 @@ TEST_F(ProfilePickerHandlerTest, HandleGetAvailableAccounts_Available) {
 
   // ****** No accounts syncing in any profile: return all.
   // Send message to the handler.
-  base::ListValue empty_args;
-  web_ui()->HandleReceivedMessage("getAvailableAccounts", &empty_args);
+  base::Value::List empty_args;
+  web_ui()->HandleReceivedMessage("getAvailableAccounts", empty_args);
 
   // Check that the handler replied.
   ASSERT_TRUE(!web_ui()->call_data().empty());
@@ -360,7 +360,7 @@ TEST_F(ProfilePickerHandlerTest, HandleGetAvailableAccounts_Available) {
   secondary->SetAuthInfo(kGaiaId1, u"example1@gmail.com",
                          /*is_consented_primary_account=*/true);
   // Send message to the handler.
-  web_ui()->HandleReceivedMessage("getAvailableAccounts", &empty_args);
+  web_ui()->HandleReceivedMessage("getAvailableAccounts", empty_args);
 
   // Check that the handler replied.
   ASSERT_TRUE(!web_ui()->call_data().empty());
@@ -404,8 +404,8 @@ TEST_F(ProfilePickerHandlerTest, ProfilePickerObservesAvailableAccounts) {
   CompleteFacadeGetAccounts({account1, account2});
 
   // Send message to the handler.
-  base::ListValue empty_args;
-  web_ui()->HandleReceivedMessage("getAvailableAccounts", &empty_args);
+  base::Value::List empty_args;
+  web_ui()->HandleReceivedMessage("getAvailableAccounts", empty_args);
 
   // Check that the handler replied.
   ASSERT_TRUE(!web_ui()->call_data().empty());
@@ -453,10 +453,10 @@ TEST_F(ProfilePickerHandlerTest, CreateProfileExistingAccount) {
 
   // Request profile creation with the existing account.
   ProfileWaiter profile_waiter;
-  base::ListValue args;
+  base::Value::List args;
   args.Append(/*color=*/base::Value());
   args.Append(/*gaiaId=*/kGaiaId);
-  web_ui()->HandleReceivedMessage("selectAccountLacros", &args);
+  web_ui()->HandleReceivedMessage("selectAccountLacros", args);
 
   // Check profile creation.
   Profile* new_profile = profile_waiter.WaitForProfileAdded();
@@ -518,10 +518,10 @@ TEST_F(ProfilePickerHandlerTest, CreateProfileNewAccount) {
 
   // Request profile creation.
   ProfileWaiter profile_waiter;
-  base::ListValue args;
+  base::Value::List args;
   args.Append(/*color=*/base::Value());
   args.Append(/*gaiaId=*/base::Value(base::Value::Type::STRING));
-  web_ui()->HandleReceivedMessage("selectAccountLacros", &args);
+  web_ui()->HandleReceivedMessage("selectAccountLacros", args);
 
   // Check profile creation.
   Profile* new_profile = profile_waiter.WaitForProfileAdded();
@@ -588,8 +588,8 @@ TEST_F(ProfilePickerHandlerInUserProfileTest,
   CompleteFacadeGetAccounts({});
 
   // Send message to the handler.
-  base::ListValue empty_args;
-  web_ui()->HandleReceivedMessage("getAvailableAccounts", &empty_args);
+  base::Value::List empty_args;
+  web_ui()->HandleReceivedMessage("getAvailableAccounts", empty_args);
 
   // Check that the handler replied.
   ASSERT_TRUE(!web_ui()->call_data().empty());
@@ -617,8 +617,8 @@ TEST_F(ProfilePickerHandlerInUserProfileTest,
 
   // ****** No accounts assigned to "Secondary": return all.
   // Send message to the handler.
-  base::ListValue empty_args;
-  web_ui()->HandleReceivedMessage("getAvailableAccounts", &empty_args);
+  base::Value::List empty_args;
+  web_ui()->HandleReceivedMessage("getAvailableAccounts", empty_args);
 
   // Check that the handler replied.
   ASSERT_TRUE(!web_ui()->call_data().empty());
@@ -634,7 +634,7 @@ TEST_F(ProfilePickerHandlerInUserProfileTest,
           ->GetProfileAttributesWithPath(GetWebUIProfile()->GetPath());
   profile_entry->SetGaiaIds({kGaiaId1});
   // Send message to the handler.
-  web_ui()->HandleReceivedMessage("getAvailableAccounts", &empty_args);
+  web_ui()->HandleReceivedMessage("getAvailableAccounts", empty_args);
 
   // Check that the handler replied.
   ASSERT_TRUE(!web_ui()->call_data().empty());
@@ -689,9 +689,9 @@ TEST_F(ProfilePickerHandlerInUserProfileTest,
 TEST_F(ProfilePickerHandlerInUserProfileTest,
        HandleGetNewProfileSuggestedThemeInfo_Default) {
   // Send message to the handler.
-  base::ListValue args;
+  base::Value::List args;
   args.Append(kTestCallbackId);
-  web_ui()->HandleReceivedMessage("getNewProfileSuggestedThemeInfo", &args);
+  web_ui()->HandleReceivedMessage("getNewProfileSuggestedThemeInfo", args);
 
   // Check that the handler replied correctly.
   const base::Value& theme_info = GetThemeInfoReply();
@@ -706,9 +706,9 @@ TEST_F(ProfilePickerHandlerInUserProfileTest,
   theme_service->BuildAutogeneratedThemeFromColor(SK_ColorRED);
 
   // Send message to the handler.
-  base::ListValue args;
+  base::Value::List args;
   args.Append(kTestCallbackId);
-  web_ui()->HandleReceivedMessage("getNewProfileSuggestedThemeInfo", &args);
+  web_ui()->HandleReceivedMessage("getNewProfileSuggestedThemeInfo", args);
 
   // Check that the handler replied correctly.
   const base::Value& theme_info = GetThemeInfoReply();
@@ -753,10 +753,10 @@ TEST_F(ProfilePickerHandlerInUserProfileTest, NoAvailableAccount) {
           });
 
   // Request account addition.
-  base::ListValue args;
+  base::Value::List args;
   args.Append(/*color=*/base::Value());
   args.Append(/*gaiaId=*/base::Value(base::Value::Type::STRING));
-  web_ui()->HandleReceivedMessage("selectAccountLacros", &args);
+  web_ui()->HandleReceivedMessage("selectAccountLacros", args);
 }
 
 #endif  //  BUILDFLAG(IS_CHROMEOS_LACROS)

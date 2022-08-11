@@ -49,11 +49,11 @@ class PluralStringHandlerTest : public testing::Test {
 TEST_F(PluralStringHandlerTest, PluralString) {
   // base::RunLoop run_loop;
   const int call_data_count_before_call = web_ui_.call_data().size();
-  base::ListValue args;
+  base::Value::List args;
   args.Append(kHandlerFunctionName);
   args.Append("editButtonLabel");
   args.Append(/*count=*/2);
-  web_ui_.HandleReceivedMessage("getPluralString", &args);
+  web_ui_.HandleReceivedMessage("getPluralString", args);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(call_data_count_before_call + 1u, web_ui_.call_data().size());
@@ -67,11 +67,11 @@ TEST_F(PluralStringHandlerTest, PluralString) {
 
 TEST_F(PluralStringHandlerTest, SingularString) {
   const int call_data_count_before_call = web_ui_.call_data().size();
-  base::ListValue args;
+  base::Value::List args;
   args.Append(kHandlerFunctionName);
   args.Append("editButtonLabel");
   args.Append(/*count=*/1);
-  web_ui_.HandleReceivedMessage("getPluralString", &args);
+  web_ui_.HandleReceivedMessage("getPluralString", args);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(call_data_count_before_call + 1u, web_ui_.call_data().size());
@@ -84,11 +84,11 @@ TEST_F(PluralStringHandlerTest, SingularString) {
 }
 
 TEST_F(PluralStringHandlerTest, InvalidPluralStringRequest) {
-  base::ListValue args;
+  base::Value::List args;
   args.Append(kHandlerFunctionName);
   args.Append(/*name=*/"invalidKey");
   args.Append(/*count=*/2);
-  web_ui_.HandleReceivedMessage("getPluralString", &args);
+  web_ui_.HandleReceivedMessage("getPluralString", args);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(0u, web_ui_.call_data().size());

@@ -198,9 +198,9 @@ class CertificateProvisioningUiHandlerTest : public ::testing::Test {
     content::TestWebUIListenerObserver result_waiter(
         &web_ui_, "certificate-provisioning-processes-changed");
 
-    base::ListValue args;
+    base::Value::List args;
     web_ui_.HandleReceivedMessage("refreshCertificateProvisioningProcessses",
-                                  &args);
+                                  args);
 
     result_waiter.Wait();
     ASSERT_NO_FATAL_FAILURE(ExtractCertProvisioningProcesses(

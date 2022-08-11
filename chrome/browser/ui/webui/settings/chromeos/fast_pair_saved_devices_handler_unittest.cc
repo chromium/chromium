@@ -260,17 +260,15 @@ class FastPairSavedDevicesHandlerTest : public testing::Test {
 
   void LoadPage() {
     // `HandleReceivedMessages` has to use a ListValue due to the API.
-    base::Value args(base::Value::Type::LIST);
-    test_web_ui()->HandleReceivedMessage(kLoadSavedDevicePage,
-                                         &base::Value::AsListValue(args));
+    base::Value::List args;
+    test_web_ui()->HandleReceivedMessage(kLoadSavedDevicePage, args);
   }
 
   void RemoveDevice(const std::vector<uint8_t>& account_key) {
     // `HandleReceivedMessages` has to use a ListValue due to the API.
-    base::Value args(base::Value::Type::LIST);
+    base::Value::List args;
     args.Append(EncodeKey(account_key));
-    test_web_ui()->HandleReceivedMessage(kRemoveSavedDevice,
-                                         &base::Value::AsListValue(args));
+    test_web_ui()->HandleReceivedMessage(kRemoveSavedDevice, args);
   }
 
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
