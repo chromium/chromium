@@ -17,5 +17,5 @@ enum PaymentDelegation {
 ] interface PaymentManager {
     [SameObject, MeasureAs=PaymentInstruments] readonly attribute PaymentInstruments instruments;
     attribute DOMString userHint;
-    [CallWith=ScriptState, RaisesException] Promise<void> enableDelegations(FrozenArray<PaymentDelegation> delegations);
+    [CallWith=ScriptState, RaisesException] Promise<void> enableDelegations(sequence<PaymentDelegation> delegations);
 };

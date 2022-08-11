@@ -7,8 +7,8 @@
 dictionary PaymentRequestDetailsUpdate {
   DOMString error;
   PaymentCurrencyAmount total;
-  FrozenArray<PaymentDetailsModifier> modifiers;
-  FrozenArray<PaymentShippingOption> shippingOptions;
+  sequence<PaymentDetailsModifier> modifiers;
+  sequence<PaymentShippingOption> shippingOptions;
   object paymentMethodErrors;
   AddressErrors shippingAddressErrors;
 };
