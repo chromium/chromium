@@ -49,6 +49,7 @@ template("core_impl_source_set") {
       "configuration.h",
       "connection_params.h",
       "core.h",
+      "core_ipcz.h",
       "data_pipe_consumer_dispatcher.h",
       "data_pipe_control_message.h",
       "data_pipe_producer_dispatcher.h",
@@ -59,6 +60,7 @@ template("core_impl_source_set") {
       "handle_signals_state.h",
       "handle_table.h",
       "invitation_dispatcher.h",
+      "ipcz_api.h",
       "message_pipe_dispatcher.h",
       "node_channel.h",
       "node_controller.h",
@@ -79,6 +81,7 @@ template("core_impl_source_set") {
       "configuration.cc",
       "connection_params.cc",
       "core.cc",
+      "core_ipcz.cc",
       "data_pipe_consumer_dispatcher.cc",
       "data_pipe_control_message.cc",
       "data_pipe_producer_dispatcher.cc",
@@ -86,6 +89,9 @@ template("core_impl_source_set") {
       "entrypoints.cc",
       "handle_table.cc",
       "invitation_dispatcher.cc",
+      "ipcz_api.cc",
+      "ipcz_driver/driver.cc",
+      "ipcz_driver/driver.h",
       "message_pipe_dispatcher.cc",
       "node_channel.cc",
       "node_controller.cc",
@@ -111,6 +117,7 @@ template("core_impl_source_set") {
       "//mojo/core/ports",
       "//mojo/public/c/system:headers",
       "//mojo/public/cpp/platform",
+      "//third_party/ipcz/src:ipcz_chromium",
     ]
 
     if (is_fuchsia) {
@@ -284,6 +291,7 @@ source_set("test_sources") {
   testonly = true
   sources = [
     "channel_unittest.cc",
+    "core_ipcz_test.cc",
     "core_test_base.cc",
     "core_test_base.h",
     "core_unittest.cc",
@@ -322,6 +330,7 @@ source_set("test_sources") {
     "//mojo/public/cpp/system",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/ipcz/src:ipcz_chromium",
   ]
 }
 

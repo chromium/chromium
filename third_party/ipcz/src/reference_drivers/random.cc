@@ -29,6 +29,7 @@
 
 #if BUILDFLAG(IS_POSIX)
 #include <fcntl.h>
+#include <unistd.h>
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -97,6 +98,8 @@ void RandomBytes(absl::Span<uint8_t> destination) {
   } else {
     RandomBytesFromDevUrandom(destination);
   }
+#elif BUILDFLAG(IS_IOS)
+  RandomBytesFromDevUrandom(destination);
 #elif BUILDFLAG(IS_NACL)
   while (!destination.empty()) {
     size_t nread;

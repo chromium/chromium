@@ -3,6 +3,7 @@ include_rules = [
   "+build",
   "+mojo/public",
   "+testing",
+  "+third_party/ipcz/include",
 
   "-mojo",
   "+mojo/public",
