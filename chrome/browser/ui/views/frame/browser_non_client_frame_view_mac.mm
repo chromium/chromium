@@ -575,6 +575,13 @@ void BrowserNonClientFrameViewMac::LayoutWindowControlsOverlay() {
 
     web_contents->UpdateWindowControlsOverlay(bounding_rect);
   }
+
+  // WebAppFrameToolbarView visible property needs to be explicitly shown based
+  // on the fullscreen preference and also after exiting fullscreen. Otherwise
+  // upon exiting fullscreen when the toolbar is set to be hidden, the
+  // WebAppFrameToolbarView does not get added back. See crbug.com/1351179.
+  web_app_frame_toolbar()->SetVisible(
+      browser_view()->IsFullscreen() ? !ShouldHideTopUIForFullscreen() : true);
 }
 
 void BrowserNonClientFrameViewMac::
