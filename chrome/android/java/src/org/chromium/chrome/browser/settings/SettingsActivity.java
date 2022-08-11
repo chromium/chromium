@@ -48,7 +48,7 @@ import org.chromium.chrome.browser.password_check.PasswordCheckComponentUiFactor
 import org.chromium.chrome.browser.password_check.PasswordCheckFragmentView;
 import org.chromium.chrome.browser.password_entry_edit.CredentialEditUiFactory;
 import org.chromium.chrome.browser.password_entry_edit.CredentialEntryFragmentViewBase;
-import org.chromium.chrome.browser.privacy.settings.PrivacySettings;
+import org.chromium.chrome.browser.privacy_guide.PrivacyGuideFragment;
 import org.chromium.chrome.browser.privacy_sandbox.AdMeasurementFragment;
 import org.chromium.chrome.browser.privacy_sandbox.AdPersonalizationFragment;
 import org.chromium.chrome.browser.privacy_sandbox.AdPersonalizationRemovedFragment;
@@ -436,9 +436,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                     .setCustomTabIntentHelper(
                             LaunchIntentDispatcher::createCustomTabActivityIntent);
         }
-        if (fragment instanceof PrivacySettings) {
-            ((PrivacySettings) fragment).setBottomSheetController(mBottomSheetController);
-            ((PrivacySettings) fragment).setDialogContainer(findViewById(R.id.dialog_container));
+        if (fragment instanceof PrivacyGuideFragment) {
+            ((PrivacyGuideFragment) fragment).setBottomSheetController(mBottomSheetController);
         }
         if (fragment instanceof AccessibilitySettings) {
             ((AccessibilitySettings) fragment)

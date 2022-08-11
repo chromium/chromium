@@ -10,7 +10,6 @@ import android.text.SpannableString;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.ViewGroup;
 
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
@@ -23,7 +22,6 @@ import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthSettingSwitch
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsFragment;
 import org.chromium.chrome.browser.privacy.secure_dns.SecureDnsSettings;
-import org.chromium.chrome.browser.privacy_guide.PrivacyGuideDialog;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxReferrer;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsFragment;
@@ -37,7 +35,6 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.settings.GoogleServicesSettings;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.usage_stats.UsageStatsConsentDialog;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
@@ -68,8 +65,6 @@ public class PrivacySettings
 
     private ManagedPreferenceDelegate mManagedPreferenceDelegate;
     private IncognitoLockSettings mIncognitoLockSettings;
-    private ViewGroup mDialogContainer;
-    private BottomSheetController mBottomSheetController;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -96,14 +91,6 @@ public class PrivacySettings
         Preference privacyGuidePreference = findPreference(PREF_PRIVACY_GUIDE);
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_GUIDE)) {
             getPreferenceScreen().removePreference(privacyGuidePreference);
-        } else {
-            // Display the privacy guide dialog when the menu item is clicked.
-            privacyGuidePreference.setOnPreferenceClickListener(preference -> {
-                PrivacyGuideDialog dialog = new PrivacyGuideDialog(
-                        getContext(), mDialogContainer, mBottomSheetController);
-                dialog.show();
-                return true;
-            });
         }
 
         IncognitoReauthSettingSwitchPreference incognitoReauthPreference =
@@ -283,13 +270,5 @@ public class PrivacySettings
             return true;
         }
         return false;
-    }
-
-    public void setDialogContainer(ViewGroup dialogContainer) {
-        mDialogContainer = dialogContainer;
-    }
-
-    public void setBottomSheetController(BottomSheetController controller) {
-        mBottomSheetController = controller;
     }
 }

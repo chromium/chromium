@@ -15,7 +15,9 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-/** A custom view for an item (icon + text) of a setting explanation for the privacy guide. */
+/**
+ * A custom view for an item (icon + text) of a setting explanation for the privacy guide.
+ */
 public class PrivacyGuideExplanationItem extends LinearLayout {
     public PrivacyGuideExplanationItem(Context context, AttributeSet attrs) {
         super(context, attrs);

@@ -7,9 +7,9 @@ import("//build/config/android/rules.gni")
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/privacy_guide/PrivacyGuideBottomSheetView.java",
-    "java/src/org/chromium/chrome/browser/privacy_guide/PrivacyGuideDialog.java",
     "java/src/org/chromium/chrome/browser/privacy_guide/PrivacyGuideExplanationHeading.java",
     "java/src/org/chromium/chrome/browser/privacy_guide/PrivacyGuideExplanationItem.java",
+    "java/src/org/chromium/chrome/browser/privacy_guide/PrivacyGuideFragment.java",
     "java/src/org/chromium/chrome/browser/privacy_guide/PrivacyGuidePagerAdapter.java",
   ]
   deps = [
@@ -18,11 +18,29 @@ android_library("java") {
     "//components/browser_ui/widget/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/androidx:androidx_viewpager2_viewpager2_java",
     "//ui/android:ui_full_java",
   ]
   resources_package = "org.chromium.chrome.browser.privacy_guide"
+}
+
+android_library("javatests") {
+  testonly = true
+  sources = [ "javatests/src/org/chromium/chrome/browser/privacy_guide/PrivacyGuideFragmentTest.java" ]
+  deps = [
+    ":java",
+    "//base:base_java_test_support",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/settings:test_support_java",
+    "//chrome/test/android:chrome_java_test_support_common",
+    "//third_party/android_deps:espresso_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_core_java",
+    "//third_party/junit:junit",
+    "//ui/android:ui_java_test_support",
+  ]
 }
 
 android_resources("java_resources") {
@@ -34,10 +52,10 @@ android_resources("java_resources") {
     "java/res/drawable/privacy_guide_sb_image.xml",
     "java/res/drawable/privacy_guide_sync_image.xml",
     "java/res/layout/privacy_guide_cookies_step.xml",
-    "java/res/layout/privacy_guide_dialog.xml",
     "java/res/layout/privacy_guide_done.xml",
     "java/res/layout/privacy_guide_explanation_heading.xml",
     "java/res/layout/privacy_guide_explanation_item.xml",
+    "java/res/layout/privacy_guide_fragment.xml",
     "java/res/layout/privacy_guide_msbb_step.xml",
     "java/res/layout/privacy_guide_sb_enhanced_explanation.xml",
     "java/res/layout/privacy_guide_sb_standard_explanation.xml",

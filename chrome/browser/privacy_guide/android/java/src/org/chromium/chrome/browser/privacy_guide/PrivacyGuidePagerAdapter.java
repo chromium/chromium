@@ -18,7 +18,9 @@ import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionAndAu
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/** Controls the behavior of the ViewPager to navigate between privacy guide steps. */
+/**
+ * Controls the behavior of the ViewPager to navigate between privacy guide steps.
+ */
 public class PrivacyGuidePagerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     /**
      * The types of views supported. Each view corresponds to a step in the privacy guide.

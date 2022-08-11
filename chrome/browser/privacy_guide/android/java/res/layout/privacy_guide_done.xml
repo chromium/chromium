@@ -29,8 +29,8 @@
                 android:layout_marginVertical="32dp"
                 android:layout_height="@dimen/privacy_guide_illustration_height"
                 android:layout_width="@dimen/privacy_guide_illustration_width"
-                android:src="@drawable/privacy_guide_done_image"
-                android:importantForAccessibility="no" />
+                android:importantForAccessibility="no"
+                app:srcCompat="@drawable/privacy_guide_done_image" />
 
             <TextView
                 android:id="@+id/done_title"

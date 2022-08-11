@@ -5,6 +5,8 @@
 
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/welcome_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -28,8 +30,8 @@
                 android:layout_marginVertical="32dp"
                 android:layout_height="@dimen/privacy_guide_illustration_height"
                 android:layout_width="@dimen/privacy_guide_illustration_width"
-                android:src="@drawable/privacy_guide_illustration"
-                android:importantForAccessibility="no" />
+                android:importantForAccessibility="no"
+                app:srcCompat="@drawable/privacy_guide_illustration" />
 
             <TextView
                 android:id="@+id/welcome_title"
