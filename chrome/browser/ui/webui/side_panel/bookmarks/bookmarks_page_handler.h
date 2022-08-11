@@ -29,7 +29,9 @@ class BookmarksPageHandler : public side_panel::mojom::BookmarksPageHandler {
   void OpenBookmark(int64_t node_id,
                     int32_t parent_folder_depth,
                     ui::mojom::ClickModifiersPtr click_modifiers) override;
-  void ShowContextMenu(const std::string& id, const gfx::Point& point) override;
+  void ShowContextMenu(const std::string& id,
+                       const gfx::Point& point,
+                       side_panel::mojom::ContextMenuSource source) override;
   void ShowUI() override;
 
  private:

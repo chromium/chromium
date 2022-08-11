@@ -43,7 +43,8 @@ class BookmarkContextMenu : public ui::SimpleMenuModel,
   explicit BookmarkContextMenu(
       Browser* browser,
       base::WeakPtr<ui::MojoBubbleWebUIController::Embedder> embedder,
-      const bookmarks::BookmarkNode* bookmark)
+      const bookmarks::BookmarkNode* bookmark,
+      const side_panel::mojom::ContextMenuSource& source)
       : ui::SimpleMenuModel(this),
         embedder_(embedder),
         controller_(base::WrapUnique(new BookmarkContextMenuController(
@@ -54,6 +55,15 @@ class BookmarkContextMenu : public ui::SimpleMenuModel,
             BookmarkLaunchLocation::kSidePanelContextMenu,
             bookmark->parent(),
             {bookmark}))) {
+    if (source == side_panel::mojom::ContextMenuSource::kPriceTracking) {
+      AddItem(IDC_BOOKMARK_BAR_OPEN_ALL);
+      AddItem(IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW);
+      AddItem(IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO);
+      AddSeparator(ui::NORMAL_SEPARATOR);
+      AddItem(IDC_BOOKMARK_MANAGER);
+      return;
+    }
+
     AddItem(IDC_BOOKMARK_BAR_OPEN_ALL);
     AddItem(IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW);
     AddItem(IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO);
@@ -147,8 +157,10 @@ void BookmarksPageHandler::OpenBookmark(
       profile_metrics::GetBrowserProfileType(browser->profile()));
 }
 
-void BookmarksPageHandler::ShowContextMenu(const std::string& id_string,
-                                           const gfx::Point& point) {
+void BookmarksPageHandler::ShowContextMenu(
+    const std::string& id_string,
+    const gfx::Point& point,
+    side_panel::mojom::ContextMenuSource source) {
   int64_t id;
   if (!base::StringToInt64(id_string, &id))
     return;
@@ -168,7 +180,7 @@ void BookmarksPageHandler::ShowContextMenu(const std::string& id_string,
       bookmarks_ui_ ? bookmarks_ui_->embedder() : reading_list_ui_->embedder();
   if (embedder) {
     embedder->ShowContextMenu(point, std::make_unique<BookmarkContextMenu>(
-                                         browser, embedder, bookmark));
+                                         browser, embedder, bookmark, source));
   }
 }
 

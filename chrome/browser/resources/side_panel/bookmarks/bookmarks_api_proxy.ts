@@ -5,7 +5,7 @@
 import {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
 import {ClickModifiers} from 'chrome://resources/mojo/ui/base/mojom/window_open_disposition.mojom-webui.js';
 
-import {BookmarksPageHandlerFactory, BookmarksPageHandlerRemote} from './bookmarks.mojom-webui.js';
+import {BookmarksPageHandlerFactory, BookmarksPageHandlerRemote, ContextMenuSource} from './bookmarks.mojom-webui.js';
 
 let instance: BookmarksApiProxy|null = null;
 
@@ -73,7 +73,7 @@ export class BookmarksApiProxyImpl implements BookmarksApiProxy {
   }
 
   showContextMenu(id: string, x: number, y: number) {
-    this.handler.showContextMenu(id, {x, y});
+    this.handler.showContextMenu(id, {x, y}, ContextMenuSource.kBookmark);
   }
 
   showUI() {
