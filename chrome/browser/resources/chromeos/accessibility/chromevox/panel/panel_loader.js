@@ -7,7 +7,6 @@
  */
 
 goog.require('AutomationPredicate');
-goog.require('EarconDescription');
 goog.require('PanelNodeMenuData');
 goog.require('PanelNodeMenuItemData');
 

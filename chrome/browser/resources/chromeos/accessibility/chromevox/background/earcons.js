@@ -7,6 +7,7 @@
  * auditory cues.
  */
 
+import {AbstractEarcons, Earcon} from '../common/abstract_earcons.js';
 import {LogType} from '../common/log_types.js';
 
 import {ChromeVoxState} from './chromevox_state.js';

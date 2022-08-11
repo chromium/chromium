@@ -9,16 +9,11 @@
  *
  */
 
-goog.provide('AbstractEarcons');
-goog.provide('Earcon');
-goog.provide('EarconDescription');
-
-
 /**
  * Earcon names.
  * @enum {string}
  */
-Earcon = {
+export const Earcon = {
   ALERT_MODAL: 'alert_modal',
   ALERT_NONMODAL: 'alert_nonmodal',
   BUTTON: 'button',
@@ -59,7 +54,7 @@ Earcon = {
  * used to generate tutorial content.
  * @type {Object<string, string>}
  */
-const EarconDescription = {
+export const EarconDescription = {
   alert_modal: 'alert_modal_earcon_description',
   alert_nonmodal: 'alert_nonmodal_earcon_description',
   button: 'button_earcon_description',
@@ -76,7 +71,7 @@ const EarconDescription = {
 };
 
 
-AbstractEarcons = class {
+export class AbstractEarcons {
   constructor() {}
 
   /**
@@ -116,4 +111,4 @@ AbstractEarcons = class {
   set enabled(value) {
     localStorage['earcons'] = value;
   }
-};
+}

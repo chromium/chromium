@@ -6,6 +6,4 @@
  * @fileoverview Description of this file.
  */
 
-goog.require('AbstractEarcons');
-
 goog.require('constants');

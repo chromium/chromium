@@ -5,6 +5,7 @@
 /**
  * @fileoverview Script that runs on the background page.
  */
+import {AbstractEarcons} from '../common/abstract_earcons.js';
 import {AbstractTts} from '../common/abstract_tts.js';
 import {NavBraille} from '../common/braille/nav_braille.js';
 import {BridgeConstants} from '../common/bridge_constants.js';

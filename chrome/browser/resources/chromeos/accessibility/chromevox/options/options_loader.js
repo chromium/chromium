@@ -6,7 +6,6 @@
  * @fileoverview Loads the options script.
  */
 
-goog.require('AbstractEarcons');
 goog.require('BluetoothBrailleDisplayListener');
 goog.require('BluetoothBrailleDisplayManager');
 

@@ -5,6 +5,7 @@
 import {AutomationUtil} from '../../common/automation_util.js';
 import {CursorRange} from '../../common/cursors/range.js';
 import {InstanceChecker} from '../../common/instance_checker.js';
+import {AbstractEarcons} from '../common/abstract_earcons.js';
 import {ExtensionBridge} from '../common/extension_bridge.js';
 import {LocaleOutputHelper} from '../common/locale_output_helper.js';
 import {Msgs} from '../common/msgs.js';

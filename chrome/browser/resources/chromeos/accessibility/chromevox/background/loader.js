@@ -6,7 +6,6 @@
  * @fileoverview Loader for the background page.
  */
 
-goog.require('AbstractEarcons');
 goog.require('AutomationPredicate');
 goog.require('JaPhoneticData');
 goog.require('PanelNodeMenuData');
