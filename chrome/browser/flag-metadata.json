@@ -791,7 +791,7 @@
   {
     "name": "canvas-oop-rasterization",
     "owners": [ "junov", "vasilyt" ],
-    "expiry_milestone": 105
+    "expiry_milestone": 110
   },
   {
     "name": "cct-brand-transparency",
