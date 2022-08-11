@@ -3315,5 +3315,17 @@
         "match_field_input_types": [0]
       }
     ]
+  },
+    "IBAN_VALUE": {
+    "en": [
+      {
+        "pattern_identifier": "en_iban_preserving",
+        "positive_pattern": "(\\biban(\\b|_)|international bank account number)",
+        "positive_score": 0.975,
+        "negative_pattern": null,
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
+      }
+    ]
   }
 }

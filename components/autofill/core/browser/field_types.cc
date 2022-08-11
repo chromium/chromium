@@ -101,9 +101,8 @@ bool IsFillableFieldType(ServerFieldType field_type) {
     case UPI_VPA:
       return base::FeatureList::IsEnabled(features::kAutofillSaveAndFillVPA);
 
-    // TODO(crbug/1335549) to return true when the flag is enabled.
     case IBAN_VALUE:
-      return false;
+      return base::FeatureList::IsEnabled(features::kAutofillParseIBANFields);
 
     case COMPANY_NAME:
       return true;
