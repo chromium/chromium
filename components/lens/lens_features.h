@@ -30,6 +30,9 @@ extern const base::Feature kLensTransparentImagesFix;
 // a "Search Image" button.
 extern const base::Feature kLensSearchImageInScreenshotSharing;
 
+// Enable the Lens Region Search feature on the PDF viewer.
+extern const base::Feature kEnableRegionSearchOnPdfViewer;
+
 // Enables using `Google` as the visual search provider instead of `Google
 // Lens`.
 extern const base::FeatureParam<bool> kUseGoogleAsVisualSearchProvider;

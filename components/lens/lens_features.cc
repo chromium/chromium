@@ -28,6 +28,9 @@ const base::Feature kLensSearchImageInScreenshotSharing{
 const base::Feature kLensUnifiedSidePanelFooter{
     "LensUnifiedSidePanelFooter", base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kEnableRegionSearchOnPdfViewer{
+    "LensEnableRegionSearchOnPdfViewer", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::FeatureParam<bool> kEnableUKMLoggingForRegionSearch{
     &kLensStandalone, "region-search-enable-ukm-logging", true};
 

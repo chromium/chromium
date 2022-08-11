@@ -50,6 +50,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/extension_prefs.h"
@@ -1043,6 +1044,45 @@ TEST_F(RenderViewContextMenuPrefsTest, LensRegionSearch) {
   content::ContextMenuParams params = CreateParams(MenuItem::PAGE);
   TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
                                  params);
+  menu.Init();
+
+  EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH));
+}
+
+TEST_F(RenderViewContextMenuPrefsTest, LensRegionSearchPdfDisabled) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures({lens::features::kLensStandalone},
+                            {lens::features::kEnableRegionSearchOnPdfViewer});
+  SetUserSelectedDefaultSearchProvider("https://www.google.com",
+                                       /*supports_image_search=*/true);
+  content::RenderFrameHost* render_frame_host =
+      web_contents()->GetPrimaryMainFrame();
+  OverrideLastCommittedOrigin(
+      render_frame_host,
+      url::Origin::Create(
+          GURL("chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai")));
+  content::ContextMenuParams params = CreateParams(MenuItem::PAGE);
+  TestRenderViewContextMenu menu(*render_frame_host, params);
+  menu.Init();
+
+  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH));
+}
+
+TEST_F(RenderViewContextMenuPrefsTest, LensRegionSearchPdfEnabled) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures({lens::features::kLensStandalone,
+                             lens::features::kEnableRegionSearchOnPdfViewer},
+                            {});
+  SetUserSelectedDefaultSearchProvider("https://www.google.com",
+                                       /*supports_image_search=*/true);
+  content::RenderFrameHost* render_frame_host =
+      web_contents()->GetPrimaryMainFrame();
+  OverrideLastCommittedOrigin(
+      render_frame_host,
+      url::Origin::Create(
+          GURL("chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai")));
+  content::ContextMenuParams params = CreateParams(MenuItem::PAGE);
+  TestRenderViewContextMenu menu(*render_frame_host, params);
   menu.Init();
 
   EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH));
