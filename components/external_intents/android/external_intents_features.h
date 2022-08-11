@@ -10,6 +10,7 @@
 namespace external_intents {
 
 // Alphabetical:
+extern const base::Feature kAutofillAssistantGoogleInitiatorOriginCheck;
 extern const base::Feature kScaryExternalNavigationRefactoring;
 
 }  // namespace external_intents
