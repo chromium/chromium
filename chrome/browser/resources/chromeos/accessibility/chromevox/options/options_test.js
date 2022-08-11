@@ -79,9 +79,9 @@ AX_TEST_F(
           .expectSpeech('Digits', 'Collapsed')
           .call(() => {
             assertEquals('asDigits', localStorage['numberReadingStyle']);
-          })
+          });
 
-          .replay();
+      await mockFeedback.replay();
     });
 
 // TODO(crbug.com/1128926, crbug.com/1172387):
@@ -125,9 +125,9 @@ AX_TEST_F(
             assertEquals(
                 PUNCTUATION_ECHO_ALL,
                 localStorage[AbstractTts.PUNCTUATION_ECHO]);
-          })
+          });
 
-          .replay();
+      await mockFeedback.replay();
     });
 
 // TODO(crbug.com/1128926, crbug.com/1172387):
@@ -153,9 +153,9 @@ AX_TEST_F('ChromeVoxOptionsTest', 'DISABLED_SmartStickyMode', async function() {
           'Check box', 'Not checked')
       .call(() => {
         assertEquals('false', localStorage['smartStickyMode']);
-      })
+      });
 
-      .replay();
+  await mockFeedback.replay();
 });
 
 // TODO(crbug.com/1169396, crbug.com/1172387):
@@ -230,5 +230,5 @@ AX_TEST_F('ChromeVoxOptionsTest', 'DISABLED_UsePitchChanges', async function() {
       })
       .call(capitalStrategySelect.focus.bind(capitalStrategySelect))
       .expectSpeech('When reading capitals:', 'Increase pitch', 'Collapsed');
-  mockFeedback.replay();
+  await mockFeedback.replay();
 });

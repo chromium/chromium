@@ -218,8 +218,8 @@ AX_TEST_F('ChromeVoxAutoScrollHandlerTest', 'ScrollForward', async function() {
       .call(doCmd('nextObject'))
       .expectSpeech('4th item')
       .call(doCmd('nextObject'))
-      .expectSpeech('5th item')
-      .replay();
+      .expectSpeech('5th item');
+  await mockFeedback.replay();
 });
 
 AX_TEST_F(
@@ -238,8 +238,8 @@ AX_TEST_F(
           .call(doCmd('nextObject'))
           .expectSpeech('hello')
           .call(doCmd('nextObject'))
-          .expectSpeech('world')
-          .replay();
+          .expectSpeech('world');
+      await mockFeedback.replay();
     });
 
 AX_TEST_F(
@@ -252,8 +252,8 @@ AX_TEST_F(
           .call(doCmd('nextObject'))  // scroll forward
           .expectSpeech('3rd item')
           .call(doCmd('previousObject'))  // scroll backward
-          .expectSpeech('2nd item')
-          .replay();
+          .expectSpeech('2nd item');
+      await mockFeedback.replay();
     });
 
 AX_TEST_F(
@@ -270,8 +270,8 @@ AX_TEST_F(
           .call(doCmd('previousWord'))  // scroll backward
           .expectSpeech('item')
           .call(doCmd('previousWord'))
-          .expectSpeech('2nd')
-          .replay();
+          .expectSpeech('2nd');
+      await mockFeedback.replay();
     });
 
 AX_TEST_F(
@@ -299,8 +299,8 @@ AX_TEST_F(
           .call(doCmd('previousCharacter'))  // scroll backward
           .expectSpeech('m')
           .call(doCmd('previousCharacter'))
-          .expectSpeech('e')
-          .replay();
+          .expectSpeech('e');
+      await mockFeedback.replay();
     });
 
 AX_TEST_F(
@@ -318,6 +318,6 @@ AX_TEST_F(
           .call(doCmd('nextSimilarItem'))  // scroll forward
           .expectSpeech('3rd item')
           .call(doCmd('previousSimilarItem'))  // scroll backward
-          .expectSpeech('2nd item')
-          .replay();
+          .expectSpeech('2nd item');
+      await mockFeedback.replay();
     });

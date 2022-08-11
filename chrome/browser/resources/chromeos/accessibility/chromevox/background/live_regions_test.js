@@ -47,7 +47,7 @@ AX_TEST_F('ChromeVoxLiveRegionsTest', 'LiveRegionAddElement', async function() {
   const go = rootNode.find({role: RoleType.BUTTON});
   mockFeedback.call(go.doDefault.bind(go))
       .expectCategoryFlushSpeech('Hello, world');
-  mockFeedback.replay();
+  await mockFeedback.replay();
 });
 
 AX_TEST_F(
@@ -67,7 +67,7 @@ AX_TEST_F(
       go.doDefault();
       mockFeedback.expectCategoryFlushSpeech('removed:')
           .expectQueuedSpeech('Hello, world');
-      mockFeedback.replay();
+      await mockFeedback.replay();
     });
 
 AX_TEST_F(
@@ -89,7 +89,7 @@ AX_TEST_F(
       const go = rootNode.find({role: RoleType.BUTTON});
       mockFeedback.call(go.doDefault.bind(go))
           .expectCategoryFlushSpeech('Alpha Bravo Charlie');
-      mockFeedback.replay();
+      await mockFeedback.replay();
     });
 
 AX_TEST_F(
@@ -108,7 +108,7 @@ AX_TEST_F(
       const go = rootNode.find({role: RoleType.BUTTON});
       mockFeedback.call(go.doDefault.bind(go))
           .expectCategoryFlushSpeech('bar', 'Heading 1');
-      mockFeedback.replay();
+      await mockFeedback.replay();
     });
 
 AX_TEST_F(
@@ -134,7 +134,7 @@ AX_TEST_F(
       const go = rootNode.find({role: RoleType.BUTTON});
       mockFeedback.call(go.doDefault.bind(go))
           .expectCategoryFlushSpeech('After');
-      mockFeedback.replay();
+      await mockFeedback.replay();
     });
 
 AX_TEST_F('ChromeVoxLiveRegionsTest', 'LiveRegionThenFocus', async function() {
@@ -174,7 +174,7 @@ AX_TEST_F('ChromeVoxLiveRegionsTest', 'LiveRegionThenFocus', async function() {
       .call(go.doDefault.bind(go))
       .expectSpeech(focusOrLive)
       .expectSpeech(focusOrLive);
-  mockFeedback.replay();
+  await mockFeedback.replay();
 });
 
 AX_TEST_F('ChromeVoxLiveRegionsTest', 'FocusThenLiveRegion', async function() {
@@ -201,7 +201,7 @@ AX_TEST_F('ChromeVoxLiveRegionsTest', 'FocusThenLiveRegion', async function() {
             (candidate.queueMode === QueueMode.CATEGORY_FLUSH ||
              candidate.queueMode === QueueMode.QUEUE);
       });
-  mockFeedback.replay();
+  await mockFeedback.replay();
 });
 
 AX_TEST_F(
@@ -228,7 +228,7 @@ AX_TEST_F(
       mockFeedback.call(go.doDefault.bind(go))
           .expectCategoryFlushSpeech('Live1')
           .expectCategoryFlushSpeech('Live2');
-      mockFeedback.replay();
+      await mockFeedback.replay();
     });
 
 AX_TEST_F('ChromeVoxLiveRegionsTest', 'SilentOnNodeChange', async function() {
@@ -255,7 +255,7 @@ AX_TEST_F('ChromeVoxLiveRegionsTest', 'SilentOnNodeChange', async function() {
       .expectSpeech('hello!')
       .expectNextSpeechUtteranceIsNot('hello!')
       .expectNextSpeechUtteranceIsNot('hello!');
-  mockFeedback.replay();
+  await mockFeedback.replay();
 });
 
 AX_TEST_F('ChromeVoxLiveRegionsTest', 'SimulateTreeChanges', async function() {
@@ -287,7 +287,7 @@ AX_TEST_F('ChromeVoxLiveRegionsTest', 'SimulateTreeChanges', async function() {
       })
       .expectSpeech('hello')
       .expectSpeech('there');
-  mockFeedback.replay();
+  await mockFeedback.replay();
 });
 
 // Flaky: https://crbug.com/945199
@@ -322,8 +322,8 @@ AX_TEST_F(
           .clearPendingOutput()
           .call(clickInput)
           .expectNextSpeechUtteranceIsNot('bba')
-          .expectSpeech('a')
-          .replay();
+          .expectSpeech('a');
+      await mockFeedback.replay();
     });
 
 AX_TEST_F(
@@ -346,8 +346,8 @@ AX_TEST_F(
   `);
       const button = root.find({role: chrome.automation.RoleType.BUTTON});
       mockFeedback.call(button.doDefault.bind(button))
-          .expectSpeech('Alert', 'hi')
-          .replay();
+          .expectSpeech('Alert', 'hi');
+      await mockFeedback.replay();
     });
 
 AX_TEST_F('ChromeVoxLiveRegionsTest', 'ShouldIgnoreLiveRegion', function() {
@@ -395,6 +395,6 @@ AX_TEST_F(
       mockFeedback.call(button.doDefault.bind(button))
           .expectSpeech('hello')
           .call(button.doDefault.bind(button))
-          .expectSpeech('there')
-          .replay();
+          .expectSpeech('there');
+      await mockFeedback.replay();
     });

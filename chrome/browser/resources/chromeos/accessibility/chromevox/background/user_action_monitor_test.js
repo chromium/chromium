@@ -225,7 +225,7 @@ AX_TEST_F('ChromeVoxUserActionMonitorTest', 'Output', async function() {
         assertTrue(finished);
       })
       .expectSpeech('You did it!');
-  mockFeedback.replay();
+  await mockFeedback.replay();
 });
 
 // Tests that we can match a single key. Serves as an integration test
@@ -328,7 +328,7 @@ AX_TEST_F(
             assertTrue(finished);
           })
           .expectSpeech('You pressed the second sequence!');
-      mockFeedback.replay();
+      await mockFeedback.replay();
     });
 
 // Tests that we can provide expectations for ChromeVox commands and block
@@ -390,8 +390,8 @@ AX_TEST_F('ChromeVoxUserActionMonitorTest', 'BlockCommands', async function() {
         keyboardHandler.onKeyUp(previousObject);
         assertEquals('Start', this.getRangeStart().name);
       })
-      .expectSpeech('Start')
-      .replay();
+      .expectSpeech('Start');
+  await mockFeedback.replay();
 });
 
 // Tests that a user can close ChromeVox (Ctrl + Alt + Z) when UserActionMonitor
@@ -488,6 +488,6 @@ AX_TEST_F(
             doGesture(Gesture.SWIPE_RIGHT1)();
             assertTrue(finished);
           })
-          .expectSpeech(/Battery at [0-9]+ percent/)
-          .replay();
+          .expectSpeech(/Battery at [0-9]+ percent/);
+      await mockFeedback.replay();
     });

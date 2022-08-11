@@ -81,9 +81,9 @@ AX_TEST_F(
           .call(() => this.handler_.onValueChanged(event))
 
           .expectNextSpeechUtteranceIsNot('70%')
-          .expectSpeech('80%')
+          .expectSpeech('80%');
 
-          .replay();
+      await mockFeedback.replay();
     });
 
 TEST_F(
@@ -105,9 +105,9 @@ TEST_F(
             })
             // Make sure it doesn't repeat the previous line!
             .expectNextSpeechUtteranceIsNot('Browser')
-            .expectSpeech('row 3 column 1');
+            .expectSpeech('row 3 column 1')
 
-        mockFeedback.replay();
+            .replay();
       });
     });
 
@@ -138,8 +138,8 @@ AX_TEST_F(
               'S: sierra, e: echo, c: charlie, o: oscar, n: november, d: delta')
           .call(() => this.handler_.onSelection(selectFirst))
           .expectSpeech('First')
-          .expectSpeech(/foxtrot/)
-          .replay();
+          .expectSpeech(/foxtrot/);
+      await mockFeedback.replay();
     });
 
 AX_TEST_F(
@@ -164,8 +164,8 @@ AX_TEST_F(
             assertFalse(mockFeedback.utteranceInQueue('Hello world'));
             this.handler_.onAlert(event);
             assertFalse(mockFeedback.utteranceInQueue('Hello world'));
-          })
-          .replay();
+          });
+      await mockFeedback.replay();
     });
 
 AX_TEST_F(
@@ -197,6 +197,6 @@ AX_TEST_F(
           .expectBraille('bar lstitm 2/2 (x)')
           .call(press(KeyCode.UP))
           .expectSpeech('foo', 'List item', ' 1 of 2 ')
-          .expectBraille('foo lstitm 1/2 (x)')
-          .replay();
+          .expectBraille('foo lstitm 1/2 (x)');
+      await mockFeedback.replay();
     });

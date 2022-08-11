@@ -112,8 +112,8 @@ AX_TEST_F('ChromeVoxTutorialTest', 'BasicTest', async function() {
       .call(doCmd('nextObject'))
       .expectSpeech('Resources', 'Link')
       .call(doCmd('nextObject'))
-      .expectSpeech('Exit tutorial', 'Button')
-      .replay();
+      .expectSpeech('Exit tutorial', 'Button');
+  await mockFeedback.replay();
 });
 
 // Tests that different lessons are shown when choosing an experience from the
@@ -148,8 +148,8 @@ AX_TEST_F('ChromeVoxTutorialTest', 'DISABLED_LessonSetTest', async function() {
       .call(doCmd('forceClickOnCurrentItem'))
       .expectSpeech(/Essential Keys Tutorial, [0-9]+ Lessons/)
       .call(doCmd('nextObject'))
-      .expectSpeech('On, Off, and Stop')
-      .replay();
+      .expectSpeech('On, Off, and Stop');
+  await mockFeedback.replay();
 });
 
 // Tests that a static lesson does not show the 'Practice area' button.
@@ -176,8 +176,8 @@ AX_TEST_F(
               ' Press Search + Right Arrow, or Search + Left Arrow to navigate ' +
                   'this lesson ')
           .call(doCmd('nextButton'))
-          .expectSpeech('Next lesson')
-          .replay();
+          .expectSpeech('Next lesson');
+      await mockFeedback.replay();
     });
 
 // Tests that an interactive lesson shows the 'Practice area' button.
@@ -203,8 +203,8 @@ AX_TEST_F(
           })
           .expectSpeech('Jump Commands', 'Heading 1')
           .call(doCmd('nextButton'))
-          .expectSpeech('Practice area')
-          .replay();
+          .expectSpeech('Practice area');
+      await mockFeedback.replay();
     });
 
 // Tests nudges given in the general tutorial context.
@@ -231,8 +231,8 @@ AX_TEST_F('ChromeVoxTutorialTest', 'GeneralNudgesTest', async function() {
       .expectSpeech('Hint: Press Search + Space to activate the current item.')
       .call(giveNudge)
       .expectSpeech(
-          'Hint: Press Escape if you would like to exit this tutorial.')
-      .replay();
+          'Hint: Press Escape if you would like to exit this tutorial.');
+  await mockFeedback.replay();
 });
 
 // Tests nudges given in the practice area context. Note, each practice area
@@ -270,8 +270,8 @@ AX_TEST_F(
               'Try pressing Search + left/right arrow. The search key is ' +
               'directly above the shift key')
           .call(giveNudge)
-          .expectSpeech('Press Search + Space to activate the current item.')
-          .replay();
+          .expectSpeech('Press Search + Space to activate the current item.');
+      await mockFeedback.replay();
     });
 
 // Tests that the tutorial closes when the 'Exit tutorial' button is clicked.
@@ -285,8 +285,8 @@ AX_TEST_F('ChromeVoxTutorialTest', 'DISABLED_ExitButtonTest', async function() {
       .call(doCmd('previousButton'))
       .expectSpeech('Exit tutorial')
       .call(doCmd('forceClickOnCurrentItem'))
-      .expectSpeech('Some web content')
-      .replay();
+      .expectSpeech('Some web content');
+  await mockFeedback.replay();
 });
 
 // Tests that the tutorial closes when Escape is pressed.
@@ -305,8 +305,8 @@ AX_TEST_F('ChromeVoxTutorialTest', 'DISABLED_EscapeTest', async function() {
           stopPropagation: () => {},
         });
       })
-      .expectSpeech('Some web content')
-      .replay();
+      .expectSpeech('Some web content');
+  await mockFeedback.replay();
 });
 
 // Tests that the main menu button navigates the user to the main menu screen.
@@ -332,8 +332,8 @@ AX_TEST_F('ChromeVoxTutorialTest', 'DISABLED_MainMenuButton', async function() {
       .expectSpeech('Main menu')
       .call(doCmd('forceClickOnCurrentItem'))
       .expectSpeech('ChromeVox tutorial')
-      .call(this.assertActiveScreen.bind(this, 'main_menu'))
-      .replay();
+      .call(this.assertActiveScreen.bind(this, 'main_menu'));
+  await mockFeedback.replay();
 });
 
 // Tests that the all lessons button navigates the user to the lesson menu
@@ -366,8 +366,8 @@ AX_TEST_F(
           .expectSpeech('All lessons')
           .call(doCmd('forceClickOnCurrentItem'))
           .expectSpeech(/Essential Keys Tutorial, [0-9]+ Lessons/)
-          .call(this.assertActiveScreen.bind(this, 'lesson_menu'))
-          .replay();
+          .call(this.assertActiveScreen.bind(this, 'lesson_menu'));
+      await mockFeedback.replay();
     });
 
 // Tests that the next and previous lesson buttons navigate properly.
@@ -396,8 +396,8 @@ AX_TEST_F(
           .expectSpeech('Previous lesson')
           .call(doCmd('forceClickOnCurrentItem'))
           .expectSpeech('On, Off, and Stop', 'Heading 1')
-          .call(this.assertActiveLessonIndex.bind(this, 0))
-          .replay();
+          .call(this.assertActiveLessonIndex.bind(this, 0));
+      await mockFeedback.replay();
     });
 
 // Tests that the title of an interactive lesson is read when shown.
@@ -420,8 +420,8 @@ AX_TEST_F('ChromeVoxTutorialTest', 'AutoReadTitle', async function() {
           'time, press the Escape key on the top left corner of the ' +
           'keyboard. To turn off ChromeVox, hold Control and Alt, and ' +
           `press Z. When you're ready, use the spacebar to move to the ` +
-          'next lesson.')
-      .replay();
+          'next lesson.');
+  await mockFeedback.replay();
 });
 
 // Tests that we read a hint for navigating a lesson when it is shown.
@@ -445,8 +445,8 @@ AX_TEST_F('ChromeVoxTutorialTest', 'DISABLED_LessonHint', async function() {
       .expectSpeech('On, Off, and Stop', 'Heading 1')
       .expectSpeech(
           ' Press Search + Right Arrow, or Search + Left Arrow to navigate' +
-          ' this lesson ')
-      .replay();
+          ' this lesson ');
+  await mockFeedback.replay();
 });
 
 // Tests for correct speech and earcons on the earcons lesson.
@@ -475,7 +475,7 @@ AX_TEST_F('ChromeVoxTutorialTest', 'EarconLesson', async function() {
   nextObjectAndExpectSpeechAndEarcon(
       'A non modal alert', Earcon.ALERT_NONMODAL);
   nextObjectAndExpectSpeechAndEarcon('A button', Earcon.BUTTON);
-  mockFeedback.replay();
+  await mockFeedback.replay();
 });
 
 // Tests that a lesson from the quick orientation blocks ChromeVox execution
@@ -546,8 +546,8 @@ AX_TEST_F(
           .expectSpeech('Essential Keys: Shift')
           .call(() => {
             assertEquals(2, tutorial.activeLessonId);
-          })
-          .replay();
+          });
+      await mockFeedback.replay();
     });
 
 // Tests that tutorial nudges are restarted whenever the current range changes.
@@ -591,8 +591,8 @@ AX_TEST_F('ChromeVoxTutorialTest', 'ResourcesTest', async function() {
       .call(doCmd('nextObject'))
       .expectSpeech('ChromeVox Command Reference', 'Link')
       .call(doCmd('forceClickOnCurrentItem'))
-      .expectSpeech('support.google.com')
-      .replay();
+      .expectSpeech('support.google.com');
+  await mockFeedback.replay();
 });
 
 // Tests that choosing a curriculum with only 1 lesson automatically opens the
@@ -625,8 +625,8 @@ AX_TEST_F('ChromeVoxTutorialTest', 'OnlyLessonTest', async function() {
       .call(doCmd('nextButton'))
       .expectSpeech('Main menu')
       .call(doCmd('nextButton'))
-      .expectSpeech('Exit tutorial')
-      .replay();
+      .expectSpeech('Exit tutorial');
+  await mockFeedback.replay();
 });
 
 // Tests that interactive mode and UserActionMonitor are properly set when
@@ -699,8 +699,8 @@ AX_TEST_F('ChromeVoxTutorialTest', 'DISABLED_Gestures', async function() {
       .call(doGesture(Gesture.SWIPE_LEFT1))
       .expectSpeech('Quick orientation', 'Link')
       .call(doGesture(Gesture.SWIPE_LEFT2))
-      .expectSpeech('Some web content')
-      .replay();
+      .expectSpeech('Some web content');
+  await mockFeedback.replay();
 });
 
 // Tests that touch orientation loads properly. Tests string content, but does
@@ -737,8 +737,8 @@ AX_TEST_F(
           .call(doGesture(Gesture.SWIPE_RIGHT4))
           .expectSpeech(/swiping with four fingers from right to left/)
           .call(doGesture(Gesture.SWIPE_LEFT4))
-          .expectSpeech('Touch tutorial complete')
-          .replay();
+          .expectSpeech('Touch tutorial complete');
+      await mockFeedback.replay();
     });
 
 AX_TEST_F('ChromeVoxTutorialTest', 'GeneralTouchNudges', async function() {
@@ -767,6 +767,6 @@ AX_TEST_F('ChromeVoxTutorialTest', 'GeneralTouchNudges', async function() {
       .call(giveNudge)
       .expectSpeech(
           'Hint: Swipe from right to left with two fingers if you would ' +
-          'like to exit this tutorial.')
-      .replay();
+          'like to exit this tutorial.');
+  await mockFeedback.replay();
 });

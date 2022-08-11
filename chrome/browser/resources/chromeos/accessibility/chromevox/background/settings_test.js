@@ -86,7 +86,7 @@ AX_TEST_F(
           .call(increaseRate)
           .expectSpeech('Rate 2 percent')
           .call(increaseRate)
-          .expectSpeech('Rate 4 percent')
+          .expectSpeech('Rate 4 percent');
 
-          .replay();
+      await mockFeedback.replay();
     });
