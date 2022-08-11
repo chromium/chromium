@@ -20,6 +20,7 @@ class CableAuthenticationData;
 class CableRegistrationData;
 class Credential;
 class IdentityCredentialLogoutRPsRequest;
+class IdentityProvider;
 class PublicKeyCredentialCreationOptions;
 class PublicKeyCredentialDescriptor;
 class PublicKeyCredentialParameters;
@@ -188,6 +189,13 @@ struct TypeConverter<blink::mojom::blink::RemoteDesktopClientOverridePtr,
                      blink::RemoteDesktopClientOverride> {
   static blink::mojom::blink::RemoteDesktopClientOverridePtr Convert(
       const blink::RemoteDesktopClientOverride&);
+};
+
+template <>
+struct TypeConverter<blink::mojom::blink::IdentityProviderPtr,
+                     blink::IdentityProvider> {
+  static blink::mojom::blink::IdentityProviderPtr Convert(
+      const blink::IdentityProvider&);
 };
 
 }  // namespace mojo

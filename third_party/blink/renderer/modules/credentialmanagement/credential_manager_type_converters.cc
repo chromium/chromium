@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_cable_authentication_data.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_cable_registration_data.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_logout_r_ps_request.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_creation_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_parameters.h"
@@ -49,6 +50,8 @@ using blink::mojom::blink::CableRegistrationPtr;
 using blink::mojom::blink::CredentialInfo;
 using blink::mojom::blink::CredentialInfoPtr;
 using blink::mojom::blink::CredentialType;
+using blink::mojom::blink::IdentityProvider;
+using blink::mojom::blink::IdentityProviderPtr;
 using blink::mojom::blink::LargeBlobSupport;
 using blink::mojom::blink::LogoutRpsRequest;
 using blink::mojom::blink::LogoutRpsRequestPtr;
@@ -689,6 +692,18 @@ TypeConverter<RemoteDesktopClientOverridePtr,
   return RemoteDesktopClientOverride::New(
       blink::SecurityOrigin::CreateFromString(blink_value.origin()),
       blink_value.sameOriginWithAncestors());
+}
+
+// static
+IdentityProviderPtr
+TypeConverter<IdentityProviderPtr, blink::IdentityProvider>::Convert(
+    const blink::IdentityProvider& provider) {
+  auto mojo_provider = IdentityProvider::New();
+
+  mojo_provider->config_url = blink::KURL(provider.configURL());
+  mojo_provider->client_id = provider.clientId();
+  mojo_provider->nonce = provider.nonce();
+  return mojo_provider;
 }
 
 }  // namespace mojo

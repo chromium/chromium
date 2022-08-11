@@ -41,17 +41,24 @@ struct LogoutRpsRequest {
   string account_id;
 };
 
+// The details of an identity provider.
+struct IdentityProvider {
+  url.mojom.Url config_url;
+
+  // Can be an empty string to be omitted in the request sent to the provider.
+  string client_id;
+
+  // Can be an empty string to be omitted in the request sent to the provider.
+  string nonce;
+};
+
 // Create a federated sign-in request using the specified provider.
 // This interface is called from a renderer process and implemented in the
 // browser process.
 interface FederatedAuthRequest {
-  // Requests a token to be generated, given an IDP URL.
-  // |client_id| and |nonce| can be empty strings to omit the fields in the
-  // request sent to the provider.
+  // Requests a token to be generated, given an IdentityProvider.
   // Returns the raw content of the token.
-  RequestToken(url.mojom.Url provider,
-                 string client_id,
-                 string nonce,
+  RequestToken(IdentityProvider identity_provider_ptr,
                  bool prefer_auto_sign_in) =>
       (RequestTokenStatus status, string? token);
 

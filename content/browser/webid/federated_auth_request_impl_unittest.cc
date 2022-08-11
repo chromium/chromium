@@ -686,7 +686,10 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
                      const std::string& nonce,
                      bool prefer_auto_sign_in,
                      bool wait_for_callback) {
-    request_remote_->RequestToken(provider, client_id, nonce,
+    blink::mojom::IdentityProviderPtr identity_provider =
+        blink::mojom::IdentityProvider::New(provider, client_id, nonce);
+
+    request_remote_->RequestToken(std::move(identity_provider),
                                   prefer_auto_sign_in, auth_helper_.callback());
 
     if (wait_for_callback)
@@ -868,8 +871,10 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
   }
 
   void ComputeLoginStateAndReorderAccounts(
+      const blink::mojom::IdentityProvider& identity_provider,
       IdpNetworkRequestManager::AccountList& accounts) {
-    federated_auth_request_impl_->ComputeLoginStateAndReorderAccounts(accounts);
+    federated_auth_request_impl_->ComputeLoginStateAndReorderAccounts(
+        identity_provider, accounts);
   }
 
  protected:
@@ -2018,7 +2023,10 @@ TEST_F(FederatedAuthRequestImplTest, ReorderMultipleAccounts) {
               kConfigurationValid);
 
   AccountList multiple_accounts = kMultipleAccounts;
-  ComputeLoginStateAndReorderAccounts(multiple_accounts);
+  blink::mojom::IdentityProviderPtr identity_provider =
+      blink::mojom::IdentityProvider::New(GURL(kProviderUrlFull), kClientId,
+                                          kNonce);
+  ComputeLoginStateAndReorderAccounts(*identity_provider, multiple_accounts);
 
   // Check the account order using the account ids.
   ASSERT_EQ(multiple_accounts.size(), 3u);
