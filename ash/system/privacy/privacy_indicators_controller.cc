@@ -21,9 +21,11 @@ const char kPrivacyIndicatorsNotificationIdPrefix[] = "privacy-indicators";
 const char kPrivacyIndicatorsNotifierId[] = "ash.privacy-indicators";
 }  // namespace
 
-void ModifyPrivacyIndicatorsNotification(const std::string& app_id,
-                                         bool camera_is_used,
-                                         bool microphone_is_used) {
+void ModifyPrivacyIndicatorsNotification(
+    const std::string& app_id,
+    absl::optional<std::u16string> app_name,
+    bool camera_is_used,
+    bool microphone_is_used) {
   auto* message_center = message_center::MessageCenter::Get();
   std::string id = kPrivacyIndicatorsNotificationIdPrefix + app_id;
   bool notification_exist = message_center->FindVisibleNotificationById(id);
@@ -34,14 +36,23 @@ void ModifyPrivacyIndicatorsNotification(const std::string& app_id,
     return;
   }
 
+  std::u16string app_name_str = app_name.value_or(l10n_util::GetStringUTF16(
+      IDS_PRIVACY_NOTIFICATION_MESSAGE_DEFAULT_APP_NAME));
   std::u16string title;
+  std::u16string message;
   if (camera_is_used && microphone_is_used) {
     title = l10n_util::GetStringUTF16(
         IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA_AND_MIC);
+    message = l10n_util::GetStringFUTF16(
+        IDS_PRIVACY_NOTIFICATION_MESSAGE_CAMERA_AND_MIC, app_name_str);
   } else if (camera_is_used) {
     title = l10n_util::GetStringUTF16(IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA);
+    message = l10n_util::GetStringFUTF16(
+        IDS_PRIVACY_NOTIFICATION_MESSAGE_CAMERA, app_name_str);
   } else {
     title = l10n_util::GetStringUTF16(IDS_PRIVACY_NOTIFICATION_TITLE_MIC);
+    message = l10n_util::GetStringFUTF16(IDS_PRIVACY_NOTIFICATION_MESSAGE_MIC,
+                                         app_name_str);
   }
 
   message_center::RichNotificationData optional_fields;
@@ -51,7 +62,7 @@ void ModifyPrivacyIndicatorsNotification(const std::string& app_id,
 
   auto notification = CreateSystemNotification(
       message_center::NotificationType::NOTIFICATION_TYPE_SIMPLE, id, title,
-      std::u16string(),
+      message,
       /*display_source=*/std::u16string(),
       /*origin_url=*/GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
@@ -60,6 +71,8 @@ void ModifyPrivacyIndicatorsNotification(const std::string& app_id,
       optional_fields,
       /*delegate=*/nullptr, kImeMenuMicrophoneIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
+
+  notification->set_accent_color_id(ui::kColorAshPrivacyIndicatorsBackground);
 
   if (notification_exist) {
     message_center->UpdateNotification(id, std::move(notification));

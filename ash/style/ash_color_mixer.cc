@@ -379,6 +379,10 @@ void AddCrosStylesColorMixer(ui::ColorProvider* provider,
 void AddAshColorMixer(ui::ColorProvider* provider,
                       const ui::ColorProviderManager::Key& key) {
   ui::ColorMixer& mixer = provider->AddMixer();
+  bool dark_mode =
+      features::IsDarkLightModeEnabled()
+          ? key.color_mode == ui::ColorProviderManager::ColorMode::kDark
+          : DarkLightModeControllerImpl::Get()->IsDarkModeEnabled();
 
   AddShieldAndBaseColors(mixer, key);
   AddControlsColors(mixer, key);
@@ -390,6 +394,16 @@ void AddAshColorMixer(ui::ColorProvider* provider,
       cros_tokens::kColorAlertDark};
   mixer[ui::kColorAshActionLabelFocusRingHover] =
       ui::SetAlpha(cros_tokens::kColorPrimaryDark, 0x60);
+
+  // TODO(crbug/1350671): Use cros token for
+  // kPrivacyIndicatorsBackgroundColor instead of constant values.
+  if (dark_mode) {
+    mixer[ui::kColorAshPrivacyIndicatorsBackground] = {
+        SkColorSetRGB(0x37, 0xBE, 0x5F)};
+  } else {
+    mixer[ui::kColorAshPrivacyIndicatorsBackground] = {
+        SkColorSetRGB(0x14, 0x6C, 0x2E)};
+  }
 
   mixer[ui::kColorAshAppListFocusRingNoKeyboard] = {SK_AlphaTRANSPARENT};
   mixer[ui::kColorAshAppListSeparatorLight] = {

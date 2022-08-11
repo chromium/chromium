@@ -34,6 +34,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
@@ -1485,10 +1486,21 @@ SkColor AshNotificationView::CalculateIconAndButtonsColor(
   if (!notification)
     return default_color;
 
+  auto color_id = notification->accent_color_id();
   absl::optional<SkColor> accent_color = notification->accent_color();
-  if (!accent_color.has_value())
+
+  if ((!color_id || !GetWidget()) && !accent_color.has_value())
     return default_color;
 
+  SkColor fg_color;
+  // ColorProvider needs widget to be created.
+  if (color_id && GetWidget()) {
+    fg_color = GetColorProvider()->GetColor(color_id.value());
+  } else {
+    fg_color = accent_color.value();
+  }
+
+  // TODO(crbug/1351205): move color calculation logic to color mixer.
   // TODO(crbug/1294459): re-evaluate contrast, maybe increase or use fixed HSL
   float minContrastRatio =
       DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
@@ -1499,7 +1511,7 @@ SkColor AshNotificationView::CalculateIconAndButtonsColor(
   SkColor bg_color = AshColorProvider::Get()->GetBaseLayerColor(
       AshColorProvider::BaseLayerType::kOpaque);
   return color_utils::BlendForMinContrast(
-             *accent_color, bg_color,
+             fg_color, bg_color,
              /*high_contrast_foreground=*/absl::nullopt, minContrastRatio)
       .color;
 }

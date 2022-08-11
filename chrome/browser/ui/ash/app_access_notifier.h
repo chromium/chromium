@@ -44,12 +44,6 @@ class AppAccessNotifier
   // ash::MicrophoneMuteNotificationDelegate
   absl::optional<std::u16string> GetAppAccessingMicrophone() override;
 
-  // Returns the "short name" of the registered app to most recently attempt to
-  // access the microphone, or an empty (optional) string if none exists.
-  absl::optional<std::u16string> GetAppAccessingMicrophone(
-      apps::AppCapabilityAccessCache* capability_cache,
-      apps::AppRegistryCache* registry_cache);
-
   // apps::AppCapabilityAccessCache::Observer
   void OnCapabilityAccessUpdate(
       const apps::CapabilityAccessUpdate& update) override;
@@ -62,6 +56,11 @@ class AppAccessNotifier
   // user_manager::UserManager::UserSessionStateObserver
   void ActiveUserChanged(user_manager::User* active_user) override;
 
+  // Get the app short name of the app with `app_id`.
+  static absl::optional<std::u16string> GetAppShortNameFromAppId(
+      std::string app_id,
+      apps::AppRegistryCache* registry_cache);
+
  protected:
   // Returns the active user's account ID if we have an active user, an empty
   // account ID otherwise.
@@ -73,9 +72,18 @@ class AppAccessNotifier
   void CheckActiveUserChanged();
 
  private:
+  friend class AppAccessNotifierTest;
+
   // Returns the AppCapabilityAccessCache associated with the active user's
   // account ID.
   apps::AppCapabilityAccessCache* GetActiveUserAppCapabilityAccessCache();
+
+  // Returns the "short name" of the registered app to most recently attempt to
+  // access the microphone, or an empty (optional) string if none exists. Used
+  // for the microphone mute notification.
+  absl::optional<std::u16string> GetMostRecentAppAccessingMicrophone(
+      apps::AppCapabilityAccessCache* capability_cache,
+      apps::AppRegistryCache* registry_cache);
 
   // List of IDs of apps that have attempted to use the microphone, in order of
   // most-recently-launched.

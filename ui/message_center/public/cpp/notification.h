@@ -185,6 +185,12 @@ class MESSAGE_CENTER_PUBLIC_EXPORT RichNotificationData {
   // SystemNotificationWarningLevel should be used.
   absl::optional<SkColor> accent_color;
 
+  // Similar to `accent_color`, but store a ColorId instead of SkColor so that
+  // the notification view can use this id to correctly handle theme change. In
+  // CrOS notification, if `accent_color_id` is provided, `accent_color` will
+  // not be used.
+  absl::optional<ui::ColorId> accent_color_id;
+
   // Controls whether a settings button should appear on the notification. See
   // enum definition. TODO(estade): turn this into a boolean. See
   // crbug.com/780342
@@ -439,6 +445,13 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
   }
   void set_accent_color(SkColor accent_color) {
     optional_fields_.accent_color = accent_color;
+  }
+
+  absl::optional<ui::ColorId> accent_color_id() const {
+    return optional_fields_.accent_color_id;
+  }
+  void set_accent_color_id(ui::ColorId accent_color_id) {
+    optional_fields_.accent_color_id = accent_color_id;
   }
 
   bool should_show_settings_button() const {

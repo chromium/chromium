@@ -110,8 +110,8 @@ class AppAccessNotifierTest : public testing::Test,
          account_id_primary_user_)
             ? &registry_cache_primary_user_
             : &registry_cache_secondary_user_;
-    return microphone_mute_notification_delegate_->GetAppAccessingMicrophone(
-        cap_cache, reg_cache);
+    return microphone_mute_notification_delegate_
+        ->GetMostRecentAppAccessingMicrophone(cap_cache, reg_cache);
   }
 
   static apps::AppPtr MakeApp(const std::string app_id, const char* name) {
@@ -394,4 +394,14 @@ TEST_P(AppAccessNotifierTest, AppAccessNotification) {
                                    /*use_microphone=*/true);
   EXPECT_TRUE(message_center::MessageCenter::Get()->FindNotificationById(
       kPrivacyIndicatorsNotificationIdPrefix + id1));
+}
+
+TEST_P(AppAccessNotifierTest, GetShortNameFromAppId) {
+  // Test that GetAppShortNameFromAppId works properly.
+  const std::string id = "test_app_id";
+  LaunchAppUsingCameraOrMicrophone(id, "test_app_name", /*use_camera=*/false,
+                                   /*use_microphone=*/true);
+  EXPECT_EQ(AppAccessNotifier::GetAppShortNameFromAppId(
+                id, &registry_cache_primary_user_),
+            u"test_app_name");
 }

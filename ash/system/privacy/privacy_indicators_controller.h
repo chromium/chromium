@@ -8,14 +8,17 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
 // Add, update, or remove the privacy notification associated with the given
 // `app_id`.
-void ASH_EXPORT ModifyPrivacyIndicatorsNotification(const std::string& app_id,
-                                                    bool camera_is_used,
-                                                    bool microphone_is_used);
+void ASH_EXPORT
+ModifyPrivacyIndicatorsNotification(const std::string& app_id,
+                                    absl::optional<std::u16string> app_name,
+                                    bool camera_is_used,
+                                    bool microphone_is_used);
 
 }  // namespace ash
 

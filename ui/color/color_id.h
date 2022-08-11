@@ -210,6 +210,8 @@
   \
   E_CPONLY(kColorAshOnboardingFocusRing) \
   \
+  E_CPONLY(kColorAshPrivacyIndicatorsBackground) \
+  \
   /* TODO(crbug/1319917): Remove these when dark light mode is launched. */ \
   E_CPONLY(kColorAshSystemUILightBorderColor1) \
   E_CPONLY(kColorAshSystemUILightBorderColor2) \
