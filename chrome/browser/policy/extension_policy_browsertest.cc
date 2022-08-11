@@ -69,6 +69,7 @@
 #include "extensions/browser/scoped_ignore_content_verifier_for_test.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/browser/updater/extension_cache_fake.h"
+#include "extensions/browser/updater/extension_downloader_test_helper.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/feature_switch.h"
 #include "extensions/common/features/feature_channel.h"
@@ -701,17 +702,10 @@ std::string GetUpdateManifestBody(const std::string& id,
   // "example.com" is a  placeholder that gets substituted with the test
   // server address at runtime.
   std::string crx_path = "http://example.com/" + crx_name;
-  return "<?xml version='1.0' encoding='UTF-8'?>"
-         "<gupdate xmlns='http://www.google.com/update2/response' "
-         "protocol='2.0'>"
-         " <app appid='" +
-         id +
-         "'>"
-         "  <updatecheck status='ok' codebase='" +
-         crx_path + "' version='" + version +
-         "' />"
-         " </app>"
-         "</gupdate>";
+  return extensions::CreateUpdateManifest({extensions::UpdateManifestItem(id)
+                                               .version(version)
+                                               .status("ok")
+                                               .codebase(crx_path)});
 }
 
 std::string GetUpdateManifestHeader() {

@@ -39,6 +39,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/browser/updater/extension_cache_fake.h"
+#include "extensions/browser/updater/extension_downloader_test_helper.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -118,18 +119,11 @@ class PreinstalledWebAppMigrationBrowserTest
     if (request_path == kExtensionUpdatePath) {
       auto response = std::make_unique<net::test_server::BasicHttpResponse>();
       response->set_code(net::HTTP_OK);
-      response->set_content(base::ReplaceStringPlaceholders(
-          R"(<?xml version='1.0' encoding='UTF-8'?>
-            <gupdate xmlns='http://www.google.com/update2/response' protocol='2.0'>
-              <app appid='$1'>
-                <updatecheck codebase='$2' version='$3' />
-              </app>
-            </gupdate>
-          )",
-          {kExtensionId,
-           embedded_test_server()->GetURL(kExtensionCrxPath).spec(),
-           kExtensionVersion},
-          nullptr));
+      response->set_content(extensions::CreateUpdateManifest(
+          {extensions::UpdateManifestItem(kExtensionId)
+               .version(kExtensionVersion)
+               .codebase(
+                   embedded_test_server()->GetURL(kExtensionCrxPath).spec())}));
       response->set_content_type("text/xml");
       return std::move(response);
     }

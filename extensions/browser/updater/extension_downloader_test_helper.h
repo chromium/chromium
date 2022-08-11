@@ -187,6 +187,10 @@ struct UpdateManifestItem {
     updatecheck_params.emplace("hash", std::move(value));
     return std::move(*this);
   }
+  UpdateManifestItem&& hash_sha256(std::string value) && {
+    updatecheck_params.emplace("hash_sha256", std::move(value));
+    return std::move(*this);
+  }
   UpdateManifestItem&& info(std::string value) && {
     updatecheck_params.emplace("info", std::move(value));
     return std::move(*this);

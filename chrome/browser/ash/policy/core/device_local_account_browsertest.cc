@@ -131,6 +131,7 @@
 #include "extensions/browser/management_policy.h"
 #include "extensions/browser/notification_types.h"
 #include "extensions/browser/sandboxed_unpacker.h"
+#include "extensions/browser/updater/extension_downloader_test_helper.h"
 #include "extensions/common/extension.h"
 #include "net/base/url_util.h"
 #include "net/http/http_status_code.h"
@@ -170,14 +171,6 @@ const char* const kStartupURLs[] = {
 const char kExistentTermsOfServicePath[] = "chromeos/enterprise/tos.txt";
 const char kNonexistentTermsOfServicePath[] = "chromeos/enterprise/tos404.txt";
 const char kRelativeUpdateURL[] = "/service/update2/crx";
-const char kUpdateManifestHeader[] =
-    "<?xml version='1.0' encoding='UTF-8'?>\n"
-    "<gupdate xmlns='http://www.google.com/update2/response' protocol='2.0'>\n";
-const char kUpdateManifestTemplate[] =
-    "  <app appid='%s'>\n"
-    "    <updatecheck codebase='%s' version='%s' />\n"
-    "  </app>\n";
-const char kUpdateManifestFooter[] = "</gupdate>\n";
 const char kHostedAppID[] = "kbmnembihfiondgfjekmnmcbddelicoi";
 const char kHostedAppCRXPath[] = "extensions/hosted_app.crx";
 const char kHostedAppVersion[] = "1.0.0.0";
@@ -317,7 +310,7 @@ TestingUpdateManifestProvider::HandleRequest(
   if (url.path() != relative_update_url_)
     return nullptr;
 
-  std::string content = kUpdateManifestHeader;
+  std::vector<extensions::UpdateManifestItem> update_manifest;
   for (net::QueryIterator it(url); !it.IsAtEnd(); it.Advance()) {
     if (it.GetKey() != "x")
       continue;
@@ -328,12 +321,15 @@ TestingUpdateManifestProvider::HandleRequest(
                                "id", &id);
     UpdateMap::const_iterator entry = updates_.find(id);
     if (entry != updates_.end()) {
-      content += base::StringPrintf(kUpdateManifestTemplate, id.c_str(),
-                                    entry->second.crx_url.spec().c_str(),
-                                    entry->second.version.c_str());
+      update_manifest.emplace_back(extensions::UpdateManifestItem(id)
+                                       .version(entry->second.version)
+                                       .codebase(entry->second.crx_url.spec()));
     }
   }
-  content += kUpdateManifestFooter;
+
+  std::string content =
+      extensions::CreateUpdateManifest(std::move(update_manifest));
+
   std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
       new net::test_server::BasicHttpResponse);
   http_response->set_code(net::HTTP_OK);

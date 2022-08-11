@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/browser/updater/extension_downloader_test_helper.h"
 #include "extensions/browser/updater/safe_manifest_parser.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -81,14 +82,9 @@ TEST_F(ExtensionUpdateManifestTest, MissingAppId) {
 }
 
 TEST_F(ExtensionUpdateManifestTest, InvalidCodebase) {
-  TestParseUpdateManifest(
-      "<?xml version='1.0'?>"
-      "<gupdate xmlns='http://www.google.com/update2/response' protocol='2.0'>"
-      " <app appid='12345' status='ok'>"
-      "  <updatecheck codebase='example.com/extension_1.2.3.4.crx'"
-      "               version='1.2.3.4' />"
-      " </app>"
-      "</gupdate>");
+  TestParseUpdateManifest(CreateUpdateManifest(
+      {UpdateManifestItem("12345").version("1.2.3.4").codebase(
+          "example.com/extension_1.2.3.4.crx")}));
   ASSERT_EQ(1u, results()->update_list.size());
   EXPECT_TRUE(results()->update_list.at(0).parse_error);
   EXPECT_EQ(results()->update_list.at(0).parse_error.value().error,
@@ -98,12 +94,8 @@ TEST_F(ExtensionUpdateManifestTest, InvalidCodebase) {
 
 TEST_F(ExtensionUpdateManifestTest, MissingVersion) {
   TestParseUpdateManifest(
-      "<?xml version='1.0'?>"
-      "<gupdate xmlns='http://www.google.com/update2/response' protocol='2.0'>"
-      " <app appid='12345' status='ok'>"
-      "  <updatecheck codebase='http://example.com/extension_1.2.3.4.crx' />"
-      " </app>"
-      "</gupdate>");
+      CreateUpdateManifest({UpdateManifestItem("12345").codebase(
+          "http://example.com/extension_1.2.3.4.crx")}));
   ASSERT_EQ(1u, results()->update_list.size());
   EXPECT_TRUE(results()->update_list.at(0).parse_error);
   EXPECT_EQ(results()->update_list.at(0).parse_error.value().error,
@@ -112,14 +104,9 @@ TEST_F(ExtensionUpdateManifestTest, MissingVersion) {
 }
 
 TEST_F(ExtensionUpdateManifestTest, InvalidVersion) {
-  TestParseUpdateManifest(
-      "<?xml version='1.0'?>"
-      "<gupdate xmlns='http://www.google.com/update2/response' protocol='2.0'>"
-      " <app appid='12345' status='ok'>"
-      "  <updatecheck codebase='http://example.com/extension_1.2.3.4.crx' "
-      "               version='1.2.3.a'/>"
-      " </app>"
-      "</gupdate>");
+  TestParseUpdateManifest(CreateUpdateManifest(
+      {UpdateManifestItem("12345").version("1.2.3.a").codebase(
+          "http://example.com/extension_1.2.3.4.crx")}));
   ASSERT_EQ(1u, results()->update_list.size());
   EXPECT_TRUE(results()->update_list.at(0).parse_error);
   EXPECT_EQ(results()->update_list.at(0).parse_error.value().error,
@@ -128,14 +115,11 @@ TEST_F(ExtensionUpdateManifestTest, InvalidVersion) {
 }
 
 TEST_F(ExtensionUpdateManifestTest, ValidXml) {
-  TestParseUpdateManifest(
-      "<?xml version='1.0' encoding='UTF-8'?>"
-      "<gupdate xmlns='http://www.google.com/update2/response' protocol='2.0'>"
-      " <app appid='12345'>"
-      "  <updatecheck codebase='http://example.com/extension_1.2.3.4.crx'"
-      "               version='1.2.3.4' prodversionmin='2.0.143.0' />"
-      " </app>"
-      "</gupdate>");
+  TestParseUpdateManifest(CreateUpdateManifest(
+      {UpdateManifestItem("12345")
+           .version("1.2.3.4")
+           .prodversionmin("2.0.143.0")
+           .codebase("http://example.com/extension_1.2.3.4.crx")}));
   ExpectNoError();
   ASSERT_TRUE(results());
   EXPECT_EQ(1U, results()->update_list.size());
@@ -196,15 +180,12 @@ TEST_F(ExtensionUpdateManifestTest, SimilarTagnames) {
 }
 
 TEST_F(ExtensionUpdateManifestTest, XmlWithHash) {
-  TestParseUpdateManifest(
-      "<?xml version='1.0' encoding='UTF-8'?>"
-      "<gupdate xmlns='http://www.google.com/update2/response' protocol='2.0'>"
-      " <app appid='12345'>"
-      "  <updatecheck codebase='http://example.com/extension_1.2.3.4.crx'"
-      "               version='1.2.3.4' prodversionmin='2.0.143.0' "
-      "               hash_sha256='1234'/>"
-      " </app>"
-      "</gupdate>");
+  TestParseUpdateManifest(CreateUpdateManifest(
+      {UpdateManifestItem("12345")
+           .version("1.2.3.4")
+           .prodversionmin("2.0.143.0")
+           .codebase("http://example.com/extension_1.2.3.4.crx")
+           .hash_sha256("1234")}));
   ExpectNoError();
   ASSERT_TRUE(results());
   EXPECT_EQ(1U, results()->update_list.size());
@@ -230,12 +211,7 @@ TEST_F(ExtensionUpdateManifestTest, XmlWithDaystart) {
 
 TEST_F(ExtensionUpdateManifestTest, NoUpdateResponse) {
   TestParseUpdateManifest(
-      "<?xml version='1.0' encoding='UTF-8'?>"
-      "<gupdate xmlns='http://www.google.com/update2/response' protocol='2.0'>"
-      " <app appid='12345'>"
-      "  <updatecheck status='noupdate' />"
-      " </app>"
-      "</gupdate>");
+      CreateUpdateManifest({UpdateManifestItem("12345").status("noupdate")}));
   ExpectNoError();
   ASSERT_TRUE(results());
   ASSERT_FALSE(results()->update_list.empty());
@@ -267,21 +243,14 @@ TEST_F(ExtensionUpdateManifestTest, TwoAppsOneError) {
 
 TEST_F(ExtensionUpdateManifestTest, Duplicates) {
   TestParseUpdateManifest(
-      "<?xml version='1.0' encoding='UTF-8'?>"
-      "<gupdate xmlns='http://www.google.com/update2/response' protocol='2.0'>"
-      " <app appid='aaaaaaaa'>"
-      "  <updatecheck status='noupdate' />"
-      " </app>"
-      " <app appid='bbbbbbbb'>"
-      "  <updatecheck codebase='http://example.com/b_3.1.crx' version='3.1'/>"
-      " </app>"
-      " <app appid='aaaaaaaa'>"
-      "  <updatecheck status='noupdate' />"
-      " </app>"
-      " <app appid='aaaaaaaa'>"
-      "  <updatecheck codebase='http://example.com/a_2.0.crx' version='2.0'/>"
-      " </app>"
-      "</gupdate>");
+      CreateUpdateManifest({UpdateManifestItem("aaaaaaaa").status("noupdate"),
+                            UpdateManifestItem("bbbbbbbb")
+                                .version("3.1")
+                                .codebase("http://example.com/b_3.1.crx"),
+                            UpdateManifestItem("aaaaaaaa").status("noupdate"),
+                            UpdateManifestItem("aaaaaaaa")
+                                .version("2.0")
+                                .codebase("http://example.com/a_2.0.crx")}));
 
   ExpectNoError();
   ASSERT_TRUE(results());
@@ -309,28 +278,14 @@ TEST_F(ExtensionUpdateManifestTest, Duplicates) {
 }
 
 TEST_F(ExtensionUpdateManifestTest, GroupByID) {
-  TestParseUpdateManifest(
-      "<?xml version='1.0' encoding='UTF-8'?>"
-      "<gupdate xmlns='http://www.google.com/update2/response' protocol='2.0'>"
-      " <app appid='aaaaaaaa'>"
-      "  <updatecheck status='noupdate' />"
-      " </app>"
-      " <app appid='bbbbbbbb'>"
-      "  <updatecheck status='noupdate' />"
-      " </app>"
-      " <app appid='aaaaaaaa'>"
-      "  <updatecheck status='noupdate' />"
-      " </app>"
-      " <app appid='bbbbbbbb'>"
-      "  <updatecheck status='noupdate' />"
-      " </app>"
-      " <app appid='cccccccc'>"
-      "  <updatecheck status='noupdate' />"
-      " </app>"
-      " <app appid='aaaaaaaa'>"
-      "  <updatecheck status='noupdate' />"
-      " </app>"
-      "</gupdate>");
+  TestParseUpdateManifest(CreateUpdateManifest({
+      UpdateManifestItem("aaaaaaaa").status("noupdate"),
+      UpdateManifestItem("bbbbbbbb").status("noupdate"),
+      UpdateManifestItem("aaaaaaaa").status("noupdate"),
+      UpdateManifestItem("bbbbbbbb").status("noupdate"),
+      UpdateManifestItem("cccccccc").status("noupdate"),
+      UpdateManifestItem("aaaaaaaa").status("noupdate"),
+  }));
 
   ExpectNoError();
   ASSERT_TRUE(results());
