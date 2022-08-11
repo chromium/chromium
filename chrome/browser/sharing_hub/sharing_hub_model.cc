@@ -208,7 +208,7 @@ void SharingHubModel::PopulateFirstPartyActions() {
   first_party_action_list_.emplace_back(
       IDC_SEND_TAB_TO_SELF,
       l10n_util::GetStringUTF16(IDS_CONTEXT_MENU_SEND_TAB_TO_SELF),
-      &kSendTabToSelfIcon, true, gfx::ImageSkia(),
+      &kLaptopAndSmartphoneIcon, true, gfx::ImageSkia(),
       "SharingHubDesktop.SendTabToSelfSelected");
 
   first_party_action_list_.emplace_back(

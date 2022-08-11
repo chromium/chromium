@@ -209,8 +209,8 @@ std::unique_ptr<views::ImageView> GetIconImageViewByName(
   if (icon_str == "empty")
     return ImageViewFromVectorIcon(omnibox::kHttpIcon);
 
-  if (icon_str == "fingerprint")
-    return ImageViewFromVectorIcon(kFingerprintIcon);
+  if (icon_str == "device")
+    return ImageViewFromVectorIcon(kLaptopAndSmartphoneIcon);
 
   if (icon_str == "google") {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

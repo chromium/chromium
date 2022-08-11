@@ -25,7 +25,7 @@ namespace send_tab_to_self {
 
 SendTabToSelfToolbarIconView::SendTabToSelfToolbarIconView(
     BrowserView* browser_view)
-    : ImageView(ui::ImageModel::FromVectorIcon(kSendTabToSelfIcon,
+    : ImageView(ui::ImageModel::FromVectorIcon(kLaptopAndSmartphoneIcon,
                                                ui::kColorIcon,
                                                gfx::kFaviconSize)),
       browser_(browser_view->browser()),

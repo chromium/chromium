@@ -1840,11 +1840,11 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSuggestions) {
   // Return a WebAuthn credential.
   const std::string kId = "abcd";
   const std::u16string kName = u"nadeshiko@example.com";
-  const std::u16string kDisplayName = u"Nadeshiko Kagamihara";
-  autofill::Suggestion webauthn_credential(kDisplayName);
+  const std::u16string kAuthenticator = u"Use device sign-in";
+  autofill::Suggestion webauthn_credential(kName);
   webauthn_credential.frontend_id = autofill::POPUP_ITEM_ID_WEBAUTHN_CREDENTIAL;
   webauthn_credential.payload = kId;
-  webauthn_credential.label = kName;
+  webauthn_credential.label = kAuthenticator;
   ON_CALL(webauthn_credentials_delegate, IsWebAuthnAutofillEnabled)
       .WillByDefault(Return(true));
   EXPECT_CALL(client, GetWebAuthnCredentialsDelegate)
@@ -1874,8 +1874,8 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSuggestions) {
   EXPECT_EQ(absl::get<std::string>(open_args.suggestions[0].payload), kId);
   EXPECT_EQ(open_args.suggestions[0].frontend_id,
             autofill::POPUP_ITEM_ID_WEBAUTHN_CREDENTIAL);
-  EXPECT_EQ(open_args.suggestions[0].main_text.value, kDisplayName);
-  EXPECT_EQ(open_args.suggestions[0].label, kName);
+  EXPECT_EQ(open_args.suggestions[0].main_text.value, kName);
+  EXPECT_EQ(open_args.suggestions[0].label, kAuthenticator);
   testing::Mock::VerifyAndClearExpectations(client.mock_driver());
 
   // Check that preview of the "username" (i.e. the credential name) works.
@@ -1927,9 +1927,8 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSignInWithAnotherDevice) {
                   autofill::POPUP_ITEM_ID_ALL_SAVED_PASSWORDS_ENTRY)));
 
   // Check that the button shows the correct text.
-  // TODO(crbug.com/1329958): replace with a resource ID when i18n'd.
   const std::u16string kSignInWithAnotherDeviceText =
-      u"Sign in with another device…";
+      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USE_DEVICE_PASSKEY);
   EXPECT_EQ(open_args.suggestions[1].main_text.value,
             kSignInWithAnotherDeviceText);
 

@@ -63,6 +63,10 @@ std::vector<std::u16string> GetUsernamesForRealm(
     const std::string& signon_realm,
     bool is_using_account_store);
 
+// Returns the resource identifier for the label describing the platform
+// authenticator, e.g. "Use TouchID".
+int GetPlatformAuthenticatorLabel();
+
 }  // namespace password_manager
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_UI_UTILS_H_

@@ -27,8 +27,6 @@ class ChromeWebAuthnCredentialsDelegate
       delete;
   ChromeWebAuthnCredentialsDelegate operator=(
       const ChromeWebAuthnCredentialsDelegate&) = delete;
-  ChromeWebAuthnCredentialsDelegate(ChromeWebAuthnCredentialsDelegate&&) =
-      delete;
 
   // password_manager::WebAuthnCredentialsDelegate:
   bool IsWebAuthnAutofillEnabled() const override;

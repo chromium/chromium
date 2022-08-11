@@ -9,6 +9,8 @@
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
+#include "components/password_manager/core/browser/password_ui_utils.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/common/content_features.h"
 #include "device/fido/discoverable_credential_metadata.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -113,18 +115,15 @@ void ChromeWebAuthnCredentialsDelegate::OnCredentialsReceived(
   std::vector<autofill::Suggestion> suggestions;
   for (const auto& credential : credentials) {
     std::u16string name;
-    if (credential.user.display_name &&
-        !credential.user.display_name->empty()) {
-      name = base::UTF8ToUTF16(*credential.user.display_name);
+    if (credential.user.name && !credential.user.name->empty()) {
+      name = base::UTF8ToUTF16(*credential.user.name);
     } else {
-      // TODO(crbug.com/1329958): i18n this string.
-      name = u"Unknown account";
+      name = l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_EMPTY_LOGIN);
     }
     autofill::Suggestion suggestion(std::move(name));
-    if (credential.user.name) {
-      suggestion.label = base::UTF8ToUTF16(*credential.user.name);
-    }
-    suggestion.icon = "fingerprint";
+    suggestion.label = l10n_util::GetStringUTF16(
+        password_manager::GetPlatformAuthenticatorLabel());
+    suggestion.icon = "globeIcon";
     suggestion.frontend_id = autofill::POPUP_ITEM_ID_WEBAUTHN_CREDENTIAL;
     suggestion.payload = base::Base64Encode(credential.cred_id);
     suggestions.push_back(std::move(suggestion));

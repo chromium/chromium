@@ -17,6 +17,7 @@
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/password_manager/core/browser/password_ui_utils.h"
 #include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/public_key_credential_user_entity.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -112,7 +113,7 @@ class ChromeWebAuthnCredentialsDelegateTest
 #if !BUILDFLAG(IS_ANDROID)
     dialog_model()->StartFlow(
         AuthenticatorRequestDialogModel::TransportAvailabilityInfo(),
-        /*use_location_bar_bubble=*/true, /*prefer_native_api=*/false);
+        /*is_conditional_mediation=*/true, /*prefer_native_api=*/false);
     dialog_model()->ReplaceCredListForTesting(std::move(creds));
 #else
     delegate_->OnWebAuthnRequestPending(
@@ -152,6 +153,8 @@ class ChromeWebAuthnCredentialsDelegateTest
 // Testing retrieving suggestions when there are 2 public key credentials
 // present.
 TEST_F(ChromeWebAuthnCredentialsDelegateTest, RetrieveCredentials) {
+  const std::u16string kPlatformAuthenticatorLabel = l10n_util::GetStringUTF16(
+      password_manager::GetPlatformAuthenticatorLabel());
   std::vector<device::DiscoverableCredentialMetadata> users;
   users.emplace_back(
       kRpId, CredId1(),
@@ -169,10 +172,10 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest, RetrieveCredentials) {
 
   auto suggestions = credentials_delegate_->GetWebAuthnSuggestions();
   EXPECT_EQ(suggestions.size(), 2u);
-  EXPECT_EQ(suggestions[0].main_text.value, base::UTF8ToUTF16(DisplayName1()));
-  EXPECT_EQ(suggestions[0].label, base::UTF8ToUTF16(UserName1()));
-  EXPECT_EQ(suggestions[1].main_text.value, base::UTF8ToUTF16(DisplayName2()));
-  EXPECT_EQ(suggestions[1].label, base::UTF8ToUTF16(UserName2()));
+  EXPECT_EQ(suggestions[0].main_text.value, base::UTF8ToUTF16(UserName1()));
+  EXPECT_EQ(suggestions[0].label, kPlatformAuthenticatorLabel);
+  EXPECT_EQ(suggestions[1].main_text.value, base::UTF8ToUTF16(UserName2()));
+  EXPECT_EQ(suggestions[1].label, kPlatformAuthenticatorLabel);
 }
 
 // Testing retrieving suggestions when there are no public key credentials
@@ -187,45 +190,26 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest,
 }
 
 // Testing retrieving suggestions when there is a public key credential present
-// with no display name.
-TEST_F(ChromeWebAuthnCredentialsDelegateTest,
-       RetrieveCredentialsWithEmptyDisplayName) {
-  std::vector<device::DiscoverableCredentialMetadata> users;
-  users.emplace_back(kRpId, CredId1(),
-                     device::PublicKeyCredentialUserEntity(
-                         UserId1(), UserName1(), std::string(), absl::nullopt));
-
-  SetCredList(users);
-
-  credentials_delegate_->RetrieveWebAuthnSuggestions(base::BindOnce([]() {}));
-  task_environment()->RunUntilIdle();
-
-  auto suggestions = credentials_delegate_->GetWebAuthnSuggestions();
-  std::u16string error_string = u"Unknown account";
-  EXPECT_EQ(suggestions.size(), 1u);
-  EXPECT_EQ(suggestions[0].main_text.value, error_string);
-  EXPECT_EQ(suggestions[0].label, base::UTF8ToUTF16(UserName1()));
-}
-
-// Testing retrieving suggestions when there is a public key credential present
 // with missing user name.
 TEST_F(ChromeWebAuthnCredentialsDelegateTest,
        RetrieveCredentialWithNoUserName) {
+  const std::u16string kErrorLabel =
+      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_EMPTY_LOGIN);
+  const std::u16string kPlatformAuthenticatorLabel = l10n_util::GetStringUTF16(
+      password_manager::GetPlatformAuthenticatorLabel());
   std::vector<device::DiscoverableCredentialMetadata> users;
   users.emplace_back(
       kRpId, CredId1(),
       device::PublicKeyCredentialUserEntity(UserId1(), absl::nullopt,
                                             DisplayName1(), absl::nullopt));
-
   SetCredList(users);
-
   credentials_delegate_->RetrieveWebAuthnSuggestions(base::BindOnce([]() {}));
   task_environment()->RunUntilIdle();
 
   auto suggestions = credentials_delegate_->GetWebAuthnSuggestions();
   EXPECT_EQ(suggestions.size(), 1u);
-  EXPECT_EQ(suggestions[0].main_text.value, base::UTF8ToUTF16(DisplayName1()));
-  EXPECT_EQ(suggestions[0].label, std::u16string());
+  EXPECT_EQ(suggestions[0].main_text.value, kErrorLabel);
+  EXPECT_EQ(suggestions[0].label, kPlatformAuthenticatorLabel);
 }
 
 // Testing selection of a credential.

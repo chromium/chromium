@@ -1929,8 +1929,8 @@ void OmniboxViewViews::MaybeAddSendTabToSelfItem(
       index, IDC_SEND_TAB_TO_SELF,
       l10n_util::GetStringUTF16(IDS_CONTEXT_MENU_SEND_TAB_TO_SELF));
 #if !BUILDFLAG(IS_MAC)
-  menu_contents->SetIcon(index,
-                         ui::ImageModel::FromVectorIcon(kSendTabToSelfIcon));
+  menu_contents->SetIcon(
+      index, ui::ImageModel::FromVectorIcon(kLaptopAndSmartphoneIcon));
 #endif
   menu_contents->InsertSeparatorAt(++index, ui::NORMAL_SEPARATOR);
 }

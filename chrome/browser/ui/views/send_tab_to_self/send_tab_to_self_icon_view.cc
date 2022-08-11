@@ -106,7 +106,7 @@ void SendTabToSelfIconView::OnExecuting(
     PageActionIconView::ExecuteSource execute_source) {}
 
 const gfx::VectorIcon& SendTabToSelfIconView::GetVectorIcon() const {
-  return kSendTabToSelfIcon;
+  return kLaptopAndSmartphoneIcon;
 }
 
 std::u16string SendTabToSelfIconView::GetTextForTooltipAndAccessibleName()
