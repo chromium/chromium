@@ -16,14 +16,12 @@ namespace {
 // Creates suggestions from dictionary values in |list| and adds them to
 // |suggestions|. Returns true on success, false if anything went wrong.
 bool AddSuggestionsFromListValue(int remote_category_id,
-                                 const base::Value& list,
+                                 const base::Value::List& list,
                                  RemoteSuggestion::PtrVector* suggestions,
                                  const base::Time& fetch_time) {
-  DCHECK(list.is_list());
-
-  for (const base::Value& value : list.GetListDeprecated()) {
-    const base::DictionaryValue* dict = nullptr;
-    if (!value.GetAsDictionary(&dict)) {
+  for (const base::Value& value : list) {
+    const base::Value::Dict* dict = value.GetIfDict();
+    if (!dict) {
       return false;
     }
 
@@ -83,29 +81,30 @@ CategoryInfo BuildRemoteCategoryInfo(const std::u16string& title,
 bool JsonToCategories(const base::Value& parsed,
                       FetchedCategoriesVector* categories,
                       const base::Time& fetch_time) {
-  const base::DictionaryValue* top_dict = nullptr;
-  if (!parsed.GetAsDictionary(&top_dict)) {
+  const base::Value::Dict* top_dict = parsed.GetIfDict();
+  if (!top_dict) {
     return false;
   }
 
-  const base::ListValue* categories_value = nullptr;
-  if (!top_dict->GetList("categories", &categories_value)) {
+  const base::Value::List* categories_value = top_dict->FindList("categories");
+  if (!categories_value) {
     return false;
   }
 
-  for (const base::Value& v : categories_value->GetListDeprecated()) {
+  for (const base::Value& v : *categories_value) {
     if (!v.is_dict())
       return false;
+    const base::Value::Dict& d = v.GetDict();
 
-    const std::string* utf8_title = v.FindStringKey("localizedTitle");
-    int remote_category_id = v.FindIntKey("id").value_or(-1);
+    const std::string* utf8_title = d.FindString("localizedTitle");
+    int remote_category_id = d.FindInt("id").value_or(-1);
 
     if (!utf8_title || remote_category_id <= 0) {
       return false;
     }
 
     RemoteSuggestion::PtrVector suggestions;
-    const base::Value* suggestions_list = v.FindListKey("suggestions");
+    const base::Value::List* suggestions_list = d.FindList("suggestions");
     // Absence of a list of suggestions is treated as an empty list, which
     // is permissible.
     if (suggestions_list &&
@@ -121,7 +120,7 @@ bool JsonToCategories(const base::Value& parsed,
       // TODO(tschumann): Right now, the backend does not yet populate this
       // field. Make it mandatory once the backends provide it.
       bool allow_fetching_more_results =
-          v.FindBoolKey("allowFetchingMoreResults").value_or(false);
+          d.FindBool("allowFetchingMoreResults").value_or(false);
       categories->push_back(FetchedCategory(
           category, BuildRemoteCategoryInfo(base::UTF8ToUTF16(*utf8_title),
                                             allow_fetching_more_results)));

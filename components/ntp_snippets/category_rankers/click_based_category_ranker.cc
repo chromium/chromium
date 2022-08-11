@@ -330,13 +330,13 @@ void ClickBasedCategoryRanker::AppendKnownCategory(
 
 namespace {
 
-base::Time ParseLastDismissedDate(const base::DictionaryValue& value) {
+base::Time ParseLastDismissedDate(const base::Value::Dict& value) {
   // We don't expect the last-dismissed value to be present in all cases (we
   // added this after the fact).
-  std::string serialized_value;
+  const std::string* serialized_value = value.FindString(kLastDismissedKey);
   int64_t parsed_value;
-  if (value.GetString(kLastDismissedKey, &serialized_value) &&
-      base::StringToInt64(serialized_value, &parsed_value)) {
+  if (serialized_value &&
+      base::StringToInt64(*serialized_value, &parsed_value)) {
     return DeserializeTime(parsed_value);
   }
   return base::Time();
@@ -354,19 +354,19 @@ bool ClickBasedCategoryRanker::ReadOrderFromPrefs(
   }
 
   for (const base::Value& value : list) {
-    const base::DictionaryValue* dictionary;
-    if (!value.GetAsDictionary(&dictionary)) {
+    const base::Value::Dict* dictionary = value.GetIfDict();
+    if (!dictionary) {
       LOG(DFATAL) << "Failed to parse category data from prefs param "
                   << prefs::kClickBasedCategoryRankerOrderWithClicks
                   << " into dictionary.";
       return false;
     }
-    absl::optional<int> category_id = dictionary->FindIntKey(kCategoryIdKey);
+    absl::optional<int> category_id = dictionary->FindInt(kCategoryIdKey);
     if (!category_id) {
       LOG(DFATAL) << "Dictionary does not have '" << kCategoryIdKey << "' key.";
       return false;
     }
-    absl::optional<int> clicks = dictionary->FindIntKey(kClicksKey);
+    absl::optional<int> clicks = dictionary->FindInt(kClicksKey);
     if (!clicks) {
       LOG(DFATAL) << "Dictionary does not have '" << kClicksKey << "' key.";
       return false;

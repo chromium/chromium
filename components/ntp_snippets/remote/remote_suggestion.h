@@ -12,13 +12,10 @@
 #include <vector>
 
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/ntp_snippets/content_suggestion.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
-
-namespace base {
-class DictionaryValue;
-}  // namespace base
 
 namespace ntp_snippets {
 
@@ -41,7 +38,7 @@ class RemoteSuggestion {
   // Suggestions. Returns a null pointer if the dictionary doesn't correspond to
   // a valid suggestion.
   static std::unique_ptr<RemoteSuggestion>
-  CreateFromContentSuggestionsDictionary(const base::DictionaryValue& dict,
+  CreateFromContentSuggestionsDictionary(const base::Value::Dict& dict,
                                          int remote_category_id,
                                          const base::Time& fetch_date);
 

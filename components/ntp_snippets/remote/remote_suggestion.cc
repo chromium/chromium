@@ -18,10 +18,10 @@
 namespace {
 
 // dict.Get() specialization for base::Time values
-bool GetTimeValue(const base::Value& dict,
+bool GetTimeValue(const base::Value::Dict& dict,
                   const std::string& key,
                   base::Time* time) {
-  const std::string* time_value = dict.FindStringKey(key);
+  const std::string* time_value = dict.FindString(key);
   if (!time_value) {
     return false;
   }
@@ -29,8 +29,10 @@ bool GetTimeValue(const base::Value& dict,
 }
 
 // dict.Get() specialization for GURL values
-bool GetURLValue(const base::Value& dict, const std::string& key, GURL* url) {
-  const std::string* spec = dict.FindStringKey(key);
+bool GetURLValue(const base::Value::Dict& dict,
+                 const std::string& key,
+                 GURL* url) {
+  const std::string* spec = dict.FindString(key);
   if (!spec) {
     return false;
   }
@@ -39,10 +41,10 @@ bool GetURLValue(const base::Value& dict, const std::string& key, GURL* url) {
 }
 
 // dict.Get() specialization for std::string values
-bool GetStringValue(const base::Value& dict,
+bool GetStringValue(const base::Value::Dict& dict,
                     const std::string& key,
                     std::string* str) {
-  const std::string* str_value = dict.FindStringKey(key);
+  const std::string* str_value = dict.FindString(key);
   if (!str_value) {
     return false;
   }
@@ -76,15 +78,15 @@ RemoteSuggestion::~RemoteSuggestion() = default;
 // static
 std::unique_ptr<RemoteSuggestion>
 RemoteSuggestion::CreateFromContentSuggestionsDictionary(
-    const base::DictionaryValue& dict,
+    const base::Value::Dict& dict,
     int remote_category_id,
     const base::Time& fetch_date) {
-  const base::ListValue* ids;
-  if (!dict.GetList("ids", &ids)) {
+  const base::Value::List* ids = dict.FindList("ids");
+  if (!ids) {
     return nullptr;
   }
   std::vector<std::string> parsed_ids;
-  for (const base::Value& value : ids->GetListDeprecated()) {
+  for (const base::Value& value : *ids) {
     if (!value.is_string()) {
       return nullptr;
     }
@@ -113,7 +115,7 @@ RemoteSuggestion::CreateFromContentSuggestionsDictionary(
   // TODO(sfiera): also favicon URL.
 
   const base::Value* image_dominant_color_value =
-      dict.FindKey("imageDominantColor");
+      dict.Find("imageDominantColor");
   if (image_dominant_color_value) {
     // The field is defined as fixed32 in the proto (effectively 32 bits
     // unsigned int), however, JSON does not support unsigned types. As a result
@@ -129,14 +131,14 @@ RemoteSuggestion::CreateFromContentSuggestionsDictionary(
     snippet->image_dominant_color_ = image_dominant_color;
   }
 
-  absl::optional<double> score = dict.FindDoubleKey("score");
+  absl::optional<double> score = dict.FindDouble("score");
   if (score)
     snippet->score_ = *score;
 
-  const base::DictionaryValue* notification_info = nullptr;
-  if (dict.GetDictionary("notificationInfo", &notification_info)) {
+  if (const base::Value::Dict* notification_info =
+          dict.FindDict("notificationInfo")) {
     absl::optional<bool> should_notify =
-        notification_info->FindBoolKey("shouldNotify");
+        notification_info->FindBool("shouldNotify");
     if (should_notify) {
       snippet->should_notify_ = should_notify.value();
       if (snippet->should_notify_) {
