@@ -500,42 +500,40 @@ void DownloadBubbleRowView::OnMainButtonPressed() {
 }
 
 void DownloadBubbleRowView::UpdateButtons() {
-  if (download::IsDownloadBubbleV2Enabled(browser_->profile())) {
-    resume_action_->SetVisible(false);
-    pause_action_->SetVisible(false);
-    open_when_complete_action_->SetVisible(false);
-    cancel_action_->SetVisible(false);
-    show_in_folder_action_->SetVisible(false);
-    open_when_complete_action_->SetVisible(false);
-    for (const auto& action : ui_info_.quick_actions) {
-      views::ImageButton* action_button =
-          GetActionButtonForCommand(action.command);
-      action_button->SetImageModel(views::Button::STATE_NORMAL,
-                                   ui::ImageModel::FromVectorIcon(
-                                       *(action.icon), ui::kColorIcon,
+  resume_action_->SetVisible(false);
+  pause_action_->SetVisible(false);
+  open_when_complete_action_->SetVisible(false);
+  cancel_action_->SetVisible(false);
+  show_in_folder_action_->SetVisible(false);
+  open_when_complete_action_->SetVisible(false);
+  for (const auto& action : ui_info_.quick_actions) {
+    views::ImageButton* action_button =
+        GetActionButtonForCommand(action.command);
+    action_button->SetImageModel(
+        views::Button::STATE_NORMAL,
+        ui::ImageModel::FromVectorIcon(*(action.icon), ui::kColorIcon,
                                        GetLayoutConstant(DOWNLOAD_ICON_SIZE)));
-      action_button->SetAccessibleName(action.hover_text);
-      action_button->SetTooltipText(action.hover_text);
-      action_button->SetVisible(true);
-    }
-  } else {
-    cancel_button_->SetVisible(ui_info_.primary_button_command ==
-                               DownloadCommands::CANCEL);
-    discard_button_->SetVisible(ui_info_.primary_button_command ==
-                                DownloadCommands::DISCARD);
-    keep_button_->SetVisible(ui_info_.primary_button_command ==
-                             DownloadCommands::KEEP);
-    scan_button_->SetVisible(ui_info_.primary_button_command ==
-                             DownloadCommands::DEEP_SCAN);
-    open_now_button_->SetVisible(ui_info_.primary_button_command ==
-                                 DownloadCommands::BYPASS_DEEP_SCANNING);
-    resume_button_->SetVisible(ui_info_.primary_button_command ==
-                               DownloadCommands::RESUME);
-    review_button_->SetVisible(ui_info_.primary_button_command ==
-                               DownloadCommands::REVIEW);
-    retry_button_->SetVisible(ui_info_.primary_button_command ==
-                              DownloadCommands::RETRY);
+    action_button->SetAccessibleName(action.hover_text);
+    action_button->SetTooltipText(action.hover_text);
+    action_button->SetVisible(true);
   }
+
+  cancel_button_->SetVisible(ui_info_.primary_button_command ==
+                             DownloadCommands::CANCEL);
+  discard_button_->SetVisible(ui_info_.primary_button_command ==
+                              DownloadCommands::DISCARD);
+  keep_button_->SetVisible(ui_info_.primary_button_command ==
+                           DownloadCommands::KEEP);
+  scan_button_->SetVisible(ui_info_.primary_button_command ==
+                           DownloadCommands::DEEP_SCAN);
+  open_now_button_->SetVisible(ui_info_.primary_button_command ==
+                               DownloadCommands::BYPASS_DEEP_SCANNING);
+  resume_button_->SetVisible(ui_info_.primary_button_command ==
+                             DownloadCommands::RESUME);
+  review_button_->SetVisible(ui_info_.primary_button_command ==
+                             DownloadCommands::REVIEW);
+  retry_button_->SetVisible(ui_info_.primary_button_command ==
+                            DownloadCommands::RETRY);
 
   subpage_icon_->SetVisible(ui_info_.has_subpage);
   subpage_icon_->SetBorder(views::CreateEmptyBorder(

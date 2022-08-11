@@ -1136,36 +1136,51 @@ DownloadUIModel::GetBubbleUIInfoForInProgressOrComplete(
     case download::DOWNLOAD_DANGER_TYPE_MAX:
       break;
   }
+
+  // Add primary button/quick actions for in-progress (paused or active), and
+  // completed downloads
   bool has_progress_bar = GetState() == DownloadItem::IN_PROGRESS;
   BubbleUIInfo bubble_ui_info = DownloadUIModel::BubbleUIInfo(has_progress_bar);
   if (has_progress_bar) {
     if (IsPaused()) {
-      bubble_ui_info.AddPrimaryButton(DownloadCommands::Command::RESUME);
-      bubble_ui_info.AddQuickAction(
-          DownloadCommands::Command::RESUME,
-          l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_RESUME_QUICK_ACTION),
-          &vector_icons::kPlayArrowIcon);
+      if (is_download_bubble_v2) {
+        bubble_ui_info.AddQuickAction(
+            DownloadCommands::Command::RESUME,
+            l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_RESUME_QUICK_ACTION),
+            &vector_icons::kPlayArrowIcon);
+        bubble_ui_info.AddQuickAction(
+            DownloadCommands::Command::CANCEL,
+            l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_CANCEL_QUICK_ACTION),
+            &vector_icons::kCloseIcon);
+      } else {
+        bubble_ui_info.AddPrimaryButton(DownloadCommands::Command::RESUME);
+      }
     } else {
-      bubble_ui_info.AddPrimaryButton(DownloadCommands::Command::CANCEL);
-      bubble_ui_info.AddQuickAction(
-          DownloadCommands::Command::PAUSE,
-          l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_PAUSE_QUICK_ACTION),
-          &vector_icons::kPauseIcon);
+      if (is_download_bubble_v2) {
+        bubble_ui_info.AddQuickAction(
+            DownloadCommands::Command::PAUSE,
+            l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_PAUSE_QUICK_ACTION),
+            &vector_icons::kPauseIcon);
+        bubble_ui_info.AddQuickAction(
+            DownloadCommands::Command::CANCEL,
+            l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_CANCEL_QUICK_ACTION),
+            &vector_icons::kCloseIcon);
+      } else {
+        bubble_ui_info.AddPrimaryButton(DownloadCommands::Command::CANCEL);
+      }
     }
-    bubble_ui_info.AddQuickAction(
-        DownloadCommands::Command::CANCEL,
-        l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_CANCEL_QUICK_ACTION),
-        &vector_icons::kCloseIcon);
   } else {
-    bubble_ui_info.AddQuickAction(
-        DownloadCommands::Command::OPEN_WHEN_COMPLETE,
-        l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_OPEN_QUICK_ACTION),
-        &vector_icons::kOpenInNewIcon);
-    bubble_ui_info.AddQuickAction(
-        DownloadCommands::Command::SHOW_IN_FOLDER,
-        l10n_util::GetStringUTF16(
-            IDS_DOWNLOAD_BUBBLE_SHOW_IN_FOLDER_QUICK_ACTION),
-        &vector_icons::kFolderIcon);
+    if (is_download_bubble_v2) {
+      bubble_ui_info.AddQuickAction(
+          DownloadCommands::Command::OPEN_WHEN_COMPLETE,
+          l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_OPEN_QUICK_ACTION),
+          &vector_icons::kOpenInNewIcon);
+      bubble_ui_info.AddQuickAction(
+          DownloadCommands::Command::SHOW_IN_FOLDER,
+          l10n_util::GetStringUTF16(
+              IDS_DOWNLOAD_BUBBLE_SHOW_IN_FOLDER_QUICK_ACTION),
+          &vector_icons::kFolderIcon);
+    }
   }
   return bubble_ui_info;
 }

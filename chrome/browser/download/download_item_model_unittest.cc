@@ -740,6 +740,86 @@ TEST_F(DownloadItemModelTest, CompletedBubbleWarningStatusText) {
 
 #if !BUILDFLAG(IS_ANDROID)
 
+TEST_F(DownloadItemModelTest, InProgressOrCompletedBubbleUIInfo_V2On) {
+  SetupDownloadItemDefaults();
+
+  SetupCompletedDownloadItem(base::Hours(1));
+  DownloadUIModel::BubbleUIInfo bubble_ui_info =
+      model().GetBubbleUIInfo(/*is_download_bubble_v2=*/true);
+  std::vector<DownloadCommands::Command> quick_action_commands;
+  for (auto quick_action : bubble_ui_info.quick_actions) {
+    quick_action_commands.push_back(quick_action.command);
+  }
+  EXPECT_EQ(quick_action_commands,
+            std::vector({DownloadCommands::Command::OPEN_WHEN_COMPLETE,
+                         DownloadCommands::Command::SHOW_IN_FOLDER}));
+  EXPECT_FALSE(bubble_ui_info.primary_button_command.has_value());
+
+  Mock::VerifyAndClearExpectations(&item());
+  Mock::VerifyAndClearExpectations(&model());
+
+  ON_CALL(item(), GetState())
+      .WillByDefault(Return(download::DownloadItem::IN_PROGRESS));
+  EXPECT_CALL(item(), IsPaused()).WillRepeatedly(Return(true));
+  bubble_ui_info = model().GetBubbleUIInfo(/*is_download_bubble_v2=*/true);
+  quick_action_commands = {};
+  for (auto quick_action : bubble_ui_info.quick_actions) {
+    quick_action_commands.push_back(quick_action.command);
+  }
+  EXPECT_EQ(quick_action_commands,
+            std::vector({DownloadCommands::Command::RESUME,
+                         DownloadCommands::Command::CANCEL}));
+  EXPECT_FALSE(bubble_ui_info.primary_button_command.has_value());
+
+  Mock::VerifyAndClearExpectations(&item());
+  Mock::VerifyAndClearExpectations(&model());
+
+  EXPECT_CALL(item(), IsPaused()).WillRepeatedly(Return(false));
+  bubble_ui_info = model().GetBubbleUIInfo(/*is_download_bubble_v2=*/true);
+  quick_action_commands = {};
+  for (auto quick_action : bubble_ui_info.quick_actions) {
+    quick_action_commands.push_back(quick_action.command);
+  }
+  EXPECT_EQ(quick_action_commands,
+            std::vector({DownloadCommands::Command::PAUSE,
+                         DownloadCommands::Command::CANCEL}));
+  EXPECT_FALSE(bubble_ui_info.primary_button_command.has_value());
+}
+
+TEST_F(DownloadItemModelTest, InProgressOrCompletedBubbleUIInfo_V2Off) {
+  SetupDownloadItemDefaults();
+
+  SetupCompletedDownloadItem(base::Hours(1));
+  DownloadUIModel::BubbleUIInfo bubble_ui_info =
+      model().GetBubbleUIInfo(/*is_download_bubble_v2=*/false);
+  std::vector<DownloadCommands::Command> quick_action_commands;
+  for (auto quick_action : bubble_ui_info.quick_actions) {
+    quick_action_commands.push_back(quick_action.command);
+  }
+  EXPECT_EQ(quick_action_commands, std::vector<DownloadCommands::Command>());
+  EXPECT_FALSE(bubble_ui_info.primary_button_command.has_value());
+
+  Mock::VerifyAndClearExpectations(&item());
+  Mock::VerifyAndClearExpectations(&model());
+
+  ON_CALL(item(), GetState())
+      .WillByDefault(Return(download::DownloadItem::IN_PROGRESS));
+  EXPECT_CALL(item(), IsPaused()).WillRepeatedly(Return(true));
+  bubble_ui_info = model().GetBubbleUIInfo(/*is_download_bubble_v2=*/false);
+  EXPECT_TRUE(bubble_ui_info.quick_actions.empty());
+  EXPECT_EQ(bubble_ui_info.primary_button_command.value(),
+            DownloadCommands::Command::RESUME);
+
+  Mock::VerifyAndClearExpectations(&item());
+  Mock::VerifyAndClearExpectations(&model());
+
+  EXPECT_CALL(item(), IsPaused()).WillRepeatedly(Return(false));
+  bubble_ui_info = model().GetBubbleUIInfo(/*is_download_bubble_v2=*/false);
+  EXPECT_TRUE(bubble_ui_info.quick_actions.empty());
+  EXPECT_EQ(bubble_ui_info.primary_button_command.value(),
+            DownloadCommands::Command::CANCEL);
+}
+
 TEST_F(DownloadItemModelTest, DangerousWarningBubbleUIInfo_V2On) {
   SetupCompletedDownloadItem(base::Hours(1));
   const struct DangerTypeTestCase {
