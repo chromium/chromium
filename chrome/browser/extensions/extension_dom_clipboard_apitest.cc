@@ -10,19 +10,24 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/browser/background_script_executor.h"
+#include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "url/gurl.h"
 
+namespace extensions {
+
 namespace {
 
-class ClipboardApiTest : public extensions::ExtensionApiTest {
+class ClipboardApiTest : public ExtensionApiTest {
  public:
   void SetUpOnMainThread() override {
-    extensions::ExtensionApiTest::SetUpOnMainThread();
+    ExtensionApiTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
   }
 
@@ -119,6 +124,61 @@ IN_PROC_BROWSER_TEST_F(ClipboardApiTest, MAYBE_ExtensionNoPermission) {
       << message_;
 }
 
+// Regression test for crbug.com/1051198
+IN_PROC_BROWSER_TEST_F(ClipboardApiTest, BrowserPermissionCheck) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  content::RenderFrameHost* rfh = ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/english_page.html"));
+  // No extensions are installed. Clipboard access should be disallowed.
+  EXPECT_FALSE(
+      content::GetContentClientForTesting()->browser()->IsClipboardPasteAllowed(
+          rfh));
+
+  static constexpr char kManifest[] =
+      R"({
+         "name": "Ext",
+         "manifest_version": 3,
+         "version": "1",
+         "background": {"service_worker": "background.js"},
+         "permissions": ["scripting", "clipboardRead"],
+         "host_permissions": ["<all_urls>"]
+       })";
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), "// blank ");
+
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  // Even with an extension installed, clipboard access is disallowed for
+  // the page.
+  EXPECT_FALSE(
+      content::GetContentClientForTesting()->browser()->IsClipboardPasteAllowed(
+          rfh));
+
+  // Inject a script on the page through the extension.
+  static constexpr char kScript[] =
+      R"(
+       (async () => {
+         let tabs = await chrome.tabs.query({active: true});
+         await chrome.scripting.executeScript(
+             {target: {tabId: tabs[0].id},
+             func: function() {}} );
+         chrome.test.sendScriptResult('done');
+       })();)";
+
+  // This will execute the script and wait for it to complete, ensuring
+  // the browser is aware of the executing content script.
+  BackgroundScriptExecutor::ExecuteScript(
+      profile(), extension->id(), kScript,
+      BackgroundScriptExecutor::ResultCapture::kSendScriptResult);
+  // Now the page should have access to the clipboard.
+  EXPECT_TRUE(
+      content::GetContentClientForTesting()->browser()->IsClipboardPasteAllowed(
+          rfh));
+}
+
 IN_PROC_BROWSER_TEST_F(ClipboardApiTest, HostedApp) {
   ASSERT_TRUE(LoadHostedApp("hosted_app", "main.html")) << message_;
 
@@ -142,3 +202,5 @@ IN_PROC_BROWSER_TEST_F(ClipboardApiTest, HostedAppNoPermission) {
   EXPECT_FALSE(ExecuteCommandInIframeInSelectedTab("copy")) << message_;
   EXPECT_FALSE(ExecuteCommandInIframeInSelectedTab("paste")) << message_;
 }
+
+}  // namespace extensions
