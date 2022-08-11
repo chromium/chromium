@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_CERT_VERIFIER_TEST_CERT_VERIFIER_SERVICE_FACTORY_H_
-#define SERVICES_CERT_VERIFIER_TEST_CERT_VERIFIER_SERVICE_FACTORY_H_
+#ifndef CONTENT_PUBLIC_TEST_TEST_CERT_VERIFIER_SERVICE_FACTORY_H_
+#define CONTENT_PUBLIC_TEST_TEST_CERT_VERIFIER_SERVICE_FACTORY_H_
 
 #include <memory>
 
 #include "base/containers/circular_deque.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/ref_counted_delete_on_sequence.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -63,14 +65,32 @@ class TestCertVerifierServiceFactoryImpl
   }
 
  private:
+  class DelegateOwner : public base::RefCountedDeleteOnSequence<DelegateOwner> {
+   public:
+    explicit DelegateOwner(
+        scoped_refptr<base::SequencedTaskRunner> owning_task_runner);
+
+    void Init(
+        mojo::PendingReceiver<cert_verifier::mojom::CertVerifierServiceFactory>
+            receiver);
+
+   private:
+    friend class base::RefCountedDeleteOnSequence<DelegateOwner>;
+    friend class base::DeleteHelper<DelegateOwner>;
+
+    ~DelegateOwner();
+
+    std::unique_ptr<CertVerifierServiceFactoryImpl> delegate_;
+  };
+
   void InitDelegate();
 
   mojo::Remote<mojom::CertVerifierServiceFactory> delegate_remote_;
-  std::unique_ptr<CertVerifierServiceFactoryImpl> delegate_;
+  scoped_refptr<DelegateOwner> delegate_;
 
   base::circular_deque<GetNewCertVerifierParams> captured_params_;
 };
 
 }  // namespace cert_verifier
 
-#endif  // SERVICES_CERT_VERIFIER_TEST_CERT_VERIFIER_SERVICE_FACTORY_H_
+#endif  // CONTENT_PUBLIC_TEST_TEST_CERT_VERIFIER_SERVICE_FACTORY_H_

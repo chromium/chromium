@@ -70,18 +70,3 @@ source_set("tests") {
     "//testing/gtest",
   ]
 }
-
-source_set("test_support") {
-  testonly = true
-
-  sources = [
-    "test_cert_verifier_service_factory.cc",
-    "test_cert_verifier_service_factory.h",
-  ]
-
-  deps = [
-    ":lib",
-    "//base",
-    "//net",
-  ]
-}

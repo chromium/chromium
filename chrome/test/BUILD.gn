@@ -299,7 +299,6 @@ static_library("test_support") {
     "//net:test_support",
     "//ppapi/buildflags",
     "//printing/buildflags",
-    "//services/cert_verifier:test_support",
     "//services/data_decoder/public/cpp:test_support",
     "//services/device/public/cpp:test_support",
     "//services/device/public/cpp/geolocation",
