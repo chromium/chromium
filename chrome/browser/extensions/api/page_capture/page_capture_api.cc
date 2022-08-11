@@ -9,31 +9,19 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/task/thread_pool.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_util.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profiles_state.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_security_policy.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_source.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/mhtml_generation_params.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/permissions/permissions_data.h"
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/chromeos/extensions/public_session_permission_helper.h"
-#include "extensions/common/permissions/api_permission_set.h"
-#endif
 
 using content::BrowserThread;
 using content::ChildProcessSecurityPolicy;
@@ -51,9 +39,6 @@ const char kTemporaryFileError[] = "Failed to create a temporary file.";
 const char kTabClosedError[] = "Cannot find the tab for this request.";
 const char kPageCaptureNotAllowed[] =
     "Don't have permissions required to capture this page.";
-#if BUILDFLAG(IS_CHROMEOS)
-const char kUserDenied[] = "User denied request.";
-#endif
 constexpr base::TaskTraits kCreateTemporaryFileTaskTraits = {
     // Requires IO.
     base::MayBlock(),
@@ -90,31 +75,6 @@ void PageCaptureSaveAsMHTMLFunction::SetTestDelegate(TestDelegate* delegate) {
 ExtensionFunction::ResponseAction PageCaptureSaveAsMHTMLFunction::Run() {
   params_ = SaveAsMHTML::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params_.get());
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // In Public Sessions, extensions (and apps) are force-installed by admin
-  // policy so the user does not get a chance to review the permissions for
-  // these extensions. This is not acceptable from a security/privacy
-  // standpoint, so when an extension uses the PageCapture API for the first
-  // time, we show the user a dialog where they can choose whether to allow
-  // the extension access to the API.
-  // TODO(https://crbug.com/1269409): This bypasses the CanCaptureCurrentPage()
-  // check below, which means we don't check certain restrictions.
-  if (profiles::ArePublicSessionRestrictionsEnabled()) {
-    WebContents* web_contents = GetWebContents();
-    if (!web_contents) {
-      return RespondNow(Error(kTabClosedError));
-    }
-
-    permission_helper::HandlePermissionRequest(
-        *extension(), {mojom::APIPermissionID::kPageCapture}, web_contents,
-        base::BindOnce(
-            &PageCaptureSaveAsMHTMLFunction::ResolvePermissionRequest,
-            this),  // Callback increments refcount.
-        permission_helper::PromptFactory());
-    return RespondLater();
-  }
-#endif
 
   std::string error;
   if (!CanCaptureCurrentPage(&error)) {
@@ -186,21 +146,6 @@ void PageCaptureSaveAsMHTMLFunction::OnServiceWorkerAck() {
   // this!!!
   Release();  // Balanced in Run()
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-void PageCaptureSaveAsMHTMLFunction::ResolvePermissionRequest(
-    const PermissionIDSet& allowed_permissions) {
-  if (allowed_permissions.ContainsID(
-          extensions::mojom::APIPermissionID::kPageCapture)) {
-    base::ThreadPool::PostTask(
-        FROM_HERE, kCreateTemporaryFileTaskTraits,
-        base::BindOnce(&PageCaptureSaveAsMHTMLFunction::CreateTemporaryFile,
-                       this));
-  } else {
-    ReturnFailure(kUserDenied);
-  }
-}
-#endif
 
 void PageCaptureSaveAsMHTMLFunction::CreateTemporaryFile() {
   bool success = base::CreateTemporaryFile(&mhtml_path_);
