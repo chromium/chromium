@@ -3678,6 +3678,18 @@
   <message name="IDS_ARC_LOW_DISK_SPACE_ERROR" desc="Android sign-in failed due to low disk space">
     Disk space is critically low. Please free up disk space.
   </message>
+  <message name="IDS_ARC_LOW_DISK_SPACE_PRE_STOP_NOTIFICATION_TITLE" desc="Title of the notification warning Android users that they are critically low on disk space">
+    Device disk space critically low
+  </message>
+  <message name="IDS_ARC_LOW_DISK_SPACE_PRE_STOP_NOTIFICATION_MESSAGE" desc="Message in the notification warning Android users that they are critically low on disk space">
+    Free up space to avoid losing access to Android.
+  </message>
+  <message name="IDS_ARC_LOW_DISK_SPACE_POST_STOP_NOTIFICATION_TITLE" desc="Title of the notification shown when Android is stopped due to low disk space">
+    Android apps were stopped
+  </message>
+  <message name="IDS_ARC_LOW_DISK_SPACE_POST_STOP_NOTIFICATION_MESSAGE" desc="Message in the notification shown when Android is stopped due to low disk space">
+    Free up disk space to launch Android apps.
+  </message>
   <message name="IDS_ARC_SIGN_IN_UNKNOWN_ERROR" desc="Android sign-in error because of unknown error">
     Something went wrong. Error code: <ph name="ERROR_CODE">$1<ex>7</ex></ph>.
   </message>

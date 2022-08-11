@@ -14,22 +14,37 @@
 namespace arc {
 
 // These thresholds are chosen based on UMA stats. (go/arcvm-virtio-blk-sparse)
-// Show a pre-warning notification if free disk space is lower than this.
-constexpr int64_t kDiskSpaceThresholdForPreWarning = 1LL << 30;  // 1GB
+// Show a pre-stop warning notification if free disk space is lower than this.
+constexpr int64_t kDiskSpaceThresholdForPreStopNotification = 1LL << 30;  // 1GB
 
-// Stop ARC and show a final warning notification if free disk space is
+// Stop ARC and show a post-stop warning notification if free disk space is
 // lower than this.
 constexpr int64_t kDiskSpaceThresholdForStoppingArc = 256LL << 20;  // 256MB
 
 // TODO(b/233030867): Choose these values based on some logic
 //                    instead of deciding them on a hunch.
 // Disk space check interval used when free disk space is lower than
-// kDiskSpaceThresholdForPreWarning.
+// kDiskSpaceThresholdForPreStopNotification.
 constexpr base::TimeDelta kDiskSpaceCheckIntervalShort = base::Seconds(1);
 
 // Disk space check interval used when free disk space is higher than
-// kDiskSpaceThresholdForPreWarning.
+// kDiskSpaceThresholdForPreStopNotification.
 constexpr base::TimeDelta kDiskSpaceCheckIntervalLong = base::Seconds(10);
+
+// A pre-stop warning notification should not be shown more than once within
+// this interval.
+// TODO(b/237040345): Finalize the value.
+constexpr base::TimeDelta kPreStopNotificationReshowInterval = base::Minutes(2);
+
+// Notifier ID of ArcDiskSpaceMonitor.
+const char kDiskSpaceMonitorNotifierId[] = "arc_disk_space_monitor";
+
+// Notification ID of the pre-stop warning notification.
+const char kLowDiskSpacePreStopNotificationId[] = "arc_low_disk_space_pre_stop";
+
+// Notification ID of the post-stop warning notification.
+const char kLowDiskSpacePostStopNotificationId[] =
+    "arc_low_disk_space_post_stop";
 
 // Monitors disk usage. Requests stopping ARC and/or shows a warning
 // notification when device's free disk space becomes lower than a threshold.
@@ -63,6 +78,14 @@ class ArcDiskSpaceMonitor : public ArcSessionManagerObserver {
 
   // Used as a callback function.
   void OnGetFreeDiskSpace(absl::optional<int64_t> reply);
+
+  // Shows a pre-stop warning notification if |is_pre_stop| is true and the
+  // same notification was not shown within kPreStopNotificationReshowInterval.
+  // Always shows a post-stop warning notification if |is_pre_stop| is false.
+  void MaybeShowNotification(bool is_pre_stop);
+
+  // The last time when a pre-stop warning notification was shown.
+  base::Time pre_stop_notification_last_shown_time_;
 
   // Used for periodically calling CheckDiskSpace().
   base::OneShotTimer timer_;

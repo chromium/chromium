@@ -10,6 +10,7 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/spaced/fake_spaced_client.h"
@@ -51,6 +52,9 @@ class ArcDiskSpaceMonitorTest : public testing::Test {
     user_manager->AddUser(account_id);
     user_manager->LoginUser(account_id);
 
+    notification_tester_ = std::make_unique<NotificationDisplayServiceTester>(
+        testing_profile_.get());
+
     // Initialize a session manager with a fake ARC session.
     arc_session_manager_ =
         CreateTestArcSessionManager(std::make_unique<ArcSessionRunner>(
@@ -71,9 +75,18 @@ class ArcDiskSpaceMonitorTest : public testing::Test {
   void TearDown() override {
     arc_disk_space_monitor_.reset();
     arc_session_manager_.reset();
+    notification_tester_.reset();
     testing_profile_.reset();
     ash::SpacedClient::Shutdown();
     ash::ConciergeClient::Shutdown();
+  }
+
+  void FastForwardBy(base::TimeDelta delta) {
+    task_environment_.FastForwardBy(delta);
+  }
+
+  NotificationDisplayServiceTester* notification_tester() const {
+    return notification_tester_.get();
   }
 
   ArcSessionManager* arc_session_manager() const {
@@ -88,6 +101,7 @@ class ArcDiskSpaceMonitorTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestingProfile> testing_profile_;
+  std::unique_ptr<NotificationDisplayServiceTester> notification_tester_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
   std::unique_ptr<ArcDiskSpaceMonitor> arc_disk_space_monitor_;
 };
@@ -105,12 +119,18 @@ TEST_F(ArcDiskSpaceMonitorTest, GetFreeDiskSpaceFailed) {
   // ARC should keep running but the timer should be stopped.
   EXPECT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
   EXPECT_FALSE(arc_disk_space_monitor()->IsTimerRunningForTesting());
+
+  // No notification should be shown.
+  EXPECT_FALSE(notification_tester()->GetNotification(
+      kLowDiskSpacePreStopNotificationId));
+  EXPECT_FALSE(notification_tester()->GetNotification(
+      kLowDiskSpacePostStopNotificationId));
 }
 
-TEST_F(ArcDiskSpaceMonitorTest, FreeSpaceIsHigherThanThresholdForPreWarning) {
-  // ThresholdForStoppingArc < ThresholdForPreWarning < free_disk_space
+TEST_F(ArcDiskSpaceMonitorTest, FreeSpaceIsHigherThanPreStopNotification) {
+  // ThresholdForStoppingArc < ThresholdForPreStopNotification < free_disk_space
   ash::FakeSpacedClient::Get()->set_free_disk_space(
-      absl::make_optional(kDiskSpaceThresholdForPreWarning + 1));
+      absl::make_optional(kDiskSpaceThresholdForPreStopNotification + 1));
 
   arc_session_manager()->StartArcForTesting();
   EXPECT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
@@ -125,12 +145,19 @@ TEST_F(ArcDiskSpaceMonitorTest, FreeSpaceIsHigherThanThresholdForPreWarning) {
   EXPECT_TRUE(arc_disk_space_monitor()->IsTimerRunningForTesting());
   EXPECT_EQ(kDiskSpaceCheckIntervalLong,
             arc_disk_space_monitor()->GetTimerCurrentDelayForTesting());
+
+  // No notification should be shown.
+  EXPECT_FALSE(notification_tester()->GetNotification(
+      kLowDiskSpacePreStopNotificationId));
+  EXPECT_FALSE(notification_tester()->GetNotification(
+      kLowDiskSpacePostStopNotificationId));
 }
 
-TEST_F(ArcDiskSpaceMonitorTest, FreeSpaceIsLowerThanThresholdForPreWarning) {
-  // ThresholdForStoppingArc < free_disk_space < ThresholdForPreWarning
+TEST_F(ArcDiskSpaceMonitorTest,
+       FreeSpaceIsLowerThanThresholdForPreStopNotification) {
+  // ThresholdForStoppingArc < free_disk_space < ThresholdForPreStopNotification
   ash::FakeSpacedClient::Get()->set_free_disk_space(
-      absl::make_optional(kDiskSpaceThresholdForPreWarning - 1));
+      absl::make_optional(kDiskSpaceThresholdForPreStopNotification - 1));
 
   arc_session_manager()->StartArcForTesting();
   EXPECT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
@@ -145,10 +172,29 @@ TEST_F(ArcDiskSpaceMonitorTest, FreeSpaceIsLowerThanThresholdForPreWarning) {
   // The timer should be running with the short check interval.
   EXPECT_EQ(kDiskSpaceCheckIntervalShort,
             arc_disk_space_monitor()->GetTimerCurrentDelayForTesting());
+
+  // A pre-stop warning notification should be shown.
+  EXPECT_TRUE(notification_tester()->GetNotification(
+      kLowDiskSpacePreStopNotificationId));
+  EXPECT_FALSE(notification_tester()->GetNotification(
+      kLowDiskSpacePostStopNotificationId));
+
+  // Remove the notification.
+  notification_tester()->RemoveAllNotifications(
+      NotificationHandler::Type::TRANSIENT, /*by_user=*/false);
+
+  // Ensure that the warning notification is reshown only after
+  // kPreStopNotificationReshowInterval elapses.
+  FastForwardBy(kPreStopNotificationReshowInterval - base::Seconds(1));
+  EXPECT_FALSE(notification_tester()->GetNotification(
+      kLowDiskSpacePreStopNotificationId));
+  FastForwardBy(base::Seconds(2));
+  EXPECT_TRUE(notification_tester()->GetNotification(
+      kLowDiskSpacePreStopNotificationId));
 }
 
 TEST_F(ArcDiskSpaceMonitorTest, FreeSpaceIsLowerThanThresholdForStoppingArc) {
-  // free_disk_space < ThresholdForStoppingArc < ThresholdForPreWarning
+  // free_disk_space < ThresholdForStoppingArc < ThresholdForPreStopNotification
   ash::FakeSpacedClient::Get()->set_free_disk_space(
       absl::make_optional(kDiskSpaceThresholdForStoppingArc - 1));
 
@@ -161,6 +207,12 @@ TEST_F(ArcDiskSpaceMonitorTest, FreeSpaceIsLowerThanThresholdForStoppingArc) {
   // Both ARC and the timer should be stopped.
   EXPECT_EQ(ArcSessionManager::State::STOPPED, arc_session_manager()->state());
   EXPECT_FALSE(arc_disk_space_monitor()->IsTimerRunningForTesting());
+
+  // A post-stop warning notification should be shown.
+  EXPECT_FALSE(notification_tester()->GetNotification(
+      kLowDiskSpacePreStopNotificationId));
+  EXPECT_TRUE(notification_tester()->GetNotification(
+      kLowDiskSpacePostStopNotificationId));
 }
 
 }  // namespace

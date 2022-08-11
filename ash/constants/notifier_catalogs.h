@@ -163,7 +163,9 @@ enum class NotificationCatalogName {
   kTailoredSecurityDisabled = 148,
   kTailoredSecurityEnabled = 149,
   kTailoredSecurityPromotion = 150,
-  kMaxValue = kTailoredSecurityPromotion
+  kArcLowDiskSpacePreStop = 151,
+  kArcLowDiskSpacePostStop = 152,
+  kMaxValue = kArcLowDiskSpacePostStop
 };
 
 // A living catalog that registers toasts.
