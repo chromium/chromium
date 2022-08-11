@@ -56770,6 +56770,7 @@ from previous Chrome versions.
   <int value="-1437526584" label="HelpAppReleaseNotes:enabled"/>
   <int value="-1436892902" label="FastPairSavedDevices:disabled"/>
   <int value="-1436251034" label="VoiceSearchOnLocalNtp:disabled"/>
+  <int value="-1435804236" label="ThrottleIntersectionObserverUMA:enabled"/>
   <int value="-1433719718" label="enable-webrtc-stun-origin"/>
   <int value="-1433452630" label="AllowRemoteContextForNotifications:enabled"/>
   <int value="-1433087548" label="enable-app-install-alerts"/>
@@ -59045,6 +59046,7 @@ from previous Chrome versions.
   <int value="-9599490" label="KernelnextVMs:disabled"/>
   <int value="-9322265" label="ShowBluetoothDebugLogToggle:enabled"/>
   <int value="-8063095" label="AutofillEnableRemadeDownstreamMetrics:enabled"/>
+  <int value="-7996532" label="ThrottleIntersectionObserverUMA:disabled"/>
   <int value="-5492723" label="CCTIncognito:enabled"/>
   <int value="-5305648" label="OmniboxClosePopupWithEscape:enabled"/>
   <int value="-5052940" label="enable-simplified-fullscreen"/>

@@ -346,6 +346,8 @@ public final class ProductionSupportedFlagList {
                             + " See https://crbug.com/1315279."),
             Flag.baseFeature(BaseFeatures.NO_WAKE_UPS_FOR_CANCELED_TASKS,
                     "Controls whether or not canceled delayed tasks are removed from task queues."),
+            Flag.baseFeature(BlinkFeatures.THROTTLE_INTERSECTION_OBSERVER_UMA,
+                    "Reduces fine-grained UMA metrics for IntersectionObserver."),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };
