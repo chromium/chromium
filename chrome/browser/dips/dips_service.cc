@@ -4,6 +4,7 @@
 
 #include "chrome/browser/dips/dips_service.h"
 
+#include "base/task/thread_pool.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/dips/dips_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -12,7 +13,8 @@
 DIPSService::DIPSService(content::BrowserContext* context)
     : browser_context_(context),
       cookie_settings_(CookieSettingsFactory::GetForProfile(
-          Profile::FromBrowserContext(context))) {}
+          Profile::FromBrowserContext(context))),
+      storage_(base::SequenceBound<DIPSStorage>(CreateTaskRunner())) {}
 
 DIPSService::~DIPSService() = default;
 
@@ -23,6 +25,12 @@ DIPSService* DIPSService::Get(content::BrowserContext* context) {
 
 void DIPSService::Shutdown() {
   cookie_settings_.reset();
+}
+
+scoped_refptr<base::SequencedTaskRunner> DIPSService::CreateTaskRunner() {
+  return base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::ThreadPolicy::PREFER_BACKGROUND});
 }
 
 bool DIPSService::ShouldBlockThirdPartyCookies() const {

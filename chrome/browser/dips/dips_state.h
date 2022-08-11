@@ -34,6 +34,7 @@ class DirtyBit {
 // DIPSState represents the state recorded by DIPSService itself.
 class DIPSState {
  public:
+  DIPSState() = default;
   DIPSState(DIPSStorage* storage, std::string site, bool was_loaded);
   DIPSState(DIPSState&&);
   // Flushes changes to storage_.
@@ -43,16 +44,22 @@ class DIPSState {
   // True iff this DIPSState was loaded from DIPSStorage (as opposed to being
   // default-initialized for a new site).
   bool was_loaded() const { return was_loaded_; }
+  // For testing only.
+  void set_was_loaded_for_testing(bool loaded);
 
   absl::optional<base::Time> site_storage_time() const {
     return site_storage_time_;
   }
   void set_site_storage_time(absl::optional<base::Time> time);
+  // For loading/copying DIPSState objects only.
+  void set_site_storage_time_on_load(absl::optional<base::Time> time);
 
   absl::optional<base::Time> user_interaction_time() const {
     return user_interaction_time_;
   }
   void set_user_interaction_time(absl::optional<base::Time> time);
+  // For loading/copying DIPSState objects only.
+  void set_user_interaction_time_on_load(absl::optional<base::Time> time);
 
  private:
   raw_ptr<DIPSStorage> storage_;
