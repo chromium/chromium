@@ -42,14 +42,14 @@ namespace content {
 namespace {
 
 bool JSONToPoint(const std::string& str, gfx::PointF* point) {
-  std::unique_ptr<base::Value> value = base::JSONReader::ReadDeprecated(str);
+  absl::optional<base::Value> value = base::JSONReader::Read(str);
   if (!value)
     return false;
-  base::DictionaryValue* root;
-  if (!value->GetAsDictionary(&root))
+  base::Value::Dict* root = value->GetIfDict();
+  if (!root)
     return false;
-  absl::optional<double> x = root->FindDoubleKey("x");
-  absl::optional<double> y = root->FindDoubleKey("y");
+  absl::optional<double> x = root->FindDouble("x");
+  absl::optional<double> y = root->FindDouble("y");
   if (!x || !y)
     return false;
   point->set_x(*x);
