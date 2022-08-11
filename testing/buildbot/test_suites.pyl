@@ -3693,8 +3693,8 @@
     },
 
     'lacros_skylab_arm64_tests': {
-      'lacros_all_tast_tests': {
-        'tast_expr': '("group:mainline" && "dep:lacros" && !informational)',
+      'lacros_fyi_tast_tests': {
+        'tast_expr': '("group:mainline" && "dep:lacros_unstable" && !informational)',
         'timeout_sec': 10800,
         'mixins': [
           'has_native_resultdb_integration',
