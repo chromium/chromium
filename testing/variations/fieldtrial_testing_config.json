@@ -3739,6 +3739,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "StackCapacity": "16"
+                    },
                     "enable_features": [
                         "DifferentWorkQueueCapacities"
                     ]
