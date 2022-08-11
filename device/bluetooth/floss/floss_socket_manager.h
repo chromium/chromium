@@ -176,6 +176,8 @@ class DEVICE_BLUETOOTH_EXPORT FlossSocketManager : public FlossDBusClient {
             const std::string& adapter_path) override;
 
  protected:
+  friend class FlossSocketManagerTest;
+
   // Complete the method call for |RegisterCallback|.
   void CompleteRegisterCallback(dbus::Response* response,
                                 dbus::ErrorResponse* error_response);

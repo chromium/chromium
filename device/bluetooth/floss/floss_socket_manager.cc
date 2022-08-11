@@ -52,6 +52,20 @@ bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
 }
 
 template <>
+void FlossDBusClient::WriteDBusParam(
+    dbus::MessageWriter* writer,
+    const FlossSocketManager::SocketType& type) {
+  WriteDBusParam(writer, static_cast<uint32_t>(type));
+}
+
+template <>
+void FlossDBusClient::WriteDBusParamIntoVariant(
+    dbus::MessageWriter* writer,
+    const FlossSocketManager::SocketType& type) {
+  WriteDBusParamIntoVariant(writer, static_cast<uint32_t>(type));
+}
+
+template <>
 bool FlossDBusClient::ReadDBusParam(
     dbus::MessageReader* reader,
     FlossSocketManager::FlossListeningSocket* socket) {
@@ -176,6 +190,39 @@ template bool FlossDBusClient::ReadDBusParam<FlossSocketManager::FlossSocket>(
     absl::optional<FlossSocketManager::FlossSocket>* socket);
 
 template <>
+void FlossDBusClient::WriteDBusParam(
+    dbus::MessageWriter* writer,
+    const FlossSocketManager::FlossSocket& socket) {
+  dbus::MessageWriter array(nullptr);
+  dbus::MessageWriter dict(nullptr);
+
+  writer->OpenArray("{sv}", &array);
+
+  WriteDictEntry(&array, kConnectingPropId, socket.id);
+  WriteDictEntry(&array, kConnectingPropRemoteDevice, socket.remote_device);
+  WriteDictEntry(&array, kConnectingPropSockType, socket.type);
+  WriteDictEntry(&array, kConnectingPropFlags, socket.flags);
+  WriteDictEntry(&array, kConnectingPropFd, socket.fd);
+  WriteDictEntry(&array, kConnectingPropPort, socket.port);
+  WriteDictEntry(&array, kConnectingPropUuid, socket.uuid);
+  WriteDictEntry(&array, kConnectingPropMaxRxSize, socket.max_rx_size);
+  WriteDictEntry(&array, kConnectingPropMaxTxSize, socket.max_tx_size);
+
+  writer->CloseContainer(&array);
+}
+
+template <>
+void FlossDBusClient::WriteDBusParamIntoVariant(
+    dbus::MessageWriter* writer,
+    const FlossSocketManager::FlossSocket& socket) {
+  dbus::MessageWriter variant(nullptr);
+
+  writer->OpenVariant("a{sv}", &variant);
+  WriteDBusParam(&variant, socket);
+  writer->CloseContainer(&variant);
+}
+
+template <>
 bool FlossDBusClient::ReadDBusParam(
     dbus::MessageReader* reader,
     FlossSocketManager::SocketResult* socket_result) {
@@ -213,6 +260,22 @@ bool FlossDBusClient::ReadDBusParam(
   }
 
   return result;
+}
+
+template <>
+void FlossDBusClient::WriteDBusParam(
+    dbus::MessageWriter* writer,
+    const FlossSocketManager::SocketResult& socket_result) {
+  dbus::MessageWriter array(nullptr);
+  dbus::MessageWriter dict(nullptr);
+
+  writer->OpenArray("{sv}", &array);
+
+  WriteDictEntry(&array, kResultPropStatus,
+                 static_cast<uint32_t>(socket_result.status));
+  WriteDictEntry(&array, kResultPropId, socket_result.id);
+
+  writer->CloseContainer(&array);
 }
 
 FlossSocketManager::FlossListeningSocket::FlossListeningSocket() = default;
