@@ -1063,16 +1063,16 @@ TEST_F(V8ValueConverterImplTest, MaxRecursionDepth) {
   // Expected depth is kMaxRecursionDepth in v8_value_converter_impl.cc.
   int kExpectedDepth = 100;
 
-  base::Value* current = value.get();
+  const base::Value* current = value.get();
   for (int i = 1; i < kExpectedDepth; ++i) {
-    base::DictionaryValue* current_as_object = nullptr;
-    ASSERT_TRUE(current->GetAsDictionary(&current_as_object)) << i;
-    ASSERT_TRUE(current_as_object->Get(kKey, &current)) << i;
+    ASSERT_TRUE(current->is_dict()) << i;
+    const base::Value::Dict& current_as_object = current->GetDict();
+    current = current_as_object.Find(kKey);
+    ASSERT_TRUE(current) << i;
   }
 
   // The leaf node shouldn't have any properties.
-  base::DictionaryValue empty;
-  EXPECT_EQ(empty, *current) << *current;
+  EXPECT_EQ(base::Value(base::Value::Dict()), *current) << *current;
 }
 
 TEST_F(V8ValueConverterImplTest, NegativeZero) {
