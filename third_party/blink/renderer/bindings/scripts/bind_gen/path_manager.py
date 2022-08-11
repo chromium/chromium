@@ -110,17 +110,19 @@ class PathManager(object):
         elif len(components) == 2:
             assert components[0] == "core"
             assert components[1] == "modules"
-            self._is_cross_components = True
             # ObservableArray and union types do not support cross-component
             # code generation because clients of IDL observable array and IDL
             # union types must be on an upper or same layer to any of element
             # type and union members.
             if isinstance(idl_definition,
                           (web_idl.ObservableArray, web_idl.Union)):
+                self._is_cross_components = False
                 self._api_component = components[1]
+                self._impl_component = components[1]
             else:
+                self._is_cross_components = True
                 self._api_component = components[0]
-            self._impl_component = components[1]
+                self._impl_component = components[1]
         else:
             assert False
 

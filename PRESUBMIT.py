@@ -1207,6 +1207,7 @@ _GENERIC_PYDEPS_FILES = [
     'testing/merge_scripts/code_coverage/merge_steps.pydeps',
     'third_party/android_platform/development/scripts/stack.pydeps',
     'third_party/blink/renderer/bindings/scripts/build_web_idl_database.pydeps',
+    'third_party/blink/renderer/bindings/scripts/check_generated_file_list.pydeps',
     'third_party/blink/renderer/bindings/scripts/collect_idl_files.pydeps',
     'third_party/blink/renderer/bindings/scripts/generate_bindings.pydeps',
     'third_party/blink/renderer/bindings/scripts/validate_web_idl.pydeps',

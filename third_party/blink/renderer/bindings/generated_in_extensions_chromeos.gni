@@ -12,8 +12,8 @@ generated_dictionary_sources_in_extensions_chromeos = [
 generated_enumeration_sources_in_extensions_chromeos = [
   "$root_gen_dir/third_party/blink/renderer/bindings/extensions_chromeos/v8/v8_cros_window_visibility_state.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/extensions_chromeos/v8/v8_cros_window_visibility_state.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/extensions_chromeos/v8/v8_window_state.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/extensions_chromeos/v8/v8_window_state.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/extensions_chromeos/v8/v8_cros_window_state.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/extensions_chromeos/v8/v8_cros_window_state.h",
 ]
 
 generated_interface_sources_in_extensions_chromeos = [
