@@ -1749,7 +1749,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 TabGroupUi tabGroupUi = toolbarManager.getTabGroupUi();
                 boolean isDialogVisible = tabGroupUi != null && tabGroupUi.isTabGridDialogVisible();
 
-                Supplier<Boolean> tabSwitcherDialogVisibilitySupplier = mStartSurfaceSupplier == null
+                Supplier<Boolean> tabSwitcherDialogVisibilitySupplier = 
+                	(mStartSurfaceSupplier == null || mStartSurfaceSupplier.hasValue()) 
                         ? null
                         : mStartSurfaceSupplier.get().getTabGridDialogVisibilitySupplier();
 
