@@ -8,10 +8,12 @@
 
 namespace storage::test {
 
+const std::vector<std::string> kCookiesTypesForFrame{"Cookie", "CookieStore"};
+
 const std::vector<std::string> kStorageTypesForFrame{
-    "Cookie",         "LocalStorage", "FileSystem",       "FileSystemAccess",
-    "SessionStorage", "IndexedDb",    "WebSql",           "CacheStorage",
-    "ServiceWorker",  "CookieStore",  "StorageFoundation"};
+    "LocalStorage",   "FileSystem",    "FileSystemAccess",
+    "SessionStorage", "IndexedDb",     "WebSql",
+    "CacheStorage",   "ServiceWorker", "StorageFoundation"};
 
 const std::vector<std::string> kStorageTypesForWorker{
     "WorkerFileSystemAccess", "WorkerCacheStorage", "WorkerIndexedDb",
@@ -34,14 +36,23 @@ constexpr char kHasStorageAccess[] =
     "  () => { window.domAutomationController.send(false); },"
     ");";
 
+std::vector<std::string> GetStorageTypesForFrame(bool include_cookies) {
+  std::vector<std::string> types(kStorageTypesForFrame);
+  if (include_cookies) {
+    types.insert(types.end(), kCookiesTypesForFrame.begin(),
+                 kCookiesTypesForFrame.end());
+  }
+  return types;
+}
+
 std::string GetFrameContent(content::RenderFrameHost* frame) {
   return content::EvalJs(frame, "document.body.textContent").ExtractString();
 }
 
-void SetStorageForFrame(content::RenderFrameHost* frame) {
+void SetStorageForFrame(content::RenderFrameHost* frame, bool include_cookies) {
   base::flat_map<std::string, bool> actual;
   base::flat_map<std::string, bool> expected;
-  for (const auto& data_type : kStorageTypesForFrame) {
+  for (const auto& data_type : GetStorageTypesForFrame(include_cookies)) {
     actual[data_type] =
         content::EvalJs(frame, "set" + data_type + "()",
                         content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
@@ -71,10 +82,12 @@ void SetStorageForWorker(content::RenderFrameHost* frame) {
   EXPECT_THAT(actual, testing::UnorderedElementsAreArray(expected));
 }
 
-void ExpectStorageForFrame(content::RenderFrameHost* frame, bool expected) {
+void ExpectStorageForFrame(content::RenderFrameHost* frame,
+                           bool include_cookies,
+                           bool expected) {
   base::flat_map<std::string, bool> actual;
   base::flat_map<std::string, bool> expected_elts;
-  for (const auto& data_type : kStorageTypesForFrame) {
+  for (const auto& data_type : GetStorageTypesForFrame(include_cookies)) {
     actual[data_type] =
         content::EvalJs(frame, "has" + data_type + "();",
                         content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)

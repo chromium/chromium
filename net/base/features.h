@@ -476,8 +476,14 @@ NET_EXPORT extern const base::Feature kStorageAccessAPI;
 NET_EXPORT extern const int kStorageAccessAPIDefaultImplicitGrantLimit;
 NET_EXPORT extern const base::FeatureParam<int>
     kStorageAccessAPIImplicitGrantLimit;
+// Whether the Storage Access API can grant access to storage (even if it is
+// unpartitioned). When this feature is disabled, access to storage is only
+// granted if the storage is partitioned.
+NET_EXPORT extern const base::FeatureParam<bool>
+    kStorageAccessAPIGrantsUnpartitionedStorage;
 
 NET_EXPORT extern const base::Feature kThirdPartyStoragePartitioning;
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

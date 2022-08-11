@@ -291,7 +291,8 @@ class CookiePolicyBrowserTest : public InProcessBrowserTest {
                      bool expected) {
     switch (test_type) {
       case TestType::kFrame:
-        storage::test::ExpectStorageForFrame(frame, expected);
+        storage::test::ExpectStorageForFrame(frame, /*include_cookies=*/true,
+                                             expected);
         return;
       case TestType::kWorker:
         storage::test::ExpectStorageForWorker(frame, expected);
@@ -302,7 +303,7 @@ class CookiePolicyBrowserTest : public InProcessBrowserTest {
   void SetStorage(TestType test_type, content::RenderFrameHost* frame) {
     switch (test_type) {
       case TestType::kFrame:
-        storage::test::SetStorageForFrame(frame);
+        storage::test::SetStorageForFrame(frame, /*include_cookies=*/true);
         return;
       case TestType::kWorker:
         storage::test::SetStorageForWorker(frame);

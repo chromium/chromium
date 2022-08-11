@@ -36,6 +36,10 @@ ContentSettingPatternSource CreateThirdPartySetting(ContentSetting setting) {
       std::string(), false);
 }
 
+std::string BoolToString(bool b) {
+  return b ? "true" : "false";
+}
+
 class CallbackCookieSettings : public CookieSettingsBase {
  public:
   explicit CallbackCookieSettings(GetSettingCallback callback)
@@ -225,14 +229,33 @@ TEST(CookieSettingsBaseTest, IsValidLegacyAccessSetting) {
 }
 
 class CookieSettingsBaseStorageAccessAPITest
-    : public testing::TestWithParam<bool> {
+    : public testing::TestWithParam<std::tuple<bool, bool, bool>> {
  public:
   CookieSettingsBaseStorageAccessAPITest() {
-    features_.InitWithFeatureState(net::features::kStorageAccessAPI,
-                                   IsStorageAccessAPIEnabled());
+    std::vector<base::test::ScopedFeatureList::FeatureAndParams> enabled;
+    std::vector<base::Feature> disabled;
+    if (IsStorageAccessAPIEnabled()) {
+      enabled.push_back({net::features::kStorageAccessAPI,
+                         {{"storage-access-api-grants-unpartitioned-storage",
+                           BoolToString(IsStorageGrantedByPermission())}}});
+    } else {
+      disabled.push_back(net::features::kStorageAccessAPI);
+    }
+    features_.InitWithFeaturesAndParameters(enabled, disabled);
   }
 
-  bool IsStorageAccessAPIEnabled() const { return GetParam(); }
+  bool IsStorageAccessAPIEnabled() const { return std::get<0>(GetParam()); }
+  bool PermissionGrantsUnpartitionedStorage() const {
+    return std::get<1>(GetParam());
+  }
+  bool IsStoragePartitioned() const { return std::get<2>(GetParam()); }
+
+  bool IsStorageGrantedByPermission() const {
+    // Storage access should only be granted if the permission grants
+    // unpartitioned storage, or if storage is partitioned.
+    return IsStorageAccessAPIEnabled() &&
+           (PermissionGrantsUnpartitionedStorage() || IsStoragePartitioned());
+  }
 
  private:
   base::test::ScopedFeatureList features_;
@@ -240,22 +263,30 @@ class CookieSettingsBaseStorageAccessAPITest
 
 TEST_P(CookieSettingsBaseStorageAccessAPITest,
        ShouldConsiderStorageAccessGrants) {
-  EXPECT_FALSE(CookieSettingsBase::ShouldConsiderStorageAccessGrants(
-      QueryReason::kSetting));
-  EXPECT_FALSE(CookieSettingsBase::ShouldConsiderStorageAccessGrants(
-      QueryReason::kPrivacySandbox));
+  EXPECT_FALSE(CookieSettingsBase::ShouldConsiderStorageAccessGrantsInternal(
+      QueryReason::kSetting, IsStorageAccessAPIEnabled(),
+      PermissionGrantsUnpartitionedStorage(), IsStoragePartitioned()));
 
-  EXPECT_EQ(CookieSettingsBase::ShouldConsiderStorageAccessGrants(
-                QueryReason::kSiteStorage),
-            IsStorageAccessAPIEnabled());
-  EXPECT_EQ(CookieSettingsBase::ShouldConsiderStorageAccessGrants(
-                QueryReason::kCookies),
+  EXPECT_FALSE(CookieSettingsBase::ShouldConsiderStorageAccessGrantsInternal(
+      QueryReason::kPrivacySandbox, IsStorageAccessAPIEnabled(),
+      PermissionGrantsUnpartitionedStorage(), IsStoragePartitioned()));
+
+  EXPECT_EQ(CookieSettingsBase::ShouldConsiderStorageAccessGrantsInternal(
+                QueryReason::kSiteStorage, IsStorageAccessAPIEnabled(),
+                PermissionGrantsUnpartitionedStorage(), IsStoragePartitioned()),
+            IsStorageGrantedByPermission());
+
+  EXPECT_EQ(CookieSettingsBase::ShouldConsiderStorageAccessGrantsInternal(
+                QueryReason::kCookies, IsStorageAccessAPIEnabled(),
+                PermissionGrantsUnpartitionedStorage(), IsStoragePartitioned()),
             IsStorageAccessAPIEnabled());
 }
 
 INSTANTIATE_TEST_SUITE_P(/* no prefix */,
                          CookieSettingsBaseStorageAccessAPITest,
-                         testing::Bool());
+                         testing::Combine(testing::Bool(),
+                                          testing::Bool(),
+                                          testing::Bool()));
 
 }  // namespace
 }  // namespace content_settings

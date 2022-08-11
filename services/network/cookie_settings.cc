@@ -14,6 +14,8 @@
 #include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/cookie_settings_base.h"
+#include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_delegate.h"
 #include "net/cookies/canonical_cookie.h"

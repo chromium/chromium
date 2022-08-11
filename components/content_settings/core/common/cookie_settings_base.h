@@ -66,7 +66,7 @@ namespace content_settings {
 // |top_frame_origin|. This is done inconsistently and needs to be fixed.
 class CookieSettingsBase {
  public:
-  CookieSettingsBase() = default;
+  CookieSettingsBase();
 
   CookieSettingsBase(const CookieSettingsBase&) = delete;
   CookieSettingsBase& operator=(const CookieSettingsBase&) = delete;
@@ -205,7 +205,15 @@ class CookieSettingsBase {
   // access.
   static bool IsValidSettingForLegacyAccess(ContentSetting setting);
 
-  static bool ShouldConsiderStorageAccessGrants(QueryReason query_reason);
+  // Returns true iff the query should consider Storage Access API permission
+  // grants.
+  bool ShouldConsiderStorageAccessGrants(QueryReason query_reason) const;
+  // Static version of the above, exposed for testing.
+  static bool ShouldConsiderStorageAccessGrantsInternal(
+      QueryReason query_reason,
+      bool storage_access_api_enabled,
+      bool storage_access_api_grants_unpartitioned_storage,
+      bool is_storage_partitioned);
 
  protected:
   // Returns true iff the request is considered third-party.
@@ -225,6 +233,10 @@ class CookieSettingsBase {
       bool is_third_party_request,
       content_settings::SettingSource* source,
       QueryReason query_reason) const = 0;
+
+  bool storage_access_api_enabled_;
+  bool storage_access_api_grants_unpartitioned_storage_;
+  bool is_storage_partitioned_;
 };
 
 }  // namespace content_settings

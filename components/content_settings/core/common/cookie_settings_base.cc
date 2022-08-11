@@ -21,6 +21,14 @@
 
 namespace content_settings {
 
+CookieSettingsBase::CookieSettingsBase()
+    : storage_access_api_enabled_(
+          base::FeatureList::IsEnabled(net::features::kStorageAccessAPI)),
+      storage_access_api_grants_unpartitioned_storage_(
+          net::features::kStorageAccessAPIGrantsUnpartitionedStorage.Get()),
+      is_storage_partitioned_(base::FeatureList::IsEnabled(
+          net::features::kThirdPartyStoragePartitioning)) {}
+
 // static
 bool CookieSettingsBase::IsThirdPartyRequest(
     const GURL& url,
@@ -134,18 +142,31 @@ CookieSettingsBase::GetCookieAccessSemanticsForDomain(
   return net::CookieAccessSemantics::UNKNOWN;
 }
 
-// static
 bool CookieSettingsBase::ShouldConsiderStorageAccessGrants(
-    QueryReason query_reason) {
+    QueryReason query_reason) const {
+  return CookieSettingsBase::ShouldConsiderStorageAccessGrantsInternal(
+      query_reason, storage_access_api_enabled_,
+      storage_access_api_grants_unpartitioned_storage_,
+      is_storage_partitioned_);
+}
+
+// static
+bool CookieSettingsBase::ShouldConsiderStorageAccessGrantsInternal(
+    QueryReason query_reason,
+    bool storage_access_api_enabled,
+    bool storage_access_api_grants_unpartitioned_storage,
+    bool is_storage_partitioned) {
   switch (query_reason) {
     case QueryReason::kSetting:
       return false;
     case QueryReason::kPrivacySandbox:
       return false;
     case QueryReason::kSiteStorage:
-      return base::FeatureList::IsEnabled(net::features::kStorageAccessAPI);
+      return storage_access_api_enabled &&
+             (storage_access_api_grants_unpartitioned_storage ||
+              is_storage_partitioned);
     case QueryReason::kCookies:
-      return base::FeatureList::IsEnabled(net::features::kStorageAccessAPI);
+      return storage_access_api_enabled;
   }
 }
 
