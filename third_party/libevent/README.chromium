@@ -32,3 +32,4 @@ static library using GYP.
    problems on macOS Sierra.
 7) Change buffer.c to not redefine _GNU_SOURCE.
 8) Change _event_strlcpy in strlcpy.c to not use K&R syntax.
+9) Change a bitfield in evhttp.h from int to unsigned int.
