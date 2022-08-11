@@ -67,6 +67,12 @@ class PLATFORM_EXPORT PaintArtifact final : public RefCounted<PaintArtifact> {
   DOMNodeId ClientOwnerNodeId(DisplayItemClientId) const;
   String IdAsString(const DisplayItem::Id& id) const;
 
+  std::unique_ptr<JSONArray> ToJSON() const;
+  void AppendChunksAsJSON(wtf_size_t start_chunk_index,
+                          wtf_size_t end_chunk_index,
+                          JSONArray&,
+                          unsigned flags) const;
+
  private:
   struct ClientDebugInfo {
     String name;
@@ -79,6 +85,8 @@ class PLATFORM_EXPORT PaintArtifact final : public RefCounted<PaintArtifact> {
   Vector<PaintChunk> chunks_;
   DebugInfo debug_info_;
 };
+
+PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const PaintArtifact&);
 
 }  // namespace blink
 

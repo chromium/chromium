@@ -149,6 +149,8 @@ class PaintChunkSubset {
     return sizeof(*this) + subset_indices_.CapacityInBytes();
   }
 
+  std::unique_ptr<JSONArray> ToJSON() const;
+
  private:
   bool UsesSubsetIndices() const { return begin_index_ == kNotFound; }
 
@@ -161,6 +163,9 @@ class PaintChunkSubset {
 };
 
 using PaintChunkIterator = PaintChunkSubset::Iterator;
+
+PLATFORM_EXPORT std::ostream& operator<<(std::ostream&,
+                                         const PaintChunkSubset&);
 
 }  // namespace blink
 

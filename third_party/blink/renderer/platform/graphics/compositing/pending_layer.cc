@@ -140,16 +140,7 @@ std::unique_ptr<JSONObject> PendingLayer::ToJSON() const {
   result->SetObject("property_tree_state", GetPropertyTreeState().ToJSON());
   result->SetArray("offset_of_decomposited_transforms",
                    VectorAsJSONArray(offset_of_decomposited_transforms_));
-  std::unique_ptr<JSONArray> json_chunks = std::make_unique<JSONArray>();
-  for (auto it = chunks_.begin(); it != chunks_.end(); ++it) {
-    StringBuilder sb;
-    sb.Append("index=");
-    sb.AppendNumber(it.IndexInPaintArtifact());
-    sb.Append(" ");
-    sb.Append(it->ToString(chunks_.GetPaintArtifact()));
-    json_chunks->PushString(sb.ToString());
-  }
-  result->SetArray("paint_chunks", std::move(json_chunks));
+  result->SetArray("paint_chunks", chunks_.ToJSON());
   result->SetBoolean("draws_content", DrawsContent());
   return result;
 }
