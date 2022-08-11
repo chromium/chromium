@@ -16,8 +16,7 @@
 #include "chromeos/services/libassistant/public/mojom/service.mojom-forward.h"
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 
@@ -60,5 +59,4 @@ void LibassistantServiceHostImpl::Stop() {}
 
 #endif
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant

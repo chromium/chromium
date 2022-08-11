@@ -8,8 +8,7 @@
 #include "chromeos/ash/services/assistant/public/cpp/device_actions.h"
 #include "chromeos/ash/services/assistant/service_context.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 namespace {
 
@@ -85,12 +84,11 @@ DeviceActions& DeviceSettingsHost::device_actions() {
   return *result;
 }
 
-ash::AssistantNotificationController&
+AssistantNotificationController&
 DeviceSettingsHost::assistant_notification_controller() {
   auto* result = context_.assistant_notification_controller();
   DCHECK(result);
   return *result;
 }
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant

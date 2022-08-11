@@ -12,8 +12,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/accessibility/mojom/ax_assistant_structure.mojom.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 class MockAssistant : public Assistant {
  public:
@@ -56,7 +55,6 @@ class MockAssistant : public Assistant {
   MOCK_METHOD1(CreateTimer, void(base::TimeDelta));
 };
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant
 
 #endif  // CHROMEOS_ASH_SERVICES_ASSISTANT_TEST_SUPPORT_MOCK_ASSISTANT_H_

@@ -27,7 +27,7 @@
 namespace ash::assistant {
 
 // Main interface implemented in browser to provide dependencies to
-// |chromeos::assistant::Service|.
+// |ash::assistant::Service|.
 class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AssistantBrowserDelegate {
  public:
   AssistantBrowserDelegate();
@@ -42,7 +42,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AssistantBrowserDelegate {
 
   // Requests Ash's AssistantVolumeControl interface from the browser.
   virtual void RequestAssistantVolumeControl(
-      mojo::PendingReceiver<ash::mojom::AssistantVolumeControl> receiver) = 0;
+      mojo::PendingReceiver<::ash::mojom::AssistantVolumeControl> receiver) = 0;
 
   // Requests a BatteryMonitor from the browser.
   virtual void RequestBatteryMonitor(

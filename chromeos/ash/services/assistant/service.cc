@@ -44,8 +44,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 namespace {
 
@@ -101,7 +100,7 @@ bool IsSignedOutMode() {
 // and will unsubscribe in its destructor.
 class ScopedAshSessionObserver {
  public:
-  ScopedAshSessionObserver(ash::SessionActivationObserver* observer,
+  ScopedAshSessionObserver(SessionActivationObserver* observer,
                            const AccountId& account_id)
       : observer_(observer), account_id_(account_id) {
     DCHECK(account_id_.is_valid());
@@ -117,11 +116,9 @@ class ScopedAshSessionObserver {
   }
 
  private:
-  ash::SessionController* controller() const {
-    return ash::SessionController::Get();
-  }
+  SessionController* controller() const { return SessionController::Get(); }
 
-  ash::SessionActivationObserver* const observer_;
+  SessionActivationObserver* const observer_;
   const AccountId account_id_;
 };
 
@@ -135,27 +132,26 @@ class Service::Context : public ServiceContext {
   ~Context() override = default;
 
   // ServiceContext:
-  ash::AssistantAlarmTimerController* assistant_alarm_timer_controller()
+  AssistantAlarmTimerController* assistant_alarm_timer_controller() override {
+    return AssistantAlarmTimerController::Get();
+  }
+
+  AssistantController* assistant_controller() override {
+    return AssistantController::Get();
+  }
+
+  AssistantNotificationController* assistant_notification_controller()
       override {
-    return ash::AssistantAlarmTimerController::Get();
+    return AssistantNotificationController::Get();
   }
 
-  ash::AssistantController* assistant_controller() override {
-    return ash::AssistantController::Get();
-  }
-
-  ash::AssistantNotificationController* assistant_notification_controller()
+  AssistantScreenContextController* assistant_screen_context_controller()
       override {
-    return ash::AssistantNotificationController::Get();
+    return AssistantScreenContextController::Get();
   }
 
-  ash::AssistantScreenContextController* assistant_screen_context_controller()
-      override {
-    return ash::AssistantScreenContextController::Get();
-  }
-
-  ash::AssistantStateBase* assistant_state() override {
-    return ash::AssistantState::Get();
+  AssistantStateBase* assistant_state() override {
+    return AssistantState::Get();
   }
 
   CrasAudioHandler* cras_audio_handler() override {
@@ -197,8 +193,8 @@ Service::Service(std::unique_ptr<network::PendingSharedURLLoaderFactory>
 
 Service::~Service() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  ash::AssistantState::Get()->RemoveObserver(this);
-  ash::AssistantController::Get()->SetAssistant(nullptr);
+  AssistantState::Get()->RemoveObserver(this);
+  AssistantController::Get()->SetAssistant(nullptr);
 }
 
 // static
@@ -220,7 +216,7 @@ void Service::SetAssistantManagerServiceForTesting(
 void Service::Init() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  ash::AssistantState::Get()->AddObserver(this);
+  AssistantState::Get()->AddObserver(this);
 
   DCHECK(!assistant_manager_service_);
 
@@ -339,7 +335,7 @@ void Service::OnStateChanged(AssistantManagerService::State new_state) {
 
 void Service::UpdateAssistantManagerState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto* assistant_state = ash::AssistantState::Get();
+  auto* assistant_state = AssistantState::Get();
 
   if (!assistant_state->hotword_enabled().has_value() ||
       !assistant_state->settings_enabled().has_value() ||
@@ -516,8 +512,7 @@ void Service::FinalizeAssistantManagerService() {
 
   AddAshSessionObserver();
 
-  ash::AssistantController::Get()->SetAssistant(
-      assistant_manager_service_.get());
+  AssistantController::Get()->SetAssistant(assistant_manager_service_.get());
 }
 
 void Service::StopAssistantManagerService() {
@@ -533,7 +528,7 @@ void Service::AddAshSessionObserver() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // No session controller in unittest.
-  if (ash::SessionController::Get()) {
+  if (SessionController::Get()) {
     // Note that this account can either be a regular account using real gaia,
     // or a fake gaia account.
     CoreAccountInfo account_info = RetrievePrimaryAccountInfo();
@@ -549,8 +544,7 @@ void Service::UpdateListeningState() {
 
   bool should_listen =
       !locked_ &&
-      !ash::AssistantState::Get()->locked_full_screen_enabled().value_or(
-          false) &&
+      !AssistantState::Get()->locked_full_screen_enabled().value_or(false) &&
       session_active_;
   DVLOG(1) << "Update assistant listening state: " << should_listen;
   assistant_manager_service_->EnableListening(should_listen);
@@ -570,7 +564,7 @@ bool Service::ShouldEnableHotword() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   bool dsp_available = context()->cras_audio_handler()->HasHotwordDevice();
-  auto* assistant_state = ash::AssistantState::Get();
+  auto* assistant_state = AssistantState::Get();
 
   // Disable hotword if hotword is not set to always on and power source is not
   // connected.
@@ -582,5 +576,4 @@ bool Service::ShouldEnableHotword() {
   return assistant_state->hotword_enabled().value();
 }
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant

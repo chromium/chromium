@@ -55,11 +55,10 @@
 
 using media_session::mojom::MediaSessionAction;
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 namespace {
 
-using InstallResult = chromeos::assistant::LibassistantDlcInstallResult;
+using InstallResult = LibassistantDlcInstallResult;
 
 static base::OnceCallback<void()> initialized_internal_callback_for_testing;
 static bool is_first_init = true;
@@ -80,7 +79,7 @@ ToAuthenticationTokens(
   if (user.has_value()) {
     DCHECK(!user.value().gaia_id.empty());
     DCHECK(!user.value().access_token.empty());
-    result.emplace_back(libassistant::mojom::AuthenticationToken::New(
+    result.emplace_back(chromeos::libassistant::mojom::AuthenticationToken::New(
         /*gaia_id=*/user.value().gaia_id,
         /*access_token=*/user.value().access_token));
   }
@@ -192,8 +191,8 @@ void AssistantManagerServiceImpl::SetInitializedInternalCallbackForTesting(
   // We expect that the callback is set when AssistantStatus is NOT_READY to
   // confirm that AssistantStatus has changed from NOT_READY to READY. See more
   // details at a comment in AssistantManagerServiceImpl::OnDeviceAppsEnabled.
-  CHECK(ash::AssistantState::Get()->assistant_status() ==
-        chromeos::assistant::AssistantStatus::NOT_READY);
+  CHECK(AssistantState::Get()->assistant_status() ==
+        AssistantStatus::NOT_READY);
   initialized_internal_callback_for_testing = std::move(callback);
 }
 
@@ -728,17 +727,17 @@ void AssistantManagerServiceImpl::SendAssistantFeedback(
   conversation_controller().SendAssistantFeedback(assistant_feedback);
 }
 
-ash::AssistantNotificationController*
+AssistantNotificationController*
 AssistantManagerServiceImpl::assistant_notification_controller() {
   return context_->assistant_notification_controller();
 }
 
-ash::AssistantScreenContextController*
+AssistantScreenContextController*
 AssistantManagerServiceImpl::assistant_screen_context_controller() {
   return context_->assistant_screen_context_controller();
 }
 
-ash::AssistantStateBase* AssistantManagerServiceImpl::assistant_state() {
+AssistantStateBase* AssistantManagerServiceImpl::assistant_state() {
   return context_->assistant_state();
 }
 
@@ -787,5 +786,4 @@ void AssistantManagerServiceImpl::SetStateAndInformObservers(State new_state) {
     observer.OnStateChanged(state_);
 }
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant

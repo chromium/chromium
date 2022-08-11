@@ -13,8 +13,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 // Fake implementation of the Libassistant Mojom service.
 // It allows hooks to read and control the state of the service.
@@ -98,6 +97,6 @@ class FakeLibassistantService
   FakeServiceController service_controller_;
 };
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant
+
 #endif  // CHROMEOS_ASH_SERVICES_ASSISTANT_TEST_SUPPORT_FAKE_LIBASSISTANT_SERVICE_H_

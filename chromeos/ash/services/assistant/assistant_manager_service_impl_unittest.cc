@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/audio/cras_audio_handler.h"
 #include "ash/public/cpp/assistant/controller/assistant_alarm_timer_controller.h"
 #include "base/json/json_reader.h"
 #include "base/memory/weak_ptr.h"
@@ -41,8 +42,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 using chromeos::libassistant::mojom::ServiceState;
 using chromeos::libassistant::mojom::SpeakerIdEnrollmentStatus;
@@ -60,8 +60,7 @@ const char* kNoValue = FakeServiceController::kNoValue;
 #define EXPECT_STATE(_state) \
   EXPECT_EQ(_state, assistant_manager_service()->GetState());
 
-class AssistantAlarmTimerControllerMock
-    : public ash::AssistantAlarmTimerController {
+class AssistantAlarmTimerControllerMock : public AssistantAlarmTimerController {
  public:
   AssistantAlarmTimerControllerMock() = default;
   AssistantAlarmTimerControllerMock(const AssistantAlarmTimerControllerMock&) =
@@ -70,8 +69,8 @@ class AssistantAlarmTimerControllerMock
       const AssistantAlarmTimerControllerMock&) = delete;
   ~AssistantAlarmTimerControllerMock() override = default;
 
-  // ash::AssistantAlarmTimerController:
-  MOCK_METHOD((const ash::AssistantAlarmTimerModel*),
+  // AssistantAlarmTimerController:
+  MOCK_METHOD((const AssistantAlarmTimerModel*),
               GetModel,
               (),
               (const, override));
@@ -240,7 +239,7 @@ class AssistantManagerServiceImplTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
 
   ScopedAssistantBrowserDelegate delegate_;
-  ash::ScopedCrasAudioHandlerForTesting cras_audio_handler_;
+  ScopedCrasAudioHandlerForTesting cras_audio_handler_;
   ScopedDeviceActions device_actions_;
   FullyInitializedAssistantState assistant_state_;
 
@@ -741,5 +740,4 @@ TEST_F(AssistantManagerServiceImplTest, ShouldPropagateColorMode) {
   EXPECT_TRUE(mojom_service_controller().dark_mode_enabled().value());
 }
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant

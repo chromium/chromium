@@ -383,7 +383,7 @@ class PaletteTrayTestWithAssistant : public PaletteTrayTest {
 
  private:
   base::SimpleTestTickClock simulated_clock_;
-  chromeos::assistant::ScopedAssistantBrowserDelegate delegate_;
+  assistant::ScopedAssistantBrowserDelegate delegate_;
 };
 
 TEST_F(PaletteTrayTestWithAssistant, MetalayerToolViewCreated) {

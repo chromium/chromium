@@ -6,8 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 // A macro which ensures we are running on the mojom thread.
 #define ENSURE_MOJOM_THREAD(method, ...)                                    \
@@ -133,6 +132,4 @@ void FakeServiceController::GetSettings(const std::string& selector,
   std::move(callback).Run(std::string());
 }
 
-}  // namespace assistant
-
-}  // namespace chromeos
+}  // namespace ash::assistant

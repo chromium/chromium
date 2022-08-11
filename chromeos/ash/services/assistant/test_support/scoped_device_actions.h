@@ -10,15 +10,14 @@
 
 #include "chromeos/ash/services/assistant/public/cpp/device_actions.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 class ScopedDeviceActions : DeviceActions {
  public:
   ScopedDeviceActions() = default;
   ~ScopedDeviceActions() override = default;
 
-  // chromeos::assistant::DeviceActions overrides:
+  // assistant::DeviceActions overrides:
   void SetWifiEnabled(bool enabled) override {}
   void SetBluetoothEnabled(bool enabled) override {}
   void GetScreenBrightnessLevel(
@@ -42,7 +41,6 @@ class ScopedDeviceActions : DeviceActions {
   double current_brightness_ = 0.0;
 };
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant
 
 #endif  // CHROMEOS_ASH_SERVICES_ASSISTANT_TEST_SUPPORT_SCOPED_DEVICE_ACTIONS_H_

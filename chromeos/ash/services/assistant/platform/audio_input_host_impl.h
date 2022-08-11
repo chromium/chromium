@@ -19,8 +19,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 // Class that provides the bridge between the ChromeOS Browser thread and the
 // Libassistant audio input mojom service.
@@ -71,7 +70,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AudioInputHostImpl
   base::WeakPtrFactory<AudioInputHostImpl> weak_factory_{this};
 };
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant
 
 #endif  // CHROMEOS_ASH_SERVICES_ASSISTANT_PLATFORM_AUDIO_INPUT_HOST_IMPL_H_

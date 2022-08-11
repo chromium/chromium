@@ -161,7 +161,7 @@ using ScopedAssistantInteractionSubscriber =
                             &Assistant::AddAssistantInteractionSubscriber,
                             &Assistant::RemoveAssistantInteractionSubscriber>;
 
-// Main interface between browser and |chromeos::assistant::Service|.
+// Main interface between browser and |ash::assistant::Service|.
 class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AssistantService {
  public:
   AssistantService();

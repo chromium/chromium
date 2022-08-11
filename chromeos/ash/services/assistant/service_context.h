@@ -8,29 +8,23 @@
 #include <string>
 
 #include "ash/public/cpp/assistant/controller/assistant_screen_context_controller.h"
-// TODO(https://crbug.com/1164001): use forward declaration when migrated to
-// ash/.
-#include "ash/components/audio/cras_audio_handler.h"
 #include "base/memory/scoped_refptr.h"
 // TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/ash/services/assistant/public/cpp/device_actions.h"
-
-namespace ash {
-class AssistantAlarmTimerController;
-class AssistantController;
-class AssistantNotificationController;
-class AssistantStateBase;
-}  // namespace ash
-
-namespace chromeos {
-class PowerManagerClient;
-}  // namespace chromeos
+#include "chromeos/dbus/power/power_manager_client.h"
 
 namespace base {
 class SequencedTaskRunner;
 }  // namespace base
 
-namespace chromeos {
+namespace ash {
+
+class AssistantAlarmTimerController;
+class AssistantController;
+class AssistantNotificationController;
+class AssistantStateBase;
+class CrasAudioHandler;
+class DeviceActions;
+
 namespace assistant {
 
 // Context object passed around so classes can access some of the |Service|
@@ -39,20 +33,19 @@ class ServiceContext {
  public:
   virtual ~ServiceContext() = default;
 
-  virtual ash::AssistantAlarmTimerController*
-  assistant_alarm_timer_controller() = 0;
+  virtual AssistantAlarmTimerController* assistant_alarm_timer_controller() = 0;
 
-  virtual ash::AssistantController* assistant_controller() = 0;
+  virtual AssistantController* assistant_controller() = 0;
 
-  virtual ash::AssistantNotificationController*
+  virtual AssistantNotificationController*
   assistant_notification_controller() = 0;
 
-  virtual ash::AssistantScreenContextController*
+  virtual AssistantScreenContextController*
   assistant_screen_context_controller() = 0;
 
-  virtual ash::AssistantStateBase* assistant_state() = 0;
+  virtual AssistantStateBase* assistant_state() = 0;
 
-  virtual ash::CrasAudioHandler* cras_audio_handler() = 0;
+  virtual CrasAudioHandler* cras_audio_handler() = 0;
 
   virtual DeviceActions* device_actions() = 0;
 

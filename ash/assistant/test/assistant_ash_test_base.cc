@@ -107,8 +107,8 @@ AssistantAshTestBase::AssistantAshTestBase(
       test_api_(AssistantTestApi::Create()),
       test_setup_(std::make_unique<TestAssistantSetup>()),
       test_web_view_factory_(std::make_unique<TestAshWebViewFactory>()),
-      delegate_(std::make_unique<
-                chromeos::assistant::ScopedAssistantBrowserDelegate>()) {}
+      delegate_(std::make_unique<assistant::ScopedAssistantBrowserDelegate>()) {
+}
 
 AssistantAshTestBase::~AssistantAshTestBase() = default;
 

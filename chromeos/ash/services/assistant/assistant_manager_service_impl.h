@@ -41,11 +41,10 @@
 #include "ui/accessibility/mojom/ax_assistant_structure.mojom.h"
 
 namespace ash {
+
 class AssistantNotificationController;
 class AssistantStateBase;
-}  // namespace ash
 
-namespace chromeos {
 namespace assistant {
 
 class AssistantHost;
@@ -167,7 +166,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   mojo::PendingReceiver<chromeos::libassistant::mojom::NotificationDelegate>
   GetPendingNotificationDelegate() override;
 
-  // chromeos::assistant::ConversationObserver overrides:
+  // ConversationObserver overrides:
   void OnInteractionStarted(
       const AssistantInteractionMetadata& metadata) override;
   void OnInteractionFinished(
@@ -228,9 +227,9 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
                                 const std::string& description,
                                 bool is_user_initiated);
 
-  ash::AssistantNotificationController* assistant_notification_controller();
-  ash::AssistantScreenContextController* assistant_screen_context_controller();
-  ash::AssistantStateBase* assistant_state();
+  AssistantNotificationController* assistant_notification_controller();
+  AssistantScreenContextController* assistant_screen_context_controller();
+  AssistantStateBase* assistant_state();
   DeviceActions* device_actions();
   scoped_refptr<base::SequencedTaskRunner> main_task_runner();
 
@@ -291,6 +290,11 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
 };
 
 }  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::assistant {
+using ::ash::assistant::AssistantManagerServiceImpl;
+}
 
 #endif  // CHROMEOS_ASH_SERVICES_ASSISTANT_ASSISTANT_MANAGER_SERVICE_IMPL_H_

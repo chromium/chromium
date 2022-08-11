@@ -7,8 +7,7 @@
 #include "chromeos/ash/services/assistant/public/cpp/device_actions.h"
 #include "chromeos/ash/services/assistant/test_support/fake_service_context.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 /*static*/
 constexpr const char* FakeServiceContext::kGaiaId;
@@ -18,7 +17,7 @@ FakeServiceContext::FakeServiceContext() = default;
 FakeServiceContext::~FakeServiceContext() = default;
 
 FakeServiceContext& FakeServiceContext::set_assistant_alarm_timer_controller(
-    ash::AssistantAlarmTimerController* value) {
+    AssistantAlarmTimerController* value) {
   assistant_alarm_timer_controller_ = value;
   return *this;
 }
@@ -42,52 +41,52 @@ FakeServiceContext& FakeServiceContext::set_primary_account_gaia_id(
 }
 
 FakeServiceContext& FakeServiceContext::set_assistant_state(
-    ash::AssistantStateBase* value) {
+    AssistantStateBase* value) {
   assistant_state_ = value;
   return *this;
 }
 
 FakeServiceContext& FakeServiceContext::set_assistant_notification_controller(
-    ash::AssistantNotificationController* value) {
+    AssistantNotificationController* value) {
   assistant_notification_controller_ = value;
   return *this;
 }
 
 FakeServiceContext& FakeServiceContext::set_cras_audio_handler(
-    ash::CrasAudioHandler* value) {
+    CrasAudioHandler* value) {
   cras_audio_handler_ = value;
   return *this;
 }
 
-ash::AssistantAlarmTimerController*
+AssistantAlarmTimerController*
 FakeServiceContext::assistant_alarm_timer_controller() {
   DCHECK(assistant_alarm_timer_controller_ != nullptr);
   return assistant_alarm_timer_controller_;
 }
 
-ash::AssistantController* FakeServiceContext::assistant_controller() {
+AssistantController* FakeServiceContext::assistant_controller() {
   NOTIMPLEMENTED();
   return nullptr;
 }
 
-ash::AssistantNotificationController*
+AssistantNotificationController*
 FakeServiceContext::assistant_notification_controller() {
   DCHECK(assistant_notification_controller_ != nullptr);
   return assistant_notification_controller_;
 }
 
-ash::AssistantScreenContextController*
+AssistantScreenContextController*
 FakeServiceContext::assistant_screen_context_controller() {
   NOTIMPLEMENTED();
   return nullptr;
 }
 
-ash::AssistantStateBase* FakeServiceContext::assistant_state() {
+AssistantStateBase* FakeServiceContext::assistant_state() {
   DCHECK(assistant_state_ != nullptr);
   return assistant_state_;
 }
 
-ash::CrasAudioHandler* FakeServiceContext::cras_audio_handler() {
+CrasAudioHandler* FakeServiceContext::cras_audio_handler() {
   DCHECK(cras_audio_handler_ != nullptr);
   return cras_audio_handler_;
 }
@@ -111,5 +110,4 @@ std::string FakeServiceContext::primary_account_gaia_id() {
   return gaia_id_;
 }
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant

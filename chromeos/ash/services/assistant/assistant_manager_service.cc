@@ -4,8 +4,7 @@
 
 #include "chromeos/ash/services/assistant/assistant_manager_service.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 AuthenticationStateObserver::AuthenticationStateObserver() = default;
 
@@ -17,5 +16,4 @@ AuthenticationStateObserver::BindNewPipeAndPassRemote() {
   return receiver_.BindNewPipeAndPassRemote();
 }
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant

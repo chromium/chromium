@@ -177,22 +177,23 @@ void FakeS3Server::SetAccessTokenForMode(FakeS3Mode mode) {
 
 void FakeS3Server::SetFakeS3ServerURI() {
   // Note this must be stored in a local variable, as
-  // |Service::OverrideS3ServerUriForTesting| does not take ownership of the
-  // |const char *|.
+  // |ash::assistant::Service::OverrideS3ServerUriForTesting| does not take
+  // ownership of the |const char *|.
   fake_s3_server_uri_ = "localhost:" + base::NumberToString(port());
-  Service::OverrideS3ServerUriForTesting(fake_s3_server_uri_.c_str());
+  ash::assistant::Service::OverrideS3ServerUriForTesting(
+      fake_s3_server_uri_.c_str());
 }
 
 void FakeS3Server::SetDeviceId() {
-  Service::OverrideDeviceIdForTesting(kDeviceId);
+  ash::assistant::Service::OverrideDeviceIdForTesting(kDeviceId);
 }
 
 void FakeS3Server::UnsetDeviceId() {
-  Service::OverrideDeviceIdForTesting(nullptr);
+  ash::assistant::Service::OverrideDeviceIdForTesting(nullptr);
 }
 
 void FakeS3Server::UnsetFakeS3ServerURI() {
-  Service::OverrideS3ServerUriForTesting(nullptr);
+  ash::assistant::Service::OverrideS3ServerUriForTesting(nullptr);
   fake_s3_server_uri_ = "";
 }
 

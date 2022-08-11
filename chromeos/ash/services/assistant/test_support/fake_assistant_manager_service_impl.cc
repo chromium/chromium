@@ -6,8 +6,7 @@
 
 #include <utility>
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 FakeAssistantManagerServiceImpl::FakeAssistantManagerServiceImpl() = default;
 
@@ -149,5 +148,4 @@ void FakeAssistantManagerServiceImpl::MaybeSendStateChange(State state,
   }
 }
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant

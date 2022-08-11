@@ -13,10 +13,9 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace ash {
-class AssistantAlarmTimerController;
-}  // namespace ash
 
-namespace chromeos {
+class AssistantAlarmTimerController;
+
 namespace assistant {
 
 class ServiceContext;
@@ -46,7 +45,7 @@ class TimerHost {
  private:
   class TimerDelegateImpl;
 
-  ash::AssistantAlarmTimerController* assistant_alarm_timer_controller();
+  AssistantAlarmTimerController* assistant_alarm_timer_controller();
   chromeos::libassistant::mojom::TimerController& libassistant_controller();
 
   bool IsStopped() const;
@@ -62,6 +61,6 @@ class TimerHost {
 };
 
 }  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_SERVICES_ASSISTANT_TIMER_HOST_H_

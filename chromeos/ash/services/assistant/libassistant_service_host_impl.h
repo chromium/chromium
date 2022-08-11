@@ -18,8 +18,7 @@ class LibassistantService;
 }  // namespace libassistant
 }  // namespace chromeos
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 // Host class controlling the lifetime of the Libassistant service.
 // The implementation will be stubbed out in the unbranded build.
@@ -44,7 +43,6 @@ class LibassistantServiceHostImpl : public LibassistantServiceHost {
 #endif
 };
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant
 
 #endif  // CHROMEOS_ASH_SERVICES_ASSISTANT_LIBASSISTANT_SERVICE_HOST_IMPL_H_

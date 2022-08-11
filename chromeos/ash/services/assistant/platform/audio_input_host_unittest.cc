@@ -16,8 +16,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 namespace {
 
@@ -48,9 +47,7 @@ class AudioInputControllerMock : public MojomAudioInputController {
   MOCK_METHOD(void,
               SetHotwordDeviceId,
               (const absl::optional<std::string>& device_id));
-  MOCK_METHOD(void,
-              SetLidState,
-              (chromeos::libassistant::mojom::LidState new_state));
+  MOCK_METHOD(void, SetLidState, (MojomLidState new_state));
   MOCK_METHOD(void, OnConversationTurnStarted, ());
 
  private:
@@ -239,5 +236,4 @@ TEST_F(AssistantAudioInputHostTest,
   OnConversationTurnStarted();
 }
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant

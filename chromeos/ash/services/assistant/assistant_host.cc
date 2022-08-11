@@ -10,8 +10,7 @@
 #include "base/check.h"
 #include "chromeos/ash/services/assistant/libassistant_service_host.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 AssistantHost::AssistantHost() {
   background_thread_.Start();
@@ -226,5 +225,4 @@ void AssistantHost::AddAuthenticationStateObserver(
   libassistant_service_->AddAuthenticationStateObserver(std::move(observer));
 }
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant

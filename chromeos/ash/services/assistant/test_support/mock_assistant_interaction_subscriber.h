@@ -11,8 +11,7 @@
 #include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 class MockAssistantInteractionSubscriber
     : public AssistantInteractionSubscriber {
@@ -59,7 +58,6 @@ class MockAssistantInteractionSubscriber
   MOCK_METHOD(void, OnWaitStarted, (), (override));
 };
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant
 
 #endif  // CHROMEOS_ASH_SERVICES_ASSISTANT_TEST_SUPPORT_MOCK_ASSISTANT_INTERACTION_SUBSCRIBER_H_

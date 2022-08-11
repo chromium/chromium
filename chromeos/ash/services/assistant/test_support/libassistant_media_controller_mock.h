@@ -11,8 +11,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 class LibassistantMediaControllerMock
     : public chromeos::libassistant::mojom::MediaController {
@@ -40,7 +39,6 @@ class LibassistantMediaControllerMock
       this};
 };
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant
 
 #endif  // CHROMEOS_ASH_SERVICES_ASSISTANT_TEST_SUPPORT_LIBASSISTANT_MEDIA_CONTROLLER_MOCK_H_

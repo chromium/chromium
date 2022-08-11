@@ -19,8 +19,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 namespace {
 
@@ -574,5 +573,4 @@ TEST_F(MediaHostTest, ShouldStop) {
   FlushMojomPipes();
 }
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant

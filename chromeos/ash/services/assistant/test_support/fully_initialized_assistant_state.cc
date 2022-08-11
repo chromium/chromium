@@ -4,8 +4,7 @@
 
 #include "chromeos/ash/services/assistant/test_support/fully_initialized_assistant_state.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 FullyInitializedAssistantState::FullyInitializedAssistantState() {
   InitializeAllValues();
@@ -32,5 +31,4 @@ void FullyInitializedAssistantState::InitializeAllValues() {
   locked_full_screen_enabled_ = true;
 }
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant

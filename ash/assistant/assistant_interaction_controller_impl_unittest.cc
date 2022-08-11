@@ -38,16 +38,16 @@ namespace ash {
 
 namespace {
 
+using assistant::Assistant;
 using assistant::AssistantInteractionSubscriber;
+using assistant::MockAssistantInteractionSubscriber;
 using assistant::ScopedAssistantInteractionSubscriber;
 using chromeos::assistant::AndroidAppInfo;
-using chromeos::assistant::Assistant;
 using chromeos::assistant::AssistantInteractionMetadata;
 using chromeos::assistant::AssistantInteractionType;
 using chromeos::assistant::AssistantQuerySource;
 using chromeos::assistant::AssistantSuggestion;
 using chromeos::assistant::AssistantSuggestionType;
-using chromeos::assistant::MockAssistantInteractionSubscriber;
 
 using ::testing::Invoke;
 using ::testing::Mock;

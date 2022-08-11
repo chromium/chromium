@@ -5,8 +5,7 @@
 #include "chromeos/ash/services/assistant/platform/platform_delegate_impl.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_browser_delegate.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 PlatformDelegateImpl::~PlatformDelegateImpl() = default;
 PlatformDelegateImpl::PlatformDelegateImpl() = default;
@@ -23,8 +22,7 @@ void PlatformDelegateImpl::BindAudioStreamFactory(
 }
 
 void PlatformDelegateImpl::BindAudioDecoderFactory(
-    mojo::PendingReceiver<ash::assistant::mojom::AssistantAudioDecoderFactory>
-        receiver) {
+    mojo::PendingReceiver<mojom::AssistantAudioDecoderFactory> receiver) {
   AssistantBrowserDelegate::Get()->RequestAudioDecoderFactory(
       std::move(receiver));
 }
@@ -51,5 +49,4 @@ void PlatformDelegateImpl::BindWakeLockProvider(
   AssistantBrowserDelegate::Get()->RequestWakeLockProvider(std::move(receiver));
 }
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant

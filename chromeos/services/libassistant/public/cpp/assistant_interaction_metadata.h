@@ -64,7 +64,9 @@ struct COMPONENT_EXPORT(LIBASSISTANT_PUBLIC_STRUCTS)
 
 // TODO(https://crbug.com/1164001): remove when it moved to ash.
 namespace ash::assistant {
+using ::chromeos::assistant::AssistantInteractionMetadata;
+using ::chromeos::assistant::AssistantInteractionType;
 using ::chromeos::assistant::AssistantQuerySource;
-}
+}  // namespace ash::assistant
 
 #endif  // CHROMEOS_SERVICES_LIBASSISTANT_PUBLIC_CPP_ASSISTANT_INTERACTION_METADATA_H_

@@ -14,8 +14,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 namespace {
 
@@ -431,5 +430,4 @@ TEST_F(AssistantAudioDevicesTest, ShouldDoNothingIfUserPrefIsAccepted) {
   audio_devices().SetLocale("accepted-LOCALE");
 }
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant

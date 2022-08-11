@@ -10,8 +10,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/services/assistant/service_context.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 // Fake implementation of the |ServiceContext| used during the unittests.
 // Every method will assert when called,
@@ -27,26 +26,24 @@ class FakeServiceContext : public ServiceContext {
   ~FakeServiceContext() override;
 
   FakeServiceContext& set_assistant_alarm_timer_controller(
-      ash::AssistantAlarmTimerController*);
+      AssistantAlarmTimerController*);
   FakeServiceContext& set_main_task_runner(
       scoped_refptr<base::SingleThreadTaskRunner>);
   FakeServiceContext& set_power_manager_client(PowerManagerClient*);
   FakeServiceContext& set_primary_account_gaia_id(std::string);
-  FakeServiceContext& set_assistant_state(ash::AssistantStateBase*);
+  FakeServiceContext& set_assistant_state(AssistantStateBase*);
   FakeServiceContext& set_assistant_notification_controller(
-      ash::AssistantNotificationController*);
-  FakeServiceContext& set_cras_audio_handler(ash::CrasAudioHandler*);
+      AssistantNotificationController*);
+  FakeServiceContext& set_cras_audio_handler(CrasAudioHandler*);
 
   // ServiceContext implementation:
-  ash::AssistantAlarmTimerController* assistant_alarm_timer_controller()
+  AssistantAlarmTimerController* assistant_alarm_timer_controller() override;
+  AssistantController* assistant_controller() override;
+  AssistantNotificationController* assistant_notification_controller() override;
+  AssistantScreenContextController* assistant_screen_context_controller()
       override;
-  ash::AssistantController* assistant_controller() override;
-  ash::AssistantNotificationController* assistant_notification_controller()
-      override;
-  ash::AssistantScreenContextController* assistant_screen_context_controller()
-      override;
-  ash::AssistantStateBase* assistant_state() override;
-  ash::CrasAudioHandler* cras_audio_handler() override;
+  AssistantStateBase* assistant_state() override;
+  CrasAudioHandler* cras_audio_handler() override;
   DeviceActions* device_actions() override;
   scoped_refptr<base::SequencedTaskRunner> main_task_runner() override;
   PowerManagerClient* power_manager_client() override;
@@ -54,15 +51,14 @@ class FakeServiceContext : public ServiceContext {
 
  private:
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
-  ash::AssistantStateBase* assistant_state_ = nullptr;
+  AssistantStateBase* assistant_state_ = nullptr;
   PowerManagerClient* power_manager_client_ = nullptr;
   std::string gaia_id_ = kGaiaId;
-  ash::AssistantAlarmTimerController* assistant_alarm_timer_controller_ =
-      nullptr;
-  ash::AssistantNotificationController* assistant_notification_controller_ =
-      nullptr;
-  ash::CrasAudioHandler* cras_audio_handler_ = nullptr;
+  AssistantAlarmTimerController* assistant_alarm_timer_controller_ = nullptr;
+  AssistantNotificationController* assistant_notification_controller_ = nullptr;
+  CrasAudioHandler* cras_audio_handler_ = nullptr;
 };
-}  // namespace assistant
-}  // namespace chromeos
+
+}  // namespace ash::assistant
+
 #endif  // CHROMEOS_ASH_SERVICES_ASSISTANT_TEST_SUPPORT_FAKE_SERVICE_CONTEXT_H_

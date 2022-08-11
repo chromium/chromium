@@ -5,8 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_ASSISTANT_PLATFORM_AUDIO_INPUT_HOST_H_
 #define CHROMEOS_ASH_SERVICES_ASSISTANT_PLATFORM_AUDIO_INPUT_HOST_H_
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 // Class that provides the bridge between the ChromeOS UI thread and the
 // Libassistant audio input class.
@@ -23,7 +22,6 @@ class AudioInputHost {
   virtual void OnConversationTurnStarted() = 0;
 };
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant
 
 #endif  // CHROMEOS_ASH_SERVICES_ASSISTANT_PLATFORM_AUDIO_INPUT_HOST_H_

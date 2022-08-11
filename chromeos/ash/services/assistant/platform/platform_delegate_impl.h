@@ -8,8 +8,7 @@
 #include "chromeos/services/libassistant/public/mojom/platform_delegate.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 // Delegate that will fetch all instances from the |AssistantBrowserDelegate|.
 class PlatformDelegateImpl
@@ -27,7 +26,7 @@ class PlatformDelegateImpl
       mojo::PendingReceiver<media::mojom::AudioStreamFactory> receiver)
       override;
   void BindAudioDecoderFactory(
-      mojo::PendingReceiver<ash::assistant::mojom::AssistantAudioDecoderFactory>
+      mojo::PendingReceiver<assistant::mojom::AssistantAudioDecoderFactory>
           receiver) override;
   void BindBatteryMonitor(
       mojo::PendingReceiver<::device::mojom::BatteryMonitor> receiver) override;
@@ -45,7 +44,6 @@ class PlatformDelegateImpl
   mojo::Receiver<PlatformDelegate> receiver_{this};
 };
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant
 
 #endif  // CHROMEOS_ASH_SERVICES_ASSISTANT_PLATFORM_PLATFORM_DELEGATE_IMPL_H_

@@ -17,8 +17,15 @@
 #include "chromeos/services/libassistant/public/mojom/speaker_id_enrollment_controller.mojom.h"
 #include "chromeos/version/version_loader.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
+
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace {
+using ::chromeos::assistant::ActivityControlSettingsUiSelector;
+using ::chromeos::assistant::ConsentFlowUiSelector;
+using ::chromeos::assistant::SettingsUi;
+using ::chromeos::assistant::SettingsUiSelector;
+}  // namespace
 
 AssistantSettingsImpl::AssistantSettingsImpl(ServiceContext* context)
     : context_(context) {}
@@ -68,8 +75,7 @@ void AssistantSettingsImpl::StopSpeakerIdEnrollment() {
 }
 
 void AssistantSettingsImpl::SyncSpeakerIdEnrollmentStatus() {
-  if (assistant_state()->allowed_state() !=
-          chromeos::assistant::AssistantAllowedState::ALLOWED ||
+  if (assistant_state()->allowed_state() != AssistantAllowedState::ALLOWED ||
       features::IsVoiceMatchDisabled()) {
     return;
   }
@@ -140,11 +146,11 @@ void AssistantSettingsImpl::HandleDeviceAppsStatusSync(
   std::move(callback).Run(gaia_user_context_ui.device_apps_enabled());
 }
 
-ash::AssistantStateBase* AssistantSettingsImpl::assistant_state() {
+AssistantStateBase* AssistantSettingsImpl::assistant_state() {
   return context_->assistant_state();
 }
 
-ash::AssistantController* AssistantSettingsImpl::assistant_controller() {
+AssistantController* AssistantSettingsImpl::assistant_controller() {
   return context_->assistant_controller();
 }
 
@@ -154,5 +160,4 @@ AssistantSettingsImpl::settings_controller() {
   return *settings_controller_;
 }
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant

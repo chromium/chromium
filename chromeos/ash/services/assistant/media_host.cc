@@ -12,8 +12,7 @@
 #include "chromeos/services/assistant/public/shared/utils.h"
 #include "chromeos/services/libassistant/public/mojom/media_controller.mojom.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 namespace {
 using chromeos::libassistant::mojom::PlaybackState;
@@ -255,7 +254,7 @@ void MediaHost::SetRelatedInfoEnabled(bool enable) {
   }
 }
 
-libassistant::mojom::MediaController&
+chromeos::libassistant::mojom::MediaController&
 MediaHost::libassistant_media_controller() {
   // Initialize must be called first.
   DCHECK(libassistant_media_controller_);
@@ -296,5 +295,4 @@ void MediaHost::StopObservingMediaController() {
   chromeos_media_state_observer_.reset();
 }
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant

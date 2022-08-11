@@ -4,13 +4,11 @@
 
 #include "chromeos/ash/services/assistant/test_support/mock_assistant_interaction_subscriber.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 MockAssistantInteractionSubscriber::MockAssistantInteractionSubscriber() =
     default;
 MockAssistantInteractionSubscriber::~MockAssistantInteractionSubscriber() =
     default;
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant

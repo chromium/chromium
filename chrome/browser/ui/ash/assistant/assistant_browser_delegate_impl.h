@@ -93,7 +93,7 @@ class AssistantBrowserDelegateImpl
   void OnAppTerminating();
 
   std::unique_ptr<DeviceActions> device_actions_;
-  std::unique_ptr<chromeos::assistant::Service> service_;
+  std::unique_ptr<ash::assistant::Service> service_;
   std::unique_ptr<AssistantSetup> assistant_setup_;
 
   bool initialized_ = false;

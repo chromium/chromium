@@ -79,7 +79,7 @@ void AssistantBrowserDelegateImpl::MaybeInit(Profile* profile) {
   device_actions_ = std::make_unique<DeviceActions>(
       std::make_unique<DeviceActionsDelegateImpl>());
 
-  service_ = std::make_unique<chromeos::assistant::Service>(
+  service_ = std::make_unique<ash::assistant::Service>(
       profile->GetURLLoaderFactory()->Clone(),
       IdentityManagerFactory::GetForProfile(profile));
   service_->Init();

@@ -5,8 +5,7 @@
 #include "chromeos/ash/services/assistant/platform/audio_output_delegate_impl.h"
 #include "chromeos/ash/services/assistant/media_session/assistant_media_session.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 AudioOutputDelegateImpl::AudioOutputDelegateImpl(
     AssistantMediaSession* media_session)
@@ -50,5 +49,4 @@ void AudioOutputDelegateImpl::AddMediaSessionObserver(
   media_session_->AddObserver(std::move(observer));
 }
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant

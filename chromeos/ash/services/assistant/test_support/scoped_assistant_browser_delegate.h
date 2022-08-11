@@ -11,8 +11,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 // A base testing implementation of the AssistantBrowserDelegate interface which
 // tests can subclass to implement specific client mocking support. It also
@@ -32,7 +31,7 @@ class ScopedAssistantBrowserDelegate : AssistantBrowserDelegate {
   // AssistantBrowserDelegate implementation:
   void OnAssistantStatusChanged(AssistantStatus status) override {}
   void RequestAssistantVolumeControl(
-      mojo::PendingReceiver<ash::mojom::AssistantVolumeControl> receiver)
+      mojo::PendingReceiver<::ash::mojom::AssistantVolumeControl> receiver)
       override {}
   void RequestBatteryMonitor(
       mojo::PendingReceiver<device::mojom::BatteryMonitor> receiver) override {}
@@ -43,7 +42,7 @@ class ScopedAssistantBrowserDelegate : AssistantBrowserDelegate {
       mojo::PendingReceiver<media::mojom::AudioStreamFactory> receiver)
       override {}
   void RequestAudioDecoderFactory(
-      mojo::PendingReceiver<ash::assistant::mojom::AssistantAudioDecoderFactory>
+      mojo::PendingReceiver<assistant::mojom::AssistantAudioDecoderFactory>
           receiver) override {}
   void RequestAudioFocusManager(
       mojo::PendingReceiver<media_session::mojom::AudioFocusManager> receiver)
@@ -52,8 +51,8 @@ class ScopedAssistantBrowserDelegate : AssistantBrowserDelegate {
       mojo::PendingReceiver<media_session::mojom::MediaControllerManager>
           receiver) override;
   void RequestNetworkConfig(
-      mojo::PendingReceiver<network_config::mojom::CrosNetworkConfig> receiver)
-      override {}
+      mojo::PendingReceiver<chromeos::network_config::mojom::CrosNetworkConfig>
+          receiver) override {}
   void OpenUrl(GURL url) override;
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
   void RequestLibassistantService(
@@ -66,7 +65,6 @@ class ScopedAssistantBrowserDelegate : AssistantBrowserDelegate {
       media_controller_manager_receiver_ = nullptr;
 };
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant
 
 #endif  // CHROMEOS_ASH_SERVICES_ASSISTANT_TEST_SUPPORT_SCOPED_ASSISTANT_BROWSER_DELEGATE_H_

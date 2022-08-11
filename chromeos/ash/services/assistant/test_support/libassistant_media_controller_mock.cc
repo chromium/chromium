@@ -4,8 +4,7 @@
 
 #include "chromeos/ash/services/assistant/test_support/libassistant_media_controller_mock.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 LibassistantMediaControllerMock::LibassistantMediaControllerMock() = default;
 LibassistantMediaControllerMock::~LibassistantMediaControllerMock() = default;
@@ -20,5 +19,4 @@ void LibassistantMediaControllerMock::FlushForTesting() {
   receiver_.FlushForTesting();
 }
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant

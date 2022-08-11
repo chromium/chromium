@@ -5,12 +5,10 @@
 #include "chromeos/ash/services/assistant/test_support/mock_assistant.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_feedback.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 MockAssistant::MockAssistant() = default;
 
 MockAssistant::~MockAssistant() = default;
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant

@@ -8,8 +8,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 FakeLibassistantService::FakeLibassistantService() : receiver_(this) {}
 
@@ -85,5 +84,4 @@ void FakeLibassistantService::Bind(
       std::move(speaker_id_enrollment_controller);
 }
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant

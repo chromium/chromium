@@ -15,8 +15,7 @@
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 class MediaHost;
 
@@ -136,7 +135,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantMediaSession
   base::WeakPtrFactory<AssistantMediaSession> weak_factory_{this};
 };
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant
 
 #endif  // CHROMEOS_ASH_SERVICES_ASSISTANT_MEDIA_SESSION_ASSISTANT_MEDIA_SESSION_H_

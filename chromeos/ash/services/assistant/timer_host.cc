@@ -9,9 +9,9 @@
 #include "chromeos/ash/services/assistant/service_context.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_timer.h"
 #include "chromeos/services/libassistant/public/mojom/timer_controller.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 ////////////////////////////////////////////////////////////////////////////////
 // TimerDelegateImpl
@@ -34,7 +34,7 @@ class TimerHost::TimerDelegateImpl
     assistant_alarm_timer_controller().OnTimerStateChanged(timers);
   }
 
-  ash::AssistantAlarmTimerController& assistant_alarm_timer_controller() {
+  AssistantAlarmTimerController& assistant_alarm_timer_controller() {
     auto* result = context_.assistant_alarm_timer_controller();
     DCHECK(result);
     return *result;
@@ -88,5 +88,4 @@ TimerHost::libassistant_controller() {
   return *libassistant_controller_;
 }
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant

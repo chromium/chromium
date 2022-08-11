@@ -16,8 +16,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 // Fake implementation of the Mojom |ServiceController| and
 // |SettingsController|. This implementation will inform the registered
@@ -134,7 +133,7 @@ class FakeServiceController
 
   base::WeakPtrFactory<FakeServiceController> weak_factory_{this};
 };
-}  // namespace assistant
-}  // namespace chromeos
+
+}  // namespace ash::assistant
 
 #endif  // CHROMEOS_ASH_SERVICES_ASSISTANT_TEST_SUPPORT_FAKE_SERVICE_CONTROLLER_H_

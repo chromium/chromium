@@ -7,12 +7,11 @@
 
 #include "ash/public/cpp/assistant/assistant_state.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 // Instance of |AssistantState| where every absl::optional value has a non-null
 // value. All values will be set to their equivalent of enabled.
-class FullyInitializedAssistantState : public ash::AssistantState {
+class FullyInitializedAssistantState : public AssistantState {
  public:
   FullyInitializedAssistantState();
 
@@ -29,7 +28,6 @@ class FullyInitializedAssistantState : public ash::AssistantState {
   void InitializeAllValues();
 };
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant
 
 #endif  // CHROMEOS_ASH_SERVICES_ASSISTANT_TEST_SUPPORT_FULLY_INITIALIZED_ASSISTANT_STATE_H_

@@ -17,11 +17,10 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash {
+
 class AssistantController;
 class AssistantStateBase;
-}  // namespace ash
 
-namespace chromeos {
 namespace assistant {
 
 class ServiceContext;
@@ -62,8 +61,8 @@ class AssistantSettingsImpl : public AssistantSettings {
   void HandleDeviceAppsStatusSync(base::OnceCallback<void(bool)> callback,
                                   const std::string& settings);
 
-  ash::AssistantStateBase* assistant_state();
-  ash::AssistantController* assistant_controller();
+  AssistantStateBase* assistant_state();
+  AssistantController* assistant_controller();
   chromeos::libassistant::mojom::SettingsController& settings_controller();
 
   ServiceContext* const context_;
@@ -77,6 +76,6 @@ class AssistantSettingsImpl : public AssistantSettings {
 };
 
 }  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_SERVICES_ASSISTANT_ASSISTANT_SETTINGS_IMPL_H_

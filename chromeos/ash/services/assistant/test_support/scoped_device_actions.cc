@@ -6,8 +6,7 @@
 
 #include <utility>
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 void ScopedDeviceActions::GetScreenBrightnessLevel(
     GetScreenBrightnessLevelCallback callback) {
@@ -23,5 +22,4 @@ AppStatus ScopedDeviceActions::GetAndroidAppStatus(
   return AppStatus::kAvailable;
 }
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant

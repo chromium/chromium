@@ -24,7 +24,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AppListEventSubscriber
       const std::vector<AndroidAppInfo>& apps_info) = 0;
 };
 
-// Main interface for |chromeos::assistant::Service| to execute device related
+// Main interface for |ash::assistant::Service| to execute device related
 // actions.
 class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) DeviceActions {
  public:

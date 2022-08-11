@@ -8,15 +8,15 @@
 #include <cstdint>
 
 #include "ash/components/audio/audio_device.h"
-// TODO(https://crbug.com/1164001): use forward declaration when migrated to
-// ash/.
-#include "ash/components/audio/cras_audio_handler.h"
 #include "base/component_export.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
+
+class CrasAudioHandler;
+
 namespace assistant {
 
 // This class will monitor the available audio devices (through
@@ -51,7 +51,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AudioDevices {
 
   // Used during unittests to simulate an update to the list of available audio
   // devices.
-  void SetAudioDevicesForTest(const chromeos::AudioDeviceList& audio_devices);
+  void SetAudioDevicesForTest(const AudioDeviceList& audio_devices);
 
   using ScopedObservation =
       base::ScopedObservation<AudioDevices,
@@ -63,9 +63,9 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AudioDevices {
   class ScopedCrasAudioHandlerObserver;
   class HotwordModelUpdater;
 
-  void SetAudioDevices(const chromeos::AudioDeviceList& audio_devices);
-  void UpdateHotwordDeviceId(const chromeos::AudioDeviceList& devices);
-  void UpdateDeviceId(const chromeos::AudioDeviceList& devices);
+  void SetAudioDevices(const AudioDeviceList& audio_devices);
+  void UpdateHotwordDeviceId(const AudioDeviceList& devices);
+  void UpdateDeviceId(const AudioDeviceList& devices);
   void UpdateHotwordModel();
 
   // Handles the asynchronous nature of sending a new hotword model to
@@ -88,6 +88,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AudioDevices {
 };
 
 }  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_SERVICES_ASSISTANT_PLATFORM_AUDIO_DEVICES_H_

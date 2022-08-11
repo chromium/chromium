@@ -27,8 +27,7 @@ class LibassistantService;
 }  // namespace libassistant
 }  // namespace chromeos
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 class LibassistantServiceHost;
 
@@ -151,7 +150,6 @@ class AssistantHost {
   base::Thread background_thread_{"Assistant background thread"};
 };
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant
 
 #endif  // CHROMEOS_ASH_SERVICES_ASSISTANT_ASSISTANT_HOST_H_

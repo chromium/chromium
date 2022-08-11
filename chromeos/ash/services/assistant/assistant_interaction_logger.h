@@ -10,8 +10,7 @@
 
 #include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 // A subscriber that will log all Assistant interactions.
 // The interactions will be logged using
@@ -66,7 +65,6 @@ class AssistantInteractionLogger : public AssistantInteractionSubscriber {
   void OnWaitStarted() override;
 };
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant
 
 #endif  // CHROMEOS_ASH_SERVICES_ASSISTANT_ASSISTANT_INTERACTION_LOGGER_H_

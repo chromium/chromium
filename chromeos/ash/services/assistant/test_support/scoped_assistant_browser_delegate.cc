@@ -6,12 +6,7 @@
 
 #include "ash/public/cpp/new_window_delegate.h"
 
-namespace chromeos {
-namespace assistant {
-
-namespace {
-
-}  // namespace
+namespace ash::assistant {
 
 ScopedAssistantBrowserDelegate::ScopedAssistantBrowserDelegate() = default;
 
@@ -36,9 +31,8 @@ void ScopedAssistantBrowserDelegate::RequestMediaControllerManager(
 }
 
 void ScopedAssistantBrowserDelegate::OpenUrl(GURL url) {
-  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
-      url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction);
+  NewWindowDelegate::GetPrimary()->OpenUrl(
+      url, NewWindowDelegate::OpenUrlFrom::kUserInteraction);
 }
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant

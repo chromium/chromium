@@ -23,8 +23,7 @@
     return;                                                                 \
   }
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 namespace {
 
@@ -239,5 +238,4 @@ void AssistantMediaSession::NotifyMediaSessionInfoChanged() {
     observer->MediaSessionInfoChanged(session_info_.Clone());
 }
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant

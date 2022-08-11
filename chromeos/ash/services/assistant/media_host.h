@@ -8,19 +8,16 @@
 #include "base/component_export.h"
 #include "base/observer_list.h"
 #include "base/unguessable_token.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/ash/services/assistant/public/cpp/assistant_browser_delegate.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/services/libassistant/public/mojom/media_controller.mojom-forward.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/public/mojom/media_controller.mojom.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
+class AssistantBrowserDelegate;
+class AssistantInteractionSubscriber;
 class AssistantManagerServiceImpl;
 class AssistantMediaSession;
 
@@ -90,7 +87,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) MediaHost {
   std::unique_ptr<LibassistantMediaDelegate> libassistant_media_delegate_;
 };
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant
 
 #endif  // CHROMEOS_ASH_SERVICES_ASSISTANT_MEDIA_HOST_H_

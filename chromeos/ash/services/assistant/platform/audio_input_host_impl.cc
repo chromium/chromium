@@ -10,8 +10,7 @@
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 namespace {
 
@@ -31,7 +30,7 @@ MojomLidState ConvertLidState(chromeos::PowerManagerClient::LidState state) {
 
 }  // namespace
 
-chromeos::assistant::AudioInputHostImpl::AudioInputHostImpl(
+AudioInputHostImpl::AudioInputHostImpl(
     mojo::PendingRemote<chromeos::libassistant::mojom::AudioInputController>
         pending_remote,
     CrasAudioHandler* cras_audio_handler,
@@ -94,5 +93,4 @@ void AudioInputHostImpl::OnInitialLidStateReceived(
     remote_->SetLidState(ConvertLidState(switch_states->lid_state));
 }
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant

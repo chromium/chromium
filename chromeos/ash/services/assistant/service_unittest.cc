@@ -34,8 +34,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 namespace {
 constexpr base::TimeDelta kDefaultTokenExpirationDelay =
@@ -51,8 +50,7 @@ const char* kEmailAddress = "user@gmail.com";
 class ScopedFakeAssistantBrowserDelegate
     : public ScopedAssistantBrowserDelegate {
  public:
-  explicit ScopedFakeAssistantBrowserDelegate(
-      ash::AssistantState* assistant_state)
+  explicit ScopedFakeAssistantBrowserDelegate(AssistantState* assistant_state)
       : status_(AssistantStatus::NOT_READY) {}
 
   AssistantStatus status() { return status_; }
@@ -74,7 +72,7 @@ class AssistantServiceTest : public testing::Test {
   ~AssistantServiceTest() override = default;
 
   void SetUp() override {
-    chromeos::CrasAudioHandler::InitializeForTesting();
+    CrasAudioHandler::InitializeForTesting();
 
     PowerManagerClient::InitializeFake();
     FakePowerManagerClient::Get()->SetTabletMode(
@@ -109,7 +107,7 @@ class AssistantServiceTest : public testing::Test {
   void TearDown() override {
     service_.reset();
     PowerManagerClient::Shutdown();
-    chromeos::CrasAudioHandler::Shutdown();
+    CrasAudioHandler::Shutdown();
   }
 
   void StartAssistantAndWait() {
@@ -146,7 +144,7 @@ class AssistantServiceTest : public testing::Test {
 
   PrefService* pref_service() { return &pref_service_; }
 
-  ash::AssistantState* assistant_state() { return &assistant_state_; }
+  AssistantState* assistant_state() { return &assistant_state_; }
 
   ScopedFakeAssistantBrowserDelegate* client() { return &fake_delegate_; }
 
@@ -164,7 +162,7 @@ class AssistantServiceTest : public testing::Test {
   signin::IdentityTestEnvironment identity_test_env_;
   ScopedFakeAssistantBrowserDelegate fake_delegate_{&assistant_state_};
   ScopedDeviceActions fake_device_actions_;
-  testing::NiceMock<ash::MockAssistantController> mock_assistant_controller;
+  testing::NiceMock<MockAssistantController> mock_assistant_controller;
 
   network::TestURLLoaderFactory url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
@@ -309,5 +307,4 @@ TEST_F(AssistantServiceTest, ShouldSetClientStatusToNotReadyWhenStopped) {
   EXPECT_EQ(client()->status(), AssistantStatus::NOT_READY);
 }
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant

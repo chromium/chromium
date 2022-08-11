@@ -14,8 +14,7 @@
 #include "chromeos/services/libassistant/public/mojom/authentication_state_observer.mojom.h"
 #include "services/media_session/public/mojom/media_session.mojom-shared.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 class AuthenticationStateObserver;
 
@@ -126,7 +125,6 @@ class AuthenticationStateObserver
       receiver_{this};
 };
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant
 
 #endif  // CHROMEOS_ASH_SERVICES_ASSISTANT_ASSISTANT_MANAGER_SERVICE_H_
