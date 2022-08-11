@@ -119,15 +119,7 @@ bool AutocorrectManager::OnKeyEvent(const ui::KeyEvent& event) {
     return false;
   }
   if (event.code() == ui::DomCode::ARROW_UP && window_visible_) {
-    std::string error;
-    auto button = ui::ime::AssistiveWindowButton();
-    button.id = ui::ime::ButtonId::kUndo;
-    button.window_type = ui::ime::AssistiveWindowType::kUndoWindow;
-    button.announce_string = l10n_util::GetStringFUTF16(
-        IDS_SUGGESTION_AUTOCORRECT_UNDO_BUTTON, original_text_);
-    suggestion_handler_->SetButtonHighlighted(context_id_, button, true,
-                                              &error);
-    button_highlighted_ = true;
+    HighlightUndoButton();
     return true;
   }
   if (event.code() == ui::DomCode::ENTER && window_visible_ &&
@@ -175,31 +167,10 @@ void AutocorrectManager::OnSurroundingTextChanged(const std::u16string& text,
   // 3) Ensure there is no selection (selection UI clashes with autocorrect UI).
   if (!range.is_empty() && cursor_pos_unsigned >= range.start() &&
       cursor_pos_unsigned <= range.end() && cursor_pos == anchor_pos) {
-    if (!window_visible_) {
-      const std::u16string autocorrected_text =
-          text.substr(range.start(), range.length());
-      AssistiveWindowProperties properties;
-      properties.type = ui::ime::AssistiveWindowType::kUndoWindow;
-      properties.visible = true;
-      properties.announce_string = l10n_util::GetStringFUTF16(
-          IDS_SUGGESTION_AUTOCORRECT_UNDO_WINDOW_SHOWN, original_text_,
-          autocorrected_text);
-      window_visible_ = true;
-      button_highlighted_ = false;
-      suggestion_handler_->SetAssistiveWindowProperties(context_id_, properties,
-                                                        &error);
-      LogAssistiveAutocorrectAction(AutocorrectActions::kWindowShown);
-      RecordAssistiveCoverage(AssistiveType::kAutocorrectWindowShown);
-    }
+    ShowUndoWindow(range, text);
     key_presses_until_underline_hide_ = kKeysUntilUnderlineHides;
-  } else if (window_visible_) {
-    AssistiveWindowProperties properties;
-    properties.type = ui::ime::AssistiveWindowType::kUndoWindow;
-    properties.visible = false;
-    window_visible_ = false;
-    button_highlighted_ = false;
-    suggestion_handler_->SetAssistiveWindowProperties(context_id_, properties,
-                                                      &error);
+  } else {
+    HideUndoWindow();
   }
 }
 
@@ -220,15 +191,7 @@ void AutocorrectManager::OnFocus(int context_id) {
 }
 
 void AutocorrectManager::UndoAutocorrect() {
-  // TODO(crbug/1111135): error handling and metrics
-  std::string error;
-  AssistiveWindowProperties properties;
-  properties.type = ui::ime::AssistiveWindowType::kUndoWindow;
-  properties.visible = false;
-  window_visible_ = false;
-  button_highlighted_ = false;
-  suggestion_handler_->SetAssistiveWindowProperties(context_id_, properties,
-                                                    &error);
+  HideUndoWindow();
 
   ui::IMEInputContextHandlerInterface* input_context =
       ui::IMEBridge::Get()->GetInputContextHandler();
@@ -266,6 +229,62 @@ void AutocorrectManager::UndoAutocorrect() {
   RecordAssistiveCoverage(AssistiveType::kAutocorrectReverted);
   RecordAssistiveSuccess(AssistiveType::kAutocorrectReverted);
   LogAssistiveAutocorrectDelay(base::TimeTicks::Now() - autocorrect_time_);
+}
+
+void AutocorrectManager::ShowUndoWindow(
+  gfx::Range range, const std::u16string& text) {
+  if (window_visible_) {
+    return;
+  }
+
+  std::string error;
+  const std::u16string autocorrected_text =
+      text.substr(range.start(), range.length());
+  AssistiveWindowProperties properties;
+  properties.type = ui::ime::AssistiveWindowType::kUndoWindow;
+  properties.visible = true;
+  properties.announce_string = l10n_util::GetStringFUTF16(
+      IDS_SUGGESTION_AUTOCORRECT_UNDO_WINDOW_SHOWN, original_text_,
+      autocorrected_text);
+  button_highlighted_ = false;
+  // TODO(b/161490813): Handle error.
+  suggestion_handler_->SetAssistiveWindowProperties(context_id_, properties,
+                                                    &error);
+  LogAssistiveAutocorrectAction(AutocorrectActions::kWindowShown);
+  RecordAssistiveCoverage(AssistiveType::kAutocorrectWindowShown);
+  window_visible_ = true;
+}
+
+void AutocorrectManager::HideUndoWindow() {
+  if (!window_visible_) {
+    return;
+  }
+
+  std::string error;
+  AssistiveWindowProperties properties;
+  properties.type = ui::ime::AssistiveWindowType::kUndoWindow;
+  properties.visible = false;
+  button_highlighted_ = false;
+  // TODO(b/161490813): Handle error.
+  suggestion_handler_->SetAssistiveWindowProperties(context_id_, properties,
+                                                    &error);
+  window_visible_ = false;
+}
+
+void AutocorrectManager::HighlightUndoButton() {
+  if (button_highlighted_) {
+    return;
+  }
+
+  std::string error;
+  auto button = ui::ime::AssistiveWindowButton();
+  button.id = ui::ime::ButtonId::kUndo;
+  button.window_type = ui::ime::AssistiveWindowType::kUndoWindow;
+  button.announce_string = l10n_util::GetStringFUTF16(
+      IDS_SUGGESTION_AUTOCORRECT_UNDO_BUTTON, original_text_);
+  suggestion_handler_->SetButtonHighlighted(context_id_, button, true,
+                                            &error);
+  button_highlighted_ = true;
 }
 
 void AutocorrectManager::OnTextFieldContextualInfoChanged(

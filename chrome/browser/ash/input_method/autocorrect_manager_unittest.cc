@@ -25,6 +25,28 @@ namespace {
 
 using ::testing::_;
 
+// A helper to create properties for hidden undo window.
+AssistiveWindowProperties CreateHiddenUndoWindowProperties() {
+  AssistiveWindowProperties window_properties;
+  window_properties.type = ui::ime::AssistiveWindowType::kUndoWindow;
+  window_properties.visible = false;
+  return window_properties;
+}
+
+// A helper to create properties for shown undo window.
+AssistiveWindowProperties CreateVisibleUndoWindowProperties(
+    const std::u16string& original_text,
+    const std::u16string& autocorrected_text) {
+  AssistiveWindowProperties window_properties;
+  window_properties.type = ui::ime::AssistiveWindowType::kUndoWindow;
+  window_properties.visible = true;
+  window_properties.announce_string = l10n_util::GetStringFUTF16(
+      IDS_SUGGESTION_AUTOCORRECT_UNDO_WINDOW_SHOWN, original_text,
+      autocorrected_text);
+  return window_properties;
+}
+
+// A helper for creating key event.
 ui::KeyEvent CreateKeyEvent(ui::DomKey key, ui::DomCode code) {
   return ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_UNKNOWN, code, ui::EF_NONE,
                       key, ui::EventTimeForNow());
@@ -116,11 +138,8 @@ TEST(AutocorrectManagerTest, MovingCursorInsideRangeShowsAssistiveWindow) {
                                    /*anchor_pos=*/4);
   manager.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
 
-  AssistiveWindowProperties properties;
-  properties.type = ui::ime::AssistiveWindowType::kUndoWindow;
-  properties.visible = true;
-  properties.announce_string = l10n_util::GetStringFUTF16(
-      IDS_SUGGESTION_AUTOCORRECT_UNDO_WINDOW_SHOWN, u"teh", u"the");
+  AssistiveWindowProperties properties =
+      CreateVisibleUndoWindowProperties(u"teh", u"the");
   EXPECT_CALL(mock_suggestion_handler,
               SetAssistiveWindowProperties(_, properties, _));
 
@@ -140,17 +159,13 @@ TEST(AutocorrectManagerTest, MovingCursorOutsideRangeHidesAssistiveWindow) {
   {
     ::testing::InSequence seq;
 
-    AssistiveWindowProperties shown_properties;
-    shown_properties.type = ui::ime::AssistiveWindowType::kUndoWindow;
-    shown_properties.visible = true;
-    shown_properties.announce_string = l10n_util::GetStringFUTF16(
-        IDS_SUGGESTION_AUTOCORRECT_UNDO_WINDOW_SHOWN, u"teh", u"the");
+    AssistiveWindowProperties shown_properties =
+        CreateVisibleUndoWindowProperties(u"teh", u"the");
     EXPECT_CALL(mock_suggestion_handler,
                 SetAssistiveWindowProperties(_, shown_properties, _));
 
-    AssistiveWindowProperties hidden_properties;
-    hidden_properties.type = ui::ime::AssistiveWindowType::kUndoWindow;
-    hidden_properties.visible = false;
+    AssistiveWindowProperties hidden_properties =
+        CreateHiddenUndoWindowProperties();
     EXPECT_CALL(mock_suggestion_handler,
                 SetAssistiveWindowProperties(_, hidden_properties, _));
   }

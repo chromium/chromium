@@ -77,6 +77,16 @@ class AutocorrectManager {
 
   void OnTextFieldContextualInfoChanged(const TextFieldContextualInfo& info);
 
+  // Hides undo window if there is any visible.
+  void HideUndoWindow();
+
+  // Shows undo window and record the relevant metric if undo window is
+  // not already visible.
+  void ShowUndoWindow(gfx::Range range, const std::u16string& text);
+
+  // Highlights undo button of undo window if it is visible.
+  void HighlightUndoButton();
+
   SuggestionHandlerInterface* suggestion_handler_;
   int context_id_ = 0;
   int key_presses_until_underline_hide_ = 0;
