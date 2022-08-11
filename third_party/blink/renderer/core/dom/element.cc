@@ -2626,8 +2626,7 @@ void Element::HideAllPopupsUntil(const Element* endpoint,
         document.PopupHintShowing()->HidePopUpInternal(focus_behavior,
                                                        forcing_level);
       }
-      while (!document.PopupStack().IsEmpty() &&
-             document.PopupStack().back() != endpoint) {
+      while (!document.PopupStack().IsEmpty()) {
         document.PopupStack().back()->HidePopUpInternal(focus_behavior,
                                                         forcing_level);
       }
