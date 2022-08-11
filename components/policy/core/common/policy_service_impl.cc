@@ -95,7 +95,7 @@ base::flat_set<std::string> GetStringListPolicyItems(
 }
 
 bool IsUserCloudMergingAllowed(const PolicyMap& policies) {
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_CHROMEOS)
   return false;
 #else
   const base::Value* cloud_user_policy_merge_value =

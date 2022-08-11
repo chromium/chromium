@@ -10564,7 +10564,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:92-', 'android:97-'],
-      'future_on': ['fuchsia'],
+      'future_on': ['fuchsia', 'ios'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
