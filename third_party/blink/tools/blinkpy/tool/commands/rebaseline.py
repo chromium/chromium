@@ -537,24 +537,12 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
                 test_flag_pairs_to_suffixes[test, flag_spec].update(
                     self._suffixes_for_actual_failures(test, build, step_name))
 
-        suffixes_flag_spec = collections.defaultdict(set)
-        test_list = collections.defaultdict(list)
+        optimize_commands = []
         for (test, flag_spec), suffixes in test_flag_pairs_to_suffixes.items():
+            # No need to optimize baselines for a test with no failures.
             if not suffixes:
                 continue
-            if flag_spec is None:
-                flag_spec = 'default'
-
-            suffixes_flag_spec[flag_spec].update(suffixes)
-            test_list[flag_spec].append(test)
-
-        optimize_commands = collections.defaultdict(lambda: ([], ''))
-        cwd = self._tool.git().checkout_root
-        path_to_blink_tool = self._tool.path()
-
-        # Build one optimize-baselines invocation command for each flag_spec.
-        # All the tests in the test list will be optimized iteratively.
-        for flag_spec, test_list_flag in test_list.items():
+            path_to_blink_tool = self._tool.path()
             command = [
                 self._tool.executable,
                 path_to_blink_tool,
@@ -566,15 +554,11 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
             ]
             if verbose:
                 command.append('--verbose')
-            if flag_spec != 'default':
+            if flag_spec:
                 command.extend(['--flag-specific', flag_spec])
-            command.extend([
-                '--suffixes', ','.join(sorted(suffixes_flag_spec[flag_spec]))
-            ])
-            for test in test_list_flag:
-                command.append(test)
-
-            optimize_commands[flag_spec] = (command, cwd)
+            command.extend(['--suffixes', ','.join(sorted(suffixes)), test])
+            cwd = self._tool.git().checkout_root
+            optimize_commands.append((command, cwd))
 
         return optimize_commands
 
@@ -668,14 +652,9 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
             self._update_expectations_files(lines_to_remove)
 
         if options.optimize:
-            optimize_commands = self._optimize_commands(
-                test_baseline_set, options.verbose, options.resultDB)
-
-            for _, (cmd, cwd) in optimize_commands.items():
-                output = self._tool.executive.run_command(cmd, cwd)
-                # log stderr if any.
-                for line in output[1]:
-                    print(line)
+            self._run_in_parallel(
+                self._optimize_commands(test_baseline_set, options.verbose,
+                                        options.resultDB))
 
         self._tool.git().add_list(self.unstaged_baselines())
 
