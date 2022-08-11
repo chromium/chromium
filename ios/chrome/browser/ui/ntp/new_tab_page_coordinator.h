@@ -92,6 +92,9 @@ class WebState;
 // Called when the given `feedType` has completed updates.
 - (void)handleFeedModelDidEndUpdates:(FeedType)feedType;
 
+// Changes the selected feed on the NTP to be `feedType`.
+- (void)selectFeedType:(FeedType)feedType;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_COORDINATOR_H_

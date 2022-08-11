@@ -595,6 +595,10 @@ namespace {
   }
 }
 
+- (void)selectFeedType:(FeedType)feedType {
+  [self handleFeedSelected:feedType];
+}
+
 - (void)ntpDidChangeVisibility:(BOOL)visible {
   if (!self.browser->GetBrowserState()->IsOffTheRecord()) {
     if (visible && self.started) {
@@ -606,6 +610,10 @@ namespace {
         self.feedHeaderViewController.followingFeedSortType =
             (FollowingFeedSortType)self.prefService->GetInteger(
                 prefs::kNTPFollowingFeedSortType);
+        // Update the header so that it's synced with the currently selected
+        // feed, which could have been changed when a new web state was
+        // inserted.
+        [self.feedHeaderViewController updateForSelectedFeed];
         self.feedMetricsRecorder.feedControlDelegate = self;
         self.feedMetricsRecorder.followDelegate = self;
       }
