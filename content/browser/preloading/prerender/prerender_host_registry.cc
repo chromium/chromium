@@ -181,9 +181,8 @@ int PrerenderHostRegistry::CreateAndStartHost(
       return RenderFrameHost::kNoFrameTreeNodeId;
     }
 
-    auto* attempt_impl = static_cast<PreloadingAttemptImpl*>(attempt);
-    auto prerender_host =
-        std::make_unique<PrerenderHost>(attributes, web_contents, attempt_impl);
+    auto prerender_host = std::make_unique<PrerenderHost>(
+        attributes, web_contents, attempt ? attempt->GetWeakPtr() : nullptr);
     frame_tree_node_id = prerender_host->frame_tree_node_id();
 
     CHECK(!base::Contains(prerender_host_by_frame_tree_node_id_,

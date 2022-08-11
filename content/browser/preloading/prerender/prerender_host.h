@@ -100,7 +100,7 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
 
   PrerenderHost(const PrerenderAttributes& attributes,
                 WebContents& web_contents,
-                PreloadingAttemptImpl* attempt);
+                base::WeakPtr<PreloadingAttempt> attempt);
   ~PrerenderHost() override;
 
   PrerenderHost(const PrerenderHost&) = delete;
@@ -240,8 +240,9 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
   base::ObserverList<Observer> observers_;
 
   // Stores the attempt corresponding to this prerender to log various metrics.
-  raw_ptr<PreloadingAttemptImpl, DanglingUntriaged> attempt_;
-
+  // We use a WeakPtr here to avoid inadvertent UAF. `attempt_` can get deleted
+  // before `PrerenderHostRegistry::DeleteAbandonedHosts` is scheduled.
+  base::WeakPtr<PreloadingAttempt> attempt_;
   // Navigation parameters for the navigation which loaded the main document of
   // the prerendered page, copied immediately after BeginNavigation when
   // throttles are created. They will be compared with the navigation parameters

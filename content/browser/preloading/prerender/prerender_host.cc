@@ -71,8 +71,8 @@ PreloadingFailureReason ToPreloadingFailureReason(
 
 PrerenderHost::PrerenderHost(const PrerenderAttributes& attributes,
                              WebContents& web_contents,
-                             PreloadingAttemptImpl* attempt)
-    : attributes_(attributes), attempt_(attempt) {
+                             base::WeakPtr<PreloadingAttempt> attempt)
+    : attributes_(attributes), attempt_(std::move(attempt)) {
   DCHECK(blink::features::IsPrerender2Enabled());
   // If the prerendering is browser-initiated, it is expected to have no
   // initiator. All initiator related information should be null or invalid. On
