@@ -683,7 +683,8 @@ class SecureChannelPendingConnectionManagerImplTest : public testing::Test {
         ClientParamsListToRawPtrs(clients_to_send);
 
     attempt->set_client_data_for_extraction(std::move(clients_to_send));
-    attempt->OnConnectionAttemptSucceeded(move(fake_authenticated_channel));
+    attempt->OnConnectionAttemptSucceeded(
+        std::move(fake_authenticated_channel));
 
     EXPECT_FALSE(GetActiveBleInitiatorAttempt(details_for_attempt));
     EXPECT_EQ(num_received_connections_before_call + 1u,
@@ -718,7 +719,8 @@ class SecureChannelPendingConnectionManagerImplTest : public testing::Test {
         ClientParamsListToRawPtrs(clients_to_send);
 
     attempt->set_client_data_for_extraction(std::move(clients_to_send));
-    attempt->OnConnectionAttemptSucceeded(move(fake_authenticated_channel));
+    attempt->OnConnectionAttemptSucceeded(
+        std::move(fake_authenticated_channel));
 
     EXPECT_FALSE(GetActiveBleListenerAttempt(details_for_attempt));
     EXPECT_EQ(num_received_connections_before_call + 1u,
@@ -753,7 +755,8 @@ class SecureChannelPendingConnectionManagerImplTest : public testing::Test {
         ClientParamsListToRawPtrs(clients_to_send);
 
     attempt->set_client_data_for_extraction(std::move(clients_to_send));
-    attempt->OnConnectionAttemptSucceeded(move(fake_authenticated_channel));
+    attempt->OnConnectionAttemptSucceeded(
+        std::move(fake_authenticated_channel));
 
     EXPECT_FALSE(GetActiveNearbyInitiatorAttempt(details_for_attempt));
     EXPECT_EQ(num_received_connections_before_call + 1u,
