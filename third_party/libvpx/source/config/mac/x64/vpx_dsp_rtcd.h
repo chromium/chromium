@@ -4521,7 +4521,30 @@ void vpx_highbd_quantize_b_sse2(const tran_low_t* coeff_ptr,
                                 uint16_t* eob_ptr,
                                 const int16_t* scan,
                                 const int16_t* iscan);
-#define vpx_highbd_quantize_b vpx_highbd_quantize_b_sse2
+void vpx_highbd_quantize_b_avx2(const tran_low_t* coeff_ptr,
+                                intptr_t n_coeffs,
+                                const int16_t* zbin_ptr,
+                                const int16_t* round_ptr,
+                                const int16_t* quant_ptr,
+                                const int16_t* quant_shift_ptr,
+                                tran_low_t* qcoeff_ptr,
+                                tran_low_t* dqcoeff_ptr,
+                                const int16_t* dequant_ptr,
+                                uint16_t* eob_ptr,
+                                const int16_t* scan,
+                                const int16_t* iscan);
+RTCD_EXTERN void (*vpx_highbd_quantize_b)(const tran_low_t* coeff_ptr,
+                                          intptr_t n_coeffs,
+                                          const int16_t* zbin_ptr,
+                                          const int16_t* round_ptr,
+                                          const int16_t* quant_ptr,
+                                          const int16_t* quant_shift_ptr,
+                                          tran_low_t* qcoeff_ptr,
+                                          tran_low_t* dqcoeff_ptr,
+                                          const int16_t* dequant_ptr,
+                                          uint16_t* eob_ptr,
+                                          const int16_t* scan,
+                                          const int16_t* iscan);
 
 void vpx_highbd_quantize_b_32x32_c(const tran_low_t* coeff_ptr,
                                    intptr_t n_coeffs,
@@ -4547,7 +4570,30 @@ void vpx_highbd_quantize_b_32x32_sse2(const tran_low_t* coeff_ptr,
                                       uint16_t* eob_ptr,
                                       const int16_t* scan,
                                       const int16_t* iscan);
-#define vpx_highbd_quantize_b_32x32 vpx_highbd_quantize_b_32x32_sse2
+void vpx_highbd_quantize_b_32x32_avx2(const tran_low_t* coeff_ptr,
+                                      intptr_t n_coeffs,
+                                      const int16_t* zbin_ptr,
+                                      const int16_t* round_ptr,
+                                      const int16_t* quant_ptr,
+                                      const int16_t* quant_shift_ptr,
+                                      tran_low_t* qcoeff_ptr,
+                                      tran_low_t* dqcoeff_ptr,
+                                      const int16_t* dequant_ptr,
+                                      uint16_t* eob_ptr,
+                                      const int16_t* scan,
+                                      const int16_t* iscan);
+RTCD_EXTERN void (*vpx_highbd_quantize_b_32x32)(const tran_low_t* coeff_ptr,
+                                                intptr_t n_coeffs,
+                                                const int16_t* zbin_ptr,
+                                                const int16_t* round_ptr,
+                                                const int16_t* quant_ptr,
+                                                const int16_t* quant_shift_ptr,
+                                                tran_low_t* qcoeff_ptr,
+                                                tran_low_t* dqcoeff_ptr,
+                                                const int16_t* dequant_ptr,
+                                                uint16_t* eob_ptr,
+                                                const int16_t* scan,
+                                                const int16_t* iscan);
 
 unsigned int vpx_highbd_sad16x16_c(const uint8_t* src_ptr,
                                    int src_stride,
@@ -5573,6 +5619,18 @@ void vpx_quantize_b_avx(const tran_low_t* coeff_ptr,
                         uint16_t* eob_ptr,
                         const int16_t* scan,
                         const int16_t* iscan);
+void vpx_quantize_b_avx2(const tran_low_t* coeff_ptr,
+                         intptr_t n_coeffs,
+                         const int16_t* zbin_ptr,
+                         const int16_t* round_ptr,
+                         const int16_t* quant_ptr,
+                         const int16_t* quant_shift_ptr,
+                         tran_low_t* qcoeff_ptr,
+                         tran_low_t* dqcoeff_ptr,
+                         const int16_t* dequant_ptr,
+                         uint16_t* eob_ptr,
+                         const int16_t* scan,
+                         const int16_t* iscan);
 RTCD_EXTERN void (*vpx_quantize_b)(const tran_low_t* coeff_ptr,
                                    intptr_t n_coeffs,
                                    const int16_t* zbin_ptr,
@@ -5622,6 +5680,18 @@ void vpx_quantize_b_32x32_avx(const tran_low_t* coeff_ptr,
                               uint16_t* eob_ptr,
                               const int16_t* scan,
                               const int16_t* iscan);
+void vpx_quantize_b_32x32_avx2(const tran_low_t* coeff_ptr,
+                               intptr_t n_coeffs,
+                               const int16_t* zbin_ptr,
+                               const int16_t* round_ptr,
+                               const int16_t* quant_ptr,
+                               const int16_t* quant_shift_ptr,
+                               tran_low_t* qcoeff_ptr,
+                               tran_low_t* dqcoeff_ptr,
+                               const int16_t* dequant_ptr,
+                               uint16_t* eob_ptr,
+                               const int16_t* scan,
+                               const int16_t* iscan);
 RTCD_EXTERN void (*vpx_quantize_b_32x32)(const tran_low_t* coeff_ptr,
                                          intptr_t n_coeffs,
                                          const int16_t* zbin_ptr,
@@ -7144,7 +7214,22 @@ void vpx_subtract_block_sse2(int rows,
                              ptrdiff_t src_stride,
                              const uint8_t* pred_ptr,
                              ptrdiff_t pred_stride);
-#define vpx_subtract_block vpx_subtract_block_sse2
+void vpx_subtract_block_avx2(int rows,
+                             int cols,
+                             int16_t* diff_ptr,
+                             ptrdiff_t diff_stride,
+                             const uint8_t* src_ptr,
+                             ptrdiff_t src_stride,
+                             const uint8_t* pred_ptr,
+                             ptrdiff_t pred_stride);
+RTCD_EXTERN void (*vpx_subtract_block)(int rows,
+                                       int cols,
+                                       int16_t* diff_ptr,
+                                       ptrdiff_t diff_stride,
+                                       const uint8_t* src_ptr,
+                                       ptrdiff_t src_stride,
+                                       const uint8_t* pred_ptr,
+                                       ptrdiff_t pred_stride);
 
 uint64_t vpx_sum_squares_2d_i16_c(const int16_t* src, int stride, int size);
 uint64_t vpx_sum_squares_2d_i16_sse2(const int16_t* src, int stride, int size);
@@ -7675,6 +7760,12 @@ static void setup_rtcd_internal(void) {
   vpx_highbd_idct8x8_64_add = vpx_highbd_idct8x8_64_add_sse2;
   if (flags & HAS_SSE4_1)
     vpx_highbd_idct8x8_64_add = vpx_highbd_idct8x8_64_add_sse4_1;
+  vpx_highbd_quantize_b = vpx_highbd_quantize_b_sse2;
+  if (flags & HAS_AVX2)
+    vpx_highbd_quantize_b = vpx_highbd_quantize_b_avx2;
+  vpx_highbd_quantize_b_32x32 = vpx_highbd_quantize_b_32x32_sse2;
+  if (flags & HAS_AVX2)
+    vpx_highbd_quantize_b_32x32 = vpx_highbd_quantize_b_32x32_avx2;
   vpx_highbd_satd = vpx_highbd_satd_c;
   if (flags & HAS_AVX2)
     vpx_highbd_satd = vpx_highbd_satd_avx2;
@@ -7704,11 +7795,15 @@ static void setup_rtcd_internal(void) {
     vpx_quantize_b = vpx_quantize_b_ssse3;
   if (flags & HAS_AVX)
     vpx_quantize_b = vpx_quantize_b_avx;
+  if (flags & HAS_AVX2)
+    vpx_quantize_b = vpx_quantize_b_avx2;
   vpx_quantize_b_32x32 = vpx_quantize_b_32x32_c;
   if (flags & HAS_SSSE3)
     vpx_quantize_b_32x32 = vpx_quantize_b_32x32_ssse3;
   if (flags & HAS_AVX)
     vpx_quantize_b_32x32 = vpx_quantize_b_32x32_avx;
+  if (flags & HAS_AVX2)
+    vpx_quantize_b_32x32 = vpx_quantize_b_32x32_avx2;
   vpx_sad32x16 = vpx_sad32x16_sse2;
   if (flags & HAS_AVX2)
     vpx_sad32x16 = vpx_sad32x16_avx2;
@@ -7837,6 +7932,9 @@ static void setup_rtcd_internal(void) {
   vpx_sub_pixel_variance8x8 = vpx_sub_pixel_variance8x8_sse2;
   if (flags & HAS_SSSE3)
     vpx_sub_pixel_variance8x8 = vpx_sub_pixel_variance8x8_ssse3;
+  vpx_subtract_block = vpx_subtract_block_sse2;
+  if (flags & HAS_AVX2)
+    vpx_subtract_block = vpx_subtract_block_avx2;
   vpx_variance16x16 = vpx_variance16x16_sse2;
   if (flags & HAS_AVX2)
     vpx_variance16x16 = vpx_variance16x16_avx2;
