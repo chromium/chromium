@@ -89,13 +89,9 @@ class TileServiceSchedulerTest : public testing::Test {
   base::SimpleTestTickClock* tick_clock() { return &tick_clock_; }
 
   std::unique_ptr<net::BackoffEntry> GetBackoffPolicy() {
-    std::unique_ptr<net::BackoffEntry> result;
-    const base::Value* value = prefs()->GetList(kBackoffEntryKey);
-    if (value) {
-      result = net::BackoffEntrySerializer::DeserializeFromValue(
-          *value, &kTestPolicy, tick_clock(), clock()->Now());
-    }
-    return result;
+    const base::Value::List& value = prefs()->GetValueList(kBackoffEntryKey);
+    return net::BackoffEntrySerializer::DeserializeFromList(
+        value, &kTestPolicy, tick_clock(), clock()->Now());
   }
 
   void ResetTileServiceScheduler() {
