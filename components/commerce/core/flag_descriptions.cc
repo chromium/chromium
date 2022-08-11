@@ -10,4 +10,7 @@ const char kCommercePriceTrackingName[] = "Price Tracking";
 const char kCommercePriceTrackingDescription[] =
     "Allows users to track product prices through Chrome.";
 
+const char kShoppingListName[] = "Shopping List";
+const char kShoppingListDescription[] = "Enable shopping list in bookmarks.";
+
 }  // namespace commerce::flag_descriptions

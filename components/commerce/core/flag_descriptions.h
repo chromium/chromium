@@ -13,6 +13,9 @@ namespace commerce::flag_descriptions {
 extern const char kCommercePriceTrackingName[];
 extern const char kCommercePriceTrackingDescription[];
 
+extern const char kShoppingListName[];
+extern const char kShoppingListDescription[];
+
 }  // namespace commerce::flag_descriptions
 
 #endif  // COMPONENTS_COMMERCE_CORE_FLAG_DESCRIPTIONS_H_
