@@ -218,6 +218,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="InputMethod.Assistive.MultiWord.CandidatesGenerated"
+    enum="IMEAssistiveMultiWordSuggestionType" expires_after="2022-12-04">
+  <owner>curtismcmullan@google.com</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    This records when a candidate generation response is returned from the multi
+    word suggestion engine and the response contains some candidates. This is
+    recorded exactly once per response.
+  </summary>
+</histogram>
+
 <histogram name="InputMethod.Assistive.MultiWord.InputState"
     enum="IMEAssistiveTextInputState" expires_after="2022-12-04">
   <owner>curtismcmullan@google.com</owner>
@@ -227,6 +238,28 @@ chromium-metrics-reviews@google.com.
     input field. The feature could be enabled or disabled for a number of
     reasons and this metric captures that information. The metric is recorded
     once when a user focuses on a new input field.
+  </summary>
+</histogram>
+
+<histogram name="InputMethod.Assistive.MultiWord.PrecedingTextLength"
+    units="chars" expires_after="2022-12-04">
+  <owner>curtismcmullan@google.com</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    This records the preceding text given in a request to generate candidates
+    from the multi word suggestion engine. It is recorded exactly once per
+    request.
+  </summary>
+</histogram>
+
+<histogram name="InputMethod.Assistive.MultiWord.RequestCandidates"
+    enum="IMEAssistiveMultiWordSuggestionType" expires_after="2022-12-04">
+  <owner>curtismcmullan@google.com</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    This records when a request to generate suggestion candidates is made to the
+    multi word suggestion engine. It records the type of suggestion requested.
+    It is recorded exactly once per request.
   </summary>
 </histogram>
 

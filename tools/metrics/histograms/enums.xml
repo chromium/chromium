@@ -49826,6 +49826,12 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="4" label="Url or App not allowed"/>
 </enum>
 
+<enum name="IMEAssistiveMultiWordSuggestionType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Prediction"/>
+  <int value="2" label="Completion"/>
+</enum>
+
 <enum name="IMEAssistiveTextInputState">
   <int value="0" label="None"/>
   <int value="1" label="Feature disabled by blocklist"/>

@@ -58,6 +58,17 @@ enum class AssistiveTextInputState {
   kMaxValue = kFeatureEnabled,
 };
 
+// Must match with IMEAssistiveMultiWordSuggestionType in enums.xml
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class MultiWordSuggestionType {
+  kUnknown = 0,
+  kPrediction = 1,
+  kCompletion = 2,
+  kMaxValue = kCompletion,
+};
+
 }  // namespace input_method
 }  // namespace ash
 

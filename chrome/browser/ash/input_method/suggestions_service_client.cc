@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/ash/input_method/suggestion_enums.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -69,9 +70,38 @@ std::string TrimText(const std::string& text) {
              : text;
 }
 
+MultiWordSuggestionType ToSuggestionType(
+    const ime::TextSuggestionMode& suggestion_mode) {
+  switch (suggestion_mode) {
+    case ime::TextSuggestionMode::kCompletion:
+      return MultiWordSuggestionType::kCompletion;
+    case ime::TextSuggestionMode::kPrediction:
+      return MultiWordSuggestionType::kPrediction;
+    default:
+      return MultiWordSuggestionType::kUnknown;
+  }
+}
+
 void RecordRequestLatency(base::TimeDelta delta) {
   base::UmaHistogramTimes(
       "InputMethod.Assistive.CandidateGenerationTime.MultiWord", delta);
+}
+
+void RecordPrecedingTextLength(size_t text_length) {
+  base::UmaHistogramCounts1000(
+      "InputMethod.Assistive.MultiWord.PrecedingTextLength", text_length);
+}
+
+void RecordRequestCandidates(const ime::TextSuggestionMode& suggestion_mode) {
+  base::UmaHistogramEnumeration(
+      "InputMethod.Assistive.MultiWord.RequestCandidates",
+      ToSuggestionType(suggestion_mode));
+}
+
+void RecordCandidatesGenerated(TextSuggestionMode suggestion_mode) {
+  base::UmaHistogramEnumeration(
+      "InputMethod.Assistive.MultiWord.CandidatesGenerated",
+      ToSuggestionType(suggestion_mode));
 }
 
 }  // namespace
@@ -107,6 +137,9 @@ void SuggestionsServiceClient::RequestSuggestions(
     return;
   }
 
+  RecordPrecedingTextLength(preceding_text.size());
+  RecordRequestCandidates(suggestion_mode);
+
   auto query = TextSuggesterQuery::New();
   query->text = TrimText(preceding_text);
   query->suggestion_mode = ToTextSuggestionModeMojom(suggestion_mode);
@@ -131,6 +164,9 @@ void SuggestionsServiceClient::OnSuggestionsReturned(
     TextSuggestionMode suggestion_mode_requested,
     chromeos::machine_learning::mojom::TextSuggesterResultPtr result) {
   std::vector<TextSuggestion> suggestions;
+
+  if (result->candidates.size() > 0)
+    RecordCandidatesGenerated(suggestion_mode_requested);
 
   for (const auto& candidate : result->candidates) {
     auto suggestion =
