@@ -21,9 +21,11 @@
 #include "components/password_manager/ios/account_select_fill_data.h"
 #include "components/password_manager/ios/password_manager_ios_util.h"
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
+#include "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/web_state.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -69,6 +71,9 @@ constexpr char kCommandPrefix[] = "passwordForm";
 - (void)getPasswordForms:(std::vector<FormData>*)forms
                 fromJSON:(NSString*)jsonString
                  pageURL:(const GURL&)pageURL;
+
+// Records both UMA & UKM metrics.
+- (void)recordFormFillingSuccessMetrics:(bool)success;
 
 @end
 
@@ -241,6 +246,18 @@ constexpr char kCommandPrefix[] = "passwordForm";
   }
 }
 
+- (void)recordFormFillingSuccessMetrics:(bool)success {
+  base::UmaHistogramBoolean("PasswordManager.FillingSuccessIOS", success);
+  ukm::SourceId source_id = ukm::GetSourceIdForWebStateDocument(_webState);
+
+  if (source_id == ukm::kInvalidSourceId || !(ukm::UkmRecorder::Get())) {
+    return;
+  }
+  ukm::builders::PasswordManager_PasswordFillingIOS(source_id)
+      .SetFillingSuccess(success)
+      .Record(ukm::UkmRecorder::Get());
+}
+
 #pragma mark - Public methods
 
 - (void)findPasswordFormsWithCompletionHandler:
@@ -283,6 +300,8 @@ constexpr char kCommandPrefix[] = "passwordForm";
           }));
 }
 
+// TODO(crbug.com/1350997): Filling on page load doesn't happen anymore
+// so this method should be deleted.
 - (void)fillPasswordForm:(const autofill::PasswordFormFillData&)formData
                  inFrame:(web::WebFrame*)frame
        completionHandler:(nullable void (^)(BOOL))completionHandler {
@@ -314,18 +333,21 @@ constexpr char kCommandPrefix[] = "passwordForm";
 
   // Send JSON over to the web view.
   __weak PasswordFormHelper* weakSelf = self;
+
   password_manager::PasswordManagerJavaScriptFeature::GetInstance()
       ->FillPasswordForm(mainFrame, formData, UTF16ToUTF8(usernameValue),
                          UTF16ToUTF8(passwordValue),
                          base::BindOnce(^(BOOL success) {
-                           base::UmaHistogramBoolean("PasswordManager."
-                                                     "FillingSuccessIOS",
-                                                     success);
+                           PasswordFormHelper* strongSelf = weakSelf;
+                           if (!strongSelf) {
+                             return;
+                           }
+                           [strongSelf recordFormFillingSuccessMetrics:success];
                            if (success) {
-                             weakSelf.fieldDataManager->UpdateFieldDataMap(
+                             strongSelf.fieldDataManager->UpdateFieldDataMap(
                                  usernameID, usernameValue,
                                  FieldPropertiesFlags::kAutofilledOnPageLoad);
-                             weakSelf.fieldDataManager->UpdateFieldDataMap(
+                             strongSelf.fieldDataManager->UpdateFieldDataMap(
                                  passwordID, passwordValue,
                                  FieldPropertiesFlags::kAutofilledOnPageLoad);
                            }
@@ -395,14 +417,16 @@ constexpr char kCommandPrefix[] = "passwordForm";
       ->FillPasswordForm(
           mainFrame, fillData, fillUsername, UTF16ToUTF8(usernameValue),
           UTF16ToUTF8(passwordValue), base::BindOnce(^(BOOL success) {
-            base::UmaHistogramBoolean("PasswordManager."
-                                      "FillingSuccessIOS",
-                                      success);
+            PasswordFormHelper* strongSelf = weakSelf;
+            if (!strongSelf) {
+              return;
+            }
+            [strongSelf recordFormFillingSuccessMetrics:success];
             if (success) {
-              weakSelf.fieldDataManager->UpdateFieldDataMap(
+              strongSelf.fieldDataManager->UpdateFieldDataMap(
                   usernameID, usernameValue,
                   FieldPropertiesFlags::kAutofilledOnUserTrigger);
-              weakSelf.fieldDataManager->UpdateFieldDataMap(
+              strongSelf.fieldDataManager->UpdateFieldDataMap(
                   passwordID, passwordValue,
                   FieldPropertiesFlags::kAutofilledOnUserTrigger);
             }

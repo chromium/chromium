@@ -20,6 +20,8 @@
 #include "components/password_manager/ios/account_select_fill_data.h"
 #include "components/password_manager/ios/password_manager_java_script_feature.h"
 #include "components/password_manager/ios/test_helpers.h"
+#include "components/ukm/ios/ukm_url_recorder.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
@@ -27,6 +29,7 @@
 #import "ios/web/public/test/web_test_with_web_state.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 
@@ -68,6 +71,7 @@ class PasswordFormHelperTest : public AutofillTestWithWebState {
     WebTestWithWebState::SetUp();
     UniqueIDDataTabHelper::CreateForWebState(web_state());
     helper_ = [[PasswordFormHelper alloc] initWithWebState:web_state()];
+    ukm::InitializeSourceUrlRecorderForWebState(web_state());
   }
 
   void TearDown() override {
@@ -238,6 +242,7 @@ static NSString* kInputFieldValueVerificationScript =
 
 // Tests that filling password forms with fill data works correctly.
 TEST_F(PasswordFormHelperTest, FillPasswordFormWithFillData) {
+  ukm::TestAutoSetUkmRecorder test_recorder;
   base::HistogramTester histogram_tester;
   LoadHtml(
       @"<form><input id='u1' type='text' name='un1'>"
@@ -267,10 +272,17 @@ TEST_F(PasswordFormHelperTest, FillPasswordFormWithFillData) {
 
   histogram_tester.ExpectUniqueSample("PasswordManager.FillingSuccessIOS", true,
                                       1);
+  // Check recorded UKM.
+  auto entries = test_recorder.GetEntriesByName(
+      ukm::builders::PasswordManager_PasswordFillingIOS::kEntryName);
+  // Expect one recorded metric.
+  ASSERT_EQ(1u, entries.size());
+  test_recorder.ExpectEntryMetric(entries[0], "FillingSuccess", true);
 }
 
 // Tests that failure in filling password forms with fill data is recorded.
 TEST_F(PasswordFormHelperTest, FillPasswordFormWithFillDataFillingFailure) {
+  ukm::TestAutoSetUkmRecorder test_recorder;
   base::HistogramTester histogram_tester;
   LoadHtml(@"<form><input id='u1' type='text' name='un1'>"
             "<input id='p1' type='password' name='pw1'></form>");
@@ -297,11 +309,18 @@ TEST_F(PasswordFormHelperTest, FillPasswordFormWithFillDataFillingFailure) {
 
   histogram_tester.ExpectUniqueSample("PasswordManager.FillingSuccessIOS",
                                       false, 1);
+  // Check recorded UKM.
+  auto entries = test_recorder.GetEntriesByName(
+      ukm::builders::PasswordManager_PasswordFillingIOS::kEntryName);
+  // Expect one recorded metric.
+  ASSERT_EQ(1u, entries.size());
+  test_recorder.ExpectEntryMetric(entries[0], "FillingSuccess", false);
 }
 
 // Tests that a form is found and the found form is filled in with the given
 // username and password.
 TEST_F(PasswordFormHelperTest, FindAndFillOnePasswordForm) {
+  ukm::TestAutoSetUkmRecorder test_recorder;
   base::HistogramTester histogram_tester;
   LoadHtml(
       @"<form><input id='u1' type='text' name='un1'>"
@@ -332,11 +351,18 @@ TEST_F(PasswordFormHelperTest, FindAndFillOnePasswordForm) {
   EXPECT_NSEQ(@"u1=john.doe@gmail.com;p1=super!secret;", result);
   histogram_tester.ExpectUniqueSample("PasswordManager.FillingSuccessIOS", true,
                                       1);
+  // Check recorded UKM.
+  auto entries = test_recorder.GetEntriesByName(
+      ukm::builders::PasswordManager_PasswordFillingIOS::kEntryName);
+  // Expect one recorded metric.
+  ASSERT_EQ(1u, entries.size());
+  test_recorder.ExpectEntryMetric(entries[0], "FillingSuccess", true);
 }
 
 // Tests that failure in filling password form with the given
 // username and password is recorded.
 TEST_F(PasswordFormHelperTest, FindAndFillOnePasswordFormFillingFailure) {
+  ukm::TestAutoSetUkmRecorder test_recorder;
   base::HistogramTester histogram_tester;
   LoadHtml(@"<form><input id='u1' type='text' name='un1'>"
             "<input id='p1' type='password' name='pw1'></form>");
@@ -360,6 +386,12 @@ TEST_F(PasswordFormHelperTest, FindAndFillOnePasswordFormFillingFailure) {
   }));
   histogram_tester.ExpectUniqueSample("PasswordManager.FillingSuccessIOS",
                                       false, 1);
+  // Check recorded UKM.
+  auto entries = test_recorder.GetEntriesByName(
+      ukm::builders::PasswordManager_PasswordFillingIOS::kEntryName);
+  // Expect one recorded metric.
+  ASSERT_EQ(1u, entries.size());
+  test_recorder.ExpectEntryMetric(entries[0], "FillingSuccess", false);
 }
 
 // Tests that extractPasswordFormData extracts wanted form on page with mutiple
