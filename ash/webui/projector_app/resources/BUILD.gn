@@ -12,6 +12,7 @@ js_type_check("closure_compile") {
   is_polymer3 = true
   deps = [
     ":message_types",
+    ":mock_app_closure_compile",
     ":projector_browser_proxy",
     ":trusted_annotator_closure_compile",
     ":trusted_app_closure_compile",
@@ -74,6 +75,14 @@ js_library("untrusted_app_closure_compile") {
     ":message_types",
     "//ui/webui/resources/js:post_message_api_client.m",
     "//ui/webui/resources/js:post_message_api_request_handler.m",
+  ]
+  externs_list = [ "communication/projector_app.externs.js" ]
+}
+
+js_library("mock_app_closure_compile") {
+  sources = [ "mock/app_bin.js" ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   externs_list = [ "communication/projector_app.externs.js" ]
 }

@@ -7,20 +7,31 @@
 #include <memory>
 
 #include "ash/components/drivefs/fake_drivefs.h"
+#include "ash/webui/projector_app/buildflags.h"
 #include "ash/webui/projector_app/projector_screencast.h"
+#include "ash/webui/web_applications/test/sandboxed_web_ui_test_base.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/values.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drivefs_test_support.h"
+#include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/web_applications/test/profile_test_helper.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/drive/file_errors.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace ash {
 
@@ -31,9 +42,18 @@ constexpr char kVideoFileId[] = "videoFileId";
 constexpr char kResourceKey[] = "resourceKey";
 constexpr char kTestFileContents[] = "This is some test content.";
 
+void VerifyResponse(const content::EvalJsResult& result) {
+  EXPECT_TRUE(result.error.empty());
+
+  const base::Value::Dict& dict = result.value.GetDict();
+  const std::string* file_id = dict.FindString("fileId");
+  ASSERT_TRUE(file_id);
+  EXPECT_EQ(*file_id, kVideoFileId);
+}
+
 }  // namespace
 
-class ScreencastManagerTest : public InProcessBrowserTest {
+class ScreencastManagerTest : public SystemWebAppIntegrationTest {
  protected:
   ScreencastManager& screencast_manager() { return screencast_manager_; }
 
@@ -52,6 +72,11 @@ class ScreencastManagerTestWithDriveFs : public ScreencastManagerTest {
     service_factory_for_test_ = std::make_unique<
         drive::DriveIntegrationServiceFactory::ScopedFactoryForTest>(
         &create_drive_integration_service_);
+  }
+
+  void SetUpOnMainThread() override {
+    ScreencastManagerTest::SetUpOnMainThread();
+    WaitForTestSystemAppInstall();
   }
 
   // Gets the file path for a named file in the test folder. If `relative`
@@ -114,7 +139,7 @@ class ScreencastManagerTestWithDriveFs : public ScreencastManagerTest {
 
 // Tests that GetDriveFsFile() fails with an appropriate error message when
 // there's no DriveFS mount point available.
-IN_PROC_BROWSER_TEST_F(ScreencastManagerTest, NoDriveFsMountPoint) {
+IN_PROC_BROWSER_TEST_P(ScreencastManagerTest, NoDriveFsMountPoint) {
   base::RunLoop run_loop;
   screencast_manager().GetVideo(
       kVideoFileId, /*resource_key=*/"",
@@ -134,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(ScreencastManagerTest, NoDriveFsMountPoint) {
 // Tests that GetDriveFsFile() fails with an appropriate error message when the
 // files don't exist in DriveFS. This scenario can happen right after the user
 // logs in on a new device, before the files have fully synced.
-IN_PROC_BROWSER_TEST_F(ScreencastManagerTestWithDriveFs, FileNotFound) {
+IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs, FileNotFound) {
   base::RunLoop run_loop;
   screencast_manager().GetVideo(
       kVideoFileId, kResourceKey,
@@ -153,7 +178,7 @@ IN_PROC_BROWSER_TEST_F(ScreencastManagerTestWithDriveFs, FileNotFound) {
 }
 
 // Tests that the ScreencastManager rejects files that don't look like a video.
-IN_PROC_BROWSER_TEST_F(ScreencastManagerTestWithDriveFs, NotAVideo) {
+IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs, NotAVideo) {
   AddFileToDefaultFolder(kVideoFileId, "video/webm", "MyTestScreencast.exe",
                          /*shared_with_me=*/true);
 
@@ -173,7 +198,7 @@ IN_PROC_BROWSER_TEST_F(ScreencastManagerTestWithDriveFs, NotAVideo) {
   run_loop.Run();
 }
 
-IN_PROC_BROWSER_TEST_F(ScreencastManagerTestWithDriveFs, GetVideoSuccess) {
+IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs, GetVideoSuccess) {
   AddFileToDefaultFolder(kVideoFileId, "video/webm", kVideoFileName,
                          /*shared_with_me=*/false);
 
@@ -190,5 +215,92 @@ IN_PROC_BROWSER_TEST_F(ScreencastManagerTestWithDriveFs, GetVideoSuccess) {
           }));
   run_loop.Run();
 }
+
+#if !BUILDFLAG(ENABLE_CROS_PROJECTOR_APP)
+
+constexpr char kGetVideoScript[] = R"(
+      (async function getVideo() {
+        const projectorApp = document.querySelector('projector-app');
+        const clientDelegate = projectorApp.getClientDelegateForTesting();
+        return await clientDelegate.getVideo('%s');
+      })();
+      )";
+
+// The following tests only run in the unbranded build (is_chrome_branded =
+// false) because they rely on the mock app for testing. The script calls
+// projectorApp.getClientDelegateForTesting(), which only exists in the mock
+// version of the app.
+
+IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs,
+                       LoadFileBeforeGetVideo) {
+  AddFileToDefaultFolder(kVideoFileId, "video/webm", kVideoFileName,
+                         /*shared_with_me=*/true);
+
+  // Launch the app for the first time.
+  content::WebContents* app = LaunchApp(SystemWebAppType::PROJECTOR);
+  EXPECT_TRUE(WaitForLoadStop(app));
+  Browser* first_browser = chrome::FindBrowserWithActiveWindow();
+  // Verify that Projector App is opened.
+  ASSERT_TRUE(first_browser);
+  EXPECT_EQ(first_browser->tab_strip_model()->GetActiveWebContents(), app);
+
+  // Use LaunchAppWithFileWithoutWaiting() instead of LaunchAppWithFile()
+  // because the second one waits for the app to finish loading, but we don't
+  // reload the app when we send files. Thus, LaunchAppWithFile() would time out
+  // and we should use LaunchAppWithFileWithoutWaiting() instead.
+  base::FilePath absolute_path =
+      GetTestFile(kVideoFileName, /*relative=*/false);
+  app = LaunchAppWithFileWithoutWaiting(SystemWebAppType::PROJECTOR,
+                                        absolute_path);
+  Browser* second_browser = chrome::FindBrowserWithActiveWindow();
+  // Launching the app with files should not open a new window.
+  EXPECT_EQ(first_browser, second_browser);
+
+  const std::string& script = base::StringPrintf(kGetVideoScript, kVideoFileId);
+  content::EvalJsResult result =
+      EvalJs(SandboxedWebUiAppTestBase::GetAppFrame(app), script);
+  VerifyResponse(result);
+}
+
+IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs,
+                       GetVideoBeforeLoadFile) {
+  AddFileToDefaultFolder(kVideoFileId, "video/webm", kVideoFileName,
+                         /*shared_with_me=*/false);
+
+  // Launch the app for the first time.
+  content::WebContents* app = LaunchApp(ash::SystemWebAppType::PROJECTOR);
+  EXPECT_TRUE(WaitForLoadStop(app));
+
+  const std::string& script = base::StringPrintf(kGetVideoScript, kVideoFileId);
+  content::EvalJsResult result =
+      EvalJs(SandboxedWebUiAppTestBase::GetAppFrame(app), script);
+  VerifyResponse(result);
+}
+
+// The following situation can happen if the user requests a video file id that
+// doesn't exist in DriveFS. For example, the user could be on a new device and
+// the items haven't synced yet.
+IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs,
+                       FileNotFoundInDriveFS) {
+  // Launch the app for the first time.
+  content::WebContents* app = LaunchApp(ash::SystemWebAppType::PROJECTOR);
+  EXPECT_TRUE(WaitForLoadStop(app));
+
+  const std::string& script = base::StringPrintf(kGetVideoScript, kVideoFileId);
+  content::EvalJsResult result =
+      EvalJs(SandboxedWebUiAppTestBase::GetAppFrame(app), script);
+  const std::string& expected_error = base::StringPrintf(
+      "a JavaScript error: \"Failed to fetch DriveFS file with video file "
+      "id=%s and error code=%d\"\n",
+      kVideoFileId, drive::FILE_ERROR_NOT_FOUND);
+  EXPECT_EQ(result.error, expected_error);
+}
+
+#endif  // !BUILDFLAG(ENABLE_CROS_PROJECTOR_APP)
+
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
+    ScreencastManagerTest);
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
+    ScreencastManagerTestWithDriveFs);
 
 }  // namespace ash

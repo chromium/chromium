@@ -42,8 +42,9 @@ class SystemWebAppIntegrationTest : public SystemWebAppManagerBrowserTest {
 
   // Launch the given System App |type| with the given |file_path| as a launch
   // file, without waiting for the application to finish loading.
-  void LaunchAppWithFileWithoutWaiting(SystemWebAppType type,
-                                       const base::FilePath& file_path);
+  content::WebContents* LaunchAppWithFileWithoutWaiting(
+      SystemWebAppType type,
+      const base::FilePath& file_path);
 };
 
 }  // namespace ash
