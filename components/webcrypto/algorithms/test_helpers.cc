@@ -330,48 +330,44 @@ Status ImportKeyJwkFromDict(const base::DictionaryValue& dict,
                               usages, key);
 }
 
-absl::optional<base::DictionaryValue> GetJwkDictionary(
+absl::optional<base::Value::Dict> GetJwkDictionary(
     const std::vector<uint8_t>& json) {
   base::StringPiece json_string(reinterpret_cast<const char*>(json.data()),
                                 json.size());
   absl::optional<base::Value> value = base::JSONReader::Read(json_string);
   EXPECT_TRUE(value.has_value());
   EXPECT_TRUE(value.value().is_dict());
-
-  base::DictionaryValue* dict_value = nullptr;
-  if (!value.value().GetAsDictionary(&dict_value))
-    return absl::nullopt;
-
-  return std::move(*dict_value);
+  return absl::make_optional(std::move(value->GetDict()));
 }
 
 // Verifies the input dictionary contains the expected values. Exact matches are
 // required on the fields examined.
 ::testing::AssertionResult VerifyJwk(
-    const base::DictionaryValue& dict,
+    const base::Value::Dict& dict,
     const std::string& kty_expected,
     const std::string& alg_expected,
     blink::WebCryptoKeyUsageMask use_mask_expected) {
   // ---- kty
-  std::string value_string;
-  if (!dict.GetString("kty", &value_string))
+  const std::string* value_string = dict.FindString("kty");
+  if (!value_string)
     return ::testing::AssertionFailure() << "Missing 'kty'";
-  if (value_string != kty_expected)
-    return ::testing::AssertionFailure() << "Expected 'kty' to be "
-                                         << kty_expected << "but found "
-                                         << value_string;
+  if (*value_string != kty_expected)
+    return ::testing::AssertionFailure()
+           << "Expected 'kty' to be " << kty_expected << "but found "
+           << *value_string;
 
   // ---- alg
-  if (!dict.GetString("alg", &value_string))
+  value_string = dict.FindString("alg");
+  if (!value_string)
     return ::testing::AssertionFailure() << "Missing 'alg'";
-  if (value_string != alg_expected)
-    return ::testing::AssertionFailure() << "Expected 'alg' to be "
-                                         << alg_expected << " but found "
-                                         << value_string;
+  if (*value_string != alg_expected)
+    return ::testing::AssertionFailure()
+           << "Expected 'alg' to be " << alg_expected << " but found "
+           << *value_string;
 
   // ---- ext
   // always expect ext == true in this case
-  absl::optional<bool> ext_value = dict.FindBoolKey("ext");
+  absl::optional<bool> ext_value = dict.FindBool("ext");
   if (!ext_value)
     return ::testing::AssertionFailure() << "Missing 'ext'";
   if (!ext_value.value())
@@ -379,12 +375,12 @@ absl::optional<base::DictionaryValue> GetJwkDictionary(
            << "Expected 'ext' to be true but found false";
 
   // ---- key_ops
-  const base::ListValue* key_ops;
-  if (!dict.GetList("key_ops", &key_ops))
+  const base::Value::List* key_ops = dict.FindList("key_ops");
+  if (!key_ops)
     return ::testing::AssertionFailure() << "Missing 'key_ops'";
   blink::WebCryptoKeyUsageMask key_ops_mask = 0;
   Status status =
-      GetWebCryptoUsagesFromJwkKeyOpsForTest(key_ops, &key_ops_mask);
+      GetWebCryptoUsagesFromJwkKeyOpsForTest(*key_ops, &key_ops_mask);
   if (status.IsError())
     return ::testing::AssertionFailure() << "Failure extracting 'key_ops'";
   if (key_ops_mask != use_mask_expected)
@@ -400,16 +396,16 @@ absl::optional<base::DictionaryValue> GetJwkDictionary(
     const std::string& alg_expected,
     const std::string& k_expected_hex,
     blink::WebCryptoKeyUsageMask use_mask_expected) {
-  absl::optional<base::DictionaryValue> dict = GetJwkDictionary(json);
-  if (!dict.has_value() || dict.value().DictEmpty())
+  absl::optional<base::Value::Dict> dict = GetJwkDictionary(json);
+  if (!dict.has_value() || dict.value().empty())
     return ::testing::AssertionFailure() << "JSON parsing failed";
 
   // ---- k
-  std::string value_string;
-  if (!dict.value().GetString("k", &value_string))
+  const std::string* value_string = dict.value().FindString("k");
+  if (!value_string)
     return ::testing::AssertionFailure() << "Missing 'k'";
   std::string k_value;
-  if (!Base64DecodeUrlSafe(value_string, &k_value))
+  if (!Base64DecodeUrlSafe(*value_string, &k_value))
     return ::testing::AssertionFailure() << "Base64DecodeUrlSafe(k) failed";
   if (!base::EqualsCaseInsensitiveASCII(
           base::HexEncode(k_value.data(), k_value.size()), k_expected_hex)) {
@@ -427,16 +423,16 @@ absl::optional<base::DictionaryValue> GetJwkDictionary(
     const std::string& n_expected_hex,
     const std::string& e_expected_hex,
     blink::WebCryptoKeyUsageMask use_mask_expected) {
-  absl::optional<base::DictionaryValue> dict = GetJwkDictionary(json);
-  if (!dict.has_value() || dict.value().DictEmpty())
+  absl::optional<base::Value::Dict> dict = GetJwkDictionary(json);
+  if (!dict.has_value() || dict.value().empty())
     return ::testing::AssertionFailure() << "JSON parsing failed";
 
   // ---- n
-  std::string value_string;
-  if (!dict.value().GetString("n", &value_string))
+  const std::string* value_string = dict.value().FindString("n");
+  if (!value_string)
     return ::testing::AssertionFailure() << "Missing 'n'";
   std::string n_value;
-  if (!Base64DecodeUrlSafe(value_string, &n_value))
+  if (!Base64DecodeUrlSafe(*value_string, &n_value))
     return ::testing::AssertionFailure() << "Base64DecodeUrlSafe(n) failed";
   if (base::HexEncode(n_value.data(), n_value.size()) != n_expected_hex) {
     return ::testing::AssertionFailure() << "'n' does not match the expected "
@@ -445,10 +441,11 @@ absl::optional<base::DictionaryValue> GetJwkDictionary(
   // TODO(padolph): EqualsCaseInsensitiveASCII() does not work for above!
 
   // ---- e
-  if (!dict.value().GetString("e", &value_string))
+  value_string = dict.value().FindString("e");
+  if (!value_string)
     return ::testing::AssertionFailure() << "Missing 'e'";
   std::string e_value;
-  if (!Base64DecodeUrlSafe(value_string, &e_value))
+  if (!Base64DecodeUrlSafe(*value_string, &e_value))
     return ::testing::AssertionFailure() << "Base64DecodeUrlSafe(e) failed";
   if (!base::EqualsCaseInsensitiveASCII(
           base::HexEncode(e_value.data(), e_value.size()), e_expected_hex)) {

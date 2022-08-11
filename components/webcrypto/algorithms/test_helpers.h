@@ -27,11 +27,6 @@
 #define EXPECT_BYTES_EQ_HEX(expected_hex, actual_bytes) \
   EXPECT_BYTES_EQ(HexStringToBytes(expected_hex), actual_bytes)
 
-namespace base {
-class DictionaryValue;
-class Value;
-}
-
 namespace blink {
 class WebCryptoAlgorithm;
 }
@@ -149,13 +144,13 @@ Status ImportKeyJwkFromDict(const base::DictionaryValue& dict,
                             blink::WebCryptoKey* key);
 
 // Parses a vector of JSON into a dictionary.
-absl::optional<base::DictionaryValue> GetJwkDictionary(
+absl::optional<base::Value::Dict> GetJwkDictionary(
     const std::vector<uint8_t>& json);
 
 // Verifies the input dictionary contains the expected values. Exact matches are
 // required on the fields examined.
 ::testing::AssertionResult VerifyJwk(
-    const std::unique_ptr<base::DictionaryValue>& dict,
+    const base::Value::Dict& dict,
     const std::string& kty_expected,
     const std::string& alg_expected,
     blink::WebCryptoKeyUsageMask use_mask_expected);

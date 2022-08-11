@@ -107,15 +107,14 @@ base::Value CreateJwkKeyOpsFromWebCryptoUsages(
 }
 
 // Composes a Web Crypto usage mask from an array of JWK key_ops values.
-Status GetWebCryptoUsagesFromJwkKeyOps(const base::ListValue* key_ops,
+Status GetWebCryptoUsagesFromJwkKeyOps(const base::Value::List& key_ops,
                                        blink::WebCryptoKeyUsageMask* usages) {
   // This set keeps track of all unrecognized key_ops values.
   std::set<std::string> unrecognized_usages;
 
   *usages = 0;
-  base::Value::ConstListView key_ops_list = key_ops->GetListDeprecated();
-  for (size_t i = 0; i < key_ops_list.size(); ++i) {
-    const base::Value& key_op_value = key_ops_list[i];
+  for (size_t i = 0; i < key_ops.size(); ++i) {
+    const base::Value& key_op_value = key_ops[i];
     if (!key_op_value.is_string()) {
       return Status::ErrorJwkMemberWrongType(
           base::StringPrintf("key_ops[%d]", static_cast<int>(i)), "string");
@@ -145,7 +144,7 @@ Status GetWebCryptoUsagesFromJwkKeyOps(const base::ListValue* key_ops,
 Status VerifyUsages(const JwkReader& jwk,
                     blink::WebCryptoKeyUsageMask expected_usages) {
   // JWK "key_ops" (optional) --> usages parameter
-  const base::ListValue* jwk_key_ops_value = nullptr;
+  const base::Value::List* jwk_key_ops_value = nullptr;
   bool has_jwk_key_ops;
   Status status =
       jwk.GetOptionalList("key_ops", &jwk_key_ops_value, &has_jwk_key_ops);
@@ -154,7 +153,7 @@ Status VerifyUsages(const JwkReader& jwk,
   blink::WebCryptoKeyUsageMask jwk_key_ops_mask = 0;
   if (has_jwk_key_ops) {
     status =
-        GetWebCryptoUsagesFromJwkKeyOps(jwk_key_ops_value, &jwk_key_ops_mask);
+        GetWebCryptoUsagesFromJwkKeyOps(*jwk_key_ops_value, &jwk_key_ops_mask);
     if (status.IsError())
       return status;
     // The input usages must be a subset of jwk_key_ops_mask.
@@ -276,7 +275,7 @@ Status JwkReader::GetOptionalString(const std::string& member_name,
 }
 
 Status JwkReader::GetOptionalList(const std::string& member_name,
-                                  const base::ListValue** result,
+                                  const base::Value::List** result,
                                   bool* member_exists) const {
   *member_exists = false;
   const base::Value* value = dict_.FindKey(member_name);
@@ -286,7 +285,7 @@ Status JwkReader::GetOptionalList(const std::string& member_name,
   if (!value->is_list())
     return Status::ErrorJwkMemberWrongType(member_name, "list");
 
-  *result = &base::Value::AsListValue(*value);
+  *result = &value->GetList();
   *member_exists = true;
   return Status::Success();
 }
@@ -399,7 +398,7 @@ void JwkWriter::ToJson(std::vector<uint8_t>* utf8_bytes) const {
 }
 
 Status GetWebCryptoUsagesFromJwkKeyOpsForTest(
-    const base::ListValue* key_ops,
+    const base::Value::List& key_ops,
     blink::WebCryptoKeyUsageMask* usages) {
   return GetWebCryptoUsagesFromJwkKeyOps(key_ops, usages);
 }
