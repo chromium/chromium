@@ -7,9 +7,7 @@
 namespace content {
 
 TestBrowserAccessibilityDelegate::TestBrowserAccessibilityDelegate()
-    : is_root_frame_(true),
-      accelerated_widget_(gfx::kNullAcceleratedWidget),
-      got_fatal_error_(false) {}
+    : is_root_frame_(true), accelerated_widget_(gfx::kNullAcceleratedWidget) {}
 
 void TestBrowserAccessibilityDelegate::AccessibilityPerformAction(
     const ui::AXActionData& data) {}
@@ -28,9 +26,7 @@ float TestBrowserAccessibilityDelegate::AccessibilityGetDeviceScaleFactor() {
   return 1.0f;
 }
 
-void TestBrowserAccessibilityDelegate::AccessibilityFatalError() {
-  got_fatal_error_ = true;
-}
+void TestBrowserAccessibilityDelegate::AccessibilityFatalError() {}
 
 gfx::AcceleratedWidget
 TestBrowserAccessibilityDelegate::AccessibilityGetAcceleratedWidget() {
@@ -66,14 +62,6 @@ void TestBrowserAccessibilityDelegate::AccessibilityHitTest(
 WebContentsAccessibility*
 TestBrowserAccessibilityDelegate::AccessibilityGetWebContentsAccessibility() {
   return nullptr;
-}
-
-bool TestBrowserAccessibilityDelegate::got_fatal_error() const {
-  return got_fatal_error_;
-}
-
-void TestBrowserAccessibilityDelegate::reset_got_fatal_error() {
-  got_fatal_error_ = false;
 }
 
 }  // namespace content

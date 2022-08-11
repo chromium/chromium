@@ -324,8 +324,7 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   // Called when the renderer process has notified us of tree changes. Returns
   // false in fatal-error conditions, in which case the caller should destroy
   // the manager.
-  [[nodiscard]] virtual bool OnAccessibilityEvents(
-      const AXEventNotificationDetails& details);
+  virtual bool OnAccessibilityEvents(const AXEventNotificationDetails& details);
 
   // Allows derived classes to do event pre-processing
   virtual void BeforeAccessibilityEvents();
@@ -684,10 +683,6 @@ class CONTENT_EXPORT BrowserAccessibilityManager
 #endif  // DCHECK_IS_ON()
 
  private:
-  // Helper that calls AXTree::Unserialize(). On failure it populates crash data
-  // with error information.
-  bool Unserialize(const ui::AXTreeUpdate& tree_update);
-
   void BuildAXTreeHitTestCacheInternal(
       const BrowserAccessibility* node,
       std::vector<const BrowserAccessibility*>* storage);

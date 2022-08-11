@@ -80,8 +80,7 @@ void BrowserAccessibilityManagerTest::SetUp() {
       std::make_unique<TestBrowserAccessibilityDelegate>();
 }
 
-// Temporarily disabled due to bug http://crbug.com/765490
-TEST_F(BrowserAccessibilityManagerTest, DISABLED_TestFatalError) {
+TEST_F(BrowserAccessibilityManagerTest, TestErrorOnCreateIsFatal) {
   // Test that BrowserAccessibilityManager raises a fatal error
   // (which will crash the renderer) if the same id is used in
   // two places in the tree.
@@ -93,42 +92,52 @@ TEST_F(BrowserAccessibilityManagerTest, DISABLED_TestFatalError) {
   root.child_ids.push_back(2);
 
   std::unique_ptr<BrowserAccessibilityManager> manager;
-  ASSERT_FALSE(test_browser_accessibility_delegate_->got_fatal_error());
-  manager.reset(BrowserAccessibilityManager::Create(
-      MakeAXTreeUpdate(root), test_browser_accessibility_delegate_.get()));
-  ASSERT_TRUE(test_browser_accessibility_delegate_->got_fatal_error());
+  EXPECT_DEATH_IF_SUPPORTED(
+      manager.reset(BrowserAccessibilityManager::Create(
+          MakeAXTreeUpdate(root), test_browser_accessibility_delegate_.get())),
+      "Node 1 has duplicate child id 2");
+}
 
-  ui::AXNodeData root2;
-  root2.id = 1;
-  root2.role = ax::mojom::Role::kRootWebArea;
-  root2.child_ids.push_back(2);
-  root2.child_ids.push_back(3);
+TEST_F(BrowserAccessibilityManagerTest, TestErrorOnUpdate) {
+  ui::AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
 
-  ui::AXNodeData child1;
-  child1.id = 2;
-  child1.child_ids.push_back(4);
-  child1.child_ids.push_back(5);
+  ui::AXNodeData node2;
+  node2.id = 2;
+  root.child_ids.push_back(2);
 
-  ui::AXNodeData child2;
-  child2.id = 3;
-  child2.child_ids.push_back(6);
-  child2.child_ids.push_back(5);  // Duplicate
+  ui::AXNodeData node3;
+  node3.id = 3;
+  root.child_ids.push_back(3);
 
-  ui::AXNodeData grandchild4;
-  grandchild4.id = 4;
+  ui::AXNodeData node4;
+  node4.id = 4;
+  node3.child_ids.push_back(4);
 
-  ui::AXNodeData grandchild5;
-  grandchild5.id = 5;
+  ui::AXNodeData node5;
+  node5.id = 5;
+  root.child_ids.push_back(5);
 
-  ui::AXNodeData grandchild6;
-  grandchild6.id = 6;
+  std::unique_ptr<BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManager::Create(
+          MakeAXTreeUpdate(root, node2, node3, node4, node5),
+          test_browser_accessibility_delegate_.get()));
 
-  test_browser_accessibility_delegate_->reset_got_fatal_error();
-  manager.reset(BrowserAccessibilityManager::Create(
-      MakeAXTreeUpdate(root2, child1, child2, grandchild4, grandchild5,
-                       grandchild6),
-      test_browser_accessibility_delegate_.get()));
-  ASSERT_TRUE(test_browser_accessibility_delegate_->got_fatal_error());
+  // node4 has two child ids now.
+  node4.child_ids.push_back(5);
+  node4.child_ids.push_back(5);
+  ui::AXTreeUpdate update = MakeAXTreeUpdate(node4, node5);
+  AXEventNotificationDetails events;
+  events.updates = {update};
+
+#if defined(AX_FAIL_FAST_BUILD)
+  // Update errors are fatal in AX_FAIL_FAST_BUILD builds.
+  EXPECT_DEATH_IF_SUPPORTED(manager->OnAccessibilityEvents(events),
+                            "Node 4 has duplicate child id 5");
+#else
+  ASSERT_FALSE(manager->OnAccessibilityEvents(events));
+#endif
 }
 
 // This test depends on hypertext, which is only used on

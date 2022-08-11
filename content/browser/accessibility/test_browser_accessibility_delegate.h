@@ -33,14 +33,8 @@ class TestBrowserAccessibilityDelegate : public BrowserAccessibilityDelegate {
                               int hit_node_id)> opt_callback) override;
   WebContentsAccessibility* AccessibilityGetWebContentsAccessibility() override;
 
-  bool got_fatal_error() const;
-  void reset_got_fatal_error();
-
   bool is_root_frame_;
   gfx::AcceleratedWidget accelerated_widget_;
-
- private:
-  bool got_fatal_error_;
 };
 
 }  // namespace content
