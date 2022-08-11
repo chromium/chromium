@@ -1259,6 +1259,10 @@ TEST_F(FileManagerPathUtilTest, GetDisplayablePathTest) {
           "My files/Linux files/foo",
       },
       {
+          "/mount_path/guest_os/foo",
+          "My files/guest_os_label/foo",
+      },
+      {
           "/mount_path/provided/foo",
           "provided_label/foo",
       },
@@ -1278,10 +1282,6 @@ TEST_F(FileManagerPathUtilTest, GetDisplayablePathTest) {
           arc::GetDocumentsProviderMountPath("authority", "document_id")
               .value(),
           "documents_provider_label",
-      },
-      {
-          "/mount_path/guest_os/foo",
-          "guest_os_label/foo",
       },
       {
           "/mount_path/mtp",

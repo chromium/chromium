@@ -1082,6 +1082,7 @@ absl::optional<base::FilePath> GetDisplayablePath(Profile* profile,
       break;
     case VOLUME_TYPE_ANDROID_FILES:
     case VOLUME_TYPE_CROSTINI:
+    case VOLUME_TYPE_GUEST_OS:
       result = base::FilePath(l10n_util::GetStringUTF8(
                                   IDS_FILE_BROWSER_MY_FILES_ROOT_LABEL))
                    .Append(volume->volume_label());
@@ -1091,7 +1092,6 @@ absl::optional<base::FilePath> GetDisplayablePath(Profile* profile,
     case VOLUME_TYPE_MOUNTED_ARCHIVE_FILE:
     case VOLUME_TYPE_PROVIDED:
     case VOLUME_TYPE_DOCUMENTS_PROVIDER:
-    case VOLUME_TYPE_GUEST_OS:
     case VOLUME_TYPE_MTP:
     case VOLUME_TYPE_SMB:
       result = base::FilePath(volume->volume_label());
