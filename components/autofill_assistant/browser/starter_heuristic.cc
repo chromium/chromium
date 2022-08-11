@@ -62,7 +62,7 @@ void StarterHeuristic::InitFromHeuristicConfigs(
               url_matcher_->condition_factory(), url_conditions->GetDict(),
               next_condition_set_id, &error));
       if (!error.empty()) {
-        VLOG(1) << "Error pasing url conditions: " << error;
+        VLOG(1) << "Error parsing url conditions: " << error;
         return;
       }
       mapping.insert(
