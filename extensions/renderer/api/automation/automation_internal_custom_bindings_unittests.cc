@@ -392,7 +392,7 @@ TEST_F(AutomationInternalCustomBindingsTest, GetBoundsAppIdConstruction) {
   AutomationAXTreeWrapper* wrapper_1 = GetTreeIDToTreeMap()[tree_1_id].get();
   ASSERT_TRUE(wrapper_1);
 
-  ui::AXNode* wrapper1_button = wrapper_1->tree()->GetFromId(2);
+  ui::AXNode* wrapper1_button = wrapper_1->ax_tree()->GetFromId(2);
   ASSERT_TRUE(wrapper1_button);
 
   // The button in wrapper 1 is scaled by .5 (200 * .5). It's root is also
@@ -481,7 +481,7 @@ TEST_F(AutomationInternalCustomBindingsTest, GetBoundsNestedAppIdConstruction) {
   AutomationAXTreeWrapper* wrapper_1 = GetTreeIDToTreeMap()[tree_1_id].get();
   ASSERT_TRUE(wrapper_1);
 
-  ui::AXNode* wrapper1_button = wrapper_1->tree()->GetFromId(2);
+  ui::AXNode* wrapper1_button = wrapper_1->ax_tree()->GetFromId(2);
   ASSERT_TRUE(wrapper1_button);
 
   // The button in wrapper 1 is scaled by .5 (200 * .5). It's root is also
@@ -490,7 +490,7 @@ TEST_F(AutomationInternalCustomBindingsTest, GetBoundsNestedAppIdConstruction) {
   EXPECT_EQ(gfx::Rect(50, 50, 100, 100),
             CallComputeGlobalNodeBounds(wrapper_1, wrapper1_button));
 
-  ui::AXNode* wrapper1_root = wrapper_1->tree()->GetFromId(1);
+  ui::AXNode* wrapper1_root = wrapper_1->ax_tree()->GetFromId(1);
   ASSERT_TRUE(wrapper1_root);
 
   // Similar to the button, but not scaled. This does not cross an app id
@@ -565,7 +565,7 @@ TEST_F(AutomationInternalCustomBindingsTest, IgnoredAncestorTrees) {
   EXPECT_TRUE(wrapper_2->IsTreeIgnored());
 
   // No longer invisible.
-  ui::AXNode* button = wrapper_0->tree()->GetFromId(2);
+  ui::AXNode* button = wrapper_0->ax_tree()->GetFromId(2);
   ui::AXNodeData data = button->TakeData();
   data.RemoveState(ax::mojom::State::kInvisible);
   button->SetData(data);
@@ -634,7 +634,7 @@ TEST_F(AutomationInternalCustomBindingsTest,
   AutomationAXTreeWrapper* wrapper_0 = GetTreeIDToTreeMap()[tree_0_id].get();
   ASSERT_TRUE(wrapper_0);
 
-  ui::AXNode* wrapper0_client = wrapper_0->tree()->GetFromId(3);
+  ui::AXNode* wrapper0_client = wrapper_0->ax_tree()->GetFromId(3);
   ASSERT_TRUE(wrapper0_client);
 
   std::vector<ui::AXNode*> child_roots =

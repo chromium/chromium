@@ -174,17 +174,17 @@ BrowserAccessibilityManager* BrowserAccessibilityManager::FromID(
 
 BrowserAccessibilityManager::BrowserAccessibilityManager(
     BrowserAccessibilityDelegate* delegate)
-    : WebContentsObserver(delegate
+    : AXPlatformTreeManager(ui::AXTreeIDUnknown(),
+                            std::make_unique<ui::AXSerializableTree>()),
+      WebContentsObserver(delegate
                               ? WebContents::FromRenderFrameHost(
                                     delegate->AccessibilityRenderFrameHost())
                               : nullptr),
       delegate_(delegate),
       user_is_navigating_away_(false),
       connected_to_parent_tree_node_(false),
-      ax_tree_id_(ui::AXTreeIDUnknown()),
       device_scale_factor_(1.0f),
       use_custom_device_scale_factor_for_testing_(false),
-      tree_(std::make_unique<ui::AXSerializableTree>()),
       event_generator_(ax_tree()) {
   tree_observation_.Observe(ax_tree());
 }
@@ -192,16 +192,16 @@ BrowserAccessibilityManager::BrowserAccessibilityManager(
 BrowserAccessibilityManager::BrowserAccessibilityManager(
     const ui::AXTreeUpdate& initial_tree,
     BrowserAccessibilityDelegate* delegate)
-    : WebContentsObserver(delegate
+    : AXPlatformTreeManager(ui::AXTreeIDUnknown(),
+                            std::make_unique<ui::AXSerializableTree>()),
+      WebContentsObserver(delegate
                               ? WebContents::FromRenderFrameHost(
                                     delegate->AccessibilityRenderFrameHost())
                               : nullptr),
       delegate_(delegate),
       user_is_navigating_away_(false),
-      ax_tree_id_(ui::AXTreeIDUnknown()),
       device_scale_factor_(1.0f),
       use_custom_device_scale_factor_for_testing_(false),
-      tree_(std::make_unique<ui::AXSerializableTree>()),
       event_generator_(ax_tree()) {
   tree_observation_.Observe(ax_tree());
   Initialize(initial_tree);
@@ -1709,7 +1709,7 @@ void BrowserAccessibilityManager::RemoveObserver(ui::AXTreeObserver* observer) {
 }
 
 ui::AXTreeID BrowserAccessibilityManager::GetTreeID() const {
-  return ax_tree_id();
+  return ax_tree_id_;
 }
 
 ui::AXTreeID BrowserAccessibilityManager::GetParentTreeID() const {
@@ -1717,11 +1717,11 @@ ui::AXTreeID BrowserAccessibilityManager::GetParentTreeID() const {
 }
 
 ui::AXNode* BrowserAccessibilityManager::GetRootAsAXNode() const {
-  // tree_ is nullptr after destruction.
+  // ax_tree_ is nullptr after destruction.
   if (!ax_tree())
     return nullptr;
 
-  // tree_->root() can be null during AXTreeObserver callbacks.
+  // ax_tree_->root() can be null during AXTreeObserver callbacks.
   return ax_tree()->root();
 }
 
@@ -1859,7 +1859,7 @@ BrowserAccessibility* BrowserAccessibilityManager::GetLastFocusedNode() {
 
 ui::AXTreeUpdate BrowserAccessibilityManager::SnapshotAXTreeForTesting() {
   std::unique_ptr<ui::AXTreeSource<const ui::AXNode*>> tree_source(
-      tree_->CreateTreeSource());
+      ax_serializable_tree()->CreateTreeSource());
   ui::AXTreeSerializer<const ui::AXNode*> serializer(tree_source.get());
   ui::AXTreeUpdate update;
   serializer.SerializeChanges(GetRootAsAXNode(), &update);

@@ -25,6 +25,11 @@ class AX_EXPORT AXPlatformTreeManager : public AXTreeManager {
 
   // Returns an AXPlatformNode that corresponds to the given |node|.
   virtual AXPlatformNode* GetPlatformNodeFromTree(const AXNode& node) const = 0;
+
+ protected:
+  explicit AXPlatformTreeManager(const AXTreeID& tree_id,
+                                 std::unique_ptr<AXTree> tree)
+      : AXTreeManager(tree_id, std::move(tree)) {}
 };
 
 }  // namespace ui
