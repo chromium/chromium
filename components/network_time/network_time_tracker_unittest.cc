@@ -441,10 +441,10 @@ TEST_F(NetworkTimeTrackerTest, DeserializeOldFormat) {
   EXPECT_EQ(NetworkTimeTracker::NETWORK_TIME_AVAILABLE,
             tracker_->GetNetworkTime(&out_network_time, nullptr));
   absl::optional<double> local, network;
-  const base::Value* saved_prefs =
-      pref_service_.GetDictionary(prefs::kNetworkTimeMapping);
-  local = saved_prefs->FindDoubleKey("local");
-  network = saved_prefs->FindDoubleKey("network");
+  const base::Value::Dict& saved_prefs =
+      pref_service_.GetValueDict(prefs::kNetworkTimeMapping);
+  local = saved_prefs.FindDouble("local");
+  network = saved_prefs.FindDouble("network");
   ASSERT_TRUE(local);
   ASSERT_TRUE(network);
   base::Value::Dict prefs;
