@@ -126,6 +126,14 @@ TEST_F(ReadAnythingModelTest, NotificationsOnIncreasedFontSize) {
   EXPECT_NEAR(model_->GetFontScale(), 1.2, 0.01);
 }
 
+TEST_F(ReadAnythingModelTest, NotificationsOnSetSelectedColorsIndex) {
+  model_->AddObserver(&model_observer_1_);
+
+  EXPECT_CALL(model_observer_1_, OnThemeChanged(_)).Times(1);
+
+  model_->SetSelectedColorsByIndex(2);
+}
+
 TEST_F(ReadAnythingModelTest, MinimumFontScaleIsEnforced) {
   std::string font_name;
   model_->Init(font_name, 0.3);

@@ -20,6 +20,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button_factory.h"
+#include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
@@ -42,7 +43,8 @@ ReadAnythingToolbarView::ReadAnythingToolbarView(
 
   SetLayoutManager(std::move(layout));
 
-  // Create a font selection combobox for the toolbar.
+  // Create a font selection combobox for the toolbar. The font combobox uses
+  // a custom MenuModel, so we have a separate View for it for convenience.
   auto combobox =
       std::make_unique<ReadAnythingFontCombobox>(font_combobox_delegate);
 
@@ -63,12 +65,23 @@ ReadAnythingToolbarView::ReadAnythingToolbarView(
       l10n_util::GetStringUTF16(
           IDS_READ_ANYTHING_INCREASE_FONT_SIZE_BUTTON_LABEL));
 
+  // Create theme selection combobox.
+  auto colors_combobox = std::make_unique<views::Combobox>();
+  colors_combobox->SetModel(delegate_->GetColorsModel());
+  colors_combobox->SetTooltipTextAndAccessibleName(
+      l10n_util::GetStringUTF16(IDS_READ_ANYTHING_COLORS_COMBOBOX_LABEL));
+  colors_combobox->SetSizeToLargestLabel(true);
+  colors_combobox->SetCallback(
+      base::BindRepeating(&ReadAnythingToolbarView::ChangeColorsCallback,
+                          weak_pointer_factory_.GetWeakPtr()));
+
   // Add all views as children.
   font_combobox_ = AddChildView(std::move(combobox));
   AddChildView(Separator());
   decrease_text_size_button_ = AddChildView(std::move(decrease_size_button));
   increase_text_size_button_ = AddChildView(std::move(increase_size_button));
   AddChildView(Separator());
+  colors_combobox_ = AddChildView(std::move(colors_combobox));
 }
 
 void ReadAnythingToolbarView::DecreaseFontSizeCallback() {
@@ -79,6 +92,12 @@ void ReadAnythingToolbarView::DecreaseFontSizeCallback() {
 void ReadAnythingToolbarView::IncreaseFontSizeCallback() {
   if (delegate_)
     delegate_->OnFontSizeChanged(/* increase = */ true);
+}
+
+void ReadAnythingToolbarView::ChangeColorsCallback() {
+  if (delegate_)
+    delegate_->OnColorsChanged(
+        colors_combobox_->GetSelectedIndex().value_or(0));
 }
 
 void ReadAnythingToolbarView::OnCoordinatorDestroyed() {

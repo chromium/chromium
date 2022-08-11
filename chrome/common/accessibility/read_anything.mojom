@@ -5,6 +5,7 @@
 // A module for a prototype of the Read Anything feature.
 module read_anything.mojom;
 
+import "skia/public/mojom/skcolor.mojom";
 import "ui/accessibility/mojom/ax_tree_update.mojom";
 
 // Used to represent the current user choices for the Read Anything visual
@@ -15,6 +16,10 @@ struct ReadAnythingTheme {
 
   // The px value of the user's font size.
   float font_size;
+
+  // The various colors of the user's chosen theme.
+  skia.mojom.SkColor foreground_color;
+  skia.mojom.SkColor background_color;
 };
 
 // Used by the WebUI page to bootstrap bidirectional communication.

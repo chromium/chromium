@@ -17,6 +17,8 @@ declare namespace chrome {
     // Items in the ReadAnythingTheme struct, see read_anything.mojom for info.
     let fontName: string;
     let fontSize: number;
+    let foregroundColor: number;
+    let backgroundColor: number;
 
     // Returns a list of AXNodeIDs corresponding to the unignored children of
     // the AXNode for the provided AXNodeID.
@@ -69,7 +71,9 @@ declare namespace chrome {
         snapshotLite: Object, contentNodeIds: number[]): void;
 
     // Set the theme. Used by tests only.
-    function setThemeForTesting(fontName: string, fontSize: number): void;
+    function setThemeForTesting(
+        fontName: string, fontSize: number, foregroundColor: number,
+        backgroundColor: number): void;
 
     ////////////////////////////////////////////////////////////////
     // Implemented in read_anything/app.ts and called by native c++.

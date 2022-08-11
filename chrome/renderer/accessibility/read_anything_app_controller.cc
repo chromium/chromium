@@ -203,6 +203,8 @@ void ReadAnythingAppController::OnAXTreeDistilled(
 void ReadAnythingAppController::OnThemeChanged(ReadAnythingThemePtr new_theme) {
   font_name_ = new_theme->font_name;
   font_size_ = new_theme->font_size;
+  foreground_color_ = new_theme->foreground_color;
+  background_color_ = new_theme->background_color;
 
   // TODO(abigailbklein): Use v8::Function rather than javascript. If possible,
   // replace this function call with firing an event.
@@ -217,6 +219,10 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetProperty("contentNodeIds", &ReadAnythingAppController::ContentNodeIds)
       .SetProperty("fontName", &ReadAnythingAppController::FontName)
       .SetProperty("fontSize", &ReadAnythingAppController::FontSize)
+      .SetProperty("foregroundColor",
+                   &ReadAnythingAppController::ForegroundColor)
+      .SetProperty("backgroundColor",
+                   &ReadAnythingAppController::BackgroundColor)
       .SetMethod("getChildren", &ReadAnythingAppController::GetChildren)
       .SetMethod("getHeadingLevel", &ReadAnythingAppController::GetHeadingLevel)
       .SetMethod("getTextContent", &ReadAnythingAppController::GetTextContent)
@@ -242,6 +248,14 @@ std::string ReadAnythingAppController::FontName() {
 
 float ReadAnythingAppController::FontSize() {
   return font_size_;
+}
+
+SkColor ReadAnythingAppController::ForegroundColor() {
+  return foreground_color_;
+}
+
+SkColor ReadAnythingAppController::BackgroundColor() {
+  return background_color_;
 }
 
 std::vector<ui::AXNodeID> ReadAnythingAppController::GetChildren(
@@ -318,8 +332,11 @@ void ReadAnythingAppController::OnConnected() {
 }
 
 void ReadAnythingAppController::SetThemeForTesting(const std::string& font_name,
-                                                   float font_size) {
-  OnThemeChanged(ReadAnythingTheme::New(font_name, font_size));
+                                                   float font_size,
+                                                   SkColor foreground_color,
+                                                   SkColor background_color) {
+  OnThemeChanged(ReadAnythingTheme::New(font_name, font_size, foreground_color,
+                                        background_color));
 }
 
 void ReadAnythingAppController::SetContentForTesting(

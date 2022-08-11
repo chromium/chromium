@@ -17,6 +17,8 @@ class MockReadAnythingToolbarViewDelegate
     : public ReadAnythingToolbarView::Delegate {
  public:
   MOCK_METHOD(void, OnFontSizeChanged, (bool increase), (override));
+  MOCK_METHOD(void, OnColorsChanged, (int new_index), (override));
+  MOCK_METHOD(ui::ComboboxModel*, GetColorsModel, (), (override));
 };
 
 class MockReadAnythingFontComboboxDelegate
@@ -65,6 +67,8 @@ class ReadAnythingToolbarViewTest : public InProcessBrowserTest {
 
   void IncreaseFontSizeCallback() { toolbar_view_->IncreaseFontSizeCallback(); }
 
+  void ChangeColorsCallback() { toolbar_view_->ChangeColorsCallback(); }
+
  protected:
   MockReadAnythingToolbarViewDelegate toolbar_delegate_;
   MockReadAnythingFontComboboxDelegate font_combobox_delegate_;
@@ -86,4 +90,10 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingToolbarViewTest, IncreaseFontSizeCallback) {
   EXPECT_CALL(toolbar_delegate_, OnFontSizeChanged(true)).Times(1);
 
   IncreaseFontSizeCallback();
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingToolbarViewTest, ChangeColorsCallback) {
+  EXPECT_CALL(toolbar_delegate_, OnColorsChanged(0)).Times(1);
+
+  ChangeColorsCallback();
 }

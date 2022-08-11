@@ -27,6 +27,8 @@ class ReadAnythingToolbarView : public views::View,
   class Delegate {
    public:
     virtual void OnFontSizeChanged(bool increase) = 0;
+    virtual void OnColorsChanged(int new_index) = 0;
+    virtual ui::ComboboxModel* GetColorsModel() = 0;
   };
 
   ReadAnythingToolbarView(
@@ -45,6 +47,7 @@ class ReadAnythingToolbarView : public views::View,
 
   void DecreaseFontSizeCallback();
   void IncreaseFontSizeCallback();
+  void ChangeColorsCallback();
 
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
@@ -54,6 +57,8 @@ class ReadAnythingToolbarView : public views::View,
   raw_ptr<views::Combobox> font_combobox_;
   raw_ptr<ReadAnythingButtonView> decrease_text_size_button_;
   raw_ptr<ReadAnythingButtonView> increase_text_size_button_;
+  raw_ptr<views::Combobox> colors_combobox_;
+
   raw_ptr<ReadAnythingToolbarView::Delegate> delegate_;
   raw_ptr<ReadAnythingCoordinator> coordinator_;
 

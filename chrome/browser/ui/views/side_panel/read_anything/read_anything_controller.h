@@ -52,12 +52,14 @@ class ReadAnythingController : public ReadAnythingToolbarView::Delegate,
  private:
   friend class ReadAnythingControllerTest;
 
-  // ReadAnythingToolbarView::Delegate:
-  void OnFontSizeChanged(bool increase) override;
-
   // ReadAnythingFontCombobox::Delegate:
   void OnFontChoiceChanged(int new_choice) override;
   ui::ComboboxModel* GetFontComboboxModel() override;
+
+  // ReadAnythingToolbarView::Delegate:
+  void OnFontSizeChanged(bool increase) override;
+  void OnColorsChanged(int new_index) override;
+  ui::ComboboxModel* GetColorsModel() override;
 
   // ReadAnythingPageHandler::Delegate:
   void OnUIReady() override;

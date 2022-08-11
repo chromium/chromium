@@ -5,7 +5,9 @@
 import '../strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
+import {skColorToRgba} from 'chrome://resources/js/color_utils.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
+import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
@@ -53,6 +55,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   private fontName_: string;
   private fontSize_: number;
+  private foregroundColor_: SkColor = new SkColor();
+  private backgroundColor_: SkColor = new SkColor();
 
   // Defines the valid font names that can be passed to front-end and maps
   // them to a corresponding class style in app.html. Must stay in-sync with
@@ -178,6 +182,13 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   updateTheme() {
     this.fontName_ = this.validatedFontName();
     this.fontSize_ = chrome.readAnything.fontSize;
+    this.foregroundColor_.value = chrome.readAnything.foregroundColor;
+    this.backgroundColor_.value = chrome.readAnything.backgroundColor;
+
+    this.updateStyles({
+      '--foreground-color': skColorToRgba(this.foregroundColor_),
+      '--background-color': skColorToRgba(this.backgroundColor_),
+    });
   }
 }
 

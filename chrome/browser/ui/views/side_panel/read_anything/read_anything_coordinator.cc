@@ -43,6 +43,8 @@ void ReadAnythingCoordinator::InitModelWithUserPrefs(Browser* browser) {
   prefs_font_scale = browser->profile()->GetPrefs()->GetDouble(
       prefs::kAccessibilityReadAnythingFontScale);
 
+  // TODO(crbug.com/1266555): Add initial color values fetched from Prefs.
+
   model_->Init(
       /* font name = */ prefs_font_name,
       /* font scale = */ prefs_font_scale);
