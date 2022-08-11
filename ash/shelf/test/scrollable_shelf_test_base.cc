@@ -1,0 +1,89 @@
+// Copyright (c) 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "ash/shelf/test/scrollable_shelf_test_base.h"
+
+#include "ash/shelf/scrollable_shelf_view.h"
+#include "ash/shelf/shelf.h"
+#include "ash/shelf/shelf_test_util.h"
+#include "ash/shelf/shelf_view_test_api.h"
+#include "ash/shelf/shelf_widget.h"
+
+namespace ash {
+namespace {
+
+// The array of the candidate colors for app icons.
+constexpr std::array<SkColor, 7> kColorArray = {
+    SK_ColorWHITE,  SK_ColorRED,  SK_ColorGREEN,  SK_ColorBLUE,
+    SK_ColorYELLOW, SK_ColorCYAN, SK_ColorMAGENTA};
+
+// Create a test 1x1 icon image with a given |color|.
+gfx::ImageSkia CreateImageSkiaIcon(SkColor color) {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(1, 1);
+  bitmap.eraseColor(color);
+  return gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
+}
+
+}  // namespace
+
+ScrollableShelfTestBase::ScrollableShelfTestBase() = default;
+
+ScrollableShelfTestBase::~ScrollableShelfTestBase() = default;
+
+void ScrollableShelfTestBase::SetUp() {
+  AshTestBase::SetUp();
+  scrollable_shelf_view_ = GetPrimaryShelf()
+                               ->shelf_widget()
+                               ->hotseat_widget()
+                               ->scrollable_shelf_view();
+  shelf_view_ = scrollable_shelf_view_->shelf_view();
+  test_api_ =
+      std::make_unique<ShelfViewTestAPI>(scrollable_shelf_view_->shelf_view());
+  test_api_->SetAnimationDuration(base::Milliseconds(1));
+}
+
+void ScrollableShelfTestBase::TearDown() {
+  // When the test is completed, the page flip timer should be idle.
+  EXPECT_FALSE(scrollable_shelf_view_->IsPageFlipTimerBusyForTest());
+
+  AshTestBase::TearDown();
+}
+
+void ScrollableShelfTestBase::PopulateAppShortcut(int number,
+                                                  bool use_alternative_color) {
+  for (int i = 0; i < number; i++)
+    AddAppShortcutWithIconColor(
+        TYPE_PINNED_APP, use_alternative_color ? GetNextColor() : SK_ColorRED);
+}
+
+void ScrollableShelfTestBase::AddAppShortcutsUntilOverflow(
+    bool use_alternative_color) {
+  while (scrollable_shelf_view_->layout_strategy_for_test() ==
+         ScrollableShelfView::kNotShowArrowButtons) {
+    AddAppShortcutWithIconColor(
+        TYPE_PINNED_APP, use_alternative_color ? GetNextColor() : SK_ColorRED);
+  }
+}
+
+ShelfID ScrollableShelfTestBase::AddAppShortcutWithIconColor(
+    ShelfItemType item_type,
+    SkColor color) {
+  ShelfItem item = ShelfTestUtil::AddAppShortcutWithIcon(
+      base::NumberToString(id_++), item_type, CreateImageSkiaIcon(color));
+
+  // Wait for shelf view's bounds animation to end. Otherwise the scrollable
+  // shelf's bounds are not updated yet.
+  test_api_->RunMessageLoopUntilAnimationsDone();
+
+  return item.id;
+}
+
+SkColor ScrollableShelfTestBase::GetNextColor() {
+  const SkColor color = kColorArray[next_color_index_];
+  next_color_index_ = (next_color_index_ + 1) % kColorArray.size();
+  return color;
+}
+
+}  // namespace ash

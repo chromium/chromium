@@ -3240,6 +3240,7 @@ test("ash_unittests") {
 test("ash_pixeltests") {
   sources = [
     "shelf/login_shelf_view_pixeltest.cc",
+    "shelf/scrollable_shelf_view_pixeltest.cc",
     "test/ash_pixel_diff_test_helper.cc",
     "test/ash_pixel_diff_test_helper.h",
     "test/demo_ash_pixel_diff_test.cc",
@@ -3404,6 +3405,8 @@ static_library("test_support") {
     "shelf/shelf_test_util.h",
     "shelf/shelf_view_test_api.cc",
     "shelf/shelf_view_test_api.h",
+    "shelf/test/scrollable_shelf_test_base.cc",
+    "shelf/test/scrollable_shelf_test_base.h",
     "shell_test_api.cc",
     "system/holding_space/holding_space_test_api.cc",
     "system/message_center/test_notifier_settings_controller.cc",

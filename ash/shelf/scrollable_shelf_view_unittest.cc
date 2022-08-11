@@ -17,6 +17,7 @@
 #include "ash/shelf/shelf_tooltip_manager.h"
 #include "ash/shelf/shelf_view_test_api.h"
 #include "ash/shelf/shelf_widget.h"
+#include "ash/shelf/test/scrollable_shelf_test_base.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -118,52 +119,14 @@ class TestShelfItemDelegate : public ShelfItemDelegate {
   void Close() override {}
 };
 
-class ScrollableShelfViewTest : public AshTestBase {
+class ScrollableShelfViewTest : public ScrollableShelfTestBase {
  public:
   ScrollableShelfViewTest() = default;
   ~ScrollableShelfViewTest() override = default;
 
-  void SetUp() override {
-    AshTestBase::SetUp();
-    scrollable_shelf_view_ = GetPrimaryShelf()
-                                 ->shelf_widget()
-                                 ->hotseat_widget()
-                                 ->scrollable_shelf_view();
-    shelf_view_ = scrollable_shelf_view_->shelf_view();
-    test_api_ = std::make_unique<ShelfViewTestAPI>(
-        scrollable_shelf_view_->shelf_view());
-    test_api_->SetAnimationDuration(base::Milliseconds(1));
-  }
-
-  void TearDown() override {
-    // When the test is completed, the page flip timer should be idle.
-    EXPECT_FALSE(scrollable_shelf_view_->IsPageFlipTimerBusyForTest());
-
-    AshTestBase::TearDown();
-  }
-
  protected:
-  void PopulateAppShortcut(int number) {
-    for (int i = 0; i < number; i++)
-      AddAppShortcut();
-  }
-
   ShelfID AddAppShortcut(ShelfItemType item_type = TYPE_PINNED_APP) {
-    ShelfItem item =
-        ShelfTestUtil::AddAppShortcut(base::NumberToString(id_++), item_type);
-
-    // Wait for shelf view's bounds animation to end. Otherwise the scrollable
-    // shelf's bounds are not updated yet.
-    test_api_->RunMessageLoopUntilAnimationsDone();
-
-    return item.id;
-  }
-
-  void AddAppShortcutsUntilOverflow() {
-    while (scrollable_shelf_view_->layout_strategy_for_test() ==
-           ScrollableShelfView::kNotShowArrowButtons) {
-      AddAppShortcut();
-    }
+    return AddAppShortcutWithIconColor(item_type, SK_ColorRED);
   }
 
   // Verifies that a tappable app icon should have the correct button state when
@@ -263,11 +226,6 @@ class ScrollableShelfViewTest : public AshTestBase {
 
     return has_rounded_corners;
   }
-
-  ScrollableShelfView* scrollable_shelf_view_ = nullptr;
-  ShelfView* shelf_view_ = nullptr;
-  std::unique_ptr<ShelfViewTestAPI> test_api_;
-  int id_ = 0;
 };
 
 // Tests scrollable shelf's features under both LTR and RTL.
