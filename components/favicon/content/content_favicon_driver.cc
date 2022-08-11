@@ -96,15 +96,15 @@ void ContentFaviconDriver::OnDidDownloadManifest(
 }
 
 int ContentFaviconDriver::DownloadImage(const GURL& url,
-                                        int preferred_size,
+                                        int max_image_size,
                                         ImageDownloadCallback callback) {
   bool bypass_cache = (bypass_cache_page_url_ == GetActiveURL());
   bypass_cache_page_url_ = GURL();
 
-  const gfx::Size preferred_size_constraints(preferred_size, preferred_size);
-  return web_contents()->DownloadImage(url, true, preferred_size_constraints,
-                                       /*max_image_size = */ 0, bypass_cache,
-                                       std::move(callback));
+  const gfx::Size preferred_size(max_image_size, max_image_size);
+  return web_contents()->DownloadImage(url, true, preferred_size,
+                                       /*max_bitmap_size=*/max_image_size,
+                                       bypass_cache, std::move(callback));
 }
 
 void ContentFaviconDriver::DownloadManifest(const GURL& url,

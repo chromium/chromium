@@ -22,7 +22,6 @@
 #include "components/favicon_base/favicon_util.h"
 #include "components/favicon_base/select_favicon_frames.h"
 #include "skia/ext/image_operations.h"
-#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_util.h"
@@ -714,8 +713,9 @@ void FaviconHandler::ScheduleImageDownload(const GURL& image_url,
   image_download_request_.Reset(
       base::BindOnce(&FaviconHandler::OnDidDownloadFavicon,
                      base::Unretained(this), icon_type));
-  // The maximal icon size is passed in to set the preferred size for vector
-  // images. See FaviconHandler::Delegate::DownloadImage() for more info.
+  // A max bitmap size is specified to avoid receiving huge bitmaps in
+  // OnDidDownloadFavicon(). See FaviconDriver::StartDownload()
+  // for more details about the max bitmap size.
   const int download_id = delegate_->DownloadImage(
       image_url, GetMaximalIconSize(handler_type_, !manifest_url_.is_empty()),
       image_download_request_.callback());

@@ -48,7 +48,7 @@ GURL WebFaviconDriver::GetActiveURL() {
 }
 
 int WebFaviconDriver::DownloadImage(const GURL& url,
-                                    int preferred_size,
+                                    int max_image_size,
                                     ImageDownloadCallback callback) {
   static int downloaded_image_count = 0;
   int local_download_id = ++downloaded_image_count;
@@ -65,10 +65,7 @@ int WebFaviconDriver::DownloadImage(const GURL& url,
         std::vector<SkBitmap> frames;
         std::vector<gfx::Size> sizes;
         if (data) {
-          // From FaviconHandler::ScheduleImageDownload, the preferred_size
-          // contains the maximal size while the max_image_size is set to 0 to
-          // allow all files to be downloaded by the blink renderer.
-          frames = skia::ImageDataToSkBitmapsWithMaxSize(data, preferred_size);
+          frames = skia::ImageDataToSkBitmapsWithMaxSize(data, max_image_size);
           for (const auto& frame : frames) {
             sizes.push_back(gfx::Size(frame.width(), frame.height()));
           }

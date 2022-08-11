@@ -74,7 +74,7 @@ class ContentFaviconDriver
 
   // FaviconHandler::Delegate implementation.
   int DownloadImage(const GURL& url,
-                    int preferred_size,
+                    int max_image_size,
                     ImageDownloadCallback callback) override;
   void DownloadManifest(const GURL& url,
                         ManifestDownloadCallback callback) override;

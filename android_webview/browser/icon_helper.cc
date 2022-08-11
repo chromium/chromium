@@ -4,8 +4,6 @@
 
 #include "android_webview/browser/icon_helper.h"
 
-#include <vector>
-
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check_op.h"
@@ -18,7 +16,6 @@
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/image/image_util.h"
 
 using content::BrowserThread;
 using content::WebContents;
@@ -55,13 +52,7 @@ void IconHelper::DownloadFaviconCallback(
     return;
   }
 
-  std::vector<SkBitmap> filtered_images;
-  std::vector<gfx::Size> filtered_bitmap_sizes;
-  gfx::FilterAndResizeImagesForMaximalSize(
-      bitmaps, kLargestIconSize, filtered_images, filtered_bitmap_sizes);
-  DCHECK_EQ(filtered_images.size(), filtered_bitmap_sizes.size());
-
-  if (filtered_images.size() == 0) {
+  if (bitmaps.size() == 0) {
     return;
   }
 
@@ -71,13 +62,13 @@ void IconHelper::DownloadFaviconCallback(
 
   if (listener_) {
     std::vector<size_t> best_indices;
-    SelectFaviconFrameIndices(filtered_bitmap_sizes,
+    SelectFaviconFrameIndices(original_bitmap_sizes,
                               std::vector<int>(1U, kLargestIconSize),
                               &best_indices, nullptr);
 
     listener_->OnReceivedIcon(
         image_url,
-        filtered_images[best_indices.size() == 0 ? 0 : best_indices.front()]);
+        bitmaps[best_indices.size() == 0 ? 0 : best_indices.front()]);
   }
 }
 
@@ -98,10 +89,10 @@ void IconHelper::DidUpdateFaviconURL(
         }
         web_contents()->DownloadImage(
             candidate->icon_url,
-            true,         // Is a favicon
-            gfx::Size(),  // No preferred size
-            0,            // Max bitmap size - 0 means unlimited
-            false,        // Normal cache policy
+            true,              // Is a favicon
+            gfx::Size(),       // No preferred size
+            kLargestIconSize,  // Max bitmap size
+            false,             // Normal cache policy
             base::BindOnce(&IconHelper::DownloadFaviconCallback,
                            base::Unretained(this)));
         break;

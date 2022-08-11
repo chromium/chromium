@@ -7,12 +7,10 @@
 #include <algorithm>
 #include <memory>
 #include <utility>
-#include <vector>
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/cxx17_backports.h"
-#include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -41,9 +39,7 @@
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
-#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/favicon_size.h"
-#include "ui/gfx/image/image_util.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "content/browser/media/session/media_session_android.h"
@@ -869,25 +865,17 @@ void MediaSessionImpl::OnImageDownloadComplete(
     const GURL& image_url,
     const std::vector<SkBitmap>& bitmaps,
     const std::vector<gfx::Size>& sizes) {
-  DCHECK_EQ(bitmaps.size(), sizes.size());
-
-  std::vector<SkBitmap> filtered_images;
-  std::vector<gfx::Size> filtered_bitmap_sizes;
-  gfx::FilterAndResizeImagesForMaximalSize(
-      bitmaps, base::checked_cast<uint32_t>(desired_size_px), filtered_images,
-      filtered_bitmap_sizes);
-  DCHECK_EQ(filtered_images.size(), filtered_bitmap_sizes.size());
-
+  DCHECK(bitmaps.size() == sizes.size());
   SkBitmap image;
   double best_image_score = 0.0;
 
-  // Rank |filtered_bitmap_sizes| and |filtered_images| using MediaImageManager.
-  for (size_t i = 0; i < filtered_images.size(); i++) {
+  // Rank |sizes| and |bitmaps| using MediaImageManager.
+  for (size_t i = 0; i < bitmaps.size(); i++) {
     double image_score = media_session::MediaImageManager::GetImageSizeScore(
-        minimum_size_px, desired_size_px, filtered_bitmap_sizes.at(i));
+        minimum_size_px, desired_size_px, sizes.at(i));
 
     if (image_score > best_image_score)
-      image = filtered_images.at(i);
+      image = bitmaps.at(i);
   }
 
   // If the image is the wrong color type then we should convert it.
@@ -1334,7 +1322,7 @@ void MediaSessionImpl::GetMediaImageBitmap(
   const gfx::Size preferred_size(desired_size_px, desired_size_px);
   web_contents()->DownloadImage(
       image.src, false /* is_favicon */, preferred_size,
-      /*max_bitmap_size=*/0, false /* bypass_cache */,
+      desired_size_px /* max_bitmap_size */, false /* bypass_cache */,
       base::BindOnce(&MediaSessionImpl::OnImageDownloadComplete,
                      base::Unretained(this),
                      mojo::WrapCallbackWithDefaultInvokeIfNotRun(

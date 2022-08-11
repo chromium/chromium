@@ -20,8 +20,6 @@
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/metrics/user_metrics.h"
-#include "base/numerics/safe_conversions.h"
-#include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "content/browser/android/java/gin_java_bridge_dispatcher_host.h"
 #include "content/browser/media/media_web_contents_observer.h"
@@ -37,9 +35,7 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
-#include "skia/ext/image_operations.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
-#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/accessibility/ax_assistant_structure.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_tree_update.h"
@@ -49,7 +45,6 @@
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/image/image_util.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
@@ -726,19 +721,13 @@ int WebContentsAndroid::DownloadImage(
     jint max_bitmap_size,
     jboolean bypass_cache,
     const base::android::JavaParamRef<jobject>& jcallback) {
-  ScopedJavaGlobalRef<jobject> j_callback;
-  j_callback.Reset(env, jcallback);
-  // The max_image_size of 0 being passed to web_contents_->DownloadImage()
-  // ensures that all images are fetched by the renderer before being
-  // resized/filtered out in WebContentsAndroid::OnFinishDownloadImage()
-  // using the max_bitmap_size in a separate threadpool.
   const gfx::Size preferred_size;
   return web_contents_->DownloadImage(
       *url::GURLAndroid::ToNativeGURL(env, jurl), is_fav_icon, preferred_size,
-      /*max_image_size=*/0, bypass_cache,
+      max_bitmap_size, bypass_cache,
       base::BindOnce(&WebContentsAndroid::OnFinishDownloadImage,
-                     weak_factory_.GetWeakPtr(), j_callback,
-                     base::checked_cast<uint32_t>(max_bitmap_size)));
+                     weak_factory_.GetWeakPtr(), obj_,
+                     ScopedJavaGlobalRef<jobject>(env, jcallback)));
 }
 
 void WebContentsAndroid::SetHasPersistentVideo(JNIEnv* env, jboolean value) {
@@ -782,45 +771,13 @@ ScopedJavaLocalRef<jobject> WebContentsAndroid::GetOrCreateEventForwarder(
 }
 
 void WebContentsAndroid::OnFinishDownloadImage(
-    const base::android::ScopedJavaGlobalRef<jobject>& callback,
-    uint32_t max_image_size,
-    int id,
-    int http_status_code,
-    const GURL& url,
-    const std::vector<SkBitmap>& bitmaps,
-    const std::vector<gfx::Size>& sizes) {
-  std::vector<SkBitmap> filtered_images;
-  std::vector<gfx::Size> filtered_bitmap_sizes;
-
-  base::ThreadPool::PostTaskAndReply(
-      FROM_HERE, {base::TaskPriority::USER_VISIBLE},
-      base::BindOnce(&WebContentsAndroid::FilterOrResizeReceivedImages,
-                     weak_factory_.GetWeakPtr(), bitmaps, max_image_size,
-                     std::ref(filtered_images),
-                     std::ref(filtered_bitmap_sizes)),
-      base::BindOnce(&WebContentsAndroid::ConvertToJavaBitmap,
-                     weak_factory_.GetWeakPtr(), obj_, callback, id,
-                     http_status_code, url, filtered_images,
-                     filtered_bitmap_sizes));
-}
-
-void WebContentsAndroid::FilterOrResizeReceivedImages(
-    const std::vector<SkBitmap>& bitmaps,
-    uint32_t max_image_size,
-    std::vector<SkBitmap>& filtered_images,
-    std::vector<gfx::Size>& filtered_bitmap_sizes) {
-  gfx::FilterAndResizeImagesForMaximalSize(
-      bitmaps, max_image_size, filtered_images, filtered_bitmap_sizes);
-}
-
-void WebContentsAndroid::ConvertToJavaBitmap(
     const JavaRef<jobject>& obj,
     const JavaRef<jobject>& callback,
     int id,
     int http_status_code,
     const GURL& url,
-    const std::vector<SkBitmap>& filtered_images,
-    const std::vector<gfx::Size>& filtered_bitmap_sizes) {
+    const std::vector<SkBitmap>& bitmaps,
+    const std::vector<gfx::Size>& sizes) {
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jobject> jbitmaps =
       Java_WebContentsImpl_createBitmapList(env);
@@ -828,15 +785,14 @@ void WebContentsAndroid::ConvertToJavaBitmap(
       Java_WebContentsImpl_createSizeList(env);
   ScopedJavaLocalRef<jobject> jurl = url::GURLAndroid::FromNativeGURL(env, url);
 
-  DCHECK_EQ(filtered_images.size(), filtered_bitmap_sizes.size());
-  for (const SkBitmap& bitmap : filtered_images) {
-    // WARNING: converting to java bitmaps results in duplicate memory
+  for (const SkBitmap& bitmap : bitmaps) {
+    // WARNING: convering to java bitmaps results in duplicate memory
     // allocations, which increases the chance of OOMs if DownloadImage() is
     // misused.
     ScopedJavaLocalRef<jobject> jbitmap = gfx::ConvertToJavaBitmap(bitmap);
     Java_WebContentsImpl_addToBitmapList(env, jbitmaps, jbitmap);
   }
-  for (const gfx::Size& size : filtered_bitmap_sizes) {
+  for (const gfx::Size& size : sizes) {
     Java_WebContentsImpl_createSizeAndAddToList(env, jsizes, size.width(),
                                                 size.height());
   }

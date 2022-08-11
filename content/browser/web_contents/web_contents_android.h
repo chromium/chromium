@@ -215,26 +215,13 @@ class CONTENT_EXPORT WebContentsAndroid {
   void RemoveDestructionObserver(DestructionObserver* observer);
 
  private:
-  void OnFinishDownloadImage(
-      const base::android::ScopedJavaGlobalRef<jobject>& jcallback,
-      uint32_t max_image_size,
-      int id,
-      int http_status_code,
-      const GURL& url,
-      const std::vector<SkBitmap>& bitmaps,
-      const std::vector<gfx::Size>& sizes);
-  void FilterOrResizeReceivedImages(
-      const std::vector<SkBitmap>& bitmaps,
-      uint32_t max_image_size,
-      std::vector<SkBitmap>& filtered_images,
-      std::vector<gfx::Size>& filtered_bitmap_sizes);
-  void ConvertToJavaBitmap(const base::android::JavaRef<jobject>& obj,
-                           const base::android::JavaRef<jobject>& callback,
-                           int id,
-                           int http_status_code,
-                           const GURL& url,
-                           const std::vector<SkBitmap>& filtered_images,
-                           const std::vector<gfx::Size>& filtered_bitmap_sizes);
+  void OnFinishDownloadImage(const base::android::JavaRef<jobject>& obj,
+                             const base::android::JavaRef<jobject>& callback,
+                             int id,
+                             int http_status_code,
+                             const GURL& url,
+                             const std::vector<SkBitmap>& bitmaps,
+                             const std::vector<gfx::Size>& sizes);
   void SelectAroundCaretAck(blink::mojom::SelectAroundCaretResultPtr result);
   // Walks over the AXTreeUpdate and creates a light weight snapshot.
   void AXTreeSnapshotCallback(

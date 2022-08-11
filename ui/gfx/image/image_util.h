@@ -9,8 +9,6 @@
 
 #include <vector>
 
-#include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gfx_export.h"
 
 namespace gfx {
@@ -75,24 +73,6 @@ Image ResizedImageForMaxDimensionsSkiaRepresentation(const Image& image,
                                                      int max_width,
                                                      int max_height,
                                                      int max_area);
-
-// Proportionally resizes the |image| to fit in a box of size
-// |max_image_size|. If the |image| already fits, it is
-// returned without any resizing.
-GFX_EXPORT SkBitmap ResizeImageToLargestSize(const SkBitmap& image,
-                                             uint32_t max_image_size);
-
-// Filters the array of bitmaps, removing all images that do not fit in a box of
-// size |max_image_size|. Returns the result if it is not empty. Otherwise,
-// find the smallest image in the array and resize it proportionally to fit
-// in a box of size |max_image_size|.
-// Sets |filtered_image_sizes| to the sizes of |filtered_images| before
-// resizing. Both output vectors are guaranteed to have the same size.
-GFX_EXPORT void FilterAndResizeImagesForMaximalSize(
-    const std::vector<SkBitmap>& images,
-    uint32_t max_image_size,
-    std::vector<SkBitmap>& filtered_images,
-    std::vector<gfx::Size>& filtered_image_sizes);
 
 }  // namespace gfx
 

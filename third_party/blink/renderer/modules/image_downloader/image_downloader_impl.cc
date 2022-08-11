@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/numerics/safe_conversions.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/interface_registry.h"
@@ -59,12 +58,29 @@ WTF::Vector<SkBitmap> ImagesFromDataUrl(const blink::KURL& url,
   return DecodeImageData(data, mime_type, preferred_size);
 }
 
-// Images are allowed only if the following criteria is true:
-// If |max_image_size| == 0, denoting that no upper limit is provided for image
-// size.
-// If size of image (width and height) is <= max_image_size.
-// For all other cases, the image is filtered out.
-void FilterImagesBasedOnMaximalSize(
+//  Proportionally resizes the |image| to fit in a box of size
+// |max_image_size|.
+SkBitmap ResizeImage(const SkBitmap& image, uint32_t max_image_size) {
+  if (max_image_size == 0)
+    return image;
+  uint32_t max_dimension = std::max(image.width(), image.height());
+  if (max_dimension <= max_image_size)
+    return image;
+  // Proportionally resize the minimal image to fit in a box of size
+  // max_image_size.
+  return skia::ImageOperations::Resize(
+      image, skia::ImageOperations::RESIZE_BEST,
+      static_cast<uint32_t>(image.width()) * max_image_size / max_dimension,
+      static_cast<uint32_t>(image.height()) * max_image_size / max_dimension);
+}
+
+// Filters the array of bitmaps, removing all images that do not fit in a box of
+// size |max_image_size|. Returns the result if it is not empty. Otherwise,
+// find the smallest image in the array and resize it proportionally to fit
+// in a box of size |max_image_size|.
+// Sets |original_image_sizes| to the sizes of |images| before resizing. Both
+// output vectors are guaranteed to have the same size.
+void FilterAndResizeImagesForMaximalSize(
     const WTF::Vector<SkBitmap>& unfiltered,
     uint32_t max_image_size,
     WTF::Vector<SkBitmap>* images,
@@ -75,14 +91,38 @@ void FilterImagesBasedOnMaximalSize(
   if (unfiltered.IsEmpty())
     return;
 
-  for (const SkBitmap& image : unfiltered) {
-    if ((max_image_size == 0) ||
-        (base::checked_cast<uint32_t>(image.width()) <= max_image_size &&
-         base::checked_cast<uint32_t>(image.height()) <= max_image_size)) {
+  if (max_image_size == 0)
+    max_image_size = std::numeric_limits<uint32_t>::max();
+
+  const SkBitmap* min_image = nullptr;
+  uint32_t min_image_size = std::numeric_limits<uint32_t>::max();
+  // Filter the images by |max_image_size|, and also identify the smallest image
+  // in case all the images are bigger than |max_image_size|.
+  for (auto* it = unfiltered.begin(); it != unfiltered.end(); ++it) {
+    const SkBitmap& image = *it;
+    uint32_t current_size = std::max(it->width(), it->height());
+    if (current_size < min_image_size) {
+      min_image = &image;
+      min_image_size = current_size;
+    }
+    if (static_cast<uint32_t>(image.width()) <= max_image_size &&
+        static_cast<uint32_t>(image.height()) <= max_image_size) {
       images->push_back(image);
       original_image_sizes->push_back(gfx::Size(image.width(), image.height()));
     }
   }
+  DCHECK(min_image);
+  if (images->size())
+    return;
+  // Proportionally resize the minimal image to fit in a box of size
+  // |max_image_size|.
+  SkBitmap resized = ResizeImage(*min_image, max_image_size);
+  // Drop null or empty SkBitmap.
+  if (resized.drawsNothing())
+    return;
+  images->push_back(resized);
+  original_image_sizes->push_back(
+      gfx::Size(min_image->width(), min_image->height()));
 }
 
 }  // namespace
@@ -163,8 +203,8 @@ void ImageDownloaderImpl::DidDownloadImage(
     const WTF::Vector<SkBitmap>& images) {
   WTF::Vector<SkBitmap> result_images;
   WTF::Vector<gfx::Size> result_original_image_sizes;
-  FilterImagesBasedOnMaximalSize(images, max_image_size, &result_images,
-                                 &result_original_image_sizes);
+  FilterAndResizeImagesForMaximalSize(images, max_image_size, &result_images,
+                                      &result_original_image_sizes);
 
   DCHECK_EQ(result_images.size(), result_original_image_sizes.size());
 
