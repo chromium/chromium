@@ -21,7 +21,6 @@ closure_library_dir =
 chromevox_modules = [
   "../common/automation_predicate.js",
   "../common/constants.js",
-  "../common/cursors/recovery_strategy.js",
   "background/braille/cursor_dots.js",
   "background/braille/pan_strategy.js",
   "common/abstract_earcons.js",
@@ -40,6 +39,7 @@ chromevox_es6_modules = [
   "../common/automation_util.js",
   "../common/cursors/cursor.js",
   "../common/cursors/range.js",
+  "../common/cursors/recovery_strategy.js",
   "../common/event_generator.js",
   "../common/instance_checker.js",
   "../common/key_code.js",

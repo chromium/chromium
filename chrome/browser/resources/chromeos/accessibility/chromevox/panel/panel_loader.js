@@ -6,12 +6,10 @@
  * @fileoverview Loads the panel script.
  */
 
-goog.require('AncestryRecoveryStrategy');
 goog.require('AutomationPredicate');
 goog.require('EarconDescription');
 goog.require('PanelNodeMenuData');
 goog.require('PanelNodeMenuItemData');
-goog.require('RecoveryStrategy');
 
 goog.require('constants');
 goog.require('goog.i18n.MessageFormat');

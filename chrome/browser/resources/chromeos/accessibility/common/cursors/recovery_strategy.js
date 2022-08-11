@@ -6,15 +6,10 @@
  * @fileoverview Defines various strategies for recovering automation nodes.
  */
 
-goog.provide('AncestryRecoveryStrategy');
-goog.provide('RecoveryStrategy');
-goog.provide('TreePathRecoveryStrategy');
-
-goog.scope(function() {
 const AutomationNode = chrome.automation.AutomationNode;
 const RoleType = chrome.automation.RoleType;
 
-RecoveryStrategy = class {
+export class RecoveryStrategy {
   /**
    * @param {!AutomationNode} node
    */
@@ -48,13 +43,13 @@ RecoveryStrategy = class {
   equalsWithoutRecovery(rhs) {
     return this.node_ === rhs.node_;
   }
-};
+}
 
 
 /**
  * A recovery strategy that uses the node's ancestors.
  */
-AncestryRecoveryStrategy = class extends RecoveryStrategy {
+export class AncestryRecoveryStrategy extends RecoveryStrategy {
   constructor(node) {
     super(node);
 
@@ -89,13 +84,13 @@ AncestryRecoveryStrategy = class extends RecoveryStrategy {
     }
     return 0;
   }
-};
+}
 
 
 /**
  * A recovery strategy that uses the node's tree path.
  */
-TreePathRecoveryStrategy = class extends AncestryRecoveryStrategy {
+export class TreePathRecoveryStrategy extends AncestryRecoveryStrategy {
   constructor(node) {
     super(node);
 
@@ -130,5 +125,4 @@ TreePathRecoveryStrategy = class extends AncestryRecoveryStrategy {
     }
     return node;
   }
-};
-});  // goog.scope
+}

@@ -15,6 +15,18 @@ AccessibilityExtensionRecoveryStrategyTest =
   constructor() {
     super();
   }
+
+  /** @override */
+  async setUpDeferred() {
+    await super.setUpDeferred();
+    await importModule(
+        [
+          'RecoveryStrategy',
+          'AncestryRecoveryStrategy',
+          'TreePathRecoveryStrategy',
+        ],
+        '/common/cursors/recovery_strategy.js');
+  }
 };
 
 

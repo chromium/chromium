@@ -14,6 +14,7 @@ const StateType = chrome.automation.StateType;
 
 import {StringUtil} from '../string_util.js';
 import {AutomationUtil} from '../automation_util.js';
+import {RecoveryStrategy, AncestryRecoveryStrategy} from './recovery_strategy.js';
 
 /**
  * The special index that represents a cursor pointing to a node without
