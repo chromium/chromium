@@ -26,6 +26,9 @@ class AXScreenAIAnnotator {
   AXScreenAIAnnotator(const AXScreenAIAnnotator&) = delete;
   AXScreenAIAnnotator& operator=(const AXScreenAIAnnotator&) = delete;
 
+  // Binds |screen_ai_annotator_| to the Screen AI service.
+  virtual void BindToScreenAIService();
+
   // Takes a screenshot and sends it to |OnScreenshotReceived| through an async
   // call.
   void Run();

@@ -15,17 +15,23 @@
 
 namespace screen_ai {
 
-AXScreenAIAnnotator::AXScreenAIAnnotator(Browser* browser) : browser_(browser) {
-  mojo::PendingReceiver<screen_ai::mojom::ScreenAIAnnotator>
-      screen_ai_receiver = screen_ai_annotator_.BindNewPipeAndPassReceiver();
-  ScreenAIServiceRouterFactory::GetForBrowserContext(
-      static_cast<content::BrowserContext*>(browser->profile()))
-      ->BindScreenAIAnnotator(std::move(screen_ai_receiver));
-}
+AXScreenAIAnnotator::AXScreenAIAnnotator(Browser* browser)
+    : browser_(browser) {}
 
 AXScreenAIAnnotator::~AXScreenAIAnnotator() = default;
 
+void AXScreenAIAnnotator::BindToScreenAIService() {
+  mojo::PendingReceiver<screen_ai::mojom::ScreenAIAnnotator>
+      screen_ai_receiver = screen_ai_annotator_.BindNewPipeAndPassReceiver();
+  ScreenAIServiceRouterFactory::GetForBrowserContext(
+      static_cast<content::BrowserContext*>(browser_->profile()))
+      ->BindScreenAIAnnotator(std::move(screen_ai_receiver));
+}
+
 void AXScreenAIAnnotator::Run() {
+  if (!screen_ai_annotator_.is_bound())
+    BindToScreenAIService();
+
   // Request screenshot from content area of the main frame.
   content::WebContents* web_contents =
       browser_->tab_strip_model()->GetActiveWebContents();
@@ -45,8 +51,8 @@ void AXScreenAIAnnotator::Run() {
     return;
   }
 
-  AXScreenAIAnnotator::OnScreenshotReceived(
-      web_contents->GetPrimaryMainFrame()->GetAXTreeID(), std::move(snapshot));
+  OnScreenshotReceived(web_contents->GetPrimaryMainFrame()->GetAXTreeID(),
+                       std::move(snapshot));
 #else
   ui::GrabViewSnapshotAsync(
       native_view, gfx::Rect(web_contents->GetSize()),
@@ -58,6 +64,7 @@ void AXScreenAIAnnotator::Run() {
 
 void AXScreenAIAnnotator::OnScreenshotReceived(const ui::AXTreeID& ax_tree_id,
                                                gfx::Image snapshot) {
+  DCHECK(screen_ai_annotator_.is_bound());
   screen_ai_annotator_->Annotate(
       snapshot.AsBitmap(),
       base::BindOnce(&AXScreenAIAnnotator::OnAnnotationReceived,

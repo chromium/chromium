@@ -18,6 +18,12 @@ class MockAXScreenAIAnnotator : public AXScreenAIAnnotator {
  public:
   explicit MockAXScreenAIAnnotator(Browser* browser)
       : AXScreenAIAnnotator(browser) {}
+
+  // TODO(https://1278249): Consider making Screen AI component available for
+  // tests. The test should refrain from trying to bind to it while it is not
+  // available.
+  MOCK_METHOD(void, BindToScreenAIService, (), (override));
+
   MOCK_METHOD(void,
               OnScreenshotReceived,
               (const ui::AXTreeID& ax_tree_id, gfx::Image snapshot),
@@ -28,20 +34,14 @@ class MockAXScreenAIAnnotator : public AXScreenAIAnnotator {
 
 using ScreenAIServiceTest = InProcessBrowserTest;
 
-// https://crbug.com/1348280: Creating AXScreenAIAnnotator triggers the sandbox
-// on Mac11 which is not implemented yet.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ScreenshotTest DISABLED_ScreenshotTest
-#else
-#define MAYBE_ScreenshotTest ScreenshotTest
-#endif
-IN_PROC_BROWSER_TEST_F(ScreenAIServiceTest, MAYBE_ScreenshotTest) {
+IN_PROC_BROWSER_TEST_F(ScreenAIServiceTest, ScreenshotTest) {
   MockAXScreenAIAnnotator* annotator = new MockAXScreenAIAnnotator(browser());
   browser()->SetScreenAIAnnotatorForTesting(
       std::unique_ptr<AXScreenAIAnnotator>(annotator));
 
   base::RunLoop run_loop;
 
+  EXPECT_CALL(*annotator, BindToScreenAIService);
   EXPECT_CALL(*annotator, OnScreenshotReceived)
       .WillOnce(
           [&run_loop](const ui::AXTreeID& ax_tree_id, gfx::Image snapshot) {
@@ -54,8 +54,9 @@ IN_PROC_BROWSER_TEST_F(ScreenAIServiceTest, MAYBE_ScreenshotTest) {
   browser()->RunScreenAIAnnotator();
   run_loop.Run();
 
-  // TODO(https://crbug.com/1278249): Expect OnAnnotationReceived once library
-  // binary is available for test.
+  // TODO(https://crbug.com/1278249): Add a test that mocks
+  // |OnScreenshotReceived| and returns the expected proto, and observe its
+  // application on the accessibility tree(s).
 }
 
 }  // namespace screen_ai
