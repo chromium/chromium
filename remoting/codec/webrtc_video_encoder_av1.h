@@ -7,10 +7,17 @@
 
 #include "base/callback.h"
 #include "remoting/codec/encoder_bitrate_filter.h"
+#include "remoting/codec/video_encoder_active_map.h"
 #include "remoting/codec/webrtc_video_encoder.h"
 #include "third_party/libaom/source/libaom/aom/aom_encoder.h"
 #include "third_party/libaom/source/libaom/aom/aom_image.h"
 #include "third_party/libaom/source/libaom/aom/aomcx.h"
+
+namespace webrtc {
+class DesktopFrame;
+class DesktopRegion;
+class DesktopSize;
+}  // namespace webrtc
 
 namespace remoting {
 
@@ -34,7 +41,8 @@ class WebrtcVideoEncoderAV1 : public WebrtcVideoEncoder {
   void ConfigureCodecParams();
   bool InitializeCodec(const webrtc::DesktopSize& size);
   void UpdateConfig(const FrameParams& params);
-  void PrepareImage(const webrtc::DesktopFrame* frame);
+  void PrepareImage(const webrtc::DesktopFrame* frame,
+                    webrtc::DesktopRegion& updated_region);
 
   using scoped_aom_codec =
       std::unique_ptr<aom_codec_ctx_t, void (*)(aom_codec_ctx_t*)>;
@@ -44,6 +52,11 @@ class WebrtcVideoEncoderAV1 : public WebrtcVideoEncoder {
 
   using scoped_aom_image = std::unique_ptr<aom_image_t, void (*)(aom_image_t*)>;
   scoped_aom_image image_;
+
+  // Active map used to optimize out processing of unchanged macroblocks.
+  VideoEncoderActiveMap active_map_;
+  // Disable |active_map_| until we've verified it improves performance.
+  const bool use_active_map_ = false;
 
   // This timestamp is monotonically increased using the current frame duration.
   // It's only used for rate control and is not related to the timestamps on the

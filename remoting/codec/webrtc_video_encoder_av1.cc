@@ -10,6 +10,7 @@
 #include "base/system/sys_info.h"
 #include "remoting/base/cpu_utils.h"
 #include "remoting/base/util.h"
+#include "third_party/libaom/source/libaom/aom/aomcx.h"
 #include "third_party/libyuv/include/libyuv/convert_from_argb.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
@@ -73,6 +74,10 @@ bool WebrtcVideoEncoderAV1::InitializeCodec(const webrtc::DesktopSize& size) {
     return false;
   }
   DCHECK_NE(codec->name, nullptr);
+
+  if (use_active_map_) {
+    active_map_.Initialize(size);
+  }
 
   error = aom_codec_control(codec.get(), AOME_SET_CPUUSED, 10);
   DCHECK_EQ(error, AOM_CODEC_OK) << "Failed to set AOME_SET_CPUUSED";
@@ -171,12 +176,14 @@ bool WebrtcVideoEncoderAV1::InitializeCodec(const webrtc::DesktopSize& size) {
   return true;
 }
 
-void WebrtcVideoEncoderAV1::PrepareImage(const webrtc::DesktopFrame* frame) {
+void WebrtcVideoEncoderAV1::PrepareImage(
+    const webrtc::DesktopFrame* frame,
+    webrtc::DesktopRegion& updated_region) {
+  updated_region.Clear();
   if (!frame) {
     return;
   }
 
-  webrtc::DesktopRegion updated_region;
   if (image_) {
     DCHECK_EQ(frame->size().width(), static_cast<int>(image_->d_w));
     DCHECK_EQ(frame->size().height(), static_cast<int>(image_->d_h));
@@ -329,7 +336,27 @@ void WebrtcVideoEncoderAV1::Encode(std::unique_ptr<webrtc::DesktopFrame> frame,
 
   // Transfer the frame data to the image buffer for encoding.
   // TODO(joedow): Look into using aom_img_wrap instead of our own buffer.
-  PrepareImage(frame.get());
+  webrtc::DesktopRegion updated_region;
+  PrepareImage(frame.get(), updated_region);
+
+  aom_active_map_t act_map;
+  if (use_active_map_) {
+    if (params.clear_active_map)
+      active_map_.Clear();
+
+    if (params.key_frame)
+      updated_region.SetRect(webrtc::DesktopRect::MakeSize(frame_size));
+
+    active_map_.Update(updated_region);
+
+    // Apply active map to the encoder.
+    act_map.rows = active_map_.height();
+    act_map.cols = active_map_.width();
+    act_map.active_map = active_map_.data();
+    if (aom_codec_control(codec_.get(), AOME_SET_ACTIVEMAP, &act_map)) {
+      LOG(ERROR) << "Unable to apply active map";
+    }
+  }
 
   auto duration_us = params.duration.InMicroseconds();
   DCHECK_GT(duration_us, 0);
@@ -344,6 +371,14 @@ void WebrtcVideoEncoderAV1::Encode(std::unique_ptr<webrtc::DesktopFrame> frame,
                << (error_detail ? error_detail : "No error details");
     std::move(done).Run(EncodeResult::UNKNOWN_ERROR, nullptr);
     return;
+  }
+
+  if (use_active_map_) {
+    // Update our active map based on the internal map in the encoder.
+    ret = aom_codec_control(codec_.get(), AV1E_GET_ACTIVEMAP, &act_map);
+    DCHECK_EQ(ret, AOM_CODEC_OK)
+        << "Failed to fetch active map: " << aom_codec_err_to_string(ret)
+        << "\n";
   }
 
   // Read the encoded data.
