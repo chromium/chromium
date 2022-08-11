@@ -320,7 +320,8 @@ void ArcScreenCaptureSession::OnDesktopCaptured(
   // if the CopyOutputRequest succeeded:
   const gpu::MailboxHolder& plane = result->GetTextureResult()->planes[0];
   gl->WaitSyncTokenCHROMIUM(plane.sync_token.GetConstData());
-  GLuint src_texture = gl->CreateAndConsumeTextureCHROMIUM(plane.mailbox.name);
+  GLuint src_texture =
+      gl->CreateAndTexStorage2DSharedImageCHROMIUM(plane.mailbox.name);
   viz::CopyOutputResult::ReleaseCallbacks release_callbacks =
       result->TakeTextureOwnership();
 
@@ -354,16 +355,19 @@ void ArcScreenCaptureSession::CopyDesktopTextureToGpuBuffer(
   GLuint query_id;
   gl->GenQueriesEXT(1, &query_id);
   gl->BeginQueryEXT(GL_COMMANDS_COMPLETED_CHROMIUM, query_id);
+  gl->BeginSharedImageAccessDirectCHROMIUM(
+      desktop_texture->texture_, GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
   scaler_->Scale(desktop_texture->texture_, desktop_texture->size_,
                  gfx::Vector2dF(), pending_buffer->texture_,
                  gfx::Rect(0, 0, size_.width(), size_.height()));
+  gl->EndSharedImageAccessDirectCHROMIUM(desktop_texture->texture_);
   gl->EndQueryEXT(GL_COMMANDS_COMPLETED_CHROMIUM);
 
   context_provider->ContextSupport()->SignalQuery(
-      query_id, base::BindOnce(&ArcScreenCaptureSession::QueryCompleted,
-                               weak_ptr_factory_.GetWeakPtr(), query_id,
-                               std::move(desktop_texture),
-                               std::move(pending_buffer)));
+      query_id,
+      base::BindOnce(&ArcScreenCaptureSession::QueryCompleted,
+                     weak_ptr_factory_.GetWeakPtr(), query_id,
+                     std::move(desktop_texture), std::move(pending_buffer)));
 }
 
 void ArcScreenCaptureSession::OnAnimationStep(base::TimeTicks timestamp) {
