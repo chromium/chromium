@@ -4,8 +4,6 @@
 
 #include "media/gpu/vaapi/test/video_decoder.h"
 
-#include "media/filters/ivf_parser.h"
-
 namespace media {
 namespace vaapi_test {
 

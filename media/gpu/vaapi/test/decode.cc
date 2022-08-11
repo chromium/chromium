@@ -18,6 +18,9 @@
 #include "media/filters/ivf_parser.h"
 #include "media/gpu/vaapi/test/av1_decoder.h"
 #include "media/gpu/vaapi/test/h264_decoder.h"
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+#include "media/gpu/vaapi/test/h265_decoder.h"
+#endif
 #include "media/gpu/vaapi/test/shared_va_surface.h"
 #include "media/gpu/vaapi/test/vaapi_device.h"
 #include "media/gpu/vaapi/test/video_decoder.h"
@@ -29,6 +32,9 @@
 
 using media::vaapi_test::Av1Decoder;
 using media::vaapi_test::H264Decoder;
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+using media::vaapi_test::H265Decoder;
+#endif
 using media::vaapi_test::SharedVASurface;
 using media::vaapi_test::VaapiDevice;
 using media::vaapi_test::VideoDecoder;
@@ -57,16 +63,19 @@ constexpr char kUsageMsg[] =
     "           [--md5]\n"
     "           [--visible]\n"
     "           [--loop]\n"
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+    "           [--h265]\n"
+#endif
     "           [--v=<log verbosity>]\n"
     "           [--help]\n";
 
 constexpr char kHelpMsg[] =
     "This binary decodes the IVF video in <video> path with specified video\n"
     "<profile> via thinly wrapped libva calls.\n"
-    "Supported codecs: VP8, VP9 (profiles 0, 2), and AV1 (profile 0)\n"
+    "Supported codecs: VP8, VP9 (profiles 0, 2), AV1 (profile 0), and H265\n"
     "\nThe following arguments are supported:\n"
     "    --video=<path>\n"
-    "        Required. Path to IVF-formatted video to decode.\n"
+    "        Required. Path to IVF-formatted or HEVC-formatted video.\n"
     "    --frames=<int>\n"
     "        Optional. Number of frames to decode, defaults to all.\n"
     "        Override with a positive integer to decode at most that many.\n"
@@ -101,6 +110,12 @@ constexpr char kHelpMsg[] =
     "        If specified with --frames, loops decoding that number of\n"
     "        leading frames. If specified with --out-prefix, loops decoding,\n"
     "        but only saves the first iteration of decoded frames.\n"
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+    "    --h265\n"
+    "        Required for H.265 files. If specified, assumes the input video\n"
+    "        is in H.265 format and selects the H.265 decoder. This is used\n"
+    "        to distinguish H.264 and H.265 videos (b/239719493).\n"
+#endif
     "    --help\n"
     "        Display this help message and exit.\n";
 
@@ -122,6 +137,15 @@ std::unique_ptr<VideoDecoder> CreateDecoder(
     SharedVASurface::FetchPolicy fetch_policy,
     const uint8_t* stream_data,
     size_t stream_len) {
+  // TODO(b/239719493): Update how we are selecting the correct decoder.
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+  const base::CommandLine* cmd = base::CommandLine::ForCurrentProcess();
+  if (cmd->HasSwitch("h265")) {
+    return std::make_unique<H265Decoder>(stream_data, stream_len, va_device,
+                                         fetch_policy);
+  }
+#endif
+
   if (*reinterpret_cast<const uint32_t*>(stream_data) == fourcc(0, 0, 0, 1) ||
       ((*reinterpret_cast<const uint32_t*>(stream_data)) & 0x00FFFFFF) ==
           fourcc(0, 0, 1, 0)) {
@@ -129,7 +153,7 @@ std::unique_ptr<VideoDecoder> CreateDecoder(
                                          fetch_policy);
   }
 
-  // Set up IVF parser.
+  // Set up video parser.
   auto ivf_parser = std::make_unique<media::IvfParser>();
   media::IvfFileHeader file_header{};
   if (!ivf_parser->Initialize(stream_data, stream_len, &file_header)) {
