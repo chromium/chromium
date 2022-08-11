@@ -25,6 +25,7 @@
 #include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
 #include "services/network/public/cpp/devtools_observer_util.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -438,7 +439,9 @@ class PreflightController::PreflightLoader final {
     // respond, and that should not fail the overall request. Instead, we should
     // wait a short while then move on. See also https://crbug.com/1299382.
     if (private_network_access_behavior_ ==
-        PrivateNetworkAccessPreflightBehavior::kWarnWithTimeout) {
+            PrivateNetworkAccessPreflightBehavior::kWarnWithTimeout &&
+        base::FeatureList::IsEnabled(
+            features::kPrivateNetworkAccessPreflightShortTimeout)) {
       loader_->SetTimeoutDuration(base::Milliseconds(200));
     }
   }

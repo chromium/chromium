@@ -117,6 +117,9 @@ extern const base::Feature kReduceAcceptLanguage;
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kDisableResourceScheduler;
 
+COMPONENT_EXPORT(NETWORK_CPP)
+extern const base::Feature kPrivateNetworkAccessPreflightShortTimeout;
+
 }  // namespace features
 }  // namespace network
 

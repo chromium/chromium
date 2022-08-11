@@ -57696,6 +57696,8 @@ from previous Chrome versions.
   <int value="-871784177" label="DeprecateMenagerieAPI:enabled"/>
   <int value="-871520682"
       label="AccessibilityInternalsPageImprovements:enabled"/>
+  <int value="-871467950"
+      label="PrivateNetworkAccessPreflightReduceTimeout:enabled"/>
   <int value="-871450829"
       label="ThreadedScrollPreventRenderingStarvation:disabled"/>
   <int value="-870994173" label="NtpChromeCartModule:enabled"/>
@@ -61148,6 +61150,8 @@ from previous Chrome versions.
   <int value="1324623677"
       label="SessionRestorePrioritizesBackgroundUseCases:enabled"/>
   <int value="1325459977" label="HandwritingGestureEditing:disabled"/>
+  <int value="1326346535"
+      label="PrivateNetworkAccessPreflightReduceTimeout:disabled"/>
   <int value="1326530782" label="AutofillParseAsync:enabled"/>
   <int value="1327883321"
       label="OmniboxHistoryQuickProviderAllowMidwordContinuations:enabled"/>

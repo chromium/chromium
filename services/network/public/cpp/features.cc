@@ -282,5 +282,11 @@ const base::Feature kReduceAcceptLanguage{"ReduceAcceptLanguage",
 const base::Feature kDisableResourceScheduler{
     "DisableResourceScheduler", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Reduce PNA preflight response waiting time to 200ms.
+// See: https://wicg.github.io/private-network-access/#cors-preflight
+const base::Feature kPrivateNetworkAccessPreflightShortTimeout = {
+    "PrivateNetworkAccessPreflightReduceTimeout",
+    base::FEATURE_ENABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace network

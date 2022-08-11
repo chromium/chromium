@@ -5279,6 +5279,11 @@
     "expiry_milestone": 108
   },
   {
+    "name": "private-network-access-preflight-short-timeout",
+    "owners": [ "lyf", "chrome-security-owp-team@google.com" ],
+    "expiry_milestone": 107
+  },
+  {
     "name": "private-network-access-respect-preflight-results",
     "owners": [ "titouan", "chrome-security-owp-team@google.com" ],
     "expiry_milestone": 107

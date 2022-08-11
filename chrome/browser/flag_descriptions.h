@@ -626,6 +626,9 @@ extern const char kPrivateNetworkAccessSendPreflightsDescription[];
 extern const char kPrivateNetworkAccessRespectPreflightResultsName[];
 extern const char kPrivateNetworkAccessRespectPreflightResultsDescription[];
 
+extern const char kPrivateNetworkAccessPreflightShortTimeoutName[];
+extern const char kPrivateNetworkAccessPreflightShortTimeoutDescription[];
+
 extern const char kDeprecateAltClickName[];
 extern const char kDeprecateAltClickDescription[];
 
