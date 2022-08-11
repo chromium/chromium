@@ -5,6 +5,7 @@
 package org.chromium.support_lib_glue;
 
 import android.os.Build;
+import android.webkit.CookieManager;
 import android.webkit.SafeBrowsingResponse;
 import android.webkit.ServiceWorkerWebSettings;
 import android.webkit.WebMessagePort;
@@ -124,5 +125,14 @@ class SupportLibWebkitToCompatConverterAdapter implements WebkitToCompatConverte
                 (SupportLibWebMessagePortAdapter) BoundaryInterfaceReflectionUtil
                         .getDelegateFromInvocationHandler(webMessagePort);
         return new WebMessagePortAdapter(supportLibMessagePort.getPort());
+    }
+
+    // WebViewCookieManagerBoundaryInterface
+    @Override
+    public InvocationHandler convertCookieManager(Object cookieManager) {
+        return BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                new SupportLibWebViewCookieManagerAdapter(
+                        WebkitToSharedGlueConverter.getCookieManager(
+                                (CookieManager) cookieManager)));
     }
 }

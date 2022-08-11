@@ -2956,6 +2956,9 @@ Unknown properties are collapsed to zero. -->
       label="WEB_SETTINGS_GET_ENTERPRISE_AUTHENTICATION_APP_LINK_POLICY_ENABLED">
     WebSettingsCompat#getEnterpriseAuthenticationAppLinkPolicyEnabled()
   </int>
+  <int value="63" label="WEB_View_COOKIE_MANAGER_GET_COOKIE_INFO">
+    CookieManagerCompat#getCookieInfo()
+  </int>
 </enum>
 
 <enum name="AnnouncementNotificationEvent">

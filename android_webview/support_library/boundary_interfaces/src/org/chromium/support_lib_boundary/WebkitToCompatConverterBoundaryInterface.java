@@ -63,4 +63,8 @@ public interface WebkitToCompatConverterBoundaryInterface {
             /* WebMessagePort */ Object webMessagePort);
     /* WebMessagePort */ Object convertWebMessagePort(
             /* SupportLibWebMessagePort */ InvocationHandler webMessagePort);
+
+    // CookieManager
+    /* SupportLibWebViewCookieManager */ InvocationHandler convertCookieManager(
+            Object cookieManager);
 }

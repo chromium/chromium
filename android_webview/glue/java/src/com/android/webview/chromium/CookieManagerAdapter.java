@@ -29,6 +29,10 @@ public class CookieManagerAdapter extends CookieManager {
         mChromeCookieManager = chromeCookieManager;
     }
 
+    public AwCookieManager getCookieManager() {
+        return mChromeCookieManager;
+    }
+
     @Override
     public synchronized void setAcceptCookie(boolean accept) {
         mChromeCookieManager.setAcceptCookie(accept);

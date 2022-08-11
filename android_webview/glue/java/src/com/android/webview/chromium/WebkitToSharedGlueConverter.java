@@ -5,6 +5,7 @@
 package com.android.webview.chromium;
 
 import android.os.Build;
+import android.webkit.CookieManager;
 import android.webkit.SafeBrowsingResponse;
 import android.webkit.ServiceWorkerWebSettings;
 import android.webkit.WebMessagePort;
@@ -17,6 +18,7 @@ import androidx.annotation.RequiresApi;
 
 import org.chromium.android_webview.AwContentsClient.AwWebResourceError;
 import org.chromium.android_webview.AwContentsClient.AwWebResourceRequest;
+import org.chromium.android_webview.AwCookieManager;
 import org.chromium.android_webview.AwServiceWorkerSettings;
 import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingResponse;
@@ -29,6 +31,10 @@ import org.chromium.content_public.browser.MessagePort;
  * This class is used to minimize dependencies from the support-library-glue on the webkit-glue.
  */
 public class WebkitToSharedGlueConverter {
+    public static AwCookieManager getCookieManager(CookieManager cookieManager) {
+        return ((CookieManagerAdapter) cookieManager).getCookieManager();
+    }
+
     public static SharedWebViewChromium getSharedWebViewChromium(WebView webview) {
         WebViewChromium webviewChromium = (WebViewChromium) webview.getWebViewProvider();
         return webviewChromium.getSharedWebViewChromium();
