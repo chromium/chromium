@@ -254,7 +254,8 @@ void OfflineContentAggregator::OnItemRemoved(const ContentId& id) {
   if (!pending_providers_.empty()) {
     auto item = std::find_if(aggregated_items_.begin(), aggregated_items_.end(),
                              [id](const OfflineItem& p) { return p.id == id; });
-    aggregated_items_.erase(item);
+    if (item != aggregated_items_.end())
+      aggregated_items_.erase(item);
   }
   NotifyItemRemoved(id);
 }
