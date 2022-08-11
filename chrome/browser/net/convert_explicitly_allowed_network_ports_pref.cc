@@ -15,16 +15,14 @@
 std::vector<uint16_t> ConvertExplicitlyAllowedNetworkPortsPref(
     PrefService* local_state) {
   std::vector<uint16_t> explicitly_allowed_network_ports;
-  const base::Value* explicitly_allowed_network_ports_list_value =
-      local_state->GetList(prefs::kExplicitlyAllowedNetworkPorts);
-  DCHECK(explicitly_allowed_network_ports_list_value);
-  auto list_view =
-      explicitly_allowed_network_ports_list_value->GetListDeprecated();
-  if (list_view.empty()) {
+  const base::Value::List& explicitly_allowed_network_ports_list =
+      local_state->GetValueList(prefs::kExplicitlyAllowedNetworkPorts);
+  if (explicitly_allowed_network_ports_list.empty()) {
     return explicitly_allowed_network_ports;
   }
-  explicitly_allowed_network_ports.reserve(list_view.size());
-  for (const base::Value& value : list_view) {
+  explicitly_allowed_network_ports.reserve(
+      explicitly_allowed_network_ports_list.size());
+  for (const base::Value& value : explicitly_allowed_network_ports_list) {
     const absl::optional<int> optional_int = value.GetIfInt();
     if (!optional_int) {
       // We handle this case because prefs can be corrupt, but it shouldn't

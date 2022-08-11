@@ -158,8 +158,7 @@ network::mojom::HttpAuthDynamicParamsPtr CreateHttpAuthDynamicParams(
                         base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
   for (const base::Value& item :
-       local_state->GetList(prefs::kAllHttpAuthSchemesAllowedForOrigins)
-           ->GetListDeprecated()) {
+       local_state->GetValueList(prefs::kAllHttpAuthSchemesAllowedForOrigins)) {
     auth_dynamic_params->patterns_allowed_to_use_all_schemes.push_back(
         item.GetString());
   }

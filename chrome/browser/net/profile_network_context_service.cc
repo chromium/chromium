@@ -129,12 +129,9 @@ bool* g_discard_domain_reliability_uploads_for_testing = nullptr;
 const char kHttpCacheFinchExperimentGroups[] =
     "profile_network_context_service.http_cache_finch_experiment_groups";
 
-std::vector<std::string> TranslateStringArray(const base::Value* list) {
-  if (!list->is_list())
-    return std::vector<std::string>();
-
+std::vector<std::string> TranslateStringArray(const base::Value::List& list) {
   std::vector<std::string> strings;
-  for (const base::Value& value : list->GetListDeprecated()) {
+  for (const base::Value& value : list) {
     DCHECK(value.is_string());
     strings.push_back(value.GetString());
   }
@@ -432,14 +429,14 @@ void ProfileNetworkContextService::UpdateReferrersEnabled() {
 
 network::mojom::CTPolicyPtr ProfileNetworkContextService::GetCTPolicy() {
   auto* prefs = profile_->GetPrefs();
-  const base::Value* ct_required =
-      prefs->GetList(certificate_transparency::prefs::kCTRequiredHosts);
-  const base::Value* ct_excluded =
-      prefs->GetList(certificate_transparency::prefs::kCTExcludedHosts);
-  const base::Value* ct_excluded_spkis =
-      prefs->GetList(certificate_transparency::prefs::kCTExcludedSPKIs);
-  const base::Value* ct_excluded_legacy_spkis =
-      prefs->GetList(certificate_transparency::prefs::kCTExcludedLegacySPKIs);
+  const base::Value::List& ct_required =
+      prefs->GetValueList(certificate_transparency::prefs::kCTRequiredHosts);
+  const base::Value::List& ct_excluded =
+      prefs->GetValueList(certificate_transparency::prefs::kCTExcludedHosts);
+  const base::Value::List& ct_excluded_spkis =
+      prefs->GetValueList(certificate_transparency::prefs::kCTExcludedSPKIs);
+  const base::Value::List& ct_excluded_legacy_spkis = prefs->GetValueList(
+      certificate_transparency::prefs::kCTExcludedLegacySPKIs);
 
   std::vector<std::string> required(TranslateStringArray(ct_required));
   std::vector<std::string> excluded(TranslateStringArray(ct_excluded));
