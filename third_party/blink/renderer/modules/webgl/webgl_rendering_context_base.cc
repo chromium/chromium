@@ -6041,12 +6041,33 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
         raster_context_provider = context_provider->RasterContextProvider();
     }
 
-    // Use PaintCanvasVideoRenderer, if possible.
-    if (video_renderer->CopyVideoFrameToWebGLTexture(
-            raster_context_provider, ContextGL(), gpu_teximage_is_slow,
-            media_video_frame, params.target, texture->Object(),
-            adjusted_internalformat, params.format, params.type, params.level,
-            unpack_premultiply_alpha_, unpack_flip_y_)) {
+    // Go through the fast path doing a GPU-GPU textures copy without a readback
+    // to system memory if possible.  Otherwise, it will fall back to the normal
+    // SW path.
+
+    if (media_video_frame->HasTextures() &&
+        video_renderer->CopyVideoFrameTexturesToGLTexture(
+            raster_context_provider, ContextGL(), media_video_frame,
+            params.target, texture->Object(), adjusted_internalformat,
+            params.format, params.type, params.level, unpack_premultiply_alpha_,
+            unpack_flip_y_)) {
+      texture->UpdateLastUploadedFrame(metadata);
+      return;
+    }
+
+    // For certain video frame formats (e.g. I420/YUV), if they start on the CPU
+    // (e.g. video camera frames): upload them to the GPU, do a GPU decode, and
+    // then copy into the target texture.
+    //
+    // TODO(crbug.com/1180879): I420A should be supported, but currently fails
+    // conformance/textures/misc/texture-video-transparent.html.
+    if (!media_video_frame->HasTextures() &&
+        media::IsOpaque(media_video_frame->format()) && !gpu_teximage_is_slow &&
+        video_renderer->CopyVideoFrameYUVDataToGLTexture(
+            raster_context_provider, ContextGL(), media_video_frame,
+            params.target, texture->Object(), adjusted_internalformat,
+            params.format, params.type, params.level, unpack_premultiply_alpha_,
+            unpack_flip_y_)) {
       texture->UpdateLastUploadedFrame(metadata);
       return;
     }

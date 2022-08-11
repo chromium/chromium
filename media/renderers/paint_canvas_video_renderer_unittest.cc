@@ -1078,7 +1078,7 @@ class PaintCanvasVideoRendererWithGLTest : public testing::Test {
     gl::GLSurfaceTestSupport::ShutdownGL(display_);
   }
 
-  // Uses CopyVideoFrameToWebGLTexture to copy |frame| into a GL texture,
+  // Uses CopyVideoFrameTexturesToGLTexture to copy |frame| into a GL texture,
   // reads back its contents, and runs |check_pixels| to validate it.
   template <class CheckPixels>
   void CopyVideoFrameTexturesAndCheckPixels(scoped_refptr<VideoFrame> frame,
@@ -1090,10 +1090,10 @@ class PaintCanvasVideoRendererWithGLTest : public testing::Test {
     destination_gl->GenTextures(1, &texture);
     destination_gl->BindTexture(target, texture);
 
-    renderer_.CopyVideoFrameToWebGLTexture(
-        media_context_.get(), destination_gl, /*gpu_teximage_is_slow=*/false,
-        frame, target, texture, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, /*level=*/0,
-        /*unpack_premultiply_alpha=*/false, /*unpack_flip_y=*/false);
+    renderer_.CopyVideoFrameTexturesToGLTexture(
+        media_context_.get(), destination_gl, frame, target, texture, GL_RGBA,
+        GL_RGBA, GL_UNSIGNED_BYTE, 0, false /* premultiply_alpha */,
+        false /* flip_y */);
 
     gfx::Size expected_size = frame->visible_rect().size();
 
@@ -1241,7 +1241,7 @@ class PaintCanvasVideoRendererWithGLTest : public testing::Test {
   raw_ptr<gl::GLDisplay> display_ = nullptr;
 };
 
-TEST_F(PaintCanvasVideoRendererWithGLTest, CopyVideoFrameToWebGLTexture) {
+TEST_F(PaintCanvasVideoRendererWithGLTest, CopyVideoFrameYUVDataToGLTexture) {
   auto* destination_gl = destination_context_->ContextGL();
   DCHECK(destination_gl);
   GLenum target = GL_TEXTURE_2D;
@@ -1249,11 +1249,10 @@ TEST_F(PaintCanvasVideoRendererWithGLTest, CopyVideoFrameToWebGLTexture) {
   destination_gl->GenTextures(1, &texture);
   destination_gl->BindTexture(target, texture);
 
-  renderer_.CopyVideoFrameToWebGLTexture(
-      media_context_.get(), destination_gl, /*gpu_teximage_is_slow=*/false,
-      cropped_frame(), target, texture, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE,
-      /*level=*/0,
-      /*unpack_premultiply_alpha=*/false, /*unpack_flip_y=*/false);
+  renderer_.CopyVideoFrameYUVDataToGLTexture(
+      media_context_.get(), destination_gl, cropped_frame(), target, texture,
+      GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, 0, false /* premultiply_alpha */,
+      false /* flip_y */);
 
   gfx::Size expected_size = cropped_frame()->visible_rect().size();
 
@@ -1273,7 +1272,8 @@ TEST_F(PaintCanvasVideoRendererWithGLTest, CopyVideoFrameToWebGLTexture) {
   destination_gl->DeleteTextures(1, &texture);
 }
 
-TEST_F(PaintCanvasVideoRendererWithGLTest, CopyVideoFrameToWebGLTexture_FlipY) {
+TEST_F(PaintCanvasVideoRendererWithGLTest,
+       CopyVideoFrameYUVDataToGLTexture_FlipY) {
   auto* destination_gl = destination_context_->ContextGL();
   DCHECK(destination_gl);
   GLenum target = GL_TEXTURE_2D;
@@ -1281,11 +1281,10 @@ TEST_F(PaintCanvasVideoRendererWithGLTest, CopyVideoFrameToWebGLTexture_FlipY) {
   destination_gl->GenTextures(1, &texture);
   destination_gl->BindTexture(target, texture);
 
-  renderer_.CopyVideoFrameToWebGLTexture(
-      media_context_.get(), destination_gl, /*gpu_teximage_is_slow=*/false,
-      cropped_frame(), target, texture, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE,
-      /*level=*/0,
-      /*unpack_premultiply_alpha=*/false, /*unpack_flip_y=*/true);
+  renderer_.CopyVideoFrameYUVDataToGLTexture(
+      media_context_.get(), destination_gl, cropped_frame(), target, texture,
+      GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, 0, false /* premultiply_alpha */,
+      true /* flip_y */);
 
   gfx::Size expected_size = cropped_frame()->visible_rect().size();
 
@@ -1306,8 +1305,9 @@ TEST_F(PaintCanvasVideoRendererWithGLTest, CopyVideoFrameToWebGLTexture_FlipY) {
 }
 
 // Checks that we correctly copy a RGBA shared image VideoFrame when using
-// CopyVideoFrameToWebGLTexture, including correct cropping.
-TEST_F(PaintCanvasVideoRendererWithGLTest, CopyVideoFrameToWebGLTextureRGBA) {
+// CopyVideoFrameYUVDataToGLTexture, including correct cropping.
+TEST_F(PaintCanvasVideoRendererWithGLTest,
+       CopyVideoFrameTexturesToGLTextureRGBA) {
   base::RunLoop run_loop;
   scoped_refptr<VideoFrame> frame = CreateTestRGBAFrame(run_loop.QuitClosure());
 
@@ -1318,10 +1318,10 @@ TEST_F(PaintCanvasVideoRendererWithGLTest, CopyVideoFrameToWebGLTextureRGBA) {
 }
 
 // Checks that we correctly copy a RGBA shared image VideoFrame that needs read
-// lock fences, when using CopyVideoFrameToWebGLTexture, including correct
+// lock fences, when using CopyVideoFrameYUVDataToGLTexture, including correct
 // cropping.
 TEST_F(PaintCanvasVideoRendererWithGLTest,
-       CopyVideoFrameToWebGLTextureRGBA_ReadLockFence) {
+       CopyVideoFrameTexturesToGLTextureRGBA_ReadLockFence) {
   base::RunLoop run_loop;
   scoped_refptr<VideoFrame> frame = CreateTestRGBAFrame(run_loop.QuitClosure());
   frame->metadata().read_lock_fences_enabled = true;
@@ -1345,8 +1345,9 @@ TEST_F(PaintCanvasVideoRendererWithGLTest, PaintRGBA) {
 }
 
 // Checks that we correctly copy an I420 shared image VideoFrame when using
-// CopyVideoFrameToWebGLTexture, including correct cropping.
-TEST_F(PaintCanvasVideoRendererWithGLTest, CopyVideoFrameToWebGLTextureI420) {
+// CopyVideoFrameYUVDataToGLTexture, including correct cropping.
+TEST_F(PaintCanvasVideoRendererWithGLTest,
+       CopyVideoFrameTexturesToGLTextureI420) {
   base::RunLoop run_loop;
   scoped_refptr<VideoFrame> frame = CreateTestI420Frame(run_loop.QuitClosure());
 
@@ -1382,8 +1383,9 @@ TEST_F(PaintCanvasVideoRendererWithGLTest, PaintI420NotSubset) {
 }
 
 // Checks that we correctly copy a NV12 shared image VideoFrame when using
-// CopyVideoFrameToWebGLTexture, including correct cropping.
-TEST_F(PaintCanvasVideoRendererWithGLTest, CopyVideoFrameToWebGLTextureNV12) {
+// CopyVideoFrameYUVDataToGLTexture, including correct cropping.
+TEST_F(PaintCanvasVideoRendererWithGLTest,
+       CopyVideoFrameTexturesToGLTextureNV12) {
   base::RunLoop run_loop;
   scoped_refptr<VideoFrame> frame = CreateTestNV12Frame(run_loop.QuitClosure());
   if (!frame) {
