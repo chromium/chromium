@@ -585,7 +585,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2515761554693942801">Možete odabrati potvrdu pomoću Touch ID-a na web lokacijama koje koriste pružatelja usluga <ph name="PROVIDER_ORIGIN" />. Ovaj pružalac usluga je možda pohranio informacije o vašem načinu plaćanja, za koji možete <ph name="LINK_TEXT" />.</translation>
 <translation id="2521385132275182522">Spajanje u donjem desnom uglu</translation>
 <translation id="2521736961081452453">Kreiraj obrazac</translation>
-<translation id="2523886232349826891">Sačuvano isključivo na ovom uređaju</translation>
+<translation id="2523886232349826891">Pohranjuje se samo na ovom uređaju</translation>
 <translation id="2524461107774643265">Dodajte više informacija</translation>
 <translation id="2529899080962247600">Ovo polje ne smije sadržavati više od sljedećeg broja unosa: <ph name="MAX_ITEMS_LIMIT" />. Svi daljnji unosi će se zanemariti.</translation>
 <translation id="253493526287553278">Pogledajte detalje o promotivnim kôdovima</translation>

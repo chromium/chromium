@@ -1114,6 +1114,7 @@
 <translation id="2048653237708779538">无法执行操作</translation>
 <translation id="2050339315714019657">纵向</translation>
 <translation id="2052572566310583903">已安装在您的其他设备上</translation>
+<translation id="2053105195397337973">我们正在探索如何既能让网站阻止垃圾广告和欺诈行为，又能限制跟踪。</translation>
 <translation id="2053312383184521053">闲置状态数据</translation>
 <translation id="2054240652864153171">清除 <ph name="PARTITION_SITE_NAME" /> 上已分区的 <ph name="SITE_NAME" /> 网站数据？</translation>
 <translation id="2055585478631012616">您将会自动退出这些网站（包括打开的标签页）</translation>
@@ -1853,6 +1854,7 @@
 <translation id="2727633948226935816">不再提醒</translation>
 <translation id="2727712005121231835">实际大小</translation>
 <translation id="2729314457178420145">一并清除浏览数据 (<ph name="URL" />)，这可能会使您在 Google.com 上退出帐号。<ph name="LEARN_MORE" /></translation>
+<translation id="2729327310379176711">Chrome 正在寻找新方法来减少跟踪，让您在浏览时更安全。Chrome 还会<ph name="ESTIMATE_INTERESTS_LINK" />，并允许您管理它们。然后，您访问的网站可请求 Chrome 提供您的兴趣以据之向您展示广告。</translation>
 <translation id="2730029791981212295">正在备份 Linux 应用和文件</translation>
 <translation id="2730901670247399077">表情符号建议</translation>
 <translation id="273093730430620027">此网页正在使用您的摄像头。</translation>
