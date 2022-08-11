@@ -125,7 +125,8 @@ bool DownloadBubbleRowView::UpdateBubbleUIInfo(bool initial_setup) {
 
   // If either of mode or state changes, or if it is the initial setup,
   // we might need to change UI.
-  ui_info_ = model_->GetBubbleUIInfo();
+  ui_info_ = model_->GetBubbleUIInfo(
+      download::IsDownloadBubbleV2Enabled(browser_->profile()));
   return true;
 }
 

@@ -55,18 +55,27 @@ class DownloadBubbleSecurityView : public views::View {
   void OnCheckboxClicked();
   void UpdateIconAndText();
   void AddIconAndText();
+  // Updates the subpage button. Setting initial state and color for enabled
+  // state, if it is a secondary button.
+  void UpdateButton(DownloadUIModel::BubbleUIInfo::SubpageButton button,
+                    bool is_secondary_button,
+                    bool has_checkbox,
+                    SkColor color);
   void UpdateButtons();
   void AddButtons();
 
+  // |is_secondary_button| checks if the command/action originated from the
+  // secondary button.
   void ProcessButtonClick(DownloadCommands::Command command,
-                          bool is_first_button);
+                          bool is_secondary_button);
   views::MdTextButton* GetButtonForCommand(DownloadCommands::Command command);
-  void RecordWarningActionTime(bool is_first_button);
+  void RecordWarningActionTime(bool is_secondary_button);
 
   raw_ptr<DownloadBubbleRowView> download_row_view_;
   raw_ptr<DownloadBubbleUIController> bubble_controller_ = nullptr;
   raw_ptr<DownloadBubbleNavigationHandler> navigation_handler_ = nullptr;
-  raw_ptr<views::MdTextButton> first_button_ = nullptr;
+  // The secondary button is the one that may be protected by the checkbox.
+  raw_ptr<views::MdTextButton> secondary_button_ = nullptr;
   raw_ptr<views::Checkbox> checkbox_ = nullptr;
   raw_ptr<views::Label> title_ = nullptr;
   raw_ptr<views::ImageView> icon_ = nullptr;
