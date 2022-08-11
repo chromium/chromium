@@ -45,6 +45,11 @@ constexpr char kHttpConnectivityCheckUrl[] =
 constexpr net::HttpStatusCode kConnectivitySuccessStatusCode =
     net::HTTP_NO_CONTENT;
 
+// Delay notification of network change events to smooth out rapid flipping.
+// Histogram "Cast.Network.Down.Duration.In.Seconds" shows 40% of network
+// downtime is less than 3 seconds.
+constexpr base::TimeDelta kNetworkChangedDelay = base::Seconds(3);
+
 // Simple class to check network connectivity by sending a HEAD http request
 // to given url.
 class ConnectivityCheckerImpl
@@ -158,6 +163,9 @@ class ConnectivityCheckerImpl
   // Note: Cancelling this timeout can cause the destructor for this class to be
   // called.
   base::CancelableOnceCallback<void()> timeout_;
+
+  // Cancelable check handler used to cancel duplicate connectivity check.
+  base::CancelableOnceCallback<void()> delayed_check_;
 
   // How often connectivity checks are performed while not connected.
   const base::TimeDelta disconnected_probe_period_;

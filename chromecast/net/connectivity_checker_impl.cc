@@ -50,12 +50,6 @@ const unsigned int kNumErrorsToNotifyOffline = 3;
 // Request timeout value.
 constexpr base::TimeDelta kRequestTimeout = base::Seconds(3);
 
-// Delay notification of network change events to smooth out rapid flipping.
-// Histogram "Cast.Network.Down.Duration.In.Seconds" shows 40% of network
-// downtime is less than 3 seconds.
-constexpr base::TimeDelta kNetworkChangedDelay =
-    base::Seconds(3);
-
 const char kMetricNameNetworkConnectivityCheckingErrorType[] =
     "Network.ConnectivityChecking.ErrorType";
 
@@ -339,10 +333,10 @@ void ConnectivityCheckerImpl::OnConnectivityCheckComplete(
   }
   // Some products don't have an idle screen that makes periodic network
   // requests. Schedule another check to ensure connectivity hasn't dropped.
-  task_runner_->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&ConnectivityCheckerImpl::CheckInternal, weak_this_),
-      connected_probe_period_);
+  delayed_check_.Reset(
+      base::BindOnce(&ConnectivityCheckerImpl::CheckInternal, weak_this_));
+  task_runner_->PostDelayedTask(FROM_HERE, delayed_check_.callback(),
+                                connected_probe_period_);
 }
 
 void ConnectivityCheckerImpl::OnUrlRequestError(ErrorType type) {
@@ -362,9 +356,10 @@ void ConnectivityCheckerImpl::OnUrlRequestError(ErrorType type) {
     SetConnected(false);
   }
   // Check again.
-  task_runner_->PostDelayedTask(
-      FROM_HERE, base::BindOnce(&ConnectivityCheckerImpl::Check, weak_this_),
-      disconnected_probe_period_);
+  delayed_check_.Reset(
+      base::BindOnce(&ConnectivityCheckerImpl::CheckInternal, weak_this_));
+  task_runner_->PostDelayedTask(FROM_HERE, delayed_check_.callback(),
+                                disconnected_probe_period_);
 }
 
 void ConnectivityCheckerImpl::OnUrlRequestTimeout() {

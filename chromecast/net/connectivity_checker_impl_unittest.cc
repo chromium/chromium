@@ -44,9 +44,20 @@ class FakeNetworkConnectionTracker : public network::NetworkConnectionTracker {
   // Spoof a valid connection type.
   bool GetConnectionType(network::mojom::ConnectionType* type,
                          ConnectionTypeCallback callback) override {
+    check_counter_++;
     *type = network::mojom::ConnectionType::CONNECTION_UNKNOWN;
     return true;
   }
+
+  void NotifyNetworkTypeChanged(network::mojom::ConnectionType type) {
+    OnNetworkChanged(type);
+  }
+
+  unsigned int check_counter() const { return check_counter_; }
+
+ private:
+  // To memorize how many times GetConnectionType() called by checker
+  unsigned int check_counter_ = 0;
 };
 
 class ConnectivityCheckPeriods {
@@ -149,6 +160,10 @@ class ConnectivityCheckerImplTest : public ::testing::Test {
   }
 
   const ConnectivityCheckerImpl& checker() const { return *checker_; }
+
+  FakeNetworkConnectionTracker& tracker() const {
+    return *network_connection_tracker_;
+  }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
 
@@ -283,5 +298,74 @@ TEST_F(ConnectivityCheckerImplTest, RecordsDisconnectDueToNetError) {
 
   CheckAndExpectRecordedError(ConnectivityCheckerImpl::ErrorType::NET_ERROR);
 }
+
+class ConnectivityCheckerImplTestPeriodicCheck
+    : public ConnectivityCheckerImplTestPeriodParameterized {};
+
+TEST_P(ConnectivityCheckerImplTestPeriodicCheck, NoDuplicateConnectedCheck) {
+  const ConnectivityCheckPeriods periods = GetParam();
+  constexpr base::TimeDelta kCheckRequestDelay = base::Milliseconds(100);
+  constexpr unsigned int kRounds = 10;
+
+  // Initial: connected. First Check.
+  // A check is scheduled in connected_check_period_.
+  ConnectAndCheck();
+
+  // Add a delay to prevent the new check() from being ignored due to the
+  // duplicate url loader request
+  task_environment_.FastForwardBy(kCheckRequestDelay);
+  SetResponsesWithStatusCode(kConnectivitySuccessStatusCode);
+  tracker().NotifyNetworkTypeChanged(
+      network::mojom::ConnectionType::CONNECTION_WIFI);
+
+  // Wait for the internal network change delay.
+  // A check will be executed and the next check will be schedule in
+  // connected_check_period_. The old scheduled check should be removed.
+  task_environment_.FastForwardBy(kNetworkChangedDelay);
+
+  // Fast forward and count the times of check()
+  unsigned int counter_start = tracker().check_counter();
+  task_environment_.FastForwardBy(periods.connected_check_period_ * kRounds);
+
+  // The check_counter should increase by kRounds.
+  EXPECT_EQ(tracker().check_counter() - counter_start, kRounds);
+}
+
+TEST_P(ConnectivityCheckerImplTestPeriodicCheck, NoDuplicateDisconnectedCheck) {
+  const ConnectivityCheckPeriods periods = GetParam();
+  constexpr base::TimeDelta kCheckRequestDelay = base::Milliseconds(100);
+  constexpr unsigned int kRounds = 10;
+
+  // Initial: disconnected. First Check.
+  // A check is scheduled in disconnected_check_period_.
+  DisconnectAndCheck();
+
+  // Add a delay to prevent the new check() from being ignored due to the
+  // duplicate url loader request
+  task_environment_.FastForwardBy(kCheckRequestDelay);
+  SetResponsesWithStatusCode(net::HTTP_INTERNAL_SERVER_ERROR);
+  tracker().NotifyNetworkTypeChanged(
+      network::mojom::ConnectionType::CONNECTION_WIFI);
+
+  // Wait for the internal network change delay.
+  // A check will be executed and the next check will be schedule in
+  // disconnected_check_period_. The old scheduled check should be removed.
+  task_environment_.FastForwardBy(kNetworkChangedDelay);
+
+  // Fast forward and count the times of check()
+  unsigned int counter_start = tracker().check_counter();
+  task_environment_.FastForwardBy(periods.disconnected_check_period_ * kRounds);
+
+  // The check_counter should increase by kRounds.
+  EXPECT_EQ(tracker().check_counter() - counter_start, kRounds);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ConnectivityCheckerImplTestCheckPeriodicCheck,
+    ConnectivityCheckerImplTestPeriodicCheck,
+    ::testing::Values(
+        ConnectivityCheckPeriods(base::Seconds(1), base::Seconds(1)),
+        ConnectivityCheckPeriods(base::Seconds(10), base::Seconds(10)),
+        ConnectivityCheckPeriods(base::Seconds(1), base::Seconds(60))));
 
 }  // namespace chromecast
