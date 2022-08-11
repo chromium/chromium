@@ -62,20 +62,19 @@ void OnStartupHandler::OnExtensionReady(
   FireWebUIListener(kOnStartupNtpExtensionEventName, GetNtpExtension());
 }
 
-base::Value OnStartupHandler::GetNtpExtension() {
+base::Value::Dict OnStartupHandler::GetNtpExtension() {
   const extensions::Extension* ntp_extension =
       extensions::GetExtensionOverridingNewTabPage(profile_);
   if (!ntp_extension) {
-    return base::Value();
+    return base::Value::Dict();
   }
 
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("id", ntp_extension->id());
-  dict.SetStringKey("name", ntp_extension->name());
-  dict.SetBoolKey("canBeDisabled",
-                  !extensions::ExtensionSystem::Get(profile_)
-                       ->management_policy()
-                       ->MustRemainEnabled(ntp_extension, nullptr));
+  base::Value::Dict dict;
+  dict.Set("id", ntp_extension->id());
+  dict.Set("name", ntp_extension->name());
+  dict.Set("canBeDisabled", !extensions::ExtensionSystem::Get(profile_)
+                                 ->management_policy()
+                                 ->MustRemainEnabled(ntp_extension, nullptr));
   return dict;
 }
 

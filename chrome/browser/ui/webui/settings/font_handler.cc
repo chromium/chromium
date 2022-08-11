@@ -74,8 +74,7 @@ void FontHandler::FontListHasLoaded(std::string callback_id,
   base::Value::Dict response;
   response.Set("fontList", std::move(list));
 
-  ResolveJavascriptCallback(base::Value(callback_id),
-                            base::Value(std::move(response)));
+  ResolveJavascriptCallback(base::Value(callback_id), response);
 }
 
 }  // namespace settings

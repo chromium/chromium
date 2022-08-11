@@ -48,7 +48,7 @@ class MetricsReportingHandler : public SettingsPageUIHandler {
  private:
   // Describes the state of metrics reporting in a base::DictionaryValue.
   // Friends with ChromeMetricsServiceAccessor.
-  std::unique_ptr<base::DictionaryValue> CreateMetricsReportingDict();
+  base::Value::Dict CreateMetricsReportingDict();
 
   // Handler for "setMetricsReportingEnabled" message. Passed a single,
   // |enabled| boolean argument.

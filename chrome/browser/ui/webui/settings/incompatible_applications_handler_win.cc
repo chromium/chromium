@@ -75,7 +75,7 @@ void IncompatibleApplicationsHandler::HandleRequestIncompatibleApplicationsList(
       incompatible_applications =
           IncompatibleApplicationsUpdater::GetCachedApplications();
 
-  base::Value application_list(base::Value::Type::LIST);
+  base::Value::List application_list;
 
   for (const auto& application : incompatible_applications) {
     // Set up a registry watcher for each problem application.
@@ -99,12 +99,10 @@ void IncompatibleApplicationsHandler::HandleRequestIncompatibleApplicationsList(
     }
 
     // Also add the application to the list that is passed to the javascript.
-    base::Value dict(base::Value::Type::DICTIONARY);
-    dict.SetKey("name", base::Value(base::WideToUTF8(application.info.name)));
-    dict.SetKey("type",
-                base::Value(application.blocklist_action->message_type()));
-    dict.SetKey("url",
-                base::Value(application.blocklist_action->message_url()));
+    base::Value::Dict dict;
+    dict.Set("name", base::WideToUTF8(application.info.name));
+    dict.Set("type", application.blocklist_action->message_type());
+    dict.Set("url", application.blocklist_action->message_url());
     application_list.Append(std::move(dict));
   }
 
