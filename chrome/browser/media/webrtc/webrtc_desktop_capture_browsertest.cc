@@ -351,6 +351,30 @@ IN_PROC_BROWSER_TEST_F(WebRtcDesktopCaptureBrowserTest,
   ASSERT_GE(average_fps, kFps / 3);
 }
 
+IN_PROC_BROWSER_TEST_F(
+    WebRtcDesktopCaptureBrowserTest,
+    TabCaptureProvides0HzWith0MinFpsConstraintAndStaticContent) {
+  constexpr base::TimeDelta kTestTime = base::Seconds(2);
+  InitializeTabSharingForFirstTab(
+      base::BindOnce(GetDesktopMediaIDForTab, base::Unretained(browser()), 1),
+      nullptr, base::StrCat({"minFrameRate: 0, maxFrameRate: 30"}));
+  content::WebContents* first_tab =
+      browser()->tab_strip_model()->GetWebContentsAt(1);
+  EnableVideoFrameCallbacks(first_tab, "local-view");
+
+  // Sample received frame counts during the test time.
+  int frame_counter = 0;
+  base::TimeTicks initial_timestamp = base::TimeTicks::Now();
+  ASSERT_TRUE(test::PollingWaitUntilClosureEvaluatesTrue(
+      base::BindLambdaForTesting([&]() -> bool {
+        frame_counter = GetNumVideoFrameCallbacks(first_tab);
+        return base::TimeTicks::Now() - initial_timestamp >= kTestTime;
+      }),
+      first_tab, base::Milliseconds(50)));
+  // Expect only a few initial frames.
+  ASSERT_LE(frame_counter, 3);
+}
+
 // TODO(crbug.com/796889): Enable on Mac when thread check crash is fixed.
 // TODO(sprang): Figure out why test times out on Win 10 and ChromeOS.
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
