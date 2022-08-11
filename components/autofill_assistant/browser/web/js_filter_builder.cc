@@ -185,8 +185,8 @@ std::string JsFilterBuilder::AddRegexpInstance(const TextFilter& filter) {
 void JsFilterBuilder::AddRegexpFilter(const TextFilter& filter,
                                       const std::string& property) {
   std::string re_var = AddRegexpInstance(filter);
-  AddLine({"elements = elements.filter((e) => ", re_var, ".test(e.", property,
-           "));"});
+  AddLine({"elements = elements.filter((e) => ", re_var, ".test(e[",
+           AddArgument(property), "]));"});
 }
 
 std::string JsFilterBuilder::DeclareVariable() {
