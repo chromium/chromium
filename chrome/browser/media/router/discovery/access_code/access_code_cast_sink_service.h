@@ -120,7 +120,6 @@ class AccessCodeCastSinkService : public KeyedService,
 
     base::WeakPtrFactory<AccessCodeMediaRoutesObserver> weak_ptr_factory_{this};
   };
-  // TODO(b/234892353): Remove friend class AccessCodeCastSinkServiceFactory
   friend class AccessCodeCastSinkServiceFactory;
   friend class AccessCodeCastSinkServiceTest;
   friend class AccessCodeCastHandlerTest;
