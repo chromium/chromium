@@ -112,6 +112,7 @@ class WebRuntimeFeatures {
   BLINK_PLATFORM_EXPORT static void EnableFedCm(bool);
   BLINK_PLATFORM_EXPORT static void EnableFedCmIdpSignout(bool);
   BLINK_PLATFORM_EXPORT static void EnableFedCmIframeSupport(bool);
+  BLINK_PLATFORM_EXPORT static void EnableFedCmMultipleIdentityProviders(bool);
   BLINK_PLATFORM_EXPORT static void EnableFencedFrames(bool);
   BLINK_PLATFORM_EXPORT static bool IsFencedFramesEnabled();
   BLINK_PLATFORM_EXPORT static void EnableFileSystem(bool);

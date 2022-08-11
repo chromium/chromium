@@ -1004,6 +1004,10 @@
       status: "test",
     },
     {
+      name: "FedCmMultipleIdentityProviders",
+      status: "test",
+    },
+    {
       name: "FencedFrames",
       // This helps enable and expose the <fencedframe> element, but note that
       // blink::features::kFencedFrames must be enabled as well, similar to

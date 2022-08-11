@@ -352,6 +352,11 @@ const char kFedCmIframeSupportFieldTrialParamName[] = "IframeSupport";
 const base::Feature kFedCmManifestValidation{"FedCmManifestValidation",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables usage of the FedCM API with multiple identity providers at the same
+// time.
+const base::Feature kFedCmMultipleIdentityProviders{
+    "FedCmMultipleIdentityProviders", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables usage of First Party Sets to determine cookie availability.
 constexpr base::Feature kFirstPartySets{"FirstPartySets",
                                         base::FEATURE_DISABLED_BY_DEFAULT};

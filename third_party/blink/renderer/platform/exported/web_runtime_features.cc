@@ -647,6 +647,10 @@ void WebRuntimeFeatures::EnableFedCmIframeSupport(bool enable) {
   RuntimeEnabledFeatures::SetFedCmIframeSupportEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnableFedCmMultipleIdentityProviders(bool enable) {
+  RuntimeEnabledFeatures::SetFedCmMultipleIdentityProvidersEnabled(enable);
+}
+
 void WebRuntimeFeatures::EnableDocumentTransition(bool enable) {
   RuntimeEnabledFeatures::SetDocumentTransitionEnabled(enable);
 }
