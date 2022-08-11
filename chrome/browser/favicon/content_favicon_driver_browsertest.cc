@@ -1115,7 +1115,6 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest,
   url_loader_interceptor.Reset();
 }
 
-// TODO(crbug.com/1300214): Different origins should not share the same cache.
 // Test that different origins share the underlying favicon cache over http.
 IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest, CrossOriginCacheHTTP) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -1140,7 +1139,7 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest, CrossOriginCacheHTTP) {
             url_loader_interceptor.destination(icon_url));
   url_loader_interceptor.Reset();
 
-  // Initial visit to b.com should reuse the existing cache.
+  // Initial visit to b.com shouldn't reuse the existing cache.
   {
     PendingTaskWaiter waiter(web_contents());
     ui_test_utils::NavigateToURLWithDisposition(
@@ -1148,11 +1147,10 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest, CrossOriginCacheHTTP) {
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     waiter.Wait();
   }
-  EXPECT_FALSE(url_loader_interceptor.was_loaded(icon_url));
+  EXPECT_TRUE(url_loader_interceptor.was_loaded(icon_url));
   EXPECT_FALSE(url_loader_interceptor.did_bypass_cache(icon_url));
 }
 
-// TODO(crbug.com/1300214): Different origins should not share the same cache.
 // Test that different origins share the underlying favicon cache over https.
 IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest, CrossOriginCacheHTTPS) {
   net::EmbeddedTestServer ssl_server(net::EmbeddedTestServer::TYPE_HTTPS);
@@ -1179,7 +1177,7 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest, CrossOriginCacheHTTPS) {
             url_loader_interceptor.destination(icon_url));
   url_loader_interceptor.Reset();
 
-  // Initial visit to b.com should reuse the existing cache.
+  // Initial visit to b.com shouldn't reuse the existing cache.
   {
     PendingTaskWaiter waiter(web_contents());
     ui_test_utils::NavigateToURLWithDisposition(
@@ -1187,6 +1185,6 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest, CrossOriginCacheHTTPS) {
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     waiter.Wait();
   }
-  EXPECT_FALSE(url_loader_interceptor.was_loaded(icon_url));
+  EXPECT_TRUE(url_loader_interceptor.was_loaded(icon_url));
   EXPECT_FALSE(url_loader_interceptor.did_bypass_cache(icon_url));
 }
