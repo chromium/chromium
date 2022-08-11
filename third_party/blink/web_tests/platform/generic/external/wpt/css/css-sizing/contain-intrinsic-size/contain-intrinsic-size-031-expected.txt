@@ -1,0 +1,23 @@
+This is a testharness.js-based test.
+PASS .test 1
+PASS .test 2
+PASS .test 3
+PASS .test 4
+PASS .test 5
+PASS .test 6
+FAIL .test 7 assert_equals: 
+<div class="test columns-120px-1 cis-width" data-expected-client-width="100" data-expected-client-height="0"></div>
+clientWidth expected 100 but got 120
+FAIL .test 8 assert_equals: 
+<div class="test columns-120px-1 cis-both" data-expected-client-width="100" data-expected-client-height="50"></div>
+clientWidth expected 100 but got 120
+PASS .test 9
+PASS .test 10
+FAIL .test 11 assert_equals: 
+<div class="test columns-60px-2 cis-width" data-expected-client-width="100" data-expected-client-height="0"></div>
+clientWidth expected 100 but got 205
+FAIL .test 12 assert_equals: 
+<div class="test columns-60px-2 cis-both" data-expected-client-width="100" data-expected-client-height="50"></div>
+clientWidth expected 100 but got 205
+Harness: the test ran to completion.
+

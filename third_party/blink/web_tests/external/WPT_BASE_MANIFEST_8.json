@@ -390893,6 +390893,13 @@
         {}
        ]
       ],
+      "contain-intrinsic-size-031.html": [
+       "981ddc693bce23fc98a724e965cdaf1bdc6fd412",
+       [
+        null,
+        {}
+       ]
+      ],
       "contain-intrinsic-size-logical-003.html": [
        "59ae8328f2dfaba25094bdf90cf6c0bc1abbdee0",
        [
@@ -594921,7 +594928,7 @@
      },
      "get_element_property": {
       "get.py": [
-       "6c15545b26589ccb05870c9b197390c555a14a80",
+       "46755ffc9b138a00f525a68e89062bc04ed8e28e",
        [
         null,
         {}
