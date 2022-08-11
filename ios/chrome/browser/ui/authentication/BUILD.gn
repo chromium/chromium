@@ -33,6 +33,7 @@ source_set("authentication") {
     "//components/infobars/core",
     "//components/policy/core/common",
     "//components/prefs",
+    "//components/signin/ios/browser",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager/objc",
     "//components/strings",

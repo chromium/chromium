@@ -321,49 +321,13 @@ ChromeIdentity* AuthenticationService::GetPrimaryIdentity(
   return account_manager_service_->GetIdentityWithGaiaID(authenticated_gaia_id);
 }
 
+// TODO(crbug.com/1351423): Remove asynchronous callback from SignIn function,
+// since this is no longer used by existing callers.
 void AuthenticationService::SignIn(ChromeIdentity* identity,
                                    signin_ui::CompletionCallback completion) {
-  base::WeakPtr<AuthenticationService> weak_ptr = GetWeakPtr();
-  ProceduralBlock signin_callback = ^() {
-    bool has_primary_identity = false;
-    AuthenticationService* strong_ptr = weak_ptr.get();
-    if (strong_ptr) {
-      strong_ptr->SignInInternal(identity);
-      has_primary_identity =
-          strong_ptr->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
-    }
-    if (completion) {
-      completion(has_primary_identity);
-    }
-  };
-
-  if (base::FeatureList::IsEnabled(signin::kEnableUnicornAccountSupport)) {
-    ios::ChromeIdentityService* identity_service =
-        ios::GetChromeBrowserProvider().GetChromeIdentityService();
-    identity_service->IsSubjectToParentalControls(
-        identity, ^(ios::ChromeIdentityCapabilityResult result) {
-          AuthenticationService* strong_ptr = weak_ptr.get();
-          if (strong_ptr) {
-            strong_ptr->OnIsSubjectToParentalControlsResult(result,
-                                                            signin_callback);
-          }
-        });
-    return;
-  }
-
-  // When supervised user account are not enabled, sign in the account by
-  // default.
-  signin_callback();
-}
-
-void AuthenticationService::OnIsSubjectToParentalControlsResult(
-    ios::ChromeIdentityCapabilityResult result,
-    ProceduralBlock completion) {
-  // Clears browsing data for supervised users before sign-in operation.
-  if (result == ios::ChromeIdentityCapabilityResult::kTrue) {
-    delegate_->ClearBrowsingData(completion);
-  } else if (completion) {
-    completion();
+  SignInInternal(identity);
+  if (completion) {
+    completion(HasPrimaryIdentity(signin::ConsentLevel::kSignin));
   }
 }
 
@@ -484,10 +448,6 @@ void AuthenticationService::SignOut(
   // GetPrimaryAccountMutator() returns nullptr on ChromeOS only.
   DCHECK(account_mutator);
 
-  // Retrieve primary identity before clearing in the account mutator.
-  ChromeIdentity* primary_identity =
-      GetPrimaryIdentity(signin::ConsentLevel::kSignin);
-
   account_mutator->ClearPrimaryAccount(
       signout_source, signin_metrics::SignoutDelete::kIgnoreMetric);
   crash_keys::SetCurrentlySignedIn(false);
@@ -497,18 +457,6 @@ void AuthenticationService::SignOut(
   // started at least once.
   if (force_clear_browsing_data || (is_managed && is_first_setup_complete)) {
     delegate_->ClearBrowsingData(completion);
-  } else if (base::FeatureList::IsEnabled(
-                 signin::kEnableUnicornAccountSupport)) {
-    ios::ChromeIdentityService* identity_service =
-        ios::GetChromeBrowserProvider().GetChromeIdentityService();
-    base::WeakPtr<AuthenticationService> weak_ptr = GetWeakPtr();
-    identity_service->IsSubjectToParentalControls(
-        primary_identity, ^(ios::ChromeIdentityCapabilityResult result) {
-          AuthenticationService* strong_ptr = weak_ptr.get();
-          if (strong_ptr) {
-            strong_ptr->OnIsSubjectToParentalControlsResult(result, completion);
-          }
-        });
   } else if (completion) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                                   base::BindOnce(completion));

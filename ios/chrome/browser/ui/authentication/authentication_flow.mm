@@ -8,6 +8,7 @@
 #include "base/check_op.h"
 #import "base/ios/block_types.h"
 #include "base/notreached.h"
+#import "components/signin/ios/browser/features.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/main/browser.h"
 #include "ios/chrome/browser/policy/cloud/user_policy_switch.h"
@@ -302,17 +303,25 @@ enum AuthenticationState {
     case CHECK_MERGE_CASE:
       DCHECK_EQ(SHOULD_CLEAR_DATA_USER_CHOICE, self.localDataClearingStrategy);
       if (_postSignInAction == POST_SIGNIN_ACTION_COMMIT_SYNC) {
-        if (([_performer shouldHandleMergeCaseForIdentity:_identityToSignIn
-                                             browserState:browserState])) {
-          [_performer promptMergeCaseForIdentity:_identityToSignIn
-                                         browser:_browser
-                                  viewController:_presentingViewController];
-          return;
+        if (base::FeatureList::IsEnabled(
+                signin::kEnableUnicornAccountSupport)) {
+          ios::ChromeIdentityService* identity_service =
+              ios::GetChromeBrowserProvider().GetChromeIdentityService();
+          __weak AuthenticationFlow* weakSelf = self;
+          identity_service->IsSubjectToParentalControls(
+              _identityToSignIn, ^(ios::ChromeIdentityCapabilityResult result) {
+                if (result == ios::ChromeIdentityCapabilityResult::kTrue) {
+                  weakSelf.localDataClearingStrategy =
+                      SHOULD_CLEAR_DATA_CLEAR_DATA;
+                  [weakSelf continueSignin];
+                  return;
+                }
+                [weakSelf checkMergeCaseForUnsupervisedAccounts];
+              });
         } else {
-          // If the user is not prompted to choose a data clearing strategy,
-          // Chrome defaults to merging the account data.
-          self.localDataClearingStrategy = SHOULD_CLEAR_DATA_MERGE_DATA;
+          [self checkMergeCaseForUnsupervisedAccounts];
         }
+        return;
       }
       [self continueSignin];
       return;
@@ -380,6 +389,21 @@ enum AuthenticationState {
       return;
   }
   NOTREACHED();
+}
+
+- (void)checkMergeCaseForUnsupervisedAccounts {
+  if (([_performer
+          shouldHandleMergeCaseForIdentity:_identityToSignIn
+                              browserState:_browser->GetBrowserState()])) {
+    [_performer promptMergeCaseForIdentity:_identityToSignIn
+                                   browser:_browser
+                            viewController:_presentingViewController];
+  } else {
+    // If the user is not prompted to choose a data clearing strategy,
+    // Chrome defaults to merging the account data.
+    self.localDataClearingStrategy = SHOULD_CLEAR_DATA_MERGE_DATA;
+    [self continueSignin];
+  }
 }
 
 - (void)checkSigninSteps {
