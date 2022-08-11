@@ -2455,7 +2455,8 @@ void AutomationInternalCustomBindings::OnAccessibilityEvents(
   ui::AXTreeID tree_id = event_bundle.tree_id;
   AutomationAXTreeWrapper* tree_wrapper;
   auto iter = tree_id_to_tree_wrapper_map_.find(tree_id);
-  if (iter == tree_id_to_tree_wrapper_map_.end()) {
+  bool is_new_tree = iter == tree_id_to_tree_wrapper_map_.end();
+  if (is_new_tree) {
     tree_wrapper = new AutomationAXTreeWrapper(tree_id, this);
     tree_id_to_tree_wrapper_map_.insert(
         std::make_pair(tree_id, base::WrapUnique(tree_wrapper)));
@@ -2471,6 +2472,16 @@ void AutomationInternalCustomBindings::OnAccessibilityEvents(
         "automationInternal.onAccessibilityTreeSerializationError", args,
         nullptr, context());
     return;
+  }
+
+  // Send an initial event to ensure the js-side objects get created for new
+  // trees.
+  if (is_new_tree) {
+    ui::AXEvent initial_event;
+    initial_event.id = -1;
+    initial_event.event_from = ax::mojom::EventFrom::kNone;
+    initial_event.event_type = ax::mojom::Event::kNone;
+    SendAutomationEvent(tree_id, gfx::Point(), initial_event);
   }
 
   // After handling events in js, if the client did not add any event listeners,
@@ -2615,11 +2626,12 @@ void AutomationInternalCustomBindings::SendAutomationEvent(
       api::automation::ToString(automation_event_type);
 
   // These events get used internally to trigger other behaviors in js.
-  ax::mojom::Event ax_event = event.event_type;
-  bool fire_event = ax_event == ax::mojom::Event::kNone ||
-                    ax_event == ax::mojom::Event::kHitTestResult ||
-                    ax_event == ax::mojom::Event::kMediaStartedPlaying ||
-                    ax_event == ax::mojom::Event::kMediaStoppedPlaying;
+  bool fire_event =
+      automation_event_type == api::automation::EVENT_TYPE_NONE ||
+      automation_event_type == api::automation::EVENT_TYPE_HITTESTRESULT ||
+      automation_event_type ==
+          api::automation::EVENT_TYPE_MEDIASTARTEDPLAYING ||
+      automation_event_type == api::automation::EVENT_TYPE_MEDIASTOPPEDPLAYING;
 
   // If we don't explicitly recognize the event type, require a valid, unignored
   // node target.
@@ -2629,8 +2641,10 @@ void AutomationInternalCustomBindings::SendAutomationEvent(
     return;
 
   while (node && tree_wrapper && !fire_event) {
-    if (tree_wrapper->HasEventListener(automation_event_type, node))
+    if (tree_wrapper->HasEventListener(automation_event_type, node)) {
       fire_event = true;
+      break;
+    }
     node = GetParent(node, &tree_wrapper);
   }
 
@@ -2669,6 +2683,9 @@ void AutomationInternalCustomBindings::SendAutomationEvent(
   args.Append(std::move(event_params));
   bindings_system_->DispatchEventInContext(
       "automationInternal.onAccessibilityEvent", args, nullptr, context());
+
+  if (!notify_event_for_testing_.is_null())
+    notify_event_for_testing_.Run(automation_event_type);
 }
 
 void AutomationInternalCustomBindings::MaybeSendFocusAndBlur(

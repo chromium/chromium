@@ -308,6 +308,9 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler {
   // Keeps track of all trees with event listeners.
   std::set<ui::AXTreeID> trees_with_event_listeners_;
 
+  base::RepeatingCallback<void(api::automation::EventType)>
+      notify_event_for_testing_;
+
   base::WeakPtrFactory<AutomationInternalCustomBindings> weak_ptr_factory_{
       this};
 };
