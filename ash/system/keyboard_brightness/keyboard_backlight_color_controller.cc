@@ -86,22 +86,12 @@ KeyboardBacklightColorController::GetBacklightColor(
 void KeyboardBacklightColorController::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
   const auto backlight_color = GetBacklightColor(GetActiveAccountId());
-  // Wallpaper extracted color may not be available at this state. Instead of
-  // setting wallpaper color here, let |OnWallpaperColorsChanged| handles it
-  // when the color is available.
-  if (backlight_color == personalization_app::mojom::BacklightColor::kWallpaper)
-    return;
   DisplayBacklightColor(backlight_color);
 }
 
 void KeyboardBacklightColorController::OnUserSessionUpdated(
     const AccountId& account_id) {
   const auto backlight_color = GetBacklightColor(account_id);
-  // Wallpaper extracted color may not be available at this state. Instead of
-  // setting wallpaper color here, let |OnWallpaperColorsChanged| handles it
-  // when the color is available.
-  if (backlight_color == personalization_app::mojom::BacklightColor::kWallpaper)
-    return;
   DisplayBacklightColor(backlight_color);
 }
 

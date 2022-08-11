@@ -146,11 +146,6 @@ void RgbKeyboardManager::InitializeRgbKeyboard() {
 
     ime_controller_ptr_->AddObserver(this);
   }
-
-  // Set keyboard to the default color on startup
-  RgbkbdClient::Get()->SetStaticBackgroundColor(SkColorGetR(kDefaultColor),
-                                                SkColorGetG(kDefaultColor),
-                                                SkColorGetB(kDefaultColor));
 }
 
 bool RgbKeyboardManager::IsPerKeyKeyboard() const {

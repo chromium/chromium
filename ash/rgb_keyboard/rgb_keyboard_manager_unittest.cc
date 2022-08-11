@@ -235,16 +235,6 @@ TEST_F(RgbKeyboardManagerTest, OnLoginCapsLock) {
   EXPECT_TRUE(client_->get_caps_lock_state());
 }
 
-TEST_F(RgbKeyboardManagerTest, DefaultState) {
-  const RgbColor& default_rgb_values = client_->recently_sent_rgb();
-
-  EXPECT_FALSE(client_->is_rainbow_mode_set());
-
-  EXPECT_EQ(SkColorGetR(kDefaultColor), std::get<0>(default_rgb_values));
-  EXPECT_EQ(SkColorGetG(kDefaultColor), std::get<1>(default_rgb_values));
-  EXPECT_EQ(SkColorGetB(kDefaultColor), std::get<2>(default_rgb_values));
-}
-
 // TODO(jimmyxgong): This is just a stub test, there is only one enum available
 // so just check num times the function has been called.
 TEST_F(RgbKeyboardManagerTest, SetAnimationMode) {
