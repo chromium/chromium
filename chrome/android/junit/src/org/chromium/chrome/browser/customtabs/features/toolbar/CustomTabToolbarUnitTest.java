@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.customtabs.features.toolbar;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -28,6 +29,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.annotation.LooperMode.Mode;
@@ -38,12 +40,15 @@ import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.task.test.ShadowPostTask.TestImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar.CustomTabLocationBar;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.toolbar.LocationBarModel;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.url.JUnitTestGURLs;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * Tests AMP url handling in the CustomTab Toolbar.
@@ -61,6 +66,8 @@ public class CustomTabToolbarUnitTest {
     ActionMode.Callback mActionModeCallback;
     @Mock
     CustomTabToolbarAnimationDelegate mAnimationDelegate;
+    @Mock
+    BrowserStateBrowserControlsVisibilityDelegate mControlsVisibleDelegate;
 
     private Activity mActivity;
     private CustomTabLocationBar mLocationBar;
@@ -85,8 +92,8 @@ public class CustomTabToolbarUnitTest {
         mActivity = Robolectric.buildActivity(TestActivity.class).get();
         CustomTabToolbar toolbar = (CustomTabToolbar) LayoutInflater.from(mActivity).inflate(
                 R.layout.custom_tabs_toolbar, null, false);
-        mLocationBar = (CustomTabLocationBar) toolbar.createLocationBar(
-                mLocationBarModel, mActionModeCallback, () -> null, () -> null);
+        mLocationBar = (CustomTabLocationBar) toolbar.createLocationBar(mLocationBarModel,
+                mActionModeCallback, () -> null, () -> null, mControlsVisibleDelegate);
         mUrlBar = toolbar.findViewById(R.id.url_bar);
         mTitleBar = toolbar.findViewById(R.id.title_bar);
         mLocationBar.setAnimDelegateForTesting(mAnimationDelegate);
@@ -177,6 +184,7 @@ public class CustomTabToolbarUnitTest {
         assertUrlAndTitleVisible(/*titleVisible=*/false, /*urlVisible=*/true);
         assertEquals("Runnables queue should be empty after reset to regular toolbar", 0,
                 postBrandingRunnableCounts());
+        verifyBrowserControlVisibleForRequiredDuration();
     }
 
     @Test
@@ -205,6 +213,7 @@ public class CustomTabToolbarUnitTest {
         assertUrlAndTitleVisible(/*titleVisible=*/false, /*urlVisible=*/true);
         assertEquals("Runnables queue should be empty after reset to regular toolbar", 0,
                 postBrandingRunnableCounts());
+        verifyBrowserControlVisibleForRequiredDuration();
     }
 
     private int postBrandingRunnableCounts() {
@@ -225,5 +234,15 @@ public class CustomTabToolbarUnitTest {
         assertEquals(
                 "Title visibility is off.", expectedTitleVisibility, mTitleBar.getVisibility());
         assertEquals("URL bar visibility is off.", expectedUrlVisibility, mUrlBar.getVisibility());
+    }
+
+    private void verifyBrowserControlVisibleForRequiredDuration() {
+        // Verify browser control is visible for required duration (3000ms).
+        ShadowLooper looper = Shadows.shadowOf(Looper.getMainLooper());
+        verify(mControlsVisibleDelegate).showControlsPersistent();
+        looper.idleFor(2999, TimeUnit.MILLISECONDS);
+        verify(mControlsVisibleDelegate, never()).releasePersistentShowingToken(anyInt());
+        looper.idleFor(1, TimeUnit.MILLISECONDS);
+        verify(mControlsVisibleDelegate).releasePersistentShowingToken(anyInt());
     }
 }

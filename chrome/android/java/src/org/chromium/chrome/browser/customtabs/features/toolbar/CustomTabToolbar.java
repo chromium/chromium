@@ -49,6 +49,7 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CloseButtonPosition;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
@@ -116,6 +117,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
     private final CustomTabLocationBar mLocationBar = new CustomTabLocationBar();
     private LocationBarModel mLocationBarModel;
+    private BrowserStateBrowserControlsVisibilityDelegate mBrowserControlsVisibilityDelegate;
 
     /**
      * Whether to use the toolbar as handle to resize the Window height.
@@ -226,15 +228,20 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
      * @param actionModeCallback Callback to handle changes in contextual action Modes.
      * @param modalDialogManagerSupplier Supplier of {@link ModalDialogManager}.
      * @param ephemeralTabCoordinatorSupplier Supplier of {@link EphemeralTabCoordinator}.
+     * @param controlsVisibilityDelegate {@link BrowserStateBrowserControlsVisibilityDelegate} to
+     *         show / hide the browser control. Used to ensure toolbar is shown for a certain
+     *         duration.
      * @return The LocationBar implementation for this CustomTabToolbar.
      */
     public LocationBar createLocationBar(LocationBarModel locationBarModel,
             ActionMode.Callback actionModeCallback,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
-            Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier) {
+            Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
+            BrowserStateBrowserControlsVisibilityDelegate controlsVisibilityDelegate) {
         mLocationBarModel = locationBarModel;
         mLocationBar.init(locationBarModel, modalDialogManagerSupplier,
                 ephemeralTabCoordinatorSupplier, actionModeCallback);
+        mBrowserControlsVisibilityDelegate = controlsVisibilityDelegate;
         return mLocationBar;
     }
 
@@ -630,6 +637,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                        View.OnLongClickListener, ToolbarBrandingDelegate {
         private static final int TITLE_ANIM_DELAY_MS = 800;
         private static final int BRANDING_DELAY_MS = 1800;
+        private static final int MIN_URL_BAR_VISIBLE_TIME_POST_BRANDING_MS = 3000;
 
         private static final int STATE_DOMAIN_ONLY = 0;
         private static final int STATE_TITLE_ONLY = 1;
@@ -741,6 +749,13 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             mCurrentlyShowingBranding = false;
             recoverFromRegularState();
             runAfterBrandingRunnables();
+
+            int token = mBrowserControlsVisibilityDelegate.showControlsPersistent();
+            PostTask.postDelayedTask(UiThreadTaskTraits.USER_VISIBLE,
+                    ()
+                            -> mBrowserControlsVisibilityDelegate.releasePersistentShowingToken(
+                                    token),
+                    MIN_URL_BAR_VISIBLE_TIME_POST_BRANDING_MS);
         }
 
         private void cacheRegularState() {
