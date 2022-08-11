@@ -365,7 +365,16 @@ responds with a device-specific device management token, which is used in
 future requests to fetch device-specific policies from the device management
 server.
 
-TODO(crbug.com/1339451): Document location of enrollment token.
+#### Windows
+The enrollment token is read from
+`HKLM\Software\Policies\{COMPANY_SHORTNAME}\CloudManagement`.
+
+#### macOS
+The enrollment token is searched in the order:
+* Managed Preference value with key `EnrollmentToken` in domain
+ `{MAC_BROWSER_BUNDLE_IDENTIFIER}`.
+* File
+ `/Library/{COMPANY_SHORTNAME}/{BROWSER_NAME}/CloudManagementEnrollmentToken`.
 
 TODO(crbug.com/1339451): Document timing of enterprise enrollment and policy
 fetches.
@@ -383,11 +392,29 @@ Policies may be set by platform-specific means (group policy on Windows, managed
 preferences on macOS), or by communication with the device management server.
 
 For device management, the enterprise policies for Google applications are
-downloaded from the device management server periodically and stored at
-`%ProgramFiles(x86)%\Google\Policies` in the Windows file system.
+downloaded from the device management server periodically and stored at a fixed
+secure location. The path on Windows is 
+`%ProgramFiles(x86)%\Google\Policies` and on macOS is 
+`/Library/Google/GoogleSoftwareUpdate/DeviceManagement`.
 
-TODO(crbug.com/1339451): Document how conflicts between multiple policy sources
-are resolved.
+The policy service searches all active policy providers in pre-determined order
+for any policy value. When a policy value is configured in multiple providers,
+the service always returns the first active valid value.
+
+The policy searching order:
+#### Windows
+* Policy dictionary defined in
+ [External constants](#external-constants-overrides)(testing overrides)
+* Group Policy
+* Device Management policy
+* Policy from default value provider
+
+#### macOS
+* Policy dictionary defined in
+ [External constants](#external-constants-overrides)(testing overrides)
+* Device management policy
+* Policy from Managed Preferences
+* Policy from default value provider
 
 #### Deploying enterprise applications via updater policy
 For each application that needs to be deployed via the updater, the policy for
