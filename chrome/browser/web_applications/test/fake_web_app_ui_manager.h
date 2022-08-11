@@ -25,6 +25,7 @@ class FakeWebAppUiManager : public WebAppUiManager {
 
   void SetNumWindowsForApp(const AppId& app_id, size_t num_windows_for_app);
   bool DidUninstallAndReplace(const AppId& from_app, const AppId& to_app);
+  int num_reparent_tab_calls() const { return num_reparent_tab_calls_; }
 
   // WebAppUiManager:
   WebAppUiManagerImpl* AsImpl() override;
@@ -61,6 +62,7 @@ class FakeWebAppUiManager : public WebAppUiManager {
  private:
   std::map<AppId, size_t> app_id_to_num_windows_map_;
   std::map<AppId, AppId> uninstall_and_replace_map_;
+  int num_reparent_tab_calls_ = 0;
 };
 
 }  // namespace web_app

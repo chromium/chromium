@@ -581,41 +581,6 @@ void WebAppInstallTask::OnGetWebAppInstallInfo(
                      GetWeakPtr(), std::move(web_app_info)));
 }
 
-// If the dialog callback is null, then this is considered to be
-// a background installation.
-void WebAppInstallTask::InstallWebAppOnManifestValidated(
-    content::WebContents* contents,
-    WebAppInstallDialogCallback dialog_callback,
-    OnceInstallCallback install_callback,
-    std::unique_ptr<WebAppInstallInfo> web_app_info,
-    blink::mojom::ManifestPtr opt_manifest,
-    const GURL& manifest_url,
-    WebAppInstallFlow flow,
-    absl::optional<WebAppInstallParams> install_params) {
-  CheckInstallPreconditions();
-
-  flow_ = flow;
-
-  Observe(contents);
-
-  dialog_callback_ = std::move(dialog_callback);
-  if (dialog_callback_.is_null()) {
-    background_installation_ = true;
-    log_entry_.set_background_installation(true);
-  } else {
-    // TODO(https://crbug.com/1298130): Move the DCHECK to the beginning of
-    // install commands when all install flows are denormalized.
-    DCHECK(AreWebAppsUserInstallable(profile_));
-  }
-  install_callback_ = std::move(install_callback);
-
-  if (install_params.has_value())
-    SetInstallParams(install_params.value());
-
-  OnDidPerformInstallableCheck(std::move(web_app_info), std::move(opt_manifest),
-                               manifest_url, true, true);
-}
-
 void WebAppInstallTask::OnDidPerformInstallableCheck(
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     blink::mojom::ManifestPtr opt_manifest,
@@ -810,31 +775,6 @@ void WebAppInstallTask::OnDidCheckForIntentToPlayStoreLacros(
       result == crosapi::mojom::IsInstallableResult::kInstallable);
 }
 #endif
-
-void WebAppInstallTask::OnIconsRetrieved(
-    std::unique_ptr<WebAppInstallInfo> web_app_info,
-    WebAppInstallFinalizer::FinalizeOptions finalize_options,
-    IconsDownloadedResult result,
-    IconsMap icons_map,
-    DownloadedIconsHttpResults icons_http_results) {
-  DCHECK(background_installation_);
-
-  if (ShouldStopInstall())
-    return;
-
-  DCHECK(web_app_info);
-
-  PopulateProductIcons(web_app_info.get(), &icons_map);
-  PopulateOtherIcons(web_app_info.get(), icons_map);
-
-  RecordDownloadedIconsResultAndHttpStatusCodes(result, icons_http_results);
-  log_entry_.LogDownloadedIconsErrors(*web_app_info, result, icons_map,
-                                      icons_http_results);
-
-  install_finalizer_->FinalizeInstall(
-      *web_app_info, std::move(finalize_options),
-      base::BindOnce(&WebAppInstallTask::OnInstallFinalized, GetWeakPtr()));
-}
 
 void WebAppInstallTask::OnIconsRetrievedShowDialog(
     std::unique_ptr<WebAppInstallInfo> web_app_info,

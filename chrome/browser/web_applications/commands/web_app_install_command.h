@@ -13,6 +13,7 @@
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_install_task.h"
+#include "chrome/browser/web_applications/web_app_logging.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 
@@ -60,11 +61,56 @@ class WebAppInstallCommand : public WebAppCommand {
   base::Value ToDebugValue() const override;
 
  private:
+  bool IsWebContentsDestroyed();
+
   void Abort(webapps::InstallResultCode code);
+
+  void RecordDownloadedIconsResultAndHttpStatusCodes(
+      IconsDownloadedResult result,
+      const DownloadedIconsHttpResults& icons_http_results);
 
   void OnInstallCompleted(const AppId& app_id, webapps::InstallResultCode code);
 
-  WebAppInstallTask install_task_;
+  // Either dispatches an asynchronous check for whether this installation
+  // should be stopped and an intent to the Play Store should be made, or
+  // synchronously calls OnDidCheckForIntentToPlayStore() implicitly failing the
+  // check if it cannot be made.
+  void CheckForPlayStoreIntentOrGetIcons(base::flat_set<GURL> icon_urls,
+                                         bool skip_page_favicons);
+
+  // Called when the asynchronous check for whether an intent to the Play Store
+  // should be made returns.
+  void OnDidCheckForIntentToPlayStore(base::flat_set<GURL> icon_urls,
+                                      bool skip_page_favicons,
+                                      const std::string& intent,
+                                      bool should_intent_to_store);
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Called when the asynchronous check for whether an intent to the Play Store
+  // should be made returns (Lacros adapter that calls
+  // |OnDidCheckForIntentToPlayStore| based on |result|).
+  void OnDidCheckForIntentToPlayStoreLacros(
+      base::flat_set<GURL> icon_urls,
+      bool skip_page_favicons,
+      const std::string& intent,
+      crosapi::mojom::IsInstallableResult result);
+#endif
+
+  void OnIconsRetrievedShowDialog(
+      IconsDownloadedResult result,
+      IconsMap icons_map,
+      DownloadedIconsHttpResults icons_http_results);
+  void OnDialogCompleted(bool user_accepted,
+                         std::unique_ptr<WebAppInstallInfo> web_app_info);
+  void OnInstallFinalizedMaybeReparentTab(const AppId& app_id,
+                                          webapps::InstallResultCode code,
+                                          OsHooksErrors os_hooks_errors);
+
+  Profile* profile_;
+  WebAppInstallFinalizer* install_finalizer_;
+  std::unique_ptr<WebAppDataRetriever> data_retriever_;
+  WebAppRegistrar* registrar_;
+  webapps::WebappInstallSource install_surface_;
 
   base::WeakPtr<content::WebContents> web_contents_;
   WebAppInstallDialogCallback dialog_callback_;
@@ -78,7 +124,13 @@ class WebAppInstallCommand : public WebAppCommand {
   AppId app_id_;
   absl::optional<WebAppInstallParams> install_params_;
 
-  base::WeakPtrFactory<WebAppInstallCommand> weak_factory_{this};
+  // TODO(https://crbug.com/1298130): remove after separate
+  // InstallWebAppWithParams
+  bool background_installation_;
+
+  InstallErrorLogEntry install_error_log_entry_;
+
+  base::WeakPtrFactory<WebAppInstallCommand> weak_ptr_factory_{this};
 };
 
 }  // namespace web_app

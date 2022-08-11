@@ -128,22 +128,6 @@ class WebAppInstallTask : content::WebContentsObserver {
                                const WebAppInstallParams& install_params,
                                OnceInstallCallback callback);
 
-  // Perform installation after manifest is retrieved and validated, starts the
-  // installation flow from `OnDidPerformInstallableCheck`.
-  //
-  // When |dialog_callback| is null (aka |base::NullCallback|) the command
-  // doesn't show installation prompt in UI and installs the application in
-  // background.
-  void InstallWebAppOnManifestValidated(
-      content::WebContents* contents,
-      WebAppInstallDialogCallback dialog_callback,
-      OnceInstallCallback install_callback,
-      std::unique_ptr<WebAppInstallInfo> web_app_info,
-      blink::mojom::ManifestPtr opt_manifest,
-      const GURL& manifest_url,
-      WebAppInstallFlow flow,
-      absl::optional<WebAppInstallParams> install_params);
-
   // Obtains WebAppInstallInfo about web app located at |start_url|, fallbacks
   // to title/favicon if manifest is not present.
   void LoadAndRetrieveWebAppInstallInfoWithIcons(
@@ -246,12 +230,6 @@ class WebAppInstallTask : content::WebContentsObserver {
       crosapi::mojom::IsInstallableResult result);
 #endif
 
-  void OnIconsRetrieved(
-      std::unique_ptr<WebAppInstallInfo> web_app_info,
-      WebAppInstallFinalizer::FinalizeOptions finalize_options,
-      IconsDownloadedResult result,
-      IconsMap icons_map,
-      DownloadedIconsHttpResults icons_http_results);
   void OnIconsRetrievedShowDialog(
       std::unique_ptr<WebAppInstallInfo> web_app_info,
       IconsDownloadedResult result,

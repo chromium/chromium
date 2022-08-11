@@ -82,11 +82,13 @@ bool FakeWebAppUiManager::IsInAppWindow(content::WebContents* web_contents,
 bool FakeWebAppUiManager::CanReparentAppTabToWindow(
     const AppId& app_id,
     bool shortcut_created) const {
-  return false;
+  return true;
 }
 
 void FakeWebAppUiManager::ReparentAppTabToWindow(content::WebContents* contents,
                                                  const AppId& app_id,
-                                                 bool shortcut_created) {}
+                                                 bool shortcut_created) {
+  ++num_reparent_tab_calls_;
+}
 
 }  // namespace web_app
