@@ -8,7 +8,7 @@
  */
 import '//resources/cr_elements/cr_button/cr_button.m.js';
 import '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
-import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import '//resources/cr_elements/cr_dialog/cr_dialog.js';
 import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import '//resources/cr_elements/shared_style_css.m.js';
 import '//resources/cr_elements/shared_vars_css.m.js';
@@ -16,7 +16,7 @@ import '//resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../settings_shared.css.js';
 
-import {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.js';
 import {WebUIListenerMixin} from '//resources/js/web_ui_listener_mixin.js';
 import {microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

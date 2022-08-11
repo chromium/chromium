@@ -19,8 +19,19 @@
  * width/height (as well as other available mixins to style other parts of the
  * dialog contents).
  */
+import {Polymer, html} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {assert} from '../../js/assert.m.js';
+import {CrContainerShadowBehavior} from '../cr_container_shadow_behavior.m.js';
+import '../cr_icon_button/cr_icon_button.js';
+import '../cr_icons_css.m.js';
+import '../hidden_style_css.m.js';
+import '../shared_vars_css.m.js';
+
 Polymer({
   is: 'cr-dialog',
+
+  _template: html`{__html_template__}`,
 
   behaviors: [CrContainerShadowBehavior],
 
@@ -338,4 +349,3 @@ Polymer({
     this.$$('.title-container').focus();
   },
 });
-/* #ignore */ console.warn('crbug/1173575, non-JS module files deprecated.');

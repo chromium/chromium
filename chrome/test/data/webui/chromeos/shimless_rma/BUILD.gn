@@ -321,7 +321,7 @@ js_library("wrapup_repair_complete_page_test") {
     "//ash/webui/shimless_rma/resources:mojo_interface_provider",
     "//ash/webui/shimless_rma/resources:wrapup_repair_complete_page",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

@@ -72,6 +72,7 @@ polymer_modulizer("setup_pin_keyboard") {
   html_file = "setup_pin_keyboard.html"
   html_type = "dom-module"
   namespace_rewrites = cr_components_chromeos_namespace_rewrites
+  migrated_imports = cr_components_migrated_imports
   auto_imports = cr_components_chromeos_auto_imports
 }
 

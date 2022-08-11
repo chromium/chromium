@@ -24,3 +24,6 @@ assistant_namespace_rewrites = [
   "Polymer.mixinBehaviors|mixinBehaviors",
   "Polymer.Element|PolymerElement",
 ]
+
+assistant_migrated_imports =
+    [ "ui/webui/resources/cr_elements/cr_dialog/cr_dialog.html" ]

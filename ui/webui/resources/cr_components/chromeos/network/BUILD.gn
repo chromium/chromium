@@ -379,7 +379,7 @@ js_library("network_config.m") {
     "//third_party/polymer/v3_0/components-chromium/iron-icon:iron-icon",
     "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
     "//ui/webui/resources/cr_elements/cr_toggle:cr_toggle.m",
     "//ui/webui/resources/cr_elements/policy:cr_policy_indicator.m",
     "//ui/webui/resources/js:i18n_behavior.m",
@@ -662,7 +662,7 @@ js_library("sim_lock_dialogs.m") {
     "//third_party/polymer/v3_0/components-chromium/iron-icon:iron-icon",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
     "//ui/webui/resources/cr_elements/cr_toggle:cr_toggle.m",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
@@ -731,6 +731,7 @@ polymer_modulizer("network_config") {
   html_file = "network_config.html"
   html_type = "dom-module"
   auto_imports = cr_components_chromeos_auto_imports
+  migrated_imports = cr_components_migrated_imports
   namespace_rewrites = cr_components_chromeos_namespace_rewrites
 }
 
@@ -867,6 +868,7 @@ polymer_modulizer("sim_lock_dialogs") {
   html_file = "sim_lock_dialogs.html"
   html_type = "dom-module"
   auto_imports = cr_components_chromeos_auto_imports
+  migrated_imports = cr_components_migrated_imports
   namespace_rewrites = cr_components_chromeos_namespace_rewrites
 }
 

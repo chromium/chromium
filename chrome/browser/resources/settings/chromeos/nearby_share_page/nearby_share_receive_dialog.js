@@ -20,7 +20,7 @@
  */
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
-import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import '../../prefs/prefs.js';
 import '../../shared/nearby_onboarding_one_page.js';
 import '../../shared/nearby_onboarding_page.js';

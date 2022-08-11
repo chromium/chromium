@@ -7,7 +7,7 @@
  * that is shared with OOBE in a dialog with OS Settings stylizations.
  */
 import 'chrome://resources/cr_components/chromeos/cellular_setup/cellular_setup.m.js';
-import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import '../../settings_shared.css.js';
 

@@ -9,7 +9,7 @@ import {assert} from '//resources/js/assert_ts.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CrDialogElement} from '../../cr_elements/cr_dialog/cr_dialog.m.js';
+import {CrDialogElement} from '../../cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from '../../js/i18n_mixin.js';
 
 import {App} from './app_management.mojom-webui.js';

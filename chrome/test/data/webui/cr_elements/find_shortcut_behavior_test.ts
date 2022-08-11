@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 
 import {FindShortcutBehavior, FindShortcutManager} from 'chrome://resources/cr_elements/find_shortcut_behavior.js';
 import {assert} from 'chrome://resources/js/assert.m.js';

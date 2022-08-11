@@ -66,7 +66,7 @@ js_library("oobe_modal_dialog.m") {
     "../behaviors:oobe_i18n_behavior.m",
     "../buttons:oobe_text_button.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
     "//ui/webui/resources/js:cr.m",
   ]
   extra_deps = [ ":oobe_modal_dialog_module" ]
@@ -102,4 +102,5 @@ polymer_modulizer("oobe_modal_dialog") {
   html_file = "oobe_modal_dialog.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
+  migrated_imports = oobe_migrated_imports
 }

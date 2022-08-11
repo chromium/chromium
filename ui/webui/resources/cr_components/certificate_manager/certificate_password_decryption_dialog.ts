@@ -7,14 +7,14 @@
  * a previously exported personal certificate can be imported.
  */
 import '../../cr_elements/cr_button/cr_button.m.js';
-import '../../cr_elements/cr_dialog/cr_dialog.m.js';
+import '../../cr_elements/cr_dialog/cr_dialog.js';
 import '../../cr_elements/cr_input/cr_input.m.js';
 import './certificate_shared.css.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CrButtonElement} from '../../cr_elements/cr_button/cr_button.m.js';
-import {CrDialogElement} from '../../cr_elements/cr_dialog/cr_dialog.m.js';
+import {CrDialogElement} from '../../cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from '../../js/i18n_mixin.js';
 
 import {getTemplate} from './certificate_password_decryption_dialog.html.js';

@@ -378,6 +378,7 @@ polymer_modulizer("cellular_eid_dialog") {
   html_file = "cellular_eid_dialog.html"
   html_type = "dom-module"
   namespace_rewrites = cr_components_chromeos_namespace_rewrites
+  migrated_imports = cr_components_migrated_imports
   auto_imports = cr_components_chromeos_auto_imports
 }
 

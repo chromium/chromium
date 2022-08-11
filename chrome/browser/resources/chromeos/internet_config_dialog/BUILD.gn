@@ -70,7 +70,7 @@ js_library("internet_config_dialog") {
     "//ui/webui/resources/cr_components/chromeos/network:cr_policy_network_behavior_mojo.m",
     "//ui/webui/resources/cr_components/chromeos/network:network_config.m",
     "//ui/webui/resources/cr_components/chromeos/network:onc_mojo.m",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]

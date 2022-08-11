@@ -13,7 +13,7 @@
  * - The dialog shows itself automatically when it is attached.
  */
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
-import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import '../../settings_shared.css.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';

@@ -7,12 +7,12 @@
  * view the details of an in-progress certiifcate provisioning process.
  */
 import '../../cr_elements/cr_expand_button/cr_expand_button.js';
-import '../../cr_elements/cr_dialog/cr_dialog.m.js';
+import '../../cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CrDialogElement} from '../../cr_elements/cr_dialog/cr_dialog.m.js';
+import {CrDialogElement} from '../../cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from '../../js/i18n_mixin.js';
 
 import {CertificateProvisioningBrowserProxyImpl, CertificateProvisioningProcess} from './certificate_provisioning_browser_proxy.js';

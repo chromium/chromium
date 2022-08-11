@@ -6,7 +6,7 @@ import './accessibility_features.mojom-lite.js';
 import './action_toolbar.js';
 import './scanning_fonts_css.js';
 import './scanning_shared_css.js';
-import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
 

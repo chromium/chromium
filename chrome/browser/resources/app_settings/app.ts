@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import './strings.m.js';
-import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import 'chrome://resources/cr_components/app_management/app_management_shared_style.css.js';
 import 'chrome://resources/cr_components/app_management/file_handling_item.js';

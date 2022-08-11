@@ -251,6 +251,7 @@ polymer_modulizer("assistant_value_prop") {
   html_file = "assistant_value_prop.html"
   html_type = "dom-module"
   auto_imports = assistant_auto_imports
+  migrated_imports = assistant_migrated_imports
   namespace_rewrites = assistant_namespace_rewrites
 }
 
