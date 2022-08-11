@@ -126,19 +126,6 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
   return std::move(http_response);
 }
 
-CGVector FixCoordinateOffset(CGVector offset) {
-#if TARGET_IPHONE_SIMULATOR
-  // TODO(crbug.com/1342819): For some unknown reason, the XCUICoordinate
-  // space is scaled by the simulator's scale factor when computing offsets
-  // relative to the app or screen.
-  if (@available(iOS 16, *)) {
-    CGFloat scale = UIScreen.mainScreen.scale;
-    return CGVectorMake(offset.dx * scale, offset.dy * scale);
-  }
-#endif
-  return offset;
-}
-
 }  // namespace
 
 // Integration tests for navigating history via JavaScript and the forward and
@@ -637,10 +624,9 @@ CGVector FixCoordinateOffset(CGVector offset) {
   // of zero.
   CGFloat leftEdge = 0;
   XCUICoordinate* leftEdgeCoord =
-      [app coordinateWithNormalizedOffset:FixCoordinateOffset(
-                                              CGVectorMake(leftEdge, 0.5))];
-  XCUICoordinate* swipeRight = [leftEdgeCoord
-      coordinateWithOffset:FixCoordinateOffset(CGVectorMake(600, 0.5))];
+      [app coordinateWithNormalizedOffset:CGVectorMake(leftEdge, 0.5)];
+  XCUICoordinate* swipeRight =
+      [leftEdgeCoord coordinateWithOffset:CGVectorMake(600, 0.5)];
 
   // Swipe back twice.
   [leftEdgeCoord pressForDuration:0.1f thenDragToCoordinate:swipeRight];
@@ -658,10 +644,9 @@ CGVector FixCoordinateOffset(CGVector offset) {
   CGFloat rightEdgeNTP = 0.99;
   CGFloat rightEdge = 1;
   XCUICoordinate* rightEdgeCoordFromNTP =
-      [app coordinateWithNormalizedOffset:FixCoordinateOffset(
-                                              CGVectorMake(rightEdgeNTP, 0.5))];
-  XCUICoordinate* swipeLeftFromNTP = [rightEdgeCoordFromNTP
-      coordinateWithOffset:FixCoordinateOffset(CGVectorMake(-600, 0.5))];
+      [app coordinateWithNormalizedOffset:CGVectorMake(rightEdgeNTP, 0.5)];
+  XCUICoordinate* swipeLeftFromNTP =
+      [rightEdgeCoordFromNTP coordinateWithOffset:CGVectorMake(-600, 0.5)];
 
   // Swiping forward twice and verify each page.
   [rightEdgeCoordFromNTP pressForDuration:0.1f
@@ -670,10 +655,9 @@ CGVector FixCoordinateOffset(CGVector offset) {
   [ChromeEarlGrey waitForWebStateContainingText:"pony"];
 
   XCUICoordinate* rightEdgeCoord =
-      [app coordinateWithNormalizedOffset:FixCoordinateOffset(
-                                              CGVectorMake(rightEdge, 0.5))];
-  XCUICoordinate* swipeLeft = [rightEdgeCoord
-      coordinateWithOffset:FixCoordinateOffset(CGVectorMake(-600, 0.5))];
+      [app coordinateWithNormalizedOffset:CGVectorMake(rightEdge, 0.5)];
+  XCUICoordinate* swipeLeft =
+      [rightEdgeCoord coordinateWithOffset:CGVectorMake(-600, 0.5)];
   [rightEdgeCoord pressForDuration:0.1f thenDragToCoordinate:swipeLeft];
   GREYWaitForAppToIdle(@"App failed to idle");
   [ChromeEarlGrey waitForWebStateContainingText:"onload"];

@@ -17,19 +17,6 @@ namespace {
 // The splitter is 10 points wide.
 const CGFloat kSplitterWidth = 10.0;
 
-CGVector FixCoordinateOffset(CGVector offset) {
-#if TARGET_IPHONE_SIMULATOR
-  // TODO(crbug.com/1342819): For some unknown reason, the XCUICoordinate
-  // space is scaled by the simulator's scale factor when computing offsets
-  // relative to the app or screen.
-  if (@available(iOS 16, *)) {
-    CGFloat scale = UIScreen.mainScreen.scale;
-    return CGVectorMake(offset.dx * scale, offset.dy * scale);
-  }
-#endif
-  return offset;
-}
-
 // Returns a normalized vector for the given edge.
 CGVector GetNormalizedEdgeVector(GREYContentEdge edge) {
   switch (edge) {
@@ -114,8 +101,8 @@ BOOL LongPressCellAndDragToEdge(NSString* accessibility_identifier,
       app, accessibility_identifier, window_number, XCUIElementTypeCell);
 
   // |app| is still an element, so it can just be passed in directly here.
-  return LongPressAndDragBetweenElements(
-      drag_element, app, FixCoordinateOffset(GetNormalizedEdgeVector(edge)));
+  return LongPressAndDragBetweenElements(drag_element, app,
+                                         GetNormalizedEdgeVector(edge));
 }
 
 BOOL LongPressCellAndDragToOffsetOf(NSString* src_accessibility_identifier,
