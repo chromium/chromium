@@ -35,7 +35,7 @@ namespace settings {
 
 namespace {
 
-base::Value CreateSecureDnsSettingDict() {
+base::Value::Dict CreateSecureDnsSettingDict() {
   // Fetch the current host resolver configuration. It is not sufficient to read
   // the secure DNS prefs directly since the host resolver configuration takes
   // other factors into account such as whether a managed environment or
@@ -49,7 +49,7 @@ base::Value CreateSecureDnsSettingDict() {
   dict.Set("mode", SecureDnsConfig::ModeToString(config.mode()));
   dict.Set("config", config.doh_servers().ToString());
   dict.Set("managementMode", static_cast<int>(config.management_mode()));
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 }  // namespace
@@ -105,8 +105,16 @@ void SecureDnsHandler::OnJavascriptDisallowed() {
   pref_registrar_.RemoveAll();
 }
 
-base::Value SecureDnsHandler::GetSecureDnsResolverList() {
+base::Value::List SecureDnsHandler::GetSecureDnsResolverList() {
   base::Value::List resolvers;
+
+  // Add a custom option to the front of the list
+  base::Value::Dict custom;
+  custom.Set("name", l10n_util::GetStringUTF8(IDS_SETTINGS_CUSTOM));
+  custom.Set("value", std::string());  // Empty value means custom.
+  custom.Set("policy", std::string());
+  resolvers.Append(std::move(custom));
+
   for (const auto* entry : providers_) {
     net::DnsOverHttpsConfig doh_config({entry->doh_server_config});
     base::Value::Dict dict;
@@ -116,17 +124,10 @@ base::Value SecureDnsHandler::GetSecureDnsResolverList() {
     resolvers.Append(std::move(dict));
   }
 
-  // Randomize the order of the resolvers.
-  base::RandomShuffle(resolvers.begin(), resolvers.end());
+  // Randomize the order of the resolvers, but keep custom in first place.
+  base::RandomShuffle(std::next(resolvers.begin()), resolvers.end());
 
-  // Add a custom option to the front of the list
-  base::Value::Dict custom;
-  custom.Set("name", l10n_util::GetStringUTF8(IDS_SETTINGS_CUSTOM));
-  custom.Set("value", std::string());  // Empty value means custom.
-  custom.Set("policy", std::string());
-  resolvers.Insert(resolvers.begin(), base::Value(std::move(custom)));
-
-  return base::Value(std::move(resolvers));
+  return resolvers;
 }
 
 void SecureDnsHandler::SetNetworkContextForTesting(

@@ -103,8 +103,7 @@ void ManageProfileHandler::OnProfileHighResAvatarLoaded(
     return;
 
   // GAIA image is loaded asynchronously.
-  FireWebUIListener("available-icons-changed",
-                    base::Value(GetAvailableIcons()));
+  FireWebUIListener("available-icons-changed", GetAvailableIcons());
 }
 
 void ManageProfileHandler::OnProfileAvatarChanged(
@@ -113,8 +112,7 @@ void ManageProfileHandler::OnProfileAvatarChanged(
     return;
 
   // This is necessary to send the potentially updated GAIA photo.
-  FireWebUIListener("available-icons-changed",
-                    base::Value(GetAvailableIcons()));
+  FireWebUIListener("available-icons-changed", GetAvailableIcons());
 }
 
 void ManageProfileHandler::OnProfileThemeColorsChanged(
@@ -132,7 +130,7 @@ void ManageProfileHandler::HandleGetAvailableIcons(
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
 
-  ResolveJavascriptCallback(callback_id, base::Value(GetAvailableIcons()));
+  ResolveJavascriptCallback(callback_id, GetAvailableIcons());
 }
 
 base::Value::List ManageProfileHandler::GetAvailableIcons() {

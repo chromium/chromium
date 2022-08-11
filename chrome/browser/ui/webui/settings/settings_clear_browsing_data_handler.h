@@ -77,7 +77,7 @@ class ClearBrowsingDataHandler : public SettingsPageUIHandler,
   // based on whether installed apps were marked for deletion by the checkbox on
   // the installed apps warning dialog.
   std::unique_ptr<content::BrowsingDataFilterBuilder> ProcessInstalledApps(
-      base::Value::ConstListView installed_apps);
+      const base::Value::List& installed_apps);
 
   // Clears browsing data, called by Javascript.
   void HandleClearBrowsingData(const base::Value::List& value);
@@ -105,7 +105,7 @@ class ClearBrowsingDataHandler : public SettingsPageUIHandler,
   virtual void UpdateSyncState();
 
   // Create a SyncStateEvent containing the current sync state.
-  base::DictionaryValue CreateSyncStateEvent();
+  base::Value::Dict CreateSyncStateEvent();
 
   // Finds out whether we should show notice about other forms of history stored
   // in user's account.

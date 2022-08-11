@@ -160,8 +160,7 @@ void SecurityKeysPINHandler::OnGatherPIN(uint32_t current_min_pin_length,
     response.Set("retries", base::Value());
   }
 
-  ResolveJavascriptCallback(base::Value(std::move(callback_id_)),
-                            base::Value(std::move(response)));
+  ResolveJavascriptCallback(base::Value(std::move(callback_id_)), response);
 }
 
 void SecurityKeysPINHandler::OnSetPINComplete(
@@ -180,8 +179,7 @@ void SecurityKeysPINHandler::OnSetPINComplete(
   base::Value::Dict response;
   response.Set("done", true);
   response.Set("error", static_cast<int>(code));
-  ResolveJavascriptCallback(base::Value(std::move(callback_id_)),
-                            base::Value(std::move(response)));
+  ResolveJavascriptCallback(base::Value(std::move(callback_id_)), response);
 }
 
 void SecurityKeysPINHandler::HandleSetPIN(const base::Value::List& args) {
@@ -533,8 +531,7 @@ void SecurityKeysCredentialHandler::OnHaveCredentials(
     }
   }
 
-  ResolveJavascriptCallback(base::Value(std::move(callback_id_)),
-                            base::Value(std::move(credentials)));
+  ResolveJavascriptCallback(base::Value(std::move(callback_id_)), credentials);
 }
 
 void SecurityKeysCredentialHandler::OnGatherPIN(
@@ -554,8 +551,7 @@ void SecurityKeysCredentialHandler::OnGatherPIN(
     response.Set("supportsUpdateUserInformation",
                  authenticator_properties.supports_update_user_information);
     state_ = State::kPIN;
-    ResolveJavascriptCallback(base::Value(std::move(callback_id_)),
-                              base::Value(std::move(response)));
+    ResolveJavascriptCallback(base::Value(std::move(callback_id_)), response);
     return;
   }
 
@@ -564,8 +560,7 @@ void SecurityKeysCredentialHandler::OnGatherPIN(
   base::Value::List response;
   response.Append(static_cast<int>(authenticator_properties.min_pin_length));
   response.Append(static_cast<int>(authenticator_properties.pin_retries));
-  ResolveJavascriptCallback(base::Value(std::move(callback_id_)),
-                            base::Value(std::move(response)));
+  ResolveJavascriptCallback(base::Value(std::move(callback_id_)), response);
 }
 
 void SecurityKeysCredentialHandler::OnCredentialsDeleted(
@@ -586,8 +581,7 @@ void SecurityKeysCredentialHandler::OnCredentialsDeleted(
           status == device::CtapDeviceResponseCode::kSuccess
               ? IDS_SETTINGS_SECURITY_KEYS_CREDENTIAL_MANAGEMENT_DELETE_SUCCESS
               : IDS_SETTINGS_SECURITY_KEYS_CREDENTIAL_MANAGEMENT_DELETE_FAILED));
-  ResolveJavascriptCallback(base::Value(std::move(callback_id_)),
-                            base::Value(std::move(response)));
+  ResolveJavascriptCallback(base::Value(std::move(callback_id_)), response);
 }
 
 void SecurityKeysCredentialHandler::OnUserInformationUpdated(
@@ -608,8 +602,7 @@ void SecurityKeysCredentialHandler::OnUserInformationUpdated(
           status == device::CtapDeviceResponseCode::kSuccess
               ? IDS_SETTINGS_SECURITY_KEYS_CREDENTIAL_MANAGEMENT_UPDATE_SUCCESS
               : IDS_SETTINGS_SECURITY_KEYS_CREDENTIAL_MANAGEMENT_UPDATE_FAILED));
-  ResolveJavascriptCallback(base::Value(std::move(callback_id_)),
-                            base::Value(std::move(response)));
+  ResolveJavascriptCallback(base::Value(std::move(callback_id_)), response);
 }
 
 void SecurityKeysCredentialHandler::OnFinished(
@@ -802,8 +795,7 @@ void SecurityKeysBioEnrollmentHandler::OnGatherPIN(
   base::Value::List response;
   response.Append(static_cast<int>(min_pin_length));
   response.Append(static_cast<int>(retries));
-  ResolveJavascriptCallback(base::Value(std::move(callback_id_)),
-                            base::Value(std::move(response)));
+  ResolveJavascriptCallback(base::Value(std::move(callback_id_)), response);
 }
 
 void SecurityKeysBioEnrollmentHandler::HandleProvidePIN(
@@ -828,7 +820,7 @@ void SecurityKeysBioEnrollmentHandler::HandleGetSensorInfo(
     response.Set("maxSamplesForEnroll", *sensor_info_.max_samples_for_enroll);
   }
   ResolveJavascriptCallback(base::Value(std::move(args[0].GetString())),
-                            base::Value(std::move(response)));
+                            response);
 }
 
 void SecurityKeysBioEnrollmentHandler::HandleEnumerate(
@@ -858,8 +850,7 @@ void SecurityKeysBioEnrollmentHandler::OnHaveEnumeration(
   }
 
   state_ = State::kReady;
-  ResolveJavascriptCallback(base::Value(std::move(callback_id_)),
-                            base::Value(std::move(list)));
+  ResolveJavascriptCallback(base::Value(std::move(callback_id_)), list);
 }
 
 void SecurityKeysBioEnrollmentHandler::HandleStartEnrolling(
@@ -884,8 +875,7 @@ void SecurityKeysBioEnrollmentHandler::OnEnrollingResponse(
   base::Value::Dict d;
   d.Set("status", static_cast<int>(status));
   d.Set("remaining", static_cast<int>(remaining_samples));
-  FireWebUIListener("security-keys-bio-enroll-status",
-                    base::Value(std::move(d)));
+  FireWebUIListener("security-keys-bio-enroll-status", d);
 }
 
 void SecurityKeysBioEnrollmentHandler::OnEnrollmentFinished(
@@ -899,8 +889,7 @@ void SecurityKeysBioEnrollmentHandler::OnEnrollmentFinished(
     base::Value::Dict d;
     d.Set("code", static_cast<int>(code));
     d.Set("remaining", 0);
-    ResolveJavascriptCallback(base::Value(std::move(callback_id_)),
-                              base::Value(std::move(d)));
+    ResolveJavascriptCallback(base::Value(std::move(callback_id_)), d);
     return;
   }
   if (code != device::CtapDeviceResponseCode::kSuccess) {
@@ -930,8 +919,7 @@ void SecurityKeysBioEnrollmentHandler::OnHavePostEnrollmentEnumeration(
   d.Set("remaining", 0);
   d.Set("enrollment", EncodeEnrollment(enrolled_template_id,
                                        (*enrollments)[enrolled_template_id]));
-  ResolveJavascriptCallback(base::Value(std::move(callback_id_)),
-                            base::Value(std::move(d)));
+  ResolveJavascriptCallback(base::Value(std::move(callback_id_)), d);
 }
 
 void SecurityKeysBioEnrollmentHandler::HandleDelete(
@@ -1118,7 +1106,7 @@ void SecurityKeysPhonesHandler::DoEnumerate(const base::Value& callback_id) {
   result.Append(std::move(synced));
   result.Append(std::move(linked));
 
-  ResolveJavascriptCallback(callback_id, base::Value(std::move(result)));
+  ResolveJavascriptCallback(callback_id, result);
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -1213,8 +1201,7 @@ void PasskeysHandler::OnEnumerateComplete(
     result = base::Value(std::move(passkeys));
   }
 
-  ResolveJavascriptCallback(base::Value(std::move(callback_id)),
-                            std::move(result));
+  ResolveJavascriptCallback(base::Value(std::move(callback_id)), result);
 }
 
 void PasskeysHandler::HandleDelete(const base::Value::List& args) {

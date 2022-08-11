@@ -92,18 +92,16 @@ net::DohProviderEntry::List GetDohProviderListForTesting() {
   return {&global1, &no_display, &ee_fr, &fr, &global2};
 }
 
-bool FindDropdownItem(const base::Value& resolvers,
+bool FindDropdownItem(const base::Value::List& resolvers,
                       const std::string& name,
                       const std::string& value,
                       const std::string& policy) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey("name", base::Value(name));
-  dict.SetKey("value", base::Value(value));
-  dict.SetKey("policy", base::Value(policy));
+  base::Value::Dict dict;
+  dict.Set("name", name);
+  dict.Set("value", value);
+  dict.Set("policy", policy);
 
-  return std::find(resolvers.GetListDeprecated().begin(),
-                   resolvers.GetListDeprecated().end(),
-                   dict) != resolvers.GetListDeprecated().end();
+  return std::find(resolvers.begin(), resolvers.end(), dict) != resolvers.end();
 }
 
 }  // namespace
@@ -316,22 +314,18 @@ IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest, DropdownList) {
   ASSERT_TRUE(call_data.arg2()->GetBool());
 
   // Check results.
-  base::Value::ConstListView resolver_list =
-      call_data.arg3()->GetListDeprecated();
+  const base::Value::List& resolver_list = call_data.arg3()->GetList();
   ASSERT_GE(resolver_list.size(), 1U);
-  EXPECT_TRUE(resolver_list[0].FindKey("value")->GetString().empty());
+  EXPECT_TRUE(resolver_list[0].GetDict().FindString("value")->empty());
 }
 
 IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest, DropdownListContents) {
   const auto entries = GetDohProviderListForTesting();
   handler_->SetProvidersForTesting(entries);
-  const base::Value resolver_list = handler_->GetSecureDnsResolverList();
+  const base::Value::List resolver_list = handler_->GetSecureDnsResolverList();
 
-  EXPECT_EQ(entries.size() + 1, resolver_list.GetListDeprecated().size());
-  EXPECT_TRUE(resolver_list.GetListDeprecated()[0]
-                  .FindKey("value")
-                  ->GetString()
-                  .empty());
+  EXPECT_EQ(entries.size() + 1, resolver_list.size());
+  EXPECT_TRUE(resolver_list[0].GetDict().FindString("value")->empty());
   for (const auto* entry : entries) {
     EXPECT_TRUE(FindDropdownItem(resolver_list, entry->ui_name,
                                  entry->doh_server_config.server_template(),

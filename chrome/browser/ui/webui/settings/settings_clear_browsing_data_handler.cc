@@ -153,17 +153,17 @@ void ClearBrowsingDataHandler::HandleClearBrowsingDataForTest() {
   // types that the user cleared from the clear browsing data UI and time period
   // of the data to be cleared.
 
-  base::Value data_types(base::Value::Type::LIST);
+  base::Value::List data_types;
   data_types.Append("browser.clear_data.browsing_history");
 
-  base::Value installed_apps(base::Value::Type::LIST);
+  base::Value::List installed_apps;
 
-  base::Value list_args(base::Value::Type::LIST);
+  base::Value::List list_args;
   list_args.Append("webui_callback_id");
   list_args.Append(std::move(data_types));
   list_args.Append(1);
   list_args.Append(std::move(installed_apps));
-  HandleClearBrowsingData(list_args.GetList());
+  HandleClearBrowsingData(list_args);
 }
 
 void ClearBrowsingDataHandler::GetRecentlyLaunchedInstalledApps(
@@ -203,29 +203,28 @@ void ClearBrowsingDataHandler::OnGotInstalledApps(
     installed_apps_list.Append(std::move(entry));
   }
   ResolveJavascriptCallback(base::Value(webui_callback_id),
-                            base::Value(std::move(installed_apps_list)));
+                            installed_apps_list);
 }
 
 std::unique_ptr<content::BrowsingDataFilterBuilder>
 ClearBrowsingDataHandler::ProcessInstalledApps(
-    base::Value::ConstListView installed_apps) {
+    const base::Value::List& installed_apps) {
   std::vector<std::string> excluded_domains;
   std::vector<int32_t> excluded_domain_reasons;
   std::vector<std::string> ignored_domains;
   std::vector<int32_t> ignored_domain_reasons;
   for (const auto& item : installed_apps) {
-    const base::DictionaryValue* site = nullptr;
-    CHECK(item.GetAsDictionary(&site));
-    bool is_checked = site->FindBoolPath(kIsCheckedField).value();
-    std::string domain;
-    CHECK(site->GetString(kRegisterableDomainField, &domain));
-    absl::optional<int> domain_reason = site->FindIntKey(kReasonBitfieldField);
+    const base::Value::Dict& site = item.GetDict();
+    bool is_checked = site.FindBool(kIsCheckedField).value();
+    const std::string* domain = site.FindString(kRegisterableDomainField);
+    CHECK(domain);
+    absl::optional<int> domain_reason = site.FindInt(kReasonBitfieldField);
     CHECK(domain_reason);
     if (is_checked) {  // Selected installed apps should be deleted.
-      ignored_domains.push_back(domain);
+      ignored_domains.push_back(*domain);
       ignored_domain_reasons.push_back(*domain_reason);
     } else {  // Unselected sites should be kept.
-      excluded_domains.push_back(domain);
+      excluded_domains.push_back(*domain);
       excluded_domain_reasons.push_back(*domain_reason);
     }
   }
@@ -259,7 +258,7 @@ void ClearBrowsingDataHandler::HandleClearBrowsingData(
   std::vector<BrowsingDataType> data_type_vector;
 
   CHECK(args_list[1].is_list());
-  base::Value::ConstListView data_type_list = args_list[1].GetListDeprecated();
+  const base::Value::List& data_type_list = args_list[1].GetList();
   for (const base::Value& type : data_type_list) {
     const std::string pref_name = type.GetString();
     BrowsingDataType data_type =
@@ -358,8 +357,7 @@ void ClearBrowsingDataHandler::HandleClearBrowsingData(
 
   int period_selected = args_list[2].GetInt();
 
-  const base::Value::ConstListView installed_apps =
-      args_list[3].GetListDeprecated();
+  const base::Value::List& installed_apps = args_list[3].GetList();
   std::unique_ptr<content::BrowsingDataFilterBuilder> filter_builder =
       ProcessInstalledApps(installed_apps);
 
@@ -410,11 +408,11 @@ void ClearBrowsingDataHandler::OnClearingTaskFinished(
   bool show_passwords_notice =
       (failed_data_types & chrome_browsing_data_remover::DATA_TYPE_PASSWORDS);
 
-  base::Value result(base::Value::Type::DICTIONARY);
-  result.SetBoolKey("showHistoryNotice", show_history_notice);
-  result.SetBoolKey("showPasswordsNotice", show_passwords_notice);
+  base::Value::Dict result;
+  result.Set("showHistoryNotice", show_history_notice);
+  result.Set("showPasswordsNotice", show_passwords_notice);
 
-  ResolveJavascriptCallback(base::Value(webui_callback_id), std::move(result));
+  ResolveJavascriptCallback(base::Value(webui_callback_id), result);
 }
 
 void ClearBrowsingDataHandler::HandleInitialize(const base::Value::List& args) {
@@ -449,33 +447,31 @@ void ClearBrowsingDataHandler::UpdateSyncState() {
   FireWebUIListener("update-sync-state", CreateSyncStateEvent());
 }
 
-base::DictionaryValue ClearBrowsingDataHandler::CreateSyncStateEvent() {
+base::Value::Dict ClearBrowsingDataHandler::CreateSyncStateEvent() {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_);
-  base::DictionaryValue event;
-  event.SetBoolKey("signedIn",
-                   identity_manager && identity_manager->HasPrimaryAccount(
-                                           signin::ConsentLevel::kSignin));
-  event.SetBoolKey("syncConsented",
-                   identity_manager && identity_manager->HasPrimaryAccount(
-                                           signin::ConsentLevel::kSync));
-  event.SetBoolKey("syncingHistory",
-                   sync_service_ && sync_service_->IsSyncFeatureActive() &&
-                       sync_service_->GetActiveDataTypes().Has(
-                           syncer::HISTORY_DELETE_DIRECTIVES));
-  event.SetBoolKey(
-      "shouldShowCookieException",
-      browsing_data_counter_utils::ShouldShowCookieException(profile_));
+  base::Value::Dict event;
+  event.Set("signedIn", identity_manager && identity_manager->HasPrimaryAccount(
+                                                signin::ConsentLevel::kSignin));
+  event.Set("syncConsented",
+            identity_manager && identity_manager->HasPrimaryAccount(
+                                    signin::ConsentLevel::kSync));
+  event.Set("syncingHistory", sync_service_ &&
+                                  sync_service_->IsSyncFeatureActive() &&
+                                  sync_service_->GetActiveDataTypes().Has(
+                                      syncer::HISTORY_DELETE_DIRECTIVES));
+  event.Set("shouldShowCookieException",
+            browsing_data_counter_utils::ShouldShowCookieException(profile_));
 
-  event.SetBoolKey("isNonGoogleDse", false);
+  event.Set("isNonGoogleDse", false);
   const TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile_);
   const TemplateURL* dse = template_url_service->GetDefaultSearchProvider();
   if (dse && dse->GetEngineType(template_url_service->search_terms_data()) !=
                  SearchEngineType::SEARCH_ENGINE_GOOGLE) {
     // Non-Google DSE. Prepopulated DSEs have an ID > 0.
-    event.SetBoolKey("isNonGoogleDse", true);
-    event.SetStringKey(
+    event.Set("isNonGoogleDse", true);
+    event.Set(
         "nonGoogleSearchHistoryString",
         (dse->prepopulate_id() > 0)
             ? l10n_util::GetStringFUTF16(

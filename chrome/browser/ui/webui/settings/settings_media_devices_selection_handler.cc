@@ -143,9 +143,8 @@ void MediaDevicesSelectionHandler::UpdateDevicesMenu(
 
   base::Value default_value(default_id);
   base::Value type_value(device_type);
-  base::Value device_list_value(std::move(device_list));
 
-  FireWebUIListener("updateDevicesMenu", type_value, device_list_value,
+  FireWebUIListener("updateDevicesMenu", type_value, device_list,
                     default_value);
 }
 

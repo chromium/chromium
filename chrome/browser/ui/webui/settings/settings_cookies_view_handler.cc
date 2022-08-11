@@ -255,8 +255,7 @@ void CookiesViewHandler::GetCookieDetails(const std::string& callback_id,
 
   base::Value::List children = model_util_->GetChildNodeDetailsDeprecated(node);
 
-  ResolveJavascriptCallback(base::Value(callback_id),
-                            base::Value(std::move(children)));
+  ResolveJavascriptCallback(base::Value(callback_id), children);
 }
 
 void CookiesViewHandler::HandleGetNumCookiesString(
@@ -473,8 +472,7 @@ void CookiesViewHandler::ReturnLocalDataList(const std::string& callback_id) {
               return *a.FindStringKey(kSite) < *b.FindStringKey(kSite);
             });
 
-  ResolveJavascriptCallback(base::Value(callback_id),
-                            base::Value(std::move(site_list)));
+  ResolveJavascriptCallback(base::Value(callback_id), site_list);
 }
 
 void CookiesViewHandler::ProcessPendingRequests() {
