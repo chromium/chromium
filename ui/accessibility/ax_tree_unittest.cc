@@ -449,10 +449,6 @@ TEST(AXTreeTest, LeaveOrphanedDeletedSubtreeFails) {
   update.node_id_to_clear = 2;
   update.nodes.resize(1);
   update.nodes[0].id = 3;
-#if defined(AX_FAIL_FAST_BUILD)
-  EXPECT_DEATH_IF_SUPPORTED(tree.Unserialize(update),
-                            "Nodes left pending by the update: 2");
-#else
   EXPECT_FALSE(tree.Unserialize(update));
   ASSERT_EQ("Nodes left pending by the update: 2", tree.error());
   histogram_tester.ExpectUniqueSample(
@@ -460,7 +456,6 @@ TEST(AXTreeTest, LeaveOrphanedDeletedSubtreeFails) {
       AXTreeUnserializeError::kPendingNodes, 1);
   histogram_tester.ExpectTotalCount(
       "Accessibility.Performance.Tree.Unserialize", 2);
-#endif
 }
 
 TEST(AXTreeTest, LeaveOrphanedNewChildFails) {
@@ -480,10 +475,6 @@ TEST(AXTreeTest, LeaveOrphanedNewChildFails) {
   update.nodes.resize(1);
   update.nodes[0].id = 1;
   update.nodes[0].child_ids.push_back(2);
-#if defined(AX_FAIL_FAST_BUILD)
-  EXPECT_DEATH_IF_SUPPORTED(tree.Unserialize(update),
-                            "Nodes left pending by the update: 2");
-#else
   EXPECT_FALSE(tree.Unserialize(update));
   ASSERT_EQ("Nodes left pending by the update: 2", tree.error());
   histogram_tester.ExpectUniqueSample(
@@ -491,7 +482,6 @@ TEST(AXTreeTest, LeaveOrphanedNewChildFails) {
       AXTreeUnserializeError::kPendingNodes, 1);
   histogram_tester.ExpectTotalCount(
       "Accessibility.Performance.Tree.Unserialize", 2);
-#endif
 }
 
 TEST(AXTreeTest, DuplicateChildIdFails) {
@@ -512,10 +502,6 @@ TEST(AXTreeTest, DuplicateChildIdFails) {
   update.nodes[0].child_ids.push_back(2);
   update.nodes[0].child_ids.push_back(2);
   update.nodes[1].id = 2;
-#if defined(AX_FAIL_FAST_BUILD)
-  EXPECT_DEATH_IF_SUPPORTED(tree.Unserialize(update),
-                            "Node 1 has duplicate child id 2");
-#else
   EXPECT_FALSE(tree.Unserialize(update));
   ASSERT_EQ("Node 1 has duplicate child id 2", tree.error());
   histogram_tester.ExpectUniqueSample(
@@ -523,7 +509,6 @@ TEST(AXTreeTest, DuplicateChildIdFails) {
       AXTreeUnserializeError::kDuplicateChild, 1);
   histogram_tester.ExpectTotalCount(
       "Accessibility.Performance.Tree.Unserialize", 1);
-#endif
 }
 
 TEST(AXTreeTest, InvalidReparentingFails) {
@@ -551,11 +536,6 @@ TEST(AXTreeTest, InvalidReparentingFails) {
   update.nodes[0].child_ids.push_back(2);
   update.nodes[1].id = 2;
   update.nodes[2].id = 3;
-#if defined(AX_FAIL_FAST_BUILD)
-  EXPECT_DEATH_IF_SUPPORTED(
-      tree.Unserialize(update),
-      "Node 3 is not marked for destruction, would be reparented to 1");
-#else
   EXPECT_FALSE(tree.Unserialize(update));
   ASSERT_EQ("Node 3 is not marked for destruction, would be reparented to 1",
             tree.error());
@@ -564,7 +544,6 @@ TEST(AXTreeTest, InvalidReparentingFails) {
       AXTreeUnserializeError::kReparent, 1);
   histogram_tester.ExpectTotalCount(
       "Accessibility.Performance.Tree.Unserialize", 1);
-#endif
 }
 
 TEST(AXTreeTest, NoReparentingOfRootIfNoNewRoot) {
@@ -1226,13 +1205,7 @@ TEST(AXTreeTest, BogusAXTree2) {
   node2.child_ids.push_back(0);
   initial_state.nodes.push_back(node2);
   ui::AXTree tree;
-#if defined(AX_FAIL_FAST_BUILD)
-  EXPECT_DEATH_IF_SUPPORTED(tree.Unserialize(initial_state),
-                            "Node 0 has duplicate child id 0");
-#else
-  EXPECT_FALSE(tree.Unserialize(initial_state));
-  EXPECT_EQ("Node 0 has duplicate child id 0", tree.error());
-#endif
+  tree.Unserialize(initial_state);
 }
 
 // UAF caught by ax_tree_fuzzer
@@ -1250,13 +1223,7 @@ TEST(AXTreeTest, BogusAXTree3) {
   initial_state.nodes.push_back(node2);
 
   ui::AXTree tree;
-#if defined(AX_FAIL_FAST_BUILD)
-  EXPECT_DEATH_IF_SUPPORTED(tree.Unserialize(initial_state),
-                            "Node 1 has duplicate child id 1");
-#else
-  EXPECT_FALSE(tree.Unserialize(initial_state));
-  EXPECT_EQ("Node 1 has duplicate child id 1", tree.error());
-#endif
+  tree.Unserialize(initial_state);
 }
 
 TEST(AXTreeTest, RoleAndStateChangeCallbacks) {
@@ -5414,17 +5381,10 @@ TEST(AXTreeTest, UnserializeErrors) {
   ui::AXNodeData disconnected_node;
   disconnected_node.id = 2;
   tree_update_3.nodes.push_back(disconnected_node);
-#if defined(AX_FAIL_FAST_BUILD)
-  EXPECT_DEATH_IF_SUPPORTED(
-      tree.Unserialize(tree_update_3),
-      "2 will not be in the tree and is not the new root");
-#else
   EXPECT_FALSE(tree.Unserialize(tree_update_3));
-  EXPECT_EQ("2 will not be in the tree and is not the new root", tree.error());
   histogram_tester.ExpectUniqueSample(
       "Accessibility.Reliability.Tree.UnserializeError",
       AXTreeUnserializeError::kNotInTree, 1);
-#endif
 }
 
 }  // namespace ui

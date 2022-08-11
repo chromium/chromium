@@ -1171,7 +1171,7 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
     if (!root_) {
       ACCESSIBILITY_TREE_UNSERIALIZE_ERROR_HISTOGRAM(
           AXTreeUnserializeError::kNoRoot);
-      RecordError(update_state, "Tree has no root.");
+      RecordError("Tree has no root.");
       return false;
     }
 
@@ -1530,10 +1530,8 @@ bool AXTree::ComputePendingChangesToNode(const AXNodeData& new_data,
     if (!is_new_root) {
       ACCESSIBILITY_TREE_UNSERIALIZE_ERROR_HISTOGRAM(
           AXTreeUnserializeError::kNotInTree);
-      RecordError(*update_state,
-                  base::StringPrintf(
-                      "%d will not be in the tree and is not the new root",
-                      new_data.id));
+      RecordError(base::StringPrintf(
+          "%d will not be in the tree and is not the new root", new_data.id));
       return false;
     }
 
@@ -1543,11 +1541,9 @@ bool AXTree::ComputePendingChangesToNode(const AXNodeData& new_data,
                                                        absl::nullopt)) {
       ACCESSIBILITY_TREE_UNSERIALIZE_ERROR_HISTOGRAM(
           AXTreeUnserializeError::kCreationPending);
-      RecordError(
-          *update_state,
-          base::StringPrintf(
-              "Node %d is already pending for creation, cannot be the new root",
-              new_data.id));
+      RecordError(base::StringPrintf(
+          "Node %d is already pending for creation, cannot be the new root",
+          new_data.id));
       return false;
     }
     if (update_state->pending_root_id) {
@@ -1563,8 +1559,7 @@ bool AXTree::ComputePendingChangesToNode(const AXNodeData& new_data,
     if (base::Contains(new_child_id_set, new_child_id)) {
       ACCESSIBILITY_TREE_UNSERIALIZE_ERROR_HISTOGRAM(
           AXTreeUnserializeError::kDuplicateChild);
-      RecordError(*update_state,
-                  base::StringPrintf("Node %d has duplicate child id %d",
+      RecordError(base::StringPrintf("Node %d has duplicate child id %d",
                                      new_data.id, new_child_id));
       return false;
     }
@@ -1589,10 +1584,9 @@ bool AXTree::ComputePendingChangesToNode(const AXNodeData& new_data,
                                                          new_data.id)) {
         ACCESSIBILITY_TREE_UNSERIALIZE_ERROR_HISTOGRAM(
             AXTreeUnserializeError::kCreationPendingForChild);
-        RecordError(*update_state,
-                    base::StringPrintf("Node %d is already pending for "
-                                       "creation, cannot be a new child",
-                                       child_id));
+        RecordError(base::StringPrintf(
+            "Node %d is already pending for creation, cannot be a new child",
+            child_id));
         return false;
       }
     }
@@ -1634,10 +1628,9 @@ bool AXTree::ComputePendingChangesToNode(const AXNodeData& new_data,
       if (update_state->ShouldPendingNodeExistInTree(child_id)) {
         ACCESSIBILITY_TREE_UNSERIALIZE_ERROR_HISTOGRAM(
             AXTreeUnserializeError::kReparent);
-        RecordError(*update_state,
-                    base::StringPrintf("Node %d is not marked for destruction, "
-                                       "would be reparented to %d",
-                                       child_id, new_data.id));
+        RecordError(base::StringPrintf(
+            "Node %d is not marked for destruction, would be reparented to %d",
+            child_id, new_data.id));
         return false;
       }
 
@@ -1648,10 +1641,9 @@ bool AXTree::ComputePendingChangesToNode(const AXNodeData& new_data,
                                                          new_data.id)) {
         ACCESSIBILITY_TREE_UNSERIALIZE_ERROR_HISTOGRAM(
             AXTreeUnserializeError::kCreationPendingForChild);
-        RecordError(*update_state,
-                    base::StringPrintf("Node %d is already pending for "
-                                       "creation, cannot be a new child",
-                                       child_id));
+        RecordError(base::StringPrintf(
+            "Node %d is already pending for creation, cannot be a new child",
+            child_id));
         return false;
       }
     } else {
@@ -1690,9 +1682,8 @@ bool AXTree::UpdateNode(const AXNodeData& src,
     if (!is_new_root) {
       ACCESSIBILITY_TREE_UNSERIALIZE_ERROR_HISTOGRAM(
           AXTreeUnserializeError::kNotInTree);
-      RecordError(*update_state,
-                  base::StringPrintf(
-                      "%d is not in the tree and not the new root", src.id));
+      RecordError(base::StringPrintf(
+          "%d is not in the tree and not the new root", src.id));
       return false;
     }
 
@@ -2016,7 +2007,7 @@ bool AXTree::ValidatePendingChangesComplete(
     std::string error = "Nodes left pending by the update:";
     for (const AXNodeID pending_id : update_state.pending_node_ids)
       error += base::StringPrintf(" %d", pending_id);
-    RecordError(update_state, error);
+    RecordError(error);
     return false;
   }
 
@@ -2042,13 +2033,11 @@ bool AXTree::ValidatePendingChangesComplete(
     if (has_pending_changes) {
       ACCESSIBILITY_TREE_UNSERIALIZE_ERROR_HISTOGRAM(
           AXTreeUnserializeError::kPendingChanges);
-      RecordError(
-          update_state,
-          base::StringPrintf(
-              "Changes left pending by the update; "
-              "destroy subtrees: %s, destroy nodes: %s, create nodes: %s",
-              destroy_subtree_ids.c_str(), destroy_node_ids.c_str(),
-              create_node_ids.c_str()));
+      RecordError(base::StringPrintf(
+          "Changes left pending by the update; "
+          "destroy subtrees: %s, destroy nodes: %s, create nodes: %s",
+          destroy_subtree_ids.c_str(), destroy_node_ids.c_str(),
+          create_node_ids.c_str()));
     }
     return !has_pending_changes;
   }
@@ -2157,8 +2146,7 @@ bool AXTree::CreateNewChildVector(AXNode* node,
         // If this case occurs, continue so this node isn't left in an
         // inconsistent state, but return failure at the end.
         if (child->parent()) {
-          RecordError(*update_state,
-                      base::StringPrintf("Node %d reparented from %d to %d",
+          RecordError(base::StringPrintf("Node %d reparented from %d to %d",
                                          child->id(), child->parent()->id(),
                                          node->id()));
         } else {
@@ -2740,36 +2728,18 @@ void AXTree::NotifyTreeManagerWillBeRemoved(AXTreeID previous_tree_id) {
     observer.OnTreeManagerWillBeRemoved(previous_tree_id);
 }
 
-void AXTree::RecordError(const AXTreeUpdateState& update_state,
-                         std::string new_error) {
+void AXTree::RecordError(std::string new_error) {
   if (!error_.empty())
     error_ = error_ + "\n";  // Add visual separation between errors.
   error_ = error_ + new_error;
 
-  LOG(ERROR) << new_error;
-
-  static auto* const ax_tree_error_key = base::debug::AllocateCrashKeyString(
-      "ax_tree_error", base::debug::CrashKeySize::Size256);
-  static auto* const ax_tree_update_key = base::debug::AllocateCrashKeyString(
-      "ax_tree_update", base::debug::CrashKeySize::Size256);
-  static auto* const ax_tree_key = base::debug::AllocateCrashKeyString(
-      "ax_tree", base::debug::CrashKeySize::Size256);
-  static auto* const ax_tree_data_key = base::debug::AllocateCrashKeyString(
-      "ax_tree_data", base::debug::CrashKeySize::Size256);
-
-  // Log additional crash keys so we can debug bad tree updates.
-  base::debug::SetCrashKeyString(ax_tree_error_key, new_error);
-  base::debug::SetCrashKeyString(ax_tree_update_key,
-                                 update_state.pending_tree_update.ToString());
-  base::debug::SetCrashKeyString(ax_tree_key, TreeToStringHelper(root_, 1));
-  base::debug::SetCrashKeyString(ax_tree_data_key, data().ToString());
-
-  // In fast-failing-builds, crash immediately with a message, otherwise
-  // rely on AccessibilityFatalError(), which will not crash until multiple
-  // errors occur.
-  SANITIZER_NOTREACHED() << new_error << "\n"
-                         << update_state.pending_tree_update.ToString() << "\n"
-                         << ToString();
+  if (!error_.empty()) {
+    // Add a crash key so we can figure out why this is happening.
+    static crash_reporter::CrashKeyString<256> ax_tree_error(
+        "ax_tree_unserialize_error");
+    ax_tree_error.Set(error_);
+    LOG(ERROR) << error_;
+  }
 }
 
 }  // namespace ui

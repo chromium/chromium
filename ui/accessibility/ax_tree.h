@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/debug/crash_logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
@@ -248,9 +247,7 @@ class AX_EXPORT AXTree : public AXNode::OwnerTree {
 
   // Accumulate errors as there can be more than one before Chrome is crashed
   // via AccessibilityFatalError();
-  // In an AX_FAIL_FAST_BUILD, will assert/crash immediately.
-  void RecordError(const AXTreeUpdateState& update_state,
-                   std::string new_error);
+  void RecordError(std::string new_error);
 
   // AXNode::OwnerTree override.
   //

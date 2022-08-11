@@ -14,7 +14,6 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
-#include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_tree.h"
 
@@ -43,9 +42,7 @@ class AccessibilityIpcErrorBrowserTest : public ContentBrowserTest {
 };
 
 // Failed on Android x86 in crbug.com/1123641.
-// Do not test on AX_FAIL_FAST_BUILDS, where the BAD IPC will simply assert.
-#if (BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86)) || \
-    defined(AX_FAIL_FAST_BUILD)
+#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86)
 #define MAYBE_ResetBrowserAccessibilityManager \
   DISABLED_ResetBrowserAccessibilityManager
 #else
@@ -145,8 +142,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityIpcErrorBrowserTest,
   EXPECT_EQ(ax::mojom::Role::kButton, button->GetRole());
 }
 
-// Do not test on AX_FAIL_FAST_BUILDS, where the BAD IPC will simply assert.
-#if BUILDFLAG(IS_LINUX) && !defined(AX_FAIL_FAST_BUILD)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_MultipleBadAccessibilityIPCsKillsRenderer \
   MultipleBadAccessibilityIPCsKillsRenderer
 #else
