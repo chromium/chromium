@@ -29,6 +29,13 @@
 #include "components/user_manager/user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
+#include "chromeos/startup/browser_init_params.h"
+#include "components/policy/core/common/policy_loader_lacros.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 namespace chromeos {
 
 namespace {
@@ -425,6 +432,16 @@ class TelemetryExtensionApiGuardRealDelegateBrowserTest
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Returns whether the Diagnostics interface is available. It may
+  // not be available on earlier versions of ash-chrome.
+  bool IsServiceAvailable() const {
+    chromeos::LacrosService* lacros_service = chromeos::LacrosService::Get();
+    return lacros_service &&
+           lacros_service->IsAvailable<crosapi::mojom::DiagnosticsService>();
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   GURL GetPwaGURL() const { return https_server_.GetURL("/ssl/google.html"); }
 
   // BaseTelemetryExtensionBrowserTest:
@@ -444,6 +461,19 @@ class TelemetryExtensionApiGuardRealDelegateBrowserTest
 // TODO(b/219514064): Make an equivalent test for Lacros.
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionApiGuardRealDelegateBrowserTest,
                        CanAccessRunBatteryCapacityRoutine) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // We can't run this test if Ash doesn't support the crosapi
+  // interface.
+  if (!IsServiceAvailable()) {
+    return;
+  }
+
+  // Setup the device ownership for Lacros
+  auto params = crosapi::mojom::BrowserInitParams::New();
+  params->is_current_user_device_owner = true;
+  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(params));
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Add a new user and make it owner.
   auto* const user_manager = GetFakeUserManager();

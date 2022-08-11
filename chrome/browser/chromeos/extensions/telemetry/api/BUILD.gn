@@ -87,6 +87,7 @@ source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = [
+    "base_telemetry_extension_api_guard_function_browsertest.cc",
     "base_telemetry_extension_browser_test.cc",
     "base_telemetry_extension_browser_test.h",
     "diagnostics_api_browsertest.cc",
@@ -97,6 +98,7 @@ source_set("browser_tests") {
     "fake_probe_service.cc",
     "fake_probe_service.h",
     "telemetry_api_browsertest.cc",
+    "telemetry_extension_capabilities_browser_test.cc",
   ]
 
   deps = [
@@ -106,6 +108,7 @@ source_set("browser_tests") {
     "//chrome/common/chromeos/extensions",
     "//chrome/test:test_support",
     "//chromeos/crosapi/mojom",
+    "//chromeos/startup",
     "//components/user_manager",
     "//content/test:test_support",
     "//extensions:test_support",
@@ -118,14 +121,14 @@ source_set("browser_tests") {
     "//url",
   ]
 
+  data = [ "//chrome/test/data" ]
+
   if (is_chromeos_ash) {
     sources += [
-      "base_telemetry_extension_api_guard_function_browsertest.cc",
       "fake_diagnostics_service_factory.cc",
       "fake_diagnostics_service_factory.h",
       "fake_probe_service_factory.cc",
       "fake_probe_service_factory.h",
-      "telemetry_extension_capabilities_browser_test.cc",
     ]
 
     deps += [
