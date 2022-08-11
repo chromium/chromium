@@ -6,7 +6,6 @@
 #define CHROME_TEST_BASE_DEVTOOLS_LISTENER_H_
 
 #include <map>
-#include <memory>
 #include <string>
 #include <vector>
 
@@ -79,13 +78,13 @@ class DevToolsListener : public content::DevToolsAgentHostClient {
   void AgentHostClosed(content::DevToolsAgentHost* host) override;
 
  private:
-  std::vector<std::unique_ptr<base::DictionaryValue>> script_;
-  std::unique_ptr<base::DictionaryValue> script_coverage_;
+  std::vector<base::Value::Dict> scripts_;
+  base::Value::Dict script_coverage_;
   std::map<std::string, std::string> script_hash_map_;
   std::map<std::string, std::string> script_id_map_;
 
   base::OnceClosure value_closure_;
-  std::unique_ptr<base::DictionaryValue> value_;
+  base::Value::Dict value_;
   int value_id_ = 0;
 
   const std::string uuid_;
