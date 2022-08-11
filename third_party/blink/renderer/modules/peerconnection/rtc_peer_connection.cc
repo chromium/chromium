@@ -2339,11 +2339,10 @@ RTCRtpReceiver* RTCPeerConnection::CreateOrUpdateReceiver(
 
 RTCRtpTransceiver* RTCPeerConnection::CreateOrUpdateTransceiver(
     std::unique_ptr<RTCRtpTransceiverPlatform> platform_transceiver) {
-  String kind =
-      (platform_transceiver->Receiver()->Track()->Source()->GetType() ==
-       MediaStreamSource::kTypeAudio)
-          ? "audio"
-          : "video";
+  String kind = (platform_transceiver->Receiver()->Track()->GetSourceType() ==
+                 MediaStreamSource::kTypeAudio)
+                    ? "audio"
+                    : "video";
   RTCRtpSender* sender =
       CreateOrUpdateSender(platform_transceiver->Sender(), kind);
   RTCRtpReceiver* receiver =
@@ -2600,12 +2599,12 @@ void RTCPeerConnection::DidModifyReceiversPlanB(
         MediaStreamTrackVector audio_tracks;
         MediaStreamComponentVector video_track_components;
         MediaStreamTrackVector video_tracks;
-        if (track->Component()->Source()->GetType() ==
+        if (track->Component()->GetSourceType() ==
             MediaStreamSource::kTypeAudio) {
           audio_track_components.push_back(track->Component());
           audio_tracks.push_back(track);
         } else {
-          DCHECK(track->Component()->Source()->GetType() ==
+          DCHECK(track->Component()->GetSourceType() ==
                  MediaStreamSource::kTypeVideo);
           video_track_components.push_back(track->Component());
           video_tracks.push_back(track);

@@ -547,7 +547,7 @@ bool IsRemoteStream(
 
 MediaStreamTrackMetrics::Kind MediaStreamTrackMetricsKind(
     const MediaStreamComponent* component) {
-  return component->Source()->GetType() == MediaStreamSource::kTypeAudio
+  return component->GetSourceType() == MediaStreamSource::kTypeAudio
              ? MediaStreamTrackMetrics::Kind::kAudio
              : MediaStreamTrackMetrics::Kind::kVideo;
 }
@@ -2100,8 +2100,8 @@ void RTCPeerConnectionHandler::MaybeCreateThermalUmaListner() {
   if (!thermal_uma_listener_) {
     // Instantiate the thermal uma listener only if we are sending video.
     for (const auto& sender : rtp_senders_) {
-      if (sender->Track() && sender->Track()->Source()->GetType() ==
-                                 MediaStreamSource::kTypeVideo) {
+      if (sender->Track() &&
+          sender->Track()->GetSourceType() == MediaStreamSource::kTypeVideo) {
         thermal_uma_listener_ = ThermalUmaListener::Create(task_runner_);
         thermal_uma_listener_->OnThermalMeasurement(last_thermal_state_);
         return;

@@ -143,7 +143,7 @@ WritableStream* MediaStreamTrackGenerator::writable(ScriptState* script_state) {
 
 PushableMediaStreamVideoSource* MediaStreamTrackGenerator::PushableVideoSource()
     const {
-  DCHECK_EQ(Component()->Source()->GetType(), MediaStreamSource::kTypeVideo);
+  DCHECK_EQ(Component()->GetSourceType(), MediaStreamSource::kTypeVideo);
   return static_cast<PushableMediaStreamVideoSource*>(
       GetExecutionContext()->GetTaskRunner(TaskType::kInternalMediaRealTime),
       MediaStreamVideoSource::GetVideoSource(Component()->Source()));

@@ -137,12 +137,12 @@ void MediaStreamComponentImpl::SetContentHint(
       break;
     case WebMediaStreamTrack::ContentHintType::kAudioSpeech:
     case WebMediaStreamTrack::ContentHintType::kAudioMusic:
-      DCHECK_EQ(MediaStreamSource::kTypeAudio, Source()->GetType());
+      DCHECK_EQ(MediaStreamSource::kTypeAudio, GetSourceType());
       break;
     case WebMediaStreamTrack::ContentHintType::kVideoMotion:
     case WebMediaStreamTrack::ContentHintType::kVideoDetail:
     case WebMediaStreamTrack::ContentHintType::kVideoText:
-      DCHECK_EQ(MediaStreamSource::kTypeVideo, Source()->GetType());
+      DCHECK_EQ(MediaStreamSource::kTypeVideo, GetSourceType());
       break;
   }
   if (hint == content_hint_)

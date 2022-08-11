@@ -197,7 +197,7 @@ void DidCloneMediaStreamTrack(MediaStreamComponent* original,
   DCHECK(!clone->GetPlatformTrack());
   DCHECK(clone->Source());
 
-  switch (clone->Source()->GetType()) {
+  switch (clone->GetSourceType()) {
     case MediaStreamSource::kTypeAudio:
       MediaStreamAudioSource::From(clone->Source())->ConnectToTrack(clone);
       break;
@@ -286,7 +286,7 @@ MediaStreamTrackImpl::MediaStreamTrackImpl(
   MediaStreamVideoTrack* const video_track =
       MediaStreamVideoTrack::From(Component());
   if (video_track && component_->Source() &&
-      component_->Source()->GetType() == MediaStreamSource::kTypeVideo) {
+      component_->GetSourceType() == MediaStreamSource::kTypeVideo) {
     image_capture_ = MakeGarbageCollected<ImageCapture>(
         context, this, video_track->pan_tilt_zoom_allowed(),
         std::move(callback));
@@ -311,7 +311,7 @@ String MediaStreamTrackImpl::kind() const {
   DEFINE_THREAD_SAFE_STATIC_LOCAL(String, audio_kind, ("audio"));
   DEFINE_THREAD_SAFE_STATIC_LOCAL(String, video_kind, ("video"));
 
-  switch (component_->Source()->GetType()) {
+  switch (component_->GetSourceType()) {
     case MediaStreamSource::kTypeAudio:
       return audio_kind;
     case MediaStreamSource::kTypeVideo:
@@ -366,7 +366,7 @@ void MediaStreamTrackImpl::SetContentHint(const String& hint) {
       String::Format("%s({hint=%s})", __func__, hint.Utf8().c_str()));
   WebMediaStreamTrack::ContentHintType translated_hint =
       WebMediaStreamTrack::ContentHintType::kNone;
-  switch (component_->Source()->GetType()) {
+  switch (component_->GetSourceType()) {
     case MediaStreamSource::kTypeAudio:
       if (hint == kContentHintStringNone) {
         translated_hint = WebMediaStreamTrack::ContentHintType::kNone;
@@ -475,7 +475,7 @@ MediaTrackCapabilities* MediaStreamTrackImpl::getCapabilities() const {
   if (!platform_capabilities.group_id.IsNull())
     capabilities->setGroupId(platform_capabilities.group_id);
 
-  if (component_->Source()->GetType() == MediaStreamSource::kTypeAudio) {
+  if (component_->GetSourceType() == MediaStreamSource::kTypeAudio) {
     Vector<bool> echo_cancellation, auto_gain_control, noise_suppression;
     for (bool value : platform_capabilities.echo_cancellation)
       echo_cancellation.push_back(value);
@@ -519,7 +519,7 @@ MediaTrackCapabilities* MediaStreamTrackImpl::getCapabilities() const {
     }
   }
 
-  if (component_->Source()->GetType() == MediaStreamSource::kTypeVideo) {
+  if (component_->GetSourceType() == MediaStreamSource::kTypeVideo) {
     if (platform_capabilities.width.size() == 2) {
       LongRange* width = LongRange::Create();
       width->setMin(platform_capabilities.width[0]);

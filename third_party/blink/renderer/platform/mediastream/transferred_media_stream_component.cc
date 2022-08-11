@@ -48,6 +48,15 @@ int TransferredMediaStreamComponent::UniqueId() const {
   return 0;
 }
 
+MediaStreamSource::StreamType TransferredMediaStreamComponent::GetSourceType()
+    const {
+  if (component_) {
+    return component_->GetSourceType();
+  }
+  // TODO(crbug.com/1288839): Return the transferred value
+  return MediaStreamSource::StreamType::kTypeVideo;
+}
+
 bool TransferredMediaStreamComponent::Remote() const {
   if (component_) {
     return component_->Remote();

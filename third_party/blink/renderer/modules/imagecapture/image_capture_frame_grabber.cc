@@ -300,7 +300,7 @@ void ImageCaptureFrameGrabber::GrabFrame(
   DCHECK(!!callbacks);
 
   DCHECK(component && component->GetPlatformTrack());
-  DCHECK_EQ(MediaStreamSource::kTypeVideo, component->Source()->GetType());
+  DCHECK_EQ(MediaStreamSource::kTypeVideo, component->GetSourceType());
 
   if (frame_grab_in_progress_) {
     // Reject grabFrame()s too close back to back.

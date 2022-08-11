@@ -63,11 +63,11 @@ void ApplyConstraintsProcessor::ProcessRequest(
   }
   request_completed_cb_ = std::move(callback);
   current_request_ = request;
-  if (current_request_->Track()->Source()->GetType() ==
+  if (current_request_->Track()->GetSourceType() ==
       MediaStreamSource::kTypeVideo) {
     ProcessVideoRequest();
   } else {
-    DCHECK_EQ(current_request_->Track()->Source()->GetType(),
+    DCHECK_EQ(current_request_->Track()->GetSourceType(),
               MediaStreamSource::kTypeAudio);
     ProcessAudioRequest();
   }
@@ -76,7 +76,7 @@ void ApplyConstraintsProcessor::ProcessRequest(
 void ApplyConstraintsProcessor::ProcessAudioRequest() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(current_request_);
-  DCHECK_EQ(current_request_->Track()->Source()->GetType(),
+  DCHECK_EQ(current_request_->Track()->GetSourceType(),
             MediaStreamSource::kTypeAudio);
   DCHECK(request_completed_cb_);
   blink::MediaStreamAudioSource* audio_source = GetCurrentAudioSource();
@@ -97,7 +97,7 @@ void ApplyConstraintsProcessor::ProcessAudioRequest() {
 void ApplyConstraintsProcessor::ProcessVideoRequest() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(current_request_);
-  DCHECK_EQ(current_request_->Track()->Source()->GetType(),
+  DCHECK_EQ(current_request_->Track()->GetSourceType(),
             MediaStreamSource::kTypeVideo);
   DCHECK(request_completed_cb_);
   video_source_ = GetCurrentVideoSource();
@@ -266,7 +266,7 @@ blink::VideoCaptureSettings ApplyConstraintsProcessor::SelectVideoSettings(
     Vector<media::VideoCaptureFormat> formats) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(current_request_);
-  DCHECK_EQ(current_request_->Track()->Source()->GetType(),
+  DCHECK_EQ(current_request_->Track()->GetSourceType(),
             MediaStreamSource::kTypeVideo);
   DCHECK(request_completed_cb_);
   DCHECK_GT(formats.size(), 0U);
@@ -329,7 +329,7 @@ ApplyConstraintsProcessor::GetCurrentVideoSource() {
 bool ApplyConstraintsProcessor::AbortIfVideoRequestStateInvalid() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(current_request_);
-  DCHECK_EQ(current_request_->Track()->Source()->GetType(),
+  DCHECK_EQ(current_request_->Track()->GetSourceType(),
             MediaStreamSource::kTypeVideo);
   DCHECK(request_completed_cb_);
 

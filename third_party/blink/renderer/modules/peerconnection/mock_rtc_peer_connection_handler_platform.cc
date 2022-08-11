@@ -172,7 +172,7 @@ class DummyTransceiverInternal
         receiver_(type),
         direction_(webrtc::RtpTransceiverDirection::kSendRecv) {
     DCHECK(!sender_.Track() ||
-           sender_.Track()->Source()->GetType() ==
+           sender_.Track()->GetSourceType() ==
                static_cast<MediaStreamSource::StreamType>(type));
   }
 
@@ -325,7 +325,7 @@ MockRTCPeerConnectionHandlerPlatform::AddTransceiverWithTrack(
     MediaStreamComponent* component,
     const webrtc::RtpTransceiverInit&) {
   transceivers_.push_back(std::make_unique<DummyRTCRtpTransceiverPlatform>(
-      component->Source()->GetType(), component));
+      component->GetSourceType(), component));
   std::unique_ptr<DummyRTCRtpTransceiverPlatform> copy(
       new DummyRTCRtpTransceiverPlatform(*transceivers_.back()));
   return std::unique_ptr<RTCRtpTransceiverPlatform>(std::move(copy));
@@ -349,7 +349,7 @@ MockRTCPeerConnectionHandlerPlatform::AddTrack(
     MediaStreamComponent* component,
     const MediaStreamDescriptorVector&) {
   transceivers_.push_back(std::make_unique<DummyRTCRtpTransceiverPlatform>(
-      component->Source()->GetType(), component));
+      component->GetSourceType(), component));
   std::unique_ptr<DummyRTCRtpTransceiverPlatform> copy(
       new DummyRTCRtpTransceiverPlatform(*transceivers_.back()));
   return std::unique_ptr<RTCRtpTransceiverPlatform>(std::move(copy));

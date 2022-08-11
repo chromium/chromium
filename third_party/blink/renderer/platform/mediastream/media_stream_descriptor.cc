@@ -51,7 +51,7 @@ int MediaStreamDescriptor::GenerateUniqueId() {
 }
 
 void MediaStreamDescriptor::AddComponent(MediaStreamComponent* component) {
-  switch (component->Source()->GetType()) {
+  switch (component->GetSourceType()) {
     case MediaStreamSource::kTypeAudio:
       if (audio_components_.Find(component) == kNotFound)
         audio_components_.push_back(component);
@@ -70,7 +70,7 @@ void MediaStreamDescriptor::AddComponent(MediaStreamComponent* component) {
 
 void MediaStreamDescriptor::RemoveComponent(MediaStreamComponent* component) {
   wtf_size_t pos = kNotFound;
-  switch (component->Source()->GetType()) {
+  switch (component->GetSourceType()) {
     case MediaStreamSource::kTypeAudio:
       pos = audio_components_.Find(component);
       if (pos != kNotFound)

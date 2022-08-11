@@ -60,7 +60,7 @@ ReadableStream* MediaStreamTrackProcessor::readable(ScriptState* script_state) {
   if (source_stream_)
     return source_stream_;
 
-  if (input_track_->Component()->Source()->GetType() ==
+  if (input_track_->Component()->GetSourceType() ==
       MediaStreamSource::kTypeVideo) {
     CreateVideoSourceStream(script_state);
   } else {

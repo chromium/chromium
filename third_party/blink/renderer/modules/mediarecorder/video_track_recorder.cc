@@ -622,7 +622,7 @@ VideoTrackRecorderImpl::VideoTrackRecorderImpl(
       main_task_runner_(std::move(main_task_runner)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   DCHECK(track_);
-  DCHECK(track_->Source()->GetType() == MediaStreamSource::kTypeVideo);
+  DCHECK(track_->GetSourceType() == MediaStreamSource::kTypeVideo);
 
   initialize_encoder_cb_ = WTF::BindRepeating(
       &VideoTrackRecorderImpl::InitializeEncoder, weak_factory_.GetWeakPtr(),

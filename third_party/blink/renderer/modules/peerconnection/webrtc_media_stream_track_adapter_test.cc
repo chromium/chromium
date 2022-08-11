@@ -126,7 +126,7 @@ TEST_F(WebRtcMediaStreamTrackAdapterTest, LocalAudioTrack) {
           dependency_factory_.Get(), main_thread_, CreateLocalAudioTrack());
   EXPECT_TRUE(track_adapter_->is_initialized());
   EXPECT_TRUE(track_adapter_->track());
-  EXPECT_EQ(track_adapter_->track()->Source()->GetType(),
+  EXPECT_EQ(track_adapter_->track()->GetSourceType(),
             MediaStreamSource::kTypeAudio);
   EXPECT_TRUE(track_adapter_->webrtc_track());
   EXPECT_EQ(track_adapter_->webrtc_track()->kind(),
@@ -146,7 +146,7 @@ TEST_F(WebRtcMediaStreamTrackAdapterTest, DISABLED_LocalVideoTrack) {
           dependency_factory_.Get(), main_thread_, CreateLocalVideoTrack());
   EXPECT_TRUE(track_adapter_->is_initialized());
   EXPECT_TRUE(track_adapter_->track());
-  EXPECT_EQ(track_adapter_->track()->Source()->GetType(),
+  EXPECT_EQ(track_adapter_->track()->GetSourceType(),
             MediaStreamSource::kTypeVideo);
   EXPECT_TRUE(track_adapter_->webrtc_track());
   EXPECT_EQ(track_adapter_->webrtc_track()->kind(),
@@ -172,7 +172,7 @@ TEST_F(WebRtcMediaStreamTrackAdapterTest, RemoteAudioTrack) {
   DCHECK(track_adapter_);
   EXPECT_TRUE(track_adapter_->is_initialized());
   EXPECT_TRUE(track_adapter_->track());
-  EXPECT_EQ(track_adapter_->track()->Source()->GetType(),
+  EXPECT_EQ(track_adapter_->track()->GetSourceType(),
             MediaStreamSource::kTypeAudio);
   EXPECT_TRUE(track_adapter_->webrtc_track());
   EXPECT_EQ(track_adapter_->webrtc_track()->kind(),
@@ -197,7 +197,7 @@ TEST_F(WebRtcMediaStreamTrackAdapterTest, RemoteVideoTrack) {
   DCHECK(track_adapter_);
   EXPECT_TRUE(track_adapter_->is_initialized());
   EXPECT_TRUE(track_adapter_->track());
-  EXPECT_EQ(track_adapter_->track()->Source()->GetType(),
+  EXPECT_EQ(track_adapter_->track()->GetSourceType(),
             MediaStreamSource::kTypeVideo);
   EXPECT_TRUE(track_adapter_->webrtc_track());
   EXPECT_EQ(track_adapter_->webrtc_track()->kind(),
@@ -226,7 +226,7 @@ TEST_F(WebRtcMediaStreamTrackAdapterTest, RemoteTrackExplicitlyInitialized) {
   track_adapter_->InitializeOnMainThread();
   EXPECT_TRUE(track_adapter_->is_initialized());
   EXPECT_TRUE(track_adapter_->track());
-  EXPECT_EQ(track_adapter_->track()->Source()->GetType(),
+  EXPECT_EQ(track_adapter_->track()->GetSourceType(),
             MediaStreamSource::kTypeAudio);
   EXPECT_TRUE(track_adapter_->webrtc_track());
   EXPECT_EQ(track_adapter_->webrtc_track()->kind(),

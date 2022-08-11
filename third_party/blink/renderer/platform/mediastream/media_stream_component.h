@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/mediastream/media_constraints.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_track_platform.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -64,6 +65,7 @@ class PLATFORM_EXPORT MediaStreamComponent : public GarbageCollectedMixin {
   virtual String Id() const = 0;
   // Uniquely identifies this component.
   virtual int UniqueId() const = 0;
+  virtual MediaStreamSource::StreamType GetSourceType() const = 0;
   virtual bool Remote() const = 0;
   virtual bool Enabled() const = 0;
   virtual void SetEnabled(bool enabled) = 0;

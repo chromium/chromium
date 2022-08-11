@@ -36,10 +36,10 @@ WebRtcMediaStreamTrackAdapter::CreateLocalTrackAdapter(
   DCHECK(component);
   scoped_refptr<WebRtcMediaStreamTrackAdapter> local_track_adapter(
       base::AdoptRef(new WebRtcMediaStreamTrackAdapter(factory, main_thread)));
-  if (component->Source()->GetType() == MediaStreamSource::kTypeAudio) {
+  if (component->GetSourceType() == MediaStreamSource::kTypeAudio) {
     local_track_adapter->InitializeLocalAudioTrack(component);
   } else {
-    DCHECK_EQ(component->Source()->GetType(), MediaStreamSource::kTypeVideo);
+    DCHECK_EQ(component->GetSourceType(), MediaStreamSource::kTypeVideo);
     local_track_adapter->InitializeLocalVideoTrack(component);
   }
   return local_track_adapter;
@@ -114,13 +114,13 @@ void WebRtcMediaStreamTrackAdapter::Dispose() {
     return;
   remote_track_can_complete_initialization_.Reset();
   is_disposed_ = true;
-  if (component_->Source()->GetType() == MediaStreamSource::kTypeAudio) {
+  if (component_->GetSourceType() == MediaStreamSource::kTypeAudio) {
     if (local_track_audio_sink_)
       DisposeLocalAudioTrack();
     else
       DisposeRemoteAudioTrack();
   } else {
-    DCHECK_EQ(component_->Source()->GetType(), MediaStreamSource::kTypeVideo);
+    DCHECK_EQ(component_->GetSourceType(), MediaStreamSource::kTypeVideo);
     if (local_track_video_sink_)
       DisposeLocalVideoTrack();
     else
@@ -168,7 +168,7 @@ void WebRtcMediaStreamTrackAdapter::InitializeLocalAudioTrack(
   DCHECK(main_thread_->BelongsToCurrentThread());
   DCHECK(!is_initialized_);
   DCHECK(component);
-  DCHECK_EQ(component->Source()->GetType(), MediaStreamSource::kTypeAudio);
+  DCHECK_EQ(component->GetSourceType(), MediaStreamSource::kTypeAudio);
   SendLogMessage(base::StringPrintf("InitializeLocalAudioTrack({id=%s})",
                                     component->Id().Utf8().c_str()));
   component_ = component;
@@ -207,7 +207,7 @@ void WebRtcMediaStreamTrackAdapter::InitializeLocalVideoTrack(
   DCHECK(main_thread_->BelongsToCurrentThread());
   DCHECK(!is_initialized_);
   DCHECK(component);
-  DCHECK_EQ(component->Source()->GetType(), MediaStreamSource::kTypeVideo);
+  DCHECK_EQ(component->GetSourceType(), MediaStreamSource::kTypeVideo);
   component_ = component;
   auto factory = factory_.Lock();
   DCHECK(factory);
@@ -308,7 +308,7 @@ void WebRtcMediaStreamTrackAdapter::EnsureTrackIsInitialized() {
 void WebRtcMediaStreamTrackAdapter::DisposeLocalAudioTrack() {
   DCHECK(main_thread_->BelongsToCurrentThread());
   DCHECK(local_track_audio_sink_);
-  DCHECK_EQ(component_->Source()->GetType(), MediaStreamSource::kTypeAudio);
+  DCHECK_EQ(component_->GetSourceType(), MediaStreamSource::kTypeAudio);
   auto* audio_track = MediaStreamAudioTrack::From(component_);
   DCHECK(audio_track);
   audio_track->RemoveSink(local_track_audio_sink_.get());
@@ -320,7 +320,7 @@ void WebRtcMediaStreamTrackAdapter::DisposeLocalAudioTrack() {
 void WebRtcMediaStreamTrackAdapter::DisposeLocalVideoTrack() {
   DCHECK(main_thread_->BelongsToCurrentThread());
   DCHECK(local_track_video_sink_);
-  DCHECK_EQ(component_->Source()->GetType(), MediaStreamSource::kTypeVideo);
+  DCHECK_EQ(component_->GetSourceType(), MediaStreamSource::kTypeVideo);
   local_track_video_sink_.reset();
   webrtc_track_ = nullptr;
   component_ = nullptr;
@@ -329,7 +329,7 @@ void WebRtcMediaStreamTrackAdapter::DisposeLocalVideoTrack() {
 void WebRtcMediaStreamTrackAdapter::DisposeRemoteAudioTrack() {
   DCHECK(main_thread_->BelongsToCurrentThread());
   DCHECK(remote_audio_track_adapter_);
-  DCHECK_EQ(component_->Source()->GetType(), MediaStreamSource::kTypeAudio);
+  DCHECK_EQ(component_->GetSourceType(), MediaStreamSource::kTypeAudio);
 
   DCHECK(webrtc_signaling_task_runner_);
   PostCrossThreadTask(
@@ -343,7 +343,7 @@ void WebRtcMediaStreamTrackAdapter::DisposeRemoteAudioTrack() {
 void WebRtcMediaStreamTrackAdapter::DisposeRemoteVideoTrack() {
   DCHECK(main_thread_->BelongsToCurrentThread());
   DCHECK(remote_video_track_adapter_);
-  DCHECK_EQ(component_->Source()->GetType(), MediaStreamSource::kTypeVideo);
+  DCHECK_EQ(component_->GetSourceType(), MediaStreamSource::kTypeVideo);
   FinalizeRemoteTrackDisposingOnMainThread();
 }
 

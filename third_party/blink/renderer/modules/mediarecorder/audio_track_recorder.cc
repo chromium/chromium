@@ -66,7 +66,7 @@ AudioTrackRecorder::AudioTrackRecorder(
       encoder_task_runner_(encoder_thread_->GetTaskRunner()) {
   DCHECK(IsMainThread());
   DCHECK(track_);
-  DCHECK(track_->Source()->GetType() == MediaStreamSource::kTypeAudio);
+  DCHECK(track_->GetSourceType() == MediaStreamSource::kTypeAudio);
 
   // Connect the source provider to the track as a sink.
   ConnectToTrack();

@@ -594,7 +594,7 @@ WebMediaStreamTrack MediaStreamVideoTrack::CreateVideoTrack(
 MediaStreamVideoTrack* MediaStreamVideoTrack::From(
     const MediaStreamComponent* component) {
   if (!component ||
-      component->Source()->GetType() != MediaStreamSource::kTypeVideo) {
+      component->GetSourceType() != MediaStreamSource::kTypeVideo) {
     return nullptr;
   }
 

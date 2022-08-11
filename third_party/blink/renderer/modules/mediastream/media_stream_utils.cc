@@ -38,7 +38,7 @@ void MediaStreamUtils::DidCreateMediaStreamTrack(
   DCHECK(!component->GetPlatformTrack());
   DCHECK(component->Source());
 
-  switch (component->Source()->GetType()) {
+  switch (component->GetSourceType()) {
     case MediaStreamSource::kTypeAudio:
       MediaStreamAudioSource::From(component->Source())
           ->ConnectToTrack(component);

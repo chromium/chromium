@@ -504,7 +504,7 @@ UserMediaProcessor::RequestInfo::RequestInfo(UserMediaRequest* request)
 void UserMediaProcessor::RequestInfo::StartAudioTrack(
     MediaStreamComponent* component,
     bool is_pending) {
-  DCHECK(component->Source()->GetType() == MediaStreamSource::kTypeAudio);
+  DCHECK(component->GetSourceType() == MediaStreamSource::kTypeAudio);
   DCHECK(request()->Audio());
 #if DCHECK_IS_ON()
   DCHECK(audio_capture_settings_.HasValue());

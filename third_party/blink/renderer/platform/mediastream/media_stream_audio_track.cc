@@ -40,7 +40,7 @@ MediaStreamAudioTrack::~MediaStreamAudioTrack() {
 MediaStreamAudioTrack* MediaStreamAudioTrack::From(
     const MediaStreamComponent* component) {
   if (!component ||
-      component->Source()->GetType() != MediaStreamSource::kTypeAudio) {
+      component->GetSourceType() != MediaStreamSource::kTypeAudio) {
     return nullptr;
   }
   return static_cast<MediaStreamAudioTrack*>(component->GetPlatformTrack());
