@@ -65,10 +65,10 @@ void AutofillAssistantHandler::HandleRevokeConsent(
   std::vector<int> description_grd_ids;
 
   for (const base::Value& element : args) {
-    DCHECK(element.is_string());
+    CHECK(element.is_string());
 
     auto grd_id = string_to_revoke_grd_id_map_.find(element.GetString());
-    DCHECK(grd_id != string_to_revoke_grd_id_map_.end());
+    CHECK(grd_id != string_to_revoke_grd_id_map_.end());
     description_grd_ids.push_back(grd_id->second);
   }
   GetApcClient()->RevokeConsent(description_grd_ids);
