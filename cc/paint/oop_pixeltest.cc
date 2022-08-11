@@ -309,20 +309,17 @@ class OopPixelTest : public testing::Test,
     return bitmap;
   }
 
-  gpu::Mailbox CreateMailboxSharedImage(
-      gpu::raster::RasterInterface* ri,
-      gpu::SharedImageInterface* sii,
-      const RasterOptions& options,
-      viz::ResourceFormat image_format,
-      absl::optional<gfx::ColorSpace> color_space = absl::nullopt) {
+  gpu::Mailbox CreateMailboxSharedImage(gpu::raster::RasterInterface* ri,
+                                        gpu::SharedImageInterface* sii,
+                                        const RasterOptions& options,
+                                        viz::ResourceFormat image_format) {
     uint32_t flags = gpu::SHARED_IMAGE_USAGE_RASTER |
                      gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION |
                      gpu::SHARED_IMAGE_USAGE_GLES2;
     gpu::Mailbox mailbox = sii->CreateSharedImage(
         image_format, options.resource_size,
-        color_space.value_or(options.target_color_params.color_space),
-        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, flags,
-        gpu::kNullSurfaceHandle);
+        options.target_color_params.color_space, kTopLeft_GrSurfaceOrigin,
+        kPremul_SkAlphaType, flags, gpu::kNullSurfaceHandle);
     EXPECT_TRUE(mailbox.Verify());
     ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
 
@@ -2241,36 +2238,14 @@ TEST_F(OopPixelTest, CopySubTexture) {
   EXPECT_EQ(*upload_bitmap.getAddr32(0, 0), *readback_bitmap.getAddr32(0, 0));
 }
 
-using OopYUVToRGBConfig = ::testing::tuple<bool, gfx::ColorSpace>;
-
-class OopYUVToRGBPixelTest
-    : public OopPixelTest,
-      public ::testing::WithParamInterface<OopYUVToRGBConfig> {
- public:
-  bool TestColorSpaceConversion() const {
-    return ::testing::get<0>(GetParam());
-  }
-  gfx::ColorSpace DestinationColorSpace() const {
-    return ::testing::get<1>(GetParam());
-  }
-};
-
-TEST_P(OopYUVToRGBPixelTest, ConvertYUVToRGB) {
-  // The source color space for the YUV image. If color space conversion is
-  // disabled, or if `dest_color_space` is invalid, then this will be ignored.
-  const gfx::ColorSpace source_color_space(gfx::ColorSpace::PrimaryID::BT2020,
-                                           gfx::ColorSpace::TransferID::SRGB);
-
-  // The output SharedImage color space.
-  const gfx::ColorSpace dest_color_space = DestinationColorSpace();
-
+TEST_F(OopPixelTest, ConvertYUVToRGB) {
   RasterOptions options(gfx::Size(16, 16));
   RasterOptions uv_options(gfx::Size(options.resource_size.width() / 2,
                                      options.resource_size.height() / 2));
   auto* ri = raster_context_provider_->RasterInterface();
   auto* sii = raster_context_provider_->SharedImageInterface();
   gpu::Mailbox dest_mailbox = CreateMailboxSharedImage(
-      ri, sii, options, viz::ResourceFormat::RGBA_8888, dest_color_space);
+      ri, sii, options, viz::ResourceFormat::RGBA_8888);
   gpu::Mailbox yuv_mailboxes[3]{
       CreateMailboxSharedImage(ri, sii, options,
                                viz::ResourceFormat::LUMINANCE_8),
@@ -2301,9 +2276,7 @@ TEST_P(OopYUVToRGBPixelTest, ConvertYUVToRGB) {
   gl->OrderingBarrierCHROMIUM();
 
   ri->ConvertYUVAMailboxesToRGB(dest_mailbox, kJPEG_SkYUVColorSpace,
-                                TestColorSpaceConversion()
-                                    ? source_color_space.ToSkColorSpace().get()
-                                    : nullptr,
+                                SkColorSpace::MakeSRGB().get(),
                                 SkYUVAInfo::PlaneConfig::kY_U_V,
                                 SkYUVAInfo::Subsampling::k420, yuv_mailboxes);
   ri->OrderingBarrierCHROMIUM();
@@ -2325,21 +2298,12 @@ TEST_P(OopYUVToRGBPixelTest, ConvertYUVToRGB) {
   GrYUVABackendTextures yuva_textures(yuva_info, backend_textures,
                                       kTopLeft_GrSurfaceOrigin);
 
-  // If we specify a color space to ConvertYUVAMailboxesToRGB, then specify that
-  // color space for the source YUV SkImage (so that we will convert from that
-  // to `dest_color_space` during readPixels). If we did not specify a color
-  // space to ConvertYUVAMailboxesToRGB, then specify `dest_color_space` to for
-  // the YUV SkImage (so that no color space conversion will be done by
-  // readPixels).
   auto expected_image = SkImage::MakeFromYUVATextures(
-      gles2_context_provider_->GrContext(), yuva_textures,
-      TestColorSpaceConversion() ? source_color_space.ToSkColorSpace()
-                                 : dest_color_space.ToSkColorSpace());
+      gles2_context_provider_->GrContext(), yuva_textures);
 
   SkBitmap expected_bitmap;
-  expected_bitmap.allocPixels(SkImageInfo::MakeN32Premul(
-      options.resource_size.width(), options.resource_size.height(),
-      dest_color_space.ToSkColorSpace()));
+  expected_bitmap.allocN32Pixels(options.resource_size.width(),
+                                 options.resource_size.height());
 
   for (auto& backend : backend_textures) {
     GrGLTextureInfo info;
@@ -2350,16 +2314,7 @@ TEST_P(OopYUVToRGBPixelTest, ConvertYUVToRGB) {
   }
 
   expected_image->readPixels(expected_bitmap.pixmap(), 0, 0);
-
-  // Allow slight rounding error on all pixels.
-  FuzzyPixelComparator comparator(
-      /*discard_alpha=*/false,
-      /*error_pixels_percentage_limit=*/100.0f,
-      /*small_error_pixels_percentage_limit=*/0.0f,
-      /*avg_abs_error_limit=*/2.f,
-      /*max_abs_error_limit=*/2.f,
-      /*small_error_threshold=*/0);
-  ExpectEquals(actual_bitmap, expected_bitmap, comparator);
+  ExpectEquals(actual_bitmap, expected_bitmap);
 
   for (auto& backend : backend_textures) {
     GrGLTextureInfo info;
@@ -2593,12 +2548,6 @@ TEST_F(OopPixelTest, RecordShaderExceedsMaxTextureSize) {
                FILE_PATH_LITERAL("oop_record_shader_max_texture_size.png"));
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    P,
-    OopYUVToRGBPixelTest,
-    ::testing::Combine(::testing::Bool(),
-                       ::testing::Values(gfx::ColorSpace::CreateDisplayP3D65(),
-                                         gfx::ColorSpace())));
 INSTANTIATE_TEST_SUITE_P(P, OopClearPixelTest, ::testing::Bool());
 INSTANTIATE_TEST_SUITE_P(P, OopPathPixelTest, ::testing::Bool());
 
