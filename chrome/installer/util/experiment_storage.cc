@@ -14,6 +14,8 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/check.h"
+#include "base/debug/crash_logging.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -256,8 +258,15 @@ ExperimentStorage::Lock::Lock(ExperimentStorage* storage) : storage_(storage) {
 
 // ExperimentStorage -----------------------------------------------------------
 
-ExperimentStorage::ExperimentStorage()
-    : mutex_(::CreateMutex(nullptr, FALSE, GetMutexName().c_str())) {}
+ExperimentStorage::ExperimentStorage() {
+  // Diagnose failure to create mutex; see https://crbug.com/1351849.
+  const auto mutex_name = GetMutexName();
+  SCOPED_CRASH_KEY_STRING256("ExperimentStorage", "mutex_name",
+                             base::WideToASCII(mutex_name));
+  HANDLE mutex = ::CreateMutex(nullptr, FALSE, mutex_name.c_str());
+  PCHECK(mutex) << "Failed to create ExperimentStorage mutex";
+  mutex_.Set(mutex);
+}
 
 ExperimentStorage::~ExperimentStorage() {}
 
