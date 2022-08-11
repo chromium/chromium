@@ -278,41 +278,6 @@ bool SearchPrefetchService::MaybePrefetchURL(
     return false;
   }
 
-  if (!navigation_prefetch &&
-      (last_error_time_ticks_ + SearchPrefetchErrorBackoffDuration() >
-       base::TimeTicks::Now())) {
-    recorder.reason_ = SearchPrefetchEligibilityReason::kErrorBackoff;
-    SetEligibility(attempt,
-                   ToPreloadingEligibility(
-                       ChromePreloadingEligibility::kPreloadingErrorBackOff));
-    return false;
-  }
-
-  // Don't prefetch the same search terms twice within the expiry duration.
-  if (prefetches_.find(search_terms) != prefetches_.end()) {
-    auto status = prefetches_[search_terms]->current_status();
-
-    // If the prefetch is for navigation it can replace unservable statuses.
-    if (!navigation_prefetch || status == SearchPrefetchStatus::kCanBeServed ||
-        status == SearchPrefetchStatus::kCanBeServedAndUserClicked ||
-        status == SearchPrefetchStatus::kComplete ||
-        status == SearchPrefetchStatus::kPrerendered) {
-      recorder.reason_ =
-          SearchPrefetchEligibilityReason::kAttemptedQueryRecently;
-      // Prefetch was eligible as it was attempted recently but mark it as a
-      // duplicate attempt.
-      SetEligibility(attempt, content::PreloadingEligibility::kEligible);
-      CheckAndSetPrefetchHoldbackStatus(attempt);
-      SetTriggeringOutcome(attempt,
-                           content::PreloadingTriggeringOutcome::kDuplicate);
-      return false;
-    }
-
-    // The navigation prefetch should replace the existing prefetch.
-    if (navigation_prefetch)
-      DeletePrefetch(search_terms);
-  }
-
   // Prefetch has completed all the eligibility checks. Set the
   // PreloadingEligibility to kEligible.
   SetEligibility(attempt, content::PreloadingEligibility::kEligible);
@@ -320,8 +285,29 @@ bool SearchPrefetchService::MaybePrefetchURL(
   // Don't trigger prefetch if it is in holdback group. We do this after all the
   // eligibility checks to ensure we replicate the behaviour between our
   // experiment groups.
-  if (!CheckAndSetPrefetchHoldbackStatus(attempt))
+  if (!CheckAndSetPrefetchHoldbackStatus(attempt)) {
     return false;
+  }
+
+  if (last_error_time_ticks_ + SearchPrefetchErrorBackoffDuration() >
+      base::TimeTicks::Now()) {
+    recorder.reason_ = SearchPrefetchEligibilityReason::kErrorBackoff;
+    // Recorded as a triggering outcome as it is based on a previous failures,
+    // which cannot happen in a holdback arm.
+    SetTriggeringOutcome(attempt,
+                         content::PreloadingTriggeringOutcome::kFailure);
+    return false;
+  }
+
+  // Don't prefetch the same search terms twice within the expiry duration.
+  if (prefetches_.find(search_terms) != prefetches_.end()) {
+    recorder.reason_ = SearchPrefetchEligibilityReason::kAttemptedQueryRecently;
+    // Prefetch was eligible as it was attempted recently but mark it as a
+    // duplicate attempt.
+    SetTriggeringOutcome(attempt,
+                         content::PreloadingTriggeringOutcome::kDuplicate);
+    return false;
+  }
 
   if (prefetches_.size() >= SearchPrefetchMaxAttemptsPerCachingDuration()) {
     recorder.reason_ = SearchPrefetchEligibilityReason::kMaxAttemptsReached;

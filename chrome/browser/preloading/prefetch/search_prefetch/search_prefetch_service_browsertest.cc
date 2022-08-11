@@ -1682,8 +1682,8 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
     EXPECT_EQ(attempt_ukm_entries.size(), 2u);
 
     // Check that we store two preloading attempts, where the first one fails
-    // due to network request error whereas the second one sets the correct
-    // EligibilityStatus to kPreloadingErrorBackOff.
+    // due to network request error and the second one fails due to error
+    // backoff which is recorded as a failure.
     std::vector<UkmEntry> expected_attempt_entries = {
         attempt_entry_builder().BuildEntry(
             ukm_source_id, content::PreloadingType::kPrefetch,
@@ -1694,10 +1694,9 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
             /*accurate=*/true),
         attempt_entry_builder().BuildEntry(
             ukm_source_id, content::PreloadingType::kPrefetch,
-            ToPreloadingEligibility(
-                ChromePreloadingEligibility::kPreloadingErrorBackOff),
-            content::PreloadingHoldbackStatus::kUnspecified,
-            content::PreloadingTriggeringOutcome::kUnspecified,
+            content::PreloadingEligibility::kEligible,
+            content::PreloadingHoldbackStatus::kAllowed,
+            content::PreloadingTriggeringOutcome::kFailure,
             content::PreloadingFailureReason::kUnspecified,
             /*accurate=*/false),
     };
@@ -3357,7 +3356,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
-                       NavigationPrefetchReplacesError) {
+                       NavigationPrefetchDoesNotReplaceError) {
   SetDSEWithURL(
       GetSearchServerQueryURL("{searchTerms}&{google:prefetchSource}"), true);
   auto* search_prefetch_service =
@@ -3397,15 +3396,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
   prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
       base::ASCIIToUTF16(search_terms));
   ASSERT_TRUE(prefetch_status.has_value());
-  EXPECT_EQ(SearchPrefetchStatus::kCanBeServed, prefetch_status.value());
-
-  omnibox->model()->AcceptInput(WindowOpenDisposition::CURRENT_TAB);
-
-  prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
-      base::ASCIIToUTF16(search_terms));
-  ASSERT_TRUE(prefetch_status.has_value());
-  EXPECT_EQ(SearchPrefetchStatus::kCanBeServedAndUserClicked,
-            prefetch_status.value());
+  EXPECT_EQ(SearchPrefetchStatus::kRequestFailed, prefetch_status.value());
 }
 
 IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
