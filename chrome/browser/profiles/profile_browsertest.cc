@@ -538,19 +538,20 @@ std::string GetExitTypePreferenceFromDisk(Profile* profile) {
   if (!base::ReadFileToString(prefs_path, &prefs))
     return std::string();
 
-  std::unique_ptr<base::Value> value = base::JSONReader::ReadDeprecated(prefs);
+  absl::optional<base::Value> value = base::JSONReader::Read(prefs);
   if (!value)
     return std::string();
 
-  base::DictionaryValue* dict = NULL;
-  if (!value->GetAsDictionary(&dict) || !dict)
+  base::Value::Dict* dict = value->GetIfDict();
+  if (!dict)
     return std::string();
 
-  std::string exit_type;
-  if (!dict->GetString("profile.exit_type", &exit_type))
+  const std::string* exit_type =
+      dict->FindStringByDottedPath("profile.exit_type");
+  if (!exit_type)
     return std::string();
 
-  return exit_type;
+  return *exit_type;
 }
 
 }  // namespace
