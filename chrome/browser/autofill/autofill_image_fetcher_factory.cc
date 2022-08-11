@@ -7,10 +7,8 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/autofill/core/browser/ui/autofill_image_fetcher.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -30,9 +28,9 @@ AutofillImageFetcherFactory* AutofillImageFetcherFactory::GetInstance() {
 }
 
 AutofillImageFetcherFactory::AutofillImageFetcherFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "AutofillImageFetcher",
-          BrowserContextDependencyManager::GetInstance()) {}
+          ProfileSelections::BuildRedirectedInIncognito()) {}
 
 AutofillImageFetcherFactory::~AutofillImageFetcherFactory() = default;
 
@@ -49,12 +47,6 @@ KeyedService* AutofillImageFetcherFactory::BuildAutofillImageFetcher(
 KeyedService* AutofillImageFetcherFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return BuildAutofillImageFetcher(context);
-}
-
-content::BrowserContext* AutofillImageFetcherFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  // Use the image fetcher from the original browser context.
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
 }
 
 }  // namespace autofill

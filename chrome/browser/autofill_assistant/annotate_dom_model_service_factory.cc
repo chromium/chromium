@@ -17,12 +17,9 @@
 #include "components/autofill_assistant/browser/features.h"
 #include "components/autofill_assistant/browser/switches.h"
 #include "components/autofill_assistant/content/browser/annotate_dom_model_service.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 AnnotateDomModelServiceFactory::AnnotateDomModelServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "AnnotateDomModelService",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("AnnotateDomModelService") {}
 
 AnnotateDomModelServiceFactory::~AnnotateDomModelServiceFactory() = default;
 

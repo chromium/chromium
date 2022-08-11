@@ -18,7 +18,7 @@ namespace {
 
 ProfileSelections BuildLoginDetectionProfileSelection() {
   if (!IsLoginDetectionFeatureEnabled()) {
-    return ProfileSelections::BuildNoServicesForAllProfiles();
+    return ProfileSelections::BuildNoProfilesSelected();
   }
 
   return ProfileSelections::BuildDefault();

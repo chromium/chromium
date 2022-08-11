@@ -30,7 +30,7 @@ AuthorizationZonesManagerFactory::GetForBrowserContext(
 AuthorizationZonesManagerFactory::AuthorizationZonesManagerFactory()
     : ProfileKeyedServiceFactory(
           "AuthorizationZonesManagerFactory",
-          ProfileSelections::BuildServicesRedirectedToOriginal()) {}
+          ProfileSelections::BuildRedirectedInIncognito()) {}
 
 AuthorizationZonesManagerFactory::~AuthorizationZonesManagerFactory() = default;
 

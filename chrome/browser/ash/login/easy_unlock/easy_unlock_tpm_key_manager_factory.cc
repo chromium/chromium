@@ -53,7 +53,7 @@ EasyUnlockTpmKeyManager* EasyUnlockTpmKeyManagerFactory::GetForUser(
 EasyUnlockTpmKeyManagerFactory::EasyUnlockTpmKeyManagerFactory()
     : ProfileKeyedServiceFactory(
           "EasyUnlockTpmKeyManager",
-          ProfileSelections::BuildServicesRedirectedToOriginal()) {}
+          ProfileSelections::BuildRedirectedInIncognito()) {}
 
 EasyUnlockTpmKeyManagerFactory::~EasyUnlockTpmKeyManagerFactory() {}
 

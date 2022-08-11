@@ -48,7 +48,7 @@ SmbServiceFactory* SmbServiceFactory::GetInstance() {
 SmbServiceFactory::SmbServiceFactory()
     : ProfileKeyedServiceFactory(
           /*name=*/"SmbService",
-          ProfileSelections::BuildServicesRedirectedToOriginal()) {
+          ProfileSelections::BuildRedirectedInIncognito()) {
   DependsOn(file_system_provider::ServiceFactory::GetInstance());
   DependsOn(AuthPolicyCredentialsManagerFactory::GetInstance());
   DependsOn(KerberosCredentialsManagerFactory::GetInstance());

@@ -8,7 +8,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/commerce/coupons/coupon_service.h"
 #include "chrome/browser/commerce/coupons/coupon_service_factory.h"
@@ -30,9 +29,7 @@ AutofillOfferManagerFactory* AutofillOfferManagerFactory::GetInstance() {
 }
 
 AutofillOfferManagerFactory::AutofillOfferManagerFactory()
-    : BrowserContextKeyedServiceFactory(
-          "AutofillOfferManager",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("AutofillOfferManager") {
   DependsOn(PersonalDataManagerFactory::GetInstance());
 #if !BUILDFLAG(IS_ANDROID)
   DependsOn(CouponServiceFactory::GetInstance());

@@ -34,7 +34,7 @@ LiveCaptionControllerFactory* LiveCaptionControllerFactory::GetInstance() {
 LiveCaptionControllerFactory::LiveCaptionControllerFactory()
     : ProfileKeyedServiceFactory(
           "LiveCaptionController",
-          ProfileSelections::BuildServicesRedirectedToOriginal()) {}
+          ProfileSelections::BuildRedirectedInIncognito()) {}
 
 LiveCaptionControllerFactory::~LiveCaptionControllerFactory() = default;
 

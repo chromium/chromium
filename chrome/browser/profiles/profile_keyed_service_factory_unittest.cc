@@ -104,7 +104,7 @@ class PredefinedProfileSelectionsFactoryTest
   PredefinedProfileSelectionsFactoryTest()
       : ProfileKeyedServiceFactoryTest(
             "PredefinedProfileSelectionsFactoryTest",
-            ProfileSelections::BuildServicesRedirectedToOriginal()) {}
+            ProfileSelections::BuildRedirectedInIncognito()) {}
 };
 
 TEST_F(ProfileKeyedServiceFactoryUnittest,

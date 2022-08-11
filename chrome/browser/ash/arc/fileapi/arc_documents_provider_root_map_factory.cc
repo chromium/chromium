@@ -22,7 +22,7 @@ ArcDocumentsProviderRootMapFactory::GetForBrowserContext(
 ArcDocumentsProviderRootMapFactory::ArcDocumentsProviderRootMapFactory()
     : ProfileKeyedServiceFactory(
           "ArcDocumentsProviderRootMap",
-          ProfileSelections::BuildServicesRedirectedToOriginal()) {
+          ProfileSelections::BuildRedirectedInIncognito()) {
   DependsOn(ArcFileSystemOperationRunner::GetFactory());
 }
 

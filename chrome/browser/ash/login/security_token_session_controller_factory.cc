@@ -20,7 +20,7 @@ namespace login {
 SecurityTokenSessionControllerFactory::SecurityTokenSessionControllerFactory()
     : ProfileKeyedServiceFactory(
           "SecurityTokenSessionController",
-          ProfileSelections::BuildServicesRedirectedToOriginal()) {
+          ProfileSelections::BuildRedirectedInIncognito()) {
   DependsOn(chromeos::CertificateProviderServiceFactory::GetInstance());
 }
 

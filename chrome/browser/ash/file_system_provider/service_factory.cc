@@ -33,7 +33,7 @@ ServiceFactory* ServiceFactory::GetInstance() {
 ServiceFactory::ServiceFactory()
     : ProfileKeyedServiceFactory(
           "Service",
-          ProfileSelections::BuildServicesRedirectedToOriginal()) {
+          ProfileSelections::BuildRedirectedInIncognito()) {
   DependsOn(extensions::ExtensionRegistryFactory::GetInstance());
   DependsOn(extensions::ExtensionSystemFactory::GetInstance());
   DependsOn(NotificationDisplayServiceFactory::GetInstance());

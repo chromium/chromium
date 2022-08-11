@@ -51,7 +51,7 @@ VolumeManagerFactory::VolumeManagerFactory()
     : ProfileKeyedServiceFactory(
           "VolumeManagerFactory",
           // Explicitly allow this manager in guest login mode.
-          ProfileSelections::BuildServicesForAllProfiles()) {
+          ProfileSelections::BuildForRegularAndIncognito()) {
   DependsOn(drive::DriveIntegrationServiceFactory::GetInstance());
   DependsOn(ash::file_system_provider::ServiceFactory::GetInstance());
 }

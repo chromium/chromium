@@ -33,7 +33,7 @@ ReadingListNotificationServiceFactory::GetForBrowserContext(
 ReadingListNotificationServiceFactory::ReadingListNotificationServiceFactory()
     : ProfileKeyedServiceFactory(
           "ReadingListNotificationService",
-          ProfileSelections::BuildServicesRedirectedToOriginal()) {
+          ProfileSelections::BuildRedirectedInIncognito()) {
   DependsOn(ReadingListModelFactory::GetInstance());
   DependsOn(NotificationScheduleServiceFactory::GetInstance());
 }

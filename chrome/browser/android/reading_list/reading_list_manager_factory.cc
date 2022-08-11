@@ -26,7 +26,7 @@ ReadingListManager* ReadingListManagerFactory::GetForBrowserContext(
 ReadingListManagerFactory::ReadingListManagerFactory()
     : ProfileKeyedServiceFactory(
           "ReadingListManager",
-          ProfileSelections::BuildServicesRedirectedToOriginal()) {
+          ProfileSelections::BuildRedirectedInIncognito()) {
   DependsOn(ReadingListModelFactory::GetInstance());
 }
 

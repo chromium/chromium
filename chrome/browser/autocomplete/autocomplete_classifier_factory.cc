@@ -11,10 +11,8 @@
 #include "chrome/browser/autocomplete/in_memory_url_index_factory.h"
 #include "chrome/browser/autocomplete/remote_suggestions_service_factory.h"
 #include "chrome/browser/autocomplete/shortcuts_backend_factory.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "extensions/buildflags/buildflags.h"
@@ -48,9 +46,9 @@ std::unique_ptr<KeyedService> AutocompleteClassifierFactory::BuildInstanceFor(
 }
 
 AutocompleteClassifierFactory::AutocompleteClassifierFactory()
-    : BrowserContextKeyedServiceFactory(
-        "AutocompleteClassifier",
-        BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory(
+          "AutocompleteClassifier",
+          ProfileSelections::BuildRedirectedInIncognito()) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   DependsOn(
       extensions::ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
@@ -62,11 +60,6 @@ AutocompleteClassifierFactory::AutocompleteClassifierFactory()
 }
 
 AutocompleteClassifierFactory::~AutocompleteClassifierFactory() {
-}
-
-content::BrowserContext* AutocompleteClassifierFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
 }
 
 bool AutocompleteClassifierFactory::ServiceIsNULLWhileTesting() const {

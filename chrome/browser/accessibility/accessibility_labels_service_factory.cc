@@ -36,7 +36,7 @@ KeyedService* AccessibilityLabelsServiceFactory::BuildInstanceFor(
 AccessibilityLabelsServiceFactory::AccessibilityLabelsServiceFactory()
     : ProfileKeyedServiceFactory(
           "AccessibilityLabelsService",
-          ProfileSelections::BuildServicesRedirectedToOriginal()) {}
+          ProfileSelections::BuildRedirectedInIncognito()) {}
 
 AccessibilityLabelsServiceFactory::~AccessibilityLabelsServiceFactory() {}
 

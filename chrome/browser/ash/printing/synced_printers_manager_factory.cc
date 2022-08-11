@@ -42,7 +42,7 @@ SyncedPrintersManagerFactory* SyncedPrintersManagerFactory::GetInstance() {
 SyncedPrintersManagerFactory::SyncedPrintersManagerFactory()
     : ProfileKeyedServiceFactory(
           "SyncedPrintersManager",
-          ProfileSelections::BuildServicesRedirectedToOriginal()) {
+          ProfileSelections::BuildRedirectedInIncognito()) {
   DependsOn(ModelTypeStoreServiceFactory::GetInstance());
 }
 

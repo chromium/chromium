@@ -24,7 +24,7 @@ PluginVmInstallerFactory* PluginVmInstallerFactory::GetInstance() {
 PluginVmInstallerFactory::PluginVmInstallerFactory()
     : ProfileKeyedServiceFactory(
           "PluginVmInstaller",
-          ProfileSelections::BuildServicesRedirectedToOriginal()) {
+          ProfileSelections::BuildRedirectedInIncognito()) {
   DependsOn(BackgroundDownloadServiceFactory::GetInstance());
 }
 

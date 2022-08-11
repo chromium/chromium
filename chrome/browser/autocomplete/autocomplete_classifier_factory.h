@@ -8,14 +8,14 @@
 #include <memory>
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class AutocompleteClassifier;
 class Profile;
 
 // Singleton that owns all AutocompleteClassifiers and associates them with
 // Profiles.
-class AutocompleteClassifierFactory : public BrowserContextKeyedServiceFactory {
+class AutocompleteClassifierFactory : public ProfileKeyedServiceFactory {
  public:
   // Returns the AutocompleteClassifier for |profile|.
   static AutocompleteClassifier* GetForProfile(Profile* profile);
@@ -36,8 +36,6 @@ class AutocompleteClassifierFactory : public BrowserContextKeyedServiceFactory {
   ~AutocompleteClassifierFactory() override;
 
   // BrowserContextKeyedServiceFactory:
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;

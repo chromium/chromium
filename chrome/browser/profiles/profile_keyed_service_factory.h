@@ -33,7 +33,8 @@
 //   MyRedirectingKeyedServiceFactory()
 //       : ProfileKeyedServiceFactory(
 //             "MyRedirectingKeyedService",
-//             ProfileSelections::BuildServicesRedirectedInIncognito()) {}
+//             ProfileSelections::BuildRedirectedInIncognitoNonExperimental())
+//             {}
 //   }
 // };
 //

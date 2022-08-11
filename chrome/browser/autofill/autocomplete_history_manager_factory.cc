@@ -5,12 +5,10 @@
 #include "chrome/browser/autofill/autocomplete_history_manager_factory.h"
 
 #include "base/memory/singleton.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_data_service_factory.h"
 #include "components/autofill/core/browser/autocomplete_history_manager.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace autofill {
 
@@ -28,9 +26,9 @@ AutocompleteHistoryManagerFactory::GetInstance() {
 }
 
 AutocompleteHistoryManagerFactory::AutocompleteHistoryManagerFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "AutocompleteHistoryManager",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::BuildForRegularAndIncognito()) {
   DependsOn(WebDataServiceFactory::GetInstance());
 }
 
@@ -47,12 +45,6 @@ KeyedService* AutocompleteHistoryManagerFactory::BuildServiceInstanceFor(
   service->Init(local_storage, profile->GetPrefs(), profile->IsOffTheRecord());
 
   return service;
-}
-
-content::BrowserContext*
-AutocompleteHistoryManagerFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
 }
 
 }  // namespace autofill

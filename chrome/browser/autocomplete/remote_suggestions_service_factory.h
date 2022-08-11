@@ -6,13 +6,12 @@
 #define CHROME_BROWSER_AUTOCOMPLETE_REMOTE_SUGGESTIONS_SERVICE_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class RemoteSuggestionsService;
 class Profile;
 
-class RemoteSuggestionsServiceFactory
-    : public BrowserContextKeyedServiceFactory {
+class RemoteSuggestionsServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static RemoteSuggestionsService* GetForProfile(Profile* profile,
                                                  bool create_if_necessary);

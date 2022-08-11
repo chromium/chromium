@@ -29,7 +29,7 @@ AppLoadServiceFactory* AppLoadServiceFactory::GetInstance() {
 AppLoadServiceFactory::AppLoadServiceFactory()
     : ProfileKeyedServiceFactory(
           "AppLoadService",
-          ProfileSelections::BuildServicesRedirectedToOriginal()) {
+          ProfileSelections::BuildRedirectedInIncognito()) {
   DependsOn(extensions::AppWindowRegistry::Factory::GetInstance());
   DependsOn(extensions::ExtensionPrefsFactory::GetInstance());
   DependsOn(extensions::ExtensionRegistryFactory::GetInstance());

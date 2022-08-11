@@ -22,9 +22,8 @@ AccountConsistencyModeManagerFactory::GetForProfile(Profile* profile) {
 }
 
 AccountConsistencyModeManagerFactory::AccountConsistencyModeManagerFactory()
-    : ProfileKeyedServiceFactory(
-          "AccountConsistencyModeManager",
-          ProfileSelections::BuildServicesForRegularProfile()) {}
+    : ProfileKeyedServiceFactory("AccountConsistencyModeManager",
+                                 ProfileSelections::BuildForRegularProfile()) {}
 
 AccountConsistencyModeManagerFactory::~AccountConsistencyModeManagerFactory() =
     default;

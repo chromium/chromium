@@ -9,8 +9,15 @@
 
 class Profile;
 
-// Enum used to map the logic of selecting the right profile for the service to
-// be created for, based on the given profile.
+// The class `ProfileSelections` and enum `ProfileSelection` are not coupled
+// with the usage of `ProfileKeyedServiceFactory`, however the experiment of
+// changing the default value of `ProfileSelections` behavior is mainly done for
+// the `ProfileKeyedServiceFactory`.
+// If other usages are needed it is best not to use the builders that contains
+// experimental code (mentioned below).
+
+// Enum used to map the logic of selecting the right profile based on the given
+// profile.
 enum class ProfileSelection {
   kNone,                  // Original: No Profile  --  OTR: No Profile
   kOriginalOnly,          // Original: Self        --  OTR: No Profile
@@ -32,35 +39,160 @@ class ProfileSelections {
 
   // - Predefined `ProfileSelections`
 
-  // Default implementation, as of now:
-  // - No services in OTR.
-  // - Regular profile returns itself (original).
-  // - Guest and System profiles follow Regular profile behaviour.
+  // Regular builders (independent of the experiments):
+
+  // All Profiles are selected.
+  // +---------+------------+------------+
+  // |         |  Original  |    OTR     |
+  // +---------+------------+------------+
+  // | Regular | self       | self       |
+  // | Guest   | self       | self       |
+  // | System  | self       | self       |
+  // +---------+------------+------------+
+  static ProfileSelections BuildForAllProfiles();
+
+  // No Profiles are selected.
+  // +---------+------------+------------+
+  // |         |  Original  |    OTR     |
+  // +---------+------------+------------+
+  // | Regular | no profile | no profile |
+  // | Guest   | no profile | no profile |
+  // | System  | no profile | no profile |
+  // +---------+------------+------------+
+  static ProfileSelections BuildNoProfilesSelected();
+
+  // Only select the regular profile.
+  // +---------+------------+------------+
+  // |         |  Original  |    OTR     |
+  // +---------+------------+------------+
+  // | Regular | self       | no profile |
+  // | Guest   | no profile | no profile |
+  // | System  | no profile | no profile |
+  // +---------+------------+------------+
+  static ProfileSelections BuildForRegularProfile();
+
+  // Redirects incognito profiles to their original regular profile. No
+  // profiles for Guest and System profiles. "NonExperimental" is added to
+  // differentiate with the experimental behavior during the experiment, once
+  // done it will be the equivalent builder.
+  // +---------+------------+------------+
+  // |         |  Original  |    OTR     |
+  // +---------+------------+------------+
+  // | Regular | self       | original   |
+  // | Guest   | no profile | no profile |
+  // | System  | no profile | no profile |
+  // +---------+------------+------------+
+  static ProfileSelections BuildRedirectedInIncognitoNonExperimental();
+
+  // Redirects all OTR profiles to their original profiles.
+  // Includes all profile types (Regular, Guest and System).
+  // +---------+------------+------------+
+  // |         |  Original  |    OTR     |
+  // +---------+------------+------------+
+  // | Regular | self       | original   |
+  // | Guest   | self       | original   |
+  // | System  | self       | original   |
+  // +---------+------------+------------+
+  static ProfileSelections BuildRedirectedToOriginal();
+
+  // Experimental builders:
+  //
+  // Experimental builders (should only be used for the transition from
+  // `BrowserContextKeyedServiceFactory` to `ProfileKeyedServiceFactory`):
+  // The following builder will contain experimental code indirectly, by not
+  // giving a value to Guest and System Profile (unless forced by parameters).
+  // The experiment is targeted to affect usages on
+  // `ProfileKeyedServiceFactory`. During the experiment phase, these builders
+  // will not have very accurate function names, the name is based on the end
+  // result behavior the experiment enforced behavior. With/Without experiment
+  // behavior is described per experimental builder. The parameters force_* will
+  // allow to have an easier transition when adapting to the experiment.
+
+  // Default implementation, without the experiment:
+  // +---------+------------+------------+
+  // |         |  Original  |    OTR     |
+  // +---------+------------+------------+
+  // | Regular | self       | no profile |
+  // | Guest   | self       | no profile |
+  // | System  | self       | no profile |
+  // +---------+------------+------------+
   //
   // After the migration(crbug.com/1284664) this default behaviour will change.
-  // It will be similar to the current `BuildServicesForRegularProfile()`.
-  // - No services in OTR.
-  // - Regular profile returns itself (original).
-  // - No services for Guest and System profile.
-  static ProfileSelections BuildDefault();
+  // +---------+------------+------------+
+  // |         |  Original  |    OTR     |
+  // +---------+------------+------------+
+  // | Regular | self       | no profile |
+  // | Guest   | no profile | no profile |
+  // | System  | no profile | no profile |
+  // +---------+------------+------------+
+  //
+  // Parameters: (used during the experiment)
+  // - force_guest: true, force Guest with `ProfileSelection::kOriginalOnly`.
+  // - force_system: true, force System with `ProfileSelection::kOriginalOnly`.
+  static ProfileSelections BuildDefault(bool force_guest = false,
+                                        bool force_system = false);
 
-  // Services available for all profiles.
-  static ProfileSelections BuildServicesForAllProfiles();
+  // Without the experiment:
+  // - Returns Regular for Regular, incognito and other regular OTR profiles.
+  // - Returns Guest Original for GuestOriginal  and GuestOTR (same as Regular).
+  // - Returns System Original for SystemOriginal  and SystemOTR (same as
+  // Regular).
+  //
+  // With the experiment:
+  // - Returns Regular for Regular, incognito and other regular OTR profiles.
+  // - Return nullptr for all Guest and System profiles.
+  //
+  // Without the experiment:
+  // +---------+------------+------------+
+  // |         |  Original  |    OTR     |
+  // +---------+------------+------------+
+  // | Regular | self       | original   |
+  // | Guest   | self       | original   |
+  // | System  | self       | original   |
+  // +---------+------------+------------+
+  //
+  // With the experiment:
+  // +---------+------------+------------+
+  // |         |  Original  |    OTR     |
+  // +---------+------------+------------+
+  // | Regular | self       | original   |
+  // | Guest   | no profile | no profile |
+  // | System  | no profile | no profile |
+  // +---------+------------+------------+
+  //
+  // Parameters: (used during the experiment)
+  // - force_guest: true, force Guest with
+  // `ProfileSelecion::kRedirectedToOriginal`.
+  // - force_system: true, force System with
+  // `ProfileSelecion::kRedirectedToOriginal`.
+  static ProfileSelections BuildRedirectedInIncognito(
+      bool force_guest = false,
+      bool force_system = false);
 
-  // No services for all profiles.
-  static ProfileSelections BuildNoServicesForAllProfiles();
-
-  // Only build services for the regular profile.
-  static ProfileSelections BuildServicesForRegularProfile();
-
-  // Redirects building services for regular off the record profiles (incognito
-  // and other off the record profiles) to regular Profile.  Doesn't build
-  // services for Guest and System profiles.
-  static ProfileSelections BuildServicesRedirectedInIncognito();
-
-  // Redirects building services for both OTR and Original profile to Original
-  // Profile for all profile types (Regular, Guest and System).
-  static ProfileSelections BuildServicesRedirectedToOriginal();
+  // Without the experiment:
+  // +---------+------------+------------+
+  // |         |  Original  |    OTR     |
+  // +---------+------------+------------+
+  // | Regular | self       | self       |
+  // | Guest   | self       | self       |
+  // | System  | self       | self       |
+  // +---------+------------+------------+
+  //
+  // With the experiment:
+  // +---------+------------+------------+
+  // |         |  Original  |    OTR     |
+  // +---------+------------+------------+
+  // | Regular | self       | self       |
+  // | Guest   | no profile | no profile |
+  // | System  | no profile | no profile |
+  // +---------+------------+------------+
+  //
+  // Parameters: (used during the experiment)
+  // - force_guest: true, force Guest with `ProfileSelecion::kOwnInstance`.
+  // - force_system: true, force System with `ProfileSelecion::kOwnInstance`.
+  static ProfileSelections BuildForRegularAndIncognito(
+      bool force_guest = false,
+      bool force_system = false);
 
   // Builder to construct the `ProfileSelections` parameters.
   class Builder {

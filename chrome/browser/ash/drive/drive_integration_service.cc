@@ -1434,7 +1434,7 @@ DriveIntegrationServiceFactory* DriveIntegrationServiceFactory::GetInstance() {
 DriveIntegrationServiceFactory::DriveIntegrationServiceFactory()
     : ProfileKeyedServiceFactory(
           "DriveIntegrationService",
-          ProfileSelections::BuildServicesRedirectedToOriginal()) {
+          ProfileSelections::BuildRedirectedInIncognito()) {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(DriveNotificationManagerFactory::GetInstance());
   DependsOn(DownloadCoreServiceFactory::GetInstance());

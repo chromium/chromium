@@ -31,7 +31,7 @@ ApkWebAppServiceFactory* ApkWebAppServiceFactory::GetInstance() {
 ApkWebAppServiceFactory::ApkWebAppServiceFactory()
     : ProfileKeyedServiceFactory(
           "ApkWebAppService",
-          ProfileSelections::BuildServicesRedirectedToOriginal()) {
+          ProfileSelections::BuildRedirectedInIncognito()) {
   DependsOn(ArcAppListPrefsFactory::GetInstance());
   DependsOn(web_app::WebAppProviderFactory::GetInstance());
 }

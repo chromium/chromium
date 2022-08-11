@@ -186,7 +186,7 @@ void SigninPartitionManager::OnStoragePartitionCleared(
 SigninPartitionManager::Factory::Factory()
     : ProfileKeyedServiceFactory(
           "SigninPartitionManager",
-          ProfileSelections::BuildServicesForAllProfiles()) {}
+          ProfileSelections::BuildForRegularAndIncognito()) {}
 
 SigninPartitionManager::Factory::~Factory() = default;
 

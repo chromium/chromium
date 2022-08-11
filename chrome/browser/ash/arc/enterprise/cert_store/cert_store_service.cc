@@ -70,7 +70,7 @@ class CertStoreServiceFactory : public ProfileKeyedServiceFactory {
   CertStoreServiceFactory()
       : ProfileKeyedServiceFactory(
             "CertStoreService",
-            ProfileSelections::BuildServicesForAllProfiles()) {
+            ProfileSelections::BuildForRegularAndIncognito()) {
     DependsOn(NssServiceFactory::GetInstance());
   }
 

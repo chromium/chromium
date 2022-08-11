@@ -31,7 +31,7 @@ PrinterEventTracker* PrinterEventTrackerFactory::GetForBrowserContext(
 PrinterEventTrackerFactory::PrinterEventTrackerFactory()
     : ProfileKeyedServiceFactory(
           "PrinterEventTracker",
-          ProfileSelections::BuildServicesForAllProfiles()) {}
+          ProfileSelections::BuildForRegularAndIncognito()) {}
 PrinterEventTrackerFactory::~PrinterEventTrackerFactory() = default;
 
 void PrinterEventTrackerFactory::SetLogging(bool enabled) {

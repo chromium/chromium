@@ -32,7 +32,7 @@ PrintingManagerFactory* PrintingManagerFactory::GetInstance() {
 PrintingManagerFactory::PrintingManagerFactory()
     : ProfileKeyedServiceFactory(
           "PrintingManager",
-          ProfileSelections::BuildServicesRedirectedToOriginal()) {
+          ProfileSelections::BuildRedirectedInIncognito()) {
   DependsOn(PrintJobHistoryServiceFactory::GetInstance());
   DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(CupsPrintJobManagerFactory::GetInstance());

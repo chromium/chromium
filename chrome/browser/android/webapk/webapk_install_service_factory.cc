@@ -21,7 +21,7 @@ WebApkInstallService* WebApkInstallServiceFactory::GetForBrowserContext(
 WebApkInstallServiceFactory::WebApkInstallServiceFactory()
     : ProfileKeyedServiceFactory(
           "WebApkInstallService",
-          ProfileSelections::BuildServicesRedirectedToOriginal()) {}
+          ProfileSelections::BuildRedirectedInIncognito()) {}
 
 WebApkInstallServiceFactory::~WebApkInstallServiceFactory() {}
 

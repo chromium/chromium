@@ -32,7 +32,7 @@ class AppTerminationObserverFactory : public ProfileKeyedServiceFactory {
 AppTerminationObserverFactory::AppTerminationObserverFactory()
     : ProfileKeyedServiceFactory(
           "AppTerminationObserver",
-          ProfileSelections::BuildServicesRedirectedToOriginal()) {}
+          ProfileSelections::BuildRedirectedInIncognito()) {}
 
 KeyedService* AppTerminationObserverFactory::BuildServiceInstanceFor(
     content::BrowserContext* browser_context) const {

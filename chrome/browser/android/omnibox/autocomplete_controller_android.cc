@@ -481,7 +481,7 @@ AutocompleteControllerAndroid::Factory::GetInstance() {
 AutocompleteControllerAndroid::Factory::Factory()
     : ProfileKeyedServiceFactory(
           "AutocompleteControllerAndroid",
-          ProfileSelections::BuildServicesForAllProfiles()) {
+          ProfileSelections::BuildForRegularAndIncognito()) {
   DependsOn(TemplateURLServiceFactory::GetInstance());
   DependsOn(ShortcutsBackendFactory::GetInstance());
 }

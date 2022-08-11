@@ -44,30 +44,29 @@ ProfileSelections::ProfileSelections() = default;
 ProfileSelections::~ProfileSelections() = default;
 ProfileSelections::ProfileSelections(const ProfileSelections& other) = default;
 
-ProfileSelections ProfileSelections::BuildDefault() {
-  return ProfileSelections::Builder().Build();
-}
-
-ProfileSelections ProfileSelections::BuildServicesForAllProfiles() {
+ProfileSelections ProfileSelections::BuildForAllProfiles() {
   return ProfileSelections::Builder()
       .WithRegular(ProfileSelection::kOwnInstance)
+      .WithGuest(ProfileSelection::kOwnInstance)
+      .WithSystem(ProfileSelection::kOwnInstance)
       .Build();
 }
 
-ProfileSelections ProfileSelections::BuildNoServicesForAllProfiles() {
+ProfileSelections ProfileSelections::BuildNoProfilesSelected() {
   return ProfileSelections::Builder()
       .WithRegular(ProfileSelection::kNone)
       .Build();
 }
 
-ProfileSelections ProfileSelections::BuildServicesForRegularProfile() {
+ProfileSelections ProfileSelections::BuildForRegularProfile() {
   return ProfileSelections::Builder()
       .WithGuest(ProfileSelection::kNone)
       .WithSystem(ProfileSelection::kNone)
       .Build();
 }
 
-ProfileSelections ProfileSelections::BuildServicesRedirectedInIncognito() {
+ProfileSelections
+ProfileSelections::BuildRedirectedInIncognitoNonExperimental() {
   return ProfileSelections::Builder()
       .WithRegular(ProfileSelection::kRedirectedToOriginal)
       .WithGuest(ProfileSelection::kNone)
@@ -75,10 +74,46 @@ ProfileSelections ProfileSelections::BuildServicesRedirectedInIncognito() {
       .Build();
 }
 
-ProfileSelections ProfileSelections::BuildServicesRedirectedToOriginal() {
+ProfileSelections ProfileSelections::BuildRedirectedToOriginal() {
   return ProfileSelections::Builder()
       .WithRegular(ProfileSelection::kRedirectedToOriginal)
+      .WithGuest(ProfileSelection::kRedirectedToOriginal)
+      .WithSystem(ProfileSelection::kRedirectedToOriginal)
       .Build();
+}
+
+ProfileSelections ProfileSelections::BuildDefault(bool force_guest,
+                                                  bool force_system) {
+  Builder builder;
+  if (force_guest)
+    builder.WithGuest(ProfileSelection::kOriginalOnly);
+  if (force_system)
+    builder.WithSystem(ProfileSelection::kOriginalOnly);
+  return builder.Build();
+}
+
+ProfileSelections ProfileSelections::BuildRedirectedInIncognito(
+    bool force_guest,
+    bool force_system) {
+  Builder builder;
+  builder.WithRegular(ProfileSelection::kRedirectedToOriginal);
+  if (force_guest)
+    builder.WithGuest(ProfileSelection::kRedirectedToOriginal);
+  if (force_system)
+    builder.WithSystem(ProfileSelection::kRedirectedToOriginal);
+  return builder.Build();
+}
+
+ProfileSelections ProfileSelections::BuildForRegularAndIncognito(
+    bool force_guest,
+    bool force_system) {
+  Builder builder;
+  builder.WithRegular(ProfileSelection::kOwnInstance);
+  if (force_guest)
+    builder.WithGuest(ProfileSelection::kOwnInstance);
+  if (force_system)
+    builder.WithSystem(ProfileSelection::kOwnInstance);
+  return builder.Build();
 }
 
 Profile* ProfileSelections::ApplyProfileSelection(Profile* profile) const {

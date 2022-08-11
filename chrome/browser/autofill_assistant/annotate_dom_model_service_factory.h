@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_AUTOFILL_ASSISTANT_ANNOTATE_DOM_MODEL_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_AUTOFILL_ASSISTANT_ANNOTATE_DOM_MODEL_SERVICE_FACTORY_H_
 
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace content {
 class BrowserContext;
@@ -16,8 +16,7 @@ class AnnotateDomModelService;
 }  // namespace autofill_assistant
 
 // Creates instances of |AnnotateDomMOdelService| per |BrowserContext|.
-class AnnotateDomModelServiceFactory
-    : public BrowserContextKeyedServiceFactory {
+class AnnotateDomModelServiceFactory : public ProfileKeyedServiceFactory {
  public:
   AnnotateDomModelServiceFactory();
   ~AnnotateDomModelServiceFactory() override;

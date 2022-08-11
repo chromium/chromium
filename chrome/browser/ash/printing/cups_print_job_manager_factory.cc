@@ -32,7 +32,7 @@ CupsPrintJobManager* CupsPrintJobManagerFactory::GetForBrowserContext(
 CupsPrintJobManagerFactory::CupsPrintJobManagerFactory()
     : ProfileKeyedServiceFactory(
           "CupsPrintJobManagerFactory",
-          ProfileSelections::BuildServicesRedirectedToOriginal()) {
+          ProfileSelections::BuildRedirectedInIncognito()) {
   DependsOn(SyncedPrintersManagerFactory::GetInstance());
   DependsOn(CupsPrintersManagerFactory::GetInstance());
 }

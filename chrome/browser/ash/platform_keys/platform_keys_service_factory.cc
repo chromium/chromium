@@ -171,7 +171,7 @@ void PlatformKeysServiceFactory::SetTestingMode(bool is_testing_mode) {
 PlatformKeysServiceFactory::PlatformKeysServiceFactory()
     : ProfileKeyedServiceFactory(
           "PlatformKeysService",
-          ProfileSelections::BuildServicesRedirectedToOriginal()) {
+          ProfileSelections::BuildRedirectedInIncognito()) {
   DependsOn(NssServiceFactory::GetInstance());
 }
 

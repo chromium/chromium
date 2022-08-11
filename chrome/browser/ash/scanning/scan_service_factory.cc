@@ -54,7 +54,7 @@ KeyedService* ScanServiceFactory::BuildInstanceFor(
 ScanServiceFactory::ScanServiceFactory()
     : ProfileKeyedServiceFactory(
           "ScanService",
-          ProfileSelections::BuildServicesRedirectedToOriginal()) {
+          ProfileSelections::BuildRedirectedInIncognito()) {
   DependsOn(LorgnetteScannerManagerFactory::GetInstance());
   DependsOn(HoldingSpaceKeyedServiceFactory::GetInstance());
 }

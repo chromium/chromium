@@ -6,16 +6,16 @@
 #define CHROME_BROWSER_AUTOFILL_AUTOFILL_IMAGE_FETCHER_FACTORY_H_
 
 #include "base/no_destructor.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
-#include "components/keyed_service/core/keyed_service.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
+class KeyedService;
 class Profile;
 
 namespace autofill {
 
 class AutofillImageFetcher;
 
-class AutofillImageFetcherFactory : public BrowserContextKeyedServiceFactory {
+class AutofillImageFetcherFactory : public ProfileKeyedServiceFactory {
  public:
   // Returns the AutofillImageFetcher for |profile|, creating it if it is not
   // yet created.
@@ -35,8 +35,6 @@ class AutofillImageFetcherFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
 };
 
 }  // namespace autofill
