@@ -75,4 +75,13 @@ python_library("code_coverage_merge_steps_py") {
 
 python_library("process_perf_results_py") {
   pydeps_file = "//tools/perf/process_perf_results.pydeps"
+
+  # Telemetry fails if catapult's vendored libs aren't present on the
+  # filesystem. But since process_perf_results.py doesn't ever import any of
+  # them, build/print_python_deps.py doesn't detect them. So to appease
+  # telemetry, just add the needed dirs directly.
+  data = [
+      "//third_party/catapult/telemetry/third_party/",
+      "//third_party/catapult/third_party/six/",
+  ]
 }
