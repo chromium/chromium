@@ -359,7 +359,7 @@ void CSSGradientValue::AddComputedStops(
       case CSSValueID::kCurrentcolor:
         if (allow_visited_style) {
           stop.color_ = CSSColor::Create(
-              style.VisitedDependentColor(GetCSSPropertyColor()).Rgb());
+              style.VisitedDependentColor(GetCSSPropertyColor()));
         } else {
           stop.color_ = ComputedStyleUtils::CurrentColorOrValidColor(
               style, StyleColor(), CSSValuePhase::kComputedValue);
@@ -367,10 +367,8 @@ void CSSGradientValue::AddComputedStops(
         break;
       default:
         // TODO(crbug.com/929098) Need to pass an appropriate color scheme here.
-        stop.color_ =
-            CSSColor::Create(StyleColor::ColorFromKeyword(
-                                 value_id, mojom::blink::ColorScheme::kLight)
-                                 .Rgb());
+        stop.color_ = CSSColor::Create(StyleColor::ColorFromKeyword(
+            value_id, mojom::blink::ColorScheme::kLight));
     }
     AddStop(stop);
   }

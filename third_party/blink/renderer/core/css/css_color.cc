@@ -10,21 +10,21 @@
 namespace blink {
 namespace cssvalue {
 
-CSSColor* CSSColor::Create(RGBA32 color) {
+CSSColor* CSSColor::Create(const Color& color) {
   // These are the empty and deleted values of the hash table.
-  if (Color::FromRGBA32(color) == Color::kTransparent)
+  if (color == Color::kTransparent)
     return CssValuePool().TransparentColor();
-  if (Color::FromRGBA32(color) == Color::kWhite)
+  if (color == Color::kWhite)
     return CssValuePool().WhiteColor();
   // Just because it is common.
-  if (Color::FromRGBA32(color) == Color::kBlack)
+  if (color == Color::kBlack)
     return CssValuePool().BlackColor();
 
+  // TODO(https://crbug.com/1351544): Use blink::Color as the cache key.
   CSSValuePool::ColorValueCache::AddResult entry =
-      CssValuePool().GetColorCacheEntry(color);
+      CssValuePool().GetColorCacheEntry(color.Rgb());
   if (entry.is_new_entry) {
-    entry.stored_value->value =
-        MakeGarbageCollected<CSSColor>(Color::FromRGBA32(color));
+    entry.stored_value->value = MakeGarbageCollected<CSSColor>(color);
   }
   return entry.stored_value->value;
 }

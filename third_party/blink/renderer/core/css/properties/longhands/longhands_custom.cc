@@ -602,7 +602,7 @@ const CSSValue* BackgroundColor::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style) const {
   if (allow_visited_style) {
-    return cssvalue::CSSColor::Create(style.VisitedDependentColor(*this).Rgb());
+    return cssvalue::CSSColor::Create(style.VisitedDependentColor(*this));
   }
 
   StyleColor background_color = style.BackgroundColor();
@@ -844,8 +844,7 @@ const CSSValue* BorderBottomColor::CSSValueFromComputedStyleInternal(
   // https://drafts.csswg.org/cssom/#resolved-values
   // For this property, the resolved value is the used value.
   return allow_visited_style
-             ? cssvalue::CSSColor::Create(
-                   style.VisitedDependentColor(*this).Rgb())
+             ? cssvalue::CSSColor::Create(style.VisitedDependentColor(*this))
              : ComputedStyleUtils::CurrentColorOrValidColor(
                    style, border_bottom_color, CSSValuePhase::kUsedValue);
 }
@@ -1107,8 +1106,7 @@ const CSSValue* BorderLeftColor::CSSValueFromComputedStyleInternal(
   // https://drafts.csswg.org/cssom/#resolved-values
   // For this property, the resolved value is the used value.
   return allow_visited_style
-             ? cssvalue::CSSColor::Create(
-                   style.VisitedDependentColor(*this).Rgb())
+             ? cssvalue::CSSColor::Create(style.VisitedDependentColor(*this))
              : ComputedStyleUtils::CurrentColorOrValidColor(
                    style, border_left_color, CSSValuePhase::kUsedValue);
 }
@@ -1167,8 +1165,7 @@ const CSSValue* BorderRightColor::CSSValueFromComputedStyleInternal(
   // https://drafts.csswg.org/cssom/#resolved-values
   // For this property, the resolved value is the used value.
   return allow_visited_style
-             ? cssvalue::CSSColor::Create(
-                   style.VisitedDependentColor(*this).Rgb())
+             ? cssvalue::CSSColor::Create(style.VisitedDependentColor(*this))
              : ComputedStyleUtils::CurrentColorOrValidColor(
                    style, border_right_color, CSSValuePhase::kUsedValue);
 }
@@ -1241,8 +1238,7 @@ const CSSValue* BorderTopColor::CSSValueFromComputedStyleInternal(
   // https://drafts.csswg.org/cssom/#resolved-values
   // For this property, the resolved value is the used value.
   return allow_visited_style
-             ? cssvalue::CSSColor::Create(
-                   style.VisitedDependentColor(*this).Rgb())
+             ? cssvalue::CSSColor::Create(style.VisitedDependentColor(*this))
              : ComputedStyleUtils::ComputedStyleUtils::CurrentColorOrValidColor(
                    style, border_top_color, CSSValuePhase::kUsedValue);
 }
@@ -1410,7 +1406,7 @@ const CSSValue* CaretColor::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style) const {
   if (allow_visited_style) {
-    return cssvalue::CSSColor::Create(style.VisitedDependentColor(*this).Rgb());
+    return cssvalue::CSSColor::Create(style.VisitedDependentColor(*this));
   }
 
   StyleAutoColor auto_color = style.CaretColor();
@@ -1419,8 +1415,7 @@ const CSSValue* CaretColor::CSSValueFromComputedStyleInternal(
   StyleColor result = auto_color.IsAutoColor() ? StyleColor::CurrentColor()
                                                : auto_color.ToStyleColor();
   if (style.ShouldForceColor(result)) {
-    return cssvalue::CSSColor::Create(
-        style.GetInternalForcedCurrentColor().Rgb());
+    return cssvalue::CSSColor::Create(style.GetInternalForcedCurrentColor());
   }
 
   // https://drafts.csswg.org/cssom/#resolved-values
@@ -1573,9 +1568,9 @@ const CSSValue* Color::CSSValueFromComputedStyleInternal(
     return GetCSSPropertyInternalForcedColor().CSSValueFromComputedStyle(
         style, nullptr, allow_visited_style);
   }
-  return cssvalue::CSSColor::Create(
-      allow_visited_style ? style.VisitedDependentColor(*this).Rgb()
-                          : style.GetCurrentColor().Rgb());
+  return cssvalue::CSSColor::Create(allow_visited_style
+                                        ? style.VisitedDependentColor(*this)
+                                        : style.GetCurrentColor());
 }
 
 void Color::ApplyInitial(StyleResolverState& state) const {
@@ -1814,11 +1809,11 @@ const CSSValue* ColumnRuleColor::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
-  return allow_visited_style ? cssvalue::CSSColor::Create(
-                                   style.VisitedDependentColor(*this).Rgb())
-                             : ComputedStyleUtils::CurrentColorOrValidColor(
-                                   style, style.ColumnRuleColor(),
-                                   CSSValuePhase::kComputedValue);
+  return allow_visited_style
+             ? cssvalue::CSSColor::Create(style.VisitedDependentColor(*this))
+             : ComputedStyleUtils::CurrentColorOrValidColor(
+                   style, style.ColumnRuleColor(),
+                   CSSValuePhase::kComputedValue);
 }
 
 const CSSValue* ColumnRuleStyle::CSSValueFromComputedStyleInternal(
@@ -4121,7 +4116,7 @@ InternalForcedBackgroundColor::CSSValueFromComputedStyleInternal(
   bool visited_link = allow_visited_style &&
                       style.InsideLink() == EInsideLink::kInsideVisitedLink;
   return cssvalue::CSSColor::Create(
-      ColorIncludingFallback(visited_link, style).Rgb());
+      ColorIncludingFallback(visited_link, style));
 }
 
 const CSSValue* InternalForcedBackgroundColor::ParseSingleValue(
@@ -4150,7 +4145,7 @@ const CSSValue* InternalForcedBorderColor::CSSValueFromComputedStyleInternal(
   bool visited_link = allow_visited_style &&
                       style.InsideLink() == EInsideLink::kInsideVisitedLink;
   return cssvalue::CSSColor::Create(
-      ColorIncludingFallback(visited_link, style).Rgb());
+      ColorIncludingFallback(visited_link, style));
 }
 
 const CSSValue* InternalForcedBorderColor::ParseSingleValue(
@@ -4201,8 +4196,8 @@ const CSSValue* InternalForcedColor::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style) const {
   return cssvalue::CSSColor::Create(
-      allow_visited_style ? style.VisitedDependentColor(*this).Rgb()
-                          : style.GetInternalForcedCurrentColor().Rgb());
+      allow_visited_style ? style.VisitedDependentColor(*this)
+                          : style.GetInternalForcedCurrentColor());
 }
 
 const CSSValue* InternalForcedColor::ParseSingleValue(
@@ -4231,7 +4226,7 @@ const CSSValue* InternalForcedOutlineColor::CSSValueFromComputedStyleInternal(
   bool visited_link = allow_visited_style &&
                       style.InsideLink() == EInsideLink::kInsideVisitedLink;
   return cssvalue::CSSColor::Create(
-      ColorIncludingFallback(visited_link, style).Rgb());
+      ColorIncludingFallback(visited_link, style));
 }
 
 const CSSValue* InternalForcedOutlineColor::ParseSingleValue(
@@ -5233,8 +5228,7 @@ const CSSValue* OutlineColor::CSSValueFromComputedStyleInternal(
   // https://drafts.csswg.org/cssom/#resolved-values
   // For this property, the resolved value is the used value.
   return allow_visited_style
-             ? cssvalue::CSSColor::Create(
-                   style.VisitedDependentColor(*this).Rgb())
+             ? cssvalue::CSSColor::Create(style.VisitedDependentColor(*this))
              : ComputedStyleUtils::CurrentColorOrValidColor(
                    style, outline_color, CSSValuePhase::kUsedValue);
 }

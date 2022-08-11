@@ -812,7 +812,7 @@ static CSSValue* ParseColor(CSSPropertyID property_id,
       });
   if (!parse_result)
     return nullptr;
-  return cssvalue::CSSColor::Create(color);
+  return cssvalue::CSSColor::Create(Color::FromRGBA32(color));
 }
 
 CSSValue* CSSParserFastPaths::ParseColor(const String& string,

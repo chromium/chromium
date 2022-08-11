@@ -343,7 +343,7 @@ const CSSValue* CSSColorInterpolationType::CreateCSSValue(
     const StyleResolverState& state) const {
   const auto& color_pair = To<InterpolableList>(interpolable_value);
   Color color = ResolveInterpolableColor(*color_pair.Get(kUnvisited), state);
-  return cssvalue::CSSColor::Create(color.Rgb());
+  return cssvalue::CSSColor::Create(color);
 }
 
 void CSSColorInterpolationType::Composite(

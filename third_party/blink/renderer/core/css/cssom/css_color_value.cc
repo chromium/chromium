@@ -43,7 +43,7 @@ CSSHWB* CSSColorValue::toHWB() const {
 }
 
 const CSSValue* CSSColorValue::ToCSSValue() const {
-  return cssvalue::CSSColor::Create(ToColor().Rgb());
+  return cssvalue::CSSColor::Create(ToColor());
 }
 
 CSSNumericValue* CSSColorValue::ToNumberOrPercentage(

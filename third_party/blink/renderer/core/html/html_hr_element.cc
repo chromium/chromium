@@ -87,7 +87,7 @@ void HTMLHRElement::CollectStyleForPresentationAttribute(
           style, CSSPropertyID::kBorderStyle, CSSValueID::kSolid);
 
       const cssvalue::CSSColor& dark_gray_value =
-          *cssvalue::CSSColor::Create(Color::kDarkGray.Rgb());
+          *cssvalue::CSSColor::Create(Color::kDarkGray);
       style->SetProperty(CSSPropertyID::kBorderColor, dark_gray_value);
       style->SetProperty(CSSPropertyID::kBackgroundColor, dark_gray_value);
     }

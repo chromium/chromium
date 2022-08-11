@@ -2110,7 +2110,7 @@ static const CSSValue& ComputeRegisteredPropertyValue(
                 : mojom::blink::ColorScheme::kLight;
       Color color = document.GetTextLinkColors().ColorFromCSSValue(
           value, Color(), scheme, false);
-      return *cssvalue::CSSColor::Create(color.Rgb());
+      return *cssvalue::CSSColor::Create(color);
     }
   }
 

@@ -1747,7 +1747,7 @@ CSSValue* ConsumeColor(CSSParserTokenRange& range,
     return ConsumeInternalLightDark(ConsumeColor, range, context,
                                     accept_quirky_colors, allowed_keywords);
   }
-  return cssvalue::CSSColor::Create(color);
+  return cssvalue::CSSColor::Create(Color::FromRGBA32(color));
 }
 
 CSSValue* ConsumeLineWidth(CSSParserTokenRange& range,

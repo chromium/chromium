@@ -107,9 +107,8 @@ void PluginDocumentParser::CreateDocumentStructure() {
   auto* body = MakeGarbageCollected<HTMLBodyElement>(*GetDocument());
   body->setAttribute(html_names::kStyleAttr,
                      "height: 100%; width: 100%; overflow: hidden; margin: 0");
-  body->SetInlineStyleProperty(
-      CSSPropertyID::kBackgroundColor,
-      *cssvalue::CSSColor::Create(background_color_.Rgb()));
+  body->SetInlineStyleProperty(CSSPropertyID::kBackgroundColor,
+                               *cssvalue::CSSColor::Create(background_color_));
   root_element->AppendChild(body);
   if (IsStopped()) {
     // Possibly detached by a mutation event listener installed in

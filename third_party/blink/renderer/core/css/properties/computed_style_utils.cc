@@ -119,7 +119,7 @@ CSSValue* ComputedStyleUtils::CurrentColorOrValidColor(
     const StyleColor& color,
     CSSValuePhase value_phase) {
   return cssvalue::CSSColor::Create(
-      color.Resolve(style.GetCurrentColor(), style.UsedColorScheme()).Rgb());
+      color.Resolve(style.GetCurrentColor(), style.UsedColorScheme()));
 }
 
 const blink::Color ComputedStyleUtils::BorderSideColor(
@@ -3032,10 +3032,8 @@ const CSSValue* ComputedStyleUtils::ValueForStyleAutoColor(
     const StyleAutoColor& color,
     CSSValuePhase value_phase) {
   if (color.IsAutoColor()) {
-    return cssvalue::CSSColor::Create(
-        StyleColor::CurrentColor()
-            .Resolve(style.GetCurrentColor(), style.UsedColorScheme())
-            .Rgb());
+    return cssvalue::CSSColor::Create(StyleColor::CurrentColor().Resolve(
+        style.GetCurrentColor(), style.UsedColorScheme()));
   }
   return ComputedStyleUtils::CurrentColorOrValidColor(
       style, color.ToStyleColor(), value_phase);

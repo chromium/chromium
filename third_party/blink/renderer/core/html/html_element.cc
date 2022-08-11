@@ -1743,8 +1743,7 @@ void HTMLElement::AddHTMLColorToStyle(MutableCSSPropertyValueSet* style,
   if (!ParseColorWithLegacyRules(attribute_value, parsed_color))
     return;
 
-  style->SetProperty(property_id,
-                     *cssvalue::CSSColor::Create(parsed_color.Rgb()));
+  style->SetProperty(property_id, *cssvalue::CSSColor::Create(parsed_color));
 }
 
 LabelsNodeList* HTMLElement::labels() {
