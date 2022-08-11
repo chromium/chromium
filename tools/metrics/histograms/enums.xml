@@ -63,6 +63,14 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="4" label="kNotAllowedToShow"/>
 </enum>
 
+<enum name="AboutThisSiteInteraction">
+  <int value="0" label="kNotShown"/>
+  <int value="1" label="kShownWithDescription"/>
+  <int value="2" label="kShownWithoutDescription"/>
+  <int value="3" label="kClickedWithDescription"/>
+  <int value="4" label="kClickedWithoutDescription"/>
+</enum>
+
 <enum name="AboutThisSiteStatus">
   <summary>Tracks status of AboutThisSite queries.</summary>
   <int value="0" label="kValid">A valid response.</int>

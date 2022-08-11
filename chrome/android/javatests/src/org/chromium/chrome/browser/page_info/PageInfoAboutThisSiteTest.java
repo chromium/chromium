@@ -313,12 +313,27 @@ public class PageInfoAboutThisSiteTest {
     testAboutThisSiteOpensEphemeralTab() throws Exception {
         mockResponse(createDescription());
         openPageInfo();
+
         onView(withId(PageInfoAboutThisSiteController.ROW_ID)).perform(click());
         String moreAboutUrl = mTestServerRule.getServer().getURL(sAboutHtml);
         verify(mMockEphemeralTabCoordinator)
                 .requestOpenSheetWithFullPageUrl(/*url=*/new GURL(moreAboutUrl + "?ilrm=minimal"),
                         /*fullPageUrl=*/new GURL(moreAboutUrl), /*title=*/"About this page",
                         /*isIncognito=*/false);
+        verify(mMockAboutThisSiteJni).onAboutThisSiteRowClicked(true);
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_EN,
+            ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_NON_EN,
+            ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_MORE_INFO})
+    public void
+    testAboutThisSiteWithoutDescription() throws Exception {
+        mockResponse(createDescription().clearDescription());
+        openPageInfo();
+        onView(withId(PageInfoAboutThisSiteController.ROW_ID)).perform(click());
+        verify(mMockAboutThisSiteJni).onAboutThisSiteRowClicked(false);
     }
 
     @Test

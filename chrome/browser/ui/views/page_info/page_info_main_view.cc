@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/views/page_info/permission_toggle_row_view.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/common/url_constants.h"
+#include "components/page_info/core/about_this_site_service.h"
 #include "components/page_info/core/features.h"
 #include "components/page_info/page_info_ui_delegate.h"
 #include "components/permissions/permission_util.h"
@@ -586,12 +587,14 @@ std::unique_ptr<views::View> PageInfoMainView::CreateAboutThisSiteSection(
         std::make_unique<PageInfoHoverButton>(
             base::BindRepeating(
                 [](PageInfoMainView* view, GURL more_info_url,
-                   const ui::Event& event) {
+                   bool has_description, const ui::Event& event) {
+                  page_info::AboutThisSiteService::OnAboutThisSiteRowClicked(
+                      has_description);
                   view->ui_delegate_->OpenMoreAboutThisPageUrl(more_info_url,
                                                                event);
                   view->GetWidget()->Close();
                 },
-                this, GURL(info.more_about().url())),
+                this, GURL(info.more_about().url()), info.has_description()),
             PageInfoViewFactory::GetAboutThisPageIcon(),
             IDS_PAGE_INFO_ABOUT_THIS_PAGE_TITLE, std::u16string(),
             PageInfoViewFactory::VIEW_ID_PAGE_INFO_ABOUT_THIS_SITE_BUTTON,
@@ -604,8 +607,13 @@ std::unique_ptr<views::View> PageInfoMainView::CreateAboutThisSiteSection(
     about_this_site_button = about_this_site_section->AddChildView(
         std::make_unique<PageInfoHoverButton>(
             base::BindRepeating(
-                &PageInfoNavigationHandler::OpenAboutThisSitePage,
-                base::Unretained(navigation_handler_), info),
+                [](PageInfoMainView* view,
+                   const page_info::proto::SiteInfo& info) {
+                  page_info::AboutThisSiteService::OnAboutThisSiteRowClicked(
+                      info.has_description());
+                  view->navigation_handler_->OpenAboutThisSitePage(info);
+                },
+                this, info),
             PageInfoViewFactory::GetAboutThisSiteIcon(),
             IDS_PAGE_INFO_ABOUT_THIS_SITE_HEADER, std::u16string(),
             PageInfoViewFactory::VIEW_ID_PAGE_INFO_ABOUT_THIS_SITE_BUTTON,

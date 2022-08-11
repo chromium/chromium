@@ -22,6 +22,7 @@ using testing::Invoke;
 using testing::Return;
 
 using about_this_site_validation::AboutThisSiteStatus;
+using AboutThisSiteInteraction = AboutThisSiteService::AboutThisSiteInteraction;
 using optimization_guide::OptimizationGuideDecision;
 using optimization_guide::OptimizationMetadata;
 
@@ -112,6 +113,8 @@ TEST_F(AboutThisSiteServiceTest, ValidResponse) {
             "https://google.com/ats/example.com?ctx=chrome");
   t.ExpectUniqueSample("Security.PageInfo.AboutThisSiteStatus",
                        AboutThisSiteStatus::kValid, 1);
+  t.ExpectUniqueSample("Security.PageInfo.AboutThisSiteInteraction",
+                       AboutThisSiteInteraction::kShownWithDescription, 1);
 }
 
 // Tests the language specific feature check.
@@ -135,6 +138,8 @@ TEST_F(AboutThisSiteServiceTest, InvalidResponse) {
   EXPECT_FALSE(info.has_value());
   t.ExpectUniqueSample("Security.PageInfo.AboutThisSiteStatus",
                        AboutThisSiteStatus::kMissingDescriptionSource, 1);
+  t.ExpectUniqueSample("Security.PageInfo.AboutThisSiteInteraction",
+                       AboutThisSiteInteraction::kNotShown, 1);
 }
 
 // Tests that no response is handled.
@@ -148,6 +153,8 @@ TEST_F(AboutThisSiteServiceTest, NoResponse) {
   EXPECT_FALSE(info.has_value());
   t.ExpectUniqueSample("Security.PageInfo.AboutThisSiteStatus",
                        AboutThisSiteStatus::kNoResult, 1);
+  t.ExpectUniqueSample("Security.PageInfo.AboutThisSiteInteraction",
+                       AboutThisSiteInteraction::kNotShown, 1);
 }
 
 // Tests that unknown response is handled.
@@ -161,6 +168,8 @@ TEST_F(AboutThisSiteServiceTest, Unknown) {
   EXPECT_FALSE(info.has_value());
   t.ExpectUniqueSample("Security.PageInfo.AboutThisSiteStatus",
                        AboutThisSiteStatus::kUnknown, 1);
+  t.ExpectUniqueSample("Security.PageInfo.AboutThisSiteInteraction",
+                       AboutThisSiteInteraction::kNotShown, 1);
 }
 
 // Tests that banner dismisses are handled.

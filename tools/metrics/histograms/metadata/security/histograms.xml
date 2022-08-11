@@ -210,6 +210,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Security.PageInfo.AboutThisSiteInteraction"
+    enum="AboutThisSiteInteraction" expires_after="2022-12-18">
+  <owner>dullweber@chromium.org</owner>
+  <owner>olesiamarukhno@chromium.org</owner>
+  <summary>
+    Tracks interactions with the AboutThisSite feature. Recorded when PageInfo
+    is opened and when the user interacts with the AboutThisSite row.
+  </summary>
+</histogram>
+
 <histogram name="Security.PageInfo.AboutThisSiteLanguageSupported"
     enum="Boolean" expires_after="M109">
   <owner>dullweber@chromium.org</owner>

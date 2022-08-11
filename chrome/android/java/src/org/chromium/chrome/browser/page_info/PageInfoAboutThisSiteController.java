@@ -142,10 +142,7 @@ public class PageInfoAboutThisSiteController implements PageInfoSubpageControlle
         rowParams.iconResId =
                 more_info_enabled ? R.drawable.ic_globe_24dp : R.drawable.ic_info_outline_grey_24dp;
         rowParams.decreaseIconSize = true;
-        rowParams.clickCallback = more_info_enabled ? ()
-                -> openUrl(mSiteInfo.getMoreAbout().getUrl(),
-                        PageInfoAction.PAGE_INFO_ABOUT_THIS_SITE_PAGE_OPENED)
-                : this::launchSubpage;
+        rowParams.clickCallback = this::onAboutThisSiteRowClicked;
         mRowView.setParams(rowParams);
     }
 
@@ -169,6 +166,18 @@ public class PageInfoAboutThisSiteController implements PageInfoSubpageControlle
         }
         return info;
     }
+
+    private void onAboutThisSiteRowClicked() {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_MORE_INFO)) {
+            openUrl(mSiteInfo.getMoreAbout().getUrl(),
+                    PageInfoAction.PAGE_INFO_ABOUT_THIS_SITE_PAGE_OPENED);
+        } else {
+            launchSubpage();
+        }
+        PageInfoAboutThisSiteControllerJni.get().onAboutThisSiteRowClicked(
+                mSiteInfo.hasDescription());
+    }
+
     @Override
     public void clearData() {}
 
@@ -184,5 +193,6 @@ public class PageInfoAboutThisSiteController implements PageInfoSubpageControlle
     interface Natives {
         boolean isFeatureEnabled();
         byte[] getSiteInfo(BrowserContextHandle browserContext, GURL url, WebContents webContents);
+        void onAboutThisSiteRowClicked(boolean withDescription);
     }
 }

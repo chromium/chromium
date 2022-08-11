@@ -42,6 +42,19 @@ class AboutThisSiteService : public KeyedService {
     virtual ~Client() = default;
   };
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // Keep in sync with AboutThisSiteInteraction in enums.xml
+  enum class AboutThisSiteInteraction {
+    kNotShown = 0,
+    kShownWithDescription = 1,
+    kShownWithoutDescription = 2,
+    kClickedWithDescription = 3,
+    kClickedWithoutDescription = 4,
+
+    kMaxValue = kClickedWithoutDescription
+  };
+
   explicit AboutThisSiteService(std::unique_ptr<Client> client);
   ~AboutThisSiteService() override;
 
@@ -56,6 +69,8 @@ class AboutThisSiteService : public KeyedService {
   bool CanShowBanner(GURL url);
   void OnBannerDismissed(GURL url, ukm::SourceId source_id);
   void OnBannerURLOpened(GURL url, ukm::SourceId source_id);
+
+  static void OnAboutThisSiteRowClicked(bool with_description);
 
   base::WeakPtr<AboutThisSiteService> GetWeakPtr();
 

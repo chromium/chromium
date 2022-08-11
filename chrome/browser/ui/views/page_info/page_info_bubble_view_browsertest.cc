@@ -33,6 +33,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
+#include "components/page_info/core/about_this_site_service.h"
 #include "components/page_info/core/about_this_site_validation.h"
 #include "components/page_info/core/features.h"
 #include "components/page_info/core/proto/about_this_site_metadata.pb.h"
@@ -69,6 +70,8 @@
 
 using AboutThisSiteStatus =
     page_info::about_this_site_validation::AboutThisSiteStatus;
+using AboutThisSiteInteraction =
+    page_info::AboutThisSiteService::AboutThisSiteInteraction;
 
 namespace {
 
@@ -146,19 +149,6 @@ void AddHintForTesting(Browser* browser,
       OptimizationGuideKeyedServiceFactory::GetForProfile(browser->profile());
   optimization_guide_decider->AddHintForTesting(
       url, optimization_guide::proto::ABOUT_THIS_SITE, optimization_metadata);
-}
-
-page_info::proto::SiteInfo CreateValidSiteInfo() {
-  page_info::proto::SiteInfo site_info;
-  auto* description = site_info.mutable_description();
-  description->set_description(
-      "A domain used in illustrative examples in documents");
-  description->set_lang("en_US");
-  description->set_name("Example");
-  description->mutable_source()->set_url("https://example.com");
-  description->mutable_source()->set_label("Example source");
-
-  return site_info;
 }
 
 }  // namespace
@@ -742,9 +732,12 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewPrerenderBrowserTest,
 class PageInfoBubbleViewAboutThisSiteBrowserTest : public InProcessBrowserTest {
  public:
   PageInfoBubbleViewAboutThisSiteBrowserTest() {
-    feature_list.InitWithFeatures({page_info::kPageInfoAboutThisSiteEn,
-                                   page_info::kPageInfoAboutThisSiteNonEn},
-                                  {});
+    feature_list.InitWithFeatures(
+        {page_info::kPageInfoAboutThisSiteEn,
+         page_info::kPageInfoAboutThisSiteNonEn,
+         page_info::kPageInfoAboutThisSiteMoreInfo,
+         page_info::kPageInfoAboutThisSiteDescriptionPlaceholder},
+        {});
   }
 
   void SetUp() override {
@@ -762,6 +755,23 @@ class PageInfoBubbleViewAboutThisSiteBrowserTest : public InProcessBrowserTest {
   void SetUpCommandLine(base::CommandLine* cmd) override {
     cmd->AppendSwitch(optimization_guide::switches::
                           kDisableCheckingUserPermissionsForTesting);
+  }
+
+  page_info::proto::SiteInfo CreateValidSiteInfo() {
+    page_info::proto::SiteInfo site_info;
+    auto* description = site_info.mutable_description();
+    description->set_description(
+        "A domain used in illustrative examples in documents");
+    description->set_lang("en_US");
+    description->set_name("Example");
+    description->mutable_source()->set_url("https://example.com");
+    description->mutable_source()->set_label("Example source");
+    site_info.mutable_more_about()->set_url(
+        https_server_.GetURL("a.test", "/title2.html").spec());
+    EXPECT_EQ(
+        page_info::about_this_site_validation::ValidateSiteInfo(site_info),
+        AboutThisSiteStatus::kValid);
+    return site_info;
   }
 
  protected:
@@ -800,6 +810,64 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewAboutThisSiteBrowserTest,
   page_info->GetWidget()->CloseWithReason(
       views::Widget::ClosedReason::kEscKeyPressed);
   base::RunLoop().RunUntilIdle();
+}
+
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewAboutThisSiteBrowserTest,
+                       AboutThisSiteInteraction) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  base::HistogramTester histograms;
+
+  auto url = https_server_.GetURL("a.test", "/title1.html");
+  AddHintForTesting(browser(), url, CreateValidSiteInfo());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  OpenPageInfoBubble(browser());
+
+  auto* page_info = PageInfoBubbleView::GetPageInfoBubbleForTesting();
+  views::View* button = page_info->GetViewByID(
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_ABOUT_THIS_SITE_BUTTON);
+  ASSERT_TRUE(button);
+
+  histograms.ExpectUniqueSample("Security.PageInfo.AboutThisSiteInteraction",
+                                AboutThisSiteInteraction::kShownWithDescription,
+                                1);
+
+  PerformMouseClickOnView(button);
+  histograms.ExpectTotalCount("Security.PageInfo.AboutThisSiteInteraction", 2);
+  histograms.ExpectBucketCount(
+      "Security.PageInfo.AboutThisSiteInteraction",
+      AboutThisSiteInteraction::kClickedWithDescription, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewAboutThisSiteBrowserTest,
+                       AboutThisSiteInteractionWithoutDescription) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  base::HistogramTester histograms;
+
+  auto url = https_server_.GetURL("a.test", "/title1.html");
+  auto site_info = CreateValidSiteInfo();
+  site_info.clear_description();
+  EXPECT_EQ(page_info::about_this_site_validation::ValidateSiteInfo(site_info),
+            AboutThisSiteStatus::kValid);
+  AddHintForTesting(browser(), url, site_info);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  OpenPageInfoBubble(browser());
+
+  auto* page_info = PageInfoBubbleView::GetPageInfoBubbleForTesting();
+  views::View* button = page_info->GetViewByID(
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_ABOUT_THIS_SITE_BUTTON);
+  ASSERT_TRUE(button);
+
+  histograms.ExpectUniqueSample(
+      "Security.PageInfo.AboutThisSiteInteraction",
+      AboutThisSiteInteraction::kShownWithoutDescription, 1);
+
+  PerformMouseClickOnView(button);
+  histograms.ExpectTotalCount("Security.PageInfo.AboutThisSiteInteraction", 2);
+  histograms.ExpectBucketCount(
+      "Security.PageInfo.AboutThisSiteInteraction",
+      AboutThisSiteInteraction::kClickedWithoutDescription, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewAboutThisSiteBrowserTest,

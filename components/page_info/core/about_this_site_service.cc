@@ -17,8 +17,17 @@
 #include "url/gurl.h"
 
 namespace page_info {
+namespace {
 using AboutThisSiteStatus = about_this_site_validation::AboutThisSiteStatus;
+using AboutThisSiteInteraction = AboutThisSiteService::AboutThisSiteInteraction;
 using OptimizationGuideDecision = optimization_guide::OptimizationGuideDecision;
+
+void RecordAboutThisSiteInteraction(AboutThisSiteInteraction interaction) {
+  base::UmaHistogramEnumeration("Security.PageInfo.AboutThisSiteInteraction",
+                                interaction);
+}
+
+}  // namespace
 
 const char kBannerInteractionHistogram[] =
     "Privacy.AboutThisSite.BannerInteraction";
@@ -51,6 +60,13 @@ absl::optional<proto::SiteInfo> AboutThisSiteService::GetAboutThisSiteInfo(
                 about_this_site_metadata);
   base::UmaHistogramEnumeration("Security.PageInfo.AboutThisSiteStatus",
                                 status);
+  RecordAboutThisSiteInteraction(
+      status == AboutThisSiteStatus::kValid
+          ? (about_this_site_metadata->site_info().has_description()
+                 ? AboutThisSiteInteraction::kShownWithDescription
+                 : AboutThisSiteInteraction::kShownWithoutDescription)
+          : AboutThisSiteInteraction::kNotShown);
+
   ukm::builders::AboutThisSiteStatus(source_id)
       .SetStatus(static_cast<int>(status))
       .Record(ukm::UkmRecorder::Get());
@@ -118,6 +134,13 @@ void AboutThisSiteService::OnBannerURLOpened(GURL url,
                                              ukm::SourceId source_id) {
   base::UmaHistogramEnumeration(kBannerInteractionHistogram,
                                 BannerInteraction::kUrlOpened);
+}
+
+// static
+void AboutThisSiteService::OnAboutThisSiteRowClicked(bool with_description) {
+  RecordAboutThisSiteInteraction(
+      with_description ? AboutThisSiteInteraction::kClickedWithDescription
+                       : AboutThisSiteInteraction::kClickedWithoutDescription);
 }
 
 base::WeakPtr<AboutThisSiteService> AboutThisSiteService::GetWeakPtr() {
