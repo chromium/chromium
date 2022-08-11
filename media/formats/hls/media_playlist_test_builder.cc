@@ -51,7 +51,7 @@ void MediaPlaylistTestBuilder::VerifyExpectations(
     const auto& segment = playlist.GetSegments().at(i);
     const auto& expectations = segment_expectations_.at(i);
     for (const auto& expectation : expectations.expectations) {
-      expectation.Run(segment);
+      expectation.Run(*segment);
     }
   }
 }

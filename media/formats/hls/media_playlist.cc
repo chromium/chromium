@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/numerics/clamped_math.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
@@ -31,7 +32,7 @@ struct MediaPlaylist::CtorArgs {
   bool independent_segments;
   base::TimeDelta target_duration;
   absl::optional<PartialSegmentInfo> partial_segment_info;
-  std::vector<MediaSegment> segments;
+  std::vector<scoped_refptr<MediaSegment>> segments;
   base::TimeDelta total_duration;
   absl::optional<PlaylistType> playlist_type;
   bool end_list;
@@ -84,7 +85,7 @@ ParseStatus::Or<MediaPlaylist> MediaPlaylist::Parse(
   absl::optional<XServerControlTag> server_control_tag;
   absl::optional<XMediaSequenceTag> media_sequence_tag;
   absl::optional<XDiscontinuitySequenceTag> discontinuity_sequence_tag;
-  std::vector<MediaSegment> segments;
+  std::vector<scoped_refptr<MediaSegment>> segments;
   scoped_refptr<MediaSegment::InitializationSegment> initialization_segment;
 
   types::DecimalInteger discontinuity_sequence_number = 0;
@@ -356,12 +357,12 @@ ParseStatus::Or<MediaPlaylist> MediaPlaylist::Parse(
         offset = range.offset.value();
       } else if (segments.empty()) {
         return ParseStatusCode::kByteRangeRequiresOffset;
-      } else if (!segments.back().GetByteRange().has_value()) {
+      } else if (!segments.back()->GetByteRange().has_value()) {
         return ParseStatusCode::kByteRangeRequiresOffset;
-      } else if (segments.back().GetUri() != segment_uri) {
+      } else if (segments.back()->GetUri() != segment_uri) {
         return ParseStatusCode::kByteRangeRequiresOffset;
       } else {
-        offset = segments.back().GetByteRange()->GetEnd();
+        offset = segments.back()->GetByteRange()->GetEnd();
       }
 
       byterange = types::ByteRange::Validate(range.length, offset);
@@ -383,10 +384,10 @@ ParseStatus::Or<MediaPlaylist> MediaPlaylist::Parse(
       bitrate = base::ClampMul(bitrate_tag->bitrate, 1000u);
     }
 
-    segments.emplace_back(inf_tag->duration, media_sequence_number,
-                          discontinuity_sequence_number, std::move(segment_uri),
-                          initialization_segment, byterange, bitrate,
-                          discontinuity_tag.has_value(), gap_tag.has_value());
+    segments.push_back(base::MakeRefCounted<MediaSegment>(
+        inf_tag->duration, media_sequence_number, discontinuity_sequence_number,
+        std::move(segment_uri), initialization_segment, byterange, bitrate,
+        discontinuity_tag.has_value(), gap_tag.has_value()));
 
     // Reset per-segment tags
     inf_tag.reset();
@@ -469,7 +470,7 @@ ParseStatus::Or<MediaPlaylist> MediaPlaylist::Parse(
     // duration after rounding to the nearest integer.
     // https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#section-4.4.3.1
     const auto rounded_duration =
-        std::round(segment.GetDuration().InSecondsF());
+        std::round(segment->GetDuration().InSecondsF());
 
     // Compare the rounded segment duration to the target duration (as an
     // integer). Target duration should always be an integer of seconds, so to
@@ -479,7 +480,7 @@ ParseStatus::Or<MediaPlaylist> MediaPlaylist::Parse(
       return ParseStatusCode::kMediaSegmentExceedsTargetDuration;
     }
 
-    total_duration += segment.GetDuration();
+    total_duration += segment->GetDuration();
   }
 
   if (total_duration.is_max()) {

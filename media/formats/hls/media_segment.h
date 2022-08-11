@@ -14,12 +14,10 @@
 
 namespace media::hls {
 
-class MEDIA_EXPORT MediaSegment {
+class MEDIA_EXPORT MediaSegment : public base::RefCounted<MediaSegment> {
  public:
   class MEDIA_EXPORT InitializationSegment
       : public base::RefCounted<InitializationSegment> {
-    friend class base::RefCounted<InitializationSegment>;
-
    public:
     InitializationSegment(GURL uri, absl::optional<types::ByteRange>);
     InitializationSegment(const InitializationSegment& copy) = delete;
@@ -39,6 +37,7 @@ class MEDIA_EXPORT MediaSegment {
     }
 
    private:
+    friend class base::RefCounted<InitializationSegment>;
     ~InitializationSegment();
 
     GURL uri_;
@@ -54,11 +53,10 @@ class MEDIA_EXPORT MediaSegment {
                absl::optional<types::DecimalInteger> bitrate,
                bool has_discontinuity,
                bool is_gap);
-  ~MediaSegment();
-  MediaSegment(const MediaSegment&);
-  MediaSegment(MediaSegment&&);
-  MediaSegment& operator=(const MediaSegment&);
-  MediaSegment& operator=(MediaSegment&&);
+  MediaSegment(const MediaSegment&) = delete;
+  MediaSegment(MediaSegment&&) = delete;
+  MediaSegment& operator=(const MediaSegment&) = delete;
+  MediaSegment& operator=(MediaSegment&&) = delete;
 
   // The approximate duration of this media segment.
   base::TimeDelta GetDuration() const { return duration_; }
@@ -102,6 +100,9 @@ class MEDIA_EXPORT MediaSegment {
   absl::optional<types::DecimalInteger> GetBitRate() const { return bitrate_; }
 
  private:
+  friend class base::RefCounted<MediaSegment>;
+  ~MediaSegment();
+
   base::TimeDelta duration_;
   types::DecimalInteger media_sequence_number_;
   types::DecimalInteger discontinuity_sequence_number_;

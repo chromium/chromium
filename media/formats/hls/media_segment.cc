@@ -39,12 +39,4 @@ MediaSegment::MediaSegment(
 
 MediaSegment::~MediaSegment() = default;
 
-MediaSegment::MediaSegment(const MediaSegment&) = default;
-
-MediaSegment::MediaSegment(MediaSegment&&) = default;
-
-MediaSegment& MediaSegment::operator=(const MediaSegment&) = default;
-
-MediaSegment& MediaSegment::operator=(MediaSegment&&) = default;
-
 }  // namespace media::hls
