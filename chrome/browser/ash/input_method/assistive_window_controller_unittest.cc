@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_profile.h"
-#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
 #include "ui/base/ime/ash/ime_assistive_window_handler_interface.h"
@@ -31,8 +30,6 @@ const char16_t kAnnounceString[] = u"announce string";
 
 namespace ash {
 namespace input_method {
-
-constexpr size_t kShowSuggestionDelayMs = 5;
 
 class MockDelegate : public AssistiveWindowControllerDelegate {
  public:
@@ -56,10 +53,7 @@ class TestAccessibilityView : public ui::ime::AssistiveAccessibilityView {
 
 class AssistiveWindowControllerTest : public ChromeAshTestBase {
  protected:
-  AssistiveWindowControllerTest()
-      : ChromeAshTestBase(std::make_unique<content::BrowserTaskEnvironment>(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME)) {}
-
+  AssistiveWindowControllerTest() = default;
   ~AssistiveWindowControllerTest() override = default;
 
   void SetUp() override {
@@ -111,11 +105,6 @@ class AssistiveWindowControllerTest : public ChromeAshTestBase {
         /*disabled_features=*/{});
   }
 
-  void WaitForSuggestionWindowDelay() {
-    task_environment()->FastForwardBy(
-        base::Milliseconds(kShowSuggestionDelayMs + 1));
-  }
-
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<AssistiveWindowController> controller_;
   std::unique_ptr<MockDelegate> delegate_ = std::make_unique<MockDelegate>();
@@ -126,42 +115,10 @@ class AssistiveWindowControllerTest : public ChromeAshTestBase {
   std::unique_ptr<TestAccessibilityView> accessibility_view_;
 };
 
-TEST_F(AssistiveWindowControllerTest, ShowSuggestionDelaysWindowDisplay) {
-  ui::ime::SuggestionDetails details;
-  details.text = u"asdf";
-  details.confirmed_length = 3;
-
-  controller_->ShowSuggestion(details);
-  ui::ime::SuggestionWindowView* window_before_delay =
-      controller_->GetSuggestionWindowViewForTesting();
-  WaitForSuggestionWindowDelay();
-  ui::ime::SuggestionWindowView* window_after_delay =
-      controller_->GetSuggestionWindowViewForTesting();
-
-  EXPECT_EQ(window_before_delay, nullptr);
-  EXPECT_NE(window_after_delay, nullptr);
-}
-
-TEST_F(AssistiveWindowControllerTest,
-       SetBoundsAfterShowSuggestionCancelsDelay) {
-  ui::ime::SuggestionDetails details;
-  details.text = u"asdf";
-  details.confirmed_length = 3;
-  gfx::Rect caret_bounds(0, 0, 100, 100);
-
-  controller_->ShowSuggestion(details);
-  controller_->SetBounds(Bounds{.caret = caret_bounds});
-  ui::ime::SuggestionWindowView* suggestion_window_view =
-      controller_->GetSuggestionWindowViewForTesting();
-
-  EXPECT_NE(suggestion_window_view, nullptr);
-}
-
 TEST_F(AssistiveWindowControllerTest, ShowSuggestionSetsConfirmedLength) {
   ui::ime::SuggestionDetails details;
   details.text = u"asdf";
   details.confirmed_length = 3;
-
   controller_->ShowSuggestion(details);
 
   EXPECT_EQ(controller_->GetConfirmedLength(), 3u);
@@ -171,18 +128,16 @@ TEST_F(AssistiveWindowControllerTest, ConfirmedLength0SetsBoundsToCaretBounds) {
   ui::ime::SuggestionDetails details;
   details.text = suggestion_;
   details.confirmed_length = 0;
-
   controller_->ShowSuggestion(details);
-  WaitForSuggestionWindowDelay();
   ui::ime::SuggestionWindowView* suggestion_view =
       controller_->GetSuggestionWindowViewForTesting();
 
-  ASSERT_NE(suggestion_view, nullptr);
   gfx::Rect current_bounds = suggestion_view->GetAnchorRect();
   gfx::Rect caret_bounds(0, 0, 100, 100);
   Bounds bounds;
   bounds.caret = caret_bounds;
   controller_->SetBounds(bounds);
+
   EXPECT_NE(suggestion_view->GetAnchorRect(), current_bounds);
   EXPECT_EQ(suggestion_view->GetAnchorRect(), caret_bounds);
 }
@@ -191,18 +146,16 @@ TEST_F(AssistiveWindowControllerTest, ConfirmedLengthNSetsBoundsToCaretBounds) {
   ui::ime::SuggestionDetails details;
   details.text = suggestion_;
   details.confirmed_length = 1;
-
   controller_->ShowSuggestion(details);
-  WaitForSuggestionWindowDelay();
   ui::ime::SuggestionWindowView* suggestion_view =
       controller_->GetSuggestionWindowViewForTesting();
 
-  ASSERT_NE(suggestion_view, nullptr);
   gfx::Rect current_bounds = suggestion_view->GetAnchorRect();
   gfx::Rect caret_bounds(0, 0, 100, 100);
   Bounds bounds;
   bounds.caret = caret_bounds;
   controller_->SetBounds(bounds);
+
   EXPECT_NE(suggestion_view->GetAnchorRect(), current_bounds);
   EXPECT_EQ(suggestion_view->GetAnchorRect(), caret_bounds);
 }
@@ -211,13 +164,10 @@ TEST_F(AssistiveWindowControllerTest, WindowTracksCaretBounds) {
   ui::ime::SuggestionDetails details;
   details.text = suggestion_;
   details.confirmed_length = 0;
-
   controller_->ShowSuggestion(details);
-  WaitForSuggestionWindowDelay();
   ui::ime::SuggestionWindowView* suggestion_view =
       controller_->GetSuggestionWindowViewForTesting();
 
-  ASSERT_NE(suggestion_view, nullptr);
   gfx::Rect current_bounds = suggestion_view->GetAnchorRect();
   gfx::Rect caret_bounds_after_one_key(current_bounds.width() + 1,
                                        current_bounds.height());
@@ -244,9 +194,7 @@ TEST_F(AssistiveWindowControllerTest,
   ui::ime::SuggestionDetails details;
   details.text = suggestion_;
   details.confirmed_length = 1;
-
   controller_->ShowSuggestion(details);
-  WaitForSuggestionWindowDelay();
 
   gfx::Rect current_bounds =
       controller_->GetSuggestionWindowViewForTesting()->GetAnchorRect();
