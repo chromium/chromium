@@ -221,7 +221,9 @@ void OverviewSession::Init(const WindowList& windows,
 
     // Do not animate if there is any window that is being dragged in the
     // grid.
-    if (enter_exit_overview_type_ == OverviewEnterExitType::kImmediateEnter) {
+    if (enter_exit_overview_type_ == OverviewEnterExitType::kImmediateEnter ||
+        enter_exit_overview_type_ ==
+            OverviewEnterExitType::kImmediateEnterWithoutFocus) {
       overview_grid->PositionWindows(/*animate=*/false);
     } else {
       // Exit only types should not appear here:
@@ -368,7 +370,7 @@ void OverviewSession::OnGridEmpty() {
   if (SplitViewController::Get(Shell::GetPrimaryRootWindow())
           ->InTabletSplitViewMode()) {
     UpdateNoWindowsWidgetOnEachGrid();
-  } else {
+  } else if (!allow_empty_desk_without_exiting_) {
     EndOverview(OverviewEndAction::kLastWindowRemoved);
   }
 }
@@ -522,6 +524,9 @@ void OverviewSession::AppendItem(aura::Window* window,
   OverviewGrid* grid = GetGridWithRootWindow(window->GetRootWindow());
   if (!grid || grid->GetOverviewItemContaining(window))
     return;
+
+  if (IsShowingDesksTemplatesGrid())
+    animate = false;
 
   grid->AppendItem(window, reposition, animate, /*use_spawn_animation=*/true);
   OnItemAdded(window);
@@ -1031,9 +1036,10 @@ void OverviewSession::ShowDesksTemplatesGrids(
     grid->ShowDesksTemplatesGrid(was_zero_state);
   // Only ask for all entries if it is the first time creating the grid widgets.
   // Otherwise, add or update the entries one at a time.
-  if (created_grid_widgets)
+  if (created_grid_widgets) {
     saved_desk_presenter_->GetAllEntries(item_to_focus, saved_desk_name,
                                          root_window);
+  }
   UpdateNoWindowsWidgetOnEachGrid();
 
   UpdateAccessibilityFocus();

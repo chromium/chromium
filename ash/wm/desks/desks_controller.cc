@@ -552,10 +552,11 @@ void DesksController::RemoveDesk(const Desk* desk,
 
   auto* overview_controller = Shell::Get()->overview_controller();
   const bool in_overview = overview_controller->InOverviewSession();
-  if (!in_overview && active_desk_ == desk) {
-    // When removing the active desk outside of overview, we trigger the remove
-    // desk animation. We will activate the desk to its left if any, otherwise,
-    // we activate one on the right.
+  if (!in_overview && active_desk_ == desk &&
+      source != DesksCreationRemovalSource::kSaveAndRecall) {
+    // When removing the active desk outside of overview (and the source is not
+    // Save & Recall), we trigger the remove desk animation. We will activate
+    // the desk to its left if any, otherwise, we activate one on the right.
     const int current_desk_index = GetDeskIndex(active_desk_);
     const int target_desk_index =
         current_desk_index + ((current_desk_index > 0) ? -1 : 1);

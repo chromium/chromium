@@ -146,6 +146,11 @@ class ASH_EXPORT SavedDeskPresenter : desks_storage::DeskModelObserver {
   std::u16string AppendDuplicateNumberToDuplicateName(
       const std::u16string& duplicate_name_u16);
 
+  // Sets `closure` to be invoked when Save & Recall triggers a modal dialog.
+  static void SetModalDialogCallbackForTesting(base::OnceClosure closure);
+  // Immediately fires the window watcher auto transition timer.
+  static void FireWindowWatcherTimerForTesting();
+
   // Pointer to the session which owns `this`.
   OverviewSession* const overview_session_;
 

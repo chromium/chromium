@@ -395,6 +395,8 @@ class SavedDeskTest : public OverviewTestBase {
         GetOverviewGridForRoot(root)->IsSaveDeskForLaterButtonVisible());
     ClickOnView(save_desk_button);
     WaitForDesksTemplatesUI();
+    WaitForDesksTemplatesUI();
+
     // Clicking the save desk button selects the newly saved desk's name
     // field. We can press enter or escape or click to select out of it.
     SendKey(ui::VKEY_RETURN);
@@ -1207,8 +1209,10 @@ TEST_F(SavedDeskTest, DesksBarLoadsBeforeSaveDeskButtons) {
   ui::ScopedAnimationDurationScaleMode animation_scale(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
-  auto test_window = CreateAppWindow();
-  ASSERT_FALSE(WindowState::Get(test_window.get())->IsMaximized());
+  // Release the window since it will be automatically destroyed when the desk
+  // is saved.
+  auto* test_window = CreateAppWindow().release();
+  ASSERT_FALSE(WindowState::Get(test_window)->IsMaximized());
 
   aura::Window* root_window = Shell::GetPrimaryRootWindow();
 
@@ -1232,6 +1236,7 @@ TEST_F(SavedDeskTest, DesksBarLoadsBeforeSaveDeskButtons) {
   // library and there should be no crash.
   auto* save_for_later_button = GetSaveDeskForLaterButtonForRoot(root_window);
   ClickOnView(save_for_later_button);
+  WaitForDesksTemplatesUI();
   WaitForDesksTemplatesUI();
   EXPECT_TRUE(GetOverviewGridList()[0]->IsShowingDesksTemplatesGrid());
 }
@@ -4109,6 +4114,7 @@ TEST_F(SavedDeskTest, FocusedDeskItemFullyVisible) {
       GetSaveDeskForLaterButtonForRoot(Shell::Get()->GetPrimaryRootWindow());
   ClickOnView(save_desk_button);
   WaitForDesksTemplatesUI();
+  WaitForDesksTemplatesUI();
 
   // The newly saved desk item should be fully visible.
   SavedDeskItemView* item_view = GetItemViewFromTemplatesGrid(6);
@@ -4324,7 +4330,8 @@ TEST_F(DeskSaveAndRecallTest, SaveDeskWithDuplicateName) {
     ToggleOverview();
     ClickOnView(
         GetSaveDeskForLaterButtonForRoot(Shell::Get()->GetPrimaryRootWindow()));
-    WaitForDesksTemplatesUI();
+    for (int i = 0; i != 3; ++i)
+      WaitForDesksTemplatesUI();
 
     // Expect that the last added template item name view has focus, and verify
     // that we have a saved desk with the expected `name`.
