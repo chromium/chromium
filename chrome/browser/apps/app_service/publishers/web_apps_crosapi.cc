@@ -175,6 +175,18 @@ void WebAppsCrosapi::SetPermission(const std::string& app_id,
   controller_->SetPermission(app_id, std::move(permission));
 }
 
+void WebAppsCrosapi::Uninstall(const std::string& app_id,
+                               UninstallSource uninstall_source,
+                               bool clear_site_data,
+                               bool report_abuse) {
+  if (!LogIfNotConnected(FROM_HERE)) {
+    return;
+  }
+
+  controller_->Uninstall(app_id, uninstall_source, clear_site_data,
+                         report_abuse);
+}
+
 void WebAppsCrosapi::Connect(
     mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
     apps::mojom::ConnectOptionsPtr opts) {
@@ -243,13 +255,9 @@ void WebAppsCrosapi::Uninstall(const std::string& app_id,
                                apps::mojom::UninstallSource uninstall_source,
                                bool clear_site_data,
                                bool report_abuse) {
-  if (!LogIfNotConnected(FROM_HERE)) {
-    return;
-  }
-
-  controller_->Uninstall(
-      app_id, ConvertMojomUninstallSourceToUninstallSource(uninstall_source),
-      clear_site_data, report_abuse);
+  Uninstall(app_id,
+            ConvertMojomUninstallSourceToUninstallSource(uninstall_source),
+            clear_site_data, report_abuse);
 }
 
 void WebAppsCrosapi::GetMenuModel(const std::string& app_id,

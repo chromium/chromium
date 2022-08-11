@@ -547,6 +547,47 @@ void ExtensionAppsBase::LaunchAppWithParams(AppLaunchParams&& params,
   LaunchAppWithParamsImpl(std::move(params), std::move(callback));
 }
 
+void ExtensionAppsBase::Uninstall(const std::string& app_id,
+                                  UninstallSource uninstall_source,
+                                  bool clear_site_data,
+                                  bool report_abuse) {
+  // TODO(crbug.com/1009248): We need to add the error code, which could be used
+  // by ExtensionFunction, ManagementUninstallFunctionBase on the callback
+  // OnExtensionUninstallDialogClosed
+  scoped_refptr<const extensions::Extension> extension =
+      extensions::ExtensionRegistry::Get(profile())->GetInstalledExtension(
+          app_id);
+  if (!extension.get()) {
+    return;
+  }
+
+  // If the extension doesn't belong to this publisher, do nothing.
+  if (!Accepts(extension.get())) {
+    return;
+  }
+
+  std::u16string error;
+  extensions::ExtensionSystem::Get(profile())
+      ->extension_service()
+      ->UninstallExtension(
+          app_id, GetExtensionUninstallReason(uninstall_source), &error);
+
+  if (!report_abuse) {
+    return;
+  }
+
+  // If the extension specifies a custom uninstall page via
+  // chrome.runtime.setUninstallURL, then at uninstallation its uninstall
+  // page opens. To ensure that the CWS Report Abuse page is the active
+  // tab at uninstallation, navigates to the url to report abuse.
+  constexpr char kReferrerId[] = "chrome-remove-extension-dialog";
+  NavigateParams params(
+      profile(), extension_urls::GetWebstoreReportAbuseUrl(app_id, kReferrerId),
+      ui::PAGE_TRANSITION_LINK);
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  Navigate(&params);
+}
+
 void ExtensionAppsBase::Connect(
     mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
     apps::mojom::ConnectOptionsPtr opts) {
@@ -693,43 +734,10 @@ void ExtensionAppsBase::Uninstall(
     apps::mojom::UninstallSource mojom_uninstall_source,
     bool clear_site_data,
     bool report_abuse) {
-  // TODO(crbug.com/1009248): We need to add the error code, which could be used
-  // by ExtensionFunction, ManagementUninstallFunctionBase on the callback
-  // OnExtensionUninstallDialogClosed
-  scoped_refptr<const extensions::Extension> extension =
-      extensions::ExtensionRegistry::Get(profile())->GetInstalledExtension(
-          app_id);
-  if (!extension.get()) {
-    return;
-  }
-
-  // If the extension doesn't belong to this publisher, do nothing.
-  if (!Accepts(extension.get())) {
-    return;
-  }
-
-  std::u16string error;
-  extensions::ExtensionSystem::Get(profile())
-      ->extension_service()
-      ->UninstallExtension(app_id,
-                           GetExtensionUninstallReason(
-                               ConvertMojomUninstallSourceToUninstallSource(
-                                   mojom_uninstall_source)),
-                           &error);
-
-  if (!report_abuse)
-    return;
-
-  // If the extension specifies a custom uninstall page via
-  // chrome.runtime.setUninstallURL, then at uninstallation its uninstall
-  // page opens. To ensure that the CWS Report Abuse page is the active
-  // tab at uninstallation, navigates to the url to report abuse.
-  constexpr char kReferrerId[] = "chrome-remove-extension-dialog";
-  NavigateParams params(
-      profile(), extension_urls::GetWebstoreReportAbuseUrl(app_id, kReferrerId),
-      ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-  Navigate(&params);
+  Uninstall(
+      app_id,
+      ConvertMojomUninstallSourceToUninstallSource(mojom_uninstall_source),
+      clear_site_data, report_abuse);
 }
 
 void ExtensionAppsBase::OpenNativeSettings(const std::string& app_id) {

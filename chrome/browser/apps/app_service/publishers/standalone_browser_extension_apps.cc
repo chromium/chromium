@@ -239,6 +239,19 @@ void StandaloneBrowserExtensionApps::LaunchAppWithParams(
   }
 }
 
+void StandaloneBrowserExtensionApps::Uninstall(const std::string& app_id,
+                                               UninstallSource uninstall_source,
+                                               bool clear_site_data,
+                                               bool report_abuse) {
+  // It is possible that Lacros is briefly unavailable, for example if it shuts
+  // down for an update.
+  if (!controller_.is_bound())
+    return;
+
+  controller_->Uninstall(app_id, uninstall_source, clear_site_data,
+                         report_abuse);
+}
+
 void StandaloneBrowserExtensionApps::Connect(
     mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
     apps::mojom::ConnectOptionsPtr opts) {
@@ -410,19 +423,15 @@ void StandaloneBrowserExtensionApps::StopApp(const std::string& app_id) {
 
   controller_->StopApp(app_id);
 }
+
 void StandaloneBrowserExtensionApps::Uninstall(
     const std::string& app_id,
     apps::mojom::UninstallSource uninstall_source,
     bool clear_site_data,
     bool report_abuse) {
-  // It is possible that Lacros is briefly unavailable, for example if it shuts
-  // down for an update.
-  if (!controller_.is_bound())
-    return;
-
-  controller_->Uninstall(
-      app_id, ConvertMojomUninstallSourceToUninstallSource(uninstall_source),
-      clear_site_data, report_abuse);
+  Uninstall(app_id,
+            ConvertMojomUninstallSourceToUninstallSource(uninstall_source),
+            clear_site_data, report_abuse);
 }
 
 void StandaloneBrowserExtensionApps::SetWindowMode(

@@ -67,6 +67,13 @@ void AppPublisher::SetPermission(const std::string& app_id,
   NOTIMPLEMENTED();
 }
 
+void AppPublisher::Uninstall(const std::string& app_id,
+                             UninstallSource uninstall_source,
+                             bool clear_site_data,
+                             bool report_abuse) {
+  LOG(ERROR) << "Uninstall failed, could not remove the app with id " << app_id;
+}
+
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 void AppPublisher::Publish(AppPtr app) {
   if (!proxy_) {

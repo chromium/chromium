@@ -78,7 +78,7 @@ class CrostiniApps : public KeyedService,
   void Uninstall(const std::string& app_id,
                  UninstallSource uninstall_source,
                  bool clear_site_data,
-                 bool report_abuse);
+                 bool report_abuse) override;
 
   // apps::mojom::Publisher overrides.
   void Connect(mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,

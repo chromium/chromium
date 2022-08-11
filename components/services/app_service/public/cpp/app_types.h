@@ -287,6 +287,10 @@ COMPONENT_EXPORT(APP_TYPES)
 apps::mojom::UninstallSource ConvertUninstallSourceToMojomUninstallSource(
     UninstallSource uninstall_source);
 
+COMPONENT_EXPORT(APP_TYPES)
+apps::mojom::UninstallSource ConvertUninstallSourceToMojomUninstallSource(
+    UninstallSource uninstall_source);
+
 }  // namespace apps
 
 #endif  // COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_APP_TYPES_H_

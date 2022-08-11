@@ -128,7 +128,7 @@ class ArcApps : public KeyedService,
   void Uninstall(const std::string& app_id,
                  UninstallSource uninstall_source,
                  bool clear_site_data,
-                 bool report_abuse);
+                 bool report_abuse) override;
   void OnPreferredAppSet(
       const std::string& app_id,
       IntentFilterPtr intent_filter,

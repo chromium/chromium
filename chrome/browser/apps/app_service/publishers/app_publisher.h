@@ -119,6 +119,11 @@ class AppPublisher {
   virtual void SetPermission(const std::string& app_id,
                              PermissionPtr permission);
 
+  virtual void Uninstall(const std::string& app_id,
+                         UninstallSource uninstall_source,
+                         bool clear_site_data,
+                         bool report_abuse);
+
   // Indicates that the app identified by |app_id| has been set as a preferred
   // app for |intent_filter|, and the |replaced_app_preferences| is the apps
   // that are no longer preferred apps for their corresponding |intent_filters|.

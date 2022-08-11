@@ -101,6 +101,10 @@ class WebAppsCrosapi : public KeyedService,
                       int64_t display_id) override;
   void SetPermission(const std::string& app_id,
                      PermissionPtr permission) override;
+  void Uninstall(const std::string& app_id,
+                 UninstallSource uninstall_source,
+                 bool clear_site_data,
+                 bool report_abuse) override;
 
   // apps::PublisherBase overrides.
   void Connect(mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
