@@ -1534,11 +1534,6 @@ config("default_warnings") {
           "-Wno-deprecated-builtins",
         ]
       }
-
-      if (is_fuchsia) {
-        # TODO(https://bugs.chromium.org/p/fuchsia/issues/detail?id=77383)
-        cflags += [ "-Wno-deprecated-copy" ]
-      }
     }
   }
 }
