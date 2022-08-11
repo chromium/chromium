@@ -63,8 +63,13 @@ class PLATFORM_EXPORT FontCustomPlatformData
   FontCustomPlatformData& operator=(const FontCustomPlatformData&) = delete;
   ~FontCustomPlatformData();
 
+  // The size argument should come from EffectiveFontSize() and
+  // adjusted_specified_size should come from AdjustedSpecifiedSize() of
+  // FontDescription. The latter is needed for correctly applying
+  // font-optical-sizing: auto; independent of zoom level.
   FontPlatformData GetFontPlatformData(
       float size,
+      float adjusted_specified_size,
       bool bold,
       bool italic,
       const FontSelectionRequest&,

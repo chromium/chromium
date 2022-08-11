@@ -83,10 +83,9 @@ FontCustomPlatformData::FontCustomPlatformData(sk_sp<SkTypeface> typeface,
 
 FontCustomPlatformData::~FontCustomPlatformData() = default;
 
-// TODO(crbug.com/1205794): Optical sizing should use specified size, instead of
-// zoomed size.
 FontPlatformData FontCustomPlatformData::GetFontPlatformData(
     float size,
+    float adjusted_specified_size,
     bool bold,
     bool italic,
     const FontSelectionRequest& selection_request,
@@ -189,7 +188,7 @@ FontPlatformData FontCustomPlatformData::GetFontPlatformData(
     if (!explicit_opsz_configured) {
       if (optical_sizing == kAutoOpticalSizing) {
         SkFontArguments::VariationPosition::Coordinate opsz_coordinate = {
-            kOpszTag, SkFloatToScalar(size)};
+            kOpszTag, SkFloatToScalar(adjusted_specified_size)};
         variation.push_back(opsz_coordinate);
       } else if (optical_sizing == kNoneOpticalSizing) {
         // Explicitly set default value to avoid automatic application of
