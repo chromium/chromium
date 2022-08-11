@@ -92,12 +92,12 @@ bool X11SoftwareBitmapPresenter::CompositeBitmap(x11::Connection* connection,
     connection->ChangeGC(x11::ChangeGCRequest{
         .gc = gc, .subwindow_mode = x11::SubwindowMode::ClipByChildren});
 
-    auto req = connection->GetImage(
+    auto pix_req = connection->GetImage(
         {x11::ImageFormat::ZPixmap, pixmap_id, 0, 0, w_u16, h_u16, kAllPlanes});
-    if (auto reply = req.Sync())
-      bg = reply->data;
-    else
+    auto pix_reply = pix_req.Sync();
+    if (!pix_reply)
       return false;
+    bg = pix_reply->data;
   }
 
   SkBitmap bg_bitmap;

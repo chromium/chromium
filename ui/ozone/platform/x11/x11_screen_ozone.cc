@@ -113,8 +113,8 @@ gfx::AcceleratedWidget X11ScreenOzone::GetLocalProcessWidgetAtPoint(
     gfx::Point point_in_pixels = gfx::ToFlooredPoint(
         gfx::ConvertPointToPixels(point, GetXDisplayScaleFactor()));
     base::flat_set<x11::Window> ignore_windows;
-    for (auto widget : ignore)
-      ignore_windows.insert(static_cast<x11::Window>(widget));
+    for (auto ignore_widget : ignore)
+      ignore_windows.insert(static_cast<x11::Window>(ignore_widget));
     widget = static_cast<gfx::AcceleratedWidget>(
         x11::GetWindowAtPoint(point_in_pixels, &ignore_windows));
   }

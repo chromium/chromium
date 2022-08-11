@@ -216,9 +216,9 @@ X11SurfaceFactory::CreateNativePixmapFromHandle(
       ui::GpuMemoryBufferSupportX11::GetInstance()->CreateBufferFromHandle(
           size, format, std::move(handle));
   if (buffer) {
-    gfx::NativePixmapHandle handle = buffer->ExportHandle();
-    pixmap = base::MakeRefCounted<gfx::NativePixmapDmaBuf>(size, format,
-                                                           std::move(handle));
+    gfx::NativePixmapHandle buffer_handle = buffer->ExportHandle();
+    pixmap = base::MakeRefCounted<gfx::NativePixmapDmaBuf>(
+        size, format, std::move(buffer_handle));
   }
   return pixmap;
 }
