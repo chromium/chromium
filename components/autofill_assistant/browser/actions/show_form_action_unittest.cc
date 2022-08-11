@@ -153,5 +153,141 @@ TEST_F(ShowFormActionTest, FailsWithInvalidFormWithWeight) {
   Run();
 }
 
+TEST_F(ShowFormActionTest, SetFormCallFails) {
+  ON_CALL(mock_action_delegate_, SetForm(_, _, _)).WillByDefault(Return(false));
+  EXPECT_CALL(
+      callback_,
+      Run(Pointee(Property(&ProcessedActionProto::status, UNSUPPORTED))));
+
+  proto_.mutable_form();
+  Run();
+}
+
+TEST_F(ShowFormActionTest, FailsWithTooManyBooleanRulesSatisfied) {
+  EXPECT_CALL(
+      mock_action_delegate_,
+      Prompt(Pointee(ElementsAre(Property(&UserAction::enabled, false))), _, _,
+             _, _));
+
+  auto* input = proto_.mutable_form()->add_inputs();
+  auto* counter = input->mutable_counter()->add_counters();
+  counter->set_min_value(0);
+  counter->set_max_value(1);
+  counter->set_label("Counter");
+  auto* rule =
+      input->mutable_counter()->mutable_validation_rule()->mutable_boolean();
+  rule->set_min_satisfied_rules(1);
+  rule->set_max_satisfied_rules(2);
+
+  // All three rules are satisfied.
+  for (int i = 1; i <= 3; ++i) {
+    auto* sub_rule = rule->add_sub_rules()->mutable_counter();
+    sub_rule->set_counter_index(0);
+    sub_rule->set_min_value(i);
+    sub_rule->set_max_value(3);
+  }
+
+  auto* input_result = result_.add_input_results();
+  input_result->mutable_counter()->add_values(3);
+
+  Run();
+}
+
+TEST_F(ShowFormActionTest, FailsWithTooLittleBooleanRulesSatisfied) {
+  EXPECT_CALL(
+      mock_action_delegate_,
+      Prompt(Pointee(ElementsAre(Property(&UserAction::enabled, false))), _, _,
+             _, _));
+
+  auto* input = proto_.mutable_form()->add_inputs();
+  auto* counter = input->mutable_counter()->add_counters();
+  counter->set_min_value(0);
+  counter->set_max_value(1);
+  counter->set_label("Counter");
+  auto* rule =
+      input->mutable_counter()->mutable_validation_rule()->mutable_boolean();
+  rule->set_min_satisfied_rules(1);
+  rule->set_max_satisfied_rules(2);
+
+  // None of the rules are satisfied.
+  for (int i = 1; i <= 3; ++i) {
+    auto* sub_rule = rule->add_sub_rules()->mutable_counter();
+    sub_rule->set_counter_index(0);
+    sub_rule->set_min_value(i);
+    sub_rule->set_max_value(3);
+  }
+
+  auto* input_result = result_.add_input_results();
+  input_result->mutable_counter()->add_values(0);
+
+  Run();
+}
+
+TEST_F(ShowFormActionTest, SucceedsWithEnoughBooleanRulesSatisfied) {
+  EXPECT_CALL(mock_action_delegate_,
+              Prompt(Pointee(ElementsAre(Property(&UserAction::enabled, true))),
+                     _, _, _, _));
+
+  auto* input = proto_.mutable_form()->add_inputs();
+  auto* counter = input->mutable_counter()->add_counters();
+  counter->set_min_value(0);
+  counter->set_max_value(1);
+  counter->set_label("Counter");
+  auto* rule =
+      input->mutable_counter()->mutable_validation_rule()->mutable_boolean();
+  rule->set_min_satisfied_rules(1);
+  rule->set_max_satisfied_rules(2);
+
+  // Only the first rule is satisfied.
+  for (int i = 1; i <= 3; ++i) {
+    auto* sub_rule = rule->add_sub_rules()->mutable_counter();
+    sub_rule->set_counter_index(0);
+    sub_rule->set_min_value(i);
+    sub_rule->set_max_value(3);
+  }
+
+  auto* input_result = result_.add_input_results();
+  input_result->mutable_counter()->add_values(1);
+
+  Run();
+}
+
+TEST_F(ShowFormActionTest, SucceedsInputSelectionValidation) {
+  EXPECT_CALL(mock_action_delegate_,
+              Prompt(Pointee(ElementsAre(Property(&UserAction::enabled, true))),
+                     _, _, _, _));
+
+  auto* input = proto_.mutable_form()->add_inputs();
+  auto* selection = input->mutable_selection();
+  selection->set_min_selected_choices(1);
+  selection->add_choices();
+  selection->add_choices();
+
+  auto* input_result = result_.add_input_results();
+  input_result->mutable_selection()->add_selected(true);
+  input_result->mutable_selection()->add_selected(true);
+
+  Run();
+}
+
+TEST_F(ShowFormActionTest, FailsInputSelectionValidation) {
+  EXPECT_CALL(
+      mock_action_delegate_,
+      Prompt(Pointee(ElementsAre(Property(&UserAction::enabled, false))), _, _,
+             _, _));
+
+  auto* input = proto_.mutable_form()->add_inputs();
+  auto* selection = input->mutable_selection();
+  selection->set_min_selected_choices(2);
+  selection->add_choices();
+  selection->add_choices();
+
+  auto* input_result = result_.add_input_results();
+  input_result->mutable_selection()->add_selected(false);
+  input_result->mutable_selection()->add_selected(true);
+
+  Run();
+}
+
 }  // namespace
 }  // namespace autofill_assistant
