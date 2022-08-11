@@ -44,7 +44,9 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
       : template_url_service_(new TemplateURLService(nullptr, 0)),
         pref_service_(new TestingPrefServiceSimple()) {
     pref_service_->registry()->RegisterStringPref(
-        omnibox::kZeroSuggestCachedResults, "");
+        omnibox::kZeroSuggestCachedResults, std::string());
+    pref_service_->registry()->RegisterDictionaryPref(
+        omnibox::kZeroSuggestCachedResultsWithURL, base::Value::Dict());
   }
   FakeAutocompleteProviderClient(const FakeAutocompleteProviderClient&) =
       delete;
@@ -108,10 +110,13 @@ class ZeroSuggestProviderTest : public testing::TestWithParam<std::string>,
   }
 
   GURL GetSuggestURL(
-      metrics::OmniboxEventProto::PageClassification page_classification) {
+      metrics::OmniboxEventProto::PageClassification page_classification,
+      OmniboxFocusType focus_type,
+      const std::string& page_url) {
     TemplateURLRef::SearchTermsArgs search_terms_args;
     search_terms_args.page_classification = page_classification;
-    search_terms_args.focus_type = OmniboxFocusType::ON_FOCUS;
+    search_terms_args.focus_type = focus_type;
+    search_terms_args.current_page_url = page_url;
     return RemoteSuggestionsService::EndpointUrl(
         search_terms_args, client_->GetTemplateURLService());
   }
@@ -157,8 +162,7 @@ class ZeroSuggestProviderTest : public testing::TestWithParam<std::string>,
 
   AutocompleteInput PrefixInputForWeb() {
     std::string input_url = "https://example.com/";
-    AutocompleteInput input(base::ASCIIToUTF16(input_url),
-                            metrics::OmniboxEventProto::OTHER,
+    AutocompleteInput input(u"foobar", metrics::OmniboxEventProto::OTHER,
                             TestSchemeClassifier());
     input.set_current_url(GURL(input_url));
     input.set_focus_type(OmniboxFocusType::DEFAULT);
@@ -166,7 +170,7 @@ class ZeroSuggestProviderTest : public testing::TestWithParam<std::string>,
   }
 
   AutocompleteInput OnFocusInputForSRP() {
-    std::string input_url = "https://example.com/";
+    std::string input_url = "https://google.com/search?q=omnibox";
     AutocompleteInput input(base::ASCIIToUTF16(input_url),
                             metrics::OmniboxEventProto::
                                 SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
@@ -181,14 +185,23 @@ class ZeroSuggestProviderTest : public testing::TestWithParam<std::string>,
                             metrics::OmniboxEventProto::
                                 SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
                             TestSchemeClassifier());
-    input.set_current_url(GURL("https://example.com/"));
+    input.set_current_url(GURL("https://google.com/search?q=omnibox"));
+    input.set_focus_type(OmniboxFocusType::DELETED_PERMANENT_TEXT);
+    return input;
+  }
+
+  AutocompleteInput PrefetchingInputForSRP() {
+    std::string input_url = "https://google.com/search?q=omnibox";
+    AutocompleteInput input(u"", metrics::OmniboxEventProto::SRP_ZPS_PREFETCH,
+                            TestSchemeClassifier());
+    input.set_current_url(GURL(input_url));
     input.set_focus_type(OmniboxFocusType::DELETED_PERMANENT_TEXT);
     return input;
   }
 
   AutocompleteInput PrefixInputForSRP() {
-    std::string input_url = "https://example.com/";
-    AutocompleteInput input(base::ASCIIToUTF16(input_url),
+    std::string input_url = "https://google.com/search?q=omnibox";
+    AutocompleteInput input(u"foobar",
                             metrics::OmniboxEventProto::
                                 SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
                             TestSchemeClassifier());
@@ -223,9 +236,14 @@ void ZeroSuggestProviderTest::SetUp() {
   // Ensure the cache is empty.
   PrefService* prefs = client_->GetPrefs();
   prefs->SetString(omnibox::kZeroSuggestCachedResults, "");
+  prefs->SetDict(omnibox::kZeroSuggestCachedResultsWithURL,
+                 base::Value::Dict());
 
   scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-  scoped_feature_list_->InitAndEnableFeature(omnibox::kZeroSuggestPrefetching);
+  scoped_feature_list_->InitWithFeatures(
+      /*enabled_features=*/{omnibox::kZeroSuggestPrefetching,
+                            omnibox::kZeroSuggestPrefetchingOnSRP},
+      /*disabled_features=*/{});
 }
 
 void ZeroSuggestProviderTest::OnProviderUpdate(
@@ -234,7 +252,7 @@ void ZeroSuggestProviderTest::OnProviderUpdate(
   provider_did_notify_ = true;
 }
 
-TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestions_NTP) {
+TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsNTP) {
   AutocompleteInput onfocus_ntp_input = OnFocusInputForNTP();
 
   EXPECT_CALL(*client_, IsAuthenticated())
@@ -267,8 +285,7 @@ TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestions_NTP) {
   }
 }
 
-TEST_F(ZeroSuggestProviderTest,
-       AllowZeroPrefixSuggestions_ContextualWebAndSRP) {
+TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsContextualWebAndSRP) {
   AutocompleteInput prefix_web_input = PrefixInputForWeb();
   AutocompleteInput prefix_srp_input = PrefixInputForSRP();
   AutocompleteInput on_focus_web_input = OnFocusInputForWeb();
@@ -357,7 +374,7 @@ TEST_F(ZeroSuggestProviderTest,
   }
 }
 
-TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestions_RequestEligibility) {
+TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsRequestEligibility) {
   base::HistogramTester histogram_tester;
 
   // Enable on-focus for SRP.
@@ -409,14 +426,14 @@ TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestions_RequestEligibility) {
                                     5);
 }
 
-TEST_F(ZeroSuggestProviderTest, ResultTypeToRun_NTP) {
+TEST_F(ZeroSuggestProviderTest, ResultTypeToRunNTP) {
   AutocompleteInput onfocus_ntp_input = OnFocusInputForNTP();
   EXPECT_EQ(
       ZeroSuggestProvider::ResultType::kRemoteNoURL,
       ZeroSuggestProvider::ResultTypeToRun(client_.get(), onfocus_ntp_input));
 }
 
-TEST_F(ZeroSuggestProviderTest, ResultTypeToRun_ContextualWeb) {
+TEST_F(ZeroSuggestProviderTest, ResultTypeToRunContextualWeb) {
   AutocompleteInput on_focus_input = OnFocusInputForWeb();
   AutocompleteInput on_clobber_input = OnClobberInputForWeb();
 
@@ -489,7 +506,7 @@ TEST_F(ZeroSuggestProviderTest, ResultTypeToRun_ContextualWeb) {
   }
 }
 
-TEST_F(ZeroSuggestProviderTest, ResultTypeToRun_SRP) {
+TEST_F(ZeroSuggestProviderTest, ResultTypeToRunSRP) {
   AutocompleteInput on_focus_input = OnFocusInputForSRP();
   AutocompleteInput on_clobber_input = OnClobberInputForSRP();
 
@@ -559,19 +576,20 @@ TEST_F(ZeroSuggestProviderTest, ResultTypeToRun_SRP) {
   }
 }
 
-TEST_F(ZeroSuggestProviderTest, StartStop) {
+TEST_F(ZeroSuggestProviderTest, StartStopNTP) {
   EXPECT_CALL(*client_, IsAuthenticated())
       .WillRepeatedly(testing::Return(true));
 
   // Set up the pref to cache the response from the previous run.
   std::string json_response(
-      "[\"\",[\"search1\", \"search2\", \"search3\"],"
-      "[],[],{\"google:suggestrelevance\":[602, 601, 600],"
-      "\"google:verbatimrelevance\":1300}]");
+      R"(["",["search1", "search2", "search3"],)"
+      R"([],[],{"google:suggestrelevance":[602, 601, 600],)"
+      R"("google:verbatimrelevance":1300}])");
   PrefService* prefs = client_->GetPrefs();
   prefs->SetString(omnibox::kZeroSuggestCachedResults, json_response);
 
-  GURL suggest_url = GetSuggestURL(metrics::OmniboxEventProto::NTP_REALBOX);
+  GURL suggest_url = GetSuggestURL(metrics::OmniboxEventProto::NTP_REALBOX,
+                                   OmniboxFocusType::ON_FOCUS, "");
 
   // Make sure valid input starts the provider.
   AutocompleteInput input = OnFocusInputForNTP();
@@ -617,7 +635,72 @@ TEST_F(ZeroSuggestProviderTest, StartStop) {
   EXPECT_FALSE(provider_did_notify_);
 }
 
-TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestCachingFirstRun) {
+TEST_F(ZeroSuggestProviderTest, StartStopSRP) {
+  EXPECT_CALL(*client_, IsAuthenticated())
+      .WillRepeatedly(testing::Return(true));
+
+  // Enable on-clobber ZPS.
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(omnibox::kClobberTriggersSRPZeroSuggest);
+
+  // Set up the pref to cache the response from the previous run.
+  std::string json_response(
+      R"(["",["search1", "search2", "search3"],)"
+      R"([],[],{"google:suggestrelevance":[602, 601, 600],)"
+      R"("google:verbatimrelevance":1300}])");
+  PrefService* prefs = client_->GetPrefs();
+  AutocompleteInput input = OnClobberInputForSRP();
+  omnibox::SetUserPreferenceForZeroSuggestCachedResponse(
+      prefs, input.current_url().spec(), json_response);
+
+  GURL suggest_url = GetSuggestURL(
+      metrics::OmniboxEventProto::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
+      OmniboxFocusType::DELETED_PERMANENT_TEXT, input.current_url().spec());
+
+  // Make sure valid input starts the provider.
+  provider_->Start(input, false);
+  EXPECT_FALSE(provider_->done());
+  // Expect that matches got populated out of cache.
+  EXPECT_FALSE(provider_->matches().empty());
+  // Expect that network request was sent.
+  EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
+  // Expect the provider to not have notified the provider listener yet.
+  EXPECT_FALSE(provider_did_notify_);
+
+  // Make sure valid input restarts the provider.
+  provider_->Start(input, false);
+  EXPECT_FALSE(provider_->done());
+  // Expect that matches got populated out of cache.
+  EXPECT_FALSE(provider_->matches().empty());
+  // Expect that network request was sent.
+  EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
+  // Expect the provider to not have notified the provider listener yet.
+  EXPECT_FALSE(provider_did_notify_);
+
+  // Make sure invalid input stops the provider.
+  AutocompleteInput prefix_input = PrefixInputForSRP();
+  provider_->Start(prefix_input, false);
+  EXPECT_TRUE(provider_->done());
+  // Expect that matches did not get populated out of cache.
+  EXPECT_TRUE(provider_->matches().empty());
+  // Expect that network request was not sent.
+  EXPECT_FALSE(test_loader_factory()->IsPending(suggest_url.spec()));
+  // Expect the provider to not have notified the provider listener since the
+  // request was invalidated.
+  EXPECT_FALSE(provider_did_notify_);
+
+  // Make sure valid input restarts the provider.
+  provider_->Start(input, false);
+  EXPECT_FALSE(provider_->done());
+  // Expect that matches got populated out of cache.
+  EXPECT_FALSE(provider_->matches().empty());
+  // Expect that network request was sent.
+  EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
+  // Expect the provider to not have notified the provider listener yet.
+  EXPECT_FALSE(provider_did_notify_);
+}
+
+TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestCachingFirstRunNTP) {
   base::HistogramTester histogram_tester;
 
   EXPECT_CALL(*client_, IsAuthenticated())
@@ -630,12 +713,14 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestCachingFirstRun) {
 
   EXPECT_TRUE(provider_->matches().empty());
 
-  GURL suggest_url = GetSuggestURL(metrics::OmniboxEventProto::NTP_REALBOX);
+  GURL suggest_url = GetSuggestURL(metrics::OmniboxEventProto::NTP_REALBOX,
+                                   OmniboxFocusType::ON_FOCUS, "");
   EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
 
-  std::string json_response("[\"\",[\"search1\", \"search2\", \"search3\"],"
-      "[],[],{\"google:suggestrelevance\":[602, 601, 600],"
-      "\"google:verbatimrelevance\":1300}]");
+  std::string json_response(
+      R"(["",["search1", "search2", "search3"],)"
+      R"([],[],{"google:suggestrelevance":[602, 601, 600],)"
+      R"("google:verbatimrelevance":1300}])");
   test_loader_factory()->AddResponse(suggest_url.spec(), json_response);
 
   base::RunLoop().RunUntilIdle();
@@ -671,15 +756,85 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestCachingFirstRun) {
             prefs->GetString(omnibox::kZeroSuggestCachedResults));
 }
 
+TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestCachingFirstRunSRP) {
+  base::HistogramTester histogram_tester;
+
+  EXPECT_CALL(*client_, IsAuthenticated())
+      .WillRepeatedly(testing::Return(true));
+
+  // Enable on-clobber ZPS.
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(omnibox::kClobberTriggersSRPZeroSuggest);
+
+  AutocompleteInput input = OnClobberInputForSRP();
+  provider_->Start(input, false);
+  ASSERT_EQ(ZeroSuggestProvider::ResultType::kRemoteSendURL,
+            provider_->GetResultTypeRunningForTesting());
+
+  EXPECT_TRUE(provider_->matches().empty());
+
+  GURL suggest_url = GetSuggestURL(
+      metrics::OmniboxEventProto::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
+      OmniboxFocusType::DELETED_PERMANENT_TEXT, input.current_url().spec());
+  EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
+
+  std::string json_response(
+      R"(["",["search1", "search2", "search3"],)"
+      R"([],[],{"google:suggestrelevance":[602, 601, 600],)"
+      R"("google:verbatimrelevance":1300}])");
+  test_loader_factory()->AddResponse(suggest_url.spec(), json_response);
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(provider_->done());
+
+  // Expect correct histograms to have been logged.
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.ZeroSuggestProvider.NoURL.Prefetch", 0);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch", 0);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.ZeroSuggestProvider.URLBased.Prefetch", 0);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch", 4);
+  histogram_tester.ExpectBucketCount(
+      "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch", 1 /*REQUEST_SENT*/,
+      1);
+  histogram_tester.ExpectBucketCount(
+      "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch",
+      3 /*REMOTE_RESPONSE_RECEIVED*/, 1);
+  histogram_tester.ExpectBucketCount(
+      "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch",
+      4 /*REMOTE_RESPONSE_CACHED*/, 1);
+  histogram_tester.ExpectBucketCount(
+      "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch",
+      5 /*REMOTE_RESPONSE_CONVERTED_TO_MATCHES*/, 1);
+
+  // Expect the provider to have notified the provider listener.
+  EXPECT_TRUE(provider_did_notify_);
+
+  EXPECT_EQ(3U, provider_->matches().size());  // 3 results, no verbatim match
+  PrefService* prefs = client_->GetPrefs();
+  EXPECT_EQ(json_response,
+            omnibox::GetUserPreferenceForZeroSuggestCachedResponse(
+                prefs, input.current_url().spec()));
+}
+
 TEST_F(ZeroSuggestProviderTest,
-       TestPsuggestZeroSuggestWantAsynchronousMatchesFalse) {
+       TestPsuggestZeroSuggestOmitAsynchronousMatchesTrueNTP) {
   EXPECT_CALL(*client_, IsAuthenticated())
       .WillRepeatedly(testing::Return(true));
 
   AutocompleteInput input = OnFocusInputForNTP();
   input.set_omit_asynchronous_matches(true);
 
-  GURL suggest_url = GetSuggestURL(metrics::OmniboxEventProto::NTP_REALBOX);
+  GURL suggest_url = GetSuggestURL(metrics::OmniboxEventProto::NTP_REALBOX,
+                                   OmniboxFocusType::ON_FOCUS, "");
+
+  // Ensure the cache is empty.
+  PrefService* prefs = client_->GetPrefs();
+  prefs->SetString(omnibox::kZeroSuggestCachedResults, "");
+  prefs->SetDict(omnibox::kZeroSuggestCachedResultsWithURL,
+                 base::Value::Dict());
 
   provider_->Start(input, false);
   ASSERT_EQ(ZeroSuggestProvider::ResultType::kRemoteNoURL,
@@ -696,16 +851,54 @@ TEST_F(ZeroSuggestProviderTest,
   EXPECT_FALSE(provider_did_notify_);
 }
 
-TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestHasCachedResults) {
+TEST_F(ZeroSuggestProviderTest,
+       TestPsuggestZeroSuggestOmitAsynchronousMatchesTrueSRP) {
+  EXPECT_CALL(*client_, IsAuthenticated())
+      .WillRepeatedly(testing::Return(true));
+
+  // Enable on-clobber ZPS.
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(omnibox::kClobberTriggersSRPZeroSuggest);
+
+  AutocompleteInput input = OnClobberInputForSRP();
+  input.set_omit_asynchronous_matches(true);
+
+  GURL suggest_url = GetSuggestURL(
+      metrics::OmniboxEventProto::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
+      OmniboxFocusType::DELETED_PERMANENT_TEXT, input.current_url().spec());
+
+  // Ensure the cache is empty.
+  PrefService* prefs = client_->GetPrefs();
+  prefs->SetString(omnibox::kZeroSuggestCachedResults, "");
+  prefs->SetDict(omnibox::kZeroSuggestCachedResultsWithURL,
+                 base::Value::Dict());
+
+  provider_->Start(input, false);
+  ASSERT_EQ(ZeroSuggestProvider::ResultType::kRemoteSendURL,
+            provider_->GetResultTypeRunningForTesting());
+  EXPECT_TRUE(provider_->done());
+  EXPECT_TRUE(provider_->matches().empty());
+
+  // There should be no pending network requests, given that asynchronous logic
+  // has been explicitly disabled (`omit_asynchronous_matches_ == true`).
+  ASSERT_FALSE(test_loader_factory()->IsPending(suggest_url.spec()));
+
+  // Expect the provider to not have notified the provider listener since the
+  // request was not sent.
+  EXPECT_FALSE(provider_did_notify_);
+}
+
+TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestHasCachedResultsNTP) {
   base::HistogramTester histogram_tester;
 
   EXPECT_CALL(*client_, IsAuthenticated())
       .WillRepeatedly(testing::Return(true));
 
   // Set up the pref to cache the response from the previous run.
-  std::string json_response("[\"\",[\"search1\", \"search2\", \"search3\"],"
-      "[],[],{\"google:suggestrelevance\":[602, 601, 600],"
-      "\"google:verbatimrelevance\":1300}]");
+  std::string json_response(
+      R"(["",["search1", "search2", "search3"],)"
+      R"([],[],{"google:suggestrelevance":[602, 601, 600],)"
+      R"("google:verbatimrelevance":1300}])");
   PrefService* prefs = client_->GetPrefs();
   prefs->SetString(omnibox::kZeroSuggestCachedResults, json_response);
 
@@ -720,12 +913,13 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestHasCachedResults) {
   EXPECT_EQ(u"search2", provider_->matches()[1].contents);
   EXPECT_EQ(u"search3", provider_->matches()[2].contents);
 
-  GURL suggest_url = GetSuggestURL(metrics::OmniboxEventProto::NTP_REALBOX);
+  GURL suggest_url = GetSuggestURL(metrics::OmniboxEventProto::NTP_REALBOX,
+                                   OmniboxFocusType::ON_FOCUS, "");
   EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
   std::string json_response2(
-      "[\"\",[\"search4\", \"search5\", \"search6\"],"
-      "[],[],{\"google:suggestrelevance\":[602, 601, 600],"
-      "\"google:verbatimrelevance\":1300}]");
+      R"(["",["search4", "search5", "search6"],)"
+      R"([],[],{"google:suggestrelevance":[602, 601, 600],)"
+      R"("google:verbatimrelevance":1300}])");
   test_loader_factory()->AddResponse(suggest_url.spec(), json_response2);
 
   base::RunLoop().RunUntilIdle();
@@ -767,16 +961,99 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestHasCachedResults) {
             prefs->GetString(omnibox::kZeroSuggestCachedResults));
 }
 
-TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestReceivedEmptyResults) {
+TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestHasCachedResultsSRP) {
+  base::HistogramTester histogram_tester;
+
+  EXPECT_CALL(*client_, IsAuthenticated())
+      .WillRepeatedly(testing::Return(true));
+
+  // Enable on-clobber ZPS.
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(omnibox::kClobberTriggersSRPZeroSuggest);
+
+  // Set up the pref to cache the response from the previous run.
+  std::string json_response(
+      R"(["",["search1", "search2", "search3"],)"
+      R"([],[],{"google:suggestrelevance":[602, 601, 600],)"
+      R"("google:verbatimrelevance":1300}])");
+  PrefService* prefs = client_->GetPrefs();
+  AutocompleteInput input = OnClobberInputForSRP();
+  omnibox::SetUserPreferenceForZeroSuggestCachedResponse(
+      prefs, input.current_url().spec(), json_response);
+
+  provider_->Start(input, false);
+  ASSERT_EQ(ZeroSuggestProvider::ResultType::kRemoteSendURL,
+            provider_->GetResultTypeRunningForTesting());
+
+  // Expect that matches get populated synchronously out of the cache.
+  ASSERT_EQ(3U, provider_->matches().size());  // 3 results, no verbatim match
+  EXPECT_EQ(u"search1", provider_->matches()[0].contents);
+  EXPECT_EQ(u"search2", provider_->matches()[1].contents);
+  EXPECT_EQ(u"search3", provider_->matches()[2].contents);
+
+  GURL suggest_url = GetSuggestURL(
+      metrics::OmniboxEventProto::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
+      OmniboxFocusType::DELETED_PERMANENT_TEXT, input.current_url().spec());
+  EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
+  std::string json_response2(
+      R"(["",["search4", "search5", "search6"],)"
+      R"([],[],{"google:suggestrelevance":[602, 601, 600],)"
+      R"("google:verbatimrelevance":1300}])");
+  test_loader_factory()->AddResponse(suggest_url.spec(), json_response2);
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(provider_->done());
+
+  // Expect the provider to not have notified the provider listener when using
+  // the cached response.
+  EXPECT_FALSE(provider_did_notify_);
+
+  // Expect correct histograms to have been logged.
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.ZeroSuggestProvider.NoURL.Prefetch", 0);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch", 0);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.ZeroSuggestProvider.URLBased.Prefetch", 0);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch", 4);
+  histogram_tester.ExpectBucketCount(
+      "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch",
+      0 /*CACHED_RESPONSE_CONVERTED_TO_MATCHES*/, 1);
+  histogram_tester.ExpectBucketCount(
+      "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch", 1 /*REQUEST_SENT*/,
+      1);
+  histogram_tester.ExpectBucketCount(
+      "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch",
+      3 /*REMOTE_RESPONSE_RECEIVED*/, 1);
+  histogram_tester.ExpectBucketCount(
+      "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch",
+      4 /*REMOTE_RESPONSE_CACHED*/, 1);
+
+  // Expect the same results after the response has been handled.
+  ASSERT_EQ(3U, provider_->matches().size());  // 3 results, no verbatim match
+  EXPECT_EQ(u"search1", provider_->matches()[0].contents);
+  EXPECT_EQ(u"search2", provider_->matches()[1].contents);
+  EXPECT_EQ(u"search3", provider_->matches()[2].contents);
+
+  // Expect the new results to have been stored.
+  EXPECT_EQ(json_response2,
+            omnibox::GetUserPreferenceForZeroSuggestCachedResponse(
+                prefs, input.current_url().spec()));
+}
+
+TEST_F(ZeroSuggestProviderTest,
+       TestPsuggestZeroSuggestReceivedEmptyResultsNTP) {
   base::HistogramTester histogram_tester;
 
   EXPECT_CALL(*client_, IsAuthenticated())
       .WillRepeatedly(testing::Return(true));
 
   // Set up the pref to cache the response from the previous run.
-  std::string json_response("[\"\",[\"search1\", \"search2\", \"search3\"],"
-      "[],[],{\"google:suggestrelevance\":[602, 601, 600],"
-      "\"google:verbatimrelevance\":1300}]");
+  std::string json_response(
+      R"(["",["search1", "search2", "search3"],)"
+      R"([],[],{"google:suggestrelevance":[602, 601, 600],)"
+      R"("google:verbatimrelevance":1300}])");
   PrefService* prefs = client_->GetPrefs();
   prefs->SetString(omnibox::kZeroSuggestCachedResults, json_response);
 
@@ -791,9 +1068,10 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestReceivedEmptyResults) {
   EXPECT_EQ(u"search2", provider_->matches()[1].contents);
   EXPECT_EQ(u"search3", provider_->matches()[2].contents);
 
-  GURL suggest_url = GetSuggestURL(metrics::OmniboxEventProto::NTP_REALBOX);
+  GURL suggest_url = GetSuggestURL(metrics::OmniboxEventProto::NTP_REALBOX,
+                                   OmniboxFocusType::ON_FOCUS, "");
   EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
-  std::string empty_response("[\"\",[],[],[],{}]");
+  std::string empty_response(R"(["",[],[],[],{}])");
   test_loader_factory()->AddResponse(suggest_url.spec(), empty_response);
 
   base::RunLoop().RunUntilIdle();
@@ -834,15 +1112,93 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestReceivedEmptyResults) {
             prefs->GetString(omnibox::kZeroSuggestCachedResults));
 }
 
+TEST_F(ZeroSuggestProviderTest,
+       TestPsuggestZeroSuggestReceivedEmptyResultsSRP) {
+  base::HistogramTester histogram_tester;
+
+  EXPECT_CALL(*client_, IsAuthenticated())
+      .WillRepeatedly(testing::Return(true));
+
+  // Enable on-clobber ZPS.
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(omnibox::kClobberTriggersSRPZeroSuggest);
+
+  // Set up the pref to cache the response from the previous run.
+  std::string json_response(
+      R"(["",["search1", "search2", "search3"],)"
+      R"([],[],{"google:suggestrelevance":[602, 601, 600],)"
+      R"("google:verbatimrelevance":1300}])");
+  PrefService* prefs = client_->GetPrefs();
+  AutocompleteInput input = OnClobberInputForSRP();
+  omnibox::SetUserPreferenceForZeroSuggestCachedResponse(
+      prefs, input.current_url().spec(), json_response);
+
+  provider_->Start(input, false);
+  ASSERT_EQ(ZeroSuggestProvider::ResultType::kRemoteSendURL,
+            provider_->GetResultTypeRunningForTesting());
+
+  // Expect that matches get populated synchronously out of the cache.
+  ASSERT_EQ(3U, provider_->matches().size());  // 3 results, no verbatim match
+  EXPECT_EQ(u"search1", provider_->matches()[0].contents);
+  EXPECT_EQ(u"search2", provider_->matches()[1].contents);
+  EXPECT_EQ(u"search3", provider_->matches()[2].contents);
+
+  GURL suggest_url = GetSuggestURL(
+      metrics::OmniboxEventProto::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
+      OmniboxFocusType::DELETED_PERMANENT_TEXT, input.current_url().spec());
+  EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
+  std::string empty_response(R"(["",[],[],[],{}])");
+  test_loader_factory()->AddResponse(suggest_url.spec(), empty_response);
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(provider_->done());
+
+  // Expect correct histograms to have been logged.
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.ZeroSuggestProvider.NoURL.Prefetch", 0);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch", 0);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.ZeroSuggestProvider.URLBased.Prefetch", 0);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch", 5);
+  histogram_tester.ExpectBucketCount(
+      "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch",
+      0 /*CACHED_RESPONSE_CONVERTED_TO_MATCHES*/, 1);
+  histogram_tester.ExpectBucketCount(
+      "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch", 1 /*REQUEST_SENT*/,
+      1);
+  histogram_tester.ExpectBucketCount(
+      "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch",
+      3 /*REMOTE_RESPONSE_RECEIVED*/, 1);
+  histogram_tester.ExpectBucketCount(
+      "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch",
+      4 /*REMOTE_RESPONSE_CACHED*/, 1);
+  histogram_tester.ExpectBucketCount(
+      "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch",
+      5 /*REMOTE_RESPONSE_CONVERTED_TO_MATCHES*/, 1);
+
+  // Expect the provider to have notified the provider listener.
+  EXPECT_TRUE(provider_did_notify_);
+
+  // Expect that the matches have been cleared.
+  ASSERT_TRUE(provider_->matches().empty());
+
+  // Expect the new results to have been stored.
+  EXPECT_EQ(empty_response,
+            omnibox::GetUserPreferenceForZeroSuggestCachedResponse(
+                prefs, input.current_url().spec()));
+}
+
 TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestPrefetchThenNTPOnFocus) {
   EXPECT_CALL(*client_, IsAuthenticated())
       .WillRepeatedly(testing::Return(true));
 
   // Set up the pref to cache the response from the previous run.
   std::string json_response(
-      "[\"\",[\"search1\", \"search2\", \"search3\"],"
-      "[],[],{\"google:suggestrelevance\":[602, 601, 600],"
-      "\"google:verbatimrelevance\":1300}]");
+      R"(["",["search1", "search2", "search3"],)"
+      R"([],[],{"google:suggestrelevance":[602, 601, 600],)"
+      R"("google:verbatimrelevance":1300}])");
   PrefService* prefs = client_->GetPrefs();
   prefs->SetString(omnibox::kZeroSuggestCachedResults, json_response);
 
@@ -858,12 +1214,13 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestPrefetchThenNTPOnFocus) {
     ASSERT_EQ(0U, provider_->matches().size());
 
     GURL suggest_url =
-        GetSuggestURL(metrics::OmniboxEventProto::NTP_ZPS_PREFETCH);
+        GetSuggestURL(metrics::OmniboxEventProto::NTP_ZPS_PREFETCH,
+                      OmniboxFocusType::ON_FOCUS, "");
     EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
     std::string json_response2(
-        "[\"\",[\"search4\", \"search5\", \"search6\"],"
-        "[],[],{\"google:suggestrelevance\":[602, 601, 600],"
-        "\"google:verbatimrelevance\":1300}]");
+        R"(["",["search4", "search5", "search6"],)"
+        R"([],[],{"google:suggestrelevance":[602, 601, 600],)"
+        R"("google:verbatimrelevance":1300}])");
     test_loader_factory()->AddResponse(suggest_url.spec(), json_response2);
 
     base::RunLoop().RunUntilIdle();
@@ -892,7 +1249,7 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestPrefetchThenNTPOnFocus) {
     EXPECT_FALSE(provider_did_notify_);
 
     // Expect the same empty results after the response has been handled.
-    ASSERT_EQ(0U, provider_->matches().size());  // 3 results, no verbatim match
+    ASSERT_EQ(0U, provider_->matches().size());
 
     // Expect the new response to have been stored in the pref.
     EXPECT_EQ(json_response2,
@@ -914,12 +1271,13 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestPrefetchThenNTPOnFocus) {
     EXPECT_EQ(u"search5", provider_->matches()[1].contents);
     EXPECT_EQ(u"search6", provider_->matches()[2].contents);
 
-    GURL suggest_url = GetSuggestURL(metrics::OmniboxEventProto::NTP_REALBOX);
+    GURL suggest_url = GetSuggestURL(metrics::OmniboxEventProto::NTP_REALBOX,
+                                     OmniboxFocusType::ON_FOCUS, "");
     EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
     std::string json_response3(
-        "[\"\",[\"search7\", \"search8\", \"search9\"],"
-        "[],[],{\"google:suggestrelevance\":[602, 601, 600],"
-        "\"google:verbatimrelevance\":1300}]");
+        R"(["",["search7", "search8", "search9"],)"
+        R"([],[],{"google:suggestrelevance":[602, 601, 600],)"
+        R"("google:verbatimrelevance":1300}])");
     test_loader_factory()->AddResponse(suggest_url.spec(), json_response3);
 
     base::RunLoop().RunUntilIdle();
@@ -959,5 +1317,146 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestPrefetchThenNTPOnFocus) {
     // Expect the new response to have been stored in the pref.
     EXPECT_EQ(json_response3,
               prefs->GetString(omnibox::kZeroSuggestCachedResults));
+  }
+}
+
+TEST_F(ZeroSuggestProviderTest,
+       TestPsuggestZeroSuggestPrefetchThenSRPOnClobber) {
+  EXPECT_CALL(*client_, IsAuthenticated())
+      .WillRepeatedly(testing::Return(true));
+
+  // Enable on-clobber ZPS.
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(omnibox::kClobberTriggersSRPZeroSuggest);
+
+  // Set up the pref to cache the response from the previous run.
+  std::string json_response(
+      R"(["",["search1", "search2", "search3"],)"
+      R"([],[],{"google:suggestrelevance":[602, 601, 600],)"
+      R"("google:verbatimrelevance":1300}])");
+  PrefService* prefs = client_->GetPrefs();
+  AutocompleteInput input = PrefetchingInputForSRP();
+  omnibox::SetUserPreferenceForZeroSuggestCachedResponse(
+      prefs, input.current_url().spec(), json_response);
+
+  {
+    base::HistogramTester histogram_tester;
+
+    // Start a prefetch request.
+    provider_->StartPrefetch(input);
+    EXPECT_TRUE(provider_->done());
+
+    // Expect the results to be empty.
+    ASSERT_EQ(0U, provider_->matches().size());
+
+    GURL suggest_url = GetSuggestURL(
+        metrics::OmniboxEventProto::SRP_ZPS_PREFETCH,
+        OmniboxFocusType::DELETED_PERMANENT_TEXT, input.current_url().spec());
+    EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
+    std::string json_response2(
+        R"(["",["search4", "search5", "search6"],)"
+        R"([],[],{"google:suggestrelevance":[602, 601, 600],)"
+        R"("google:verbatimrelevance":1300}])");
+    test_loader_factory()->AddResponse(suggest_url.spec(), json_response2);
+
+    base::RunLoop().RunUntilIdle();
+    EXPECT_TRUE(provider_->done());
+
+    // Expect correct histograms to have been logged.
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch", 0);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.ZeroSuggestProvider.NoURL.Prefetch", 0);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.ZeroSuggestProvider.URLBased.Prefetch", 3);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch", 0);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.ZeroSuggestProvider.URLBased.Prefetch", 1 /*REQUEST_SENT*/, 1);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.ZeroSuggestProvider.URLBased.Prefetch",
+        3 /*REMOTE_RESPONSE_RECEIVED*/, 1);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.ZeroSuggestProvider.URLBased.Prefetch",
+        4 /*REMOTE_RESPONSE_CACHED*/, 1);
+
+    // Expect the provider to not have notified the provider listener since the
+    // matches were not updated.
+    EXPECT_FALSE(provider_did_notify_);
+
+    // Expect the same empty results after the response has been handled.
+    ASSERT_EQ(0U, provider_->matches().size());
+
+    // Expect the new response to have been stored in the pref.
+    EXPECT_EQ(json_response2,
+              omnibox::GetUserPreferenceForZeroSuggestCachedResponse(
+                  prefs, input.current_url().spec()));
+  }
+  {
+    base::HistogramTester histogram_tester;
+
+    // Start a non-prefetch request.
+    AutocompleteInput input = OnClobberInputForSRP();
+    provider_->Start(input, false);
+    EXPECT_FALSE(provider_->done());
+    ASSERT_EQ(ZeroSuggestProvider::ResultType::kRemoteSendURL,
+              provider_->GetResultTypeRunningForTesting());
+
+    // Expect the results from the cached response.
+    ASSERT_EQ(3U, provider_->matches().size());  // 3 results, no verbatim match
+    EXPECT_EQ(u"search4", provider_->matches()[0].contents);
+    EXPECT_EQ(u"search5", provider_->matches()[1].contents);
+    EXPECT_EQ(u"search6", provider_->matches()[2].contents);
+
+    GURL suggest_url = GetSuggestURL(
+        metrics::OmniboxEventProto::
+            SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
+        OmniboxFocusType::DELETED_PERMANENT_TEXT, input.current_url().spec());
+    EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
+    std::string json_response3(
+        R"(["",["search7", "search8", "search9"],)"
+        R"([],[],{"google:suggestrelevance":[602, 601, 600],)"
+        R"("google:verbatimrelevance":1300}])");
+    test_loader_factory()->AddResponse(suggest_url.spec(), json_response3);
+
+    base::RunLoop().RunUntilIdle();
+    EXPECT_TRUE(provider_->done());
+
+    // Expect correct histograms to have been logged.
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.ZeroSuggestProvider.NoURL.Prefetch", 0);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch", 0);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.ZeroSuggestProvider.URLBased.Prefetch", 0);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch", 4);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch",
+        0 /*CACHED_RESPONSE_CONVERTED_TO_MATCHES*/, 1);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch", 1 /*REQUEST_SENT*/,
+        1);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch",
+        3 /*REMOTE_RESPONSE_RECEIVED*/, 1);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch",
+        4 /*REMOTE_RESPONSE_CACHED*/, 1);
+
+    // Expect the provider to not have notified the provider listener since the
+    // matches were not updated.
+    EXPECT_FALSE(provider_did_notify_);
+
+    // Expect the same results after the response has been handled.
+    ASSERT_EQ(3U, provider_->matches().size());  // 3 results, no verbatim match
+    EXPECT_EQ(u"search4", provider_->matches()[0].contents);
+    EXPECT_EQ(u"search5", provider_->matches()[1].contents);
+    EXPECT_EQ(u"search6", provider_->matches()[2].contents);
+
+    // Expect the new response to have been stored in the pref.
+    EXPECT_EQ(json_response3,
+              omnibox::GetUserPreferenceForZeroSuggestCachedResponse(
+                  prefs, input.current_url().spec()));
   }
 }

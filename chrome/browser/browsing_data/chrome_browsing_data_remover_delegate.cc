@@ -1131,8 +1131,11 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
           nullable_filter.is_null() || nullable_filter.Run(search_url);
     }
 
-    if (should_clear_zero_suggest_and_session_token)
+    if (should_clear_zero_suggest_and_session_token) {
       prefs->SetString(omnibox::kZeroSuggestCachedResults, std::string());
+      prefs->SetDict(omnibox::kZeroSuggestCachedResultsWithURL,
+                     base::Value::Dict());
+    }
 
     // |search_prefetch_service| is null if |profile_| is off the record.
     auto* search_prefetch_service =

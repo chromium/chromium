@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_PREFS_H_
 #define COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_PREFS_H_
 
+#include <string>
+
 class PrefRegistrySimple;
 class PrefService;
 
@@ -37,6 +39,7 @@ extern const char kKeywordSpaceTriggeringEnabled[];
 extern const char kSuggestionGroupVisibility[];
 extern const char kPreventUrlElisionsInOmnibox[];
 extern const char kZeroSuggestCachedResults[];
+extern const char kZeroSuggestCachedResultsWithURL[];
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
@@ -60,6 +63,18 @@ void SetUserPreferenceForSuggestionGroupVisibility(
     PrefService* prefs,
     int suggestion_group_id,
     SuggestionGroupVisibility visibility);
+
+// Updates the ZPS dictionary preference to cache the given |response| value
+// using the |page_url| as the cache key.
+void SetUserPreferenceForZeroSuggestCachedResponse(PrefService* prefs,
+                                                   const std::string& page_url,
+                                                   const std::string& response);
+
+// Returns the cached response from the ZPS dictionary preference associated
+// with the given |page_url|.
+std::string GetUserPreferenceForZeroSuggestCachedResponse(
+    PrefService* prefs,
+    const std::string& page_url);
 
 }  // namespace omnibox
 

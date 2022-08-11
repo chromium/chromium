@@ -42,8 +42,14 @@ const char kSuggestionGroupVisibility[] = "omnibox.suggestionGroupVisibility";
 // Boolean that specifies whether to always show full URLs in the omnibox.
 const char kPreventUrlElisionsInOmnibox[] = "omnibox.prevent_url_elisions";
 
-// A cache of zero suggest results using JSON serialized into a string.
+// A cache of NTP zero suggest results using a JSON dictionary serialized into a
+// string.
 const char kZeroSuggestCachedResults[] = "zerosuggest.cachedresults";
+
+// A cache of SRP/Web zero suggest results using a JSON dictionary serialized
+// into a string keyed off the page URL.
+const char kZeroSuggestCachedResultsWithURL[] =
+    "zerosuggest.cachedresults_with_url";
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kSuggestionGroupVisibility);
@@ -86,6 +92,27 @@ void SetUserPreferenceForSuggestionGroupVisibility(
           : kToggleSuggestionGroupIdOffHistogram,
       base::HistogramBase::kUmaTargetedHistogramFlag)
       ->Add(suggestion_group_id);
+}
+
+void SetUserPreferenceForZeroSuggestCachedResponse(
+    PrefService* prefs,
+    const std::string& page_url,
+    const std::string& response) {
+  DCHECK(prefs);
+
+  DictionaryPrefUpdate update(prefs, kZeroSuggestCachedResultsWithURL);
+  update->SetStringKey(page_url, response);
+}
+
+std::string GetUserPreferenceForZeroSuggestCachedResponse(
+    PrefService* prefs,
+    const std::string& page_url) {
+  DCHECK(prefs);
+
+  const base::Value::Dict& dictionary =
+      prefs->GetValueDict(omnibox::kZeroSuggestCachedResultsWithURL);
+  auto* value_ptr = dictionary.FindString(page_url);
+  return (value_ptr ? *value_ptr : std::string());
 }
 
 }  // namespace omnibox

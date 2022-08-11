@@ -2066,14 +2066,18 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
 
 TEST_F(ChromeBrowsingDataRemoverDelegateTest, ZeroSuggestCacheClear) {
   PrefService* prefs = GetProfile()->GetPrefs();
+  omnibox::SetUserPreferenceForZeroSuggestCachedResponse(
+      prefs, "https://google.com/search?q=chrome", R"(["", ["foo", "bar"]])");
   prefs->SetString(omnibox::kZeroSuggestCachedResults,
-                   "[\"\", [\"foo\", \"bar\"]]");
+                   R"(["", ["foo", "bar"]])");
   BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
                                 content::BrowsingDataRemover::DATA_TYPE_COOKIES,
                                 false);
 
   // Expect the prefs to be cleared when cookies are removed.
   EXPECT_TRUE(prefs->GetString(omnibox::kZeroSuggestCachedResults).empty());
+  EXPECT_TRUE(
+      prefs->GetValueDict(omnibox::kZeroSuggestCachedResultsWithURL).empty());
   EXPECT_EQ(content::BrowsingDataRemover::DATA_TYPE_COOKIES, GetRemovalMask());
   EXPECT_EQ(content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
             GetOriginTypeMask());

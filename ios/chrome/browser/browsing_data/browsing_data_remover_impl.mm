@@ -483,6 +483,8 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
       IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::REMOVE_COOKIES)) {
     browser_state_->GetPrefs()->SetString(omnibox::kZeroSuggestCachedResults,
                                           std::string());
+    browser_state_->GetPrefs()->SetDict(
+        omnibox::kZeroSuggestCachedResultsWithURL, base::Value::Dict());
   }
 
   if (IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::REMOVE_DOWNLOADS)) {
