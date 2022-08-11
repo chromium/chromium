@@ -2074,6 +2074,11 @@ void PaintLayerScrollableArea::AddStickyLayer(PaintLayer* layer) {
   EnsureRareData().sticky_layers_.insert(layer);
 }
 
+void PaintLayerScrollableArea::RemoveStickyLayer(PaintLayer* layer) {
+  if (rare_data_)
+    rare_data_->sticky_layers_.erase(layer);
+}
+
 void PaintLayerScrollableArea::InvalidateAllStickyConstraints() {
   // Don't clear StickyConstraints for each LayoutObject of each layer in
   // sticky_layers_ because sticky_layers_ may contain stale pointers.
