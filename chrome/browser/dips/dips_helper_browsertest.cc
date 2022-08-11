@@ -5,7 +5,6 @@
 #include "chrome/browser/dips/dips_helper.h"
 
 #include "base/memory/raw_ptr.h"
-#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
@@ -103,31 +102,7 @@ class DIPSTabHelperBrowserTest : public InProcessBrowserTest {
 
   DIPSTabHelper* dips_helper() { return helper_; }
 
-  void BlockUntilHelperProcessesPendingRequests() {
-    base::RunLoop run_loop;
-    helper_->FlushForTesting(run_loop.QuitClosure());
-    run_loop.Run();
-  }
-
   void SetDIPSTime(base::Time time) { test_clock_.SetNow(time); }
-
-  void CopyDIPSState(DIPSState* a, DIPSState* b) {
-    a->set_site_storage_time_on_load(b->site_storage_time());
-    a->set_user_interaction_time_on_load(b->user_interaction_time());
-    a->set_was_loaded_for_testing(b->was_loaded());
-  }
-
-  DIPSState GetDIPSState(const GURL& url) {
-    DIPSState state;
-
-    helper_->StateForURLForTesting(
-        url, base::BindLambdaForTesting([&](DIPSState loaded_state) {
-          CopyDIPSState(&state, &loaded_state);
-        }));
-    BlockUntilHelperProcessesPendingRequests();
-
-    return state;
-  }
 
  private:
   base::SimpleTestClock test_clock_;
@@ -153,8 +128,8 @@ IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest,
   content::WaitForHitTestData(iframe);
 
   // Before clicking, no DIPS state for either site.
-  EXPECT_FALSE(GetDIPSState(url_a).was_loaded());
-  EXPECT_FALSE(GetDIPSState(url_b).was_loaded());
+  EXPECT_FALSE(dips_helper()->StateForURL(url_a).was_loaded());
+  EXPECT_FALSE(dips_helper()->StateForURL(url_b).was_loaded());
 
   // Click on the b.test iframe.
   SetDIPSTime(time);
@@ -163,12 +138,12 @@ IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest,
   observer.Wait();
 
   // User interaction is recorded for a.test (the top-level frame).
-  DIPSState state_a = GetDIPSState(url_a);
+  DIPSState state_a = dips_helper()->StateForURL(url_a);
   EXPECT_TRUE(state_a.was_loaded());
   EXPECT_FALSE(state_a.site_storage_time().has_value());
   EXPECT_EQ(time, state_a.user_interaction_time().value());
   // User interaction is also recorded for b.test (the iframe).
-  DIPSState state_b = GetDIPSState(url_b);
+  DIPSState state_b = dips_helper()->StateForURL(url_b);
   EXPECT_TRUE(state_b.was_loaded());
   EXPECT_FALSE(state_b.site_storage_time().has_value());
   EXPECT_EQ(time, state_b.user_interaction_time().value());
@@ -197,8 +172,8 @@ IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest, StorageRecordedInSingleFrame) {
       base::BindRepeating(&content::FrameIsChildOfMainFrame));
 
   // Initially, no DIPS state for either site.
-  EXPECT_FALSE(GetDIPSState(url_a).was_loaded());
-  EXPECT_FALSE(GetDIPSState(url_b).was_loaded());
+  EXPECT_FALSE(dips_helper()->StateForURL(url_a).was_loaded());
+  EXPECT_FALSE(dips_helper()->StateForURL(url_b).was_loaded());
 
   // Write a cookie in the b.test iframe.
   SetDIPSTime(time);
@@ -209,10 +184,10 @@ IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest, StorageRecordedInSingleFrame) {
   observer.Wait();
 
   // Nothing recorded for a.test (the top-level frame).
-  DIPSState state_a = GetDIPSState(url_a);
+  DIPSState state_a = dips_helper()->StateForURL(url_a);
   EXPECT_FALSE(state_a.was_loaded());
   // Site storage was recorded for b.test (the iframe).
-  DIPSState state_b = GetDIPSState(url_b);
+  DIPSState state_b = dips_helper()->StateForURL(url_b);
   EXPECT_TRUE(state_b.was_loaded());
   EXPECT_EQ(time, state_b.site_storage_time().value());
   EXPECT_FALSE(state_b.user_interaction_time().has_value());

@@ -26,14 +26,12 @@ class DIPSTabHelper : public content::WebContentsObserver,
 
   // Record that |url| wrote to storage, if it was the first such time (we
   // currently don't care about later writes to storage.)
-  void RecordStorage(const GURL& url);
+  void MaybeRecordStorage(const GURL& url);
   // Record that the user interacted on |url| .
   void RecordInteraction(const GURL& url);
 
-  void FlushForTesting(base::OnceClosure flushed);
+  DIPSState StateForURL(const GURL& url);
 
-  using StateForURLCallback = base::OnceCallback<void(DIPSState)>;
-  void StateForURLForTesting(const GURL& url, StateForURLCallback callback);
   static base::Clock* SetClockForTesting(base::Clock* clock);
 
  private:

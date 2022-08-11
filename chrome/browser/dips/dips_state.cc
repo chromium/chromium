@@ -28,10 +28,6 @@ void DIPSState::set_site_storage_time(absl::optional<base::Time> time) {
   dirty_ = true;
 }
 
-void DIPSState::set_site_storage_time_on_load(absl::optional<base::Time> time) {
-  site_storage_time_ = time;
-}
-
 void DIPSState::set_user_interaction_time(absl::optional<base::Time> time) {
   if (time == user_interaction_time_) {
     return;
@@ -39,13 +35,4 @@ void DIPSState::set_user_interaction_time(absl::optional<base::Time> time) {
 
   user_interaction_time_ = time;
   dirty_ = true;
-}
-
-void DIPSState::set_user_interaction_time_on_load(
-    absl::optional<base::Time> time) {
-  user_interaction_time_ = time;
-}
-
-void DIPSState::set_was_loaded_for_testing(bool loaded) {
-  was_loaded_ = loaded;
 }

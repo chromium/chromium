@@ -4,6 +4,7 @@
 
 #include "chrome/browser/dips/dips_storage.h"
 
+#include "base/test/simple_test_clock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
