@@ -571,7 +571,7 @@ sk_sp<SkDrawLooper>& CanvasRenderingContext2DState::ShadowOnlyDrawLooper()
   if (!shadow_only_draw_looper_) {
     DrawLooperBuilder draw_looper_builder;
     draw_looper_builder.AddShadow(shadow_offset_, ClampTo<float>(shadow_blur_),
-                                  shadow_color_,
+                                  Color::FromSkColor(shadow_color_),
                                   DrawLooperBuilder::kShadowIgnoresTransforms,
                                   DrawLooperBuilder::kShadowRespectsAlpha);
     shadow_only_draw_looper_ = draw_looper_builder.DetachDrawLooper();
@@ -584,7 +584,7 @@ CanvasRenderingContext2DState::ShadowAndForegroundDrawLooper() const {
   if (!shadow_and_foreground_draw_looper_) {
     DrawLooperBuilder draw_looper_builder;
     draw_looper_builder.AddShadow(shadow_offset_, ClampTo<float>(shadow_blur_),
-                                  shadow_color_,
+                                  Color::FromSkColor(shadow_color_),
                                   DrawLooperBuilder::kShadowIgnoresTransforms,
                                   DrawLooperBuilder::kShadowRespectsAlpha);
     draw_looper_builder.AddUnmodifiedContent();

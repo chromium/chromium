@@ -106,12 +106,14 @@ class PLATFORM_EXPORT Color {
 
   // Create a color using rgb() syntax.
   static constexpr Color FromRGB(int r, int g, int b) {
-    return Color(MakeRGB(r, g, b));
+    return Color(0xFF000000 | ClampInt(r) << 16 | ClampInt(g) << 8 |
+                 ClampInt(b));
   }
 
   // Create a color using rgba() syntax.
   static constexpr Color FromRGBA(int r, int g, int b, int a) {
-    return Color(MakeRGBA(r, g, b, a));
+    return Color(ClampInt(a) << 24 | ClampInt(r) << 16 | ClampInt(g) << 8 |
+                 ClampInt(b));
   }
 
   // Create a color using the hsl() syntax.
@@ -127,7 +129,7 @@ class PLATFORM_EXPORT Color {
   // TODO(crbug.com/1308932): These three functions are just helpers for while
   // we're converting platform/graphics to float color.
   static Color FromSkColor4f(SkColor4f fc) {
-    return MakeRGBA32FromFloats(fc.fR, fc.fG, fc.fB, fc.fA);
+    return Color(MakeRGBA32FromFloats(fc.fR, fc.fG, fc.fB, fc.fA));
   }
   static constexpr Color FromSkColor(SkColor color) { return Color(color); }
   static constexpr Color FromRGBA32(RGBA32 color) { return Color(color); }
@@ -189,6 +191,9 @@ class PLATFORM_EXPORT Color {
   static const Color kTransparent;
 
  private:
+  static constexpr int ClampInt(int x) {
+    return x < 0 ? 0 : (x > 255 ? 255 : x);
+  }
   void GetHueMaxMin(double&, double&, double&) const;
 
   RGBA32 color_;

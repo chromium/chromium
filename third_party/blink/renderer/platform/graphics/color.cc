@@ -304,8 +304,8 @@ Color::operator SkColor() const {
 
 Color Color::Light() const {
   // Hardcode this common case for speed.
-  if (color_ == kBlack)
-    return kLightenedBlack;
+  if (color_ == kBlack.color_)
+    return Color(kLightenedBlack);
 
   const float scale_factor = nextafterf(256.0f, 0.0f);
 
@@ -327,8 +327,8 @@ Color Color::Light() const {
 
 Color Color::Dark() const {
   // Hardcode this common case for speed.
-  if (color_ == kWhite)
-    return kDarkenedWhite;
+  if (color_ == kWhite.color_)
+    return Color(kDarkenedWhite);
 
   const float scale_factor = nextafterf(256.0f, 0.0f);
 
@@ -346,7 +346,7 @@ Color Color::Dark() const {
 Color Color::CombineWithAlpha(float other_alpha) const {
   RGBA32 rgb_only = Rgb() & 0x00FFFFFF;
   float override_alpha = (Alpha() / 255.f) * other_alpha;
-  return rgb_only | ColorFloatToRGBAByte(override_alpha) << 24;
+  return Color(rgb_only | ColorFloatToRGBAByte(override_alpha) << 24);
 }
 
 Color Color::Blend(const Color& source) const {
