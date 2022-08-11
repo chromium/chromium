@@ -761,9 +761,9 @@ base::Value ConvertIntentToValue(const apps::IntentPtr& intent) {
 }
 
 absl::optional<std::string> GetStringValueFromDict(
-    const base::DictionaryValue& dict,
+    const base::Value::Dict& dict,
     const std::string& key_name) {
-  const base::Value* value = dict.FindKey(key_name);
+  const base::Value* value = dict.Find(key_name);
   if (!value)
     return absl::nullopt;
 
@@ -774,14 +774,14 @@ absl::optional<std::string> GetStringValueFromDict(
   return *string_value;
 }
 
-absl::optional<bool> GetBoolValueFromDict(const base::DictionaryValue& dict,
+absl::optional<bool> GetBoolValueFromDict(const base::Value::Dict& dict,
                                           const std::string& key_name) {
-  return dict.FindBoolKey(key_name);
+  return dict.FindBool(key_name);
 }
 
-absl::optional<GURL> GetGurlValueFromDict(const base::DictionaryValue& dict,
+absl::optional<GURL> GetGurlValueFromDict(const base::Value::Dict& dict,
                                           const std::string& key_name) {
-  const std::string* url_spec = dict.FindStringKey(key_name);
+  const std::string* url_spec = dict.FindString(key_name);
   if (!url_spec)
     return absl::nullopt;
 
@@ -792,15 +792,14 @@ absl::optional<GURL> GetGurlValueFromDict(const base::DictionaryValue& dict,
   return url;
 }
 
-std::vector<apps::IntentFilePtr> GetFilesFromDict(
-    const base::DictionaryValue& dict,
-    const std::string& key_name) {
-  const base::Value* value = dict.FindListKey(key_name);
-  if (!value || !value->is_list() || value->GetListDeprecated().empty())
+std::vector<apps::IntentFilePtr> GetFilesFromDict(const base::Value::Dict& dict,
+                                                  const std::string& key_name) {
+  const base::Value::List* value = dict.FindList(key_name);
+  if (!value || value->empty())
     return std::vector<apps::IntentFilePtr>();
 
   std::vector<apps::IntentFilePtr> files;
-  for (const auto& item : value->GetListDeprecated()) {
+  for (const auto& item : *value) {
     GURL url(item.GetString());
     if (url.is_valid()) {
       files.push_back(std::make_unique<apps::IntentFile>(url));
@@ -809,29 +808,28 @@ std::vector<apps::IntentFilePtr> GetFilesFromDict(
   return files;
 }
 
-std::vector<std::string> GetCategoriesFromDict(
-    const base::DictionaryValue& dict,
-    const std::string& key_name) {
-  const base::Value* value = dict.FindListKey(key_name);
-  if (!value || !value->is_list() || value->GetListDeprecated().empty())
+std::vector<std::string> GetCategoriesFromDict(const base::Value::Dict& dict,
+                                               const std::string& key_name) {
+  const base::Value::List* value = dict.FindList(key_name);
+  if (!value || value->empty())
     return std::vector<std::string>();
 
   std::vector<std::string> categories;
-  for (const auto& item : value->GetListDeprecated())
+  for (const auto& item : *value)
     categories.push_back(item.GetString());
 
   return categories;
 }
 
 base::flat_map<std::string, std::string> GetExtrasFromDict(
-    const base::DictionaryValue& dict,
+    const base::Value::Dict& dict,
     const std::string& key_name) {
-  const base::Value* value = dict.FindDictKey(key_name);
-  if (!value || !value->is_dict())
+  const base::Value::Dict* value = dict.FindDict(key_name);
+  if (!value)
     return base::flat_map<std::string, std::string>();
 
   base::flat_map<std::string, std::string> extras;
-  for (auto pair : value->DictItems()) {
+  for (auto pair : *value) {
     if (pair.second.is_string())
       extras[pair.first] = pair.second.GetString();
   }
@@ -840,8 +838,8 @@ base::flat_map<std::string, std::string> GetExtrasFromDict(
 }
 
 apps::IntentPtr ConvertValueToIntent(base::Value&& value) {
-  base::DictionaryValue* dict = nullptr;
-  if (!value.is_dict() || !value.GetAsDictionary(&dict))
+  base::Value::Dict* dict = value.GetIfDict();
+  if (!dict)
     return nullptr;
 
   auto action = GetStringValueFromDict(*dict, kActionKey);
