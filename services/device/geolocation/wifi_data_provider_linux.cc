@@ -232,23 +232,23 @@ bool NetworkManagerWlanApi::GetAccessPointsForAdapter(
 
     AccessPointData access_point_data;
     {
-      std::unique_ptr<dbus::Response> response(
+      std::unique_ptr<dbus::Response> ssid_response(
           GetAccessPointProperty(access_point_proxy, "Ssid"));
-      if (!response)
+      if (!ssid_response)
         continue;
       // The response should contain a variant that contains an array of bytes.
-      dbus::MessageReader reader(response.get());
-      dbus::MessageReader variant_reader(response.get());
-      if (!reader.PopVariant(&variant_reader)) {
+      dbus::MessageReader ssid_reader(ssid_response.get());
+      dbus::MessageReader variant_reader(ssid_response.get());
+      if (!ssid_reader.PopVariant(&variant_reader)) {
         LOG(WARNING) << "Unexpected response for " << access_point_path.value()
-                     << ": " << response->ToString();
+                     << ": " << ssid_response->ToString();
         continue;
       }
       const uint8_t* ssid_bytes = nullptr;
       size_t ssid_length = 0;
       if (!variant_reader.PopArrayOfBytes(&ssid_bytes, &ssid_length)) {
         LOG(WARNING) << "Unexpected response for " << access_point_path.value()
-                     << ": " << response->ToString();
+                     << ": " << ssid_response->ToString();
         continue;
       }
       std::string ssid(ssid_bytes, ssid_bytes + ssid_length);
@@ -256,15 +256,15 @@ bool NetworkManagerWlanApi::GetAccessPointsForAdapter(
     }
 
     {  // Read the mac address
-      std::unique_ptr<dbus::Response> response(
+      std::unique_ptr<dbus::Response> mac_response(
           GetAccessPointProperty(access_point_proxy, "HwAddress"));
-      if (!response)
+      if (!mac_response)
         continue;
-      dbus::MessageReader reader(response.get());
+      dbus::MessageReader mac_reader(mac_response.get());
       std::string mac;
-      if (!reader.PopVariantOfString(&mac)) {
+      if (!mac_reader.PopVariantOfString(&mac)) {
         LOG(WARNING) << "Unexpected response for " << access_point_path.value()
-                     << ": " << response->ToString();
+                     << ": " << mac_response->ToString();
         continue;
       }
 
@@ -280,15 +280,15 @@ bool NetworkManagerWlanApi::GetAccessPointsForAdapter(
     }
 
     {  // Read signal strength.
-      std::unique_ptr<dbus::Response> response(
+      std::unique_ptr<dbus::Response> strength_response(
           GetAccessPointProperty(access_point_proxy, "Strength"));
-      if (!response)
+      if (!strength_response)
         continue;
-      dbus::MessageReader reader(response.get());
+      dbus::MessageReader strength_reader(strength_response.get());
       uint8_t strength = 0;
-      if (!reader.PopVariantOfByte(&strength)) {
+      if (!strength_reader.PopVariantOfByte(&strength)) {
         LOG(WARNING) << "Unexpected response for " << access_point_path.value()
-                     << ": " << response->ToString();
+                     << ": " << strength_response->ToString();
         continue;
       }
       // Convert strength as a percentage into dBs.
@@ -296,15 +296,15 @@ bool NetworkManagerWlanApi::GetAccessPointsForAdapter(
     }
 
     {  // Read the channel
-      std::unique_ptr<dbus::Response> response(
+      std::unique_ptr<dbus::Response> frequency_response(
           GetAccessPointProperty(access_point_proxy, "Frequency"));
-      if (!response)
+      if (!frequency_response)
         continue;
-      dbus::MessageReader reader(response.get());
+      dbus::MessageReader frequency_reader(frequency_response.get());
       uint32_t frequency = 0;
-      if (!reader.PopVariantOfUint32(&frequency)) {
+      if (!frequency_reader.PopVariantOfUint32(&frequency)) {
         LOG(WARNING) << "Unexpected response for " << access_point_path.value()
-                     << ": " << response->ToString();
+                     << ": " << frequency_response->ToString();
         continue;
       }
 
