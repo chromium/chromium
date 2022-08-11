@@ -355,33 +355,33 @@ std::ostream& operator<<(std::ostream& stream,
   return stream;
 }
 
-}  // namespace ash
-
 std::ostream& operator<<(
     std::ostream& stream,
-    const ash::CellularInhibitor::InhibitReason& inhibit_reason) {
+    const CellularInhibitor::InhibitReason& inhibit_reason) {
   switch (inhibit_reason) {
-    case ash::CellularInhibitor::InhibitReason::kInstallingProfile:
+    case CellularInhibitor::InhibitReason::kInstallingProfile:
       stream << "[Installing profile]";
       break;
-    case ash::CellularInhibitor::InhibitReason::kRenamingProfile:
+    case CellularInhibitor::InhibitReason::kRenamingProfile:
       stream << "[Renaming profile]";
       break;
-    case ash::CellularInhibitor::InhibitReason::kRemovingProfile:
+    case CellularInhibitor::InhibitReason::kRemovingProfile:
       stream << "[Removing profile]";
       break;
-    case ash::CellularInhibitor::InhibitReason::kConnectingToProfile:
+    case CellularInhibitor::InhibitReason::kConnectingToProfile:
       stream << "[Connecting to profile]";
       break;
-    case ash::CellularInhibitor::InhibitReason::kRefreshingProfileList:
+    case CellularInhibitor::InhibitReason::kRefreshingProfileList:
       stream << "[Refreshing profile list]";
       break;
-    case ash::CellularInhibitor::InhibitReason::kResettingEuiccMemory:
+    case CellularInhibitor::InhibitReason::kResettingEuiccMemory:
       stream << "[Resetting EUICC memory]";
       break;
-    case ash::CellularInhibitor::InhibitReason::kDisablingProfile:
+    case CellularInhibitor::InhibitReason::kDisablingProfile:
       stream << "[Disabling profile]";
       break;
   }
   return stream;
 }
+
+}  // namespace ash

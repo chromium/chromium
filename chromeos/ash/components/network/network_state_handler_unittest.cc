@@ -144,7 +144,7 @@ class TestObserver final : public NetworkStateHandlerObserver {
                           NetworkState::PortalState portal_state) override {
     default_network_portal_state_ = portal_state;
     ++portal_state_change_count_;
-    VLOG(1) << "PortalStateChanged: " << static_cast<int>(portal_state);
+    VLOG(1) << "PortalStateChanged: " << portal_state;
   }
 
   void NetworkConnectionStateChanged(const NetworkState* network) override {

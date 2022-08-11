@@ -76,6 +76,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularInhibitor
     kResettingEuiccMemory,
     kDisablingProfile,
   };
+  friend std::ostream& operator<<(std::ostream& stream,
+                                  const InhibitReason& state);
 
   // Callback which returns InhibitLock on inhibit success or nullptr on
   // failure.
@@ -197,11 +199,15 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularInhibitor
   base::WeakPtrFactory<CellularInhibitor> weak_ptr_factory_{this};
 };
 
-}  // namespace ash
+std::ostream& COMPONENT_EXPORT(CHROMEOS_NETWORK) operator<<(
+    std::ostream& stream,
+    const ash::CellularInhibitor::State& state);
 
-std::ostream& operator<<(
+std::ostream& COMPONENT_EXPORT(CHROMEOS_NETWORK) operator<<(
     std::ostream& stream,
     const ash::CellularInhibitor::InhibitReason& inhibit_reason);
+
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove when the migration is finished.
 namespace chromeos {

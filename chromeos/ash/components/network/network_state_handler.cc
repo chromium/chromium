@@ -567,6 +567,8 @@ void NetworkStateHandler::SetNetworkChromePortalState(
   NetworkState* network = GetModifiableNetworkState(service_path);
   if (!network)
     return;
+  NET_LOG(USER) << "Setting Chrome PortalState for "
+                << NetworkPathId(service_path) << " = " << portal_state;
   auto prev_portal_state = network->GetPortalState();
   network->set_chrome_portal_state(portal_state);
   if (prev_portal_state == network->GetPortalState())
@@ -2075,6 +2077,8 @@ void NetworkStateHandler::NotifyDefaultNetworkChanged(
        default_network->proxy_config() != default_network_proxy_config_)) {
     default_network_portal_state_ = default_network->GetPortalState();
     default_network_proxy_config_ = default_network->proxy_config().Clone();
+    NET_LOG(EVENT) << "NOTIFY: PortalStateChanged: "
+                   << default_network_portal_state_;
     for (auto& observer : observers_) {
       observer.PortalStateChanged(default_network,
                                   default_network_portal_state_);
@@ -2084,6 +2088,7 @@ void NetworkStateHandler::NotifyDefaultNetworkChanged(
                                   !default_network_proxy_config_.is_none())) {
     default_network_portal_state_ = NetworkState::PortalState::kUnknown;
     default_network_proxy_config_ = base::Value();
+    NET_LOG(EVENT) << "NOTIFY: PortalStateChanged: Unknown (no network)";
     for (auto& observer : observers_)
       observer.PortalStateChanged(nullptr, NetworkState::PortalState::kUnknown);
   }

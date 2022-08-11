@@ -667,7 +667,7 @@ void NetworkState::UpdateCaptivePortalState(const base::Value& properties) {
                             shill_portal_state_);
   if (shill_portal_state_ != PortalState::kOnline) {
     NET_LOG(EVENT) << "Shill captive portal state for: " << NetworkId(this)
-                   << " = " << static_cast<int>(shill_portal_state_)
+                   << " = " << shill_portal_state_
                    << " ,status_code=" << status_code;
     base::UmaHistogramSparse("CaptivePortal.NetworkStateStatusCode",
                              std::abs(status_code));
@@ -685,6 +685,31 @@ void NetworkState::SetVpnProvider(const std::string& id,
     vpn_provider_ = std::make_unique<VpnProviderInfo>();
   vpn_provider_->id = id;
   vpn_provider_->type = type;
+}
+
+std::ostream& operator<<(std::ostream& stream,
+                         const NetworkState::PortalState& portal_state) {
+  switch (portal_state) {
+    case NetworkState::PortalState::kUnknown:
+      stream << "Unknown";
+      break;
+    case NetworkState::PortalState::kOnline:
+      stream << "Online";
+      break;
+    case NetworkState::PortalState::kPortalSuspected:
+      stream << "PortalSuspected";
+      break;
+    case NetworkState::PortalState::kPortal:
+      stream << "Portal";
+      break;
+    case NetworkState::PortalState::kProxyAuthRequired:
+      stream << "ProxyAuthRequired";
+      break;
+    case NetworkState::PortalState::kNoInternet:
+      stream << "NoInternet";
+      break;
+  }
+  return stream;
 }
 
 }  // namespace ash
