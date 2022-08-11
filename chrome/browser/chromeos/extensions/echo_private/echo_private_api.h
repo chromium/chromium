@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/values.h"
 #include "chrome/browser/ash/notifications/echo_dialog_listener.h"
 #include "extensions/browser/extension_function.h"
 
@@ -14,10 +15,13 @@ class PrefRegistrySimple;
 
 namespace chromeos {
 
-// Namespace to register the EchoCheckedOffers field in Local State.
 namespace echo_offer {
 
+// Registers the EchoCheckedOffers field in Local State.
 void RegisterPrefs(PrefRegistrySimple* registry);
+
+// Removes nested empty dictionaries from |dict|.
+void RemoveEmptyValueDicts(base::Value::Dict& dict);
 
 }  // namespace echo_offer
 

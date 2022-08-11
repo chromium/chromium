@@ -56,6 +56,24 @@ void RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kEchoCheckedOffers);
 }
 
+// Removes empty dictionaries from |dict|, potentially nested.
+// Does not modify empty lists.
+void RemoveEmptyValueDicts(base::Value::Dict& dict) {
+  auto it = dict.begin();
+  while (it != dict.end()) {
+    base::Value& value = it->second;
+    if (value.is_dict()) {
+      base::Value::Dict& sub_dict = value.GetDict();
+      RemoveEmptyValueDicts(sub_dict);
+      if (sub_dict.empty()) {
+        it = dict.erase(it);
+        continue;
+      }
+    }
+    it++;
+  }
+}
+
 }  // namespace echo_offer
 
 }  // namespace chromeos
@@ -124,13 +142,13 @@ ExtensionFunction::ResponseAction EchoPrivateSetOfferInfoFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   const std::string& service_id = params->id;
-  std::unique_ptr<base::DictionaryValue> dict =
-      params->offer_info.additional_properties.DeepCopyWithoutEmptyChildren();
+  base::Value::Dict dict =
+      params->offer_info.additional_properties.GetDict().Clone();
+  chromeos::echo_offer::RemoveEmptyValueDicts(dict);
 
   PrefService* local_state = g_browser_process->local_state();
   DictionaryPrefUpdate offer_update(local_state, prefs::kEchoCheckedOffers);
-  offer_update->SetKey("echo." + service_id,
-                       base::Value::FromUniquePtrValue(std::move(dict)));
+  offer_update->SetKey("echo." + service_id, base::Value(std::move(dict)));
   return RespondNow(NoArguments());
 }
 

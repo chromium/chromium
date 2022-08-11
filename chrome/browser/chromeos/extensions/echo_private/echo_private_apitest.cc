@@ -265,4 +265,30 @@ IN_PROC_BROWSER_TEST_F(ExtensionEchoPrivateApiTest,
   EXPECT_EQ(1, dialog_invocation_count());
 }
 
+IN_PROC_BROWSER_TEST_F(ExtensionEchoPrivateApiTest, RemoveEmptyValueDicts) {
+  base::Value::Dict dict;
+
+  base::Value::Dict nested;
+  nested.Set("c", "d");
+  nested.Set("empty_value", base::Value::Dict());
+
+  base::Value::Dict nested_empty;
+  nested_empty.Set("empty_value", base::Value::Dict());
+
+  dict.Set("a", "b");
+  dict.Set("empty", base::Value::Dict());
+  dict.Set("nested", std::move(nested));
+  dict.Set("nested_empty", std::move(nested_empty));
+
+  // Remove nested dictionaries.
+  chromeos::echo_offer::RemoveEmptyValueDicts(dict);
+
+  // After removing empty nested dicts, we  are left with:
+  //   {"a" : "b", "nested" : {"c" : "d"}}
+  EXPECT_EQ(2, dict.size());
+  EXPECT_EQ(1, dict.FindDict("nested")->size());
+  EXPECT_EQ("b", *dict.FindString("a"));
+  EXPECT_EQ("d", *dict.FindStringByDottedPath("nested.c"));
+}
+
 }  // namespace chromeos
