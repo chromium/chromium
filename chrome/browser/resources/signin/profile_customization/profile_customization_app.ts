@@ -9,7 +9,6 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import './strings.m.js';
-import './signin_icons.js';
 import './signin_shared.css.js';
 import './signin_vars.css.js';
 
