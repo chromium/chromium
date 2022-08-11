@@ -224,8 +224,6 @@ scoped_refptr<gl::GLImage> GLImageBackingFactory::MakeGLImage(
   if (handle.type == gfx::SHARED_MEMORY_BUFFER) {
     if (plane != gfx::BufferPlane::DEFAULT)
       return nullptr;
-    if (!base::IsValueInRangeForNumericType<size_t>(handle.stride))
-      return nullptr;
     auto image = base::MakeRefCounted<gl::GLImageSharedMemory>(size);
     if (color_space.IsValid())
       image->SetColorSpace(color_space);

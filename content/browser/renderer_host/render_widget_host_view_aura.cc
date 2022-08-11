@@ -1386,7 +1386,7 @@ gfx::Rect RenderWidgetHostViewAura::GetSelectionBoundingBox() const {
 }
 
 bool RenderWidgetHostViewAura::GetCompositionCharacterBounds(
-    uint32_t index,
+    size_t index,
     gfx::Rect* rect) const {
   DCHECK(rect);
 

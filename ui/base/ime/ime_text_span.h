@@ -48,8 +48,8 @@ struct COMPONENT_EXPORT(UI_BASE_IME_TYPES) ImeTextSpan {
 
   explicit ImeTextSpan(
       Type type = Type::kComposition,
-      uint32_t start_offset = 0,
-      uint32_t end_offset = 0,
+      size_t start_offset = 0,
+      size_t end_offset = 0,
       Thickness thickness = Thickness::kThin,
       UnderlineStyle underline_style = UnderlineStyle::kSolid,
       SkColor background_color = SK_ColorTRANSPARENT,
@@ -80,8 +80,8 @@ struct COMPONENT_EXPORT(UI_BASE_IME_TYPES) ImeTextSpan {
   bool operator!=(const ImeTextSpan& rhs) const { return !(*this == rhs); }
 
   Type type;
-  uint32_t start_offset;
-  uint32_t end_offset;
+  size_t start_offset;
+  size_t end_offset;
   SkColor underline_color = SK_ColorTRANSPARENT;
   Thickness thickness;
   UnderlineStyle underline_style;

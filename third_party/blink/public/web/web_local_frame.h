@@ -475,8 +475,8 @@ class WebLocalFrame : public WebFrame {
   virtual WebRange MarkedRange() const = 0;
 
   // Returns the text range rectangle in the viepwort coordinate space.
-  virtual bool FirstRectForCharacterRange(unsigned location,
-                                          unsigned length,
+  virtual bool FirstRectForCharacterRange(uint32_t location,
+                                          uint32_t length,
                                           gfx::Rect&) const = 0;
 
   // Supports commands like Undo, Redo, Cut, Copy, Paste, SelectAll,

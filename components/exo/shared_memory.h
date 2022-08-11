@@ -34,7 +34,7 @@ class SharedMemory {
   std::unique_ptr<Buffer> CreateBuffer(const gfx::Size& size,
                                        gfx::BufferFormat format,
                                        unsigned offset,
-                                       int stride);
+                                       uint32_t stride);
 
   size_t GetSize() const;
   bool Resize(const size_t new_size);

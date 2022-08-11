@@ -70,7 +70,7 @@ Message::Message(int32_t routing_id, uint32_t type, PriorityValue priority)
   Init();
 }
 
-Message::Message(const char* data, int data_len)
+Message::Message(const char* data, size_t data_len)
     : base::Pickle(data, data_len) {
   Init();
 }

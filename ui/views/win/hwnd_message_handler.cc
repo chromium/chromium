@@ -862,7 +862,8 @@ bool HWNDMessageHandler::RunMoveLoop(const gfx::Vector2d& drag_offset,
   // tasks while in windows move loop.
   base::CurrentThread::ScopedNestableTaskAllower allow_nested;
 
-  SendMessage(hwnd(), WM_SYSCOMMAND, SC_MOVE | 0x0002, GetMessagePos());
+  SendMessage(hwnd(), WM_SYSCOMMAND, SC_MOVE | 0x0002,
+              static_cast<LPARAM>(GetMessagePos()));
   // Windows doesn't appear to offer a way to determine whether the user
   // canceled the move or not. We assume if the user released the mouse it was
   // successful.

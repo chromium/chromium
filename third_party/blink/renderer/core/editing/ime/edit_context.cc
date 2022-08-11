@@ -140,9 +140,10 @@ void EditContext::DispatchTextFormatEvent(
       static_cast<WTF::wtf_size_t>(ime_text_spans.size()));
 
   for (const auto& ime_text_span : ime_text_spans) {
-    const int range_start =
-        ime_text_span.start_offset + composition_range_start_;
-    const int range_end = ime_text_span.end_offset + composition_range_start_;
+    const auto range_start = base::checked_cast<wtf_size_t>(
+        ime_text_span.start_offset + composition_range_start_);
+    const auto range_end = base::checked_cast<wtf_size_t>(
+        ime_text_span.end_offset + composition_range_start_);
 
     String underline_thickness;
     String underline_style;

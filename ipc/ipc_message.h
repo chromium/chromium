@@ -66,7 +66,7 @@ class IPC_MESSAGE_SUPPORT_EXPORT Message : public base::Pickle {
   // Initializes a message from a const block of data.  The data is not copied;
   // instead the data is merely referenced by this message.  Only const methods
   // should be used on the message when initialized this way.
-  Message(const char* data, int data_len);
+  Message(const char* data, size_t data_len);
 
   Message(const Message& other);
   Message& operator=(const Message& other);
@@ -111,7 +111,7 @@ class IPC_MESSAGE_SUPPORT_EXPORT Message : public base::Pickle {
     if (unblock) {
       header()->flags |= UNBLOCK_BIT;
     } else {
-      header()->flags &= ~UNBLOCK_BIT;
+      header()->flags &= static_cast<uint32_t>(~UNBLOCK_BIT);
     }
   }
 

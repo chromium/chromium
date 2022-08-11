@@ -93,7 +93,7 @@ gfx::Rect FakeTextInputClient::GetSelectionBoundingBox() const {
   return {};
 }
 
-bool FakeTextInputClient::GetCompositionCharacterBounds(uint32_t index,
+bool FakeTextInputClient::GetCompositionCharacterBounds(size_t index,
                                                         gfx::Rect* rect) const {
   return false;
 }

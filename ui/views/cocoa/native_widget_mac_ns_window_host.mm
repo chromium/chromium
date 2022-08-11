@@ -11,6 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/mac/foundation_util.h"
 #include "base/no_destructor.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/time/time.h"
 #include "components/remote_cocoa/app_shim/mouse_capture.h"
@@ -1170,7 +1171,8 @@ void NativeWidgetMacNSWindowHost::OnWindowDisplayChanged(
                                display_.color_spaces());
   }
   if (display_id_changed) {
-    display_link_ = ui::DisplayLinkMac::GetForDisplay(display_.id());
+    display_link_ = ui::DisplayLinkMac::GetForDisplay(
+        base::checked_cast<CGDirectDisplayID>(display_.id()));
     if (!display_link_) {
       // Note that on some headless systems, the display link will fail to be
       // created, so this should not be a fatal error.

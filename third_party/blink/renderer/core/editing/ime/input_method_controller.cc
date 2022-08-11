@@ -736,9 +736,9 @@ void InputMethodController::AddImeTextSpans(
     ContainerNode* base_element,
     unsigned offset_in_plain_chars) {
   for (const auto& ime_text_span : ime_text_spans) {
-    unsigned ime_text_span_start =
+    wtf_size_t ime_text_span_start =
         offset_in_plain_chars + ime_text_span.StartOffset();
-    unsigned ime_text_span_end =
+    wtf_size_t ime_text_span_end =
         offset_in_plain_chars + ime_text_span.EndOffset();
 
     EphemeralRange ephemeral_line_range =

@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -118,7 +119,7 @@ struct COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowInitProperties {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   bool prefer_dark_theme = false;
   raw_ptr<gfx::ImageSkia> icon = nullptr;
-  absl::optional<int> background_color;
+  absl::optional<SkColor> background_color;
 
   // Specifies the res_name and res_class fields,
   // respectively, of the WM_CLASS window property. Controls window grouping

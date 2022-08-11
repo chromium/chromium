@@ -82,7 +82,7 @@ gfx::Rect DummyTextInputClient::GetSelectionBoundingBox() const {
 }
 
 bool DummyTextInputClient::GetCompositionCharacterBounds(
-    uint32_t index,
+    size_t index,
     gfx::Rect* rect) const {
   return false;
 }

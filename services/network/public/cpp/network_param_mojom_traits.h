@@ -52,10 +52,10 @@ template <>
 class COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM)
     StructTraits<network::mojom::HttpVersionDataView, net::HttpVersion> {
  public:
-  static int16_t major_value(net::HttpVersion version) {
+  static uint16_t major_value(net::HttpVersion version) {
     return version.major_value();
   }
-  static int16_t minor_value(net::HttpVersion version) {
+  static uint16_t minor_value(net::HttpVersion version) {
     return version.minor_value();
   }
 

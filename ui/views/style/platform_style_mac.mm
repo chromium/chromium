@@ -4,6 +4,7 @@
 
 #include "ui/views/style/platform_style.h"
 
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "ui/base/buildflags.h"
 #include "ui/gfx/color_utils.h"
@@ -71,16 +72,18 @@ gfx::Range PlatformStyle::RangeToDeleteBackwards(const std::u16string& text,
 
   base::ScopedCFTypeRef<CFStringRef> cf_string(CFStringCreateWithCharacters(
       kCFAllocatorDefault, reinterpret_cast<const UniChar*>(text.data()),
-      text.size()));
+      base::checked_cast<CFIndex>(text.size())));
   CFRange range_to_delete = CFStringGetRangeOfCharacterClusterAtIndex(
-      cf_string, cursor_position - 1, kCFStringBackwardDeletionCluster);
+      cf_string, base::checked_cast<CFIndex>(cursor_position - 1),
+      kCFStringBackwardDeletionCluster);
 
   if (range_to_delete.location == NSNotFound)
     return gfx::Range();
 
   // The range needs to be reversed to undo correctly.
-  return gfx::Range(range_to_delete.location + range_to_delete.length,
-                    range_to_delete.location);
+  return gfx::Range(base::checked_cast<size_t>(range_to_delete.location +
+                                               range_to_delete.length),
+                    base::checked_cast<size_t>(range_to_delete.location));
 }
 
 }  // namespace views

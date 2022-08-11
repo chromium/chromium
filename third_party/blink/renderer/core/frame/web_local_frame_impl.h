@@ -198,8 +198,8 @@ class CORE_EXPORT WebLocalFrameImpl final
   void UnmarkText() override;
   bool HasMarkedText() const override;
   WebRange MarkedRange() const override;
-  bool FirstRectForCharacterRange(unsigned location,
-                                  unsigned length,
+  bool FirstRectForCharacterRange(uint32_t location,
+                                  uint32_t length,
                                   gfx::Rect&) const override;
   bool ExecuteCommand(const WebString&) override;
   bool ExecuteCommand(const WebString&, const WebString& value) override;

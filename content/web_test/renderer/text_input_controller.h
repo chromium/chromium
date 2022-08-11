@@ -48,8 +48,8 @@ class TextInputController {
   bool HasMarkedText();
   std::vector<int> MarkedRange();
   std::vector<int> SelectedRange();
-  std::vector<int> FirstRectForCharacterRange(unsigned location,
-                                              unsigned length);
+  std::vector<int> FirstRectForCharacterRange(uint32_t location,
+                                              uint32_t length);
   void SetComposition(const std::string& text,
                       int replacement_range_start,
                       int replacement_range_end);

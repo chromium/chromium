@@ -767,7 +767,7 @@ TEST_P(GLImageBackingFactoryWithGMBTest, GpuMemoryBufferImportSharedMemory) {
   handle.region = base::UnsafeSharedMemoryRegion::Create(shm_size);
   ASSERT_TRUE(handle.region.IsValid());
   handle.offset = 0;
-  handle.stride = static_cast<int32_t>(
+  handle.stride = static_cast<uint32_t>(
       gfx::RowSizeForBufferFormat(size.width(), format, 0));
 
   auto backing = backing_factory_shmem_->CreateSharedImage(

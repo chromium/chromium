@@ -21,7 +21,7 @@ COMPONENT_EXPORT(UI_BASE)
 // Called as each item is created during menu or submenu creation.
 - (void)controllerWillAddItem:(NSMenuItem*)menuItem
                     fromModel:(ui::MenuModel*)model
-                      atIndex:(NSInteger)index
+                      atIndex:(size_t)index
             withColorProvider:(const ui::ColorProvider*)colorProvider;
 // Called after all menu items in a menu or submenu are created.
 - (void)controllerWillAddMenu:(NSMenu*)menu fromModel:(ui::MenuModel*)model;

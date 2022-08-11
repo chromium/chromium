@@ -1161,8 +1161,8 @@ void LocalFrameMojoHandler::GetFirstRectForRange(const gfx::Range& range) {
                            : GetCurrentCursorPositionInFrame(frame_);
 
       WebLocalFrameImpl::FromFrame(frame_)->FirstRectForCharacterRange(
-          base::checked_cast<unsigned>(start),
-          base::checked_cast<unsigned>(range.length()), rect);
+          base::checked_cast<uint32_t>(start),
+          base::checked_cast<uint32_t>(range.length()), rect);
     }
   }
 

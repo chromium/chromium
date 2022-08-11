@@ -548,7 +548,7 @@ bool ArcImeService::CanComposeInline() const {
   return true;
 }
 
-bool ArcImeService::GetCompositionCharacterBounds(uint32_t index,
+bool ArcImeService::GetCompositionCharacterBounds(size_t index,
                                                   gfx::Rect* rect) const {
   return false;
 }

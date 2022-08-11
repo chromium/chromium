@@ -42,7 +42,7 @@ SharedMemory::~SharedMemory() {}
 std::unique_ptr<Buffer> SharedMemory::CreateBuffer(const gfx::Size& size,
                                                    gfx::BufferFormat format,
                                                    unsigned offset,
-                                                   int stride) {
+                                                   uint32_t stride) {
   TRACE_EVENT2("exo", "SharedMemory::CreateBuffer", "size", size.ToString(),
                "format", static_cast<int>(format));
 
@@ -52,10 +52,8 @@ std::unique_ptr<Buffer> SharedMemory::CreateBuffer(const gfx::Size& size,
     return nullptr;
   }
 
-  if (!base::IsValueInRangeForNumericType<size_t>(stride) ||
-      gfx::RowSizeForBufferFormat(size.width(), format, 0) >
-          static_cast<size_t>(stride) ||
-      static_cast<size_t>(stride) & 3) {
+  if (gfx::RowSizeForBufferFormat(size.width(), format, 0) > stride ||
+      stride & 3) {
     DLOG(WARNING) << "Failed to create shm buffer. Unsupported stride "
                   << stride;
     return nullptr;

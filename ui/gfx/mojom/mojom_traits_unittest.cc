@@ -147,7 +147,7 @@ TEST_F(StructTraitsTest, AcceleratedWidget) {
 TEST_F(StructTraitsTest, GpuMemoryBufferHandle) {
   const gfx::GpuMemoryBufferId kId(99);
   const uint32_t kOffset = 126;
-  const int32_t kStride = 256;
+  const uint32_t kStride = 256;
   base::UnsafeSharedMemoryRegion shared_memory_region =
       base::UnsafeSharedMemoryRegion::Create(1024);
   ASSERT_TRUE(shared_memory_region.IsValid());

@@ -57,8 +57,8 @@ class TextInputControllerBindings
   bool HasMarkedText();
   std::vector<int> MarkedRange();
   std::vector<int> SelectedRange();
-  std::vector<int> FirstRectForCharacterRange(unsigned location,
-                                              unsigned length);
+  std::vector<int> FirstRectForCharacterRange(uint32_t location,
+                                              uint32_t length);
   void SetComposition(const std::string& text);
   void SetCompositionWithReplacementRange(const std::string& text,
                                           int replacement_start,
@@ -186,8 +186,8 @@ std::vector<int> TextInputControllerBindings::SelectedRange() {
 }
 
 std::vector<int> TextInputControllerBindings::FirstRectForCharacterRange(
-    unsigned location,
-    unsigned length) {
+    uint32_t location,
+    uint32_t length) {
   return controller_ ? controller_->FirstRectForCharacterRange(location, length)
                      : std::vector<int>();
 }
@@ -363,8 +363,8 @@ std::vector<int> TextInputController::SelectedRange() {
 }
 
 std::vector<int> TextInputController::FirstRectForCharacterRange(
-    unsigned location,
-    unsigned length) {
+    uint32_t location,
+    uint32_t length) {
   gfx::Rect rect;
   if (!view()->FocusedFrame() ||
       !view()->FocusedFrame()->FirstRectForCharacterRange(location, length,

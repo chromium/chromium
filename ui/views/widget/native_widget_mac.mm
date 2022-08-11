@@ -54,7 +54,7 @@ namespace {
 static base::RepeatingCallback<void(NativeWidgetMac*)>*
     g_init_native_widget_callback = nullptr;
 
-NSInteger StyleMaskForParams(const Widget::InitParams& params) {
+uint64_t StyleMaskForParams(const Widget::InitParams& params) {
   // If the Widget is modal, it will be displayed as a sheet. This works best if
   // it has NSWindowStyleMaskTitled. For example, with
   // NSWindowStyleMaskBorderless, the parent window still accepts input.

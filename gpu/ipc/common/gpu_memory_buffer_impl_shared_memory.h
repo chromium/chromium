@@ -85,12 +85,12 @@ class GPU_EXPORT GpuMemoryBufferImplSharedMemory : public GpuMemoryBufferImpl {
       base::UnsafeSharedMemoryRegion shared_memory_region,
       base::WritableSharedMemoryMapping shared_memory_mapping,
       size_t offset,
-      int stride);
+      uint32_t stride);
 
   base::UnsafeSharedMemoryRegion shared_memory_region_;
   base::WritableSharedMemoryMapping shared_memory_mapping_;
   size_t offset_;
-  int stride_;
+  uint32_t stride_;
 };
 
 }  // namespace gpu

@@ -82,7 +82,7 @@ struct MD5CE {
     DCHECK_EQ(m % 64, 0u);
     if (i < n) {
       // Emit the message itself...
-      return data[i];
+      return static_cast<uint8_t>(data[i]);
     } else if (i == n) {
       // ...followed by the end of message marker.
       return 0x80;

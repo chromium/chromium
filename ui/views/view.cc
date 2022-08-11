@@ -18,6 +18,7 @@
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
@@ -2389,7 +2390,8 @@ void View::HandlePropertyChangeEffects(PropertyEffects effects) {
 void View::AfterPropertyChange(const void* key, int64_t old_value) {
   if (key == kElementIdentifierKey) {
     const ui::ElementIdentifier old_element_id =
-        ui::ElementIdentifier::FromRawValue(old_value);
+        ui::ElementIdentifier::FromRawValue(
+            base::checked_cast<intptr_t>(old_value));
     if (old_element_id) {
       views::ElementTrackerViews::GetInstance()->UnregisterView(old_element_id,
                                                                 this);

@@ -1459,7 +1459,7 @@ gfx::Rect Textfield::GetSelectionBoundingBox() const {
   return gfx::Rect();
 }
 
-bool Textfield::GetCompositionCharacterBounds(uint32_t index,
+bool Textfield::GetCompositionCharacterBounds(size_t index,
                                               gfx::Rect* rect) const {
   DCHECK(rect);
   if (!HasCompositionText())

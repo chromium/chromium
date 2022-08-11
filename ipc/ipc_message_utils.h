@@ -191,7 +191,9 @@ struct ParamTraits<int> {
 template <>
 struct ParamTraits<unsigned int> {
   typedef unsigned int param_type;
-  static void Write(base::Pickle* m, const param_type& p) { m->WriteInt(p); }
+  static void Write(base::Pickle* m, const param_type& p) {
+    m->WriteInt(static_cast<int>(p));
+  }
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r) {
@@ -260,7 +262,9 @@ struct ParamTraits<long long> {
 template <>
 struct ParamTraits<unsigned long long> {
   typedef unsigned long long param_type;
-  static void Write(base::Pickle* m, const param_type& p) { m->WriteInt64(p); }
+  static void Write(base::Pickle* m, const param_type& p) {
+    m->WriteInt64(static_cast<int64_t>(p));
+  }
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r) {

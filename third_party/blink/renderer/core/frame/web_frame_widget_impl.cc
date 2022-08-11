@@ -38,6 +38,7 @@
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -3605,9 +3606,11 @@ WebFrameWidgetImpl::GetImeTextSpansInfo(
 
   for (const auto& ime_text_span : ime_text_spans) {
     gfx::Rect rect;
-    unsigned length = ime_text_span.end_offset - ime_text_span.start_offset;
-    focused_frame->FirstRectForCharacterRange(ime_text_span.start_offset,
-                                              length, rect);
+    auto length = base::checked_cast<wtf_size_t>(ime_text_span.end_offset -
+                                                 ime_text_span.start_offset);
+    focused_frame->FirstRectForCharacterRange(
+        base::checked_cast<wtf_size_t>(ime_text_span.start_offset), length,
+        rect);
 
     ime_text_spans_info.push_back(ui::mojom::blink::ImeTextSpanInfo::New(
         ime_text_span, widget_base_->BlinkSpaceToEnclosedDIPs(rect)));

@@ -74,7 +74,7 @@ struct GFX_EXPORT GpuMemoryBufferHandle {
   GpuMemoryBufferId id{0};
   base::UnsafeSharedMemoryRegion region;
   uint32_t offset = 0;
-  int32_t stride = 0;
+  uint32_t stride = 0;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
   NativePixmapHandle native_pixmap_handle;
 #elif BUILDFLAG(IS_MAC)

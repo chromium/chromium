@@ -93,7 +93,7 @@ gfx::Rect PrefixSelector::GetSelectionBoundingBox() const {
   return gfx::Rect();
 }
 
-bool PrefixSelector::GetCompositionCharacterBounds(uint32_t index,
+bool PrefixSelector::GetCompositionCharacterBounds(size_t index,
                                                    gfx::Rect* rect) const {
   // TextInputClient::GetCompositionCharacterBounds is expected to fill |rect|
   // in screen coordinates and GetCaretBounds returns screen coordinates.

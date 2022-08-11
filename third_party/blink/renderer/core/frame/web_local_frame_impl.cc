@@ -1262,8 +1262,8 @@ WebRange WebLocalFrameImpl::MarkedRange() const {
 }
 
 bool WebLocalFrameImpl::FirstRectForCharacterRange(
-    unsigned location,
-    unsigned length,
+    uint32_t location,
+    uint32_t length,
     gfx::Rect& rect_in_viewport) const {
   if ((location + length < location) && (location + length))
     length = 0;

@@ -11,6 +11,7 @@
 #include <set>
 
 #include "base/component_export.h"
+#include "base/numerics/safe_conversions.h"
 #include "ui/base/class_property.h"
 
 // Overview:
@@ -246,7 +247,7 @@ class ClassPropertyCaster<ui::ElementIdentifier> {
  public:
   static int64_t ToInt64(ui::ElementIdentifier x) { return x.GetRawValue(); }
   static ui::ElementIdentifier FromInt64(int64_t x) {
-    return ui::ElementIdentifier::FromRawValue(x);
+    return ui::ElementIdentifier::FromRawValue(base::checked_cast<intptr_t>(x));
   }
 };
 
