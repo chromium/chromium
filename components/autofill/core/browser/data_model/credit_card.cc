@@ -866,9 +866,7 @@ void CreditCard::SetExpirationDateFromString(const std::u16string& text) {
   SetExpirationYear(num);
 }
 
-const std::pair<std::u16string, std::u16string> CreditCard::LabelPieces()
-    const {
-  std::u16string label;
+std::pair<std::u16string, std::u16string> CreditCard::LabelPieces() const {
   if (number().empty()) {
     // No CC number, if valid nickname is present, return nickname only.
     // Otherwise, return cardholder name only.
@@ -878,22 +876,16 @@ const std::pair<std::u16string, std::u16string> CreditCard::LabelPieces()
     return std::make_pair(name_on_card_, std::u16string());
   }
 
-  std::u16string obfuscated_cc_number =
-      CardIdentifierStringForAutofillDisplay();
-  // No expiration date set.
-  if (!expiration_month_ || !expiration_year_)
-    return std::make_pair(obfuscated_cc_number, std::u16string());
-
-  std::u16string formatted_date = ExpirationDateForDisplay();
-
-  std::u16string separator =
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_ADDRESS_SUMMARY_SEPARATOR);
-  return std::make_pair(obfuscated_cc_number, separator + formatted_date);
+  return std::make_pair(CardIdentifierStringForAutofillDisplay(),
+                        name_on_card_);
 }
 
-const std::u16string CreditCard::Label() const {
+std::u16string CreditCard::Label() const {
   std::pair<std::u16string, std::u16string> pieces = LabelPieces();
-  return pieces.first + pieces.second;
+  if (pieces.first.empty() || pieces.second.empty())
+    return pieces.first + pieces.second;
+
+  return pieces.first + u", " + pieces.second;
 }
 
 std::u16string CreditCard::LastFourDigits() const {

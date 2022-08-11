@@ -4,9 +4,17 @@
         display: flex;
         flex: 1;
       }
+      .list-item {
+        margin-bottom: 8px;
+        margin-top: 8px;
+      }
 
       #creditCardExpiration {
         flex: 1;
+      }
+
+      #summarySublabel {
+        color: var(--cr-secondary-text-color);
       }
 
       .payments-label {
@@ -20,11 +28,17 @@
     </style>
     <div class="list-item">
       <div class="type-column">
-        <span id="creditCardLabel" class="ellipses">
-          [[creditCard.metadata.summaryLabel]]
-        </span>
+        <div class="summary-column">
+          <div id = "summaryLabel" class="ellipses">
+            [[creditCard.metadata.summaryLabel]]
+          </div>
+          <div id = "summarySublabel"
+            hidden$="[[!shouldShowSecondarySublabel_()]]" class="ellipses">
+            [[getSecondarySublabel_(creditCard.metadata)]]
+          </div>
+        </div>
         <span id="virtualCardLabel"
-            hidden$="[[!isVirtualCardEnrolled_(creditCard.metadata)]]">
+            hidden$="[[!shouldShowVirtualCardLabel_(creditCard.metadata)]]">
           $i18n{virtualCardEnabled}
         </span>
         <span class="payments-label"

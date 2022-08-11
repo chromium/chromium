@@ -43,6 +43,7 @@ suite('PaymentsSection', function() {
     loadTimeData.overrideValues({
       migrationEnabled: true,
       virtualCardEnrollmentEnabled: true,
+      virtualCardMetadataEnabled: true,
     });
   });
 
@@ -207,7 +208,7 @@ suite('PaymentsSection', function() {
     assertEquals(
         creditCard.metadata!.summaryLabel,
         rowShadowRoot.querySelector<HTMLElement>(
-                         '#creditCardLabel')!.textContent!.trim());
+                         '#summaryLabel')!.textContent!.trim());
     assertEquals(
         creditCard.expirationMonth + '/' + creditCard.expirationYear,
         rowShadowRoot.querySelector<HTMLElement>(
@@ -304,6 +305,77 @@ suite('PaymentsSection', function() {
             rowShadowRoot.querySelector('cr-icon-button.icon-external');
         assertFalse(!!outlinkButton);
       });
+
+  test('verifyCreditCardSummarySublabelWhenSublabelIsValid', function() {
+    const creditCard = createCreditCardEntry();
+    creditCard.metadata!.isLocal = false;
+    creditCard.metadata!.isVirtualCardEnrollmentEligible = false;
+    creditCard.metadata!.isVirtualCardEnrolled = false;
+    const section =
+        createPaymentsSection([creditCard], /*upiIds=*/[], /*prefValues=*/ {});
+
+    const creditCardList = section.$.paymentsList;
+    assertTrue(!!creditCardList);
+    assertEquals(1, getLocalAndServerCreditCardListItems().length);
+    assertFalse(getCardRowShadowRoot(section.$.paymentsList)
+                    .querySelector<HTMLElement>('#summarySublabel')!.hidden);
+  });
+
+  test('verifyCreditCardSummarySublabelWhenSublabelIsInvalid', function() {
+    const creditCard = createCreditCardEntry();
+    creditCard.metadata!.isLocal = false;
+    creditCard.metadata!.isVirtualCardEnrollmentEligible = false;
+    creditCard.metadata!.isVirtualCardEnrolled = false;
+    creditCard.metadata!.summarySublabel = '';
+    const section =
+        createPaymentsSection([creditCard], /*upiIds=*/[], /*prefValues=*/ {});
+
+    const creditCardList = section.$.paymentsList;
+    assertTrue(!!creditCardList);
+    assertEquals(1, getLocalAndServerCreditCardListItems().length);
+    assertTrue(getCardRowShadowRoot(section.$.paymentsList)
+                   .querySelector<HTMLElement>('#summarySublabel')!.hidden);
+  });
+
+  test('verifyCreditCardSummarySublabelWhenVirtualCardAvailable', function() {
+    const creditCard = createCreditCardEntry();
+    creditCard.metadata!.isLocal = false;
+    creditCard.metadata!.isVirtualCardEnrollmentEligible = true;
+    creditCard.metadata!.isVirtualCardEnrolled = false;
+    const section =
+        createPaymentsSection([creditCard], /*upiIds=*/[], /*prefValues=*/ {});
+
+    const creditCardList = section.$.paymentsList;
+    assertTrue(!!creditCardList);
+    assertEquals(1, getLocalAndServerCreditCardListItems().length);
+    assertFalse(getCardRowShadowRoot(section.$.paymentsList)
+                    .querySelector<HTMLElement>('#summarySublabel')!.hidden);
+    assertEquals(
+        'Virtual card available',
+        getCardRowShadowRoot(section.$.paymentsList)
+            .querySelector<HTMLElement>(
+                '#summarySublabel')!.textContent!.trim());
+  });
+
+  test('verifyCreditCardSummarySublabelWhenVirtualCardTurnedOn', function() {
+    const creditCard = createCreditCardEntry();
+    creditCard.metadata!.isLocal = false;
+    creditCard.metadata!.isVirtualCardEnrollmentEligible = false;
+    creditCard.metadata!.isVirtualCardEnrolled = true;
+    const section =
+        createPaymentsSection([creditCard], /*upiIds=*/[], /*prefValues=*/ {});
+
+    const creditCardList = section.$.paymentsList;
+    assertTrue(!!creditCardList);
+    assertEquals(1, getLocalAndServerCreditCardListItems().length);
+    assertFalse(getCardRowShadowRoot(section.$.paymentsList)
+                    .querySelector<HTMLElement>('#summarySublabel')!.hidden);
+    assertEquals(
+        'Virtual card turned on',
+        getCardRowShadowRoot(section.$.paymentsList)
+            .querySelector<HTMLElement>(
+                '#summarySublabel')!.textContent!.trim());
+  });
 
   test('verifyAddVsEditCreditCardTitle', function() {
     const newCreditCard = createEmptyCreditCardEntry();

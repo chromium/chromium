@@ -275,11 +275,11 @@ class CreditCard : public AutofillDataModel {
 
   // Various display functions.
 
-  // Card preview summary, for example: "Nickname/Network - ****1234",
-  // ", 01/2020".
-  const std::pair<std::u16string, std::u16string> LabelPieces() const;
+  // Card preview summary, for example: "Nickname/Network - ****1234 John
+  // Smith".
+  std::pair<std::u16string, std::u16string> LabelPieces() const;
   // Like LabelPieces, but appends the two pieces together.
-  const std::u16string Label() const;
+  std::u16string Label() const;
   // The last four digits of the card number (or possibly less if there aren't
   // enough characters).
   std::u16string LastFourDigits() const;

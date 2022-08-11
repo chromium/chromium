@@ -103,81 +103,57 @@ TEST(CreditCardTest, GetObfuscatedStringForCardDigits) {
 // Tests credit card summary string generation.  This test simulates a variety
 // of different possible summary strings.  Variations occur based on the
 // existence of credit card number, month, and year fields.
-TEST(CreditCardTest, PreviewSummaryAndNetworkAndLastFourDigitsStrings) {
+TEST(CreditCardTest, LabelSummary) {
   std::u16string valid_nickname = u"My Visa Card";
 
   // Case 0: empty credit card.
   CreditCard credit_card0(base::GenerateGUID(), "https://www.example.com/");
-  std::u16string summary0 = credit_card0.Label();
-  EXPECT_EQ(std::u16string(), summary0);
-  std::u16string obfuscated0 = credit_card0.NetworkAndLastFourDigits();
-  EXPECT_EQ(ASCIIToUTF16(std::string("Card")), obfuscated0);
+  EXPECT_EQ(std::u16string(), credit_card0.Label());
 
   // Case 00: Empty credit card with empty strings.
   CreditCard credit_card00(base::GenerateGUID(), "https://www.example.com/");
   test::SetCreditCardInfo(&credit_card00, "John Dillinger", "", "", "", "");
-  std::u16string summary00 = credit_card00.Label();
-  EXPECT_EQ(std::u16string(u"John Dillinger"), summary00);
-  std::u16string obfuscated00 = credit_card00.NetworkAndLastFourDigits();
-  EXPECT_EQ(ASCIIToUTF16(std::string("Card")), obfuscated00);
+  EXPECT_EQ(std::u16string(u"John Dillinger"), credit_card00.Label());
 
   // Case 1: No credit card number.
   CreditCard credit_card1(base::GenerateGUID(), "https://www.example.com/");
   test::SetCreditCardInfo(&credit_card1, "John Dillinger", "", "01", "2010",
                           "1");
-  std::u16string summary1 = credit_card1.Label();
-  EXPECT_EQ(std::u16string(u"John Dillinger"), summary1);
-  std::u16string obfuscated1 = credit_card1.NetworkAndLastFourDigits();
-  EXPECT_EQ(ASCIIToUTF16(std::string("Card")), obfuscated1);
+  EXPECT_EQ(std::u16string(u"John Dillinger"), credit_card1.Label());
 
   // Case 1.1: No credit card number, but has nickname.
   CreditCard credit_card11(base::GenerateGUID(), "https://www.example.com/");
   test::SetCreditCardInfo(&credit_card11, "John Dillinger", "", "01", "2010",
                           "1");
   credit_card11.SetNickname(valid_nickname);
-  std::u16string summary11 = credit_card11.Label();
-  EXPECT_EQ(valid_nickname, summary11);
-  std::u16string obfuscated11 = credit_card11.NetworkAndLastFourDigits();
-  EXPECT_EQ(ASCIIToUTF16(std::string("Card")), obfuscated11);
+  EXPECT_EQ(valid_nickname, credit_card11.Label());
 
   // Case 2: No month.
   CreditCard credit_card2(base::GenerateGUID(), "https://www.example.com/");
   test::SetCreditCardInfo(&credit_card2, "John Dillinger",
                           "5105 1051 0510 5100", "", "2010", "1");
-  std::u16string summary2 = credit_card2.Label();
   EXPECT_EQ(UTF8ToUTF16(std::string("Mastercard  ") +
-                        test::ObfuscatedCardDigitsAsUTF8("5100")),
-            summary2);
-  std::u16string obfuscated2 = credit_card2.NetworkAndLastFourDigits();
-  EXPECT_EQ(UTF8ToUTF16(std::string("Mastercard  ") +
-                        test::ObfuscatedCardDigitsAsUTF8("5100")),
-            obfuscated2);
+                        test::ObfuscatedCardDigitsAsUTF8("5100") +
+                        ", John Dillinger"),
+            credit_card2.Label());
 
   // Case 3: No year.
   CreditCard credit_card3(base::GenerateGUID(), "https://www.example.com/");
   test::SetCreditCardInfo(&credit_card3, "John Dillinger",
                           "5105 1051 0510 5100", "01", "", "1");
-  std::u16string summary3 = credit_card3.Label();
   EXPECT_EQ(UTF8ToUTF16(std::string("Mastercard  ") +
-                        test::ObfuscatedCardDigitsAsUTF8("5100")),
-            summary3);
-  std::u16string obfuscated3 = credit_card3.NetworkAndLastFourDigits();
-  EXPECT_EQ(UTF8ToUTF16(std::string("Mastercard  ") +
-                        test::ObfuscatedCardDigitsAsUTF8("5100")),
-            obfuscated3);
+                        test::ObfuscatedCardDigitsAsUTF8("5100") +
+                        ", John Dillinger"),
+            credit_card3.Label());
 
   // Case 4: Have everything except nickname.
   CreditCard credit_card4(base::GenerateGUID(), "https://www.example.com/");
   test::SetCreditCardInfo(&credit_card4, "John Dillinger",
                           "5105 1051 0510 5100", "01", "2010", "1");
-  std::u16string summary4 = credit_card4.Label();
   EXPECT_EQ(UTF8ToUTF16(std::string("Mastercard  ") +
-                        test::ObfuscatedCardDigitsAsUTF8("5100") + ", 01/2010"),
-            summary4);
-  std::u16string obfuscated4 = credit_card4.NetworkAndLastFourDigits();
-  EXPECT_EQ(UTF8ToUTF16(std::string("Mastercard  ") +
-                        test::ObfuscatedCardDigitsAsUTF8("5100")),
-            obfuscated4);
+                        test::ObfuscatedCardDigitsAsUTF8("5100") +
+                        ", John Dillinger"),
+            credit_card4.Label());
 
   // Case 5: Very long credit card
   CreditCard credit_card5(base::GenerateGUID(), "https://www.example.com/");
@@ -185,26 +161,94 @@ TEST(CreditCardTest, PreviewSummaryAndNetworkAndLastFourDigitsStrings) {
       &credit_card5, "John Dillinger",
       "0123456789 0123456789 0123456789 5105 1051 0510 5100", "01", "2010",
       "1");
-  std::u16string summary5 = credit_card5.Label();
   EXPECT_EQ(UTF8ToUTF16(std::string("Card  ") +
-                        test::ObfuscatedCardDigitsAsUTF8("5100") + ", 01/2010"),
-            summary5);
-  std::u16string obfuscated5 = credit_card5.NetworkAndLastFourDigits();
-  EXPECT_EQ(UTF8ToUTF16(std::string("Card  ") +
-                        test::ObfuscatedCardDigitsAsUTF8("5100")),
-            obfuscated5);
+                        test::ObfuscatedCardDigitsAsUTF8("5100") +
+                        ", John Dillinger"),
+            credit_card5.Label());
 
   // Case 6: Have everything including nickname.
   CreditCard credit_card6(base::GenerateGUID(), "https://www.example.com/");
   test::SetCreditCardInfo(&credit_card6, "John Dillinger",
                           "5105 1051 0510 5100", "01", "2010", "1");
   credit_card6.SetNickname(valid_nickname);
-  std::u16string summary6 = credit_card6.Label();
   EXPECT_EQ(
-      valid_nickname +
-          UTF8ToUTF16(std::string("  ") +
-                      test::ObfuscatedCardDigitsAsUTF8("5100") + ", 01/2010"),
-      summary6);
+      valid_nickname + UTF8ToUTF16(std::string("  ") +
+                                   test::ObfuscatedCardDigitsAsUTF8("5100") +
+                                   ", John Dillinger"),
+      credit_card6.Label());
+}
+
+TEST(CreditCardTest, NetworkAndLastFourDigits) {
+  std::u16string valid_nickname = u"My Visa Card";
+
+  // Case 0: empty credit card.
+  CreditCard credit_card0(base::GenerateGUID(), "https://www.example.com/");
+  EXPECT_EQ(ASCIIToUTF16(std::string("Card")),
+            credit_card0.NetworkAndLastFourDigits());
+
+  // Case 00: Empty credit card with empty strings.
+  CreditCard credit_card00(base::GenerateGUID(), "https://www.example.com/");
+  test::SetCreditCardInfo(&credit_card00, "John Dillinger", "", "", "", "");
+  EXPECT_EQ(ASCIIToUTF16(std::string("Card")),
+            credit_card00.NetworkAndLastFourDigits());
+
+  // Case 1: No credit card number.
+  CreditCard credit_card1(base::GenerateGUID(), "https://www.example.com/");
+  test::SetCreditCardInfo(&credit_card1, "John Dillinger", "", "01", "2010",
+                          "1");
+  EXPECT_EQ(ASCIIToUTF16(std::string("Card")),
+            credit_card1.NetworkAndLastFourDigits());
+
+  // Case 1.1: No credit card number, but has nickname.
+  CreditCard credit_card11(base::GenerateGUID(), "https://www.example.com/");
+  test::SetCreditCardInfo(&credit_card11, "John Dillinger", "", "01", "2010",
+                          "1");
+  credit_card11.SetNickname(valid_nickname);
+  EXPECT_EQ(ASCIIToUTF16(std::string("Card")),
+            credit_card11.NetworkAndLastFourDigits());
+
+  // Case 2: No month.
+  CreditCard credit_card2(base::GenerateGUID(), "https://www.example.com/");
+  test::SetCreditCardInfo(&credit_card2, "John Dillinger",
+                          "5105 1051 0510 5100", "", "2010", "1");
+  EXPECT_EQ(UTF8ToUTF16(std::string("Mastercard  ") +
+                        test::ObfuscatedCardDigitsAsUTF8("5100")),
+            credit_card2.NetworkAndLastFourDigits());
+
+  // Case 3: No year.
+  CreditCard credit_card3(base::GenerateGUID(), "https://www.example.com/");
+  test::SetCreditCardInfo(&credit_card3, "John Dillinger",
+                          "5105 1051 0510 5100", "01", "", "1");
+  EXPECT_EQ(UTF8ToUTF16(std::string("Mastercard  ") +
+                        test::ObfuscatedCardDigitsAsUTF8("5100")),
+            credit_card3.NetworkAndLastFourDigits());
+
+  // Case 4: Have everything except nickname.
+  CreditCard credit_card4(base::GenerateGUID(), "https://www.example.com/");
+  test::SetCreditCardInfo(&credit_card4, "John Dillinger",
+                          "5105 1051 0510 5100", "01", "2010", "1");
+  EXPECT_EQ(UTF8ToUTF16(std::string("Mastercard  ") +
+                        test::ObfuscatedCardDigitsAsUTF8("5100")),
+            credit_card4.NetworkAndLastFourDigits());
+
+  // Case 5: Very long credit card
+  CreditCard credit_card5(base::GenerateGUID(), "https://www.example.com/");
+  test::SetCreditCardInfo(
+      &credit_card5, "John Dillinger",
+      "0123456789 0123456789 0123456789 5105 1051 0510 5100", "01", "2010",
+      "1");
+  EXPECT_EQ(UTF8ToUTF16(std::string("Card  ") +
+                        test::ObfuscatedCardDigitsAsUTF8("5100")),
+            credit_card5.NetworkAndLastFourDigits());
+
+  // Case 6: Have everything including nickname.
+  CreditCard credit_card6(base::GenerateGUID(), "https://www.example.com/");
+  test::SetCreditCardInfo(&credit_card6, "John Dillinger",
+                          "5105 1051 0510 5100", "01", "2010", "1");
+  credit_card6.SetNickname(valid_nickname);
+  EXPECT_EQ(UTF8ToUTF16(std::string("Mastercard  ") +
+                        test::ObfuscatedCardDigitsAsUTF8("5100")),
+            credit_card6.NetworkAndLastFourDigits());
 }
 
 TEST(CreditCardTest, NicknameAndLastFourDigitsStrings) {

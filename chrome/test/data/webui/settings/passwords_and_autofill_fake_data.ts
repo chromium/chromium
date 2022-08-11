@@ -163,6 +163,7 @@ export function createCreditCardEntry():
       isLocal: true,
       summaryLabel: card + ' ' +
           '****' + cardNumber.substr(-4),
+      summarySublabel: 'Jane Doe',
     },
   };
 }
