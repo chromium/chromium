@@ -11,10 +11,12 @@
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_page_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/grit/side_panel_customize_chrome_resources.h"
 #include "chrome/grit/side_panel_customize_chrome_resources_map.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/base/webui/web_ui_util.h"
 
 CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
     : ui::MojoBubbleWebUIController(web_ui) {
@@ -22,6 +24,11 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
 
   content::WebUIDataSource* source = content::WebUIDataSource::Create(
       chrome::kChromeUICustomizeChromeSidePanelHost);
+
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"title", IDS_SIDE_PANEL_CUSTOMIZE_CHROME_TITLE},
+  };
+  source->AddLocalizedStrings(kLocalizedStrings);
 
   webui::SetupWebUIDataSource(
       source,

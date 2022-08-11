@@ -37,6 +37,7 @@ class SidePanelEntry final {
     kLens,
     kAssistant,
     kAboutThisSite,
+    kCustomizeChrome
   };
 
   SidePanelEntry(Id id,
