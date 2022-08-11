@@ -25,7 +25,6 @@ class WebContents;
 }
 
 namespace views {
-class AXVirtualView;
 class Button;
 class ImageButton;
 }  // namespace views
@@ -167,9 +166,6 @@ class ZoomBubbleView : public LocationBarBubbleDelegateView,
   raw_ptr<views::Button> zoom_out_button_ = nullptr;
   raw_ptr<views::Button> zoom_in_button_ = nullptr;
   raw_ptr<views::Button> reset_button_ = nullptr;
-
-  // Virtual view used to announce zoom level changes.
-  raw_ptr<views::AXVirtualView> zoom_level_alert_ = nullptr;
 
   // Whether the currently displayed bubble will automatically close.
   bool auto_close_;
