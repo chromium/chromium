@@ -25,14 +25,14 @@ class MockSecureEnclaveClient : public SecureEnclaveClient {
   ~MockSecureEnclaveClient() override;
 
   MOCK_METHOD(base::ScopedCFTypeRef<SecKeyRef>,
-              CreateTemporaryKey,
+              CreatePermanentKey,
               (),
               (override));
   MOCK_METHOD(base::ScopedCFTypeRef<SecKeyRef>,
               CopyStoredKey,
               (KeyType),
               (override));
-  MOCK_METHOD(bool, MoveTemporaryKeyToPermanent, (), (override));
+  MOCK_METHOD(bool, UpdateStoredKeyLabel, (KeyType, KeyType), (override));
   MOCK_METHOD(bool, DeleteKey, (KeyType), (override));
   MOCK_METHOD(bool,
               GetStoredKeyLabel,

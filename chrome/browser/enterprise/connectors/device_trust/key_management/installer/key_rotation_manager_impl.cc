@@ -181,6 +181,7 @@ void KeyRotationManagerImpl::OnDmServerResponse(
     std::move(result_callback).Run(false);
     return;
   }
+  persistence_delegate_->CleanupTemporaryKeyData();
   key_pair_ = std::move(new_key_pair);
   RecordRotationStatus(nonce, RotationStatus::SUCCESS);
   std::move(result_callback).Run(true);

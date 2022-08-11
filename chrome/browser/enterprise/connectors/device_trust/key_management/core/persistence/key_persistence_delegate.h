@@ -46,6 +46,12 @@ class KeyPersistenceDelegate {
   // BPKUR::CHROME_BROWSER_OS_KEY is created if available. If neither are
   // available, a nullptr is returned.
   virtual std::unique_ptr<SigningKeyPair> CreateKeyPair() = 0;
+
+  // Deletes the signing key in the temporary key storage after a successful
+  // key rotation. This method is only overridden in Mac platforms since signing
+  // key rollback is handled in the StoreKeyPair method in Linux and Windows
+  // platforms.
+  virtual void CleanupTemporaryKeyData() {}
 };
 
 }  // namespace enterprise_connectors

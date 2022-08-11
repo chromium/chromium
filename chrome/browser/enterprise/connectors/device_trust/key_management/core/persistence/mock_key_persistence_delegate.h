@@ -32,6 +32,7 @@ class MockKeyPersistenceDelegate : public KeyPersistenceDelegate {
               CreateKeyPair,
               (),
               (override));
+  MOCK_METHOD(void, CleanupTemporaryKeyData, (), (override));
 };
 
 }  // namespace test

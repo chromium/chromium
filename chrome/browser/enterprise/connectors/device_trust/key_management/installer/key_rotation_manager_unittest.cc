@@ -116,6 +116,7 @@ TEST_P(KeyRotationManagerTest, Rotate_Hw_WithKey) {
             captured_body = body;
             std::move(callback).Run(kSuccessCode);
           }));
+  EXPECT_CALL(*mock_persistence_delegate, CleanupTemporaryKeyData());
 
   auto manager = KeyRotationManager::CreateForTesting(
       std::move(mock_network_delegate), std::move(mock_persistence_delegate));
@@ -171,6 +172,7 @@ TEST_P(KeyRotationManagerTest, Rotate_Hw_NoKey) {
                           base::OnceCallback<void(int)> callback) {
         std::move(callback).Run(kSuccessCode);
       }));
+  EXPECT_CALL(*mock_persistence_delegate, CleanupTemporaryKeyData());
 
   auto manager = KeyRotationManager::CreateForTesting(
       std::move(mock_network_delegate), std::move(mock_persistence_delegate));
@@ -213,6 +215,7 @@ TEST_P(KeyRotationManagerTest, Rotate_NoHw_NoKey) {
                           base::OnceCallback<void(int)> callback) {
         std::move(callback).Run(kSuccessCode);
       }));
+  EXPECT_CALL(*mock_persistence_delegate, CleanupTemporaryKeyData());
 
   auto manager = KeyRotationManager::CreateForTesting(
       std::move(mock_network_delegate), std::move(mock_persistence_delegate));
@@ -445,6 +448,7 @@ TEST_P(KeyRotationManagerTest, Rotate_NoHw_WithKey) {
                           base::OnceCallback<void(int)> callback) {
         std::move(callback).Run(kSuccessCode);
       }));
+  EXPECT_CALL(*mock_persistence_delegate, CleanupTemporaryKeyData());
 
   auto manager = KeyRotationManager::CreateForTesting(
       std::move(mock_network_delegate), std::move(mock_persistence_delegate));

@@ -36,16 +36,18 @@ class SecureEnclaveClient {
 
   static std::unique_ptr<SecureEnclaveClient> Create();
 
-  // Creates a new Secure Enclave private key with a temporary key label.
-  virtual base::ScopedCFTypeRef<SecKeyRef> CreateTemporaryKey() = 0;
+  // Creates a new Secure Enclave private key with a permanent key label.
+  virtual base::ScopedCFTypeRef<SecKeyRef> CreatePermanentKey() = 0;
 
   // Queries for the secure key using its label determined by the key `type`.
   // Returns the secure key reference or a nullptr if no key was found.
   virtual base::ScopedCFTypeRef<SecKeyRef> CopyStoredKey(KeyType type) = 0;
 
-  // Updates the private key label from the temporary key label to the
-  // non-temporary label.
-  virtual bool MoveTemporaryKeyToPermanent() = 0;
+  // Deletes any key stored in `new_key_type` and updates the private key
+  // storage in `current_key_type` to `new_key_type` and modifies the key label
+  // to reflect this change.
+  virtual bool UpdateStoredKeyLabel(KeyType current_key_type,
+                                    KeyType new_key_type) = 0;
 
   // Queries for the secure key using its label determined by the key `type`
   // and deletes it from the secure enclave.

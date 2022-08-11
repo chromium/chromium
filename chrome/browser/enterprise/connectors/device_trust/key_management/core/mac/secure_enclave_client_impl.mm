@@ -69,7 +69,8 @@ base::ScopedCFTypeRef<SecAccessRef> CreateACL() {
 #pragma clang diagnostic pop
 
 // Creates and returns the secure enclave private key attributes used
-// for key creation.
+// for key creation. These key attributes represent the key created in
+// the permanent key location.
 base::ScopedCFTypeRef<CFMutableDictionaryRef> CreateAttributesForKey() {
   auto access_ref = CreateACL();
   if (!access_ref)
@@ -84,9 +85,9 @@ base::ScopedCFTypeRef<CFMutableDictionaryRef> CreateAttributesForKey() {
   CFDictionarySetValue(attributes, kSecAttrKeyType,
                        kSecAttrKeyTypeECSECPrimeRandom);
   CFDictionarySetValue(attributes, kSecAttrKeySizeInBits, @256);
-  CFDictionarySetValue(attributes, kSecAttrLabel,
-                       base::SysUTF8ToCFStringRef(
-                           constants::kTemporaryDeviceTrustSigningKeyLabel));
+  CFDictionarySetValue(
+      attributes, kSecAttrLabel,
+      base::SysUTF8ToCFStringRef(constants::kDeviceTrustSigningKeyLabel));
 
   base::ScopedCFTypeRef<CFMutableDictionaryRef> private_key_params(
       CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
@@ -123,14 +124,14 @@ SecureEnclaveClientImpl::SecureEnclaveClientImpl()
 
 SecureEnclaveClientImpl::~SecureEnclaveClientImpl() = default;
 
-base::ScopedCFTypeRef<SecKeyRef> SecureEnclaveClientImpl::CreateTemporaryKey() {
+base::ScopedCFTypeRef<SecKeyRef> SecureEnclaveClientImpl::CreatePermanentKey() {
   auto attributes = CreateAttributesForKey();
   if (!attributes)
     return base::ScopedCFTypeRef<SecKeyRef>();
 
-  // Deletes a temporary Secure Enclave key if it exists from a previous
+  // Deletes a permanent Secure Enclave key if it exists from a previous
   // key rotation.
-  DeleteKey(KeyType::kTemporary);
+  DeleteKey(KeyType::kPermanent);
   return helper_->CreateSecureKey(attributes);
 }
 
@@ -139,19 +140,23 @@ base::ScopedCFTypeRef<SecKeyRef> SecureEnclaveClientImpl::CopyStoredKey(
   return helper_->CopyKey(CreateQueryForKey(type));
 }
 
-bool SecureEnclaveClientImpl::MoveTemporaryKeyToPermanent() {
-  // Deletes an old Secure Enclave key if it exists.
-  DeleteKey(SecureEnclaveClient::KeyType::kPermanent);
+bool SecureEnclaveClientImpl::UpdateStoredKeyLabel(KeyType current_key_type,
+                                                   KeyType new_key_type) {
+  // Deletes the `new_key_type` label if it exists in the keychain.
+  DeleteKey(new_key_type);
 
   base::ScopedCFTypeRef<CFMutableDictionaryRef> attributes_to_update(
       CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
                                 &kCFTypeDictionaryKeyCallBacks,
                                 &kCFTypeDictionaryValueCallBacks));
-  CFDictionarySetValue(
-      attributes_to_update, kSecAttrLabel,
-      base::SysUTF8ToCFStringRef(constants::kDeviceTrustSigningKeyLabel));
+  auto label = GetLabelFromKeyType(new_key_type);
+  if (label.empty())
+    return false;
 
-  return helper_->Update(CreateQueryForKey(KeyType::kTemporary),
+  CFDictionarySetValue(attributes_to_update, kSecAttrLabel,
+                       base::SysUTF8ToCFStringRef(label));
+
+  return helper_->Update(CreateQueryForKey(current_key_type),
                          attributes_to_update);
 }
 

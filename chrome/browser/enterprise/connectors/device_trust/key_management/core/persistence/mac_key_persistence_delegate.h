@@ -25,6 +25,7 @@ class MacKeyPersistenceDelegate : public KeyPersistenceDelegate {
                     std::vector<uint8_t> wrapped) override;
   std::unique_ptr<SigningKeyPair> LoadKeyPair() override;
   std::unique_ptr<SigningKeyPair> CreateKeyPair() override;
+  void CleanupTemporaryKeyData() override;
 };
 
 }  // namespace enterprise_connectors

@@ -40,7 +40,7 @@ class SecureEnclaveSigningKeyTest : public testing::Test {
   }
 
  protected:
-  // Creates a temporary key.
+  // Creates a test key.
   void CreateTestKey() {
     base::ScopedCFTypeRef<CFMutableDictionaryRef> test_attributes(
         CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
@@ -65,8 +65,8 @@ class SecureEnclaveSigningKeyTest : public testing::Test {
   // Sets the unexportable key using the test key.
   void SetUnexportableKey() {
     auto provider = SecureEnclaveSigningKeyProvider(
-        SecureEnclaveClient::KeyType::kTemporary);
-    EXPECT_CALL(*mock_secure_enclave_client_, CreateTemporaryKey())
+        SecureEnclaveClient::KeyType::kPermanent);
+    EXPECT_CALL(*mock_secure_enclave_client_, CreatePermanentKey())
         .Times(1)
         .WillOnce([this]() { return test_key_; });
     auto acceptable_algorithms = {crypto::SignatureVerifier::ECDSA_SHA256};
@@ -79,15 +79,16 @@ class SecureEnclaveSigningKeyTest : public testing::Test {
 };
 
 // Tests that the GenerateSigningKeySlowly method invokes the SE client's
-// CreateTemporaryKey method only when the provider is a temporary key provider.
+// CreatePermanentKey method only when the provider is a permanent key provider.
 TEST_F(SecureEnclaveSigningKeyTest, GenerateSigningKeySlowly) {
   auto acceptable_algorithms = {crypto::SignatureVerifier::ECDSA_SHA256};
 
   InSequence s;
 
   auto provider =
-      SecureEnclaveSigningKeyProvider(SecureEnclaveClient::KeyType::kTemporary);
-  EXPECT_CALL(*mock_secure_enclave_client_, CreateTemporaryKey())
+      SecureEnclaveSigningKeyProvider(SecureEnclaveClient::KeyType::kPermanent);
+
+  EXPECT_CALL(*mock_secure_enclave_client_, CreatePermanentKey())
       .Times(1)
       .WillOnce([this]() { return test_key_; });
   auto unexportable_key =
@@ -97,8 +98,8 @@ TEST_F(SecureEnclaveSigningKeyTest, GenerateSigningKeySlowly) {
             unexportable_key->Algorithm());
 
   provider =
-      SecureEnclaveSigningKeyProvider(SecureEnclaveClient::KeyType::kPermanent);
-  EXPECT_CALL(*mock_secure_enclave_client_, CreateTemporaryKey()).Times(0);
+      SecureEnclaveSigningKeyProvider(SecureEnclaveClient::KeyType::kTemporary);
+  EXPECT_CALL(*mock_secure_enclave_client_, CreatePermanentKey()).Times(0);
   unexportable_key = provider.GenerateSigningKeySlowly(acceptable_algorithms);
   EXPECT_FALSE(unexportable_key);
 }
@@ -186,12 +187,12 @@ TEST_F(SecureEnclaveSigningKeyTest, GetSubjectPublicKeyInfo) {
 }
 
 // Tests that the GetWrappedKey method invokes the SE client's
-// GetStoredKeyLabel method and that the wrapped key label is the temporary
-// key label since the SecureEnclaveSigningKey is currently a temporary key.
+// GetStoredKeyLabel method and that the wrapped key label is the permanent
+// key label since the SecureEnclaveSigningKey is currently a permanent key.
 TEST_F(SecureEnclaveSigningKeyTest, GetWrappedKey) {
   SetUnexportableKey();
   EXPECT_CALL(*mock_secure_enclave_client_,
-              GetStoredKeyLabel(SecureEnclaveClient::KeyType::kTemporary, _))
+              GetStoredKeyLabel(SecureEnclaveClient::KeyType::kPermanent, _))
       .WillOnce(
           [](SecureEnclaveClient::KeyType type, std::vector<uint8_t>& output) {
             std::string label =
@@ -202,7 +203,7 @@ TEST_F(SecureEnclaveSigningKeyTest, GetWrappedKey) {
             return true;
           });
   auto wrapped = key_->GetWrappedKey();
-  EXPECT_EQ(constants::kTemporaryDeviceTrustSigningKeyLabel,
+  EXPECT_EQ(constants::kDeviceTrustSigningKeyLabel,
             std::string(wrapped.begin(), wrapped.end()));
 }
 

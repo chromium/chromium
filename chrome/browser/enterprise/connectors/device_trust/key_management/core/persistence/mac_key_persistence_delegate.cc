@@ -35,4 +35,8 @@ std::unique_ptr<SigningKeyPair> MacKeyPersistenceDelegate::CreateKeyPair() {
   return nullptr;
 }
 
+void MacKeyPersistenceDelegate::CleanupTemporaryKeyData() {
+  NOTIMPLEMENTED();
+}
+
 }  // namespace enterprise_connectors

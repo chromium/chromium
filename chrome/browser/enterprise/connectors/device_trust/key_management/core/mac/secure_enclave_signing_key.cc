@@ -129,7 +129,7 @@ std::unique_ptr<crypto::UnexportableSigningKey>
 SecureEnclaveSigningKeyProvider::GenerateSigningKeySlowly(
     base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
         acceptable_algorithms) {
-  if (provider_key_type_ != SecureEnclaveClient::KeyType::kTemporary)
+  if (provider_key_type_ != SecureEnclaveClient::KeyType::kPermanent)
     return nullptr;
 
   auto algo = SelectAlgorithm(acceptable_algorithms);
@@ -139,7 +139,7 @@ SecureEnclaveSigningKeyProvider::GenerateSigningKeySlowly(
   DCHECK_EQ(crypto::SignatureVerifier::ECDSA_SHA256, *algo);
 
   auto client = SecureEnclaveClient::Create();
-  auto key = client->CreateTemporaryKey();
+  auto key = client->CreatePermanentKey();
   if (!key)
     return nullptr;
 
