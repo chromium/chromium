@@ -6760,7 +6760,6 @@ crbug.com/1311456 [ Fuchsia ] tables/mozilla/core/bloomberg.html [ Skip ]
 
 # Sheriff 2022-04-01
 crbug.com/1312266 [ Mac10.13 ] external/wpt/preload/preload-time-to-fetch.https.html [ Failure ]
-crbug.com/1312484 [ Mac11 ] external/wpt/navigation-api/ordering-and-transition/navigate-cross-document-double.html [ Skip ]
 
 # Sheriff 2022-04-05
 crbug.com/1203491 [ Linux ] fast/events/touch/gesture/touch-gesture-scroll-listbox.html [ Failure Pass ]
@@ -7041,7 +7040,6 @@ crbug.com/1345745 virtual/async-script-scheduling-first-paint-or-finished-parsin
 
 # Sheriff 2022-07-21
 crbug.com/1346158 crbug.com/1346158 external/wpt/dom/events/non-cancelable-when-passive/non-passive-mousewheel-event-listener-on-window.html [ Failure Pass ]
-crbug.com/1310202 [ Mac11 ] wpt_internal/navigation-api/ordering-and-transition/navigate-cross-document-double.html [ Failure Pass ]
 
 # Sheriff 2022-07-25
 crbug.com/1346822 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/geometry-background-image-002.https.html [ Failure Pass ]
@@ -7064,14 +7062,11 @@ crbug.com/1348118 [ Linux ] virtual/partitioned-cookies-first-party-sets/http/te
 # Failure on all platforms was added before, see crbug.com/1306770
 crbug.com/1348118 http/tests/inspector-protocol/network/interception-download.js [ Failure Pass Timeout ]
 crbug.com/1348118 [ Linux ] virtual/first-party-sets/http/tests/inspector-protocol/network/interception-download.js [ Pass Timeout ]
-# See crbug.com/1310202 for Failure
-crbug.com/1348118 [ Linux ] wpt_internal/navigation-api/ordering-and-transition/navigate-cross-document-double.html [ Failure Pass Timeout ]
 # See crbug.com/1344277 for Crash and Failure
 crbug.com/1348118 [ Linux ] wpt_internal/webxr/ar/ar_light_estimation.https.html [ Crash Failure Pass Timeout ]
 crbug.com/1348275 [ Mac12-arm64 ] virtual/scroll-unification/fast/scrolling/inertial-scrolling-with-pointer-events-none-overlay.html [ Failure Pass ]
 
 # Sheriff 2022-07-29 - Flaky failure.
-crbug.com/1348118 [ Mac11-arm64 ] wpt_internal/navigation-api/ordering-and-transition/navigate-cross-document-double.html [ Failure Pass Timeout ]
 crbug.com/1347675 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/fragment-navigation.https.html [ Pass Timeout ]
 
 # Sheriff 2022-08-01
@@ -7089,7 +7084,6 @@ crbug.com/1350336 [ Mac ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/
 crbug.com/1350337 [ Linux ] external/wpt/web-locks/query-ordering.tentative.https.html [ Failure Pass ]
 crbug.com/1350341 [ Linux ] virtual/threaded-no-composited-antialiasing/animations/direction-and-fill/fill-mode-missing-from-to-keyframes.html [ Failure Pass ]
 
-
 # These seem to consistently fail with disabling code cache.
 crbug.com/1351903 http/tests/devtools/network/font-face.js [ Failure Pass ]
 crbug.com/1351903 virtual/disable-frequency-capping-for-overlay-popup-detection/http/tests/subresource_filter/overlay_popup_ad/overlay-popup-ad-fixed-position.html [ Failure Pass ]
@@ -7102,3 +7096,7 @@ crbug.com/1352009 external/wpt/preload/preconnect.html [ Failure Pass ]
 # Most likely a forced style/layout update from accessibiity while we are
 # render blocking, which should not happen.
 crbug.com/1351811 external/wpt/css/css-transitions/no-transition-from-ua-to-blocking-stylesheet.html [ Pass Failure ]
+
+# Flakes on all platforms.
+crbug.com/1352209 wpt_internal/navigation-api/ordering-and-transition/navigate-cross-document-double.html [ Failure Pass ]
+
