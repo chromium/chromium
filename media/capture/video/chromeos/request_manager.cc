@@ -594,10 +594,20 @@ void RequestManager::ProcessCaptureResult(
     cros::mojom::Camera3CaptureResultPtr result) {
   DCHECK(ipc_task_runner_->BelongsToCurrentThread());
 
+  uint32_t frame_number = result->frame_number;
   if (!capturing_) {
+    if (result->output_buffers) {
+      for (auto& stream_buffer : result->output_buffers.value()) {
+        TRACE_EVENT_END("camera",
+                        GetTraceTrack(CameraTraceEvent::kCaptureStream,
+                                      frame_number, stream_buffer->stream_id));
+      }
+    }
+    TRACE_EVENT("camera", "Capture Result", "frame_number", frame_number);
+    TRACE_EVENT_END("camera", GetTraceTrack(CameraTraceEvent::kCaptureRequest,
+                                            frame_number));
     return;
   }
-  uint32_t frame_number = result->frame_number;
   // A new partial result may be created in either ProcessCaptureResult or
   // Notify.
   CaptureResult& pending_result = pending_results_[frame_number];
