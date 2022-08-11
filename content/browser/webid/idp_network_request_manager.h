@@ -67,7 +67,6 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
     kHttpNotFoundError,
     kNoResponseError,
     kInvalidResponseError,
-    kInvalidRequestError,
   };
 
   enum class LogoutResponse {

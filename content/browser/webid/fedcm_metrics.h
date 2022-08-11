@@ -38,7 +38,7 @@ enum class FedCmRequestIdTokenStatus {
   kIdTokenHttpNotFound,
   kIdTokenNoResponse,
   kIdTokenInvalidResponse,
-  kIdTokenInvalidRequest,
+  kIdTokenInvalidRequest,                  // obsolete
   kClientMetadataMissingPrivacyPolicyUrl,  // obsolete
   kThirdPartyCookiesBlocked,
   kDisabledInSettings,

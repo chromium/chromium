@@ -160,9 +160,6 @@ std::string GetConsoleErrorMessage(FederatedAuthRequestResult status) {
     case FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse: {
       return "Provider's token is invalid.";
     }
-    case FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidRequest: {
-      return "The id token fetching request is invalid.";
-    }
     case FederatedAuthRequestResult::kErrorCanceled: {
       return "The request has been aborted.";
     }
@@ -212,7 +209,6 @@ RequestTokenStatus FederatedAuthRequestResultToRequestTokenStatus(
     case FederatedAuthRequestResult::kErrorFetchingIdTokenHttpNotFound:
     case FederatedAuthRequestResult::kErrorFetchingIdTokenNoResponse:
     case FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse:
-    case FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidRequest:
     case FederatedAuthRequestResult::kError: {
       return RequestTokenStatus::kError;
     }
@@ -522,10 +518,6 @@ void FederatedAuthRequestImpl::OnManifestListFetched(
           /*should_delay_callback=*/true);
       return;
     }
-    case IdpNetworkRequestManager::FetchStatus::kInvalidRequestError: {
-      NOTREACHED();
-      return;
-    }
     case IdpNetworkRequestManager::FetchStatus::kSuccess: {
       // Intentional fall-through.
     }
@@ -596,10 +588,6 @@ void FederatedAuthRequestImpl::OnManifestFetched(
       CompleteRequest(
           FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse, "",
           /*should_delay_callback=*/true);
-      return;
-    }
-    case IdpNetworkRequestManager::FetchStatus::kInvalidRequestError: {
-      NOTREACHED();
       return;
     }
     case IdpNetworkRequestManager::FetchStatus::kSuccess: {
@@ -750,9 +738,6 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
           base::BindOnce(&FederatedAuthRequestImpl::OnDialogDismissed,
                          weak_ptr_factory_.GetWeakPtr()));
       return;
-    }
-    case IdpNetworkRequestManager::FetchStatus::kInvalidRequestError: {
-      NOTREACHED();
     }
   }
 }
@@ -920,14 +905,6 @@ void FederatedAuthRequestImpl::CompleteTokenRequest(
       fedcm_metrics_->RecordRequestTokenStatus(TokenStatus::kIdTokenNoResponse);
       CompleteRequest(
           FederatedAuthRequestResult::kErrorFetchingIdTokenNoResponse, "",
-          /*should_delay_callback=*/true);
-      return;
-    }
-    case IdpNetworkRequestManager::FetchStatus::kInvalidRequestError: {
-      fedcm_metrics_->RecordRequestTokenStatus(
-          TokenStatus::kIdTokenInvalidRequest);
-      CompleteRequest(
-          FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidRequest, "",
           /*should_delay_callback=*/true);
       return;
     }

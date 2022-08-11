@@ -631,11 +631,6 @@ void IdpNetworkRequestManager::SendTokenRequest(
     const std::string& account,
     const std::string& url_encoded_post_data,
     TokenRequestCallback callback) {
-  if (url_encoded_post_data.empty()) {
-    std::move(callback).Run(FetchStatus::kInvalidRequestError, std::string());
-    return;
-  }
-
   std::unique_ptr<network::SimpleURLLoader> url_loader =
       CreateCredentialedUrlLoader(token_url,
                                   /* send_referrer= */ true,

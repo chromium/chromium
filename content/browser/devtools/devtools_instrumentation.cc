@@ -228,9 +228,6 @@ std::string FederatedAuthRequestResultToProtocol(
     case FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse: {
       return FederatedAuthRequestIssueReasonEnum::IdTokenInvalidResponse;
     }
-    case FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidRequest: {
-      return FederatedAuthRequestIssueReasonEnum::IdTokenInvalidRequest;
-    }
     case FederatedAuthRequestResult::kErrorCanceled: {
       return FederatedAuthRequestIssueReasonEnum::Canceled;
     }
