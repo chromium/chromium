@@ -71,7 +71,7 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
       const SiteInstanceGroup& site_instance_group,
       RenderProcessHost& process);
 
-  // Should not be called explicitly. Use `CreateIfNeeded()` instead.
+  // Should not be called explicitly. Use `GetOrCreate()` instead.
   explicit AgentSchedulingGroupHost(RenderProcessHost& process);
   ~AgentSchedulingGroupHost() override;
 
