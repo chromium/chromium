@@ -7,8 +7,7 @@ The component has the following structure:
 * core/: shared code that does not depend on either {src/content, src/ios} or {./content,
 ./ios}
     * browser/: Browser process code
-    * common/: Code shared by the browser and the renderer (on platforms other than
-  iOS)
+    * common/: Code shared by the browser and the renderer
 * content/: non-iOS code layered above core/ that integrates with the Content API
     *  browser/: Browser process code
     *  common/: Code shared by the browser and the renderer
