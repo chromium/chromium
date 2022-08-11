@@ -327,7 +327,7 @@ void RenderWidgetHostViewEventHandler::OnMouseEvent(ui::MouseEvent* event) {
   // breaks drop-down lists which means something is incorrectly setting
   // event->handled to true (http://crbug.com/577983).
 
-  if (mouse_locked_ && !window_->GetHost()->SupportsMouseLock()) {
+  if (mouse_locked_) {
     HandleMouseEventWhileLocked(event);
     return;
   }
@@ -702,9 +702,8 @@ void RenderWidgetHostViewEventHandler::HandleMouseEventWhileLocked(
     // If we receive non client mouse messages while we are in the locked state
     // it probably means that the mouse left the borders of our window and
     // needs to be moved back to the center.
-    if (event->flags() & ui::EF_IS_NON_CLIENT) {
-      // TODO(jonross): ideally this would not be done for mus
-      // (crbug.com/621412)
+    if ((event->flags() & ui::EF_IS_NON_CLIENT) &&
+        !window_->GetHost()->SupportsMouseLock()) {
       MoveCursorToCenter(event);
       return;
     }
