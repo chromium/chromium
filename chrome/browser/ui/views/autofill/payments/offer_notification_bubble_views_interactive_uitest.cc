@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/offer_notification_handler.h"
+#include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/ui/payments/payments_bubble_closed_reasons.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strings/grit/components_strings.h"
@@ -147,6 +148,7 @@ class OfferNotificationBubbleViewsInteractiveUiTest
         ->notification_handler_.ClearShownNotificationIdForTesting();
   }
 
+  TestAutofillClock test_clock_;
   const AutofillOfferData::OfferType test_offer_type_;
 };
 
@@ -544,6 +546,41 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
   EXPECT_EQ(
       browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
       GURL(GetDefaultTestDetailsUrlString()));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    OfferNotificationBubbleViewsInteractiveUiTest,
+    RecordPageLoadsWithPromoOfferIconShowingMetricForFreeListingOffer) {
+  // Applies to free listing coupons offers only, as we don't log this metric
+  // for other offers.
+  if (test_offer_type_ !=
+      AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER) {
+    return;
+  }
+
+  base::HistogramTester histogram_tester;
+
+  ShowBubbleForOfferAndVerify();
+  ASSERT_TRUE(GetOfferNotificationBubbleViews());
+  ASSERT_TRUE(IsIconVisible());
+  histogram_tester.ExpectBucketCount(
+      "Autofill.PageLoadsWithOfferIconShowing.FreeListingCouponOffer", true, 1);
+
+  test_clock_.Advance(kAutofillBubbleSurviveNavigationTime);
+
+  // Navigates to another valid domain will not reshow the bubble.
+  NavigateTo("https://www.merchantsite1.com/second");
+  EXPECT_FALSE(GetOfferNotificationBubbleViews());
+  EXPECT_TRUE(IsIconVisible());
+  histogram_tester.ExpectBucketCount(
+      "Autofill.PageLoadsWithOfferIconShowing.FreeListingCouponOffer", true, 2);
+
+  // Navigates to an invalid domain will dismiss the icon.
+  NavigateTo("https://www.about.com/");
+  EXPECT_FALSE(GetOfferNotificationBubbleViews());
+  EXPECT_FALSE(IsIconVisible());
+  histogram_tester.ExpectBucketCount(
+      "Autofill.PageLoadsWithOfferIconShowing.FreeListingCouponOffer", true, 2);
 }
 
 }  // namespace autofill

@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/commerce/coupons/coupon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/payments/offers_metrics.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -178,6 +180,9 @@ void OfferNotificationBubbleControllerImpl::ShowOfferNotificationIfApplicable(
   // going to show another bubble anyway.
   HideBubbleAndClearTimestamp(/*should_show_icon=*/true);
 
+  DCHECK(IsIconVisible());
+  autofill_metrics::LogPageLoadsWithOfferIconShown(offer->GetOfferType());
+
   if (card)
     card_ = *card;
 
@@ -188,8 +193,6 @@ void OfferNotificationBubbleControllerImpl::ShowOfferNotificationIfApplicable(
     if (!last_display_time.is_null() &&
         (base::Time::Now() - last_display_time) <
             commerce::kCouponDisplayInterval.Get()) {
-      bubble_state_ = BubbleState::kShowingIcon;
-      UpdatePageActionIcon();
       AutofillMetrics::LogOfferNotificationBubbleSuppressed(
           AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER);
       return;

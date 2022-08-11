@@ -73,6 +73,9 @@ void LogOffersSuggestionsPopupShown(bool first_time_being_logged);
 void LogIndividualOfferSuggestionEvent(OffersSuggestionsEvent event,
                                        AutofillOfferData::OfferType offer_type);
 
+// Log the presence of the offer notification icon shows on navigation event
+// for |offer_type|.
+void LogPageLoadsWithOfferIconShown(AutofillOfferData::OfferType offer_type);
 }  // namespace autofill::autofill_metrics
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_OFFERS_METRICS_H_
