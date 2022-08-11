@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "chromeos/crosapi/mojom/message_center.mojom-test-utils.h"
 #include "chromeos/crosapi/mojom/message_center.mojom.h"
+#include "chromeos/crosapi/mojom/notification.mojom-shared.h"
 #include "chromeos/crosapi/mojom/notification.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -118,6 +119,13 @@ TEST_F(MessageCenterAshTest, SerializationSimple) {
   mojo_notification->fullscreen_visibility =
       mojom::FullscreenVisibility::kOverUser;
 
+  mojo_notification->notifier_id = mojom::NotifierId::New();
+  mojo_notification->notifier_id->type = mojom::NotifierType::kApplication;
+  mojo_notification->notifier_id->url = GURL("http://example.com/");
+  mojo_notification->notifier_id->id = "test_notifier_id";
+  mojo_notification->notifier_id->title = u"notifier_title";
+  mojo_notification->notifier_id->profile_id = "test_profile_id";
+
   SkBitmap test_badge = gfx::test::CreateBitmap(1, 2);
   mojo_notification->badge = gfx::ImageSkia::CreateFrom1xBitmap(test_badge);
   SkBitmap test_icon = gfx::test::CreateBitmap(3, 4);
@@ -155,6 +163,13 @@ TEST_F(MessageCenterAshTest, SerializationSimple) {
   EXPECT_EQ(u"accessible_name", ui_notification->accessible_name());
   EXPECT_EQ(message_center::FullscreenVisibility::OVER_USER,
             ui_notification->fullscreen_visibility());
+
+  EXPECT_EQ(ui_notification->notifier_id().type,
+            message_center::NotifierType::APPLICATION);
+  EXPECT_EQ(ui_notification->notifier_id().url, "http://example.com/");
+  EXPECT_EQ(ui_notification->notifier_id().id, "test_notifier_id");
+  EXPECT_EQ(ui_notification->notifier_id().title, u"notifier_title");
+  EXPECT_EQ(ui_notification->notifier_id().profile_id, "test_profile_id");
 
   EXPECT_TRUE(
       AreBitmapsEqual(test_badge, ui_notification->small_image().AsBitmap()));
@@ -398,6 +413,42 @@ TEST_F(MessageCenterAshTest, GetDisplayedNotifications) {
 
   // The notifications ids are returned. No particular order is specified.
   EXPECT_THAT(ids, testing::UnorderedElementsAre("id0", "id1"));
+}
+
+TEST_F(MessageCenterAshTest, NotificationsGroupByNotifierId) {
+  // Build mojo notification for display.
+  auto mojo_notification = mojom::Notification::New();
+  mojo_notification->type = mojom::NotificationType::kSimple;
+  mojo_notification->id = "test_id";
+  mojo_notification->origin_url = GURL("http://example.com/");
+  mojo_notification->notifier_id = mojom::NotifierId::New();
+  mojo_notification->notifier_id->type = mojom::NotifierType::kWebPage;
+
+  auto mojo_notification_2 = mojom::Notification::New();
+  mojo_notification_2->type = mojom::NotificationType::kSimple;
+  mojo_notification_2->id = "test_id_2";
+  mojo_notification_2->origin_url = GURL("http://example.com/");
+  mojo_notification_2->notifier_id = mojom::NotifierId::New();
+  mojo_notification_2->notifier_id->type = mojom::NotifierType::kWebPage;
+
+  // Display the notification.
+  MojoDelegate mojo_delegate;
+  message_center_remote_->DisplayNotification(
+      std::move(mojo_notification),
+      mojo_delegate.receiver_.BindNewPipeAndPassRemote());
+  message_center_remote_.FlushForTesting();
+
+  // Display another notification from the same notifier_id.
+  MojoDelegate mojo_delegate2;
+  message_center_remote_->DisplayNotification(
+      std::move(mojo_notification_2),
+      mojo_delegate2.receiver_.BindNewPipeAndPassRemote());
+  message_center_remote_.FlushForTesting();
+
+  // There should only be a single popup since the new notification should be
+  // added to the existing notification as a grouped child.
+  EXPECT_EQ(
+      1, message_center::MessageCenter::Get()->GetPopupNotifications().size());
 }
 
 }  // namespace

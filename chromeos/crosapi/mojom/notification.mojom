@@ -28,6 +28,16 @@ enum NotificationType {
   kProgress = 3,
 };
 
+[Stable, Extensible]
+enum NotifierType {
+  [Default] kApplication = 0,
+  kArcApplication = 1,
+  kWebPage = 2,
+  kSystemComponent = 3,
+  kCrostiniApplication = 4,
+  kPhoneHub = 5,
+};
+
 // How to display notifications when a fullscreen window is open. For example,
 // a child account time limit notification should appear over a fullscreen
 // video.
@@ -38,6 +48,18 @@ enum FullscreenVisibility {
 
   // Show on top of user-created fullscreen windows.
   kOverUser = 1,
+};
+
+[Stable]
+struct NotifierId {
+  NotifierType type@0;
+  // The identifier of the app notifier. Empty if |type| is kWebPage.
+  string id@1;
+  url.mojom.Url? url@2;
+  mojo_base.mojom.String16? title@3;
+  // A unique identifier of the user profile associated with the
+  // notification, usually an email address.
+  string profile_id@4;
 };
 
 // List items for NotificationType::kList.
@@ -165,4 +187,11 @@ struct Notification {
   [MinVersion=3]
   // Unified theme color used in new style notification.
   skia.mojom.SkColor? accent_color@26;
+
+  [MinVersion=4]
+  // The notifierId contains additional details for the notification's origin.
+  // Will contain information on the type of sender
+  // (Webpage, Android, System etc..) along with additional info that can
+  // identify the sender (url, app name etc..).
+  NotifierId? notifier_id@27;
 };

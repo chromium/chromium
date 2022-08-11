@@ -15,6 +15,7 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chromeos/crosapi/mojom/message_center.mojom.h"
+#include "chromeos/crosapi/mojom/notification.mojom-shared.h"
 #include "chromeos/crosapi/mojom/notification.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -38,6 +39,23 @@ crosapi::mojom::NotificationType ToMojo(message_center::NotificationType type) {
       // TYPE_CUSTOM exists only within ash.
       NOTREACHED();
       return crosapi::mojom::NotificationType::kSimple;
+  }
+}
+
+crosapi::mojom::NotifierType ToMojo(message_center::NotifierType type) {
+  switch (type) {
+    case message_center::NotifierType::APPLICATION:
+      return crosapi::mojom::NotifierType::kApplication;
+    case message_center::NotifierType::ARC_APPLICATION:
+      return crosapi::mojom::NotifierType::kArcApplication;
+    case message_center::NotifierType::WEB_PAGE:
+      return crosapi::mojom::NotifierType::kWebPage;
+    case message_center::NotifierType::SYSTEM_COMPONENT:
+      return crosapi::mojom::NotifierType::kSystemComponent;
+    case message_center::NotifierType::CROSTINI_APPLICATION:
+      return crosapi::mojom::NotifierType::kCrostiniApplication;
+    case message_center::NotifierType::PHONE_HUB:
+      return crosapi::mojom::NotifierType::kPhoneHub;
   }
 }
 
@@ -95,6 +113,14 @@ crosapi::mojom::NotificationPtr ToMojo(
   mojo_note->fullscreen_visibility =
       ToMojo(notification.fullscreen_visibility());
   mojo_note->accent_color = notification.accent_color();
+
+  mojo_note->notifier_id = crosapi::mojom::NotifierId::New();
+  mojo_note->notifier_id->type = ToMojo(notification.notifier_id().type);
+  mojo_note->notifier_id->id = notification.notifier_id().id;
+  mojo_note->notifier_id->url = notification.notifier_id().url;
+  mojo_note->notifier_id->title = notification.notifier_id().title;
+  mojo_note->notifier_id->profile_id = notification.notifier_id().profile_id;
+
   return mojo_note;
 }
 

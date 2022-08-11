@@ -13,6 +13,7 @@
 #include "base/cxx17_backports.h"
 #include "base/memory/scoped_refptr.h"
 #include "chromeos/crosapi/mojom/message_center.mojom.h"
+#include "chromeos/crosapi/mojom/notification.mojom-shared.h"
 #include "chromeos/crosapi/mojom/notification.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -20,6 +21,7 @@
 #include "ui/gfx/image/image.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
+#include "ui/message_center/public/cpp/notifier_id.h"
 #include "url/gurl.h"
 
 namespace mc = message_center;
@@ -37,6 +39,23 @@ mc::NotificationType FromMojo(mojom::NotificationType type) {
       return mc::NOTIFICATION_TYPE_MULTIPLE;
     case mojom::NotificationType::kProgress:
       return mc::NOTIFICATION_TYPE_PROGRESS;
+  }
+}
+
+mc::NotifierType FromMojo(mojom::NotifierType type) {
+  switch (type) {
+    case mojom::NotifierType::kApplication:
+      return mc::NotifierType::APPLICATION;
+    case mojom::NotifierType::kArcApplication:
+      return mc::NotifierType::ARC_APPLICATION;
+    case mojom::NotifierType::kWebPage:
+      return mc::NotifierType::WEB_PAGE;
+    case mojom::NotifierType::kSystemComponent:
+      return mc::NotifierType::SYSTEM_COMPONENT;
+    case mojom::NotifierType::kCrostiniApplication:
+      return mc::NotifierType::CROSTINI_APPLICATION;
+    case mojom::NotifierType::kPhoneHub:
+      return mc::NotifierType::PHONE_HUB;
   }
 }
 
@@ -90,11 +109,22 @@ std::unique_ptr<mc::Notification> FromMojo(
   if (!notification->icon.isNull())
     icon = gfx::Image(notification->icon);
   GURL origin_url = notification->origin_url.value_or(GURL());
-  // TODO(crbug.com/1323789): Lacros NotifierId support.
+
+  mc::NotifierId notifier_id = mc::NotifierId();
+  if (notification->notifier_id) {
+    notifier_id.type = FromMojo(notification->notifier_id->type);
+    notifier_id.id = notification->notifier_id->id;
+    if (notification->notifier_id->url.has_value())
+      notifier_id.url = notification->notifier_id->url.value();
+    if (notification->notifier_id->title.has_value())
+      notifier_id.title = notification->notifier_id->title;
+    notifier_id.profile_id = notification->notifier_id->profile_id;
+  }
+
   return std::make_unique<mc::Notification>(
       FromMojo(notification->type), notification->id, notification->title,
       notification->message, ui::ImageModel::FromImage(icon),
-      notification->display_source, origin_url, mc::NotifierId(), rich_data,
+      notification->display_source, origin_url, notifier_id, rich_data,
       /*delegate=*/nullptr);
 }
 
