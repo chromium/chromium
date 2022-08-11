@@ -184,14 +184,18 @@ void AppInstall::InstallCandidateDone(bool valid_version, int result) {
   // It's possible that a previous updater existed but is nonresponsive. In
   // this case, clear the active version in global prefs so that the system can
   // recover.
-  base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
-      ->PostTaskAndReply(FROM_HERE,
-                         base::BindOnce(
-                             [](UpdaterScope scope) {
-                               CreateGlobalPrefs(scope)->SetActiveVersion("");
-                             },
-                             updater_scope()),
-                         base::BindOnce(&AppInstall::WakeCandidate, this));
+  base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::WithBaseSyncPrimitives()})
+      ->PostTaskAndReply(
+          FROM_HERE,
+          base::BindOnce(
+              [](UpdaterScope scope) {
+                scoped_refptr<GlobalPrefs> prefs = CreateGlobalPrefs(scope);
+                prefs->SetActiveVersion("");
+                PrefsCommitPendingWrites(prefs->GetPrefService());
+              },
+              updater_scope()),
+          base::BindOnce(&AppInstall::WakeCandidate, this));
 }
 
 void AppInstall::WakeCandidate() {
