@@ -398,6 +398,8 @@ executable("decode_test") {
 
   if (enable_platform_hevc) {
     sources += [
+      "test/h265_decoder.cc",
+      "test/h265_decoder.h",
       "test/h265_dpb.cc",
       "test/h265_dpb.h",
       "test/h265_vaapi_wrapper.cc",
