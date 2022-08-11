@@ -161,8 +161,6 @@ constexpr char kArcSupervisionIconPath[] = "supervision_icon.png";
 constexpr char kDebuggerMJSPath[] = "debug/debug.m.js";
 constexpr char kDebuggerUtilJSPath[] = "debug/debug_util.js";
 constexpr char kKeyboardUtilsJSPath[] = "keyboard_utils.js";
-constexpr char kKeyboardUtilsForInjectionPath[] =
-    "components/keyboard_utils_for_injection.js";
 constexpr char kKeyboardUtilsForInjectionModulePath[] =
     "components/keyboard_utils_for_injection.m.js";
 
@@ -174,8 +172,6 @@ constexpr char kTestAPIJsMPath[] = "test_api/test_api.m.js";
 constexpr char kWebviewSamlInjectedJSPath[] = "webview_saml_injected.js";
 
 // Components
-constexpr char kOobeCustomVarsCssHTML[] =
-    "components/oobe_vars/oobe_custom_vars_css.html";
 constexpr char kOobeCustomVarsCssJsM[] =
     "components/oobe_vars/oobe_custom_vars_css.m.js";
 
@@ -313,8 +309,6 @@ content::WebUIDataSource* CreateOobeUIDataSource(
   source->AddResourcePath(kWebviewSamlInjectedJSPath,
                           IDR_GAIA_AUTH_WEBVIEW_SAML_INJECTED_JS);
   source->AddResourcePath(kKeyboardUtilsJSPath, IDR_KEYBOARD_UTILS_JS);
-  source->AddResourcePath(kKeyboardUtilsForInjectionPath,
-                          IDR_KEYBOARD_UTILS_FOR_INJECTION_JS);
   source->AddResourcePath(kKeyboardUtilsForInjectionModulePath,
                           IDR_KEYBOARD_UTILS_FOR_INJECTION_M_JS);
   source->OverrideContentSecurityPolicy(
@@ -589,14 +583,9 @@ void OobeUI::AddOobeComponents(content::WebUIDataSource* source) {
 
   if (policy::EnrollmentRequisitionManager::IsRemoraRequisition()) {
     source->AddResourcePath(
-        kOobeCustomVarsCssHTML,
-        IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_REMORA_CSS_HTML);
-    source->AddResourcePath(
         kOobeCustomVarsCssJsM,
         IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_REMORA_CSS_M_JS);
   } else {
-    source->AddResourcePath(kOobeCustomVarsCssHTML,
-                            IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_CSS_HTML);
     source->AddResourcePath(kOobeCustomVarsCssJsM,
                             IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_CSS_M_JS);
   }
