@@ -9,6 +9,7 @@
 #include "chrome/browser/browsing_data/access_context_audit_service.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/custom_handlers/protocol_handler.h"
+#include "content/public/browser/web_contents_observer.h"
 
 namespace chrome {
 
