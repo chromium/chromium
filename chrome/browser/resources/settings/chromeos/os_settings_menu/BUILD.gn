@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/html_to_js.gni")
 import("../os_settings.gni")
 
 js_type_check("closure_compile_module") {
@@ -20,8 +19,4 @@ js_library("os_settings_menu") {
     "//third_party/polymer/v3_0/components-chromium/iron-collapse:iron-collapse",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
-}
-
-html_to_js("web_components") {
-  js_files = [ "os_settings_menu.js" ]
 }

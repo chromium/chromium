@@ -10,9 +10,11 @@
  */
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {html, PolymerElement, TemplateInstanceBase, templatize} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement, TemplateInstanceBase, templatize} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ensureLazyLoaded} from '../ensure_lazy_loaded.js';
+
+import {getTemplate} from './settings_idle_load.html.js';
 
 /** @polymer */
 class SettingsIdleLoadElement extends PolymerElement {
@@ -21,7 +23,7 @@ class SettingsIdleLoadElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

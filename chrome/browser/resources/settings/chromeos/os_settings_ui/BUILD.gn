@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/html_to_js.gni")
 import("../os_settings.gni")
 
 js_type_check("closure_compile_module") {
@@ -32,8 +31,4 @@ js_library("os_settings_ui") {
     "../settings_controls_types.js",
     "//ui/webui/resources/cr_elements/cr_drawer/cr_drawer_externs.js",
   ]
-}
-
-html_to_js("web_components") {
-  js_files = [ "os_settings_ui.js" ]
 }

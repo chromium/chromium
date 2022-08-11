@@ -26,7 +26,7 @@ import {CrContainerShadowBehavior, CrContainerShadowBehaviorInterface} from 'chr
 import {FindShortcutBehavior, FindShortcutBehaviorInterface} from 'chrome://resources/cr_elements/find_shortcut_behavior.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {listenOnce} from 'chrome://resources/js/util.m.js';
-import {Debouncer, html, microTask, mixinBehaviors, PolymerElement, timeOut} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Debouncer, microTask, mixinBehaviors, PolymerElement, timeOut} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
 import {SettingChangeValue} from '../../mojom-webui/search/user_action_recorder.mojom-webui.js';
@@ -37,6 +37,8 @@ import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSe
 import {OSPageVisibility, osPageVisibility} from '../os_page_visibility.js';
 import {PrefToSettingMetricConverter} from '../pref_to_setting_metric_converter.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
+
+import {getTemplate} from './os_settings_ui.html.js';
 
 /** Global defined when the main Settings script runs. */
 let defaultResourceLoaded = true;  // eslint-disable-line prefer-const
@@ -68,7 +70,7 @@ class OsSettingsUiElement extends OsSettingsUiElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

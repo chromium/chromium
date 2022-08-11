@@ -14,6 +14,12 @@ web_component_files = [
   "chromeos/os_about_page/edit_hostname_dialog.ts",
   "chromeos/os_about_page/os_about_page.ts",
   "chromeos/os_about_page/update_warning_dialog.ts",
+  "chromeos/os_settings_main/os_settings_main.js",
+  "chromeos/os_settings_menu/os_settings_menu.js",
+  "chromeos/os_settings_page/os_settings_page.js",
+  "chromeos/os_settings_page/settings_idle_load.js",
+  "chromeos/os_settings_ui/os_settings_ui.js",
+  "chromeos/os_toolbar/os_toolbar.js",
 ]
 
 # Files that are passed as input to html_to_wrapper().
@@ -327,14 +333,8 @@ gen_web_component_files = [
   "chromeos/os_search_page/search_engine.js",
   "chromeos/os_search_page/search_subpage.js",
   "chromeos/os_settings_icons_css.js",
-  "chromeos/os_settings_main/os_settings_main.js",
-  "chromeos/os_settings_menu/os_settings_menu.js",
-  "chromeos/os_settings_page/os_settings_page.js",
-  "chromeos/os_settings_page/settings_idle_load.js",
   "chromeos/os_settings_search_box/os_search_result_row.js",
   "chromeos/os_settings_search_box/os_settings_search_box.js",
-  "chromeos/os_settings_ui/os_settings_ui.js",
-  "chromeos/os_toolbar/os_toolbar.js",
   "chromeos/parental_controls_page/parental_controls_page.js",
   "chromeos/personalization_page/change_picture.js",
   "chromeos/personalization_page/personalization_page.js",
