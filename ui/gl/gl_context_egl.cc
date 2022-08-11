@@ -87,6 +87,11 @@
 #define EGL_CONTEXT_VIRTUALIZATION_GROUP_ANGLE 0x3481
 #endif /* EGL_ANGLE_context_virtualization */
 
+#ifndef EGL_ANGLE_program_cache_control
+#define EGL_ANGLE_program_cache_control 1
+#define EGL_CONTEXT_PROGRAM_BINARY_CACHE_ENABLED_ANGLE 0x3459
+#endif /* EGL_ANGLE_program_cache_control */
+
 using ui::GetLastEGLErrorString;
 
 namespace gl {
@@ -308,6 +313,14 @@ bool GLContextEGL::Initialize(GLSurface* compatible_surface,
     context_attributes.push_back(EGL_CONTEXT_VIRTUALIZATION_GROUP_ANGLE);
     context_attributes.push_back(
         static_cast<EGLint>(attribs.angle_context_virtualization_group_number));
+  }
+
+  // Skia manages program cache by itself.
+  // For WebGL program, it should manage program by itself too.
+  if (gl_display_->ext->b_EGL_ANGLE_program_cache_control) {
+    context_attributes.push_back(
+        EGL_CONTEXT_PROGRAM_BINARY_CACHE_ENABLED_ANGLE);
+    context_attributes.push_back(EGL_FALSE);
   }
 
   // Append final EGL_NONE to signal the context attributes are finished

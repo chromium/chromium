@@ -2819,6 +2819,7 @@ EGL_EXTENSIONS_EXTRA = [
   'EGL_ANGLE_create_context_webgl_compatibility',
   'EGL_ANGLE_external_context_and_surface',
   'EGL_ANGLE_keyed_mutex',
+  'EGL_ANGLE_program_cache_control',
   'EGL_ANGLE_robust_resource_initialization',
   'EGL_ANGLE_surface_orientation',
   'EGL_ANGLE_window_fixed_size',

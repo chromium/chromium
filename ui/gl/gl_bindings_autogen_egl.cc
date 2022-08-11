@@ -302,6 +302,8 @@ void DisplayExtensionsEGL::InitializeExtensionSettings(EGLDisplay display) {
       gfx::HasExtension(extensions, "EGL_ANGLE_keyed_mutex");
   b_EGL_ANGLE_power_preference =
       gfx::HasExtension(extensions, "EGL_ANGLE_power_preference");
+  b_EGL_ANGLE_program_cache_control =
+      gfx::HasExtension(extensions, "EGL_ANGLE_program_cache_control");
   b_EGL_ANGLE_query_surface_pointer =
       gfx::HasExtension(extensions, "EGL_ANGLE_query_surface_pointer");
   b_EGL_ANGLE_robust_resource_initialization =
