@@ -53,7 +53,7 @@ js_library("nearby_share_data_usage_dialog") {
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
     "//ui/webui/resources/cr_elements/cr_radio_button:cr_radio_button.m",
-    "//ui/webui/resources/cr_elements/cr_radio_group:cr_radio_group.m",
+    "//ui/webui/resources/cr_elements/cr_radio_group:cr_radio_group",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
 }

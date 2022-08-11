@@ -103,8 +103,6 @@ if (is_chromeos_ash) {
       "cr_radio_button/cr_radio_button.html",
       "cr_radio_button/cr_radio_button.js",
       "cr_radio_button/cr_radio_button_style_css.html",
-      "cr_radio_group/cr_radio_group.html",
-      "cr_radio_group/cr_radio_group.js",
       "cr_scrollable_behavior.html",
       "cr_scrollable_behavior.js",
       "cr_toggle/cr_toggle.html",
@@ -149,7 +147,7 @@ if (include_polymer) {
       "cr_radio_button/cr_radio_button_behavior.m.js",
       "cr_radio_button/cr_radio_button.m.js",
       "cr_radio_button/cr_radio_button_style_css.m.js",
-      "cr_radio_group/cr_radio_group.m.js",
+      "cr_radio_group/cr_radio_group.js",
       "cr_scrollable_behavior.m.js",
       "cr_toggle/cr_toggle.m.js",
       "hidden_style_css.m.js",
@@ -195,10 +193,7 @@ if (include_polymer) {
     ]
 
     if (is_chromeos_ash) {
-      deps += [
-        "cr_button:closure_compile",
-        "cr_radio_group:closure_compile",
-      ]
+      deps += [ "cr_button:closure_compile" ]
     }
   }
 
@@ -296,7 +291,7 @@ if (include_polymer) {
       "cr_input:polymer3_elements",
       "cr_lottie:cr_lottie_module",
       "cr_radio_button:polymer3_elements",
-      "cr_radio_group:cr_radio_group_module",
+      "cr_radio_group:web_components",
       "cr_toggle:cr_toggle_module",
       "policy:polymer3_elements",
     ]

@@ -146,7 +146,6 @@ js_library("network_nameservers") {
   deps = [
     ":cr_policy_network_behavior_mojo",
     ":onc_mojo",
-    "../../../cr_elements/cr_radio_group:cr_radio_group",
     "//ui/webui/resources/js:i18n_behavior",
   ]
 }
@@ -512,7 +511,7 @@ js_library("network_nameservers.m") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
     "//ui/webui/resources/cr_elements/cr_radio_button:cr_radio_button.m",
-    "//ui/webui/resources/cr_elements/cr_radio_group:cr_radio_group.m",
+    "//ui/webui/resources/cr_elements/cr_radio_group:cr_radio_group",
     "//ui/webui/resources/cr_elements/policy:cr_policy_indicator.m",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
@@ -798,6 +797,7 @@ polymer_modulizer("network_nameservers") {
   html_file = "network_nameservers.html"
   html_type = "dom-module"
   auto_imports = cr_components_chromeos_auto_imports
+  migrated_imports = cr_components_migrated_imports
 }
 
 polymer_modulizer("network_password_input") {

@@ -107,10 +107,10 @@ Polymer({
 
   /*
    * Returns the nameserver type CrRadioGroupElement.
-   * @return {?CrRadioGroupElement}
+   * @return {?HTMLElement}
    */
   getNameserverRadioButtons() {
-    return /** @type {?CrRadioGroupElement} */ (this.$$('#nameserverType'));
+    return /** @type {?HTMLElement} */ (this.$$('#nameserverType'));
   },
 
   /**

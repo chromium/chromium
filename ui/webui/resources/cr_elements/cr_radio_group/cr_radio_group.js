@@ -2,7 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-(() => {
+import {Polymer, html, dom} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {EventTracker} from '../../js/event_tracker.m.js';
+import '../cr_radio_button/cr_radio_button.m.js';
+import '../shared_vars_css.m.js';
+
 
   /**
    * @param {!Element} radio
@@ -15,6 +20,8 @@
 
   Polymer({
     is: 'cr-radio-group',
+
+    _template: html`{__html_template__}`,
 
     properties: {
       disabled: {
@@ -58,7 +65,7 @@
     /** @private {Array<!CrRadioButtonElement>} */
     buttons_: null,
 
-    /** @private {cr.EventTracker} */
+    /** @private {EventTracker} */
     buttonEventTracker_: null,
 
     /** @private {Map<string, number>} */
@@ -84,7 +91,7 @@
         ['PageDown', 1],
         ['PageUp', -1],
       ]);
-      this.buttonEventTracker_ = new cr.EventTracker();
+      this.buttonEventTracker_ = new EventTracker();
 
       this.populateBound_ = () => this.populate_();
       // Needed for when the radio buttons change when using dom-repeat or
@@ -94,7 +101,7 @@
       if (Polymer.DomIf) {
         this.$$('slot').addEventListener('slotchange', this.populateBound_);
       } else {
-        this.observer_ = Polymer.dom(this).observeNodes(this.populateBound_);
+        this.observer_ = dom(this).observeNodes(this.populateBound_);
       }
 
       this.populate_();
@@ -105,7 +112,7 @@
       if (Polymer.DomIf) {
         this.$$('slot').removeEventListener('slotchange', this.populateBound_);
       } else if (this.observer_) {
-        Polymer.dom(this).unobserveNodes(
+        dom(this).unobserveNodes(
             /** @type {!PolymerDomApi.ObserveHandle} */ (this.observer_));
       }
       this.buttonEventTracker_.removeAll();
@@ -279,4 +286,3 @@
       }
     },
   });
-})();
