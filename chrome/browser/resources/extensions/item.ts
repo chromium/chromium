@@ -266,6 +266,7 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
       case SourceType.UNPACKED:
         return 'extensions-icons:unpacked';
       case SourceType.WEBSTORE:
+      case SourceType.INSTALLED_BY_DEFAULT:
         return '';
       default:
         assertNotReached();

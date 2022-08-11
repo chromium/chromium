@@ -44,6 +44,7 @@ declare global {
         FROM_STORE = 'FROM_STORE',
         UNPACKED = 'UNPACKED',
         THIRD_PARTY = 'THIRD_PARTY',
+        INSTALLED_BY_DEFAULT = 'INSTALLED_BY_DEFAULT',
         UNKNOWN = 'UNKNOWN',
       }
 

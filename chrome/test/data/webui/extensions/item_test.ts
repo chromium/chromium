@@ -333,6 +333,10 @@ suite(extension_item_tests.suiteName, function() {
     assertTrue(isChildVisible(item, '#source-indicator'));
     assertEquals('extensions-icons:input', icon.icon);
 
+    item.set('data.location', 'INSTALLED_BY_DEFAULT');
+    flush();
+    assertFalse(isChildVisible(item, '#source-indicator'));
+
     item.set('data.location', 'FROM_STORE');
     item.set('data.controlledInfo', {text: 'policy'});
     flush();

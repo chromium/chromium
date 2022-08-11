@@ -310,6 +310,9 @@
   <message name="IDS_EXTENSIONS_ITEM_SOURCE" desc="The label above an extension's source, which indicates where the extension came from (webstore, third-party, local disk, etc).">
     Source
   </message>
+  <message name="IDS_EXTENSIONS_ITEM_SOURCE_INSTALLED_BY_DEFAULT" desc="The text to indicate that an extension has been added by default for the user's profile.">
+    Installed by default
+  </message>
   <message name="IDS_EXTENSIONS_ITEM_SOURCE_POLICY" desc="The text to indicate that an extension has been added by enterprise policy.">
     Added by policy
   </message>

@@ -55,6 +55,7 @@ namespace developerPrivate {
     FROM_STORE,
     UNPACKED,
     THIRD_PARTY,
+    INSTALLED_BY_DEFAULT,
     // "Unknown" includes crx's installed from chrome://extensions.
     UNKNOWN
   };

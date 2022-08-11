@@ -252,6 +252,11 @@ suite(extension_detail_view_tests.suiteName, function() {
     assertEquals('Added by a third-party', item.$.source.textContent!.trim());
     assertFalse(isChildVisible(item, '#load-path'));
 
+    item.set('data.location', 'INSTALLED_BY_DEFAULT');
+    flush();
+    assertEquals('Installed by default', item.$.source.textContent!.trim());
+    assertFalse(isChildVisible(item, '#load-path'));
+
     item.set('data.location', 'UNPACKED');
     item.set('data.prettifiedPath', 'foo/bar/baz/');
     flush();

@@ -379,6 +379,63 @@ TEST_F(ExtensionInfoGeneratorUnitTest, BasicInfoTest) {
   EXPECT_FALSE(info->path);
 }
 
+// Tests that the correct location field is returned for an extension that's
+// installed by default.
+TEST_F(ExtensionInfoGeneratorUnitTest, ExtensionInfoInstalledByDefault) {
+  profile()->GetPrefs()->SetBoolean(prefs::kExtensionsUIDeveloperMode, true);
+
+  std::unique_ptr<base::DictionaryValue> manifest =
+      DictionaryBuilder()
+          .Set("name", "installed by default")
+          .Set("version", "1.2")
+          .Set("manifest_version", 3)
+          .Set("update_url", "https://clients2.google.com/service/update2/crx")
+          .Build();
+
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder()
+          .SetManifest(std::move(manifest))
+          .SetLocation(ManifestLocation::kExternalPref)
+          .SetPath(data_dir())
+          .SetID(crx_file::id_util::GenerateId("alpha"))
+          .AddFlags(Extension::WAS_INSTALLED_BY_DEFAULT)
+          .Build();
+  service()->AddExtension(extension.get());
+
+  std::unique_ptr<api::developer_private::ExtensionInfo> info =
+      GenerateExtensionInfo(extension->id());
+  EXPECT_EQ(info->location, developer::LOCATION_INSTALLED_BY_DEFAULT);
+}
+
+// Tests that the correct location field is returned for an extension that's
+// installed by the OEM.
+TEST_F(ExtensionInfoGeneratorUnitTest, ExtensionInfoInstalledByOem) {
+  profile()->GetPrefs()->SetBoolean(prefs::kExtensionsUIDeveloperMode, true);
+
+  std::unique_ptr<base::DictionaryValue> manifest =
+      DictionaryBuilder()
+          .Set("name", "installed by OEM")
+          .Set("version", "1.2")
+          .Set("manifest_version", 3)
+          .Set("update_url", "https://clients2.google.com/service/update2/crx")
+          .Build();
+
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder()
+          .SetManifest(std::move(manifest))
+          .SetLocation(ManifestLocation::kExternalPref)
+          .SetPath(data_dir())
+          .SetID(crx_file::id_util::GenerateId("alpha"))
+          .AddFlags(Extension::WAS_INSTALLED_BY_DEFAULT |
+                    Extension::WAS_INSTALLED_BY_OEM)
+          .Build();
+  service()->AddExtension(extension.get());
+
+  std::unique_ptr<api::developer_private::ExtensionInfo> info =
+      GenerateExtensionInfo(extension->id());
+  EXPECT_EQ(info->location, developer::LOCATION_THIRD_PARTY);
+}
+
 // Test three generated json outputs.
 TEST_F(ExtensionInfoGeneratorUnitTest, GenerateExtensionsJSONData) {
   // Test Extension1

@@ -652,13 +652,18 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
   }
 
   // Location.
+  bool updates_from_web_store =
+      extension_management->UpdatesFromWebstore(extension);
   if (extension.location() == mojom::ManifestLocation::kInternal &&
-      extension_management->UpdatesFromWebstore(extension)) {
+      updates_from_web_store) {
     info->location = developer::LOCATION_FROM_STORE;
   } else if (Manifest::IsUnpackedLocation(extension.location())) {
     info->location = developer::LOCATION_UNPACKED;
+  } else if (extension.was_installed_by_default() &&
+             !extension.was_installed_by_oem() && updates_from_web_store) {
+    info->location = developer::LOCATION_INSTALLED_BY_DEFAULT;
   } else if (Manifest::IsExternalLocation(extension.location()) &&
-             extension_management->UpdatesFromWebstore(extension)) {
+             updates_from_web_store) {
     info->location = developer::LOCATION_THIRD_PARTY;
   } else {
     info->location = developer::LOCATION_UNKNOWN;
