@@ -3860,12 +3860,11 @@
             ],
             "experiments": [
                 {
-                    "name": "enabled_ntp_native_dialog_20220713",
+                    "name": "enabled_ntp_native_dialog_with_approved_strings_M104_20220809",
                     "params": {
                         "discount-consent-ntp-variation": "4",
-                        "step-one-one-cart-content": "Get discount codes for $1",
-                        "step-one-three-carts-content": "Get discount codes for $1, $2, and more",
-                        "step-one-two-carts-content": "Get discount codes for $1 and $2"
+                        "step-one-static-content": "Let Google help you find discounts for your carts",
+                        "step-one-use-static-content": "true"
                     },
                     "enable_features": [
                         "DiscountConsentV2"
