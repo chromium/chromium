@@ -35,12 +35,10 @@ class ExtensionWatcher;
 #endif
 
 namespace user_tuning {
+class ProfileDiscardOptOutListHelper;
 class UserPerformanceTuningManager;
 }
 
-namespace user_tuning {
-class ProfileDiscardOptOutListHelper;
-}
 }  // namespace performance_manager
 
 // Handles the initialization of the performance manager and a few dependent

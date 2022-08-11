@@ -2,21 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_METRICS_METRICS_PROVIDER_H_
-#define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_METRICS_METRICS_PROVIDER_H_
+#ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_METRICS_PROVIDER_H_
+#define CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_METRICS_PROVIDER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/performance_manager/user_tuning/user_performance_tuning_manager.h"
 #include "components/metrics/metrics_provider.h"
-
 #include "components/prefs/pref_change_registrar.h"
 
+class ChromeMetricsServiceClient;
+class PerformanceManagerMetricsProviderTest;
 class PrefService;
 
 namespace performance_manager {
 
 // A metrics provider to add some performance manager related metrics to the UMA
 // protos on each upload.
-class MetricsProvider : public metrics::MetricsProvider {
+class MetricsProvider : public ::metrics::MetricsProvider,
+                        public performance_manager::user_tuning::
+                            UserPerformanceTuningManager::Observer {
  public:
   enum class EfficiencyMode {
     // No efficiency mode for the entire upload window
@@ -33,23 +37,43 @@ class MetricsProvider : public metrics::MetricsProvider {
     kMaxValue = kMixed
   };
 
-  explicit MetricsProvider(PrefService* local_state);
+  static MetricsProvider* GetInstance();
+
   ~MetricsProvider() override;
+
+  void Initialize();
 
   // metrics::MetricsProvider:
   // This is only called from UMA code but is public for testing.
   void ProvideCurrentSessionData(
-      metrics::ChromeUserMetricsExtension* uma_proto) override;
+      ::metrics::ChromeUserMetricsExtension* uma_proto) override;
 
  private:
-  void OnEfficiencyModeChanged();
+  friend class ::ChromeMetricsServiceClient;
+  friend class ::PerformanceManagerMetricsProviderTest;
+
+  explicit MetricsProvider(PrefService* local_state);
+
+  // UserPerformanceTuningManager::Observer:
+  void OnBatterySaverModeChanged(bool is_active) override;
+  void OnExternalPowerConnectedChanged(
+      bool external_power_connected) override{};
+  void OnBatteryThresholdReached() override{};
+  void OnMemoryThresholdReached() override{};
+  void OnTabCountThresholdReached() override{};
+  void OnJankThresholdReached() override{};
+
+  void OnTuningModesChanged();
   EfficiencyMode ComputeCurrentMode() const;
 
   PrefChangeRegistrar pref_change_registrar_;
   const raw_ptr<PrefService> local_state_;
   EfficiencyMode current_mode_ = EfficiencyMode::kNormal;
+
+  bool initialized_ = false;
+  ;
 };
 
 }  // namespace performance_manager
 
-#endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_METRICS_METRICS_PROVIDER_H_
+#endif  // CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_METRICS_PROVIDER_H_

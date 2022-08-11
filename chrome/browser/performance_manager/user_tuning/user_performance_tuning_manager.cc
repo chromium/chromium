@@ -15,6 +15,8 @@
 namespace performance_manager::user_tuning {
 namespace {
 
+UserPerformanceTuningManager* g_user_performance_tuning_manager = nullptr;
+
 class FrameThrottlingDelegateImpl
     : public performance_manager::user_tuning::UserPerformanceTuningManager::
           FrameThrottlingDelegate {
@@ -30,40 +32,35 @@ class FrameThrottlingDelegateImpl
   ~FrameThrottlingDelegateImpl() override = default;
 };
 
+class HighEfficiencyModeToggleDelegateImpl
+    : public performance_manager::user_tuning::UserPerformanceTuningManager::
+          HighEfficiencyModeToggleDelegate {
+ public:
+  void ToggleHighEfficiencyMode(bool enabled) override {
+    performance_manager::PerformanceManager::CallOnGraph(
+        FROM_HERE, base::BindOnce(
+                       [](bool enabled, performance_manager::Graph* graph) {
+                         policies::HighEfficiencyModePolicy::GetInstance()
+                             ->OnHighEfficiencyModeChanged(enabled);
+                       },
+                       enabled));
+  }
+
+  ~HighEfficiencyModeToggleDelegateImpl() override = default;
+};
+
 }  // namespace
 
-UserPerformanceTuningManager::UserPerformanceTuningManager(
-    PrefService* local_state,
-    std::unique_ptr<FrameThrottlingDelegate> frame_throttling_delegate)
-    : frame_throttling_delegate_(
-          frame_throttling_delegate
-              ? std::move(frame_throttling_delegate)
-              : std::make_unique<FrameThrottlingDelegateImpl>()) {
-  pref_change_registrar_.Init(local_state);
-
-  if (base::FeatureList::IsEnabled(
-          performance_manager::features::kHighEfficiencyModeAvailable)) {
-    pref_change_registrar_.Add(
-        performance_manager::user_tuning::prefs::kHighEfficiencyModeEnabled,
-        base::BindRepeating(
-            &UserPerformanceTuningManager::OnHighEfficiencyModePrefChanged,
-            base::Unretained(this)));
-    // Make sure the initial state of the pref is passed on to the policy.
-    OnHighEfficiencyModePrefChanged();
-  }
-
-  if (base::FeatureList::IsEnabled(
-          performance_manager::features::kBatterySaverModeAvailable)) {
-    pref_change_registrar_.Add(
-        performance_manager::user_tuning::prefs::kBatterySaverModeEnabled,
-        base::BindRepeating(
-            &UserPerformanceTuningManager::OnBatterySaverModePrefChanged,
-            base::Unretained(this)));
-    OnBatterySaverModePrefChanged();
-  }
+// static
+UserPerformanceTuningManager* UserPerformanceTuningManager::GetInstance() {
+  DCHECK(g_user_performance_tuning_manager);
+  return g_user_performance_tuning_manager;
 }
 
-UserPerformanceTuningManager::~UserPerformanceTuningManager() = default;
+UserPerformanceTuningManager::~UserPerformanceTuningManager() {
+  DCHECK_EQ(this, g_user_performance_tuning_manager);
+  g_user_performance_tuning_manager = nullptr;
+}
 
 void UserPerformanceTuningManager::AddObserver(Observer* o) {
   observers_.AddObserver(o);
@@ -92,16 +89,50 @@ bool UserPerformanceTuningManager::IsBatterySaverActive() const {
   return battery_saver_mode_enabled_;
 }
 
+UserPerformanceTuningManager::UserPerformanceTuningManager(
+    PrefService* local_state,
+    std::unique_ptr<FrameThrottlingDelegate> frame_throttling_delegate,
+    std::unique_ptr<HighEfficiencyModeToggleDelegate>
+        high_efficiency_mode_toggle_delegate)
+    : frame_throttling_delegate_(
+          frame_throttling_delegate
+              ? std::move(frame_throttling_delegate)
+              : std::make_unique<FrameThrottlingDelegateImpl>()),
+      high_efficiency_mode_toggle_delegate_(
+          high_efficiency_mode_toggle_delegate
+              ? std::move(high_efficiency_mode_toggle_delegate)
+              : std::make_unique<HighEfficiencyModeToggleDelegateImpl>()) {
+  DCHECK(!g_user_performance_tuning_manager);
+  g_user_performance_tuning_manager = this;
+
+  pref_change_registrar_.Init(local_state);
+
+  if (base::FeatureList::IsEnabled(
+          performance_manager::features::kHighEfficiencyModeAvailable)) {
+    pref_change_registrar_.Add(
+        performance_manager::user_tuning::prefs::kHighEfficiencyModeEnabled,
+        base::BindRepeating(
+            &UserPerformanceTuningManager::OnHighEfficiencyModePrefChanged,
+            base::Unretained(this)));
+    // Make sure the initial state of the pref is passed on to the policy.
+    OnHighEfficiencyModePrefChanged();
+  }
+
+  if (base::FeatureList::IsEnabled(
+          performance_manager::features::kBatterySaverModeAvailable)) {
+    pref_change_registrar_.Add(
+        performance_manager::user_tuning::prefs::kBatterySaverModeEnabled,
+        base::BindRepeating(
+            &UserPerformanceTuningManager::OnBatterySaverModePrefChanged,
+            base::Unretained(this)));
+    OnBatterySaverModePrefChanged();
+  }
+}
+
 void UserPerformanceTuningManager::OnHighEfficiencyModePrefChanged() {
   bool enabled = pref_change_registrar_.prefs()->GetBoolean(
       performance_manager::user_tuning::prefs::kHighEfficiencyModeEnabled);
-  performance_manager::PerformanceManager::CallOnGraph(
-      FROM_HERE, base::BindOnce(
-                     [](bool enabled, performance_manager::Graph* graph) {
-                       policies::HighEfficiencyModePolicy::GetInstance()
-                           ->OnHighEfficiencyModeChanged(enabled);
-                     },
-                     enabled));
+  high_efficiency_mode_toggle_delegate_->ToggleHighEfficiencyMode(enabled);
 }
 
 void UserPerformanceTuningManager::OnBatterySaverModePrefChanged() {

@@ -4029,6 +4029,8 @@ static_library("browser") {
       "performance_manager/mechanisms/page_discarder.h",
       "performance_manager/mechanisms/page_loader.cc",
       "performance_manager/mechanisms/page_loader.h",
+      "performance_manager/metrics/metrics_provider.cc",
+      "performance_manager/metrics/metrics_provider.h",
       "performance_manager/persistence/site_data/site_data_cache_facade.cc",
       "performance_manager/persistence/site_data/site_data_cache_facade.h",
       "performance_manager/persistence/site_data/site_data_cache_facade_factory.cc",

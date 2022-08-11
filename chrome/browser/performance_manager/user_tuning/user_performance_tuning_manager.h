@@ -9,6 +9,8 @@
 #include "base/observer_list_types.h"
 #include "components/prefs/pref_change_registrar.h"
 
+class ChromeBrowserMainExtraPartsPerformanceManager;
+class PerformanceManagerMetricsProviderTest;
 class PrefService;
 
 namespace performance_manager::user_tuning {
@@ -21,6 +23,12 @@ class UserPerformanceTuningManager {
     virtual void StopThrottlingAllFrameSinks() = 0;
 
     virtual ~FrameThrottlingDelegate() = default;
+  };
+
+  class HighEfficiencyModeToggleDelegate {
+   public:
+    virtual void ToggleHighEfficiencyMode(bool enabled) = 0;
+    virtual ~HighEfficiencyModeToggleDelegate() = default;
   };
 
   class Observer : public base::CheckedObserver {
@@ -53,10 +61,8 @@ class UserPerformanceTuningManager {
     virtual void OnJankThresholdReached() = 0;
   };
 
-  explicit UserPerformanceTuningManager(
-      PrefService* local_state,
-      std::unique_ptr<FrameThrottlingDelegate> frame_throttling_delegate =
-          nullptr);
+  static UserPerformanceTuningManager* GetInstance();
+
   ~UserPerformanceTuningManager();
 
   void AddObserver(Observer* o);
@@ -76,6 +82,17 @@ class UserPerformanceTuningManager {
   bool IsBatterySaverActive() const;
 
  private:
+  friend class ::ChromeBrowserMainExtraPartsPerformanceManager;
+  friend class ::PerformanceManagerMetricsProviderTest;
+  friend class UserPerformanceTuningManagerTest;
+
+  explicit UserPerformanceTuningManager(
+      PrefService* local_state,
+      std::unique_ptr<FrameThrottlingDelegate> frame_throttling_delegate =
+          nullptr,
+      std::unique_ptr<HighEfficiencyModeToggleDelegate>
+          high_efficiency_mode_toggle_delegate = nullptr);
+
   void OnHighEfficiencyModePrefChanged();
   void OnBatterySaverModePrefChanged();
 
@@ -84,6 +101,8 @@ class UserPerformanceTuningManager {
   bool battery_saver_mode_enabled_ = false;
   bool temporary_battery_saver_enabled_ = false;
   std::unique_ptr<FrameThrottlingDelegate> frame_throttling_delegate_;
+  std::unique_ptr<HighEfficiencyModeToggleDelegate>
+      high_efficiency_mode_toggle_delegate_;
 
   PrefChangeRegistrar pref_change_registrar_;
   base::ObserverList<Observer> observers_;
