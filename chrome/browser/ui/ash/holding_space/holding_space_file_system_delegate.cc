@@ -20,6 +20,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -126,8 +127,12 @@ class HoldingSpaceFileSystemDelegate::FileSystemWatcher {
  private:
   void OnFilePathChanged(const base::FilePath& file_path, bool error) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(callback_, file_path, error));
+    // In tests `OnFilePathChanged()` events are sometimes propagated before
+    // `OnFileMoved()` events. Delay propagation of `OnFilePathChanged()`
+    // events to give `OnFileMoved()` events time to propagate.
+    content::GetUIThreadTaskRunner({})->PostDelayedTask(
+        FROM_HERE, base::BindOnce(callback_, file_path, error),
+        base::Milliseconds(1));
   }
 
   SEQUENCE_CHECKER(sequence_checker_);

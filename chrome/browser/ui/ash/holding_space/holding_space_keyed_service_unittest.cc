@@ -786,11 +786,9 @@ TEST_F(HoldingSpaceKeyedServiceTest, PersistenceOfInProgressItems) {
             persisted_holding_space_items);
 }
 
-// TODO(crbug.com/1315122): Fix flakes and re-enable.
 // Verifies that when a file backing a holding space item is moved, the holding
 // space item is updated in place and persistence storage is updated.
-TEST_F(HoldingSpaceKeyedServiceTest,
-       DISABLED_UpdatePersistentStorageAfterMove) {
+TEST_F(HoldingSpaceKeyedServiceTest, UpdatePersistentStorageAfterMove) {
   // Create a file system mount point.
   std::unique_ptr<ScopedTestMountPoint> downloads_mount =
       ScopedTestMountPoint::CreateAndMountDownloads(GetProfile());
@@ -912,12 +910,11 @@ TEST_F(HoldingSpaceKeyedServiceTest,
   }
 }
 
-// TODO(crbug.com/1170667): Fix flakes and re-enable.
 // Tests that holding space item's image representation gets updated when the
 // backing file is changed using move operation. Furthermore, verifies that
 // conflicts caused by moving a holding space item file to another path present
 // in the holding space get resolved.
-TEST_F(HoldingSpaceKeyedServiceTest, DISABLED_UpdateItemsOverwrittenByMove) {
+TEST_F(HoldingSpaceKeyedServiceTest, UpdateItemsOverwrittenByMove) {
   // Create a file system mount point.
   std::unique_ptr<ScopedTestMountPoint> downloads_mount =
       ScopedTestMountPoint::CreateAndMountDownloads(GetProfile());
