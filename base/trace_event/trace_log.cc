@@ -1669,8 +1669,6 @@ bool TraceLog::ShouldAddAfterUpdatingState(
   if (thread_is_in_trace_event_.Get())
     return false;
 
-  DCHECK(name);
-
   // Check and update the current thread name only if the event is for the
   // current thread to avoid locks in most cases.
   if (thread_id == PlatformThread::CurrentId()) {
@@ -1709,6 +1707,8 @@ bool TraceLog::ShouldAddAfterUpdatingState(
   // This is done sooner rather than later, to avoid creating the event and
   // acquiring the lock, which is not needed for ETW as it's already threadsafe.
   if (*category_group_enabled & TraceCategory::ENABLED_FOR_ETW_EXPORT) {
+    // ETW export expects non-null event names.
+    name = name ? name : "";
     TraceEventETWExport::AddEvent(phase, category_group_enabled, name, id,
                                   args);
   }

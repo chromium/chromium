@@ -2601,6 +2601,22 @@ TEST_F(TraceEventDataSourceTest, EmptyPacket) {
 #endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 }
 
+TEST_F(TraceEventDataSourceTest, SupportNullptrEventName) {
+  StartTraceEventDataSource();
+  TRACE_EVENT_INSTANT("browser", nullptr, [&](::perfetto::EventContext& ctx) {
+                          ctx.event()->set_name(std::string("EventName"));
+                        });
+  const auto& packets = GetFinalizedPackets();
+  ASSERT_GT(packets.size(), 0u);
+  const auto& last_packet = *packets.back();
+  EXPECT_TRUE(last_packet.has_track_event());
+  EXPECT_FALSE(last_packet.track_event().has_name_iid());
+  EXPECT_TRUE(last_packet.track_event().has_name());
+  EXPECT_EQ("EventName", last_packet.track_event().name());
+  EXPECT_TRUE(last_packet.has_interned_data());
+  EXPECT_EQ(0, last_packet.interned_data().event_names().size());
+}
+
 // TODO(eseckler): Add startup tracing unittests.
 
 }  // namespace

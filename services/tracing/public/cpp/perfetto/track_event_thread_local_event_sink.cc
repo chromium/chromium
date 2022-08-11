@@ -441,7 +441,7 @@ TrackEvent* TrackEventThreadLocalEventSink::PrepareTrackEvent(
   // Legacy async events (TRACE_EVENT_ASYNC*) are only pass-through in trace
   // processor, so we still have to emit names for these.
   const char* trace_event_name = trace_event->name();
-  if (!is_sync_end && !is_nestable_async_end) {
+  if (!is_sync_end && !is_nestable_async_end && trace_event_name != nullptr) {
     bool filter_name =
         copy_strings && !is_java_event && privacy_filtering_enabled_;
     if (filter_name)
