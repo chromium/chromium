@@ -542,7 +542,6 @@ ResourceFormat GetResourceFormat(gfx::BufferFormat format) {
 bool GLSupportsFormat(ResourceFormat format) {
   switch (format) {
     case BGR_565:
-    case BGRX_8888:
     case YVU_420:
     case YUV_420_BIPLANAR:
     case P010:
