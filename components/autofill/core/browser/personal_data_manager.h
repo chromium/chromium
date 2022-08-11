@@ -370,6 +370,7 @@ class PersonalDataManager : public KeyedService,
     variations_country_code_ = country_code;
   }
 
+#if BUILDFLAG(IS_IOS)
   // Returns the raw pointer to PersonalDataManagerCleaner used for testing
   // purposes.
   PersonalDataManagerCleaner* personal_data_manager_cleaner_for_testing()
@@ -377,7 +378,8 @@ class PersonalDataManager : public KeyedService,
     DCHECK(personal_data_manager_cleaner_);
     return personal_data_manager_cleaner_.get();
   }
-#endif
+#endif  // IOS
+#endif  // UNIT_TEST
 
   // Returns our best guess for the country a user is likely to use when
   // inputting a new address. The value is calculated once and cached, so it
@@ -510,32 +512,6 @@ class PersonalDataManager : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest, GetCreditCardByServerId);
   FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
                            AddAndGetCreditCardArtImage);
-  FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
-                           DedupeProfiles_ProfilesToDelete);
-  FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
-                           DedupeProfiles_GuidsMergeMap);
-  FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
-                           UpdateCardsBillingAddressReference);
-  FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
-                           ApplyDedupingRoutine_CardsBillingAddressIdUpdated);
-  FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
-                           ApplyDedupingRoutine_MergedProfileValues);
-  FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
-                           ApplyDedupingRoutine_VerifiedProfileFirst);
-  FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
-                           ApplyDedupingRoutine_VerifiedProfileLast);
-  FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
-                           ApplyDedupingRoutine_MultipleVerifiedProfiles);
-  FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
-                           ApplyDedupingRoutine_FeatureDisabled);
-  FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
-                           ApplyDedupingRoutine_NopIfZeroProfiles);
-  FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
-                           ApplyDedupingRoutine_NopIfOneProfile);
-  FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
-                           ApplyDedupingRoutine_OncePerVersion);
-  FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
-                           ApplyDedupingRoutine_MultipleDedupes);
   FRIEND_TEST_ALL_PREFIXES(
       PersonalDataManagerTest,
       ConvertWalletAddressesAndUpdateWalletCards_NewProfile);
@@ -555,9 +531,6 @@ class PersonalDataManager : public KeyedService,
                            DoNotConvertWalletAddressesInEphemeralStorage);
   FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
                            DeleteDisusedCreditCards_DoNothingWhenDisabled);
-  FRIEND_TEST_ALL_PREFIXES(
-      PersonalDataManagerTest,
-      DeleteDisusedCreditCards_OnlyDeleteExpiredDisusedLocalCards);
   FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
                            GetProfileSuggestions_ProfileAutofillDisabled);
   FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
@@ -572,6 +545,8 @@ class PersonalDataManager : public KeyedService,
       PersonalDataManagerTest,
       GetCreditCardsToSuggest_NoCreditCardsAddedIfDisabled);
   FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest, LogStoredCreditCardMetrics);
+  FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerCleanerTest,
+                           UpdateCardsBillingAddressReference);
 
   friend class autofill::AutofillInteractiveTest;
   friend class autofill::PersonalDataManagerCleaner;
