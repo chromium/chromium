@@ -116,6 +116,18 @@ class PLATFORM_EXPORT SegmentedSubstring {
     return data_.string8_ptr < data_last_char_;
   }
 
+  // Advances up to `delta` characters, returning how many characters were
+  // advanced. This will not advance past the last character.
+  unsigned Advance(unsigned delta) {
+    DCHECK_NE(0, length());
+    delta = std::min(static_cast<unsigned>(length()) - 1, delta);
+    if (is_8bit_)
+      data_.string8_ptr += delta;
+    else
+      data_.string16_ptr += delta;
+    return delta;
+  }
+
   ALWAYS_INLINE UChar Advance() {
     return is_8bit_ ? *++data_.string8_ptr : *++data_.string16_ptr;
   }
@@ -215,6 +227,12 @@ class PLATFORM_EXPORT SegmentedString {
   LookAheadResult LookAheadIgnoringCase(const String& string) {
     return LookAheadInline(string, kTextCaseASCIIInsensitive);
   }
+
+  // Used to advance by multiple characters. Specifically this advances by
+  // `num_chars` and `num_lines`. This function advances without analyzing the
+  // input string in anyway. As a result, the caller must know `num_lines` and
+  // `current_column`.
+  void Advance(unsigned num_chars, unsigned num_lines, int current_column);
 
   ALWAYS_INLINE UChar Advance() {
     if (LIKELY(current_string_.CanAdvance())) {
