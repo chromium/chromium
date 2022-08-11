@@ -3647,6 +3647,7 @@ enum WebFeature {
   kV8PendingPostBeacon_Constructor = 4326,
   kV8PendingPostBeacon_SetData_Method = 4327,
   kContentVisibilityAutoStateChangedHandlerRegistered = 4328,
+  kReplacedElementPaintedWithLargeOverflow = 4329,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

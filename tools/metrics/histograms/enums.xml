@@ -40995,6 +40995,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4326" label="V8PendingPostBeacon_Constructor"/>
   <int value="4327" label="V8PendingPostBeacon_SetData_Method"/>
   <int value="4328" label="ContentVisibilityAutoStateChangedHandlerRegistered"/>
+  <int value="4329" label="ReplacedElementPaintedWithLargeOverflow"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

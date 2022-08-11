@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/layout_replaced.h"
+#include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 #include "third_party/blink/renderer/core/mobile_metrics/mobile_friendliness_checker.h"
 #include "third_party/blink/renderer/core/paint/box_painter.h"
@@ -200,9 +201,19 @@ void ReplacedPainter::Paint(const PaintInfo& paint_info) {
       auto content_area = content_size.Width() * content_size.Height();
 
       DCHECK_GT(overflow_area, content_area);
+      const float device_pixel_ratio =
+          layout_replaced_.GetDocument().DevicePixelRatio();
+      const int overflow_outside_content_rect =
+          (overflow_area - content_area).ToInt() / pow(device_pixel_ratio, 2);
       UMA_HISTOGRAM_COUNTS_100000(
           "Blink.Overflow.ReplacedElementAreaOutsideContentRect",
-          (overflow_area - content_area).ToInt());
+          overflow_outside_content_rect);
+
+      constexpr int kMaxContentBreakageHeuristic = 5000;
+      if (overflow_outside_content_rect > kMaxContentBreakageHeuristic) {
+        UseCounter::Count(layout_replaced_.GetDocument(),
+                          WebFeature::kReplacedElementPaintedWithLargeOverflow);
+      }
     }
   }
 
