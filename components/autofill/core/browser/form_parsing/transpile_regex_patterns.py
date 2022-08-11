@@ -8,6 +8,7 @@ import argparse
 from collections import defaultdict
 import io
 import json
+import re
 import sys
 
 # Generates a set of C++ constexpr constants to facilitate lookup of a set of
@@ -36,11 +37,6 @@ import sys
 # lookup pattern name -> language code -> span of MatchPatternRefs, but it's
 # significantly simpler.
 def generate_cpp_constants(id_to_name_to_lang_to_patterns):
-  # The enum constant of the MatchAttribute::kName.
-  kName = 1
-  yield f'static_assert(MatchAttribute::kName == To<MatchAttribute,{kName}>());'
-  yield ''
-
   # Stores a `key` in `dictionary` and assigns it a natural number.
   #
   # For example, after memoize("foo", d) and memoize("bar", d),
@@ -64,17 +60,30 @@ def generate_cpp_constants(id_to_name_to_lang_to_patterns):
   def json_to_cpp_u16string_literal(json_string_literal):
     return 'u'+ json.dumps(json_string_literal or '')
 
-  # Maps a list of natural numbers to a DenseSet<MatchAttribute> expression.
-  def json_to_cpp_match_field_attributes(enum_values):
-    return f'DenseSet<MatchAttribute>{{' \
-           f"{','.join(f'To<MatchAttribute,{i}>()' for i in enum_values)}" \
-           f'}}'
+  # Maps a list of strings to a DenseSet containing these values.
+  # The strings represents constants in the format FOO_BAR.
+  # They're translated to the C++ constant kFooBar.
+  def json_to_cpp_dense_set(json_enum_values, cpp_enum_type):
+    # Converts FOO_BAR into kFooBar.
+    def json_to_cpp_constant_symbol(json):
+      assert json.isupper()
+      return f'{cpp_enum_type}::k' + re.sub(
+          r'(^|_)([a-z])', lambda matched: matched.group(2).upper(),
+          json.lower())
+    cpp_enum_values = [json_to_cpp_constant_symbol(c) for c in json_enum_values]
+    return (f'DenseSet<{cpp_enum_type}>{{' + ','.join(cpp_enum_values) + f'}}')
 
-  # Maps a list of natural numbers to a DenseSet<MatchFieldType> expression.
+  # Maps a list of strings to a DenseSet<MatchAttribute> expression.
+  # The strings must be the names of MatchAttribute constants, e.g., NAME.
+  # They're mapped to C++ constants, e.g., kName.
+  def json_to_cpp_match_field_attributes(enum_values):
+    return json_to_cpp_dense_set(enum_values, 'MatchAttribute')
+
+  # Maps a list of strings to a DenseSet<MatchFieldType> expression.
+  # The strings must be the names of MatchFieldType constants, e.g., TEXT_AREA.
+  # They're mapped to C++ constants, e.g., kTextArea.
   def json_to_cpp_match_field_input_types(enum_values):
-    return f'DenseSet<MatchFieldType>{{' \
-           f"{','.join(f'To<MatchFieldType,{i}>()' for i in enum_values)}" \
-           f'}}'
+    return json_to_cpp_dense_set(enum_values, 'MatchFieldType')
 
   # Maps a JSON object representing a pattern to a C++ MatchingPattern
   # expression.
@@ -125,6 +134,27 @@ def generate_cpp_constants(id_to_name_to_lang_to_patterns):
           p.copy() for ps in lang_to_patterns.values() for p in ps
       ]
 
+    # Map legacy raw integer literals to the JSON constant string.
+    # TODO(crbug.com/1312026): Remove once src-internal has been rolled.
+    def normalize_match_field_attributes(json):
+      constants = ['LABEL', 'NAME']
+      return [constants[c] if isinstance(c, int) else c for c in json]
+    def normalize_match_field_input_types(json):
+      constants = [
+          'TEXT', 'EMAIL', 'TELEPHONE', 'SELECT', 'TEXT_AREA', 'PASSWORD',
+          'NUMBER', 'SEARCH'
+      ]
+      return [constants[c] if isinstance(c, int) else c for c in json]
+    for lang_to_patterns in name_to_lang_to_patterns.values():
+      for patterns in lang_to_patterns.values():
+        for p in patterns:
+          if 'match_field_attributes' in p:
+            p['match_field_attributes'] = normalize_match_field_attributes(
+                p['match_field_attributes'])
+          if 'match_field_input_types' in p:
+            p['match_field_input_types'] = normalize_match_field_input_types(
+                p['match_field_input_types'])
+
     # Add the English patterns to all languages except for English itself and
     # the catch-all language ''.
     #
@@ -136,7 +166,7 @@ def generate_cpp_constants(id_to_name_to_lang_to_patterns):
       if 'en' not in lang_to_patterns:
         continue
       def make_supplementary_pattern(p):
-        assert kName in p['match_field_attributes']
+        assert "NAME" in p['match_field_attributes']
         p = p.copy()
         p['supplementary'] = True
         return p
@@ -145,7 +175,7 @@ def generate_cpp_constants(id_to_name_to_lang_to_patterns):
         patterns.extend(
             make_supplementary_pattern(p)
             for p in lang_to_patterns['en']
-            if kName in p['match_field_attributes'])
+            if "NAME" in p['match_field_attributes'])
 
   # Populate the two maps:
   # - a map from C++ MatchingPattern expressions to their index.
@@ -264,14 +294,6 @@ constexpr MatchPatternRef MakeMatchPatternRef(
     bool is_supplementary,
     MatchPatternRef::UnderlyingType index) {
   return MatchPatternRef(is_supplementary, index);
-}
-
-// Converts an integer to the associated enum class constant.
-template<typename Enum, int i>
-constexpr Enum To() {
-  static_assert(0 <= i);
-  static_assert(static_cast<Enum>(i) <= Enum::kMaxValue);
-  return static_cast<Enum>(i);
 }
 
 // A pair of const char* used as keys in the `kPatternMap`.
