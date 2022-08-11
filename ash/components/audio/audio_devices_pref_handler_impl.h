@@ -114,10 +114,10 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) AudioDevicesPrefHandlerImpl
   // Notifies the AudioPrefObserver for audio policy pref changes.
   void NotifyAudioPolicyChange();
 
-  base::Value device_mute_settings_;
-  base::Value device_volume_settings_;
-  base::Value device_gain_settings_;
-  base::Value device_state_settings_;
+  base::Value::Dict device_mute_settings_;
+  base::Value::Dict device_volume_settings_;
+  base::Value::Dict device_gain_settings_;
+  base::Value::Dict device_state_settings_;
 
   PrefService* local_state_;  // not owned
 
