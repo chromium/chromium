@@ -65,14 +65,15 @@ namespace storage {
 
 namespace {
 
-// TODO(https://crbug.com/1322223): create an additional parameterized
-// test mode for kIncognitoThirdParty.
 enum TestMode {
   kRegularFirstParty,
   kRegularFirstPartyNonDefaultBucket,
   kRegularThirdParty,
   kRegularThirdPartyNonDefaultBucket,
-  kIncognitoFirstParty
+  kIncognitoFirstParty,
+  kIncognitoFirstPartyNonDefaultBucket,
+  kIncognitoThirdParty,
+  kIncognitoThirdPartyNonDefaultBucket
 };
 
 bool FileExists(const base::FilePath& path) {
@@ -203,14 +204,23 @@ class ObfuscatedFileUtilTest : public testing::Test,
 
   ~ObfuscatedFileUtilTest() override = default;
 
-  bool is_incognito() { return GetParam() == TestMode::kIncognitoFirstParty; }
+  bool is_incognito() {
+    return GetParam() == TestMode::kIncognitoFirstParty ||
+           (GetParam() == TestMode::kIncognitoFirstPartyNonDefaultBucket) ||
+           (GetParam() == TestMode::kIncognitoThirdParty) ||
+           (GetParam() == TestMode::kIncognitoThirdPartyNonDefaultBucket);
+  }
   bool is_third_party_context() {
     return GetParam() == TestMode::kRegularThirdParty ||
-           (GetParam() == TestMode::kRegularThirdPartyNonDefaultBucket);
+           (GetParam() == TestMode::kRegularThirdPartyNonDefaultBucket) ||
+           (GetParam() == TestMode::kIncognitoThirdParty) ||
+           (GetParam() == TestMode::kIncognitoThirdPartyNonDefaultBucket);
   }
   bool is_non_default_bucket() {
     return GetParam() == TestMode::kRegularFirstPartyNonDefaultBucket ||
-           (GetParam() == TestMode::kRegularThirdPartyNonDefaultBucket);
+           (GetParam() == TestMode::kRegularThirdPartyNonDefaultBucket) ||
+           (GetParam() == TestMode::kIncognitoFirstPartyNonDefaultBucket) ||
+           (GetParam() == TestMode::kIncognitoThirdPartyNonDefaultBucket);
   }
 
   void SetUp() override {
@@ -941,7 +951,10 @@ INSTANTIATE_TEST_SUITE_P(
                     TestMode::kRegularFirstPartyNonDefaultBucket,
                     TestMode::kRegularThirdParty,
                     TestMode::kRegularThirdPartyNonDefaultBucket,
-                    TestMode::kIncognitoFirstParty));
+                    TestMode::kIncognitoFirstParty,
+                    TestMode::kIncognitoFirstPartyNonDefaultBucket,
+                    TestMode::kIncognitoThirdParty,
+                    TestMode::kIncognitoThirdPartyNonDefaultBucket));
 
 TEST_P(ObfuscatedFileUtilTest, TestCreateAndDeleteFile) {
   FileSystemURL url = CreateURLFromUTF8("fake/file");
@@ -2541,10 +2554,6 @@ TEST_P(ObfuscatedFileUtilTest, CreateDirectory_NotADirectoryInRecursive) {
 }
 
 TEST_P(ObfuscatedFileUtilTest, DeleteDirectoryForBucketAndType) {
-  // TODO(https://crbug.com/1322223): Remove this early return once we resolve
-  // failures involving non-default buckets in incognito mode.
-  if (is_incognito())
-    return;
   // Create directories.
   std::unique_ptr<SandboxFileSystemTestHelper> fs1 =
       NewFileSystem(default_bucket_, kFileSystemTypeTemporary);
@@ -2715,10 +2724,6 @@ TEST_P(ObfuscatedFileUtilTest, DeleteDirectoryForStorageKeyAndType) {
 }
 
 TEST_P(ObfuscatedFileUtilTest, DeleteDirectoryForBucketAndType_DeleteAll) {
-  // TODO(https://crbug.com/1322223): Remove this early return once we resolve
-  // failures involving non-default buckets in incognito mode.
-  if (is_incognito())
-    return;
   // Create origin directories.
   std::unique_ptr<SandboxFileSystemTestHelper> fs1 =
       NewFileSystem(default_bucket_, kFileSystemTypeTemporary);

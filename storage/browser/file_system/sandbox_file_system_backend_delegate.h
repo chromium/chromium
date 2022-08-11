@@ -73,9 +73,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileSystemBackendDelegate
   using OpenFileSystemCallback = FileSystemBackend::OpenFileSystemCallback;
   using ResolveURLCallback = FileSystemBackend::ResolveURLCallback;
 
-  // The FileSystem directory name.
-  static const base::FilePath::CharType kFileSystemDirectory[];
-
   // StorageKey enumerator interface.
   // An instance of this interface is assumed to be called on the file thread.
   class StorageKeyEnumerator {

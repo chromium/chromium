@@ -23,6 +23,7 @@
 #include "storage/browser/file_system/file_system_backend.h"
 #include "storage/browser/file_system/file_system_features.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "storage/browser/file_system/obfuscated_file_util.h"
 #include "storage/browser/file_system/sandbox_file_system_backend_delegate.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
@@ -203,8 +204,7 @@ class SandboxFileSystemBackendTest
   }
 
   base::FilePath file_system_path() const {
-    return data_dir_.GetPath().Append(
-        SandboxFileSystemBackendDelegate::kFileSystemDirectory);
+    return data_dir_.GetPath().Append(ObfuscatedFileUtil::kFileSystemDirectory);
   }
 
   base::FilePath file_system_path_for_buckets() const {

@@ -306,15 +306,17 @@ class ObfuscatedStorageKeyEnumerator
   base::WeakPtr<ObfuscatedFileUtilMemoryDelegate> memory_file_util_;
 };
 
+const base::FilePath::CharType ObfuscatedFileUtil::kFileSystemDirectory[] =
+    FILE_PATH_LITERAL("File System");
+
 ObfuscatedFileUtil::ObfuscatedFileUtil(
     scoped_refptr<SpecialStoragePolicy> special_storage_policy,
-    const base::FilePath& file_system_directory,
+    const base::FilePath& profile_path,
     leveldb::Env* env_override,
     const std::set<std::string>& known_type_strings,
     SandboxFileSystemBackendDelegate* sandbox_delegate,
     bool is_incognito)
     : special_storage_policy_(std::move(special_storage_policy)),
-      file_system_directory_(file_system_directory),
       env_override_(env_override),
       is_incognito_(is_incognito),
       db_flush_delay_seconds_(10 * 60),  // 10 mins.
@@ -323,10 +325,15 @@ ObfuscatedFileUtil::ObfuscatedFileUtil(
   DETACH_FROM_SEQUENCE(sequence_checker_);
   DCHECK(!is_incognito_ ||
          (env_override && leveldb_chrome::IsMemEnv(env_override)));
+  file_system_directory_ = profile_path.Append(kFileSystemDirectory);
 
   if (is_incognito_) {
-    delegate_ = std::make_unique<ObfuscatedFileUtilMemoryDelegate>(
-        file_system_directory_);
+    // profile_path is passed here, so that the delegate is able to accommodate
+    // both codepaths of {{profile_path}}/File System (first-party) and
+    // {{profile_path}}/WebStorage (buckets-based).
+    // See https://crrev.com/c/3817542 for more context.
+    delegate_ =
+        std::make_unique<ObfuscatedFileUtilMemoryDelegate>(profile_path);
   } else {
     delegate_ = std::make_unique<ObfuscatedFileUtilDiskDelegate>();
   }

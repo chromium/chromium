@@ -136,6 +136,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtil
     virtual bool HasTypeDirectory(const std::string& type_string) const = 0;
   };
 
+  // The FileSystem directory component.
+  static const base::FilePath::CharType kFileSystemDirectory[];
+
   // The type string is used to provide per-type isolation in the sandboxed
   // filesystem directory. `known_type_strings` are known type string names that
   // this file system should care about. This info is used to determine whether
@@ -146,7 +149,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtil
   // and as a result, directories should only be directly compared using type
   // string values.
   ObfuscatedFileUtil(scoped_refptr<SpecialStoragePolicy> special_storage_policy,
-                     const base::FilePath& file_system_directory,
+                     const base::FilePath& profile_path,
                      leveldb::Env* env_override,
                      const std::set<std::string>& known_type_strings,
                      SandboxFileSystemBackendDelegate* sandbox_delegate,

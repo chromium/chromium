@@ -162,10 +162,6 @@ void DeleteSoon(base::SequencedTaskRunner* runner, T* ptr) {
 
 }  // namespace
 
-const base::FilePath::CharType
-    SandboxFileSystemBackendDelegate::kFileSystemDirectory[] =
-        FILE_PATH_LITERAL("File System");
-
 // static
 std::string SandboxFileSystemBackendDelegate::GetTypeString(
     FileSystemType type) {
@@ -196,7 +192,7 @@ SandboxFileSystemBackendDelegate::SandboxFileSystemBackendDelegate(
       sandbox_file_util_(std::make_unique<AsyncFileUtilAdapter>(
           std::make_unique<ObfuscatedFileUtil>(
               special_storage_policy,
-              profile_path.Append(kFileSystemDirectory),
+              profile_path,
               env_override,
               GetKnownTypeStrings(),
               this,
@@ -795,11 +791,11 @@ SandboxFileSystemBackendDelegate::memory_file_util_delegate() {
 // static
 std::unique_ptr<ObfuscatedFileUtil> ObfuscatedFileUtil::CreateForTesting(
     scoped_refptr<SpecialStoragePolicy> special_storage_policy,
-    const base::FilePath& file_system_directory,
+    const base::FilePath& profile_path,
     leveldb::Env* env_override,
     bool is_incognito) {
   return std::make_unique<ObfuscatedFileUtil>(
-      std::move(special_storage_policy), file_system_directory, env_override,
+      std::move(special_storage_policy), profile_path, env_override,
       GetKnownTypeStrings(), /*sandbox_delegate=*/nullptr, is_incognito);
 }
 
