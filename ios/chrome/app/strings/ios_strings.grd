@@ -2295,6 +2295,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PASSWORD_MANAGER_HEADER_NOT_SYNCING" desc="Header text for the view in Settings for managing saved passwords. This string only appears when the user is not syncing their passwords. [Length: unlimited] [iOS only]">
         Passwords are saved to Google Password Manager on this device only.
       </message>
+      <message name="IDS_IOS_ADD_PASSWORD" desc="Text on a button which allows the user to save a password for a website in their Password Manager.">
+        Add Password...
+      </message>
       <message name="IDS_IOS_CHECK_PASSWORDS" desc="Title for the item in Settings for Password Check feature" meaning="Label tells the user about status of Password Check [CHAR_LIMIT=25] [iOS only]">
         Check Passwords
       </message>

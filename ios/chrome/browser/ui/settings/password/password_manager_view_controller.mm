@@ -108,6 +108,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeOnDeviceEncryptionSetUp,
   ItemTypeOnDeviceEncryptionOptedInDescription,
   ItemTypeOnDeviceEncryptionOptedInLearnMore,
+  // Section: SectionIdentifierAddPasswordButton
+  ItemTypeAddPasswordButton,
 };
 
 // Return if the feature flag for the favicon is enabled.
@@ -205,6 +207,8 @@ bool ShouldShowSettingsUI() {
   SettingsCheckItem* _passwordProblemsItem;
   // The button to start password check.
   TableViewTextItem* _checkForProblemsItem;
+  // The button to add a password.
+  TableViewTextItem* _addPasswordItem;
   // The item related to the button for exporting passwords.
   TableViewTextItem* _exportPasswordsItem;
   // The text explaining why the user should opt-in on device encryption.
@@ -407,13 +411,11 @@ bool ShouldShowSettingsUI() {
                      action:@selector(dismissSearchController:)
            forControlEvents:UIControlEventTouchUpInside];
 
-  // If the settings are managed by enterprise policy and the password manager
-  // is not enabled, there won't be any add functionality.
-  if (!(_browserState->GetPrefs()->IsManagedPreference(
-            password_manager::prefs::kCredentialsEnableService) &&
-        ![_passwordManagerEnabled value])) {
+  if (ShouldShowSettingsUI() && [self allowsAddPassword]) {
     self.shouldShowAddButtonInToolbar = YES;
     self.addButtonInToolbar.enabled = YES;
+  } else {
+    self.shouldShowAddButtonInToolbar = NO;
   }
 
   [self loadModel];
@@ -475,6 +477,7 @@ bool ShouldShowSettingsUI() {
       [self setExportPasswordsButtonEnabled:YES];
     }
   }
+  [self setAddPasswordButtonEnabled:!editing];
   [self setSearchBarEnabled:self.shouldEnableSearchBar];
   [self updatePasswordCheckButtonWithState:self.passwordCheckState];
   [self updatePasswordCheckStatusLabelWithState:self.passwordCheckState];
@@ -553,6 +556,14 @@ bool ShouldShowSettingsUI() {
   [self updateOnDeviceEncryptionSessionWithUpdateTableView:NO
                                           withRowAnimation:
                                               UITableViewRowAnimationNone];
+
+  // Add Password button.
+  if (!ShouldShowSettingsUI() && [self allowsAddPassword]) {
+    [model addSectionWithIdentifier:SectionIdentifierAddPasswordButton];
+    _addPasswordItem = [self addPasswordItem];
+    [model addItem:_addPasswordItem
+        toSectionWithIdentifier:SectionIdentifierAddPasswordButton];
+  }
 
   // Saved passwords.
   if (!_passwords.empty()) {
@@ -909,6 +920,16 @@ bool ShouldShowSettingsUI() {
   return item;
 }
 
+- (TableViewTextItem*)addPasswordItem {
+  TableViewTextItem* addPasswordItem =
+      [[TableViewTextItem alloc] initWithType:ItemTypeAddPasswordButton];
+  addPasswordItem.text = l10n_util::GetNSString(IDS_IOS_ADD_PASSWORD);
+  addPasswordItem.accessibilityIdentifier = kAddPasswordButtonId;
+  addPasswordItem.accessibilityTraits = UIAccessibilityTraitButton;
+  addPasswordItem.textColor = [UIColor colorNamed:kBlueColor];
+  return addPasswordItem;
+}
+
 - (TableViewTextItem*)exportPasswordsItem {
   TableViewTextItem* exportPasswordsItem =
       [[TableViewTextItem alloc] initWithType:ItemTypeExportPasswordsButton];
@@ -1201,6 +1222,9 @@ bool ShouldShowSettingsUI() {
                         withRowAnimation:UITableViewRowAnimationTop];
         self.onDeviceEncryptionStateInModel = OnDeviceEncryptionStateNotShown;
 
+        [self clearSectionWithIdentifier:SectionIdentifierAddPasswordButton
+                        withRowAnimation:UITableViewRowAnimationTop];
+
         [self clearSectionWithIdentifier:SectionIdentifierPasswordCheck
                         withRowAnimation:UITableViewRowAnimationTop];
 
@@ -1288,6 +1312,27 @@ bool ShouldShowSettingsUI() {
                                                      inSection:checkSection]];
         [rowsIndexPaths addObject:[NSIndexPath indexPathForRow:1
                                                      inSection:checkSection]];
+        sectionIndex++;
+
+        // Add "Add Password" button.
+        if (!ShouldShowSettingsUI() && [self allowsAddPassword]) {
+          [model insertSectionWithIdentifier:SectionIdentifierAddPasswordButton
+                                     atIndex:sectionIndex];
+          [self.tableView
+                insertSections:[NSIndexSet indexSetWithIndex:sectionIndex]
+              withRowAnimation:UITableViewRowAnimationTop];
+          [model addItem:_addPasswordItem
+              toSectionWithIdentifier:SectionIdentifierAddPasswordButton];
+          [rowsIndexPaths
+              addObject:
+                  [NSIndexPath
+                      indexPathForRow:0
+                            inSection:
+                                [model
+                                    sectionForSectionIdentifier:
+                                        SectionIdentifierAddPasswordButton]]];
+          sectionIndex++;
+        }
 
         [model setHeader:_manageAccountLinkItem
             forSectionWithIdentifier:[self sectionForManageAccountLinkHeader]];
@@ -1632,6 +1677,20 @@ bool ShouldShowSettingsUI() {
   }
 }
 
+- (void)setAddPasswordButtonEnabled:(BOOL)enabled {
+  if (!_addPasswordItem) {
+    return;
+  }
+  if (enabled) {
+    _addPasswordItem.textColor = [UIColor colorNamed:kBlueColor];
+    _addPasswordItem.accessibilityTraits &= ~UIAccessibilityTraitNotEnabled;
+  } else {
+    _addPasswordItem.textColor = [UIColor colorNamed:kTextSecondaryColor];
+    _addPasswordItem.accessibilityTraits |= UIAccessibilityTraitNotEnabled;
+  }
+  [self reconfigureCellsForItems:@[ _addPasswordItem ]];
+}
+
 - (void)updateExportPasswordsButton {
   if (!_exportPasswordsItem)
     return;
@@ -1855,6 +1914,14 @@ bool ShouldShowSettingsUI() {
                                percentage);
 }
 
+- (bool)allowsAddPassword {
+  // If the settings are managed by enterprise policy and the password manager
+  // is not enabled, there won't be any add functionality.
+  return !(_browserState->GetPrefs()->IsManagedPreference(
+               password_manager::prefs::kCredentialsEnableService) &&
+           ![_passwordManagerEnabled value]);
+}
+
 #pragma mark - UITableViewDelegate
 
 - (void)tableView:(UITableView*)tableView
@@ -1933,6 +2000,10 @@ bool ShouldShowSettingsUI() {
       BlockToOpenURL(self, self.dispatcher)(url);
       break;
     }
+    case ItemTypeAddPasswordButton: {
+      [self.handler showAddPasswordSheet];
+      break;
+    }
     case ItemTypeOnDeviceEncryptionOptedInDescription:
     case ItemTypeLastCheckTimestampFooter:
     case ItemTypeOnDeviceEncryptionOptInDescription:
@@ -1970,6 +2041,8 @@ bool ShouldShowSettingsUI() {
              self.passwordCheckState != PasswordCheckStateDisabled;
     case ItemTypeExportPasswordsButton:
       return _exportReady;
+    case ItemTypeAddPasswordButton:
+      return [self allowsAddPassword];
   }
   return YES;
 }

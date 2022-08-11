@@ -36,6 +36,10 @@ extern NSString* const kSettingsPasswordsInOtherAppsCellId;
 // The accessibility identifier of the password issues table view.
 extern NSString* const kPasswordIssuesTableViewId;
 
+// The accessibility identifier of the large "Add Password..." button when
+// displayed in the table.
+extern NSString* const kAddPasswordButtonId;
+
 // Sections of the password settings
 typedef NS_ENUM(NSInteger, PasswordSectionIdentifier) {
   SectionIdentifierSavePasswordsSwitch = kSectionIdentifierEnumZero,
@@ -45,6 +49,7 @@ typedef NS_ENUM(NSInteger, PasswordSectionIdentifier) {
   SectionIdentifierExportPasswordsButton,
   SectionIdentifierPasswordCheck,
   SectionIdentifierOnDeviceEncryption,
+  SectionIdentifierAddPasswordButton,
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORDS_TABLE_VIEW_CONSTANTS_H_

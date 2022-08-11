@@ -295,10 +295,9 @@ id<GREYMatcher> PopUpMenuItemWithLabel(int label) {
       grey_userInteractionEnabled(), nil);
 }
 
-// Returns matcher for the "Add Password" button located at the bottom of the
-// screen.
+// Returns matcher for the "Add Password" button.
 id<GREYMatcher> AddPasswordButton() {
-  return grey_accessibilityID(kSettingsToolbarAddButtonId);
+  return grey_accessibilityID(kAddPasswordButtonId);
 }
 
 // Returns matcher for the "Save" button in the "Add Password" view.
@@ -1703,14 +1702,17 @@ id<GREYMatcher> EditDoneButton() {
 }
 
 // Checks that the "Add" button is not shown on Edit.
-- (void)testNoAddButtonInEditMode {
+- (void)testAddButtonDisabledInEditMode {
   SaveExamplePasswordForm();
   OpenPasswordSettings();
 
   TapEdit();
 
-  // Expect Add Password button to be removed.
   [[EarlGrey selectElementWithMatcher:AddPasswordButton()]
+      performAction:grey_tap()];
+
+  // Verify that the dialog didn't show up after tapping the Add button.
+  [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
       assertWithMatcher:grey_nil()];
 }
 
