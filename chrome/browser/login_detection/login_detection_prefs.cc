@@ -72,17 +72,15 @@ void SaveSiteToOAuthSignedInList(PrefService* pref_service, const GURL& url) {
 }
 
 bool IsSiteInOAuthSignedInList(PrefService* pref_service, const GURL& url) {
-  if (auto* dict = pref_service->GetDictionary(kOAuthSignedInSitesPref))
-    return dict->FindKey(GetSiteNameForURL(url));
-  return false;
+  return pref_service->GetValueDict(kOAuthSignedInSitesPref)
+      .contains(GetSiteNameForURL(url));
 }
 
 std::vector<url::Origin> GetOAuthSignedInSites(PrefService* pref_service) {
   std::vector<url::Origin> sites;
-  if (auto* dict = pref_service->GetDictionary(kOAuthSignedInSitesPref)) {
-    for (auto site_entry : dict->DictItems()) {
-      sites.push_back(url::Origin::Create(GURL(site_entry.first)));
-    }
+  for (const auto site_entry :
+       pref_service->GetValueDict(kOAuthSignedInSitesPref)) {
+    sites.push_back(url::Origin::Create(GURL(site_entry.first)));
   }
   return sites;
 }
