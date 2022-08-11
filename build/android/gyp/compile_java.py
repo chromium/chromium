@@ -471,7 +471,7 @@ def _RunCompiler(changes,
 
   # Use jar_path's directory to ensure paths are relative (needed for goma).
   temp_dir = jar_path + '.staging'
-  shutil.rmtree(temp_dir, True)
+  build_utils.DeleteDirectory(temp_dir)
   os.makedirs(temp_dir)
   info_file_context = None
   try:
