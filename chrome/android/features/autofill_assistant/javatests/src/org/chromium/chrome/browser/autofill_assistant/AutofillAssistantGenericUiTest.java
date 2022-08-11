@@ -160,6 +160,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.autofill_assistant.R;
 import org.chromium.components.autofill_assistant.generic_ui.AssistantDimension;
+import org.chromium.ui.test.util.UiDisableIf;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -2682,6 +2683,7 @@ public class AutofillAssistantGenericUiTest {
      */
     @Test
     @MediumTest
+    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/1350993
     public void testElementCondition() throws Exception {
         List<InteractionProto> interactions = new ArrayList<>();
 
