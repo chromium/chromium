@@ -1110,7 +1110,8 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
         // column balancing. However, if the containing block has not finished
         // layout, we should wait to lay out the OOF in case its position is
         // dependent on its containing block's final size.
-        if (containing_block->PhysicalFragments().back().BreakToken()) {
+        if (containing_block->PhysicalFragments().IsEmpty() ||
+            containing_block->PhysicalFragments().back().BreakToken()) {
           delayed_descendants_.push_back(descendant);
           continue;
         }
