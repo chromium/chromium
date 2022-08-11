@@ -5,6 +5,12 @@ specific_include_rules = {
   "media_manifest\.cc": [
     "+chromecast/common/mojom",
   ],
+  "mojo_cdm_service_context\.h": [
+    "+chromeos/components/cdm_factory_daemon/remote_cdm_context.h",
+  ],
+  "stable_video_decoder_service\.h": [
+    "+chromeos/components/cdm_factory_daemon/remote_cdm_context.h",
+  ],
   "webrtc_video_perf_mojolpm_fuzzer\.cc": [
     "+third_party/libprotobuf-mutator/src/src",
     "+components/leveldb_proto/testing/fake_db.h",

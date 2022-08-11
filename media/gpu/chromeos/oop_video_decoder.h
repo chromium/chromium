@@ -114,6 +114,10 @@ class OOPVideoDecoder : public VideoDecoderMixin,
   std::unique_ptr<MojoDecoderBufferWriter> mojo_decoder_buffer_writer_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
+  // This is to indicate we should perform transcryption before sending the data
+  // to the video decoder utility process.
+  bool needs_transcryption_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<OOPVideoDecoder> weak_this_factory_

@@ -259,6 +259,10 @@ bool ContentDecryptionModuleAdapter::UsingArcCdm() const {
   return false;
 }
 
+bool ContentDecryptionModuleAdapter::IsRemoteCdm() const {
+  return false;
+}
+
 void ContentDecryptionModuleAdapter::OnSessionMessage(
     const std::string& session_id,
     media::CdmMessageType message_type,

@@ -146,6 +146,7 @@ class ArcCdmContext : public ChromeOsCdmContext, public media::CdmContext {
     return std::make_unique<SingletonCdmContextRef>(this);
   }
   bool UsingArcCdm() const override { return true; }
+  bool IsRemoteCdm() const override { return true; }
 
   // media::CdmContext implementation.
   ChromeOsCdmContext* GetChromeOsCdmContext() override { return this; }

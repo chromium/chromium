@@ -528,3 +528,21 @@ struct MediaLogRecord {
   mojo_base.mojom.DeprecatedDictionaryValue params@2;
   mojo_base.mojom.TimeTicks time@3;
 };
+
+[Stable, Extensible]
+enum DecryptStatus {
+  kSuccess,
+  kNoKey,
+  [Default] kFailure,
+};
+
+[Stable, Extensible]
+enum CdmContextEvent {
+  // We use |kHasAdditionalUsableKey| as the default since this maps to an
+  // existing enum in Chrome that only has the two values below. Receiving an
+  // event for |kHasAdditionalUsableKey| is always safe because it is a benign
+  // indicator that if something was waiting for a key, it should check again.
+  // It is not an indicator that the key it actually wanted is ready.
+  [Default] kHasAdditionalUsableKey,
+  kHardwareContextReset,
+};

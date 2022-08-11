@@ -55,6 +55,11 @@ class ChromeOsCdmContext {
   // Returns true if this is coming from a CDM in ARC.
   virtual bool UsingArcCdm() const = 0;
 
+  // Returns true if this is coming from a remote CDM in another process or
+  // operating system. This is used to determine if certain processing has
+  // already been done on the data such as transcryption.
+  virtual bool IsRemoteCdm() const = 0;
+
  protected:
   virtual ~ChromeOsCdmContext() = default;
 };

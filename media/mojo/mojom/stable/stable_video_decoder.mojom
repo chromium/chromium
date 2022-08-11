@@ -7,6 +7,7 @@ module media.stable.mojom;
 import "media/mojo/mojom/stable/stable_video_decoder_types.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // This API is a stable version of VideoDecoder. This is used both by LaCrOS and
 // by out-of-process video decoding to allow the GPU process to forward video
@@ -58,9 +59,37 @@ interface VideoDecoderClient {
   OnWaiting@1(WaitingReason reason);
 };
 
-// TODO(b/194429120): Implement when protected content support is integrated.
+// Interface for handling callbacks from the StableCdmContext interface below.
+// Next min method ID: 1
+[Stable, Uuid="a1a73e1f-5297-49a2-a4e5-df875a44b61e"]
+interface CdmContextEventCallback {
+  // Sends the event back to the registrar.
+  EventCallback@0(CdmContextEvent event);
+};
+
+// Maps to the media::CdmContext interface for remoting it to another process.
+// Next MinVersion: 2
+// Next min method ID: 4
 [Stable, Uuid="33c7a00e-2970-41b3-8c7b-f1074a539740"]
 interface StableCdmContext {
+  // Proxies to media::CdmContext::GetChromeOsCdmContext()->GetHwKeyData.
+  [MinVersion=1]
+  GetHwKeyData@0(DecryptConfig decrypt_config, array<uint8> hw_identifier) =>
+      (DecryptStatus status, array<uint8> key_data);
+
+  // Registers an interface for receiving event callbacks. This maps to
+  // media::CdmContext::RegisterEventCB.
+  [MinVersion=1]
+  RegisterEventCallback@1(pending_remote<CdmContextEventCallback> callback);
+
+  // Proxies to media::CdmContext::GetChromeOsCdmContext()->GetHwConfigData.
+  [MinVersion=1]
+  GetHwConfigData@2() => (bool success, array<uint8> config_data);
+
+  // Proxies to media::CdmContext::GetChromeOsCdmContext()->
+  // GetScreenResolutions.
+  [MinVersion=1]
+  GetScreenResolutions@3() => (array<gfx.mojom.Size> resolutions);
 };
 
 // Based on |media.mojom.VideoDecoder|.

@@ -18,6 +18,7 @@ source_set("chromeos") {
   defines = [ "MEDIA_GPU_IMPLEMENTATION" ]
   sources = [
     "image_processor_factory.cc",
+    "oop_video_decoder.cc",
     "video_decoder_pipeline.cc",
   ]
 
@@ -30,6 +31,7 @@ source_set("chromeos") {
     "//media/gpu:buildflags",
     "//media/gpu:command_buffer_helper",
     "//media/gpu:common",
+    "//media/mojo/common:common",
   ]
 
   if (use_vaapi) {
@@ -41,6 +43,11 @@ source_set("chromeos") {
 
   if (use_v4l2_codec) {
     deps += [ "//media/gpu/v4l2" ]
+  }
+
+  if (is_chromeos) {
+    deps +=
+        [ "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_gpu" ]
   }
 }
 
@@ -66,7 +73,6 @@ source_set("common") {
     "libyuv_image_processor_backend.h",
     "mailbox_video_frame_converter.cc",
     "mailbox_video_frame_converter.h",
-    "oop_video_decoder.cc",
     "oop_video_decoder.h",
     "platform_video_frame_pool.cc",
     "platform_video_frame_pool.h",
@@ -100,7 +106,6 @@ source_set("common") {
     "//media/gpu:command_buffer_helper",
     "//media/gpu:common",
     "//media/gpu:video_frame_mapper_common",
-    "//media/mojo/common:common",
     "//third_party/libyuv",
     "//ui/gfx:buffer_types",
     "//ui/gfx:memory_buffer",
@@ -109,7 +114,7 @@ source_set("common") {
     "//ui/gfx/linux:gbm",
     "//ui/gl",
   ]
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "decoder_buffer_transcryptor.cc",
       "decoder_buffer_transcryptor.h",
@@ -156,7 +161,7 @@ source_set("video_frame_mapper") {
   ]
 }
 
-if (is_chromeos_ash) {
+if (is_chromeos) {
   proto_library("cdm-oemcrypto-proto") {
     sources = [
       "//third_party/cros_system_api/dbus/cdm_oemcrypto/secure_buffer.proto",

@@ -31,6 +31,10 @@ mojom("stable_video_decoder") {
     {
       types = [
         {
+          mojom = "media.stable.mojom.CdmContextEvent"
+          cpp = "::media::CdmContext::Event"
+        },
+        {
           mojom = "media.stable.mojom.ColorSpacePrimaryID"
           cpp = "::gfx::ColorSpace::PrimaryID"
         },
@@ -64,6 +68,10 @@ mojom("stable_video_decoder") {
           cpp = "::std::unique_ptr<::media::DecryptConfig>"
           move_only = true
           nullable_is_same_type = true
+        },
+        {
+          mojom = "media.stable.mojom.DecryptStatus"
+          cpp = "::media::Decryptor::Status"
         },
         {
           mojom = "media.stable.mojom.EncryptionScheme"

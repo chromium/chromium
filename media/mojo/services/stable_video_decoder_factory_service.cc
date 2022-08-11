@@ -118,9 +118,9 @@ void StableVideoDecoderFactoryService::CreateStableVideoDecoder(
         mojo_media_client_.get(), &cdm_service_context_,
         mojo::PendingRemote<stable::mojom::StableVideoDecoder>());
   }
-  video_decoders_.Add(
-      std::make_unique<StableVideoDecoderService>(std::move(dst_video_decoder)),
-      std::move(receiver));
+  video_decoders_.Add(std::make_unique<StableVideoDecoderService>(
+                          std::move(dst_video_decoder), &cdm_service_context_),
+                      std::move(receiver));
 }
 
 }  // namespace media

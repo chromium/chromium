@@ -295,9 +295,9 @@ VideoDecoderPipeline::~VideoDecoderPipeline() {
   main_frame_pool_.reset();
   frame_converter_.reset();
   decoder_.reset();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   buffer_transcryptor_.reset();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 // static
@@ -451,7 +451,7 @@ void VideoDecoderPipeline::OnInitializeDone(InitCB init_cb,
   MEDIA_LOG(INFO, media_log_)
       << "VideoDecoderPipeline |decoder_| Initialize() successful";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (decoder_ && decoder_->NeedsTranscryption()) {
     if (!cdm_context) {
       VLOGF(1) << "CdmContext required for transcryption";
@@ -470,7 +470,7 @@ void VideoDecoderPipeline::OnInitializeDone(InitCB init_cb,
     // In case this was created on a prior initialization but no longer needed.
     buffer_transcryptor_.reset();
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   client_task_runner_->PostTask(FROM_HERE,
                                 base::BindOnce(std::move(init_cb), status));
@@ -502,10 +502,10 @@ void VideoDecoderPipeline::OnResetDone(base::OnceClosure reset_cb) {
     image_processor_->Reset();
   frame_converter_->AbortPendingFrames();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (buffer_transcryptor_)
     buffer_transcryptor_->Reset(DecoderStatus::Codes::kAborted);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   CallFlushCbIfNeeded(DecoderStatus::Codes::kAborted);
 
@@ -545,7 +545,7 @@ void VideoDecoderPipeline::DecodeTask(scoped_refptr<DecoderBuffer> buffer,
   }
 
   const bool is_flush = buffer->end_of_stream();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (buffer_transcryptor_) {
     buffer_transcryptor_->EnqueueBuffer(
         std::move(buffer),
@@ -553,7 +553,7 @@ void VideoDecoderPipeline::DecodeTask(scoped_refptr<DecoderBuffer> buffer,
                        is_flush, std::move(decode_cb)));
     return;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   decoder_->Decode(
       std::move(buffer),
@@ -656,10 +656,10 @@ void VideoDecoderPipeline::OnError(const std::string& msg) {
   MEDIA_LOG(ERROR, media_log_) << "VideoDecoderPipeline " << msg;
 
   has_error_ = true;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (buffer_transcryptor_)
     buffer_transcryptor_->Reset(DecoderStatus::Codes::kFailed);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   CallFlushCbIfNeeded(DecoderStatus::Codes::kFailed);
 }
 
@@ -877,7 +877,7 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
                               gfx::NativePixmapHandle::kNoModifier};
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void VideoDecoderPipeline::OnBufferTranscrypted(
     scoped_refptr<DecoderBuffer> transcrypted_buffer,
     DecodeCB decode_callback) {
@@ -891,6 +891,6 @@ void VideoDecoderPipeline::OnBufferTranscrypted(
 
   decoder_->Decode(std::move(transcrypted_buffer), std::move(decode_callback));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace media

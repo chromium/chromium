@@ -108,6 +108,7 @@ class COMPONENT_EXPORT(CDM_FACTORY_DAEMON) ContentDecryptionModuleAdapter
   void GetScreenResolutions(GetScreenResolutionsCB callback) override;
   std::unique_ptr<media::CdmContextRef> GetCdmContextRef() override;
   bool UsingArcCdm() const override;
+  bool IsRemoteCdm() const override;
 
   // cdm::mojom::ContentDecryptionModuleClient:
   void OnSessionMessage(const std::string& session_id,

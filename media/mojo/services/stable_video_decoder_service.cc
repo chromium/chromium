@@ -9,12 +9,18 @@
 namespace media {
 
 StableVideoDecoderService::StableVideoDecoderService(
-    std::unique_ptr<mojom::VideoDecoder> dst_video_decoder)
+    std::unique_ptr<mojom::VideoDecoder> dst_video_decoder,
+    MojoCdmServiceContext* cdm_service_context)
     : video_decoder_client_receiver_(this),
       media_log_receiver_(this),
       stable_video_frame_handle_releaser_receiver_(this),
       dst_video_decoder_(std::move(dst_video_decoder)),
-      dst_video_decoder_receiver_(dst_video_decoder_.get()) {
+      dst_video_decoder_receiver_(dst_video_decoder_.get())
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      ,
+      cdm_service_context_(cdm_service_context)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+{
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!!dst_video_decoder_);
   dst_video_decoder_remote_.Bind(
@@ -23,6 +29,11 @@ StableVideoDecoderService::StableVideoDecoderService(
 
 StableVideoDecoderService::~StableVideoDecoderService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (cdm_id_)
+    cdm_service_context_->UnregisterRemoteCdmContext(cdm_id_.value());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void StableVideoDecoderService::GetSupportedConfigs(
@@ -85,17 +96,42 @@ void StableVideoDecoderService::Initialize(
   // The |config| should have been validated at deserialization time.
   DCHECK(config.IsValidConfig());
 
-  // TODO(b/195769334): implement out-of-process video decoding of hardware
-  // protected content.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // This can change across initializations, so reset this state.
+  if (cdm_id_) {
+    cdm_service_context_->UnregisterRemoteCdmContext(cdm_id_.value());
+    cdm_id_.reset();
+  }
+  remote_cdm_context_.reset();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   if (config.is_encrypted()) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    if (!cdm_context) {
+      std::move(callback).Run(DecoderStatus::Codes::kMissingCDM,
+                              /*needs_bitstream_conversion=*/false,
+                              /*max_decode_requests=*/1,
+                              VideoDecoderType::kUnknown);
+      return;
+    }
+    remote_cdm_context_ = base::WrapRefCounted(
+        new chromeos::RemoteCdmContext(std::move(cdm_context)));
+    cdm_id_ = cdm_service_context_->RegisterRemoteCdmContext(
+        remote_cdm_context_.get());
+#else
     std::move(callback).Run(DecoderStatus::Codes::kUnsupportedConfig,
                             /*needs_bitstream_conversion=*/false,
                             /*max_decode_requests=*/1,
                             VideoDecoderType::kUnknown);
     return;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
-  dst_video_decoder_remote_->Initialize(
-      config, low_delay, /*cdm_id=*/absl::nullopt, std::move(callback));
+
+  // Even though this is in-process, we still need to pass a |cdm_id_|
+  // instead of a media::CdmContext* since this goes through Mojo IPC. This is
+  // why we need to register with the |cdm_service_context_| above.
+  dst_video_decoder_remote_->Initialize(config, low_delay, cdm_id_,
+                                        std::move(callback));
 }
 
 void StableVideoDecoderService::Decode(

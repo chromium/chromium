@@ -52,6 +52,10 @@ component("cdm_factory_daemon_gpu") {
     "chromeos_cdm_factory.h",
     "content_decryption_module_adapter.cc",
     "content_decryption_module_adapter.h",
+    "remote_cdm_context.cc",
+    "remote_cdm_context.h",
+    "stable_cdm_context_impl.cc",
+    "stable_cdm_context_impl.h",
   ]
   public_deps = [
     "//chromeos/components/cdm_factory_daemon/mojom",
@@ -59,6 +63,7 @@ component("cdm_factory_daemon_gpu") {
   ]
   deps = [
     "//base",
+    "//media/mojo/mojom/stable:stable_video_decoder",
     "//mojo/public/cpp/bindings",
   ]
   defines = [ "IS_CDM_FACTORY_DAEMON_IMPL" ]

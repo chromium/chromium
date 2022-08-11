@@ -44,6 +44,25 @@ void MojoCdmServiceContext::UnregisterCdm(
   cdm_services_.erase(cdm_id);
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+base::UnguessableToken MojoCdmServiceContext::RegisterRemoteCdmContext(
+    chromeos::RemoteCdmContext* remote_context) {
+  DCHECK(remote_context);
+  base::UnguessableToken cdm_id = GetNextCdmId();
+  remote_cdm_contexts_[cdm_id] = remote_context;
+  DVLOG(1) << __func__ << ": RemoteCdmContext registered with CDM ID "
+           << cdm_id;
+  return cdm_id;
+}
+
+void MojoCdmServiceContext::UnregisterRemoteCdmContext(
+    const base::UnguessableToken& cdm_id) {
+  DVLOG(1) << __func__ << ": cdm_id = " << cdm_id;
+  DCHECK(remote_cdm_contexts_.count(cdm_id));
+  remote_cdm_contexts_.erase(cdm_id);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 std::unique_ptr<CdmContextRef> MojoCdmServiceContext::GetCdmContextRef(
     const base::UnguessableToken& cdm_id) {
   DVLOG(1) << __func__ << ": cdm_id = " << cdm_id;
@@ -57,6 +76,13 @@ std::unique_ptr<CdmContextRef> MojoCdmServiceContext::GetCdmContextRef(
     }
     return std::make_unique<CdmContextRefImpl>(cdm_service->second->GetCdm());
   }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Try the remote contexts now.
+  auto remote_context = remote_cdm_contexts_.find(cdm_id);
+  if (remote_context != remote_cdm_contexts_.end())
+    return remote_context->second->GetCdmContextRef();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   LOG(ERROR) << "CdmContextRef cannot be obtained for CDM ID: " << cdm_id;
   return nullptr;

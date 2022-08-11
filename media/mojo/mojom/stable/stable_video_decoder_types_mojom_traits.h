@@ -6,12 +6,44 @@
 #define MEDIA_MOJO_MOJOM_STABLE_STABLE_VIDEO_DECODER_TYPES_MOJOM_TRAITS_H_
 
 #include "base/notreached.h"
+#include "media/base/cdm_context.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_metadata.h"
 #include "media/mojo/mojom/stable/stable_video_decoder_types.mojom.h"
 #include "mojo/public/cpp/bindings/optional_as_pointer.h"
 
 namespace mojo {
+
+template <>
+struct EnumTraits<media::stable::mojom::CdmContextEvent,
+                  ::media::CdmContext::Event> {
+  static media::stable::mojom::CdmContextEvent ToMojom(
+      ::media::CdmContext::Event input) {
+    switch (input) {
+      case ::media::CdmContext::Event::kHasAdditionalUsableKey:
+        return media::stable::mojom::CdmContextEvent::kHasAdditionalUsableKey;
+      case ::media::CdmContext::Event::kHardwareContextReset:
+        return media::stable::mojom::CdmContextEvent::kHardwareContextReset;
+    }
+
+    NOTREACHED();
+    return media::stable::mojom::CdmContextEvent::kHasAdditionalUsableKey;
+  }
+
+  static bool FromMojom(media::stable::mojom::CdmContextEvent input,
+                        ::media::CdmContext::Event* output) {
+    switch (input) {
+      case media::stable::mojom::CdmContextEvent::kHasAdditionalUsableKey:
+        *output = ::media::CdmContext::Event::kHasAdditionalUsableKey;
+        return true;
+      case media::stable::mojom::CdmContextEvent::kHardwareContextReset:
+        *output = ::media::CdmContext::Event::kHardwareContextReset;
+        return true;
+    }
+    NOTREACHED();
+    return false;
+  }
+};
 
 template <>
 struct EnumTraits<media::stable::mojom::ColorSpacePrimaryID,
@@ -505,6 +537,44 @@ struct StructTraits<media::stable::mojom::DecryptConfigDataView,
 
   static bool Read(media::stable::mojom::DecryptConfigDataView input,
                    std::unique_ptr<media::DecryptConfig>* output);
+};
+
+template <>
+struct EnumTraits<media::stable::mojom::DecryptStatus,
+                  ::media::Decryptor::Status> {
+  static media::stable::mojom::DecryptStatus ToMojom(
+      ::media::Decryptor::Status input) {
+    switch (input) {
+      case ::media::Decryptor::Status::kSuccess:
+        return media::stable::mojom::DecryptStatus::kSuccess;
+      case ::media::Decryptor::Status::kNoKey:
+        return media::stable::mojom::DecryptStatus::kNoKey;
+      case ::media::Decryptor::Status::kNeedMoreData:
+        return media::stable::mojom::DecryptStatus::kFailure;
+      case ::media::Decryptor::Status::kError:
+        return media::stable::mojom::DecryptStatus::kFailure;
+    }
+
+    NOTREACHED();
+    return media::stable::mojom::DecryptStatus::kFailure;
+  }
+
+  static bool FromMojom(media::stable::mojom::DecryptStatus input,
+                        ::media::Decryptor::Status* output) {
+    switch (input) {
+      case media::stable::mojom::DecryptStatus::kSuccess:
+        *output = ::media::Decryptor::Status::kSuccess;
+        return true;
+      case media::stable::mojom::DecryptStatus::kNoKey:
+        *output = ::media::Decryptor::Status::kNoKey;
+        return true;
+      case media::stable::mojom::DecryptStatus::kFailure:
+        *output = ::media::Decryptor::Status::kError;
+        return true;
+    }
+    NOTREACHED();
+    return false;
+  }
 };
 
 template <>
