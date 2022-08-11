@@ -230,7 +230,14 @@ IN_PROC_BROWSER_TEST_F(WebUITabStripInteractiveTest, CanUseInImmersiveMode) {
 //
 // This sequence of events would crash without the associated bugfix. More
 // detail is provided in the actual test sequence.
-IN_PROC_BROWSER_TEST_F(WebUITabStripInteractiveTest, CloseTabDuringDrag) {
+// TODO(crbug.com/1352040): Fix consistent failures.
+#if BUILDFLAG(IS_LINUX) && \
+    (defined(THREAD_SANITIZER) || defined(THREAD_SANITIZER))
+#define MAYBE_CloseTabDuringDrag DISABLED_CloseTabDuringDrag
+#else
+#define MAYBE_CloseTabDuringDrag CloseTabDuringDrag
+#endif
+IN_PROC_BROWSER_TEST_F(WebUITabStripInteractiveTest, MAYBE_CloseTabDuringDrag) {
   // Add a second tab and set up an object to instrument that tab.
   ASSERT_TRUE(AddTabAtIndex(-1, GURL("about:blank"), ui::PAGE_TRANSITION_LINK));
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTabElementId);
