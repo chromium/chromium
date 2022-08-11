@@ -28,7 +28,16 @@ not just for the purpose of anchoring a help bubble.
 
  * Implement the `CreateHelpBubbleHandler()` method to manufacture a
    [HelpBubbleHandler](./help_bubble_handler.h).
-   
+
+   * Create a new `HelpBubbleHandler` and store it in a `unique_ptr` on each
+     call, discarding any previous handler.
+
+     * `CreateHelpBubbleHandler()` should be called exactly once by a WebUI per
+       reload.
+
+     * **Never expose a raw pointer to a `HelpBubbleHandler`** as a reload (or a
+       spurious call from a compromised WebUI) could trigger a discard.
+
    * Assign one or more unique `identifiers` that will correspond to the
      element(s) your bubble(s) will attach to. Each will be mapped to an HTML
      element by your WebUI component.

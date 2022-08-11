@@ -104,6 +104,16 @@ class HelpBubbleHandlerBase : public help_bubble::mojom::HelpBubbleHandler {
 //   //ui/webui/resources/cr_components/help_bubble/
 //
 // Full usage recommendations can be found in README.md.
+//
+// SECURITY NOTE: a `HelpBubbleHandler` is typically owned by a
+// `WebUIController` that implements `HelpBubbleHandlerFactory`, and typically
+// has a lifespan limited to a subset of the corresponding WebUI page's
+// lifespan. Reloading the page can cause it to be discarded and recreated (and
+// a common attack vector is triggering a recreate). If a class has a raw_ptr to
+// a HelpBubbleHandler[Base], then a test MUST be added to ensure that the class
+// releases the reference when the HelpBubbleHandler is destroyed. Tests are
+// already provided for `HelpBubbleWebUI` and `TrackedElementWebUI` in
+// help_bubble_handler_unittest.cc.
 class HelpBubbleHandler : public HelpBubbleHandlerBase {
  public:
   // Create a help bubble handler (called from the HelpBubbleHandlerFactory

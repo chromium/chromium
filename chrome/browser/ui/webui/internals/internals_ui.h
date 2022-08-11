@@ -15,6 +15,8 @@
 // gn check doesn't understand "#if !BUILDFLAG(IS_ANDROID)" and fails this
 // non-Android include on Android.
 #include "chrome/browser/ui/webui/internals/user_education/user_education_internals.mojom.h"  // nogncheck
+#include "components/user_education/webui/help_bubble_handler.h"
+#include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
 #endif
 
 namespace content {
@@ -23,7 +25,12 @@ class WebUI;
 
 // Client could put debug WebUI as sub-URL under chrome://internals/.
 // e.g. chrome://internals/your-feature.
-class InternalsUI : public ui::MojoWebUIController {
+class InternalsUI : public ui::MojoWebUIController
+#if !BUILDFLAG(IS_ANDROID)
+    ,
+                    public help_bubble::mojom::HelpBubbleHandlerFactory
+#endif  // !BUILDFLAG(IS_ANDROID)
+{
  public:
   explicit InternalsUI(content::WebUI* web_ui);
   ~InternalsUI() override;
@@ -33,6 +40,18 @@ class InternalsUI : public ui::MojoWebUIController {
       mojo::PendingReceiver<
           mojom::user_education_internals::UserEducationInternalsPageHandler>
           receiver);
+
+  // The HelpBubbleHandlerFactory provides support for help bubbles in this
+  // WebUI. Also see CreateHelpBubbleHandler() below.
+  void BindInterface(
+      mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandlerFactory>
+          pending_receiver);
+
+  // help_bubble::mojom::HelpBubbleHandlerFactory:
+  void CreateHelpBubbleHandler(
+      mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient> pending_client,
+      mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandler>
+          pending_handler) override;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
  private:
@@ -53,6 +72,10 @@ class InternalsUI : public ui::MojoWebUIController {
   std::unique_ptr<
       mojom::user_education_internals::UserEducationInternalsPageHandler>
       user_education_handler_;
+
+  std::unique_ptr<user_education::HelpBubbleHandler> help_bubble_handler_;
+  mojo::Receiver<help_bubble::mojom::HelpBubbleHandlerFactory>
+      help_bubble_handler_factory_receiver_;
 #endif  // !BUILDFLAG(IS_ANDROID)
 };
 

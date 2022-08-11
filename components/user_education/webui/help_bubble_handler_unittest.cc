@@ -377,6 +377,17 @@ TEST_F(HelpBubbleHandlerTest, HelpBubbleClosedWhenClosedRemotely) {
   EXPECT_FALSE(help_bubble->is_open());
 }
 
+TEST_F(HelpBubbleHandlerTest, DestroyHandlerCleansUpElement) {
+  handler()->HelpBubbleAnchorVisibilityChanged(
+      kHelpBubbleHandlerTestElementIdentifier.GetName(), true);
+  const ui::ElementContext context = test_handler_->context();
+  EXPECT_TRUE(ui::ElementTracker::GetElementTracker()->IsElementVisible(
+      kHelpBubbleHandlerTestElementIdentifier, context));
+  test_handler_.reset();
+  EXPECT_FALSE(ui::ElementTracker::GetElementTracker()->IsElementVisible(
+      kHelpBubbleHandlerTestElementIdentifier, context));
+}
+
 TEST_F(HelpBubbleHandlerTest, DestroyHandlerClosesHelpBubble) {
   UNCALLED_MOCK_CALLBACK(HelpBubble::ClosedCallback, closed);
 

@@ -236,6 +236,8 @@ DEFINE_VARIATION_PARAM(kIPHProfileSwitchFeature, "IPH_ProfileSwitch");
 DEFINE_VARIATION_PARAM(kIPHDesktopSharedHighlightingFeature,
                        "IPH_DesktopSharedHighlighting");
 DEFINE_VARIATION_PARAM(kIPHIntentChipFeature, "IPH_IntentChip");
+DEFINE_VARIATION_PARAM(kIPHWebUiHelpBubbleTestFeature,
+                       "IPH_WebUiHelpBubbleTest");
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 
@@ -359,6 +361,7 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHProfileSwitchFeature),
         VARIATION_ENTRY(kIPHDesktopSharedHighlightingFeature),
         VARIATION_ENTRY(kIPHIntentChipFeature),
+        VARIATION_ENTRY(kIPHWebUiHelpBubbleTestFeature),
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 

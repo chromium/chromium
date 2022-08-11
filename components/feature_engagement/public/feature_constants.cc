@@ -4,6 +4,7 @@
 
 #include "components/feature_engagement/public/feature_constants.h"
 
+#include "base/feature_list.h"
 #include "build/build_config.h"
 
 namespace feature_engagement {
@@ -60,6 +61,9 @@ const base::Feature kIPHProfileSwitchFeature{"IPH_ProfileSwitch",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHIntentChipFeature{"IPH_IntentChip",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kIPHWebUiHelpBubbleTestFeature(
+    "IPH_WebUiHelpBubbleTest",
+    base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 

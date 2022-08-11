@@ -231,6 +231,8 @@ chromium-metrics-reviews@google.com.
       summary="proactive Web Feed follow recommendations"/>
   <variant name="IPH_WebFeedPostFollowDialog"
       summary="Web Feed successful follow operations"/>
+  <variant name="IPH_WebUiHelpBubbleTest"
+      summary="testing the WebUI help bubble"/>
   <variant name="IPH_WebUITabStrip" summary="opening the WebUI tab strip"/>
 </variants>
 

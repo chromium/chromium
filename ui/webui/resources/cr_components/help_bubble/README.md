@@ -52,6 +52,10 @@ Once you have performed setup on the backend:
      bubble to, but whose visibility you care able for a Tutorial step or
      interactive test.
 
+   * It is rare, but if your anchor element is not immediately present in your
+     component, you can instead wait to call `registerHelpBubbleIdentifier()`
+     until after the element is created.
+
 ## Limitations
 
 Currently the frontend has the following limitations (many of these will be

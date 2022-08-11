@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/internals/internals_ui.h"
 
+#include <vector>
+
 #include "build/build_config.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/dev_ui_browser_resources.h"
@@ -18,8 +20,10 @@
 #include "chrome/browser/ui/webui/internals/notifications/notifications_internals_ui_message_handler.h"
 #include "chrome/browser/ui/webui/internals/query_tiles/query_tiles_internals_ui_message_handler.h"
 #else
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/webui/internals/user_education/user_education_internals_page_handler_impl.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "ui/base/interaction/element_identifier.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
@@ -52,7 +56,12 @@ void HandleWebUIRequestCallback(
 }  // namespace
 
 InternalsUI::InternalsUI(content::WebUI* web_ui)
-    : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {
+    : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true)
+#if !BUILDFLAG(IS_ANDROID)
+      ,
+      help_bubble_handler_factory_receiver_(this)
+#endif
+{
   profile_ = Profile::FromWebUI(web_ui);
   source_ = content::WebUIDataSource::Create(chrome::kChromeUIInternalsHost);
   source_->AddResourcePaths(
@@ -116,7 +125,9 @@ void InternalsUI::AddQueryTilesInternals(content::WebUI* web_ui) {
   web_ui->AddMessageHandler(
       std::make_unique<QueryTilesInternalsUIMessageHandler>(profile_));
 }
+
 #else   // BUILDFLAG(IS_ANDROID)
+
 void InternalsUI::BindInterface(
     mojo::PendingReceiver<
         mojom::user_education_internals::UserEducationInternalsPageHandler>
@@ -125,6 +136,25 @@ void InternalsUI::BindInterface(
       std::make_unique<UserEducationInternalsPageHandlerImpl>(
           web_ui(), profile_, std::move(receiver));
 }
+
+void InternalsUI::BindInterface(
+    mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandlerFactory>
+        pending_receiver) {
+  if (help_bubble_handler_factory_receiver_.is_bound())
+    help_bubble_handler_factory_receiver_.reset();
+  help_bubble_handler_factory_receiver_.Bind(std::move(pending_receiver));
+}
+
+void InternalsUI::CreateHelpBubbleHandler(
+    mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient> pending_client,
+    mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandler>
+        pending_handler) {
+  help_bubble_handler_ = std::make_unique<user_education::HelpBubbleHandler>(
+      std::move(pending_handler), std::move(pending_client),
+      web_ui()->GetWebContents(),
+      std::vector<ui::ElementIdentifier>{kWebUIIPHDemoElementIdentifier});
+}
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 WEB_UI_CONTROLLER_TYPE_IMPL(InternalsUI)
