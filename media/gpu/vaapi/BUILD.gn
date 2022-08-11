@@ -379,8 +379,6 @@ executable("decode_test") {
     "test/h264_dpb.h",
     "test/h264_vaapi_wrapper.cc",
     "test/h264_vaapi_wrapper.h",
-    "test/h265_dpb.cc",
-    "test/h265_dpb.h",
     "test/macros.h",
     "test/scoped_va_config.cc",
     "test/scoped_va_config.h",
@@ -397,6 +395,16 @@ executable("decode_test") {
     "test/vp9_decoder.cc",
     "test/vp9_decoder.h",
   ]
+
+  if (enable_platform_hevc) {
+    sources += [
+      "test/h265_dpb.cc",
+      "test/h265_dpb.h",
+      "test/h265_vaapi_wrapper.cc",
+      "test/h265_vaapi_wrapper.h",
+    ]
+  }
+
   deps = [
     ":libva_stubs",
     "//base",
