@@ -70,6 +70,59 @@ constexpr base::StringPiece GetAttributeName(XDefineTagAttribute attribute) {
   return "";
 }
 
+// Attributes expected in `EXT-X-MEDIA` tag contents.
+// These must remain sorted alphabetically.
+enum class XMediaTagAttribute {
+  kAssocLanguage,
+  kAutoselect,
+  kChannels,
+  kCharacteristics,
+  kDefault,
+  kForced,
+  kGroupId,
+  kInstreamId,
+  kLanguage,
+  kName,
+  kStableRenditionId,
+  kType,
+  kUri,
+  kMaxValue = kUri,
+};
+
+constexpr base::StringPiece GetAttributeName(XMediaTagAttribute attribute) {
+  switch (attribute) {
+    case XMediaTagAttribute::kAssocLanguage:
+      return "ASSOC-LANGUAGE";
+    case XMediaTagAttribute::kAutoselect:
+      return "AUTOSELECT";
+    case XMediaTagAttribute::kChannels:
+      return "CHANNELS";
+    case XMediaTagAttribute::kCharacteristics:
+      return "CHARACTERISTICS";
+    case XMediaTagAttribute::kDefault:
+      return "DEFAULT";
+    case XMediaTagAttribute::kForced:
+      return "FORCED";
+    case XMediaTagAttribute::kGroupId:
+      return "GROUP-ID";
+    case XMediaTagAttribute::kInstreamId:
+      return "INSTREAM-ID";
+    case XMediaTagAttribute::kLanguage:
+      return "LANGUAGE";
+    case XMediaTagAttribute::kName:
+      return "NAME";
+    case XMediaTagAttribute::kStableRenditionId:
+      return "STABLE-RENDITION-ID";
+    case XMediaTagAttribute::kType:
+      return "TYPE";
+    case XMediaTagAttribute::kUri:
+      return "URI";
+  }
+
+  NOTREACHED();
+  return "";
+}
+
 // Attributes expected in `EXT-X-STREAM-INF` tag contents.
 // These must remain sorted alphabetically.
 enum class XStreamInfTagAttribute {
@@ -368,6 +421,294 @@ ParseStatus::Or<XVersionTag> XVersionTag::Parse(TagItem tag) {
   }
 
   return out;
+}
+
+struct XMediaTag::CtorArgs {
+  decltype(XMediaTag::type) type;
+  decltype(XMediaTag::uri) uri;
+  decltype(XMediaTag::instream_id) instream_id;
+  decltype(XMediaTag::group_id) group_id;
+  decltype(XMediaTag::language) language;
+  decltype(XMediaTag::associated_language) associated_language;
+  decltype(XMediaTag::name) name;
+  decltype(XMediaTag::stable_rendition_id) stable_rendition_id;
+  decltype(XMediaTag::is_default) is_default;
+  decltype(XMediaTag::autoselect) autoselect;
+  decltype(XMediaTag::forced) forced;
+  decltype(XMediaTag::characteristics) characteristics;
+  decltype(XMediaTag::channels) channels;
+};
+
+XMediaTag::XMediaTag(CtorArgs args)
+    : type(std::move(args.type)),
+      uri(std::move(args.uri)),
+      instream_id(std::move(args.instream_id)),
+      group_id(std::move(args.group_id)),
+      language(std::move(args.language)),
+      associated_language(std::move(args.associated_language)),
+      name(std::move(args.name)),
+      stable_rendition_id(std::move(args.stable_rendition_id)),
+      is_default(std::move(args.is_default)),
+      autoselect(std::move(args.autoselect)),
+      forced(std::move(args.forced)),
+      characteristics(std::move(args.characteristics)),
+      channels(std::move(args.channels)) {}
+
+XMediaTag::~XMediaTag() = default;
+
+XMediaTag::XMediaTag(const XMediaTag&) = default;
+
+XMediaTag::XMediaTag(XMediaTag&&) = default;
+
+XMediaTag& XMediaTag::operator=(const XMediaTag&) = default;
+
+XMediaTag& XMediaTag::operator=(XMediaTag&&) = default;
+
+// static
+ParseStatus::Or<XMediaTag> XMediaTag::Parse(
+    TagItem tag,
+    const VariableDictionary& variable_dict,
+    VariableDictionary::SubstitutionBuffer& sub_buffer) {
+  DCHECK(tag.GetName() == ToTagName(XMediaTag::kName));
+  if (!tag.GetContent().has_value()) {
+    return ParseStatusCode::kMalformedTag;
+  }
+
+  // Parse the attribute-list
+  TypedAttributeMap<XMediaTagAttribute> map;
+  types::AttributeListIterator iter(*tag.GetContent());
+  auto map_result = map.FillUntilError(&iter);
+
+  if (map_result.code() != ParseStatusCode::kReachedEOF) {
+    return ParseStatus(ParseStatusCode::kMalformedTag)
+        .AddCause(std::move(map_result));
+  }
+
+  // Parse the 'TYPE' attribute
+  MediaType type;
+  if (map.HasValue(XMediaTagAttribute::kType)) {
+    auto str = map.GetValue(XMediaTagAttribute::kType);
+    if (str.Str() == "AUDIO") {
+      type = MediaType::kAudio;
+    } else if (str.Str() == "VIDEO") {
+      type = MediaType::kVideo;
+    } else if (str.Str() == "SUBTITLES") {
+      type = MediaType::kSubtitles;
+    } else if (str.Str() == "CLOSED-CAPTIONS") {
+      type = MediaType::kClosedCaptions;
+    } else {
+      return ParseStatusCode::kMalformedTag;
+    }
+  } else {
+    return ParseStatusCode::kMalformedTag;
+  }
+
+  // Parse the 'URI' attribute
+  absl::optional<ResolvedSourceString> uri;
+  if (map.HasValue(XMediaTagAttribute::kUri)) {
+    // This attribute MUST NOT be defined for closed-captions renditions
+    if (type == MediaType::kClosedCaptions) {
+      return ParseStatusCode::kMalformedTag;
+    }
+
+    auto result = types::ParseQuotedString(
+        map.GetValue(XMediaTagAttribute::kUri), variable_dict, sub_buffer);
+    if (result.has_error()) {
+      return ParseStatus(ParseStatusCode::kMalformedTag)
+          .AddCause(std::move(result).error());
+    }
+
+    uri = std::move(result).value();
+  } else {
+    // URI MUST be defined for subtitle renditions
+    if (type == MediaType::kSubtitles) {
+      return ParseStatusCode::kMalformedTag;
+    }
+  }
+
+  // Parse the 'GROUP-ID' attribute
+  absl::optional<ResolvedSourceString> group_id;
+  if (map.HasValue(XMediaTagAttribute::kGroupId)) {
+    auto result = types::ParseQuotedString(
+        map.GetValue(XMediaTagAttribute::kGroupId), variable_dict, sub_buffer);
+    if (result.has_error()) {
+      return ParseStatus(ParseStatusCode::kMalformedTag)
+          .AddCause(std::move(result).error());
+    }
+
+    group_id = std::move(result).value();
+  } else {
+    return ParseStatusCode::kMalformedTag;
+  }
+
+  // Parse the 'LANGUAGE' attribute
+  absl::optional<ResolvedSourceString> language;
+  if (map.HasValue(XMediaTagAttribute::kLanguage)) {
+    auto result = types::ParseQuotedString(
+        map.GetValue(XMediaTagAttribute::kLanguage), variable_dict, sub_buffer);
+    if (result.has_error()) {
+      return ParseStatus(ParseStatusCode::kMalformedTag)
+          .AddCause(std::move(result).error());
+    }
+
+    language = std::move(result).value();
+  }
+
+  // Parse the 'ASSOC-LANGUAGE' attribute
+  absl::optional<ResolvedSourceString> assoc_language;
+  if (map.HasValue(XMediaTagAttribute::kAssocLanguage)) {
+    auto result = types::ParseQuotedString(
+        map.GetValue(XMediaTagAttribute::kAssocLanguage), variable_dict,
+        sub_buffer);
+    if (result.has_error()) {
+      return ParseStatus(ParseStatusCode::kMalformedTag)
+          .AddCause(std::move(result).error());
+    }
+
+    assoc_language = std::move(result).value();
+  }
+
+  // Parse the 'NAME' attribute
+  absl::optional<ResolvedSourceString> name;
+  if (map.HasValue(XMediaTagAttribute::kName)) {
+    auto result = types::ParseQuotedString(
+        map.GetValue(XMediaTagAttribute::kName), variable_dict, sub_buffer);
+    if (result.has_error()) {
+      return ParseStatus(ParseStatusCode::kMalformedTag)
+          .AddCause(std::move(result).error());
+    }
+
+    name = std::move(result).value();
+  } else {
+    return ParseStatusCode::kMalformedTag;
+  }
+
+  // Parse the 'STABLE-RENDITION-ID' attribute
+  absl::optional<types::StableId> stable_rendition_id;
+  if (map.HasValue(XMediaTagAttribute::kStableRenditionId)) {
+    auto result = types::ParseQuotedString(
+                      map.GetValue(XMediaTagAttribute::kStableRenditionId),
+                      variable_dict, sub_buffer)
+                      .MapValue(types::StableId::Parse);
+    if (result.has_error()) {
+      return ParseStatus(ParseStatusCode::kMalformedTag)
+          .AddCause(std::move(result).error());
+    }
+    stable_rendition_id = std::move(result).value();
+  }
+
+  // Parse the 'DEFAULT' attribute
+  bool is_default = false;
+  if (map.HasValue(XMediaTagAttribute::kDefault)) {
+    if (map.GetValue(XMediaTagAttribute::kDefault).Str() == "YES") {
+      is_default = true;
+    }
+  }
+
+  // Parse the 'AUTOSELECT' attribute
+  bool autoselect = false;
+  if (map.HasValue(XMediaTagAttribute::kAutoselect)) {
+    if (map.GetValue(XMediaTagAttribute::kAutoselect).Str() == "YES") {
+      autoselect = true;
+    } else if (is_default) {
+      // If the 'DEFAULT' attribute is 'YES', then the value of this attribute
+      // must also be 'YES', if present.
+      return ParseStatusCode::kMalformedTag;
+    }
+  }
+
+  // Parse the 'FORCED' attribute
+  bool forced = false;
+  if (map.HasValue(XMediaTagAttribute::kForced)) {
+    // The FORCED attribute MUST NOT be present unless TYPE=SUBTITLES
+    if (type != MediaType::kSubtitles) {
+      return ParseStatusCode::kMalformedTag;
+    }
+
+    if (map.GetValue(XMediaTagAttribute::kForced).Str() == "YES") {
+      forced = true;
+    }
+  }
+
+  // Parse the 'INSTREAM-ID' attribute
+  absl::optional<types::InstreamId> instream_id;
+  if (map.HasValue(XMediaTagAttribute::kInstreamId)) {
+    // The INSTREAM-ID attribute MUST NOT be present unless TYPE=CLOSED-CAPTIONS
+    if (type != MediaType::kClosedCaptions) {
+      return ParseStatusCode::kMalformedTag;
+    }
+
+    auto result =
+        types::ParseQuotedString(map.GetValue(XMediaTagAttribute::kInstreamId),
+                                 variable_dict, sub_buffer)
+            .MapValue(types::InstreamId::Parse);
+    if (result.has_error()) {
+      return ParseStatus(ParseStatusCode::kMalformedTag)
+          .AddCause(std::move(result).error());
+    }
+
+    instream_id = std::move(result).value();
+  }
+  // This attribute is REQUIRED if TYPE=CLOSED-CAPTIONS
+  else if (type == MediaType::kClosedCaptions) {
+    return ParseStatusCode::kMalformedTag;
+  }
+
+  // Parse the 'CHARACTERISTICS' attribute
+  std::vector<std::string> characteristics;
+  if (map.HasValue(XMediaTagAttribute::kCharacteristics)) {
+    auto result = types::ParseQuotedString(
+        map.GetValue(XMediaTagAttribute::kCharacteristics), variable_dict,
+        sub_buffer);
+    if (result.has_error()) {
+      return ParseStatus(ParseStatusCode::kMalformedTag)
+          .AddCause(std::move(result).error());
+    }
+    auto value = std::move(result).value();
+
+    while (!value.Empty()) {
+      const auto mct = value.ConsumeDelimiter(',');
+      if (mct.Empty()) {
+        return ParseStatusCode::kMalformedTag;
+      }
+
+      characteristics.emplace_back(mct.Str());
+    }
+  }
+
+  // Parse the 'CHANNELS' attribute
+  absl::optional<types::AudioChannels> channels;
+  if (map.HasValue(XMediaTagAttribute::kChannels)) {
+    // Currently only supported type with channel information is `kAudio`.
+    if (type == MediaType::kAudio) {
+      auto result =
+          types::ParseQuotedString(map.GetValue(XMediaTagAttribute::kChannels),
+                                   variable_dict, sub_buffer)
+              .MapValue(types::AudioChannels::Parse);
+      if (result.has_error()) {
+        return ParseStatus(ParseStatusCode::kMalformedTag)
+            .AddCause(std::move(result).error());
+      }
+
+      channels = std::move(result).value();
+    }
+  }
+
+  return XMediaTag(XMediaTag::CtorArgs{
+      .type = type,
+      .uri = uri,
+      .instream_id = instream_id,
+      .group_id = group_id.value(),
+      .language = language,
+      .associated_language = assoc_language,
+      .name = name.value(),
+      .stable_rendition_id = std::move(stable_rendition_id),
+      .is_default = is_default,
+      .autoselect = autoselect,
+      .forced = forced,
+      .characteristics = std::move(characteristics),
+      .channels = std::move(channels),
+  });
 }
 
 XStreamInfTag::XStreamInfTag() = default;

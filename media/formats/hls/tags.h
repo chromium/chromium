@@ -60,6 +60,86 @@ struct MEDIA_EXPORT XVersionTag {
   types::DecimalInteger version;
 };
 
+enum class MediaType {
+  kAudio,
+  kVideo,
+  kSubtitles,
+  kClosedCaptions,
+};
+
+// Represents the contents of the #EXT-X-MEDIA tag
+struct MEDIA_EXPORT XMediaTag {
+  static constexpr auto kName = MultivariantPlaylistTagName::kXMedia;
+  static ParseStatus::Or<XMediaTag> Parse(
+      TagItem,
+      const VariableDictionary& variable_dict,
+      VariableDictionary::SubstitutionBuffer& sub_buffer);
+
+  struct CtorArgs;
+  explicit XMediaTag(CtorArgs);
+  ~XMediaTag();
+  XMediaTag(const XMediaTag&);
+  XMediaTag(XMediaTag&&);
+  XMediaTag& operator=(const XMediaTag&);
+  XMediaTag& operator=(XMediaTag&&);
+
+  // The type of media this tag represents.
+  MediaType type;
+
+  // The URI of the media playlist for this rendition. This is required if
+  // `type` is `kSubtitles`, optional if the type is `kAudio` or `kVideo`,
+  // and absent in the case of `kClosedCaptions`. The absence of this value for
+  // `kVideo` indicates that the media data is included in the primary rendition
+  // of any associated variants, and the absence of this value for `kAudio`
+  // indicates that the media data is included in every video rendition of any
+  // associated variants.
+  absl::optional<ResolvedSourceString> uri;
+
+  // For renditions with type `kClosedCaptions`, this specifies a rendition
+  // within the segments of an associated media playlist. For all other types
+  // this will be empty.
+  absl::optional<types::InstreamId> instream_id;
+
+  // Indicates the group to which this rendition belongs.
+  ResolvedSourceString group_id;
+
+  // This identifies the primary language used in the rendition.
+  absl::optional<ResolvedSourceString> language;
+
+  // This identifies a language that is associated with the rendition, in a
+  // different role than `language`.
+  absl::optional<ResolvedSourceString> associated_language;
+
+  // A human-readable description of this rendition.
+  ResolvedSourceString name;
+
+  // A stable identifier for URI of this rendition within a multivariant
+  // playlist. All renditions with the same URI SHOULD use the same
+  // stable-rendition-id.
+  absl::optional<types::StableId> stable_rendition_id;
+
+  // Indicates whether the client should play this rendition in the absence of
+  // information from the user indicating a different choice.
+  bool is_default = false;
+
+  // Indicates that the client may choose to play this rendition in the absence
+  // of an explicit user preference.
+  bool autoselect = false;
+
+  // Indicates that this rendition contains content that is considered essential
+  // to play. This will always be false if the type is not `kSubtitles`.
+  bool forced = false;
+
+  // A sequence of media characteristic tags, indicating a characteristic of the
+  // rendition.
+  std::vector<std::string> characteristics;
+
+  // Contains channel information for this rendition. The only type with channel
+  // information currently defined is `kAudio`, others are ignored for
+  // forward-compatibility.
+  absl::optional<types::AudioChannels> channels;
+};
+
 // Represents the contents of the #EXT-X-STREAM-INF tag
 struct MEDIA_EXPORT XStreamInfTag {
   static constexpr auto kName = MultivariantPlaylistTagName::kXStreamInf;

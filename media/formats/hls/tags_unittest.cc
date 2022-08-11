@@ -16,6 +16,7 @@
 #include "media/formats/hls/variable_dictionary.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
 
 namespace media::hls {
 
@@ -175,6 +176,7 @@ VariableDictionary CreateBasicDictionary(
   VariableDictionary dict;
   EXPECT_TRUE(dict.Insert(CreateVarName("FOO"), "bar")) << from.ToString();
   EXPECT_TRUE(dict.Insert(CreateVarName("BAR"), "baz")) << from.ToString();
+  EXPECT_TRUE(dict.Insert(CreateVarName("EMPTY"), "")) << from.ToString();
 
   return dict;
 }
@@ -338,7 +340,715 @@ TEST(HlsTagsTest, ParseXMediaTag) {
       "#EXT-X-MEDIA:TYPE=VIDEO,URI=\"foo.m3u8\",GROUP-ID=\"HD\",NAME=\"Foo "
       "HD\"\n",
       "TYPE=VIDEO,URI=\"foo.m3u8\",GROUP-ID=\"HD\",NAME=\"Foo HD\"");
-  // TODO(crbug.com/1266991): Implement the EXT-X-MEDIA tag.
+
+  VariableDictionary variable_dict = CreateBasicDictionary();
+  VariableDictionary::SubstitutionBuffer sub_buffer;
+  EXPECT_TRUE(variable_dict.Insert(CreateVarName("TYPE"), "AUDIO"));
+  EXPECT_TRUE(variable_dict.Insert(CreateVarName("YEAH"), "{$YES}"));
+  EXPECT_TRUE(variable_dict.Insert(CreateVarName("SRVC"), "SERVICE"));
+
+  ErrorTest<XMediaTag>(absl::nullopt, variable_dict, sub_buffer,
+                       ParseStatusCode::kMalformedTag);
+  ErrorTest<XMediaTag>("", variable_dict, sub_buffer,
+                       ParseStatusCode::kMalformedTag);
+  ErrorTest<XMediaTag>("123", variable_dict, sub_buffer,
+                       ParseStatusCode::kMalformedTag);
+  ErrorTest<XMediaTag>("Foobar", variable_dict, sub_buffer,
+                       ParseStatusCode::kMalformedTag);
+
+  // TYPE attribute is required
+  ErrorTest<XMediaTag>("GROUP-ID=\"group\",NAME=\"name\"", variable_dict,
+                       sub_buffer, ParseStatusCode::kMalformedTag);
+  ErrorTest<XMediaTag>("TYPE=FAKE,GROUP-ID=\"group\",NAME=\"name\"",
+                       variable_dict, sub_buffer,
+                       ParseStatusCode::kMalformedTag);
+  ErrorTest<XMediaTag>("TYPE={$TYPE},GROUP-ID=\"group\",NAME=\"name\"",
+                       variable_dict, sub_buffer,
+                       ParseStatusCode::kMalformedTag);
+
+  auto result = OkTest<XMediaTag>("TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"name\"",
+                                  variable_dict, sub_buffer);
+  EXPECT_EQ(result.tag.type, MediaType::kAudio);
+  EXPECT_EQ(result.tag.uri, absl::nullopt);
+  EXPECT_EQ(result.tag.group_id.Str(), "group");
+  EXPECT_EQ(result.tag.language, absl::nullopt);
+  EXPECT_EQ(result.tag.associated_language, absl::nullopt);
+  EXPECT_EQ(result.tag.name.Str(), "name");
+  EXPECT_EQ(result.tag.stable_rendition_id, absl::nullopt);
+  EXPECT_EQ(result.tag.is_default, false);
+  EXPECT_EQ(result.tag.autoselect, false);
+  EXPECT_EQ(result.tag.forced, false);
+  EXPECT_EQ(result.tag.instream_id, absl::nullopt);
+  EXPECT_EQ(result.tag.characteristics.size(), 0u);
+  EXPECT_EQ(result.tag.channels, absl::nullopt);
+
+  result = OkTest<XMediaTag>("TYPE=VIDEO,GROUP-ID=\"group\",NAME=\"name\"",
+                             variable_dict, sub_buffer);
+  EXPECT_EQ(result.tag.type, MediaType::kVideo);
+  EXPECT_EQ(result.tag.uri, absl::nullopt);
+  EXPECT_EQ(result.tag.group_id.Str(), "group");
+  EXPECT_EQ(result.tag.language, absl::nullopt);
+  EXPECT_EQ(result.tag.associated_language, absl::nullopt);
+  EXPECT_EQ(result.tag.name.Str(), "name");
+  EXPECT_EQ(result.tag.stable_rendition_id, absl::nullopt);
+  EXPECT_EQ(result.tag.is_default, false);
+  EXPECT_EQ(result.tag.autoselect, false);
+  EXPECT_EQ(result.tag.forced, false);
+  EXPECT_EQ(result.tag.instream_id, absl::nullopt);
+  EXPECT_EQ(result.tag.characteristics.size(), 0u);
+  EXPECT_EQ(result.tag.channels, absl::nullopt);
+
+  // The URI attribute is REQUIRED if TYPE=SUBTITLES
+  ErrorTest<XMediaTag>("TYPE=SUBTITLES,GROUP-ID=\"group\",NAME=\"name\"",
+                       variable_dict, sub_buffer,
+                       ParseStatusCode::kMalformedTag);
+  result = OkTest<XMediaTag>(
+      "TYPE=SUBTITLES,GROUP-ID=\"group\",NAME=\"name\",URI=\"foo.m3u8\"",
+      variable_dict, sub_buffer);
+  EXPECT_EQ(result.tag.type, MediaType::kSubtitles);
+  EXPECT_EQ(result.tag.uri->Str(), "foo.m3u8");
+  EXPECT_EQ(result.tag.group_id.Str(), "group");
+  EXPECT_EQ(result.tag.language, absl::nullopt);
+  EXPECT_EQ(result.tag.associated_language, absl::nullopt);
+  EXPECT_EQ(result.tag.name.Str(), "name");
+  EXPECT_EQ(result.tag.stable_rendition_id, absl::nullopt);
+  EXPECT_EQ(result.tag.is_default, false);
+  EXPECT_EQ(result.tag.autoselect, false);
+  EXPECT_EQ(result.tag.forced, false);
+  EXPECT_EQ(result.tag.instream_id, absl::nullopt);
+  EXPECT_EQ(result.tag.characteristics.size(), 0u);
+  EXPECT_EQ(result.tag.channels, absl::nullopt);
+
+  // The URI attribute MUST NOT be present if TYPE=CLOSED-CAPTIONS
+  ErrorTest<XMediaTag>(
+      "TYPE=CLOSED-CAPTIONS,GROUP-ID=\"group\",NAME=\"name\",INSTREAM-ID="
+      "\"CC1\",URI=\"foo.m3u8\"",
+      variable_dict, sub_buffer, ParseStatusCode::kMalformedTag);
+
+  // The URI attribute must be a valid quoted-string
+  ErrorTest<XMediaTag>("TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"name\",URI=foo",
+                       variable_dict, sub_buffer,
+                       ParseStatusCode::kMalformedTag);
+  ErrorTest<XMediaTag>("TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"name\",URI=\"\"",
+                       variable_dict, sub_buffer,
+                       ParseStatusCode::kMalformedTag);
+  ErrorTest<XMediaTag>(
+      "TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"name\",URI=\"{$EMPTY}\"",
+      variable_dict, sub_buffer, ParseStatusCode::kMalformedTag);
+  result = OkTest<XMediaTag>(
+      "TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"name\",URI=\"foo.m3u8\"",
+      variable_dict, sub_buffer);
+  EXPECT_EQ(result.tag.type, MediaType::kAudio);
+  EXPECT_EQ(result.tag.uri->Str(), "foo.m3u8");
+  EXPECT_EQ(result.tag.group_id.Str(), "group");
+  EXPECT_EQ(result.tag.language, absl::nullopt);
+  EXPECT_EQ(result.tag.associated_language, absl::nullopt);
+  EXPECT_EQ(result.tag.name.Str(), "name");
+  EXPECT_EQ(result.tag.stable_rendition_id, absl::nullopt);
+  EXPECT_EQ(result.tag.is_default, false);
+  EXPECT_EQ(result.tag.autoselect, false);
+  EXPECT_EQ(result.tag.forced, false);
+  EXPECT_EQ(result.tag.instream_id, absl::nullopt);
+  EXPECT_EQ(result.tag.characteristics.size(), 0u);
+  EXPECT_EQ(result.tag.channels, absl::nullopt);
+
+  // The URI attribute is subject to variable substitution
+  result = OkTest<XMediaTag>(
+      "TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"name\",URI=\"{$FOO}.m3u8\"",
+      variable_dict, sub_buffer);
+  EXPECT_EQ(result.tag.type, MediaType::kAudio);
+  EXPECT_EQ(result.tag.uri->Str(), "bar.m3u8");
+  EXPECT_EQ(result.tag.group_id.Str(), "group");
+  EXPECT_EQ(result.tag.language, absl::nullopt);
+  EXPECT_EQ(result.tag.associated_language, absl::nullopt);
+  EXPECT_EQ(result.tag.name.Str(), "name");
+  EXPECT_EQ(result.tag.stable_rendition_id, absl::nullopt);
+  EXPECT_EQ(result.tag.is_default, false);
+  EXPECT_EQ(result.tag.autoselect, false);
+  EXPECT_EQ(result.tag.forced, false);
+  EXPECT_EQ(result.tag.instream_id, absl::nullopt);
+  EXPECT_EQ(result.tag.characteristics.size(), 0u);
+  EXPECT_EQ(result.tag.channels, absl::nullopt);
+
+  // The GROUP-ID attribute is REQUIRED, and must be a valid quoted-string
+  ErrorTest<XMediaTag>("TYPE=AUDIO,NAME=\"name\"", variable_dict, sub_buffer,
+                       ParseStatusCode::kMalformedTag);
+  ErrorTest<XMediaTag>("TYPE=AUDIO,GROUP-ID=foo,NAME=\"name\"", variable_dict,
+                       sub_buffer, ParseStatusCode::kMalformedTag);
+  ErrorTest<XMediaTag>("TYPE=AUDIO,GROUP-ID=\"\",NAME=\"name\"", variable_dict,
+                       sub_buffer, ParseStatusCode::kMalformedTag);
+  ErrorTest<XMediaTag>("TYPE=AUDIO,GROUP-ID=\"{$EMPTY}\",NAME=\"name\"",
+                       variable_dict, sub_buffer,
+                       ParseStatusCode::kMalformedTag);
+
+  // The GROUP-ID attribute is subject to variable substitution
+  result = OkTest<XMediaTag>("TYPE=AUDIO,GROUP-ID=\"foo{$FOO}\",NAME=\"name\"",
+                             variable_dict, sub_buffer);
+  EXPECT_EQ(result.tag.type, MediaType::kAudio);
+  EXPECT_EQ(result.tag.uri, absl::nullopt);
+  EXPECT_EQ(result.tag.group_id.Str(), "foobar");
+  EXPECT_EQ(result.tag.language, absl::nullopt);
+  EXPECT_EQ(result.tag.associated_language, absl::nullopt);
+  EXPECT_EQ(result.tag.name.Str(), "name");
+  EXPECT_EQ(result.tag.stable_rendition_id, absl::nullopt);
+  EXPECT_EQ(result.tag.is_default, false);
+  EXPECT_EQ(result.tag.autoselect, false);
+  EXPECT_EQ(result.tag.forced, false);
+  EXPECT_EQ(result.tag.instream_id, absl::nullopt);
+  EXPECT_EQ(result.tag.characteristics.size(), 0u);
+  EXPECT_EQ(result.tag.channels, absl::nullopt);
+
+  // The LANGUAGE attribute must be a valid quoted-string
+  ErrorTest<XMediaTag>(
+      "TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"name\",LANGUAGE=foo", variable_dict,
+      sub_buffer, ParseStatusCode::kMalformedTag);
+  ErrorTest<XMediaTag>(
+      "TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"name\",LANGUAGE=\"\"",
+      variable_dict, sub_buffer, ParseStatusCode::kMalformedTag);
+  ErrorTest<XMediaTag>(
+      "TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"name\",LANGUAGE=\"{$EMPTY}\"",
+      variable_dict, sub_buffer, ParseStatusCode::kMalformedTag);
+
+  result = OkTest<XMediaTag>(
+      "TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"name\",LANGUAGE=\"en\"",
+      variable_dict, sub_buffer);
+  EXPECT_EQ(result.tag.type, MediaType::kAudio);
+  EXPECT_EQ(result.tag.uri, absl::nullopt);
+  EXPECT_EQ(result.tag.group_id.Str(), "group");
+  ASSERT_TRUE(result.tag.language.has_value());
+  EXPECT_EQ(result.tag.language->Str(), "en");
+  EXPECT_EQ(result.tag.associated_language, absl::nullopt);
+  EXPECT_EQ(result.tag.name.Str(), "name");
+  EXPECT_EQ(result.tag.stable_rendition_id, absl::nullopt);
+  EXPECT_EQ(result.tag.is_default, false);
+  EXPECT_EQ(result.tag.autoselect, false);
+  EXPECT_EQ(result.tag.forced, false);
+  EXPECT_EQ(result.tag.instream_id, absl::nullopt);
+  EXPECT_EQ(result.tag.characteristics.size(), 0u);
+  EXPECT_EQ(result.tag.channels, absl::nullopt);
+
+  // The LANGUAGE attribute is subject to variable substitution
+  result = OkTest<XMediaTag>(
+      "TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"name\",LANGUAGE=\"{$FOO}\"",
+      variable_dict, sub_buffer);
+  EXPECT_EQ(result.tag.type, MediaType::kAudio);
+  EXPECT_EQ(result.tag.uri, absl::nullopt);
+  EXPECT_EQ(result.tag.group_id.Str(), "group");
+  ASSERT_TRUE(result.tag.language.has_value());
+  EXPECT_EQ(result.tag.language->Str(), "bar");
+  EXPECT_EQ(result.tag.associated_language, absl::nullopt);
+  EXPECT_EQ(result.tag.name.Str(), "name");
+  EXPECT_EQ(result.tag.stable_rendition_id, absl::nullopt);
+  EXPECT_EQ(result.tag.is_default, false);
+  EXPECT_EQ(result.tag.autoselect, false);
+  EXPECT_EQ(result.tag.forced, false);
+  EXPECT_EQ(result.tag.instream_id, absl::nullopt);
+  EXPECT_EQ(result.tag.characteristics.size(), 0u);
+  EXPECT_EQ(result.tag.channels, absl::nullopt);
+
+  // The ASSOC-LANGUAGE attribute must be a valid quoted-string
+  ErrorTest<XMediaTag>(
+      "TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"name\",ASSOC-LANGUAGE=foo",
+      variable_dict, sub_buffer, ParseStatusCode::kMalformedTag);
+  ErrorTest<XMediaTag>(
+      "TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"name\",ASSOC-LANGUAGE=\"\"",
+      variable_dict, sub_buffer, ParseStatusCode::kMalformedTag);
+  ErrorTest<XMediaTag>(
+      "TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"name\",ASSOC-LANGUAGE=\"{$EMPTY}\"",
+      variable_dict, sub_buffer, ParseStatusCode::kMalformedTag);
+
+  result = OkTest<XMediaTag>(
+      "TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"name\",ASSOC-LANGUAGE=\"en\"",
+      variable_dict, sub_buffer);
+  EXPECT_EQ(result.tag.type, MediaType::kAudio);
+  EXPECT_EQ(result.tag.uri, absl::nullopt);
+  EXPECT_EQ(result.tag.group_id.Str(), "group");
+  EXPECT_EQ(result.tag.language, absl::nullopt);
+  ASSERT_TRUE(result.tag.associated_language.has_value());
+  EXPECT_EQ(result.tag.associated_language->Str(), "en");
+  EXPECT_EQ(result.tag.name.Str(), "name");
+  EXPECT_EQ(result.tag.stable_rendition_id, absl::nullopt);
+  EXPECT_EQ(result.tag.is_default, false);
+  EXPECT_EQ(result.tag.autoselect, false);
+  EXPECT_EQ(result.tag.forced, false);
+  EXPECT_EQ(result.tag.instream_id, absl::nullopt);
+  EXPECT_EQ(result.tag.characteristics.size(), 0u);
+  EXPECT_EQ(result.tag.channels, absl::nullopt);
+
+  // The ASSOC-LANGUAGE attribute is subject to variable substitution
+  result = OkTest<XMediaTag>(
+      "TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"name\",ASSOC-LANGUAGE=\"{$FOO}\"",
+      variable_dict, sub_buffer);
+  EXPECT_EQ(result.tag.type, MediaType::kAudio);
+  EXPECT_EQ(result.tag.uri, absl::nullopt);
+  EXPECT_EQ(result.tag.group_id.Str(), "group");
+  EXPECT_EQ(result.tag.language, absl::nullopt);
+  ASSERT_TRUE(result.tag.associated_language.has_value());
+  EXPECT_EQ(result.tag.associated_language->Str(), "bar");
+  EXPECT_EQ(result.tag.name.Str(), "name");
+  EXPECT_EQ(result.tag.stable_rendition_id, absl::nullopt);
+  EXPECT_EQ(result.tag.is_default, false);
+  EXPECT_EQ(result.tag.autoselect, false);
+  EXPECT_EQ(result.tag.forced, false);
+  EXPECT_EQ(result.tag.instream_id, absl::nullopt);
+  EXPECT_EQ(result.tag.characteristics.size(), 0u);
+  EXPECT_EQ(result.tag.channels, absl::nullopt);
+
+  // LANGUAGE and ASSOC-LANGUAGE are not mutually exclusive
+  result = OkTest<XMediaTag>(
+      "TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"name\",LANGUAGE=\"foo\",ASSOC-"
+      "LANGUAGE=\"bar\"",
+      variable_dict, sub_buffer);
+  EXPECT_EQ(result.tag.type, MediaType::kAudio);
+  EXPECT_EQ(result.tag.uri, absl::nullopt);
+  EXPECT_EQ(result.tag.group_id.Str(), "group");
+  ASSERT_TRUE(result.tag.language.has_value());
+  EXPECT_EQ(result.tag.language->Str(), "foo");
+  ASSERT_TRUE(result.tag.associated_language.has_value());
+  EXPECT_EQ(result.tag.associated_language->Str(), "bar");
+  EXPECT_EQ(result.tag.name.Str(), "name");
+  EXPECT_EQ(result.tag.stable_rendition_id, absl::nullopt);
+  EXPECT_EQ(result.tag.is_default, false);
+  EXPECT_EQ(result.tag.autoselect, false);
+  EXPECT_EQ(result.tag.forced, false);
+  EXPECT_EQ(result.tag.instream_id, absl::nullopt);
+  EXPECT_EQ(result.tag.characteristics.size(), 0u);
+  EXPECT_EQ(result.tag.channels, absl::nullopt);
+
+  // The NAME attribute is REQUIRED, and must be a valid quoted-string
+  ErrorTest<XMediaTag>("TYPE=AUDIO,GROUP-ID=\"group\"", variable_dict,
+                       sub_buffer, ParseStatusCode::kMalformedTag);
+  ErrorTest<XMediaTag>("TYPE=AUDIO,NAME=foo,GROUP-ID=\"group\"", variable_dict,
+                       sub_buffer, ParseStatusCode::kMalformedTag);
+  ErrorTest<XMediaTag>("TYPE=AUDIO,NAME=\"\",GROUP-ID=\"group\"", variable_dict,
+                       sub_buffer, ParseStatusCode::kMalformedTag);
+  ErrorTest<XMediaTag>("TYPE=AUDIO,NAME=\"{$EMPTY}\",GROUP-ID=\"group\"",
+                       variable_dict, sub_buffer,
+                       ParseStatusCode::kMalformedTag);
+
+  // NAME is subject to variable substitution
+  result = OkTest<XMediaTag>("TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"foo{$FOO}\"",
+                             variable_dict, sub_buffer);
+  EXPECT_EQ(result.tag.type, MediaType::kAudio);
+  EXPECT_EQ(result.tag.uri, absl::nullopt);
+  EXPECT_EQ(result.tag.group_id.Str(), "group");
+  EXPECT_EQ(result.tag.language, absl::nullopt);
+  EXPECT_EQ(result.tag.associated_language, absl::nullopt);
+  EXPECT_EQ(result.tag.name.Str(), "foobar");
+  EXPECT_EQ(result.tag.stable_rendition_id, absl::nullopt);
+  EXPECT_EQ(result.tag.is_default, false);
+  EXPECT_EQ(result.tag.autoselect, false);
+  EXPECT_EQ(result.tag.forced, false);
+  EXPECT_EQ(result.tag.instream_id, absl::nullopt);
+  EXPECT_EQ(result.tag.characteristics.size(), 0u);
+  EXPECT_EQ(result.tag.channels, absl::nullopt);
+
+  // The STABLE-RENDITION-ID attribute must be a valid quoted-string containing
+  // a valid StableId
+  ErrorTest<XMediaTag>(
+      "TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"name\",STABLE-RENDITION-ID=FOO",
+      variable_dict, sub_buffer, ParseStatusCode::kMalformedTag);
+  ErrorTest<XMediaTag>(
+      "TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"name\",STABLE-RENDITION-ID=\"\"",
+      variable_dict, sub_buffer, ParseStatusCode::kMalformedTag);
+  ErrorTest<XMediaTag>(
+      "TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"name\",STABLE-RENDITION-ID=\"{$"
+      "EMPTY}\"",
+      variable_dict, sub_buffer, ParseStatusCode::kMalformedTag);
+  ErrorTest<XMediaTag>(
+      "TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"name\",STABLE-RENDITION-ID=\"*\"",
+      variable_dict, sub_buffer, ParseStatusCode::kMalformedTag);
+
+  result = OkTest<XMediaTag>(
+      "TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"name\",STABLE-RENDITION-ID="
+      "\"abcABC123+/=.-_\"",
+      variable_dict, sub_buffer);
+  EXPECT_EQ(result.tag.type, MediaType::kAudio);
+  EXPECT_EQ(result.tag.uri, absl::nullopt);
+  EXPECT_EQ(result.tag.group_id.Str(), "group");
+  EXPECT_EQ(result.tag.language, absl::nullopt);
+  EXPECT_EQ(result.tag.associated_language, absl::nullopt);
+  EXPECT_EQ(result.tag.name.Str(), "name");
+  ASSERT_TRUE(result.tag.stable_rendition_id.has_value());
+  EXPECT_EQ(result.tag.stable_rendition_id->Str(), "abcABC123+/=.-_");
+  EXPECT_EQ(result.tag.is_default, false);
+  EXPECT_EQ(result.tag.autoselect, false);
+  EXPECT_EQ(result.tag.forced, false);
+  EXPECT_EQ(result.tag.instream_id, absl::nullopt);
+  EXPECT_EQ(result.tag.characteristics.size(), 0u);
+  EXPECT_EQ(result.tag.channels, absl::nullopt);
+
+  // STABLE-RENDITION-ID is subject to variable substitution
+  result = OkTest<XMediaTag>(
+      "TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"name\",STABLE-RENDITION-ID=\"foo{$"
+      "FOO}\"",
+      variable_dict, sub_buffer);
+  EXPECT_EQ(result.tag.type, MediaType::kAudio);
+  EXPECT_EQ(result.tag.uri, absl::nullopt);
+  EXPECT_EQ(result.tag.group_id.Str(), "group");
+  EXPECT_EQ(result.tag.language, absl::nullopt);
+  EXPECT_EQ(result.tag.associated_language, absl::nullopt);
+  EXPECT_EQ(result.tag.name.Str(), "name");
+  ASSERT_TRUE(result.tag.stable_rendition_id.has_value());
+  EXPECT_EQ(result.tag.stable_rendition_id->Str(), "foobar");
+  EXPECT_EQ(result.tag.is_default, false);
+  EXPECT_EQ(result.tag.autoselect, false);
+  EXPECT_EQ(result.tag.forced, false);
+  EXPECT_EQ(result.tag.instream_id, absl::nullopt);
+  EXPECT_EQ(result.tag.characteristics.size(), 0u);
+  EXPECT_EQ(result.tag.channels, absl::nullopt);
+
+  // The DEFAULT attribute must equal 'YES' to evaluate as true. Other values
+  // are ignored, and it is not subject to variable substitution.
+  for (std::string x : {"FOO", "Y", "{$YEAH}", "NO"}) {
+    result = OkTest<XMediaTag>(
+        "TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"name\",DEFAULT=" + x,
+        variable_dict, sub_buffer);
+    EXPECT_EQ(result.tag.type, MediaType::kAudio);
+    EXPECT_EQ(result.tag.uri, absl::nullopt);
+    EXPECT_EQ(result.tag.group_id.Str(), "group");
+    EXPECT_EQ(result.tag.language, absl::nullopt);
+    EXPECT_EQ(result.tag.associated_language, absl::nullopt);
+    EXPECT_EQ(result.tag.name.Str(), "name");
+    EXPECT_EQ(result.tag.stable_rendition_id, absl::nullopt);
+    EXPECT_EQ(result.tag.is_default, false);
+    EXPECT_EQ(result.tag.autoselect, false);
+    EXPECT_EQ(result.tag.forced, false);
+    EXPECT_EQ(result.tag.instream_id, absl::nullopt);
+    EXPECT_EQ(result.tag.characteristics.size(), 0u);
+    EXPECT_EQ(result.tag.channels, absl::nullopt);
+  }
+
+  result = OkTest<XMediaTag>(
+      "TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"name\",DEFAULT=YES", variable_dict,
+      sub_buffer);
+  EXPECT_EQ(result.tag.type, MediaType::kAudio);
+  EXPECT_EQ(result.tag.uri, absl::nullopt);
+  EXPECT_EQ(result.tag.group_id.Str(), "group");
+  EXPECT_EQ(result.tag.language, absl::nullopt);
+  EXPECT_EQ(result.tag.associated_language, absl::nullopt);
+  EXPECT_EQ(result.tag.name.Str(), "name");
+  EXPECT_EQ(result.tag.stable_rendition_id, absl::nullopt);
+  EXPECT_EQ(result.tag.is_default, true);
+  EXPECT_EQ(result.tag.autoselect, false);
+  EXPECT_EQ(result.tag.forced, false);
+  EXPECT_EQ(result.tag.instream_id, absl::nullopt);
+  EXPECT_EQ(result.tag.characteristics.size(), 0u);
+  EXPECT_EQ(result.tag.channels, absl::nullopt);
+
+  // The AUTOSELECT attribute must equal 'YES' to evaluate as true. Other values
+  // are ignored, and it is not subject to variable substitution.
+  for (std::string x : {"FOO", "Y", "{$YEAH}", "NO"}) {
+    result = OkTest<XMediaTag>(
+        "TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"name\",AUTOSELECT=" + x,
+        variable_dict, sub_buffer);
+    EXPECT_EQ(result.tag.type, MediaType::kAudio);
+    EXPECT_EQ(result.tag.uri, absl::nullopt);
+    EXPECT_EQ(result.tag.group_id.Str(), "group");
+    EXPECT_EQ(result.tag.language, absl::nullopt);
+    EXPECT_EQ(result.tag.associated_language, absl::nullopt);
+    EXPECT_EQ(result.tag.name.Str(), "name");
+    EXPECT_EQ(result.tag.stable_rendition_id, absl::nullopt);
+    EXPECT_EQ(result.tag.is_default, false);
+    EXPECT_EQ(result.tag.autoselect, false);
+    EXPECT_EQ(result.tag.forced, false);
+    EXPECT_EQ(result.tag.instream_id, absl::nullopt);
+    EXPECT_EQ(result.tag.characteristics.size(), 0u);
+    EXPECT_EQ(result.tag.channels, absl::nullopt);
+  }
+
+  result = OkTest<XMediaTag>(
+      "TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"name\",AUTOSELECT=YES",
+      variable_dict, sub_buffer);
+  EXPECT_EQ(result.tag.type, MediaType::kAudio);
+  EXPECT_EQ(result.tag.uri, absl::nullopt);
+  EXPECT_EQ(result.tag.group_id.Str(), "group");
+  EXPECT_EQ(result.tag.language, absl::nullopt);
+  EXPECT_EQ(result.tag.associated_language, absl::nullopt);
+  EXPECT_EQ(result.tag.name.Str(), "name");
+  EXPECT_EQ(result.tag.stable_rendition_id, absl::nullopt);
+  EXPECT_EQ(result.tag.is_default, false);
+  EXPECT_EQ(result.tag.autoselect, true);
+  EXPECT_EQ(result.tag.forced, false);
+  EXPECT_EQ(result.tag.instream_id, absl::nullopt);
+  EXPECT_EQ(result.tag.characteristics.size(), 0u);
+  EXPECT_EQ(result.tag.channels, absl::nullopt);
+
+  // If DEFAULT=YES, then AUTOSELECT must be YES if present
+  ErrorTest<XMediaTag>(
+      "TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"name\",DEFAULT=YES,AUTOSELECT=NO",
+      variable_dict, sub_buffer, ParseStatusCode::kMalformedTag);
+  result = OkTest<XMediaTag>(
+      "TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"name\",DEFAULT=YES,AUTOSELECT=YES",
+      variable_dict, sub_buffer);
+  EXPECT_EQ(result.tag.type, MediaType::kAudio);
+  EXPECT_EQ(result.tag.uri, absl::nullopt);
+  EXPECT_EQ(result.tag.group_id.Str(), "group");
+  EXPECT_EQ(result.tag.language, absl::nullopt);
+  EXPECT_EQ(result.tag.associated_language, absl::nullopt);
+  EXPECT_EQ(result.tag.name.Str(), "name");
+  EXPECT_EQ(result.tag.stable_rendition_id, absl::nullopt);
+  EXPECT_EQ(result.tag.is_default, true);
+  EXPECT_EQ(result.tag.autoselect, true);
+  EXPECT_EQ(result.tag.forced, false);
+  EXPECT_EQ(result.tag.instream_id, absl::nullopt);
+  EXPECT_EQ(result.tag.characteristics.size(), 0u);
+  EXPECT_EQ(result.tag.channels, absl::nullopt);
+
+  // The FORCED attribute may only appear when TYPE=SUBTITLES
+  ErrorTest<XMediaTag>(
+      "TYPE=AUDIO,URI=\"foo.m3u8\",GROUP-ID=\"group\",NAME=\"name\",FORCED=YES",
+      variable_dict, sub_buffer, ParseStatusCode::kMalformedTag);
+  ErrorTest<XMediaTag>(
+      "TYPE=AUDIO,URI=\"foo.m3u8\",GROUP-ID=\"group\",NAME=\"name\",FORCED=NO",
+      variable_dict, sub_buffer, ParseStatusCode::kMalformedTag);
+
+  // The FORCED attribute must equal 'YES' to evaluate as true. Other values are
+  // ignored, and it is not subject to variable substitution.
+  for (std::string x : {"FOO", "Y", "{$YEAH}", "NO"}) {
+    result = OkTest<XMediaTag>(
+        "TYPE=SUBTITLES,URI=\"foo.m3u8\",GROUP-ID=\"group\",NAME=\"name\","
+        "FORCED=" +
+            x,
+        variable_dict, sub_buffer);
+    EXPECT_EQ(result.tag.type, MediaType::kSubtitles);
+    ASSERT_TRUE(result.tag.uri.has_value());
+    EXPECT_EQ(result.tag.uri->Str(), "foo.m3u8");
+    EXPECT_EQ(result.tag.group_id.Str(), "group");
+    EXPECT_EQ(result.tag.language, absl::nullopt);
+    EXPECT_EQ(result.tag.associated_language, absl::nullopt);
+    EXPECT_EQ(result.tag.name.Str(), "name");
+    EXPECT_EQ(result.tag.stable_rendition_id, absl::nullopt);
+    EXPECT_EQ(result.tag.is_default, false);
+    EXPECT_EQ(result.tag.autoselect, false);
+    EXPECT_EQ(result.tag.forced, false);
+    EXPECT_EQ(result.tag.instream_id, absl::nullopt);
+    EXPECT_EQ(result.tag.characteristics.size(), 0u);
+    EXPECT_EQ(result.tag.channels, absl::nullopt);
+  }
+
+  result = OkTest<XMediaTag>(
+      "TYPE=SUBTITLES,URI=\"foo.m3u8\",GROUP-ID=\"group\",NAME=\"name\",FORCED="
+      "YES",
+      variable_dict, sub_buffer);
+  EXPECT_EQ(result.tag.type, MediaType::kSubtitles);
+  ASSERT_TRUE(result.tag.uri.has_value());
+  EXPECT_EQ(result.tag.uri->Str(), "foo.m3u8");
+  EXPECT_EQ(result.tag.group_id.Str(), "group");
+  EXPECT_EQ(result.tag.language, absl::nullopt);
+  EXPECT_EQ(result.tag.associated_language, absl::nullopt);
+  EXPECT_EQ(result.tag.name.Str(), "name");
+  EXPECT_EQ(result.tag.stable_rendition_id, absl::nullopt);
+  EXPECT_EQ(result.tag.is_default, false);
+  EXPECT_EQ(result.tag.autoselect, false);
+  EXPECT_EQ(result.tag.forced, true);
+  EXPECT_EQ(result.tag.instream_id, absl::nullopt);
+  EXPECT_EQ(result.tag.characteristics.size(), 0u);
+  EXPECT_EQ(result.tag.channels, absl::nullopt);
+
+  // INSTREAM-ID is REQUIRED when TYPE=CLOSED-CAPTIONS, and MUST NOT appear for
+  // any other type
+  for (std::string x : {"AUDIO", "VIDEO", "SUBTITLES"}) {
+    ErrorTest<XMediaTag>("TYPE=" + x +
+                             ",URI=\"foo.m3u8\",GROUP-ID=\"group\",NAME="
+                             "\"name\",INSTREAM-ID=\"CC1\"",
+                         variable_dict, sub_buffer,
+                         ParseStatusCode::kMalformedTag);
+  }
+
+  ErrorTest<XMediaTag>("TYPE=CLOSED-CAPTIONS,GROUP-ID=\"group\",NAME=\"name\"",
+                       variable_dict, sub_buffer,
+                       ParseStatusCode::kMalformedTag);
+  result = OkTest<XMediaTag>(
+      "TYPE=CLOSED-CAPTIONS,GROUP-ID=\"group\",NAME=\"name\",INSTREAM-ID="
+      "\"CC1\"",
+      variable_dict, sub_buffer);
+  EXPECT_EQ(result.tag.type, MediaType::kClosedCaptions);
+  EXPECT_EQ(result.tag.uri, absl::nullopt);
+  EXPECT_EQ(result.tag.group_id.Str(), "group");
+  EXPECT_EQ(result.tag.language, absl::nullopt);
+  EXPECT_EQ(result.tag.associated_language, absl::nullopt);
+  EXPECT_EQ(result.tag.name.Str(), "name");
+  EXPECT_EQ(result.tag.stable_rendition_id, absl::nullopt);
+  EXPECT_EQ(result.tag.is_default, false);
+  EXPECT_EQ(result.tag.autoselect, false);
+  EXPECT_EQ(result.tag.forced, false);
+  ASSERT_TRUE(result.tag.instream_id.has_value());
+  EXPECT_EQ(result.tag.instream_id->GetType(), types::InstreamId::Type::kCc);
+  EXPECT_EQ(result.tag.instream_id->GetNumber(), 1);
+  EXPECT_EQ(result.tag.characteristics.size(), 0u);
+  EXPECT_EQ(result.tag.channels, absl::nullopt);
+
+  // INSTREAM-ID must be a valid quoted-string containing an InstreamId, and is
+  // subject to variable substitution.
+  ErrorTest<XMediaTag>(
+      "TYPE=CLOSED-CAPTIONS,GROUP-ID=\"group\",NAME=\"name\"INSTREAM-ID=CC1",
+      variable_dict, sub_buffer, ParseStatusCode::kMalformedTag);
+  ErrorTest<XMediaTag>(
+      "TYPE=CLOSED-CAPTIONS,GROUP-ID=\"group\",NAME=\"name\"INSTREAM-ID="
+      "\"FOO\"",
+      variable_dict, sub_buffer, ParseStatusCode::kMalformedTag);
+  ErrorTest<XMediaTag>(
+      "TYPE=CLOSED-CAPTIONS,GROUP-ID=\"group\",NAME=\"name\"INSTREAM-ID="
+      "\"SERVICE99\"",
+      variable_dict, sub_buffer, ParseStatusCode::kMalformedTag);
+  result = OkTest<XMediaTag>(
+      "TYPE=CLOSED-CAPTIONS,GROUP-ID=\"group\",NAME=\"name\",INSTREAM-ID=\"{$"
+      "SRVC}32\"",
+      variable_dict, sub_buffer);
+  EXPECT_EQ(result.tag.type, MediaType::kClosedCaptions);
+  EXPECT_EQ(result.tag.uri, absl::nullopt);
+  EXPECT_EQ(result.tag.group_id.Str(), "group");
+  EXPECT_EQ(result.tag.language, absl::nullopt);
+  EXPECT_EQ(result.tag.associated_language, absl::nullopt);
+  EXPECT_EQ(result.tag.name.Str(), "name");
+  EXPECT_EQ(result.tag.stable_rendition_id, absl::nullopt);
+  EXPECT_EQ(result.tag.is_default, false);
+  EXPECT_EQ(result.tag.autoselect, false);
+  EXPECT_EQ(result.tag.forced, false);
+  ASSERT_TRUE(result.tag.instream_id.has_value());
+  EXPECT_EQ(result.tag.instream_id->GetType(),
+            types::InstreamId::Type::kService);
+  EXPECT_EQ(result.tag.instream_id->GetNumber(), 32);
+  EXPECT_EQ(result.tag.characteristics.size(), 0u);
+  EXPECT_EQ(result.tag.channels, absl::nullopt);
+
+  // The CHARACTERISTICS attribute must be a quoted-string containing a sequence
+  // of media characteristics tags It may not be empty, and is subject to
+  // variable substitution.
+  ErrorTest<XMediaTag>(
+      "TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"name\",CHARACTERISTICS=foo",
+      variable_dict, sub_buffer, ParseStatusCode::kMalformedTag);
+  ErrorTest<XMediaTag>(
+      "TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"name\",CHARACTERISTICS=\"\"",
+      variable_dict, sub_buffer, ParseStatusCode::kMalformedTag);
+
+  result = OkTest<XMediaTag>(
+      "TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"name\",CHARACTERISTICS=\"foo,bar,"
+      "baz\"",
+      variable_dict, sub_buffer);
+  EXPECT_EQ(result.tag.type, MediaType::kAudio);
+  EXPECT_EQ(result.tag.uri, absl::nullopt);
+  EXPECT_EQ(result.tag.group_id.Str(), "group");
+  EXPECT_EQ(result.tag.language, absl::nullopt);
+  EXPECT_EQ(result.tag.associated_language, absl::nullopt);
+  EXPECT_EQ(result.tag.name.Str(), "name");
+  EXPECT_EQ(result.tag.stable_rendition_id, absl::nullopt);
+  EXPECT_EQ(result.tag.is_default, false);
+  EXPECT_EQ(result.tag.autoselect, false);
+  EXPECT_EQ(result.tag.forced, false);
+  EXPECT_EQ(result.tag.instream_id, absl::nullopt);
+  EXPECT_EQ(result.tag.characteristics.size(), 3u);
+  EXPECT_EQ(result.tag.characteristics[0], "foo");
+  EXPECT_EQ(result.tag.characteristics[1], "bar");
+  EXPECT_EQ(result.tag.characteristics[2], "baz");
+  EXPECT_EQ(result.tag.channels, absl::nullopt);
+
+  result = OkTest<XMediaTag>(
+      "TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"name\",CHARACTERISTICS=\"{$FOO},{$"
+      "BAR}\"",
+      variable_dict, sub_buffer);
+  EXPECT_EQ(result.tag.type, MediaType::kAudio);
+  EXPECT_EQ(result.tag.uri, absl::nullopt);
+  EXPECT_EQ(result.tag.group_id.Str(), "group");
+  EXPECT_EQ(result.tag.language, absl::nullopt);
+  EXPECT_EQ(result.tag.associated_language, absl::nullopt);
+  EXPECT_EQ(result.tag.name.Str(), "name");
+  EXPECT_EQ(result.tag.stable_rendition_id, absl::nullopt);
+  EXPECT_EQ(result.tag.is_default, false);
+  EXPECT_EQ(result.tag.autoselect, false);
+  EXPECT_EQ(result.tag.forced, false);
+  EXPECT_EQ(result.tag.instream_id, absl::nullopt);
+  EXPECT_EQ(result.tag.characteristics.size(), 2u);
+  EXPECT_EQ(result.tag.characteristics[0], "bar");
+  EXPECT_EQ(result.tag.characteristics[1], "baz");
+  EXPECT_EQ(result.tag.channels, absl::nullopt);
+
+  // The CHANNELS tag must be a non-empty quoted-string, and is subject to
+  // variable substitution. The only parameters that are recognized are for
+  // audio.
+  ErrorTest<XMediaTag>(
+      "TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"name\",CHANNELS=foo", variable_dict,
+      sub_buffer, ParseStatusCode::kMalformedTag);
+  ErrorTest<XMediaTag>(
+      "TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"name\",CHANNELS=\"\"",
+      variable_dict, sub_buffer, ParseStatusCode::kMalformedTag);
+  ErrorTest<XMediaTag>(
+      "TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"name\",CHANNELS=\"foo\"",
+      variable_dict, sub_buffer, ParseStatusCode::kMalformedTag);
+  ErrorTest<XMediaTag>(
+      "TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"name\",CHANNELS=\"1/foo\"",
+      variable_dict, sub_buffer, ParseStatusCode::kMalformedTag);
+  ErrorTest<XMediaTag>(
+      "TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"name\",CHANNELS=\"1/FOO,,BAR\"",
+      variable_dict, sub_buffer, ParseStatusCode::kMalformedTag);
+  ErrorTest<XMediaTag>(
+      "TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"name\",CHANNELS=\"1/{$FOO}\"",
+      variable_dict, sub_buffer, ParseStatusCode::kMalformedTag);
+
+  result = OkTest<XMediaTag>(
+      "TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"name\",CHANNELS=\"1\"",
+      variable_dict, sub_buffer);
+  EXPECT_EQ(result.tag.type, MediaType::kAudio);
+  EXPECT_EQ(result.tag.uri, absl::nullopt);
+  EXPECT_EQ(result.tag.group_id.Str(), "group");
+  EXPECT_EQ(result.tag.language, absl::nullopt);
+  EXPECT_EQ(result.tag.associated_language, absl::nullopt);
+  EXPECT_EQ(result.tag.name.Str(), "name");
+  EXPECT_EQ(result.tag.stable_rendition_id, absl::nullopt);
+  EXPECT_EQ(result.tag.is_default, false);
+  EXPECT_EQ(result.tag.autoselect, false);
+  EXPECT_EQ(result.tag.forced, false);
+  EXPECT_EQ(result.tag.instream_id, absl::nullopt);
+  EXPECT_EQ(result.tag.characteristics.size(), 0u);
+  ASSERT_TRUE(result.tag.channels.has_value());
+  EXPECT_EQ(result.tag.channels->GetMaxChannels(), 1u);
+  EXPECT_TRUE(result.tag.channels->GetAudioCodingIdentifiers().empty());
+
+  result = OkTest<XMediaTag>(
+      "TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"name\",CHANNELS=\"1/FOO,BAR,-\"",
+      variable_dict, sub_buffer);
+  EXPECT_EQ(result.tag.type, MediaType::kAudio);
+  EXPECT_EQ(result.tag.uri, absl::nullopt);
+  EXPECT_EQ(result.tag.group_id.Str(), "group");
+  EXPECT_EQ(result.tag.language, absl::nullopt);
+  EXPECT_EQ(result.tag.associated_language, absl::nullopt);
+  EXPECT_EQ(result.tag.name.Str(), "name");
+  EXPECT_EQ(result.tag.stable_rendition_id, absl::nullopt);
+  EXPECT_EQ(result.tag.is_default, false);
+  EXPECT_EQ(result.tag.autoselect, false);
+  EXPECT_EQ(result.tag.forced, false);
+  EXPECT_EQ(result.tag.instream_id, absl::nullopt);
+  EXPECT_EQ(result.tag.characteristics.size(), 0u);
+  ASSERT_TRUE(result.tag.channels.has_value());
+  EXPECT_EQ(result.tag.channels->GetMaxChannels(), 1u);
+  EXPECT_EQ(result.tag.channels->GetAudioCodingIdentifiers().size(), 3u);
+  EXPECT_EQ(result.tag.channels->GetAudioCodingIdentifiers()[0], "FOO");
+  EXPECT_EQ(result.tag.channels->GetAudioCodingIdentifiers()[1], "BAR");
+  EXPECT_EQ(result.tag.channels->GetAudioCodingIdentifiers()[2], "-");
+
+  result = OkTest<XMediaTag>(
+      "TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"name\",CHANNELS=\"1/"
+      "FOO,{$SRVC},-\"",
+      variable_dict, sub_buffer);
+  EXPECT_EQ(result.tag.type, MediaType::kAudio);
+  EXPECT_EQ(result.tag.uri, absl::nullopt);
+  EXPECT_EQ(result.tag.group_id.Str(), "group");
+  EXPECT_EQ(result.tag.language, absl::nullopt);
+  EXPECT_EQ(result.tag.associated_language, absl::nullopt);
+  EXPECT_EQ(result.tag.name.Str(), "name");
+  EXPECT_EQ(result.tag.stable_rendition_id, absl::nullopt);
+  EXPECT_EQ(result.tag.is_default, false);
+  EXPECT_EQ(result.tag.autoselect, false);
+  EXPECT_EQ(result.tag.forced, false);
+  EXPECT_EQ(result.tag.instream_id, absl::nullopt);
+  EXPECT_EQ(result.tag.characteristics.size(), 0u);
+  EXPECT_TRUE(result.tag.channels.has_value());
+  EXPECT_EQ(result.tag.channels->GetMaxChannels(), 1u);
+  EXPECT_EQ(result.tag.channels->GetAudioCodingIdentifiers().size(), 3u);
+  EXPECT_EQ(result.tag.channels->GetAudioCodingIdentifiers()[0], "FOO");
+  EXPECT_EQ(result.tag.channels->GetAudioCodingIdentifiers()[1], "SERVICE");
+  EXPECT_EQ(result.tag.channels->GetAudioCodingIdentifiers()[2], "-");
 }
 
 TEST(HlsTagsTest, ParseXSessionDataTag) {
