@@ -199,6 +199,8 @@ const base::Feature kElasticOverscroll = {"ElasticOverscroll",
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
+const base::Feature kAndroidPermissionsCache{"AndroidPermissionsCache",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
 const char kElasticOverscrollType[] = "type";
 const char kElasticOverscrollTypeFilter[] = "filter";
 const char kElasticOverscrollTypeTransform[] = "transform";

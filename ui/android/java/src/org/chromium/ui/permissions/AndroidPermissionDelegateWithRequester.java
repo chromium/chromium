@@ -37,7 +37,7 @@ public abstract class AndroidPermissionDelegateWithRequester implements AndroidP
     }
 
     @Override
-    public final boolean hasPermission(String permission) {
+    public boolean hasPermission(String permission) {
         boolean isGranted =
                 ApiCompatibilityUtils.checkPermission(ContextUtils.getApplicationContext(),
                         permission, Process.myPid(), Process.myUid())
@@ -49,7 +49,7 @@ public abstract class AndroidPermissionDelegateWithRequester implements AndroidP
     }
 
     @Override
-    public final boolean canRequestPermission(String permission) {
+    public boolean canRequestPermission(String permission) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return false;
 
         if (hasPermission(permission)) {

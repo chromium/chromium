@@ -668,6 +668,11 @@ component("features") {
     "//base",
     "//build:chromeos_buildflags",
   ]
+
+  if (is_android) {
+    sources += [ "ui_base_feature_list_android.cc" ]
+    deps += [ ":ui_base_jni_headers" ]
+  }
 }
 
 if (is_win || is_mac || is_linux || is_chromeos) {
@@ -868,7 +873,31 @@ if (is_android) {
       "../android/java/src/org/chromium/ui/base/ResourceBundle.java",
       "../android/java/src/org/chromium/ui/base/SelectFileDialog.java",
       "../android/java/src/org/chromium/ui/base/TouchDevice.java",
+      "../android/java/src/org/chromium/ui/base/UiBaseFeatureList.java",
     ]
+  }
+
+  java_cpp_features("java_features_srcjar") {
+    # External code should depend on ":features_java" instead.
+    visibility = [ ":*" ]
+    sources = [ "ui_base_features.cc" ]
+    template =
+        "../android/java/src/org/chromium/ui/base/UiBaseFeatures.java.tmpl"
+  }
+
+  android_library("features_java") {
+    srcjar_deps = [ ":java_features_srcjar" ]
+  }
+
+  android_library("feature_list_java") {
+    sources =
+        [ "../android/java/src/org/chromium/ui/base/UiBaseFeatureList.java" ]
+    deps = [
+      "//base:base_java",
+      "//base:jni_java",
+      "//build/android:build_java",
+    ]
+    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
 }
 

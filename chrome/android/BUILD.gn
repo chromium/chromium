@@ -651,6 +651,7 @@ android_library("chrome_java") {
     "//third_party/gif_player:gif_player_java",
     "//third_party/metrics_proto:metrics_proto_java",
     "//ui/android:ui_java",
+    "//ui/base:features_java",
     "//ui/base/mojom:mojom_java",
     "//ui/gfx/geometry/mojom:mojom_java",
     "//url:gurl_java",
