@@ -6407,7 +6407,7 @@
                         "EntitySuggestionsReduceLatencyDecoderTimeout": "405",
                         "MaxZeroSuggestMatches": "10",
                         "OmniboxBookmarkPathsUiDynamicReplaceUrl": "true",
-                        "OmniboxLocalZeroSuggestAgeThreshold": "60",
+                        "OmniboxLocalZeroSuggestAgeThreshold": "90",
                         "OmniboxMaxURLMatches": "7",
                         "PrefixSuggestIgnoreDuplicateVisits": "true",
                         "ShortBookmarkSuggestionsByTotalInputLengthThreshold": "3",
@@ -6443,7 +6443,7 @@
                     "name": "AndroidExperiments",
                     "params": {
                         "OmniboxDynamicMaxAutocompleteIncreasedLimit": "15",
-                        "OmniboxLocalZeroSuggestAgeThreshold": "30",
+                        "OmniboxLocalZeroSuggestAgeThreshold": "90",
                         "OmniboxMaxURLMatches": "8",
                         "UIMaxAutocompleteMatches": "10"
                     },
@@ -6471,10 +6471,13 @@
                 {
                     "name": "IOSExperiments",
                     "params": {
-                        "MaxZeroSuggestMatches": "20"
+                        "MaxZeroSuggestMatches": "20",
+                        "OmniboxLocalZeroSuggestAgeThreshold": "90"
                     },
                     "enable_features": [
-                        "OmniboxMaxZeroSuggestMatches"
+                        "OmniboxLocalZeroSuggestAgeThreshold",
+                        "OmniboxMaxZeroSuggestMatches",
+                        "ZeroSuggestPrefetching"
                     ]
                 }
             ]
