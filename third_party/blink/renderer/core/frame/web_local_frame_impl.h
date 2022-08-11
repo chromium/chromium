@@ -54,6 +54,7 @@
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/page/widget.mojom-blink.h"
 #include "third_party/blink/public/mojom/portal/portal.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/script/script_evaluation_params.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_file_system_type.h"
 #include "third_party/blink/public/web/web_history_commit_type.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -184,11 +185,12 @@ class CORE_EXPORT WebLocalFrameImpl final
                                 WebScriptExecutionCallback*) override;
   void RequestExecuteScript(int32_t world_id,
                             base::span<const WebScriptSource> sources,
-                            bool user_gesture,
-                            ScriptExecutionType,
+                            mojom::blink::UserActivationOption,
+                            mojom::blink::EvaluationTiming,
+                            mojom::blink::LoadEventBlockingOption,
                             WebScriptExecutionCallback*,
                             BackForwardCacheAware back_forward_cache_aware,
-                            PromiseBehavior) override;
+                            mojom::blink::PromiseResultOption) override;
   void Alert(const WebString& message) override;
   bool Confirm(const WebString& message) override;
   WebString Prompt(const WebString& message,

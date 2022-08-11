@@ -327,7 +327,6 @@ void ScriptInjection::InjectJs(std::set<std::string>* executing_scripts,
   std::vector<blink::WebScriptSource> sources = injector_->GetJsSources(
       run_location_, executing_scripts, num_injected_js_scripts);
   DCHECK(!sources.empty());
-  bool is_user_gesture = injector_->IsUserGesture();
 
   std::unique_ptr<blink::WebScriptExecutionCallback> callback(
       new TimedScriptInjectionCallback(weak_ptr_factory_.GetWeakPtr()));
@@ -345,29 +344,29 @@ void ScriptInjection::InjectJs(std::set<std::string>* executing_scripts,
       injector_->script_type() == mojom::InjectionType::kContentScript &&
       (run_location_ == mojom::RunLocation::kDocumentEnd ||
        run_location_ == mojom::RunLocation::kDocumentIdle);
-  blink::WebLocalFrame::ScriptExecutionType execution_option =
+  blink::mojom::EvaluationTiming execution_option =
       should_execute_asynchronously
-          ? blink::WebLocalFrame::kAsynchronousBlockingOnload
-          : blink::WebLocalFrame::kSynchronous;
+          ? blink::mojom::EvaluationTiming::kAsynchronous
+          : blink::mojom::EvaluationTiming::kSynchronous;
 
-  mojom::ExecutionWorld execution_world = injector_->GetExecutionWorld();
   int32_t world_id = blink::kMainDOMWorldId;
-  if (execution_world == mojom::ExecutionWorld::kIsolated) {
-    world_id = GetIsolatedWorldIdForInstance(injection_host_.get());
-    if (injection_host_->id().type == mojom::HostID::HostType::kExtensions &&
-        log_activity_) {
-      DOMActivityLogger::AttachToWorld(world_id, injection_host_->id().id);
-    }
-  } else {
-    DCHECK_EQ(mojom::ExecutionWorld::kMain, execution_world);
+  switch (injector_->GetExecutionWorld()) {
+    case mojom::ExecutionWorld::kIsolated:
+      world_id = GetIsolatedWorldIdForInstance(injection_host_.get());
+      if (injection_host_->id().type == mojom::HostID::HostType::kExtensions &&
+          log_activity_) {
+        DOMActivityLogger::AttachToWorld(world_id, injection_host_->id().id);
+      }
+      break;
+    case mojom::ExecutionWorld::kMain:
+      world_id = blink::kMainDOMWorldId;
+      break;
   }
-  auto promise_behavior =
-      injector_->ShouldWaitForPromise()
-          ? blink::WebLocalFrame::PromiseBehavior::kAwait
-          : blink::WebLocalFrame::PromiseBehavior::kDontWait;
   render_frame_->GetWebFrame()->RequestExecuteScript(
-      world_id, sources, is_user_gesture, execution_option, callback.release(),
-      blink::BackForwardCacheAware::kPossiblyDisallow, promise_behavior);
+      world_id, sources, injector_->IsUserGesture(), execution_option,
+      blink::mojom::LoadEventBlockingOption::kBlock, callback.release(),
+      blink::BackForwardCacheAware::kPossiblyDisallow,
+      injector_->ShouldWaitForPromise());
 }
 
 void ScriptInjection::OnJsInjectionCompleted(
@@ -396,8 +395,8 @@ void ScriptInjection::OnJsInjectionCompleted(
     }
   }
 
-  bool expects_results = injector_->ExpectsResults();
-  if (expects_results) {
+  if (injector_->ExpectsResults() ==
+      blink::mojom::WantResultOption::kWantResult) {
     if (!results.empty() && !results.back().IsEmpty()) {
       // Right now, we only support returning single results (per frame).
       // It's safe to always use the main world context when converting

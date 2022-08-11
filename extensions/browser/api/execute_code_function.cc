@@ -134,10 +134,13 @@ bool ExecuteCodeFunction::Execute(const std::string& code_string,
     sources.push_back(mojom::JSSource::New(code_string, script_url_));
     // tabs.executeScript does not support waiting for promises (only
     // scripting.executeScript does).
-    constexpr bool kWaitForPromises = false;
     injection = mojom::CodeInjection::NewJs(mojom::JSInjection::New(
-        std::move(sources), mojom::ExecutionWorld::kIsolated, wants_result,
-        user_gesture(), kWaitForPromises));
+        std::move(sources), mojom::ExecutionWorld::kIsolated,
+        wants_result ? blink::mojom::WantResultOption::kWantResult
+                     : blink::mojom::WantResultOption::kNoResult,
+        user_gesture() ? blink::mojom::UserActivationOption::kActivate
+                       : blink::mojom::UserActivationOption::kDoNotActivate,
+        blink::mojom::PromiseResultOption::kDoNotWait));
   }
 
   executor->ExecuteScript(

@@ -48,10 +48,12 @@ class VirtualTimeTest : public SimTest {
     ScriptExecutionCallbackHelper callback_helper;
     WebScriptSource source(script_source);
     WebView().MainFrame()->ToWebLocalFrame()->RequestExecuteScript(
-        DOMWrapperWorld::kMainWorldId, base::make_span(&source, 1), false,
-        WebLocalFrame::kSynchronous, &callback_helper,
+        DOMWrapperWorld::kMainWorldId, base::make_span(&source, 1),
+        mojom::blink::UserActivationOption::kDoNotActivate,
+        mojom::blink::EvaluationTiming::kSynchronous,
+        mojom::blink::LoadEventBlockingOption::kDoNotBlock, &callback_helper,
         BackForwardCacheAware::kAllow,
-        WebLocalFrame::PromiseBehavior::kDontWait);
+        mojom::blink::PromiseResultOption::kDoNotWait);
 
     return callback_helper.Result();
   }

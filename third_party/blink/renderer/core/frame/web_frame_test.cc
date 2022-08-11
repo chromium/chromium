@@ -259,27 +259,33 @@ std::string GetHTMLStringForReferrerPolicy(const std::string& meta_policy,
 
 // A helper function to execute the given `scripts` in the main world of the
 // specified `frame`.
-void ExecuteScriptsInMainWorld(WebLocalFrame* frame,
-                               base::span<const String> scripts,
-                               WebScriptExecutionCallback* callback,
-                               bool wait_for_promise = true,
-                               bool user_gesture = false) {
+void ExecuteScriptsInMainWorld(
+    WebLocalFrame* frame,
+    base::span<const String> scripts,
+    WebScriptExecutionCallback* callback,
+    mojom::blink::PromiseResultOption wait_for_promise =
+        mojom::blink::PromiseResultOption::kAwait,
+    mojom::blink::UserActivationOption user_gesture =
+        mojom::blink::UserActivationOption::kDoNotActivate) {
   Vector<WebScriptSource> sources;
   for (auto script : scripts)
     sources.push_back(WebScriptSource(script));
   frame->RequestExecuteScript(
       DOMWrapperWorld::kMainWorldId, sources, user_gesture,
-      WebLocalFrame::kSynchronous, callback, BackForwardCacheAware::kAllow,
-      wait_for_promise ? WebLocalFrame::PromiseBehavior::kAwait
-                       : WebLocalFrame::PromiseBehavior::kDontWait);
+      mojom::blink::EvaluationTiming::kSynchronous,
+      mojom::blink::LoadEventBlockingOption::kDoNotBlock, callback,
+      BackForwardCacheAware::kAllow, wait_for_promise);
 }
 
 // Same as above, but for a single script.
-void ExecuteScriptInMainWorld(WebLocalFrame* frame,
-                              String script_string,
-                              WebScriptExecutionCallback* callback,
-                              bool wait_for_promise = true,
-                              bool user_gesture = false) {
+void ExecuteScriptInMainWorld(
+    WebLocalFrame* frame,
+    String script_string,
+    WebScriptExecutionCallback* callback,
+    mojom::blink::PromiseResultOption wait_for_promise =
+        mojom::blink::PromiseResultOption::kAwait,
+    mojom::blink::UserActivationOption user_gesture =
+        mojom::blink::UserActivationOption::kDoNotActivate) {
   ExecuteScriptsInMainWorld(frame, base::make_span(&script_string, 1), callback,
                             wait_for_promise, user_gesture);
 }
@@ -655,7 +661,7 @@ TEST_F(WebFrameTest, ExecuteScriptWithPromiseWithoutWait) {
       web_view_helper.LocalMainFrame()->MainWorldScriptContext());
   ExecuteScriptInMainWorld(web_view_helper.GetWebView()->MainFrameImpl(),
                            kScript, &callback_helper,
-                           /*wait_for_promise=*/false);
+                           mojom::blink::PromiseResultOption::kDoNotWait);
   RunPendingTasks();
   // Since the caller specified the script shouldn't wait for the promise to
   // be resolved, the callback should have completed normally and the result
@@ -747,7 +753,7 @@ TEST_F(WebFrameTest, ExecuteScriptWithMultiplePromises) {
   ScriptExecutionCallbackHelper callback_helper(
       web_view_helper.LocalMainFrame()->MainWorldScriptContext());
   ExecuteScriptsInMainWorld(web_view_helper.GetWebView()->MainFrameImpl(),
-                            scripts, &callback_helper, true);
+                            scripts, &callback_helper);
   RunPendingTasks();
   EXPECT_TRUE(callback_helper.DidComplete());
   EXPECT_EQ("hello", callback_helper.StringValueAt(0));
@@ -769,7 +775,7 @@ TEST_F(WebFrameTest, ExecuteScriptWithMultiplePromisesWithDelayedSettlement) {
   ScriptExecutionCallbackHelper callback_helper(
       web_view_helper.LocalMainFrame()->MainWorldScriptContext());
   ExecuteScriptsInMainWorld(web_view_helper.GetWebView()->MainFrameImpl(),
-                            scripts, &callback_helper, true);
+                            scripts, &callback_helper);
   RunPendingTasks();
   EXPECT_FALSE(callback_helper.DidComplete());
 
@@ -804,7 +810,7 @@ TEST_F(WebFrameTest, ExecuteScriptWithMultipleSourcesWhereSomeArePromises) {
   ScriptExecutionCallbackHelper callback_helper(
       web_view_helper.LocalMainFrame()->MainWorldScriptContext());
   ExecuteScriptsInMainWorld(web_view_helper.GetWebView()->MainFrameImpl(),
-                            scripts, &callback_helper, true);
+                            scripts, &callback_helper);
   RunPendingTasks();
 
   EXPECT_TRUE(callback_helper.DidComplete());
@@ -827,7 +833,7 @@ TEST_F(WebFrameTest, ExecuteScriptWithPromisesWhereOnlySomeAreFulfilled) {
   ScriptExecutionCallbackHelper callback_helper(
       web_view_helper.LocalMainFrame()->MainWorldScriptContext());
   ExecuteScriptsInMainWorld(web_view_helper.GetWebView()->MainFrameImpl(),
-                            scripts, &callback_helper, true);
+                            scripts, &callback_helper);
   RunPendingTasks();
   EXPECT_TRUE(callback_helper.DidComplete());
   EXPECT_EQ("hello", callback_helper.StringValueAt(0));
@@ -1025,7 +1031,8 @@ TEST_F(WebFrameTest, CapabilityDelegationMessageEventTest) {
     // user activation but without the delegation option.
     ExecuteScriptInMainWorld(web_view_helper.GetWebView()->MainFrameImpl(),
                              post_message_wo_request, &callback_helper,
-                             /*wait_for_promise=*/true, /*user_gesture=*/true);
+                             blink::mojom::PromiseResultOption::kAwait,
+                             blink::mojom::UserActivationOption::kActivate);
     RunPendingTasks();
     EXPECT_TRUE(callback_helper.DidComplete());
     EXPECT_FALSE(message_event_listener->DelegateCapability());
@@ -1034,7 +1041,8 @@ TEST_F(WebFrameTest, CapabilityDelegationMessageEventTest) {
     // both user activation and the delegation option.
     ExecuteScriptInMainWorld(web_view_helper.GetWebView()->MainFrameImpl(),
                              post_message_w_payment_request, &callback_helper,
-                             /*wait_for_promise=*/true, /*user_gesture=*/true);
+                             blink::mojom::PromiseResultOption::kAwait,
+                             blink::mojom::UserActivationOption::kActivate);
     RunPendingTasks();
     EXPECT_TRUE(callback_helper.DidComplete());
     EXPECT_TRUE(message_event_listener->DelegateCapability());
@@ -1051,7 +1059,8 @@ TEST_F(WebFrameTest, CapabilityDelegationMessageEventTest) {
     ExecuteScriptInMainWorld(web_view_helper.GetWebView()->MainFrameImpl(),
                              post_message_w_fullscreen_request,
                              &callback_helper,
-                             /*wait_for_promise=*/true, /*user_gesture=*/true);
+                             blink::mojom::PromiseResultOption::kAwait,
+                             blink::mojom::UserActivationOption::kActivate);
     RunPendingTasks();
     EXPECT_TRUE(callback_helper.DidComplete());
     EXPECT_TRUE(message_event_listener->DelegateCapability());
@@ -1066,7 +1075,8 @@ TEST_F(WebFrameTest, CapabilityDelegationMessageEventTest) {
     // user activation and the delegation option for an unknown capability.
     ExecuteScriptInMainWorld(web_view_helper.GetWebView()->MainFrameImpl(),
                              post_message_w_unknown_request, &callback_helper,
-                             /*wait_for_promise=*/true, /*user_gesture=*/true);
+                             blink::mojom::PromiseResultOption::kAwait,
+                             blink::mojom::UserActivationOption::kActivate);
     RunPendingTasks();
     EXPECT_TRUE(callback_helper.DidComplete());
     EXPECT_FALSE(message_event_listener->DelegateCapability());

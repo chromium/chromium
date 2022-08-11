@@ -1081,11 +1081,12 @@ void WebLocalFrameImpl::RequestExecuteV8Function(
 void WebLocalFrameImpl::RequestExecuteScript(
     int32_t world_id,
     base::span<const WebScriptSource> sources,
-    bool user_gesture,
-    ScriptExecutionType execution_type,
+    mojom::blink::UserActivationOption user_gesture,
+    mojom::blink::EvaluationTiming evaluation_timing,
+    mojom::blink::LoadEventBlockingOption blocking_option,
     WebScriptExecutionCallback* callback,
     BackForwardCacheAware back_forward_cache_aware,
-    PromiseBehavior promise_behavior) {
+    mojom::blink::PromiseResultOption promise_behavior) {
   DCHECK(GetFrame());
 
   scoped_refptr<DOMWrapperWorld> world;
@@ -1108,15 +1109,12 @@ void WebLocalFrameImpl::RequestExecuteScript(
   auto* executor = MakeGarbageCollected<PausableScriptExecutor>(
       GetFrame()->DomWindow(), std::move(world), std::move(script_sources),
       user_gesture, callback);
-  executor->set_wait_for_promise(promise_behavior == PromiseBehavior::kAwait);
-  switch (execution_type) {
-    case kAsynchronousBlockingOnload:
-      executor->RunAsync(PausableScriptExecutor::kOnloadBlocking);
+  executor->set_wait_for_promise(promise_behavior);
+  switch (evaluation_timing) {
+    case mojom::blink::EvaluationTiming::kAsynchronous:
+      executor->RunAsync(blocking_option);
       break;
-    case kAsynchronous:
-      executor->RunAsync(PausableScriptExecutor::kNonBlocking);
-      break;
-    case kSynchronous:
+    case mojom::blink::EvaluationTiming::kSynchronous:
       executor->Run();
       break;
   }

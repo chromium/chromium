@@ -144,26 +144,27 @@ class WebScriptExecutor : public PausableScriptExecutor::Executor {
  public:
   WebScriptExecutor(Vector<WebScriptSource>,
                     int32_t world_id,
-                    bool user_gesture);
+                    mojom::blink::UserActivationOption);
 
   Vector<v8::Local<v8::Value>> Execute(LocalDOMWindow*) override;
 
  private:
   Vector<WebScriptSource> sources_;
   int32_t world_id_;
-  bool user_gesture_;
+  mojom::blink::UserActivationOption user_gesture_;
 };
 
-WebScriptExecutor::WebScriptExecutor(Vector<WebScriptSource> sources,
-                                     int32_t world_id,
-                                     bool user_gesture)
+WebScriptExecutor::WebScriptExecutor(
+    Vector<WebScriptSource> sources,
+    int32_t world_id,
+    mojom::blink::UserActivationOption user_gesture)
     : sources_(std::move(sources)),
       world_id_(world_id),
       user_gesture_(user_gesture) {}
 
 Vector<v8::Local<v8::Value>> WebScriptExecutor::Execute(
     LocalDOMWindow* window) {
-  if (user_gesture_) {
+  if (user_gesture_ == mojom::blink::UserActivationOption::kActivate) {
     // TODO(mustaq): Need to make sure this is safe. https://crbug.com/1082273
     LocalFrame::NotifyUserActivation(
         window->GetFrame(),
@@ -284,7 +285,7 @@ PausableScriptExecutor::PausableScriptExecutor(
     LocalDOMWindow* window,
     scoped_refptr<DOMWrapperWorld> world,
     Vector<WebScriptSource> sources,
-    bool user_gesture,
+    mojom::blink::UserActivationOption user_gesture,
     WebScriptExecutionCallback* callback)
     : PausableScriptExecutor(
           window,
@@ -302,7 +303,7 @@ PausableScriptExecutor::PausableScriptExecutor(
     : ExecutionContextLifecycleObserver(window),
       script_state_(script_state),
       callback_(callback),
-      blocking_option_(kNonBlocking),
+      blocking_option_(mojom::blink::LoadEventBlockingOption::kDoNotBlock),
       executor_(executor) {
   CHECK(script_state_);
   CHECK(script_state_->ContextIsValid());
@@ -320,11 +321,12 @@ void PausableScriptExecutor::Run() {
   PostExecuteAndDestroySelf(context);
 }
 
-void PausableScriptExecutor::RunAsync(BlockingOption blocking) {
+void PausableScriptExecutor::RunAsync(
+    mojom::blink::LoadEventBlockingOption blocking) {
   ExecutionContext* context = GetExecutionContext();
   DCHECK(context);
   blocking_option_ = blocking;
-  if (blocking_option_ == kOnloadBlocking)
+  if (blocking_option_ == mojom::blink::LoadEventBlockingOption::kBlock)
     To<LocalDOMWindow>(context)->document()->IncrementLoadEventDelayCount();
 
   PostExecuteAndDestroySelf(context);
@@ -353,21 +355,24 @@ void PausableScriptExecutor::ExecuteAndDestroySelf() {
   if (!script_state_->ContextIsValid())
     return;
 
-  if (wait_for_promise_) {
-    // Use a SelfKeepAlive to extend the lifetime of the PausableScriptExecutor
-    // while we wait for promises to settle. We don't just use a reference in
-    // the callback to PromiseAggregator to avoid a cycle with a GC root.
-    // Cleared in Dispose(), which is called when all promises settle or when
-    // the ExecutionContext is invalidated.
-    keep_alive_ = this;
-    MakeGarbageCollected<PromiseAggregator>(
-        script_state_, results,
-        WTF::Bind(&PausableScriptExecutor::HandleResults,
-                  WrapWeakPersistent(this)));
-    return;
-  }
+  switch (wait_for_promise_) {
+    case mojom::blink::PromiseResultOption::kAwait:
+      // Use a SelfKeepAlive to extend the lifetime of the
+      // PausableScriptExecutor while we wait for promises to settle. We don't
+      // just use a reference in the callback to PromiseAggregator to avoid a
+      // cycle with a GC root. Cleared in Dispose(), which is called when all
+      // promises settle or when the ExecutionContext is invalidated.
+      keep_alive_ = this;
+      MakeGarbageCollected<PromiseAggregator>(
+          script_state_, results,
+          WTF::Bind(&PausableScriptExecutor::HandleResults,
+                    WrapWeakPersistent(this)));
+      break;
 
-  HandleResults(results);
+    case mojom::blink::PromiseResultOption::kDoNotWait:
+      HandleResults(results);
+      break;
+  }
 }
 
 void PausableScriptExecutor::HandleResults(
@@ -379,7 +384,7 @@ void PausableScriptExecutor::HandleResults(
 
   auto* window = To<LocalDOMWindow>(GetExecutionContext());
 
-  if (blocking_option_ == kOnloadBlocking)
+  if (blocking_option_ == mojom::blink::LoadEventBlockingOption::kBlock)
     window->document()->DecrementLoadEventDelayCount();
 
   if (callback_)

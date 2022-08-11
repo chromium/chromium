@@ -682,10 +682,12 @@ bool ScriptingExecuteScriptFunction::Execute(
           : mojom::RunLocation::kDocumentIdle;
   script_executor->ExecuteScript(
       mojom::HostID(mojom::HostID::HostType::kExtensions, extension()->id()),
-      mojom::CodeInjection::NewJs(
-          mojom::JSInjection::New(std::move(sources), execution_world,
-                                  /*wants_result=*/true, user_gesture(),
-                                  /*wait_for_promise=*/true)),
+      mojom::CodeInjection::NewJs(mojom::JSInjection::New(
+          std::move(sources), execution_world,
+          blink::mojom::WantResultOption::kWantResult,
+          user_gesture() ? blink::mojom::UserActivationOption::kActivate
+                         : blink::mojom::UserActivationOption::kDoNotActivate,
+          blink::mojom::PromiseResultOption::kAwait)),
       frame_scope, frame_ids, ScriptExecutor::MATCH_ABOUT_BLANK, run_location,
       ScriptExecutor::DEFAULT_PROCESS,
       /* webview_src */ GURL(),

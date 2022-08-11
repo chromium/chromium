@@ -138,20 +138,21 @@ mojom::InjectionType UserScriptInjector::script_type() const {
   return mojom::InjectionType::kContentScript;
 }
 
-bool UserScriptInjector::IsUserGesture() const {
-  return false;
+blink::mojom::UserActivationOption UserScriptInjector::IsUserGesture() const {
+  return blink::mojom::UserActivationOption::kDoNotActivate;
 }
 
 mojom::ExecutionWorld UserScriptInjector::GetExecutionWorld() const {
   return script_->execution_world();
 }
 
-bool UserScriptInjector::ExpectsResults() const {
-  return false;
+blink::mojom::WantResultOption UserScriptInjector::ExpectsResults() const {
+  return blink::mojom::WantResultOption::kNoResult;
 }
 
-bool UserScriptInjector::ShouldWaitForPromise() const {
-  return false;
+blink::mojom::PromiseResultOption UserScriptInjector::ShouldWaitForPromise()
+    const {
+  return blink::mojom::PromiseResultOption::kDoNotWait;
 }
 
 mojom::CSSOrigin UserScriptInjector::GetCssOrigin() const {

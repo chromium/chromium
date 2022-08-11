@@ -1442,7 +1442,10 @@ mojom("mojom_mhtml_load_result") {
 
 mojom_component("script_type_mojo_bindings") {
   generate_java = true
-  sources = [ "script/script_type.mojom" ]
+  sources = [
+    "script/script_evaluation_params.mojom",
+    "script/script_type.mojom",
+  ]
 
   macro_prefix = "SCRIPT_TYPE_MOJOM"
   output_prefix = "script_type_mojom"

@@ -6,6 +6,7 @@ module extensions.mojom;
 
 import "extensions/common/mojom/css_origin.mojom";
 import "extensions/common/mojom/execution_world.mojom";
+import "third_party/blink/public/mojom/script/script_evaluation_params.mojom";
 import "url/mojom/url.mojom";
 
 // A single JS source to execute in the renderer.
@@ -37,15 +38,15 @@ struct JSInjection {
 
   // Whether the caller is interested in the result value. Manifest-declared
   // content scripts and executeScript() calls without a response callback
-  // are examples of when this will be false.
-  bool wants_result;
+  // are examples of when this will be `kNoResult`.
+  blink.mojom.WantResultOption wants_result;
 
-  // Whether the code to be executed should be associated with a user gesture.
-  bool user_gesture;
+  // Whether the code to be executed with synthesized user activation.
+  blink.mojom.UserActivationOption user_gesture;
 
-  // If true and a script evaluates to a promise, causes the injection to
-  // wait for the promise to resolve and pass back the result.
-  bool wait_for_promise;
+  // For scripts that evaluate to promises, whether to wait for the resolution
+  // of the resulting promises.
+  blink.mojom.PromiseResultOption wait_for_promise;
 };
 
 // A struct representing a collection of CSS code to insert in the renderer.

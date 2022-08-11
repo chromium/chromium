@@ -809,10 +809,12 @@ void CommerceHintAgent::ExtractCartWithUpdatedScript(
     javascript_request_ = new JavaScriptRequest(weak_factory_.GetWeakPtr());
   }
   main_frame->RequestExecuteScript(
-      ISOLATED_WORLD_ID_CHROME_INTERNAL, base::make_span(&source, 1), false,
-      blink::WebLocalFrame::kAsynchronous, javascript_request_,
+      ISOLATED_WORLD_ID_CHROME_INTERNAL, base::make_span(&source, 1),
+      blink::mojom::UserActivationOption::kDoNotActivate,
+      blink::mojom::EvaluationTiming::kAsynchronous,
+      blink::mojom::LoadEventBlockingOption::kDoNotBlock, javascript_request_,
       blink::BackForwardCacheAware::kAllow,
-      blink::WebLocalFrame::PromiseBehavior::kAwait);
+      blink::mojom::PromiseResultOption::kAwait);
 }
 
 CommerceHintAgent::JavaScriptRequest::JavaScriptRequest(

@@ -36,6 +36,7 @@
 #include "third_party/blink/public/mojom/page/widget.mojom-shared.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-shared.h"
 #include "third_party/blink/public/mojom/portal/portal.mojom-shared.h"
+#include "third_party/blink/public/mojom/script/script_evaluation_params.mojom-shared.h"
 #include "third_party/blink/public/mojom/selection_menu/selection_menu_behavior.mojom-shared.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
@@ -414,35 +415,17 @@ class WebLocalFrame : public WebFrame {
                                         v8::Local<v8::Value> argv[],
                                         WebScriptExecutionCallback*) = 0;
 
-  enum ScriptExecutionType {
-    // Execute script synchronously, unless the page is suspended.
-    kSynchronous,
-    // Execute script asynchronously.
-    kAsynchronous,
-    // Execute script asynchronously, blocking the window.onload event.
-    kAsynchronousBlockingOnload
-  };
-
-  enum class PromiseBehavior {
-    // If the result of the executed script is a promise or other then-able,
-    // wait for it to settle and pass the result of the promise to the caller.
-    // If the promise (and any subsequent thenables) resolves, this passes the
-    // value. If the promise rejects, the corresponding value will be empty.
-    kAwait,
-    // Don't wait for any promise to settle.
-    kDontWait,
-  };
-
   // Executes the script in the main world of the page.
   // Use kMainDOMWorldId to execute in the main world; otherwise,
   // `world_id` must be a positive integer and less than kEmbedderWorldIdLimit.
   virtual void RequestExecuteScript(int32_t world_id,
                                     base::span<const WebScriptSource> sources,
-                                    bool user_gesture,
-                                    ScriptExecutionType,
+                                    mojom::UserActivationOption,
+                                    mojom::EvaluationTiming,
+                                    mojom::LoadEventBlockingOption,
                                     WebScriptExecutionCallback*,
                                     BackForwardCacheAware,
-                                    PromiseBehavior) = 0;
+                                    mojom::PromiseResultOption) = 0;
 
   // Logs to the console associated with this frame. If |discard_duplicates| is
   // set, the message will only be added if it is unique (i.e. has not been
