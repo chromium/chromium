@@ -42,7 +42,11 @@ enum class BiometricAuthRequester {
   // lock setting in on and Chrome came to foreground.
   kIncognitoReauthPage = 6,
 
-  kMaxValue = kIncognitoReauthPage,
+  // The prompt displayed when user is trying to copy/edit/view/export their
+  // passwords from settings page on Windows and Mac.
+  kPasswordsInSettings = 7,
+
+  kMaxValue = kPasswordsInSettings,
 };
 
 // This interface encapsulates operations related to biometric authentication.

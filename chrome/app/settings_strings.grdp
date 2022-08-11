@@ -271,6 +271,18 @@
   </message>
 
   <!-- Autofill Page -->
+  <message name="IDS_PASSWORDS_PAGE_AUTHENTICATION_PROMPT_BIOMETRIC_SUFFIX" desc="Shown after 'Google Chrome is trying to ' (or in some languages, 'Google Chrome wants to ') in a dialog message. Text for the dialog box that prompts the user for the biometric authentication before revealing plaintext passwords on the password page.">
+    show passwords
+  </message>
+  <message name="IDS_PASSWORDS_PAGE_COPY_AUTHENTICATION_PROMPT_BIOMETRIC_SUFFIX" desc="Shown after 'Google Chrome is trying to ' (or in some languages, 'Google Chrome wants to ') in a dialog message. Text for the dialog box that prompts the user for the biometric authentication before copying plaintext passwords into the clipboard.">
+    copy passwords
+  </message>
+  <message name="IDS_PASSWORDS_PAGE_EDIT_AUTHENTICATION_PROMPT_BIOMETRIC_SUFFIX" desc="Shown after 'Google Chrome is trying to ' (or in some languages, 'Google Chrome wants to ') in a dialog message. Text for the dialog box that prompts the user for the biometric authentication before editing plaintext passwords on the password page.">
+    edit passwords
+  </message>
+  <message name="IDS_PASSWORDS_PAGE_EXPORT_AUTHENTICATION_PROMPT_BIOMETRIC_SUFFIX" desc="Shown after 'Google Chrome is trying to ' (or in some languages, 'Google Chrome wants to ') in a dialog message. Text for the dialog box that prompts the user for the biometric authentication before exporting passwords to a file.">
+    export passwords
+  </message>
   <message name="IDS_SETTINGS_AUTOFILL" desc="Name of the settings page which allows managing passwords, payment methods and addresses settings.">
     Autofill
   </message>

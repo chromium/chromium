@@ -109,9 +109,6 @@ TEST_F(BiometricAuthenticatorAndroidTest, AuthenticateRecordsRequester) {
   authenticator()->Authenticate(BiometricAuthRequester::kAllPasswordsList,
                                 base::DoNothing(),
                                 /*use_last_valid_auth=*/true);
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.BiometricAuthPwdFill.AuthRequester",
-      BiometricAuthRequester::kAllPasswordsList, 1);
 
   histogram_tester.ExpectUniqueSample("Android.BiometricAuth.AuthRequester",
                                       BiometricAuthRequester::kAllPasswordsList,

@@ -796,6 +796,7 @@ static_library("extensions") {
     "//chrome/browser/ui/tabs:tab_enums",
     "//chrome/browser/web_applications",
     "//components/cbor:cbor",
+    "//components/device_reauth",
     "//components/safe_browsing/content/browser",
     "//components/safe_browsing/core/browser:safe_browsing_metrics_collector",
     "//components/security_interstitials/content:security_interstitial_page",

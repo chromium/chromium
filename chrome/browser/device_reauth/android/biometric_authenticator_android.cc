@@ -55,7 +55,9 @@ BiometricAuthFinalResult MapUIResultToFinal(BiometricAuthUIResult result) {
   }
 }
 
-bool isPasswordManagerRequester(
+// Checks whether authentication request was made by the password manager on
+// Android.
+bool isAndroidPasswordManagerRequester(
     const device_reauth::BiometricAuthRequester& requester) {
   switch (requester) {
     case device_reauth::BiometricAuthRequester::kTouchToFill:
@@ -66,33 +68,28 @@ bool isPasswordManagerRequester(
     case device_reauth::BiometricAuthRequester::kPasswordCheckAutoPwdChange:
       return true;
     case device_reauth::BiometricAuthRequester::kIncognitoReauthPage:
+    // kPasswordsInSettings flag is used only for desktop.
+    case device_reauth::BiometricAuthRequester::kPasswordsInSettings:
       return false;
   }
 }
 
 void LogAuthResult(const device_reauth::BiometricAuthRequester& requester,
                    const BiometricAuthFinalResult& result) {
-  if (isPasswordManagerRequester(requester)) {
+  if (isAndroidPasswordManagerRequester(requester)) {
     base::UmaHistogramEnumeration(
         "PasswordManager.BiometricAuthPwdFill.AuthResult", result);
   }
 }
 
 void LogAuthRequester(const device_reauth::BiometricAuthRequester& requester) {
-  // TODO(crbug.com/1263397): The
-  // "PasswordManager.BiometricAuthPwdFill.AuthRequester" should be removed once
-  // the "Android.BiometricAuth.AuthRequester" is saturated and adopted.
-  if (isPasswordManagerRequester(requester)) {
-    base::UmaHistogramEnumeration(
-        "PasswordManager.BiometricAuthPwdFill.AuthRequester", requester);
-  }
   base::UmaHistogramEnumeration("Android.BiometricAuth.AuthRequester",
                                 requester);
 }
 
 void LogCanAuthenticate(const device_reauth::BiometricAuthRequester& requester,
                         const BiometricsAvailability& availability) {
-  if (isPasswordManagerRequester(requester)) {
+  if (isAndroidPasswordManagerRequester(requester)) {
     base::UmaHistogramEnumeration(
         "PasswordManager.BiometricAuthPwdFill.CanAuthenticate", availability);
   }
