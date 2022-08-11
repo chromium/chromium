@@ -40,6 +40,16 @@ absl::optional<AutocompleteParsingResult> ParseAutocompleteAttribute(
 // currently ignored by Autofill.
 bool ShouldIgnoreAutocompleteAttribute(base::StringPiece autocomplete);
 
+// Parses `value` as an HTML field type and converts it to the corresponding
+// HtmlFieldType, if it is supposed by Autofill. Rationalization based on the
+// `field` is done.
+// HTML_TYPE_UNSPECIFIED is returned if `value` is empty, or if `value` is
+// supposed to be ignored by `kAutofillIgnoreUnmappableAutocompleteValues`.
+// Otherwise HTML_TYPE_UNRECOGNIZED is returned.
+HtmlFieldType FieldTypeFromAutocompleteAttributeValue(
+    std::string value,
+    const AutofillField& field);
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PROCESSING_AUTOCOMPLETE_ATTRIBUTE_PROCESSING_UTIL_H_

@@ -15,6 +15,7 @@
 #include "base/feature_list.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_regexes.h"
 #include "components/autofill/core/browser/autofill_type.h"
@@ -31,6 +32,7 @@
 #include "components/autofill/core/browser/form_parsing/price_field.h"
 #include "components/autofill/core/browser/form_parsing/search_field.h"
 #include "components/autofill/core/browser/form_parsing/travel_field.h"
+#include "components/autofill/core/browser/form_processing/autocomplete_attribute_processing_util.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/common/autofill_constants.h"
@@ -116,6 +118,13 @@ void FormField::ParseFormFields(
   // Search pass.
   ParseFormFieldsPass(SearchField::Parse, processed_fields, field_candidates,
                       page_language, pattern_source, log_manager);
+
+  // Deduce `field_candidates` for the `processed_fields` by parsing their
+  // `parsable_name()` as an autocomplete attribute.
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillParseNameAsAutocompleteType)) {
+    ParseUsingAutocompleteAttributes(processed_fields, field_candidates);
+  }
 
   size_t fillable_fields = 0;
   if (base::FeatureList::IsEnabled(features::kAutofillFixFillableFieldTypes)) {
@@ -493,6 +502,23 @@ bool FormField::MatchesFormControlType(base::StringPiece type,
 // static
 bool FormField::IsSingleFieldParseableType(ServerFieldType field_type) {
   return field_type == MERCHANT_PROMO_CODE;
+}
+
+// static
+void FormField::ParseUsingAutocompleteAttributes(
+    const std::vector<AutofillField*>& fields,
+    FieldCandidatesMap& field_candidates) {
+  for (const AutofillField* field : fields) {
+    HtmlFieldType html_type = FieldTypeFromAutocompleteAttributeValue(
+        base::UTF16ToUTF8(field->parseable_name()), *field);
+    // The HTML_MODE is irrelevant when converting to a ServerFieldType.
+    ServerFieldType type =
+        AutofillType(html_type, HTML_MODE_NONE).GetStorableType();
+    if (type != UNKNOWN_TYPE) {
+      AddClassification(field, type, kBaseAutocompleteParserScore,
+                        field_candidates);
+    }
+  }
 }
 
 }  // namespace autofill
