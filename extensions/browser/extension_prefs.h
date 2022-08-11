@@ -350,9 +350,13 @@ class ExtensionPrefs : public KeyedService {
                       base::StringPiece pref_key,
                       const base::ListValue** out_value) const;
 
+  // DEPRECATED: prefer ReadPrefAsDict() instead.
   bool ReadPrefAsDictionary(const std::string& extension_id,
                             base::StringPiece pref_key,
                             const base::DictionaryValue** out_value) const;
+
+  const base::Value::Dict* ReadPrefAsDict(const std::string& extension_id,
+                                          base::StringPiece pref_key) const;
 
   // Interprets the list pref, |pref_key| in |extension_id|'s preferences, as a
   // URLPatternSet. The |valid_schemes| specify how to parse the URLPatterns.
@@ -847,6 +851,11 @@ class ExtensionPrefs : public KeyedService {
   // Returns an immutable dictionary for extension |id|'s prefs, or NULL if it
   // doesn't exist.
   const base::DictionaryValue* GetExtensionPref(const std::string& id) const;
+
+  // Returns an immutable base::Value for extension |id|'s prefs, or nullptr if
+  // it doesn't exist.
+  const base::Value* GetPrefAsValue(const std::string& extension_id,
+                                    base::StringPiece pref_key) const;
 
   // Modifies the extensions disable reasons to add a new reason, remove an
   // existing reason, or clear all reasons. Notifies observers if the set of

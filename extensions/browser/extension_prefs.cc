@@ -725,20 +725,31 @@ bool ExtensionPrefs::ReadPrefAsList(const std::string& extension_id,
   return true;
 }
 
+const base::Value* ExtensionPrefs::GetPrefAsValue(
+    const std::string& extension_id,
+    base::StringPiece pref_key) const {
+  const base::DictionaryValue* ext = GetExtensionPref(extension_id);
+  return ext ? ext->FindDictPath(pref_key) : nullptr;
+}
+
 bool ExtensionPrefs::ReadPrefAsDictionary(
     const std::string& extension_id,
     base::StringPiece pref_key,
     const base::DictionaryValue** out_value) const {
-  const base::DictionaryValue* ext = GetExtensionPref(extension_id);
-  if (!ext)
-    return false;
-  const base::Value* out = ext->FindDictPath(pref_key);
+  const base::Value* out = GetPrefAsValue(extension_id, pref_key);
   if (!out)
     return false;
   if (out_value)
     *out_value = &base::Value::AsDictionaryValue(*out);
 
   return true;
+}
+
+const base::Value::Dict* ExtensionPrefs::ReadPrefAsDict(
+    const std::string& extension_id,
+    base::StringPiece pref_key) const {
+  const base::Value* out = GetPrefAsValue(extension_id, pref_key);
+  return out ? &out->GetDict() : nullptr;
 }
 
 bool ExtensionPrefs::HasPrefForExtension(

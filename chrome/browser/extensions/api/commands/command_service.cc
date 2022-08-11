@@ -554,23 +554,19 @@ void CommandService::UpdateExtensionSuggestedCommandPrefs(
 void CommandService::RemoveDefunctExtensionSuggestedCommandPrefs(
     const Extension* extension) {
   ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(profile_);
-  const base::DictionaryValue* current_prefs = nullptr;
-  extension_prefs->ReadPrefAsDictionary(extension->id(),
-                                        kCommands,
-                                        &current_prefs);
+  const base::Value::Dict* current_prefs =
+      extension_prefs->ReadPrefAsDict(extension->id(), kCommands);
 
   if (current_prefs) {
-    std::unique_ptr<base::DictionaryValue> suggested_key_prefs =
-        base::DictionaryValue::From(
-            base::Value::ToUniquePtrValue(current_prefs->Clone()));
+    base::Value::Dict suggested_key_prefs = current_prefs->Clone();
+
     const CommandMap* named_commands =
         CommandsInfo::GetNamedCommands(extension);
 
     const Command* browser_action_command =
         CommandsInfo::GetBrowserActionCommand(extension);
-    for (base::DictionaryValue::Iterator it(*current_prefs);
-         !it.IsAtEnd(); it.Advance()) {
-      if (it.key() == manifest_values::kBrowserActionCommandEvent) {
+    for (const auto [key, _] : *current_prefs) {
+      if (key == manifest_values::kBrowserActionCommandEvent) {
         // The browser action command may be defaulted to an unassigned
         // accelerator if a browser action is specified by the extension but a
         // keybinding is not declared. See
@@ -578,22 +574,23 @@ void CommandService::RemoveDefunctExtensionSuggestedCommandPrefs(
         if (!browser_action_command ||
             browser_action_command->accelerator().key_code() ==
                 ui::VKEY_UNKNOWN) {
-          suggested_key_prefs->RemoveKey(it.key());
+          suggested_key_prefs.Remove(key);
         }
-      } else if (it.key() == manifest_values::kPageActionCommandEvent) {
+      } else if (key == manifest_values::kPageActionCommandEvent) {
         if (!CommandsInfo::GetPageActionCommand(extension))
-          suggested_key_prefs->RemoveKey(it.key());
-      } else if (it.key() == manifest_values::kActionCommandEvent) {
+          suggested_key_prefs.Remove(key);
+      } else if (key == manifest_values::kActionCommandEvent) {
         if (!CommandsInfo::GetActionCommand(extension))
-          suggested_key_prefs->RemoveKey(it.key());
+          suggested_key_prefs.Remove(key);
       } else if (named_commands) {
-        if (named_commands->find(it.key()) == named_commands->end())
-          suggested_key_prefs->RemoveKey(it.key());
+        if (named_commands->find(key) == named_commands->end())
+          suggested_key_prefs.Remove(key);
       }
     }
 
-    extension_prefs->UpdateExtensionPref(extension->id(), kCommands,
-                                         std::move(suggested_key_prefs));
+    extension_prefs->UpdateExtensionPref(
+        extension->id(), kCommands,
+        std::make_unique<base::Value>(std::move(suggested_key_prefs)));
   }
 }
 
