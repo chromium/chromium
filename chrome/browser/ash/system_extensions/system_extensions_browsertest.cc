@@ -13,6 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_install_manager.h"
+#include "chrome/browser/ash/system_extensions/system_extensions_persistence_manager.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_profile_utils.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_provider.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_provider_factory.h"
@@ -21,6 +22,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -33,6 +35,16 @@ namespace ash {
 namespace {
 
 constexpr SystemExtensionId kTestSystemExtensionId = {1, 2, 3, 4};
+
+constexpr char kTestSystemExtensionManifest[] = R"({
+   "companion_web_app_url": "https://example.com",
+   "id": "01020304",
+   "name": "Sample System Web Extension",
+   "service_worker_url": "/sw.js",
+   "short_name": "Sample SWX",
+   "type": "echo"
+}
+)";
 
 constexpr char kTestSystemExtensionIndexURL[] =
     "chrome-untrusted://system-extension-echo-01020304/html/index.html";
@@ -210,6 +222,13 @@ class SystemExtensionsBrowserTest : public InProcessBrowserTest {
               extension_ids);
     EXPECT_TRUE(registry.GetById(kTestSystemExtensionId));
 
+    // Test we persisted the System Extension.
+    absl::optional<SystemExtensionPersistenceInfo> persistence_info =
+        provider.persistence_manager().Get(kTestSystemExtensionId);
+    ASSERT_TRUE(persistence_info);
+    EXPECT_EQ(kTestSystemExtensionManifest,
+              persistence_info->manifest.DebugString());
+
     auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
     {
       ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -299,6 +318,11 @@ IN_PROC_BROWSER_TEST_F(SystemExtensionsBrowserTest, Uninstall_Success) {
   auto& registry = provider.registry();
   EXPECT_TRUE(registry.GetIds().empty());
   EXPECT_FALSE(registry.GetById(kTestSystemExtensionId));
+
+  // Tests that the System Extension is no longer in persistent storage.
+  absl::optional<SystemExtensionPersistenceInfo> persistence_info =
+      provider.persistence_manager().Get(kTestSystemExtensionId);
+  EXPECT_FALSE(persistence_info);
 
   // Test that navigating to the System Extension's resources fails.
   auto* tab = browser()->tab_strip_model()->GetActiveWebContents();

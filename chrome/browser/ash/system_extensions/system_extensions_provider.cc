@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "chrome/browser/ash/system_extensions/system_extension.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_install_manager.h"
+#include "chrome/browser/ash/system_extensions/system_extensions_persistence_manager.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_profile_utils.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_provider_factory.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_registry_manager.h"
@@ -35,9 +36,12 @@ bool SystemExtensionsProvider::IsDebugMode() {
 }
 
 SystemExtensionsProvider::SystemExtensionsProvider(Profile* profile) {
+  persistence_manager_ =
+      std::make_unique<SystemExtensionsPersistenceManager>(profile);
   registry_manager_ = std::make_unique<SystemExtensionsRegistryManager>();
   install_manager_ = std::make_unique<SystemExtensionsInstallManager>(
-      profile, *registry_manager_, registry_manager_->registry());
+      profile, *registry_manager_, registry_manager_->registry(),
+      *persistence_manager_);
 }
 
 SystemExtensionsProvider::~SystemExtensionsProvider() = default;

@@ -15,6 +15,8 @@ class Profile;
 
 namespace ash {
 
+class SystemExtensionsPersistenceManager;
+
 // Manages the installation, storage, and execution of System Extensions.
 class SystemExtensionsProvider : public KeyedService {
  public:
@@ -43,6 +45,10 @@ class SystemExtensionsProvider : public KeyedService {
     return *registry_manager_;
   }
 
+  SystemExtensionsPersistenceManager& persistence_manager() {
+    return *persistence_manager_;
+  }
+
   SystemExtensionsInstallManager& install_manager() {
     return *install_manager_;
   }
@@ -57,6 +63,7 @@ class SystemExtensionsProvider : public KeyedService {
 
  private:
   std::unique_ptr<SystemExtensionsRegistryManager> registry_manager_;
+  std::unique_ptr<SystemExtensionsPersistenceManager> persistence_manager_;
   std::unique_ptr<SystemExtensionsInstallManager> install_manager_;
 };
 

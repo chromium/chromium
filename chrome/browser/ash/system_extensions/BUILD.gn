@@ -19,6 +19,8 @@ source_set("system_extensions") {
     "system_extensions_internals_page_handler.h",
     "system_extensions_mutable_registry.cc",
     "system_extensions_mutable_registry.h",
+    "system_extensions_persistence_manager.cc",
+    "system_extensions_persistence_manager.h",
     "system_extensions_profile_utils.cc",
     "system_extensions_profile_utils.h",
     "system_extensions_provider.cc",
@@ -52,6 +54,7 @@ source_set("system_extensions") {
     "//chrome/common:constants",
     "//components/keyed_service/content",
     "//components/keyed_service/core",
+    "//components/pref_registry",
     "//components/user_manager",
     "//content/public/browser",
     "//services/data_decoder/public/cpp",
@@ -78,11 +81,18 @@ source_set("browser_tests") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "system_extensions_sandboxed_unpacker_unittest.cc" ]
+  sources = [
+    "system_extensions_persistence_manager_unittest.cc",
+    "system_extensions_sandboxed_unpacker_unittest.cc",
+  ]
   deps = [
     ":system_extensions",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/test:test_support",
+    "//components/prefs:prefs",
+    "//components/sync_preferences:test_support",
     "//services/data_decoder/public/cpp",
     "//services/data_decoder/public/cpp:test_support",
     "//skia",

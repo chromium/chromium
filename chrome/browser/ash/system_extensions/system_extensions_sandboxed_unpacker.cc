@@ -95,9 +95,16 @@ void SystemExtensionsSandboxedUnpacker::OnSystemExtensionManifestParsed(
     return;
   }
 
+  if (!value_or_error->is_dict()) {
+    std::move(callback).Run(
+        SystemExtensionsInstallStatus::kFailedJsonErrorParsingManifest);
+    return;
+  }
+
   base::Value& parsed_manifest = *value_or_error;
 
   SystemExtension system_extension;
+  system_extension.manifest = parsed_manifest.GetDict().Clone();
 
   // Parse mandatory fields.
 

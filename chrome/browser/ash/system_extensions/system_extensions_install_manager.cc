@@ -17,6 +17,7 @@
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chrome/browser/ash/system_extensions/system_extension.h"
+#include "chrome/browser/ash/system_extensions/system_extensions_persistence_manager.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_profile_utils.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_registry_manager.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_webui_config.h"
@@ -38,10 +39,12 @@ namespace ash {
 SystemExtensionsInstallManager::SystemExtensionsInstallManager(
     Profile* profile,
     SystemExtensionsRegistryManager& registry_manager,
-    SystemExtensionsRegistry& registry)
+    SystemExtensionsRegistry& registry,
+    SystemExtensionsPersistenceManager& persistence_manager)
     : profile_(profile),
       registry_manager_(registry_manager),
-      registry_(registry) {
+      registry_(registry),
+      persistence_manager_(persistence_manager) {
   InstallFromCommandLineIfNecessary();
 }
 
@@ -130,7 +133,10 @@ void SystemExtensionsInstallManager::OnAssetsCopiedToProfileDir(
   content::WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
       std::move(config));
 
-  // Installation Step #4: Add the System Extension to the registry.
+  // Installation Step #4: Persist the System Extension across restarts.
+  persistence_manager_->Persist(system_extension);
+
+  // Installation Step #5: Add the System Extension to the registry.
   SystemExtensionId id = system_extension.id;
   registry_manager_->AddSystemExtension(std::move(system_extension));
 
@@ -154,7 +160,7 @@ void SystemExtensionsInstallManager::RegisterServiceWorker(
       blink::mojom::ServiceWorkerUpdateViaCache::kImports);
   blink::StorageKey key(url::Origin::Create(options.scope));
 
-  // Installation Step #5: Register a Service Worker for the System Extension.
+  // Installation Step #6: Register a Service Worker for the System Extension.
   auto* worker_context =
       profile_->GetDefaultStoragePartition()->GetServiceWorkerContext();
   worker_context->RegisterServiceWorker(
@@ -187,8 +193,6 @@ void SystemExtensionsInstallManager::Uninstall(
   const GURL& scope = system_extension->base_url;
   const url::Origin& origin = url::Origin::Create(system_extension->base_url);
 
-  // The un-installation steps are in reverse order of the installation steps.
-
   // Uninstallation Step #1: Unregister the Service Worker.
   auto* worker_context =
       profile_->GetDefaultStoragePartition()->GetServiceWorkerContext();
@@ -202,10 +206,13 @@ void SystemExtensionsInstallManager::Uninstall(
   // Uninstallation Step #2: Remove the WebUIConfig for the System Extension.
   content::WebUIConfigMap::GetInstance().RemoveConfig(origin);
 
-  // Uninstallation Step #3: Remove System Extension from the registry.
+  // Installation Step #3: Remove the System Extension from persistent storage.
+  persistence_manager_->Delete(system_extension_id);
+
+  // Uninstallation Step #4: Remove System Extension from the registry.
   registry_manager_->RemoveSystemExtension(system_extension_id);
 
-  // Uninstallation Step #4: Delete the System Extension assets.
+  // Uninstallation Step #5: Delete the System Extension assets.
   io_helper_.AsyncCall(&IOHelper::RemoveExtensionAssets)
       .WithArgs(GetDirectoryForSystemExtension(*profile_, system_extension_id))
       .Then(base::BindOnce(&SystemExtensionsInstallManager::NotifyAssetsRemoved,

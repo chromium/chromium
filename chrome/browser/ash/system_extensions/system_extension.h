@@ -8,6 +8,7 @@
 #include <array>
 
 #include "base/strings/string_piece_forward.h"
+#include "base/values.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -57,6 +58,9 @@ struct SystemExtension {
   // The System Extension's base URL derived from the type and the id e.g.
   // `chrome-untrusted://system-extension-echo-1234/`
   GURL base_url;
+
+  // Parsed JSON that was used to installed the System Extension.
+  base::Value::Dict manifest;
 };
 
 }  // namespace ash
