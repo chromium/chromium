@@ -18,6 +18,14 @@
 namespace prefs {
 
 #if !defined(ANDROID)
+// Whether the Live Caption bubble is expanded.
+const char kLiveCaptionBubbleExpanded[] =
+    "accessibility.captions.live_caption_bubble_expanded";
+
+// Whether the Live Caption bubble is pinned.
+const char kLiveCaptionBubblePinned[] =
+    "accessibility.captions.live_caption_bubble_pinned";
+
 // Whether the Live Caption feature is enabled.
 const char kLiveCaptionEnabled[] =
     "accessibility.captions.live_caption_enabled";

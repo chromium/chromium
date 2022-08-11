@@ -12,16 +12,20 @@
 #include "components/live_caption/live_caption_controller.h"
 #include "components/live_caption/views/caption_bubble.h"
 #include "components/live_caption/views/caption_bubble_model.h"
+#include "components/prefs/pref_service.h"
 
 namespace captions {
 
 // Static
-std::unique_ptr<CaptionBubbleController> CaptionBubbleController::Create() {
-  return std::make_unique<CaptionBubbleControllerViews>();
+std::unique_ptr<CaptionBubbleController> CaptionBubbleController::Create(
+    PrefService* profile_prefs) {
+  return std::make_unique<CaptionBubbleControllerViews>(profile_prefs);
 }
 
-CaptionBubbleControllerViews::CaptionBubbleControllerViews() {
+CaptionBubbleControllerViews::CaptionBubbleControllerViews(
+    PrefService* profile_prefs) {
   caption_bubble_ = new CaptionBubble(
+      profile_prefs,
       base::BindOnce(&CaptionBubbleControllerViews::OnCaptionBubbleDestroyed,
                      base::Unretained(this)));
   caption_widget_ =

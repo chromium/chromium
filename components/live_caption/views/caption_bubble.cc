@@ -18,6 +18,8 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "components/live_caption/caption_bubble_context.h"
+#include "components/live_caption/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -402,8 +404,13 @@ class CaptionBubbleLabelAXModeObserver : public ui::AXModeObserver {
 };
 #endif
 
-CaptionBubble::CaptionBubble(base::OnceClosure destroyed_callback)
-    : destroyed_callback_(std::move(destroyed_callback)),
+CaptionBubble::CaptionBubble(PrefService* profile_prefs,
+                             base::OnceClosure destroyed_callback)
+    : profile_prefs_(profile_prefs),
+      destroyed_callback_(std::move(destroyed_callback)),
+      is_expanded_(
+          profile_prefs_->GetBoolean(prefs::kLiveCaptionBubbleExpanded)),
+      is_pinned_(profile_prefs_->GetBoolean(prefs::kLiveCaptionBubblePinned)),
       tick_clock_(base::DefaultTickClock::GetInstance()) {
   // Bubbles that use transparent colors should not paint their ClientViews to a
   // layer as doing so could result in visual artifacts.
@@ -696,6 +703,7 @@ void CaptionBubble::CloseButtonPressed() {
 
 void CaptionBubble::ExpandOrCollapseButtonPressed() {
   is_expanded_ = !is_expanded_;
+  profile_prefs_->SetBoolean(prefs::kLiveCaptionBubbleExpanded, is_expanded_);
   base::UmaHistogramBoolean("Accessibility.LiveCaption.ExpandBubble",
                             is_expanded_);
 
@@ -708,6 +716,7 @@ void CaptionBubble::ExpandOrCollapseButtonPressed() {
 
 void CaptionBubble::PinOrUnpinButtonPressed() {
   is_pinned_ = !is_pinned_;
+  profile_prefs_->SetBoolean(prefs::kLiveCaptionBubblePinned, is_pinned_);
   base::UmaHistogramBoolean("Accessibility.LiveCaption.PinBubble", is_pinned_);
 
   SwapButtons(unpin_button_, pin_button_, is_pinned_);

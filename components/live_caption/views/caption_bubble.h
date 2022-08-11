@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "build/buildflag.h"
 #include "components/live_caption/views/caption_bubble_model.h"
+#include "components/prefs/pref_service.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/font_list.h"
 #include "ui/native_theme/caption_style.h"
@@ -67,7 +68,8 @@ using ResetInactivityTimerCallback = base::RepeatingCallback<void()>;
 class CaptionBubble : public views::BubbleDialogDelegateView {
  public:
   METADATA_HEADER(CaptionBubble);
-  explicit CaptionBubble(base::OnceClosure destroyed_callback);
+  CaptionBubble(PrefService* profile_prefs,
+                base::OnceClosure destroyed_callback);
   CaptionBubble(const CaptionBubble&) = delete;
   CaptionBubble& operator=(const CaptionBubble&) = delete;
   ~CaptionBubble() override;
@@ -211,16 +213,17 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
 
   absl::optional<ui::CaptionStyle> caption_style_;
   raw_ptr<CaptionBubbleModel> model_ = nullptr;
+  raw_ptr<PrefService> profile_prefs_;
 
   OnErrorClickedCallback error_clicked_callback_;
   OnDoNotShowAgainClickedCallback error_silenced_callback_;
   base::ScopedClosureRunner destroyed_callback_;
 
   // Whether the caption bubble is expanded to show more lines of text.
-  bool is_expanded_ = false;
+  bool is_expanded_;
 
   // Whether the caption bubble is pinned or if it should hide on inactivity.
-  bool is_pinned_ = false;
+  bool is_pinned_;
 
   bool has_been_shown_ = false;
 

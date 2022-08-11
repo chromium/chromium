@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/live_caption/caption_bubble_controller.h"
 #include "components/live_caption/views/caption_bubble.h"
+#include "components/prefs/pref_service.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
 
 namespace views {
@@ -30,7 +31,7 @@ class CaptionBubbleModel;
 //
 class CaptionBubbleControllerViews : public CaptionBubbleController {
  public:
-  explicit CaptionBubbleControllerViews();
+  explicit CaptionBubbleControllerViews(PrefService* profile_prefs);
   ~CaptionBubbleControllerViews() override;
   CaptionBubbleControllerViews(const CaptionBubbleControllerViews&) = delete;
   CaptionBubbleControllerViews& operator=(const CaptionBubbleControllerViews&) =

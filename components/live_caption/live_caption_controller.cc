@@ -57,6 +57,12 @@ LiveCaptionController::~LiveCaptionController() {
 void LiveCaptionController::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(
+      prefs::kLiveCaptionBubbleExpanded, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kLiveCaptionBubblePinned, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(
       prefs::kLiveCaptionEnabled, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 
@@ -183,7 +189,7 @@ void LiveCaptionController::CreateUI() {
 
   is_ui_constructed_ = true;
 
-  caption_bubble_controller_ = CaptionBubbleController::Create();
+  caption_bubble_controller_ = CaptionBubbleController::Create(profile_prefs_);
   caption_bubble_controller_->UpdateCaptionStyle(caption_style_);
 
   // Observe native theme changes for caption style updates.

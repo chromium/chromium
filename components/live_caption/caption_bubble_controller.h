@@ -13,6 +13,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/native_theme/caption_style.h"
 
+class PrefService;
+
 namespace content {
 class BrowserContext;
 }
@@ -37,7 +39,8 @@ class CaptionBubbleController {
   CaptionBubbleController(const CaptionBubbleController&) = delete;
   CaptionBubbleController& operator=(const CaptionBubbleController&) = delete;
 
-  static std::unique_ptr<CaptionBubbleController> Create();
+  static std::unique_ptr<CaptionBubbleController> Create(
+      PrefService* profile_prefs);
 
   // Called when a transcription is received from the service. Returns whether
   // the transcription result was set on the caption bubble successfully.

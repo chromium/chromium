@@ -9,6 +9,7 @@
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -17,8 +18,10 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/live_caption/pref_names.h"
 #include "components/live_caption/views/caption_bubble.h"
 #include "components/live_caption/views/caption_bubble_controller_views.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/test/browser_test.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
@@ -50,7 +53,8 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
 
   CaptionBubbleControllerViews* GetController() {
     if (!controller_)
-      controller_ = std::make_unique<CaptionBubbleControllerViews>();
+      controller_ = std::make_unique<CaptionBubbleControllerViews>(
+          browser()->profile()->GetPrefs());
     return controller_.get();
   }
 
@@ -98,6 +102,16 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
 
   views::Button* GetCollapseButton() {
     return controller_ ? controller_->caption_bubble_->collapse_button_.get()
+                       : nullptr;
+  }
+
+  views::Button* GetPinButton() {
+    return controller_ ? controller_->caption_bubble_->pin_button_.get()
+                       : nullptr;
+  }
+
+  views::Button* GetUnpinButton() {
+    return controller_ ? controller_->caption_bubble_->unpin_button_.get()
                        : nullptr;
   }
 
@@ -862,6 +876,8 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, ExpandsAndCollapses) {
   int line_height = 24;
+  EXPECT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
+      prefs::kLiveCaptionBubbleExpanded));
 
   OnPartialTranscription("Seahorses are monogamous");
   EXPECT_TRUE(GetExpandButton()->GetVisible());
@@ -872,6 +888,8 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, ExpandsAndCollapses) {
   EXPECT_TRUE(GetCollapseButton()->GetVisible());
   EXPECT_FALSE(GetExpandButton()->GetVisible());
   EXPECT_EQ(7 * line_height, GetLabel()->GetBoundsInScreen().height());
+  EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
+      prefs::kLiveCaptionBubbleExpanded));
 
   // Switch media. The bubble should remain expanded.
   auto media_1 = CaptionBubbleContextBrowser::Create(
@@ -897,6 +915,29 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, ExpandsAndCollapses) {
   EXPECT_TRUE(GetExpandButton()->GetVisible());
   EXPECT_FALSE(GetCollapseButton()->GetVisible());
   EXPECT_EQ(line_height, GetLabel()->GetBoundsInScreen().height());
+}
+
+IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, PinAndUnpin) {
+  base::ScopedMockTimeMessageLoopTaskRunner test_task_runner;
+  SetTickClockForTesting(test_task_runner->GetMockTickClock());
+  EXPECT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
+      prefs::kLiveCaptionBubblePinned));
+
+  OnPartialTranscription(
+      "Sea otters have the densest fur of any mammal at about 1 million hairs "
+      "per square inch.");
+  EXPECT_TRUE(GetPinButton()->GetVisible());
+  EXPECT_FALSE(GetUnpinButton()->GetVisible());
+
+  ClickButton(GetPinButton());
+  EXPECT_FALSE(GetPinButton()->GetVisible());
+  EXPECT_TRUE(GetUnpinButton()->GetVisible());
+  EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
+      prefs::kLiveCaptionBubblePinned));
+
+  ASSERT_TRUE(GetBubble()->GetInactivityTimerForTesting()->IsRunning());
+  test_task_runner->FastForwardBy(base::Seconds(15));
+  EXPECT_TRUE(IsWidgetVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, NonAsciiCharacter) {
