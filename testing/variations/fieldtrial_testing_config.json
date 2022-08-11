@@ -5180,6 +5180,9 @@
                 },
                 {
                     "name": "EnabledWithTextClassifier",
+                    "params": {
+                        "confidence_score_threshold": "0.0"
+                    },
                     "enable_features": [
                         "CalendarExperienceKit",
                         "EnableExpKitCalendarTextClassifier"
