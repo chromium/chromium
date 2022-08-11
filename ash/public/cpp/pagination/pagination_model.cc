@@ -271,6 +271,7 @@ void PaginationModel::StartTransitionAnimation(const Transition& transition) {
   if (!duration.is_zero())
     transition_animation_->SetSlideDuration(duration);
 
+  is_transition_started_ = true;
   NotifyTransitionStarted();
   transition_animation_->Show();
 }
@@ -288,9 +289,11 @@ void PaginationModel::AnimationProgressed(const gfx::Animation* animation) {
 }
 
 void PaginationModel::AnimationEnded(const gfx::Animation* animation) {
-  // Do not notify transition end for the reverting animation.
-  if (!IsRevertingCurrentTransition())
+  // Ensure that each TransitionStarted() has only one TransitionEnded().
+  if (is_transition_started_) {
+    is_transition_started_ = false;
     NotifyTransitionEnded();
+  }
 
   // Save |pending_selected_page_| because SelectPage resets it.
   int next_target = pending_selected_page_;

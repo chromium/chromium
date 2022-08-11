@@ -519,5 +519,23 @@ TEST_F(PaginationModelTest, NoTransitionEndForRevertingAnimation) {
   EXPECT_EQ(1, observer_.transition_end_call_count());
 }
 
+// Tests that a canceled scroll will call both TransitionStart and
+// TransitionEnd.
+TEST_F(PaginationModelTest, CancelAnimationHasOneTransitionEnd) {
+  const int kStartPage = 2;
+
+  // Scroll to the next page (negative delta) and cancel it.
+  SetStartPageAndExpects(kStartPage, 0, 1, 0);
+  pagination()->StartScroll();
+  pagination()->UpdateScroll(-0.1);
+  EXPECT_EQ(kStartPage + 1, pagination()->transition().target_page);
+  pagination()->EndScroll(true);  // Cancel transition
+  WaitForPagingAnimation();
+  EXPECT_EQ(0, observer_.selection_count());
+
+  EXPECT_EQ(1, observer_.transition_start_call_count());
+  EXPECT_EQ(1, observer_.transition_end_call_count());
+}
+
 }  // namespace test
 }  // namespace ash

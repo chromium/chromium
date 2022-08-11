@@ -34,6 +34,12 @@ class ASH_PUBLIC_EXPORT PaginationModel : public views::AnimationDelegateViews {
       return target_page == rhs.target_page && progress == rhs.progress;
     }
 
+    std::string ToString() const {
+      std::stringstream ss;
+      ss << "Target Page: " << target_page << ", Progess: " << progress;
+      return ss.str();
+    }
+
     // Target page for the transition or -1 if there is no target page. For
     // page switcher, this is the target selected page. For touch scroll,
     // this is usually the previous or next page (or -1 when there is no
@@ -138,6 +144,9 @@ class ASH_PUBLIC_EXPORT PaginationModel : public views::AnimationDelegateViews {
   int selected_page_;
 
   Transition transition_;
+
+  // Whether a transition has started, but not yet ended.
+  bool is_transition_started_ = false;
 
   // Pending selected page when SelectedPage is called during a transition. If
   // multiple SelectPage is called while a transition is in progress, only the
