@@ -4228,8 +4228,7 @@ void PaintPropertyTreeBuilder::IssueInvalidationsAfterUpdate() {
     }
   }
 
-  CullRectUpdater::PaintPropertiesChanged(object_, *context_.painting_layer,
-                                          properties_changed_,
+  CullRectUpdater::PaintPropertiesChanged(object_, properties_changed_,
                                           context_.old_scroll_offset);
 }
 

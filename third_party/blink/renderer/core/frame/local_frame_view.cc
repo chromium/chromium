@@ -2644,10 +2644,8 @@ bool LocalFrameView::RunPrePaintLifecyclePhase(
           }
         }
 
-        // We skipped pre-paint for this frame while it was throttled, or we
-        // have never run pre-paint for this frame. Either way, we're
-        // unthrottled now, so we must propagate our dirty bits into our
-        // parent frame so that pre-paint reaches into this frame.
+        // Propagate dirty bits in the frame into the parent frame so that
+        // pre-paint reaches into this frame.
         if (LayoutView* layout_view = frame_view.GetLayoutView()) {
           if (auto* owner = frame_view.GetFrame().OwnerLayoutObject()) {
             if (layout_view->NeedsPaintPropertyUpdate() ||
@@ -2664,11 +2662,6 @@ bool LocalFrameView::RunPrePaintLifecyclePhase(
             if (layout_view->BlockingWheelEventHandlerChanged() ||
                 layout_view->DescendantBlockingWheelEventHandlerChanged()) {
               owner->MarkDescendantBlockingWheelEventHandlerChanged();
-            }
-            if (layout_view->Layer()->NeedsCullRectUpdate() ||
-                layout_view->Layer()->DescendantNeedsCullRectUpdate()) {
-              layout_view->Layer()
-                  ->MarkCompositingContainerChainForNeedsCullRectUpdate();
             }
           }
         }
@@ -4867,6 +4860,27 @@ PaintLayer* LocalFrameView::GetXROverlayLayer() const {
     return GetXrOverlayLayer(*doc);
 
   return nullptr;
+}
+
+void LocalFrameView::PropagateCullRectNeedsUpdateForFrames() {
+  ForAllNonThrottledLocalFrameViews(
+      [](LocalFrameView& frame_view) {
+        // Propagate child frame PaintLayer NeedsCullRectUpdate flag into the
+        // owner frame.
+        if (auto* frame_layout_view = frame_view.GetLayoutView()) {
+          if (auto* owner = frame_view.GetFrame().OwnerLayoutObject()) {
+            PaintLayer* frame_root_layer = frame_layout_view->Layer();
+            DCHECK(frame_root_layer);
+            DCHECK(owner->Layer());
+            if (frame_root_layer->NeedsCullRectUpdate() ||
+                frame_root_layer->DescendantNeedsCullRectUpdate()) {
+              owner->Layer()->SetDescendantNeedsCullRectUpdate();
+            }
+          }
+        }
+      },
+      // Use post-order to ensure correct flag propagation for nested frames.
+      kPostOrder);
 }
 
 void LocalFrameView::RunPaintBenchmark(int repeat_count,
