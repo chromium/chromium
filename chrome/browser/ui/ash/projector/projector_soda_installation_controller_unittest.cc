@@ -165,26 +165,40 @@ TEST_F(ProjectorSodaInstallationControllerTest, OnSodaInstallProgress) {
   speech::SodaInstaller::GetInstance()->NotifySodaProgressForTesting(50);
 }
 
-TEST_F(ProjectorSodaInstallationControllerTest, OnSodaInstallError) {
-  NewScreencastPrecondition sodaInstallError(
+TEST_F(ProjectorSodaInstallationControllerTest, OnSodaInstallErrorUnspecified) {
+  NewScreencastPrecondition soda_install_error(
       NewScreencastPreconditionState::kDisabled,
-      {NewScreencastPreconditionReason::kSodaInstallationError});
+      {NewScreencastPreconditionReason::kSodaInstallationErrorUnspecified});
   EXPECT_CALL(app_client(), OnSodaInstallError());
   EXPECT_CALL(projector_client(),
-              OnNewScreencastPreconditionChanged(sodaInstallError));
-  speech::SodaInstaller::GetInstance()->NotifySodaErrorForTesting();
+              OnNewScreencastPreconditionChanged(soda_install_error));
+  speech::SodaInstaller::GetInstance()->NotifySodaErrorForTesting(
+      en_us(), speech::SodaInstaller::ErrorCode::kUnspecifiedError);
   EXPECT_EQ(projector_controller().GetNewScreencastPrecondition(),
-            sodaInstallError);
+            soda_install_error);
+}
+
+TEST_F(ProjectorSodaInstallationControllerTest, OnSodaInstallErrorNeedsReboot) {
+  NewScreencastPrecondition soda_install_error(
+      NewScreencastPreconditionState::kDisabled,
+      {NewScreencastPreconditionReason::kSodaInstallationErrorNeedsReboot});
+  EXPECT_CALL(app_client(), OnSodaInstallError());
+  EXPECT_CALL(projector_client(),
+              OnNewScreencastPreconditionChanged(soda_install_error));
+  speech::SodaInstaller::GetInstance()->NotifySodaErrorForTesting(
+      en_us(), speech::SodaInstaller::ErrorCode::kNeedsReboot);
+  EXPECT_EQ(projector_controller().GetNewScreencastPrecondition(),
+            soda_install_error);
 }
 
 // Prevents a regression to b/228899579.
 TEST_F(ProjectorSodaInstallationControllerTest,
        OnLocaleChangedBeforeSodaInstall) {
-  NewScreencastPrecondition localeNotSupported(
+  NewScreencastPrecondition locale_not_supported(
       NewScreencastPreconditionState::kDisabled,
       {NewScreencastPreconditionReason::kUserLocaleNotSupported});
   EXPECT_CALL(projector_client(),
-              OnNewScreencastPreconditionChanged(localeNotSupported));
+              OnNewScreencastPreconditionChanged(locale_not_supported));
 
   // The locale changes to the user's preferences after sign in but before SODA
   // finishes installing.
@@ -195,7 +209,7 @@ TEST_F(ProjectorSodaInstallationControllerTest,
   EXPECT_FALSE(soda_installation_controller()->IsSodaAvailable(fr_fr()));
 
   EXPECT_EQ(projector_controller().GetNewScreencastPrecondition(),
-            localeNotSupported);
+            locale_not_supported);
 }
 
 // Prevents a regression to b/227626179.
@@ -212,19 +226,19 @@ TEST_F(ProjectorSodaInstallationControllerTest,
   EXPECT_TRUE(soda_installation_controller()->IsSodaAvailable(en_us()));
   EXPECT_FALSE(soda_installation_controller()->IsSodaAvailable(fr_fr()));
 
-  NewScreencastPrecondition localeNotSupported(
+  NewScreencastPrecondition locale_not_supported(
       NewScreencastPreconditionState::kDisabled,
       {NewScreencastPreconditionReason::kUserLocaleNotSupported});
 
   EXPECT_CALL(projector_client(),
-              OnNewScreencastPreconditionChanged(localeNotSupported));
+              OnNewScreencastPreconditionChanged(locale_not_supported));
 
   // The locale changes to the user's preferences after sign in but after SODA
   // finishes installing.
   SetLocale(kNonEnglishLocale);
 
   EXPECT_EQ(projector_controller().GetNewScreencastPrecondition(),
-            localeNotSupported);
+            locale_not_supported);
 }
 
 }  // namespace ash

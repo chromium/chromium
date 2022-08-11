@@ -27,7 +27,9 @@ enum class ASH_PUBLIC_EXPORT SpeechRecognitionAvailability {
   // SODA binary and language packs are downloading.
   kSodaInstalling,
   // SODA installation failed.
-  kSodaInstallationError,
+  kSodaInstallationErrorUnspecified,
+  // SODA installation error needs reboot
+  kSodaInstallationErrorNeedsReboot,
   // SODA is available to be used.
   kAvailable
 };

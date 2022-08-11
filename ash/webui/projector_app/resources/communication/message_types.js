@@ -52,7 +52,6 @@ export const NewScreencastPreconditionState = {
  * @enum {number}
  */
 export const NewScreencastPreconditionReason = {
-  SODA_INSTALLATION_ERROR: 0,
   ON_DEVICE_RECOGNITION_NOT_SUPPORTED: 1,
   USER_LOCALE_NOT_SUPPORTED: 2,
   IN_PROJECTOR_SESSION: 3,
@@ -63,4 +62,8 @@ export const NewScreencastPreconditionReason = {
   DRIVE_FS_UNMOUNTED: 8,
   DRIVE_FS_MOUNT_FAILED: 9,
   OTHERS: 10,
+
+  // Soda installation errors:
+  SODA_INSTALLATION_ERROR_UNSPECIFIED_ERROR: 0,
+  SODA_INSTALLATION_ERROR_NEEDS_REBOOT: 11,
 };

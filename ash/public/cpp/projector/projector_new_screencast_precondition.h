@@ -31,7 +31,6 @@ enum class ASH_PUBLIC_EXPORT NewScreencastPreconditionState {
 // NewScreencastPreconditionReason enum in
 // //ash/webui/projector_app/resources/communication/message_types.js.
 enum class ASH_PUBLIC_EXPORT NewScreencastPreconditionReason {
-  kSodaInstallationError = 0,
   kOnDeviceSpeechRecognitionNotSupported = 1,
   kUserLocaleNotSupported = 2,
   kInProjectorSession = 3,
@@ -42,6 +41,10 @@ enum class ASH_PUBLIC_EXPORT NewScreencastPreconditionReason {
   kDriveFsUnmounted = 8,    // Drive could be re-enabled from the Setting.
   kDriveFsMountFailed = 9,  // Drive will not be automatically retried to mount.
   kOthers = 10,
+
+  // Soda installation errors.
+  kSodaInstallationErrorUnspecified = 0,
+  kSodaInstallationErrorNeedsReboot = 1
 };
 
 // Struct used to provide the new screen cast precondition state and the reasons

@@ -101,8 +101,19 @@ void ProjectorSodaInstallationController::OnSodaInstallError(
     return;
   }
 
-  projector_controller_->OnSpeechRecognitionAvailabilityChanged(
-      ash::SpeechRecognitionAvailability::kSodaInstallationError);
+  switch (error_code) {
+    case speech::SodaInstaller::ErrorCode::kUnspecifiedError:
+      projector_controller_->OnSpeechRecognitionAvailabilityChanged(
+          ash::SpeechRecognitionAvailability::
+              kSodaInstallationErrorUnspecified);
+      break;
+    case speech::SodaInstaller::ErrorCode::kNeedsReboot:
+      projector_controller_->OnSpeechRecognitionAvailabilityChanged(
+          ash::SpeechRecognitionAvailability::
+              kSodaInstallationErrorNeedsReboot);
+      break;
+  }
+
   app_client_->OnSodaInstallError();
 }
 
