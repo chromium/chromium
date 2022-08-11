@@ -108,7 +108,7 @@ void LensUnifiedSidePanelView::LoadResultsInNewTab() {
 void LensUnifiedSidePanelView::LoadProgressChanged(double progress) {
   bool is_content_visible = progress == 1.0;
   SetContentVisible(is_content_visible);
-  if (is_content_visible) {
+  if (launch_button_ != nullptr && is_content_visible) {
     auto last_committed_url =
         web_view_->GetWebContents()->GetLastCommittedURL();
     launch_button_->SetEnabled(lens::IsValidLensResultUrl(last_committed_url));
@@ -116,7 +116,7 @@ void LensUnifiedSidePanelView::LoadProgressChanged(double progress) {
 }
 
 bool LensUnifiedSidePanelView::IsLaunchButtonEnabledForTesting() {
-  return launch_button_->GetEnabled();
+  return launch_button_ != nullptr && launch_button_->GetEnabled();
 }
 
 bool LensUnifiedSidePanelView::HandleContextMenu(

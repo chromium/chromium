@@ -242,4 +242,39 @@ IN_PROC_BROWSER_TEST_F(SearchImageWithUnifiedSidePanel,
   EXPECT_FALSE(GetRightAlignedSidePanel()->GetVisible());
 }
 
+class SearchImageWithUnifiedSidePanelFooterDisabled
+    : public SearchImageWithUnifiedSidePanel {
+ protected:
+  void SetUp() override {
+    base::test::ScopedFeatureList features;
+    features.InitWithFeaturesAndParameters(
+        {{lens::features::kLensStandalone,
+          {{lens::features::kEnableSidePanelForLens.name, "true"}}},
+         {features::kUnifiedSidePanel, {{}}}},
+        {lens::features::kLensUnifiedSidePanelFooter});
+    InProcessBrowserTest::SetUp();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(SearchImageWithUnifiedSidePanelFooterDisabled,
+                       ImageSearchWithValidImageOpensUnifiedSidePanel) {
+  SetupUnifiedSidePanel();
+  EXPECT_TRUE(GetRightAlignedSidePanel()->GetVisible());
+
+  content::WebContents* contents =
+      lens::GetLensUnifiedSidePanelWebContentsForTesting(browser());
+
+  std::string expected_content = GetLensImageSearchURL().GetContent();
+  std::string side_panel_content = contents->GetLastCommittedURL().GetContent();
+  // Match strings up to the query.
+  std::size_t query_start_pos = side_panel_content.find("?");
+  EXPECT_EQ(expected_content.substr(0, query_start_pos),
+            side_panel_content.substr(0, query_start_pos));
+  EXPECT_FALSE(
+      GetLensSidePanelCoordinator()->IsLaunchButtonEnabledForTesting());
+  // Match the query parameters, without the value of start_time.
+  EXPECT_THAT(side_panel_content,
+              testing::MatchesRegex(".*ep=ccm&s=csp&st=\\d+&p=somepayload"));
+}
+
 }  // namespace
