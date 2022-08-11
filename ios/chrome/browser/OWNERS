@@ -1,1 +1,3 @@
 per-file ios_chrome_io_thread*=rch@chromium.org
+per-file system_flags*=*
+per-file resources/*=*
