@@ -72,6 +72,11 @@ const char kMirrorModeTypesHistogram[] = "DisplayManager.MirrorModeTypes";
 const char kMirroringDisplayCountRangesHistogram[] =
     "DisplayManager.MirroringDisplayCountRanges";
 
+// The UMA histogram that logs whether mirroring is done in hardware or
+// software.
+const char kMirroringImplementationHistogram[] =
+    "DisplayManager.MirroringImplementation";
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // The UMA historgram that logs the zoom percentage level of the intenral
 // display.
@@ -276,6 +281,21 @@ DisplayCountRange GetDisplayCountRange(int display_count) {
 
   return DisplayCountRange::kGreaterThan8Displays;
 }
+
+// Describes the way mirror mode is implemented as reported by UMA.
+//
+// WARNING: These values are persisted to logs. Entries should not be renumbered
+//          and numeric values should never be reused.
+enum class MirroringImplementation {
+  // Software mirroring, where the same content is rendered for each display
+  // independently.
+  kSoftware = 0,
+  // Hardware mirroring, where a display is rendered once and shared across
+  // multiple displays.
+  kHardware = 1,
+
+  kMaxValue = kHardware,
+};
 
 // Defines the types of mirror mode in which the displays connected to the
 // device are in as reported by UMA.
@@ -1124,6 +1144,10 @@ void DisplayManager::UpdateDisplaysWith(
         kMirroringDisplayCountRangesHistogram,
         GetDisplayCountRange(GetMirroringDestinationDisplayIdList().size() + 1),
         DisplayCountRange::kCount);
+    UMA_HISTOGRAM_ENUMERATION(kMirroringImplementationHistogram,
+                              IsInSoftwareMirrorMode()
+                                  ? MirroringImplementation::kSoftware
+                                  : MirroringImplementation::kHardware);
     UMA_HISTOGRAM_ENUMERATION(kMirrorModeTypesHistogram,
                               mixed_mirror_mode_params_
                                   ? MirrorModeTypes::kMixed

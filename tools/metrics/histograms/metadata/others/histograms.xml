@@ -4765,6 +4765,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DisplayManager.MirroringImplementation"
+    enum="DisplayMirroringImplementation" expires_after="2023-02-09">
+  <owner>jshargo@chromium.org</owner>
+  <owner>oshima@chromium.org</owner>
+  <owner>chromeos-gfx-compositor@google.com</owner>
+  <summary>
+    The way in which mirroring is implemented, either in hardware or software.
+    This is emitted once when mirroring is enabled through API call, or the
+    display configuration changes ( e.g. adding or removing a display) when
+    mirror mode is on.
+  </summary>
+</histogram>
+
 <histogram name="DisplayManager.MirrorModeTypes" enum="DisplayMirrorModeTypes"
     expires_after="2022-12-04">
   <owner>zentaro@chromium.org</owner>

@@ -26128,6 +26128,12 @@ Called by update_debug_scenarios.py.-->
   <int value="8" label="Viewport intersection"/>
 </enum>
 
+<enum name="DisplayMirroringImplementation">
+  <summary>Defines the implementation of mirror mode.</summary>
+  <int value="0" label="Software-based mirroring"/>
+  <int value="1" label="Hardware-based mirroring"/>
+</enum>
+
 <enum name="DisplayMirrorModeTypes">
   <summary>
     Defines the types of mirror mode in which displays connected to the device
