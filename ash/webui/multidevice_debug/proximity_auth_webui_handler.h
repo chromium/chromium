@@ -63,21 +63,18 @@ class ProximityAuthWebUIHandler
       device_sync::mojom::NetworkRequestResult result_code);
   void OnGetDebugInfo(device_sync::mojom::DebugInfoPtr debug_info_ptr);
 
-  void NotifyOnEnrollmentFinished(
-      bool success,
-      std::unique_ptr<base::DictionaryValue> enrollment_state);
-  void NotifyOnSyncFinished(
-      bool was_sync_successful,
-      bool changed,
-      std::unique_ptr<base::DictionaryValue> device_sync_state);
-  void NotifyGotLocalState(
-      std::unique_ptr<base::Value> truncated_local_device_id,
-      std::unique_ptr<base::DictionaryValue> enrollment_state,
-      std::unique_ptr<base::DictionaryValue> device_sync_state,
-      std::unique_ptr<base::ListValue> synced_devices);
+  void NotifyOnEnrollmentFinished(bool success,
+                                  base::Value::Dict enrollment_state);
+  void NotifyOnSyncFinished(bool was_sync_successful,
+                            bool changed,
+                            base::Value::Dict device_sync_state);
+  void NotifyGotLocalState(base::Value truncated_local_device_id,
+                           base::Value::Dict enrollment_state,
+                           base::Value::Dict device_sync_state,
+                           base::Value::List synced_devices);
 
-  std::unique_ptr<base::Value> GetTruncatedLocalDeviceId();
-  std::unique_ptr<base::ListValue> GetRemoteDevicesList();
+  base::Value GetTruncatedLocalDeviceId();
+  base::Value::List GetRemoteDevicesList();
 
   // The delegate used to fetch dependencies. Must outlive this instance.
   device_sync::DeviceSyncClient* device_sync_client_;

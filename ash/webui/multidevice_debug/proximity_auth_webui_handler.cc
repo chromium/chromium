@@ -79,18 +79,16 @@ double ConvertNextAttemptTimeToDouble(base::TimeDelta delta) {
 
 // Converts |log_message| to a raw dictionary value used as a JSON argument to
 // JavaScript functions.
-std::unique_ptr<base::DictionaryValue> LogMessageToDictionary(
+base::Value::Dict LogMessageToDictionary(
     const multidevice::LogBuffer::LogMessage& log_message) {
-  std::unique_ptr<base::DictionaryValue> dictionary(
-      new base::DictionaryValue());
-  dictionary->SetStringKey(kLogMessageTextKey, log_message.text);
-  dictionary->SetStringKey(
-      kLogMessageTimeKey,
-      base::TimeFormatTimeOfDayWithMilliseconds(log_message.time));
-  dictionary->SetStringKey(kLogMessageFileKey, log_message.file);
-  dictionary->SetIntKey(kLogMessageLineKey, log_message.line);
-  dictionary->SetIntKey(kLogMessageSeverityKey,
-                        static_cast<int>(log_message.severity));
+  base::Value::Dict dictionary;
+  dictionary.Set(kLogMessageTextKey, log_message.text);
+  dictionary.Set(kLogMessageTimeKey,
+                 base::TimeFormatTimeOfDayWithMilliseconds(log_message.time));
+  dictionary.Set(kLogMessageFileKey, log_message.file);
+  dictionary.Set(kLogMessageLineKey, log_message.line);
+  dictionary.Set(kLogMessageSeverityKey,
+                 static_cast<int>(log_message.severity));
   return dictionary;
 }
 
@@ -104,19 +102,15 @@ const char kExternalDeviceMobileHotspot[] = "hasMobileHotspot";
 const char kExternalDeviceFeatureStates[] = "featureStates";
 
 // Creates a SyncState JSON object that can be passed to the WebUI.
-std::unique_ptr<base::DictionaryValue> CreateSyncStateDictionary(
-    double last_success_time,
-    double next_refresh_time,
-    bool is_recovering_from_failure,
-    bool is_enrollment_in_progress) {
-  std::unique_ptr<base::DictionaryValue> sync_state(
-      new base::DictionaryValue());
-  sync_state->SetDoubleKey(kSyncStateLastSuccessTime, last_success_time);
-  sync_state->SetDoubleKey(kSyncStateNextRefreshTime, next_refresh_time);
-  sync_state->SetBoolKey(kSyncStateRecoveringFromFailure,
-                         is_recovering_from_failure);
-  sync_state->SetBoolKey(kSyncStateOperationInProgress,
-                         is_enrollment_in_progress);
+base::Value::Dict CreateSyncStateDictionary(double last_success_time,
+                                            double next_refresh_time,
+                                            bool is_recovering_from_failure,
+                                            bool is_enrollment_in_progress) {
+  base::Value::Dict sync_state;
+  sync_state.Set(kSyncStateLastSuccessTime, last_success_time);
+  sync_state.Set(kSyncStateNextRefreshTime, next_refresh_time);
+  sync_state.Set(kSyncStateRecoveringFromFailure, is_recovering_from_failure);
+  sync_state.Set(kSyncStateOperationInProgress, is_enrollment_in_progress);
   return sync_state;
 }
 
@@ -191,10 +185,8 @@ void ProximityAuthWebUIHandler::RegisterMessages() {
 
 void ProximityAuthWebUIHandler::OnLogMessageAdded(
     const multidevice::LogBuffer::LogMessage& log_message) {
-  std::unique_ptr<base::DictionaryValue> dictionary =
-      LogMessageToDictionary(log_message);
   web_ui()->CallJavascriptFunctionUnsafe("LogBufferInterface.onLogMessageAdded",
-                                         *dictionary);
+                                         LogMessageToDictionary(log_message));
 }
 
 void ProximityAuthWebUIHandler::OnLogBufferCleared() {
@@ -230,10 +222,9 @@ void ProximityAuthWebUIHandler::OnWebContentsInitialized(
 }
 
 void ProximityAuthWebUIHandler::GetLogMessages(const base::Value::List& args) {
-  base::ListValue json_logs;
+  base::Value::List json_logs;
   for (const auto& log : *multidevice::LogBuffer::GetInstance()->logs()) {
-    json_logs.Append(
-        base::Value::FromUniquePtrValue(LogMessageToDictionary(log)));
+    json_logs.Append(LogMessageToDictionary(log));
   }
   web_ui()->CallJavascriptFunctionUnsafe("LogBufferInterface.onGotLogMessages",
                                          json_logs);
@@ -266,8 +257,7 @@ void ProximityAuthWebUIHandler::GetLocalState(const base::Value::List& args) {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-std::unique_ptr<base::Value>
-ProximityAuthWebUIHandler::GetTruncatedLocalDeviceId() {
+base::Value ProximityAuthWebUIHandler::GetTruncatedLocalDeviceId() {
   absl::optional<multidevice::RemoteDeviceRef> local_device_metadata =
       device_sync_client_->GetLocalDeviceMetadata();
 
@@ -276,16 +266,14 @@ ProximityAuthWebUIHandler::GetTruncatedLocalDeviceId() {
           ? local_device_metadata->GetTruncatedDeviceIdForLogs()
           : "Missing Device ID";
 
-  return std::make_unique<base::Value>(device_id);
+  return base::Value(device_id);
 }
 
-std::unique_ptr<base::ListValue>
-ProximityAuthWebUIHandler::GetRemoteDevicesList() {
-  std::unique_ptr<base::ListValue> devices_list_value(new base::ListValue());
+base::Value::List ProximityAuthWebUIHandler::GetRemoteDevicesList() {
+  base::Value::List devices_list_value;
 
   for (const auto& remote_device : device_sync_client_->GetSyncedDevices()) {
-    devices_list_value->Append(
-        base::Value(RemoteDeviceToDictionary(remote_device)));
+    devices_list_value.Append(RemoteDeviceToDictionary(remote_device));
   }
 
   return devices_list_value;
@@ -387,47 +375,47 @@ void ProximityAuthWebUIHandler::OnGetDebugInfo(
 
 void ProximityAuthWebUIHandler::NotifyOnEnrollmentFinished(
     bool success,
-    std::unique_ptr<base::DictionaryValue> enrollment_state) {
+    base::Value::Dict enrollment_state) {
   PA_LOG(VERBOSE) << "Enrollment attempt completed with success=" << success
                   << ":\n"
-                  << *enrollment_state;
+                  << enrollment_state;
   web_ui()->CallJavascriptFunctionUnsafe(
-      "LocalStateInterface.onEnrollmentStateChanged", *enrollment_state);
+      "LocalStateInterface.onEnrollmentStateChanged", enrollment_state);
 }
 
 void ProximityAuthWebUIHandler::NotifyOnSyncFinished(
     bool was_sync_successful,
     bool changed,
-    std::unique_ptr<base::DictionaryValue> device_sync_state) {
+    base::Value::Dict device_sync_state) {
   PA_LOG(VERBOSE) << "Device sync completed with result=" << was_sync_successful
                   << ":\n"
-                  << *device_sync_state;
+                  << device_sync_state;
   web_ui()->CallJavascriptFunctionUnsafe(
-      "LocalStateInterface.onDeviceSyncStateChanged", *device_sync_state);
+      "LocalStateInterface.onDeviceSyncStateChanged", device_sync_state);
 
   if (changed) {
-    std::unique_ptr<base::ListValue> synced_devices = GetRemoteDevicesList();
+    base::Value::List synced_devices = GetRemoteDevicesList();
     PA_LOG(VERBOSE) << "New unlock keys obtained after device sync:\n"
-                    << *synced_devices;
+                    << synced_devices;
     web_ui()->CallJavascriptFunctionUnsafe(
-        "LocalStateInterface.onRemoteDevicesChanged", *synced_devices);
+        "LocalStateInterface.onRemoteDevicesChanged", synced_devices);
   }
 }
 
 void ProximityAuthWebUIHandler::NotifyGotLocalState(
-    std::unique_ptr<base::Value> truncated_local_device_id,
-    std::unique_ptr<base::DictionaryValue> enrollment_state,
-    std::unique_ptr<base::DictionaryValue> device_sync_state,
-    std::unique_ptr<base::ListValue> synced_devices) {
+    base::Value truncated_local_device_id,
+    base::Value::Dict enrollment_state,
+    base::Value::Dict device_sync_state,
+    base::Value::List synced_devices) {
   PA_LOG(VERBOSE) << "==== Got Local State ====\n"
-                  << "Device ID (truncated): " << *truncated_local_device_id
+                  << "Device ID (truncated): " << truncated_local_device_id
                   << "\nEnrollment State: \n"
-                  << *enrollment_state << "Device Sync State: \n"
-                  << *device_sync_state << "Synced devices: \n"
-                  << *synced_devices;
+                  << enrollment_state << "Device Sync State: \n"
+                  << device_sync_state << "Synced devices: \n"
+                  << synced_devices;
   web_ui()->CallJavascriptFunctionUnsafe(
-      "LocalStateInterface.onGotLocalState", *truncated_local_device_id,
-      *enrollment_state, *device_sync_state, *synced_devices);
+      "LocalStateInterface.onGotLocalState", truncated_local_device_id,
+      enrollment_state, device_sync_state, synced_devices);
 }
 
 }  // namespace multidevice
