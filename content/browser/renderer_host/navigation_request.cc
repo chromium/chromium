@@ -144,6 +144,7 @@
 #include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
+#include "third_party/blink/public/common/frame/fenced_frame_permissions_policies.h"
 #include "third_party/blink/public/common/frame/fenced_frame_sandbox_flags.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/common/navigation/navigation_params_mojom_traits.h"
@@ -152,6 +153,7 @@
 #include "third_party/blink/public/common/origin_trials/trial_token_result.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy.h"
+#include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/security/address_space_feature.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
@@ -3854,6 +3856,17 @@ void NavigationRequest::OnResponseStarted(
     return;
   }
 
+  if (render_frame_host_ &&
+      !CheckPermissionsPoliciesForFencedFrames(GetOriginToCommit())) {
+    OnRequestFailedInternal(
+        network::URLLoaderCompletionStatus(net::ERR_ABORTED),
+        false /*skip_throttles*/, absl::nullopt /*error_page_content*/,
+        false /*collapse_frame*/);
+    // DO NOT ADD CODE after this. The previous call to
+    // OnRequestFailedInternal has destroyed the NavigationRequest.
+    return;
+  }
+
   // Check if the navigation should be allowed to proceed.
   WillProcessResponse();
 }
@@ -7410,6 +7423,38 @@ bool NavigationRequest::CoopCoepSanityCheck() {
     NOTREACHED();
     base::debug::DumpWithoutCrashing();
     return false;
+  }
+  return true;
+}
+
+bool NavigationRequest::CheckPermissionsPoliciesForFencedFrames(
+    const url::Origin& origin) {
+  // These checks only apply to fenced frames.
+  if (!frame_tree_node_->IsFencedFrameRoot())
+    return true;
+
+  for (const blink::mojom::PermissionsPolicyFeature feature :
+       blink::kFencedFrameOpaqueAdsDefaultAllowedFeatures) {
+    // Only check if the feature is enabled for this origin if
+    // a policy was explicitly specified.
+    if (GetParentFrameOrOuterDocument()
+            ->permissions_policy()
+            ->GetAllowlistForFeatureIfExists(feature) &&
+        !GetParentFrameOrOuterDocument()
+             ->permissions_policy()
+             ->IsFeatureEnabledForOrigin(feature, origin)) {
+      const blink::PermissionsPolicyFeatureToNameMap& feature_to_name_map =
+          blink::GetPermissionsPolicyFeatureToNameMap();
+      const std::string feature_string(
+          (feature_to_name_map.find(feature))->second);
+      AddDeferredConsoleMessage(
+          blink::mojom::ConsoleMessageLevel::kError,
+          base::StringPrintf(
+              "Refused to frame '%s' as a fenced frame because permissions "
+              "policy '%s' is not allowed for the frame's origin.",
+              origin.Serialize().c_str(), feature_string.c_str()));
+      return false;
+    }
   }
   return true;
 }

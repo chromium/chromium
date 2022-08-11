@@ -281,7 +281,7 @@ TestRenderFrameHost* TestRenderFrameHost::AppendFencedFrame(
   mojo::AssociatedRemote<blink::mojom::RemoteFrame> frame;
   std::ignore = frame.BindNewEndpointAndPassDedicatedReceiver();
   remote_frame_interfaces->frame = frame.Unbind();
-  fenced_frame->CreateProxyAndAttachToOuterFrameTree(
+  fenced_frame->InitInnerFrameTreeAndReturnProxyToOuterFrameTree(
       std::move(remote_frame_interfaces), blink::RemoteFrameToken());
   return static_cast<TestRenderFrameHost*>(fenced_frame->GetInnerRoot());
 }

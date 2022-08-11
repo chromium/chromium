@@ -136,6 +136,7 @@ source_set("headers") {
     "fetch/fetch_api_request_headers_mojom_traits.h",
     "forcedark/forcedark_switches.h",
     "frame/event_page_show_persisted.h",
+    "frame/fenced_frame_permissions_policies.h",
     "frame/fenced_frame_sandbox_flags.h",
     "frame/frame_ad_evidence.h",
     "frame/frame_owner_element_type.h",

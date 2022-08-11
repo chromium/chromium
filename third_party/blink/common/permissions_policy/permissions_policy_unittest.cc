@@ -39,6 +39,8 @@ class PermissionsPolicyTest : public testing::Test {
              {kDefaultSelfFeature,
               PermissionsPolicyFeatureDefault::EnableForSelf},
              {mojom::PermissionsPolicyFeature::kClientHintDPR,
+              PermissionsPolicyFeatureDefault::EnableForSelf},
+             {mojom::PermissionsPolicyFeature::kAttributionReporting,
               PermissionsPolicyFeatureDefault::EnableForSelf}}) {}
 
   ~PermissionsPolicyTest() override = default;
@@ -66,8 +68,9 @@ class PermissionsPolicyTest : public testing::Test {
                                                      origin, feature_list_);
   }
   std::unique_ptr<PermissionsPolicy> CreateForFencedFrame(
-      const url::Origin& origin) {
-    return PermissionsPolicy::CreateForFencedFrame(origin, feature_list_);
+      const url::Origin& origin,
+      const blink::mojom::FencedFrameMode mode) {
+    return PermissionsPolicy::CreateForFencedFrame(origin, feature_list_, mode);
   }
 
   bool PolicyContainsInheritedValue(const PermissionsPolicy* policy,
@@ -1657,10 +1660,22 @@ TEST_F(PermissionsPolicyTest, ProposedTestNestedPolicyPropagates) {
   EXPECT_FALSE(policy3->IsFeatureEnabled(kDefaultSelfFeature));
 }
 
-TEST_F(PermissionsPolicyTest, CreateForFencedFrame) {
-  std::unique_ptr<PermissionsPolicy> policy = CreateForFencedFrame(origin_a_);
+TEST_F(PermissionsPolicyTest, CreateForDefaultFencedFrame) {
+  std::unique_ptr<PermissionsPolicy> policy =
+      CreateForFencedFrame(origin_a_, blink::mojom::FencedFrameMode::kDefault);
   EXPECT_FALSE(policy->IsFeatureEnabled(kDefaultOnFeature));
   EXPECT_FALSE(policy->IsFeatureEnabled(kDefaultSelfFeature));
+  EXPECT_FALSE(policy->IsFeatureEnabled(
+      mojom::PermissionsPolicyFeature::kAttributionReporting));
+}
+
+TEST_F(PermissionsPolicyTest, CreateForOpaqueFencedFrame) {
+  std::unique_ptr<PermissionsPolicy> policy = CreateForFencedFrame(
+      origin_a_, blink::mojom::FencedFrameMode::kOpaqueAds);
+  EXPECT_FALSE(policy->IsFeatureEnabled(kDefaultOnFeature));
+  EXPECT_FALSE(policy->IsFeatureEnabled(kDefaultSelfFeature));
+  EXPECT_TRUE(policy->IsFeatureEnabled(
+      mojom::PermissionsPolicyFeature::kAttributionReporting));
 }
 
 TEST_F(PermissionsPolicyTest, CreateFromParsedPolicy) {

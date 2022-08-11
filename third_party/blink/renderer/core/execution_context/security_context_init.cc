@@ -204,7 +204,8 @@ void SecurityContextInit::ApplyPermissionsPolicy(
     if (frame.IsInFencedFrameTree()) {
       // In Fenced Frames, all permission policy gated features must be disabled
       // for privacy reasons.
-      permissions_policy = PermissionsPolicy::CreateForFencedFrame(origin);
+      permissions_policy = PermissionsPolicy::CreateForFencedFrame(
+          origin, frame.GetFencedFrameMode().value());
     } else {
       auto* parent_permissions_policy = frame.Tree().Parent()
                                             ? frame.Tree()

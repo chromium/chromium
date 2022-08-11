@@ -9,6 +9,7 @@
 #include "base/no_destructor.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
+#include "third_party/blink/public/common/frame/fenced_frame_permissions_policies.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 
@@ -358,17 +359,29 @@ PermissionsPolicy::~PermissionsPolicy() = default;
 
 // static
 std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateForFencedFrame(
-    const url::Origin& origin) {
-  return CreateForFencedFrame(origin, GetPermissionsPolicyFeatureList());
+    const url::Origin& origin,
+    blink::mojom::FencedFrameMode mode) {
+  return CreateForFencedFrame(origin, GetPermissionsPolicyFeatureList(), mode);
 }
 
 std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateForFencedFrame(
     const url::Origin& origin,
-    const PermissionsPolicyFeatureList& features) {
+    const PermissionsPolicyFeatureList& features,
+    blink::mojom::FencedFrameMode mode) {
   std::unique_ptr<PermissionsPolicy> new_policy =
       base::WrapUnique(new PermissionsPolicy(origin, features));
   for (const auto& feature : features) {
     new_policy->inherited_policies_[feature.first] = false;
+  }
+  // TODO(crbug.com/1347953): this is a medium-term solution to allow
+  // attribution reporting inside an opaque ad. This will eventually be replaced
+  // by urn:uuid bound attributes as outlined in this document:
+  // https://docs.google.com/document/d/11QaI40IAr12CDFrIUQbugxmS9LfircghHUghW-EDzMk/edit?usp=sharing
+  if (mode == blink::mojom::FencedFrameMode::kOpaqueAds) {
+    for (const blink::mojom::PermissionsPolicyFeature feature :
+         blink::kFencedFrameOpaqueAdsDefaultAllowedFeatures) {
+      new_policy->inherited_policies_[feature] = true;
+    }
   }
   return new_policy;
 }

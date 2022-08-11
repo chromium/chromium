@@ -49,7 +49,7 @@ class CONTENT_EXPORT FencedFrame : public blink::mojom::FencedFrameOwnerHost,
   // renderer. This creates a proxy representing the main frame of the inner
   // `FrameTree`, for use by the embedding RenderFrameHostImpl.
   // `remote_frame_interfaces` must not be null.
-  RenderFrameProxyHost* CreateProxyAndAttachToOuterFrameTree(
+  RenderFrameProxyHost* InitInnerFrameTreeAndReturnProxyToOuterFrameTree(
       blink::mojom::RemoteFrameInterfacesFromRendererPtr
           remote_frame_interfaces,
       const blink::RemoteFrameToken& frame_token);
@@ -106,7 +106,7 @@ class CONTENT_EXPORT FencedFrame : public blink::mojom::FencedFrameOwnerHost,
   // frame FrameTree. It is a "dummy" child FrameTreeNode that `this` is
   // responsible for adding as a child of `owner_render_frame_host_`; it is
   // initially null, and only set in the constructor (indirectly via
-  // `CreateProxyAndAttachToOuterFrameTree()`).
+  // `InitInnerFrameTreeAndReturnProxyToOuterFrameTree()`).
   // Furthermore, the lifetime of `this` is directly tied to it (see
   // `OnFrameTreeNodeDestroyed()`).
   raw_ptr<FrameTreeNode> outer_delegate_frame_tree_node_ = nullptr;

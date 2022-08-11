@@ -12,6 +12,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
+#include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-shared.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-forward.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "url/origin.h"
@@ -194,9 +195,12 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
       const PermissionsPolicy*);
 
   // Creates a PermissionsPolicy for a fenced frame. All permissions are
-  // disabled in fenced frames.
+  // disabled in fenced frames except for attribution reporting (which are only
+  // enabled for opaque-ads fenced frames). Permissions do not inherit from the
+  // parent to prevent cross-channel communication.
   static std::unique_ptr<PermissionsPolicy> CreateForFencedFrame(
-      const url::Origin& origin);
+      const url::Origin& origin,
+      blink::mojom::FencedFrameMode mode);
 
   static std::unique_ptr<PermissionsPolicy> CreateFromParsedPolicy(
       const ParsedPermissionsPolicy& parsed_policy,
@@ -273,7 +277,8 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
 
   static std::unique_ptr<PermissionsPolicy> CreateForFencedFrame(
       const url::Origin& origin,
-      const PermissionsPolicyFeatureList& features);
+      const PermissionsPolicyFeatureList& features,
+      blink::mojom::FencedFrameMode mode);
 
   bool InheritedValueForFeature(
       const PermissionsPolicy* parent_policy,

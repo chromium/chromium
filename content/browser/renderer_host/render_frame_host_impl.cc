@@ -771,8 +771,9 @@ DetermineWhetherToForbidTrustTokenRedemption(
   if (frame->IsNestedWithinFencedFrame()) {
     // In Fenced Frames, all permission policy gated features must be disabled
     // for privacy reasons.
-    subframe_policy =
-        blink::PermissionsPolicy::CreateForFencedFrame(subframe_origin);
+    subframe_policy = blink::PermissionsPolicy::CreateForFencedFrame(
+        subframe_origin,
+        frame->frame_tree_node()->GetFencedFrameMode().value());
   } else {
     // For main frame loads, the frame's permissions policy is determined
     // entirely by response headers, which are provided by the renderer.
@@ -7697,7 +7698,7 @@ void RenderFrameHostImpl::CreateFencedFrame(
       weak_ptr_factory_.GetSafeRef(), mode, devtools_frame_token));
   FencedFrame* fenced_frame = fenced_frames_.back().get();
   RenderFrameProxyHost* proxy_host =
-      fenced_frame->CreateProxyAndAttachToOuterFrameTree(
+      fenced_frame->InitInnerFrameTreeAndReturnProxyToOuterFrameTree(
           std::move(remote_frame_interfaces), frame_token);
   fenced_frame->Bind(std::move(pending_receiver));
 
@@ -10336,8 +10337,9 @@ void RenderFrameHostImpl::ResetPermissionsPolicy() {
   if (IsNestedWithinFencedFrame()) {
     // In Fenced Frames, all permission policy gated features must be disabled
     // for privacy reasons.
-    permissions_policy_ =
-        blink::PermissionsPolicy::CreateForFencedFrame(last_committed_origin_);
+    permissions_policy_ = blink::PermissionsPolicy::CreateForFencedFrame(
+        last_committed_origin_,
+        frame_tree_node()->GetFencedFrameMode().value());
     return;
   }
 

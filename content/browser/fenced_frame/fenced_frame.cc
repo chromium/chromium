@@ -61,36 +61,7 @@ FencedFrame::FencedFrame(
                                       /*page_delegate=*/web_contents_,
                                       FrameTree::Type::kFencedFrame,
                                       devtools_frame_token)),
-      mode_(mode) {
-  scoped_refptr<SiteInstance> site_instance =
-      SiteInstanceImpl::CreateForFencedFrame(
-          owner_render_frame_host->GetSiteInstance());
-
-  // Set the mandatory sandbox flags from the beginning.
-  blink::FramePolicy frame_policy;
-  frame_policy.sandbox_flags = blink::kFencedFrameForcedSandboxFlags;
-  // Note that even though this is happening in response to an event in the
-  // renderer (i.e., the creation of a <fencedframe> element), we are still
-  // putting `renderer_initiated_creation` as false. This is because that
-  // parameter is only used when a renderer is creating a new window and has
-  // already created the main frame for the window, but wants the browser to
-  // refrain from showing the main frame until the renderer signals the browser
-  // via the mojom.LocalMainFrameHost.ShowCreatedWindow(). This flow does not
-  // apply for fenced frames, portals, and prerendered nested FrameTrees, hence
-  // the decision to mark it as false.
-  frame_tree_->Init(site_instance.get(), /*renderer_initiated_creation=*/false,
-                    /*main_frame_name=*/"", /*opener_for_origin=*/nullptr,
-                    frame_policy);
-  // Note that pending frame policy will be passed as `frame_policy` in
-  // `replication_state` in `mojom::CreateFrameParams`.
-  // See `RenderFrameHostImpl::CreateRenderFrame`.
-  frame_tree_->root()->SetPendingFramePolicy(frame_policy);
-
-  // TODO(crbug.com/1199679): This should be moved to FrameTree::Init.
-  web_contents_->NotifySwappedFromRenderManager(
-      /*old_frame=*/nullptr,
-      frame_tree_->root()->render_manager()->current_frame_host());
-}
+      mode_(mode) {}
 
 FencedFrame::~FencedFrame() {
   DCHECK(frame_tree_);
@@ -180,11 +151,42 @@ FrameTree* FencedFrame::LoadingTree() {
   return web_contents_->LoadingTree();
 }
 
-RenderFrameProxyHost* FencedFrame::CreateProxyAndAttachToOuterFrameTree(
+RenderFrameProxyHost*
+FencedFrame::InitInnerFrameTreeAndReturnProxyToOuterFrameTree(
     blink::mojom::RemoteFrameInterfacesFromRendererPtr remote_frame_interfaces,
     const blink::RemoteFrameToken& frame_token) {
   DCHECK(remote_frame_interfaces);
   DCHECK(outer_delegate_frame_tree_node_);
+
+  scoped_refptr<SiteInstance> site_instance =
+      SiteInstanceImpl::CreateForFencedFrame(
+          owner_render_frame_host_->GetSiteInstance());
+
+  // Set the mandatory sandbox flags from the beginning.
+  blink::FramePolicy frame_policy;
+  frame_policy.sandbox_flags = blink::kFencedFrameForcedSandboxFlags;
+  // Note that even though this is happening in response to an event in the
+  // renderer (i.e., the creation of a <fencedframe> element), we are still
+  // putting `renderer_initiated_creation` as false. This is because that
+  // parameter is only used when a renderer is creating a new window and has
+  // already created the main frame for the window, but wants the browser to
+  // refrain from showing the main frame until the renderer signals the browser
+  // via the mojom.LocalMainFrameHost.ShowCreatedWindow(). This flow does not
+  // apply for fenced frames, portals, and prerendered nested FrameTrees, hence
+  // the decision to mark it as false.
+  frame_tree_->Init(site_instance.get(), /*renderer_initiated_creation=*/false,
+                    /*main_frame_name=*/"", /*opener_for_origin=*/nullptr,
+                    frame_policy);
+  // Note that pending frame policy will be passed as `frame_policy` in
+  // `replication_state` in `mojom::CreateFrameParams`.
+  // See `RenderFrameHostImpl::CreateRenderFrame`.
+  frame_tree_->root()->SetPendingFramePolicy(frame_policy);
+
+  // TODO(crbug.com/1199679): This should be moved to FrameTree::Init.
+  web_contents_->NotifySwappedFromRenderManager(
+      /*old_frame=*/nullptr,
+      frame_tree_->root()->render_manager()->current_frame_host());
+
   // Connect the outer delegate RenderFrameHost with the inner main
   // FrameTreeNode. This allows us to traverse from the outer delegate RFH
   // inward, to the inner fenced frame FrameTree.

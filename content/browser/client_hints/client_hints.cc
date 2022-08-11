@@ -553,8 +553,8 @@ struct ClientHintsExtendedData {
       outermost_main_frame_origin = resource_origin;
       is_1p_origin = true;
     } else if (frame_tree_node->IsInFencedFrameTree()) {
-      permissions_policy =
-          blink::PermissionsPolicy::CreateForFencedFrame(resource_origin);
+      permissions_policy = blink::PermissionsPolicy::CreateForFencedFrame(
+          resource_origin, frame_tree_node->GetFencedFrameMode().value());
     } else {
       RenderFrameHostImpl* outermost_main_frame = frame_tree_node->frame_tree()
                                                       ->GetMainFrame()

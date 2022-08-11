@@ -1451,6 +1451,11 @@ class CONTENT_EXPORT NavigationRequest
   // If they aren't, this returns false and emits a crash report.
   bool CoopCoepSanityCheck();
 
+  // Checks if all of the permissions policies that a fenced frame requires to
+  // be enabled for its origin are enabled. If not, it logs a console message
+  // and returns false.
+  bool CheckPermissionsPoliciesForFencedFrames(const url::Origin&);
+
   // Returns the user-agent override, or an empty string if one isn't set.
   std::string GetUserAgentOverride();
 
