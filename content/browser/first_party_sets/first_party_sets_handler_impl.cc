@@ -149,9 +149,10 @@ std::vector<SingleSet> NormalizeAdditionSets(
       for (const auto& child_site_and_entry : addition_sets[child_set_idx]) {
         bool inserted =
             normalized
-                .emplace(child_site_and_entry.first,
-                         net::FirstPartySetEntry(rep_primary,
-                                                 net::SiteType::kAssociated))
+                .emplace(
+                    child_site_and_entry.first,
+                    net::FirstPartySetEntry(
+                        rep_primary, net::SiteType::kAssociated, absl::nullopt))
                 .second;
         DCHECK(inserted);
       }
@@ -305,7 +306,8 @@ FirstPartySetsHandlerImpl::ComputeEnterpriseCustomizations(
           member, net::FirstPartySetEntry(entry->second.primary(),
                                           member == entry->second.primary()
                                               ? net::SiteType::kPrimary
-                                              : net::SiteType::kAssociated));
+                                              : net::SiteType::kAssociated,
+                                          absl::nullopt));
     }
     if (member == set_entry.primary())
       continue;

@@ -98,11 +98,11 @@ TEST_F(FirstPartySetsLoaderTest, AcceptsMinimal) {
                   Pair(SerializesTo("https://example.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kPrimary)),
+                           net::SiteType::kPrimary, absl::nullopt)),
                   Pair(SerializesTo("https://aaaa.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kAssociated))));
+                           net::SiteType::kAssociated, 0))));
 }
 
 TEST_F(FirstPartySetsLoaderTest, AcceptsMultipleSets) {
@@ -121,19 +121,19 @@ TEST_F(FirstPartySetsLoaderTest, AcceptsMultipleSets) {
                   Pair(SerializesTo("https://example.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kPrimary)),
+                           net::SiteType::kPrimary, absl::nullopt)),
                   Pair(SerializesTo("https://member1.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kAssociated)),
+                           net::SiteType::kAssociated, 0)),
                   Pair(SerializesTo("https://foo.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://foo.test")),
-                           net::SiteType::kPrimary)),
+                           net::SiteType::kPrimary, absl::nullopt)),
                   Pair(SerializesTo("https://member2.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://foo.test")),
-                           net::SiteType::kAssociated))));
+                           net::SiteType::kAssociated, 0))));
 }
 
 TEST_F(FirstPartySetsLoaderTest, SetComponentSets_Idempotent) {
@@ -156,19 +156,19 @@ TEST_F(FirstPartySetsLoaderTest, SetComponentSets_Idempotent) {
                   Pair(SerializesTo("https://example.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kPrimary)),
+                           net::SiteType::kPrimary, absl::nullopt)),
                   Pair(SerializesTo("https://member1.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kAssociated)),
+                           net::SiteType::kAssociated, 0)),
                   Pair(SerializesTo("https://foo.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://foo.test")),
-                           net::SiteType::kPrimary)),
+                           net::SiteType::kPrimary, absl::nullopt)),
                   Pair(SerializesTo("https://member2.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://foo.test")),
-                           net::SiteType::kAssociated))));
+                           net::SiteType::kAssociated, 0))));
 }
 
 TEST_F(FirstPartySetsLoaderTest, OwnerIsOnlyMember) {
@@ -263,11 +263,11 @@ TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Valid_SingleMember) {
                   Pair(SerializesTo("https://example.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kPrimary)),
+                           net::SiteType::kPrimary, absl::nullopt)),
                   Pair(SerializesTo("https://member.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kAssociated))));
+                           net::SiteType::kAssociated, 0))));
 }
 
 TEST_F(FirstPartySetsLoaderTest,
@@ -282,11 +282,11 @@ TEST_F(FirstPartySetsLoaderTest,
                   Pair(SerializesTo("https://example.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kPrimary)),
+                           net::SiteType::kPrimary, absl::nullopt)),
                   Pair(SerializesTo("https://member.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kAssociated))));
+                           net::SiteType::kAssociated, 0))));
 }
 
 TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Valid_MultipleMembers) {
@@ -300,15 +300,15 @@ TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Valid_MultipleMembers) {
                   Pair(SerializesTo("https://example.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kPrimary)),
+                           net::SiteType::kPrimary, absl::nullopt)),
                   Pair(SerializesTo("https://member1.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kAssociated)),
+                           net::SiteType::kAssociated, 0)),
                   Pair(SerializesTo("https://member2.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kAssociated))));
+                           net::SiteType::kAssociated, 1))));
 }
 
 TEST_F(FirstPartySetsLoaderTest,
@@ -331,11 +331,11 @@ TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Valid_OwnerIsMember) {
                   Pair(SerializesTo("https://example.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kPrimary)),
+                           net::SiteType::kPrimary, absl::nullopt)),
                   Pair(SerializesTo("https://member1.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kAssociated))));
+                           net::SiteType::kAssociated, 0))));
 }
 
 TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Valid_RepeatedMember) {
@@ -351,15 +351,15 @@ https://member1.test)");
                   Pair(SerializesTo("https://example.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kPrimary)),
+                           net::SiteType::kPrimary, absl::nullopt)),
                   Pair(SerializesTo("https://member1.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kAssociated)),
+                           net::SiteType::kAssociated, 0)),
                   Pair(SerializesTo("https://member2.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kAssociated))));
+                           net::SiteType::kAssociated, 1))));
 }
 
 TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_DeduplicatesOwnerOwner) {
@@ -375,23 +375,23 @@ TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_DeduplicatesOwnerOwner) {
                   Pair(SerializesTo("https://example.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kPrimary)),
+                           net::SiteType::kPrimary, absl::nullopt)),
                   Pair(SerializesTo("https://member1.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kAssociated)),
+                           net::SiteType::kAssociated, 0)),
                   Pair(SerializesTo("https://member2.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kAssociated)),
+                           net::SiteType::kAssociated, 1)),
                   Pair(SerializesTo("https://bar.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://bar.test")),
-                           net::SiteType::kPrimary)),
+                           net::SiteType::kPrimary, absl::nullopt)),
                   Pair(SerializesTo("https://member4.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://bar.test")),
-                           net::SiteType::kAssociated))));
+                           net::SiteType::kAssociated, 0))));
 }
 
 TEST_F(FirstPartySetsLoaderTest,
@@ -408,23 +408,23 @@ TEST_F(FirstPartySetsLoaderTest,
                   Pair(SerializesTo("https://example.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kPrimary)),
+                           net::SiteType::kPrimary, absl::nullopt)),
                   Pair(SerializesTo("https://member1.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kAssociated)),
+                           net::SiteType::kAssociated, 0)),
                   Pair(SerializesTo("https://member3.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kAssociated)),
+                           net::SiteType::kAssociated, 1)),
                   Pair(SerializesTo("https://bar.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://bar.test")),
-                           net::SiteType::kPrimary)),
+                           net::SiteType::kPrimary, absl::nullopt)),
                   Pair(SerializesTo("https://member2.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://bar.test")),
-                           net::SiteType::kAssociated))));
+                           net::SiteType::kAssociated, 0))));
 }
 
 TEST_F(FirstPartySetsLoaderTest,
@@ -440,23 +440,23 @@ TEST_F(FirstPartySetsLoaderTest,
                   Pair(SerializesTo("https://example.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kPrimary)),
+                           net::SiteType::kPrimary, absl::nullopt)),
                   Pair(SerializesTo("https://member3.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kAssociated)),
+                           net::SiteType::kAssociated, 0)),
                   Pair(SerializesTo("https://foo.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://foo.test")),
-                           net::SiteType::kPrimary)),
+                           net::SiteType::kPrimary, absl::nullopt)),
                   Pair(SerializesTo("https://member1.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://foo.test")),
-                           net::SiteType::kAssociated)),
+                           net::SiteType::kAssociated, 0)),
                   Pair(SerializesTo("https://member2.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://foo.test")),
-                           net::SiteType::kAssociated))));
+                           net::SiteType::kAssociated, 1))));
 }
 
 TEST_F(FirstPartySetsLoaderTest,
@@ -473,31 +473,31 @@ TEST_F(FirstPartySetsLoaderTest,
                   Pair(SerializesTo("https://example.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kPrimary)),
+                           net::SiteType::kPrimary, absl::nullopt)),
                   Pair(SerializesTo("https://member1.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kAssociated)),
+                           net::SiteType::kAssociated, 0)),
                   Pair(SerializesTo("https://member2.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kAssociated)),
+                           net::SiteType::kAssociated, 1)),
                   Pair(SerializesTo("https://foo.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://foo.test")),
-                           net::SiteType::kPrimary)),
+                           net::SiteType::kPrimary, absl::nullopt)),
                   Pair(SerializesTo("https://member3.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://foo.test")),
-                           net::SiteType::kAssociated)),
+                           net::SiteType::kAssociated, 1)),
                   Pair(SerializesTo("https://bar.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://bar.test")),
-                           net::SiteType::kPrimary)),
+                           net::SiteType::kPrimary, absl::nullopt)),
                   Pair(SerializesTo("https://member4.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://bar.test")),
-                           net::SiteType::kAssociated))));
+                           net::SiteType::kAssociated, 0))));
 }
 
 TEST_F(FirstPartySetsLoaderTest,
@@ -516,11 +516,11 @@ TEST_F(FirstPartySetsLoaderTest,
                   Pair(SerializesTo("https://example.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kPrimary)),
+                           net::SiteType::kPrimary, absl::nullopt)),
                   Pair(SerializesTo("https://member1.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kAssociated))));
+                           net::SiteType::kAssociated, 0))));
 }
 
 }  // namespace content

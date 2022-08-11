@@ -4,6 +4,7 @@
 
 #include "content/browser/first_party_sets/first_party_set_parser.h"
 
+#include <cstdint>
 #include <string>
 #include <utility>
 #include <vector>
@@ -81,6 +82,7 @@ const char kFirstPartySetPolicyAdditionsField[] = "additions";
 // returns an appropriate FirstPartySetParser::ParseError.
 base::expected<FirstPartySetParser::SingleSet, FirstPartySetParser::ParseError>
 ParseSet(const base::Value& value,
+         bool keep_indices,
          base::flat_set<net::SchemefulSite>& elements) {
   if (!value.is_dict())
     return base::unexpected(FirstPartySetParser::ParseError::kInvalidType);
@@ -112,8 +114,10 @@ ParseSet(const base::Value& value,
   std::vector<std::pair<net::SchemefulSite, net::FirstPartySetEntry>> sites;
   sites.emplace_back(
       *canonical_owner,
-      net::FirstPartySetEntry(*canonical_owner, net::SiteType::kPrimary));
+      net::FirstPartySetEntry(*canonical_owner, net::SiteType::kPrimary,
+                              absl::nullopt));
   // Add each member to our mapping (assuming the member is a string).
+  uint32_t index = 0;
   for (const auto& item : maybe_members_list->GetListDeprecated()) {
     // Members may not be a member of another set, and may not be an owner of
     // another set.
@@ -140,7 +144,12 @@ ParseSet(const base::Value& value,
 
     sites.emplace_back(
         *member,
-        net::FirstPartySetEntry(*canonical_owner, net::SiteType::kAssociated));
+        net::FirstPartySetEntry(
+            *canonical_owner, net::SiteType::kAssociated,
+            keep_indices
+                ? absl::make_optional(net::FirstPartySetEntry::SiteIndex(index))
+                : absl::nullopt));
+    ++index;
   }
 
   for (const std::pair<net::SchemefulSite, net::FirstPartySetEntry>&
@@ -168,7 +177,7 @@ GetPolicySetsFromList(const base::Value::List* policy_sets,
   for (int i = 0; i < static_cast<int>(policy_sets->size()); i++) {
     base::expected<FirstPartySetParser::SingleSet,
                    FirstPartySetParser::ParseError>
-        parsed = ParseSet((*policy_sets)[i], elements);
+        parsed = ParseSet((*policy_sets)[i], /*keep_indices=*/false, elements);
     if (!parsed.has_value()) {
       return base::unexpected(
           FirstPartySetParser::PolicyParsingError{parsed.error(), set_type, i});
@@ -229,9 +238,9 @@ FirstPartySetParser::SetsMap FirstPartySetParser::DeserializeFirstPartySets(
       continue;
     }
     if (!owner_set.contains(maybe_owner)) {
-      map.emplace_back(
-          *maybe_owner,
-          net::FirstPartySetEntry(*maybe_owner, net::SiteType::kPrimary));
+      map.emplace_back(*maybe_owner, net::FirstPartySetEntry(
+                                         *maybe_owner, net::SiteType::kPrimary,
+                                         absl::nullopt));
     }
     // Check disjointness. Note that we are relying on the JSON Parser to
     // eliminate the possibility of a site being used as a key more than once,
@@ -242,9 +251,12 @@ FirstPartySetParser::SetsMap FirstPartySetParser::DeserializeFirstPartySets(
     }
     owner_set.insert(*maybe_owner);
     member_set.insert(*maybe_member);
-    map.emplace_back(std::move(*maybe_member),
-                     net::FirstPartySetEntry(std::move(*maybe_owner),
-                                             net::SiteType::kAssociated));
+    // TODO(https://crbug.com/1219656): preserve ordering information when
+    // persisting set info.
+    map.emplace_back(
+        std::move(*maybe_member),
+        net::FirstPartySetEntry(std::move(*maybe_owner),
+                                net::SiteType::kAssociated, absl::nullopt));
   }
   return map;
 }
@@ -286,7 +298,7 @@ FirstPartySetParser::SetsMap FirstPartySetParser::ParseSetsFromStream(
       return {};
     base::expected<FirstPartySetParser::SingleSet,
                    FirstPartySetParser::ParseError>
-        parsed = ParseSet(*maybe_value, elements);
+        parsed = ParseSet(*maybe_value, /*keep_indices=*/true, elements);
     if (!parsed.has_value()) {
       if (parsed.error() == FirstPartySetParser::ParseError::kInvalidOrigin) {
         // Ignore sets that include an invalid domain (which might have been

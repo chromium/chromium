@@ -15,6 +15,14 @@
 
 namespace mojo {
 
+bool StructTraits<network::mojom::SiteIndexDataView,
+                  net::FirstPartySetEntry::SiteIndex>::
+    Read(network::mojom::SiteIndexDataView index,
+         net::FirstPartySetEntry::SiteIndex* out) {
+  *out = net::FirstPartySetEntry::SiteIndex(index.value());
+  return true;
+}
+
 bool EnumTraits<network::mojom::SiteType, net::SiteType>::FromMojom(
     network::mojom::SiteType site_type,
     net::SiteType* out) {
@@ -54,7 +62,11 @@ bool StructTraits<network::mojom::FirstPartySetEntryDataView,
   if (!entry.ReadSiteType(&site_type))
     return false;
 
-  *out = net::FirstPartySetEntry(primary, site_type);
+  absl::optional<net::FirstPartySetEntry::SiteIndex> site_index;
+  if (!entry.ReadSiteIndex(&site_index))
+    return false;
+
+  *out = net::FirstPartySetEntry(primary, site_type, site_index);
   return true;
 }
 

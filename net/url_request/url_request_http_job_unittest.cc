@@ -1923,10 +1923,10 @@ TEST_P(PartitionedCookiesURLRequestHttpJobTest,
       /*first_party_sets_enabled=*/false);
   auto cookie_access_delegate = std::make_unique<TestCookieAccessDelegate>();
   cookie_access_delegate->SetFirstPartySets({
-      {kOwnerSite,
-       net::FirstPartySetEntry(kOwnerSite, net::SiteType::kPrimary)},
+      {kOwnerSite, net::FirstPartySetEntry(kOwnerSite, net::SiteType::kPrimary,
+                                           absl::nullopt)},
       {kMemberSite,
-       net::FirstPartySetEntry(kOwnerSite, net::SiteType::kAssociated)},
+       net::FirstPartySetEntry(kOwnerSite, net::SiteType::kAssociated, 0)},
   });
   cookie_monster->SetCookieAccessDelegate(std::move(cookie_access_delegate));
   context_builder->SetCookieStore(std::move(cookie_monster));

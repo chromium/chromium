@@ -49,32 +49,37 @@ FirstPartySetsHandlerImpl::FlattenedSets MakeFlattenedSetsFromMap(
   for (const auto& [owner, members] : owners_to_members) {
     net::SchemefulSite owner_site((GURL(owner)));
     result.insert(std::make_pair(
-        owner_site,
-        net::FirstPartySetEntry(owner_site, net::SiteType::kPrimary)));
+        owner_site, net::FirstPartySetEntry(owner_site, net::SiteType::kPrimary,
+                                            absl::nullopt)));
+    uint32_t index = 0;
     for (const std::string& member : members) {
       net::SchemefulSite member_site((GURL(member)));
       result.insert(std::make_pair(
-          member_site,
-          net::FirstPartySetEntry(owner_site, net::SiteType::kAssociated)));
+          member_site, net::FirstPartySetEntry(
+                           owner_site, net::SiteType::kAssociated, index)));
+      ++index;
     }
   }
   return result;
 }
 
 // Parses `input` as a collection of primaries and their associated sites, and
-// appends the results to `output`.
+// appends the results to `output`. Does not preserve indices (so it is only
+// suitable for creating enterprise policy sets).
 void ParseAndAppend(
     const base::flat_map<std::string, std::vector<std::string>>& input,
     std::vector<SingleSet>& output) {
   for (auto& [owner, members] : input) {
     std::vector<std::pair<net::SchemefulSite, net::FirstPartySetEntry>> sites;
     net::SchemefulSite owner_site((GURL(owner)));
-    sites.emplace_back(owner_site, net::FirstPartySetEntry(
-                                       owner_site, net::SiteType::kPrimary));
+    sites.emplace_back(
+        owner_site, net::FirstPartySetEntry(owner_site, net::SiteType::kPrimary,
+                                            absl::nullopt));
     for (const std::string& member : members) {
       sites.emplace_back(
           GURL(member),
-          net::FirstPartySetEntry(owner_site, net::SiteType::kAssociated));
+          net::FirstPartySetEntry(owner_site, net::SiteType::kAssociated,
+                                  absl::nullopt));
     }
     output.emplace_back(sites);
   }
@@ -109,13 +114,13 @@ TEST(FirstPartySetsHandlerImpl, ComputeSetsDiff_SitesJoined) {
   FirstPartySetsHandlerImpl::FlattenedSets old_sets = {
       {net::SchemefulSite(GURL("https://example.test")),
        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://example.test")),
-                               net::SiteType::kPrimary)},
+                               net::SiteType::kPrimary, absl::nullopt)},
       {net::SchemefulSite(GURL("https://member1.test")),
        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://example.test")),
-                               net::SiteType::kAssociated)},
+                               net::SiteType::kAssociated, 0)},
       {net::SchemefulSite(GURL("https://member3.test")),
        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://example.test")),
-                               net::SiteType::kAssociated)}};
+                               net::SiteType::kAssociated, 1)}};
   // Consistency check the reviewer-friendly format matches the input.
   ASSERT_THAT(ParseSetsFromStream(
                   R"({"owner": "https://example.test", "members": )"
@@ -125,19 +130,19 @@ TEST(FirstPartySetsHandlerImpl, ComputeSetsDiff_SitesJoined) {
   FirstPartySetsHandlerImpl::FlattenedSets current_sets = {
       {net::SchemefulSite(GURL("https://example.test")),
        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://example.test")),
-                               net::SiteType::kPrimary)},
+                               net::SiteType::kPrimary, absl::nullopt)},
       {net::SchemefulSite(GURL("https://member1.test")),
        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://example.test")),
-                               net::SiteType::kAssociated)},
+                               net::SiteType::kAssociated, 0)},
       {net::SchemefulSite(GURL("https://member3.test")),
        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://example.test")),
-                               net::SiteType::kAssociated)},
+                               net::SiteType::kAssociated, 1)},
       {net::SchemefulSite(GURL("https://foo.test")),
        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
-                               net::SiteType::kPrimary)},
+                               net::SiteType::kPrimary, absl::nullopt)},
       {net::SchemefulSite(GURL("https://member2.test")),
        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
-                               net::SiteType::kAssociated)},
+                               net::SiteType::kAssociated, 0)},
   };
   // Consistency check the reviewer-friendly format matches the input.
   ASSERT_THAT(
@@ -159,19 +164,19 @@ TEST(FirstPartySetsHandlerImpl, ComputeSetsDiff_SitesLeft) {
   FirstPartySetsHandlerImpl::FlattenedSets old_sets = {
       {net::SchemefulSite(GURL("https://example.test")),
        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://example.test")),
-                               net::SiteType::kPrimary)},
+                               net::SiteType::kPrimary, absl::nullopt)},
       {net::SchemefulSite(GURL("https://member1.test")),
        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://example.test")),
-                               net::SiteType::kAssociated)},
+                               net::SiteType::kAssociated, 0)},
       {net::SchemefulSite(GURL("https://member3.test")),
        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://example.test")),
-                               net::SiteType::kAssociated)},
+                               net::SiteType::kAssociated, 1)},
       {net::SchemefulSite(GURL("https://foo.test")),
        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
-                               net::SiteType::kPrimary)},
+                               net::SiteType::kPrimary, absl::nullopt)},
       {net::SchemefulSite(GURL("https://member2.test")),
        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
-                               net::SiteType::kAssociated)}};
+                               net::SiteType::kAssociated, 0)}};
   // Consistency check the reviewer-friendly format matches the input.
   ASSERT_THAT(
       ParseSetsFromStream(R"({"owner": "https://example.test", "members": )"
@@ -182,10 +187,10 @@ TEST(FirstPartySetsHandlerImpl, ComputeSetsDiff_SitesLeft) {
   FirstPartySetsHandlerImpl::FlattenedSets current_sets = {
       {net::SchemefulSite(GURL("https://example.test")),
        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://example.test")),
-                               net::SiteType::kPrimary)},
+                               net::SiteType::kPrimary, absl::nullopt)},
       {net::SchemefulSite(GURL("https://member1.test")),
        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://example.test")),
-                               net::SiteType::kAssociated)}};
+                               net::SiteType::kAssociated, 0)}};
   // Consistency check the reviewer-friendly format matches the input.
   ASSERT_THAT(ParseSetsFromStream(R"({"owner": "https://example.test", )"
                                   R"("members": ["https://member1.test"]})"),
@@ -205,19 +210,19 @@ TEST(FirstPartySetsHandlerImpl, ComputeSetsDiff_OwnerChanged) {
   FirstPartySetsHandlerImpl::FlattenedSets old_sets = {
       {net::SchemefulSite(GURL("https://example.test")),
        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://example.test")),
-                               net::SiteType::kPrimary)},
+                               net::SiteType::kPrimary, absl::nullopt)},
       {net::SchemefulSite(GURL("https://member1.test")),
        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://example.test")),
-                               net::SiteType::kAssociated)},
+                               net::SiteType::kAssociated, 0)},
       {net::SchemefulSite(GURL("https://foo.test")),
        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
-                               net::SiteType::kPrimary)},
+                               net::SiteType::kPrimary, absl::nullopt)},
       {net::SchemefulSite(GURL("https://member2.test")),
        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
-                               net::SiteType::kAssociated)},
+                               net::SiteType::kAssociated, 0)},
       {net::SchemefulSite(GURL("https://member3.test")),
        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
-                               net::SiteType::kAssociated)}};
+                               net::SiteType::kAssociated, 1)}};
   // Consistency check the reviewer-friendly format matches the input.
   ASSERT_THAT(ParseSetsFromStream(
                   R"({"owner": "https://example.test", "members": )"
@@ -229,19 +234,19 @@ TEST(FirstPartySetsHandlerImpl, ComputeSetsDiff_OwnerChanged) {
   FirstPartySetsHandlerImpl::FlattenedSets current_sets = {
       {net::SchemefulSite(GURL("https://example.test")),
        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://example.test")),
-                               net::SiteType::kPrimary)},
+                               net::SiteType::kPrimary, absl::nullopt)},
       {net::SchemefulSite(GURL("https://member1.test")),
        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://example.test")),
-                               net::SiteType::kAssociated)},
+                               net::SiteType::kAssociated, 0)},
       {net::SchemefulSite(GURL("https://member3.test")),
        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://example.test")),
-                               net::SiteType::kAssociated)},
+                               net::SiteType::kAssociated, 1)},
       {net::SchemefulSite(GURL("https://foo.test")),
        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
-                               net::SiteType::kPrimary)},
+                               net::SiteType::kPrimary, absl::nullopt)},
       {net::SchemefulSite(GURL("https://member2.test")),
        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
-                               net::SiteType::kAssociated)}};
+                               net::SiteType::kAssociated, 0)}};
   // Consistency check the reviewer-friendly format matches the input.
   ASSERT_THAT(
       ParseSetsFromStream(R"({"owner": "https://example.test", "members": )"
@@ -260,13 +265,13 @@ TEST(FirstPartySetsHandlerImpl, ComputeSetsDiff_OwnerLeft) {
   FirstPartySetsHandlerImpl::FlattenedSets old_sets = {
       {net::SchemefulSite(GURL("https://example.test")),
        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://example.test")),
-                               net::SiteType::kPrimary)},
+                               net::SiteType::kPrimary, absl::nullopt)},
       {net::SchemefulSite(GURL("https://foo.test")),
        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://example.test")),
-                               net::SiteType::kAssociated)},
+                               net::SiteType::kAssociated, 0)},
       {net::SchemefulSite(GURL("https://bar.test")),
        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://example.test")),
-                               net::SiteType::kAssociated)}};
+                               net::SiteType::kAssociated, 1)}};
   // Consistency check the reviewer-friendly format matches the input.
   ASSERT_THAT(
       ParseSetsFromStream(R"({"owner": "https://example.test", "members": )"
@@ -276,10 +281,10 @@ TEST(FirstPartySetsHandlerImpl, ComputeSetsDiff_OwnerLeft) {
   FirstPartySetsHandlerImpl::FlattenedSets current_sets = {
       {net::SchemefulSite(GURL("https://foo.test")),
        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
-                               net::SiteType::kPrimary)},
+                               net::SiteType::kPrimary, absl::nullopt)},
       {net::SchemefulSite(GURL("https://bar.test")),
        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
-                               net::SiteType::kAssociated)}};
+                               net::SiteType::kAssociated, 0)}};
   // Consistency check the reviewer-friendly format matches the input.
   ASSERT_THAT(ParseSetsFromStream(R"(
       {"owner": "https://foo.test", "members": ["https://bar.test"]})"),
@@ -302,10 +307,10 @@ TEST(FirstPartySetsHandlerImpl, ComputeSetsDiff_OwnerMemberRotate) {
   FirstPartySetsHandlerImpl::FlattenedSets old_sets = {
       {net::SchemefulSite(GURL("https://example.test")),
        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://example.test")),
-                               net::SiteType::kPrimary)},
+                               net::SiteType::kPrimary, absl::nullopt)},
       {net::SchemefulSite(GURL("https://foo.test")),
        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://example.test")),
-                               net::SiteType::kAssociated)}};
+                               net::SiteType::kAssociated, 0)}};
   // Consistency check the reviewer-friendly format matches the input.
   ASSERT_THAT(
       ParseSetsFromStream(R"({"owner": "https://example.test", "members": )"
@@ -315,10 +320,10 @@ TEST(FirstPartySetsHandlerImpl, ComputeSetsDiff_OwnerMemberRotate) {
   FirstPartySetsHandlerImpl::FlattenedSets current_sets = {
       {net::SchemefulSite(GURL("https://example.test")),
        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
-                               net::SiteType::kAssociated)},
+                               net::SiteType::kAssociated, 0)},
       {net::SchemefulSite(GURL("https://foo.test")),
        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
-                               net::SiteType::kPrimary)}};
+                               net::SiteType::kPrimary, absl::nullopt)}};
   // Consistency check the reviewer-friendly format matches the input.
   ASSERT_THAT(
       ParseSetsFromStream(
@@ -340,10 +345,10 @@ TEST(FirstPartySetsHandlerImpl, ComputeSetsDiff_EmptyOldSets) {
   FirstPartySetsHandlerImpl::FlattenedSets current_sets = {
       {net::SchemefulSite(GURL("https://example.test")),
        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://example.test")),
-                               net::SiteType::kPrimary)},
+                               net::SiteType::kPrimary, absl::nullopt)},
       {net::SchemefulSite(GURL("https://member1.test")),
        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://example.test")),
-                               net::SiteType::kAssociated)}};
+                               net::SiteType::kAssociated, 0)}};
   // Consistency check the reviewer-friendly format matches the input.
   ASSERT_THAT(ParseSetsFromStream(R"({"owner": "https://example.test", )"
                                   R"("members": ["https://member1.test"]})"),
@@ -360,10 +365,10 @@ TEST(FirstPartySetsHandlerImpl, ComputeSetsDiff_EmptyCurrentSets) {
   FirstPartySetsHandlerImpl::FlattenedSets old_sets = {
       {net::SchemefulSite(GURL("https://example.test")),
        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://example.test")),
-                               net::SiteType::kPrimary)},
+                               net::SiteType::kPrimary, absl::nullopt)},
       {net::SchemefulSite(GURL("https://member1.test")),
        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://example.test")),
-                               net::SiteType::kAssociated)}};
+                               net::SiteType::kAssociated, 0)}};
   // Consistency check the reviewer-friendly format matches the input.
   ASSERT_THAT(ParseSetsFromStream(R"({"owner": "https://example.test", )"
                                   R"("members": ["https://member1.test"]})"),
@@ -379,10 +384,10 @@ TEST(FirstPartySetsHandlerImpl, ComputeSetsDiff_PolicySitesJoined) {
   FirstPartySetsHandlerImpl::PolicyCustomization current_policy = {
       {net::SchemefulSite(GURL("https://foo.test")),
        {net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
-                                net::SiteType::kPrimary)}},
+                                net::SiteType::kPrimary, absl::nullopt)}},
       {net::SchemefulSite(GURL("https://member2.test")),
        {net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
-                                net::SiteType::kAssociated)}},
+                                net::SiteType::kAssociated, 0)}},
   };
 
   // "https://example.test" and "https://member2.test" joined FPSs via
@@ -398,10 +403,10 @@ TEST(FirstPartySetsHandlerImpl, ComputeSetsDiff_PolicyRemovedSitesJoined) {
   FirstPartySetsHandlerImpl::FlattenedSets sets = {
       {net::SchemefulSite(GURL("https://example.test")),
        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://example.test")),
-                               net::SiteType::kPrimary)},
+                               net::SiteType::kPrimary, absl::nullopt)},
       {net::SchemefulSite(GURL("https://member1.test")),
        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://example.test")),
-                               net::SiteType::kAssociated)}};
+                               net::SiteType::kAssociated, 0)}};
   // Consistency check the reviewer-friendly format matches the input.
   ASSERT_THAT(ParseSetsFromStream(R"({"owner": "https://example.test",)"
                                   R"("members": ["https://member1.test"]})"),
@@ -411,10 +416,10 @@ TEST(FirstPartySetsHandlerImpl, ComputeSetsDiff_PolicyRemovedSitesJoined) {
   FirstPartySetsHandlerImpl::PolicyCustomization old_policy = {
       {net::SchemefulSite(GURL("https://foo.test")),
        {net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
-                                net::SiteType::kPrimary)}},
+                                net::SiteType::kPrimary, absl::nullopt)}},
       {net::SchemefulSite(GURL("https://member1.test")),
        {net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
-                                net::SiteType::kAssociated)}},
+                                net::SiteType::kAssociated, 0)}},
       {net::SchemefulSite(GURL("https://example.test")), absl::nullopt},
   };
 
@@ -422,13 +427,13 @@ TEST(FirstPartySetsHandlerImpl, ComputeSetsDiff_PolicyRemovedSitesJoined) {
   FirstPartySetsHandlerImpl::PolicyCustomization current_policy = {
       {net::SchemefulSite(GURL("https://foo.test")),
        {net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
-                                net::SiteType::kPrimary)}},
+                                net::SiteType::kPrimary, absl::nullopt)}},
       {net::SchemefulSite(GURL("https://member1.test")),
        {net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
-                                net::SiteType::kAssociated)}},
+                                net::SiteType::kAssociated, 0)}},
       {net::SchemefulSite(GURL("https://example.test")),
        {net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
-                                net::SiteType::kAssociated)}},
+                                net::SiteType::kAssociated, 0)}},
   };
 
   // We don't clear site data upon joining, so the computed diff should be
@@ -443,23 +448,23 @@ TEST(FirstPartySetsHandlerImpl, ComputeSetsDiff_PolicyMemberLeft) {
   FirstPartySetsHandlerImpl::PolicyCustomization old_policy = {
       {net::SchemefulSite(GURL("https://foo.test")),
        {net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
-                                net::SiteType::kPrimary)}},
+                                net::SiteType::kPrimary, absl::nullopt)}},
       {net::SchemefulSite(GURL("https://member1.test")),
        {net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
-                                net::SiteType::kAssociated)}},
+                                net::SiteType::kAssociated, 0)}},
       {net::SchemefulSite(GURL("https://member2.test")),
        {net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
-                                net::SiteType::kAssociated)}},
+                                net::SiteType::kAssociated, 0)}},
   };
 
   // "https://member2.test" left FPSs via enterprise policy.
   FirstPartySetsHandlerImpl::PolicyCustomization current_policy = {
       {net::SchemefulSite(GURL("https://foo.test")),
        {net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
-                                net::SiteType::kPrimary)}},
+                                net::SiteType::kPrimary, absl::nullopt)}},
       {net::SchemefulSite(GURL("https://member1.test")),
        {net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
-                                net::SiteType::kAssociated)}},
+                                net::SiteType::kAssociated, 0)}},
   };
 
   EXPECT_THAT(
@@ -473,26 +478,26 @@ TEST(FirstPartySetsHandlerImpl, ComputeSetsDiff_PolicyOwnerLeft) {
       {net::SchemefulSite(GURL("https://example.test")),
        {net::FirstPartySetEntry(
            net::SchemefulSite(GURL("https://example.test")),
-           net::SiteType::kPrimary)}},
+           net::SiteType::kPrimary, absl::nullopt)}},
       {net::SchemefulSite(GURL("https://member1.test")),
        {net::FirstPartySetEntry(
            net::SchemefulSite(GURL("https://example.test")),
-           net::SiteType::kAssociated)}},
+           net::SiteType::kAssociated, 0)}},
       {net::SchemefulSite(GURL("https://member2.test")),
        {net::FirstPartySetEntry(
            net::SchemefulSite(GURL("https://example.test")),
-           net::SiteType::kAssociated)}},
+           net::SiteType::kAssociated, 0)}},
   };
 
   FirstPartySetsHandlerImpl::PolicyCustomization current_policy = {
       {net::SchemefulSite(GURL("https://member1.test")),
        {net::FirstPartySetEntry(
            net::SchemefulSite(GURL("https://member1.test")),
-           net::SiteType::kPrimary)}},
+           net::SiteType::kPrimary, absl::nullopt)}},
       {net::SchemefulSite(GURL("https://member2.test")),
        {net::FirstPartySetEntry(
            net::SchemefulSite(GURL("https://member1.test")),
-           net::SiteType::kAssociated)}},
+           net::SiteType::kAssociated, 0)}},
   };
 
   // Expected diff: "https://example.test" left FPSs, "https://member1.test" and
@@ -512,31 +517,31 @@ TEST(FirstPartySetsHandlerImpl, ComputeSetsDiff_PolicyMembersChangeSet) {
   FirstPartySetsHandlerImpl::PolicyCustomization old_policy = {
       {net::SchemefulSite(GURL("https://foo.test")),
        {net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
-                                net::SiteType::kPrimary)}},
+                                net::SiteType::kPrimary, absl::nullopt)}},
       {net::SchemefulSite(GURL("https://member1.test")),
        {net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
-                                net::SiteType::kAssociated)}},
+                                net::SiteType::kAssociated, 0)}},
       {net::SchemefulSite(GURL("https://bar.test")),
        {net::FirstPartySetEntry(net::SchemefulSite(GURL("https://bar.test")),
-                                net::SiteType::kPrimary)}},
+                                net::SiteType::kPrimary, absl::nullopt)}},
       {net::SchemefulSite(GURL("https://member2.test")),
        {net::FirstPartySetEntry(net::SchemefulSite(GURL("https://bar.test")),
-                                net::SiteType::kAssociated)}},
+                                net::SiteType::kAssociated, 0)}},
   };
 
   FirstPartySetsHandlerImpl::PolicyCustomization current_policy = {
       {net::SchemefulSite(GURL("https://foo.test")),
        {net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
-                                net::SiteType::kPrimary)}},
+                                net::SiteType::kPrimary, absl::nullopt)}},
       {net::SchemefulSite(GURL("https://member2.test")),
        {net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
-                                net::SiteType::kAssociated)}},
+                                net::SiteType::kAssociated, 0)}},
       {net::SchemefulSite(GURL("https://bar.test")),
        {net::FirstPartySetEntry(net::SchemefulSite(GURL("https://bar.test")),
-                                net::SiteType::kPrimary)}},
+                                net::SiteType::kPrimary, absl::nullopt)}},
       {net::SchemefulSite(GURL("https://member1.test")),
        {net::FirstPartySetEntry(net::SchemefulSite(GURL("https://bar.test")),
-                                net::SiteType::kAssociated)}},
+                                net::SiteType::kAssociated, 0)}},
   };
 
   EXPECT_THAT(
@@ -668,11 +673,11 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest, EmptyPersistedSetsDir) {
                   Pair(SerializesTo("https://example.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kPrimary)),
+                           net::SiteType::kPrimary, absl::nullopt)),
                   Pair(SerializesTo("https://member1.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kAssociated))));
+                           net::SiteType::kAssociated, 0))));
 }
 
 TEST_F(FirstPartySetsHandlerImplEnabledTest,
@@ -685,34 +690,51 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
   FirstPartySetsHandlerImpl::GetInstance()->SetPublicFirstPartySets(
       WritePublicSetsFile(input));
 
-  auto expected_sets = UnorderedElementsAre(
-      Pair(SerializesTo("https://example.test"),
-           net::FirstPartySetEntry(
-               net::SchemefulSite(GURL("https://example.test")),
-               net::SiteType::kPrimary)),
-      Pair(SerializesTo("https://member1.test"),
-           net::FirstPartySetEntry(
-               net::SchemefulSite(GURL("https://example.test")),
-               net::SiteType::kAssociated)),
-      Pair(SerializesTo("https://foo.test"),
-           net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
-                                   net::SiteType::kPrimary)),
-      Pair(SerializesTo("https://member2.test"),
-           net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
-                                   net::SiteType::kAssociated)));
-
   // Persisted sets are expected to be loaded with the provided path.
   FirstPartySetsHandlerImpl::GetInstance()->Init(
       scoped_dir_.GetPath(),
       /*flag_value=*/"https://example.test,https://member1.test");
-  EXPECT_THAT(GetSetsAndWait(), expected_sets);
+  EXPECT_THAT(GetSetsAndWait(),
+              UnorderedElementsAre(
+                  Pair(SerializesTo("https://example.test"),
+                       net::FirstPartySetEntry(
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kPrimary, absl::nullopt)),
+                  Pair(SerializesTo("https://member1.test"),
+                       net::FirstPartySetEntry(
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kAssociated, 0)),
+                  Pair(SerializesTo("https://foo.test"),
+                       net::FirstPartySetEntry(
+                           net::SchemefulSite(GURL("https://foo.test")),
+                           net::SiteType::kPrimary, absl::nullopt)),
+                  Pair(SerializesTo("https://member2.test"),
+                       net::FirstPartySetEntry(
+                           net::SchemefulSite(GURL("https://foo.test")),
+                           net::SiteType::kAssociated, 0))));
 
   env().RunUntilIdle();
 
   std::string got;
   ASSERT_TRUE(base::ReadFileToString(persisted_sets_path_, &got));
   EXPECT_THAT(FirstPartySetParser::DeserializeFirstPartySets(got),
-              expected_sets);
+              UnorderedElementsAre(
+                  Pair(SerializesTo("https://example.test"),
+                       net::FirstPartySetEntry(
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kPrimary, absl::nullopt)),
+                  Pair(SerializesTo("https://member1.test"),
+                       net::FirstPartySetEntry(
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kAssociated, absl::nullopt)),
+                  Pair(SerializesTo("https://foo.test"),
+                       net::FirstPartySetEntry(
+                           net::SchemefulSite(GURL("https://foo.test")),
+                           net::SiteType::kPrimary, absl::nullopt)),
+                  Pair(SerializesTo("https://member2.test"),
+                       net::FirstPartySetEntry(
+                           net::SchemefulSite(GURL("https://foo.test")),
+                           net::SiteType::kAssociated, absl::nullopt))));
 }
 
 TEST_F(FirstPartySetsHandlerImplEnabledTest, Successful_PersistedSetsEmpty) {
@@ -726,34 +748,51 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest, Successful_PersistedSetsEmpty) {
   FirstPartySetsHandlerImpl::GetInstance()->SetPublicFirstPartySets(
       WritePublicSetsFile(input));
 
-  auto expected_sets = UnorderedElementsAre(
-      Pair(SerializesTo("https://example.test"),
-           net::FirstPartySetEntry(
-               net::SchemefulSite(GURL("https://example.test")),
-               net::SiteType::kPrimary)),
-      Pair(SerializesTo("https://member1.test"),
-           net::FirstPartySetEntry(
-               net::SchemefulSite(GURL("https://example.test")),
-               net::SiteType::kAssociated)),
-      Pair(SerializesTo("https://foo.test"),
-           net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
-                                   net::SiteType::kPrimary)),
-      Pair(SerializesTo("https://member2.test"),
-           net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
-                                   net::SiteType::kAssociated)));
-
   // Persisted sets are expected to be loaded with the provided path.
   FirstPartySetsHandlerImpl::GetInstance()->Init(
       scoped_dir_.GetPath(),
       /*flag_value=*/"https://example.test,https://member1.test");
-  EXPECT_THAT(GetSetsAndWait(), expected_sets);
+  EXPECT_THAT(GetSetsAndWait(),
+              UnorderedElementsAre(
+                  Pair(SerializesTo("https://example.test"),
+                       net::FirstPartySetEntry(
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kPrimary, absl::nullopt)),
+                  Pair(SerializesTo("https://member1.test"),
+                       net::FirstPartySetEntry(
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kAssociated, 0)),
+                  Pair(SerializesTo("https://foo.test"),
+                       net::FirstPartySetEntry(
+                           net::SchemefulSite(GURL("https://foo.test")),
+                           net::SiteType::kPrimary, absl::nullopt)),
+                  Pair(SerializesTo("https://member2.test"),
+                       net::FirstPartySetEntry(
+                           net::SchemefulSite(GURL("https://foo.test")),
+                           net::SiteType::kAssociated, 0))));
 
   env().RunUntilIdle();
 
   std::string got;
   ASSERT_TRUE(base::ReadFileToString(persisted_sets_path_, &got));
   EXPECT_THAT(FirstPartySetParser::DeserializeFirstPartySets(got),
-              expected_sets);
+              UnorderedElementsAre(
+                  Pair(SerializesTo("https://example.test"),
+                       net::FirstPartySetEntry(
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kPrimary, absl::nullopt)),
+                  Pair(SerializesTo("https://member1.test"),
+                       net::FirstPartySetEntry(
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kAssociated, absl::nullopt)),
+                  Pair(SerializesTo("https://foo.test"),
+                       net::FirstPartySetEntry(
+                           net::SchemefulSite(GURL("https://foo.test")),
+                           net::SiteType::kPrimary, absl::nullopt)),
+                  Pair(SerializesTo("https://member2.test"),
+                       net::FirstPartySetEntry(
+                           net::SchemefulSite(GURL("https://foo.test")),
+                           net::SiteType::kAssociated, absl::nullopt))));
 }
 
 TEST_F(FirstPartySetsHandlerImplEnabledTest,
@@ -768,33 +807,48 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
   FirstPartySetsHandlerImpl::GetInstance()->SetPublicFirstPartySets(
       WritePublicSetsFile(input));
 
-  auto expected_sets = UnorderedElementsAre(
-      Pair(SerializesTo("https://example.test"),
-           net::FirstPartySetEntry(
-               net::SchemefulSite(GURL("https://example.test")),
-               net::SiteType::kPrimary)),
-      Pair(SerializesTo("https://member.test"),
-           net::FirstPartySetEntry(
-               net::SchemefulSite(GURL("https://example.test")),
-               net::SiteType::kAssociated)));
-
   // Persisted sets are expected to be loaded with the provided path.
   FirstPartySetsHandlerImpl::GetInstance()->Init(scoped_dir_.GetPath(),
                                                  /*flag_value=*/"");
-  EXPECT_THAT(GetSetsAndWait(), expected_sets);
+  EXPECT_THAT(GetSetsAndWait(),
+              UnorderedElementsAre(
+                  Pair(SerializesTo("https://example.test"),
+                       net::FirstPartySetEntry(
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kPrimary, absl::nullopt)),
+                  Pair(SerializesTo("https://member.test"),
+                       net::FirstPartySetEntry(
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kAssociated, 0))));
 
   env().RunUntilIdle();
 
   std::string got;
   ASSERT_TRUE(base::ReadFileToString(persisted_sets_path_, &got));
   EXPECT_THAT(FirstPartySetParser::DeserializeFirstPartySets(got),
-              expected_sets);
+              UnorderedElementsAre(
+                  Pair(SerializesTo("https://example.test"),
+                       net::FirstPartySetEntry(
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kPrimary, absl::nullopt)),
+                  Pair(SerializesTo("https://member.test"),
+                       net::FirstPartySetEntry(
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kAssociated, absl::nullopt))));
 
   EXPECT_THAT(
       FirstPartySetsHandlerImpl::GetInstance()->GetSets(
           base::BindLambdaForTesting(
               [](FirstPartySetsHandlerImpl::FlattenedSets) { FAIL(); })),
-      testing::Optional(expected_sets));
+      testing::Optional(UnorderedElementsAre(
+          Pair(SerializesTo("https://example.test"),
+               net::FirstPartySetEntry(
+                   net::SchemefulSite(GURL("https://example.test")),
+                   net::SiteType::kPrimary, absl::nullopt)),
+          Pair(SerializesTo("https://member.test"),
+               net::FirstPartySetEntry(
+                   net::SchemefulSite(GURL("https://example.test")),
+                   net::SiteType::kAssociated, 0)))));
 }
 
 TEST_F(FirstPartySetsHandlerImplEnabledTest,
@@ -824,11 +878,11 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
                   Pair(SerializesTo("https://example.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kPrimary)),
+                           net::SiteType::kPrimary, absl::nullopt)),
                   Pair(SerializesTo("https://member.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kAssociated))));
+                           net::SiteType::kAssociated, 0))));
 
   EXPECT_THAT(
       FirstPartySetsHandlerImpl::GetInstance()->GetSets(
@@ -838,11 +892,11 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
           Pair(SerializesTo("https://example.test"),
                net::FirstPartySetEntry(
                    net::SchemefulSite(GURL("https://example.test")),
-                   net::SiteType::kPrimary)),
+                   net::SiteType::kPrimary, absl::nullopt)),
           Pair(SerializesTo("https://member.test"),
                net::FirstPartySetEntry(
                    net::SchemefulSite(GURL("https://example.test")),
-                   net::SiteType::kAssociated)))));
+                   net::SiteType::kAssociated, 0)))));
 }
 
 class FirstPartySetsHandlerGetCustomizationForPolicyTest
@@ -945,23 +999,23 @@ TEST_F(FirstPartySetsHandlerGetCustomizationForPolicyTest,
                   Pair(SerializesTo("https://owner1.test"),
                        Optional(net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://owner2.test")),
-                           net::SiteType::kAssociated))),
+                           net::SiteType::kAssociated, absl::nullopt))),
                   Pair(SerializesTo("https://member1.test"),
                        Optional(net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://member1.test")),
-                           net::SiteType::kPrimary))),
+                           net::SiteType::kPrimary, absl::nullopt))),
                   Pair(SerializesTo("https://owner3.test"),
                        Optional(net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://member1.test")),
-                           net::SiteType::kAssociated))),
+                           net::SiteType::kAssociated, absl::nullopt))),
                   Pair(SerializesTo("https://member2.test"),
                        Optional(net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://owner2.test")),
-                           net::SiteType::kAssociated))),
+                           net::SiteType::kAssociated, absl::nullopt))),
                   Pair(SerializesTo("https://owner2.test"),
                        Optional(net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://owner2.test")),
-                           net::SiteType::kPrimary)))));
+                           net::SiteType::kPrimary, absl::nullopt)))));
 }
 
 TEST(FirstPartySetsProfilePolicyCustomizations, EmptyPolicySetLists) {
@@ -987,11 +1041,11 @@ TEST(FirstPartySetsProfilePolicyCustomizations,
                   Pair(SerializesTo("https://member2.test"),
                        Optional(net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://owner2.test")),
-                           net::SiteType::kAssociated))),
+                           net::SiteType::kAssociated, absl::nullopt))),
                   Pair(SerializesTo("https://owner2.test"),
                        Optional(net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://owner2.test")),
-                           net::SiteType::kPrimary)))));
+                           net::SiteType::kPrimary, absl::nullopt)))));
 }
 
 // The common member between the policy and existing set is removed from its
@@ -1012,11 +1066,11 @@ TEST(FirstPartySetsProfilePolicyCustomizations,
                   Pair(SerializesTo("https://member1b.test"),
                        Optional(net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://owner2.test")),
-                           net::SiteType::kAssociated))),
+                           net::SiteType::kAssociated, absl::nullopt))),
                   Pair(SerializesTo("https://owner2.test"),
                        Optional(net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://owner2.test")),
-                           net::SiteType::kPrimary)))));
+                           net::SiteType::kPrimary, absl::nullopt)))));
 }
 
 // The common owner between the policy and existing set is removed and its
@@ -1037,11 +1091,11 @@ TEST(FirstPartySetsProfilePolicyCustomizations,
                   Pair(SerializesTo("https://member2.test"),
                        Optional(net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://owner1.test")),
-                           net::SiteType::kAssociated))),
+                           net::SiteType::kAssociated, absl::nullopt))),
                   Pair(SerializesTo("https://owner1.test"),
                        Optional(net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://owner1.test")),
-                           net::SiteType::kPrimary))),
+                           net::SiteType::kPrimary, absl::nullopt))),
                   Pair(SerializesTo("https://member1a.test"), absl::nullopt),
                   Pair(SerializesTo("https://member1b.test"), absl::nullopt)));
 }
@@ -1063,11 +1117,11 @@ TEST(FirstPartySetsProfilePolicyCustomizations,
                   Pair(SerializesTo("https://member1.test"),
                        Optional(net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://owner3.test")),
-                           net::SiteType::kAssociated))),
+                           net::SiteType::kAssociated, absl::nullopt))),
                   Pair(SerializesTo("https://owner3.test"),
                        Optional(net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://owner3.test")),
-                           net::SiteType::kPrimary))),
+                           net::SiteType::kPrimary, absl::nullopt))),
                   Pair(SerializesTo("https://owner1.test"), absl::nullopt)));
 }
 
@@ -1088,11 +1142,11 @@ TEST(FirstPartySetsProfilePolicyCustomizations,
                   Pair(SerializesTo("https://member2.test"),
                        Optional(net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://owner2.test")),
-                           net::SiteType::kAssociated))),
+                           net::SiteType::kAssociated, absl::nullopt))),
                   Pair(SerializesTo("https://owner2.test"),
                        Optional(net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://owner2.test")),
-                           net::SiteType::kPrimary)))));
+                           net::SiteType::kPrimary, absl::nullopt)))));
 }
 
 // The owner of a policy set is also a member in an existing set.
@@ -1113,19 +1167,19 @@ TEST(FirstPartySetsProfilePolicyCustomizations,
                   Pair(SerializesTo("https://owner1.test"),
                        Optional(net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://member2.test")),
-                           net::SiteType::kAssociated))),
+                           net::SiteType::kAssociated, absl::nullopt))),
                   Pair(SerializesTo("https://member2a.test"),
                        Optional(net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://member2.test")),
-                           net::SiteType::kAssociated))),
+                           net::SiteType::kAssociated, absl::nullopt))),
                   Pair(SerializesTo("https://member2b.test"),
                        Optional(net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://member2.test")),
-                           net::SiteType::kAssociated))),
+                           net::SiteType::kAssociated, absl::nullopt))),
                   Pair(SerializesTo("https://member2.test"),
                        Optional(net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://member2.test")),
-                           net::SiteType::kPrimary)))));
+                           net::SiteType::kPrimary, absl::nullopt)))));
 }
 
 // The owner of a policy set is also an owner of an existing set.
@@ -1146,19 +1200,19 @@ TEST(FirstPartySetsProfilePolicyCustomizations,
                   Pair(SerializesTo("https://member2.test"),
                        Optional(net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://owner1.test")),
-                           net::SiteType::kAssociated))),
+                           net::SiteType::kAssociated, absl::nullopt))),
                   Pair(SerializesTo("https://member1.test"),
                        Optional(net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://owner1.test")),
-                           net::SiteType::kAssociated))),
+                           net::SiteType::kAssociated, absl::nullopt))),
                   Pair(SerializesTo("https://member3.test"),
                        Optional(net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://owner1.test")),
-                           net::SiteType::kAssociated))),
+                           net::SiteType::kAssociated, absl::nullopt))),
                   Pair(SerializesTo("https://owner1.test"),
                        Optional(net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://owner1.test")),
-                           net::SiteType::kPrimary)))));
+                           net::SiteType::kPrimary, absl::nullopt)))));
 }
 
 TEST(FirstPartySetsProfilePolicyCustomizations,
@@ -1183,44 +1237,53 @@ TEST(FirstPartySetsProfilePolicyCustomizations,
           FirstPartySetParser::ParsedPolicySetLists(
               /*replacement_list=*/{},
               {
-                  SingleSet(
-                      {{owner0, net::FirstPartySetEntry(
-                                    owner0, net::SiteType::kPrimary)},
-                       {member0, net::FirstPartySetEntry(
-                                     owner0, net::SiteType::kAssociated)}}),
-                  SingleSet(
-                      {{owner1, net::FirstPartySetEntry(
-                                    owner1, net::SiteType::kPrimary)},
-                       {member1, net::FirstPartySetEntry(
-                                     owner1, net::SiteType::kAssociated)}}),
-                  SingleSet(
-                      {{owner2, net::FirstPartySetEntry(
-                                    owner2, net::SiteType::kPrimary)},
-                       {member2, net::FirstPartySetEntry(
-                                     owner2, net::SiteType::kAssociated)}}),
-                  SingleSet(
-                      {{owner42, net::FirstPartySetEntry(
-                                     owner42, net::SiteType::kPrimary)},
-                       {member42, net::FirstPartySetEntry(
-                                      owner42, net::SiteType::kAssociated)}}),
+                  SingleSet({{owner0, net::FirstPartySetEntry(
+                                          owner0, net::SiteType::kPrimary,
+                                          absl::nullopt)},
+                             {member0, net::FirstPartySetEntry(
+                                           owner0, net::SiteType::kAssociated,
+                                           absl::nullopt)}}),
+                  SingleSet({{owner1, net::FirstPartySetEntry(
+                                          owner1, net::SiteType::kPrimary,
+                                          absl::nullopt)},
+                             {member1, net::FirstPartySetEntry(
+                                           owner1, net::SiteType::kAssociated,
+                                           absl::nullopt)}}),
+                  SingleSet({{owner2, net::FirstPartySetEntry(
+                                          owner2, net::SiteType::kPrimary,
+                                          absl::nullopt)},
+                             {member2, net::FirstPartySetEntry(
+                                           owner2, net::SiteType::kAssociated,
+                                           absl::nullopt)}}),
+                  SingleSet({{owner42, net::FirstPartySetEntry(
+                                           owner42, net::SiteType::kPrimary,
+                                           absl::nullopt)},
+                             {member42, net::FirstPartySetEntry(
+                                            owner42, net::SiteType::kAssociated,
+                                            absl::nullopt)}}),
               })),
       UnorderedElementsAre(
-          Pair(member0, absl::make_optional(net::FirstPartySetEntry(
-                            owner0, net::SiteType::kAssociated))),
-          Pair(member1, absl::make_optional(net::FirstPartySetEntry(
-                            owner1, net::SiteType::kAssociated))),
-          Pair(member2, absl::make_optional(net::FirstPartySetEntry(
-                            owner1, net::SiteType::kAssociated))),
-          Pair(member42, absl::make_optional(net::FirstPartySetEntry(
-                             owner42, net::SiteType::kAssociated))),
+          Pair(member0,
+               absl::make_optional(net::FirstPartySetEntry(
+                   owner0, net::SiteType::kAssociated, absl::nullopt))),
+          Pair(member1,
+               absl::make_optional(net::FirstPartySetEntry(
+                   owner1, net::SiteType::kAssociated, absl::nullopt))),
+          Pair(member2,
+               absl::make_optional(net::FirstPartySetEntry(
+                   owner1, net::SiteType::kAssociated, absl::nullopt))),
+          Pair(member42,
+               absl::make_optional(net::FirstPartySetEntry(
+                   owner42, net::SiteType::kAssociated, absl::nullopt))),
           Pair(owner0, absl::make_optional(net::FirstPartySetEntry(
-                           owner0, net::SiteType::kPrimary))),
+                           owner0, net::SiteType::kPrimary, absl::nullopt))),
           Pair(owner1, absl::make_optional(net::FirstPartySetEntry(
-                           owner1, net::SiteType::kPrimary))),
+                           owner1, net::SiteType::kPrimary, absl::nullopt))),
           Pair(owner2, absl::make_optional(net::FirstPartySetEntry(
-                           owner1, net::SiteType::kAssociated))),
-          Pair(owner42, absl::make_optional(net::FirstPartySetEntry(
-                            owner42, net::SiteType::kPrimary)))));
+                           owner1, net::SiteType::kAssociated, absl::nullopt))),
+          Pair(owner42,
+               absl::make_optional(net::FirstPartySetEntry(
+                   owner42, net::SiteType::kPrimary, absl::nullopt)))));
 }
 
 TEST(FirstPartySetsProfilePolicyCustomizations,
@@ -1245,44 +1308,53 @@ TEST(FirstPartySetsProfilePolicyCustomizations,
           FirstPartySetParser::ParsedPolicySetLists(
               /*replacement_list=*/{},
               {
-                  SingleSet(
-                      {{owner0, net::FirstPartySetEntry(
-                                    owner0, net::SiteType::kPrimary)},
-                       {member0, net::FirstPartySetEntry(
-                                     owner0, net::SiteType::kAssociated)}}),
-                  SingleSet(
-                      {{owner2, net::FirstPartySetEntry(
-                                    owner2, net::SiteType::kPrimary)},
-                       {member2, net::FirstPartySetEntry(
-                                     owner2, net::SiteType::kAssociated)}}),
-                  SingleSet(
-                      {{owner1, net::FirstPartySetEntry(
-                                    owner1, net::SiteType::kPrimary)},
-                       {member1, net::FirstPartySetEntry(
-                                     owner1, net::SiteType::kAssociated)}}),
-                  SingleSet(
-                      {{owner42, net::FirstPartySetEntry(
-                                     owner42, net::SiteType::kPrimary)},
-                       {member42, net::FirstPartySetEntry(
-                                      owner42, net::SiteType::kAssociated)}}),
+                  SingleSet({{owner0, net::FirstPartySetEntry(
+                                          owner0, net::SiteType::kPrimary,
+                                          absl::nullopt)},
+                             {member0, net::FirstPartySetEntry(
+                                           owner0, net::SiteType::kAssociated,
+                                           absl::nullopt)}}),
+                  SingleSet({{owner2, net::FirstPartySetEntry(
+                                          owner2, net::SiteType::kPrimary,
+                                          absl::nullopt)},
+                             {member2, net::FirstPartySetEntry(
+                                           owner2, net::SiteType::kAssociated,
+                                           absl::nullopt)}}),
+                  SingleSet({{owner1, net::FirstPartySetEntry(
+                                          owner1, net::SiteType::kPrimary,
+                                          absl::nullopt)},
+                             {member1, net::FirstPartySetEntry(
+                                           owner1, net::SiteType::kAssociated,
+                                           absl::nullopt)}}),
+                  SingleSet({{owner42, net::FirstPartySetEntry(
+                                           owner42, net::SiteType::kPrimary,
+                                           absl::nullopt)},
+                             {member42, net::FirstPartySetEntry(
+                                            owner42, net::SiteType::kAssociated,
+                                            absl::nullopt)}}),
               })),
       UnorderedElementsAre(
-          Pair(member0, absl::make_optional(net::FirstPartySetEntry(
-                            owner0, net::SiteType::kAssociated))),
-          Pair(member1, absl::make_optional(net::FirstPartySetEntry(
-                            owner2, net::SiteType::kAssociated))),
-          Pair(member2, absl::make_optional(net::FirstPartySetEntry(
-                            owner2, net::SiteType::kAssociated))),
-          Pair(member42, absl::make_optional(net::FirstPartySetEntry(
-                             owner42, net::SiteType::kAssociated))),
+          Pair(member0,
+               absl::make_optional(net::FirstPartySetEntry(
+                   owner0, net::SiteType::kAssociated, absl::nullopt))),
+          Pair(member1,
+               absl::make_optional(net::FirstPartySetEntry(
+                   owner2, net::SiteType::kAssociated, absl::nullopt))),
+          Pair(member2,
+               absl::make_optional(net::FirstPartySetEntry(
+                   owner2, net::SiteType::kAssociated, absl::nullopt))),
+          Pair(member42,
+               absl::make_optional(net::FirstPartySetEntry(
+                   owner42, net::SiteType::kAssociated, absl::nullopt))),
           Pair(owner0, absl::make_optional(net::FirstPartySetEntry(
-                           owner0, net::SiteType::kPrimary))),
+                           owner0, net::SiteType::kPrimary, absl::nullopt))),
           Pair(owner1, absl::make_optional(net::FirstPartySetEntry(
-                           owner2, net::SiteType::kAssociated))),
+                           owner2, net::SiteType::kAssociated, absl::nullopt))),
           Pair(owner2, absl::make_optional(net::FirstPartySetEntry(
-                           owner2, net::SiteType::kPrimary))),
-          Pair(owner42, absl::make_optional(net::FirstPartySetEntry(
-                            owner42, net::SiteType::kPrimary)))));
+                           owner2, net::SiteType::kPrimary, absl::nullopt))),
+          Pair(owner42,
+               absl::make_optional(net::FirstPartySetEntry(
+                   owner42, net::SiteType::kPrimary, absl::nullopt)))));
 }
 
 // Existing set overlaps with both replacement and addition set.
@@ -1303,22 +1375,22 @@ TEST(FirstPartySetsProfilePolicyCustomizations,
                   Pair(SerializesTo("https://member1.test"),
                        Optional(net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://owner0.test")),
-                           net::SiteType::kAssociated))),
+                           net::SiteType::kAssociated, absl::nullopt))),
                   Pair(SerializesTo("https://owner0.test"),
                        Optional(net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://owner0.test")),
-                           net::SiteType::kPrimary))),
+                           net::SiteType::kPrimary, absl::nullopt))),
                   Pair(SerializesTo("https://new-member1.test"),
                        Optional(net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://owner1.test")),
-                           net::SiteType::kAssociated))),
+                           net::SiteType::kAssociated, absl::nullopt))),
                   Pair(SerializesTo("https://member2.test"),
                        Optional(net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://owner1.test")),
-                           net::SiteType::kAssociated))),
+                           net::SiteType::kAssociated, absl::nullopt))),
                   Pair(SerializesTo("https://owner1.test"),
                        Optional(net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://owner1.test")),
-                           net::SiteType::kPrimary)))));
+                           net::SiteType::kPrimary, absl::nullopt)))));
 }
 }  // namespace content

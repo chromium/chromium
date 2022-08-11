@@ -23,11 +23,28 @@ enum class SiteType {
 // First-Party Set.
 class NET_EXPORT FirstPartySetEntry {
  public:
-  FirstPartySetEntry();
+  class NET_EXPORT SiteIndex {
+   public:
+    SiteIndex();
+    explicit SiteIndex(uint32_t value);
 
+    bool operator==(const SiteIndex& other) const;
+
+    uint32_t value() const { return value_; }
+
+   private:
+    uint32_t value_;
+  };
+
+  FirstPartySetEntry();
   // `primary` is the primary site in the First-Party Set associated with this
   // entry.
-  FirstPartySetEntry(SchemefulSite primary, SiteType site_type);
+  FirstPartySetEntry(SchemefulSite primary,
+                     SiteType site_type,
+                     absl::optional<SiteIndex> site_index);
+  FirstPartySetEntry(SchemefulSite primary,
+                     SiteType site_type,
+                     uint32_t site_index);
 
   FirstPartySetEntry(const FirstPartySetEntry&);
   FirstPartySetEntry& operator=(const FirstPartySetEntry&);
@@ -43,11 +60,22 @@ class NET_EXPORT FirstPartySetEntry {
 
   SiteType site_type() const { return site_type_; }
 
+  const absl::optional<SiteIndex>& site_index() const { return site_index_; }
+
  private:
+  // The primary site associated with this site's set.
   SchemefulSite primary_;
+  // The type associated with this site.
   SiteType site_type_;
+  // The index of this site in the set declaration, if a meaningful index
+  // exists. Primary sites do not have indices, nor do sites that were defined
+  // or affected by an enterprise policy set.
+  absl::optional<SiteIndex> site_index_;
 };
 
+NET_EXPORT std::ostream& operator<<(
+    std::ostream& os,
+    const FirstPartySetEntry::SiteIndex& site_index);
 NET_EXPORT std::ostream& operator<<(std::ostream& os,
                                     const FirstPartySetEntry& fpse);
 

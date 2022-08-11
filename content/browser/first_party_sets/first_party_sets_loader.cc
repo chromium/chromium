@@ -42,14 +42,20 @@ CanonicalizeSet(const std::vector<std::string>& origins) {
 
   const net::SchemefulSite& owner = *maybe_owner;
   std::vector<std::pair<net::SchemefulSite, net::FirstPartySetEntry>> sites(
-      {{owner, net::FirstPartySetEntry(owner, net::SiteType::kPrimary)}});
+      {{owner, net::FirstPartySetEntry(owner, net::SiteType::kPrimary,
+                                       absl::nullopt)}});
+  base::flat_set<net::SchemefulSite> associated_sites;
   for (auto it = origins.begin() + 1; it != origins.end(); ++it) {
     const absl::optional<net::SchemefulSite> maybe_member =
         content::FirstPartySetParser::CanonicalizeRegisteredDomain(
             *it, true /* emit_errors */);
-    if (maybe_member.has_value() && maybe_member != owner)
+    if (maybe_member.has_value() && maybe_member != owner &&
+        !base::Contains(associated_sites, *maybe_member)) {
       sites.emplace_back(*maybe_member, net::FirstPartySetEntry(
-                                            owner, net::SiteType::kAssociated));
+                                            owner, net::SiteType::kAssociated,
+                                            associated_sites.size()));
+      associated_sites.insert(*maybe_member);
+    }
   }
 
   if (sites.size() < 2) {

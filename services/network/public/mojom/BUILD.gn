@@ -752,6 +752,10 @@ mojom("mojom_first_party_sets") {
         {
           types = [
             {
+              mojom = "network.mojom.SiteIndex"
+              cpp = "::net::FirstPartySetEntry::SiteIndex"
+            },
+            {
               mojom = "network.mojom.FirstPartySetEntry"
               cpp = "::net::FirstPartySetEntry"
             },

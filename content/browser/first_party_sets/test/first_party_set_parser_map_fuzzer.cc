@@ -11,6 +11,7 @@
 #include "net/base/schemeful_site.h"
 #include "net/cookies/first_party_set_entry.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -32,11 +33,16 @@ FirstPartySetParser::SetsMap ConvertProtoToMap(
   for (const firstpartysets::proto::SitePair& item : sets.items()) {
     auto member_or_owner = GetSchemefulSite(item.member_or_owner());
     auto owner = GetSchemefulSite(item.owner());
-    map.emplace(
-        std::move(member_or_owner),
-        net::FirstPartySetEntry(owner, member_or_owner == owner
-                                           ? net::SiteType::kPrimary
-                                           : net::SiteType::kAssociated));
+    net::SiteType site_type = member_or_owner == owner
+                                  ? net::SiteType::kPrimary
+                                  : net::SiteType::kAssociated;
+    absl::optional<net::FirstPartySetEntry::SiteIndex> site_index =
+        site_type == net::SiteType::kPrimary
+            ? absl::nullopt
+            : absl::make_optional(
+                  net::FirstPartySetEntry::SiteIndex(map.size()));
+    map.emplace(member_or_owner,
+                net::FirstPartySetEntry(owner, site_type, site_index));
   }
   return map;
 }
