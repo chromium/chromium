@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -2347,6 +2348,31 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormField) {
   expected.name = expected.id_attribute;
   expected.value = u"value";
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, result2);
+}
+
+// <label for=fieldId> elements are correctly assigned to their inputs. Multiple
+// labels are separated with a space.
+TEST_F(FormAutofillTest, WebFormControlElementToFormField_LabelFor) {
+  base::test::ScopedFeatureList improved_label_for_inference;
+  improved_label_for_inference.InitAndEnableFeature(
+      features::kAutofillImprovedLabelForInference);
+
+  LoadHTML(R"(
+    <label for=fieldId>foo</label>
+    <label for=fieldId>bar</label>
+    <input id=fieldId>
+  )");
+  ASSERT_NE(GetMainFrame(), nullptr);
+
+  base::HistogramTester histogram_tester;
+  FormFieldData form_field_data;
+  WebFormControlElementToFormField(FormRendererId(),
+                                   GetFormControlElementById("fieldId"),
+                                   nullptr, EXTRACT_NONE, &form_field_data);
+  EXPECT_EQ(form_field_data.label, u"foo bar");
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kAssignedLabelSourceHistogram),
+      testing::UnorderedElementsAre(base::Bucket(AssignedLabelSource::kId, 2)));
 }
 
 // We should be able to extract a text field with autocomplete="off".

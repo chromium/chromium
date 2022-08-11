@@ -1297,17 +1297,6 @@ struct CompareByRendererId {
   }
 };
 
-// Autofill supports assigning <label for=x> tags to inputs if x its id/name,
-// or the id/name of a shadow host element containing the input.
-// This enum is used to track how often each case occurs in practise.
-enum class AssignedLabelSource {
-  kId = 0,
-  kName = 1,
-  kShadowHostId = 2,
-  kShadowHostName = 3,
-  kMaxValue = kShadowHostName,
-};
-
 // Searches |field_set| for a unique field with name |field_name|. If there is
 // none or more than one field with that name, the fields' shadow hosts' name
 // and id attributes are tested, and the first match is returned. Returns
@@ -1390,11 +1379,7 @@ void MatchLabelsAndFields(
     if (!field_data->label.empty() && !label_text.empty())
       field_data->label += u" ";
     field_data->label += label_text;
-    // This temporary histogram is emitted inline, because browser files like
-    // AutofillMetrics cannot be included here.
-    // TODO(crbug.com/1339277): Remove.
-    base::UmaHistogramEnumeration("Autofill.LabelInference.AssignedLabelSource",
-                                  label_source);
+    base::UmaHistogramEnumeration(kAssignedLabelSourceHistogram, label_source);
   }
 }
 
@@ -1497,7 +1482,8 @@ bool FormOrFieldsetsToFormData(
   }
 
   // Extracts field labels from the <label for="..."> tags.
-  {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillImprovedLabelForInference)) {
     std::vector<std::pair<FormFieldData*, ShadowFieldData>> items;
     DCHECK_EQ(form->fields.size(), shadow_fields.size());
     for (size_t i = 0; i < form->fields.size(); i++) {
@@ -1640,6 +1626,22 @@ std::string GetAutocompleteAttribute(const WebElement& element) {
     return "x-max-data-length-exceeded";
   }
   return autocomplete_attribute;
+}
+
+// Returns the concatenated label text of all labels assigned to the `element`
+// using <label for=`element.GetIdAttribute()`>, separated by a space.
+std::u16string GetAssignedLabel(const WebFormControlElement& element) {
+  std::u16string concatenated_labels;
+  for (const auto& label : element.Labels()) {
+    if (auto label_text = FindChildText(label); !label_text.empty()) {
+      if (!concatenated_labels.empty())
+        concatenated_labels.push_back(' ');
+      concatenated_labels.append(std::move(label_text));
+      base::UmaHistogramEnumeration(kAssignedLabelSourceHistogram,
+                                    AssignedLabelSource::kId);
+    }
+  }
+  return concatenated_labels;
 }
 
 void FindFormElementUpShadowRoots(const WebElement& element,
@@ -1951,6 +1953,10 @@ void WebFormControlElementToFormField(
   field->form_control_ax_id = element.GetAxId();
   field->form_control_type = element.FormControlTypeForAutofill().Utf8();
   field->autocomplete_attribute = GetAutocompleteAttribute(element);
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillImprovedLabelForInference)) {
+    field->label = GetAssignedLabel(element);
+  }
   if (base::EqualsCaseInsensitiveASCII(element.GetAttribute(*kRole).Utf16(),
                                        "presentation")) {
     field->role = FormFieldData::RoleAttribute::kPresentation;

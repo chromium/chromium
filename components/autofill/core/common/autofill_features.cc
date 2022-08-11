@@ -216,7 +216,7 @@ const base::Feature kAutofillEnableExtendedAddressFormats{
 
 // Controls whether to save the first number in a form with multiple phone
 // numbers instead of aborting the import.
-// TODO(crbug.com/1167484) Remove once launched
+// TODO(crbug.com/1167484) Remove once launched.
 const base::Feature kAutofillEnableImportWhenMultiplePhoneNumbers{
     "AutofillEnableImportWhenMultiplePhoneNumbers",
     base::FEATURE_DISABLED_BY_DEFAULT};
@@ -351,6 +351,12 @@ const base::FeatureParam<base::TimeDelta>
 const base::Feature kAutofillIgnoreUnmappableAutocompleteValues{
     "AutofillIgnoreUnmappableAutocompleteValues",
     base::FEATURE_DISABLED_BY_DEFAULT};
+
+// When enabled, <label for=..> inference relies on control.labels() instead of
+// iterating through all <label> tags manually.
+// TODO(crbug.com/1339277) Remove once launched.
+const base::Feature kAutofillImprovedLabelForInference{
+    "AutofillImprovedLabelForInference", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // When enabled, only changed values are highlighted in preview mode.
 // TODO(crbug/1248585): Remove when launched.
