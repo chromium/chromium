@@ -55,7 +55,6 @@ void InputIPC::CreateStream(media::AudioInputIPCDelegate* delegate,
   if (log_)
     log = log_.Unbind();
 
-  // TODO(crbug.com/1284652): Pass a real |processing_config|.
   stream_factory_->CreateInputStream(
       stream_.BindNewPipeAndPassReceiver(), std::move(client), {},
       std::move(log), device_id_, params, total_segments,
