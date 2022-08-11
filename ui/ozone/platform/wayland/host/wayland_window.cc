@@ -697,8 +697,8 @@ void WaylandWindow::OnLeftOutput() {
   // event.
   if (AsWaylandPopup())
     return;
-  // Do not update the window scale where. It'll be updated when entring a new
-  // output.
+
+  UpdateWindowScale(true);
 }
 
 WaylandWindow* WaylandWindow::GetTopMostChildWindow() {
