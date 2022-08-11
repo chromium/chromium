@@ -529,7 +529,7 @@ WebMediaPlayer::LoadTiming WebMediaPlayerMS::Load(
         client_->AddAudioTrack(
             blink::WebString::FromUTF8(component->Id().Utf8()),
             blink::WebMediaPlayerClient::kAudioTrackKindMain,
-            blink::WebString::FromUTF8(component->Source()->GetName().Utf8()),
+            blink::WebString::FromUTF8(component->GetSourceName().Utf8()),
             /*language=*/"", is_first_audio_track);
         is_first_audio_track = false;
       }
@@ -554,7 +554,7 @@ WebMediaPlayer::LoadTiming WebMediaPlayerMS::Load(
         client_->AddVideoTrack(
             blink::WebString::FromUTF8(component->Id().Utf8()),
             blink::WebMediaPlayerClient::kVideoTrackKindMain,
-            blink::WebString::FromUTF8(component->Source()->GetName().Utf8()),
+            blink::WebString::FromUTF8(component->GetSourceName().Utf8()),
             /*language=*/"", is_first_video_track);
         is_first_video_track = false;
       }

@@ -85,6 +85,7 @@ class PLATFORM_EXPORT MediaStreamComponentImpl final
   MediaStreamSource::StreamType GetSourceType() const override {
     return Source()->GetType();
   }
+  const String& GetSourceName() const override { return Source()->GetName(); }
   MediaStreamSource::ReadyState GetReadyState() const override {
     return Source()->GetReadyState();
   }

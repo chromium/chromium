@@ -56,6 +56,14 @@ MediaStreamSource::StreamType TransferredMediaStreamComponent::GetSourceType()
   // TODO(crbug.com/1288839): Return the transferred value
   return MediaStreamSource::StreamType::kTypeVideo;
 }
+const String& TransferredMediaStreamComponent::GetSourceName() const {
+  if (component_) {
+    return component_->GetSourceName();
+  }
+  // TODO(crbug.com/1288839): Return the transferred value
+  static String name;
+  return name;
+}
 
 MediaStreamSource::ReadyState TransferredMediaStreamComponent::GetReadyState()
     const {

@@ -46,6 +46,7 @@ class PLATFORM_EXPORT TransferredMediaStreamComponent final
   String Id() const override;
   int UniqueId() const override;
   MediaStreamSource::StreamType GetSourceType() const override;
+  const String& GetSourceName() const override;
   MediaStreamSource::ReadyState GetReadyState() const override;
   bool Remote() const override;
   bool Enabled() const override;
