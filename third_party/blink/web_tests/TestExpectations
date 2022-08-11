@@ -3968,7 +3968,6 @@ crbug.com/792437 external/wpt/css/css-multicol/multicol-rule-outset-000.xht [ Fa
 crbug.com/963109 external/wpt/css/css-multicol/multicol-span-all-button-001.html [ Failure ]
 crbug.com/963109 external/wpt/css/css-multicol/multicol-span-all-button-002.html [ Failure ]
 crbug.com/963109 external/wpt/css/css-multicol/multicol-span-all-button-003.html [ Failure ]
-crbug.com/915204 external/wpt/css/css-multicol/multicol-span-all-005.html [ Failure ]
 crbug.com/636055 external/wpt/css/css-multicol/multicol-span-all-margin-nested-002.xht [ Failure ]
 crbug.com/990240 external/wpt/css/css-multicol/multicol-span-all-rule-001.html [ Failure ]
 crbug.com/964183 external/wpt/css/css-multicol/multicol-width-005.html [ Failure ]

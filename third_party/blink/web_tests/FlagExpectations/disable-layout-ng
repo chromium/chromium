@@ -631,6 +631,7 @@ crbug.com/829028 external/wpt/css/css-multicol/multicol-span-all-children-height
 crbug.com/874051 external/wpt/css/css-multicol/multicol-span-all-fieldset-001.html [ Failure ]
 crbug.com/874051 external/wpt/css/css-multicol/multicol-span-all-fieldset-002.html [ Failure ]
 crbug.com/874051 external/wpt/css/css-multicol/multicol-span-all-fieldset-003.html [ Failure ]
+crbug.com/915204 external/wpt/css/css-multicol/multicol-span-all-005.html [ Failure ]
 crbug.com/915204 external/wpt/css/css-multicol/multicol-span-all-006.html [ Failure ]
 crbug.com/915204 external/wpt/css/css-multicol/multicol-span-all-007.html [ Failure ]
 crbug.com/915204 external/wpt/css/css-multicol/multicol-span-all-009.html [ Failure ]
