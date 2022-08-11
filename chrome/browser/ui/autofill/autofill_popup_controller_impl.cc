@@ -98,10 +98,6 @@ void AutofillPopupControllerImpl::Show(
     const std::vector<Suggestion>& suggestions,
     bool autoselect_first_suggestion,
     PopupType popup_type) {
-  // TODO(crbug.com/1341374, crbug.com/1277218): Why can `this` be deleted
-  // synchronously?
-  WeakPtr<AutofillPopupControllerImpl> weak_this = GetWeakPtr();
-
   if (IsMouseLocked()) {
     Hide(PopupHidingReason::kMouseLocked);
     return;
@@ -129,26 +125,16 @@ void AutofillPopupControllerImpl::Show(
         ->UpdateSourceAvailability(FillingSource::AUTOFILL,
                                    !suggestions.empty());
 #endif
-    view_->Show();
-    // TODO(crbug.com/1055981): `this` can be destroyed synchronously at this
-    // point.
-    if (!weak_this || !view_)
+    if (!view_.Call(&AutofillPopupView::Show))
       return;
 
     // We only fire the event when a new popup shows. We do not fire the
     // event when suggestions changed.
     FireControlsChangedEvent(true);
 
-    if (autoselect_first_suggestion) {
-      // TODO(crbug.com/1276850, crbug.com/1277218): Replace with
-      // SetSelectedLine().
-      SetSelectedLineHelper(0);
-    }
+    if (autoselect_first_suggestion)
+      SetSelectedLine(0);
   }
-  // TODO(crbug.com/1200766, crbug.com/1276850, crbug.com/1277218): `this` can
-  // be destroyed synchronously at this point.
-  if (!weak_this)
-    return;
 
   absl::visit(
       [&](auto* driver) {
@@ -159,7 +145,7 @@ void AutofillPopupControllerImpl::Show(
                const content::NativeWebKeyboardEvent& event) {
               return weak_this && weak_this->HandleKeyPressEvent(event);
             },
-            weak_this));
+            GetWeakPtr()));
       },
       GetDriver());
 
@@ -244,17 +230,12 @@ void AutofillPopupControllerImpl::Hide(PopupHidingReason reason) {
   }
   AutofillMetrics::LogAutofillPopupHidingReason(reason);
   HideViewAndDie();
-  // No code below this line!
-  // |HideViewAndDie()| destroys |this|, so it should be the last line.
 }
 
 void AutofillPopupControllerImpl::ViewDestroyed() {
   // The view has already been destroyed so clear the reference to it.
   view_ = nullptr;
-
   Hide(PopupHidingReason::kViewDestroyed);
-  // No code below this line!
-  // |Hide()| destroys |this|, so it should be the last line.
 }
 
 bool AutofillPopupControllerImpl::HandleKeyPressEvent(
@@ -274,10 +255,7 @@ bool AutofillPopupControllerImpl::HandleKeyPressEvent(
     case ui::VKEY_PRIOR:  // Page up.
       // Set no line and then select the next line in case the first line is not
       // selectable.
-      // TODO(crbug.com/1276850,crbug.com/1277218): Replace with
-      // SetSelectedLine().
-      if (SetSelectedLineHelper(absl::nullopt) != SelfStatus::kAlive)
-        return true;
+      SetSelectedLine(absl::nullopt);
       SelectNextLine();
       return true;
     case ui::VKEY_NEXT:  // Page down.
@@ -319,7 +297,7 @@ void AutofillPopupControllerImpl::OnSuggestionsChanged() {
 #endif
 
   // Platform-specific draw call.
-  view_->OnSuggestionsChanged();
+  std::ignore = view_.Call(&AutofillPopupView::OnSuggestionsChanged);
 }
 
 void AutofillPopupControllerImpl::SelectionCleared() {
@@ -452,21 +430,13 @@ PopupType AutofillPopupControllerImpl::GetPopupType() const {
 
 void AutofillPopupControllerImpl::SetSelectedLine(
     absl::optional<int> selected_line) {
-  SetSelectedLineHelper(selected_line);
-}
-
-// TODO(crbug.com/1276850,crbug.com/1277218): Remove function in favour of
-// SetSelectedLine().
-AutofillPopupControllerImpl::SelfStatus
-AutofillPopupControllerImpl::SetSelectedLineHelper(
-    absl::optional<int> selected_line) {
   if (IsMouseLocked()) {
     Hide(PopupHidingReason::kMouseLocked);
-    return SelfStatus::kDestroyed;
+    return;
   }
 
   if (selected_line_ == selected_line)
-    return SelfStatus::kAlive;
+    return;
 
   if (selected_line) {
     DCHECK_LT(*selected_line, GetLineCount());
@@ -474,9 +444,10 @@ AutofillPopupControllerImpl::SetSelectedLineHelper(
       selected_line = absl::nullopt;
   }
 
-  auto previous_selected_line(selected_line_);
+  absl::optional<int> previous_selected_line = selected_line_;
   selected_line_ = selected_line;
-  view_->OnSelectedRowChanged(previous_selected_line, selected_line_);
+  std::ignore = view_.Call(&AutofillPopupView::OnSelectedRowChanged,
+                           previous_selected_line, selected_line_);
 
   if (selected_line_) {
     const Suggestion& suggestion = suggestions_[*selected_line_];
@@ -486,7 +457,6 @@ AutofillPopupControllerImpl::SetSelectedLineHelper(
   } else {
     delegate_->ClearPreviewedForm();
   }
-  return SelfStatus::kAlive;
 }
 
 void AutofillPopupControllerImpl::SelectNextLine() {
@@ -501,8 +471,7 @@ void AutofillPopupControllerImpl::SelectNextLine() {
   if (new_selected_line >= GetLineCount())
     new_selected_line = 0;
 
-  // TODO(crbug.com/1276850,crbug.com/1277218): Replace with SetSelectedLine().
-  SetSelectedLineHelper(new_selected_line);
+  SetSelectedLine(new_selected_line);
 }
 
 void AutofillPopupControllerImpl::SelectPreviousLine() {
@@ -517,8 +486,7 @@ void AutofillPopupControllerImpl::SelectPreviousLine() {
   if (new_selected_line < 0)
     new_selected_line = GetLineCount() - 1;
 
-  // TODO(crbug.com/1276850,crbug.com/1277218): Replace with SetSelectedLine().
-  SetSelectedLineHelper(new_selected_line);
+  SetSelectedLine(new_selected_line);
 }
 
 bool AutofillPopupControllerImpl::RemoveSelectedLine() {
@@ -598,7 +566,8 @@ void AutofillPopupControllerImpl::HideViewAndDie() {
   if (view_) {
     // We need to fire the event while view is not deleted yet.
     FireControlsChangedEvent(false);
-    view_->Hide();  // Deletes |view_|.
+    // Deletes the pointer wrapped in `view_`.
+    std::ignore = view_.Call(&AutofillPopupView::Hide);
     view_ = nullptr;
   }
 
@@ -643,7 +612,6 @@ AutofillPopupControllerImpl::GetDriver() {
 void AutofillPopupControllerImpl::FireControlsChangedEvent(bool is_show) {
   if (!accessibility_state_utils::IsScreenReaderEnabled())
     return;
-  DCHECK(view_);
 
   // Retrieve the ax tree id associated with the current web contents.
   ui::AXTreeID tree_id = absl::visit(
@@ -668,14 +636,15 @@ void AutofillPopupControllerImpl::FireControlsChangedEvent(bool is_show) {
   // Now get the target node from its tree ID and node ID.
   ui::AXPlatformNode* target_node =
       root_platform_node_delegate->GetFromTreeIDAndNodeID(tree_id, node_id);
-  absl::optional<int32_t> popup_ax_id = view_->GetAxUniqueId();
-  if (!target_node || !popup_ax_id)
+  absl::optional<absl::optional<int32_t>> popup_ax_id =
+      view_.Call(&AutofillPopupView::GetAxUniqueId);
+  if (!target_node || !popup_ax_id || !*popup_ax_id)
     return;
 
   // All the conditions are valid, raise the accessibility event and set global
   // popup ax unique id.
   if (is_show)
-    ui::SetActivePopupAxUniqueId(popup_ax_id);
+    ui::SetActivePopupAxUniqueId(*popup_ax_id);
   else
     ui::ClearActivePopupAxUniqueId();
 

@@ -8,9 +8,11 @@
 #include <stddef.h>
 
 #include <string>
+#include <type_traits>
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/functional/invoke.h"
 #include "base/gtest_prod_util.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
@@ -153,8 +155,6 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
   // without showing the popup.
   void SetValues(const std::vector<Suggestion>& suggestions);
 
-  AutofillPopupView* view() { return view_; }
-
   base::WeakPtr<AutofillPopupControllerImpl> GetWeakPtr();
 
   // Raise an accessibility event to indicate the controls relation of the
@@ -170,8 +170,38 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
   virtual void HideViewAndDie();
 
  private:
-  // TODO(crbug.com/1276850, crbug.com/1277218): Remove.
-  enum class SelfStatus { kDestroyed, kAlive };
+  // Wraps a raw AutofillPopupView pointer and checks for nullptr before any
+  // dereference. This is useful because AutofillPopupView may be synchronously
+  // deleted and set to nullptr by many calls in AutofillPopupControllerImpl,
+  // which easily leads to segfaults. See crbug.com/1277218 for the lifecycle
+  // management issue in AutofillPopupView.
+  class AutofillPopupViewPtr {
+   public:
+    AutofillPopupViewPtr() = default;
+    AutofillPopupViewPtr(nullptr_t) : ptr_(nullptr) {}
+    AutofillPopupViewPtr(AutofillPopupView* ptr) : ptr_(ptr) {}
+
+    explicit operator bool() const { return ptr_; }
+
+    // If `ptr_ == nullptr`, returns something that converts to false.
+    // If `ptr_ != nullptr`, calls `ptr_->func(args...)` and, if that returns a
+    // value, returns this value wrapped in an `absl::optional`, otherwise
+    // returns true.
+    template <typename Func, typename... Args>
+    [[nodiscard]] auto Call(Func&& func, Args... args) {
+      using ReturnType = decltype(base::invoke(func, *ptr_, args...));
+      if constexpr (!std::is_void_v<ReturnType>) {
+        return ptr_ ? absl::optional<ReturnType>(
+                          base::invoke(func, *ptr_, args...))
+                    : absl::optional<ReturnType>();
+      } else {
+        return ptr_ ? base::invoke(func, *ptr_, args...), true : false;
+      }
+    }
+
+   private:
+    raw_ptr<AutofillPopupView> ptr_ = nullptr;
+  };
 
   // The user has accepted the currently selected line. Returns whether there
   // was a selection to accept.
@@ -192,19 +222,13 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
                 password_manager::ContentPasswordManagerDriver*>
   GetDriver();
 
-  // Conceptually an override of AutofillPopupController::SetSelectedLine(), but
-  // additionally returns a `SelfStatus` to indicate if |this| was destroyed by
-  // this call.
-  // TODO(crbug.com/1276850, crbug.com/1277218): Replace with SetSelectedLine().
-  SelfStatus SetSelectedLineHelper(absl::optional<int> selected_line);
-
   friend class AutofillPopupControllerUnitTest;
   friend class AutofillPopupControllerAccessibilityUnitTest;
   void SetViewForTesting(AutofillPopupView* view) { view_ = view; }
 
   PopupControllerCommon controller_common_;
   raw_ptr<content::WebContents> web_contents_;
-  raw_ptr<AutofillPopupView> view_ = nullptr;  // Weak reference.
+  AutofillPopupViewPtr view_ = nullptr;  // Weak reference.
   base::WeakPtr<AutofillPopupDelegate> delegate_;
 
   // If set to true, the popup will never be hidden because of stale data or if
