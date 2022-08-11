@@ -47,6 +47,10 @@ bool IsValid(const mojom::SecurePaymentConfirmationRequestPtr& request,
   if (!request)
     return false;
 
+  // The remaining steps in this method check that the renderer has sent us a
+  // valid SecurePaymentConfirmationRequest, to guard against a compromised
+  // renderer.
+
   if (request->credential_ids.empty()) {
     *error_message = errors::kCredentialIdsRequired;
     return false;
@@ -82,6 +86,24 @@ bool IsValid(const mojom::SecurePaymentConfirmationRequestPtr& request,
 
   if (!request->instrument->icon.is_valid()) {
     *error_message = errors::kValidInstrumentIconRequired;
+    return false;
+  }
+
+  if (request->rp_id.empty()) {
+    *error_message = errors::kRpIdRequired;
+    return false;
+  }
+
+  if ((!request->payee_origin.has_value() &&
+       !request->payee_name.has_value()) ||
+      (request->payee_name.has_value() && request->payee_name->empty())) {
+    *error_message = errors::kPayeeOriginOrPayeeNameRequired;
+    return false;
+  }
+
+  if (request->payee_origin.has_value() &&
+      request->payee_origin->scheme() != url::kHttpsScheme) {
+    *error_message = errors::kPayeeOriginMustBeHttps;
     return false;
   }
 

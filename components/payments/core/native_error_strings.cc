@@ -226,5 +226,17 @@ const char kValidInstrumentIconRequired[] =
 const char kInvalidIcon[] =
     "The \"instrument.icon\" either could not be downloaded or decoded.";
 
+const char kRpIdRequired[] =
+    "The \"secure-payment-confirmation\" method requires a non-empty \"rpId\" "
+    "field.";
+
+const char kPayeeOriginOrPayeeNameRequired[] =
+    "The \"secure-payment-confirmation\" method requires a non-empty "
+    "\"payeeOrigin\" or \"payeeName\" field.";
+
+const char kPayeeOriginMustBeHttps[] =
+    "The \"secure-payment-confirmation\" method requires that the "
+    "\"payeeOrigin\" field must be https.";
+
 }  // namespace errors
 }  // namespace payments

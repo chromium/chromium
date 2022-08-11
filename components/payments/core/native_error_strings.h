@@ -256,6 +256,18 @@ extern const char kValidInstrumentIconRequired[];
 // not valid.
 extern const char kInvalidIcon[];
 
+// Used when the rpId field was not specified for the
+// "secure-payment-confirmation" method.
+extern const char kRpIdRequired[];
+
+// Used when neither of the payeeOrigin or payeeName fields were specified for
+// the "secure-payment-confirmation" method.
+extern const char kPayeeOriginOrPayeeNameRequired[];
+
+// Used when the payeeOrigin field was specified but was non-https for the
+// "secure-payment-confirmation" method.
+extern const char kPayeeOriginMustBeHttps[];
+
 }  // namespace errors
 }  // namespace payments
 
