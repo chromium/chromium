@@ -127,8 +127,10 @@ class NetworkTrafficAnnotationTools():
 
     # Change directory to src (two levels upper than build path).
     os.chdir(os.path.join(self.build_path, "..", ".."))
-    command = subprocess.Popen(args, stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE)
+    command = subprocess.Popen(args,
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE,
+                               encoding="utf-8")
     stdout_text, stderr_text = command.communicate()
 
     if stderr_text:
