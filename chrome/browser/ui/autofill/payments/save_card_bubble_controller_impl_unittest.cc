@@ -110,10 +110,9 @@ class SaveCardBubbleControllerImplTest : public BrowserWithTestWindowTest {
           AutofillClient::SaveCreditCardOptions().with_show_prompt()) {
     absl::optional<base::Value> value(base::JSONReader::Read(message_json));
     ASSERT_TRUE(value);
-    base::DictionaryValue* dictionary;
-    ASSERT_TRUE(value->GetAsDictionary(&dictionary));
+    ASSERT_TRUE(value->is_dict());
     LegalMessageLines legal_message_lines;
-    LegalMessageLine::Parse(*dictionary, &legal_message_lines,
+    LegalMessageLine::Parse(*value, &legal_message_lines,
                             /*escape_apostrophes=*/true);
     controller()->OfferUploadSave(CreditCard(), legal_message_lines, options,
                                   base::BindOnce(&UploadSaveCardCallback));

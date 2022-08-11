@@ -50,10 +50,9 @@ class SaveCardBubbleControllerImplTest : public DialogBrowserTest {
         "     } ]"
         "  } ]"
         "}"));
-    base::DictionaryValue* dictionary;
-    value->GetAsDictionary(&dictionary);
+    EXPECT_TRUE(value->is_dict());
     LegalMessageLines legal_message_lines;
-    LegalMessageLine::Parse(*dictionary, &legal_message_lines,
+    LegalMessageLine::Parse(*value, &legal_message_lines,
                             /*escape_apostrophes=*/true);
     return legal_message_lines;
   }
