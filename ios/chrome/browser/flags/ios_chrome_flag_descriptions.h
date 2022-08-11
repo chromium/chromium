@@ -285,11 +285,6 @@ extern const char kEnableFREUIModuleIOSDescription[];
 extern const char kEnableFullscreenAPIName[];
 extern const char kEnableFullscreenAPIDescription[];
 
-// Title and description for the flag to enable shorted password auto-fill
-// instructions and button.
-extern const char kEnableShortenedPasswordAutoFillInstructionName[];
-extern const char kEnableShortenedPasswordAutoFillInstructionDescription[];
-
 // Title and description for the flag to enable omnibox suggestions scrolling on
 // iPad.
 extern const char kEnableSuggestionsScrollingOnIPadName[];

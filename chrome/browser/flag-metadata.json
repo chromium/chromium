@@ -1075,11 +1075,6 @@
     "expiry_milestone": 107
   },
   {
-    "name": "credential-provider-extension-promo",
-    "owners": ["ginnyhuang","bling-flags@google.com"],
-    "expiry_milestone": 100
-  },
-  {
     "name": "cros-labs-float-window",
     "owners": [ "shidi", "afakhry" ],
     "expiry_milestone": 110
@@ -2817,11 +2812,6 @@
     "name": "enable-shortcut-customization-app",
     "owners": [ "jimmyxgong", "zentaro", "cros-peripherals@google.com"],
     "expiry_milestone": 115
-  },
-  {
-    "name": "enable-shortened-password-auto-fill-instruction",
-    "owners": ["ginnyhuang","bling-flags@google.com"],
-    "expiry_milestone": 101
   },
   {
     "name": "enable-show-autofill-signatures",
