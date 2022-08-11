@@ -7,10 +7,11 @@
 #import <UIKit/UIKit.h>
 
 #import "base/metrics/histogram_functions.h"
-#include "base/notreached.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/first_run/first_run_metrics.h"
-#include "ios/chrome/browser/main/browser.h"
+#import "base/notreached.h"
+#import "base/time/time.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/first_run/first_run_metrics.h"
+#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/authentication/signin_sync/signin_sync_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/default_browser/default_browser_screen_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_delegate.h"
@@ -31,6 +32,7 @@
 @property(nonatomic, strong) ScreenProvider* screenProvider;
 @property(nonatomic, strong) ChromeCoordinator* childCoordinator;
 @property(nonatomic, strong) UINavigationController* navigationController;
+@property(nonatomic, strong) NSDate* firstScreenStartTime;
 
 // YES if First Run was completed.
 @property(nonatomic, assign) BOOL completed;
@@ -56,8 +58,10 @@
 
 - (void)start {
   [self presentScreen:[self.screenProvider nextScreenType]];
+  __weak FirstRunCoordinator* weakSelf = self;
   void (^completion)(void) = ^{
     base::UmaHistogramEnumeration("FirstRun.Stage", first_run::kStart);
+    weakSelf.firstScreenStartTime = [NSDate now];
   };
   [self.navigationController setNavigationBarHidden:YES animated:NO];
   [self.baseViewController presentViewController:self.navigationController
@@ -89,6 +93,16 @@
 - (void)willFinishPresenting {
   [self.childCoordinator stop];
   self.childCoordinator = nil;
+  // Usually, finishing presenting the first FRE screen signifies that the user
+  // has accepted Terms of Services. Therefore, we can use the time it takes the
+  // first screen to be visible as the time it takes a user to accept Terms of
+  // Services.
+  if (self.firstScreenStartTime) {
+    base::TimeDelta delta =
+        base::Time::Now() - base::Time::FromNSDate(self.firstScreenStartTime);
+    base::UmaHistogramTimes("FirstRun.TermsOfServicesPromoDisplayTime", delta);
+    self.firstScreenStartTime = nil;
+  }
   [self presentScreen:[self.screenProvider nextScreenType]];
 }
 
