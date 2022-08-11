@@ -25,6 +25,15 @@ export const LogType = {
   TREE: 'tree',
 };
 
+/**
+ * @typedef {{
+ *   logType: !LogType,
+ *   date: !Date,
+ *   value: string
+ * }}
+ */
+export let SerializableLog;
+
 export class BaseLog {
   constructor(logType) {
     /**
@@ -36,6 +45,12 @@ export class BaseLog {
      * @type {!Date}
      */
     this.date = new Date();
+  }
+
+  /** @return {!SerializableLog} */
+  serialize() {
+    return /** @type {!SerializableLog} */ (
+        {logType: this.logType, date: this.date, value: this.toString()});
   }
 
   /** @return {string} */

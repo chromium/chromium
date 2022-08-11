@@ -1271,7 +1271,8 @@ window.addEventListener('hashchange', function() {
   const bkgnd = chrome.extension.getBackgroundPage();
 
   // Save the sticky state when a user first focuses the panel.
-  if (location.hash === '#fullscreen' || location.hash === '#focus') {
+  if (bkgnd['ChromeVox'] &&
+      (location.hash === '#fullscreen' || location.hash === '#focus')) {
     Panel.originalStickyState_ = bkgnd['ChromeVox']['isStickyPrefOn'];
   }
 

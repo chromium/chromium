@@ -9,7 +9,7 @@
 
 import {BridgeConstants} from './bridge_constants.js';
 import {BridgeHelper} from './bridge_helper.js';
-import {BaseLog} from './log_types.js';
+import {SerializableLog} from './log_types.js';
 
 export const BackgroundBridge = {};
 
@@ -188,7 +188,7 @@ BackgroundBridge.LogStore = {
   /**
    * Create logs in order.
    * This function is not currently optimized for speed.
-   * @return {!Promise<!Array<BaseLog>>}
+   * @return {!Promise<!Array<!SerializableLog>>}
    */
   async getLogs() {
     return BridgeHelper.sendMessage(

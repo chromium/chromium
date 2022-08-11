@@ -159,4 +159,4 @@ BridgeHelper.registerHandler(
     () => LogStore.instance.clearLog());
 BridgeHelper.registerHandler(
     BridgeConstants.LogStore.TARGET, BridgeConstants.LogStore.Action.GET_LOGS,
-    () => LogStore.instance.getLogs());
+    () => LogStore.instance.getLogs().map(log => log.serialize()));
