@@ -464,8 +464,7 @@
     ctx.fillStyle = '#0f0';
     ctx.fillRect(0, 0, 100, 50);
     var img = document.getElementById('broken.png');
-    ctx.drawImage(img, 0, 0);
-    @assert pixel 50,25 ==~ 0,255,0,255; @moz-todo
+    @assert throws INVALID_STATE_ERR ctx.drawImage(img, 0, 0);
   expected: green
 
 - name: 2d.drawImage.nonexistent

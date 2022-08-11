@@ -1487,7 +1487,7 @@
   - broken.png
   code: |
     var img = document.getElementById('broken.png');
-    @assert ctx.createPattern(img, 'repeat') === null;
+    @assert throws INVALID_STATE_ERR ctx.createPattern(img, 'repeat');
 
 - name: 2d.pattern.image.nonexistent
   testing:

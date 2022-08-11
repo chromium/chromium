@@ -65,9 +65,19 @@ scoped_refptr<Image> ImageElementBase::GetSourceImageForCanvas(
   }
 
   scoped_refptr<Image> source_image = image_content->GetImage();
+
+  if (!source_image->width() || !source_image->height()) {
+    *status = kZeroSizeImageSourceStatus;
+    return nullptr;
+  }
+
   if (auto* svg_image = DynamicTo<SVGImage>(source_image.get())) {
     UseCounter::Count(GetElement().GetDocument(), WebFeature::kSVGInCanvas2D);
     gfx::SizeF image_size = svg_image->ConcreteObjectSize(default_object_size);
+    if (!image_size.width() || !image_size.height()) {
+      *status = kZeroSizeImageSourceStatus;
+      return nullptr;
+    }
     source_image = SVGImageForContainer::Create(
         svg_image, image_size, 1,
         GetElement().GetDocument().CompleteURL(GetElement().ImageSourceURL()),

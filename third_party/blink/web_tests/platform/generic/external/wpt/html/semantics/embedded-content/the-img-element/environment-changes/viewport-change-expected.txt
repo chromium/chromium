@@ -12,11 +12,11 @@ PASS img (srcset 1 cand) broken image, resize to wide
 PASS img (srcset 1 cand) valid image, onload, narrow
 PASS img (srcset 1 cand) valid image, resize to wide
 PASS picture: source (max-width:500px) broken image, img broken image, onload, narrow
-FAIL picture: source (max-width:500px) broken image, img broken image, resize to wide assert_unreached: Got unexpected load event Reached unreachable code
+FAIL picture: source (max-width:500px) broken image, img broken image, resize to wide assert_unreached: Got unexpected error event Reached unreachable code
 PASS picture: source (max-width:500px) broken image, img valid image, onload, narrow
 PASS picture: source (max-width:500px) broken image, img valid image, resize to wide
 PASS picture: source (max-width:500px) valid image, img broken image, onload, narrow
-FAIL picture: source (max-width:500px) valid image, img broken image, resize to wide assert_unreached: Got unexpected load event Reached unreachable code
+FAIL picture: source (max-width:500px) valid image, img broken image, resize to wide assert_unreached: Got unexpected error event Reached unreachable code
 PASS picture: source (max-width:500px) valid image, img valid image, onload, narrow
 PASS picture: source (max-width:500px) valid image, img valid image, resize to wide
 PASS picture: same URL in source (max-width:500px) and img, onload, narrow
@@ -34,9 +34,9 @@ PASS img (srcset 1 cand) broken image, resize to narrow
 PASS img (srcset 1 cand) valid image, onload, wide
 PASS img (srcset 1 cand) valid image, resize to narrow
 PASS picture: source (max-width:500px) broken image, img broken image, onload, wide
-FAIL picture: source (max-width:500px) broken image, img broken image, resize to narrow assert_unreached: Got unexpected load event Reached unreachable code
+FAIL picture: source (max-width:500px) broken image, img broken image, resize to narrow assert_unreached: Got unexpected error event Reached unreachable code
 PASS picture: source (max-width:500px) broken image, img valid image, onload, wide
-FAIL picture: source (max-width:500px) broken image, img valid image, resize to narrow assert_unreached: Got unexpected load event Reached unreachable code
+FAIL picture: source (max-width:500px) broken image, img valid image, resize to narrow assert_unreached: Got unexpected error event Reached unreachable code
 PASS picture: source (max-width:500px) valid image, img broken image, onload, wide
 PASS picture: source (max-width:500px) valid image, img broken image, resize to narrow
 PASS picture: source (max-width:500px) valid image, img valid image, onload, wide

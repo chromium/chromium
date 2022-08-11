@@ -1816,7 +1816,6 @@ CanvasPattern* BaseRenderingContext2D::createPattern(
 }
 
 CanvasPattern* BaseRenderingContext2D::createPattern(
-
     CanvasImageSource* image_source,
     const String& repetition_type,
     ExceptionState& exception_state) {
@@ -1849,6 +1848,8 @@ CanvasPattern* BaseRenderingContext2D::createPattern(
                                  .width()
                              ? "height"
                              : "width"));
+      return nullptr;
+    case kZeroSizeImageSourceStatus:
       return nullptr;
     case kUndecodableSourceImageStatus:
       exception_state.ThrowDOMException(
