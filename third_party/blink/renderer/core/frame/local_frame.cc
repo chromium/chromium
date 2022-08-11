@@ -2433,11 +2433,12 @@ class FrameColorOverlay final : public FrameOverlay::Delegate {
                              gfx::Rect(view->Size()));
     gfx::RectF rect(0, 0, view->Width(), view->Height());
     graphics_context.FillRect(
-        rect, color_,
+        rect, Color::FromSkColor(color_),
         PaintAutoDarkMode(view->GetLayoutView()->StyleRef(),
                           DarkModeFilter::ElementRole::kBackground));
   }
 
+  // TODO(https://crbug.com/1351544): This should be an SkColor4f or a Color.
   SkColor color_;
   Persistent<LocalFrame> frame_;
 };
@@ -2458,7 +2459,7 @@ void LocalFrame::SetFrameColorOverlay(SkColor color) {
   if (frame_color_overlay_)
     frame_color_overlay_.Release()->Destroy();
 
-  if (color == Color::kTransparent)
+  if (color == SK_ColorTRANSPARENT)
     return;
 
   frame_color_overlay_ = MakeGarbageCollected<FrameOverlay>(

@@ -122,8 +122,9 @@ void TestGreenDiv(DummyPageHolder& page_holder) {
   Element* div = doc.getElementById("div");
   ASSERT_TRUE(div);
   ASSERT_TRUE(div->GetComputedStyle());
-  EXPECT_EQ(MakeRGB(0, 128, 0), div->GetComputedStyle()->VisitedDependentColor(
-                                    GetCSSPropertyColor()));
+  EXPECT_EQ(
+      Color::FromRGB(0, 128, 0),
+      div->GetComputedStyle()->VisitedDependentColor(GetCSSPropertyColor()));
 }
 
 }  // namespace

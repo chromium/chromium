@@ -556,7 +556,7 @@ Color LayoutTheme::DefaultSystemColor(
 
   switch (css_value_id) {
     case CSSValueID::kActivetext:
-      return 0xFFFF0000;
+      return Color::FromRGBA32(0xFFFF0000);
     case CSSValueID::kButtonborder:
     // The following system colors were deprecated to default to ButtonBorder.
     case CSSValueID::kActiveborder:
@@ -566,18 +566,21 @@ Color LayoutTheme::DefaultSystemColor(
     case CSSValueID::kThreedlightshadow:
     case CSSValueID::kThreedshadow:
     case CSSValueID::kWindowframe:
-      return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFF6B6B6B
-                                                              : 0xFF767676;
+      return color_scheme == mojom::blink::ColorScheme::kDark
+                 ? Color::FromRGBA32(0xFF6B6B6B)
+                 : Color::FromRGBA32(0xFF767676);
     case CSSValueID::kButtonface:
     // The following system colors were deprecated to default to ButtonFace.
     case CSSValueID::kButtonhighlight:
     case CSSValueID::kButtonshadow:
     case CSSValueID::kThreedface:
-      return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFF6B6B6B
-                                                              : 0xFFEFEFEF;
+      return color_scheme == mojom::blink::ColorScheme::kDark
+                 ? Color::FromRGBA32(0xFF6B6B6B)
+                 : Color::FromRGBA32(0xFFEFEFEF);
     case CSSValueID::kButtontext:
-      return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFFFFFFFF
-                                                              : 0xFF000000;
+      return color_scheme == mojom::blink::ColorScheme::kDark
+                 ? Color::FromRGBA32(0xFFFFFFFF)
+                 : Color::FromRGBA32(0xFF000000);
     case CSSValueID::kCanvas:
     // The following system colors were deprecated to default to Canvas.
     case CSSValueID::kAppworkspace:
@@ -587,8 +590,9 @@ Color LayoutTheme::DefaultSystemColor(
     case CSSValueID::kMenu:
     case CSSValueID::kScrollbar:
     case CSSValueID::kWindow:
-      return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFF121212
-                                                              : 0xFFFFFFFF;
+      return color_scheme == mojom::blink::ColorScheme::kDark
+                 ? Color::FromRGBA32(0xFF121212)
+                 : Color::FromRGBA32(0xFFFFFFFF);
     case CSSValueID::kCanvastext:
     // The following system colors were deprecated to default to CanvasText.
     case CSSValueID::kActivecaption:
@@ -596,35 +600,40 @@ Color LayoutTheme::DefaultSystemColor(
     case CSSValueID::kInfotext:
     case CSSValueID::kMenutext:
     case CSSValueID::kWindowtext:
-      return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFFFFFFFF
-                                                              : 0xFF000000;
+      return color_scheme == mojom::blink::ColorScheme::kDark
+                 ? Color::FromRGBA32(0xFFFFFFFF)
+                 : Color::FromRGBA32(0xFF000000);
 
     case CSSValueID::kField:
-      return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFF3B3B3B
-                                                              : 0xFFFFFFFF;
+      return color_scheme == mojom::blink::ColorScheme::kDark
+                 ? Color::FromRGBA32(0xFF3B3B3B)
+                 : Color::FromRGBA32(0xFFFFFFFF);
     case CSSValueID::kFieldtext:
-      return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFFFFFFFF
-                                                              : 0xFF000000;
+      return color_scheme == mojom::blink::ColorScheme::kDark
+                 ? Color::FromRGBA32(0xFFFFFFFF)
+                 : Color::FromRGBA32(0xFF000000);
     case CSSValueID::kGraytext:
     // The following system color was deprecated to default to GrayText.
     case CSSValueID::kInactivecaptiontext:
-      return 0xFF808080;
+      return Color::FromRGBA32(0xFF808080);
     case CSSValueID::kHighlight:
-      return 0xFFB5D5FF;
+      return Color::FromRGBA32(0xFFB5D5FF);
     case CSSValueID::kHighlighttext:
-      return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFFFFFFFF
-                                                              : 0xFF000000;
+      return color_scheme == mojom::blink::ColorScheme::kDark
+                 ? Color::FromRGBA32(0xFFFFFFFF)
+                 : Color::FromRGBA32(0xFF000000);
     case CSSValueID::kLinktext:
-      return 0xFF0000EE;
+      return Color::FromRGBA32(0xFF0000EE);
     case CSSValueID::kMark:
-      return 0xFFFFFF00;
+      return Color::FromRGBA32(0xFFFFFF00);
     case CSSValueID::kMarktext:
-      return 0xFF000000;
+      return Color::FromRGBA32(0xFF000000);
     case CSSValueID::kText:
-      return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFFFFFFFF
-                                                              : 0xFF000000;
+      return color_scheme == mojom::blink::ColorScheme::kDark
+                 ? Color::FromRGBA32(0xFFFFFFFF)
+                 : Color::FromRGBA32(0xFF000000);
     case CSSValueID::kVisitedtext:
-      return 0xFF551A8B;
+      return Color::FromRGBA32(0xFF551A8B);
     case CSSValueID::kSelecteditem:
     case CSSValueID::kInternalActiveListBoxSelection:
       return ActiveListBoxSelectionBackgroundColor(color_scheme);
@@ -711,7 +720,7 @@ Color LayoutTheme::SystemColorFromNativeTheme(
   const absl::optional<SkColor> system_color =
       WebThemeEngineHelper::GetNativeThemeEngine()->GetSystemColor(theme_color);
   if (system_color)
-    return Color(system_color.value());
+    return Color::FromSkColor((system_color.value()));
   return DefaultSystemColor(css_value_id, color_scheme);
 }
 

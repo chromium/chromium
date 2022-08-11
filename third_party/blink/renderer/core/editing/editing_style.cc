@@ -435,7 +435,7 @@ static Color CssValueToColor(const CSSValue* value) {
   if (color_value)
     return color_value->Value();
 
-  Color color = 0;
+  Color color = Color::kTransparent;
   // FIXME: Why ignore the return value?
   CSSParser::ParseColor(color, value->CssText());
   return color;

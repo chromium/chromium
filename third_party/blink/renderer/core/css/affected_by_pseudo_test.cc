@@ -3058,7 +3058,7 @@ TEST_F(AffectedByPseudoTest, AffectedByHasAfterInsertion2) {
                               {kAncestorsOrAncestorSiblingsAffectedByHas, true},
                               {kSiblingsAffectedByHas, false}});
 
-  EXPECT_EQ(MakeRGB(0, 0, 0),
+  EXPECT_EQ(Color::FromRGB(0, 0, 0),
             GetElementById("div11")->GetComputedStyle()->VisitedDependentColor(
                 GetCSSPropertyColor()));
 
@@ -3068,7 +3068,7 @@ TEST_F(AffectedByPseudoTest, AffectedByHasAfterInsertion2) {
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(1U, GetStyleEngine().StyleForElementCount() - start_count);
 
-  EXPECT_EQ(MakeRGB(0, 0, 0),
+  EXPECT_EQ(Color::FromRGB(0, 0, 0),
             GetElementById("div11")->GetComputedStyle()->VisitedDependentColor(
                 GetCSSPropertyColor()));
 
@@ -3477,7 +3477,7 @@ TEST_F(AffectedByPseudoTest, AffectedByHasAfterInsertion4) {
        {kSiblingsAffectedByHasForSiblingRelationship, false},
        {kSiblingsAffectedByHasForSiblingDescendantRelationship, false}});
 
-  EXPECT_EQ(MakeRGB(0, 0, 0),
+  EXPECT_EQ(Color::FromRGB(0, 0, 0),
             GetElementById("div12")->GetComputedStyle()->VisitedDependentColor(
                 GetCSSPropertyColor()));
 
@@ -3491,7 +3491,7 @@ TEST_F(AffectedByPseudoTest, AffectedByHasAfterInsertion4) {
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(2U, GetStyleEngine().StyleForElementCount() - start_count);
 
-  EXPECT_EQ(MakeRGB(0, 0, 0),
+  EXPECT_EQ(Color::FromRGB(0, 0, 0),
             GetElementById("div12")->GetComputedStyle()->VisitedDependentColor(
                 GetCSSPropertyColor()));
 
@@ -3515,7 +3515,7 @@ TEST_F(AffectedByPseudoTest, AffectedByHasAfterInsertion4) {
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(1U, GetStyleEngine().StyleForElementCount() - start_count);
 
-  EXPECT_EQ(MakeRGB(0, 128, 0),
+  EXPECT_EQ(Color::FromRGB(0, 128, 0),
             GetElementById("div12")->GetComputedStyle()->VisitedDependentColor(
                 GetCSSPropertyColor()));
 
@@ -3837,7 +3837,7 @@ TEST_F(AffectedByPseudoTest, AffectedByHasAfterInsertion5) {
        {kSiblingsAffectedByHasForSiblingRelationship, false},
        {kSiblingsAffectedByHasForSiblingDescendantRelationship, false}});
 
-  EXPECT_EQ(MakeRGB(0, 0, 0),
+  EXPECT_EQ(Color::FromRGB(0, 0, 0),
             GetElementById("div11")->GetComputedStyle()->VisitedDependentColor(
                 GetCSSPropertyColor()));
 
@@ -3855,7 +3855,7 @@ TEST_F(AffectedByPseudoTest, AffectedByHasAfterInsertion5) {
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(5U, GetStyleEngine().StyleForElementCount() - start_count);
 
-  EXPECT_EQ(MakeRGB(0, 128, 0),
+  EXPECT_EQ(Color::FromRGB(0, 128, 0),
             GetElementById("div11")->GetComputedStyle()->VisitedDependentColor(
                 GetCSSPropertyColor()));
 
@@ -4092,7 +4092,7 @@ TEST_F(AffectedByPseudoTest, AffectedByHasAfterInsertion6) {
        {kSiblingsAffectedByHasForSiblingRelationship, false},
        {kSiblingsAffectedByHasForSiblingDescendantRelationship, false}});
 
-  EXPECT_EQ(MakeRGB(0, 0, 0),
+  EXPECT_EQ(Color::FromRGB(0, 0, 0),
             GetElementById("div11")->GetComputedStyle()->VisitedDependentColor(
                 GetCSSPropertyColor()));
 
@@ -4107,7 +4107,7 @@ TEST_F(AffectedByPseudoTest, AffectedByHasAfterInsertion6) {
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(3U, GetStyleEngine().StyleForElementCount() - start_count);
 
-  EXPECT_EQ(MakeRGB(0, 0, 0),
+  EXPECT_EQ(Color::FromRGB(0, 0, 0),
             GetElementById("div11")->GetComputedStyle()->VisitedDependentColor(
                 GetCSSPropertyColor()));
 
@@ -4168,7 +4168,7 @@ TEST_F(AffectedByPseudoTest, AffectedByHasAfterInsertion6) {
                  {kAncestorsOrAncestorSiblingsAffectedByHas, false},
                  {kSiblingsAffectedByHas, false}});
 
-  EXPECT_EQ(MakeRGB(0, 0, 0),
+  EXPECT_EQ(Color::FromRGB(0, 0, 0),
             GetElementById("div22")->GetComputedStyle()->VisitedDependentColor(
                 GetCSSPropertyColor()));
 
@@ -4196,7 +4196,7 @@ TEST_F(AffectedByPseudoTest, AffectedByHasAfterInsertion6) {
        {kSiblingsAffectedByHasForSiblingRelationship, false},
        {kSiblingsAffectedByHasForSiblingDescendantRelationship, false}});
 
-  EXPECT_EQ(MakeRGB(0, 0, 0),
+  EXPECT_EQ(Color::FromRGB(0, 0, 0),
             GetElementById("div22")->GetComputedStyle()->VisitedDependentColor(
                 GetCSSPropertyColor()));
 
@@ -4232,7 +4232,7 @@ TEST_F(AffectedByPseudoTest, AffectedByHasAfterInsertion6) {
        {kSiblingsAffectedByHasForSiblingRelationship, false},
        {kSiblingsAffectedByHasForSiblingDescendantRelationship, false}});
 
-  EXPECT_EQ(MakeRGB(0, 128, 0),
+  EXPECT_EQ(Color::FromRGB(0, 128, 0),
             GetElementById("div22")->GetComputedStyle()->VisitedDependentColor(
                 GetCSSPropertyColor()));
 }

@@ -1713,8 +1713,8 @@ CSSValue* ConsumeColorContrast(CSSParserTokenRange& range,
                                          SK_ColorWHITE) >
                    color_utils::GetContrastRatio(resolved_background_color,
                                                  SK_ColorBLACK)
-               ? MakeGarbageCollected<cssvalue::CSSColor>(SK_ColorWHITE)
-               : MakeGarbageCollected<cssvalue::CSSColor>(SK_ColorBLACK);
+               ? MakeGarbageCollected<cssvalue::CSSColor>(Color::kWhite)
+               : MakeGarbageCollected<cssvalue::CSSColor>(Color::kBlack);
   }
 
   return MakeGarbageCollected<cssvalue::CSSColor>(

@@ -44,7 +44,8 @@ ScrollbarThemeOverlayMobile& ScrollbarThemeOverlayMobile::GetInstance() {
       ScrollbarThemeOverlayMobile, theme,
       (ScrollbarStyle().thumb_thickness, ScrollbarStyle().scrollbar_margin,
        ScrollbarStyle().thumb_thickness_thin,
-       ScrollbarStyle().scrollbar_margin_thin, ScrollbarStyle().color));
+       ScrollbarStyle().scrollbar_margin_thin,
+       Color::FromSkColor(ScrollbarStyle().color)));
   return theme;
 }
 

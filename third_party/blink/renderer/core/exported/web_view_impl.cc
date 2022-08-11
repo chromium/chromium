@@ -3143,12 +3143,16 @@ SkColor WebViewImpl::BackgroundColor() const {
 
 Color WebViewImpl::BaseBackgroundColor() const {
   if (override_base_background_color_to_transparent_)
-    return SK_ColorTRANSPARENT;
-  if (base_background_color_override_for_inspector_)
-    return base_background_color_override_for_inspector_.value();
+    return Color::kTransparent;
+  // TODO(https://crbug.com/1351544): The base background color override should
+  // be an SkColor4f or a Color.
+  if (base_background_color_override_for_inspector_) {
+    return Color::FromSkColor(
+        base_background_color_override_for_inspector_.value());
+  }
   // Use the page background color if this is the WebView of the main frame.
   if (MainFrameImpl())
-    return page_base_background_color_;
+    return Color::FromSkColor(page_base_background_color_);
   return Color::kWhite;
 }
 

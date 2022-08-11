@@ -76,7 +76,7 @@ AXObject* ColorChooserUIController::RootAXObject() {
 }
 
 void ColorChooserUIController::DidChooseColor(uint32_t color) {
-  client_->DidChooseColor(color);
+  client_->DidChooseColor(Color::FromRGBA32(color));
 }
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)

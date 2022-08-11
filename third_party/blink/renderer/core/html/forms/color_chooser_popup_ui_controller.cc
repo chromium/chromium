@@ -156,8 +156,12 @@ void ColorChooserPopupUIController::WriteColorSuggestionPickerDocument(
   DCHECK(client_->ShouldShowSuggestions());
 
   Vector<String> suggestion_values;
-  for (auto& suggestion : client_->Suggestions())
-    suggestion_values.push_back(Color(suggestion->color).Serialized());
+  for (auto& suggestion : client_->Suggestions()) {
+    // TODO(https://crbug.com/1351544): ColorSuggestions be sent as Color or
+    // SkColor4f.
+    suggestion_values.push_back(
+        Color::FromRGBA32(suggestion->color).Serialized());
+  }
   gfx::Rect anchor_rect_in_screen = chrome_client_->ViewportToScreen(
       client_->ElementRectRelativeToViewport(), frame_->View());
 
@@ -258,7 +262,9 @@ void ColorChooserPopupUIController::EyeDropperResponseHandler(bool success,
   scoped_refptr<SharedBuffer> data = SharedBuffer::Create();
   PagePopupClient::AddString("window.updateData = {\n", data.get());
   AddProperty("success", success, data.get());
-  AddProperty("color", Color(color).Serialized(), data.get());
+  // TODO(https://crbug.com/1351544): The EyeDropper should use Color or
+  // SkColor4f.
+  AddProperty("color", Color::FromRGBA32(color).Serialized(), data.get());
   PagePopupClient::AddString("}\n", data.get());
   popup_->PostMessageToPopup(String::FromUTF8(data->Data(), data->size()));
 }

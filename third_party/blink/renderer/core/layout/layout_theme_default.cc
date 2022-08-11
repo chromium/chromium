@@ -45,20 +45,26 @@ static const float kDefaultCancelButtonSize = 9;
 static const float kMinCancelButtonSize = 5;
 static const float kMaxCancelButtonSize = 21;
 
-Color LayoutThemeDefault::active_selection_background_color_ = 0xFF1E90FF;
-Color LayoutThemeDefault::active_selection_foreground_color_ = 0xFF000000;
-Color LayoutThemeDefault::inactive_selection_background_color_ = 0xFFC8C8C8;
-Color LayoutThemeDefault::inactive_selection_foreground_color_ = 0xFF323232;
+Color LayoutThemeDefault::active_selection_background_color_ =
+    Color::FromRGBA32(0xFF1E90FF);
+Color LayoutThemeDefault::active_selection_foreground_color_ =
+    Color::FromRGBA32(0xFF000000);
+Color LayoutThemeDefault::inactive_selection_background_color_ =
+    Color::FromRGBA32(0xFFC8C8C8);
+Color LayoutThemeDefault::inactive_selection_foreground_color_ =
+    Color::FromRGBA32(0xFF323232);
 Color
     LayoutThemeDefault::active_list_box_selection_background_color_dark_mode_ =
-        0xFF99C8FF;
+        Color::FromRGBA32(0xFF99C8FF);
 Color
     LayoutThemeDefault::active_list_box_selection_foreground_color_dark_mode_ =
-        0xFF3B3B3B;
+        Color::FromRGBA32(0xFF3B3B3B);
 Color LayoutThemeDefault::
-    inactive_list_box_selection_background_color_dark_mode_ = 0x4D3B3B3B;
+    inactive_list_box_selection_background_color_dark_mode_ =
+        Color::FromRGBA32(0x4D3B3B3B);
 Color LayoutThemeDefault::
-    inactive_list_box_selection_foreground_color_dark_mode_ = 0xFF323232;
+    inactive_list_box_selection_foreground_color_dark_mode_ =
+        Color::FromRGBA32(0xFF323232);
 
 LayoutThemeDefault::LayoutThemeDefault() : painter_(*this) {}
 
@@ -176,7 +182,7 @@ void LayoutThemeDefault::AdjustInnerSpinButtonStyle(
 }
 
 Color LayoutThemeDefault::PlatformFocusRingColor() const {
-  constexpr Color focus_ring_color(0xFFE59700);
+  constexpr Color focus_ring_color = Color::FromRGBA32(0xFFE59700);
   return focus_ring_color;
 }
 

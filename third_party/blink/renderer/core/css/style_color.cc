@@ -33,7 +33,7 @@ Color StyleColor::ColorFromKeyword(CSSValueID keyword,
   if (const char* value_name = getValueName(keyword)) {
     if (const NamedColor* named_color =
             FindColor(value_name, static_cast<wtf_size_t>(strlen(value_name))))
-      return Color(named_color->argb_value);
+      return Color::FromRGBA32(named_color->argb_value);
   }
   return LayoutTheme::GetTheme().SystemColor(keyword, color_scheme);
 }

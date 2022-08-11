@@ -70,7 +70,7 @@ TEST_F(SerializationTest, Link) {
   // a1
   ASSERT_THAT(style1.InsideLink(), EInsideLink::kNotInsideLink);
   ASSERT_THAT(style1.VisitedDependentColor(GetCSSPropertyColor()),
-              MakeRGB(1, 1, 1))
+              Color::FromRGB(1, 1, 1))
       << "should not be :visited/:link color";
   EXPECT_THAT(
       SerailizeToHTMLText(a1),
@@ -83,7 +83,7 @@ TEST_F(SerializationTest, Link) {
   // visited/unvisited state of link for privacy reason.
   ASSERT_THAT(style2.InsideLink(), EInsideLink::kInsideVisitedLink);
   ASSERT_THAT(style2.VisitedDependentColor(GetCSSPropertyColor()),
-              MakeRGB(3, 3, 3))
+              Color::FromRGB(3, 3, 3))
       << "should be :visited color";
   EXPECT_THAT(
       SerailizeToHTMLText(a2),
@@ -93,7 +93,7 @@ TEST_F(SerializationTest, Link) {
   // a3
   ASSERT_THAT(style3.InsideLink(), EInsideLink::kInsideUnvisitedLink);
   ASSERT_THAT(style3.VisitedDependentColor(GetCSSPropertyColor()),
-              MakeRGB(2, 2, 2))
+              Color::FromRGB(2, 2, 2))
       << "should be :link color";
   EXPECT_THAT(
       SerailizeToHTMLText(a3),

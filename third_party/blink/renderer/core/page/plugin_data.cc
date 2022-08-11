@@ -113,7 +113,8 @@ void PluginData::UpdatePluginList() {
   for (const auto& plugin : plugins) {
     auto* plugin_info = MakeGarbageCollected<PluginInfo>(
         std::move(plugin->name), FilePathToWebString(plugin->filename),
-        std::move(plugin->description), plugin->background_color,
+        std::move(plugin->description),
+        Color::FromRGBA32(plugin->background_color),
         plugin->may_use_external_handler);
     plugins_.push_back(plugin_info);
     for (const auto& mime : plugin->mime_types) {

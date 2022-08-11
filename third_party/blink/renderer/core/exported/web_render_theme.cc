@@ -41,16 +41,22 @@ void SetCaretBlinkInterval(base::TimeDelta interval) {
 }
 
 void SetFocusRingColor(SkColor color) {
-  LayoutTheme::GetTheme().SetCustomFocusRingColor(color);
+  // TODO(https://crbug.com/1351544): SetFocusRing should specify an SkColor4f
+  // or a string.
+  LayoutTheme::GetTheme().SetCustomFocusRingColor(Color::FromSkColor(color));
 }
 
 void SetSelectionColors(unsigned active_background_color,
                         unsigned active_foreground_color,
                         unsigned inactive_background_color,
                         unsigned inactive_foreground_color) {
+  // TODO(https://crbug.com/1351544): SetSelectionColors should specify an
+  // SkColor4f or a string.
   LayoutTheme::GetTheme().SetSelectionColors(
-      active_background_color, active_foreground_color,
-      inactive_background_color, inactive_foreground_color);
+      Color::FromRGBA32(active_background_color),
+      Color::FromRGBA32(active_foreground_color),
+      Color::FromRGBA32(inactive_background_color),
+      Color::FromRGBA32(inactive_foreground_color));
 }
 
 void SystemColorsChanged() {

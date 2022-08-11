@@ -105,7 +105,7 @@ void CSSHWB::setAlpha(const V8CSSNumberish* alpha,
 
 Color CSSHWB::ToColor() const {
   // MakeRGBAFromHSLA expects hue in the range [0, 6)
-  return MakeRGBAFromHWBA(
+  return Color::FromHWBA(
       h_->to(CSSPrimitiveValue::UnitType::kDegrees)->value() / 60,
       ComponentToColorInput(w_), ComponentToColorInput(b_),
       ComponentToColorInput(alpha_));

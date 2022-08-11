@@ -39,16 +39,12 @@
 
 namespace blink {
 
-constexpr Color kDefaultLinkColorLight = Color::CreateUnchecked(0, 0, 238);
-constexpr Color kDefaultLinkColorDark = Color::CreateUnchecked(158, 158, 255);
-constexpr Color kDefaultVisitedLinkColorLight =
-    Color::CreateUnchecked(85, 26, 139);
-constexpr Color kDefaultVisitedLinkColorDark =
-    Color::CreateUnchecked(208, 173, 240);
-constexpr Color kDefaultActiveLinkColorLight =
-    Color::CreateUnchecked(255, 0, 0);
-constexpr Color kDefaultActiveLinkColorDark =
-    Color::CreateUnchecked(255, 158, 158);
+constexpr Color kDefaultLinkColorLight = Color::FromRGB(0, 0, 238);
+constexpr Color kDefaultLinkColorDark = Color::FromRGB(158, 158, 255);
+constexpr Color kDefaultVisitedLinkColorLight = Color::FromRGB(85, 26, 139);
+constexpr Color kDefaultVisitedLinkColorDark = Color::FromRGB(208, 173, 240);
+constexpr Color kDefaultActiveLinkColorLight = Color::FromRGB(255, 0, 0);
+constexpr Color kDefaultActiveLinkColorDark = Color::FromRGB(255, 158, 158);
 
 TextLinkColors::TextLinkColors() : text_color_(Color::kBlack) {
   ResetLinkColor();

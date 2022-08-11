@@ -265,7 +265,7 @@ TEST_F(CSSScrollTimelineTest, MultipleLifecyclePasses) {
   //
   // [1] https://drafts.csswg.org/scroll-animations-1/#avoiding-cycles
   // [2] https://github.com/w3c/csswg-drafts/issues/5261
-  EXPECT_EQ(MakeRGB(0, 128, 0),
+  EXPECT_EQ(Color::FromRGB(0, 128, 0),
             element->GetComputedStyle()->VisitedDependentColor(
                 GetCSSPropertyColor()));
 }

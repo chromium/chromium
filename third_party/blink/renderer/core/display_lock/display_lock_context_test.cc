@@ -227,7 +227,7 @@ TEST_F(DisplayLockContextTest, LockAfterAppendStyleDirtyBits) {
   EXPECT_TRUE(element->GetComputedStyle());
   EXPECT_EQ(
       element->GetComputedStyle()->VisitedDependentColor(GetCSSPropertyColor()),
-      MakeRGB(255, 0, 0));
+      Color::FromRGB(255, 0, 0));
   // Manually commit the lock so that we can verify which dirty bits get
   // propagated.
   UnlockImmediate(element->GetDisplayLockContext());
@@ -257,7 +257,7 @@ TEST_F(DisplayLockContextTest, LockAfterAppendStyleDirtyBits) {
   ASSERT_TRUE(child->GetComputedStyle());
   EXPECT_EQ(
       child->GetComputedStyle()->VisitedDependentColor(GetCSSPropertyColor()),
-      MakeRGB(0, 0, 255));
+      Color::FromRGB(0, 0, 255));
 
   UnlockImmediate(child->GetDisplayLockContext());
   child->setAttribute(html_names::kStyleAttr, "color: blue;");
@@ -274,7 +274,7 @@ TEST_F(DisplayLockContextTest, LockAfterAppendStyleDirtyBits) {
   ASSERT_TRUE(child->GetComputedStyle());
   EXPECT_EQ(
       child->GetComputedStyle()->VisitedDependentColor(GetCSSPropertyColor()),
-      MakeRGB(0, 0, 255));
+      Color::FromRGB(0, 0, 255));
 }
 
 TEST_F(DisplayLockContextTest, LockedElementIsNotSearchableViaFindInPage) {
@@ -1329,7 +1329,7 @@ TEST_F(DisplayLockContextTest, ElementInTemplate) {
   ASSERT_TRUE(document_child->GetComputedStyle());
   EXPECT_EQ(document_child->GetComputedStyle()->VisitedDependentColor(
                 GetCSSPropertyColor()),
-            MakeRGB(255, 0, 0));
+            Color::FromRGB(255, 0, 0));
 
   auto* grandchild = GetDocument().getElementById("grandchild");
   EXPECT_FALSE(grandchild->NeedsStyleRecalc());
@@ -1337,7 +1337,7 @@ TEST_F(DisplayLockContextTest, ElementInTemplate) {
   ASSERT_TRUE(grandchild->GetComputedStyle());
   EXPECT_EQ(grandchild->GetComputedStyle()->VisitedDependentColor(
                 GetCSSPropertyColor()),
-            MakeRGB(0, 0, 255));
+            Color::FromRGB(0, 0, 255));
 }
 
 TEST_F(DisplayLockContextTest, AncestorAllowedTouchAction) {

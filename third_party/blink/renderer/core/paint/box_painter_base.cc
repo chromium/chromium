@@ -172,11 +172,13 @@ void BoxPainterBase::PaintNormalBoxShadow(const PaintInfo& info,
         style.UsedColorScheme());
     // DarkModeFilter::ApplyToFlagsIfNeeded does not apply dark mode to the draw
     // looper used for shadows so we need to apply dark mode to the color here.
-    const Color& shadow_color =
-        style.ForceDark() ? context.GetDarkModeFilter()->InvertColorIfNeeded(
-                                resolved_shadow_color.Rgb(),
-                                DarkModeFilter::ElementRole::kBackground)
-                          : resolved_shadow_color;
+    const Color shadow_color =
+        style.ForceDark()
+            ? Color::FromSkColor(
+                  context.GetDarkModeFilter()->InvertColorIfNeeded(
+                      SkColor(resolved_shadow_color),
+                      DarkModeFilter::ElementRole::kBackground))
+            : resolved_shadow_color;
 
     gfx::RectF fill_rect = border.Rect();
     fill_rect.Outset(shadow_spread);
@@ -323,10 +325,12 @@ void BoxPainterBase::PaintInsetBoxShadow(const PaintInfo& info,
     // DarkModeFilter::ApplyToFlagsIfNeeded does not apply dark mode to the draw
     // looper used for shadows so we need to apply dark mode to the color here.
     const Color& shadow_color =
-        style.ForceDark() ? context.GetDarkModeFilter()->InvertColorIfNeeded(
-                                resolved_shadow_color.Rgb(),
-                                DarkModeFilter::ElementRole::kBackground)
-                          : resolved_shadow_color;
+        style.ForceDark()
+            ? Color::FromSkColor(
+                  context.GetDarkModeFilter()->InvertColorIfNeeded(
+                      SkColor(resolved_shadow_color),
+                      DarkModeFilter::ElementRole::kBackground))
+            : resolved_shadow_color;
 
     gfx::RectF inner_rect = bounds.Rect();
     AdjustInnerRectForSideClipping(inner_rect, shadow, sides_to_include);

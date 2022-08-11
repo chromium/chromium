@@ -65,7 +65,7 @@ class CORE_EXPORT LayoutThemeDefault : public LayoutTheme {
   void AdjustButtonStyle(ComputedStyle&) const override;
 
   Color PlatformTapHighlightColor() const override {
-    return Color(kDefaultTapHighlightColor);
+    return kDefaultTapHighlightColor;
   }
 
   void SetSelectionColors(Color active_background_color,
@@ -110,7 +110,8 @@ class CORE_EXPORT LayoutThemeDefault : public LayoutTheme {
 
   int MenuListInternalPadding(const ComputedStyle&, int padding) const;
 
-  static const RGBA32 kDefaultTapHighlightColor = 0x2e000000;  // 18% black.
+  static constexpr Color kDefaultTapHighlightColor =
+      Color::FromRGBA32(0x2e000000);  // 18% black.
 
   static Color active_selection_background_color_;
   static Color active_selection_foreground_color_;

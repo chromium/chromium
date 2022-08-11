@@ -52,8 +52,10 @@ class LayoutThemeMobile : public LayoutThemeDefault {
   ~LayoutThemeMobile() override;
 
  private:
-  static const RGBA32 kDefaultTapHighlightColor = 0x6633b5e5;
-  static const RGBA32 kDefaultActiveSelectionBackgroundColor = 0x6633b5e5;
+  static constexpr Color kDefaultTapHighlightColor =
+      Color::FromRGBA32(0x6633b5e5);
+  static constexpr Color kDefaultActiveSelectionBackgroundColor =
+      Color::FromRGBA32(0x6633b5e5);
 };
 
 }  // namespace blink

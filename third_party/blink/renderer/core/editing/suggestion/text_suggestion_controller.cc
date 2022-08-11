@@ -148,7 +148,8 @@ SuggestionInfosWithNodeAndHighlightColor ComputeSuggestionInfos(
       node_suggestion_marker_pairs_sorted_by_length.front().second.Get());
 
   suggestion_infos_with_node_and_highlight_color.highlight_color =
-      (first_suggestion_marker->SuggestionHighlightColor() == 0)
+      (first_suggestion_marker->SuggestionHighlightColor() ==
+       Color::kTransparent)
           ? LayoutTheme::TapHighlightColor()
           : first_suggestion_marker->SuggestionHighlightColor();
 
@@ -428,9 +429,9 @@ void TextSuggestionController::ShowSpellCheckMenu(
   is_suggestion_menu_open_ = true;
   GetFrame().Selection().SetCaretEnabled(false);
   GetDocument().Markers().AddActiveSuggestionMarker(
-      active_suggestion_range, SK_ColorTRANSPARENT,
+      active_suggestion_range, Color::kTransparent,
       ui::mojom::ImeTextSpanThickness::kNone,
-      ui::mojom::ImeTextSpanUnderlineStyle::kSolid, SK_ColorTRANSPARENT,
+      ui::mojom::ImeTextSpanUnderlineStyle::kSolid, Color::kTransparent,
       LayoutTheme::GetTheme().PlatformActiveSpellingMarkerHighlightColor());
 
   Vector<String> suggestions;
@@ -496,8 +497,8 @@ void TextSuggestionController::ShowSuggestionMenu(
                                     Position(text_node, span_union_end));
 
   GetDocument().Markers().AddActiveSuggestionMarker(
-      marker_range, SK_ColorTRANSPARENT, ui::mojom::ImeTextSpanThickness::kThin,
-      ui::mojom::ImeTextSpanUnderlineStyle::kSolid, SK_ColorTRANSPARENT,
+      marker_range, Color::kTransparent, ui::mojom::ImeTextSpanThickness::kThin,
+      ui::mojom::ImeTextSpanUnderlineStyle::kSolid, Color::kTransparent,
       suggestion_infos_with_node_and_highlight_color.highlight_color);
 
   is_suggestion_menu_open_ = true;

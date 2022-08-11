@@ -452,7 +452,7 @@ TEST_F(WebViewTest, SetBaseBackgroundColor) {
 
   // Creating a new frame view with the background color having 0 alpha.
   frame->CreateView(gfx::Size(1024, 768), Color::kTransparent);
-  EXPECT_EQ(SK_ColorTRANSPARENT, frame->View()->BaseBackgroundColor());
+  EXPECT_EQ(Color::kTransparent, frame->View()->BaseBackgroundColor());
   frame->View()->Dispose();
 
   const Color transparent_red(100, 0, 0, 0);
@@ -684,7 +684,7 @@ TEST_F(WebViewTest, PlatformColorsChangedOnDeviceEmulation) {
   EXPECT_EQ(original, OutlineColor(span1));
 
   // Set the focus ring color for the mobile theme to something known.
-  Color custom_color = MakeRGB(123, 145, 167);
+  Color custom_color = Color::FromRGB(123, 145, 167);
   {
     ScopedMobileLayoutThemeForTest mobile_layout_theme_enabled(true);
     LayoutTheme::GetTheme().SetCustomFocusRingColor(custom_color);
@@ -5329,8 +5329,9 @@ TEST_F(WebViewTest, WidthMediaQueryWithPageZoomAfterPrinting) {
   Document* document = frame->GetFrame()->GetDocument();
   Element* div = document->getElementById("d");
 
-  EXPECT_EQ(MakeRGB(0, 128, 0), div->GetComputedStyle()->VisitedDependentColor(
-                                    GetCSSPropertyColor()));
+  EXPECT_EQ(
+      Color::FromRGB(0, 128, 0),
+      div->GetComputedStyle()->VisitedDependentColor(GetCSSPropertyColor()));
 
   gfx::Size page_size(300, 360);
 
@@ -5340,8 +5341,9 @@ TEST_F(WebViewTest, WidthMediaQueryWithPageZoomAfterPrinting) {
   frame->PrintBegin(print_params, WebNode());
   frame->PrintEnd();
 
-  EXPECT_EQ(MakeRGB(0, 128, 0), div->GetComputedStyle()->VisitedDependentColor(
-                                    GetCSSPropertyColor()));
+  EXPECT_EQ(
+      Color::FromRGB(0, 128, 0),
+      div->GetComputedStyle()->VisitedDependentColor(GetCSSPropertyColor()));
 }
 
 TEST_F(WebViewTest, ViewportUnitsPrintingWithPageZoom) {

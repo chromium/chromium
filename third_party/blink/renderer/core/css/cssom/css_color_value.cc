@@ -157,7 +157,7 @@ V8UnionCSSColorValueOrCSSStyleValue* CSSColorValue::parse(
       getValueName(To<CSSIdentifierValue>(parsed_value)->GetValueID());
   if (const NamedColor* named_color =
           FindColor(value_name, static_cast<wtf_size_t>(strlen(value_name)))) {
-    Color color(named_color->argb_value);
+    Color color = Color::FromRGBA32(named_color->argb_value);
 
     return MakeGarbageCollected<V8UnionCSSColorValueOrCSSStyleValue>(
         CreateCSSRGBByNumbers(color.Red(), color.Green(), color.Blue(),

@@ -9048,7 +9048,7 @@ TEST_F(WebFrameTest, ThemeColor) {
                                     &client);
   EXPECT_TRUE(host.DidNotify());
   WebLocalFrameImpl* frame = web_view_helper.LocalMainFrame();
-  EXPECT_EQ(Color(0, 0, 255), frame->GetDocument().ThemeColor());
+  EXPECT_EQ(SK_ColorBLUE, frame->GetDocument().ThemeColor());
   // Change color by rgb.
   host.Reset();
   frame->ExecuteScript(
@@ -9056,7 +9056,7 @@ TEST_F(WebFrameTest, ThemeColor) {
                       "'rgb(0, 0, 0)');"));
   RunPendingTasks();
   EXPECT_TRUE(host.DidNotify());
-  EXPECT_EQ(Color::kBlack, frame->GetDocument().ThemeColor());
+  EXPECT_EQ(SK_ColorBLACK, frame->GetDocument().ThemeColor());
   // Change color by hsl.
   host.Reset();
   frame->ExecuteScript(
@@ -9064,7 +9064,7 @@ TEST_F(WebFrameTest, ThemeColor) {
                       "'hsl(240,100%, 50%)');"));
   RunPendingTasks();
   EXPECT_TRUE(host.DidNotify());
-  EXPECT_EQ(Color(0, 0, 255), frame->GetDocument().ThemeColor());
+  EXPECT_EQ(SK_ColorBLUE, frame->GetDocument().ThemeColor());
   // Change of second theme-color meta tag will not change frame's theme
   // color.
   host.Reset();
@@ -9072,14 +9072,14 @@ TEST_F(WebFrameTest, ThemeColor) {
       "document.getElementById('tc2').setAttribute('content', '#00FF00');"));
   RunPendingTasks();
   EXPECT_TRUE(host.DidNotify());
-  EXPECT_EQ(Color(0, 0, 255), frame->GetDocument().ThemeColor());
+  EXPECT_EQ(SK_ColorBLUE, frame->GetDocument().ThemeColor());
   // Remove the first theme-color meta tag to apply the second.
   host.Reset();
   frame->ExecuteScript(
       WebScriptSource("document.getElementById('tc1').remove();"));
   RunPendingTasks();
   EXPECT_TRUE(host.DidNotify());
-  EXPECT_EQ(Color(0, 255, 0), frame->GetDocument().ThemeColor());
+  EXPECT_EQ(SK_ColorGREEN, frame->GetDocument().ThemeColor());
   // Remove the name attribute of the remaining meta.
   host.Reset();
   frame->ExecuteScript(WebScriptSource(

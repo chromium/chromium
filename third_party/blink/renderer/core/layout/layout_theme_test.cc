@@ -48,7 +48,7 @@ TEST_F(LayoutThemeTest, ChangeFocusRingColor) {
   EXPECT_NE(nullptr, span);
   EXPECT_NE(nullptr, span->GetLayoutObject());
 
-  Color custom_color = MakeRGB(123, 145, 167);
+  Color custom_color = Color::FromRGB(123, 145, 167);
 
   // Checking unfocused style.
   EXPECT_EQ(EBorderStyle::kNone, OutlineStyle(span));

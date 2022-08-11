@@ -12,18 +12,20 @@ namespace cssvalue {
 
 CSSColor* CSSColor::Create(RGBA32 color) {
   // These are the empty and deleted values of the hash table.
-  if (color == Color::kTransparent)
+  if (Color::FromRGBA32(color) == Color::kTransparent)
     return CssValuePool().TransparentColor();
-  if (color == Color::kWhite)
+  if (Color::FromRGBA32(color) == Color::kWhite)
     return CssValuePool().WhiteColor();
   // Just because it is common.
-  if (color == Color::kBlack)
+  if (Color::FromRGBA32(color) == Color::kBlack)
     return CssValuePool().BlackColor();
 
   CSSValuePool::ColorValueCache::AddResult entry =
       CssValuePool().GetColorCacheEntry(color);
-  if (entry.is_new_entry)
-    entry.stored_value->value = MakeGarbageCollected<CSSColor>(color);
+  if (entry.is_new_entry) {
+    entry.stored_value->value =
+        MakeGarbageCollected<CSSColor>(Color::FromRGBA32(color));
+  }
   return entry.stored_value->value;
 }
 

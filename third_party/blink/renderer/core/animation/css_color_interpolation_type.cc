@@ -112,10 +112,11 @@ Color CSSColorInterpolationType::GetRGBA(const InterpolableValue& value) {
   if (color[kAlpha] == 0)
     return Color::kTransparent;
 
-  return Color(MakeRGBA(ClampTo<int>(std::round(color[kRed] / color[kAlpha])),
-                        ClampTo<int>(std::round(color[kGreen] / color[kAlpha])),
-                        ClampTo<int>(std::round(color[kBlue] / color[kAlpha])),
-                        ClampTo<int>(color[kAlpha])));
+  return Color::FromRGBA(
+      ClampTo<int>(std::round(color[kRed] / color[kAlpha])),
+      ClampTo<int>(std::round(color[kGreen] / color[kAlpha])),
+      ClampTo<int>(std::round(color[kBlue] / color[kAlpha])),
+      ClampTo<int>(color[kAlpha]));
 }
 
 bool CSSColorInterpolationType::IsRGBA(const InterpolableValue& value) {
@@ -211,7 +212,7 @@ Color CSSColorInterpolationType::ResolveInterpolableColor(
   if (alpha == 0)
     return Color::kTransparent;
 
-  return MakeRGBA(
+  return Color::FromRGBA(
       ClampTo<int>(round(red / alpha)), ClampTo<int>(round(green / alpha)),
       ClampTo<int>(round(blue / alpha)), ClampTo<int>(round(alpha)));
 }

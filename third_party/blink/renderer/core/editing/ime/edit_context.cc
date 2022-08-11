@@ -175,15 +175,15 @@ void EditContext::DispatchTextFormatEvent(
         break;
     }
 
-    text_formats.push_back(
-        TextFormat::Create(range_start, range_end,
-                           cssvalue::CSSColor::SerializeAsCSSComponentValue(
-                               ime_text_span.text_color),
-                           cssvalue::CSSColor::SerializeAsCSSComponentValue(
-                               ime_text_span.background_color),
-                           cssvalue::CSSColor::SerializeAsCSSComponentValue(
-                               ime_text_span.underline_color),
-                           underline_style, underline_thickness));
+    text_formats.push_back(TextFormat::Create(
+        range_start, range_end,
+        cssvalue::CSSColor::SerializeAsCSSComponentValue(
+            Color::FromSkColor(ime_text_span.text_color)),
+        cssvalue::CSSColor::SerializeAsCSSComponentValue(
+            Color::FromSkColor(ime_text_span.background_color)),
+        cssvalue::CSSColor::SerializeAsCSSComponentValue(
+            Color::FromSkColor(ime_text_span.underline_color)),
+        underline_style, underline_thickness));
   }
 
   TextFormatUpdateEvent* event = MakeGarbageCollected<TextFormatUpdateEvent>(

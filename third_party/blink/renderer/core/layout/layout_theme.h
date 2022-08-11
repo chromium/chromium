@@ -253,9 +253,11 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
 
   // This color is expected to be drawn on a semi-transparent overlay,
   // making it more transparent than its alpha value indicates.
-  static const RGBA32 kDefaultTapHighlightColor = 0x66000000;
+  static constexpr Color kDefaultTapHighlightColor =
+      Color::FromRGBA32(0x66000000);
 
-  static const RGBA32 kDefaultCompositionBackgroundColor = 0xFFFFDD55;
+  static constexpr Color kDefaultCompositionBackgroundColor =
+      Color::FromRGBA32(0xFFFFDD55);
 };
 
 }  // namespace blink

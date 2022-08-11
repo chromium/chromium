@@ -123,7 +123,8 @@ Color HighlightThemeBackgroundColor(const Document& document,
                  : LayoutTheme::GetTheme().InactiveSelectionBackgroundColor(
                        style.UsedColorScheme());
     case kPseudoIdTargetText:
-      return Color(shared_highlighting::kFragmentTextBackgroundColorARGB);
+      return Color::FromRGBA32(
+          shared_highlighting::kFragmentTextBackgroundColorARGB);
     case kPseudoIdSpellingError:
     case kPseudoIdGrammarError:
     case kPseudoIdHighlight:
