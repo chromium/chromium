@@ -10,7 +10,7 @@
 
 #include "base/bind.h"
 #include "base/values.h"
-#include "chrome/browser/ash/telemetry_extension/diagnostics_service_ash.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/diagnostics_api_converters.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/remote_diagnostics_service_strategy.h"
 #include "chrome/common/chromeos/extensions/api/diagnostics.h"
@@ -28,8 +28,15 @@ DiagnosticsApiFunctionBase::~DiagnosticsApiFunctionBase() = default;
 
 mojo::Remote<crosapi::mojom::DiagnosticsService>&
 DiagnosticsApiFunctionBase::GetRemoteService() {
+  DCHECK(remote_diagnostics_service_strategy_);
   return remote_diagnostics_service_strategy_->GetRemoteService();
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+bool DiagnosticsApiFunctionBase::IsCrosApiAvailable() {
+  return remote_diagnostics_service_strategy_ != nullptr;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // OsDiagnosticsGetAvailableRoutinesFunction -----------------------------------
 

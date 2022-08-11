@@ -10,7 +10,7 @@
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash {
@@ -39,13 +39,15 @@ class DiagnosticsServiceAsh : public crosapi::mojom::DiagnosticsService {
     static Factory* test_factory_;
   };
 
+  DiagnosticsServiceAsh();
   DiagnosticsServiceAsh(const DiagnosticsServiceAsh&) = delete;
   DiagnosticsServiceAsh& operator=(const DiagnosticsServiceAsh&) = delete;
   ~DiagnosticsServiceAsh() override;
 
- private:
-  explicit DiagnosticsServiceAsh(
+  void BindReceiver(
       mojo::PendingReceiver<crosapi::mojom::DiagnosticsService> receiver);
+
+ private:
   // Ensures that |service_| created and connected to the
   // CrosHealthdDiagnosticsService.
   cros_healthd::mojom::CrosHealthdDiagnosticsService* GetService();
@@ -106,7 +108,9 @@ class DiagnosticsServiceAsh : public crosapi::mojom::DiagnosticsService {
   // interface pipe before destroying pending response callbacks owned by
   // |service_|. It is an error to drop response callbacks which still
   // correspond to an open interface pipe.
-  mojo::Receiver<crosapi::mojom::DiagnosticsService> receiver_;
+  //
+  // Support any number of connections.
+  mojo::ReceiverSet<crosapi::mojom::DiagnosticsService> receivers_;
 };
 
 }  // namespace ash

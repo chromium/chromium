@@ -9,12 +9,14 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/memory/ptr_util.h"
 #include "chrome/browser/ash/telemetry_extension/diagnostics_service_converters.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/nullable_primitives.mojom.h"
 #include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash {
 
@@ -30,8 +32,9 @@ DiagnosticsServiceAsh::Factory::Create(
     return test_factory_->CreateInstance(std::move(receiver));
   }
 
-  return base::WrapUnique<DiagnosticsServiceAsh>(
-      new DiagnosticsServiceAsh(std::move(receiver)));
+  auto diagnostics_service = std::make_unique<DiagnosticsServiceAsh>();
+  diagnostics_service->BindReceiver(std::move(receiver));
+  return diagnostics_service;
 }
 
 // static
@@ -41,11 +44,14 @@ void DiagnosticsServiceAsh::Factory::SetForTesting(Factory* test_factory) {
 
 DiagnosticsServiceAsh::Factory::~Factory() = default;
 
-DiagnosticsServiceAsh::DiagnosticsServiceAsh(
-    mojo::PendingReceiver<crosapi::mojom::DiagnosticsService> receiver)
-    : receiver_(this, std::move(receiver)) {}
+DiagnosticsServiceAsh::DiagnosticsServiceAsh() = default;
 
 DiagnosticsServiceAsh::~DiagnosticsServiceAsh() = default;
+
+void DiagnosticsServiceAsh::BindReceiver(
+    mojo::PendingReceiver<crosapi::mojom::DiagnosticsService> receiver) {
+  receivers_.Add(this, std::move(receiver));
+}
 
 cros_healthd::mojom::CrosHealthdDiagnosticsService*
 DiagnosticsServiceAsh::GetService() {

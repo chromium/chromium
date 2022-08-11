@@ -3,15 +3,26 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/values.h"
-#include "chrome/browser/ash/telemetry_extension/diagnostics_service_ash.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/base_telemetry_extension_browser_test.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/fake_diagnostics_service.h"
-#include "chrome/browser/chromeos/extensions/telemetry/api/fake_diagnostics_service_factory.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/telemetry_extension/diagnostics_service_ash.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/fake_diagnostics_service_factory.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
+#include "chromeos/lacros/lacros_service.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace chromeos {
 
@@ -19,8 +30,10 @@ class TelemetryExtensionDiagnosticsApiBrowserTest
     : public BaseTelemetryExtensionBrowserTest {
  public:
   TelemetryExtensionDiagnosticsApiBrowserTest() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     ash::DiagnosticsServiceAsh::Factory::SetForTesting(
         &fake_diagnostics_service_factory_);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
   ~TelemetryExtensionDiagnosticsApiBrowserTest() override = default;
@@ -31,17 +44,265 @@ class TelemetryExtensionDiagnosticsApiBrowserTest
       const TelemetryExtensionDiagnosticsApiBrowserTest&) = delete;
 
  protected:
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Returns whether the Diagnostics interface is available. It may
+  // not be available on earlier versions of ash-chrome.
+  bool IsServiceAvailable() const {
+    chromeos::LacrosService* lacros_service = chromeos::LacrosService::Get();
+    return lacros_service &&
+           lacros_service->IsAvailable<crosapi::mojom::DiagnosticsService>();
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   void SetServiceForTesting(
       std::unique_ptr<FakeDiagnosticsService> fake_diagnostics_service_impl) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     fake_diagnostics_service_factory_.SetCreateInstanceResponse(
         std::move(fake_diagnostics_service_impl));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // Replace the production DiagnosticsService with a fake for testing.
+    mojo::Remote<crosapi::mojom::DiagnosticsService>& remote =
+        chromeos::LacrosService::Get()
+            ->GetRemote<crosapi::mojom::DiagnosticsService>();
+    DCHECK(remote);
+    remote.reset();
+    fake_diagnostics_service_impl->BindPendingReceiver(
+        remote.BindNewPipeAndPassReceiver());
+    fake_diagnostics_service_impl_ = std::move(fake_diagnostics_service_impl);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   FakeDiagnosticsServiceFactory fake_diagnostics_service_factory_;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  std::unique_ptr<FakeDiagnosticsService> fake_diagnostics_service_impl_;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
+                       LacrosServiceNotAvailableError) {
+  if (IsServiceAvailable()) {
+    return;
+  }
+
+  std::string service_worker = R"(
+    const tests = [
+      // Diagnostics APIs.
+      async function getAvailableRoutines() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.getAvailableRoutines(),
+            'Error: API chrome.os.diagnostics.getAvailableRoutines failed. ' +
+            'Not supported by ash browser'
+        );
+        chrome.test.succeed();
+      },
+      async function getRoutineUpdate() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.getRoutineUpdate(
+              {
+                id: 12345,
+                command: 'status'
+              }
+            ),
+            'Error: API chrome.os.diagnostics.getRoutineUpdate failed. ' +
+            'Not supported by ash browser'
+        );
+        chrome.test.succeed();
+      },
+      async function runAcPowerRoutine() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.runAcPowerRoutine(
+              {
+                expected_status: 'connected',
+                expected_power_type: 'ac_power'
+              }
+            ),
+            'Error: API chrome.os.diagnostics.runAcPowerRoutine failed. ' +
+            'Not supported by ash browser'
+        );
+        chrome.test.succeed();
+      },
+      async function runBatteryCapacityRoutine() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.runBatteryCapacityRoutine(),
+            'Error: API chrome.os.diagnostics.runBatteryCapacityRoutine ' +
+            'failed. Not supported by ash browser'
+        );
+        chrome.test.succeed();
+      },
+      async function runBatteryChargeRoutine() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.runBatteryChargeRoutine(
+              {
+                length_seconds: 1000,
+                minimum_charge_percent_required: 1
+              }
+            ),
+            'Error: API chrome.os.diagnostics.runBatteryChargeRoutine ' +
+            'failed. Not supported by ash browser'
+        );
+        chrome.test.succeed();
+      },
+      async function runBatteryDischargeRoutine() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.runBatteryDischargeRoutine(
+              {
+                length_seconds: 10,
+                maximum_discharge_percent_allowed: 15
+              }
+            ),
+            'Error: API chrome.os.diagnostics.runBatteryDischargeRoutine ' +
+            'failed. Not supported by ash browser'
+        );
+        chrome.test.succeed();
+      },
+      async function runBatteryHealthRoutine() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.runBatteryHealthRoutine(),
+            'Error: API chrome.os.diagnostics.runBatteryHealthRoutine ' +
+            'failed. Not supported by ash browser'
+        );
+        chrome.test.succeed();
+      },
+      async function runCpuCacheRoutine() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.runCpuCacheRoutine(
+              {
+                length_seconds: 120
+              }
+            ),
+            'Error: API chrome.os.diagnostics.runCpuCacheRoutine failed. ' +
+            'Not supported by ash browser'
+        );
+        chrome.test.succeed();
+      },
+      async function runCpuFloatingPointAccuracyRoutine() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.runCpuFloatingPointAccuracyRoutine(
+              {
+                length_seconds: 120
+              }
+            ),
+            'Error: API chrome.os.diagnostics.' +
+            'runCpuFloatingPointAccuracyRoutine failed. ' +
+            'Not supported by ash browser'
+        );
+        chrome.test.succeed();
+      },
+      async function runCpuPrimeSearchRoutine() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.runCpuPrimeSearchRoutine(
+              {
+                length_seconds: 120
+              }
+            ),
+            'Error: API chrome.os.diagnostics.runCpuPrimeSearchRoutine ' +
+            'failed. Not supported by ash browser'
+        );
+        chrome.test.succeed();
+      },
+      async function runCpuStressRoutine() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.runCpuStressRoutine(
+              {
+                length_seconds: 120
+              }
+            ),
+            'Error: API chrome.os.diagnostics.runCpuStressRoutine failed. ' +
+            'Not supported by ash browser'
+        );
+        chrome.test.succeed();
+      },
+      async function runDiskReadRoutine() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.runDiskReadRoutine(
+              {
+                type: 'random',
+                length_seconds: 60,
+                file_size_mb: 200
+              }
+            ),
+            'Error: API chrome.os.diagnostics.runDiskReadRoutine failed. ' +
+            'Not supported by ash browser'
+        );
+        chrome.test.succeed();
+      },
+      async function runLanConnectivityRoutine() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.runLanConnectivityRoutine(),
+            'Error: API chrome.os.diagnostics.runLanConnectivityRoutine ' +
+            'failed. Not supported by ash browser'
+        );
+        chrome.test.succeed();
+      },
+      async function runMemoryRoutine() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.runMemoryRoutine(),
+            'Error: API chrome.os.diagnostics.runMemoryRoutine failed. ' +
+            'Not supported by ash browser'
+        );
+        chrome.test.succeed();
+      },
+      async function runNvmeWearLevelRoutine() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.runNvmeWearLevelRoutine(
+              {
+                wear_level_threshold: 80
+              }
+            ),
+            'Error: API chrome.os.diagnostics.runNvmeWearLevelRoutine ' +
+            'failed. Not supported by ash browser'
+        );
+        chrome.test.succeed();
+      },
+      async function runSmartctlCheckRoutine() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.runSmartctlCheckRoutine(),
+            'Error: API chrome.os.diagnostics.runSmartctlCheckRoutine ' +
+            'failed. Not supported by ash browser'
+        );
+        chrome.test.succeed();
+      },
+    ];
+
+    chrome.test.runTests([
+      async function allAPIsTested() {
+        getTestNames = function(arr) {
+          return arr.map(item => item.name);
+        }
+        getMethods = function(obj) {
+          return Object.getOwnPropertyNames(obj).filter(
+            item => typeof obj[item] === 'function');
+        }
+        apiNames = [
+          ...getMethods(chrome.os.diagnostics)
+        ];
+        chrome.test.assertEq(getTestNames(tests), apiNames);
+        chrome.test.succeed();
+      },
+      ...tests
+    ]);
+  )";
+
+  CreateExtensionAndRunServiceWorker(service_worker);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        GetAvailableRoutinesSuccess) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If Diagnostics interface is not available on this version of ash-chrome,
+  // this test suite will no-op.
+  if (!IsServiceAvailable()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   {
     auto fake_service_impl = std::make_unique<FakeDiagnosticsService>();
     fake_service_impl->SetAvailableRoutines({
@@ -96,6 +357,14 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        GetRoutineUpdateNonInteractiveSuccess) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If Diagnostics interface is not available on this version of ash-chrome,
+  // this test suite will no-op.
+  if (!IsServiceAvailable()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   // Configure FakeDiagnosticsService.
   {
     auto nonInteractiveRoutineUpdate =
@@ -156,6 +425,14 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        GetRoutineUpdateInteractiveSuccess) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If Diagnostics interface is not available on this version of ash-chrome,
+  // this test suite will no-op.
+  if (!IsServiceAvailable()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   // Configure FakeDiagnosticsService.
   {
     auto interactiveRoutineUpdate =
@@ -216,6 +493,14 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        RunAcPowerRoutineSuccess) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If Diagnostics interface is not available on this version of ash-chrome,
+  // this test suite will no-op.
+  if (!IsServiceAvailable()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   // Configure FakeDiagnosticsService.
   {
     auto expected_response =
@@ -263,6 +548,14 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        RunBatteryCapacityRoutineSuccess) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If Diagnostics interface is not available on this version of ash-chrome,
+  // this test suite will no-op.
+  if (!IsServiceAvailable()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   // Configure FakeDiagnosticsService.
   {
     auto expected_response =
@@ -296,6 +589,14 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        RunBatteryChargeRoutineSuccess) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If Diagnostics interface is not available on this version of ash-chrome,
+  // this test suite will no-op.
+  if (!IsServiceAvailable()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   // Configure FakeDiagnosticsService.
   {
     auto expected_response =
@@ -340,6 +641,14 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        RunBatteryDischargeRoutineSuccess) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If Diagnostics interface is not available on this version of ash-chrome,
+  // this test suite will no-op.
+  if (!IsServiceAvailable()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   // Configure FakeDiagnosticsService.
   {
     auto expected_response =
@@ -384,6 +693,14 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        RunBatteryHealthRoutineSuccess) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If Diagnostics interface is not available on this version of ash-chrome,
+  // this test suite will no-op.
+  if (!IsServiceAvailable()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   // Configure FakeDiagnosticsService.
   {
     auto expected_response =
@@ -417,6 +734,14 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        RunCpuCacheRoutineSuccess) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If Diagnostics interface is not available on this version of ash-chrome,
+  // this test suite will no-op.
+  if (!IsServiceAvailable()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   // Configure FakeDiagnosticsService.
   {
     auto expected_response =
@@ -459,6 +784,14 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        RunCpuFloatingPointAccuracyRoutineSuccess) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If Diagnostics interface is not available on this version of ash-chrome,
+  // this test suite will no-op.
+  if (!IsServiceAvailable()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   // Configure FakeDiagnosticsService.
   {
     auto expected_response =
@@ -501,6 +834,14 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        RunCpuPrimeSearchRoutineSuccess) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If Diagnostics interface is not available on this version of ash-chrome,
+  // this test suite will no-op.
+  if (!IsServiceAvailable()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   // Configure FakeDiagnosticsService.
   {
     auto expected_response =
@@ -543,6 +884,14 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        RunCpuStressRoutineSuccess) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If Diagnostics interface is not available on this version of ash-chrome,
+  // this test suite will no-op.
+  if (!IsServiceAvailable()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   // Configure FakeDiagnosticsService.
   {
     auto expected_response =
@@ -585,6 +934,14 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        RunDiskReadRoutineSuccess) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If Diagnostics interface is not available on this version of ash-chrome,
+  // this test suite will no-op.
+  if (!IsServiceAvailable()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   // Configure FakeDiagnosticsService.
   {
     auto expected_response =
@@ -634,6 +991,14 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        RunLanConnectivityRoutineSuccess) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If Diagnostics interface is not available on this version of ash-chrome,
+  // this test suite will no-op.
+  if (!IsServiceAvailable()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   // Configure FakeDiagnosticsService.
   {
     auto expected_response =
@@ -667,6 +1032,14 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        RunMemoryRoutineSuccess) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If Diagnostics interface is not available on this version of ash-chrome,
+  // this test suite will no-op.
+  if (!IsServiceAvailable()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   // Configure FakeDiagnosticsService.
   {
     auto expected_response =
@@ -700,6 +1073,14 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        RunNvmeWearLevelRoutineSuccess) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If Diagnostics interface is not available on this version of ash-chrome,
+  // this test suite will no-op.
+  if (!IsServiceAvailable()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   // Configure FakeDiagnosticsService.
   {
     auto expected_response =
@@ -742,6 +1123,14 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        RunSmartctlCheckRoutineSuccess) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If Diagnostics interface is not available on this version of ash-chrome,
+  // this test suite will no-op.
+  if (!IsServiceAvailable()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   // Configure FakeDiagnosticsService.
   {
     auto expected_response =

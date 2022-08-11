@@ -35,6 +35,7 @@
 #include "chromeos/crosapi/mojom/desk_template.mojom.h"
 #include "chromeos/crosapi/mojom/device_oauth2_token_service.mojom.h"
 #include "chromeos/crosapi/mojom/device_settings_service.mojom.h"
+#include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
 #include "chromeos/crosapi/mojom/digital_goods.mojom.h"
 #include "chromeos/crosapi/mojom/dlp.mojom.h"
 #include "chromeos/crosapi/mojom/document_scan.mojom.h"
@@ -291,6 +292,9 @@ LacrosService::LacrosService()
       crosapi::mojom::DeviceSettingsService,
       &Crosapi::BindDeviceSettingsService,
       Crosapi::MethodMinVersions::kBindDeviceSettingsServiceMinVersion>();
+  ConstructRemote<
+      crosapi::mojom::DiagnosticsService, &Crosapi::BindDiagnosticsService,
+      Crosapi::MethodMinVersions::kBindDiagnosticsServiceMinVersion>();
   ConstructRemote<
       crosapi::mojom::DigitalGoodsFactory, &Crosapi::BindDigitalGoodsFactory,
       Crosapi::MethodMinVersions::kBindDigitalGoodsFactoryMinVersion>();

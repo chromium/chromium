@@ -14,7 +14,8 @@
       "blessed_extension"
     ],
     "platforms": [
-      "chromeos"
+      "chromeos",
+      "lacros"
     ],
     "channel": "stable"
   },

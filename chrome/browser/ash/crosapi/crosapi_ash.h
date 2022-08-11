@@ -27,6 +27,7 @@ class DigitalGoodsFactoryAsh;
 }
 
 namespace ash {
+class DiagnosticsServiceAsh;
 class ProbeServiceAsh;
 }  // namespace ash
 
@@ -173,6 +174,8 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::DeviceOAuth2TokenService> receiver) override;
   void BindDeviceSettingsService(
       mojo::PendingReceiver<mojom::DeviceSettingsService> receiver) override;
+  void BindDiagnosticsService(
+      mojo::PendingReceiver<mojom::DiagnosticsService> receiver) override;
   void BindDigitalGoodsFactory(
       mojo::PendingReceiver<mojom::DigitalGoodsFactory> receiver) override;
   void BindDlp(mojo::PendingReceiver<mojom::Dlp> receiver) override;
@@ -456,6 +459,7 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<DeviceAttributesAsh> device_attributes_ash_;
   std::unique_ptr<DeviceOAuth2TokenServiceAsh> device_oauth2_token_service_ash_;
   std::unique_ptr<DeviceSettingsAsh> device_settings_ash_;
+  std::unique_ptr<ash::DiagnosticsServiceAsh> diagnostics_service_ash_;
   std::unique_ptr<apps::DigitalGoodsFactoryAsh> digital_goods_factory_ash_;
   std::unique_ptr<DlpAsh> dlp_ash_;
   std::unique_ptr<DocumentScanAsh> document_scan_ash_;

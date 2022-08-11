@@ -17,8 +17,14 @@ source_set("api") {
     "api_guard_delegate.h",
     "base_telemetry_extension_api_guard_function.cc",
     "base_telemetry_extension_api_guard_function.h",
+    "diagnostics_api.cc",
+    "diagnostics_api.h",
+    "diagnostics_api_converters.cc",
+    "diagnostics_api_converters.h",
     "hardware_info_delegate.cc",
     "hardware_info_delegate.h",
+    "remote_diagnostics_service_strategy.cc",
+    "remote_diagnostics_service_strategy.h",
     "remote_probe_service_strategy.cc",
     "remote_probe_service_strategy.h",
     "telemetry_api.cc",
@@ -46,18 +52,7 @@ source_set("api") {
   ]
 
   if (is_chromeos_ash) {
-    sources += [
-      "diagnostics_api.cc",
-      "diagnostics_api.h",
-      "diagnostics_api_converters.cc",
-      "diagnostics_api_converters.h",
-      "remote_diagnostics_service_strategy.cc",
-      "remote_diagnostics_service_strategy.h",
-    ]
-
     deps += [
-      "//ash/webui/telemetry_extension_ui/mojom",
-      "//ash/webui/telemetry_extension_ui/services:telemetry_services",
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/telemetry_extension",
       "//components/user_manager",
@@ -94,6 +89,7 @@ source_set("browser_tests") {
   sources = [
     "base_telemetry_extension_browser_test.cc",
     "base_telemetry_extension_browser_test.h",
+    "diagnostics_api_browsertest.cc",
     "fake_api_guard_delegate.cc",
     "fake_api_guard_delegate.h",
     "fake_diagnostics_service.cc",
@@ -125,7 +121,6 @@ source_set("browser_tests") {
   if (is_chromeos_ash) {
     sources += [
       "base_telemetry_extension_api_guard_function_browsertest.cc",
-      "diagnostics_api_browsertest.cc",
       "fake_diagnostics_service_factory.cc",
       "fake_diagnostics_service_factory.h",
       "fake_probe_service_factory.cc",
@@ -146,7 +141,10 @@ source_set("browser_tests") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "telemetry_api_converters_unittest.cc" ]
+  sources = [
+    "diagnostics_api_converters_unittest.cc",
+    "telemetry_api_converters_unittest.cc",
+  ]
 
   deps = [
     ":api",
@@ -156,12 +154,6 @@ source_set("unit_tests") {
     "//chromeos/crosapi/mojom",
     "//testing/gtest",
   ]
-
-  if (is_chromeos_ash) {
-    sources += [ "diagnostics_api_converters_unittest.cc" ]
-
-    deps += [ "//ash/webui/telemetry_extension_ui/mojom" ]
-  }
 }
 
 # This is needed as a dependency for api_guard_delegate_unittest.cc in

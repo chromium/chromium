@@ -98,6 +98,7 @@
 #include "chrome/browser/ash/remote_apps/remote_apps_manager_factory.h"
 #include "chrome/browser/ash/sync/sync_service_ash.h"
 #include "chrome/browser/ash/sync/sync_service_factory_ash.h"
+#include "chrome/browser/ash/telemetry_extension/diagnostics_service_ash.h"
 #include "chrome/browser/ash/telemetry_extension/probe_service_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -184,6 +185,7 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
       device_oauth2_token_service_ash_(
           std::make_unique<DeviceOAuth2TokenServiceAsh>()),
       device_settings_ash_(std::make_unique<DeviceSettingsAsh>()),
+      diagnostics_service_ash_(std::make_unique<ash::DiagnosticsServiceAsh>()),
       digital_goods_factory_ash_(
           std::make_unique<apps::DigitalGoodsFactoryAsh>()),
       dlp_ash_(std::make_unique<DlpAsh>()),
@@ -646,6 +648,11 @@ void CrosapiAsh::BindDeviceOAuth2TokenService(
 void CrosapiAsh::BindDeviceSettingsService(
     mojo::PendingReceiver<mojom::DeviceSettingsService> receiver) {
   device_settings_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindDiagnosticsService(
+    mojo::PendingReceiver<mojom::DiagnosticsService> receiver) {
+  diagnostics_service_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindDigitalGoodsFactory(

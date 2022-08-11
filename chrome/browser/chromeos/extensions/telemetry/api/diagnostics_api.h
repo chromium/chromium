@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "chrome/browser/ash/telemetry_extension/diagnostics_service_ash.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/base_telemetry_extension_api_guard_function.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/remote_diagnostics_service_strategy.h"
 #include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
@@ -30,6 +30,10 @@ class DiagnosticsApiFunctionBase
   ~DiagnosticsApiFunctionBase() override;
 
   mojo::Remote<crosapi::mojom::DiagnosticsService>& GetRemoteService();
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  bool IsCrosApiAvailable() override;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
  private:
   std::unique_ptr<RemoteDiagnosticsServiceStrategy>

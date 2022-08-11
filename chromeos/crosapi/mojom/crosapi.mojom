@@ -26,6 +26,7 @@ import "chromeos/crosapi/mojom/desk_template.mojom";
 import "chromeos/crosapi/mojom/device_attributes.mojom";
 import "chromeos/crosapi/mojom/device_oauth2_token_service.mojom";
 import "chromeos/crosapi/mojom/device_settings_service.mojom";
+import "chromeos/crosapi/mojom/diagnostics_service.mojom";
 import "chromeos/crosapi/mojom/digital_goods.mojom";
 import "chromeos/crosapi/mojom/dlp.mojom";
 import "chromeos/crosapi/mojom/document_scan.mojom";
@@ -125,8 +126,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 95
-// Next method id: 99
+// Next version: 96
+// Next method id: 100
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -259,6 +260,12 @@ interface Crosapi {
   // Added in 96.
   [MinVersion=55] BindDeviceSettingsService@59(
     pending_receiver<DeviceSettingsService> receiver);
+
+  // Binds the diagnostics service to allow Lacros to initiate diagnostics
+  // routines from Ash.
+  // Added in M106.
+  [MinVersion=95] BindDiagnosticsService@99(
+    pending_receiver<crosapi.mojom.DiagnosticsService> receiver);
 
   // Added in M104.
   [MinVersion=76] BindDigitalGoodsFactory@79(
