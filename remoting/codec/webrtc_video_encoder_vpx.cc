@@ -263,27 +263,26 @@ void WebrtcVideoEncoderVpx::Encode(std::unique_ptr<webrtc::DesktopFrame> frame,
 
   UpdateConfig(params);
 
-  vpx_active_map_t act_map;
-  act_map.rows = active_map_.height();
-  act_map.cols = active_map_.width();
-  act_map.active_map = active_map_.data();
-
   webrtc::DesktopRegion updated_region;
   // Convert the updated capture data ready for encode.
   PrepareImage(frame.get(), &updated_region);
 
-  // Update active map based on updated region.
-  if (params.clear_active_map)
-    active_map_.Clear();
+  vpx_active_map_t act_map;
+  if (use_active_map_) {
+    if (params.clear_active_map)
+      active_map_.Clear();
 
-  if (params.key_frame)
-    updated_region.SetRect(webrtc::DesktopRect::MakeSize(frame_size));
+    if (params.key_frame)
+      updated_region.SetRect(webrtc::DesktopRect::MakeSize(frame_size));
 
-  active_map_.Update(updated_region);
+    active_map_.Update(updated_region);
 
-  // Apply active map to the encoder.
-  if (vpx_codec_control(codec_.get(), VP8E_SET_ACTIVEMAP, &act_map)) {
-    LOG(ERROR) << "Unable to apply active map";
+    act_map.rows = active_map_.height();
+    act_map.cols = active_map_.width();
+    act_map.active_map = active_map_.data();
+    if (vpx_codec_control(codec_.get(), VP8E_SET_ACTIVEMAP, &act_map)) {
+      LOG(ERROR) << "Unable to apply active map";
+    }
   }
 
   vpx_codec_err_t ret = vpx_codec_encode(
@@ -299,12 +298,14 @@ void WebrtcVideoEncoderVpx::Encode(std::unique_ptr<webrtc::DesktopFrame> frame,
     return;
   }
 
-  // VP8 doesn't return an active map so we assume it hasn't changed.
-  if (use_vp9_ && !lossless_encode_) {
-    ret = vpx_codec_control(codec_.get(), VP9E_GET_ACTIVEMAP, &act_map);
-    DCHECK_EQ(ret, VPX_CODEC_OK)
-        << "Failed to fetch active map: " << vpx_codec_err_to_string(ret)
-        << "\n";
+  if (use_active_map_) {
+    // VP8 doesn't return an active map so we assume it hasn't changed.
+    if (use_vp9_ && !lossless_encode_) {
+      ret = vpx_codec_control(codec_.get(), VP9E_GET_ACTIVEMAP, &act_map);
+      DCHECK_EQ(ret, VPX_CODEC_OK)
+          << "Failed to fetch active map: " << vpx_codec_err_to_string(ret)
+          << "\n";
+    }
   }
 
   // Read the encoded data.
@@ -382,8 +383,9 @@ void WebrtcVideoEncoderVpx::Configure(const webrtc::DesktopSize& size) {
     codec_.reset();
   }
 
-  // Initialize active map.
-  active_map_.Initialize(size);
+  if (use_active_map_) {
+    active_map_.Initialize(size);
+  }
 
   // Fetch a default configuration for the desired codec.
   const vpx_codec_iface_t* interface =

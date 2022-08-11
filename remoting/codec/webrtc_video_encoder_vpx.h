@@ -102,6 +102,8 @@ class WebrtcVideoEncoderVpx : public WebrtcVideoEncoder {
 
   // Active map used to optimize out processing of unchanged macroblocks.
   VideoEncoderActiveMap active_map_;
+  // TODO(joedow): Remove this flag after we're done with performance tuning.
+  const bool use_active_map_ = true;
 
   raw_ptr<const base::TickClock> clock_;
 
