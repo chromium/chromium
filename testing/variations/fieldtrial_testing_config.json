@@ -2328,11 +2328,8 @@
             ],
             "experiments": [
                 {
-                    "name": "Fixed_20220421",
-                    "params": {
-                        "fix_configuring": "true"
-                    },
-                    "enable_features": [
+                    "name": "Disabled_20220715",
+                    "disable_features": [
                         "CacheInlineScriptCode"
                     ]
                 }

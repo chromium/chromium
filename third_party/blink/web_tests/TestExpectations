@@ -7093,5 +7093,11 @@ crbug.com/1350336 [ Mac ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/
 crbug.com/1350337 [ Linux ] external/wpt/web-locks/query-ordering.tentative.https.html [ Failure Pass ]
 crbug.com/1350341 [ Linux ] virtual/threaded-no-composited-antialiasing/animations/direction-and-fill/fill-mode-missing-from-to-keyframes.html [ Failure Pass ]
 
+
+# These seem to consistently fail with disabling code cache.
+crbug.com/1351903 http/tests/devtools/network/font-face.js [ Failure Pass ]
+crbug.com/1351903 virtual/disable-frequency-capping-for-overlay-popup-detection/http/tests/subresource_filter/overlay_popup_ad/overlay-popup-ad-fixed-position.html [ Failure Pass ]
+crbug.com/1351903 virtual/disable-frequency-capping-for-overlay-popup-detection/http/tests/subresource_filter/overlay_popup_ad/overlay-popup-image-ad-fixed-position.html [ Failure Pass ]
+
 # TODO(crbug.com/1352009): Research how to re-enable test once not flaky
 crbug.com/1352009 external/wpt/preload/preconnect.html [ Failure Pass ]
