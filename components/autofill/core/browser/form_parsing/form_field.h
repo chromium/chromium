@@ -104,7 +104,6 @@ class FormField {
   static constexpr float kBaseNameParserScore = 0.9f;
   static constexpr float kBaseMerchantPromoCodeParserScore = 0.85f;
   static constexpr float kBaseSearchParserScore = 0.8f;
-  static constexpr float kBaseAutocompleteParserScore = 0.05f;
 
   // Only derived classes may instantiate.
   FormField() = default;
@@ -234,12 +233,6 @@ class FormField {
                                   const LanguageCode& page_language,
                                   PatternSource pattern_source,
                                   LogManager* log_manager);
-
-  // Interpret the fields' `parsable_name()` (id or name attribute) as an
-  // autocomplete type and classify them by it. E.g. <input id=given-name>.
-  static void ParseUsingAutocompleteAttributes(
-      const std::vector<AutofillField*>& fields,
-      FieldCandidatesMap& field_candidates);
 };
 
 }  // namespace autofill

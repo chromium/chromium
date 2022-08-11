@@ -137,7 +137,6 @@ absl::optional<HtmlFieldType> ParseProposedAutocompleteAttribute(
       base::MakeFixedFlatMap<base::StringPiece, HtmlFieldType>({
           {"address", HTML_TYPE_STREET_ADDRESS},
           {"coupon-code", HTML_TYPE_MERCHANT_PROMO_CODE},
-          // TODO(crbug.com/1351760): Investigate if this mapping makes sense.
           {"username", HTML_TYPE_EMAIL},
       });
 
@@ -183,8 +182,9 @@ bool ShouldIgnoreAutocompleteValue(base::StringPiece value) {
   return MatchesRegex<kRegex>(base::UTF8ToUTF16(value));
 }
 
-}  // namespace
-
+// Returns the Chrome Autofill-supported field type corresponding to a given
+// autocomplete `value`, if there is one, in the context of the given
+// `field`.
 HtmlFieldType FieldTypeFromAutocompleteAttributeValue(
     std::string value,
     const AutofillField& field) {
@@ -219,6 +219,8 @@ HtmlFieldType FieldTypeFromAutocompleteAttributeValue(
              ? HTML_TYPE_UNSPECIFIED
              : HTML_TYPE_UNRECOGNIZED;
 }
+
+}  // namespace
 
 absl::optional<AutocompleteParsingResult> ParseAutocompleteAttribute(
     const AutofillField& field) {
