@@ -10,7 +10,9 @@
 #include "base/values.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
+using ::testing::Optional;
 using ::testing::UnorderedElementsAre;
 
 namespace {
@@ -23,22 +25,22 @@ HostDescriptionNode GetNodeWithLabel(const char* name, int label) {
 }
 
 // Returns the list of children of |arg|.
-const base::Value* GetChildren(const base::Value& arg) {
-  const base::DictionaryValue* dict = nullptr;
-  EXPECT_TRUE(arg.GetAsDictionary(&dict));
+absl::optional<base::Value::List> GetChildren(const base::Value& arg) {
+  EXPECT_TRUE(arg.is_dict());
+  const base::Value::Dict& dict = arg.GetDict();
 
-  const base::Value* children = nullptr;
-  if (!dict->Get("children", &children))
-    return nullptr;
+  const base::Value* children = dict.Find("children");
+  if (!children)
+    return absl::nullopt;
   EXPECT_EQ(base::Value::Type::LIST, children->type());
-  return children;
+  return children->GetList().Clone();
 }
 
 // Checks that |arg| is a description of a node with label |l|.
 bool CheckLabel(const base::Value& arg, int l) {
-  const base::DictionaryValue* dict = nullptr;
-  EXPECT_TRUE(arg.GetAsDictionary(&dict));
-  absl::optional<int> result = dict->FindIntKey("label");
+  EXPECT_TRUE(arg.is_dict());
+  const base::Value::Dict& dict = arg.GetDict();
+  absl::optional<int> result = dict.FindInt("label");
   if (!result)
     return false;
   return l == *result;
@@ -48,7 +50,7 @@ bool CheckLabel(const base::Value& arg, int l) {
 MATCHER_P(EmptyNode, label, "") {
   if (!CheckLabel(arg, label))
     return false;
-  EXPECT_FALSE(GetChildren(arg));
+  EXPECT_EQ(GetChildren(arg), absl::nullopt);
   return true;
 }
 
@@ -102,24 +104,22 @@ namespace {
 MATCHER(Node2, "") {
   if (!CheckLabel(arg, 2))
     return false;
-  EXPECT_THAT(GetChildren(arg)->GetListDeprecated(),
-              UnorderedElementsAre(EmptyNode(4)));
+  EXPECT_THAT(GetChildren(arg), Optional(UnorderedElementsAre(EmptyNode(4))));
   return true;
 }
 
 MATCHER(Node5, "") {
   if (!CheckLabel(arg, 5))
     return false;
-  EXPECT_THAT(GetChildren(arg)->GetListDeprecated(),
-              UnorderedElementsAre(Node2()));
+  EXPECT_THAT(GetChildren(arg), Optional(UnorderedElementsAre(Node2())));
   return true;
 }
 
 MATCHER(Node0, "") {
   if (!CheckLabel(arg, 0))
     return false;
-  EXPECT_THAT(GetChildren(arg)->GetListDeprecated(),
-              UnorderedElementsAre(EmptyNode(1), EmptyNode(3), EmptyNode(6)));
+  EXPECT_THAT(GetChildren(arg), Optional(UnorderedElementsAre(
+                                    EmptyNode(1), EmptyNode(3), EmptyNode(6))));
   return true;
 }
 
