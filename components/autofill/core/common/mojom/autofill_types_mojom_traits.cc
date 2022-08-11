@@ -6,6 +6,7 @@
 
 #include "base/i18n/rtl.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/html_field_types.h"
 #include "mojo/public/cpp/base/string16_mojom_traits.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -117,6 +118,19 @@ bool UnionTraits<autofill::mojom::SectionPrefixDataView,
       *out = autofill::Section::CreditCard();
       break;
   }
+  return true;
+}
+
+// static
+bool StructTraits<autofill::mojom::SectionAutocompleteDataView,
+                  autofill::Section::Autocomplete>::
+    Read(autofill::mojom::SectionAutocompleteDataView data,
+         autofill::Section::Autocomplete* out) {
+  if (!data.ReadSection(&out->section))
+    return false;
+  static_assert(sizeof(data.html_field_mode()) <=
+                sizeof(autofill::HtmlFieldMode));
+  out->mode = static_cast<autofill::HtmlFieldMode>(data.html_field_mode());
   return true;
 }
 

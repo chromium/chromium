@@ -6590,8 +6590,8 @@ TEST_F(FormStructureTestImpl,
   field.max_length = 10000;
 
   // Billing.
-  field.section.SetPrefixFromAutocomplete("Billing",
-                                          HtmlFieldMode::HTML_MODE_NONE);
+  field.section.SetPrefixFromAutocomplete(
+      {.section = "Billing", .mode = HtmlFieldMode::HTML_MODE_NONE});
 
   field.label = u"Full Name";
   field.name = u"fullName";
@@ -6609,8 +6609,8 @@ TEST_F(FormStructureTestImpl,
   form.fields.push_back(field);
 
   // Shipping.
-  field.section.SetPrefixFromAutocomplete("Shipping",
-                                          HtmlFieldMode::HTML_MODE_NONE);
+  field.section.SetPrefixFromAutocomplete(
+      {.section = "Shipping", .mode = HtmlFieldMode::HTML_MODE_NONE});
 
   field.label = u"Full Name";
   field.name = u"fullName";
@@ -6678,8 +6678,8 @@ TEST_F(
   field.max_length = 10000;
 
   // Shipping.
-  field.section.SetPrefixFromAutocomplete("Shipping",
-                                          HtmlFieldMode::HTML_MODE_NONE);
+  field.section.SetPrefixFromAutocomplete(
+      {.section = "Shipping", .mode = HtmlFieldMode::HTML_MODE_NONE});
   field.label = u"Full Name";
   field.name = u"fullName";
   field.unique_renderer_id = MakeFieldRendererId();
@@ -6701,8 +6701,8 @@ TEST_F(
   form.fields.push_back(field);
 
   // Billing.
-  field.section.SetPrefixFromAutocomplete("Billing",
-                                          HtmlFieldMode::HTML_MODE_NONE);
+  field.section.SetPrefixFromAutocomplete(
+      {.section = "Billing", .mode = HtmlFieldMode::HTML_MODE_NONE});
   field.label = u"Full Name";
   field.name = u"fullName";
   field.unique_renderer_id = MakeFieldRendererId();
@@ -6729,8 +6729,8 @@ TEST_F(
   form.fields.push_back(field);
 
   // Work address (not realistic).
-  field.section.SetPrefixFromAutocomplete("Work",
-                                          HtmlFieldMode::HTML_MODE_NONE);
+  field.section.SetPrefixFromAutocomplete(
+      {.section = "Work", .mode = HtmlFieldMode::HTML_MODE_NONE});
   field.label = u"Full Name";
   field.name = u"fullName";
   field.unique_renderer_id = MakeFieldRendererId();
@@ -7131,8 +7131,8 @@ TEST_F(FormStructureTestImpl,
   field.max_length = 10000;
 
   // Shipping.
-  field.section.SetPrefixFromAutocomplete("shipping",
-                                          HtmlFieldMode::HTML_MODE_NONE);
+  field.section.SetPrefixFromAutocomplete(
+      {.section = "shipping", .mode = HtmlFieldMode::HTML_MODE_NONE});
 
   field.label = u"Full Name";
   field.name = u"fullName";
@@ -7155,8 +7155,8 @@ TEST_F(FormStructureTestImpl,
   form.fields.push_back(field);
 
   // Billing.
-  field.section.SetPrefixFromAutocomplete("billing",
-                                          HtmlFieldMode::HTML_MODE_NONE);
+  field.section.SetPrefixFromAutocomplete(
+      {.section = "billing", .mode = HtmlFieldMode::HTML_MODE_NONE});
 
   field.label = u"Country";
   field.name = u"country2";
@@ -7206,8 +7206,8 @@ TEST_F(FormStructureTestImpl,
   form.fields.push_back(field);
 
   // Billing-2.
-  field.section.SetPrefixFromAutocomplete("billing-2",
-                                          HtmlFieldMode::HTML_MODE_NONE);
+  field.section.SetPrefixFromAutocomplete(
+      {.section = "billing-2", .mode = HtmlFieldMode::HTML_MODE_NONE});
 
   field.label = u"Country";
   field.name = u"country";
@@ -7444,8 +7444,8 @@ TEST_F(FormStructureTestImpl,
   field.form_control_type = "text";
   field.max_length = 10000;
 
-  field.section.SetPrefixFromAutocomplete("billing",
-                                          HtmlFieldMode::HTML_MODE_NONE);
+  field.section.SetPrefixFromAutocomplete(
+      {.section = "billing", .mode = HtmlFieldMode::HTML_MODE_NONE});
 
   field.label = u"Country";
   field.name = u"country";
@@ -7514,8 +7514,8 @@ TEST_F(FormStructureTestImpl,
   field.form_control_type = "text";
   field.max_length = 10000;
 
-  field.section.SetPrefixFromAutocomplete("billing",
-                                          HtmlFieldMode::HTML_MODE_NONE);
+  field.section.SetPrefixFromAutocomplete(
+      {.section = "billing", .mode = HtmlFieldMode::HTML_MODE_NONE});
 
   field.label = u"Country";
   field.name = u"country";

@@ -1273,8 +1273,9 @@ void FormStructure::ParseFieldTypesFromAutocompleteAttributes() {
     }
 
     // Compute a section name based on the specified hints and apply the result.
-    if (field->section.SetPrefixFromAutocomplete(parsing_result->section,
-                                                 parsing_result->mode)) {
+    if (field->section.SetPrefixFromAutocomplete(
+            {.section = parsing_result->section,
+             .mode = parsing_result->mode})) {
       has_author_specified_sections_ = true;
     }
     field->SetHtmlType(parsing_result->field_type, parsing_result->mode);

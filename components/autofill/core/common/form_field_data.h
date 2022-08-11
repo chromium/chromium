@@ -71,7 +71,11 @@ class Section {
   // added to the legacy section string based on the field type group.
   enum class FieldTypeGroupSuffix : uint8_t { kNoGroup, kDefault, kCreditCard };
 
-  using Autocomplete = std::string;
+  struct Autocomplete {
+    std::string section;
+    HtmlFieldMode mode;
+  };
+
   using Default = base::StrongAlias<struct DefaultTag, absl::monostate>;
 
   // TODO(crbug.com/1153539): Remove when sectioning is redesigned.
@@ -79,7 +83,6 @@ class Section {
 
   struct FieldIdentifier {
     FieldIdentifier() = default;
-
     FieldIdentifier(std::string field_name,
                     size_t local_frame_id,
                     FieldRendererId field_renderer_id)
@@ -123,8 +126,7 @@ class Section {
 
   void set_field_type_group(FieldTypeGroupSuffix field_type_group);
   void SetPrefixToCreditCard();
-  bool SetPrefixFromAutocomplete(const Autocomplete& autocomplete_section,
-                                 HtmlFieldMode autocomplete_mode);
+  bool SetPrefixFromAutocomplete(Autocomplete autocomplete);
 
   // Sets the section prefix based on the field identifiers: the field's name,
   // mapped frame id, renderer id. We do not use LocalFrameTokens but instead

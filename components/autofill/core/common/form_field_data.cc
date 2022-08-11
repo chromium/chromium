@@ -250,6 +250,20 @@ Section::Section() = default;
 Section::Section(const Section& section) = default;
 Section::~Section() = default;
 
+bool operator==(const Section::Autocomplete& a,
+                const Section::Autocomplete& b) {
+  return std::tie(a.section, a.mode) == std::tie(b.section, b.mode);
+}
+
+bool operator!=(const Section::Autocomplete& a,
+                const Section::Autocomplete& b) {
+  return !(a == b);
+}
+
+bool operator<(const Section::Autocomplete& a, const Section::Autocomplete& b) {
+  return std::tie(a.section, a.mode) < std::tie(b.section, b.mode);
+}
+
 bool operator==(const Section::FieldIdentifier& a,
                 const Section::FieldIdentifier& b) {
   return std::tie(a.field_name, a.local_frame_id, a.field_renderer_id) ==
@@ -293,20 +307,10 @@ void Section::SetPrefixToCreditCard() {
   prefix_ = CreditCard();
 }
 
-bool Section::SetPrefixFromAutocomplete(
-    const Autocomplete& autocomplete_section,
-    HtmlFieldMode autocomplete_mode) {
-  if (autocomplete_section.empty() && autocomplete_mode == HTML_MODE_NONE)
+bool Section::SetPrefixFromAutocomplete(Autocomplete autocomplete) {
+  if (autocomplete.section.empty() && autocomplete.mode == HTML_MODE_NONE)
     return false;
-  // To prevent potential section name collisions, append `kDefaultSection`
-  // suffix to fields without a `HtmlFieldMode`. Without this, 'autocomplete'
-  // attribute values "section--shipping street-address" and "shipping
-  // street-address" would result in the same `prefix_`.
-  prefix_ =
-      autocomplete_section +
-      (autocomplete_mode != HTML_MODE_NONE
-           ? "-" + std::string(HtmlFieldModeToStringPiece(autocomplete_mode))
-           : kDefaultSection);
+  prefix_ = std::move(autocomplete);
   return true;
 }
 
@@ -322,9 +326,16 @@ void Section::SetPrefixFromFieldIdentifier(
 
 std::string Section::ToString() const {
   std::string section_name;
-  if (const Autocomplete* autocomplete_section =
-          absl::get_if<Autocomplete>(&prefix_)) {
-    section_name = *autocomplete_section;
+  if (const Autocomplete* autocomplete = absl::get_if<Autocomplete>(&prefix_)) {
+    // To prevent potential section name collisions, append `kDefaultSection`
+    // suffix to fields without a `HtmlFieldMode`. Without this, 'autocomplete'
+    // attribute values "section--shipping street-address" and "shipping
+    // street-address" would have the same prefix.
+    section_name =
+        autocomplete->section +
+        (autocomplete->mode != HTML_MODE_NONE
+             ? "-" + std::string(HtmlFieldModeToStringPiece(autocomplete->mode))
+             : kDefaultSection);
   } else if (const FieldIdentifier* f =
                  absl::get_if<FieldIdentifier>(&prefix_)) {
     FieldIdentifier field_identifier = *f;

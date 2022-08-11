@@ -120,8 +120,22 @@ struct UnionTraits<autofill::mojom::SectionPrefixDataView,
                    autofill::Section::SectionPrefix* out);
 };
 
-// Converts Autofill::Section::FieldIdentifier into the union
-// mojom::Section::FieldIdentifier.
+template <>
+struct StructTraits<autofill::mojom::SectionAutocompleteDataView,
+                    autofill::Section::Autocomplete> {
+  static const std::string& section(const autofill::Section::Autocomplete& r) {
+    return r.section;
+  }
+
+  static uint8_t html_field_mode(const autofill::Section::Autocomplete& r) {
+    static_assert(sizeof(r.mode) <= sizeof(uint8_t));
+    return r.mode;
+  }
+
+  static bool Read(autofill::mojom::SectionAutocompleteDataView data,
+                   autofill::Section::Autocomplete* out);
+};
+
 template <>
 struct StructTraits<autofill::mojom::SectionFieldIdentifierDataView,
                     autofill::Section::FieldIdentifier> {
