@@ -423,9 +423,6 @@ external/wpt/css/css-page/page-size-012.xht [ Skip ]
 external/wpt/webdriver/tests/find_element_from_shadow_root/find.py [ Skip ]
 external/wpt/webdriver/tests/find_elements_from_shadow_root/find.py [ Skip ]
 
-# This test failed presubmit check. Skip for now.
-external/wpt/editing/crashtests/indent-outdent-after-closing-editable-dialog-element.html [ Skip ]
-
 # Sheriff 16/09/2021, crbug.com/1250215
 external/wpt/html/dom/idlharness.worker.html [ Skip ]
 external/wpt/html/dom/idlharness.https.html [ Skip ]
