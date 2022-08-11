@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_icon_view.h"
 
 #import "ios/chrome/browser/net/crurl.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/omnibox/popup/favicon_retriever.h"
 #import "ios/chrome/browser/ui/omnibox/popup/image_retriever.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_icon.h"
@@ -19,6 +20,8 @@
 @property(nonatomic, strong) UIImageView* backgroundImageView;
 @property(nonatomic, strong) UIImageView* mainImageView;
 @property(nonatomic, strong) UIImageView* overlayImageView;
+
+@property(nonatomic, strong) id<OmniboxIcon> omniboxIcon;
 
 @end
 
@@ -95,6 +98,8 @@
 }
 
 - (void)setOmniboxIcon:(id<OmniboxIcon>)omniboxIcon {
+  _omniboxIcon = omniboxIcon;
+
   // Setup the view layout the first time the cell is setup.
   if (self.subviews.count == 0) {
     [self setupLayout];
@@ -148,6 +153,18 @@
 
 - (UIImage*)mainImage {
   return self.mainImageView.image;
+}
+
+- (void)setHighlighted:(BOOL)highlighted {
+  _highlighted = highlighted;
+  self.backgroundImageView.highlighted = highlighted;
+  self.mainImageView.highlighted = highlighted;
+  self.overlayImageView.highlighted = highlighted;
+
+  if (IsOmniboxActionsEnabled()) {
+    self.mainImageView.tintColor =
+        highlighted ? UIColor.whiteColor : self.omniboxIcon.iconImageTintColor;
+  }
 }
 
 @end

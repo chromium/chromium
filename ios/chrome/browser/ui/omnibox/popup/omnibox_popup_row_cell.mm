@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/ui/util/named_guide.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/elements/gradient_view.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ios/chrome/grit/ios_theme_resources.h"
@@ -29,6 +30,7 @@ namespace {
 const CGFloat kTextTopMargin = 6;
 const CGFloat kTrailingButtonSize = 24;
 const CGFloat kTrailingButtonTrailingMargin = 14;
+const CGFloat kTopGradientColorOpacity = 0.85;
 
 NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
     @"OmniboxPopupRowSwitchTabAccessibilityIdentifier";
@@ -74,9 +76,19 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
   if (self) {
     _incognito = NO;
 
-    self.selectedBackgroundView = [[UIView alloc] initWithFrame:CGRectZero];
-    self.selectedBackgroundView.backgroundColor =
-        [UIColor colorNamed:kTableViewRowHighlightColor];
+    if (IsOmniboxActionsEnabled()) {
+      self.selectedBackgroundView = [[GradientView alloc]
+          initWithTopColor:
+              [[UIColor colorNamed:@"omnibox_suggestion_row_highlight_color"]
+                  colorWithAlphaComponent:kTopGradientColorOpacity]
+               bottomColor:
+                   [UIColor
+                       colorNamed:@"omnibox_suggestion_row_highlight_color"]];
+    } else {
+      self.selectedBackgroundView = [[UIView alloc] initWithFrame:CGRectZero];
+      self.selectedBackgroundView.backgroundColor =
+          [UIColor colorNamed:kTableViewRowHighlightColor];
+    }
 
     _textTruncatingLabel =
         [[FadeTruncatingLabel alloc] initWithFrame:CGRectZero];
@@ -155,6 +167,25 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
     }
     [self freezeLayoutGuidePositions];
   }
+}
+
+#pragma mark - UITableViewCell
+
+- (void)setHighlighted:(BOOL)highlighted animated:(BOOL)animated {
+  [super setHighlighted:highlighted animated:animated];
+
+  if (!IsOmniboxActionsEnabled()) {
+    return;
+  }
+
+  UIColor* textColor = highlighted ? [UIColor whiteColor] : nil;
+  self.textTruncatingLabel.textColor = textColor;
+  self.detailTruncatingLabel.textColor = textColor;
+  self.detailAnswerLabel.textColor = textColor;
+
+  self.leadingIconView.highlighted = highlighted;
+  self.trailingButton.tintColor =
+      highlighted ? [UIColor whiteColor] : [UIColor colorNamed:kBlueColor];
 }
 
 #pragma mark - Property setter/getters

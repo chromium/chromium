@@ -21,6 +21,8 @@
 @property(nonatomic, weak) id<ImageRetriever> imageRetriever;
 // Used for testing to check whether this view is displaying anything.
 @property(nonatomic, readonly) UIImage* mainImage;
+// Same as UIImageView.
+@property(nonatomic, getter=isHighlighted) BOOL highlighted;
 
 - (void)prepareForReuse;
 

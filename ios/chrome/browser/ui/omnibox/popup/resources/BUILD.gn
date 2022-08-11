@@ -31,6 +31,10 @@ colorset("omnibox_suggestion_icon_dark_color") {
   sources = [ "omnibox_suggestion_icon_dark_color.colorset/Contents.json" ]
 }
 
+colorset("omnibox_suggestion_row_highlight_color") {
+  sources = [ "omnibox_suggestion_row_highlight_color.colorset/Contents.json" ]
+}
+
 imageset("omnibox_popup_tab_match") {
   sources = [
     "omnibox_popup_tab_match.imageset/Contents.json",
