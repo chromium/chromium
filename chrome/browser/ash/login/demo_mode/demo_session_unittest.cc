@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/timer/mock_timer.h"
 #include "chrome/browser/ash/login/demo_mode/demo_resources.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -191,6 +192,8 @@ TEST_F(DemoSessionTest, ShowAndRemoveSplashScreen) {
 
   ASSERT_TRUE(FinishResourcesComponentLoad(
       base::FilePath(kTestDemoModeResourcesMountPoint)));
+  // Wait for splash screen image to load and timer to be set
+  task_environment_.RunUntilIdle();
   EXPECT_EQ(1, test_wallpaper_controller_.show_always_on_top_wallpaper_count());
   EXPECT_EQ(0,
             test_wallpaper_controller_.remove_always_on_top_wallpaper_count());
@@ -243,6 +246,8 @@ TEST_F(DemoSessionTest, RemoveSplashScreenWhenTimeout) {
 
   ASSERT_TRUE(FinishResourcesComponentLoad(
       base::FilePath(kTestDemoModeResourcesMountPoint)));
+  // Wait for splash screen image to load and timer to be set
+  task_environment_.RunUntilIdle();
   EXPECT_EQ(1, test_wallpaper_controller_.show_always_on_top_wallpaper_count());
   EXPECT_EQ(0,
             test_wallpaper_controller_.remove_always_on_top_wallpaper_count());
