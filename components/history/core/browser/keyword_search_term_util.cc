@@ -12,11 +12,10 @@ namespace history {
 namespace {
 
 // Calculates the score for the given number of visits in a given day.
-// Recent visits count more than historical ones, so we multiply in a boost
+// Recent visits count more than historical ones, so multiply in a boost
 // depending on how long ago this day was. This boost is a curve that
 // smoothly goes through these values: Today gets 3x, a week ago 2x, three
-// weeks ago 1.5x, falling off to 1x at the limit of how far we reach into
-// the past.
+// weeks ago 1.5x, gradually falling off to 1x at the very end.
 double GetMostVisitedFrecencyScore(int visit_count,
                                    base::Time day,
                                    base::Time now) {
@@ -28,19 +27,21 @@ double GetMostVisitedFrecencyScore(int visit_count,
 
 // Returns whether two search terms are identical, i.e., have the same
 // normalized search terms.
-bool IsSameSearchTerm(const KeywordSearchTermVisit& search_term,
-                      const KeywordSearchTermVisit& other_search_term) {
-  return search_term.normalized_term == other_search_term.normalized_term;
+bool IsSameSearchTerm(const KeywordSearchTermVisit& search_term_visit,
+                      const KeywordSearchTermVisit& other_search_term_visit) {
+  return search_term_visit.normalized_term ==
+         other_search_term_visit.normalized_term;
 }
 
-// Return whether a visit to a search term is a duplicative visit, i.e., a visit
-// to the same search term in an interval smaller than
+// Return whether a visit to a search term constitutes a duplicate visit, i.e.,
+// a visit to the same search term in an interval smaller than
 // kAutocompleteDuplicateVisitIntervalThreshold.
-bool IsDuplicateVisit(const KeywordSearchTermVisit& search_term,
-                      const KeywordSearchTermVisit& other_search_term) {
-  return IsSameSearchTerm(search_term, other_search_term) &&
-         (search_term.last_visit_time - other_search_term.last_visit_time <=
-          kAutocompleteDuplicateVisitIntervalThreshold);
+// Called with identical search terms only. i.e., IsSameSearchTerm() is true.
+bool IsDuplicateVisit(const KeywordSearchTermVisit& search_term_visit,
+                      const KeywordSearchTermVisit& other_search_term_visit) {
+  return search_term_visit.last_visit_time -
+             other_search_term_visit.last_visit_time <=
+         kAutocompleteDuplicateVisitIntervalThreshold;
 }
 
 // Transforms a visit time to its timeslot, i.e., day of the viist.
@@ -49,10 +50,11 @@ base::Time VisitTimeToTimeslot(base::Time visit_time) {
 }
 
 // Returns whether two search term visits are in the same timeslot.
-bool IsSameTimeslot(const KeywordSearchTermVisit& search_term,
-                    const KeywordSearchTermVisit& other_search_term) {
-  return VisitTimeToTimeslot(search_term.last_visit_time) ==
-         VisitTimeToTimeslot(other_search_term.last_visit_time);
+// Called with identical search terms only. i.e., IsSameSearchTerm() is true.
+bool IsSameTimeslot(const KeywordSearchTermVisit& search_term_visit,
+                    const KeywordSearchTermVisit& other_search_term_visit) {
+  return VisitTimeToTimeslot(search_term_visit.last_visit_time) ==
+         VisitTimeToTimeslot(other_search_term_visit.last_visit_time);
 }
 
 }  // namespace
@@ -98,35 +100,32 @@ class SearchTermHelper {
   std::unique_ptr<KeywordSearchTermVisit> GetNextSearchTermFromEnumerator(
       KeywordSearchTermVisitEnumerator& enumerator,
       bool ignore_duplicate_visits) {
-    // |next_search_term| acts as the fast pointer and |last_search_term_| acts
-    // as the slow pointer accumulating the search term visit count across
-    // visits.
-    while (auto next_search_term = enumerator.GetNextVisit()) {
-      if (ignore_duplicate_visits && last_search_term_ &&
-          IsDuplicateVisit(*next_search_term, *last_search_term_)) {
-        continue;
-      }
-
+    // |next_visit| acts as the fast pointer and |last_search_term_| acts as the
+    // slow pointer accumulating the search term visit counts across visits.
+    while (auto next_visit = enumerator.GetNextVisit()) {
       if (last_search_term_ &&
-          IsSameSearchTerm(*next_search_term, *last_search_term_)) {
-        // We encountered the same search term:
+          IsSameSearchTerm(*next_visit, *last_search_term_)) {
+        if (ignore_duplicate_visits &&
+            IsDuplicateVisit(*next_visit, *last_search_term_)) {
+          continue;
+        }
+        // Encountered the same search term:
         // 1. Move |last_search_term_| forward.
         // 2. Add up the search term visit count.
         int visit_count = last_search_term_->visit_count;
-        last_search_term_ = std::move(next_search_term);
+        last_search_term_ = std::move(next_visit);
         last_search_term_->visit_count += visit_count;
       } else if (last_search_term_) {
-        // We encountered a new search term and |last_search_term_| has a value:
+        // Encountered a new search term and |last_search_term_| has a value:
         // 1. Move |last_search_term_| forward.
         // 2. Return the old |last_search_term_|.
         auto search_term_to_return = std::move(last_search_term_);
-        last_search_term_ = std::move(next_search_term);
+        last_search_term_ = std::move(next_visit);
         return search_term_to_return;
       } else {
-        // We encountered a new search term and |last_search_term_| has no
-        // value:
+        // Encountered a new search term and |last_search_term_| has no value:
         // 1. Move |last_search_term_| forward.
-        last_search_term_ = std::move(next_search_term);
+        last_search_term_ = std::move(next_visit);
       }
     }
 
@@ -181,27 +180,27 @@ class MostRepeatedSearchTermHelper {
   std::unique_ptr<KeywordSearchTermVisit> GetNextSearchTermFromEnumerator(
       KeywordSearchTermVisitEnumerator& enumerator,
       base::Time now) {
-    // |next_search_term| acts as the fast pointer and |last_search_term_| acts
-    // as the slow pointer accumulating the search term score across visits.
-    while (auto next_search_term = enumerator.GetNextVisit()) {
+    // |next_visit| acts as the fast pointer and |last_search_term_| acts as the
+    // slow pointer accumulating the search term score across visits.
+    while (auto next_visit = enumerator.GetNextVisit()) {
       bool is_same_search_term =
           last_search_term_ &&
-          IsSameSearchTerm(*next_search_term, *last_search_term_);
+          IsSameSearchTerm(*next_visit, *last_search_term_);
       if (is_same_search_term &&
-          IsSameTimeslot(*next_search_term, *last_search_term_)) {
-        // We are in the same timeslot for the same search term:
+          IsSameTimeslot(*next_visit, *last_search_term_)) {
+        // The same timeslot for the same search term:
         // 1. Move |last_search_term_| forward.
         // 2. Add up the search term visit count in the timeslot.
         // 3. Carry over the search term score.
         int visit_count = last_search_term_->visit_count;
         double score = last_search_term_->score.value_or(0.0);
-        last_search_term_ = std::move(next_search_term);
+        last_search_term_ = std::move(next_visit);
         last_search_term_->visit_count += visit_count;
         last_search_term_->score =
             last_search_term_->score.value_or(0.0) + score;
 
       } else if (is_same_search_term) {
-        // We are in a new timeslot for the same search term:
+        // A new timeslot for the same search term:
         // 1. Update the search term score by adding the last timeslot's score.
         // 2. Move |last_search_term_| forward.
         // 3. Carry over the search term score.
@@ -210,11 +209,11 @@ class MostRepeatedSearchTermHelper {
             GetMostVisitedFrecencyScore(
                 last_search_term_->visit_count,
                 VisitTimeToTimeslot(last_search_term_->last_visit_time), now);
-        last_search_term_ = std::move(next_search_term);
+        last_search_term_ = std::move(next_visit);
         last_search_term_->score = score;
 
       } else if (last_search_term_) {
-        // We encountered a new search term and |last_search_term_| has a value:
+        // Encountered a new search term and |last_search_term_| has a value:
         // 1. Update the search term score by adding the last timeslot's score.
         // 2. Move |last_search_term_| forward.
         // 3. Return the old |last_search_term_|.
@@ -225,13 +224,12 @@ class MostRepeatedSearchTermHelper {
                 VisitTimeToTimeslot(last_search_term_->last_visit_time), now);
         last_search_term_->score = score;
         auto search_term_to_return = std::move(last_search_term_);
-        last_search_term_ = std::move(next_search_term);
+        last_search_term_ = std::move(next_visit);
         return search_term_to_return;
       } else {
-        // We encountered a new search term and |last_search_term_| has no
-        // value:
+        // Encountered a new search term and |last_search_term_| has no value:
         // 1. Move |last_search_term_| forward.
-        last_search_term_ = std::move(next_search_term);
+        last_search_term_ = std::move(next_visit);
       }
     }
 
