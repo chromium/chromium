@@ -24,6 +24,7 @@
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/service/display_embedder/skia_output_surface_impl.h"
 #include "components/viz/service/gl/gpu_service_impl.h"
+#include "components/viz/test/buildflags.h"
 #include "components/viz/test/gl_scaler_test_util.h"
 #include "components/viz/test/paths.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
@@ -551,7 +552,7 @@ TEST_P(SkiaReadbackPixelTestNV12, ExecutesCopyRequest) {
       cc::MatchesBitmap(actual, expected, GetDefaultFuzzyPixelComparator()));
 }
 
-#if !BUILDFLAG(IS_ANDROID) || !defined(ARCH_CPU_X86_FAMILY)
+#if !BUILDFLAG(IS_ANDROID_EMULATOR)
 INSTANTIATE_TEST_SUITE_P(
     ,
     SkiaReadbackPixelTestNV12,
@@ -748,7 +749,7 @@ TEST_P(SkiaReadbackPixelTestNV12WithBlit, ExecutesCopyRequestWithBlit) {
       cc::MatchesBitmap(actual, expected, GetDefaultFuzzyPixelComparator()));
 }
 
-#if !BUILDFLAG(IS_ANDROID) || !defined(ARCH_CPU_X86_FAMILY)
+#if !BUILDFLAG(IS_ANDROID_EMULATOR)
 INSTANTIATE_TEST_SUITE_P(
     ,
     SkiaReadbackPixelTestNV12WithBlit,
