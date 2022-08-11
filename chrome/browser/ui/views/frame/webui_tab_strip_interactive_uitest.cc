@@ -231,8 +231,9 @@ IN_PROC_BROWSER_TEST_F(WebUITabStripInteractiveTest, CanUseInImmersiveMode) {
 // This sequence of events would crash without the associated bugfix. More
 // detail is provided in the actual test sequence.
 // TODO(crbug.com/1352040): Fix consistent failures.
-#if BUILDFLAG(IS_LINUX) && \
-    (defined(THREAD_SANITIZER) || defined(THREAD_SANITIZER))
+#if BUILDFLAG(IS_LINUX) &&                                      \
+    (defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || \
+     defined(THREAD_SANITIZER))
 #define MAYBE_CloseTabDuringDrag DISABLED_CloseTabDuringDrag
 #else
 #define MAYBE_CloseTabDuringDrag CloseTabDuringDrag
