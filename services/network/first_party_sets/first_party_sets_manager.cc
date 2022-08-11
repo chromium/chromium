@@ -167,11 +167,11 @@ FirstPartySetsManager::OwnerResult FirstPartySetsManager::FindOwnerInternal(
             fps_context_config.customizations().find(normalized_site);
         it != fps_context_config.customizations().end()) {
       if (it->second.has_value()) {
-        entry = net::FirstPartySetEntry(it->second.value());
+        entry = it->second.value();
       }
     } else if (const auto it = sets_->find(normalized_site);
                it != sets_->end()) {
-      entry = net::FirstPartySetEntry(it->second);
+      entry = it->second;
     }
   }
 
