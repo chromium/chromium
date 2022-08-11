@@ -84,6 +84,10 @@ bool XDGToplevelWrapperImpl::Initialize() {
   static constexpr xdg_toplevel_listener xdg_toplevel_listener = {
       &ConfigureTopLevel,
       &CloseTopLevel,
+      // Since v4
+      &ConfigureBounds,
+      // Since v5
+      &WmCapabilities,
   };
 
   if (!xdg_surface_wrapper_)
@@ -278,6 +282,21 @@ void XDGToplevelWrapperImpl::CloseTopLevel(void* data,
   auto* surface = static_cast<XDGToplevelWrapperImpl*>(data);
   DCHECK(surface);
   surface->wayland_window_->OnCloseRequest();
+}
+
+// static
+void XDGToplevelWrapperImpl::ConfigureBounds(void* data,
+                                             struct xdg_toplevel* xdg_toplevel,
+                                             int32_t width,
+                                             int32_t height) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
+// static
+void XDGToplevelWrapperImpl::WmCapabilities(void* data,
+                                            struct xdg_toplevel* xdg_toplevel,
+                                            struct wl_array* capabilities) {
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void XDGToplevelWrapperImpl::SetTopLevelDecorationMode(
