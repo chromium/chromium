@@ -7097,3 +7097,8 @@ crbug.com/1351903 virtual/disable-frequency-capping-for-overlay-popup-detection/
 
 # TODO(crbug.com/1352009): Research how to re-enable test once not flaky
 crbug.com/1352009 external/wpt/preload/preconnect.html [ Failure Pass ]
+
+# Sheriff 2022-08-11
+# Most likely a forced style/layout update from accessibiity while we are
+# render blocking, which should not happen.
+crbug.com/1351811 external/wpt/css/css-transitions/no-transition-from-ua-to-blocking-stylesheet.html [ Pass Failure ]
