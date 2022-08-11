@@ -261,7 +261,7 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
 
             mHistoryClustersCoordinator = new HistoryClustersCoordinator(
                     Profile.getLastUsedRegularProfile(), activity, TemplateUrlServiceFactory.get(),
-                    historyClustersDelegate, ChromeAccessibilityUtil.get());
+                    historyClustersDelegate, ChromeAccessibilityUtil.get(), mSnackbarManager);
         }
 
         // 1. Create selectable components.

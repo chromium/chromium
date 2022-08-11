@@ -16,6 +16,9 @@ import static org.mockito.Mockito.verify;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.view.MenuItem;
 import android.view.View;
@@ -53,11 +56,14 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.ui.base.Clipboard;
+import org.chromium.ui.base.ClipboardImpl;
 import org.chromium.ui.display.DisplayAndroidManager;
 import org.chromium.ui.util.AccessibilityUtil;
 import org.chromium.url.GURL;
@@ -181,6 +187,8 @@ public class HistoryClustersCoordinatorTest {
     private HistoryClustersMetricsLogger mMetricsLogger;
     @Mock
     private AccessibilityUtil mAccessibilityUtil;
+    @Mock
+    private SnackbarManager mSnackbarManager;
 
     private ActivityScenario<ChromeTabbedActivity> mActivityScenario;
     private HistoryClustersCoordinator mHistoryClustersCoordinator;
@@ -219,7 +227,7 @@ public class HistoryClustersCoordinatorTest {
                     mActivity = activity;
                     mHistoryClustersCoordinator = new HistoryClustersCoordinator(mProfile, activity,
                             mTemplateUrlService, mHistoryClustersDelegate, mMetricsLogger,
-                            mSelectionDelegate, mAccessibilityUtil);
+                            mSelectionDelegate, mAccessibilityUtil, mSnackbarManager);
                 });
     }
 
@@ -361,6 +369,26 @@ public class HistoryClustersCoordinatorTest {
                 toolbar.getMenu().findItem(R.id.selection_mode_delete_menu_id));
 
         assertThat(mVisitsForRemoval, Matchers.containsInAnyOrder(mVisit1, mVisit2));
+    }
+
+    @Test
+    public void testCopyMenuItem() {
+        final ClipboardManager clipboardManager =
+                (ClipboardManager) mActivity.getSystemService(Context.CLIPBOARD_SERVICE);
+        assertNotNull(clipboardManager);
+        ((ClipboardImpl) Clipboard.getInstance())
+                .overrideClipboardManagerForTesting(clipboardManager);
+        clipboardManager.setPrimaryClip(ClipData.newPlainText(null, "dummy_val"));
+        doReturn("http://spec1.com").when(mGurl1).getSpec();
+
+        HistoryClustersToolbar toolbar = mHistoryClustersCoordinator.getActivityContentView()
+                                                 .findViewById(R.id.selectable_list)
+                                                 .findViewById(R.id.action_bar);
+
+        mSelectionDelegate.setSelectedItems(new HashSet<>(Arrays.asList(mVisit1)));
+        mHistoryClustersCoordinator.onMenuItemClick(
+                toolbar.getMenu().findItem(R.id.selection_mode_copy_link));
+        assertEquals(mVisit1.getNormalizedUrl().getSpec(), clipboardManager.getText());
     }
 
     @Test

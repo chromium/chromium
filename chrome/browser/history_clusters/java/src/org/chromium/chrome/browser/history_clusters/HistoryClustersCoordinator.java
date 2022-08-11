@@ -18,12 +18,16 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.chrome.browser.history_clusters.HistoryClustersItemProperties.ItemType;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemView;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -34,7 +38,7 @@ import org.chromium.ui.util.AccessibilityUtil;
  * Root component for the HistoryClusters UI component, which displays lists of related history
  * visits grouped into clusters.
  */
-public class HistoryClustersCoordinator implements OnMenuItemClickListener {
+public class HistoryClustersCoordinator implements OnMenuItemClickListener, SnackbarController {
     private static class DisabledSelectionDelegate extends SelectionDelegate {
         @Override
         public boolean toggleSelectionForItem(Object o) {
@@ -66,13 +70,14 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
     private SelectionDelegate mDisabledSelectionDelegate = new DisabledSelectionDelegate();
     private RecyclerView mRecyclerView;
     private final HistoryClustersMetricsLogger mMetricsLogger;
+    private final SnackbarManager mSnackbarManager;
 
     @VisibleForTesting
     HistoryClustersCoordinator(@NonNull Profile profile, @NonNull Activity activity,
             TemplateUrlService templateUrlService, HistoryClustersDelegate historyClustersDelegate,
             HistoryClustersMetricsLogger metricsLogger,
-            SelectionDelegate<ClusterVisit> selectionDelegate,
-            AccessibilityUtil accessibilityUtil) {
+            SelectionDelegate<ClusterVisit> selectionDelegate, AccessibilityUtil accessibilityUtil,
+            SnackbarManager snackbarManager) {
         mActivity = activity;
         mDelegate = historyClustersDelegate;
         mModelList = new ModelList();
@@ -82,6 +87,7 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
                                 .build();
         mMetricsLogger = metricsLogger;
         mSelectionDelegate = selectionDelegate;
+        mSnackbarManager = snackbarManager;
 
         mMediator = new HistoryClustersMediator(HistoryClustersBridge.getForProfile(profile),
                 new LargeIconBridge(profile), mActivity, mActivity.getResources(), mModelList,
@@ -96,13 +102,14 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
      * @param historyClustersDelegate Delegate that provides functionality that must be implemented
      *         externally, e.g. populating intents targeting activities we can't reference directly.
      * @param accessibilityUtil Utility object that tells us about the current accessibility state.
+     * @param snackbarManager The {@link SnackbarManager} used to display snackbars.
      */
     public HistoryClustersCoordinator(@NonNull Profile profile, @NonNull Activity activity,
             TemplateUrlService templateUrlService, HistoryClustersDelegate historyClustersDelegate,
-            AccessibilityUtil accessibilityUtil) {
+            AccessibilityUtil accessibilityUtil, SnackbarManager snackbarManager) {
         this(profile, activity, templateUrlService, historyClustersDelegate,
                 new HistoryClustersMetricsLogger(templateUrlService), new SelectionDelegate<>(),
-                accessibilityUtil);
+                accessibilityUtil, snackbarManager);
     }
 
     public void destroy() {
@@ -260,9 +267,25 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
         } else if (menuItem.getItemId() == R.id.selection_mode_open_in_tab_group) {
             mMediator.openVisitsInNewTabs(mSelectionDelegate.getSelectedItemsAsList(), false, true);
             return true;
+        } else if (menuItem.getItemId() == R.id.selection_mode_copy_link) {
+            Clipboard.getInstance().setText(mSelectionDelegate.getSelectedItemsAsList()
+                                                    .get(0)
+                                                    .getNormalizedUrl()
+                                                    .getSpec());
+            mSelectionDelegate.clearSelection();
+            Snackbar snackbar = Snackbar.make(mActivity.getString(R.string.copied), this,
+                    Snackbar.TYPE_NOTIFICATION, Snackbar.UMA_HISTORY_LINK_COPIED);
+            mSnackbarManager.showSnackbar(snackbar);
         }
         return false;
     }
+
+    // SnackbarController implementation.
+    @Override
+    public void onAction(Object actionData) {}
+
+    @Override
+    public void onDismissNoAction(Object actionData) {}
 
     @VisibleForTesting
     public RecyclerView getRecyclerViewFortesting() {

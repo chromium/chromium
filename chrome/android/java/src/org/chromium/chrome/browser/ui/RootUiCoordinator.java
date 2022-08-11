@@ -851,7 +851,7 @@ public class RootUiCoordinator
 
             mHistoryClustersCoordinator = new HistoryClustersCoordinator(profile, mActivity,
                     TemplateUrlServiceFactory.get(), historyClustersDelegate,
-                    ChromeAccessibilityUtil.get());
+                    ChromeAccessibilityUtil.get(), mSnackbarManagerSupplier.get());
             mHistoryClustersCoordinatorSupplier.set(mHistoryClustersCoordinator);
         }
     }
