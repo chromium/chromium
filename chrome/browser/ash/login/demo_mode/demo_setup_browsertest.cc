@@ -112,7 +112,7 @@ const test::UIPath kArcTosDemoAppsNotice = {kArcTosId, "arcTosMetricsDemoApps"};
 const test::UIPath kArcTosBackButton = {kArcTosId, "arcTosBackButton"};
 const test::UIPath kArcTosNextButton = {kArcTosId, "arcTosNextButton"};
 
-const test::UIPath kCCAcceptButton = {kConsolidatedConsentId, "acceptButton"};
+const test::UIPath kCCLoadedDialog = {kConsolidatedConsentId, "loadedDialog"};
 const test::UIPath kCCArcTosLink = {kConsolidatedConsentId, "arcTosLink"};
 const test::UIPath kCCBackButton = {kConsolidatedConsentId, "backButton"};
 
@@ -316,12 +316,11 @@ class DemoSetupArcSupportedTest : public DemoSetupTestBase {
   }
 
   void WaitForConsolidatedConsentScreen() {
-    test::WaitForConsolidatedConsentScreen();
+    OobeScreenWaiter(ConsolidatedConsentScreenView::kScreenId).Wait();
+    test::OobeJS().CreateVisibilityWaiter(true, kCCLoadedDialog)->Wait();
 
     // Make sure that ARC ToS link is visible.
     test::OobeJS().ExpectVisiblePath(kCCArcTosLink);
-    test::OobeJS().CreateVisibilityWaiter(true, kCCAcceptButton)->Wait();
-    test::OobeJS().ExpectVisiblePath(kCCAcceptButton);
   }
 
   void AcceptArcTos() {
@@ -489,14 +488,9 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   IsConfirmationDialogHidden();
 }
 
-// TODO(crbug.com/1150349): Flaky on ChromeOS ASAN.
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_OnlineSetupFlowSuccess DISABLED_OnlineSetupFlowSuccess
-#else
-#define MAYBE_OnlineSetupFlowSuccess OnlineSetupFlowSuccess
-#endif
+// TODO(crbug.com/1341234): flaky.
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
-                       MAYBE_OnlineSetupFlowSuccess) {
+                       DISABLED_OnlineSetupFlowSuccess) {
   // Simulate successful online setup.
   enrollment_helper_.ExpectEnrollmentMode(
       policy::EnrollmentConfig::MODE_ATTESTATION);
