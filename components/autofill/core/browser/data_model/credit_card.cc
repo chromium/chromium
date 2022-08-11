@@ -403,7 +403,7 @@ double CreditCard::GetRankingScore(base::Time current_time) const {
   return AutofillDataModel::GetRankingScore(current_time) + virtual_card_boost;
 }
 
-bool CreditCard::SetMetadata(const AutofillMetadata metadata) {
+bool CreditCard::SetMetadata(const AutofillMetadata& metadata) {
   // Make sure the ids matches.
   if (metadata.id != (record_type_ == LOCAL_CARD ? guid() : server_id_))
     return false;

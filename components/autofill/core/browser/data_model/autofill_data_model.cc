@@ -83,7 +83,7 @@ AutofillMetadata AutofillDataModel::GetMetadata() const {
   return metadata;
 }
 
-bool AutofillDataModel::SetMetadata(const AutofillMetadata metadata) {
+bool AutofillDataModel::SetMetadata(const AutofillMetadata& metadata) {
   use_count_ = metadata.use_count;
   use_date_ = metadata.use_date;
   return true;

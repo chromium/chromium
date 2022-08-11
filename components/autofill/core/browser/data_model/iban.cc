@@ -13,6 +13,13 @@
 
 namespace autofill {
 
+// Unicode characters used in IBAN value obfuscation:
+//  - \u2022 - Bullet.
+//  - \u2006 - SIX-PER-EM SPACE (small space between bullets).
+constexpr char16_t kMidlineEllipsisFourDotsAndOneSpace[] =
+    u"\u2022\u2022\u2022\u2022\u2006";
+constexpr char16_t kMidlineEllipsisTwoDotsAndOneSpace[] = u"\u2022\u2022\u2006";
+
 IBAN::IBAN(const std::string& guid)
     : AutofillDataModel(guid, /*origin=*/std::string()),
       record_type_(LOCAL_IBAN) {}
@@ -25,23 +32,7 @@ IBAN::IBAN(const IBAN& iban) : IBAN() {
 
 IBAN::~IBAN() = default;
 
-void IBAN::operator=(const IBAN& iban) {
-  set_use_count(iban.use_count());
-  set_use_date(iban.use_date());
-
-  // Just overwrite use_count and use_date fields as those fields will
-  // not be compared for == operator.
-  if (this == &iban) {
-    return;
-  }
-
-  set_guid(iban.guid());
-
-  server_id_ = iban.server_id_;
-  record_type_ = iban.record_type_;
-  value_ = iban.value_;
-  nickname_ = iban.nickname_;
-}
+IBAN& IBAN::operator=(const IBAN& iban) = default;
 
 AutofillMetadata IBAN::GetMetadata() const {
   AutofillMetadata metadata = AutofillDataModel::GetMetadata();
@@ -49,7 +40,7 @@ AutofillMetadata IBAN::GetMetadata() const {
   return metadata;
 }
 
-bool IBAN::SetMetadata(const AutofillMetadata metadata) {
+bool IBAN::SetMetadata(const AutofillMetadata& metadata) {
   // Make sure the ids match.
   return ((metadata.id !=
            (record_type_ == LOCAL_IBAN ? guid() : server_id_))) &&
@@ -123,6 +114,47 @@ void IBAN::set_nickname(const std::u16string& nickname) {
   nickname_ =
       base::CollapseWhitespace(nickname_,
                                /*trim_sequences_with_line_breaks=*/true);
+}
+
+std::u16string IBAN::GetIdentifierStringForAutofillDisplay() const {
+  const std::u16string stripped_value = GetStrippedValue();
+  size_t value_length = stripped_value.size();
+  // Directly return an empty string if the length of IBAN value is invalid.
+  if (value_length < 5 || value_length > 34)
+    return std::u16string();
+
+  std::u16string value_to_display = stripped_value.substr(0, 2);
+
+  // Get the number of groups of four characters to be obfuscated.
+  size_t number_of_groups = value_length % 4 == 0 ? (value_length - 4) / 4 - 1
+                                                  : (value_length - 4) / 4;
+  // Get the position of rest of characters to be revealed.
+  size_t first_revealed_digit_pos = value_length % 4 == 0
+                                        ? value_length - 4
+                                        : value_length - (value_length % 4);
+
+  value_to_display.append(RepeatEllipsis(number_of_groups));
+
+  value_to_display.append(stripped_value.substr(first_revealed_digit_pos));
+  return value_to_display;
+}
+
+std::u16string IBAN::GetStrippedValue() const {
+  std::u16string stripped_value;
+  base::RemoveChars(value_, u"- ", &stripped_value);
+  return stripped_value;
+}
+
+std::u16string IBAN::RepeatEllipsis(size_t number_of_groups) const {
+  std::u16string ellipsis_value;
+  ellipsis_value.reserve(sizeof(kMidlineEllipsisTwoDotsAndOneSpace) +
+                         number_of_groups *
+                             sizeof(kMidlineEllipsisFourDotsAndOneSpace));
+  ellipsis_value.append(kMidlineEllipsisTwoDotsAndOneSpace);
+  for (size_t i = 0; i < number_of_groups; ++i)
+    ellipsis_value.append(kMidlineEllipsisFourDotsAndOneSpace);
+
+  return ellipsis_value;
 }
 
 }  // namespace autofill

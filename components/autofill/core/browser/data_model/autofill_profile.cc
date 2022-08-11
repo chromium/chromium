@@ -286,7 +286,7 @@ AutofillMetadata AutofillProfile::GetMetadata() const {
   return metadata;
 }
 
-bool AutofillProfile::SetMetadata(const AutofillMetadata metadata) {
+bool AutofillProfile::SetMetadata(const AutofillMetadata& metadata) {
   // Make sure the ids matches.
   if (metadata.id != (record_type_ == LOCAL_PROFILE ? guid() : server_id_))
     return false;

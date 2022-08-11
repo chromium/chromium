@@ -88,7 +88,7 @@ class AutofillDataModel : public FormGroup {
 
   // Sets the |use_count_| and |use_date_| of this autofill data model. Returns
   // whether the metadata was set.
-  virtual bool SetMetadata(const AutofillMetadata metadata);
+  virtual bool SetMetadata(const AutofillMetadata& metadata);
 
   // Returns whether the data model is deletable: if it has not been used for
   // longer than |kDisusedCreditCardDeletionTimeDelta|.

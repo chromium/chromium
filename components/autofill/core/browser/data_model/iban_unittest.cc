@@ -90,4 +90,60 @@ TEST(IBANTest, SetRawData) {
   EXPECT_EQ(u"DE91 1000 0000 0123 4567 89", iban.GetRawInfo(IBAN_VALUE));
 }
 
+// Verify that for all invalid IBAN values, empty identifier value will
+// be returned.
+TEST(IBANTest, GetObfuscatedStringForValue_InvalidIbanValue) {
+  IBAN iban(base::GenerateGUID());
+  iban.set_value(u"CH56-0483-5012-3456-7800-9999-9999-9999-9999");
+  EXPECT_EQ(u"", iban.GetIdentifierStringForAutofillDisplay());
+
+  iban.set_value(u"");
+  EXPECT_EQ(u"", iban.GetIdentifierStringForAutofillDisplay());
+
+  iban.set_value(u"CH5");
+  EXPECT_EQ(u"", iban.GetIdentifierStringForAutofillDisplay());
+}
+
+TEST(IBANTest, GetObfuscatedStringForValue_ValidIbanValue) {
+  // Verify each case of an IBAN ending in 1, 2, 3, and 4 unobfuscated
+  // digits.
+  IBAN iban(base::GenerateGUID());
+
+  iban.set_value(u"CH56 0483 5012 3456 7800 9");
+  std::u16string leading_digits = u"CH";
+  std::u16string trailing_digits = u"9";
+  // Obfuscated value is: CH** **** **** **** **** 9
+  std::u16string expected =
+      leading_digits + iban.RepeatEllipsisForTesting(4) + trailing_digits;
+
+  EXPECT_EQ(expected, iban.GetIdentifierStringForAutofillDisplay());
+
+  iban.set_value(u"DE91 1000 0000 0123 4567 89");
+  leading_digits = u"DE";
+  trailing_digits = u"89";
+  // Obfuscated value is: DE** **** **** **** **** 89
+  expected =
+      leading_digits + iban.RepeatEllipsisForTesting(4) + trailing_digits;
+
+  EXPECT_EQ(expected, iban.GetIdentifierStringForAutofillDisplay());
+
+  iban.set_value(u"GR96 0810 0010 0000 0123 4567 890");
+  leading_digits = u"GR";
+  trailing_digits = u"890";
+  // Obfuscated value is: GR** **** **** **** **** **** 890
+  expected =
+      leading_digits + iban.RepeatEllipsisForTesting(5) + trailing_digits;
+
+  EXPECT_EQ(expected, iban.GetIdentifierStringForAutofillDisplay());
+
+  iban.set_value(u"PK70 BANK 0000 1234 5678 9000");
+  leading_digits = u"PK";
+  trailing_digits = u"9000";
+  // Obfuscated value is: PK** **** **** **** **** 9000
+  expected =
+      leading_digits + iban.RepeatEllipsisForTesting(4) + trailing_digits;
+
+  EXPECT_EQ(expected, iban.GetIdentifierStringForAutofillDisplay());
+}
+
 }  // namespace autofill
