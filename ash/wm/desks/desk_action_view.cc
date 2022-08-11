@@ -17,7 +17,6 @@ namespace ash {
 
 namespace {
 
-constexpr int kButtonMargin = 4;
 constexpr int kButtonSpacing = 4;
 constexpr int kCornerRadius = 20;
 
@@ -34,7 +33,6 @@ DeskActionView::DeskActionView(
           std::make_unique<CloseButton>(std::move(close_all_callback),
                                         CloseButton::Type::kMediumFloating))) {
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);
-  SetInsideBorderInsets(gfx::Insets(kButtonMargin));
   SetBetweenChildSpacing(kButtonSpacing);
   SetBackground(
       views::CreateSolidBackground(AshColorProvider::Get()->GetBaseLayerColor(
@@ -59,6 +57,9 @@ void DeskActionView::UpdateCombineDesksTooltip(
 }
 
 void DeskActionView::SetCombineDesksButtonVisibility(bool visible) {
+  if (combine_desks_button_->GetVisible() == visible)
+    return;
+
   combine_desks_button_->SetVisible(visible);
 
   // When `combine_desks_button_` is invisible, we want to make sure that there
@@ -66,11 +67,6 @@ void DeskActionView::SetCombineDesksButtonVisibility(bool visible) {
   // `close_all_button_`. Otherwise, the desk action view will appear lopsided
   // when the `combine_desks_button_` isn't visible.
   SetBetweenChildSpacing(visible ? kButtonSpacing : 0);
-
-  // We also want to make sure that the background is only showing when
-  // `combine_desks_button_` is visible. Otherwise, it should have no inside
-  // border insets so that it is only behind the `close_desk_button_`.
-  SetInsideBorderInsets(gfx::Insets(visible ? kButtonMargin : 0));
 }
 
 void DeskActionView::OnThemeChanged() {
