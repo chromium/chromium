@@ -127,7 +127,7 @@ TEST(RenderPassIOTest, SharedQuadStateList) {
     transform.MakeIdentity();
     gfx::LinearGradient gradient_mask(40);
     gradient_mask.AddStep(/*percent=*/0, /*alpha=*/0);
-    gradient_mask.AddStep(100, 255);
+    gradient_mask.AddStep(1, 255);
     sqs1->SetAll(
         transform, gfx::Rect(0, 0, 640, 480), gfx::Rect(10, 10, 600, 400),
         gfx::MaskFilterInfo(gfx::RRectF(gfx::RectF(2.f, 3.f, 4.f, 5.f), 1.5f),
@@ -173,7 +173,7 @@ TEST(RenderPassIOTest, SharedQuadStateList) {
     EXPECT_EQ(2u, sqs1->mask_filter_info.gradient_mask()->step_count());
     EXPECT_EQ(gfx::LinearGradient::Step({0, 0}),
               sqs1->mask_filter_info.gradient_mask()->steps()[0]);
-    EXPECT_EQ(gfx::LinearGradient::Step({100, 255}),
+    EXPECT_EQ(gfx::LinearGradient::Step({1, 255}),
               sqs1->mask_filter_info.gradient_mask()->steps()[1]);
     EXPECT_EQ(gfx::RectF(2.f, 3.f, 4.f, 5.f), sqs1->mask_filter_info.bounds());
     EXPECT_EQ(gfx::Rect(5, 20, 1000, 200), sqs1->clip_rect);

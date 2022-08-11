@@ -12,8 +12,8 @@ namespace mojo {
 
 template <>
 struct StructTraits<gfx::mojom::StepDataView, gfx::LinearGradient::Step> {
-  static float percent(const gfx::LinearGradient::Step& input) {
-    return input.percent;
+  static float fraction(const gfx::LinearGradient::Step& input) {
+    return input.fraction;
   }
 
   static uint8_t alpha(const gfx::LinearGradient::Step& input) {
@@ -22,7 +22,7 @@ struct StructTraits<gfx::mojom::StepDataView, gfx::LinearGradient::Step> {
 
   static bool Read(gfx::mojom::StepDataView data,
                    gfx::LinearGradient::Step* out) {
-    out->percent = data.percent();
+    out->fraction = data.fraction();
     out->alpha = data.alpha();
     return true;
   }

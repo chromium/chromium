@@ -15,31 +15,31 @@ TEST(LinearGradientTest, Basic) {
   LinearGradient gradient(45);
   EXPECT_TRUE(gradient.IsEmpty());
 
-  gradient.AddStep(10, 0);
-  gradient.AddStep(50, 50);
-  gradient.AddStep(80, 1);
+  gradient.AddStep(.1, 0);
+  gradient.AddStep(.5, 50);
+  gradient.AddStep(.8, 1);
 
   EXPECT_FALSE(gradient.IsEmpty());
   EXPECT_EQ(45, gradient.angle());
   EXPECT_EQ(3u, gradient.step_count());
-  EXPECT_EQ(gradient.steps()[0].percent, 10);
+  EXPECT_FLOAT_EQ(gradient.steps()[0].fraction, .1);
   EXPECT_EQ(gradient.steps()[0].alpha, 0);
-  EXPECT_EQ(gradient.steps()[1].percent, 50);
+  EXPECT_FLOAT_EQ(gradient.steps()[1].fraction, .5);
   EXPECT_EQ(gradient.steps()[1].alpha, 50);
-  EXPECT_EQ(gradient.steps()[2].percent, 80);
+  EXPECT_FLOAT_EQ(gradient.steps()[2].fraction, .8);
   EXPECT_EQ(gradient.steps()[2].alpha, 1);
 
   LinearGradient gradient2(90);
-  gradient2.AddStep(10, 0);
-  gradient2.AddStep(50, 50);
-  gradient2.AddStep(80, 1);
+  gradient2.AddStep(.1, 0);
+  gradient2.AddStep(.5, 50);
+  gradient2.AddStep(.8, 1);
 
   EXPECT_NE(gradient, gradient2);
 
   gradient2.set_angle(45);
   EXPECT_EQ(gradient, gradient2);
 
-  gradient2.AddStep(90, 0);
+  gradient2.AddStep(.9, 0);
   EXPECT_NE(gradient, gradient2);
 }
 
@@ -48,20 +48,20 @@ TEST(LinearGradientTest, Reverse) {
   // Make sure reversing an empty LinearGradient doesn't cause an issue.
   gradient.ReverseSteps();
 
-  gradient.AddStep(10, 0);
-  gradient.AddStep(50, 50);
-  gradient.AddStep(80, 1);
+  gradient.AddStep(.1, 0);
+  gradient.AddStep(.5, 50);
+  gradient.AddStep(.8, 1);
 
   gradient.ReverseSteps();
 
   EXPECT_EQ(45, gradient.angle());
   EXPECT_EQ(3u, gradient.step_count());
 
-  EXPECT_EQ(gradient.steps()[0].percent, 20);
+  EXPECT_FLOAT_EQ(gradient.steps()[0].fraction, .2);
   EXPECT_EQ(gradient.steps()[0].alpha, 1);
-  EXPECT_EQ(gradient.steps()[1].percent, 50);
+  EXPECT_FLOAT_EQ(gradient.steps()[1].fraction, .5);
   EXPECT_EQ(gradient.steps()[1].alpha, 50);
-  EXPECT_EQ(gradient.steps()[2].percent, 90);
+  EXPECT_FLOAT_EQ(gradient.steps()[2].fraction, .9);
   EXPECT_EQ(gradient.steps()[2].alpha, 0);
 }
 

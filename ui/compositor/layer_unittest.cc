@@ -773,7 +773,7 @@ TEST_F(LayerWithDelegateTest, Cloning) {
   gfx::Rect clip_rect(1, 1, 2, 2);
 
   gfx::LinearGradient gradient_mask(45);
-  gradient_mask.AddStep(50, 50);
+  gradient_mask.AddStep(.5, 50);
 
   layer->SetTransform(transform);
   layer->SetColor(SK_ColorRED);
@@ -816,7 +816,7 @@ TEST_F(LayerWithDelegateTest, Cloning) {
   layer->SetRoundedCornerRadius({3, 6, 9, 12});
 
   gradient_mask.set_angle(90);
-  gradient_mask.AddStep(90, 30);
+  gradient_mask.AddStep(.9, 30);
   layer->SetGradientMask(gradient_mask);
 
   // The clone is an independent copy, so state changes do not propagate.
@@ -1064,7 +1064,7 @@ TEST_F(LayerWithNullDelegateTest, SwitchLayerPreservesCCLayerState) {
   constexpr viz::SubtreeCaptureId kSubtreeCaptureId(22);
   l1->SetSubtreeCaptureId(kSubtreeCaptureId);
   gfx::LinearGradient gradient_mask(45);
-  gradient_mask.AddStep(50, 50);
+  gradient_mask.AddStep(.5, 50);
   l1->SetGradientMask(gradient_mask);
 
   EXPECT_EQ(gfx::Point3F(), l1->cc_layer_for_testing()->transform_origin());
@@ -1348,7 +1348,7 @@ TEST_F(LayerWithDelegateTest, RoundedCorner) {
 TEST_F(LayerWithDelegateTest, GradientMask) {
   gfx::Rect layer_bounds(10, 20, 100, 100);
   gfx::LinearGradient gradient_mask;
-  gradient_mask.AddStep(50, 50);
+  gradient_mask.AddStep(.5, 50);
 
   auto layer = std::make_unique<Layer>(LAYER_TEXTURED);
 

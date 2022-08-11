@@ -26,8 +26,8 @@ class Transform;
 class GEOMETRY_SKIA_EXPORT LinearGradient {
  public:
   struct Step {
-    // Percent that defines a position in diagonal, from 0 to 100.
-    float percent = 0;
+    // Fraction that defines a position in diagonal, from 0 to 1.
+    float fraction = 0;
     // Alpha, from 0 to 255.
     uint8_t alpha = 0;
   };
@@ -44,7 +44,7 @@ class GEOMETRY_SKIA_EXPORT LinearGradient {
   bool IsEmpty() const { return !step_count_; }
 
   // Add a new step. Adding more than 6 results in DCHECK or ignored.
-  void AddStep(float percent, uint8_t alpha);
+  void AddStep(float fraction, uint8_t alpha);
 
   // Get step information.
   const StepArray& steps() const { return steps_; }
@@ -72,7 +72,7 @@ class GEOMETRY_SKIA_EXPORT LinearGradient {
 
 inline bool operator==(const LinearGradient::Step& lhs,
                        const LinearGradient::Step& rhs) {
-  return lhs.percent == rhs.percent && lhs.alpha == rhs.alpha;
+  return lhs.fraction == rhs.fraction && lhs.alpha == rhs.alpha;
 }
 
 inline bool operator==(const LinearGradient& lhs, const LinearGradient& rhs) {

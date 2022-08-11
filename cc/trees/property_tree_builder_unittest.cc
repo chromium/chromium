@@ -764,7 +764,7 @@ TEST_F(PropertyTreeBuilderTest, GradientMask) {
   child1->SetIsDrawable(true);
 
   gfx::LinearGradient gradient_mask(45);
-  gradient_mask.AddStep(50, 0x50);
+  gradient_mask.AddStep(.5, 0x50);
   child1->SetGradientMask(gradient_mask);
 
   // Without render surface.
@@ -915,12 +915,12 @@ TEST_F(PropertyTreeBuilderTest, NestedGradientMask) {
   grand_child1->SetIsDrawable(true);
 
   gfx::LinearGradient gradient_mask1(30);
-  gradient_mask1.AddStep(50, 0x50);
+  gradient_mask1.AddStep(.5, 0x50);
   child1->SetGradientMask(gradient_mask1);
 
   gfx::LinearGradient gradient_mask2(45);
   gradient_mask2.AddStep(0, 0xFF);
-  gradient_mask2.AddStep(100, 0x0);
+  gradient_mask2.AddStep(1, 0x0);
   grand_child1->SetGradientMask(gradient_mask2);
 
   CommitAndActivate();

@@ -1017,7 +1017,7 @@ void MathUtil::AddToTracedValue(const char* name,
   res->AppendInteger(gradient.angle());
   res->AppendInteger(gradient.step_count());
   for (size_t i = 0; i < gradient.step_count(); i++) {
-    res->AppendDouble(gradient.steps()[i].percent);
+    res->AppendDouble(gradient.steps()[i].fraction);
     res->AppendInteger(gradient.steps()[i].alpha);
   }
   res->EndArray();

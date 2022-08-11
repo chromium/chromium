@@ -385,10 +385,10 @@ class GradientMaskTransition : public LayerAnimationElement {
     DCHECK_EQ(start_.step_count(), target_.step_count());
     for (auto i = 0; i < static_cast<int>(start_.step_count()); ++i) {
       gradient_mask.AddStep(
-          gfx::Tween::FloatValueBetween(t, start_.steps()[i].percent,
-                                        target_.steps()[i].percent),
+          gfx::Tween::FloatValueBetween(t, start_.steps()[i].fraction,
+                                        target_.steps()[i].fraction),
           gfx::Tween::IntValueBetween(t, start_.steps()[i].alpha,
-                                        target_.steps()[i].alpha));
+                                      target_.steps()[i].alpha));
     }
 
     delegate->SetGradientMaskFromAnimation(

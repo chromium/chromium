@@ -1292,7 +1292,7 @@ void SkiaRenderer::PrepareGradient(
 
   size_t i = 0;
   for (; i < gradient_mask->step_count(); ++i) {
-    positions[i] = gradient_mask->steps()[i].percent / 100.f;
+    positions[i] = gradient_mask->steps()[i].fraction;
     gradient_colors[i] = MaskColor(gradient_mask->steps()[i].alpha);
   }
 

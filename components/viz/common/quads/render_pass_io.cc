@@ -385,8 +385,8 @@ base::Value::Dict LinearGradientToDict(
   base::Value::List steps;
   for (size_t i = 0; i < gradient_mask.step_count(); ++i) {
     base::Value::Dict step_dict;
-    step_dict.Set("percent",
-                  static_cast<double>(gradient_mask.steps()[i].percent));
+    step_dict.Set("fraction",
+                  static_cast<double>(gradient_mask.steps()[i].fraction));
     step_dict.Set("alpha", static_cast<int>(gradient_mask.steps()[i].alpha));
     steps.Append(std::move(step_dict));
   }
@@ -411,12 +411,12 @@ bool LinearGradientFromDict(const base::Value::Dict& dict,
     if (!step)
       return false;
 
-    absl::optional<double> percent = step->FindDouble("percent");
+    absl::optional<double> fraction = step->FindDouble("fraction");
     absl::optional<int> alpha = step->FindInt("alpha");
-    if (!percent || !alpha)
+    if (!fraction || !alpha)
       return false;
 
-    gradient_mask.AddStep(*percent, *alpha);
+    gradient_mask.AddStep(*fraction, *alpha);
   }
 
   *out = gradient_mask;

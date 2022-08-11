@@ -475,9 +475,9 @@ TEST(LayerAnimationElementTest, GradientMaskElement) {
   gfx::LinearGradient start(45);
   start.AddStep(0, 0);
   gfx::LinearGradient target(135);
-  target.AddStep(50, 255);
+  target.AddStep(.5, 255);
   gfx::LinearGradient middle(90);
-  middle.AddStep(25, 127);
+  middle.AddStep(.25, 127);
 
   base::TimeTicks start_time;
   base::TimeDelta delta = base::Seconds(1);

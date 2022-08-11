@@ -28,16 +28,16 @@ LinearGradient::LinearGradient(int16_t angle) : angle_(angle) {}
 
 LinearGradient::LinearGradient(const LinearGradient& copy) = default;
 
-void LinearGradient::AddStep(float percent, uint8_t alpha) {
+void LinearGradient::AddStep(float fraction, uint8_t alpha) {
   DCHECK_LT(step_count_, kMaxStepSize);
-  DCHECK_GE(percent, 0);
-  DCHECK_LE(percent, 100);
-  // make sure the step's percent is monotonically increasing.
-  DCHECK(step_count_ ? steps_[step_count_ - 1].percent < percent : true)
+  DCHECK_GE(fraction, 0);
+  DCHECK_LE(fraction, 1);
+  // make sure the step's fraction is monotonically increasing.
+  DCHECK(step_count_ ? steps_[step_count_ - 1].fraction < fraction : true)
       << base::StringPrintf("prev[%zu]=%f, next[%zu]=%f", step_count_ - 1,
-                            steps_[step_count_ - 1].percent, step_count_,
-                            steps_[step_count_].percent);
-  steps_[step_count_].percent = percent;
+                            steps_[step_count_ - 1].fraction, step_count_,
+                            fraction);
+  steps_[step_count_].fraction = fraction;
   steps_[step_count_++].alpha = alpha;
 }
 
@@ -45,7 +45,7 @@ void LinearGradient::ReverseSteps() {
   std::reverse(steps_.begin(), steps_.end());
   std::rotate(steps_.begin(), steps_.end() - step_count_, steps_.end());
   for (size_t i = 0; i < step_count_; i++)
-    steps_[i].percent = 100.f - steps_[i].percent;
+    steps_[i].fraction = 1.f - steps_[i].fraction;
 }
 
 void LinearGradient::Transform(const gfx::Transform& transform) {
@@ -70,7 +70,7 @@ std::string LinearGradient::ToString() const {
   for (size_t i = 0; i < step_count_; ++i) {
     if (i)
       result += " - ";
-    result += base::StringPrintf("%f:%u", steps_[i].percent, steps_[i].alpha);
+    result += base::StringPrintf("%f:%u", steps_[i].fraction, steps_[i].alpha);
   }
   return result + "]}";
 }

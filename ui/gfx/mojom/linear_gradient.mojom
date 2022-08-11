@@ -6,7 +6,7 @@ module gfx.mojom;
 
 // See ui/gfx/geometry/linear_gradient.h.
 struct Step {
-  float percent;
+  float fraction;
   uint8 alpha;
 };
 

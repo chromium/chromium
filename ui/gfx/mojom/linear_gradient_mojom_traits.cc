@@ -18,7 +18,7 @@ bool StructTraits<gfx::mojom::LinearGradientDataView, gfx::LinearGradient>::
     return false;
 
   for (int i = 0; i < data.step_count(); ++i) {
-    out->AddStep(steps_data[i].percent, steps_data[i].alpha);
+    out->AddStep(steps_data[i].fraction, steps_data[i].alpha);
   }
   out->set_angle(data.angle());
 
