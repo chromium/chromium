@@ -85,9 +85,7 @@ base::FilePath CreateImageFile(Profile* profile) {
 
 // HoldingSpaceBrowserTestBase -------------------------------------------------
 
-HoldingSpaceBrowserTestBase::HoldingSpaceBrowserTestBase()
-    : SystemWebAppBrowserTestBase(false) {}
-
+HoldingSpaceBrowserTestBase::HoldingSpaceBrowserTestBase() = default;
 HoldingSpaceBrowserTestBase::~HoldingSpaceBrowserTestBase() = default;
 
 void HoldingSpaceBrowserTestBase::SetUpInProcessBrowserTestFixture() {

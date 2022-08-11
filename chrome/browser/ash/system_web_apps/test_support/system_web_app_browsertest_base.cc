@@ -10,9 +10,11 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -24,8 +26,7 @@
 
 namespace ash {
 
-SystemWebAppBrowserTestBase::SystemWebAppBrowserTestBase(bool install_mock) {}
-
+SystemWebAppBrowserTestBase::SystemWebAppBrowserTestBase() = default;
 SystemWebAppBrowserTestBase::~SystemWebAppBrowserTestBase() = default;
 
 SystemWebAppManager& SystemWebAppBrowserTestBase::GetManager() {
@@ -156,8 +157,7 @@ size_t SystemWebAppBrowserTestBase::GetSystemWebAppBrowserCount(
 }
 
 SystemWebAppManagerBrowserTest::SystemWebAppManagerBrowserTest(
-    bool install_mock)
-    : TestProfileTypeMixin<SystemWebAppBrowserTestBase>(install_mock) {
+    bool install_mock) {
   if (install_mock) {
     maybe_installation_ =
         TestSystemWebAppInstallation::SetUpStandaloneSingleWindowApp();

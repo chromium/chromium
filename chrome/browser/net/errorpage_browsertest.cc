@@ -1070,10 +1070,7 @@ void ClickDiagnosticsLink(Browser* browser) {
 // LaCROS due to errors on Wayland initialization and to keep test to ChromeOS
 // devices.
 // TODO(crbug.com/1285441): Disabled due to test flakes.
-class ErrorPageOfflineAppLaunchTest : public ash::SystemWebAppBrowserTestBase {
- public:
-  ErrorPageOfflineAppLaunchTest() : ash::SystemWebAppBrowserTestBase(true) {}
-};
+using ErrorPageOfflineAppLaunchTest = ash::SystemWebAppBrowserTestBase;
 
 IN_PROC_BROWSER_TEST_F(ErrorPageOfflineAppLaunchTest,
                        DISABLED_DiagnosticsConnectivity) {

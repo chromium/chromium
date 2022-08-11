@@ -7,12 +7,8 @@
 
 #include <memory>
 
-#include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
-#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/profile_test_helper.h"
-#include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 
 class KeyedService;
@@ -29,14 +25,12 @@ namespace ash {
 
 enum class SystemWebAppType;
 class SystemWebAppManager;
+class TestSystemWebAppInstallation;
 
 class SystemWebAppBrowserTestBase : public MixinBasedInProcessBrowserTest {
  public:
   // Performs common initialization for testing SystemWebAppManager features.
-  // If true, |install_mock| installs a WebUIController that serves a mock
-  // System PWA, and ensures the WebAppProvider associated with the startup
-  // profile is a FakeWebAppProviderCreator.
-  explicit SystemWebAppBrowserTestBase(bool install_mock = true);
+  SystemWebAppBrowserTestBase();
   SystemWebAppBrowserTestBase(const SystemWebAppBrowserTestBase&) = delete;
   SystemWebAppBrowserTestBase& operator=(const SystemWebAppBrowserTestBase&) =
       delete;
@@ -114,7 +108,11 @@ class SystemWebAppBrowserTestBase : public MixinBasedInProcessBrowserTest {
 class SystemWebAppManagerBrowserTest
     : public TestProfileTypeMixin<SystemWebAppBrowserTestBase> {
  public:
+  // If true, |install_mock| installs a WebUIController that serves a mock
+  // System PWA, and ensures the WebAppProvider associated with the startup
+  // profile is a FakeWebAppProviderCreator.
   explicit SystemWebAppManagerBrowserTest(bool install_mock = true);
+
   SystemWebAppManagerBrowserTest(const SystemWebAppManagerBrowserTest&) =
       delete;
   SystemWebAppManagerBrowserTest& operator=(

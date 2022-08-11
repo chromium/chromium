@@ -247,9 +247,7 @@ class SystemWebAppManagerFileHandlingBrowserTestBase
       TestSystemWebAppInstallation::IncludeLaunchDirectory;
 
   explicit SystemWebAppManagerFileHandlingBrowserTestBase(
-      IncludeLaunchDirectory include_launch_directory)
-      : TestProfileTypeMixin<SystemWebAppBrowserTestBase>(
-            /*install_mock=*/false) {
+      IncludeLaunchDirectory include_launch_directory) {
     scoped_feature_blink_api_.InitWithFeatures(
         {blink::features::kFileHandlingAPI}, {});
 
