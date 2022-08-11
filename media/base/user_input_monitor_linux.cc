@@ -97,7 +97,7 @@ class UserInputMonitorLinux : public UserInputMonitorBase {
   void StopKeyboardMonitoring() override;
 
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
-  raw_ptr<UserInputMonitorAdapter, DanglingUntriaged> core_;
+  raw_ptr<UserInputMonitorAdapter> core_;
 };
 
 UserInputMonitorAdapter* CreateUserInputMonitor(
@@ -117,8 +117,8 @@ UserInputMonitorLinux::UserInputMonitorLinux(
       core_(CreateUserInputMonitor(io_task_runner_)) {}
 
 UserInputMonitorLinux::~UserInputMonitorLinux() {
-  if (core_ && !io_task_runner_->DeleteSoon(FROM_HERE, core_.get()))
-    delete core_;
+  if (!io_task_runner_->DeleteSoon(FROM_HERE, core_.get()))
+    core_.ClearAndDelete();
 }
 
 uint32_t UserInputMonitorLinux::GetKeyPressCount() const {
