@@ -573,15 +573,6 @@ CreditCard GetMaskedServerCardWithNickname() {
   return credit_card;
 }
 
-CreditCard GetMaskedServerCardWithInvalidNickname() {
-  CreditCard credit_card(CreditCard::MASKED_SERVER_CARD, "c789");
-  test::SetCreditCardInfo(&credit_card, "Test user", "1111" /* Visa */,
-                          NextMonth().c_str(), NextYear().c_str(), "1");
-  credit_card.SetNetworkForMaskedCard(kVisaCard);
-  credit_card.SetNickname(u"Invalid nickname which is too long");
-  return credit_card;
-}
-
 CreditCard GetFullServerCard() {
   CreditCard credit_card(CreditCard::FULL_SERVER_CARD, "c123");
   test::SetCreditCardInfo(&credit_card, "Full Carter",

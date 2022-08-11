@@ -279,55 +279,13 @@ TEST_F(CardUnmaskPromptControllerImplTest,
 TEST_F(CardUnmaskPromptControllerImplTest, DisplayCardInformation) {
   ShowPrompt();
 #if BUILDFLAG(IS_IOS)
-  EXPECT_TRUE(base::UTF16ToUTF8(controller_->GetInstructionsMessage())
-                  .find("Mastercard  " + test::ObfuscatedCardDigitsAsUTF8(
-                                             "2109")) != std::string::npos);
-#else
-  EXPECT_TRUE(base::UTF16ToUTF8(controller_->GetWindowTitle())
-                  .find("Mastercard  " + test::ObfuscatedCardDigitsAsUTF8(
-                                             "2109")) != std::string::npos);
-#endif
-}
-
-// Ensures to fallback to network name in the instruction message on iOS and in
-// the title on other platforms when the nickname is invalid.
-TEST_F(CardUnmaskPromptControllerImplTest, Nickname_NicknameInvalid) {
-  SetCreditCardForTesting(test::GetMaskedServerCardWithInvalidNickname());
-  ShowPrompt();
-#if BUILDFLAG(IS_IOS)
-  EXPECT_TRUE(
-      base::UTF16ToUTF8(controller_->GetInstructionsMessage()).find("Visa") !=
-      std::string::npos);
-  EXPECT_FALSE(base::UTF16ToUTF8(controller_->GetInstructionsMessage())
-                   .find("Invalid nickname which is too long") !=
-               std::string::npos);
-#else
-  EXPECT_TRUE(base::UTF16ToUTF8(controller_->GetWindowTitle()).find("Visa") !=
+  EXPECT_TRUE(controller_->GetInstructionsMessage().find(
+                  card_.CardIdentifierStringForAutofillDisplay()) !=
               std::string::npos);
-  EXPECT_FALSE(base::UTF16ToUTF8(controller_->GetWindowTitle())
-                   .find("Invalid nickname which is too long") !=
-               std::string::npos);
-#endif
-}
-
-// Ensures the nickname is displayed (instead of network) in the instruction
-// message on iOS and in the title on other platforms when the nickname is
-// valid.
-TEST_F(CardUnmaskPromptControllerImplTest, Nickname_NicknameValid) {
-  SetCreditCardForTesting(test::GetMaskedServerCardWithNickname());
-  ShowPrompt();
-#if BUILDFLAG(IS_IOS)
-  EXPECT_FALSE(
-      base::UTF16ToUTF8(controller_->GetInstructionsMessage()).find("Visa") !=
-      std::string::npos);
-  EXPECT_TRUE(base::UTF16ToUTF8(controller_->GetInstructionsMessage())
-                  .find("Test nickname") != std::string::npos);
 #else
-  EXPECT_FALSE(base::UTF16ToUTF8(controller_->GetWindowTitle()).find("Visa") !=
-               std::string::npos);
-  EXPECT_TRUE(
-      base::UTF16ToUTF8(controller_->GetWindowTitle()).find("Test nickname") !=
-      std::string::npos);
+  EXPECT_TRUE(controller_->GetWindowTitle().find(
+                  card_.CardIdentifierStringForAutofillDisplay()) !=
+              std::string::npos);
 #endif
 }
 

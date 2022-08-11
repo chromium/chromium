@@ -334,6 +334,49 @@ TEST(CreditCardTest,
       credit_card.CardIdentifierStringForAutofillDisplay());
 }
 
+// Test that customized nickname takes precedence over credit card's nickname.
+TEST(CreditCardTest,
+     CardIdentifierStringsForAutofillDisplay_WithCustomizedNickname) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillEnableCardProductName);
+
+  std::u16string customized_nickname = u"My grocery shopping Visa card";
+
+  CreditCard credit_card(base::GenerateGUID(), "https://www.example.com/");
+  test::SetCreditCardInfo(&credit_card, "John Dillinger",
+                          "5105 1051 0510 5100" /* Mastercard */, "01", "2020",
+                          "1");
+  credit_card.SetNickname(u"My Visa Card");
+  credit_card.set_product_description(u"ABC bank XYZ card");
+  EXPECT_TRUE(credit_card.HasNonEmptyValidNickname());
+  EXPECT_EQ(
+      customized_nickname +
+          UTF8ToUTF16(std::string("  ") +
+                      test::ObfuscatedCardDigitsAsUTF8("5100")),
+      credit_card.CardIdentifierStringForAutofillDisplay(customized_nickname));
+}
+
+// Test that the card number is formatted as per the obfuscation length.
+TEST(CreditCardTest,
+     CardIdentifierStringsForAutofillDisplay_WithObfuscationLength) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillEnableCardProductName);
+
+  int obfuscation_length = 2;
+
+  CreditCard credit_card(base::GenerateGUID(), "https://www.example.com/");
+  test::SetCreditCardInfo(&credit_card, "John Dillinger",
+                          "5105 1051 0510 5100" /* Mastercard */, "01", "2020",
+                          "1");
+  EXPECT_EQ(
+      UTF8ToUTF16(std::string("Mastercard  ") +
+                  test::ObfuscatedCardDigitsAsUTF8("5100", obfuscation_length)),
+      credit_card.CardIdentifierStringForAutofillDisplay(u"",
+                                                         obfuscation_length));
+}
+
 TEST(CreditCardTest, AssignmentOperator) {
   CreditCard a(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetCreditCardInfo(&a, "John Dillinger", "123456789012", "01", "2010",
