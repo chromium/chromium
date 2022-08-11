@@ -7,6 +7,8 @@
  * adding spell check languages.
  */
 
+import './add_items_dialog.js';
+
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {recordSettingChange} from '../metrics_recorder.js';

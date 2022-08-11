@@ -33,6 +33,7 @@ import './cellular_roaming_toggle_button.js';
 import './internet_shared_css.js';
 import './network_proxy_section.js';
 import './settings_traffic_counters.js';
+import './tether_connection_dialog.js';
 
 import {isActiveSim} from 'chrome://resources/cr_components/chromeos/network/cellular_utils.m.js';
 import {CrPolicyNetworkBehaviorMojo, CrPolicyNetworkBehaviorMojoInterface} from 'chrome://resources/cr_components/chromeos/network/cr_policy_network_behavior_mojo.m.js';

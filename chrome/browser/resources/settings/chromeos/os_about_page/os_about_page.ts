@@ -7,6 +7,13 @@
  * information.
  */
 
+import 'chrome://resources/cr_components/localized_link/localized_link.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import 'chrome://resources/cr_elements/icons.m.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import '../../icons.html.js';
 import '../../prefs/prefs.js';
 import '../../settings_page/settings_animated_pages.js';
@@ -16,15 +23,8 @@ import '../../settings_page_styles.css.js';
 import '../../settings_shared.css.js';
 import '../os_icons.js';
 import '../os_reset_page/os_powerwash_dialog.js';
-import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import './detailed_build_info.js';
 import './update_warning_dialog.js';
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import 'chrome://resources/cr_elements/icons.m.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
