@@ -26,7 +26,9 @@ base::FilePath::StringType GetUnitTestExecutableName() {
 TEST(UnitTestUtil, Processes) {
   // Test the state of the process for the unit test process itself.
   base::FilePath::StringType unit_test = GetUnitTestExecutableName();
-  EXPECT_TRUE(IsProcessRunning(unit_test));
+  // TODO(crbug.com/1352190) - remove process name insertion after the flakiness
+  // of the test is resolved.
+  EXPECT_TRUE(IsProcessRunning(unit_test)) << unit_test;
   EXPECT_FALSE(WaitForProcessesToExit(unit_test, base::Milliseconds(1)));
 
 #if BUILDFLAG(IS_WIN)
