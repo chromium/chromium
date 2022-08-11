@@ -13,6 +13,11 @@ namespace extensions {
 // lacros. This is the list of exceptions.
 bool ExtensionRunsInBothOSAndStandaloneBrowser(const std::string& extension_id);
 
+// By default most extension apps will not work properly if they run in both
+// ash and lacros. This is the list of exceptions.
+bool ExtensionAppRunsInBothOSAndStandaloneBrowser(
+    const std::string& extension_id);
+
 // Returns true if the extension is kept to run in Ash. A small list of 1st
 // party extensions will continue to run in Ash either since they are used to
 // support Chrome OS features such as text to speech or vox, or they are not

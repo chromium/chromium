@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/shelf_model.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/extensions/extension_keeplist_chromeos.h"
 #include "chrome/browser/ui/ash/shelf/standalone_browser_extension_app_shelf_item_controller.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/exo/shell_surface_util.h"
@@ -99,6 +100,14 @@ void ChromeAppWindowTrackerAsh::CheckWindowNoLongerPending(
   // The window is still pending
   if (pending_window->second.app_id.empty() || !pending_window->second.window)
     return;
+
+  // If an extension app runs in both lacros and ash, then don't show a dock
+  // icon for lacros since there might also be a dock icon for ash which will
+  // cause crashes.
+  if (extensions::ExtensionAppRunsInBothOSAndStandaloneBrowser(
+          pending_window->second.app_id)) {
+    return;
+  }
 
   std::string app_id = std::move(pending_window->second.app_id);
   aura::Window* window = pending_window->second.window;

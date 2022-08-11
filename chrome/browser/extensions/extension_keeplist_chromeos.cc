@@ -25,8 +25,18 @@ namespace extensions {
 
 bool ExtensionRunsInBothOSAndStandaloneBrowser(
     const std::string& extension_id) {
-  static base::NoDestructor<std::set<base::StringPiece>> keep_list(
-      {extension_misc::kGCSEExtensionId, extension_misc::kGnubbyV3ExtensionId});
+  static base::NoDestructor<std::set<base::StringPiece>> keep_list({
+      extension_misc::kGCSEExtensionId,
+      extension_misc::kGnubbyV3ExtensionId,
+  });
+  return base::Contains(*keep_list, extension_id);
+}
+
+bool ExtensionAppRunsInBothOSAndStandaloneBrowser(
+    const std::string& extension_id) {
+  static base::NoDestructor<std::set<base::StringPiece>> keep_list({
+      extension_misc::kGnubbyAppId,
+  });
   return base::Contains(*keep_list, extension_id);
 }
 
@@ -66,9 +76,10 @@ bool ExtensionAppRunsInOS(const std::string& app_id) {
 
         extension_misc::kGoogleKeepAppId, extension_misc::kCalculatorAppId,
         extension_misc::kInAppPaymentsSupportAppId,
-        extension_misc::kIdentityApiUiAppId, extension_misc::kGnubbyAppId
+        extension_misc::kIdentityApiUiAppId
   });
-  return base::Contains(*keep_list, app_id);
+  return ExtensionAppRunsInBothOSAndStandaloneBrowser(app_id) ||
+         base::Contains(*keep_list, app_id);
 }
 
 }  // namespace extensions
