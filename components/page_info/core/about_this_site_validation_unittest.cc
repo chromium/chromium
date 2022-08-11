@@ -85,13 +85,25 @@ TEST(AboutThisSiteValidation, InvalidSiteInfoProto) {
   EXPECT_EQ(ValidateMetadata(metadata), AboutThisSiteStatus::kEmptySiteInfo);
   metadata = GetSampleMetaData();
   metadata.mutable_site_info()->clear_description();
-  EXPECT_EQ(ValidateMetadata(metadata),
-            AboutThisSiteStatus::kMissingDescription);
+  {
+    base::test::ScopedFeatureList features;
+    features.InitAndDisableFeature(
+        kPageInfoAboutThisSiteDescriptionPlaceholder);
+    EXPECT_EQ(ValidateMetadata(metadata),
+              AboutThisSiteStatus::kMissingDescription);
+  }
+
+  {
+    base::test::ScopedFeatureList features;
+    features.InitAndEnableFeature(kPageInfoAboutThisSiteDescriptionPlaceholder);
+    EXPECT_EQ(ValidateMetadata(metadata), AboutThisSiteStatus::kValid);
+  }
 }
 
 TEST(AboutThisSiteValidation, InvalidDescription) {
   proto::SiteDescription description = GetSampleDescription();
   description.clear_description();
+
   EXPECT_EQ(ValidateDescription(description),
             AboutThisSiteStatus::kMissingDescriptionDescription);
 
@@ -109,6 +121,25 @@ TEST(AboutThisSiteValidation, InvalidDescription) {
   description.clear_source();
   EXPECT_EQ(ValidateDescription(description),
             AboutThisSiteStatus::kMissingDescriptionSource);
+}
+
+TEST(AboutThisSiteValidation, OnlyMoreAbout) {
+  proto::SiteInfo site_info;
+  *site_info.mutable_more_about() = GetSampleMoreAbout();
+
+  {
+    base::test::ScopedFeatureList features;
+    features.InitAndDisableFeature(
+        kPageInfoAboutThisSiteDescriptionPlaceholder);
+    EXPECT_EQ(ValidateSiteInfo(site_info),
+              AboutThisSiteStatus::kMissingDescription);
+  }
+
+  {
+    base::test::ScopedFeatureList features;
+    features.InitAndEnableFeature(kPageInfoAboutThisSiteDescriptionPlaceholder);
+    EXPECT_EQ(ValidateSiteInfo(site_info), AboutThisSiteStatus::kValid);
+  }
 }
 
 TEST(AboutThisSiteValidation, InvalidSource) {

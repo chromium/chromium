@@ -40,6 +40,10 @@ const base::FeatureParam<bool> kShowSampleContent{&kPageInfoAboutThisSiteEn,
 const base::Feature kPageInfoAboutThisSiteMoreInfo{
     "PageInfoAboutThisSiteMoreInfo", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kPageInfoAboutThisSiteDescriptionPlaceholder{
+    "PageInfoAboutThisSiteDescriptionPlaceholder",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kAboutThisSiteBanner{"AboutThisSiteBanner",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.page_info;
 
+import android.content.res.Resources;
 import android.net.Uri;
 import android.view.View;
 import android.view.ViewGroup;
@@ -129,8 +130,10 @@ public class PageInfoAboutThisSiteController implements PageInfoSubpageControlle
         boolean more_info_enabled =
                 ChromeFeatureList.isEnabled(ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_MORE_INFO);
 
-        assert mSiteInfo.hasDescription();
-        String subtitle = mSiteInfo.getDescription().getDescription();
+        Resources resources = mRowView.getContext().getResources();
+        String subtitle = mSiteInfo.hasDescription()
+                ? mSiteInfo.getDescription().getDescription()
+                : resources.getString(R.string.page_info_about_this_page_description_placeholder);
         PageInfoRowView.ViewParams rowParams = new PageInfoRowView.ViewParams();
         rowParams.title = getTitle();
         rowParams.subtitle = subtitle;

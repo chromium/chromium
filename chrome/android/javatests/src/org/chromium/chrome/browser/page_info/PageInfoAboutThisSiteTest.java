@@ -168,14 +168,14 @@ public class PageInfoAboutThisSiteTest {
         };
     }
 
-    private void mockResponse(byte[] bytes) {
-        doReturn(bytes)
+    private void mockResponse(SiteInfo.Builder builder) {
+        doReturn(builder != null ? builder.build().toByteArray() : null)
                 .when(mMockAboutThisSiteJni)
                 .getSiteInfo(
                         any(BrowserContextHandle.class), any(GURL.class), any(WebContents.class));
     }
 
-    private byte[] createDescription() {
+    private SiteInfo.Builder createDescription() {
         String url = mTestServerRule.getServer().getURL(sSimpleHtml);
         String moreAboutUrl = mTestServerRule.getServer().getURL(sAboutHtml);
         SiteDescription.Builder description =
@@ -183,11 +183,7 @@ public class PageInfoAboutThisSiteTest {
                         .setDescription("Some description about example.com for testing purposes")
                         .setSource(Hyperlink.newBuilder().setUrl(url).setLabel("Example Source"));
         MoreAbout.Builder moreAbout = MoreAbout.newBuilder().setUrl(moreAboutUrl);
-        return SiteInfo.newBuilder()
-                .setDescription(description)
-                .setMoreAbout(moreAbout)
-                .build()
-                .toByteArray();
+        return SiteInfo.newBuilder().setDescription(description).setMoreAbout(moreAbout);
     }
 
     @Test
@@ -216,6 +212,15 @@ public class PageInfoAboutThisSiteTest {
         mockResponse(null);
         openPageInfo();
         onView(withId(PageInfoAboutThisSiteController.ROW_ID)).check(matches(not(isDisplayed())));
+        dismissPageInfo();
+    }
+
+    @Test
+    @MediumTest
+    public void testAboutThisSiteRowWithoutDescription() throws TimeoutException {
+        mockResponse(createDescription().clearDescription());
+        openPageInfo();
+        onView(withId(PageInfoAboutThisSiteController.ROW_ID)).check(matches(isDisplayed()));
         dismissPageInfo();
     }
 

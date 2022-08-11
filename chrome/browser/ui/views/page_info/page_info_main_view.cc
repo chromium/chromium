@@ -576,6 +576,12 @@ std::unique_ptr<views::View> PageInfoMainView::CreateAboutThisSiteSection(
   PageInfoHoverButton* about_this_site_button = nullptr;
 
   if (base::FeatureList::IsEnabled(page_info::kPageInfoAboutThisSiteMoreInfo)) {
+    const auto& description =
+        info.has_description()
+            ? base::UTF8ToUTF16(info.description().description())
+            : l10n_util::GetStringUTF16(
+                  IDS_PAGE_INFO_ABOUT_THIS_PAGE_DESCRIPTION_PLACEHOLDER);
+
     about_this_site_button = about_this_site_section->AddChildView(
         std::make_unique<PageInfoHoverButton>(
             base::BindRepeating(
@@ -590,9 +596,11 @@ std::unique_ptr<views::View> PageInfoMainView::CreateAboutThisSiteSection(
             IDS_PAGE_INFO_ABOUT_THIS_PAGE_TITLE, std::u16string(),
             PageInfoViewFactory::VIEW_ID_PAGE_INFO_ABOUT_THIS_SITE_BUTTON,
             l10n_util::GetStringUTF16(IDS_PAGE_INFO_ABOUT_THIS_PAGE_TOOLTIP),
-            base::UTF8ToUTF16(info.description().description()),
-            PageInfoViewFactory::GetLaunchIcon()));
+            description, PageInfoViewFactory::GetLaunchIcon()));
   } else {
+    // The kPageInfoAboutThisSiteDescriptionPlaceholder feature must only be
+    // enabled together with kPageInfoAboutThisSiteMoreInfo
+    DCHECK(info.has_description());
     about_this_site_button = about_this_site_section->AddChildView(
         std::make_unique<PageInfoHoverButton>(
             base::BindRepeating(

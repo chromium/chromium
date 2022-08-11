@@ -37,6 +37,10 @@ extern const base::FeatureParam<bool> kShowSampleContent;
 // Shows a link with more info about a site in PageInfo.
 extern const base::Feature kPageInfoAboutThisSiteMoreInfo;
 
+// Shows a placeholder when a description is missing. Only enable in combination
+// with kPageInfoAboutThisSiteMoreInfo.
+extern const base::Feature kPageInfoAboutThisSiteDescriptionPlaceholder;
+
 // Enables the "About this site" banner.
 extern const base::Feature kAboutThisSiteBanner;
 

@@ -65,14 +65,20 @@ AboutThisSiteStatus ValidateMoreAbout(const proto::MoreAbout& more_info) {
 }
 
 AboutThisSiteStatus ValidateSiteInfo(const proto::SiteInfo& site_info) {
-  if (!site_info.has_description() && !site_info.has_first_seen())
+  if (!site_info.has_description() && !site_info.has_first_seen() &&
+      !site_info.has_more_about())
     return AboutThisSiteStatus::kEmptySiteInfo;
 
   AboutThisSiteStatus status = AboutThisSiteStatus::kValid;
-  if (!site_info.has_description())
-    return AboutThisSiteStatus::kMissingDescription;
 
-  status = ValidateDescription(site_info.description());
+  if (site_info.has_description()) {
+    status = ValidateDescription(site_info.description());
+  } else {
+    if (!base::FeatureList::IsEnabled(
+            kPageInfoAboutThisSiteDescriptionPlaceholder))
+      return AboutThisSiteStatus::kMissingDescription;
+  }
+
   if (status != AboutThisSiteStatus::kValid)
     return status;
 

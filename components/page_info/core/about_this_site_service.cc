@@ -4,6 +4,7 @@
 
 #include "components/page_info/core/about_this_site_service.h"
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_metadata.h"
@@ -70,13 +71,16 @@ absl::optional<proto::SiteInfo> AboutThisSiteService::GetAboutThisSiteInfo(
   if (kShowSampleContent.Get()) {
     page_info::proto::SiteInfo site_info;
     if (url == GURL("https://example.com")) {
-      auto* description = site_info.mutable_description();
-      description->set_name("Example website");
-      description->set_subtitle("Website");
-      description->set_description(
-          "A domain used in illustrative examples in documents.");
-      description->mutable_source()->set_url("https://example.com");
-      description->mutable_source()->set_label("Example source");
+      if (!base::FeatureList::IsEnabled(
+              kPageInfoAboutThisSiteDescriptionPlaceholder)) {
+        auto* description = site_info.mutable_description();
+        description->set_name("Example website");
+        description->set_subtitle("Website");
+        description->set_description(
+            "A domain used in illustrative examples in documents.");
+        description->mutable_source()->set_url("https://example.com");
+        description->mutable_source()->set_label("Example source");
+      }
       site_info.mutable_more_about()->set_url(
           "https://example.com/#more-about");
       return site_info;
