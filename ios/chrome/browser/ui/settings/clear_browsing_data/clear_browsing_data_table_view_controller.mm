@@ -11,6 +11,7 @@
 #include "components/browsing_data/core/pref_names.h"
 #include "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "components/signin/public/base/signin_switches.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/browsing_data/browsing_data_features.h"
 #include "ios/chrome/browser/browsing_data/browsing_data_remove_mask.h"
@@ -35,7 +36,6 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_link_item.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
-#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
@@ -310,7 +310,7 @@
 
 - (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(CrURL*)url {
   if (url.gurl == GURL(kCBDSignOutOfChromeURL)) {
-    DCHECK(base::FeatureList::IsEnabled(kEnableCBDSignOut));
+    DCHECK(base::FeatureList::IsEnabled(switches::kEnableCbdSignOut));
     // TODO(crbug.com/1341654): Log a user action indicating that the user
     // clicked on the sign out link from the footer. Remove the action
     // indicating that this came from signin > signout.

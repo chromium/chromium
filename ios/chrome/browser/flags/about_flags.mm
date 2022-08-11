@@ -1161,7 +1161,7 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IOS_BACKGROUND_MODE_ENABLED)
     {"enable-cbd-sign-out", flag_descriptions::kEnableCBDSignOutName,
      flag_descriptions::kEnableCBDSignOutDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kEnableCBDSignOut)},
+     FEATURE_VALUE_TYPE(switches::kEnableCbdSignOut)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

@@ -83,9 +83,6 @@ const base::Feature kCalendarExperienceKit{"CalendarExperienceKit",
 const base::Feature kEnableExpKitAppleCalendar{
     "EnableExpKitAppleCalendar", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kEnableCBDSignOut{"EnableCbdSignOut",
-                                      base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kEnablePhoneNumbers{"EnablePhoneNumbers",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
