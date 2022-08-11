@@ -28,6 +28,8 @@ class FakeCommonDependencies : public CommonDependencies {
       content::BrowserContext* browser_context) const override;
   bool IsSupervisedUser(
       content::BrowserContext* browser_context) const override;
+  bool IsAllowedForMachineLearning(
+      content::BrowserContext* browser_context) const override;
   AnnotateDomModelService* GetOrCreateAnnotateDomModelService(
       content::BrowserContext* browser_context) const override;
   bool IsWebLayer() const override;
@@ -40,6 +42,7 @@ class FakeCommonDependencies : public CommonDependencies {
   std::string country_code_;
   std::string signed_in_email_;
   bool is_supervised_user_ = false;
+  bool is_allowed_for_machine_learning_ = true;
   bool is_weblayer_ = false;
   version_info::Channel channel_ = version_info::Channel::UNKNOWN;
 };

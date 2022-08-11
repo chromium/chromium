@@ -61,6 +61,9 @@ class CommonDependencies {
   virtual bool IsSupervisedUser(
       content::BrowserContext* browser_context) const = 0;
 
+  virtual bool IsAllowedForMachineLearning(
+      content::BrowserContext* browser_context) const;
+
   virtual AnnotateDomModelService* GetOrCreateAnnotateDomModelService(
       content::BrowserContext* browser_context) const = 0;
 

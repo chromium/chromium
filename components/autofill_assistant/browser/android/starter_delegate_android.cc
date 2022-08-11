@@ -261,6 +261,11 @@ bool StarterDelegateAndroid::GetIsSupervisedUser() {
       GetWebContents().GetBrowserContext());
 }
 
+bool StarterDelegateAndroid::GetIsAllowedForMachineLearning() {
+  return GetCommonDependencies()->IsAllowedForMachineLearning(
+      GetWebContents().GetBrowserContext());
+}
+
 bool StarterDelegateAndroid::GetIsCustomTab() const {
   return dependencies_->GetPlatformDependencies()->IsCustomTab(
       GetWebContents());

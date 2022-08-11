@@ -2389,4 +2389,40 @@ TEST_F(StarterTest, RpcTriggerScriptStartupFailsForSupervisedUser) {
       TriggerContext::Options()));
 }
 
+TEST_F(StarterTest, RegularStartupFailsForNotAllowedForMachineLearningUsers) {
+  SetupPlatformDelegateForReturningUser();
+  fake_platform_delegate_.is_allowed_for_machine_learning_ = false;
+
+  base::flat_map<std::string, std::string> script_parameters = {
+      {"ENABLED", "true"},
+      {"START_IMMEDIATELY", "true"},
+      {"ORIGINAL_DEEPLINK", kExampleDeeplink}};
+  TriggerContext::Options options;
+  options.initial_url = "https://redirect.com/to/www/example/com";
+  EXPECT_CALL(mock_start_regular_script_callback_, Run).Times(0);
+
+  starter_->Start(std::make_unique<TriggerContext>(
+      std::make_unique<ScriptParameters>(script_parameters), options));
+}
+
+TEST_F(StarterTest,
+       RpcTriggerScriptStartupFailsForAllowedForMachineLearningUsers) {
+  SetupPlatformDelegateForReturningUser();
+  fake_platform_delegate_.is_allowed_for_machine_learning_ = false;
+
+  base::flat_map<std::string, std::string> script_parameters = {
+      {"ENABLED", "true"},
+      {"START_IMMEDIATELY", "false"},
+      {"REQUEST_TRIGGER_SCRIPT", "true"},
+      {"ORIGINAL_DEEPLINK", kExampleDeeplink}};
+  EXPECT_CALL(*mock_trigger_script_ui_delegate_, Attach).Times(0);
+  EXPECT_CALL(*mock_trigger_script_service_request_sender_, OnSendRequest)
+      .Times(0);
+  EXPECT_CALL(mock_start_regular_script_callback_, Run).Times(0);
+
+  starter_->Start(std::make_unique<TriggerContext>(
+      std::make_unique<ScriptParameters>(script_parameters),
+      TriggerContext::Options()));
+}
+
 }  // namespace autofill_assistant

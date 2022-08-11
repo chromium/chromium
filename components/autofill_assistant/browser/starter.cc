@@ -474,7 +474,8 @@ void Starter::Start(std::unique_ptr<TriggerContext> trigger_context) {
     return;
   }
 
-  if (platform_delegate_->GetIsSupervisedUser()) {
+  if (platform_delegate_->GetIsSupervisedUser() ||
+      !platform_delegate_->GetIsAllowedForMachineLearning()) {
     OnStartDone(/* start_script= */ false);
     return;
   }

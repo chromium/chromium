@@ -80,6 +80,7 @@ class StarterDelegateAndroid
   bool GetMakeSearchesAndBrowsingBetterEnabled() const override;
   bool GetIsLoggedIn() override;
   bool GetIsSupervisedUser() override;
+  bool GetIsAllowedForMachineLearning() override;
   bool GetIsCustomTab() const override;
   bool GetIsWebLayer() const override;
   bool GetIsTabCreatedByGSA() const override;

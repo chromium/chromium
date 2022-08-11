@@ -108,6 +108,11 @@ bool StarterDelegateDesktop::GetIsSupervisedUser() {
       GetWebContents().GetBrowserContext());
 }
 
+bool StarterDelegateDesktop::GetIsAllowedForMachineLearning() {
+  return common_dependencies_->IsAllowedForMachineLearning(
+      GetWebContents().GetBrowserContext());
+}
+
 bool StarterDelegateDesktop::GetIsCustomTab() const {
   return platform_dependencies_->IsCustomTab(GetWebContents());
 }

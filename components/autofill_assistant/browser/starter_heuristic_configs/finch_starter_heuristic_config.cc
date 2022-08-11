@@ -24,7 +24,8 @@ FinchStarterHeuristicConfig::GetConditionSetsForClientState(
     StarterPlatformDelegate* platform_delegate) const {
   static const base::NoDestructor<base::Value> empty_list(
       base::Value::Type::LIST);
-  if (platform_delegate->GetIsSupervisedUser()) {
+  if (platform_delegate->GetIsSupervisedUser() ||
+      !platform_delegate->GetIsAllowedForMachineLearning()) {
     return empty_list->GetList();
   }
 

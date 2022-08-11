@@ -86,6 +86,23 @@ bool CommonDependenciesChrome::IsSupervisedUser(
          signin::Tribool::kTrue;
 }
 
+bool CommonDependenciesChrome::IsAllowedForMachineLearning(
+    content::BrowserContext* browser_context) const {
+  DCHECK(browser_context);
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(
+          Profile::FromBrowserContext(browser_context));
+  if (!identity_manager) {
+    return true;
+  }
+
+  std::string gaia_id =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync).gaia;
+  return identity_manager->FindExtendedAccountInfoByGaiaId(gaia_id)
+             .capabilities.is_allowed_for_machine_learning() !=
+         signin::Tribool::kFalse;
+}
+
 AnnotateDomModelService*
 CommonDependenciesChrome::GetOrCreateAnnotateDomModelService(
     content::BrowserContext* browser_context) const {

@@ -8,4 +8,9 @@ namespace autofill_assistant {
 
 CommonDependencies::~CommonDependencies() = default;
 
+bool CommonDependencies::IsAllowedForMachineLearning(
+    content::BrowserContext* browser_context) const {
+  return true;
+}
+
 }  // namespace autofill_assistant

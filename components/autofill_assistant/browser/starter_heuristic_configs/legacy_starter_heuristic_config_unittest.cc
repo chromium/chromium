@@ -358,6 +358,25 @@ TEST_F(LegacyStarterHeuristicConfigTest, DisabledForSupervisedUsers) {
               SizeIs(1));
 }
 
+TEST_F(LegacyStarterHeuristicConfigTest,
+       DisabledForNotAllowedForMachineLearningUsers) {
+  InitDefaultHeuristic();
+  auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
+  scoped_feature_list->InitWithFeatures(
+      /* enabled_features = */ {features::kAutofillAssistantInTabTriggering,
+                                features::kAutofillAssistantInCCTTriggering},
+      /* disabled_features = */ {});
+  LegacyStarterHeuristicConfig config;
+
+  fake_platform_delegate_.is_allowed_for_machine_learning_ = false;
+  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_),
+              IsEmpty());
+
+  fake_platform_delegate_.is_allowed_for_machine_learning_ = true;
+  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_),
+              SizeIs(1));
+}
+
 TEST_F(LegacyStarterHeuristicConfigTest, DisabledIfProactiveHelpSettingOff) {
   InitDefaultHeuristic();
   auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();

@@ -43,6 +43,11 @@ bool FakeCommonDependencies::IsSupervisedUser(
   return is_supervised_user_;
 }
 
+bool FakeCommonDependencies::IsAllowedForMachineLearning(
+    content::BrowserContext* browser_context) const {
+  return is_allowed_for_machine_learning_;
+}
+
 AnnotateDomModelService*
 FakeCommonDependencies::GetOrCreateAnnotateDomModelService(
     content::BrowserContext* browser_context) const {

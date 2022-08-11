@@ -41,6 +41,9 @@ class CommonDependenciesChrome : public CommonDependencies {
   bool IsSupervisedUser(
       content::BrowserContext* browser_context) const override;
 
+  bool IsAllowedForMachineLearning(
+      content::BrowserContext* browser_context) const override;
+
   // The AnnotateDomModelService is a KeyedService. There is only one per
   // BrowserContext.
   AnnotateDomModelService* GetOrCreateAnnotateDomModelService(

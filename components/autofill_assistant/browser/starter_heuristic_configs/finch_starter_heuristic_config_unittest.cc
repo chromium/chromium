@@ -107,6 +107,21 @@ TEST_F(FinchStarterHeuristicConfigTest, DisabledForSupervisedUsers) {
               SizeIs(1));
 }
 
+TEST_F(FinchStarterHeuristicConfigTest,
+       DisabledForNotAllowedForMachineLearningUsers) {
+  InitDefaultHeuristic(features::kAutofillAssistantUrlHeuristic1, "some_key");
+  FinchStarterHeuristicConfig config(base::FeatureParam<std::string>{
+      &features::kAutofillAssistantUrlHeuristic1, "some_key", ""});
+
+  fake_platform_delegate_.is_allowed_for_machine_learning_ = false;
+  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_),
+              IsEmpty());
+
+  fake_platform_delegate_.is_allowed_for_machine_learning_ = true;
+  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_),
+              SizeIs(1));
+}
+
 TEST_F(FinchStarterHeuristicConfigTest, DisabledIfProactiveHelpSettingOff) {
   InitDefaultHeuristic(features::kAutofillAssistantUrlHeuristic1, "some_key");
   FinchStarterHeuristicConfig config(base::FeatureParam<std::string>{

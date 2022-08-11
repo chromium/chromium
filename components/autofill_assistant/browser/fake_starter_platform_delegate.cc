@@ -111,6 +111,10 @@ bool FakeStarterPlatformDelegate::GetIsSupervisedUser() {
   return is_supervised_user_;
 }
 
+bool FakeStarterPlatformDelegate::GetIsAllowedForMachineLearning() {
+  return is_allowed_for_machine_learning_;
+}
+
 bool FakeStarterPlatformDelegate::GetIsCustomTab() const {
   return is_custom_tab_;
 }

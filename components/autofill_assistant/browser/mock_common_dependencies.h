@@ -38,6 +38,10 @@ class MockCommonDependencies : public CommonDependencies {
               IsSupervisedUser,
               (content::BrowserContext*),
               (const override));
+  MOCK_METHOD(bool,
+              IsAllowedForMachineLearning,
+              (content::BrowserContext*),
+              (const override));
   MOCK_METHOD(AnnotateDomModelService*,
               GetOrCreateAnnotateDomModelService,
               (content::BrowserContext*),

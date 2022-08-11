@@ -53,6 +53,7 @@ class FakeStarterPlatformDelegate : public StarterPlatformDelegate {
   bool GetMakeSearchesAndBrowsingBetterEnabled() const override;
   bool GetIsLoggedIn() override;
   bool GetIsSupervisedUser() override;
+  bool GetIsAllowedForMachineLearning() override;
   bool GetIsCustomTab() const override;
   bool GetIsWebLayer() const override;
   bool GetIsTabCreatedByGSA() const override;
@@ -84,6 +85,7 @@ class FakeStarterPlatformDelegate : public StarterPlatformDelegate {
   bool msbb_enabled_ = true;
   bool is_logged_in_ = true;
   bool is_supervised_user_ = false;
+  bool is_allowed_for_machine_learning_ = true;
   bool is_custom_tab_ = true;
   bool is_web_layer_ = true;
   bool is_tab_created_by_gsa_ = true;

@@ -91,6 +91,8 @@ class StarterPlatformDelegate {
   virtual bool GetIsLoggedIn() = 0;
   // Returns whether the user is restricted to any supervision.
   virtual bool GetIsSupervisedUser() = 0;
+  // Returns whether the user is allowed for machine learning.
+  virtual bool GetIsAllowedForMachineLearning() = 0;
   // Returns whether this is a custom tab or not.
   virtual bool GetIsCustomTab() const = 0;
   // Returns whether this is running in WebLayer or not.
