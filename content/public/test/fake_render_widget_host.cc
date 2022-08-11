@@ -94,6 +94,8 @@ void FakeRenderWidgetHost::ShowPopup(const gfx::Rect& initial_rect,
 void FakeRenderWidgetHost::SetTouchActionFromMain(
     cc::TouchAction touch_action) {}
 
+void FakeRenderWidgetHost::SetPanAction(blink::mojom::PanAction pan_action) {}
+
 void FakeRenderWidgetHost::DidOverscroll(
     blink::mojom::DidOverscrollParamsPtr params) {}
 

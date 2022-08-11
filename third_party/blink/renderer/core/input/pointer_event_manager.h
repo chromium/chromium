@@ -66,6 +66,9 @@ class CORE_EXPORT PointerEventManager final
       const Vector<WebMouseEvent>& coalesced_events,
       const Vector<WebMouseEvent>& predicted_events);
 
+  void SendEffectivePanActionAtPointer(const WebPointerEvent& event,
+                                       const Node* node_at_pointer);
+
   // Resets the internal state of this object.
   void Clear();
 

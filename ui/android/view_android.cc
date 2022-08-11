@@ -442,6 +442,15 @@ void ViewAndroid::OnCursorChanged(const Cursor& cursor) {
   }
 }
 
+void ViewAndroid::SetHoverActionStylusWritable(bool stylus_writable) {
+  ScopedJavaLocalRef<jobject> delegate(GetViewAndroidDelegate());
+  if (delegate.is_null())
+    return;
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_ViewAndroidDelegate_setHoverActionStylusWritable(env, delegate,
+                                                        stylus_writable);
+}
+
 void ViewAndroid::OnBackgroundColorChanged(unsigned int color) {
   ScopedJavaLocalRef<jobject> delegate(GetViewAndroidDelegate());
   if (delegate.is_null())

@@ -21,16 +21,21 @@ TouchAction ComputeEffectiveTouchAction(const Node& node) {
 TouchAction EffectiveTouchActionAtPointerDown(const WebPointerEvent& event,
                                               const Node* pointerdown_node) {
   DCHECK(event.GetType() == WebInputEvent::Type::kPointerDown);
-  DCHECK(pointerdown_node);
+  return EffectiveTouchActionAtPointer(event, pointerdown_node);
+}
+
+TouchAction EffectiveTouchActionAtPointer(const WebPointerEvent& event,
+                                          const Node* node_at_pointer) {
+  DCHECK(node_at_pointer);
 
   TouchAction effective_touch_action =
-      ComputeEffectiveTouchAction(*pointerdown_node);
+      ComputeEffectiveTouchAction(*node_at_pointer);
 
   if ((effective_touch_action & TouchAction::kPanX) != TouchAction::kNone) {
     // Effective touch action is computed during style before we know whether
     // any ancestor supports horizontal scrolling, so we need to check it here.
     if (LayoutBox::HasHorizontallyScrollableAncestor(
-            pointerdown_node->GetLayoutObject())) {
+            node_at_pointer->GetLayoutObject())) {
       // If the node or its parent is horizontal scrollable, we need to disable
       // swipe to move cursor.
       effective_touch_action |= TouchAction::kInternalPanXScrolls;

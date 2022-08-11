@@ -544,6 +544,7 @@ class CORE_EXPORT WebFrameWidgetImpl
 
   void ShowVirtualKeyboardOnElementFocus();
   void ProcessTouchAction(WebTouchAction touch_action);
+  void SetPanAction(mojom::blink::PanAction pan_action);
 
   // Called to update whether low latency input mode is enabled or not.
   void SetNeedsLowLatencyInput(bool);

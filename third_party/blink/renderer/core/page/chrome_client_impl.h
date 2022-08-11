@@ -197,6 +197,7 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
   void SetNeedsUnbufferedInputForDebugger(LocalFrame*, bool immediate) override;
   void RequestUnbufferedInputEvents(LocalFrame*) override;
   void SetTouchAction(LocalFrame*, TouchAction) override;
+  void SetPanAction(LocalFrame*, mojom::blink::PanAction pan_action) override;
 
   void AttachRootLayer(scoped_refptr<cc::Layer>,
                        LocalFrame* local_root) override;

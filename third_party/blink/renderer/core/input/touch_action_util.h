@@ -19,6 +19,9 @@ CORE_EXPORT TouchAction ComputeEffectiveTouchAction(const Node&);
 TouchAction EffectiveTouchActionAtPointerDown(const WebPointerEvent& event,
                                               const Node* pointerdown_node);
 
+TouchAction EffectiveTouchActionAtPointer(const WebPointerEvent& event,
+                                          const Node* node_at_pointer);
+
 }  // namespace touch_action_util
 
 }  // namespace blink

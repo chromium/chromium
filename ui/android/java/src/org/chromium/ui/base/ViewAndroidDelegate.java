@@ -72,6 +72,31 @@ public class ViewAndroidDelegate {
             mVerticalScrollDirectionChangeListeners = new ObserverList<>();
 
     /**
+     * Handles cursor updates for stylus writing.
+     */
+    public interface StylusWritingCursorHandler {
+        /**
+         * @param currentView the current view to set the cursor.
+         * @return true if cursor update was handled.
+         */
+        boolean didHandleCursorUpdate(View currentView);
+    }
+
+    private StylusWritingCursorHandler mStylusWritingCursorHandler;
+
+    // Whether the current hovered element's action is stylus writable or not.
+    private boolean mHoverActionStylusWritable;
+
+    /**
+     * Sets a handler to handle the stylus writing cursor updates.
+     *
+     * @param handler the handler object.
+     */
+    public void setStylusWritingCursorHandler(StylusWritingCursorHandler handler) {
+        mStylusWritingCursorHandler = handler;
+    }
+
+    /**
      * Create and return a basic implementation of {@link ViewAndroidDelegate}.
      * @param containerView {@link ViewGroup} to be used as a container view.
      * @return a new instance of {@link ViewAndroidDelegate}.
@@ -253,6 +278,12 @@ public class ViewAndroidDelegate {
     public void onCursorChanged(int cursorType) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) return;
 
+        // Allow stylus writing handler to override the cursor.
+        if (mHoverActionStylusWritable && mStylusWritingCursorHandler != null
+                && mStylusWritingCursorHandler.didHandleCursorUpdate(getContainerViewGroup())) {
+            return;
+        }
+
         int pointerIconType = PointerIcon.TYPE_ARROW;
         switch (cursorType) {
             case CursorType.NONE:
@@ -377,6 +408,11 @@ public class ViewAndroidDelegate {
         ViewGroup containerView = getContainerViewGroup();
         PointerIcon icon = PointerIcon.getSystemIcon(containerView.getContext(), pointerIconType);
         ApiHelperForN.setPointerIcon(containerView, icon);
+    }
+
+    @CalledByNative
+    private void setHoverActionStylusWritable(boolean stylusWritable) {
+        mHoverActionStylusWritable = stylusWritable;
     }
 
     /**

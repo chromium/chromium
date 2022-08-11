@@ -93,6 +93,7 @@ class FakeRenderWidgetHost : public blink::mojom::FrameWidgetHost,
 
   // blink::mojom::WidgetInputHandlerHost overrides.
   void SetTouchActionFromMain(cc::TouchAction touch_action) override;
+  void SetPanAction(blink::mojom::PanAction pan_action) override;
   void DidOverscroll(blink::mojom::DidOverscrollParamsPtr params) override;
   void DidStartScrollingViewport() override;
   void ImeCancelComposition() override;

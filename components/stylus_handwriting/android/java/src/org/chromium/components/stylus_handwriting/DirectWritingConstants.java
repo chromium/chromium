@@ -11,6 +11,10 @@ package org.chromium.components.stylus_handwriting;
 class DirectWritingConstants {
     private DirectWritingConstants() {}
 
+    // This constant is defined in Samsung Platform, which sets the Hover icon for direct writing.
+    // Since this constant is not available to non-Samsung apps, it is defined below.
+    static final int STYLUS_WRITING_ICON_VALUE = 20024;
+
     static final String SERVICE_PKG_NAME = "com.samsung.android.honeyboard";
     static final String SERVICE_CLS_NAME =
             "com.samsung.android.directwriting.service.DirectWritingService";

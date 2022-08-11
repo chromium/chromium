@@ -1107,6 +1107,11 @@ bool RenderWidgetHostViewAndroid::RequestStartStylusWriting() {
          ime_adapter_android_->RequestStartStylusWriting();
 }
 
+void RenderWidgetHostViewAndroid::SetHoverActionStylusWritable(
+    bool stylus_writable) {
+  view_.SetHoverActionStylusWritable(stylus_writable);
+}
+
 void RenderWidgetHostViewAndroid::OnEditElementFocusedForStylusWriting(
     const gfx::Rect& focused_edit_bounds,
     const gfx::Rect& caret_bounds) {
