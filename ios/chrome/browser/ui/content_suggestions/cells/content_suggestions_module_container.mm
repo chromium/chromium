@@ -40,8 +40,8 @@ const float kPlaceholderTitleCornerRadius = 2.0f;
 const float kCornerRadius = 16;
 
 // The shadow offsets of this container.
-const CGFloat kHorizontalShadowOffset = 10;
-const CGFloat kVerticalShadowOffset = 20;
+const CGFloat kHorizontalShadowOffset = 40;
+const CGFloat kVerticalShadowOffset = 50;
 
 // Vertical space allocated to the Trending Queries module content.
 const float kTrendingQueriesContentHeight = 103;
@@ -75,7 +75,7 @@ const float kTrendingQueriesContentHeight = 103;
     // Create content container with same background as this view so that a
     // shadow view can be placed under it to create a shadow effect.
     UIImageView* shadow = [[UIImageView alloc]
-        initWithImage:StretchableImageNamed(@"menu_shadow")];
+        initWithImage:StretchableImageNamed(@"module_shadow")];
     shadow.translatesAutoresizingMaskIntoConstraints = NO;
     [self addSubview:shadow];
     AddSameConstraintsToSidesWithInsets(
