@@ -55,6 +55,24 @@ export const fakeBatteryHealth2 = [
   },
 ];
 
+/** @type {!Array<!BatteryChargeStatus>} */
+export const fakeBatteryChargeStatus3 = [{
+  chargeNowMilliampHours: 0,
+  currentNowMilliamps: 0,
+  powerAdapterStatus: ExternalPowerSource.kDisconnected,
+  powerTime: stringToMojoString16('0m'),
+}];
+
+/** @type {!Array<!BatteryHealth>} */
+export const fakeBatteryHealth3 = [
+  {
+    batteryWearPercentage: 0,
+    chargeFullDesignMilliampHours: 0,
+    chargeFullNowMilliampHours: 0,
+    cycleCount: 0,
+  },
+];
+
 /** @type {!Array<!BatteryHealth>} */
 export const fakeBatteryHealth = [
   {

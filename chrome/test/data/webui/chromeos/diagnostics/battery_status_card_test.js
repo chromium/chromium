@@ -3,9 +3,10 @@
 // found in the LICENSE file.
 
 import 'chrome://diagnostics/battery_status_card.js';
+
 import {BatteryChargeStatus, BatteryHealth, BatteryInfo, ExternalPowerSource, RoutineType} from 'chrome://diagnostics/diagnostics_types.js';
 import {getDiagnosticsIcon} from 'chrome://diagnostics/diagnostics_utils.js';
-import {fakeBatteryChargeStatus, fakeBatteryChargeStatus2, fakeBatteryHealth, fakeBatteryHealth2, fakeBatteryInfo} from 'chrome://diagnostics/fake_data.js';
+import {fakeBatteryChargeStatus, fakeBatteryChargeStatus2, fakeBatteryChargeStatus3, fakeBatteryHealth, fakeBatteryHealth2, fakeBatteryHealth3, fakeBatteryInfo} from 'chrome://diagnostics/fake_data.js';
 import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_provider.js';
 import {getSystemDataProvider, setSystemDataProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 import {mojoString16ToString} from 'chrome://diagnostics/mojo_utils.js';
@@ -236,6 +237,20 @@ export function batteryStatusCardTestSuite() {
               getPowerAdapterStatus(), ExternalPowerSource.kDisconnected);
 
           const expectedIconRange = '71-77';
+          assertEquals(
+              getDiagnosticsIcon(BATTERY_ICON_PREFIX + expectedIconRange),
+              batteryStatusElement.batteryIcon);
+        });
+  });
+
+  test('ShowsCorrectIconForZeroBattery', () => {
+    return initializeBatteryStatusCard(
+               fakeBatteryInfo, fakeBatteryChargeStatus3, fakeBatteryHealth3)
+        .then(() => {
+          assertEquals(
+              getPowerAdapterStatus(), ExternalPowerSource.kDisconnected);
+
+          const expectedIconRange = 'outline';
           assertEquals(
               getDiagnosticsIcon(BATTERY_ICON_PREFIX + expectedIconRange),
               batteryStatusElement.batteryIcon);

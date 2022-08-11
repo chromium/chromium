@@ -26,6 +26,22 @@ import {TestSuiteStatus} from './routine_list_executor.js';
 const BATTERY_ICON_PREFIX = 'battery-';
 
 /**
+ * Calculates the battery percentage in the range percentage [0,100].
+ * @param {number} chargeNow Current battery charge in milliamp hours.
+ * @param {number} chargeFull Full battery charge in milliamp hours.
+ * @return {number}
+ */
+function calculatePowerPercentage(chargeNow, chargeFull) {
+  // Handle values in battery_info which could cause a SIGFPE. See b/227485637.
+  if (chargeFull == 0 || isNaN(chargeNow) || isNaN(chargeFull)) {
+    return 0;
+  }
+
+  const percent = Math.round(100 * chargeNow / chargeFull);
+  return Math.min(Math.max(percent, 0), 100);
+}
+
+/**
  * @fileoverview
  * 'battery-status-card' shows information about battery status.
  */
@@ -258,8 +274,8 @@ Polymer({
     }
 
     const disableRunButtonThreshold = 95;
-    const percentage = Math.round(
-        100 * this.batteryChargeStatus_.chargeNowMilliampHours /
+    const percentage = calculatePowerPercentage(
+        this.batteryChargeStatus_.chargeNowMilliampHours,
         this.batteryHealth_.chargeFullNowMilliampHours);
 
     return percentage >= disableRunButtonThreshold ?
@@ -284,10 +300,16 @@ Polymer({
       return this.batteryIcon;
     }
 
-    const percentage = Math.round(
-        100 * this.batteryChargeStatus_.chargeNowMilliampHours /
+    const percentage = calculatePowerPercentage(
+        this.batteryChargeStatus_.chargeNowMilliampHours,
         this.batteryHealth_.chargeFullNowMilliampHours);
-    assert(percentage > 0 && percentage <= 100);
+
+    // Handle values in battery_info which could cause a SIGFPE. See
+    // b/227485637.
+    if (percentage === 0) {
+      return this.batteryIcon ||
+          getDiagnosticsIcon(`${BATTERY_ICON_PREFIX}outline`);
+    }
 
     const iconSizes = [
       [1, 7],
