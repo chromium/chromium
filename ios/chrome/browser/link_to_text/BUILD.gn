@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//ios/web/public/js_messaging/compile_ts.gni")
 import("//ios/web/public/js_messaging/optimize_js.gni")
 
 source_set("link_to_text") {
@@ -68,13 +69,23 @@ source_set("unit_tests") {
   ]
 }
 
-optimize_js("link_to_text_js") {
-  visibility = [ ":link_to_text" ]
-
-  primary_script = "resources/link_to_text.js"
+compile_ts("compile_link_to_text_js") {
+  allow_js = true
   sources = [
+    "//ios/web/public/js_messaging/resources/gcrweb.ts",
     "//third_party/text-fragments-polyfill/src/src/fragment-generation-utils.js",
     "//third_party/text-fragments-polyfill/src/src/text-fragment-utils.js",
-    "resources/link_to_text.js",
+    "resources/link_to_text.ts",
   ]
+}
+
+optimize_js("link_to_text_js") {
+  visibility = [ ":link_to_text" ]
+  _script = filter_include(get_target_outputs(":compile_link_to_text_js"),
+                           [ "*link_to_text.js" ])
+  primary_script = _script[0]
+
+  sources = _script
+
+  deps = [ ":compile_link_to_text_js" ]
 }
