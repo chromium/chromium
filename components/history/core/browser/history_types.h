@@ -991,7 +991,6 @@ struct Cluster {
   std::vector<ClusterVisit> visits;
 
   // A map of keywords to additional data.
-  // TODO(manukh): Persist to db.
   base::flat_map<std::u16string, ClusterKeywordData> keyword_to_data_map;
 
   // Whether the cluster should be shown prominently on UI surfaces.
