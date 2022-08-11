@@ -5005,7 +5005,7 @@
     // TODO(b/172341945): Fix this asap.
     "name": "overscroll-history-navigation",
     "owners": [ "mohsen", "jinsukkim" ],
-    "expiry_milestone": 105
+    "expiry_milestone": 118
   },
   {
     // Suggests the Ozone platform to use (desktop Linux only).  Can be set on
