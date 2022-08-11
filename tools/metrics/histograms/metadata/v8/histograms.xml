@@ -1909,6 +1909,66 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="V8.WasmMaxLazyCompilationTime120SecMilliSeconds" units="ms"
+    expires_after="2023-08-01">
+  <owner>ahaas@chromium.org</owner>
+  <owner>clemensb@chromium.org</owner>
+  <owner>ecmziegler@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
+  <summary>
+    Maximum time spent on the main thread on compiling a single WebAssembly
+    function with lazy compilation in the first 120 seconds after the first
+    instantiation of a WebAssembly module. Recorded 120 seconds after calling
+    the start function of the WebAssembly module during the first instantiation
+    of a WebAssembly module.
+  </summary>
+</histogram>
+
+<histogram name="V8.WasmMaxLazyCompilationTime20SecMilliSeconds" units="ms"
+    expires_after="2023-08-01">
+  <owner>ahaas@chromium.org</owner>
+  <owner>clemensb@chromium.org</owner>
+  <owner>ecmziegler@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
+  <summary>
+    Maximum time spent on the main thread on compiling a single WebAssembly
+    function with lazy compilation in the first 20 seconds after the first
+    instantiation of a WebAssembly module. Recorded 20 seconds after calling the
+    start function of the WebAssembly module during the first instantiation of a
+    WebAssembly module.
+  </summary>
+</histogram>
+
+<histogram name="V8.WasmMaxLazyCompilationTime5SecMilliSeconds" units="ms"
+    expires_after="2023-08-01">
+  <owner>ahaas@chromium.org</owner>
+  <owner>clemensb@chromium.org</owner>
+  <owner>ecmziegler@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
+  <summary>
+    Maximum time spent on the main thread on compiling a single WebAssembly
+    function with lazy compilation in the first 5 seconds after the first
+    instantiation of a WebAssembly module. Recorded 5 seconds after calling the
+    start function of the WebAssembly module during the first instantiation of a
+    WebAssembly module.
+  </summary>
+</histogram>
+
+<histogram name="V8.WasmMaxLazyCompilationTime60SecMilliSeconds" units="ms"
+    expires_after="2023-08-01">
+  <owner>ahaas@chromium.org</owner>
+  <owner>clemensb@chromium.org</owner>
+  <owner>ecmziegler@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
+  <summary>
+    Maximum time spent on the main thread on compiling a single WebAssembly
+    function with lazy compilation in the first 60 seconds after the first
+    instantiation of a WebAssembly module. Recorded 60 seconds after calling the
+    start function of the WebAssembly module during the first instantiation of a
+    WebAssembly module.
+  </summary>
+</histogram>
+
 <histogram name="V8.WasmMaxMemPagesCount" units="pages"
     expires_after="2022-02-15">
   <owner>ecmziegler@chromium.org</owner>
@@ -2069,6 +2129,62 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="V8.WasmNumLazyCompilations120Sec" units="count"
+    expires_after="2023-08-01">
+  <owner>ahaas@chromium.org</owner>
+  <owner>clemensb@chromium.org</owner>
+  <owner>ecmziegler@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
+  <summary>
+    Number of functions that get compiled lazily in 120 seconds after the first
+    instantiation of a WebAssembly module. Recorded 120 seconds after calling
+    the start function of the WebAssembly module during the first instantiation
+    of a WebAssembly module.
+  </summary>
+</histogram>
+
+<histogram name="V8.WasmNumLazyCompilations20Sec" units="count"
+    expires_after="2023-08-01">
+  <owner>ahaas@chromium.org</owner>
+  <owner>clemensb@chromium.org</owner>
+  <owner>ecmziegler@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
+  <summary>
+    Number of functions that get compiled lazily in 20 seconds after the first
+    instantiation of a WebAssembly module. Recorded 20 seconds after calling the
+    start function of the WebAssembly module during the first instantiation of a
+    WebAssembly module.
+  </summary>
+</histogram>
+
+<histogram name="V8.WasmNumLazyCompilations5Sec" units="count"
+    expires_after="2023-08-01">
+  <owner>ahaas@chromium.org</owner>
+  <owner>clemensb@chromium.org</owner>
+  <owner>ecmziegler@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
+  <summary>
+    Number of functions that get compiled lazily in 5 seconds after the first
+    instantiation of a WebAssembly module. Recorded 5 seconds after calling the
+    start function of the WebAssembly module during the first instantiation of a
+    WebAssembly module.
+  </summary>
+</histogram>
+
+<histogram name="V8.WasmNumLazyCompilations60Sec" units="count"
+    expires_after="2023-08-01">
+  <owner>ahaas@chromium.org</owner>
+  <owner>clemensb@chromium.org</owner>
+  <owner>ecmziegler@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
+  <summary>
+    Number of functions that get compiled lazily in 60 seconds after the first
+    instantiation of a WebAssembly module. Recorded 60 seconds after calling the
+    start function of the WebAssembly module during the first instantiation of a
+    WebAssembly module.
+  </summary>
+</histogram>
+
 <histogram name="V8.WasmReThrowCount" units="count" expires_after="2023-08-01">
   <owner>thibaudm@chromium.org</owner>
   <owner>ecmziegler@chromium.org</owner>
@@ -2104,6 +2220,66 @@ chromium-metrics-reviews@google.com.
     download of the WebAssembly module finished before compilation. If
     compilation finishes first, then the histogram
     V8.WasmCompilationUntilStreamFinishedMilliSeconds is recorded.
+  </summary>
+</histogram>
+
+<histogram name="V8.WasmSumLazyCompilationTime120SecMilliSeconds" units="ms"
+    expires_after="2023-08-01">
+  <owner>ahaas@chromium.org</owner>
+  <owner>clemensb@chromium.org</owner>
+  <owner>ecmziegler@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
+  <summary>
+    Total time spent on the main thread on compiling WebAssembly functions with
+    lazy compilation in the first 120 seconds after the first instantiation of a
+    WebAssembly module. Recorded 120 seconds after calling the start function of
+    the WebAssembly module during the first instantiation of a WebAssembly
+    module.
+  </summary>
+</histogram>
+
+<histogram name="V8.WasmSumLazyCompilationTime20SecMilliSeconds" units="ms"
+    expires_after="2023-08-01">
+  <owner>ahaas@chromium.org</owner>
+  <owner>clemensb@chromium.org</owner>
+  <owner>ecmziegler@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
+  <summary>
+    Total time spent on the main thread on compiling WebAssembly functions with
+    lazy compilation in the first 20 seconds after the first instantiation of a
+    WebAssembly module. Recorded 20 seconds after calling the start function of
+    the WebAssembly module during the first instantiation of a WebAssembly
+    module.
+  </summary>
+</histogram>
+
+<histogram name="V8.WasmSumLazyCompilationTime5SecMilliSeconds" units="ms"
+    expires_after="2023-08-01">
+  <owner>ahaas@chromium.org</owner>
+  <owner>clemensb@chromium.org</owner>
+  <owner>ecmziegler@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
+  <summary>
+    Total time spent on the main thread on compiling WebAssembly functions with
+    lazy compilation in the first 5 seconds after the first instantiation of a
+    WebAssembly module. Recorded 5 seconds after calling the start function of
+    the WebAssembly module during the first instantiation of a WebAssembly
+    module.
+  </summary>
+</histogram>
+
+<histogram name="V8.WasmSumLazyCompilationTime60SecMilliSeconds" units="ms"
+    expires_after="2023-08-01">
+  <owner>ahaas@chromium.org</owner>
+  <owner>clemensb@chromium.org</owner>
+  <owner>ecmziegler@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
+  <summary>
+    Total time spent on the main thread on compiling WebAssembly functions with
+    lazy compilation in the first 60 seconds after the first instantiation of a
+    WebAssembly module. Recorded 60 seconds after calling the start function of
+    the WebAssembly module during the first instantiation of a WebAssembly
+    module.
   </summary>
 </histogram>
 
