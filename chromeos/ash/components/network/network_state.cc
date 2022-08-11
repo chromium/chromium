@@ -652,11 +652,15 @@ void NetworkState::UpdateCaptivePortalState(const base::Value& properties) {
   if (connection_state_ == shill::kStateNoConnectivity) {
     shill_portal_state_ = PortalState::kNoInternet;
   } else if (connection_state_ == shill::kStateRedirectFound) {
-    shill_portal_state_ = status_code == net::HTTP_PROXY_AUTHENTICATION_REQUIRED
-                              ? PortalState::kProxyAuthRequired
-                              : PortalState::kPortal;
+    shill_portal_state_ = PortalState::kPortal;
   } else if (connection_state_ == shill::kStatePortalSuspected) {
-    shill_portal_state_ = PortalState::kPortalSuspected;
+    if (status_code == net::HTTP_PROXY_AUTHENTICATION_REQUIRED) {
+      // If Shill's portal detection HTTP probe returns a 407 response, Shill
+      // will treat that as a portal-suspected state.
+      shill_portal_state_ = PortalState::kProxyAuthRequired;
+    } else {
+      shill_portal_state_ = PortalState::kPortalSuspected;
+    }
   } else if (connection_state_ == shill::kStateOnline) {
     shill_portal_state_ = PortalState::kOnline;
   } else {

@@ -900,7 +900,7 @@ TEST_F(CrosNetworkConfigTest, PortalState) {
   EXPECT_EQ(mojom::PortalState::kNoInternet, network->portal_state);
 
   helper()->ConfigureService(
-      R"({"GUID": "wifi1_guid", "Type": "wifi", "State": "redirect-found",
+      R"({"GUID": "wifi1_guid", "Type": "wifi", "State": "portal-suspected",
           "Strength": 90, "AutoConnect": true,
           "PortalDetectionFailedStatusCode": 407})");
   network = GetNetworkState("wifi1_guid");

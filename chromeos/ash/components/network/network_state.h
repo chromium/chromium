@@ -296,6 +296,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   // true if |name_| changes.
   bool UpdateName(const base::Value& properties);
 
+  // Uses the Shill connection state and PortalDetectionFailedStatus to generate
+  // |shill_portal_state_|.
   void UpdateCaptivePortalState(const base::Value& properties);
 
   void SetVpnProvider(const std::string& id, const std::string& type);
