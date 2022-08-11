@@ -789,6 +789,7 @@ public class ChildProcessConnection {
         boolean success;
         boolean usedFallback = sAlwaysFallback && mFallbackServiceName != null;
         if (useStrongBinding) {
+            mStrongBindingCount++;
             success = mStrongBinding.bindServiceConnection();
         } else {
             mModerateBindingCount++;

@@ -147,6 +147,7 @@ android_library("content_full_java") {
     "//build/android:build_java",
     "//components/download/public/common:public_java",
     "//components/payments/mojom:mojom_java",
+    "//content/public/common:common_java",
     "//content/public/common:trust_tokens_mojo_bindings_java",
     "//device/bluetooth:java",
     "//device/gamepad:java",

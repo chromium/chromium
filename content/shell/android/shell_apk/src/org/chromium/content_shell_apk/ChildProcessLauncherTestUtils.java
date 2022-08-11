@@ -59,8 +59,9 @@ public final class ChildProcessLauncherTestUtils {
             @Override
             public ChildProcessLauncherHelperImpl call() {
                 return ChildProcessLauncherHelperImpl.createAndStartForTesting(commandLine,
-                        filesToBeMapped, sandboxed, true /* canUseWarmUpConnection */,
-                        null /* binderCallback */, doSetupConnection);
+                        filesToBeMapped, sandboxed, false /* reducePriorityOnBackground */,
+                        true /* canUseWarmUpConnection */, null /* binderCallback */,
+                        doSetupConnection);
             }
         });
     }

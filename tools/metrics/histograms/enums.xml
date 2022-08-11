@@ -58343,6 +58343,7 @@ from previous Chrome versions.
   <int value="-470247915"
       label="AutofillUpstreamEditableExpirationDate:enabled"/>
   <int value="-468697885" label="ArcInputMethod:enabled"/>
+  <int value="-468657548" label="ReduceGpuPriorityOnBackground:enabled"/>
   <int value="-467792766" label="ReengagementNotification:enabled"/>
   <int value="-466704882" label="webview-log-js-console-messages"/>
   <int value="-466164593"
@@ -61437,6 +61438,7 @@ from previous Chrome versions.
   <int value="1514066770" label="DisplayCutoutAPI:enabled"/>
   <int value="1514119870" label="enable-file-manager-touch-mode"/>
   <int value="1514158607" label="NearbySharingDeviceContacts:enabled"/>
+  <int value="1514951731" label="ReduceGpuPriorityOnBackground:disabled"/>
   <int value="1515196403" label="fast-user-switching"/>
   <int value="1515334367" label="ToolbarMicIphAndroid:disabled"/>
   <int value="1515472077" label="VirtualKeyboardRoundCorners:disabled"/>

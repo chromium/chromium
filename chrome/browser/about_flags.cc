@@ -9067,6 +9067,13 @@ const FeatureEntry kFeatureEntries[] = {
          password_manager::features::kBiometricAuthenticationForFilling)},
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+    {"reduce-gpu-priority-on-background",
+     flag_descriptions::kReduceGpuPriorityOnBackgroundName,
+     flag_descriptions::kReduceGpuPriorityOnBackgroundDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(::features::kReduceGpuPriorityOnBackground)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
