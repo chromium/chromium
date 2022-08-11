@@ -153,7 +153,7 @@ public class InCctTriggeringFromGsaTest {
         waitUntilViewMatchesCondition(withText("TriggerScript"), isDisplayed());
     }
     /**
-     * Tests a simple trigger heuristic that checks URLs for the appearance of https://cowin.gov.in.
+     * Tests a simple trigger heuristic that checks URL for the appearance of cart.
      *
      * {
      *   "intent":"COWIN_VACCINATION",
@@ -164,7 +164,8 @@ public class InCctTriggeringFromGsaTest {
      *       }
      *     }
      *   ],
-     *   "enabledInCustomTabs:true,
+     *   "enabledInCustomTabs":true,
+     *   "enabledForSignedOutUsers":true
      * }
      */
     @Test
