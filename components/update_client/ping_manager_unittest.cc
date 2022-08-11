@@ -184,6 +184,7 @@ TEST_P(PingManagerTest, SendPing) {
     EXPECT_EQ("ap1", app.FindKey("ap")->GetString());
     EXPECT_EQ("BRND", app.FindKey("brand")->GetString());
     EXPECT_EQ("fake_lang", app.FindKey("lang")->GetString());
+    EXPECT_EQ(-1, app.FindKey("installdate")->GetInt());
     EXPECT_EQ("1.0", app.FindKey("version")->GetString());
     EXPECT_EQ("c1", app.FindKey("cohort")->GetString());
     EXPECT_EQ("cn1", app.FindKey("cohortname")->GetString());

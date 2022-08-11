@@ -26,12 +26,16 @@ TEST(PersistedDataTest, Simple) {
   EXPECT_EQ(-2, metadata->GetDaysSinceLastRollCall("someappid"));
   EXPECT_EQ(-2, metadata->GetDaysSinceLastActive("someappid"));
   EXPECT_EQ(-2, metadata->GetDaysSinceLastActive("someappid.withdot"));
+  EXPECT_EQ(-2, metadata->GetInstallDate("someappid"));
+  EXPECT_EQ(-2, metadata->GetInstallDate("someappid.withdot"));
   std::vector<std::string> items;
   items.push_back("someappid");
   items.push_back("someappid.withdot");
   test::SetDateLastData(metadata.get(), items, 3383);
   EXPECT_EQ(3383, metadata->GetDateLastRollCall("someappid"));
   EXPECT_EQ(3383, metadata->GetDateLastRollCall("someappid.withdot"));
+  EXPECT_EQ(3383, metadata->GetInstallDate("someappid"));
+  EXPECT_EQ(3383, metadata->GetInstallDate("someappid.withdot"));
   EXPECT_EQ(-2, metadata->GetDateLastActive("someappid"));
   EXPECT_EQ(-2, metadata->GetDateLastActive("someappid.withdot"));
   EXPECT_EQ(-2, metadata->GetDaysSinceLastRollCall("someappid"));
@@ -44,6 +48,7 @@ TEST(PersistedDataTest, Simple) {
   EXPECT_FALSE(pf1.empty());
   test::SetDateLastData(metadata.get(), items, 3386);
   EXPECT_EQ(3386, metadata->GetDateLastRollCall("someappid"));
+  EXPECT_EQ(3383, metadata->GetInstallDate("someappid"));
   EXPECT_EQ(-2, metadata->GetDateLastActive("someappid"));
   EXPECT_EQ(-2, metadata->GetDaysSinceLastRollCall("someappid"));
   EXPECT_EQ(-2, metadata->GetDaysSinceLastActive("someappid"));
@@ -51,6 +56,8 @@ TEST(PersistedDataTest, Simple) {
   EXPECT_EQ(-2, metadata->GetDateLastActive("someotherappid"));
   EXPECT_EQ(-2, metadata->GetDaysSinceLastRollCall("someotherappid"));
   EXPECT_EQ(-2, metadata->GetDaysSinceLastActive("someotherappid"));
+  EXPECT_EQ(-2, metadata->GetInstallDate("someotherappid"));
+
   const std::string pf2 = metadata->GetPingFreshness("someappid");
   EXPECT_FALSE(pf2.empty());
   // The following has a 1 / 2^128 chance of being flaky.
@@ -75,6 +82,7 @@ TEST(PersistedDataTest, SharedPref) {
   EXPECT_EQ(-2, metadata->GetDateLastActive("someappid"));
   EXPECT_EQ(-2, metadata->GetDaysSinceLastRollCall("someappid"));
   EXPECT_EQ(-2, metadata->GetDaysSinceLastActive("someappid"));
+  EXPECT_EQ(-2, metadata->GetInstallDate("someappid"));
   std::vector<std::string> items;
   items.push_back("someappid");
   test::SetDateLastData(metadata.get(), items, 3383);
@@ -86,10 +94,12 @@ TEST(PersistedDataTest, SharedPref) {
   EXPECT_EQ(-2, metadata->GetDateLastActive("someappid"));
   EXPECT_EQ(-2, metadata->GetDaysSinceLastRollCall("someappid"));
   EXPECT_EQ(-2, metadata->GetDaysSinceLastActive("someappid"));
+  EXPECT_EQ(3383, metadata->GetInstallDate("someappid"));
   EXPECT_EQ(-2, metadata->GetDateLastRollCall("someotherappid"));
   EXPECT_EQ(-2, metadata->GetDateLastActive("someotherappid"));
   EXPECT_EQ(-2, metadata->GetDaysSinceLastRollCall("someotherappid"));
   EXPECT_EQ(-2, metadata->GetDaysSinceLastActive("someotherappid"));
+  EXPECT_EQ(-2, metadata->GetInstallDate("someotherappid"));
 }
 
 TEST(PersistedDataTest, SimpleCohort) {
@@ -144,6 +154,7 @@ TEST(PersistedDataTest, ActivityData) {
     EXPECT_EQ(-2, metadata->GetDateLastRollCall(item));
     EXPECT_EQ(-2, metadata->GetDaysSinceLastActive(item));
     EXPECT_EQ(-2, metadata->GetDaysSinceLastRollCall(item));
+    EXPECT_EQ(-2, metadata->GetInstallDate(item));
     EXPECT_EQ(false, test::GetActiveBit(metadata.get(), item));
   }
 
@@ -152,6 +163,7 @@ TEST(PersistedDataTest, ActivityData) {
     EXPECT_EQ(false, test::GetActiveBit(metadata.get(), item));
     EXPECT_EQ(-2, metadata->GetDateLastActive(item));
     EXPECT_EQ(1234, metadata->GetDateLastRollCall(item));
+    EXPECT_EQ(1234, metadata->GetInstallDate(item));
     EXPECT_EQ(-2, metadata->GetDaysSinceLastActive(item));
     EXPECT_EQ(-2, metadata->GetDaysSinceLastRollCall(item));
   }
@@ -189,6 +201,9 @@ TEST(PersistedDataTest, ActivityData) {
   EXPECT_EQ(6789, metadata->GetDateLastRollCall("id1"));
   EXPECT_EQ(6789, metadata->GetDateLastRollCall("id2"));
   EXPECT_EQ(6789, metadata->GetDateLastRollCall("id3"));
+  EXPECT_EQ(1234, metadata->GetInstallDate("id1"));
+  EXPECT_EQ(1234, metadata->GetInstallDate("id2"));
+  EXPECT_EQ(1234, metadata->GetInstallDate("id3"));
 }
 
 }  // namespace update_client

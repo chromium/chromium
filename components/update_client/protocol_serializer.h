@@ -52,6 +52,7 @@ protocol_request::App MakeProtocolApp(
     const std::string& ap,
     const std::string& brand_code,
     const std::string& lang,
+    int install_date,
     const std::string& install_source,
     const std::string& install_location,
     const std::string& fingerprint,

@@ -23,6 +23,7 @@
 #include "base/threading/thread_checker.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "components/update_client/activity_data_service.h"
 #include "components/update_client/component.h"
 #include "components/update_client/configurator.h"
 #include "components/update_client/persisted_data.h"
@@ -187,11 +188,11 @@ void UpdateCheckerImpl::CheckForUpdatesHelper(
 
     apps.push_back(MakeProtocolApp(
         app_id, crx_component->version, crx_component->ap, crx_component->brand,
-        config_->GetLang(), install_source, crx_component->install_location,
-        crx_component->fingerprint, crx_component->installer_attributes,
-        metadata_->GetCohort(app_id), metadata_->GetCohortName(app_id),
-        metadata_->GetCohortHint(app_id), crx_component->channel,
-        crx_component->disabled_reasons,
+        config_->GetLang(), metadata_->GetInstallDate(app_id), install_source,
+        crx_component->install_location, crx_component->fingerprint,
+        crx_component->installer_attributes, metadata_->GetCohort(app_id),
+        metadata_->GetCohortName(app_id), metadata_->GetCohortHint(app_id),
+        crx_component->channel, crx_component->disabled_reasons,
         MakeProtocolUpdateCheck(!crx_component->updates_enabled,
                                 crx_component->target_version_prefix,
                                 crx_component->rollback_allowed,

@@ -82,6 +82,10 @@ std::string PersistedData::GetPingFreshness(const std::string& id) const {
   return !result.empty() ? base::StringPrintf("{%s}", result.c_str()) : result;
 }
 
+int PersistedData::GetInstallDate(const std::string& id) const {
+  return GetInt(id, "installdate", kDateUnknown);
+}
+
 std::string PersistedData::GetCohort(const std::string& id) const {
   return GetString(id, "cohort");
 }
@@ -101,8 +105,10 @@ base::Value* PersistedData::GetOrCreateAppKey(const std::string& id,
   if (!apps)
     apps = root->SetKey("apps", base::Value(base::Value::Type::DICTIONARY));
   base::Value* app = apps->FindDictKey(id);
-  if (!app)
+  if (!app) {
     app = apps->SetKey(id, base::Value(base::Value::Type::DICTIONARY));
+    app->SetIntKey("installdate", kDateFirstTime);
+  }
   return app;
 }
 
@@ -117,6 +123,8 @@ void PersistedData::SetDateLastDataHelper(
     base::Value* app_key = GetOrCreateAppKey(id, update.Get());
     app_key->SetIntKey("dlrc", datenum);
     app_key->SetStringKey("pf", base::GenerateGUID());
+    if (GetInstallDate(id) == kDateFirstTime)
+      app_key->SetIntKey("installdate", datenum);
     if (active_ids.find(id) != active_ids.end()) {
       app_key->SetIntKey("dla", datenum);
     }

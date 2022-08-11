@@ -12,6 +12,7 @@
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "components/update_client/activity_data_service.h"
 
 namespace update_client {
 
@@ -102,6 +103,8 @@ std::string ProtocolSerializerJSON::Serialize(
       app_node.Set("brand", app.brand_code);
     if (!app.lang.empty())
       app_node.Set("lang", app.lang);
+    if (app.install_date != kDateUnknown)
+      app_node.Set("installdate", app.install_date);
     if (!app.install_source.empty())
       app_node.Set("installsource", app.install_source);
     if (!app.install_location.empty())
