@@ -80,9 +80,6 @@ class PLATFORM_EXPORT Color {
   // The default constructor creates a transparent color.
   constexpr Color() : color_(0) {}
 
-  // TODO(crbug.com/1351544): Make this constructor explicit and private.
-  constexpr Color(RGBA32 color) : color_(color) {}
-
   // TODO(crbug.com/1351544): Replace these constructors with explicit From
   // functions below. Replace the CreateUnchecked functions with FromRGB and
   // FromRGBA.
@@ -191,6 +188,7 @@ class PLATFORM_EXPORT Color {
   static const Color kTransparent;
 
  private:
+  constexpr explicit Color(RGBA32 color) : color_(color) {}
   static constexpr int ClampInt(int x) {
     return x < 0 ? 0 : (x > 255 ? 255 : x);
   }

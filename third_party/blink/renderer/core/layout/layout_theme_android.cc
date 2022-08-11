@@ -23,7 +23,7 @@ LayoutThemeAndroid::~LayoutThemeAndroid() {}
 Color LayoutThemeAndroid::PlatformActiveSelectionBackgroundColor(
     mojom::blink::ColorScheme color_scheme) const {
   return color_scheme == mojom::blink::ColorScheme::kDark
-             ? 0xFF99C8FF
+             ? Color::FromRGBA32(0xFF99C8FF)
              : LayoutThemeMobile::PlatformActiveSelectionBackgroundColor(
                    color_scheme);
 }
@@ -31,7 +31,7 @@ Color LayoutThemeAndroid::PlatformActiveSelectionBackgroundColor(
 Color LayoutThemeAndroid::PlatformActiveSelectionForegroundColor(
     mojom::blink::ColorScheme color_scheme) const {
   return color_scheme == mojom::blink::ColorScheme::kDark
-             ? 0xFF3B3B3B
+             ? Color::FromRGBA32(0xFF3B3B3B)
              : LayoutThemeMobile::PlatformActiveSelectionForegroundColor(
                    color_scheme);
 }
