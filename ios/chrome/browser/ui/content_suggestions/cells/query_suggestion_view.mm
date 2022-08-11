@@ -59,6 +59,7 @@ const CGFloat kQueryImageToLabelHorizontalSpacing = 9.5f;
       _config = config;
       queryLabel.text = config.query;
       self.accessibilityLabel = config.query;
+      self.accessibilityTraits |= UIAccessibilityTraitLink;
       self.isAccessibilityElement = YES;
     }
 
