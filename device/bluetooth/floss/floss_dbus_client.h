@@ -169,19 +169,41 @@ class WeaklyOwnedCallback {
 
 // Restrict all access to DBus client initialization to FlossDBusManager so we
 // can enforce the proper ordering of initialization and shutdowns.
-class FlossDBusClient {
+class DEVICE_BLUETOOTH_EXPORT FlossDBusClient {
  public:
+  // Adopted from bt_status_t in system/include/hardware/bluetooth.h
+  enum class BtifStatus : uint32_t {
+    kSuccess = 0,
+    kFail,
+    kNotReady,
+    kNomem,
+    kBusy,
+    kDone,
+    kUnsupported,
+    kParmInvalid,
+    kUnhandled,
+    kAuthFailure,
+    kRmtDevDown,
+    kAuthRejected,
+    kJniEnvironmentError,
+    kJniThreadAttachError,
+    kWakelockError,
+  };
+
   // Error: DBus error.
-  static const char DEVICE_BLUETOOTH_EXPORT kErrorDBus[];
+  static const char kErrorDBus[];
 
   // Error: No response from bus.
-  static const char DEVICE_BLUETOOTH_EXPORT kErrorNoResponse[];
+  static const char kErrorNoResponse[];
 
   // Error: Invalid parameters.
-  static const char DEVICE_BLUETOOTH_EXPORT kErrorInvalidParameters[];
+  static const char kErrorInvalidParameters[];
 
   // Error: Invalid return.
-  static const char DEVICE_BLUETOOTH_EXPORT kErrorInvalidReturn[];
+  static const char kErrorInvalidReturn[];
+
+  // Property key for absl::Optional dbus serialization.
+  static const char kOptionalValueKey[];
 
   // Error: does not exist.
   static const char DEVICE_BLUETOOTH_EXPORT kErrorDoesNotExist[];
@@ -189,47 +211,125 @@ class FlossDBusClient {
   // Generalized DBus serialization (used for generalized method call
   // invocation).
   template <typename T>
-  static void DEVICE_BLUETOOTH_EXPORT
-  WriteDBusParam(dbus::MessageWriter* writer, const T& data);
+  static void WriteDBusParam(dbus::MessageWriter* writer, const T& data);
+
+  // Generalized writer for container types using variants (i.e. a{sv}).
+  template <typename T>
+  static void WriteDBusParamIntoVariant(dbus::MessageWriter* writer,
+                                        const T& data);
+
+  // Optional container type needs to be explicitly listed here.
+  template <typename T>
+  static void WriteDBusParam(dbus::MessageWriter* writer,
+                             const absl::optional<T>& data) {
+    dbus::MessageWriter array(nullptr);
+    dbus::MessageWriter dict(nullptr);
+
+    writer->OpenArray("{sv}", &array);
+
+    // Only serialize optional value if it exists.
+    if (data) {
+      array.OpenDictEntry(&dict);
+      dict.AppendString(kOptionalValueKey);
+      WriteDBusParamIntoVariant<T>(&dict, *data);
+      array.CloseContainer(&dict);
+    }
+    writer->CloseContainer(&array);
+  }
+
+  template <typename T>
+  static void WriteDBusParamIntoVariant(dbus::MessageWriter* writer,
+                                        const absl::optional<T>& data) {
+    dbus::MessageWriter variant(nullptr);
+    writer->OpenVariant("a{sv}", &variant);
+    WriteDBusParam(&variant, data);
+    writer->CloseContainer(&variant);
+  }
 
   // Base case for variadic write.
-  static void DEVICE_BLUETOOTH_EXPORT
-  WriteAllDBusParams(dbus::MessageWriter* writer) {}
+  static void WriteAllDBusParams(dbus::MessageWriter* writer) {}
 
   // Variadic write method that expands to multiple WriteDBusParam calls.
   template <typename T, typename... Args>
-  static void DEVICE_BLUETOOTH_EXPORT
-  WriteAllDBusParams(dbus::MessageWriter* writer,
-                     const T& first,
-                     const Args&... args) {
+  static void WriteAllDBusParams(dbus::MessageWriter* writer,
+                                 const T& first,
+                                 const Args&... args) {
     WriteDBusParam(writer, first);
     WriteAllDBusParams(writer, args...);
+  }
+
+  template <typename T>
+  static void WriteDictEntry(dbus::MessageWriter* writer,
+                             const std::string& key,
+                             const T& value) {
+    dbus::MessageWriter dict(nullptr);
+
+    writer->OpenDictEntry(&dict);
+    dict.AppendString(key);
+    WriteDBusParamIntoVariant(&dict, value);
+    writer->CloseContainer(&dict);
   }
 
   // Generalized DBus deserialization (used for generalized method call returns
   // and can be used for exported methods as well). Implement for each type that
   // you want deserialized.
   template <typename T>
-  static bool DEVICE_BLUETOOTH_EXPORT ReadDBusParam(dbus::MessageReader* reader,
-                                                    T* value);
+  static bool ReadDBusParam(dbus::MessageReader* reader, T* value);
+
+  // Generalized reader for container types using variants (i.e. a{sv}).
+  template <typename T>
+  static bool ReadDBusParamFromVariant(dbus::MessageReader* reader, T* value) {
+    dbus::MessageReader variant_reader(nullptr);
+    if (!reader->PopVariant(&variant_reader)) {
+      return false;
+    }
+
+    return ReadDBusParam(&variant_reader, value);
+  }
 
   // Container type needs to be explicitly listed here.
   template <typename T>
-  static bool DEVICE_BLUETOOTH_EXPORT ReadDBusParam(dbus::MessageReader* reader,
-                                                    std::vector<T>* value);
+  static bool ReadDBusParam(dbus::MessageReader* reader, std::vector<T>* value);
 
-  // Base case for variadic read.
-  static bool DEVICE_BLUETOOTH_EXPORT
-  ReadAllDBusParams(dbus::MessageReader* reader) {
+  // Optional container type needs to be explicitly implemented here.
+  template <typename T>
+  static bool ReadDBusParam(dbus::MessageReader* reader,
+                            absl::optional<T>* value) {
+    dbus::MessageReader array(nullptr);
+    dbus::MessageReader dict(nullptr);
+
+    T inner;
+
+    if (!reader->PopArray(&array)) {
+      return false;
+    }
+
+    while (array.PopDictEntry(&dict)) {
+      std::string key;
+      dict.PopString(&key);
+
+      if (key == kOptionalValueKey) {
+        if (!ReadDBusParamFromVariant<T>(&dict, &inner)) {
+          return false;
+        }
+
+        *value = std::move(absl::optional<T>(std::move(inner)));
+      }
+    }
+
     return true;
   }
+
+  // Base case for variadic read.
+  static bool ReadAllDBusParams(dbus::MessageReader* reader) { return true; }
 
   // Variadic read method that expands to multiple ReadDBusParam calls.
   // Individual calls to |ReadDBusParam| must succeed before the next call is
   // done.
   template <typename T, typename... Args>
-  static bool DEVICE_BLUETOOTH_EXPORT
-  ReadAllDBusParams(dbus::MessageReader* reader, T* first, Args*... args) {
+  static bool ReadAllDBusParams(dbus::MessageReader* reader,
+                                T* first,
+                                Args*... args) {
     return ReadDBusParam(reader, first) && ReadAllDBusParams(reader, args...);
   }
 
@@ -293,10 +393,27 @@ class FlossDBusClient {
   // Default handler that runs |callback| with the callback with an optional
   // return and optional error.
   template <typename T>
-  void DEVICE_BLUETOOTH_EXPORT
-  DefaultResponseWithCallback(ResponseCallback<T> callback,
-                              dbus::Response* response,
-                              dbus::ErrorResponse* error_response);
+  void DefaultResponseWithCallback(ResponseCallback<T> callback,
+                                   dbus::Response* response,
+                                   dbus::ErrorResponse* error_response) {
+    if (response) {
+      T ret;
+      dbus::MessageReader reader(response);
+
+      if (!FlossDBusClient::ReadAllDBusParams<T>(&reader, &ret)) {
+        LOG(ERROR) << "Failed reading return from response";
+        std::move(callback).Run(
+            base::unexpected(Error(kErrorInvalidReturn, "")));
+        return;
+      }
+
+      std::move(callback).Run(ret);
+      return;
+    }
+
+    std::move(callback).Run(base::unexpected(ErrorResponseToError(
+        kErrorNoResponse, /*default_message=*/std::string(), error_response)));
+  }
 
   // Default handler for a response. It will either log the error response or
   // print |caller| to VLOG. |caller| should be the name of the DBus method that

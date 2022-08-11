@@ -120,6 +120,7 @@ const char FlossDBusClient::kErrorInvalidReturn[] =
     "org.chromium.Error.InvalidReturn";
 const char FlossDBusClient::kErrorDoesNotExist[] =
     "org.chromium.Error.DoesNotExist";
+const char FlossDBusClient::kOptionalValueKey[] = "optional_value";
 
 // Default error handler for dbus clients is to just print the error right now.
 // TODO(abps) - Deprecate this once error handling is implemented in the upper
@@ -153,41 +154,11 @@ Error FlossDBusClient::ErrorResponseToError(const std::string& default_name,
   return result;
 }
 
+// static
+// No-op read for a void value.
 template <>
-void FlossDBusClient::DefaultResponseWithCallback<Void>(
-    ResponseCallback<Void> callback,
-    dbus::Response* response,
-    dbus::ErrorResponse* error_response) {
-  if (response) {
-    std::move(callback).Run(Void{});
-    return;
-  }
-
-  std::move(callback).Run(base::unexpected(ErrorResponseToError(
-      kErrorNoResponse, /*default_message=*/std::string(), error_response)));
-}
-
-template <typename T>
-void FlossDBusClient::DefaultResponseWithCallback(
-    ResponseCallback<T> callback,
-    dbus::Response* response,
-    dbus::ErrorResponse* error_response) {
-  if (response) {
-    T ret;
-    dbus::MessageReader reader(response);
-
-    if (!FlossDBusClient::ReadAllDBusParams<T>(&reader, &ret)) {
-      LOG(ERROR) << "Failed reading return from response";
-      std::move(callback).Run(base::unexpected(Error(kErrorInvalidReturn, "")));
-      return;
-    }
-
-    std::move(callback).Run(ret);
-    return;
-  }
-
-  std::move(callback).Run(base::unexpected(ErrorResponseToError(
-      kErrorNoResponse, /*default_message=*/std::string(), error_response)));
+bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader, Void* value) {
+  return true;
 }
 
 // static
@@ -213,9 +184,33 @@ bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
 // static
 template <>
 bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
+                                    uint64_t* value) {
+  return reader->PopUint64(value);
+}
+
+// static
+template <>
+bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
+                                    int32_t* value) {
+  return reader->PopInt32(value);
+}
+
+// static
+template bool FlossDBusClient::ReadDBusParam<int32_t>(
+    dbus::MessageReader* reader,
+    absl::optional<int32_t>* value);
+
+// static
+template <>
+bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
                                     std::string* value) {
   return reader->PopString(value);
 }
+
+// static
+template bool FlossDBusClient::ReadDBusParam<std::string>(
+    dbus::MessageReader* reader,
+    absl::optional<std::string>* value);
 
 // static
 template <>
@@ -254,6 +249,37 @@ bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
 
   return false;
 }
+
+// static
+template bool FlossDBusClient::ReadDBusParam<device::BluetoothUUID>(
+    dbus::MessageReader* reader,
+    absl::optional<device::BluetoothUUID>* uuid);
+
+// static
+template <>
+bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
+                                    FlossDBusClient::BtifStatus* status) {
+  uint32_t raw_type = 0;
+  bool read = FlossDBusClient::ReadDBusParam(reader, &raw_type);
+
+  if (read) {
+    *status = static_cast<FlossDBusClient::BtifStatus>(raw_type);
+  }
+
+  return read;
+}
+
+// static
+template <>
+bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
+                                    base::ScopedFD* fd) {
+  return reader->PopFileDescriptor(fd);
+}
+
+// static
+template bool FlossDBusClient::ReadDBusParam<base::ScopedFD>(
+    dbus::MessageReader* reader,
+    absl::optional<base::ScopedFD>* fd);
 
 // static
 // Specialization for vector of anything.
@@ -322,19 +348,32 @@ void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
 
   writer->OpenArray("{sv}", &array);
 
-  // Serialize name
-  array.OpenDictEntry(&dict);
-  dict.AppendString(kDeviceIdNameKey);
-  dict.AppendVariantOfString(device.name);
-  array.CloseContainer(&dict);
-
-  // Serialize address
-  array.OpenDictEntry(&dict);
-  dict.AppendString(kDeviceIdAddressKey);
-  dict.AppendVariantOfString(device.address);
-  array.CloseContainer(&dict);
+  WriteDictEntry(&array, kDeviceIdNameKey, device.name);
+  WriteDictEntry(&array, kDeviceIdAddressKey, device.address);
 
   writer->CloseContainer(&array);
+}
+
+template <>
+void FlossDBusClient::WriteDBusParamIntoVariant(dbus::MessageWriter* writer,
+                                                const FlossDeviceId& device) {
+  dbus::MessageWriter variant(nullptr);
+
+  writer->OpenVariant("a{sv}", &variant);
+  WriteDBusParam(&variant, device);
+  writer->CloseContainer(&variant);
+}
+
+template <>
+void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
+                                     const uint64_t& data) {
+  writer->AppendUint64(data);
+}
+
+template <>
+void FlossDBusClient::WriteDBusParamIntoVariant(dbus::MessageWriter* writer,
+                                                const uint64_t& data) {
+  writer->AppendVariantOfUint64(data);
 }
 
 template <>
@@ -344,9 +383,37 @@ void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
 }
 
 template <>
+void FlossDBusClient::WriteDBusParamIntoVariant(dbus::MessageWriter* writer,
+                                                const uint32_t& data) {
+  writer->AppendVariantOfUint32(data);
+}
+
+template void FlossDBusClient::WriteDBusParam<uint32_t>(
+    dbus::MessageWriter* writer,
+    const absl::optional<uint32_t>& data);
+
+template <>
+void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
+                                     const int32_t& data) {
+  writer->AppendInt32(data);
+}
+
+template <>
+void FlossDBusClient::WriteDBusParamIntoVariant(dbus::MessageWriter* writer,
+                                                const int32_t& data) {
+  writer->AppendVariantOfInt32(data);
+}
+
+template <>
 void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
                                      const std::string& data) {
   writer->AppendString(data);
+}
+
+template <>
+void FlossDBusClient::WriteDBusParamIntoVariant(dbus::MessageWriter* writer,
+                                                const std::string& data) {
+  writer->AppendVariantOfString(data);
 }
 
 template <>
@@ -359,6 +426,46 @@ template <>
 void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
                                      const std::vector<uint8_t>& data) {
   writer->AppendArrayOfBytes(data.data(), data.size());
+}
+
+template <>
+void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
+                                     const device::BluetoothUUID& uuid) {
+  WriteDBusParam(writer, uuid.GetBytes());
+}
+
+template <>
+void FlossDBusClient::WriteDBusParamIntoVariant(
+    dbus::MessageWriter* writer,
+    const device::BluetoothUUID& uuid) {
+  dbus::MessageWriter variant(nullptr);
+  writer->OpenVariant("ay", &variant);
+  WriteDBusParam(&variant, uuid);
+  writer->CloseContainer(&variant);
+}
+
+template <>
+void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
+                                     const base::ScopedFD& fd) {
+  writer->AppendFileDescriptor(fd.get());
+}
+
+template <>
+void FlossDBusClient::WriteDBusParamIntoVariant(dbus::MessageWriter* writer,
+                                                const base::ScopedFD& fd) {
+  dbus::MessageWriter variant(nullptr);
+
+  writer->OpenVariant("h", &variant);
+  variant.AppendFileDescriptor(fd.get());
+  writer->CloseContainer(&variant);
+}
+
+template <>
+void FlossDBusClient::WriteDBusParam(
+    dbus::MessageWriter* writer,
+    const FlossDBusClient::BtifStatus& status) {
+  uint32_t raw_type = static_cast<uint32_t>(status);
+  WriteDBusParam(writer, raw_type);
 }
 
 template void FlossDBusClient::DefaultResponseWithCallback(
@@ -393,6 +500,11 @@ template void FlossDBusClient::DefaultResponseWithCallback(
 
 template void FlossDBusClient::DefaultResponseWithCallback(
     ResponseCallback<device::BluetoothDevice::UUIDList> callback,
+    dbus::Response* response,
+    dbus::ErrorResponse* error_response);
+
+template void FlossDBusClient::DefaultResponseWithCallback(
+    ResponseCallback<FlossDBusClient::BtifStatus> callback,
     dbus::Response* response,
     dbus::ErrorResponse* error_response);
 
