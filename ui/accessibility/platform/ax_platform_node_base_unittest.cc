@@ -516,4 +516,73 @@ TEST_F(AXPlatformNodeTest, CompareTo) {
     }
   }
 }
+
+TEST_F(AXPlatformNodeTest, HypertextOffsetFromEndpoint) {
+  // <p>
+  //   <a href="google.com">link</a>
+  // </p>
+  //
+  // kRootWebArea
+  // ++kParagraph
+  // ++++kLink
+  // ++++++kStaticText "link"
+  // ++++++kStaticText "link#2"
+  AXTree* tree =
+      Init({Role::kRootWebArea,
+            {{Role::kParagraph, {{Role::kLink, {{"link"}, {"link#2"}}}}}}});
+  auto* root = static_cast<AXPlatformNodeBase*>(
+      TestAXNodeWrapper::GetOrCreate(tree, tree->root())->ax_platform_node());
+
+  // Set an AXMode on the AXPlatformNode as some platforms (auralinux) use it to
+  // determine if it should enable accessibility.
+  ui::testing::ScopedAxModeSetter ax_mode_setter(kAXModeComplete);
+
+  auto* paragraph = static_cast<AXPlatformNodeBase*>(
+      AXPlatformNode::FromNativeViewAccessible(root->ChildAtIndex(0)));
+
+  auto* link = static_cast<AXPlatformNodeBase*>(
+      AXPlatformNode::FromNativeViewAccessible(paragraph->ChildAtIndex(0)));
+
+  auto* static_text = static_cast<AXPlatformNodeBase*>(
+      AXPlatformNode::FromNativeViewAccessible(link->ChildAtIndex(0)));
+
+  auto* static_text2 = static_cast<AXPlatformNodeBase*>(
+      AXPlatformNode::FromNativeViewAccessible(link->ChildAtIndex(1)));
+
+  // End point is a parent, points before/after the link.
+  {
+    EXPECT_EQ(link->GetHypertextOffsetFromEndpoint(paragraph, 0), 0);
+    EXPECT_EQ(link->GetHypertextOffsetFromEndpoint(paragraph, 1), 10);
+  }
+
+  // End point is a parent, points before/after the static texts.
+  {
+    EXPECT_EQ(static_text->GetHypertextOffsetFromEndpoint(link, 0), 0);
+    EXPECT_EQ(static_text->GetHypertextOffsetFromEndpoint(link, 1), 4);
+    EXPECT_EQ(static_text->GetHypertextOffsetFromEndpoint(link, 2), 4);
+
+    EXPECT_EQ(static_text2->GetHypertextOffsetFromEndpoint(link, 0), 0);
+    EXPECT_EQ(static_text2->GetHypertextOffsetFromEndpoint(link, 1), 0);
+    EXPECT_EQ(static_text2->GetHypertextOffsetFromEndpoint(link, 2), 6);
+  }
+
+  // End point is a grand parent, points before/after the static text.
+  {
+    EXPECT_EQ(static_text->GetHypertextOffsetFromEndpoint(paragraph, 0), 0);
+    EXPECT_EQ(static_text->GetHypertextOffsetFromEndpoint(paragraph, 1), 4);
+  }
+
+  // End point is |this|, points into |this| text leaf object.
+  {
+    EXPECT_EQ(static_text->GetHypertextOffsetFromEndpoint(static_text, 0), 0);
+    EXPECT_EQ(static_text->GetHypertextOffsetFromEndpoint(static_text, 4), 4);
+  }
+
+  // End point is |this|, points into |this| hypertext object.
+  {
+    EXPECT_EQ(link->GetHypertextOffsetFromEndpoint(link, 0), 0);
+    EXPECT_EQ(link->GetHypertextOffsetFromEndpoint(link, 1), 4);
+  }
+}
+
 }  // namespace ui
