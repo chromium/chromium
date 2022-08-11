@@ -112,6 +112,10 @@ public abstract class SyncConsentFragmentBase
     // success. Instead, this member should be set to false to give the user a chance of clicking
     // "No, thanks".
     private boolean mIsSigninInProgress;
+    // Set to true when the fragment is launched for add account flow. The value is only checked in
+    // tangible sync flow where the activity would otherwise be terminated if selected account is
+    // not provided.
+    private boolean mIsAccountAdditionInProgress;
     private boolean mCanUseGooglePlayServices;
     private boolean mRecordUndoSignin;
     private boolean mIsSignedInWithoutSync;
@@ -270,8 +274,11 @@ public abstract class SyncConsentFragmentBase
             // If this fragment is being recreated from a saved state there's no need to show
             // account picked or starting AddAccount flow.
             if (signinFlowType == SigninFlowType.CHOOSE_ACCOUNT) {
-                mAccountPickerDialogCoordinator = new AccountPickerDialogCoordinator(
-                        requireContext(), this, mModalDialogManager);
+                // Only show the account picker for the old signin view.
+                if (!showTangibleSyncConsentView()) {
+                    mAccountPickerDialogCoordinator = new AccountPickerDialogCoordinator(
+                            requireContext(), this, mModalDialogManager);
+                }
             } else if (signinFlowType == SigninFlowType.ADD_ACCOUNT) {
                 addAccount();
             }
@@ -652,6 +659,7 @@ public abstract class SyncConsentFragmentBase
 
     @Override
     public void addAccount() {
+        mIsAccountAdditionInProgress = true;
         mAccountManagerFacade.createAddAccountIntent((@Nullable Intent intent) -> {
             if (intent != null) {
                 startActivityForResult(intent, ADD_ACCOUNT_REQUEST_CODE);
@@ -660,23 +668,36 @@ public abstract class SyncConsentFragmentBase
 
             // AccountManagerFacade couldn't create intent, use SigninUtils to open settings
             // instead.
+            // TODO(https://crbug.com/1351315): Add histogram to check if this flow is triggered
+            // in user devices.
             SigninUtils.openSettingsForAllAccounts(getActivity());
+            mIsAccountAdditionInProgress = false;
+            if (showTangibleSyncConsentView()) {
+                // For tangible sync flow this fragment should not be shown in the absence of a
+                // selected account when add account intent can't be created.
+                getActivity().finish();
+            }
         });
+        // mAccountPickerDialogCoordinator could be null here as this method may be called without
+        // showing the account picker.
+        if (mAccountPickerDialogCoordinator != null) {
+            mAccountPickerDialogCoordinator.dismissDialog();
+        }
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == ADD_ACCOUNT_REQUEST_CODE && resultCode == Activity.RESULT_OK
-                && data != null) {
-            String addedAccountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
-            if (addedAccountName == null) return;
-
-            // Found the account name, dismiss the dialog if it is shown
-            if (mAccountPickerDialogCoordinator != null) {
-                mAccountPickerDialogCoordinator.dismissDialog();
+        if (requestCode == ADD_ACCOUNT_REQUEST_CODE) {
+            if (resultCode == Activity.RESULT_OK && data != null) {
+                String addedAccountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
+                if (addedAccountName != null) {
+                    mSelectedAccountName = addedAccountName;
+                }
             }
-
-            mSelectedAccountName = addedAccountName;
+            if (showTangibleSyncConsentView()) {
+                mIsAccountAdditionInProgress = false;
+                mAccountManagerFacade.getAccounts().then(this::updateAccounts);
+            }
         }
     }
 
@@ -708,10 +729,18 @@ public abstract class SyncConsentFragmentBase
             return;
         }
         if (mSyncConsentView != null) {
+            if (mIsAccountAdditionInProgress) {
+                // Wait for the account addition to finish.
+                return;
+            }
             final boolean selectedAccountExists = mSelectedAccountName != null
                     && AccountUtils.findAccountByName(accounts, mSelectedAccountName) != null;
-            if (!selectedAccountExists) {
-                getActivity().finish();
+            if (selectedAccountExists) {
+                selectAccount(mSelectedAccountName);
+            } else {
+                // Tangible sync consent view can't be shown without a selected account. Treat
+                // removal of selected account in the background as a sync refused event;
+                onSyncRefused();
             }
             return;
         }

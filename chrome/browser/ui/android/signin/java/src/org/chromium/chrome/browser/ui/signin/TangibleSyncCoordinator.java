@@ -50,17 +50,17 @@ public final class TangibleSyncCoordinator implements AccountPickerCoordinator.L
     /** Implements {@link AccountPickerCoordinator.Listener}. */
     @Override
     public void onAccountSelected(String accountName) {
-        mSyncConsentActivityLauncher.launchActivityForPromoDefaultFlow(
+        mSyncConsentActivityLauncher.launchActivityForPromoChooseAccountFlow(
                 mContext, mAccessPoint, accountName);
         mAccountPickerDialogCoordinator.dismissDialog();
     }
 
     /**
      * Implements {@link AccountPickerCoordinator.Listener}.
-     * TODO(crbug/1322421): Implement add account flow for tangible sync.
      */
     @Override
     public void addAccount() {
+        mSyncConsentActivityLauncher.launchActivityForPromoAddAccountFlow(mContext, mAccessPoint);
         mAccountPickerDialogCoordinator.dismissDialog();
     }
 }

@@ -214,6 +214,7 @@ android_library("unit_device_javatests") {
     "java/src/org/chromium/chrome/browser/ui/signin/ConfirmSyncDataStateMachineDelegateTest.java",
     "java/src/org/chromium/chrome/browser/ui/signin/SignOutDialogRenderTest.java",
     "java/src/org/chromium/chrome/browser/ui/signin/SignOutDialogTest.java",
+    "java/src/org/chromium/chrome/browser/ui/signin/TangibleSyncCoordinatorTest.java",
     "java/src/org/chromium/chrome/browser/ui/signin/account_picker/AccountPickerDialogTest.java",
     "java/src/org/chromium/chrome/browser/ui/signin/fre/FreUMADialogTest.java",
   ]

@@ -108,6 +108,7 @@ import java.util.HashSet;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "show-autofill-signatures"})
+@DisableFeatures(ChromeFeatureList.TANGIBLE_SYNC)
 public class MainSettingsFragmentTest {
     private static final String SEARCH_ENGINE_SHORT_NAME = "Google";
 
@@ -328,7 +329,6 @@ public class MainSettingsFragmentTest {
 
     @Test
     @SmallTest
-    @DisableFeatures(ChromeFeatureList.TANGIBLE_SYNC)
     public void testSyncRowLaunchesSignInFlowForSignedInAccounts() {
         CoreAccountInfo accountInfo = mSyncTestRule.setUpAccountAndSignInForTesting();
         launchSettingsActivity();
@@ -346,19 +346,16 @@ public class MainSettingsFragmentTest {
     public void testSyncRowLaunchesTangibleSignInFlowForSignedInAccounts() {
         CoreAccountInfo accountInfo = mSyncTestRule.setUpAccountAndSignInForTesting();
         launchSettingsActivity();
+
         onView(withText(R.string.sync_category_title)).perform(click());
+
         onView(withText(R.string.signin_account_picker_dialog_title))
                 .inRoot(isDialog())
                 .check(matches(isDisplayed()));
+        onView(withText(accountInfo.getEmail())).inRoot(isDialog()).check(matches(isDisplayed()));
         onView(withText(R.string.signin_add_account_to_device))
                 .inRoot(isDialog())
                 .check(matches(isDisplayed()));
-
-        onView(withText(accountInfo.getEmail())).inRoot(isDialog()).perform(click());
-
-        verify(mMockSyncConsentActivityLauncher)
-                .launchActivityForPromoDefaultFlow(any(Activity.class),
-                        eq(SigninAccessPoint.SETTINGS_SYNC_OFF_ROW), eq(accountInfo.getEmail()));
     }
 
     @Test
