@@ -833,6 +833,13 @@
         ]
        ]
       },
+      "table-in-abspos-multicol-with-nested-meter-crash.html": [
+       "363324b225b2e72d05defcb2ddea4865ca76ef8a",
+       [
+        null,
+        {}
+       ]
+      ],
       "table-row-end-border-1-crash.html": [
        "3947dbdadaa1b8a5c836cc82ac0fb3508eeb45e1",
        [
@@ -3553,6 +3560,13 @@
        {}
       ]
      ],
+     "forwarddelete-delete-after-justifyleft-indent.html": [
+      "0b0e188732751cf79141cab3fb95726ae5b91c3a",
+      [
+       null,
+       {}
+      ]
+     ],
      "forwarddelete-in-list-editing-host-after-selectall-with-focus.html": [
       "266cc4fb600227ed134c062d6c01cf52a9f1abed",
       [
@@ -3569,6 +3583,13 @@
      ],
      "forwarddelete-in-text-in-span-in-editable-documentElement.html": [
       "26f2f64b81f1e2b02496c6131cc58cf2460c2d5a",
+      [
+       null,
+       {}
+      ]
+     ],
+     "indent-outdent-after-closing-editable-dialog-element.html": [
+      "7f73de048d714c99ce47ae4da61d7128e53216e8",
       [
        null,
        {}
@@ -185362,7 +185383,7 @@
        ]
       ],
       "transform-interpolation-rotate.html": [
-       "d69023c9b7acbeb97fa790482ccc93a82b233528",
+       "cba2d2086fc7feb7542d8cac9b7271a394e6af14",
        [
         null,
         [
@@ -185382,7 +185403,7 @@
             ],
             [
              0,
-             17
+             246
             ]
            ]
           ]
@@ -189831,7 +189852,7 @@
       ]
      ],
      "transform-3d-rotateY-stair-above-001.xht": [
-      "ce03b4fca16936167aaed9c778538ee799b85044",
+      "e637eb0b828eadf22c2254583e5dfeeb54863d7b",
       [
        null,
        [
@@ -189844,7 +189865,7 @@
       ]
      ],
      "transform-3d-rotateY-stair-below-001.xht": [
-      "9282f245f733803f7fa21cd351293a36ee4ae7f4",
+      "8d9b610bf030a83a60185dadd3b26c6e546af261",
       [
        null,
        [
@@ -189860,7 +189881,7 @@
           [
            [
             0,
-            3
+            14
            ],
            [
             0,
@@ -439325,7 +439346,7 @@
      ]
     ],
     "FileSystemSyncAccessHandle-read-write.https.tentative.worker.js": [
-     "9f2a61db78e6cc79748ac6e037797d468fc77941",
+     "cdefc78b6cb2115114accbd449e34766fbf0849b",
      [
       "fs/FileSystemSyncAccessHandle-read-write.https.tentative.worker.html",
       {}
