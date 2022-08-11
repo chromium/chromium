@@ -208,6 +208,25 @@ class WPTManifest(object):
         extras = self._get_extras_from_item(item)
         return extras.get('timeout') == 'long'
 
+    def extract_test_pac(self, url):
+        """Get the proxy configuration (PAC) for the test
+
+        Args:
+            url: A WPT URL.
+
+        Returns:
+            A relative PAC url if noted by the test, None otherwise.
+        """
+        if not self.is_test_url(url):
+            return None
+
+        item = self._item_for_url(url)
+        if not item:
+            return None
+
+        extras = self._get_extras_from_item(item)
+        return extras.get('pac')
+
     def extract_reference_list(self, path_in_wpt):
         """Extracts reference information of the specified reference test.
 

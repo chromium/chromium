@@ -44,6 +44,8 @@ from collections import defaultdict
 import six
 from six.moves import zip_longest
 
+from urllib.parse import urljoin
+
 from blinkpy.common import exit_codes
 from blinkpy.common import find_files
 from blinkpy.common import read_checksum_from_png
@@ -1140,6 +1142,22 @@ class Port(object):
         path_in_wpt = match.group(2)
         return self.wpt_manifest(wpt_path).is_slow_test(path_in_wpt)
 
+    def extract_wpt_pac(self, test_name):
+        match = self.WPT_REGEX.match(test_name)
+        if not match:
+            return None
+        wpt_path = match.group(1)
+        path_in_wpt = match.group(2)
+        pac = self.wpt_manifest(wpt_path).extract_test_pac(path_in_wpt)
+        if pac is None:
+            return None
+
+        hosts_and_ports = self.create_driver(0).WPT_HOST_AND_PORTS
+
+        return urljoin(
+            "http://{}:{}".format(hosts_and_ports[0], hosts_and_ports[1]),
+            urljoin(path_in_wpt, pac))
+
     def get_wpt_fuzzy_metadata(self, test_name):
         """Returns the WPT-style fuzzy metadata for the given test.
 
@@ -1476,6 +1494,10 @@ class Port(object):
     @memoized
     def args_for_test(self, test_name):
         args = self._lookup_virtual_test_args(test_name)
+        pac_url = self.extract_wpt_pac(test_name)
+        if pac_url is not None:
+            args.append("--proxy-pac-url=" + pac_url)
+
         tracing_categories = self.get_option('enable_tracing')
         if tracing_categories:
             args.append('--trace-startup=' + tracing_categories)

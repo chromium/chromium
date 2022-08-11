@@ -491041,7 +491041,9 @@
       "598836d376813b754366d49616b39a4183cd3753",
       [
        null,
-       {}
+       {
+        "pac": "resources/proxy.sub.pac"
+       }
       ]
      ],
      "title.any.js": [

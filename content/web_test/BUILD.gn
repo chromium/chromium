@@ -169,6 +169,7 @@ static_library("web_test_browser") {
     "//components/download/public/background_service:public",
     "//components/download/public/common:public",
     "//components/network_session_configurator/common",
+    "//components/proxy_config",
     "//content/browser:for_content_tests",  # For non-component builds.
     "//content/public/browser",  # For component builds.
     "//content/shell:content_shell_lib",

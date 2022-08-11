@@ -265,3 +265,43 @@ class WPTManifestUnitTest(unittest.TestCase):
                          (None, None))
         self.assertEqual(manifest.extract_fuzzy_metadata('not_a_reftest.html'),
                          (None, None))
+
+    def test_extract_pac(self):
+        manifest_json = '''
+{
+    "items": {
+        "testharness": {
+     "without-pac.html": [
+      "df2f8b048c370d3ab009946d73d7de6f8a412471",
+      [
+       null,
+       {
+       }
+      ]
+     ],
+     "with-pac.html": [
+      "598836d376813b754366d49616b39a4183cd3753",
+      [
+       null,
+       {
+        "pac": "proxy.pac"
+       }
+      ]
+     ]
+    }
+    }
+}
+        '''
+
+        host = MockHost()
+        host.filesystem.write_text_file(
+            WEB_TEST_DIR + '/external/wpt/MANIFEST.json', manifest_json)
+        manifest = WPTManifest(host,
+                               WEB_TEST_DIR + '/external/wpt/MANIFEST.json')
+
+        self.assertEqual(
+            manifest.extract_test_pac('with-pac.html'),
+            "proxy.pac",
+        )
+
+        self.assertEqual(manifest.extract_test_pac('without-pac.html'), None)
