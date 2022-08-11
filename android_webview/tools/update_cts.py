@@ -194,9 +194,8 @@ class UpdateCTS:
   def download_cts_cmd(self, platforms=None):
     """Performs the download sub-command."""
     if platforms is None:
-      all_platforms = self._CTSConfig.get_platforms()
-      platforms = list(
-          set(all_platforms) - set(cts_utils.END_OF_SERVICE_DESSERTS))
+      platforms = self._CTSConfig.get_platforms()
+
     print('Downloading CTS tests for %d platforms, could take a few'
           ' minutes ...' % len(platforms))
     self.download_cts(platforms)
