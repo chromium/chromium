@@ -400,8 +400,7 @@ void FastPairRepositoryImpl::DeleteAssociatedDeviceByAccountKey(
       base::HexEncode(account_key),
       base::BindOnce(
           &FastPairRepositoryImpl::OnDeleteAssociatedDeviceByAccountKey,
-          weak_ptr_factory_.GetWeakPtr(), std::move(account_key),
-          std::move(callback)));
+          weak_ptr_factory_.GetWeakPtr(), account_key, std::move(callback)));
 }
 
 void FastPairRepositoryImpl::OnDeleteAssociatedDeviceByAccountKey(
