@@ -57,3 +57,7 @@ bool DiagnosticsSystemAppDelegate::ShouldShowInLauncher() const {
 gfx::Size DiagnosticsSystemAppDelegate::GetMinimumWindowSize() const {
   return {600, 390};
 }
+
+bool DiagnosticsSystemAppDelegate::ShouldCaptureNavigations() const {
+  return true;
+}

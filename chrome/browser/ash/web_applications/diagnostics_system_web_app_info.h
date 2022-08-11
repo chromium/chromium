@@ -21,6 +21,7 @@ class DiagnosticsSystemAppDelegate : public ash::SystemWebAppDelegate {
   std::unique_ptr<WebAppInstallInfo> GetWebAppInfo() const override;
   bool ShouldShowInLauncher() const override;
   gfx::Size GetMinimumWindowSize() const override;
+  bool ShouldCaptureNavigations() const override;
 };
 
 // Returns a WebAppInstallInfo used to install the app.
