@@ -1597,6 +1597,13 @@ Unknown properties are collapsed to zero. -->
   <int value="5" label="InferenceExecutionFailed"/>
 </enum>
 
+<enum name="AliveAfterApiNotConnectedStatus">
+  <int value="0" label="Alive on receiving the error, this is always reported"/>
+  <int value="1"
+      label="Alive after a delay, Chrome didn't shutdown/restart since
+             receiving the error"/>
+</enum>
+
 <enum name="AllowedUsersPoliciesInvalidState">
   <summary>
     For recording which of the 4 disallowed combinations of allow_new_users and

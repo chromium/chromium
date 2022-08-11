@@ -729,6 +729,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.AliveAfterApiNotConnectedError"
+    enum="AliveAfterApiNotConnectedStatus" expires_after="M108">
+  <owner>vasilii@chromium.org</owner>
+  <owner>maxan@google.com</owner>
+  <summary>
+    Recorded after PasswordStore GMS Core backend returned with
+    API_NOT_CONNECTED error. The first status is reported right after receiving
+    the error, the second one is reported with a 10 seconds delay indicating if
+    Chrome didn't shutdown/restart soon after receiving this error. Note that
+    the second status could also be not reported if Chrome is sent to
+    background.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.Android.PasswordCredentialEntry"
     enum="PasswordManagerAndroidPasswordEntryActions" expires_after="M95">
   <obsolete>
@@ -2062,7 +2076,7 @@ chromium-metrics-reviews@google.com.
   <owner>maxan@google.com</owner>
   <summary>
     Records the time(ms) elapsed between asking Google Play Services to
-    {Operation} and recieving the error response. This is recorded either before
+    {Operation} and receiving the error response. This is recorded either before
     making the actual request (if the preconditions are not met) or after the
     asynchronous call comes back with an error. This is currently only recorded
     on Android.
@@ -2077,7 +2091,7 @@ chromium-metrics-reviews@google.com.
   <owner>maxan@google.com</owner>
   <summary>
     Records the time(ms) elapsed between asking Google Play Services to
-    {Operation} and recieving the response. It includes synchronous calls made
+    {Operation} and receiving the response. It includes synchronous calls made
     to get the PasswordCheckupClient. Recorded when the asynchronous call comes
     back and only on success. This is currently only recorded on Android.
   </summary>

@@ -853,6 +853,50 @@ TEST_F(PasswordStoreAndroidBackendTest,
   histogram_tester.ExpectBucketCount(kAPIErrorMetric, kInternalErrorCode, 1);
 }
 
+TEST_F(PasswordStoreAndroidBackendTest, RecordsAliveStatusOnApiNotConnected) {
+  constexpr char kAliveAfterErrorMetric[] =
+      "PasswordManager.AliveAfterApiNotConnectedError";
+
+  base::HistogramTester histogram_tester;
+
+  backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
+                        base::RepeatingClosure(), base::DoNothing());
+  backend().OnSyncServiceInitialized(sync_service());
+
+  ASSERT_FALSE(sync_service()->GetAuthError().IsTransientError());
+  ASSERT_FALSE(sync_service()->GetAuthError().IsPersistentError());
+
+  const JobId kJobId{1337};
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
+  EXPECT_CALL(*bridge(), GetAllLogins).WillOnce(Return(kJobId));
+  backend().GetAllLoginsAsync(mock_reply.Get());
+  EXPECT_CALL(mock_reply,
+              Run(ExpectError(PasswordStoreBackendError::kUnrecoverable)));
+  AndroidBackendError error{AndroidBackendErrorType::kExternalError};
+  // Simulate receiving API_NOT_CONNECTED code.
+  const int kApiNotConnectedErrorCode =
+      static_cast<int>(AndroidBackendAPIErrorCode::kApiNotConnected);
+  error.api_error_code = absl::optional<int>(kApiNotConnectedErrorCode);
+  consumer().OnError(kJobId, std::move(error));
+
+  const int kAliveAfterApiNotConnectedOnErrorStatus = 0;
+  const int kAliveAfterApiNotConnectedAfterDelayStatus = 1;
+
+  // Fast forward to right before expected metric reporting.
+  task_environment_.FastForwardBy(base::Seconds(9));
+  histogram_tester.ExpectBucketCount(
+      kAliveAfterErrorMetric, kAliveAfterApiNotConnectedOnErrorStatus, 1);
+  histogram_tester.ExpectBucketCount(
+      kAliveAfterErrorMetric, kAliveAfterApiNotConnectedAfterDelayStatus, 0);
+
+  // Metric should be eventually reported after a 10 seconds delay.
+  task_environment_.FastForwardBy(base::Seconds(1));
+  histogram_tester.ExpectBucketCount(
+      kAliveAfterErrorMetric, kAliveAfterApiNotConnectedOnErrorStatus, 1);
+  histogram_tester.ExpectBucketCount(
+      kAliveAfterErrorMetric, kAliveAfterApiNotConnectedAfterDelayStatus, 1);
+}
+
 TEST_F(PasswordStoreAndroidBackendTest,
        OnUnrecoverablApiErrorShowsUIFlagEnabled) {
   base::test::ScopedFeatureList scoped_feature_list{
