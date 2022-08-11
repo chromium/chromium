@@ -234,19 +234,17 @@ void MediaRouterIntegrationBrowserTest::ExecuteJavaScriptAPI(
   // Read the test result, the test result set by javascript is a
   // JSON string with the following format:
   // {"passed": "<true/false>", "errorMessage": "<error_message>"}
-  std::unique_ptr<base::Value> value = base::JSONReader::ReadDeprecated(
-      result, base::JSON_ALLOW_TRAILING_COMMAS);
+  absl::optional<base::Value> value =
+      base::JSONReader::Read(result, base::JSON_ALLOW_TRAILING_COMMAS);
 
   // Convert to dictionary.
-  base::DictionaryValue* dict_value = nullptr;
-  ASSERT_TRUE(value->GetAsDictionary(&dict_value));
+  base::Value::Dict* dict_value = value->GetIfDict();
+  ASSERT_TRUE(dict_value);
 
   // Extract the fields.
-  std::string error_message;
-  ASSERT_TRUE(dict_value->GetString("errorMessage", &error_message));
-
-  ASSERT_THAT(dict_value->FindBoolKey("passed"), Optional(true))
-      << error_message;
+  const std::string* error_message = dict_value->FindString("errorMessage");
+  ASSERT_TRUE(error_message);
+  ASSERT_THAT(dict_value->FindBool("passed"), Optional(true)) << error_message;
 }
 
 void MediaRouterIntegrationBrowserTest::StartSessionAndAssertNotFoundError() {
