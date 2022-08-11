@@ -411,7 +411,8 @@ std::unique_ptr<net::test_server::HttpResponse> GetContentDispositionResponse(
 }
 
 // Tests accessibility on Download Manager UI when download is complete.
-- (void)testAccessibilityOnCompletedDownloadToolbar {
+// TODO(crbug.com/1352113): Re-enable
+- (void)DISABLED_testAccessibilityOnCompletedDownloadToolbar {
   [super testAccessibilityOnCompletedDownloadToolbar];
 }
 

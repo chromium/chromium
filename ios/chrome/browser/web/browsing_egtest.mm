@@ -200,7 +200,8 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
 
 // Tests tapping a link that navigates to a page that immediately navigates
 // again via document.location.href.
-- (void)testBrowsingWindowDataLinkScriptRedirect {
+// TODO(crbug.com/1352105): Flaky on iPhone.
+- (void)DISABLED_testBrowsingWindowDataLinkScriptRedirect {
   // Create map of canned responses and set up the test HTML server.
   std::map<GURL, std::string> responses;
   const GURL URL =

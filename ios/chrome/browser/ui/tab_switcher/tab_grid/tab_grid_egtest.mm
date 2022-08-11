@@ -1733,7 +1733,8 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 
 // Tests that the search suggested actions section has the right rows in the
 // recent tabs page.
-- (void)testSearchSuggestedActionsSectionContentInRecentTabs {
+// TODO(crbug.com/1352109): Re-enable.
+- (void)DISABLED_testSearchSuggestedActionsSectionContentInRecentTabs {
   [self loadTestURLsInNewTabs];
   [ChromeEarlGrey showTabSwitcher];
   [[EarlGrey selectElementWithMatcher:TabGridOtherDevicesPanelButton()]

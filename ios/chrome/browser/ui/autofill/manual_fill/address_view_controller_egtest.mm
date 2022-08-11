@@ -204,7 +204,8 @@ BOOL WaitForKeyboardToAppear() {
 
 // Tests that the Address View Controller is dismissed when tapping the
 // keyboard icon.
-- (void)testKeyboardIconDismissAddressController {
+// TODO(crbug.com/1352114): Re-enable
+- (void)DISABLED_testKeyboardIconDismissAddressController {
   if ([ChromeEarlGrey isIPadIdiom]) {
     // The keyboard icon is never present in iPads.
     EARL_GREY_TEST_SKIPPED(@"Test is not applicable for iPad");
