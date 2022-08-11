@@ -127,6 +127,11 @@ id<GREYMatcher> CancelUsingOtherPasswordButton() {
 // Tests that the passwords view controller contains the "Manage Passwords..."
 // action.
 - (void)testPasswordsViewControllerContainsManagePasswordsAction {
+  // TODO(crbug.com/1352059): Re-enable when flake fixed.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Test flaky failing on iPad.")
+  }
+
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementUsername)];
