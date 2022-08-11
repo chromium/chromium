@@ -1357,6 +1357,51 @@ KleeneValue MediaQueryEvaluator::EvalFeature(
   return result ? KleeneValue::kTrue : KleeneValue::kFalse;
 }
 
+namespace {
+
+void ConsumeWhitespace(Vector<CSSParserToken>::const_iterator& iterator,
+                       const Vector<CSSParserToken>::const_iterator& end) {
+  while (iterator != end && (*iterator).GetType() == kWhitespaceToken) {
+    iterator++;
+  }
+}
+
+void ConsumeWhitespaceReverse(
+    Vector<CSSParserToken>::const_iterator& iterator,
+    const Vector<CSSParserToken>::const_iterator& start) {
+  while (iterator != start && (*(iterator - 1)).GetType() == kWhitespaceToken) {
+    iterator--;
+  }
+}
+
+bool TokensEqualIgnoringLeadingAndTrailingSpaces(
+    const CSSVariableData* value1,
+    const CSSVariableData* value2) {
+  if (value1 == value2) {
+    return true;
+  }
+  if (!value1 || !value2) {
+    return false;
+  }
+
+  const Vector<CSSParserToken>& tokens1 = value1->Tokens();
+  const Vector<CSSParserToken>& tokens2 = value2->Tokens();
+
+  Vector<CSSParserToken>::const_iterator tokens1_start = tokens1.begin();
+  Vector<CSSParserToken>::const_iterator tokens1_end = tokens1.end();
+  Vector<CSSParserToken>::const_iterator tokens2_start = tokens2.begin();
+  Vector<CSSParserToken>::const_iterator tokens2_end = tokens2.end();
+
+  ConsumeWhitespace(tokens1_start, tokens1_end);
+  ConsumeWhitespaceReverse(tokens1_end, tokens1_start);
+  ConsumeWhitespace(tokens2_start, tokens2_end);
+  ConsumeWhitespaceReverse(tokens2_end, tokens2_start);
+
+  return std::equal(tokens1_start, tokens1_end, tokens2_start, tokens2_end);
+}
+
+}  // namespace
+
 KleeneValue MediaQueryEvaluator::EvalStyleFeature(
     const MediaQueryFeatureExpNode& feature,
     MediaQueryResultFlags* result_flags) const {
@@ -1375,13 +1420,20 @@ KleeneValue MediaQueryEvaluator::EvalStyleFeature(
   DCHECK(bounds.right.value.IsCSSValue());
   DCHECK(media_values_->GetComputedStyle());
 
-  return base::ValuesEquivalent(
-             media_values_->GetComputedStyle()->GetVariableData(
-                 AtomicString(feature.Name())),
-             To<CSSCustomPropertyDeclaration>(bounds.right.value.GetCSSValue())
-                 .Value())
-             ? KleeneValue::kTrue
-             : KleeneValue::kFalse;
+  CSSVariableData* computed =
+      media_values_->GetComputedStyle()->GetVariableData(
+          AtomicString(feature.Name()));
+  CSSVariableData* queried =
+      To<CSSCustomPropertyDeclaration>(bounds.right.value.GetCSSValue())
+          .Value();
+
+  // TODO(crbug.com/1220144): Compare the two CSSVariableData using
+  // base::ValuesEquivalent when we correctly strip leading and trailing
+  // whitespaces for custom property values.
+  if (TokensEqualIgnoringLeadingAndTrailingSpaces(computed, queried)) {
+    return KleeneValue::kTrue;
+  }
+  return KleeneValue::kFalse;
 }
 
 }  // namespace blink

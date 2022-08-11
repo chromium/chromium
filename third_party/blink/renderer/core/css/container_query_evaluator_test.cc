@@ -614,17 +614,10 @@ TEST_F(ContainerQueryEvaluatorTest, CustomPropertyStyleQuery) {
   EXPECT_TRUE(Eval("style(--my-prop:)", "--my-prop", ""));
   EXPECT_TRUE(Eval("style(--my-prop: )", "--my-prop", ""));
 
-  EXPECT_FALSE(Eval("style(--my-prop)", "--my-prop", " "));
-  EXPECT_FALSE(Eval("style(--my-prop:)", "--my-prop", " "));
-  EXPECT_FALSE(Eval("style(--my-prop: )", "--my-prop", " "));
-
   EXPECT_TRUE(Eval("style(--my-prop:10px)", "--my-prop", "10px"));
   EXPECT_TRUE(Eval("style(--my-prop: 10px)", "--my-prop", "10px"));
-  EXPECT_FALSE(Eval("style(--my-prop:10px )", "--my-prop", "10px"));
-  EXPECT_FALSE(Eval("style(--my-prop:10px)", "--my-prop", "10px "));
-  EXPECT_FALSE(Eval("style(--my-prop: 10px)", "--my-prop", "10px "));
-  EXPECT_TRUE(Eval("style(--my-prop:10px )", "--my-prop", "10px "));
-  EXPECT_TRUE(Eval("style(--my-prop: 10px )", "--my-prop", "10px "));
+  EXPECT_TRUE(Eval("style(--my-prop:10px )", "--my-prop", "10px"));
+  EXPECT_TRUE(Eval("style(--my-prop: 10px )", "--my-prop", "10px"));
 }
 
 TEST_F(ContainerQueryEvaluatorTest, FindContainer) {
