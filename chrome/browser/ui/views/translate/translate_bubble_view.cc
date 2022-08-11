@@ -875,16 +875,18 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateViewAdvanced(
     std::unique_ptr<views::Button> advanced_done_button,
     std::unique_ptr<views::Checkbox> advanced_always_translate_checkbox) {
   const ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
-  auto view = std::make_unique<AdvancedViewContainer>();
-  auto* layout = view->SetLayoutManager(std::make_unique<views::BoxLayout>());
-  layout->set_between_child_spacing(
-      provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_HORIZONTAL));
-
-  std::unique_ptr<views::ImageView> language_icon = CreateTranslateIcon();
   const int vertical_spacing =
       provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL);
+  const int horizontal_spacing =
+      provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_HORIZONTAL);
+
+  auto view = std::make_unique<AdvancedViewContainer>();
+  auto* layout = view->SetLayoutManager(std::make_unique<views::BoxLayout>());
+  layout->set_between_child_spacing(horizontal_spacing);
+
+  std::unique_ptr<views::ImageView> language_icon = CreateTranslateIcon();
   if (!UseGoogleTranslateBranding()) {
-    // If the bottom branding isn't showing, display the leading translate
+    // If the bottom branding isn't showing, display the leading Translate
     // icon otherwise it's not obvious what the bubble is about. This should
     // only happen on non-Chrome-branded builds.
     auto* icon_view =
@@ -895,7 +897,9 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateViewAdvanced(
                            gfx::Insets::VH(vertical_spacing, 0));
   }
   auto* form_view = view->AddChildView(std::make_unique<views::View>());
-  // Stretch `form_view` to fit the rest of bubble's width.
+  // Stretch |form_view| to fit the rest of bubble's width. Note that because no
+  // other view has flex set, the flex argument here can be any positive
+  // integer.
   layout->SetFlexForView(form_view, 1);
   form_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
@@ -904,44 +908,49 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateViewAdvanced(
   language_title_label->SetProperty(
       views::kMarginsKey,
       gfx::Insets::TLBR(vertical_spacing, 0, vertical_spacing,
-                        provider->GetDistanceMetric(
-                            views::DISTANCE_RELATED_CONTROL_HORIZONTAL) *
-                            4));
+                        horizontal_spacing * 4));
   language_title_label->SetProperty(views::kCrossAxisAlignmentKey,
                                     views::LayoutAlignment::kStart);
   auto* title_row = form_view->AddChildView(std::make_unique<views::View>());
   title_row->SetLayoutManager(std::make_unique<views::FlexLayout>());
-  title_row->AddChildView(std::move(language_title_label));
+  auto* title_label = title_row->AddChildView(std::move(language_title_label));
+  auto* padding_view = title_row->AddChildView(std::make_unique<views::View>());
   title_row->AddChildView(CreateCloseButton())
       ->SetProperty(views::kCrossAxisAlignmentKey,
                     views::LayoutAlignment::kStart);
+  // Set flex specifications for |title_row| views.
+  title_label->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
+                               views::MaximumFlexSizeRule::kPreferred));
+  // |padding_view| is unbounded so that the close button stays right aligned
+  // when the bubble expands.
+  padding_view->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kUnbounded)
+          .WithOrder(2));
 
   form_view->AddChildView(std::move(combobox))
-      ->SetProperty(
-          views::kMarginsKey,
-          gfx::Insets::TLBR(0, 0, 0,
-                            provider->GetDistanceMetric(
-                                views::DISTANCE_RELATED_CONTROL_HORIZONTAL)));
+      ->SetProperty(views::kMarginsKey,
+                    gfx::Insets::TLBR(0, 0, 0, horizontal_spacing));
 
   auto button_row = std::make_unique<views::BoxLayoutView>();
   if (advanced_always_translate_checkbox) {
     advanced_always_translate_checkbox_ =
         form_view->AddChildView(std::move(advanced_always_translate_checkbox));
-    button_row->SetProperty(views::kMarginsKey,
-                            gfx::Insets::TLBR(vertical_spacing, 0, 0, 0));
+    button_row->SetProperty(
+        views::kMarginsKey,
+        gfx::Insets::TLBR(vertical_spacing, 0, 0, horizontal_spacing));
   } else {
-    button_row->SetProperty(views::kMarginsKey,
-                            gfx::Insets::TLBR(2 * vertical_spacing, 0, 0, 0));
+    button_row->SetProperty(
+        views::kMarginsKey,
+        gfx::Insets::TLBR(2 * vertical_spacing, 0, 0, horizontal_spacing));
   }
 
   button_row->SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kEnd);
   button_row->SetBetweenChildSpacing(
       provider->GetDistanceMetric(views::DISTANCE_RELATED_BUTTON_HORIZONTAL));
-  button_row->SetProperty(
-      views::kMarginsKey,
-      gfx::Insets::TLBR(0, 0, 0,
-                        provider->GetDistanceMetric(
-                            views::DISTANCE_RELATED_CONTROL_HORIZONTAL)));
   button_row->AddChildView(std::move(advanced_reset_button));
   button_row->AddChildView(std::move(advanced_done_button));
   form_view->AddChildView(std::move(button_row));
