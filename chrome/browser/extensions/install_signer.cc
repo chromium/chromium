@@ -398,23 +398,27 @@ void InstallSigner::ParseFetchResponse(
   // where |invalid_ids| is a list of ids from the original request that
   // could not be verified to be in the webstore.
 
-  base::DictionaryValue* dictionary = NULL;
-  std::unique_ptr<base::Value> parsed =
-      base::JSONReader::ReadDeprecated(*response_body);
-  bool json_success = parsed.get() && parsed->GetAsDictionary(&dictionary);
+  absl::optional<base::Value> parsed = base::JSONReader::Read(*response_body);
+  bool json_success = parsed && parsed->is_dict();
   if (!json_success) {
     ReportErrorViaCallback();
     return;
   }
+  base::Value::Dict& dictionary = parsed->GetDict();
 
-  int protocol_version =
-      dictionary->FindIntKey(kProtocolVersionKey).value_or(0);
+  int protocol_version = dictionary.FindInt(kProtocolVersionKey).value_or(0);
   std::string signature_base64;
   std::string signature;
   std::string expire_date;
 
-  dictionary->GetString(kSignatureKey, &signature_base64);
-  dictionary->GetString(kExpiryKey, &expire_date);
+  if (const std::string* maybe_signature_base64 =
+          dictionary.FindString(kSignatureKey)) {
+    signature_base64 = *maybe_signature_base64;
+  }
+  if (const std::string* maybe_expire_date =
+          dictionary.FindString(kExpiryKey)) {
+    expire_date = *maybe_expire_date;
+  }
 
   bool fields_success =
       protocol_version == 1 && !signature_base64.empty() &&
@@ -426,10 +430,10 @@ void InstallSigner::ParseFetchResponse(
   }
 
   ExtensionIdSet invalid_ids;
-  const base::Value* invalid_ids_list = dictionary->FindListKey(kInvalidIdsKey);
+  const base::Value::List* invalid_ids_list =
+      dictionary.FindList(kInvalidIdsKey);
   if (invalid_ids_list) {
-    for (const base::Value& invalid_id :
-         invalid_ids_list->GetListDeprecated()) {
+    for (const base::Value& invalid_id : *invalid_ids_list) {
       const std::string* id = invalid_id.GetIfString();
       if (!id) {
         ReportErrorViaCallback();
