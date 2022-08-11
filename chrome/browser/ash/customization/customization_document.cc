@@ -149,25 +149,26 @@ void LogManifestLoadResult(HistogramServicesCustomizationLoadResult result) {
                             HISTOGRAM_LOAD_RESULT_MAX_VALUE);
 }
 
-std::string GetLocaleSpecificStringImpl(
-    const base::DictionaryValue* root,
-    const std::string& locale,
-    const std::string& dictionary_name,
-    const std::string& entry_name) {
-  const base::DictionaryValue* dictionary_content = NULL;
-  if (!root || !root->GetDictionary(dictionary_name, &dictionary_content))
+std::string GetLocaleSpecificStringImpl(const base::Value::Dict& root,
+                                        const std::string& locale,
+                                        const std::string& dictionary_name,
+                                        const std::string& entry_name) {
+  const base::Value::Dict* dictionary_content = root.FindDict(dictionary_name);
+  if (!dictionary_content)
     return std::string();
 
-  const base::DictionaryValue* locale_dictionary = NULL;
-  if (dictionary_content->GetDictionary(locale, &locale_dictionary)) {
-    const std::string* result = locale_dictionary->FindStringKey(entry_name);
+  const base::Value::Dict* locale_dictionary =
+      dictionary_content->FindDict(locale);
+  if (locale_dictionary) {
+    const std::string* result = locale_dictionary->FindString(entry_name);
     if (result)
       return *result;
   }
 
-  const base::DictionaryValue* default_dictionary = NULL;
-  if (dictionary_content->GetDictionary(kDefaultAttr, &default_dictionary)) {
-    const std::string* result = default_dictionary->FindStringKey(entry_name);
+  const base::Value::Dict* default_dictionary =
+      dictionary_content->FindDict(kDefaultAttr);
+  if (default_dictionary) {
+    const std::string* result = default_dictionary->FindString(entry_name);
     if (result)
       return *result;
   }
@@ -277,16 +278,16 @@ bool CustomizationDocument::LoadManifestFromString(
     NOTREACHED();
     return false;
   }
-  std::unique_ptr<base::Value> root =
-      base::Value::ToUniquePtrValue(std::move(*parsed_json));
 
-  root_ = base::DictionaryValue::From(std::move(root));
-  if (!root_) {
+  if (!parsed_json->is_dict()) {
     NOTREACHED();
     return false;
   }
 
-  const std::string* result = root_->FindStringKey(kVersionAttr);
+  root_ =
+      std::make_unique<base::Value::Dict>(std::move(parsed_json->GetDict()));
+
+  const std::string* result = root_->FindString(kVersionAttr);
   if (!result || *result != accepted_version_) {
     LOG(ERROR) << "Wrong customization manifest version";
     root_.reset();
@@ -300,8 +301,8 @@ std::string CustomizationDocument::GetLocaleSpecificString(
     const std::string& locale,
     const std::string& dictionary_name,
     const std::string& entry_name) const {
-  return GetLocaleSpecificStringImpl(
-      root_.get(), locale, dictionary_name, entry_name);
+  return GetLocaleSpecificStringImpl(*root_, locale, dictionary_name,
+                                     entry_name);
 }
 
 // StartupCustomizationDocument implementation. --------------------------------
@@ -340,49 +341,49 @@ void StartupCustomizationDocument::Init(
     chromeos::system::StatisticsProvider* statistics_provider) {
   if (IsReady()) {
     const std::string* initial_locale_ptr =
-        root_->FindStringKey(kInitialLocaleAttr);
+        root_->FindString(kInitialLocaleAttr);
     if (initial_locale_ptr)
       initial_locale_ = *initial_locale_ptr;
 
     const std::string* initial_timezone_ptr =
-        root_->FindStringKey(kInitialTimezoneAttr);
+        root_->FindString(kInitialTimezoneAttr);
     if (initial_timezone_ptr)
       initial_timezone_ = *initial_timezone_ptr;
 
     const std::string* keyboard_layout_ptr =
-        root_->FindStringKey(kKeyboardLayoutAttr);
+        root_->FindString(kKeyboardLayoutAttr);
     if (keyboard_layout_ptr)
       keyboard_layout_ = *keyboard_layout_ptr;
 
     std::string hwid;
     if (statistics_provider->GetMachineStatistic(
             chromeos::system::kHardwareClassKey, &hwid)) {
-      base::ListValue* hwid_list = NULL;
-      if (root_->GetList(kHwidMapAttr, &hwid_list)) {
-        for (const base::Value& hwid_value : hwid_list->GetListDeprecated()) {
-          const base::DictionaryValue* hwid_dictionary = nullptr;
+      base::Value::List* hwid_list = root_->FindList(kHwidMapAttr);
+      if (hwid_list) {
+        for (const base::Value& hwid_value : *hwid_list) {
+          const base::Value::Dict* hwid_dictionary = nullptr;
           if (hwid_value.is_dict())
-            hwid_dictionary = &base::Value::AsDictionaryValue(hwid_value);
+            hwid_dictionary = &hwid_value.GetDict();
 
           const std::string* hwid_mask =
-              hwid_dictionary ? hwid_dictionary->FindStringKey(kHwidMaskAttr)
+              hwid_dictionary ? hwid_dictionary->FindString(kHwidMaskAttr)
                               : nullptr;
           if (hwid_mask) {
             if (base::MatchPattern(hwid, *hwid_mask)) {
               // If HWID for this machine matches some mask, use HWID specific
               // settings.
               const std::string* initial_locale =
-                  hwid_dictionary->FindStringKey(kInitialLocaleAttr);
+                  hwid_dictionary->FindString(kInitialLocaleAttr);
               if (initial_locale)
                 initial_locale_ = *initial_locale;
 
               const std::string* initial_timezone =
-                  hwid_dictionary->FindStringKey(kInitialTimezoneAttr);
+                  hwid_dictionary->FindString(kInitialTimezoneAttr);
               if (initial_timezone)
                 initial_timezone_ = *initial_timezone;
 
               const std::string* keyboard_layout =
-                  hwid_dictionary->FindStringKey(kKeyboardLayoutAttr);
+                  hwid_dictionary->FindString(kKeyboardLayoutAttr);
               if (keyboard_layout)
                 keyboard_layout_ = *keyboard_layout;
             }
@@ -717,7 +718,7 @@ bool ServicesCustomizationDocument::GetDefaultWallpaperUrl(
   if (!IsReady())
     return false;
 
-  const std::string* url = root_->FindStringKey(kDefaultWallpaperAttr);
+  const std::string* url = root_->FindString(kDefaultWallpaperAttr);
   if (!url)
     return false;
 
@@ -743,14 +744,13 @@ std::string ServicesCustomizationDocument::GetOemAppsFolderName(
 
 std::unique_ptr<base::DictionaryValue>
 ServicesCustomizationDocument::GetDefaultAppsInProviderFormat(
-    const base::DictionaryValue& root) {
+    const base::Value::Dict& root) {
   std::unique_ptr<base::DictionaryValue> prefs(new base::DictionaryValue);
-  const base::ListValue* apps_list = NULL;
-  if (root.GetList(kDefaultAppsAttr, &apps_list)) {
-    for (size_t i = 0; i < apps_list->GetListDeprecated().size(); ++i) {
+  const base::Value::List* apps_list = root.FindList(kDefaultAppsAttr);
+  if (apps_list) {
+    for (const base::Value& app_entry_value : *apps_list) {
       std::string app_id;
       std::unique_ptr<base::DictionaryValue> entry;
-      const base::Value& app_entry_value = apps_list->GetListDeprecated()[i];
       if (app_entry_value.is_string()) {
         app_id = app_entry_value.GetString();
         entry = std::make_unique<base::DictionaryValue>();
@@ -785,7 +785,7 @@ ServicesCustomizationDocument::GetDefaultAppsInProviderFormat(
 }
 
 void ServicesCustomizationDocument::UpdateCachedManifest(Profile* profile) {
-  profile->GetPrefs()->Set(kServicesCustomizationKey, *root_);
+  profile->GetPrefs()->SetDict(kServicesCustomizationKey, root_->Clone());
 }
 
 extensions::ExternalLoader* ServicesCustomizationDocument::CreateExternalLoader(
@@ -799,12 +799,12 @@ extensions::ExternalLoader* ServicesCustomizationDocument::CreateExternalLoader(
     loader->SetCurrentApps(GetDefaultAppsInProviderFormat(*root_));
     SetOemFolderName(profile, *root_);
   } else {
-    const base::DictionaryValue* root = &base::Value::AsDictionaryValue(
-        *profile->GetPrefs()->GetDictionary(kServicesCustomizationKey));
-    if (root && root->FindStringKey(kVersionAttr)) {
+    const base::Value::Dict& root =
+        profile->GetPrefs()->GetValueDict(kServicesCustomizationKey);
+    if (root.FindString(kVersionAttr)) {
       // If version exists, profile has cached version of customization.
-      loader->SetCurrentApps(GetDefaultAppsInProviderFormat(*root));
-      SetOemFolderName(profile, *root);
+      loader->SetCurrentApps(GetDefaultAppsInProviderFormat(root));
+      SetOemFolderName(profile, root);
     } else {
       // StartFetching will be called from ServicesCustomizationExternalLoader
       // when StartLoading is called. We can't initiate manifest fetch here
@@ -822,7 +822,7 @@ void ServicesCustomizationDocument::OnCustomizationNotFound() {
 
 void ServicesCustomizationDocument::SetOemFolderName(
     Profile* profile,
-    const base::DictionaryValue& root) {
+    const base::Value::Dict& root) {
   std::string locale = g_browser_process->GetApplicationLocale();
   std::string name = GetOemAppsFolderNameImpl(locale, root);
   if (name.empty())
@@ -841,9 +841,9 @@ void ServicesCustomizationDocument::SetOemFolderName(
 
 std::string ServicesCustomizationDocument::GetOemAppsFolderNameImpl(
     const std::string& locale,
-    const base::DictionaryValue& root) const {
-  return GetLocaleSpecificStringImpl(
-      &root, locale, kLocalizedContent, kDefaultAppsFolderName);
+    const base::Value::Dict& root) const {
+  return GetLocaleSpecificStringImpl(root, locale, kLocalizedContent,
+                                     kDefaultAppsFolderName);
 }
 
 // static

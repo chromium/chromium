@@ -77,7 +77,7 @@ class CustomizationDocument {
                                       const std::string& dictionary_name,
                                       const std::string& entry_name) const;
 
-  std::unique_ptr<base::DictionaryValue> root_;
+  std::unique_ptr<base::Value::Dict> root_;
 
   // Value of the "version" attribute that is supported.
   // Otherwise config is not loaded.
@@ -251,7 +251,7 @@ class ServicesCustomizationDocument : public CustomizationDocument {
 
   // Returns list of default apps in ExternalProvider format.
   static std::unique_ptr<base::DictionaryValue> GetDefaultAppsInProviderFormat(
-      const base::DictionaryValue& root);
+      const base::Value::Dict& root);
 
   // Update cached manifest for |profile|.
   void UpdateCachedManifest(Profile* profile);
@@ -260,12 +260,11 @@ class ServicesCustomizationDocument : public CustomizationDocument {
   void OnCustomizationNotFound();
 
   // Set OEM apps folder name for AppListSyncableService for |profile|.
-  void SetOemFolderName(Profile* profile, const base::DictionaryValue& root);
+  void SetOemFolderName(Profile* profile, const base::Value::Dict& root);
 
   // Returns the name of the folder for OEM apps for given |locale|.
-  std::string GetOemAppsFolderNameImpl(
-      const std::string& locale,
-      const base::DictionaryValue& root) const;
+  std::string GetOemAppsFolderNameImpl(const std::string& locale,
+                                       const base::Value::Dict& root) const;
 
   // Start download of wallpaper image if needed.
   void StartOEMWallpaperDownload(const GURL& wallpaper_url,
