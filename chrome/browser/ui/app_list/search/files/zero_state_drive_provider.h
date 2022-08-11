@@ -36,6 +36,7 @@ class ZeroStateDriveProvider : public SearchProvider,
   ZeroStateDriveProvider(
       Profile* profile,
       SearchController* search_controller,
+      drive::DriveIntegrationService* drive_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   ~ZeroStateDriveProvider() override;
 

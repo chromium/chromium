@@ -147,10 +147,10 @@ std::vector<absl::optional<base::FilePath>> FilterPathsByTime(
 ZeroStateDriveProvider::ZeroStateDriveProvider(
     Profile* profile,
     SearchController* search_controller,
+    drive::DriveIntegrationService* drive_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : profile_(profile),
-      drive_service_(
-          drive::DriveIntegrationServiceFactory::GetForProfile(profile)),
+      drive_service_(drive_service),
       session_manager_(session_manager::SessionManager::Get()),
       construction_time_(base::Time::Now()),
       item_suggest_cache_(

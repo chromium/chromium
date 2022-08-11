@@ -27,8 +27,10 @@ class ZeroStateDriveProviderTest : public testing::Test {
  protected:
   void SetUp() override {
     profile_ = std::make_unique<TestingProfile>();
-    provider_ = std::make_unique<ZeroStateDriveProvider>(profile_.get(),
-                                                         nullptr, nullptr);
+    provider_ = std::make_unique<ZeroStateDriveProvider>(
+        profile_.get(), nullptr,
+        drive::DriveIntegrationServiceFactory::GetForProfile(profile_.get()),
+        nullptr);
     session_manager_ = std::make_unique<session_manager::SessionManager>();
     provider_->set_session_manager_for_testing(session_manager_.get());
   }
