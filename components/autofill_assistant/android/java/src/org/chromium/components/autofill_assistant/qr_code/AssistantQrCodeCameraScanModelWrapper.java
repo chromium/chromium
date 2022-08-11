@@ -61,7 +61,12 @@ public class AssistantQrCodeCameraScanModelWrapper {
     }
 
     @CalledByNative
-    private void setOverlayTitle(String text) {
-        mCameraScanModel.setOverlayTitle(text);
+    private void setOverlayInstructionText(String text) {
+        mCameraScanModel.setOverlayInstructionText(text);
+    }
+
+    @CalledByNative
+    private void setOverlaySecurityText(String text) {
+        mCameraScanModel.setOverlaySecurityText(text);
     }
 }

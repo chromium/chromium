@@ -96,6 +96,8 @@ public class AutofillAssistantQrCodeIntegrationTest {
                         .setOpenSettingsText("Please enable camera permissions in device settings")
                         .setOpenSettingsButtonText("Open Settings")
                         .setCameraPreviewInstructionText("Focus the QR Code inside the box")
+                        .setCameraPreviewSecurityText(
+                                "The details will be safely shared with the website")
                         .build();
         list.add(ActionProto.newBuilder()
                          .setPromptQrCodeScan(

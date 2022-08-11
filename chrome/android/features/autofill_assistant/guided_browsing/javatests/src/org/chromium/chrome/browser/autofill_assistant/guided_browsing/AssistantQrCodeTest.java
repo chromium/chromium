@@ -179,7 +179,7 @@ public class AssistantQrCodeTest {
 
     /** Manual Test to prompt QR Code Camera Scan and wait for any user interaction. */
     @Test
-    @DisabledTest(message = "Only for local testing. Not supposed in production")
+    @DisabledTest(message = "Only for local testing, not for automated testing")
     public void testpromptQrCodeCameraScan() throws Exception {
         MockAssistantQrCodeDelegate delegate = new MockAssistantQrCodeDelegate(mRunnableMock);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -193,7 +193,9 @@ public class AssistantQrCodeTest {
             cameraScanModel.setOpenSettingsText(
                     "Please enable camera permissions in device settings");
             cameraScanModel.setOpenSettingsButtonText("Open Settings");
-            cameraScanModel.setOverlayTitle("Focus the QR Code inside the box");
+            cameraScanModel.setOverlayInstructionText("Focus the QR Code inside the box");
+            cameraScanModel.setOverlaySecurityText(
+                    "The details will be safely shared with the website");
 
             AssistantQrCodeController.promptQrCodeCameraScan(
                     getActivity(), getActivity().getWindowAndroid(), cameraScanModel);
@@ -204,7 +206,7 @@ public class AssistantQrCodeTest {
 
     /** Manual Test to prompt QR Code Image Picker and wait for any user interaction. */
     @Test
-    @DisabledTest(message = "Only for local testing. Not supposed in production")
+    @DisabledTest(message = "Only for local testing, not for automated testing")
     public void testpromptQrCodeImagePicker() throws Exception {
         MockAssistantQrCodeDelegate delegate = new MockAssistantQrCodeDelegate(mRunnableMock);
         TestThreadUtils.runOnUiThreadBlocking(() -> {

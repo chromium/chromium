@@ -54,7 +54,8 @@ void PromptQrCodeScanAction::InternalProcessAction(
         camera_scan_ui_strings.permission_button_text().empty() ||
         camera_scan_ui_strings.open_settings_text().empty() ||
         camera_scan_ui_strings.open_settings_button_text().empty() ||
-        camera_scan_ui_strings.camera_preview_instruction_text().empty()) {
+        camera_scan_ui_strings.camera_preview_instruction_text().empty() ||
+        camera_scan_ui_strings.camera_preview_security_text().empty()) {
       VLOG(1) << "Invalid action: one or more camera_scan_ui_strings not set";
       EndAction(ClientStatus(INVALID_ACTION), /* value= */ absl::nullopt);
       return;

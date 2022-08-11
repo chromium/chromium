@@ -30,6 +30,8 @@ class AssistantQrCodeCameraScanModelWrapper {
   void SetOpenSettingsButtonText(const std::string& open_settings_button_text);
   void SetCameraPreviewInstructionText(
       const std::string& camera_preview_instruction_text);
+  void SetCameraPreviewSecurityText(
+      const std::string& camera_preview_security_text);
 
  private:
   JNIEnv* jni_env_;

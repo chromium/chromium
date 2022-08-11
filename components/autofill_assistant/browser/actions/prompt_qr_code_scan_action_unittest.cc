@@ -56,6 +56,8 @@ class PromptQrCodeScanActionTest : public testing::Test {
     proto_.mutable_camera_scan_ui_strings()
         ->set_camera_preview_instruction_text(
             "Camera preview instruction text");
+    proto_.mutable_camera_scan_ui_strings()->set_camera_preview_security_text(
+        "Camera preview security text");
   }
 
   void setImagePickerUiStrings() {

@@ -273,6 +273,8 @@ void PromptQrCodeCameraScan(
       camera_scan_ui_strings->open_settings_button_text());
   qr_code_camera_scan_model_wrapper.SetCameraPreviewInstructionText(
       camera_scan_ui_strings->camera_preview_instruction_text());
+  qr_code_camera_scan_model_wrapper.SetCameraPreviewSecurityText(
+      camera_scan_ui_strings->camera_preview_security_text());
 
   Java_AssistantQrCodeUtil_promptQrCodeCameraScan(
       env,

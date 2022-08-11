@@ -1863,6 +1863,9 @@ message PromptQrCodeScanProto {
 
     // Instruction text shown during camera preview.
     optional string camera_preview_instruction_text = 6;
+
+    // Security text shown during camera preview.
+    optional string camera_preview_security_text = 7;
   }
 
   // UI strings shown to the user during QR Code Scanning via Image Picker.

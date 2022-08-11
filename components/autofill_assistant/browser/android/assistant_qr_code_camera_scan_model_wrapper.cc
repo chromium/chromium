@@ -68,8 +68,15 @@ void AssistantQrCodeCameraScanModelWrapper::SetOpenSettingsButtonText(
 
 void AssistantQrCodeCameraScanModelWrapper::SetCameraPreviewInstructionText(
     const std::string& camera_preview_instruction_text) {
-  Java_AssistantQrCodeCameraScanModelWrapper_setOverlayTitle(
+  Java_AssistantQrCodeCameraScanModelWrapper_setOverlayInstructionText(
       jni_env_, java_assistant_camera_scan_model_wrapper_,
       ConvertUTF8ToJavaString(jni_env_, camera_preview_instruction_text));
+}
+
+void AssistantQrCodeCameraScanModelWrapper::SetCameraPreviewSecurityText(
+    const std::string& camera_preview_security_text) {
+  Java_AssistantQrCodeCameraScanModelWrapper_setOverlaySecurityText(
+      jni_env_, java_assistant_camera_scan_model_wrapper_,
+      ConvertUTF8ToJavaString(jni_env_, camera_preview_security_text));
 }
 }  // namespace autofill_assistant

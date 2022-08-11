@@ -42,9 +42,12 @@ class AssistantQrCodeCameraScanBinder implements ViewBinder<AssistantQrCodeCamer
                     model.get(AssistantQrCodeCameraScanModel.IS_ON_FOREGROUND));
         } else if (propertyKey == AssistantQrCodeCameraScanModel.TOOLBAR_TITLE) {
             viewHolder.mTitleView.setText(model.get(AssistantQrCodeCameraScanModel.TOOLBAR_TITLE));
-        } else if (propertyKey == AssistantQrCodeCameraScanModel.OVERLAY_TITLE) {
-            viewHolder.mCameraPreviewOverlay.setTextInstructions(
-                    model.get(AssistantQrCodeCameraScanModel.OVERLAY_TITLE));
+        } else if (propertyKey == AssistantQrCodeCameraScanModel.OVERLAY_INSTRUCTION_TEXT) {
+            viewHolder.mCameraPreviewOverlay.setInstructionText(
+                    model.get(AssistantQrCodeCameraScanModel.OVERLAY_INSTRUCTION_TEXT));
+        } else if (propertyKey == AssistantQrCodeCameraScanModel.OVERLAY_SECURITY_TEXT) {
+            viewHolder.mCameraPreviewOverlay.setSecurityText(
+                    model.get(AssistantQrCodeCameraScanModel.OVERLAY_SECURITY_TEXT));
         } else {
             assert false : "Unhandled property detected in AssistantQrCodeCameraScanBinder!";
         }

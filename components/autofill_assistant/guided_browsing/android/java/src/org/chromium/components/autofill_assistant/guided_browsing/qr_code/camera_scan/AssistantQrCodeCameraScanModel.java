@@ -24,8 +24,12 @@ public class AssistantQrCodeCameraScanModel extends PropertyModel {
     static final WritableObjectPropertyKey<String> TOOLBAR_TITLE =
             new WritableObjectPropertyKey<>();
 
-    /** Camera Scan Preview Overlay Title. */
-    static final WritableObjectPropertyKey<String> OVERLAY_TITLE =
+    /** Camera Scan Preview Overlay Instruction Text. */
+    static final WritableObjectPropertyKey<String> OVERLAY_INSTRUCTION_TEXT =
+            new WritableObjectPropertyKey<>();
+
+    /** Camera Scan Preview Overlay Security Text. */
+    static final WritableObjectPropertyKey<String> OVERLAY_SECURITY_TEXT =
             new WritableObjectPropertyKey<>();
 
     private final AssistantQrCodePermissionModel mPermissionModel;
@@ -34,7 +38,8 @@ public class AssistantQrCodeCameraScanModel extends PropertyModel {
      * The AssistantQrCodeCameraScanModel constructor.
      */
     public AssistantQrCodeCameraScanModel() {
-        super(DELEGATE, IS_ON_FOREGROUND, TOOLBAR_TITLE, OVERLAY_TITLE);
+        super(DELEGATE, IS_ON_FOREGROUND, TOOLBAR_TITLE, OVERLAY_INSTRUCTION_TEXT,
+                OVERLAY_SECURITY_TEXT);
         mPermissionModel = new AssistantQrCodePermissionModel();
     }
 
@@ -50,8 +55,12 @@ public class AssistantQrCodeCameraScanModel extends PropertyModel {
         set(TOOLBAR_TITLE, text);
     }
 
-    public void setOverlayTitle(String text) {
-        set(OVERLAY_TITLE, text);
+    public void setOverlayInstructionText(String text) {
+        set(OVERLAY_INSTRUCTION_TEXT, text);
+    }
+
+    public void setOverlaySecurityText(String text) {
+        set(OVERLAY_SECURITY_TEXT, text);
     }
 
     public void setPermissionText(String text) {
