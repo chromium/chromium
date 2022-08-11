@@ -63,7 +63,14 @@ IN_PROC_BROWSER_TEST_F(TotalInputDelayIntegrationTest, NoInputEvent) {
       PageLoad::kInteractiveTiming_TotalAdjustedInputDelayName, int64_t(0), 0);
 }
 
-IN_PROC_BROWSER_TEST_F(TotalInputDelayIntegrationTest, MultipleInputEvents) {
+// TODO(crbug.com/1352082): Fix flakiness.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+#define MAYBE_MultipleInputEvents DISABLED_MultipleInputEvents
+#else
+#define MAYBE_MultipleInputEvents MultipleInputEvents
+#endif
+IN_PROC_BROWSER_TEST_F(TotalInputDelayIntegrationTest,
+                       MAYBE_MultipleInputEvents) {
   auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
       web_contents());
   waiter->AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
