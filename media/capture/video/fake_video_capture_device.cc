@@ -540,9 +540,9 @@ FakeVideoCaptureDevice::FakeVideoCaptureDevice(
     std::unique_ptr<FakePhotoDevice> photo_device,
     std::unique_ptr<FakeDeviceState> device_state)
     : supported_formats_(supported_formats),
-      frame_deliverer_factory_(std::move(frame_deliverer_factory)),
+      device_state_(std::move(device_state)),
       photo_device_(std::move(photo_device)),
-      device_state_(std::move(device_state)) {}
+      frame_deliverer_factory_(std::move(frame_deliverer_factory)) {}
 
 FakeVideoCaptureDevice::~FakeVideoCaptureDevice() {
   DCHECK(thread_checker_.CalledOnValidThread());
