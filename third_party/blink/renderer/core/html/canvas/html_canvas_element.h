@@ -283,9 +283,7 @@ class CORE_EXPORT HTMLCanvasElement final
   bool IsWebGL1Enabled() const override;
   bool IsWebGL2Enabled() const override;
   bool IsWebGLBlocked() const override;
-  void SetContextCreationWasBlocked() override {
-    context_creation_was_blocked_ = true;
-  }
+  void SetContextCreationWasBlocked() override;
 
   ScriptPromise convertToBlob(ScriptState*,
                               const ImageEncodeOptions*,

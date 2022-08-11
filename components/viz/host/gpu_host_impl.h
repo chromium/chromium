@@ -82,8 +82,8 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost
     virtual void DidUpdateOverlayInfo(const gpu::OverlayInfo& overlay_info) = 0;
     virtual void DidUpdateDXGIInfo(gfx::mojom::DXGIInfoPtr dxgi_info) = 0;
 #endif
-    virtual void BlockDomainFrom3DAPIs(const GURL& url,
-                                       gpu::DomainGuilt guilt) = 0;
+    virtual void BlockDomainsFrom3DAPIs(const std::set<GURL>& urls,
+                                        gpu::DomainGuilt guilt) = 0;
     virtual void DisableGpuCompositing() = 0;
     virtual bool GpuAccessAllowed() const = 0;
     virtual gpu::GpuDiskCacheFactory* GetGpuDiskCacheFactory() = 0;

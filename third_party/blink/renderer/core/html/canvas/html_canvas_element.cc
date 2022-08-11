@@ -479,6 +479,13 @@ bool HTMLCanvasElement::IsWebGLBlocked() const {
   return blocked;
 }
 
+void HTMLCanvasElement::SetContextCreationWasBlocked() {
+  context_creation_was_blocked_ = true;
+  // This canvas's cc::Layer (or whether it has one at all) has likely
+  // changed, so schedule a compositing update.
+  SetNeedsCompositingUpdate();
+}
+
 void HTMLCanvasElement::DidDraw(const SkIRect& rect) {
   if (rect.isEmpty())
     return;

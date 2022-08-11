@@ -236,12 +236,15 @@ crbug.com/773293 [ android android-nexus-5 ] Pixel_WebGL2_ClearBufferfv_Result_D
 crbug.com/1213674 [ mac amd-0x6821 passthrough ] Pixel_WebGLGreenTriangle_NonChromiumImage_NoAA_NoAlpha [ Failure ]
 crbug.com/1213674 [ mac nvidia passthrough ] Pixel_WebGLGreenTriangle_NonChromiumImage_NoAA_NoAlpha [ Failure ]
 
+# TODO(kbr): temporary suppression until new images are triaged.
+crbug.com/1167246 [ linux ] Pixel_WebGLSadCanvas [ Failure ]
+crbug.com/1167246 [ win ] Pixel_WebGLSadCanvas [ Failure ]
+crbug.com/1167246 [ mac ] Pixel_WebGLSadCanvas [ Failure ]
+crbug.com/1167246 [ android android-chromium ] Pixel_WebGLSadCanvas [ Failure ]
+crbug.com/1167246 [ fuchsia ] Pixel_WebGLSadCanvas [ Failure ]
+
 # TODO(kbr): temporary suppression for new test.
-crbug.com/575305 [ linux ] Pixel_WebGLSadCanvas [ Failure ]
-crbug.com/575305 [ win ] Pixel_WebGLSadCanvas [ Failure ]
-crbug.com/872423 [ mac ] Pixel_WebGLSadCanvas [ Failure ]
-crbug.com/575305 [ android android-chromium ] Pixel_WebGLSadCanvas [ Failure ]
-crbug.com/575305 [ fuchsia ] Pixel_WebGLSadCanvas [ Failure ]
+crbug.com/1167246 Pixel_WebGLContextRestored [ Failure ]
 
 # Fails on Nexus 5
 crbug.com/883500 [ android android-nexus-5 ] Pixel_BackgroundImage [ Failure ]

@@ -169,7 +169,8 @@ class GpuProcessHost : public BrowserChildProcessHostDelegate,
   void DidUpdateOverlayInfo(const gpu::OverlayInfo& overlay_info) override;
   void DidUpdateDXGIInfo(gfx::mojom::DXGIInfoPtr dxgi_info) override;
 #endif
-  void BlockDomainFrom3DAPIs(const GURL& url, gpu::DomainGuilt guilt) override;
+  void BlockDomainsFrom3DAPIs(const std::set<GURL>& urls,
+                              gpu::DomainGuilt guilt) override;
   void DisableGpuCompositing() override;
   bool GpuAccessAllowed() const override;
   gpu::GpuDiskCacheFactory* GetGpuDiskCacheFactory() override;

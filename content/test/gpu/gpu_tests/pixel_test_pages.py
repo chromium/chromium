@@ -194,10 +194,15 @@ class PixelTestPages():
                       base_name +
                       '_WebGLTransparentGreenTriangle_NoAlpha_ImplicitClear',
                       test_rect=[0, 0, 300, 300]),
-        PixelTestPage('pixel_webgl_sad_canvas.html',
-                      base_name + '_WebGLSadCanvas',
+        PixelTestPage('pixel_webgl_context_restored.html',
+                      base_name + '_WebGLContextRestored',
                       test_rect=[0, 0, 300, 300],
                       optional_action='CrashGpuProcess'),
+        PixelTestPage(
+            'pixel_webgl_sad_canvas.html',
+            base_name + '_WebGLSadCanvas',
+            test_rect=[0, 0, 300, 300],
+            optional_action='CrashGpuProcessTwiceWaitForContextRestored'),
         PixelTestPage('pixel_scissor.html',
                       base_name + '_ScissorTestWithPreserveDrawingBuffer',
                       test_rect=[0, 0, 300, 300]),

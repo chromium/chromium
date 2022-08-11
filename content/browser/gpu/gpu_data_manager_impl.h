@@ -180,11 +180,14 @@ class CONTENT_EXPORT GpuDataManagerImpl : public GpuDataManager,
   // using client-facing 3D APIs (WebGL, Pepper 3D), either because
   // the domain has caused the GPU to reset, or because too many GPU
   // resets have been observed globally recently, and system stability
-  // might be compromised.
+  // might be compromised. A set of URLs is passed because in the
+  // situation where the GPU process crashes, the implementation needs
+  // to know that these URLs all came from the same crash.
   //
-  // The given URL may be a partial URL (including at least the host)
-  // or a full URL to a page.
-  void BlockDomainFrom3DAPIs(const GURL& url, gpu::DomainGuilt guilt);
+  // In the set, each URL may be a partial URL (including at least the
+  // host) or a full URL to a page.
+  void BlockDomainsFrom3DAPIs(const std::set<GURL>& urls,
+                              gpu::DomainGuilt guilt);
   bool Are3DAPIsBlocked(const GURL& top_origin_url,
                         ThreeDAPIType requester);
   void UnblockDomainFrom3DAPIs(const GURL& url);

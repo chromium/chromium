@@ -1056,9 +1056,9 @@ void GpuProcessHost::DidUpdateDXGIInfo(gfx::mojom::DXGIInfoPtr dxgi_info) {
 }
 #endif
 
-void GpuProcessHost::BlockDomainFrom3DAPIs(const GURL& url,
-                                           gpu::DomainGuilt guilt) {
-  GpuDataManagerImpl::GetInstance()->BlockDomainFrom3DAPIs(url, guilt);
+void GpuProcessHost::BlockDomainsFrom3DAPIs(const std::set<GURL>& urls,
+                                            gpu::DomainGuilt guilt) {
+  GpuDataManagerImpl::GetInstance()->BlockDomainsFrom3DAPIs(urls, guilt);
 }
 
 bool GpuProcessHost::GpuAccessAllowed() const {

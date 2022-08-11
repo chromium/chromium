@@ -341,10 +341,10 @@ void GpuDataManagerImpl::HandleGpuSwitch() {
   private_->HandleGpuSwitch();
 }
 
-void GpuDataManagerImpl::BlockDomainFrom3DAPIs(const GURL& url,
-                                               gpu::DomainGuilt guilt) {
+void GpuDataManagerImpl::BlockDomainsFrom3DAPIs(const std::set<GURL>& urls,
+                                                gpu::DomainGuilt guilt) {
   base::AutoLock auto_lock(lock_);
-  private_->BlockDomainFrom3DAPIs(url, guilt);
+  private_->BlockDomainsFrom3DAPIs(urls, guilt);
 }
 
 bool GpuDataManagerImpl::Are3DAPIsBlocked(const GURL& top_origin_url,

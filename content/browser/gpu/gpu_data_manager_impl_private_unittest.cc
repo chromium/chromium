@@ -18,6 +18,7 @@
 #include "content/public/browser/gpu_data_manager_observer.h"
 #include "content/public/common/content_switches.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
+#include "gpu/config/gpu_domain_guilt.h"
 #include "gpu/config/gpu_feature_type.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_info.h"
@@ -63,8 +64,24 @@ static GURL GetDomain1ForTesting() {
   return GURL("http://foo.com/");
 }
 
+static GURL GetDomain1URL1ForTesting() {
+  return GURL("http://foo.com/url1");
+}
+
+static GURL GetDomain1URL2ForTesting() {
+  return GURL("http://foo.com/url2");
+}
+
 static GURL GetDomain2ForTesting() {
   return GURL("http://bar.com/");
+}
+
+static GURL GetDomain3ForTesting() {
+  return GURL("http://baz.com/");
+}
+
+static GURL GetDomain4ForTesting() {
+  return GURL("http://yabba.com/");
 }
 
 [[maybe_unused]] gpu::GpuFeatureInfo GetGpuFeatureInfoWithOneDisabled(
@@ -139,6 +156,10 @@ class GpuDataManagerImplPrivateTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
+class GpuDataManagerImplPrivateTestP
+    : public GpuDataManagerImplPrivateTest,
+      public testing::WithParamInterface<gpu::DomainGuilt> {};
+
 // We use new method instead of GetInstance() method because we want
 // each test to be independent of each other.
 
@@ -165,122 +186,277 @@ TEST_F(GpuDataManagerImplPrivateTest, GpuInfoUpdate) {
 
 base::Time GpuDataManagerImplPrivateTest::JustBeforeExpiration(
     const GpuDataManagerImplPrivate* manager) {
-  return GetTimeForTesting() +
-         base::Milliseconds(manager->GetBlockAllDomainsDurationInMs()) -
+  return GetTimeForTesting() + manager->GetDomainBlockingExpirationPeriod() -
          base::Milliseconds(3);
 }
 
 base::Time GpuDataManagerImplPrivateTest::JustAfterExpiration(
     const GpuDataManagerImplPrivate* manager) {
-  return GetTimeForTesting() +
-         base::Milliseconds(manager->GetBlockAllDomainsDurationInMs()) +
+  return GetTimeForTesting() + manager->GetDomainBlockingExpirationPeriod() +
          base::Milliseconds(3);
 }
 
-void GpuDataManagerImplPrivateTest::TestBlockingDomainFrom3DAPIs(
-    gpu::DomainGuilt guilt_level) {
+TEST_P(GpuDataManagerImplPrivateTestP, SingleContextLossDoesNotBlockDomain) {
   ScopedGpuDataManagerImplPrivate manager;
+  gpu::DomainGuilt guilt_level = GetParam();
 
-  manager->BlockDomainFrom3DAPIsAtTime(GetDomain1ForTesting(),
-                                      guilt_level,
-                                      GetTimeForTesting());
+  manager->BlockDomainsFrom3DAPIsAtTime({{GetDomain1ForTesting()}}, guilt_level,
+                                        GetTimeForTesting());
 
-  // This domain should be blocked no matter what.
+  EXPECT_EQ(GpuDataManagerImplPrivate::DomainBlockStatus::kNotBlocked,
+            manager->Are3DAPIsBlockedAtTime(GetDomain1ForTesting(),
+                                            GetTimeForTesting()));
+}
+
+TEST_P(GpuDataManagerImplPrivateTestP, TwoContextLossesBlockDomain) {
+  ScopedGpuDataManagerImplPrivate manager;
+  gpu::DomainGuilt guilt_level = GetParam();
+
+  manager->BlockDomainsFrom3DAPIsAtTime({{GetDomain1ForTesting()}}, guilt_level,
+                                        GetTimeForTesting());
+  manager->BlockDomainsFrom3DAPIsAtTime({{GetDomain1ForTesting()}}, guilt_level,
+                                        GetTimeForTesting() + base::Seconds(1));
+
   EXPECT_EQ(GpuDataManagerImplPrivate::DomainBlockStatus::kBlocked,
             manager->Are3DAPIsBlockedAtTime(GetDomain1ForTesting(),
                                             GetTimeForTesting()));
+}
+
+TEST_P(GpuDataManagerImplPrivateTestP,
+       TwoSimultaneousContextLossesDoNotBlockDomain) {
+  ScopedGpuDataManagerImplPrivate manager;
+  gpu::DomainGuilt guilt_level = GetParam();
+
+  std::set<GURL> urls;
+  urls.insert(GetDomain1URL1ForTesting());
+  urls.insert(GetDomain1URL2ForTesting());
+
+  manager->BlockDomainsFrom3DAPIsAtTime(urls, guilt_level, GetTimeForTesting());
+  EXPECT_EQ(GpuDataManagerImplPrivate::DomainBlockStatus::kNotBlocked,
+            manager->Are3DAPIsBlockedAtTime(GetDomain1ForTesting(),
+                                            GetTimeForTesting()));
+}
+
+TEST_P(GpuDataManagerImplPrivateTestP, DomainBlockExpires) {
+  ScopedGpuDataManagerImplPrivate manager;
+  gpu::DomainGuilt guilt_level = GetParam();
+
+  manager->BlockDomainsFrom3DAPIsAtTime({{GetDomain1ForTesting()}}, guilt_level,
+                                        GetTimeForTesting());
+  manager->BlockDomainsFrom3DAPIsAtTime({{GetDomain1ForTesting()}}, guilt_level,
+                                        GetTimeForTesting() + base::Seconds(1));
+
   EXPECT_EQ(GpuDataManagerImplPrivate::DomainBlockStatus::kBlocked,
             manager->Are3DAPIsBlockedAtTime(
                 GetDomain1ForTesting(), JustBeforeExpiration(manager.get())));
-  EXPECT_EQ(GpuDataManagerImplPrivate::DomainBlockStatus::kBlocked,
+  EXPECT_EQ(GpuDataManagerImplPrivate::DomainBlockStatus::kNotBlocked,
             manager->Are3DAPIsBlockedAtTime(
                 GetDomain1ForTesting(), JustAfterExpiration(manager.get())));
 }
 
-void GpuDataManagerImplPrivateTest::TestUnblockingDomainFrom3DAPIs(
-    gpu::DomainGuilt guilt_level) {
+TEST_P(GpuDataManagerImplPrivateTestP, UnblockDomain) {
   ScopedGpuDataManagerImplPrivate manager;
+  gpu::DomainGuilt guilt_level = GetParam();
 
-  manager->BlockDomainFrom3DAPIsAtTime(GetDomain1ForTesting(),
-                                       guilt_level,
-                                       GetTimeForTesting());
+  manager->BlockDomainsFrom3DAPIsAtTime({{GetDomain1ForTesting()}}, guilt_level,
+                                        GetTimeForTesting());
+  manager->BlockDomainsFrom3DAPIsAtTime({{GetDomain1ForTesting()}}, guilt_level,
+                                        GetTimeForTesting() + base::Seconds(1));
 
-  // Unblocking the domain should work.
+  EXPECT_EQ(GpuDataManagerImplPrivate::DomainBlockStatus::kBlocked,
+            manager->Are3DAPIsBlockedAtTime(GetDomain1ForTesting(),
+                                            GetTimeForTesting()));
   manager->UnblockDomainFrom3DAPIs(GetDomain1ForTesting());
   EXPECT_EQ(GpuDataManagerImplPrivate::DomainBlockStatus::kNotBlocked,
             manager->Are3DAPIsBlockedAtTime(GetDomain1ForTesting(),
                                             GetTimeForTesting()));
+}
+
+TEST_P(GpuDataManagerImplPrivateTestP, Domain1DoesNotBlockDomain2) {
+  ScopedGpuDataManagerImplPrivate manager;
+  gpu::DomainGuilt guilt_level = GetParam();
+
+  manager->BlockDomainsFrom3DAPIsAtTime({{GetDomain1ForTesting()}}, guilt_level,
+                                        GetTimeForTesting());
+  std::set<GURL> urls;
+  urls.insert(GetDomain1ForTesting());
+  urls.insert(GetDomain2ForTesting());
+  manager->BlockDomainsFrom3DAPIsAtTime(urls, guilt_level,
+                                        GetTimeForTesting() + base::Seconds(1));
+
+  EXPECT_EQ(GpuDataManagerImplPrivate::DomainBlockStatus::kBlocked,
+            manager->Are3DAPIsBlockedAtTime(GetDomain1ForTesting(),
+                                            GetTimeForTesting()));
   EXPECT_EQ(GpuDataManagerImplPrivate::DomainBlockStatus::kNotBlocked,
+            manager->Are3DAPIsBlockedAtTime(GetDomain2ForTesting(),
+                                            GetTimeForTesting()));
+}
+
+TEST_P(GpuDataManagerImplPrivateTestP, UnblockingDomain1DoesNotUnblockDomain2) {
+  ScopedGpuDataManagerImplPrivate manager;
+  gpu::DomainGuilt guilt_level = GetParam();
+
+  manager->BlockDomainsFrom3DAPIsAtTime({{GetDomain1ForTesting()}}, guilt_level,
+                                        GetTimeForTesting());
+  manager->BlockDomainsFrom3DAPIsAtTime({{GetDomain1ForTesting()}}, guilt_level,
+                                        GetTimeForTesting() + base::Seconds(1));
+  manager->BlockDomainsFrom3DAPIsAtTime({{GetDomain2ForTesting()}}, guilt_level,
+                                        GetTimeForTesting() + base::Seconds(2));
+  manager->BlockDomainsFrom3DAPIsAtTime({{GetDomain2ForTesting()}}, guilt_level,
+                                        GetTimeForTesting() + base::Seconds(3));
+
+  EXPECT_EQ(GpuDataManagerImplPrivate::DomainBlockStatus::kBlocked,
+            manager->Are3DAPIsBlockedAtTime(GetDomain1ForTesting(),
+                                            GetTimeForTesting()));
+  EXPECT_EQ(GpuDataManagerImplPrivate::DomainBlockStatus::kBlocked,
+            manager->Are3DAPIsBlockedAtTime(GetDomain2ForTesting(),
+                                            GetTimeForTesting()));
+  manager->UnblockDomainFrom3DAPIs(GetDomain1ForTesting());
+  EXPECT_EQ(GpuDataManagerImplPrivate::DomainBlockStatus::kNotBlocked,
+            manager->Are3DAPIsBlockedAtTime(GetDomain1ForTesting(),
+                                            GetTimeForTesting()));
+  EXPECT_EQ(GpuDataManagerImplPrivate::DomainBlockStatus::kBlocked,
+            manager->Are3DAPIsBlockedAtTime(GetDomain2ForTesting(),
+                                            GetTimeForTesting()));
+}
+
+TEST_P(GpuDataManagerImplPrivateTestP, SimultaneousContextLossDoesNotBlock) {
+  ScopedGpuDataManagerImplPrivate manager;
+  gpu::DomainGuilt guilt_level = GetParam();
+
+  std::set<GURL> urls;
+  urls.insert(GetDomain1ForTesting());
+  urls.insert(GetDomain2ForTesting());
+  urls.insert(GetDomain3ForTesting());
+
+  manager->BlockDomainsFrom3DAPIsAtTime(urls, guilt_level, GetTimeForTesting());
+
+  EXPECT_EQ(
+      GpuDataManagerImplPrivate::DomainBlockStatus::kNotBlocked,
+      manager->Are3DAPIsBlockedAtTime(GetDomain1ForTesting(),
+                                      GetTimeForTesting() + base::Seconds(3)));
+  EXPECT_EQ(
+      GpuDataManagerImplPrivate::DomainBlockStatus::kNotBlocked,
+      manager->Are3DAPIsBlockedAtTime(GetDomain2ForTesting(),
+                                      GetTimeForTesting() + base::Seconds(3)));
+  EXPECT_EQ(
+      GpuDataManagerImplPrivate::DomainBlockStatus::kNotBlocked,
+      manager->Are3DAPIsBlockedAtTime(GetDomain3ForTesting(),
+                                      GetTimeForTesting() + base::Seconds(3)));
+}
+
+TEST_P(GpuDataManagerImplPrivateTestP, MultipleTDRsBlockAll) {
+  ScopedGpuDataManagerImplPrivate manager;
+  gpu::DomainGuilt guilt_level = GetParam();
+
+  // TDR = Timeout Detection and Recovery.
+  base::TimeDelta tdr_interval = base::Seconds(1);
+
+  manager->BlockDomainsFrom3DAPIsAtTime({{GetDomain1ForTesting()}}, guilt_level,
+                                        GetTimeForTesting());
+  manager->BlockDomainsFrom3DAPIsAtTime({{GetDomain2ForTesting()}}, guilt_level,
+                                        GetTimeForTesting() + tdr_interval);
+  manager->BlockDomainsFrom3DAPIsAtTime({{GetDomain3ForTesting()}}, guilt_level,
+                                        GetTimeForTesting() + 2 * tdr_interval);
+
+  EXPECT_EQ(
+      GpuDataManagerImplPrivate::DomainBlockStatus::kAllDomainsBlocked,
+      manager->Are3DAPIsBlockedAtTime(GetDomain1ForTesting(),
+                                      GetTimeForTesting() + 2 * tdr_interval));
+  EXPECT_EQ(
+      GpuDataManagerImplPrivate::DomainBlockStatus::kAllDomainsBlocked,
+      manager->Are3DAPIsBlockedAtTime(GetDomain2ForTesting(),
+                                      GetTimeForTesting() + 2 * tdr_interval));
+  EXPECT_EQ(
+      GpuDataManagerImplPrivate::DomainBlockStatus::kAllDomainsBlocked,
+      manager->Are3DAPIsBlockedAtTime(GetDomain3ForTesting(),
+                                      GetTimeForTesting() + 2 * tdr_interval));
+}
+
+TEST_P(GpuDataManagerImplPrivateTestP, MultipleTDRsExpire) {
+  ScopedGpuDataManagerImplPrivate manager;
+  gpu::DomainGuilt guilt_level = GetParam();
+
+  // TDR = Timeout Detection and Recovery.
+  base::TimeDelta tdr_interval = base::Seconds(1);
+
+  manager->BlockDomainsFrom3DAPIsAtTime({{GetDomain1ForTesting()}}, guilt_level,
+                                        GetTimeForTesting());
+  manager->BlockDomainsFrom3DAPIsAtTime({{GetDomain2ForTesting()}}, guilt_level,
+                                        GetTimeForTesting() + tdr_interval);
+  manager->BlockDomainsFrom3DAPIsAtTime({{GetDomain3ForTesting()}}, guilt_level,
+                                        GetTimeForTesting() + 2 * tdr_interval);
+
+  // Note that querying at given times has side effects, so query in
+  // order of increasing time.
+  EXPECT_EQ(GpuDataManagerImplPrivate::DomainBlockStatus::kAllDomainsBlocked,
             manager->Are3DAPIsBlockedAtTime(
                 GetDomain1ForTesting(), JustBeforeExpiration(manager.get())));
-  EXPECT_EQ(GpuDataManagerImplPrivate::DomainBlockStatus::kNotBlocked,
-            manager->Are3DAPIsBlockedAtTime(
-                GetDomain1ForTesting(), JustAfterExpiration(manager.get())));
-}
-
-TEST_F(GpuDataManagerImplPrivateTest, BlockGuiltyDomainFrom3DAPIs) {
-  TestBlockingDomainFrom3DAPIs(gpu::DomainGuilt::kKnown);
-}
-
-TEST_F(GpuDataManagerImplPrivateTest, BlockDomainOfUnknownGuiltFrom3DAPIs) {
-  TestBlockingDomainFrom3DAPIs(gpu::DomainGuilt::kUnknown);
-}
-
-TEST_F(GpuDataManagerImplPrivateTest, BlockAllDomainsFrom3DAPIs) {
-  ScopedGpuDataManagerImplPrivate manager;
-
-  manager->BlockDomainFrom3DAPIsAtTime(
-      GetDomain1ForTesting(), gpu::DomainGuilt::kUnknown, GetTimeForTesting());
-
-  // Blocking of other domains should expire.
   EXPECT_EQ(GpuDataManagerImplPrivate::DomainBlockStatus::kAllDomainsBlocked,
             manager->Are3DAPIsBlockedAtTime(
                 GetDomain2ForTesting(), JustBeforeExpiration(manager.get())));
+  EXPECT_EQ(GpuDataManagerImplPrivate::DomainBlockStatus::kAllDomainsBlocked,
+            manager->Are3DAPIsBlockedAtTime(
+                GetDomain3ForTesting(), JustBeforeExpiration(manager.get())));
+  EXPECT_EQ(GpuDataManagerImplPrivate::DomainBlockStatus::kNotBlocked,
+            manager->Are3DAPIsBlockedAtTime(
+                GetDomain1ForTesting(), JustAfterExpiration(manager.get())));
   EXPECT_EQ(GpuDataManagerImplPrivate::DomainBlockStatus::kNotBlocked,
             manager->Are3DAPIsBlockedAtTime(
                 GetDomain2ForTesting(), JustAfterExpiration(manager.get())));
+  EXPECT_EQ(GpuDataManagerImplPrivate::DomainBlockStatus::kNotBlocked,
+            manager->Are3DAPIsBlockedAtTime(
+                GetDomain3ForTesting(), JustAfterExpiration(manager.get())));
 }
 
-TEST_F(GpuDataManagerImplPrivateTest, UnblockGuiltyDomainFrom3DAPIs) {
-  TestUnblockingDomainFrom3DAPIs(gpu::DomainGuilt::kKnown);
-}
-
-TEST_F(GpuDataManagerImplPrivateTest, UnblockDomainOfUnknownGuiltFrom3DAPIs) {
-  TestUnblockingDomainFrom3DAPIs(gpu::DomainGuilt::kUnknown);
-}
-
-TEST_F(GpuDataManagerImplPrivateTest, UnblockOtherDomainFrom3DAPIs) {
+TEST_P(GpuDataManagerImplPrivateTestP, MultipleTDRsCanBeUnblocked) {
   ScopedGpuDataManagerImplPrivate manager;
+  gpu::DomainGuilt guilt_level = GetParam();
 
-  manager->BlockDomainFrom3DAPIsAtTime(
-      GetDomain1ForTesting(), gpu::DomainGuilt::kUnknown, GetTimeForTesting());
+  // TDR = Timeout Detection and Recovery.
+  base::TimeDelta tdr_interval = base::Seconds(1);
+
+  manager->BlockDomainsFrom3DAPIsAtTime({{GetDomain1ForTesting()}}, guilt_level,
+                                        GetTimeForTesting());
+  manager->BlockDomainsFrom3DAPIsAtTime({{GetDomain2ForTesting()}}, guilt_level,
+                                        GetTimeForTesting() + tdr_interval);
+  manager->BlockDomainsFrom3DAPIsAtTime({{GetDomain3ForTesting()}}, guilt_level,
+                                        GetTimeForTesting() + 2 * tdr_interval);
+  manager->BlockDomainsFrom3DAPIsAtTime({{GetDomain4ForTesting()}}, guilt_level,
+                                        GetTimeForTesting() + 3 * tdr_interval);
+
+  base::Time query_time = JustBeforeExpiration(manager.get());
+
+  EXPECT_EQ(
+      GpuDataManagerImplPrivate::DomainBlockStatus::kAllDomainsBlocked,
+      manager->Are3DAPIsBlockedAtTime(GetDomain1ForTesting(), query_time));
+  EXPECT_EQ(
+      GpuDataManagerImplPrivate::DomainBlockStatus::kAllDomainsBlocked,
+      manager->Are3DAPIsBlockedAtTime(GetDomain4ForTesting(), query_time));
 
   manager->UnblockDomainFrom3DAPIs(GetDomain2ForTesting());
 
-  EXPECT_EQ(GpuDataManagerImplPrivate::DomainBlockStatus::kNotBlocked,
-            manager->Are3DAPIsBlockedAtTime(
-                GetDomain2ForTesting(), JustBeforeExpiration(manager.get())));
+  EXPECT_EQ(
+      GpuDataManagerImplPrivate::DomainBlockStatus::kAllDomainsBlocked,
+      manager->Are3DAPIsBlockedAtTime(GetDomain1ForTesting(), query_time));
+  EXPECT_EQ(
+      GpuDataManagerImplPrivate::DomainBlockStatus::kAllDomainsBlocked,
+      manager->Are3DAPIsBlockedAtTime(GetDomain4ForTesting(), query_time));
 
-  // The original domain should still be blocked.
-  EXPECT_EQ(GpuDataManagerImplPrivate::DomainBlockStatus::kBlocked,
-            manager->Are3DAPIsBlockedAtTime(
-                GetDomain1ForTesting(), JustBeforeExpiration(manager.get())));
+  manager->UnblockDomainFrom3DAPIs(GetDomain3ForTesting());
+
+  EXPECT_EQ(
+      GpuDataManagerImplPrivate::DomainBlockStatus::kNotBlocked,
+      manager->Are3DAPIsBlockedAtTime(GetDomain1ForTesting(), query_time));
+  EXPECT_EQ(
+      GpuDataManagerImplPrivate::DomainBlockStatus::kNotBlocked,
+      manager->Are3DAPIsBlockedAtTime(GetDomain4ForTesting(), query_time));
 }
 
-TEST_F(GpuDataManagerImplPrivateTest, UnblockThisDomainFrom3DAPIs) {
-  ScopedGpuDataManagerImplPrivate manager;
-
-  manager->BlockDomainFrom3DAPIsAtTime(
-      GetDomain1ForTesting(), gpu::DomainGuilt::kUnknown, GetTimeForTesting());
-
-  manager->UnblockDomainFrom3DAPIs(GetDomain1ForTesting());
-
-  // This behavior is debatable. Perhaps the GPU reset caused by
-  // domain 1 should still cause other domains to be blocked.
-  EXPECT_EQ(GpuDataManagerImplPrivate::DomainBlockStatus::kNotBlocked,
-            manager->Are3DAPIsBlockedAtTime(
-                GetDomain2ForTesting(), JustBeforeExpiration(manager.get())));
-}
+INSTANTIATE_TEST_SUITE_P(GpuDataManagerImplPrivateTest,
+                         GpuDataManagerImplPrivateTestP,
+                         ::testing::Values(gpu::DomainGuilt::kKnown,
+                                           gpu::DomainGuilt::kUnknown));
 
 // Android and Chrome OS do not support software compositing, while Fuchsia does
 // not support falling back to software from Vulkan.

@@ -2,7 +2,7 @@
 
 <html>
 <head>
-<title>WebGL Sad Canvas Test</title>
+<title>WebGL Context Restored Test</title>
 <style type="text/css">
 .nomargin {
   margin: 0px auto;
@@ -23,18 +23,15 @@ function sendResult(status, detail) {
 // so give it a few seconds before proceeding.
 var numFramesBeforeEnd = 180;
 
-// The heuristics allow one WebGL context restoration in a given time
-// period.
-var numContextLosses = 0;
-
-// Test harness looks for this to know when to kill the GPU process
-// the second time.
-var contextRestored = false;
-
 var gl;
 
 function clearToRed() {
   gl.clearColor(1.0, 0.0, 0.0, 1.0);
+  gl.clear(gl.COLOR_BUFFER_BIT);
+}
+
+function clearToGreen() {
+  gl.clearColor(0.0, 1.0, 0.0, 1.0);
   gl.clear(gl.COLOR_BUFFER_BIT);
 }
 
@@ -50,8 +47,8 @@ function main() {
   canvas.addEventListener('webglcontextrestored', contextRestoredHandler, false);
 
   // Clear the canvas to red. The harness will then crash the GPU
-  // process for us, causing the canvas to be drawn as a "sad canvas".
-  // Ensure this mechanism is working correctly.
+  // process for us, the context will be restored, and the canvas will
+  // be cleared to green.  Ensure this mechanism is working correctly.
   clearToRed();
 
   // Sending READY will make the GPU process crash.
@@ -62,16 +59,13 @@ function contextLostHandler(e)
 {
   console.log("Context lost");
   e.preventDefault();
-  ++numContextLosses;
-  if (numContextLosses == 2)
-    waitForFinish();
 }
 
 function contextRestoredHandler()
 {
   console.log("Context restored");
-  clearToRed();
-  contextRestored = true;
+  clearToGreen();
+  waitForFinish();
 }
 
 function waitForFinish()

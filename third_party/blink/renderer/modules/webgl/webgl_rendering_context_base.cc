@@ -8467,8 +8467,12 @@ void WebGLRenderingContextBase::DispatchContextLostEvent(TimerBase*) {
   Host()->HostDispatchEvent(event);
   restore_allowed_ = event->defaultPrevented();
   if (restore_allowed_ && !is_hidden_) {
-    if (auto_recovery_method_ == kAuto)
-      restore_timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
+    if (auto_recovery_method_ == kAuto) {
+      // Defer the restore timer to give the context loss
+      // notifications time to propagate through the system: in
+      // particular, to the browser process.
+      restore_timer_.StartOneShot(kDurationBetweenRestoreAttempts, FROM_HERE);
+    }
   }
 
   if (!restore_allowed_) {
@@ -8503,8 +8507,13 @@ void WebGLRenderingContextBase::MaybeRestoreContext(TimerBase*) {
         gpu_data_manager.BindNewPipeAndPassReceiver());
     gpu_data_manager->Are3DAPIsBlockedForUrl(canvas()->GetDocument().Url(),
                                              &blocked);
-    if (blocked)
+    if (blocked) {
+      // Notify the canvas if it wasn't already. This has the side
+      // effect of scheduling a compositing update so the "sad canvas"
+      // will show up properly.
+      canvas()->SetContextCreationWasBlocked();
       return;
+    }
 
     Settings* settings = frame->GetSettings();
     if (settings && ((context_type_ == Platform::kWebGL1ContextType &&
@@ -8565,6 +8574,16 @@ void WebGLRenderingContextBase::MaybeRestoreContext(TimerBase*) {
   InitializeNewContext();
   MarkContextChanged(kCanvasContextChanged,
                      CanvasPerformanceMonitor::DrawType::kOther);
+  if (canvas()) {
+    // The cc::Layer associated with this WebGL rendering context has
+    // changed, so tell the canvas that a compositing update is
+    // needed.
+    //
+    // TODO(kbr): more work likely needed for the case of a canvas
+    // whose control has transferred to an OffscreenCanvas.
+    canvas()->SetNeedsCompositingUpdate();
+  }
+
   WebGLContextEvent* event =
       WebGLContextEvent::Create(event_type_names::kWebglcontextrestored, "");
   Host()->HostDispatchEvent(event);

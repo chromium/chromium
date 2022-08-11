@@ -195,9 +195,9 @@ void GpuHostImpl::AddConnectionErrorHandler(base::OnceClosure handler) {
 void GpuHostImpl::BlockLiveOffscreenContexts() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  for (auto& url : urls_with_live_offscreen_contexts_) {
-    delegate_->BlockDomainFrom3DAPIs(url, gpu::DomainGuilt::kUnknown);
-  }
+  std::set<GURL> urls(urls_with_live_offscreen_contexts_.begin(),
+                      urls_with_live_offscreen_contexts_.end());
+  delegate_->BlockDomainsFrom3DAPIs(urls, gpu::DomainGuilt::kUnknown);
 }
 
 void GpuHostImpl::ConnectFrameSinkManager(
@@ -549,7 +549,8 @@ void GpuHostImpl::DidLoseContext(bool offscreen,
       return;
   }
 
-  delegate_->BlockDomainFrom3DAPIs(active_url, guilt);
+  std::set<GURL> urls{active_url};
+  delegate_->BlockDomainsFrom3DAPIs(urls, guilt);
 }
 
 void GpuHostImpl::DisableGpuCompositing() {
