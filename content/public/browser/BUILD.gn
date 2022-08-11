@@ -426,6 +426,8 @@ source_set("browser_sources") {
     "web_ui_controller.cc",
     "web_ui_controller.h",
     "web_ui_controller_factory.h",
+    "web_ui_controller_interface_binder.cc",
+    "web_ui_controller_interface_binder.h",
     "web_ui_data_source.h",
     "web_ui_message_handler.h",
     "web_ui_url_loader_factory.h",

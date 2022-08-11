@@ -21,6 +21,7 @@
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_controller_factory.h"
+#include "content/public/browser/web_ui_controller_interface_binder.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/url_constants.h"
@@ -187,10 +188,10 @@ class MojoWebUIControllerBrowserTest : public InProcessBrowserTest {
         mojo::BinderMapWithContext<content::RenderFrameHost*>* map) override {
       ChromeContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
           render_frame_host, map);
-      chrome::internal::RegisterWebUIControllerInterfaceBinder<
-          ::test::mojom::Bar, FooBarUI>(map);
-      chrome::internal::RegisterWebUIControllerInterfaceBinder<
-          ::test::mojom::Foo, FooUI, FooBarUI>(map);
+      content::RegisterWebUIControllerInterfaceBinder<::test::mojom::Bar,
+                                                      FooBarUI>(map);
+      content::RegisterWebUIControllerInterfaceBinder<::test::mojom::Foo, FooUI,
+                                                      FooBarUI>(map);
     }
   };
 

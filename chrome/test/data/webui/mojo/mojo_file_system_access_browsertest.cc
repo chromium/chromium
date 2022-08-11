@@ -9,7 +9,6 @@
 #include "base/test/bind.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/bad_message.h"
-#include "chrome/browser/chrome_browser_interface_binders.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -25,6 +24,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_controller_factory.h"
+#include "content/public/browser/web_ui_controller_interface_binder.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/extra_mojo_js_features.mojom.h"
@@ -196,7 +196,7 @@ class MojoFileSystemAccessBrowserTest : public InProcessBrowserTest {
         mojo::BinderMapWithContext<content::RenderFrameHost*>* map) override {
       ChromeContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
           render_frame_host, map);
-      chrome::internal::RegisterWebUIControllerInterfaceBinder<
+      content::RegisterWebUIControllerInterfaceBinder<
           ::test::mojom::MojoFileSystemAccessTest, MojoFileSystemAccessUI>(map);
     }
   };
