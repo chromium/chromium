@@ -49,7 +49,9 @@ LocalFrameUkmAggregator::ScopedUkmHierarchicalTimer::ScopedUkmHierarchicalTimer(
     : aggregator_(aggregator),
       metric_index_(metric_index),
       clock_(clock),
-      start_time_(clock_->NowTicks()) {}
+      start_time_(aggregator && aggregator->ShouldMeasureMetric(metric_index)
+                      ? clock_->NowTicks()
+                      : base::TimeTicks()) {}
 
 LocalFrameUkmAggregator::ScopedUkmHierarchicalTimer::ScopedUkmHierarchicalTimer(
     ScopedUkmHierarchicalTimer&& other)
@@ -62,7 +64,8 @@ LocalFrameUkmAggregator::ScopedUkmHierarchicalTimer::ScopedUkmHierarchicalTimer(
 
 LocalFrameUkmAggregator::ScopedUkmHierarchicalTimer::
     ~ScopedUkmHierarchicalTimer() {
-  if (aggregator_ && base::TimeTicks::IsHighResolution()) {
+  if (aggregator_ && base::TimeTicks::IsHighResolution() &&
+      !start_time_.is_null()) {
     aggregator_->RecordTimerSample(metric_index_, start_time_,
                                    clock_->NowTicks());
   }
@@ -74,27 +77,36 @@ LocalFrameUkmAggregator::IterativeTimer::IterativeTimer(
 }
 
 LocalFrameUkmAggregator::IterativeTimer::~IterativeTimer() {
-  if (aggregator_.get() && metric_index_ != -1)
-    Record();
+  if (aggregator_.get())
+    Record(aggregator_->ShouldMeasureMetric(metric_index_), false);
 }
 
 void LocalFrameUkmAggregator::IterativeTimer::StartInterval(
     int64_t metric_index) {
   if (aggregator_.get() && metric_index != metric_index_) {
-    Record();
-    metric_index_ = metric_index;
+    bool should_record_prev_metric =
+        aggregator_->ShouldMeasureMetric(metric_index_);
+    bool should_record_next_metric =
+        aggregator_->ShouldMeasureMetric(metric_index);
+    Record(should_record_prev_metric, should_record_next_metric);
+    if (should_record_next_metric)
+      metric_index_ = metric_index;
   }
 }
 
-void LocalFrameUkmAggregator::IterativeTimer::Record() {
+void LocalFrameUkmAggregator::IterativeTimer::Record(
+    bool should_record_prev_metric,
+    bool should_record_next_metric) {
   DCHECK(aggregator_.get());
-  base::TimeTicks now = aggregator_->GetClock()->NowTicks();
-  if (metric_index_ != -1) {
-    aggregator_->RecordTimerSample(base::saturated_cast<size_t>(metric_index_),
-                                   start_time_, now);
+  if (should_record_prev_metric || should_record_next_metric) {
+    base::TimeTicks now = aggregator_->GetClock()->NowTicks();
+    if (should_record_prev_metric) {
+      aggregator_->RecordTimerSample(
+          base::saturated_cast<size_t>(metric_index_), start_time_, now);
+    }
+    start_time_ = now;
   }
   metric_index_ = -1;
-  start_time_ = now;
 }
 
 void LocalFrameUkmAggregator::AbsoluteMetricRecord::reset() {
@@ -175,6 +187,21 @@ LocalFrameUkmAggregator::LocalFrameUkmAggregator(int64_t source_id,
 
 LocalFrameUkmAggregator::~LocalFrameUkmAggregator() {
   ReportUpdateTimeEvent();
+}
+
+bool LocalFrameUkmAggregator::ShouldMeasureMetric(int64_t metric_id) const {
+  if (metric_id < 0 || metric_id > kMainFrame)
+    return false;
+
+  // Downsample IntersectionObserver sub-categories. Note that
+  // kIntersectionObservation, which measures a single aggregated time for all
+  // IntersectionObserver-related work, is unaffected.
+  if (metric_id >= kDisplayLockIntersectionObserver &&
+      metric_id <= kUpdateViewportIntersection) {
+    return frames_since_last_report_ % intersection_observer_sample_period_ ==
+           0;
+  }
+  return true;
 }
 
 LocalFrameUkmAggregator::ScopedUkmHierarchicalTimer

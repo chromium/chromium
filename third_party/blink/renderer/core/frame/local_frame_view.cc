@@ -4682,6 +4682,10 @@ LocalFrameUkmAggregator& LocalFrameView::EnsureUkmAggregator() {
     local_root->ukm_aggregator_ = base::MakeRefCounted<LocalFrameUkmAggregator>(
         local_root->frame_->GetDocument()->UkmSourceID(),
         local_root->frame_->GetDocument()->UkmRecorder());
+    if (base::FeatureList::IsEnabled(
+            features::kThrottleIntersectionObserverUMA)) {
+      local_root->ukm_aggregator_->SetIntersectionObserverSamplePeriod(10);
+    }
   }
   return *local_root->ukm_aggregator_;
 }

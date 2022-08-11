@@ -1588,5 +1588,8 @@ const base::Feature kClipboardUnsanitizedContent{
 const base::Feature kWebRtcThreadsUseResourceEfficientType{
     "WebRtcThreadsUseResourceEfficientType", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kThrottleIntersectionObserverUMA{
+    "ThrottleIntersectionObserverUMA", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink

@@ -26,7 +26,8 @@ class LocalFrameUkmAggregatorTest : public testing::Test {
   ~LocalFrameUkmAggregatorTest() override = default;
 
   void SetUp() override {
-    test_task_runner_ = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+    test_task_runner_ = base::MakeRefCounted<base::TestMockTimeTaskRunner>(
+        base::Time::UnixEpoch(), base::TimeTicks::Now());
     RestartAggregator();
   }
 
@@ -570,6 +571,69 @@ TEST_F(LocalFrameUkmAggregatorTest, IterativeTimer) {
   EXPECT_EQ(GetIntervalCount(LocalFrameUkmAggregator::kStyle), 5);
   EXPECT_EQ(GetIntervalCount(LocalFrameUkmAggregator::kLayout), 18);
   EXPECT_EQ(GetIntervalCount(LocalFrameUkmAggregator::kPrePaint), 13);
+}
+
+TEST_F(LocalFrameUkmAggregatorTest, IntersectionObserverSamplePeriod) {
+  if (!base::TimeTicks::IsHighResolution())
+    return;
+  aggregator().SetIntersectionObserverSamplePeriod(2);
+  cc::ActiveFrameSequenceTrackers trackers =
+      1 << static_cast<unsigned>(
+          cc::FrameSequenceTrackerType::kSETMainThreadAnimation);
+  base::HistogramTester histogram_tester;
+
+  // First main frame, everything gets recorded
+  auto start_time = Now();
+  aggregator().BeginMainFrame();
+  {
+    LocalFrameUkmAggregator::IterativeTimer timer(aggregator());
+    timer.StartInterval(LocalFrameUkmAggregator::kLayout);
+    test_task_runner_->FastForwardBy(base::Milliseconds(1));
+    timer.StartInterval(
+        LocalFrameUkmAggregator::kDisplayLockIntersectionObserver);
+    test_task_runner_->FastForwardBy(base::Milliseconds(1));
+  }
+  aggregator().RecordEndOfFrameMetrics(start_time, Now(), trackers);
+  histogram_tester.ExpectUniqueSample("Blink.Layout.UpdateTime.PreFCP", 1000,
+                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "Blink.DisplayLockIntersectionObserver.UpdateTime.PreFCP", 1000, 1);
+
+  // Second main frame, IO metrics don't get recorded
+  test_task_runner_->FastForwardBy(base::Milliseconds(1));
+  start_time = Now();
+  aggregator().BeginMainFrame();
+  {
+    LocalFrameUkmAggregator::IterativeTimer timer(aggregator());
+    timer.StartInterval(LocalFrameUkmAggregator::kLayout);
+    test_task_runner_->FastForwardBy(base::Milliseconds(1));
+    timer.StartInterval(
+        LocalFrameUkmAggregator::kDisplayLockIntersectionObserver);
+    test_task_runner_->FastForwardBy(base::Milliseconds(1));
+  }
+  aggregator().RecordEndOfFrameMetrics(start_time, Now(), trackers);
+  histogram_tester.ExpectUniqueSample("Blink.Layout.UpdateTime.PreFCP", 1000,
+                                      2);
+  histogram_tester.ExpectUniqueSample(
+      "Blink.DisplayLockIntersectionObserver.UpdateTime.PreFCP", 1000, 1);
+
+  // Third main frame, everything gets recorded
+  test_task_runner_->FastForwardBy(base::Milliseconds(1));
+  start_time = Now();
+  aggregator().BeginMainFrame();
+  {
+    LocalFrameUkmAggregator::IterativeTimer timer(aggregator());
+    timer.StartInterval(LocalFrameUkmAggregator::kLayout);
+    test_task_runner_->FastForwardBy(base::Milliseconds(1));
+    timer.StartInterval(
+        LocalFrameUkmAggregator::kDisplayLockIntersectionObserver);
+    test_task_runner_->FastForwardBy(base::Milliseconds(1));
+  }
+  aggregator().RecordEndOfFrameMetrics(start_time, Now(), trackers);
+  histogram_tester.ExpectUniqueSample("Blink.Layout.UpdateTime.PreFCP", 1000,
+                                      3);
+  histogram_tester.ExpectUniqueSample(
+      "Blink.DisplayLockIntersectionObserver.UpdateTime.PreFCP", 1000, 2);
 }
 
 class LocalFrameUkmAggregatorSimTest : public SimTest {

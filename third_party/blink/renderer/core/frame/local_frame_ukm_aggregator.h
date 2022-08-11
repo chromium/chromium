@@ -253,7 +253,7 @@ class CORE_EXPORT LocalFrameUkmAggregator
     void StartInterval(int64_t metric_index);
 
    private:
-    void Record();
+    void Record(bool should_record_prev_metric, bool should_record_next_metric);
     scoped_refptr<LocalFrameUkmAggregator> aggregator_;
     base::TimeTicks start_time_;
     int64_t metric_index_ = -1;
@@ -265,6 +265,9 @@ class CORE_EXPORT LocalFrameUkmAggregator
   ~LocalFrameUkmAggregator();
 
   const base::TickClock* GetClock() const { return clock_; }
+
+  // For performance reasons, we don't record all metrics for all frames.
+  bool ShouldMeasureMetric(int64_t metric_id) const;
 
   // Create a scoped timer with the index of the metric. Note the index must
   // correspond to the matching index in metric_names.
@@ -326,6 +329,10 @@ class CORE_EXPORT LocalFrameUkmAggregator
   std::unique_ptr<cc::BeginMainFrameMetrics> GetBeginMainFrameMetrics();
 
   bool IsBeforeFCPForTesting() const;
+
+  void SetIntersectionObserverSamplePeriod(size_t period) {
+    intersection_observer_sample_period_ = period;
+  }
 
  private:
   struct AbsoluteMetricRecord {
@@ -417,6 +424,13 @@ class CORE_EXPORT LocalFrameUkmAggregator
     kMustNotChooseNextFrame
   };
   SampleControlForTest next_frame_sample_control_for_test_ = kNoPreference;
+
+  // When they are collected, the overhead of granular IntersectionObserver
+  // metrics is a large part of overall LocalFrameUkmAggregator overhead. The
+  // granular metrics are useful for pinpointing regressions, but we can get
+  // most of the benefit even if we downsample them. This value controls how
+  // frequently we collect granular IntersectionObserver metrics.
+  size_t intersection_observer_sample_period_ = 1;
 };
 
 }  // namespace blink
