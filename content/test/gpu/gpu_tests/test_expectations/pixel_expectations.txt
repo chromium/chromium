@@ -432,6 +432,9 @@ crbug.com/1340081 [ linux release amd-0x7340 ] Pixel_ScissorTestWithPreserveDraw
 
 crbug.com/1345777 [ android ] Pixel_VideoStreamFromWebGLAlphaCanvas [ Skip ]
 
+# Skip on M105
+crbug.com/1351914 [ linux skia-renderer-vulkan ] Pixel_VulkanSwiftShader_WebGPUWebGLTexImage2D [ Skip ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
