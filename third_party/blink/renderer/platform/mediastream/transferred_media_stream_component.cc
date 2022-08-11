@@ -57,6 +57,15 @@ MediaStreamSource::StreamType TransferredMediaStreamComponent::GetSourceType()
   return MediaStreamSource::StreamType::kTypeVideo;
 }
 
+MediaStreamSource::ReadyState TransferredMediaStreamComponent::GetReadyState()
+    const {
+  if (component_) {
+    return component_->GetReadyState();
+  }
+  // TODO(crbug.com/1288839): Return the transferred value
+  return MediaStreamSource::ReadyState::kReadyStateEnded;
+}
+
 bool TransferredMediaStreamComponent::Remote() const {
   if (component_) {
     return component_->Remote();

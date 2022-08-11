@@ -135,7 +135,7 @@ BrowserCaptureMediaStreamTrack::BrowserCaptureMediaStreamTrack(
     bool is_clone)
     : BrowserCaptureMediaStreamTrack(execution_context,
                                      component,
-                                     component->Source()->GetReadyState(),
+                                     component->GetReadyState(),
                                      std::move(callback),
                                      descriptor_id,
                                      is_clone) {}

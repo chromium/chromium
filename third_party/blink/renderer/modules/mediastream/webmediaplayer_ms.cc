@@ -75,8 +75,7 @@ enum class RendererReloadAction {
 
 bool IsPlayableTrack(MediaStreamComponent* component) {
   return component && component->Source() &&
-         component->Source()->GetReadyState() !=
-             MediaStreamSource::kReadyStateEnded;
+         component->GetReadyState() != MediaStreamSource::kReadyStateEnded;
 }
 
 const char* LoadTypeToString(WebMediaPlayer::LoadType type) {

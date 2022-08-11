@@ -275,12 +275,11 @@ bool MediaRecorderHandler::Start(int timeslice) {
   }
 
   const bool use_video_tracks =
-      !video_tracks_.IsEmpty() && video_tracks_[0]->Source()->GetReadyState() !=
-                                      MediaStreamSource::kReadyStateEnded;
-  const bool use_audio_tracks = !audio_tracks_.IsEmpty() &&
-                                audio_tracks_[0]->GetPlatformTrack() &&
-                                audio_tracks_[0]->Source()->GetReadyState() !=
-                                    MediaStreamSource::kReadyStateEnded;
+      !video_tracks_.IsEmpty() &&
+      video_tracks_[0]->GetReadyState() != MediaStreamSource::kReadyStateEnded;
+  const bool use_audio_tracks =
+      !audio_tracks_.IsEmpty() && audio_tracks_[0]->GetPlatformTrack() &&
+      audio_tracks_[0]->GetReadyState() != MediaStreamSource::kReadyStateEnded;
 
   if (!use_video_tracks && !use_audio_tracks) {
     LOG(WARNING) << __func__ << ": no tracks to be recorded.";
@@ -676,7 +675,7 @@ void MediaRecorderHandler::UpdateTrackLiveAndEnabled(
     const MediaStreamComponent& track,
     bool is_video) {
   const bool track_live_and_enabled =
-      track.Source()->GetReadyState() == MediaStreamSource::kReadyStateLive &&
+      track.GetReadyState() == MediaStreamSource::kReadyStateLive &&
       track.Enabled();
   if (webm_muxer_)
     webm_muxer_->SetLiveAndEnabled(track_live_and_enabled, is_video);
@@ -685,12 +684,12 @@ void MediaRecorderHandler::UpdateTrackLiveAndEnabled(
 void MediaRecorderHandler::OnSourceReadyStateChanged() {
   for (const auto& track : video_tracks_) {
     DCHECK(track->Source());
-    if (track->Source()->GetReadyState() != MediaStreamSource::kReadyStateEnded)
+    if (track->GetReadyState() != MediaStreamSource::kReadyStateEnded)
       return;
   }
   for (const auto& track : audio_tracks_) {
     DCHECK(track->Source());
-    if (track->Source()->GetReadyState() != MediaStreamSource::kReadyStateEnded)
+    if (track->GetReadyState() != MediaStreamSource::kReadyStateEnded)
       return;
   }
   // All tracks are ended, so stop the recorder in accordance with

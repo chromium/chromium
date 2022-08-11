@@ -66,6 +66,7 @@ class PLATFORM_EXPORT MediaStreamComponent : public GarbageCollectedMixin {
   // Uniquely identifies this component.
   virtual int UniqueId() const = 0;
   virtual MediaStreamSource::StreamType GetSourceType() const = 0;
+  virtual MediaStreamSource::ReadyState GetReadyState() const = 0;
   virtual bool Remote() const = 0;
   virtual bool Enabled() const = 0;
   virtual void SetEnabled(bool enabled) = 0;

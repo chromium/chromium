@@ -633,8 +633,7 @@ bool V8ScriptValueSerializerForModules::WriteMediaStreamTrack(
   WriteOneByte(track->enabled());
   WriteOneByte(track->muted());
   WriteUint32Enum(SerializeContentHint(track->Component()->ContentHint()));
-  WriteUint32Enum(
-      SerializeReadyState(track->Component()->Source()->GetReadyState()));
+  WriteUint32Enum(SerializeReadyState(track->Component()->GetReadyState()));
   return true;
 }
 

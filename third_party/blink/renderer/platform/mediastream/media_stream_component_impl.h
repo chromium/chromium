@@ -85,6 +85,9 @@ class PLATFORM_EXPORT MediaStreamComponentImpl final
   MediaStreamSource::StreamType GetSourceType() const override {
     return Source()->GetType();
   }
+  MediaStreamSource::ReadyState GetReadyState() const override {
+    return Source()->GetReadyState();
+  }
   bool Remote() const override { return Source()->Remote(); }
   bool Enabled() const override { return enabled_; }
   void SetEnabled(bool enabled) override { enabled_ = enabled; }

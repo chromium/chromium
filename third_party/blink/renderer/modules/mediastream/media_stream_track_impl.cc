@@ -256,7 +256,7 @@ MediaStreamTrackImpl::MediaStreamTrackImpl(ExecutionContext* context,
                                            MediaStreamComponent* component)
     : MediaStreamTrackImpl(context,
                            component,
-                           component->Source()->GetReadyState(),
+                           component->GetReadyState(),
                            /*callback=*/base::DoNothing()) {}
 
 MediaStreamTrackImpl::MediaStreamTrackImpl(ExecutionContext* context,
@@ -264,7 +264,7 @@ MediaStreamTrackImpl::MediaStreamTrackImpl(ExecutionContext* context,
                                            base::OnceClosure callback)
     : MediaStreamTrackImpl(context,
                            component,
-                           component->Source()->GetReadyState(),
+                           component->GetReadyState(),
                            std::move(callback)) {}
 
 MediaStreamTrackImpl::MediaStreamTrackImpl(
@@ -795,7 +795,7 @@ void MediaStreamTrackImpl::SourceChangedState() {
   // Note that both 'live' and 'muted' correspond to a 'live' ready state in the
   // web API, hence the following logic around |feature_handle_for_scheduler_|.
 
-  setReadyState(component_->Source()->GetReadyState());
+  setReadyState(component_->GetReadyState());
   switch (ready_state_) {
     case MediaStreamSource::kReadyStateLive:
       muted_ = false;

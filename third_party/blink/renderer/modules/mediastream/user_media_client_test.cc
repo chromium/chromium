@@ -131,8 +131,7 @@ void CheckVideoSourceAndTrack(blink::MediaStreamVideoSource* source,
                               double expected_track_frame_rate) {
   CheckVideoSource(source, expected_source_width, expected_source_height,
                    expected_source_frame_rate);
-  EXPECT_EQ(component->Source()->GetReadyState(),
-            MediaStreamSource::kReadyStateLive);
+  EXPECT_EQ(component->GetReadyState(), MediaStreamSource::kReadyStateLive);
   MediaStreamVideoTrack* track = MediaStreamVideoTrack::From(component);
   EXPECT_EQ(track->source(), source);
 
@@ -1380,8 +1379,7 @@ TEST_F(UserMediaClientTest,
   source->DisableRestart();
   ApplyConstraintsVideoMode(component, 640, 480);
 
-  EXPECT_EQ(component->Source()->GetReadyState(),
-            MediaStreamSource::kReadyStateEnded);
+  EXPECT_EQ(component->GetReadyState(), MediaStreamSource::kReadyStateEnded);
   EXPECT_FALSE(source->IsRunning());
 }
 
@@ -1401,8 +1399,7 @@ TEST_F(UserMediaClientTest, ApplyConstraintsVideoDeviceStopped) {
   MediaStreamTrackPlatform* track =
       MediaStreamTrackPlatform::GetTrack(WebMediaStreamTrack(component));
   track->Stop();
-  EXPECT_EQ(component->Source()->GetReadyState(),
-            MediaStreamSource::kReadyStateEnded);
+  EXPECT_EQ(component->GetReadyState(), MediaStreamSource::kReadyStateEnded);
   EXPECT_FALSE(source->IsRunning());
   {
     MediaStreamTrackPlatform::Settings settings;
@@ -1413,8 +1410,7 @@ TEST_F(UserMediaClientTest, ApplyConstraintsVideoDeviceStopped) {
   }
 
   ApplyConstraintsVideoMode(component, 640, 480);
-  EXPECT_EQ(component->Source()->GetReadyState(),
-            MediaStreamSource::kReadyStateEnded);
+  EXPECT_EQ(component->GetReadyState(), MediaStreamSource::kReadyStateEnded);
   EXPECT_FALSE(source->IsRunning());
   {
     MediaStreamTrackPlatform::Settings settings;

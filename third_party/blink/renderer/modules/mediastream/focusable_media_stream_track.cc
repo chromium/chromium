@@ -20,7 +20,7 @@ FocusableMediaStreamTrack::FocusableMediaStreamTrack(
     bool is_clone)
     : FocusableMediaStreamTrack(execution_context,
                                 component,
-                                component->Source()->GetReadyState(),
+                                component->GetReadyState(),
                                 std::move(callback),
                                 descriptor_id,
                                 is_clone) {}
