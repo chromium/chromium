@@ -110,6 +110,12 @@
   #selectedFileName {
     color: var(--cros-text-color-primary);
   }
+
+  #selectedFileContainer {
+    display: flex;
+    flex-direction: row-reverse;
+  }
+
 </style>
 <div id="addFileContainer" hidden="[[hasSelectedAFile_]]">
   <button id="addFileLabel" class="file-input"
@@ -123,18 +129,22 @@
 <div id="replaceFileContainer" hidden="[[!hasSelectedAFile_]]">
   <cr-checkbox id="selectFileCheckbox" class="no-label">
   </cr-checkbox>
-  <div id="replaceFileInfo">
-    <div id="selectedFileName" class="overflow-text">[[selectedFileName_]]</div>
-    <button id="replaceFileButton" class="file-input"
-        aria-label="[[i18n('replaceFileArialLabel')]]"
-        on-click="handleOpenFileInputClick_">
-      [[i18n('replaceFileLabel')]]
+  <div id="selectedFileContainer">
+    <button id="selectedImageButton" on-click="handleSelectedImageClick_"
+        hidden="[[!selectedImageUrl_]]">
+      <img id="selectedFileImage" src="[[selectedImageUrl_]]">
     </button>
+    <div id="replaceFileInfo">
+      <div id="selectedFileName" class="overflow-text">
+        [[selectedFileName_]]
+      </div>
+      <button id="replaceFileButton" class="file-input"
+          aria-label="[[i18n('replaceFileArialLabel')]]"
+          on-click="handleOpenFileInputClick_">
+        [[i18n('replaceFileLabel')]]
+      </button>
+    </div>
   </div>
-  <button id="selectedImageButton" on-click="handleSelectedImageClick_"
-      hidden="[[!selectedImageUrl_]]">
-    <img id="selectedFileImage" src="[[selectedImageUrl_]]">
-  </button>
 </div>
 <cr-toast id="fileTooBigErrorMessage" duration="5000">
   <iron-icon id="toastInfoIcon" class="error-outline" icon="cr:error-outline">
