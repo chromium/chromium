@@ -2846,8 +2846,7 @@ void GLES2DecoderPassthroughImpl::ProcessDescheduleUntilFinished() {
   TRACE_EVENT_NESTABLE_ASYNC_END0(
       "cc", "GLES2DecoderPassthroughImpl::DescheduleUntilFinished",
       TRACE_ID_LOCAL(this));
-  deschedule_until_finished_fences_.erase(
-      deschedule_until_finished_fences_.begin());
+  deschedule_until_finished_fences_.pop_front();
   client()->OnRescheduleAfterFinished();
 }
 

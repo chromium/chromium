@@ -4647,8 +4647,7 @@ error::Error GLES2DecoderPassthroughImpl::DoDescheduleUntilFinishedCHROMIUM() {
 
   DCHECK_EQ(2u, deschedule_until_finished_fences_.size());
   if (deschedule_until_finished_fences_[0]->HasCompleted()) {
-    deschedule_until_finished_fences_.erase(
-        deschedule_until_finished_fences_.begin());
+    deschedule_until_finished_fences_.pop_front();
     return error::kNoError;
   }
 

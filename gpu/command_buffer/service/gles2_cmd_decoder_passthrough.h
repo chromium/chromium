@@ -9,11 +9,11 @@
 
 #include <algorithm>
 #include <memory>
-#include <set>
-#include <unordered_map>
 #include <vector>
 
 #include "base/containers/circular_deque.h"
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "gpu/command_buffer/common/debug_marker_manager.h"
@@ -141,7 +141,7 @@ struct PassthroughResources {
 
   // Mapping of client buffer IDs that are mapped to the shared memory used to
   // back the mapping so that it can be flushed when the buffer is unmapped
-  std::unordered_map<GLuint, MappedBuffer> mapped_buffer_map;
+  base::flat_map<GLuint, MappedBuffer> mapped_buffer_map;
 };
 
 class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
@@ -655,7 +655,7 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
   std::vector<TexturePendingBinding> textures_pending_binding_;
 
   // State tracking of currently bound buffers
-  std::unordered_map<GLenum, GLuint> bound_buffers_;
+  base::flat_map<GLenum, GLuint> bound_buffers_;
   // Lazy tracking of the bound element array buffer when changing VAOs.
   bool bound_element_array_buffer_dirty_;
 
@@ -663,7 +663,7 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
   struct QueryInfo {
     GLenum type = GL_NONE;
   };
-  std::unordered_map<GLuint, QueryInfo> query_info_map_;
+  base::flat_map<GLuint, QueryInfo> query_info_map_;
 
   // All queries that are waiting for their results to be ready
   struct PendingQuery {
@@ -711,7 +711,7 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
     base::TimeTicks command_processing_start_time;
     base::TimeDelta active_time;
   };
-  std::unordered_map<GLenum, ActiveQuery> active_queries_;
+  base::flat_map<GLenum, ActiveQuery> active_queries_;
 
   // Pending async ReadPixels calls
   struct PendingReadPixels {
@@ -757,7 +757,7 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
   BufferShadowUpdateMap buffer_shadow_updates_;
 
   // Error state
-  std::set<GLenum> errors_;
+  base::flat_set<GLenum> errors_;
 
   // Checks if an error has been generated since the last call to
   // CheckErrorCallbackState
@@ -879,7 +879,8 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
   // After a second fence is inserted, both the GpuChannelMessageQueue and
   // CommandExecutor are descheduled. Once the first fence has completed, both
   // get rescheduled.
-  std::vector<std::unique_ptr<gl::GLFence>> deschedule_until_finished_fences_;
+  base::circular_deque<std::unique_ptr<gl::GLFence>>
+      deschedule_until_finished_fences_;
 
   GLuint linking_program_service_id_ = 0u;
 
