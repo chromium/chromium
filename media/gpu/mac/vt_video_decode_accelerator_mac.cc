@@ -2149,7 +2149,6 @@ bool VTVideoDecodeAccelerator::SendFrame(const Frame& frame) {
       gl_params.format = gl_format;
       gl_params.type = GL_UNSIGNED_BYTE;
       gl_params.is_cleared = true;
-      gpu::GLTextureImageBackingHelper::UnpackStateAttribs gl_attribs;
 
       // Making the GL context current before performing below shared image
       // tasks.
@@ -2163,7 +2162,7 @@ bool VTVideoDecodeAccelerator::SendFrame(const Frame& frame) {
       auto shared_image = std::make_unique<gpu::GLImageBacking>(
           gl_image, mailbox, viz_resource_format, plane_size, color_space,
           kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType, shared_image_usage,
-          gl_params, gl_attribs, gl_client_.is_passthrough);
+          gl_params, gl_client_.is_passthrough);
 
       const bool success = shared_image_stub->factory()->RegisterBacking(
           std::move(shared_image), /*allow_legacy_mailbox=*/false);

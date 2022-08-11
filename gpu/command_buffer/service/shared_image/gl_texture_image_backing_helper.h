@@ -27,19 +27,10 @@ class GPU_GLES2_EXPORT GLTextureImageBackingHelper {
     bool has_immutable_storage = false;
   };
 
-  // Attributes needed to know what state to restore for GL upload and copy.
-  struct UnpackStateAttribs {
-    bool es3_capable = false;
-    bool desktop_gl = false;
-    bool supports_unpack_subimage = false;
-  };
-
   // Object used to restore state around GL upload and copy.
   class ScopedResetAndRestoreUnpackState {
    public:
-    ScopedResetAndRestoreUnpackState(gl::GLApi* api,
-                                     const UnpackStateAttribs& attribs,
-                                     bool uploading_data);
+    explicit ScopedResetAndRestoreUnpackState(bool uploading_data);
 
     ScopedResetAndRestoreUnpackState(const ScopedResetAndRestoreUnpackState&) =
         delete;

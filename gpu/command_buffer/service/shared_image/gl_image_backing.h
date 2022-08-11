@@ -187,7 +187,6 @@ class GPU_GLES2_EXPORT GLImageBacking
       SkAlphaType alpha_type,
       uint32_t usage,
       const GLTextureImageBackingHelper::InitializeGLTextureParams& params,
-      const GLTextureImageBackingHelper::UnpackStateAttribs& attribs,
       bool is_passthrough);
   GLImageBacking(const GLImageBacking& other) = delete;
   GLImageBacking& operator=(const GLImageBacking& other) = delete;
@@ -257,7 +256,6 @@ class GPU_GLES2_EXPORT GLImageBacking
   bool gl_texture_retained_for_legacy_mailbox_ = false;
 
   const GLTextureImageBackingHelper::InitializeGLTextureParams gl_params_;
-  const GLTextureImageBackingHelper::UnpackStateAttribs gl_unpack_attribs_;
   const bool is_passthrough_;
 
   // This is the cleared rect used by ClearedRect and SetClearedRect when

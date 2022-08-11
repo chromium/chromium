@@ -79,7 +79,6 @@ class GPU_GLES2_EXPORT GLCommonImageBackingFactory
   FormatInfo format_info_[viz::RESOURCE_FORMAT_MAX + 1];
   int32_t max_texture_size_ = 0;
   bool texture_usage_angle_ = false;
-  GLTextureImageBackingHelper::UnpackStateAttribs attribs_;
   GpuDriverBugWorkarounds workarounds_;
   WebGPUAdapterName use_webgpu_adapter_ = WebGPUAdapterName::kDefault;
 

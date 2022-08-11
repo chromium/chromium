@@ -186,7 +186,6 @@ EGLImageBacking::EGLImageBacking(
     size_t estimated_size,
     const GLCommonImageBackingFactory::FormatInfo format_info,
     const GpuDriverBugWorkarounds& workarounds,
-    const GLTextureImageBackingHelper::UnpackStateAttribs& attribs,
     bool use_passthrough,
     base::span<const uint8_t> pixel_data)
     : ClearTrackingSharedImageBacking(mailbox,
@@ -199,7 +198,6 @@ EGLImageBacking::EGLImageBacking(
                                       estimated_size,
                                       true /*is_thread_safe*/),
       format_info_(format_info),
-      gl_unpack_attribs_(attribs),
       use_passthrough_(use_passthrough) {
   created_on_context_ = gl::g_current_gl_context;
   // On some GPUs (NVidia) keeping reference to egl image itself is not enough,
@@ -405,21 +403,20 @@ EGLImageBacking::GenEGLImageSibling(base::span<const uint8_t> pixel_data) {
 
         if (!pixel_data.empty()) {
           GLTextureImageBackingHelper::ScopedResetAndRestoreUnpackState
-              scoped_unpack_state(api, gl_unpack_attribs_,
-                                  true /* uploading_data */);
+              scoped_unpack_state(/*uploading_data=*/true);
           api->glTexSubImage2DFn(target, 0, 0, 0, size().width(),
                                  size().height(), format_info_.adjusted_format,
                                  format_info_.gl_type, pixel_data.data());
         }
       } else if (format_info_.is_compressed) {
         GLTextureImageBackingHelper::ScopedResetAndRestoreUnpackState
-            scoped_unpack_state(api, gl_unpack_attribs_, !pixel_data.empty());
+            scoped_unpack_state(!pixel_data.empty());
         api->glCompressedTexImage2DFn(
             target, 0, format_info_.image_internal_format, size().width(),
             size().height(), 0, pixel_data.size(), pixel_data.data());
       } else {
         GLTextureImageBackingHelper::ScopedResetAndRestoreUnpackState
-            scoped_unpack_state(api, gl_unpack_attribs_, !pixel_data.empty());
+            scoped_unpack_state(!pixel_data.empty());
 
         api->glTexImage2DFn(target, 0, format_info_.image_internal_format,
                             size().width(), size().height(), 0,

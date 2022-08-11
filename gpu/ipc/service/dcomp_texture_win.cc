@@ -45,7 +45,6 @@ std::unique_ptr<ui::ScopedMakeCurrent> MakeCurrent(
 
 using InitializeGLTextureParams =
     GLTextureImageBackingHelper::InitializeGLTextureParams;
-using UnpackStateAttribs = GLTextureImageBackingHelper::UnpackStateAttribs;
 
 }  // namespace
 
@@ -170,11 +169,10 @@ gpu::Mailbox DCOMPTexture::CreateSharedImage() {
   params.is_cleared = true;
   params.is_rgb_emulation = false;
   params.framebuffer_attachment_angle = false;
-  UnpackStateAttribs attribs;
   auto shared_image = std::make_unique<GLImageBacking>(
       this, mailbox, viz::BGRA_8888, GetSize(), gfx::ColorSpace::CreateSRGB(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-      /*usage=*/SHARED_IMAGE_USAGE_DISPLAY, params, attribs,
+      /*usage=*/SHARED_IMAGE_USAGE_DISPLAY, params,
       /*use_passthrough=*/true);
 
   channel_->shared_image_stub()->factory()->RegisterBacking(

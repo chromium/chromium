@@ -37,8 +37,6 @@ size_t EstimatedSize(viz::ResourceFormat format, const gfx::Size& size) {
   return estimated_size;
 }
 
-using UnpackStateAttribs = GLTextureImageBackingHelper::UnpackStateAttribs;
-
 using ScopedResetAndRestoreUnpackState =
     GLTextureImageBackingHelper::ScopedResetAndRestoreUnpackState;
 
@@ -317,11 +315,10 @@ std::unique_ptr<GLImageBacking> GLImageBacking::CreateFromGLTexture(
   // one param.
   InitializeGLTextureParams params;
   params.target = texture_target;
-  UnpackStateAttribs attribs;
 
   auto shared_image = std::make_unique<GLImageBacking>(
       std::move(image), mailbox, format, size, color_space, surface_origin,
-      alpha_type, usage, params, attribs, true);
+      alpha_type, usage, params, true);
 
   shared_image->passthrough_texture_ = std::move(wrapped_gl_texture);
   shared_image->gl_texture_retained_for_legacy_mailbox_ = true;
@@ -340,7 +337,6 @@ GLImageBacking::GLImageBacking(scoped_refptr<gl::GLImage> image,
                                SkAlphaType alpha_type,
                                uint32_t usage,
                                const InitializeGLTextureParams& params,
-                               const UnpackStateAttribs& attribs,
                                bool is_passthrough)
     : SharedImageBacking(mailbox,
                          format,
@@ -353,7 +349,6 @@ GLImageBacking::GLImageBacking(scoped_refptr<gl::GLImage> image,
                          false /* is_thread_safe */),
       image_(image),
       gl_params_(params),
-      gl_unpack_attribs_(attribs),
       is_passthrough_(is_passthrough),
       cleared_rect_(params.is_cleared ? gfx::Rect(size) : gfx::Rect()),
       weak_factory_(this) {
@@ -789,9 +784,8 @@ bool GLImageBacking::BindOrCopyImageIfNeeded() {
     }
     new_state = gles2::Texture::BOUND;
   } else {
-    ScopedResetAndRestoreUnpackState scoped_unpack_state(api,
-                                                         gl_unpack_attribs_,
-                                                         /*upload=*/true);
+    ScopedResetAndRestoreUnpackState scoped_unpack_state(
+        /*uploading_data=*/true);
     if (!image_->CopyTexImage(target)) {
       LOG(ERROR) << "Failed to copy GLImage to target";
       return false;
@@ -825,7 +819,7 @@ void GLImageBacking::InitializePixels(GLenum format,
   ScopedRestoreTexture scoped_restore(api, target);
   api->glBindTextureFn(target, GetGLServiceId());
   ScopedResetAndRestoreUnpackState scoped_unpack_state(
-      api, gl_unpack_attribs_, true /* uploading_data */);
+      /*uploading_data=*/true);
   api->glTexSubImage2DFn(target, 0, 0, 0, size().width(), size().height(),
                          format, type, data);
   ReleaseGLTexture(true /* have_context */);

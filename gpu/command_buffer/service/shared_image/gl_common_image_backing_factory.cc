@@ -38,13 +38,6 @@ GLCommonImageBackingFactory::GLCommonImageBackingFactory(
   max_texture_size_ = std::min(max_texture_size_, INT_MAX - 1);
 
   texture_usage_angle_ = feature_info->feature_flags().angle_texture_usage;
-  attribs_.es3_capable = feature_info->IsES3Capable();
-  attribs_.desktop_gl = !feature_info->gl_version_info().is_es;
-  // Can't use the value from feature_info, as we unconditionally enable this
-  // extension, and assume it can't be used if PBOs are not used (which isn't
-  // true for Skia used directly against GL).
-  attribs_.supports_unpack_subimage =
-      gl::g_current_gl_driver->ext.b_GL_EXT_unpack_subimage;
   bool enable_texture_storage =
       feature_info->feature_flags().ext_texture_storage;
   const gles2::Validators* validators = feature_info->validators();

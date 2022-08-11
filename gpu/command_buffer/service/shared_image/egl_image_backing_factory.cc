@@ -137,8 +137,7 @@ std::unique_ptr<SharedImageBacking> EGLImageBackingFactory::MakeEglImageBacking(
 
   return std::make_unique<EGLImageBacking>(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      estimated_size, format_info, workarounds_, attribs_, use_passthrough_,
-      pixel_data);
+      estimated_size, format_info, workarounds_, use_passthrough_, pixel_data);
 }
 
 }  // namespace gpu

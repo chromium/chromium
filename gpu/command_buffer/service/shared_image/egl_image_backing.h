@@ -36,20 +36,18 @@ class NativeImageBuffer;
 // group. This is achieved by using locks and fences for proper synchronization.
 class EGLImageBacking : public ClearTrackingSharedImageBacking {
  public:
-  EGLImageBacking(
-      const Mailbox& mailbox,
-      viz::ResourceFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage,
-      size_t estimated_size,
-      const GLCommonImageBackingFactory::FormatInfo format_into,
-      const GpuDriverBugWorkarounds& workarounds,
-      const GLTextureImageBackingHelper::UnpackStateAttribs& attribs,
-      bool use_passthrough,
-      base::span<const uint8_t> pixel_data);
+  EGLImageBacking(const Mailbox& mailbox,
+                  viz::ResourceFormat format,
+                  const gfx::Size& size,
+                  const gfx::ColorSpace& color_space,
+                  GrSurfaceOrigin surface_origin,
+                  SkAlphaType alpha_type,
+                  uint32_t usage,
+                  size_t estimated_size,
+                  const GLCommonImageBackingFactory::FormatInfo format_into,
+                  const GpuDriverBugWorkarounds& workarounds,
+                  bool use_passthrough,
+                  base::span<const uint8_t> pixel_data);
 
   EGLImageBacking(const EGLImageBacking&) = delete;
   EGLImageBacking& operator=(const EGLImageBacking&) = delete;
@@ -122,7 +120,6 @@ class EGLImageBacking : public ClearTrackingSharedImageBacking {
   base::flat_set<const GLRepresentationShared*> active_readers_
       GUARDED_BY(lock_);
 
-  const GLTextureImageBackingHelper::UnpackStateAttribs gl_unpack_attribs_;
   const bool use_passthrough_;
 };
 

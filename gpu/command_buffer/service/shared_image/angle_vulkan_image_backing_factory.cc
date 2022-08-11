@@ -41,9 +41,6 @@ size_t EstimatedSize(viz::ResourceFormat format, const gfx::Size& size) {
   return estimated_size;
 }
 
-using ScopedResetAndRestoreUnpackState =
-    GLTextureImageBackingHelper::ScopedResetAndRestoreUnpackState;
-
 using ScopedRestoreTexture = GLTextureImageBackingHelper::ScopedRestoreTexture;
 
 class AngleVulkanImageBacking : public ClearTrackingSharedImageBacking,
