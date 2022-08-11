@@ -754,7 +754,7 @@ Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli
           Bu politika geçicidir ve Chrome 105'te kaldırılması planlanmaktadır. Kuruluşların ihtiyaç duyması halinde bu süre uzatılabilir.
           </translation>
 <translation id="1808715480127969042">Bu sitelerdeki çerezleri engelle</translation>
-<translation id="1810261428246410396">Anında Tethering'in kullanılmasına izin ver.</translation>
+<translation id="1810261428246410396">Hızlı Tethering'in kullanılmasına izin ver.</translation>
 <translation id="1813672770917912317"><ph name="PRODUCT_NAME" /> tarayıcının, v8 JavaScript motorunu JIT (Just In Time) derleyicisi etkinken çalıştırıp çalıştırmayacağını ayarlamanıza olanak tanır.
 
           JavaScript JIT'in devre dışı bırakılması, <ph name="PRODUCT_NAME" /> tarayıcının, web içeriğini daha yavaş oluşturabileceği, ayrıca JavaScript'in WebAssembly gibi bazı bölümlerini devre dışı bırakabileceği anlamına gelir. JavaScript JIT'in devre dışı bırakılması, <ph name="PRODUCT_NAME" /> tarayıcının, web içeriğini daha güvenli bir konfigürasyonda oluşturmasına imkan sağlayabilir.

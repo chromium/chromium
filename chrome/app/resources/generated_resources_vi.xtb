@@ -179,7 +179,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1163931534039071049">&amp;Xem nguồn khung</translation>
 <translation id="1164891049599601209">Đã được nhập trên trang web lừa đảo</translation>
 <translation id="1165039591588034296">Lỗi</translation>
-<translation id="1166212789817575481">Đóng Thẻ Bên phải</translation>
+<translation id="1166212789817575481">Đóng các thẻ bên phải</translation>
 <translation id="1166583374608765787">Xem lại bản cập nhật tên</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> thuộc không gian làm việc <ph name="DESK_TITLE" /></translation>
 <translation id="1168020859489941584">Đang mở trong <ph name="TIME_REMAINING" />...</translation>
@@ -3487,7 +3487,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4317733381297736564">Mua hàng trong ứng dụng</translation>
 <translation id="4317820549299924617">Không xác minh được</translation>
 <translation id="4320177379694898372">Không có kết nối Internet</translation>
-<translation id="4322394346347055525">Đóng các Thẻ Khác</translation>
+<translation id="4322394346347055525">Đóng các thẻ khác</translation>
 <translation id="4324577459193912240">Tệp không hoàn chỉnh</translation>
 <translation id="4325237902968425115">Đang gỡ cài đặt <ph name="LINUX_APP_NAME" />...</translation>
 <translation id="4330191372652740264">Nước đá</translation>
@@ -5412,7 +5412,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6254503684448816922">Lộ Khoá</translation>
 <translation id="6254892857036829079">Hoàn hảo</translation>
 <translation id="6257602895346497974">Bật tính năng đồng bộ hóa...</translation>
-<translation id="62586649943626337">Sắp xếp thẻ của bạn thành các nhóm thẻ</translation>
+<translation id="62586649943626337">Sắp xếp thẻ thành các nhóm</translation>
 <translation id="6262371516389954471">Các bản sao lưu được tải lên Google và mã hóa bằng mật khẩu Tài khoản Google của bạn.</translation>
 <translation id="6263082573641595914">Phiên bản CA của Microsoft</translation>
 <translation id="6263284346895336537">Không Quan trọng</translation>
@@ -5841,7 +5841,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6683087162435654533">K&amp;hôi phục tất cả các thẻ</translation>
 <translation id="6684827949542560880">Đang tải bản cập nhật mới nhất xuống</translation>
 <translation id="668599234725812620">Mở Google Play</translation>
-<translation id="6686490380836145850">Đóng thẻ phía bên phải</translation>
+<translation id="6686490380836145850">Đóng các thẻ bên phải</translation>
 <translation id="6686665106869989887">Đã di chuyển thẻ sang phải</translation>
 <translation id="6686817083349815241">Lưu mật khẩu của bạn</translation>
 <translation id="6687079240787935001">Ẩn <ph name="MODULE_TITLE" /></translation>
@@ -7407,7 +7407,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Đang tải xuống}other{Đang tải xuống}}</translation>
 <translation id="8213449224684199188">Đã chuyển sang chế độ ảnh</translation>
 <translation id="8214489666383623925">Mở Tệp...</translation>
-<translation id="8215129063232901118">Sử dụng các tính năng của điện thoại trên chiếc <ph name="DEVICE_TYPE" /> của bạn</translation>
+<translation id="8215129063232901118">Sử dụng các tính năng của điện thoại trên <ph name="DEVICE_TYPE" /></translation>
 <translation id="8217399928341212914">Tiếp tục chặn tự động tải nhiều tệp xuống</translation>
 <translation id="822050276545350872">Từ đây trở đi, bạn không cần phải chờ đợi nữa</translation>
 <translation id="8221491193165283816">Bạn thường chặn các thông báo. Để cho phép trang web này thông báo cho bạn, hãy nhấp vào đây.</translation>

@@ -1311,7 +1311,7 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
 
       Nota: En Android, usa la política <ph name="SITE_PER_PROCESS_ANDROID_POLICY_NAME" />.</translation>
 <translation id="2306505001667207184">Pedirle al usuario que seleccione el certificado de cliente cuando la política de selección automática coincida con varios certificados.</translation>
-<translation id="2307496301287881990">Informar del estado de la pantalla y la tarjeta gráfica</translation>
+<translation id="2307496301287881990">Informar del estado de la pantalla y los gráficos</translation>
 <translation id="2309341709647905294">No proporcionar información sobre los periféricos conectados al dispositivo</translation>
 <translation id="2309390639296060546">Configuración de ubicación geográfica predeterminada</translation>
 <translation id="2331354174913096226">La plantilla URI de la resolución de DNS-over-HTTPS deseada. Para especificar varias resoluciones de DNS-over-HTTPS, separa las plantillas URI correspondientes con espacios.
@@ -7337,11 +7337,11 @@ Si se configura la política, los usuarios no podrán cambiar esta función. Si 
           Si no se establece esta política, se utilizará PromptOnAccess y el usuario podrá modificarla.</translation>
 <translation id="8911348623012274122">Define el límite de memoria de las instancias de Chrome</translation>
 <translation id="8911736066340032670">Proporciona información relacionada con la pantalla, como la frecuencia de actualización, e
-      información relacionada con la tarjeta gráfica, como la versión de controlador.
+      información relacionada con los gráficos, como la versión del controlador.
 
       Si se asigna el valor "false" a esta política o no se le asigna ninguno, no se proporcionará información
-      sobre el estado de la pantalla y la tarjeta gráfica. Si se le asigna el valor "true", se proporcionará información
-      sobre el estado de la pantalla y la tarjeta gráfica.</translation>
+      sobre el estado de la pantalla y los gráficos. Si se le asigna el valor "true", se proporcionará información
+      sobre el estado de la pantalla y los gráficos.</translation>
 <translation id="891435090623616439">codificado como cadena JSON, consulta <ph name="COMPLEX_POLICIES_URL" /> para obtener más información</translation>
 <translation id="8917070657147922192">Permite que los usuarios gestionen los certificados AC instalados.</translation>
 <translation id="8919100556245407184">Número de días tras la publicación del vencimiento de las actualizaciones automáticas después de los cuales se cerrará la sesión del usuario si la versión de <ph name="PRODUCT_OS_NAME" /> es anterior a la <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> especificada</translation>
