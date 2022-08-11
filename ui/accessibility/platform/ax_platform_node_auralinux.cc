@@ -613,10 +613,6 @@ gboolean DoAction(AtkAction* atk_action, gint index) {
       obj->GetDelegate()->GetSupportedActions();
   g_return_val_if_fail(index < static_cast<gint>(actions.size()), FALSE);
 
-  if (index == 0 && obj->GetDelegate()->HasDefaultActionVerb()) {
-    // If there is a default action, it will always be at index 0.
-    return obj->DoDefaultAction();
-  }
   AXActionData data;
   data.action = actions[index];
   return obj->GetDelegate()->AccessibilityPerformAction(data);
@@ -4623,12 +4619,6 @@ bool AXPlatformNodeAuraLinux::
 
   NOTREACHED();
   return false;
-}
-
-bool AXPlatformNodeAuraLinux::DoDefaultAction() {
-  AXActionData action_data;
-  action_data.action = ax::mojom::Action::kDoDefault;
-  return delegate_->AccessibilityPerformAction(action_data);
 }
 
 const gchar* AXPlatformNodeAuraLinux::GetDefaultActionName() {

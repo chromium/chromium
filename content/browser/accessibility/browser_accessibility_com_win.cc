@@ -698,11 +698,6 @@ IFACEMETHODIMP BrowserAccessibilityComWin::doAction(LONG action_index) {
   if (action_index < 0 || action_index >= static_cast<LONG>(actions.size()))
     return E_INVALIDARG;
 
-  if (action_index == 0 && owner()->HasDefaultActionVerb()) {
-    // If there is a default action, it will always be at index 0.
-    Manager()->DoDefaultAction(*owner());
-    return S_OK;
-  }
   ui::AXActionData data;
   data.action = actions[action_index];
   owner()->AccessibilityPerformAction(data);
