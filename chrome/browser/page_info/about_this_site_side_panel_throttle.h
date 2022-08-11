@@ -5,8 +5,10 @@
 #ifndef CHROME_BROWSER_PAGE_INFO_ABOUT_THIS_SITE_SIDE_PANEL_THROTTLE_H_
 #define CHROME_BROWSER_PAGE_INFO_ABOUT_THIS_SITE_SIDE_PANEL_THROTTLE_H_
 
-#include "base/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
+
+class GURL;
 
 namespace content {
 struct OpenURLParams;
@@ -19,15 +21,23 @@ extern const char kAboutThisSiteWebContentsUserDataKey[];
 // Holds a handler to open a URL in a new tab in the browser that the sidepanel
 // of this webcontents is associated with. The NavigationThrottle from
 // |MaybeCreateAboutThisSiteThrottleFor| will check if this UserData is present
-// and if it is present intercept cross-origin navigations and open them using
-// the handler.
+// and if it is present, intercepts navigations if |IsNavigationAllowed|
+// and opens them using |OpenUrlInBrowser| instead.
 struct AboutThisSiteWebContentsUserData : public base::SupportsUserData::Data {
-  explicit AboutThisSiteWebContentsUserData(
-      base::RepeatingCallback<void(const content::OpenURLParams&)> handler);
+  class Delegate {
+   public:
+    virtual void OpenUrlInBrowser(const content::OpenURLParams& params) = 0;
+    virtual bool IsNavigationAllowed(const GURL& new_url,
+                                     const GURL& old_url) = 0;
+  };
+
+  explicit AboutThisSiteWebContentsUserData(base::WeakPtr<Delegate> delegate);
   ~AboutThisSiteWebContentsUserData() override;
 
-  base::RepeatingCallback<void(const content::OpenURLParams&)>
-      open_in_new_tab_handler;
+  Delegate* delegate() { return delegate_.get(); }
+
+ private:
+  base::WeakPtr<Delegate> delegate_;
 };
 
 // Installs a NavigationThrottle if an AboutThisSiteWebContentsUserData is
