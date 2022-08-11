@@ -7000,9 +7000,6 @@ crbug.com/1180274 virtual/first-party-sets/http/tests/inspector-protocol/network
 crbug.com/1180274 virtual/partitioned-cookies/http/tests/inspector-protocol/network/navigate-iframe-out2in.js [ Skip ]
 
 # Sheriff 2022-07-11
-crbug.com/1343262 [ Win11 ] compositing/overlap-blending/reflection-opacity-huge.html [ Failure ]
-crbug.com/1343262 [ Win11 ] compositing/reflections/nested-reflection-opacity.html [ Failure ]
-crbug.com/1343262 [ Win11 ] fast/reflections/transparent-reflected-sublayers.html [ Failure ]
 crbug.com/1343270 [ Win11 ] media/controls/video-controls-with-cast-rendering.html [ Failure ]
 
 # Sheriff 2022-07-12
