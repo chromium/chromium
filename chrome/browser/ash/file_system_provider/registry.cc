@@ -129,12 +129,11 @@ std::unique_ptr<Registry::RestoredFileSystems> Registry::RestoreFileSystems(
   PrefService* const pref_service = profile_->GetPrefs();
   DCHECK(pref_service);
 
-  const base::Value* const file_systems =
-      pref_service->GetDictionary(prefs::kFileSystemProviderMounted);
-  DCHECK(file_systems);
+  const base::Value::Dict& file_systems =
+      pref_service->GetValueDict(prefs::kFileSystemProviderMounted);
 
-  const base::Value* file_systems_per_extension =
-      file_systems->FindDictKey(provider_id.ToString());
+  const base::Value::Dict* file_systems_per_extension =
+      file_systems.FindDict(provider_id.ToString());
   if (!file_systems_per_extension) {
     return base::WrapUnique(new RestoredFileSystems);  // Nothing to restore.
   }
@@ -142,25 +141,24 @@ std::unique_ptr<Registry::RestoredFileSystems> Registry::RestoreFileSystems(
   std::unique_ptr<RestoredFileSystems> restored_file_systems(
       new RestoredFileSystems);
 
-  for (const auto it : file_systems_per_extension->DictItems()) {
-    const base::Value* file_system =
-        file_systems_per_extension->FindDictKey(it.first);
-
-    if (!file_system) {
+  for (const auto it : *file_systems_per_extension) {
+    if (!it.second.is_dict()) {
       LOG(ERROR)
           << "Malformed provided file system information in preferences.";
       continue;
     }
 
+    const base::Value::Dict& file_system = it.second.GetDict();
+
     const std::string* file_system_id =
-        file_system->FindStringKey(kPrefKeyFileSystemId);
+        file_system.FindString(kPrefKeyFileSystemId);
     const std::string* display_name =
-        file_system->FindStringKey(kPrefKeyDisplayName);
-    absl::optional<bool> writable = file_system->FindBoolKey(kPrefKeyWritable);
+        file_system.FindString(kPrefKeyDisplayName);
+    absl::optional<bool> writable = file_system.FindBool(kPrefKeyWritable);
     absl::optional<bool> supports_notify_tag =
-        file_system->FindBoolKey(kPrefKeySupportsNotifyTag);
+        file_system.FindBool(kPrefKeySupportsNotifyTag);
     absl::optional<int> opened_files_limit =
-        file_system->FindIntKey(kPrefKeyOpenedFilesLimit);
+        file_system.FindInt(kPrefKeyOpenedFilesLimit);
 
     // TODO(mtomasz): Move opened files limit to the mandatory list above in
     // M42.
@@ -186,29 +184,29 @@ std::unique_ptr<Registry::RestoredFileSystems> Registry::RestoreFileSystems(
     restored_file_system.options = options;
 
     // Restore watchers. It's optional, since this field is new.
-    const base::Value* watchers = file_system->FindDictKey(kPrefKeyWatchers);
+    const base::Value::Dict* watchers = file_system.FindDict(kPrefKeyWatchers);
     if (watchers) {
-      for (const auto it : watchers->DictItems()) {
-        const base::Value* watcher = watchers->FindDictKey(it.first);
-        if (!watcher) {
+      for (const auto it : *watchers) {
+        if (!it.second.is_dict()) {
           LOG(ERROR) << "Malformed watcher information in preferences.";
           continue;
         }
 
+        const base::Value::Dict& watcher = it.second.GetDict();
+
         const std::string* entry_path =
-            watcher->FindStringKey(kPrefKeyWatcherEntryPath);
+            watcher.FindString(kPrefKeyWatcherEntryPath);
         absl::optional<bool> recursive =
-            watcher->FindBoolKey(kPrefKeyWatcherRecursive);
+            watcher.FindBool(kPrefKeyWatcherRecursive);
         const std::string* last_tag =
-            watcher->FindStringKey(kPrefKeyWatcherLastTag);
-        const base::Value* persistent_origins =
-            watcher->FindListKey(kPrefKeyWatcherPersistentOrigins);
+            watcher.FindString(kPrefKeyWatcherLastTag);
+        const base::Value::List* persistent_origins =
+            watcher.FindList(kPrefKeyWatcherPersistentOrigins);
 
         if (!entry_path || !recursive || !last_tag || !persistent_origins ||
             it.first != *entry_path || entry_path->empty() ||
             (!options.supports_notify_tag &&
-             (!last_tag->empty() ||
-              persistent_origins->GetListDeprecated().size()))) {
+             (!last_tag->empty() || persistent_origins->size()))) {
           LOG(ERROR) << "Malformed watcher information in preferences.";
           continue;
         }
@@ -218,8 +216,7 @@ std::unique_ptr<Registry::RestoredFileSystems> Registry::RestoreFileSystems(
             base::FilePath::FromUTF8Unsafe(*entry_path);
         restored_watcher.recursive = recursive.value();
         restored_watcher.last_tag = *last_tag;
-        for (const auto& persistent_origin :
-             persistent_origins->GetListDeprecated()) {
+        for (const auto& persistent_origin : *persistent_origins) {
           if (!persistent_origin.is_string()) {
             LOG(ERROR) << "Malformed subscriber information in preferences.";
             continue;
