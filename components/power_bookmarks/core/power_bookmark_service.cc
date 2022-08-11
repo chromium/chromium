@@ -4,6 +4,8 @@
 
 #include "components/power_bookmarks/core/power_bookmark_service.h"
 
+#include <algorithm>
+
 namespace power_bookmarks {
 
 PowerBookmarkService::PowerBookmarkService() = default;
