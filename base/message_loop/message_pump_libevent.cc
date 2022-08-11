@@ -137,7 +137,7 @@ void MessagePumpLibevent::FdWatchController::OnFdWritable() {
   watcher_->OnFileCanWriteWithoutBlocking(epoll_interest_->params().fd);
 }
 
-MessagePumpLibevent::MessagePumpLibevent() : event_base_(event_base_new()) {
+MessagePumpLibevent::MessagePumpLibevent() {
 #if BUILDFLAG(ENABLE_MESSAGE_PUMP_EPOLL)
   if (g_use_epoll) {
     epoll_pump_ = std::make_unique<MessagePumpEpoll>();
@@ -154,8 +154,7 @@ MessagePumpLibevent::MessagePumpLibevent() : event_base_(event_base_new()) {
 
 #if BUILDFLAG(ENABLE_MESSAGE_PUMP_EPOLL)
 MessagePumpLibevent::MessagePumpLibevent(decltype(kUseEpoll))
-    : epoll_pump_(std::make_unique<MessagePumpEpoll>()),
-      event_base_(event_base_new()) {
+    : epoll_pump_(std::make_unique<MessagePumpEpoll>()) {
   epoll_pump_ = std::make_unique<MessagePumpEpoll>();
 }
 #endif
@@ -170,8 +169,8 @@ MessagePumpLibevent::~MessagePumpLibevent() {
   DCHECK(event_base_);
   if (using_libevent) {
     DCHECK(wakeup_event_);
-    event_del(wakeup_event_);
-    delete wakeup_event_;
+    event_del(wakeup_event_.get());
+    wakeup_event_.reset();
     if (wakeup_pipe_in_ >= 0) {
       if (IGNORE_EINTR(close(wakeup_pipe_in_)) < 0)
         DPLOG(ERROR) << "close";
@@ -181,7 +180,7 @@ MessagePumpLibevent::~MessagePumpLibevent() {
         DPLOG(ERROR) << "close";
     }
   }
-  event_base_free(event_base_);
+  event_base_.reset();
 }
 
 // Must be called early in process startup, but after FeatureList
@@ -251,7 +250,7 @@ bool MessagePumpLibevent::WatchFileDescriptor(int fd,
   event_set(evt.get(), fd, event_mask, OnLibeventNotification, controller);
 
   // Tell libevent which message pump this socket will belong to when we add it.
-  if (event_base_set(event_base_, evt.get())) {
+  if (event_base_set(event_base_.get(), evt.get())) {
     DPLOG(ERROR) << "event_base_set(fd=" << EVENT_FD(evt.get()) << ")";
     return false;
   }
@@ -313,7 +312,7 @@ void MessagePumpLibevent::Run(Delegate* delegate) {
     //    OnLibeventNotification() did enter a nested loop from here, it
     //    wouldn't be labeled as such in tracing by "ThreadController active".
     //    Contact gab@/scheduler-dev@ if a problematic trace emerges.
-    event_base_loop(event_base_, EVLOOP_NONBLOCK);
+    event_base_loop(event_base_.get(), EVLOOP_NONBLOCK);
 
     bool attempt_more_work = immediate_work_available || processed_io_events_;
     processed_io_events_ = false;
@@ -343,8 +342,8 @@ void MessagePumpLibevent::Run(Delegate* delegate) {
       struct timeval poll_tv;
       poll_tv.tv_sec = static_cast<time_t>(delay.InSeconds());
       poll_tv.tv_usec = delay.InMicroseconds() % Time::kMicrosecondsPerSecond;
-      event_set(timer_event.get(), -1, 0, timer_callback, event_base_);
-      event_base_set(event_base_, timer_event.get());
+      event_set(timer_event.get(), -1, 0, timer_callback, event_base_.get());
+      event_base_set(event_base_.get(), timer_event.get());
       event_add(timer_event.get(), &poll_tv);
 
       did_set_timer = true;
@@ -354,7 +353,7 @@ void MessagePumpLibevent::Run(Delegate* delegate) {
     // is conditionally interrupted to look for more work if we are aware of a
     // delayed task that will need servicing.
     delegate->BeforeWait();
-    event_base_loop(event_base_, EVLOOP_ONCE);
+    event_base_loop(event_base_.get(), EVLOOP_ONCE);
 
     // We previously setup a timer to break out the event loop to look for more
     // work. Now that we're here delete the event.
@@ -413,12 +412,12 @@ bool MessagePumpLibevent::Init() {
   wakeup_pipe_out_ = fds[0];
   wakeup_pipe_in_ = fds[1];
 
-  wakeup_event_ = new event;
-  event_set(wakeup_event_, wakeup_pipe_out_, EV_READ | EV_PERSIST,
+  wakeup_event_ = std::make_unique<event>();
+  event_set(wakeup_event_.get(), wakeup_pipe_out_, EV_READ | EV_PERSIST,
             OnWakeup, this);
-  event_base_set(event_base_, wakeup_event_);
+  event_base_set(event_base_.get(), wakeup_event_.get());
 
-  if (event_add(wakeup_event_, nullptr))
+  if (event_add(wakeup_event_.get(), nullptr))
     return false;
   return true;
 }
@@ -479,7 +478,7 @@ void MessagePumpLibevent::OnWakeup(int socket, short flags, void* context) {
   DCHECK_EQ(nread, 1);
   that->processed_io_events_ = true;
   // Tell libevent to break out of inner loop.
-  event_base_loopbreak(that->event_base_);
+  event_base_loopbreak(that->event_base_.get());
 }
 
 MessagePumpLibevent::EpollInterest::EpollInterest(

@@ -16,11 +16,11 @@
 #include "base/message_loop/message_pump_buildflags.h"
 #include "base/message_loop/watchable_io_message_pump_posix.h"
 #include "base/threading/thread_checker.h"
+#include "third_party/libevent/event.h"
 
 // Declare structs we need from libevent.h rather than including it
 struct event_base;
 struct event;
-
 namespace base {
 
 class MessagePumpEpoll;
@@ -220,16 +220,22 @@ class BASE_EXPORT MessagePumpLibevent : public MessagePump,
   // This flag is set if libevent has processed I/O events.
   bool processed_io_events_ = false;
 
+  struct EventBaseFree {
+    inline void operator()(event_base* e) const {
+      if (e)
+        event_base_free(e);
+    }
+  };
   // Libevent dispatcher.  Watches all sockets registered with it, and sends
   // readiness callbacks when a socket is ready for I/O.
-  const raw_ptr<event_base, DanglingUntriaged> event_base_;
+  std::unique_ptr<event_base, EventBaseFree> event_base_{event_base_new()};
 
   // ... write end; ScheduleWork() writes a single byte to it
   int wakeup_pipe_in_ = -1;
   // ... read end; OnWakeup reads it and then breaks Run() out of its sleep
   int wakeup_pipe_out_ = -1;
   // ... libevent wrapper for read end
-  raw_ptr<event, DanglingUntriaged> wakeup_event_ = nullptr;
+  std::unique_ptr<event> wakeup_event_;
 
   ThreadChecker watch_file_descriptor_caller_checker_;
 };
