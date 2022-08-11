@@ -59,6 +59,24 @@ action("embed_mobile_devices_in_cpp") {
   args += rebase_path(ts_files, root_build_dir)
 }
 
+action("embed_bidimapper_in_cpp") {
+  script = "embed_bidimapper_in_cpp.py"
+
+  js_files = [ "//third_party/bidimapper/mapper.js" ]
+
+  inputs = [ "cpp_source.py" ] + js_files
+
+  outputs = [
+    "$target_gen_dir/bidimapper/bidimapper.cc",
+    "$target_gen_dir/bidimapper/bidimapper.h",
+  ]
+  args = [
+    "--directory",
+    rebase_path("$target_gen_dir/bidimapper", root_build_dir),
+  ]
+  args += rebase_path(js_files, root_build_dir)
+}
+
 action("embed_user_data_dir_in_cpp") {
   script = "embed_user_data_dir_in_cpp.py"
 
@@ -86,6 +104,8 @@ source_set("automation_client_lib") {
     "chrome/adb.h",
     "chrome/adb_impl.cc",
     "chrome/adb_impl.h",
+    "chrome/bidi_tracker.cc",
+    "chrome/bidi_tracker.h",
     "chrome/browser_info.cc",
     "chrome/browser_info.h",
     "chrome/cast_tracker.cc",
@@ -196,9 +216,11 @@ source_set("automation_client_lib") {
   # Also compile the generated files.
   sources += get_target_outputs(":embed_js_in_cpp")
   sources += get_target_outputs(":embed_mobile_devices_in_cpp")
+  sources += get_target_outputs(":embed_bidimapper_in_cpp")
   sources += get_target_outputs(":embed_user_data_dir_in_cpp")
 
   deps = [
+    ":embed_bidimapper_in_cpp",
     ":embed_js_in_cpp",
     ":embed_mobile_devices_in_cpp",
     ":embed_user_data_dir_in_cpp",

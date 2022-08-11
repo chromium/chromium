@@ -7,7 +7,9 @@
 #include <list>
 #include <utility>
 
+#include "base/json/json_reader.h"
 #include "base/lazy_instance.h"
+#include "base/logging.h"
 #include "base/threading/thread_local.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/chrome.h"
@@ -51,10 +53,24 @@ InputCancelListEntry::InputCancelListEntry(InputCancelListEntry&& other) =
 
 InputCancelListEntry::~InputCancelListEntry() = default;
 
+BidiConnection::BidiConnection(int connection_id,
+                               SendTextFunc send_response,
+                               CloseFunc close_connection)
+    : connection_id(connection_id),
+      send_response(std::move(send_response)),
+      close_connection(std::move(close_connection)) {}
+
+BidiConnection::BidiConnection(BidiConnection&& other) = default;
+
+BidiConnection::~BidiConnection() = default;
+
+BidiConnection& BidiConnection::operator=(BidiConnection&& other) = default;
+
 // The default timeout values came from W3C spec.
 const base::TimeDelta Session::kDefaultImplicitWaitTimeout = base::Seconds(0);
 const base::TimeDelta Session::kDefaultPageLoadTimeout = base::Seconds(300);
 const base::TimeDelta Session::kDefaultScriptTimeout = base::Seconds(30);
+const int kBidiQueueCapacity = 20;
 
 Session::Session(const std::string& id)
     : id(id),
@@ -139,6 +155,85 @@ void Session::SwitchFrameInternal(bool for_top_frame) {
     // Do nothing; this should be very rare because callers of this function
     // have already called GetTargetWindow.
     // Let later code handle issues that arise from the invalid state.
+  }
+}
+
+void Session::OnBidiResponse(const std::string& payload) {
+  if (payload == "{\"launched\":true}") {
+    // TODO(chromedriver:4180): Prohibit any user command handling before we
+    // receive the "launched" event from the BiDiMapper.
+    return;
+  }
+
+  // If there is no active bidi connections the events will be accumulated.
+  bidi_response_queue_.push(payload);
+  for (; bidi_response_queue_.size() > kBidiQueueCapacity;
+       bidi_response_queue_.pop()) {
+    LOG(WARNING) << "BiDi response queue overflow, dropping the message: "
+                 << bidi_response_queue_.front();
+  }
+  ProcessBidiResponseQueue();
+}
+
+void Session::AddBidiConnection(int connection_id,
+                                SendTextFunc send_response,
+                                CloseFunc close_connection) {
+  bidi_connections_.emplace_back(connection_id, std::move(send_response),
+                                 std::move(close_connection));
+  ProcessBidiResponseQueue();
+}
+
+void Session::RemoveBidiConnection(int connection_id) {
+  // Reallistically we will not have many connections, therefore linear search
+  // is optimal.
+  auto it = std::find_if(bidi_connections_.begin(), bidi_connections_.end(),
+                         [connection_id](const auto& conn) {
+                           return conn.connection_id == connection_id;
+                         });
+  if (it != bidi_connections_.end()) {
+    bidi_connections_.erase(it);
+  }
+}
+
+void Session::ProcessBidiResponseQueue() {
+  if (bidi_connections_.empty() || bidi_response_queue_.empty()) {
+    return;
+  }
+  // Only single websocket connection is supported now.
+  DCHECK(bidi_connections_.size() == 1);
+  for (; !bidi_response_queue_.empty(); bidi_response_queue_.pop()) {
+    // TODO(chromedriver:4179): In the future we will support multiple
+    // connections. The payload will have to be parsed and routed to the
+    // appropriate connection. The events will have to be delivered to all
+    // connections.
+    for (const BidiConnection& conn : bidi_connections_) {
+      // If the callback fails (asynchronously) because the connection was
+      // broken we simply ignore this fact as the message cannot be delivered
+      // over that connection anyway.
+      std::string response = bidi_response_queue_.front();
+      conn.send_response.Run(response);
+      absl::optional<base::Value> responseParsed = base::JSONReader::Read(
+          response, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+      if (responseParsed && responseParsed->is_dict()) {
+        absl::optional<int> response_id =
+            responseParsed->GetDict().FindInt("id");
+        if (response_id && *response_id == awaited_bidi_response_id) {
+          VLOG(0) << "awaited response is received!";
+          awaited_bidi_response_id = -1;
+          // No "id" means that we are dealing with an event
+        }
+      } else {
+        LOG(WARNING) << "BiDi response is not a map";
+      }
+    }
+  }
+}
+
+void Session::CloseAllConnections() {
+  for (BidiConnection& conn : bidi_connections_) {
+    // If the callback fails (asynchronously) because the connection was
+    // terminated we simply ignore this - it is already closed.
+    conn.close_connection.Run();
   }
 }
 

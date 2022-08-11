@@ -59,6 +59,7 @@ class ChromeImpl : public Chrome {
   bool HasTouchScreen() const override;
   std::string page_load_strategy() const override;
   Status Quit() override;
+  DevToolsClient* Client() const;
 
  protected:
   ChromeImpl(std::unique_ptr<DevToolsHttpClient> http_client,

@@ -202,6 +202,7 @@ void TerminateSessionThreadOnCommandThread(SessionThreadMap* session_thread_map,
 
 void ExecuteSessionCommandOnSessionThread(
     const char* command_name,
+    const std::string& session_id,
     const SessionCommand& command,
     bool w3c_standard_command,
     bool return_ok_without_session,
@@ -217,7 +218,7 @@ void ExecuteSessionCommandOnSessionThread(
         base::BindOnce(
             callback_on_cmd,
             Status(return_ok_without_session ? kOk : kInvalidSessionId),
-            std::unique_ptr<base::Value>(), std::string(), kW3CDefault));
+            std::unique_ptr<base::Value>(), session_id, kW3CDefault));
     return;
   }
 
@@ -317,6 +318,7 @@ void ExecuteSessionCommandOnSessionThread(
                                 session->id, session->w3c_compliant));
 
   if (session->quit) {
+    session->CloseAllConnections();
     SetThreadLocalSession(std::unique_ptr<Session>());
     delete session;
     cmd_task_runner->PostTask(FROM_HERE, terminate_on_cmd);
@@ -342,8 +344,8 @@ void ExecuteSessionCommand(SessionThreadMap* session_thread_map,
     iter->second->thread()->task_runner()->PostTask(
         FROM_HERE,
         base::BindOnce(
-            &ExecuteSessionCommandOnSessionThread, command_name, command,
-            w3c_standard_command, return_ok_without_session,
+            &ExecuteSessionCommandOnSessionThread, command_name, session_id,
+            command, w3c_standard_command, return_ok_without_session,
             base::DictionaryValue::From(
                 base::Value::ToUniquePtrValue(params.Clone())),
             base::ThreadTaskRunnerHandle::Get(), callback,

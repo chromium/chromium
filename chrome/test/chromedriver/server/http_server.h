@@ -44,8 +44,12 @@ class HttpServer : public net::HttpServer::Delegate {
 
   void OnClose(int connection_id) override;
 
+  void Close(int connection_id);
+
   void AcceptWebSocket(int connection_id,
                        const net::HttpServerRequestInfo& request);
+
+  void SendOverWebSocket(int connection_id, const std::string& data);
 
   void SendResponse(int connection_id,
                     const net::HttpServerResponseInfo& response,

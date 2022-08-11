@@ -13,62 +13,12 @@ from command_executor import Command
 from webelement import WebElement
 from webshadowroot import WebShadowRoot
 from websocket_connection import WebSocketConnection
+from exceptions import *
 
 ELEMENT_KEY_W3C = "element-6066-11e4-a52e-4f735466cecf"
 ELEMENT_KEY = "ELEMENT"
 SHADOW_KEY = "shadow-6066-11e4-a52e-4f735466cecf"
 MAX_RETRY_COUNT = 5
-
-class ChromeDriverException(Exception):
-  pass
-class NoSuchElement(ChromeDriverException):
-  pass
-class NoSuchFrame(ChromeDriverException):
-  pass
-class UnknownCommand(ChromeDriverException):
-  pass
-class StaleElementReference(ChromeDriverException):
-  pass
-class ElementNotVisible(ChromeDriverException):
-  pass
-class InvalidElementState(ChromeDriverException):
-  pass
-class UnknownError(ChromeDriverException):
-  pass
-class JavaScriptError(ChromeDriverException):
-  pass
-class XPathLookupError(ChromeDriverException):
-  pass
-class Timeout(ChromeDriverException):
-  pass
-class NoSuchWindow(ChromeDriverException):
-  pass
-class InvalidCookieDomain(ChromeDriverException):
-  pass
-class ScriptTimeout(ChromeDriverException):
-  pass
-class InvalidSelector(ChromeDriverException):
-  pass
-class SessionNotCreated(ChromeDriverException):
-  pass
-class InvalidSessionId(ChromeDriverException):
-  pass
-class UnexpectedAlertOpen(ChromeDriverException):
-  pass
-class NoSuchAlert(ChromeDriverException):
-  pass
-class NoSuchCookie(ChromeDriverException):
-  pass
-class InvalidArgument(ChromeDriverException):
-  pass
-class ElementNotInteractable(ChromeDriverException):
-  pass
-class UnsupportedOperation(ChromeDriverException):
-  pass
-class NoSuchShadowRoot(ChromeDriverException):
-  pass
-class DetachedShadowRoot(ChromeDriverException):
-  pass
 
 def _ExceptionForLegacyResponse(response):
   exception_class_map = {
@@ -788,4 +738,9 @@ class ChromeDriver(object):
     params = {'vendorId': vendorId}
     return self.ExecuteCommand(Command.GET_CAST_SINKS, params)
 
+  def __enter__(self):
+    return self
+
+  def __exit__(self, *args):
+    self.Quit()
 

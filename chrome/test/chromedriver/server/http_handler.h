@@ -135,6 +135,18 @@ class HttpHandler {
                           int connection_id,
                           const net::HttpServerRequestInfo& info);
 
+  void OnWebSocketMessage(HttpServer* http_server,
+                          int connection_id,
+                          const std::string& data);
+
+  void OnWebSocketResponseOnCmdThread(HttpServer* http_server,
+                                      int connection_id,
+                                      const std::string& data);
+
+  void OnWebSocketResponseOnSessionThread(HttpServer* http_server,
+                                          int connection_id,
+                                          const std::string& data);
+
   void OnClose(HttpServer* http_server, int connection_id);
 
   void SendWebSocketRejectResponse(HttpServer* http_server,
@@ -145,6 +157,7 @@ class HttpHandler {
   base::ThreadChecker thread_checker_;
   base::RepeatingClosure quit_func_;
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
+  scoped_refptr<base::SingleThreadTaskRunner> cmd_task_runner_;
   std::string url_base_;
   bool received_shutdown_;
   scoped_refptr<URLRequestContextGetter> context_getter_;

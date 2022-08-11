@@ -188,8 +188,11 @@ class DevToolsClientImpl : public DevToolsClient {
                              const Timeout* timeout);
   Status ProcessNextMessage(int expected_id,
                             bool log_timeout,
-                            const Timeout& timeout);
-  Status HandleMessage(int expected_id, const std::string& message);
+                            const Timeout& timeout,
+                            DevToolsClientImpl* caller);
+  Status HandleMessage(int expected_id,
+                       const std::string& message,
+                       DevToolsClientImpl* caller);
   Status ProcessEvent(const internal::InspectorEvent& event);
   Status ProcessCommandResponse(
       const internal::InspectorCommandResponse& response);
@@ -228,6 +231,7 @@ class DevToolsClientImpl : public DevToolsClient {
   int stack_count_;
   bool is_remote_end_configured_;
   bool is_main_page_;
+  base::WeakPtrFactory<DevToolsClientImpl> weak_ptr_factory_{this};
 };
 
 namespace internal {

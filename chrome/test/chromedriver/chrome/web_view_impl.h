@@ -57,6 +57,8 @@ class WebViewImpl : public WebView {
   bool WasCrashed() override;
   Status ConnectIfNecessary() override;
   Status AttachTo(DevToolsClient* parent);
+  Status HandleEventsUntil(const ConditionalFunc& conditional_func,
+                           const Timeout& timeout) override;
   Status HandleReceivedEvents() override;
   Status GetUrl(std::string* url) override;
   Status Load(const std::string& url, const Timeout* timeout) override;

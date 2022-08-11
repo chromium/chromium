@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_forward.h"
 #include "base/values.h"
 
 namespace base {
@@ -31,7 +32,10 @@ struct TouchEvent;
 
 class WebView {
  public:
-  virtual ~WebView() {}
+  typedef base::RepeatingCallback<Status(bool* is_condition_met)>
+      ConditionalFunc;
+
+  virtual ~WebView() = default;
 
   virtual bool IsServiceWorker() const = 0;
 
@@ -43,6 +47,14 @@ class WebView {
 
   // Make DevToolsCient connect to DevTools if it is disconnected.
   virtual Status ConnectIfNecessary() = 0;
+
+  // Handles events until the given function reports the condition is met
+  // and there are no more received events to handle. If the given
+  // function ever returns an error, returns immediately with the error.
+  // If the condition is not met within |timeout|, kTimeout status
+  // is returned eventually. If |timeout| is 0, this function will not block.
+  virtual Status HandleEventsUntil(const ConditionalFunc& conditional_func,
+                                   const Timeout& timeout) = 0;
 
   // Handles events that have been received but not yet handled.
   virtual Status HandleReceivedEvents() = 0;

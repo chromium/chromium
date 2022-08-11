@@ -792,6 +792,10 @@ Status ChromeImpl::Quit() {
   return status;
 }
 
+DevToolsClient* ChromeImpl::Client() const {
+  return devtools_websocket_client_.get();
+}
+
 ChromeImpl::ChromeImpl(std::unique_ptr<DevToolsHttpClient> http_client,
                        std::unique_ptr<DevToolsClient> websocket_client,
                        std::vector<std::unique_ptr<DevToolsEventListener>>

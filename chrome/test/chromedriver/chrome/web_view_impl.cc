@@ -442,6 +442,11 @@ Status WebViewImpl::AttachTo(DevToolsClient* parent) {
       ->AttachTo(static_cast<DevToolsClientImpl*>(parent));
 }
 
+Status WebViewImpl::HandleEventsUntil(const ConditionalFunc& conditional_func,
+                                      const Timeout& timeout) {
+  return client_->HandleEventsUntil(conditional_func, timeout);
+}
+
 Status WebViewImpl::HandleReceivedEvents() {
   return client_->HandleReceivedEvents();
 }

@@ -6,11 +6,14 @@
 
 #include <list>
 #include <memory>
+#include <thread>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/files/file_util.h"
+#include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "base/logging.h"  // For CHECK macros.
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_util.h"
@@ -22,12 +25,16 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/basic_types.h"
+#include "chrome/test/chromedriver/bidimapper/bidimapper.h"
 #include "chrome/test/chromedriver/capabilities.h"
+#include "chrome/test/chromedriver/chrome/bidi_tracker.h"
 #include "chrome/test/chromedriver/chrome/browser_info.h"
 #include "chrome/test/chromedriver/chrome/chrome.h"
 #include "chrome/test/chromedriver/chrome/chrome_android_impl.h"
 #include "chrome/test/chromedriver/chrome/chrome_desktop_impl.h"
+#include "chrome/test/chromedriver/chrome/chrome_impl.h"
 #include "chrome/test/chromedriver/chrome/device_manager.h"
+#include "chrome/test/chromedriver/chrome/devtools_client_impl.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 #include "chrome/test/chromedriver/chrome/geoposition.h"
 #include "chrome/test/chromedriver/chrome/javascript_dialog_manager.h"
@@ -254,7 +261,7 @@ std::unique_ptr<base::DictionaryValue> CreateCapabilities(
 }
 
 Status CheckSessionCreated(Session* session) {
-  WebView* web_view = NULL;
+  WebView* web_view = nullptr;
   Status status = session->GetTargetWindow(&web_view);
   if (status.IsError())
     return Status(kSessionNotCreated, status);
@@ -307,11 +314,17 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
   // |session| will own the |CommandListener|s.
   session->command_listeners.swap(command_listeners);
 
+  BidiTracker* bidi_tracker = new BidiTracker();
+  bidi_tracker->SetBidiCallback(
+      base::BindRepeating(&Session::OnBidiResponse, base::Unretained(session)));
+  devtools_event_listeners.emplace_back(bidi_tracker);
+
   status =
       LaunchChrome(bound_params.url_loader_factory, bound_params.socket_factory,
                    bound_params.device_manager, capabilities,
                    std::move(devtools_event_listeners), &session->chrome,
                    session->w3c_compliant);
+
   if (status.IsError())
     return status;
 
@@ -341,7 +354,77 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
   } else {
     *value = base::Value::ToUniquePtrValue(session->capabilities->Clone());
   }
-  return CheckSessionCreated(session);
+
+  status = CheckSessionCreated(session);
+  if (status.IsError())
+    return status;
+
+  if (session->webSocketUrl) {
+    WebView* web_view = nullptr;
+    Status status = session->GetTargetWindow(&web_view);
+    if (status.IsError())
+      return status;
+    ChromeImpl* chrome = static_cast<ChromeImpl*>(session->chrome.get());
+    DevToolsClient* client = chrome->Client();
+
+    {
+      base::Value body(base::Value::Type::DICTIONARY);
+      body.SetStringKey("bindingName", "cdp");
+      body.SetStringKey("targetId", session->window);
+      client->SendCommandAndIgnoreResponse(
+          "Target.exposeDevToolsProtocol",
+          base::Value::AsDictionaryValue(body));
+    }
+
+    {
+      std::unique_ptr<base::Value> result;
+      base::Value body(base::Value::Type::DICTIONARY);
+      body.SetStringKey("name", "sendBidiResponse");
+      web_view->SendCommandAndGetResult(
+          "Runtime.addBinding", base::Value::AsDictionaryValue(body), &result);
+    }
+
+    status = EvaluateScriptAndIgnoreResult(session, kMapperScript);
+    if (status.IsError())
+      return status;
+
+    {
+      std::unique_ptr<base::Value> result;
+      base::Value body(base::Value::Type::DICTIONARY);
+      std::string window_id;
+      if (!base::JSONWriter::Write(session->window, &window_id)) {
+        return Status(kUnknownError,
+                      "cannot serialize be window id: " + session->window);
+      }
+      body.SetStringKey("expression",
+                        "window.setSelfTargetId(" + window_id + ")");
+      status = web_view->SendCommandAndGetResult(
+          "Runtime.evaluate", base::Value::AsDictionaryValue(body), &result);
+      if (status.IsError())
+        return status;
+    }
+
+    {
+      // Create a new tab because the default one is occupied by the BiDiMapper
+      std::string web_view_id;
+      status = session->chrome->NewWindow(
+          session->window, Chrome::WindowType::kTab, &web_view_id);
+
+      if (status.IsError())
+        return status;
+
+      std::string handle = WebViewIdToWindowHandle(web_view_id);
+
+      std::unique_ptr<base::Value> result;
+      base::Value body(base::Value::Type::DICTIONARY);
+      body.GetDict().Set("handle", handle);
+
+      status = ExecuteSwitchToWindow(
+          session, base::Value::AsDictionaryValue(body), &result);
+    }
+  }
+
+  return status;
 }
 
 }  // namespace
@@ -627,7 +710,7 @@ Status ExecuteInitSession(const InitSessionParams& bound_params,
   Status status = InitSessionHelper(bound_params, session, params, value);
   if (status.IsError()) {
     session->quit = true;
-    if (session->chrome != NULL)
+    if (session->chrome != nullptr)
       session->chrome->Quit();
   } else if (session->webSocketUrl) {
     bound_params.cmd_task_runner->PostTask(
@@ -658,7 +741,7 @@ Status ExecuteGetSessionCapabilities(Session* session,
 Status ExecuteGetCurrentWindowHandle(Session* session,
                                      const base::DictionaryValue& params,
                                      std::unique_ptr<base::Value>* value) {
-  WebView* web_view = NULL;
+  WebView* web_view = nullptr;
   Status status = session->GetTargetWindow(&web_view);
   if (status.IsError())
     return status;
@@ -679,9 +762,12 @@ Status ExecuteClose(Session* session,
   if (status.IsError())
     return status;
   bool is_last_web_view = web_view_ids.size() == 1u;
+  if (session->webSocketUrl) {
+    is_last_web_view = web_view_ids.size() <= 2u;
+  }
   web_view_ids.clear();
 
-  WebView* web_view = NULL;
+  WebView* web_view = nullptr;
   status = session->GetTargetWindow(&web_view);
   if (status.IsError())
     return status;
@@ -725,16 +811,16 @@ Status ExecuteClose(Session* session,
   if (status.IsError())
     return status;
 
-  if (!is_last_web_view) {
-    status = ExecuteGetWindowHandles(session, base::DictionaryValue(), value);
-    if (status.IsError())
-      return status;
-  } else {
+  if (is_last_web_view) {
     // If there is only one window left, call quit as well.
     session->quit = true;
     status = session->chrome->Quit();
     if (status.IsOk())
       *value = std::make_unique<base::Value>(base::Value::Type::LIST);
+  } else {
+    status = ExecuteGetWindowHandles(session, base::DictionaryValue(), value);
+    if (status.IsError())
+      return status;
   }
 
   return status;
@@ -748,6 +834,20 @@ Status ExecuteGetWindowHandles(Session* session,
                                                  session->w3c_compliant);
   if (status.IsError())
     return status;
+
+  if (session->webSocketUrl) {
+    std::string mapper_view_id;
+    // TODO(chromedriver:4181): How do we know for sure that the first page is
+    // the mapper?
+    status = session->chrome->GetWebViewIdForFirstTab(&mapper_view_id,
+                                                      session->w3c_compliant);
+    auto it =
+        std::find(web_view_ids.begin(), web_view_ids.end(), mapper_view_id);
+    if (it != web_view_ids.end()) {
+      web_view_ids.erase(it);
+    }
+  }
+
   std::unique_ptr<base::Value> window_ids(
       new base::Value(base::Value::Type::LIST));
   for (std::list<std::string>::const_iterator it = web_view_ids.begin();
@@ -977,7 +1077,7 @@ Status ExecuteImplicitlyWait(Session* session,
 Status ExecuteIsLoading(Session* session,
                         const base::DictionaryValue& params,
                         std::unique_ptr<base::Value>* value) {
-  WebView* web_view = NULL;
+  WebView* web_view = nullptr;
   Status status = session->GetTargetWindow(&web_view);
   if (status.IsError())
     return status;
@@ -1329,4 +1429,107 @@ Status ExecuteSetTimeZone(Session* session,
                                     base::Value::AsDictionaryValue(body),
                                     value);
   return Status(kOk);
+}
+
+// Run a BiDi command
+Status ExecuteBidiCommand(Session* session,
+                          const base::DictionaryValue& params,
+                          std::unique_ptr<base::Value>* value) {
+  // session == nullptr is a valid case: ExecuteQuit has already been handled
+  // in the session thread but the following
+  // TerminateSessionThreadOnCommandThread has not yet been executed (the later
+  // destroys the session thread) The connection has already been accepted by
+  // the CMD thread but soon it will be closed. We don't need to do anything.
+  if (session == nullptr) {
+    return Status{kNoSuchFrame, "session not found"};
+  }
+  std::string data;
+  params.GetString("bidiCommand", &data);
+
+  std::string web_view_id;
+  Status status = session->chrome->GetWebViewIdForFirstTab(
+      &web_view_id, session->w3c_compliant);
+  if (status.IsError()) {
+    return status;
+  }
+  WebView* web_view = nullptr;
+  status = session->chrome->GetWebViewById(web_view_id, &web_view);
+  if (status.IsError()) {
+    return status;
+  }
+
+  absl::optional<base::Value> dataParsed =
+      base::JSONReader::Read(data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+
+  if (!dataParsed) {
+    return Status(kUnknownError, "cannot parse the BiDi command: " + data);
+  }
+
+  if (!dataParsed->is_dict()) {
+    return Status(kUnknownError,
+                  "a JSON map is expected as a BiDi command: " + data);
+  }
+
+  absl::optional<int> cmd_id = dataParsed->GetDict().FindInt("id");
+  if (!cmd_id) {
+    return Status(kUnknownError, "BiDi command is missing 'id' field: " + data);
+  }
+
+  std::string* method = dataParsed->GetDict().FindString("method");
+  if (!method) {
+    return Status(kUnknownError,
+                  "BiDi command is missing 'method' field: " + data);
+  }
+
+  std::string msg;
+  if (!base::JSONWriter::Write(data, &msg)) {
+    return Status(kUnknownError, "cannot serialize be BiDi command: " + data);
+  }
+  std::string expression = "onBidiMessage(" + msg + ")";
+
+  if (*method == "browsingContext.close") {
+    // Closing of the context is handled in a blocking way.
+    // This simplifies us closing the browser if the last tab was closed.
+    session->awaited_bidi_response_id = *cmd_id;
+    status = web_view->EvaluateScript(std::string(), expression, false, value);
+    base::RepeatingCallback<Status(bool*)> bidi_response_is_received =
+        base::BindRepeating(
+            [](Session* session, int cmd_id, bool* condition_is_met) {
+              *condition_is_met = session->awaited_bidi_response_id != cmd_id;
+              return Status{kOk};
+            },
+            base::Unretained(session), *cmd_id);
+    if (status.IsError()) {
+      return status;
+    }
+
+    // The timeout is the same as in ChromeImpl::CloseTarget
+    status = web_view->HandleEventsUntil(std::move(bidi_response_is_received),
+                                         Timeout(base::Seconds(20)));
+    if (status.code() == kTimeout) {
+      // It looks like something is going wrong with the BiDiMapper.
+      // Terminating the session...
+      session->quit = true;
+      status = session->chrome->Quit();
+      return Status(kUnknownError, "failed to close window in 20 seconds");
+    }
+    if (status.IsError())
+      return status;
+
+    std::list<std::string> web_view_ids;
+    status =
+        session->chrome->GetWebViewIds(&web_view_ids, session->w3c_compliant);
+    if (status.IsError())
+      return status;
+
+    bool is_last_web_view = web_view_ids.size() <= 1u;
+    if (is_last_web_view) {
+      session->quit = true;
+      status = session->chrome->Quit();
+    }
+  } else {
+    status = web_view->EvaluateScript(std::string(), expression, false, value);
+  }
+
+  return status;
 }

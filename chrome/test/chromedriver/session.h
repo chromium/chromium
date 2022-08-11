@@ -7,9 +7,11 @@
 
 #include <list>
 #include <memory>
+#include <queue>
 #include <string>
 #include <vector>
 
+#include "base/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -64,6 +66,23 @@ struct InputCancelListEntry {
   std::unique_ptr<KeyEvent> key_event;
 };
 
+typedef base::RepeatingCallback<void(const std::string& /*payload*/)>
+    SendTextFunc;
+
+typedef base::RepeatingCallback<void()> CloseFunc;
+
+struct BidiConnection {
+  BidiConnection(int connection_id,
+                 SendTextFunc send_response,
+                 CloseFunc close_connection);
+  BidiConnection(BidiConnection&& other);
+  ~BidiConnection();
+  BidiConnection& operator=(BidiConnection&& other);
+  int connection_id;
+  SendTextFunc send_response;
+  CloseFunc close_connection;
+};
+
 struct Session {
   static const base::TimeDelta kDefaultImplicitWaitTimeout;
   static const base::TimeDelta kDefaultPageLoadTimeout;
@@ -83,11 +102,19 @@ struct Session {
   std::string GetCurrentFrameId() const;
   std::vector<WebDriverLog*> GetAllLogs() const;
 
+  void OnBidiResponse(const std::string& payload);
+  void AddBidiConnection(int connection_id,
+                         SendTextFunc send_response,
+                         CloseFunc close_connection);
+  void RemoveBidiConnection(int connection_id);
+  void CloseAllConnections();
+
   const std::string id;
   bool w3c_compliant;
   bool webSocketUrl = false;
   bool quit;
   bool detach;
+  int awaited_bidi_response_id = -1;
   std::unique_ptr<Chrome> chrome;
   std::string window;
   int sticky_modifiers;
@@ -135,6 +162,19 @@ struct Session {
 
  private:
   void SwitchFrameInternal(bool for_top_frame);
+  void ProcessBidiResponseQueue();
+
+  // TODO: for the moment being we support single connection per client
+  // In the future (2022Q4) we will probably support multiple bidi connections.
+  // In order to do that we can try either of the following approaches:
+  // * Create a separate CDP session per connection
+  // * Give some connection identifying context to the BiDiMapper.
+  //   The context will travel between the BiDiMapper and ChromeDriver.
+  // * Store an internal map between CDP command id and connection.
+  std::vector<BidiConnection> bidi_connections_;
+  // If there is no active connections the messages from Chrome are accumulated
+  // in this queue until a connection is created or the queue overflows.
+  std::queue<std::string> bidi_response_queue_;
 };
 
 Session* GetThreadLocalSession();

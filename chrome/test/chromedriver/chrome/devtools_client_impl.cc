@@ -422,7 +422,7 @@ Status DevToolsClientImpl::HandleEventsUntil(
     // but return timeout status if primary timeout has expired
     // This supports cases when loading state is updated by a different client
     Timeout funcinterval = Timeout(base::Milliseconds(500), &timeout);
-    Status status = ProcessNextMessage(-1, false, funcinterval);
+    Status status = ProcessNextMessage(-1, false, funcinterval, this);
     if (status.code() == kTimeout) {
       if (timeout.IsExpired()) {
         // Build status message based on timeout parameter, not funcinterval
@@ -524,7 +524,7 @@ Status DevToolsClientImpl::SendCommandInternal(
         // Use a long default timeout if user has not requested one.
         Status status = ProcessNextMessage(
             command_id, true,
-            timeout != nullptr ? *timeout : Timeout(base::Minutes(10)));
+            timeout != nullptr ? *timeout : Timeout(base::Minutes(10)), this);
         if (status.IsError()) {
           if (response_info->state == kReceived)
             response_info_map_.erase(command_id);
@@ -561,7 +561,8 @@ Status DevToolsClientImpl::SendCommandInternal(
 
 Status DevToolsClientImpl::ProcessNextMessage(int expected_id,
                                               bool log_timeout,
-                                              const Timeout& timeout) {
+                                              const Timeout& timeout,
+                                              DevToolsClientImpl* caller) {
   ScopedIncrementer increment_stack_count(&stack_count_);
   DCHECK(IsConnected());
 
@@ -591,7 +592,7 @@ Status DevToolsClientImpl::ProcessNextMessage(int expected_id,
     return Status(kTargetDetached);
 
   if (parent_ != nullptr)
-    return parent_->ProcessNextMessage(-1, log_timeout, timeout);
+    return parent_->ProcessNextMessage(-1, log_timeout, timeout, caller);
 
   std::string message;
   switch (socket_->ReceiveNextMessage(&message, timeout)) {
@@ -615,11 +616,12 @@ Status DevToolsClientImpl::ProcessNextMessage(int expected_id,
       break;
   }
 
-  return HandleMessage(expected_id, message);
+  return HandleMessage(expected_id, message, caller);
 }
 
 Status DevToolsClientImpl::HandleMessage(int expected_id,
-                                         const std::string& message) {
+                                         const std::string& message,
+                                         DevToolsClientImpl* caller) {
   std::string session_id;
   internal::InspectorMessageType type;
   internal::InspectorEvent event;
@@ -643,10 +645,46 @@ Status DevToolsClientImpl::HandleMessage(int expected_id,
   }
   WebViewImplHolder client_holder(client->owner_);
   if (type == internal::kEventMessageType) {
-    return client->ProcessEvent(event);
+    Status status = client->ProcessEvent(event);
+    if (caller == client || this == client) {
+      // In either case we are in the root.
+      // 'this == client' means that the error has happened in the browser
+      // session. Any errors happening here are global and most likely will lead
+      // to the session termination. Forward them to the caller!
+      // 'caller == client' means that the message must be routed to the
+      // same client that invoked the current root. Sending the errors
+      // to the caller is the proper behavior in this case as well.
+      return status;
+    } else {
+      // We support active event consumption meaning that the whole session
+      // makes progress independently from the active WebDriver Classic target.
+      // This is needed for timely delivery of bidi events to the user.
+      // If something wrong happens in the different target the corresponding
+      // WebView must update its state accordingly to notify the user
+      // about the issue on the next HTTP request.
+      return Status{kOk};
+    }
   }
   CHECK_EQ(type, internal::kCommandResponseMessageType);
-  return client->ProcessCommandResponse(response);
+  Status status = client->ProcessCommandResponse(response);
+  if (caller == client || this == client) {
+    // In either case we are in the root.
+    // 'this == client' means that the error has happened in the browser
+    // session. Any errors happening here are global and most likely will lead
+    // to the session termination. Forward them to the caller!
+    // 'caller == client' means that the message must be routed to the
+    // same client that invoked the current root. Sending the errors
+    // to the caller is the proper behavior in this case as well.
+    return status;
+  } else {
+    // We support active event consumption meaning that the whole session
+    // makes progress independently from the active WebDriver Classic target.
+    // This is needed for timely delivery of bidi events to the user.
+    // If something wrong happens in the different target the corresponding
+    // WebView must update its state accordingly to notify the user
+    // about the issue on the next HTTP request.
+    return Status{kOk};
+  }
 }
 
 Status DevToolsClientImpl::ProcessEvent(const internal::InspectorEvent& event) {

@@ -562,9 +562,10 @@ class ChromeDriverWebSocketTest(ChromeDriverBaseTestWithWebServer):
     self.assertEqual(driver.capabilities['webSocketUrl'],
         self.composeWebSocketUrl(_CHROMEDRIVER_SERVER_URL,
                                  driver.GetSessionId()))
+
     websocket = websocket_connection.WebSocketConnection(
         _CHROMEDRIVER_SERVER_URL, driver.GetSessionId())
-    self.assertNotEqual(None, websocket)
+    self.assertIsNotNone(websocket)
 
   def testWebSocketUrlInvalid(self):
     self.assertRaises(chromedriver.InvalidArgument,
@@ -577,15 +578,6 @@ class ChromeDriverWebSocketTest(ChromeDriverBaseTestWithWebServer):
     self.assertNotEqual(None, websocket)
     self.assertRaises(Exception, websocket_connection.WebSocketConnection,
                       _CHROMEDRIVER_SERVER_URL, driver.GetSessionId())
-
-  def testWebSocketCommandReturnsNotSupported(self):
-    driver = self.CreateDriver(web_socket_url=True)
-    websocket = websocket_connection.WebSocketConnection(
-        _CHROMEDRIVER_SERVER_URL, driver.GetSessionId())
-
-    websocket.SendCommand({"SOME": "COMMAND"})
-    message = websocket.ReadMessage()
-    self.assertEqual("not supported", message)
 
   def testWebSocketInvalidSessionId(self):
     driver = self.CreateDriver(web_socket_url=True)
@@ -5313,6 +5305,143 @@ class HeadlessChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))
     self.assertRaises(chromedriver.InvalidArgument,
                       self._driver.PrintPDF, {'pageRanges': ['x-y']})
+
+class BidiTest(ChromeDriverBaseTestWithWebServer):
+
+  def setUp(self):
+    self._driver = self.CreateDriver(web_socket_url = True)
+
+  def createWebSocketConnection(self, driver = None):
+    if driver is None:
+      driver = self._driver
+    conn = driver.CreateWebSocketConnection()
+    conn.SetTimeout(5 * 60) # 5 minutes
+    return conn
+
+  def testCreateContext(self):
+    conn = self.createWebSocketConnection()
+
+    old_handles = self._driver.GetWindowHandles()
+    self.assertEqual(1, len(old_handles))
+    self.assertNotEqual("BiDi Mapper", self._driver.GetTitle())
+
+    cmd_id = conn.SendCommand({
+      'method': 'browsingContext.create',
+      'params': {
+          'type': 'tab'
+      }
+    })
+    conn.WaitForResponse(cmd_id)
+    new_handles = self._driver.GetWindowHandles()
+    diff = set(new_handles) - set(old_handles)
+    self.assertEqual(1, len(diff))
+
+  def testGetBrowsingContextTree(self):
+    conn = self.createWebSocketConnection()
+
+    cmd_id = conn.SendCommand({
+      'method': 'browsingContext.getTree',
+      'params': {
+      }
+    })
+    resp = conn.WaitForResponse(cmd_id)
+    contexts = resp['result']['contexts']
+    self.assertEqual(1, len(contexts))
+
+  def testMapperIsNotDisplacedByNavigation(self):
+    self._http_server.SetDataForPath('/page.html',
+     bytes('<html><title>Regular Page</title></body></html>', 'utf-8'))
+
+    conn = self.createWebSocketConnection()
+    old_handles = self._driver.GetWindowHandles()
+
+    self._driver.Load(self._http_server.GetUrl() + '/page.html')
+    self.assertEqual("Regular Page", self._driver.GetTitle())
+
+    cmd_id = conn.SendCommand({
+      'method': 'browsingContext.create',
+      'params': {
+          'type': 'tab'
+      }
+    })
+    conn.WaitForResponse(cmd_id)
+    new_handles = self._driver.GetWindowHandles()
+    diff = set(new_handles) - set(old_handles)
+    self.assertEqual(1, len(diff))
+
+  def testBrowserQuitsWhenLastPageIsClosed(self):
+    conn = self.createWebSocketConnection()
+
+    handles = self._driver.GetWindowHandles()
+    self.assertEqual(1, len(handles))
+    self._driver.CloseWindow()
+
+    with self.assertRaises(chromedriver.WebSocketConnectionClosedException):
+      # BiDi messages cannot have negative "id".
+      # Wait indefinitely until time out.
+      conn.WaitForResponse(-1)
+
+  def testCloseOneOfManyPages(self):
+    conn = self.createWebSocketConnection()
+
+    cmd_id = conn.SendCommand({
+      'method': 'browsingContext.create',
+      'params': {
+          'type': 'tab'
+      }
+    })
+    conn.WaitForResponse(cmd_id)
+
+    handles = self._driver.GetWindowHandles()
+    self.assertEqual(2, len(handles))
+    self._driver.CloseWindow()
+
+    cmd_id = conn.SendCommand({
+      'method': 'browsingContext.getTree',
+      'params': {
+      }
+    })
+    resp = conn.WaitForResponse(cmd_id)
+    contexts = resp['result']['contexts']
+    self.assertEqual(1, len(contexts))
+
+  def testBrowserQuitsWhenLastBrowsingContextIsClosed(self):
+    conn = self.createWebSocketConnection()
+
+    cmd_id = conn.SendCommand({
+      'method': 'browsingContext.getTree',
+      'params': {
+      }
+    })
+    resp = conn.WaitForResponse(cmd_id)
+    contexts = resp['result']['contexts']
+
+    cmd_id = conn.SendCommand({
+      'method': 'browsingContext.close',
+      'params': {
+          'context': contexts[0]['context']
+      }
+    })
+    conn.WaitForResponse(cmd_id)
+
+    with self.assertRaises(chromedriver.WebSocketConnectionClosedException):
+      # BiDi messages cannot have negative "id".
+      # Wait indefinitely until time out.
+      conn.WaitForResponse(-1)
+
+
+  # TODO(nechaev): Test over tab switching by different means.
+
+class ClassiTest(ChromeDriverBaseTestWithWebServer):
+
+  def testAfterLastPage(self):
+    driver = self.CreateDriver(web_socket_url = False)
+
+    handles = driver.GetWindowHandles()
+    self.assertEqual(1, len(handles))
+    driver.CloseWindow()
+
+
 
 class SupportIPv4AndIPv6(ChromeDriverBaseTest):
   def testSupportIPv4AndIPv6(self):

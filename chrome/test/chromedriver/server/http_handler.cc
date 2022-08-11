@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_forward.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"  // For CHECK macros.
@@ -66,13 +67,82 @@ bool w3cMode(const std::string& session_id,
   return kW3CDefault;
 }
 
-net::HttpServerResponseInfo createWebSocketRejectResponse(
+net::HttpServerResponseInfo CreateWebSocketRejectResponse(
     net::HttpStatusCode code,
     const std::string& msg) {
   net::HttpServerResponseInfo response(code);
   response.AddHeader("X-WebSocket-Reject-Reason", msg);
   return response;
 }
+
+void SendWebSocketResponseOnCmdThread(
+    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
+    HttpServer* http_server,
+    int connection_id,
+    const std::string& data) {
+  io_task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(&HttpServer::SendOverWebSocket,
+                     base::Unretained(http_server), connection_id, data));
+}
+
+void SendWebSocketResponseOnSessionThread(
+    scoped_refptr<base::SingleThreadTaskRunner> cmd_task_runner,
+    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
+    HttpServer* http_server,
+    int connection_id,
+    const std::string& data) {
+  cmd_task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(&SendWebSocketResponseOnCmdThread, io_task_runner,
+                     base::Unretained(http_server), connection_id, data));
+}
+
+void CloseWebSocketOnCmdThread(
+    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
+    HttpServer* http_server,
+    int connection_id) {
+  io_task_runner->PostTask(
+      FROM_HERE, base::BindOnce(&HttpServer::Close,
+                                base::Unretained(http_server), connection_id));
+}
+
+void CloseWebSocketOnSessionThread(
+    scoped_refptr<base::SingleThreadTaskRunner> cmd_task_runner,
+    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
+    HttpServer* http_server,
+    int connection_id) {
+  cmd_task_runner->PostTask(
+      FROM_HERE, base::BindOnce(&CloseWebSocketOnCmdThread, io_task_runner,
+                                base::Unretained(http_server), connection_id));
+}
+
+void AddBidiConnectionOnSessionThread(int connection_id,
+                                      SendTextFunc send_response,
+                                      CloseFunc close_connection) {
+  Session* session = GetThreadLocalSession();
+  // session == nullptr is a valid case: ExecuteQuit has already been handled
+  // in the session thread but the following
+  // TerminateSessionThreadOnCommandThread has not yet been executed (the latter
+  // destroys the session thread) The connection has already been accepted by
+  // the CMD thread but soon it will be closed. We don't need to do anything.
+  if (session != nullptr) {
+    session->AddBidiConnection(connection_id, std::move(send_response),
+                               std::move(close_connection));
+  }
+}
+
+void RemoveBidiConnectionOnSessionThread(int connection_id) {
+  Session* session = GetThreadLocalSession();
+  // session == nullptr is a valid case: ExecuteQuit has already been handled
+  // in the session thread but the following
+  // TerminateSessionThreadOnCommandThread has not yet been executed (the latter
+  // destroys the session thread)
+  if (session != nullptr) {
+    session->RemoveBidiConnection(connection_id);
+  }
+}
+
 }  // namespace
 
 // WrapperURLLoaderFactory subclasses mojom::URLLoaderFactory as non-mojo, cross
@@ -152,6 +222,7 @@ HttpHandler::HttpHandler(
     int adb_port)
     : quit_func_(quit_func),
       io_task_runner_(io_task_runner),
+      cmd_task_runner_(cmd_task_runner),
       url_base_(url_base),
       received_shutdown_(false) {
 #if BUILDFLAG(IS_MAC)
@@ -1398,11 +1469,125 @@ void HttpHandler::OnWebSocketRequest(HttpServer* http_server,
   } else {
     session_connection_map_[session_id] = connection_id;
     connection_session_map_[connection_id] = session_id;
-    io_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&HttpServer::AcceptWebSocket,
-                       base::Unretained(http_server), connection_id, info));
+
+    auto thread_it = session_thread_map_.find(session_id);
+    // check first that the session thread is still alive
+    if (thread_it != session_thread_map_.end()) {
+      auto send_response_from_seq = base::BindRepeating(
+          &SendWebSocketResponseOnSessionThread, cmd_task_runner_,
+          io_task_runner_, base::Unretained(http_server), connection_id);
+
+      auto close_from_seq = base::BindRepeating(
+          &CloseWebSocketOnSessionThread, cmd_task_runner_, io_task_runner_,
+          base::Unretained(http_server), connection_id);
+
+      thread_it->second->thread()->task_runner()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&AddBidiConnectionOnSessionThread, connection_id,
+                         std::move(send_response_from_seq),
+                         std::move(close_from_seq)));
+
+      io_task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(&HttpServer::AcceptWebSocket,
+                         base::Unretained(http_server), connection_id, info));
+    } else {
+      std::string err_msg = "session not found session_id=" + session_id;
+      VLOG(0) << "HttpHandler WebSocketRequest error " << err_msg;
+      SendWebSocketRejectResponse(http_server, connection_id,
+                                  net::HTTP_BAD_REQUEST, err_msg);
+    }
   }
+}
+
+void HttpHandler::OnWebSocketMessage(HttpServer* http_server,
+                                     int connection_id,
+                                     const std::string& data) {
+  base::RepeatingCallback<void(const Status&)> send_error = base::BindRepeating(
+      [](HttpServer* http_server, int connection_id, const std::string& data,
+         scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
+         const Status& status) {
+        base::Value::Dict msg_dict;
+        msg_dict.Set("message", status.message());
+        msg_dict.Set("error", StatusCodeToString(status.code()));
+        absl::optional<base::Value> value =
+            base::JSONReader::Read(data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+        if (value && value->is_dict()) {
+          absl::optional<int> msg_id = value->GetDict().FindInt("id");
+          if (msg_id) {
+            msg_dict.Set("id", *msg_id);
+          } else {
+            LOG(WARNING) << "BiDi command has no id";
+          }
+        } else {
+          LOG(WARNING) << "BiDi command is not a JSON map";
+        }
+        std::string error_message;
+        if (base::JSONWriter::Write(msg_dict, &error_message)) {
+          io_task_runner->PostTask(
+              FROM_HERE, base::BindOnce(&HttpServer::SendOverWebSocket,
+                                        base::Unretained(http_server),
+                                        connection_id, error_message));
+        } else {
+          LOG(WARNING) << "unable to serialize BiDi error message";
+        }
+      },
+      http_server, connection_id, data, io_task_runner_);
+
+  auto it = connection_session_map_.find(connection_id);
+  if (it == connection_session_map_.end()) {
+    // Session was terminated but the connection is not yet closed
+    send_error.Run(Status{kNoSuchFrame, "session not found"});
+    return;
+  }
+
+  std::string session_id = it->second;
+
+  base::DictionaryValue params;
+  params.Set("bidiCommand", std::make_unique<base::Value>(data));
+
+  auto callback = base::BindRepeating(
+      [](base::RepeatingCallback<void(const Status&)> send_error,
+         const Status& status, std::unique_ptr<base::Value>,
+         const std::string& session_id, bool) {
+        if (status.IsOk()) {
+          return;
+        }
+        switch (status.code()) {
+          case kInvalidSessionId: {
+            // ExecuteSessionCommandOnSessionThread can return this error status
+            send_error.Run(Status{
+                kNoSuchFrame, "session not found session_id=" + session_id});
+            break;
+          }
+          default: {
+            send_error.Run(status);
+            break;
+          }
+        }
+      },
+      send_error);
+  auto cmd = WrapToCommand("ExecuteBidiCommand",
+                           base::BindRepeating(&ExecuteBidiCommand));
+  cmd.Run(params, session_id, std::move(callback));
+}
+
+void HttpHandler::OnWebSocketResponseOnCmdThread(HttpServer* http_server,
+                                                 int connection_id,
+                                                 const std::string& data) {
+  io_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&HttpServer::SendOverWebSocket,
+                     base::Unretained(http_server), connection_id, data));
+}
+
+void HttpHandler::OnWebSocketResponseOnSessionThread(HttpServer* http_server,
+                                                     int connection_id,
+                                                     const std::string& data) {
+  cmd_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&HttpHandler::OnWebSocketResponseOnCmdThread, WeakPtr(),
+                     base::Unretained(http_server), connection_id, data));
 }
 
 void HttpHandler::OnClose(HttpServer* http_server, int connection_id) {
@@ -1410,8 +1595,17 @@ void HttpHandler::OnClose(HttpServer* http_server, int connection_id) {
   if (it == connection_session_map_.end()) {
     return;
   }
-  session_connection_map_[it->second] = -1;
+  std::string session_id = it->second;
+  session_connection_map_[session_id] = -1;
   connection_session_map_.erase(it);
+
+  auto thread_it = session_thread_map_.find(session_id);
+  // check first that the session thread is still alive
+  if (thread_it != session_thread_map_.end()) {
+    thread_it->second->thread()->task_runner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&RemoveBidiConnectionOnSessionThread, connection_id));
+  }
 }
 
 void HttpHandler::SendWebSocketRejectResponse(HttpServer* http_server,
@@ -1422,7 +1616,7 @@ void HttpHandler::SendWebSocketRejectResponse(HttpServer* http_server,
       FROM_HERE,
       base::BindOnce(&HttpServer::SendResponse, base::Unretained(http_server),
                      connection_id,
-                     createWebSocketRejectResponse(net::HTTP_BAD_REQUEST, msg),
+                     CreateWebSocketRejectResponse(net::HTTP_BAD_REQUEST, msg),
                      TRAFFIC_ANNOTATION_FOR_TESTS));
 }
 

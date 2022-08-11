@@ -174,6 +174,11 @@ Status ExecuteSetTimeZone(Session* session,
                           const base::DictionaryValue& params,
                           std::unique_ptr<base::Value>* value);
 
+// Run a BiDi command
+Status ExecuteBidiCommand(Session* session,
+                          const base::DictionaryValue& params,
+                          std::unique_ptr<base::Value>* value);
+
 namespace internal {
 Status ConfigureHeadlessSession(Session* session,
                                 const Capabilities& capabilities);
