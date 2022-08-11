@@ -114,6 +114,9 @@
 // Opens a new incognito tab via the tools menu.
 - (void)openNewIncognitoTab;
 
+// Opens the tab grid.
+- (void)openTabGrid;
+
 // Opens and clear browsing data from history.
 - (void)openAndClearBrowsingDataFromHistory;
 

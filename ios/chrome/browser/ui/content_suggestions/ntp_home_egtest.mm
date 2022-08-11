@@ -713,14 +713,8 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
                             [NSString stringWithFormat:@"%i", 2])];
 
   // Test the same thing after opening a tab from the tab grid.
-  // TODO(crbug.com/933953) For an unknown reason synchronization doesn't work
-  // well with tapping on the tabgrid button, and instead triggers the long
-  // press gesture recognizer.  Disable this here so the test can be re-enabled.
-  {
-    ScopedSynchronizationDisabler disabler;
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
-        performAction:grey_longPressWithDuration(0.05)];
-  }
+  [ChromeEarlGreyUI openTabGrid];
+
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridNewTabButton()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]

@@ -11,6 +11,7 @@
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
+#import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -361,6 +362,15 @@ class ScopedDisableTimerTracking {
   [[EarlGrey selectElementWithMatcher:newIncognitoTabMatcher]
       performAction:grey_tap()];
   [self waitForAppToIdle];
+}
+
+- (void)openTabGrid {
+  // TODO(crbug.com/933953) For an unknown reason synchronization doesn't work
+  // well with tapping on the tabgrid button, and instead triggers the long
+  // press gesture recognizer.  Disable this here so the test can be re-enabled.
+  ScopedSynchronizationDisabler disabler;
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
+      performAction:grey_longPressWithDuration(0.05)];
 }
 
 - (void)reload {
