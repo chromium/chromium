@@ -66,7 +66,8 @@ static bool IsWindowFeaturesSeparator(UChar c) {
 }
 
 WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
-                                              LocalDOMWindow* dom_window) {
+                                              LocalDOMWindow* dom_window,
+                                              const KURL& url) {
   WebWindowFeatures window_features;
 
   bool attribution_reporting_enabled =
@@ -226,9 +227,10 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
       // If the impression could not be set, or if the value was empty, mark
       // attribution eligibility by adding an impression.
       if (!window_features.impression &&
-          CanRegisterAttributionInContext(dom_window->GetFrame(),
-                                          /*element=*/nullptr,
-                                          /*request_id=*/absl::nullopt)) {
+          dom_window->GetFrame()->GetAttributionSrcLoader()->CanRegister(
+              url,
+              /*element=*/nullptr,
+              /*request_id=*/absl::nullopt)) {
         window_features.impression = blink::Impression();
       }
     }

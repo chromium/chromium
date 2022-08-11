@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/frame/attribution_src_loader.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -109,7 +110,12 @@ Resource* PreloadRequest::Start(Document* document) {
 
   resource_request.SetFetchPriorityHint(fetch_priority_hint_);
 
-  if (is_attribution_reporting_eligible_img_or_script_) {
+  // Disable issue logging to avoid duplicates, since `CanRegister()` will be
+  // called again later.
+  if (is_attribution_reporting_eligible_img_or_script_ &&
+      document->domWindow()->GetFrame()->GetAttributionSrcLoader()->CanRegister(
+          url, /*element=*/nullptr,
+          /*request_id=*/absl::nullopt, /*log_issues=*/false)) {
     resource_request.SetHttpHeaderField(
         http_names::kAttributionReportingEligible,
         kAttributionEligibleEventSourceAndTrigger);

@@ -42,7 +42,6 @@
 #include "third_party/blink/renderer/core/css/parser/sizes_attribute_parser.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
-#include "third_party/blink/renderer/core/frame/attribution_src_loader.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/viewport_data.h"
@@ -341,8 +340,7 @@ class TokenPreloadScanner::StartTagScanner {
     if (scanner_type_ == ScannerType::kInsertion)
       request->SetFromInsertionScanner(true);
 
-    if (attributionsrc_attr_set_ &&
-        document_parameters.can_register_attribution) {
+    if (attributionsrc_attr_set_) {
       DCHECK(is_script || is_img);
       request->SetAttributionReportingEligibleImgOrScript(true);
     }
@@ -1189,12 +1187,6 @@ CachedDocumentParameters::CachedDocumentParameters(Document* document) {
   }
   probe::GetDisabledImageTypes(document->GetExecutionContext(),
                                &disabled_image_types);
-
-  can_register_attribution =
-      CanRegisterAttributionInContext(document->Loader()->GetFrame(),
-                                      /*element=*/nullptr,
-                                      /*request_id=*/absl::nullopt,
-                                      /*log_issues=*/false);
 }
 
 }  // namespace blink

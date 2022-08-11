@@ -545,23 +545,14 @@ PendingScript* ScriptLoader::PrepareScript(
       potentially_render_blocking ? RenderBlockingBehavior::kBlocking
                                   : RenderBlockingBehavior::kNonBlocking;
 
-  // TODO(apaseltiner): Propagate the element instead of passing nullptr.
-  const auto attribution_reporting_eligibility =
-      element_->HasAttributionsrcAttribute() &&
-              CanRegisterAttributionInContext(context_window->GetFrame(),
-                                              /*element=*/nullptr,
-                                              /*request_id=*/absl::nullopt)
-          ? ScriptFetchOptions::AttributionReportingEligibility::kEligible
-          : ScriptFetchOptions::AttributionReportingEligibility::kIneligible;
-
   // <spec step="27">Let options be a script fetch options whose cryptographic
   // nonce is cryptographic nonce, integrity metadata is integrity metadata,
   // parser metadata is parser metadata, credentials mode is module script
   // credentials mode, and referrer policy is referrer policy.</spec>
-  ScriptFetchOptions options(
-      nonce, integrity_metadata, integrity_attr, parser_state, credentials_mode,
-      referrer_policy, fetch_priority_hint, render_blocking_behavior,
-      RejectCoepUnsafeNone(false), attribution_reporting_eligibility);
+  ScriptFetchOptions options(nonce, integrity_metadata, integrity_attr,
+                             parser_state, credentials_mode, referrer_policy,
+                             fetch_priority_hint, render_blocking_behavior,
+                             RejectCoepUnsafeNone(false));
 
   // <spec step="28">Let settings object be el's node document's relevant
   // settings object.</spec>
@@ -645,6 +636,16 @@ PendingScript* ScriptLoader::PrepareScript(
                      WTF::Bind(&ScriptElementBase::DispatchErrorEvent,
                                WrapPersistent(element_.Get())));
       return nullptr;
+    }
+
+    // TODO(apaseltiner): Propagate the element instead of passing nullptr.
+    if (element_->HasAttributionsrcAttribute() &&
+        context_window->GetFrame()->GetAttributionSrcLoader()->CanRegister(
+            url,
+            /*element=*/nullptr,
+            /*request_id=*/absl::nullopt)) {
+      options.SetAttributionReportingEligibility(
+          ScriptFetchOptions::AttributionReportingEligibility::kEligible);
     }
 
     // <spec step="29.6">If el is potentially render-blocking, then block

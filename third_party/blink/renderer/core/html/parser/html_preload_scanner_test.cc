@@ -99,6 +99,7 @@ struct LazyLoadImageTestCase {
 
 struct AttributionSrcTestCase {
   bool use_secure_document_url;
+  const char* base_url;
   const char* input_html;
   const char* expected_header;
 };
@@ -246,9 +247,6 @@ class HTMLMockHTMLResourcePreloader : public ResourcePreloader {
     ASSERT_TRUE(preload_request_.get());
     Resource* resource = preload_request_->Start(document);
     ASSERT_TRUE(resource);
-
-    EXPECT_EQ(!!expected_header,
-              preload_request_->IsAttributionReportingEligibleImgOrScript());
 
     EXPECT_EQ(expected_header, resource->GetResourceRequest().HttpHeaderField(
                                    http_names::kAttributionReportingEligible));
@@ -428,7 +426,7 @@ class HTMLPreloadScannerTest : public PageTestBase {
   void Test(AttributionSrcTestCase test_case) {
     SCOPED_TRACE(test_case.input_html);
     HTMLMockHTMLResourcePreloader preloader(GetDocument().Url());
-    KURL base_url("http://example.test/");
+    KURL base_url(test_case.base_url);
     scanner_->AppendToEnd(String(test_case.input_html));
     std::unique_ptr<PendingPreloadData> preload_data = scanner_->Scan(base_url);
     preloader.TakePreloadData(std::move(preload_data));
@@ -1090,19 +1088,36 @@ TEST_F(HTMLPreloadScannerTest, testNonce) {
 }
 
 TEST_F(HTMLPreloadScannerTest, testAttributionSrc) {
+  static constexpr bool kSecureDocumentUrl = true;
+  static constexpr bool kInsecureDocumentUrl = false;
+
+  static constexpr char kSecureBaseURL[] = "https://example.test";
+  static constexpr char kInsecureBaseURL[] = "http://example.test";
+
   AttributionSrcTestCase test_cases[] = {
       // Insecure context
-      {false, "<img src='/image' attributionsrc>", nullptr},
-      {false, "<script src='/script' attributionsrc></script>", nullptr},
+      {kInsecureDocumentUrl, kSecureBaseURL,
+       "<img src='/image' attributionsrc>", nullptr},
+      {kInsecureDocumentUrl, kSecureBaseURL,
+       "<script src='/script' attributionsrc></script>", nullptr},
       // No attributionsrc attribute
-      {true, "<img src='/image'>", nullptr},
-      {true, "<script src='/script'></script>", nullptr},
+      {kSecureDocumentUrl, kSecureBaseURL, "<img src='/image'>", nullptr},
+      {kSecureDocumentUrl, kSecureBaseURL, "<script src='/script'></script>",
+       nullptr},
       // Irrelevant element type
-      {true, "<video poster='/image' attributionsrc>", nullptr},
-      // Secure context, attributionsrc attribute
-      {true, "<img src='/image' attributionsrc>",
+      {kSecureDocumentUrl, kSecureBaseURL,
+       "<video poster='/image' attributionsrc>", nullptr},
+      // Not potentially trustworthy reporting origin
+      {kSecureDocumentUrl, kInsecureBaseURL,
+       "<img src='/image' attributionsrc>", nullptr},
+      {kSecureDocumentUrl, kInsecureBaseURL,
+       "<script src='/script' attributionsrc></script>", nullptr},
+      // Secure context, potentially trustworthy reporting origin,
+      // attributionsrc attribute
+      {kSecureDocumentUrl, kSecureBaseURL, "<img src='/image' attributionsrc>",
        kAttributionEligibleEventSourceAndTrigger},
-      {true, "<script src='/script' attributionsrc></script>",
+      {kSecureDocumentUrl, kSecureBaseURL,
+       "<script src='/script' attributionsrc></script>",
        kAttributionEligibleEventSourceAndTrigger},
   };
 

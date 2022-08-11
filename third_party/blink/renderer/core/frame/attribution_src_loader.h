@@ -11,7 +11,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
 #include "third_party/blink/renderer/platform/heap/forward.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -64,6 +63,18 @@ class CORE_EXPORT AttributionSrcLoader
   absl::optional<Impression> RegisterNavigation(const KURL& attribution_src,
                                                 HTMLElement* element = nullptr);
 
+  // Returns true if `url` can be used as an attributionsrc: its scheme is HTTP
+  // or HTTPS, its origin is potentially trustworthy, the document's permission
+  // policy supports Attribution Reporting, the window's context is secure, and
+  // the Attribution Reporting runtime-enabled feature is enabled.
+  //
+  // Reports a DevTools issue using `element` and `request_id` otherwise, if
+  // `log_issues` is true.
+  [[nodiscard]] bool CanRegister(const KURL& url,
+                                 HTMLElement* element,
+                                 absl::optional<uint64_t> request_id,
+                                 bool log_issues = true);
+
   void Trace(Visitor* visitor) const;
 
   static constexpr size_t kMaxConcurrentRequests = 30;
@@ -80,11 +91,13 @@ class CORE_EXPORT AttributionSrcLoader
 
   // Returns the reporting origin corresponding to `url` if its protocol is in
   // the HTTP family, its origin is potentially trustworthy, and attribution is
-  // allowed. Returns `nullptr` and reports a DevTools issue otherwise.
+  // allowed. Returns `nullptr` otherwise, and reports a DevTools issue using
+  // `element` and `request_id if `log_issues` is true.
   scoped_refptr<const SecurityOrigin> ReportingOriginForUrlIfValid(
       const KURL& url,
       HTMLElement* element,
-      absl::optional<uint64_t> request_id);
+      absl::optional<uint64_t> request_id,
+      bool log_issues = true);
 
   ResourceClient* CreateAndSendRequest(const KURL& src_url,
                                        HTMLElement* element,
@@ -94,15 +107,6 @@ class CORE_EXPORT AttributionSrcLoader
   const Member<LocalFrame> local_frame_;
   size_t num_resource_clients_ = 0;
 };
-
-// Returns whether attribution is allowed, and logs DevTools issues if
-// registration was attempted in a context that is not allowed.
-// `element` may be null.
-CORE_EXPORT bool CanRegisterAttributionInContext(
-    LocalFrame* frame,
-    HTMLElement* element,
-    absl::optional<uint64_t> request_id,
-    bool log_issues = true);
 
 }  // namespace blink
 

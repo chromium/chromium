@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
+#include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
 #include "third_party/blink/renderer/platform/loader/attribution_header_constants.h"
@@ -110,43 +111,6 @@ bool IsValidReportingOrigin(const SecurityOrigin* origin) {
 }
 
 }  // namespace
-
-bool CanRegisterAttributionInContext(LocalFrame* frame,
-                                     HTMLElement* element,
-                                     absl::optional<uint64_t> request_id,
-                                     bool log_issues) {
-  DCHECK(frame);
-
-  LocalDOMWindow* window = frame->DomWindow();
-  DCHECK(window);
-
-  if (!RuntimeEnabledFeatures::AttributionReportingEnabled(window))
-    return false;
-
-  const bool feature_policy_enabled = window->IsFeatureEnabled(
-      mojom::blink::PermissionsPolicyFeature::kAttributionReporting);
-
-  if (!feature_policy_enabled) {
-    if (log_issues) {
-      LogAuditIssue(window,
-                    AttributionReportingIssueType::kPermissionPolicyDisabled,
-                    element, request_id, /*invalid_parameter=*/String());
-    }
-    return false;
-  }
-
-  if (!window->IsSecureContext()) {
-    if (log_issues) {
-      LogAuditIssue(
-          window, AttributionReportingIssueType::kInsecureContext, element,
-          request_id, /*invalid_parameter=*/
-          window->GetSecurityContext().GetSecurityOrigin()->ToString());
-    }
-    return false;
-  }
-
-  return true;
-}
 
 class AttributionSrcLoader::ResourceClient
     : public GarbageCollected<AttributionSrcLoader::ResourceClient>,
@@ -295,10 +259,8 @@ AttributionSrcLoader::CreateAndSendRequest(const KURL& src_url,
     return nullptr;
   }
 
-  if (!ReportingOriginForUrlIfValid(src_url, element,
-                                    /*request_id=*/absl::nullopt)) {
+  if (!CanRegister(src_url, element, /*request_id=*/absl::nullopt))
     return nullptr;
-  }
 
   Document* document = window->document();
 
@@ -365,21 +327,45 @@ scoped_refptr<const SecurityOrigin>
 AttributionSrcLoader::ReportingOriginForUrlIfValid(
     const KURL& url,
     HTMLElement* element,
-    absl::optional<uint64_t> request_id) {
+    absl::optional<uint64_t> request_id,
+    bool log_issues) {
   LocalDOMWindow* window = local_frame_->DomWindow();
   DCHECK(window);
 
-  if (!CanRegisterAttributionInContext(local_frame_, element, request_id))
+  auto maybe_log_audit_issue = [&](AttributionReportingIssueType issue_type,
+                                   const SecurityOrigin* invalid_origin =
+                                       nullptr) {
+    if (!log_issues)
+      return;
+
+    LogAuditIssue(window, issue_type, element, request_id,
+                  /*invalid_parameter=*/
+                  invalid_origin ? invalid_origin->ToString() : String());
+  };
+
+  if (!RuntimeEnabledFeatures::AttributionReportingEnabled(window))
     return nullptr;
+
+  if (!window->IsFeatureEnabled(
+          mojom::blink::PermissionsPolicyFeature::kAttributionReporting)) {
+    maybe_log_audit_issue(
+        AttributionReportingIssueType::kPermissionPolicyDisabled);
+    return nullptr;
+  }
+
+  if (!window->IsSecureContext()) {
+    maybe_log_audit_issue(AttributionReportingIssueType::kInsecureContext,
+                          window->GetSecurityContext().GetSecurityOrigin());
+    return nullptr;
+  }
 
   scoped_refptr<const SecurityOrigin> reporting_origin =
       SecurityOrigin::Create(url);
   if (!url.ProtocolIsInHTTPFamily() ||
       !reporting_origin->IsPotentiallyTrustworthy()) {
-    LogAuditIssue(window,
-                  AttributionReportingIssueType::kUntrustworthyReportingOrigin,
-                  element, request_id,
-                  /*invalid_parameter=*/reporting_origin->ToString());
+    maybe_log_audit_issue(
+        AttributionReportingIssueType::kUntrustworthyReportingOrigin,
+        reporting_origin.get());
     return nullptr;
   }
 
@@ -391,6 +377,13 @@ AttributionSrcLoader::ReportingOriginForUrlIfValid(
   }
 
   return reporting_origin;
+}
+
+bool AttributionSrcLoader::CanRegister(const KURL& url,
+                                       HTMLElement* element,
+                                       absl::optional<uint64_t> request_id,
+                                       bool log_issues) {
+  return !!ReportingOriginForUrlIfValid(url, element, request_id, log_issues);
 }
 
 bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
