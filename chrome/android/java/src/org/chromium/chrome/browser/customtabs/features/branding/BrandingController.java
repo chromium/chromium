@@ -90,9 +90,12 @@ public class BrandingController {
         mToolbarBrandingDelegate = delegate;
 
         // Start the task to timeout the branding check. If mBrandingChecker already finished,
-        // canceling the task does nothing.
+        // canceling the task does nothing. Does not interrupt if the task is running, since the
+        // BrandingChecker#doInBackground will collect metrics at the end.
         PostTask.postDelayedTask(UiThreadTaskTraits.USER_VISIBLE,
-                () -> mBrandingChecker.cancel(true), MAX_BLANK_TOOLBAR_TIMEOUT_MS.getValue());
+                ()
+                        -> mBrandingChecker.cancel(/*mayInterruptIfRunning*/ false),
+                MAX_BLANK_TOOLBAR_TIMEOUT_MS.getValue());
 
         // Set location bar to empty as controller is waiting for mBrandingDecision.
         // This should not cause any UI jank even if a decision is made immediately, as

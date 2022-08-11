@@ -11,11 +11,17 @@ import java.lang.annotation.RetentionPolicy;
 
 /**
  * Class used to indicate what branding decision needs to make for the embedded app.
+ *
+ * This is used for histograms and should therefore be treated as append-only.
+ * See CustomTabsBrandingDecision in tools/metrics/histograms/enums.xml.
  */
 @Retention(RetentionPolicy.SOURCE)
-@IntDef({BrandingDecision.NONE, BrandingDecision.TOOLBAR, BrandingDecision.TOAST})
+@IntDef({BrandingDecision.NONE, BrandingDecision.TOOLBAR, BrandingDecision.TOAST,
+        BrandingDecision.NUM_ENTRIES})
 @interface BrandingDecision {
-    int NONE = 1;
-    int TOOLBAR = 2;
-    int TOAST = 3;
+    int NONE = 0;
+    int TOOLBAR = 1;
+    int TOAST = 2;
+
+    int NUM_ENTRIES = 3;
 }

@@ -30,6 +30,8 @@ import org.robolectric.shadows.ShadowSystemClock;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.TimeUtils;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
@@ -89,6 +91,7 @@ public class BrandingCheckerUnitTest {
     @After
     public void tearDown() {
         mFakeTimeRule.resetTimes();
+        UmaRecorderHolder.resetForTesting();
         ShadowPackageManager.reset();
         ShadowSystemClock.reset();
         ShadowPausedAsyncTask.reset();
@@ -108,6 +111,9 @@ public class BrandingCheckerUnitTest {
                 BrandingDecision.TOOLBAR, callbackDelegate.getBrandingDecision());
 
         assertEquals("Show branding time is different.", showBrandingTime, mStorage.get(PACKAGE_1));
+
+        assertHistogramRecorded(/*decision*/ BrandingDecision.TOOLBAR, /*isPackageValid*/ true,
+                /*isTaskCanceled*/ false);
     }
 
     @Test
@@ -122,6 +128,9 @@ public class BrandingCheckerUnitTest {
                 BrandingDecision.TOAST, callbackDelegate.getBrandingDecision());
         assertEquals("Show branding time is different.", showBrandingTime,
                 mStorage.get(NEW_APPLICATION));
+
+        assertHistogramRecorded(/*decision*/ BrandingDecision.TOAST, /*isPackageValid*/ true,
+                /*isTaskCanceled*/ false);
     }
 
     @Test
@@ -143,6 +152,9 @@ public class BrandingCheckerUnitTest {
         assertEquals("Branding check canceled, BrandingDecision should be the test default. ",
                 BrandingDecision.TOAST, callbackDelegate.getBrandingDecision());
         assertEquals("Show branding time is different.", showBrandingTime, mStorage.get(PACKAGE_1));
+
+        assertHistogramRecorded(/*decision*/ BrandingDecision.TOAST, /*isPackageValid*/ true,
+                /*isTaskCanceled*/ true);
     }
 
     @Test
@@ -156,6 +168,9 @@ public class BrandingCheckerUnitTest {
                 BrandingDecision.TOAST, callbackDelegate.getBrandingDecision());
         assertEquals("Branding time should not record for invalid package.", -1,
                 mStorage.get(INVALID_PACKAGE));
+
+        assertHistogramRecorded(/*decision*/ BrandingDecision.TOAST, /*isPackageValid*/ false,
+                /*isTaskCanceled*/ false);
     }
 
     @Test
@@ -200,6 +215,26 @@ public class BrandingCheckerUnitTest {
     private void advanceTimeMs(long increments) {
         ShadowSystemClock.advanceBy(increments, TimeUnit.MILLISECONDS);
         mFakeTimeRule.advanceMillis(increments);
+    }
+
+    private void assertHistogramRecorded(
+            @BrandingDecision int decision, boolean isPackageValid, boolean isCanceled) {
+        assertHistogramSampleRecorded(
+                "CustomTabs.Branding.BrandingCheckCanceled", isCanceled ? 1 : 0);
+        assertHistogramSampleRecorded("CustomTabs.Branding.BrandingDecision", decision);
+        assertHistogramSampleRecorded(
+                "CustomTabs.Branding.IsPackageNameValid", isPackageValid ? 1 : 0);
+
+        assertEquals("<CustomTabs.Branding.BrandingCheckDuration> not recorded.", 1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "CustomTabs.Branding.BrandingCheckDuration"));
+    }
+
+    private void assertHistogramSampleRecorded(String name, int sample) {
+        assertEquals("<" + name + "> not recorded.", 1,
+                RecordHistogram.getHistogramTotalCountForTesting(name));
+        assertEquals("<" + name + "> sample <" + sample + "> count is different.", 1,
+                RecordHistogram.getHistogramValueCountForTesting(name, sample));
     }
 
     private static class CallbackDelegate extends CallbackHelper {

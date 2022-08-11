@@ -14,6 +14,7 @@ import androidx.annotation.WorkerThread;
 import org.chromium.base.Callback;
 import org.chromium.base.PackageUtils;
 import org.chromium.base.TimeUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 
 /**
@@ -82,15 +83,19 @@ class BrandingChecker extends AsyncTask<Integer> {
     @WorkerThread
     @Override
     protected @Nullable @BrandingDecision Integer doInBackground() {
+        @BrandingDecision
+        Integer brandingDecision = null;
         long startTime = TimeUtils.currentTimeMillis();
         mIsPackageValid = PackageUtils.isPackageInstalled(mContext, mPackageName);
-        if (!mIsPackageValid || isCancelled()) {
-            return null;
+        if (mIsPackageValid) {
+            long timeLastBranding = mStorage.get(mPackageName);
+            brandingDecision = makeBrandingDecisionFromLaunchTime(startTime, timeLastBranding);
         }
 
-        long timeLastBranding = mStorage.get(mPackageName);
-        @BrandingDecision
-        int brandingDecision = makeBrandingDecisionFromLaunchTime(startTime, timeLastBranding);
+        RecordHistogram.recordTimesHistogram("CustomTabs.Branding.BrandingCheckDuration",
+                TimeUtils.currentTimeMillis() - startTime);
+        RecordHistogram.recordBooleanHistogram(
+                "CustomTabs.Branding.IsPackageNameValid", mIsPackageValid);
 
         return brandingDecision;
     }
@@ -131,5 +136,10 @@ class BrandingChecker extends AsyncTask<Integer> {
                 && mIsPackageValid) {
             mStorage.put(mPackageName, taskFinishedTime);
         }
+
+        RecordHistogram.recordEnumeratedHistogram("CustomTabs.Branding.BrandingDecision",
+                brandingDecision, BrandingDecision.NUM_ENTRIES);
+        RecordHistogram.recordBooleanHistogram(
+                "CustomTabs.Branding.BrandingCheckCanceled", isCancelled());
     }
 }
