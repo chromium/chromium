@@ -10,6 +10,10 @@
 #include "components/permissions/permission_result.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace blink {
+enum class PermissionType;
+}
+
 class PageInfoUiDelegate {
  public:
   virtual ~PageInfoUiDelegate() = default;
@@ -17,8 +21,8 @@ class PageInfoUiDelegate {
   virtual bool IsBlockAutoPlayEnabled() = 0;
   virtual bool IsMultipleTabsOpen() = 0;
 #endif
-  virtual permissions::PermissionResult GetPermissionStatus(
-      ContentSettingsType type) = 0;
+  virtual permissions::PermissionResult GetPermissionResult(
+      blink::PermissionType permission) = 0;
   virtual absl::optional<permissions::PermissionResult> GetEmbargoResult(
       ContentSettingsType type) = 0;
 };

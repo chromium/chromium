@@ -14,6 +14,7 @@
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_result.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
+#include "content/public/browser/permission_result.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 
@@ -84,12 +85,12 @@ class GeolocationPermissionContextDelegateTests
                 std::move(callback)));
   }
 
-  permissions::PermissionResult GetPermissionStatusForDisplayOnSettingsUI(
+  content::PermissionResult GetPermissionResultForOriginWithoutContext(
       Profile* profile,
-      ContentSettingsType permission,
-      const GURL& origin) {
+      blink::PermissionType permission,
+      const url::Origin& origin) {
     return PermissionManagerFactory::GetForProfile(profile)
-        ->GetPermissionStatusForDisplayOnSettingsUI(permission, origin);
+        ->GetPermissionResultForOriginWithoutContext(permission, origin);
   }
 };
 
@@ -125,7 +126,7 @@ TEST_F(GeolocationPermissionContextDelegateTests, TabContentSettingIsUpdated) {
 // TODO(https://crbug.com/1318240): Flaky.
 TEST_F(GeolocationPermissionContextDelegateTests,
        DISABLED_SearchGeolocationInIncognito) {
-  GURL requesting_frame_url(kDSETestUrl);
+  url::Origin requesting_frame_url = url::Origin::Create(GURL(kDSETestUrl));
 
   SearchPermissionsService* service =
       SearchPermissionsService::Factory::GetForBrowserContext(profile());
@@ -136,19 +137,19 @@ TEST_F(GeolocationPermissionContextDelegateTests,
 
   // The DSE geolocation should not be auto-granted even in a non-OTR profile.
   ASSERT_EQ(
-      CONTENT_SETTING_ASK,
-      GetPermissionStatusForDisplayOnSettingsUI(
-          profile(), ContentSettingsType::GEOLOCATION, requesting_frame_url)
-          .content_setting);
+      blink::mojom::PermissionStatus::ASK,
+      GetPermissionResultForOriginWithoutContext(
+          profile(), blink::PermissionType::GEOLOCATION, requesting_frame_url)
+          .status);
 
   Profile* otr_profile =
       profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
 
   // The DSE geolocation should not be auto-granted in an OTR profile.
   ASSERT_EQ(
-      CONTENT_SETTING_ASK,
-      GetPermissionStatusForDisplayOnSettingsUI(
-          otr_profile, ContentSettingsType::GEOLOCATION, requesting_frame_url)
-          .content_setting);
+      blink::mojom::PermissionStatus::ASK,
+      GetPermissionResultForOriginWithoutContext(
+          otr_profile, blink::PermissionType::GEOLOCATION, requesting_frame_url)
+          .status);
 }
 #endif

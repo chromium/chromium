@@ -19,11 +19,14 @@ enum class PermissionType;
 
 namespace content {
 class RenderFrameHost;
+class RenderProcessHost;
+struct PermissionResult;
 }  // namespace content
 
 class GURL;
 
 namespace permissions {
+struct PermissionResult;
 
 // This enum backs a UMA histogram, so it must be treated as append-only.
 enum class PermissionAction {
@@ -79,19 +82,59 @@ class PermissionUtil {
   static GURL GetLastCommittedOriginAsURL(
       content::RenderFrameHost* render_frame_host);
 
-  // Helper method to convert PermissionType to ContentSettingType.
-  // If PermissionType is not supported or found, returns
+  // Helper method to convert `PermissionType` to `ContentSettingType`.
+  // If `PermissionType` is not supported or found, returns
   // ContentSettingsType::DEFAULT.
-  static ContentSettingsType PermissionTypeToContentSettingSafe(
+  static ContentSettingsType PermissionTypeToContentSettingTypeSafe(
       blink::PermissionType permission);
 
-  // Helper method to convert PermissionType to ContentSettingType.
-  static ContentSettingsType PermissionTypeToContentSetting(
+  // Helper method to convert `PermissionType` to `ContentSettingType`.
+  static ContentSettingsType PermissionTypeToContentSettingType(
       blink::PermissionType permission);
+
+  // Helper method to convert `ContentSettingType` to `PermissionType`.
+  static blink::PermissionType ContentSettingTypeToPermissionType(
+      ContentSettingsType permission);
 
   // Helper method to convert PermissionStatus to ContentSetting.
   static ContentSetting PermissionStatusToContentSetting(
       blink::mojom::PermissionStatus status);
+
+  // Helper methods to convert ContentSetting to PermissionStatus and vice
+  // versa.
+  static blink::mojom::PermissionStatus ContentSettingToPermissionStatus(
+      ContentSetting setting);
+
+  static content::PermissionResult ToContentPermissionResult(
+      PermissionResult result);
+
+  static PermissionResult ToPermissionResult(content::PermissionResult result);
+
+  // If an iframed document/worker inherits a different StoragePartition from
+  // its embedder than it would use if it were a main frame, we should block
+  // undelegated permissions. Because permissions are scoped to BrowserContext
+  // instead of StoragePartition, without this check the aforementioned iframe
+  // would be given undelegated permissions if the user had granted its origin
+  // access when it was loaded as a main frame.
+  static bool IsPermissionBlockedInPartition(
+      ContentSettingsType permission,
+      const GURL& requesting_origin,
+      content::RenderProcessHost* render_process_host);
+
+  // Converts from |url|'s actual origin to the "canonical origin" that should
+  // be used for the purpose of requesting/storing permissions. For example, the
+  // origin of the local NTP gets mapped to the Google base URL instead. With
+  // Permission Delegation it will transform the requesting origin into
+  // the embedding origin because all permission checks happen on the top level
+  // origin.
+  //
+  // All the public methods below, such as RequestPermission or
+  // GetPermissionStatus, take the actual origin and do the canonicalization
+  // internally. You only need to call this directly if you do something else
+  // with the origin, such as display it in the UI.
+  static GURL GetCanonicalOrigin(ContentSettingsType permission,
+                                 const GURL& requesting_origin,
+                                 const GURL& embedding_origin);
 };
 
 }  // namespace permissions

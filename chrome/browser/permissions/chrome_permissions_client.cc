@@ -21,7 +21,6 @@
 #include "chrome/browser/permissions/contextual_notification_permission_ui_selector.h"
 #include "chrome/browser/permissions/permission_actions_history_factory.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
-#include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/permissions/permission_revocation_request.h"
 #include "chrome/browser/permissions/prediction_based_permission_ui_selector.h"
 #include "chrome/browser/permissions/pref_notification_permission_ui_selector.h"
@@ -205,12 +204,6 @@ permissions::PermissionDecisionAutoBlocker*
 ChromePermissionsClient::GetPermissionDecisionAutoBlocker(
     content::BrowserContext* browser_context) {
   return PermissionDecisionAutoBlockerFactory::GetForProfile(
-      Profile::FromBrowserContext(browser_context));
-}
-
-permissions::PermissionManager* ChromePermissionsClient::GetPermissionManager(
-    content::BrowserContext* browser_context) {
-  return PermissionManagerFactory::GetForProfile(
       Profile::FromBrowserContext(browser_context));
 }
 
@@ -442,7 +435,7 @@ absl::optional<GURL> ChromePermissionsClient::OverrideCanonicalOrigin(
   return absl::nullopt;
 }
 
-bool ChromePermissionsClient::DoOriginsMatchNewTabPage(
+bool ChromePermissionsClient::DoURLsMatchNewTabPage(
     const GURL& requesting_origin,
     const GURL& embedding_origin) {
   return embedding_origin ==

@@ -10,7 +10,12 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/permissions/features.h"
+#include "components/permissions/permission_result.h"
+#include "components/permissions/permissions_client.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
@@ -20,6 +25,38 @@
 using blink::PermissionType;
 
 namespace permissions {
+
+namespace {
+// Represents the possible methods of delegating permissions from main frames
+// to child frames.
+enum class PermissionDelegationMode {
+  // Permissions from the main frame are delegated to child frames.
+  // This is the default delegation mode for permissions. If a main frame was
+  // granted a permission that is delegated, its child frames will inherit that
+  // permission if allowed by the permissions policy.
+  kDelegated,
+  // Permissions from the main frame are not delegated to child frames.
+  // An undelegated permission will only be granted to a child frame if the
+  // child frame's origin was previously granted access to the permission when
+  // in a main frame.
+  kUndelegated,
+  // Permission access is a function of both the requesting and embedding
+  // origins.
+  kDoubleKeyed,
+};
+
+PermissionDelegationMode GetPermissionDelegationMode(
+    ContentSettingsType permission) {
+  // TODO(crbug.com/987654): Generalize this to other "background permissions",
+  // that is, permissions that can be used by a service worker. This includes
+  // durable storage, background sync, etc.
+  if (permission == ContentSettingsType::NOTIFICATIONS)
+    return PermissionDelegationMode::kUndelegated;
+  if (permission == ContentSettingsType::STORAGE_ACCESS)
+    return PermissionDelegationMode::kDoubleKeyed;
+  return PermissionDelegationMode::kDelegated;
+}
+}  // namespace
 
 // The returned strings must match any Field Trial configs for the Permissions
 // kill switch e.g. Permissions.Action.Geolocation etc..
@@ -264,7 +301,7 @@ GURL PermissionUtil::GetLastCommittedOriginAsURL(
   return render_frame_host->GetLastCommittedOrigin().GetURL();
 }
 
-ContentSettingsType PermissionUtil::PermissionTypeToContentSettingSafe(
+ContentSettingsType PermissionUtil::PermissionTypeToContentSettingTypeSafe(
     PermissionType permission) {
   switch (permission) {
     case PermissionType::MIDI:
@@ -332,14 +369,77 @@ ContentSettingsType PermissionUtil::PermissionTypeToContentSettingSafe(
   return ContentSettingsType::DEFAULT;
 }
 
-ContentSettingsType PermissionUtil::PermissionTypeToContentSetting(
+ContentSettingsType PermissionUtil::PermissionTypeToContentSettingType(
     PermissionType permission) {
   ContentSettingsType content_setting =
-      PermissionTypeToContentSettingSafe(permission);
+      PermissionTypeToContentSettingTypeSafe(permission);
   DCHECK_NE(content_setting, ContentSettingsType::DEFAULT)
       << "Unknown content setting for permission "
       << static_cast<int>(permission);
   return content_setting;
+}
+
+PermissionType PermissionUtil::ContentSettingTypeToPermissionType(
+    ContentSettingsType permission) {
+  switch (permission) {
+    case ContentSettingsType::GEOLOCATION:
+      return PermissionType::GEOLOCATION;
+    case ContentSettingsType::NOTIFICATIONS:
+      return PermissionType::NOTIFICATIONS;
+    case ContentSettingsType::MIDI:
+      return PermissionType::MIDI;
+    case ContentSettingsType::MIDI_SYSEX:
+      return PermissionType::MIDI_SYSEX;
+    case ContentSettingsType::DURABLE_STORAGE:
+      return PermissionType::DURABLE_STORAGE;
+    case ContentSettingsType::MEDIASTREAM_CAMERA:
+      return PermissionType::VIDEO_CAPTURE;
+    case ContentSettingsType::MEDIASTREAM_MIC:
+      return PermissionType::AUDIO_CAPTURE;
+    case ContentSettingsType::BACKGROUND_SYNC:
+      return PermissionType::BACKGROUND_SYNC;
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+    case ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER:
+      return PermissionType::PROTECTED_MEDIA_IDENTIFIER;
+#endif
+    case ContentSettingsType::SENSORS:
+      return PermissionType::SENSORS;
+    case ContentSettingsType::ACCESSIBILITY_EVENTS:
+      return PermissionType::ACCESSIBILITY_EVENTS;
+    case ContentSettingsType::CLIPBOARD_READ_WRITE:
+      return PermissionType::CLIPBOARD_READ_WRITE;
+    case ContentSettingsType::PAYMENT_HANDLER:
+      return PermissionType::PAYMENT_HANDLER;
+    case ContentSettingsType::BACKGROUND_FETCH:
+      return PermissionType::BACKGROUND_FETCH;
+    case ContentSettingsType::PERIODIC_BACKGROUND_SYNC:
+      return PermissionType::PERIODIC_BACKGROUND_SYNC;
+    case ContentSettingsType::WAKE_LOCK_SCREEN:
+      return PermissionType::WAKE_LOCK_SCREEN;
+    case ContentSettingsType::WAKE_LOCK_SYSTEM:
+      return PermissionType::WAKE_LOCK_SYSTEM;
+    case ContentSettingsType::NFC:
+      return PermissionType::NFC;
+    case ContentSettingsType::VR:
+      return PermissionType::VR;
+    case ContentSettingsType::AR:
+      return PermissionType::AR;
+    case ContentSettingsType::STORAGE_ACCESS:
+      return PermissionType::STORAGE_ACCESS_GRANT;
+    case ContentSettingsType::CAMERA_PAN_TILT_ZOOM:
+      return PermissionType::CAMERA_PAN_TILT_ZOOM;
+    case ContentSettingsType::WINDOW_PLACEMENT:
+      return PermissionType::WINDOW_PLACEMENT;
+    case ContentSettingsType::LOCAL_FONTS:
+      return PermissionType::LOCAL_FONTS;
+    case ContentSettingsType::IDLE_DETECTION:
+      return PermissionType::IDLE_DETECTION;
+    case ContentSettingsType::DISPLAY_CAPTURE:
+      return PermissionType::DISPLAY_CAPTURE;
+    default:
+      NOTREACHED();
+      return PermissionType::NUM;
+  }
 }
 
 ContentSetting PermissionUtil::PermissionStatusToContentSetting(
@@ -356,6 +456,85 @@ ContentSetting PermissionUtil::PermissionStatusToContentSetting(
 
   NOTREACHED();
   return CONTENT_SETTING_DEFAULT;
+}
+
+blink::mojom::PermissionStatus PermissionUtil::ContentSettingToPermissionStatus(
+    ContentSetting setting) {
+  switch (setting) {
+    case CONTENT_SETTING_ALLOW:
+      return blink::mojom::PermissionStatus::GRANTED;
+    case CONTENT_SETTING_BLOCK:
+      return blink::mojom::PermissionStatus::DENIED;
+    case CONTENT_SETTING_ASK:
+      return blink::mojom::PermissionStatus::ASK;
+    case CONTENT_SETTING_SESSION_ONLY:
+    case CONTENT_SETTING_DETECT_IMPORTANT_CONTENT:
+    case CONTENT_SETTING_DEFAULT:
+    case CONTENT_SETTING_NUM_SETTINGS:
+      break;
+  }
+
+  NOTREACHED();
+  return blink::mojom::PermissionStatus::DENIED;
+}
+
+content::PermissionResult PermissionUtil::ToContentPermissionResult(
+    PermissionResult result) {
+  content::PermissionStatusSource source =
+      (content::PermissionStatusSource)result.source;
+  blink::mojom::PermissionStatus status =
+      ContentSettingToPermissionStatus(result.content_setting);
+
+  return content::PermissionResult(status, source);
+}
+
+PermissionResult PermissionUtil::ToPermissionResult(
+    content::PermissionResult result) {
+  PermissionStatusSource source = (PermissionStatusSource)result.source;
+  ContentSetting setting = PermissionStatusToContentSetting(result.status);
+
+  return PermissionResult(setting, source);
+}
+
+bool PermissionUtil::IsPermissionBlockedInPartition(
+    ContentSettingsType permission,
+    const GURL& requesting_origin,
+    content::RenderProcessHost* render_process_host) {
+  DCHECK(render_process_host);
+  switch (GetPermissionDelegationMode(permission)) {
+    case PermissionDelegationMode::kDelegated:
+      return false;
+    case PermissionDelegationMode::kDoubleKeyed:
+      return false;
+    case PermissionDelegationMode::kUndelegated:
+      // TODO(crbug.com/1312218): This will create |requesting_origin|'s home
+      // StoragePartition if it doesn't already exist. Given how
+      // StoragePartitions are used today, this shouldn't actually be a
+      // problem, but ideally we'd compare StoragePartitionConfigs.
+      content::StoragePartition* requesting_home_partition =
+          render_process_host->GetBrowserContext()->GetStoragePartitionForUrl(
+              requesting_origin);
+      return requesting_home_partition !=
+             render_process_host->GetStoragePartition();
+  }
+}
+
+GURL PermissionUtil::GetCanonicalOrigin(ContentSettingsType permission,
+                                        const GURL& requesting_origin,
+                                        const GURL& embedding_origin) {
+  absl::optional<GURL> override_origin =
+      PermissionsClient::Get()->OverrideCanonicalOrigin(requesting_origin,
+                                                        embedding_origin);
+  if (override_origin)
+    return override_origin.value();
+
+  switch (GetPermissionDelegationMode(permission)) {
+    case PermissionDelegationMode::kDelegated:
+      return embedding_origin;
+    case PermissionDelegationMode::kDoubleKeyed:
+    case PermissionDelegationMode::kUndelegated:
+      return requesting_origin;
+  }
 }
 
 }  // namespace permissions

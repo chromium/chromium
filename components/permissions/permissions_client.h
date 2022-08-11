@@ -44,7 +44,6 @@ namespace permissions {
 class ObjectPermissionContextBase;
 class PermissionActionsHistory;
 class PermissionDecisionAutoBlocker;
-class PermissionManager;
 class PermissionPromptAndroid;
 
 // Interface to be implemented by permissions embedder to access embedder
@@ -86,11 +85,6 @@ class PermissionsClient {
   // Retrieves the PermissionDecisionAutoBlocker for this context. The returned
   // pointer has the same lifetime as |browser_context|.
   virtual PermissionDecisionAutoBlocker* GetPermissionDecisionAutoBlocker(
-      content::BrowserContext* browser_context) = 0;
-
-  // Retrieves the PermissionManager for this context. The returned
-  // pointer has the same lifetime as |browser_context|.
-  virtual PermissionManager* GetPermissionManager(
       content::BrowserContext* browser_context) = 0;
 
   // Gets the ObjectPermissionContextBase for the given type and context, which
@@ -196,8 +190,8 @@ class PermissionsClient {
 
   // Checks if `requesting_origin` and `embedding_origin` are the new tab page
   // origins.
-  virtual bool DoOriginsMatchNewTabPage(const GURL& requesting_origin,
-                                        const GURL& embedding_origin);
+  virtual bool DoURLsMatchNewTabPage(const GURL& requesting_origin,
+                                     const GURL& embedding_origin);
 
 #if BUILDFLAG(IS_ANDROID)
   // Returns whether the given origin matches the default search engine (DSE)

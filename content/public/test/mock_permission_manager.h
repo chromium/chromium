@@ -6,8 +6,10 @@
 #define CONTENT_PUBLIC_TEST_MOCK_PERMISSION_MANAGER_H_
 
 #include "content/public/browser/permission_controller_delegate.h"
+#include "content/public/browser/permission_result.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace blink {
 enum class PermissionType;
@@ -30,6 +32,9 @@ class MockPermissionManager : public PermissionControllerDelegate {
                blink::mojom::PermissionStatus(blink::PermissionType permission,
                                               const GURL& requesting_origin,
                                               const GURL& embedding_origin));
+  MOCK_METHOD2(GetPermissionResultForOriginWithoutContext,
+               content::PermissionResult(blink::PermissionType permission,
+                                         const url::Origin& origin));
   MOCK_METHOD2(GetPermissionStatusForCurrentDocument,
                blink::mojom::PermissionStatus(
                    blink::PermissionType permission,

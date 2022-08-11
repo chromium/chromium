@@ -12,7 +12,6 @@
 #include "weblayer/browser/cookie_settings_factory.h"
 #include "weblayer/browser/host_content_settings_map_factory.h"
 #include "weblayer/browser/permissions/permission_decision_auto_blocker_factory.h"
-#include "weblayer/browser/permissions/permission_manager_factory.h"
 #include "weblayer/browser/subresource_filter_profile_context_factory.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -61,11 +60,6 @@ permissions::PermissionActionsHistory*
 WebLayerPermissionsClient::GetPermissionActionsHistory(
     content::BrowserContext* browser_context) {
   return nullptr;
-}
-
-permissions::PermissionManager* WebLayerPermissionsClient::GetPermissionManager(
-    content::BrowserContext* browser_context) {
-  return PermissionManagerFactory::GetForBrowserContext(browser_context);
 }
 
 permissions::ObjectPermissionContextBase*

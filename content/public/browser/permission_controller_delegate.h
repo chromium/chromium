@@ -8,6 +8,7 @@
 #include "base/types/id_type.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/devtools_permission_overrides.h"
+#include "content/public/browser/permission_result.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 
 class GURL;
@@ -75,6 +76,10 @@ class CONTENT_EXPORT PermissionControllerDelegate {
       const GURL& requesting_origin,
       const GURL& embedding_origin) = 0;
 
+  virtual PermissionResult GetPermissionResultForOriginWithoutContext(
+      blink::PermissionType permission,
+      const url::Origin& origin) = 0;
+
   // Returns the permission status for the current document in the given
   // RenderFrameHost. Use this over `GetPermissionStatus` whenever possible as
   // this API takes into account the lifecycle state of a given document (i.e.
@@ -83,6 +88,12 @@ class CONTENT_EXPORT PermissionControllerDelegate {
   virtual blink::mojom::PermissionStatus GetPermissionStatusForCurrentDocument(
       blink::PermissionType permission,
       RenderFrameHost* render_frame_host) = 0;
+
+  // The method does the same as `GetPermissionStatusForCurrentDocument` but
+  // additionally returns a source or reason for the permission status.
+  virtual PermissionResult GetPermissionResultForCurrentDocument(
+      blink::PermissionType permission,
+      RenderFrameHost* render_frame_host);
 
   // Returns the status of the given `permission` for a worker on
   // `worker_origin` running in `render_process_host`, also performing

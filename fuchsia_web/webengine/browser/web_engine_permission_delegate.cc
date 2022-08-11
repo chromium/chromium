@@ -70,7 +70,7 @@ void WebEnginePermissionDelegate::RequestPermissionsFromCurrentDocument(
   for (const auto& permission : permissions) {
     permission_strings.push_back(
         permissions::PermissionUtil::GetPermissionString(
-            permissions::PermissionUtil::PermissionTypeToContentSetting(
+            permissions::PermissionUtil::PermissionTypeToContentSettingType(
                 permission)));
   }
 
@@ -97,6 +97,17 @@ blink::mojom::PermissionStatus WebEnginePermissionDelegate::GetPermissionStatus(
   // TODO(crbug.com/1063094): Handle frame-less permission status checks in the
   // PermissionManager API. Until then, reject such requests.
   return blink::mojom::PermissionStatus::DENIED;
+}
+
+content::PermissionResult
+WebEnginePermissionDelegate::GetPermissionResultForOriginWithoutContext(
+    blink::PermissionType permission,
+    const url::Origin& origin) {
+  blink::mojom::PermissionStatus status =
+      GetPermissionStatus(permission, origin.GetURL(), origin.GetURL());
+
+  return content::PermissionResult(
+      status, content::PermissionStatusSource::UNSPECIFIED);
 }
 
 blink::mojom::PermissionStatus

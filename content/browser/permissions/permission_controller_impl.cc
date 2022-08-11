@@ -11,12 +11,11 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/permission_controller_delegate.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
-
-class GURL;
 
 namespace content {
 
@@ -167,9 +166,9 @@ PermissionControllerImpl::GetSubscriptionCurrentValue(
         url::Origin::Create(subscription.requesting_origin));
   }
 
-  return DeprecatedGetPermissionStatus(subscription.permission,
-                                       subscription.requesting_origin,
-                                       subscription.embedding_origin);
+  return GetPermissionStatusInternal(subscription.permission,
+                                     subscription.requesting_origin,
+                                     subscription.embedding_origin);
 }
 
 PermissionControllerImpl::SubscriptionsStatusMap
@@ -335,7 +334,7 @@ void PermissionControllerImpl::ResetPermission(blink::PermissionType permission,
 }
 
 blink::mojom::PermissionStatus
-PermissionControllerImpl::DeprecatedGetPermissionStatus(
+PermissionControllerImpl::GetPermissionStatusInternal(
     PermissionType permission,
     const GURL& requesting_origin,
     const GURL& embedding_origin) {
@@ -349,6 +348,7 @@ PermissionControllerImpl::DeprecatedGetPermissionStatus(
       browser_context_->GetPermissionControllerDelegate();
   if (!delegate)
     return blink::mojom::PermissionStatus::DENIED;
+
   return delegate->GetPermissionStatus(permission, requesting_origin,
                                        embedding_origin);
 }
@@ -389,12 +389,52 @@ PermissionControllerImpl::GetPermissionStatusForCurrentDocument(
                                                          render_frame_host);
 }
 
+PermissionResult
+PermissionControllerImpl::GetPermissionResultForCurrentDocument(
+    PermissionType permission,
+    RenderFrameHost* render_frame_host) {
+  absl::optional<blink::mojom::PermissionStatus> status =
+      devtools_permission_overrides_.Get(
+          render_frame_host->GetLastCommittedOrigin(), permission);
+  if (status)
+    return PermissionResult(*status, PermissionStatusSource::UNSPECIFIED);
+
+  PermissionControllerDelegate* delegate =
+      browser_context_->GetPermissionControllerDelegate();
+  if (!delegate)
+    return PermissionResult(blink::mojom::PermissionStatus::DENIED,
+                            PermissionStatusSource::UNSPECIFIED);
+
+  return delegate->GetPermissionResultForCurrentDocument(permission,
+                                                         render_frame_host);
+}
+
+PermissionResult
+PermissionControllerImpl::GetPermissionResultForOriginWithoutContext(
+    PermissionType permission,
+    const url::Origin& origin) {
+  absl::optional<blink::mojom::PermissionStatus> status =
+      devtools_permission_overrides_.Get(origin, permission);
+  if (status)
+    return PermissionResult(*status, PermissionStatusSource::UNSPECIFIED);
+
+  PermissionControllerDelegate* delegate =
+      browser_context_->GetPermissionControllerDelegate();
+  if (!delegate)
+    return PermissionResult(blink::mojom::PermissionStatus::DENIED,
+                            PermissionStatusSource::UNSPECIFIED);
+
+  return delegate->GetPermissionResultForOriginWithoutContext(permission,
+                                                              origin);
+}
+
 blink::mojom::PermissionStatus
 PermissionControllerImpl::GetPermissionStatusForOriginWithoutContext(
     PermissionType permission,
-    const url::Origin& origin) {
-  return DeprecatedGetPermissionStatus(permission, origin.GetURL(),
-                                       origin.GetURL());
+    const url::Origin& requesting_origin,
+    const url::Origin& embedding_origin) {
+  return GetPermissionStatusInternal(permission, requesting_origin.GetURL(),
+                                     embedding_origin.GetURL());
 }
 
 void PermissionControllerImpl::ResetPermission(PermissionType permission,

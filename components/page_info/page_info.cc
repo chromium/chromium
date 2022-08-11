@@ -1076,8 +1076,10 @@ void PageInfo::PresentSitePermissions() {
           CONTENT_SETTING_DEFAULT,
           permissions::PermissionStatusSource::UNSPECIFIED);
       if (permissions::PermissionUtil::IsPermission(permission_info.type)) {
-        permission_result =
-            delegate_->GetPermissionStatus(permission_info.type, site_url_);
+        permission_result = delegate_->GetPermissionResult(
+            permissions::PermissionUtil::ContentSettingTypeToPermissionType(
+                permission_info.type),
+            url::Origin::Create(site_url_));
       } else if (permission_info.type ==
                  ContentSettingsType::FEDERATED_IDENTITY_API) {
         absl::optional<permissions::PermissionResult> embargo_result =

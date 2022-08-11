@@ -174,6 +174,17 @@ blink::mojom::PermissionStatus CastPermissionManager::GetPermissionStatus(
   return GetPermissionStatusInternal(permission, requesting_origin);
 }
 
+content::PermissionResult
+CastPermissionManager::GetPermissionResultForOriginWithoutContext(
+    blink::PermissionType permission,
+    const url::Origin& origin) {
+  blink::mojom::PermissionStatus status =
+      GetPermissionStatus(permission, origin.GetURL(), origin.GetURL());
+
+  return content::PermissionResult(
+      status, content::PermissionStatusSource::UNSPECIFIED);
+}
+
 blink::mojom::PermissionStatus
 CastPermissionManager::GetPermissionStatusForCurrentDocument(
     blink::PermissionType permission,

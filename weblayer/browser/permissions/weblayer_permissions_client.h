@@ -30,8 +30,6 @@ class WebLayerPermissionsClient : public permissions::PermissionsClient {
       content::BrowserContext* browser_context) override;
   permissions::PermissionDecisionAutoBlocker* GetPermissionDecisionAutoBlocker(
       content::BrowserContext* browser_context) override;
-  permissions::PermissionManager* GetPermissionManager(
-      content::BrowserContext* browser_context) override;
   permissions::ObjectPermissionContextBase* GetChooserContext(
       content::BrowserContext* browser_context,
       ContentSettingsType type) override;

@@ -14,12 +14,10 @@
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/media/webrtc/media_stream_device_permissions.h"
-#include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_result.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/permissions_client.h"
@@ -122,7 +120,7 @@ void UpdatePageSpecificContentSettings(
   // Otherwise, the Microphone permission request on NTP will be gated for
   // incorrect origin.
   GURL embedding_origin;
-  if (permissions::PermissionsClient::Get()->DoOriginsMatchNewTabPage(
+  if (permissions::PermissionsClient::Get()->DoURLsMatchNewTabPage(
           request.security_origin,
           web_contents->GetLastCommittedURL().DeprecatedGetOriginAsURL())) {
     embedding_origin =
@@ -133,7 +131,7 @@ void UpdatePageSpecificContentSettings(
   }
 
   content_settings->OnMediaStreamPermissionSet(
-      PermissionManagerFactory::GetForProfile(profile)->GetCanonicalOrigin(
+      permissions::PermissionUtil::GetCanonicalOrigin(
           ContentSettingsType::MEDIASTREAM_CAMERA, request.security_origin,
           embedding_origin),
       microphone_camera_state, selected_audio_device, selected_video_device,

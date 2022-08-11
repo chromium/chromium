@@ -60,6 +60,7 @@
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/test/object_permission_context_base_mock_permission_observer.h"
+#include "components/permissions/test/permission_test_util.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
@@ -183,10 +184,7 @@ class ContentSettingSourceSetter {
  public:
   ContentSettingSourceSetter(TestingProfile* profile,
                              ContentSettingsType content_type)
-      : prefs_(profile->GetTestingPrefService()),
-        host_content_settings_map_(
-            HostContentSettingsMapFactory::GetForProfile(profile)),
-        content_type_(content_type) {}
+      : prefs_(profile->GetTestingPrefService()), content_type_(content_type) {}
   ContentSettingSourceSetter(const ContentSettingSourceSetter&) = delete;
   ContentSettingSourceSetter& operator=(const ContentSettingSourceSetter&) =
       delete;
@@ -209,7 +207,6 @@ class ContentSettingSourceSetter {
 
  private:
   raw_ptr<sync_preferences::TestingPrefServiceSyncable> prefs_;
-  raw_ptr<HostContentSettingsMap> host_content_settings_map_;
   ContentSettingsType content_type_;
 };
 
@@ -251,7 +248,11 @@ class SiteSettingsHandlerTest : public testing::Test,
     mock_privacy_sandbox_service_ = static_cast<MockPrivacySandboxService*>(
         PrivacySandboxServiceFactory::GetInstance()->SetTestingFactoryAndUse(
             profile(), base::BindRepeating(&BuildMockPrivacySandboxService)));
-    handler_ = std::make_unique<SiteSettingsHandler>(profile_.get());
+
+    profile()->SetPermissionControllerDelegate(
+        permissions::GetPermissionControllerDelegate(profile()));
+
+    handler_ = std::make_unique<SiteSettingsHandler>(profile());
     handler()->set_web_ui(web_ui());
     handler()->AllowJavascript();
     // AllowJavascript() adds a callback to create leveldb_env::ChromiumEnv

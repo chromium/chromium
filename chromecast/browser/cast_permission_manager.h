@@ -7,6 +7,7 @@
 
 #include "base/callback_forward.h"
 #include "content/public/browser/permission_controller_delegate.h"
+#include "content/public/browser/permission_result.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "url/gurl.h"
 
@@ -56,6 +57,9 @@ class CastPermissionManager : public content::PermissionControllerDelegate {
       blink::PermissionType permission,
       const GURL& requesting_origin,
       const GURL& embedding_origin) override;
+  content::PermissionResult GetPermissionResultForOriginWithoutContext(
+      blink::PermissionType permission,
+      const url::Origin& origin) override;
   blink::mojom::PermissionStatus GetPermissionStatusForCurrentDocument(
       blink::PermissionType permission,
       content::RenderFrameHost* render_frame_host) override;

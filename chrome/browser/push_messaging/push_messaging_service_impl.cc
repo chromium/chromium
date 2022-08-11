@@ -55,6 +55,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/devtools_background_services_context.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/service_worker_context.h"
@@ -961,8 +962,9 @@ blink::mojom::PermissionStatus PushMessagingServiceImpl::GetPermissionStatus(
         url::Origin::Create(origin));
   } else {
     return profile_->GetPermissionController()
-        ->GetPermissionStatusForOriginWithoutContext(
-            blink::PermissionType::NOTIFICATIONS, url::Origin::Create(origin));
+        ->GetPermissionResultForOriginWithoutContext(
+            blink::PermissionType::NOTIFICATIONS, url::Origin::Create(origin))
+        .status;
   }
 }
 

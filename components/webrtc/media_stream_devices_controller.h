@@ -18,11 +18,12 @@
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 
-namespace permissions {
-enum class PermissionStatusSource;
+namespace blink {
+enum class PermissionType;
 }
 
 namespace content {
+enum class PermissionStatusSource;
 class WebContents;
 }
 
@@ -81,25 +82,25 @@ class MediaStreamDevicesController {
   // Runs |callback_| with the current audio/video permission settings.
   void RunCallback(bool blocked_by_permissions_policy);
 
-  // Returns the content settings for the given content type and request.
+  // Returns the content settings for the given permission type and request.
   ContentSetting GetContentSetting(
-      ContentSettingsType content_type,
+      blink::PermissionType permission,
       const content::MediaStreamRequest& request,
       blink::mojom::MediaStreamRequestResult* denial_reason) const;
 
   // Returns true if clicking allow on the dialog should give access to the
   // requested devices.
-  bool IsUserAcceptAllowed(ContentSettingsType content_type) const;
+  bool IsUserAcceptAllowed(blink::PermissionType permission) const;
 
   bool PermissionIsBlockedForReason(
-      ContentSettingsType content_type,
-      permissions::PermissionStatusSource reason) const;
+      blink::PermissionType permission,
+      content::PermissionStatusSource reason) const;
 
   // Called when a permission prompt is answered through the PermissionManager.
   void PromptAnsweredGroupedRequest(
       const std::vector<blink::mojom::PermissionStatus>& permissions_status);
 
-  bool HasAvailableDevices(ContentSettingsType content_type,
+  bool HasAvailableDevices(blink::PermissionType permission,
                            const std::string& device_id) const;
 
   // The current state of the audio/video content settings which may be updated

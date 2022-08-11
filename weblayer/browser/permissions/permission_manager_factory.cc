@@ -126,7 +126,7 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
       continue;
 #endif
     ContentSettingsType content_settings_type =
-        permissions::PermissionUtil::PermissionTypeToContentSetting(type);
+        permissions::PermissionUtil::PermissionTypeToContentSettingType(type);
     if (permission_contexts.find(content_settings_type) ==
         permission_contexts.end()) {
       permission_contexts[content_settings_type] =

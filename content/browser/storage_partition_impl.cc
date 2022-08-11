@@ -101,6 +101,7 @@
 #include "content/public/browser/login_delegate.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/session_storage_usage_info.h"
 #include "content/public/browser/shared_cors_origin_access_list.h"
@@ -2037,10 +2038,10 @@ void StoragePartitionImpl::OnCanSendReportingReports(
 
   std::vector<url::Origin> origins_out;
   for (auto& origin : origins) {
-    bool allowed =
-        permission_controller->GetPermissionStatusForOriginWithoutContext(
-            blink::PermissionType::BACKGROUND_SYNC, origin) ==
-        blink::mojom::PermissionStatus::GRANTED;
+    bool allowed = permission_controller
+                       ->GetPermissionResultForOriginWithoutContext(
+                           blink::PermissionType::BACKGROUND_SYNC, origin)
+                       .status == blink::mojom::PermissionStatus::GRANTED;
     if (allowed)
       origins_out.push_back(origin);
   }
@@ -2054,11 +2055,12 @@ void StoragePartitionImpl::OnCanSendDomainReliabilityUpload(
   DCHECK(initialized_);
   PermissionController* permission_controller =
       browser_context_->GetPermissionController();
-  std::move(callback).Run(
-      permission_controller->GetPermissionStatusForOriginWithoutContext(
-          blink::PermissionType::BACKGROUND_SYNC,
-          url::Origin::Create(origin)) ==
-      blink::mojom::PermissionStatus::GRANTED);
+  std::move(callback).Run(permission_controller
+                              ->GetPermissionResultForOriginWithoutContext(
+                                  blink::PermissionType::BACKGROUND_SYNC,
+                                  url::Origin::Create(origin))
+                              .status ==
+                          blink::mojom::PermissionStatus::GRANTED);
 }
 
 void StoragePartitionImpl::OnClearSiteData(

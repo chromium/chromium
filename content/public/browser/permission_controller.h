@@ -8,6 +8,7 @@
 #include "base/supports_user_data.h"
 #include "base/types/id_type.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/permission_result.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 
 class GURL;
@@ -53,11 +54,26 @@ class CONTENT_EXPORT PermissionController
       blink::PermissionType permission,
       RenderFrameHost* render_frame_host) = 0;
 
+  // The method does the same as `GetPermissionStatusForCurrentDocument` but
+  // additionally returns a source or reason for the permission status.
+  virtual PermissionResult GetPermissionResultForCurrentDocument(
+      blink::PermissionType permission,
+      RenderFrameHost* render_frame_host) = 0;
+
   // Returns the permission status for a given origin. Use this API only if
   // there is no document and it is not a ServiceWorker.
+  virtual PermissionResult GetPermissionResultForOriginWithoutContext(
+      blink::PermissionType permission,
+      const url::Origin& origin) = 0;
+
+  // The method does the same as `GetPermissionResultForOriginWithoutContext`
+  // but it can be used for `PermissionType` that are keyed on a combination of
+  // requesting and embedding origins, e.g., Notifications.
   virtual blink::mojom::PermissionStatus
-  GetPermissionStatusForOriginWithoutContext(blink::PermissionType permission,
-                                             const url::Origin& origin) = 0;
+  GetPermissionStatusForOriginWithoutContext(
+      blink::PermissionType permission,
+      const url::Origin& requesting_origin,
+      const url::Origin& embedding_origin) = 0;
 
   // Requests the permission from the current document in the given
   // RenderFrameHost. This API takes into account the lifecycle state of a given

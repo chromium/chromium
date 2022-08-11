@@ -20,6 +20,8 @@
 #include "components/permissions/permissions_client.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -206,10 +208,14 @@ bool ChromePageInfoUiDelegate::IsBlockAutoPlayEnabled() {
 }
 #endif
 
-permissions::PermissionResult ChromePageInfoUiDelegate::GetPermissionStatus(
-    ContentSettingsType type) {
-  return PermissionManagerFactory::GetForProfile(GetProfile())
-      ->GetPermissionStatusForDisplayOnSettingsUI(type, site_url_);
+permissions::PermissionResult ChromePageInfoUiDelegate::GetPermissionResult(
+    blink::PermissionType permission) {
+  content::PermissionResult permission_result =
+      GetProfile()
+          ->GetPermissionController()
+          ->GetPermissionResultForOriginWithoutContext(
+              permission, url::Origin::Create(site_url_));
+  return permissions::PermissionUtil::ToPermissionResult(permission_result);
 }
 
 absl::optional<permissions::PermissionResult>

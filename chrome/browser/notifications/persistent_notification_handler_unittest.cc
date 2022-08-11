@@ -18,6 +18,7 @@
 #include "chrome/browser/notifications/platform_notification_service_factory.h"
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
 #include "chrome/test/base/testing_profile.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/common/persistent_notification_status.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_permission_manager.h"
@@ -51,9 +52,10 @@ class TestingProfileWithPermissionManager : public TestingProfile {
   // Sets the notification permission status to |permission_status|.
   void SetNotificationPermissionStatus(
       blink::mojom::PermissionStatus permission_status) {
-    ON_CALL(*permission_manager_,
-            GetPermissionStatus(blink::PermissionType::NOTIFICATIONS, _, _))
-        .WillByDefault(Return(permission_status));
+    ON_CALL(*permission_manager_, GetPermissionResultForOriginWithoutContext(
+                                      blink::PermissionType::NOTIFICATIONS, _))
+        .WillByDefault(Return(content::PermissionResult(
+            permission_status, content::PermissionStatusSource::UNSPECIFIED)));
   }
 
   // TestingProfile overrides:

@@ -23,6 +23,7 @@ class BrowserContext;
 class PermissionControllerImplTest;
 class RenderProcessHost;
 class PermissionServiceImpl;
+struct PermissionResult;
 
 using blink::PermissionType;
 
@@ -76,7 +77,7 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
   friend class PermissionControllerImplTest;
   friend class PermissionServiceImpl;
 
-  blink::mojom::PermissionStatus DeprecatedGetPermissionStatus(
+  blink::mojom::PermissionStatus GetPermissionStatusInternal(
       PermissionType permission,
       const GURL& requesting_origin,
       const GURL& embedding_origin);
@@ -89,9 +90,16 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
   blink::mojom::PermissionStatus GetPermissionStatusForCurrentDocument(
       PermissionType permission,
       RenderFrameHost* render_frame_host) override;
-  blink::mojom::PermissionStatus GetPermissionStatusForOriginWithoutContext(
+  PermissionResult GetPermissionResultForCurrentDocument(
+      PermissionType permission,
+      RenderFrameHost* render_frame_host) override;
+  PermissionResult GetPermissionResultForOriginWithoutContext(
       PermissionType permission,
       const url::Origin& origin) override;
+  blink::mojom::PermissionStatus GetPermissionStatusForOriginWithoutContext(
+      blink::PermissionType permission,
+      const url::Origin& requesting_origin,
+      const url::Origin& embedding_origin) override;
   void RequestPermissionFromCurrentDocument(
       PermissionType permission,
       RenderFrameHost* render_frame_host,

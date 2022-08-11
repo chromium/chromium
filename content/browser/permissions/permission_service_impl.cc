@@ -15,6 +15,7 @@
 #include "content/browser/bad_message.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_frame_host.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-shared.h"
@@ -211,7 +212,8 @@ PermissionStatus PermissionServiceImpl::GetPermissionStatusFromType(
 
   DCHECK(context_->GetEmbeddingOrigin().is_empty());
   return browser_context->GetPermissionController()
-      ->GetPermissionStatusForOriginWithoutContext(type, origin_);
+      ->GetPermissionResultForOriginWithoutContext(type, origin_)
+      .status;
 }
 
 void PermissionServiceImpl::ResetPermissionStatus(blink::PermissionType type) {

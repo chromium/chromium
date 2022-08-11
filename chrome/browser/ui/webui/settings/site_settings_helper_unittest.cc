@@ -26,6 +26,7 @@
 #include "components/permissions/object_permission_context_base.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permissions_client.h"
+#include "components/permissions/test/permission_test_util.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/extension_registry.h"
@@ -416,6 +417,8 @@ TEST_F(SiteSettingsHelperTest, CheckExceptionOrder) {
 // default, user-set pattern, user-set origin setting, extension, and policy.
 TEST_F(SiteSettingsHelperTest, ContentSettingSource) {
   TestingProfile profile;
+  profile.SetPermissionControllerDelegate(
+      permissions::GetPermissionControllerDelegate(&profile));
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(&profile);
 

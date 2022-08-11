@@ -19,6 +19,7 @@
 #include "components/permissions/permission_request_id.h"
 #include "components/permissions/permission_util.h"
 #include "content/public/browser/permission_controller_delegate.h"
+#include "content/public/browser/permission_result.h"
 #include "url/origin.h"
 
 namespace blink {
@@ -54,42 +55,6 @@ class PermissionManager : public KeyedService,
   PermissionManager& operator=(const PermissionManager&) = delete;
 
   ~PermissionManager() override;
-
-  // Converts from |url|'s actual origin to the "canonical origin" that should
-  // be used for the purpose of requesting/storing permissions. For example, the
-  // origin of the local NTP gets mapped to the Google base URL instead. With
-  // Permission Delegation it will transform the requesting origin into
-  // the embedding origin because all permission checks happen on the top level
-  // origin.
-  //
-  // All the public methods below, such as RequestPermission or
-  // GetPermissionStatus, take the actual origin and do the canonicalization
-  // internally. You only need to call this directly if you do something else
-  // with the origin, such as display it in the UI.
-  GURL GetCanonicalOrigin(ContentSettingsType permission,
-                          const GURL& requesting_origin,
-                          const GURL& embedding_origin) const;
-
-  // This method is deprecated. Use `GetPermissionStatusForCurrentDocument`
-  // instead or `GetPermissionStatusForDisplayOnSettingsUI`.
-  PermissionResult GetPermissionStatusDeprecated(ContentSettingsType permission,
-                                                 const GURL& requesting_origin,
-                                                 const GURL& embedding_origin);
-
-  // Returns the permission status for a given `permission` and displayed,
-  // top-level `origin`. This should be used only for displaying on the
-  // browser's native UI (PageInfo, Settings, etc.). This method does not take
-  // context specific restrictions (e.g. permission policy) into consideration.
-  PermissionResult GetPermissionStatusForDisplayOnSettingsUI(
-      ContentSettingsType permission,
-      const GURL& origin);
-
-  // Returns the status for the given `permission` on behalf of the last
-  // committed document in `render_frame_host`, also performing additional
-  // checks such as Permission Policy.
-  PermissionResult GetPermissionStatusForCurrentDocument(
-      ContentSettingsType permission,
-      content::RenderFrameHost* render_frame_host);
 
   // KeyedService implementation.
   void Shutdown() override;
@@ -154,7 +119,13 @@ class PermissionManager : public KeyedService,
       blink::PermissionType permission,
       const GURL& requesting_origin,
       const GURL& embedding_origin) override;
+  content::PermissionResult GetPermissionResultForOriginWithoutContext(
+      blink::PermissionType permission,
+      const url::Origin& origin) override;
   blink::mojom::PermissionStatus GetPermissionStatusForCurrentDocument(
+      blink::PermissionType permission,
+      content::RenderFrameHost* render_frame_host) override;
+  content::PermissionResult GetPermissionResultForCurrentDocument(
       blink::PermissionType permission,
       content::RenderFrameHost* render_frame_host) override;
   blink::mojom::PermissionStatus GetPermissionStatusForWorker(
@@ -192,7 +163,7 @@ class PermissionManager : public KeyedService,
 
   // Only one of |render_process_host| and |render_frame_host| should be set,
   // or neither. RenderProcessHost will be inferred from |render_frame_host|.
-  PermissionResult GetPermissionStatusHelper(
+  PermissionResult GetPermissionStatusInternal(
       ContentSettingsType permission,
       content::RenderProcessHost* render_process_host,
       content::RenderFrameHost* render_frame_host,

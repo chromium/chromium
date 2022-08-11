@@ -762,7 +762,10 @@ std::u16string PageInfoUI::PermissionAutoBlockedToUIString(
         CONTENT_SETTING_DEFAULT,
         permissions::PermissionStatusSource::UNSPECIFIED);
     if (permissions::PermissionUtil::IsPermission(permission.type)) {
-      permission_result = delegate->GetPermissionStatus(permission.type);
+      blink::PermissionType permission_type =
+          permissions::PermissionUtil::ContentSettingTypeToPermissionType(
+              permission.type);
+      permission_result = delegate->GetPermissionResult(permission_type);
     } else if (permission.type == ContentSettingsType::FEDERATED_IDENTITY_API) {
       absl::optional<permissions::PermissionResult> embargo_result =
           delegate->GetEmbargoResult(permission.type);

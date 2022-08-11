@@ -15,6 +15,7 @@ enum class PermissionType;
 
 namespace content {
 class BrowserContext;
+struct PermissionResult;
 }
 
 namespace headless {
@@ -59,6 +60,9 @@ class HeadlessPermissionManager : public content::PermissionControllerDelegate {
       blink::PermissionType permission,
       const GURL& requesting_origin,
       const GURL& embedding_origin) override;
+  content::PermissionResult GetPermissionResultForOriginWithoutContext(
+      blink::PermissionType permission,
+      const url::Origin& origin) override;
   blink::mojom::PermissionStatus GetPermissionStatusForCurrentDocument(
       blink::PermissionType permission,
       content::RenderFrameHost* render_frame_host) override;

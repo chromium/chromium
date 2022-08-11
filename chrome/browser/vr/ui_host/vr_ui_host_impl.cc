@@ -9,7 +9,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
-#include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -17,13 +16,13 @@
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/browser/vr/win/vr_browser_renderer_thread_win.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
-#include "components/permissions/permission_manager.h"
-#include "components/permissions/permission_result.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/permission_controller.h"
 #include "content/public/browser/xr_runtime_manager.h"
 #include "device/base/features.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace vr {
@@ -352,33 +351,28 @@ void VRUiHostImpl::InitCapturingStates() {
   potential_capturing_ = g_default_capturing_state;
 
   DCHECK(web_contents_);
-  permissions::PermissionManager* permission_manager =
-      PermissionManagerFactory::GetForProfile(
-          Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
+  content::PermissionController* permission_controller =
+      web_contents_->GetBrowserContext()->GetPermissionController();
   potential_capturing_.audio_capture_enabled =
-      permission_manager
-          ->GetPermissionStatusForCurrentDocument(
-              ContentSettingsType::MEDIASTREAM_MIC,
-              web_contents_->GetPrimaryMainFrame())
-          .content_setting == CONTENT_SETTING_ALLOW;
+      permission_controller->GetPermissionStatusForCurrentDocument(
+          blink::PermissionType::AUDIO_CAPTURE,
+          web_contents_->GetPrimaryMainFrame()) ==
+      blink::mojom::PermissionStatus::GRANTED;
   potential_capturing_.video_capture_enabled =
-      permission_manager
-          ->GetPermissionStatusForCurrentDocument(
-              ContentSettingsType::MEDIASTREAM_CAMERA,
-              web_contents_->GetPrimaryMainFrame())
-          .content_setting == CONTENT_SETTING_ALLOW;
+      permission_controller->GetPermissionStatusForCurrentDocument(
+          blink::PermissionType::VIDEO_CAPTURE,
+          web_contents_->GetPrimaryMainFrame()) ==
+      blink::mojom::PermissionStatus::GRANTED;
   potential_capturing_.location_access_enabled =
-      permission_manager
-          ->GetPermissionStatusForCurrentDocument(
-              ContentSettingsType::GEOLOCATION,
-              web_contents_->GetPrimaryMainFrame())
-          .content_setting == CONTENT_SETTING_ALLOW;
+      permission_controller->GetPermissionStatusForCurrentDocument(
+          blink::PermissionType::GEOLOCATION,
+          web_contents_->GetPrimaryMainFrame()) ==
+      blink::mojom::PermissionStatus::GRANTED;
   potential_capturing_.midi_connected =
-      permission_manager
-          ->GetPermissionStatusForCurrentDocument(
-              ContentSettingsType::MIDI_SYSEX,
-              web_contents_->GetPrimaryMainFrame())
-          .content_setting == CONTENT_SETTING_ALLOW;
+      permission_controller->GetPermissionStatusForCurrentDocument(
+          blink::PermissionType::MIDI_SYSEX,
+          web_contents_->GetPrimaryMainFrame()) ==
+      blink::mojom::PermissionStatus::GRANTED;
 
   indicators_shown_start_time_ = base::Time::Now();
   indicators_visible_ = false;

@@ -23,6 +23,7 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
@@ -392,8 +393,10 @@ class SensorsPolicyTest : public PolicyTest {
     content::PermissionController* permission_controller =
         browser()->profile()->GetPermissionController();
     EXPECT_EQ(
-        permission_controller->GetPermissionStatusForOriginWithoutContext(
-            blink::PermissionType::SENSORS, url::Origin::Create(GURL(url))),
+        permission_controller
+            ->GetPermissionResultForOriginWithoutContext(
+                blink::PermissionType::SENSORS, url::Origin::Create(GURL(url)))
+            .status,
         status);
   }
 

@@ -61,11 +61,6 @@ TestPermissionsClient::GetPermissionDecisionAutoBlocker(
   return &autoblocker_;
 }
 
-PermissionManager* TestPermissionsClient::GetPermissionManager(
-    content::BrowserContext* browser_context) {
-  return nullptr;
-}
-
 ObjectPermissionContextBase* TestPermissionsClient::GetChooserContext(
     content::BrowserContext* browser_context,
     ContentSettingsType type) {

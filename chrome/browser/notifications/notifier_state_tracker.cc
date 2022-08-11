@@ -19,6 +19,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_result.h"
 #include "extensions/buildflags/buildflags.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
@@ -69,10 +70,10 @@ bool NotifierStateTracker::IsNotifierEnabled(
           disabled_extension_ids_.end();
     case message_center::NotifierType::WEB_PAGE:
       return profile_->GetPermissionController()
-                 ->GetPermissionStatusForOriginWithoutContext(
+                 ->GetPermissionResultForOriginWithoutContext(
                      blink::PermissionType::NOTIFICATIONS,
-                     url::Origin::Create(notifier_id.url)) ==
-             blink::mojom::PermissionStatus::GRANTED;
+                     url::Origin::Create(notifier_id.url))
+                 .status == blink::mojom::PermissionStatus::GRANTED;
     case message_center::NotifierType::SYSTEM_COMPONENT:
       // We do not disable system component notifications.
       return true;

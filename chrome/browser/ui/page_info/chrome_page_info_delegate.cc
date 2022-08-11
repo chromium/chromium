@@ -32,8 +32,11 @@
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 #include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_profile_context.h"
+#include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
@@ -151,14 +154,14 @@ std::u16string ChromePageInfoDelegate::GetWarningDetailText() {
 }
 #endif
 
-permissions::PermissionResult ChromePageInfoDelegate::GetPermissionStatus(
-    ContentSettingsType type,
-    const GURL& site_url) {
-  // TODO(raymes): Use GetPermissionStatus() to retrieve information
-  // about *all* permissions once it has default behaviour implemented for
-  // ContentSettingTypes that aren't permissions.
-  return PermissionManagerFactory::GetForProfile(GetProfile())
-      ->GetPermissionStatusForDisplayOnSettingsUI(type, site_url);
+permissions::PermissionResult ChromePageInfoDelegate::GetPermissionResult(
+    blink::PermissionType permission,
+    const url::Origin& origin) {
+  content::PermissionResult permission_result =
+      GetProfile()
+          ->GetPermissionController()
+          ->GetPermissionResultForOriginWithoutContext(permission, origin);
+  return permissions::PermissionUtil::ToPermissionResult(permission_result);
 }
 
 #if !BUILDFLAG(IS_ANDROID)

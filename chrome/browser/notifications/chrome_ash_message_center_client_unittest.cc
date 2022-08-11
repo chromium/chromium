@@ -26,6 +26,7 @@
 #include "components/permissions/test/permission_test_util.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
@@ -251,19 +252,21 @@ TEST_F(ChromeAshMessageCenterClientTest, SetWebPageNotifierEnabled) {
 
   // (1) Enable the permission when the default is to ask (expected to set).
   message_center_client()->SetNotifierEnabled(notifier_id, true);
-  EXPECT_EQ(blink::mojom::PermissionStatus::GRANTED,
-            profile->GetPermissionController()
-                ->GetPermissionStatusForOriginWithoutContext(
-                    blink::PermissionType::NOTIFICATIONS,
-                    url::Origin::Create(origin)));
+  EXPECT_EQ(
+      blink::mojom::PermissionStatus::GRANTED,
+      profile->GetPermissionController()
+          ->GetPermissionResultForOriginWithoutContext(
+              blink::PermissionType::NOTIFICATIONS, url::Origin::Create(origin))
+          .status);
 
   // (2) Disable the permission when the default is to ask (expected to clear).
   message_center_client()->SetNotifierEnabled(notifier_id, false);
-  EXPECT_EQ(blink::mojom::PermissionStatus::ASK,
-            profile->GetPermissionController()
-                ->GetPermissionStatusForOriginWithoutContext(
-                    blink::PermissionType::NOTIFICATIONS,
-                    url::Origin::Create(origin)));
+  EXPECT_EQ(
+      blink::mojom::PermissionStatus::ASK,
+      profile->GetPermissionController()
+          ->GetPermissionResultForOriginWithoutContext(
+              blink::PermissionType::NOTIFICATIONS, url::Origin::Create(origin))
+          .status);
 
   // Change the default content setting vaule for notifications to ALLOW.
   HostContentSettingsMapFactory::GetForProfile(profile)
@@ -272,20 +275,22 @@ TEST_F(ChromeAshMessageCenterClientTest, SetWebPageNotifierEnabled) {
 
   // (3) Disable the permission when the default is allowed (expected to set).
   message_center_client()->SetNotifierEnabled(notifier_id, false);
-  EXPECT_EQ(blink::mojom::PermissionStatus::DENIED,
-            profile->GetPermissionController()
-                ->GetPermissionStatusForOriginWithoutContext(
-                    blink::PermissionType::NOTIFICATIONS,
-                    url::Origin::Create(origin)));
+  EXPECT_EQ(
+      blink::mojom::PermissionStatus::DENIED,
+      profile->GetPermissionController()
+          ->GetPermissionResultForOriginWithoutContext(
+              blink::PermissionType::NOTIFICATIONS, url::Origin::Create(origin))
+          .status);
 
   // (4) Enable the permission when the default is allowed (expected to clear).
   message_center_client()->SetNotifierEnabled(notifier_id, true);
 
-  EXPECT_EQ(blink::mojom::PermissionStatus::GRANTED,
-            profile->GetPermissionController()
-                ->GetPermissionStatusForOriginWithoutContext(
-                    blink::PermissionType::NOTIFICATIONS,
-                    url::Origin::Create(origin)));
+  EXPECT_EQ(
+      blink::mojom::PermissionStatus::GRANTED,
+      profile->GetPermissionController()
+          ->GetPermissionResultForOriginWithoutContext(
+              blink::PermissionType::NOTIFICATIONS, url::Origin::Create(origin))
+          .status);
 
   // Now change the default content setting value to BLOCK.
   HostContentSettingsMapFactory::GetForProfile(profile)
@@ -294,19 +299,21 @@ TEST_F(ChromeAshMessageCenterClientTest, SetWebPageNotifierEnabled) {
 
   // (5) Enable the permission when the default is blocked (expected to set).
   message_center_client()->SetNotifierEnabled(notifier_id, true);
-  EXPECT_EQ(blink::mojom::PermissionStatus::GRANTED,
-            profile->GetPermissionController()
-                ->GetPermissionStatusForOriginWithoutContext(
-                    blink::PermissionType::NOTIFICATIONS,
-                    url::Origin::Create(origin)));
+  EXPECT_EQ(
+      blink::mojom::PermissionStatus::GRANTED,
+      profile->GetPermissionController()
+          ->GetPermissionResultForOriginWithoutContext(
+              blink::PermissionType::NOTIFICATIONS, url::Origin::Create(origin))
+          .status);
 
   // (6) Disable the permission when the default is blocked (expected to clear).
   message_center_client()->SetNotifierEnabled(notifier_id, false);
-  EXPECT_EQ(blink::mojom::PermissionStatus::DENIED,
-            profile->GetPermissionController()
-                ->GetPermissionStatusForOriginWithoutContext(
-                    blink::PermissionType::NOTIFICATIONS,
-                    url::Origin::Create(origin)));
+  EXPECT_EQ(
+      blink::mojom::PermissionStatus::DENIED,
+      profile->GetPermissionController()
+          ->GetPermissionResultForOriginWithoutContext(
+              blink::PermissionType::NOTIFICATIONS, url::Origin::Create(origin))
+          .status);
 }
 
 }  // namespace

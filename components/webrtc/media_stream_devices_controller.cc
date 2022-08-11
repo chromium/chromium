@@ -10,11 +10,10 @@
 
 #include "base/bind.h"
 #include "build/build_config.h"
-#include "components/permissions/permission_manager.h"
-#include "components/permissions/permission_result.h"
-#include "components/permissions/permissions_client.h"
+#include "components/permissions/permission_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -36,15 +35,15 @@ namespace webrtc {
 
 namespace {
 
-// Returns true if the given ContentSettingsType is being requested in
+// Returns true if the given PermissionType is being requested in
 // |request|.
-bool ContentTypeIsRequested(ContentSettingsType type,
-                            const content::MediaStreamRequest& request) {
-  if (type == ContentSettingsType::MEDIASTREAM_MIC)
+bool PermissionIsRequested(blink::PermissionType permission,
+                           const content::MediaStreamRequest& request) {
+  if (permission == blink::PermissionType::AUDIO_CAPTURE)
     return request.audio_type ==
            blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE;
 
-  if (type == ContentSettingsType::MEDIASTREAM_CAMERA)
+  if (permission == blink::PermissionType::VIDEO_CAPTURE)
     return request.video_type ==
            blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE;
 
@@ -93,42 +92,39 @@ void MediaStreamDevicesController::RequestPermissions(
 
   std::vector<blink::PermissionType> permission_types;
 
-  permissions::PermissionManager* permission_manager =
-      permissions::PermissionsClient::Get()->GetPermissionManager(
-          web_contents->GetBrowserContext());
+  content::PermissionController* permission_controller =
+      web_contents->GetBrowserContext()->GetPermissionController();
 
   if (controller->ShouldRequestAudio()) {
-    permissions::PermissionResult permission_status =
-        permission_manager->GetPermissionStatusForCurrentDocument(
-            ContentSettingsType::MEDIASTREAM_MIC, rfh);
-    if (permission_status.content_setting == CONTENT_SETTING_BLOCK) {
+    content::PermissionResult permission_status =
+        permission_controller->GetPermissionResultForCurrentDocument(
+            blink::PermissionType::AUDIO_CAPTURE, rfh);
+    if (permission_status.status == blink::mojom::PermissionStatus::DENIED) {
       controller->denial_reason_ =
           blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED;
-      controller->RunCallback(
-          permission_status.source ==
-          permissions::PermissionStatusSource::FEATURE_POLICY);
+      controller->RunCallback(permission_status.source ==
+                              content::PermissionStatusSource::FEATURE_POLICY);
       return;
     }
 
     permission_types.push_back(blink::PermissionType::AUDIO_CAPTURE);
   }
   if (controller->ShouldRequestVideo()) {
-    permissions::PermissionResult permission_status =
-        permission_manager->GetPermissionStatusForCurrentDocument(
-            ContentSettingsType::MEDIASTREAM_CAMERA, rfh);
-    if (permission_status.content_setting == CONTENT_SETTING_BLOCK) {
+    content::PermissionResult permission_status =
+        permission_controller->GetPermissionResultForCurrentDocument(
+            blink::PermissionType::VIDEO_CAPTURE, rfh);
+    if (permission_status.status == blink::mojom::PermissionStatus::DENIED) {
       controller->denial_reason_ =
           blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED;
-      controller->RunCallback(
-          permission_status.source ==
-          permissions::PermissionStatusSource::FEATURE_POLICY);
+      controller->RunCallback(permission_status.source ==
+                              content::PermissionStatusSource::FEATURE_POLICY);
       return;
     }
 
     permission_types.push_back(blink::PermissionType::VIDEO_CAPTURE);
 
     bool has_pan_tilt_zoom_camera = controller->HasAvailableDevices(
-        ContentSettingsType::CAMERA_PAN_TILT_ZOOM,
+        blink::PermissionType::CAMERA_PAN_TILT_ZOOM,
         request.requested_video_device_id);
 
     // Request CAMERA_PAN_TILT_ZOOM only if the website requested the
@@ -136,9 +132,9 @@ void MediaStreamDevicesController::RequestPermissions(
     // available.
     if (request.request_pan_tilt_zoom_permission && has_pan_tilt_zoom_camera) {
       permission_status =
-          permission_manager->GetPermissionStatusForCurrentDocument(
-              ContentSettingsType::CAMERA_PAN_TILT_ZOOM, rfh);
-      if (permission_status.content_setting == CONTENT_SETTING_BLOCK) {
+          permission_controller->GetPermissionResultForCurrentDocument(
+              blink::PermissionType::CAMERA_PAN_TILT_ZOOM, rfh);
+      if (permission_status.status == blink::mojom::PermissionStatus::DENIED) {
         controller->denial_reason_ =
             blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED;
         controller->RunCallback(/*blocked_by_permissions_policy=*/false);
@@ -188,9 +184,9 @@ MediaStreamDevicesController::MediaStreamDevicesController(
     enumerator_ = &owned_enumerator_;
 
   denial_reason_ = blink::mojom::MediaStreamRequestResult::OK;
-  audio_setting_ = GetContentSetting(ContentSettingsType::MEDIASTREAM_MIC,
+  audio_setting_ = GetContentSetting(blink::PermissionType::AUDIO_CAPTURE,
                                      request, &denial_reason_);
-  video_setting_ = GetContentSetting(ContentSettingsType::MEDIASTREAM_CAMERA,
+  video_setting_ = GetContentSetting(blink::PermissionType::VIDEO_CAPTURE,
                                      request, &denial_reason_);
 }
 
@@ -342,37 +338,37 @@ void MediaStreamDevicesController::RunCallback(
 }
 
 ContentSetting MediaStreamDevicesController::GetContentSetting(
-    ContentSettingsType content_type,
+    blink::PermissionType permission,
     const content::MediaStreamRequest& request,
     blink::mojom::MediaStreamRequestResult* denial_reason) const {
-  DCHECK(content_type == ContentSettingsType::MEDIASTREAM_MIC ||
-         content_type == ContentSettingsType::MEDIASTREAM_CAMERA);
+  DCHECK(permission == blink::PermissionType::AUDIO_CAPTURE ||
+         permission == blink::PermissionType::VIDEO_CAPTURE);
   DCHECK(!request_.security_origin.is_empty());
   DCHECK(network::IsUrlPotentiallyTrustworthy(request_.security_origin) ||
          request_.request_type == blink::MEDIA_OPEN_DEVICE_PEPPER_ONLY);
-  if (!ContentTypeIsRequested(content_type, request)) {
+  if (!PermissionIsRequested(permission, request)) {
     // No denial reason set as it will have been previously set.
     return CONTENT_SETTING_DEFAULT;
   }
 
   std::string device_id;
-  if (content_type == ContentSettingsType::MEDIASTREAM_MIC)
+  if (permission == blink::PermissionType::AUDIO_CAPTURE)
     device_id = request.requested_audio_device_id;
   else
     device_id = request.requested_video_device_id;
-  if (!HasAvailableDevices(content_type, device_id)) {
+  if (!HasAvailableDevices(permission, device_id)) {
     *denial_reason = blink::mojom::MediaStreamRequestResult::NO_HARDWARE;
     return CONTENT_SETTING_BLOCK;
   }
 
-  if (!IsUserAcceptAllowed(content_type)) {
+  if (!IsUserAcceptAllowed(permission)) {
     *denial_reason = blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED;
     return CONTENT_SETTING_BLOCK;
   }
 
   // Don't request if the kill switch is on.
   if (PermissionIsBlockedForReason(
-          content_type, permissions::PermissionStatusSource::KILL_SWITCH)) {
+          permission, content::PermissionStatusSource::KILL_SWITCH)) {
     *denial_reason = blink::mojom::MediaStreamRequestResult::KILL_SWITCH_ON;
     return CONTENT_SETTING_BLOCK;
   }
@@ -381,12 +377,26 @@ ContentSetting MediaStreamDevicesController::GetContentSetting(
 }
 
 bool MediaStreamDevicesController::IsUserAcceptAllowed(
-    ContentSettingsType content_type) const {
+    blink::PermissionType permission) const {
 #if BUILDFLAG(IS_ANDROID)
   ui::WindowAndroid* window_android =
       web_contents_->GetNativeView()->GetWindowAndroid();
   if (!window_android)
     return false;
+
+  ContentSettingsType content_type;
+
+  switch (permission) {
+    case blink::PermissionType::AUDIO_CAPTURE:
+      content_type = ContentSettingsType::MEDIASTREAM_MIC;
+      break;
+    case blink::PermissionType::VIDEO_CAPTURE:
+      content_type = ContentSettingsType::MEDIASTREAM_CAMERA;
+      break;
+    default:
+      NOTREACHED();
+      return false;
+  }
 
   std::vector<std::string> required_android_permissions;
   permissions::AppendRequiredAndroidPermissionsForContentSetting(
@@ -408,21 +418,22 @@ bool MediaStreamDevicesController::IsUserAcceptAllowed(
 }
 
 bool MediaStreamDevicesController::PermissionIsBlockedForReason(
-    ContentSettingsType content_type,
-    permissions::PermissionStatusSource reason) const {
-  // TODO(raymes): This function wouldn't be needed if
-  // PermissionManager::RequestPermissions returned a denial reason.
+    blink::PermissionType permission,
+    content::PermissionStatusSource reason) const {
   content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
       request_.render_process_id, request_.render_frame_id);
   if (rfh->GetLastCommittedOrigin().GetURL() != request_.security_origin) {
     return false;
   }
-  permissions::PermissionResult result =
-      permissions::PermissionsClient::Get()
-          ->GetPermissionManager(web_contents_->GetBrowserContext())
-          ->GetPermissionStatusForCurrentDocument(content_type, rfh);
+
+  // TODO(raymes): This function wouldn't be needed if
+  // PermissionManager::RequestPermissions returned a denial reason.
+  content::PermissionResult result =
+      web_contents_->GetBrowserContext()
+          ->GetPermissionController()
+          ->GetPermissionResultForCurrentDocument(permission, rfh);
   if (result.source == reason) {
-    DCHECK_EQ(CONTENT_SETTING_BLOCK, result.content_setting);
+    DCHECK_EQ(blink::mojom::PermissionStatus::DENIED, result.status);
     return true;
   }
   return false;
@@ -452,8 +463,8 @@ void MediaStreamDevicesController::PromptAnsweredGroupedRequest(
     blocked_by_permissions_policy &=
         audio_setting_ == CONTENT_SETTING_BLOCK &&
         PermissionIsBlockedForReason(
-            ContentSettingsType::MEDIASTREAM_MIC,
-            permissions::PermissionStatusSource::FEATURE_POLICY);
+            blink::PermissionType::AUDIO_CAPTURE,
+            content::PermissionStatusSource::FEATURE_POLICY);
   }
 
   if (need_video) {
@@ -461,8 +472,8 @@ void MediaStreamDevicesController::PromptAnsweredGroupedRequest(
     blocked_by_permissions_policy &=
         video_setting_ == CONTENT_SETTING_BLOCK &&
         PermissionIsBlockedForReason(
-            ContentSettingsType::MEDIASTREAM_CAMERA,
-            permissions::PermissionStatusSource::FEATURE_POLICY);
+            blink::PermissionType::VIDEO_CAPTURE,
+            content::PermissionStatusSource::FEATURE_POLICY);
   }
 
   for (ContentSetting response : responses) {
@@ -478,13 +489,13 @@ void MediaStreamDevicesController::PromptAnsweredGroupedRequest(
 }
 
 bool MediaStreamDevicesController::HasAvailableDevices(
-    ContentSettingsType content_type,
+    blink::PermissionType permission,
     const std::string& device_id) const {
   const MediaStreamDevices* devices = nullptr;
-  if (content_type == ContentSettingsType::MEDIASTREAM_MIC) {
+  if (permission == blink::PermissionType::AUDIO_CAPTURE) {
     devices = &enumerator_->GetAudioCaptureDevices();
-  } else if (content_type == ContentSettingsType::MEDIASTREAM_CAMERA ||
-             content_type == ContentSettingsType::CAMERA_PAN_TILT_ZOOM) {
+  } else if (permission == blink::PermissionType::VIDEO_CAPTURE ||
+             permission == blink::PermissionType::CAMERA_PAN_TILT_ZOOM) {
     devices = &enumerator_->GetVideoCaptureDevices();
   } else {
     NOTREACHED();
@@ -500,7 +511,7 @@ bool MediaStreamDevicesController::HasAvailableDevices(
 
   // If there are no particular device requirements, all devices will do.
   if (device_id.empty() &&
-      content_type != ContentSettingsType::CAMERA_PAN_TILT_ZOOM) {
+      permission != blink::PermissionType::CAMERA_PAN_TILT_ZOOM) {
     return true;
   }
 
@@ -509,7 +520,7 @@ bool MediaStreamDevicesController::HasAvailableDevices(
     if (!device_id.empty() && device.id != device_id) {
       continue;
     }
-    if (content_type == ContentSettingsType::CAMERA_PAN_TILT_ZOOM &&
+    if (permission == blink::PermissionType::CAMERA_PAN_TILT_ZOOM &&
         !device.video_control_support.pan &&
         !device.video_control_support.tilt &&
         !device.video_control_support.zoom) {

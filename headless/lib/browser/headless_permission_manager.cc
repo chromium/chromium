@@ -7,7 +7,9 @@
 #include "base/callback.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_result.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
+#include "url/gurl.h"
 
 namespace headless {
 
@@ -72,6 +74,17 @@ blink::mojom::PermissionStatus HeadlessPermissionManager::GetPermissionStatus(
     const GURL& requesting_origin,
     const GURL& embedding_origin) {
   return blink::mojom::PermissionStatus::ASK;
+}
+
+content::PermissionResult
+HeadlessPermissionManager::GetPermissionResultForOriginWithoutContext(
+    blink::PermissionType permission,
+    const url::Origin& origin) {
+  blink::mojom::PermissionStatus status =
+      GetPermissionStatus(permission, origin.GetURL(), origin.GetURL());
+
+  return content::PermissionResult(
+      status, content::PermissionStatusSource::UNSPECIFIED);
 }
 
 blink::mojom::PermissionStatus

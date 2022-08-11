@@ -39,6 +39,7 @@
 #include "content/public/browser/android/browser_context_handle.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/permission_controller.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "storage/browser/quota/quota_manager.h"
@@ -194,20 +195,39 @@ ContentSetting GetPermissionSettingForOrigin(
     ContentSettingsType content_type,
     jstring origin,
     jstring embedder) {
-  GURL url(ConvertJavaStringToUTF8(env, origin));
+  GURL requesting_origin(ConvertJavaStringToUTF8(env, origin));
   std::string embedder_str = ConvertJavaStringToUTF8(env, embedder);
-  GURL embedder_url;
+  GURL embedding_origin;
   // TODO(raymes): This check to see if '*' is the embedder is a hack that fixes
   // crbug.com/738377. In general querying the settings for patterns is broken
   // and needs to be fixed. See crbug.com/738757.
   if (embedder_str == "*")
-    embedder_url = url;
+    embedding_origin = requesting_origin;
   else
-    embedder_url = GURL(embedder_str);
-  return permissions::PermissionsClient::Get()
-      ->GetPermissionManager(unwrap(jbrowser_context_handle))
-      ->GetPermissionStatusDeprecated(content_type, url, embedder_url)
-      .content_setting;
+    embedding_origin = GURL(embedder_str);
+
+  // If `content_type` is permission, then we need to apply a set of
+  // verifications before reading its value in `HostContentSettingsMap`.
+  if (permissions::PermissionUtil::IsPermission(content_type)) {
+    BrowserContext* browser_context = unwrap(jbrowser_context_handle);
+    content::PermissionController* permission_controller =
+        browser_context->GetPermissionController();
+    blink::mojom::PermissionStatus status =
+        permission_controller->GetPermissionStatusForOriginWithoutContext(
+            permissions::PermissionUtil::ContentSettingTypeToPermissionType(
+                content_type),
+            url::Origin::Create(requesting_origin),
+            url::Origin::Create(embedding_origin));
+    return permissions::PermissionUtil::PermissionStatusToContentSetting(
+        status);
+  } else {
+    // If `content_type` is not permission, then we can directly read its value
+    // from `HostContentSettingsMap`.
+    HostContentSettingsMap* host_content_settings_map =
+        GetHostContentSettingsMap(jbrowser_context_handle);
+    return host_content_settings_map->GetContentSetting(
+        requesting_origin, embedding_origin, content_type);
+  }
 }
 
 void SetPermissionSettingForOrigin(

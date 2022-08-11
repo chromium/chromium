@@ -154,6 +154,16 @@ blink::mojom::PermissionStatus ShellPermissionManager::GetPermissionStatus(
              : blink::mojom::PermissionStatus::DENIED;
 }
 
+PermissionResult
+ShellPermissionManager::GetPermissionResultForOriginWithoutContext(
+    blink::PermissionType permission,
+    const url::Origin& origin) {
+  blink::mojom::PermissionStatus status =
+      GetPermissionStatus(permission, origin.GetURL(), origin.GetURL());
+
+  return PermissionResult(status, content::PermissionStatusSource::UNSPECIFIED);
+}
+
 blink::mojom::PermissionStatus
 ShellPermissionManager::GetPermissionStatusForCurrentDocument(
     PermissionType permission,

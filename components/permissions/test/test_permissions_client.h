@@ -31,8 +31,6 @@ class TestPermissionsClient : public PermissionsClient {
       content::BrowserContext* browser_context) override;
   PermissionDecisionAutoBlocker* GetPermissionDecisionAutoBlocker(
       content::BrowserContext* browser_context) override;
-  PermissionManager* GetPermissionManager(
-      content::BrowserContext* browser_context) override;
   ObjectPermissionContextBase* GetChooserContext(
       content::BrowserContext* browser_context,
       ContentSettingsType type) override;

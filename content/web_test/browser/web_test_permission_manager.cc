@@ -168,6 +168,16 @@ blink::mojom::PermissionStatus WebTestPermissionManager::GetPermissionStatus(
   return it->second;
 }
 
+PermissionResult
+WebTestPermissionManager::GetPermissionResultForOriginWithoutContext(
+    blink::PermissionType permission,
+    const url::Origin& origin) {
+  blink::mojom::PermissionStatus status =
+      GetPermissionStatus(permission, origin.GetURL(), origin.GetURL());
+
+  return PermissionResult(status, content::PermissionStatusSource::UNSPECIFIED);
+}
+
 blink::mojom::PermissionStatus
 WebTestPermissionManager::GetPermissionStatusForCurrentDocument(
     blink::PermissionType permission,

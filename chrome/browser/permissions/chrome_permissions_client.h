@@ -30,8 +30,6 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
       content::BrowserContext* browser_context) override;
   permissions::PermissionDecisionAutoBlocker* GetPermissionDecisionAutoBlocker(
       content::BrowserContext* browser_context) override;
-  permissions::PermissionManager* GetPermissionManager(
-      content::BrowserContext* browser_context) override;
   permissions::ObjectPermissionContextBase* GetChooserContext(
       content::BrowserContext* browser_context,
       ContentSettingsType type) override;
@@ -74,8 +72,10 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
   absl::optional<GURL> OverrideCanonicalOrigin(
       const GURL& requesting_origin,
       const GURL& embedding_origin) override;
-  bool DoOriginsMatchNewTabPage(const GURL& requesting_origin,
-                                const GURL& embedding_origin) override;
+  // Checks if `requesting_origin` and `embedding_origin` are the new tab page
+  // origins.
+  bool DoURLsMatchNewTabPage(const GURL& requesting_origin,
+                             const GURL& embedding_origin) override;
 #if BUILDFLAG(IS_ANDROID)
   bool IsDseOrigin(content::BrowserContext* browser_context,
                    const url::Origin& origin) override;

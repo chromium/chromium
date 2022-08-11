@@ -73,10 +73,11 @@ class PaymentAppProviderTest : public PaymentAppContentUnitTestBase {
     std::unique_ptr<MockPermissionManager> mock_permission_manager(
         new testing::NiceMock<MockPermissionManager>());
     ON_CALL(*mock_permission_manager,
-            GetPermissionStatus(blink::PermissionType::PAYMENT_HANDLER,
-                                testing::_, testing::_))
-        .WillByDefault(
-            testing::Return(blink::mojom::PermissionStatus::GRANTED));
+            GetPermissionResultForOriginWithoutContext(
+                blink::PermissionType::PAYMENT_HANDLER, testing::_))
+        .WillByDefault(testing::Return(
+            PermissionResult(blink::mojom::PermissionStatus::GRANTED,
+                             PermissionStatusSource::UNSPECIFIED)));
     static_cast<TestBrowserContext*>(browser_context())
         ->SetPermissionControllerDelegate(std::move(mock_permission_manager));
 

@@ -19,6 +19,7 @@
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/public/browser/notification_database_data.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
@@ -210,10 +211,11 @@ class PlatformNotificationContextTest : public ::testing::Test {
 
   void SetPermissionStatus(const GURL& origin,
                            blink::mojom::PermissionStatus permission_status) {
-    ON_CALL(*permission_manager_,
-            GetPermissionStatus(blink::PermissionType::NOTIFICATIONS, origin,
-                                origin))
-        .WillByDefault(Return(permission_status));
+    ON_CALL(*permission_manager_, GetPermissionResultForOriginWithoutContext(
+                                      blink::PermissionType::NOTIFICATIONS,
+                                      url::Origin::Create(origin)))
+        .WillByDefault(Return(content::PermissionResult(
+            permission_status, PermissionStatusSource::UNSPECIFIED)));
   }
 
   // Returns the file path to the leveldb database for |context|.

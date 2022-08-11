@@ -49,6 +49,7 @@
 #include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_render_process_host.h"
@@ -240,8 +241,9 @@ GeolocationPermissionContextTests::GetPermissionStatus(
     const GURL& requesting_origin) {
   return browser_context()
       ->GetPermissionController()
-      ->GetPermissionStatusForOriginWithoutContext(
-          permission, url::Origin::Create(requesting_origin));
+      ->GetPermissionResultForOriginWithoutContext(
+          permission, url::Origin::Create(requesting_origin))
+      .status;
 }
 
 void GeolocationPermissionContextTests::PermissionResponse(
