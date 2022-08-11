@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/chromeos/app_mode/app_session_browser_window_handler.h"
+#include <memory>
 
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/chromeos/app_mode/app_session.h"
+#include "chrome/browser/chromeos/app_mode/app_session_policies.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_settings_navigation_throttle.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
 
@@ -26,6 +28,8 @@ AppSessionBrowserWindowHandler::AppSessionBrowserWindowHandler(
       on_last_browser_window_closed_callback_(
           on_last_browser_window_closed_callback) {
   BrowserList::AddObserver(this);
+  app_session_policies_ =
+      std::make_unique<AppSessionPolicies>(profile_->GetPrefs());
 }
 
 AppSessionBrowserWindowHandler::~AppSessionBrowserWindowHandler() {

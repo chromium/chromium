@@ -63,9 +63,10 @@ class AppSessionTest : public testing::Test {
   }
 
   void WebKioskTracksBrowserCreationTest() {
+    // |profile| needs to outlive |app_session|.
+    TestingProfile profile;
     auto app_session =
         std::make_unique<AppSession>(base::DoNothing(), local_state());
-    TestingProfile profile;
 
     Browser::CreateParams params(&profile, true);
     auto app_browser = CreateBrowserWithTestWindowForParams(params);

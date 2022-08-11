@@ -8,9 +8,9 @@
 #include "base/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/chromeos/app_mode/app_session_policies.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 
 namespace chromeos {
@@ -68,6 +68,9 @@ class AppSessionBrowserWindowHandler : public BrowserListObserver {
   // Browser in which settings are shown, restricted by
   // KioskSettingsNavigationThrottle.
   raw_ptr<Browser> settings_browser_ = nullptr;
+
+  // Provides access to app session related policies.
+  std::unique_ptr<AppSessionPolicies> app_session_policies_;
 
   base::WeakPtrFactory<AppSessionBrowserWindowHandler> weak_ptr_factory_{this};
 };
