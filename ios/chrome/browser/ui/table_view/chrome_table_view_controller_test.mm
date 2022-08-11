@@ -188,7 +188,7 @@ void ChromeTableViewControllerTest::CheckSwitchCellStateAndText(
   id switch_item = GetTableViewItem(section, item);
   EXPECT_TRUE([switch_item respondsToSelector:@selector(text)]);
   EXPECT_NSEQ(expected_title, [switch_item text]);
-  EXPECT_TRUE([switch_item respondsToSelector:@selector(isOn)]);
+  ASSERT_TRUE([switch_item respondsToSelector:@selector(isOn)]);
   EXPECT_EQ(expected_state, [switch_item isOn]);
 }
 
