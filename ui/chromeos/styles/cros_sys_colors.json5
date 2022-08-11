@@ -185,6 +185,12 @@
     // TODO(b/224402466): Add cros.sys.warning
     // TODO(b/224402466): Add cros.sys.success
 
+    // These values have a very specific meaning and should never be tinted.
+    'privacy-indicator': {
+      light: '#146c2e',
+      dark: '#37be5f',
+    },
+
     /* Effects */
     'hover-on-prominent': {
       light: 'rgba($cros.ref.neutral10.rgb, 0.10)',
