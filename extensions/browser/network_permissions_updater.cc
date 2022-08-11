@@ -6,13 +6,41 @@
 
 #include "base/barrier_closure.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/cors_origin_pattern_setter.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_client.h"
+#include "extensions/common/cors_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
 
 namespace extensions {
+
+namespace {
+
+void SetCorsOriginAccessListForExtensionHelper(
+    const std::vector<content::BrowserContext*>& browser_contexts,
+    const Extension& extension,
+    std::vector<network::mojom::CorsOriginPatternPtr> allow_patterns,
+    std::vector<network::mojom::CorsOriginPatternPtr> block_patterns,
+    base::OnceClosure closure) {
+  auto barrier_closure =
+      BarrierClosure(browser_contexts.size(), std::move(closure));
+  for (content::BrowserContext* browser_context : browser_contexts) {
+    // SetCorsOriginAccessListForExtensionHelper should only affect an incognito
+    // profile if the extension is actually allowed to run in an incognito
+    // profile (not just by the extension manifest, but also by user
+    // preferences).
+    if (browser_context->IsOffTheRecord())
+      DCHECK(util::IsIncognitoEnabled(extension.id(), browser_context));
+
+    content::CorsOriginPatternSetter::Set(
+        browser_context, extension.origin(), mojo::Clone(allow_patterns),
+        mojo::Clone(block_patterns), barrier_closure);
+  }
+}
+
+}  // namespace
 
 NetworkPermissionsUpdater::NetworkPermissionsUpdater(
     PassKey pass_key,
@@ -67,6 +95,13 @@ void NetworkPermissionsUpdater::UpdateAllExtensions(
   }
 }
 
+void NetworkPermissionsUpdater::ResetOriginAccessForExtension(
+    content::BrowserContext& browser_context,
+    const Extension& extension) {
+  SetCorsOriginAccessListForExtensionHelper({&browser_context}, extension, {},
+                                            {}, base::DoNothing());
+}
+
 void NetworkPermissionsUpdater::UpdateExtension(
     const Extension& extension,
     ContextSet context_set,
@@ -81,8 +116,10 @@ void NetworkPermissionsUpdater::UpdateExtension(
             browser_context_, extension);
   }
 
-  util::SetCorsOriginAccessListForExtension(target_contexts, extension,
-                                            std::move(completion_callback));
+  SetCorsOriginAccessListForExtensionHelper(
+      target_contexts, extension, CreateCorsOriginAccessAllowList(extension),
+      CreateCorsOriginAccessBlockList(extension),
+      std::move(completion_callback));
 }
 
 // static

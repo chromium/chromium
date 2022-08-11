@@ -63,6 +63,14 @@ class NetworkPermissionsUpdater {
   static void UpdateAllExtensions(content::BrowserContext& browser_context,
                                   base::OnceClosure completion_callback);
 
+  // Resets the origin allowlist and blocklist for `extension` to empty lists
+  // for `browser_context`. This only affects the specified `browser_context`;
+  // it does not affect any related (incognito) contexts.
+  // TODO(devlin/lukasza): Should it?
+  static void ResetOriginAccessForExtension(
+      content::BrowserContext& browser_context,
+      const Extension& extension);
+
  private:
   // Updates a single extension in the network layer, invoking
   // `completion_callback` when the operation is complete.

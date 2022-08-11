@@ -318,7 +318,8 @@ void RendererStartupHelper::OnExtensionUnloaded(const Extension& extension) {
   }
 
   // Resets registered origin access lists in the BrowserContext asynchronously.
-  util::ResetCorsOriginAccessListForExtension(browser_context_, extension);
+  NetworkPermissionsUpdater::ResetOriginAccessForExtension(*browser_context_,
+                                                           extension);
 
   for (auto& process_extensions_pair : pending_active_extensions_)
     process_extensions_pair.second.erase(extension.id());

@@ -11,7 +11,6 @@
 #include "components/crx_file/id_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/child_process_security_policy.h"
-#include "content/public/browser/cors_origin_pattern_setter.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/common/url_constants.h"
@@ -20,7 +19,6 @@
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/ui_util.h"
-#include "extensions/common/cors_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/features/behavior_feature.h"
 #include "extensions/common/features/feature.h"
@@ -49,28 +47,6 @@ bool IsSigninProfileTestExtensionOnTestImage(const Extension* extension) {
   return true;
 }
 #endif
-
-void SetCorsOriginAccessListForExtensionHelper(
-    const std::vector<content::BrowserContext*>& browser_contexts,
-    const Extension& extension,
-    std::vector<network::mojom::CorsOriginPatternPtr> allow_patterns,
-    std::vector<network::mojom::CorsOriginPatternPtr> block_patterns,
-    base::OnceClosure closure) {
-  auto barrier_closure =
-      BarrierClosure(browser_contexts.size(), std::move(closure));
-  for (content::BrowserContext* browser_context : browser_contexts) {
-    // SetCorsOriginAccessListForExtensionHelper should only affect an incognito
-    // profile if the extension is actually allowed to run in an incognito
-    // profile (not just by the extension manifest, but also by user
-    // preferences).
-    if (browser_context->IsOffTheRecord())
-      DCHECK(IsIncognitoEnabled(extension.id(), browser_context));
-
-    content::CorsOriginPatternSetter::Set(
-        browser_context, extension.origin(), mojo::Clone(allow_patterns),
-        mojo::Clone(block_patterns), barrier_closure);
-  }
-}
 
 }  // namespace
 
@@ -241,22 +217,6 @@ int GetBrowserContextId(content::BrowserContext* context) {
   }
   DCHECK(iter->second != kUnspecifiedContextId);
   return iter->second;
-}
-
-void SetCorsOriginAccessListForExtension(
-    const std::vector<content::BrowserContext*>& browser_contexts,
-    const Extension& extension,
-    base::OnceClosure closure) {
-  SetCorsOriginAccessListForExtensionHelper(
-      browser_contexts, extension, CreateCorsOriginAccessAllowList(extension),
-      CreateCorsOriginAccessBlockList(extension), std::move(closure));
-}
-
-void ResetCorsOriginAccessListForExtension(
-    content::BrowserContext* browser_context,
-    const Extension& extension) {
-  SetCorsOriginAccessListForExtensionHelper({browser_context}, extension, {},
-                                            {}, base::DoNothing());
 }
 
 // Returns whether the |extension| should be loaded in the given
