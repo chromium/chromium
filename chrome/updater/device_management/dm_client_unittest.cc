@@ -139,6 +139,7 @@ class DMRequestCallbackHandler
                                            init_dm_token ? kDmToken : ""));
 
     if (init_cache_info) {
+      ASSERT_TRUE(storage_->CanPersistPolicies());
       std::unique_ptr<::enterprise_management::DeviceManagementResponse>
           dm_response = GetDefaultTestingPolicyFetchDMResponse(
               /*first_request=*/true, /*rotate_to_new_key=*/false,

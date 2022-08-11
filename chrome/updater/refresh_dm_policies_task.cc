@@ -13,16 +13,13 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/device_management/dm_client.h"
 #include "chrome/updater/device_management/dm_response_validator.h"
 #include "chrome/updater/device_management/dm_storage.h"
 #include "chrome/updater/policy/service.h"
-
-#if BUILDFLAG(IS_WIN)
-#include <shlobj.h>
-#endif  // BUILDFLAG(IS_WIN)
 
 namespace updater {
 
@@ -37,25 +34,12 @@ void RefreshDMPoliciesTask::Run(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
 
-#if BUILDFLAG(IS_WIN)
-  // Returning early, because we cannot write to the DM cache in Windows under
-  // %ProgramFiles(x86)% without having administrative privileges.
-  if (!::IsUserAnAdmin()) {
-    std::move(callback).Run();
-    return;
-  }
-
-  FetchPolicy(std::move(callback));
-  return;
-
-#else   // BUILDFLAG(IS_WIN)
-
   // `RefreshDMPoliciesTask::FetchPolicy` can block and therefore is running
   // under a task runner with `base::MayBlock()`.
-  base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
+  base::ThreadPool::CreateSingleThreadTaskRunner(
+      {base::MayBlock()}, base::SingleThreadTaskRunnerThreadMode::DEDICATED)
       ->PostTask(FROM_HERE, base::BindOnce(&RefreshDMPoliciesTask::FetchPolicy,
                                            this, std::move(callback)));
-#endif  // BUILDFLAG(IS_WIN)
 }
 
 void RefreshDMPoliciesTask::FetchPolicy(base::OnceClosure callback) {

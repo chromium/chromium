@@ -95,6 +95,9 @@ class DMStorage : public base::RefCountedThreadSafe<DMStorage> {
   // Returns true if the device is de-registered.
   bool IsDeviceDeregistered() const;
 
+  // Checks if the caller has permissions to persist the DM policies.
+  bool CanPersistPolicies() const;
+
   // Persists DM policies.
   //
   // If the first policy in the map contains a valid public key, its serialized
@@ -139,6 +142,7 @@ class DMStorage : public base::RefCountedThreadSafe<DMStorage> {
   ~DMStorage();
 
   const base::FilePath policy_cache_root_;
+  const base::FilePath policy_info_file_;
   std::unique_ptr<TokenServiceInterface> token_service_;
 
   SEQUENCE_CHECKER(sequence_checker_);

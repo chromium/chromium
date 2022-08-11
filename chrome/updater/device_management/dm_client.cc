@@ -373,6 +373,14 @@ void DMClient::RegisterDevice(std::unique_ptr<Configurator> config,
 void DMClient::FetchPolicy(std::unique_ptr<Configurator> config,
                            scoped_refptr<DMStorage> storage,
                            PolicyFetchCallback callback) {
+  if (!storage->CanPersistPolicies()) {
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  DMClient::RequestResult::kSerializationError,
+                                  std::vector<PolicyValidationResult>()));
+    return;
+  }
+
   auto dm_fetch = base::MakeRefCounted<DMFetch>(std::move(config), storage);
   std::unique_ptr<CachedPolicyInfo> cached_info =
       dm_fetch->storage()->GetCachedPolicyInfo();
