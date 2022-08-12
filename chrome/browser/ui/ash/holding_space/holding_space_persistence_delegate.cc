@@ -67,7 +67,7 @@ void HoldingSpacePersistenceDelegate::OnHoldingSpaceItemsAdded(
   ListPrefUpdate update(profile()->GetPrefs(), kPersistencePath);
   for (const HoldingSpaceItem* item : items) {
     if (item->progress().IsComplete())
-      update->Append(item->Serialize());
+      update->GetList().Append(item->Serialize());
   }
 }
 
@@ -78,7 +78,7 @@ void HoldingSpacePersistenceDelegate::OnHoldingSpaceItemsRemoved(
 
   // Remove the `items` from persistent storage.
   ListPrefUpdate update(profile()->GetPrefs(), kPersistencePath);
-  update->EraseListValueIf([&items](const base::Value& persisted_item) {
+  update->GetList().EraseIf([&items](const base::Value& persisted_item) {
     const std::string& persisted_item_id = HoldingSpaceItem::DeserializeId(
         base::Value::AsDictionaryValue(persisted_item));
     return std::any_of(items.begin(), items.end(),
@@ -100,25 +100,25 @@ void HoldingSpacePersistenceDelegate::OnHoldingSpaceItemUpdated(
 
   // Attempt to find the finalized `item` in persistent storage.
   ListPrefUpdate update(profile()->GetPrefs(), kPersistencePath);
+  base::Value::List& list = update->GetList();
   auto item_it = std::find_if(
-      update->GetList().begin(), update->GetList().end(),
-      [&item](const base::Value& persisted_item) {
+      list.begin(), list.end(), [&item](const base::Value& persisted_item) {
         return HoldingSpaceItem::DeserializeId(base::Value::AsDictionaryValue(
                    persisted_item)) == item->id();
       });
 
   // If the finalized `item` already exists in persistent storage, update it.
-  if (item_it != update->GetList().end()) {
+  if (item_it != list.end()) {
     *item_it = item->Serialize();
     return;
   }
 
   // If the finalized `item` did not previously exist in persistent storage,
   // insert it at the appropriate index.
-  item_it = update->GetList().begin();
+  item_it = list.begin();
   for (const auto& candidate_item : model()->items()) {
     if (candidate_item.get() == item) {
-      update->Insert(item_it, item->Serialize());
+      list.Insert(item_it, item->Serialize());
       return;
     }
     if (candidate_item->progress().IsComplete())
