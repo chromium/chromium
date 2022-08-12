@@ -34,6 +34,7 @@ class AppDeduplicationService : public KeyedService,
   friend class AppDeduplicationServiceTest;
   FRIEND_TEST_ALL_PREFIXES(AppDeduplicationServiceTest,
                            OnDuplicatedAppsMapUpdated);
+  FRIEND_TEST_ALL_PREFIXES(AppDeduplicationServiceTest, ExactDuplicate);
 
   // AppProvisioningDataManager::Observer:
   void OnDuplicatedAppsMapUpdated(

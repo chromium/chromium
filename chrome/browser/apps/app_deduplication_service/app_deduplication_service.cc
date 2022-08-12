@@ -65,14 +65,16 @@ void AppDeduplicationService::OnDuplicatedAppsMapUpdated(
     for (auto const& app : group.second.apps()) {
       const std::string& app_id = app.app_id_for_platform();
       const std::string& source = app.source_name();
-      AppType app_type = AppType::kUnknown;
+      EntryId entry_id;
       // TODO(b/238394602): Add more data type when real data is ready.
       if (source == "arc") {
-        app_type = AppType::kArc;
+        entry_id = EntryId(app_id, AppType::kArc);
       } else if (source == "web") {
-        app_type = AppType::kWeb;
+        entry_id = EntryId(app_id, AppType::kWeb);
+      } else if (source == "phonehub") {
+        entry_id = EntryId(app_id);
       }
-      EntryId entry_id(app_id, app_type);
+
       entry_to_group_map_[entry_id] = group.first;
 
       Entry entry(std::move(entry_id));

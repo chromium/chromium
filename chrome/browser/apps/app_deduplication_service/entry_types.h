@@ -19,8 +19,9 @@ enum class EntryType {
 };
 
 struct EntryId {
+  EntryId() = default;
   // Constructor for apps.
-  EntryId(std::string app_id, apps::AppType app_type);
+  EntryId(std::string app_id, AppType app_type);
 
   // Constructor for web pages.
   explicit EntryId(const GURL& url);
