@@ -179,6 +179,33 @@ CreatePasswordUiEntryFromCredentialUiEntry(
   return entry;
 }
 
+extensions::api::passwords_private::ImportEntry ConvertImportEntry(
+    const password_manager::ImportEntry& entry) {
+  extensions::api::passwords_private::ImportEntry result;
+  result.status =
+      static_cast<extensions::api::passwords_private::ImportEntryStatus>(
+          entry.status);
+  result.url = entry.url;
+  result.username = entry.username;
+  return result;
+}
+
+// Maps password_manager::ImportResults to
+// extensions::api::passwords_private::ImportResults.
+extensions::api::passwords_private::ImportResults ConvertImportResults(
+    const password_manager::ImportResults& results) {
+  extensions::api::passwords_private::ImportResults private_results;
+  private_results.status =
+      static_cast<extensions::api::passwords_private::ImportResultsStatus>(
+          results.status);
+  private_results.number_imported = results.number_imported;
+  private_results.file_name = results.file_name;
+  private_results.failed_imports.reserve(results.failed_imports.size());
+  for (const auto& entry : results.failed_imports)
+    private_results.failed_imports.emplace_back(ConvertImportEntry(entry));
+  return private_results;
+}
+
 }  // namespace
 
 namespace extensions {
@@ -527,8 +554,15 @@ void PasswordsPrivateDelegateImpl::MovePasswordsToAccount(
 }
 
 void PasswordsPrivateDelegateImpl::ImportPasswords(
+    api::passwords_private::PasswordStoreSet to_store,
+    ImportResultsCallback results_callback,
     content::WebContents* web_contents) {
-  password_manager_porter_->Import(web_contents);
+  DCHECK_NE(api::passwords_private::PasswordStoreSet::
+                PASSWORD_STORE_SET_DEVICE_AND_ACCOUNT,
+            to_store);
+  password_manager_porter_->Import(
+      web_contents, *ConvertToPasswordFormStores(to_store).begin(),
+      base::BindOnce(&ConvertImportResults).Then(std::move(results_callback)));
 }
 
 void PasswordsPrivateDelegateImpl::ExportPasswords(

@@ -220,14 +220,22 @@ ResponseAction PasswordsPrivateImportPasswordsFunction::Run() {
   auto parameters =
       api::passwords_private::ImportPasswords::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
-  // TODO(crbug/1325290): Introduce callback for filling ImportResults with
-  // real data.
-  GetDelegate(browser_context())->ImportPasswords(GetSenderWebContents());
-  api::passwords_private::ImportResults results;
-  results.status =
-      extensions::api::passwords_private::IMPORT_RESULTS_STATUS_SUCCESS;
-  return RespondNow(ArgumentList(
-      api::passwords_private::ImportPasswords::Results::Create(results)));
+  GetDelegate(browser_context())
+      ->ImportPasswords(
+          parameters->to_store,
+          base::BindOnce(
+              &PasswordsPrivateImportPasswordsFunction::ImportRequestCompleted,
+              this),
+          GetSenderWebContents());
+
+  // `ImportRequestCompleted()` might respond before we reach this point.
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void PasswordsPrivateImportPasswordsFunction::ImportRequestCompleted(
+    const api::passwords_private::ImportResults& result) {
+  Respond(ArgumentList(
+      api::passwords_private::ImportPasswords::Results::Create(result)));
 }
 
 // PasswordsPrivateExportPasswordsFunction

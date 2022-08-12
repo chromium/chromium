@@ -15,6 +15,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/mock_callback.h"
 #include "build/build_config.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
@@ -340,7 +341,11 @@ TEST_P(PasswordManagerPorterStoreTest, Import) {
   porter.SetImporterForTesting(std::move(importer));
   ui::SelectFileDialog::SetFactory(
       new TestSelectFileDialogFactory(temp_file_path));
-  porter.Import(web_contents());
+  base::MockCallback<PasswordManagerPorter::ImportResultsCallback> callback;
+  EXPECT_CALL(callback, Run).Times(1);
+  porter.Import(web_contents(),
+                password_manager::PasswordForm::Store::kProfileStore,
+                callback.Get());
   base::RunLoop().RunUntilIdle();
   if (tc.descriptions.empty()) {
     EXPECT_THAT(test_password_store->stored_passwords(), IsEmpty());

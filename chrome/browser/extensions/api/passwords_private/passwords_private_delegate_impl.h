@@ -82,7 +82,9 @@ class PasswordsPrivateDelegateImpl
                                 content::WebContents* web_contents) override;
   void MovePasswordsToAccount(const std::vector<int>& ids,
                               content::WebContents* web_contents) override;
-  void ImportPasswords(content::WebContents* web_contents) override;
+  void ImportPasswords(api::passwords_private::PasswordStoreSet to_store,
+                       ImportResultsCallback results_callback,
+                       content::WebContents* web_contents) override;
   void ExportPasswords(
       base::OnceCallback<void(const std::string&)> accepted_callback,
       content::WebContents* web_contents) override;

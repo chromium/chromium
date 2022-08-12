@@ -172,10 +172,16 @@ void TestPasswordsPrivateDelegate::MovePasswordsToAccount(
 }
 
 void TestPasswordsPrivateDelegate::ImportPasswords(
+    api::passwords_private::PasswordStoreSet to_store,
+    ImportResultsCallback results_callback,
     content::WebContents* web_contents) {
-  // The testing of password importing itself should be handled via
-  // |PasswordManagerPorter|.
   import_passwords_triggered_ = true;
+
+  import_results_.status = api::passwords_private::ImportResultsStatus::
+      IMPORT_RESULTS_STATUS_SUCCESS;
+  import_results_.file_name = "test.csv";
+  import_results_.number_imported = 42;
+  std::move(results_callback).Run(import_results_);
 }
 
 void TestPasswordsPrivateDelegate::ExportPasswords(

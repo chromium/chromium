@@ -412,6 +412,13 @@ source_set("capabilities") {
   }
 }
 
+source_set("import_results") {
+  sources = [
+    "ui/import_results.cc",
+    "ui/import_results.h",
+  ]
+}
+
 # PasswordForm is an extremely common struct used by many sub-components and
 # sub-directories. Having its own target makes it possible to break up several
 # cyclic dependencies.

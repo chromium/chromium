@@ -26,7 +26,9 @@ struct CredentialUIEntry {
 
   CredentialUIEntry();
   explicit CredentialUIEntry(const PasswordForm& form);
-  explicit CredentialUIEntry(const CSVPassword& csv_password);
+  explicit CredentialUIEntry(
+      const CSVPassword& csv_password,
+      PasswordForm::Store to_store = PasswordForm::Store::kProfileStore);
   CredentialUIEntry(const CredentialUIEntry& other);
   CredentialUIEntry(CredentialUIEntry&& other);
   ~CredentialUIEntry();

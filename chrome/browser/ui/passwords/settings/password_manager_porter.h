@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/password_manager/core/browser/import/password_importer.h"
 #include "components/password_manager/core/browser/ui/export_progress_status.h"
+#include "components/password_manager/core/browser/ui/import_results.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
@@ -28,6 +29,8 @@ class Profile;
 // file to the Password Manager.
 class PasswordManagerPorter : public ui::SelectFileDialog::Listener {
  public:
+  using ImportResultsCallback =
+      base::OnceCallback<void(const password_manager::ImportResults&)>;
   using ProgressCallback =
       base::RepeatingCallback<void(password_manager::ExportProgressStatus,
                                    const std::string&)>;
@@ -60,7 +63,12 @@ class PasswordManagerPorter : public ui::SelectFileDialog::Listener {
       std::unique_ptr<password_manager::PasswordImporter> importer);
 
   // Triggers passwords import flow for the given |web_contents|.
-  void Import(content::WebContents* web_contents);
+  // Passwords will be imported into the |to_store|.
+  // |results_callback| is used to return import summary back to the user. It is
+  // run on the completion of import flow.
+  void Import(content::WebContents* web_contents,
+              password_manager::PasswordForm::Store to_store,
+              ImportResultsCallback results_callback);
 
  private:
   enum Type {
@@ -94,6 +102,11 @@ class PasswordManagerPorter : public ui::SelectFileDialog::Listener {
   // PasswordManagerExporter instance for each export.
   const raw_ptr<password_manager::SavedPasswordsPresenter> presenter_;
   ProgressCallback on_export_progress_callback_;
+
+  // |import_results_callback_|, |to_store_| are stored in the porter
+  // while the file is being selected.
+  ImportResultsCallback import_results_callback_;
+  password_manager::PasswordForm::Store to_store_;
 
   base::WeakPtrFactory<PasswordManagerPorter> weak_ptr_factory_{this};
 };

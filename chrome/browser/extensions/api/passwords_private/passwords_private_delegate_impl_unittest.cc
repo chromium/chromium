@@ -966,4 +966,115 @@ TEST_F(PasswordsPrivateDelegateImplTest, AndroidCredential) {
   delegate.GetSavedPasswordsList(callback.Get());
 }
 
+TEST_F(PasswordsPrivateDelegateImplTest, VerifyCastingOfImportEntryStatus) {
+  static_assert(
+      static_cast<int>(api::passwords_private::ImportEntryStatus::
+                           IMPORT_ENTRY_STATUS_NONE) ==
+          static_cast<int>(password_manager::ImportEntry::Status::NONE),
+      "");
+  static_assert(static_cast<int>(api::passwords_private::ImportEntryStatus::
+                                     IMPORT_ENTRY_STATUS_UNKNOWN_ERROR) ==
+                    static_cast<int>(
+                        password_manager::ImportEntry::Status::UNKNOWN_ERROR),
+                "");
+  static_assert(
+      static_cast<int>(api::passwords_private::ImportEntryStatus::
+                           IMPORT_ENTRY_STATUS_MISSING_PASSWORD) ==
+          static_cast<int>(
+              password_manager::ImportEntry::Status::MISSING_PASSWORD),
+      "");
+  static_assert(
+      static_cast<int>(api::passwords_private::ImportEntryStatus::
+                           IMPORT_ENTRY_STATUS_MISSING_URL) ==
+          static_cast<int>(password_manager::ImportEntry::Status::MISSING_URL),
+      "");
+  static_assert(
+      static_cast<int>(api::passwords_private::ImportEntryStatus::
+                           IMPORT_ENTRY_STATUS_INVALID_URL) ==
+          static_cast<int>(password_manager::ImportEntry::Status::INVALID_URL),
+      "");
+  static_assert(static_cast<int>(api::passwords_private::ImportEntryStatus::
+                                     IMPORT_ENTRY_STATUS_NON_ASCII_URL) ==
+                    static_cast<int>(
+                        password_manager::ImportEntry::Status::NON_ASCII_URL),
+                "");
+  static_assert(
+      static_cast<int>(api::passwords_private::ImportEntryStatus::
+                           IMPORT_ENTRY_STATUS_LONG_URL) ==
+          static_cast<int>(password_manager::ImportEntry::Status::LONG_URL),
+      "");
+  static_assert(static_cast<int>(api::passwords_private::ImportEntryStatus::
+                                     IMPORT_ENTRY_STATUS_LONG_PASSWORD) ==
+                    static_cast<int>(
+                        password_manager::ImportEntry::Status::LONG_PASSWORD),
+                "");
+  static_assert(static_cast<int>(api::passwords_private::ImportEntryStatus::
+                                     IMPORT_ENTRY_STATUS_LONG_USERNAME) ==
+                    static_cast<int>(
+                        password_manager::ImportEntry::Status::LONG_USERNAME),
+                "");
+  static_assert(
+      static_cast<int>(api::passwords_private::ImportEntryStatus::
+                           IMPORT_ENTRY_STATUS_CONFLICT_PROFILE) ==
+          static_cast<int>(
+              password_manager::ImportEntry::Status::CONFLICT_PROFILE),
+      "");
+  static_assert(
+      static_cast<int>(api::passwords_private::ImportEntryStatus::
+                           IMPORT_ENTRY_STATUS_CONFLICT_ACCOUNT) ==
+          static_cast<int>(
+              password_manager::ImportEntry::Status::CONFLICT_ACCOUNT),
+      "");
+}
+
+TEST_F(PasswordsPrivateDelegateImplTest, VerifyCastingOfImportResultsStatus) {
+  static_assert(
+      static_cast<int>(api::passwords_private::ImportResultsStatus::
+                           IMPORT_RESULTS_STATUS_NONE) ==
+          static_cast<int>(password_manager::ImportResults::Status::NONE),
+      "");
+  static_assert(static_cast<int>(api::passwords_private::ImportResultsStatus::
+                                     IMPORT_RESULTS_STATUS_UNKNOWN_ERROR) ==
+                    static_cast<int>(
+                        password_manager::ImportResults::Status::UNKNOWN_ERROR),
+                "");
+  static_assert(
+      static_cast<int>(api::passwords_private::ImportResultsStatus::
+                           IMPORT_RESULTS_STATUS_SUCCESS) ==
+          static_cast<int>(password_manager::ImportResults::Status::SUCCESS),
+      "");
+  static_assert(
+      static_cast<int>(api::passwords_private::ImportResultsStatus::
+                           IMPORT_RESULTS_STATUS_IO_ERROR) ==
+          static_cast<int>(password_manager::ImportResults::Status::IO_ERROR),
+      "");
+  static_assert(
+      static_cast<int>(api::passwords_private::ImportResultsStatus::
+                           IMPORT_RESULTS_STATUS_BAD_FORMAT) ==
+          static_cast<int>(password_manager::ImportResults::Status::BAD_FORMAT),
+      "");
+  static_assert(
+      static_cast<int>(api::passwords_private::ImportResultsStatus::
+                           IMPORT_RESULTS_STATUS_DISMISSED) ==
+          static_cast<int>(password_manager::ImportResults::Status::DISMISSED),
+      "");
+  static_assert(static_cast<int>(api::passwords_private::ImportResultsStatus::
+                                     IMPORT_RESULTS_STATUS_MAX_FILE_SIZE) ==
+                    static_cast<int>(
+                        password_manager::ImportResults::Status::MAX_FILE_SIZE),
+                "");
+  static_assert(
+      static_cast<int>(api::passwords_private::ImportResultsStatus::
+                           IMPORT_RESULTS_STATUS_IMPORT_ALREADY_ACTIVE) ==
+          static_cast<int>(
+              password_manager::ImportResults::Status::IMPORT_ALREADY_ACTIVE),
+      "");
+  static_assert(
+      static_cast<int>(api::passwords_private::ImportResultsStatus::
+                           IMPORT_RESULTS_STATUS_NUM_PASSWORDS_EXCEEDED) ==
+          static_cast<int>(
+              password_manager::ImportResults::Status::NUM_PASSWORDS_EXCEEDED),
+      "");
+}
+
 }  // namespace extensions

@@ -59,7 +59,9 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
                                 content::WebContents* web_contents) override;
   void MovePasswordsToAccount(const std::vector<int>& ids,
                               content::WebContents* web_contents) override;
-  void ImportPasswords(content::WebContents* web_contents) override;
+  void ImportPasswords(api::passwords_private::PasswordStoreSet to_store,
+                       ImportResultsCallback results_callback,
+                       content::WebContents* web_contents) override;
   void ExportPasswords(base::OnceCallback<void(const std::string&)> callback,
                        content::WebContents* web_contents) override;
   void CancelExportPasswords() override;
@@ -146,6 +148,8 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
       last_deleted_exception_;
 
   absl::optional<std::u16string> plaintext_password_ = u"plaintext";
+
+  api::passwords_private::ImportResults import_results_;
 
   // List of insecure credentials.
   std::vector<api::passwords_private::PasswordUiEntry> insecure_credentials_;

@@ -15,6 +15,7 @@
 #include "components/password_manager/core/browser/import/csv_password_sequence.h"
 #include "components/password_manager/core/browser/test_password_store.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#include "components/password_manager/core/browser/ui/import_results.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -70,8 +71,12 @@ class PasswordImporterTest : public testing::Test {
 
  protected:
   void StartImportAndWaitForCompletion(const base::FilePath& input_file) {
-    importer_.Import(input_file);
+    importer_.Import(input_file,
+                     password_manager::PasswordForm::Store::kProfileStore,
+                     base::BindOnce(&PasswordImporterTest::OnPasswordsConsumed,
+                                    base::Unretained(this)));
     task_environment_.RunUntilIdle();
+    ASSERT_TRUE(results_callback_called_);
   }
 
   std::vector<CredentialUIEntry> imported_passwords() {
@@ -86,8 +91,14 @@ class PasswordImporterTest : public testing::Test {
   base::ScopedTempDir temp_directory_;
 
  private:
+  void OnPasswordsConsumed(const password_manager::ImportResults& results) {
+    results_callback_called_ = true;
+    import_results_ = std::move(results);
+  }
+
   base::test::TaskEnvironment task_environment_;
-  std::vector<CredentialUIEntry> imported_passwords_;
+  password_manager::ImportResults import_results_;
+  bool results_callback_called_ = false;
   FakePasswordParserService service_;
   mojo::Receiver<mojom::CSVPasswordParser> receiver_;
   scoped_refptr<TestPasswordStore> store_ =

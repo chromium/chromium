@@ -10,6 +10,8 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/types/expected.h"
+#include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/ui/import_results.h"
 #include "components/password_manager/services/csv_password/csv_password_parser_service.h"
 #include "components/password_manager/services/csv_password/public/mojom/csv_password_parser.mojom.h"
 
@@ -36,14 +38,20 @@ class PasswordImporter {
   using CompletionCallback =
       password_manager::mojom::CSVPasswordParser::ParseCSVCallback;
 
+  using ImportResultsCallback =
+      base::OnceCallback<void(const password_manager::ImportResults&)>;
+
   explicit PasswordImporter(SavedPasswordsPresenter* presenter);
   PasswordImporter(const PasswordImporter&) = delete;
   PasswordImporter& operator=(const PasswordImporter&) = delete;
   ~PasswordImporter();
 
-  // Imports passwords from the file at |path|.
+  // Imports passwords from the file at |path| into the |to_store|.
+  // |results_callback| is used to return import summary back to the user.
   // The only supported file format is CSV.
-  void Import(const base::FilePath& path);
+  void Import(const base::FilePath& path,
+              password_manager::PasswordForm::Store to_store,
+              ImportResultsCallback results_callback);
 
   // Returns the file extensions corresponding to supported formats.
   static std::vector<std::vector<base::FilePath::StringType>>
@@ -55,6 +63,8 @@ class PasswordImporter {
 
   // Returns the import status.
   Status GetStatus() const;
+
+  bool IsRunning() const { return !results_callback_.is_null(); }
 
  private:
   // Parses passwords from |input| using a mojo sandbox process and
@@ -70,6 +80,10 @@ class PasswordImporter {
   mojo::Remote<mojom::CSVPasswordParser> parser_;
 
   Status status_{Status::NONE};
+
+  ImportResultsCallback results_callback_;
+  password_manager::PasswordForm::Store to_store_;
+  std::string selected_file_name_;
 
   const raw_ptr<SavedPasswordsPresenter> presenter_;
 

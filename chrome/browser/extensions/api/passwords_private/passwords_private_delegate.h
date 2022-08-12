@@ -16,6 +16,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/password_manager/core/browser/bulk_leak_check_service.h"
 #include "components/password_manager/core/browser/ui/export_progress_status.h"
+#include "components/password_manager/core/browser/ui/import_results.h"
 #include "components/password_manager/core/browser/ui/insecure_credentials_manager.h"
 #include "extensions/browser/extension_function.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -31,6 +32,9 @@ namespace extensions {
 // import/export) and to notify listeners when these values have changed.
 class PasswordsPrivateDelegate : public KeyedService {
  public:
+  using ImportResultsCallback =
+      base::OnceCallback<void(const api::passwords_private::ImportResults&)>;
+
   using PlaintextPasswordCallback =
       base::OnceCallback<void(absl::optional<std::u16string>)>;
   using RequestCredentialDetailsCallback = base::OnceCallback<void(
@@ -144,7 +148,13 @@ class PasswordsPrivateDelegate : public KeyedService {
 
   // Trigger the password import procedure, allowing the user to select a file
   // containing passwords to import.
-  virtual void ImportPasswords(content::WebContents* web_contents) = 0;
+  // |to_store|: destination store (Device or Account) for imported passwords.
+  // |results_callback|: Used to communicate the status and summary of the
+  // import process.
+  virtual void ImportPasswords(
+      api::passwords_private::PasswordStoreSet to_store,
+      ImportResultsCallback results_callback,
+      content::WebContents* web_contents) = 0;
 
   // Trigger the password export procedure, allowing the user to save a file
   // containing their passwords. |callback| will be called with an error

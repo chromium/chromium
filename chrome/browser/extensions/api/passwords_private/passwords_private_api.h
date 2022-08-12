@@ -170,6 +170,10 @@ class PasswordsPrivateImportPasswordsFunction : public ExtensionFunction {
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
+
+ private:
+  void ImportRequestCompleted(
+      const api::passwords_private::ImportResults& results);
 };
 
 class PasswordsPrivateExportPasswordsFunction : public ExtensionFunction {

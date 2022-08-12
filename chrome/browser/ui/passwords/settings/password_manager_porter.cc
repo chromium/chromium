@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
@@ -107,12 +108,28 @@ void PasswordManagerPorter::SetExporterForTesting(
   exporter_ = std::move(exporter);
 }
 
-void PasswordManagerPorter::Import(content::WebContents* web_contents) {
+void PasswordManagerPorter::Import(
+    content::WebContents* web_contents,
+    password_manager::PasswordForm::Store to_store,
+    ImportResultsCallback results_callback) {
   DCHECK(web_contents);
 
-  if (!importer_)
-    importer_ =
-        std::make_unique<password_manager::PasswordImporter>(presenter_);
+  if (!import_results_callback_.is_null() ||
+      (importer_ && importer_->IsRunning())) {
+    // Early return to prevent crashes due to already active import process in
+    // other window.
+    password_manager::ImportResults results;
+    results.status =
+        password_manager::ImportResults::Status::IMPORT_ALREADY_ACTIVE;
+
+    // For consistency |results_callback| is always run asynchronously.
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(results_callback), results));
+    return;
+  }
+
+  import_results_callback_ = std::move(results_callback);
+  to_store_ = to_store;
 
   PresentFileSelector(web_contents,
                       PasswordManagerPorter::Type::PASSWORD_IMPORT);
@@ -191,6 +208,12 @@ void PasswordManagerPorter::FileSelectionCanceled(void* params) {
     exporter_->Cancel();
   }
 
+  if (!import_results_callback_.is_null()) {
+    password_manager::ImportResults results;
+    results.status = password_manager::ImportResults::Status::DISMISSED;
+    std::move(import_results_callback_).Run(results);
+  }
+
   select_file_dialog_.reset();
 }
 
@@ -200,5 +223,10 @@ void PasswordManagerPorter::ExportPasswordsToPath(const base::FilePath& path) {
 
 void PasswordManagerPorter::ImportPasswordsFromPath(
     const base::FilePath& path) {
-  importer_->Import(path);
+  DCHECK(!import_results_callback_.is_null());
+  if (!importer_) {
+    importer_ =
+        std::make_unique<password_manager::PasswordImporter>(presenter_);
+  }
+  importer_->Import(path, to_store_, std::move(import_results_callback_));
 }

@@ -92,7 +92,13 @@ void PasswordImporter::ParseCSVPasswordsInSandbox(
   }
 }
 
-void PasswordImporter::Import(const base::FilePath& path) {
+void PasswordImporter::Import(const base::FilePath& path,
+                              password_manager::PasswordForm::Store to_store,
+                              ImportResultsCallback results_callback) {
+  results_callback_ = std::move(results_callback);
+  to_store_ = to_store;
+  selected_file_name_ = path.BaseName().AsUTF8Unsafe();
+
   // Posting with USER_VISIBLE priority, because the result of the import is
   // visible to the user in the password settings page.
   base::ThreadPool::PostTaskAndReplyWithResult(
@@ -106,8 +112,15 @@ void PasswordImporter::Import(const base::FilePath& path) {
 
 void PasswordImporter::ConsumePasswords(
     password_manager::mojom::CSVPasswordSequencePtr seq) {
-  if (!seq)
+  password_manager::ImportResults results;
+  results.file_name = std::move(selected_file_name_);
+
+  if (!seq) {
+    // TODO(crbug/1325290): Compute correct status.
+    results.status = password_manager::ImportResults::Status::IO_ERROR;
+    std::move(results_callback_).Run(results);
     return;
+  }
 
   base::Time start_time = base::Time::Now();
 
@@ -116,13 +129,21 @@ void PasswordImporter::ConsumePasswords(
 
   base::ranges::transform(
       seq->csv_passwords, std::back_inserter(credentials),
-      [](const password_manager::CSVPassword& csv_password) {
-        return password_manager::CredentialUIEntry(csv_password);
+      [this](const password_manager::CSVPassword& csv_password) {
+        return password_manager::CredentialUIEntry(csv_password, to_store_);
       });
 
   presenter_->AddCredentials(
       credentials, password_manager::PasswordForm::Type::kImported,
-      base::BindOnce(&AddCredentialsCallback, std::move(start_time)));
+      base::BindOnce(&AddCredentialsCallback, start_time));
+
+  // TODO(crbug/1325290):
+  // - Check for conflicts.
+  // - Compute and fill statuses for failed imports.
+  // - Count actual number of successful imports.
+  results.number_imported = seq->csv_passwords.size();
+  results.status = password_manager::ImportResults::Status::SUCCESS;
+  std::move(results_callback_).Run(results);
 }
 
 void PasswordImporter::SetServiceForTesting(

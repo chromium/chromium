@@ -22,6 +22,7 @@ if (!is_ios) {
 
     deps = [
       "//components/password_manager/core/browser",
+      "//components/password_manager/core/browser:import_results",
       "//components/password_manager/services/csv_password:service",
       "//components/sync/base:base",
     ]
@@ -33,6 +34,7 @@ if (!is_ios) {
     deps = [
       ":importer",
       "//base/test:test_support",
+      "//components/password_manager/core/browser:import_results",
       "//components/password_manager/core/browser:test_support",
       "//mojo/public/cpp/bindings:bindings",
       "//testing/gmock",
