@@ -82,8 +82,11 @@ class ModeKeyedModel(collections.OrderedDict, Submodel):
                 value = self._CreateValue(value_obj[mode])
                 if mode == 'default':
                     mode = Modes.DEFAULT
-                assert mode in Modes.ALL, f"Invalid mode '{mode}' used in definition for '{name}'"
-                assert mode not in self[name], f"{mode} mode for '{name}' defined multiple times"
+                assert mode in Modes.ALL, f"Invalid mode '{mode}' used in' \
+                    'definition for '{name}'"
+
+                assert mode not in self[
+                    name], f"{mode} mode for '{name}' defined multiple times"
                 self[name][mode] = value
         else:
             self[name][Modes.DEFAULT] = self._CreateValue(value_obj)
@@ -188,6 +191,13 @@ class ColorModel(ModeKeyedModel):
     # Returns a Color that is the final RGBA value for |name| in |mode|.
     def ResolveToRGBA(self, name, mode):
         return self._ResolveColorToRGBA(self.Resolve(name, mode), mode)
+
+    # Returns a Color that is the hexadecimal string for |name| in |mode|.
+    def ResolveToHexString(self, name, mode):
+        color = self._ResolveColorToRGBA(self.Resolve(name, mode), mode)
+        opacity = int(float(repr(color.opacity)) * 255)
+        return '#{:02x}{:02x}{:02x}{:02x}'.format(color.r, color.g, color.b,
+                                                  opacity)
 
     # Returns a Color that is the final RGBA value for |color| in |mode|.
     def _ResolveColorToRGBA(self, color, mode):

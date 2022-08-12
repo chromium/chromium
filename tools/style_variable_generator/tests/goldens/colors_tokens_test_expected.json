@@ -1,0 +1,67 @@
+[
+    {
+        "name": "cros.ref.primary50",
+        "mode_values": {
+            "light": {
+                "value": "#202124ff",
+                "formula": "rgba(32, 33, 36, 1)"
+            },
+            "dark": {
+                "value": "#202124ff",
+                "formula": "rgba(32, 33, 36, 1)"
+            }
+        }
+    },
+    {
+        "name": "cros.sys.primary",
+        "mode_values": {
+            "light": {
+                "value": "#202124ff",
+                "formula": "var(--cros.ref.primary50)"
+            },
+            "dark": {
+                "value": "#0000007f",
+                "formula": "rgba(0, 0, 0, 0.5)"
+            }
+        }
+    },
+    {
+        "name": "cros.sys.on-primary",
+        "mode_values": {
+            "light": {
+                "value": "#ffffffff",
+                "formula": "rgba(255, 255, 255, 1)"
+            },
+            "dark": {
+                "value": "#202124ff",
+                "formula": "var(--cros.ref.primary50)"
+            }
+        }
+    },
+    {
+        "name": "cros.sys.primary-container",
+        "mode_values": {
+            "light": {
+                "value": "#20212419",
+                "formula": "rgba(var(--cros.ref.primary50.rgb), 0.1)"
+            },
+            "dark": {
+                "value": "#20212460",
+                "formula": "rgba(var(--cros.ref.primary50.rgb), var(--cros.sys.disabled-opacity))"
+            }
+        }
+    },
+    {
+        "name": "cros.sys.on-primary-container",
+        "mode_values": {
+            "light": {
+                "value": "#ffffffff",
+                "formula": "rgba(255, 255, 255, 1)"
+            },
+            "dark": {
+                "value": "#292a2dff",
+                "formula": "rgba(41, 42, 45, 1)"
+            }
+        }
+    }
+]

@@ -149,4 +149,26 @@ template("style_variable_generator") {
       defines = [ "IS_${original_target_name}_COLOR_MAPPINGS_IMPL" ]
     }
   }
+
+  action("${target_name}_json") {
+    script = script_file
+    forward_variables_from(invoker,
+                           [
+                             "deps",
+                             "sources",
+                           ])
+
+    inputs = common_inputs + [
+               "//tools/style_variable_generator/proto_generator.py",
+               "//tools/style_variable_generator/templates/json_generator.tmpl",
+             ]
+    out_file = "$target_gen_dir/${original_target_name}.json"
+    outputs = [ out_file ]
+
+    args = [
+             "--generator=json",
+             "--out-file",
+             rebase_path(out_file, root_build_dir),
+           ] + rebase_path(sources, root_build_dir)
+  }
 }
