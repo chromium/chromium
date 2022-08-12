@@ -1,10 +1,10 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 //! Maps Rust targets to Chromium targets.
 
-use std::collections::HashSet;
+use std::collections::BTreeSet;
 use std::iter::Iterator;
 
 use cargo_platform::Cfg;
@@ -19,14 +19,23 @@ pub enum PlatformSet {
     /// Matches any platform configuration.
     All,
     /// Matches a finite set of configurations.
-    Platforms(HashSet<Platform>),
+    // Note we use a `BTreeSet` because stable iteration order is desired when
+    // generating build files.
+    Platforms(BTreeSet<Platform>),
 }
 
 impl PlatformSet {
     /// A `PlatformSet` that matches no platforms. Useful as a starting point
     /// when iteratively adding platforms with `add`.
     pub fn empty() -> Self {
-        Self::Platforms(HashSet::new())
+        Self::Platforms(BTreeSet::new())
+    }
+
+    /// A `PlatformSet` that matches one platform filter.
+    pub fn one(filter: Option<Platform>) -> Self {
+        let mut ps = Self::empty();
+        ps.add(filter);
+        ps
     }
 
     /// Add a single platform filter to `self`. The resulting set is superset of

@@ -1,4 +1,4 @@
-# Copyright 2022 The Chromium Authors. All rights reserved.
+# Copyright 2022 The Chromium Authors.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -19,6 +19,7 @@ rust_static_library("gnrt_lib") {
   sources = [
     "crates.rs",
     "deps.rs",
+    "gn.rs",
     "lib.rs",
     "manifest.rs",
     "paths.rs",
@@ -45,6 +46,7 @@ test("gnrt_unittests") {
   rs_sources = [
     "crates_unittest.rs",
     "deps_unittest.rs",
+    "gn_unittest.rs",
     "manifest_unittest.rs",
     "platforms_unittest.rs",
   ]
@@ -61,6 +63,7 @@ test("gnrt_unittests") {
     "//third_party/rust/semver/v1:lib",
     "//third_party/rust/serde/v1:lib",
     "//third_party/rust/serde_json/v1:lib",
+    "//third_party/rust/tempfile/v3:lib",
     "//third_party/rust/toml/v0_5:test_support",
   ]
 

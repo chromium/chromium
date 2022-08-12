@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -210,12 +210,20 @@ pub struct ThirdPartyCrate {
 }
 
 impl ThirdPartyCrate {
-    /// The location of this crate relative to the third-party Rust crate
-    /// directory. Crates are laid out according to their name and epoch.
-    pub fn crate_path(&self) -> PathBuf {
+    /// The location of this crate's directory, including its source subdir and
+    /// build files, relative to the third-party Rust crate directory. Crates
+    /// are laid out according to their name and epoch.
+    pub fn build_path(&self) -> PathBuf {
         let mut path = PathBuf::new();
         path.push(NormalizedName::from_crate_name(&self.name).0);
         path.push(self.epoch.to_string());
+        path
+    }
+
+    /// The location of this crate's source relative to the third-party Rust
+    /// crate directory.
+    pub fn crate_path(&self) -> PathBuf {
+        let mut path = self.build_path();
         path.push("crate");
         path
     }
