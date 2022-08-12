@@ -5,6 +5,7 @@
 #ifndef BASE_MESSAGE_LOOP_MESSAGE_PUMP_GLIB_H_
 #define BASE_MESSAGE_LOOP_MESSAGE_PUMP_GLIB_H_
 
+#include <glib.h>
 #include <memory>
 
 #include "base/base_export.h"
@@ -13,10 +14,6 @@
 #include "base/message_loop/watchable_io_message_pump_posix.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
-
-typedef struct _GMainContext GMainContext;
-typedef struct _GPollFD GPollFD;
-typedef struct _GSource GSource;
 
 namespace base {
 
@@ -110,6 +107,22 @@ class BASE_EXPORT MessagePumpGlib : public MessagePump,
   void HandleFdWatchDispatch(FdWatchController* controller);
 
  private:
+  struct GMainContextDeleter {
+    inline void operator()(GMainContext* context) const {
+      if (context) {
+        g_main_context_pop_thread_default(context);
+        g_main_context_unref(context);
+      }
+    }
+  };
+  struct GSourceDeleter {
+    inline void operator()(GSource* source) const {
+      if (source) {
+        g_source_destroy(source);
+        g_source_unref(source);
+      }
+    }
+  };
   bool ShouldQuit() const;
 
   // We may make recursive calls to Run, so we save state that needs to be
@@ -118,15 +131,15 @@ class BASE_EXPORT MessagePumpGlib : public MessagePump,
 
   raw_ptr<RunState> state_;
 
+  std::unique_ptr<GMainContext, GMainContextDeleter> owned_context_;
   // This is a GLib structure that we can add event sources to.  On the main
   // thread, we use the default GLib context, which is the one to which all GTK
   // events are dispatched.
-  raw_ptr<GMainContext, DanglingUntriaged> context_ = nullptr;
-  bool context_owned_ = false;
+  raw_ptr<GMainContext> context_ = nullptr;
 
   // The work source.  It is shared by all calls to Run and destroyed when
   // the message pump is destroyed.
-  raw_ptr<GSource, DanglingUntriaged> work_source_;
+  std::unique_ptr<GSource, GSourceDeleter> work_source_;
 
   // We use a wakeup pipe to make sure we'll get out of the glib polling phase
   // when another thread has scheduled us to do some work.  There is a glib

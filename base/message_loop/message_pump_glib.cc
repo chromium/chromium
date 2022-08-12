@@ -182,9 +182,10 @@ MessagePumpGlib::MessagePumpGlib()
   if (RunningOnMainThread()) {
     context_ = g_main_context_default();
   } else {
-    context_ = g_main_context_new();
+    owned_context_ = std::unique_ptr<GMainContext, GMainContextDeleter>(
+        g_main_context_new());
+    context_ = owned_context_.get();
     g_main_context_push_thread_default(context_);
-    context_owned_ = true;
   }
 
   // Create our wakeup pipe, which is used to flag when work was scheduled.
@@ -197,25 +198,22 @@ MessagePumpGlib::MessagePumpGlib()
   wakeup_gpollfd_->fd = wakeup_pipe_read_;
   wakeup_gpollfd_->events = G_IO_IN;
 
-  work_source_ = g_source_new(&WorkSourceFuncs, sizeof(WorkSource));
-  static_cast<WorkSource*>(work_source_)->pump = this;
-  g_source_add_poll(work_source_, wakeup_gpollfd_.get());
-  g_source_set_priority(work_source_, kPriorityWork);
+  work_source_ = std::unique_ptr<GSource, GSourceDeleter>(
+      g_source_new(&WorkSourceFuncs, sizeof(WorkSource)));
+  static_cast<WorkSource*>(work_source_.get())->pump = this;
+  g_source_add_poll(work_source_.get(), wakeup_gpollfd_.get());
+  g_source_set_priority(work_source_.get(), kPriorityWork);
   // This is needed to allow Run calls inside Dispatch.
-  g_source_set_can_recurse(work_source_, TRUE);
-  g_source_attach(work_source_, context_);
+  g_source_set_can_recurse(work_source_.get(), TRUE);
+  g_source_attach(work_source_.get(), context_);
 }
 
 MessagePumpGlib::~MessagePumpGlib() {
-  g_source_destroy(work_source_);
-  g_source_unref(work_source_);
+  work_source_.reset();
   close(wakeup_pipe_read_);
   close(wakeup_pipe_write_);
-
-  if (context_owned_) {
-    g_main_context_pop_thread_default(context_);
-    g_main_context_unref(context_);
-  }
+  context_ = nullptr;
+  owned_context_.reset();
 }
 
 MessagePumpGlib::FdWatchController::FdWatchController(const Location& location)
