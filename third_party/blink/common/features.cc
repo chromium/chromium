@@ -1510,6 +1510,9 @@ const base::FeatureParam<DelayAsyncScriptDelayType>
         DelayAsyncScriptDelayType::kFinishedParsing,
         &delay_async_script_execution_delay_types};
 
+const base::FeatureParam<bool> kDelayAsyncScriptExecutionCrossSiteOnlyParam{
+    &kDelayAsyncScriptExecution, "cross_site_only", false};
+
 const base::Feature kForceDeferScriptIntervention{
     "ForceDeferScriptIntervention", base::FEATURE_DISABLED_BY_DEFAULT};
 

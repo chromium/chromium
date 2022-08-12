@@ -56,13 +56,10 @@ ScriptRunner::DelayReasons ScriptRunner::DetermineDelayReasonsToWait(
     PendingScript* pending_script) {
   DelayReasons reasons = static_cast<DelayReasons>(DelayReason::kLoad);
 
-  if (base::FeatureList::IsEnabled(features::kDelayAsyncScriptExecution)) {
-    if (pending_script->IsEligibleForDelay() &&
-        !pending_script->GetElement()->IsPotentiallyRenderBlocking() &&
-        (active_delay_reasons_ &
-         static_cast<DelayReasons>(DelayReason::kMilestone))) {
-      reasons |= static_cast<DelayReasons>(DelayReason::kMilestone);
-    }
+  if (pending_script->IsEligibleForDelay() &&
+      (active_delay_reasons_ &
+       static_cast<DelayReasons>(DelayReason::kMilestone))) {
+    reasons |= static_cast<DelayReasons>(DelayReason::kMilestone);
   }
 
   if (base::FeatureList::IsEnabled(features::kForceDeferScriptIntervention)) {

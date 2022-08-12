@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/script/classic_pending_script.h"
 
 #include "base/feature_list.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/referrer_script_info.h"
@@ -60,6 +61,27 @@ namespace {
 KURL BaseUrl(const ScriptResource& resource) {
   return resource.GetResponse().ResponseUrl();
 }
+
+bool CheckIfEligibleForDelay(const KURL& url,
+                             const Document& element_document,
+                             const ScriptElementBase& element) {
+  if (!base::FeatureList::IsEnabled(features::kDelayAsyncScriptExecution))
+    return false;
+
+  if (element.IsPotentiallyRenderBlocking())
+    return false;
+
+  if (features::kDelayAsyncScriptExecutionCrossSiteOnlyParam.Get()) {
+    ExecutionContext* context = element_document.GetExecutionContext();
+    scoped_refptr<const SecurityOrigin> src_security_origin =
+        SecurityOrigin::Create(url);
+    if (src_security_origin->IsSameSiteWith(context->GetSecurityOrigin()))
+      return false;
+  }
+
+  return true;
+}
+
 }  // namespace
 
 // <specdef href="https://html.spec.whatwg.org/C/#fetch-a-classic-script">
@@ -80,7 +102,8 @@ ClassicPendingScript* ClassicPendingScript::Fetch(
       MakeGarbageCollected<ClassicPendingScript>(
           element, TextPosition::MinimumPosition(), KURL(), KURL(), String(),
           ScriptSourceLocationType::kExternalFile, options,
-          true /* is_external */);
+          true /* is_external */,
+          CheckIfEligibleForDelay(url, element_document, *element));
 
   // [Intervention]
   // For users on slow connections, we want to avoid blocking the parser in
@@ -114,7 +137,8 @@ ClassicPendingScript* ClassicPendingScript::CreateInline(
   ClassicPendingScript* pending_script =
       MakeGarbageCollected<ClassicPendingScript>(
           element, starting_position, source_url, base_url, source_text,
-          source_location_type, options, false /* is_external */);
+          source_location_type, options, false /* is_external */,
+          false /* is_eligible_for_delay */);
   pending_script->CheckState();
   return pending_script;
 }
@@ -127,7 +151,8 @@ ClassicPendingScript::ClassicPendingScript(
     const String& source_text_for_inline_script,
     ScriptSourceLocationType source_location_type,
     const ScriptFetchOptions& options,
-    bool is_external)
+    bool is_external,
+    bool is_eligible_for_delay)
     : PendingScript(element, starting_position),
       options_(options),
       source_url_for_inline_script_(source_url_for_inline_script),
@@ -136,7 +161,8 @@ ClassicPendingScript::ClassicPendingScript(
       source_location_type_(source_location_type),
       is_external_(is_external),
       ready_state_(is_external ? kWaitingForResource : kReady),
-      integrity_failure_(false) {
+      integrity_failure_(false),
+      is_eligible_for_delay_(is_eligible_for_delay) {
   CHECK(GetElement());
 
   if (is_external_) {
@@ -219,8 +245,10 @@ bool ClassicPendingScript::IsEligibleForDelay() const {
   // We don't delay async scripts that have matched a resource in the preload
   // cache, because we're using <link rel=preload> as a signal that the script
   // is higher-than-usual priority, and therefore should be executed earlier
-  // rather than later.
-  return !GetResource()->IsLinkPreload();
+  // rather than later. IsLinkPreload() can't be checked in
+  // CheckIfEligibleForDelay() since ClassicPendingScript::Fetch() initialize
+  // the state.
+  return is_eligible_for_delay_ && !GetResource()->IsLinkPreload();
 }
 
 void ClassicPendingScript::NotifyFinished(Resource* resource) {

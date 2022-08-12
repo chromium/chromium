@@ -60,7 +60,8 @@ class CORE_EXPORT ClassicPendingScript final : public PendingScript,
                        const String& source_text_for_inline_script,
                        ScriptSourceLocationType,
                        const ScriptFetchOptions&,
-                       bool is_external);
+                       bool is_external,
+                       bool is_eligible_for_delay);
   ~ClassicPendingScript() override;
 
   void Trace(Visitor*) const override;
@@ -137,6 +138,7 @@ class CORE_EXPORT ClassicPendingScript final : public PendingScript,
   const bool is_external_;
   ReadyState ready_state_;
   bool integrity_failure_;
+  const bool is_eligible_for_delay_;
 
   // The request is intervened by document.write() intervention.
   bool intervened_ = false;

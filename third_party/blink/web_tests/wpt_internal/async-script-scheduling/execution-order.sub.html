@@ -3,9 +3,8 @@
   <title>Async Script Execution Order</title>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
-  <link rel="preload" as="script" href="resources/script.js?4&preload">
-  <script async blocking=render src="resources/script.js?1&pipe=trickle(d1)"
-          data-label="async_blocking_render"></script>
+  <link rel="preload" as="script" href="resources/script.sub.js?label=async_preload">
+  <script async blocking=render src="resources/script.sub.js?pipe=trickle(d1)&label=async_blocking_render"></script>
 </head>
 <body>
   <!-- Note: This test serves mainly to document the current scheduling behavior
@@ -21,22 +20,28 @@
     }
     window.onload = e => {
       const actualOrder = logs.join(";");
-      const expectedOrder = "async_preload;async_blocking_render;async;inline1;external;inline2;defer;DOMContentLoaded";
+      const expectedOrder = "async_preload;async_blocking_render;async;async;inline1;external;inline2;defer;DOMContentLoaded";
       assert_equals(actualOrder, expectedOrder);
       done();
     };
     document.addEventListener('DOMContentLoaded', e => { logScript('DOMContentLoaded'); });
   </script>
 
-  <script defer src="resources/script.js?2" data-label="defer"></script>
-  <script async src="resources/script.js?3&pipe=trickle(d2)" data-label="async"></script>
-  <script async src="resources/script.js?4&preload" data-label="async_preload"></script>
+  <script defer src="resources/script.sub.js?label=defer"></script>
+  <!-- Note: The following two async scripts are named as
+       "label=async". These are intentionally named with the same name
+       because the ordering of these two scripts are not guaranteed even
+       if different trickle values are specified. -->
+  <script async src="resources/script.sub.js?pipe=trickle(d2)&label=async"></script>
+  <!-- cross site async script -->
+  <script async src="http://{{hosts[alt][]}}:{{ports[http][0]}}/wpt_internal/async-script-scheduling/resources/script.sub.js?pipe=trickle(d2)&label=async"></script>
+  <script async src="resources/script.sub.js?label=async_preload"></script>
   <link rel=stylesheet href=resources/main.css?pipe=trickle(d3)>
   <script>
     logScript('inline1');
     assert_equals('rgb(255, 255, 0)', getComputedStyle(document.body)['backgroundColor']);
   </script>
-  <script src="resources/script.js?5&pipe=trickle(d1)" data-label="external"></script>
+  <script src="resources/script.sub.js?pipe=trickle(d1)&label=external"></script>
   <script>
     logScript('inline2');
   </script>

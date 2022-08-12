@@ -750,6 +750,8 @@ enum class DelayAsyncScriptDelayType {
 };
 BLINK_COMMON_EXPORT extern const base::FeatureParam<DelayAsyncScriptDelayType>
     kDelayAsyncScriptExecutionDelayParam;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kDelayAsyncScriptExecutionCrossSiteOnlyParam;
 
 // If enabled, parser-blocking scripts are force-deferred.
 // https://crbug.com/1339112

@@ -1094,6 +1094,12 @@
     "args": ["--disable-features=DelayAsyncScriptExecution"]
   },
   {
+    "prefix": "async-script-scheduling-apply-to-cross-site-only",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["wpt_internal/async-script-scheduling"],
+    "args": ["--enable-features=DelayAsyncScriptExecution:cross_site_only/true"]
+  },
+  {
     "prefix": "async-script-scheduling-finished-parsing",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["wpt_internal/async-script-scheduling"],
