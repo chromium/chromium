@@ -42,6 +42,20 @@ source_set("commands") {
       "//services/network/public/mojom",
     ]
   }
+  if (is_mac) {
+    sources += [
+      "mac_key_rotation_command.cc",
+      "mac_key_rotation_command.h",
+    ]
+    deps += [
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/core/mac",
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/core/network",
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/installer:elevated_rotation",
+      "//chrome/common:channel_info",
+      "//components/version_info",
+      "//services/network/public/cpp",
+    ]
+  }
 }
 
 source_set("test_support") {
@@ -68,31 +82,38 @@ source_set("test_support") {
 
 source_set("unit_tests") {
   testonly = true
+  deps = [
+    ":commands",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
 
   if (is_win) {
     sources = [ "win_key_rotation_command_unittest.cc" ]
 
-    deps = [
-      ":commands",
-      ":test_support",
-      "//base",
-      "//base/test:test_support",
-      "//chrome/installer/util:constants",
-      "//testing/gtest",
-    ]
+    deps += [ "//chrome/installer/util:constants" ]
   }
 
   if (is_linux) {
     sources = [ "linux_key_rotation_command_unittest.cc" ]
 
-    deps = [
-      ":commands",
-      ":test_support",
-      "//base",
-      "//base/test:test_support",
+    deps += [
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core:constants",
       "//services/network:test_support",
-      "//testing/gtest",
+    ]
+  }
+
+  if (is_mac) {
+    sources = [ "mac_key_rotation_command_unittest.cc" ]
+
+    deps += [
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/core/mac",
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/core/mac:test_support",
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/core/network:test_support",
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence:test_support",
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/installer:elevated_rotation",
     ]
   }
 }

@@ -209,7 +209,7 @@ bool SecureEnclaveClientImpl::ExportPublicKey(SecKeyRef key,
     return false;
   }
 
-  output.assign(*der, *der + der_len);
+  output.assign(der, der + der_len);
   bssl::UniquePtr<uint8_t> delete_signed_cert_bytes(der);
   return true;
 }
