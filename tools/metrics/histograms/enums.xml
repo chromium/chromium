@@ -59394,6 +59394,7 @@ from previous Chrome versions.
       label="QueryTilesRemoveTrendingAfterInactivity:disabled"/>
   <int value="193865288" label="EnableSuggestedLocalFiles:enabled"/>
   <int value="194573877" label="MacViewsNativeDialogs:disabled"/>
+  <int value="194645300" label="FileTransferEnterpriseConnector:disabled"/>
   <int value="194895489" label="passive-listeners-default"/>
   <int value="195112080" label="DeskTemplateSync:enabled"/>
   <int value="195335115" label="AudioWorkletRealtimeThread:disabled"/>
@@ -61038,6 +61039,7 @@ from previous Chrome versions.
   <int value="1230555479"
       label="AutofillEnableUnmaskCardRequestSetInstrumentId:disabled"/>
   <int value="1234601252" label="ForceUseAPDownloadProtection:enabled"/>
+  <int value="1234950775" label="FileTransferEnterpriseConnector:enabled"/>
   <int value="1235197204" label="AvatarsCloudMigration:enabled"/>
   <int value="1235800887" label="V8Ignition:enabled"/>
   <int value="1235940786" label="ChromeHomePersistentIph:enabled"/>

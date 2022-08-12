@@ -3448,6 +3448,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "file-transfer-enterprise-connector",
+    "owners": [ "sseckler@google.com", "marcgrimme", "poromov" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "files-app-experimental",
     "owners": ["lucmult", "benreich", "simmonsjosh@google.com"],
     "expiry_milestone": 116

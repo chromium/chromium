@@ -385,6 +385,12 @@ const base::Feature kExtensionWorkflowJustification{
 const base::Feature kExternalExtensionDefaultButtonControl{
     "ExternalExtensionDefaultButtonControl", base::FEATURE_DISABLED_BY_DEFAULT};
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+COMPONENT_EXPORT(CHROME_FEATURES)
+const base::Feature kFileTransferEnterpriseConnector{
+    "FileTransferEnterpriseConnector", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 #if BUILDFLAG(ENABLE_PLUGINS)
 // Show Flash deprecation warning to users who have manually enabled Flash.
 // https://crbug.com/918428

@@ -5230,6 +5230,11 @@ const char kDockedMagnifierResizingDescription[] =
     "Enable feature which adds ability for user to grab and resize divider of "
     "Docked Magnifier.";
 
+const char kFileTransferEnterpriseConnectorName[] =
+    "Enable Files Transfer Enterprise Connector.";
+const char kFileTransferEnterpriseConnectorDescription[] =
+    "Enable the File Transfer Enterprise Connector.";
+
 const char kFilesAppExperimentalName[] =
     "Experimental UI features for Files app";
 const char kFilesAppExperimentalDescription[] =

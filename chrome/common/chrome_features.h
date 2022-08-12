@@ -272,6 +272,11 @@ extern const base::Feature kEnterpriseReportingInChromeOS;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kExternalExtensionDefaultButtonControl;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kFileTransferEnterpriseConnector;
+#endif
+
 #if BUILDFLAG(ENABLE_PLUGINS)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kFlashDeprecationWarning;
