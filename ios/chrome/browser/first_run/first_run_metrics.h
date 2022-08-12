@@ -90,6 +90,7 @@ enum FirstRunStage {
   // Sync screen is closed without sync.
   kSyncScreenCompletionWithoutSync = 4,
   // Sync screen is closed when user taps on advance sync settings button.
+  // Deprecated. This is not used anymore.
   kSyncScreenCompletionWithSyncSettings = 5,
   // SignIn screen is shown.
   kSignInScreenStart = 6,
