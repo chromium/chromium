@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/build_config.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/apps/platform_apps/audio_focus_web_contents_observer.h"
 #include "content/public/test/browser_test.h"
@@ -29,8 +30,15 @@ class AudioFocusWebContentsObserverBrowserTest
   }
 };
 
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_PlatformAppHasDifferentAudioFocus \
+  DISABLED_PlatformAppHasDifferentAudioFocus
+#else
+#define MAYBE_PlatformAppHasDifferentAudioFocus \
+  PlatformAppHasDifferentAudioFocus
+#endif
 IN_PROC_BROWSER_TEST_F(AudioFocusWebContentsObserverBrowserTest,
-                       PlatformAppHasDifferentAudioFocus) {
+                       MAYBE_PlatformAppHasDifferentAudioFocus) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   ExtensionTestMessageListener launched_listener("Launched");
