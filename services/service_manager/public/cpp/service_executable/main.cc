@@ -8,7 +8,6 @@
 #include "base/containers/contains.h"
 #include "base/debug/debugger.h"
 #include "base/debug/stack_trace.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/i18n/icu_util.h"
 #include "base/logging.h"
@@ -17,6 +16,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "services/service_manager/public/cpp/service_executable/service_executable_environment.h"
 #include "services/service_manager/public/cpp/service_executable/service_main.h"
@@ -91,7 +91,8 @@ int main(int argc, char** argv) {
 #endif
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  base::FeatureList::InitializeInstance(
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitFromCommandLine(
       command_line->GetSwitchValueASCII(switches::kEnableFeatures),
       command_line->GetSwitchValueASCII(switches::kDisableFeatures));
 

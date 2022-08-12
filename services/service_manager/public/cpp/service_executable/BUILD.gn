@@ -52,11 +52,13 @@ source_set("main") {
   sources = [ "main.cc" ]
 
   public_deps = [ "//services/service_manager/public/mojom" ]
+  testonly = true
 
   deps = [
     ":support",
     "//base",
     "//base:base_static",
     "//base:i18n",
+    "//base/test:test_support",
   ]
 }
