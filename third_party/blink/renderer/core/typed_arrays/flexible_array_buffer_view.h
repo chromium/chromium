@@ -36,22 +36,6 @@ class CORE_EXPORT FlexibleArrayBufferView {
     small_length_ = 0;
   }
 
-  void SetContents(v8::Local<v8::ArrayBufferView> array_buffer_view) {
-    DCHECK(IsNull());
-    size_t size = array_buffer_view->ByteLength();
-    if (size <= sizeof small_buffer_) {
-      array_buffer_view->CopyContents(small_buffer_, size);
-      small_data_ = small_buffer_;
-      small_length_ = size;
-    } else {
-      NonThrowableExceptionState exception_state;
-      full_ = NativeValueTraits<MaybeShared<DOMArrayBufferView>>::NativeValue(
-                  array_buffer_view->GetIsolate(), array_buffer_view,
-                  exception_state)
-                  .Get();
-    }
-  }
-
   // Returns true if this object represents IDL null.
   bool IsNull() const { return !full_ && !small_data_; }
 
@@ -76,6 +60,22 @@ class CORE_EXPORT FlexibleArrayBufferView {
   }
 
  private:
+  void SetContents(v8::Local<v8::ArrayBufferView> array_buffer_view) {
+    DCHECK(IsNull());
+    size_t size = array_buffer_view->ByteLength();
+    if (size <= sizeof small_buffer_) {
+      array_buffer_view->CopyContents(small_buffer_, size);
+      small_data_ = small_buffer_;
+      small_length_ = size;
+    } else {
+      NonThrowableExceptionState exception_state;
+      full_ = NativeValueTraits<MaybeShared<DOMArrayBufferView>>::NativeValue(
+                  array_buffer_view->GetIsolate(), array_buffer_view,
+                  exception_state)
+                  .Get();
+    }
+  }
+
   DOMArrayBufferView* full_ = nullptr;
 
   // If the contents of the given v8::ArrayBufferView are small enough to fit

@@ -62,7 +62,6 @@ namespace blink {
 class DOMWindow;
 class ExceptionState;
 class ExecutionContext;
-class FlexibleArrayBufferView;
 class Frame;
 class LocalDOMWindow;
 class LocalFrame;
@@ -465,10 +464,6 @@ CORE_EXPORT ScriptState* ToScriptStateForMainWorld(LocalFrame*);
 // Returns the frame object of the window object associated with
 // a context, if the window is currently being displayed in a Frame.
 CORE_EXPORT LocalFrame* ToLocalFrameIfNotDetached(v8::Local<v8::Context>);
-
-CORE_EXPORT void ToFlexibleArrayBufferView(v8::Isolate*,
-                                           v8::Local<v8::Value>,
-                                           FlexibleArrayBufferView&);
 
 CORE_EXPORT bool IsValidEnum(const String& value,
                              const char* const* valid_values,

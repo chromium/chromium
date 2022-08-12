@@ -721,16 +721,6 @@ LocalFrame* ToLocalFrameIfNotDetached(v8::Local<v8::Context> context) {
   return nullptr;
 }
 
-void ToFlexibleArrayBufferView(v8::Isolate* isolate,
-                               v8::Local<v8::Value> value,
-                               FlexibleArrayBufferView& result) {
-  if (!value->IsArrayBufferView()) {
-    result.Clear();
-    return;
-  }
-  result.SetContents(value.As<v8::ArrayBufferView>());
-}
-
 static ScriptState* ToScriptStateImpl(LocalFrame* frame,
                                       DOMWrapperWorld& world) {
   if (!frame)
