@@ -4,6 +4,7 @@
 
 #include "components/webcrypto/algorithms/secret_key_util.h"
 
+#include "base/record_replay.h"
 #include "components/webcrypto/algorithms/util.h"
 #include "components/webcrypto/blink_key_handle.h"
 #include "components/webcrypto/crypto_data.h"
@@ -20,6 +21,9 @@ Status GenerateWebCryptoSecretKey(const blink::WebCryptoKeyAlgorithm& algorithm,
                                   blink::WebCryptoKeyUsageMask usages,
                                   unsigned int keylen_bits,
                                   GenerateKeyResult* result) {
+  // https://linear.app/replay/issue/RUN-470
+  recordreplay::Assert("GenerateWebCryptoSecretKey %u", keylen_bits);
+
   crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
 
   unsigned int keylen_bytes = NumBitsToBytes(keylen_bits);
