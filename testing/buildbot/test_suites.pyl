@@ -2301,6 +2301,18 @@
       },
     },
 
+    'gpu_dawn_common_isolated_scripts': {
+      # Test that expectations files are well-formed.
+      'telemetry_gpu_unittests': {
+        'swarming': {
+          'idempotent': False,  # https://crbug.com/549140
+        },
+        'resultdb': {
+          'enable': True,
+        },
+      },
+    },
+
     # GPU gtests that test only Dawn
     'gpu_dawn_gtests': {
       'dawn_end2end_skip_validation_tests': {
@@ -2368,35 +2380,7 @@
       },
     },
 
-    'gpu_dawn_telemetry_cts_asan_tests': {
-      'webgpu_cts': {
-        'args': [
-          '--extra-browser-args=--force_high_performance_gpu',
-          '--retry-limit=3',
-          '--jobs=4',
-        ],
-        'linux_args': [
-          '--extra-browser-args=--enable-features=Vulkan',
-        ],
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-        'swarming': {
-          'shards': 8,
-        },
-      },
-    },
-
-    'gpu_dawn_telemetry_cts_tests': {
-      'webgpu_cts': {
-        'mixins': [
-          'has_native_resultdb_integration',
-          'webgpu_telemetry_cts',
-        ],
-        'swarming': {
-          'shards': 14,
-        },
-      },
+    'gpu_dawn_web_platform_webgpu_cts_force_swiftshader': {
       'webgpu_swiftshader_web_platform_cts': {
         'args': [
           '--use-webgpu-adapter=swiftshader',
@@ -2411,27 +2395,7 @@
         },
         'telemetry_test_name': 'webgpu_cts',
       },
-    },
-
-    # Test suites to run the CTS with validation layers only on CI for
-    # configurations where capacity is constrained.
-    'gpu_dawn_telemetry_cts_tests_with_ci_only_validation': {
-      'webgpu_cts_with_validation': {
-        'ci_only': True,
-        'args': [
-          '--enable-dawn-backend-validation',
-        ],
-        'mixins': [
-          'has_native_resultdb_integration',
-          'webgpu_telemetry_cts',
-        ],
-        'swarming': {
-          'shards': 14,
-        },
-        'telemetry_test_name': 'webgpu_cts',
-      },
       'webgpu_swiftshader_web_platform_cts_with_validation': {
-        'ci_only': True,
         'args': [
           '--use-webgpu-adapter=swiftshader',
           '--test-filter=*web_platform*',
@@ -2448,7 +2412,72 @@
       },
     },
 
-    'gpu_dawn_telemetry_cts_tests_with_validation': {
+    'gpu_dawn_webgpu_blink_web_tests': {
+      'webgpu_blink_web_tests': {
+        'name': 'webgpu_blink_web_tests',
+        'isolate_name': 'webgpu_blink_web_tests',
+        'args': [
+          '--flag-specific=webgpu',
+        ],
+        'mixins': [
+          # TODO(crbug.com/1327314): Enable for blink web tests.
+          'disable_check_flakiness_web_tests',
+          'webgpu_cts',
+          'skia_gold_test',
+        ],
+      },
+      'webgpu_blink_web_tests_with_backend_validation': {
+        'name': 'webgpu_blink_web_tests_with_backend_validation',
+        'isolate_name': 'webgpu_blink_web_tests',
+        'args': [
+          '--flag-specific=webgpu-with-backend-validation',
+          # Increase the timeout when using backend validation layers (crbug.com/1208253)
+          '--timeout-ms=30000',
+        ],
+        'mixins': [
+          'webgpu_cts',
+          'skia_gold_test',
+        ],
+      },
+    },
+
+    'gpu_dawn_webgpu_blink_web_tests_force_swiftshader': {
+      'webgpu_swiftshader_blink_web_tests': {
+        'name': 'webgpu_swiftshader_blink_web_tests',
+        'isolate_name': 'webgpu_blink_web_tests',
+        'args': [
+          '--flag-specific=webgpu-swiftshader',
+        ],
+        'mixins': [
+          'webgpu_cts',
+          'skia_gold_test',
+        ],
+      },
+      'webgpu_swiftshader_blink_web_tests_with_backend_validation': {
+        'name': 'webgpu_swiftshader_blink_web_tests_with_backend_validation',
+        'isolate_name': 'webgpu_blink_web_tests',
+        'args': [
+          '--flag-specific=webgpu-swiftshader-with-backend-validation',
+          # Increase the timeout when using backend validation layers (crbug.com/1208253)
+          '--timeout-ms=30000',
+        ],
+        'mixins': [
+          'webgpu_cts',
+          'skia_gold_test',
+        ],
+      },
+    },
+
+    'gpu_dawn_webgpu_cts': {
+      'webgpu_cts': {
+        'mixins': [
+          'has_native_resultdb_integration',
+          'webgpu_telemetry_cts',
+        ],
+        'swarming': {
+          'shards': 14,
+        },
+      },
       'webgpu_cts_with_validation': {
         'args': [
           '--enable-dawn-backend-validation',
@@ -2462,20 +2491,17 @@
         },
         'telemetry_test_name': 'webgpu_cts',
       },
-      'webgpu_swiftshader_web_platform_cts_with_validation': {
-        'args': [
-          '--use-webgpu-adapter=swiftshader',
-          '--test-filter=*web_platform*',
-          '--enable-dawn-backend-validation',
-        ],
+    },
+
+    'gpu_dawn_webgpu_cts_asan': {
+      'webgpu_cts': {
         'mixins': [
           'has_native_resultdb_integration',
           'webgpu_telemetry_cts',
         ],
         'swarming': {
-          'shards': 2,
+          'shards': 8,
         },
-        'telemetry_test_name': 'webgpu_cts',
       },
     },
 
@@ -3406,102 +3432,6 @@
         'swarming': {
           'shards': 2,
         },
-      },
-    },
-
-    'gpu_webgpu_integration_backend_validation_isolated_scripts': {
-      'webgpu_blink_web_tests_with_backend_validation': {
-        'name': 'webgpu_blink_web_tests_with_backend_validation',
-        'isolate_name': 'webgpu_blink_web_tests',
-        'args': [
-          '--flag-specific=webgpu-with-backend-validation',
-          # Increase the timeout when using backend validation layers (crbug.com/1208253)
-          '--timeout-ms=30000',
-        ],
-        'mixins': [
-          'webgpu_cts',
-          'skia_gold_test',
-        ],
-      },
-      'webgpu_swiftshader_blink_web_tests_with_backend_validation': {
-        'name': 'webgpu_swiftshader_blink_web_tests_with_backend_validation',
-        'isolate_name': 'webgpu_blink_web_tests',
-        'args': [
-          '--flag-specific=webgpu-swiftshader-with-backend-validation',
-          # Increase the timeout when using backend validation layers (crbug.com/1208253)
-          '--timeout-ms=30000',
-        ],
-        'mixins': [
-          'webgpu_cts',
-          'skia_gold_test',
-        ],
-      },
-    },
-
-    'gpu_webgpu_integration_isolated_scripts': {
-      # Test that expectations files are well-formed.
-      'telemetry_gpu_unittests': {
-        'swarming': {
-          'idempotent': False,  # https://crbug.com/549140
-        },
-        'resultdb': {
-          'enable': True,
-        },
-      },
-      'webgpu_blink_web_tests': {
-        'name': 'webgpu_blink_web_tests',
-        'isolate_name': 'webgpu_blink_web_tests',
-        'args': [
-          '--flag-specific=webgpu',
-        ],
-        'mixins': [
-          # TODO(crbug.com/1327314): Enable for blink web tests.
-          'disable_check_flakiness_web_tests',
-          'webgpu_cts',
-          'skia_gold_test',
-        ],
-      },
-      'webgpu_swiftshader_blink_web_tests': {
-        'name': 'webgpu_swiftshader_blink_web_tests',
-        'isolate_name': 'webgpu_blink_web_tests',
-        'args': [
-          '--flag-specific=webgpu-swiftshader',
-        ],
-        'mixins': [
-          'webgpu_cts',
-          'skia_gold_test',
-        ],
-      },
-    },
-
-    # For Windows. Use the D3D12 backend validation layers but without GPU-based
-    # validation and shader patching. This avoids hangs on less powerful systems.
-    'gpu_webgpu_integration_partial_backend_validation_isolated_scripts': {
-      'webgpu_blink_web_tests_with_backend_validation': {
-        'name': 'webgpu_blink_web_tests_with_partial_backend_validation',
-        'isolate_name': 'webgpu_blink_web_tests',
-        'args': [
-          '--flag-specific=webgpu-with-partial-backend-validation',
-          # Increase the timeout when using backend validation layers (crbug.com/1208253)
-          '--timeout-ms=30000',
-        ],
-        'mixins': [
-          'webgpu_cts',
-          'skia_gold_test',
-        ],
-      },
-      'webgpu_swiftshader_blink_web_tests_with_backend_validation': {
-        'name': 'webgpu_swiftshader_blink_web_tests_with_partial_backend_validation',
-        'isolate_name': 'webgpu_blink_web_tests',
-        'args': [
-          '--flag-specific=webgpu-swiftshader-with-partial-backend-validation',
-          # Increase the timeout when using backend validation layers (crbug.com/1208253)
-          '--timeout-ms=30000',
-        ],
-        'mixins': [
-          'webgpu_cts',
-          'skia_gold_test',
-        ],
       },
     },
 
@@ -5717,8 +5647,10 @@
     ],
 
     'gpu_dawn_asan_isolated_scripts': [
+      'gpu_dawn_common_isolated_scripts',
       'gpu_dawn_perf_smoke_isolated_scripts',
-      'gpu_webgpu_integration_isolated_scripts',
+      'gpu_dawn_webgpu_blink_web_tests',
+      'gpu_dawn_webgpu_blink_web_tests_force_swiftshader',
     ],
 
     'gpu_dawn_integration_asan_gtests_passthrough': [
@@ -5743,32 +5675,15 @@
     ],
 
     'gpu_dawn_isolated_scripts': [
+      'gpu_dawn_common_isolated_scripts',
       'gpu_dawn_perf_smoke_isolated_scripts',
-      'gpu_webgpu_integration_isolated_scripts',
-      'gpu_webgpu_integration_backend_validation_isolated_scripts',
+      'gpu_dawn_webgpu_blink_web_tests',
+      'gpu_dawn_webgpu_blink_web_tests_force_swiftshader',
     ],
 
-    'gpu_dawn_isolated_scripts_win': [
-      'gpu_dawn_perf_smoke_isolated_scripts',
-      'gpu_webgpu_integration_isolated_scripts',
-      'gpu_webgpu_integration_partial_backend_validation_isolated_scripts',
-    ],
-
-    'gpu_dawn_telemetry_cts_regular': [
-      'gpu_dawn_telemetry_cts_tests',
-    ],
-
-    # TODO(crbug.com/1321877): Instead of having CI-only test suites, we should
-    # split CI and CQ configurations so we can make manual trybots that mirror the
-    # CI bots as well.
-    'gpu_dawn_telemetry_cts_regular_and_ci_only_validation': [
-      'gpu_dawn_telemetry_cts_tests',
-      'gpu_dawn_telemetry_cts_tests_with_ci_only_validation',
-    ],
-
-    'gpu_dawn_telemetry_cts_regular_and_validation': [
-      'gpu_dawn_telemetry_cts_tests',
-      'gpu_dawn_telemetry_cts_tests_with_validation',
+    'gpu_dawn_telemetry_tests': [
+      'gpu_dawn_webgpu_cts',
+      'gpu_dawn_web_platform_webgpu_cts_force_swiftshader',
     ],
 
     'gpu_desktop_mac_gtests': [

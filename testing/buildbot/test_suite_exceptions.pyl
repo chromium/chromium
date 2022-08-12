@@ -3806,11 +3806,6 @@
         },
       }
     },
-    'remove_from': [
-      # GPU hang kills the bot. https://crbug.com/dawn/1511
-      'Dawn Mac x64 Release (AMD)',
-      'Dawn Mac x64 DEPS Release (AMD)',
-    ],
   },
   'webgpu_blink_web_tests_with_backend_validation': {
     'replacements': {
@@ -3818,6 +3813,60 @@
         'args': {
           '--platform': 'mac-mac11',
         },
+      },
+    },
+    # Remove from bots where capacity is constrained.
+    'remove_from': [
+      'Dawn Mac x64 DEPS Release (AMD)',
+      'Dawn Mac x64 Release (AMD)',
+      'Dawn Win10 x64 DEPS Release (Intel HD 630)',
+      'Dawn Win10 x64 Release (Intel HD 630)',
+    ],
+  },
+  'webgpu_cts_tests': {
+    'remove_from': [
+      # GPU hang kills the bot. https://crbug.com/dawn/1511
+      'Dawn Mac x64 Release (AMD)',
+      'Dawn Mac x64 DEPS Release (AMD)',
+    ],
+  },
+  'webgpu_cts_with_validation_tests': {
+    # Remove from bots where capacity is constrained.
+    'remove_from': [
+      'Dawn Mac x64 DEPS Release (AMD)',
+      'Dawn Mac x64 Release (AMD)',
+      'Dawn Win10 x64 DEPS Release (Intel HD 630)',
+      'Dawn Win10 x64 Release (Intel HD 630)',
+      'Dawn Win10 x86 DEPS Release (Intel HD 630)',
+      'Dawn Win10 x86 Release (Intel HD 630)',
+    ],
+    'modifications': {
+      # ci_only for bots where capacity is constrained.
+      'Dawn Linux x64 DEPS Release (Intel UHD 630)': {
+        'ci_only': True,
+      },
+      'Dawn Linux x64 Release (Intel UHD 630)': {
+        'ci_only': True,
+      },
+    },
+  },
+  'webgpu_swiftshader_web_platform_cts_with_validation_tests': {
+    # Remove from bots where capacity is constrained.
+    'remove_from': [
+      'Dawn Mac x64 DEPS Release (AMD)',
+      'Dawn Mac x64 Release (AMD)',
+      'Dawn Win10 x64 DEPS Release (Intel HD 630)',
+      'Dawn Win10 x64 Release (Intel HD 630)',
+      'Dawn Win10 x86 DEPS Release (Intel HD 630)',
+      'Dawn Win10 x86 Release (Intel HD 630)',
+    ],
+    'modifications': {
+      # ci_only for bots where capacity is constrained.
+      'Dawn Linux x64 DEPS Release (Intel UHD 630)': {
+        'ci_only': True,
+      },
+      'Dawn Linux x64 Release (Intel UHD 630)': {
+        'ci_only': True,
       },
     },
   },

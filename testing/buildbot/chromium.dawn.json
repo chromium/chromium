@@ -2312,12 +2312,12 @@
       },
       {
         "args": [
-          "--flag-specific=webgpu-with-backend-validation",
-          "--timeout-ms=30000",
+          "--flag-specific=webgpu",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--platform=mac-mac11",
           "--git-revision=${got_revision}"
         ],
+        "check_flakiness_for_new_tests": false,
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
           "args": [
@@ -2325,7 +2325,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
-        "name": "webgpu_blink_web_tests_with_backend_validation",
+        "name": "webgpu_blink_web_tests",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
           "--gerrit-patchset=${patch_set}",
@@ -2349,46 +2349,6 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
-      },
-      {
-        "args": [
-          "webgpu_cts",
-          "--show-stdout",
-          "--browser=release",
-          "--passthrough",
-          "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
-          "--retry-limit=3",
-          "--jobs=4"
-        ],
-        "isolate_name": "telemetry_gpu_integration_test",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "webgpu_cts_tests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "display_attached": "1",
-              "gpu": "1002:6821",
-              "hidpi": "1",
-              "os": "Mac-12.1",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
-          "idempotent": false,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 14
-        },
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
       },
       {
         "args": [
@@ -4380,12 +4340,12 @@
       },
       {
         "args": [
-          "--flag-specific=webgpu-with-backend-validation",
-          "--timeout-ms=30000",
+          "--flag-specific=webgpu",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--platform=mac-mac11",
           "--git-revision=${got_revision}"
         ],
+        "check_flakiness_for_new_tests": false,
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
           "args": [
@@ -4393,7 +4353,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
-        "name": "webgpu_blink_web_tests_with_backend_validation",
+        "name": "webgpu_blink_web_tests",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
           "--gerrit-patchset=${patch_set}",
@@ -4417,46 +4377,6 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
-      },
-      {
-        "args": [
-          "webgpu_cts",
-          "--show-stdout",
-          "--browser=release",
-          "--passthrough",
-          "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
-          "--retry-limit=3",
-          "--jobs=4"
-        ],
-        "isolate_name": "telemetry_gpu_integration_test",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "webgpu_cts_tests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "display_attached": "1",
-              "gpu": "1002:6821",
-              "hidpi": "1",
-              "os": "Mac-12.1",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
-          "idempotent": false,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 14
-        },
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
       },
       {
         "args": [
@@ -5364,6 +5284,48 @@
       },
       {
         "args": [
+          "--flag-specific=webgpu-with-backend-validation",
+          "--timeout-ms=30000",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
+          "--target=Release_x64",
+          "--git-revision=${got_revision}"
+        ],
+        "isolate_name": "webgpu_blink_web_tests",
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "webgpu_blink_web_tests_with_backend_validation",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "resultdb": {
+          "enable": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "gpu": "10de:2184-27.21.14.5638",
+              "os": "Windows-10-18363",
+              "pool": "chromium.tests.gpu"
+            },
+            {
+              "gpu": "8086:5912-26.20.100.8141|8086:3e92-26.20.100.8141",
+              "os": "Windows-10",
+              "pool": "chromium.tests.gpu"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
+      },
+      {
+        "args": [
           "webgpu_cts",
           "--show-stdout",
           "--browser=release_x64",
@@ -5419,6 +5381,48 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_swiftshader_blink_web_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "resultdb": {
+          "enable": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "gpu": "10de:2184-27.21.14.5638",
+              "os": "Windows-10-18363",
+              "pool": "chromium.tests.gpu"
+            },
+            {
+              "gpu": "8086:5912-26.20.100.8141|8086:3e92-26.20.100.8141",
+              "os": "Windows-10",
+              "pool": "chromium.tests.gpu"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
+      },
+      {
+        "args": [
+          "--flag-specific=webgpu-swiftshader-with-backend-validation",
+          "--timeout-ms=30000",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
+          "--target=Release_x64",
+          "--git-revision=${got_revision}"
+        ],
+        "isolate_name": "webgpu_blink_web_tests",
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "webgpu_swiftshader_blink_web_tests_with_backend_validation",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
           "--gerrit-patchset=${patch_set}",
@@ -5693,43 +5697,6 @@
       },
       {
         "args": [
-          "--flag-specific=webgpu-with-partial-backend-validation",
-          "--timeout-ms=30000",
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--target=Release_x64",
-          "--git-revision=${got_revision}"
-        ],
-        "isolate_name": "webgpu_blink_web_tests",
-        "merge": {
-          "args": [
-            "--verbose"
-          ],
-          "script": "//third_party/blink/tools/merge_web_test_results.py"
-        },
-        "name": "webgpu_blink_web_tests_with_partial_backend_validation",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
-        "resultdb": {
-          "enable": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "gpu": "8086:5912-26.20.100.8141|8086:3e92-26.20.100.8141",
-              "os": "Windows-10",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
-      },
-      {
-        "args": [
           "webgpu_cts",
           "--show-stdout",
           "--browser=release_x64",
@@ -5803,7 +5770,7 @@
       },
       {
         "args": [
-          "--flag-specific=webgpu-swiftshader-with-partial-backend-validation",
+          "--flag-specific=webgpu-swiftshader-with-backend-validation",
           "--timeout-ms=30000",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--target=Release_x64",
@@ -5816,7 +5783,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
-        "name": "webgpu_swiftshader_blink_web_tests_with_partial_backend_validation",
+        "name": "webgpu_swiftshader_blink_web_tests_with_backend_validation",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
           "--gerrit-patchset=${patch_set}",
@@ -6123,7 +6090,7 @@
       },
       {
         "args": [
-          "--flag-specific=webgpu-with-partial-backend-validation",
+          "--flag-specific=webgpu-with-backend-validation",
           "--timeout-ms=30000",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--target=Release_x64",
@@ -6136,7 +6103,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
-        "name": "webgpu_blink_web_tests_with_partial_backend_validation",
+        "name": "webgpu_blink_web_tests_with_backend_validation",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
           "--gerrit-patchset=${patch_set}",
@@ -6271,7 +6238,7 @@
       },
       {
         "args": [
-          "--flag-specific=webgpu-swiftshader-with-partial-backend-validation",
+          "--flag-specific=webgpu-swiftshader-with-backend-validation",
           "--timeout-ms=30000",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--target=Release_x64",
@@ -6284,7 +6251,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
-        "name": "webgpu_swiftshader_blink_web_tests_with_partial_backend_validation",
+        "name": "webgpu_swiftshader_blink_web_tests_with_backend_validation",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
           "--gerrit-patchset=${patch_set}",
@@ -6631,43 +6598,6 @@
       },
       {
         "args": [
-          "--flag-specific=webgpu-with-partial-backend-validation",
-          "--timeout-ms=30000",
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--target=Release_x64",
-          "--git-revision=${got_revision}"
-        ],
-        "isolate_name": "webgpu_blink_web_tests",
-        "merge": {
-          "args": [
-            "--verbose"
-          ],
-          "script": "//third_party/blink/tools/merge_web_test_results.py"
-        },
-        "name": "webgpu_blink_web_tests_with_partial_backend_validation",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
-        "resultdb": {
-          "enable": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "gpu": "8086:5912-26.20.100.8141|8086:3e92-26.20.100.8141",
-              "os": "Windows-10",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
-      },
-      {
-        "args": [
           "webgpu_cts",
           "--show-stdout",
           "--browser=release_x64",
@@ -6741,7 +6671,7 @@
       },
       {
         "args": [
-          "--flag-specific=webgpu-swiftshader-with-partial-backend-validation",
+          "--flag-specific=webgpu-swiftshader-with-backend-validation",
           "--timeout-ms=30000",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--target=Release_x64",
@@ -6754,7 +6684,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
-        "name": "webgpu_swiftshader_blink_web_tests_with_partial_backend_validation",
+        "name": "webgpu_swiftshader_blink_web_tests_with_backend_validation",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
           "--gerrit-patchset=${patch_set}",
@@ -7061,7 +6991,7 @@
       },
       {
         "args": [
-          "--flag-specific=webgpu-with-partial-backend-validation",
+          "--flag-specific=webgpu-with-backend-validation",
           "--timeout-ms=30000",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--target=Release_x64",
@@ -7074,7 +7004,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
-        "name": "webgpu_blink_web_tests_with_partial_backend_validation",
+        "name": "webgpu_blink_web_tests_with_backend_validation",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
           "--gerrit-patchset=${patch_set}",
@@ -7209,7 +7139,7 @@
       },
       {
         "args": [
-          "--flag-specific=webgpu-swiftshader-with-partial-backend-validation",
+          "--flag-specific=webgpu-swiftshader-with-backend-validation",
           "--timeout-ms=30000",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--target=Release_x64",
@@ -7222,7 +7152,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
-        "name": "webgpu_swiftshader_blink_web_tests_with_partial_backend_validation",
+        "name": "webgpu_swiftshader_blink_web_tests_with_backend_validation",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
           "--gerrit-patchset=${patch_set}",
@@ -7543,7 +7473,7 @@
       },
       {
         "args": [
-          "--flag-specific=webgpu-with-partial-backend-validation",
+          "--flag-specific=webgpu-with-backend-validation",
           "--timeout-ms=30000",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--git-revision=${got_revision}"
@@ -7555,7 +7485,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
-        "name": "webgpu_blink_web_tests_with_partial_backend_validation",
+        "name": "webgpu_blink_web_tests_with_backend_validation",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
           "--gerrit-patchset=${patch_set}",
@@ -7651,7 +7581,7 @@
       },
       {
         "args": [
-          "--flag-specific=webgpu-swiftshader-with-partial-backend-validation",
+          "--flag-specific=webgpu-swiftshader-with-backend-validation",
           "--timeout-ms=30000",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--git-revision=${got_revision}"
@@ -7663,7 +7593,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
-        "name": "webgpu_swiftshader_blink_web_tests_with_partial_backend_validation",
+        "name": "webgpu_swiftshader_blink_web_tests_with_backend_validation",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
           "--gerrit-patchset=${patch_set}",
@@ -7969,7 +7899,7 @@
       },
       {
         "args": [
-          "--flag-specific=webgpu-with-partial-backend-validation",
+          "--flag-specific=webgpu-with-backend-validation",
           "--timeout-ms=30000",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--git-revision=${got_revision}"
@@ -7981,7 +7911,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
-        "name": "webgpu_blink_web_tests_with_partial_backend_validation",
+        "name": "webgpu_blink_web_tests_with_backend_validation",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
           "--gerrit-patchset=${patch_set}",
@@ -8115,7 +8045,7 @@
       },
       {
         "args": [
-          "--flag-specific=webgpu-swiftshader-with-partial-backend-validation",
+          "--flag-specific=webgpu-swiftshader-with-backend-validation",
           "--timeout-ms=30000",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--git-revision=${got_revision}"
@@ -8127,7 +8057,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
-        "name": "webgpu_swiftshader_blink_web_tests_with_partial_backend_validation",
+        "name": "webgpu_swiftshader_blink_web_tests_with_backend_validation",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
           "--gerrit-patchset=${patch_set}",
@@ -8446,7 +8376,7 @@
       },
       {
         "args": [
-          "--flag-specific=webgpu-with-partial-backend-validation",
+          "--flag-specific=webgpu-with-backend-validation",
           "--timeout-ms=30000",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--git-revision=${got_revision}"
@@ -8458,7 +8388,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
-        "name": "webgpu_blink_web_tests_with_partial_backend_validation",
+        "name": "webgpu_blink_web_tests_with_backend_validation",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
           "--gerrit-patchset=${patch_set}",
@@ -8554,7 +8484,7 @@
       },
       {
         "args": [
-          "--flag-specific=webgpu-swiftshader-with-partial-backend-validation",
+          "--flag-specific=webgpu-swiftshader-with-backend-validation",
           "--timeout-ms=30000",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--git-revision=${got_revision}"
@@ -8566,7 +8496,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
-        "name": "webgpu_swiftshader_blink_web_tests_with_partial_backend_validation",
+        "name": "webgpu_swiftshader_blink_web_tests_with_backend_validation",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
           "--gerrit-patchset=${patch_set}",
@@ -8872,7 +8802,7 @@
       },
       {
         "args": [
-          "--flag-specific=webgpu-with-partial-backend-validation",
+          "--flag-specific=webgpu-with-backend-validation",
           "--timeout-ms=30000",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--git-revision=${got_revision}"
@@ -8884,7 +8814,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
-        "name": "webgpu_blink_web_tests_with_partial_backend_validation",
+        "name": "webgpu_blink_web_tests_with_backend_validation",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
           "--gerrit-patchset=${patch_set}",
@@ -9018,7 +8948,7 @@
       },
       {
         "args": [
-          "--flag-specific=webgpu-swiftshader-with-partial-backend-validation",
+          "--flag-specific=webgpu-swiftshader-with-backend-validation",
           "--timeout-ms=30000",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--git-revision=${got_revision}"
@@ -9030,7 +8960,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
-        "name": "webgpu_swiftshader_blink_web_tests_with_partial_backend_validation",
+        "name": "webgpu_swiftshader_blink_web_tests_with_backend_validation",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
           "--gerrit-patchset=${patch_set}",
