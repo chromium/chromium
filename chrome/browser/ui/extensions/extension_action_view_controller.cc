@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -37,6 +38,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -513,6 +515,11 @@ ExtensionActionViewController::GetIconImageSource(
           extensions::SitePermissionsHelper::SiteInteraction::kNone &&
       !action_is_visible;
   image_source->set_grayscale(grayscale);
+
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kExtensionsMenuAccessControl)) {
+    return image_source;
+  }
 
   bool was_blocked = extensions::SitePermissionsHelper(browser_->profile())
                          .HasBeenBlocked(*extension(), web_contents);
