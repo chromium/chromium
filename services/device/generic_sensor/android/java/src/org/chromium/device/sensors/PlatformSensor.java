@@ -92,37 +92,35 @@ public class PlatformSensor implements SensorEventListener {
         int readingCount;
         switch (type) {
             case SensorType.AMBIENT_LIGHT:
-                sensors = provider.getSensorManager().getSensorList(Sensor.TYPE_LIGHT);
+                sensors = sensorManager.getSensorList(Sensor.TYPE_LIGHT);
                 readingCount = 1;
                 break;
             case SensorType.ACCELEROMETER:
-                sensors = provider.getSensorManager().getSensorList(Sensor.TYPE_ACCELEROMETER);
+                sensors = sensorManager.getSensorList(Sensor.TYPE_ACCELEROMETER);
                 readingCount = 3;
                 break;
             case SensorType.LINEAR_ACCELERATION:
-                sensors =
-                        provider.getSensorManager().getSensorList(Sensor.TYPE_LINEAR_ACCELERATION);
+                sensors = sensorManager.getSensorList(Sensor.TYPE_LINEAR_ACCELERATION);
                 readingCount = 3;
                 break;
             case SensorType.GRAVITY:
-                sensors = provider.getSensorManager().getSensorList(Sensor.TYPE_GRAVITY);
+                sensors = sensorManager.getSensorList(Sensor.TYPE_GRAVITY);
                 readingCount = 3;
                 break;
             case SensorType.GYROSCOPE:
-                sensors = provider.getSensorManager().getSensorList(Sensor.TYPE_GYROSCOPE);
+                sensors = sensorManager.getSensorList(Sensor.TYPE_GYROSCOPE);
                 readingCount = 3;
                 break;
             case SensorType.MAGNETOMETER:
-                sensors = provider.getSensorManager().getSensorList(Sensor.TYPE_MAGNETIC_FIELD);
+                sensors = sensorManager.getSensorList(Sensor.TYPE_MAGNETIC_FIELD);
                 readingCount = 3;
                 break;
             case SensorType.ABSOLUTE_ORIENTATION_QUATERNION:
-                sensors = provider.getSensorManager().getSensorList(Sensor.TYPE_ROTATION_VECTOR);
+                sensors = sensorManager.getSensorList(Sensor.TYPE_ROTATION_VECTOR);
                 readingCount = 4;
                 break;
             case SensorType.RELATIVE_ORIENTATION_QUATERNION:
-                sensors =
-                        provider.getSensorManager().getSensorList(Sensor.TYPE_GAME_ROTATION_VECTOR);
+                sensors = sensorManager.getSensorList(Sensor.TYPE_GAME_ROTATION_VECTOR);
                 readingCount = 4;
                 break;
             default:
