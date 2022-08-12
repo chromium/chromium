@@ -122,6 +122,14 @@ the following process:
     * If there are objections, then the decision should be escalated to
       the [../CHROME_ENG_REVIEW](//CHROME_ENG_REVIEW) for resolution.
 
+Note: For the purpose of not slowing down code review, Chromium removes
+inactive owners (e.g., those who made no contributions for multiple quarters)
+on a regular basis. The script does not take into account personal situations
+like a long leave. If you were inactive only for a certain period of time
+while you were on a long leave and have been meeting the above owner's
+expectations in other times, you can create a CL to re-add yourself and land
+after getting local owner's approval (you can refer to this policy in the CL).
+
 ### OWNERS file details
 
 Refer to the [owners plugin](https://github.com/GerritCodeReview/plugins_code-owners/blob/master/resources/Documentation/backend-find-owners.md)
