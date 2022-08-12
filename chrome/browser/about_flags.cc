@@ -45,7 +45,6 @@
 #include "chrome/browser/net/stub_resolver_config_reader.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/notifications/scheduler/public/features.h"
-#include "chrome/browser/performance_manager/policies/policy_features.h"
 #include "chrome/browser/permissions/notifications_permission_revocation_config.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_config.h"
 #include "chrome/browser/predictors/loading_predictor_config.h"
@@ -3820,9 +3819,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"sim-lock-policy", flag_descriptions::kSimLockPolicyName,
      flag_descriptions::kSimLockPolicyDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kSimLockPolicy)},
-    {"trim-on-memory-pressure", flag_descriptions::kTrimOnMemoryPressureName,
-     flag_descriptions::kTrimOnMemoryPressureDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(performance_manager::features::kTrimOnMemoryPressure)},
     {"stylus-battery-status", flag_descriptions::kStylusBatteryStatusName,
      flag_descriptions::kStylusBatteryStatusDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kStylusBatteryStatus)},

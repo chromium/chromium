@@ -46,14 +46,6 @@ extern const base::Feature kTrimOnFreeze;
 // once every 2 minutes.
 extern const base::FeatureParam<int> kGraphWalkBackoffTimeSec;
 
-// Specifies the minimum amount of time a parent frame node must be invisible
-// before considering the process node for working set trim.
-extern const base::FeatureParam<int> kNodeInvisibileTimeSec;
-
-// Specifies the minimum amount of time a parent frame node must be invisible
-// before considering the process node for working set trim.
-extern const base::FeatureParam<int> kNodeTrimBackoffTimeSec;
-
 // Specifies the frequency in which we will fetch the arc process list.
 extern const base::FeatureParam<int> kArcProcessListFetchBackoffTimeSec;
 

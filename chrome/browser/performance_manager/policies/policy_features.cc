@@ -88,13 +88,11 @@ const base::FeatureParam<int> kTrimArcVmPagesPerMinute = {
 
 // Specifies the minimum amount of time a parent frame node must be invisible
 // before considering the process node for working set trim.
-const base::FeatureParam<int> kNodeInvisibileTimeSec = {
-    &kTrimOnMemoryPressure, "NodeInvisibleTimeSec", 900};
+const int kNodeInvisibileTimeSec = 900;
 
 // Specifies the minimum amount of time a parent frame node must be invisible
 // before considering the process node for working set trim.
-const base::FeatureParam<int> kNodeTrimBackoffTimeSec = {
-    &kTrimOnMemoryPressure, "NodeTrimBackoffTimeSec", 1800};
+const int kNodeTrimBackoffTimeSec = 1800;
 
 TrimOnMemoryPressureParams::TrimOnMemoryPressureParams() = default;
 TrimOnMemoryPressureParams::TrimOnMemoryPressureParams(
@@ -106,8 +104,8 @@ TrimOnMemoryPressureParams TrimOnMemoryPressureParams::GetParams() {
   TrimOnMemoryPressureParams params;
   params.graph_walk_backoff_time =
       base::Seconds(kGraphWalkBackoffTimeSec.Get());
-  params.node_invisible_time = base::Seconds(kNodeInvisibileTimeSec.Get());
-  params.node_trim_backoff_time = base::Seconds(kNodeTrimBackoffTimeSec.Get());
+  params.node_invisible_time = base::Seconds(kNodeInvisibileTimeSec);
+  params.node_trim_backoff_time = base::Seconds(kNodeTrimBackoffTimeSec);
 
   params.arc_process_trim_backoff_time =
       base::Seconds(kArcProcessTrimBackoffTimeSec.Get());

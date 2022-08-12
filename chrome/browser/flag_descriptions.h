@@ -2932,9 +2932,6 @@ extern const char kDisableQuickAnswersV2TranslationDescription[];
 extern const char kQuickAnswersForMoreLocalesName[];
 extern const char kQuickAnswersForMoreLocalesDescription[];
 
-extern const char kTrimOnMemoryPressureName[];
-extern const char kTrimOnMemoryPressureDescription[];
-
 extern const char kEapGtcWifiAuthenticationName[];
 extern const char kEapGtcWifiAuthenticationDescription[];
 

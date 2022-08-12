@@ -76,8 +76,6 @@ void GetArcProcessListOnUIThread(
 }  // namespace
 
 WorkingSetTrimmerPolicyChromeOS::WorkingSetTrimmerPolicyChromeOS() {
-  trim_on_memory_pressure_ =
-      base::FeatureList::IsEnabled(features::kTrimOnMemoryPressure);
   trim_on_freeze_ = base::FeatureList::IsEnabled(features::kTrimOnFreeze);
   trim_arc_on_memory_pressure_ =
       base::FeatureList::IsEnabled(features::kTrimArcOnMemoryPressure);
@@ -124,11 +122,9 @@ void WorkingSetTrimmerPolicyChromeOS::OnMemoryPressure(
   // Try not to walk the graph too frequently because we can receive moderate
   // memory pressure notifications every 10s.
 
-  if (trim_on_memory_pressure_) {
-    if (!last_graph_walk_ || (base::TimeTicks::Now() - *last_graph_walk_ >
-                              params_.graph_walk_backoff_time)) {
-      TrimNodesOnGraph();
-    }
+  if (!last_graph_walk_ || (base::TimeTicks::Now() - *last_graph_walk_ >
+                            params_.graph_walk_backoff_time)) {
+    TrimNodesOnGraph();
   }
 
   if (trim_arc_on_memory_pressure_) {
@@ -521,15 +517,14 @@ void WorkingSetTrimmerPolicyChromeOS::OnAllFramesInProcessFrozen(
 }
 
 void WorkingSetTrimmerPolicyChromeOS::OnPassedToGraph(Graph* graph) {
-  if (trim_on_memory_pressure_ || trim_arc_on_memory_pressure_) {
-    // We wait to register the memory pressure listener so we're on the
-    // right sequence.
-    params_ = features::TrimOnMemoryPressureParams::GetParams();
-    memory_pressure_listener_.emplace(
-        FROM_HERE,
-        base::BindRepeating(&WorkingSetTrimmerPolicyChromeOS::OnMemoryPressure,
-                            base::Unretained(this)));
-  }
+  // We wait to register the memory pressure listener so we're on the
+  // right sequence.
+  params_ = features::TrimOnMemoryPressureParams::GetParams();
+  memory_pressure_listener_.emplace(
+      FROM_HERE,
+      base::BindRepeating(&WorkingSetTrimmerPolicyChromeOS::OnMemoryPressure,
+                          base::Unretained(this)));
+
   if (trim_arcvm_on_memory_pressure_) {
     arcvm_trim_metric_report_timer_.Start(
         FROM_HERE, kArcVmTrimMetricReportDelay,

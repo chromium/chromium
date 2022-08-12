@@ -83,7 +83,6 @@ class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy {
   void SetArcProcessLastTrimTime(base::ProcessId pid, base::TimeTicks time);
 
   bool trim_on_freeze() const { return trim_on_freeze_; }
-  bool trim_on_memory_pressure() const { return trim_on_memory_pressure_; }
   bool trim_arc_on_memory_pressure() const {
     return trim_arc_on_memory_pressure_;
   }
@@ -102,9 +101,7 @@ class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy {
   virtual mechanism::WorkingSetTrimmerChromeOS* GetTrimmer();
 
   void set_trim_on_freeze(bool enabled) { trim_on_freeze_ = enabled; }
-  void set_trim_on_memory_pressure(bool enabled) {
-    trim_on_memory_pressure_ = enabled;
-  }
+
   void set_trim_arc_on_memory_pressure(bool enabled) {
     trim_arc_on_memory_pressure_ = enabled;
   }
@@ -187,7 +184,6 @@ class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy {
   Graph* graph_ = nullptr;
 
   bool trim_on_freeze_ = false;
-  bool trim_on_memory_pressure_ = false;
   bool trim_arc_on_memory_pressure_ = false;
   bool trim_arcvm_on_memory_pressure_ = false;
 
