@@ -3,7 +3,7 @@
 This directory is meant to house features or subsystems that are used in more
 than one part of the Chromium codebase.
 
-## Example use cases:
+## Use cases:
 
   * Features that are shared by Chrome on iOS (`//ios/chrome`) and Chrome on
     other platforms (`//chrome`).
@@ -21,6 +21,10 @@ than one part of the Chromium codebase.
         makes more sense. (In the so-far hypothetical case where it's
         conceptually Blink code that is shared by iOS, raise the question on
         chromium-dev@, where the right folks will see it).
+
+Note that the above list is meant to be exhaustive. A component should not be
+added just to separate it from other code in the same layer that is the only
+consumer; that can be done with strict DEPS or GN visibility rules.
 
 ## Guidelines for adding a new component
 
