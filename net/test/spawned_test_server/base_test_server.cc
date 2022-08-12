@@ -24,10 +24,10 @@
 #include "net/base/net_errors.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/port_util.h"
-#include "net/cert/test_root_certs.h"
 #include "net/cert/x509_certificate.h"
 #include "net/dns/public/dns_query_type.h"
 #include "net/log/net_log_with_source.h"
+#include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "url/gurl.h"
 
@@ -66,12 +66,6 @@ bool GetLocalCertificatesDir(const base::FilePath& certificates_dir,
 
   *local_certificates_dir = src_dir.Append(certificates_dir);
   return true;
-}
-
-bool RegisterRootCertsInternal(const base::FilePath& file_path) {
-  TestRootCerts* root_certs = TestRootCerts::GetInstance();
-  return root_certs->AddFromFile(file_path.AppendASCII("ocsp-test-root.pem")) &&
-         root_certs->AddFromFile(file_path.AppendASCII("root_ca_cert.pem"));
 }
 
 }  // namespace
@@ -230,30 +224,18 @@ bool BaseTestServer::GetFilePathWithReplacements(
   return true;
 }
 
-void BaseTestServer::RegisterTestCerts() {
-  bool added_root_certs = RegisterRootCertsInternal(GetTestCertsDirectory());
-  DCHECK(added_root_certs);
+ScopedTestRoot BaseTestServer::RegisterTestCerts() {
+  auto root1 =
+      ImportCertFromFile(GetTestCertsDirectory(), "ocsp-test-root.pem");
+  auto root2 = ImportCertFromFile(GetTestCertsDirectory(), "root_ca_cert.pem");
+  if (!root1 || !root2)
+    return ScopedTestRoot();
+  return ScopedTestRoot(CertificateList{root1, root2});
 }
 
-bool BaseTestServer::LoadTestRootCert() const {
-  TestRootCerts* root_certs = TestRootCerts::GetInstance();
-  DCHECK(root_certs);
-
-  // Should always use absolute path to load the root certificate.
-  base::FilePath root_certificate_path;
-  if (!GetLocalCertificatesDir(certificates_dir_, &root_certificate_path)) {
-    LOG(ERROR) << "Could not get local certificates directory from "
-               << certificates_dir_ << ".";
-    return false;
-  }
-
-  if (!RegisterRootCertsInternal(root_certificate_path)) {
-    LOG(ERROR) << "Could not register root certificates from "
-               << root_certificate_path << ".";
-    return false;
-  }
-
-  return true;
+bool BaseTestServer::LoadTestRootCert() {
+  scoped_test_root_ = RegisterTestCerts();
+  return !scoped_test_root_.IsEmpty();
 }
 
 scoped_refptr<X509Certificate> BaseTestServer::GetCertificate() const {
@@ -342,9 +324,7 @@ bool BaseTestServer::SetupWhenServerStarted() {
 }
 
 void BaseTestServer::CleanUpWhenStoppingServer() {
-  TestRootCerts* root_certs = TestRootCerts::GetInstance();
-  root_certs->Clear();
-
+  scoped_test_root_.Reset({});
   host_port_pair_.set_port(0);
   allowed_port_.reset();
   started_ = false;

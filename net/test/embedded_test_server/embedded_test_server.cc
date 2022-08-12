@@ -35,7 +35,6 @@
 #include "net/base/net_errors.h"
 #include "net/base/port_util.h"
 #include "net/cert/pki/extended_key_usage.h"
-#include "net/cert/test_root_certs.h"
 #include "net/log/net_log_source.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/ssl_server_socket.h"
@@ -284,7 +283,7 @@ EmbeddedTestServer::EmbeddedTestServer(Type type,
 
   if (!is_using_ssl_)
     return;
-  RegisterTestCerts();
+  scoped_test_root_ = RegisterTestCerts();
 }
 
 EmbeddedTestServer::~EmbeddedTestServer() {
@@ -299,12 +298,12 @@ EmbeddedTestServer::~EmbeddedTestServer() {
   }
 }
 
-void EmbeddedTestServer::RegisterTestCerts() {
+ScopedTestRoot EmbeddedTestServer::RegisterTestCerts() {
   base::ScopedAllowBlockingForTesting allow_blocking;
-  TestRootCerts* root_certs = TestRootCerts::GetInstance();
-  bool added_root_certs = root_certs->AddFromFile(GetRootCertPemPath());
-  DCHECK(added_root_certs)
-      << "Failed to install root cert from EmbeddedTestServer";
+  auto root = ImportCertFromFile(GetRootCertPemPath());
+  if (!root)
+    return ScopedTestRoot();
+  return ScopedTestRoot(root.get());
 }
 
 void EmbeddedTestServer::SetConnectionListener(

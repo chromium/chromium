@@ -49,6 +49,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "net/cert/mock_cert_verifier.h"
+#include "net/cert/test_root_certs.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -1620,7 +1621,7 @@ class LookalikeUrlNavigationThrottleSignedExchangeBrowserTest
     : public LookalikeUrlNavigationThrottleBrowserTest {
  public:
   LookalikeUrlNavigationThrottleSignedExchangeBrowserTest() {
-    net::EmbeddedTestServer::RegisterTestCerts();
+    scoped_test_root_ = net::EmbeddedTestServer::RegisterTestCerts();
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -1705,6 +1706,7 @@ class LookalikeUrlNavigationThrottleSignedExchangeBrowserTest
         it->second;
   }
 
+  net::ScopedTestRoot scoped_test_root_;
   std::map<GURL, std::string> url_accept_header_map_;
 };
 

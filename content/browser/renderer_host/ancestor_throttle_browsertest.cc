@@ -202,9 +202,6 @@ IN_PROC_BROWSER_TEST_F(AncestorThrottleTest, FrameAncestorsFileURLs) {
 }
 
 class AncestorThrottleSXGTest : public AncestorThrottleTest {
- public:
-  AncestorThrottleSXGTest() { net::EmbeddedTestServer::RegisterTestCerts(); }
-
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     AncestorThrottleTest::SetUpCommandLine(command_line);

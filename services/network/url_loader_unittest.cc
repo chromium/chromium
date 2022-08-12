@@ -677,9 +677,12 @@ class URLLoaderTest : public testing::Test {
  public:
   URLLoaderTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {
-    net::TestRootCerts* root_certs = net::TestRootCerts::GetInstance();
-    root_certs->AddFromFile(
+    scoped_refptr<net::X509Certificate> quic_root = net::ImportCertFromFile(
         net::GetTestCertsDirectory().AppendASCII("quic-root.pem"));
+    if (quic_root)
+      scoped_test_root_.Reset({quic_root});
+    else
+      ADD_FAILURE();
 
     net::QuicSimpleTestServer::Start();
     net::URLRequestFailedJob::AddUrlHandler();
@@ -1113,6 +1116,7 @@ class URLLoaderTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
 
   base::test::TaskEnvironment task_environment_;
+  net::ScopedTestRoot scoped_test_root_;
   net::EmbeddedTestServer test_server_;
   std::unique_ptr<net::ScopedDefaultHostResolverProc> mock_host_resolver_;
   raw_ptr<net::TestNetworkDelegate>

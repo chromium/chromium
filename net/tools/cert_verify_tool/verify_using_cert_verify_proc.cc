@@ -129,14 +129,13 @@ bool VerifyUsingCertVerifyProc(
   net::TestRootCerts* test_root_certs = net::TestRootCerts::GetInstance();
   CHECK(test_root_certs->IsEmpty());
 
+  net::ScopedTestRoot scoped_test_roots;
   if (!x509_additional_trust_anchors.empty() &&
       !cert_verify_proc->SupportsAdditionalTrustAnchors()) {
     std::cerr << "NOTE: Additional trust anchors not supported on this "
                  "platform. Using TestRootCerts instead.\n";
 
-    for (const auto& trust_anchor : x509_additional_trust_anchors)
-      test_root_certs->Add(trust_anchor.get());
-
+    scoped_test_roots.Reset(x509_additional_trust_anchors);
     x509_additional_trust_anchors.clear();
   }
 
@@ -146,9 +145,6 @@ bool VerifyUsingCertVerifyProc(
       x509_target_and_intermediates.get(), hostname,
       /*ocsp_response=*/std::string(), /*sct_list=*/std::string(), flags,
       crl_set, x509_additional_trust_anchors, &result, net::NetLogWithSource());
-
-  // Remove any temporary trust anchors.
-  test_root_certs->Clear();
 
   std::cout << "CertVerifyProc result: " << net::ErrorToShortString(rv) << "\n";
   PrintCertVerifyResult(result);

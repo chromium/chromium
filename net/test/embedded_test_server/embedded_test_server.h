@@ -24,6 +24,7 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_endpoint.h"
 #include "net/cert/ocsp_revocation_status.h"
+#include "net/cert/test_root_certs.h"
 #include "net/cert/x509_certificate.h"
 #include "net/socket/ssl_server_socket.h"
 #include "net/socket/stream_socket.h"
@@ -347,7 +348,7 @@ class EmbeddedTestServer {
 
   // Registers the EmbeddedTestServer's certs for the current process. See
   // constructor documentation for more information.
-  static void RegisterTestCerts();
+  [[nodiscard]] static ScopedTestRoot RegisterTestCerts();
 
   // Sets a connection listener, that would be notified when various connection
   // events happen. May only be called before the server is started. Caller
@@ -586,6 +587,7 @@ class EmbeddedTestServer {
 
   base::ThreadChecker thread_checker_;
 
+  ScopedTestRoot scoped_test_root_;
   net::SSLServerConfig ssl_config_;
   ServerCertificate cert_ = CERT_OK;
   ServerCertificateConfig cert_config_;

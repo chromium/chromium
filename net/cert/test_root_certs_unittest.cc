@@ -59,26 +59,10 @@ TEST(TestRootCertsTest, AddFromPointer) {
   ASSERT_NE(static_cast<TestRootCerts*>(nullptr), test_roots);
   EXPECT_TRUE(test_roots->IsEmpty());
 
-  EXPECT_TRUE(test_roots->Add(root_cert.get()));
-  EXPECT_FALSE(test_roots->IsEmpty());
-
-  test_roots->Clear();
-  EXPECT_TRUE(test_roots->IsEmpty());
-}
-
-// Test basic functionality when adding directly from a file, which should
-// behave the same as when adding from an existing certificate.
-TEST(TestRootCertsTest, AddFromFile) {
-  TestRootCerts* test_roots = TestRootCerts::GetInstance();
-  ASSERT_NE(static_cast<TestRootCerts*>(nullptr), test_roots);
-  EXPECT_TRUE(test_roots->IsEmpty());
-
-  base::FilePath cert_path =
-      GetTestCertsDirectory().AppendASCII(kRootCertificateFile);
-  EXPECT_TRUE(test_roots->AddFromFile(cert_path));
-  EXPECT_FALSE(test_roots->IsEmpty());
-
-  test_roots->Clear();
+  {
+    ScopedTestRoot scoped_root(root_cert.get());
+    EXPECT_FALSE(test_roots->IsEmpty());
+  }
   EXPECT_TRUE(test_roots->IsEmpty());
 }
 
@@ -109,8 +93,10 @@ TEST(TestRootCertsTest, OverrideTrust) {
   EXPECT_NE(0u, bad_verify_result.cert_status & CERT_STATUS_AUTHORITY_INVALID);
 
   // Add the root certificate and mark it as trusted.
-  EXPECT_TRUE(test_roots->AddFromFile(
-      GetTestCertsDirectory().AppendASCII(kRootCertificateFile)));
+  scoped_refptr<X509Certificate> root_cert =
+      ImportCertFromFile(GetTestCertsDirectory(), kRootCertificateFile);
+  ASSERT_TRUE(root_cert);
+  ScopedTestRoot scoped_root(root_cert.get());
   EXPECT_FALSE(test_roots->IsEmpty());
 
   // Test that the certificate verification now succeeds, because the
@@ -124,6 +110,91 @@ TEST(TestRootCertsTest, OverrideTrust) {
   EXPECT_EQ(0u, good_verify_result.cert_status);
 
   test_roots->Clear();
+  EXPECT_TRUE(test_roots->IsEmpty());
+
+  // Ensure that when the TestRootCerts is cleared, the trust settings
+  // revert to their original state, and don't linger. If trust status
+  // lingers, it will likely break other tests in net_unittests.
+  CertVerifyResult restored_verify_result;
+  int restored_status = verify_proc->Verify(
+      test_cert.get(), "127.0.0.1", /*ocsp_response=*/std::string(),
+      /*sct_list=*/std::string(), flags, CRLSet::BuiltinCRLSet().get(),
+      CertificateList(), &restored_verify_result, NetLogWithSource());
+  EXPECT_NE(OK, restored_status);
+  EXPECT_NE(0u,
+            restored_verify_result.cert_status & CERT_STATUS_AUTHORITY_INVALID);
+  EXPECT_EQ(bad_status, restored_status);
+  EXPECT_EQ(bad_verify_result.cert_status, restored_verify_result.cert_status);
+}
+
+TEST(TestRootCertsTest, Moveable) {
+  TestRootCerts* test_roots = TestRootCerts::GetInstance();
+  ASSERT_NE(static_cast<TestRootCerts*>(nullptr), test_roots);
+  EXPECT_TRUE(test_roots->IsEmpty());
+
+  scoped_refptr<X509Certificate> test_cert =
+      ImportCertFromFile(GetTestCertsDirectory(), kGoodCertificateFile);
+  ASSERT_NE(static_cast<X509Certificate*>(nullptr), test_cert.get());
+
+  int flags = 0;
+  CertVerifyResult bad_verify_result;
+  int bad_status;
+  scoped_refptr<CertVerifyProc> verify_proc(CreateCertVerifyProc());
+  {
+    // Empty ScopedTestRoot at outer scope has no effect.
+    ScopedTestRoot scoped_root_outer;
+    EXPECT_TRUE(test_roots->IsEmpty());
+
+    // Test that the good certificate fails verification, because the root
+    // certificate should not yet be trusted.
+    bad_status = verify_proc->Verify(
+        test_cert.get(), "127.0.0.1", /*ocsp_response=*/std::string(),
+        /*sct_list=*/std::string(), flags, net::CRLSet::BuiltinCRLSet().get(),
+        CertificateList(), &bad_verify_result, NetLogWithSource());
+    EXPECT_NE(OK, bad_status);
+    EXPECT_NE(0u,
+              bad_verify_result.cert_status & CERT_STATUS_AUTHORITY_INVALID);
+
+    {
+      // Add the root certificate and mark it as trusted.
+      scoped_refptr<X509Certificate> root_cert =
+          ImportCertFromFile(GetTestCertsDirectory(), kRootCertificateFile);
+      ASSERT_TRUE(root_cert);
+      ScopedTestRoot scoped_root_inner(root_cert.get());
+      EXPECT_FALSE(test_roots->IsEmpty());
+
+      // Test that the certificate verification now succeeds, because the
+      // TestRootCerts is successfully imbuing trust.
+      CertVerifyResult good_verify_result;
+      int good_status = verify_proc->Verify(
+          test_cert.get(), "127.0.0.1", /*ocsp_response=*/std::string(),
+          /*sct_list=*/std::string(), flags, CRLSet::BuiltinCRLSet().get(),
+          CertificateList(), &good_verify_result, NetLogWithSource());
+      EXPECT_THAT(good_status, IsOk());
+      EXPECT_EQ(0u, good_verify_result.cert_status);
+
+      EXPECT_FALSE(scoped_root_inner.IsEmpty());
+      EXPECT_TRUE(scoped_root_outer.IsEmpty());
+      // Move from inner scoped root to outer
+      scoped_root_outer = std::move(scoped_root_inner);
+      EXPECT_FALSE(test_roots->IsEmpty());
+      EXPECT_FALSE(scoped_root_outer.IsEmpty());
+    }
+    // After inner scoper was freed, test root is still trusted since ownership
+    // was moved to the outer scoper.
+    EXPECT_FALSE(test_roots->IsEmpty());
+    EXPECT_FALSE(scoped_root_outer.IsEmpty());
+
+    // Test that the certificate verification still succeeds, because the
+    // TestRootCerts is successfully imbuing trust.
+    CertVerifyResult good_verify_result;
+    int good_status = verify_proc->Verify(
+        test_cert.get(), "127.0.0.1", /*ocsp_response=*/std::string(),
+        /*sct_list=*/std::string(), flags, CRLSet::BuiltinCRLSet().get(),
+        CertificateList(), &good_verify_result, NetLogWithSource());
+    EXPECT_THAT(good_status, IsOk());
+    EXPECT_EQ(0u, good_verify_result.cert_status);
+  }
   EXPECT_TRUE(test_roots->IsEmpty());
 
   // Ensure that when the TestRootCerts is cleared, the trust settings

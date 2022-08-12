@@ -7,10 +7,6 @@
 #include <string>
 #include <utility>
 
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/logging.h"
-#include "base/threading/thread_restrictions.h"
 #include "net/cert/pki/cert_errors.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
@@ -24,17 +20,6 @@ bool g_has_instance = false;
 
 base::LazyInstance<TestRootCerts>::Leaky
     g_test_root_certs = LAZY_INSTANCE_INITIALIZER;
-
-CertificateList LoadCertificates(const base::FilePath& filename) {
-  std::string raw_cert;
-  if (!base::ReadFileToString(filename, &raw_cert)) {
-    LOG(ERROR) << "Can't load certificate " << filename.value();
-    return CertificateList();
-  }
-
-  return X509Certificate::CreateCertificateListFromBytes(
-      base::as_bytes(base::make_span(raw_cert)), X509Certificate::FORMAT_AUTO);
-}
 
 }  // namespace
 
@@ -60,15 +45,6 @@ bool TestRootCerts::Add(X509Certificate* certificate) {
   return AddImpl(certificate);
 }
 
-bool TestRootCerts::AddFromFile(const base::FilePath& file) {
-  base::ThreadRestrictions::ScopedAllowIO allow_io_for_loading_test_certs;
-  CertificateList root_certs = LoadCertificates(file);
-  if (root_certs.empty() || root_certs.size() > 1)
-    return false;
-
-  return Add(root_certs.front().get());
-}
-
 void TestRootCerts::Clear() {
   ClearImpl();
   test_trust_store_.Clear();
@@ -91,6 +67,17 @@ ScopedTestRoot::ScopedTestRoot(X509Certificate* cert) {
 
 ScopedTestRoot::ScopedTestRoot(CertificateList certs) {
   Reset(std::move(certs));
+}
+
+ScopedTestRoot::ScopedTestRoot(ScopedTestRoot&& other) {
+  *this = std::move(other);
+}
+
+ScopedTestRoot& ScopedTestRoot::operator=(ScopedTestRoot&& other) {
+  CertificateList tmp_certs;
+  tmp_certs.swap(other.certs_);
+  Reset(std::move(tmp_certs));
+  return *this;
 }
 
 ScopedTestRoot::~ScopedTestRoot() {
