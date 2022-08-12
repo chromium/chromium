@@ -204,6 +204,12 @@ const base::Feature kSyncUndecryptablePasswordsLinux = {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+const base::Feature kPasswordEditDialogWithDetails{
+    "PasswordEditDialogWithDetails", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kShowUPMErrorNotification{
+    "ShowUpmErrorNotification", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables the experiment to automatically submit a form after filling by
 // TouchToFill
 const base::Feature kTouchToFillPasswordSubmission = {
@@ -219,6 +225,10 @@ const base::Feature kUnifiedCredentialManagerDryRun = {
 const base::Feature kUnifiedPasswordManagerAndroid{
     "UnifiedPasswordManagerAndroid", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables showing contextual error messages when UPM encounters an auth error.
+const base::Feature kUnifiedPasswordManagerErrorMessages{
+    "UnifiedPasswordManagerErrorMessages", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled, the built-in sync functionality in PasswordSyncBridge becomes
 // unused, meaning that SyncService/SyncEngine will no longer download or
 // upload changes to/from the Sync server. Instead, an external Android-specific
@@ -226,12 +236,6 @@ const base::Feature kUnifiedPasswordManagerAndroid{
 const base::Feature kUnifiedPasswordManagerSyncUsingAndroidBackendOnly{
     "UnifiedPasswordManagerSyncUsingAndroidBackendOnly",
     base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kPasswordEditDialogWithDetails{
-    "PasswordEditDialogWithDetails", base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kShowUPMErrorNotification{
-    "ShowUpmErrorNotification", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
 const base::Feature kUnifiedPasswordManagerDesktop = {
