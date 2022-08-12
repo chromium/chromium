@@ -37,11 +37,11 @@ void InMemoryHistoryBackend::DeleteAllSearchTermsForKeyword(
   db_->DeleteAllSearchTermsForKeyword(keyword_id);
 }
 
-void InMemoryHistoryBackend::OnURLVisited(HistoryService* history_service,
-                                          ui::PageTransition transition,
-                                          const URLRow& row,
-                                          base::Time visit_time) {
-  OnURLVisitedOrModified(row);
+void InMemoryHistoryBackend::OnURLVisited(
+    history::HistoryService* history_service,
+    const history::URLRow& url_row,
+    const history::VisitRow& new_visit) {
+  OnURLVisitedOrModified(url_row);
 }
 
 void InMemoryHistoryBackend::OnURLsModified(HistoryService* history_service,

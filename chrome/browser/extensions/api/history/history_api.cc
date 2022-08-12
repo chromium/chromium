@@ -143,10 +143,9 @@ HistoryEventRouter::~HistoryEventRouter() {
 }
 
 void HistoryEventRouter::OnURLVisited(history::HistoryService* history_service,
-                                      ui::PageTransition transition,
-                                      const history::URLRow& row,
-                                      base::Time visit_time) {
-  auto args = OnVisited::Create(GetHistoryItem(row));
+                                      const history::URLRow& url_row,
+                                      const history::VisitRow& new_visit) {
+  auto args = OnVisited::Create(GetHistoryItem(url_row));
   DispatchEvent(profile_, events::HISTORY_ON_VISITED,
                 api::history::OnVisited::kEventName, std::move(args));
 }

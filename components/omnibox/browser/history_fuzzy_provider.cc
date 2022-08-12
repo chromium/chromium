@@ -703,14 +703,13 @@ void HistoryFuzzyProvider::OnUrlsLoaded(fuzzy::Node node) {
 
 void HistoryFuzzyProvider::OnURLVisited(
     history::HistoryService* history_service,
-    ui::PageTransition transition,
-    const history::URLRow& row,
-    base::Time visit_time) {
-  DVLOG(1) << "URL Visit: " << row.url();
+    const history::URLRow& url_row,
+    const history::VisitRow& new_visit) {
+  DVLOG(1) << "URL Visit: " << url_row.url();
   if (root_.TerminalCount() <
       std::min(OmniboxFieldTrial::MaxNumHQPUrlsIndexedAtStartup(),
                kMaxTerminalCount)) {
-    root_.Insert(UrlDomainReduction(row.url()), 0);
+    root_.Insert(UrlDomainReduction(url_row.url()), 0);
   }
 }
 

@@ -537,9 +537,8 @@ void HistoryMenuBridge::CancelFaviconRequest(HistoryItem* item) {
 }
 
 void HistoryMenuBridge::OnURLVisited(history::HistoryService* history_service,
-                                     ui::PageTransition transition,
-                                     const history::URLRow& row,
-                                     base::Time visit_time) {
+                                     const history::URLRow& url_row,
+                                     const history::VisitRow& new_visit) {
   OnHistoryChanged();
 }
 

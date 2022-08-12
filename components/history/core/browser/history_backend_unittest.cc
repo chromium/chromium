@@ -97,16 +97,15 @@ void SimulateNotificationURLVisited(HistoryServiceObserver* observer,
                                     const URLRow* row1,
                                     const URLRow* row2,
                                     const URLRow* row3) {
-  URLRows rows;
+  std::vector<URLRow> rows;
   rows.push_back(*row1);
   if (row2)
     rows.push_back(*row2);
   if (row3)
     rows.push_back(*row3);
 
-  base::Time visit_time;
   for (const URLRow& row : rows) {
-    observer->OnURLVisited(nullptr, ui::PAGE_TRANSITION_LINK, row, visit_time);
+    observer->OnURLVisited(nullptr, row, VisitRow());
   }
 }
 
@@ -144,9 +143,8 @@ class HistoryBackendTestDelegate : public HistoryBackend::Delegate {
       std::unique_ptr<InMemoryHistoryBackend> backend) override;
   void NotifyFaviconsChanged(const std::set<GURL>& page_urls,
                              const GURL& icon_url) override;
-  void NotifyURLVisited(ui::PageTransition transition,
-                        const URLRow& row,
-                        base::Time visit_time) override;
+  void NotifyURLVisited(const URLRow& url_row,
+                        const VisitRow& visit_row) override;
   void NotifyURLsModified(const URLRows& changed_urls) override;
   void NotifyURLsDeleted(DeletionInfo deletion_info) override;
   void NotifyKeywordSearchTermUpdated(const URLRow& row,
@@ -185,7 +183,7 @@ class TestHistoryBackend : public HistoryBackend {
 
 class HistoryBackendTestBase : public testing::Test {
  public:
-  typedef std::vector<std::pair<ui::PageTransition, URLRow>> URLVisitedList;
+  typedef std::vector<std::pair<URLRow, VisitRow>> URLVisitedList;
   typedef std::vector<URLRows> URLsModifiedList;
   typedef std::vector<std::pair<bool, bool>> URLsDeletedList;
 
@@ -248,12 +246,10 @@ class HistoryBackendTestBase : public testing::Test {
       favicon_changed_notifications_icon_urls_.push_back(icon_url);
   }
 
-  void NotifyURLVisited(ui::PageTransition transition,
-                        const URLRow& row,
-                        base::Time visit_time) {
+  void NotifyURLVisited(const URLRow& url_row, const VisitRow& new_visit) {
     // Send the notifications directly to the in-memory database.
-    mem_backend_->OnURLVisited(nullptr, transition, row, visit_time);
-    url_visited_notifications_.push_back(std::make_pair(transition, row));
+    mem_backend_->OnURLVisited(nullptr, url_row, new_visit);
+    url_visited_notifications_.push_back(std::make_pair(url_row, new_visit));
   }
 
   void NotifyURLsModified(const URLRows& changed_urls) {
@@ -341,10 +337,9 @@ void HistoryBackendTestDelegate::NotifyFaviconsChanged(
   test_->NotifyFaviconsChanged(page_urls, icon_url);
 }
 
-void HistoryBackendTestDelegate::NotifyURLVisited(ui::PageTransition transition,
-                                                  const URLRow& row,
-                                                  base::Time visit_time) {
-  test_->NotifyURLVisited(transition, row, visit_time);
+void HistoryBackendTestDelegate::NotifyURLVisited(const URLRow& url_row,
+                                                  const VisitRow& new_visit) {
+  test_->NotifyURLVisited(url_row, new_visit);
 }
 
 void HistoryBackendTestDelegate::NotifyURLsModified(
@@ -1148,7 +1143,7 @@ TEST_F(HistoryBackendTest, FormSubmitRedirect) {
   ASSERT_EQ(1, num_url_visited_notifications());
   const URLVisitedList& visited_url_list = url_visited_notifications();
   ASSERT_EQ(1u, visited_url_list.size());
-  const URLRow& visited_url = visited_url_list[0].second;
+  const URLRow& visited_url = visited_url_list[0].first;
   EXPECT_EQ(page1_title, visited_url.title());
   ClearBroadcastedNotifications();
 
@@ -1165,7 +1160,7 @@ TEST_F(HistoryBackendTest, FormSubmitRedirect) {
   ASSERT_EQ(1, num_url_visited_notifications());
   const URLVisitedList& visited_url_list2 = url_visited_notifications();
   ASSERT_EQ(1u, visited_url_list2.size());
-  const URLRow& visited_url2 = visited_url_list2[0].second;
+  const URLRow& visited_url2 = visited_url_list2[0].first;
   EXPECT_EQ(page2_title, visited_url2.title());
 }
 
@@ -1610,20 +1605,23 @@ TEST_F(HistoryBackendTest, AddPageVisitFiresNotificationWithCorrectDetails) {
   // Expect that HistoryServiceObserver::OnURLVisited has been called 3 times,
   // and that each time the URLRows have the correct URLs and IDs set.
   ASSERT_EQ(3, num_url_visited_notifications());
-  EXPECT_TRUE(ui::PageTransitionCoreTypeIs(url_visited_notifications()[0].first,
-                                           ui::PAGE_TRANSITION_LINK));
-  EXPECT_EQ(stored_row1.id(), url_visited_notifications()[0].second.id());
-  EXPECT_EQ(stored_row1.url(), url_visited_notifications()[0].second.url());
+  EXPECT_TRUE(ui::PageTransitionCoreTypeIs(
+      url_visited_notifications()[0].second.transition,
+      ui::PAGE_TRANSITION_LINK));
+  EXPECT_EQ(stored_row1.id(), url_visited_notifications()[0].first.id());
+  EXPECT_EQ(stored_row1.url(), url_visited_notifications()[0].first.url());
 
-  EXPECT_TRUE(ui::PageTransitionCoreTypeIs(url_visited_notifications()[1].first,
-                                           ui::PAGE_TRANSITION_TYPED));
-  EXPECT_EQ(stored_row2.id(), url_visited_notifications()[1].second.id());
-  EXPECT_EQ(stored_row2.url(), url_visited_notifications()[1].second.url());
+  EXPECT_TRUE(ui::PageTransitionCoreTypeIs(
+      url_visited_notifications()[1].second.transition,
+      ui::PAGE_TRANSITION_TYPED));
+  EXPECT_EQ(stored_row2.id(), url_visited_notifications()[1].first.id());
+  EXPECT_EQ(stored_row2.url(), url_visited_notifications()[1].first.url());
 
-  EXPECT_TRUE(ui::PageTransitionCoreTypeIs(url_visited_notifications()[2].first,
-                                           ui::PAGE_TRANSITION_TYPED));
-  EXPECT_EQ(stored_row2.id(), url_visited_notifications()[2].second.id());
-  EXPECT_EQ(stored_row2.url(), url_visited_notifications()[2].second.url());
+  EXPECT_TRUE(ui::PageTransitionCoreTypeIs(
+      url_visited_notifications()[2].second.transition,
+      ui::PAGE_TRANSITION_TYPED));
+  EXPECT_EQ(stored_row2.id(), url_visited_notifications()[2].first.id());
+  EXPECT_EQ(stored_row2.url(), url_visited_notifications()[2].first.url());
 }
 
 TEST_F(HistoryBackendTest, AddPageArgsSource) {

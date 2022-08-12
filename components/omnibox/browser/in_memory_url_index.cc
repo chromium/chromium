@@ -155,12 +155,11 @@ void InMemoryURLIndex::DeleteURL(const GURL& url) {
 }
 
 void InMemoryURLIndex::OnURLVisited(history::HistoryService* history_service,
-                                    ui::PageTransition transition,
-                                    const history::URLRow& row,
-                                    base::Time visit_time) {
+                                    const history::URLRow& url_row,
+                                    const history::VisitRow& new_visit) {
   DCHECK_EQ(history_service_, history_service);
   needs_to_be_cached_ |= private_data_->UpdateURL(
-      history_service_, row, scheme_allowlist_, &private_data_tracker_);
+      history_service_, url_row, scheme_allowlist_, &private_data_tracker_);
 }
 
 void InMemoryURLIndex::OnURLsModified(history::HistoryService* history_service,

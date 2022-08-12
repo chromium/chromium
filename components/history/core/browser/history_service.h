@@ -713,12 +713,10 @@ class HistoryService : public KeyedService {
 
   // Observers ----------------------------------------------------------------
 
-  // Notify all HistoryServiceObservers registered that user is visiting a URL.
-  // The `row` ID will be set to the value that is currently in effect in the
-  // main history database.
-  void NotifyURLVisited(ui::PageTransition transition,
-                        const URLRow& row,
-                        base::Time visit_time);
+  // Notify all HistoryServiceObservers registered that there's a `new_visit`
+  // for `url_row`. This happens when the user visited the URL on this machine,
+  // or if Sync has brought over a remote visit onto this device.
+  void NotifyURLVisited(const URLRow& url_row, const VisitRow& new_visit);
 
   // Notify all HistoryServiceObservers registered that URLs have been added or
   // modified. `changed_urls` contains the list of affects URLs.

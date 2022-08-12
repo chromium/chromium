@@ -36,11 +36,10 @@ HistoryServiceObserver::~HistoryServiceObserver() = default;
 
 void HistoryServiceObserver::OnURLVisited(
     history::HistoryService* history_service,
-    ui::PageTransition transition,
-    const history::URLRow& row,
-    base::Time visit_time) {
-  url_signal_handler_->OnHistoryVisit(row.url());
-  history_delegate_->OnUrlAdded(row.url());
+    const history::URLRow& url_row,
+    const history::VisitRow& new_visit) {
+  url_signal_handler_->OnHistoryVisit(url_row.url());
+  history_delegate_->OnUrlAdded(url_row.url());
 }
 
 void HistoryServiceObserver::OnURLsDeleted(

@@ -2752,8 +2752,7 @@ void HistoryBackend::NotifyURLVisited(const URLRow& url_row,
   for (HistoryBackendObserver& observer : observers_)
     observer.OnURLVisited(this, url_row, visit_row);
 
-  delegate_->NotifyURLVisited(visit_row.transition, url_row,
-                              visit_row.visit_time);
+  delegate_->NotifyURLVisited(url_row, visit_row);
 }
 
 void HistoryBackend::NotifyURLsModified(const URLRows& changed_urls,

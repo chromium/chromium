@@ -40,9 +40,8 @@ class TemplateURLServiceClientImpl : public TemplateURLServiceClient,
 
   // history::HistoryServiceObserver:
   void OnURLVisited(history::HistoryService* history_service,
-                    ui::PageTransition transition,
-                    const history::URLRow& row,
-                    base::Time visit_time) override;
+                    const history::URLRow& url_row,
+                    const history::VisitRow& new_visit) override;
 
   TemplateURLService* owner_;
   history::HistoryService* history_service_;

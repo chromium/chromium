@@ -153,9 +153,8 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
 
     // Notify HistoryService that the user is visiting a URL. The event will
     // be forwarded to the HistoryServiceObservers in the correct thread.
-    virtual void NotifyURLVisited(ui::PageTransition transition,
-                                  const URLRow& row,
-                                  base::Time visit_time) = 0;
+    virtual void NotifyURLVisited(const URLRow& url_row,
+                                  const VisitRow& visit_row) = 0;
 
     // Notify HistoryService that some URLs have been modified. The event will
     // be forwarded to the HistoryServiceObservers in the correct thread.
