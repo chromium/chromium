@@ -369,6 +369,69 @@ const CGFloat kClearButtonSize = 28.0f;
   _textChangeDelegate->OnDeleteBackward();
 }
 
+- (BOOL)canPasteItemProviders:(NSArray<NSItemProvider*>*)itemProviders {
+  for (NSItemProvider* itemProvider in itemProviders) {
+    if ((self.searchByImageEnabled &&
+         [itemProvider canLoadObjectOfClass:[UIImage class]]) ||
+        [itemProvider canLoadObjectOfClass:[NSURL class]] ||
+        [itemProvider canLoadObjectOfClass:[NSString class]]) {
+      return YES;
+    }
+  }
+  return NO;
+}
+
+- (void)pasteItemProviders:(NSArray<NSItemProvider*>*)itemProviders {
+  // Interacted while focused.
+  self.omniboxInteractedWhileFocused = YES;
+
+  __weak __typeof(self) weakSelf = self;
+  auto textCompletion =
+      ^(__kindof id<NSItemProviderReading> providedItem, NSError* error) {
+        LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
+        dispatch_async(dispatch_get_main_queue(), ^{
+          NSString* text = static_cast<NSString*>(providedItem);
+          if (text) {
+            [weakSelf.dispatcher loadQuery:text immediately:YES];
+            [weakSelf.dispatcher cancelOmniboxEdit];
+          }
+        });
+      };
+  auto imageCompletion =
+      ^(__kindof id<NSItemProviderReading> providedItem, NSError* error) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+          UIImage* image = static_cast<UIImage*>(providedItem);
+          if (image) {
+            [weakSelf.delegate omniboxViewControllerSearchImage:image];
+            [weakSelf.dispatcher cancelOmniboxEdit];
+          }
+        });
+      };
+  for (NSItemProvider* itemProvider in itemProviders) {
+    if (self.searchByImageEnabled &&
+        [itemProvider canLoadObjectOfClass:[UIImage class]]) {
+      RecordAction(
+          UserMetricsAction("Mobile.OmniboxPasteButton.SearchCopiedImage"));
+      [itemProvider loadObjectOfClass:[UIImage class]
+                    completionHandler:imageCompletion];
+      break;
+    } else if ([itemProvider canLoadObjectOfClass:[NSURL class]]) {
+      RecordAction(
+          UserMetricsAction("Mobile.OmniboxPasteButton.SearchCopiedLink"));
+      // Load URL as a NSString to avoid further conversion.
+      [itemProvider loadObjectOfClass:[NSString class]
+                    completionHandler:textCompletion];
+      break;
+    } else if ([itemProvider canLoadObjectOfClass:[NSString class]]) {
+      RecordAction(
+          UserMetricsAction("Mobile.OmniboxPasteButton.SearchCopiedText"));
+      [itemProvider loadObjectOfClass:[NSString class]
+                    completionHandler:textCompletion];
+      break;
+    }
+  }
+}
+
 #pragma mark - OmniboxConsumer
 
 - (void)updateAutocompleteIcon:(UIImage*)icon {
@@ -596,7 +659,15 @@ const CGFloat kClearButtonSize = 28.0f;
   RecordAction(
       UserMetricsAction("Mobile.OmniboxContextMenu.SearchCopiedImage"));
   self.omniboxInteractedWhileFocused = YES;
-  [self.delegate omniboxViewControllerSearchCopiedImage:self];
+  __weak __typeof(self) weakSelf = self;
+  ClipboardRecentContent::GetInstance()->GetRecentImageFromClipboard(
+      base::BindOnce(^(absl::optional<gfx::Image> optionalImage) {
+        if (!optionalImage) {
+          return;
+        }
+        UIImage* image = optionalImage.value().ToUIImage();
+        [weakSelf.delegate omniboxViewControllerSearchImage:image];
+      }));
 }
 
 - (void)visitCopiedLink:(id)sender {
@@ -606,6 +677,7 @@ const CGFloat kClearButtonSize = 28.0f;
   [self.delegate omniboxViewControllerUserDidVisitCopiedLink:self];
   RecordAction(UserMetricsAction("Mobile.OmniboxContextMenu.VisitCopiedLink"));
   self.omniboxInteractedWhileFocused = YES;
+  __weak __typeof(self) weakSelf = self;
   ClipboardRecentContent::GetInstance()->GetRecentURLFromClipboard(
       base::BindOnce(^(absl::optional<GURL> optionalURL) {
         if (!optionalURL) {
@@ -613,8 +685,8 @@ const CGFloat kClearButtonSize = 28.0f;
         }
         NSString* url = base::SysUTF8ToNSString(optionalURL.value().spec());
         dispatch_async(dispatch_get_main_queue(), ^{
-          [self.dispatcher loadQuery:url immediately:YES];
-          [self.dispatcher cancelOmniboxEdit];
+          [weakSelf.dispatcher loadQuery:url immediately:YES];
+          [weakSelf.dispatcher cancelOmniboxEdit];
         });
       }));
 }
@@ -625,6 +697,7 @@ const CGFloat kClearButtonSize = 28.0f;
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
   RecordAction(UserMetricsAction("Mobile.OmniboxContextMenu.SearchCopiedText"));
   self.omniboxInteractedWhileFocused = YES;
+  __weak __typeof(self) weakSelf = self;
   ClipboardRecentContent::GetInstance()->GetRecentTextFromClipboard(
       base::BindOnce(^(absl::optional<std::u16string> optionalText) {
         if (!optionalText) {
@@ -632,8 +705,8 @@ const CGFloat kClearButtonSize = 28.0f;
         }
         NSString* query = base::SysUTF16ToNSString(optionalText.value());
         dispatch_async(dispatch_get_main_queue(), ^{
-          [self.dispatcher loadQuery:query immediately:YES];
-          [self.dispatcher cancelOmniboxEdit];
+          [weakSelf.dispatcher loadQuery:query immediately:YES];
+          [weakSelf.dispatcher cancelOmniboxEdit];
         });
       }));
 }

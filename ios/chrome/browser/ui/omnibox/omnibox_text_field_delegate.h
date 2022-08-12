@@ -18,6 +18,13 @@
 
 // Called when the backspace button is tapped in the OmniboxTextFieldIOS.
 - (void)onDeleteBackward;
+
+// Called when the UIPasteControl in the omnibox's keyboard accessory is shown.
+// Returns whether or not the paste control should be enabled.
+- (BOOL)canPasteItemProviders:(NSArray<NSItemProvider*>*)itemProviders;
+
+// Called when the UIPasteControl in the omnibox's keyboard accessory is tapped.
+- (void)pasteItemProviders:(NSArray<NSItemProvider*>*)itemProviders;
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_TEXT_FIELD_DELEGATE_H_

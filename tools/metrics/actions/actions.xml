@@ -16812,6 +16812,33 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Mobile.OmniboxPasteButton.SearchCopiedImage">
+  <owner>christianxu@chromium.org</owner>
+  <owner>stkhapugin@chromium.org</owner>
+  <description>
+    User tapped the paste button in Omnibox's keyboard accessory to search for
+    an image.
+  </description>
+</action>
+
+<action name="Mobile.OmniboxPasteButton.SearchCopiedLink">
+  <owner>christianxu@chromium.org</owner>
+  <owner>stkhapugin@chromium.org</owner>
+  <description>
+    User tapped the paste button in Omnibox's keyboard accessory to search for a
+    link.
+  </description>
+</action>
+
+<action name="Mobile.OmniboxPasteButton.SearchCopiedText">
+  <owner>christianxu@chromium.org</owner>
+  <owner>stkhapugin@chromium.org</owner>
+  <description>
+    User tapped the paste button in Omnibox's keyboard accessory to search for
+    text.
+  </description>
+</action>
+
 <action name="Mobile.SystemNotification.Content.Click.Downloads_Files">
   <owner>chrome-analysis-team@google.com</owner>
   <description>

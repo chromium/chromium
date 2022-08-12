@@ -279,22 +279,15 @@
   [agent.nonModalScheduler logUserPastedInOmnibox];
 }
 
-- (void)omniboxViewControllerSearchCopiedImage:
-    (OmniboxViewController*)omniboxViewController {
-  ClipboardRecentContent::GetInstance()->GetRecentImageFromClipboard(
-      base::BindOnce(^(absl::optional<gfx::Image> optionalImage) {
-        if (!optionalImage) {
-          return;
-        }
-        UIImage* image = optionalImage.value().ToUIImage();
-        web::NavigationManager::WebLoadParams webParams =
-            ImageSearchParamGenerator::LoadParamsForImage(
-                image, ios::TemplateURLServiceFactory::GetForBrowserState(
-                           self.browser->GetBrowserState()));
-        UrlLoadParams params = UrlLoadParams::InCurrentTab(webParams);
+- (void)omniboxViewControllerSearchImage:(UIImage*)image {
+  DCHECK(image);
+  web::NavigationManager::WebLoadParams webParams =
+      ImageSearchParamGenerator::LoadParamsForImage(
+          image, ios::TemplateURLServiceFactory::GetForBrowserState(
+                     self.browser->GetBrowserState()));
+  UrlLoadParams params = UrlLoadParams::InCurrentTab(webParams);
 
-        UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
-      }));
+  UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
 }
 
 #pragma mark - private
