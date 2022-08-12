@@ -128,6 +128,10 @@ class NET_EXPORT NetworkIsolationKey {
   // Returns true if all parts of the key are empty.
   bool IsEmpty() const;
 
+  // Returns true if the NetworkIsolationKey has a triple keyed scheme. This
+  // means both `frame_site_` and `top_frame_site_` are populated.
+  static bool IsFrameSiteEnabled();
+
   // Returns a representation of |this| as a base::Value. Returns false on
   // failure. Succeeds if either IsEmpty() or !IsTransient().
   [[nodiscard]] bool ToValue(base::Value* out_value) const;

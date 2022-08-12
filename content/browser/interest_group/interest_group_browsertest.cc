@@ -3094,7 +3094,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionWithWinner) {
                 isolation_info.request_type());
       url::Origin expected_origin = url::Origin::Create(expected_request.url);
       EXPECT_EQ(expected_origin, isolation_info.top_frame_origin());
-      EXPECT_EQ(expected_origin, isolation_info.frame_origin());
+      if (net::IsolationInfo::IsFrameSiteEnabled()) {
+        EXPECT_EQ(expected_origin, isolation_info.frame_origin());
+      }
       EXPECT_TRUE(isolation_info.site_for_cookies().IsNull());
     }
   }
@@ -3600,8 +3602,10 @@ perBuyerSignals: {$1: {even: 'more', x: 4.5}}
                 isolation_info.request_type());
       url::Origin expected_origin = url::Origin::Create(expected_request.url);
       EXPECT_EQ(expected_origin, isolation_info.top_frame_origin());
-      EXPECT_EQ(expected_origin, isolation_info.frame_origin());
       EXPECT_TRUE(isolation_info.site_for_cookies().IsNull());
+      if (net::IsolationInfo::IsFrameSiteEnabled()) {
+        EXPECT_EQ(expected_origin, isolation_info.frame_origin());
+      }
     }
   }
 

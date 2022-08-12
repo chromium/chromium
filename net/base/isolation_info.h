@@ -120,6 +120,16 @@ class NET_EXPORT IsolationInfo {
       absl::optional<std::set<SchemefulSite>> party_context = absl::nullopt,
       const base::UnguessableToken* nonce = nullptr);
 
+  // Create and IsolationInfo from the context of a double key. This should only
+  // be used when we don't have access to the frame_origin because the
+  // IsolationInfo is being created from an existing double keyed IsolationInfo.
+  static IsolationInfo CreateDoubleKey(
+      RequestType request_type,
+      const url::Origin& top_frame_origin,
+      const SiteForCookies& site_for_cookies,
+      absl::optional<std::set<SchemefulSite>> party_context = absl::nullopt,
+      const base::UnguessableToken* nonce = nullptr);
+
   // Create an IsolationInfos that may not be fully correct - in particular,
   // the SiteForCookies will always set to null, and if the NetworkIsolationKey
   // only has a top frame origin, the frame origin will either be set to the top
@@ -201,6 +211,10 @@ class NET_EXPORT IsolationInfo {
   // Serialize the `IsolationInfo` into a string. Fails if transient, returning
   // an empty string.
   std::string Serialize() const;
+
+  // Returns true if the IsolationInfo has a triple keyed scheme. This
+  // means both `frame_site_` and `top_frame_site_` are populated.
+  static bool IsFrameSiteEnabled();
 
  private:
   IsolationInfo(RequestType request_type,

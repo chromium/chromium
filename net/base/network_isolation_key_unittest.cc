@@ -44,6 +44,14 @@ INSTANTIATE_TEST_SUITE_P(
     NetworkIsolationKeyTest,
     /*force_isolation_info_frame_origin_to_top_level_frame*/ testing::Bool());
 
+TEST_P(NetworkIsolationKeyTest, IsFrameSiteEnabled) {
+  if (ForceIsolationInfoFrameOriginToTopLevelFrameEnabled()) {
+    EXPECT_FALSE(NetworkIsolationKey::IsFrameSiteEnabled());
+  } else {
+    EXPECT_TRUE(NetworkIsolationKey::IsFrameSiteEnabled());
+  }
+}
+
 TEST_P(NetworkIsolationKeyTest, EmptyKey) {
   NetworkIsolationKey key;
   EXPECT_FALSE(key.IsFullyPopulated());
@@ -60,8 +68,7 @@ TEST_P(NetworkIsolationKeyTest, NonEmptyKey) {
   if (ForceIsolationInfoFrameOriginToTopLevelFrameEnabled()) {
     EXPECT_EQ(site1.Serialize() + " " + site1.Serialize(),
               key.ToCacheKeyString());
-    EXPECT_EQ(site1.GetDebugString() + " " + site1.GetDebugString(),
-              key.ToDebugString());
+    EXPECT_EQ(site1.GetDebugString() + " null", key.ToDebugString());
   } else {
     EXPECT_EQ(site1.Serialize() + " " + site2.Serialize(),
               key.ToCacheKeyString());
@@ -80,8 +87,8 @@ TEST_P(NetworkIsolationKeyTest, KeyWithNonce) {
   EXPECT_EQ(absl::nullopt, key.ToCacheKeyString());
   EXPECT_TRUE(key.IsTransient());
   if (ForceIsolationInfoFrameOriginToTopLevelFrameEnabled()) {
-    EXPECT_EQ(site1.GetDebugString() + " " + site1.GetDebugString() +
-                  " (with nonce " + nonce.ToString() + ")",
+    EXPECT_EQ(site1.GetDebugString() + " null" + " (with nonce " +
+                  nonce.ToString() + ")",
               key.ToDebugString());
   } else {
     EXPECT_EQ(site1.GetDebugString() + " " + site2.GetDebugString() +
@@ -201,8 +208,7 @@ TEST_P(NetworkIsolationKeyTest, KeyWithOneOpaqueOrigin) {
     EXPECT_EQ(site.GetDebugString() + " " + site.GetDebugString(),
               key1.ToCacheKeyString());
 
-    EXPECT_EQ(site.GetDebugString() + " " + site.GetDebugString(),
-              key1.ToDebugString());
+    EXPECT_EQ(site.GetDebugString() + " null", key1.ToDebugString());
   } else {
     EXPECT_TRUE(key1.IsTransient());
     EXPECT_EQ(absl::nullopt, key1.ToCacheKeyString());
@@ -215,8 +221,7 @@ TEST_P(NetworkIsolationKeyTest, KeyWithOneOpaqueOrigin) {
   EXPECT_TRUE(key2.IsTransient());
   EXPECT_EQ(absl::nullopt, key2.ToCacheKeyString());
   if (ForceIsolationInfoFrameOriginToTopLevelFrameEnabled()) {
-    EXPECT_EQ(opaque_site.GetDebugString() + " " + opaque_site.GetDebugString(),
-              key2.ToDebugString());
+    EXPECT_EQ(opaque_site.GetDebugString() + " null", key2.ToDebugString());
   } else {
     EXPECT_EQ(opaque_site.GetDebugString() + " " + site.GetDebugString(),
               key2.ToDebugString());
@@ -309,7 +314,7 @@ TEST_P(NetworkIsolationKeyTest, WithFrameSite) {
   EXPECT_FALSE(key.IsTransient());
   if (ForceIsolationInfoFrameOriginToTopLevelFrameEnabled()) {
     EXPECT_EQ("http://b.test http://b.test", key.ToCacheKeyString());
-    EXPECT_EQ("http://b.test http://b.test", key.ToDebugString());
+    EXPECT_EQ("http://b.test null", key.ToDebugString());
   } else {
     EXPECT_EQ("http://b.test http://a.test", key.ToCacheKeyString());
     EXPECT_EQ("http://b.test http://a.test", key.ToDebugString());
@@ -331,7 +336,7 @@ TEST_P(NetworkIsolationKeyTest, OpaqueSiteKey) {
 
     EXPECT_EQ(NetworkIsolationKey(site_a, site_data2), key1);
     EXPECT_EQ("http://a.test http://a.test", key1.ToCacheKeyString());
-    EXPECT_EQ("http://a.test http://a.test", key1.ToDebugString());
+    EXPECT_EQ("http://a.test null", key1.ToDebugString());
   } else {
     EXPECT_TRUE(key1.IsTransient());
 
@@ -346,8 +351,7 @@ TEST_P(NetworkIsolationKeyTest, OpaqueSiteKey) {
   EXPECT_TRUE(key2.IsTransient());
   EXPECT_EQ(absl::nullopt, key2.ToCacheKeyString());
   if (ForceIsolationInfoFrameOriginToTopLevelFrameEnabled()) {
-    EXPECT_EQ(site_data.GetDebugString() + " " + site_data.GetDebugString(),
-              key2.ToDebugString());
+    EXPECT_EQ(site_data.GetDebugString() + " null", key2.ToDebugString());
   } else {
     EXPECT_EQ(site_data.GetDebugString() + " http://a.test",
               key2.ToDebugString());
@@ -415,7 +419,7 @@ TEST_P(NetworkIsolationKeyTest, CreateWithNewFrameSite) {
   net::NetworkIsolationKey key(site_a, site_b);
   NetworkIsolationKey key_c = key.CreateWithNewFrameSite(site_c);
   if (ForceIsolationInfoFrameOriginToTopLevelFrameEnabled()) {
-    EXPECT_EQ(site_a, key_c.GetFrameSite());
+    EXPECT_EQ(absl::nullopt, key_c.GetFrameSite());
   } else {
     EXPECT_EQ(site_c, key_c.GetFrameSite());
   }
@@ -437,6 +441,69 @@ TEST_P(NetworkIsolationKeyTest, CreateTransient) {
   for (int i = 0; i < 1000; ++i) {
     EXPECT_NE(transient_key, NetworkIsolationKey::CreateTransient());
   }
+}
+
+TEST(NetworkIsolationKeyFeatureShiftTest, ValueRoundTripDoubleToTriple) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  const SchemefulSite kJunkSite = SchemefulSite(GURL("data:text/html,junk"));
+
+  // Turn double keying off.
+  scoped_feature_list_.InitAndDisableFeature(
+      net::features::kForceIsolationInfoFrameOriginToTopLevelFrame);
+  // Create a triple key.
+  NetworkIsolationKey created_triple_key(
+      SchemefulSite(GURL("https://foo.test/")),
+      SchemefulSite(GURL("https://bar.test/")));
+
+  // Assert round trip of triple key succeeds and key is a correctly formed
+  // triple key.
+  base::Value created_triple_key_value;
+  ASSERT_TRUE(created_triple_key.ToValue(&created_triple_key_value));
+  // Fill initial value with junk data, to make sure it's overwritten.
+  NetworkIsolationKey created_triple_key2(kJunkSite, kJunkSite);
+  EXPECT_TRUE(NetworkIsolationKey::FromValue(created_triple_key_value,
+                                             &created_triple_key2));
+  EXPECT_EQ(created_triple_key, created_triple_key2);
+
+  // Serialize a triple key value with frame site enabled.
+  base::Value created_triple_key_value2;
+  ASSERT_TRUE(created_triple_key.ToValue(&created_triple_key_value2));
+
+  // Turn double keying on.
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndEnableFeature(
+      net::features::kForceIsolationInfoFrameOriginToTopLevelFrame);
+
+  // Create a key and confirm the frame site is correctly set to nullopt rather
+  // than https://bar.test/.
+  NetworkIsolationKey created_double_key(
+      SchemefulSite(GURL("https://foo.test/")),
+      SchemefulSite(GURL("https://bar.test/")));
+  EXPECT_EQ(absl::nullopt, created_double_key.GetFrameSite());
+
+  // Assert the triple key still has the frame_site it was created with when
+  // frame site was enabled.
+  EXPECT_EQ(SchemefulSite(GURL("https://bar.test/")),
+            created_triple_key.GetFrameSite());
+
+  // Test round trip of key created when frame site was disabled.
+  base::Value created_double_key_value;
+  ASSERT_TRUE(created_double_key.ToValue(&created_double_key_value));
+  // Fill initial value with junk data, to make sure it's overwritten.
+  NetworkIsolationKey created_double_key2(kJunkSite, kJunkSite);
+  EXPECT_TRUE(NetworkIsolationKey::FromValue(created_double_key_value,
+                                             &created_double_key2));
+  EXPECT_EQ(created_double_key, created_double_key2);
+
+  // Test round trip of key created with frame site enabled is now formed
+  // correctly as a double key. This key was serialized to value when frame site
+  // was enabled and should be able to be created from value without error.
+  NetworkIsolationKey created_triple_key3(kJunkSite, kJunkSite);
+  EXPECT_TRUE(NetworkIsolationKey::FromValue(created_triple_key_value2,
+                                             &created_triple_key3));
+  // Triple key should be in a double key form with the frame site an empty
+  // optional.
+  EXPECT_EQ(created_double_key, created_triple_key3);
 }
 
 }  // namespace

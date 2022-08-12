@@ -37,7 +37,7 @@ IN_PROC_BROWSER_TEST_F(TopFramePopulationBrowsertest, FromTopFrame) {
             ASSERT_TRUE(params);
 
             // Ignore URLLoaderFactoryParams for the initial empty document.
-            if (params->isolation_info.frame_origin()->opaque())
+            if (params->isolation_info.top_frame_origin()->opaque())
               return;
 
             ASSERT_THAT(params->isolation_info.top_frame_origin(),
@@ -87,7 +87,7 @@ IN_PROC_BROWSER_TEST_F(TopFramePopulationBrowsertest, FromNestedFrame) {
             ASSERT_TRUE(params);
 
             // Ignore URLLoaderFactoryParams for the initial empty document.
-            if (params->isolation_info.frame_origin()->opaque())
+            if (params->isolation_info.top_frame_origin()->opaque())
               return;
 
             ASSERT_THAT(params->isolation_info.top_frame_origin(),
