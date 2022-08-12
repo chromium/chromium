@@ -119,8 +119,10 @@ def _CheckHasNoIncludeDirectives(input_api, output_api):
       'replace %(singular_plural)s with `#import` preprocessor '
       'directive%(plural)s instead. '
       'Consider replacing all existing `#include` with `#import` (if any) in '
-      'this file for the code clean up. See //styleguide/objective-c/'
-      'objective-c.md#import-and-include-in-the-directory for more details. '
+      'this file for the code clean up. See '
+      'https://chromium.googlesource.com/chromium/src.git/+/refs/heads/main'
+      '/styleguide/objective-c/objective-c.md#import-and-include-in-the-directory'
+      ' for more details. '
       '\n\nAffected file%(plural)s:' % {'plural': plural_suffix,
       'singular_plural': singular_plural }
   ] + errors) + '\n'
