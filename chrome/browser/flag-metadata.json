@@ -1901,7 +1901,7 @@
   {
     "name": "enable-cros-system-japanese-physical-typing",
     "owners": [ "keithlee", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 105
+    "expiry_milestone": 108
   },
   {
     "name": "enable-cros-system-korean-physical-typing",
