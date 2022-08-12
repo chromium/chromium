@@ -21,6 +21,7 @@
 
 namespace ash {
 
+class DeskMiniView;
 class DeskTemplate;
 class SavedDeskGridView;
 class SavedDeskItemView;
@@ -61,7 +62,16 @@ class SavedDeskLibraryView : public views::View, public aura::WindowObserver {
                             bool initializing_grid_view,
                             const base::GUID& last_saved_desk_uuid);
 
-  void DeleteTemplates(const std::vector<std::string>& uuids);
+  // Delete all templates identified by `uuids`. If `delete_animation` is false,
+  // then the respective item views will just disappear instead of fading out.
+  void DeleteTemplates(const std::vector<std::string>& uuids,
+                       bool delete_animation);
+
+  // This performs the launch animation for Save & Recall. The `DeskItemView`
+  // identified by `uuid` is animated up into the position of the desk preview
+  // housed in `mini_view`. It then crossfades into the desk preview. The
+  // `DeskItemView` is also removed from the grid.
+  void AnimateDeskLaunch(const base::GUID& uuid, DeskMiniView* mini_view);
 
  private:
   friend class SavedDeskLibraryEventHandler;
@@ -83,6 +93,14 @@ class SavedDeskLibraryView : public views::View, public aura::WindowObserver {
   aura::Window* GetWidgetWindow();
 
   void OnLocatedEvent(ui::LocatedEvent* event, bool is_touch);
+
+  // This returns the screen space bounds of the desk preview that `mini_view`
+  // holds. It is intended to be called when launching a Save & Recall desk so
+  // that the `SavedDeskItemView` can be animated up to the `DesksBarView`. It
+  // takes animation into consideration and will return the position where the
+  // desk preview will end up, rather than where it currently is.
+  absl::optional<gfx::Rect> GetDeskPreviewBoundsForLaunch(
+      const DeskMiniView* mini_view);
 
   // views::View:
   void AddedToWidget() override;

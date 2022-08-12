@@ -181,7 +181,8 @@ void SavedDeskGridView::AddOrUpdateTemplates(
     AnimateGridItems(new_grid_items);
 }
 
-void SavedDeskGridView::DeleteTemplates(const std::vector<std::string>& uuids) {
+void SavedDeskGridView::DeleteTemplates(const std::vector<std::string>& uuids,
+                                        bool delete_animation) {
   OverviewHighlightController* highlight_controller =
       Shell::Get()
           ->overview_controller()
@@ -206,19 +207,21 @@ void SavedDeskGridView::DeleteTemplates(const std::vector<std::string>& uuids) {
     // Performs an animation of changing the deleted grid item opacity
     // from 1 to 0 and scales down to `kAddOrDeleteItemScale`. `old_layer_tree`
     // will be deleted when the animation is complete.
-    auto old_grid_item_layer_tree = wm::RecreateLayers(grid_item);
-    auto* old_grid_item_layer_tree_root = old_grid_item_layer_tree->root();
-    GetWidget()->GetLayer()->Add(old_grid_item_layer_tree_root);
+    if (delete_animation) {
+      auto old_grid_item_layer_tree = wm::RecreateLayers(grid_item);
+      auto* old_grid_item_layer_tree_root = old_grid_item_layer_tree->root();
+      GetWidget()->GetLayer()->Add(old_grid_item_layer_tree_root);
 
-    views::AnimationBuilder()
-        .OnEnded(base::BindOnce(
-            [](std::unique_ptr<ui::LayerTreeOwner> layer_tree_owner) {},
-            std::move(old_grid_item_layer_tree)))
-        .Once()
-        .SetTransform(old_grid_item_layer_tree_root,
-                      GetScaleTransformForView(grid_item))
-        .SetOpacity(old_grid_item_layer_tree_root, 0.f)
-        .SetDuration(kTemplateViewsScaleAndFadeDuration);
+      views::AnimationBuilder()
+          .OnEnded(base::BindOnce(
+              [](std::unique_ptr<ui::LayerTreeOwner> layer_tree_owner) {},
+              std::move(old_grid_item_layer_tree)))
+          .Once()
+          .SetTransform(old_grid_item_layer_tree_root,
+                        GetScaleTransformForView(grid_item))
+          .SetOpacity(old_grid_item_layer_tree_root, 1.f)
+          .SetDuration(kTemplateViewsScaleAndFadeDuration);
+    }
 
     RemoveChildViewT(grid_item);
     grid_items_.erase(iter);

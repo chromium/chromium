@@ -530,6 +530,23 @@ void SavedDeskPresenter::OnNewDeskCreatedForTemplate(
   const auto saved_desk_creation_time = desk_template->created_time();
   const std::string uuid = desk_template->uuid().AsLowercaseString();
 
+  auto* overview_controller = Shell::Get()->overview_controller();
+  if (saved_desk_type == DeskTemplateType::kSaveAndRecall) {
+    if (overview_controller->InOverviewSession()) {
+      auto* overview_session = overview_controller->overview_session();
+      OverviewGrid* overview_grid =
+          overview_session->GetGridWithRootWindow(root_window);
+
+      const DesksBarView* desks_bar_view = overview_grid->desks_bar_view();
+      DCHECK(desks_bar_view);
+      DeskMiniView* mini_view = desks_bar_view->FindMiniViewForDesk(new_desk);
+      DCHECK(mini_view);
+
+      SavedDeskLibraryView* library = overview_grid->GetSavedDeskLibraryView();
+      library->AnimateDeskLaunch(desk_template->uuid(), mini_view);
+    }
+  }
+
   // Copy the index of the newly created desk to the template. This ensures that
   // apps appear on the right desk even if the user switches to another.
   const int desk_index = DesksController::Get()->GetDeskIndex(new_desk);
@@ -538,7 +555,6 @@ void SavedDeskPresenter::OnNewDeskCreatedForTemplate(
   Shell::Get()->desks_templates_delegate()->LaunchAppsFromTemplate(
       std::move(desk_template), time_launch_started, delay);
 
-  auto* overview_controller = Shell::Get()->overview_controller();
   if (!overview_controller->InOverviewSession()) {
     // Note: it is the intention that we don't leave overview mode when
     // launching a saved desk. However, if something goes wrong when launching a
@@ -701,7 +717,7 @@ void SavedDeskPresenter::RemoveUIEntries(
   for (auto& overview_grid : overview_session_->grid_list()) {
     // Remove the entries from `SavedDeskLibraryView`.
     if (auto* library_view = overview_grid->GetSavedDeskLibraryView())
-      library_view->DeleteTemplates(uuids);
+      library_view->DeleteTemplates(uuids, /*delete_animation=*/true);
   }
 
   if (on_update_ui_closure_for_testing_)

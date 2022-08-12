@@ -58,8 +58,11 @@ class SavedDeskGridView : public views::View {
                             const base::GUID& last_saved_template_uuid);
 
   // Removes templates from the grid by UUID. Will trigger an animation to
-  // shuffle `grid_items_` to their final positions.
-  void DeleteTemplates(const std::vector<std::string>& uuids);
+  // shuffle `grid_items_` to their final positions. If `delete_animation` is
+  // false, then deleted items will simply disappear (shuffled items will still
+  // animate).
+  void DeleteTemplates(const std::vector<std::string>& uuids,
+                       bool delete_animation);
 
   // Returns true if a template name is being modified using an item view's
   // `SavedDeskNameView` in this grid.
