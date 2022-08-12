@@ -65,6 +65,8 @@ class APP_MENU_EXPORT AppMenuModelAdapter : public views::MenuModelAdapter {
   // views::MenuModelAdapter:
   void ExecuteCommand(int id, int mouse_event_flags) override;
   void OnMenuClosed(views::MenuItemView* menu) override;
+  bool ShouldExecuteCommandWithoutClosingMenu(int id,
+                                              const ui::Event& event) override;
 
   ui::SimpleMenuModel* model() { return model_.get(); }
   views::MenuItemView* root_for_testing() { return root_; }
@@ -114,6 +116,8 @@ class APP_MENU_EXPORT AppMenuModelAdapter : public views::MenuModelAdapter {
 
   // Whether tablet mode is active.
   bool is_tablet_mode_;
+
+  base::WeakPtrFactory<AppMenuModelAdapter> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
