@@ -38,16 +38,6 @@
 -PageInfoBubbleViewBrowserTest.FocusReturnsToContentOnClose
 -PrintBrowserTest.PDFPluginNotKeyboardFocusable
 
-# These tests fail when run either with weston's test-plugin module or with
-# normal Wayland compositor. The reason is that weston with headless backend
-# and without test-plugin doesn't create a wl_seat and as a consequence any
-# input devices. This affects the way how menus and other children windows
-# are created.
-# TODO(https://crbug.com/1176174): figure out what exactly is wrong and fix
-# the problems.
--AudioFocusWebContentsObserverBrowserTest.PlatformAppHasDifferentAudioFocus
--BrowserNavigatorTest.SwitchToTabLatestWindow
-
 # #TODO (b/235882005): These tests fail due to a NOT_IMPLEMENTED_LOG_ONCE()
 # within the  wayland_surface.cc implementation. This causes our focused
 # dialog object to instantly close and causes these tests to fail. Until a
