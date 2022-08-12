@@ -54,7 +54,7 @@ namespace updater {
 namespace test {
 namespace {
 
-#if BUILDFLAG(IS_WIN) || !defined(COMPONENT_BUILD)
+#if !defined(COMPONENT_BUILD)
 
 void ExpectNoUpdateSequence(ScopedServer* test_server,
                             const std::string& app_id) {
@@ -78,7 +78,7 @@ void ExpectNoUpdateSequence(ScopedServer* test_server,
                          app_id.c_str()));
 }
 
-#endif  // BUILDFLAG(IS_WIN) || !defined(COMPONENT_BUILD)
+#endif  // !defined(COMPONENT_BUILD)
 
 }  // namespace
 
@@ -328,7 +328,7 @@ class IntegrationTest : public ::testing::Test {
 // the build directory. Therefore, installation of component builds is not
 // expected to work and these tests do not run on component builders.
 // See crbug.com/1112527.
-#if BUILDFLAG(IS_WIN) || !defined(COMPONENT_BUILD)
+#if !defined(COMPONENT_BUILD)
 
 TEST_F(IntegrationTest, InstallUninstall) {
   Install();
@@ -712,14 +712,7 @@ TEST_F(IntegrationTest, UnregisterUnownedApp) {
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(CHROMIUM_BRANDING) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#if !defined(COMPONENT_BUILD)
-// Disabled on Windows due to high flake rate; see https://crbug.com/1341471.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_SelfUpdateFromOldReal DISABLED_SelfUpdateFromOldReal
-#else
-#define MAYBE_SelfUpdateFromOldReal SelfUpdateFromOldReal
-#endif
-TEST_F(IntegrationTest, MAYBE_SelfUpdateFromOldReal) {
+TEST_F(IntegrationTest, SelfUpdateFromOldReal) {
   ScopedServer test_server(test_commands_);
 
   SetupRealUpdaterLowerVersion();
@@ -743,16 +736,8 @@ TEST_F(IntegrationTest, MAYBE_SelfUpdateFromOldReal) {
   Uninstall();
 }
 #endif
-#endif
 
-// TODO(crbug.com/1336591) - enable test after investigating crbug.com/1336591
-// or open a new crbug for debugging this test if it is the culprit.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_UpdateServiceStress DISABLED_UpdateServiceStress
-#else
-#define MAYBE_UpdateServiceStress UpdateServiceStress
-#endif
-TEST_F(IntegrationTest, MAYBE_UpdateServiceStress) {
+TEST_F(IntegrationTest, UpdateServiceStress) {
   Install();
   ExpectInstalled();
   StressUpdateService();
@@ -865,7 +850,7 @@ TEST_F(IntegrationTest, OfflineInstall) {
   Uninstall();
 }
 
-#endif  // BUILDFLAG(IS_WIN) || !defined(COMPONENT_BUILD)
+#endif  // !defined(COMPONENT_BUILD)
 
 }  // namespace test
 }  // namespace updater
