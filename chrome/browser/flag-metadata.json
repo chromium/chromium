@@ -3847,20 +3847,9 @@
     "expiry_milestone": -1
   },
   {
-    "name": "incognito-brand-consistency-for-android",
-    "owners": [ "sideyilmaz", "chrome-incognito@google.com" ],
-    "expiry_milestone": 105
-  },
-
-  {
-    "name": "incognito-brand-consistency-for-ios",
-    "owners": [ "sideyilmaz", "chrome-incognito@google.com" ],
-    "expiry_milestone": 105
-  },
-  {
     "name": "incognito-downloads-warning",
     "owners": [ "sideyilmaz", "chrome-incognito@google.com" ],
-    "expiry_milestone": 105
+    "expiry_milestone": 110
   },
   {
     "name": "incognito-ntp-revamp",
@@ -6312,7 +6301,7 @@
   {
     "name": "update-history-entry-points-in-incognito",
     "owners": [ "sideyilmaz", "chrome-incognito@google.com" ],
-    "expiry_milestone": 105
+    "expiry_milestone": 108
   },
   {
     "name": "update-menu-item-custom-summary",

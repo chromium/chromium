@@ -335,11 +335,6 @@ extern const char kFullscreenSmoothScrollingDescription[];
 extern const char kHttpsOnlyModeName[];
 extern const char kHttpsOnlyModeDescription[];
 
-// Title and description for the flag to enable dark mode colors while in
-// Incognito mode.
-extern const char kIncognitoBrandConsistencyForIOSName[];
-extern const char kIncognitoBrandConsistencyForIOSDescription[];
-
 // Title and description for the flag to enable revamped Incognito NTP page.
 extern const char kIncognitoNtpRevampName[];
 extern const char kIncognitoNtpRevampDescription[];

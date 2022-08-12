@@ -7426,12 +7426,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)
-    {"incognito-brand-consistency-for-android",
-     flag_descriptions::kIncognitoBrandConsistencyForAndroidName,
-     flag_descriptions::kIncognitoBrandConsistencyForAndroidDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kIncognitoBrandConsistencyForAndroid)},
-
     {"incognito-reauthentication-for-android",
      flag_descriptions::kIncognitoReauthenticationForAndroidName,
      flag_descriptions::kIncognitoReauthenticationForAndroidDescription,

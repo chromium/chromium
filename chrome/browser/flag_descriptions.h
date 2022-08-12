@@ -922,9 +922,6 @@ extern const char kImprovedKeyboardShortcutsDescription[];
 extern const char kCompositorThreadedScrollbarScrollingName[];
 extern const char kCompositorThreadedScrollbarScrollingDescription[];
 
-extern const char kIncognitoBrandConsistencyForAndroidName[];
-extern const char kIncognitoBrandConsistencyForAndroidDescription[];
-
 extern const char kIncognitoReauthenticationForAndroidName[];
 extern const char kIncognitoReauthenticationForAndroidDescription[];
 

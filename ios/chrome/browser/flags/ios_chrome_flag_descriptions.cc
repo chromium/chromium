@@ -374,12 +374,6 @@ const char kFullscreenSmoothScrollingDescription[] =
 const char kHttpsOnlyModeName[] = "HTTPS-Only Mode Setting";
 const char kHttpsOnlyModeDescription[] = "Enables the HTTPS-Only Mode setting";
 
-const char kIncognitoBrandConsistencyForIOSName[] =
-    "Enable Incognito brand consistency in iOS.";
-const char kIncognitoBrandConsistencyForIOSDescription[] =
-    "When enabled, keeps Incognito UI consistent regardless of any selected "
-    "theme.";
-
 const char kIncognitoNtpRevampName[] = "Revamped Incognito New Tab Page";
 const char kIncognitoNtpRevampDescription[] =
     "When enabled, Incognito new tab page will have an updated UI.";

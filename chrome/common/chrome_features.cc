@@ -584,12 +584,6 @@ const base::Feature kIncompatibleApplicationsWarning{
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-// When enabled, keeps Incognito UI consistent regardless of any selected theme.
-const base::Feature kIncognitoBrandConsistencyForAndroid{
-    "IncognitoBrandConsistencyForAndroid", base::FEATURE_DISABLED_BY_DEFAULT};
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
 // When enabled, users will see a warning when downloading from Incognito.
 const base::Feature kIncognitoDownloadsWarning{
     "IncognitoDownloadsWarning", base::FEATURE_DISABLED_BY_DEFAULT};

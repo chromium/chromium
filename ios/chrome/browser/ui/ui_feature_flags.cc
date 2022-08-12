@@ -24,9 +24,6 @@ const base::Feature kEnableFREUIModuleIOS{"EnableFREUIModuleIOSV3",
 const base::Feature kModernTabStrip{"ModernTabStrip",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kIncognitoBrandConsistencyForIOS{
-    "IncognitoBrandConsistencyForIOS", base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kIncognitoNtpRevamp{"IncognitoNtpRevamp",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 

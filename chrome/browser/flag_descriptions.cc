@@ -1648,12 +1648,6 @@ const char kImprovedKeyboardShortcutsDescription[] =
     "Ensure keyboard shortcuts work consistently with international keyboard "
     "layouts and deprecate legacy shortcuts.";
 
-const char kIncognitoBrandConsistencyForAndroidName[] =
-    "Enable Incognito brand consistency in Android.";
-const char kIncognitoBrandConsistencyForAndroidDescription[] =
-    "When enabled, keeps Incognito UI consistent regardless of any selected "
-    "theme.";
-
 const char kIncognitoDownloadsWarningName[] =
     "Enable Incognito downloads warning";
 const char kIncognitoDownloadsWarningDescription[] =
