@@ -8169,6 +8169,24 @@
             ]
         }
     ],
+    "SearchResumptionModuleAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "use_new_service": "true"
+                    },
+                    "enable_features": [
+                        "SearchResumptionModuleAndroid"
+                    ]
+                }
+            ]
+        }
+    ],
     "SegmentationStructuredMetrics": [
         {
             "platforms": [
