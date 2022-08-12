@@ -187,10 +187,12 @@
       <select id="userEmailDropDown" class="md-select"
           aria-label="[[i18n('userEmailAriaLabel')]]">
         <option value$="[[feedbackContext.email]]"
+            aria-label="user email"
             class="email-dropdown">
           [[feedbackContext.email]]
         </option>
-        <option value="" id="anonymousUser" class="email-dropdown">
+        <option value="" aria-label="anonymous user"
+          id="anonymousUser" class="email-dropdown">
           [[i18n('anonymousUser')]]
         </option>
       </select>
