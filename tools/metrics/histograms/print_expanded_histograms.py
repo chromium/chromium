@@ -33,7 +33,7 @@ def ConstructHistogram(doc, name, histogram_dict):
     obsolete_node.appendChild(doc.createTextNode(histogram_dict['obsolete']))
     histogram.appendChild(obsolete_node)
   # Populate owner nodes.
-  for owner in histogram_dict['owners']:
+  for owner in histogram_dict.get('owners', []):
     owner_node = doc.createElement('owner')
     owner_node.appendChild(doc.createTextNode(owner))
     histogram.appendChild(owner_node)
