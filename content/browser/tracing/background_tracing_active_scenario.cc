@@ -559,7 +559,7 @@ BackgroundTracingActiveScenario::GetRuleAbleToTriggerTracing(
   return nullptr;
 }
 
-base::Value BackgroundTracingActiveScenario::GenerateMetadataDict() {
+base::Value::Dict BackgroundTracingActiveScenario::GenerateMetadataDict() {
   base::Value::Dict metadata_dict;
   metadata_dict.Set("config", config_->ToDict());
   metadata_dict.Set("scenario_name", config_->scenario_name());
@@ -568,7 +568,7 @@ base::Value BackgroundTracingActiveScenario::GenerateMetadataDict() {
     metadata_dict.Set("last_triggered_rule", last_triggered_rule_->ToDict());
   }
 
-  return base::Value(std::move(metadata_dict));
+  return metadata_dict;
 }
 
 void BackgroundTracingActiveScenario::GenerateMetadataProto(

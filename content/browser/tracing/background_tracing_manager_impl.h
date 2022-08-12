@@ -166,7 +166,7 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager {
   ~BackgroundTracingManagerImpl() override;
 
   bool IsSupportedConfig(BackgroundTracingConfigImpl* config);
-  absl::optional<base::Value> GenerateMetadataDict();
+  absl::optional<base::Value::Dict> GenerateMetadataDict();
   void GenerateMetadataProto(
       perfetto::protos::pbzero::ChromeMetadataPacket* metadata,
       bool privacy_filtering_enabled);

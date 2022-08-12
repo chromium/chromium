@@ -92,9 +92,9 @@ bool AwTracingDelegate::IsAllowedToEndBackgroundScenario(
   return true;
 }
 
-absl::optional<base::Value> AwTracingDelegate::GenerateMetadataDict() {
-  base::Value metadata_dict(base::Value::Type::DICTIONARY);
-  metadata_dict.SetStringKey("revision", version_info::GetLastChange());
+absl::optional<base::Value::Dict> AwTracingDelegate::GenerateMetadataDict() {
+  base::Value::Dict metadata_dict;
+  metadata_dict.Set("revision", version_info::GetLastChange());
   return metadata_dict;
 }
 

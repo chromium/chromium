@@ -26,7 +26,7 @@ bool TracingDelegate::IsSystemWideTracingEnabled() {
   return false;
 }
 
-absl::optional<base::Value> TracingDelegate::GenerateMetadataDict() {
+absl::optional<base::Value::Dict> TracingDelegate::GenerateMetadataDict() {
   return absl::nullopt;
 }
 

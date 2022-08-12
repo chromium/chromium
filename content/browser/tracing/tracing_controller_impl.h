@@ -14,6 +14,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/task/task_traits.h"
 #include "base/timer/timer.h"
+#include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/tracing_controller.h"
@@ -37,7 +38,6 @@ namespace trace_event {
 class TraceConfig;
 }  // namespace trace_event
 
-class Value;
 }  // namespace base
 
 namespace tracing {
@@ -95,7 +95,7 @@ class TracingControllerImpl : public TracingController,
   ~TracingControllerImpl() override;
   void AddAgents();
   void ConnectToServiceIfNeeded();
-  absl::optional<base::Value> GenerateMetadataDict();
+  absl::optional<base::Value::Dict> GenerateMetadataDict();
   void GenerateMetadataPacket(perfetto::protos::pbzero::TracePacket* packet,
                               bool privacy_filtering_enabled);
 

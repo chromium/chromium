@@ -53,7 +53,7 @@ class ChromeTracingDelegate : public content::TracingDelegate,
 
   bool IsSystemWideTracingEnabled() override;
 
-  absl::optional<base::Value> GenerateMetadataDict() override;
+  absl::optional<base::Value::Dict> GenerateMetadataDict() override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ChromeTracingDelegateBrowserTest,

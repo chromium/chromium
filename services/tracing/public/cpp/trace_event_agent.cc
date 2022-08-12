@@ -70,7 +70,16 @@ void TraceEventAgent::AddMetadataGeneratorFunction(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   metadata_generator_functions_.push_back(generator);
 
-  TraceEventMetadataSource::GetInstance()->AddGeneratorFunction(generator);
+  TraceEventMetadataSource::GetInstance()->AddGeneratorFunction(
+      base::BindRepeating(
+          [](MetadataGeneratorFunction const& generator)
+              -> absl::optional<base::Value> {
+            if (auto rv = generator.Run()) {
+              return base::Value(std::move(rv.value()));
+            }
+            return absl::nullopt;
+          },
+          std::move(generator)));
 }
 
 }  // namespace tracing
