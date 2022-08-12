@@ -690,6 +690,8 @@ grit("resources") {
 
   outputs = [
     "grit/ios_web_resources.h",
+    "grit/ios_web_resources_map.cc",
+    "grit/ios_web_resources_map.h",
     "ios_web_resources.pak",
   ]
   deps = [ "//mojo/public/js:bindings" ]

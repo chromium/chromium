@@ -152,6 +152,8 @@ class WebState : public base::SupportsUserData {
         base::RepeatingCallback<void(mojo::GenericPendingReceiver*)>;
     void AddInterface(base::StringPiece interface_name, Callback callback);
 
+    void RemoveInterface(base::StringPiece interface_name);
+
     // Attempts to bind |receiver| by matching its interface name against the
     // callbacks registered on this InterfaceBinder.
     void BindInterface(mojo::GenericPendingReceiver receiver);
