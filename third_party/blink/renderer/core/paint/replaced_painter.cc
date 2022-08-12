@@ -187,34 +187,7 @@ void ReplacedPainter::Paint(const PaintInfo& paint_info) {
                                                         layout_replaced_);
     layout_replaced_.PaintReplaced(content_paint_state.GetPaintInfo(),
                                    content_paint_state.PaintOffset());
-
-    if (layout_replaced_.BelongsToElementChangingOverflowBehaviour() &&
-        !layout_replaced_.ClipsToContentBox() &&
-        layout_replaced_.HasVisualOverflow()) {
-      UseCounter::Count(layout_replaced_.GetDocument(),
-                        WebFeature::kReplacedElementPaintedWithOverflow);
-
-      auto overflow_size = layout_replaced_.PhysicalVisualOverflowRect().size;
-      auto overflow_area = overflow_size.width * overflow_size.height;
-
-      auto content_size = layout_replaced_.Size();
-      auto content_area = content_size.Width() * content_size.Height();
-
-      DCHECK_GT(overflow_area, content_area);
-      const float device_pixel_ratio =
-          layout_replaced_.GetDocument().DevicePixelRatio();
-      const int overflow_outside_content_rect =
-          (overflow_area - content_area).ToInt() / pow(device_pixel_ratio, 2);
-      UMA_HISTOGRAM_COUNTS_100000(
-          "Blink.Overflow.ReplacedElementAreaOutsideContentRect",
-          overflow_outside_content_rect);
-
-      constexpr int kMaxContentBreakageHeuristic = 5000;
-      if (overflow_outside_content_rect > kMaxContentBreakageHeuristic) {
-        UseCounter::Count(layout_replaced_.GetDocument(),
-                          WebFeature::kReplacedElementPaintedWithLargeOverflow);
-      }
-    }
+    MeasureOverflowMetrics();
   }
 
   if (layout_replaced_.StyleRef().Visibility() == EVisibility::kVisible &&
@@ -302,6 +275,40 @@ bool ReplacedPainter::ShouldPaint(const ScopedPaintState& paint_state) const {
     return false;
 
   return true;
+}
+
+void ReplacedPainter::MeasureOverflowMetrics() const {
+  if (!layout_replaced_.BelongsToElementChangingOverflowBehaviour() ||
+      layout_replaced_.ClipsToContentBox() ||
+      !layout_replaced_.HasVisualOverflow()) {
+    return;
+  }
+
+  auto overflow_size = layout_replaced_.PhysicalVisualOverflowRect().size;
+  auto overflow_area = overflow_size.width * overflow_size.height;
+
+  auto content_size = layout_replaced_.Size();
+  auto content_area = content_size.Width() * content_size.Height();
+
+  DCHECK_GE(overflow_area, content_area);
+  if (overflow_area == content_area)
+    return;
+
+  const float device_pixel_ratio =
+      layout_replaced_.GetDocument().DevicePixelRatio();
+  const int overflow_outside_content_rect =
+      (overflow_area - content_area).ToInt() / pow(device_pixel_ratio, 2);
+  UMA_HISTOGRAM_COUNTS_100000(
+      "Blink.Overflow.ReplacedElementAreaOutsideContentRect",
+      overflow_outside_content_rect);
+
+  UseCounter::Count(layout_replaced_.GetDocument(),
+                    WebFeature::kReplacedElementPaintedWithOverflow);
+  constexpr int kMaxContentBreakageHeuristic = 5000;
+  if (overflow_outside_content_rect > kMaxContentBreakageHeuristic) {
+    UseCounter::Count(layout_replaced_.GetDocument(),
+                      WebFeature::kReplacedElementPaintedWithLargeOverflow);
+  }
 }
 
 }  // namespace blink
