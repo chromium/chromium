@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_BACKGROUND_BACKGROUND_CONTENTS_SERVICE_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class BackgroundContentsService;
 class Profile;
@@ -14,8 +14,7 @@ class Profile;
 // Singleton that owns all BackgroundContentsServices and associates them with
 // Profiles. Listens for the Profile's destruction notification and cleans up
 // the associated BackgroundContentsService.
-class BackgroundContentsServiceFactory
-    : public BrowserContextKeyedServiceFactory {
+class BackgroundContentsServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static BackgroundContentsService* GetForProfile(Profile* profile);
 
@@ -37,8 +36,6 @@ class BackgroundContentsServiceFactory
       content::BrowserContext* profile) const override;
   void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
 };
 

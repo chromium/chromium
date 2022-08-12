@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_BLUETOOTH_BLUETOOTH_CHOOSER_CONTEXT_FACTORY_H_
 
 #include "base/no_destructor.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 
@@ -14,8 +14,7 @@ namespace permissions {
 class BluetoothChooserContext;
 }
 
-class BluetoothChooserContextFactory
-    : public BrowserContextKeyedServiceFactory {
+class BluetoothChooserContextFactory : public ProfileKeyedServiceFactory {
  public:
   static permissions::BluetoothChooserContext* GetForProfile(Profile* profile);
   static permissions::BluetoothChooserContext* GetForProfileIfExists(
@@ -36,8 +35,6 @@ class BluetoothChooserContextFactory
 
   // BrowserContextKeyedServiceFactory implementation:
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
   void BrowserContextShutdown(content::BrowserContext* context) override;
 };

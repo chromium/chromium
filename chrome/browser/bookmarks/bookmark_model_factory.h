@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_BOOKMARKS_BOOKMARK_MODEL_FACTORY_H_
 #define CHROME_BROWSER_BOOKMARKS_BOOKMARK_MODEL_FACTORY_H_
 
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace base {
 template <typename T> struct DefaultSingletonTraits;
@@ -17,7 +17,7 @@ class BookmarkModel;
 
 // Singleton that owns all BookmarkModels and associates them with
 // BrowserContexts.
-class BookmarkModelFactory : public BrowserContextKeyedServiceFactory {
+class BookmarkModelFactory : public ProfileKeyedServiceFactory {
  public:
   static bookmarks::BookmarkModel* GetForBrowserContext(
       content::BrowserContext* browser_context);
@@ -44,8 +44,6 @@ class BookmarkModelFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
 };
 

@@ -5,8 +5,7 @@
 #ifndef CHROME_BROWSER_AUTOFILL_STRIKE_DATABASE_FACTORY_H_
 #define CHROME_BROWSER_AUTOFILL_STRIKE_DATABASE_FACTORY_H_
 
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
-#include "components/keyed_service/core/keyed_service.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace base {
 template <typename T>
@@ -21,7 +20,7 @@ class StrikeDatabase;
 
 // Singleton that owns all StrikeDatabases and associates them with
 // Profiles.
-class StrikeDatabaseFactory : public BrowserContextKeyedServiceFactory {
+class StrikeDatabaseFactory : public ProfileKeyedServiceFactory {
  public:
   // Returns the StrikeDatabase for |profile|, creating it if it is not
   // yet created.

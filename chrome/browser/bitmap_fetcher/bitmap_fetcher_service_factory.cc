@@ -5,7 +5,6 @@
 
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 /// Factory
 BitmapFetcherService* BitmapFetcherServiceFactory::GetForBrowserContext(
@@ -20,10 +19,7 @@ BitmapFetcherServiceFactory* BitmapFetcherServiceFactory::GetInstance() {
 }
 
 BitmapFetcherServiceFactory::BitmapFetcherServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "BitmapFetcherService",
-          BrowserContextDependencyManager::GetInstance()) {
-}
+    : ProfileKeyedServiceFactory("BitmapFetcherService") {}
 
 BitmapFetcherServiceFactory::~BitmapFetcherServiceFactory() {
 }

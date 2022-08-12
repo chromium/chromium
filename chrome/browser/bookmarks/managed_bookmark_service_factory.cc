@@ -9,11 +9,9 @@
 #include "base/bind.h"
 #include "base/memory/singleton.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/policy/policy_constants.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
@@ -65,20 +63,15 @@ std::string ManagedBookmarkServiceFactory::GetManagedBookmarksManager(
 }
 
 ManagedBookmarkServiceFactory::ManagedBookmarkServiceFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "ManagedBookmarkService",
-          BrowserContextDependencyManager::GetInstance()) {}
+          ProfileSelections::BuildRedirectedInIncognito()) {}
 
 ManagedBookmarkServiceFactory::~ManagedBookmarkServiceFactory() {}
 
 KeyedService* ManagedBookmarkServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return BuildManagedBookmarkService(context).release();
-}
-
-content::BrowserContext* ManagedBookmarkServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
 }
 
 bool ManagedBookmarkServiceFactory::ServiceIsNULLWhileTesting() const {

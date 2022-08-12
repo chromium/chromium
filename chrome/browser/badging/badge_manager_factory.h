@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_BADGING_BADGE_MANAGER_FACTORY_H_
 #define CHROME_BROWSER_BADGING_BADGE_MANAGER_FACTORY_H_
 
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace base {
 template <typename T>
@@ -19,7 +19,7 @@ namespace badging {
 class BadgeManager;
 
 // Singleton that provides access to Profile specific BadgeManagers.
-class BadgeManagerFactory : public BrowserContextKeyedServiceFactory {
+class BadgeManagerFactory : public ProfileKeyedServiceFactory {
  public:
   // Gets the BadgeManager for the current profile. |nullptr| for guest and
   // incognito profiles.

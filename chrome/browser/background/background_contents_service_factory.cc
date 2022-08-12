@@ -7,10 +7,8 @@
 #include "base/command_line.h"
 #include "chrome/browser/background/background_contents_service.h"
 #include "chrome/browser/extensions/extension_system_factory.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/extension_host_registry.h"
@@ -30,9 +28,9 @@ BackgroundContentsServiceFactory::GetInstance() {
 }
 
 BackgroundContentsServiceFactory::BackgroundContentsServiceFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "BackgroundContentsService",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::BuildForRegularAndIncognito()) {
   DependsOn(extensions::ExtensionRegistryFactory::GetInstance());
   DependsOn(extensions::ExtensionSystemFactory::GetInstance());
   DependsOn(extensions::ExtensionHostRegistry::GetFactory());
@@ -49,12 +47,6 @@ KeyedService* BackgroundContentsServiceFactory::BuildServiceInstanceFor(
 void BackgroundContentsServiceFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* user_prefs) {
   user_prefs->RegisterDictionaryPref(prefs::kRegisteredBackgroundContents);
-}
-
-content::BrowserContext*
-BackgroundContentsServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
 }
 
 bool BackgroundContentsServiceFactory::ServiceIsCreatedWithBrowserContext()

@@ -6,13 +6,12 @@
 #define CHROME_BROWSER_BACKGROUND_SYNC_BACKGROUND_SYNC_CONTROLLER_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class BackgroundSyncControllerImpl;
 class Profile;
 
-class BackgroundSyncControllerFactory
-    : public BrowserContextKeyedServiceFactory {
+class BackgroundSyncControllerFactory : public ProfileKeyedServiceFactory {
  public:
   static BackgroundSyncControllerImpl* GetForProfile(Profile* profile);
   static BackgroundSyncControllerFactory* GetInstance();
@@ -30,8 +29,6 @@ class BackgroundSyncControllerFactory
 
   // BrowserContextKeyedServiceFactory methods:
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
 };
 

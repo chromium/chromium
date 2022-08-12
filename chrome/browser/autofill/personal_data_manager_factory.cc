@@ -9,7 +9,6 @@
 #include "chrome/browser/autofill/strike_database_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/web_data_service_factory.h"
@@ -17,7 +16,6 @@
 #include "components/autofill/core/browser/strike_database.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_features.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/sync/base/command_line_switches.h"
 #include "components/variations/service/variations_service.h"
 
@@ -57,9 +55,9 @@ PersonalDataManagerFactory* PersonalDataManagerFactory::GetInstance() {
 }
 
 PersonalDataManagerFactory::PersonalDataManagerFactory()
-    : BrowserContextKeyedServiceFactory(
-        "PersonalDataManager",
-        BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory(
+          "PersonalDataManager",
+          ProfileSelections::BuildForRegularAndIncognito()) {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(WebDataServiceFactory::GetInstance());
@@ -98,11 +96,6 @@ KeyedService* PersonalDataManagerFactory::BuildPersonalDataManager(
 KeyedService* PersonalDataManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return BuildPersonalDataManager(context);
-}
-
-content::BrowserContext* PersonalDataManagerFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
 }
 
 }  // namespace autofill

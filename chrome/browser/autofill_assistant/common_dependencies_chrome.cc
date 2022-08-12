@@ -47,6 +47,9 @@ std::string CommonDependenciesChrome::GetCountryCode() const {
 
 PersonalDataManager* CommonDependenciesChrome::GetPersonalDataManager(
     content::BrowserContext* browser_context) const {
+  if (!browser_context)
+    return nullptr;
+
   return autofill::PersonalDataManagerFactory::GetForBrowserContext(
       browser_context);
 }

@@ -10,9 +10,7 @@
 #include "chrome/browser/download/background_download_service_factory.h"
 #include "chrome/browser/metrics/ukm_background_recorder_service.h"
 #include "chrome/browser/offline_items_collection/offline_content_aggregator_factory.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/background_fetch_delegate.h"
 
 // static
@@ -28,9 +26,9 @@ BackgroundFetchDelegateFactory* BackgroundFetchDelegateFactory::GetInstance() {
 }
 
 BackgroundFetchDelegateFactory::BackgroundFetchDelegateFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "BackgroundFetchService",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::BuildForRegularAndIncognito()) {
   DependsOn(BackgroundDownloadServiceFactory::GetInstance());
   DependsOn(HostContentSettingsMapFactory::GetInstance());
   DependsOn(OfflineContentAggregatorFactory::GetInstance());
@@ -42,9 +40,4 @@ BackgroundFetchDelegateFactory::~BackgroundFetchDelegateFactory() {}
 KeyedService* BackgroundFetchDelegateFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return new BackgroundFetchDelegateImpl(Profile::FromBrowserContext(context));
-}
-
-content::BrowserContext* BackgroundFetchDelegateFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
 }
