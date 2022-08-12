@@ -11,13 +11,15 @@
 namespace {
 #if !BUILDFLAG(IS_ANDROID)
 std::map<std::string, std::string> kRulePartnerMerchantParams = {
-    {"partner-merchant-pattern", "foo"}};
+    {"partner-merchant-pattern", "foo"},
+    {"discount-fetch-delay", "6h"}};
 std::map<std::string, std::string> kCouponPartnerMerchantParams = {
     {"coupon-partner-merchant-pattern", "bar"}};
 const char kGlobalHeuristicsJSONData[] = R"###(
       {
         "rule_discount_partner_merchant_regex": "baz",
-        "coupon_discount_partner_merchant_regex": "qux"
+        "coupon_discount_partner_merchant_regex": "qux",
+        "discount_fetch_delay": "10h"
       }
   )###";
 const char kRuleFeatureParamPartnerMerchantURL[] = "https://www.foo.com";
@@ -85,5 +87,29 @@ TEST_F(CommerceFeatureListTest, TestCouponPartnerMerchant_Priority) {
       GURL(kCouponFeatureParamPartnerMerchantURL)));
   ASSERT_FALSE(commerce::IsCouponDiscountPartnerMerchant(
       GURL(kCouponComponentPartnerMerchantURL)));
+}
+
+TEST_F(CommerceFeatureListTest, TestGetDiscountFetchDelay_FromFeatureParam) {
+  commerce_heuristics::CommerceHeuristicsData::GetInstance()
+      .PopulateDataFromComponent("{}", "{}", "", "");
+  features_.InitWithFeaturesAndParameters(
+      {{ntp_features::kNtpChromeCartModule, kRulePartnerMerchantParams},
+       {commerce::kRetailCoupons, kCouponPartnerMerchantParams}},
+      {});
+
+  ASSERT_EQ(commerce::GetDiscountFetchDelay(), base::Hours(6));
+}
+
+TEST_F(CommerceFeatureListTest, TestGetDiscountFetchDelay_FromComponent) {
+  features_.InitWithFeaturesAndParameters(
+      {{ntp_features::kNtpChromeCartModule, kRulePartnerMerchantParams},
+       {commerce::kRetailCoupons, kCouponPartnerMerchantParams}},
+      {});
+
+  auto& data = commerce_heuristics::CommerceHeuristicsData::GetInstance();
+  ASSERT_TRUE(
+      data.PopulateDataFromComponent("{}", kGlobalHeuristicsJSONData, "", ""));
+
+  ASSERT_EQ(commerce::GetDiscountFetchDelay(), base::Hours(10));
 }
 #endif  //! BUILDFLAG(IS_ANDROID)

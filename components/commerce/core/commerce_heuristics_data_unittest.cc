@@ -33,7 +33,8 @@ const char kGlobalHeuristicsJSONData[] = R"###(
         "cart_page_url_regex": "cart",
         "checkout_page_url_regex": "checkout",
         "purchase_button_text_regex": "purchase",
-        "add_to_cart_request_regex": "add_to_cart"
+        "add_to_cart_request_regex": "add_to_cart",
+        "discount_fetch_delay": "10h"
       }
   )###";
 }  // namespace
@@ -94,7 +95,7 @@ TEST_F(CommerceHeuristicsDataTest, TestPopulateHintHeuristics_Success) {
       *hint_heuristics->FindDict("baz.com")->FindString("purchase_url_regex"),
       "baz.com/([^/]+/)?purchase");
   auto* global_heuristics = GetGlobalHeuristics();
-  EXPECT_EQ(global_heuristics->size(), 7u);
+  EXPECT_EQ(global_heuristics->size(), 8u);
   EXPECT_TRUE(global_heuristics->contains("sensitive_product_regex"));
   EXPECT_EQ(*global_heuristics->FindString("sensitive_product_regex"),
             "\\b\\B");
@@ -119,6 +120,7 @@ TEST_F(CommerceHeuristicsDataTest, TestPopulateHintHeuristics_Success) {
   EXPECT_TRUE(global_heuristics->contains("add_to_cart_request_regex"));
   EXPECT_EQ(*global_heuristics->FindString("add_to_cart_request_regex"),
             "add_to_cart");
+  EXPECT_EQ(*global_heuristics->FindString("discount_fetch_delay"), "10h");
 }
 
 TEST_F(CommerceHeuristicsDataTest, TestPopulateHeuristics_Failure) {
@@ -357,5 +359,23 @@ TEST_F(CommerceHeuristicsDataTest, TestGetCartProductExtractionScript) {
   ASSERT_TRUE(data.PopulateDataFromComponent("{}", "{}", "foo", "bar"));
   EXPECT_EQ("bar", commerce_heuristics::CommerceHeuristicsData::GetInstance()
                        .GetCartProductExtractionScript());
+}
+
+TEST_F(CommerceHeuristicsDataTest, TestGetDiscountFetchDelay) {
+  auto& data = commerce_heuristics::CommerceHeuristicsData::GetInstance();
+
+  ASSERT_TRUE(data.PopulateDataFromComponent("{}", "{}", "", ""));
+  EXPECT_FALSE(commerce_heuristics::CommerceHeuristicsData::GetInstance()
+                   .GetDiscountFetchDelay()
+                   .has_value());
+
+  ASSERT_TRUE(data.PopulateDataFromComponent(
+      kHintHeuristicsJSONData, kGlobalHeuristicsJSONData, "", ""));
+
+  auto delay_value_optional =
+      commerce_heuristics::CommerceHeuristicsData::GetInstance()
+          .GetDiscountFetchDelay();
+  EXPECT_TRUE(delay_value_optional.has_value());
+  EXPECT_EQ(*delay_value_optional, base::Hours(10));
 }
 }  // namespace commerce_heuristics

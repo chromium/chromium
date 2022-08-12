@@ -7,6 +7,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/no_destructor.h"
+#include "base/time/time_delta_from_string.h"
 
 namespace commerce_heuristics {
 
@@ -28,6 +29,7 @@ constexpr char kCartPagetURLPatternType[] = "cart_page_url_regex";
 constexpr char kCheckoutPageURLPatternType[] = "checkout_page_url_regex";
 constexpr char kPurchaseButtonTextPatternType[] = "purchase_button_text_regex";
 constexpr char kAddToCartRequestPatternType[] = "add_to_cart_request_regex";
+constexpr char kDiscountFetchDelayType[] = "discount_fetch_delay";
 
 }  // namespace
 
@@ -174,6 +176,16 @@ std::string CommerceHeuristicsData::GetProductIDExtractionJSON() {
 
 std::string CommerceHeuristicsData::GetCartProductExtractionScript() {
   return cart_extraction_script_;
+}
+
+absl::optional<base::TimeDelta>
+CommerceHeuristicsData::GetDiscountFetchDelay() {
+  auto delay_value_optional =
+      GetCommerceGlobalHeuristics(kDiscountFetchDelayType);
+  if (!delay_value_optional.has_value()) {
+    return absl::nullopt;
+  }
+  return base::TimeDeltaFromString(*delay_value_optional);
 }
 
 absl::optional<std::string> CommerceHeuristicsData::GetCommerceHintHeuristics(

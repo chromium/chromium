@@ -1053,7 +1053,7 @@ void CartService::StartGettingDiscount() {
 
   base::Time last_fetched_time =
       profile_->GetPrefs()->GetTime(prefs::kCartDiscountLastFetchedTime);
-  base::TimeDelta fetch_delay = commerce::kDiscountFetchDelayParam.Get() -
+  base::TimeDelta fetch_delay = commerce::GetDiscountFetchDelay() -
                                 (base::Time::Now() - last_fetched_time);
   if (last_fetched_time == base::Time() || fetch_delay.is_negative() ||
       kBypassDisocuntFetchingThreshold.Get()) {

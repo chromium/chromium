@@ -291,6 +291,10 @@ bool IsCouponWithCodeEnabled();
 bool IsFakeDataEnabled();
 // Check if the contextual consent for discount is enabled.
 bool isContextualConsentEnabled();
+#if !BUILDFLAG(IS_ANDROID)
+// Get the time delay between discount fetches.
+base::TimeDelta GetDiscountFetchDelay();
+#endif
 }  // namespace commerce
 
 #endif  // COMPONENTS_COMMERCE_CORE_COMMERCE_FEATURE_LIST_H_
