@@ -28,9 +28,11 @@ class AssistantSidePanelCoordinatorImpl : public AssistantSidePanelCoordinator,
   // Sets the Assistant side panel view. This method takes ownership of the view
   // and returns a pointer to it, which can be used for later updates.
   views::View* SetView(std::unique_ptr<views::View> view) override;
+
   // Gets the current view rendered in the side panel. Returns `nullptr` if the
   // side panel is hidden or no view has been set.
   views::View* GetView() override;
+
   // Removes the current view rendered in the side panel and destroys it.
   void RemoveView() override;
 

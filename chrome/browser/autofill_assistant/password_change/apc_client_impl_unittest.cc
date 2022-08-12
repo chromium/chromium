@@ -66,12 +66,14 @@ class MockApcExternalActionDelegate : public ApcExternalActionDelegate {
   MOCK_METHOD(void, ShowCompletionScreen, (base::RepeatingClosure), (override));
   MOCK_METHOD(void, ShowErrorScreen, (), (override));
   MOCK_METHOD(void, SetupDisplay, (), (override));
+  MOCK_METHOD(bool, PasswordWasSuccessfullyChanged, (), (override));
 };
 
 }  // namespace
 
 using ::testing::_;
 using ::testing::DoAll;
+using ::testing::Return;
 using ::testing::SaveArg;
 using ::testing::StrEq;
 
@@ -257,6 +259,9 @@ class ApcClientImplTest : public ChromeRenderViewHostTestHarness {
         std::make_unique<MockApcExternalActionDelegate>(
             side_panel_ref_, scrim_manager_ref_, website_login_manager_ref_);
     apc_external_action_delegate_ref_ = apc_external_action_delegate.get();
+    // As default, assume a password change run as successful.
+    ON_CALL(*apc_external_action_delegate_ref_, PasswordWasSuccessfullyChanged)
+        .WillByDefault(Return(true));
     test_apc_client_->InjectApcExternalActionDelegateForTesting(
         std::move(apc_external_action_delegate));
   }
@@ -307,7 +312,8 @@ class ApcClientImplTest : public ChromeRenderViewHostTestHarness {
           std::make_unique<autofill_assistant::MockRuntimeManager>();
 };
 
-TEST_F(ApcClientImplTest, CreateAndStartApcFlow_Success) {
+TEST_F(ApcClientImplTest,
+       CreateAndStartApcFlow_Success_PasswordSuccessfullyChanged) {
   raw_ptr<ApcClient> client =
       ApcClient::GetOrCreateForWebContents(web_contents());
 
@@ -363,11 +369,51 @@ TEST_F(ApcClientImplTest, CreateAndStartApcFlow_Success) {
   EXPECT_CALL(*apc_external_action_delegate(), ShowCompletionScreen(_))
       .Times(1)
       .WillOnce(MoveArg<0>(&show_completion_screen_callback));
+  EXPECT_CALL(*side_panel(), Die);
 
   std::move(external_script_controller_callback).Run(script_result);
   std::move(show_completion_screen_callback).Run();
 
   EXPECT_FALSE(client->IsRunning());
+}
+
+TEST_F(ApcClientImplTest, CreateAndStartApcFlow_Success_PasswordWasNotChanged) {
+  raw_ptr<ApcClient> client =
+      ApcClient::GetOrCreateForWebContents(web_contents());
+
+  ON_CALL(*apc_external_action_delegate(), PasswordWasSuccessfullyChanged())
+      .WillByDefault(Return(false));
+
+  // Prepare to extract the callback to the coordinator.
+  ApcOnboardingCoordinator::Callback coordinator_callback;
+  base::MockCallback<ApcClient::ResultCallback> result_callback1,
+      result_callback2;
+  EXPECT_CALL(*coordinator(), PerformOnboarding)
+      .WillOnce(MoveArg<0>(&coordinator_callback));
+
+  client->Start(GURL(kUrl1), kUsername1, /*skip_login=*/false,
+                result_callback1.Get());
+
+  // Prepare to extract the callback to the external script controller.
+  base::OnceCallback<void(
+      autofill_assistant::HeadlessScriptController::ScriptResult)>
+      external_script_controller_callback;
+  EXPECT_CALL(*external_script_controller(), StartScript(_, _))
+      .Times(1)
+      .WillOnce(MoveArg<1>(&external_script_controller_callback));
+
+  // Successful onboarding.
+  std::move(coordinator_callback).Run(true);
+
+  autofill_assistant::HeadlessScriptController::ScriptResult script_result = {
+      .success = true};
+
+  EXPECT_CALL(*apc_external_action_delegate(), ShowErrorScreen()).Times(0);
+  EXPECT_CALL(*apc_external_action_delegate(), ShowCompletionScreen(_))
+      .Times(0);
+  EXPECT_CALL(*side_panel(), Die);
+
+  std::move(external_script_controller_callback).Run(script_result);
 }
 
 TEST_F(ApcClientImplTest, CreateAndStartApcFlow_ScriptFails) {

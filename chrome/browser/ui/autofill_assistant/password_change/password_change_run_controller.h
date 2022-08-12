@@ -73,6 +73,10 @@ class PasswordChangeRunController {
   // Shows the error screen.
   virtual void ShowErrorScreen() = 0;
 
+  // Whether a password change run has resulted in the password being
+  // successfully changed.
+  virtual bool PasswordWasSuccessfullyChanged() = 0;
+
   // Returns a weak pointer to this controller.
   virtual base::WeakPtr<PasswordChangeRunController> GetWeakPtr() = 0;
 

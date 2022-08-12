@@ -7,5 +7,6 @@
 MockAssistantSidePanelCoordinator::MockAssistantSidePanelCoordinator() =
     default;
 
-MockAssistantSidePanelCoordinator::~MockAssistantSidePanelCoordinator() =
-    default;
+MockAssistantSidePanelCoordinator::~MockAssistantSidePanelCoordinator() {
+  Die();
+}

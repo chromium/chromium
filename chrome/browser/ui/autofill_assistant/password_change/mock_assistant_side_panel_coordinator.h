@@ -16,6 +16,7 @@ class MockAssistantSidePanelCoordinator : public AssistantSidePanelCoordinator {
  public:
   MockAssistantSidePanelCoordinator();
   ~MockAssistantSidePanelCoordinator() override;
+  MOCK_METHOD(void, Die, ());
 
   // AssistantDisplayDelegate:
   MOCK_METHOD(views::View*,

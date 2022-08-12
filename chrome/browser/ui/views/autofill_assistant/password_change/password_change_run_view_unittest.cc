@@ -131,7 +131,7 @@ TEST_F(PasswordChangeRunViewTest, CreateAndSetInTheProvidedDisplay) {
 
 TEST_F(PasswordChangeRunViewTest, CreateBasePromptAndClick) {
   std::vector<PromptChoice> choices = CreatePromptChoices();
-  view()->ShowBasePrompt(choices);
+  view()->ShowBasePrompt(kDescription, choices);
 
   views::View* container = GetButtonContainer();
   ASSERT_TRUE(container);
@@ -156,7 +156,7 @@ TEST_F(PasswordChangeRunViewTest, CreateBasePromptWithEmptyText) {
   // Make the last button have no text.
   // This means our DSL call used a choice with selectIf and no title.
   choices.back().text = u"";
-  view()->ShowBasePrompt(choices);
+  view()->ShowBasePrompt(kDescription, choices);
 
   views::View* container = GetButtonContainer();
   ASSERT_TRUE(container);
@@ -201,7 +201,7 @@ TEST_F(PasswordChangeRunViewTest, CreateSuggestedPasswordPromptAndAccept) {
 
 TEST_F(PasswordChangeRunViewTest, ClearPrompt) {
   std::vector<PromptChoice> choices = CreatePromptChoices();
-  view()->ShowBasePrompt(choices);
+  view()->ShowBasePrompt(kDescription, choices);
 
   ASSERT_TRUE(GetButtonContainer());
 

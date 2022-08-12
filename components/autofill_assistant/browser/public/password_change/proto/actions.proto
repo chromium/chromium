@@ -59,6 +59,9 @@ message BasePromptSpecification {
   // The title of the prompt.
   optional string title = 2;
 
+  // The description of the prompt.
+  optional string description = 4;
+
   // List of available choices in a prompt.
   repeated Choice choices = 3;
 

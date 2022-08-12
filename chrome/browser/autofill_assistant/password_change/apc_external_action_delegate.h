@@ -83,6 +83,7 @@ class ApcExternalActionDelegate
   void ShowCompletionScreen(
       base::RepeatingClosure onShowCompletionScreenDoneButtonClicked) override;
   void ShowErrorScreen() override;
+  bool PasswordWasSuccessfullyChanged() override;
 
  private:
   friend class ApcExternalActionDelegateTest;

@@ -109,6 +109,8 @@ class ApcClientImpl : public content::WebContentsUserData<ApcClientImpl>,
   // AssistantSidePanelCoordinator::Observer:
   void OnHidden() override;
 
+  void CloseSidePanel();
+
   // The delegate is responsible for handling protos received from backend DSL
   // actions and UI updates.
   std::unique_ptr<ApcExternalActionDelegate> apc_external_action_delegate_;

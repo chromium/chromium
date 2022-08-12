@@ -149,10 +149,6 @@ void ApcExternalActionDelegate::SetProgressBarStep(
 void ApcExternalActionDelegate::ShowBasePrompt(
     const autofill_assistant::password_change::BasePromptSpecification&
         base_prompt) {
-  // Showing the prompt will override the description, so set the model value
-  // to empty to ensure that it reflects the state of the view.
-  model_.description = std::u16string();
-
   std::vector<PasswordChangeRunDisplay::PromptChoice> choices;
   choices.reserve(base_prompt.choices_size());
   base_prompt_return_values_.clear();
@@ -166,7 +162,13 @@ void ApcExternalActionDelegate::ShowBasePrompt(
   }
 
   SetTitle(base::UTF8ToUTF16(base_prompt.title()));
-  password_change_run_display_->ShowBasePrompt(choices);
+  if (base_prompt.has_description()) {
+    model_.description = base::UTF8ToUTF16(base_prompt.description());
+    password_change_run_display_->ShowBasePrompt(
+        base::UTF8ToUTF16(base_prompt.description()), choices);
+  } else {
+    password_change_run_display_->ShowBasePrompt(choices);
+  }
 }
 
 void ApcExternalActionDelegate::OnBasePromptChoiceSelected(
@@ -231,6 +233,11 @@ void ApcExternalActionDelegate::OnGeneratedPasswordSelected(
       generated_password_prompt_result;
 
   EndAction(true, std::move(action_result));
+}
+
+bool ApcExternalActionDelegate::PasswordWasSuccessfullyChanged() {
+  return password_change_run_display_->GetProgressStep() ==
+         autofill_assistant::password_change::ProgressStep::PROGRESS_STEP_END;
 }
 
 void ApcExternalActionDelegate::ShowStartingScreen(const GURL& url) {

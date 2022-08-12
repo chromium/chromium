@@ -48,10 +48,14 @@ class PasswordChangeRunDisplay {
   virtual void SetDescription(const std::u16string& progress_description) = 0;
   virtual void SetProgressBarStep(
       autofill_assistant::password_change::ProgressStep progress_step) = 0;
+  virtual autofill_assistant::password_change::ProgressStep
+  GetProgressStep() = 0;
 
   // Shows a base prompt, i.e. a set of buttons. Relies on the controller
   // calling `ClearPrompt` to close.
   virtual void ShowBasePrompt(const std::vector<PromptChoice>& choices) = 0;
+  virtual void ShowBasePrompt(const std::u16string& description,
+                              const std::vector<PromptChoice>& choices) = 0;
 
   // Shows a generated password prompt for the password passed as a parameter.
   // Offers two buttons, one to accept the generated password and one to

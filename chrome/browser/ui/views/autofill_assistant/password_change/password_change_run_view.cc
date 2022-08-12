@@ -186,11 +186,32 @@ void PasswordChangeRunView::SetProgressBarStep(
   password_change_run_progress_->SetProgressBarStep(progress_step);
 }
 
+autofill_assistant::password_change::ProgressStep
+PasswordChangeRunView::GetProgressStep() {
+  return password_change_run_progress_->GetCurrentProgressBarStep();
+}
+
+void PasswordChangeRunView::ShowBasePrompt(
+    const std::u16string& description,
+    const std::vector<PromptChoice>& choices) {
+  DCHECK(body_);
+
+  SetDescription(description);
+  CreateBasePromptOptions(choices);
+}
+
 void PasswordChangeRunView::ShowBasePrompt(
     const std::vector<PromptChoice>& choices) {
   DCHECK(body_);
+
   body_->RemoveAllChildViews();
   body_->AddChildView(std::make_unique<views::Separator>());
+
+  CreateBasePromptOptions(choices);
+}
+
+void PasswordChangeRunView::CreateBasePromptOptions(
+    const std::vector<PromptChoice>& choices) {
   views::View* button_container = body_->AddChildView(CreateButtonContainer());
   for (size_t index = 0; index < choices.size(); ++index) {
     if (!choices[index].text.empty()) {

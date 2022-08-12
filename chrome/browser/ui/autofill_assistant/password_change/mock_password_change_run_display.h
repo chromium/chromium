@@ -32,6 +32,15 @@ class MockPasswordChangeRunDisplay : public PasswordChangeRunDisplay {
               SetProgressBarStep,
               (autofill_assistant::password_change::ProgressStep),
               (override));
+  MOCK_METHOD(autofill_assistant::password_change::ProgressStep,
+              GetProgressStep,
+              (),
+              (override));
+  MOCK_METHOD(void,
+              ShowBasePrompt,
+              (const std::u16string& description,
+               const std::vector<PromptChoice>&),
+              (override));
   MOCK_METHOD(void,
               ShowBasePrompt,
               (const std::vector<PromptChoice>&),
