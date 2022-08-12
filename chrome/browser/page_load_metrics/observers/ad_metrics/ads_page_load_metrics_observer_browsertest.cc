@@ -430,9 +430,15 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
       expected_page_density_height);
 }
 
+// TODO(crbug.com/1352329): Flaky on Lacros bots.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_PageAdDensityMultipleFrames DISABLED_PageAdDensityMultipleFrames
+#else
+#define MAYBE_PageAdDensityMultipleFrames PageAdDensityMultipleFrames
+#endif
 // Creates multiple overlapping frames and verifies the page ad density.
 IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
-                       PageAdDensityMultipleFrames) {
+                       MAYBE_PageAdDensityMultipleFrames) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   auto waiter = CreatePageLoadMetricsTestWaiter();
