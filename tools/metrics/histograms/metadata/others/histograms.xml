@@ -8491,12 +8491,17 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Mouse.ScrollSensitivity" enum="PointerSensitivity"
-    expires_after="2020-12-01">
+    expires_after="2023-08-09">
 <!-- Name completed by histogram_suffixes name="PreferenceChangeType" -->
 
-  <owner>khorimoto@chromium.org</owner>
   <owner>zentaro@chromium.org</owner>
-  <summary>Mouse scroll sensitivity value. Only reported on Chrome OS.</summary>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Mouse scroll sensitivity value. Only reported on Chrome OS.
+
+    Warning: this histogram was expired from 2020-12-01 to M105; data may be
+    missing.
+  </summary>
 </histogram>
 
 <histogram name="MPArch.ChildProcessLaunchFirst" units="ms"
@@ -13717,17 +13722,20 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="Touchpad.NaturalScroll.Changed" enum="BooleanEnabled"
-    expires_after="2022-06-15">
+    expires_after="2023-08-09">
   <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Tracks touchpad natural scroll setting changes by the user. Only reported on
     Chrome OS.
+
+    Warning: this histogram was expired from 2022-06-15 to M105; data may be
+    missing.
   </summary>
 </histogram>
 
 <histogram name="Touchpad.NaturalScroll.Started" enum="BooleanEnabled"
-    expires_after="2022-12-04">
+    expires_after="2023-08-09">
   <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -13737,78 +13745,99 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="Touchpad.PointerSensitivity.Changed" enum="PointerSensitivity"
-    expires_after="2022-06-15">
+    expires_after="2023-08-09">
   <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Tracks touchpad sensitivity setting changes by the user. This replaces the
     old Touchpad.Sensitivity.Changed metric. Only reported on Chrome OS.
+
+    Warning: this histogram was expired from 2022-06-15 to M105; data may be
+    missing.
   </summary>
 </histogram>
 
 <histogram name="Touchpad.PointerSensitivity.Started" enum="PointerSensitivity"
-    expires_after="2022-06-15">
+    expires_after="2023-08-09">
   <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Tracks touchpad sensitivity setting on startup. This replaces the old
     Touchpad.Sensitivity.Started metric. Only reported on Chrome OS.
+
+    Warning: this histogram was expired from 2022-06-15 to M105; data may be
+    missing.
   </summary>
 </histogram>
 
 <histogram base="true" name="Touchpad.ScrollAcceleration" enum="BooleanEnabled"
-    expires_after="2020-12-01">
+    expires_after="2023-08-09">
 <!-- Name completed by histogram_suffixes name="PreferenceChangeType" -->
 
-  <owner>khorimoto@chromium.org</owner>
   <owner>zentaro@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
   <summary>
     Whether touchpad scroll acceleration is enabled. Only reported on Chrome OS.
+
+    Warning: this histogram was expired from 2020-12-01 to M105; data may be
+    missing.
   </summary>
 </histogram>
 
 <histogram base="true" name="Touchpad.ScrollSensitivity"
-    enum="PointerSensitivity" expires_after="2020-12-01">
+    enum="PointerSensitivity" expires_after="2023-08-09">
 <!-- Name completed by histogram_suffixes name="PreferenceChangeType" -->
 
-  <owner>khorimoto@chromium.org</owner>
   <owner>zentaro@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
   <summary>
     Touchpad scroll sensitivity value. Only reported on Chrome OS.
+
+    Warning: this histogram was expired from 2020-12-01 to M105; data may be
+    missing.
   </summary>
 </histogram>
 
 <histogram name="Touchpad.TapDragging.Changed" enum="BooleanEnabled"
-    expires_after="2022-06-15">
+    expires_after="2023-08-09">
   <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Tracks touchpad TapDragging setting changes by the user. Only reported on
     Chrome OS.
+
+    Warning: this histogram was expired from 2022-06-15 to M105; data may be
+    missing.
   </summary>
 </histogram>
 
 <histogram name="Touchpad.TapDragging.Started" enum="BooleanEnabled"
-    expires_after="2022-06-15">
+    expires_after="2023-08-09">
   <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Tracks touchpad TapDragging setting on startup. Only reported on Chrome OS.
+
+    Warning: this histogram was expired from 2022-06-15 to M105; data may be
+    missing.
   </summary>
 </histogram>
 
 <histogram name="Touchpad.TapToClick.Changed" enum="BooleanEnabled"
-    expires_after="2022-06-15">
+    expires_after="2023-08-09">
   <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Tracks touchpad TapToClick setting changes by the user. Only reported on
     Chrome OS.
+
+    Warning: this histogram was expired from 2022-06-15 to M105; data may be
+    missing.
   </summary>
 </histogram>
 
 <histogram name="Touchpad.TapToClick.Started" enum="BooleanEnabled"
-    expires_after="2022-12-04">
+    expires_after="2023-08-09">
   <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
