@@ -542,6 +542,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Security.SCTAuditing.OptOut.ReportCount" units="reports"
+    expires_after="2023-02-01">
+  <owner>cthomp@chromium.org</owner>
+  <owner>jdeblasio@chromium.org</owner>
+  <summary>
+    Records how many full SCT auditing reports the client has sent (i.e., after
+    a successful hashdance lookup query resulting in kSCTSuffixNotFound). This
+    count is tracked per-client in a pref to limit how many full reports a
+    client can send. This metric is emitted every time this count is checked by
+    the SCT auditing code, after sampling is performed, and only once per report
+    (including across browser restarts). This metric is only emitted for SCT
+    auditing hashdance users.
+  </summary>
+</histogram>
+
 <histogram name="Security.SecurityLevel.DownloadStarted" enum="SecurityLevel"
     expires_after="2022-09-01">
   <owner>cthomp@chromium.org</owner>
