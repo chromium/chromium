@@ -607,7 +607,9 @@ IN_PROC_BROWSER_TEST_P(DictationTest, RecognitionEndsWhenInputFieldLosesFocus) {
   EXPECT_EQ("Vega is a star", GetTextAreaValue());
 }
 
-IN_PROC_BROWSER_TEST_P(DictationTest, UserEndsDictationWhenChromeVoxEnabled) {
+// TODO(crbug.com/1352312): Flaky.
+IN_PROC_BROWSER_TEST_P(DictationTest,
+                       DISABLED_UserEndsDictationWhenChromeVoxEnabled) {
   EnableChromeVox();
   EXPECT_TRUE(GetManager()->IsSpokenFeedbackEnabled());
   InstallMockInputContextHandler();
