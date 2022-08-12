@@ -171,7 +171,7 @@ class LiteralBufferBase {
 };
 
 template <wtf_size_t kInlineSize>
-class LCharLiteralBuffer : public LiteralBufferBase<UChar, kInlineSize> {
+class LCharLiteralBuffer : public LiteralBufferBase<LChar, kInlineSize> {
  public:
   LCharLiteralBuffer() = default;
   LCharLiteralBuffer(const LCharLiteralBuffer& other) { *this = other; }

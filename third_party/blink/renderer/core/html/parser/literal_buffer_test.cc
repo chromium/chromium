@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/html/parser/literal_buffer.h"
+
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace blink {
-
 namespace {
 
 TEST(LiteralBufferTest, Empty) {
@@ -107,6 +107,12 @@ TEST(LiteralBufferTest, Is8BitMove) {
   EXPECT_FALSE(buf2.Is8Bit());
 }
 
-}  // anonymous namespace
+TEST(LiteralBufferTest, AsStringIs8Bit) {
+  LCharLiteralBuffer<2> lit;
+  lit.AddChar('a');
+  lit.AddChar('b');
+  EXPECT_TRUE(lit.AsString().Is8Bit());
+}
 
+}  // anonymous namespace
 }  // namespace blink
