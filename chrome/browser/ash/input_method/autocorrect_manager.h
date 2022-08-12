@@ -77,6 +77,15 @@ class AutocorrectManager {
 
   void OnTextFieldContextualInfoChanged(const TextFieldContextualInfo& info);
 
+  // Forces to accept or clear a pending autocorrect suggestion if any. If the
+  // autocorrect range is empty, it means the user interacted with the
+  // pending autocorrect suggestion and made it invalid, so it considers
+  // the autocorrect suggestion as "cleared". Otherwise, it considers the
+  // autocorrect suggestion as "accepted". For the both cases, relevant
+  // metrics are recorded, state variables are reset and autocorrect range is
+  // set to empty.
+  void AcceptOrClearPendingAutocorrect();
+
   // Hides undo window if there is any visible.
   void HideUndoWindow();
 
@@ -94,6 +103,11 @@ class AutocorrectManager {
   bool window_visible_ = false;
   bool button_highlighted_ = false;
   base::TimeTicks autocorrect_time_;
+
+  // Stores the state where there is a pending/unprocessed autocorrect
+  // suggestion. The state is kept to avoid issue where InputContext returns
+  // stale autocorrect range.
+  bool autocorrect_pending_ = false;
 
   DiacriticsInsensitiveStringComparator
       diacritics_insensitive_string_comparator_;
