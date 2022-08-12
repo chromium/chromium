@@ -133,6 +133,9 @@ MultibufferDataSource::MultibufferDataSource(
       media_log_(media_log),
       host_(host),
       downloading_cb_(std::move(downloading_cb)) {
+  // https://linear.app/replay/issue/RUN-468
+  recordreplay::RegisterPointer(this);
+
   weak_ptr_ = weak_factory_.GetWeakPtr();
   DCHECK(host_);
   DCHECK(downloading_cb_);
@@ -144,6 +147,9 @@ MultibufferDataSource::MultibufferDataSource(
 }
 
 MultibufferDataSource::~MultibufferDataSource() {
+  // https://linear.app/replay/issue/RUN-468
+  recordreplay::UnregisterPointer(this);
+
   DCHECK(render_task_runner_->BelongsToCurrentThread());
 }
 
@@ -197,6 +203,10 @@ void MultibufferDataSource::Initialize(InitializeCB init_cb) {
 
   // We're not allowed to call Wait() if data is already available.
   if (reader_->Available()) {
+    // https://linear.app/replay/issue/RUN-468
+    recordreplay::Assert("MultibufferDataSource::Initialize #1 %lu",
+                         recordreplay::PointerId(this));
+
     render_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&MultibufferDataSource::StartCallback, weak_ptr_));
@@ -209,6 +219,10 @@ void MultibufferDataSource::Initialize(InitializeCB init_cb) {
         FROM_HERE, base::BindOnce(&MultibufferDataSource::UpdateProgress,
                                   weak_factory_.GetWeakPtr()));
   } else {
+    // https://linear.app/replay/issue/RUN-468
+    recordreplay::Assert("MultibufferDataSource::Initialize #2 %lu",
+                         recordreplay::PointerId(this));
+
     reader_->Wait(
         1, base::BindOnce(&MultibufferDataSource::StartCallback, weak_ptr_));
   }
@@ -220,6 +234,10 @@ void MultibufferDataSource::OnRedirected(
     // A failure occurred.
     failed_ = true;
     if (init_cb_) {
+      // https://linear.app/replay/issue/RUN-468
+      recordreplay::Assert("MultibufferDataSource::OnRedirected #1 %lu",
+                           recordreplay::PointerId(this));
+
       render_task_runner_->PostTask(
           FROM_HERE,
           base::BindOnce(&MultibufferDataSource::StartCallback, weak_ptr_));
@@ -242,10 +260,18 @@ void MultibufferDataSource::OnRedirected(
   if (init_cb_) {
     CreateResourceLoader(0, kPositionNotSpecified);
     if (reader_->Available()) {
+      // https://linear.app/replay/issue/RUN-468
+      recordreplay::Assert("MultibufferDataSource::OnRedirected #2 %lu",
+                           recordreplay::PointerId(this));
+
       render_task_runner_->PostTask(
           FROM_HERE,
           base::BindOnce(&MultibufferDataSource::StartCallback, weak_ptr_));
     } else {
+      // https://linear.app/replay/issue/RUN-468
+      recordreplay::Assert("MultibufferDataSource::OnRedirected #3 %lu",
+                           recordreplay::PointerId(this));
+
       reader_->Wait(
           1, base::BindOnce(&MultibufferDataSource::StartCallback, weak_ptr_));
     }
@@ -584,6 +610,10 @@ void MultibufferDataSource::SetBitrateTask(int bitrate) {
 // BufferedResourceLoader callback methods.
 void MultibufferDataSource::StartCallback() {
   DCHECK(render_task_runner_->BelongsToCurrentThread());
+
+  // https://linear.app/replay/issue/RUN-468
+  recordreplay::Assert("MultibufferDataSource::StartCallback %lu",
+                       recordreplay::PointerId(this));
 
   if (!init_cb_) {
     SetReader(nullptr);
