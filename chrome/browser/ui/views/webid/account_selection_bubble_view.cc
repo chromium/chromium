@@ -152,6 +152,52 @@ class AvatarImageSkiaSource : public gfx::CanvasImageSource {
   gfx::ImageSkia avatar_;
 };
 
+class AccountImageView : public views::ImageView {
+ public:
+  AccountImageView() = default;
+
+  AccountImageView(const AccountImageView&) = delete;
+  AccountImageView& operator=(const AccountImageView&) = delete;
+  ~AccountImageView() override = default;
+
+  // Fetch image and set it on AccountImageView.
+  void FetchImage(const content::IdentityRequestAccount& account,
+                  image_fetcher::ImageFetcher& image_fetcher) {
+    image_fetcher::ImageFetcherParams params(kTrafficAnnotation,
+                                             kImageFetcherUmaClient);
+
+    // OnImageFetched() is a member of AccountImageView so that the callback
+    // is cancelled in the case that AccountImageView is destroyed prior to
+    // the callback returning.
+    image_fetcher.FetchImage(account.picture,
+                             base::BindOnce(&AccountImageView::OnImageFetched,
+                                            weak_ptr_factory_.GetWeakPtr(),
+                                            base::UTF8ToUTF16(account.name)),
+                             std::move(params));
+  }
+
+ private:
+  void OnImageFetched(const std::u16string& account_name,
+                      const gfx::Image& image,
+                      const image_fetcher::RequestMetadata& metadata) {
+    gfx::ImageSkia avatar;
+    if (image.IsEmpty()) {
+      std::u16string letter = account_name;
+      if (letter.length() > 0)
+        letter = base::i18n::ToUpper(account_name.substr(0, 1));
+      avatar =
+          gfx::CanvasImageSource::MakeImageSkia<LetterAvatarImageSkiaSource>(
+              letter, kDesiredAvatarSize);
+    } else {
+      avatar = gfx::CanvasImageSource::MakeImageSkia<AvatarImageSkiaSource>(
+          image.AsImageSkia(), kDesiredAvatarSize);
+    }
+    SetImage(avatar);
+  }
+
+  base::WeakPtrFactory<AccountImageView> weak_ptr_factory_{this};
+};
+
 void SendAccessibilityEvent(views::Widget* widget,
                             std::u16string announcement) {
   if (!widget)
@@ -421,22 +467,14 @@ AccountSelectionBubbleView::CreateMultipleAccountChooser(
 std::unique_ptr<views::View> AccountSelectionBubbleView::CreateAccountRow(
     const content::IdentityRequestAccount& account,
     bool should_hover) {
-  auto image_view = std::make_unique<views::ImageView>();
+  auto image_view = std::make_unique<AccountImageView>();
   image_view->SetImageSize({kDesiredAvatarSize, kDesiredAvatarSize});
-  image_fetcher::ImageFetcherParams params(kTrafficAnnotation,
-                                           kImageFetcherUmaClient);
-  std::u16string account_name16 = base::UTF8ToUTF16(account.name);
-  image_fetcher_->FetchImage(
-      account.picture,
-      base::BindOnce(&AccountSelectionBubbleView::OnAccountImageFetched,
-                     weak_ptr_factory_.GetWeakPtr(), image_view.get(),
-                     account_name16),
-      std::move(params));
+  image_view->FetchImage(account, *image_fetcher_);
   if (should_hover) {
     auto row = std::make_unique<HoverButton>(
         base::BindRepeating(&AccountSelectionBubbleView::OnSingleAccountPicked,
                             weak_ptr_factory_.GetWeakPtr(), account),
-        std::move(image_view), account_name16,
+        std::move(image_view), base::UTF8ToUTF16(account.name),
         base::UTF8ToUTF16(account.email));
     row->SetBorder(views::CreateEmptyBorder(
         gfx::Insets::VH(/*vertical=*/0, /*horizontal=*/kLeftRightPadding)));
@@ -469,25 +507,6 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateAccountRow(
   account_email->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
 
   return row;
-}
-
-void AccountSelectionBubbleView::OnAccountImageFetched(
-    views::ImageView* image_view,
-    const std::u16string& account_name,
-    const gfx::Image& image,
-    const image_fetcher::RequestMetadata& metadata) {
-  gfx::ImageSkia avatar;
-  if (image.IsEmpty()) {
-    std::u16string letter = account_name;
-    if (letter.length() > 0)
-      letter = base::i18n::ToUpper(account_name.substr(0, 1));
-    avatar = gfx::CanvasImageSource::MakeImageSkia<LetterAvatarImageSkiaSource>(
-        letter, kDesiredAvatarSize);
-  } else {
-    avatar = gfx::CanvasImageSource::MakeImageSkia<AvatarImageSkiaSource>(
-        image.AsImageSkia(), kDesiredAvatarSize);
-  }
-  image_view->SetImage(avatar);
 }
 
 void AccountSelectionBubbleView::OnBrandImageFetched(
