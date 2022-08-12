@@ -15,6 +15,7 @@
 namespace content {
 
 class MockBackgroundSyncController;
+class MockReduceAcceptLanguageControllerDelegate;
 class MockResourceContext;
 class MockSSLHostStateDelegate;
 class ZoomLevelDelegate;
@@ -33,6 +34,8 @@ class TestBrowserContext : public BrowserContext {
   // this object is destructed.
   base::FilePath TakePath();
 
+  void SetReduceAcceptLanguageControllerDelegate(
+      std::unique_ptr<MockReduceAcceptLanguageControllerDelegate> delegate);
   void SetSpecialStoragePolicy(storage::SpecialStoragePolicy* policy);
   void SetPermissionControllerDelegate(
       std::unique_ptr<PermissionControllerDelegate> delegate);
@@ -62,6 +65,8 @@ class TestBrowserContext : public BrowserContext {
   BackgroundFetchDelegate* GetBackgroundFetchDelegate() override;
   BackgroundSyncController* GetBackgroundSyncController() override;
   BrowsingDataRemoverDelegate* GetBrowsingDataRemoverDelegate() override;
+  ReduceAcceptLanguageControllerDelegate*
+  GetReduceAcceptLanguageControllerDelegate() override;
 
  private:
   // Hold a reference here because BrowserContext owns lifetime.
@@ -72,6 +77,8 @@ class TestBrowserContext : public BrowserContext {
   std::unique_ptr<PermissionControllerDelegate> permission_controller_delegate_;
   std::unique_ptr<MockBackgroundSyncController> background_sync_controller_;
   std::unique_ptr<PlatformNotificationService> platform_notification_service_;
+  std::unique_ptr<MockReduceAcceptLanguageControllerDelegate>
+      reduce_accept_language_controller_delegate_;
   bool is_off_the_record_ = false;
 };
 

@@ -23,6 +23,7 @@ class ContentIndexProvider;
 class ClientHintsControllerDelegate;
 class DownloadManagerDelegate;
 class PermissionControllerDelegate;
+class ReduceAcceptLanguageControllerDelegate;
 class ShellDownloadManagerDelegate;
 class ShellFederatedPermissionContext;
 class ZoomLevelDelegate;
@@ -69,6 +70,8 @@ class ShellBrowserContext : public BrowserContext {
   GetFederatedIdentitySharingPermissionContext() override;
   FederatedIdentityActiveSessionPermissionContextDelegate*
   GetFederatedIdentityActiveSessionPermissionContext() override;
+  ReduceAcceptLanguageControllerDelegate*
+  GetReduceAcceptLanguageControllerDelegate() override;
 
  protected:
   // Contains URLRequestContextGetter required for resource loading.
@@ -91,6 +94,8 @@ class ShellBrowserContext : public BrowserContext {
   std::unique_ptr<ContentIndexProvider> content_index_provider_;
   std::unique_ptr<ShellFederatedPermissionContext>
       federated_permission_context_;
+  std::unique_ptr<ReduceAcceptLanguageControllerDelegate>
+      reduce_accept_lang_controller_delegate_;
 
  private:
   // Performs initialization of the ShellBrowserContext while IO is still

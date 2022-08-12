@@ -14,6 +14,14 @@
     "args": ["--enable-features=PrivateNetworkAccessPermissionPrompt"]
   },
   {
+    "prefix": "reduce-accept-language",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["http/tests/navigation/language",
+              "http/tests/inspector-protocol/network",
+              "http/tests/serviceworker/reduce-accept-language/fetch-event-headers.html"],
+    "args": ["--enable-features=ReduceAcceptLanguage"]
+  },
+  {
     "prefix": "gpu",
     "platforms": ["Linux", "Mac", "Win", "Fuchsia"],
     "bases": ["fast/canvas"],

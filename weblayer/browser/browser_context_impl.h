@@ -65,6 +65,8 @@ class BrowserContextImpl : public content::BrowserContext {
   download::InProgressDownloadManager* RetriveInProgressDownloadManager()
       override;
   content::ContentIndexProvider* GetContentIndexProvider() override;
+  content::ReduceAcceptLanguageControllerDelegate*
+  GetReduceAcceptLanguageControllerDelegate() override;
 
   ProfileImpl* profile_impl() const { return profile_impl_; }
 

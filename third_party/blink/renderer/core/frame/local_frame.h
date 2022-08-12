@@ -588,6 +588,12 @@ class CORE_EXPORT LocalFrame final
   mojom::blink::BackForwardCacheControllerHost&
   GetBackForwardCacheControllerHostRemote();
 
+  const AtomicString& GetReducedAcceptLanguage() const {
+    return reduced_accept_language_;
+  }
+
+  void SetReducedAcceptLanguage(const AtomicString& reduced_accept_language);
+
   // Overlays a color on top of this LocalFrameView if it is associated with
   // the main frame. Should not have multiple consumers.
   void SetMainFrameColorOverlay(SkColor color);
@@ -1001,6 +1007,9 @@ class CORE_EXPORT LocalFrame final
   // frame). Calculated browser-side and used to help determine if this frame
   // is allowed to load a new child opaque-ads fenced frame.
   bool ancestor_or_self_has_cspee_ = false;
+
+  // Reduced accept language for top-level frame.
+  AtomicString reduced_accept_language_;
 };
 
 inline FrameLoader& LocalFrame::Loader() const {

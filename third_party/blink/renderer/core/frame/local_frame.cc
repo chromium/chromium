@@ -2445,6 +2445,11 @@ class FrameColorOverlay final : public FrameOverlay::Delegate {
 
 }  // namespace
 
+void LocalFrame::SetReducedAcceptLanguage(
+    const AtomicString& reduced_accept_language) {
+  reduced_accept_language_ = reduced_accept_language;
+}
+
 void LocalFrame::SetMainFrameColorOverlay(SkColor color) {
   DCHECK(IsMainFrame() && !IsInFencedFrameTree());
   SetFrameColorOverlay(color);

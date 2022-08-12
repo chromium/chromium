@@ -23,6 +23,7 @@
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_service_factory.h"
+#include "components/reduce_accept_language/browser/reduce_accept_language_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 #include "components/site_isolation/pref_names.h"
@@ -47,6 +48,7 @@
 #include "weblayer/browser/client_hints_factory.h"
 #include "weblayer/browser/heavy_ad_service_factory.h"
 #include "weblayer/browser/permissions/permission_manager_factory.h"
+#include "weblayer/browser/reduce_accept_language_factory.h"
 #include "weblayer/browser/stateful_ssl_host_state_delegate_factory.h"
 #include "weblayer/public/common/switches.h"
 
@@ -218,6 +220,11 @@ BrowserContextImpl::GetBackgroundSyncController() {
 content::BrowsingDataRemoverDelegate*
 BrowserContextImpl::GetBrowsingDataRemoverDelegate() {
   return BrowsingDataRemoverDelegateFactory::GetForBrowserContext(this);
+}
+
+content::ReduceAcceptLanguageControllerDelegate*
+BrowserContextImpl::GetReduceAcceptLanguageControllerDelegate() {
+  return ReduceAcceptLanguageFactory::GetForBrowserContext(this);
 }
 
 download::InProgressDownloadManager*

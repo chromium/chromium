@@ -86,6 +86,7 @@
 #include "content/shell/browser/shell_browser_context.h"
 #include "content/shell/browser/shell_content_browser_client.h"
 #include "content/test/content_browser_test_utils_internal.h"
+#include "content/test/mock_reduce_accept_language_controller_delegate.h"
 #include "content/test/resource_load_observer.h"
 #include "content/test/test_content_browser_client.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
@@ -96,6 +97,7 @@
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/client_hints.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -2840,6 +2842,93 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTestClientHintsEnabled,
   ShellContentBrowserClient::Get()
       ->browser_context()
       ->set_client_hints_controller_delegate(nullptr);
+}
+
+class WebContentsImplBrowserTestReduceAcceptLanguageOn
+    : public WebContentsImplBrowserTest {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        {network::features::kReduceAcceptLanguage}, {});
+    WebContentsImplBrowserTest::SetUp();
+  }
+
+  void VerifyAcceptLanguageHeader(net::EmbeddedTestServer& http_server) {
+    ReduceAcceptLanguageControllerDelegate* delegate =
+        ShellContentBrowserClient::Get()
+            ->browser_context()
+            ->GetReduceAcceptLanguageControllerDelegate();
+
+    ASSERT_EQ(delegate->GetUserAcceptLanguages(),
+              std::vector<std::string>({"en-us", "en"}));
+
+    http_server.ServeFilesFromSourceDirectory("content/test/data");
+
+    base::RunLoop run_loop;
+    http_server.RegisterRequestMonitor(base::BindRepeating(
+        [](base::RunLoop* run_loop,
+           const net::test_server::HttpRequest& request) {
+          if (request.relative_url.compare("/empty.html") == 0) {
+            // Default mock user language is "en-us,en", see
+            // content/shell/browser/shell_content_browser_client.h
+            ASSERT_EQ(request.headers.at("Accept-Language"), "en-us");
+            run_loop->Quit();
+          }
+        },
+        &run_loop));
+
+    auto handle = http_server.StartAndReturnHandle();
+    EXPECT_TRUE(NavigateToURL(shell(), http_server.GetURL("/empty.html")));
+
+    run_loop.Run();
+  }
+
+  void VerifyPersistAndGetReduceAcceptLanguage(
+      const GURL& url,
+      const std::string& persist_lang,
+      const absl::optional<std::string>& expect_lang) {
+    ReduceAcceptLanguageControllerDelegate* delegate =
+        ShellContentBrowserClient::Get()
+            ->browser_context()
+            ->GetReduceAcceptLanguageControllerDelegate();
+
+    delegate->PersistReducedLanguage(url::Origin::Create(url), persist_lang);
+    const absl::optional<std::string>& language =
+        delegate->GetReducedLanguage(url::Origin::Create(url));
+    EXPECT_EQ(expect_lang, language);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Verifies accept-language are updated when DidStartNavigation().
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTestReduceAcceptLanguageOn,
+                       HttpsReduceAcceptLanguageInNavigation) {
+  net::EmbeddedTestServer http2_server(
+      net::EmbeddedTestServer::TYPE_HTTPS,
+      net::test_server::HttpConnection::Protocol::kHttp2);
+  VerifyAcceptLanguageHeader(http2_server);
+}
+
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTestReduceAcceptLanguageOn,
+                       HttpReduceAcceptLanguageInNavigation) {
+  net::EmbeddedTestServer http_server_http(net::EmbeddedTestServer::TYPE_HTTP);
+  VerifyAcceptLanguageHeader(http_server_http);
+}
+
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTestReduceAcceptLanguageOn,
+                       PersistAndGetReduceAcceptLanguage) {
+  std::string test_lang("en-us");
+  VerifyPersistAndGetReduceAcceptLanguage(/*url=*/GURL("https://example.com/"),
+                                          /*persist_lang=*/test_lang,
+                                          /*expect_lang=*/test_lang);
+  VerifyPersistAndGetReduceAcceptLanguage(/*url=*/GURL("http://example.com/"),
+                                          /*persist_lang=*/test_lang,
+                                          /*expect_lang=*/test_lang);
+  VerifyPersistAndGetReduceAcceptLanguage(/*url=*/GURL("ws://example.com/"),
+                                          /*persist_lang=*/test_lang,
+                                          /*expect_lang=*/absl::nullopt);
 }
 
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,

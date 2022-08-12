@@ -638,6 +638,10 @@ const char kPullToRefresh[] = "pull-to-refresh";
 // the debounce mechanimsm.
 const char kQuotaChangeEventInterval[] = "quota-change-event-interval";
 
+// Reduce the accept-language http header, and only send one language in the
+// request header: https://github.com/Tanych/accept-language.
+const char kReduceAcceptLanguage[] = "reduce-accept-language";
+
 // Reduce the minor version number in the User-Agent string. This flag
 // implements phase 4 of User-Agent reduction:
 // https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.html.

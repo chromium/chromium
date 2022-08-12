@@ -80,6 +80,7 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/renderer_updater_factory.h"
+#include "chrome/browser/reduce_accept_language/reduce_accept_language_factory.h"
 #include "chrome/browser/safe_browsing/certificate_reporting_service_factory.h"
 #include "chrome/browser/safe_browsing/tailored_security/tailored_security_service_factory.h"
 #include "chrome/browser/search_engines/template_url_fetcher_factory.h"
@@ -132,6 +133,7 @@
 #include "media/base/media_switches.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
+#include "services/network/public/cpp/features.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/explore_sites/explore_sites_service_factory.h"
@@ -522,6 +524,9 @@ void ChromeBrowserMainExtraPartsProfiles::
   ReadingListManagerFactory::GetInstance();
   ReadingListNotificationServiceFactory::GetInstance();
 #endif
+
+  if (base::FeatureList::IsEnabled(network::features::kReduceAcceptLanguage))
+    ReduceAcceptLanguageFactory::GetInstance();
 
   RendererUpdaterFactory::GetInstance();
 

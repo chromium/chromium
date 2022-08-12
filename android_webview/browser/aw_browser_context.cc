@@ -445,6 +445,11 @@ AwBrowserContext::GetBrowsingDataRemoverDelegate() {
   return nullptr;
 }
 
+content::ReduceAcceptLanguageControllerDelegate*
+AwBrowserContext::GetReduceAcceptLanguageControllerDelegate() {
+  return nullptr;
+}
+
 download::InProgressDownloadManager*
 AwBrowserContext::RetriveInProgressDownloadManager() {
   return new download::InProgressDownloadManager(

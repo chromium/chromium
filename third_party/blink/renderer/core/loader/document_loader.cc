@@ -299,6 +299,7 @@ struct SameSizeAsDocumentLoader
   bool waiting_for_document_loader;
   bool waiting_for_code_cache;
   std::unique_ptr<ExtraData> extra_data;
+  AtomicString reduced_accept_language;
 };
 
 // Asserts size of DocumentLoader, so that whenever a new attribute is added to
@@ -396,7 +397,8 @@ DocumentLoader::DocumentLoader(
           params_->is_cross_site_cross_browsing_context_group),
       navigation_api_back_entries_(params_->navigation_api_back_entries),
       navigation_api_forward_entries_(params_->navigation_api_forward_entries),
-      extra_data_(std::move(extra_data)) {
+      extra_data_(std::move(extra_data)),
+      reduced_accept_language_(params_->reduced_accept_language) {
   DCHECK(frame_);
 
   // TODO(dgozman): we should get rid of this boolean field, and make client
@@ -564,6 +566,7 @@ DocumentLoader::CreateWebNavigationParamsToCloneDocument() {
                                                        std::move(data));
     }
   }
+  params->reduced_accept_language = reduced_accept_language_;
   return params;
 }
 
@@ -1778,6 +1781,8 @@ void DocumentLoader::DidInstallNewDocument(Document* document) {
   // synchronously.
   document->GetFrame()->GetClientHintsPreferences().UpdateFrom(
       client_hints_preferences_);
+
+  document->GetFrame()->SetReducedAcceptLanguage(reduced_accept_language_);
 
   const AtomicString& dns_prefetch_control =
       response_.HttpHeaderField(http_names::kXDNSPrefetchControl);

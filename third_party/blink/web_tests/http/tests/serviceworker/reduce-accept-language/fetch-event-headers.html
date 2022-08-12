@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<!-- This test cannot be upstreamed to WPT because it asserts a precise list
+  of expected header names, but such precision is not mandated by the
+  relevant specifications. It should be maintained only to the extent that this
+  precision is relevant to Chromium internals; the Web Platform Tests project
+  includes a relaxed version which allows for additional headers. -->
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../resources/test-helpers.js"></script>
+<body>
+<script>
+var worker = '../resources/fetch-event-test-worker.js';
+
+promise_test(async t => {
+    const scope = '../resources/simple.html?headers';
+    const reg = await service_worker_unregister_and_register(t, worker, scope);
+    await wait_for_state(t, reg.installing, 'activated');
+    const frame = await with_iframe(scope);
+    t.add_cleanup(function() { frame.remove(); });
+    // We have this test to prevent unexpected exposure of headers to a
+    // ServiceWorker. Feel free to rebaseline this expectation if it
+    // looks good.
+    const headers = JSON.parse(frame.contentDocument.body.textContent);
+    const header_names = [];
+    for (const [name, value] of headers) {
+      header_names.push(name);
+    }
+    header_names.sort();
+    assert_array_equals(header_names, [
+        "accept",
+        "accept-language",
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform",
+        "upgrade-insecure-requests",
+        "user-agent"
+      ],
+      'event.request has the expected headers.',);
+
+    await service_worker_unregister_and_done(t, scope);
+  }, 'Service Worker headers in the request of a fetch event');
+</script>
+</body>

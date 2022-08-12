@@ -109,6 +109,8 @@ class AwBrowserContext : public content::BrowserContext,
   content::BackgroundSyncController* GetBackgroundSyncController() override;
   content::BrowsingDataRemoverDelegate* GetBrowsingDataRemoverDelegate()
       override;
+  content::ReduceAcceptLanguageControllerDelegate*
+  GetReduceAcceptLanguageControllerDelegate() override;
   download::InProgressDownloadManager* RetriveInProgressDownloadManager()
       override;
   std::unique_ptr<content::ZoomLevelDelegate> CreateZoomLevelDelegate(

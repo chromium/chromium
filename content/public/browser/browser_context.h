@@ -91,6 +91,7 @@ class PermissionController;
 class PermissionControllerDelegate;
 class PlatformNotificationService;
 class PushMessagingService;
+class ReduceAcceptLanguageControllerDelegate;
 class ResourceContext;
 class SSLHostStateDelegate;
 class SharedCorsOriginAccessList;
@@ -373,6 +374,11 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // Note: if you want to check a permission status, you probably need
   // BrowserContext::GetPermissionController() instead.
   virtual PermissionControllerDelegate* GetPermissionControllerDelegate() = 0;
+
+  // Returns the ReduceAcceptLanguageControllerDelegate associated with that
+  // context if any, nullptr otherwise.
+  virtual ReduceAcceptLanguageControllerDelegate*
+  GetReduceAcceptLanguageControllerDelegate() = 0;
 
   // Returns the ClientHintsControllerDelegate associated with that context if
   // any, nullptr otherwise.

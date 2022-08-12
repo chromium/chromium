@@ -54,6 +54,7 @@
 #include "content/browser/origin_agent_cluster_isolation_state.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/process_lock.h"
+#include "content/browser/reduce_accept_language/reduce_accept_language_utils.h"
 #include "content/browser/renderer_host/cookie_utils.h"
 #include "content/browser/renderer_host/debug_urls.h"
 #include "content/browser/renderer_host/frame_tree.h"
@@ -96,6 +97,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_ui_data.h"
 #include "content/public/browser/network_service_instance.h"
+#include "content/public/browser/reduce_accept_language_controller_delegate.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/storage_partition.h"
@@ -1235,7 +1237,8 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
           base::TimeTicks() /* commit_sent */, std::string() /* srcdoc_value */,
           false /* should_load_data_url */,
           /*ancestor_or_self_has_cspee=*/
-          frame_tree_node->AncestorOrSelfHasCSPEE());
+          frame_tree_node->AncestorOrSelfHasCSPEE(),
+          std::string() /* reduced_accept_language */);
 
   // CreateRendererInitiated() should only be triggered when the navigation is
   // initiated by a frame in the same process.
@@ -1363,7 +1366,8 @@ NavigationRequest::CreateForSynchronousRendererCommit(
           base::TimeTicks() /* commit_sent */, std::string() /* srcdoc_value */,
           false /* should_load_data_url */,
           /*ancestor_or_self_has_cspee=*/
-          frame_tree_node->AncestorOrSelfHasCSPEE());
+          frame_tree_node->AncestorOrSelfHasCSPEE(),
+          std::string() /* reduced_accept_language */);
   blink::mojom::BeginNavigationParamsPtr begin_params =
       blink::mojom::BeginNavigationParams::New();
   std::unique_ptr<NavigationRequest> navigation_request(new NavigationRequest(
@@ -1710,6 +1714,23 @@ NavigationRequest::NavigationRequest(
           frame_tree_node_, commit_params_->frame_policy.container_policy,
           common_params_->url);
       headers.MergeFrom(client_hints_headers);
+    }
+
+    // Add reduced accept language header.
+    if (auto reduce_accept_lang_utils =
+            ReduceAcceptLanguageUtils::Create(browser_context)) {
+      // Add the Accept-Language header with the reduce accept language value.
+      // Chromium network stack won't overwrite the value if Accept-Language
+      // header was already added in the request header.
+      net::HttpRequestHeaders accept_language_headers;
+      absl::optional<std::string> reduced_accept_language =
+          reduce_accept_lang_utils.value()
+              .AddNavigationRequestAcceptLanguageHeaders(
+                  url::Origin::Create(common_params_->url), frame_tree_node_,
+                  &accept_language_headers);
+      commit_params_->reduced_accept_language =
+          reduced_accept_language.value_or("");
+      headers.MergeFrom(accept_language_headers);
     }
 
     headers.AddHeadersFromString(begin_params_->headers);
@@ -4480,6 +4501,20 @@ void NavigationRequest::OnRedirectChecksComplete(
     }
   }
 
+  // Add reduced accept language header to the current request.
+  if (auto reduce_accept_lang_utils =
+          ReduceAcceptLanguageUtils::Create(browser_context)) {
+    net::HttpRequestHeaders accept_language_headers;
+    absl::optional<std::string> reduced_accept_language =
+        reduce_accept_lang_utils.value()
+            .AddNavigationRequestAcceptLanguageHeaders(
+                url::Origin::Create(common_params_->url), frame_tree_node_,
+                &accept_language_headers);
+    commit_params_->reduced_accept_language =
+        reduced_accept_language.value_or("");
+    modified_headers.MergeFrom(accept_language_headers);
+  }
+
   net::HttpRequestHeaders cors_exempt_headers;
   std::swap(cors_exempt_headers, cors_exempt_request_headers_);
   loader_->FollowRedirect(std::move(removed_headers),
@@ -4872,6 +4907,18 @@ void NavigationRequest::CommitNavigation() {
                                      frame_tree_node_->current_frame_host()
                                          ->GetStoragePartition()
                                          ->GetCookieManagerForBrowserProcess());
+
+  if (auto reduce_accept_lang_utils =
+          ReduceAcceptLanguageUtils::Create(browser_context)) {
+    // TODO(crbug.com/1323776) Add supporting resend request after language
+    // negotiation.
+    if (response() && frame_tree_node_->IsOutermostMainFrame()) {
+      reduce_accept_lang_utils.value()
+          .ReadAndPersistAcceptLanguageForNavigation(
+              GetOriginToCommit(), GetRequestHeaders(),
+              response()->parsed_headers);
+    }
+  }
 
   // Generate a UKM source and track it on NavigationRequest. This will be
   // passed down to the blink::Document to be created, if any, and used for UKM

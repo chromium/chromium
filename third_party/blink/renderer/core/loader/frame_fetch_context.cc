@@ -40,6 +40,7 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "net/http/structured_headers.h"
 #include "services/network/public/cpp/client_hints.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-blink.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -175,7 +176,8 @@ struct FrameFetchContext::FrozenState final : GarbageCollected<FrozenState> {
               const String& user_agent,
               const absl::optional<UserAgentMetadata>& user_agent_metadata,
               bool is_svg_image_chrome_client,
-              bool is_prerendering)
+              bool is_prerendering,
+              const String& reduced_accept_language)
       : url(url),
         content_security_policy(content_security_policy),
         site_for_cookies(std::move(site_for_cookies)),
@@ -185,7 +187,8 @@ struct FrameFetchContext::FrozenState final : GarbageCollected<FrozenState> {
         user_agent(user_agent),
         user_agent_metadata(user_agent_metadata),
         is_svg_image_chrome_client(is_svg_image_chrome_client),
-        is_prerendering(is_prerendering) {}
+        is_prerendering(is_prerendering),
+        reduced_accept_language(reduced_accept_language) {}
 
   const KURL url;
   const scoped_refptr<const SecurityOrigin> parent_security_origin;
@@ -198,6 +201,7 @@ struct FrameFetchContext::FrozenState final : GarbageCollected<FrozenState> {
   const absl::optional<UserAgentMetadata> user_agent_metadata;
   const bool is_svg_image_chrome_client;
   const bool is_prerendering;
+  const String reduced_accept_language;
 
   void Trace(Visitor* visitor) const {
     visitor->Trace(content_security_policy);
@@ -456,6 +460,25 @@ void FrameFetchContext::AddClientHintsIfNecessary(
       image_info, prefers_color_scheme, request);
 }
 
+void FrameFetchContext::AddReducedAcceptLanguageIfNecessary(
+    ResourceRequest& request) {
+  // If the feature is enabled, then reduce accept language are allowed only on
+  // http and https.
+  if (!base::FeatureList::IsEnabled(network::features::kReduceAcceptLanguage)) {
+    return;
+  }
+
+  if (!request.Url().ProtocolIsInHTTPFamily())
+    return;
+
+  const String& reduced_accept_language = GetReducedAcceptLanguage();
+  if (!reduced_accept_language.IsEmpty() &&
+      request.HttpHeaderField(http_names::kAcceptLanguage).IsEmpty()) {
+    request.SetHttpHeaderField(http_names::kAcceptLanguage,
+                               reduced_accept_language.Ascii().c_str());
+  }
+}
+
 void FrameFetchContext::PopulateResourceRequest(
     ResourceType type,
     const FetchParameters::ResourceWidth& resource_width,
@@ -466,6 +489,7 @@ void FrameFetchContext::PopulateResourceRequest(
 
   ModifyRequestForCSP(request);
   AddClientHintsIfNecessary(resource_width, request);
+  AddReducedAcceptLanguageIfNecessary(request);
 }
 
 bool FrameFetchContext::IsPrerendering() const {
@@ -710,6 +734,14 @@ const ClientHintsPreferences FrameFetchContext::GetClientHintsPreferences()
   return frame->GetClientHintsPreferences();
 }
 
+String FrameFetchContext::GetReducedAcceptLanguage() const {
+  if (GetResourceFetcherProperties().IsDetached())
+    return frozen_state_->reduced_accept_language;
+  LocalFrame* frame = document_->GetFrame();
+  DCHECK(frame);
+  return frame->GetReducedAcceptLanguage().GetString();
+}
+
 float FrameFetchContext::GetDevicePixelRatio() const {
   if (GetResourceFetcherProperties().IsDetached())
     return frozen_state_->device_pixel_ratio;
@@ -739,7 +771,7 @@ FetchContext* FrameFetchContext::Detach() {
       Url(), GetContentSecurityPolicy(), GetSiteForCookies(),
       GetTopFrameOrigin(), client_hints_prefs, GetDevicePixelRatio(),
       user_agent, GetUserAgentMetadata(), IsSVGImageChromeClient(),
-      IsPrerendering());
+      IsPrerendering(), GetReducedAcceptLanguage());
   document_loader_ = nullptr;
   document_ = nullptr;
   return this;

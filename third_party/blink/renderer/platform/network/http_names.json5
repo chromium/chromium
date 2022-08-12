@@ -12,6 +12,7 @@
     "PUT",
     "Accept",
     "Accept-CH",
+    "Accept-Language",
     "Access-Control-Allow-External",
     "Access-Control-Allow-Headers",
     "Access-Control-Allow-Methods",

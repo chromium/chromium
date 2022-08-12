@@ -118,6 +118,8 @@ class OffTheRecordProfileImpl : public Profile {
   content::BackgroundSyncController* GetBackgroundSyncController() override;
   content::BrowsingDataRemoverDelegate* GetBrowsingDataRemoverDelegate()
       override;
+  content::ReduceAcceptLanguageControllerDelegate*
+  GetReduceAcceptLanguageControllerDelegate() override;
   std::unique_ptr<media::VideoDecodePerfHistory> CreateVideoDecodePerfHistory()
       override;
   content::FileSystemAccessPermissionContext*

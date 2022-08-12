@@ -713,6 +713,9 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   bool waiting_for_code_cache_ = false;
 
   std::unique_ptr<ExtraData> extra_data_;
+
+  // Reduced accept language for top-level frame.
+  const AtomicString reduced_accept_language_;
 };
 
 DECLARE_WEAK_IDENTIFIER_MAP(DocumentLoader);

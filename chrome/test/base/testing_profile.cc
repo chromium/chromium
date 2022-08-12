@@ -968,6 +968,11 @@ TestingProfile::GetBrowsingDataRemoverDelegate() {
   return ChromeBrowsingDataRemoverDelegateFactory::GetForProfile(this);
 }
 
+content::ReduceAcceptLanguageControllerDelegate*
+TestingProfile::GetReduceAcceptLanguageControllerDelegate() {
+  return nullptr;
+}
+
 bool TestingProfile::WasCreatedByVersionOrLater(const std::string& version) {
   return true;
 }

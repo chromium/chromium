@@ -1378,6 +1378,26 @@ TEST_F(FrameFetchContextTest, PopulateResourceRequestWhenDetached) {
   // Should not crash.
 }
 
+// TODO(victortan) Add corresponding web platform tests once feature on.
+TEST_F(FrameFetchContextTest, SetReduceAcceptLanguageWhenDetached) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      network::features::kReduceAcceptLanguage);
+
+  const KURL url("https://www.example.com/");
+  ResourceRequest request(url);
+
+  FetchParameters::ResourceWidth resource_width;
+  ResourceLoaderOptions options(/*world=*/nullptr);
+
+  document->GetFrame()->SetReducedAcceptLanguage("en-GB");
+  dummy_page_holder = nullptr;
+
+  GetFetchContext()->PopulateResourceRequest(ResourceType::kRaw, resource_width,
+                                             request, options);
+  EXPECT_EQ("en-GB", request.HttpHeaderField("Accept-Language"));
+}
+
 TEST_F(FrameFetchContextTest, SetFirstPartyCookieWhenDetached) {
   const KURL document_url("https://www2.example.com/foo/bar");
   RecreateFetchContext(document_url);

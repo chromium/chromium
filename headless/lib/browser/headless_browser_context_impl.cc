@@ -279,6 +279,11 @@ HeadlessBrowserContextImpl::GetBrowsingDataRemoverDelegate() {
   return nullptr;
 }
 
+content::ReduceAcceptLanguageControllerDelegate*
+HeadlessBrowserContextImpl::GetReduceAcceptLanguageControllerDelegate() {
+  return nullptr;
+}
+
 HeadlessWebContents* HeadlessBrowserContextImpl::CreateWebContents(
     HeadlessWebContents::Builder* builder) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

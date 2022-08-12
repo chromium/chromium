@@ -60,6 +60,8 @@ class WebEngineBrowserContext final : public content::BrowserContext {
       override;
   std::unique_ptr<media::VideoDecodePerfHistory> CreateVideoDecodePerfHistory()
       override;
+  content::ReduceAcceptLanguageControllerDelegate*
+  GetReduceAcceptLanguageControllerDelegate() override;
 
  private:
   // Contains URLRequestContextGetter required for resource loading.

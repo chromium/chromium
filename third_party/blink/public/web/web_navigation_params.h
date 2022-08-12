@@ -462,6 +462,20 @@ struct BLINK_EXPORT WebNavigationParams {
   // ::blink::mojom::CommitNavigationParams::ancestor_or_self_has_cspee for
   // where the value is coming from.
   bool ancestor_or_self_has_cspee = false;
+
+  // Reduced Accept-Language negotiates the language when navigating to a new
+  // document in the main frame, and the browser supplies the same negotiated
+  // language to the main frame and all its subframes when committing a
+  // navigation. This value will be used as the Accept-Language for subresource
+  // requests made by the document committed by this navigation. For example,
+  // when navigating to a URL with embedded image subresource request, the
+  // language negotiation only happens in top-level document. It will store the
+  // top-level document's negotiated language as `reduced_accept_language` here.
+  // Whenever fetching image subresources, the HTTP Accept-Language header will
+  // be set as the reduced accept language which was stored here. As we only do
+  // language negotiation on the top-level document, all subresource requests
+  // will inherit the Accept-Language header value of the top-level document.
+  WebString reduced_accept_language;
 };
 
 }  // namespace blink

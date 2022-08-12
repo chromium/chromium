@@ -15,6 +15,7 @@
 #include "content/public/test/mock_resource_context.h"
 #include "content/public/test/test_utils.h"
 #include "content/test/mock_background_sync_controller.h"
+#include "content/test/mock_reduce_accept_language_controller_delegate.h"
 #include "content/test/mock_ssl_host_state_delegate.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -57,6 +58,11 @@ TestBrowserContext::~TestBrowserContext() {
 
 base::FilePath TestBrowserContext::TakePath() {
   return browser_context_dir_.Take();
+}
+
+void TestBrowserContext::SetReduceAcceptLanguageControllerDelegate(
+    std::unique_ptr<MockReduceAcceptLanguageControllerDelegate> delegate) {
+  reduce_accept_language_controller_delegate_ = std::move(delegate);
 }
 
 void TestBrowserContext::SetSpecialStoragePolicy(
@@ -153,6 +159,11 @@ TestBrowserContext::GetBrowsingDataRemoverDelegate() {
   // Most BrowsingDataRemover tests do not require a delegate
   // (not even a mock one).
   return nullptr;
+}
+
+ReduceAcceptLanguageControllerDelegate*
+TestBrowserContext::GetReduceAcceptLanguageControllerDelegate() {
+  return reduce_accept_language_controller_delegate_.get();
 }
 
 }  // namespace content
