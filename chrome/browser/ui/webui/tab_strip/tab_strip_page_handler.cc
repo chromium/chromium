@@ -644,10 +644,11 @@ void TabStripPageHandler::GetThemeColors(GetThemeColorsCallback callback) {
 void TabStripPageHandler::GroupTab(int32_t tab_id,
                                    const std::string& group_id_string) {
   int tab_index = -1;
-  bool got_tab = extensions::ExtensionTabUtil::GetTabById(
-      tab_id, browser_->profile(), /*include_incognito=*/true, nullptr, nullptr,
-      nullptr, &tab_index);
-  DCHECK(got_tab);
+  if (!extensions::ExtensionTabUtil::GetTabById(
+          tab_id, browser_->profile(), /*include_incognito=*/true, nullptr,
+          nullptr, nullptr, &tab_index)) {
+    return;
+  }
 
   absl::optional<tab_groups::TabGroupId> group_id =
       tab_strip_ui::GetTabGroupIdFromString(
@@ -660,10 +661,11 @@ void TabStripPageHandler::GroupTab(int32_t tab_id,
 
 void TabStripPageHandler::UngroupTab(int32_t tab_id) {
   int tab_index = -1;
-  bool got_tab = extensions::ExtensionTabUtil::GetTabById(
-      tab_id, browser_->profile(), /*include_incognito=*/true, nullptr, nullptr,
-      nullptr, &tab_index);
-  DCHECK(got_tab);
+  if (!extensions::ExtensionTabUtil::GetTabById(
+          tab_id, browser_->profile(), /*include_incognito=*/true, nullptr,
+          nullptr, nullptr, &tab_index)) {
+    return;
+  }
 
   browser_->tab_strip_model()->RemoveFromGroup({tab_index});
 }
@@ -812,10 +814,11 @@ void TabStripPageHandler::ShowTabContextMenu(int32_t tab_id,
   gfx::PointF point(location_x, location_y);
   Browser* browser = nullptr;
   int tab_index = -1;
-  const bool got_tab = extensions::ExtensionTabUtil::GetTabById(
-      tab_id, browser_->profile(), true /* include_incognito */, &browser,
-      nullptr, nullptr, &tab_index);
-  CHECK(got_tab);
+  if (!extensions::ExtensionTabUtil::GetTabById(
+          tab_id, browser_->profile(), true /* include_incognito */, &browser,
+          nullptr, nullptr, &tab_index)) {
+    return;
+  }
 
   if (browser != browser_) {
     // TODO(crbug.com/1141573): Investigate how a context menu is being opened
