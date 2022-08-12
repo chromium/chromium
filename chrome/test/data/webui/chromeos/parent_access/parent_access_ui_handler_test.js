@@ -13,41 +13,43 @@ parent_access_ui_handler_tests.suiteName = 'ParentAccessUIHandlerTest';
 
 /** @enum {string} */
 parent_access_ui_handler_tests.TestNames = {
-  TestOnParentAccessResult: 'tests that parent access result was parsed',
+  TestOnParentAccessCallbackReceived:
+      'tests that parent access callback was parsed',
 };
 
 suite(parent_access_ui_handler_tests.suiteName, function() {
   const parentAccessUIHandler =
       parentAccessUi.mojom.ParentAccessUIHandler.getRemote();
   test(
-      parent_access_ui_handler_tests.TestNames.TestOnParentAccessResult,
+      parent_access_ui_handler_tests.TestNames
+          .TestOnParentAccessCallbackReceived,
       async function() {
         // Test with an unparsable/invalid result.
-        let result = await parentAccessUIHandler.onParentAccessResult(
+        let result = await parentAccessUIHandler.onParentAccessCallbackReceived(
             'INVALID_PARENT_ACCESS_RESULT');
         assertEquals(
-            parentAccessUi.mojom.ParentAccessResultStatus.kError,
-            result.status);
+            parentAccessUi.mojom.ParentAccessServerMessageType.kError,
+            result.message.type);
 
         // Decodes to a valid parent_access_callback with OnParentVerified.
         const on_verified_parent_access_callback =
             'ChwKGgoSVkFMSURfQUNDRVNTX1RPS0VOEgQIPBA8';
 
-        result = await parentAccessUIHandler.onParentAccessResult(
+        result = await parentAccessUIHandler.onParentAccessCallbackReceived(
             on_verified_parent_access_callback);
 
         assertEquals(
-            parentAccessUi.mojom.ParentAccessResultStatus.kParentVerified,
-            result.status);
+            parentAccessUi.mojom.ParentAccessServerMessageType.kParentVerified,
+            result.message.type);
 
-        // Decodes to a valid parent_access_callback with OnConsentDeclined.
+        // Decodes to ignore OnConsentDeclined.
         const on_consent_declined_parent_access_callback = 'EgA=';
 
-        result = await parentAccessUIHandler.onParentAccessResult(
+        result = await parentAccessUIHandler.onParentAccessCallbackReceived(
             on_consent_declined_parent_access_callback);
 
         assertEquals(
-            parentAccessUi.mojom.ParentAccessResultStatus.kConsentDeclined,
-            result.status);
+            parentAccessUi.mojom.ParentAccessServerMessageType.kIgnore,
+            result.message.type);
       });
 });

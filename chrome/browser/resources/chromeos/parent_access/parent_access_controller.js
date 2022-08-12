@@ -25,7 +25,7 @@ export class ParentAccessController extends PostMessageAPIServer {
     super(webviewElement, targetURL, originURLPrefix);
 
     /** @private {!PromiseResolver} */
-    this.parentAccessResultResolver_ = new PromiseResolver();
+    this.parentAccessCallbackReceivedResolver_ = new PromiseResolver();
     /** @private {!PromiseResolver} */
     this.initializationErrorResolver_ = new PromiseResolver();
 
@@ -49,10 +49,10 @@ export class ParentAccessController extends PostMessageAPIServer {
 
   /*
    * @return {!Promise<string>} A promise that resolves when a parent access
-   *     result was received.
+   *     callback was received.
    */
-  whenParentAccessResult() {
-    return this.parentAccessResultResolver_.promise;
+  whenParentAccessCallbackReceived() {
+    return this.parentAccessCallbackReceivedResolver_.promise;
   }
 
   /**
@@ -64,6 +64,8 @@ export class ParentAccessController extends PostMessageAPIServer {
    *     used by the handler.
    */
   parentAccessResult_(parentAccessResultProto) {
-    this.parentAccessResultResolver_.resolve(parentAccessResultProto);
+    this.parentAccessCallbackReceivedResolver_.resolve(parentAccessResultProto);
+    // Resets resolver to wait for the next callback.
+    this.parentAccessCallbackReceivedResolver_ = new PromiseResolver();
   }
 }

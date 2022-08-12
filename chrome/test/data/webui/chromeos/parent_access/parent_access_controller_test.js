@@ -15,7 +15,7 @@ parent_access_controller_tests.suiteName = 'ParentAccessControllerTest';
 
 /** @enum {string} */
 parent_access_controller_tests.TestNames = {
-  ParentAccessResultFnCalled:
+  ParentAccessCallbackReceivedFnCalled:
       'tests that parent access result was passed through',
 };
 
@@ -34,17 +34,18 @@ suite(parent_access_controller_tests.suiteName, function() {
   });
 
   test(
-      parent_access_controller_tests.TestNames.ParentAccessResultFnCalled,
+      parent_access_controller_tests.TestNames
+          .ParentAccessCallbackReceivedFnCalled,
       async function() {
         parentAccessController = new ParentAccessController(
             element, 'chrome://test', 'chrome://test');
 
         const parentAccessResult = await Promise.race([
-          parentAccessController.whenParentAccessResult(),
+          parentAccessController.whenParentAccessCallbackReceived(),
           parentAccessController.whenInitializationError(),
         ]);
 
         // Verify that the result received is the one set in test_content.html
-        assertEquals('1234567890', parentAccessResult);
+        assertEquals(0, parentAccessResult.message.type);
       });
 });

@@ -71,26 +71,31 @@ void ParentAccessUIHandlerImpl::OnAccessTokenFetchComplete(
       access_token_info.token);
 }
 
-void ParentAccessUIHandlerImpl::OnParentAccessResult(
-    const std::string& parent_access_result,
-    OnParentAccessResultCallback callback) {
-  std::string decoded_parent_access_result;
-  if (!base::Base64Decode(parent_access_result,
-                          &decoded_parent_access_result)) {
+void ParentAccessUIHandlerImpl::OnParentAccessCallbackReceived(
+    const std::string& encoded_parent_access_callback_proto,
+    OnParentAccessCallbackReceivedCallback callback) {
+  std::string decoded_parent_access_callback;
+  parent_access_ui::mojom::ParentAccessServerMessagePtr message =
+      parent_access_ui::mojom::ParentAccessServerMessage::New();
+  if (!base::Base64Decode(encoded_parent_access_callback_proto,
+                          &decoded_parent_access_callback)) {
     LOG(ERROR) << "ParentAccessHandler::ParentAccessResult: Error decoding "
                   "parent_access_result from base64";
-    std::move(callback).Run(
-        parent_access_ui::mojom::ParentAccessResultStatus::kError);
+    message->type =
+        parent_access_ui::mojom::ParentAccessServerMessageType::kError;
+    std::move(callback).Run(std::move(message));
     return;
   }
 
   kids::platform::parentaccess::client::proto::ParentAccessCallback
       parent_access_callback;
-  if (!parent_access_callback.ParseFromString(decoded_parent_access_result)) {
+  if (!parent_access_callback.ParseFromString(decoded_parent_access_callback)) {
     LOG(ERROR) << "ParentAccessHandler::ParentAccessResult: Error parsing "
                   "decoded_parent_access_result to proto";
-    std::move(callback).Run(
-        parent_access_ui::mojom::ParentAccessResultStatus::kError);
+
+    message->type =
+        parent_access_ui::mojom::ParentAccessServerMessageType::kError;
+    std::move(callback).Run(std::move(message));
     return;
   }
 
@@ -99,19 +104,20 @@ void ParentAccessUIHandlerImpl::OnParentAccessResult(
   switch (parent_access_callback.callback_case()) {
     case kids::platform::parentaccess::client::proto::ParentAccessCallback::
         CallbackCase::kOnParentVerified:
-      std::move(callback).Run(
-          parent_access_ui::mojom::ParentAccessResultStatus::kParentVerified);
-      break;
-    case kids::platform::parentaccess::client::proto::ParentAccessCallback::
-        CallbackCase::kOnConsentDeclined:
-      std::move(callback).Run(
-          parent_access_ui::mojom::ParentAccessResultStatus::kConsentDeclined);
+
+      message->type = parent_access_ui::mojom::ParentAccessServerMessageType::
+          kParentVerified;
+
+      std::move(callback).Run(std::move(message));
       break;
     default:
-      std::move(callback).Run(
-          parent_access_ui::mojom::ParentAccessResultStatus::kError);
-      LOG(ERROR) << "ParentAccessHandler::ParentAccessResult: Unknown type of "
-                    "callback received";
+      LOG(ERROR)
+          << "ParentAccessHandler::OnParentAccessCallback: Unknown type of "
+             "callback received and ignored: "
+          << parent_access_callback.callback_case();
+      message->type =
+          parent_access_ui::mojom::ParentAccessServerMessageType::kIgnore;
+      std::move(callback).Run(std::move(message));
       break;
   }
 }

@@ -113,31 +113,57 @@ Polymer({
     this.server =
         new ParentAccessController(webview, url.toString(), eventOriginFilter);
 
-    const parentAccessResult = await Promise.race([
-      this.server.whenParentAccessResult(),
-      this.server.whenInitializationError(),
-    ]);
 
-    // Notify ParentAccessUIHandler that we received a result.
-    const decodedParentAccessResult =
-        await parentAccessUIHandler.onParentAccessResult(parentAccessResult);
+    // What follows is the main message handling loop.  The received base64
+    // encoded proto messages are passed to c++ handler for proto decoding
+    // before they are handled. When the following while loop terminates, the
+    // flow will either proceed to the next steps, or show a terminal error.
+    let lastServerMessageType =
+        parentAccessUi.mojom.ParentAccessServerMessageType.kIgnore;
 
-    switch (decodedParentAccessResult.status) {
-      case parentAccessUi.mojom.ParentAccessResultStatus.kParentVerified:
-        this.dispatchEvent(new CustomEvent('show-after', {
-          bubbles: true,
-          composed: true,
-        }));
-        break;
+    while (lastServerMessageType ===
+           parentAccessUi.mojom.ParentAccessServerMessageType.kIgnore) {
+      const parentAccessCallback = await Promise.race([
+        this.server.whenParentAccessCallbackReceived(),
+        this.server.whenInitializationError(),
+      ]);
 
-      // ConsentDeclined result status is not currently supported, so show an
-      // error.
-      case parentAccessUi.mojom.ParentAccessResultStatus.kConsentDeclined:
-      case parentAccessUi.mojom.ParentAccessResultStatus.kError:
-      default:
+      // Notify ParentAccessUIHandler that we received a ParentAccessCallback.
+      // The handler will attempt to parse the callback and return the status.
+      const parentAccessServerMessage =
+          await parentAccessUIHandler.onParentAccessCallbackReceived(
+              parentAccessCallback);
+
+      // If the parentAccessCallback couldn't be parsed, then an initialization
+      // or communication error occurred between the ParentAccessController and
+      // the server.
+      if (!(parentAccessServerMessage instanceof Object)) {
+        console.error('Error initializing ParentAccessController');
         // TODO(b/200187536): show error page
         break;
-    }
+      }
 
+      lastServerMessageType = parentAccessServerMessage.message.type;
+
+      switch (lastServerMessageType) {
+        case parentAccessUi.mojom.ParentAccessServerMessageType.kParentVerified:
+          this.dispatchEvent(new CustomEvent('show-after', {
+            bubbles: true,
+            composed: true,
+          }));
+          break;
+
+        case parentAccessUi.mojom.ParentAccessServerMessageType.kError:
+          // TODO(b/200187536): show error page
+          break;
+
+        case parentAccessUi.mojom.ParentAccessServerMessageType.kIgnore:
+          continue;
+
+        default:
+          // TODO(b/200187536): show error page
+          break;
+      }
+    }
   },
 });

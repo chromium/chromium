@@ -45,10 +45,12 @@ var ParentAccessControllerTest = class extends testing.Test {
   }
 };
 
-TEST_F('ParentAccessControllerTest', 'ParentAccessResultFnCalled', function() {
-  this.runMochaTest(
-      parent_access_controller_tests.TestNames.ParentAccessResultFnCalled);
-});
+TEST_F(
+    'ParentAccessControllerTest', 'ParentAccessCallbackReceivedFnCalled',
+    function() {
+      this.runMochaTest(parent_access_controller_tests.TestNames
+                            .ParentAccessCallbackReceivedFnCalled);
+    });
 
 var ParentAccessUITest = class extends PolymerTest {
   /** @override */
@@ -101,7 +103,9 @@ var ParentAccessUIHandlerTest = class extends testing.Test {
   }
 };
 
-TEST_F('ParentAccessUIHandlerTest', 'TestOnParentAccessResult', function() {
-  this.runMochaTest(
-      parent_access_ui_handler_tests.TestNames.TestOnParentAccessResult);
-});
+TEST_F(
+    'ParentAccessUIHandlerTest', 'TestOnParentAccessCallbackReceived',
+    function() {
+      this.runMochaTest(parent_access_ui_handler_tests.TestNames
+                            .TestOnParentAccessCallbackReceived);
+    });

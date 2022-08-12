@@ -41,8 +41,13 @@ class ParentAccessUIHandlerImpl
 
   // parent_access_ui::mojom::ParentAccessUIHandler overrides:
   void GetOAuthToken(GetOAuthTokenCallback callback) override;
-  void OnParentAccessResult(const std::string& parent_access_result,
-                            OnParentAccessResultCallback callback) override;
+  // Called when the message from the parent access server app was received.
+  // encoded_parent_access_callback is a base64 encoded protocol buffer with
+  // the received message. 'callback' is a mojo callback used to pass the
+  // parsed message back to the WebUI.
+  void OnParentAccessCallbackReceived(
+      const std::string& encoded_parent_access_callback_proto,
+      OnParentAccessCallbackReceivedCallback callback) override;
 
  private:
   void OnAccessTokenFetchComplete(GetOAuthTokenCallback callback,

@@ -16,7 +16,9 @@ class TestParentAccessAPIClient extends PostMessageAPIClient {
    * @override
    */
   onInitialized() {
-    this.callApiFn('onParentAccessResult', ['1234567890']);
+    // The parameter roughly matches a ParentVerified typed Mojo struct that the
+    // C++ handler would return to the WebUI.
+    this.callApiFn('onParentAccessResult', [{message: {type: 0}}]);
   }
 }
 
