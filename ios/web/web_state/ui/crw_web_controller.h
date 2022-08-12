@@ -24,6 +24,7 @@ enum class WKNavigationState;
 
 }  // namespace web
 
+@class CRWContextMenuItem;
 @class CRWJSInjectionReceiver;
 @protocol CRWScrollableContent;
 @protocol CRWSwipeRecognizerProvider;
@@ -229,6 +230,11 @@ class WebStateImpl;
 // Injects the windowID into the main frame of the current webpage.
 // TODO(crbug.com/905939): Remove WindowID.
 - (void)injectWindowID;
+
+// Shows a custom iOS context menu with the given `items` for options targeted
+// to the data visible in given window `rect`.
+- (void)showMenuWithItems:(NSArray<CRWContextMenuItem*>*)items
+                     rect:(CGRect)rect;
 
 #pragma mark Navigation Message Handlers
 

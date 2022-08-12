@@ -10,6 +10,7 @@
 #import "ios/web/common/crw_viewport_adjustment_container.h"
 #import "ios/web/common/crw_web_view_content_view.h"
 #include "ios/web/common/features.h"
+#import "ios/web/public/ui/crw_context_menu_item.h"
 #import "ios/web/web_state/ui/crw_web_view_proxy_impl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -27,7 +28,9 @@
 
 @end
 
-@implementation CRWWebControllerContainerView
+@implementation CRWWebControllerContainerView {
+  NSMutableDictionary<NSString*, ProceduralBlock>* _currentMenuItems;
+}
 @synthesize webViewContentView = _webViewContentView;
 @synthesize delegate = _delegate;
 
@@ -165,6 +168,80 @@
 - (void)drawRect:(CGRect)rect
     forViewPrintFormatter:(UIViewPrintFormatter*)formatter {
   [self.webViewContentView.webView drawRect:rect];
+}
+
+#pragma mark Custom Context Menu
+
+- (void)showMenuWithItems:(NSArray<CRWContextMenuItem*>*)items
+                     rect:(CGRect)rect {
+  [self becomeFirstResponder];
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(didHideMenuNotification)
+             name:UIMenuControllerDidHideMenuNotification
+           object:nil];
+
+  _currentMenuItems = [[NSMutableDictionary alloc] init];
+  NSMutableArray* menuItems = [[NSMutableArray alloc] init];
+  for (CRWContextMenuItem* item in items) {
+    UIMenuItem* menuItem =
+        [[UIMenuItem alloc] initWithTitle:item.title
+                                   action:NSSelectorFromString(item.ID)];
+    [menuItems addObject:menuItem];
+
+    _currentMenuItems[item.ID] = item.action;
+  }
+
+  UIMenuController* menu = [UIMenuController sharedMenuController];
+  menu.menuItems = menuItems;
+
+  [menu showMenuFromView:self rect:rect];
+}
+
+// Called when menu is dismissed for cleanup.
+- (void)didHideMenuNotification {
+  [[NSNotificationCenter defaultCenter]
+      removeObserver:self
+                name:UIMenuControllerDidHideMenuNotification
+              object:nil];
+  _currentMenuItems = nil;
+}
+
+// Checks is selector is one for an item of the custom menu and if so, tell objc
+// runtime that it exists, even if it doesn't.
+- (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
+  if (_currentMenuItems[NSStringFromSelector(action)]) {
+    return YES;
+  }
+  return [super canPerformAction:action withSender:sender];
+}
+
+// Catches a menu item selector and replace with `selectedMenuItemWithID` so it
+// passes the test made to check is selector exists.
+- (NSMethodSignature*)methodSignatureForSelector:(SEL)sel {
+  if (_currentMenuItems[NSStringFromSelector(sel)]) {
+    return
+        [super methodSignatureForSelector:@selector(selectedMenuItemWithID:)];
+  }
+  return [super methodSignatureForSelector:sel];
+}
+
+// Catches invovation of a menu item selector and forward to
+// `selectedMenuItemWithID` tagging on the menu item id for recognition.
+- (void)forwardInvocation:(NSInvocation*)invocation {
+  NSString* sel = NSStringFromSelector(invocation.selector);
+  if (_currentMenuItems[sel]) {
+    [self selectedMenuItemWithID:sel];
+    return;
+  }
+  [super forwardInvocation:invocation];
+}
+
+// Triggers the action for the menu item with given `ID`.
+- (void)selectedMenuItemWithID:(NSString*)ID {
+  if (_currentMenuItems[ID]) {
+    _currentMenuItems[ID]();
+  }
 }
 
 @end

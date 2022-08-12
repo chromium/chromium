@@ -190,4 +190,9 @@ UIView* GetFirstResponderSubview(UIView* view) {
   [_webController surfaceSizeChanged];
 }
 
+- (void)showMenuWithItems:(NSArray<CRWContextMenuItem*>*)items
+                     rect:(CGRect)rect {
+  [_webController showMenuWithItems:items rect:rect];
+}
+
 @end
