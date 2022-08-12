@@ -216,8 +216,7 @@ TEST_F(VisitAnnotationsDatabaseTest, UpdateContentAnnotationsForVisit) {
   EXPECT_EQ(final.alternative_title, "New alternative title");
 }
 
-TEST_F(VisitAnnotationsDatabaseTest,
-       AddClusters_GetCluster_GetClusterVisit_GetClusterKeywords) {
+TEST_F(VisitAnnotationsDatabaseTest, AddClusters_GetCluster_GetClusterVisit) {
   // Test `AddClusters()`.
 
   // Cluster without visits shouldn't be added.
@@ -354,10 +353,7 @@ TEST_F(VisitAnnotationsDatabaseTest, DeleteAnnotationsForVisit) {
   AddContextAnnotationsForVisit(1, {});
   AddContentAnnotationsForVisit(2, {});
   AddContextAnnotationsForVisit(2, {});
-  auto cluster = CreateCluster({1, 2});
-  cluster.keyword_to_data_map[u"keyword1"];
-  cluster.keyword_to_data_map[u"keyword2"];
-  AddClusters({cluster});
+  AddCluster({1, 2});
 
   VisitContentAnnotations got_content_annotations;
   VisitContextAnnotations got_context_annotations;
@@ -366,11 +362,10 @@ TEST_F(VisitAnnotationsDatabaseTest, DeleteAnnotationsForVisit) {
   EXPECT_TRUE(GetContextAnnotationsForVisit(1, &got_context_annotations));
   EXPECT_TRUE(GetContentAnnotationsForVisit(2, &got_content_annotations));
   EXPECT_TRUE(GetContextAnnotationsForVisit(2, &got_context_annotations));
-  EXPECT_EQ(GetCluster(1).cluster_id, 1);
   EXPECT_THAT(GetVisitIdsInCluster(1), UnorderedElementsAre(1, 2));
   EXPECT_EQ(GetClusterIdContainingVisit(1), 1);
   EXPECT_EQ(GetClusterIdContainingVisit(2), 1);
-  EXPECT_EQ(GetClusterKeywords(1).size(), 2u);
+  EXPECT_EQ(GetCluster(1).cluster_id, 1);
 
   // Delete 1 visit. Make sure the tables are updated, but the cluster remains.
   DeleteAnnotationsForVisit(1);
@@ -378,11 +373,10 @@ TEST_F(VisitAnnotationsDatabaseTest, DeleteAnnotationsForVisit) {
   EXPECT_FALSE(GetContextAnnotationsForVisit(1, &got_context_annotations));
   EXPECT_TRUE(GetContentAnnotationsForVisit(2, &got_content_annotations));
   EXPECT_TRUE(GetContextAnnotationsForVisit(2, &got_context_annotations));
-  EXPECT_EQ(GetCluster(1).cluster_id, 1);
   EXPECT_THAT(GetVisitIdsInCluster(1), UnorderedElementsAre(2));
   EXPECT_EQ(GetClusterIdContainingVisit(1), 0);
   EXPECT_EQ(GetClusterIdContainingVisit(2), 1);
-  EXPECT_EQ(GetClusterKeywords(1).size(), 2u);
+  EXPECT_EQ(GetCluster(1).cluster_id, 1);
 
   // Delete the 2nd visit. Make sure the cluster is removed.
   DeleteAnnotationsForVisit(2);
@@ -390,56 +384,31 @@ TEST_F(VisitAnnotationsDatabaseTest, DeleteAnnotationsForVisit) {
   EXPECT_FALSE(GetContextAnnotationsForVisit(1, &got_context_annotations));
   EXPECT_FALSE(GetContentAnnotationsForVisit(2, &got_content_annotations));
   EXPECT_FALSE(GetContextAnnotationsForVisit(2, &got_context_annotations));
-  EXPECT_EQ(GetCluster(1).cluster_id, 0);
   EXPECT_TRUE(GetVisitIdsInCluster(1).empty());
   EXPECT_EQ(GetClusterIdContainingVisit(1), 0);
   EXPECT_EQ(GetClusterIdContainingVisit(2), 0);
-  EXPECT_EQ(GetClusterKeywords(1).size(), 0u);
+  EXPECT_EQ(GetCluster(1).cluster_id, 0);
 }
 
 TEST_F(VisitAnnotationsDatabaseTest, AddClusters_DeleteClusters) {
   AddClusters(CreateClusters({{3, 2, 5}, {3, 2, 5}, {6}}));
 
-  auto cluster_with_keyword_data = CreateCluster({10});
-  cluster_with_keyword_data.keyword_to_data_map[u"keyword1"];
-  cluster_with_keyword_data.keyword_to_data_map[u"keyword2"];
-  AddClusters({cluster_with_keyword_data});
-
-  EXPECT_EQ(GetCluster(1).cluster_id, 1);
-  EXPECT_EQ(GetCluster(2).cluster_id, 2);
-  EXPECT_EQ(GetCluster(3).cluster_id, 3);
-  EXPECT_EQ(GetCluster(4).cluster_id, 4);
   EXPECT_THAT(GetVisitIdsInCluster(1), ElementsAre(5, 3, 2));
   EXPECT_THAT(GetVisitIdsInCluster(2), ElementsAre(5, 3, 2));
   EXPECT_THAT(GetVisitIdsInCluster(3), ElementsAre(6));
-  EXPECT_THAT(GetVisitIdsInCluster(4), ElementsAre(10));
-  EXPECT_EQ(GetClusterKeywords(4).size(), 2u);
 
   DeleteClusters({});
 
-  EXPECT_EQ(GetCluster(1).cluster_id, 1);
-  EXPECT_EQ(GetCluster(2).cluster_id, 2);
-  EXPECT_EQ(GetCluster(3).cluster_id, 3);
-  EXPECT_EQ(GetCluster(4).cluster_id, 4);
   EXPECT_THAT(GetVisitIdsInCluster(1), ElementsAre(5, 3, 2));
   EXPECT_THAT(GetVisitIdsInCluster(2), ElementsAre(5, 3, 2));
   EXPECT_THAT(GetVisitIdsInCluster(3), ElementsAre(6));
-  EXPECT_THAT(GetVisitIdsInCluster(4), ElementsAre(10));
-  EXPECT_EQ(GetClusterKeywords(4).size(), 2u);
 
-  DeleteClusters({1, 3, 4, 5});
+  DeleteClusters({1, 3, 4});
 
-  EXPECT_EQ(GetCluster(1).cluster_id, 0);
-  EXPECT_EQ(GetCluster(2).cluster_id, 2);
-  EXPECT_EQ(GetCluster(3).cluster_id, 0);
-  EXPECT_EQ(GetCluster(4).cluster_id, 0);
-  EXPECT_EQ(GetCluster(5).cluster_id, 0);
   EXPECT_THAT(GetVisitIdsInCluster(1), ElementsAre());
   EXPECT_THAT(GetVisitIdsInCluster(2), ElementsAre(5, 3, 2));
   EXPECT_THAT(GetVisitIdsInCluster(3), ElementsAre());
   EXPECT_THAT(GetVisitIdsInCluster(4), ElementsAre());
-  EXPECT_THAT(GetVisitIdsInCluster(5), ElementsAre());
-  EXPECT_TRUE(GetClusterKeywords(4).empty());
 }
 
 }  // namespace history

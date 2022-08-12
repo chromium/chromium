@@ -76,8 +76,7 @@ class VisitAnnotationsDatabase {
   // entries for any `Cluster` that it failed to add.
   void AddClusters(const std::vector<Cluster>& clusters);
 
-  // Get a `Cluster`. Does not include the cluster's `visits` or
-  // `keyword_to_data_map`.
+  // Get a `Cluster`.
   Cluster GetCluster(int64_t cluster_id);
 
   // Get the most recent clusters within the constraints. The most recent visit
@@ -95,10 +94,6 @@ class VisitAnnotationsDatabase {
   // Return the ID of the cluster containing `visit_id`. Returns 0 if `visit_id`
   // is not in a cluster.`
   int64_t GetClusterIdContainingVisit(VisitID visit_id);
-
-  // Return the keyword data associated with `cluster_id`.
-  base::flat_map<std::u16string, ClusterKeywordData> GetClusterKeywords(
-      int64_t cluster_id);
 
   // Delete `Cluster`s from the table.
   void DeleteClusters(const std::vector<int64_t>& cluster_ids);

@@ -200,17 +200,6 @@ bool VisitAnnotationsDatabase::InitVisitAnnotationsTables() {
   if (!CreateClustersAndVisitsTableAndIndex())
     return false;
 
-  // Represents the one-to-many relationship of `Cluster`s and
-  // `ClusterKeywordData`s.
-  if (!GetDB().Execute("CREATE TABLE IF NOT EXISTS cluster_keywords("
-                       "cluster_id INTEGER NOT NULL,"
-                       "keyword VARCHAR NOT NULL,"
-                       "type INTEGER NOT NULL,"
-                       "score NUMERIC NOT NULL,"
-                       "collections VARCHAR NOT NULL)")) {
-    return false;
-  }
-
   return true;
 }
 
@@ -428,11 +417,6 @@ void VisitAnnotationsDatabase::AddClusters(
       "(cluster_id,visit_id,score,engagement_score,url_for_deduping,"
       "normalized_url,url_for_display)"
       "VALUES(?,?,?,?,?,?,?)"));
-  sql::Statement cluster_keywords_statement(
-      GetDB().GetCachedStatement(SQL_FROM_HERE,
-                                 "INSERT INTO cluster_keywords"
-                                 "(cluster_id,keyword,type,score,collections)"
-                                 "VALUES(?,?,?,?,?)"));
 
   for (const auto& cluster : clusters) {
     if (cluster.visits.empty())
@@ -472,23 +456,6 @@ void VisitAnnotationsDatabase::AddClusters(
             << "cluster_id = " << cluster_id << ", visit_id = " << visit_id;
       }
     });
-
-    // Insert each keyword into 'cluster_keywords'.
-    for (const auto& [keyword, keyword_data] : cluster.keyword_to_data_map) {
-      cluster_keywords_statement.Reset(true);
-      cluster_keywords_statement.BindInt64(0, cluster_id);
-      cluster_keywords_statement.BindString16(1, keyword);
-      cluster_keywords_statement.BindInt(2, keyword_data.type);
-      cluster_keywords_statement.BindDouble(3, keyword_data.score);
-      cluster_keywords_statement.BindString(
-          4, keyword_data.entity_collections.empty()
-                 ? ""
-                 : keyword_data.entity_collections[0]);
-      if (!cluster_keywords_statement.Run()) {
-        DVLOG(0) << "Failed to execute 'cluster_keywords' insert statement:  "
-                 << "cluster_id = " << cluster_id << ", keyword = " << keyword;
-      }
-    }
   }
 }
 
@@ -605,27 +572,6 @@ int64_t VisitAnnotationsDatabase::GetClusterIdContainingVisit(
   return 0;
 }
 
-base::flat_map<std::u16string, ClusterKeywordData>
-VisitAnnotationsDatabase::GetClusterKeywords(int64_t cluster_id) {
-  DCHECK_GT(cluster_id, 0);
-  sql::Statement statement(
-      GetDB().GetCachedStatement(SQL_FROM_HERE,
-                                 "SELECT keyword,type,score,collections "
-                                 "FROM cluster_keywords "
-                                 "WHERE cluster_id=?"));
-  statement.BindInt64(0, cluster_id);
-
-  base::flat_map<std::u16string, ClusterKeywordData> keyword_data;
-  while (statement.Step()) {
-    keyword_data[statement.ColumnString16(0)] = {
-        static_cast<ClusterKeywordData::ClusterKeywordType>(
-            statement.ColumnInt(1)),
-        static_cast<float>(statement.ColumnDouble(2)),
-        DeserializeFromStringColumn(statement.ColumnString(3))};
-  }
-  return keyword_data;
-}
-
 void VisitAnnotationsDatabase::DeleteClusters(
     const std::vector<int64_t>& cluster_ids) {
   if (cluster_ids.empty())
@@ -636,9 +582,6 @@ void VisitAnnotationsDatabase::DeleteClusters(
 
   sql::Statement clusters_and_visits_statement(GetDB().GetCachedStatement(
       SQL_FROM_HERE, "DELETE FROM clusters_and_visits WHERE cluster_id=?"));
-
-  sql::Statement cluster_keywords_statement(GetDB().GetCachedStatement(
-      SQL_FROM_HERE, "DELETE FROM cluster_keywords WHERE cluster_id=?"));
 
   for (auto cluster_id : cluster_ids) {
     clusters_statement.Reset(true);
@@ -652,13 +595,6 @@ void VisitAnnotationsDatabase::DeleteClusters(
     clusters_and_visits_statement.BindInt64(0, cluster_id);
     if (!clusters_and_visits_statement.Run()) {
       DVLOG(0) << "Failed to execute clusters_and_visits delete statement:  "
-               << "cluster_id = " << cluster_id;
-    }
-
-    cluster_keywords_statement.Reset(true);
-    cluster_keywords_statement.BindInt64(0, cluster_id);
-    if (!cluster_keywords_statement.Run()) {
-      DVLOG(0) << "Failed to execute cluster_keywords delete statement:  "
                << "cluster_id = " << cluster_id;
     }
   }
