@@ -369,7 +369,7 @@ void WaylandEventSource::OnTouchPressEvent(
   TouchEvent event(ET_TOUCH_PRESSED, location, location, timestamp, details,
                    keyboard_modifiers_);
   DCHECK_EQ(dispatch_policy, DispatchPolicy::kOnFrame);
-  touch_frames_.push_front(
+  touch_frames_.push_back(
       std::make_unique<TouchFrame>(event, base::NullCallback()));
 }
 
@@ -394,7 +394,7 @@ void WaylandEventSource::OnTouchReleaseEvent(
     SetTouchTargetAndDispatchTouchEvent(&event);
     OnTouchReleaseInternal(id);
   } else {
-    touch_frames_.push_front(std::make_unique<TouchFrame>(
+    touch_frames_.push_back(std::make_unique<TouchFrame>(
         event, base::BindOnce(&WaylandEventSource::OnTouchReleaseInternal,
                               base::Unretained(this), id)));
   }
@@ -467,7 +467,7 @@ void WaylandEventSource::OnTouchMotionEvent(
   if (dispatch_policy == DispatchPolicy::kImmediate) {
     SetTouchTargetAndDispatchTouchEvent(&event);
   } else {
-    touch_frames_.push_front(
+    touch_frames_.push_back(
         std::make_unique<TouchFrame>(event, base::NullCallback()));
   }
 }
