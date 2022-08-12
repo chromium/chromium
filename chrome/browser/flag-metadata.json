@@ -5369,7 +5369,7 @@
   },
   {
     "name": "query-tiles-local-ordering",
-    "owners": [ "hesen", "qinmin" ],
+    "owners": [ "qinmin" ],
     "expiry_milestone": 100
   },
   {
