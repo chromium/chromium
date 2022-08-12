@@ -4,7 +4,8 @@
       <div id='parent-div' style='padding-top: 20px;'>
           <div id='inspected' style='padding-top: 55px; margin-top: 33px !important;'></div>
           <div id='child-div'></div>
-      </div>`,
+      </div>
+      <div id='shorthand-div' style='margin: 0; margin-top: 5px; padding: var(--x); border: 1px solid black;'></div>`,
       'The test verifies functionality of protocol method CSS.getMatchedStylesForNode and CSS.getInlineStylesForNode.');
 
   await dp.DOM.enable();
@@ -24,6 +25,15 @@
 
   // Test on Element node
   await cssHelper.loadAndDumpInlineAndMatchingRules(documentNodeId, '#inspected');
+
+  const shorthandNodeId = await cssHelper.requestNodeId(documentNodeId, '#shorthand-div');
+  const shorthandResult = await dp.CSS.getInlineStylesForNode({'nodeId': shorthandNodeId});
+  testRunner.log('checking parsed longhand components from shorthand properties');
+  for (const property of shorthandResult.result.inlineStyle.cssProperties) {
+    if (property.longhandProperties) {
+      testRunner.log(property.longhandProperties);
+    }
+  }
   testRunner.completeTest();
 });
 

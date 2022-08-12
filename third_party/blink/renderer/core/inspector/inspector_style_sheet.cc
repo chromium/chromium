@@ -43,7 +43,10 @@
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/css_supports_rule.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_observer.h"
+#include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
+#include "third_party/blink/renderer/core/css/properties/shorthand.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
@@ -71,7 +74,8 @@ namespace blink {
 
 namespace {
 
-static const CSSParserContext* ParserContextForDocument(Document* document) {
+static const CSSParserContext* ParserContextForDocument(
+    const Document* document) {
   // Fallback to an insecure context parser if no document is present.
   return document ? MakeGarbageCollected<CSSParserContext>(*document)
                   : StrictCSSParserContext(SecureContextMode::kInsecureContext);
@@ -989,6 +993,10 @@ std::unique_ptr<protocol::CSS::CSSStyle> InspectorStyle::StyleWithProperties() {
         }
       }
     }
+
+    if (auto longhandProperties = LonghandProperties(property_entry))
+      property->setLonghandProperties(std::move(longhandProperties));
+
     properties_object->emplace_back(std::move(property));
   }
 
@@ -1026,6 +1034,43 @@ String InspectorStyle::ShorthandValue(const String& shorthand_property) {
     builder.Append(" !important");
 
   return builder.ToString();
+}
+
+std::unique_ptr<protocol::Array<protocol::CSS::CSSProperty>>
+InspectorStyle::LonghandProperties(
+    const CSSPropertySourceData& property_entry) {
+  CSSTokenizer tokenizer(property_entry.value);
+  const auto tokens = tokenizer.TokenizeToEOF();
+  CSSParserTokenRange range(tokens);
+  CSSPropertyID property_id =
+      CssPropertyID(style_->GetExecutionContext(), property_entry.name);
+  if (property_id == CSSPropertyID::kInvalid ||
+      property_id == CSSPropertyID::kVariable)
+    return nullptr;
+  const CSSProperty& property =
+      CSSProperty::Get(ResolveCSSPropertyID(property_id));
+  if (!property.IsProperty() || !property.IsShorthand())
+    return nullptr;
+  const auto local_context =
+      CSSParserLocalContext().WithCurrentShorthand(property_id);
+  HeapVector<CSSPropertyValue, 64> longhand_properties;
+  if (To<Shorthand>(property).ParseShorthand(
+          property_entry.important, range,
+          *ParserContextForDocument(parent_style_sheet_->GetDocument()),
+          local_context, longhand_properties)) {
+    auto result =
+        std::make_unique<protocol::Array<protocol::CSS::CSSProperty>>();
+    for (auto longhand_property : longhand_properties) {
+      std::unique_ptr<protocol::CSS::CSSProperty> longhand =
+          protocol::CSS::CSSProperty::create()
+              .setName(longhand_property.Name().ToAtomicString())
+              .setValue(longhand_property.Value()->CssText())
+              .build();
+      result->emplace_back(std::move(longhand));
+    }
+    return result;
+  }
+  return nullptr;
 }
 
 void InspectorStyle::Trace(Visitor* visitor) const {

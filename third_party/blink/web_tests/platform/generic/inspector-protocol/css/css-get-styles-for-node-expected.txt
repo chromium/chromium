@@ -84,4 +84,93 @@ Dumping inherited rules:
         background-color: green; @[42:12-42:36]
         background-color: green; @[undefined-undefined]
     }
+checking parsed longhand components from shorthand properties
+[
+    [0] : {
+        name : margin-top
+        value : 0px
+    }
+    [1] : {
+        name : margin-right
+        value : 0px
+    }
+    [2] : {
+        name : margin-bottom
+        value : 0px
+    }
+    [3] : {
+        name : margin-left
+        value : 0px
+    }
+]
+[
+    [0] : {
+        name : border-top-width
+        value : 1px
+    }
+    [1] : {
+        name : border-right-width
+        value : 1px
+    }
+    [2] : {
+        name : border-bottom-width
+        value : 1px
+    }
+    [3] : {
+        name : border-left-width
+        value : 1px
+    }
+    [4] : {
+        name : border-top-style
+        value : solid
+    }
+    [5] : {
+        name : border-right-style
+        value : solid
+    }
+    [6] : {
+        name : border-bottom-style
+        value : solid
+    }
+    [7] : {
+        name : border-left-style
+        value : solid
+    }
+    [8] : {
+        name : border-top-color
+        value : black
+    }
+    [9] : {
+        name : border-right-color
+        value : black
+    }
+    [10] : {
+        name : border-bottom-color
+        value : black
+    }
+    [11] : {
+        name : border-left-color
+        value : black
+    }
+    [12] : {
+        name : border-image-source
+        value : initial
+    }
+    [13] : {
+        name : border-image-slice
+        value : initial
+    }
+    [14] : {
+        name : border-image-width
+        value : initial
+    }
+    [15] : {
+        name : border-image-outset
+        value : initial
+    }
+    [16] : {
+        name : border-image-repeat
+        value : initial
+    }
+]
 

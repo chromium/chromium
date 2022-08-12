@@ -77,6 +77,8 @@ class InspectorStyle final : public GarbageCollected<InspectorStyle> {
   void PopulateAllProperties(Vector<CSSPropertySourceData>& result);
   std::unique_ptr<protocol::CSS::CSSStyle> StyleWithProperties();
   String ShorthandValue(const String& shorthand_property);
+  std::unique_ptr<protocol::Array<protocol::CSS::CSSProperty>>
+  LonghandProperties(const CSSPropertySourceData& property_entry);
 
   Member<CSSStyleDeclaration> style_;
   Member<CSSRuleSourceData> source_data_;
