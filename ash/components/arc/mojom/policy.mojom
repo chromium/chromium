@@ -59,6 +59,7 @@ enum CommandResultType {
   SUCCESS = 2,  // The command was successfully executed.
 };
 
+// Deprecated method IDs: 5
 // Next Method ID: 9
 interface PolicyHost {
   // Get policies from Chrome OS, as JSON-encoded dictionary with the policies'
@@ -83,11 +84,6 @@ interface PolicyHost {
   [MinVersion=3] ReportCloudDpsFailed@4(mojo_base.mojom.Time time,
                                       string package_name,
                                       InstallErrorReason reason);
-
-  // Reports that packages were scheduled for force installing
-  // via Play Store directly.
-  [MinVersion=5] ReportDirectInstall@5(mojo_base.mojom.Time time,
-                                     array<string> package_names);
 
   // Reports that CloudDPC is giving up after several retries to
   // force install the packages.

@@ -612,15 +612,6 @@ void ArcPolicyBridge::ReportCloudDpsFailed(base::Time time,
     observer.OnCloudDpsFailed(time, package_name, reason);
 }
 
-void ArcPolicyBridge::ReportDirectInstall(
-    base::Time time,
-    const std::vector<std::string>& package_names) {
-  const std::set<std::string> packages_set(package_names.begin(),
-                                           package_names.end());
-  for (Observer& observer : observers_)
-    observer.OnReportDirectInstall(time, packages_set);
-}
-
 void ArcPolicyBridge::ReportForceInstallMainLoopFailed(
     base::Time time,
     const std::vector<std::string>& package_names) {

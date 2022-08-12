@@ -146,18 +146,6 @@ void ArcAppInstallEventLogCollector::OnCloudDpsFailed(
                  std::move(event));
 }
 
-void ArcAppInstallEventLogCollector::OnReportDirectInstall(
-    base::Time time,
-    const std::set<std::string>& package_names) {
-  for (const std::string& package_name : package_names) {
-    auto event = std::make_unique<em::AppInstallReportLogEvent>();
-    event->set_event_type(em::AppInstallReportLogEvent::DIRECT_INSTALL);
-    SetTimestampFromTime(event.get(), time);
-    delegate_->Add(package_name, true /* gather_disk_space_info */,
-                   std::move(event));
-  }
-}
-
 void ArcAppInstallEventLogCollector::OnReportForceInstallMainLoopFailed(
     base::Time time,
     const std::set<std::string>& package_names) {
