@@ -811,6 +811,25 @@ async function cros_test() {
   RunTest(test_code);
 }
 
+IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, CrosWindowEventIdl) {
+  const char test_code[] = R"(
+async function cros_test() {
+  let windows = await chromeos.windowManagement.getWindows();
+  assert_true(chromeos.CrosWindowEvent !== undefined, 'event');
+  let window_event = new chromeos.CrosWindowEvent('windowclosed',
+      {window: windows[0]});
+  assert_equals(window_event.type, 'windowclosed', 'event type');
+  assert_equals(window_event.window, windows[0], 'Window event has correct\
+      window property');
+  assert_true(window_event.bubbles, 'Window event should bubble');
+  assert_false(window_event.cancelable, 'Window event should not be\
+      cancelable');
+}
+  )";
+
+  RunTest(test_code);
+}
+
 IN_PROC_BROWSER_TEST_F(CrosWindowExtensionBrowserTest, StartEvent) {
   // TODO(b/230811571): Rather than using the console to wait for the
   // observer to get called, we should add support for running async functions
