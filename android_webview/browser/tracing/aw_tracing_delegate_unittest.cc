@@ -49,20 +49,20 @@ class AwTracingDelegateTest : public testing::Test {
 };
 
 std::unique_ptr<content::BackgroundTracingConfig> CreateValidConfig() {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("scenario_name", "TestScenario");
-  dict.SetStringKey("mode", "PREEMPTIVE_TRACING_MODE");
-  dict.SetStringKey("custom_categories", "toplevel");
-  base::Value rules_list(base::Value::Type::LIST);
+  base::Value::Dict dict;
+  dict.Set("scenario_name", "TestScenario");
+  dict.Set("mode", "PREEMPTIVE_TRACING_MODE");
+  dict.Set("custom_categories", "toplevel");
+  base::Value::List rules_list;
 
   {
-    base::Value rules_dict(base::Value::Type::DICTIONARY);
-    rules_dict.SetStringKey("rule", "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED");
-    rules_dict.SetStringKey("trigger_name", "test");
+    base::Value::Dict rules_dict;
+    rules_dict.Set("rule", "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED");
+    rules_dict.Set("trigger_name", "test");
     rules_list.Append(std::move(rules_dict));
   }
 
-  dict.SetKey("configs", std::move(rules_list));
+  dict.Set("configs", std::move(rules_list));
   return content::BackgroundTracingConfig::FromDict(std::move(dict));
 }
 

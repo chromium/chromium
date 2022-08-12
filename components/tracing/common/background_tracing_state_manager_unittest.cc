@@ -54,41 +54,44 @@ TEST_F(BackgroundTracingStateManagerTest, InitializeEmptyPrefs) {
 }
 
 TEST_F(BackgroundTracingStateManagerTest, InitializeInvalidState) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetIntKey("state",
-                 static_cast<int>(tracing::BackgroundTracingState::LAST) + 1);
-  pref_service_->Set(tracing::kBackgroundTracingSessionState, std::move(dict));
+  base::Value::Dict dict;
+  dict.Set("state",
+           static_cast<int>(tracing::BackgroundTracingState::LAST) + 1);
+  pref_service_->Set(tracing::kBackgroundTracingSessionState,
+                     base::Value(std::move(dict)));
 
   tracing::BackgroundTracingStateManager::GetInstance().Initialize(nullptr);
   EXPECT_EQ(GetSessionStateJson(), R"({"state":0,"upload_times":[]})");
 }
 
 TEST_F(BackgroundTracingStateManagerTest, InitializeNoScenario) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetIntKey("state", static_cast<int>(
-                              tracing::BackgroundTracingState::NOT_ACTIVATED));
-  base::Value upload_times(base::Value::Type::LIST);
-  base::Value scenario(base::Value::Type::DICTIONARY);
-  scenario.SetKey("time", base::TimeToValue(base::Time::Now()));
+  base::Value::Dict dict;
+  dict.Set("state",
+           static_cast<int>(tracing::BackgroundTracingState::NOT_ACTIVATED));
+  base::Value::List upload_times;
+  base::Value::Dict scenario;
+  scenario.Set("time", base::TimeToValue(base::Time::Now()));
   upload_times.Append(std::move(scenario));
-  dict.SetKey("upload_times", std::move(upload_times));
-  pref_service_->Set(tracing::kBackgroundTracingSessionState, std::move(dict));
+  dict.Set("upload_times", std::move(upload_times));
+  pref_service_->Set(tracing::kBackgroundTracingSessionState,
+                     base::Value(std::move(dict)));
 
   tracing::BackgroundTracingStateManager::GetInstance().Initialize(nullptr);
   EXPECT_EQ(GetSessionStateJson(), R"({"state":0,"upload_times":[]})");
 }
 
 TEST_F(BackgroundTracingStateManagerTest, InitializeValidPrefs) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetIntKey("state", static_cast<int>(
-                              tracing::BackgroundTracingState::NOT_ACTIVATED));
-  base::Value upload_times(base::Value::Type::LIST);
-  base::Value scenario(base::Value::Type::DICTIONARY);
-  scenario.SetStringKey("scenario", "TestScenario");
-  scenario.SetKey("time", base::TimeToValue(base::Time::Now()));
+  base::Value::Dict dict;
+  dict.Set("state",
+           static_cast<int>(tracing::BackgroundTracingState::NOT_ACTIVATED));
+  base::Value::List upload_times;
+  base::Value::Dict scenario;
+  scenario.Set("scenario", "TestScenario");
+  scenario.Set("time", base::TimeToValue(base::Time::Now()));
   upload_times.Append(std::move(scenario));
-  dict.SetKey("upload_times", std::move(upload_times));
-  pref_service_->Set(tracing::kBackgroundTracingSessionState, std::move(dict));
+  dict.Set("upload_times", std::move(upload_times));
+  pref_service_->Set(tracing::kBackgroundTracingSessionState,
+                     base::Value(std::move(dict)));
 
   tracing::BackgroundTracingStateManager::GetInstance().Initialize(nullptr);
   EXPECT_TRUE(base::MatchPattern(
@@ -126,20 +129,20 @@ TEST_F(BackgroundTracingStateManagerTest, NotUploadedRecently) {
       tracing::BackgroundTracingState::NOT_ACTIVATED);
   tracing::BackgroundTracingStateManager::GetInstance().Initialize(nullptr);
 
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("scenario_name", "TestScenario");
-  dict.SetStringKey("mode", "PREEMPTIVE_TRACING_MODE");
-  dict.SetStringKey("custom_categories", "toplevel");
-  base::Value rules_list(base::Value::Type::LIST);
+  base::Value::Dict dict;
+  dict.Set("scenario_name", "TestScenario");
+  dict.Set("mode", "PREEMPTIVE_TRACING_MODE");
+  dict.Set("custom_categories", "toplevel");
+  base::Value::List rules_list;
 
   {
-    base::Value rules_dict(base::Value::Type::DICTIONARY);
-    rules_dict.SetStringKey("rule", "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED");
-    rules_dict.SetStringKey("trigger_name", "test");
+    base::Value::Dict rules_dict;
+    rules_dict.Set("rule", "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED");
+    rules_dict.Set("trigger_name", "test");
     rules_list.Append(std::move(rules_dict));
   }
 
-  dict.SetKey("configs", std::move(rules_list));
+  dict.Set("configs", std::move(rules_list));
   std::unique_ptr<content::BackgroundTracingConfig> config(
       content::BackgroundTracingConfig::FromDict(std::move(dict)));
 
@@ -153,20 +156,20 @@ TEST_F(BackgroundTracingStateManagerTest, UploadedRecently) {
       tracing::BackgroundTracingState::NOT_ACTIVATED);
   tracing::BackgroundTracingStateManager::GetInstance().Initialize(nullptr);
 
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("scenario_name", "TestScenario");
-  dict.SetStringKey("mode", "PREEMPTIVE_TRACING_MODE");
-  dict.SetStringKey("custom_categories", "toplevel");
-  base::Value rules_list(base::Value::Type::LIST);
+  base::Value::Dict dict;
+  dict.Set("scenario_name", "TestScenario");
+  dict.Set("mode", "PREEMPTIVE_TRACING_MODE");
+  dict.Set("custom_categories", "toplevel");
+  base::Value::List rules_list;
 
   {
-    base::Value rules_dict(base::Value::Type::DICTIONARY);
-    rules_dict.SetStringKey("rule", "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED");
-    rules_dict.SetStringKey("trigger_name", "test");
+    base::Value::Dict rules_dict;
+    rules_dict.Set("rule", "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED");
+    rules_dict.Set("trigger_name", "test");
     rules_list.Append(std::move(rules_dict));
   }
 
-  dict.SetKey("configs", std::move(rules_list));
+  dict.Set("configs", std::move(rules_list));
   std::unique_ptr<content::BackgroundTracingConfig> config(
       content::BackgroundTracingConfig::FromDict(std::move(dict)));
 

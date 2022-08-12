@@ -27,7 +27,7 @@ class BackgroundTracingRule {
 
   virtual ~BackgroundTracingRule();
 
-  void Setup(const base::Value& dict);
+  void Setup(const base::Value::Dict& dict);
   BackgroundTracingConfigImpl::CategoryPreset category_preset() const {
     return category_preset_;
   }
@@ -37,7 +37,7 @@ class BackgroundTracingRule {
   }
 
   virtual void Install() {}
-  virtual base::Value ToDict() const;
+  virtual base::Value::Dict ToDict() const;
   virtual void GenerateMetadataProto(MetadataProto* out) const;
   virtual bool ShouldTriggerNamedEvent(const std::string& named_event) const;
   virtual void OnHistogramTrigger(const std::string& histogram_name) const {}
@@ -53,7 +53,7 @@ class BackgroundTracingRule {
   }
 
   static std::unique_ptr<BackgroundTracingRule> CreateRuleFromDict(
-      const base::Value& dict);
+      const base::Value::Dict& dict);
 
   void SetArgs(const base::Value& args) { args_ = args.Clone(); }
   const base::Value* args() const { return &args_; }

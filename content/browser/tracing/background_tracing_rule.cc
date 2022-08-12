@@ -93,31 +93,31 @@ std::string BackgroundTracingRule::GetDefaultRuleId() const {
   return "org.chromium.background_tracing.trigger";
 }
 
-base::Value BackgroundTracingRule::ToDict() const {
-  base::Value dict(base::Value::Type::DICTIONARY);
+base::Value::Dict BackgroundTracingRule::ToDict() const {
+  base::Value::Dict dict;
 
   if (trigger_chance_ < 1.0)
-    dict.SetDoubleKey(kConfigRuleTriggerChance, trigger_chance_);
+    dict.Set(kConfigRuleTriggerChance, trigger_chance_);
 
   if (trigger_delay_ != -1)
-    dict.SetIntKey(kConfigRuleTriggerDelay, trigger_delay_);
+    dict.Set(kConfigRuleTriggerDelay, trigger_delay_);
 
   if (stop_tracing_on_repeated_reactive_) {
-    dict.SetBoolKey(kConfigRuleStopTracingOnRepeatedReactive,
-                    stop_tracing_on_repeated_reactive_);
+    dict.Set(kConfigRuleStopTracingOnRepeatedReactive,
+             stop_tracing_on_repeated_reactive_);
   }
   if (rule_id_ != GetDefaultRuleId()) {
-    dict.SetStringKey(kConfigRuleIdKey, rule_id_);
+    dict.Set(kConfigRuleIdKey, rule_id_);
   }
 
   if (category_preset_ != BackgroundTracingConfigImpl::CATEGORY_PRESET_UNSET) {
-    dict.SetStringKey(
+    dict.Set(
         kConfigCategoryKey,
         BackgroundTracingConfigImpl::CategoryPresetToString(category_preset_));
   }
 
   if (is_crash_) {
-    dict.SetBoolKey(kConfigIsCrashKey, is_crash_);
+    dict.Set(kConfigIsCrashKey, is_crash_);
   }
 
   return dict;
@@ -126,23 +126,23 @@ base::Value BackgroundTracingRule::ToDict() const {
 void BackgroundTracingRule::GenerateMetadataProto(
     BackgroundTracingRule::MetadataProto* out) const {}
 
-void BackgroundTracingRule::Setup(const base::Value& dict) {
-  if (auto trigger_chance = dict.FindDoubleKey(kConfigRuleTriggerChance)) {
+void BackgroundTracingRule::Setup(const base::Value::Dict& dict) {
+  if (auto trigger_chance = dict.FindDouble(kConfigRuleTriggerChance)) {
     trigger_chance_ = *trigger_chance;
   }
-  if (auto trigger_delay = dict.FindIntKey(kConfigRuleTriggerDelay)) {
+  if (auto trigger_delay = dict.FindInt(kConfigRuleTriggerDelay)) {
     trigger_delay_ = *trigger_delay;
   }
   if (auto stop_tracing_on_repeated_reactive =
-          dict.FindBoolKey(kConfigRuleStopTracingOnRepeatedReactive)) {
+          dict.FindBool(kConfigRuleStopTracingOnRepeatedReactive)) {
     stop_tracing_on_repeated_reactive_ = *stop_tracing_on_repeated_reactive;
   }
-  if (const std::string* rule_id = dict.FindStringKey(kConfigRuleIdKey)) {
+  if (const std::string* rule_id = dict.FindString(kConfigRuleIdKey)) {
     rule_id_ = *rule_id;
   } else {
     rule_id_ = GetDefaultRuleId();
   }
-  if (auto is_crash = dict.FindBoolKey(kConfigIsCrashKey)) {
+  if (auto is_crash = dict.FindBool(kConfigIsCrashKey)) {
     is_crash_ = *is_crash;
   }
 }
@@ -156,20 +156,19 @@ class NamedTriggerRule : public BackgroundTracingRule {
 
  public:
   static std::unique_ptr<BackgroundTracingRule> Create(
-      const base::Value& dict) {
+      const base::Value::Dict& dict) {
     if (const std::string* trigger_name =
-            dict.FindStringKey(kConfigRuleTriggerNameKey)) {
+            dict.FindString(kConfigRuleTriggerNameKey)) {
       return base::WrapUnique<BackgroundTracingRule>(
           new NamedTriggerRule(*trigger_name));
     }
     return nullptr;
   }
 
-  base::Value ToDict() const override {
-    base::Value dict = BackgroundTracingRule::ToDict();
-    DCHECK(dict.is_dict());
-    dict.SetStringKey(kConfigRuleKey, kConfigRuleTypeMonitorNamed);
-    dict.SetStringKey(kConfigRuleTriggerNameKey, named_event_.c_str());
+  base::Value::Dict ToDict() const override {
+    base::Value::Dict dict = BackgroundTracingRule::ToDict();
+    dict.Set(kConfigRuleKey, kConfigRuleTypeMonitorNamed);
+    dict.Set(kConfigRuleTriggerNameKey, named_event_.c_str());
     return dict;
   }
 
@@ -249,42 +248,41 @@ class HistogramRule : public BackgroundTracingRule,
 
  public:
   static std::unique_ptr<BackgroundTracingRule> Create(
-      const base::Value& dict) {
+      const base::Value::Dict& dict) {
     const std::string* histogram_name =
-        dict.FindStringKey(kConfigRuleHistogramNameKey);
+        dict.FindString(kConfigRuleHistogramNameKey);
     if (!histogram_name)
       return nullptr;
 
     // Optional parameter, so we don't need to check if the key exists.
-    bool repeat =
-        dict.FindBoolKey(kConfigRuleHistogramRepeatKey).value_or(true);
+    bool repeat = dict.FindBool(kConfigRuleHistogramRepeatKey).value_or(true);
 
     absl::optional<int> histogram_lower_value =
-        dict.FindIntKey(kConfigRuleHistogramValue1Key);
+        dict.FindInt(kConfigRuleHistogramValue1Key);
     if (!histogram_lower_value) {
       // Check for the old naming.
-      histogram_lower_value = dict.FindIntKey(kConfigRuleHistogramValueOldKey);
+      histogram_lower_value = dict.FindInt(kConfigRuleHistogramValueOldKey);
       if (!histogram_lower_value)
         return nullptr;
     }
 
-    int histogram_upper_value = dict.FindIntKey(kConfigRuleHistogramValue2Key)
+    int histogram_upper_value = dict.FindInt(kConfigRuleHistogramValue2Key)
                                     .value_or(std::numeric_limits<int>::max());
 
     if (*histogram_lower_value > histogram_upper_value)
       return nullptr;
 
     Units units = Units::kUnspecified;
-    if (auto units_value = dict.FindIntKey(kConfigRuleHistogramUnitsKey)) {
+    if (auto units_value = dict.FindInt(kConfigRuleHistogramUnitsKey)) {
       units = IntToUnits(*units_value);
     }
     std::unique_ptr<BackgroundTracingRule> rule(
         new HistogramRule(*histogram_name, *histogram_lower_value,
                           histogram_upper_value, units, repeat));
 
-    const base::Value* args_dict = dict.FindDictKey(kConfigRuleArgsKey);
+    const base::Value::Dict* args_dict = dict.FindDict(kConfigRuleArgsKey);
     if (args_dict)
-      rule->SetArgs(*args_dict);
+      rule->SetArgs(base::Value(args_dict->Clone()));
     return rule;
   }
 
@@ -306,16 +304,15 @@ class HistogramRule : public BackgroundTracingRule,
     installed_ = true;
   }
 
-  base::Value ToDict() const override {
-    base::Value dict = BackgroundTracingRule::ToDict();
-    DCHECK(dict.is_dict());
-    dict.SetStringKey(kConfigRuleKey, kConfigRuleTypeMonitorHistogram);
-    dict.SetStringKey(kConfigRuleHistogramNameKey, histogram_name_.c_str());
-    dict.SetIntKey(kConfigRuleHistogramValue1Key, histogram_lower_value_);
-    dict.SetIntKey(kConfigRuleHistogramValue2Key, histogram_upper_value_);
+  base::Value::Dict ToDict() const override {
+    base::Value::Dict dict = BackgroundTracingRule::ToDict();
+    dict.Set(kConfigRuleKey, kConfigRuleTypeMonitorHistogram);
+    dict.Set(kConfigRuleHistogramNameKey, histogram_name_.c_str());
+    dict.Set(kConfigRuleHistogramValue1Key, histogram_lower_value_);
+    dict.Set(kConfigRuleHistogramValue2Key, histogram_upper_value_);
     if (units_ != Units::kUnspecified)
-      dict.SetIntKey(kConfigRuleHistogramUnitsKey, static_cast<int>(units_));
-    dict.SetBoolKey(kConfigRuleHistogramRepeatKey, repeat_);
+      dict.Set(kConfigRuleHistogramUnitsKey, static_cast<int>(units_));
+    dict.Set(kConfigRuleHistogramRepeatKey, repeat_);
     return dict;
   }
 
@@ -441,9 +438,9 @@ class TraceForNSOrTriggerOrFullRule : public BackgroundTracingRule {
 
  public:
   static std::unique_ptr<BackgroundTracingRule> Create(
-      const base::Value& dict) {
+      const base::Value::Dict& dict) {
     if (const std::string* trigger_name =
-            dict.FindStringKey(kConfigRuleTriggerNameKey)) {
+            dict.FindString(kConfigRuleTriggerNameKey)) {
       return base::WrapUnique<BackgroundTracingRule>(
           new TraceForNSOrTriggerOrFullRule(*trigger_name));
     }
@@ -451,12 +448,11 @@ class TraceForNSOrTriggerOrFullRule : public BackgroundTracingRule {
   }
 
   // BackgroundTracingRule implementation
-  base::Value ToDict() const override {
-    base::Value dict = BackgroundTracingRule::ToDict();
-    DCHECK(dict.is_dict());
-    dict.SetStringKey(kConfigRuleKey,
-                      kConfigRuleTypeTraceOnNavigationUntilTriggerOrFull);
-    dict.SetStringKey(kConfigRuleTriggerNameKey, named_event_.c_str());
+  base::Value::Dict ToDict() const override {
+    base::Value::Dict dict = BackgroundTracingRule::ToDict();
+    dict.Set(kConfigRuleKey,
+             kConfigRuleTypeTraceOnNavigationUntilTriggerOrFull);
+    dict.Set(kConfigRuleTriggerNameKey, named_event_.c_str());
     return dict;
   }
 
@@ -490,14 +486,14 @@ class TraceAtRandomIntervalsRule : public BackgroundTracingRule {
 
  public:
   static std::unique_ptr<BackgroundTracingRule> Create(
-      const base::Value& dict) {
+      const base::Value::Dict& dict) {
     absl::optional<int> timeout_min =
-        dict.FindIntKey(kConfigRuleRandomIntervalTimeoutMin);
+        dict.FindInt(kConfigRuleRandomIntervalTimeoutMin);
     if (!timeout_min)
       return nullptr;
 
     absl::optional<int> timeout_max =
-        dict.FindIntKey(kConfigRuleRandomIntervalTimeoutMax);
+        dict.FindInt(kConfigRuleRandomIntervalTimeoutMax);
     if (!timeout_max)
       return nullptr;
 
@@ -509,12 +505,11 @@ class TraceAtRandomIntervalsRule : public BackgroundTracingRule {
   }
   ~TraceAtRandomIntervalsRule() override {}
 
-  base::Value ToDict() const override {
-    base::Value dict = BackgroundTracingRule::ToDict();
-    DCHECK(dict.is_dict());
-    dict.SetStringKey(kConfigRuleKey, kConfigRuleTypeTraceAtRandomIntervals);
-    dict.SetIntKey(kConfigRuleRandomIntervalTimeoutMin, timeout_min_);
-    dict.SetIntKey(kConfigRuleRandomIntervalTimeoutMax, timeout_max_);
+  base::Value::Dict ToDict() const override {
+    base::Value::Dict dict = BackgroundTracingRule::ToDict();
+    dict.Set(kConfigRuleKey, kConfigRuleTypeTraceAtRandomIntervals);
+    dict.Set(kConfigRuleRandomIntervalTimeoutMin, timeout_min_);
+    dict.Set(kConfigRuleRandomIntervalTimeoutMax, timeout_max_);
     return dict;
   }
 
@@ -581,10 +576,8 @@ class TraceAtRandomIntervalsRule : public BackgroundTracingRule {
 }  // namespace
 
 std::unique_ptr<BackgroundTracingRule>
-BackgroundTracingRule::CreateRuleFromDict(const base::Value& dict) {
-  DCHECK(dict.is_dict());
-
-  const std::string* type = dict.FindStringKey(kConfigRuleKey);
+BackgroundTracingRule::CreateRuleFromDict(const base::Value::Dict& dict) {
+  const std::string* type = dict.FindString(kConfigRuleKey);
   if (!type)
     return nullptr;
 

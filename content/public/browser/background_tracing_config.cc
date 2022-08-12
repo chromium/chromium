@@ -16,7 +16,7 @@ BackgroundTracingConfig::BackgroundTracingConfig(TracingMode tracing_mode)
 BackgroundTracingConfig::~BackgroundTracingConfig() {}
 
 std::unique_ptr<BackgroundTracingConfig> BackgroundTracingConfig::FromDict(
-    base::Value&& dict) {
+    base::Value::Dict&& dict) {
   return BackgroundTracingConfigImpl::FromDict(std::move(dict));
 }
 

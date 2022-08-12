@@ -62,28 +62,28 @@ class ChromeTracingDelegateBrowserTest : public InProcessBrowserTest {
       content::BackgroundTracingManager::DataFiltering data_filtering,
       base::StringPiece scenario_name = "TestScenario",
       bool with_crash_scenario = false) {
-    base::Value dict(base::Value::Type::DICTIONARY);
+    base::Value::Dict dict;
 
-    dict.SetStringKey("scenario_name", scenario_name);
-    dict.SetStringKey("mode", "PREEMPTIVE_TRACING_MODE");
-    dict.SetStringKey("custom_categories",
-                      tracing::TraceStartupConfig::kDefaultStartupCategories);
+    dict.Set("scenario_name", scenario_name);
+    dict.Set("mode", "PREEMPTIVE_TRACING_MODE");
+    dict.Set("custom_categories",
+             tracing::TraceStartupConfig::kDefaultStartupCategories);
 
-    base::Value rules_list(base::Value::Type::LIST);
+    base::Value::List rules_list;
     {
-      base::Value rules_dict(base::Value::Type::DICTIONARY);
-      rules_dict.SetStringKey("rule", "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED");
-      rules_dict.SetStringKey("trigger_name", "test");
+      base::Value::Dict rules_dict;
+      rules_dict.Set("rule", "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED");
+      rules_dict.Set("trigger_name", "test");
       rules_list.Append(std::move(rules_dict));
     }
     if (with_crash_scenario) {
-      base::Value rules_dict(base::Value::Type::DICTIONARY);
-      rules_dict.SetStringKey("rule", "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED");
-      rules_dict.SetStringKey("trigger_name", "test_crash");
-      rules_dict.SetBoolKey("is_crash", true);
+      base::Value::Dict rules_dict;
+      rules_dict.Set("rule", "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED");
+      rules_dict.Set("trigger_name", "test_crash");
+      rules_dict.Set("is_crash", true);
       rules_list.Append(std::move(rules_dict));
     }
-    dict.SetKey("configs", std::move(rules_list));
+    dict.Set("configs", std::move(rules_list));
 
     std::unique_ptr<content::BackgroundTracingConfig> config(
         content::BackgroundTracingConfig::FromDict(std::move(dict)));
