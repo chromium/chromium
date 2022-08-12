@@ -8,15 +8,18 @@
 #include <memory>
 #include <vector>
 
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/mac/secure_enclave_client.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate.h"
 
 namespace enterprise_connectors {
 
 class SigningKeyPair;
 
-// Mac implementation of the KeyPersistenceDelegate interface.
+// Mac implementation of the KeyPersistenceDelegate interface. Mac currently
+// only supports hardware generated Secure Enclave signing keys.
 class MacKeyPersistenceDelegate : public KeyPersistenceDelegate {
  public:
+  MacKeyPersistenceDelegate();
   ~MacKeyPersistenceDelegate() override;
 
   // KeyPersistenceDelegate:
@@ -26,6 +29,9 @@ class MacKeyPersistenceDelegate : public KeyPersistenceDelegate {
   std::unique_ptr<SigningKeyPair> LoadKeyPair() override;
   std::unique_ptr<SigningKeyPair> CreateKeyPair() override;
   void CleanupTemporaryKeyData() override;
+
+ private:
+  std::unique_ptr<SecureEnclaveClient> client_;
 };
 
 }  // namespace enterprise_connectors

@@ -13,6 +13,7 @@
 
 #include "base/containers/span.h"
 #include "base/mac/scoped_cftyperef.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace enterprise_connectors {
 
@@ -35,6 +36,11 @@ class SecureEnclaveClient {
       std::unique_ptr<SecureEnclaveClient> client);
 
   static std::unique_ptr<SecureEnclaveClient> Create();
+
+  // Returns the key type from the `wrapped_key_label` if the label matches
+  // any of the supported key labels. Otherwise a nullptr is returned.
+  static absl::optional<SecureEnclaveClient::KeyType> GetTypeFromWrappedKey(
+      base::span<const uint8_t> wrapped_key_label);
 
   // Creates a new Secure Enclave private key with a permanent key label.
   virtual base::ScopedCFTypeRef<SecKeyRef> CreatePermanentKey() = 0;
