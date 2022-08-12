@@ -54,6 +54,9 @@ void SVGContainerPainter::Paint(const PaintInfo& paint_info) {
             layout_svg_container_.VisualRectInLocalSVGCoordinates()))
       return;
     if (properties) {
+      // TODO(https://crbug.com/1278452): Also consider Translate, Rotate,
+      // Scale, and Offset, probably via a single transform operation to
+      // FirstFragment().PreTransform().
       if (const auto* transform = properties->Transform())
         paint_info_before_filtering.TransformCullRect(*transform);
     }

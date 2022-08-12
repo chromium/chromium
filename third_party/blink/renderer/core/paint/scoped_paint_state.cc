@@ -85,6 +85,10 @@ void ScopedPaintState::AdjustForPaintProperties(const LayoutObject& object) {
     new_chunk_properties.SetTransform(*transform);
     needs_new_chunk_properties = true;
   }
+  DCHECK(!properties->Translate());
+  DCHECK(!properties->Rotate());
+  DCHECK(!properties->Scale());
+  DCHECK(!properties->Offset());
   if (const auto* effect = properties->Effect()) {
     // Similar to the above.
     DCHECK(!effect->HasRealEffects());

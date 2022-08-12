@@ -21,6 +21,9 @@ void SVGTextPainter::Paint(const PaintInfo& paint_info) {
   PaintInfo block_info(paint_info);
   if (const auto* properties =
           layout_svg_text_.FirstFragment().PaintProperties()) {
+    // TODO(https://crbug.com/1278452): Also consider Translate, Rotate,
+    // Scale, and Offset, probably via a single transform operation to
+    // FirstFragment().PreTransform().
     if (const auto* transform = properties->Transform())
       block_info.TransformCullRect(*transform);
   }

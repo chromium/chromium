@@ -1411,8 +1411,11 @@ HitTestingTransformState PaintLayer::CreateLocalTransformState(
   transform_state.Translate(gfx::Vector2dF(local_fragment.PaintOffset()));
 
   if (const auto* properties = local_fragment.PaintProperties()) {
-    if (const auto* transform = properties->Transform())
-      transform_state.ApplyTransform(*transform);
+    for (const TransformPaintPropertyNode* transform :
+         properties->AllCSSTransformPropertiesOutsideToInside()) {
+      if (transform)
+        transform_state.ApplyTransform(*transform);
+    }
   }
 
   return transform_state;
@@ -1559,7 +1562,8 @@ PaintLayer* PaintLayer::HitTestLayer(
     DCHECK(layout_object.CanContainAbsolutePositionObjects());
     if (const auto* properties =
             layout_object.FirstFragment().PaintProperties()) {
-      if (properties->Transform() || properties->Perspective())
+      if (properties->HasCSSTransformPropertyNode() ||
+          properties->Perspective())
         use_transform = true;
     }
   }

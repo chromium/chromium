@@ -1223,6 +1223,10 @@ void FragmentPaintPropertyTreeBuilder::UpdateIndividualTransform(
       // this in the caller.)
       context_.should_flatten_inherited_transform = false;
     }
+    if (transform->IsIdentityOr2DTranslation()) {
+      context_.translation_2d_to_layout_shift_root_delta +=
+          transform->Translation2D();
+    }
   }
 }
 
@@ -1327,10 +1331,6 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransform() {
     } else {
       context_.rendering_context_id = 0;
       context_.should_flatten_inherited_transform = true;
-    }
-    if (transform->IsIdentityOr2DTranslation()) {
-      context_.translation_2d_to_layout_shift_root_delta +=
-          transform->Translation2D();
     }
   } else if (object_.IsForElement()) {
     // 3D rendering contexts follow the DOM ancestor chain, so
@@ -2990,8 +2990,9 @@ static bool IsLayoutShiftRoot(const LayoutObject& object,
     return false;
   if (IsA<LayoutView>(object))
     return true;
-  if (auto* transform = properties->Transform()) {
-    if (!transform->IsIdentityOr2DTranslation())
+  for (const TransformPaintPropertyNode* transform :
+       properties->AllCSSTransformPropertiesOutsideToInside()) {
+    if (transform && !transform->IsIdentityOr2DTranslation())
       return true;
   }
   if (properties->ReplacedContentTransform())
@@ -3175,12 +3176,19 @@ void PaintPropertyTreeBuilder::InitFragmentPaintProperties(
       context.pending_additional_offset_to_layout_shift_root_delta =
           -PhysicalOffset::FromVector2dFRound(translation->Translation2D());
     }
-    if (const auto* transform = properties->Transform()) {
-      if (transform->IsIdentityOr2DTranslation()) {
-        context.translation_2d_to_layout_shift_root_delta -=
-            transform->Translation2D();
+    gfx::Vector2dF translation2d;
+    for (const TransformPaintPropertyNode* transform :
+         properties->AllCSSTransformPropertiesOutsideToInside()) {
+      if (transform) {
+        if (transform->IsIdentityOr2DTranslation()) {
+          translation2d += transform->Translation2D();
+        } else {
+          translation2d = gfx::Vector2dF();
+          break;
+        }
       }
     }
+    context.translation_2d_to_layout_shift_root_delta -= translation2d;
   }
 
   if (needs_paint_properties) {

@@ -71,9 +71,12 @@ void FragmentData::SetLayer(PaintLayer* layer) {
 
 const TransformPaintPropertyNodeOrAlias& FragmentData::PreTransform() const {
   if (const auto* properties = PaintProperties()) {
-    if (const auto* transform = properties->Transform()) {
-      DCHECK(transform->Parent());
-      return *transform->Parent();
+    for (const TransformPaintPropertyNode* transform :
+         properties->AllCSSTransformPropertiesOutsideToInside()) {
+      if (transform) {
+        DCHECK(transform->Parent());
+        return *transform->Parent();
+      }
     }
   }
   return LocalBorderBoxProperties().Transform();

@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_OBJECT_PAINT_PROPERTIES_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_OBJECT_PAINT_PROPERTIES_H_
 
+#include <array>
 #include <memory>
 #include <utility>
 
@@ -162,6 +163,13 @@ class CORE_EXPORT ObjectPaintProperties {
            offset_ || transform_ || perspective_ ||
            replaced_content_transform_ || scroll_translation_ ||
            transform_isolation_node_;
+  }
+  bool HasCSSTransformPropertyNode() const {
+    return translate_ || rotate_ || scale_ || offset_ || transform_;
+  }
+  std::array<const TransformPaintPropertyNode*, 5>
+  AllCSSTransformPropertiesOutsideToInside() const {
+    return {Translate(), Rotate(), Scale(), Offset(), Transform()};
   }
   ADD_TRANSFORM(PaintOffsetTranslation, paint_offset_translation_);
   ADD_TRANSFORM(StickyTranslation, sticky_translation_);

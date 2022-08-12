@@ -54,6 +54,8 @@ class ScopedSVGTransformState {
     if (!properties)
       return;
 
+    // TODO(https://crbug.com/1278452): Also consider Translate, Rotate,
+    // Scale, and Offset.
     if (const auto* transform_node = properties->Transform()) {
       transform_property_scope_.emplace(
           paint_info.context.GetPaintController(), *transform_node, object,
