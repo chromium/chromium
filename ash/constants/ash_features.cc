@@ -925,6 +925,9 @@ const base::Feature kInstantTethering{"InstantTethering",
 // Enables Jelly features.
 const base::Feature kJelly{"Jelly", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables Jellyroll features.
+const base::Feature kJellyroll{"Jellyroll", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables IME button in the floating accessibility menu for the Kiosk session.
 const base::Feature kKioskEnableImeButton{"KioskEnableImeButton",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
@@ -2033,6 +2036,10 @@ bool IsInstantTetheringBackgroundAdvertisingSupported() {
 
 bool IsJellyEnabled() {
   return base::FeatureList::IsEnabled(kJelly);
+}
+
+bool IsJellyrollEnabled() {
+  return base::FeatureList::IsEnabled(kJellyroll);
 }
 
 bool IsKeyboardBacklightToggleEnabled() {
