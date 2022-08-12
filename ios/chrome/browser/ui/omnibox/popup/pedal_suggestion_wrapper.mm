@@ -60,7 +60,10 @@
       initWithString:self.innerPedal.title
           attributes:@{
             NSForegroundColorAttributeName :
-                [UIColor colorNamed:kTextPrimaryColor]
+                [UIColor colorNamed:kTextPrimaryColor],
+            NSFontAttributeName :
+                [UIFont preferredFontForTextStyle:UIFontTextStyleBody],
+
           }];
 }
 
@@ -69,7 +72,10 @@
       initWithString:self.innerPedal.subtitle
           attributes:@{
             NSForegroundColorAttributeName :
-                [UIColor colorNamed:kTextSecondaryColor]
+                [UIColor colorNamed:kTextSecondaryColor],
+            NSFontAttributeName :
+                [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote]
+
           }];
 }
 

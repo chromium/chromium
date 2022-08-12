@@ -31,6 +31,10 @@
 
 namespace {
 const CGFloat kTopAndBottomPadding = 8.0;
+const CGFloat kTopPaddingVariation1 = 8.0;
+const CGFloat kTopPaddingVariation2 = 10.0;
+const CGFloat kFooterHeightVariation1 = 12.0;
+const CGFloat kFooterHeightVariation2 = 16.0;
 // Percentage of the suggestion height that needs to be visible in order to
 // consider the suggestion as visible.
 const CGFloat kVisibleSuggestionThreshold = 0.6;
@@ -156,9 +160,20 @@ const CGFloat kVisibleSuggestionThreshold = 0.6;
     [self.tableView setLayoutMargins:UIEdgeInsetsZero];
   }
   self.tableView.contentInsetAdjustmentBehavior =
-      UIScrollViewContentInsetAdjustmentAutomatic;
-  [self.tableView setContentInset:UIEdgeInsetsMake(kTopAndBottomPadding, 0,
-                                                   kTopAndBottomPadding, 0)];
+      IsOmniboxActionsVisualTreatment2()
+          ? UIScrollViewContentInsetAdjustmentNever
+          : UIScrollViewContentInsetAdjustmentAutomatic;
+  CGFloat topPadding = kTopAndBottomPadding;
+  if (IsOmniboxActionsVisualTreatment1()) {
+    topPadding = kTopPaddingVariation1;
+  }
+  if (IsOmniboxActionsVisualTreatment2()) {
+    topPadding = kTopPaddingVariation2;
+  }
+  [self.tableView
+      setContentInset:UIEdgeInsetsMake(topPadding, 0, kTopAndBottomPadding, 0)];
+
+  self.tableView.sectionHeaderHeight = 0.1;
   self.tableView.estimatedRowHeight = 0;
 
   self.tableView.rowHeight = UITableViewAutomaticDimension;
@@ -167,6 +182,10 @@ const CGFloat kVisibleSuggestionThreshold = 0.6;
   [self.tableView registerClass:[OmniboxPopupRowCell class]
          forCellReuseIdentifier:OmniboxPopupRowCellReuseIdentifier];
   self.shouldUpdateVisibleSuggestionCount = YES;
+
+  if (@available(iOS 15.0, *)) {
+    self.tableView.sectionHeaderTopPadding = 0;
+  }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -358,6 +377,54 @@ const CGFloat kVisibleSuggestionThreshold = 0.6;
                                   inSection:indexPath.section];
 }
 
+- (CGFloat)tableView:(UITableView*)tableView
+    heightForHeaderInSection:(NSInteger)section {
+  return FLT_MIN;
+}
+
+- (CGFloat)tableView:(UITableView*)tableView
+    heightForFooterInSection:(NSInteger)section {
+  if (!IsOmniboxActionsEnabled()) {
+    return FLT_MIN;
+  }
+  if (section == (tableView.numberOfSections - 1)) {
+    return FLT_MIN;
+  }
+
+  return IsOmniboxActionsVisualTreatment1() ? kFooterHeightVariation1
+                                            : kFooterHeightVariation2;
+}
+
+- (UIView*)tableView:(UITableView*)tableView
+    viewForFooterInSection:(NSInteger)section {
+  if (!IsOmniboxActionsEnabled()) {
+    return nil;
+  }
+
+  // Do not show footer for the last section
+  if (section == (tableView.numberOfSections - 1)) {
+    return nil;
+  }
+  if (IsOmniboxActionsVisualTreatment2()) {
+    return [[UIView alloc] init];
+  }
+
+  UIView* footer = [[UIView alloc] init];
+  footer.backgroundColor = tableView.backgroundColor;
+  UIView* hairline = [[UIView alloc]
+      initWithFrame:CGRectMake(0, 8, tableView.bounds.size.width,
+                               2 / tableView.window.screen.scale)];
+  hairline.backgroundColor = [UIColor lightGrayColor];
+  [footer addSubview:hairline];
+
+  return footer;
+}
+
+- (UIView*)tableView:(UITableView*)tableView
+    viewForHeaderInSection:(NSInteger)section {
+  return nil;
+}
+
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView*)tableView {
@@ -538,14 +605,8 @@ const CGFloat kVisibleSuggestionThreshold = 0.6;
 #pragma mark - ContentProviding
 
 - (BOOL)hasContent {
-  if (IsOmniboxActionsVisualTreatment2()) {
-    return self.tableView.numberOfSections > 0 &&
-           [self.tableView numberOfRowsInSection:0] > 0;
-  }
-
-  // The table view is a `SelfSizingTableView`, so its intrinsic content size
-  // can tell whether it has content.
-  return self.view.intrinsicContentSize.height > 0;
+  return self.tableView.numberOfSections > 0 &&
+         [self.tableView numberOfRowsInSection:0] > 0;
 }
 
 #pragma mark - Private Methods
