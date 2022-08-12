@@ -273,6 +273,8 @@ class CORE_EXPORT CheckPseudoHasCacheScope {
       return cache_allowed_ ? fast_reject_filter_map_->size() : 0;
     }
 
+    size_t GetBloomFilterAllocationCountForTesting() const;
+
     bool cache_allowed_;
     ElementCheckPseudoHasResultMap* result_map_;
     ElementCheckPseudoHasFastRejectFilterMap* fast_reject_filter_map_;
