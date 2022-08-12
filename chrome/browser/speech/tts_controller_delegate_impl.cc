@@ -29,12 +29,19 @@ PreferredVoiceIdFromString(const base::Value* pref,
   if (!voice_id || voice_id->empty())
     return absl::nullopt;
 
-  std::unique_ptr<base::DictionaryValue> json =
-      base::DictionaryValue::From(base::JSONReader::ReadDeprecated(*voice_id));
+  absl::optional<base::Value> json = base::JSONReader::Read(*voice_id);
   std::string name;
   std::string id;
-  json->GetString("name", &name);
-  json->GetString("extension", &id);
+  if (json && json->is_dict()) {
+    const base::Value::Dict& dict = json->GetDict();
+    const std::string* name_str = dict.FindString("name");
+    if (name_str)
+      name = *name_str;
+    const std::string* id_str = dict.FindString("extension");
+    if (id_str)
+      id = *id_str;
+  }
+
   return absl::optional<content::TtsControllerDelegate::PreferredVoiceId>(
       {name, id});
 }
