@@ -33,8 +33,8 @@ void PromosManager::Init() {
 
   const base::Value::List& stored_active_promos =
       local_state_->GetValueList(prefs::kIosPromosManagerActivePromos);
-  const base::Value::Dict& stored_impression_history =
-      local_state_->GetValueDict(prefs::kIosPromosManagerImpressionHistory);
+  const base::Value::List& stored_impression_history =
+      local_state_->GetValueList(prefs::kIosPromosManagerImpressions);
 
   active_promos_ = stored_active_promos.Clone();
   impression_history_ = stored_impression_history.Clone();

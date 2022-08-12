@@ -27,8 +27,8 @@ class PromosManager {
   // base::Value::List of active promos.
   base::Value::List active_promos_;
 
-  // base::Value::Dict of the promo impression history.
-  base::Value::Dict impression_history_;
+  // base::Value::List of the promo impression history.
+  base::Value::List impression_history_;
 };
 
 #endif  // IOS_CHROME_BROWSER_PROMOS_MANAGER_PROMOS_MANAGER_H_

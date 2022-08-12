@@ -154,7 +154,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
                                 false);
 
   registry->RegisterListPref(prefs::kIosPromosManagerActivePromos);
-  registry->RegisterDictionaryPref(prefs::kIosPromosManagerImpressionHistory);
+  registry->RegisterListPref(prefs::kIosPromosManagerImpressions);
 
   registry->RegisterBooleanPref(enterprise_reporting::kCloudReportingEnabled,
                                 false);

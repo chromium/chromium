@@ -95,9 +95,8 @@ const char kIosDiscoverFeedLastRefreshTime[] =
 // List preference maintaining the list of active promo campaigns.
 const char kIosPromosManagerActivePromos[] = "ios.promos_manager.active_promos";
 
-// Dictionary preference containing the promo impression history.
-const char kIosPromosManagerImpressionHistory[] =
-    "ios.promos_manager.impression_history";
+// List preference containing the promo impression history.
+const char kIosPromosManagerImpressions[] = "ios.promos_manager.impressions";
 
 // Preference that hold a boolean indicating if the user has already dismissed
 // the sign-in promo in settings view.

@@ -27,8 +27,8 @@ class PromosManagerTest : public PlatformTest {
   // Create pref registry for tests.
   void CreatePrefs() {
     local_state_ = std::make_unique<TestingPrefServiceSimple>();
-    local_state_->registry()->RegisterDictionaryPref(
-        prefs::kIosPromosManagerImpressionHistory);
+    local_state_->registry()->RegisterListPref(
+        prefs::kIosPromosManagerImpressions);
     local_state_->registry()->RegisterListPref(
         prefs::kIosPromosManagerActivePromos);
   }
@@ -42,12 +42,10 @@ class PromosManagerTest : public PlatformTest {
 TEST_F(PromosManagerTest, InitWithPrefService) {
   CreatePromosManager();
 
-  EXPECT_NE(
-      local_state_->FindPreference(prefs::kIosPromosManagerImpressionHistory),
-      nullptr);
+  EXPECT_NE(local_state_->FindPreference(prefs::kIosPromosManagerImpressions),
+            nullptr);
   EXPECT_NE(local_state_->FindPreference(prefs::kIosPromosManagerActivePromos),
             nullptr);
-  EXPECT_FALSE(
-      local_state_->HasPrefPath(prefs::kIosPromosManagerImpressionHistory));
+  EXPECT_FALSE(local_state_->HasPrefPath(prefs::kIosPromosManagerImpressions));
   EXPECT_FALSE(local_state_->HasPrefPath(prefs::kIosPromosManagerActivePromos));
 }
