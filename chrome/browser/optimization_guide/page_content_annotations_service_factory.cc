@@ -19,7 +19,6 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/history/core/browser/history_service.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/optimization_guide/content/browser/page_content_annotations_service.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -87,9 +86,7 @@ PageContentAnnotationsServiceFactory::GetInstance() {
 }
 
 PageContentAnnotationsServiceFactory::PageContentAnnotationsServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "PageContentAnnotationsService",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("PageContentAnnotationsService") {
   DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
   DependsOn(HistoryServiceFactory::GetInstance());
 }

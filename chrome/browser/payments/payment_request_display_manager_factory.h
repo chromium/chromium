@@ -6,14 +6,13 @@
 #define CHROME_BROWSER_PAYMENTS_PAYMENT_REQUEST_DISPLAY_MANAGER_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace payments {
 
 class PaymentRequestDisplayManager;
 
-class PaymentRequestDisplayManagerFactory
-    : public BrowserContextKeyedServiceFactory {
+class PaymentRequestDisplayManagerFactory : public ProfileKeyedServiceFactory {
  public:
   static PaymentRequestDisplayManagerFactory* GetInstance();
   static PaymentRequestDisplayManager* GetForBrowserContext(
@@ -31,8 +30,6 @@ class PaymentRequestDisplayManagerFactory
       PaymentRequestDisplayManagerFactory>;
 
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
 };
 

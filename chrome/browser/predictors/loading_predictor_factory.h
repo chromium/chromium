@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_PREDICTORS_LOADING_PREDICTOR_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 
@@ -14,7 +14,7 @@ namespace predictors {
 
 class LoadingPredictor;
 
-class LoadingPredictorFactory : public BrowserContextKeyedServiceFactory {
+class LoadingPredictorFactory : public ProfileKeyedServiceFactory {
  public:
   static LoadingPredictor* GetForProfile(Profile* profile);
   static LoadingPredictorFactory* GetInstance();

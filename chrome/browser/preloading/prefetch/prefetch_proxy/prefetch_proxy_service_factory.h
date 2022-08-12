@@ -6,12 +6,12 @@
 #define CHROME_BROWSER_PRELOADING_PREFETCH_PREFETCH_PROXY_PREFETCH_PROXY_SERVICE_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 class PrefetchProxyService;
 
-class PrefetchProxyServiceFactory : public BrowserContextKeyedServiceFactory {
+class PrefetchProxyServiceFactory : public ProfileKeyedServiceFactory {
  public:
   // Returns the PrefetchProxy for |profile|.
   static PrefetchProxyService* GetForProfile(Profile* profile);

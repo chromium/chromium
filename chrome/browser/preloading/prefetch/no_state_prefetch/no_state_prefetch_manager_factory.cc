@@ -8,10 +8,8 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/predictors/predictor_database_factory.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_manager_delegate.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "extensions/buildflags/buildflags.h"
 
@@ -36,9 +34,9 @@ NoStatePrefetchManagerFactory* NoStatePrefetchManagerFactory::GetInstance() {
 }
 
 NoStatePrefetchManagerFactory::NoStatePrefetchManagerFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "NoStatePrefetchManager",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::BuildForRegularAndIncognito()) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   DependsOn(
       extensions::ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
@@ -57,11 +55,6 @@ KeyedService* NoStatePrefetchManagerFactory::BuildServiceInstanceFor(
       Profile::FromBrowserContext(browser_context),
       std::make_unique<ChromeNoStatePrefetchManagerDelegate>(
           Profile::FromBrowserContext(browser_context)));
-}
-
-content::BrowserContext* NoStatePrefetchManagerFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
 }
 
 }  // namespace prerender

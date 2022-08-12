@@ -5,8 +5,6 @@
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_link_manager_factory.h"
 
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_link_manager.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 
@@ -27,9 +25,9 @@ NoStatePrefetchLinkManagerFactory::GetInstance() {
 }
 
 NoStatePrefetchLinkManagerFactory::NoStatePrefetchLinkManagerFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "NoStatePrefetchLinkManager",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::BuildForRegularAndIncognito()) {
   DependsOn(prerender::NoStatePrefetchManagerFactory::GetInstance());
 }
 
@@ -42,12 +40,6 @@ KeyedService* NoStatePrefetchLinkManagerFactory::BuildServiceInstanceFor(
   NoStatePrefetchLinkManager* no_state_prefetch_link_manager =
       new NoStatePrefetchLinkManager(no_state_prefetch_manager);
   return no_state_prefetch_link_manager;
-}
-
-content::BrowserContext*
-NoStatePrefetchLinkManagerFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
 }
 
 }  // namespace prerender

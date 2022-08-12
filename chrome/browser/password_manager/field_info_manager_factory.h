@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_PASSWORD_MANAGER_FIELD_INFO_MANAGER_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace password_manager {
 class FieldInfoManager;
 }
 
-class FieldInfoManagerFactory : public BrowserContextKeyedServiceFactory {
+class FieldInfoManagerFactory : public ProfileKeyedServiceFactory {
  public:
   static FieldInfoManagerFactory* GetInstance();
 

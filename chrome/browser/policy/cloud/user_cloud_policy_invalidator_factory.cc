@@ -9,7 +9,6 @@
 #include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
 #include "chrome/browser/policy/cloud/user_cloud_policy_invalidator.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #else
@@ -25,9 +24,7 @@ UserCloudPolicyInvalidatorFactory*
 }
 
 UserCloudPolicyInvalidatorFactory::UserCloudPolicyInvalidatorFactory()
-    : BrowserContextKeyedServiceFactory(
-          "UserCloudPolicyInvalidator",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("UserCloudPolicyInvalidator") {
   DependsOn(invalidation::ProfileInvalidationProviderFactory::GetInstance());
 }
 

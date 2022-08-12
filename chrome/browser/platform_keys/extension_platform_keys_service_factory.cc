@@ -15,9 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/platform_keys/extension_platform_keys_service.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/ui/platform_keys_certificate_selector_chromeos.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "net/cert/x509_certificate.h"
@@ -87,21 +85,15 @@ ExtensionPlatformKeysServiceFactory::GetInstance() {
 }
 
 ExtensionPlatformKeysServiceFactory::ExtensionPlatformKeysServiceFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "ExtensionPlatformKeysService",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::BuildRedirectedInIncognito()) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   DependsOn(crosapi::KeystoreServiceFactoryAsh::GetInstance());
 #endif
 }
 
 ExtensionPlatformKeysServiceFactory::~ExtensionPlatformKeysServiceFactory() {}
-
-content::BrowserContext*
-ExtensionPlatformKeysServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
-}
 
 KeyedService* ExtensionPlatformKeysServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

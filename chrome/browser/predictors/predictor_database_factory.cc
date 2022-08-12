@@ -11,7 +11,6 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/predictors/predictor_database.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace predictors {
 
@@ -27,9 +26,7 @@ PredictorDatabaseFactory* PredictorDatabaseFactory::GetInstance() {
 }
 
 PredictorDatabaseFactory::PredictorDatabaseFactory()
-    : BrowserContextKeyedServiceFactory(
-        "PredictorDatabase", BrowserContextDependencyManager::GetInstance()) {
-}
+    : ProfileKeyedServiceFactory("PredictorDatabase") {}
 
 PredictorDatabaseFactory::~PredictorDatabaseFactory() {
 }

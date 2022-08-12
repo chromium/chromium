@@ -8,9 +8,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "content/public/browser/browser_context.h"
 
@@ -36,9 +34,9 @@ OptimizationGuideKeyedServiceFactory::GetInstance() {
 }
 
 OptimizationGuideKeyedServiceFactory::OptimizationGuideKeyedServiceFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "OptimizationGuideKeyedService",
-          BrowserContextDependencyManager::GetInstance()) {}
+          ProfileSelections::BuildForRegularAndIncognito()) {}
 
 OptimizationGuideKeyedServiceFactory::~OptimizationGuideKeyedServiceFactory() =
     default;
@@ -54,12 +52,6 @@ KeyedService* OptimizationGuideKeyedServiceFactory::BuildServiceInstanceFor(
     return nullptr;
 #endif
   return new OptimizationGuideKeyedService(context);
-}
-
-content::BrowserContext*
-OptimizationGuideKeyedServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
 }
 
 bool OptimizationGuideKeyedServiceFactory::ServiceIsCreatedWithBrowserContext()

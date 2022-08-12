@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_PRELOADING_PREFETCH_SEARCH_PREFETCH_SEARCH_PREFETCH_SERVICE_FACTORY_H_
 
 #include "base/no_destructor.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace content {
 class BrowserContext;
@@ -17,7 +17,7 @@ class Profile;
 
 // LazyInstance that owns all SearchPrefetchServices and associates them
 // with Profiles.
-class SearchPrefetchServiceFactory : public BrowserContextKeyedServiceFactory {
+class SearchPrefetchServiceFactory : public ProfileKeyedServiceFactory {
  public:
   // Gets the SearchPrefetchService for the profile.
   //

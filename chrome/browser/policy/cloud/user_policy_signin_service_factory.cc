@@ -12,7 +12,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/pref_names.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -35,9 +34,7 @@ DeviceManagementService* g_device_management_service = NULL;
 }  // namespace
 
 UserPolicySigninServiceFactory::UserPolicySigninServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-        "UserPolicySigninService",
-        BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("UserPolicySigninService") {
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 

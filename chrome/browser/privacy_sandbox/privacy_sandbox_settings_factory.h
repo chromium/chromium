@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SETTINGS_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 
@@ -14,7 +14,7 @@ namespace privacy_sandbox {
 class PrivacySandboxSettings;
 }
 
-class PrivacySandboxSettingsFactory : public BrowserContextKeyedServiceFactory {
+class PrivacySandboxSettingsFactory : public ProfileKeyedServiceFactory {
  public:
   static PrivacySandboxSettingsFactory* GetInstance();
   static privacy_sandbox::PrivacySandboxSettings* GetForProfile(
@@ -27,8 +27,6 @@ class PrivacySandboxSettingsFactory : public BrowserContextKeyedServiceFactory {
 
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
 };
 

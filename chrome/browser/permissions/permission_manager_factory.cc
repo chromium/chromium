@@ -17,7 +17,6 @@
 #include "chrome/browser/media/webrtc/media_stream_device_permission_context.h"
 #include "chrome/browser/nfc/chrome_nfc_permission_context_delegate.h"
 #include "chrome/browser/notifications/notification_permission_context.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
 #include "chrome/browser/storage/durable_storage_permission_context.h"
@@ -28,7 +27,6 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/background_sync/background_sync_permission_context.h"
 #include "components/embedder_support/permission_context_utils.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/permissions/contexts/local_fonts_permission_context.h"
 #include "components/permissions/contexts/window_placement_permission_context.h"
 #include "components/permissions/permission_manager.h"
@@ -157,9 +155,9 @@ PermissionManagerFactory* PermissionManagerFactory::GetInstance() {
 }
 
 PermissionManagerFactory::PermissionManagerFactory()
-    : BrowserContextKeyedServiceFactory(
-        "PermissionManagerFactory",
-        BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory(
+          "PermissionManagerFactory",
+          ProfileSelections::BuildForRegularAndIncognito()) {
   DependsOn(HostContentSettingsMapFactory::GetInstance());
 }
 
@@ -171,10 +169,4 @@ KeyedService* PermissionManagerFactory::BuildServiceInstanceFor(
   Profile* profile = Profile::FromBrowserContext(context);
   return new permissions::PermissionManager(profile,
                                             CreatePermissionContexts(profile));
-}
-
-content::BrowserContext*
-PermissionManagerFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
 }

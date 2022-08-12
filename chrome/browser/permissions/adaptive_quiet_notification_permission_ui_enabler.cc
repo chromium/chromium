@@ -97,9 +97,9 @@ AdaptiveQuietNotificationPermissionUiEnabler::Factory::GetInstance() {
 }
 
 AdaptiveQuietNotificationPermissionUiEnabler::Factory::Factory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "AdaptiveQuietNotificationPermissionUiEnabler",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::BuildRedirectedInIncognito()) {
   DependsOn(HostContentSettingsMapFactory::GetInstance());
 }
 
@@ -110,12 +110,6 @@ AdaptiveQuietNotificationPermissionUiEnabler::Factory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return new AdaptiveQuietNotificationPermissionUiEnabler(
       static_cast<Profile*>(context));
-}
-
-content::BrowserContext*
-AdaptiveQuietNotificationPermissionUiEnabler::Factory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
 }
 
 // AdaptiveQuietNotificationPermissionUiEnabler ------------------------------

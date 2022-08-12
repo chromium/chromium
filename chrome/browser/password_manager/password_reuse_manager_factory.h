@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_REUSE_MANAGER_FACTORY_H_
 #define CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_REUSE_MANAGER_FACTORY_H_
 
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 
@@ -18,7 +18,7 @@ class BrowserContext;
 }
 
 // Creates instances of PasswordReuseManager per Profile.
-class PasswordReuseManagerFactory : public BrowserContextKeyedServiceFactory {
+class PasswordReuseManagerFactory : public ProfileKeyedServiceFactory {
  public:
   PasswordReuseManagerFactory();
   ~PasswordReuseManagerFactory() override;
@@ -29,8 +29,6 @@ class PasswordReuseManagerFactory : public BrowserContextKeyedServiceFactory {
 
  private:
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
 };
 

@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_PREDICTORS_PREDICTOR_DATABASE_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 
@@ -16,7 +16,7 @@ class PredictorDatabase;
 
 // Singleton that owns the PredictorDatabases and associates them with
 // Profiles.
-class PredictorDatabaseFactory : public BrowserContextKeyedServiceFactory {
+class PredictorDatabaseFactory : public ProfileKeyedServiceFactory {
  public:
   static PredictorDatabase* GetForProfile(Profile* profile);
 

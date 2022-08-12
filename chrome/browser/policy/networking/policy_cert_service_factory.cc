@@ -12,10 +12,8 @@
 #include "chrome/browser/policy/networking/policy_cert_service.h"
 #include "chrome/browser/policy/networking/user_network_configuration_updater.h"
 #include "chrome/browser/policy/networking/user_network_configuration_updater_factory.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "services/network/cert_verifier_with_trust_anchors.h"
 
@@ -144,9 +142,9 @@ PolicyCertServiceFactory* PolicyCertServiceFactory::GetInstance() {
 }
 
 PolicyCertServiceFactory::PolicyCertServiceFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "PolicyCertService",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::BuildForRegularAndIncognito()) {
   DependsOn(UserNetworkConfigurationUpdaterFactory::GetInstance());
 }
 
@@ -161,11 +159,6 @@ KeyedService* PolicyCertServiceFactory::BuildServiceInstanceFor(
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   return BuildServiceInstanceLacros(context);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-}
-
-content::BrowserContext* PolicyCertServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
 }
 
 bool PolicyCertServiceFactory::ServiceIsNULLWhileTesting() const {

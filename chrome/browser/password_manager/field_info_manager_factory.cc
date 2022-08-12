@@ -7,7 +7,6 @@
 #include "base/memory/singleton.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/password_manager/core/browser/field_info_manager.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
@@ -29,9 +28,7 @@ FieldInfoManager* FieldInfoManagerFactory::GetForBrowserContext(
 }
 
 FieldInfoManagerFactory::FieldInfoManagerFactory()
-    : BrowserContextKeyedServiceFactory(
-          "FieldInfoManagerFactory",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("FieldInfoManagerFactory") {
   DependsOn(PasswordStoreFactory::GetInstance());
 }
 

@@ -5,7 +5,6 @@
 #include "chrome/browser/policy/messaging_layer/util/manual_test_heartbeat_event_factory.h"
 
 #include "chrome/browser/policy/messaging_layer/util/manual_test_heartbeat_event.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace reporting {
 
@@ -15,9 +14,7 @@ ManualTestHeartbeatEventFactory::GetInstance() {
 }
 
 ManualTestHeartbeatEventFactory::ManualTestHeartbeatEventFactory()
-    : BrowserContextKeyedServiceFactory(
-          "ManualTestHeartbeatEvent",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("ManualTestHeartbeatEvent") {}
 
 ManualTestHeartbeatEventFactory::~ManualTestHeartbeatEventFactory() = default;
 

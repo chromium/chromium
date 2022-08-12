@@ -9,10 +9,8 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/password_manager/core/browser/password_reuse_manager_impl.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/browser/password_store_signin_notifier_impl.h"
@@ -44,9 +42,9 @@ bool IsSignedIn(Profile* profile) {
 }  // namespace
 
 PasswordReuseManagerFactory::PasswordReuseManagerFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "PasswordReuseManager",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::BuildRedirectedInIncognito()) {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(PasswordStoreFactory::GetInstance());
   DependsOn(AccountPasswordStoreFactory::GetInstance());
@@ -102,9 +100,4 @@ KeyedService* PasswordReuseManagerFactory::BuildServiceInstanceFor(
 #endif
 
   return reuse_manager;
-}
-
-content::BrowserContext* PasswordReuseManagerFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
 }

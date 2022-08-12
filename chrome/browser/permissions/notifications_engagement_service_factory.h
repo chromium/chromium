@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_PERMISSIONS_NOTIFICATIONS_ENGAGEMENT_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_PERMISSIONS_NOTIFICATIONS_ENGAGEMENT_SERVICE_FACTORY_H_
 
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/permissions/notifications_engagement_service.h"
 
 class Profile;
@@ -20,7 +20,7 @@ class BrowserContext;
 }
 
 class NotificationsEngagementServiceFactory
-    : public BrowserContextKeyedServiceFactory {
+    : public ProfileKeyedServiceFactory {
  public:
   static NotificationsEngagementServiceFactory* GetInstance();
 

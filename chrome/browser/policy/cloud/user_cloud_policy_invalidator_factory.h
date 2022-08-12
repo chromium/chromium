@@ -6,13 +6,12 @@
 #define CHROME_BROWSER_POLICY_CLOUD_USER_CLOUD_POLICY_INVALIDATOR_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace policy {
 
 // Creates an instance of UserCloudPolicyInvalidator for each profile.
-class UserCloudPolicyInvalidatorFactory
-    : public BrowserContextKeyedServiceFactory {
+class UserCloudPolicyInvalidatorFactory : public ProfileKeyedServiceFactory {
  public:
   static UserCloudPolicyInvalidatorFactory* GetInstance();
 

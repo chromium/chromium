@@ -13,7 +13,6 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/page_info/chrome_about_this_site_service_client.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/page_info/core/about_this_site_service.h"
 #include "components/page_info/core/features.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -32,9 +31,7 @@ AboutThisSiteServiceFactory* AboutThisSiteServiceFactory::GetInstance() {
 }
 
 AboutThisSiteServiceFactory::AboutThisSiteServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "AboutThisSiteServiceFactory",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("AboutThisSiteServiceFactory") {
   DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
 }
 

@@ -9,10 +9,8 @@
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "content/public/browser/storage_partition.h"
@@ -32,9 +30,11 @@ PrivacySandboxService* PrivacySandboxServiceFactory::GetForProfile(
 }
 
 PrivacySandboxServiceFactory::PrivacySandboxServiceFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "PrivacySandboxService",
-          BrowserContextDependencyManager::GetInstance()) {
+          // TODO(crbug.com/1284295): Determine whether this actually needs to
+          // be created, or whether all usage in OTR contexts can be removed.
+          ProfileSelections::BuildForRegularAndIncognito()) {
   DependsOn(PrivacySandboxSettingsFactory::GetInstance());
   DependsOn(CookieSettingsFactory::GetInstance());
   DependsOn(browsing_topics::BrowsingTopicsServiceFactory::GetInstance());
@@ -58,11 +58,4 @@ KeyedService* PrivacySandboxServiceFactory::BuildServiceInstanceFor(
       TrustSafetySentimentServiceFactory::GetForProfile(profile),
 #endif
       browsing_topics::BrowsingTopicsServiceFactory::GetForProfile(profile));
-}
-
-content::BrowserContext* PrivacySandboxServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  // TODO(crbug.com/1284295): Determine whether this actually needs to be
-  // created, or whether all usage in OTR contexts can be removed.
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
 }

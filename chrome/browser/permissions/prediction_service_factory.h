@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_PERMISSIONS_PREDICTION_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_PERMISSIONS_PREDICTION_SERVICE_FACTORY_H_
 
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 
@@ -17,7 +17,7 @@ namespace permissions {
 class PredictionService;
 }
 
-class PredictionServiceFactory : public BrowserContextKeyedServiceFactory {
+class PredictionServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static permissions::PredictionService* GetForProfile(Profile* profile);
   static PredictionServiceFactory* GetInstance();
@@ -33,9 +33,6 @@ class PredictionServiceFactory : public BrowserContextKeyedServiceFactory {
 
   // BrowserContextKeyedServiceFactory
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
 };
 

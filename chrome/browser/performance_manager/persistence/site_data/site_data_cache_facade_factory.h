@@ -10,7 +10,7 @@
 #include "base/no_destructor.h"
 #include "base/threading/sequence_bound.h"
 #include "base/types/pass_key.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 
@@ -47,7 +47,7 @@ class SiteDataCacheFacadeTest;
 //   - At shutdown, when the last SiteDataCacheFacade is destroyed, a task is
 //     posted to ensure that the SiteDataCacheFactory is destroyed on its
 //     sequence.
-class SiteDataCacheFacadeFactory : public BrowserContextKeyedServiceFactory {
+class SiteDataCacheFacadeFactory : public ProfileKeyedServiceFactory {
  public:
   SiteDataCacheFacadeFactory(const SiteDataCacheFacadeFactory&) = delete;
   SiteDataCacheFacadeFactory& operator=(const SiteDataCacheFacadeFactory&) =
@@ -82,8 +82,6 @@ class SiteDataCacheFacadeFactory : public BrowserContextKeyedServiceFactory {
  private:
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
   bool ServiceIsNULLWhileTesting() const override;

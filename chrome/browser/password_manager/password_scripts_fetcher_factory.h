@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_SCRIPTS_FETCHER_FACTORY_H_
 #define CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_SCRIPTS_FETCHER_FACTORY_H_
 
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace password_manager {
 class PasswordScriptsFetcher;
@@ -16,7 +16,7 @@ class BrowserContext;
 }
 
 // Creates instances of |PasswordScriptsFetcher| per |BrowserContext|.
-class PasswordScriptsFetcherFactory : public BrowserContextKeyedServiceFactory {
+class PasswordScriptsFetcherFactory : public ProfileKeyedServiceFactory {
  public:
   PasswordScriptsFetcherFactory();
   ~PasswordScriptsFetcherFactory() override;

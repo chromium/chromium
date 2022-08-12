@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_PERMISSIONS_PERMISSION_AUDITING_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_PERMISSIONS_PERMISSION_AUDITING_SERVICE_FACTORY_H_
 
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 
@@ -18,8 +18,7 @@ namespace permissions {
 class PermissionAuditingService;
 }
 
-class PermissionAuditingServiceFactory
-    : public BrowserContextKeyedServiceFactory {
+class PermissionAuditingServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static PermissionAuditingServiceFactory* GetInstance();
 

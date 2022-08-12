@@ -9,7 +9,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/browser/site_affiliation/affiliation_service_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -18,9 +17,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 AffiliationServiceFactory::AffiliationServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "AffiliationService",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("AffiliationService") {}
 
 AffiliationServiceFactory::~AffiliationServiceFactory() = default;
 

@@ -7,7 +7,6 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
 
 // static
@@ -24,9 +23,7 @@ SearchPrefetchServiceFactory* SearchPrefetchServiceFactory::GetInstance() {
 }
 
 SearchPrefetchServiceFactory::SearchPrefetchServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "SearchPrefetchService",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("SearchPrefetchService") {}
 
 SearchPrefetchServiceFactory::~SearchPrefetchServiceFactory() = default;
 

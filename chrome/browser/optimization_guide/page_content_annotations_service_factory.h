@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_OPTIMIZATION_GUIDE_PAGE_CONTENT_ANNOTATIONS_SERVICE_FACTORY_H_
 
 #include "base/no_destructor.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace content {
 class BrowserContext;
@@ -20,8 +20,7 @@ class Profile;
 
 // LazyInstance that owns all PageContentAnnotationsService(s) and associates
 // them with Profiles.
-class PageContentAnnotationsServiceFactory
-    : public BrowserContextKeyedServiceFactory {
+class PageContentAnnotationsServiceFactory : public ProfileKeyedServiceFactory {
  public:
   // Gets the PageContentAnnotationsService for the profile.
   //

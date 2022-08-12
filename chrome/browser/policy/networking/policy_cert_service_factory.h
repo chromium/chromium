@@ -9,7 +9,7 @@
 #include <string>
 
 #include "build/chromeos_buildflags.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace base {
 template <typename T>
@@ -23,7 +23,7 @@ namespace policy {
 class PolicyCertService;
 
 // Factory to create PolicyCertServices.
-class PolicyCertServiceFactory : public BrowserContextKeyedServiceFactory {
+class PolicyCertServiceFactory : public ProfileKeyedServiceFactory {
  public:
   // Returns an existing PolicyCertService for |profile|. See
   // CreateForProfile.
@@ -70,8 +70,6 @@ class PolicyCertServiceFactory : public BrowserContextKeyedServiceFactory {
 
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
 };

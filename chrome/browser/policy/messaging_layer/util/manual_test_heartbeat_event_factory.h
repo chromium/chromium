@@ -6,14 +6,13 @@
 #define CHROME_BROWSER_POLICY_MESSAGING_LAYER_UTIL_MANUAL_TEST_HEARTBEAT_EVENT_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace reporting {
 
 // This class is only used for manual testing purpose. Do not depend on it in
 // other parts of the production code.
-class ManualTestHeartbeatEventFactory
-    : public BrowserContextKeyedServiceFactory {
+class ManualTestHeartbeatEventFactory : public ProfileKeyedServiceFactory {
  public:
   static ManualTestHeartbeatEventFactory* GetInstance();
 

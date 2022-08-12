@@ -6,9 +6,7 @@
 
 #include "base/memory/singleton.h"
 #include "chrome/browser/permissions/last_tab_standing_tracker.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 LastTabStandingTracker* LastTabStandingTrackerFactory::GetForBrowserContext(
     content::BrowserContext* browser_context) {
@@ -21,9 +19,9 @@ LastTabStandingTrackerFactory* LastTabStandingTrackerFactory::GetInstance() {
 }
 
 LastTabStandingTrackerFactory::LastTabStandingTrackerFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "LastTabStandingTrackerKeyedService",
-          BrowserContextDependencyManager::GetInstance()) {}
+          ProfileSelections::BuildForRegularAndIncognito()) {}
 
 LastTabStandingTrackerFactory::~LastTabStandingTrackerFactory() = default;
 
@@ -34,9 +32,4 @@ bool LastTabStandingTrackerFactory::ServiceIsCreatedWithBrowserContext() const {
 KeyedService* LastTabStandingTrackerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return new LastTabStandingTracker();
-}
-
-content::BrowserContext* LastTabStandingTrackerFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
 }

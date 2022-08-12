@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_PERMISSIONS_PREDICTION_MODEL_HANDLER_FACTORY_H_
 #define CHROME_BROWSER_PERMISSIONS_PREDICTION_MODEL_HANDLER_FACTORY_H_
 
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace base {
 template <typename T>
@@ -15,7 +15,7 @@ namespace permissions {
 class PredictionModelHandler;
 }
 
-class PredictionModelHandlerFactory : public BrowserContextKeyedServiceFactory {
+class PredictionModelHandlerFactory : public ProfileKeyedServiceFactory {
  public:
   PredictionModelHandlerFactory(const PredictionModelHandlerFactory&) = delete;
   PredictionModelHandlerFactory& operator=(
@@ -32,9 +32,6 @@ class PredictionModelHandlerFactory : public BrowserContextKeyedServiceFactory {
 
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
 };
 

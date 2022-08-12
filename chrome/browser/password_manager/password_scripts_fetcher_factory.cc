@@ -12,7 +12,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/autofill_assistant/browser/public/autofill_assistant.h"
 #include "components/autofill_assistant/browser/public/autofill_assistant_factory.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/password_manager/core/browser/capabilities_service_impl.h"
 #include "components/password_manager/core/browser/password_scripts_fetcher_impl.h"
 #include "components/password_manager/core/browser/saved_passwords_capabilities_fetcher.h"
@@ -22,9 +21,7 @@
 #include "content/public/browser/storage_partition.h"
 
 PasswordScriptsFetcherFactory::PasswordScriptsFetcherFactory()
-    : BrowserContextKeyedServiceFactory(
-          "PasswordScriptsFetcher",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("PasswordScriptsFetcher") {}
 
 PasswordScriptsFetcherFactory::~PasswordScriptsFetcherFactory() = default;
 

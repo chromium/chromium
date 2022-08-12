@@ -7,7 +7,6 @@
 #include "base/memory/singleton.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/permissions/notifications_engagement_service.h"
 
 // static
@@ -24,9 +23,7 @@ NotificationsEngagementServiceFactory::GetForProfile(Profile* profile) {
 }
 
 NotificationsEngagementServiceFactory::NotificationsEngagementServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "NotificationsEngagementService",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("NotificationsEngagementService") {
   DependsOn(HostContentSettingsMapFactory::GetInstance());
 }
 

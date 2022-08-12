@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_PLATFORM_KEYS_EXTENSION_PLATFORM_KEYS_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_PLATFORM_KEYS_EXTENSION_PLATFORM_KEYS_SERVICE_FACTORY_H_
 
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace base {
 template <typename T>
@@ -17,8 +17,7 @@ namespace chromeos {
 class ExtensionPlatformKeysService;
 
 // Factory to create ExtensionPlatformKeysService.
-class ExtensionPlatformKeysServiceFactory
-    : public BrowserContextKeyedServiceFactory {
+class ExtensionPlatformKeysServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static ExtensionPlatformKeysService* GetForBrowserContext(
       content::BrowserContext* context);
@@ -36,8 +35,6 @@ class ExtensionPlatformKeysServiceFactory
   ~ExtensionPlatformKeysServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory:
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
 };

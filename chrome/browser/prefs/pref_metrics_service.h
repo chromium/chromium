@@ -8,7 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "url/gurl.h"
 
@@ -30,7 +30,7 @@ class PrefMetricsService : public KeyedService {
                                           bool homepage_is_ntp,
                                           const GURL& homepage_url);
 
-  class Factory : public BrowserContextKeyedServiceFactory {
+  class Factory : public ProfileKeyedServiceFactory {
    public:
     static Factory* GetInstance();
     static PrefMetricsService* GetForProfile(Profile* profile);
@@ -44,8 +44,6 @@ class PrefMetricsService : public KeyedService {
     KeyedService* BuildServiceInstanceFor(
         content::BrowserContext* profile) const override;
     bool ServiceIsCreatedWithBrowserContext() const override;
-    content::BrowserContext* GetBrowserContextToUse(
-        content::BrowserContext* context) const override;
   };
 
  private:

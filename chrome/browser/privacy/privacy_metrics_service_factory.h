@@ -6,12 +6,12 @@
 #define CHROME_BROWSER_PRIVACY_PRIVACY_METRICS_SERVICE_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class PrivacyMetricsService;
 class Profile;
 
-class PrivacyMetricsServiceFactory : public BrowserContextKeyedServiceFactory {
+class PrivacyMetricsServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static PrivacyMetricsServiceFactory* GetInstance();
   static PrivacyMetricsService* GetForProfile(Profile* profile);

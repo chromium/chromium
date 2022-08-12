@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_PERMISSIONS_LAST_TAB_STANDING_TRACKER_FACTORY_H_
 #define CHROME_BROWSER_PERMISSIONS_LAST_TAB_STANDING_TRACKER_FACTORY_H_
 
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace base {
 template <typename T>
@@ -13,7 +13,7 @@ struct DefaultSingletonTraits;
 }
 class LastTabStandingTracker;
 
-class LastTabStandingTrackerFactory : public BrowserContextKeyedServiceFactory {
+class LastTabStandingTrackerFactory : public ProfileKeyedServiceFactory {
  public:
   LastTabStandingTrackerFactory(const LastTabStandingTrackerFactory&) = delete;
   LastTabStandingTrackerFactory& operator=(
@@ -34,8 +34,6 @@ class LastTabStandingTrackerFactory : public BrowserContextKeyedServiceFactory {
 
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
 };
 

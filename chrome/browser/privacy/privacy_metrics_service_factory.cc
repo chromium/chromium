@@ -10,7 +10,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 PrivacyMetricsServiceFactory* PrivacyMetricsServiceFactory::GetInstance() {
@@ -24,9 +23,8 @@ PrivacyMetricsService* PrivacyMetricsServiceFactory::GetForProfile(
 }
 
 PrivacyMetricsServiceFactory::PrivacyMetricsServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "PrivacyMetricsService",
-          BrowserContextDependencyManager::GetInstance()) {
+    // No metrics recorded for OTR profiles.
+    : ProfileKeyedServiceFactory("PrivacyMetricsService") {
   DependsOn(HostContentSettingsMapFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
@@ -34,10 +32,6 @@ PrivacyMetricsServiceFactory::PrivacyMetricsServiceFactory()
 
 KeyedService* PrivacyMetricsServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  // No metrics recorded for OTR profiles.
-  if (context->IsOffTheRecord())
-    return nullptr;
-
   Profile* profile = Profile::FromBrowserContext(context);
   return new PrivacyMetricsService(
       profile->GetPrefs(),

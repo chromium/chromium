@@ -7,9 +7,7 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor.h"
 #include "chrome/browser/predictors/predictor_database_factory.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace predictors {
 
@@ -27,20 +25,14 @@ AutocompleteActionPredictorFactory*
 }
 
 AutocompleteActionPredictorFactory::AutocompleteActionPredictorFactory()
-    : BrowserContextKeyedServiceFactory(
-        "AutocompleteActionPredictor",
-        BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory(
+          "AutocompleteActionPredictor",
+          ProfileSelections::BuildForRegularAndIncognito()) {
   DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(PredictorDatabaseFactory::GetInstance());
 }
 
 AutocompleteActionPredictorFactory::~AutocompleteActionPredictorFactory() {}
-
-content::BrowserContext*
-AutocompleteActionPredictorFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
-}
 
 KeyedService* AutocompleteActionPredictorFactory::BuildServiceInstanceFor(
     content::BrowserContext* profile) const {

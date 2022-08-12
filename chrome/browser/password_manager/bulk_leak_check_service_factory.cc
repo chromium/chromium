@@ -7,14 +7,11 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/password_manager/core/browser/bulk_leak_check_service.h"
 #include "content/public/browser/storage_partition.h"
 
 BulkLeakCheckServiceFactory::BulkLeakCheckServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "PasswordBulkLeakCheck",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("PasswordBulkLeakCheck") {
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 

@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_PRELOADING_PREFETCH_NO_STATE_PREFETCH_NO_STATE_PREFETCH_LINK_MANAGER_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace content {
 class BrowserContext;
@@ -16,8 +16,7 @@ namespace prerender {
 
 class NoStatePrefetchLinkManager;
 
-class NoStatePrefetchLinkManagerFactory
-    : public BrowserContextKeyedServiceFactory {
+class NoStatePrefetchLinkManagerFactory : public ProfileKeyedServiceFactory {
  public:
   static NoStatePrefetchLinkManager* GetForBrowserContext(
       content::BrowserContext* browser_context);
@@ -30,8 +29,6 @@ class NoStatePrefetchLinkManagerFactory
   ~NoStatePrefetchLinkManagerFactory() override {}
 
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
 };
 

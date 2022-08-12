@@ -11,7 +11,6 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/permissions/prediction_service/prediction_model_handler.h"
 
 // static
@@ -28,9 +27,9 @@ PredictionModelHandlerFactory::GetForBrowserContext(
 }
 
 PredictionModelHandlerFactory::PredictionModelHandlerFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "PredictionModelHandler",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::BuildForRegularAndIncognito()) {
   DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
 }
 
@@ -48,9 +47,4 @@ KeyedService* PredictionModelHandlerFactory::BuildServiceInstanceFor(
       optimization_guide,
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE}));
-}
-
-content::BrowserContext* PredictionModelHandlerFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return context;
 }

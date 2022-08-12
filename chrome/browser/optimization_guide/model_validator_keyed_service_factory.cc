@@ -9,7 +9,6 @@
 #include "chrome/browser/optimization_guide/model_validator_keyed_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "content/public/browser/browser_context.h"
 
@@ -24,21 +23,15 @@ ModelValidatorKeyedServiceFactory::GetInstance() {
 }
 
 ModelValidatorKeyedServiceFactory::ModelValidatorKeyedServiceFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "ModelValidatorKeyedService",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::BuildForRegularAndIncognito()) {
   DCHECK(switches::ShouldValidateModel());
   DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
 }
 
 ModelValidatorKeyedServiceFactory::~ModelValidatorKeyedServiceFactory() =
     default;
-
-content::BrowserContext*
-ModelValidatorKeyedServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return context;
-}
 
 KeyedService* ModelValidatorKeyedServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

@@ -5,8 +5,6 @@
 #include "chrome/browser/page_load_metrics/page_load_metrics_memory_tracker_factory.h"
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/page_load_metrics/browser/page_load_metrics_memory_tracker.h"
 
 namespace page_load_metrics {
@@ -24,9 +22,9 @@ PageLoadMetricsMemoryTrackerFactory::GetInstance() {
 }
 
 PageLoadMetricsMemoryTrackerFactory::PageLoadMetricsMemoryTrackerFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "PageLoadMetricsMemoryTracker",
-          BrowserContextDependencyManager::GetInstance()) {}
+          ProfileSelections::BuildForRegularAndIncognito()) {}
 
 bool PageLoadMetricsMemoryTrackerFactory::ServiceIsCreatedWithBrowserContext()
     const {
@@ -36,12 +34,6 @@ bool PageLoadMetricsMemoryTrackerFactory::ServiceIsCreatedWithBrowserContext()
 KeyedService* PageLoadMetricsMemoryTrackerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return new page_load_metrics::PageLoadMetricsMemoryTracker();
-}
-
-content::BrowserContext*
-PageLoadMetricsMemoryTrackerFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return context;
 }
 
 }  // namespace page_load_metrics

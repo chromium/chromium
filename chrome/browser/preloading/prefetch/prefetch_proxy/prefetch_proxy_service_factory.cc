@@ -6,7 +6,6 @@
 
 #include "chrome/browser/preloading/prefetch/prefetch_proxy/prefetch_proxy_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
 
 // static
@@ -22,9 +21,7 @@ PrefetchProxyServiceFactory* PrefetchProxyServiceFactory::GetInstance() {
 }
 
 PrefetchProxyServiceFactory::PrefetchProxyServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "PrefetchProxyService",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("PrefetchProxyService") {}
 
 PrefetchProxyServiceFactory::~PrefetchProxyServiceFactory() = default;
 

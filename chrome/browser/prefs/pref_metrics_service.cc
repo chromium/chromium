@@ -11,13 +11,11 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/tabs/pinned_tab_codec.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/search_engine_utils.h"
 #include "url/gurl.h"
@@ -108,9 +106,9 @@ PrefMetricsService* PrefMetricsService::Factory::GetForProfile(
 }
 
 PrefMetricsService::Factory::Factory()
-    : BrowserContextKeyedServiceFactory(
-        "PrefMetricsService",
-        BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory(
+          "PrefMetricsService",
+          ProfileSelections::BuildRedirectedInIncognito()) {
   DependsOn(TemplateURLServiceFactory::GetInstance());
 }
 
@@ -124,9 +122,4 @@ KeyedService* PrefMetricsService::Factory::BuildServiceInstanceFor(
 
 bool PrefMetricsService::Factory::ServiceIsCreatedWithBrowserContext() const {
   return true;
-}
-
-content::BrowserContext* PrefMetricsService::Factory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
 }
