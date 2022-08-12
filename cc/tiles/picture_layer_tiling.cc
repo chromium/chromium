@@ -351,32 +351,47 @@ bool PictureLayerTiling::ShouldCreateTileAt(
   // the tile for instance). Pending tree, on the other hand, should only be
   // creating tiles that are different from the current active tree, which is
   // represented by the logic in the rest of the function.
-  if (tree_ == ACTIVE_TREE)
+  if (tree_ == ACTIVE_TREE) {
+    // https://linear.app/replay/issue/RUN-467
+    recordreplay::Assert("PictureLayerTiling::ShouldCreateTileAt #1");
     return true;
+  }
 
   // If the pending tree has no active twin, then it needs to create all tiles.
   const PictureLayerTiling* active_twin =
       client_->GetPendingOrActiveTwinTiling(this);
-  if (!active_twin)
+  if (!active_twin) {
+    // https://linear.app/replay/issue/RUN-467
+    recordreplay::Assert("PictureLayerTiling::ShouldCreateTileAt #2");
     return true;
+  }
 
   // Pending tree will override the entire active tree if indices don't match.
-  if (!TilingMatchesTileIndices(active_twin))
+  if (!TilingMatchesTileIndices(active_twin)) {
+    // https://linear.app/replay/issue/RUN-467
+    recordreplay::Assert("PictureLayerTiling::ShouldCreateTileAt #3");
     return true;
+  }
 
   // If our settings don't match the active twin, it means that the active
   // tiles will all be removed when we activate. So we need all the tiles on the
   // pending tree to be created. See
   // PictureLayerTilingSet::CopyTilingsAndPropertiesFromPendingTwin.
   if (can_use_lcd_text() != active_twin->can_use_lcd_text() ||
-      raster_transform() != active_twin->raster_transform())
+      raster_transform() != active_twin->raster_transform()) {
+    // https://linear.app/replay/issue/RUN-467
+    recordreplay::Assert("PictureLayerTiling::ShouldCreateTileAt #4");
     return true;
+  }
 
   // If the active tree can't create a tile, because of its raster source, then
   // the pending tree should create one.
   if (!active_twin->raster_source()->IntersectsRect(info.enclosing_layer_rect,
-                                                    *active_twin->client()))
+                                                    *active_twin->client())) {
+    // https://linear.app/replay/issue/RUN-467
+    recordreplay::Assert("PictureLayerTiling::ShouldCreateTileAt #5");
     return true;
+  }
 
   const Region* layer_invalidation = client_->GetPendingInvalidation();
 
@@ -386,8 +401,11 @@ bool PictureLayerTiling::ShouldCreateTileAt(
   for (gfx::Rect layer_rect : *layer_invalidation) {
     gfx::Rect invalid_content_rect =
         EnclosingContentsRectFromLayerRect(layer_rect);
-    if (invalid_content_rect.Intersects(info.content_rect))
+    if (invalid_content_rect.Intersects(info.content_rect)) {
+      // https://linear.app/replay/issue/RUN-467
+      recordreplay::Assert("PictureLayerTiling::ShouldCreateTileAt #6");
       return true;
+    }
   }
   // If the active tree doesn't have a tile here, but it's in the pending tree's
   // visible rect, then the pending tree should create a tile. This can happen
@@ -395,10 +413,15 @@ bool PictureLayerTiling::ShouldCreateTileAt(
   // rect. In those situations, we need to block activation until we're ready to
   // display content, which will have to come from the pending tree.
   if (!active_twin->TileAt(i, j) &&
-      current_visible_rect_.Intersects(info.content_rect))
+      current_visible_rect_.Intersects(info.content_rect)) {
+    // https://linear.app/replay/issue/RUN-467
+    recordreplay::Assert("PictureLayerTiling::ShouldCreateTileAt #7");
     return true;
+  }
 
   // In all other cases, the pending tree doesn't need to create a tile.
+  // https://linear.app/replay/issue/RUN-467
+  recordreplay::Assert("PictureLayerTiling::ShouldCreateTileAt #8");
   return false;
 }
 
