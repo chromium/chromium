@@ -427,28 +427,23 @@ void AddressProfileSaveManagerTest::TestImportScenario(
     }
 
     if (is_confirmable_merge &&
-        test_scenario.user_decision == UserDecision::kAccepted) {
-      histogram_tester.ExpectTotalCount(
-          kProfileUpdateAffectedTypesHistogram,
-          test_scenario.expected_affeceted_types_in_merge_for_metrics.size());
+        (test_scenario.user_decision == UserDecision::kAccepted ||
+         test_scenario.user_decision == UserDecision::kDeclined)) {
+      std::string changed_histogram_suffix;
+      switch (test_scenario.user_decision) {
+        case UserDecision::kAccepted:
+          changed_histogram_suffix = ".Accepted";
+          break;
 
+        case UserDecision::kDeclined:
+          changed_histogram_suffix = ".Declined";
+          break;
+
+        default:
+          NOTREACHED() << "Decision not covered by test logic.";
+      }
       for (auto changed_type :
            test_scenario.expected_affeceted_types_in_merge_for_metrics) {
-        histogram_tester.ExpectBucketCount(kProfileUpdateAffectedTypesHistogram,
-                                           changed_type, 1);
-        std::string changed_histogram_suffix;
-        switch (test_scenario.user_decision) {
-          case UserDecision::kAccepted:
-            changed_histogram_suffix = ".Accepted";
-            break;
-
-          case UserDecision::kDeclined:
-            changed_histogram_suffix = ".Declined";
-            break;
-
-          default:
-            NOTREACHED() << "Decision not covered by test logic.";
-        }
         histogram_tester.ExpectBucketCount(
             base::StrCat({kProfileUpdateAffectedTypesHistogram,
                           changed_histogram_suffix}),
@@ -456,7 +451,8 @@ void AddressProfileSaveManagerTest::TestImportScenario(
       }
 
       histogram_tester.ExpectUniqueSample(
-          kProfileUpdateNumberOfAffectedTypesHistogram,
+          base::StrCat({kProfileUpdateNumberOfAffectedTypesHistogram,
+                        changed_histogram_suffix}),
           test_scenario.expected_affeceted_types_in_merge_for_metrics.size(),
           1);
     }
@@ -907,7 +903,10 @@ TEST_P(AddressProfileSaveManagerTest, UserConfirmableMerge_Declined) {
       .is_profile_change_expected = false,
       .merge_candidate = mergeable_profile,
       .import_candidate = final_profile,
-      .expected_final_profiles = {mergeable_profile}};
+      .expected_final_profiles = {mergeable_profile},
+      .expected_affeceted_types_in_merge_for_metrics = {
+          AutofillMetrics::SettingsVisibleFieldTypeForMetrics::kZip,
+          AutofillMetrics::SettingsVisibleFieldTypeForMetrics::kCity}};
 
   TestImportScenario(test_scenario);
 }
@@ -1070,7 +1069,10 @@ TEST_P(AddressProfileSaveManagerTest,
       .merge_candidate = mergeable_profile,
       .import_candidate = merged_profile,
       .expected_final_profiles = {existing_duplicate, updated_profile,
-                                  mergeable_profile}};
+                                  mergeable_profile},
+      .expected_affeceted_types_in_merge_for_metrics = {
+          AutofillMetrics::SettingsVisibleFieldTypeForMetrics::kZip,
+          AutofillMetrics::SettingsVisibleFieldTypeForMetrics::kCity}};
 
   TestImportScenario(test_scenario);
 }

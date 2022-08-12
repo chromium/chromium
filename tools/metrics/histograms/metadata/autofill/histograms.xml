@@ -2693,18 +2693,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Autofill.ProfileImport.UpdateProfileAffectedType"
-    enum="AutofillSettingsVisibleTypes" expires_after="2022-12-25">
-  <owner>koerber@google.com</owner>
-  <owner>src/components/autofill/OWNERS</owner>
-  <summary>
-    Logs that a specific type was changed in a profile update process that was
-    shown to the user when a profile similar to an already existing profile was
-    observed in a form submission. This metric is emitted only when the user
-    accepts the update without further edits.
-  </summary>
-</histogram>
-
 <histogram name="Autofill.ProfileImport.UpdateProfileAffectedType.{Decision}"
     enum="AutofillSettingsVisibleTypes" expires_after="M108">
   <owner>koerber@google.com</owner>
@@ -2782,18 +2770,6 @@ chromium-metrics-reviews@google.com.
     shown to the user when a profile similar to an already existing profile was
     observed in a form submission. This metric is emitted once the user-provided
     import decision is final.
-  </summary>
-</histogram>
-
-<histogram name="Autofill.ProfileImport.UpdateProfileNumberOfAffectedFields"
-    units="fields" expires_after="2022-08-21">
-  <owner>koerber@google.com</owner>
-  <owner>src/components/autofill/OWNERS</owner>
-  <summary>
-    Logs the number of fields that have been changed in the process of
-    succesfully updating an existing profile after an observed form submission.
-    This metric is only collected if the profile update is accepted by the user
-    without further edits.
   </summary>
 </histogram>
 
