@@ -2861,7 +2861,6 @@ crbug.com/1050754 external/wpt/html/semantics/embedded-content/the-video-element
 crbug.com/1050754 external/wpt/html/semantics/forms/constraints/form-validation-validity-patternMismatch.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/html/semantics/forms/constraints/form-validation-validity-valueMissing.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/html/semantics/forms/form-submission-0/form-double-submit-3.html [ Failure ]
-crbug.com/1050754 external/wpt/html/semantics/forms/form-submission-0/form-double-submit-to-different-origin-frame.html [ Failure ]
 crbug.com/1050754 external/wpt/html/semantics/forms/form-submission-0/form-double-submit.html [ Failure ]
 crbug.com/1050754 external/wpt/html/semantics/forms/form-submission-0/getactionurl.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/html/semantics/forms/form-submission-target/rel-base-target.html [ Failure Pass ]

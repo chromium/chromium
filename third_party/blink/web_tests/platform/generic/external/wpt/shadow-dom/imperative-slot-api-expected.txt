@@ -14,5 +14,6 @@ PASS Assignment with the same node in parameters should be ignored, first one wi
 PASS Removing a slot from DOM resets its slottable's slot assignment.
 PASS Nodes can be assigned even if slots or nodes aren't in the same tree.
 PASS Removing a node from the document does not break manually assigned slot linkage.
+PASS throw TypeError if the passed values are neither Element nor Text
 Harness: the test ran to completion.
 

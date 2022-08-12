@@ -285,4 +285,19 @@ test(() => {
   assert_equals(tTree.c2.assignedSlot, tTree.s1);
 }, 'Removing a node from the document does not break manually assigned slot linkage.');
 
+test(() => {
+  const inputValues = [
+    ['Attr', document.createAttribute('bar')],
+    ['Comment', document.createComment('bar')],
+    ['DocumentFragment', document.createDocumentFragment()],
+    ['DocumentType', document.implementation.createDocumentType('html', '', '')]
+  ];
+  for (const [label, input] of inputValues) {
+    assert_throws_js(TypeError, () => {
+      const slot = document.createElement('slot');
+      slot.assign(input);
+    }, label);
+  }
+}, 'throw TypeError if the passed values are neither Element nor Text');
+
 </script>

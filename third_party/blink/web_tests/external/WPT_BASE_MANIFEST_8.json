@@ -309104,7 +309104,7 @@
          []
         ],
         "fill-and-stroke-styles.yaml": [
-         "88a36119d4127907a3f4dc494e9b28349b1a1929",
+         "1650ec4909b2adf1bd582f88a02f25e33e98975e",
          []
         ],
         "line-styles.yaml": [
@@ -309201,7 +309201,7 @@
         []
        ],
        "drawing-images-to-the-canvas.yaml": [
-        "8569ed044f8d6f973a30f4fc2cc7a6d9db1811f2",
+        "8c6de99e0c54d02e32c45f4ed284d34518868ee0",
         []
        ],
        "drawing-rectangles-to-the-canvas.yaml": [
@@ -320170,7 +320170,7 @@
      []
     ],
     "broken.png": [
-     "f2581017b43d44664e7137a78c0803554b50f3b1",
+     "2ff648a04905f9090df637f2140c1c092cc3a247",
      []
     ],
     "clear-100x50.png": [
@@ -320317,6 +320317,10 @@
     ],
     "transparent50.png": [
      "55f8e69325bc61ff83f769a6524f7f9c3310be1f",
+     []
+    ],
+    "undecodable.png": [
+     "f2581017b43d44664e7137a78c0803554b50f3b1",
      []
     ],
     "webp-animated.webp": [
@@ -395282,7 +395286,7 @@
       ]
      ],
      "preserve-3d-flat-grouping-properties.html": [
-      "100726ab1ba0244e930bb281ec25324f5d9a0fef",
+      "7fbd61d85421dbed1cf37be339302af837ea2155",
       [
        null,
        {}
@@ -446921,7 +446925,7 @@
         ]
        ],
        "2d.drawImage.broken.html": [
-        "017048cf732bc30ff236f941a0ecc6d921e7b2a3",
+        "4b22ffc8ba6a1795f11dba87fd592d107ec2c33a",
         [
          null,
          {}
@@ -449020,7 +449024,7 @@
         ]
        ],
        "2d.pattern.image.broken.html": [
-        "8eafcada5f57d0549f91946ceb6b40e92aa995b2",
+        "9f1bb2d036fbb025ef852e2ea90aa133affb8a79",
         [
          null,
          {}
@@ -449904,7 +449908,7 @@
          ]
         ],
         "createImageBitmap-invalid-args.html": [
-         "74ca9a853e66591b5f043b3e9ea74346f985f7b5",
+         "3cae3523eff54994fdc8b8c68faaaf2b066acf7e",
          [
           null,
           {}
@@ -477079,7 +477083,7 @@
        ],
        "environment-changes": {
         "viewport-change.html": [
-         "f6ae65708c661c5ff1a957c3a8606d75a44827fb",
+         "bf65172bde27016130e753bdfdb6760bcc36126a",
          [
           null,
           {}
@@ -477947,7 +477951,7 @@
         ]
        ],
        "form-double-submit-to-different-origin-frame.html": [
-        "aee1d41e3a1512638a1f4e3ab5bfeb4ee9781eec",
+        "00a46bfd4326fc2d35d50bfc4a2f68890a5594bb",
         [
          null,
          {}
@@ -480418,6 +480422,13 @@
        ],
        "anchor-with-inline-element.html": [
         "6910a5de93c7897f4e3fb1e5122a87cd001d10ad",
+        [
+         null,
+         {}
+        ]
+       ],
+       "anchor-without-link.html": [
+        "edaf786b2565a779d249730358d0563d6dbf7b8f",
         [
          null,
          {}
@@ -526892,6 +526903,47 @@
       }
      ]
     ],
+    "serialPort_readable_byob.https.any.js": [
+     "8672cf7124f388309e3ab001b489f692a77bc5a9",
+     [
+      "serial/serialPort_readable_byob.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/test-only-api.js"
+        ],
+        [
+         "script",
+         "/serial/resources/common.js"
+        ],
+        [
+         "script",
+         "resources/automation.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "serial/serialPort_readable_byob.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/test-only-api.js"
+        ],
+        [
+         "script",
+         "/serial/resources/common.js"
+        ],
+        [
+         "script",
+         "resources/automation.js"
+        ]
+       ]
+      }
+     ]
+    ],
     "serialPort_readable_cancel.https.any.js": [
      "fd1b08f6e7f34a3b7e693cc419f6ea84edfaff01",
      [
@@ -527221,7 +527273,7 @@
      ]
     ],
     "serialPort_readable_smallRead.https.any.js": [
-     "b53ea71443d44f23aa80326b65b1f7501d7846dc",
+     "b926aa608f38a18db536f0278e755ac7d14e93d0",
      [
       "serial/serialPort_readable_smallRead.https.any.html",
       {
@@ -530464,7 +530516,7 @@
      ]
     ],
     "imperative-slot-api.html": [
-     "b176add4091978e25f2d847d13f279eec1171ce7",
+     "bcf052bbab37b4060a3c1f54ed3edf0cb9c2bc45",
      [
       null,
       {}
