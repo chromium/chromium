@@ -77,7 +77,13 @@ class VirtualKeyboardPrivateApiTest : public extensions::ExtensionApiTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(VirtualKeyboardPrivateApiTest, Multipaste) {
+// TODO(crbug.com/1352320): Flaky on release bots.
+#if defined(NDEBUG)
+#define MAYBE_Multipaste DISABLED_Multipaste
+#else
+#define MAYBE_Multipaste Multipaste
+#endif
+IN_PROC_BROWSER_TEST_F(VirtualKeyboardPrivateApiTest, MAYBE_Multipaste) {
   // Copy to the clipboard an item of each display format type.
   CopyHtmlItem();
   CopyTextItem();
