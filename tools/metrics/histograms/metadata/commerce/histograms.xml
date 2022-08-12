@@ -129,8 +129,10 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   <owner>wychen@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
-    Logged when we try to get cart extraction script to record the source of
-    this script data.
+    Cart extraction script could come from local resources or component updater.
+    This histogram is logged when we try to get the extraction script to record
+    from which source we are getting the script. The action of getting script is
+    triggered when users visit the cart page which would trigger extractions.
   </summary>
 </histogram>
 
@@ -140,8 +142,11 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   <owner>wychen@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
-    Logged when we try to get general checkout URL detection pattern to record
-    the source of this pattern data.
+    Checkout URL pattern could come from Finch feature parameter or component
+    updater. This histogram is logged when we try to get checkout URL pattern to
+    record from which source we are getting the pattern. The action of getting
+    checkout URL pattern is triggered on every eligible navigation to decide if
+    users have visited the checkout page.
   </summary>
 </histogram>
 
@@ -151,8 +156,41 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   <owner>wychen@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
-    Logged when we try to get merchant name of a domain to record the source of
-    this name data.
+    Merchant name could come from local resources or component updater. This
+    histogram is logged when we try to get merchant name data to record from
+    which source we are getting the data. The action of getting merchant name is
+    triggered every time when a new abadoned cart is detected by ChromeCart, so
+    that we can look up merchant name for the abadoned cart merchant.
+  </summary>
+</histogram>
+
+<histogram name="Commerce.Heuristics.PartnerMerchantPatternSource"
+    enum="CommerceHeuristicsDataSource" expires_after="2022-12-04">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>wychen@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Partner merchant pattern heuristics could come from Finch feature parameter
+    or component updater. This histogram is logged when we try to get partner
+    merchant pattern to record from which source we are getting the pattern. The
+    action of getting partner merchant pattern is triggered every time when we
+    need to decide if an abandoned cart in ChromeCart is from a partner
+    merchant, which could happen both with and without user actions.
+  </summary>
+</histogram>
+
+<histogram name="Commerce.Heuristics.SkipProductPatternSource"
+    enum="CommerceHeuristicsDataSource" expires_after="2022-12-04">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>wychen@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Skip product pattern heuristics could come from Finch feature parameter or
+    component updater. This histogram is logged when we try to get skip product
+    pattern to record from which source we are getting the pattern. The action
+    of getting skip product pattern is triggered every time when a new abadoned
+    cart is detected by ChromeCart, so that we can check if products in abadoned
+    cart need to be skipped.
   </summary>
 </histogram>
 

@@ -23,3 +23,15 @@ void CommerceHeuristicsDataMetricsHelper::RecordCartExtractionScriptSource(
   base::UmaHistogramEnumeration(
       "Commerce.Heuristics.CartExtractionScriptSource", source);
 }
+
+void CommerceHeuristicsDataMetricsHelper::RecordPartnerMerchantPatternSource(
+    HeuristicsSource source) {
+  base::UmaHistogramEnumeration(
+      "Commerce.Heuristics.PartnerMerchantPatternSource", source);
+}
+
+void CommerceHeuristicsDataMetricsHelper::RecordSkipProductPatternSource(
+    HeuristicsSource source) {
+  base::UmaHistogramEnumeration("Commerce.Heuristics.SkipProductPatternSource",
+                                source);
+}

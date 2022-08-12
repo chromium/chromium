@@ -1055,6 +1055,18 @@ TEST_F(CommerceHintAgentUnitTest, ShouldSkipFromFeatureParam) {
   for (auto* str : kNotSkipText) {
     EXPECT_FALSE(CommerceHintAgent::ShouldSkip(str)) << str;
   }
+  int match_times = (sizeof(kSkipText) / sizeof(*kSkipText)) +
+                    (sizeof(kNotSkipText) / sizeof(*kNotSkipText));
+  ASSERT_EQ(histogram_tester_.GetBucketCount(
+                "Commerce.Heuristics.SkipProductPatternSource",
+                CommerceHeuristicsDataMetricsHelper::HeuristicsSource::
+                    FROM_FEATURE_PARAMETER),
+            match_times);
+  ASSERT_EQ(histogram_tester_.GetBucketCount(
+                "Commerce.Heuristics.SkipProductPatternSource",
+                CommerceHeuristicsDataMetricsHelper::HeuristicsSource::
+                    FROM_COMPONENT),
+            0);
 }
 
 TEST_F(CommerceHintAgentUnitTest, ShouldSkipFromComponent) {
@@ -1072,6 +1084,18 @@ TEST_F(CommerceHintAgentUnitTest, ShouldSkipFromComponent) {
   for (auto* str : kNotSkipText) {
     EXPECT_FALSE(CommerceHintAgent::ShouldSkip(str)) << str;
   }
+  int match_times = (sizeof(kSkipText) / sizeof(*kSkipText)) +
+                    (sizeof(kNotSkipText) / sizeof(*kNotSkipText));
+  ASSERT_EQ(histogram_tester_.GetBucketCount(
+                "Commerce.Heuristics.SkipProductPatternSource",
+                CommerceHeuristicsDataMetricsHelper::HeuristicsSource::
+                    FROM_FEATURE_PARAMETER),
+            0);
+  ASSERT_EQ(histogram_tester_.GetBucketCount(
+                "Commerce.Heuristics.SkipProductPatternSource",
+                CommerceHeuristicsDataMetricsHelper::HeuristicsSource::
+                    FROM_COMPONENT),
+            match_times);
 }
 
 TEST_F(CommerceHintAgentUnitTest, ShouldSkip_Priority) {
