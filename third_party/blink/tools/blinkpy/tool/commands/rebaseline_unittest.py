@@ -393,6 +393,7 @@ class TestRebaseline(BaseTestCase):
             dict(
                 {
                     'optimize': True,
+                    'dry_run': False,
                     'verbose': True,
                     'results_directory': None,
                     'flag_specific': None,
@@ -661,6 +662,7 @@ class TestRebaselineUpdatesExpectationsFiles(BaseTestCase):
     def options():
         return optparse.Values({
             'optimize': False,
+            'dry_run': False,
             'verbose': True,
             'results_directory': None,
             'flag_specific': None,
@@ -1024,6 +1026,7 @@ class TestRebaselineExecute(BaseTestCase):
         return optparse.Values({
             'results_directory': False,
             'optimize': False,
+            'dry_run': False,
             'builders': None,
             'suffixes': 'png,txt',
             'verbose': True,

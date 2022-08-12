@@ -36,12 +36,6 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
     def __init__(self):
         super(RebaselineCL, self).__init__(options=[
             optparse.make_option(
-                '--dry-run',
-                action='store_true',
-                default=False,
-                help='Dry run mode; list actions that would be performed but '
-                'do not actually download any new baselines.'),
-            optparse.make_option(
                 '--only-changed-tests',
                 action='store_true',
                 default=False,
@@ -110,6 +104,7 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
                                        'Works with --test-name-file '
                                        'and positional parameters')),
             self.no_optimize_option,
+            self.dry_run_option,
             self.results_directory_option,
         ])
         self.git_cl = None
@@ -118,7 +113,10 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
 
     def execute(self, options, args, tool):
         self._tool = tool
+        self._dry_run = options.dry_run
         self.git_cl = self.git_cl or GitCL(tool)
+        # '--dry-run' implies '--no-trigger-jobs'.
+        options.trigger_jobs = options.trigger_jobs and not self._dry_run
         if args and options.test_name_file:
             _log.error('Aborted: Cannot combine --test-name-file and '
                        'positional parameters.')
@@ -155,7 +153,8 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         }
 
         if not options.trigger_jobs and not jobs:
-            _log.info('Aborted: no try jobs and --no-trigger-jobs passed.')
+            _log.info("Aborted: no try jobs and '--no-trigger-jobs' or "
+                      "'--dry-run' passed.")
             return 1
 
         if options.use_blink_try_bots_only:
@@ -207,8 +206,7 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         if options.fill_missing:
             self.fill_in_missing_results(test_baseline_set)
 
-        if not options.dry_run:
-            self.rebaseline(options, test_baseline_set)
+        self.rebaseline(options, test_baseline_set)
         return 0
 
     def check_ok_to_run(self):

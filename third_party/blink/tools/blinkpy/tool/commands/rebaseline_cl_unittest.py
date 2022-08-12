@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import json
+import logging
 import optparse
 import textwrap
 
@@ -300,27 +301,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             'resultDB': None
         }
         options.update(kwargs)
-        return optparse.Values(dict(**options))
-
-    @staticmethod
-    def command_options_resultDB(**kwargs):
-        options = {
-            'dry_run': False,
-            'only_changed_tests': False,
-            'trigger_jobs': True,
-            'fill_missing': None,
-            'optimize': True,
-            'results_directory': None,
-            'test_name_file': None,
-            'verbose': False,
-            'builders': [],
-            'patchset': None,
-            'use_blink_try_bots_only': False,
-            'flag_specific': None,
-            'resultDB': True
-        }
-        options.update(kwargs)
-        return optparse.Values(dict(**options))
+        return optparse.Values(options)
 
     def test_execute_basic(self):
         # By default, with no arguments or options, rebaseline-cl rebaselines
@@ -336,6 +317,38 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             'INFO: Rebaselining two/image-fail.html\n',
         ])
 
+    def test_execute_basic_dry_run(self):
+        """Dry running does not execute any commands or write any files."""
+        self.set_logging_level(logging.DEBUG)
+        # This shallow copy prevents a spurious pass when the filesystem
+        # contents mapping mutates.
+        files_before = dict(self.tool.filesystem.files)
+        exit_code = self.command.execute(self.command_options(dry_run=True),
+                                         [], self.tool)
+        self.assertEqual(exit_code, 0)
+        messages = self.logMessages()
+        # Asserting an exact count is brittle.
+        # Just verify one of each internal command.
+        self.assertTrue(
+            any(
+                message.startswith('DEBUG: Would have run: "python echo '
+                                   'copy-existing-baselines-internal ')
+                for message in messages))
+        self.assertTrue(
+            any(
+                message.startswith('DEBUG: Would have run: "python echo '
+                                   'rebaseline-test-internal ')
+                for message in messages))
+        self.assertTrue(
+            any(
+                message.startswith('DEBUG: Would have run: "python echo '
+                                   'optimize-baselines ')
+                for message in messages))
+        self.assertEqual(self.tool.executive.calls, [])
+        self.assertEqual(self.command.git_cl.calls, [])
+        self.assertEqual(self.tool.filesystem.files, files_before)
+        self.assertEqual(self.tool.git().added_paths, set())
+
     def test_execute_basic_resultDB(self):
         # By default, with no arguments or options, rebaseline-cl rebaselines
         # all of the tests that unexpectedly failed.
@@ -344,8 +357,8 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
                 build, self.web_test_resultsdb)
             self.tool.results_fetcher.set_artifact_list_for_test(
                 build, self.test_artifacts_list)
-        exit_code = self.command.execute(self.command_options_resultDB(), [],
-                                         self.tool)
+        exit_code = self.command.execute(self.command_options(resultDB=True),
+                                         [], self.tool)
         self.assertEqual(exit_code, 0)
         self.assertLog([
             'INFO: Finished try jobs found for all try bots.\n',
@@ -445,16 +458,26 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
         ])
 
     def test_execute_no_try_jobs_started_and_no_trigger_jobs(self):
-        # If there are no try jobs started yet and --no-trigger-jobs is passed,
-        # then we just abort immediately.
+        # If there are no try jobs started yet and '--no-trigger-jobs' or
+        # '--dry-run' is passed, then we just abort immediately.
         self.command.git_cl = MockGitCL(self.tool, {})
         exit_code = self.command.execute(
             self.command_options(trigger_jobs=False), [], self.tool)
         self.assertEqual(exit_code, 1)
         self.assertLog([
             'INFO: No finished try jobs.\n',
-            'INFO: Aborted: no try jobs and --no-trigger-jobs passed.\n',
+            "INFO: Aborted: no try jobs and '--no-trigger-jobs' or '--dry-run' "
+            "passed.\n",
         ])
+        exit_code = self.command.execute(self.command_options(dry_run=True),
+                                         [], self.tool)
+        self.assertEqual(exit_code, 1)
+        self.assertLog([
+            'INFO: No finished try jobs.\n',
+            "INFO: Aborted: no try jobs and '--no-trigger-jobs' or '--dry-run' "
+            "passed.\n",
+        ])
+        self.assertEqual(self.command.git_cl.calls, [])
 
     def test_execute_one_missing_build(self):
         builds = {
