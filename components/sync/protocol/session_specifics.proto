@@ -45,13 +45,7 @@ message SessionWindow {
   // Index of the selected tab in tabs; -1 if no tab is selected.
   optional int32 selected_tab_index = 2 [default = -1];
   // Type of the window.
-  enum BrowserType {
-    TYPE_TABBED = 1;      // A normal tabbed window.
-    TYPE_POPUP = 2;       // A popup window.
-    TYPE_CUSTOM_TAB = 3;  // A custom tab within an app. Not restored
-                          // automatically on sync startup.
-  }
-  optional BrowserType browser_type = 3 [default = TYPE_TABBED];
+  optional SyncEnums.BrowserType browser_type = 3 [default = TYPE_TABBED];
   // The tabs that compose a window (correspond to tab id's).
   repeated int32 tab = 4;
 }
@@ -85,7 +79,7 @@ message SessionTab {
   // Ids of the currently assigned variations which should be sent to sync.
   repeated uint64 variation_id = 12 [deprecated = true];
 
-  optional SessionWindow.BrowserType browser_type = 13;
+  optional SyncEnums.BrowserType browser_type = 13;
 }
 
 message TabNavigation {

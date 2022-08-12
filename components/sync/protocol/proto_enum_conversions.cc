@@ -214,14 +214,13 @@ const char* ProtoEnumToString(sync_pb::SessionTab::FaviconType favicon_type) {
   return "";
 }
 
-const char* ProtoEnumToString(
-    sync_pb::SessionWindow::BrowserType browser_type) {
-  ASSERT_ENUM_BOUNDS(sync_pb::SessionWindow, BrowserType, TYPE_TABBED,
+const char* ProtoEnumToString(sync_pb::SyncEnums::BrowserType browser_type) {
+  ASSERT_ENUM_BOUNDS(sync_pb::SyncEnums, BrowserType, TYPE_TABBED,
                      TYPE_CUSTOM_TAB);
   switch (browser_type) {
-    ENUM_CASE(sync_pb::SessionWindow, TYPE_TABBED);
-    ENUM_CASE(sync_pb::SessionWindow, TYPE_POPUP);
-    ENUM_CASE(sync_pb::SessionWindow, TYPE_CUSTOM_TAB);
+    ENUM_CASE(sync_pb::SyncEnums, TYPE_TABBED);
+    ENUM_CASE(sync_pb::SyncEnums, TYPE_POPUP);
+    ENUM_CASE(sync_pb::SyncEnums, TYPE_CUSTOM_TAB);
   }
   NOTREACHED();
   return "";

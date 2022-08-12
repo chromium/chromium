@@ -150,6 +150,13 @@ message SyncEnums {
     TYPE_TABLET = 7;
   }
 
+  // Types of browsers; used for history-related data types.
+  enum BrowserType {
+    TYPE_TABBED = 1;      // A normal tabbed window.
+    TYPE_POPUP = 2;       // A popup window.
+    TYPE_CUSTOM_TAB = 3;  // A custom tab within an app.
+  }
+
   // This is the successor to GetUpdatesSource.  It merges the "normal mode"
   // values (LOCAL, NOTIFICATION and DATATYPE_REFRESH), which were never really
   // mutually exclusive to being with, into the GU_TRIGGER value.  It also

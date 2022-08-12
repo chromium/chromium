@@ -18,6 +18,7 @@
 #include "components/sessions/core/session_id.h"
 #include "components/sessions/core/session_types.h"
 #include "components/sync/protocol/session_specifics.pb.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_sessions/synced_session.h"
 #include "components/sync_sessions/tab_node_pool.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -82,7 +83,7 @@ class SyncedSessionTracker {
   const sessions::SessionTab* LookupSessionTab(const std::string& session_tag,
                                                SessionID tab_id) const;
 
-  absl::optional<sync_pb::SessionWindow::BrowserType> LookupWindowType(
+  absl::optional<sync_pb::SyncEnums::BrowserType> LookupWindowType(
       const std::string& session_tag,
       SessionID window_id) const;
 

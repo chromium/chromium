@@ -13,6 +13,7 @@
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
 #include "components/sync/base/time.h"
 #include "components/sync/protocol/session_specifics.pb.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -307,13 +308,13 @@ TEST(SyncedSessionTest, SessionTabToSyncData) {
 }
 
 TEST(SyncedSessionTest, SessionTabToSyncDataWithBrowserType) {
-  EXPECT_EQ(sync_pb::SessionWindow_BrowserType_TYPE_TABBED,
+  EXPECT_EQ(sync_pb::SyncEnums_BrowserType_TYPE_TABBED,
             SessionTabToSyncData(sessions::SessionTab(),
-                                 sync_pb::SessionWindow_BrowserType_TYPE_TABBED)
+                                 sync_pb::SyncEnums_BrowserType_TYPE_TABBED)
                 .browser_type());
-  EXPECT_EQ(sync_pb::SessionWindow_BrowserType_TYPE_POPUP,
+  EXPECT_EQ(sync_pb::SyncEnums_BrowserType_TYPE_POPUP,
             SessionTabToSyncData(sessions::SessionTab(),
-                                 sync_pb::SessionWindow_BrowserType_TYPE_POPUP)
+                                 sync_pb::SyncEnums_BrowserType_TYPE_POPUP)
                 .browser_type());
 }
 

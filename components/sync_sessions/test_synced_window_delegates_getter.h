@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/sync/protocol/session_specifics.pb.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_sessions/local_session_event_router.h"
 #include "components/sync_sessions/synced_tab_delegate.h"
 #include "components/sync_sessions/synced_window_delegate.h"
@@ -126,7 +127,7 @@ class PlaceholderTabDelegate : public SyncedTabDelegate {
 class TestSyncedWindowDelegate : public SyncedWindowDelegate {
  public:
   explicit TestSyncedWindowDelegate(SessionID window_id,
-                                    sync_pb::SessionWindow_BrowserType type);
+                                    sync_pb::SyncEnums_BrowserType type);
 
   TestSyncedWindowDelegate(const TestSyncedWindowDelegate&) = delete;
   TestSyncedWindowDelegate& operator=(const TestSyncedWindowDelegate&) = delete;
@@ -155,7 +156,7 @@ class TestSyncedWindowDelegate : public SyncedWindowDelegate {
 
  private:
   const SessionID window_id_;
-  const sync_pb::SessionWindow_BrowserType window_type_;
+  const sync_pb::SyncEnums_BrowserType window_type_;
 
   std::vector<SyncedTabDelegate*> tab_delegates_;
   bool is_session_restore_in_progress_;
@@ -174,7 +175,7 @@ class TestSyncedWindowDelegatesGetter : public SyncedWindowDelegatesGetter {
 
   void ResetWindows();
   TestSyncedWindowDelegate* AddWindow(
-      sync_pb::SessionWindow_BrowserType type,
+      sync_pb::SyncEnums_BrowserType type,
       SessionID window_id = SessionID::NewUnique());
   // Creates a new tab within the window specified by |window_id|. The newly
   // created tab's ID can be specified optionally. Returns the newly created

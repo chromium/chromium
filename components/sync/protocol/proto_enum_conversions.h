@@ -64,7 +64,7 @@ const char* ProtoEnumToString(
 
 const char* ProtoEnumToString(sync_pb::SessionTab::FaviconType favicon_type);
 
-const char* ProtoEnumToString(sync_pb::SessionWindow::BrowserType browser_type);
+const char* ProtoEnumToString(sync_pb::SyncEnums::BrowserType browser_type);
 
 const char* ProtoEnumToString(sync_pb::SyncEnums::Action action);
 

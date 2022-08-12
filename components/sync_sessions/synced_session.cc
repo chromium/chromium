@@ -223,7 +223,7 @@ void SetSessionTabFromSyncData(const sync_pb::SessionTab& sync_data,
 
 sync_pb::SessionTab SessionTabToSyncData(
     const sessions::SessionTab& tab,
-    absl::optional<sync_pb::SessionWindow::BrowserType> browser_type) {
+    absl::optional<sync_pb::SyncEnums::BrowserType> browser_type) {
   sync_pb::SessionTab sync_data;
   sync_data.set_tab_id(tab.tab_id.id());
   sync_data.set_window_id(tab.window_id.id());

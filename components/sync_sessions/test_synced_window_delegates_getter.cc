@@ -272,7 +272,7 @@ int64_t PlaceholderTabDelegate::GetRootTaskIdForNavigationId(int nav_id) const {
 
 TestSyncedWindowDelegate::TestSyncedWindowDelegate(
     SessionID window_id,
-    sync_pb::SessionWindow_BrowserType type)
+    sync_pb::SyncEnums_BrowserType type)
     : window_id_(window_id),
       window_type_(type),
       is_session_restore_in_progress_(false) {}
@@ -315,11 +315,11 @@ int TestSyncedWindowDelegate::GetActiveIndex() const {
 }
 
 bool TestSyncedWindowDelegate::IsTypeNormal() const {
-  return window_type_ == sync_pb::SessionWindow_BrowserType_TYPE_TABBED;
+  return window_type_ == sync_pb::SyncEnums_BrowserType_TYPE_TABBED;
 }
 
 bool TestSyncedWindowDelegate::IsTypePopup() const {
-  return window_type_ == sync_pb::SessionWindow_BrowserType_TYPE_POPUP;
+  return window_type_ == sync_pb::SyncEnums_BrowserType_TYPE_POPUP;
 }
 
 bool TestSyncedWindowDelegate::IsTabPinned(const SyncedTabDelegate* tab) const {
@@ -360,7 +360,7 @@ void TestSyncedWindowDelegatesGetter::ResetWindows() {
 }
 
 TestSyncedWindowDelegate* TestSyncedWindowDelegatesGetter::AddWindow(
-    sync_pb::SessionWindow_BrowserType type,
+    sync_pb::SyncEnums_BrowserType type,
     SessionID window_id) {
   windows_.push_back(
       std::make_unique<TestSyncedWindowDelegate>(window_id, type));

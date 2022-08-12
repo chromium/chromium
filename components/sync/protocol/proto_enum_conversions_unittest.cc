@@ -32,7 +32,7 @@ TEST(ProtoEnumConversionsTest, GetAppListItemTypeString) {
 }
 
 TEST(ProtoEnumConversionsTest, GetBrowserTypeString) {
-  TestEnumStringsNonEmpty(sync_pb::SessionWindow::BrowserType);
+  TestEnumStringsNonEmpty(sync_pb::SyncEnums::BrowserType);
 }
 
 TEST(ProtoEnumConversionsTest, GetPageTransitionString) {

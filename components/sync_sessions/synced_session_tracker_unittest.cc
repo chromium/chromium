@@ -6,11 +6,10 @@
 
 #include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_sessions/mock_sync_sessions_client.h"
-#include "components/sync_sessions/synced_tab_delegate.h"
 #include "components/sync_sessions/test_matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -990,7 +989,7 @@ TEST_F(SyncedSessionTrackerTest, SerializeTrackerToSpecifics) {
   tracker_.InitLocalSession(kTag, kSessionName, kDeviceType);
   tracker_.PutWindowInSession(kTag, kWindow1);
   tracker_.GetSession(kTag)->windows[kWindow1]->window_type =
-      sync_pb::SessionWindow_BrowserType_TYPE_TABBED;
+      sync_pb::SyncEnums_BrowserType_TYPE_TABBED;
   tracker_.PutTabInWindow(kTag, kWindow1, kTab1);
   tracker_.PutTabInWindow(kTag, kWindow1, kTab2);
   // Unmapped tab.

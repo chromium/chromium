@@ -17,9 +17,9 @@
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/engine/model_type_processor.h"
-#include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/session_specifics.pb.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_store.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -266,7 +266,7 @@ void RecentTabsBuilderTestHelper::AddWindowToHeaderSpecifics(
   SessionID window_id = GetWindowID(session_index, window_index);
   window->set_window_id(window_id.id());
   window->set_selected_tab_index(0);
-  window->set_browser_type(sync_pb::SessionWindow_BrowserType_TYPE_TABBED);
+  window->set_browser_type(sync_pb::SyncEnums_BrowserType_TYPE_TABBED);
   for (int i = 0; i < GetTabCount(session_index, window_index); ++i)
     window->add_tab(GetTabID(session_index, window_index, i).id());
 }

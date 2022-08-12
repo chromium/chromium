@@ -39,7 +39,7 @@ void SessionSyncTestHelper::AddWindowSpecifics(
   sync_pb::SessionWindow* window = header->add_window();
   window->set_window_id(window_id.id());
   window->set_selected_tab_index(0);
-  window->set_browser_type(sync_pb::SessionWindow_BrowserType_TYPE_TABBED);
+  window->set_browser_type(sync_pb::SyncEnums_BrowserType_TYPE_TABBED);
   for (const SessionID& tab_id : tab_list) {
     window->add_tab(tab_id.id());
   }

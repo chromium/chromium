@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/sync/tab_contents_synced_tab_delegate.h"
 
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_sessions/mock_sync_sessions_client.h"
 #include "components/sync_sessions/test_synced_window_delegates_getter.h"
 #include "content/public/browser/navigation_controller.h"
@@ -77,7 +78,7 @@ TEST_F(TabContentsSyncedTabDelegateTest,
 
   std::unique_ptr<content::WebContents> web_contents(CreateTestWebContents());
   TestSyncedTabDelegate delegate(web_contents.get());
-  window_getter_.AddWindow(sync_pb::SessionWindow_BrowserType_TYPE_TABBED,
+  window_getter_.AddWindow(sync_pb::SyncEnums_BrowserType_TYPE_TABBED,
                            delegate.GetWindowId());
 
   // The WebContents has not navigated yet and InitialNavigationEntry is
@@ -103,7 +104,7 @@ TEST_F(TabContentsSyncedTabDelegateTest,
 
   std::unique_ptr<content::WebContents> web_contents(CreateTestWebContents());
   TestSyncedTabDelegate delegate(web_contents.get());
-  window_getter_.AddWindow(sync_pb::SessionWindow_BrowserType_TYPE_TABBED,
+  window_getter_.AddWindow(sync_pb::SyncEnums_BrowserType_TYPE_TABBED,
                            delegate.GetWindowId());
 
   // The WebContents has not navigated yet and InitialNavigationEntry is

@@ -11,8 +11,8 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "components/sync/model/sync_change.h"
 #include "components/sync/protocol/session_specifics.pb.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_sessions/sync_sessions_client.h"
 #include "components/sync_sessions/synced_session_tracker.h"
 #include "components/sync_sessions/synced_tab_delegate.h"
@@ -58,19 +58,19 @@ bool ScanForTabbedWindow(SyncedWindowDelegatesGetter* delegates_getter) {
   return false;
 }
 
-sync_pb::SessionWindow_BrowserType BrowserTypeFromWindowDelegate(
+sync_pb::SyncEnums_BrowserType BrowserTypeFromWindowDelegate(
     const SyncedWindowDelegate& delegate) {
   if (delegate.IsTypeNormal()) {
-    return sync_pb::SessionWindow_BrowserType_TYPE_TABBED;
+    return sync_pb::SyncEnums_BrowserType_TYPE_TABBED;
   }
 
   if (delegate.IsTypePopup()) {
-    return sync_pb::SessionWindow_BrowserType_TYPE_POPUP;
+    return sync_pb::SyncEnums_BrowserType_TYPE_POPUP;
   }
 
   // This is a custom tab within an app. These will not be restored on
   // startup if not present.
-  return sync_pb::SessionWindow_BrowserType_TYPE_CUSTOM_TAB;
+  return sync_pb::SyncEnums_BrowserType_TYPE_CUSTOM_TAB;
 }
 
 }  // namespace

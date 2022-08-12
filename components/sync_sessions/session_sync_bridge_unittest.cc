@@ -9,8 +9,6 @@
 #include <vector>
 
 #include "base/callback_helpers.h"
-#include "base/json/json_writer.h"
-#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
@@ -26,10 +24,8 @@
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_type_sync_bridge.h"
-#include "components/sync/model/sync_metadata_store.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
-#include "components/sync/protocol/proto_value_conversions.h"
 #include "components/sync/protocol/session_specifics.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/test/model/mock_model_type_change_processor.h"
@@ -37,7 +33,6 @@
 #include "components/sync/test/model/test_matchers.h"
 #include "components/sync_sessions/mock_sync_sessions_client.h"
 #include "components/sync_sessions/session_sync_prefs.h"
-#include "components/sync_sessions/tab_node_pool.h"
 #include "components/sync_sessions/test_matchers.h"
 #include "components/sync_sessions/test_synced_window_delegates_getter.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -136,7 +131,7 @@ sync_pb::SessionSpecifics CreateHeaderSpecificsWithOneTab(
   specifics.mutable_header()->set_device_type(
       sync_pb::SyncEnums_DeviceType_TYPE_LINUX);
   sync_pb::SessionWindow* window = specifics.mutable_header()->add_window();
-  window->set_browser_type(sync_pb::SessionWindow_BrowserType_TYPE_TABBED);
+  window->set_browser_type(sync_pb::SyncEnums_BrowserType_TYPE_TABBED);
   window->set_window_id(window_id);
   window->add_tab(tab_id);
   return specifics;
@@ -272,8 +267,8 @@ class SessionSyncBridgeTest : public ::testing::Test {
 
   TestSyncedWindowDelegate* AddWindow(
       int window_id,
-      sync_pb::SessionWindow_BrowserType type =
-          sync_pb::SessionWindow_BrowserType_TYPE_TABBED) {
+      sync_pb::SyncEnums_BrowserType type =
+          sync_pb::SyncEnums_BrowserType_TYPE_TABBED) {
     return window_getter_.AddWindow(type,
                                     SessionID::FromSerializedValue(window_id));
   }
@@ -748,7 +743,7 @@ TEST_F(SessionSyncBridgeTest, ShouldPreserveTabbedDataIfCustomTabOnlyFound) {
 
   // Start the bridge with only a custom tab open.
   ResetWindows();
-  AddWindow(kWindowId2, sync_pb::SessionWindow_BrowserType_TYPE_CUSTOM_TAB);
+  AddWindow(kWindowId2, sync_pb::SyncEnums_BrowserType_TYPE_CUSTOM_TAB);
   AddTab(kWindowId2, "http://bar.com/");
   InitializeBridge();
   StartSyncing();
@@ -791,7 +786,7 @@ TEST_F(SessionSyncBridgeTest, ShouldPreserveTabbedDataIfNewCustomTabAlsoFound) {
   ShutdownBridge();
 
   // Start the bridge with an additional local custom tab.
-  AddWindow(kWindowId2, sync_pb::SessionWindow_BrowserType_TYPE_CUSTOM_TAB);
+  AddWindow(kWindowId2, sync_pb::SyncEnums_BrowserType_TYPE_CUSTOM_TAB);
   AddTab(kWindowId2, "http://bar.com/", kTabId2);
   InitializeBridge();
   StartSyncing();
@@ -815,7 +810,7 @@ TEST_F(SessionSyncBridgeTest, ShouldAssociateIfCustomTabOnlyOnStartup) {
   const int kWindowId = 1000001;
   const int kTabId = 1000002;
 
-  AddWindow(kWindowId, sync_pb::SessionWindow_BrowserType_TYPE_CUSTOM_TAB);
+  AddWindow(kWindowId, sync_pb::SyncEnums_BrowserType_TYPE_CUSTOM_TAB);
   AddTab(kWindowId, "http://foo.com/", kTabId);
 
   InitializeBridge();
@@ -839,7 +834,7 @@ TEST_F(SessionSyncBridgeTest, ShouldExposeTabbedWindowAfterCustomTabOnly) {
   const int kTabId1 = 1000003;
   const int kTabId2 = 1000004;
 
-  AddWindow(kWindowId1, sync_pb::SessionWindow_BrowserType_TYPE_CUSTOM_TAB);
+  AddWindow(kWindowId1, sync_pb::SyncEnums_BrowserType_TYPE_CUSTOM_TAB);
   AddTab(kWindowId1, "http://foo.com/", kTabId1);
 
   InitializeBridge();
@@ -1573,7 +1568,7 @@ TEST_F(SessionSyncBridgeTest, ShouldReturnBrowserTypeInGetData) {
   const int kWindowId = 1000001;
   const int kTabId = 1000002;
 
-  AddWindow(kWindowId, sync_pb::SessionWindow_BrowserType_TYPE_CUSTOM_TAB);
+  AddWindow(kWindowId, sync_pb::SyncEnums_BrowserType_TYPE_CUSTOM_TAB);
   AddTab(kWindowId, "http://foo.com/", kTabId);
 
   InitializeBridge();
@@ -1583,7 +1578,7 @@ TEST_F(SessionSyncBridgeTest, ShouldReturnBrowserTypeInGetData) {
       SessionStore::GetTabStorageKey(kLocalCacheGuid, /*tab_node_id=*/0));
   ASSERT_THAT(tab_data, NotNull());
 
-  EXPECT_EQ(sync_pb::SessionWindow_BrowserType_TYPE_CUSTOM_TAB,
+  EXPECT_EQ(sync_pb::SyncEnums_BrowserType_TYPE_CUSTOM_TAB,
             tab_data->specifics.session().tab().browser_type());
 }
 

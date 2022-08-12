@@ -50,7 +50,7 @@ void SetSessionTabFromSyncData(const sync_pb::SessionTab& sync_data,
 // property of the window.
 sync_pb::SessionTab SessionTabToSyncData(
     const sessions::SessionTab& tab,
-    absl::optional<sync_pb::SessionWindow::BrowserType> browser_type);
+    absl::optional<sync_pb::SyncEnums::BrowserType> browser_type);
 
 // A Sync wrapper for a SessionWindow.
 struct SyncedSessionWindow {
@@ -65,7 +65,7 @@ struct SyncedSessionWindow {
   sync_pb::SessionWindow ToSessionWindowProto() const;
 
   // Type of the window. See session_specifics.proto.
-  sync_pb::SessionWindow::BrowserType window_type;
+  sync_pb::SyncEnums::BrowserType window_type;
 
   // The SessionWindow this object wraps.
   sessions::SessionWindow wrapped_window;
