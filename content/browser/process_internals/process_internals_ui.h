@@ -40,9 +40,9 @@ class ProcessInternalsUI : public WebUIController {
   // WebUIController overrides:
   void WebUIRenderFrameCreated(RenderFrameHost* render_frame_host) override;
 
-  void BindProcessInternalsHandler(
-      mojo::PendingReceiver<::mojom::ProcessInternalsHandler> receiver,
-      RenderFrameHost* render_frame_host);
+  void BindInterface(
+      RenderFrameHost* render_frame_host,
+      mojo::PendingReceiver<::mojom::ProcessInternalsHandler> receiver);
 
  private:
   std::unique_ptr<::mojom::ProcessInternalsHandler> ui_handler_;

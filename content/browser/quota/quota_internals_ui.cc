@@ -4,6 +4,8 @@
 
 #include "content/browser/quota/quota_internals_ui.h"
 
+#include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/webui/web_ui_impl.h"
 #include "content/grit/quota_internals_resources.h"
 #include "content/grit/quota_internals_resources_map.h"
 #include "content/public/browser/render_frame_host.h"
@@ -13,6 +15,7 @@
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/url_constants.h"
 #include "storage/browser/quota/quota_internals.mojom.h"
+#include "storage/browser/quota/quota_manager.h"
 
 namespace content {
 
@@ -44,6 +47,15 @@ void QuotaInternalsUI::WebUIRenderFrameCreated(
   // Enable the JavaScript Mojo bindings in the renderer process, so the JS
   // code can call the Mojo APIs exposed by this WebUI.
   render_frame_host->EnableMojoJsBindings(nullptr);
+}
+
+void QuotaInternalsUI::BindInterface(
+    RenderFrameHost* render_frame_host,
+    mojo::PendingReceiver<storage::mojom::QuotaInternalsHandler> receiver) {
+  static_cast<StoragePartitionImpl*>(render_frame_host->GetStoragePartition())
+      ->GetQuotaManager()
+      ->proxy()
+      ->BindInternalsHandler(std::move(receiver));
 }
 
 }  // namespace content

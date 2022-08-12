@@ -35,6 +35,10 @@ class CONTENT_EXPORT QuotaInternalsUI : public WebUIController {
   // WebUIController overrides:
   void WebUIRenderFrameCreated(RenderFrameHost* render_frame_host) override;
 
+  void BindInterface(
+      RenderFrameHost* render_frame_host,
+      mojo::PendingReceiver<storage::mojom::QuotaInternalsHandler> receiver);
+
  private:
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

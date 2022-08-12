@@ -31,7 +31,7 @@ class PrerenderInternalsUI : public WebUIController {
 
   void WebUIRenderFrameCreated(RenderFrameHost* render_frame_host) override;
 
-  void BindPrerenderInternalsHandler(
+  void BindInterface(
       mojo::PendingReceiver<mojom::PrerenderInternalsHandler> receiver);
 
  private:

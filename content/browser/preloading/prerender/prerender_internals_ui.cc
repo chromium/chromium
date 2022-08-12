@@ -37,7 +37,7 @@ void PrerenderInternalsUI::WebUIRenderFrameCreated(RenderFrameHost* rfh) {
   rfh->EnableMojoJsBindings(nullptr);
 }
 
-void PrerenderInternalsUI::BindPrerenderInternalsHandler(
+void PrerenderInternalsUI::BindInterface(
     mojo::PendingReceiver<mojom::PrerenderInternalsHandler> receiver) {
   ui_handler_ =
       std::make_unique<PrerenderInternalsHandlerImpl>(std::move(receiver));
