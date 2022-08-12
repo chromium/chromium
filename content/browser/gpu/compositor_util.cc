@@ -251,7 +251,7 @@ base::Value GetFeatureStatusImpl(GpuFeatureInfoType type) {
         manager->IsGpuCompositingDisabledForHardwareGpu();
   }
 
-  auto feature_status_dict = base::Value(base::Value::Type::DICTIONARY);
+  base::Value::Dict feature_status_dict;
 
   bool eof = false;
   for (size_t i = 0; !eof; ++i) {
@@ -303,9 +303,9 @@ base::Value GetFeatureStatusImpl(GpuFeatureInfoType type) {
         status += "_on";
       }
     }
-    feature_status_dict.SetStringKey(gpu_feature_data.name, status);
+    feature_status_dict.Set(gpu_feature_data.name, status);
   }
-  return feature_status_dict;
+  return base::Value(std::move(feature_status_dict));
 }
 
 base::Value GetProblemsImpl(GpuFeatureInfoType type) {
@@ -326,7 +326,7 @@ base::Value GetProblemsImpl(GpuFeatureInfoType type) {
         manager->IsGpuCompositingDisabledForHardwareGpu();
   }
 
-  auto problem_list = base::Value(base::Value::Type::LIST);
+  base::Value::List problem_list;
   if (!gpu_feature_info.applied_gpu_blocklist_entries.empty()) {
     std::unique_ptr<gpu::GpuBlocklist> blocklist(gpu::GpuBlocklist::Create());
     blocklist->GetReasons(problem_list, "disabledFeatures",
@@ -340,16 +340,15 @@ base::Value GetProblemsImpl(GpuFeatureInfoType type) {
   }
 
   if (gpu_access_blocked) {
-    auto problem = base::Value(base::Value::Type::DICTIONARY);
-    problem.SetStringKey("description", "GPU process was unable to boot: " +
-                                            gpu_access_blocked_reason);
-    problem.SetKey("crBugs", base::Value(base::Value::Type::LIST));
-    auto disabled_features = base::Value(base::Value::Type::LIST);
+    base::Value::Dict problem;
+    problem.Set("description",
+                "GPU process was unable to boot: " + gpu_access_blocked_reason);
+    problem.Set("crBugs", base::Value::List());
+    base::Value::List disabled_features;
     disabled_features.Append("all");
-    problem.SetKey("affectedGpuSettings", std::move(disabled_features));
-    problem.SetStringKey("tag", "disabledFeatures");
-    problem_list.Insert(problem_list.GetListDeprecated().begin(),
-                        std::move(problem));
+    problem.Set("affectedGpuSettings", std::move(disabled_features));
+    problem.Set("tag", "disabledFeatures");
+    problem_list.Insert(problem_list.begin(), base::Value(std::move(problem)));
   }
 
   bool eof = false;
@@ -358,19 +357,18 @@ base::Value GetProblemsImpl(GpuFeatureInfoType type) {
         gpu_feature_info, i, is_gpu_compositing_disabled, &eof);
     if (gpu_feature_data.disabled &&
         gpu_feature_data.disabled_info.is_problem) {
-      auto problem = base::Value(base::Value::Type::DICTIONARY);
-      problem.SetStringKey("description",
-                           gpu_feature_data.disabled_info.description);
-      problem.SetKey("crBugs", base::Value(base::Value::Type::LIST));
-      auto disabled_features = base::Value(base::Value::Type::LIST);
+      base::Value::Dict problem;
+      problem.Set("description", gpu_feature_data.disabled_info.description);
+      problem.Set("crBugs", base::Value::List());
+      base::Value::List disabled_features;
       disabled_features.Append(gpu_feature_data.name);
-      problem.SetKey("affectedGpuSettings", std::move(disabled_features));
-      problem.SetStringKey("tag", "disabledFeatures");
-      problem_list.Insert(problem_list.GetListDeprecated().begin(),
-                          std::move(problem));
+      problem.Set("affectedGpuSettings", std::move(disabled_features));
+      problem.Set("tag", "disabledFeatures");
+      problem_list.Insert(problem_list.begin(),
+                          base::Value(std::move(problem)));
     }
   }
-  return problem_list;
+  return base::Value(std::move(problem_list));
 }
 
 std::vector<std::string> GetDriverBugWorkaroundsImpl(GpuFeatureInfoType type) {

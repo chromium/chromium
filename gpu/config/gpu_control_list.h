@@ -241,8 +241,7 @@ class GPU_EXPORT GpuControlList {
     // decision.  It should only be checked if Contains() returns true.
     bool NeedsMoreInfo(const GPUInfo& gpu_info, bool consider_exceptions) const;
 
-    void GetFeatureNames(base::Value& feature_names,
-                         const FeatureMap& feature_map) const;
+    base::Value::List GetFeatureNames(const FeatureMap& feature_map) const;
 
     // Logs a control list match for this rule in the list identified by
     // |control_list_logging_name|.
@@ -288,7 +287,7 @@ class GPU_EXPORT GpuControlList {
   // }
   // The use case is we compute the entries from GPU process and send them to
   // browser process, and call GetReasons() in browser process.
-  void GetReasons(base::Value& problem_list,
+  void GetReasons(base::Value::List& problem_list,
                   const std::string& tag,
                   const std::vector<uint32_t>& entries) const;
 
