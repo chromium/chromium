@@ -330,6 +330,7 @@ source_set("chromeos") {
     "//chromeos/ash/services/cros_healthd/public/cpp",
     "//chromeos/ash/services/cros_healthd/public/mojom",
     "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_browser",
+    "//chromeos/components/certificate_provider:certificate_provider",
     "//chromeos/components/disks:prefs",
     "//chromeos/components/mojo_bootstrap",
     "//chromeos/components/onc",
