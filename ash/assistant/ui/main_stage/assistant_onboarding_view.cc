@@ -17,12 +17,12 @@
 #include "ash/assistant/ui/main_stage/assistant_onboarding_suggestion_view.h"
 #include "ash/public/cpp/assistant/controller/assistant_suggestions_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
-#include "ash/public/cpp/style/color_provider.h"
-#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -143,12 +143,10 @@ void AssistantOnboardingView::ChildPreferredSizeChanged(views::View* child) {
 void AssistantOnboardingView::OnThemeChanged() {
   views::View::OnThemeChanged();
 
-  ScopedAssistantLightModeAsDefault scoped_light_mode_as_default;
-
-  greeting_->SetEnabledColor(ColorProvider::Get()->GetContentLayerColor(
-      ColorProvider::ContentLayerType::kTextColorPrimary));
-  intro_->SetEnabledColor(ColorProvider::Get()->GetContentLayerColor(
-      ColorProvider::ContentLayerType::kTextColorPrimary));
+  SkColor greeting_color =
+      GetColorProvider()->GetColor(kColorAshAssistantGreetingEnabled);
+  greeting_->SetEnabledColor(greeting_color);
+  intro_->SetEnabledColor(greeting_color);
 }
 
 void AssistantOnboardingView::OnAssistantControllerDestroying() {

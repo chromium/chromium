@@ -388,6 +388,14 @@ void AddAshColorMixer(ui::ColorProvider* provider,
   AddControlsColors(mixer, key);
   AddContentColors(mixer, key);
 
+  if (!features::IsProductivityLauncherEnabled() &&
+      !features::IsDarkLightModeEnabled()) {
+    mixer[kColorAshAssistantGreetingEnabled] = {
+        cros_tokens::kColorPrimaryLight};
+  } else {
+    mixer[kColorAshAssistantGreetingEnabled] = {cros_tokens::kColorPrimary};
+  }
+
   mixer[ui::kColorAshActionLabelFocusRingEdit] = {
       cros_tokens::kColorProminentDark};
   mixer[ui::kColorAshActionLabelFocusRingError] = {

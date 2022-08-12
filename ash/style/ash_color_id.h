@@ -92,7 +92,9 @@ namespace ash {
   /* Color of the capture region in the capture session. */ \
   E_CPONLY(kColorAshCaptureRegionColor) \
   E_CPONLY(kColorAshInkDrop) \
-  E_CPONLY(kColorAshInkDropOpaqueColor)
+  E_CPONLY(kColorAshInkDropOpaqueColor) \
+  /* Colors for Google Assistant */ \
+  E_CPONLY(kColorAshAssistantGreetingEnabled)
 
 #include "ui/color/color_id_macros.inc"
 
