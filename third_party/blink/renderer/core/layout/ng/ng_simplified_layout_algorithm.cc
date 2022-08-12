@@ -271,7 +271,7 @@ const NGLayoutResult* NGSimplifiedLayoutAlgorithm::Layout() {
     NGLogicalStaticPosition position = layer->GetStaticPosition();
     container_builder_.AddOutOfFlowChildCandidate(
         To<NGBlockNode>(child), position.offset, position.inline_edge,
-        position.block_edge, /* needs_block_offset_adjustment */ false);
+        position.block_edge);
   }
 
   // We add both items and line-box fragments for existing mechanisms to work.

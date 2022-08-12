@@ -260,9 +260,8 @@ void NGFlexLayoutAlgorithm::HandleOutOfFlowPositionedItems(
     // Make the child offset relative to our fragment.
     offset.block_offset -= previous_consumed_block_size;
 
-    container_builder_.AddOutOfFlowChildCandidate(
-        child, offset, inline_edge, block_edge,
-        /* needs_block_offset_adjustment */ false);
+    container_builder_.AddOutOfFlowChildCandidate(child, offset, inline_edge,
+                                                  block_edge);
   }
 }
 

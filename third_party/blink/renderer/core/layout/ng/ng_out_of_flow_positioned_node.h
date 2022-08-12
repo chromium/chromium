@@ -203,7 +203,6 @@ struct CORE_EXPORT NGLogicalOutOfFlowPositionedNode {
   Member<LayoutBox> box;
   NGLogicalStaticPosition static_position;
   NGInlineContainer<LogicalOffset> inline_container;
-  bool needs_block_offset_adjustment;
   // Whether or not this is an NGLogicalOOFNodeForFragmentation.
   unsigned is_for_fragmentation : 1;
 
@@ -211,12 +210,10 @@ struct CORE_EXPORT NGLogicalOutOfFlowPositionedNode {
       NGBlockNode node,
       NGLogicalStaticPosition static_position,
       NGInlineContainer<LogicalOffset> inline_container =
-          NGInlineContainer<LogicalOffset>(),
-      bool needs_block_offset_adjustment = false)
+          NGInlineContainer<LogicalOffset>())
       : box(node.GetLayoutBox()),
         static_position(static_position),
         inline_container(inline_container),
-        needs_block_offset_adjustment(needs_block_offset_adjustment),
         is_for_fragmentation(false) {
     DCHECK(!inline_container.container ||
            inline_container.container ==
@@ -299,7 +296,6 @@ struct CORE_EXPORT NGLogicalOOFNodeForFragmentation final
       NGLogicalStaticPosition static_position,
       NGInlineContainer<LogicalOffset> inline_container =
           NGInlineContainer<LogicalOffset>(),
-      bool needs_block_offset_adjustment = false,
       NGContainingBlock<LogicalOffset> containing_block =
           NGContainingBlock<LogicalOffset>(),
       NGContainingBlock<LogicalOffset> fixedpos_containing_block =
@@ -308,8 +304,7 @@ struct CORE_EXPORT NGLogicalOOFNodeForFragmentation final
           NGInlineContainer<LogicalOffset>())
       : NGLogicalOutOfFlowPositionedNode(node,
                                          static_position,
-                                         inline_container,
-                                         needs_block_offset_adjustment),
+                                         inline_container),
         containing_block(containing_block),
         fixedpos_containing_block(fixedpos_containing_block),
         fixedpos_inline_container(fixedpos_inline_container) {
@@ -318,11 +313,9 @@ struct CORE_EXPORT NGLogicalOOFNodeForFragmentation final
 
   explicit NGLogicalOOFNodeForFragmentation(
       const NGLogicalOutOfFlowPositionedNode& oof_node)
-      : NGLogicalOutOfFlowPositionedNode(
-            oof_node.Node(),
-            oof_node.static_position,
-            oof_node.inline_container,
-            oof_node.needs_block_offset_adjustment) {
+      : NGLogicalOutOfFlowPositionedNode(oof_node.Node(),
+                                         oof_node.static_position,
+                                         oof_node.inline_container) {
     is_for_fragmentation = true;
   }
 

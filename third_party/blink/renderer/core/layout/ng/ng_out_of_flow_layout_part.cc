@@ -949,7 +949,6 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(
           descendant.Node(),
           static_position,
           inline_container,
-          /* needs_block_offset_adjustment */ false,
           NGContainingBlock<LogicalOffset>(
               containing_block_offset, containing_block_rel_offset,
               containing_block_fragment,

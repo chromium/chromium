@@ -128,13 +128,12 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
   // NGOutOfFlowLayoutPart(container_style, builder).Run();
   //
   // See layout part for builder interaction.
-  void AddOutOfFlowChildCandidate(
-      NGBlockNode,
-      const LogicalOffset& child_offset,
-      NGLogicalStaticPosition::InlineEdge =
-          NGLogicalStaticPosition::kInlineStart,
-      NGLogicalStaticPosition::BlockEdge = NGLogicalStaticPosition::kBlockStart,
-      bool needs_block_offset_adjustment = true);
+  void AddOutOfFlowChildCandidate(NGBlockNode,
+                                  const LogicalOffset& child_offset,
+                                  NGLogicalStaticPosition::InlineEdge =
+                                      NGLogicalStaticPosition::kInlineStart,
+                                  NGLogicalStaticPosition::BlockEdge =
+                                      NGLogicalStaticPosition::kBlockStart);
 
   void AddOutOfFlowChildCandidate(
       const NGLogicalOutOfFlowPositionedNode& candidate);
@@ -453,7 +452,6 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
   bool should_force_same_fragmentation_flow_ = false;
   bool should_add_break_tokens_manually_ = false;
 
-  bool has_oof_candidate_that_needs_block_offset_adjustment_ = false;
   bool has_out_of_flow_fragment_child_ = false;
   bool has_out_of_flow_in_fragmentainer_subtree_ = false;
 

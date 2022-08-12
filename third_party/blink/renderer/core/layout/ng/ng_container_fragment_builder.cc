@@ -194,21 +194,11 @@ void NGContainerFragmentBuilder::AddOutOfFlowChildCandidate(
     NGBlockNode child,
     const LogicalOffset& child_offset,
     NGLogicalStaticPosition::InlineEdge inline_edge,
-    NGLogicalStaticPosition::BlockEdge block_edge,
-    bool needs_block_offset_adjustment) {
+    NGLogicalStaticPosition::BlockEdge block_edge) {
   DCHECK(child);
-
-  // If an OOF-positioned candidate has a static-position which uses a
-  // non-block-start edge, we may need to adjust its static-position when the
-  // final block-size is known.
-  needs_block_offset_adjustment &=
-      block_edge != NGLogicalStaticPosition::BlockEdge::kBlockStart;
-  has_oof_candidate_that_needs_block_offset_adjustment_ |=
-      needs_block_offset_adjustment;
-
   oof_positioned_candidates_.emplace_back(
       child, NGLogicalStaticPosition{child_offset, inline_edge, block_edge},
-      NGInlineContainer<LogicalOffset>(), needs_block_offset_adjustment);
+      NGInlineContainer<LogicalOffset>());
 }
 
 void NGContainerFragmentBuilder::AddOutOfFlowChildCandidate(
@@ -253,27 +243,6 @@ void NGContainerFragmentBuilder::SwapOutOfFlowPositionedCandidates(
     HeapVector<NGLogicalOutOfFlowPositionedNode>* candidates) {
   DCHECK(candidates->IsEmpty());
   std::swap(oof_positioned_candidates_, *candidates);
-
-  if (!has_oof_candidate_that_needs_block_offset_adjustment_)
-    return;
-
-  using BlockEdge = NGLogicalStaticPosition::BlockEdge;
-
-  // We might have an OOF-positioned candidate whose static-position depends on
-  // the final block-size of this fragment.
-  DCHECK_NE(BlockSize(), kIndefiniteSize);
-  for (auto& candidate : *candidates) {
-    if (!candidate.needs_block_offset_adjustment)
-      continue;
-
-    if (candidate.static_position.block_edge == BlockEdge::kBlockCenter)
-      candidate.static_position.offset.block_offset += BlockSize() / 2;
-    else if (candidate.static_position.block_edge == BlockEdge::kBlockEnd)
-      candidate.static_position.offset.block_offset += BlockSize();
-    candidate.needs_block_offset_adjustment = false;
-  }
-
-  has_oof_candidate_that_needs_block_offset_adjustment_ = false;
 }
 
 void NGContainerFragmentBuilder::AddMulticolWithPendingOOFs(
@@ -295,7 +264,6 @@ void NGContainerFragmentBuilder::SwapMulticolsWithPendingOOFs(
 void NGContainerFragmentBuilder::SwapOutOfFlowFragmentainerDescendants(
     HeapVector<NGLogicalOOFNodeForFragmentation>* descendants) {
   DCHECK(descendants->IsEmpty());
-  DCHECK(!has_oof_candidate_that_needs_block_offset_adjustment_);
   std::swap(oof_positioned_fragmentainer_descendants_, *descendants);
 }
 
@@ -313,7 +281,6 @@ void NGContainerFragmentBuilder::TransferOutOfFlowCandidates(
       DCHECK(!candidate.inline_container.container);
       destination_builder->AddOutOfFlowFragmentainerDescendant(
           {node, candidate.static_position, multicol->fixedpos_inline_container,
-           candidate.needs_block_offset_adjustment,
            multicol->fixedpos_containing_block,
            multicol->fixedpos_containing_block,
            multicol->fixedpos_inline_container});
@@ -420,7 +387,6 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
           new_fixedpos_inline_container = *fixedpos_inline_container;
         AddOutOfFlowFragmentainerDescendant(
             {node, static_position, new_fixedpos_inline_container,
-             /* needs_block_offset_adjustment */ false,
              *fixedpos_containing_block, *fixedpos_containing_block,
              new_fixedpos_inline_container});
         continue;
@@ -652,7 +618,6 @@ void NGContainerFragmentBuilder::PropagateOOFFragmentainerDescendants(
     }
     NGLogicalOOFNodeForFragmentation oof_node(
         descendant.Node(), static_position, new_inline_container,
-        /* needs_block_offset_adjustment */ false,
         NGContainingBlock<LogicalOffset>(
             containing_block_offset, containing_block_rel_offset,
             containing_block_fragment, container_inside_column_spanner,

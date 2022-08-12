@@ -3541,8 +3541,7 @@ void NGGridLayoutAlgorithm::PlaceOutOfFlowItems(
     child_offset.block_offset -= previous_consumed_block_size;
 
     container_builder_.AddOutOfFlowChildCandidate(
-        out_of_flow_item.node, child_offset, inline_edge, block_edge,
-        /* needs_block_offset_adjustment */ false);
+        out_of_flow_item.node, child_offset, inline_edge, block_edge);
   }
 }
 
