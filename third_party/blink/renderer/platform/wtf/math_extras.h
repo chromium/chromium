@@ -309,9 +309,10 @@ constexpr T DefaultMinimumForClamp() {
 
 // And, finally, the actual function for people to call.
 template <typename LimitType, typename ValueType>
-inline LimitType ClampTo(ValueType value,
-                         LimitType min = DefaultMinimumForClamp<LimitType>(),
-                         LimitType max = DefaultMaximumForClamp<LimitType>()) {
+constexpr LimitType ClampTo(
+    ValueType value,
+    LimitType min = DefaultMinimumForClamp<LimitType>(),
+    LimitType max = DefaultMaximumForClamp<LimitType>()) {
   DCHECK(!std::isnan(static_cast<double>(value)));
   DCHECK_LE(min, max);  // This also ensures |min| and |max| aren't NaN.
   return ClampToHelper<LimitType, ValueType>::ClampTo(value, min, max);
