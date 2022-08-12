@@ -523,4 +523,15 @@ TEST_F(TabDragDropDelegateTest, TabDraggingHistogram) {
       "Ash.TabDrag.PresentationTime.MaxLatency.TabletMode", 1);
 }
 
+// There are edge cases where a dragging tab closes itself before being dropped.
+// In these cases new window will be nullptr and it
+// should be handled gracefully. https://crbug.com/1286203
+TEST_F(TabDragDropDelegateTest, DropWithoutNewWindow) {
+  std::unique_ptr<aura::Window> source_window = CreateToplevelTestWindow();
+  const gfx::Point drag_location = source_window->bounds().CenterPoint();
+  auto delegate = std::make_unique<TabDragDropDelegate>(
+      Shell::GetPrimaryRootWindow(), source_window.get(), drag_location);
+  delegate->OnNewBrowserWindowCreated(drag_location, /*new_window=*/nullptr);
+}
+
 }  // namespace ash
