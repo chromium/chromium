@@ -265,8 +265,8 @@ std::unique_ptr<FeedbackInfo> FeedbackPrivateAPI::CreateFeedbackInfo(
 ExtensionFunction::ResponseAction FeedbackPrivateGetUserEmailFunction::Run() {
   FeedbackPrivateDelegate* feedback_private_delegate =
       ExtensionsAPIClient::Get()->GetFeedbackPrivateDelegate();
-  return RespondNow(OneArgument(base::Value(
-      feedback_private_delegate->GetSignedInUserEmail(browser_context()))));
+  return RespondNow(WithArguments(
+      feedback_private_delegate->GetSignedInUserEmail(browser_context())));
 }
 
 ExtensionFunction::ResponseAction
@@ -367,8 +367,8 @@ ExtensionFunction::ResponseAction FeedbackPrivateSendFeedbackFunction::Run() {
 void FeedbackPrivateSendFeedbackFunction::OnCompleted(
     api::feedback_private::LandingPageType type,
     bool success) {
-  Respond(TwoArguments(base::Value(ToFeedbackStatus(success)),
-                       base::Value(feedback_private::ToString(type))));
+  Respond(WithArguments(ToFeedbackStatus(success),
+                        feedback_private::ToString(type)));
   if (!success) {
     ExtensionsAPIClient::Get()
         ->GetFeedbackPrivateDelegate()

@@ -191,6 +191,9 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   //   * RespondNow(NoArguments())
   //   * RespondNow(OneArgument(42))
   //   * RespondNow(ArgumentList(my_result.ToValue()))
+  //   * RespondNow(WithArguments())
+  //   * RespondNow(WithArguments(42))
+  //   * RespondNow(WithArguments(42, "value", false))
   //   * RespondNow(Error("Warp core breach"))
   //   * RespondNow(Error("Warp core breach on *", GetURL()))
   //   * RespondLater(), then later,
@@ -379,6 +382,19 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   ResponseValue TwoArguments(base::Value arg1, base::Value arg2);
   // Success, a list of arguments |results| to pass to caller.
   ResponseValue ArgumentList(base::Value::List results);
+
+  // Success, a variadic list of arguments to pass to the caller.
+  template <typename... Args>
+  ResponseValue WithArguments(Args&&... args) {
+    if constexpr (sizeof...(Args) == 0u)
+      return ArgumentList(base::Value::List());
+
+    base::Value::List params;
+    params.reserve(sizeof...(Args));
+    (params.Append(std::forward<Args&&>(args)), ...);
+    return ArgumentList(std::move(params));
+  }
+
   // Error. chrome.runtime.lastError.message will be set to |error|.
   ResponseValue Error(std::string error);
   // Error with formatting. Args are processed using
