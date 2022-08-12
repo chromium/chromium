@@ -388,12 +388,7 @@ TEST_F(AutofillJavaScriptFeatureTest, FillActiveFormField) {
   data.Set("value", "newemail@com");
   __block BOOL success = NO;
 
-  // TODO(crbug.com/1346447) move FillActiveFormField to base::Value::Dict.
-  base::Value dictValue(std::move(data));
-  std::unique_ptr<base::DictionaryValue> dictValuePtr =
-      base::DictionaryValue::From(
-          base::Value::ToUniquePtrValue(std::move(dictValue)));
-  feature()->FillActiveFormField(main_web_frame(), std::move(dictValuePtr),
+  feature()->FillActiveFormField(main_web_frame(), std::move(data),
                                  base::BindOnce(^(BOOL result) {
                                    success = result;
                                  }));
@@ -550,11 +545,7 @@ TEST_F(AutofillJavaScriptFeatureTest, FillFormUsingRendererIDs) {
   __block NSString* filling_result = nil;
   __block BOOL block_was_called = NO;
 
-  base::Value autofillDataValue(std::move(autofillData));
-  std::unique_ptr<base::DictionaryValue> autofillDataDictionaryValue =
-      base::DictionaryValue::From(
-          base::Value::ToUniquePtrValue(std::move(autofillDataValue)));
-  feature()->FillForm(main_web_frame(), std::move(autofillDataDictionaryValue),
+  feature()->FillForm(main_web_frame(), std::move(autofillData),
                       FieldRendererId(2), base::BindOnce(^(NSString* result) {
                         filling_result = [result copy];
                         block_was_called = YES;
@@ -588,12 +579,9 @@ TEST_F(AutofillJavaScriptFeatureTest, ClearForm) {
     base::Value::Dict data;
     data.Set("unique_renderer_id", field_data.second);
     data.Set("value", "testvalue");
+
     __block BOOL success = NO;
-    base::Value dictValue(std::move(data));
-    std::unique_ptr<base::DictionaryValue> dictValuePtr =
-        base::DictionaryValue::From(
-            base::Value::ToUniquePtrValue(std::move(dictValue)));
-    feature()->FillActiveFormField(main_web_frame(), std::move(dictValuePtr),
+    feature()->FillActiveFormField(main_web_frame(), std::move(data),
                                    base::BindOnce(^(BOOL result) {
                                      success = result;
                                    }));

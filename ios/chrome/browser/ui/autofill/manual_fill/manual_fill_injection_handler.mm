@@ -185,10 +185,10 @@ using base::UmaHistogramEnumeration;
     return;
   }
 
-  auto data = std::make_unique<base::DictionaryValue>();
-  data->SetInteger("unique_renderer_id",
-                   self.lastFocusedElementUniqueId.value());
-  data->SetString("value", base::SysNSStringToUTF16(string));
+  base::Value::Dict data;
+  data.Set("unique_renderer_id",
+           static_cast<int>(self.lastFocusedElementUniqueId.value()));
+  data.Set("value", base::SysNSStringToUTF16(string));
   autofill::AutofillJavaScriptFeature::GetInstance()->FillActiveFormField(
       activeWebFrame, std::move(data), base::BindOnce(^(BOOL success) {
         [self jumpToNextField];
