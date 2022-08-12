@@ -1342,9 +1342,9 @@ bool TSFTextStore::CancelComposition() {
 
   TRACE_EVENT0("ime", "TSFTextStore::CancelComposition");
 
+  bool result = TerminateComposition();
   ResetCompositionState();
-
-  return TerminateComposition();
+  return result;
 }
 
 bool TSFTextStore::ConfirmComposition() {
@@ -1358,9 +1358,9 @@ bool TSFTextStore::ConfirmComposition() {
   if (!text_input_client_)
     return false;
 
+  bool result = TerminateComposition();
   ResetCompositionState();
-
-  return TerminateComposition();
+  return result;
 }
 
 void TSFTextStore::SendOnLayoutChange() {
