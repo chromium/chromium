@@ -821,14 +821,6 @@ suite('SettingsDevicePage', function() {
           defaultFakeAudioSystemProperties.outputVolumePercent,
           outputVolumeSlider.value);
 
-      // Test max volume case.
-      crosAudioConfig.setAudioSystemProperties(
-          maxVolumePercentFakeAudioSystemProperties);
-      await flushTasks();
-      assertEquals(
-          maxVolumePercentFakeAudioSystemProperties.outputVolumePercent,
-          outputVolumeSlider.value);
-
       // Test min volume case.
       crosAudioConfig.setAudioSystemProperties(
           minVolumePercentFakeAudioSystemProperties);
@@ -836,6 +828,52 @@ suite('SettingsDevicePage', function() {
       assertEquals(
           minVolumePercentFakeAudioSystemProperties.outputVolumePercent,
           outputVolumeSlider.value);
+
+      // Test max volume case.
+      crosAudioConfig.setAudioSystemProperties(
+          maxVolumePercentFakeAudioSystemProperties);
+      await flushTasks();
+      assertEquals(
+          maxVolumePercentFakeAudioSystemProperties.outputVolumePercent,
+          outputVolumeSlider.value);
+    });
+
+    test('simulate setting output volume slider mojo test', async function() {
+      async function simulateSliderClicked(value) {
+        const outputVolumeSlider =
+            audioPage.shadowRoot.querySelector('#outputVolumeSlider');
+        const rect = outputVolumeSlider.$.container.getBoundingClientRect();
+        outputVolumeSlider.dispatchEvent(new PointerEvent('pointerdown', {
+          buttons: 1,
+          pointerId: 1,
+          clientX: rect.left + (value * rect.width),
+        }));
+        return await flushTasks();
+      }
+
+      // Test clicking to min volume case.
+      const minOutputVolumePercent = 0;
+      await simulateSliderClicked(minOutputVolumePercent / 100);
+      assertEquals(
+          minOutputVolumePercent,
+          audioPage.audioSystemProperties_.outputVolumePercent,
+      );
+
+      // Test clicking to max volume case.
+      const maxOutputVolumePercent = 100;
+      await simulateSliderClicked(maxOutputVolumePercent / 100);
+      assertEquals(
+          maxOutputVolumePercent,
+          audioPage.audioSystemProperties_.outputVolumePercent,
+      );
+
+      // Test clicking to non-boundary volume case.
+      const nonBoundaryOutputVolumePercent = 50;
+      await simulateSliderClicked(50 / 100);
+      assertEquals(
+          nonBoundaryOutputVolumePercent,
+          audioPage.audioSystemProperties_.outputVolumePercent,
+      );
     });
 
     test('output mute mojo test', async function() {
@@ -893,7 +931,6 @@ suite('SettingsDevicePage', function() {
           activeSpeakerFakeAudioSystemProperties.outputDevices.length,
           outputDeviceDropdown.length);
     });
-
   });
 
   suite(assert(TestNames.Pointers), function() {

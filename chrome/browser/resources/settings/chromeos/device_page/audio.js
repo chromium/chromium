@@ -116,8 +116,15 @@ class SettingsAudioElement extends SettingsAudioElementBase {
         MuteState.kMutedByPolicy;
   }
 
-  // TODO(crbug.com/1092970): Create onCrSliderChanged_ method for setting
-  // output volume.
+  /**
+   * Handles the event where the output volume slider is being changed.
+   * @private
+   */
+  onOutputVolumeSliderChanged_() {
+    const sliderValue =
+        this.shadowRoot.querySelector('#outputVolumeSlider').value;
+    this.crosAudioConfig_.setOutputVolumePercent(sliderValue);
+  }
 
   // TODO(crbug.com/1092970): Create onOutputMuteTap_ method for setting output
   // mute state.

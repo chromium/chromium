@@ -95,7 +95,8 @@
                 disabled="[[isOutputVolumeSliderDisabled_(
                     audioSystemProperties_.outputMuteState
                   )]]"
-                value="[[audioSystemProperties_.outputVolumePercent]]">
+                value="[[audioSystemProperties_.outputVolumePercent]]"
+                on-cr-slider-value-changed="onOutputVolumeSliderChanged_">
             </cr-slider>
             <iron-icon id="audioOutputSliderVolumeUpIcon"
                 icon="settings:volume-up">
