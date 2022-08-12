@@ -20,12 +20,9 @@ absl::optional<gfx::Size> ParsePaperSizeDefault(const PrefService& prefs) {
   if (!prefs.HasPrefPath(prefs::kPrintingPaperSizeDefault))
     return absl::nullopt;
 
-  const base::Value* paper_size_value =
-      prefs.GetDictionary(prefs::kPrintingPaperSizeDefault);
-  if (!paper_size_value)
-    return absl::nullopt;
+  const base::Value::Dict& paper_size_dict =
+      prefs.GetValueDict(prefs::kPrintingPaperSizeDefault);
 
-  const base::Value::Dict& paper_size_dict = paper_size_value->GetDict();
   if (paper_size_dict.empty())
     return absl::nullopt;
 
