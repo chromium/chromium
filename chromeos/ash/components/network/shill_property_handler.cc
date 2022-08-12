@@ -676,7 +676,8 @@ void ShillPropertyHandler::GetIPConfigCallback(
     return;
   }
   NET_LOG(EVENT) << "IP Config properties received: " << NetworkPathId(path);
-  listener_->UpdateIPConfigProperties(type, path, ip_config_path, *properties);
+  listener_->UpdateIPConfigProperties(type, path, ip_config_path,
+                                      std::move(*properties));
 }
 
 }  // namespace ash::internal

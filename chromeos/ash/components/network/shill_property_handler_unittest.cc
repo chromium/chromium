@@ -86,7 +86,7 @@ class TestListener : public internal::ShillPropertyHandler::Listener {
   void UpdateIPConfigProperties(ManagedState::ManagedType type,
                                 const std::string& path,
                                 const std::string& ip_config_path,
-                                const base::Value& properties) override {
+                                base::Value properties) override {
     AddPropertyUpdate(shill::kIPConfigsProperty, ip_config_path);
   }
 

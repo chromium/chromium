@@ -23,7 +23,7 @@ DeviceState::~DeviceState() = default;
 bool DeviceState::PropertyChanged(const std::string& key,
                                   const base::Value& value) {
   // All property values get stored in |properties_|.
-  properties_.SetKey(key, value.Clone());
+  properties_.Set(key, value.Clone());
 
   if (ManagedStatePropertyChanged(key, value))
     return true;
@@ -111,7 +111,7 @@ bool DeviceState::PropertyChanged(const std::string& key,
   } else if (key == shill::kCellularApnListProperty) {
     if (!value.is_list())
       return false;
-    apn_list_ = value.Clone();
+    apn_list_ = value.GetList().Clone();
     return true;
   } else if (key == shill::kInhibitedProperty) {
     return GetBooleanValue(key, value, &inhibited_);
@@ -121,7 +121,7 @@ bool DeviceState::PropertyChanged(const std::string& key,
     // If kIPConfigsProperty changes, clear any previous ip_configs_.
     // ShillPropertyhandler will request the IPConfig objects which will trigger
     // calls to IPConfigPropertiesChanged.
-    ip_configs_.DictClear();
+    ip_configs_.clear();
     return false;  // No actual state change.
   } else if (key == shill::kLinkUpProperty) {
     return GetBooleanValue(key, value, &link_up_);
@@ -138,10 +138,10 @@ bool DeviceState::IsActive() const {
 }
 
 void DeviceState::IPConfigPropertiesChanged(const std::string& ip_config_path,
-                                            const base::Value& properties) {
+                                            base::Value properties) {
   NET_LOG(EVENT) << "IPConfig for: " << path()
                  << " Changed: " << ip_config_path;
-  ip_configs_.SetKey(ip_config_path, properties.Clone());
+  ip_configs_.Set(ip_config_path, std::move(properties));
 }
 
 std::string DeviceState::GetName() const {
@@ -175,19 +175,19 @@ DeviceState::CellularSIMSlotInfos DeviceState::GetSimSlotInfos() const {
 }
 
 std::string DeviceState::GetIpAddressByType(const std::string& type) const {
-  for (const auto iter : ip_configs_.DictItems()) {
+  for (const auto iter : ip_configs_) {
     if (!iter.second.is_dict())
       continue;
-    const base::Value& ip_config = iter.second;
+    const base::Value::Dict& ip_config = iter.second.GetDict();
     const std::string* ip_config_method =
-        ip_config.FindStringKey(shill::kMethodProperty);
+        ip_config.FindString(shill::kMethodProperty);
     if (!ip_config_method)
       continue;
     if (type == *ip_config_method ||
         (type == shill::kTypeIPv4 && *ip_config_method == shill::kTypeDHCP) ||
         (type == shill::kTypeIPv6 && *ip_config_method == shill::kTypeDHCP6)) {
       const std::string* address =
-          ip_config.FindStringKey(shill::kAddressProperty);
+          ip_config.FindString(shill::kAddressProperty);
       if (!address)
         continue;
       return *address;
@@ -208,13 +208,13 @@ bool DeviceState::IsSimLocked() const {
 }
 
 bool DeviceState::HasAPN(const std::string& access_point_name) const {
-  for (const auto& apn : apn_list_.GetListDeprecated()) {
+  for (const auto& apn : apn_list_) {
     // bogus empty entries in the list might have been converted to a list while
     // traveling over D-Bus, skip them rather than crashing below.
     if (!apn.is_dict())
       continue;
 
-    const std::string* apn_name = apn.FindStringKey(shill::kApnProperty);
+    const std::string* apn_name = apn.GetDict().FindString(shill::kApnProperty);
     if (apn_name && *apn_name == access_point_name) {
       return true;
     }

@@ -33,7 +33,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) DeviceState : public ManagedState {
   bool IsActive() const override;
 
   void IPConfigPropertiesChanged(const std::string& ip_config_path,
-                                 const base::Value& properties);
+                                 base::Value properties);
 
   // Accessors
   const std::string& mac_address() const { return mac_address_; }
@@ -59,11 +59,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) DeviceState : public ManagedState {
   bool inhibited() const { return inhibited_; }
 
   // |ip_configs_| is kept up to date by NetworkStateHandler.
-  const base::Value& ip_configs() const { return ip_configs_; }
+  const base::Value::Dict& ip_configs() const { return ip_configs_; }
 
   // Do not use this. It exists temporarily for internet_options_handler.cc
   // which is being deprecated.
-  const base::Value& properties() const { return properties_; }
+  const base::Value::Dict& properties() const { return properties_; }
 
   // Ethernet specific accessors
   bool eap_authentication_completed() const {
@@ -132,13 +132,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) DeviceState : public ManagedState {
   std::string available_managed_network_path_;
 
   // Keep all Device properties in a dictionary for now. See comment above.
-  base::Value properties_{base::Value::Type::DICTIONARY};
+  base::Value::Dict properties_;
 
   // List of APNs.
-  base::Value apn_list_;
+  base::Value::List apn_list_;
 
   // Dictionary of IPConfig properties, keyed by IpConfig path.
-  base::Value ip_configs_{base::Value::Type::DICTIONARY};
+  base::Value::Dict ip_configs_;
 };
 
 }  // namespace ash

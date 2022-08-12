@@ -70,7 +70,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ShillPropertyHandler
     virtual void UpdateIPConfigProperties(ManagedState::ManagedType type,
                                           const std::string& path,
                                           const std::string& ip_config_path,
-                                          const base::Value& properties) = 0;
+                                          base::Value properties) = 0;
 
     // Called when the list of devices with portal check enabled changes.
     virtual void CheckPortalListChanged(

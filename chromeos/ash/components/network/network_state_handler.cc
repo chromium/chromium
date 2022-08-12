@@ -1623,7 +1623,7 @@ void NetworkStateHandler::UpdateIPConfigProperties(
     ManagedState::ManagedType type,
     const std::string& path,
     const std::string& ip_config_path,
-    const base::Value& properties) {
+    base::Value properties) {
   if (type == ManagedState::MANAGED_TYPE_NETWORK) {
     NetworkState* network = GetModifiableNetworkState(path);
     if (!network)
@@ -1638,7 +1638,7 @@ void NetworkStateHandler::UpdateIPConfigProperties(
     DeviceState* device = GetModifiableDeviceState(path);
     if (!device)
       return;
-    device->IPConfigPropertiesChanged(ip_config_path, properties);
+    device->IPConfigPropertiesChanged(ip_config_path, std::move(properties));
     NotifyDevicePropertiesUpdated(device);
     if (!default_network_path_.empty()) {
       const NetworkState* default_network =

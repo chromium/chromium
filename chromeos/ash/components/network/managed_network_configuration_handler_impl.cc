@@ -1107,7 +1107,7 @@ void ManagedNetworkConfigurationHandlerImpl::GetDeviceStateProperties(
   // want information about all ipv4 and ipv6 IPConfig properties.
   base::Value ip_configs(base::Value::Type::LIST);
 
-  if (!device_state || device_state->ip_configs().DictEmpty()) {
+  if (!device_state || device_state->ip_configs().empty()) {
     // Shill may not provide IPConfigs for external Cellular devices/dongles
     // (https://crbug.com/739314) or VPNs, so build a dictionary of ipv4
     // properties from cached NetworkState properties .
@@ -1119,7 +1119,7 @@ void ManagedNetworkConfigurationHandlerImpl::GetDeviceStateProperties(
   } else {
     // Convert the DeviceState IPConfigs dictionary to a base::Value::Type::LIST
     // Value.
-    for (const auto iter : device_state->ip_configs().DictItems())
+    for (const auto iter : device_state->ip_configs())
       ip_configs.Append(iter.second.Clone());
   }
   if (!ip_configs.GetListDeprecated().empty()) {

@@ -99,9 +99,9 @@ bool GetServicePathFromGuid(const std::string& guid,
   return true;
 }
 
-void SetDeviceProperties(base::Value* dictionary) {
-  const std::string* device =
-      dictionary->GetDict().FindString(shill::kDeviceProperty);
+void SetDeviceProperties(base::Value::Dict* dictionary) {
+  DCHECK(dictionary);
+  const std::string* device = dictionary->FindString(shill::kDeviceProperty);
   if (!device)
     return;
   const DeviceState* device_state =
@@ -109,19 +109,17 @@ void SetDeviceProperties(base::Value* dictionary) {
   if (!device_state)
     return;
 
-  base::Value device_dictionary(device_state->properties().Clone());
-  if (!device_state->ip_configs().DictEmpty()) {
+  base::Value::Dict device_dictionary = device_state->properties().Clone();
+  if (!device_state->ip_configs().empty()) {
     // Convert IPConfig dictionary to a ListValue.
-    base::Value ip_configs(base::Value::Type::LIST);
-    for (auto iter : device_state->ip_configs().DictItems()) {
+    base::Value::List ip_configs;
+    for (auto iter : device_state->ip_configs()) {
       ip_configs.Append(iter.second.Clone());
     }
-    device_dictionary.GetDict().Set(shill::kIPConfigsProperty,
-                                    std::move(ip_configs));
+    device_dictionary.Set(shill::kIPConfigsProperty, std::move(ip_configs));
   }
-  if (!device_dictionary.DictEmpty())
-    dictionary->GetDict().Set(shill::kDeviceProperty,
-                              std::move(device_dictionary));
+  if (!device_dictionary.empty())
+    dictionary->Set(shill::kDeviceProperty, std::move(device_dictionary));
 }
 
 bool IsGuestModeActive() {
@@ -279,7 +277,7 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
   }
 
  private:
-  void Respond(const std::string& callback_id, const base::Value& response) {
+  void Respond(const std::string& callback_id, const base::ValueView response) {
     AllowJavascript();
     ResolveJavascriptCallback(base::Value(callback_id), response);
   }
@@ -300,7 +298,7 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
       ProvideNetworkProperties(callback_id, wifi_network->guid());
       return;
     }
-    Respond(callback_id, base::ListValue());
+    Respond(callback_id, base::Value::List());
   }
 
   void ProvideNetworkProperties(const std::string& callback_id,
@@ -329,8 +327,8 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
     // Set the 'service_path' property for debugging.
     result->GetDict().Set("service_path", base::Value(service_path));
     // Set the device properties for debugging.
-    SetDeviceProperties(&result.value());
-    base::ListValue return_arg_list;
+    SetDeviceProperties(result->GetIfDict());
+    base::Value::List return_arg_list;
     return_arg_list.Append(std::move(*result));
     Respond(callback_id, return_arg_list);
   }
@@ -365,15 +363,15 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
         &list);
 
     if (list.empty()) {
-      Respond(callback_id, base::Value(base::Value::Type::LIST));
+      Respond(callback_id, base::Value::List());
       return;
     }
     const NetworkState* eap = list.front();
-    base::Value properties(base::Value::Type::DICTIONARY);
-    properties.GetDict().Set("guid", eap->guid());
-    properties.GetDict().Set("name", eap->name());
-    properties.GetDict().Set("type", eap->type());
-    base::Value response(base::Value::Type::LIST);
+    base::Value::Dict properties;
+    properties.Set("guid", eap->guid());
+    properties.Set("name", eap->name());
+    properties.Set("type", eap->type());
+    base::Value::List response;
     response.Append(std::move(properties));
     Respond(callback_id, response);
   }
@@ -389,7 +387,7 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
       SystemTrayClientImpl::Get()->ShowSettingsCellularSetup(
           /*show_psim_flow=*/true);
     }
-    base::Value response(base::Value::Type::LIST);
+    base::Value::List response;
     response.Append(base::Value(cellular_network != nullptr));
     Respond(callback_id, response);
   }
@@ -468,7 +466,7 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
     // Set the 'device_path' property for debugging.
     result->GetDict().Set("device_path", base::Value(device_path));
 
-    base::ListValue return_arg_list;
+    base::Value::List return_arg_list;
     return_arg_list.Append(std::move(*result));
     Respond(callback_id, return_arg_list);
   }
@@ -501,13 +499,13 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
                         const std::string& function_name,
                         const std::string& error_name) {
     NET_LOG(ERROR) << "Shill Error: " << error_name << " id=" << guid_or_type;
-    base::ListValue return_arg_list;
-    base::Value dictionary(base::Value::Type::DICTIONARY);
+    base::Value::List return_arg_list;
+    base::Value::Dict dictionary;
     std::string key = function_name == kGetDeviceProperties
                           ? shill::kTypeProperty
                           : shill::kGuidProperty;
-    dictionary.GetDict().Set(key, base::Value(guid_or_type));
-    dictionary.GetDict().Set("ShillError", base::Value(error_name));
+    dictionary.Set(key, base::Value(guid_or_type));
+    dictionary.Set("ShillError", base::Value(error_name));
     return_arg_list.Append(std::move(dictionary));
     Respond(callback_id, return_arg_list);
   }
@@ -557,7 +555,7 @@ class HotspotConfigMessageHandler : public content::WebUIMessageHandler {
   }
 
  private:
-  void Respond(const std::string& callback_id, const base::Value& response) {
+  void Respond(const std::string& callback_id, const base::ValueView response) {
     AllowJavascript();
     ResolveJavascriptCallback(base::Value(callback_id), response);
   }
@@ -667,9 +665,11 @@ class HotspotConfigMessageHandler : public content::WebUIMessageHandler {
       return;
     }
 
-    const base::Value* value = properties->FindDictKey(dict_key);
-    Respond(callback_id, value ? value->Clone()
-                               : base::Value(base::Value::Type::DICTIONARY));
+    const base::Value::Dict* value = properties->GetDict().FindDict(dict_key);
+    if (value)
+      Respond(callback_id, *value);
+    else
+      Respond(callback_id, base::Value::Dict());
   }
 
   void SetManagerPropertiesErrorCallback(
