@@ -90,7 +90,7 @@ XMLPUBFUN void XMLCALL xmlCheckVersion(int version);
  *
  * Whether the thread support is configured in
  */
-#if 0
+#if 1
 #define LIBXML_THREAD_ENABLED
 #endif
 
