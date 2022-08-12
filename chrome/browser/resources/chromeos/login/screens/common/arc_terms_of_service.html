@@ -2,285 +2,251 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style include="oobe-dialog-host-styles">
+  #arcTosContainer p {
+    color: rgba(0, 0, 0, 0.54);
+    line-height: 20px;
+    margin: 0;
+    padding: 0;
+  }
 
-<link rel="import" href="chrome://resources/cr_elements/cr_checkbox/cr_checkbox.html">
-<link rel="import" href="chrome://resources/html/action_link.html">
-<link rel="import" href="chrome://resources/html/load_time_data.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
+  cr-checkbox {
+    --cr-checkbox-label-padding-start: 16px;
+  }
 
+  .parameter-section {
+    margin: 0;
+    max-width: 590px;
+    padding: 0 20px 16px 20px;
+  }
 
-<link rel="import" href="../../cr_ui.html">
-<link rel="import" href="../../components/display_manager_types.html">
-<link rel="import" href="../../components/oobe_icons.html">
-<link rel="import" href="../../components/oobe_select.html">
-<link rel="import" href="../../components/oobe_types.html">
-<link rel="import" href="../../components/web_view_helper.html">
-<link rel="import" href="../../components/web_view_loader.html">
-<link rel="import" href="../../components/behaviors/login_screen_behavior.html">
-<link rel="import" href="../../components/behaviors/multi_step_behavior.html">
-<link rel="import" href="../../components/behaviors/oobe_i18n_behavior.html">
-<link rel="import" href="../../components/buttons/oobe_back_button.html">
-<link rel="import" href="../../components/buttons/oobe_text_button.html">
-<link rel="import" href="../../components/common_styles/common_styles.html">
-<link rel="import" href="../../components/common_styles/oobe_dialog_host_styles.html">
-<link rel="import" href="../../components/dialogs/oobe_adaptive_dialog.html">
-<link rel="import" href="../../components/dialogs/oobe_loading_dialog.html">
-<link rel="import" href="../../components/dialogs/oobe_modal_dialog.html">
+  #arcPolicyLink {
+    margin: 0;
+    padding: 16px 0 16px 20px;
+  }
 
-<link rel="stylesheet" href="chrome://resources/css/overlay.css">
+  #arcGoogleServiceConfirmation {
+    font-weight: 600;
+  }
 
-<dom-module id="arc-tos-element">
-  <template>
-    <style include="oobe-dialog-host-styles">
-      #arcTosContainer p {
-        color: rgba(0, 0, 0, 0.54);
-        line-height: 20px;
-        margin: 0;
-        padding: 0;
-      }
+  #arcTosContainer::-webkit-scrollbar {
+    display: none;
+  }
 
-      cr-checkbox {
-        --cr-checkbox-label-padding-start: 16px;
-      }
+  #arcTosOverlayWebview {
+    border: 1px solid #d9d9d9;
+    display: flex;
+    height: 300px;
+    width: 100%;
+  }
 
-      .parameter-section {
-        margin: 0;
-        max-width: 590px;
-        padding: 0 20px 16px 20px;
-      }
+  #arcTosOverlayWebviewContainer {
+    box-sizing: border-box;
+    height: 332px;
+    margin: auto;
+    padding: 24px 8px 8px 8px;
+    width: 100%;
+  }
+</style>
 
-      #arcPolicyLink {
-        margin: 0;
-        padding: 16px 0 16px 20px;
-      }
+<!-- LOADING DIALOG -->
+<oobe-loading-dialog id="arcTosLoadingDialog" for-step="loading"
+    role="dialog"
+    aria-label$="[[i18nDynamic(locale, 'arcTermsOfServiceScreenHeading')]]"
+    title-key="arcTermsOfServiceLoading">
+  <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
+</oobe-loading-dialog>
 
-      #arcGoogleServiceConfirmation {
-        font-weight: 600;
-      }
+<!-- ERROR DIALOG -->
+<oobe-adaptive-dialog id="arcTosErrorDialog" for-step="error"
+    role="dialog"
+    aria-label$="[[i18nDynamic(locale, 'arcTermsOfServiceScreenHeading')]]">
+  <iron-icon slot="icon" icon="oobe-32:warning"></iron-icon>
+  <h1 slot="title">
+    [[i18nDynamic(locale, 'arcTermsOfServiceErrorTitle')]]
+  </h1>
+  <p slot="subtitle">
+    [[i18nDynamic(locale, 'arcTermsOfServiceErrorMessage')]]
+  </p>
+  <div slot="content" class="flex layout vertical center center-justified">
+    <img src="images/error.svg" class="oobe-illustration">
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-text-button id="arcTosRetryButton" class="focus-on-show"
+        inverse on-click="onRetry_"
+        text-key="arcTermsOfServiceRetryButton"></oobe-text-button>
+  </div>
+</oobe-adaptive-dialog>
 
-      #arcTosContainer::-webkit-scrollbar {
-        display: none;
-      }
-
-      #arcTosOverlayWebview {
-        border: 1px solid #d9d9d9;
-        display: flex;
-        height: 300px;
-        width: 100%;
-      }
-
-      #arcTosOverlayWebviewContainer {
-        box-sizing: border-box;
-        height: 332px;
-        margin: auto;
-        padding: 24px 8px 8px 8px;
-        width: 100%;
-      }
-    </style>
-
-    <!-- LOADING DIALOG -->
-    <oobe-loading-dialog id="arcTosLoadingDialog" for-step="loading"
-        role="dialog"
-        aria-label$="[[i18nDynamic(locale, 'arcTermsOfServiceScreenHeading')]]"
-        title-key="arcTermsOfServiceLoading">
-      <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
-    </oobe-loading-dialog>
-
-    <!-- ERROR DIALOG -->
-    <oobe-adaptive-dialog id="arcTosErrorDialog" for-step="error"
-        role="dialog"
-        aria-label$="[[i18nDynamic(locale, 'arcTermsOfServiceScreenHeading')]]">
-      <iron-icon slot="icon" icon="oobe-32:warning"></iron-icon>
-      <h1 slot="title">
-        [[i18nDynamic(locale, 'arcTermsOfServiceErrorTitle')]]
-      </h1>
-      <p slot="subtitle">
-        [[i18nDynamic(locale, 'arcTermsOfServiceErrorMessage')]]
+<!-- As this dialog have pre-loading logic that require access to elements,
+      dialog is marked as no-lazy. -->
+<oobe-adaptive-dialog id="arcTosDialog" for-step="loaded"
+    role="dialog" aria-label$="[[getDialogTitle_(locale, isChild)]]"
+    no-lazy>
+  <iron-icon src="chrome://oobe/playstore.svg" slot="icon">
+  </iron-icon>
+  <h1 slot="title">
+    [[getDialogTitle_(locale, isChild)]]
+  </h1>
+  <p slot="subtitle" hidden="[[isChild]]">
+    [[i18nDynamic(locale, 'arcTermsOfServiceScreenDescription')]]
+  </p>
+  <p slot="subtitle" hidden="[[!isChild]]">
+    [[i18nDynamic(locale, 'arcTermsOfServiceScreenDescriptionForChild')]]
+  </p>
+  <div id="arcTosContainer" slot="content" class="flex layout vertical">
+    <webview id="arcTosView" allowTransparency
+        role="document" class="flex oobe-tos-webview"
+        on-contentload="onTermsViewContentLoad_">
+    </webview>
+    <div id="arcPolicyLink" class="arc-tos-content"
+        on-click="onPolicyLinkClick_">
+      <a class="oobe-local-link" is="action-link">
+        [[i18nDynamic(locale, 'arcPolicyLink')]]
+      </a>
+    </div>
+    <div class="parameter-section arc-tos-content"
+        hidden="[[isMetricsHidden]]">
+      <p>
+        <span>[[i18nDynamic(locale, metricsTextKey)]]</span>
+        <a id="learnMoreLinkMetrics" class="oobe-local-link"
+            on-click="onMetricsLearnMoreTap_" is="action-link">
+          [[i18nDynamic(locale, 'arcLearnMoreText')]]
+        </a>
       </p>
-      <div slot="content" class="flex layout vertical center center-justified">
-        <img src="images/error.svg" class="oobe-illustration">
-      </div>
-      <div slot="bottom-buttons">
-        <oobe-text-button id="arcTosRetryButton" class="focus-on-show"
-            inverse on-click="onRetry_"
-            text-key="arcTermsOfServiceRetryButton"></oobe-text-button>
-      </div>
-    </oobe-adaptive-dialog>
-
-    <!-- As this dialog have pre-loading logic that require access to elements,
-         dialog is marked as no-lazy. -->
-    <oobe-adaptive-dialog id="arcTosDialog" for-step="loaded"
-        role="dialog" aria-label$="[[getDialogTitle_(locale, isChild)]]"
-        no-lazy>
-      <iron-icon src="chrome://oobe/playstore.svg" slot="icon">
-      </iron-icon>
-      <h1 slot="title">
-        [[getDialogTitle_(locale, isChild)]]
-      </h1>
-      <p slot="subtitle" hidden="[[isChild]]">
-        [[i18nDynamic(locale, 'arcTermsOfServiceScreenDescription')]]
-      </p>
-      <p slot="subtitle" hidden="[[!isChild]]">
-        [[i18nDynamic(locale, 'arcTermsOfServiceScreenDescriptionForChild')]]
-      </p>
-      <div id="arcTosContainer" slot="content" class="flex layout vertical">
-        <webview id="arcTosView" allowTransparency
-            role="document" class="flex oobe-tos-webview"
-            on-contentload="onTermsViewContentLoad_">
-        </webview>
-        <div id="arcPolicyLink" class="arc-tos-content"
-            on-click="onPolicyLinkClick_">
-          <a class="oobe-local-link" is="action-link">
-            [[i18nDynamic(locale, 'arcPolicyLink')]]
+    </div>
+    <div id="arcTosMetricsDemoApps"
+        class="parameter-section arc-tos-content"
+        hidden="[[!demoMode]]">
+      <p>[[i18nDynamic(locale, 'arcTextMetricsDemoApps')]]</p>
+    </div>
+    <div id="arcBackupService"
+        class="parameter-section arc-tos-content"
+        disabled="[[backupRestoreManaged]]"
+        hidden="[[demoMode]]">
+      <cr-checkbox id="arcEnableBackupRestore"
+          class="layout start"
+          checked="{{backupRestore}}"
+          disabled="[[backupRestoreManaged]]">
+        <p>
+          <span>[[i18nDynamic(locale, 'arcTextBackupRestore')]]</span>
+          <a id="learnMoreLinkBackupRestore" class="oobe-local-link"
+              on-click="onBackupRestoreLearnMoreTap_" is="action-link">
+            [[i18nDynamic(locale, 'arcLearnMoreText')]]
           </a>
-        </div>
-        <div class="parameter-section arc-tos-content"
-            hidden="[[isMetricsHidden]]">
+        </p>
+      </cr-checkbox>
+    </div>
+    <div id="arcExtraContent" hidden="[[!showFullDialog]]">
+      <div id="arcLocationService"
+          class="parameter-section arc-tos-content"
+          disabled="[[locationServiceManaged]]"
+          hidden="[[demoMode]]">
+        <cr-checkbox id="arcEnableLocationService"
+            class="layout start"
+            checked="{{locationService}}"
+            disabled="[[locationServiceManaged]]">
           <p>
-            <span>[[i18nDynamic(locale, metricsTextKey)]]</span>
-            <a id="learnMoreLinkMetrics" class="oobe-local-link"
-                on-click="onMetricsLearnMoreTap_" is="action-link">
+            <span>[[i18nDynamic(locale, 'arcTextLocationService')]]</span>
+            <a id="learnMoreLinkLocationService" class="oobe-local-link"
+                on-click="onLocationServiceLearnMoreTap_" is="action-link">
               [[i18nDynamic(locale, 'arcLearnMoreText')]]
             </a>
           </p>
-        </div>
-        <div id="arcTosMetricsDemoApps"
-            class="parameter-section arc-tos-content"
-            hidden="[[!demoMode]]">
-          <p>[[i18nDynamic(locale, 'arcTextMetricsDemoApps')]]</p>
-        </div>
-        <div id="arcBackupService"
-            class="parameter-section arc-tos-content"
-            disabled="[[backupRestoreManaged]]"
-            hidden="[[demoMode]]">
-          <cr-checkbox id="arcEnableBackupRestore"
-              class="layout start"
-              checked="{{backupRestore}}"
-              disabled="[[backupRestoreManaged]]">
-            <p>
-              <span>[[i18nDynamic(locale, 'arcTextBackupRestore')]]</span>
-              <a id="learnMoreLinkBackupRestore" class="oobe-local-link"
-                  on-click="onBackupRestoreLearnMoreTap_" is="action-link">
-                [[i18nDynamic(locale, 'arcLearnMoreText')]]
-              </a>
-            </p>
-          </cr-checkbox>
-        </div>
-        <div id="arcExtraContent" hidden="[[!showFullDialog]]">
-          <div id="arcLocationService"
-              class="parameter-section arc-tos-content"
-              disabled="[[locationServiceManaged]]"
-              hidden="[[demoMode]]">
-            <cr-checkbox id="arcEnableLocationService"
-                class="layout start"
-                checked="{{locationService}}"
-                disabled="[[locationServiceManaged]]">
-              <p>
-                <span>[[i18nDynamic(locale, 'arcTextLocationService')]]</span>
-                <a id="learnMoreLinkLocationService" class="oobe-local-link"
-                    on-click="onLocationServiceLearnMoreTap_" is="action-link">
-                  [[i18nDynamic(locale, 'arcLearnMoreText')]]
-                </a>
-              </p>
-            </cr-checkbox>
-          </div>
-          <div id="arcPaiService" class="parameter-section arc-tos-content">
-            <p>
-              <span>[[i18nDynamic(locale, 'arcTextPaiService')]]</span>
-              <a id="learnMoreLinkPai" class="oobe-local-link"
-                  on-click="onPaiLearnMoreTap_" is="action-link">
-                [[i18nDynamic(locale, 'arcLearnMoreText')]]
-              </a>
-            </p>
-          </div>
-          <div id="arcGoogleServiceConfirmation"
-               class="parameter-section arc-tos-content">
-            <p>[[i18nDynamic(locale, googleServiceConfirmationTextKey)]]</p>
-          </div>
-          <div id="arcReviewSettings"
-            class="parameter-section arc-tos-content"
-            hidden="[[demoMode]]">
-            <cr-checkbox id="arcReviewSettingsCheckbox"
-                class="layout start"
-                checked="{{reviewSettings}}">
-              <p>[[i18nDynamic(locale, 'arcTextReviewSettings')]]</p>
-            </cr-checkbox>
-          </div>
-        </div>
+        </cr-checkbox>
       </div>
-      <div slot="back-navigation">
-        <oobe-back-button id="arcTosBackButton" hidden="[[!demoMode]]"
-            on-click="onBack_"></oobe-back-button>
+      <div id="arcPaiService" class="parameter-section arc-tos-content">
+        <p>
+          <span>[[i18nDynamic(locale, 'arcTextPaiService')]]</span>
+          <a id="learnMoreLinkPai" class="oobe-local-link"
+              on-click="onPaiLearnMoreTap_" is="action-link">
+            [[i18nDynamic(locale, 'arcLearnMoreText')]]
+          </a>
+        </p>
       </div>
-      <div slot="bottom-buttons">
-        <oobe-text-button id="arcTosNextButton" class="focus-on-show"
-            inverse on-click="onNext_"
-            disabled="[[arcTosButtonsDisabled]]"
-            hidden="[[showFullDialog]]"
-            text-key="arcTermsOfServiceNextButton"></oobe-text-button>
-        <oobe-text-button id="arcTosAcceptButton"
-            inverse on-click="onAccept_"
-            disabled="[[arcTosButtonsDisabled]]"
-            hidden="[[!showFullDialog]]"
-            text-key="[[acceptTextKey]]"></oobe-text-button>
+      <div id="arcGoogleServiceConfirmation"
+            class="parameter-section arc-tos-content">
+        <p>[[i18nDynamic(locale, googleServiceConfirmationTextKey)]]</p>
       </div>
-    </oobe-adaptive-dialog>
-    <oobe-modal-dialog id="arcMetricsPopup" on-close="onOverlayClosed_"
-        title-key="arcLearnMoreStatisticsTitle">
-      <div slot="content">
-        <p>[[i18nDynamic(locale, 'arcLearnMoreStatisticsP1')]]</p>
-        <p>[[i18nDynamic(locale, 'arcLearnMoreStatisticsP2')]]</p>
-        <p>[[i18nDynamic(locale, 'arcLearnMoreStatisticsP3')]]</p>
-        <p>[[i18nDynamic(locale, 'arcLearnMoreStatisticsP4')]]</p>
+      <div id="arcReviewSettings"
+        class="parameter-section arc-tos-content"
+        hidden="[[demoMode]]">
+        <cr-checkbox id="arcReviewSettingsCheckbox"
+            class="layout start"
+            checked="{{reviewSettings}}">
+          <p>[[i18nDynamic(locale, 'arcTextReviewSettings')]]</p>
+        </cr-checkbox>
       </div>
-    </oobe-modal-dialog>
-    <oobe-modal-dialog id="arcBackupRestorePopup" on-close="onOverlayClosed_"
-        title-key="arcLearnMoreBackupAndRestoreTitle">
-      <div slot="content">
-        <p>[[i18nDynamic(locale, 'arcLearnMoreBackupAndRestoreP1')]]</p>
-        <p>[[i18nDynamic(locale, 'arcLearnMoreBackupAndRestoreP2')]]</p>
-        <p>[[i18nDynamic(locale, 'arcLearnMoreBackupAndRestoreP3')]]</p>
-        <p>[[i18nDynamic(locale, 'arcLearnMoreBackupAndRestoreP4')]]</p>
-        <p>[[i18nDynamic(locale, 'arcLearnMoreBackupAndRestoreP5')]]</p>
-      </div>
-    </oobe-modal-dialog>
-    <oobe-modal-dialog id="arcBackupRestoreChildPopup"
-        on-close="onOverlayClosed_"
-        title-key="arcLearnMoreBackupAndRestoreTitle">
-      <div slot="content">
-        <p>[[i18nDynamic(locale, 'arcLearnMoreBackupAndRestoreChildP1')]]</p>
-        <p>[[i18nDynamic(locale, 'arcLearnMoreBackupAndRestoreChildP2')]]</p>
-        <p>[[i18nDynamic(locale, 'arcLearnMoreBackupAndRestoreChildP3')]]</p>
-      </div>
-    </oobe-modal-dialog>
-    <oobe-modal-dialog id="arcLocationServicePopup"
-        on-close="onOverlayClosed_"
-        title-key="arcLearnMoreLocationServiceTitle">
-      <div slot="content">
-        <p>[[i18nDynamic(locale, 'arcLearnMoreLocationServiceP1')]]</p>
-        <p>[[i18nDynamic(locale, 'arcLearnMoreLocationServiceP2')]]</p>
-      </div>
-    </oobe-modal-dialog>
-    <oobe-modal-dialog id="arcPaiPopup" on-close="onOverlayClosed_"
-        title-key="arcLearnMorePaiServiceTitle">
-      <div slot="content">
-        <p>[[i18nDynamic(locale, 'arcLearnMorePaiService')]]</p>
-      </div>
-    </oobe-modal-dialog>
-    <oobe-modal-dialog id="arcTosOverlayPrivacyPolicy"
-        on-close="onOverlayClosed_">
-      <div slot="content" id = "arcTosOverlayWebviewContainer">
-        <webview id="arcTosOverlayWebview"
-            hidden="[[overlayLoading_]]" class="flex oobe-tos-webview"
-            on-contentload="onAcrTosOverlayContentLoad_">
-        </webview>
-        <throbber-notice class="flex layout center-justified vertical"
-            hidden="[[!overlayLoading_]]" style="height: 100%;">
-        </throbber-notice>
-      </div>
-    </oobe-modal-dialog>
-  </template>
-  <script src="arc_terms_of_service.js"></script>
-</dom-module>
+    </div>
+  </div>
+  <div slot="back-navigation">
+    <oobe-back-button id="arcTosBackButton" hidden="[[!demoMode]]"
+        on-click="onBack_"></oobe-back-button>
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-text-button id="arcTosNextButton" class="focus-on-show"
+        inverse on-click="onNext_"
+        disabled="[[arcTosButtonsDisabled]]"
+        hidden="[[showFullDialog]]"
+        text-key="arcTermsOfServiceNextButton"></oobe-text-button>
+    <oobe-text-button id="arcTosAcceptButton"
+        inverse on-click="onAccept_"
+        disabled="[[arcTosButtonsDisabled]]"
+        hidden="[[!showFullDialog]]"
+        text-key="[[acceptTextKey]]"></oobe-text-button>
+  </div>
+</oobe-adaptive-dialog>
+<oobe-modal-dialog id="arcMetricsPopup" on-close="onOverlayClosed_"
+    title-key="arcLearnMoreStatisticsTitle">
+  <div slot="content">
+    <p>[[i18nDynamic(locale, 'arcLearnMoreStatisticsP1')]]</p>
+    <p>[[i18nDynamic(locale, 'arcLearnMoreStatisticsP2')]]</p>
+    <p>[[i18nDynamic(locale, 'arcLearnMoreStatisticsP3')]]</p>
+    <p>[[i18nDynamic(locale, 'arcLearnMoreStatisticsP4')]]</p>
+  </div>
+</oobe-modal-dialog>
+<oobe-modal-dialog id="arcBackupRestorePopup" on-close="onOverlayClosed_"
+    title-key="arcLearnMoreBackupAndRestoreTitle">
+  <div slot="content">
+    <p>[[i18nDynamic(locale, 'arcLearnMoreBackupAndRestoreP1')]]</p>
+    <p>[[i18nDynamic(locale, 'arcLearnMoreBackupAndRestoreP2')]]</p>
+    <p>[[i18nDynamic(locale, 'arcLearnMoreBackupAndRestoreP3')]]</p>
+    <p>[[i18nDynamic(locale, 'arcLearnMoreBackupAndRestoreP4')]]</p>
+    <p>[[i18nDynamic(locale, 'arcLearnMoreBackupAndRestoreP5')]]</p>
+  </div>
+</oobe-modal-dialog>
+<oobe-modal-dialog id="arcBackupRestoreChildPopup"
+    on-close="onOverlayClosed_"
+    title-key="arcLearnMoreBackupAndRestoreTitle">
+  <div slot="content">
+    <p>[[i18nDynamic(locale, 'arcLearnMoreBackupAndRestoreChildP1')]]</p>
+    <p>[[i18nDynamic(locale, 'arcLearnMoreBackupAndRestoreChildP2')]]</p>
+    <p>[[i18nDynamic(locale, 'arcLearnMoreBackupAndRestoreChildP3')]]</p>
+  </div>
+</oobe-modal-dialog>
+<oobe-modal-dialog id="arcLocationServicePopup"
+    on-close="onOverlayClosed_"
+    title-key="arcLearnMoreLocationServiceTitle">
+  <div slot="content">
+    <p>[[i18nDynamic(locale, 'arcLearnMoreLocationServiceP1')]]</p>
+    <p>[[i18nDynamic(locale, 'arcLearnMoreLocationServiceP2')]]</p>
+  </div>
+</oobe-modal-dialog>
+<oobe-modal-dialog id="arcPaiPopup" on-close="onOverlayClosed_"
+    title-key="arcLearnMorePaiServiceTitle">
+  <div slot="content">
+    <p>[[i18nDynamic(locale, 'arcLearnMorePaiService')]]</p>
+  </div>
+</oobe-modal-dialog>
+<oobe-modal-dialog id="arcTosOverlayPrivacyPolicy"
+    on-close="onOverlayClosed_">
+  <div slot="content" id = "arcTosOverlayWebviewContainer">
+    <webview id="arcTosOverlayWebview"
+        hidden="[[overlayLoading_]]" class="flex oobe-tos-webview"
+        on-contentload="onAcrTosOverlayContentLoad_">
+    </webview>
+    <throbber-notice class="flex layout center-justified vertical"
+        hidden="[[!overlayLoading_]]" style="height: 100%;">
+    </throbber-notice>
+  </div>
+</oobe-modal-dialog>

@@ -9,7 +9,7 @@
 import './screens/common/adb_sideloading.js';
 import './screens/common/app_downloading.m.js';
 import './screens/common/app_launch_splash.m.js';
-import './screens/common/arc_terms_of_service.m.js';
+import './screens/common/arc_terms_of_service.js';
 import './screens/common/assistant_optin.m.js';
 import './screens/common/autolaunch.m.js';
 import './screens/common/consolidated_consent.m.js';
