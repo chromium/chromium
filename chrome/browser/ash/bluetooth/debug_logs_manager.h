@@ -22,6 +22,10 @@ namespace bluetooth {
 // advantageous to capture more verbose logs (e.g., in noisy environments or on
 // a device with a particular Bluetooth chip). This class tracks the current
 // state of debug logs and handles the user enabling/disabling them.
+// This class also manages Bluetooth link quality debug logs and handles the
+// enabling/disabling them.
+// TODO(b/240788483) Fix the DebugLogsManager class name to include both the
+// debug log and the link quality report.
 class DebugLogsManager : public mojom::DebugLogsChangeHandler {
  public:
   DebugLogsManager(const std::string& primary_user_email,
@@ -61,6 +65,12 @@ class DebugLogsManager : public mojom::DebugLogsChangeHandler {
                                 const int num_completed_attempts,
                                 const std::string& error_name,
                                 const std::string& error_message);
+  void SetBluetoothQualityReport(bool enable, int num_completed_attempts);
+  void OnSetBluetoothQualityReportSuccess(bool enable);
+  void OnSetBluetoothQualityReportError(const bool enable,
+                                        const int num_completed_attempts,
+                                        const std::string& error_name,
+                                        const std::string& error_message);
 
   const std::string primary_user_email_;
   PrefService* pref_service_ = nullptr;

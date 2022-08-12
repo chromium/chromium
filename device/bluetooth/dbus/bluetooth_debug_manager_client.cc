@@ -64,6 +64,25 @@ class BluetoothDebugManagerClientImpl : public BluetoothDebugManagerClient,
                        std::move(error_callback)));
   }
 
+  void SetBluetoothQualityReport(const bool enable,
+                                 base::OnceClosure callback,
+                                 ErrorCallback error_callback) override {
+    dbus::MethodCall method_call(bluetooth_debug::kBluetoothDebugInterface,
+                                 bluetooth_debug::kSetBluetoothQualityReport);
+
+    dbus::MessageWriter writer(&method_call);
+    // Convert enable to uint8_t as the dbus method takes a byte.
+    writer.AppendByte((uint8_t)enable);
+
+    object_proxy_->CallMethodWithErrorCallback(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&BluetoothDebugManagerClientImpl::OnSuccess,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+        base::BindOnce(&BluetoothDebugManagerClientImpl::OnError,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(error_callback)));
+  }
+
   // BluetoothDebugManagerClient override.
   void SetLogLevels(const uint8_t bluez_level,
                     const uint8_t kernel_level,

@@ -32,6 +32,9 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothDebugManagerClient
   void SetLLPrivacy(const bool enable,
                     base::OnceClosure callback,
                     ErrorCallback error_callback) override {}
+  void SetBluetoothQualityReport(const bool enable,
+                                 base::OnceClosure callback,
+                                 ErrorCallback error_callback) override {}
 
   // Make the next call to SetLogLevels() to fail only once.
   void MakeNextSetLogLevelsFail();

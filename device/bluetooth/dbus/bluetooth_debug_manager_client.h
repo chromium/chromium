@@ -38,6 +38,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDebugManagerClient
                             base::OnceClosure callback,
                             ErrorCallback error_callback) = 0;
 
+  // Invoke D-Bus API to enable or disable the Bluetooth Quality Report.
+  virtual void SetBluetoothQualityReport(const bool enable,
+                                         base::OnceClosure callback,
+                                         ErrorCallback error_callback) = 0;
+
   // Invoke D-Bus API to set the levels of logging verbosity for each of
   // the bluetooth daemons and kernel.
   virtual void SetLogLevels(const uint8_t bluez_level,

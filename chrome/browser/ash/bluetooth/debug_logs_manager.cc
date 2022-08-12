@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
+#include "base/logging.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "device/bluetooth/dbus/bluetooth_debug_manager_client.h"
@@ -38,16 +39,25 @@ DebugLogsManager::DebugLogsManager(const std::string& primary_user_email,
 
   SetVerboseLogsEnable(GetDebugLogsState() ==
                        DebugLogsState::kSupportedAndEnabled);
+
+  SetBluetoothQualityReport(
+      /*enable=*/features::IsBluetoothQualityReportEnabled(),
+      /*num_completed_attempts=*/0);
 }
 
 DebugLogsManager::~DebugLogsManager() {
   SetVerboseLogsEnable(false);
+
+  // Disable Bluetooth Quality Report if it is enabled on login.
+  if (features::IsBluetoothQualityReportEnabled())
+    SetBluetoothQualityReport(/*enable=*/false,
+                              /*num_completed_attempts=*/0);
 }
 
 // static
 void DebugLogsManager::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kVerboseLoggingEnablePrefName,
-                                false /* default_value */);
+                                /*default_value=*/false);
 }
 
 DebugLogsManager::DebugLogsState DebugLogsManager::GetDebugLogsState() const {
@@ -83,7 +93,7 @@ bool DebugLogsManager::AreDebugLogsSupported() const {
 }
 
 void DebugLogsManager::SetVerboseLogsEnable(bool enable) {
-  SendDBusVerboseLogsMessage(enable, 0 /* num_completed_attempts */);
+  SendDBusVerboseLogsMessage(enable, /*num_completed_attempts=*/0);
 }
 
 void DebugLogsManager::SendDBusVerboseLogsMessage(bool enable,
@@ -99,7 +109,7 @@ void DebugLogsManager::SendDBusVerboseLogsMessage(bool enable,
   bluez::BluezDBusManager::Get()
       ->GetBluetoothDebugManagerClient()
       ->SetLogLevels(
-          level /* bluez */, 0 /* kernel */,
+          /*bluez_level=*/level, /*kernel_level=*/0,
           base::BindOnce(&DebugLogsManager::OnVerboseLogsEnableSuccess,
                          weak_ptr_factory_.GetWeakPtr(), enable),
           base::BindOnce(&DebugLogsManager::OnVerboseLogsEnableError,
@@ -129,6 +139,53 @@ void DebugLogsManager::OnVerboseLogsEnableError(
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&DebugLogsManager::SendDBusVerboseLogsMessage,
+                     weak_ptr_factory_.GetWeakPtr(), enable,
+                     num_completed_attempts + 1),
+      kDbusRetryInterval);
+}
+
+void DebugLogsManager::SetBluetoothQualityReport(bool enable,
+                                                 int num_completed_attempts) {
+  VLOG(1) << (enable ? "Enabling" : "Disabling") << " Bluetooth Quality Report";
+
+  if (floss::features::IsFlossEnabled()) {
+    VLOG(1) << "Floss does not yet support Bluetooth Quality Report.";
+    return;
+  }
+
+  bluez::BluezDBusManager::Get()
+      ->GetBluetoothDebugManagerClient()
+      ->SetBluetoothQualityReport(
+          enable,
+          base::BindOnce(&DebugLogsManager::OnSetBluetoothQualityReportSuccess,
+                         weak_ptr_factory_.GetWeakPtr(), enable),
+          base::BindOnce(&DebugLogsManager::OnSetBluetoothQualityReportError,
+                         weak_ptr_factory_.GetWeakPtr(), enable,
+                         num_completed_attempts));
+}
+
+void DebugLogsManager::OnSetBluetoothQualityReportSuccess(bool enable) {
+  VLOG(1) << "Bluetooth Quality Report successfully "
+          << (enable ? "enabled" : "disabled");
+}
+
+void DebugLogsManager::OnSetBluetoothQualityReportError(
+    const bool enable,
+    const int num_completed_attempts,
+    const std::string& error_name,
+    const std::string& error_message) {
+  bool should_retry = (num_completed_attempts < kDbusRetryCount);
+
+  LOG(ERROR) << "Setting Bluetooth Quality Report failed: error: " << error_name
+             << " - " << error_message << " "
+             << (should_retry ? "Retrying." : "Giving up.");
+
+  if (!should_retry)
+    return;
+
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&DebugLogsManager::SetBluetoothQualityReport,
                      weak_ptr_factory_.GetWeakPtr(), enable,
                      num_completed_attempts + 1),
       kDbusRetryInterval);
