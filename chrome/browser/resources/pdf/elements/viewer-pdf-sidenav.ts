@@ -18,6 +18,12 @@ import {record, UserAction} from '../metrics.js';
 
 import {getTemplate} from './viewer-pdf-sidenav.html.js';
 
+export interface ViewerPdfSidenavElement {
+  $: {
+    icons: HTMLElement,
+  };
+}
+
 export class ViewerPdfSidenavElement extends PolymerElement {
   static get is() {
     return 'viewer-pdf-sidenav';
@@ -53,6 +59,12 @@ export class ViewerPdfSidenavElement extends PolymerElement {
   docLength: number;
   private thumbnailView_: boolean;
 
+  override ready() {
+    super.ready();
+
+    this.$.icons.addEventListener('keydown', this.onKeydown_.bind(this));
+  }
+
   private onThumbnailClick_() {
     record(UserAction.SELECT_SIDENAV_THUMBNAILS);
     this.thumbnailView_ = true;
@@ -77,6 +89,17 @@ export class ViewerPdfSidenavElement extends PolymerElement {
 
   private getAriaSelectedOutline_(): string {
     return this.thumbnailView_ ? 'false' : 'true';
+  }
+
+  private onKeydown_(e: KeyboardEvent) {
+    // Up and down arrows should toggle between thumbnail and outline
+    // when sidenav is open and an outline exists.
+    if ((e.key === 'ArrowUp' || e.key === 'ArrowDown') &&
+        this.bookmarks.length > 0) {
+      e.preventDefault();
+      e.stopPropagation();
+      this.thumbnailView_ = !this.thumbnailView_;
+    }
   }
 }
 

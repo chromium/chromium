@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {ViewerPdfSidenavElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
 function createSidenav(): ViewerPdfSidenavElement {
   document.body.innerHTML = '';
@@ -25,6 +26,7 @@ const tests = [
       {title: 'Bar', page: 2, children: []},
     ];
 
+    const icons = sidenav.shadowRoot!.querySelector('#icons')!;
     const content = sidenav.shadowRoot!.querySelector('#content')!;
     const buttons = sidenav.shadowRoot!.querySelectorAll('cr-icon-button');
     const thumbnailButton = buttons[0]!;
@@ -33,39 +35,64 @@ const tests = [
     const thumbnailBar = content.querySelector('viewer-thumbnail-bar')!;
     const outline = content.querySelector('viewer-document-outline')!;
 
+    function assertThumbnailView() {
+      chrome.test.assertTrue(
+          thumbnailButton.parentElement!.classList.contains('selected'));
+      chrome.test.assertEq(
+          'true', thumbnailButton.getAttribute('aria-selected'));
+      chrome.test.assertFalse(
+          outlineButton.parentElement!.classList.contains('selected'));
+      chrome.test.assertEq(
+          'false', outlineButton.getAttribute('aria-selected'));
+      chrome.test.assertFalse(thumbnailBar.hidden);
+      chrome.test.assertTrue(outline.hidden);
+    }
+
+    function assertOutlineView() {
+      chrome.test.assertFalse(
+          thumbnailButton.parentElement!.classList.contains('selected'));
+      chrome.test.assertEq(
+          'false', thumbnailButton.getAttribute('aria-selected'));
+      chrome.test.assertTrue(
+          outlineButton.parentElement!.classList.contains('selected'));
+      chrome.test.assertEq('true', outlineButton.getAttribute('aria-selected'));
+      chrome.test.assertTrue(thumbnailBar.hidden);
+      chrome.test.assertFalse(outline.hidden);
+    }
+
 
     // Sidebar starts on thumbnail view.
-    chrome.test.assertTrue(
-        thumbnailButton.parentElement!.classList.contains('selected'));
-    chrome.test.assertEq('true', thumbnailButton.getAttribute('aria-selected'));
-    chrome.test.assertFalse(
-        outlineButton.parentElement!.classList.contains('selected'));
-    chrome.test.assertEq('false', outlineButton.getAttribute('aria-selected'));
-    chrome.test.assertFalse(thumbnailBar.hidden);
-    chrome.test.assertTrue(outline.hidden);
+    assertThumbnailView();
 
     // Click on outline view.
     outlineButton.click();
-    chrome.test.assertFalse(
-        thumbnailButton.parentElement!.classList.contains('selected'));
-    chrome.test.assertEq(
-        'false', thumbnailButton.getAttribute('aria-selected'));
-    chrome.test.assertTrue(
-        outlineButton.parentElement!.classList.contains('selected'));
-    chrome.test.assertEq('true', outlineButton.getAttribute('aria-selected'));
-    chrome.test.assertTrue(thumbnailBar.hidden);
-    chrome.test.assertFalse(outline.hidden);
+    assertOutlineView();
 
     // Return to thumbnail view.
     thumbnailButton.click();
-    chrome.test.assertTrue(
-        thumbnailButton.parentElement!.classList.contains('selected'));
-    chrome.test.assertEq('true', thumbnailButton.getAttribute('aria-selected'));
-    chrome.test.assertFalse(
-        outlineButton.parentElement!.classList.contains('selected'));
-    chrome.test.assertEq('false', outlineButton.getAttribute('aria-selected'));
-    chrome.test.assertFalse(thumbnailBar.hidden);
-    chrome.test.assertTrue(outline.hidden);
+    assertThumbnailView();
+
+    // Arrow keys toggle between thumbnail and outline view.
+
+    // Thumbnail -> Outline
+    keyDownOn(icons, 0, '', 'ArrowDown');
+    assertOutlineView();
+
+    // Outline -> Thumbnail
+    keyDownOn(icons, 0, '', 'ArrowDown');
+    assertThumbnailView();
+
+    // Thumbnail -> Outline
+    keyDownOn(icons, 0, '', 'ArrowUp');
+    assertOutlineView();
+
+    // Outline -> Thumbnail
+    keyDownOn(icons, 0, '', 'ArrowUp');
+    assertThumbnailView();
+
+    // Pressing arrow keys outside of icons shouldn't do anything.
+    keyDownOn(content, 0, '', 'ArrowDown');
+    assertThumbnailView();
 
     chrome.test.succeed();
   },
