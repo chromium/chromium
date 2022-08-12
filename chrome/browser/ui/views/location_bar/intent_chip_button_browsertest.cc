@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/callback.h"
+#include "base/callback_forward.h"
+#include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -30,6 +33,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event_utils.h"
 #include "ui/views/test/button_test_api.h"
+#include "ui/views/view_observer.h"
 #include "ui/views/widget/any_widget_observer.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -40,6 +44,36 @@
 #include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/preferred_apps_test_util.h"
 #endif
+
+namespace {
+
+// ViewObserver that sends a callback when the target View's size is set to a
+// nonzero value.
+class NonzeroSizeObserver : public views::ViewObserver {
+ public:
+  NonzeroSizeObserver(views::View* view, base::OnceClosure callback)
+      : callback_(std::move(callback)) {
+    if (!view->size().IsEmpty())
+      std::move(callback_).Run();
+    else
+      observation_.Observe(view);
+  }
+  ~NonzeroSizeObserver() override = default;
+
+  // views::ViewObserver:
+  void OnViewBoundsChanged(views::View* observed_view) override {
+    if (!observed_view->size().IsEmpty()) {
+      std::move(callback_).Run();
+      observation_.Reset();
+    }
+  }
+
+ private:
+  base::OnceClosure callback_;
+  base::ScopedObservation<views::View, views::ViewObserver> observation_{this};
+};
+
+}  // namespace
 
 class IntentChipButtonBrowserTest
     : public web_app::WebAppNavigationBrowserTest {
@@ -361,13 +395,13 @@ IN_PROC_BROWSER_TEST_F(IntentChipButtonIPHBubbleBrowserTest, ShowAndCloseIPH) {
           browser()->window()->GetFeaturePromoController());
   feature_engagement::Tracker* tracker =
       promo_controller->feature_engagement_tracker();
-  base::RunLoop loop;
+  base::RunLoop init_loop;
   tracker->AddOnInitializedCallback(
-      base::BindLambdaForTesting([&loop](bool success) {
+      base::BindLambdaForTesting([&init_loop](bool success) {
         DCHECK(success);
-        loop.Quit();
+        init_loop.Quit();
       }));
-  loop.Run();
+  init_loop.Run();
   ASSERT_TRUE(tracker->IsInitialized());
 
   NavigateToLaunchingPage(browser());
@@ -377,6 +411,12 @@ IN_PROC_BROWSER_TEST_F(IntentChipButtonIPHBubbleBrowserTest, ShowAndCloseIPH) {
   // Navigate to an in-scope page to see the intent chip and the IPH.
   ClickLinkAndWait(web_contents, in_scope_url, LinkTarget::SELF, "");
   EXPECT_TRUE(GetIntentChip()->GetVisible());
+
+  // Wait for the chip to actually be laid out. This will result in the IPH
+  // showing.
+  base::RunLoop chip_loop;
+  NonzeroSizeObserver observer(GetIntentChip(), chip_loop.QuitClosure());
+  chip_loop.Run();
 
   // Check if the IPH bubble is showing.
   EXPECT_TRUE(promo_controller->IsPromoActive(
