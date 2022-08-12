@@ -449,8 +449,6 @@ extern const char kProfileUsingDefaultAvatar[];
 extern const char kProfileUsingGAIAAvatar[];
 extern const char kSupervisedUserId[];
 
-extern const char kProfileAvatarTutorialShown[];
-
 extern const char kInvertNotificationShown[];
 
 extern const char kPrinterTypeDenyList[];

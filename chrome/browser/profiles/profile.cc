@@ -334,11 +334,6 @@ void Profile::RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
                                std::string());
 #endif
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-  // Preferences related to the avatar bubble and user manager tutorials.
-  registry->RegisterIntegerPref(prefs::kProfileAvatarTutorialShown, 0);
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(prefs::kClickedUpdateMenuItem, false);
   registry->RegisterStringPref(prefs::kLatestVersionWhenClickedUpdateMenuItem,

@@ -753,6 +753,12 @@ constexpr char kSecurityTokenSessionNotificationDisplayed[] =
     "security_token_session_notification_displayed";
 #endif
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+// Deprecated 08/2022.
+const char kProfileAvatarTutorialShown[] =
+    "profile.avatar_bubble_tutorial_shown";
+#endif
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -983,6 +989,11 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(kSecurityTokenSessionNotificationDisplayed,
                                 false);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+  // Deprecated 08/2022.
+  registry->RegisterIntegerPref(kProfileAvatarTutorialShown, 0);
+#endif
 }
 
 }  // namespace
@@ -1931,6 +1942,11 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Added 08/2022.
   profile_prefs->ClearPref(kSecurityTokenSessionNotificationDisplayed);
+#endif
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+  // Added 08/2022.
+  profile_prefs->ClearPref(kProfileAvatarTutorialShown);
 #endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.

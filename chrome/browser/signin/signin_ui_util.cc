@@ -182,14 +182,6 @@ std::u16string GetAuthenticatedUsername(Profile* profile) {
   return base::UTF8ToUTF16(user_display_name);
 }
 
-void InitializePrefsForProfile(Profile* profile) {
-  if (profile->IsNewProfile()) {
-    // Suppresses the upgrade tutorial for a new profile.
-    profile->GetPrefs()->SetInteger(prefs::kProfileAvatarTutorialShown,
-                                    kUpgradeWelcomeTutorialShowMax + 1);
-  }
-}
-
 void ShowSigninErrorLearnMorePage(Profile* profile) {
   static const char kSigninErrorLearnMoreUrl[] =
       "https://support.google.com/chrome/answer/1181420?";

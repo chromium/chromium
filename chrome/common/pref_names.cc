@@ -1418,11 +1418,6 @@ const char kProfileUsingGAIAAvatar[] = "profile.using_gaia_avatar";
 // The supervised user ID.
 const char kSupervisedUserId[] = "profile.managed_user_id";
 
-// Integer that specifies the number of times that we have shown the upgrade
-// tutorial card in the avatar menu bubble.
-const char kProfileAvatarTutorialShown[] =
-    "profile.avatar_bubble_tutorial_shown";
-
 // Indicates if we've already shown a notification that high contrast
 // mode is on, recommending high-contrast extensions and themes.
 const char kInvertNotificationShown[] = "invert_notification_version_2_shown";

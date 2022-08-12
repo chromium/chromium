@@ -779,10 +779,6 @@ void ProfileImpl::DoFinalInit(CreateMode create_mode) {
 
   PushMessagingServiceImpl::InitializeForProfile(this);
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-  signin_ui_util::InitializePrefsForProfile(this);
-#endif
-
   site_isolation::SiteIsolationPolicy::ApplyPersistedIsolatedOrigins(this);
 
   content::URLDataSource::Add(this,
