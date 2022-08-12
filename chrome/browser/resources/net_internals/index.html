@@ -32,6 +32,17 @@ found in the LICENSE file.
       </div>
 
       <div id=dns-view-tab-content class=content-box>
+        <h4>DNS lookup</h4>
+          <p>Input a domain name to look up:</p>
+          <form id=dns-view-dns-lookup-form>
+            Domain: <input type=text id=dns-view-dns-lookup-input type="url"
+                     placeholder="example.com">
+            <input type=submit value="Lookup" id=dns-view-dns-lookup-submit>
+          </form>
+          <div style="margin-top: 1em; margin-left: 2em;"
+          id=dns-view-dns-lookup-output>
+          </div>
+        </h4>
         <h4>
           Host resolver cache
           <input type=button value="Clear host cache" id=dns-view-clear-cache>

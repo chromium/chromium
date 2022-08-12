@@ -59,10 +59,31 @@ NetInternalsDnsViewTest.prototype = {
 
   browsePreload:
       'chrome://net-internals/index.html?module=net_internals/dns_view_test.js',
+
+  /** @param {string} testName The name of the test to run. */
+  runMochaTest: function(testName) {
+    runMochaTest(dns_view_test.suiteName, testName);
+  },
 };
 
+TEST_F('NetInternalsDnsViewTest', 'ResolveSingleHost', function() {
+  this.runMochaTest(dns_view_test.TestNames.ResolveSingleHost);
+});
+
+// TODO(crbug.com/1351249): Enable this test after making
+// RuleBasedHostResolverProc support multiple addresses.
+/*
+TEST_F('NetInternalsDnsViewTest','ResolveMultipleHost', function() {
+  this.runMochaTest(dns_view_test.TestNames.ResolveMultipleHost);
+});
+*/
+
+TEST_F('NetInternalsDnsViewTest', 'ErrorNameNotResolved', function() {
+  this.runMochaTest(dns_view_test.TestNames.ErrorNameNotResolved);
+});
+
 TEST_F('NetInternalsDnsViewTest', 'ClearCache', function() {
-  mocha.run();
+  this.runMochaTest(dns_view_test.TestNames.ClearCache);
 });
 
 /**

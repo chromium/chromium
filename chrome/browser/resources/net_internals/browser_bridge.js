@@ -22,6 +22,10 @@ export class BrowserBridge {
     chrome.send('clearBadProxies');
   }
 
+  sendResolveHost(hostname) {
+    return sendWithPromise('resolveHost', hostname);
+  }
+
   sendClearHostResolverCache() {
     chrome.send('clearHostResolverCache');
   }

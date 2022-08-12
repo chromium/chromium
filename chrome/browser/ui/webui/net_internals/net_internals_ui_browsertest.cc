@@ -254,7 +254,10 @@ NetInternalsTest::~NetInternalsTest() {
 
 void NetInternalsTest::SetUpOnMainThread() {
   WebUIBrowserTest::SetUpOnMainThread();
-  host_resolver()->AddRule("*", "127.0.0.1");
+  host_resolver()->AddRule("*.com", "127.0.0.1");
+  // TODO(crbug.com/1351249): Enable this test after making
+  // RuleBasedHostResolverProc support multiple addresses.
+  // host_resolver()->AddRule("multihost.org", "127.0.0.2,127.0.0.3,127.0.0.4");
 }
 
 content::WebUIMessageHandler* NetInternalsTest::GetMockMessageHandler() {
