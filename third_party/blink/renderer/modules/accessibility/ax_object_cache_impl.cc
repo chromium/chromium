@@ -1680,7 +1680,7 @@ void AXObjectCacheImpl::Remove(AXID ax_id) {
   if (!objects_.Take(ax_id))
     return;
 
-  DCHECK_GE(objects_.size(), ids_in_use_.size());
+  DCHECK_EQ(objects_.size(), ids_in_use_.size());
 }
 
 // This is safe to call even if there isn't a current mapping.
