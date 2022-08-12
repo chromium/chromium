@@ -222,6 +222,7 @@
 #include "chrome/browser/ash/os_feedback/chrome_os_feedback_delegate.h"
 #include "chrome/browser/ash/printing/print_management/printing_manager.h"
 #include "chrome/browser/ash/printing/print_management/printing_manager_factory.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/scanning/chrome_scanning_app_delegate.h"
 #include "chrome/browser/ash/scanning/scan_service.h"
 #include "chrome/browser/ash/scanning/scan_service_factory.h"
@@ -278,8 +279,10 @@
 #include "chrome/browser/ui/webui/nearby_internals/nearby_internals_ui.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share_dialog_ui.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_ui.h"
+#include "chrome/common/chrome_switches.h"
 #include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"  // nogncheck
 #include "chromeos/services/network_health/public/mojom/network_health.mojom.h"  // nogncheck
+#include "content/public/common/content_switches.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #endif
 
@@ -990,8 +993,18 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<chromeos::multidevice_setup::MultiDeviceSetupDialogUI>;
   if (url.host_piece() == chrome::kChromeUINetworkHost)
     return &NewWebUI<chromeos::NetworkUI>;
-  if (url.host_piece() == chrome::kChromeUIOobeHost)
-    return &NewWebUI<chromeos::OobeUI>;
+  if (url.host_piece() == chrome::kChromeUIOobeHost) {
+    // TODO(crbug.com/1329058): Eliminate chrome://oobe/login and fix OOBE tests
+    // running inside the session.
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    bool is_running_test = command_line->HasSwitch(::switches::kTestName) ||
+                           command_line->HasSwitch(::switches::kTestType);
+    if (ash::ProfileHelper::IsSigninProfile(profile) ||
+        (url.path() == "/login" && is_running_test)) {
+      return &NewWebUI<chromeos::OobeUI>;
+    }
+    return nullptr;
+  }
   if (url.host_piece() == chrome::kChromeUIOSSettingsHost)
     return &NewWebUI<chromeos::settings::OSSettingsUI>;
   if (url.host_piece() == chrome::kChromeUIPowerHost)
