@@ -2586,7 +2586,7 @@ void WebViewImpl::DispatchPageshow(base::TimeTicks navigation_start) {
       }
       DocumentLoader* loader = local_frame->Loader().GetDocumentLoader();
       if (loader) {
-        loader->GetTiming().MarkBackForwardCacheRestoreNavigationStart(
+        loader->GetTiming().SetBackForwardCacheRestoreNavigationStart(
             navigation_start);
       }
     }

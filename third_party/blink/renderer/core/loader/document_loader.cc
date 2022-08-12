@@ -2887,7 +2887,7 @@ void DocumentLoader::NotifyPrerenderingDocumentActivated(
     // process already knows it.
   }
 
-  GetTiming().MarkActivationStart(params.activation_start);
+  GetTiming().SetActivationStart(params.activation_start);
 }
 
 HashMap<KURL, EarlyHintsPreloadEntry>

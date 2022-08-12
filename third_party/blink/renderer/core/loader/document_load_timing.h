@@ -57,7 +57,7 @@ class CORE_EXPORT DocumentLoadTiming final {
 
   void MarkNavigationStart();
   void SetNavigationStart(base::TimeTicks);
-  void MarkBackForwardCacheRestoreNavigationStart(base::TimeTicks);
+  void SetBackForwardCacheRestoreNavigationStart(base::TimeTicks);
   void MarkCommitNavigationEnd();
 
   void SetInputStart(base::TimeTicks);
@@ -74,8 +74,8 @@ class CORE_EXPORT DocumentLoadTiming final {
     has_cross_origin_redirect_ = value;
   }
 
-  void MarkUnloadEventStart(base::TimeTicks);
-  void MarkUnloadEventEnd(base::TimeTicks);
+  void SetUnloadEventStart(base::TimeTicks);
+  void SetUnloadEventEnd(base::TimeTicks);
 
   void MarkFetchStart();
   void SetFetchStart(base::TimeTicks);
@@ -85,7 +85,7 @@ class CORE_EXPORT DocumentLoadTiming final {
   void MarkLoadEventStart();
   void MarkLoadEventEnd();
 
-  void MarkActivationStart(base::TimeTicks);
+  void SetActivationStart(base::TimeTicks);
 
   void SetCanRequestFromPreviousDocument(bool value) {
     can_request_from_previous_document_ = value;

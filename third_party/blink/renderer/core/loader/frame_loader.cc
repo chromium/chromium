@@ -1350,10 +1350,10 @@ void FrameLoader::CommitDocumentLoader(DocumentLoader* document_loader,
     if (old_document_info->unload_timing_info.unload_timing.has_value()) {
       document_loader_->GetTiming().SetCanRequestFromPreviousDocument(
           old_document_info->unload_timing_info.unload_timing->can_request);
-      document_loader_->GetTiming().MarkUnloadEventStart(
+      document_loader_->GetTiming().SetUnloadEventStart(
           old_document_info->unload_timing_info.unload_timing
               ->unload_event_start);
-      document_loader_->GetTiming().MarkUnloadEventEnd(
+      document_loader_->GetTiming().SetUnloadEventEnd(
           old_document_info->unload_timing_info.unload_timing
               ->unload_event_end);
       document_loader_->GetTiming().MarkCommitNavigationEnd();
