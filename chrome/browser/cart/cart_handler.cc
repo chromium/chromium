@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/cart/cart_service.h"
 #include "chrome/browser/cart/cart_service_factory.h"
+#include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/proto/cart_db_content.pb.h"
@@ -24,7 +25,7 @@ CartHandler::CartHandler(
 CartHandler::~CartHandler() = default;
 
 void CartHandler::GetMerchantCarts(GetMerchantCartsCallback callback) {
-  DCHECK(base::FeatureList::IsEnabled(ntp_features::kNtpChromeCartModule));
+  DCHECK(IsCartModuleEnabled());
   if (base::GetFieldTrialParamValueByFeature(
           ntp_features::kNtpChromeCartModule,
           ntp_features::kNtpChromeCartModuleDataParam) == "fake") {

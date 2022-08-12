@@ -6,5 +6,6 @@
 #define CHROME_BROWSER_NEW_TAB_PAGE_NEW_TAB_PAGE_UTIL_H_
 
 bool IsRecipeTasksModuleEnabled();
+bool IsCartModuleEnabled();
 
 #endif  // CHROME_BROWSER_NEW_TAB_PAGE_NEW_TAB_PAGE_UTIL_H_

@@ -644,7 +644,7 @@ void PopulateChromeFrameBinders(
   // We should not request this mojo interface's binding for the subframes in
   // the renderer.
 #if !BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(ntp_features::kNtpChromeCartModule) &&
+  if (IsCartModuleEnabled() &&
 #else
   if (base::FeatureList::IsEnabled(commerce::kCommerceHintAndroid) &&
 #endif
@@ -896,7 +896,7 @@ void PopulateChromeWebUIFrameBinders(
       map);
 #endif  // !defined(OFFICIAL_BUILD)
 
-  if (base::FeatureList::IsEnabled(ntp_features::kNtpChromeCartModule)) {
+  if (IsCartModuleEnabled()) {
     RegisterWebUIControllerInterfaceBinder<chrome_cart::mojom::CartHandler,
                                            NewTabPageUI>(map);
   }

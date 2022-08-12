@@ -13,6 +13,11 @@
 #include "url/gurl.h"
 
 namespace commerce {
+
+namespace switches {
+extern const char kEnableChromeCart[];
+}
+
 extern const base::Feature kCommercePriceTracking;
 
 // Price tracking variations for Android.

@@ -10,8 +10,16 @@
 #include "components/variations/service/variations_service.h"
 
 namespace {
-bool IsOsSupported() {
+bool IsOsSupportedForRecipe() {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  return true;
+#else
+  return false;
+#endif
+}
+
+bool IsOsSupportedForCart() {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   return true;
 #else
   return false;
@@ -27,6 +35,11 @@ std::string GetCountryCode() {
   return country_code.empty() ? variations_service->GetLatestCountry()
                               : country_code;
 }
+
+bool IsInUS() {
+  return g_browser_process->GetApplicationLocale() == "en-US" &&
+         GetCountryCode() == "us";
+}
 }  // namespace
 
 // If feature is overridden manually or by finch, read the feature flag value.
@@ -36,8 +49,15 @@ bool IsRecipeTasksModuleEnabled() {
           ntp_features::kNtpRecipeTasksModule.name)) {
     return base::FeatureList::IsEnabled(ntp_features::kNtpRecipeTasksModule);
   } else {
-    return IsOsSupported() &&
-           g_browser_process->GetApplicationLocale() == "en-US" &&
-           GetCountryCode() == "us";
+    return IsOsSupportedForRecipe() && IsInUS();
+  }
+}
+
+bool IsCartModuleEnabled() {
+  if (base::FeatureList::GetInstance()->IsFeatureOverridden(
+          ntp_features::kNtpChromeCartModule.name)) {
+    return base::FeatureList::IsEnabled(ntp_features::kNtpChromeCartModule);
+  } else {
+    return IsOsSupportedForCart() && IsInUS();
   }
 }

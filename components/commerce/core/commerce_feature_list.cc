@@ -70,6 +70,11 @@ const re2::RE2& GetCouponPartnerMerchantPattern() {
 
 }  // namespace
 
+namespace switches {
+// Specifies whether ChromeCart is enabled.
+const char kEnableChromeCart[] = "enable-chrome-cart";
+}  // namespace switches
+
 const base::Feature kCommerceAllowLocalImages{
     "CommerceAllowLocalImages", base::FEATURE_DISABLED_BY_DEFAULT};
 
