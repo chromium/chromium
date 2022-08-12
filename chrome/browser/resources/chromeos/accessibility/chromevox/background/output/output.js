@@ -2838,8 +2838,10 @@ Output.RULES = {
     rootWebArea: {enter: `$name`, speak: `$if($name, $name, @web_content)`},
     region: {speak: `$state $nameOrTextContent $description $roleDescription`},
     row: {
-      startOf: `$node(tableRowHeader) $roleDescription`,
-      speak: `$name $node(activeDescendant) $value $state $restriction $role
+      startOf: `$node(tableRowHeader) $roleDescription
+          $if($hierarchicalLevel, @describe_depth($hierarchicalLevel))`,
+      speak: ` $if($hierarchicalLevel, @describe_depth($hierarchicalLevel))
+          $name $node(activeDescendant) $value $state $restriction $role
           $if($selected, @aria_selected_true) $description`,
     },
     staticText: {speak: `$precedingBullet $name= $description`},

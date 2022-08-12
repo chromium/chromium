@@ -1451,3 +1451,44 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'ContextOrder', async function() {
       CursorRange.fromNode(menu.firstChild), CursorRange.fromNode(p));
   assertEquals('first', o.contextOrder_);
 });
+
+AX_TEST_F('ChromeVoxOutputE2ETest', 'TreeGridLevel', async function() {
+  const site = `
+    <table id="treegrid" role="treegrid" aria-label="Inbox">
+      <tbody>
+        <tr role="row" aria-level="1" aria-posinset="1" aria-setsize="1"
+            aria-expanded="true">
+          <td role="gridcell">Treegrids are awesome</td>
+          <td role="gridcell">Want to learn how to use them?</td>
+        </tr>
+      </tbody>
+    </table>
+  `;
+  const root = await this.runWithLoadedTree(site);
+  const row = root.find({role: RoleType.ROW});
+  let range = CursorRange.fromNode(row);
+  let o =
+      new Output().withoutHints().withSpeechAndBraille(range, null, 'navigate');
+
+  checkSpeechOutput(
+      ' level 1 |Expanded|Row',
+      [
+        {value: 'state', start: 10, end: 18},
+        {value: 'role', start: 19, end: 22},
+      ],
+      o);
+
+  range = CursorRange.fromNode(row.firstChild);
+  o = new Output().withoutHints().withSpeechAndBraille(range, null, 'navigate');
+
+  checkSpeechOutput(
+      'Treegrids are awesome| level 1 |row 1 column 1',
+      [{value: 'name', start: 0, end: 21}], o);
+
+  range = CursorRange.fromNode(row.lastChild);
+  o = new Output().withoutHints().withSpeechAndBraille(range, null, 'navigate');
+
+  checkSpeechOutput(
+      'Want to learn how to use them?|row 1 column 2',
+      [{value: 'name', start: 0, end: 30}], o);
+});
