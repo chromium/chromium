@@ -34,9 +34,12 @@ class PerformanceManagerMetricsProviderTest : public testing::Test {
   }
 
   void SetBatterySaverEnabled(bool enabled) {
-    local_state()->SetBoolean(
-        performance_manager::user_tuning::prefs::kBatterySaverModeEnabled,
-        enabled);
+    local_state()->SetInteger(
+        performance_manager::user_tuning::prefs::kBatterySaverModeState,
+        static_cast<int>(enabled ? performance_manager::user_tuning::prefs::
+                                       BatterySaverModeState::kEnabled
+                                 : performance_manager::user_tuning::prefs::
+                                       BatterySaverModeState::kDisabled));
   }
 
   void ExpectSingleUniqueSample(

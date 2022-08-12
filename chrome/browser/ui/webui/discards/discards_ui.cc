@@ -209,24 +209,31 @@ class DiscardsDetailsProviderImpl : public discards::mojom::DetailsProvider {
     std::move(callback).Run();
   }
 
-  void ToggleLocalStatePref(const std::string& pref_name) {
-    bool val = g_browser_process->local_state()->GetBoolean(pref_name);
-    g_browser_process->local_state()->SetBoolean(pref_name, !val);
-  }
-
   void ToggleHighEfficiencyMode() override {
     if (base::FeatureList::IsEnabled(
             performance_manager::features::kHighEfficiencyModeAvailable)) {
-      ToggleLocalStatePref(
+      bool enabled = g_browser_process->local_state()->GetBoolean(
           performance_manager::user_tuning::prefs::kHighEfficiencyModeEnabled);
+      g_browser_process->local_state()->SetBoolean(
+          performance_manager::user_tuning::prefs::kHighEfficiencyModeEnabled,
+          !enabled);
     }
   }
 
   void ToggleBatterySaverMode() override {
     if (base::FeatureList::IsEnabled(
             performance_manager::features::kBatterySaverModeAvailable)) {
-      ToggleLocalStatePref(
-          performance_manager::user_tuning::prefs::kBatterySaverModeEnabled);
+      performance_manager::user_tuning::prefs::BatterySaverModeState state =
+          performance_manager::user_tuning::prefs::
+              GetCurrentBatterySaverModeState(g_browser_process->local_state());
+      g_browser_process->local_state()->SetInteger(
+          performance_manager::user_tuning::prefs::kBatterySaverModeState,
+          static_cast<int>(state == performance_manager::user_tuning::prefs::
+                                        BatterySaverModeState::kDisabled
+                               ? performance_manager::user_tuning::prefs::
+                                     BatterySaverModeState::kEnabled
+                               : performance_manager::user_tuning::prefs::
+                                     BatterySaverModeState::kDisabled));
     }
   }
 

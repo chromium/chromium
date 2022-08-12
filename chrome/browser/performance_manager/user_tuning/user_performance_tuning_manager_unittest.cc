@@ -55,20 +55,26 @@ TEST_F(UserPerformanceTuningManagerTest, BatterySaverModePref) {
   EXPECT_FALSE(manager()->IsBatterySaverActive());
   EXPECT_FALSE(throttling_enabled());
 
-  local_state_.SetBoolean(
-      performance_manager::user_tuning::prefs::kBatterySaverModeEnabled, true);
+  local_state_.SetInteger(
+      performance_manager::user_tuning::prefs::kBatterySaverModeState,
+      static_cast<int>(performance_manager::user_tuning::prefs::
+                           BatterySaverModeState::kEnabled));
   EXPECT_TRUE(manager()->IsBatterySaverActive());
   EXPECT_TRUE(throttling_enabled());
 
-  local_state_.SetBoolean(
-      performance_manager::user_tuning::prefs::kBatterySaverModeEnabled, false);
+  local_state_.SetInteger(
+      performance_manager::user_tuning::prefs::kBatterySaverModeState,
+      static_cast<int>(performance_manager::user_tuning::prefs::
+                           BatterySaverModeState::kDisabled));
   EXPECT_FALSE(manager()->IsBatterySaverActive());
   EXPECT_FALSE(throttling_enabled());
 }
 
 TEST_F(UserPerformanceTuningManagerTest, PrefSupersedesTemporary) {
-  local_state_.SetBoolean(
-      performance_manager::user_tuning::prefs::kBatterySaverModeEnabled, true);
+  local_state_.SetInteger(
+      performance_manager::user_tuning::prefs::kBatterySaverModeState,
+      static_cast<int>(performance_manager::user_tuning::prefs::
+                           BatterySaverModeState::kEnabled));
   EXPECT_TRUE(manager()->IsBatterySaverActive());
   EXPECT_TRUE(throttling_enabled());
 
@@ -79,6 +85,28 @@ TEST_F(UserPerformanceTuningManagerTest, PrefSupersedesTemporary) {
   manager()->SetTemporaryBatterySaver(false);
   EXPECT_TRUE(manager()->IsBatterySaverActive());
   EXPECT_TRUE(throttling_enabled());
+}
+
+TEST_F(UserPerformanceTuningManagerTest, InvalidPrefInStore) {
+  local_state_.SetInteger(
+      performance_manager::user_tuning::prefs::kBatterySaverModeState,
+      static_cast<int>(performance_manager::user_tuning::prefs::
+                           BatterySaverModeState::kEnabled));
+  EXPECT_TRUE(manager()->IsBatterySaverActive());
+  EXPECT_TRUE(throttling_enabled());
+
+  local_state_.SetInteger(
+      performance_manager::user_tuning::prefs::kBatterySaverModeState, -1);
+  EXPECT_FALSE(manager()->IsBatterySaverActive());
+  EXPECT_FALSE(throttling_enabled());
+
+  local_state_.SetInteger(
+      performance_manager::user_tuning::prefs::kBatterySaverModeState,
+      static_cast<int>(performance_manager::user_tuning::prefs::
+                           BatterySaverModeState::kDisabled) +
+          1);
+  EXPECT_FALSE(manager()->IsBatterySaverActive());
+  EXPECT_FALSE(throttling_enabled());
 }
 
 }  // namespace performance_manager::user_tuning

@@ -121,7 +121,7 @@ UserPerformanceTuningManager::UserPerformanceTuningManager(
   if (base::FeatureList::IsEnabled(
           performance_manager::features::kBatterySaverModeAvailable)) {
     pref_change_registrar_.Add(
-        performance_manager::user_tuning::prefs::kBatterySaverModeEnabled,
+        performance_manager::user_tuning::prefs::kBatterySaverModeState,
         base::BindRepeating(
             &UserPerformanceTuningManager::OnBatterySaverModePrefChanged,
             base::Unretained(this)));
@@ -140,12 +140,15 @@ void UserPerformanceTuningManager::OnBatterySaverModePrefChanged() {
 }
 
 void UserPerformanceTuningManager::UpdateBatterySaverModeState() {
-  bool pref_enabled = pref_change_registrar_.prefs()->GetBoolean(
-      performance_manager::user_tuning::prefs::kBatterySaverModeEnabled);
+  performance_manager::user_tuning::prefs::BatterySaverModeState state =
+      performance_manager::user_tuning::prefs::GetCurrentBatterySaverModeState(
+          pref_change_registrar_.prefs());
 
   bool previously_enabled = battery_saver_mode_enabled_;
   battery_saver_mode_enabled_ =
-      pref_enabled || temporary_battery_saver_enabled_;
+      (state == performance_manager::user_tuning::prefs::BatterySaverModeState::
+                    kEnabled) ||
+      temporary_battery_saver_enabled_;
 
   // Don't change throttling or notify observers if the mode didn't change.
   if (previously_enabled == battery_saver_mode_enabled_)
