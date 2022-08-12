@@ -36,9 +36,8 @@ class AccessCodeCastPrefUpdater {
   // exist, then update the value of that |sink_id| with a new time.
   void UpdateDeviceAddedTimeDict(const MediaSink::Id sink_id);
 
-  // Returns a nullptr if the device dictionary does not exist in the pref
-  // service for some reason.
-  const base::Value* GetDevicesDict();
+  // Returns a the device dictionary from the pref service.
+  const base::Value::Dict& GetDevicesDict();
 
   // Returns a nullptr if the device Added dictionary does not exist in the
   // pref service for some reason.

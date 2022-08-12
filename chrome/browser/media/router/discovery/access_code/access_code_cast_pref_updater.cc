@@ -72,8 +72,8 @@ void AccessCodeCastPrefUpdater::UpdateDeviceAddedTimeDict(
   device_time_pref->SetKey(sink_id, base::TimeToValue(base::Time::Now()));
 }
 
-const base::Value* AccessCodeCastPrefUpdater::GetDevicesDict() {
-  return pref_service_->GetDictionary(prefs::kAccessCodeCastDevices);
+const base::Value::Dict& AccessCodeCastPrefUpdater::GetDevicesDict() {
+  return pref_service_->GetValueDict(prefs::kAccessCodeCastDevices);
 }
 
 const base::Value* AccessCodeCastPrefUpdater::GetDeviceAddedTimeDict() {
@@ -83,24 +83,20 @@ const base::Value* AccessCodeCastPrefUpdater::GetDeviceAddedTimeDict() {
 const base::Value::List AccessCodeCastPrefUpdater::GetSinkIdsFromDevicesDict() {
   auto sink_ids = base::Value::List();
 
-  auto* devices_dict = GetDevicesDict();
-  if (devices_dict) {
-    for (auto sink_id_keypair : devices_dict->GetDict()) {
-      sink_ids.Append(sink_id_keypair.first);
-    }
+  const auto& devices_dict = GetDevicesDict();
+  for (auto sink_id_keypair : devices_dict) {
+    sink_ids.Append(sink_id_keypair.first);
   }
   return sink_ids;
 }
 
 const base::Value* AccessCodeCastPrefUpdater::GetMediaSinkInternalValueBySinkId(
     const MediaSink::Id sink_id) {
-  auto* device_dict = GetDevicesDict();
-  if (!device_dict)
-    return nullptr;
+  const auto& device_dict = GetDevicesDict();
 
   // If found, it returns a pointer to the element. Otherwise it returns
   // nullptr.
-  auto* device_value = device_dict->FindKey(sink_id);
+  const auto* device_value = device_dict.Find(sink_id);
 
   if (!device_value)
     return nullptr;

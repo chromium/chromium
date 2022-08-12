@@ -133,19 +133,15 @@ bool CanPreProvision(base::Value* origin_id_dict) {
   return true;
 }
 
-int CountAvailableOriginIds(const base::Value* origin_id_dict) {
+int CountAvailableOriginIds(const base::Value::Dict& origin_id_dict) {
   DVLOG(3) << __func__;
 
-  if (!origin_id_dict || !origin_id_dict->is_dict())
-    return 0;
-
-  const base::Value* origin_ids =
-      origin_id_dict->FindKeyOfType(kOriginIds, base::Value::Type::LIST);
+  const base::Value::List* origin_ids = origin_id_dict.FindList(kOriginIds);
   if (!origin_ids)
     return 0;
 
-  DVLOG(3) << "count: " << origin_ids->GetListDeprecated().size();
-  return origin_ids->GetListDeprecated().size();
+  DVLOG(3) << "count: " << origin_ids->size();
+  return origin_ids->size();
 }
 
 base::UnguessableToken TakeFirstOriginId(PrefService* const pref_service) {
@@ -391,7 +387,8 @@ void MediaDrmOriginIdManager::PreProvisionIfNecessary() {
 
   // No need to pre-provision if there are already enough existing
   // pre-provisioned origin IDs.
-  if (CountAvailableOriginIds(update.Get()) >= kMaxPreProvisionedOriginIds) {
+  if (CountAvailableOriginIds(update->GetDict()) >=
+      kMaxPreProvisionedOriginIds) {
     // Disable any network monitoring, if it exists.
     network_observer_.reset();
     return;
@@ -515,7 +512,8 @@ void MediaDrmOriginIdManager::OriginIdProvisioned(
 
     // If we already have enough pre-provisioned origin IDs, we're done.
     // Stop watching for network change events.
-    if (CountAvailableOriginIds(update.Get()) >= kMaxPreProvisionedOriginIds) {
+    if (CountAvailableOriginIds(update->GetDict()) >=
+        kMaxPreProvisionedOriginIds) {
       network_observer_.reset();
       RemoveExpirableToken(update.Get());
       is_provisioning_ = false;
@@ -529,9 +527,8 @@ void MediaDrmOriginIdManager::OriginIdProvisioned(
 
 void MediaDrmOriginIdManager::RecordCountOfPreprovisionedOriginIds() {
   int available_origin_ids = 0;
-  const auto* pref = pref_service_->GetDictionary(kMediaDrmOriginIds);
-  if (pref)
-    available_origin_ids = CountAvailableOriginIds(pref);
+  const auto& pref = pref_service_->GetValueDict(kMediaDrmOriginIds);
+  available_origin_ids = CountAvailableOriginIds(pref);
 
   if (media::MediaDrmBridge::IsPerApplicationProvisioningSupported()) {
     UMA_HISTOGRAM_EXACT_LINEAR(

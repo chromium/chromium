@@ -177,11 +177,11 @@ TEST_F(AccessCodeCastPrefUpdaterTest, TestClearDevicesDict) {
   pref_updater()->UpdateDevicesDict(cast_sink);
   pref_updater()->UpdateDevicesDict(cast_sink2);
 
-  EXPECT_FALSE(pref_updater()->GetDevicesDict()->GetDict().empty());
+  EXPECT_FALSE(pref_updater()->GetDevicesDict().empty());
 
   pref_updater()->ClearDevicesDict();
 
-  EXPECT_TRUE(pref_updater()->GetDevicesDict()->GetDict().empty());
+  EXPECT_TRUE(pref_updater()->GetDevicesDict().empty());
 }
 
 TEST_F(AccessCodeCastPrefUpdaterTest, TestClearDeviceAddedTimeDict) {

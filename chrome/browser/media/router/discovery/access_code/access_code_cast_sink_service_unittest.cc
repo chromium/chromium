@@ -421,9 +421,8 @@ TEST_F(AccessCodeCastSinkServiceTest, SinkDoesntExistForPrefs) {
       access_code_cast_sink_service_->pref_updater_->GetDeviceAddedTimeDict()
           ->GetDict()
           .empty());
-  EXPECT_TRUE(access_code_cast_sink_service_->pref_updater_->GetDevicesDict()
-                  ->GetDict()
-                  .empty());
+  EXPECT_TRUE(
+      access_code_cast_sink_service_->pref_updater_->GetDevicesDict().empty());
 }
 
 TEST_F(AccessCodeCastSinkServiceTest, TestFetchAndAddStoredDevices) {
@@ -534,9 +533,8 @@ TEST_F(AccessCodeCastSinkServiceTest, TestChangeNetworksExpiration) {
       access_code_cast_sink_service_->pref_updater_->GetDeviceAddedTimeDict()
           ->GetDict()
           .empty());
-  EXPECT_FALSE(access_code_cast_sink_service_->pref_updater_->GetDevicesDict()
-                   ->GetDict()
-                   .empty());
+  EXPECT_FALSE(
+      access_code_cast_sink_service_->pref_updater_->GetDevicesDict().empty());
 
   // When the network changes, the sinks on that network should be removed.
   EXPECT_CALL(*mock_cast_media_sink_service_impl(),
@@ -567,9 +565,8 @@ TEST_F(AccessCodeCastSinkServiceTest, TestChangeNetworksExpiration) {
       access_code_cast_sink_service_->pref_updater_->GetDeviceAddedTimeDict()
           ->GetDict()
           .size());
-  EXPECT_FALSE(access_code_cast_sink_service_->pref_updater_->GetDevicesDict()
-                   ->GetDict()
-                   .size());
+  EXPECT_FALSE(
+      access_code_cast_sink_service_->pref_updater_->GetDevicesDict().size());
 }
 
 TEST_F(AccessCodeCastSinkServiceTest, TestChangeNetworksNoExpiration) {
@@ -632,9 +629,8 @@ TEST_F(AccessCodeCastSinkServiceTest, TestChangeNetworksNoExpiration) {
       access_code_cast_sink_service_->pref_updater_->GetDeviceAddedTimeDict()
           ->GetDict()
           .empty());
-  EXPECT_FALSE(access_code_cast_sink_service_->pref_updater_->GetDevicesDict()
-                   ->GetDict()
-                   .empty());
+  EXPECT_FALSE(
+      access_code_cast_sink_service_->pref_updater_->GetDevicesDict().empty());
 
   content::RunAllTasksUntilIdle();
   mock_time_task_runner()->FastForwardUntilNoTasksRemain();
@@ -669,9 +665,8 @@ TEST_F(AccessCodeCastSinkServiceTest, TestChangeNetworksNoExpiration) {
       access_code_cast_sink_service_->pref_updater_->GetDeviceAddedTimeDict()
           ->GetDict()
           .size());
-  EXPECT_TRUE(access_code_cast_sink_service_->pref_updater_->GetDevicesDict()
-                  ->GetDict()
-                  .size());
+  EXPECT_TRUE(
+      access_code_cast_sink_service_->pref_updater_->GetDevicesDict().size());
 }
 
 TEST_F(AccessCodeCastSinkServiceTest,
@@ -705,9 +700,8 @@ TEST_F(AccessCodeCastSinkServiceTest,
       access_code_cast_sink_service_->pref_updater_->GetDeviceAddedTimeDict()
           ->GetDict()
           .empty());
-  EXPECT_TRUE(access_code_cast_sink_service_->pref_updater_->GetDevicesDict()
-                  ->GetDict()
-                  .empty());
+  EXPECT_TRUE(
+      access_code_cast_sink_service_->pref_updater_->GetDevicesDict().empty());
 
   // Expect that the sink id is removed from all instance in the pref service
   // when we try to init connections with a corrupted device entry.
@@ -790,9 +784,8 @@ TEST_F(AccessCodeCastSinkServiceTest, TestSetExpirationTimer) {
       access_code_cast_sink_service_->pref_updater_->GetDeviceAddedTimeDict()
           ->GetDict()
           .empty());
-  EXPECT_FALSE(access_code_cast_sink_service_->pref_updater_->GetDevicesDict()
-                   ->GetDict()
-                   .empty());
+  EXPECT_FALSE(
+      access_code_cast_sink_service_->pref_updater_->GetDevicesDict().empty());
 
   // Add the device again, the expiration timer should be reset and 150 seconds
   // passed will not reset the cast device.
@@ -810,9 +803,8 @@ TEST_F(AccessCodeCastSinkServiceTest, TestSetExpirationTimer) {
       access_code_cast_sink_service_->pref_updater_->GetDeviceAddedTimeDict()
           ->GetDict()
           .empty());
-  EXPECT_FALSE(access_code_cast_sink_service_->pref_updater_->GetDevicesDict()
-                   ->GetDict()
-                   .empty());
+  EXPECT_FALSE(
+      access_code_cast_sink_service_->pref_updater_->GetDevicesDict().empty());
   mock_time_task_runner()->FastForwardUntilNoTasksRemain();
 }
 
@@ -925,9 +917,8 @@ TEST_F(AccessCodeCastSinkServiceTest, TestChangeEnabledPref) {
       access_code_cast_sink_service_->pref_updater_->GetDeviceAddedTimeDict()
           ->GetDict()
           .empty());
-  EXPECT_FALSE(access_code_cast_sink_service_->pref_updater_->GetDevicesDict()
-                   ->GetDict()
-                   .empty());
+  EXPECT_FALSE(
+      access_code_cast_sink_service_->pref_updater_->GetDevicesDict().empty());
 
   EXPECT_CALL(*mock_cast_media_sink_service_impl(),
               DisconnectAndRemoveSink(cast_sink1));
@@ -940,9 +931,8 @@ TEST_F(AccessCodeCastSinkServiceTest, TestChangeEnabledPref) {
       access_code_cast_sink_service_->pref_updater_->GetDeviceAddedTimeDict()
           ->GetDict()
           .empty());
-  EXPECT_TRUE(access_code_cast_sink_service_->pref_updater_->GetDevicesDict()
-                  ->GetDict()
-                  .empty());
+  EXPECT_TRUE(
+      access_code_cast_sink_service_->pref_updater_->GetDevicesDict().empty());
   FastForwardUiAndIoTasks();
   content::RunAllTasksUntilIdle();
   mock_time_task_runner_->FastForwardUntilNoTasksRemain();
@@ -1032,9 +1022,8 @@ TEST_F(AccessCodeCastSinkServiceTest, TestChangeNetworkWithRouteActive) {
       access_code_cast_sink_service_->pref_updater_->GetDeviceAddedTimeDict()
           ->GetDict()
           .empty());
-  EXPECT_FALSE(access_code_cast_sink_service_->pref_updater_->GetDevicesDict()
-                   ->GetDict()
-                   .empty());
+  EXPECT_FALSE(
+      access_code_cast_sink_service_->pref_updater_->GetDevicesDict().empty());
 }
 
 TEST_F(AccessCodeCastSinkServiceTest,
@@ -1099,9 +1088,8 @@ TEST_F(AccessCodeCastSinkServiceTest,
       access_code_cast_sink_service_->pref_updater_->GetDeviceAddedTimeDict()
           ->GetDict()
           .empty());
-  EXPECT_TRUE(access_code_cast_sink_service_->pref_updater_->GetDevicesDict()
-                  ->GetDict()
-                  .empty());
+  EXPECT_TRUE(
+      access_code_cast_sink_service_->pref_updater_->GetDevicesDict().empty());
 }
 
 TEST_F(AccessCodeCastSinkServiceTest, DiscoverSinkWithNoMediaRouter) {
@@ -1188,9 +1176,8 @@ TEST_F(AccessCodeCastSinkServiceTest,
       access_code_cast_sink_service_->pref_updater_->GetDeviceAddedTimeDict()
           ->GetDict()
           .empty());
-  EXPECT_TRUE(access_code_cast_sink_service_->pref_updater_->GetDevicesDict()
-                  ->GetDict()
-                  .empty());
+  EXPECT_TRUE(
+      access_code_cast_sink_service_->pref_updater_->GetDevicesDict().empty());
 }
 
 }  // namespace media_router

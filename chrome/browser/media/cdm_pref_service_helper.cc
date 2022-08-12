@@ -70,10 +70,10 @@ base::Value ToDictValue(const CdmPrefData& pref_data) {
 // id and the time it was first created as well as the client token and the time
 // it was set/updated. Return nullptr if `cdm_data_dict` has any corruption,
 // e.g. format error, missing fields, invalid value.
-std::unique_ptr<CdmPrefData> FromDictValue(const base::Value& cdm_data_dict) {
-  DCHECK(cdm_data_dict.is_dict());
+std::unique_ptr<CdmPrefData> FromDictValue(
+    const base::Value::Dict& cdm_data_dict) {
   // Origin ID
-  const base::Value* origin_id_value = cdm_data_dict.FindKey(kOriginId);
+  const base::Value* origin_id_value = cdm_data_dict.Find(kOriginId);
   if (!origin_id_value)
     return nullptr;
 
@@ -82,7 +82,7 @@ std::unique_ptr<CdmPrefData> FromDictValue(const base::Value& cdm_data_dict) {
   if (!origin_id)
     return nullptr;
 
-  const base::Value* time_value = cdm_data_dict.FindKey(kOriginIdCreationTime);
+  const base::Value* time_value = cdm_data_dict.Find(kOriginIdCreationTime);
   if (!time_value)
     return nullptr;
 
@@ -95,7 +95,7 @@ std::unique_ptr<CdmPrefData> FromDictValue(const base::Value& cdm_data_dict) {
 
   // Client Token
   const std::string* encoded_client_token =
-      cdm_data_dict.FindStringKey(kClientToken);
+      cdm_data_dict.FindString(kClientToken);
   if (encoded_client_token) {
     std::string decoded_client_token;
     if (!base::Base64Decode(*encoded_client_token, &decoded_client_token))
@@ -104,7 +104,7 @@ std::unique_ptr<CdmPrefData> FromDictValue(const base::Value& cdm_data_dict) {
     std::vector<uint8_t> client_token(decoded_client_token.begin(),
                                       decoded_client_token.end());
 
-    time_value = cdm_data_dict.FindKey(kClientTokenCreationTime);
+    time_value = cdm_data_dict.Find(kClientTokenCreationTime);
 
     // If we have a client token but no creation time, this is an error.
     if (!time_value)
@@ -191,7 +191,8 @@ void CdmPrefServiceHelper::ClearCdmPreferenceData(
       continue;
     }
 
-    std::unique_ptr<CdmPrefData> cdm_pref_data = FromDictValue(origin_dict);
+    std::unique_ptr<CdmPrefData> cdm_pref_data =
+        FromDictValue(origin_dict.GetDict());
 
     if (!cdm_pref_data) {
       origins_to_delete.push_back(origin);
@@ -222,8 +223,8 @@ std::unique_ptr<CdmPrefData> CdmPrefServiceHelper::GetCdmPrefData(
   // Access to the PrefService must be made from the UI thread.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  const base::Value* dict =
-      user_prefs->GetDictionary(prefs::kMediaCdmOriginData);
+  const base::Value::Dict& dict =
+      user_prefs->GetValueDict(prefs::kMediaCdmOriginData);
 
   DCHECK(!cdm_origin.opaque());
   if (cdm_origin.opaque()) {
@@ -234,8 +235,7 @@ std::unique_ptr<CdmPrefData> CdmPrefServiceHelper::GetCdmPrefData(
   const std::string serialized_cdm_origin = cdm_origin.Serialize();
   DCHECK(!serialized_cdm_origin.empty());
 
-  const base::Value* cdm_data_dict =
-      dict->FindKeyOfType(serialized_cdm_origin, base::Value::Type::DICTIONARY);
+  const base::Value::Dict* cdm_data_dict = dict.FindDict(serialized_cdm_origin);
 
   std::unique_ptr<CdmPrefData> cdm_pref_data;
   if (cdm_data_dict)
@@ -269,10 +269,9 @@ void CdmPrefServiceHelper::SetCdmClientToken(
   DCHECK(!serialized_cdm_origin.empty());
 
   DictionaryPrefUpdate update(user_prefs, prefs::kMediaCdmOriginData);
-  base::Value* dict = update.Get();
+  base::Value::Dict& dict = update->GetDict();
 
-  base::Value* dict_value =
-      dict->FindKeyOfType(serialized_cdm_origin, base::Value::Type::DICTIONARY);
+  base::Value::Dict* dict_value = dict.FindDict(serialized_cdm_origin);
   if (!dict_value) {
     // If there is no preference associated with the origin at this point, this
     // means that the preference data was deleted by the user recently. No need
@@ -285,21 +284,21 @@ void CdmPrefServiceHelper::SetCdmClientToken(
     DVLOG(ERROR) << "The CDM preference data for origin \""
                  << serialized_cdm_origin
                  << "\" could not be parsed. Removing entry from preferences.";
-    dict->RemoveKey(serialized_cdm_origin);
+    dict.Remove(serialized_cdm_origin);
     return;
   }
 
   cdm_pref_data->SetClientToken(client_token, base::Time::Now());
-  dict->SetKey(serialized_cdm_origin, ToDictValue(*cdm_pref_data));
+  dict.Set(serialized_cdm_origin, ToDictValue(*cdm_pref_data));
 }
 
 std::map<std::string, url::Origin> CdmPrefServiceHelper::GetOriginIdMapping(
     PrefService* user_prefs) {
   std::map<std::string, url::Origin> mapping;
-  const base::Value* dict =
-      user_prefs->GetDictionary(prefs::kMediaCdmOriginData);
+  const base::Value::Dict& dict =
+      user_prefs->GetValueDict(prefs::kMediaCdmOriginData);
 
-  for (auto key_value : dict->DictItems()) {
+  for (auto key_value : dict) {
     const base::Value* origin_id_value = key_value.second.FindKey(kOriginId);
     if (!origin_id_value)
       continue;
