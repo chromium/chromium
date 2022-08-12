@@ -1071,6 +1071,9 @@ void UiaGetPropertyValueVtArrayVtUnknownValidate(
 // Returns the RenderWidgetHost that holds the keyboard lock.
 RenderWidgetHost* GetKeyboardLockWidget(WebContents* web_contents);
 
+// Returns the RenderWidgetHost that holds the mouse lock.
+RenderWidgetHost* GetMouseLockWidget(WebContents* web_contents);
+
 // Allows tests to drive keyboard lock functionality without requiring access
 // to the RenderWidgetHostImpl header or setting up an HTTP test server.
 // |codes| represents the set of keys to lock.  If |codes| has no value, then
