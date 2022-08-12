@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_SAFE_BROWSING_TAILORED_SECURITY_TAILORED_SECURITY_SERVICE_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class KeyedService;
 class Profile;
@@ -20,8 +20,7 @@ class TailoredSecurityService;
 
 // Used for creating and fetching a per-profile instance of the
 // TailoredSecurityService.
-class TailoredSecurityServiceFactory
-    : public BrowserContextKeyedServiceFactory {
+class TailoredSecurityServiceFactory : public ProfileKeyedServiceFactory {
  public:
   // Get the singleton instance of the factory.
   static TailoredSecurityServiceFactory* GetInstance();

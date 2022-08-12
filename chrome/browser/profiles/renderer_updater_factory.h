@@ -6,14 +6,14 @@
 #define CHROME_BROWSER_PROFILES_RENDERER_UPDATER_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 class RendererUpdater;
 
 // Singleton that creates/deletes RendererUpdater as new Profiles are
 // created/shutdown.
-class RendererUpdaterFactory : public BrowserContextKeyedServiceFactory {
+class RendererUpdaterFactory : public ProfileKeyedServiceFactory {
  public:
   // Returns an instance of the RendererUpdaterFactory singleton.
   static RendererUpdaterFactory* GetInstance();
@@ -28,8 +28,6 @@ class RendererUpdaterFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
 
  private:

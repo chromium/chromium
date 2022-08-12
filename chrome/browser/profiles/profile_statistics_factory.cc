@@ -7,7 +7,6 @@
 #include "base/memory/singleton.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_statistics.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_thread.h"
 
 // static
@@ -22,9 +21,7 @@ ProfileStatisticsFactory* ProfileStatisticsFactory::GetInstance() {
 }
 
 ProfileStatisticsFactory::ProfileStatisticsFactory()
-    : BrowserContextKeyedServiceFactory("ProfileStatistics",
-        BrowserContextDependencyManager::GetInstance()) {
-}
+    : ProfileKeyedServiceFactory("ProfileStatistics") {}
 
 KeyedService* ProfileStatisticsFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

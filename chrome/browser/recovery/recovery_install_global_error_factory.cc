@@ -9,12 +9,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/recovery/recovery_install_global_error.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 RecoveryInstallGlobalErrorFactory::RecoveryInstallGlobalErrorFactory()
-    : BrowserContextKeyedServiceFactory(
-        "RecoveryInstallGlobalError",
-        BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("RecoveryInstallGlobalError") {
   DependsOn(GlobalErrorServiceFactory::GetInstance());
 }
 

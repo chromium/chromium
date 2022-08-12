@@ -6,15 +6,14 @@
 #define CHROME_BROWSER_PROFILES_PROFILE_THEME_UPDATE_SERVICE_FACTORY_H_
 
 #include "base/no_destructor.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class ProfileThemeUpdateService;
 class Profile;
 
 // Singleton that owns all ProfileThemeUpdateServices and associates them with
 // Profiles.
-class ProfileThemeUpdateServiceFactory
-    : public BrowserContextKeyedServiceFactory {
+class ProfileThemeUpdateServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static ProfileThemeUpdateService* GetForProfile(Profile* profile);
   static ProfileThemeUpdateServiceFactory* GetInstance();

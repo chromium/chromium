@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_SEARCH_PROVIDER_LOGOS_LOGO_SERVICE_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 
@@ -15,7 +15,7 @@ class LogoService;
 }  // namespace search_provider_logos
 
 // Singleton that owns all LogoServices and associates them with Profiles.
-class LogoServiceFactory : public BrowserContextKeyedServiceFactory {
+class LogoServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static search_provider_logos::LogoService* GetForProfile(Profile* profile);
 

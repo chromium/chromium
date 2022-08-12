@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_SAFE_BROWSING_SAFE_BROWSING_NAVIGATION_OBSERVER_MANAGER_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class KeyedService;
 class Profile;
@@ -24,7 +24,7 @@ class SafeBrowsingNavigationObserverManager;
 // associated service. It returns a separate instance if the profile is in the
 // Incognito mode.
 class SafeBrowsingNavigationObserverManagerFactory
-    : public BrowserContextKeyedServiceFactory {
+    : public ProfileKeyedServiceFactory {
  public:
   // Creates the service if it doesn't exist already for the given
   // |browser_context|. If the service already exists, return its pointer.
@@ -43,8 +43,6 @@ class SafeBrowsingNavigationObserverManagerFactory
 
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
 };
 

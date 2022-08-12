@@ -6,12 +6,12 @@
 #define CHROME_BROWSER_SEARCH_BACKGROUND_NTP_BACKGROUND_SERVICE_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class NtpBackgroundService;
 class Profile;
 
-class NtpBackgroundServiceFactory : public BrowserContextKeyedServiceFactory {
+class NtpBackgroundServiceFactory : public ProfileKeyedServiceFactory {
  public:
   // Returns the NtpBackgroundService for |profile|.
   static NtpBackgroundService* GetForProfile(Profile* profile);

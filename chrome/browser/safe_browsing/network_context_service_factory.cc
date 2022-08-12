@@ -4,10 +4,8 @@
 
 #include "chrome/browser/safe_browsing/network_context_service_factory.h"
 
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/network_context_service.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace safe_browsing {
 
@@ -24,9 +22,9 @@ NetworkContextService* NetworkContextServiceFactory::GetForBrowserContext(
 }
 
 NetworkContextServiceFactory::NetworkContextServiceFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "SafeBrowsingNetworkContextService",
-          BrowserContextDependencyManager::GetInstance()) {}
+          ProfileSelections::BuildRedirectedInIncognito()) {}
 
 NetworkContextServiceFactory::~NetworkContextServiceFactory() = default;
 
@@ -34,11 +32,6 @@ KeyedService* NetworkContextServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   return new NetworkContextService(profile);
-}
-
-content::BrowserContext* NetworkContextServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
 }
 
 }  // namespace safe_browsing

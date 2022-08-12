@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_RECOVERY_RECOVERY_INSTALL_GLOBAL_ERROR_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 class RecoveryInstallGlobalError;
@@ -14,8 +14,7 @@ class RecoveryInstallGlobalError;
 // Singleton that owns all RecoveryInstallGlobalError and associates them with
 // Profiles. Listens for the Profile's destruction notification and cleans up
 // the associated RecoveryInstallGlobalError.
-class RecoveryInstallGlobalErrorFactory
-    : public BrowserContextKeyedServiceFactory {
+class RecoveryInstallGlobalErrorFactory : public ProfileKeyedServiceFactory {
  public:
   // Returns the instance of RecoveryInstallGlobalError associated with this
   // profile, creating one if none exists.

@@ -7,13 +7,11 @@
 #include "base/command_line.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_user_population_helper.h"
 #include "chrome/browser/safe_browsing/chrome_v4_protocol_config_provider.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/browser/ping_manager.h"
 #include "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"
@@ -37,9 +35,7 @@ PingManager* ChromePingManagerFactory::GetForBrowserContext(
 }
 
 ChromePingManagerFactory::ChromePingManagerFactory()
-    : BrowserContextKeyedServiceFactory(
-          "ChromeSafeBrowsingPingManager",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("ChromeSafeBrowsingPingManager") {
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 

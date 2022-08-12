@@ -5,11 +5,9 @@
 #include "chrome/browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service_factory.h"
 
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/browser_context.h"
 
@@ -30,21 +28,15 @@ CloudBinaryUploadServiceFactory::GetInstance() {
 }
 
 CloudBinaryUploadServiceFactory::CloudBinaryUploadServiceFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "CloudBinaryUploadService",
-          BrowserContextDependencyManager::GetInstance()) {}
+          ProfileSelections::BuildForRegularAndIncognito()) {}
 
 KeyedService* CloudBinaryUploadServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   // TODO(b/226679912): Add logic to select service based on analysis settings.
   Profile* profile = Profile::FromBrowserContext(context);
   return new CloudBinaryUploadService(profile);
-}
-
-content::BrowserContext*
-CloudBinaryUploadServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
 }
 
 }  // namespace safe_browsing

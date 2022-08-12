@@ -9,7 +9,6 @@
 #include "chrome/browser/profile_resetter/triggered_profile_resetter.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "content/public/browser/browser_context.h"
 
@@ -27,9 +26,7 @@ TriggeredProfileResetterFactory::GetInstance() {
 }
 
 TriggeredProfileResetterFactory::TriggeredProfileResetterFactory()
-    : BrowserContextKeyedServiceFactory(
-          "TriggeredProfileResetter",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("TriggeredProfileResetter") {}
 
 TriggeredProfileResetterFactory::~TriggeredProfileResetterFactory() {}
 

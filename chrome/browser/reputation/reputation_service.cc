@@ -14,12 +14,10 @@
 #include "chrome/browser/lookalikes/lookalike_url_blocking_page.h"
 #include "chrome/browser/lookalikes/lookalike_url_navigation_throttle.h"
 #include "chrome/browser/lookalikes/lookalike_url_service.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/reputation/local_heuristics.h"
 #include "chrome/browser/safe_browsing/user_interaction_observer.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/lookalikes/core/lookalike_url_util.h"
 #include "components/reputation/core/safety_tips_config.h"
 #include "components/security_state/core/security_state.h"
@@ -34,7 +32,7 @@ using security_state::SafetyTipStatus;
 
 // This factory helps construct and find the singleton ReputationService linked
 // to a Profile.
-class ReputationServiceFactory : public BrowserContextKeyedServiceFactory {
+class ReputationServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static ReputationService* GetForProfile(Profile* profile) {
     return static_cast<ReputationService*>(
@@ -52,9 +50,9 @@ class ReputationServiceFactory : public BrowserContextKeyedServiceFactory {
   friend struct base::DefaultSingletonTraits<ReputationServiceFactory>;
 
   ReputationServiceFactory()
-      : BrowserContextKeyedServiceFactory(
+      : ProfileKeyedServiceFactory(
             "ReputationServiceFactory",
-            BrowserContextDependencyManager::GetInstance()) {}
+            ProfileSelections::BuildForRegularAndIncognito()) {}
 
   ~ReputationServiceFactory() override = default;
 
@@ -62,11 +60,6 @@ class ReputationServiceFactory : public BrowserContextKeyedServiceFactory {
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override {
     return new ReputationService(static_cast<Profile*>(profile));
-  }
-
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override {
-    return chrome::GetBrowserContextOwnInstanceInIncognito(context);
   }
 };
 

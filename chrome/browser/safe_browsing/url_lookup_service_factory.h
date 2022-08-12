@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_SAFE_BROWSING_URL_LOOKUP_SERVICE_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class KeyedService;
 class Profile;
@@ -22,8 +22,7 @@ class RealTimeUrlLookupService;
 // Singleton that owns RealTimeUrlLookupService objects, one for each active
 // Profile. It listens to profile destroy events and destroy its associated
 // service. It returns nullptr if the profile is in the Incognito mode.
-class RealTimeUrlLookupServiceFactory
-    : public BrowserContextKeyedServiceFactory {
+class RealTimeUrlLookupServiceFactory : public ProfileKeyedServiceFactory {
  public:
   // Creates the service if it doesn't exist already for the given |profile|.
   // If the service already exists, return its pointer.

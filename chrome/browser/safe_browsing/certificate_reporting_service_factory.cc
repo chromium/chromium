@@ -11,7 +11,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/certificate_reporting_service.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -76,9 +75,9 @@ void CertificateReportingServiceFactory::SetURLLoaderFactoryForTesting(
 }
 
 CertificateReportingServiceFactory::CertificateReportingServiceFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "cert_reporting::Factory",
-          BrowserContextDependencyManager::GetInstance()),
+          ProfileSelections::BuildForRegularAndIncognito()),
       server_public_key_(nullptr),
       server_public_key_version_(0),
       clock_(base::DefaultClock::GetInstance()),
@@ -107,10 +106,4 @@ KeyedService* CertificateReportingServiceFactory::BuildServiceInstanceFor(
       safe_browsing_service, url_loader_factory, static_cast<Profile*>(profile),
       server_public_key_, server_public_key_version_, max_queued_report_count_,
       queued_report_ttl_, clock_, service_reset_callback_);
-}
-
-content::BrowserContext*
-CertificateReportingServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return context;
 }

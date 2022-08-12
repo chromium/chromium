@@ -11,7 +11,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/search_provider_logos/logo_service.h"
 #include "components/search_provider_logos/logo_service_impl.h"
 #include "content/public/browser/storage_partition.h"
@@ -43,9 +42,7 @@ LogoServiceFactory* LogoServiceFactory::GetInstance() {
 }
 
 LogoServiceFactory::LogoServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "LogoService",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("LogoService") {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(TemplateURLServiceFactory::GetInstance());
 }

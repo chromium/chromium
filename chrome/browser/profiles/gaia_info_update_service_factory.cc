@@ -11,13 +11,10 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/pref_names.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 
 GAIAInfoUpdateServiceFactory::GAIAInfoUpdateServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-        "GAIAInfoUpdateService",
-        BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("GAIAInfoUpdateService") {
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 

@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_SAFE_BROWSING_ADVANCED_PROTECTION_STATUS_MANAGER_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 
@@ -17,7 +17,7 @@ class AdvancedProtectionStatusManager;
 // Responsible for keeping track of advanced protection status of the sign-in
 // profile.
 class AdvancedProtectionStatusManagerFactory
-    : public BrowserContextKeyedServiceFactory {
+    : public ProfileKeyedServiceFactory {
  public:
   static AdvancedProtectionStatusManager* GetForProfile(Profile* profile);
 
@@ -39,8 +39,6 @@ class AdvancedProtectionStatusManagerFactory
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
 };
 
 }  // namespace safe_browsing

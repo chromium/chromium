@@ -32,9 +32,7 @@ ClientSideDetectionServiceFactory::GetInstance() {
 }
 
 ClientSideDetectionServiceFactory::ClientSideDetectionServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "ClientSideDetectionService",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("ClientSideDetectionService") {}
 
 KeyedService* ClientSideDetectionServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

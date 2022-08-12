@@ -7,7 +7,7 @@
 
 #include "base/memory/singleton.h"
 #include "build/build_config.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #error "Instant is only used on desktop";
@@ -17,7 +17,7 @@ class InstantService;
 class Profile;
 
 // Singleton that owns all InstantServices and associates them with Profiles.
-class InstantServiceFactory : public BrowserContextKeyedServiceFactory {
+class InstantServiceFactory : public ProfileKeyedServiceFactory {
  public:
   // Returns the InstantService for |profile|.
   static InstantService* GetForProfile(Profile* profile);
@@ -34,8 +34,6 @@ class InstantServiceFactory : public BrowserContextKeyedServiceFactory {
   ~InstantServiceFactory() override;
 
   // Overridden from BrowserContextKeyedServiceFactory:
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
 };

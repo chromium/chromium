@@ -6,7 +6,6 @@
 
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #include "content/public/browser/browser_context.h"
 
@@ -26,9 +25,7 @@ SafeBrowsingMetricsCollectorFactory::GetInstance() {
 }
 
 SafeBrowsingMetricsCollectorFactory::SafeBrowsingMetricsCollectorFactory()
-    : BrowserContextKeyedServiceFactory(
-          "SafeBrowsingMetricsCollector",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("SafeBrowsingMetricsCollector") {}
 
 KeyedService* SafeBrowsingMetricsCollectorFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

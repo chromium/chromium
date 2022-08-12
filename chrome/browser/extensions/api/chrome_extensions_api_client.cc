@@ -169,7 +169,9 @@ bool ChromeExtensionsAPIClient::ShouldHideBrowserNetworkRequest(
 
   // Hide requests made by the NTP Instant renderer.
   auto* instant_service =
-      InstantServiceFactory::GetForProfile(static_cast<Profile*>(context));
+      context
+          ? InstantServiceFactory::GetForProfile(static_cast<Profile*>(context))
+          : nullptr;
   if (instant_service) {
     is_sensitive_request |=
         instant_service->IsInstantProcess(request.render_process_id);

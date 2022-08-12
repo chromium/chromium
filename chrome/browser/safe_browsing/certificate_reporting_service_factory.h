@@ -8,7 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/time/time.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace base {
@@ -21,8 +21,7 @@ class BrowserContext;
 
 class CertificateReportingService;
 
-class CertificateReportingServiceFactory
-    : public BrowserContextKeyedServiceFactory {
+class CertificateReportingServiceFactory : public ProfileKeyedServiceFactory {
  public:
   // Returns singleton instance of CertificateReportingServiceFactory.
   static CertificateReportingServiceFactory* GetInstance();
@@ -56,8 +55,6 @@ class CertificateReportingServiceFactory
 
   // BrowserContextKeyedServiceFactory overrides:
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
 
   // Encryption parameters for certificate reports.

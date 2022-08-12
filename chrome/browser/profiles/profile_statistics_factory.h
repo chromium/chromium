@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_PROFILES_PROFILE_STATISTICS_FACTORY_H_
 #define CHROME_BROWSER_PROFILES_PROFILE_STATISTICS_FACTORY_H_
 
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace base {
 template <typename T> struct DefaultSingletonTraits;
@@ -15,7 +15,7 @@ class Profile;
 class ProfileStatistics;
 
 // Singleton that owns all ProfileStatistics and associates them with Profiles.
-class ProfileStatisticsFactory : public BrowserContextKeyedServiceFactory {
+class ProfileStatisticsFactory : public ProfileKeyedServiceFactory {
  public:
   ProfileStatisticsFactory(const ProfileStatisticsFactory&) = delete;
   ProfileStatisticsFactory& operator=(const ProfileStatisticsFactory&) = delete;

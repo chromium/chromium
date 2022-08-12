@@ -8,14 +8,14 @@
 #include <memory>
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 class TemplateURLService;
 
 // Singleton that owns all TemplateURLService and associates them with
 // Profiles.
-class TemplateURLServiceFactory : public BrowserContextKeyedServiceFactory {
+class TemplateURLServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static TemplateURLService* GetForProfile(Profile* profile);
 
@@ -35,8 +35,6 @@ class TemplateURLServiceFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* profile) const override;
   void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
 };
 

@@ -15,7 +15,6 @@
 #include "chrome/browser/security_events/security_event_sync_bridge_impl.h"
 #include "chrome/browser/sync/model_type_store_service_factory.h"
 #include "chrome/common/channel_info.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/model_type_store_service.h"
@@ -33,9 +32,7 @@ SecurityEventRecorder* SecurityEventRecorderFactory::GetForProfile(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }
 SecurityEventRecorderFactory::SecurityEventRecorderFactory()
-    : BrowserContextKeyedServiceFactory(
-          "SecurityEventRecorder",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("SecurityEventRecorder") {
   DependsOn(ModelTypeStoreServiceFactory::GetInstance());
 }
 

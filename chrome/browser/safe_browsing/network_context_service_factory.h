@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_SAFE_BROWSING_NETWORK_CONTEXT_SERVICE_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace content {
 class BrowserContext;
@@ -20,7 +20,7 @@ class NetworkContextService;
 // profiles will return the same NetworkContextService as the original profile.
 // Features using this network context are expected to behave correctly while
 // incognito.
-class NetworkContextServiceFactory : public BrowserContextKeyedServiceFactory {
+class NetworkContextServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static NetworkContextServiceFactory* GetInstance();
   static NetworkContextService* GetForBrowserContext(
@@ -34,8 +34,6 @@ class NetworkContextServiceFactory : public BrowserContextKeyedServiceFactory {
 
   // BrowserContextKeyedServiceFactory overrides:
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
 };
 

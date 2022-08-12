@@ -6,14 +6,14 @@
 #define CHROME_BROWSER_SEARCH_ENGINES_TEMPLATE_URL_FETCHER_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 class TemplateURLFetcher;
 
 // Singleton that owns all TemplateURLFetcher and associates them with
 // Profiles.
-class TemplateURLFetcherFactory : public BrowserContextKeyedServiceFactory {
+class TemplateURLFetcherFactory : public ProfileKeyedServiceFactory {
  public:
   static TemplateURLFetcher* GetForProfile(Profile* profile);
 
@@ -37,8 +37,6 @@ class TemplateURLFetcherFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
 };
 
 #endif  // CHROME_BROWSER_SEARCH_ENGINES_TEMPLATE_URL_FETCHER_FACTORY_H_

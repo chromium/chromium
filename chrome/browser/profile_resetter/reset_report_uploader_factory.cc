@@ -6,7 +6,6 @@
 
 #include "base/memory/singleton.h"
 #include "chrome/browser/profile_resetter/reset_report_uploader.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 
@@ -23,9 +22,7 @@ ResetReportUploader* ResetReportUploaderFactory::GetForBrowserContext(
 }
 
 ResetReportUploaderFactory::ResetReportUploaderFactory()
-    : BrowserContextKeyedServiceFactory(
-          "ResetReportUploaderFactory",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("ResetReportUploaderFactory") {}
 
 ResetReportUploaderFactory::~ResetReportUploaderFactory() {}
 

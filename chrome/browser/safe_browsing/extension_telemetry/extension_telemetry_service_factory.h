@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_SAFE_BROWSING_EXTENSION_TELEMETRY_EXTENSION_TELEMETRY_SERVICE_FACTORY_H_
 
 #include "base/no_destructor.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class KeyedService;
 class Profile;
@@ -21,8 +21,7 @@ class ExtensionTelemetryService;
 
 // Singleton that produces ExtensionTelemetryService objects, one for each
 // active Profile.
-class ExtensionTelemetryServiceFactory
-    : public BrowserContextKeyedServiceFactory {
+class ExtensionTelemetryServiceFactory : public ProfileKeyedServiceFactory {
  public:
   // Creates the service if it doesn't exist already for the given |profile|.
   // If the service already exists, return its pointer.

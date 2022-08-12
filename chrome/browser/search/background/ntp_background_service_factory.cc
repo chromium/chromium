@@ -11,7 +11,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_background_service.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/search/ntp_features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -30,9 +29,7 @@ NtpBackgroundServiceFactory* NtpBackgroundServiceFactory::GetInstance() {
 }
 
 NtpBackgroundServiceFactory::NtpBackgroundServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "NtpBackgroundService",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("NtpBackgroundService") {}
 
 NtpBackgroundServiceFactory::~NtpBackgroundServiceFactory() = default;
 

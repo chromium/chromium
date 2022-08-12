@@ -4,11 +4,9 @@
 
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
 
 namespace safe_browsing {
@@ -27,9 +25,9 @@ AdvancedProtectionStatusManagerFactory::GetInstance() {
 }
 
 AdvancedProtectionStatusManagerFactory::AdvancedProtectionStatusManagerFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "AdvancedProtectionStatusManager",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::BuildRedirectedInIncognito()) {
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 
@@ -46,12 +44,6 @@ KeyedService* AdvancedProtectionStatusManagerFactory::BuildServiceInstanceFor(
 bool AdvancedProtectionStatusManagerFactory::
     ServiceIsCreatedWithBrowserContext() const {
   return true;
-}
-
-content::BrowserContext*
-AdvancedProtectionStatusManagerFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
 }
 
 }  // namespace safe_browsing
