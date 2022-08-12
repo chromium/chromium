@@ -772,6 +772,24 @@ ci.builder(
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
 )
 
+# TODO(crbug.com/1320004): Remove this builder after experimentation.
+ci.builder(
+    name = "linux-rel-no-external-ip",
+    builderless = False,
+    console_view_entry = consoles.console_view_entry(
+        category = "linux",
+    ),
+    os = os.LINUX_DEFAULT,
+    builder_spec = builder_config.copy_from(
+        "ci/Linux Builder",
+    ),
+    # Limited test pool is likely to cause long build times.
+    execution_timeout = 24 * time.hour,
+    goma_backend = None,
+    reclient_jobs = reclient.jobs.DEFAULT,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+)
+
 ci.builder(
     name = "mac-backuprefptr-x64-fyi-rel",
     builderless = True,
@@ -809,6 +827,24 @@ ci.builder(
     os = os.WINDOWS_ANY,
     goma_backend = None,
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+)
+
+# TODO(crbug.com/1320004): Remove this builder after experimentation.
+ci.builder(
+    name = "win10-rel-no-external-ip",
+    builderless = False,
+    console_view_entry = consoles.console_view_entry(
+        category = "win",
+    ),
+    os = os.WINDOWS_ANY,
+    builder_spec = builder_config.copy_from(
+        "ci/Win x64 Builder",
+    ),
+    # Limited test pool is likely to cause long build times.
+    execution_timeout = 24 * time.hour,
+    goma_backend = None,
+    reclient_jobs = reclient.jobs.DEFAULT,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
 )
 

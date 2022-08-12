@@ -1361,6 +1361,17 @@
       "use_remoteexec": true
     }
   },
+  "linux-rel-no-external-ip": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "devtools_skip_typecheck": false,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "use_remoteexec": true
+    }
+  },
   "linux-upload-perfetto": {
     "gn_args": {
       "dcheck_always_on": false,
@@ -1529,6 +1540,17 @@
       "is_debug": false,
       "symbol_level": 0,
       "use_clang_coverage": true,
+      "use_remoteexec": true
+    }
+  },
+  "win10-rel-no-external-ip": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
       "use_remoteexec": true
     }
   },

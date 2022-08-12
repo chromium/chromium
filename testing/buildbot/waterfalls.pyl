@@ -3686,6 +3686,24 @@
           'gtest_tests': 'perfetto_gtests',
         },
       },
+      'linux-rel-no-external-ip': {
+        'mixins': [
+          'isolate_profile_data',
+          'linux-bionic',
+        ],
+        'swarming': {
+          'dimension_sets': [
+            {
+              'pool': 'chromium.tests.no-external-ip',
+            }
+          ],
+          'expiration': 43200,
+        },
+        'test_suites': {
+          'gtest_tests': 'chromium_linux_gtests',
+          'isolated_scripts': 'chromium_linux_rel_isolated_scripts',
+        },
+      },
       'linux-upload-perfetto': {
         'additional_compile_targets': [ 'trace_processor_shell' ],
         'test_suites': {
@@ -3894,6 +3912,25 @@
         ],
         'test_suites': {
           'gtest_tests': 'chromium_win_gtests',
+        },
+      },
+      'win10-rel-no-external-ip': {
+        'mixins': [
+          'x86-64',
+          'win10',
+          'isolate_profile_data',
+        ],
+        'swarming': {
+          'dimension_sets': [
+            {
+              'pool': 'chromium.tests.no-external-ip',
+            }
+          ],
+          'expiration': 43200,
+        },
+        'test_suites': {
+          'gtest_tests': 'chromium_win10_gtests',
+          'isolated_scripts': 'chromium_win_rel_isolated_scripts',
         },
       },
       'win10.20h2-blink-rel': {
