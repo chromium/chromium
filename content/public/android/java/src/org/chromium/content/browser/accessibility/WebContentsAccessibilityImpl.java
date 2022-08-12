@@ -139,6 +139,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     // Constants defined for AccessibilityNodeInfo Bundle extras keys.
     public static final String EXTRAS_KEY_CHROME_ROLE = "AccessibilityNodeInfo.chromeRole";
     public static final String EXTRAS_KEY_CLICKABLE_SCORE = "AccessibilityNodeInfo.clickableScore";
+    public static final String EXTRAS_KEY_CSS_DISPLAY = "AccessibilityNodeInfo.blockDisplay";
     public static final String EXTRAS_KEY_HAS_IMAGE = "AccessibilityNodeInfo.hasImage";
     public static final String EXTRAS_KEY_HINT = "AccessibilityNodeInfo.hint";
     public static final String EXTRAS_KEY_IMAGE_DATA = "AccessibilityNodeInfo.imageData";
@@ -1910,13 +1911,16 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     private void setAccessibilityNodeInfoBaseAttributes(AccessibilityNodeInfoCompat node,
             boolean isRoot, String className, String role, String roleDescription, String hint,
             String targetUrl, boolean canOpenPopup, boolean multiLine, int inputType,
-            int liveRegion, String errorMessage, int clickableScore) {
+            int liveRegion, String errorMessage, int clickableScore, String display) {
         node.setClassName(className);
 
         Bundle bundle = node.getExtras();
         bundle.putCharSequence(EXTRAS_KEY_CHROME_ROLE, role);
         bundle.putCharSequence(EXTRAS_KEY_ROLE_DESCRIPTION, roleDescription);
         bundle.putCharSequence(EXTRAS_KEY_HINT, hint);
+        if (!display.isEmpty()) {
+            bundle.putCharSequence(EXTRAS_KEY_CSS_DISPLAY, display);
+        }
         if (!targetUrl.isEmpty()) {
             bundle.putCharSequence(EXTRAS_KEY_TARGET_URL, targetUrl);
         }

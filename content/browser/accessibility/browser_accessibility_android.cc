@@ -1188,6 +1188,17 @@ std::u16string BrowserAccessibilityAndroid::GetRoleDescription() const {
   return std::u16string();
 }
 
+std::string BrowserAccessibilityAndroid::GetCSSDisplay() const {
+  std::string display =
+      node_->GetStringAttribute(ax::mojom::StringAttribute::kDisplay);
+
+  // Since this method is used to determine whether a text node is inline or
+  // block, we can filter out other values like list-item or table-cell
+  if (display == "inline" || display == "block" || display == "inline-block")
+    return display;
+  return std::string();
+}
+
 int BrowserAccessibilityAndroid::GetItemIndex() const {
   int index = 0;
   if (IsRangeControlWithoutAriaValueText()) {

@@ -139,6 +139,8 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
 
   std::u16string GetRoleDescription() const;
 
+  std::string GetCSSDisplay() const;
+
   int GetItemIndex() const;
   int GetItemCount() const;
   int GetSelectedItemCount() const;

@@ -35,6 +35,7 @@ import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.Acces
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SET_TEXT;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SHOW_ON_SCREEN;
 
+import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.EXTRAS_KEY_CSS_DISPLAY;
 import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.EXTRAS_KEY_OFFSCREEN;
 import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.EXTRAS_KEY_SUPPORTED_ELEMENTS;
 import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.EXTRAS_KEY_UNCLIPPED_BOTTOM;
@@ -341,6 +342,12 @@ public class AccessibilityNodeInfoUtils {
             // The AccessibilityNodeInfoCompat class uses the extras for backwards compatibility,
             // so exclude anything that contains the classname in the key.
             if (key.contains("AccessibilityNodeInfoCompat")) {
+                continue;
+            }
+
+            // Exclude css display for now
+            // TODO: remove this exclusion and update tests
+            if (key.equals(EXTRAS_KEY_CSS_DISPLAY)) {
                 continue;
             }
 
