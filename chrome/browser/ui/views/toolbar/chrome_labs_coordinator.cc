@@ -42,10 +42,6 @@ bool ChromeLabsCoordinator::BubbleExists() {
 
 void ChromeLabsCoordinator::Show(ShowUserType user_type) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (anchor_view_->GetAshOwnerCheckTimer()) {
-    UmaHistogramMediumTimes("Toolbar.ChromeLabs.AshOwnerCheckTime",
-                            anchor_view_->GetAshOwnerCheckTimer()->Elapsed());
-  }
 
   // Bypass possible incognito profile same as chrome://flags does.
   Profile* original_profile = browser_->profile()->GetOriginalProfile();

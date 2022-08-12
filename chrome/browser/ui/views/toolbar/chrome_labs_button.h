@@ -13,10 +13,6 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/dot_indicator.h"
 
-namespace base {
-class ElapsedTimer;
-}
-
 class BrowserView;
 class Profile;
 
@@ -38,9 +34,6 @@ class ChromeLabsButton : public ToolbarButton {
                                Profile* profile);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  base::ElapsedTimer* GetAshOwnerCheckTimer() {
-    return ash_owner_check_timer_.get();
-  }
 
   void SetShouldCircumventDeviceCheckForTesting(bool should_circumvent) {
     should_circumvent_device_check_for_testing_ = should_circumvent;
@@ -59,13 +52,6 @@ class ChromeLabsButton : public ToolbarButton {
   void ButtonPressed();
 
   void UpdateDotIndicator();
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Measures elapsed between when IsOwnerAsync is called and the callback
-  // passed into IsOwnerAsnc is called. The callback will be called after
-  // ownership is established.
-  std::unique_ptr<base::ElapsedTimer> ash_owner_check_timer_;
-#endif
 
   raw_ptr<BrowserView> browser_view_;
 

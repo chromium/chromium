@@ -6,7 +6,6 @@
 
 #include "base/command_line.h"
 #include "base/ranges/algorithm.h"
-#include "base/timer/elapsed_timer.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -89,8 +88,6 @@ void ChromeLabsButton::ButtonPressed() {
   // Asynchronously check if the user is the owner and show the Chrome Labs
   // bubble only after we have this information.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Reset timer.
-  ash_owner_check_timer_ = nullptr;
   // Bypass possible incognito profile same as chrome://flags does.
   Profile* original_profile =
       browser_view_->browser()->profile()->GetOriginalProfile();
@@ -101,7 +98,6 @@ void ChromeLabsButton::ButtonPressed() {
     ash::OwnerSettingsServiceAsh* service =
         ash::OwnerSettingsServiceAshFactory::GetForBrowserContext(
             original_profile);
-    ash_owner_check_timer_ = std::make_unique<base::ElapsedTimer>();
     is_waiting_to_show = true;
     service->IsOwnerAsync(base::BindOnce(
         [](ChromeLabsButton* button, base::WeakPtr<BrowserView> browser_view,

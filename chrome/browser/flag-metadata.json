@@ -880,7 +880,7 @@
   {
     "name": "chrome-labs",
     "owners": ["elainechien", "robliao"],
-    "expiry_milestone": 107
+    "expiry_milestone": 112
   },
   {
     "name": "chrome-share-long-screenshot",
