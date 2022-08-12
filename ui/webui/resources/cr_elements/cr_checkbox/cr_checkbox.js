@@ -26,68 +26,89 @@ import '//resources/polymer/v3_0/paper-styles/color.js';
 import '../shared_vars_css.m.js';
 
 import {PaperRippleBehavior} from '//resources/polymer/v3_0/paper-behaviors/paper-ripple-behavior.js';
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-Polymer({
-  is: 'cr-checkbox',
+class PaperRippleBehaviorInterface {
+  /** @return {!PaperRippleElement} */
+  getRipple() {}
+}
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {PaperRippleBehaviorInterface}
+ */
+const CrCheckboxElementBase =
+    mixinBehaviors([PaperRippleBehavior], PolymerElement);
 
-  behaviors: [
-    PaperRippleBehavior,
-  ],
+/** @polymer */
+export class CrCheckboxElement extends CrCheckboxElementBase {
+  static get is() {
+    return 'cr-checkbox';
+  }
 
-  properties: {
-    checked: {
-      type: Boolean,
-      value: false,
-      reflectToAttribute: true,
-      observer: 'checkedChanged_',
-      notify: true,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    disabled: {
-      type: Boolean,
-      value: false,
-      reflectToAttribute: true,
-      observer: 'disabledChanged_',
-    },
+  static get properties() {
+    return {
+      checked: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+        observer: 'checkedChanged_',
+        notify: true,
+      },
 
-    ariaDescription: String,
+      disabled: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+        observer: 'disabledChanged_',
+      },
 
-    tabIndex: {
-      type: Number,
-      value: 0,
-      observer: 'onTabIndexChanged_',
-    },
-  },
+      ariaDescription: String,
 
-  listeners: {
-    blur: 'hideRipple_',
-    click: 'onClick_',
-    focus: 'showRipple_',
-    up: 'hideRipple_',
-  },
+      tabIndex: {
+        type: Number,
+        value: 0,
+        observer: 'onTabIndexChanged_',
+      },
+    };
+  }
+
+  constructor() {
+    super();
+
+    /** @type {!Element} */
+    this._rippleContainer;
+  }
 
   /** @override */
   ready() {
+    super.ready();
     this.removeAttribute('unresolved');
-  },
+    this.addEventListener('blur', this.hideRipple_.bind(this));
+    this.addEventListener('click', this.onClick_.bind(this));
+    this.addEventListener('focus', this.showRipple_.bind(this));
+    this.addEventListener('up', this.hideRipple_.bind(this));
+  }
 
   focus() {
     this.$.checkbox.focus();
-  },
+  }
 
   /** @return {!Element} */
   getFocusableElement() {
     return this.$.checkbox;
-  },
+  }
 
   /** @private */
   checkedChanged_() {
     this.$.checkbox.setAttribute(
         'aria-checked', this.checked ? 'true' : 'false');
-  },
+  }
 
   /**
    * @param {boolean} current
@@ -102,17 +123,17 @@ Polymer({
     this.tabIndex = this.disabled ? -1 : 0;
     this.$.checkbox.setAttribute(
         'aria-disabled', this.disabled ? 'true' : 'false');
-  },
+  }
 
   /** @private */
   showRipple_() {
     this.getRipple().showAndHoldDown();
-  },
+  }
 
   /** @private */
   hideRipple_() {
     this.getRipple().clear();
-  },
+  }
 
   /**
    * @param {!Event} e
@@ -129,8 +150,9 @@ Polymer({
     e.preventDefault();
 
     this.checked = !this.checked;
-    this.fire('change', this.checked);
-  },
+    this.dispatchEvent(new CustomEvent(
+        'change', {bubbles: true, composed: true, detail: this.checked}));
+  }
 
   /**
    * @param {!KeyboardEvent} e
@@ -150,7 +172,7 @@ Polymer({
     if (e.key === 'Enter') {
       this.click();
     }
-  },
+  }
 
   /**
    * @param {!KeyboardEvent} e
@@ -165,13 +187,13 @@ Polymer({
     if (e.key === ' ') {
       this.click();
     }
-  },
+  }
 
   /** @private */
   onTabIndexChanged_() {
     // :host shouldn't have a tabindex because it's set on #checkbox.
     this.removeAttribute('tabindex');
-  },
+  }
 
   // customize the element's ripple
   _createRipple() {
@@ -181,5 +203,7 @@ Polymer({
     ripple.setAttribute('recenters', '');
     ripple.classList.add('circle', 'toggle-ink');
     return ripple;
-  },
-});
+  }
+}
+
+customElements.define(CrCheckboxElement.is, CrCheckboxElement);

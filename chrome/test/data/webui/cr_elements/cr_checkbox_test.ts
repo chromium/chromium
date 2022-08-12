@@ -26,7 +26,8 @@ suite('cr-checkbox', function() {
     `;
 
     checkbox = document.querySelector('cr-checkbox')!;
-    innerCheckbox = checkbox.$$('#checkbox') as HTMLElement;
+    innerCheckbox =
+        checkbox.shadowRoot!.querySelector('#checkbox')! as HTMLElement;
     assertNotChecked();
   });
 
@@ -177,7 +178,8 @@ suite('cr-checkbox', function() {
     `;
 
     checkbox = document.querySelector('cr-checkbox')!;
-    innerCheckbox = checkbox.$$('#checkbox') as HTMLElement;
+    innerCheckbox =
+        checkbox.shadowRoot!.querySelector('#checkbox')! as HTMLElement;
 
     // Should not override tabindex if it is initialized.
     assertEquals(-1, checkbox.tabIndex);
@@ -191,7 +193,8 @@ suite('cr-checkbox', function() {
     `;
 
     checkbox = document.querySelector('cr-checkbox')!;
-    innerCheckbox = checkbox.$$('#checkbox') as HTMLElement;
+    innerCheckbox =
+        checkbox.shadowRoot!.querySelector('#checkbox')! as HTMLElement;
 
     // Initializing with disabled should make tabindex="-1".
     assertEquals(-1, checkbox.tabIndex);

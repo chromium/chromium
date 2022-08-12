@@ -73,7 +73,7 @@ export class UrlGeneratorElement extends PolymerElement {
         });
   }
 
-  private onDataCollectorItemClicked_() {
+  private onDataCollectorItemChange_() {
     // The button should be disabled if no data collector is selected.
     this.buttonDisabled_ = !this.hasDataCollectorSelected();
   }

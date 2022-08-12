@@ -38,8 +38,8 @@
 </div>
 <div class="data-collector-list" aria-labelledby="data-sources-title">
   <template is="dom-repeat" items="[[dataCollectors_]]">
-    <cr-checkbox class="data-collector-checkbox" checked="{{item.isIncluded}}" 
-        on-click="onDataCollectorItemClicked_" tabindex="0">
+    <cr-checkbox class="data-collector-checkbox" checked="{{item.isIncluded}}"
+        on-change="onDataCollectorItemChange_" tabindex="0">
       [[item.name]]
     </cr-checkbox>
   </template>
