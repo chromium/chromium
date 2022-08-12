@@ -24,10 +24,10 @@ class StorageAccessGrantPermissionContext
   ~StorageAccessGrantPermissionContext() override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(StorageAccessGrantPermissionContextTest,
-                           PermissionBlockedWhenFeatureDisabled);
+  FRIEND_TEST_ALL_PREFIXES(StorageAccessGrantPermissionContextAPIDisabledTest,
+                           PermissionBlocked);
   FRIEND_TEST_ALL_PREFIXES(StorageAccessGrantPermissionContextAPIEnabledTest,
-                           PermissionDecidedWhenFeatureEnabled);
+                           PermissionDecided);
   FRIEND_TEST_ALL_PREFIXES(StorageAccessGrantPermissionContextAPIEnabledTest,
                            PermissionDeniedWithoutUserGesture);
   FRIEND_TEST_ALL_PREFIXES(StorageAccessGrantPermissionContextAPIEnabledTest,
