@@ -29,7 +29,7 @@ void HttpServerPropertiesPrefDelegate::RegisterPrefs(
 
 const base::Value* HttpServerPropertiesPrefDelegate::GetServerProperties()
     const {
-  return pref_service_->Get(kPrefPath);
+  return &pref_service_->GetValue(kPrefPath);
 }
 
 void HttpServerPropertiesPrefDelegate::SetServerProperties(
