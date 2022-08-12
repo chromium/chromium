@@ -4126,6 +4126,19 @@ TEST_F(CaptureModeTest, ReverseTabbingTest) {
   }
 }
 
+// A regression test for a UAF issue reported at https://crbug.com/1350743, in
+// which if a the native widget of the settings menu gets deleted without
+// calling `Close()` or `CloseNow()` on the widget, we get a UAF. This can
+// happen when all the windows in the window tree hierarchy gets deleted e.g.
+// when shutting down.
+TEST_F(CaptureModeTest, SettingsMenuWidgetDestruction) {
+  CaptureModeTestApi().StartForFullscreen(true);
+  ClickOnView(GetSettingsButton(), GetEventGenerator());
+  auto* widget = GetCaptureModeSettingsWidget();
+  ASSERT_TRUE(widget);
+  delete widget->GetNativeWindow();
+}
+
 // A test class that uses a mock time task environment.
 class CaptureModeMockTimeTest : public CaptureModeTest {
  public:

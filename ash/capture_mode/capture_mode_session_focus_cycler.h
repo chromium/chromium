@@ -186,6 +186,7 @@ class ASH_EXPORT CaptureModeSessionFocusCycler : public views::WidgetObserver {
 
   // views::WidgetObserver:
   void OnWidgetClosing(views::Widget* widget) override;
+  void OnWidgetDestroying(views::Widget* widget) override;
 
  private:
   friend class CaptureModeSessionTestApi;
