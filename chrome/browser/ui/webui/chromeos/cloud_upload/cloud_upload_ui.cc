@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/chromeos/cloud_upload/cloud_upload_dialog.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/cloud_upload_resources.h"
@@ -38,7 +39,24 @@ void CloudUploadUI::BindInterface(
 void CloudUploadUI::CreatePageHandler(
     mojo::PendingReceiver<chromeos::cloud_upload::mojom::PageHandler>
         receiver) {
-  page_handler_ = std::make_unique<CloudUploadPageHandler>(std::move(receiver));
+  page_handler_ = std::make_unique<CloudUploadPageHandler>(
+      std::move(receiver),
+      // base::Unretained() because |page_handler_| will not out-live |this|.
+      base::BindOnce(&CloudUploadUI::RespondAndCloseDialog,
+                     base::Unretained(this)));
+}
+
+void CloudUploadUI::RespondAndCloseDialog(mojom::UserAction action) {
+  base::Value::List args;
+  switch (action) {
+    case mojom::UserAction::kCancel:
+      args.Append(kUserActionCancel);
+      break;
+    case mojom::UserAction::kUpload:
+      args.Append(kUserActionUpload);
+      break;
+  }
+  ui::MojoWebDialogUI::CloseDialog(args);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(CloudUploadUI);

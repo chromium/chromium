@@ -6,6 +6,12 @@ module chromeos.cloud_upload.mojom;
 
 import "mojo/public/mojom/base/file_path.mojom";
 
+// The selected action when the user closes the dialog.
+enum UserAction {
+  kCancel,
+  kUpload,
+};
+
 // Lives in the browser process. A renderer uses this to create a page handler
 // that enables communication between a renderer and the browser process.
 interface PageHandlerFactory {
@@ -18,4 +24,6 @@ interface PageHandlerFactory {
 interface PageHandler {
   // Returns the path of the Office file to upload.
   GetUploadPath() => (mojo_base.mojom.FilePath upload_path);
+  // Returns the user selected action and requests the dialog to be closed.
+  RespondAndClose(UserAction response);
 };

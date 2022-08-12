@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/webui/chromeos/cloud_upload/cloud_upload.mojom-shared.h"
 #include "chrome/browser/ui/webui/chromeos/cloud_upload/cloud_upload.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -20,9 +21,12 @@ namespace chromeos::cloud_upload {
 class CloudUploadPageHandler
     : public chromeos::cloud_upload::mojom::PageHandler {
  public:
+  using RespondAndCloseCallback =
+      base::OnceCallback<void(mojom::UserAction action)>;
   explicit CloudUploadPageHandler(
       mojo::PendingReceiver<chromeos::cloud_upload::mojom::PageHandler>
-          pending_page_handler);
+          pending_page_handler,
+      RespondAndCloseCallback callback);
 
   CloudUploadPageHandler(const CloudUploadPageHandler&) = delete;
   CloudUploadPageHandler& operator=(const CloudUploadPageHandler&) = delete;
@@ -31,9 +35,11 @@ class CloudUploadPageHandler
 
   // chromeos::cloud_upload::mojom::PageHandler:
   void GetUploadPath(GetUploadPathCallback callback) override;
+  void RespondAndClose(mojom::UserAction action) override;
 
  private:
   mojo::Receiver<chromeos::cloud_upload::mojom::PageHandler> receiver_;
+  RespondAndCloseCallback callback_;
 
   base::WeakPtrFactory<CloudUploadPageHandler> weak_ptr_factory_{this};
 };

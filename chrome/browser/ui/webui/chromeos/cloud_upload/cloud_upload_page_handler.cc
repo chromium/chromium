@@ -10,13 +10,21 @@ namespace chromeos::cloud_upload {
 
 CloudUploadPageHandler::CloudUploadPageHandler(
     mojo::PendingReceiver<chromeos::cloud_upload::mojom::PageHandler>
-        pending_page_handler)
-    : receiver_{this, std::move(pending_page_handler)} {}
+        pending_page_handler,
+    RespondAndCloseCallback callback)
+    : receiver_{this, std::move(pending_page_handler)},
+      callback_{std::move(callback)} {}
 
 CloudUploadPageHandler::~CloudUploadPageHandler() = default;
 
 void CloudUploadPageHandler::GetUploadPath(GetUploadPathCallback callback) {
   std::move(callback).Run(std::move(base::FilePath("/from Chromebook")));
+}
+
+void CloudUploadPageHandler::RespondAndClose(mojom::UserAction action) {
+  if (callback_) {
+    std::move(callback_).Run(action);
+  }
 }
 
 }  // namespace chromeos::cloud_upload

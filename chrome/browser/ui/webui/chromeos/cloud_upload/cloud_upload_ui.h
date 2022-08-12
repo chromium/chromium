@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_CLOUD_UPLOAD_CLOUD_UPLOAD_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_CLOUD_UPLOAD_CLOUD_UPLOAD_UI_H_
 
+#include "chrome/browser/ui/webui/chromeos/cloud_upload/cloud_upload.mojom-shared.h"
 #include "chrome/browser/ui/webui/chromeos/cloud_upload/cloud_upload.mojom.h"
 #include "chrome/browser/ui/webui/chromeos/cloud_upload/cloud_upload_page_handler.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
@@ -33,6 +34,8 @@ class CloudUploadUI : public ui::MojoWebDialogUI,
           pending_page_handler) override;
 
  private:
+  void RespondAndCloseDialog(mojom::UserAction action);
+
   std::unique_ptr<CloudUploadPageHandler> page_handler_;
   mojo::Receiver<chromeos::cloud_upload::mojom::PageHandlerFactory>
       factory_receiver_{this};
