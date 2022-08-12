@@ -41,14 +41,6 @@
 // TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
 //     "network", "ResourceLoad",
 //     TRACE_ID_WITH_SCOPE("BlinkResourceID", resourceID));
-//
-// Also, it is possible to prepend the ID with another number, like the process
-// ID. This is useful in creating IDs that are unique among all processes. To do
-// that, pass two numbers after the scope string instead of one. For example,
-//
-// TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-//     "network", "ResourceLoad",
-//     TRACE_ID_WITH_SCOPE("BlinkResourceID", pid, resourceID));
 #define TRACE_ID_WITH_SCOPE(scope, ...) \
   trace_event_internal::TraceID::WithScope(scope, ##__VA_ARGS__)
 
