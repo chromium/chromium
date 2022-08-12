@@ -123,12 +123,6 @@ public class JniPaymentApp extends PaymentApp {
     }
 
     @Override
-    @Nullable
-    public String getCountryCode() {
-        return JniPaymentAppJni.get().getCountryCode(mNativeObject);
-    }
-
-    @Override
     public boolean canMakePayment() {
         return JniPaymentAppJni.get().canMakePayment(mNativeObject);
     }
@@ -226,7 +220,6 @@ public class JniPaymentApp extends PaymentApp {
         boolean handlesPayerName(long nativeJniPaymentApp);
         boolean handlesPayerEmail(long nativeJniPaymentApp);
         boolean handlesPayerPhone(long nativeJniPaymentApp);
-        String getCountryCode(long nativeJniPaymentApp);
         boolean canMakePayment(long nativeJniPaymentApp);
         boolean canPreselect(long nativeJniPaymentApp);
         void invokePaymentApp(long nativeJniPaymentApp, JniPaymentApp callback);

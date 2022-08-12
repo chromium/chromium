@@ -123,11 +123,6 @@ public abstract class PaymentApp extends EditableOption {
      */
     public abstract Set<String> getInstrumentMethodNames();
 
-    /** @return Whether this is a server autofill app. */
-    public boolean isServerAutofillInstrument() {
-        return false;
-    }
-
     /**
      * @return Whether this is a replacement for all server autofill apps. If at least one of
      *         the displayed apps returns true here, then all apps that return true in
@@ -172,12 +167,6 @@ public abstract class PaymentApp extends EditableOption {
      */
     public boolean handlesPayerPhone() {
         return false;
-    }
-
-    /** @return The country code (or null if none) associated with this payment app. */
-    @Nullable
-    public String getCountryCode() {
-        return null;
     }
 
     /**

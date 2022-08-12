@@ -26,7 +26,6 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.payments.AddressEditor;
 import org.chromium.chrome.browser.payments.AutofillAddress;
 import org.chromium.chrome.browser.payments.AutofillContact;
-import org.chromium.chrome.browser.payments.AutofillPaymentInstrument;
 import org.chromium.chrome.browser.payments.ChromePaymentRequestService;
 import org.chromium.chrome.browser.payments.ContactEditor;
 import org.chromium.chrome.browser.payments.PaymentPreferencesUtil;
@@ -1418,10 +1417,6 @@ public class PaymentUiService
             }
             onSelectedPaymentMethodUpdated();
             PaymentApp paymentApp = (PaymentApp) option;
-
-            // TODO(https://crbug.com/1209835): AutofillPaymentInstrument should probably no longer
-            // be a PaymentApp subclass.
-            assert !(paymentApp instanceof AutofillPaymentInstrument);
 
             updateOrderSummary(paymentApp);
             mPaymentMethodsSection.setSelectedItem(option);

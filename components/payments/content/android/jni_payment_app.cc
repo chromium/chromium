@@ -105,11 +105,6 @@ bool JniPaymentApp::HandlesPayerPhone(JNIEnv* env) {
   return payment_app_->HandlesPayerPhone();
 }
 
-ScopedJavaLocalRef<jstring> JniPaymentApp::GetCountryCode(JNIEnv* env) {
-  // Only autofill payment apps have country code.
-  return nullptr;
-}
-
 bool JniPaymentApp::CanMakePayment(JNIEnv* env) {
   // ChromePaymentRequestService.java uses this value to determine whether
   // PaymentRequest.hasEnrolledInstrument() should return true.

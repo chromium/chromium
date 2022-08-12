@@ -9,7 +9,6 @@ import android.content.Context;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -45,11 +44,8 @@ import org.chromium.payments.mojom.PaymentValidationErrors;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * This is the Clank specific parts of {@link PaymentRequest}, with the parts shared with WebLayer
@@ -74,7 +70,6 @@ public class ChromePaymentRequestService
     private boolean mHasClosed;
 
     private PaymentRequestSpec mSpec;
-    private boolean mHideServerAutofillCards;
     private PaymentHandlerHost mPaymentHandlerHost;
 
     /**
@@ -464,7 +459,6 @@ public class ChromePaymentRequestService
     // Implements BrowserPaymentRequest:
     @Override
     public boolean onPaymentAppCreated(PaymentApp paymentApp) {
-        mHideServerAutofillCards |= paymentApp.isServerAutofillInstrumentReplacement();
         paymentApp.setHaveRequestedAutofillData(mPaymentUiService.haveRequestedAutofillData());
         return true;
     }
@@ -472,42 +466,7 @@ public class ChromePaymentRequestService
     // Implements BrowserPaymentRequest:
     @Override
     public void notifyPaymentUiOfPendingApps(List<PaymentApp> pendingApps) {
-        if (mHideServerAutofillCards) {
-            List<PaymentApp> nonServerAutofillCards = new ArrayList<>();
-            int numberOfPendingApps = pendingApps.size();
-            for (int i = 0; i < numberOfPendingApps; i++) {
-                if (!pendingApps.get(i).isServerAutofillInstrument()) {
-                    nonServerAutofillCards.add(pendingApps.get(i));
-                }
-            }
-            pendingApps = nonServerAutofillCards;
-        }
-
-        // Load the validation rules for each unique region code in the credit card billing
-        // addresses and check for validity.
-        Set<String> uniqueCountryCodes = new HashSet<>();
-        for (int i = 0; i < pendingApps.size(); ++i) {
-            @Nullable
-            String countryCode = pendingApps.get(i).getCountryCode();
-            if (countryCode != null && !uniqueCountryCodes.contains(countryCode)) {
-                uniqueCountryCodes.add(countryCode);
-                PersonalDataManager.getInstance().loadRulesForAddressNormalization(countryCode);
-            }
-        }
-
         mPaymentUiService.setPaymentApps(pendingApps);
-
-        int missingFields = 0;
-        if (!mPaymentUiService.getPaymentApps().isEmpty()) {
-            PaymentApp firstApp = mPaymentUiService.getPaymentApps().get(0);
-            if (firstApp.getPaymentAppType() == PaymentAppType.AUTOFILL) {
-                missingFields = ((AutofillPaymentInstrument) (firstApp)).getMissingFields();
-            }
-        }
-        if (missingFields != 0) {
-            RecordHistogram.recordSparseHistogram(
-                    "PaymentRequest.MissingPaymentFields", missingFields);
-        }
     }
 
     // Implements BrowserPaymentRequest:
