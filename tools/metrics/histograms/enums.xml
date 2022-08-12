@@ -56754,6 +56754,7 @@ from previous Chrome versions.
   <int value="-1466206556" label="ArcDocumentsProviderUnknownSize:enabled"/>
   <int value="-1466100014" label="EchePhoneHubPermissionsOnboarding:disabled"/>
   <int value="-1465172796" label="CCTModule:disabled"/>
+  <int value="-1464860971" label="BluetoothCoredump:enabled"/>
   <int value="-1464832541" label="EnableFuzzyAppSearch:disabled"/>
   <int value="-1463489219" label="OfflinePagesCTSuppressNotifications:enabled"/>
   <int value="-1463410070" label="IPH_DemoMode:enabled"/>
@@ -60166,6 +60167,7 @@ from previous Chrome versions.
   <int value="683013217" label="AllowPopupsDuringPageUnload:disabled"/>
   <int value="683433500" label="CommerceMerchantViewer:disabled"/>
   <int value="683746280" label="PrivacyGuideAndroid:disabled"/>
+  <int value="684112629" label="BluetoothCoredump:disabled"/>
   <int value="684198422" label="UnifiedPasswordManagerDesktop:enabled"/>
   <int value="684806628" label="TranslateLanguageByULP:disabled"/>
   <int value="685406951" label="UseNotificationCompatBuilder:disabled"/>

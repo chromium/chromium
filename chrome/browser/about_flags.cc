@@ -162,6 +162,7 @@
 #include "content/public/common/content_switches.h"
 #include "device/base/features.h"
 #include "device/bluetooth/bluez/bluez_features.h"
+#include "device/bluetooth/chromeos_platform_features.h"
 #include "device/bluetooth/floss/floss_features.h"
 #include "device/fido/features.h"
 #include "device/gamepad/public/cpp/gamepad_features.h"
@@ -3621,6 +3622,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"bluetooth-wbs-dogfood", flag_descriptions::kBluetoothWbsDogfoodName,
      flag_descriptions::kBluetoothWbsDogfoodDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kBluetoothWbsDogfood)},
+    {"bluetooth-coredump", flag_descriptions::kBluetoothCoredumpName,
+     flag_descriptions::kBluetoothCoredumpDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::bluetooth::features::kBluetoothCoredump)},
     {"bluetooth-use-floss", flag_descriptions::kBluetoothUseFlossName,
      flag_descriptions::kBluetoothUseFlossDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(floss::features::kFlossEnabled)},

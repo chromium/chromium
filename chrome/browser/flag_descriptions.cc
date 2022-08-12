@@ -4600,6 +4600,12 @@ const char kBluetoothWbsDogfoodDescription[] =
     "or fully launched. Only on the few models that Bluetooth WBS is "
     "still stablizing this flag will take effect.";
 
+const char kBluetoothCoredumpName[] = "Enable Bluetooth Device Coredump";
+const char kBluetoothCoredumpDescription[] =
+    "Enable Bluetooth coredump collection if supported. Please note that "
+    "coredumps are only collected when hardware exceptions occur and are "
+    "used for debugging such exceptions.";
+
 const char kBluetoothUseFlossName[] = "Use Floss instead of BlueZ";
 const char kBluetoothUseFlossDescription[] =
     "Enables using Floss (also known as Fluoride, Android's Bluetooth stack) "
