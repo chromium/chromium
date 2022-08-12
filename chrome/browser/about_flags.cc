@@ -6378,10 +6378,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kArcWindowPredictorDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(full_restore::features::kArcWindowPredictor)},
 
-    {"arc-input-overlay", flag_descriptions::kArcInputOverlayName,
-     flag_descriptions::kArcInputOverlayDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kArcInputOverlay)},
-
     {"full-restore-for-lacros", flag_descriptions::kFullRestoreForLacrosName,
      flag_descriptions::kFullRestoreForLacrosDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(full_restore::features::kFullRestoreForLacros)},
@@ -6390,6 +6386,16 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kUseFakeDeviceForMediaStreamName,
      flag_descriptions::kUseFakeDeviceForMediaStreamDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(media::kUseFakeDeviceForMediaStream)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"arc-input-overlay", flag_descriptions::kArcInputOverlayName,
+     flag_descriptions::kArcInputOverlayDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kArcInputOverlay)},
+
+    {"arc-input-overlay-beta", flag_descriptions::kArcInputOverlayNameBeta,
+     flag_descriptions::kArcInputOverlayDescriptionBeta, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kArcInputOverlayBeta)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)

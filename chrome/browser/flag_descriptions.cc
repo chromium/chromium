@@ -5675,6 +5675,11 @@ const char kArcInputOverlayDescription[] =
     "Enables the input overlay feature for some Android game apps, "
     "so it can play with a keyboard and a mouse instead of touch screen";
 
+const char kArcInputOverlayNameBeta[] = "Enable ARC Input Overlay Beta";
+const char kArcInputOverlayDescriptionBeta[] =
+    "Enable more features based on ARC Input Overlay Alpha, "
+    "so it can change the touch point position.";
+
 const char kSecondaryGoogleAccountUsageName[] =
     "Enable Secondary Google account usage policy.";
 const char kSecondaryGoogleAccountUsageDescription[] =

@@ -57868,6 +57868,7 @@ from previous Chrome versions.
   <int value="-800464360" label="ContextualPageActions:enabled"/>
   <int value="-800127303" label="OmniboxPedalsTranslationConsole:disabled"/>
   <int value="-799931058" label="UseMultiloginEndpoint:disabled"/>
+  <int value="-798521418" label="ArcInputOverlayBeta:disabled"/>
   <int value="-798187384" label="try-supported-channel-layouts"/>
   <int value="-797520931" label="ExtensionsToolbarMenu:disabled"/>
   <int value="-797310986" label="CSSFragmentIdentifiers:disabled"/>
@@ -60364,6 +60365,7 @@ from previous Chrome versions.
   <int value="781785788" label="ClipboardSuggestionContentHidden:disabled"/>
   <int value="782167080" label="enable-new-qp-input-view"/>
   <int value="783270752" label="AndroidHistoryManager:enabled"/>
+  <int value="783443490" label="ArcInputOverlayBeta:enabled"/>
   <int value="783502146" label="AutofillConsiderPlaceholderForParsing:enabled"/>
   <int value="785273919" label="CompositingBasedThrottling:disabled"/>
   <int value="787080596" label="DynamicTcmallocTuning:enabled"/>
