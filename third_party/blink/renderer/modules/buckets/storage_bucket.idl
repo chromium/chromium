@@ -21,4 +21,6 @@
   [CallWith=ScriptState] Promise<DOMTimeStamp?> expires();
 
   [SameObject] readonly attribute IDBFactory indexedDB;
+
+  [SameObject] readonly attribute LockManager locks;
 };

@@ -14,11 +14,13 @@
 #include "third_party/blink/renderer/core/dom/dom_time_stamp.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/execution_context/navigator_base.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
 namespace blink {
 
 class IDBFactory;
+class LockManager;
 class ScriptState;
 
 class StorageBucket final : public ScriptWrappable,
@@ -27,7 +29,7 @@ class StorageBucket final : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  StorageBucket(ExecutionContext* context,
+  StorageBucket(NavigatorBase* navigator,
                 mojo::PendingRemote<mojom::blink::BucketHost> remote);
 
   ~StorageBucket() override = default;
@@ -39,6 +41,7 @@ class StorageBucket final : public ScriptWrappable,
   ScriptPromise setExpires(ScriptState*, const DOMTimeStamp&);
   ScriptPromise expires(ScriptState*);
   IDBFactory* indexedDB();
+  LockManager* locks();
 
   // ActiveScriptWrappable
   bool HasPendingActivity() const final;
@@ -72,6 +75,8 @@ class StorageBucket final : public ScriptWrappable,
   mojo::Remote<mojom::blink::BucketHost> remote_;
 
   Member<IDBFactory> idb_factory_;
+  Member<LockManager> lock_manager_;
+  Member<NavigatorBase> navigator_base_;
 };
 
 }  // namespace blink

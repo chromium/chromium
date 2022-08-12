@@ -53,6 +53,8 @@ class BucketHost : public blink::mojom::BucketHost {
   void Expires(ExpiresCallback callback) override;
   void GetIdbFactory(
       mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) override;
+  void GetLockManager(
+      mojo::PendingReceiver<blink::mojom::LockManager> receiver) override;
 
  private:
   void OnReceiverDisconnected();

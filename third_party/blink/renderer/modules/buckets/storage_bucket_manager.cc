@@ -75,7 +75,8 @@ const char StorageBucketManager::kSupplementName[] = "StorageBucketManager";
 StorageBucketManager::StorageBucketManager(NavigatorBase& navigator)
     : Supplement<NavigatorBase>(navigator),
       ExecutionContextClient(navigator.GetExecutionContext()),
-      manager_remote_(navigator.GetExecutionContext()) {}
+      manager_remote_(navigator.GetExecutionContext()),
+      navigator_base_(navigator) {}
 
 StorageBucketManager* StorageBucketManager::storageBuckets(
     ScriptState* script_state,
@@ -193,7 +194,7 @@ void StorageBucketManager::DidOpen(
     return;
   }
   resolver->Resolve(MakeGarbageCollected<StorageBucket>(
-      GetExecutionContext(), std::move(bucket_remote)));
+      navigator_base_, std::move(bucket_remote)));
 }
 
 void StorageBucketManager::DidGetKeys(ScriptPromiseResolver* resolver,
@@ -231,6 +232,7 @@ void StorageBucketManager::DidDelete(ScriptPromiseResolver* resolver,
 
 void StorageBucketManager::Trace(Visitor* visitor) const {
   visitor->Trace(manager_remote_);
+  visitor->Trace(navigator_base_);
   ScriptWrappable::Trace(visitor);
   Supplement<NavigatorBase>::Trace(visitor);
   ExecutionContextClient::Trace(visitor);

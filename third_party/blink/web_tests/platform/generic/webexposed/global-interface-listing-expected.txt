@@ -8730,6 +8730,7 @@ interface Storage
 interface StorageBucket
     attribute @@toStringTag
     getter indexedDB
+    getter locks
     method constructor
     method durability
     method estimate

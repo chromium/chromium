@@ -237,6 +237,13 @@ LockManager::LockManager(NavigatorBase& navigator)
       service_(navigator.GetExecutionContext()),
       observer_(navigator.GetExecutionContext()) {}
 
+void LockManager::SetManager(
+    mojo::PendingRemote<mojom::blink::LockManager> manager,
+    ExecutionContext* execution_context) {
+  service_.Bind(std::move(manager),
+                execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI));
+}
+
 ScriptPromise LockManager::request(ScriptState* script_state,
                                    const String& name,
                                    V8LockGrantedCallback* callback,

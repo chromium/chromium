@@ -1291,6 +1291,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker] interface StorageBucket
 [Worker]     attribute @@toStringTag
 [Worker]     getter indexedDB
+[Worker]     getter locks
 [Worker]     method constructor
 [Worker]     method durability
 [Worker]     method estimate

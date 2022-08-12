@@ -7,7 +7,7 @@
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/feature_observer/feature_observer.mojom-blink.h"
-#include "third_party/blink/public/mojom/locks/lock_manager.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/locks/lock_manager.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_lock_options.h"
 #include "third_party/blink/renderer/modules/locks/lock.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -65,6 +65,10 @@ class LockManager final : public ScriptWrappable,
   // collectable. In that case, the lock should be held until the context
   // is destroyed. See https://crbug.com/798500 for an example.
   void OnLockReleased(Lock*);
+
+  // Sets the LockManager remote
+  void SetManager(mojo::PendingRemote<mojom::blink::LockManager> manager,
+                  ExecutionContext* execution_context);
 
  private:
   class LockRequestImpl;
