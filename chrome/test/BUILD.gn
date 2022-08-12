@@ -10880,6 +10880,23 @@ if (is_chromeos_ash) {
   }
 }
 
+# This target is for Ash-side browser testing.
+if (is_chromeos_ash) {
+  test("ash_crosapi_browsertests") {
+    use_xvfb = use_xvfb_in_this_config
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [ "../browser/ash/crosapi/test/file_manager_ash_browsertest.cc" ]
+    deps = [
+      ":browser_tests_runner",
+      ":test_support_ui",
+      "//base",
+      "//chrome/browser/ash/crosapi",
+      "//chromeos/crosapi/mojom",
+    ]
+  }
+}
+
 if (is_linux || is_mac || is_win) {
   script_test("variations_smoke_tests") {
     if (is_linux) {

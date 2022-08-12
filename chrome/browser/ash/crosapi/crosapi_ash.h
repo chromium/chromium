@@ -407,6 +407,8 @@ class CrosapiAsh : public mojom::Crosapi {
     return file_system_provider_service_ash_.get();
   }
 
+  FileManagerAsh* file_manager_ash() { return file_manager_ash_.get(); }
+
   CertProvisioningAsh* cert_provisioning_ash() {
     return cert_provisioning_ash_.get();
   }
