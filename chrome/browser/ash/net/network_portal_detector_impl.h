@@ -166,11 +166,6 @@ class NetworkPortalDetectorImpl : public NetworkPortalDetector,
     time_ticks_for_testing_ = time_ticks;
   }
 
-  // Advances current test time ticks. Used by unit tests.
-  void advance_time_ticks_for_testing(const base::TimeDelta& delta) {
-    time_ticks_for_testing_ += delta;
-  }
-
   const std::string& default_network_id_for_testing() const {
     return default_network_id_;
   }
