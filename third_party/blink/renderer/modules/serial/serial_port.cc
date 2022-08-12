@@ -289,12 +289,8 @@ ReadableStream* SerialPort::readable(ScriptState* script_state,
   DCHECK(!underlying_source_);
   underlying_source_ = MakeGarbageCollected<SerialPortUnderlyingSource>(
       script_state, this, std::move(consumer));
-  // Ideally the stream would report the number of bytes that can be read from
-  // the underlying Mojo data pipe. As an approximation the high water mark is
-  // set to 0 so that data remains in the pipe rather than being queued in the
-  // stream and thus adding an extra layer of buffering.
-  readable_ = ReadableStream::CreateWithCountQueueingStrategy(
-      script_state, underlying_source_, /*high_water_mark=*/0);
+  readable_ =
+      ReadableStream::CreateByteStream(script_state, underlying_source_);
   return readable_;
 }
 

@@ -7,6 +7,7 @@
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_byob_reader.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_controller.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
@@ -28,7 +29,8 @@ class StreamStartAlgorithm;
 class StreamPromiseResolver;
 class UnderlyingSource;
 
-class ReadableByteStreamController : public ReadableStreamController {
+class CORE_EXPORT ReadableByteStreamController
+    : public ReadableStreamController {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

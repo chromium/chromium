@@ -12,6 +12,7 @@
 
 namespace blink {
 
+class ExceptionState;
 class ReadableByteStreamController;
 class ScriptPromise;
 class ScriptState;
