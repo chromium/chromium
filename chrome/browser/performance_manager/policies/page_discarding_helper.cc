@@ -59,33 +59,6 @@ class DiscardAttemptMarker : public NodeAttachedDataImpl<DiscardAttemptMarker> {
 
 const char kDescriberName[] = "PageDiscardingHelper";
 
-// Caches page node properties to facilitate sorting.
-class PageNodeSortProxy {
- public:
-  PageNodeSortProxy(const PageNode* page_node,
-                    bool is_protected,
-                    base::TimeDelta last_visible)
-      : page_node_(page_node),
-        is_protected_(is_protected),
-        last_visible_(last_visible) {}
-  const PageNode* page_node() { return page_node_; }
-
-  // Returns true if the rhs is more important.
-  bool operator<(const PageNodeSortProxy& rhs) const {
-    if (is_protected_ && !rhs.is_protected_)
-      return false;
-    if (!is_protected_ && rhs.is_protected_)
-      return true;
-    return last_visible_ > rhs.last_visible_;
-  }
-
- private:
-  const PageNode* page_node_;
-  bool is_protected_;
-  // Delta between current time and last visibility change time.
-  base::TimeDelta last_visible_;
-};
-
 using NodeRssMap = base::flat_map<const PageNode*, uint64_t>;
 
 // Returns the mapping from page_node to its RSS estimation.
@@ -169,7 +142,7 @@ void PageDiscardingHelper::UrgentlyDiscardMultiplePages(
         (can_discard_result == CanUrgentlyDiscardResult::kProtected);
     if (!discard_protected_tabs && is_protected)
       continue;
-    candidates.emplace_back(page_node, is_protected,
+    candidates.emplace_back(page_node, false, is_protected,
                             page_node->GetTimeSinceLastVisibilityChange());
   }
   // Sorts with ascending importance.

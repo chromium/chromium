@@ -5565,6 +5565,8 @@ static_library("browser") {
       "notifications/notification_platform_bridge_delegate.h",
       "notifications/notification_platform_bridge_lacros.cc",
       "notifications/notification_platform_bridge_lacros.h",
+      "performance_manager/policies/oom_score_policy_lacros.cc",
+      "performance_manager/policies/oom_score_policy_lacros.h",
       "platform_util_lacros.cc",
       "policy/status_provider/device_policy_status_provider_lacros.cc",
       "policy/status_provider/device_policy_status_provider_lacros.h",
