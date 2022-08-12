@@ -136,6 +136,11 @@ const char kMockAmazonURL[] = "https://www.amazon.com/gp/cart/view.html";
 const cart_db::ChromeCartContentProto kMockAmazonProto =
     BuildProto(kMockAmazon, kMockAmazonURL);
 
+const char kMockWalmart[] = "walmart.com";
+const char kMockWalmartURL[] = "https://www.walmart.com/cart";
+const cart_db::ChromeCartContentProto kMockWalmartProto =
+    BuildProto(kMockWalmart, kMockWalmartURL);
+
 using ShoppingCarts =
     std::vector<SessionProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>;
 const ShoppingCarts kExpectedExampleFallbackCart = {
@@ -148,6 +153,7 @@ const ShoppingCarts kExpectedExampleWithProducts = {
 const ShoppingCarts kExpectedExampleWithProductsWithoutSaved = {
     {kMockExample, kMockExampleProtoWithProductsWithoutSaved}};
 const ShoppingCarts kExpectedAmazon = {{kMockAmazon, kMockAmazonProto}};
+const ShoppingCarts kExpectedWalmart = {{kMockWalmart, kMockWalmartProto}};
 const ShoppingCarts kEmptyExpected = {};
 #endif
 
@@ -480,11 +486,11 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, AddToCartByForm_WithLink) {
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, AddToCartByForm_WithWrongLink) {
   // Mismatching eTLD+1 domain uses cart URL in the look-up table.
-  NavigateToURL("https://amazon.com/product.html");
+  NavigateToURL("https://walmart.com/product.html");
   SendXHR("/wp-admin/admin-ajax.php", "action: woocommerce_add_to_cart");
 
   WaitForUmaCount("Commerce.Carts.AddToCartByPOST", 1);
-  WaitForCartCount(kExpectedAmazon);
+  WaitForCartCount(kExpectedWalmart);
   ExpectUKMCount(XHREntry::kEntryName, "IsAddToCart", 1);
 }
 #endif
@@ -576,7 +582,7 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, ExtractCart_ScriptFromResource) {
   // This page has three products.
   NavigateToURL("https://www.guitarcenter.com/cart.html");
 #if !BUILDFLAG(IS_ANDROID)
-  WaitForProductCount(kExpectedExampleWithProducts);
+  WaitForProductCount(kExpectedExampleWithProductsWithoutSaved);
 #endif
   WaitForUmaCount("Commerce.Carts.ExtractionExecutionTime", 1);
   WaitForUmaCount("Commerce.Carts.ExtractionLongestTaskTime", 1);
@@ -1108,35 +1114,6 @@ IN_PROC_BROWSER_TEST_F(CommerceHintProductInfoTest,
   NavigateToURL("https://www.guitarcenter.com/cart.html");
 
   WaitForCartCount(kExpectedExampleFallbackCart);
-}
-
-class CommerceHintImprovementTest : public CommerceHintAgentTest {
- public:
-  void SetUpInProcessBrowserTestFixture() override {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{ntp_features::kNtpChromeCartModule,
-          {{ntp_features::kNtpChromeCartModuleHeuristicsImprovementParam,
-            "true"},
-           {"product-skip-pattern", "(^|\\W)(?i)(skipped)(\\W|$)"},
-           // These two are for manual testing only.
-           // Use --vmodule='commerce_*=2'.
-           {"cart-extraction-min-task-time", "1s"},
-           {"cart-extraction-duty-cycle", "0.5"},
-           // Extend timeout to avoid flakiness.
-           {"cart-extraction-timeout", "1m"}}}},
-        {optimization_guide::features::kOptimizationHints});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(CommerceHintImprovementTest, ExtractCart) {
-  // This page has three products but should ignore the one in saved for later
-  // section.
-  NavigateToURL("https://www.guitarcenter.com/cart.html");
-
-  WaitForProductCount(kExpectedExampleWithProductsWithoutSaved);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
