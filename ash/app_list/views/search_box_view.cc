@@ -43,6 +43,8 @@
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/color/color_provider_manager.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/events/event.h"
@@ -883,13 +885,12 @@ bool SearchBoxView::IsValidAutocompleteText(
 void SearchBoxView::UpdateTextColor() {
   if (is_app_list_bubble_) {
     // Bubble launcher uses standard text colors (light-on-dark by default).
-    search_box()->SetTextColor(AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorPrimary));
+    search_box()->SetTextColor(
+        GetColorProvider()->GetColor(cros_tokens::kTextColorPrimary));
   } else {
     // Fullscreen launcher uses dark-on-light text by default.
     search_box()->SetTextColor(
-        AppListColorProvider::Get()->GetSearchBoxTextColor(
-            kDeprecatedSearchBoxTextDefaultColor));
+        GetColorProvider()->GetColor(cros_tokens::kColorPrimaryInverted));
   }
 }
 

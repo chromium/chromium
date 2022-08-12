@@ -32,6 +32,7 @@
 #include "ash/search_box/search_box_constants.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_mixer.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/test/ash_test_base.h"
 #include "base/callback_helpers.h"
@@ -132,6 +133,12 @@ class SearchBoxViewTest : public views::test::WidgetTest,
 
     views::test::WidgetTest::SetUp();
 
+    // Tests have an implicit dependency on the color providers.
+    ui::ColorProviderManager::Get().AppendColorProviderInitializer(
+        base::BindRepeating(AddCrosStylesColorMixer));
+    ui::ColorProviderManager::Get().AppendColorProviderInitializer(
+        base::BindRepeating(AddAshColorMixer));
+
     widget_ = CreateTopLevelPlatformWidget();
     widget_->SetBounds(gfx::Rect(0, 0, 300, 200));
 
@@ -158,6 +165,7 @@ class SearchBoxViewTest : public views::test::WidgetTest,
   }
 
   void TearDown() override {
+    ui::ColorProviderManager::ResetForTesting();
     if (app_list_view_)
       app_list_view_->GetWidget()->Close();
     widget_->CloseNow();
@@ -309,9 +317,15 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Values(false));
 
 TEST_P(SearchBoxViewTest, SearchBoxTextUsesAppListSearchBoxTextColor) {
-  EXPECT_EQ(view()->search_box()->GetTextColor(),
-            AppListColorProvider::Get()->GetSearchBoxTextColor(
-                kDeprecatedSearchBoxTextDefaultColor));
+  if (IsProductivityLauncherEnabled()) {
+    // Text should be the primary light color when productivity launcher is
+    // used.
+    EXPECT_EQ(view()->search_box()->GetTextColor(), gfx::kGoogleGrey900);
+  } else {
+    EXPECT_EQ(view()->search_box()->GetTextColor(),
+              AppListColorProvider::Get()->GetSearchBoxTextColor(
+                  kDeprecatedSearchBoxTextDefaultColor));
+  }
 }
 
 // Tests that the close button is invisible by default.
