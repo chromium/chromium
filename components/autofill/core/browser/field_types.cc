@@ -96,6 +96,7 @@ bool IsFillableFieldType(ServerFieldType field_type) {
     case CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR:
     case CREDIT_CARD_TYPE:
     case CREDIT_CARD_VERIFICATION_CODE:
+    case CREDIT_CARD_STANDALONE_VERIFICATION_CODE:
       return true;
 
     case UPI_VPA:
@@ -316,6 +317,8 @@ base::StringPiece FieldTypeToStringPiece(ServerFieldType type) {
       return "AMBIGUOUS_TYPE";
     case IBAN_VALUE:
       return "IBAN_VALUE";
+    case CREDIT_CARD_STANDALONE_VERIFICATION_CODE:
+      return "CREDIT_CARD_STANDALONE_VERIFICATION_CODE";
     case MAX_VALID_FIELD_TYPE:
       return "";
   }

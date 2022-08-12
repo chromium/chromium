@@ -99,6 +99,7 @@ FieldTypeGroup GroupTypeOfServerFieldType(ServerFieldType field_type) {
     case MERCHANT_PROMO_CODE:
     case IBAN_VALUE:
     case UPI_VPA:
+    case CREDIT_CARD_STANDALONE_VERIFICATION_CODE:
       return FieldTypeGroup::kNoGroup;
 
     case MAX_VALID_FIELD_TYPE:

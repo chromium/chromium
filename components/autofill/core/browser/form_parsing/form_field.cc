@@ -32,6 +32,7 @@
 #include "components/autofill/core/browser/form_parsing/phone_field.h"
 #include "components/autofill/core/browser/form_parsing/price_field.h"
 #include "components/autofill/core/browser/form_parsing/search_field.h"
+#include "components/autofill/core/browser/form_parsing/standalone_cvc_field.h"
 #include "components/autofill/core/browser/form_parsing/travel_field.h"
 #include "components/autofill/core/browser/form_processing/autocomplete_attribute_processing_util.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -508,7 +509,8 @@ bool FormField::MatchesFormControlType(base::StringPiece type,
 
 // static
 bool FormField::IsSingleFieldParseableType(ServerFieldType field_type) {
-  return field_type == MERCHANT_PROMO_CODE || field_type == IBAN_VALUE;
+  return field_type == MERCHANT_PROMO_CODE || field_type == IBAN_VALUE ||
+         field_type == CREDIT_CARD_STANDALONE_VERIFICATION_CODE;
 }
 
 // static

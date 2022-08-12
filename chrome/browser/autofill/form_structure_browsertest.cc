@@ -228,7 +228,9 @@ FormStructureBrowserTest::FormStructureBrowserTest()
        // TODO(crbug.com/1113970): Remove once launched.
        features::kAutofillSectionUponRedundantNameInfo,
        // TODO(crbug.com/1335549): Remove once launched.
-       features::kAutofillParseIBANFields},
+       features::kAutofillParseIBANFields,
+       // TODO(crbug.com/1341387): Remove once launched.
+       features::kAutofillParseVcnCardOnFileStandaloneCvcFields},
       // Disabled
       {});
 }

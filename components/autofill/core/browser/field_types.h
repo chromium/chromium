@@ -243,9 +243,12 @@ enum ServerFieldType {
   // banking and merchant websites used to make international transactions.
   // See https://en.wikipedia.org/wiki/International_Bank_Account_Number.
   IBAN_VALUE = 125,
+
+  // Standalone card verification code (CVC).
+  CREDIT_CARD_STANDALONE_VERIFICATION_CODE = 126,
   // No new types can be added without a corresponding change to the Autofill
   // server.
-  MAX_VALID_FIELD_TYPE = 126,
+  MAX_VALID_FIELD_TYPE = 127,
 };
 
 enum class FieldTypeGroup {
