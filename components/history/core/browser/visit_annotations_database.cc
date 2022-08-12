@@ -475,6 +475,7 @@ Cluster VisitAnnotationsDatabase::GetCluster(int64_t cluster_id) {
   // `VisitContextAnnotations`.
   Cluster cluster;
   cluster.cluster_id = received_cluster_id;
+  cluster.from_persistence = true;
   cluster.should_show_on_prominent_ui_surfaces = statement.ColumnBool(1);
   // The DB can't represent `nullopt` labels, so they're persisted as u"" but
   // retrieved as `nullopt` for consistency with their original values and the

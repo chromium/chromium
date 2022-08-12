@@ -234,6 +234,10 @@ mojom::QueryResultPtr QueryClustersResultToMojom(
       }
     }
 
+    if (GetConfig().user_visible_debug && cluster.from_persistence) {
+      cluster_mojom->debug_info = "persisted";
+    }
+
     for (const auto& visit : cluster.visits) {
       cluster_mojom->visits.push_back(VisitToMojom(profile, visit));
     }

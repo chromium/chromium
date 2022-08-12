@@ -114,7 +114,8 @@ struct URLVisit {
   bool hidden;
 
   // A key-value dictionary of additional debug info to show. This is not
-  // visible in production, and used for development only.
+  // visible in production, and used for development only. Disabled by default,
+  // but can be enabled by the 'JourneysUserVisibleDebug' flag.
   map<string, string> debug_info;
 };
 
@@ -139,6 +140,11 @@ struct Cluster {
 
   // Search queries related to this cluster's visits.
   array<SearchQuery> related_searches;
+
+  // Additional debug string to show. This is not visible in production, and
+  // used for development only. Disabled by default, but can be enabled by the
+  // 'JourneysUserVisibleDebug' flag.
+  string? debug_info;
 };
 
 // Represents a set of Clusters returned by the browser in response to a request

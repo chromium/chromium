@@ -1020,6 +1020,10 @@ struct Cluster {
   // and should not be persisted. It's a UI-state-specific score that's
   // convenient to buffer here.
   float search_match_score = 0.0;
+
+  // Set to true if this cluster was loaded from SQL rather than dynamically
+  // generated. Used for UI display only and should not be persisted.
+  bool from_persistence = false;
 };
 
 }  // namespace history

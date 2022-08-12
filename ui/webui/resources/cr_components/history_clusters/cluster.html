@@ -51,6 +51,10 @@
     font-weight: 500;
   }
 
+  .debug-info {
+    color: var(--cr-secondary-text-color);
+  }
+
   #label-and-timestamp {
     align-items: center;
     display: flex;
@@ -121,12 +125,14 @@
   <div class="label-row" hidden="[[!inSidePanel]]">
     <div id="label-and-timestamp">
       <div id="labelSidePanel" class="label"></div>
+      <div class="debug-info">[[cluster.debugInfo]]</div>
       <div class="timestamp">[[cluster.visits.0.relativeDate]]</div>
     </div>
     <menu-container></menu-container>
   </div>
   <div class="label-row" hidden="[[inSidePanel]]">
     <div id="label" class="label"></div>
+    <div class="debug-info">[[cluster.debugInfo]]</div>
     <div class="timestamp-and-menu">
       <div class="timestamp">[[cluster.visits.0.relativeDate]]</div>
       <menu-container></menu-container>
