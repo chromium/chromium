@@ -34,7 +34,9 @@ message ClientContextProto {
     optional string chrome_version = 1;
     repeated FieldTrialProto active_field_trials = 2;
   }
-  oneof client { Chrome chrome = 1; }
+  oneof client {
+    Chrome chrome = 1;
+  }
 
   // locale will be the language tag of the default locale. The tag should
   // be a well-formed IETF BCP 47 language tag with language and country code
@@ -756,7 +758,9 @@ message ActionsResponseProto {
   // Note: This is an intermediate solution and the logic associated with this
   // field will eventually be absorbed into the supports script response from
   // the backend.
-  message UpdateScriptListProto { repeated SupportedScriptProto scripts = 1; }
+  message UpdateScriptListProto {
+    repeated SupportedScriptProto scripts = 1;
+  }
   optional UpdateScriptListProto update_script_list = 5;
 
   // Needs to be evaluated before each JS flow action. Contains function
@@ -766,6 +770,10 @@ message ActionsResponseProto {
 
   // Id of the current run.
   optional uint64 run_id = 12;
+
+  // Opaque data for reporting progress. Only included in the initial response
+  // from GetActions.
+  optional string report_token = 14;
 
   reserved 1, 6 to 10;
 }
@@ -3503,7 +3511,9 @@ message GetElementStatusProto {
     reserved 1, 2;
   }
 
-  message ValueMatch { optional TextMatch text_match = 1; }
+  message ValueMatch {
+    optional TextMatch text_match = 1;
+  }
 
   message ComparisonReport {
     optional MatchOptions match_options = 1;

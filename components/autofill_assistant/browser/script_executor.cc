@@ -897,7 +897,8 @@ bool ScriptExecutor::ProcessNextActionResponse(
   std::vector<std::unique_ptr<Script>> scripts;
   bool parse_result = ProtocolUtils::ParseActions(
       this, response, &run_id_, &last_global_payload_, &last_script_payload_,
-      &actions_, &scripts, &should_update_scripts, &js_flow_library);
+      &actions_, &scripts, &should_update_scripts, &js_flow_library,
+      &report_token_);
   if (!parse_result) {
     return false;
   }

@@ -790,7 +790,8 @@ bool ProtocolUtils::ParseActions(ActionDelegate* delegate,
                                  std::vector<std::unique_ptr<Action>>* actions,
                                  std::vector<std::unique_ptr<Script>>* scripts,
                                  bool* should_update_scripts,
-                                 std::string* js_flow_library) {
+                                 std::string* js_flow_library,
+                                 std::string* report_token) {
   DCHECK(actions);
   DCHECK(scripts);
 
@@ -811,6 +812,11 @@ bool ProtocolUtils::ParseActions(ActionDelegate* delegate,
   }
   if (js_flow_library) {
     *js_flow_library = std::move(*response_proto.mutable_js_flow_library());
+  }
+  // Only set the report token if it's empty; it should only be populated in the
+  // initial response from GetActions beginning the script run.
+  if (report_token && report_token->empty()) {
+    *report_token = response_proto.report_token();
   }
 
   for (const auto& action : response_proto.actions()) {

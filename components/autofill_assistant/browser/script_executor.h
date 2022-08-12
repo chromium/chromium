@@ -435,6 +435,7 @@ class ScriptExecutor : public ActionDelegate,
   int consecutive_slow_roundtrip_counter_ = 0;
 
   uint64_t run_id_ = 0;
+  std::string report_token_;
 
   base::WeakPtrFactory<ScriptExecutor> weak_ptr_factory_{this};
 };
