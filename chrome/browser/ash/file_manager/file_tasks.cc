@@ -559,28 +559,20 @@ bool GetDefaultTaskFromPrefs(const PrefService& pref_service,
   VLOG(1) << "Looking for default for MIME type: " << mime_type
           << " and suffix: " << suffix;
   if (!mime_type.empty()) {
-    const base::Value* mime_task_prefs =
-        pref_service.GetDictionary(prefs::kDefaultTasksByMimeType);
-    DCHECK(mime_task_prefs);
-    LOG_IF(ERROR, !mime_task_prefs) << "Unable to open MIME type prefs";
-    if (mime_task_prefs) {
-      const std::string* task_id = mime_task_prefs->FindStringKey(mime_type);
-      if (task_id) {
-        VLOG(1) << "Found MIME default handler: " << *task_id;
-        return ParseTaskID(*task_id, task_out);
-      }
+    const base::Value::Dict& mime_task_prefs =
+        pref_service.GetValueDict(prefs::kDefaultTasksByMimeType);
+    const std::string* task_id = mime_task_prefs.FindString(mime_type);
+    if (task_id) {
+      VLOG(1) << "Found MIME default handler: " << *task_id;
+      return ParseTaskID(*task_id, task_out);
     }
   }
 
-  const base::Value* suffix_task_prefs =
-      pref_service.GetDictionary(prefs::kDefaultTasksBySuffix);
-  DCHECK(suffix_task_prefs);
-  LOG_IF(ERROR, !suffix_task_prefs) << "Unable to open suffix prefs";
+  const base::Value::Dict& suffix_task_prefs =
+      pref_service.GetValueDict(prefs::kDefaultTasksBySuffix);
   std::string lower_suffix = base::ToLowerASCII(suffix);
-  if (!suffix_task_prefs)
-    return false;
 
-  const std::string* task_id = suffix_task_prefs->FindStringKey(lower_suffix);
+  const std::string* task_id = suffix_task_prefs.FindString(lower_suffix);
 
   if (!task_id || task_id->empty())
     return false;
