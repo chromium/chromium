@@ -112,8 +112,8 @@ std::set<support_tool::DataCollectorType> GetIncludedDataCollectorTypes(
 //   success: boolean,
 //   errorMessage: string,
 // }
-base::Value GetStartDataCollectionResult(bool success,
-                                         std::string error_message);
+base::Value::Dict GetStartDataCollectionResult(bool success,
+                                               std::string error_message);
 
 base::FilePath GetDefaultFileToExport(base::FilePath suggested_path,
                                       const std::string& case_id,

@@ -251,7 +251,7 @@ base::Value::List GetDetectedPIIDataItems(const PIIMap& detected_pii) {
     // TODO(b/200511640): Set `keep` field to the value we'll get from URL's
     // pii_masking_on query if it exists.
     pii_data_item.Set(support_tool_ui::kPiiItemKeepKey, true);
-    detected_pii_data_items.Append(base::Value(std::move(pii_data_item)));
+    detected_pii_data_items.Append(std::move(pii_data_item));
   }
   return detected_pii_data_items;
 }
@@ -349,12 +349,12 @@ std::set<support_tool::DataCollectorType> GetIncludedDataCollectorTypes(
   return included_data_collectors;
 }
 
-base::Value GetStartDataCollectionResult(bool success,
-                                         std::string error_message) {
+base::Value::Dict GetStartDataCollectionResult(bool success,
+                                               std::string error_message) {
   base::Value::Dict result;
   result.Set("success", success);
   result.Set("errorMessage", error_message);
-  return base::Value(std::move(result));
+  return result;
 }
 
 base::FilePath GetDefaultFileToExport(base::FilePath suggested_path,

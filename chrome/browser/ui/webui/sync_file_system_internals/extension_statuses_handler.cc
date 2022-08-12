@@ -117,8 +117,7 @@ void ExtensionStatusesHandler::HandleGetExtensionStatuses(
 
 void ExtensionStatusesHandler::DidGetExtensionStatuses(std::string callback_id,
                                                        base::Value::List list) {
-  ResolveJavascriptCallback(base::Value(callback_id),
-                            base::Value(std::move(list)));
+  ResolveJavascriptCallback(base::Value(callback_id), list);
 }
 
 }  // namespace syncfs_internals

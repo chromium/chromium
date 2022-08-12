@@ -119,7 +119,7 @@ void NtpBackgroundHandler::HandleGetBackgrounds(const base::Value::List& args) {
     list_value.Append(std::move(element));
   }
 
-  ResolveJavascriptCallback(callback_id, base::Value(std::move(list_value)));
+  ResolveJavascriptCallback(callback_id, list_value);
 }
 
 void NtpBackgroundHandler::HandleSetBackground(const base::Value::List& args) {

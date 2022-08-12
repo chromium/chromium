@@ -86,8 +86,7 @@ void FileMetadataHandler::HandleGetExtensions(const base::Value::List& args) {
 
 void FileMetadataHandler::DidGetExtensions(std::string callback_id,
                                            base::Value::List list) {
-  ResolveJavascriptCallback(base::Value(callback_id),
-                            base::Value(std::move(list)));
+  ResolveJavascriptCallback(base::Value(callback_id), list);
 }
 
 void FileMetadataHandler::DidGetFileMetadata(std::string callback_id,

@@ -177,7 +177,7 @@ base::Value::List SupportToolMessageHandler::GetAccountsList() {
   for (const auto& account : signin_ui_util::GetOrderedAccountsForDisplay(
            profile, /*restrict_to_accounts_eligible_for_sync=*/false)) {
     if (!account.IsEmpty())
-      account_list.Append(base::Value(account.email));
+      account_list.Append(account.email);
   }
   return account_list;
 }
@@ -188,7 +188,7 @@ void SupportToolMessageHandler::HandleGetEmailAddresses(
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
 
-  ResolveJavascriptCallback(callback_id, base::Value(GetAccountsList()));
+  ResolveJavascriptCallback(callback_id, GetAccountsList());
 }
 
 void SupportToolMessageHandler::HandleGetDataCollectors(
@@ -201,8 +201,8 @@ void SupportToolMessageHandler::HandleGetDataCollectors(
   net::GetValueForKeyInQuery(web_ui()->GetWebContents()->GetURL(),
                              support_tool_ui::kModuleQuery, &module_query);
 
-  ResolveJavascriptCallback(
-      callback_id, base::Value(GetDataCollectorItemsInQuery(module_query)));
+  ResolveJavascriptCallback(callback_id,
+                            GetDataCollectorItemsInQuery(module_query));
 }
 
 void SupportToolMessageHandler::HandleGetAllDataCollectors(
@@ -210,7 +210,7 @@ void SupportToolMessageHandler::HandleGetAllDataCollectors(
   AllowJavascript();
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
-  ResolveJavascriptCallback(callback_id, base::Value(GetAllDataCollectors()));
+  ResolveJavascriptCallback(callback_id, GetAllDataCollectors());
 }
 
 // Starts data collection with the issue details and selected set of data
@@ -254,7 +254,7 @@ void SupportToolMessageHandler::OnDataCollectionDone(
     std::set<SupportToolError> errors) {
   AllowJavascript();
   FireWebUIListener("data-collection-completed",
-                    base::Value(GetDetectedPIIDataItems(detected_pii)));
+                    GetDetectedPIIDataItems(detected_pii));
 }
 
 void SupportToolMessageHandler::HandleCancelDataCollection(
@@ -345,8 +345,7 @@ void SupportToolMessageHandler::OnDataExportDone(
     data_export_result.Set("path", std::string());
     data_export_result.Set("error", export_error->error_message);
   }
-  FireWebUIListener("data-export-completed",
-                    base::Value(std::move(data_export_result)));
+  FireWebUIListener("data-export-completed", data_export_result);
 }
 
 void SupportToolMessageHandler::HandleShowExportedDataInFolder(
@@ -361,8 +360,8 @@ void SupportToolMessageHandler::HandleGenerateCustomizedURL(
   std::string case_id = args[1].GetString();
   const base::Value::List* data_collectors = args[2].GetIfList();
   DCHECK(data_collectors);
-  ResolveJavascriptCallback(callback_id, base::Value(GenerateCustomizedURL(
-                                             case_id, data_collectors)));
+  ResolveJavascriptCallback(callback_id,
+                            GenerateCustomizedURL(case_id, data_collectors));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

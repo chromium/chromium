@@ -105,17 +105,17 @@ void SyncFileSystemInternalsHandler::OnFileSynced(
 
 void SyncFileSystemInternalsHandler::OnLogRecorded(
     const sync_file_system::TaskLogger::TaskLog& task_log) {
-  base::DictionaryValue dict;
+  base::Value::Dict dict;
   int64_t duration = (task_log.end_time - task_log.start_time).InMilliseconds();
-  dict.SetIntKey("duration", duration);
-  dict.SetStringKey("task_description", task_log.task_description);
-  dict.SetStringKey("result_description", task_log.result_description);
+  dict.Set("duration", static_cast<int>(duration));
+  dict.Set("task_description", task_log.task_description);
+  dict.Set("result_description", task_log.result_description);
 
-  base::ListValue details;
+  base::Value::List details;
   for (const std::string& detail : task_log.details) {
     details.Append(detail);
   }
-  dict.SetKey("details", std::move(details));
+  dict.Set("details", std::move(details));
   FireWebUIListener("task-log-recorded", dict);
 }
 
@@ -159,20 +159,20 @@ void SyncFileSystemInternalsHandler::HandleGetLog(
     last_log_id_sent = args[1].GetInt();
 
   // Collate events which haven't been sent to WebUI yet.
-  base::Value list(base::Value::Type::LIST);
-  for (auto log_entry = log.begin(); log_entry != log.end(); ++log_entry) {
-    if (log_entry->id <= last_log_id_sent)
+  base::Value::List list;
+  for (const auto& entry : log) {
+    if (entry.id <= last_log_id_sent)
       continue;
 
-    base::Value dict(base::Value::Type::DICTIONARY);
-    dict.SetIntKey("id", log_entry->id);
-    dict.SetStringKey("time", google_apis::util::FormatTimeAsStringLocaltime(
-                                  log_entry->when));
-    dict.SetStringKey("logEvent", log_entry->what);
+    base::Value::Dict dict;
+    dict.Set("id", entry.id);
+    dict.Set("time",
+             google_apis::util::FormatTimeAsStringLocaltime(entry.when));
+    dict.Set("logEvent", entry.what);
     list.Append(std::move(dict));
-    last_log_id_sent = log_entry->id;
+    last_log_id_sent = entry.id;
   }
-  if (list.GetListDeprecated().empty())
+  if (list.empty())
     return;
 
   ResolveJavascriptCallback(callback_id, list);

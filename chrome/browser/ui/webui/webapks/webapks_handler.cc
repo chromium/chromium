@@ -47,38 +47,34 @@ void WebApksHandler::HandleRequestWebApkUpdate(const base::Value::List& args) {
 void WebApksHandler::OnWebApkInfoRetrieved(const WebApkInfo& webapk_info) {
   if (!IsJavascriptAllowed())
     return;
-  base::DictionaryValue result;
-  result.SetStringKey("name", webapk_info.name);
-  result.SetStringKey("shortName", webapk_info.short_name);
-  result.SetStringKey("packageName", webapk_info.package_name);
-  result.SetStringKey("id", webapk_info.id);
-  result.SetIntKey("shellApkVersion", webapk_info.shell_apk_version);
-  result.SetIntKey("versionCode", webapk_info.version_code);
-  result.SetStringKey("uri", webapk_info.uri);
-  result.SetStringKey("scope", webapk_info.scope);
-  result.SetStringKey("manifestUrl", webapk_info.manifest_url);
-  result.SetStringKey("manifestStartUrl", webapk_info.manifest_start_url);
-  result.SetStringKey("manifestId", webapk_info.manifest_id);
-  result.SetStringKey("displayMode",
-                      blink::DisplayModeToString(webapk_info.display));
-  result.SetStringKey(
-      "orientation",
-      blink::WebScreenOrientationLockTypeToString(webapk_info.orientation));
-  result.SetStringKey("themeColor",
-                      ui::OptionalSkColorToString(webapk_info.theme_color));
-  result.SetStringKey("backgroundColor", ui::OptionalSkColorToString(
-                                             webapk_info.background_color));
-  result.SetDoubleKey("lastUpdateCheckTimeMs",
-                      webapk_info.last_update_check_time.ToJsTime());
-  result.SetDoubleKey("lastUpdateCompletionTimeMs",
-                      webapk_info.last_update_completion_time.ToJsTime());
-  result.SetBoolKey("relaxUpdates", webapk_info.relax_updates);
-  result.SetStringKey("backingBrowser",
-                      webapk_info.backing_browser_package_name);
-  result.SetBoolKey("isBackingBrowser", webapk_info.is_backing_browser);
-  result.SetStringKey("updateStatus",
-                      webapk_info.is_backing_browser
-                          ? webapk_info.update_status
-                          : "Current browser doesn't own this WebAPK.");
+  base::Value::Dict result;
+  result.Set("name", webapk_info.name);
+  result.Set("shortName", webapk_info.short_name);
+  result.Set("packageName", webapk_info.package_name);
+  result.Set("id", webapk_info.id);
+  result.Set("shellApkVersion", webapk_info.shell_apk_version);
+  result.Set("versionCode", webapk_info.version_code);
+  result.Set("uri", webapk_info.uri);
+  result.Set("scope", webapk_info.scope);
+  result.Set("manifestUrl", webapk_info.manifest_url);
+  result.Set("manifestStartUrl", webapk_info.manifest_start_url);
+  result.Set("manifestId", webapk_info.manifest_id);
+  result.Set("displayMode", blink::DisplayModeToString(webapk_info.display));
+  result.Set("orientation", blink::WebScreenOrientationLockTypeToString(
+                                webapk_info.orientation));
+  result.Set("themeColor",
+             ui::OptionalSkColorToString(webapk_info.theme_color));
+  result.Set("backgroundColor",
+             ui::OptionalSkColorToString(webapk_info.background_color));
+  result.Set("lastUpdateCheckTimeMs",
+             webapk_info.last_update_check_time.ToJsTime());
+  result.Set("lastUpdateCompletionTimeMs",
+             webapk_info.last_update_completion_time.ToJsTime());
+  result.Set("relaxUpdates", webapk_info.relax_updates);
+  result.Set("backingBrowser", webapk_info.backing_browser_package_name);
+  result.Set("isBackingBrowser", webapk_info.is_backing_browser);
+  result.Set("updateStatus", webapk_info.is_backing_browser
+                                 ? webapk_info.update_status
+                                 : "Current browser doesn't own this WebAPK.");
   FireWebUIListener("web-apk-info", result);
 }
