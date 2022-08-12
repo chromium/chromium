@@ -42,10 +42,11 @@ class AppDiscoveryService : public KeyedService {
 
   // Queries for an app's icon, identified by |app_id|.
   // |callback| is called when a response to the request is ready.
-  void GetIcon(const std::string& app_id,
-               int32_t size_hint_in_dip,
-               ResultType result_type,
-               GetIconCallback callback);
+  // Virtual for testing.
+  virtual void GetIcon(const std::string& app_id,
+                       int32_t size_hint_in_dip,
+                       ResultType result_type,
+                       GetIconCallback callback);
 
  private:
   std::unique_ptr<AppFetcherManager> app_fetcher_manager_;

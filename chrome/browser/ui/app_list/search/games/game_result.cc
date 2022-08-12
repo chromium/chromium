@@ -162,26 +162,28 @@ void GameResult::OnIconLoaded(const gfx::ImageSkia& image,
     return;
   }
 
+  // All icons must be circles and set on a white background. The white
+  // background will only affect images with transparent backgrounds.
+  gfx::ImageSkia icon;
   if (is_icon_masking_allowed_) {
-    // TODO(crbug.com/1305880): Check that this is set in unit tests. This
-    // relies on the AppDiscoveryService.
-    SetIcon(IconInfo(image, GetAppIconDimension(), IconShape::kCircle));
-    return;
+    // Create a circle that is large enough to cover the image. Images are
+    // expected to be squares of an even dimension.
+    const int radius = std::max(image.height(), image.width()) / 2;
+    icon = gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
+        radius, SK_ColorWHITE, image);
+  } else {
+    // If icon masking is not allowed, resize the image to fit.
+    const int radius = dimension_ / 2;
+    const int size = MaxSquareLengthForRadius(radius);
+    const gfx::ImageSkia resized_image =
+        gfx::ImageSkiaOperations::CreateResizedImage(
+            image, skia::ImageOperations::ResizeMethod::RESIZE_GOOD,
+            gfx::Size(size, size));
+
+    icon = gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
+        radius, SK_ColorWHITE, resized_image);
   }
-
-  // Resize and set the provided image into a white circle.
-  const int radius = dimension_ / 2;
-  const int size = MaxSquareLengthForRadius(radius);
-  const gfx::ImageSkia resized_image =
-      gfx::ImageSkiaOperations::CreateResizedImage(
-          image, skia::ImageOperations::ResizeMethod::RESIZE_GOOD,
-          gfx::Size(size, size));
-
-  const gfx::ImageSkia icon =
-      gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
-          radius, SK_ColorWHITE, resized_image);
-
-  SetIcon(IconInfo(icon, GetAppIconDimension()));
+  SetIcon(IconInfo(icon, GetAppIconDimension(), IconShape::kCircle));
 }
 
 void GameResult::SetGenericIcon() {
