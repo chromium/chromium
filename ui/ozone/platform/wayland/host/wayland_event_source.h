@@ -33,6 +33,15 @@ namespace gfx {
 class Vector2dF;
 }
 
+namespace wl {
+
+enum class EventDispatchPolicy {
+  kImmediate,
+  kOnFrame,
+};
+
+}  // namespace wl
+
 namespace ui {
 
 class WaylandConnection;
@@ -120,19 +129,18 @@ class WaylandEventSource : public PlatformEventSource,
   const WaylandWindow* GetPointerTarget() const override;
 
   // WaylandTouch::Delegate
-  using DispatchPolicy = WaylandTouch::Delegate::EventDispatchPolicy;
   void OnTouchPressEvent(WaylandWindow* window,
                          const gfx::PointF& location,
                          base::TimeTicks timestamp,
                          PointerId id,
-                         EventDispatchPolicy dispatch_policy) override;
+                         wl::EventDispatchPolicy dispatch_policy) override;
   void OnTouchReleaseEvent(base::TimeTicks timestamp,
                            PointerId id,
-                           EventDispatchPolicy dispatch_policy) override;
+                           wl::EventDispatchPolicy dispatch_policy) override;
   void OnTouchMotionEvent(const gfx::PointF& location,
                           base::TimeTicks timestamp,
                           PointerId id,
-                          EventDispatchPolicy dispatch_policy) override;
+                          wl::EventDispatchPolicy dispatch_policy) override;
   void OnTouchCancelEvent() override;
   void OnTouchFrame() override;
   void OnTouchFocusChanged(WaylandWindow* window) override;

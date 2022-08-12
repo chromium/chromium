@@ -12,6 +12,7 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 
@@ -56,7 +57,7 @@ void WaylandTouch::Down(void* data,
       gfx::PointF(wl_fixed_to_double(x), wl_fixed_to_double(y)), window);
   base::TimeTicks timestamp = base::TimeTicks() + base::Milliseconds(time);
   touch->delegate_->OnTouchPressEvent(window, location, timestamp, id,
-                                      Delegate::EventDispatchPolicy::kOnFrame);
+                                      wl::EventDispatchPolicy::kOnFrame);
 }
 
 void WaylandTouch::Up(void* data,
@@ -68,8 +69,8 @@ void WaylandTouch::Up(void* data,
   DCHECK(touch);
 
   base::TimeTicks timestamp = base::TimeTicks() + base::Milliseconds(time);
-  touch->delegate_->OnTouchReleaseEvent(
-      timestamp, id, Delegate::EventDispatchPolicy::kOnFrame);
+  touch->delegate_->OnTouchReleaseEvent(timestamp, id,
+                                        wl::EventDispatchPolicy::kOnFrame);
 }
 
 void WaylandTouch::Motion(void* data,
@@ -90,7 +91,7 @@ void WaylandTouch::Motion(void* data,
       gfx::PointF(wl_fixed_to_double(x), wl_fixed_to_double(y)), target);
   base::TimeTicks timestamp = base::TimeTicks() + base::Milliseconds(time);
   touch->delegate_->OnTouchMotionEvent(location, timestamp, id,
-                                       Delegate::EventDispatchPolicy::kOnFrame);
+                                       wl::EventDispatchPolicy::kOnFrame);
 }
 
 void WaylandTouch::Cancel(void* data, wl_touch* obj) {

@@ -375,7 +375,7 @@ void WaylandEventSource::OnTouchPressEvent(
     const gfx::PointF& location,
     base::TimeTicks timestamp,
     PointerId id,
-    EventDispatchPolicy dispatch_policy) {
+    wl::EventDispatchPolicy dispatch_policy) {
   DCHECK(window);
   HandleTouchFocusChange(window, true);
 
@@ -390,7 +390,7 @@ void WaylandEventSource::OnTouchPressEvent(
   PointerDetails details(EventPointerType::kTouch, id);
   TouchEvent event(ET_TOUCH_PRESSED, location, location, timestamp, details,
                    keyboard_modifiers_);
-  DCHECK_EQ(dispatch_policy, DispatchPolicy::kOnFrame);
+  DCHECK_EQ(dispatch_policy, wl::EventDispatchPolicy::kOnFrame);
   touch_frames_.push_back(
       std::make_unique<TouchFrame>(event, base::NullCallback()));
 }
@@ -398,7 +398,7 @@ void WaylandEventSource::OnTouchPressEvent(
 void WaylandEventSource::OnTouchReleaseEvent(
     base::TimeTicks timestamp,
     PointerId id,
-    EventDispatchPolicy dispatch_policy) {
+    wl::EventDispatchPolicy dispatch_policy) {
   // Make sure this touch point was present before.
   const auto it = touch_points_.find(id);
   if (it == touch_points_.end()) {
@@ -412,7 +412,7 @@ void WaylandEventSource::OnTouchReleaseEvent(
 
   TouchEvent event(ET_TOUCH_RELEASED, location, location, timestamp, details,
                    keyboard_modifiers_);
-  if (dispatch_policy == EventDispatchPolicy::kImmediate) {
+  if (dispatch_policy == wl::EventDispatchPolicy::kImmediate) {
     SetTouchTargetAndDispatchTouchEvent(&event);
     OnTouchReleaseInternal(id);
   } else {
@@ -475,7 +475,7 @@ void WaylandEventSource::OnTouchMotionEvent(
     const gfx::PointF& location,
     base::TimeTicks timestamp,
     PointerId id,
-    EventDispatchPolicy dispatch_policy) {
+    wl::EventDispatchPolicy dispatch_policy) {
   const auto it = touch_points_.find(id);
   // Make sure this touch point was present before.
   if (it == touch_points_.end()) {
@@ -486,7 +486,7 @@ void WaylandEventSource::OnTouchMotionEvent(
   PointerDetails details(EventPointerType::kTouch, id);
   TouchEvent event(ET_TOUCH_MOVED, location, location, timestamp, details,
                    keyboard_modifiers_);
-  if (dispatch_policy == DispatchPolicy::kImmediate) {
+  if (dispatch_policy == wl::EventDispatchPolicy::kImmediate) {
     SetTouchTargetAndDispatchTouchEvent(&event);
   } else {
     touch_frames_.push_back(
