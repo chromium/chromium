@@ -7,6 +7,7 @@
 #include "chrome/browser/segmentation_platform/segmentation_platform_config.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/segmentation_platform/internal/execution/optimization_guide/optimization_guide_segmentation_model_provider.h"
+#include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 
 namespace segmentation_platform {
@@ -32,9 +33,21 @@ class DummyModelProvider : public ModelProvider {
 ModelProviderFactoryImpl::ModelProviderFactoryImpl(
     optimization_guide::OptimizationGuideModelProvider*
         optimization_guide_provider,
+    std::vector<std::unique_ptr<Config>>& configs,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner)
     : optimization_guide_provider_(optimization_guide_provider),
-      background_task_runner_(background_task_runner) {}
+      background_task_runner_(background_task_runner) {
+  for (auto& config : configs) {
+    for (auto& segment : config->segments) {
+      if (segment.second->default_provider) {
+        auto inserted = default_models_.insert(
+            {segment.first, std::move(segment.second->default_provider)});
+        DCHECK(inserted.second)
+            << "Only one config can set default provider for " << segment.first;
+      }
+    }
+  }
+}
 
 ModelProviderFactoryImpl::~ModelProviderFactoryImpl() = default;
 
@@ -54,7 +67,45 @@ std::unique_ptr<ModelProvider> ModelProviderFactoryImpl::CreateProvider(
 
 std::unique_ptr<ModelProvider> ModelProviderFactoryImpl::CreateDefaultProvider(
     proto::SegmentId segment_id) {
-  return DefaultModelsRegister::GetInstance().GetModelProvider(segment_id);
+  auto test_override =
+      TestDefaultModelOverride::GetInstance().TakeOwnershipOfModelProvider(
+          segment_id);
+  if (test_override) {
+    return test_override;
+  }
+
+  auto it = default_models_.find(segment_id);
+  if (it == default_models_.end()) {
+    return nullptr;
+  }
+  DCHECK(it->second)
+      << "Default model can be requested only once for a service.";
+  return std::move(it->second);
+}
+
+TestDefaultModelOverride::TestDefaultModelOverride() = default;
+TestDefaultModelOverride::~TestDefaultModelOverride() = default;
+
+TestDefaultModelOverride& TestDefaultModelOverride::GetInstance() {
+  static base::NoDestructor<TestDefaultModelOverride> instance;
+  return *instance;
+}
+
+std::unique_ptr<ModelProvider>
+TestDefaultModelOverride::TakeOwnershipOfModelProvider(
+    proto::SegmentId target) {
+  auto it = providers_.find(target);
+  if (it != providers_.end()) {
+    DCHECK(it->second);
+    return std::move(it->second);
+  }
+  return nullptr;
+}
+
+void TestDefaultModelOverride::SetModelForTesting(
+    proto::SegmentId target,
+    std::unique_ptr<ModelProvider> provider) {
+  providers_[target] = std::move(provider);
 }
 
 }  // namespace segmentation_platform

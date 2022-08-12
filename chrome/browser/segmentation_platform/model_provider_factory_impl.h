@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
+#include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
@@ -18,11 +19,14 @@ class OptimizationGuideModelProvider;
 
 namespace segmentation_platform {
 
+struct Config;
+
 class ModelProviderFactoryImpl : public ModelProviderFactory {
  public:
   ModelProviderFactoryImpl(
       optimization_guide::OptimizationGuideModelProvider*
           optimization_guide_provider,
+      std::vector<std::unique_ptr<Config>>& configs,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner);
 
   ~ModelProviderFactoryImpl() override;
@@ -39,7 +43,33 @@ class ModelProviderFactoryImpl : public ModelProviderFactory {
  private:
   raw_ptr<optimization_guide::OptimizationGuideModelProvider>
       optimization_guide_provider_;
+  base::flat_map<proto::SegmentId, std::unique_ptr<ModelProvider>>
+      default_models_;
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
+};
+
+// Used only in tests to override the default model.
+class TestDefaultModelOverride {
+ public:
+  static TestDefaultModelOverride& GetInstance();
+
+  ~TestDefaultModelOverride();
+  TestDefaultModelOverride(const TestDefaultModelOverride& client) = delete;
+  TestDefaultModelOverride& operator=(const TestDefaultModelOverride& client) =
+      delete;
+
+  std::unique_ptr<ModelProvider> TakeOwnershipOfModelProvider(
+      proto::SegmentId target);
+
+  void SetModelForTesting(proto::SegmentId target,
+                          std::unique_ptr<ModelProvider>);
+
+ private:
+  friend class base::NoDestructor<TestDefaultModelOverride>;
+
+  TestDefaultModelOverride();
+
+  std::map<proto::SegmentId, std::unique_ptr<ModelProvider>> providers_;
 };
 
 }  // namespace segmentation_platform

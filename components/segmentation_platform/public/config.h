@@ -100,8 +100,6 @@ struct Config {
 
     // The default model or score used when server provided model is
     // unavailable.
-    // TODO(crbug.com/1346389): This field is unused and being migrated from
-    // ModelProviderFactory.
     std::unique_ptr<ModelProvider> default_provider;
   };
   base::flat_map<proto::SegmentId, std::unique_ptr<SegmentMetadata>> segments;

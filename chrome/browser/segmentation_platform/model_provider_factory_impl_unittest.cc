@@ -7,6 +7,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
+#include "components/segmentation_platform/public/config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace segmentation_platform {
@@ -21,7 +22,7 @@ class ModelProviderFactoryImplTest : public testing::Test {
     model_provider_ = std::make_unique<
         optimization_guide::TestOptimizationGuideModelProvider>();
     provider_factory_ = std::make_unique<ModelProviderFactoryImpl>(
-        model_provider_.get(), task_runner_);
+        model_provider_.get(), configs_, task_runner_);
   }
 
   void TearDown() override {
@@ -35,6 +36,8 @@ class ModelProviderFactoryImplTest : public testing::Test {
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   std::unique_ptr<optimization_guide::TestOptimizationGuideModelProvider>
       model_provider_;
+  // TODO(ssid): Fxi test to take rael configs
+  std::vector<std::unique_ptr<Config>> configs_;
 
   std::unique_ptr<ModelProviderFactoryImpl> provider_factory_;
 };
@@ -50,8 +53,9 @@ class DummyModelProviderFactoryImplTest : public ModelProviderFactoryImplTest {
  public:
   void SetUp() override {
     task_runner_ = base::MakeRefCounted<base::TestSimpleTaskRunner>();
-    provider_factory_ =
-        std::make_unique<ModelProviderFactoryImpl>(nullptr, task_runner_);
+    std::vector<std::unique_ptr<Config>> configs;
+    provider_factory_ = std::make_unique<ModelProviderFactoryImpl>(
+        nullptr, configs, task_runner_);
   }
 };
 

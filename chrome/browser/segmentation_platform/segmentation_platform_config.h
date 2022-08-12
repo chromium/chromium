@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/no_destructor.h"
 #include "components/segmentation_platform/public/field_trial_register.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 
@@ -18,34 +17,10 @@ class BrowserContext;
 
 namespace segmentation_platform {
 struct Config;
-class ModelProvider;
 
 // Returns a Config created from the finch feature params.
 std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
     content::BrowserContext* context);
-
-// Returns a default model provider for the `target`.
-class DefaultModelsRegister {
- public:
-  static DefaultModelsRegister& GetInstance();
-
-  ~DefaultModelsRegister();
-  DefaultModelsRegister(const DefaultModelsRegister& client) = delete;
-  DefaultModelsRegister& operator=(const DefaultModelsRegister& client) =
-      delete;
-
-  std::unique_ptr<ModelProvider> GetModelProvider(proto::SegmentId target);
-
-  void SetModelForTesting(proto::SegmentId target,
-                          std::unique_ptr<ModelProvider>);
-
- private:
-  friend class base::NoDestructor<DefaultModelsRegister>;
-
-  DefaultModelsRegister();
-
-  std::map<proto::SegmentId, std::unique_ptr<ModelProvider>> providers_;
-};
 
 // Implementation of FieldTrialRegister that uses synthetic field trials to
 // record segmentation groups.

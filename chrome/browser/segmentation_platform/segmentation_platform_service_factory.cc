@@ -97,14 +97,14 @@ KeyedService* SegmentationPlatformServiceFactory::BuildServiceInstanceFor(
       profile->GetDefaultStoragePartition()->GetProtoDatabaseProvider();
   params->clock = base::DefaultClock::GetInstance();
 
-  params->model_provider = std::make_unique<ModelProviderFactoryImpl>(
-      optimization_guide, params->task_runner);
   params->ukm_data_manager =
       UkmDatabaseClient::GetInstance().GetUkmDataManager();
   params->profile_prefs = profile->GetPrefs();
   params->configs = GetSegmentationPlatformConfig(context);
   params->input_delegate_holder = SetUpInputDelegates(params->configs);
   params->field_trial_register = std::make_unique<FieldTrialRegisterImpl>();
+  params->model_provider = std::make_unique<ModelProviderFactoryImpl>(
+      optimization_guide, params->configs, params->task_runner);
   auto* service = new SegmentationPlatformServiceImpl(std::move(params));
 
   // Profile manager can be null in unit tests.
