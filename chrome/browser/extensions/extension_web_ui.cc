@@ -69,23 +69,23 @@ const char kActive[] = "active";
 // We do the conversion because we previously stored these values as strings
 // rather than objects.
 // TODO(devlin): Remove the conversion once everyone's updated.
-void InitializeOverridesList(base::Value* list) {
-  base::Value migrated(base::Value::Type::LIST);
+void InitializeOverridesList(base::Value::List& list) {
+  base::Value::List migrated;
   std::set<std::string> seen_entries;
-  for (auto& val : list->GetListDeprecated()) {
-    base::Value new_dict(base::Value::Type::DICTIONARY);
+  for (auto& val : list) {
+    base::Value::Dict new_dict;
     std::string entry_name;
     if (val.is_dict()) {
-      const std::string* tmp = val.FindStringKey(kEntry);
+      const std::string* tmp = val.GetDict().FindString(kEntry);
       if (!tmp)  // See comment about CHECK(success) in
                  // ForEachOverrideList.
         continue;
       entry_name = *tmp;
-      new_dict = val.Clone();
+      new_dict = val.GetDict().Clone();
     } else if (val.is_string()) {
       entry_name = val.GetString();
-      new_dict.SetStringKey(kEntry, entry_name);
-      new_dict.SetBoolKey(kActive, true);
+      new_dict.Set(kEntry, entry_name);
+      new_dict.Set(kActive, true);
     } else {
       NOTREACHED();
       continue;
@@ -98,24 +98,25 @@ void InitializeOverridesList(base::Value* list) {
     }
   }
 
-  *list = std::move(migrated);
+  list = std::move(migrated);
 }
 
 // Adds |override| to |list|, or, if there's already an entry for the override,
 // marks it as active.
-void AddOverridesToList(base::Value* list, const GURL& override_url) {
+void AddOverridesToList(base::Value::List& list, const GURL& override_url) {
   const std::string& spec = override_url.spec();
-  for (auto& val : list->GetListDeprecated()) {
+  for (auto& val : list) {
     std::string* entry = nullptr;
-    if (val.is_dict()) {
-      entry = val.FindStringKey(kEntry);
+    base::Value::Dict* dict = val.GetIfDict();
+    if (dict) {
+      entry = dict->FindString(kEntry);
     }
     if (!entry) {
       NOTREACHED();
       continue;
     }
     if (*entry == spec) {
-      val.SetBoolKey(kActive, true);
+      dict->Set(kActive, true);
       return;  // All done!
     }
     GURL entry_url(*entry);
@@ -124,29 +125,29 @@ void AddOverridesToList(base::Value* list, const GURL& override_url) {
       continue;
     }
     if (entry_url.host() == override_url.host()) {
-      val.SetBoolKey(kActive, true);
-      val.SetStringKey(kEntry, spec);
+      dict->Set(kActive, true);
+      dict->Set(kEntry, spec);
       return;
     }
   }
 
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringPath(kEntry, spec);
-  dict.SetBoolPath(kActive, true);
+  base::Value::Dict dict;
+  dict.SetByDottedPath(kEntry, spec);
+  dict.SetByDottedPath(kActive, true);
   // Add the entry to the front of the list.
-  list->Insert(list->GetListDeprecated().begin(), std::move(dict));
+  list.Insert(list.begin(), base::Value(std::move(dict)));
 }
 
 // Validates that each entry in |list| contains a valid url and points to an
 // extension contained in |all_extensions| (and, if not, removes it).
 void ValidateOverridesList(const extensions::ExtensionSet* all_extensions,
-                           base::Value* list) {
-  base::Value migrated(base::Value::Type::LIST);
+                           base::Value::List& list) {
+  base::Value::List migrated;
   std::set<std::string> seen_hosts;
-  for (auto& val : list->GetListDeprecated()) {
+  for (auto& val : list) {
     std::string* entry = nullptr;
     if (val.is_dict()) {
-      entry = val.FindStringKey(kEntry);
+      entry = val.GetDict().FindString(kEntry);
     }
     if (!entry) {
       NOTREACHED();
@@ -167,7 +168,7 @@ void ValidateOverridesList(const extensions::ExtensionSet* all_extensions,
     migrated.Append(val.Clone());
   }
 
-  *list = std::move(migrated);
+  list = std::move(migrated);
 }
 
 // Reloads the page in |web_contents| if it uses the same profile as |profile|
@@ -318,28 +319,29 @@ bool ValidateOverrideURL(const base::Value* override_url_value,
 }
 
 // Fetches each list in the overrides dictionary and runs |callback| on it.
-void ForEachOverrideList(Profile* profile,
-                         base::RepeatingCallback<void(base::Value*)> callback) {
+void ForEachOverrideList(
+    Profile* profile,
+    base::RepeatingCallback<void(base::Value::List&)> callback) {
   PrefService* prefs = profile->GetPrefs();
   DictionaryPrefUpdate update(prefs, ExtensionWebUI::kExtensionURLOverrides);
-  base::Value* all_overrides = update.Get();
+  base::Value::Dict& all_overrides = update->GetDict();
 
   // We shouldn't modify the list during iteration. Generate the set of keys
   // instead.
   std::vector<std::string> keys;
-  for (const auto entry : all_overrides->DictItems()) {
+  for (const auto entry : all_overrides) {
     keys.push_back(entry.first);
   }
   for (const std::string& key : keys) {
-    base::Value* list = all_overrides->FindListKey(key);
+    base::Value::List* list = all_overrides.FindList(key);
     // In a perfect world, we could CHECK(list) here. Unfortunately, if a
     // user's prefs are mangled (by malware, user modification, hard drive
     // corruption, evil robots, etc), this will fail. Instead, delete the pref.
     if (!list) {
-      all_overrides->RemoveKey(key);
+      all_overrides.Remove(key);
       continue;
     }
-    callback.Run(list);
+    callback.Run(*list);
   }
 }
 
@@ -535,15 +537,17 @@ void ExtensionWebUI::RegisterOrActivateChromeURLOverrides(
     return;
   PrefService* prefs = profile->GetPrefs();
   DictionaryPrefUpdate update(prefs, kExtensionURLOverrides);
-  base::Value* all_overrides = update.Get();
+  base::Value::Dict& all_overrides = update->GetDict();
   for (const auto& page_override_pair : overrides) {
-    base::Value* page_overrides_weak =
-        all_overrides->FindListPath(page_override_pair.first);
+    base::Value::List* page_overrides_weak =
+        all_overrides.FindListByDottedPath(page_override_pair.first);
     if (page_overrides_weak == nullptr) {
-      page_overrides_weak = all_overrides->SetPath(
-          page_override_pair.first, base::Value(base::Value::Type::LIST));
+      page_overrides_weak =
+          &all_overrides
+               .SetByDottedPath(page_override_pair.first, base::Value::List())
+               ->GetList();
     }
-    AddOverridesToList(page_overrides_weak, page_override_pair.second);
+    AddOverridesToList(*page_overrides_weak, page_override_pair.second);
   }
 }
 
