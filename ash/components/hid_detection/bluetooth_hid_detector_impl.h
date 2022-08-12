@@ -10,6 +10,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/elapsed_timer.h"
 #include "chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -98,6 +99,7 @@ class BluetoothHidDetectorImpl
 
   void ProcessQueue();
   void OnPairDevice(
+      std::unique_ptr<base::ElapsedTimer> pairing_timer,
       chromeos::bluetooth_config::mojom::PairingResult pairing_result);
 
   // Removes any state related to the current pairing device. This will cancel

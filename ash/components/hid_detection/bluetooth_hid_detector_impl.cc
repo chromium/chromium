@@ -358,11 +358,13 @@ void BluetoothHidDetectorImpl::ProcessQueue() {
       current_pairing_device_.value()->id,
       device_pairing_delegate_receiver_.BindNewPipeAndPassRemote(),
       base::BindOnce(&BluetoothHidDetectorImpl::OnPairDevice,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::make_unique<base::ElapsedTimer>()));
   NotifyBluetoothHidDetectionStatusChanged();
 }
 
 void BluetoothHidDetectorImpl::OnPairDevice(
+    std::unique_ptr<base::ElapsedTimer> pairing_timer,
     chromeos::bluetooth_config::mojom::PairingResult pairing_result) {
   DCHECK(current_pairing_device_)
       << "OnPairDevice() called with no |current_pairing_device_|";
@@ -372,10 +374,15 @@ void BluetoothHidDetectorImpl::OnPairDevice(
                  << ", result: " << pairing_result << ", [" << queue_->size()
                  << "] devices still in queue.";
 
+  const bool success =
+      pairing_result ==
+      chromeos::bluetooth_config::mojom::PairingResult::kSuccess;
+  hid_detection::RecordBluetoothPairingResult(success,
+                                              pairing_timer->Elapsed());
+
   // If pairing has succeeded, wait for SetInputDevicesStatus() to be called
   // with the corresponding HID type no longer missing.
-  if (pairing_result ==
-      chromeos::bluetooth_config::mojom::PairingResult::kSuccess) {
+  if (success) {
     HID_LOG(EVENT)
         << "Pairing succeeded, waiting for input devices status to update.";
     return;
