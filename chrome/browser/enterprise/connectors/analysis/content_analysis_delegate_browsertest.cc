@@ -86,6 +86,12 @@ class FakeBinaryUploadService : public CloudBinaryUploadService {
     prepared_file_responses_[path] = response;
   }
 
+  void SetExpectedFinalAction(
+      enterprise_connectors::ContentAnalysisAcknowledgement::FinalAction
+          final_action) {
+    final_action_ = final_action;
+  }
+
   void SetShouldAutomaticallyAuthorize(bool authorize) {
     should_automatically_authorize_ = authorize;
   }
@@ -95,6 +101,8 @@ class FakeBinaryUploadService : public CloudBinaryUploadService {
 
  private:
   void MaybeAcknowledge(std::unique_ptr<Ack> ack) override {
+    EXPECT_EQ(final_action_, ack->ack().final_action());
+
     ++ack_count_;
     ASSERT_NE(requests_tokens_.end(),
               std::find(requests_tokens_.begin(), requests_tokens_.end(),
@@ -161,6 +169,8 @@ class FakeBinaryUploadService : public CloudBinaryUploadService {
   int requests_count_ = 0;
   int ack_count_ = 0;
   bool should_automatically_authorize_ = false;
+  ContentAnalysisAcknowledgement::FinalAction final_action_ =
+      ContentAnalysisAcknowledgement::ACTION_UNSPECIFIED;
 };
 
 FakeBinaryUploadService* FakeBinaryUploadServiceStorage() {
@@ -447,6 +457,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Files) {
   FakeBinaryUploadServiceStorage()->SetResponseForFile(
       created_file_paths()[1].AsUTF8Unsafe(),
       BinaryUploadService::Result::SUCCESS, bad_response);
+  FakeBinaryUploadServiceStorage()->SetExpectedFinalAction(
+      ContentAnalysisAcknowledgement::BLOCK);
 
   bool called = false;
   base::RunLoop run_loop;
@@ -510,6 +522,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Texts) {
 
   FakeBinaryUploadServiceStorage()->SetResponseForText(
       BinaryUploadService::Result::SUCCESS, response);
+  FakeBinaryUploadServiceStorage()->SetExpectedFinalAction(
+      ContentAnalysisAcknowledgement::BLOCK);
 
   // The DLP verdict means an event should be reported. The content size is
   // equal to the length of the concatenated texts (2 * 100 * 'a').
@@ -1047,6 +1061,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
   FakeBinaryUploadServiceStorage()->SetResponseForFile(
       created_file_paths()[0].AsUTF8Unsafe(),
       BinaryUploadService::Result::SUCCESS, response);
+  FakeBinaryUploadServiceStorage()->SetExpectedFinalAction(
+      ContentAnalysisAcknowledgement::BLOCK);
   validator.ExpectDangerousDeepScanningResultAndSensitiveDataEvent(
       /*url*/ "about:blank",
       /*filename*/ "foo.doc",

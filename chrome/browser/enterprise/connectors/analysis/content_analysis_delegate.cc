@@ -117,6 +117,25 @@ bool* UIEnabledStorage() {
   return &enabled;
 }
 
+ContentAnalysisAcknowledgement::FinalAction GetFinalAction(
+    FinalContentAnalysisResult final_result) {
+  auto final_action = ContentAnalysisAcknowledgement::ALLOW;
+  switch (final_result) {
+    case FinalContentAnalysisResult::FAILURE:
+    case FinalContentAnalysisResult::LARGE_FILES:
+    case FinalContentAnalysisResult::ENCRYPTED_FILES:
+      final_action = ContentAnalysisAcknowledgement::BLOCK;
+      break;
+    case FinalContentAnalysisResult::WARNING:
+      final_action = ContentAnalysisAcknowledgement::WARN;
+      break;
+    case FinalContentAnalysisResult::SUCCESS:
+      break;
+  }
+
+  return final_action;
+}
+
 }  // namespace
 
 ContentAnalysisDelegate::Data::Data() = default;
@@ -625,18 +644,15 @@ void ContentAnalysisDelegate::AckAllRequests() {
   if (!upload_service)
     return;
 
-  // Calculate overall status for all requests.
-  // TODO(b/240629222): Calculate status based on final_result_.
-  // However, final_result_ does not take info account timeout and I think
-  // the enum values of ContentAnalysisAcknowledgement::Status are not
-  // right.
-  auto status = ContentAnalysisAcknowledgement::SUCCESS;
+  // Calculate final action applied to all requests.
+  auto final_action = GetFinalAction(final_result_);
 
   for (auto& token : request_tokens_) {
     auto ack = std::make_unique<safe_browsing::BinaryUploadService::Ack>(
         data_.settings.cloud_or_local_settings);
     ack->set_request_token(token);
-    ack->set_status(status);
+    ack->set_status(ContentAnalysisAcknowledgement::SUCCESS);
+    ack->set_final_action(final_action);
     upload_service->MaybeAcknowledge(std::move(ack));
   }
 }

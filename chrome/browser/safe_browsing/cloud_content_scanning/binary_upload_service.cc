@@ -276,6 +276,12 @@ void BinaryUploadService::Ack::set_status(
   ack_.set_status(status);
 }
 
+void BinaryUploadService::Ack::set_final_action(
+    enterprise_connectors::ContentAnalysisAcknowledgement::FinalAction
+        final_action) {
+  ack_.set_final_action(final_action);
+}
+
 // static
 BinaryUploadService* BinaryUploadService::GetForProfile(
     Profile* profile,

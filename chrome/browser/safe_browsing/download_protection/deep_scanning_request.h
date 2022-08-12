@@ -183,7 +183,7 @@ class DeepScanningRequest : public download::DownloadItem::Observer {
   bool ReportOnlyScan();
 
   // Acknowledge the request's handling to the service provider.
-  void AcknowledgeRequest();
+  void AcknowledgeRequest(EventResult event_result);
 
   // The download item to scan. This is unowned, and could become nullptr if the
   // download is destroyed.

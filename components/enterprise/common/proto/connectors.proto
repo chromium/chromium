@@ -215,4 +215,17 @@ message ContentAnalysisAcknowledgement {
     TOO_LATE = 3;
   };
   optional Status status = 2;
+
+  // The final action that chrome took with this request.  This may be different
+  // from the action specified in the response if the response was too late or
+  // if the original request was part of a user action whose overall final
+  // differed from the action of this particular request.
+  enum FinalAction {
+    ACTION_UNSPECIFIED = 0;
+    ALLOW = 1;
+    REPORT_ONLY = 2;
+    WARN = 3;
+    BLOCK = 4;
+  };
+  optional FinalAction final_action = 3;
 }

@@ -213,6 +213,9 @@ class BinaryUploadService : public KeyedService {
     void set_request_token(const std::string& token);
     void set_status(
         enterprise_connectors::ContentAnalysisAcknowledgement::Status status);
+    void set_final_action(
+        enterprise_connectors::ContentAnalysisAcknowledgement::FinalAction
+            final_action);
 
     const enterprise_connectors::CloudOrLocalAnalysisSettings&
     cloud_or_local_settings() const {
