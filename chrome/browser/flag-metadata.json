@@ -5442,6 +5442,11 @@
     "expiry_milestone": 108
   },
   {
+    "name": "reduce-accept-language",
+    "owners": [ "miketaylr", "victortan"],
+    "expiry_milestone": 114
+  },
+  {
     "name": "reduce-display-notifications",
     "owners": [ "baileyberro", "zentaro" ],
     "expiry_milestone": 112

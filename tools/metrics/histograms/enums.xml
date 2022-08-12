@@ -57407,6 +57407,7 @@ from previous Chrome versions.
   <int value="-1081295536"
       label="ContextMenuSearchAndShopWithGoogleLens:enabled"/>
   <int value="-1080893507" label="MessagesForAndroidStackingAnimation:enabled"/>
+  <int value="-1078892725" label="ReduceAcceptLanguage:enabled"/>
   <int value="-1078093206" label="ash-debug-shortcuts"/>
   <int value="-1077752943" label="enable-password-generation"/>
   <int value="-1077534880" label="OmniboxDynamicMaxAutocomplete:enabled"/>
@@ -62099,6 +62100,7 @@ from previous Chrome versions.
   <int value="1918061181" label="HoldingSpaceInProgressAnimationV2:enabled"/>
   <int value="1918984253"
       label="OmniboxUIExperimentBlueSearchLoopAndSearchQuery:disabled"/>
+  <int value="1919380242" label="ReduceAcceptLanguage:disabled"/>
   <int value="1919917329" label="ImplicitRootScroller:disabled"/>
   <int value="1920894670"
       label="OmniboxPreserveDefaultMatchAgainstAsyncUpdate:enabled"/>

@@ -1783,6 +1783,9 @@ extern const char kForceMajorVersionInMinorPositionInUserAgentDescription[];
 extern const char kDurableClientHintsCacheName[];
 extern const char kDurableClientHintsCacheDescription[];
 
+extern const char kReduceAcceptLanguageName[];
+extern const char kReduceAcceptLanguageDescription[];
+
 extern const char kReduceUserAgentMinorVersionName[];
 extern const char kReduceUserAgentMinorVersionDescription[];
 

@@ -8685,6 +8685,10 @@ const FeatureEntry kFeatureEntries[] = {
          kUnthrottledNestedTimeout_Variations,
          "NestingLevel")},
 
+    {"reduce-accept-language", flag_descriptions::kReduceAcceptLanguageName,
+     flag_descriptions::kReduceAcceptLanguageDescription, kOsAll,
+     FEATURE_VALUE_TYPE(network::features::kReduceAcceptLanguage)},
+
     {"reduce-user-agent-minor-version",
      flag_descriptions::kReduceUserAgentMinorVersionName,
      flag_descriptions::kReduceUserAgentMinorVersionDescription, kOsAll,

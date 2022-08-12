@@ -2382,6 +2382,12 @@ const char kRecordWebAppDebugInfoDescription[] =
     "Enables recording additional web app related debugging data to be "
     "displayed in: chrome://web-app-internals";
 
+const char kReduceAcceptLanguageName[] =
+    "Reduce Accept-Language request header";
+const char kReduceAcceptLanguageDescription[] =
+    "Reduce the amount of information available in the Accept-Language request "
+    "header. See https://github.com/Tanych/accept-language for more info.";
+
 const char kReduceUserAgentName[] = "Reduce User-Agent request header";
 const char kReduceUserAgentDescription[] =
     "Reduce (formerly, \"freeze\") the amount of information available in "
