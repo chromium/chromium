@@ -536,7 +536,7 @@ public class BookmarkManager
     public void openSearchUI() {
         setState(BookmarkUIState.createSearchState());
         mSelectableListLayout.onStartSearch(R.string.bookmark_no_result);
-        mToolbar.showSearchView();
+        mToolbar.showSearchView(true);
     }
 
     @Override

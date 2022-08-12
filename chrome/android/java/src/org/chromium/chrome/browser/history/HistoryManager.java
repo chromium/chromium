@@ -439,7 +439,7 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
             return true;
         } else if (item.getItemId() == R.id.search_menu_id) {
             mContentManager.removeHeader();
-            mToolbar.showSearchView();
+            mToolbar.showSearchView(true);
             String searchEmptyString = getSearchEmptyString();
             mSelectableListLayout.onStartSearch(searchEmptyString);
             recordUserAction("Search");

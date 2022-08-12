@@ -220,7 +220,7 @@ public class PickerCategoryView extends OptimizedFrameLayout
         mPreviousSelection = new HashSet<ContactDetails>(mSelectionDelegate.getSelectedItems());
         mSearchButton.setVisibility(GONE);
         mPickerAdapter.setSearchMode(true);
-        mToolbar.showSearchView();
+        mToolbar.showSearchView(true);
     }
 
     // SelectableListToolbar.SearchDelegate:

@@ -181,7 +181,7 @@ public class ToolbarCoordinator implements SelectionObserver<ListItem> {
             UmaUtils.recordTopMenuShareCount(itemsShared);
             return true;
         } else if (item.getItemId() == R.id.search_menu_id) {
-            mToolbar.showSearchView();
+            mToolbar.showSearchView(true);
             updateShadowVisibility();
             return true;
         } else if (item.getItemId() == R.id.settings_menu_id) {
