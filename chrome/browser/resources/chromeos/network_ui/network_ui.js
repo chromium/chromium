@@ -17,6 +17,7 @@ import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import './strings.m.js';
 import './network_state_ui.js';
 import './network_logs_ui.js';
+import './network_metrics_ui.js';
 
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
@@ -55,6 +56,7 @@ Polymer({
           this.i18n('networkSelectTab'),
           this.i18n('TrafficCountersTrafficCounters'),
           this.i18n('networkHotspotTab'),
+          this.i18n('networkMetricsTab'),
         ];
       },
     },

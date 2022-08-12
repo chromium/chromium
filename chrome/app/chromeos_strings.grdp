@@ -3186,6 +3186,9 @@
   <message name="IDS_NETWORK_UI_TAB_NETWORK_SELECT" desc="Network Select tab name">
     Network Select
   </message>
+  <message name="IDS_NETWORK_UI_TAB_NETWORK_METRICS" desc="Network metrics tab name">
+    Network Metrics
+  </message>
   <message name="IDS_NETWORK_UI_TAB_NETWORK_HOTSPOT" desc="Hotspot tab name">
     Hotspot
   </message>
@@ -3311,6 +3314,24 @@
   </message>
   <message name="IDS_NETWORK_UI_NETWORK_LOGS_DEBUGGING_UNKNOWN" desc="Text displayed when the Shill debugging mode is unknown.">
     Unknown
+  </message>
+  <message name="IDS_NETWORK_UI_NETWORK_METRICS_LABEL" desc="Title for the section for displaying WiFi performance metrics.">
+    WiFi Performance Metrics
+  </message>
+  <message name="IDS_NETWORK_UI_NETWORK_METRICS_RENDER_BUTTON" desc="Text displayed on the button for rendering graph.">
+    Render
+  </message>
+  <message name="IDS_NETWORK_UI_NETWORK_METRICS_START_BUTTON" desc="Text displayed on the button for starting plots.">
+    Start
+  </message>
+  <message name="IDS_NETWORK_UI_NETWORK_METRICS_STOP_BUTTON" desc="Text displayed on the button for stopping plots.">
+    Stop
+  </message>
+  <message name="IDS_NETWORK_UI_NETWORK_METRICS_INCREASE_RATE_BUTTON" desc="Text displayed on the button for increasing the sample rate of plots.">
+    Increase rate
+  </message>
+  <message name="IDS_NETWORK_UI_NETWORK_METRICS_DECREASE_RATE_BUTTON" desc="Text displayed on the button for decreasing the sample rate of plots.">
+    Decrease rate
   </message>
   <message name="IDS_NETWORK_UI_TETHERING_CAPABILITIES_LABEL" desc="Title for the section for displaying and refreshing tethering capabilities.">
     Tethering Capabilities:

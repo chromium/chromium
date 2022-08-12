@@ -724,6 +724,9 @@ base::Value::Dict NetworkUI::GetLocalizedStrings() {
   localized_strings.Set(
       "networkHotspotTab",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_TAB_NETWORK_HOTSPOT));
+  localized_strings.Set(
+      "networkMetricsTab",
+      l10n_util::GetStringUTF16(IDS_NETWORK_UI_TAB_NETWORK_METRICS));
 
   localized_strings.Set("autoRefreshText",
                         l10n_util::GetStringUTF16(IDS_NETWORK_UI_AUTO_REFRESH));
@@ -861,6 +864,28 @@ base::Value::Dict NetworkUI::GetLocalizedStrings() {
   localized_strings.Set(
       "NetworkDiagnosticsSendFeedback",
       l10n_util::GetStringUTF16(IDS_NETWORK_DIAGNOSTICS_SEND_FEEDBACK));
+
+  // Network Metrics
+  localized_strings.Set(
+      "networkMetricsLabel",
+      l10n_util::GetStringUTF16(IDS_NETWORK_UI_NETWORK_METRICS_LABEL));
+  localized_strings.Set(
+      "renderGraphButtonText",
+      l10n_util::GetStringUTF16(IDS_NETWORK_UI_NETWORK_METRICS_RENDER_BUTTON));
+  localized_strings.Set(
+      "startPlotsButtonText",
+      l10n_util::GetStringUTF16(IDS_NETWORK_UI_NETWORK_METRICS_START_BUTTON));
+  localized_strings.Set(
+      "stopPlotsButtonText",
+      l10n_util::GetStringUTF16(IDS_NETWORK_UI_NETWORK_METRICS_STOP_BUTTON));
+  localized_strings.Set(
+      "increaseRateButtonText",
+      l10n_util::GetStringUTF16(
+          IDS_NETWORK_UI_NETWORK_METRICS_INCREASE_RATE_BUTTON));
+  localized_strings.Set(
+      "decreaseRateButtonText",
+      l10n_util::GetStringUTF16(
+          IDS_NETWORK_UI_NETWORK_METRICS_DECREASE_RATE_BUTTON));
 
   // Network Hotspot
   localized_strings.Set(

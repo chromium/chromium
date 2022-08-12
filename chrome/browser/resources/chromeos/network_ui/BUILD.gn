@@ -32,7 +32,11 @@ generate_grd("build_grd") {
 preprocess_if_expr("preprocess") {
   out_folder = "$target_gen_dir/$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_manifest"
-  in_files = [ "network_ui_browser_proxy.js" ]
+  in_files = [
+    "network_ui_browser_proxy.js",
+    "third_party/uPlot.iife.min.js",
+    "third_party/uPlot.min.css",
+  ]
 }
 
 preprocess_if_expr("preprocess_generated") {
@@ -44,6 +48,7 @@ preprocess_if_expr("preprocess_generated") {
     "network_logs_ui.js",
     "network_state_ui.js",
     "network_ui.js",
+    "network_metrics_ui.js",
   ]
 }
 
@@ -69,6 +74,7 @@ js_type_check("closure_compile") {
   closure_flags = default_closure_args + mojom_js_args
   deps = [
     ":network_logs_ui",
+    ":network_metrics_ui",
     ":network_state_ui",
     ":network_ui",
     ":network_ui_browser_proxy",
@@ -86,6 +92,13 @@ js_library("network_ui") {
 }
 
 js_library("network_logs_ui") {
+  deps = [
+    ":network_ui_browser_proxy",
+    "//ui/webui/resources/js:i18n_behavior.m",
+  ]
+}
+
+js_library("network_metrics_ui") {
   deps = [
     ":network_ui_browser_proxy",
     "//ui/webui/resources/js:i18n_behavior.m",
@@ -114,5 +127,6 @@ html_to_js("web_components") {
     "network_logs_ui.js",
     "network_state_ui.js",
     "network_ui.js",
+    "network_metrics_ui.js",
   ]
 }

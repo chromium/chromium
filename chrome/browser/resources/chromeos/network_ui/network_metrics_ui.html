@@ -1,0 +1,44 @@
+<style include="cr-shared-style">
+  cr-button,
+  .flex-parent{
+    display: flex;
+  }
+
+  .button {
+    margin-right: 4px;
+    padding: 12px 60px;
+    font-size: 14px;
+  }
+
+  .jc-center {
+    justify-content: center;
+  }
+</style>
+<div>
+  <h2>$i18n{networkMetricsLabel}</h2>
+  <div class="flex-parent jc-center">
+    <cr-button class="action-button button"
+        on-click="renderGraph_">
+      $i18n{renderGraphButtonText}
+    </cr-button>
+    <cr-button class="action-button button"
+        on-click="start_">
+      $i18n{startPlotsButtonText}
+    </cr-button>
+    <cr-button class="action-button button"
+        on-click="stop_">
+      $i18n{stopPlotsButtonText}
+    </cr-button>
+    <cr-button class="action-button button"
+        on-click="decreaseDelay_">
+      $i18n{increaseRateButtonText}
+    </cr-button>
+    <cr-button class="action-button button"
+        on-click="increaseDelay_">
+      $i18n{decreaseRateButtonText}
+    </cr-button>
+  </div>
+  <div class="graph" id="metrics-graph">
+    <link rel="stylesheet" href="third_party/uPlot.min.css" type="text/css">
+  </div>
+</div>
