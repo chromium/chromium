@@ -211,7 +211,6 @@
 #include "chromeos/startup/browser_params_proxy.h"  // nogncheck
 #include "media/base/media_switches.h"
 #include "ui/base/resource/data_pack_with_resource_sharing_lacros.h"
-#include "ui/base/ui_base_switches.h"
 #endif
 
 base::LazyInstance<ChromeContentGpuClient>::DestructorAtExit
