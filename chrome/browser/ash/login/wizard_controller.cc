@@ -1671,7 +1671,7 @@ void WizardController::OnDemoSetupScreenExit(DemoSetupScreen::Result result) {
   switch (result) {
     case DemoSetupScreen::Result::COMPLETED:
       PerformOOBECompletedActions();
-      SwitchWebUItoMojo();
+      ShowLoginScreen();
       break;
     case DemoSetupScreen::Result::CANCELED:
       ShowWelcomeScreen();
