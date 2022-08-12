@@ -20,6 +20,7 @@
 
 namespace web_app {
 
+class AppLock;
 class WebAppInstallFinalizer;
 
 // Starts a web app installation process using prefilled
@@ -52,6 +53,8 @@ class InstallFromInfoCommand : public WebAppCommand {
 
   ~InstallFromInfoCommand() override;
 
+  Lock& lock() const override;
+
   void Start() override;
   void OnSyncSourceRemoved() override;
   void OnShutdown() override;
@@ -65,6 +68,7 @@ class InstallFromInfoCommand : public WebAppCommand {
                           webapps::InstallResultCode code,
                           OsHooksErrors os_hooks_errors);
 
+  std::unique_ptr<AppLock> lock_;
   AppId app_id_;
   std::unique_ptr<WebAppInstallInfo> install_info_;
   raw_ptr<WebAppInstallFinalizer> install_finalizer_;

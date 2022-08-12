@@ -4,14 +4,17 @@
 
 #include "chrome/browser/web_applications/commands/web_app_install_command.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/install_bounce_metric.h"
+#include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -139,7 +142,7 @@ WebAppInstallCommand::WebAppInstallCommand(
     const GURL& manifest_url,
     WebAppInstallFlow flow,
     absl::optional<WebAppInstallParams> install_params)
-    : WebAppCommand(WebAppCommandLock::CreateForAppLock({app_id})),
+    : lock_(std::make_unique<AppLock, base::flat_set<AppId>>({app_id})),
       profile_(profile),
       install_finalizer_(install_finalizer),
       data_retriever_(std::move(data_retriever)),
@@ -168,6 +171,10 @@ WebAppInstallCommand::WebAppInstallCommand(
 }
 
 WebAppInstallCommand::~WebAppInstallCommand() = default;
+
+Lock& WebAppInstallCommand::lock() const {
+  return *lock_;
+}
 
 void WebAppInstallCommand::Start() {
   // This metric is recorded regardless of the installation result.

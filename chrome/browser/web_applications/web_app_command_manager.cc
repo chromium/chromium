@@ -13,14 +13,13 @@
 #include "base/containers/contains.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
-#include "base/strings/strcat.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
+#include "chrome/browser/web_applications/locks/lock.h"
+#include "chrome/browser/web_applications/locks/web_app_lock_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_task.h"
 #include "chrome/browser/web_applications/web_app_url_loader.h"
-#include "components/services/storage/indexed_db/locks/disjoint_range_lock_manager.h"
-#include "components/services/storage/indexed_db/locks/leveled_lock_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -52,14 +51,10 @@ base::Value CreateLogValue(const WebAppCommand& command,
 
 }  // namespace
 
-WebAppCommandManager::CommandState::CommandState(
-    std::unique_ptr<WebAppCommand> command)
-    : command(std::move(command)) {}
-
-WebAppCommandManager::CommandState::~CommandState() = default;
-
 WebAppCommandManager::WebAppCommandManager(Profile* profile)
-    : profile_(profile), url_loader_(std::make_unique<WebAppUrlLoader>()) {}
+    : profile_(profile),
+      url_loader_(std::make_unique<WebAppUrlLoader>()),
+      lock_manager_(std::make_unique<WebAppLockManager>()) {}
 WebAppCommandManager::~WebAppCommandManager() {
   // Make sure that unittests & browsertests correctly shut down the manager.
   // This ensures that all tests also cover shutdown.
@@ -75,11 +70,9 @@ void WebAppCommandManager::ScheduleCommand(
   }
   DCHECK(!base::Contains(commands_, command->id()));
   auto command_id = command->id();
-  auto command_state_it =
-      commands_.try_emplace(command_id, std::move(command)).first;
-  lock_manager_.AcquireLocks(
-      command_state_it->second.command->lock().GetLockRequests(),
-      command_state_it->second.lock_holder.AsWeakPtr(),
+  auto command_it = commands_.try_emplace(command_id, std::move(command)).first;
+  lock_manager_->AcquireLock(
+      command_it->second->lock(),
       base::BindOnce(&WebAppCommandManager::OnLockAcquired,
                      weak_ptr_factory_.GetWeakPtr(), command_id));
 }
@@ -87,7 +80,6 @@ void WebAppCommandManager::ScheduleCommand(
 void WebAppCommandManager::OnLockAcquired(WebAppCommand::Id command_id) {
   if (is_in_shutdown_)
     return;
-
   auto command_it = commands_.find(command_id);
   DCHECK(command_it != commands_.end());
   // Start is called in a new task to avoid re-entry issues with started tasks
@@ -97,8 +89,7 @@ void WebAppCommandManager::OnLockAcquired(WebAppCommand::Id command_id) {
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(&WebAppCommandManager::StartCommandOrPrepareForLoad,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     command_it->second.command.get()));
+                     weak_ptr_factory_.GetWeakPtr(), command_it->second.get()));
 }
 
 void WebAppCommandManager::StartCommandOrPrepareForLoad(
@@ -107,8 +98,8 @@ void WebAppCommandManager::StartCommandOrPrepareForLoad(
     return;
 #if DCHECK_IS_ON()
   DCHECK(command);
-  auto command_state_it = commands_.find(command->id());
-  DCHECK(command_state_it != commands_.end());
+  auto command_it = commands_.find(command->id());
+  DCHECK(command_it != commands_.end());
   DCHECK(!command->IsStarted());
 #endif
   if (command->lock().IncludesSharedWebContents()) {
@@ -160,11 +151,10 @@ void WebAppCommandManager::Shutdown() {
   // `CallSignalCompletionAndSelfDestruct` during `OnShutdown`, which removes
   // the command from the `commands_` map.
   std::vector<base::WeakPtr<WebAppCommand>> commands_to_shutdown;
-  for (const auto& [id, command_state] : commands_) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(
-        command_state.command->command_sequence_checker_);
-    if (command_state.command->IsStarted()) {
-      commands_to_shutdown.push_back(command_state.command->AsWeakPtr());
+  for (const auto& [id, command] : commands_) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(command->command_sequence_checker_);
+    if (command->IsStarted()) {
+      commands_to_shutdown.push_back(command->AsWeakPtr());
     }
   }
   for (const auto& command_ptr : commands_to_shutdown) {
@@ -189,10 +179,10 @@ void WebAppCommandManager::NotifySyncSourceRemoved(
   // and that command can be destroyed before we notify it.
   std::vector<base::WeakPtr<WebAppCommand>> commands_to_notify;
   for (const AppId& app_id : app_ids) {
-    for (const auto& [id, command_state] : commands_) {
-      if (command_state.command->lock().IsAppLocked(app_id)) {
-        if (command_state.command->IsStarted()) {
-          commands_to_notify.push_back(command_state.command->AsWeakPtr());
+    for (const auto& [id, command] : commands_) {
+      if (base::Contains(command->lock().app_ids(), app_id)) {
+        if (command->IsStarted()) {
+          commands_to_notify.push_back(command->AsWeakPtr());
         }
       }
     }
@@ -211,9 +201,8 @@ base::Value WebAppCommandManager::ToDebugValue() {
   }
 
   base::Value::List queued;
-  for (const auto& [id, command_state] : commands_) {
-    queued.Append(
-        ::web_app::CreateLogValue(*command_state.command, absl::nullopt));
+  for (const auto& [id, command] : commands_) {
+    queued.Append(::web_app::CreateLogValue(*command, absl::nullopt));
   }
 
   base::Value::Dict state;
@@ -233,8 +222,8 @@ void WebAppCommandManager::LogToInstallManager(base::Value log) {
 
 bool WebAppCommandManager::IsInstallingForWebContents(
     const content::WebContents* web_contents) const {
-  for (const auto& [id, command_state] : commands_) {
-    if (command_state.command->GetInstallingWebContents() == web_contents) {
+  for (const auto& [id, command] : commands_) {
+    if (command->GetInstallingWebContents() == web_contents) {
       return true;
     }
   }
@@ -268,11 +257,8 @@ void WebAppCommandManager::OnCommandComplete(
   commands_.erase(command_it);
 
   if (shared_web_contents_) {
-    auto lock_free =
-        lock_manager_.TestLock(WebAppCommandLock::GetSharedWebContentsLock());
-    DCHECK_NE(lock_free,
-              content::DisjointRangeLockManager::TestLockResult::kInvalid);
-    if (lock_free == content::DisjointRangeLockManager::TestLockResult::kFree) {
+    bool lock_free = lock_manager_->IsSharedWebContentsLockFree();
+    if (lock_free) {
       AddValueToLog(base::Value("Destroying the shared web contents."));
       shared_web_contents_.reset();
     }

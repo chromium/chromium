@@ -9,8 +9,6 @@
 #include <map>
 #include <memory>
 
-#include "base/containers/flat_map.h"
-#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
@@ -18,12 +16,7 @@
 #include "base/types/pass_key.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
-#include "chrome/browser/web_applications/web_app_url_loader.h"
-#include "components/services/storage/indexed_db/locks/disjoint_range_lock_manager.h"
-#include "components/services/storage/indexed_db/locks/leveled_lock_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -34,6 +27,9 @@ class WebContents;
 namespace web_app {
 
 class WebAppInstallManager;
+class WebAppLockManager;
+class WebAppUrlLoader;
+enum class WebAppUrlLoaderResult;
 
 // The command manager is used to schedule commands or callbacks to write & read
 // from the WebAppProvider system. To use, simply call `ScheduleCommand` to
@@ -102,21 +98,13 @@ class WebAppCommandManager {
   void StartCommandOrPrepareForLoad(WebAppCommand* command);
 
   void OnAboutBlankLoadedForCommandStart(WebAppCommand* command,
-                                         WebAppUrlLoader::Result result);
+                                         WebAppUrlLoaderResult result);
 
   content::WebContents* EnsureWebContentsCreated();
 
-  struct CommandState {
-    explicit CommandState(std::unique_ptr<WebAppCommand> command);
-    ~CommandState();
-
-    std::unique_ptr<WebAppCommand> command;
-    content::LeveledLockHolder lock_holder;
-  };
-
   SEQUENCE_CHECKER(command_sequence_checker_);
 
-  std::map<WebAppCommand::Id, CommandState> commands_{};
+  std::map<WebAppCommand::Id, std::unique_ptr<WebAppCommand>> commands_{};
 
   raw_ptr<Profile> profile_;
   // TODO(https://crbug.com/1329934): Figure out better ownership of this.
@@ -127,8 +115,7 @@ class WebAppCommandManager {
   bool is_in_shutdown_ = false;
   std::deque<base::Value> command_debug_log_;
 
-  content::DisjointRangeLockManager lock_manager_{
-      static_cast<int>(WebAppCommandLock::LockLevel::kMaxValue) + 1};
+  std::unique_ptr<WebAppLockManager> lock_manager_;
 
   raw_ptr<WebAppInstallManager> install_manager_;
 

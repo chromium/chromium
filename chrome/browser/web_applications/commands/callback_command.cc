@@ -4,20 +4,30 @@
 
 #include "chrome/browser/web_applications/commands/callback_command.h"
 
+#include <memory>
+#include <utility>
+
+#include "base/callback.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/locks/lock.h"
 
 namespace web_app {
 
-CallbackCommand::CallbackCommand(WebAppCommandLock command_lock,
+CallbackCommand::CallbackCommand(std::unique_ptr<Lock> lock,
                                  base::OnceClosure callback)
-    : WebAppCommand(std::move(command_lock)), callback_(std::move(callback)) {}
+    : lock_(std::move(lock)), callback_(std::move(callback)) {
+  DCHECK(lock_);
+}
 
 CallbackCommand::~CallbackCommand() = default;
 
 void CallbackCommand::Start() {
   return SignalCompletionAndSelfDestruct(CommandResult::kSuccess,
                                          base::BindOnce(std::move(callback_)));
+}
+
+Lock& CallbackCommand::lock() const {
+  return *lock_;
 }
 
 base::Value CallbackCommand::ToDebugValue() const {

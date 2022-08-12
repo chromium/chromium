@@ -4,16 +4,17 @@
 
 #include "chrome/browser/web_applications/commands/run_on_os_login_command.h"
 
+#include <initializer_list>
 #include <memory>
 #include <string>
 
 #include "base/callback_forward.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
+#include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
-#include "chrome/browser/web_applications/web_app_command_manager.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
@@ -61,7 +62,7 @@ RunOnOsLoginCommand::RunOnOsLoginCommand(
     absl::optional<RunOnOsLoginMode> login_mode,
     RunOnOsLoginAction set_or_sync_mode,
     base::OnceClosure callback)
-    : WebAppCommand(WebAppCommandLock::CreateForAppLock({app_id})),
+    : lock_(std::make_unique<AppLock, base::flat_set<AppId>>({app_id})),
       app_id_(app_id),
       registrar_(registrar),
       os_integration_manager_(os_integration_manager),
@@ -71,6 +72,10 @@ RunOnOsLoginCommand::RunOnOsLoginCommand(
       callback_(std::move(callback)) {}
 
 RunOnOsLoginCommand::~RunOnOsLoginCommand() = default;
+
+Lock& RunOnOsLoginCommand::lock() const {
+  return *lock_;
+}
 
 void RunOnOsLoginCommand::Start() {
   switch (set_or_sync_mode_) {

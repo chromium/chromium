@@ -16,6 +16,7 @@
 
 namespace web_app {
 
+class AppLock;
 class WebAppRegistrar;
 class OsIntegrationManager;
 class WebAppSyncBridge;
@@ -54,6 +55,9 @@ class RunOnOsLoginCommand : public WebAppCommand {
       const AppId& app_id,
       base::OnceClosure callback);
   ~RunOnOsLoginCommand() override;
+
+  Lock& lock() const override;
+
   void Start() override;
   void OnSyncSourceRemoved() override{};
   void OnShutdown() override;
@@ -82,6 +86,7 @@ class RunOnOsLoginCommand : public WebAppCommand {
   void RecordCompletionState(
       RunOnOsLoginCommandCompletionState completion_state);
 
+  std::unique_ptr<AppLock> lock_;
   AppId app_id_;
   base::raw_ptr<WebAppRegistrar> registrar_;
   base::raw_ptr<OsIntegrationManager> os_integration_manager_;

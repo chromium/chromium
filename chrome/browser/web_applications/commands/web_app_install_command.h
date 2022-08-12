@@ -9,13 +9,18 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
+#include "build/buildflag.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
-#include "chrome/browser/web_applications/web_app_install_task.h"
 #include "chrome/browser/web_applications/web_app_logging.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/arc.mojom.h"
+#endif
 
 class Profile;
 
@@ -25,6 +30,7 @@ class WebContents;
 
 namespace web_app {
 
+class AppLock;
 class WebAppDataRetriever;
 class WebAppInstallFinalizer;
 class WebAppRegistrar;
@@ -51,6 +57,8 @@ class WebAppInstallCommand : public WebAppCommand {
       WebAppInstallFlow flow,
       absl::optional<WebAppInstallParams> install_params = absl::nullopt);
   ~WebAppInstallCommand() override;
+
+  Lock& lock() const override;
 
   void Start() override;
   void OnSyncSourceRemoved() override;
@@ -106,6 +114,7 @@ class WebAppInstallCommand : public WebAppCommand {
                                           webapps::InstallResultCode code,
                                           OsHooksErrors os_hooks_errors);
 
+  std::unique_ptr<AppLock> lock_;
   Profile* profile_;
   WebAppInstallFinalizer* install_finalizer_;
   std::unique_ptr<WebAppDataRetriever> data_retriever_;

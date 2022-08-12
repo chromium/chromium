@@ -4,17 +4,17 @@
 
 #include "chrome/browser/web_applications/commands/web_app_uninstall_command.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
-#include "base/feature_list.h"
-#include "base/logging.h"
+#include "base/containers/flat_set.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolation_prefs_utils.h"
+#include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
@@ -25,7 +25,6 @@
 #include "chrome/browser/web_applications/web_app_translation_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
 
@@ -42,7 +41,7 @@ WebAppUninstallCommand::WebAppUninstallCommand(
     WebAppTranslationManager* translation_manager,
     webapps::WebappUninstallSource source,
     UninstallWebAppCallback callback)
-    : WebAppCommand(WebAppCommandLock::CreateForAppLock({app_id})),
+    : lock_(std::make_unique<AppLock, base::flat_set<AppId>>({app_id})),
       app_id_(app_id),
       app_origin_(app_origin),
       source_(source),
@@ -57,6 +56,10 @@ WebAppUninstallCommand::WebAppUninstallCommand(
       profile_prefs_(profile->GetPrefs()) {}
 
 WebAppUninstallCommand::~WebAppUninstallCommand() = default;
+
+Lock& WebAppUninstallCommand::lock() const {
+  return *lock_;
+}
 
 void WebAppUninstallCommand::Start() {
   if (!registrar_->GetAppById(app_id_)) {

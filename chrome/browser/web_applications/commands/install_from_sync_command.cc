@@ -7,14 +7,16 @@
 #include <memory>
 #include <utility>
 
-#include "base/callback_helpers.h"
+#include "base/containers/flat_set.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/install_bounce_metric.h"
+#include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
@@ -22,7 +24,6 @@
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/web_contents.h"
-#include "net/http/http_status_code.h"
 
 namespace web_app {
 
@@ -78,8 +79,9 @@ InstallFromSyncCommand::InstallFromSyncCommand(
     std::unique_ptr<WebAppDataRetriever> data_retriever,
     const Params& params,
     OnceInstallCallback install_callback)
-    : WebAppCommand(
-          WebAppCommandLock::CreateForAppAndWebContentsLock({params.app_id})),
+    : lock_(
+          std::make_unique<SharedWebContentsWithAppLock, base::flat_set<AppId>>(
+              {params.app_id})),
       url_loader_(url_loader),
       profile_(profile),
       finalizer_(finalizer),
@@ -125,6 +127,10 @@ void InstallFromSyncCommand::OnSyncSourceRemoved() {
   // cancel this command.
   ReportResultAndDestroy(params_.app_id,
                          webapps::InstallResultCode::kHaltedBySyncUninstall);
+}
+
+Lock& InstallFromSyncCommand::lock() const {
+  return *lock_;
 }
 
 void InstallFromSyncCommand::Start() {

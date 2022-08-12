@@ -21,6 +21,7 @@ class WebContents;
 
 namespace web_app {
 
+class NoopLock;
 class WebAppDataRetriever;
 class WebAppInstallFinalizer;
 class WebAppRegistrar;
@@ -38,6 +39,8 @@ class InstallWebAppWithParamsCommand : public WebAppCommand {
       std::unique_ptr<WebAppDataRetriever> data_retriever);
   ~InstallWebAppWithParamsCommand() override;
 
+  Lock& lock() const override;
+
   void Start() override;
   void OnSyncSourceRemoved() override;
   void OnShutdown() override;
@@ -54,6 +57,7 @@ class InstallWebAppWithParamsCommand : public WebAppCommand {
                                     bool valid_manifest_for_web_app,
                                     bool is_installable);
 
+  std::unique_ptr<NoopLock> lock_;
   base::WeakPtr<content::WebContents> web_contents_;
   WebAppInstallParams install_params_;
   webapps::WebappInstallSource install_surface_;

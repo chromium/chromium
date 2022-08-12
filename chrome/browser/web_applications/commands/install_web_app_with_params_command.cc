@@ -4,17 +4,17 @@
 
 #include "chrome/browser/web_applications/commands/install_web_app_with_params_command.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/commands/web_app_install_command.h"
+#include "chrome/browser/web_applications/locks/noop_lock.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_install_task.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "content/public/browser/web_contents.h"
 
@@ -28,7 +28,7 @@ InstallWebAppWithParamsCommand::InstallWebAppWithParamsCommand(
     WebAppRegistrar* registrar,
     OnceInstallCallback callback,
     std::unique_ptr<WebAppDataRetriever> data_retriever)
-    : WebAppCommand(WebAppCommandLock::CreateForNoOpLock()),
+    : lock_(std::make_unique<NoopLock>()),
       web_contents_(contents),
       install_params_(install_params),
       install_surface_(install_surface),
@@ -38,6 +38,10 @@ InstallWebAppWithParamsCommand::InstallWebAppWithParamsCommand(
       data_retriever_(std::move(data_retriever)) {}
 
 InstallWebAppWithParamsCommand::~InstallWebAppWithParamsCommand() = default;
+
+Lock& InstallWebAppWithParamsCommand::lock() const {
+  return *lock_;
+}
 
 void InstallWebAppWithParamsCommand::Start() {
   if (!web_contents_ || web_contents_->IsBeingDestroyed()) {

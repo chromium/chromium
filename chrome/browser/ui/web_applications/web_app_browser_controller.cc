@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
 
 #include "base/callback_helpers.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -22,10 +23,12 @@
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
 #include "chrome/browser/web_applications/commands/callback_command.h"
+#include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
@@ -190,7 +193,7 @@ void WebAppBrowserController::ToggleAlwaysShowToolbarInFullscreen() {
   // base::Unretained is safe as the command manager won't execute the command
   // if the provider no longer exists.
   provider_.command_manager().ScheduleCommand(std::make_unique<CallbackCommand>(
-      WebAppCommandLock::CreateForAppLock({app_id()}),
+      std::make_unique<AppLock, base::flat_set<AppId>>({app_id()}),
       base::BindOnce(&WebAppSyncBridge::SetAlwaysShowToolbarInFullscreen,
                      base::Unretained(&provider_.sync_bridge()), app_id(),
                      !registrar().AlwaysShowToolbarInFullscreen(app_id()))));

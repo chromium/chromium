@@ -4,11 +4,14 @@
 
 #include "chrome/browser/web_applications/commands/install_from_info_command.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -25,7 +28,7 @@ InstallFromInfoCommand::InstallFromInfoCommand(
     bool overwrite_existing_manifest_fields,
     webapps::WebappInstallSource install_surface,
     OnceInstallCallback install_callback)
-    : WebAppCommand(WebAppCommandLock::CreateForAppLock(
+    : lock_(std::make_unique<AppLock, base::flat_set<AppId>>(
           {GenerateAppId(install_info->manifest_id, install_info->start_url)})),
       app_id_(
           GenerateAppId(install_info->manifest_id, install_info->start_url)),
@@ -42,7 +45,7 @@ InstallFromInfoCommand::InstallFromInfoCommand(
     webapps::WebappInstallSource install_surface,
     OnceInstallCallback install_callback,
     const WebAppInstallParams& install_params)
-    : WebAppCommand(WebAppCommandLock::CreateForAppLock(
+    : lock_(std::make_unique<AppLock, base::flat_set<AppId>>(
           {GenerateAppId(install_info->manifest_id, install_info->start_url)})),
       app_id_(
           GenerateAppId(install_info->manifest_id, install_info->start_url)),
@@ -60,6 +63,10 @@ InstallFromInfoCommand::InstallFromInfoCommand(
   DCHECK(install_info_->start_url.is_valid());
 }
 InstallFromInfoCommand::~InstallFromInfoCommand() = default;
+
+Lock& InstallFromInfoCommand::lock() const {
+  return *lock_;
+}
 
 void InstallFromInfoCommand::Start() {
   PopulateProductIcons(install_info_.get(),

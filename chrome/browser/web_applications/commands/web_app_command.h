@@ -10,10 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/values.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
-#include "components/services/storage/indexed_db/locks/disjoint_range_lock_manager.h"
-#include "components/services/storage/indexed_db/locks/leveled_lock_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
@@ -22,84 +19,8 @@ class WebContents;
 
 namespace web_app {
 
+class Lock;
 class WebAppCommandManager;
-
-class WebAppCommandLock {
- public:
-  using LockRequestSet =
-      base::flat_set<content::DisjointRangeLockManager::LeveledLockRequest>;
-
-  WebAppCommandLock(WebAppCommandLock&&);
-  WebAppCommandLock& operator=(WebAppCommandLock&&);
-
-  WebAppCommandLock(const WebAppCommandLock&) = delete;
-  WebAppCommandLock& operator=(const WebAppCommandLock&) = delete;
-
-  ~WebAppCommandLock();
-
-  //  Creates a lock that guarantees isolation against all commands.
-  //  This makes sure that all commands are finished before this command is
-  //  started, and no command will be started during execution of the command.
-  static WebAppCommandLock CreateForFullSystemLock();
-
-  // Creates a lock that guarantees isolation against all
-  // commands that also use this lock type. Background web app installations can
-  // use this lock to run tasks sequentially that loads a `WebContents` in the
-  // background to avoid adding too much load to the system.
-  static WebAppCommandLock CreateForBackgroundWebContentsLock();
-
-  // Creates a lock that guarantees isolation against all commands that has lock
-  // on any of the `app_ids`.
-  static WebAppCommandLock CreateForAppLock(base::flat_set<AppId> app_ids);
-
-  // Creates a lock that guarantees isolation against all commands that has lock
-  // on any of the `app_ids` and also grants access to the shared web contents.
-  static WebAppCommandLock CreateForAppAndWebContentsLock(
-      base::flat_set<AppId> app_ids);
-
-  // Creates a no-op lock that doesn't lock on anything. This is useful to
-  // create commands that doesn't need isolation protection but would like to be
-  // managed by WebAppCommandManager for consistent lifecycle management.
-  static WebAppCommandLock CreateForNoOpLock();
-
-  const LockRequestSet& GetLockRequests() const { return lock_requests_; }
-
-  bool IsAppLocked(const AppId& app_id) const;
-
-  bool IncludesSharedWebContents() const;
-
-  const base::flat_set<AppId>& app_ids() const { return app_ids_; }
-
-  friend class WebAppCommandManager;
-
- private:
-  enum class LockType {
-    kFullSystem,
-    kApp,
-    kAppAndWebContents,
-    kBackgroundWebContents,
-    kNoOp,
-  };
-
-  explicit WebAppCommandLock(base::flat_set<AppId> app_ids,
-                             LockType lock_type,
-                             LockRequestSet lock_requests);
-
-  // Exposed for usage in the WebAppCommandManager to determine if the shared
-  // web contents can be destroyed.
-  static content::LeveledLockManager::LeveledLockRequest
-  GetSharedWebContentsLock();
-
-  enum class LockLevel {
-    kStatic = 0,
-    kApp = 1,
-    kMaxValue = kApp,
-  };
-
-  base::flat_set<AppId> app_ids_{};
-  LockType lock_type_;
-  LockRequestSet lock_requests_{};
-};
 
 enum class CommandResult { kSuccess, kFailure, kShutdown };
 
@@ -130,28 +51,29 @@ using WebAppCommandQueueId = absl::optional<AppId>;
 class WebAppCommand {
  public:
   using Id = int;
-  explicit WebAppCommand(WebAppCommandLock command_lock);
+  WebAppCommand();
   virtual ~WebAppCommand();
-
-  // Unique id generated for this command. Currently only used for debug values.
-  Id id() const { return id_; }
-
-  // The command lock that contains isolation information.
-  const WebAppCommandLock& lock() const { return command_lock_; }
 
   // Returns if the command has been started yet.
   bool IsStarted() const { return command_manager_ != nullptr; }
 
-  // Returns the pre-existing web contents the installation was
-  // initiated with. Only implements this when the command is used for
-  // installation and uses a pre-existing web contents.
-  virtual content::WebContents* GetInstallingWebContents();
+  // Unique id generated for this command. Currently only used for debug values.
+  Id id() const { return id_; }
 
   // Returns a debug value to log the state of the command. Used in
   // chrome://web-app-internals.
   virtual base::Value ToDebugValue() const = 0;
 
  protected:
+  // The command lock that contains isolation information. Mutable so the
+  // command manager can use it with `WebAppLockManager::AcquireLock`.
+  virtual Lock& lock() const = 0;
+
+  // Returns the pre-existing web contents the installation was
+  // initiated with. Only implements this when the command is used for
+  // installation and uses a pre-existing web contents.
+  virtual content::WebContents* GetInstallingWebContents();
+
   // Triggered by the WebAppCommandManager. Signals that this command can
   // start its operations. When this command is complete, it should call
   // `SignalCompletionAndSelfDestruct` to signal it's completion and destruct
@@ -207,7 +129,6 @@ class WebAppCommand {
   base::WeakPtr<WebAppCommand> AsWeakPtr();
 
   Id id_;
-  WebAppCommandLock command_lock_;
   raw_ptr<WebAppCommandManager> command_manager_ = nullptr;
   // Because this is owned by the command manager, it will always outlive this
   // object. Thus a raw pointer is save.
@@ -218,5 +139,7 @@ class WebAppCommand {
 
   base::WeakPtrFactory<WebAppCommand> weak_factory_{this};
 };
+
 }  // namespace web_app
+
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_WEB_APP_COMMAND_H_

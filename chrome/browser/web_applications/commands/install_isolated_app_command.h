@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/callback_forward.h"
+#include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece_forward.h"
@@ -20,6 +20,8 @@
 class GURL;
 
 namespace web_app {
+
+class SharedWebContentsWithAppLock;
 class WebAppDataRetriever;
 class WebAppInstallFinalizer;
 class WebAppUrlLoader;
@@ -42,6 +44,8 @@ class InstallIsolatedAppCommand : public WebAppCommand {
       WebAppInstallFinalizer& install_finalizer,
       base::OnceCallback<void(InstallIsolatedAppCommandResult)> callback);
   ~InstallIsolatedAppCommand() override;
+
+  Lock& lock() const override;
 
   base::Value ToDebugValue() const override;
 
@@ -74,6 +78,8 @@ class InstallIsolatedAppCommand : public WebAppCommand {
   void FinalizeInstall(const WebAppInstallInfo& info);
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  std::unique_ptr<SharedWebContentsWithAppLock> lock_;
 
   std::string url_;
 

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/commands/install_isolated_app_command.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -17,6 +18,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
+#include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
 #include "chrome/browser/web_applications/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
@@ -53,7 +55,7 @@ InstallIsolatedAppCommand::InstallIsolatedAppCommand(
     WebAppUrlLoader& url_loader,
     WebAppInstallFinalizer& install_finalizer,
     base::OnceCallback<void(InstallIsolatedAppCommandResult)> callback)
-    : WebAppCommand(WebAppCommandLock::CreateForAppAndWebContentsLock(
+    : lock_(std::make_unique<SharedWebContentsWithAppLock>(
           base::flat_set<AppId>{"some random app id"})),
       url_(url),
       url_loader_(url_loader),
@@ -77,6 +79,10 @@ void InstallIsolatedAppCommand::SetDataRetrieverForTesting(
 
 InstallIsolatedAppCommand::~InstallIsolatedAppCommand() {
   DCHECK(callback_.is_null());
+}
+
+Lock& InstallIsolatedAppCommand::lock() const {
+  return *lock_;
 }
 
 void InstallIsolatedAppCommand::Start() {

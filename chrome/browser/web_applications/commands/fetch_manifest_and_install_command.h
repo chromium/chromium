@@ -23,6 +23,7 @@ class WebContents;
 
 namespace web_app {
 
+class NoopLock;
 class WebAppDataRetriever;
 class WebAppInstallFinalizer;
 class WebAppRegistrar;
@@ -59,6 +60,8 @@ class FetchManifestAndInstallCommand : public WebAppCommand {
 
   ~FetchManifestAndInstallCommand() override;
 
+  Lock& lock() const override;
+
   void Start() override;
   void OnSyncSourceRemoved() override;
   void OnShutdown() override;
@@ -80,6 +83,8 @@ class FetchManifestAndInstallCommand : public WebAppCommand {
                                     bool valid_manifest_for_web_app,
                                     bool is_installable);
   void LogInstallInfo();
+
+  std::unique_ptr<NoopLock> lock_;
 
   raw_ptr<WebAppInstallFinalizer> install_finalizer_;
   raw_ptr<WebAppRegistrar> registrar_;

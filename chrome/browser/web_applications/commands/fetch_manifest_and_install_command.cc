@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/commands/web_app_install_command.h"
+#include "chrome/browser/web_applications/locks/noop_lock.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -32,7 +33,7 @@ FetchManifestAndInstallCommand::FetchManifestAndInstallCommand(
     bool bypass_service_worker_check,
     WebAppInstallDialogCallback dialog_callback,
     OnceInstallCallback callback)
-    : WebAppCommand(WebAppCommandLock::CreateForNoOpLock()),
+    : lock_(std::make_unique<NoopLock>()),
       install_finalizer_(install_finalizer),
       registrar_(registrar),
       install_surface_(install_surface),
@@ -52,7 +53,7 @@ FetchManifestAndInstallCommand::FetchManifestAndInstallCommand(
     OnceInstallCallback callback,
     bool use_fallback,
     WebAppInstallFlow flow)
-    : WebAppCommand(WebAppCommandLock::CreateForNoOpLock()),
+    : lock_(std::make_unique<NoopLock>()),
       install_finalizer_(install_finalizer),
       registrar_(registrar),
       install_surface_(install_surface),
@@ -65,6 +66,10 @@ FetchManifestAndInstallCommand::FetchManifestAndInstallCommand(
       flow_(flow) {}
 
 FetchManifestAndInstallCommand::~FetchManifestAndInstallCommand() = default;
+
+Lock& FetchManifestAndInstallCommand::lock() const {
+  return *lock_;
+}
 
 void FetchManifestAndInstallCommand::Start() {
   if (IsWebContentsDestroyed()) {

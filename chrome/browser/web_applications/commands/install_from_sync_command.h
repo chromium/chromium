@@ -13,21 +13,24 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_app_data_retriever.h"
-#include "chrome/browser/web_applications/web_app_install_finalizer.h"
-#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_logging.h"
-#include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/browser/web_applications/web_app_url_loader.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
 class Profile;
+struct WebAppInstallInfo;
 
 namespace web_app {
+
+enum class WebAppUrlLoaderResult;
+class SharedWebContentsWithAppLock;
+class WebAppInstallFinalizer;
+class WebAppDataRetriever;
+class WebAppRegistrar;
 
 class InstallFromSyncCommand : public WebAppCommand {
  public:
@@ -65,6 +68,8 @@ class InstallFromSyncCommand : public WebAppCommand {
       OnceInstallCallback install_callback);
   ~InstallFromSyncCommand() override;
 
+  Lock& lock() const override;
+
   base::Value ToDebugValue() const override;
 
   void OnSyncSourceRemoved() override;
@@ -77,7 +82,7 @@ class InstallFromSyncCommand : public WebAppCommand {
       base::OnceCallback<void(webapps::InstallResultCode code)> callback);
 
  private:
-  void OnWebAppUrlLoadedGetWebAppInstallInfo(WebAppUrlLoader::Result result);
+  void OnWebAppUrlLoadedGetWebAppInstallInfo(WebAppUrlLoaderResult result);
 
   void OnGetWebAppInstallInfo(std::unique_ptr<WebAppInstallInfo> web_app_info);
 
@@ -104,6 +109,7 @@ class InstallFromSyncCommand : public WebAppCommand {
   void ReportResultAndDestroy(const AppId& app_id,
                               webapps::InstallResultCode code);
 
+  std::unique_ptr<SharedWebContentsWithAppLock> lock_;
   const base::raw_ptr<WebAppUrlLoader> url_loader_;
   const base::raw_ptr<Profile> profile_;
   const base::raw_ptr<WebAppInstallFinalizer> finalizer_;

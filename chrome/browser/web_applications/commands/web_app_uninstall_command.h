@@ -23,6 +23,7 @@ enum class WebappUninstallSource;
 
 namespace web_app {
 
+class AppLock;
 class OsIntegrationManager;
 class WebAppIconManager;
 class WebAppInstallManager;
@@ -51,6 +52,8 @@ class WebAppUninstallCommand : public WebAppCommand {
                          UninstallWebAppCallback callback);
   ~WebAppUninstallCommand() override;
 
+  Lock& lock() const override;
+
   void Start() override;
   void OnSyncSourceRemoved() override;
   void OnShutdown() override;
@@ -71,6 +74,7 @@ class WebAppUninstallCommand : public WebAppCommand {
     kDone = 2,
   } state_ = State::kNotStarted;
 
+  std::unique_ptr<AppLock> lock_;
   AppId app_id_;
   url::Origin app_origin_;
   webapps::WebappUninstallSource source_;

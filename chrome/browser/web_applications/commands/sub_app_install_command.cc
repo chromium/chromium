@@ -3,7 +3,20 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/web_applications/commands/sub_app_install_command.h"
+
+#include <memory>
+
+#include "base/callback.h"
+#include "base/ranges/algorithm.h"
+#include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
+#include "third_party/blink/public/mojom/subapps/sub_apps_service.mojom-shared.h"
+
+namespace web_app {
 
 static blink::mojom::SubAppsServiceAddResultCode InstallResultCodeToMojo(
     webapps::InstallResultCode install_result_code) {
@@ -42,14 +55,13 @@ base::Value SubAppInstallCommand::ToDebugValue() const {
 }
 
 SubAppInstallCommand::SubAppInstallCommand(
-    web_app::WebAppInstallManager* install_manager,
-    web_app::WebAppRegistrar* registrar,
-    web_app::AppId& parent_app_id,
-    std::vector<std::pair<web_app::UnhashedAppId, GURL>> sub_apps,
-    base::flat_set<web_app::AppId> app_ids_for_lock,
+    WebAppInstallManager* install_manager,
+    WebAppRegistrar* registrar,
+    AppId& parent_app_id,
+    std::vector<std::pair<UnhashedAppId, GURL>> sub_apps,
+    base::flat_set<AppId> app_ids_for_lock,
     base::OnceCallback<void(AppInstallResults)> callback)
-    : WebAppCommand{web_app::WebAppCommandLock::CreateForAppLock(
-          app_ids_for_lock)},
+    : lock_(std::make_unique<AppLock>(app_ids_for_lock)),
       install_manager_{install_manager},
       registrar_{registrar},
       requested_installs_{std::move(sub_apps)},
@@ -57,6 +69,10 @@ SubAppInstallCommand::SubAppInstallCommand(
       install_callback_{std::move(callback)} {}
 
 SubAppInstallCommand::~SubAppInstallCommand() = default;
+
+Lock& SubAppInstallCommand::lock() const {
+  return *lock_;
+}
 
 void SubAppInstallCommand::Start() {
   DCHECK(state_ == State::kNotStarted);
@@ -72,14 +88,14 @@ void SubAppInstallCommand::Start() {
               blink::mojom::SubAppsServiceAddResultCode::kParentAppUninstalled};
         });
     SignalCompletionAndSelfDestruct(
-        web_app::CommandResult::kFailure,
+        CommandResult::kFailure,
         base::BindOnce(std::move(install_callback_), results_));
     return;
   }
 
   if (requested_installs_.empty()) {
     SignalCompletionAndSelfDestruct(
-        web_app::CommandResult::kSuccess,
+        CommandResult::kSuccess,
         base::BindOnce(std::move(install_callback_), results_));
     return;
   }
@@ -98,17 +114,16 @@ void SubAppInstallCommand::Start() {
 
 void SubAppInstallCommand::StartNextInstall() {
   DCHECK(!requested_installs_.empty());
-  std::pair<web_app::UnhashedAppId, GURL> install_info =
+  std::pair<UnhashedAppId, GURL> install_info =
       std::move(requested_installs_.back());
-  const web_app::UnhashedAppId& unhashed_app_id = install_info.first;
+  const UnhashedAppId& unhashed_app_id = install_info.first;
   GURL install_url = install_info.second;
   requested_installs_.pop_back();
 
   // TODO(https://crbug.com/1327963): Update to use WebAppCommand version of
   // WebAppInstallManager::InstallSubApp once implemented.
   install_manager_->InstallSubApp(
-      parent_app_id_, install_url,
-      web_app::GenerateAppIdFromUnhashed(unhashed_app_id),
+      parent_app_id_, install_url, GenerateAppIdFromUnhashed(unhashed_app_id),
       base::BindOnce(&SubAppInstallCommand::OnDialogRequested,
                      weak_ptr_factory_.GetWeakPtr(), unhashed_app_id),
       base::BindOnce(&SubAppInstallCommand::OnInstalled,
@@ -116,10 +131,10 @@ void SubAppInstallCommand::StartNextInstall() {
 }
 
 void SubAppInstallCommand::OnDialogRequested(
-    const web_app::UnhashedAppId& unhashed_app_id,
+    const UnhashedAppId& unhashed_app_id,
     content::WebContents* initiator_web_contents,
     std::unique_ptr<WebAppInstallInfo> web_app_info,
-    web_app::WebAppInstallationAcceptanceCallback acceptance_callback) {
+    WebAppInstallationAcceptanceCallback acceptance_callback) {
   acceptance_callbacks_.emplace_back(unhashed_app_id, std::move(web_app_info),
                                      std::move(acceptance_callback));
 
@@ -137,7 +152,7 @@ void SubAppInstallCommand::MaybeShowDialog() {
 
   if (acceptance_callbacks_.empty()) {
     SignalCompletionAndSelfDestruct(
-        web_app::CommandResult::kFailure,
+        CommandResult::kFailure,
         base::BindOnce(std::move(install_callback_), results_));
     return;
   }
@@ -152,10 +167,9 @@ void SubAppInstallCommand::MaybeShowDialog() {
   acceptance_callbacks_.clear();
 }
 
-void SubAppInstallCommand::OnInstalled(
-    const web_app::UnhashedAppId& unhashed_app_id,
-    const web_app::AppId& app_id,
-    webapps::InstallResultCode result) {
+void SubAppInstallCommand::OnInstalled(const UnhashedAppId& unhashed_app_id,
+                                       const AppId& app_id,
+                                       webapps::InstallResultCode result) {
   AddResultAndRemoveFromPendingInstalls(unhashed_app_id, result);
 
   // In case an installation returns with a failure before running the dialog
@@ -176,14 +190,16 @@ void SubAppInstallCommand::MaybeFinishCommand() {
   }
 
   SignalCompletionAndSelfDestruct(
-      web_app::CommandResult::kSuccess,
+      CommandResult::kSuccess,
       base::BindOnce(std::move(install_callback_), results_));
 }
 
 void SubAppInstallCommand::AddResultAndRemoveFromPendingInstalls(
-    const web_app::UnhashedAppId& unhashed_app_id,
+    const UnhashedAppId& unhashed_app_id,
     webapps::InstallResultCode result) {
   std::pair result_pair(unhashed_app_id, InstallResultCodeToMojo(result));
   results_.emplace_back(result_pair);
   pending_installs_.erase(unhashed_app_id);
 }
+
+}  // namespace web_app
