@@ -1327,6 +1327,9 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // xml-roles object attribute.
   const AtomicString& GetRoleAttributeStringForObjectAttribute();
 
+  // Extra checks that occur right before a node is evaluated for serialization.
+  void PreSerializationConsistencyCheck();
+
   // Returns a string representation of this object.
   // |cached_values_only| avoids recomputing cached values, and thus can be
   // used during UpdateCachedValuesIfNecessary() without causing recursion.

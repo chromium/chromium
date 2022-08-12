@@ -829,7 +829,7 @@ bool RenderAccessibilityImpl::SerializeUpdatesAndEvents(
     // parts of the code as well, so we need to ensure the object still exists.
     // TODO(accessibility) Change this to CheckValidity() if there aren't crash
     // reports of illegal lifecycle changes from WebDisallowTransitionScope.
-    if (!obj.MaybeUpdateLayoutAndCheckValidity())
+    if (obj.IsDetached() || !obj.MaybeUpdateLayoutAndCheckValidity())
       continue;
 
     // Cannot serialize unincluded object.

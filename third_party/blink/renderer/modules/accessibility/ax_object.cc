@@ -614,7 +614,7 @@ int32_t ToAXHighlightType(const AtomicString& highlight_type) {
 }
 
 const AXObject* FindAncestorWithAriaHidden(const AXObject* start) {
-  for (const AXObject* object = start; object;
+  for (const AXObject* object = start; object && !object->IsWebArea();
        object = object->ParentObject()) {
     if (object->AOMPropertyOrARIAAttributeIsTrue(AOMBooleanProperty::kHidden))
       return object;
@@ -1231,9 +1231,6 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
   bool is_visible = IsVisible();
   if (!is_visible)
     node_data->AddState(ax::mojom::blink::State::kInvisible);
-  SANITIZER_CHECK_EQ(cached_is_aria_hidden_, !!FindAncestorWithAriaHidden(this))
-      << "IsAriaHidden() doesn't match existence of an aria-hidden ancestor: "
-      << ToString(true);
 
   if (is_visible || is_focusable) {
     // If the author applied the ARIA "textbox" role on something that is not
@@ -2870,8 +2867,9 @@ bool AXObject::IsAriaHidden() const {
 }
 
 bool AXObject::ComputeIsAriaHidden(IgnoredReasons* ignored_reasons) const {
-  if (IsA<Document>(GetNode()))
-    return false;  // The root node cannot be aria-hidden.
+  // The root node of a document or popup document cannot be aria-hidden.
+  if (IsWebArea())
+    return false;
 
   // aria-hidden:true works a bit like display:none.
   // * aria-hidden=true affects entire subtree.
@@ -6657,6 +6655,18 @@ const AXObject* AXObject::LowestCommonAncestor(const AXObject& first,
   return common_ancestor;
 }
 
+void AXObject::PreSerializationConsistencyCheck() {
+#if defined(AX_FAIL_FAST_BUILD)
+  if (!AXObjectCache().IsFrozen())
+    return;  // Only perform checks if tree is frozen.
+  SANITIZER_CHECK(!IsDetached());
+  // Extra checks that only occur during serialization.
+  SANITIZER_CHECK_EQ(cached_is_aria_hidden_, !!FindAncestorWithAriaHidden(this))
+      << "IsAriaHidden() doesn't match existence of an aria-hidden ancestor: "
+      << ToString(true);
+#endif
+}
+
 String AXObject::ToString(bool verbose, bool cached_values_only) const {
   // Build a friendly name for debugging the object.
   // If verbose, build a longer name name in the form of:
@@ -6740,12 +6750,17 @@ String AXObject::ToString(bool verbose, bool cached_values_only) const {
         string_builder = string_builder + " ariaHidden";
     } else if (IsAriaHidden()) {
       const AXObject* aria_hidden_root = AriaHiddenRoot();
-      DCHECK(aria_hidden_root);
-      string_builder = string_builder + " ariaHiddenRoot";
-      if (aria_hidden_root != this) {
-        string_builder =
-            string_builder + GetNodeString(aria_hidden_root->GetNode());
+      if (aria_hidden_root) {
+        string_builder = string_builder + " ariaHiddenRoot";
+        if (aria_hidden_root != this) {
+          string_builder =
+              string_builder + GetNodeString(aria_hidden_root->GetNode());
+        }
+      } else {
+        string_builder = string_builder + " ariaHiddenRootMissing";
       }
+    } else if (AriaHiddenRoot()) {
+      string_builder = string_builder + " ariaHiddenRootExtra";
     }
     if (cached_values_only ? cached_is_hidden_via_style : IsHiddenViaStyle())
       string_builder = string_builder + " isHiddenViaCSS";
