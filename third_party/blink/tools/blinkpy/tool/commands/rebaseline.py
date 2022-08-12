@@ -688,12 +688,16 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
             self._update_expectations_files(lines_to_remove)
 
         if options.optimize:
-            optimize_commands = self._optimize_commands(
-                test_baseline_set, options.verbose, options.resultDB)
-
-            for _, (cmd, cwd) in optimize_commands.items():
-                output = self._tool.executive.run_command(cmd, cwd)
-                print(output)
+            # No point in optimizing during a dry run where no files were
+            # downloaded.
+            if self._dry_run:
+                _log.info('Skipping optimization during dry run.')
+            else:
+                optimize_commands = self._optimize_commands(
+                    test_baseline_set, options.verbose, options.resultDB)
+                for _, (cmd, cwd) in optimize_commands.items():
+                    output = self._tool.executive.run_command(cmd, cwd)
+                    print(output)
 
         if not self._dry_run:
             self._tool.git().add_list(self.unstaged_baselines())

@@ -339,11 +339,8 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
                 message.startswith('DEBUG: Would have run: "python echo '
                                    'rebaseline-test-internal ')
                 for message in messages))
-        self.assertTrue(
-            any(
-                message.startswith('DEBUG: Would have run: "python echo '
-                                   'optimize-baselines ')
-                for message in messages))
+        # `optimize-baselines` commands are not useful to look at, since many
+        # are no-ops anyways. We don't look at them here.
         self.assertEqual(self.tool.executive.calls, [])
         self.assertEqual(self.command.git_cl.calls, [])
         self.assertEqual(self.tool.filesystem.files, files_before)
@@ -723,7 +720,6 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
                 'not_site_per_process_blink_web_tests (with patch)'
             ],
         ])
-        print(self.tool.executive.calls)
         self.assertEqual(self.tool.executive.calls[2], [
             'python', 'echo', 'optimize-baselines', '--no-manifest-update',
             '--suffixes', 'txt', 'one/text-fail.html'
