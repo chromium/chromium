@@ -16,6 +16,7 @@
 #include "base/atomic_sequence_num.h"
 #include "base/bind.h"
 #include "base/format_macros.h"
+#include "base/record_replay.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -265,6 +266,11 @@ ResourcePool::TryAcquireResourceForPartialRaster(
         viz::ResourceSizes::UncheckedSizeInBytes<size_t>(resource->size(),
                                                          resource->format());
     *total_invalidated_rect = resource->invalidated_rect();
+
+    // https://linear.app/replay/issue/RUN-464
+    recordreplay::Assert("ResourcePool::TryAcquireResourceForPartialRaster #5 %d %d %d %d",
+                         total_invalidated_rect->x(), total_invalidated_rect->y(),
+                         total_invalidated_rect->width(), total_invalidated_rect->height());
 
     // Clear the invalidated rect and content ID on the resource being retunred.
     // These will be updated when raster completes successfully.

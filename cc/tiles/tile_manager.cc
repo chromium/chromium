@@ -1225,6 +1225,12 @@ scoped_refptr<TileTask> TileManager::CreateRasterTask(
   ResourcePool::InUsePoolResource resource;
   uint64_t resource_content_id = 0;
   gfx::Rect invalidated_rect = tile->invalidated_content_rect();
+
+  // https://linear.app/replay/issue/RUN-464
+  recordreplay::Assert("TileManager::CreateRasterTask #2 %d %d %d %d",
+                       invalidated_rect.x(), invalidated_rect.y(),
+                       invalidated_rect.width(), invalidated_rect.height());
+
   if (UsePartialRaster(msaa_sample_count) && tile->invalidated_id()) {
     resource = resource_pool_->TryAcquireResourceForPartialRaster(
         tile->id(), tile->invalidated_content_rect(), tile->invalidated_id(),
