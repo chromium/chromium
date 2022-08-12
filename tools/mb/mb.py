@@ -485,10 +485,12 @@ class MetaBuildWrapper:
       exe += '.exe'
 
     args = [
-       exe, 'select',
-      '-model-dir', model_dir, \
-      '-out', self.PathJoin(self.ToAbsPath(self.args.path), self.rts_out_dir),
-      '-checkout', self.chromium_src_dir,
+        exe,
+        'select',
+        '-gen-inverse',
+        '-model-dir', model_dir, \
+        '-out', self.PathJoin(self.ToAbsPath(self.args.path), self.rts_out_dir),
+        '-checkout', self.chromium_src_dir,
     ]
     if self.args.rts_target_change_recall:
       if (self.args.rts_target_change_recall < 0
@@ -1334,11 +1336,6 @@ class MetaBuildWrapper:
       if 'is_skylab=true' in vals['gn_args']:
         runtime_deps = self._FilterOutUnneededSkylabDeps(runtime_deps)
 
-      # For more info about RTS, please see
-      # //docs/testing/regression-test-selection.md
-      if self.args.rts:
-        self.AddFilterFileArg(target, build_dir, command)
-
       canonical_target = target.replace(':','_').replace('/','_')
       ret = self.WriteIsolateFiles(build_dir, command, canonical_target,
                                    runtime_deps, vals, extra_files)
@@ -1346,17 +1343,17 @@ class MetaBuildWrapper:
         return ret
     return 0
 
-  def AddFilterFileArg(self, target, build_dir, command):
-    if target in self.banned_from_rts:
-      self.Print('%s is banned for RTS on this builder' % target)
-    else:
-      filter_file = target + '.filter'
-      filter_file_path = self.PathJoin(self.rts_out_dir, filter_file)
-      abs_filter_file_path = self.ToAbsPath(build_dir, filter_file_path)
+  def AddFilterFileArg(self, target, build_dir, command, inverted=False):
+    filter_file = ('%s_inverted' % target if inverted else target) + '.filter'
+    filter_file_path = self.PathJoin(self.rts_out_dir, filter_file)
+    abs_filter_file_path = self.ToAbsPath(build_dir, filter_file_path)
 
-      if self.Exists(abs_filter_file_path):
-        command.append('--test-launcher-filter-file=%s' % filter_file_path)
-        self.Print('added RTS filter file to command: %s' % filter_file)
+    filter_exists = self.Exists(abs_filter_file_path)
+    if filter_exists:
+      command.append('--test-launcher-filter-file=%s' % filter_file_path)
+      self.Print('added RTS filter file to command: %s' % filter_file)
+
+    return filter_exists
 
   def PossibleRuntimeDepsPaths(self, vals, ninja_targets, isolate_map):
     """Returns a map of targets to possible .runtime_deps paths.
@@ -1556,13 +1553,31 @@ class MetaBuildWrapper:
                  'list files in directory instead for:' + err)
       return 1
 
-    self.WriteFile(isolate_path,
-      json.dumps({
+    isolate = {
         'variables': {
-          'command': command,
-          'files': files,
+            'command': command,
+            'files': files,
         }
-      }, sort_keys=True) + '\n')
+    }
+    # For more info about RTS, please see
+    # //docs/testing/regression-test-selection.md
+    if self.args.rts:
+      if target in self.banned_from_rts:
+        self.Print('%s is banned for RTS on this builder' % target)
+        isolate['variables']['command'] = command
+      else:
+        inverted_command = command.copy()
+        self.AddFilterFileArg(target, build_dir, command, inverted=False)
+        isolate['variables']['command'] = command
+
+        inverted_filter_exists = self.AddFilterFileArg(target,
+                                                       build_dir,
+                                                       inverted_command,
+                                                       inverted=True)
+        if inverted_filter_exists:
+          isolate['variables']['inverted_command'] = inverted_command
+
+    self.WriteFile(isolate_path, json.dumps(isolate, sort_keys=True) + '\n')
 
     self.WriteJSON(
       {
