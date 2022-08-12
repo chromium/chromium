@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/html/parser/html_parser_options.h"
 #include "third_party/blink/renderer/core/html/parser/html_token.h"
 #include "third_party/blink/renderer/core/html/parser/input_stream_preprocessor.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/text/segmented_string.h"
 
 namespace blink {
@@ -146,12 +147,13 @@ class CORE_EXPORT HTMLTokenizer {
   // Potentially sets the tokenizer state for the given tag name. Specifically
   // the state is set if SpeculativeStateForTag() returns a value, see it for
   // details and caveats.
-  void UpdateStateFor(const String& tag_name);
+  void UpdateStateFor(const HTMLToken& token);
+  void UpdateStateFor(html_names::HTMLTag tag);
 
-  // Returns the tokenizer state for the given tag name. This is
-  // an approximation of how the tree builder would update the tokenizer's
-  // state. This method is useful for approximating HTML tokenization. To
-  // get exactly the correct tokenization, you need the real tree builder.
+  // Returns the tokenizer state for the given tag. This is an approximation of
+  // how the tree builder would update the tokenizer's state. This method is
+  // useful for approximating HTML tokenization. To get exactly the correct
+  // tokenization, you need the real tree builder.
   //
   // The main failures in the approximation are as follows:
   //
@@ -163,8 +165,7 @@ class CORE_EXPORT HTMLTokenizer {
   //    instead of as character tokens.
   //
   // The return value is empty if a state change is not necessary.
-  absl::optional<State> SpeculativeStateForTag(
-      const AtomicString& tag_name) const;
+  absl::optional<State> SpeculativeStateForTag(html_names::HTMLTag tag) const;
 
   bool ForceNullCharacterReplacement() const {
     return force_null_character_replacement_;

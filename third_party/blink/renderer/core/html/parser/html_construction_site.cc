@@ -84,16 +84,17 @@ static inline void SetAttributes(Element* element,
 }
 
 static bool HasImpliedEndTag(const HTMLStackItem* item) {
-  return item->HasTagName(html_names::kDdTag) ||
-         item->HasTagName(html_names::kDtTag) ||
-         item->HasTagName(html_names::kLiTag) ||
-         item->HasTagName(html_names::kOptionTag) ||
-         item->HasTagName(html_names::kOptgroupTag) ||
-         item->HasTagName(html_names::kPTag) ||
-         item->HasTagName(html_names::kRbTag) ||
-         item->HasTagName(html_names::kRpTag) ||
-         item->HasTagName(html_names::kRtTag) ||
-         item->HasTagName(html_names::kRTCTag);
+  if (item->NamespaceURI() != html_names::xhtmlNamespaceURI)
+    return false;
+
+  auto tag = item->GetHTMLTag();
+  return tag == html_names::HTMLTag::kDd || tag == html_names::HTMLTag::kDt ||
+         tag == html_names::HTMLTag::kLi ||
+         tag == html_names::HTMLTag::kOption ||
+         tag == html_names::HTMLTag::kOptgroup ||
+         tag == html_names::HTMLTag::kP || tag == html_names::HTMLTag::kRb ||
+         tag == html_names::HTMLTag::kRp || tag == html_names::HTMLTag::kRt ||
+         tag == html_names::HTMLTag::kRTC;
 }
 
 static bool ShouldUseLengthLimit(const ContainerNode& node) {
@@ -484,7 +485,7 @@ void HTMLConstructionSite::SetCompatibilityMode(
 }
 
 void HTMLConstructionSite::SetCompatibilityModeFromDoctype(
-    const String& name,
+    html_names::HTMLTag tag,
     const String& public_id,
     const String& system_id) {
   // There are three possible compatibility modes:
@@ -496,7 +497,7 @@ void HTMLConstructionSite::SetCompatibilityModeFromDoctype(
   // letter.
 
   // Check for Quirks Mode.
-  if (name != "html" ||
+  if (tag != html_names::HTMLTag::kHTML ||
       public_id.StartsWithIgnoringASCIICase(
           "+//Silmaril//dtd html Pro v0r11 19970101//") ||
       public_id.StartsWithIgnoringASCIICase(
@@ -661,7 +662,7 @@ void HTMLConstructionSite::InsertDoctype(AtomicHTMLToken* token) {
   if (token->ForceQuirks())
     SetCompatibilityMode(Document::kQuirksMode);
   else {
-    SetCompatibilityModeFromDoctype(token->GetName(), public_id, system_id);
+    SetCompatibilityModeFromDoctype(token->GetHTMLTag(), public_id, system_id);
   }
 }
 
@@ -928,7 +929,12 @@ Element* HTMLConstructionSite::CreateElement(
   Document& document = OwnerDocumentForCurrentNode();
 
   // "2. Let local name be the tag name of the token."
-  QualifiedName tag_name(g_null_atom, token->GetName(), namespace_uri);
+  QualifiedName tag_name =
+      ((token->IsValidHTMLTag() &&
+        namespace_uri == html_names::xhtmlNamespaceURI)
+           ? static_cast<const QualifiedName&>(
+                 html_names::TagToQualifedName(token->GetHTMLTag()))
+           : QualifiedName(g_null_atom, token->GetName(), namespace_uri));
   // "3. Let is be the value of the "is" attribute in the given token ..." etc.
   const Attribute* is_attribute = token->GetAttributeItem(html_names::kIsAttr);
   const AtomicString& is = is_attribute ? is_attribute->Value() : g_null_atom;
@@ -1105,9 +1111,9 @@ void HTMLConstructionSite::ReconstructTheActiveFormattingElements() {
 }
 
 void HTMLConstructionSite::GenerateImpliedEndTagsWithExclusion(
-    const AtomicString& tag_name) {
+    const HTMLTokenName& name) {
   while (HasImpliedEndTag(CurrentStackItem()) &&
-         !CurrentStackItem()->MatchesHTMLTag(tag_name))
+         !CurrentStackItem()->MatchesHTMLTag(name))
     open_elements_.Pop();
 }
 

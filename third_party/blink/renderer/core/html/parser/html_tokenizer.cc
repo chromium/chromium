@@ -1667,27 +1667,42 @@ String HTMLTokenizer::BufferedCharacters() const {
   return characters.ToString();
 }
 
-void HTMLTokenizer::UpdateStateFor(const String& tag_name) {
-  auto state = SpeculativeStateForTag(AtomicString(tag_name));
+void HTMLTokenizer::UpdateStateFor(const HTMLToken& token) {
+  if (!token.GetName().IsEmpty()) {
+    UpdateStateFor(
+        lookupHTMLTag(token.GetName().data(), token.GetName().size()));
+  }
+}
+
+void HTMLTokenizer::UpdateStateFor(html_names::HTMLTag tag) {
+  auto state = SpeculativeStateForTag(tag);
   if (state)
     SetState(*state);
 }
 
 absl::optional<HTMLTokenizer::State> HTMLTokenizer::SpeculativeStateForTag(
-    const AtomicString& tag_name) const {
-  if (tag_name == html_names::kTextareaTag || tag_name == html_names::kTitleTag)
-    return HTMLTokenizer::kRCDATAState;
-  if (tag_name == html_names::kPlaintextTag)
-    return HTMLTokenizer::kPLAINTEXTState;
-  if (tag_name == html_names::kScriptTag)
-    return HTMLTokenizer::kScriptDataState;
-  if (tag_name == html_names::kStyleTag || tag_name == html_names::kIFrameTag ||
-      tag_name == html_names::kXmpTag || tag_name == html_names::kNoembedTag ||
-      tag_name == html_names::kNoframesTag ||
-      (tag_name == html_names::kNoscriptTag && options_.scripting_flag)) {
-    return HTMLTokenizer::kRAWTEXTState;
+    html_names::HTMLTag tag) const {
+  switch (tag) {
+    case html_names::HTMLTag::kTextarea:
+    case html_names::HTMLTag::kTitle:
+      return HTMLTokenizer::kRCDATAState;
+    case html_names::HTMLTag::kPlaintext:
+      return HTMLTokenizer::kPLAINTEXTState;
+    case html_names::HTMLTag::kScript:
+      return HTMLTokenizer::kScriptDataState;
+    case html_names::HTMLTag::kStyle:
+    case html_names::HTMLTag::kIFrame:
+    case html_names::HTMLTag::kXmp:
+    case html_names::HTMLTag::kNoembed:
+    case html_names::HTMLTag::kNoframes:
+      return HTMLTokenizer::kRAWTEXTState;
+    case html_names::HTMLTag::kNoscript:
+      if (options_.scripting_flag)
+        return HTMLTokenizer::kRAWTEXTState;
+      return absl::nullopt;
+    default:
+      return absl::nullopt;
   }
-  return absl::nullopt;
 }
 
 inline bool HTMLTokenizer::TemporaryBufferIs(const String& expected_string) {

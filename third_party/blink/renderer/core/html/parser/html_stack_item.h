@@ -44,13 +44,14 @@ class HTMLStackItem final : public GarbageCollected<HTMLStackItem> {
  public:
   enum ItemType { kItemForContextElement, kItemForDocumentFragmentNode };
 
-  HTMLStackItem(ContainerNode* node, ItemType type) : node_(node) {
+  HTMLStackItem(ContainerNode* node, ItemType type)
+      : node_(node), token_name_(html_names::HTMLTag::kUnknown) {
     switch (type) {
       case kItemForDocumentFragmentNode:
         is_document_fragment_node_ = true;
         break;
       case kItemForContextElement:
-        token_local_name_ = GetElement()->localName();
+        token_name_ = HTMLTokenName::FromLocalName(GetElement()->localName());
         namespace_uri_ = GetElement()->namespaceURI();
         is_document_fragment_node_ = false;
         break;
@@ -64,7 +65,7 @@ class HTMLStackItem final : public GarbageCollected<HTMLStackItem> {
                 AtomicHTMLToken* token,
                 const AtomicString& namespace_uri)
       : node_(node),
-        token_local_name_(token->GetName()),
+        token_name_(token->GetTokenName()),
         namespace_uri_(namespace_uri),
         num_token_attributes_(token->Attributes().size()),
         is_document_fragment_node_(false) {
@@ -101,43 +102,55 @@ class HTMLStackItem final : public GarbageCollected<HTMLStackItem> {
   bool IsElementNode() const { return !is_document_fragment_node_; }
 
   const AtomicString& NamespaceURI() const { return namespace_uri_; }
-  const AtomicString& LocalName() const { return token_local_name_; }
+  const AtomicString& LocalName() const { return token_name_.GetLocalName(); }
 
   const base::span<Attribute> Attributes() {
-    DCHECK(token_local_name_);
+    DCHECK(LocalName());
     return {TokenAttributesData(), num_token_attributes_};
   }
   const base::span<const Attribute> Attributes() const {
-    DCHECK(token_local_name_);
+    DCHECK(LocalName());
     return {TokenAttributesData(), num_token_attributes_};
   }
   Attribute* GetAttributeItem(const QualifiedName& attribute_name) {
-    DCHECK(token_local_name_);
+    DCHECK(LocalName());
     return FindAttributeInVector(Attributes(), attribute_name);
   }
 
+  html_names::HTMLTag GetHTMLTag() const { return token_name_.GetHTMLTag(); }
+
   bool HasLocalName(const AtomicString& name) const {
-    return token_local_name_ == name;
+    return token_name_.GetLocalName() == name;
   }
   bool HasTagName(const QualifiedName& name) const {
-    return token_local_name_ == name.LocalName() &&
+    return HasLocalName(name.LocalName()) &&
            namespace_uri_ == name.NamespaceURI();
   }
 
   bool MatchesHTMLTag(const AtomicString& name) const {
-    return token_local_name_ == name &&
+    return HasLocalName(name) &&
            namespace_uri_ == html_names::xhtmlNamespaceURI;
   }
   bool MatchesHTMLTag(const QualifiedName& name) const {
-    return token_local_name_ == name &&
+    return HasLocalName(name.LocalName()) &&
+           namespace_uri_ == html_names::xhtmlNamespaceURI;
+  }
+  bool MatchesHTMLTag(const HTMLTokenName& name) const {
+    return name == token_name_ &&
            namespace_uri_ == html_names::xhtmlNamespaceURI;
   }
 
   bool CausesFosterParenting() {
-    return HasTagName(html_names::kTableTag) ||
-           HasTagName(html_names::kTbodyTag) ||
-           HasTagName(html_names::kTfootTag) ||
-           HasTagName(html_names::kTheadTag) || HasTagName(html_names::kTrTag);
+    switch (GetHTMLTag()) {
+      case html_names::HTMLTag::kTable:
+      case html_names::HTMLTag::kTbody:
+      case html_names::HTMLTag::kTfoot:
+      case html_names::HTMLTag::kThead:
+      case html_names::HTMLTag::kTr:
+        return namespace_uri_ == html_names::xhtmlNamespaceURI;
+      default:
+        return false;
+    }
   }
 
   bool IsInHTMLNamespace() const {
@@ -149,19 +162,121 @@ class HTMLStackItem final : public GarbageCollected<HTMLStackItem> {
   }
 
   bool IsNumberedHeaderElement() const {
-    return HasTagName(html_names::kH1Tag) || HasTagName(html_names::kH2Tag) ||
-           HasTagName(html_names::kH3Tag) || HasTagName(html_names::kH4Tag) ||
-           HasTagName(html_names::kH5Tag) || HasTagName(html_names::kH6Tag);
+    switch (GetHTMLTag()) {
+      case html_names::HTMLTag::kH1:
+      case html_names::HTMLTag::kH2:
+      case html_names::HTMLTag::kH3:
+      case html_names::HTMLTag::kH4:
+      case html_names::HTMLTag::kH5:
+      case html_names::HTMLTag::kH6:
+        return namespace_uri_ == html_names::xhtmlNamespaceURI;
+      default:
+        return false;
+    }
   }
 
   bool IsTableBodyContextElement() const {
-    return HasTagName(html_names::kTbodyTag) ||
-           HasTagName(html_names::kTfootTag) ||
-           HasTagName(html_names::kTheadTag);
+    switch (GetHTMLTag()) {
+      case html_names::HTMLTag::kTbody:
+      case html_names::HTMLTag::kTfoot:
+      case html_names::HTMLTag::kThead:
+        return namespace_uri_ == html_names::xhtmlNamespaceURI;
+      default:
+        return false;
+    }
   }
 
   // http://www.whatwg.org/specs/web-apps/current-work/multipage/parsing.html#special
   bool IsSpecialNode() const {
+    if (IsDocumentFragmentNode())
+      return true;
+    if (IsInHTMLNamespace()) {
+      switch (GetHTMLTag()) {
+        case html_names::HTMLTag::kAddress:
+        case html_names::HTMLTag::kArea:
+        case html_names::HTMLTag::kApplet:
+        case html_names::HTMLTag::kArticle:
+        case html_names::HTMLTag::kAside:
+        case html_names::HTMLTag::kBase:
+        case html_names::HTMLTag::kBasefont:
+        case html_names::HTMLTag::kBgsound:
+        case html_names::HTMLTag::kBlockquote:
+        case html_names::HTMLTag::kBody:
+        case html_names::HTMLTag::kBr:
+        case html_names::HTMLTag::kButton:
+        case html_names::HTMLTag::kCaption:
+        case html_names::HTMLTag::kCenter:
+        case html_names::HTMLTag::kCol:
+        case html_names::HTMLTag::kColgroup:
+        case html_names::HTMLTag::kCommand:
+        case html_names::HTMLTag::kDd:
+        case html_names::HTMLTag::kDetails:
+        case html_names::HTMLTag::kDir:
+        case html_names::HTMLTag::kDiv:
+        case html_names::HTMLTag::kDl:
+        case html_names::HTMLTag::kDt:
+        case html_names::HTMLTag::kEmbed:
+        case html_names::HTMLTag::kFieldset:
+        case html_names::HTMLTag::kFigcaption:
+        case html_names::HTMLTag::kFigure:
+        case html_names::HTMLTag::kFooter:
+        case html_names::HTMLTag::kForm:
+        case html_names::HTMLTag::kFrame:
+        case html_names::HTMLTag::kFrameset:
+        case html_names::HTMLTag::kH1:
+        case html_names::HTMLTag::kH2:
+        case html_names::HTMLTag::kH3:
+        case html_names::HTMLTag::kH4:
+        case html_names::HTMLTag::kH5:
+        case html_names::HTMLTag::kH6:
+        case html_names::HTMLTag::kHead:
+        case html_names::HTMLTag::kHeader:
+        case html_names::HTMLTag::kHgroup:
+        case html_names::HTMLTag::kHr:
+        case html_names::HTMLTag::kHTML:
+        case html_names::HTMLTag::kIFrame:
+        case html_names::HTMLTag::kImg:
+        case html_names::HTMLTag::kInput:
+        case html_names::HTMLTag::kLi:
+        case html_names::HTMLTag::kLink:
+        case html_names::HTMLTag::kListing:
+        case html_names::HTMLTag::kMain:
+        case html_names::HTMLTag::kMarquee:
+        case html_names::HTMLTag::kMenu:
+        case html_names::HTMLTag::kMeta:
+        case html_names::HTMLTag::kNav:
+        case html_names::HTMLTag::kNoembed:
+        case html_names::HTMLTag::kNoframes:
+        case html_names::HTMLTag::kNoscript:
+        case html_names::HTMLTag::kObject:
+        case html_names::HTMLTag::kOl:
+        case html_names::HTMLTag::kP:
+        case html_names::HTMLTag::kParam:
+        case html_names::HTMLTag::kPlaintext:
+        case html_names::HTMLTag::kPre:
+        case html_names::HTMLTag::kScript:
+        case html_names::HTMLTag::kSection:
+        case html_names::HTMLTag::kSelect:
+        case html_names::HTMLTag::kStyle:
+        case html_names::HTMLTag::kSummary:
+        case html_names::HTMLTag::kTable:
+        case html_names::HTMLTag::kTbody:
+        case html_names::HTMLTag::kTfoot:
+        case html_names::HTMLTag::kThead:
+        case html_names::HTMLTag::kTd:
+        case html_names::HTMLTag::kTemplate:
+        case html_names::HTMLTag::kTextarea:
+        case html_names::HTMLTag::kTh:
+        case html_names::HTMLTag::kTitle:
+        case html_names::HTMLTag::kTr:
+        case html_names::HTMLTag::kUl:
+        case html_names::HTMLTag::kWbr:
+        case html_names::HTMLTag::kXmp:
+          return true;
+        default:
+          return false;
+      }
+    }
     if (HasTagName(mathml_names::kMiTag) || HasTagName(mathml_names::kMoTag) ||
         HasTagName(mathml_names::kMnTag) || HasTagName(mathml_names::kMsTag) ||
         HasTagName(mathml_names::kMtextTag) ||
@@ -169,74 +284,7 @@ class HTMLStackItem final : public GarbageCollected<HTMLStackItem> {
         HasTagName(svg_names::kForeignObjectTag) ||
         HasTagName(svg_names::kDescTag) || HasTagName(svg_names::kTitleTag))
       return true;
-    if (IsDocumentFragmentNode())
-      return true;
-    if (!IsInHTMLNamespace())
-      return false;
-    const AtomicString& tag_name = LocalName();
-    return tag_name == html_names::kAddressTag ||
-           tag_name == html_names::kAreaTag ||
-           tag_name == html_names::kAppletTag ||
-           tag_name == html_names::kArticleTag ||
-           tag_name == html_names::kAsideTag ||
-           tag_name == html_names::kBaseTag ||
-           tag_name == html_names::kBasefontTag ||
-           tag_name == html_names::kBgsoundTag ||
-           tag_name == html_names::kBlockquoteTag ||
-           tag_name == html_names::kBodyTag || tag_name == html_names::kBrTag ||
-           tag_name == html_names::kButtonTag ||
-           tag_name == html_names::kCaptionTag ||
-           tag_name == html_names::kCenterTag ||
-           tag_name == html_names::kColTag ||
-           tag_name == html_names::kColgroupTag ||
-           tag_name == html_names::kCommandTag ||
-           tag_name == html_names::kDdTag ||
-           tag_name == html_names::kDetailsTag ||
-           tag_name == html_names::kDirTag || tag_name == html_names::kDivTag ||
-           tag_name == html_names::kDlTag || tag_name == html_names::kDtTag ||
-           tag_name == html_names::kEmbedTag ||
-           tag_name == html_names::kFieldsetTag ||
-           tag_name == html_names::kFigcaptionTag ||
-           tag_name == html_names::kFigureTag ||
-           tag_name == html_names::kFooterTag ||
-           tag_name == html_names::kFormTag ||
-           tag_name == html_names::kFrameTag ||
-           tag_name == html_names::kFramesetTag || IsNumberedHeaderElement() ||
-           tag_name == html_names::kHeadTag ||
-           tag_name == html_names::kHeaderTag ||
-           tag_name == html_names::kHgroupTag ||
-           tag_name == html_names::kHrTag || tag_name == html_names::kHTMLTag ||
-           tag_name == html_names::kIFrameTag ||
-           tag_name == html_names::kImgTag ||
-           tag_name == html_names::kInputTag ||
-           tag_name == html_names::kLiTag || tag_name == html_names::kLinkTag ||
-           tag_name == html_names::kListingTag ||
-           tag_name == html_names::kMainTag ||
-           tag_name == html_names::kMarqueeTag ||
-           tag_name == html_names::kMenuTag ||
-           tag_name == html_names::kMetaTag ||
-           tag_name == html_names::kNavTag ||
-           tag_name == html_names::kNoembedTag ||
-           tag_name == html_names::kNoframesTag ||
-           tag_name == html_names::kNoscriptTag ||
-           tag_name == html_names::kObjectTag ||
-           tag_name == html_names::kOlTag || tag_name == html_names::kPTag ||
-           tag_name == html_names::kParamTag ||
-           tag_name == html_names::kPlaintextTag ||
-           tag_name == html_names::kPreTag ||
-           tag_name == html_names::kScriptTag ||
-           tag_name == html_names::kSectionTag ||
-           tag_name == html_names::kSelectTag ||
-           tag_name == html_names::kStyleTag ||
-           tag_name == html_names::kSummaryTag ||
-           tag_name == html_names::kTableTag || IsTableBodyContextElement() ||
-           tag_name == html_names::kTdTag ||
-           tag_name == html_names::kTemplateTag ||
-           tag_name == html_names::kTextareaTag ||
-           tag_name == html_names::kThTag ||
-           tag_name == html_names::kTitleTag ||
-           tag_name == html_names::kTrTag || tag_name == html_names::kUlTag ||
-           tag_name == html_names::kWbrTag || tag_name == html_names::kXmpTag;
+    return false;
   }
 
   void Trace(Visitor* visitor) const { visitor->Trace(node_); }
@@ -256,7 +304,7 @@ class HTMLStackItem final : public GarbageCollected<HTMLStackItem> {
 
   Member<ContainerNode> node_;
 
-  AtomicString token_local_name_;
+  HTMLTokenName token_name_;
   AtomicString namespace_uri_;
   wtf_size_t num_token_attributes_ = 0;
   bool is_document_fragment_node_;

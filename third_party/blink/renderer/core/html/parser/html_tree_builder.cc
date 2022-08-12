@@ -810,7 +810,7 @@ void HTMLTreeBuilder::ProcessStartTagForInBody(AtomicHTMLToken* token) {
     case TagParsingGroup::kRtOrRpTag:
       if (tree_.OpenElements()->InScope(html_names::kRubyTag.LocalName())) {
         tree_.GenerateImpliedEndTagsWithExclusion(
-            html_names::kRTCTag.LocalName());
+            HTMLTokenName(html_names::HTMLTag::kRTC));
         if (!tree_.CurrentStackItem()->HasTagName(html_names::kRubyTag) &&
             !tree_.CurrentStackItem()->HasTagName(html_names::kRTCTag))
           ParseError(token);
@@ -1475,7 +1475,7 @@ void HTMLTreeBuilder::ProcessAnyOtherEndTagForInBody(AtomicHTMLToken* token) {
   while (true) {
     HTMLStackItem* item = record->StackItem();
     if (item->MatchesHTMLTag(token->GetName())) {
-      tree_.GenerateImpliedEndTagsWithExclusion(token->GetName());
+      tree_.GenerateImpliedEndTagsWithExclusion(token->GetTokenName());
       if (!tree_.CurrentStackItem()->MatchesHTMLTag(token->GetName()))
         ParseError(token);
       tree_.OpenElements()->PopUntilPopped(item->GetElement());
@@ -1859,7 +1859,7 @@ void HTMLTreeBuilder::ProcessEndTagForInBody(AtomicHTMLToken* token) {
       ProcessEndTag(token);
       return;
     }
-    tree_.GenerateImpliedEndTagsWithExclusion(token->GetName());
+    tree_.GenerateImpliedEndTagsWithExclusion(token->GetTokenName());
     if (!tree_.CurrentStackItem()->MatchesHTMLTag(token->GetName()))
       ParseError(token);
     tree_.OpenElements()->PopUntilPopped(token->GetName());
@@ -1870,7 +1870,7 @@ void HTMLTreeBuilder::ProcessEndTagForInBody(AtomicHTMLToken* token) {
       ParseError(token);
       return;
     }
-    tree_.GenerateImpliedEndTagsWithExclusion(token->GetName());
+    tree_.GenerateImpliedEndTagsWithExclusion(token->GetTokenName());
     if (!tree_.CurrentStackItem()->MatchesHTMLTag(token->GetName()))
       ParseError(token);
     tree_.OpenElements()->PopUntilPopped(token->GetName());
@@ -1882,7 +1882,7 @@ void HTMLTreeBuilder::ProcessEndTagForInBody(AtomicHTMLToken* token) {
       ParseError(token);
       return;
     }
-    tree_.GenerateImpliedEndTagsWithExclusion(token->GetName());
+    tree_.GenerateImpliedEndTagsWithExclusion(token->GetTokenName());
     if (!tree_.CurrentStackItem()->MatchesHTMLTag(token->GetName()))
       ParseError(token);
     tree_.OpenElements()->PopUntilPopped(token->GetName());

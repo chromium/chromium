@@ -31,6 +31,7 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/notreached.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/html/parser/html_token.h"
@@ -50,6 +51,78 @@ namespace blink {
 // Controls whether attribute name lookup uses LookupHTMLAttributeName().
 CORE_EXPORT extern bool g_use_html_attribute_name_lookup;
 
+class AtomicHTMLToken;
+
+// HTMLTokenName represents a parsed token name (the local name of a
+// QualifiedName). The token name contains the local name as an AtomicString and
+// if the name is a valid html tag name, an HTMLTag. As this class is created
+// from tokenized input, it does not know the namespace, the namespace is
+// determined later in parsing (see HTMLTreeBuilder and HTMLStackItem).
+class CORE_EXPORT HTMLTokenName {
+ public:
+  explicit HTMLTokenName(html_names::HTMLTag tag) : tag_(tag) {
+    if (tag != html_names::HTMLTag::kUnknown)
+      local_name_ = html_names::TagToQualifedName(tag).LocalName();
+  }
+
+  // Returns an HTMLTokenName for the specified string. This function looks up
+  // the HTMLTag from the supplied string.
+  static HTMLTokenName FromLocalName(const AtomicString& local_name) {
+    if (local_name.IsEmpty())
+      return HTMLTokenName(html_names::HTMLTag::kUnknown);
+
+    if (local_name.Is8Bit()) {
+      return HTMLTokenName(
+          lookupHTMLTag(local_name.Characters8(), local_name.length()),
+          local_name);
+    }
+    return HTMLTokenName(
+        lookupHTMLTag(local_name.Characters16(), local_name.length()),
+        local_name);
+  }
+
+  bool operator==(const HTMLTokenName& other) const {
+    return other.local_name_ == local_name_;
+  }
+
+  bool IsValidHTMLTag() const { return tag_ != html_names::HTMLTag::kUnknown; }
+
+  html_names::HTMLTag GetHTMLTag() const { return tag_; }
+
+  const AtomicString& GetLocalName() const { return local_name_; }
+
+ private:
+  // For access to constructor.
+  friend class AtomicHTMLToken;
+
+  explicit HTMLTokenName(html_names::HTMLTag tag, const AtomicString& name)
+      : tag_(tag), local_name_(name) {
+#if DCHECK_IS_ON()
+    if (tag == html_names::HTMLTag::kUnknown) {
+      // If the tag is unknown, then `name` must either be empty, or not
+      // identify any other HTMLTag.
+      if (!name.IsEmpty()) {
+        if (name.Is8Bit()) {
+          DCHECK_EQ(html_names::HTMLTag::kUnknown,
+                    lookupHTMLTag(name.Characters8(), name.length()));
+        } else {
+          DCHECK_EQ(html_names::HTMLTag::kUnknown,
+                    lookupHTMLTag(name.Characters16(), name.length()));
+        }
+      }
+    }
+#endif
+  }
+
+  // This constructor is intended for use by AtomicHTMLToken when it is known
+  // the string is not a known html tag.
+  explicit HTMLTokenName(const AtomicString& name)
+      : HTMLTokenName(html_names::HTMLTag::kUnknown, name) {}
+
+  html_names::HTMLTag tag_;
+  AtomicString local_name_;
+};
+
 class CORE_EXPORT AtomicHTMLToken {
   STACK_ALLOCATED();
 
@@ -61,15 +134,22 @@ class CORE_EXPORT AtomicHTMLToken {
 
   HTMLToken::TokenType GetType() const { return type_; }
 
+  // TODO(sky): for consistency, rename to GetLocalName().
   const AtomicString& GetName() const {
     DCHECK(UsesName());
-    return name_;
+    return name_.GetLocalName();
   }
 
   void SetName(const AtomicString& name) {
     DCHECK(UsesName());
-    name_ = name;
+    name_ = HTMLTokenName::FromLocalName(name);
   }
+
+  html_names::HTMLTag GetHTMLTag() const { return name_.GetHTMLTag(); }
+
+  bool IsValidHTMLTag() const { return name_.IsValidHTMLTag(); }
+
+  const HTMLTokenName& GetTokenName() const { return name_; }
 
   bool SelfClosing() const {
     DCHECK(type_ == HTMLToken::kStartTag || type_ == HTMLToken::kEndTag);
@@ -115,13 +195,13 @@ class CORE_EXPORT AtomicHTMLToken {
     return doctype_data_->system_identifier_;
   }
 
-  explicit AtomicHTMLToken(HTMLToken& token) : type_(token.GetType()) {
+  explicit AtomicHTMLToken(HTMLToken& token)
+      : type_(token.GetType()), name_(HTMLTokenNameFromToken(token)) {
     switch (type_) {
       case HTMLToken::kUninitialized:
         NOTREACHED();
         break;
       case HTMLToken::DOCTYPE:
-        name_ = token.GetName().AsAtomicString();
         doctype_data_ = token.ReleaseDoctypeData();
         break;
       case HTMLToken::kEndOfFile:
@@ -129,13 +209,6 @@ class CORE_EXPORT AtomicHTMLToken {
       case HTMLToken::kStartTag:
       case HTMLToken::kEndTag: {
         self_closing_ = token.SelfClosing();
-        const html_names::HTMLTag html_tag =
-            lookupHTMLTag(token.GetName().data(), token.GetName().size());
-        if (html_tag != html_names::HTMLTag::kUnknown) {
-          name_ = html_names::TagToQualifedName(html_tag).LocalName();
-        } else {
-          name_ = token.GetName().AsAtomicString();
-        }
         const HTMLToken::AttributeList& attributes = token.Attributes();
 
         // This limit is set fairly arbitrarily; the main point is to avoid
@@ -160,12 +233,15 @@ class CORE_EXPORT AtomicHTMLToken {
     }
   }
 
-  explicit AtomicHTMLToken(HTMLToken::TokenType type) : type_(type) {}
+  explicit AtomicHTMLToken(HTMLToken::TokenType type)
+      : type_(type), name_(html_names::HTMLTag::kUnknown) {}
 
   AtomicHTMLToken(HTMLToken::TokenType type,
                   const AtomicString& name,
                   const Vector<Attribute>& attributes = Vector<Attribute>())
-      : type_(type), name_(name), attributes_(attributes) {
+      : type_(type),
+        name_(HTMLTokenName::FromLocalName(name)),
+        attributes_(attributes) {
     DCHECK(UsesName());
   }
 
@@ -177,7 +253,25 @@ class CORE_EXPORT AtomicHTMLToken {
 #endif
 
  private:
-  HTMLToken::TokenType type_;
+  static HTMLTokenName HTMLTokenNameFromToken(const HTMLToken& token) {
+    switch (token.GetType()) {
+      case HTMLToken::DOCTYPE:
+        // Doctype name may be empty, but not start/end tags.
+        if (token.GetName().IsEmpty())
+          return HTMLTokenName(html_names::HTMLTag::kUnknown);
+        [[fallthrough]];
+      case HTMLToken::kStartTag:
+      case HTMLToken::kEndTag: {
+        const html_names::HTMLTag html_tag =
+            lookupHTMLTag(token.GetName().data(), token.GetName().size());
+        if (html_tag != html_names::HTMLTag::kUnknown)
+          return HTMLTokenName(html_tag);
+        return HTMLTokenName(token.GetName().AsAtomicString());
+      }
+      default:
+        return HTMLTokenName(html_names::HTMLTag::kUnknown);
+    }
+  }
 
   // Sets up and deduplicates attributes.
   //
@@ -195,8 +289,10 @@ class CORE_EXPORT AtomicHTMLToken {
 
   bool UsesAttributes() const;
 
+  HTMLToken::TokenType type_;
+
   // "name" for DOCTYPE, StartTag, and EndTag
-  AtomicString name_;
+  HTMLTokenName name_;
 
   // "data" for Comment, "characters" for Character
   String data_;

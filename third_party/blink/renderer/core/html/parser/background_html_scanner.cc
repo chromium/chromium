@@ -114,10 +114,8 @@ void BackgroundHTMLScanner::Scan(const String& source) {
   token_scanner_->set_first_script_in_scan(true);
   source_.Append(source);
   while (tokenizer_->NextToken(source_, token_)) {
-    if (token_.GetType() == HTMLToken::kStartTag) {
-      tokenizer_->UpdateStateFor(
-          AttemptStaticStringCreation(token_.GetName(), kLikely8Bit));
-    }
+    if (token_.GetType() == HTMLToken::kStartTag)
+      tokenizer_->UpdateStateFor(token_);
     token_scanner_->ScanToken(token_);
     token_.Clear();
   }

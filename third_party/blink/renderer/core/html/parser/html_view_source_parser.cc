@@ -51,10 +51,8 @@ void HTMLViewSourceParser::PumpTokenizer() {
 
     GetDocument()->AddSource(SourceForToken(token_), token_);
 
-    // FIXME: The tokenizer should do this work for us.
     if (token_.GetType() == HTMLToken::kStartTag)
-      tokenizer_->UpdateStateFor(
-          AttemptStaticStringCreation(token_.GetName(), kLikely8Bit));
+      tokenizer_->UpdateStateFor(token_);
     token_.Clear();
   }
 }

@@ -1127,8 +1127,7 @@ std::unique_ptr<PendingPreloadData> HTMLPreloadScanner::Scan(
 
   while (tokenizer_->NextToken(source_, token_)) {
     if (token_.GetType() == HTMLToken::kStartTag)
-      tokenizer_->UpdateStateFor(
-          AttemptStaticStringCreation(token_.GetName(), kLikely8Bit));
+      tokenizer_->UpdateStateFor(token_);
     bool seen_csp_meta_tag = false;
     scanner_.Scan(token_, source_, pending_data->requests,
                   pending_data->meta_ch_values, &pending_data->viewport,

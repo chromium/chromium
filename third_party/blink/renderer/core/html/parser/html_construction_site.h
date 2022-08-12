@@ -189,7 +189,7 @@ class HTMLConstructionSite final {
   void ReconstructTheActiveFormattingElements();
 
   void GenerateImpliedEndTags();
-  void GenerateImpliedEndTagsWithExclusion(const AtomicString& tag_name);
+  void GenerateImpliedEndTagsWithExclusion(const HTMLTokenName& name);
 
   bool InQuirksMode();
 
@@ -251,7 +251,7 @@ class HTMLConstructionSite final {
   typedef HeapVector<HTMLConstructionSiteTask, 1> TaskQueue;
 
   void SetCompatibilityMode(Document::CompatibilityMode);
-  void SetCompatibilityModeFromDoctype(const String& name,
+  void SetCompatibilityModeFromDoctype(const html_names::HTMLTag tag,
                                        const String& public_id,
                                        const String& system_id);
 

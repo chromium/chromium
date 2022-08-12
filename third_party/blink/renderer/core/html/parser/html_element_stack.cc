@@ -44,23 +44,32 @@ inline bool IsRootNode(HTMLStackItem* item) {
 }
 
 inline bool IsScopeMarker(HTMLStackItem* item) {
-  return item->HasTagName(html_names::kAppletTag) ||
-         item->HasTagName(html_names::kCaptionTag) ||
-         item->HasTagName(html_names::kMarqueeTag) ||
-         item->HasTagName(html_names::kObjectTag) ||
-         item->HasTagName(html_names::kTableTag) ||
-         item->HasTagName(html_names::kTdTag) ||
-         item->HasTagName(html_names::kThTag) ||
-         item->HasTagName(mathml_names::kMiTag) ||
-         item->HasTagName(mathml_names::kMoTag) ||
-         item->HasTagName(mathml_names::kMnTag) ||
-         item->HasTagName(mathml_names::kMsTag) ||
-         item->HasTagName(mathml_names::kMtextTag) ||
-         item->HasTagName(mathml_names::kAnnotationXmlTag) ||
-         item->HasTagName(svg_names::kForeignObjectTag) ||
-         item->HasTagName(svg_names::kDescTag) ||
-         item->HasTagName(svg_names::kTitleTag) ||
-         item->HasTagName(html_names::kTemplateTag) || IsRootNode(item);
+  if (item->NamespaceURI() == html_names::xhtmlNamespaceURI) {
+    switch (item->GetHTMLTag()) {
+      case html_names::HTMLTag::kApplet:
+      case html_names::HTMLTag::kCaption:
+      case html_names::HTMLTag::kMarquee:
+      case html_names::HTMLTag::kObject:
+      case html_names::HTMLTag::kTable:
+      case html_names::HTMLTag::kTd:
+      case html_names::HTMLTag::kTemplate:
+      case html_names::HTMLTag::kTh:
+        return true;
+      default:
+        break;
+    }
+  } else if (item->HasTagName(mathml_names::kMiTag) ||
+             item->HasTagName(mathml_names::kMoTag) ||
+             item->HasTagName(mathml_names::kMnTag) ||
+             item->HasTagName(mathml_names::kMsTag) ||
+             item->HasTagName(mathml_names::kMtextTag) ||
+             item->HasTagName(mathml_names::kAnnotationXmlTag) ||
+             item->HasTagName(svg_names::kForeignObjectTag) ||
+             item->HasTagName(svg_names::kDescTag) ||
+             item->HasTagName(svg_names::kTitleTag)) {
+    return true;
+  }
+  return IsRootNode(item);
 }
 
 inline bool IsListItemScopeMarker(HTMLStackItem* item) {
