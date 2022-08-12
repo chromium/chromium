@@ -22,7 +22,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
-#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
@@ -46,6 +45,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/test_extension_registry_observer.h"
+#include "extensions/browser/updater/extension_downloader_test_helper.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/file_util.h"
@@ -76,14 +76,6 @@ constexpr char kServedDirName[] = "served";
 constexpr char kCrxFileNameTemplate[] = "%s-%s.crx";
 // Template for the file name of a served update manifest file.
 constexpr char kUpdateManifestFileNameTemplate[] = "%s.xml";
-// Template for the update manifest contents.
-constexpr char kUpdateManifestTemplate[] =
-    R"(<?xml version='1.0' encoding='UTF-8'?>
-       <gupdate xmlns='http://www.google.com/update2/response' protocol='2.0'>
-         <app appid='$1'>
-           <updatecheck codebase='$2' version='$3' />
-         </app>
-       </gupdate>)";
 
 // Implements waiting until the given extension appears in the
 // force-installation pref.
@@ -255,10 +247,10 @@ std::string GetServedCrxFileName(const extensions::ExtensionId& extension_id,
 std::string GenerateUpdateManifest(const extensions::ExtensionId& extension_id,
                                    const base::Version& extension_version,
                                    const GURL& crx_url) {
-  return base::ReplaceStringPlaceholders(
-      kUpdateManifestTemplate,
-      {extension_id, crx_url.spec(), extension_version.GetString()},
-      /*offsets=*/nullptr);
+  return extensions::CreateUpdateManifest(
+      {extensions::UpdateManifestItem(extension_id)
+           .codebase(crx_url.spec())
+           .version(extension_version.GetString())});
 }
 
 bool ParseExtensionManifestData(const base::FilePath& extension_dir_path,
