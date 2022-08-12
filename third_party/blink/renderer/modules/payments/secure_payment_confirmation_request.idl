@@ -10,7 +10,7 @@ enum SecurePaymentConfirmationAction {
 
 dictionary SecurePaymentConfirmationRequest {
     SecurePaymentConfirmationAction action;
-    required FrozenArray<BufferSource> credentialIds;
+    required sequence<BufferSource> credentialIds;
 
     // Opaque data about the current transaction provided by the issuer. As the
     // issuer is the RP of the credential, `challenge` provides protection
