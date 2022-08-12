@@ -107,6 +107,8 @@ extern const base::Feature kAvatarsCloudMigration;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kBentoBar;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kBluetoothFixA2dpPacketSize;
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kBluetoothQualityReport;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kBluetoothRevamp;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kBluetoothWbsDogfood;
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -694,6 +696,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAudioSettingsPageEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAutoNightLightEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBackgroundBlurEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBentoBarEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBluetoothQualityReportEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBluetoothRevampEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCalendarViewEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCalendarModelDebugModeEnabled();

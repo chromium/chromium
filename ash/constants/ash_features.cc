@@ -236,6 +236,10 @@ const base::Feature kBentoBar{"BentoBar", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kBluetoothFixA2dpPacketSize{
     "BluetoothFixA2dpPacketSize", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables or disables the Bluetooth Quality Report feature.
+const base::Feature kBluetoothQualityReport{"BluetoothQualityReport",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables the ChromeOS Bluetooth Revamp, which updates Bluetooth
 // system UI and related infrastructure. See https://crbug.com/1010321.
 const base::Feature kBluetoothRevamp{"BluetoothRevamp",
@@ -1799,6 +1803,10 @@ bool IsBackgroundBlurEnabled() {
 
 bool IsBentoBarEnabled() {
   return base::FeatureList::IsEnabled(kBentoBar);
+}
+
+bool IsBluetoothQualityReportEnabled() {
+  return base::FeatureList::IsEnabled(kBluetoothQualityReport);
 }
 
 bool IsBluetoothRevampEnabled() {

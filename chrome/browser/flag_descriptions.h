@@ -2630,6 +2630,9 @@ extern const char kAvatarsCloudMigrationDescription[];
 extern const char kBluetoothFixA2dpPacketSizeName[];
 extern const char kBluetoothFixA2dpPacketSizeDescription[];
 
+extern const char kBluetoothQualityReportName[];
+extern const char kBluetoothQualityReportDescription[];
+
 extern const char kBluetoothRevampName[];
 extern const char kBluetoothRevampDescription[];
 

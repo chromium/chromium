@@ -4591,6 +4591,12 @@ const char kBluetoothFixA2dpPacketSizeDescription[] =
     "Fixes Bluetooth A2DP packet size to a smaller default value to improve "
     "audio quality and may fix audio stutter.";
 
+const char kBluetoothQualityReportName[] = "Bluetooth Quality Report";
+const char kBluetoothQualityReportDescription[] =
+    "Enables the Bluetooth Quality Report feature on Bluetooth controllers "
+    "which will send the Bluetooth link quality statistics such as the "
+    "signal strength, the lost packet count, etc. to the host.";
+
 const char kBluetoothRevampName[] = "Bluetooth Revamp";
 const char kBluetoothRevampDescription[] =
     "Enables the ChromeOS Bluetooth Revamp, which updates Bluetooth system UI "

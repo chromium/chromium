@@ -669,6 +669,11 @@
     "expiry_milestone": 86
   },
   {
+    "name": "bluetooth-quality-report",
+    "owners": [ "josephsih", "chromeos-bluetooth@google.com" ],
+    "expiry_milestone": 111
+  },
+  {
     "name": "bluetooth-revamp",
     "owners": [ "khorimoto", "cros-connectivity@google.com" ],
     "expiry_milestone": 106
