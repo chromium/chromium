@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/services/app_service/public/cpp/preferred_app.h"
@@ -81,6 +82,9 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   void RegisterCrosApiSubScriber(SubscriberCrosapi* subscriber);
 
   // apps::AppServiceProxyBase overrides:
+  void Uninstall(const std::string& app_id,
+                 UninstallSource uninstall_source,
+                 gfx::NativeWindow parent_window) override;
   void Uninstall(const std::string& app_id,
                  apps::mojom::UninstallSource uninstall_source,
                  gfx::NativeWindow parent_window) override;
@@ -148,7 +152,7 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
                                 OnPauseDialogClosedCallback pause_callback);
 
   void UninstallImpl(const std::string& app_id,
-                     apps::mojom::UninstallSource uninstall_source,
+                     UninstallSource uninstall_source,
                      gfx::NativeWindow parent_window,
                      OnUninstallForTestingCallback callback);
 
@@ -161,7 +165,7 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   // |uninstall_dialogs_|.
   void OnUninstallDialogClosed(apps::AppType app_type,
                                const std::string& app_id,
-                               apps::mojom::UninstallSource uninstall_source,
+                               UninstallSource uninstall_source,
                                bool uninstall,
                                bool clear_site_data,
                                bool report_abuse,
@@ -207,10 +211,9 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
 
   void InitAppPlatformMetrics();
 
-  void PerformPostUninstallTasks(
-      apps::AppType app_type,
-      const std::string& app_id,
-      apps::mojom::UninstallSource uninstall_source) override;
+  void PerformPostUninstallTasks(apps::AppType app_type,
+                                 const std::string& app_id,
+                                 UninstallSource uninstall_source) override;
 
   // apps::InstanceRegistry::Observer overrides.
   void OnInstanceUpdate(const apps::InstanceUpdate& update) override;

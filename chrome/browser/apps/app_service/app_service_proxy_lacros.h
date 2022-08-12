@@ -192,11 +192,20 @@ class AppServiceProxyLacros : public KeyedService,
   // the uninstall dialog will be created as a modal dialog anchored at
   // |parent_window|. Otherwise, the browser window will be used as the anchor.
   void Uninstall(const std::string& app_id,
+                 UninstallSource uninstall_source,
+                 gfx::NativeWindow parent_window);
+  // TODO(crbug.com/1253250): Will be removed soon. Please use the non mojom
+  // interface.
+  void Uninstall(const std::string& app_id,
                  apps::mojom::UninstallSource uninstall_source,
                  gfx::NativeWindow parent_window);
 
   // Uninstalls an app for the given |app_id| without prompting the user to
   // confirm.
+  void UninstallSilently(const std::string& app_id,
+                         UninstallSource uninstall_source);
+  // TODO(crbug.com/1253250): Will be removed soon. Please use the non mojom
+  // interface.
   void UninstallSilently(const std::string& app_id,
                          apps::mojom::UninstallSource uninstall_source);
 

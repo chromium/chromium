@@ -32,7 +32,6 @@
 #include "components/services/app_service/app_service_mojom_impl.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
-#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/preferred_apps_impl.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list.h"
@@ -172,11 +171,19 @@ void AppServiceProxyAsh::RegisterCrosApiSubScriber(
   }
 }
 
+void AppServiceProxyAsh::Uninstall(const std::string& app_id,
+                                   UninstallSource uninstall_source,
+                                   gfx::NativeWindow parent_window) {
+  UninstallImpl(app_id, uninstall_source, parent_window, base::DoNothing());
+}
+
 void AppServiceProxyAsh::Uninstall(
     const std::string& app_id,
     apps::mojom::UninstallSource uninstall_source,
     gfx::NativeWindow parent_window) {
-  UninstallImpl(app_id, uninstall_source, parent_window, base::DoNothing());
+  UninstallImpl(app_id,
+                ConvertMojomUninstallSourceToUninstallSource(uninstall_source),
+                parent_window, base::DoNothing());
 }
 
 void AppServiceProxyAsh::OnApps(std::vector<AppPtr> deltas,
@@ -295,7 +302,7 @@ void AppServiceProxyAsh::UninstallForTesting(
     const std::string& app_id,
     gfx::NativeWindow parent_window,
     OnUninstallForTestingCallback callback) {
-  UninstallImpl(app_id, apps::mojom::UninstallSource::kUnknown, parent_window,
+  UninstallImpl(app_id, UninstallSource::kUnknown, parent_window,
                 std::move(callback));
 }
 
@@ -323,11 +330,10 @@ void AppServiceProxyAsh::Shutdown() {
   }
 }
 
-void AppServiceProxyAsh::UninstallImpl(
-    const std::string& app_id,
-    apps::mojom::UninstallSource uninstall_source,
-    gfx::NativeWindow parent_window,
-    OnUninstallForTestingCallback callback) {
+void AppServiceProxyAsh::UninstallImpl(const std::string& app_id,
+                                       UninstallSource uninstall_source,
+                                       gfx::NativeWindow parent_window,
+                                       OnUninstallForTestingCallback callback) {
   if (!app_service_.is_connected()) {
     if (!callback.is_null()) {
       std::move(callback).Run(false);
@@ -369,7 +375,7 @@ void AppServiceProxyAsh::UninstallImpl(
 void AppServiceProxyAsh::OnUninstallDialogClosed(
     apps::AppType app_type,
     const std::string& app_id,
-    apps::mojom::UninstallSource uninstall_source,
+    UninstallSource uninstall_source,
     bool uninstall,
     bool clear_site_data,
     bool report_abuse,
@@ -377,8 +383,17 @@ void AppServiceProxyAsh::OnUninstallDialogClosed(
   if (uninstall) {
     app_registry_cache_.ForOneApp(app_id, RecordAppBounce);
 
-    app_service_->Uninstall(ConvertAppTypeToMojomAppType(app_type), app_id,
-                            uninstall_source, clear_site_data, report_abuse);
+    if (base::FeatureList::IsEnabled(apps::kAppServiceUninstallWithoutMojom)) {
+      auto* publisher = GetPublisher(app_type);
+      DCHECK(publisher);
+      publisher->Uninstall(app_id, uninstall_source,
+                           /*clear_site_data=*/false, /*report_abuse=*/false);
+    } else {
+      app_service_->Uninstall(
+          ConvertAppTypeToMojomAppType(app_type), app_id,
+          ConvertUninstallSourceToMojomUninstallSource(uninstall_source),
+          clear_site_data, report_abuse);
+    }
 
     PerformPostUninstallTasks(app_type, app_id, uninstall_source);
   }
@@ -588,12 +603,11 @@ void AppServiceProxyAsh::InitAppPlatformMetrics() {
 void AppServiceProxyAsh::PerformPostUninstallTasks(
     apps::AppType app_type,
     const std::string& app_id,
-    apps::mojom::UninstallSource uninstall_source) {
+    UninstallSource uninstall_source) {
   if (app_platform_metrics_service_ &&
       app_platform_metrics_service_->AppPlatformMetrics()) {
     app_platform_metrics_service_->AppPlatformMetrics()->RecordAppUninstallUkm(
-        app_type, app_id,
-        ConvertMojomUninstallSourceToUninstallSource(uninstall_source));
+        app_type, app_id, uninstall_source);
   }
 }
 

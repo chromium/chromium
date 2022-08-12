@@ -37,6 +37,9 @@ class AppServiceProxy : public AppServiceProxyBase {
 
   // apps::AppServiceProxyBase overrides:
   void Uninstall(const std::string& app_id,
+                 UninstallSource uninstall_source,
+                 gfx::NativeWindow parent_window) override;
+  void Uninstall(const std::string& app_id,
                  apps::mojom::UninstallSource uninstall_source,
                  gfx::NativeWindow parent_window) override;
   void FlushMojoCallsForTesting() override;

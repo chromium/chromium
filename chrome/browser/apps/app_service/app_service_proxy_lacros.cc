@@ -293,25 +293,31 @@ void AppServiceProxyLacros::SetPermission(
   NOTIMPLEMENTED();
 }
 
-void AppServiceProxyLacros::Uninstall(
-    const std::string& app_id,
-    apps::mojom::UninstallSource uninstall_source,
-    gfx::NativeWindow parent_window) {
+void AppServiceProxyLacros::Uninstall(const std::string& app_id,
+                                      UninstallSource uninstall_source,
+                                      gfx::NativeWindow parent_window) {
   // On non-ChromeOS, publishers run the remove dialog.
   auto app_type = app_registry_cache_.GetAppType(app_id);
   if (app_type == AppType::kWeb) {
-    web_app::UninstallImpl(
-        web_app::WebAppProvider::GetForWebApps(profile_), app_id,
-        ConvertMojomUninstallSourceToUninstallSource(uninstall_source),
-        parent_window);
+    web_app::UninstallImpl(web_app::WebAppProvider::GetForWebApps(profile_),
+                           app_id, uninstall_source, parent_window);
   } else {
     NOTIMPLEMENTED();
   }
 }
 
+void AppServiceProxyLacros::Uninstall(
+    const std::string& app_id,
+    apps::mojom::UninstallSource uninstall_source,
+    gfx::NativeWindow parent_window) {
+  Uninstall(app_id,
+            ConvertMojomUninstallSourceToUninstallSource(uninstall_source),
+            parent_window);
+}
+
 void AppServiceProxyLacros::UninstallSilently(
     const std::string& app_id,
-    apps::mojom::UninstallSource uninstall_source) {
+    UninstallSource uninstall_source) {
   if (!remote_crosapi_app_service_proxy_) {
     return;
   }
@@ -325,7 +331,14 @@ void AppServiceProxyLacros::UninstallSilently(
     return;
   }
 
-  remote_crosapi_app_service_proxy_->UninstallSilently(
+  remote_crosapi_app_service_proxy_->UninstallSilently(app_id,
+                                                       uninstall_source);
+}
+
+void AppServiceProxyLacros::UninstallSilently(
+    const std::string& app_id,
+    apps::mojom::UninstallSource uninstall_source) {
+  UninstallSilently(
       app_id, ConvertMojomUninstallSourceToUninstallSource(uninstall_source));
 }
 
