@@ -2402,8 +2402,8 @@ void NavigationRequest::StartNavigation() {
   modified_request_headers_.Clear();
   removed_request_headers_.clear();
 
-  throttle_runner_ =
-      base::WrapUnique(new NavigationThrottleRunner(this, navigation_id_));
+  throttle_runner_ = base::WrapUnique(new NavigationThrottleRunner(
+      this, navigation_id_, IsInPrimaryMainFrame()));
 
   // For prerendered page activation, CommitDeferringConditions have already run
   // at the beginning of the navigation, so we won't run them again.

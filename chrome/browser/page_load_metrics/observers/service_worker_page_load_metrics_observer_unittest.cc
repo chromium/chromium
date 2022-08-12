@@ -9,6 +9,7 @@
 #include "chrome/browser/page_load_metrics/observers/page_load_metrics_observer_test_harness.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "components/page_load_metrics/common/test/page_load_metrics_test_util.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -119,7 +120,9 @@ TEST_F(ServiceWorkerPageLoadMetricsObserverTest, NoMetrics) {
   AssertNoServiceWorkerHistogramsLogged();
   AssertNoSearchHistogramsLogged();
   AssertNoSearchNoSWHistogramsLogged();
-  EXPECT_EQ(0ul, tester()->test_ukm_recorder().entries_count());
+  const auto& entries = tester()->test_ukm_recorder().GetEntriesByName(
+      ukm::builders::PageLoad_ServiceWorkerControlled::kEntryName);
+  EXPECT_EQ(0u, entries.size());
 }
 
 TEST_F(ServiceWorkerPageLoadMetricsObserverTest, NoServiceWorker) {
@@ -132,9 +135,9 @@ TEST_F(ServiceWorkerPageLoadMetricsObserverTest, NoServiceWorker) {
   AssertNoServiceWorkerHistogramsLogged();
   AssertNoSearchHistogramsLogged();
   AssertNoSearchNoSWHistogramsLogged();
-  // Only a DocumentCreated entry and an Unload entry is logged for creation of
-  // a blink::Document when the navigation committed.
-  EXPECT_EQ(2ul, tester()->test_ukm_recorder().entries_count());
+  const auto& entries = tester()->test_ukm_recorder().GetEntriesByName(
+      ukm::builders::PageLoad_ServiceWorkerControlled::kEntryName);
+  EXPECT_EQ(0u, entries.size());
   EXPECT_EQ(
       1ul,
       tester()->test_ukm_recorder().GetEntriesByName("DocumentCreated").size());

@@ -12836,6 +12836,36 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="NavigationThrottleDeferredTime" singular="False">
+  <owner>ryansturm@chromium.org</owner>
+  <owner>chrome-brapp-loading@google.com</owner>
+  <summary>
+    Information recorded about a navigation throttle when a navigation is
+    deferred at any stage of the navigation. Only recorded for main frame
+    navigations that were deferred and later resumed.
+  </summary>
+  <metric name="DurationOfNavigationDeferralMs">
+    <summary>
+      The duration from the start of the navigation deferral until the throttle
+      resumes the navigation recorded in milliseconds.
+    </summary>
+  </metric>
+  <metric name="NavigationThrottleEventType">
+    <summary>
+      An enum representing each event that can cause deferral method
+      (WillFailRequest, WillProcessResponse, WillRedirectRequest,
+      WillStartRequest). See NavigationThrottleRunner::Event for enum details.
+    </summary>
+  </metric>
+  <metric name="NavigationThrottleNameHash">
+    <summary>
+      A (MD5) hash of the logging name string which represents a unique
+      navigation throttle class (subclass of NavigationThrottle). See
+      NavigationThrottle::GetNameForLogging().
+    </summary>
+  </metric>
+</event>
+
 <event name="NavigationTiming" singular="True">
   <owner>nhiroki@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>

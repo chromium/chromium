@@ -21,12 +21,13 @@ namespace content {
 class CONTENT_EXPORT NavigationThrottleRunner {
  public:
   // The different event types that can be processed by NavigationThrottles.
+  // These values are recorded in metrics and should not be renumbered.
   enum class Event {
-    WillStartRequest,
-    WillRedirectRequest,
-    WillFailRequest,
-    WillProcessResponse,
-    NoEvent,
+    NoEvent = 0,
+    WillStartRequest = 1,
+    WillRedirectRequest = 2,
+    WillFailRequest = 3,
+    WillProcessResponse = 4,
   };
 
   class Delegate {
@@ -39,7 +40,9 @@ class CONTENT_EXPORT NavigationThrottleRunner {
         NavigationThrottle::ThrottleCheckResult result) = 0;
   };
 
-  NavigationThrottleRunner(Delegate* delegate, int64_t navigation_id);
+  NavigationThrottleRunner(Delegate* delegate,
+                           int64_t navigation_id,
+                           bool is_primary_main_frame);
 
   NavigationThrottleRunner(const NavigationThrottleRunner&) = delete;
   NavigationThrottleRunner& operator=(const NavigationThrottleRunner&) = delete;
@@ -81,6 +84,9 @@ class CONTENT_EXPORT NavigationThrottleRunner {
   void ProcessInternal();
   void InformDelegate(const NavigationThrottle::ThrottleCheckResult& result);
 
+  // Records UKM about the deferring throttle when the navigation is resumed.
+  void RecordDeferTimeUKM();
+
   const raw_ptr<Delegate> delegate_;
 
   // A list of Throttles registered for this navigation.
@@ -102,6 +108,10 @@ class CONTENT_EXPORT NavigationThrottleRunner {
 
   // The event currently being processed.
   Event current_event_ = Event::NoEvent;
+
+  // Whether the navigation is in the primary main frame.
+  bool is_primary_main_frame_ = false;
+
   base::WeakPtrFactory<NavigationThrottleRunner> weak_factory_{this};
 };
 
