@@ -217,7 +217,8 @@ void ExtractUnderlines(NSAttributedString* string,
               withHostHelper:(RenderWidgetHostNSViewHostHelper*)hostHelper {
   self = [super initWithFrame:NSZeroRect];
   if (self) {
-    self.allowedTouchTypes |= NSTouchTypeMaskDirect;
+    // Enable trackpad touches ("direct" touches are touchbar touches).
+    self.allowedTouchTypes |= NSTouchTypeMaskIndirect;
     _editCommandHelper =
         std::make_unique<RenderWidgetHostViewMacEditCommandHelper>();
 
