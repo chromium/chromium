@@ -17,15 +17,12 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
-#include "base/task/task_runner_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/cros_disks/fake_cros_disks_client.h"
@@ -134,19 +131,46 @@ MountError CrosDisksMountErrorToChromeMountError(
 }
 
 bool ReadMountEntryFromDbus(dbus::MessageReader* reader, MountEntry* entry) {
+  DCHECK(reader);
+  DCHECK(entry);
+
   uint32_t error_code = 0;
-  std::string source_path;
   uint32_t mount_type = 0;
-  std::string mount_path;
-  if (!reader->PopUint32(&error_code) || !reader->PopString(&source_path) ||
-      !reader->PopUint32(&mount_type) || !reader->PopString(&mount_path)) {
+  if (!reader->PopUint32(&error_code) ||
+      !reader->PopString(&entry->source_path) ||
+      !reader->PopUint32(&mount_type) ||
+      !reader->PopString(&entry->mount_path)) {
     return false;
   }
-  *entry =
-      MountEntry{CrosDisksMountErrorToChromeMountError(
-                     static_cast<cros_disks::MountErrorType>(error_code)),
-                 std::move(source_path), static_cast<MountType>(mount_type),
-                 std::move(mount_path)};
+
+  entry->error_code = CrosDisksMountErrorToChromeMountError(
+      static_cast<cros_disks::MountErrorType>(error_code));
+  entry->mount_type = static_cast<MountType>(mount_type);
+  entry->progress_percent = 100;
+
+  return true;
+}
+
+bool ReadMountProgressFromDbus(dbus::MessageReader* reader, MountEntry* entry) {
+  DCHECK(reader);
+  DCHECK(entry);
+
+  uint32_t progress_percent = 0;
+  uint32_t mount_type = 0;
+  if (!reader->PopUint32(&progress_percent) ||
+      !reader->PopString(&entry->source_path) ||
+      !reader->PopUint32(&mount_type) ||
+      !reader->PopString(&entry->mount_path)) {
+    return false;
+  }
+
+  if (!(progress_percent >= 0 && progress_percent <= 100))
+    return false;
+
+  entry->error_code = MountError::kInProgress;
+  entry->mount_type = static_cast<MountType>(mount_type);
+  entry->progress_percent = progress_percent;
+
   return true;
 }
 
@@ -162,8 +186,7 @@ void MaybeGetStringFromDictionaryValue(const base::Value& dict,
 // The CrosDisksClient implementation.
 class CrosDisksClientImpl : public CrosDisksClient {
  public:
-  CrosDisksClientImpl() : proxy_(nullptr) {}
-
+  CrosDisksClientImpl() = default;
   CrosDisksClientImpl(const CrosDisksClientImpl&) = delete;
   CrosDisksClientImpl& operator=(const CrosDisksClientImpl&) = delete;
 
@@ -335,6 +358,13 @@ class CrosDisksClientImpl : public CrosDisksClient {
                        weak_ptr_factory_.GetWeakPtr()));
 
     proxy_->ConnectToSignal(
+        cros_disks::kCrosDisksInterface, cros_disks::kMountProgress,
+        base::BindRepeating(&CrosDisksClientImpl::OnMountProgress,
+                            weak_ptr_factory_.GetWeakPtr()),
+        base::BindOnce(&CrosDisksClientImpl::OnSignalConnected,
+                       weak_ptr_factory_.GetWeakPtr()));
+
+    proxy_->ConnectToSignal(
         cros_disks::kCrosDisksInterface, cros_disks::kFormatCompleted,
         base::BindRepeating(&CrosDisksClientImpl::OnFormatCompleted,
                             weak_ptr_factory_.GetWeakPtr()),
@@ -493,16 +523,31 @@ class CrosDisksClientImpl : public CrosDisksClient {
                               entry.error_code, MountError::kCount);
     // Flatten MountType and MountError into a single dimension.
     constexpr int kMaxMountErrors = 100;
-    static_assert(static_cast<int>(MountError::kCount) <= kMaxMountErrors,
-                  "CrosDisksClient.MountErrorMountType histogram must be "
-                  "updated.");
-    const int type_and_error =
-        (static_cast<int>(entry.mount_type) * kMaxMountErrors) +
-        static_cast<int>(entry.error_code);
-    base::UmaHistogramSparse("CrosDisksClient.MountErrorMountType",
-                             type_and_error);
-    for (auto& observer : observer_list_)
+    static_assert(
+        static_cast<int>(MountError::kCount) <= kMaxMountErrors,
+        "CrosDisksClient.MountErrorMountType histogram must be updated");
+    base::UmaHistogramSparse(
+        "CrosDisksClient.MountErrorMountType",
+        static_cast<int>(entry.mount_type) * kMaxMountErrors +
+            static_cast<int>(entry.error_code));
+
+    // Notify observers.
+    for (Observer& observer : observer_list_)
       observer.OnMountCompleted(entry);
+  }
+
+  // Handles MountProgress signal and notifies observers.
+  void OnMountProgress(dbus::Signal* signal) {
+    dbus::MessageReader reader(signal);
+    MountEntry entry;
+    if (!ReadMountProgressFromDbus(&reader, &entry)) {
+      LOG(ERROR) << "Invalid signal: " << signal->ToString();
+      return;
+    }
+
+    // Notify observers.
+    for (Observer& observer : observer_list_)
+      observer.OnMountProgress(entry);
   }
 
   // Handles FormatCompleted signal and notifies observers.
@@ -526,7 +571,7 @@ class CrosDisksClientImpl : public CrosDisksClient {
                                   static_cast<FormatError>(error_code),
                                   FormatError::kCount);
 
-    for (auto& observer : observer_list_) {
+    for (Observer& observer : observer_list_) {
       observer.OnFormatCompleted(static_cast<FormatError>(error_code),
                                  device_path);
     }
@@ -573,7 +618,7 @@ class CrosDisksClientImpl : public CrosDisksClient {
         << "Connect to " << interface << " " << signal << " failed.";
   }
 
-  dbus::ObjectProxy* proxy_;
+  dbus::ObjectProxy* proxy_ = nullptr;
 
   base::ObserverList<Observer> observer_list_;
 
@@ -589,41 +634,64 @@ class CrosDisksClientImpl : public CrosDisksClient {
 
 namespace ash {
 
+std::ostream& operator<<(std::ostream& out, const MountType type) {
+  switch (type) {
+#define PRINT_TYPE(s) \
+  case MountType::s:  \
+    return out << #s;
+    PRINT_TYPE(kInvalid)
+    PRINT_TYPE(kDevice)
+    PRINT_TYPE(kArchive)
+    PRINT_TYPE(kNetworkStorage)
+#undef PRINT_TYPE
+  }
+
+  return out << std::underlying_type_t<MountType>(type);
+}
+
 std::ostream& operator<<(std::ostream& out, const MountError error) {
   switch (error) {
 #define PRINT_ERROR(s) \
-  case s:              \
+  case MountError::s:  \
     return out << #s;
-    PRINT_ERROR(MountError::kNone)
-    PRINT_ERROR(MountError::kUnknown)
-    PRINT_ERROR(MountError::kInternal)
-    PRINT_ERROR(MountError::kInvalidArgument)
-    PRINT_ERROR(MountError::kInvalidPath)
-    PRINT_ERROR(MountError::kPathAlreadyMounted)
-    PRINT_ERROR(MountError::kPathNotMounted)
-    PRINT_ERROR(MountError::kDirectoryCreationFailed)
-    PRINT_ERROR(MountError::kInvalidMountOptions)
-    PRINT_ERROR(MountError::kInvalidUnmountOptions)
-    PRINT_ERROR(MountError::kInsufficientPermissions)
-    PRINT_ERROR(MountError::kMountProgramNotFound)
-    PRINT_ERROR(MountError::kMountProgramFailed)
-    PRINT_ERROR(MountError::kInvalidDevicePath)
-    PRINT_ERROR(MountError::kUnknownFilesystem)
-    PRINT_ERROR(MountError::kUnsupportedFilesystem)
-    PRINT_ERROR(MountError::kInvalidArchive)
-    PRINT_ERROR(MountError::kNeedPassword)
-    PRINT_ERROR(MountError::kInProgress)
-    PRINT_ERROR(MountError::kCancelled)
-    PRINT_ERROR(MountError::kCount)
+    PRINT_ERROR(kNone)
+    PRINT_ERROR(kUnknown)
+    PRINT_ERROR(kInternal)
+    PRINT_ERROR(kInvalidArgument)
+    PRINT_ERROR(kInvalidPath)
+    PRINT_ERROR(kPathAlreadyMounted)
+    PRINT_ERROR(kPathNotMounted)
+    PRINT_ERROR(kDirectoryCreationFailed)
+    PRINT_ERROR(kInvalidMountOptions)
+    PRINT_ERROR(kInvalidUnmountOptions)
+    PRINT_ERROR(kInsufficientPermissions)
+    PRINT_ERROR(kMountProgramNotFound)
+    PRINT_ERROR(kMountProgramFailed)
+    PRINT_ERROR(kInvalidDevicePath)
+    PRINT_ERROR(kUnknownFilesystem)
+    PRINT_ERROR(kUnsupportedFilesystem)
+    PRINT_ERROR(kInvalidArchive)
+    PRINT_ERROR(kNeedPassword)
+    PRINT_ERROR(kInProgress)
+    PRINT_ERROR(kCancelled)
+    PRINT_ERROR(kCount)
 #undef PRINT_ERROR
   }
 
-  return out << "MOUNT_ERROR_" << std::underlying_type_t<MountError>(error);
+  return out << std::underlying_type_t<MountError>(error);
 }
 
 }  // namespace ash
 
 namespace chromeos {
+
+std::ostream& operator<<(std::ostream& out, const MountEntry& entry) {
+  return out << "error_code = " << entry.error_code << ", source_path = '"
+             << entry.source_path << "', mount_type = " << entry.mount_type
+             << ", mount_path = '" << entry.mount_path
+             << "', progress_percent = " << entry.progress_percent;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // DiskInfo
 

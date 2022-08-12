@@ -524,6 +524,11 @@ class DiskMountManagerImpl : public DiskMountManager,
     }
   }
 
+  // CrosDisksClient::Observer override.
+  void OnMountProgress(const MountEntry& entry) override {
+    VLOG(1) << "OnMountProgress: " << entry;
+  }
+
   // Callback for UnmountPath.
   void OnUnmountPath(UnmountPathCallback callback,
                      const std::string& mount_path,

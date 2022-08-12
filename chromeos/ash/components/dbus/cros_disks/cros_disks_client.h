@@ -40,6 +40,10 @@ enum class MountType {
   kNetworkStorage,
 };
 
+// Output operator for logging.
+COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS)
+std::ostream& operator<<(std::ostream& out, MountType type);
+
 // Type of device.
 enum class DeviceType {
   kUnknown,
@@ -285,7 +289,12 @@ struct MountEntry {
   std::string source_path;
   MountType mount_type = MountType::kInvalid;
   std::string mount_path;
+  int progress_percent = 0;
 };
+
+// Output operator for logging.
+COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS)
+std::ostream& operator<<(std::ostream& out, const MountEntry& entry);
 
 // A class to make the actual DBus calls for cros-disks service.
 // This class only makes calls, result/error handling should be done
@@ -324,6 +333,9 @@ class COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS) CrosDisksClient
 
     // Called when a MountCompleted signal is received.
     virtual void OnMountCompleted(const MountEntry& entry) = 0;
+
+    // Called when a MountProgress signal is received.
+    virtual void OnMountProgress(const MountEntry& entry) = 0;
 
     // Called when a FormatCompleted signal is received.
     virtual void OnFormatCompleted(FormatError error_code,
