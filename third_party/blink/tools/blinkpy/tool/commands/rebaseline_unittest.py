@@ -458,7 +458,7 @@ class TestRebaseline(BaseTestCase):
                               '--step-name',
                               'blink_web_tests (with patch)',
                           ]],
-                          [[
+                          [
                               'python',
                               'echo',
                               'optimize-baselines',
@@ -467,7 +467,7 @@ class TestRebaseline(BaseTestCase):
                               '--suffixes',
                               'png,txt',
                               'userscripts/first-test.html',
-                          ]]])
+                          ]])
 
     def test_rebaseline_debug(self):
         test_baseline_set = TestBaselineSet(self.tool)
@@ -505,7 +505,7 @@ class TestRebaseline(BaseTestCase):
                               '--step-name',
                               'blink_web_tests (with patch)',
                           ]],
-                          [[
+                          [
                               'python',
                               'echo',
                               'optimize-baselines',
@@ -514,7 +514,7 @@ class TestRebaseline(BaseTestCase):
                               '--suffixes',
                               'png,txt',
                               'userscripts/first-test.html',
-                          ]]])
+                          ]])
 
     def test_no_optimize(self):
         test_baseline_set = TestBaselineSet(self.tool)
@@ -632,7 +632,7 @@ class TestRebaseline(BaseTestCase):
                               '--step-name',
                               'blink_web_tests (with patch)',
                           ]],
-                          [[
+                          [
                               'python',
                               'echo',
                               'optimize-baselines',
@@ -641,7 +641,7 @@ class TestRebaseline(BaseTestCase):
                               '--suffixes',
                               'png,txt',
                               'userscripts/first-test.html',
-                          ]]])
+                          ]])
 
 
 class TestRebaselineUpdatesExpectationsFiles(BaseTestCase):
