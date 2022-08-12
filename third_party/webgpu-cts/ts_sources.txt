@@ -203,6 +203,7 @@ src/webgpu/api/validation/buffer/threading.spec.ts
 src/webgpu/api/validation/capability_checks/features/query_types.spec.ts
 src/webgpu/util/create_elements.ts
 src/webgpu/api/validation/capability_checks/features/texture_formats.spec.ts
+src/webgpu/api/validation/encoding/beginComputePass.spec.ts
 src/webgpu/api/validation/encoding/beginRenderPass.spec.ts
 src/webgpu/api/validation/encoding/createRenderBundleEncoder.spec.ts
 src/webgpu/api/validation/encoding/encoder_state.spec.ts
