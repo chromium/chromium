@@ -78,8 +78,6 @@ class FeatureStatusProviderImpl
   void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;
   void SuspendDone(base::TimeDelta sleep_duration) override;
 
-  void RecordFeatureStatusOnLogin();
-
   device_sync::DeviceSyncClient* device_sync_client_;
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
   secure_channel::ConnectionManager* connection_manager_;
@@ -88,7 +86,6 @@ class FeatureStatusProviderImpl
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
   absl::optional<FeatureStatus> status_;
-  bool is_login_status_metric_recorded_ = false;
   bool is_suspended_ = false;
 
   base::WeakPtrFactory<FeatureStatusProviderImpl> weak_ptr_factory_{this};
