@@ -54,6 +54,8 @@ const char kResult[] = ".Result";
 // in order, from parts [1, 2, and 3], or [1, 2, 3, and 4]. For example:
 // SafeBrowsing.V4ProcessPartialUpdate.ApplyUpdate.Result, or
 // SafeBrowsing.V4ProcessPartialUpdate.ApplyUpdate.Result.UrlSoceng
+const char kChromeExtMalwareUmaSuffix[] = ".ChromeExtMalware";
+const char kUrlMalBinUmaSuffix[] = ".UrlMalBin";
 const char kUrlSocengUmaSuffix[] = ".UrlSoceng";
 
 const uint32_t kFileMagic = 0x600D71FE;
@@ -871,10 +873,17 @@ int64_t V4Store::RecordAndReturnFileSize(const std::string& base_metric) {
 
   // Add a linear histogram for UrlSoceng since its size is too large to be
   // accurately represented by the histogram above.
-  const int64_t file_size_megabytes = file_size_kilobytes / 1024;
   if (suffix == kUrlSocengUmaSuffix) {
+    const int64_t file_size_megabytes = file_size_kilobytes / 1024;
     base::UmaHistogramExactLinear(base_metric + "Linear" + suffix,
                                   file_size_megabytes, 50);
+  }
+
+  // Linear histogram for ChromeExtMalware, sizes in 100kB, up to ~5MB
+  if (suffix == kChromeExtMalwareUmaSuffix || suffix == kUrlMalBinUmaSuffix) {
+    const int64_t file_size_100_kb = file_size_kilobytes / 100;
+    base::UmaHistogramExactLinear(base_metric + "Linear" + suffix,
+                                  file_size_100_kb, 50);
   }
 
   return file_size_;

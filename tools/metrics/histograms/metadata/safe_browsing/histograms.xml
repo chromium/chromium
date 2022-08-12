@@ -2161,6 +2161,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.V4Database.SizeLinear{ThreatTypeKB}"
+    units="100 KB" expires_after="2023-01-01">
+  <owner>kristianm@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The size of {ThreatTypeKB} SafeBrowsing database or file on disk in 100 KB,
+    after reading it from disk on startup and after a database update has
+    occurred. Linear version of V4Database.Size histogram.
+  </summary>
+  <token key="ThreatTypeKB">
+    <variant name=".ChromeExtMalware" summary="extension malware"/>
+    <variant name=".UrlMalBin" summary="malware"/>
+  </token>
+</histogram>
+
 <histogram name="SafeBrowsing.V4Database.SizeLinear{ThreatType}" units="MB"
     expires_after="2023-01-01">
   <owner>richche@chromium.org</owner>
