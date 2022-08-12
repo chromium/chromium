@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_view_state_observer.h"
 #include "chrome/common/pref_names.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/views/controls/combobox/combobox.h"
 
 using testing::_;
 
@@ -897,6 +898,38 @@ TEST_F(SidePanelCoordinatorTest, GlobalEntryDeregisteredWhenClosed) {
 
   EXPECT_FALSE(browser_view()->right_aligned_side_panel()->GetVisible());
   EXPECT_FALSE(GetLastActiveEntryId().has_value());
+}
+
+TEST_F(SidePanelCoordinatorTest, ComboboxAdditionsDoNotChangeSelection) {
+  SidePanelEntry::Id earlier_sorted_entry =
+      std::min(SidePanelEntry::Id::kSideSearch, SidePanelEntry::Id::kLens);
+  SidePanelEntry::Id later_sorted_entry =
+      std::max(SidePanelEntry::Id::kSideSearch, SidePanelEntry::Id::kLens);
+  browser_view()->browser()->tab_strip_model()->ActivateTabAt(1);
+  content::WebContents* active_contents =
+      browser_view()->GetActiveWebContents();
+  auto* contextual_registry = SidePanelRegistry::Get(active_contents);
+  contextual_registry->Deregister(earlier_sorted_entry);
+  coordinator_->Show(later_sorted_entry);
+  // Verify the selected index in the combobox is the later entry.
+  absl::optional<size_t> selected_index =
+      coordinator_->GetComboboxForTesting()->GetSelectedIndex();
+  EXPECT_TRUE(selected_index.has_value());
+  EXPECT_EQ(coordinator_->GetComboboxModelForTesting()->GetIdAt(
+                selected_index.value()),
+            later_sorted_entry);
+  // Add back the earlier entry and verify the selected index is still correct.
+  contextual_registry->Register(std::make_unique<SidePanelEntry>(
+      earlier_sorted_entry, u"testing1",
+      ui::ImageModel::FromVectorIcon(kReadLaterIcon, ui::kColorIcon),
+      base::BindRepeating([]() { return std::make_unique<views::View>(); })));
+  EXPECT_EQ(coordinator_->GetCurrentSidePanelEntryForTesting()->id(),
+            later_sorted_entry);
+  selected_index = coordinator_->GetComboboxForTesting()->GetSelectedIndex();
+  EXPECT_TRUE(selected_index.has_value());
+  EXPECT_EQ(coordinator_->GetComboboxModelForTesting()->GetIdAt(
+                selected_index.value()),
+            later_sorted_entry);
 }
 
 // Test that the SidePanelCoordinator behaves and updates corrected when dealing

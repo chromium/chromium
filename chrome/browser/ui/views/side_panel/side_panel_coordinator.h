@@ -58,6 +58,12 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
     return current_entry_.get();
   }
 
+  views::Combobox* GetComboboxForTesting() { return header_combobox_; }
+
+  SidePanelComboboxModel* GetComboboxModelForTesting() {
+    return combobox_model_.get();
+  }
+
   absl::optional<SidePanelEntry::Id> GetCurrentEntryId() const;
 
   SidePanelEntry::Id GetComboboxDisplayedEntryIdForTesting() const;
