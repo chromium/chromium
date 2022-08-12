@@ -138,9 +138,10 @@ void OverlayWindowAndroid::Destroy(JNIEnv* env) {
       visible_actions_.end());
 }
 
-void OverlayWindowAndroid::TogglePlayPause(JNIEnv* env) {
+void OverlayWindowAndroid::TogglePlayPause(JNIEnv* env, bool toggleOn) {
   DCHECK(!controller_->IsPlayerActive());
-  controller_->TogglePlayPause();
+  if (toggleOn == (playback_state_ == PlaybackState::kPaused))
+    controller_->TogglePlayPause();
 }
 
 void OverlayWindowAndroid::NextTrack(JNIEnv* env) {
@@ -151,12 +152,14 @@ void OverlayWindowAndroid::PreviousTrack(JNIEnv* env) {
   controller_->PreviousTrack();
 }
 
-void OverlayWindowAndroid::ToggleMicrophone(JNIEnv* env) {
-  controller_->ToggleMicrophone();
+void OverlayWindowAndroid::ToggleMicrophone(JNIEnv* env, bool toggleOn) {
+  if (microphone_muted_ == toggleOn)
+    controller_->ToggleMicrophone();
 }
 
-void OverlayWindowAndroid::ToggleCamera(JNIEnv* env) {
-  controller_->ToggleCamera();
+void OverlayWindowAndroid::ToggleCamera(JNIEnv* env, bool toggleOn) {
+  if (!camera_on_ == toggleOn)
+    controller_->ToggleCamera();
 }
 
 void OverlayWindowAndroid::HangUp(JNIEnv* env) {

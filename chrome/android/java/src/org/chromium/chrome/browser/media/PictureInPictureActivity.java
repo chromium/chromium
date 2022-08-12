@@ -68,6 +68,9 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
     // Used to determine which action button has been touched.
     private static final String CONTROL_TYPE =
             "org.chromium.chrome.browser.media.PictureInPictureActivity.ControlType";
+    // Used to determine the media controls state. (e.g. microphone on/off)
+    private static final String CONTROL_STATE =
+            "org.chromium.chrome.browser.media.PictureInPictureActivity.ControlState";
 
     // Used to verify Pre-T that the broadcast sender was Chrome. This extra can be removed when the
     // min supported version is Android T.
@@ -162,30 +165,39 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
         private HashSet<Integer> mVisibleActions;
 
         private MediaActionButtonsManager() {
-            mPreviousTrack = createRemoteAction(MediaSessionAction.PREVIOUS_TRACK,
-                    R.drawable.ic_skip_previous_white_24dp, R.string.accessibility_previous_track);
-            mPlay = createRemoteAction(MediaSessionAction.PLAY, R.drawable.ic_play_arrow_white_24dp,
-                    R.string.accessibility_play);
-            mPause = createRemoteAction(MediaSessionAction.PAUSE, R.drawable.ic_pause_white_24dp,
-                    R.string.accessibility_pause);
-            mReplay = createRemoteAction(MediaSessionAction.PLAY, R.drawable.ic_replay_white_24dp,
-                    R.string.accessibility_replay);
-            mNextTrack = createRemoteAction(MediaSessionAction.NEXT_TRACK,
-                    R.drawable.ic_skip_next_white_24dp, R.string.accessibility_next_track);
-            mHangUp = createRemoteAction(MediaSessionAction.HANG_UP,
-                    R.drawable.ic_call_end_white_24dp, R.string.accessibility_hang_up);
+            int requestCode = 0;
+            mPreviousTrack = createRemoteAction(requestCode++, MediaSessionAction.PREVIOUS_TRACK,
+                    R.drawable.ic_skip_previous_white_24dp, R.string.accessibility_previous_track,
+                    /**controlState=*/null);
+            mPlay = createRemoteAction(requestCode++, MediaSessionAction.PLAY,
+                    R.drawable.ic_play_arrow_white_24dp, R.string.accessibility_play,
+                    /**controlState=*/null);
+            mPause = createRemoteAction(requestCode++, MediaSessionAction.PAUSE,
+                    R.drawable.ic_pause_white_24dp, R.string.accessibility_pause,
+                    /**controlState=*/null);
+            mReplay = createRemoteAction(requestCode++, MediaSessionAction.PLAY,
+                    R.drawable.ic_replay_white_24dp, R.string.accessibility_replay,
+                    /**controlState=*/null);
+            mNextTrack = createRemoteAction(requestCode++, MediaSessionAction.NEXT_TRACK,
+                    R.drawable.ic_skip_next_white_24dp, R.string.accessibility_next_track,
+                    /**controlState=*/null);
+            mHangUp = createRemoteAction(requestCode++, MediaSessionAction.HANG_UP,
+                    R.drawable.ic_call_end_white_24dp, R.string.accessibility_hang_up,
+                    /**controlState=*/null);
             mMicrophone = new ToggleRemoteAction(
-                    createRemoteAction(MediaSessionAction.TOGGLE_MICROPHONE,
-                            R.drawable.ic_mic_white_24dp, R.string.accessibility_mute_microphone),
-                    createRemoteAction(MediaSessionAction.TOGGLE_MICROPHONE,
+                    createRemoteAction(requestCode++, MediaSessionAction.TOGGLE_MICROPHONE,
+                            R.drawable.ic_mic_white_24dp, R.string.accessibility_mute_microphone,
+                            /**controlState=*/true),
+                    createRemoteAction(requestCode++, MediaSessionAction.TOGGLE_MICROPHONE,
                             R.drawable.ic_mic_off_white_24dp,
-                            R.string.accessibility_unmute_microphone));
+                            R.string.accessibility_unmute_microphone, /**controlState=*/false));
             mCamera = new ToggleRemoteAction(
-                    createRemoteAction(MediaSessionAction.TOGGLE_CAMERA,
-                            R.drawable.ic_videocam_24dp, R.string.accessibility_turn_off_camera),
-                    createRemoteAction(MediaSessionAction.TOGGLE_CAMERA,
+                    createRemoteAction(requestCode++, MediaSessionAction.TOGGLE_CAMERA,
+                            R.drawable.ic_videocam_24dp, R.string.accessibility_turn_off_camera,
+                            /**controlState=*/true),
+                    createRemoteAction(requestCode++, MediaSessionAction.TOGGLE_CAMERA,
                             R.drawable.ic_videocam_off_white_24dp,
-                            R.string.accessibility_turn_on_camera));
+                            R.string.accessibility_turn_on_camera, /**controlState=*/false));
 
             mPlaybackState = PlaybackState.END_OF_VIDEO;
             mVisibleActions = new HashSet<>();
@@ -279,19 +291,26 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
         /**
          * Create a remote action for picture-in-picture window.
          *
+         * @param requestCode unique id for pending intent.
          * @param action {@link MediaSessionAction} that the action button is corresponding to.
          * @param iconResourceId used for getting icon associated with the id.
          * @param titleResourceId used for getting accessibility title associated with the id.
+         * @param controlState indicate the action's state. (e.g. microphone on/off) Null if not
+         * applicable
          */
         @SuppressLint("NewApi")
-        private RemoteAction createRemoteAction(
-                int action, int iconResourceId, int titleResourceId) {
+        private RemoteAction createRemoteAction(int requestCode, int action, int iconResourceId,
+                int titleResourceId, Boolean controlState) {
             Intent intent = new Intent(MEDIA_ACTION);
             intent.putExtra(EXTRA_RECEIVER_TOKEN, mMediaSessionReceiver.hashCode());
             intent.putExtra(CONTROL_TYPE, action);
             intent.putExtra(NATIVE_POINTER_KEY, mNativeOverlayWindowAndroid);
+            if (controlState != null) {
+                intent.putExtra(CONTROL_STATE, controlState);
+            }
+
             PendingIntent pendingIntent =
-                    PendingIntent.getBroadcast(getApplicationContext(), action, intent,
+                    PendingIntent.getBroadcast(getApplicationContext(), requestCode, intent,
                             PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
 
             return new RemoteAction(
@@ -316,11 +335,18 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
                 return;
             }
 
+            Boolean controlState = intent.hasExtra(CONTROL_STATE)
+                    ? intent.getBooleanExtra(CONTROL_STATE, true)
+                    : null;
+
             switch (intent.getIntExtra(CONTROL_TYPE, -1)) {
                 case MediaSessionAction.PLAY:
+                    PictureInPictureActivityJni.get().togglePlayPause(
+                            nativeOverlayWindowAndroid, /**toggleOn=*/true);
+                    return;
                 case MediaSessionAction.PAUSE:
-                    // TODO(crbug.com/1345956): Play/pause state might get out of sync.
-                    PictureInPictureActivityJni.get().togglePlayPause(nativeOverlayWindowAndroid);
+                    PictureInPictureActivityJni.get().togglePlayPause(
+                            nativeOverlayWindowAndroid, /**toggleOn=*/false);
                     return;
                 case MediaSessionAction.PREVIOUS_TRACK:
                     PictureInPictureActivityJni.get().previousTrack(nativeOverlayWindowAndroid);
@@ -329,10 +355,12 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
                     PictureInPictureActivityJni.get().nextTrack(nativeOverlayWindowAndroid);
                     return;
                 case MediaSessionAction.TOGGLE_MICROPHONE:
-                    PictureInPictureActivityJni.get().toggleMicrophone(nativeOverlayWindowAndroid);
+                    PictureInPictureActivityJni.get().toggleMicrophone(
+                            nativeOverlayWindowAndroid, !controlState);
                     return;
                 case MediaSessionAction.TOGGLE_CAMERA:
-                    PictureInPictureActivityJni.get().toggleCamera(nativeOverlayWindowAndroid);
+                    PictureInPictureActivityJni.get().toggleCamera(
+                            nativeOverlayWindowAndroid, !controlState);
                     return;
                 case MediaSessionAction.HANG_UP:
                     PictureInPictureActivityJni.get().hangUp(nativeOverlayWindowAndroid);
@@ -593,14 +621,16 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
         updatePictureInPictureParams();
     }
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     @CalledByNative
-    private void setMicrophoneMuted(boolean muted) {
+    void setMicrophoneMuted(boolean muted) {
         mMediaActionsButtonsManager.setMicrophoneMuted(muted);
         updatePictureInPictureParams();
     }
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     @CalledByNative
-    private void setCameraState(boolean turnedOn) {
+    void setCameraState(boolean turnedOn) {
         mMediaActionsButtonsManager.setCameraOn(turnedOn);
         updatePictureInPictureParams();
     }
@@ -717,11 +747,11 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
 
         void destroy(long nativeOverlayWindowAndroid);
 
-        void togglePlayPause(long nativeOverlayWindowAndroid);
+        void togglePlayPause(long nativeOverlayWindowAndroid, boolean toggleOn);
         void nextTrack(long nativeOverlayWindowAndroid);
         void previousTrack(long nativeOverlayWindowAndroid);
-        void toggleMicrophone(long nativeOverlayWindowAndroid);
-        void toggleCamera(long nativeOverlayWindowAndroid);
+        void toggleMicrophone(long nativeOverlayWindowAndroid, boolean toggleOn);
+        void toggleCamera(long nativeOverlayWindowAndroid, boolean toggleOn);
         void hangUp(long nativeOverlayWindowAndroid);
 
         void compositorViewCreated(long nativeOverlayWindowAndroid, CompositorView compositorView);

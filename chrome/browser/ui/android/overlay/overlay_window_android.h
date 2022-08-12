@@ -37,11 +37,11 @@ class OverlayWindowAndroid : public content::VideoOverlayWindow,
       const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& jwindow_android);
   void Destroy(JNIEnv* env);
-  void TogglePlayPause(JNIEnv* env);
+  void TogglePlayPause(JNIEnv* env, bool toggleOn);
   void NextTrack(JNIEnv* env);
   void PreviousTrack(JNIEnv* env);
-  void ToggleMicrophone(JNIEnv* env);
-  void ToggleCamera(JNIEnv* env);
+  void ToggleMicrophone(JNIEnv* env, bool toggleOn);
+  void ToggleCamera(JNIEnv* env, bool toggleOn);
   void HangUp(JNIEnv* env);
   void CompositorViewCreated(
       JNIEnv* env,

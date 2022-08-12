@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.media;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -255,6 +256,47 @@ public class PictureInPictureActivityTest {
         testExitOn(activity, () -> activity.close());
     }
 
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
+    public void testActionsInSync() throws Throwable {
+        PictureInPictureActivity activity = startPictureInPictureActivity();
+        PictureInPictureActivity.MediaActionButtonsManager manager =
+                activity.mMediaActionsButtonsManager;
+
+        activity.setPlaybackState(PlaybackState.PLAYING);
+        activity.setMicrophoneMuted(false);
+        activity.setCameraState(true);
+
+        manager.mMicrophone.getAction().getActionIntent().send();
+        manager.mCamera.getAction().getActionIntent().send();
+        manager.mPause.getActionIntent().send();
+
+        verify(mNativeMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
+                .togglePlayPause(eq(NATIVE_OVERLAY), eq(false));
+        verify(mNativeMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
+                .toggleMicrophone(eq(NATIVE_OVERLAY), eq(false));
+        verify(mNativeMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
+                .toggleCamera(eq(NATIVE_OVERLAY), eq(false));
+
+        activity.setPlaybackState(PlaybackState.PAUSED);
+        activity.setMicrophoneMuted(true);
+        activity.setCameraState(false);
+        manager.mPlay.getActionIntent().send();
+        manager.mMicrophone.getAction().getActionIntent().send();
+        manager.mCamera.getAction().getActionIntent().send();
+
+        verify(mNativeMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
+                .togglePlayPause(eq(NATIVE_OVERLAY), eq(true));
+        verify(mNativeMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
+                .toggleMicrophone(eq(NATIVE_OVERLAY), eq(true));
+        verify(mNativeMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
+                .toggleCamera(eq(NATIVE_OVERLAY), eq(true));
+
+        testExitOn(activity, () -> activity.close());
+    }
+
     private WebContents getWebContents() {
         return mActivityTestRule.getActivity().getCurrentWebContents();
     }
@@ -284,7 +326,8 @@ public class PictureInPictureActivityTest {
                             }
                         });
 
-        verify(mNativeMock, times(1)).onActivityStart(eq(NATIVE_OVERLAY), eq(activity), any());
+        verify(mNativeMock, timeout(500).times(1))
+                .onActivityStart(eq(NATIVE_OVERLAY), eq(activity), any());
 
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat(activity.isInPictureInPictureMode(), Matchers.is(true));
