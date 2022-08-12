@@ -483,6 +483,15 @@
           'hard_timeout': 1800,
         },
       },
+      'win10-rel-no-external-ip': {
+        'args': [
+          '--target',
+          'Release_x64',
+        ],
+        'swarming': {
+          "shards": 12
+        },
+      },
       'win10.20h2-blink-rel': {
         'swarming': {
           'shards': 6,
@@ -753,6 +762,15 @@
         'swarming': {
           'shards': 7,
           'hard_timeout': 1800,
+        },
+      },
+      'win10-rel-no-external-ip': {
+        'args': [
+          '--target',
+          'Release_x64',
+        ],
+        'swarming': {
+          "shards": 18
         },
       },
       'win10.20h2-blink-rel': {
@@ -1060,6 +1078,15 @@
        'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/win_backuprefptr_fyi.browser_tests.filter',
         ],
+      },
+      'win10-rel-no-external-ip': {
+        # crbug.com/868082
+        'args': [
+          '--disable-features=WebRTC-H264WithOpenH264FFmpeg',
+        ],
+        'swarming': {
+          'shards': 15,
+        }
       },
     },
   },
@@ -1744,6 +1771,12 @@
             }
           ],
         },
+      },
+      'win10-rel-no-external-ip': {
+        # crbug.com/868082
+        'args': [
+          '--disable-features=WebRTC-H264WithOpenH264FFmpeg',
+        ],
       },
     },
   },
@@ -3326,6 +3359,12 @@
         # TODO(b/188822176): Restore to 100% when we have additional capacity.
         'experiment_percentage': 0,
       },
+      'linux-rel-no-external-ip': {
+        'args': [
+          '--xvfb',
+          '--jobs=1',
+        ],
+      },
     },
     'remove_from': [
       'android-marshmallow-x86-rel-non-cq', # crbug.com/1084352
@@ -3343,6 +3382,7 @@
       'Win10 Tests x64',
       'Win10 Tests x64 (dbg)',
       'Win11 Tests x64',
+      'win10-rel-no-external-ip',
     ],
   },
   'telemetry_unittests': {
@@ -3364,6 +3404,7 @@
 
       'Win10 Tests x64',
       'Win11 Tests x64',
+      'win10-rel-no-external-ip',
 
       # TODO(https://crbug.com/1267161): Re-enable when platform is supported.
       'mac11-arm64-rel-tests',
