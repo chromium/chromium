@@ -58,8 +58,13 @@ export class DriveOutOfOrganizationSpaceBanner extends WarningBanner {
       return;
     }
 
-    this.shadowRoot.querySelector('span[slot="text"]').innerText =
+    const message =
         strf('DRIVE_ORGANIZATION_QUOTA_OVER', context.organizationName);
+    const warning = strf('DRIVE_WARNING_QUOTA_OVER');
+    this.shadowRoot.querySelector('span[slot="text"]').outerHTML = `
+<span slot="text" aria-label="${warning}: ${message}">
+  <span aria-hidden="true">${message}</span>
+</span>`;
   }
 }
 
