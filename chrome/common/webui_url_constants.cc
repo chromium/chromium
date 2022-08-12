@@ -155,7 +155,6 @@ const char kChromeUIOsUrlAppURL[] = "chrome://internal/";
 #endif
 const char kChromeUIPasswordManagerInternalsHost[] =
     "password-manager-internals";
-const char kChromeUIPasswordManagerHost[] = "password-manager";
 const char kChromeUIPolicyHost[] = "policy";
 const char kChromeUIPolicyURL[] = "chrome://policy/";
 const char kChromeUIPredictorsHost[] = "predictors";
@@ -660,7 +659,6 @@ const char* const kChromeHostURLs[] = {
     kChromeUIOmniboxHost,
     optimization_guide_internals::kChromeUIOptimizationGuideInternalsHost,
     kChromeUIPasswordManagerInternalsHost,
-    kChromeUIPasswordManagerHost,
     kChromeUIPolicyHost,
     kChromeUIPredictorsHost,
     kChromeUIPrefsInternalsHost,

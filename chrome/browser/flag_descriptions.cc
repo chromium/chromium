@@ -4176,10 +4176,6 @@ const char kOmniboxExperimentalKeywordModeDescription[] =
     "Enables various experimental features related to keyword mode, its "
     "suggestions and layout.";
 
-const char kPasswordManagerRedesignName[] = "Password Manager new UI";
-const char kPasswordManagerRedesignDescription[] =
-    "Enables new Password Manager UI on Desktop";
-
 const char kScreenAIName[] = "Screen AI";
 const char kScreenAIDescription[] =
     "Enables Screen AI local machine intelligence library to use the screen "
