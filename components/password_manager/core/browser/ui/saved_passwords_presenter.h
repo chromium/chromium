@@ -142,9 +142,9 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
 
  private:
   // Adds the |credential| to the specified store.
-  // Expects a credential that is valid to be added - can be verefied by
-  // calling `CanBeAdded()` before. `completion` callback wil be run after the
-  // DB call is completed.
+  // Expects a credential that is valid to be added - can be verified by
+  // calling `GetExpectedAddResult()` before. `completion` callback wil be run
+  // after the DB call is completed.
   void AddCredentialAsync(const CredentialUIEntry& credential,
                           password_manager::PasswordForm::Type type,
                           base::OnceClosure completion);

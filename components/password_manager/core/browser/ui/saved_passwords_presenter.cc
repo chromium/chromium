@@ -207,7 +207,7 @@ void SavedPasswordsPresenter::AddCredentialAsync(
     const CredentialUIEntry& credential,
     password_manager::PasswordForm::Type type,
     base::OnceClosure completion) {
-  DCHECK(GetExpectedAddResult(credential) == AddResult::kSuccess);
+  DCHECK_EQ(GetExpectedAddResult(credential), AddResult::kSuccess);
 
   UnblocklistBothStores(credential);
   PasswordForm form = GenerateFormFromCredential(credential, type);
