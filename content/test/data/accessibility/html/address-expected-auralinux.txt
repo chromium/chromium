@@ -1,3 +1,3 @@
 [document web]
-++[section]
+++[panel]
 ++++[static] name='Please contact John Citizen for more information.'

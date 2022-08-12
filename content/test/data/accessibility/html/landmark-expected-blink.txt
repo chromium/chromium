@@ -7,7 +7,7 @@ rootWebArea
 ++++++complementary
 ++++++++staticText name='This is an aside element.'
 ++++++++++inlineTextBox name='This is an aside element.'
-++++++genericContainer
+++++++group
 ++++++++staticText name='This is an address element.'
 ++++++++++inlineTextBox name='This is an address element.'
 ++++++footer

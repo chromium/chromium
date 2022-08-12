@@ -187,7 +187,7 @@ element
             AXRole: AXParagraph
                 AXRole: AXStaticText "Footer in section"
                     AXRole: AXInlineTextBox "Footer in section"
-    AXRole: AXGenericContainer
+    AXRole: AXGroup
         AXRole: AXStaticText "Written by Julie"
             AXRole: AXInlineTextBox "Written by Julie"
         AXRole: AXLineBreak "

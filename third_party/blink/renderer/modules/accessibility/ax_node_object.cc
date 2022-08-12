@@ -1245,7 +1245,7 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
   }
 
   if (GetNode()->HasTagName(html_names::kAddressTag))
-    return RoleFromLayoutObjectOrNode();
+    return ax::mojom::blink::Role::kGroup;
 
   if (IsA<HTMLDialogElement>(*GetNode()))
     return ax::mojom::blink::Role::kDialog;

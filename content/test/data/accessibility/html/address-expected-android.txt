@@ -1,2 +1,2 @@
 android.webkit.WebView focusable focused scrollable
-++android.widget.TextView name='Please contact John Citizen for more information.'
+++android.view.View name='Please contact John Citizen for more information.'
