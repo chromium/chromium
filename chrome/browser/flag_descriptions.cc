@@ -1951,6 +1951,12 @@ const char kOmniboxZeroSuggestPrefetchingOnSRPDescription[] =
     "Enables prefetching of the zero prefix suggestions for eligible users "
     "on the Search Results page.";
 
+const char kOmniboxZeroSuggestPrefetchingOnWebName[] =
+    "Omnibox Zero Prefix Suggestion Prefetching on the Web";
+const char kOmniboxZeroSuggestPrefetchingOnWebDescription[] =
+    "Enables prefetching of the zero prefix suggestions for eligible users "
+    "on the Web (i.e. non-NTP and non-SRP URLs).";
+
 const char kOmniboxOnDeviceHeadSuggestionsName[] =
     "Omnibox on device head suggestions (non-incognito only)";
 const char kOmniboxOnDeviceHeadSuggestionsDescription[] =

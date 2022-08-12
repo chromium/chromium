@@ -4938,6 +4938,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "omnibox-zero-suggest-prefetching-on-web",
+    "owners": [ "khalidpeer", "mahmadi", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "one-group-per-renderer",
     "owners": ["youssefesmat", "baseos-perf@google.com"],
     "expiry_milestone": 120

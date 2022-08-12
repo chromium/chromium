@@ -1145,6 +1145,9 @@ extern const char kOmniboxZeroSuggestPrefetchingDescription[];
 extern const char kOmniboxZeroSuggestPrefetchingOnSRPName[];
 extern const char kOmniboxZeroSuggestPrefetchingOnSRPDescription[];
 
+extern const char kOmniboxZeroSuggestPrefetchingOnWebName[];
+extern const char kOmniboxZeroSuggestPrefetchingOnWebDescription[];
+
 extern const char kOmniboxMaxZeroSuggestMatchesName[];
 extern const char kOmniboxMaxZeroSuggestMatchesDescription[];
 

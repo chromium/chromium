@@ -60320,6 +60320,7 @@ from previous Chrome versions.
   <int value="760542355" label="ServiceWorkerScriptFullCodeCache:enabled"/>
   <int value="761770770"
       label="OverrideLanguagePrefsForHrefTranslate:disabled"/>
+  <int value="762324154" label="ZeroSuggestPrefetchingOnWeb:disabled"/>
   <int value="762700519" label="enable-checker-imaging"/>
   <int value="763667542"
       label="AutofillFillCreditCardAsPerFormatString:enabled"/>
@@ -61768,6 +61769,7 @@ from previous Chrome versions.
   <int value="1694854500" label="disable-save-password-bubble"/>
   <int value="1696139514" label="enable-ble-advertising-in-apps"/>
   <int value="1697189972" label="WebPaymentsSingleAppUiSkip:disabled"/>
+  <int value="1697576315" label="ZeroSuggestPrefetchingOnWeb:enabled"/>
   <int value="1698089268" label="WebXRMultiGpu:disabled"/>
   <int value="1699134522" label="LensFullscreenSearch:enabled"/>
   <int value="1699180023" label="PaymentRequestOptionalTotal:disabled"/>
