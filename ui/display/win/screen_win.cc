@@ -951,7 +951,9 @@ ScreenWinDisplay ScreenWin::GetPrimaryScreenWinDisplay() const {
   const ScreenWinDisplay screen_win_display = GetScreenWinDisplay(
       MonitorInfoFromWindow(nullptr, MONITOR_DEFAULTTOPRIMARY));
   // The Windows primary monitor is defined to have an origin of (0, 0).
-  DCHECK(screen_win_display.display().bounds().origin().IsOrigin());
+  // Don't DCHECK if GetScreenWinDisplay returns the default monitor.
+  DCHECK(screen_win_display.display().bounds().origin().IsOrigin() ||
+         !screen_win_display.display().is_valid());
   return screen_win_display;
 }
 
