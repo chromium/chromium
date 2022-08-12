@@ -3,21 +3,23 @@
 // found in the LICENSE file.
 
 #import "base/test/ios/wait_util.h"
-#include "ios/testing/scoped_block_swizzler.h"
+#import "base/test/scoped_feature_list.h"
+#import "ios/testing/scoped_block_swizzler.h"
+#import "ios/web/common/features.h"
 #import "ios/web/public/navigation/navigation_manager.h"
-#include "ios/web/public/navigation/reload_type.h"
+#import "ios/web/public/navigation/reload_type.h"
 #import "ios/web/public/permissions/permissions.h"
 #import "ios/web/public/test/navigation_test_util.h"
 #import "ios/web/public/web_state.h"
-#include "ios/web/public/web_state_observer.h"
+#import "ios/web/public/web_state_observer.h"
 #import "ios/web/test/web_test_with_web_controller.h"
 #import "ios/web/web_state/ui/crw_web_controller.h"
 #import "ios/web/web_state/ui/crw_wk_ui_handler.h"
 #import "ios/web/web_state/ui/crw_wk_ui_handler_delegate.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
-#include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/gtest_mac.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
+#import "testing/gmock/include/gmock/gmock.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -92,6 +94,10 @@ class PermissionsInttest : public WebTestWithWebController {
   void SetUp() override {
     WebTestWithWebState::SetUp();
     if (@available(iOS 15.0, *)) {
+      // Turn on media permissions feature.
+      scoped_feature_list_.InitWithFeatures(
+          {features::kMediaPermissionsControl}, {});
+
       // Switch actual objects to fakes/mocks for testing purposes.
       handler_ = [[FakeCRWWKUIHandler alloc] init];
       handler_.delegate = (id<CRWWKUIHandlerDelegate>)web_controller();
@@ -116,6 +122,7 @@ class PermissionsInttest : public WebTestWithWebController {
   }
 
  protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<ScopedBlockSwizzler> swizzler_;
   std::unique_ptr<net::EmbeddedTestServer> test_server_;
   testing::NiceMock<WebStateObserverMock> observer_;
