@@ -49,6 +49,12 @@ void VerifyResponse(const content::EvalJsResult& result) {
   const std::string* file_id = dict.FindString("fileId");
   ASSERT_TRUE(file_id);
   EXPECT_EQ(*file_id, kVideoFileId);
+  const std::string* src_url = dict.FindString("srcUrl");
+  ASSERT_TRUE(src_url);
+  // We can't verify the entire video src url because the random hash at the end
+  // differs across test runs, even for the same file. Just check that the url
+  // begins with blob:chrome-untrusted://projector/.
+  EXPECT_EQ(src_url->rfind("blob:chrome-untrusted://projector/", 0), 0);
 }
 
 }  // namespace
@@ -231,6 +237,11 @@ constexpr char kGetVideoScript[] = R"(
 // projectorApp.getClientDelegateForTesting(), which only exists in the mock
 // version of the app.
 
+// There is a necessary race condition between getVideo() and onFileLoaded()
+// because they occur on different channels. It shouldn't matter which one
+// returns first because we wait for both promises before returning the
+// assembled video object. This test covers the scenario where onFileLoaded()
+// returns before getVideo().
 IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs,
                        LoadFileBeforeGetVideo) {
   AddFileToDefaultFolder(kVideoFileId, "video/webm", kVideoFileName,
@@ -262,6 +273,11 @@ IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs,
   VerifyResponse(result);
 }
 
+// There is a necessary race condition between getVideo() and onFileLoaded()
+// because they occur on different channels. It shouldn't matter which one
+// returns first because we wait for both promises before returning the
+// assembled video object. This test covers the scenario where
+// getVideo() returns before onFileLoaded().
 IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs,
                        GetVideoBeforeLoadFile) {
   AddFileToDefaultFolder(kVideoFileId, "video/webm", kVideoFileName,
@@ -294,6 +310,52 @@ IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs,
       "id=%s and error code=%d\"\n",
       kVideoFileId, drive::FILE_ERROR_NOT_FOUND);
   EXPECT_EQ(result.error, expected_error);
+}
+
+// Tests a disk I/O error when trying to access the file handle in launch.js.
+IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs,
+                       NotFoundErrorDOMException) {
+  AddFileToDefaultFolder(kVideoFileId, "video/webm", kVideoFileName,
+                         /*shared_with_me=*/true);
+
+  // Launch the app for the first time.
+  content::WebContents* app = LaunchApp(ash::SystemWebAppType::PROJECTOR);
+  EXPECT_TRUE(WaitForLoadStop(app));
+  base::FilePath absolute_path =
+      GetTestFile("NotFoundError.file", /*relative=*/false);
+  app = LaunchAppWithFileWithoutWaiting(SystemWebAppType::PROJECTOR,
+                                        absolute_path);
+
+  const std::string& script = base::StringPrintf(kGetVideoScript, kVideoFileId);
+  content::EvalJsResult result =
+      EvalJs(SandboxedWebUiAppTestBase::GetAppFrame(app), script);
+  EXPECT_EQ(
+      result.error,
+      "a JavaScript error: \"NotFoundError: A requested file or directory "
+      "could not be found at the time an operation was processed.\"\n");
+}
+
+// Tests throwing an error instead of sending the file to the untrusted context
+// if the retrieved video file doesn't have a video MIME type.
+IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs, NotAVideoMimeType) {
+  AddFileToDefaultFolder("driveItemId", "text/plain", "MyTestScreencast.txt",
+                         /*shared_with_me=*/false);
+
+  // Launch the app for the first time.
+  content::WebContents* app = LaunchApp(ash::SystemWebAppType::PROJECTOR);
+  EXPECT_TRUE(WaitForLoadStop(app));
+  base::FilePath absolute_path =
+      GetTestFile("MyTestScreencast.txt", /*relative=*/false);
+  app = LaunchAppWithFileWithoutWaiting(SystemWebAppType::PROJECTOR,
+                                        absolute_path);
+
+  AddFileToDefaultFolder(kVideoFileId, "text/plain", kVideoFileName,
+                         /*shared_with_me=*/true);
+
+  const std::string& script = base::StringPrintf(kGetVideoScript, kVideoFileId);
+  content::EvalJsResult result =
+      EvalJs(SandboxedWebUiAppTestBase::GetAppFrame(app), script);
+  EXPECT_EQ(result.error, "a JavaScript error: \"NotAVideo: Not a video.\"\n");
 }
 
 #endif  // !BUILDFLAG(ENABLE_CROS_PROJECTOR_APP)

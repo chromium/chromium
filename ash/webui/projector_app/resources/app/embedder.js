@@ -7,6 +7,7 @@ import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.m
 
 import {ProjectorBrowserProxyImpl} from '../communication/projector_browser_proxy.js';
 
+import {installLaunchHandler} from './trusted/launch.js';
 import {AppTrustedCommFactory, UntrustedAppClient} from './trusted/trusted_app_comm_factory.js';
 
 /**
@@ -72,3 +73,5 @@ Polymer({
     });
   },
 });
+
+installLaunchHandler();

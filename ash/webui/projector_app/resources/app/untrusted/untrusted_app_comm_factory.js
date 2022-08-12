@@ -4,10 +4,25 @@
 
 import {PostMessageAPIClient} from '//resources/js/post_message_api_client.m.js';
 import {RequestHandler} from '//resources/js/post_message_api_request_handler.m.js';
+import {PromiseResolver} from '//resources/js/promise_resolver.m.js';
 
 import {ProjectorError} from '../../communication/message_types.js';
 
 const TARGET_URL = 'chrome://projector/';
+
+// By using a global promise resolver, we are assuming that the app won't send
+// out simultaneous or overlapping getVideo() requests. Each request should
+// complete before the next one.
+// TODO(b/237089852): Consider converting to a map of promises keyed by the
+// video file id.
+let loadFilePromise = null;
+
+function getOrCreateLoadFilePromise() {
+  if (!loadFilePromise) {
+    loadFilePromise = new PromiseResolver();
+  }
+  return loadFilePromise;
+}
 
 /**
  * Returns the projector app element inside this current DOM.
@@ -187,10 +202,18 @@ const CLIENT_DELEGATE = {
    * TODO(b/237089852): Wire up the resource key once DriveFS has support.
    * @return {!Promise<!projectorApp.Video>}
    */
-  getVideo(videoFileId, resourceKey) {
-    return AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(
-        'getVideo', [videoFileId, resourceKey]);
-    // TODO(b/237089852): Wait for the launch event and generate the object URL.
+  async getVideo(videoFileId, resourceKey) {
+    loadFilePromise = null;
+    const video =
+        await AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(
+            'getVideo', [videoFileId, resourceKey]);
+    const videoFile = await getOrCreateLoadFilePromise().promise;
+    // The streaming url must be generated in the untrusted context.
+    // We are not calling URL.revokeObjectURL() because we currently don't have
+    // a signal for when the viewer is done with this streaming URL. Browsers
+    // will release object URLs automatically when the document is unloaded.
+    video.srcUrl = URL.createObjectURL(videoFile);
+    return video;
   },
 };
 
@@ -231,6 +254,20 @@ export class UntrustedAppRequestHandler extends RequestHandler {
     });
     this.registerMethod('onScreencastsStateChange', (pendingScreencasts) => {
       getAppElement().onScreencastsStateChange(pendingScreencasts);
+    });
+    this.registerMethod('onFileLoaded', (args) => {
+      if (args.length !== 2) {
+        console.error('Invalid argument to onFileLoaded', args);
+        return;
+      }
+      const file = args[0];
+      const error = args[1];
+      const resolver = getOrCreateLoadFilePromise();
+      if (!file || error) {
+        resolver.reject(error);
+        return;
+      }
+      resolver.resolve(file);
     });
   }
 

@@ -52,7 +52,7 @@ content::WebUIDataSource* CreateProjectorHTMLSource(
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;");
   std::string mediaCSP =
       std::string("media-src 'self' https://*.drive.google.com ") +
-      kChromeUIUntrustedProjectorPwaUrl + ";";
+      kChromeUIUntrustedProjectorPwaUrl + " blob:;";
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::MediaSrc,
       // Allows streaming video.

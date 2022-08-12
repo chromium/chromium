@@ -59,6 +59,15 @@ export class UntrustedAppClient extends PostMessageAPIClient {
   onScreencastsStateChange(pendingScreencasts) {
     return this.callApiFn('onScreencastsStateChange', pendingScreencasts);
   }
+
+  /**
+   * Notifies the untrusted context when a new video file is available.
+   * @param {?File} videoFile to provide to the untrusted context
+   * @param {?DOMException} error if retrieving the video file failed
+   */
+  onFileLoaded(videoFile, error) {
+    return this.callApiFn('onFileLoaded', [videoFile, error]);
+  }
 }
 
 /**
