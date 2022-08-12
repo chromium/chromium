@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/kerberos/kerberos_credentials_manager_factory.h"
 #include "chrome/browser/ash/lock_screen_apps/lock_screen_apps.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service_factory.h"
+#include "chrome/browser/ash/login/extensions/login_screen_extensions_content_script_manager_factory.h"
 #include "chrome/browser/ash/login/extensions/login_screen_extensions_lifetime_manager_factory.h"
 #include "chrome/browser/ash/login/signin_partition_manager.h"
 #include "chrome/browser/ash/nearby/nearby_dependencies_provider_factory.h"
@@ -84,6 +85,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   KerberosCredentialsManagerFactory::GetInstance();
   LockScreenAppsFactory::GetInstance();
   LoginScreenExtensionsLifetimeManagerFactory::GetInstance();
+  LoginScreenExtensionsContentScriptManagerFactory::GetInstance();
   login::SigninPartitionManager::Factory::GetInstance();
   nearby::NearbyDependenciesProviderFactory::GetInstance();
   nearby::NearbyProcessManagerFactory::GetInstance();

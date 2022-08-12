@@ -1,0 +1,6 @@
+These extensions are used for testing the content script restrictions that apply
+to login screen extensions.
+
+Extension IDs:
+Extension with a good content script: "jpbinmmnncmfffhfpeonjmcgnapcholg"
+Extension with a bad content script: "edehlkcoilmenhomhdakcpolbbimkhlg"
