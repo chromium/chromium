@@ -54,6 +54,14 @@ constexpr double kZeroStartDelayMillis = 0.0;
 constexpr double kStrongMagnitude = 1.0;  // 100% intensity.
 constexpr double kWeakMagnitude = 0.5;    // 50% intensity.
 
+constexpr GamepadId kGamepadsWithTriggerRumble[] = {
+    GamepadId::kMicrosoftProduct02d1, GamepadId::kMicrosoftProduct02dd,
+    GamepadId::kMicrosoftProduct02fd, GamepadId::kMicrosoftProduct0b20,
+    GamepadId::kMicrosoftProduct02ea, GamepadId::kMicrosoftProduct02e0,
+    GamepadId::kMicrosoftProduct0b12, GamepadId::kMicrosoftProduct0b13,
+    GamepadId::kMicrosoftProduct02e3, GamepadId::kMicrosoftProduct0b00,
+    GamepadId::kMicrosoftProduct0b05, GamepadId::kMicrosoftProduct0b22};
+
 constexpr ErrorCode kErrors[] = {
     ErrorCode::kErrorWgiRawGameControllerActivateFailed,
     ErrorCode::kErrorWgiRawGameControllerFromGameControllerFailed,
@@ -672,6 +680,39 @@ TEST_F(WgiDataFetcherWinTest, ShouldNotEnumerateControllers) {
       fetcher().GetGamepadsForTesting();
   EXPECT_EQ(gamepads.size(), 0u);
 }
+
+// Test class created to assert that gamepads gamepads with trigger-rumble are
+// being detected correctly.
+class WgiDataFetcherTriggerRumbleSupportTest
+    : public WgiDataFetcherWinTest,
+      public testing::WithParamInterface<GamepadId> {};
+
+TEST_P(WgiDataFetcherTriggerRumbleSupportTest,
+       GamepadShouldHaveTriggerRumbleSupport) {
+  SetUpTestEnv();
+  const GamepadId gamepad_id = GetParam();
+  auto* fake_gamepad_statics = FakeIGamepadStatics::GetInstance();
+  const auto fake_gamepad = Microsoft::WRL::Make<FakeIGamepad>();
+  uint16_t vendor_id;
+  uint16_t product_id;
+  std::tie(vendor_id, product_id) =
+      GamepadIdList::Get().GetDeviceIdsFromGamepadId(gamepad_id);
+  fake_gamepad_statics->SimulateGamepadAdded(fake_gamepad, product_id,
+                                             vendor_id, "");
+  // Wait for the gampad polling thread to handle the gamepad added event.
+  FlushPollingThread();
+
+  // Assert that the gamepad has been added to the DataFetcher.
+  const base::flat_map<int, std::unique_ptr<WgiGamepadDevice>>& gamepads =
+      fetcher().GetGamepadsForTesting();
+  ASSERT_EQ(gamepads.size(), 1u);
+  // Assert that the gamepad has been assigned the correct type.
+  CheckGamepadAdded(fetcher().GetPadState(gamepads.begin()->first),
+                    GamepadHapticActuatorType::kTriggerRumble);
+}
+INSTANTIATE_TEST_SUITE_P(WgiDataFetcherTriggerRumbleSupportTests,
+                         WgiDataFetcherTriggerRumbleSupportTest,
+                         testing::ValuesIn(kGamepadsWithTriggerRumble));
 
 // class created to simulate scenarios where the OS may throw errors.
 class WgiDataFetcherWinErrorTest

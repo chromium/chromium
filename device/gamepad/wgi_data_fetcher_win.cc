@@ -170,7 +170,7 @@ bool HasTriggerRumbleSupport(GamepadId gamepad_id) {
          // Xbox One Elite Series 2 Bluetooth
          gamepad_id == GamepadId::kMicrosoftProduct0b05 ||
          // Xbox Elite Series 2 Bluetooth 2021 Firmware
-         gamepad_id == GamepadId::kMicrosoftProduct0b05;
+         gamepad_id == GamepadId::kMicrosoftProduct0b22;
 }
 
 }  // namespace
