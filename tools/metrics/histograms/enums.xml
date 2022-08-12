@@ -18367,6 +18367,7 @@ Called by update_net_error_codes.py.-->
   <int value="84" label="Request desktop site"/>
   <int value="85" label="Federated identity browser JavaScript API"/>
   <int value="86" label="Notification interactions"/>
+  <int value="87" label="Reduce accept language"/>
 </enum>
 
 <enum name="ContentTypeParseableResult">

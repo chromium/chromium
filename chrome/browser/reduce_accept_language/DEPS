@@ -1,0 +1,6 @@
+include_rules = [
+  # No inclusion of Blink from the browser, other than the ones in
+  # components reduce accept language code.
+  "-third_party/blink",
+  "+components/reduce_accept_language/browser",
+]

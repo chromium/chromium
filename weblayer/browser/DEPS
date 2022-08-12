@@ -60,6 +60,7 @@ include_rules = [
   "+components/profile_metrics",
   "+components/no_state_prefetch/browser",
   "+components/no_state_prefetch/common",
+  "+components/reduce_accept_language/browser",
   "+components/resources/android",
   "+components/safe_browsing/android",
   "+components/safe_browsing/content/browser",

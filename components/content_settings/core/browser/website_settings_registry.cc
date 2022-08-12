@@ -257,6 +257,12 @@ void WebsiteSettingsRegistry::Init() {
            WebsiteSettingsInfo::REQUESTING_ORIGIN_ONLY_SCOPE,
            DESKTOP | PLATFORM_ANDROID,
            WebsiteSettingsInfo::DONT_INHERIT_IN_INCOGNITO);
+  Register(ContentSettingsType::REDUCED_ACCEPT_LANGUAGE,
+           "reduced-accept-language", base::Value(),
+           WebsiteSettingsInfo::UNSYNCABLE, WebsiteSettingsInfo::LOSSY,
+           WebsiteSettingsInfo::GENERIC_SINGLE_ORIGIN_SCOPE,
+           DESKTOP | PLATFORM_ANDROID,
+           WebsiteSettingsInfo::DONT_INHERIT_IN_INCOGNITO);
 }
 
 }  // namespace content_settings

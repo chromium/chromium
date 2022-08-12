@@ -161,6 +161,7 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::REQUEST_DESKTOP_SITE, nullptr},
     {ContentSettingsType::GET_DISPLAY_MEDIA_SET_SELECT_ALL_SCREENS, nullptr},
     {ContentSettingsType::NOTIFICATION_INTERACTIONS, nullptr},
+    {ContentSettingsType::REDUCED_ACCEPT_LANGUAGE, nullptr},
 };
 
 static_assert(std::size(kContentSettingsTypeGroupNames) ==

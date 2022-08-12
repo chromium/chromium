@@ -104,6 +104,7 @@ constexpr HistogramValue kHistogramValue[] = {
     {ContentSettingsType::REQUEST_DESKTOP_SITE, 84},
     {ContentSettingsType::FEDERATED_IDENTITY_API, 85},
     {ContentSettingsType::NOTIFICATION_INTERACTIONS, 86},
+    {ContentSettingsType::REDUCED_ACCEPT_LANGUAGE, 87},
 };
 
 void FilterRulesForType(ContentSettingsForOneType& settings,

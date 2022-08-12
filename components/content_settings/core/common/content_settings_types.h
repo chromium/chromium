@@ -287,6 +287,10 @@ enum class ContentSettingsType : int32_t {
   // in local time.
   NOTIFICATION_INTERACTIONS,
 
+  // Website setting which stores the last reduced accept language negotiated
+  // for a given origin, to be used on future visits to the origin.
+  REDUCED_ACCEPT_LANGUAGE,
+
   NUM_TYPES,
 };
 

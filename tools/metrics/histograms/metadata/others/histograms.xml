@@ -10908,6 +10908,42 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ReduceAcceptLanguage.FetchLatency" units="ms"
+    expires_after="2023-01-01">
+  <owner>awillia@chromium.org</owner>
+  <owner>miketaylr@chromium.org</owner>
+  <owner>victortan@chromium.org</owner>
+  <summary>
+    The latency (in milliseconds) to fetch the reduce accept language for a
+    given origin in the language negotiation cache. This histogram is recorded
+    when fetching persisted value from PrefService.
+  </summary>
+</histogram>
+
+<histogram name="ReduceAcceptLanguage.StoreLatency" units="ms"
+    expires_after="2023-01-01">
+  <owner>awillia@chromium.org</owner>
+  <owner>miketaylr@chromium.org</owner>
+  <owner>victortan@chromium.org</owner>
+  <summary>
+    The latency (in milliseconds) to store the reduced accept language header
+    value for a given origin in the language negotiation cache. This histogram
+    is recorded when navigation responses are being processed.
+  </summary>
+</histogram>
+
+<histogram name="ReduceAcceptLanguage.UpdateSize" units="count"
+    expires_after="2023-01-01">
+  <owner>awillia@chromium.org</owner>
+  <owner>miketaylr@chromium.org</owner>
+  <owner>victortan@chromium.org</owner>
+  <summary>
+    Count of reduce accept language that need to be persisted to the disk.
+    Recorded by the renderer. This histogram is recorded when navigation
+    responses are being processed.
+  </summary>
+</histogram>
+
 <histogram base="true" name="RelaunchNotification.ShowResult"
     enum="RelaunchNotificationShowResult" expires_after="2021-06-20">
   <obsolete>
