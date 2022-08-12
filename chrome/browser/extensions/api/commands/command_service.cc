@@ -601,20 +601,20 @@ bool CommandService::IsCommandShortcutUserModified(
   ui::Accelerator suggested_key;
   absl::optional<bool> suggested_key_was_assigned;
   ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(profile_);
-  const base::DictionaryValue* commands_prefs = nullptr;
-  if (extension_prefs->ReadPrefAsDictionary(extension->id(), kCommands,
-                                            &commands_prefs)) {
-    const base::Value* suggested_key_prefs =
-        commands_prefs->FindDictPath(command_name);
+  const base::Value::Dict* commands_prefs =
+      extension_prefs->ReadPrefAsDict(extension->id(), kCommands);
+  if (commands_prefs) {
+    const base::Value::Dict* suggested_key_prefs =
+        commands_prefs->FindDict(command_name);
     if (suggested_key_prefs) {
       const std::string* suggested_key_string =
-          suggested_key_prefs->FindStringKey(kSuggestedKey);
+          suggested_key_prefs->FindString(kSuggestedKey);
       if (suggested_key_string) {
         suggested_key =
             Command::StringToAccelerator(*suggested_key_string, command_name);
       }
       suggested_key_was_assigned =
-          suggested_key_prefs->FindBoolKey(kSuggestedKeyWasAssigned);
+          suggested_key_prefs->FindBool(kSuggestedKeyWasAssigned);
     }
   }
 
