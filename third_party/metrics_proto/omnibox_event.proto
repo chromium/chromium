@@ -188,6 +188,13 @@ message OmniboxEventProto {
     // enum is used in other places too, and not only OmniboxEventProto.)
     SRP_ZPS_PREFETCH = 22;
 
+    // The catch-all zero-prefix suggestion prefetch for everything other than
+    // NTP and SRP.
+    // Used for prefetching suggestions and should never appear in an
+    // OmniboxEventProto or any of its derived histograms. (PageClassification
+    // enum is used in other places too, and not only OmniboxEventProto.)
+    OTHER_ZPS_PREFETCH = 23;
+
     // When adding new classifications, please consider adding them in
     // chromium's chrome/browser/resources/omnibox/omnibox.html
     // so that these new options are displayed on about:omnibox.
