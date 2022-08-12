@@ -706,12 +706,12 @@ public class MultiWindowUtils implements ActivityStateListener {
                     SharedPreferencesManager prefs = SharedPreferencesManager.getInstance();
                     long startTime = prefs.readLong(ChromePreferenceKeys.MULTI_WINDOW_START_TIME);
                     if (startTime == 0) {
-                        RecordUserAction.record("Android.MultiWindowMode.Enter");
+                        RecordUserAction.record("Android.MultiWindowMode.Enter2");
                         long current = System.currentTimeMillis();
                         prefs.writeLong(ChromePreferenceKeys.MULTI_WINDOW_START_TIME, current);
                     }
                 } else {
-                    RecordUserAction.record("Android.MultiWindowMode.Enter");
+                    RecordUserAction.record("Android.MultiWindowMode.Enter2");
                 }
             } else {
                 if (mMultiInstanceApi31Enabled) {
@@ -719,13 +719,13 @@ public class MultiWindowUtils implements ActivityStateListener {
                     long startTime = prefs.readLong(ChromePreferenceKeys.MULTI_WINDOW_START_TIME);
                     if (startTime > 0) {
                         long current = System.currentTimeMillis();
-                        RecordUserAction.record("Android.MultiWindowMode.Exit");
+                        RecordUserAction.record("Android.MultiWindowMode.Exit2");
                         RecordHistogram.recordLongTimesHistogram(
                                 "Android.MultiWindowMode.TotalDuration", current - startTime);
                         prefs.writeLong(ChromePreferenceKeys.MULTI_WINDOW_START_TIME, 0);
                     }
                 } else {
-                    RecordUserAction.record("Android.MultiWindowMode.Exit");
+                    RecordUserAction.record("Android.MultiWindowMode.Exit2");
                 }
             }
         } else {

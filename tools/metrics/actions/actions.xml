@@ -3332,6 +3332,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Android.MultiWindowMode.Enter">
+  <obsolete>
+    Deprecated as the data is not valid any more from M100 onward.
+  </obsolete>
   <owner>jinsukkim@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <description>The activity entered Android N multi-window mode.</description>
@@ -3346,7 +3349,20 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Android.MultiWindowMode.Enter2">
+  <owner>jinsukkim@chromium.org</owner>
+  <owner>twellington@chromium.org</owner>
+  <description>
+    The activity entered Android N multi-window mode. This is identical to
+    Android.MultiWindowMode.Enter, but introduced after a bug that affected the
+    logging was fixed.
+  </description>
+</action>
+
 <action name="Android.MultiWindowMode.Exit">
+  <obsolete>
+    Deprecated as the data is not valid any more from M100 onward.
+  </obsolete>
   <owner>twellington@chromium.org</owner>
   <description>The activity exited Android N multi-window mode.</description>
 </action>
@@ -3357,6 +3373,16 @@ should be able to be added at any place in this file.
     The second activity instance (ChromeTabbedActivity2) exited Android N
     multi-window mode. Recorded separately from Android.MultiWindowMode.Exit to
     avoid double counting when two instances are running.
+  </description>
+</action>
+
+<action name="Android.MultiWindowMode.Exit2">
+  <owner>jinsukkim@chromium.org</owner>
+  <owner>twellington@chromium.org</owner>
+  <description>
+    The activity exited Android N multi-window mode. This is identical to
+    Android.MultiWindowMode.Exit, but introduced after a bug that affected the
+    logging was fixed.
   </description>
 </action>
 

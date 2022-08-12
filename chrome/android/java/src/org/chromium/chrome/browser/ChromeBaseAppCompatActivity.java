@@ -17,6 +17,7 @@ import android.os.Bundle;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.StyleRes;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -129,6 +130,13 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     public void setTheme(@StyleRes int resid) {
         super.setTheme(resid);
         mThemeResIds.add(resid);
+    }
+
+    @Override
+    @RequiresApi(Build.VERSION_CODES.O)
+    public void onMultiWindowModeChanged(boolean inMultiWindowMode, Configuration configuration) {
+        super.onMultiWindowModeChanged(inMultiWindowMode, configuration);
+        onMultiWindowModeChanged(inMultiWindowMode);
     }
 
     @Override
