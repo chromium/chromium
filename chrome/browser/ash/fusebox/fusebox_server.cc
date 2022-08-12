@@ -37,11 +37,11 @@ std::pair<std::string, bool> ResolvePrefixMap(
     const std::string& s) {
   size_t i = s.find('/');
   if (i == std::string::npos) {
-    return std::make_pair(s, false);
+    i = s.size();
   }
   auto iter = prefix_map.find(s.substr(0, i));
   if (iter == prefix_map.end()) {
-    return std::make_pair(s, false);
+    return std::make_pair("", false);
   }
   return std::make_pair(base::StrCat({iter->second.fs_url_prefix, s.substr(i)}),
                         iter->second.read_only);
@@ -122,6 +122,10 @@ ParseResult ParseFileSystemURL(fusebox::MonikerMap& moniker_map,
       break;
     case ResultType::NOT_A_MONIKER_FS_URL: {
       auto resolved = ResolvePrefixMap(prefix_map, fs_url_as_string);
+      if (resolved.first.empty()) {
+        LOG(ERROR) << "Unresolvable Prefix";
+        return ParseResult(base::File::Error::FILE_ERROR_NOT_FOUND);
+      }
       read_only = resolved.second;
       fs_url = fs_context->CrackURLInFirstPartyContext(GURL(resolved.first));
       if (!fs_url.is_valid()) {
