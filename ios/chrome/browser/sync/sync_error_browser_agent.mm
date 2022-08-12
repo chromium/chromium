@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/sync/sync_error_browser_agent.h"
 
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/authentication/re_signin_infobar_delegate.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 #import "ios/chrome/browser/ui/settings/sync/utils/sync_util.h"
@@ -35,6 +35,7 @@ void SyncErrorBrowserAgent::SetUIProviders(
 }
 
 void SyncErrorBrowserAgent::ClearUIProviders() {
+  web_state_observations_.RemoveAllObservations();
   signin_presenter_provider_ = nil;
   sync_presenter_provider_ = nil;
 }
@@ -52,12 +53,29 @@ void SyncErrorBrowserAgent::WebStateInsertedAt(WebStateList* web_state_list,
                                                web::WebState* web_state,
                                                int index,
                                                bool activating) {
-  if (signin_presenter_provider_ == nullptr ||
-      sync_presenter_provider_ == nullptr)
+  CreateReSignInInfoBarDelegate(web_state);
+}
+
+void SyncErrorBrowserAgent::WebStateDestroyed(web::WebState* web_state) {
+  web_state_observations_.RemoveObservation(web_state);
+}
+
+void SyncErrorBrowserAgent::WebStateRealized(web::WebState* web_state) {
+  web_state_observations_.RemoveObservation(web_state);
+  CreateReSignInInfoBarDelegate(web_state);
+}
+
+void SyncErrorBrowserAgent::CreateReSignInInfoBarDelegate(
+    web::WebState* web_state) {
+  if (!signin_presenter_provider_ || !sync_presenter_provider_)
     return;
 
-  ChromeBrowserState* browser_state = browser_->GetBrowserState();
+  if (!web_state->IsRealized()) {
+    web_state_observations_.AddObservation(web_state);
+    return;
+  }
 
+  ChromeBrowserState* browser_state = browser_->GetBrowserState();
   if (!ReSignInInfoBarDelegate::Create(browser_state, web_state,
                                        signin_presenter_provider_)) {
     DisplaySyncErrors(browser_state, web_state, sync_presenter_provider_);
