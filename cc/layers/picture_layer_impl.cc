@@ -17,6 +17,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/numerics/ranges.h"
+#include "base/record_replay.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "base/trace_event/traced_value.h"
@@ -140,6 +141,9 @@ std::unique_ptr<LayerImpl> PictureLayerImpl::CreateLayerImpl(
 void PictureLayerImpl::PushPropertiesTo(LayerImpl* base_layer) {
   PictureLayerImpl* layer_impl = static_cast<PictureLayerImpl*>(base_layer);
 
+  // https://linear.app/replay/issue/RUN-465
+  recordreplay::Assert("PictureLayerImpl::PushPropertiesTo");
+
   LayerImpl::PushPropertiesTo(base_layer);
 
   // Twin relationships should never change once established.
@@ -184,6 +188,9 @@ void PictureLayerImpl::PushPropertiesTo(LayerImpl* base_layer) {
   layer_impl->lcd_text_disallowed_reason_ = lcd_text_disallowed_reason_;
 
   layer_impl->SanityCheckTilingState();
+
+  // https://linear.app/replay/issue/RUN-465
+  recordreplay::Assert("PictureLayerImpl::PushPropertiesTo Done");
 }
 
 void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
