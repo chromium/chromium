@@ -4,7 +4,15 @@
 
 #include "mojo/core/core_ipcz.h"
 
+#include <cstddef>
+#include <cstdint>
+#include <utility>
+#include <vector>
+
+#include "base/containers/span.h"
+#include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "mojo/core/ipcz_api.h"
 #include "third_party/ipcz/include/ipcz/ipcz.h"
@@ -12,6 +20,148 @@
 namespace mojo::core {
 
 namespace {
+
+// The ipcz-based implementation of Mojo message objects. ipcz API exposes no
+// notion of message objects, so this is merely heap storage for data and ipcz
+// handles.
+class MojoMessage {
+ public:
+  // Even with an input size of 0, MojoAppendMessageData is expected to allocate
+  // *some* storage for message data. This constant therefore sets a lower bound
+  // on payload allocation size. 32 bytes is chosen since it's the smallest
+  // possible Mojo bindings message size (v0 header + 8 byte payload)
+  static constexpr size_t kMinBufferSize = 32;
+
+  MojoMessage() = default;
+  MojoMessage(std::vector<uint8_t> data, std::vector<IpczHandle> handles) {
+    SetContents(std::move(data), std::move(handles));
+  }
+
+  ~MojoMessage() {
+    for (IpczHandle handle : handles_) {
+      if (handle != IPCZ_INVALID_HANDLE) {
+        GetIpczAPI().Close(handle, IPCZ_NO_FLAGS, nullptr);
+      }
+    }
+  }
+
+  static MojoMessage* FromHandle(MojoMessageHandle handle) {
+    return reinterpret_cast<MojoMessage*>(handle);
+  }
+
+  static std::unique_ptr<MojoMessage> TakeFromHandle(MojoMessageHandle handle) {
+    return base::WrapUnique(FromHandle(handle));
+  }
+
+  MojoMessageHandle handle() const {
+    return reinterpret_cast<MojoMessageHandle>(this);
+  }
+
+  base::span<uint8_t> data() { return data_; }
+  std::vector<IpczHandle>& handles() { return handles_; }
+
+  void SetContents(std::vector<uint8_t> data, std::vector<IpczHandle> handles) {
+    const size_t size = data.size();
+    if (size >= kMinBufferSize) {
+      data_storage_ = std::move(data);
+    } else {
+      data_storage_.resize(kMinBufferSize);
+      std::copy(data.begin(), data.end(), data_storage_.begin());
+    }
+    data_ = base::make_span(data_storage_).first(size);
+    handles_ = std::move(handles);
+  }
+
+  MojoResult AppendData(uint32_t additional_num_bytes,
+                        const MojoHandle* handles,
+                        uint32_t num_handles,
+                        void** buffer,
+                        uint32_t* buffer_size) {
+    const size_t new_data_size = data_.size() + additional_num_bytes;
+    const size_t required_storage_size =
+        std::max(new_data_size, kMinBufferSize);
+    if (required_storage_size > data_storage_.size()) {
+      data_storage_.resize(std::max(data_.size() * 2, required_storage_size));
+    }
+    data_ = base::make_span(data_storage_).first(new_data_size);
+
+    handles_.reserve(handles_.size() + num_handles);
+    for (MojoHandle handle : base::make_span(handles, num_handles)) {
+      handles_.push_back(handle);
+    }
+    if (buffer) {
+      *buffer = data_storage_.data();
+    }
+    if (buffer_size) {
+      *buffer_size = base::checked_cast<uint32_t>(data_storage_.size());
+    }
+    return MOJO_RESULT_OK;
+  }
+
+  IpczResult GetData(void** buffer,
+                     uint32_t* num_bytes,
+                     MojoHandle* handles,
+                     uint32_t* num_handles,
+                     bool consume_handles) {
+    if (buffer) {
+      *buffer = data_storage_.data();
+    }
+    if (num_bytes) {
+      *num_bytes = base::checked_cast<uint32_t>(data_.size());
+    }
+
+    if (!consume_handles || handles_.empty()) {
+      return MOJO_RESULT_OK;
+    }
+
+    uint32_t capacity = num_handles ? *num_handles : 0;
+    uint32_t required_capacity = base::checked_cast<uint32_t>(handles_.size());
+    if (num_handles) {
+      *num_handles = required_capacity;
+    }
+    if (!handles || capacity < required_capacity) {
+      return MOJO_RESULT_RESOURCE_EXHAUSTED;
+    }
+
+    std::copy(handles_.begin(), handles_.end(), handles);
+    handles_.clear();
+    return MOJO_RESULT_OK;
+  }
+
+ private:
+  std::vector<uint8_t> data_storage_;
+  base::span<uint8_t> data_;
+  std::vector<IpczHandle> handles_;
+};
+
+// ipcz get and put operations differ slightly in their return code semantics as
+// compared to Mojo read and write operations. These helpers perform the
+// translation.
+MojoResult GetMojoReadResultForIpczGet(IpczResult result) {
+  if (result == IPCZ_RESULT_UNAVAILABLE) {
+    // The peer is still open but there are not currently any parcels to read.
+    return MOJO_RESULT_SHOULD_WAIT;
+  }
+  if (result == IPCZ_RESULT_NOT_FOUND) {
+    // There are no more parcels to read and the peer is closed.
+    return MOJO_RESULT_FAILED_PRECONDITION;
+  }
+  return result;
+}
+
+MojoResult GetMojoWriteResultForIpczPut(IpczResult result) {
+  if (result == IPCZ_RESULT_RESOURCE_EXHAUSTED) {
+    // For put operations with limits, which are used to emulate data pipe
+    // producer writes, this indicates that the caller needs to try again later
+    // due to the pipe being at capacity.
+    return MOJO_RESULT_SHOULD_WAIT;
+  }
+  if (result == IPCZ_RESULT_NOT_FOUND) {
+    // The peer is closed.
+    return MOJO_RESULT_FAILED_PRECONDITION;
+  }
+  return result;
+}
 
 extern "C" {
 
@@ -31,42 +181,116 @@ MojoResult MojoCloseIpcz(MojoHandle handle) {
 MojoResult MojoQueryHandleSignalsStateIpcz(
     MojoHandle handle,
     MojoHandleSignalsState* signals_state) {
-  return MOJO_RESULT_UNIMPLEMENTED;
+  IpczPortalStatus status = {sizeof(status)};
+  IpczResult result =
+      GetIpczAPI().QueryPortalStatus(handle, IPCZ_NO_FLAGS, nullptr, &status);
+  if (result != IPCZ_RESULT_OK) {
+    return result;
+  }
+
+  // TODO: These signals aren't quite accurate for data pipe handles.
+  signals_state->satisfiable_signals = MOJO_HANDLE_SIGNAL_PEER_CLOSED;
+  signals_state->satisfied_signals = 0;
+  if (status.flags & IPCZ_PORTAL_STATUS_PEER_CLOSED) {
+    signals_state->satisfied_signals |= MOJO_HANDLE_SIGNAL_PEER_CLOSED;
+  } else {
+    signals_state->satisfiable_signals |= MOJO_HANDLE_SIGNAL_WRITABLE |
+                                          MOJO_HANDLE_SIGNAL_QUOTA_EXCEEDED |
+                                          MOJO_HANDLE_SIGNAL_PEER_REMOTE;
+    signals_state->satisfied_signals |= MOJO_HANDLE_SIGNAL_WRITABLE;
+  }
+  if ((status.flags & IPCZ_PORTAL_STATUS_DEAD) == 0) {
+    signals_state->satisfiable_signals |= MOJO_HANDLE_SIGNAL_READABLE;
+  }
+  if (status.num_local_parcels > 0) {
+    signals_state->satisfied_signals |= MOJO_HANDLE_SIGNAL_READABLE;
+  }
+  return MOJO_RESULT_OK;
 }
 
 MojoResult MojoCreateMessagePipeIpcz(
     const MojoCreateMessagePipeOptions* options,
     MojoHandle* message_pipe_handle0,
     MojoHandle* message_pipe_handle1) {
-  return MOJO_RESULT_UNIMPLEMENTED;
+  return GetIpczAPI().OpenPortals(GetIpczNode(), IPCZ_NO_FLAGS, nullptr,
+                                  message_pipe_handle0, message_pipe_handle1);
 }
 
 MojoResult MojoWriteMessageIpcz(MojoHandle message_pipe_handle,
                                 MojoMessageHandle message,
                                 const MojoWriteMessageOptions* options) {
-  return MOJO_RESULT_UNIMPLEMENTED;
+  auto m = MojoMessage::TakeFromHandle(message);
+  if (!m || !message_pipe_handle) {
+    return MOJO_RESULT_INVALID_ARGUMENT;
+  }
+
+  IpczResult result = GetIpczAPI().Put(
+      message_pipe_handle, m->data().data(), m->data().size(),
+      m->handles().data(), m->handles().size(), IPCZ_NO_FLAGS, nullptr);
+  if (result == IPCZ_RESULT_NOT_FOUND) {
+    return MOJO_RESULT_FAILED_PRECONDITION;
+  }
+
+  if (result == IPCZ_RESULT_OK) {
+    // Ensure the hadles don't get freed on MojoMessage destruction, as their
+    // ownership was relinquished in Put() above.
+    m->handles().clear();
+  }
+
+  return GetMojoWriteResultForIpczPut(result);
 }
 
 MojoResult MojoReadMessageIpcz(MojoHandle message_pipe_handle,
                                const MojoReadMessageOptions* options,
                                MojoMessageHandle* message) {
-  return MOJO_RESULT_UNIMPLEMENTED;
+  std::vector<uint8_t> data;
+  std::vector<MojoHandle> handles;
+  size_t num_bytes = 0;
+  size_t num_handles = 0;
+  IpczResult result =
+      GetIpczAPI().Get(message_pipe_handle, IPCZ_NO_FLAGS, nullptr, nullptr,
+                       &num_bytes, nullptr, &num_handles);
+  if (result == IPCZ_RESULT_OK) {
+    *message = std::make_unique<MojoMessage>().release()->handle();
+    return MOJO_RESULT_OK;
+  }
+
+  if (result != IPCZ_RESULT_RESOURCE_EXHAUSTED) {
+    return GetMojoReadResultForIpczGet(result);
+  }
+
+  data.resize(num_bytes);
+  handles.resize(num_handles);
+  result =
+      GetIpczAPI().Get(message_pipe_handle, IPCZ_NO_FLAGS, nullptr, data.data(),
+                       &num_bytes, handles.data(), &num_handles);
+  if (result != IPCZ_RESULT_OK) {
+    return GetMojoReadResultForIpczGet(result);
+  }
+
+  auto m = std::make_unique<MojoMessage>();
+  m->SetContents(std::move(data), std::move(handles));
+  *message = m.release()->handle();
+  return MOJO_RESULT_OK;
 }
 
 MojoResult MojoFuseMessagePipesIpcz(
     MojoHandle handle0,
     MojoHandle handle1,
     const MojoFuseMessagePipesOptions* options) {
-  return MOJO_RESULT_UNIMPLEMENTED;
+  return GetIpczAPI().MergePortals(handle0, handle1, IPCZ_NO_FLAGS, nullptr);
 }
 
 MojoResult MojoCreateMessageIpcz(const MojoCreateMessageOptions* options,
                                  MojoMessageHandle* message) {
-  return MOJO_RESULT_UNIMPLEMENTED;
+  auto new_message = std::make_unique<MojoMessage>();
+  *message = new_message.release()->handle();
+  return MOJO_RESULT_OK;
 }
 
 MojoResult MojoDestroyMessageIpcz(MojoMessageHandle message) {
-  return MOJO_RESULT_UNIMPLEMENTED;
+  std::unique_ptr<MojoMessage> scoped_message(MojoMessage::FromHandle(message));
+  return scoped_message ? MOJO_RESULT_OK : MOJO_RESULT_INVALID_ARGUMENT;
 }
 
 MojoResult MojoSerializeMessageIpcz(
@@ -83,7 +307,11 @@ MojoResult MojoAppendMessageDataIpcz(
     const MojoAppendMessageDataOptions* options,
     void** buffer,
     uint32_t* buffer_size) {
-  return MOJO_RESULT_UNIMPLEMENTED;
+  if (auto* m = MojoMessage::FromHandle(message)) {
+    return m->AppendData(additional_payload_size, handles, num_handles, buffer,
+                         buffer_size);
+  }
+  return MOJO_RESULT_INVALID_ARGUMENT;
 }
 
 MojoResult MojoGetMessageDataIpcz(MojoMessageHandle message,
@@ -92,7 +320,13 @@ MojoResult MojoGetMessageDataIpcz(MojoMessageHandle message,
                                   uint32_t* num_bytes,
                                   MojoHandle* handles,
                                   uint32_t* num_handles) {
-  return MOJO_RESULT_UNIMPLEMENTED;
+  if (auto* m = MojoMessage::FromHandle(message)) {
+    const bool consume_handles =
+        !options ||
+        ((options->flags & MOJO_GET_MESSAGE_DATA_FLAG_IGNORE_HANDLES) == 0);
+    return m->GetData(buffer, num_bytes, handles, num_handles, consume_handles);
+  }
+  return MOJO_RESULT_INVALID_ARGUMENT;
 }
 
 MojoResult MojoSetMessageContextIpcz(
