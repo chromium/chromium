@@ -62,10 +62,19 @@
     "channel": "stable",
     "extension_types": ["extension", "platform_app"]
   },
-  "content_scripts": {
-    "channel": "stable",
-    "extension_types": ["extension", "legacy_packaged_app"]
-  },
+  "content_scripts": [
+    {
+      "channel": "stable",
+      "extension_types": ["extension", "legacy_packaged_app"]
+    },
+    {
+      // The URLs that can be matched with content scripts added by login screen
+      // extensions are restricted to the Imprivata IdP.
+      "channel": "stable",
+      "dependencies": ["behavior:imprivata_login_screen_extension"],
+      "extension_types": ["login_screen_extension"]
+    }
+  ],
   "converted_from_user_script": {
     "channel": "stable",
     "extension_types": [

@@ -387,6 +387,11 @@
       "channel": "stable",
       "extension_types": ["platform_app"],
       "location": "component"
+    },
+    {
+      "channel": "stable",
+      "dependencies": ["behavior:imprivata_login_screen_extension"],
+      "extension_types": ["login_screen_extension"]
     }
   ],
   "webview": {

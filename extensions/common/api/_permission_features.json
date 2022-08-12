@@ -752,10 +752,17 @@
     "channel": "stable",
     "extension_types": ["platform_app"]
   },
-  "webRequest": {
-    "channel": "stable",
-    "extension_types": ["extension", "legacy_packaged_app"]
-   },
+  "webRequest": [
+    {
+      "channel": "stable",
+      "extension_types": ["extension", "legacy_packaged_app"]
+    },
+    {
+      "channel": "stable",
+      "dependencies": ["behavior:imprivata_login_screen_extension"],
+      "extension_types": ["login_screen_extension"]
+    }
+  ],
   "webRequestBlocking": [{
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"],
