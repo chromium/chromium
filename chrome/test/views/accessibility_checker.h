@@ -10,9 +10,7 @@
 #include "ui/views/widget/widget_observer.h"
 
 // Runs UI accessibility checks on |widget|.
-// Adds a gtest failure if any check fails.
-// Callers are not expected to assert/expect on failure.
-void AddFailureOnWidgetAccessibilityError(views::Widget* widget);
+void RunAccessibilityChecks(views::Widget* widget);
 
 // Observe the creation of all widgets and ensure their view subtrees are
 // checked for accessibility violations when they become visible or hidden.

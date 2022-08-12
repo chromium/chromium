@@ -289,7 +289,7 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest,
 
   cache_ptr->set_focused_widget_for_testing(nullptr);
 
-  AddFailureOnWidgetAccessibilityError(widget);
+  RunAccessibilityChecks(widget);
 }
 
 // TODO(crbug.com/1202250): Crashes on Ozone.
@@ -562,7 +562,7 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest, EventFromAction) {
 
   cache_ptr->set_focused_widget_for_testing(nullptr);
 
-  AddFailureOnWidgetAccessibilityError(widget);
+  RunAccessibilityChecks(widget);
 }
 
 // Verify that re-enabling AutomationManagerAura after disable will not cause
@@ -637,5 +637,5 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest, GetFocusOnChildTree) {
 
   cache.set_focused_widget_for_testing(nullptr);
 
-  AddFailureOnWidgetAccessibilityError(widget);
+  RunAccessibilityChecks(widget);
 }

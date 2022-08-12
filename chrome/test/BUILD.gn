@@ -8530,9 +8530,6 @@ test("unit_tests") {
   }
 
   if (toolkit_views) {
-    # Test accessibility checks that audit any UI opened in a browser test.
-    sources += [ "views/accessibility_checker_unittest.cc" ]
-
     deps += [
       "//chrome:unit_tests_pak",
       "//chrome/browser/ui/tabs:tab_enums",

@@ -1103,6 +1103,7 @@ test("views_unittests") {
   use_xvfb = use_xvfb_in_this_config
 
   sources = [
+    "accessibility/accessibility_paint_checks_unittest.cc",
     "accessible_pane_view_unittest.cc",
     "animation/animation_builder_unittest.cc",
     "animation/bounds_animator_unittest.cc",

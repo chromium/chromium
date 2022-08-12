@@ -13,6 +13,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/widget/widget.h"
 
 namespace views {
 
@@ -28,9 +29,12 @@ void RunAccessibilityPaintChecks(View* view) {
   if (view->GetProperty(kSkipAccessibilityPaintChecks))
     return;
 
+  // Get accessible node data from ViewAccessibility instead of View, because
+  // some additional fields are processed and set there.
   ui::AXNodeData node_data;
   view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
 
+  // No checks for unfocusable items yet.
   if (!node_data.HasState(ax::mojom::State::kFocusable))
     return;
 
@@ -89,6 +93,16 @@ void RunAccessibilityPaintChecks(View* view) {
          "screen readers to end users. Thus if this is production code, the "
          "accessible name should be localized.\n"
       << GetViewDebugInfo(view);
+}
+
+void RunAccessibilityPaintChecksRecursive(View* view) {
+  RunAccessibilityPaintChecks(view);
+  for (auto* v : view->children())
+    RunAccessibilityPaintChecksRecursive(v);
+}
+
+void RunAccessibilityPaintChecks(Widget* widget) {
+  RunAccessibilityPaintChecksRecursive(widget->GetRootView());
 }
 
 }  // namespace views
