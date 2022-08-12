@@ -32,47 +32,19 @@ FeedUI::FeedUI(content::WebUI* web_ui)
       source, base::make_span(kFeedResources, kFeedResourcesSize),
       IDR_FEED_FEED_HTML);
 
-  // TODO(crbug.com/1292623): CSP is weak during development and will be
-  // tightened once the final architecture is decided.
-  //  - Unsafe-eval/unsafe-inline is used by wasm code and is likely that we can
-  //    avoid this for the final production version.
-
   if (kWebUiDisableContentSecurityPolicy.Get()) {
     source->DisableContentSecurityPolicy();
   } else {
-    std::string default_script_policy =
-        " 'self' chrome-untrusted://resources http://localhost:8000 "
-        "https://*.google.com https://google.com;";
-    source->OverrideContentSecurityPolicy(
-        network::mojom::CSPDirectiveName::ScriptSrc,
-        base::StrCat({"script-src 'unsafe-eval' 'unsafe-inline'",
-                      default_script_policy}));
     source->OverrideContentSecurityPolicy(
         network::mojom::CSPDirectiveName::FrameSrc,
-        base::StrCat({"frame-src", default_script_policy}));
+        "frame-src https://www.google.com;");
     source->OverrideContentSecurityPolicy(
         network::mojom::CSPDirectiveName::StyleSrc,
-        base::StrCat({"style-src", default_script_policy}));
-
-    std::string default_content_policy =
-        " 'self'  chrome-untrusted://resources https: http://localhost:8000;";
-
-    source->OverrideContentSecurityPolicy(
-        network::mojom::CSPDirectiveName::ConnectSrc,
-        base::StrCat({"connect-src", default_content_policy}));
-    source->OverrideContentSecurityPolicy(
-        network::mojom::CSPDirectiveName::ImgSrc,
-        base::StrCat({"img-src", default_content_policy}));
-    source->OverrideContentSecurityPolicy(
-        network::mojom::CSPDirectiveName::MediaSrc,
-        base::StrCat({"media-src", default_content_policy}));
-
-    source->OverrideContentSecurityPolicy(
-        network::mojom::CSPDirectiveName::DefaultSrc, "default-src 'self';");
+        "style-src 'unsafe-inline' 'self';");
   }
 
   // Configurable javascript for prototyping purposes.
-  source->AddString("scriptUrl", kWebUiScriptFetchUrl.Get());
+  source->AddString("feedUrl", kWebUiFeedUrl.Get());
 
   // Register the URLDataSource
   auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();

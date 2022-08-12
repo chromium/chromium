@@ -3569,6 +3569,13 @@ extern const char kAsyncDnsName[];
 extern const char kAsyncDnsDescription[];
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_CHROMEOS)
+extern const char kFollowingFeedSidepanelName[];
+extern const char kFollowingFeedSidepanelDescription[];
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_CHROMEOS)
+
 // Feature flags --------------------------------------------------------------
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)

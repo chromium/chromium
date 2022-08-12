@@ -3518,6 +3518,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "following-feed-sidepanel",
+    "owners": [ "//chrome/android/feed/OWNERS", "freedjm@chromium.org" ],
+    "expiry_milestone": 115
+  },
+  {
     "name": "font-access",
     "owners": [ "dslee" ],
     "expiry_milestone": 108

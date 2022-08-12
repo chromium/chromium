@@ -60270,6 +60270,7 @@ from previous Chrome versions.
   <int value="730024226" label="enable-out-of-process-pdf"/>
   <int value="730478037" label="FilesAppExperimental:disabled"/>
   <int value="730750097" label="PermissionsBlacklist:disabled"/>
+  <int value="731201083" label="FeedWebUi:disabled"/>
   <int value="731318054" label="WebAssemblySimd:enabled"/>
   <int value="731593144" label="ReadPrinterCapabilitiesWithXps:enabled"/>
   <int value="731757746" label="ArcEnableDocumentsProviderInFilesApp:disabled"/>
@@ -60346,6 +60347,7 @@ from previous Chrome versions.
   <int value="774866229" label="AndroidPWAsDefaultOfflinePage:disabled"/>
   <int value="775075949" label="ImeInputLogicHmm:enabled"/>
   <int value="775148009" label="OsSettingsDeepLinking:disabled"/>
+  <int value="777569794" label="FeedWebUi:enabled"/>
   <int value="777667507" label="DesktopPWAsLinkCapturing:enabled"/>
   <int value="778000757" label="EnableInputEventLogging:disabled"/>
   <int value="779086132" label="enable-data-reduction-proxy-alt"/>

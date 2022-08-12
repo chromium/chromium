@@ -4760,6 +4760,13 @@ const FeatureEntry kFeatureEntries[] = {
                                     kFeedCloseRefreshVariations,
                                     "FeedCloseRefresh")},
 #endif  // BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
+    {"following-feed-sidepanel", flag_descriptions::kFollowingFeedSidepanelName,
+     flag_descriptions::kFollowingFeedSidepanelDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(feed::kWebUiFeed)},
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
+        // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
     {"password-import", flag_descriptions::kPasswordImportName,
      flag_descriptions::kPasswordImportDescription, kOsAll,
      FEATURE_VALUE_TYPE(password_manager::features::kPasswordImport)},
