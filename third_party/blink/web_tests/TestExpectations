@@ -7100,3 +7100,6 @@ crbug.com/1351811 external/wpt/css/css-transitions/no-transition-from-ua-to-bloc
 # Flakes on all platforms.
 crbug.com/1352209 wpt_internal/navigation-api/ordering-and-transition/navigate-cross-document-double.html [ Failure Pass ]
 
+# Sheriff 2022-08-12
+crbug.com/1350611 [ Mac10.15 ] external/wpt/html/browsers/browsing-the-web/remote-context-helper-tests/navigation-same-document.window.html [ Failure Pass ]
+crbug.com/1352248 [ Mac10.15 ] virtual/disable-frequency-capping-for-overlay-popup-detection/http/tests/subresource_filter/overlay_popup_ad/overlay-popup-non-ad-followed-by-ad.html [ Failure Pass ]
