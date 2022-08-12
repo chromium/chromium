@@ -1,8 +1,0 @@
-# Pending Beacon API: Tests should all pass with
-#   --enable-blink-features=PendingBeaconAPI
-#
-# results: [ Timeout Crash Pass Failure Slow Skip ]
-
-crbug.com/1293679 pending_beacon/pending_beacon-basic.html [ Pass ]
-crbug.com/1293679 pending_beacon/pending_beacon-deactivate.html [ Pass ]
-crbug.com/1293679 wpt_internal/pending_beacon/* [ Pass ]

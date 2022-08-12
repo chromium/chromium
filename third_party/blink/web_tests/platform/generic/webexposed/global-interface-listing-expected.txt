@@ -6409,6 +6409,26 @@ interface PaymentResponse : EventTarget
     method retry
     method toJSON
     setter onpayerdetailchange
+interface PendingBeacon
+    attribute @@toStringTag
+    getter backgroundTimeout
+    getter method
+    getter pending
+    getter timeout
+    getter url
+    method constructor
+    method deactivate
+    method sendNow
+    setter backgroundTimeout
+    setter timeout
+interface PendingGetBeacon : PendingBeacon
+    attribute @@toStringTag
+    method constructor
+    method setURL
+interface PendingPostBeacon : PendingBeacon
+    attribute @@toStringTag
+    method constructor
+    method setData
 interface Performance : EventTarget
     attribute @@toStringTag
     getter eventCounts

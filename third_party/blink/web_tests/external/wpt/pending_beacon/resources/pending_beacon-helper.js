@@ -48,8 +48,8 @@ function generateSequentialData(begin, end, skip) {
   return String.fromCharCode(...codeUnits);
 }
 
-function wait(ms) {
-  return new Promise(resolve => step_timeout(resolve, ms));
+function generateSetBeaconCountURL(uuid) {
+  return `/pending_beacon/resources/set_beacon_count.py?uuid=${uuid}`;
 }
 
 async function poll(f, expected) {
@@ -66,7 +66,8 @@ async function poll(f, expected) {
 async function expectBeaconCount(uuid, expected) {
   poll(async () => {
     const res = await fetch(
-        `resources/get_beacon_count.py?uuid=${uuid}`, {cache: 'no-store'});
+        `/pending_beacon/resources/get_beacon_count.py?uuid=${uuid}`,
+        {cache: 'no-store'});
     return await res.json();
   }, expected);
 }
@@ -74,7 +75,8 @@ async function expectBeaconCount(uuid, expected) {
 async function expectBeaconData(uuid, expected, options) {
   poll(async () => {
     const res = await fetch(
-        `resources/get_beacon_count.py?uuid=${uuid}`, {cache: 'no-store'});
+        `/pending_beacon/resources/get_beacon_count.py?uuid=${uuid}`,
+        {cache: 'no-store'});
     let data = await res.text();
     if (options && options.percentDecoded) {
       // application/x-www-form-urlencoded serializer encodes space as '+'
@@ -89,10 +91,7 @@ async function expectBeaconData(uuid, expected, options) {
 function postBeaconSendDataTest(dataType, testData, expectEmpty, description) {
   parallelPromiseTest(async t => {
     const uuid = token();
-    const baseUrl = `${location.protocol}//${location.host}`;
-    const url = `${
-        baseUrl}/wpt_internal/pending_beacon/resources/set_beacon_data.py?uuid=${
-        uuid}`;
+    const url = `/pending_beacon/resources/set_beacon_data.py?uuid=${uuid}`;
     let beacon = new PendingPostBeacon(url);
     assert_equals(beacon.method, 'POST');
 

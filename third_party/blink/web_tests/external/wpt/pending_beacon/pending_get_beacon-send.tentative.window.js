@@ -1,0 +1,40 @@
+// META: script=/resources/testharness.js
+// META: script=/resources/testharnessreport.js
+// META: script=/common/utils.js
+// META: script=./resources/pending_beacon-helper.js
+
+'use strict';
+
+const baseUrl = `${location.protocol}//${location.host}`;
+
+parallelPromiseTest(async t => {
+  const uuid = token();
+  const url = generateSetBeaconCountURL(uuid);
+
+  let beacon = new PendingGetBeacon('/');
+
+  beacon.setURL(url);
+  assert_equals(beacon.url, url);
+  beacon.sendNow();
+
+  await expectBeaconCount(uuid, 1);
+}, 'PendingGetBeacon is sent to the updated URL');
+
+parallelPromiseTest(async t => {
+  const uuid = token();
+  const url = generateSetBeaconCountURL(uuid);
+
+  let beacon = new PendingGetBeacon('/0');
+
+  for (let i = 0; i < 10; i++) {
+    const transientUrl = `/${i}`;
+    beacon.setURL(transientUrl);
+    assert_equals(beacon.url, transientUrl);
+  }
+  beacon.setURL(url);
+  assert_equals(beacon.url, url);
+
+  beacon.sendNow();
+
+  await expectBeaconCount(uuid, 1);
+}, 'PendingGetBeacon is sent to the last updated URL');

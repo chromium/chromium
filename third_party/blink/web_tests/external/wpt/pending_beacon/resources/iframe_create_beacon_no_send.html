@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<body>
+  <script>
+      const uuid = window.location.search.split("=")[1]
+      const url = `/pending_beacon/resources/set_beacon.py?uuid=${uuid}`;
+      let beacon1 = new PendingGetBeacon(url);
+      let beacon2 = new PendingGetBeacon(url);
+  </script>
+</body>

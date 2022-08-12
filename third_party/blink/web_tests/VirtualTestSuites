@@ -1332,5 +1332,11 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [ "http/tests/inspector-protocol/issues/cookie-domain-non-ascii.js" ],
     "args": ["--enable-features=CookieDomainRejectNonASCII"]
+  },
+  {
+    "prefix": "pending-beacon",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["external/wpt/pending_beacon"],
+    "args": ["--enable-features=PendingBeaconAPI"]
   }
 ]
