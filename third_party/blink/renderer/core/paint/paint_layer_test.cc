@@ -2584,4 +2584,76 @@ TEST_P(PaintLayerTest, ScrollContainerLayerTransformScroller) {
   TEST_SCROLL_CONTAINER("transform", scroller, false);
 }
 
+TEST_P(PaintLayerTest, AnchorScrollConvertToLayerCoords) {
+  // CSS anchor positioning doesn't work with legacy layout
+  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
+    return;
+
+  ScopedCSSAnchorPositioningForTest enabled_scope(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body {
+        margin: 0;
+      }
+
+      #cb {
+        position: relative;
+        overflow: hidden;
+        width: min-content;
+        height: min-content;
+      }
+
+      #scroller {
+        overflow: scroll;
+        width: 300px;
+        height: 300px;
+      }
+
+      #anchor {
+        anchor-name: --anchor;
+        margin-top: 100px;
+        margin-left: 500px;
+        margin-right: 500px;
+        width: 50px;
+        height: 50px;
+      }
+
+      #anchored {
+        position: absolute;
+        left: anchor(--anchor left);
+        bottom: anchor(--anchor top);
+        width: 50px;
+        height: 50px;
+        anchor-scroll: --anchor;
+      }
+    </style>
+    <div id=cb>
+      <div id=scroller>
+        <div id=anchor></div>
+      </div>
+      <div id=anchored></div>
+   </div>
+  )HTML");
+
+  PaintLayer* anchored_layer = GetPaintLayerByElementId("anchored");
+
+  {
+    PhysicalOffset offset;
+    anchored_layer->ConvertToLayerCoords(nullptr, offset);
+    EXPECT_EQ(PhysicalOffset(500, 50), offset);
+  }
+
+  auto* scrollable_area =
+      GetPaintLayerByElementId("scroller")->GetScrollableArea();
+  scrollable_area->ScrollToAbsolutePosition(gfx::PointF(400, 0));
+  UpdateAllLifecyclePhasesForTest();
+
+  {
+    PhysicalOffset offset;
+    anchored_layer->ConvertToLayerCoords(nullptr, offset);
+    EXPECT_EQ(PhysicalOffset(100, 50), offset);
+  }
+}
+
 }  // namespace blink
