@@ -78,12 +78,13 @@ public class BrandingControllerUnitTest {
         BrandingController.BRANDING_CADENCE_MS.setForTesting(TEST_BRANDING_CADENCE);
         BrandingController.MAX_BLANK_TOOLBAR_TIMEOUT_MS.setForTesting(
                 TEST_MAX_TOOLBAR_BLANK_TIMEOUT);
+        BrandingController.USE_TEMPORARY_STORAGE.setForTesting(false);
     }
 
     @After
     public void tearDown() {
         mFakeTimeTestRule.resetTimes();
-        SharedPreferencesBrandingTimeStorage.getInstance().resetForTesting();
+        SharedPreferencesBrandingTimeStorage.getInstance().resetSharedPref();
         ShadowPostTask.reset();
         ShadowSystemClock.reset();
         ShadowToast.reset();
@@ -178,6 +179,38 @@ public class BrandingControllerUnitTest {
         // BrandingController.TOTAL_BRANDING_DELAY_MS - TEST_MAX_TOOLBAR_BLANK_TIMEOUT = 800
         assertEquals(
                 "Toast duration is different.", 800, ShadowToast.getLatestToast().getDuration());
+    }
+
+    @Test
+    public void testInMemoryStorage() {
+        BrandingController.USE_TEMPORARY_STORAGE.setForTesting(true);
+
+        new BrandingCheckTester()
+                .newBrandingController()
+                .idleMainLooper()
+                .onToolbarInitialized()
+                .assertBrandingDecisionMade(BrandingDecision.TOAST)
+                .assertShownBrandingLocationBar(false)
+                .advanceMills(TEST_BRANDING_CADENCE - 1)
+                .newBrandingController()
+                .idleMainLooper()
+                .onToolbarInitialized()
+                .assertBrandingDecisionMade(BrandingDecision.NONE)
+                // Advance one more bit so branding will show again with toolbar.
+                .advanceMills(1)
+                .newBrandingController()
+                .idleMainLooper()
+                .onToolbarInitialized()
+                .assertBrandingDecisionMade(BrandingDecision.TOOLBAR);
+
+        SharedPreferencesBrandingTimeStorage.resetInstanceForTesting();
+
+        // After reset storage instance, decision should be in use again.
+        new BrandingCheckTester()
+                .newBrandingController()
+                .idleMainLooper()
+                .onToolbarInitialized()
+                .assertBrandingDecisionMade(BrandingDecision.TOAST);
     }
 
     class BrandingCheckTester {
