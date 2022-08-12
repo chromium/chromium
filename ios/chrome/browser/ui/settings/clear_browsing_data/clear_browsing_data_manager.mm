@@ -412,10 +412,10 @@ static NSDictionary* imageNamesByItemTypes = @{
         forSectionWithIdentifier:SectionIdentifierGoogleAccount];
   }
 
-  [model addSectionWithIdentifier:SectionIdentifierSavedSiteData];
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForBrowserState(self.browserState);
   if (!base::FeatureList::IsEnabled(switches::kEnableCbdSignOut)) {
+    [model addSectionWithIdentifier:SectionIdentifierSavedSiteData];
     if (syncService && syncService->IsSyncFeatureActive()) {
       [model setFooter:[self footerClearSyncAndSavedSiteDataItem]
           forSectionWithIdentifier:SectionIdentifierSavedSiteData];
@@ -424,6 +424,7 @@ static NSDictionary* imageNamesByItemTypes = @{
           forSectionWithIdentifier:SectionIdentifierSavedSiteData];
     }
   } else if (loggedIn) {
+    [model addSectionWithIdentifier:SectionIdentifierSavedSiteData];
     [model setFooter:[self signOutFooterItem]
         forSectionWithIdentifier:SectionIdentifierSavedSiteData];
   }
