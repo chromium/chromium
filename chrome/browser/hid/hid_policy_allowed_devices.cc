@@ -120,14 +120,12 @@ void HidPolicyAllowedDevices::LoadAllowDevicesForUrlsPolicy() {
   device_policy_.clear();
   vendor_policy_.clear();
 
-  const auto* pref_value = pref_change_registrar_.prefs()->Get(
+  const auto& pref_value = pref_change_registrar_.prefs()->GetValueList(
       prefs::kManagedWebHidAllowDevicesForUrls);
-  if (!pref_value)
-    return;
 
   // The pref value has already been validated by the policy handler, so it is
   // safe to assume that |pref_value| follows the policy template.
-  for (const auto& item : pref_value->GetListDeprecated()) {
+  for (const auto& item : pref_value) {
     const base::Value* urls_value = item.FindKey(kPrefUrlsKey);
     DCHECK(urls_value);
 
