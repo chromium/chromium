@@ -34,8 +34,6 @@ source_set("generator") {
 
   if (is_android) {
     sources += [
-      "android/local_media_data_source_factory.cc",
-      "android/local_media_data_source_factory.h",
       "android/stats.cc",
       "android/stats.h",
       "android/thumbnail_generator.cc",

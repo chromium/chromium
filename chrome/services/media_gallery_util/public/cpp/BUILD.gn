@@ -6,6 +6,8 @@ import("//media/media_options.gni")
 
 source_set("cpp") {
   sources = [
+    "local_media_data_source_factory.cc",
+    "local_media_data_source_factory.h",
     "media_parser_provider.cc",
     "media_parser_provider.h",
     "safe_audio_video_checker.cc",
@@ -15,6 +17,7 @@ source_set("cpp") {
   ]
 
   deps = [
+    "//base",
     "//chrome/app:generated_resources",
     "//chrome/common",
     "//content/public/browser",

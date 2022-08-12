@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/thumbnail/generator/android/local_media_data_source_factory.h"
+#include "chrome/services/media_gallery_util/public/cpp/local_media_data_source_factory.h"
 
 #include <vector>
 
-#include "base/android/content_uri_utils.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/files/file.h"
@@ -15,6 +14,10 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/content_uri_utils.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace {
 
