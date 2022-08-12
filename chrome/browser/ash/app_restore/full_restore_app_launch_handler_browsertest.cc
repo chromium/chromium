@@ -250,8 +250,6 @@ void ClickSaveDeskAsTemplateButton() {
 
 void ClickTemplateItem(int index) {
   ClickButton(ash::GetTemplateItemButton(/*index=*/0));
-  // We need to wait for the template to be fetched from the model.
-  ash::WaitForDesksTemplatesUI();
 }
 
 }  // namespace

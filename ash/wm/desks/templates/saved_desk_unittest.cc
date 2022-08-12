@@ -1288,7 +1288,6 @@ TEST_F(SavedDeskTest, LaunchTemplate) {
 
   // Click on the grid item to launch the template.
   ClickOnView(GetItemViewFromTemplatesGrid(/*grid_item_index=*/0));
-  WaitForDesksTemplatesUI();
 
   // Verify that we have created and activated a new desk.
   EXPECT_EQ(2ul, desks_controller->desks().size());
@@ -1305,7 +1304,6 @@ TEST_F(SavedDeskTest, LaunchTemplate) {
   SavedDeskItemView* item_view = GetItemViewFromTemplatesGrid(
       /*grid_item_index=*/0);
   ClickOnView(SavedDeskItemViewTestApi(item_view).launch_button());
-  WaitForDesksTemplatesUI();
 
   EXPECT_EQ(3ul, desks_controller->desks().size());
   EXPECT_EQ(2, desks_controller->GetActiveDeskIndex());
@@ -1327,7 +1325,6 @@ TEST_F(SavedDeskTest, LaunchTemplateNudgesNewDeskName) {
   SavedDeskItemView* item_view = GetItemViewFromTemplatesGrid(
       /*grid_item_index=*/0);
   ClickOnView(SavedDeskItemViewTestApi(item_view).launch_button());
-  WaitForDesksTemplatesUI();
 
   // Verify that we have created and activated a new desk.
   EXPECT_EQ(2ul, desks_controller->desks().size());
@@ -2287,8 +2284,6 @@ TEST_F(SavedDeskTest, LaunchTemplateWithMinimizedOverviewWindow) {
   // Click on the grid item to launch the template. We should remain in overview
   // and there should be no crash.
   ClickOnView(GetItemViewFromTemplatesGrid(/*grid_item_index=*/0));
-  // Launching a template fetches it from the desk model asynchronously.
-  WaitForDesksTemplatesUI();
 
   EXPECT_TRUE(InOverviewSession());
 }
@@ -2314,8 +2309,6 @@ TEST_F(SavedDeskTest, LaunchTemplateAfterClosingActiveDesk) {
 
   // Click on the grid item to launch the template. There should be no crash.
   ClickOnView(GetItemViewFromTemplatesGrid(/*grid_item_index=*/0));
-  // Launching a template fetches it from the desk model asynchronously.
-  WaitForDesksTemplatesUI();
 
   EXPECT_TRUE(InOverviewSession());
 }
@@ -2343,7 +2336,6 @@ TEST_F(SavedDeskTest, HideAndShowTemplatesGridWithoutLeavingOverview) {
 
   // Click on the grid item to launch the template.
   ClickOnView(GetItemViewFromTemplatesGrid(/*grid_item_index=*/0));
-  WaitForDesksTemplatesUI();
   EXPECT_TRUE(InOverviewSession());
 
   // Go back to the library view and verify that we have the same amount of
@@ -3052,7 +3044,6 @@ TEST_F(SavedDeskTest, LaunchTemplateRecordsMetric) {
 
   // Click on the grid item to launch the template.
   ClickOnView(GetItemViewFromTemplatesGrid(/*grid_item_index=*/0));
-  WaitForDesksTemplatesUI();
 
   // Verify that we have created and activated a new desk.
   EXPECT_EQ(2ul, desks_controller->desks().size());
@@ -3398,7 +3389,6 @@ TEST_F(SavedDeskTest, WindowOpacityResetAfterLeavingOverview) {
 
   // Launch a new desk.
   ClickOnView(GetItemViewFromTemplatesGrid(/*grid_item_index=*/0));
-  WaitForDesksTemplatesUI();
 
   views::Widget* library_widget =
       GetOverviewGridList()[0]->saved_desk_library_widget();
@@ -3531,7 +3521,6 @@ TEST_F(SavedDeskTest, SnapWindowTest) {
   ASSERT_EQ(1ul, GetAllEntries().size());
 
   ClickOnView(GetItemViewFromTemplatesGrid(/*grid_item_index=*/0));
-  WaitForDesksTemplatesUI();
 
   // Test that overview is still active and there is no crash.
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
@@ -3680,7 +3669,6 @@ TEST_F(SavedDeskTest, VisibleOnAllDesksWindowShownProperly) {
       GetItemViewFromTemplatesGrid(/*grid_item_index=*/0);
   DCHECK(template_item);
   ClickOnView(template_item);
-  WaitForDesksTemplatesUI();
   ASSERT_EQ(2, controller->GetNumberOfDesks());
 
   // The visible on all desks window belongs to the active desk, and has an
@@ -4272,7 +4260,6 @@ TEST_F(DeskSaveAndRecallTest, RecallSavedDesk) {
       GetItemViewFromTemplatesGrid(/*grid_item_index=*/0);
   ASSERT_TRUE(template_item);
   ClickOnView(template_item);
-  WaitForDesksTemplatesUI();
 
   // Verify that a new desk has been created and that it has the name of the
   // saved desk.

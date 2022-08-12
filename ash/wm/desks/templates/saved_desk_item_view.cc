@@ -737,8 +737,8 @@ void SavedDeskItemView::MaybeLaunchTemplate(bool should_delay) {
     delay = base::Seconds(3);
 #endif
 
-  saved_desk_util::GetSavedDeskPresenter()->LaunchDeskTemplate(
-      desk_template_->uuid().AsLowercaseString(), delay,
+  saved_desk_util::GetSavedDeskPresenter()->LaunchSavedDesk(
+      desk_template_->Clone(), delay,
       GetWidget()->GetNativeWindow()->GetRootWindow());
 }
 

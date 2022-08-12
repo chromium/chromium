@@ -65,11 +65,11 @@ class ASH_EXPORT SavedDeskPresenter : desks_storage::DeskModelObserver {
   void DeleteEntry(const std::string& uuid,
                    absl::optional<DeskTemplateType> record_for_type);
 
-  // Launches the desk template with 'template_uuid' as a new desk. `delay` is
-  // the time between each app launch, used for debugging.
-  void LaunchDeskTemplate(const std::string& template_uuid,
-                          base::TimeDelta delay,
-                          aura::Window* root_window);
+  // Launches `saved_desk` into a new desk. `delay` is the time between each app
+  // launch, used for debugging.
+  void LaunchSavedDesk(std::unique_ptr<DeskTemplate> saved_desk,
+                       base::TimeDelta delay,
+                       aura::Window* root_window);
 
   // Calls the DeskModel to capture the active desk as a `template_type`, with a
   // callback to `OnAddOrUpdateEntry`. If there are unsupported apps on the
@@ -109,14 +109,6 @@ class ASH_EXPORT SavedDeskPresenter : desks_storage::DeskModelObserver {
   void OnDeleteEntry(const std::string& uuid,
                      absl::optional<DeskTemplateType> record_for_type,
                      desks_storage::DeskModel::DeleteEntryStatus status);
-
-  // Launches DeskTemplate after retrieval from storage.
-  void OnGetTemplateForDeskLaunch(
-      base::Time time_launch_started,
-      base::TimeDelta delay,
-      aura::Window* const root_window,
-      desks_storage::DeskModel::GetEntryByUuidStatus status,
-      std::unique_ptr<DeskTemplate> entry);
 
   // Callback after creating a new desk for launching a template.
   void OnNewDeskCreatedForTemplate(std::unique_ptr<DeskTemplate> desk_template,

@@ -364,9 +364,10 @@ void SavedDeskPresenter::DeleteEntry(
                      weak_ptr_factory_.GetWeakPtr(), uuid, record_for_type));
 }
 
-void SavedDeskPresenter::LaunchDeskTemplate(const std::string& template_uuid,
-                                            base::TimeDelta delay,
-                                            aura::Window* root_window) {
+void SavedDeskPresenter::LaunchSavedDesk(
+    std::unique_ptr<DeskTemplate> saved_desk,
+    base::TimeDelta delay,
+    aura::Window* root_window) {
   // If we are at the max desk limit (currently is 8), a new desk
   // cannot be created, and a toast will be displayed to the user.
   if (!DesksController::Get()->CanCreateDesks()) {
@@ -381,13 +382,21 @@ void SavedDeskPresenter::LaunchDeskTemplate(const std::string& template_uuid,
     return;
   }
 
-  weak_ptr_factory_.InvalidateWeakPtrs();
+  // Copy fields we need from `desk_template` since we're about to move it. Also
+  // be very careful about doing anything after `CreateNewDeskForTemplate` since
+  // it may exit overview (and thus destroy `this`).
+  // See https://crbug.com/1284138.
+  const auto saved_desk_name = saved_desk->template_name();
+  const auto saved_desk_type = saved_desk->type();
+  const bool activate_desk = saved_desk_type == DeskTemplateType::kTemplate;
+  DesksController::Get()->CreateNewDeskForTemplate(
+      activate_desk,
+      base::BindOnce(&SavedDeskPresenter::OnNewDeskCreatedForTemplate,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(saved_desk),
+                     base::Time::Now(), delay, root_window),
+      saved_desk_name);
 
-  GetDeskModel()->GetEntryByUUID(
-      template_uuid,
-      base::BindOnce(&SavedDeskPresenter::OnGetTemplateForDeskLaunch,
-                     weak_ptr_factory_.GetWeakPtr(), base::Time::Now(), delay,
-                     root_window));
+  RecordLaunchSavedDeskHistogram(saved_desk_type);
 }
 
 void SavedDeskPresenter::MaybeSaveActiveDeskAsTemplate(
@@ -503,36 +512,6 @@ void SavedDeskPresenter::OnDeleteEntry(
   }
 
   RemoveUIEntries({uuid});
-}
-
-void SavedDeskPresenter::OnGetTemplateForDeskLaunch(
-    base::Time time_launch_started,
-    base::TimeDelta delay,
-    aura::Window* root_window,
-    desks_storage::DeskModel::GetEntryByUuidStatus status,
-    std::unique_ptr<DeskTemplate> entry) {
-  if (status != desks_storage::DeskModel::GetEntryByUuidStatus::kOk)
-    return;
-
-  // `CreateAndActivateNewDeskForTemplate` may destroy `this`. Copy the member
-  // variables to a local to prevent UAF. See https://crbug.com/1284138.
-  base::OnceClosure on_update_ui_closure_for_testing =
-      std::move(on_update_ui_closure_for_testing_);
-
-  const auto saved_desk_name = entry->template_name();
-  const auto saved_desk_type = entry->type();
-  const bool activate_desk = saved_desk_type == DeskTemplateType::kTemplate;
-  DesksController::Get()->CreateNewDeskForTemplate(
-      activate_desk,
-      base::BindOnce(&SavedDeskPresenter::OnNewDeskCreatedForTemplate,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(entry),
-                     time_launch_started, delay, root_window),
-      saved_desk_name);
-
-  if (on_update_ui_closure_for_testing)
-    std::move(on_update_ui_closure_for_testing).Run();
-
-  RecordLaunchSavedDeskHistogram(saved_desk_type);
 }
 
 void SavedDeskPresenter::OnNewDeskCreatedForTemplate(

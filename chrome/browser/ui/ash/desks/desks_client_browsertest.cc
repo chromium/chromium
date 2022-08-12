@@ -313,9 +313,6 @@ void ClickFirstTemplateItem() {
   views::Button* template_item = ash::GetTemplateItemButton(/*index=*/0);
   DCHECK(template_item);
   ClickButton(template_item);
-
-  // We need to wait for the template to be fetched from the model.
-  ash::WaitForDesksTemplatesUI();
 }
 
 const std::vector<const ash::DeskTemplate*> GetAllEntries() {
