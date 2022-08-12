@@ -165,6 +165,10 @@
   }
 
   [self updateNTPLayout];
+
+  if (self.isFeedVisible) {
+    [self updateFeedInsetsForMinimumHeight];
+  }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
