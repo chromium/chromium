@@ -95,6 +95,7 @@ public class ExternalNavigationHandlerTest {
     private static final String YOUTUBE_URL = "http://youtube.com/";
     private static final String YOUTUBE_MOBILE_URL = "http://m.youtube.com";
     private static final String YOUTUBE_PACKAGE_NAME = "youtube";
+    private static final String OTHER_BROWSER_PACKAGE = "com.other.browser";
 
     private static final String SEARCH_RESULT_URL_FOR_TOM_HANKS =
             "https://www.google.com/search?q=tom+hanks";
@@ -2438,19 +2439,36 @@ public class ExternalNavigationHandlerTest {
 
     @Test
     @SmallTest
-    public void testIntentToOtherBrowser() {
-        // This will create a non-specialized ResolveInfo for the target package.
-        mDelegate.setCanResolveActivityForExternalSchemes(true);
+    public void testUrlIntentToOtherBrowser() {
+        mDelegate.setResolvesToOtherBrowser(true);
 
-        String intent = "intent://example.com#Intent;scheme=https;package=com.other.browser;end";
+        String unsafeUrls[] = new String[] {
+                "intent:#Intent;S.EXTRA_HIDDEN_URL=encodedUrl;action=CUSTOM.ACTION;end",
+                "intent:#Intent;S.EXTRA_HIDDEN_URL=encodedUrl;end",
+                "intent://example.com#Intent;scheme=https;action=CUSTOM.ACTION;end",
+                "intent://example.com#Intent;scheme=https;end", "intent:example.com#Intent;end"};
+        for (String url : unsafeUrls) {
+            checkUrl(url)
+                    .withPageTransition(PageTransition.LINK)
+                    .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT,
+                            START_OTHER_ACTIVITY);
+            Assert.assertTrue(mUrlHandler.mRequiresIntentChooser);
+        }
+    }
 
-        // This is a limitation of this testing harness, which doesn't get past
-        // startActivityIfNeeded as that requires an Activity context. This functionality is
-        // tested in ExternalNavigationDelegateImplTest.
+    @Test
+    @SmallTest
+    public void testSafeIntentToOtherBrowser() throws Exception {
+        mDelegate.setResolvesToOtherBrowser(true);
+
+        String intent =
+                "intent:#Intent;action=ACTION.PROMO;package=" + OTHER_BROWSER_PACKAGE + ";end";
+
         checkUrl(intent)
                 .withPageTransition(PageTransition.LINK)
                 .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT,
                         START_OTHER_ACTIVITY);
+        Assert.assertFalse(mUrlHandler.mRequiresIntentChooser);
     }
 
     @Test
@@ -2591,6 +2609,7 @@ public class ExternalNavigationHandlerTest {
         public boolean mResolveInfoContainsSelf;
         public Intent mStartActivityIntent;
         public boolean mCalledWithProxy;
+        public boolean mRequiresIntentChooser;
         private boolean mSendIntentsForReal;
 
         public ExternalNavigationHandlerForTesting(ExternalNavigationDelegate delegate) {
@@ -2674,6 +2693,7 @@ public class ExternalNavigationHandlerTest {
                 GURL intentDataUrl, GURL referrerUrl) {
             mStartActivityIntent = intent;
             mCalledWithProxy = proxy;
+            mRequiresIntentChooser = requiresIntentChooser;
             if (mSendIntentsForReal) {
                 return super.startActivity(intent, proxy, requiresIntentChooser, resolvingInfos,
                         resolveActivity, browserFallbackUrl, intentDataUrl, referrerUrl);
@@ -2705,7 +2725,6 @@ public class ExternalNavigationHandlerTest {
                                 intentActivity.packageName(), intentActivity));
                     }
                 }
-                if (!list.isEmpty()) return list;
 
                 String schemeString = intent.getScheme();
                 boolean isMarketScheme = schemeString != null && schemeString.startsWith("market");
@@ -2720,12 +2739,18 @@ public class ExternalNavigationHandlerTest {
                 // Scheme-less intents (eg. Action-based intents like opening Settings).
                 list.add(newResolveInfo("package"));
             }
+            if (mResolvesToOtherBrowser) {
+                list.add(newResolveInfo(OTHER_BROWSER_PACKAGE));
+            }
             return list;
         }
 
         public ResolveInfo resolveActivity(Intent intent) {
             if (mWillResolveToDisambiguationDialog) {
                 return newResolveInfo("android.disambiguation.dialog");
+            }
+            if (mResolvesToOtherBrowser) {
+                return newResolveInfo(OTHER_BROWSER_PACKAGE);
             }
 
             List<ResolveInfo> list = queryIntentActivities(intent);
@@ -2986,6 +3011,10 @@ public class ExternalNavigationHandlerTest {
             mHandlesInstantAppLaunchingInternally = value;
         }
 
+        public void setResolvesToOtherBrowser(boolean value) {
+            mResolvesToOtherBrowser = value;
+        }
+
         public boolean startIncognitoIntentCalled;
         public boolean maybeSetRequestMetadataCalled;
         public Callback<Boolean> incognitoDialogUserDecisionCallback;
@@ -3011,6 +3040,7 @@ public class ExternalNavigationHandlerTest {
         private Context mContext;
         private boolean mShouldEmbedderInitiatedNavigationsStayInBrowser = true;
         private boolean mHandlesInstantAppLaunchingInternally = true;
+        private boolean mResolvesToOtherBrowser;
     }
 
     private void checkIntentSanity(Intent intent, String name) {

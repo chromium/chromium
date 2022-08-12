@@ -919,18 +919,16 @@ public class ExternalNavigationHandler {
     }
 
     /**
-     * Returns true if an intent is an ACTION_VIEW intent targeting browsers or browser-like apps
+     * Returns true if the intent is an insecure intent targeting browsers or browser-like apps
      * (excluding the embedding app).
      */
-    private boolean isViewIntentToOtherBrowser(Intent targetIntent,
+    private boolean isInsecureIntentToOtherBrowser(Intent targetIntent,
             QueryIntentActivitiesSupplier resolveInfos, boolean isIntentWithSupportedProtocol,
-            ResolveActivitySupplier resolveActivity) {
-        // Note that up until at least Android S, an empty action will match any intent filter
-        // with with an action specified. If an intent selector is specified, then don't trust the
-        // action on the intent.
-        if (!TextUtils.isEmpty(targetIntent.getAction())
-                && !targetIntent.getAction().equals(Intent.ACTION_VIEW)
-                && targetIntent.getSelector() == null) {
+            ResolveActivitySupplier resolveActivity, boolean intentHasExtras) {
+        // If an intent has Extras or a data URI it may be used to launch arbitrary URIs in insecure
+        // browsers.
+        if (!intentHasExtras
+                && (targetIntent.getData() == null || targetIntent.getData().equals(Uri.EMPTY))) {
             return false;
         }
 
@@ -951,8 +949,9 @@ public class ExternalNavigationHandler {
         }
         if (!matchesOtherPackage) return false;
 
-        // Querying for browser packages if the intent doesn't obviously match or not
-        // match a browser. This will catch custom URL schemes like googlechrome://.
+        // Querying for browser packages will catch Intents that use custom URL schemes like
+        // googlechrome:// or are otherwise not considered by Android to be Web intents but can
+        // still load arbitrary URLs in a browser.
         Set<String> browserPackages = getInstalledBrowserPackages();
 
         boolean matchesBrowser = false;
@@ -1416,6 +1415,8 @@ public class ExternalNavigationHandler {
             return OverrideUrlLoadingResult.forNoOverride();
         }
 
+        boolean intentHasExtras =
+                targetIntent.getExtras() != null && !targetIntent.getExtras().isEmpty();
         boolean shouldProxyForInstantApps = mDelegate.handlesInstantAppLaunchingInternally()
                 && isIntentToInstantApp(targetIntent) && isSerpReferrer();
         prepareExternalIntent(
@@ -1443,8 +1444,8 @@ public class ExternalNavigationHandler {
         ResolveActivitySupplier resolveActivity = new ResolveActivitySupplier(targetIntent);
         boolean requiresIntentChooser = false;
         if (!mDelegate.maybeSetTargetPackage(targetIntent)) {
-            requiresIntentChooser = isViewIntentToOtherBrowser(
-                    targetIntent, resolvingInfos, isIntentWithSupportedProtocol, resolveActivity);
+            requiresIntentChooser = isInsecureIntentToOtherBrowser(targetIntent, resolvingInfos,
+                    isIntentWithSupportedProtocol, resolveActivity, intentHasExtras);
         }
 
         if (shouldAvoidShowingDisambiguationPrompt(
