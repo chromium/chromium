@@ -42,9 +42,14 @@ BrandcodedDefaultSettings::GetSearchProviderOverrides() const {
 }
 
 bool BrandcodedDefaultSettings::GetHomepage(std::string* homepage) const {
-  return master_dictionary_ &&
-         master_dictionary_->GetString(prefs::kHomePage, homepage) &&
-         !homepage->empty();
+  if (!master_dictionary_)
+    return false;
+  const std::string* val =
+      master_dictionary_->GetDict().FindString(prefs::kHomePage);
+  if (!val)
+    return false;
+  *homepage = *val;
+  return !homepage->empty();
 }
 
 absl::optional<bool> BrandcodedDefaultSettings::GetHomepageIsNewTab() const {
