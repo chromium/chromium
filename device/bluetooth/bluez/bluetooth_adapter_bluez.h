@@ -386,6 +386,14 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
                         ConfirmationCallback callback) override;
   void Cancel() override;
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // Called by dbus:: on completion of the D-Bus method call to update
+  // bluetooth devcoredump state.
+  void OnSetDevCoredumpSuccess();
+  void OnSetDevCoredumpError(const std::string& error_name,
+                             const std::string& error_message);
+#endif // BUILDFLAG(IS_CHROMEOS)
+
   // Called by dbus:: on completion of the D-Bus method call to enable LL
   // privacy.
   void OnSetLLPrivacySuccess();
