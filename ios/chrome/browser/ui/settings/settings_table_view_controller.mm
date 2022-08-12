@@ -279,11 +279,11 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   BOOL _settingsHasBeenDismissed;
 }
 
-// The item related to the switch for the show suggestions setting.
-@property(nonatomic, strong, readonly) TableViewSwitchItem* articlesForYouItem;
-// The item related to the enterprise managed show suggestions setting.
+// The item related to the switch for the show feed settings.
+@property(nonatomic, strong, readonly) TableViewSwitchItem* feedSettingsItem;
+// The item related to the enterprise managed show feed settings.
 @property(nonatomic, strong, readonly)
-    TableViewInfoButtonItem* managedArticlesForYouItem;
+    TableViewInfoButtonItem* managedFeedSettingsItem;
 
 @property(nonatomic, readonly, weak)
     id<ApplicationCommands, BrowserCommands, BrowsingDataCommands>
@@ -303,8 +303,8 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 
 @implementation SettingsTableViewController
 @synthesize dispatcher = _dispatcher;
-@synthesize managedArticlesForYouItem = _managedArticlesForYouItem;
-@synthesize articlesForYouItem = _articlesForYouItem;
+@synthesize managedFeedSettingsItem = _managedFeedSettingsItem;
+@synthesize feedSettingsItem = _feedSettingsItem;
 
 #pragma mark Initialization
 
@@ -475,11 +475,11 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 
   if (!IsFeedAblationEnabled()) {
     if ([_contentSuggestionPolicyEnabled value]) {
-      [model addItem:self.articlesForYouItem
+      [model addItem:self.feedSettingsItem
           toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
 
     } else {
-      [model addItem:self.managedArticlesForYouItem
+      [model addItem:self.managedFeedSettingsItem
           toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
     }
   }
@@ -532,6 +532,19 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   // index 0.
   [model insertSectionWithIdentifier:SettingsSectionIdentifierSignIn atIndex:0];
   [self addPromoToSigninSection];
+}
+
+// Helper method to update the Discover Section cells when called.
+- (void)updateDiscoverSection {
+  // Do not use self to access _managedFeedSettingsItem, as it is lazy loaded
+  // and will create a new item and the following will always be true.
+  if (_managedFeedSettingsItem) {
+    DCHECK(!_feedSettingsItem);
+    self.managedFeedSettingsItem.text = [self feedItemTitle];
+  } else {
+    DCHECK(_feedSettingsItem);
+    self.feedSettingsItem.text = [self feedItemTitle];
+  }
 }
 
 // Adds the identity promo to promote the sign-in or sync state.
@@ -1058,57 +1071,39 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   return showMemoryDebugSwitchItem;
 }
 
-- (TableViewSwitchItem*)articlesForYouItem {
-  if (!_articlesForYouItem) {
-    AuthenticationService* authService =
-        AuthenticationServiceFactory::GetForBrowserState(
-            _browser->GetBrowserState());
-    BOOL isSignedIn =
-        authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
+- (TableViewSwitchItem*)feedSettingsItem {
+  if (!_feedSettingsItem) {
+    NSString* settingTitle = [self feedItemTitle];
 
-    NSString* settingTitle =
-        (isSignedIn && IsWebChannelsEnabled())
-            ? l10n_util::GetNSString(IDS_IOS_DISCOVER_AND_FOLLOWING_FEED_TITLE)
-            : l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_TITLE);
-
-    _articlesForYouItem =
+    _feedSettingsItem =
         [self switchItemWithType:SettingsItemTypeArticlesForYou
                               title:settingTitle
                       iconImageName:kSettingsArticleSuggestionsImageName
                     withDefaultsKey:nil
             accessibilityIdentifier:kSettingsArticleSuggestionsCellId];
-    _articlesForYouItem.on = [_articlesEnabled value];
+    _feedSettingsItem.on = [_articlesEnabled value];
   }
-  return _articlesForYouItem;
+  return _feedSettingsItem;
 }
 
-- (TableViewInfoButtonItem*)managedArticlesForYouItem {
-  if (!_managedArticlesForYouItem) {
-    AuthenticationService* authService =
-        AuthenticationServiceFactory::GetForBrowserState(
-            _browser->GetBrowserState());
-    BOOL isSignedIn =
-        authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
+- (TableViewInfoButtonItem*)managedFeedSettingsItem {
+  if (!_managedFeedSettingsItem) {
+    NSString* settingTitle = [self feedItemTitle];
 
-    NSString* settingTitle =
-        (isSignedIn && IsWebChannelsEnabled())
-            ? l10n_util::GetNSString(IDS_IOS_DISCOVER_AND_FOLLOWING_FEED_TITLE)
-            : l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_TITLE);
-
-    _managedArticlesForYouItem = [[TableViewInfoButtonItem alloc]
+    _managedFeedSettingsItem = [[TableViewInfoButtonItem alloc]
         initWithType:SettingsItemTypeManagedArticlesForYou];
-    _managedArticlesForYouItem.image =
+    _managedFeedSettingsItem.image =
         [UIImage imageNamed:kSettingsArticleSuggestionsImageName];
-    _managedArticlesForYouItem.text = settingTitle;
-    _managedArticlesForYouItem.statusText =
+    _managedFeedSettingsItem.text = settingTitle;
+    _managedFeedSettingsItem.statusText =
         l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
-    _managedArticlesForYouItem.accessibilityIdentifier =
+    _managedFeedSettingsItem.accessibilityIdentifier =
         kSettingsArticleSuggestionsCellId;
-    _managedArticlesForYouItem.accessibilityHint = l10n_util::GetNSString(
+    _managedFeedSettingsItem.accessibilityHint = l10n_util::GetNSString(
         IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT);
   }
 
-  return _managedArticlesForYouItem;
+  return _managedFeedSettingsItem;
 }
 
 #if BUILDFLAG(CHROMIUM_BRANDING) && !defined(NDEBUG)
@@ -1780,6 +1775,18 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   return base::SysUTF8ToNSString(*status);
 }
 
+// Returns the appropriate text to update the title for the feed item.
+- (NSString*)feedItemTitle {
+  AuthenticationService* authService =
+      AuthenticationServiceFactory::GetForBrowserState(
+          _browser->GetBrowserState());
+  BOOL isSignedIn =
+      authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
+  return (isSignedIn && IsWebChannelsEnabled())
+             ? l10n_util::GetNSString(IDS_IOS_DISCOVER_AND_FOLLOWING_FEED_TITLE)
+             : l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_TITLE);
+}
+
 #pragma mark - SigninPresenter
 
 - (void)showSignin:(ShowSigninCommand*)command {
@@ -1875,6 +1882,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 
 - (void)onSyncStateChanged {
   [self updateSigninSection];
+  [self updateDiscoverSection];
   // The Identity section may be added or removed depending on sign-in is
   // allowed. Reload all sections in the model to account for the change.
   [self.tableView reloadData];
@@ -1913,32 +1921,33 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
     [self reconfigureCellsForItems:@[ _showMemoryDebugToolsItem ]];
   } else if (observableBoolean == _allowChromeSigninPreference) {
     [self updateSigninSection];
+    [self updateDiscoverSection];
     // The Identity section may be added or removed depending on sign-in is
     // allowed. Reload all sections in the model to account for the change.
     [self.tableView reloadData];
   } else if (observableBoolean == _articlesEnabled) {
-    self.articlesForYouItem.on = [_articlesEnabled value];
-    [self reconfigureCellsForItems:@[ self.articlesForYouItem ]];
+    self.feedSettingsItem.on = [_articlesEnabled value];
+    [self reconfigureCellsForItems:@[ self.feedSettingsItem ]];
   } else if (observableBoolean == _contentSuggestionPolicyEnabled) {
     NSIndexPath* itemIndexPath;
     NSInteger itemTypeToRemove;
     TableViewItem* itemToAdd;
     if ([_contentSuggestionPolicyEnabled value]) {
-      if (![self.tableViewModel hasItem:self.managedArticlesForYouItem]) {
+      if (![self.tableViewModel hasItem:self.managedFeedSettingsItem]) {
         return;
       }
       itemIndexPath =
-          [self.tableViewModel indexPathForItem:self.managedArticlesForYouItem];
+          [self.tableViewModel indexPathForItem:self.managedFeedSettingsItem];
       itemTypeToRemove = SettingsItemTypeManagedArticlesForYou;
-      itemToAdd = self.articlesForYouItem;
+      itemToAdd = self.feedSettingsItem;
     } else {
-      if (![self.tableViewModel hasItem:self.articlesForYouItem]) {
+      if (![self.tableViewModel hasItem:self.feedSettingsItem]) {
         return;
       }
       itemIndexPath =
-          [self.tableViewModel indexPathForItem:self.articlesForYouItem];
+          [self.tableViewModel indexPathForItem:self.feedSettingsItem];
       itemTypeToRemove = SettingsItemTypeArticlesForYou;
-      itemToAdd = self.managedArticlesForYouItem;
+      itemToAdd = self.managedFeedSettingsItem;
     }
     [self.tableViewModel removeItemWithType:itemTypeToRemove
                   fromSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
