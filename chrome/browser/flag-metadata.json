@@ -2700,11 +2700,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "enable-prefetch-proxy",
-    "owners": [ "curranmax", "chrome-brapp-loading@google.com" ],
-    "expiry_milestone": 105
-  },
-  {
     "name": "enable-preinstalled-web-app-duplication-fixer",
     "owners": [ "alancutter" ],
     "expiry_milestone": 110

@@ -4323,13 +4323,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebViewTagSiteIsolationDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kSiteIsolationForGuests)},
 #endif
-    {"enable-prefetch-proxy",
-     flag_descriptions::kEnablePrivatePrefetchProxyName,
-     flag_descriptions::kEnablePrivatePrefetchProxyDescription, kOsAll,
-     SINGLE_VALUE_TYPE_AND_VALUE(
-         switches::kEnableFeatures,
-         "IsolatePrerenders:allow_all_domains/true/max_srp_prefetches/-1/"
-         "use_speculation_rules/true,SpeculationRulesPrefetchProxy")},
     {"allow-insecure-localhost", flag_descriptions::kAllowInsecureLocalhostName,
      flag_descriptions::kAllowInsecureLocalhostDescription, kOsAll,
      SINGLE_VALUE_TYPE(switches::kAllowInsecureLocalhost)},

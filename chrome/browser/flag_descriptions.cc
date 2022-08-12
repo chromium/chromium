@@ -1083,13 +1083,6 @@ const char kEnableIsolatedWebAppsDescription[] =
     "Enables experimental support for isolated web apps. "
     "See https://github.com/reillyeon/isolated-web-apps for more information.";
 
-const char kEnablePrivatePrefetchProxyName[] =
-    "Enables prefetching using the prefetch proxy";
-const char kEnablePrivatePrefetchProxyDescription[] =
-    "Enables for prefetches to be made using the prefetch proxy when specified "
-    "via the speculation rules API. When enabled, will allow prefetches from "
-    "all domains without any limit on the number of prefetches.";
-
 const char kEnableRgbKeyboardName[] = "Enable RGB Keyboard Support";
 const char kEnableRgbKeyboardDescription[] =
     "Enable RGB Keyboard support on supported devices.";

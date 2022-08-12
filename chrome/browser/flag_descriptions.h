@@ -720,9 +720,6 @@ extern const char kEnablePortalsCrossOriginDescription[];
 extern const char kEnablePixelCanvasRecordingName[];
 extern const char kEnablePixelCanvasRecordingDescription[];
 
-extern const char kEnablePrivatePrefetchProxyName[];
-extern const char kEnablePrivatePrefetchProxyDescription[];
-
 extern const char kEnableRgbKeyboardName[];
 extern const char kEnableRgbKeyboardDescription[];
 
