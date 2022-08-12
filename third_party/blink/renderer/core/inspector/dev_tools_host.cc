@@ -122,6 +122,7 @@ void DevToolsHost::Trace(Visitor* visitor) const {
 void DevToolsHost::EvaluateScript(const String& expression) {
   if (ScriptForbiddenScope::IsScriptForbidden())
     return;
+  DCHECK(!ScriptForbiddenScope::WillBeScriptForbidden());
   ClassicScript::CreateUnspecifiedScript(expression,
                                          ScriptSourceLocationType::kInternal)
       ->RunScriptOnScriptState(ToScriptStateForMainWorld(frontend_frame_));

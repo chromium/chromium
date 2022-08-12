@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/svg/svg_resource_client.h"
 #include "third_party/blink/renderer/core/svg/svg_resource_document_content.h"
 #include "third_party/blink/renderer/core/svg/svg_uri_reference.h"
+#include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
@@ -176,6 +177,10 @@ ExternalSVGResource::ExternalSVGResource(const KURL& url) : url_(url) {}
 void ExternalSVGResource::Load(Document& document) {
   if (document_content_)
     return;
+  // Loading SVG resources should not trigger script, see
+  // https://crbug.com/1196853 This could be allowed if DOMContentLoaded and
+  // other checkpoints were asynchronous per https://crbug.com/961428
+  ScriptForbiddenScope forbid_script;
   ExecutionContext* execution_context = document.GetExecutionContext();
   ResourceLoaderOptions options(execution_context->GetCurrentWorld());
   options.initiator_info.name = fetch_initiator_type_names::kCSS;
@@ -187,6 +192,10 @@ void ExternalSVGResource::Load(Document& document) {
 void ExternalSVGResource::LoadWithoutCSP(Document& document) {
   if (document_content_)
     return;
+  // Loading SVG resources should not trigger script, see
+  // https://crbug.com/1196853 This could be allowed if DOMContentLoaded and
+  // other checkpoints were asynchronous per https://crbug.com/961428
+  ScriptForbiddenScope forbid_script;
   ExecutionContext* execution_context = document.GetExecutionContext();
   ResourceLoaderOptions options(execution_context->GetCurrentWorld());
   options.initiator_info.name = fetch_initiator_type_names::kCSS;

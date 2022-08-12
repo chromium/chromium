@@ -3195,7 +3195,13 @@ void LocalFrameView::UpdateStyleAndLayout() {
   gfx::SizeF visual_viewport_size(visual_viewport.VisibleWidthCSSPx(),
                                   visual_viewport.VisibleHeightCSSPx());
 
-  bool did_layout = UpdateStyleAndLayoutInternal();
+  bool did_layout = false;
+  {
+    // Script is allowed during the initial style and layout as we will rerun
+    // at least once more if anything was invalidated.
+    ScriptForbiddenScope::AllowUserAgentScript allow_script;
+    did_layout = UpdateStyleAndLayoutInternal();
+  }
 
   // Second pass: run autosize until it stabilizes
   if (auto_size_info_) {

@@ -51,6 +51,15 @@ class PLATFORM_EXPORT ScriptForbiddenScope final {
     return GetMutableCounter() > 0;
   }
 
+  // Returns whether we are in a blink lifecycle scope. This should be checked
+  // from any location in which we are about to run potentially arbitrary
+  // script. It is not safe to run script during the blink lifecycle unless
+  // we either check whether it dirtied anything and rerun style/layout, or,
+  // can guarantee that script cannot dirty style / layout (e.g. worklet
+  // scopes). Use AllowUserAgentScript to annotate known safe points to run
+  // script.
+  // TODO(crbug.com/1196853): Remove this once we have discovered and fixed
+  // sources of attempted script execution during blink lifecycle.
   static bool WillBeScriptForbidden() {
     if (LIKELY(IsMainThread()))
       return g_blink_lifecycle_counter_ > 0;

@@ -41,6 +41,7 @@ namespace blink {
 void Microtask::PerformCheckpoint(v8::Isolate* isolate) {
   if (ScriptForbiddenScope::IsScriptForbidden())
     return;
+  DCHECK(!ScriptForbiddenScope::WillBeScriptForbidden());
   v8::MicrotasksScope::PerformCheckpoint(isolate);
 }
 

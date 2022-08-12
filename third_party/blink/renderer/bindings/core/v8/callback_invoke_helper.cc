@@ -26,8 +26,6 @@ bool CallbackInvokeHelper<CallbackBase, mode, return_type_is_promise>::
     ScriptForbiddenScope::ThrowScriptForbiddenException(isolate);
     return Abort();
   }
-  // TODO(crbug.com/1196853): Remove this once we have discovered and fixed
-  // sources of attempted script execution during blink lifecycle.
   DCHECK(!ScriptForbiddenScope::WillBeScriptForbidden());
 
   if constexpr (mode == CallbackInvokeHelperMode::kConstructorCall) {
