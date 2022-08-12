@@ -125,6 +125,11 @@ class VIEWS_EXPORT Combobox : public View,
     menu_selection_at_callback_ = std::move(callback);
   }
 
+  // Set whether the arrow should be shown to the user.
+  void SetShouldShowArrow(bool should_show_arrow) {
+    should_show_arrow_ = should_show_arrow;
+  }
+
   // Use the time when combobox was closed in order for parent view to not
   // treat a user event already treated by the combobox.
   base::TimeTicks GetClosedTime() { return closed_time_; }
@@ -229,6 +234,9 @@ class VIEWS_EXPORT Combobox : public View,
 
   // True when there should be ink drop highlighting on hover and press.
   bool should_highlight_ = false;
+
+  // True when the combobox should display the arrow during paint.
+  bool should_show_arrow_ = true;
 
   // Overriding ColorId for the combobox border.
   absl::optional<ui::ColorId> border_color_id_;

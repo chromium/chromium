@@ -150,7 +150,7 @@ Combobox::Combobox(ui::ComboboxModel* model, int text_context, int text_style)
   SetBackgroundColorId(ui::kColorTextfieldBackground);
   UpdateBorder();
 
-  arrow_button_->SetVisible(true);
+  arrow_button_->SetVisible(should_show_arrow_);
   AddChildView(arrow_button_.get());
 
   // A layer is applied to make sure that canvas bounds are snapped to pixel
@@ -323,11 +323,17 @@ gfx::Size Combobox::CalculatePreferredSize() const {
 
   // The preferred size will drive the local bounds which in turn is used to set
   // the minimum width for the dropdown list.
-  const int width = std::max(kMinComboboxWidth, content_size_.width()) +
-                    LayoutProvider::Get()->GetDistanceMetric(
-                        DISTANCE_TEXTFIELD_HORIZONTAL_TEXT_PADDING) *
-                        2 +
-                    kComboboxArrowContainerWidth + GetInsets().width();
+  int width = std::max(kMinComboboxWidth, content_size_.width()) +
+              LayoutProvider::Get()->GetDistanceMetric(
+                  DISTANCE_TEXTFIELD_HORIZONTAL_TEXT_PADDING) *
+                  2 +
+              GetInsets().width();
+
+  // If an arrow is being shown, add extra width to include that arrow.
+  if (should_show_arrow_) {
+    width += kComboboxArrowContainerWidth;
+  }
+
   const int height = LayoutProvider::GetControlHeightForFont(
       text_context_, text_style_, GetFontList());
   return gfx::Size(width, height);
@@ -555,31 +561,42 @@ void Combobox::PaintIconAndText(gfx::Canvas* canvas) {
     gfx::Rect icon_bounds(x, icon_y, icon_skia.width(), icon_skia.height());
     AdjustBoundsForRTLUI(&icon_bounds);
     canvas->DrawImageInt(icon_skia, icon_bounds.x(), icon_bounds.y());
-    x += icon_skia.width() + LayoutProvider::Get()->GetDistanceMetric(
-                                 DISTANCE_RELATED_LABEL_HORIZONTAL);
+    x += icon_skia.width();
   }
 
   // Draw the text.
   SkColor text_color = GetTextColorForEnableState(*this, GetEnabled());
   std::u16string text = GetModel()->GetItemAt(selected_index_.value());
-
-  int disclosure_arrow_offset = width() - kComboboxArrowContainerWidth;
-
   const gfx::FontList& font_list = GetFontList();
+
+  // If the text is not empty, add padding between it and the icon. If there
+  // was an empty icon, this padding is not necessary.
+  if (!text.empty() && !icon.IsEmpty()) {
+    x += LayoutProvider::Get()->GetDistanceMetric(
+        DISTANCE_RELATED_LABEL_HORIZONTAL);
+  }
+
+  // The total width of the text is the minimum of either the string width,
+  // or the available space, accounting for optional arrow.
   int text_width = gfx::GetStringWidth(text, font_list);
-  text_width =
-      std::min(text_width, disclosure_arrow_offset - insets.right() - x);
+  int available_width = width() - x - insets.right();
+  if (should_show_arrow_) {
+    available_width -= kComboboxArrowContainerWidth;
+  }
+  text_width = std::min(text_width, available_width);
 
   gfx::Rect text_bounds(x, y, text_width, contents_height);
   AdjustBoundsForRTLUI(&text_bounds);
   canvas->DrawStringRect(text, font_list, text_color, text_bounds);
 
-  gfx::Rect arrow_bounds(disclosure_arrow_offset, 0,
-                         kComboboxArrowContainerWidth, height());
-  arrow_bounds.ClampToCenteredSize(ComboboxArrowSize());
-  AdjustBoundsForRTLUI(&arrow_bounds);
-
-  PaintComboboxArrow(text_color, arrow_bounds, canvas);
+  // Draw the arrow.
+  if (should_show_arrow_) {
+    gfx::Rect arrow_bounds(width() - kComboboxArrowContainerWidth, 0,
+                           kComboboxArrowContainerWidth, height());
+    arrow_bounds.ClampToCenteredSize(ComboboxArrowSize());
+    AdjustBoundsForRTLUI(&arrow_bounds);
+    PaintComboboxArrow(text_color, arrow_bounds, canvas);
+  }
 }
 
 void Combobox::ArrowButtonPressed(const ui::Event& event) {
@@ -668,17 +685,29 @@ gfx::Size Combobox::GetContentSize() const {
       continue;
 
     if (size_to_largest_label_ || i == selected_index_) {
-      int item_width = gfx::GetStringWidth(GetModel()->GetItemAt(i), font_list);
+      int item_width = 0;
       ui::ImageModel icon = GetModel()->GetIconAt(i);
+      std::u16string text = GetModel()->GetItemAt(i);
       if (!icon.IsEmpty()) {
         gfx::ImageSkia icon_skia;
         if (GetWidget())
           icon_skia = icon.Rasterize(GetColorProvider());
-        item_width +=
-            icon_skia.width() + LayoutProvider::Get()->GetDistanceMetric(
-                                    DISTANCE_RELATED_LABEL_HORIZONTAL);
+        item_width += icon_skia.width();
         height = std::max(height, icon_skia.height());
+
+        // If both the text and icon are not empty, include padding between.
+        // We do not include this padding if there is no icon present.
+        if (!text.empty()) {
+          item_width += LayoutProvider::Get()->GetDistanceMetric(
+              DISTANCE_RELATED_LABEL_HORIZONTAL);
+        }
       }
+
+      // If text is not empty, the content size needs to include the text width
+      if (!text.empty()) {
+        item_width += gfx::GetStringWidth(GetModel()->GetItemAt(i), font_list);
+      }
+
       if (size_to_largest_label_)
         item_width = MaybeAdjustWidthForCheckmarks(item_width);
       width = std::max(width, item_width);
