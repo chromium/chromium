@@ -663,6 +663,12 @@ namespace {
 
 - (void)handleSortTypeForFollowingFeed:(FollowingFeedSortType)sortType {
   DCHECK([self isFollowingFeedAvailable]);
+
+  if (self.feedHeaderViewController.followingFeedSortType == sortType) {
+    return;
+  }
+
+  [self.ntpViewController setContentOffsetToTop];
   self.prefService->SetInteger(prefs::kNTPFollowingFeedSortType, sortType);
   self.discoverFeedService->SetFollowingFeedSortType(sortType);
   self.feedHeaderViewController.followingFeedSortType = sortType;
