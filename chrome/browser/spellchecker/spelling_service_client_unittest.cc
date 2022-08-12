@@ -206,30 +206,27 @@ TEST_P(SpellingServiceClientTest, RequestTextCheck) {
   EXPECT_EQ("application/json", request_content_type);
 
   // Parse the JSON sent to the service, and verify its parameters.
-  std::unique_ptr<base::DictionaryValue> value(
-      static_cast<base::DictionaryValue*>(
-          base::JSONReader::ReadDeprecated(intercepted_body,
-                                           base::JSON_ALLOW_TRAILING_COMMAS)
-              .release()));
-  ASSERT_TRUE(value.get());
+  absl::optional<base::Value> value = base::JSONReader::Read(
+      intercepted_body, base::JSON_ALLOW_TRAILING_COMMAS);
+  ASSERT_TRUE(value);
+  ASSERT_TRUE(value->is_dict());
+  const base::Value::Dict& dict = value->GetDict();
 
-  std::string method;
-  EXPECT_FALSE(value->GetString("method", &method));
-  std::string version;
-  EXPECT_FALSE(value->GetString("apiVersion", &version));
-  std::string sanitized_text;
-  EXPECT_TRUE(value->GetString("text", &sanitized_text));
-  EXPECT_EQ(test_case.sanitized_request_text, sanitized_text);
-  std::string language;
-  EXPECT_TRUE(value->GetString("language", &language));
+  EXPECT_FALSE(dict.FindString("method"));
+  EXPECT_FALSE(dict.FindString("apiVersion"));
+  const std::string* sanitized_text = dict.FindString("text");
+  EXPECT_TRUE(sanitized_text);
+  EXPECT_EQ(test_case.sanitized_request_text, *sanitized_text);
+  const std::string* language = dict.FindString("language");
+  EXPECT_TRUE(language);
   std::string expected_language =
       test_case.language.empty() ? std::string("en") : test_case.language;
-  EXPECT_EQ(expected_language, language);
+  EXPECT_EQ(expected_language, *language);
   std::string expected_country;
-  ASSERT_TRUE(GetExpectedCountry(language, &expected_country));
-  std::string country;
-  EXPECT_TRUE(value->GetString("originCountry", &country));
-  EXPECT_EQ(expected_country, country);
+  ASSERT_TRUE(GetExpectedCountry(*language, &expected_country));
+  const std::string* country = dict.FindString("originCountry");
+  EXPECT_TRUE(country);
+  EXPECT_EQ(expected_country, *country);
 }
 
 INSTANTIATE_TEST_SUITE_P(
