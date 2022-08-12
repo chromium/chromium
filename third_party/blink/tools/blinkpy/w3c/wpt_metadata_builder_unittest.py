@@ -97,7 +97,7 @@ class WPTMetadataBuilderTest(unittest.TestCase):
 
         # Write a dummy manifest file, describing what tests exist.
         self.host.filesystem.write_text_file(
-            self.port.web_tests_dir() + '/external/' + BASE_MANIFEST_NAME,
+            self.port.web_tests_dir() + 'external/' + BASE_MANIFEST_NAME,
             json.dumps({
                 'items': {
                     'reftest': {

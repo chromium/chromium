@@ -39,11 +39,9 @@ from blinkpy.web_tests.port.base import Port, VirtualTestSuite
 from blinkpy.web_tests.port.driver import DeviceFailure, Driver, DriverOutput
 from blinkpy.w3c.wpt_manifest import BASE_MANIFEST_NAME
 
-# Here we use a non-standard location for the web tests, to ensure that
-# this works. The path contains a '.' in the name because we've seen bugs
-# related to this before.
-WEB_TEST_DIR = '/test.checkout/wtests'
-PERF_TEST_DIR = '/test.checkout/PerformanceTests'
+MOCK_ROOT = '/mock-checkout/'
+MOCK_WEB_TESTS = MOCK_ROOT + 'third_party/blink/web_tests/'
+PERF_TEST_DIR = MOCK_ROOT + 'PerformanceTests'
 
 
 # This sets basic expectations for a test. Each individual expectation
@@ -432,10 +430,10 @@ layer at (0,0) size 800x34
 # we don't need a real filesystem to run the tests.
 def add_unit_tests_to_mock_filesystem(filesystem):
     # Add the test_expectations file.
-    filesystem.maybe_make_directory(WEB_TEST_DIR)
-    if not filesystem.exists(WEB_TEST_DIR + '/TestExpectations'):
+    filesystem.maybe_make_directory(MOCK_WEB_TESTS)
+    if not filesystem.exists(MOCK_WEB_TESTS + 'TestExpectations'):
         filesystem.write_text_file(
-            WEB_TEST_DIR + '/TestExpectations', """
+            MOCK_WEB_TESTS + 'TestExpectations', """
 # results: [ Pass Failure Crash Timeout Skip ]
 failures/expected/audio.html [ Failure ]
 failures/expected/crash.html [ Crash ]
@@ -461,9 +459,9 @@ passes/text.html [ Pass ]
 virtual/skipped/failures/expected* [ Skip ]
 """)
 
-    if not filesystem.exists(WEB_TEST_DIR + '/NeverFixTests'):
+    if not filesystem.exists(MOCK_WEB_TESTS + 'NeverFixTests'):
         filesystem.write_text_file(
-            WEB_TEST_DIR + '/NeverFixTests', """
+            MOCK_WEB_TESTS + 'NeverFixTests', """
 # results: [ Pass Failure Crash Timeout Skip ]
 failures/expected/keyboard.html [ Skip ]
 failures/expected/exception.html [ Skip ]
@@ -473,9 +471,9 @@ virtual/virtual_failures/failures/expected/exception.html [ Skip ]
 virtual/virtual_failures/failures/expected/device_failure.html [ Skip ]
 """)
 
-    if not filesystem.exists(WEB_TEST_DIR + '/SlowTests'):
+    if not filesystem.exists(MOCK_WEB_TESTS + 'SlowTests'):
         filesystem.write_text_file(
-            WEB_TEST_DIR + '/SlowTests', """
+            MOCK_WEB_TESTS + 'SlowTests', """
 # results: [ Slow ]
 passes/slow.html [ Slow ]
 """)
@@ -483,10 +481,10 @@ passes/slow.html [ Slow ]
     # FIXME: This test was only being ignored because of missing a leading '/'.
     # Fixing the typo causes several tests to assert, so disabling the test entirely.
     # Add in a file should be ignored by port.find_test_files().
-    #files[WEB_TEST_DIR + '/userscripts/resources/iframe.html'] = 'iframe'
+    #files[MOCK_WEB_TESTS + 'userscripts/resources/iframe.html'] = 'iframe'
 
     def add_file(test, suffix, contents):
-        dirname = filesystem.join(WEB_TEST_DIR,
+        dirname = filesystem.join(MOCK_WEB_TESTS,
                                   test.name[0:test.name.rfind('/')])
         base = test.base
         filesystem.maybe_make_directory(dirname)
@@ -494,9 +492,7 @@ passes/slow.html [ Slow ]
             filesystem.join(dirname, base + suffix), contents)
 
     def add_baseline(test, suffix, contents):
-        dirname = filesystem.join(WEB_TEST_DIR,
-                                  "platform",
-                                  "generic",
+        dirname = filesystem.join(MOCK_WEB_TESTS, "platform", "generic",
                                   test.name[0:test.name.rfind('/')])
         base = test.base
         filesystem.maybe_make_directory(dirname)
@@ -515,16 +511,16 @@ passes/slow.html [ Slow ]
             add_baseline(test, '-expected.png', test.expected_image)
 
     filesystem.write_text_file(
-        filesystem.join(WEB_TEST_DIR, 'platform', 'generic',
-                        'virtual', 'virtual_passes', 'passes',
-                        'args-expected.txt'), 'args-txt --virtual-arg')
+        filesystem.join(MOCK_WEB_TESTS, 'platform', 'generic', 'virtual',
+                        'virtual_passes', 'passes', 'args-expected.txt'),
+        'args-txt --virtual-arg')
     filesystem.maybe_make_directory(
-        filesystem.join(WEB_TEST_DIR, 'virtual', 'virtual_passes'))
+        filesystem.join(MOCK_WEB_TESTS, 'virtual', 'virtual_passes'))
 
     filesystem.maybe_make_directory(
-        filesystem.join(WEB_TEST_DIR, 'external', 'wpt'))
+        filesystem.join(MOCK_WEB_TESTS, 'external', 'wpt'))
     filesystem.write_text_file(
-        filesystem.join(WEB_TEST_DIR, 'external', BASE_MANIFEST_NAME),
+        filesystem.join(MOCK_WEB_TESTS, 'external', BASE_MANIFEST_NAME),
         '{"manifest": "base"}')
 
     # Clear the list of written files so that we can watch what happens during testing.
@@ -536,7 +532,7 @@ def add_manifest_to_mock_filesystem(port):
     port.set_option_default('manifest_update', False)
     filesystem = port.host.filesystem
     filesystem.write_text_file(
-        WEB_TEST_DIR + '/external/wpt/MANIFEST.json',
+        MOCK_WEB_TESTS + 'external/wpt/MANIFEST.json',
         json.dumps({
             'items': {
                 'testharness': {
@@ -605,18 +601,18 @@ def add_manifest_to_mock_filesystem(port):
             }
         }))
     filesystem.write_text_file(
-        WEB_TEST_DIR + '/external/wpt/dom/ranges/Range-attributes.html', '')
+        MOCK_WEB_TESTS + 'external/wpt/dom/ranges/Range-attributes.html', '')
     filesystem.write_text_file(
-        WEB_TEST_DIR + '/external/wpt/dom/ranges/Range-attributes-slow.html',
+        MOCK_WEB_TESTS + 'external/wpt/dom/ranges/Range-attributes-slow.html',
         '')
     filesystem.write_text_file(
-        WEB_TEST_DIR + '/external/wpt/console/console-is-a-namespace.any.js',
+        MOCK_WEB_TESTS + 'external/wpt/console/console-is-a-namespace.any.js',
         '')
     filesystem.write_text_file(
-        WEB_TEST_DIR + '/external/wpt/common/blank.html', 'foo')
+        MOCK_WEB_TESTS + 'external/wpt/common/blank.html', 'foo')
 
     filesystem.write_text_file(
-        WEB_TEST_DIR + '/wpt_internal/MANIFEST.json',
+        MOCK_WEB_TESTS + 'wpt_internal/MANIFEST.json',
         json.dumps({
             'items': {
                 'testharness': {
@@ -626,7 +622,7 @@ def add_manifest_to_mock_filesystem(port):
                 }
             }
         }))
-    filesystem.write_text_file(WEB_TEST_DIR + '/wpt_internal/dom/bar.html',
+    filesystem.write_text_file(MOCK_WEB_TESTS + 'wpt_internal/dom/bar.html',
                                'baz')
 
 
@@ -665,7 +661,7 @@ class TestPort(Port):
         # test ports. rebaseline_unittest.py needs to not mix both "real" ports
         # and "test" ports
 
-        self._generic_expectations_path = WEB_TEST_DIR + '/TestExpectations'
+        self._generic_expectations_path = MOCK_WEB_TESTS + 'TestExpectations'
         self._results_directory = None
 
         self._operating_system = 'mac'
@@ -765,7 +761,7 @@ class TestPort(Port):
         return (None, None, None)
 
     def web_tests_dir(self):
-        return WEB_TEST_DIR
+        return MOCK_WEB_TESTS
 
     def _perf_tests_dir(self):
         return PERF_TEST_DIR

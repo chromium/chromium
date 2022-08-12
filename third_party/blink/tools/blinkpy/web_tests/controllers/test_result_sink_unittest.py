@@ -19,7 +19,7 @@ from blinkpy.web_tests.models import test_results, failure_reason
 from blinkpy.web_tests.models.typ_types import ResultType
 from blinkpy.web_tests.port.test import add_manifest_to_mock_filesystem
 from blinkpy.web_tests.port.test import TestPort
-from blinkpy.web_tests.port.test import WEB_TEST_DIR
+from blinkpy.web_tests.port.test import MOCK_WEB_TESTS
 
 
 class TestResultSinkTestBase(unittest.TestCase):
@@ -329,7 +329,7 @@ class TestResultSinkMessage(TestResultSinkTestBase):
             'virtual/virtual_passes/passes/does_not_exist.html',
             'passes/does_not_exist.html')
         self.port.host.filesystem.write_text_file(
-            self.port.host.filesystem.join(WEB_TEST_DIR, 'virtual',
+            self.port.host.filesystem.join(MOCK_WEB_TESTS, 'virtual',
                                            'virtual_passes', 'passes',
                                            'exists.html'),
             'body',

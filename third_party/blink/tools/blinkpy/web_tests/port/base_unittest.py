@@ -31,7 +31,6 @@ import operator
 import optparse
 import unittest
 
-from blinkpy.common.path_finder import RELATIVE_WEB_TESTS
 from blinkpy.common.host_mock import MockHost
 from blinkpy.common.system.executive_mock import MockExecutive
 from blinkpy.common.system.log_testing import LoggingTestCase
@@ -43,9 +42,7 @@ from blinkpy.web_tests.port.base import Port, VirtualTestSuite
 from blinkpy.web_tests.port.factory import PortFactory
 from blinkpy.web_tests.port.test import (add_unit_tests_to_mock_filesystem,
                                          add_manifest_to_mock_filesystem,
-                                         WEB_TEST_DIR, TestPort)
-
-MOCK_WEB_TESTS = '/mock-checkout/' + RELATIVE_WEB_TESTS
+                                         MOCK_WEB_TESTS, TestPort)
 
 
 class PortTest(LoggingTestCase):
@@ -492,6 +489,9 @@ class PortTest(LoggingTestCase):
     def _make_port_for_test_additional_expectations(self, options_dict={}):
         port = self.make_port(
             port_name='foo', options=optparse.Values(options_dict))
+        port.host.filesystem.remove(MOCK_WEB_TESTS + 'TestExpectations')
+        port.host.filesystem.remove(MOCK_WEB_TESTS + 'NeverFixTests')
+        port.host.filesystem.remove(MOCK_WEB_TESTS + 'SlowTests')
         port.host.filesystem.write_text_file(
             MOCK_WEB_TESTS + 'platform/foo/TestExpectations', '')
         port.host.filesystem.write_text_file(
@@ -537,6 +537,9 @@ class PortTest(LoggingTestCase):
 
     def test_flag_specific_expectations(self):
         port = self.make_port(port_name='foo')
+        port.host.filesystem.remove(MOCK_WEB_TESTS + 'TestExpectations')
+        port.host.filesystem.remove(MOCK_WEB_TESTS + 'NeverFixTests')
+        port.host.filesystem.remove(MOCK_WEB_TESTS + 'SlowTests')
         port.host.filesystem.write_text_file(
             MOCK_WEB_TESTS + 'FlagExpectations/special-flag-a', 'aa')
         port.host.filesystem.write_text_file(
@@ -735,7 +738,7 @@ class PortTest(LoggingTestCase):
         port.set_option_default('manifest_update', False)
         filesystem = port.host.filesystem
         filesystem.write_text_file(
-            WEB_TEST_DIR + '/external/wpt/MANIFEST.json', '{}')
+            MOCK_WEB_TESTS + 'external/wpt/MANIFEST.json', '{}')
         filesystem.clear_written_files()
 
         port.wpt_manifest('external/wpt')
@@ -936,19 +939,19 @@ class PortTest(LoggingTestCase):
         self.assertFalse(port.is_non_wpt_test_file('', 'notref-foo.xhr'))
 
         self.assertFalse(
-            port.is_non_wpt_test_file(WEB_TEST_DIR + '/external/wpt/common',
+            port.is_non_wpt_test_file(MOCK_WEB_TESTS + 'external/wpt/common',
                                       'blank.html'))
         self.assertFalse(
-            port.is_non_wpt_test_file(WEB_TEST_DIR + '/external/wpt/console',
+            port.is_non_wpt_test_file(MOCK_WEB_TESTS + 'external/wpt/console',
                                       'console-is-a-namespace.any.js'))
         self.assertFalse(
-            port.is_non_wpt_test_file(WEB_TEST_DIR + '/external/wpt',
+            port.is_non_wpt_test_file(MOCK_WEB_TESTS + 'external/wpt',
                                       'testharness_runner.html'))
         self.assertTrue(
             port.is_non_wpt_test_file(
-                WEB_TEST_DIR + '/external/wpt_automation', 'foo.html'))
+                MOCK_WEB_TESTS + '/external/wpt_automation', 'foo.html'))
         self.assertFalse(
-            port.is_non_wpt_test_file(WEB_TEST_DIR + '/wpt_internal/console',
+            port.is_non_wpt_test_file(MOCK_WEB_TESTS + 'wpt_internal/console',
                                       'console-is-a-namespace.any.js'))
 
     def test_is_wpt_test(self):
@@ -1141,17 +1144,17 @@ class PortTest(LoggingTestCase):
 
     def test_reference_files(self):
         port = self.make_port(with_tests=True)
-        self.assertEqual(
-            port.reference_files('passes/svgreftest.svg'),
-            [('==', port.web_tests_dir() + '/platform/generic/passes/svgreftest-expected.svg')])
+        self.assertEqual(port.reference_files('passes/svgreftest.svg'),
+                         [('==', port.web_tests_dir() +
+                           'platform/generic/passes/svgreftest-expected.svg')])
         self.assertEqual(
             port.reference_files('passes/xhtreftest.svg'),
-            [('==', port.web_tests_dir() + '/platform/generic/passes/xhtreftest-expected.html')
-             ])
+            [('==', port.web_tests_dir() +
+              'platform/generic/passes/xhtreftest-expected.html')])
         self.assertEqual(
             port.reference_files('passes/phpreftest.php'),
             [('!=', port.web_tests_dir() +
-              '/platform/generic/passes/phpreftest-expected-mismatch.svg')])
+              'platform/generic/passes/phpreftest-expected-mismatch.svg')])
 
     def test_reference_files_from_manifest(self):
         port = self.make_port(with_tests=True)
@@ -1162,7 +1165,7 @@ class PortTest(LoggingTestCase):
                 'external/wpt/html/dom/elements/global-attributes/dir_auto-EN-L.html'
             ),
             [('==', port.web_tests_dir() +
-              '/external/wpt/html/dom/elements/global-attributes/dir_auto-EN-L-ref.html'
+              'external/wpt/html/dom/elements/global-attributes/dir_auto-EN-L-ref.html'
               )])
         self.assertEqual(
             port.reference_files(
@@ -1170,7 +1173,7 @@ class PortTest(LoggingTestCase):
                 'external/wpt/html/dom/elements/global-attributes/dir_auto-EN-L.html'
             ),
             [('==', port.web_tests_dir() +
-              '/external/wpt/html/dom/elements/global-attributes/dir_auto-EN-L-ref.html'
+              'external/wpt/html/dom/elements/global-attributes/dir_auto-EN-L-ref.html'
               )])
 
     def test_http_server_supports_ipv6(self):

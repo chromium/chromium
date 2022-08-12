@@ -10,7 +10,6 @@ from blinkpy.common.net.git_cl import TryJobStatus
 from blinkpy.common.net.git_cl_mock import MockGitCL
 from blinkpy.common.net.results_fetcher import Build
 from blinkpy.common.net.web_test_results import WebTestResult, WebTestResults
-from blinkpy.common.path_finder import RELATIVE_WEB_TESTS
 from blinkpy.common.system.executive import ScriptError
 from blinkpy.common.system.log_testing import LoggingTestCase
 
@@ -23,8 +22,8 @@ from blinkpy.web_tests.builder_list import BuilderList
 from blinkpy.web_tests.models.test_expectations import TestExpectations
 from blinkpy.web_tests.port.android import PRODUCTS_TO_EXPECTATION_FILE_PATHS
 from blinkpy.web_tests.port.factory_mock import MockPortFactory
+from blinkpy.web_tests.port.test import MOCK_WEB_TESTS
 
-MOCK_WEB_TESTS = '/mock-checkout/' + RELATIVE_WEB_TESTS
 
 class WPTExpectationsUpdaterTest(LoggingTestCase):
     def mock_host(self):
@@ -77,7 +76,7 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
 
         # Write a dummy manifest file, describing what tests exist.
         host.filesystem.write_text_file(
-            host.port_factory.get().web_tests_dir() + '/external/' +
+            host.port_factory.get().web_tests_dir() + 'external/' +
             BASE_MANIFEST_NAME,
             json.dumps({
                 'items': {
@@ -90,14 +89,14 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                     'testharness': {
                         'test/path.html': ['abcdef123', [None, {}]],
                         'test/zzzz.html': ['ghijkl456', [None, {}]],
-                        'fake/some_test.html': [
-                            'ghijkl456', ['fake/some_test.html?HelloWorld', {}]],
-                        'fake/file/deleted_path.html': [
-                            'ghijkl456', [None, {}]],
+                        'fake/some_test.html':
+                        ['ghijkl456', ['fake/some_test.html?HelloWorld', {}]],
+                        'fake/file/deleted_path.html':
+                        ['ghijkl456', [None, {}]],
                         'test/task.js': [
-                            'mnpqrs789',
-                            ['test/task.html', {}],
-                            ['test/task2.html', {}]],
+                            'mnpqrs789', ['test/task.html', {}],
+                            ['test/task2.html', {}]
+                        ],
                     },
                     'manual': {
                         'x-manual.html': ['abcdef123', [None, {}]],
@@ -612,14 +611,14 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
 
     def test_skipped_specifiers_when_test_is_skip(self):
         host = self.mock_host()
-        expectations_path = '/test.checkout/wtests/NeverFixTests'
+        expectations_path = MOCK_WEB_TESTS + 'NeverFixTests'
         host.filesystem.write_text_file(
             expectations_path,
             ('# tags: [ Linux ]\n'
              '# results: [ Skip ]\n'
              'crbug.com/111 [ Linux ] external/wpt/test.html [ Skip ]\n'))
         host.filesystem.write_text_file(
-            '/test.checkout/wtests/external/wpt/test.html', '')
+            MOCK_WEB_TESTS + 'external/wpt/test.html', '')
         updater = WPTExpectationsUpdater(host)
         self.assertEqual(
             updater.skipped_specifiers('external/wpt/test.html'),
@@ -627,14 +626,14 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
 
     def test_specifiers_can_extend_to_all_platforms(self):
         host = self.mock_host()
-        expectations_path = '/test.checkout/wtests/NeverFixTests'
+        expectations_path = MOCK_WEB_TESTS + 'NeverFixTests'
         host.filesystem.write_text_file(
             expectations_path,
             ('# tags: [ Linux ]\n'
              '# results: [ Skip ]\n'
              'crbug.com/111 [ Linux ] external/wpt/test.html [ Skip ]\n'))
         host.filesystem.write_text_file(
-            '/test.checkout/wtests/external/wpt/test.html', '')
+            MOCK_WEB_TESTS + 'external/wpt/test.html', '')
         updater = WPTExpectationsUpdater(host)
         self.assertTrue(
             updater.specifiers_can_extend_to_all_platforms(
@@ -698,7 +697,7 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
 
     def test_normalized_specifiers_with_skipped_test(self):
         host = self.mock_host()
-        expectations_path = '/test.checkout/wtests/NeverFixTests'
+        expectations_path = MOCK_WEB_TESTS + 'NeverFixTests'
         host.filesystem.write_text_file(
             expectations_path,
             ('# tags: [ Linux Mac10.11 ]\n'
@@ -706,7 +705,7 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
              'crbug.com/111 [ Linux ] external/wpt/test.html [ Skip ]\n'
              'crbug.com/111 [ Mac10.11 ] external/wpt/test.html [ Skip ]\n'))
         host.filesystem.write_text_file(
-            '/test.checkout/wtests/external/wpt/test.html', '')
+            MOCK_WEB_TESTS + 'external/wpt/test.html', '')
         updater = WPTExpectationsUpdater(host)
         self.assertEqual(
             updater.normalized_specifiers(
@@ -1302,7 +1301,7 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
             })
 
     def test_cleanup_all_deleted_tests_in_expectations_files(self):
-        host = MockHost()
+        host = self.mock_host()
         port = host.port_factory.get()
         fs = host.filesystem
         expectations_path = fs.join(MOCK_WEB_TESTS, 'TestExpectations')
@@ -1342,7 +1341,7 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                                    'some/test/d.html [ Failure ]\n'))
 
     def test_skip_slow_timeout_tests(self):
-        host = MockHost()
+        host = self.mock_host()
         fs = host.filesystem
         expectations_path = fs.join(MOCK_WEB_TESTS, 'TestExpectations')
         data = ('# results: [ Pass Failure Crash Timeout Skip ]\n'
@@ -1366,7 +1365,7 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         self.assertEqual(newdata, fs.read_text_file(expectations_path))
 
     def test_cleanup_all_test_expectations_files(self):
-        host = MockHost()
+        host = self.mock_host()
         fs = host.filesystem
         test_expect_path = fs.join(MOCK_WEB_TESTS, 'TestExpectations')
         webdriver_expect_path = fs.join(MOCK_WEB_TESTS,

@@ -35,7 +35,7 @@ from blinkpy.common.system.log_testing import LoggingTestCase
 from blinkpy.web_tests import lint_test_expectations
 from blinkpy.web_tests.port.android import PRODUCTS_TO_EXPECTATION_FILE_PATHS
 from blinkpy.web_tests.port.base import VirtualTestSuite
-from blinkpy.web_tests.port.test import WEB_TEST_DIR
+from blinkpy.web_tests.port.test import MOCK_WEB_TESTS
 
 from six import StringIO
 
@@ -152,8 +152,9 @@ class LintTest(LoggingTestCase):
 
         host.port_factory.get = lambda platform=None, options=None: port
         host.port_factory.all_port_names = lambda platform=None: [port.name()]
-        host.filesystem.write_text_file(WEB_TEST_DIR + '/LeakExpectations',
-                                        '-- syntax error')
+        host.filesystem.write_text_file(
+            host.filesystem.join(MOCK_WEB_TESTS, 'LeakExpectations'),
+            '-- syntax error')
 
         failures, warnings = lint_test_expectations.lint(host, options)
         self.assertTrue(failures)
@@ -468,16 +469,17 @@ class CheckVirtualSuiteTest(unittest.TestCase):
             VirtualTestSuite(prefix='foo', platforms=['Linux', 'Mac', 'Win'], bases=['test'], args=['--foo']),
             VirtualTestSuite(prefix='bar', platforms=['Linux', 'Mac', 'Win'], bases=['test'], args=['--bar']), ]
         fs = self.host.filesystem
-        fs.maybe_make_directory(fs.join(WEB_TEST_DIR, 'test'))
+        fs.maybe_make_directory(fs.join(MOCK_WEB_TESTS, 'test'))
 
         res = lint_test_expectations.check_virtual_test_suites(
             self.host, self.options)
         self.assertEqual(len(res), 2)
 
         fs.write_text_file(
-            fs.join(WEB_TEST_DIR, 'virtual', 'foo', 'README.md'), '')
+            fs.join(MOCK_WEB_TESTS, 'virtual', 'foo', 'README.md'), '')
         fs.write_text_file(
-            fs.join(WEB_TEST_DIR, 'virtual', 'bar', 'test', 'README.txt'), '')
+            fs.join(MOCK_WEB_TESTS, 'virtual', 'bar', 'test', 'README.txt'),
+            '')
         res = lint_test_expectations.check_virtual_test_suites(
             self.host, self.options)
         self.assertFalse(res)
@@ -513,10 +515,10 @@ class CheckVirtualSuiteTest(unittest.TestCase):
         ]
 
         fs = self.host.filesystem
-        fs.maybe_make_directory(fs.join(WEB_TEST_DIR, 'base1'))
-        fs.write_text_file(fs.join(WEB_TEST_DIR, 'base3.html'), '')
+        fs.maybe_make_directory(fs.join(MOCK_WEB_TESTS, 'base1'))
+        fs.write_text_file(fs.join(MOCK_WEB_TESTS, 'base3.html'), '')
         fs.write_text_file(
-            fs.join(WEB_TEST_DIR, 'virtual', 'foo', 'README.md'), '')
+            fs.join(MOCK_WEB_TESTS, 'virtual', 'foo', 'README.md'), '')
         res = lint_test_expectations.check_virtual_test_suites(
             self.host, self.options)
         self.assertEqual(len(res), 1)

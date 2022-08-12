@@ -16,7 +16,8 @@ from blinkpy.tool.commands.rebaseline import (
 from blinkpy.tool.mock_tool import MockBlinkTool
 from blinkpy.web_tests.builder_list import BuilderList
 from blinkpy.web_tests.port.factory_mock import MockPortFactory
-from blinkpy.web_tests.port.test import add_manifest_to_mock_filesystem
+from blinkpy.web_tests.port.test import (add_manifest_to_mock_filesystem,
+                                         MOCK_WEB_TESTS)
 
 
 class BaseTestCase(unittest.TestCase):
@@ -312,9 +313,9 @@ class TestAbstractParallelRebaselineCommand(BaseTestCase):
         baseline_paths = self.command._generic_baseline_paths(
             test_baseline_set)
         self.assertEqual(baseline_paths, [
-            '/test.checkout/wtests/platform/generic/passes/text-expected.png',
-            '/test.checkout/wtests/platform/generic/passes/text-expected.txt',
-            '/test.checkout/wtests/platform/generic/passes/text-expected.wav',
+            MOCK_WEB_TESTS + 'platform/generic/passes/text-expected.png',
+            MOCK_WEB_TESTS + 'platform/generic/passes/text-expected.txt',
+            MOCK_WEB_TESTS + 'platform/generic/passes/text-expected.wav',
         ])
 
     def test_unstaged_baselines(self):
@@ -326,8 +327,8 @@ class TestAbstractParallelRebaselineCommand(BaseTestCase):
             RELATIVE_WEB_TESTS + 'x/foo.html': 'M',
             'docs/something.md': '?', }
         self.assertEqual(self.command.unstaged_baselines(), [
-            '/mock-checkout/' + RELATIVE_WEB_TESTS + 'x/foo-expected.png',
-            '/mock-checkout/' + RELATIVE_WEB_TESTS + 'x/foo-expected.txt',
+            MOCK_WEB_TESTS + 'x/foo-expected.png',
+            MOCK_WEB_TESTS + 'x/foo-expected.txt',
         ])
 
     def test_suffixes_for_actual_failures_for_wpt(self):
@@ -1138,9 +1139,9 @@ class TestBaselineSetTest(unittest.TestCase):
         host.port_factory = MockPortFactory(host)
         port = host.port_factory.get()
         base_dir = port.web_tests_dir()
-        host.filesystem.write_text_file(base_dir + '/a/x.html', '<html>')
-        host.filesystem.write_text_file(base_dir + '/a/y.html', '<html>')
-        host.filesystem.write_text_file(base_dir + '/a/z.html', '<html>')
+        host.filesystem.write_text_file(base_dir + 'a/x.html', '<html>')
+        host.filesystem.write_text_file(base_dir + 'a/y.html', '<html>')
+        host.filesystem.write_text_file(base_dir + 'a/z.html', '<html>')
         host.builders = BuilderList({
             'MOCK Mac10.12': {
                 'port_name': 'test-mac-mac10.12',

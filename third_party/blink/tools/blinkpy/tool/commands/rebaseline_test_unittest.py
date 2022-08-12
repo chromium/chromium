@@ -9,6 +9,7 @@ from blinkpy.common.system.executive_mock import MockExecutive
 from blinkpy.common.system.output_capture import OutputCapture
 from blinkpy.tool.commands.rebaseline_test import RebaselineTest
 from blinkpy.tool.commands.rebaseline_unittest import BaseTestCase
+from blinkpy.web_tests.port.test import MOCK_WEB_TESTS
 
 
 class TestRebaselineTest(BaseTestCase):
@@ -79,16 +80,16 @@ class TestRebaselineTest(BaseTestCase):
     def test_baseline_directory(self):
         self.assertMultiLineEqual(
             self.command.baseline_directory('MOCK Mac10.11'),
-            '/test.checkout/wtests/platform/test-mac-mac10.11')
+            MOCK_WEB_TESTS + 'platform/test-mac-mac10.11')
         self.assertMultiLineEqual(
             self.command.baseline_directory('MOCK Mac10.10'),
-            '/test.checkout/wtests/platform/test-mac-mac10.10')
+            MOCK_WEB_TESTS + 'platform/test-mac-mac10.10')
         self.assertMultiLineEqual(
             self.command.baseline_directory('MOCK Trusty'),
-            '/test.checkout/wtests/platform/test-linux-trusty')
+            MOCK_WEB_TESTS + 'platform/test-linux-trusty')
         self.assertMultiLineEqual(
             self.command.baseline_directory('MOCK Precise'),
-            '/test.checkout/wtests/platform/test-linux-precise')
+            MOCK_WEB_TESTS + 'platform/test-linux-precise')
 
     def test_rebaseline_updates_expectations_file_noop(self):
         # pylint: disable=protected-access
