@@ -672,9 +672,8 @@ class FileManagerPathUtilConvertUrlTest : public testing::Test {
             .Build()));
     ASSERT_TRUE(
         ash::disks::DiskMountManager::GetInstance()->AddMountPointForTest(
-            ash::disks::DiskMountManager::MountPointInfo(
-                "/device/source_path", "/media/removable/a",
-                ash::MountType::kDevice, ash::disks::MOUNT_CONDITION_NONE)));
+            {"/device/source_path", "/media/removable/a",
+             ash::MountType::kDevice}));
 
     // Add a Share Cache mount point for the primary profile.
     ASSERT_TRUE(mount_points->RegisterFileSystem(

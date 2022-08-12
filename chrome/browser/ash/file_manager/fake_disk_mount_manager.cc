@@ -81,8 +81,7 @@ void FakeDiskMountManager::MountPath(
   mount_requests_.emplace_back(source_path, source_format, mount_label,
                                mount_options, type, access_mode);
 
-  const MountPointInfo mount_point(source_path, source_path, type,
-                                   ash::disks::MOUNT_CONDITION_NONE);
+  const MountPoint mount_point{source_path, source_path, type};
   mount_points_.insert(make_pair(source_path, mount_point));
   std::move(callback).Run(ash::MountError::kNone, mount_point);
   for (auto& observer : observers_) {
@@ -105,7 +104,7 @@ void FakeDiskMountManager::UnmountPath(const std::string& mount_path,
     if (iter == mount_points_.end())
       return;
 
-    const MountPointInfo mount_point = iter->second;
+    const MountPoint mount_point = iter->second;
     mount_points_.erase(iter);
     for (auto& observer : observers_) {
       observer.OnMountEvent(DiskMountManager::UNMOUNTING,
@@ -166,8 +165,7 @@ bool FakeDiskMountManager::AddDiskForTest(
   return disks_.insert(make_pair(disk->device_path(), std::move(disk))).second;
 }
 
-bool FakeDiskMountManager::AddMountPointForTest(
-    const MountPointInfo& mount_point) {
+bool FakeDiskMountManager::AddMountPointForTest(const MountPoint& mount_point) {
   if (mount_point.mount_type == ash::MountType::kDevice &&
       disks_.find(mount_point.source_path) == disks_.end()) {
     // Device mount point must have a disk entry.

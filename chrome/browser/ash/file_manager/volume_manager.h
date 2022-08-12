@@ -106,7 +106,7 @@ class Volume : public base::SupportsWeakPtr<Volume> {
   static std::unique_ptr<Volume> CreateForDownloads(
       const base::FilePath& downloads_path);
   static std::unique_ptr<Volume> CreateForRemovable(
-      const ash::disks::DiskMountManager::MountPointInfo& mount_point,
+      const ash::disks::DiskMountManager::MountPoint& mount_point,
       const ash::disks::Disk* disk);
   static std::unique_ptr<Volume> CreateForProvidedFileSystem(
       const ash::file_system_provider::ProvidedFileSystemInfo& file_system_info,
@@ -460,7 +460,7 @@ class VolumeManager : public KeyedService,
   void OnMountEvent(
       ash::disks::DiskMountManager::MountEvent event,
       ash::MountError error_code,
-      const ash::disks::DiskMountManager::MountPointInfo& mount_info) override;
+      const ash::disks::DiskMountManager::MountPoint& mount_info) override;
   void OnFormatEvent(ash::disks::DiskMountManager::FormatEvent event,
                      ash::FormatError error_code,
                      const std::string& device_path,

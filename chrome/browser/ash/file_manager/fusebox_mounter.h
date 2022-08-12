@@ -16,7 +16,7 @@ namespace file_manager {
 
 using FuseBoxDiskMountManager = ::ash::disks::DiskMountManager;
 
-using FuseBoxMountInfo = ::ash::disks::DiskMountManager::MountPointInfo;
+using FuseBoxMountInfo = ::ash::disks::DiskMountManager::MountPoint;
 
 class FuseBoxMounter {
  public:

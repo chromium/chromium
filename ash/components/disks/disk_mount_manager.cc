@@ -95,9 +95,8 @@ class DiskMountManagerImpl : public DiskMountManager,
     if (const auto [_, ok] =
             mount_callbacks_.try_emplace(source_path, std::move(callback));
         !ok) {
-      std::move(callback).Run(
-          MountError::kPathAlreadyMounted,
-          MountPointInfo(source_path, "", type, MOUNT_CONDITION_NONE));
+      std::move(callback).Run(MountError::kPathAlreadyMounted,
+                              {source_path, "", type});
       return;
     }
 
@@ -332,7 +331,7 @@ class DiskMountManagerImpl : public DiskMountManager,
 
   // DiskMountManager override.
   // Corresponding disk should be added to the manager before this is called.
-  bool AddMountPointForTest(const MountPointInfo& mount_point) override {
+  bool AddMountPointForTest(const MountPoint& mount_point) override {
     if (mount_points_.find(mount_point.mount_path) != mount_points_.end()) {
       LOG(ERROR) << "Attempt to add a duplicate mount point";
       return false;
@@ -470,8 +469,8 @@ class DiskMountManagerImpl : public DiskMountManager,
       }
     }
 
-    const MountPointInfo mount_info(entry.source_path, entry.mount_path,
-                                    entry.mount_type, mount_condition);
+    const MountPoint mount_info{entry.source_path, entry.mount_path,
+                                entry.mount_type, mount_condition};
 
     // If the device is corrupted but it's still possible to format it, it will
     // be fake mounted.
@@ -542,7 +541,7 @@ class DiskMountManagerImpl : public DiskMountManager,
     if (const MountPointMap::const_iterator mp_it =
             mount_points_.find(mount_path);
         mp_it != mount_points_.end()) {
-      const MountPointInfo& mp = mp_it->second;
+      const MountPoint& mp = mp_it->second;
       NotifyMountStatusUpdate(UNMOUNTING, error, mp);
 
       if (error == MountError::kNone) {
@@ -984,7 +983,7 @@ class DiskMountManagerImpl : public DiskMountManager,
   // Notifies all observers about mount completion.
   void NotifyMountStatusUpdate(MountEvent event,
                                MountError error_code,
-                               const MountPointInfo& mount_info) {
+                               const MountPoint& mount_info) {
     for (auto& observer : observers_)
       observer.OnMountEvent(event, error_code, mount_info);
   }
@@ -1068,7 +1067,7 @@ bool DiskMountManager::AddDiskForTest(std::unique_ptr<Disk> disk) {
   return false;
 }
 
-bool DiskMountManager::AddMountPointForTest(const MountPointInfo& mount_point) {
+bool DiskMountManager::AddMountPointForTest(const MountPoint& mount_point) {
   return false;
 }
 
@@ -1081,9 +1080,8 @@ std::string DiskMountManager::MountConditionToString(MountCondition condition) {
       return "unknown_filesystem";
     case MOUNT_CONDITION_UNSUPPORTED_FILESYSTEM:
       return "unsupported_filesystem";
-    default:
-      NOTREACHED();
   }
+  NOTREACHED();
   return "";
 }
 

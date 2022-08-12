@@ -73,23 +73,17 @@ TEST_F(SuspendUnmountManagerTest, Basic) {
   const std::string kDummyMountPathSd = "/dummy/mount/sd";
   const std::string kDummyMountPathUnknown = "/dummy/mount/unknown";
   disk_mount_manager_.CreateDiskEntryForMountDevice(
-      DiskMountManager::MountPointInfo("/dummy/device/usb", kDummyMountPathUsb,
-                                       MountType::kDevice,
-                                       MOUNT_CONDITION_NONE),
-      kDeviceId, kDeviceLabel, kVendor, kProduct, DeviceType::kUSB, 1024 * 1024,
+      {"/dummy/device/usb", kDummyMountPathUsb, MountType::kDevice}, kDeviceId,
+      kDeviceLabel, kVendor, kProduct, DeviceType::kUSB, 1024 * 1024,
       false /* is_parent */, false /* has_media */, false /* on_boot_device */,
       true /* on_removable_device */, kFileSystemType);
   disk_mount_manager_.CreateDiskEntryForMountDevice(
-      DiskMountManager::MountPointInfo("/dummy/device/sd", kDummyMountPathSd,
-                                       MountType::kDevice,
-                                       MOUNT_CONDITION_NONE),
-      kDeviceId, kDeviceLabel, kVendor, kProduct, DeviceType::kSD, 1024 * 1024,
+      {"/dummy/device/sd", kDummyMountPathSd, MountType::kDevice}, kDeviceId,
+      kDeviceLabel, kVendor, kProduct, DeviceType::kSD, 1024 * 1024,
       false /* is_parent */, false /* has_media */, false /* on_boot_device */,
       true /* on_removable_device */, kFileSystemType);
   disk_mount_manager_.CreateDiskEntryForMountDevice(
-      DiskMountManager::MountPointInfo(
-          "/dummy/device/unknown", kDummyMountPathUnknown, MountType::kDevice,
-          MOUNT_CONDITION_NONE),
+      {"/dummy/device/unknown", kDummyMountPathUnknown, MountType::kDevice},
       kDeviceId, kDeviceLabel, kVendor, kProduct, DeviceType::kUnknown,
       1024 * 1024, false /* is_parent */, false /* has_media */,
       false /* on_boot_device */, true /* on_removable_device */,
@@ -120,10 +114,8 @@ TEST_F(SuspendUnmountManagerTest, Basic) {
 TEST_F(SuspendUnmountManagerTest, CancelAndSuspendAgain) {
   const std::string kDummyMountPath = "/dummy/mount";
   disk_mount_manager_.CreateDiskEntryForMountDevice(
-      DiskMountManager::MountPointInfo("/dummy/device", kDummyMountPath,
-                                       MountType::kDevice,
-                                       MOUNT_CONDITION_NONE),
-      kDeviceId, kDeviceLabel, kVendor, kProduct, DeviceType::kUSB, 1024 * 1024,
+      {"/dummy/device", kDummyMountPath, MountType::kDevice}, kDeviceId,
+      kDeviceLabel, kVendor, kProduct, DeviceType::kUSB, 1024 * 1024,
       false /* is_parent */, false /* has_media */, false /* on_boot_device */,
       true /* on_removable_device */, kFileSystemType);
   disk_mount_manager_.SetupDefaultReplies();

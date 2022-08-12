@@ -105,7 +105,7 @@ class FakeDiskMountManager : public ash::disks::DiskMountManager {
       UnmountDeviceRecursivelyCallbackType callback) override;
 
   bool AddDiskForTest(std::unique_ptr<ash::disks::Disk> disk) override;
-  bool AddMountPointForTest(const MountPointInfo& mount_point) override;
+  bool AddMountPointForTest(const MountPoint& mount_point) override;
   void InvokeDiskEventForTest(DiskEvent event, const ash::disks::Disk* disk);
 
  private:

@@ -99,7 +99,7 @@ class COMPONENT_EXPORT(ASH_DISKS) DiskMountManager {
   using MountPointInfo = MountPoint;
 
   // MountPointMap key is mount_path.
-  typedef std::map<std::string, MountPointInfo> MountPointMap;
+  typedef std::map<std::string, MountPoint> MountPointMap;
 
   // A callback function type which is called after UnmountDeviceRecursively
   // finishes.
@@ -107,7 +107,7 @@ class COMPONENT_EXPORT(ASH_DISKS) DiskMountManager {
       UnmountDeviceRecursivelyCallbackType;
 
   typedef base::OnceCallback<void(MountError error_code,
-                                  const MountPointInfo& mount_info)>
+                                  const MountPoint& mount_info)>
       MountPathCallback;
 
   // A callback type for UnmountPath method.
@@ -130,7 +130,7 @@ class COMPONENT_EXPORT(ASH_DISKS) DiskMountManager {
     // Called after a mount point has been mounted or unmounted.
     virtual void OnMountEvent(MountEvent event,
                               MountError error_code,
-                              const MountPointInfo& mount_info) {}
+                              const MountPoint& mount_info) {}
     // Called on format process events.
     virtual void OnFormatEvent(FormatEvent event,
                                FormatError error_code,
@@ -238,7 +238,7 @@ class COMPONENT_EXPORT(ASH_DISKS) DiskMountManager {
   // Used in tests to initialize the manager's disk and mount point sets.
   // Default implementation does noting. It just fails.
   virtual bool AddDiskForTest(std::unique_ptr<Disk> disk);
-  virtual bool AddMountPointForTest(const MountPointInfo& mount_point);
+  virtual bool AddMountPointForTest(const MountPoint& mount_point);
 
   // Returns corresponding string to |type| like "unknown_filesystem".
   static std::string MountConditionToString(MountCondition type);

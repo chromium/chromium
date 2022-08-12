@@ -38,9 +38,8 @@ TEST_F(MountPointTest, Mount) {
               MountPath(kSourcePath, "", "", _, MountType::kDevice,
                         MOUNT_ACCESS_MODE_READ_WRITE, _))
       .WillOnce(RunOnceCallback<6>(
-          MountError::kNone, DiskMountManager::MountPointInfo(
-                                 kSourcePath, kMountPath, MountType::kDevice,
-                                 MOUNT_CONDITION_NONE)));
+          MountError::kNone, DiskMountManager::MountPoint{
+                                 kSourcePath, kMountPath, MountType::kDevice}));
   EXPECT_CALL(disk_mount_manager_, UnmountPath(kMountPath, _)).Times(1);
 
   base::RunLoop run_loop;
@@ -61,9 +60,9 @@ TEST_F(MountPointTest, MountFailure) {
               MountPath(kSourcePath, "", "", _, MountType::kDevice,
                         MOUNT_ACCESS_MODE_READ_WRITE, _))
       .WillOnce(RunOnceCallback<6>(
-          MountError::kUnknown, DiskMountManager::MountPointInfo(
+          MountError::kUnknown, DiskMountManager::MountPoint{
                                     kSourcePath, kMountPath, MountType::kDevice,
-                                    MOUNT_CONDITION_UNSUPPORTED_FILESYSTEM)));
+                                    MOUNT_CONDITION_UNSUPPORTED_FILESYSTEM}));
   EXPECT_CALL(disk_mount_manager_, UnmountPath(_, _)).Times(0);
 
   base::RunLoop run_loop;

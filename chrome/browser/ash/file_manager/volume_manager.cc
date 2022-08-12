@@ -316,7 +316,7 @@ std::unique_ptr<Volume> Volume::CreateForDownloads(
 
 // static
 std::unique_ptr<Volume> Volume::CreateForRemovable(
-    const ash::disks::DiskMountManager::MountPointInfo& mount_point,
+    const ash::disks::DiskMountManager::MountPoint& mount_point,
     const ash::disks::Disk* disk) {
   std::unique_ptr<Volume> volume(new Volume());
   volume->type_ = MountTypeToVolumeType(mount_point.mount_type);
@@ -1130,7 +1130,7 @@ void VolumeManager::OnDeviceEvent(
 void VolumeManager::OnMountEvent(
     ash::disks::DiskMountManager::MountEvent event,
     ash::MountError error_code,
-    const ash::disks::DiskMountManager::MountPointInfo& mount_info) {
+    const ash::disks::DiskMountManager::MountPoint& mount_info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Network storage is responsible for doing its own mounting.

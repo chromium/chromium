@@ -18,7 +18,7 @@ namespace {
 void OnMountDone(DiskMountManager* disk_mount_manager,
                  MountPoint::DoneCallback callback,
                  MountError error_code,
-                 const DiskMountManager::MountPointInfo& mount_info) {
+                 const DiskMountManager::MountPoint& mount_info) {
   std::unique_ptr<MountPoint> mount_point;
   if (error_code == MountError::kNone) {
     DCHECK(!mount_info.mount_path.empty());

@@ -124,7 +124,7 @@ void MockDiskMountManager::NotifyDeviceRemoveEvents() {
 
 void MockDiskMountManager::NotifyMountEvent(MountEvent event,
                                             MountError error_code,
-                                            const MountPointInfo& mount_info) {
+                                            const MountPoint& mount_info) {
   for (auto& observer : observers_)
     observer.OnMountEvent(event, error_code, mount_info);
 }
@@ -152,7 +152,7 @@ void MockDiskMountManager::CreateDiskEntryForMountDevice(
 }
 
 void MockDiskMountManager::CreateDiskEntryForMountDevice(
-    const DiskMountManager::MountPointInfo& mount_info,
+    const DiskMountManager::MountPoint& mount_info,
     const std::string& device_id,
     const std::string& device_label,
     const std::string& vendor_name,
@@ -185,7 +185,7 @@ void MockDiskMountManager::CreateDiskEntryForMountDevice(
 }
 
 void MockDiskMountManager::RemoveDiskEntryForMountDevice(
-    const DiskMountManager::MountPointInfo& mount_info) {
+    const DiskMountManager::MountPoint& mount_info) {
   disks_.erase(mount_info.source_path);
 }
 

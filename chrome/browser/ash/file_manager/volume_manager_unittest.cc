@@ -694,9 +694,8 @@ TEST_F(VolumeManagerTest, OnMountEvent_MountingAndUnmounting) {
   LoggingObserver observer;
   volume_manager()->AddObserver(&observer);
 
-  const DiskMountManager::MountPointInfo kMountPoint(
-      "device1", "mount1", ash::MountType::kDevice,
-      ash::disks::MOUNT_CONDITION_NONE);
+  const DiskMountManager::MountPoint kMountPoint{"device1", "mount1",
+                                                 ash::MountType::kDevice};
 
   volume_manager()->OnMountEvent(DiskMountManager::MOUNTING,
                                  ash::MountError::kNone, kMountPoint);
@@ -729,9 +728,8 @@ TEST_F(VolumeManagerTest, OnMountEvent_Remounting) {
                                  chromeos::MOUNT_ACCESS_MODE_READ_WRITE,
                                  base::DoNothing());
 
-  const DiskMountManager::MountPointInfo kMountPoint(
-      "device1", "mount1", ash::MountType::kDevice,
-      ash::disks::MOUNT_CONDITION_NONE);
+  const DiskMountManager::MountPoint kMountPoint{"device1", "mount1",
+                                                 ash::MountType::kDevice};
 
   volume_manager()->OnMountEvent(DiskMountManager::MOUNTING,
                                  ash::MountError::kNone, kMountPoint);
@@ -768,9 +766,8 @@ TEST_F(VolumeManagerTest, OnMountEvent_UnmountingWithoutMounting) {
   LoggingObserver observer;
   volume_manager()->AddObserver(&observer);
 
-  const DiskMountManager::MountPointInfo kMountPoint(
-      "device1", "mount1", ash::MountType::kDevice,
-      ash::disks::MOUNT_CONDITION_NONE);
+  const DiskMountManager::MountPoint kMountPoint{"device1", "mount1",
+                                                 ash::MountType::kDevice};
 
   volume_manager()->OnMountEvent(DiskMountManager::UNMOUNTING,
                                  ash::MountError::kNone, kMountPoint);
@@ -1151,16 +1148,12 @@ TEST_F(VolumeManagerTest, ArchiveSourceFiltering) {
   // Mount a USB stick.
   volume_manager()->OnMountEvent(
       DiskMountManager::MOUNTING, ash::MountError::kNone,
-      DiskMountManager::MountPointInfo("/removable/usb", "/removable/usb",
-                                       ash::MountType::kDevice,
-                                       ash::disks::MOUNT_CONDITION_NONE));
+      {"/removable/usb", "/removable/usb", ash::MountType::kDevice});
 
   // Mount a zip archive in the stick.
   volume_manager()->OnMountEvent(
       DiskMountManager::MOUNTING, ash::MountError::kNone,
-      DiskMountManager::MountPointInfo("/removable/usb/1.zip", "/archive/1",
-                                       ash::MountType::kArchive,
-                                       ash::disks::MOUNT_CONDITION_NONE));
+      {"/removable/usb/1.zip", "/archive/1", ash::MountType::kArchive});
   base::WeakPtr<Volume> volume = volume_manager()->FindVolumeById("archive:1");
   ASSERT_TRUE(volume.get());
   EXPECT_EQ("/archive/1", volume->mount_path().AsUTF8Unsafe());
@@ -1169,9 +1162,7 @@ TEST_F(VolumeManagerTest, ArchiveSourceFiltering) {
   // Mount a zip archive in the previous zip archive.
   volume_manager()->OnMountEvent(
       DiskMountManager::MOUNTING, ash::MountError::kNone,
-      DiskMountManager::MountPointInfo("/archive/1/2.zip", "/archive/2",
-                                       ash::MountType::kArchive,
-                                       ash::disks::MOUNT_CONDITION_NONE));
+      {"/archive/1/2.zip", "/archive/2", ash::MountType::kArchive});
   base::WeakPtr<Volume> second_volume =
       volume_manager()->FindVolumeById("archive:2");
   ASSERT_TRUE(second_volume.get());
@@ -1180,11 +1171,10 @@ TEST_F(VolumeManagerTest, ArchiveSourceFiltering) {
 
   // A zip file is mounted from other profile. It must be ignored in the current
   // VolumeManager.
-  volume_manager()->OnMountEvent(
-      DiskMountManager::MOUNTING, ash::MountError::kNone,
-      DiskMountManager::MountPointInfo("/other/profile/drive/folder/3.zip",
-                                       "/archive/3", ash::MountType::kArchive,
-                                       ash::disks::MOUNT_CONDITION_NONE));
+  volume_manager()->OnMountEvent(DiskMountManager::MOUNTING,
+                                 ash::MountError::kNone,
+                                 {"/other/profile/drive/folder/3.zip",
+                                  "/archive/3", ash::MountType::kArchive});
   base::WeakPtr<Volume> third_volume =
       volume_manager()->FindVolumeById("archive:3");
   ASSERT_FALSE(third_volume.get());

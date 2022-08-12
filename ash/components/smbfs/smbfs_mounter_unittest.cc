@@ -49,12 +49,10 @@ constexpr char kPassword[] = "myverysecurepassword";
 constexpr char kKerberosIdentity[] = "my-kerberos-identity";
 constexpr char kAccountHash[] = "00112233445566778899aabb";
 
-ash::disks::DiskMountManager::MountPointInfo MakeMountPointInfo(
+ash::disks::DiskMountManager::MountPoint MakeMountPointInfo(
     const std::string& source_path,
     const std::string& mount_path) {
-  return ash::disks::DiskMountManager::MountPointInfo(
-      source_path, mount_path, ash::MountType::kNetworkStorage,
-      ash::disks::MOUNT_CONDITION_NONE);
+  return {source_path, mount_path, ash::MountType::kNetworkStorage};
 }
 
 class MockDelegate : public SmbFsHost::Delegate {

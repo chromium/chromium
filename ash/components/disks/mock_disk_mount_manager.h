@@ -87,7 +87,7 @@ class MockDiskMountManager : public DiskMountManager {
   // Invokes specified mount event.
   void NotifyMountEvent(MountEvent event,
                         MountError error_code,
-                        const MountPointInfo& mount_info);
+                        const MountPoint& mount_info);
 
   // Sets up default results for mock methods.
   void SetupDefaultReplies();
@@ -97,7 +97,7 @@ class MockDiskMountManager : public DiskMountManager {
 
   // Creates a fake disk entry for the mounted device.
   void CreateDiskEntryForMountDevice(
-      const DiskMountManager::MountPointInfo& mount_info,
+      const DiskMountManager::MountPoint& mount_info,
       const std::string& device_id,
       const std::string& device_label,
       const std::string& vendor_name,
@@ -113,7 +113,7 @@ class MockDiskMountManager : public DiskMountManager {
   // Removes the fake disk entry associated with the mounted device. This
   // function is primarily for StorageMonitorTest.
   void RemoveDiskEntryForMountDevice(
-      const DiskMountManager::MountPointInfo& mount_info);
+      const DiskMountManager::MountPoint& mount_info);
 
  private:
   // Is used to implement AddObserver.

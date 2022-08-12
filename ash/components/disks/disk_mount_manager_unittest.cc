@@ -70,14 +70,6 @@ struct TestDiskInfo {
   bool is_mounted;
 };
 
-// Holds information to create a DiskMOuntManager::MountPointInfo instance.
-struct TestMountPointInfo {
-  const char* source_path;
-  const char* mount_path;
-  MountType mount_type;
-  MountCondition mount_condition;
-};
-
 // List of disks held in DiskMountManager at the beginning of the test.
 const TestDiskInfo kTestDisks[] = {
     {
@@ -134,28 +126,6 @@ const TestDiskInfo kTestDisks[] = {
         kFileSystemType2,
         true,  // is_mounted
     },
-};
-
-// List of mount points held in DiskMountManager at the beginning of the test.
-const TestMountPointInfo kTestMountPoints[] = {
-  {
-    "/archive/source_path",
-    "/archive/mount_path",
-    MountType::kArchive,
-    MOUNT_CONDITION_NONE
-  },
-  {
-    kDevice1SourcePath,
-    kDevice1MountPath,
-    MountType::kDevice,
-    MOUNT_CONDITION_NONE
-  },
-  {
-    kReadOnlyDeviceSourcePath,
-    kReadOnlyDeviceMountPath,
-    MountType::kDevice,
-    MOUNT_CONDITION_NONE
-  },
 };
 
 // Represents which function in |DiskMountManager::Observer| was invoked.
@@ -313,7 +283,7 @@ struct RenameEvent : public ObserverEvent {
 struct MountEvent : public ObserverEvent {
   DiskMountManager::MountEvent event;
   MountError error_code;
-  DiskMountManager::MountPointInfo mount_point;
+  DiskMountManager::MountPoint mount_point;
 
   // Not passed to callback, but read by handlers. So it's captured upon
   // callback.
@@ -326,7 +296,7 @@ struct MountEvent : public ObserverEvent {
         disk(std::move(other.disk)) {}
   MountEvent(DiskMountManager::MountEvent event,
              MountError error_code,
-             const DiskMountManager::MountPointInfo& mount_point,
+             const DiskMountManager::MountPoint& mount_point,
              const Disk& disk)
       : event(event),
         error_code(error_code),
@@ -389,10 +359,9 @@ class MockDiskMountManagerObserver : public DiskMountManager::Observer {
                                                     device_path, device_label));
   }
 
-  void OnMountEvent(
-      DiskMountManager::MountEvent event,
-      MountError error_code,
-      const DiskMountManager::MountPointInfo& mount_point) override {
+  void OnMountEvent(DiskMountManager::MountEvent event,
+                    MountError error_code,
+                    const DiskMountManager::MountPoint& mount_point) override {
     // Take a snapshot (copy) of a Disk object at the time of invocation.
     // It can be verified later besides the arguments.
     events_.push_back(std::make_unique<MountEvent>(
@@ -587,12 +556,9 @@ class DiskMountManagerTest : public testing::Test {
   // Adds a new mount point to the disk mount manager.
   // If the mount point is a device mount point, disk with its source path
   // should already be added to the disk mount manager.
-  void AddTestMountPoint(const TestMountPointInfo& mount_point) {
-    EXPECT_TRUE(DiskMountManager::GetInstance()->AddMountPointForTest(
-        DiskMountManager::MountPointInfo(mount_point.source_path,
-                                         mount_point.mount_path,
-                                         mount_point.mount_type,
-                                         mount_point.mount_condition)));
+  void AddTestMountPoint(const DiskMountManager::MountPoint& mount_point) {
+    EXPECT_TRUE(
+        DiskMountManager::GetInstance()->AddMountPointForTest(mount_point));
   }
 
   // Adds disks and mount points to disk mount manager.
@@ -602,8 +568,12 @@ class DiskMountManagerTest : public testing::Test {
     for (size_t i = 0; i < std::size(kTestDisks); i++)
       AddTestDisk(kTestDisks[i]);
 
-    for (size_t i = 0; i < std::size(kTestMountPoints); i++)
-      AddTestMountPoint(kTestMountPoints[i]);
+    AddTestMountPoint(
+        {"/archive/source_path", "/archive/mount_path", MountType::kArchive});
+    AddTestMountPoint(
+        {kDevice1SourcePath, kDevice1MountPath, MountType::kDevice});
+    AddTestMountPoint({kReadOnlyDeviceSourcePath, kReadOnlyDeviceMountPath,
+                       MountType::kDevice});
   }
 
  protected:
@@ -999,15 +969,15 @@ TEST_F(DiskMountManagerTest, MountPath_RecordAccessMode) {
   EXPECT_CALL(
       mock_callback1,
       Run(MountError::kNone,
-          Field(&DiskMountManager::MountPointInfo::mount_path, kMountPath1)));
+          Field(&DiskMountManager::MountPoint::mount_path, kMountPath1)));
 
   base::MockCallback<DiskMountManager::MountPathCallback> mock_callback2;
   EXPECT_CALL(
       mock_callback2,
       Run(MountError::kNone,
-          Field(&DiskMountManager::MountPointInfo::mount_path, kMountPath2)))
+          Field(&DiskMountManager::MountPoint::mount_path, kMountPath2)))
       .WillOnce([&](MountError,
-                    const DiskMountManager::MountPointInfo& mount_point) {
+                    const DiskMountManager::MountPoint& mount_point) {
         // Verify the disk appears read-only when the callback is invoked. See
         // below comment about the 2nd source.
         EXPECT_TRUE(manager->disks()
@@ -1058,10 +1028,10 @@ TEST_F(DiskMountManagerTest, MountPath_ReadOnlyDevice) {
   const std::string kMountLabel = std::string();  // N/A for MountType::kDevice
 
   base::MockCallback<DiskMountManager::MountPathCallback> mock_callback;
-  EXPECT_CALL(mock_callback,
-              Run(MountError::kNone,
-                  Field(&DiskMountManager::MountPointInfo::mount_path,
-                        kReadOnlyDeviceMountPath)));
+  EXPECT_CALL(
+      mock_callback,
+      Run(MountError::kNone, Field(&DiskMountManager::MountPoint::mount_path,
+                                   kReadOnlyDeviceMountPath)));
 
   // Attempt to mount a read-only device in read-write mode.
   manager->MountPath(kReadOnlyDeviceSourcePath, kSourceFormat, std::string(),
@@ -1108,7 +1078,7 @@ TEST_F(DiskMountManagerTest, MountPath_DoubleCall) {
   EXPECT_CALL(
       mock_callback1,
       Run(MountError::kNone,
-          Field(&DiskMountManager::MountPointInfo::mount_path, kMountPath1)));
+          Field(&DiskMountManager::MountPoint::mount_path, kMountPath1)));
   fake_cros_disks_client_->NotifyMountCompleted(
       MountError::kNone, kDevice1SourcePath, MountType::kDevice, kMountPath1);
 }
@@ -1124,9 +1094,9 @@ TEST_F(DiskMountManagerTest, MountPath_CallbackCallsMount) {
   EXPECT_CALL(
       mock_callback1,
       Run(MountError::kNone,
-          Field(&DiskMountManager::MountPointInfo::mount_path, kMountPath1)))
+          Field(&DiskMountManager::MountPoint::mount_path, kMountPath1)))
       .WillOnce([=](MountError error,
-                    const DiskMountManager::MountPointInfo& mount_info) {
+                    const DiskMountManager::MountPoint& mount_info) {
         // Try remount the same path and verify it fails.
         base::MockCallback<DiskMountManager::MountPathCallback> mock_callback2;
         EXPECT_CALL(mock_callback2, Run(MountError::kPathAlreadyMounted, _));
@@ -1136,10 +1106,10 @@ TEST_F(DiskMountManagerTest, MountPath_CallbackCallsMount) {
 
         // Try mount a different path and verify it succeeds.
         base::MockCallback<DiskMountManager::MountPathCallback> mock_callback3;
-        EXPECT_CALL(mock_callback3,
-                    Run(MountError::kNone,
-                        Field(&DiskMountManager::MountPointInfo::mount_path,
-                              kMountPath2)));
+        EXPECT_CALL(
+            mock_callback3,
+            Run(MountError::kNone,
+                Field(&DiskMountManager::MountPoint::mount_path, kMountPath2)));
         manager->MountPath(kDevice2SourcePath, "", "", {}, MountType::kDevice,
                            chromeos::MOUNT_ACCESS_MODE_READ_WRITE,
                            mock_callback3.Get());
