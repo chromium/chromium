@@ -100,10 +100,6 @@ ui::AXNode* ViewsAXTreeManager::GetParentNodeFromParentTreeAsAXNode() const {
   return nullptr;
 }
 
-std::string ViewsAXTreeManager::ToString() const {
-  return "<ViewsAXTreeManager>";
-}
-
 void ViewsAXTreeManager::OnViewEvent(View* view, ax::mojom::Event event) {
   DCHECK(view);
   AXAuraObjWrapper* wrapper = cache_.GetOrCreate(view);

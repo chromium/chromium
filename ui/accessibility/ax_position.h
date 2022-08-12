@@ -401,7 +401,7 @@ class AXPosition {
     DCHECK(GetManager());
     std::ostringstream str;
     str << "* Position: " << ToString()
-        << "\n* Manager: " << GetManager()->ToString()
+        << "\n* Manager: " << GetManager()->ax_tree()->data().ToString()
         << "\n* Anchor node: " << *GetAnchor();
     return str.str();
   }

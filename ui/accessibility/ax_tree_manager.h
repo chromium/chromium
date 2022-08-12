@@ -60,11 +60,6 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
   // `AXTreeManagerMap`.
   virtual void WillBeRemovedFromMap() {}
 
-  // For debugging.
-  // TODO(benjamin.beaudry) Instead of this, implement GetTreeData() on all
-  // AXTreeManager subclasses, and have callers use GetTreeData().ToString();
-  virtual std::string ToString() const = 0;
-
   const AXTreeID& ax_tree_id() const { return ax_tree_id_; }
   AXTree* ax_tree() const { return ax_tree_.get(); }
 

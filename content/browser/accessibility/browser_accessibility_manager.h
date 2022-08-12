@@ -218,8 +218,6 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   // Get the AXTreeData for this frame.
   const ui::AXTreeData& GetTreeData() const;
 
-  std::string ToString() const override;
-
   // Called to notify the accessibility manager that its associated native
   // view got focused.
   virtual void OnWindowFocused();

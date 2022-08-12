@@ -586,8 +586,4 @@ ui::AXNode* AutomationAXTreeWrapper::GetParentNodeFromParentTreeAsAXNode()
                            /* requires_unignored = */ false);
 }
 
-std::string AutomationAXTreeWrapper::ToString() const {
-  return "<AutomationAXTreeWrapper>";
-}
-
 }  // namespace extensions

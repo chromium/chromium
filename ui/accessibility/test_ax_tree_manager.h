@@ -51,7 +51,6 @@ class AX_EXPORT TestAXTreeManager : public AXTreeManager {
   AXTreeID GetParentTreeID() const override;
   AXNode* GetRootAsAXNode() const override;
   AXNode* GetParentNodeFromParentTreeAsAXNode() const override;
-  std::string ToString() const override;
 };
 
 }  // namespace ui
