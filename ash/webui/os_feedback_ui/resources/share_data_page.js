@@ -70,6 +70,12 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
      * @type {string}
      * @protected
      */
+    this.bluetoothLogsCheckboxLabel_;
+
+    /**
+     * @type {string}
+     * @protected
+     */
     this.privacyNote_;
 
     /** @private {!FeedbackServiceProviderInterface} */
@@ -80,6 +86,7 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
     super.ready();
     this.setPrivacyNote_();
     this.setSysInfoCheckboxLabelAndAttributes_();
+    this.setBluetoothLogsCheckboxLabelAndAttributes_();
     // Set the aria description works the best for screen reader.
     // It reads the description when the checkbox is focused, and when it is
     // checked and unchecked.
@@ -169,6 +176,20 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
     e.preventDefault();
 
     this.feedbackServiceProvider_.openSystemInfoDialog();
+  }
+
+  /**
+   * @param {!Event} e
+   * @protected
+   */
+  handleOpenBluetoothLogsInfoDialog_(e) {
+    // The default behavior of clicking on an anchor tag
+    // with href="#" is a scroll to the top of the page.
+    // This link opens a dialog, so we want to prevent
+    // this default behavior.
+    e.preventDefault();
+
+    this.feedbackServiceProvider_.openBluetoothLogsInfoDialog();
   }
 
   /**
@@ -302,6 +323,19 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
     histogramsLink.setAttribute('href', '#');
     histogramsLink.addEventListener(
         'click', (e) => void this.handleOpenMetricsDialog_(e));
+  }
+
+  /** @private */
+  setBluetoothLogsCheckboxLabelAndAttributes_() {
+    this.bluetoothLogsCheckboxLabel_ =
+        this.i18nAdvanced('bluetoothLogsInfo', {attrs: ['id']});
+
+    const bluetoothLogsLink =
+        this.shadowRoot.querySelector('#bluetoothLogsInfoLink');
+    // Setting href causes <a> tag to display as link.
+    bluetoothLogsLink.setAttribute('href', '#');
+    bluetoothLogsLink.addEventListener(
+        'click', (e) => void this.handleOpenBluetoothLogsInfoDialog_(e));
   }
 }
 

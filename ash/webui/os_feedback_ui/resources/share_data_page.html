@@ -50,11 +50,6 @@
     width: 50%;
   }
 
-  #screenshotCheckLabel {
-    flex: 1;
-    margin-inline-end: 12px;
-  }
-
   #screenshotContainer > button {
     cursor: pointer;
   }
@@ -95,7 +90,12 @@
   }
 
   #shareDiagnosticData {
-    height: 96px;
+    margin-bottom: 16px;
+  }
+
+  .checkbox-field-container {
+    display: flex;
+    margin-bottom: 8px;
   }
 
   #pageUrl {
@@ -119,7 +119,10 @@
   }
 
   #screenshotCheckLabel {
+    flex: 1;
     font-weight: 400;
+    line-height: 20px;
+    margin-inline-end: 12px;
   }
 
   #imageButton {
@@ -130,7 +133,6 @@
     width: 68px;
   }
 
-  #sysInfoContainer,
   #userConsent {
     display: flex;
     margin-bottom: 24px;
@@ -217,6 +219,12 @@
         <cr-checkbox id="sysInfoCheckbox" aria-labelledby="sysInfoCheckboxLabel" checked>
         </cr-checkbox>
         <label id="sysInfoCheckboxLabel" inner-h-t-m-l="[[sysInfoCheckboxLabel_]]"></label>
+      </div>
+      <!-- Bluetooth Logs (Googler Internal Only) -->
+      <div id="bluetoothCheckboxContainer" class="checkbox-field-container">
+        <cr-checkbox id="bluetoothLogsCheckbox" aria-labelledby="sysInfoCheckboxLabel" checked>
+        </cr-checkbox>
+        <label id="bluetoothInfoLabel" inner-h-t-m-l="[[bluetoothLogsCheckboxLabel_]]"></label>
       </div>
     </div>
     <!-- Privacy note -->

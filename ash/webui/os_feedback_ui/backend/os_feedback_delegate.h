@@ -48,6 +48,9 @@ class OsFeedbackDelegate {
   // Open system info dialog (which displays the system logs
   // to be sent with the report if the user has opted in).
   virtual void OpenSystemInfoDialog() = 0;
+  // Open bluetooth logs info dialog (which displays the bluetooth logs
+  // to be sent with the report if the user has opted in).
+  virtual void OpenBluetoothLogsInfoDialog() = 0;
 };
 
 }  // namespace ash

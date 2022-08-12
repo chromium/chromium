@@ -44,6 +44,8 @@ export class FakeFeedbackServiceProvider {
       openMetricsDialog: 0,
       /** @type {number} */
       openSystemInfoDialog: 0,
+      /** @type {number} */
+      openBluetoothLogsInfoDialog: 0,
     };
 
     /** @type {?FeedbackAppPostSubmitAction} */
@@ -184,6 +186,17 @@ export class FakeFeedbackServiceProvider {
    */
   openSystemInfoDialog() {
     this.callCounts_.openSystemInfoDialog++;
+  }
+
+  /**
+   * @return {number}
+   */
+  getOpenBluetoothLogsInfoDialogCallCount() {
+    return this.callCounts_.openBluetoothLogsInfoDialog;
+  }
+
+  openBluetoothLogsInfoDialog() {
+    this.callCounts_.openBluetoothLogsInfoDialog++;
   }
 
   /**

@@ -72,6 +72,8 @@ class TestOsFeedbackDelegate : public OsFeedbackDelegate {
   void OpenMetricsDialog() override {}
 
   void OpenSystemInfoDialog() override {}
+
+  void OpenBluetoothLogsInfoDialog() override {}
 };
 
 class FeedbackServiceProviderTest : public testing::Test {

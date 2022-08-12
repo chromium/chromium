@@ -395,4 +395,30 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, OpenSystemInfoDialog) {
   EXPECT_EQ(owned_widgets_post_dialog.size(), 1);
 }
 
+// Test that the bluetooth logs dialog opens
+// when OpenBluetoothLogsInfoDialog is invoked.
+IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
+                       OpenBluetoothLogsInfoDialog) {
+  Browser* feedback_browser = LaunchFeedbackAppAndGetBrowser();
+
+  gfx::NativeWindow feedback_window =
+      feedback_browser->window()->GetNativeWindow();
+
+  std::set<views::Widget*> owned_widgets_pre_dialog;
+  views::Widget::GetAllOwnedWidgets(feedback_window, &owned_widgets_pre_dialog);
+
+  EXPECT_EQ(owned_widgets_pre_dialog.size(), 0);
+
+  // Initialize the delegate.
+  ChromeOsFeedbackDelegate feedback_delegate_(browser()->profile());
+
+  feedback_delegate_.OpenBluetoothLogsInfoDialog();
+
+  std::set<views::Widget*> owned_widgets_post_dialog;
+  views::Widget::GetAllOwnedWidgets(feedback_window,
+                                    &owned_widgets_post_dialog);
+
+  EXPECT_EQ(owned_widgets_post_dialog.size(), 1);
+}
+
 }  // namespace ash

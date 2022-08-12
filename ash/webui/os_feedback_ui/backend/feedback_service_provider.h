@@ -37,6 +37,7 @@ class FeedbackServiceProvider
   void OpenExploreApp() override;
   void OpenMetricsDialog() override;
   void OpenSystemInfoDialog() override;
+  void OpenBluetoothLogsInfoDialog() override;
   void RecordPostSubmitAction(
       os_feedback_ui::mojom::FeedbackAppPostSubmitAction action) override;
   void RecordPreSubmitAction(

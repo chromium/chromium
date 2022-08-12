@@ -620,4 +620,20 @@ export function shareDataPageTestSuite() {
 
     assertEquals(1, feedbackServiceProvider.getOpenSystemInfoDialogCallCount());
   });
+
+  /**
+   * Test that feedbackServiceProvider.openBluetoothLogsInfoDialog is called
+   * when #bluetoothLogsLink link is clicked.
+   */
+  test('openBluetoothLogsInfoDialog', async () => {
+    await initializePage();
+
+    assertEquals(
+        0, feedbackServiceProvider.getOpenBluetoothLogsInfoDialogCallCount());
+
+    getElement('#bluetoothLogsInfoLink').click();
+
+    assertEquals(
+        1, feedbackServiceProvider.getOpenBluetoothLogsInfoDialogCallCount());
+  });
 }
