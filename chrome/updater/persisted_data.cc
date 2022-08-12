@@ -151,10 +151,9 @@ std::vector<std::string> PersistedData::GetAppIds() const {
   // The prefs is a dictionary of dictionaries, where each inner dictionary
   // corresponds to an app:
   // {"updateclientdata":{"apps":{"{44FC7FE2-65CE-487C-93F4-EDEE46EEAAAB}":{...
-  const auto* pref = pref_service_->GetDictionary(kPersistedDataPreference);
-  if (!pref)
-    return {};
-  const auto* apps = pref->GetDict().FindDict("apps");
+  const base::Value::Dict& dict =
+      pref_service_->GetValueDict(kPersistedDataPreference);
+  const base::Value::Dict* apps = dict.FindDict("apps");
   if (!apps)
     return {};
   std::vector<std::string> app_ids;
