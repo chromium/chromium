@@ -19,6 +19,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/sessions/sessions_api.h"
 #include "chrome/browser/extensions/api/tabs/tabs_api.h"
+#include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -26,6 +27,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/sync/base/client_tag_hash.h"
@@ -350,6 +352,27 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, RestoreInIncognito) {
           CreateFunction<SessionsRestoreFunction>(true).get(), "[\"1\"]",
           CreateIncognitoBrowser()),
       "Can not restore sessions in incognito mode."));
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, RestoreNonEditableTabstrip) {
+  CreateSessionModels();
+
+  // Set up a browser with a non-editable tabstrip, simulating one in the midst
+  // of a tab dragging session.
+  std::unique_ptr<TestBrowserWindow> browser_window =
+      std::make_unique<TestBrowserWindow>();
+  Browser::CreateParams params(browser()->profile(), true);
+  params.type = Browser::TYPE_NORMAL;
+  params.window = browser_window.get();
+  std::unique_ptr<Browser> browser =
+      std::unique_ptr<Browser>(Browser::Create(params));
+  browser_window->SetIsTabStripEditable(false);
+
+  EXPECT_TRUE(base::MatchPattern(
+      utils::RunFunctionAndReturnError(
+          CreateFunction<SessionsRestoreFunction>(true).get(), "[\"1\"]",
+          browser.get()),
+      tabs_constants::kTabStripNotEditableError));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, GetRecentlyClosedIncognito) {
