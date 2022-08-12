@@ -4,9 +4,10 @@
 
 #include "ash/wm/multitask_menu_nudge_controller.h"
 
-#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
+#include "ash/style/system_toast_style.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_util.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
@@ -15,21 +16,17 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_type.h"
+#include "ui/aura/client/aura_constants.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/transform_util.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/animation_builder.h"
-#include "ui/views/background.h"
-#include "ui/views/controls/image_view.h"
-#include "ui/views/controls/label.h"
-#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/frame_caption_button.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
 
-constexpr int kNudgeCornerRadius = 16;
 constexpr base::TimeDelta kNudgeDismissTimeout = base::Seconds(6);
 
 // The name of an integer pref that counts the number of times we have shown the
@@ -48,6 +45,8 @@ constexpr int kNudgeMaxShownCount = 3;
 constexpr base::TimeDelta kNudgeTimeBetweenShown = base::Hours(24);
 
 constexpr base::TimeDelta kFadeDuration = base::Milliseconds(50);
+
+constexpr int kNudgeDistanceFromAnchor = 8;
 
 // The max pulse size will be three times the size of the maximize/restore
 // button.
@@ -72,28 +71,10 @@ std::unique_ptr<views::Widget> CreateWidget(aura::Window* parent) {
   params.parent = parent;
 
   auto widget = std::make_unique<views::Widget>(std::move(params));
-
-  // The contents view is a view that contains an icon and a label.
-  // TODO(crbug.com/1329233): The values, colors and text are all placeholders
-  // until the spec is received.
-  auto contents_view =
-      views::Builder<views::BoxLayoutView>()
-          .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
-          .SetBackground(views::CreateRoundedRectBackground(SK_ColorGRAY,
-                                                            kNudgeCornerRadius))
-          .SetInsideBorderInsets(gfx::Insets(5))
-          .SetBetweenChildSpacing(10)
-          .AddChildren(
-              views::Builder<views::ImageView>()
-                  .SetPreferredSize(gfx::Size(30, 30))
-                  .SetImage(gfx::CreateVectorIcon(
-                      kPersistentDesksBarFeedbackIcon, 30, SK_ColorWHITE)),
-              views::Builder<views::Label>()
-                  .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                  .SetText(
-                      u"Keep hovering on maximize for more layout options"))
-          .Build();
-  widget->SetContentsView(std::move(contents_view));
+  widget->SetContentsView(std::make_unique<SystemToastStyle>(
+      base::DoNothing(),
+      l10n_util::GetStringUTF16(IDS_MULTITASK_MENU_NUDGE_TEXT),
+      /*dismiss_text=*/u"", /*is_managed=*/false));
   return widget;
 }
 
@@ -173,7 +154,7 @@ void MultitaskMenuNudgeController::MaybeShowNudge(aura::Window* window) {
 
   // Create the layer which pulses on the maximize/restore button.
   pulse_layer_ = std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR);
-  pulse_layer_->SetColor(SK_ColorBLUE);
+  pulse_layer_->SetColor(SK_ColorGRAY);
   window_->parent()->layer()->Add(pulse_layer_.get());
 
   UpdateWidgetAndPulse();
@@ -315,7 +296,8 @@ void MultitaskMenuNudgeController::UpdateWidgetAndPulse() {
   const gfx::Size size = nudge_widget_->GetContentsView()->GetPreferredSize();
   const gfx::Rect bounds_in_screen(
       anchor_bounds_in_screen.CenterPoint().x() - size.width() / 2,
-      anchor_bounds_in_screen.bottom(), size.width(), size.height());
+      anchor_bounds_in_screen.bottom() + kNudgeDistanceFromAnchor, size.width(),
+      size.height());
   nudge_widget_->SetBounds(bounds_in_screen);
 
   // The circular pulse should be a square that matches the smaller dimension of
@@ -345,8 +327,8 @@ void MultitaskMenuNudgeController::PerformPulseAnimation(int pulse_count) {
   pulse_layer_->SetOpacity(1.0f);
   pulse_layer_->SetTransform(gfx::Transform());
 
-  // Note that `views::AnimationBuilder::Repeatedly` does not work when one of
-  // the animation sequences has zero duration.
+  // Note that `views::AnimationBuilder::Repeatedly` works here as well, but
+  // causes tests to hang.
   views::AnimationBuilder builder;
   builder
       .SetPreemptionStrategy(
