@@ -862,7 +862,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/rts/model/linux-amd64',
-          'version': 'TkDDiu4byTvUZ76oFHCKypWsXZ-AtiKVvT8Ma4E2e1YC',
+          'version': 'S4G81p35MbG6mbSYDSwSEeoqjLxDXGiqVK7v0RaeDHcC',
         },
       ],
       'dep_type': 'cipd',
