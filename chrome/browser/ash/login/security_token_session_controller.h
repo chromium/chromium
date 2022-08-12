@@ -14,6 +14,7 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/certificate_provider/certificate_provider_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -28,10 +29,11 @@ namespace views {
 class Widget;
 }
 
-namespace ash {
+namespace chromeos {
 class CertificateProvider;
+}
 
-namespace login {
+namespace ash::login {
 
 // A controller that implements the combined behavior of the
 // SecurityTokenSessionBehavior and SecurityTokenSessionNotificationSeconds
@@ -90,6 +92,7 @@ class SecurityTokenSessionController
   bool ShouldApplyPolicyInCurrentSessionState() const;
   Behavior GetBehaviorFromPrefAndSessionState() const;
   void UpdateBehavior();
+  void UpdateKeepAlive();
   void UpdateNotificationPref();
 
   void ExtensionProvidesAllRequiredCertificates(
@@ -109,6 +112,7 @@ class SecurityTokenSessionController
   const user_manager::User* const primary_user_;
   chromeos::CertificateProviderService* certificate_provider_service_ = nullptr;
   session_manager::SessionManager* const session_manager_;
+  std::unique_ptr<crosapi::BrowserManager::ScopedKeepAlive> keep_alive_;
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>
       session_manager_observation_{this};
@@ -133,7 +137,6 @@ class SecurityTokenSessionController
   base::WeakPtrFactory<SecurityTokenSessionController> weak_ptr_factory_{this};
 };
 
-}  // namespace login
-}  // namespace ash
+}  // namespace ash::login
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SECURITY_TOKEN_SESSION_CONTROLLER_H_

@@ -51,6 +51,9 @@ class StandaloneBrowserExtensionApps;
 
 namespace ash {
 class ApkWebAppService;
+namespace login {
+class SecurityTokenSessionController;
+}
 }
 
 namespace extensions {
@@ -385,6 +388,11 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   friend class ash::ApkWebAppService;
   // Only for exposing state_ to Tast tests.
   friend class extensions::AutotestPrivateGetLacrosInfoFunction;
+  // In LacrosOnly mode, certificate provider and smart card connector
+  // extensions will be running in Lacros, but policy implementation stays in
+  // Ash. Thus, session controller needs to keep Lacros alive to keep track of
+  // smart card status.
+  friend class ash::login::SecurityTokenSessionController;
 
   // Processes the action depending on the current state.
   // Ignoring a few exceptional cases, the logic is as follows:
@@ -405,6 +413,7 @@ class BrowserManager : public session_manager::SessionManagerObserver,
     kApkWebAppService,
     kChromeApps,
     kExtensions,
+    kSmartCardSessionController,
   };
 
   // Any instance of this class will ensure that the Lacros browser will stay

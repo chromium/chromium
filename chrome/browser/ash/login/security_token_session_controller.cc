@@ -19,6 +19,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/certificate_provider/certificate_info.h"
@@ -186,6 +187,7 @@ SecurityTokenSessionController::SecurityTokenSessionController(
       &observed_extensions_);
   UpdateNotificationPref();
   behavior_ = GetBehaviorFromPrefAndSessionState();
+  UpdateKeepAlive();
   pref_change_registrar_.Init(local_state_);
   base::RepeatingClosure behavior_pref_changed_callback =
       base::BindRepeating(&SecurityTokenSessionController::UpdateBehavior,
@@ -315,12 +317,23 @@ void SecurityTokenSessionController::MaybeDisplayLoginScreenNotification() {
 void SecurityTokenSessionController::UpdateBehavior() {
   Behavior previous_behavior = behavior_;
   behavior_ = GetBehaviorFromPrefAndSessionState();
+  UpdateKeepAlive();
   if (behavior_ == Behavior::kIgnore) {
     Reset();
   } else if (previous_behavior == Behavior::kIgnore) {
     // Request all available certificates to ensure that all required
     // certificates are still present.
     certificate_provider_->GetCertificates(base::DoNothing());
+  }
+}
+
+void SecurityTokenSessionController::UpdateKeepAlive() {
+  if (behavior_ == Behavior::kIgnore ||
+      crosapi::browser_util::IsAshWebBrowserEnabled()) {
+    keep_alive_.reset();
+  } else if (!keep_alive_) {
+    keep_alive_ = crosapi::BrowserManager::Get()->KeepAlive(
+        crosapi::BrowserManager::Feature::kSmartCardSessionController);
   }
 }
 
