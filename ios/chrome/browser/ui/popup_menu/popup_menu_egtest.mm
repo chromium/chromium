@@ -174,17 +174,6 @@ const char kPDFURL[] = "http://ios/testing/data/http_server_files/testpage.pdf";
 // Navigates to a pdf page and verifies that the "Find in Page..." tool
 // is not enabled
 - (void)testNoSearchForPDF {
-#if !TARGET_IPHONE_SIMULATOR
-  // TODO(crbug.com/1209346): test failing on ipad device
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"This test doesn't pass on iPad device.");
-  }
-#else
-  // TODO(crbug.com/1293132): Test is flaky on iphone simulator.
-  if (![ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"This test is flaky on iPhone simulator.");
-  }
-#endif
   const GURL URL = web::test::HttpServer::MakeUrl(kPDFURL);
 
   // Navigate to a mock pdf and verify that the find button is disabled.
