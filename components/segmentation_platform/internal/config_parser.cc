@@ -64,7 +64,8 @@ std::unique_ptr<Config> ParseConfigFromString(const std::string& config_str) {
     }
 
     config->segments.insert(
-        {static_cast<proto::SegmentId>(segment), {*segment_uma_name}});
+        {static_cast<proto::SegmentId>(segment),
+         std::make_unique<Config::SegmentMetadata>(*segment_uma_name)});
   }
 
   return config;

@@ -6,11 +6,11 @@
 #define COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_CONFIG_H_
 
 #include <string>
-#include <unordered_map>
 
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "components/segmentation_platform/public/input_delegate.h"
+#include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "components/segmentation_platform/public/trigger.h"
@@ -86,12 +86,25 @@ struct Config {
 
   // List of segments needed to make a selection.
   struct SegmentMetadata {
+    explicit SegmentMetadata(const std::string& uma_name);
+    SegmentMetadata(const std::string& uma_name,
+                    std::unique_ptr<ModelProvider> default_provider);
+    SegmentMetadata(SegmentMetadata&&);
+
+    ~SegmentMetadata();
+
+    bool operator==(const SegmentMetadata& other) const;
+
     // The name used for this segment in UMA filters.
     std::string uma_name;
 
-    bool operator==(const SegmentMetadata& other) const;
+    // The default model or score used when server provided model is
+    // unavailable.
+    // TODO(crbug.com/1346389): This field is unused and being migrated from
+    // ModelProviderFactory.
+    std::unique_ptr<ModelProvider> default_provider;
   };
-  std::unordered_map<proto::SegmentId, SegmentMetadata> segments;
+  base::flat_map<proto::SegmentId, std::unique_ptr<SegmentMetadata>> segments;
 
   // The selection only supports returning results from on-demand model
   // executions instead of returning result from previous sessions. The

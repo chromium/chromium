@@ -21,11 +21,10 @@ namespace segmentation_platform {
 
 namespace {
 
-#define SEGMENT_ID_ENTRY(segment)                          \
-  {                                                        \
-    segment, Config::SegmentMetadata {                     \
-      stats::OptimizationTargetToHistogramVariant(segment) \
-    }                                                      \
+#define SEGMENT_ID_ENTRY(segment)                                      \
+  {                                                                    \
+    segment, std::make_unique<Config::SegmentMetadata>(                \
+                 stats::OptimizationTargetToHistogramVariant(segment)) \
   }
 
 class MockFieldTrialRegister : public FieldTrialRegister {
@@ -45,26 +44,28 @@ std::vector<std::unique_ptr<Config>> CreateTestConfigs() {
     std::unique_ptr<Config> config = std::make_unique<Config>();
     config->segmentation_key = kTestSegmentationKey1;
     config->segment_selection_ttl = base::Days(28);
-    config->segments = {
-        SEGMENT_ID_ENTRY(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB),
-        SEGMENT_ID_ENTRY(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE)};
+    config->segments.insert(
+        SEGMENT_ID_ENTRY(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB));
+    config->segments.insert(
+        SEGMENT_ID_ENTRY(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE));
     configs.push_back(std::move(config));
   }
   {
     std::unique_ptr<Config> config = std::make_unique<Config>();
     config->segmentation_key = kTestSegmentationKey2;
     config->segment_selection_ttl = base::Days(10);
-    config->segments = {
-        SEGMENT_ID_ENTRY(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE),
-        SEGMENT_ID_ENTRY(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_VOICE)};
+    config->segments.insert(
+        SEGMENT_ID_ENTRY(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE));
+    config->segments.insert(
+        SEGMENT_ID_ENTRY(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_VOICE));
     configs.push_back(std::move(config));
   }
   {
     std::unique_ptr<Config> config = std::make_unique<Config>();
     config->segmentation_key = kTestSegmentationKey3;
     config->segment_selection_ttl = base::Days(14);
-    config->segments = {
-        SEGMENT_ID_ENTRY(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB)};
+    config->segments.insert(
+        SEGMENT_ID_ENTRY(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB));
     configs.push_back(std::move(config));
   }
   {

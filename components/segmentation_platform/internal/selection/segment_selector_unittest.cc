@@ -7,7 +7,6 @@
 #include "base/run_loop.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
-#include "components/segmentation_platform/internal/constants.h"
 #include "components/segmentation_platform/internal/database/mock_signal_storage_config.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/database/test_segment_info_database.h"
@@ -33,11 +32,10 @@ class SegmentInfo;
 
 namespace {
 
-#define SEGMENT_ID_ENTRY(segment)                          \
-  {                                                        \
-    segment, Config::SegmentMetadata {                     \
-      stats::OptimizationTargetToHistogramVariant(segment) \
-    }                                                      \
+#define SEGMENT_ID_ENTRY(segment)                                      \
+  {                                                                    \
+    segment, std::make_unique<Config::SegmentMetadata>(                \
+                 stats::OptimizationTargetToHistogramVariant(segment)) \
   }
 
 class MockFieldTrialRegister : public FieldTrialRegister {
@@ -58,9 +56,10 @@ std::unique_ptr<Config> CreateTestConfig() {
   config->segmentation_uma_name = "TestKey";
   config->segment_selection_ttl = base::Days(28);
   config->unknown_selection_ttl = base::Days(14);
-  config->segments = {
-      SEGMENT_ID_ENTRY(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB),
-      SEGMENT_ID_ENTRY(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE)};
+  config->segments.insert(
+      SEGMENT_ID_ENTRY(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB));
+  config->segments.insert(
+      SEGMENT_ID_ENTRY(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE));
   return config;
 }
 
@@ -99,7 +98,7 @@ class SegmentSelectorTest : public testing::Test {
     clock_.SetNow(base::Time::Now());
     config_ = std::move(config);
     std::vector<proto::SegmentId> all_segments;
-    for (auto it : config_->segments)
+    for (const auto& it : config_->segments)
       all_segments.push_back(it.first);
     default_manager_ =
         std::make_unique<DefaultModelManager>(&provider_factory_, all_segments);
@@ -332,8 +331,9 @@ TEST_F(SegmentSelectorTest, NewSegmentResultOverridesThePreviousBest) {
 
 TEST_F(SegmentSelectorTest, UnknownSegmentTtlExpiryForBooleanModel) {
   auto config = CreateTestConfig();
-  config->segments = {SEGMENT_ID_ENTRY(
-      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID)};
+  config->segments.clear();
+  config->segments.insert(SEGMENT_ID_ENTRY(
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID));
   SetUpWithConfig(std::move(config));
 
   SegmentId segment_id =

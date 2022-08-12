@@ -72,11 +72,10 @@ constexpr int kQueryTilesDefaultSelectionTTLDays = 28;
 constexpr int kQueryTilesDefaultUnknownTTLDays = 7;
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#define SEGMENT_ID_ENTRY(segment)                          \
-  {                                                        \
-    segment, Config::SegmentMetadata {                     \
-      stats::OptimizationTargetToHistogramVariant(segment) \
-    }                                                      \
+#define SEGMENT_ID_ENTRY(segment)                                      \
+  {                                                                    \
+    segment, std::make_unique<Config::SegmentMetadata>(                \
+                 stats::OptimizationTargetToHistogramVariant(segment)) \
   }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -93,11 +92,12 @@ std::unique_ptr<Config> GetConfigForAdaptiveToolbar() {
   // Do not set unknown TTL so that the platform ignores unknown results.
 
   // A hardcoded list of segment IDs known to the segmentation platform.
-  config->segments = {
-      SEGMENT_ID_ENTRY(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB),
-      SEGMENT_ID_ENTRY(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE),
-      SEGMENT_ID_ENTRY(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_VOICE),
-  };
+  config->segments.insert(
+      SEGMENT_ID_ENTRY(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB));
+  config->segments.insert(
+      SEGMENT_ID_ENTRY(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE));
+  config->segments.insert(
+      SEGMENT_ID_ENTRY(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_VOICE));
 
   return config;
 }
@@ -108,9 +108,8 @@ std::unique_ptr<Config> GetConfigForDummyFeature() {
   config->segmentation_key = kDummySegmentationKey;
   config->segmentation_uma_name =
       stats::SegmentationKeyToUmaName(config->segmentation_key);
-  config->segments = {
-      SEGMENT_ID_ENTRY(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_DUMMY),
-  };
+  config->segments.insert(
+      SEGMENT_ID_ENTRY(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_DUMMY));
   config->segment_selection_ttl = base::Days(kDummyFeatureSelectionTTLDays);
   config->unknown_selection_ttl = base::Days(kDummyFeatureSelectionTTLDays);
   return config;
@@ -131,10 +130,8 @@ std::unique_ptr<Config> GetConfigForChromeStartAndroid() {
   config->segmentation_key = kChromeStartAndroidSegmentationKey;
   config->segmentation_uma_name =
       stats::SegmentationKeyToUmaName(config->segmentation_key);
-  config->segments = {
-      SEGMENT_ID_ENTRY(
-          SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID),
-  };
+  config->segments.insert(SEGMENT_ID_ENTRY(
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID));
 
   int segment_selection_ttl_days = base::GetFieldTrialParamByFeatureAsInt(
       chrome::android::kStartSurfaceAndroid, "segment_selection_ttl_days",
@@ -162,9 +159,8 @@ std::unique_ptr<Config> GetConfigForQueryTiles() {
   config->segmentation_key = kQueryTilesSegmentationKey;
   config->segmentation_uma_name =
       stats::SegmentationKeyToUmaName(config->segmentation_key);
-  config->segments = {
-      SEGMENT_ID_ENTRY(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_QUERY_TILES),
-  };
+  config->segments.insert(SEGMENT_ID_ENTRY(
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_QUERY_TILES));
 
   int segment_selection_ttl_days = base::GetFieldTrialParamByFeatureAsInt(
       query_tiles::features::kQueryTilesSegmentation,
@@ -241,11 +237,8 @@ std::unique_ptr<Config> GetConfigForChromeLowUserEngagement() {
   config->segmentation_key = kChromeLowUserEngagementSegmentationKey;
   config->segmentation_uma_name =
       stats::SegmentationKeyToUmaName(config->segmentation_key);
-  config->segments = {
-      SEGMENT_ID_ENTRY(
-          SegmentId::
-              OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT),
-  };
+  config->segments.insert(SEGMENT_ID_ENTRY(
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT));
 
 #if BUILDFLAG(IS_ANDROID)
   int segment_selection_ttl_days = base::GetFieldTrialParamByFeatureAsInt(
@@ -267,9 +260,8 @@ std::unique_ptr<Config> GetConfigForFeedSegments() {
   config->segmentation_key = kFeedUserSegmentationKey;
   config->segmentation_uma_name =
       stats::SegmentationKeyToUmaName(config->segmentation_key);
-  config->segments = {
-      SEGMENT_ID_ENTRY(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER),
-  };
+  config->segments.insert(
+      SEGMENT_ID_ENTRY(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER));
   config->segment_selection_ttl =
       base::Days(base::GetFieldTrialParamByFeatureAsInt(
           features::kSegmentationPlatformFeedSegmentFeature,

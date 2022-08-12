@@ -39,7 +39,9 @@ std::unique_ptr<Config> GetConfigForFeedSegments() {
       SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER;
   std::string feed_segment_name =
       stats::OptimizationTargetToHistogramVariant(segment_id);
-  config->segments.insert({segment_id, Config::SegmentMetadata{feed_segment_name}});
+  config->segments.insert(
+      {segment_id,
+       std::make_unique<Config::SegmentMetadata>(feed_segment_name)});
   config->segment_selection_ttl =
       base::Days(base::GetFieldTrialParamByFeatureAsInt(
           features::kSegmentationPlatformFeedSegmentFeature,
