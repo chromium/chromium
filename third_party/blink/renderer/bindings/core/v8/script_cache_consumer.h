@@ -157,8 +157,7 @@ class CORE_EXPORT ScriptCacheConsumer final
   // The task runner on which the finish callback should be run.
   scoped_refptr<base::SingleThreadTaskRunner> finish_callback_task_runner_;
 
-  // Keep the script URL string for event tracing. This is owned by the main
-  // thread, and should be copied when used off-thread.
+  // Keep the script URL string for event tracing.
   const String script_url_string_;
 
   // Keep the script resource dentifier for event tracing.

@@ -127,9 +127,9 @@ void ScriptCacheConsumer::RunMergeTaskOffThread() {
       TRACE_ID_LOCAL(this),
       TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "data",
       [&](perfetto::TracedValue context) {
-        inspector_deserialize_script_event::Data(
-            std::move(context), script_resource_identifier_,
-            script_url_string_.IsolatedCopy());
+        inspector_deserialize_script_event::Data(std::move(context),
+                                                 script_resource_identifier_,
+                                                 script_url_string_);
       });
 
   consume_task_->MergeWithExistingScript();
