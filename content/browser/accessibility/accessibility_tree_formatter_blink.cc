@@ -19,7 +19,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
-#include "ui/accessibility/ax_tree_manager_map.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/accessibility/platform/compute_attributes.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -72,9 +71,8 @@ std::string IntAttrToString(const ui::AXNode& node,
   if (ui::IsNodeIdIntAttribute(attr)) {
     // Relation
     ui::AXTreeID tree_id = node.tree()->GetAXTreeID();
-    ui::AXNode* target = ui::AXTreeManagerMap::GetInstance()
-                             .GetManager(tree_id)
-                             ->GetNodeFromTree(tree_id, value);
+    ui::AXNode* target =
+        ui::AXTreeManager::FromID(tree_id)->GetNodeFromTree(tree_id, value);
     if (!target)
       return "null";
 
@@ -272,8 +270,7 @@ base::Value AccessibilityTreeFormatterBlink::BuildNode(
 std::string AccessibilityTreeFormatterBlink::DumpInternalAccessibilityTree(
     ui::AXTreeID tree_id,
     const std::vector<AXPropertyFilter>& property_filters) {
-  ui::AXTreeManager* ax_mgr =
-      ui::AXTreeManagerMap::GetInstance().GetManager(tree_id);
+  ui::AXTreeManager* ax_mgr = ui::AXTreeManager::FromID(tree_id);
   DCHECK(ax_mgr);
   SetPropertyFilters(property_filters, kFiltersDefaultSet);
   base::Value dict = BuildTreeForNode(ax_mgr->GetRootAsAXNode());
@@ -560,9 +557,8 @@ void AccessibilityTreeFormatterBlink::AddProperties(
       for (auto value : values) {
         if (ui::IsNodeIdIntListAttribute(attr)) {
           ui::AXTreeID tree_id = node.tree()->GetAXTreeID();
-          ui::AXNode* target = ui::AXTreeManagerMap::GetInstance()
-                                   .GetManager(tree_id)
-                                   ->GetNodeFromTree(tree_id, node.id());
+          ui::AXNode* target =
+              ui::AXTreeManager::FromID(tree_id)->GetNodeFromTree(node.id());
 
           if (target)
             value_list.Append(ui::ToString(target->GetRole()));

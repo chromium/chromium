@@ -25,7 +25,6 @@
 #include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_language_detection.h"
 #include "ui/accessibility/ax_tree_data.h"
-#include "ui/accessibility/ax_tree_manager_map.h"
 #include "ui/accessibility/ax_tree_serializer.h"
 #include "ui/base/buildflags.h"
 
@@ -169,7 +168,7 @@ BrowserAccessibilityManager* BrowserAccessibilityManager::FromID(
     ui::AXTreeID ax_tree_id) {
   DCHECK(ax_tree_id != ui::AXTreeIDUnknown());
   return static_cast<BrowserAccessibilityManager*>(
-      ui::AXTreeManagerMap::GetInstance().GetManager(ax_tree_id));
+      ui::AXTreeManager::FromID(ax_tree_id));
 }
 
 BrowserAccessibilityManager::BrowserAccessibilityManager(
@@ -223,7 +222,7 @@ BrowserAccessibilityManager::~BrowserAccessibilityManager() {
     SetLastFocusedNode(nullptr);
   }
 
-  ui::AXTreeManagerMap::GetInstance().RemoveTreeManager(ax_tree_id_);
+  RemoveFromMap();
 
   ParentConnectionChanged(parent);
 }
@@ -1586,9 +1585,7 @@ void BrowserAccessibilityManager::OnTreeDataChanged(
     SetLastFocusedNode(nullptr);
   }
 
-  ui::AXTreeManagerMap::GetInstance().RemoveTreeManager(ax_tree_id_);
-  ax_tree_id_ = new_data.tree_id;
-  ui::AXTreeManagerMap::GetInstance().AddTreeManager(ax_tree_id_, this);
+  ui::AXTreeManager::OnTreeDataChanged(tree, old_data, new_data);
 }
 
 void BrowserAccessibilityManager::OnNodeWillBeDeleted(ui::AXTree* tree,

@@ -13,7 +13,6 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
-#include "ui/accessibility/ax_tree_manager_map.h"
 #include "ui/accessibility/ax_tree_source_checker.h"
 #include "ui/accessibility/ax_tree_update.h"
 #include "ui/views/accessibility/ax_aura_obj_wrapper.h"
@@ -31,7 +30,6 @@ ViewsAXTreeManager::ViewsAXTreeManager(Widget* widget)
       tree_serializer_(&tree_source_),
       event_generator_(ax_tree()) {
   DCHECK(widget);
-  ui::AXTreeManagerMap::GetInstance().AddTreeManager(ax_tree_id_, this);
   views::WidgetAXTreeIDMap::GetInstance().AddWidget(ax_tree_id_, widget);
   views_event_observer_.Observe(AXEventManager::Get());
   widget_observer_.Observe(widget);
@@ -50,7 +48,6 @@ ViewsAXTreeManager::~ViewsAXTreeManager() {
   event_generator_.ReleaseTree();
   views_event_observer_.Reset();
   widget_observer_.Reset();
-  ui::AXTreeManagerMap::GetInstance().RemoveTreeManager(ax_tree_id_);
 }
 
 void ViewsAXTreeManager::SetGeneratedEventCallbackForTesting(
@@ -68,8 +65,7 @@ ui::AXNode* ViewsAXTreeManager::GetNodeFromTree(
   if (!widget_ || !widget_->GetRootView())
     return nullptr;
 
-  const ui::AXTreeManager* manager =
-      ui::AXTreeManagerMap::GetInstance().GetManager(tree_id);
+  const ui::AXTreeManager* manager = ui::AXTreeManager::FromID(tree_id);
   return manager ? manager->GetNodeFromTree(node_id) : nullptr;
 }
 

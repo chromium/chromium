@@ -13,7 +13,6 @@
 #include "build/chromeos_buildflags.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
-#include "ui/accessibility/ax_tree_manager_map.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/base/buildflags.h"
@@ -609,7 +608,7 @@ ViewsAXTreeManager* ViewAccessibility::AXTreeManager() const {
         WidgetAXTreeIDMap::GetInstance().GetWidgetTreeID(widget);
     DCHECK_NE(tree_id, ui::AXTreeIDUnknown());
     manager = static_cast<views::ViewsAXTreeManager*>(
-        ui::AXTreeManagerMap::GetInstance().GetManager(tree_id));
+        ui::AXTreeManager::FromID(tree_id));
   }
 #endif
   return manager;

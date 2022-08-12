@@ -131,6 +131,7 @@ TEST_F(AutomationInternalCustomBindingsTest, GetFocusOneTree) {
   auto& node_data2 = tree_update.nodes.back();
   node_data2.id = 2;
   node_data2.role = ax::mojom::Role::kButton;
+  bundle.tree_id = tree_data.tree_id;
   SendOnAccessibilityEvents(bundle, true /* active profile */);
 
   ASSERT_EQ(1U, GetTreeIDToTreeMap().size());

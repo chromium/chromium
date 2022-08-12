@@ -13,12 +13,18 @@
 namespace ui {
 
 class AXNode;
+class AXTreeManagerMap;
 
 // Abstract interface for a class that owns an AXTree and manages its
 // connections to other AXTrees in the same page or desktop (parent and child
 // trees).
 class AX_EXPORT AXTreeManager : public AXTreeObserver {
  public:
+  static AXTreeManager* FromID(AXTreeID ax_tree_id);
+  // If the child of `parent_node` exists in a separate child tree, return the
+  // tree manager for that child tree. Otherwise, return nullptr.
+  static AXTreeManager* ForChildTree(const AXNode& parent_node);
+
   AXTreeManager(const AXTreeManager&) = delete;
   AXTreeManager& operator=(const AXTreeManager&) = delete;
 
@@ -70,7 +76,7 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
   // AXTreeObserver implementation.
   void OnTreeDataChanged(ui::AXTree* tree,
                          const ui::AXTreeData& old_data,
-                         const ui::AXTreeData& new_data) override {}
+                         const ui::AXTreeData& new_data) override;
   void OnNodeWillBeDeleted(ui::AXTree* tree, ui::AXNode* node) override {}
   void OnSubtreeWillBeDeleted(ui::AXTree* tree, ui::AXNode* node) override {}
   void OnNodeCreated(ui::AXTree* tree, ui::AXNode* node) override {}
@@ -87,10 +93,23 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
 
  protected:
   AXTreeManager();
+  explicit AXTreeManager(std::unique_ptr<AXTree> tree);
   explicit AXTreeManager(const AXTreeID& tree_id, std::unique_ptr<AXTree> tree);
+
+  // TODO(benjamin.beaudry): Remove this helper once we move the logic related
+  // to the parent connection from `BrowserAccessibilityManager` to this class.
+  // `BrowserAccessibilityManager` needs to remove the manager from the map
+  // before calling `BrowserAccessibilityManager::ParentConnectionChanged`, so
+  // the default removal of the manager in `~AXTreeManager` occurs too late.
+  void RemoveFromMap();
 
   AXTreeID ax_tree_id_;
   std::unique_ptr<AXTree> ax_tree_;
+
+ private:
+  friend class TestAXTreeManager;
+
+  static AXTreeManagerMap& GetMap();
 };
 
 }  // namespace ui

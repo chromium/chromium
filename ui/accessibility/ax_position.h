@@ -35,7 +35,6 @@
 #include "ui/accessibility/ax_text_attributes.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_manager.h"
-#include "ui/accessibility/ax_tree_manager_map.h"
 #include "ui/gfx/utf16_indexing.h"
 
 namespace ui {
@@ -411,9 +410,7 @@ class AXPosition {
   AXTreeID tree_id() const { return tree_id_; }
   AXNodeID anchor_id() const { return anchor_id_; }
 
-  AXTreeManager* GetManager() const {
-    return AXTreeManagerMap::GetInstance().GetManager(tree_id());
-  }
+  AXTreeManager* GetManager() const { return AXTreeManager::FromID(tree_id()); }
 
   AXNode* GetAnchor() const {
     if (tree_id_ == AXTreeIDUnknown() || anchor_id_ == kInvalidAXNodeID)

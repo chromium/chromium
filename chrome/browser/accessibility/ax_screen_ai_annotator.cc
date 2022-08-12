@@ -9,7 +9,7 @@
 #include "components/services/screen_ai/public/cpp/screen_ai_service_router.h"
 #include "components/services/screen_ai/public/cpp/screen_ai_service_router_factory.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/accessibility/ax_tree_manager_map.h"
+#include "ui/accessibility/ax_tree_manager.h"
 #include "ui/gfx/image/image.h"
 #include "ui/snapshot/snapshot.h"
 
@@ -76,8 +76,7 @@ void AXScreenAIAnnotator::OnAnnotationReceived(
     const ui::AXTreeUpdate& updates) {
   VLOG(2) << "AxScreenAIAnnotator received:\n" << updates.ToString();
 
-  ui::AXTreeManager* manager =
-      ui::AXTreeManagerMap::GetInstance().GetManager(ax_tree_id);
+  ui::AXTreeManager* manager = ui::AXTreeManager::FromID(ax_tree_id);
 
   if (!manager) {
     VLOG(1) << "ScreenAI annotations received, but the corresponding AxTree "

@@ -13,7 +13,6 @@
 #include "extensions/renderer/api/automation/automation_internal_custom_bindings.h"
 #include "ui/accessibility/ax_language_detection.h"
 #include "ui/accessibility/ax_node_position.h"
-#include "ui/accessibility/ax_tree_manager_map.h"
 
 namespace extensions {
 
@@ -47,14 +46,12 @@ AutomationAXTreeWrapper::AutomationAXTreeWrapper(
       owner_(owner),
       event_generator_(ax_tree()) {
   ax_tree_->AddObserver(this);
-  ui::AXTreeManagerMap::GetInstance().AddTreeManager(tree_id, this);
 }
 
 AutomationAXTreeWrapper::~AutomationAXTreeWrapper() {
   // Stop observing so we don't get a callback for every node being deleted.
   event_generator_.SetTree(nullptr);
   ax_tree_->RemoveObserver(this);
-  ui::AXTreeManagerMap::GetInstance().RemoveTreeManager(ax_tree_id_);
 }
 
 // static

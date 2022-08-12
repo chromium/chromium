@@ -1379,8 +1379,7 @@ void AXPlatformNodeTextRangeProviderWin::NormalizeAsUnignoredTextRange(
 
 AXPlatformNodeDelegate* AXPlatformNodeTextRangeProviderWin::GetRootDelegate(
     const ui::AXTreeID tree_id) {
-  const AXTreeManager* ax_tree_manager =
-      AXTreeManagerMap::GetInstance().GetManager(tree_id);
+  const AXTreeManager* ax_tree_manager = AXTreeManager::FromID(tree_id);
   DCHECK(ax_tree_manager);
   AXNode* root_node = ax_tree_manager->GetRootAsAXNode();
   const AXPlatformNode* root_platform_node =
@@ -1615,16 +1614,14 @@ void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::SetEnd(
 
 void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::AddObserver(
     const AXTreeID tree_id) {
-  AXTreeManager* ax_tree_manager =
-      AXTreeManagerMap::GetInstance().GetManager(tree_id);
+  AXTreeManager* ax_tree_manager = AXTreeManager::FromID(tree_id);
   DCHECK(ax_tree_manager);
   ax_tree_manager->AddObserver(this);
 }
 
 void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::RemoveObserver(
     const AXTreeID tree_id) {
-  AXTreeManager* ax_tree_manager =
-      AXTreeManagerMap::GetInstance().GetManager(tree_id);
+  AXTreeManager* ax_tree_manager = AXTreeManager::FromID(tree_id);
   if (ax_tree_manager)
     ax_tree_manager->RemoveObserver(this);
 }

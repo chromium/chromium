@@ -20,7 +20,6 @@
 #include "ui/accessibility/ax_table_info.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_manager.h"
-#include "ui/accessibility/ax_tree_manager_map.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/transform.h"
 
@@ -63,8 +62,7 @@ size_t AXNode::GetChildCount() const {
 size_t AXNode::GetChildCountCrossingTreeBoundary() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
 
-  const AXTreeManager* child_tree_manager =
-      AXTreeManagerMap::GetInstance().GetManagerForChildTree(*this);
+  const AXTreeManager* child_tree_manager = AXTreeManager::ForChildTree(*this);
   if (child_tree_manager)
     return 1u;
 
@@ -81,8 +79,7 @@ size_t AXNode::GetUnignoredChildCountCrossingTreeBoundary() const {
   // TODO(nektar): Should DCHECK that this node is not ignored.
   DCHECK(!tree_->GetTreeUpdateInProgressState());
 
-  const AXTreeManager* child_tree_manager =
-      AXTreeManagerMap::GetInstance().GetManagerForChildTree(*this);
+  const AXTreeManager* child_tree_manager = AXTreeManager::ForChildTree(*this);
   if (child_tree_manager) {
     DCHECK_EQ(unignored_child_count_, 0u)
         << "A node cannot be hosting both a child tree and other nodes as "
@@ -103,8 +100,7 @@ AXNode* AXNode::GetChildAtIndex(size_t index) const {
 AXNode* AXNode::GetChildAtIndexCrossingTreeBoundary(size_t index) const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
 
-  const AXTreeManager* child_tree_manager =
-      AXTreeManagerMap::GetInstance().GetManagerForChildTree(*this);
+  const AXTreeManager* child_tree_manager = AXTreeManager::ForChildTree(*this);
   if (child_tree_manager) {
     DCHECK_EQ(index, 0u)
         << "A node cannot be hosting both a child tree and other nodes as "
@@ -133,8 +129,7 @@ AXNode* AXNode::GetUnignoredChildAtIndexCrossingTreeBoundary(
   // TODO(nektar): Should DCHECK that this node is not ignored.
   DCHECK(!tree_->GetTreeUpdateInProgressState());
 
-  const AXTreeManager* child_tree_manager =
-      AXTreeManagerMap::GetInstance().GetManagerForChildTree(*this);
+  const AXTreeManager* child_tree_manager = AXTreeManager::ForChildTree(*this);
   if (child_tree_manager) {
     DCHECK_EQ(index, 0u)
         << "A node cannot be hosting both a child tree and other nodes as "
@@ -218,8 +213,7 @@ AXNode* AXNode::GetFirstUnignoredChild() const {
 AXNode* AXNode::GetFirstUnignoredChildCrossingTreeBoundary() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
 
-  const AXTreeManager* child_tree_manager =
-      AXTreeManagerMap::GetInstance().GetManagerForChildTree(*this);
+  const AXTreeManager* child_tree_manager = AXTreeManager::ForChildTree(*this);
   if (child_tree_manager)
     return child_tree_manager->GetRootAsAXNode();
 
@@ -250,8 +244,7 @@ AXNode* AXNode::GetLastUnignoredChild() const {
 AXNode* AXNode::GetLastUnignoredChildCrossingTreeBoundary() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
 
-  const AXTreeManager* child_tree_manager =
-      AXTreeManagerMap::GetInstance().GetManagerForChildTree(*this);
+  const AXTreeManager* child_tree_manager = AXTreeManager::ForChildTree(*this);
   if (child_tree_manager)
     return child_tree_manager->GetRootAsAXNode();
 
@@ -773,7 +766,7 @@ SkColor AXNode::ComputeColorAttribute(ax::mojom::IntAttribute attr) const {
 }
 
 AXTreeManager* AXNode::GetManager() const {
-  return AXTreeManagerMap::GetInstance().GetManager(tree_->GetAXTreeID());
+  return AXTreeManager::FromID(tree_->GetAXTreeID());
 }
 
 bool AXNode::HasVisibleCaretOrSelection() const {
@@ -947,7 +940,7 @@ const std::string& AXNode::GetNameUTF8() const {
   if (GetRole() == ax::mojom::Role::kPortal &&
       GetNameFrom() == ax::mojom::NameFrom::kNone) {
     const AXTreeManager* child_tree_manager =
-        AXTreeManagerMap::GetInstance().GetManagerForChildTree(*this);
+        AXTreeManager::ForChildTree(*this);
     if (child_tree_manager)
       node = child_tree_manager->GetRootAsAXNode();
   }
