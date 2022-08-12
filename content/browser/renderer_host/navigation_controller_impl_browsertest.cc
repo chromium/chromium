@@ -14502,7 +14502,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 // Verifies that unsafe redirects to javascript: URLs are canceled and don't
 // make a spoof possible. Ideally they would create an error page, but some
 // extensions rely on them being silently blocked. See https://crbug.com/935175
-// and https://cbug.com/941653.
+// and https://crbug.com/941653.
 // This test is flaky on Linux : http://crbug.com/1223051
 #if BUILDFLAG(IS_LINUX)
 #define MAYBE_JavascriptRedirectSilentlyCanceled \

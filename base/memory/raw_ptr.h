@@ -1291,7 +1291,7 @@ using DisableDanglingPtrDetection = base::RawPtrMayDangle;
 
 // See `docs/dangling_ptr.md`
 // Annotates known dangling raw_ptr. Those haven't been triaged yet. All the
-// occurrences are meant to be removed. See https://cbug.com/1291138.
+// occurrences are meant to be removed. See https://crbug.com/1291138.
 using DanglingUntriaged = DisableDanglingPtrDetection;
 
 // The following template parameters are only meaningful when `raw_ptr`
