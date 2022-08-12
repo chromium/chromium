@@ -283,13 +283,12 @@ void PositionView(UIView* view, CGPoint point) {
 }
 
 - (void)showActivityIndicator {
-  [self.activityIndicator startAnimating];
   [self.activityIndicator setHidden:NO];
+  [self.activityIndicator startAnimating];
   [self.iconView setHidden:YES];
 }
 
 - (void)hideActivityIndicator {
-  [self.activityIndicator stopAnimating];
   [self.activityIndicator setHidden:YES];
   [self.iconView setHidden:NO];
 }
