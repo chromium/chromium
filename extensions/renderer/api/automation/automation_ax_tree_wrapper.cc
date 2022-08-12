@@ -46,10 +46,7 @@ AutomationAXTreeWrapper::AutomationAXTreeWrapper(
       owner_(owner),
       event_generator_(ax_tree()) {}
 
-AutomationAXTreeWrapper::~AutomationAXTreeWrapper() {
-  // Stop observing so we don't get a callback for every node being deleted.
-  event_generator_.SetTree(nullptr);
-}
+AutomationAXTreeWrapper::~AutomationAXTreeWrapper() = default;
 
 // static
 AutomationAXTreeWrapper* AutomationAXTreeWrapper::GetParentOfTreeId(

@@ -16,7 +16,6 @@
 #include "base/scoped_observation.h"
 #include "ui/accessibility/ax_action_handler.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
-#include "ui/accessibility/ax_event_generator.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_tree.h"
@@ -134,9 +133,6 @@ class VIEWS_EXPORT ViewsAXTreeManager : public ui::AXTreeManager,
   // The serializer that serializes the Views tree into one or more
   // AXTreeUpdate.
   ViewsAXTreeSerializer tree_serializer_;
-
-  // For automatically generating events based on changes to |tree_|.
-  ui::AXEventGenerator event_generator_;
 
   // For testing only: A function to call when a generated event is fired.
   GeneratedEventCallbackForTesting generated_event_callback_for_testing_;

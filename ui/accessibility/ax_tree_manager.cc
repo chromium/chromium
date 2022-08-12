@@ -46,23 +46,30 @@ AXTreeManager* AXTreeManager::ForChildTree(const AXNode& parent_node) {
 }
 
 AXTreeManager::AXTreeManager()
-    : ax_tree_id_(AXTreeIDUnknown()), ax_tree_(nullptr) {}
+    : ax_tree_id_(AXTreeIDUnknown()),
+      ax_tree_(nullptr),
+      event_generator_(ax_tree()) {}
 
 AXTreeManager::AXTreeManager(std::unique_ptr<AXTree> tree)
     : ax_tree_id_(tree ? tree->data().tree_id : AXTreeIDUnknown()),
-      ax_tree_(std::move(tree)) {
+      ax_tree_(std::move(tree)),
+      event_generator_(ax_tree()) {
   GetMap().AddTreeManager(ax_tree_id_, this);
 }
 
 AXTreeManager::AXTreeManager(const AXTreeID& tree_id,
                              std::unique_ptr<AXTree> tree)
-    : ax_tree_id_(tree_id), ax_tree_(std::move(tree)) {
+    : ax_tree_id_(tree_id),
+      ax_tree_(std::move(tree)),
+      event_generator_(ax_tree()) {
   GetMap().AddTreeManager(ax_tree_id_, this);
   if (ax_tree())
     tree_observation_.Observe(ax_tree());
 }
 
 AXTreeManager::~AXTreeManager() {
+  // Stop observing so we don't get a callback for every node being deleted.
+  event_generator_.ReleaseTree();
   if (ax_tree_)
     GetMap().RemoveTreeManager(ax_tree_id_);
 }

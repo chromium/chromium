@@ -26,7 +26,6 @@
 #include "third_party/blink/public/web/web_ax_enums.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_action_handler_registry.h"
-#include "ui/accessibility/ax_event_generator.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_node_position.h"
@@ -700,8 +699,6 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   // called first.
   BrowserAccessibility* AXTreeHitTest(
       const gfx::Point& blink_screen_point) const;
-
-  ui::AXEventGenerator event_generator_;
 
   // Only used on the root node for AXTree hit testing as an alternative to
   // ApproximateHitTest when used without a renderer.

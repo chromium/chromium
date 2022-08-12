@@ -27,8 +27,7 @@ ViewsAXTreeManager::ViewsAXTreeManager(Widget* widget)
                         std::make_unique<ui::AXTree>()),
       widget_(widget),
       tree_source_(cache_.GetOrCreate(widget), ax_tree_id_, &cache_),
-      tree_serializer_(&tree_source_),
-      event_generator_(ax_tree()) {
+      tree_serializer_(&tree_source_) {
   DCHECK(widget);
   views::WidgetAXTreeIDMap::GetInstance().AddWidget(ax_tree_id_, widget);
   views_event_observer_.Observe(AXEventManager::Get());
@@ -45,7 +44,6 @@ ViewsAXTreeManager::ViewsAXTreeManager(Widget* widget)
 }
 
 ViewsAXTreeManager::~ViewsAXTreeManager() {
-  event_generator_.ReleaseTree();
   views_event_observer_.Reset();
   widget_observer_.Reset();
 }

@@ -6,6 +6,7 @@
 #define UI_ACCESSIBILITY_AX_TREE_MANAGER_H_
 
 #include "base/scoped_observation.h"
+#include "ui/accessibility/ax_event_generator.h"
 #include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_observer.h"
@@ -63,6 +64,9 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
   const AXTreeID& ax_tree_id() const { return ax_tree_id_; }
   AXTree* ax_tree() const { return ax_tree_.get(); }
 
+  const AXEventGenerator& event_generator() const { return event_generator_; }
+  AXEventGenerator& event_generator() { return event_generator_; }
+
   // AXTreeObserver implementation.
   void OnTreeDataChanged(ui::AXTree* tree,
                          const ui::AXTreeData& old_data,
@@ -95,6 +99,8 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
 
   AXTreeID ax_tree_id_;
   std::unique_ptr<AXTree> ax_tree_;
+
+  AXEventGenerator event_generator_;
 
  private:
   friend class TestAXTreeManager;

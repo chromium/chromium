@@ -183,8 +183,7 @@ BrowserAccessibilityManager::BrowserAccessibilityManager(
       user_is_navigating_away_(false),
       connected_to_parent_tree_node_(false),
       device_scale_factor_(1.0f),
-      use_custom_device_scale_factor_for_testing_(false),
-      event_generator_(ax_tree()) {}
+      use_custom_device_scale_factor_for_testing_(false) {}
 
 BrowserAccessibilityManager::BrowserAccessibilityManager(
     const ui::AXTreeUpdate& initial_tree,
@@ -198,8 +197,7 @@ BrowserAccessibilityManager::BrowserAccessibilityManager(
       delegate_(delegate),
       user_is_navigating_away_(false),
       device_scale_factor_(1.0f),
-      use_custom_device_scale_factor_for_testing_(false),
-      event_generator_(ax_tree()) {
+      use_custom_device_scale_factor_for_testing_(false) {
   Initialize(initial_tree);
 }
 
