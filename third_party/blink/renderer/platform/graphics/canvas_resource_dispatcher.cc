@@ -99,7 +99,7 @@ namespace {
 
 void UpdatePlaceholderImage(
     int placeholder_canvas_id,
-    scoped_refptr<blink::CanvasResource> canvas_resource,
+    scoped_refptr<blink::CanvasResource>&& canvas_resource,
     viz::ResourceId resource_id) {
   DCHECK(IsMainThread());
   OffscreenCanvasPlaceholder* placeholder_canvas =
@@ -127,7 +127,7 @@ void UpdatePlaceholderDispatcher(
 }  // namespace
 
 void CanvasResourceDispatcher::PostImageToPlaceholderIfNotBlocked(
-    scoped_refptr<CanvasResource> canvas_resource,
+    scoped_refptr<CanvasResource>&& canvas_resource,
     viz::ResourceId resource_id) {
   if (placeholder_canvas_id_ == kInvalidPlaceholderCanvasId) {
     ReclaimResourceInternal(resource_id);
@@ -151,7 +151,7 @@ void CanvasResourceDispatcher::PostImageToPlaceholderIfNotBlocked(
 }
 
 void CanvasResourceDispatcher::PostImageToPlaceholder(
-    scoped_refptr<CanvasResource> canvas_resource,
+    scoped_refptr<CanvasResource>&& canvas_resource,
     viz::ResourceId resource_id) {
   // After this point, |canvas_resource| can only be used on the main thread,
   // until it is returned.
@@ -168,7 +168,7 @@ void CanvasResourceDispatcher::PostImageToPlaceholder(
 }
 
 void CanvasResourceDispatcher::DispatchFrameSync(
-    scoped_refptr<CanvasResource> canvas_resource,
+    scoped_refptr<CanvasResource>&& canvas_resource,
     base::TimeTicks commit_start_time,
     const SkIRect& damage_rect,
     bool needs_vertical_flip,
@@ -189,7 +189,7 @@ void CanvasResourceDispatcher::DispatchFrameSync(
 }
 
 void CanvasResourceDispatcher::DispatchFrame(
-    scoped_refptr<CanvasResource> canvas_resource,
+    scoped_refptr<CanvasResource>&& canvas_resource,
     base::TimeTicks commit_start_time,
     const SkIRect& damage_rect,
     bool needs_vertical_flip,
@@ -208,7 +208,7 @@ void CanvasResourceDispatcher::DispatchFrame(
 }
 
 bool CanvasResourceDispatcher::PrepareFrame(
-    scoped_refptr<CanvasResource> canvas_resource,
+    scoped_refptr<CanvasResource>&& canvas_resource,
     base::TimeTicks commit_start_time,
     const SkIRect& damage_rect,
     bool needs_vertical_flip,
@@ -429,6 +429,10 @@ void CanvasResourceDispatcher::ReclaimResource(viz::ResourceId resource_id) {
            kMaxUnreclaimedPlaceholderFrames - 1);
     PostImageToPlaceholderIfNotBlocked(std::move(latest_unposted_image_),
                                        latest_unposted_resource_id_);
+    // To make it safe to use/check latest_unposted_image_ after using
+    // std::move on it, we need to force a reset because the move above is
+    // elide-able.
+    latest_unposted_image_.reset();
     latest_unposted_resource_id_ = viz::kInvalidResourceId;
   }
 }

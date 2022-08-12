@@ -183,7 +183,7 @@ class CORE_EXPORT HTMLCanvasElement final
 
   CanvasResourceDispatcher* GetOrCreateResourceDispatcher() override;
 
-  bool PushFrame(scoped_refptr<CanvasResource> image,
+  bool PushFrame(scoped_refptr<CanvasResource>&& image,
                  const SkIRect& damage_rect) override;
 
   // ExecutionContextLifecycleObserver and PageVisibilityObserver implementation
@@ -235,7 +235,7 @@ class CORE_EXPORT HTMLCanvasElement final
                                   ExceptionState&) override;
 
   // OffscreenCanvasPlaceholder implementation.
-  void SetOffscreenCanvasResource(scoped_refptr<CanvasResource>,
+  void SetOffscreenCanvasResource(scoped_refptr<CanvasResource>&&,
                                   viz::ResourceId resource_id) override;
   void Trace(Visitor*) const override;
 

@@ -58,13 +58,13 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
   void SetSuspendAnimation(bool);
   bool NeedsBeginFrame() const { return needs_begin_frame_; }
   bool IsAnimationSuspended() const { return suspend_animation_; }
-  void DispatchFrame(scoped_refptr<CanvasResource>,
+  void DispatchFrame(scoped_refptr<CanvasResource>&&,
                      base::TimeTicks commit_start_time,
                      const SkIRect& damage_rect,
                      bool needs_vertical_flip,
                      bool is_opaque);
   void ReclaimResource(viz::ResourceId);
-  void DispatchFrameSync(scoped_refptr<CanvasResource>,
+  void DispatchFrameSync(scoped_refptr<CanvasResource>&&,
                          base::TimeTicks commit_start_time,
                          const SkIRect& damage_rect,
                          bool needs_vertical_flip,
@@ -101,7 +101,7 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
   using ResourceMap =
       HashMap<viz::ResourceId, std::unique_ptr<FrameResource>, ResourceIdHash>;
 
-  bool PrepareFrame(scoped_refptr<CanvasResource>,
+  bool PrepareFrame(scoped_refptr<CanvasResource>&&,
                     base::TimeTicks commit_start_time,
                     const SkIRect& damage_rect,
                     bool needs_vertical_flip,
@@ -121,10 +121,10 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
   void SetNeedsBeginFrameInternal();
 
   bool VerifyImageSize(const gfx::Size&);
-  void PostImageToPlaceholderIfNotBlocked(scoped_refptr<CanvasResource>,
+  void PostImageToPlaceholderIfNotBlocked(scoped_refptr<CanvasResource>&&,
                                           viz::ResourceId resource_id);
   // virtual for testing
-  virtual void PostImageToPlaceholder(scoped_refptr<CanvasResource>,
+  virtual void PostImageToPlaceholder(scoped_refptr<CanvasResource>&&,
                                       viz::ResourceId resource_id);
 
   void ReclaimResourceInternal(viz::ResourceId resource_id);

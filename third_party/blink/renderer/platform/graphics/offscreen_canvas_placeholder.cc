@@ -25,7 +25,7 @@ PlaceholderIdMap& placeholderRegistry() {
 
 void releaseFrameToDispatcher(
     base::WeakPtr<blink::CanvasResourceDispatcher> dispatcher,
-    scoped_refptr<blink::CanvasResource> oldImage,
+    scoped_refptr<blink::CanvasResource>&& oldImage,
     viz::ResourceId resourceId) {
   oldImage = nullptr;  // Needed to unref'ed on the right thread
   if (dispatcher) {
@@ -58,7 +58,7 @@ OffscreenCanvasPlaceholder::~OffscreenCanvasPlaceholder() {
 }
 
 void OffscreenCanvasPlaceholder::SetOffscreenCanvasResource(
-    scoped_refptr<CanvasResource> new_frame,
+    scoped_refptr<CanvasResource>&& new_frame,
     viz::ResourceId resource_id) {
   DCHECK(IsOffscreenCanvasRegistered());
   DCHECK(new_frame);

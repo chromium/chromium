@@ -95,7 +95,7 @@ OffscreenCanvas::~OffscreenCanvas() {
       -memory_usage_);
 }
 
-void OffscreenCanvas::Commit(scoped_refptr<CanvasResource> canvas_resource,
+void OffscreenCanvas::Commit(scoped_refptr<CanvasResource>&& canvas_resource,
                              const SkIRect& damage_rect) {
   if (!HasPlaceholderCanvas() || !canvas_resource)
     return;
@@ -523,7 +523,7 @@ bool OffscreenCanvas::PushFrameIfNeeded() {
   return false;
 }
 
-bool OffscreenCanvas::PushFrame(scoped_refptr<CanvasResource> canvas_resource,
+bool OffscreenCanvas::PushFrame(scoped_refptr<CanvasResource>&& canvas_resource,
                                 const SkIRect& damage_rect) {
   TRACE_EVENT0("blink", "OffscreenCanvas::PushFrame");
   DCHECK(needs_push_frame_);

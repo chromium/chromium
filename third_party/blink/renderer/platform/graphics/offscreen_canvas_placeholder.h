@@ -25,7 +25,7 @@ class PLATFORM_EXPORT OffscreenCanvasPlaceholder {
  public:
   ~OffscreenCanvasPlaceholder();
 
-  virtual void SetOffscreenCanvasResource(scoped_refptr<CanvasResource>,
+  virtual void SetOffscreenCanvasResource(scoped_refptr<CanvasResource>&&,
                                           viz::ResourceId resource_id);
   void SetOffscreenCanvasDispatcher(
       base::WeakPtr<CanvasResourceDispatcher>,

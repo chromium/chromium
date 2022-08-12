@@ -119,11 +119,11 @@ class CORE_EXPORT OffscreenCanvas final
   CanvasRenderingContext* RenderingContext() const override { return context_; }
 
   bool PushFrameIfNeeded();
-  bool PushFrame(scoped_refptr<CanvasResource> frame,
+  bool PushFrame(scoped_refptr<CanvasResource>&& frame,
                  const SkIRect& damage_rect) override;
   void DidDraw(const SkIRect&) override;
   using CanvasRenderingContextHost::DidDraw;
-  void Commit(scoped_refptr<CanvasResource> bitmap_image,
+  void Commit(scoped_refptr<CanvasResource>&& bitmap_image,
               const SkIRect& damage_rect) override;
   bool ShouldAccelerate2dContext() const override;
   CanvasResourceDispatcher* GetOrCreateResourceDispatcher() override;

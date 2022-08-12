@@ -66,7 +66,7 @@ CanvasRenderingContextHost::CreateTransparentImage(
   return UnacceleratedStaticBitmapImage::Create(surface->makeImageSnapshot());
 }
 
-void CanvasRenderingContextHost::Commit(scoped_refptr<CanvasResource>,
+void CanvasRenderingContextHost::Commit(scoped_refptr<CanvasResource>&&,
                                         const SkIRect&) {
   NOTIMPLEMENTED();
 }

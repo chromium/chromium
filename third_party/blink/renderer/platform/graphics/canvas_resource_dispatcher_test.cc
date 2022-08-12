@@ -56,7 +56,7 @@ class MockCanvasResourceDispatcher : public CanvasResourceDispatcher {
                                  {kWidth, kHeight} /* canvas_size */) {}
 
   MOCK_METHOD2(PostImageToPlaceholder,
-               void(scoped_refptr<CanvasResource>,
+               void(scoped_refptr<CanvasResource>&&,
                     viz::ResourceId resource_id));
 };
 
