@@ -91,6 +91,14 @@ export class ViewerPdfSidenavElement extends PolymerElement {
     return this.thumbnailView_ ? 'false' : 'true';
   }
 
+  private getTabIndexThumbnail_(): string {
+    return this.thumbnailView_ ? '0' : '-1';
+  }
+
+  private getTabIndexOutline_(): string {
+    return this.thumbnailView_ ? '-1' : '0';
+  }
+
   private onKeydown_(e: KeyboardEvent) {
     // Up and down arrows should toggle between thumbnail and outline
     // when sidenav is open and an outline exists.

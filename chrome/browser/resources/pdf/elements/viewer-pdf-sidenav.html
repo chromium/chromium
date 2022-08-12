@@ -63,13 +63,14 @@
     margin: 0 auto;
   }
 </style>
-<div id="icons" hidden$="[[!bookmarks.length]]">
+<div id="icons" hidden$="[[!bookmarks.length]]" role="tablist">
   <div class$="
       button-wrapper cr-vertical-tab [[thumbnailButtonClass_(thumbnailView_)]]">
     <cr-icon-button iron-icon="pdf:thumbnails" role="tab"
         title="$i18n{tooltipThumbnails}" aria-label="$i18n{tooltipThumbnails}"
         aria-selected$="[[getAriaSelectedThumbnails_(thumbnailView_)]]"
-        on-click="onThumbnailClick_">
+        on-click="onThumbnailClick_"
+        tabindex$="[[getTabIndexThumbnail_(thumbnailView_)]]">
     </cr-icon-button>
   </div>
   <div class$="
@@ -78,7 +79,8 @@
         title="$i18n{tooltipDocumentOutline}"
         aria-label="$i18n{tooltipDocumentOutline}"
         aria-selected$="[[getAriaSelectedOutline_(thumbnailView_)]]"
-        on-click="onOutlineClick_">
+        on-click="onOutlineClick_"
+        tabindex$="[[getTabIndexOutline_(thumbnailView_)]]">
     </cr-icon-button>
   </div>
 </div>

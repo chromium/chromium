@@ -16,11 +16,12 @@
     padding-top: 24px;
   }
 </style>
-<div id="thumbnails" hidden$="[[!isPluginActive_]]">
+<div id="thumbnails" hidden$="[[!isPluginActive_]]" role="tablist">
   <template is="dom-repeat" items="[[pageNumbers_]]"
       on-dom-change="onDomChange_">
-    <viewer-thumbnail tabindex="0" role="button"
+    <viewer-thumbnail tabindex="0" role="tab"
         aria-label$="[[getAriaLabel_(item)]]"
+        aria-selected="[[isActivePage_(item, activePage)]]",
         clockwise-rotations="[[clockwiseRotations]]"
         is-active="[[isActivePage_(item, activePage)]]" page-number="[[item]]">
     </viewer-thumbnail>
