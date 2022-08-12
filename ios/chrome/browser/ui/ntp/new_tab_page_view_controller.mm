@@ -165,10 +165,6 @@
   }
 
   [self updateNTPLayout];
-
-  if (self.isFeedVisible) {
-    [self updateFeedInsetsForMinimumHeight];
-  }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -183,7 +179,9 @@
     self.shouldFocusFakebox = NO;
   }
 
-  if (!self.isFeedVisible) {
+  if (self.isFeedVisible) {
+    [self updateFeedInsetsForMinimumHeight];
+  } else {
     [self setMinimumHeight];
   }
 
