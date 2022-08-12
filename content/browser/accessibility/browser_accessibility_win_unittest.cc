@@ -1930,6 +1930,8 @@ TEST_F(BrowserAccessibilityWinTest, TestCaretAndSelectionInSimpleFields) {
   ASSERT_NE(nullptr, combo_box_accessible);
   ui::AXTreeData data = manager->GetTreeData();
   data.focus_id = combo_box_accessible->GetId();
+  data.sel_anchor_object_id = combo_box_accessible->GetId();
+  data.sel_focus_object_id = combo_box_accessible->GetId();
   manager->ax_tree()->UpdateDataForTesting(data);
   ASSERT_EQ(combo_box_accessible,
             ToBrowserAccessibilityWin(manager->GetFocus()));
@@ -1947,19 +1949,21 @@ TEST_F(BrowserAccessibilityWinTest, TestCaretAndSelectionInSimpleFields) {
   HRESULT hr = combo_box_accessible->GetCOM()->get_caretOffset(&caret_offset);
   EXPECT_EQ(S_OK, hr);
   EXPECT_EQ(1, caret_offset);
-  // The caret should be at the end of the selection.
+  // The caret should not be visible because the text field is not focused.
   hr = text_field_accessible->GetCOM()->get_caretOffset(&caret_offset);
-  EXPECT_EQ(S_OK, hr);
-  EXPECT_EQ(2, caret_offset);
+  EXPECT_EQ(S_FALSE, hr);
+  EXPECT_EQ(0, caret_offset);
 
   // Move the focus to the text field.
   data = manager->GetTreeData();
   data.focus_id = text_field_accessible->GetId();
+  data.sel_anchor_object_id = text_field_accessible->GetId();
+  data.sel_focus_object_id = text_field_accessible->GetId();
   manager->ax_tree()->UpdateDataForTesting(data);
   ASSERT_EQ(text_field_accessible,
             ToBrowserAccessibilityWin(manager->GetFocus()));
 
-  // The caret should not have moved.
+  // The caret should now appear at the end of the text field.
   hr = text_field_accessible->GetCOM()->get_caretOffset(&caret_offset);
   EXPECT_EQ(S_OK, hr);
   EXPECT_EQ(2, caret_offset);
@@ -1995,18 +1999,23 @@ TEST_F(BrowserAccessibilityWinTest, TestCaretInContentEditables) {
   div_editable.id = 2;
   div_editable.role = ax::mojom::Role::kGenericContainer;
   div_editable.AddState(ax::mojom::State::kEditable);
+  div_editable.AddState(ax::mojom::State::kRichlyEditable);
   div_editable.AddState(ax::mojom::State::kFocusable);
+  div_editable.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot, true);
 
   ui::AXNodeData text;
   text.id = 3;
   text.role = ax::mojom::Role::kStaticText;
   text.AddState(ax::mojom::State::kEditable);
+  text.AddState(ax::mojom::State::kRichlyEditable);
   text.SetName("Click ");
 
   ui::AXNodeData link;
   link.id = 4;
   link.role = ax::mojom::Role::kLink;
   link.AddState(ax::mojom::State::kEditable);
+  link.AddState(ax::mojom::State::kRichlyEditable);
   link.AddState(ax::mojom::State::kFocusable);
   link.AddState(ax::mojom::State::kLinked);
   link.SetName("here");
@@ -2015,6 +2024,7 @@ TEST_F(BrowserAccessibilityWinTest, TestCaretInContentEditables) {
   link_text.id = 5;
   link_text.role = ax::mojom::Role::kStaticText;
   link_text.AddState(ax::mojom::State::kEditable);
+  link_text.AddState(ax::mojom::State::kRichlyEditable);
   link_text.AddState(ax::mojom::State::kFocusable);
   link_text.AddState(ax::mojom::State::kLinked);
   link_text.SetName("here");

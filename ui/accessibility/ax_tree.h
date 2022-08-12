@@ -215,6 +215,14 @@ class AX_EXPORT AXTree : public AXNode::OwnerTree {
   // present in the cache.
   absl::optional<int> GetSetSize(const AXNode& node) override;
 
+  // Returns the part of the current selection that falls within this
+  // accessibility tree, if any.
+  Selection GetSelection() const override;
+
+  // Returns the part of the current selection that falls within this
+  // accessibility tree, if any, adjusting its endpoints to be within unignored
+  // nodes. (An "ignored" node is a node that is not exposed to platform APIs:
+  // See `AXNode::IsIgnored`.)
   Selection GetUnignoredSelection() const override;
 
   bool GetTreeUpdateInProgressState() const override;

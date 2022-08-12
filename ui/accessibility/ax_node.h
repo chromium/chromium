@@ -61,13 +61,32 @@ class AX_EXPORT AXNode final {
   // be necessary.
   class OwnerTree {
    public:
-    struct Selection {
-      bool is_backward;
-      AXNodeID anchor_object_id;
-      int anchor_offset;
+    // A data structure that can store either the selected range of nodes in the
+    // accessibility tree, or the location of the caret in the case of a
+    // "collapsed" selection.
+    //
+    // TODO(nektar): Move this struct into its own file called "AXSelection",
+    // turn it into a class and make it compute the unignored selection given
+    // the `AXTreeData`.
+    struct Selection final {
+      Selection() = default;
+      ~Selection() = default;
+      constexpr Selection(const Selection&) = default;
+      constexpr Selection& operator=(const Selection&) = default;
+
+      // Returns true if this instance represents the position of the caret.
+      constexpr bool IsCollapsed() const {
+        return focus_object_id != kInvalidAXNodeID &&
+               anchor_object_id == focus_object_id &&
+               anchor_offset == focus_offset;
+      }
+
+      bool is_backward = false;
+      AXNodeID anchor_object_id = kInvalidAXNodeID;
+      int anchor_offset = -1;
       ax::mojom::TextAffinity anchor_affinity;
-      AXNodeID focus_object_id;
-      int focus_offset;
+      AXNodeID focus_object_id = kInvalidAXNodeID;
+      int focus_offset = -1;
       ax::mojom::TextAffinity focus_affinity;
     };
 
@@ -83,8 +102,13 @@ class AX_EXPORT AXNode final {
     virtual absl::optional<int> GetPosInSet(const AXNode& node) = 0;
     virtual absl::optional<int> GetSetSize(const AXNode& node) = 0;
 
+    // See `AXTree::GetSelection`.
+    virtual Selection GetSelection() const = 0;
+    // See `AXTree::GetUnignoredSelection`.
     virtual Selection GetUnignoredSelection() const = 0;
+    // See `AXTree::GetTreeUpdateInProgressState`.
     virtual bool GetTreeUpdateInProgressState() const = 0;
+    // See `AXTree::HasPaginationSupport`.
     virtual bool HasPaginationSupport() const = 0;
   };
 
@@ -312,6 +336,22 @@ class AX_EXPORT AXNode final {
   SkColor ComputeBackgroundColor() const;
 
   AXTreeManager* GetManager() const;
+
+  //
+  // Methods for accessing caret and selection information.
+  //
+
+  // Returns true if the caret is visible or there is an active selection inside
+  // this node.
+  bool HasVisibleCaretOrSelection() const;
+
+  // Gets the current selection from the accessibility tree.
+  OwnerTree::Selection GetSelection() const;
+
+  // Gets the unignored selection from the accessibility tree, meaning the
+  // selection whose endpoints are on unignored nodes. (An "ignored" node is a
+  // node that is not exposed to platform APIs: See `IsIgnored`.)
+  OwnerTree::Selection GetUnignoredSelection() const;
 
   //
   // Methods for accessing accessibility attributes including attributes that

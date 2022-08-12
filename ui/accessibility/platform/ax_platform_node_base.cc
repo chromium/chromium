@@ -1113,27 +1113,8 @@ absl::optional<float> AXPlatformNodeBase::GetFontSizeInPoints() const {
   return absl::nullopt;
 }
 
-bool AXPlatformNodeBase::HasCaret(const AXTree::Selection* selection) {
-  if (IsAtomicTextField() &&
-      HasIntAttribute(ax::mojom::IntAttribute::kTextSelStart) &&
-      HasIntAttribute(ax::mojom::IntAttribute::kTextSelEnd)) {
-    return true;
-  }
-
-  // The caret is always at the focus of the selection.
-  int32_t focus_id;
-  if (selection)
-    focus_id = selection->focus_object_id;
-  else
-    focus_id = delegate_->GetTreeData().sel_focus_object_id;
-
-  AXPlatformNodeBase* focus_object =
-      static_cast<AXPlatformNodeBase*>(delegate_->GetFromNodeID(focus_id));
-
-  if (!focus_object)
-    return false;
-
-  return focus_object->IsDescendantOf(this);
+bool AXPlatformNodeBase::HasVisibleCaretOrSelection() const {
+  return delegate_ && delegate_->HasVisibleCaretOrSelection();
 }
 
 bool AXPlatformNodeBase::IsLeaf() const {
@@ -1151,7 +1132,7 @@ bool AXPlatformNodeBase::IsInvisibleOrIgnored() const {
   if (HasState(ax::mojom::State::kFocusable))
     return !IsFocused();
 
-  return !const_cast<AXPlatformNodeBase*>(this)->HasCaret();
+  return !HasVisibleCaretOrSelection();
 }
 
 bool AXPlatformNodeBase::IsFocused() const {
@@ -2021,7 +2002,7 @@ void AXPlatformNodeBase::GetSelectionOffsetsFromTree(
   // outside this object in their entirety.
   // Selections that span more than one character are by definition inside
   // this object, so checking them is not necessary.
-  if (*selection_start == *selection_end && !HasCaret(selection)) {
+  if (*selection_start == *selection_end && !HasVisibleCaretOrSelection()) {
     *selection_start = -1;
     *selection_end = -1;
     return;

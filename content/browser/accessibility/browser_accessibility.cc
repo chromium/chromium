@@ -873,38 +873,13 @@ bool BrowserAccessibility::IsReadOnlyOrDisabled() const {
 }
 
 bool BrowserAccessibility::HasVisibleCaretOrSelection() const {
-  // TODO(nektar): Move this method to `AXNode` in the immediate future.
-  ui::AXTree::Selection unignored_selection =
-      manager()->ax_tree()->GetUnignoredSelection();
-  ui::AXNodeID focus_id = unignored_selection.focus_object_id;
-  const BrowserAccessibility* focus_object = manager()->GetFromID(focus_id);
-  // Since "AXTree::GetUnignoredSelection" always ensures that the focus of the
-  // selection is an unignored object, i.e. it is visible to platform APIs, we
-  // need to ensure that we check against the lowest unignored ancestor of this
-  // object if this object is ignored.
-  if (!focus_object ||
-      !focus_object->IsDescendantOf(PlatformGetLowestPlatformAncestor())) {
-    return false;
-  }
-
-  // A selection or the caret will be visible in a focused text field (including
-  // content editables).
-  const BrowserAccessibility* text_field =
-      focus_object->PlatformGetTextFieldAncestor();
-  if (text_field)
-    return true;
-
   // The caret should be visible if Caret Browsing is enabled.
   //
   // TODO(crbug.com/1052091): Caret Browsing should be looking at leaf text
   // nodes so it might not return expected results in this method.
   if (BrowserAccessibilityStateImpl::GetInstance()->IsCaretBrowsingEnabled())
     return true;
-
-  // The selection will be visible in non-editable content only if it is not
-  // collapsed.
-  return focus_id != unignored_selection.anchor_object_id ||
-         unignored_selection.focus_offset != unignored_selection.anchor_offset;
+  return node()->HasVisibleCaretOrSelection();
 }
 
 std::set<ui::AXPlatformNode*> BrowserAccessibility::GetNodesForNodeIdSet(
@@ -1223,47 +1198,7 @@ ax::mojom::DescriptionFrom BrowserAccessibility::GetDescriptionFrom() const {
 
 const ui::AXTree::Selection BrowserAccessibility::GetUnignoredSelection()
     const {
-  // TODO(nektar): Move this method to `AXNode` in the immediate future.
-
-  ui::AXTree::Selection selection =
-      manager()->ax_tree()->GetUnignoredSelection();
-
-  // "selection.anchor_offset" and "selection.focus_ofset" might need to be
-  // adjusted if the anchor or the focus nodes include ignored children.
-  const BrowserAccessibility* anchor_object =
-      manager()->GetFromID(selection.anchor_object_id);
-  if (anchor_object && !anchor_object->IsLeaf()) {
-    DCHECK_GE(selection.anchor_offset, 0);
-    if (static_cast<size_t>(selection.anchor_offset) <
-        anchor_object->node()->children().size()) {
-      const ui::AXNode* anchor_child =
-          anchor_object->node()->children()[selection.anchor_offset];
-      DCHECK(anchor_child);
-      selection.anchor_offset =
-          static_cast<int>(anchor_child->GetUnignoredIndexInParent());
-    } else {
-      selection.anchor_offset =
-          static_cast<int>(anchor_object->GetChildCount());
-    }
-  }
-
-  const BrowserAccessibility* focus_object =
-      manager()->GetFromID(selection.focus_object_id);
-  if (focus_object && !focus_object->IsLeaf()) {
-    DCHECK_GE(selection.focus_offset, 0);
-    if (static_cast<size_t>(selection.focus_offset) <
-        focus_object->node()->children().size()) {
-      const ui::AXNode* focus_child =
-          focus_object->node()->children()[selection.focus_offset];
-      DCHECK(focus_child);
-      selection.focus_offset =
-          static_cast<int>(focus_child->GetUnignoredIndexInParent());
-    } else {
-      selection.focus_offset = static_cast<int>(focus_object->GetChildCount());
-    }
-  }
-
-  return selection;
+  return node()->GetUnignoredSelection();
 }
 
 BrowserAccessibility::AXPosition BrowserAccessibility::CreateTextPositionAt(

@@ -2684,12 +2684,15 @@ bool ComputeUnignoredSelectionEndpoint(
 
 }  // namespace
 
+AXTree::Selection AXTree::GetSelection() const {
+  return {data().sel_is_backward,     data().sel_anchor_object_id,
+          data().sel_anchor_offset,   data().sel_anchor_affinity,
+          data().sel_focus_object_id, data().sel_focus_offset,
+          data().sel_focus_affinity};
+}
+
 AXTree::Selection AXTree::GetUnignoredSelection() const {
-  Selection unignored_selection = {
-      data().sel_is_backward,     data().sel_anchor_object_id,
-      data().sel_anchor_offset,   data().sel_anchor_affinity,
-      data().sel_focus_object_id, data().sel_focus_offset,
-      data().sel_focus_affinity};
+  Selection unignored_selection = GetSelection();
 
   // If one of the selection endpoints is invalid, then the other endpoint
   // should also be unset.

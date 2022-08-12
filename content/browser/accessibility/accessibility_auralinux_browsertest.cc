@@ -1493,7 +1493,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
   LoadInitialAccessibilityTreeFromHtml(
       R"HTML(<!DOCTYPE html>
       <html>
-      <body>
+      <body contenteditable>
       <style>h1.generated::before{content:"   [   ";}</style>
       <style>h1.generated::after{content:"   ]   ";}</style>
       <h1 class="generated">Foo</h1>
@@ -1501,7 +1501,14 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
       </html>)HTML");
 
   AtkObject* document = GetRendererAccessible();
-  AtkObject* heading = atk_object_ref_accessible_child(document, 0);
+
+  AtkObject* contenteditable = atk_object_ref_accessible_child(document, 0);
+  ASSERT_NE(nullptr, contenteditable);
+  ASSERT_EQ(ATK_ROLE_SECTION, atk_object_get_role(contenteditable));
+  ASSERT_TRUE(ATK_IS_TEXT(contenteditable));
+
+  AtkObject* heading = atk_object_ref_accessible_child(contenteditable, 0);
+  ASSERT_NE(nullptr, heading);
   ASSERT_EQ(atk_object_get_role(heading), ATK_ROLE_HEADING);
 
   // The accessible text for the heading should match the rendered text and
@@ -1526,6 +1533,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
   }
 
   g_object_unref(heading);
+  g_object_unref(contenteditable);
 }
 
 // TODO(crbug.com/981913): This flakes on linux.

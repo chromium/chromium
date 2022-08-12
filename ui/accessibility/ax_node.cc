@@ -776,6 +776,74 @@ AXTreeManager* AXNode::GetManager() const {
   return AXTreeManagerMap::GetInstance().GetManager(tree_->GetAXTreeID());
 }
 
+bool AXNode::HasVisibleCaretOrSelection() const {
+  const OwnerTree::Selection selection = GetSelection();
+  const AXNode* focus = tree()->GetFromId(selection.focus_object_id);
+  if (!focus || !focus->IsDescendantOf(this))
+    return false;
+
+  // A selection or the caret will be visible in a focused text field (including
+  // a content editable).
+  const AXNode* text_field = GetTextFieldAncestor();
+  if (text_field)
+    return true;
+
+  // The selection will be visible in non-editable content only if it is not
+  // collapsed.
+  return !selection.IsCollapsed();
+}
+
+AXNode::OwnerTree::Selection AXNode::GetSelection() const {
+  DCHECK(tree()) << "Cannot retrieve the current selection if the node is not "
+                    "attached to an accessibility tree.\n"
+                 << *this;
+  return tree()->GetSelection();
+}
+
+AXNode::OwnerTree::Selection AXNode::GetUnignoredSelection() const {
+  DCHECK(tree()) << "Cannot retrieve the current selection if the node is not "
+                    "attached to an accessibility tree.\n"
+                 << *this;
+  OwnerTree::Selection selection = tree()->GetUnignoredSelection();
+
+  // "selection.anchor_offset" and "selection.focus_ofset" might need to be
+  // adjusted if the anchor or the focus nodes include ignored children.
+  //
+  // TODO(nektar): Move this logic into its own "AXSelection" class and cache
+  // the result for faster reuse.
+  const AXNode* anchor = tree()->GetFromId(selection.anchor_object_id);
+  if (anchor && !anchor->IsLeaf()) {
+    DCHECK_GE(selection.anchor_offset, 0);
+    if (static_cast<size_t>(selection.anchor_offset) <
+        anchor->GetChildCount()) {
+      const AXNode* anchor_child =
+          anchor->GetChildAtIndex(selection.anchor_offset);
+      DCHECK(anchor_child);
+      selection.anchor_offset =
+          static_cast<int>(anchor_child->GetUnignoredIndexInParent());
+    } else {
+      selection.anchor_offset =
+          static_cast<int>(anchor->GetUnignoredChildCount());
+    }
+  }
+
+  const AXNode* focus = tree()->GetFromId(selection.focus_object_id);
+  if (focus && !focus->IsLeaf()) {
+    DCHECK_GE(selection.focus_offset, 0);
+    if (static_cast<size_t>(selection.focus_offset) < focus->GetChildCount()) {
+      const AXNode* focus_child =
+          focus->GetChildAtIndex(selection.focus_offset);
+      DCHECK(focus_child);
+      selection.focus_offset =
+          static_cast<int>(focus_child->GetUnignoredIndexInParent());
+    } else {
+      selection.focus_offset =
+          static_cast<int>(focus->GetUnignoredChildCount());
+    }
+  }
+  return selection;
+}
+
 bool AXNode::HasStringAttribute(ax::mojom::StringAttribute attribute) const {
   return GetComputedNodeData().HasOrCanComputeAttribute(attribute);
 }

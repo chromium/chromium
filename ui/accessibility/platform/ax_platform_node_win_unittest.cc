@@ -3485,19 +3485,6 @@ TEST_F(AXPlatformNodeWinTest, IAccessibleTextTextFieldGetCaretOffsetNoCaret) {
   EXPECT_EQ(0, offset);
 }
 
-TEST_F(AXPlatformNodeWinTest, IAccessibleTextTextFieldGetCaretOffsetHasCaret) {
-  Init(BuildTextFieldWithSelectionRange(1, 2));
-
-  ComPtr<IAccessible2> ia2_text_field = ToIAccessible2(GetRootIAccessible());
-  ComPtr<IAccessibleText> text_field;
-  ia2_text_field.As(&text_field);
-  ASSERT_NE(nullptr, text_field.Get());
-
-  LONG offset;
-  EXPECT_HRESULT_SUCCEEDED(text_field->get_caretOffset(&offset));
-  EXPECT_EQ(2, offset);
-}
-
 TEST_F(AXPlatformNodeWinTest,
        IAccessibleTextContextEditableGetCaretOffsetNoCaret) {
   Init(BuildContentEditable());

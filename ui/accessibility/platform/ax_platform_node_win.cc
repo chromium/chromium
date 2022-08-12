@@ -4157,7 +4157,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_caretOffset(LONG* offset) {
   AXPlatformNode::NotifyAddAXModeFlags(kScreenReaderAndHTMLAccessibilityModes);
   *offset = 0;
 
-  if (!HasCaret())
+  if (!HasVisibleCaretOrSelection())
     return S_FALSE;
 
   int selection_start, selection_end;
