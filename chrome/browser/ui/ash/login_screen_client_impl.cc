@@ -361,21 +361,20 @@ void LoginScreenClientImpl::SetPublicSessionKeyboardLayout(
   std::vector<ash::InputMethodItem> result;
 
   for (const auto& i : keyboard_layouts->GetList()) {
-    const base::DictionaryValue* dictionary;
-    if (!i.GetAsDictionary(&dictionary))
+    if (!i.is_dict())
       continue;
+    const base::Value::Dict& dict = i.GetDict();
 
     ash::InputMethodItem input_method_item;
-    std::string ime_id;
-    dictionary->GetString("value", &ime_id);
-    input_method_item.ime_id = ime_id;
+    const std::string* ime_id = dict.FindString("value");
+    if (ime_id)
+      input_method_item.ime_id = *ime_id;
 
-    std::string title;
-    dictionary->GetString("title", &title);
-    input_method_item.title = title;
+    const std::string* title = dict.FindString("title");
+    if (title)
+      input_method_item.title = *title;
 
-    input_method_item.selected =
-        dictionary->FindBoolKey("selected").value_or(false);
+    input_method_item.selected = dict.FindBool("selected").value_or(false);
     result.push_back(std::move(input_method_item));
   }
   ash::LoginScreen::Get()->GetModel()->SetPublicSessionKeyboardLayouts(
