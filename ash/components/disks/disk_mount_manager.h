@@ -74,8 +74,8 @@ class COMPONENT_EXPORT(ASH_DISKS) DiskMountManager {
 
   typedef std::map<std::string, std::unique_ptr<Disk>> DiskMap;
 
-  // A struct to store information about mount point.
-  struct MountPointInfo {
+  // Information about a mount point.
+  struct MountPoint {
     // Device's path.
     std::string source_path;
     // Mounted path.
@@ -85,15 +85,18 @@ class COMPONENT_EXPORT(ASH_DISKS) DiskMountManager {
     // Condition of mount.
     MountCondition mount_condition;
 
-    MountPointInfo(const std::string& source,
-                   const std::string& mount,
-                   const MountType type,
-                   MountCondition condition)
+    MountPoint(const std::string& source,
+               const std::string& mount,
+               const MountType type,
+               MountCondition condition = MOUNT_CONDITION_NONE)
         : source_path(source),
           mount_path(mount),
           mount_type(type),
           mount_condition(condition) {}
   };
+
+  // TODO Remove once the transition to plain MountPoint is finished.
+  using MountPointInfo = MountPoint;
 
   // MountPointMap key is mount_path.
   typedef std::map<std::string, MountPointInfo> MountPointMap;
