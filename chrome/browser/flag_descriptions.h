@@ -3226,6 +3226,12 @@ extern const char kProjectorAnnotatorDescription[];
 extern const char kProjectorExcludeTranscriptName[];
 extern const char kProjectorExcludeTranscriptDescription[];
 
+extern const char kProjectorLocalPlaybackName[];
+extern const char kProjectorLocalPlaybackDescription[];
+
+extern const char kProjectorAppDebugName[];
+extern const char kProjectorAppDebugDescription[];
+
 extern const char kQsRevampName[];
 extern const char kQsRevampDescription[];
 

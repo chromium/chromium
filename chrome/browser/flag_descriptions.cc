@@ -5631,12 +5631,21 @@ const char kProjectorDescription[] =
 
 const char kProjectorAnnotatorName[] = "Enable Projector annotator";
 const char kProjectorAnnotatorDescription[] =
-    "Turns on annotator tools when recording a screen capture using projector";
+    "Turns on annotator tools when recording a screen capture using Projector";
 
 const char kProjectorExcludeTranscriptName[] =
     "Enable Projector exclude transcript feature";
 const char kProjectorExcludeTranscriptDescription[] =
-    "Support excluding segment of Projector recording by excluding transcript";
+    "Supports excluding segment of Projector recording by excluding transcript";
+
+const char kProjectorLocalPlaybackName[] = "Enable Projector local playback";
+const char kProjectorLocalPlaybackDescription[] =
+    "Supports streaming screencast videos from DriveFS instead of Drive before "
+    "they have finished transcoding";
+
+const char kProjectorAppDebugName[] = "Enable Projector app debug";
+const char kProjectorAppDebugDescription[] =
+    "Adds more informative error messages to the Projector app for debugging";
 
 const char kQsRevampName[] = "Quick Settings Revamp";
 const char kQsRevampDescription[] =

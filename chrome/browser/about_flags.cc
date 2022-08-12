@@ -8725,6 +8725,15 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kProjectorExcludeTranscriptName,
      flag_descriptions::kProjectorExcludeTranscriptDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kProjectorExcludeTranscript)},
+
+    {"enable-projector-local-playback",
+     flag_descriptions::kProjectorLocalPlaybackName,
+     flag_descriptions::kProjectorLocalPlaybackDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kProjectorLocalPlayback)},
+
+    {"enable-projector-app-debug", flag_descriptions::kProjectorAppDebugName,
+     flag_descriptions::kProjectorAppDebugDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kProjectorAppDebug)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"web-sql-access", flag_descriptions::kWebSQLAccessName,
