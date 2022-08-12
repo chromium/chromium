@@ -289,7 +289,8 @@ void LayerAnimator::StartTogether(
 
   bool wait_for_group_start = false;
   for (iter = animations.begin(); iter != animations.end(); ++iter)
-    wait_for_group_start |= (*iter)->IsFirstElementThreaded(delegate_);
+    wait_for_group_start |=
+        delegate_ && (*iter)->IsFirstElementThreaded(delegate_);
   int group_id = cc::AnimationIdProvider::NextGroupId();
 
   // These animations (provided they don't animate any common properties) will
@@ -326,7 +327,8 @@ void LayerAnimator::ScheduleTogether(
 
   bool wait_for_group_start = false;
   for (iter = animations.begin(); iter != animations.end(); ++iter)
-    wait_for_group_start |= (*iter)->IsFirstElementThreaded(delegate_);
+    wait_for_group_start |=
+        delegate_ && (*iter)->IsFirstElementThreaded(delegate_);
 
   int group_id = cc::AnimationIdProvider::NextGroupId();
 
