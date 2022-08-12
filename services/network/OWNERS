@@ -40,3 +40,7 @@ per-file content_security_policy*=nasko@chromium.org
 
 # Cookies
 per-file *cookie*=file://net/cookies/OWNERS
+
+# Private Network Access
+per-file private_network_access*=titouan@chromium.org
+per-file private_network_access*=lyf@chromium.org
