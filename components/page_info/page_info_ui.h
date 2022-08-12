@@ -96,7 +96,7 @@ class PageInfoUI {
     int sites_accessing_data_count = -1;
 
     // The name of the owner of the FPS.
-    std::string owner_name;
+    std::u16string owner_name;
   };
 
   // |CookiesNewInfo| contains information about the sites that are allowed

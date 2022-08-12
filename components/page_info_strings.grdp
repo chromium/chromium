@@ -727,6 +727,12 @@
   <message name="IDS_PAGE_INFO_COOKIES_ALLOWED_SITES_COUNT" desc="The label of the count for sites with allowed cookies on the page. This text will be shown on the cookies dialog button." translateable="false">
         {NUM_COOKIES, plural, =1 {1 site allowed} other {# sites allowed}}
   </message>
+  <message name="IDS_PAGE_FPS_BUTTON_TITLE" desc="The title of first-party sets button in Cookies Subpage with place holder for name of the owner of this set." translateable="false">
+    See sites related to <ph name="SET_OWNER">$1<ex>gannett.com</ex></ph>
+  </message>
+  <message name="IDS_PAGE_FPS_BUTTON_SUBTITLE" desc="The subtitle of first-party sets button in Cookies Subpage with place holder for name of the owner of this set." translateable="false">
+    <ph name="SET_OWNER">$1<ex>gannett.com</ex></ph> says these sites are related
+  </message>
 
   <!-- History strings -->
   <message name="IDS_PAGE_INFO_HISTORY" desc="The button label of the 'History' row in Page Info bubble. The button opens history page for the site.">

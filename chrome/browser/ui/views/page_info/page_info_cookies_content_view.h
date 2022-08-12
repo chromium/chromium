@@ -24,6 +24,8 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
 
   void CookiesSettingsLinkClicked(const ui::Event& event);
 
+  void FPSSettingsButtonClicked(const ui::Event& event);
+
   void OnToggleButtonPressed();
 
  private:
@@ -34,6 +36,10 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
   // Ensures the blocked sites information UI is present, with placeholder
   // information if necessary.
   void InitBlockingThirdPartyCookiesRow();
+
+  // Ensures the first-party sets information UI is present, with
+  // placeholder information if necessary.
+  void InitFPSButton();
 
   raw_ptr<PageInfo> presenter_;
 

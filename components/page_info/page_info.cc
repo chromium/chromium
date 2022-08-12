@@ -44,6 +44,7 @@
 #endif
 #include "build/chromeos_buildflags.h"
 #include "components/page_info/core/features.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_service.h"
 #include "components/safe_browsing/core/browser/password_protection/metrics_util.h"
@@ -1143,7 +1144,11 @@ void PageInfo::PresentSiteDataInternal(base::OnceClosure done) {
     PageInfoUI::CookiesNewInfo cookies_info;
     cookies_info.allowed_sites_count = GetSitesWithAllowedCookiesCount();
 
-    // TODO(crbug.com/1346305): Add data flow for FPS.
+    // TODO(crbug.com/1346305): Add dummy function for FPS information.
+    if (privacy_sandbox::kPrivacySandboxFirstPartySetsUISampleSets.Get() &&
+        site_url_.host() == "example.com") {
+      cookies_info.fps_info.owner_name = u"example.com";
+    }
 
     ui_->SetCookieInfo(cookies_info);
   } else {

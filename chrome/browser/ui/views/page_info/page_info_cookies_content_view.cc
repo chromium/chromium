@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/button/toggle_button.h"
@@ -73,31 +74,31 @@ PageInfoCookiesContentView::PageInfoCookiesContentView(PageInfo* presenter)
 PageInfoCookiesContentView::~PageInfoCookiesContentView() = default;
 
 void PageInfoCookiesContentView::InitCookiesDialogButton() {
-  if (cookies_dialog_button_ == nullptr) {
-    // Get the icon.
-    PageInfo::PermissionInfo info;
-    info.type = ContentSettingsType::COOKIES;
-    info.setting = CONTENT_SETTING_ALLOW;
-    const ui::ImageModel icon = PageInfoViewFactory::GetPermissionIcon(info);
+  if (cookies_dialog_button_)
+    return;
+  // Get the icon.
+  PageInfo::PermissionInfo info;
+  info.type = ContentSettingsType::COOKIES;
+  info.setting = CONTENT_SETTING_ALLOW;
+  const ui::ImageModel icon = PageInfoViewFactory::GetPermissionIcon(info);
 
-    const std::u16string& tooltip =
-        l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_TOOLTIP);
+  const std::u16string& tooltip =
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_TOOLTIP);
 
-    // Create the cookie button, with a temporary value for the subtitle text
-    // since the site count is not yet known.
-    // TODO(crbug.com/1346305): Change to correct final string.
-    cookies_dialog_button_ = cookies_buttons_container_view_->AddChildView(
-        std::make_unique<PageInfoHoverButton>(
-            base::BindRepeating(
-                [](PageInfoCookiesContentView* view) {
-                  view->presenter_->OpenCookiesDialog();
-                },
-                this),
-            icon, IDS_PAGE_INFO_COOKIES, std::u16string(),
-            PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG,
-            tooltip, /*subtitle_text=*/u" ",
-            PageInfoViewFactory::GetLaunchIcon()));
-  }
+  // Create the cookie button, with a temporary value for the subtitle text
+  // since the site count is not yet known.
+  // TODO(crbug.com/1346305): Change to correct final string.
+  cookies_dialog_button_ = cookies_buttons_container_view_->AddChildView(
+      std::make_unique<PageInfoHoverButton>(
+          base::BindRepeating(
+              [](PageInfoCookiesContentView* view) {
+                view->presenter_->OpenCookiesDialog();
+              },
+              this),
+          icon, IDS_PAGE_INFO_COOKIES, std::u16string(),
+          PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG,
+          tooltip, /*subtitle_text=*/u" ",
+          PageInfoViewFactory::GetLaunchIcon()));
 }
 
 void PageInfoCookiesContentView::CookiesSettingsLinkClicked(
@@ -112,6 +113,7 @@ void PageInfoCookiesContentView::SetCookieInfo(
           IDS_PAGE_INFO_COOKIES_ALLOWED_SITES_COUNT,
           cookie_info.allowed_sites_count);
 
+  // TODO(crbug.com/1346305): Add different text when FPS blocked.
   const std::u16string num_blocked_sites_text =
       l10n_util::GetPluralStringFUTF16(
           IDS_PAGE_INFO_COOKIES_BLOCKED_SITES_COUNT,
@@ -130,42 +132,88 @@ void PageInfoCookiesContentView::SetCookieInfo(
   // Update the text displaying the number of blocked sites.
   blocking_third_party_cookies_subtitle_label_->SetText(num_blocked_sites_text);
 
+  // TODO(crbug.com/1346305): Add checking if FPS is blocked.
+  if (base::FeatureList::IsEnabled(
+          privacy_sandbox::kPrivacySandboxFirstPartySetsUI)) {
+    const std::u16string fps_button_title = l10n_util::GetStringFUTF16(
+        IDS_PAGE_FPS_BUTTON_TITLE, cookie_info.fps_info.owner_name);
+
+    const std::u16string fps_button_subtitle = l10n_util::GetStringFUTF16(
+        IDS_PAGE_FPS_BUTTON_SUBTITLE, cookie_info.fps_info.owner_name);
+
+    InitFPSButton();
+    fps_button_->SetTitleText(fps_button_title);
+    fps_button_->SetSubtitleText(fps_button_subtitle);
+  }
+
   PreferredSizeChanged();
 }
 
 void PageInfoCookiesContentView::InitBlockingThirdPartyCookiesRow() {
-  if (blocking_third_party_cookies_row_ == nullptr) {
-    const auto title = l10n_util::GetStringUTF16(
-        IDS_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_TITLE);
-    const auto tooltip = l10n_util::GetStringUTF16(
-        IDS_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_TOGGLE_TOOLTIP);
-    // TODO(crbug.com/1346305): Add correct icon.
-    PageInfo::PermissionInfo info;
-    info.type = ContentSettingsType::COOKIES;
-    info.setting = CONTENT_SETTING_ALLOW;
-    const auto icon = PageInfoViewFactory::GetPermissionIcon(info);
+  if (blocking_third_party_cookies_row_)
+    return;
 
-    blocking_third_party_cookies_row_ =
-        AddChildView(std::make_unique<PageInfoRowView>());
-    blocking_third_party_cookies_row_->SetTitle(title);
-    blocking_third_party_cookies_row_->SetIcon(icon);
-    blocking_third_party_cookies_subtitle_label_ =
-        blocking_third_party_cookies_row_->AddSecondaryLabel(u"");
+  const auto title =
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_TITLE);
+  const auto tooltip = l10n_util::GetStringUTF16(
+      IDS_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_TOGGLE_TOOLTIP);
+  // TODO(crbug.com/1346305): Add correct icon.
+  PageInfo::PermissionInfo info;
+  info.type = ContentSettingsType::COOKIES;
+  info.setting = CONTENT_SETTING_ALLOW;
+  const auto icon = PageInfoViewFactory::GetPermissionIcon(info);
 
-    auto* toggle_button = blocking_third_party_cookies_row_->AddControl(
-        std::make_unique<views::ToggleButton>(base::BindRepeating(
-            &PageInfoCookiesContentView::OnToggleButtonPressed,
-            base::Unretained(this))));
-    toggle_button->SetAccessibleName(tooltip);
-    toggle_button->SetPreferredSize(
-        gfx::Size(toggle_button->GetPreferredSize().width(),
-                  blocking_third_party_cookies_row_->GetFirstLineHeight()));
+  blocking_third_party_cookies_row_ =
+      cookies_buttons_container_view_->AddChildView(
+          std::make_unique<PageInfoRowView>());
+  blocking_third_party_cookies_row_->SetTitle(title);
+  blocking_third_party_cookies_row_->SetIcon(icon);
+  blocking_third_party_cookies_subtitle_label_ =
+      blocking_third_party_cookies_row_->AddSecondaryLabel(u"");
 
-    // TODO(crbug.com/1346305): Add checking current state.
-    toggle_button->SetIsOn(true);
-  }
+  auto* toggle_button = blocking_third_party_cookies_row_->AddControl(
+      std::make_unique<views::ToggleButton>(base::BindRepeating(
+          &PageInfoCookiesContentView::OnToggleButtonPressed,
+          base::Unretained(this))));
+  toggle_button->SetAccessibleName(tooltip);
+  toggle_button->SetPreferredSize(
+      gfx::Size(toggle_button->GetPreferredSize().width(),
+                blocking_third_party_cookies_row_->GetFirstLineHeight()));
+
+  // TODO(crbug.com/1346305): Add checking current state.
+  toggle_button->SetIsOn(true);
 }
 
 void PageInfoCookiesContentView::OnToggleButtonPressed() {
   // TODO(crbug.com/1346305): Add reaction to clicking the toggle.
+}
+
+void PageInfoCookiesContentView::InitFPSButton() {
+  if (fps_button_)
+    return;
+
+  PageInfo::PermissionInfo info;
+  info.type = ContentSettingsType::COOKIES;
+  info.setting = CONTENT_SETTING_ALLOW;
+  // TODO(crbug.com/1346305): Change to the correct icon.
+  const ui::ImageModel icon_fps = PageInfoViewFactory::GetPermissionIcon(info);
+
+  const std::u16string& tooltip =
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_TOOLTIP);
+
+  // Create the fps_button with temporary values for title and subtitle
+  // as we don't have data yet, it will be updated.
+  fps_button_ = cookies_buttons_container_view_->AddChildView(
+      std::make_unique<PageInfoHoverButton>(
+          base::BindRepeating(
+              &PageInfoCookiesContentView::FPSSettingsButtonClicked,
+              base::Unretained(this)),
+          icon_fps, IDS_PAGE_INFO_COOKIES, std::u16string(),
+          PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_FPS_SETTINGS,
+          tooltip, /*secondary_text=*/u" ",
+          PageInfoViewFactory::GetLaunchIcon()));
+}
+
+void PageInfoCookiesContentView::FPSSettingsButtonClicked(ui::Event const&) {
+  // TODO(crbug.com/1346305): Add linking to "All Sites" settings page.
 }
