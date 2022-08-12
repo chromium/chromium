@@ -39,10 +39,7 @@ def load_test_seed_from_file(hardcoded_seed_path):
     A tuple of two strings: the compressed seed and the seed signature.
   """
   # Provided seed path.
-  path_seed = os.path.join(_SRC_DIR, 'variations_seed')
-
-  if not os.path.isfile(path_seed):
-    path_seed = hardcoded_seed_path
+  path_seed = get_test_seed_file_path(hardcoded_seed_path)
 
   logging.info('Parsing test seed from "%s"', path_seed)
 
@@ -51,6 +48,33 @@ def load_test_seed_from_file(hardcoded_seed_path):
 
   return (seed_json.get(LOCAL_STATE_SEED_NAME, None),
           seed_json.get(LOCAL_STATE_SEED_SIGNATURE_NAME, None))
+
+def get_test_seed_file_path(hardcoded_seed_path):
+  """Gets the file path to the test seed.
+
+  There are 2 types of seeds used by this smoke test:
+  1. A provided seed under test, and when the test is running with this seed,
+     it's running as a TRY job and is triggered by the finch_smoke_test recipe
+     to test the Finch GCL config changes. The interface between the recipe and
+     this test is a json file named variations_seed located at the root of
+     the checkout.
+  2. A hard-coded seed, and when the test is running with this seed, it's
+     running on CI continuously to prevent regressions to this test itself.
+
+  The function tries to use provided seed first. If the provided seed doesn't
+  exist, the function will fallback to a hard-coded seed as input arg.
+
+  Args:
+    hardcoded_seed_path (str): Path to provided hard-coded seed.
+  Returns:
+    A path to the location of the seed.
+  """
+  path_seed = os.path.abspath(os.path.join(_SRC_DIR, 'variations_seed'))
+
+  if not os.path.isfile(path_seed):
+    path_seed = hardcoded_seed_path
+
+  return path_seed
 
 
 def get_current_seed(user_data_dir):
