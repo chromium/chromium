@@ -64,6 +64,7 @@
 #include "gpu/config/gpu_finch_features.h"
 #include "media/base/media_switches.h"
 #include "media/media_buildflags.h"
+#include "net/base/features.h"
 #include "services/network/public/cpp/features.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/features.h"
@@ -322,6 +323,9 @@ absl::optional<int> AwMainDelegate::BasicStartupComplete() {
     // ML model delivery via Optimization Guide component.
     // TODO(crbug.com/1292622): Enable the feature on Webview.
     features.DisableIfNotSet(::translate::kTFLiteLanguageDetectionEnabled);
+
+    // Disable key pinning enforcement on webview.
+    features.DisableIfNotSet(net::features::kStaticKeyPinningEnforcement);
 
     // Have the network service in the browser process even if we have separate
     // renderer processes. See also: switches::kInProcessGPU above.

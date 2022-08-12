@@ -5747,22 +5747,6 @@
             ]
         }
     ],
-    "KeyPinningAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "KeyPinningComponentUpdater",
-                        "StaticKeyPinningEnforcement"
-                    ]
-                }
-            ]
-        }
-    ],
     "KeyboardAccessoryAddressIPH": [
         {
             "platforms": [

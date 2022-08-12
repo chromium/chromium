@@ -301,11 +301,7 @@ const base::Feature kClampCookieExpiryTo400Days(
 
 const base::Feature kStaticKeyPinningEnforcement(
     "StaticKeyPinningEnforcement",
-#if BUILDFLAG(IS_ANDROID)
-    base::FEATURE_DISABLED_BY_DEFAULT);
-#else
     base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
 
 const base::Feature kCookieDomainRejectNonASCII{
     "CookieDomainRejectNonASCII", base::FEATURE_DISABLED_BY_DEFAULT};
