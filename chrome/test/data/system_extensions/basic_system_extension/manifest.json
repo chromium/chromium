@@ -1,7 +1,6 @@
 {
     "name": "Sample System Web Extension",
     "short_name": "Sample SWX",
-    "companion_web_app_url": "https://example.com",
     "service_worker_url": "/sw.js",
     "id": "01020304",
     "type": "echo"

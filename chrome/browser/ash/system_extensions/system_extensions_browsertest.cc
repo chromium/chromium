@@ -37,7 +37,6 @@ namespace {
 constexpr SystemExtensionId kTestSystemExtensionId = {1, 2, 3, 4};
 
 constexpr char kTestSystemExtensionManifest[] = R"({
-   "companion_web_app_url": "https://example.com",
    "id": "01020304",
    "name": "Sample System Web Extension",
    "service_worker_url": "/sw.js",

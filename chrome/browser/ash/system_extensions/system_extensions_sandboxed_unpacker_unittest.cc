@@ -107,8 +107,7 @@ TEST_P(SystemExtensionsSandboxedUnpackerTest, Success) {
     "type": "echo",
     "service_worker_url": "/sw.js",
     "name": "Long Test",
-    "short_name": "Test",
-    "companion_web_app_url": "https://test.example/"
+    "short_name": "Test"
   })";
 
   auto result = CallGetSystemExtensionFrom(kSystemExtensionManifest);
@@ -124,9 +123,6 @@ TEST_P(SystemExtensionsSandboxedUnpackerTest, Success) {
   EXPECT_EQ("Long Test", system_extension.name);
   ASSERT_TRUE(system_extension.short_name.has_value());
   EXPECT_EQ("Test", system_extension.short_name);
-  ASSERT_TRUE(system_extension.companion_web_app_url.has_value());
-  EXPECT_EQ("https://test.example/",
-            system_extension.companion_web_app_url->spec());
 }
 
 TEST_P(SystemExtensionsSandboxedUnpackerTest, Failure_EmptyManifest) {
@@ -147,8 +143,7 @@ TEST_P(SystemExtensionsSandboxedUnpackerTest, Failure_IdMissing) {
     "type": "echo",
     "service_worker_url": "/sw.js",
     "name": "Long Test",
-    "short_name": "Test",
-    "companion_web_app_url": "https://test.example/"
+    "short_name": "Test"
   })";
 
   auto result = CallGetSystemExtensionFrom(kSystemExtensionManifest);
@@ -161,8 +156,7 @@ TEST_P(SystemExtensionsSandboxedUnpackerTest, Failure_IdInvalidTooShort) {
     "type": "echo",
     "service_worker_url": "/sw.js",
     "name": "Long Test",
-    "short_name": "Test",
-    "companion_web_app_url": "https://test.example/"
+    "short_name": "Test"
   })";
 
   auto result = CallGetSystemExtensionFrom(kSystemExtensionManifest);
@@ -175,8 +169,7 @@ TEST_P(SystemExtensionsSandboxedUnpackerTest, Failure_IdInvalidTooLong) {
     "type": "echo",
     "service_worker_url": "/sw.js",
     "name": "Long Test",
-    "short_name": "Test",
-    "companion_web_app_url": "https://test.example/"
+    "short_name": "Test"
   })";
 
   auto result = CallGetSystemExtensionFrom(kSystemExtensionManifest);
@@ -189,8 +182,7 @@ TEST_P(SystemExtensionsSandboxedUnpackerTest, Failure_IdInvalidCharacters) {
     "type": "echo",
     "service_worker_url": "/sw.js",
     "name": "Long Test",
-    "short_name": "Test",
-    "companion_web_app_url": "https://test.example/"
+    "short_name": "Test"
   })";
 
   auto result = CallGetSystemExtensionFrom(kSystemExtensionManifest);
@@ -202,8 +194,7 @@ TEST_P(SystemExtensionsSandboxedUnpackerTest, Failure_TypeMissing) {
     "id": "01020304",
     "service_worker_url": "/sw.js",
     "name": "Long Test",
-    "short_name": "Test",
-    "companion_web_app_url": "https://test.example/"
+    "short_name": "Test"
   })";
 
   auto result = CallGetSystemExtensionFrom(kSystemExtensionManifest);
@@ -216,8 +207,7 @@ TEST_P(SystemExtensionsSandboxedUnpackerTest, Failure_TypeInvalid) {
     "type": "foo",
     "service_worker_url": "/sw.js",
     "name": "Long Test",
-    "short_name": "Test",
-    "companion_web_app_url": "https://test.example/"
+    "short_name": "Test"
   })";
 
   auto result = CallGetSystemExtensionFrom(kSystemExtensionManifest);
@@ -229,8 +219,7 @@ TEST_P(SystemExtensionsSandboxedUnpackerTest, Failure_ServiceWorkerUrlMissing) {
     "id": "01020304",
     "type": "echo",
     "name": "Long Test",
-    "short_name": "Test",
-    "companion_web_app_url": "https://test.example/"
+    "short_name": "Test"
   })";
 
   auto result = CallGetSystemExtensionFrom(kSystemExtensionManifest);
@@ -243,8 +232,7 @@ TEST_P(SystemExtensionsSandboxedUnpackerTest, Failure_ServiceWorkerUrlInvalid) {
     "type": "echo",
     "service_worker_url": "../",
     "name": "Long Test",
-    "short_name": "Test",
-    "companion_web_app_url": "https://test.example/"
+    "short_name": "Test"
   })";
 
   auto result = CallGetSystemExtensionFrom(kSystemExtensionManifest);
@@ -257,8 +245,7 @@ TEST_P(SystemExtensionsSandboxedUnpackerTest, Failure_ServiceWorkerUrlEmpty) {
     "type": "echo",
     "service_worker_url": "",
     "name": "Long Test",
-    "short_name": "Test",
-    "companion_web_app_url": "https://test.example/"
+    "short_name": "Test"
   })";
 
   auto result = CallGetSystemExtensionFrom(kSystemExtensionManifest);
@@ -272,8 +259,7 @@ TEST_P(SystemExtensionsSandboxedUnpackerTest,
     "type": "echo",
     "service_worker_url": "https://test.example",
     "name": "Long Test",
-    "short_name": "Test",
-    "companion_web_app_url": "https://test.example/"
+    "short_name": "Test"
   })";
 
   auto result = CallGetSystemExtensionFrom(kSystemExtensionManifest);
@@ -285,8 +271,7 @@ TEST_P(SystemExtensionsSandboxedUnpackerTest, Failure_NameMissing) {
     "id": "01020304",
     "type": "echo",
     "service_worker_url": "/sw.js",
-    "short_name": "Test",
-    "companion_web_app_url": "https://test.example/"
+    "short_name": "Test"
   })";
 
   auto result = CallGetSystemExtensionFrom(kSystemExtensionManifest);
@@ -299,8 +284,7 @@ TEST_P(SystemExtensionsSandboxedUnpackerTest, Failure_NameEmpty) {
     "type": "echo",
     "service_worker_url": "/sw.js",
     "name": "",
-    "short_name": "Test",
-    "companion_web_app_url": "https://test.example/"
+    "short_name": "Test"
   })";
 
   auto result = CallGetSystemExtensionFrom(kSystemExtensionManifest);
@@ -312,8 +296,7 @@ TEST_P(SystemExtensionsSandboxedUnpackerTest, Success_NoShortName) {
     "id": "01020304",
     "type": "echo",
     "service_worker_url": "/sw.js",
-    "name": "Long Test",
-    "companion_web_app_url": "https://test.example/"
+    "name": "Long Test"
   })";
 
   auto result = CallGetSystemExtensionFrom(kSystemExtensionManifest);
@@ -326,55 +309,11 @@ TEST_P(SystemExtensionsSandboxedUnpackerTest, Success_EmptyShortName) {
     "type": "echo",
     "service_worker_url": "/sw.js",
     "name": "Long Test",
-    "short_name": "",
-    "companion_web_app_url": "https://test.example/"
+    "short_name": ""
   })";
 
   auto result = CallGetSystemExtensionFrom(kSystemExtensionManifest);
   EXPECT_FALSE(result.value().short_name.has_value());
-}
-
-TEST_P(SystemExtensionsSandboxedUnpackerTest, Success_NoCompanionWebAppUrl) {
-  static constexpr const char kSystemExtensionManifest[] = R"({
-    "id": "01020304",
-    "type": "echo",
-    "service_worker_url": "/sw.js",
-    "name": "Long Test",
-    "short_name": "Test"
-  })";
-
-  auto result = CallGetSystemExtensionFrom(kSystemExtensionManifest);
-  EXPECT_FALSE(result.value().companion_web_app_url.has_value());
-}
-
-TEST_P(SystemExtensionsSandboxedUnpackerTest,
-       Success_InvalidCompanionWebAppUrl) {
-  static constexpr const char kSystemExtensionManifest[] = R"({
-    "id": "01020304",
-    "type": "echo",
-    "service_worker_url": "/sw.js",
-    "name": "Long Test",
-    "short_name": "Test",
-    "companion_web_app_url": "foobar"
-  })";
-
-  auto result = CallGetSystemExtensionFrom(kSystemExtensionManifest);
-  EXPECT_FALSE(result.value().companion_web_app_url.has_value());
-}
-
-TEST_P(SystemExtensionsSandboxedUnpackerTest,
-       Success_InsecureCompanionWebAppUrl) {
-  static constexpr const char kSystemExtensionManifest[] = R"({
-    "id": "01020304",
-    "type": "echo",
-    "service_worker_url": "/sw.js",
-    "name": "Long Test",
-    "short_name": "Test",
-    "companion_web_app_url": "http://test.example"
-  })";
-
-  auto result = CallGetSystemExtensionFrom(kSystemExtensionManifest);
-  EXPECT_FALSE(result.value().companion_web_app_url.has_value());
 }
 
 TEST_P(SystemExtensionsSandboxedUnpackerFromDirTest, Failure_NoDir) {
