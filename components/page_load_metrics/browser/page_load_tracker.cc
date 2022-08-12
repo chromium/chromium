@@ -320,8 +320,10 @@ void PageLoadTracker::PageHidden() {
     // foregrounded.
     base::TimeTicks background_time;
 
-    if (!first_background_time_.has_value())
+    if (!first_background_time_.has_value() &&
+        (prerendering_state_ == PrerenderingState::kNoPrerendering)) {
       DCHECK_EQ(started_in_foreground_, !first_foreground_time_.has_value());
+    }
 
     background_time = base::TimeTicks::Now();
     ClampBrowserTimestampIfInterProcessTimeTickSkew(&background_time);
@@ -465,7 +467,6 @@ void PageLoadTracker::DidActivatePrerenderedPage(
 
   if (GetWebContents()->GetVisibility() == content::Visibility::VISIBLE) {
     visibility_at_activation_ = PageVisibility::kForeground;
-    PageShown();
   } else {
     visibility_at_activation_ = PageVisibility::kBackground;
   }

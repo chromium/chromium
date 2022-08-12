@@ -285,9 +285,9 @@ TEST_F(TranslatePageLoadMetricsObserverTest, PrerenderAndActivation) {
       .Times(0);
 
   EXPECT_CALL(*mock_translate_metrics_loggers()[1], OnPageLoadStart(true))
-      .Times(1);
-  EXPECT_CALL(*mock_translate_metrics_loggers()[1], OnPageLoadStart(false))
       .Times(0);
+  EXPECT_CALL(*mock_translate_metrics_loggers()[1], OnPageLoadStart(false))
+      .Times(1);
   EXPECT_CALL(*mock_translate_metrics_loggers()[1],
               OnForegroundChange(testing::_))
       .Times(0);
