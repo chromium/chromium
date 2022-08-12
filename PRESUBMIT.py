@@ -2218,8 +2218,12 @@ def CheckNoProductIconsAddedToPublicRepo(input_api, output_api):
 
     results = []
     if errors:
+        # Give warnings instead of errors on presubmit --all and presubmit
+        # --files.
+        message_type = (output_api.PresubmitNotifyResult if input_api.no_diffs
+                        else output_api.PresubmitError)
         results.append(
-            output_api.PresubmitError(
+            message_type(
                 'Trademarked images should not be added to the public repo. '
                 'See crbug.com/944754', errors))
     return results
