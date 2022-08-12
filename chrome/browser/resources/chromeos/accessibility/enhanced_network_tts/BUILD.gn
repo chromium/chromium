@@ -25,7 +25,6 @@ run_jsbundler("enhanced_network_tts_copied_files") {
   mode = "copy"
   dest_dir = enhanced_network_tts_dir
   sources = [
-    "background.html",
     "background.js",
     "enhanced_network_tts.js",
   ]
