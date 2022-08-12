@@ -876,6 +876,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.GPUInitializationTime.V4" units="ms"
+    expires_after="2023-02-01">
+  <owner>zmo@chromium.org</owner>
+  <owner>spvw@chromium.org</owner>
+  <summary>
+    The time between the GPU process start and the collection of GPU info during
+    the process's startup phase. The time range is between 5ms and 90s. Emitted
+    after the collection of GPU info. Reported for all clients.
+
+    This metric is similar to GPU.GPUInitializationTime.V3, but there are two
+    main differences. First, the range for GPU.GPUInitializationTime.V4 is
+    capped at 90s while the range of the other metric is capped at 5s. Second,
+    this metric is emitted earlier in the execution because this metric is
+    recorded at the same time as trace events which require the timestamp
+    marking the start and end of the GPU initialization to be in scope, whereas
+    V3 only requires the time spent.
+
+    The purpose of this metric is to investigate the long tail of GPU startup
+    time. See crbug/1350257.
+  </summary>
+</histogram>
+
 <histogram name="GPU.GPUProcessExitCode" enum="GPUProcessExitCode"
     expires_after="2023-01-01">
   <owner>zmo@chromium.org</owner>

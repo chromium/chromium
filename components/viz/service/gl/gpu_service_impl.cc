@@ -12,12 +12,14 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/trace_event/trace_event.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -125,6 +127,12 @@
 namespace viz {
 
 namespace {
+
+// The names emitted for GPU initialization trace events.
+// This code may be removed after the following investigation:
+// crbug.com/1350257
+constexpr char kGpuInitializationEventCategory[] = "latency";
+constexpr char kGpuInitializationEvent[] = "GpuInitialization";
 
 using LogCallback = base::RepeatingCallback<
     void(int severity, const std::string& header, const std::string& message)>;
@@ -505,6 +513,18 @@ void GpuServiceImpl::UpdateGPUInfo() {
   // Record initialization only after collecting the GPU info because that can
   // take a significant amount of time.
   gpu_info_.initialization_time = base::TimeTicks::Now() - start_time_;
+
+  // This metric code may be removed after the following investigation:
+  // crbug.com/1350257
+  UMA_HISTOGRAM_CUSTOM_TIMES("GPU.GPUInitializationTime.V4",
+                             gpu_info_.initialization_time,
+                             base::Milliseconds(5), base::Seconds(90), 100);
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
+      kGpuInitializationEventCategory, kGpuInitializationEvent,
+      TRACE_ID_LOCAL(this), start_time_);
+  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
+      kGpuInitializationEventCategory, kGpuInitializationEvent,
+      TRACE_ID_LOCAL(this), base::TimeTicks::Now());
 }
 
 void GpuServiceImpl::UpdateGPUInfoGL() {
