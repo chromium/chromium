@@ -1762,11 +1762,8 @@ NavigationRequest::NavigationRequest(
 #if BUILDFLAG(IS_ANDROID)
   RenderWidgetHostImpl* host = RenderWidgetHostImpl::From(
       frame_tree_node_->current_frame_host()->GetRenderWidgetHost());
-  // TODO(crbug.com/1314749): With MPArch there may be multiple main frames and
-  // so IsMainFrame should not be used to identify subframes. Follow up to
-  // confirm correctness.
   if (base::FeatureList::IsEnabled(features::kOptimizeEarlyNavigation) &&
-      NeedsUrlLoader() && frame_tree_node_->IsOutermostMainFrame() && host &&
+      NeedsUrlLoader() && IsInPrimaryMainFrame() && host &&
       !host->is_hidden() && host->GetView() &&
       host->GetView()->GetNativeView() &&
       host->GetView()->GetNativeView()->GetWindowAndroid()) {
