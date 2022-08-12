@@ -384,7 +384,14 @@ IN_PROC_BROWSER_TEST_F(BrowserSideFlingBrowserTest,
       0, EvalJs(root->current_frame_host(), "window.scrollY").ExtractDouble());
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserSideFlingBrowserTest, TouchscreenFlingInOOPIF) {
+// TODO(crbug.com/1352412): Re-enable on Linux MSAN once not flaky.
+#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+#define MAYBE_TouchscreenFlingInOOPIF DISABLED_TouchscreenFlingInOOPIF
+#else
+#define MAYBE_TouchscreenFlingInOOPIF TouchscreenFlingInOOPIF
+#endif
+IN_PROC_BROWSER_TEST_F(BrowserSideFlingBrowserTest,
+                       MAYBE_TouchscreenFlingInOOPIF) {
   LoadPageWithOOPIF();
   SimulateTouchscreenFling(child_view_->host());
   WaitForFrameScroll(GetChildNode());
