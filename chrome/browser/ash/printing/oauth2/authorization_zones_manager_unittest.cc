@@ -4,23 +4,38 @@
 
 #include "chrome/browser/ash/printing/oauth2/authorization_zones_manager.h"
 
+#include <map>
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/ash/printing/oauth2/authorization_zone.h"
 #include "chrome/browser/ash/printing/oauth2/status_code.h"
 #include "chrome/browser/ash/printing/oauth2/test_authorization_server.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/printing/uri.h"
+#include "components/sync/model/model_type_store.h"
+#include "components/sync/protocol/entity_data.h"
+#include "components/sync/test/model/mock_model_type_change_processor.h"
+#include "components/sync/test/model/model_type_store_test_util.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace ash::printing::oauth2 {
 namespace {
+
+syncer::EntityData ToEntityData(const std::string& uri) {
+  syncer::EntityData entity_data;
+  entity_data.specifics.mutable_printers_authorization_server()->set_uri(uri);
+  entity_data.name = uri;
+  return entity_data;
+}
 
 class MockAuthorizationZone : public AuthorizationZone {
  public:
@@ -50,18 +65,38 @@ class PrintingOAuth2AuthorizationZonesManagerTest : public testing::Test {
  protected:
   using AuthZoneMock = testing::StrictMock<MockAuthorizationZone>;
 
-  PrintingOAuth2AuthorizationZonesManagerTest() = default;
+  PrintingOAuth2AuthorizationZonesManagerTest() {
+    // This method is called when the bridge inside AuthorizationZonesManager
+    // is fully initialized.
+    EXPECT_CALL(mock_processor_, ModelReadyToSync(testing::_))
+        .Times(testing::AtMost(1))
+        .WillOnce([this]() { bridge_initialization_.Quit(); });
+
+    auth_zones_manager_ = AuthorizationZonesManager::CreateForTesting(
+        &profile_,
+        base::BindRepeating(
+            &PrintingOAuth2AuthorizationZonesManagerTest::CreateAuthZoneMock,
+            base::Unretained(this)),
+        mock_processor_.CreateForwardingProcessor(),
+        syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(
+            store_.get()));
+  }
+
+  // Wait for `auth_zones_manager_` to be completely initialized. It is done
+  // when the internal sync bridge completes its initialization.
+  void WaitForTheCompletionOfInitialization() {
+    ON_CALL(mock_processor_, IsTrackingMetadata())
+        .WillByDefault(testing::Return(true));
+    bridge_initialization_.Run();
+  }
 
   // Creates a mock of AuthorizationZone, stores it as a trusted server.
   // Returns a pointer to the mock. The mock is owned by `auth_zones_manager_`.
   AuthZoneMock* CallSaveAuthorizationServerAsTrusted(const GURL& auth_server) {
-    auto auth_zone = std::make_unique<AuthZoneMock>();
-    auto* auth_zone_ptr = auth_zone.get();
     const StatusCode sc =
-        auth_zones_manager_->SaveAuthorizationServerAsTrustedForTesting(
-            auth_server, std::move(auth_zone));
-    EXPECT_EQ(sc, StatusCode::kOK);
-    return auth_zone_ptr;
+        auth_zones_manager_->SaveAuthorizationServerAsTrusted(auth_server);
+    DCHECK_EQ(sc, StatusCode::kOK);
+    return auth_zones_[auth_server];
   }
 
   // Calls InitAuthorization(...) and waits for the callback.
@@ -161,10 +196,23 @@ class PrintingOAuth2AuthorizationZonesManagerTest : public testing::Test {
         .Times(1);
   }
 
+  std::unique_ptr<AuthorizationZone> CreateAuthZoneMock(
+      const GURL& url,
+      const std::string& client_id) {
+    auto auth_zone = std::make_unique<AuthZoneMock>();
+    auto [_, created] = auth_zones_.emplace(url, auth_zone.get());
+    DCHECK(created);
+    return auth_zone;
+  }
+
+  std::map<GURL, AuthZoneMock*> auth_zones_;
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
-  std::unique_ptr<AuthorizationZonesManager> auth_zones_manager_ =
-      AuthorizationZonesManager::Create(&profile_);
+  testing::NiceMock<syncer::MockModelTypeChangeProcessor> mock_processor_;
+  std::unique_ptr<syncer::ModelTypeStore> store_ =
+      syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest();
+  base::RunLoop bridge_initialization_;
+  std::unique_ptr<AuthorizationZonesManager> auth_zones_manager_;
 };
 
 TEST_F(PrintingOAuth2AuthorizationZonesManagerTest, UntrustedAuthServer) {
@@ -213,6 +261,80 @@ TEST_F(PrintingOAuth2AuthorizationZonesManagerTest, PassingCallsToAuthZones) {
   ExpectCallMarkEndpointAccessTokenAsExpired(auth_zone_2, ipp_endpoint, "zaq1");
   auth_zones_manager_->MarkEndpointAccessTokenAsExpired(url_2, ipp_endpoint,
                                                         "zaq1");
+}
+
+TEST_F(PrintingOAuth2AuthorizationZonesManagerTest,
+       SaveAuthorizationServerAsTrustedBeforeInitialization) {
+  GURL url_1("https://ala.ma.kota/albo/psa");
+  CallbackResult cr;
+  auto callback = [&cr](StatusCode status, const std::string& data) {
+    cr.status = status;
+    cr.data = data;
+  };
+
+  AuthZoneMock* auth_zone_1 = CallSaveAuthorizationServerAsTrusted(url_1);
+  auth_zones_manager_->InitAuthorization(url_1, "scope",
+                                         base::BindLambdaForTesting(callback));
+
+  EXPECT_CALL(mock_processor_, Put(url_1.spec(), testing::_, testing::_));
+  ExpectCallInitAuthorization(auth_zone_1, "scope",
+                              CallbackResult{StatusCode::kOK, "data"});
+  WaitForTheCompletionOfInitialization();
+}
+
+TEST_F(PrintingOAuth2AuthorizationZonesManagerTest,
+       SaveAuthorizationServerAsTrustedAfterInitialization) {
+  GURL url_1("https://ala.ma.kota/albo/psa");
+  CallbackResult cr;
+  auto callback = [&cr](StatusCode status, const std::string& data) {
+    cr.status = status;
+    cr.data = data;
+  };
+
+  WaitForTheCompletionOfInitialization();
+
+  EXPECT_CALL(mock_processor_, Put(url_1.spec(), testing::_, testing::_));
+  AuthZoneMock* auth_zone_1 = CallSaveAuthorizationServerAsTrusted(url_1);
+
+  ExpectCallInitAuthorization(auth_zone_1, "scope",
+                              CallbackResult{StatusCode::kOK, "data"});
+  auth_zones_manager_->InitAuthorization(url_1, "scope",
+                                         base::BindLambdaForTesting(callback));
+  EXPECT_EQ(cr.status, StatusCode::kOK);
+  EXPECT_EQ(cr.data, "data");
+}
+
+TEST_F(PrintingOAuth2AuthorizationZonesManagerTest, ApplySyncChanges) {
+  GURL url_1("https://ala.ma.kota/albo/psa");
+  GURL url_2("https://other.server:1234");
+
+  WaitForTheCompletionOfInitialization();
+
+  AuthZoneMock* auth_zone_1 = CallSaveAuthorizationServerAsTrusted(url_1);
+
+  EXPECT_CALL(*auth_zone_1, MarkAuthorizationZoneAsUntrusted());
+
+  syncer::EntityChangeList data_change_list;
+  data_change_list.push_back(syncer::EntityChange::CreateAdd(
+      url_2.spec(), ToEntityData(url_2.spec())));
+  data_change_list.push_back(syncer::EntityChange::CreateDelete(url_1.spec()));
+  syncer::ModelTypeSyncBridge* bridge =
+      auth_zones_manager_->GetModelTypeSyncBridge();
+
+  absl::optional<syncer::ModelError> error = bridge->ApplySyncChanges(
+      bridge->CreateMetadataChangeList(), std::move(data_change_list));
+  EXPECT_FALSE(error);
+
+  // Check if |url_1| is gone.
+  CallbackResult cr = CallInitAuthorization(url_1, "scope1");
+  EXPECT_EQ(cr.status, StatusCode::kUnknownAuthorizationServer);
+
+  // Check if |url_2| is added.
+  AuthZoneMock* auth_zone_2 = auth_zones_[url_2];
+  ASSERT_TRUE(auth_zone_2);
+  ExpectCallInitAuthorization(auth_zone_2, "scope1", {StatusCode::kOK, "x"});
+  cr = CallInitAuthorization(url_2, "scope1");
+  EXPECT_EQ(cr.status, StatusCode::kOK);
 }
 
 }  // namespace

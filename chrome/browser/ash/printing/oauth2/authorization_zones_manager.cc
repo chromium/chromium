@@ -8,7 +8,10 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <utility>
+#include <vector>
 
+#include "base/callback.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/notreached.h"
@@ -18,6 +21,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/model_type_store_service_factory.h"
 #include "chromeos/printing/uri.h"
+#include "components/sync/model/model_type_change_processor.h"
+#include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_store_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
@@ -35,19 +40,43 @@ class AuthorizationZonesManagerImpl
             this,
             ModelTypeStoreServiceFactory::GetForProfile(profile)
                 ->GetStoreFactory())),
-        url_loader_factory_(profile->GetURLLoaderFactory()) {}
+        url_loader_factory_(profile->GetURLLoaderFactory()),
+        auth_zone_creator_(base::BindRepeating(AuthorizationZone::Create,
+                                               url_loader_factory_)) {}
+
+  AuthorizationZonesManagerImpl(
+      Profile* profile,
+      CreateAuthZoneCallback auth_zone_creator,
+      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+      syncer::OnceModelTypeStoreFactory store_factory)
+      : sync_bridge_(ProfileAuthServersSyncBridge::CreateForTesting(
+            this,
+            std::move(change_processor),
+            std::move(store_factory))),
+        url_loader_factory_(profile->GetURLLoaderFactory()),
+        auth_zone_creator_(std::move(auth_zone_creator)) {}
 
   StatusCode SaveAuthorizationServerAsTrusted(
       const GURL& auth_server) override {
-    return ValidateURLAndSave(
-        auth_server,
-        AuthorizationZone::Create(url_loader_factory_, auth_server));
-  }
-
-  StatusCode SaveAuthorizationServerAsTrustedForTesting(
-      const GURL& auth_server,
-      std::unique_ptr<AuthorizationZone> auth_zone) override {
-    return ValidateURLAndSave(auth_server, std::move(auth_zone));
+    std::unique_ptr<AuthorizationZone> auth_zone =
+        auth_zone_creator_.Run(auth_server, /*client_id=*/"");
+    if (!auth_server.is_valid() || !auth_server.SchemeIs("https") ||
+        !auth_server.has_host() || auth_server.has_username() ||
+        auth_server.has_query() || auth_server.has_ref()) {
+      // TODO(pawliczek): log why the URL is invalid
+      return StatusCode::kInvalidURL;
+    }
+    if (sync_bridge_->IsInitialized()) {
+      if (!base::Contains(servers_, auth_server)) {
+        servers_.emplace(auth_server, std::move(auth_zone));
+        sync_bridge_->AddAuthorizationServer(auth_server);
+      }
+    } else {
+      if (!base::Contains(waiting_servers_, auth_server)) {
+        waiting_servers_[auth_server].server = std::move(auth_zone);
+      }
+    }
+    return StatusCode::kOK;
   }
 
   void InitAuthorization(const GURL& auth_server,
@@ -55,8 +84,14 @@ class AuthorizationZonesManagerImpl
                          StatusCallback callback) override {
     AuthorizationZone* zone = GetAuthorizationZone(auth_server);
     if (!zone) {
-      std::move(callback).Run(StatusCode::kUnknownAuthorizationServer,
-                              auth_server.possibly_invalid_spec());
+      auto it = waiting_servers_.find(auth_server);
+      if (it == waiting_servers_.end()) {
+        std::move(callback).Run(StatusCode::kUnknownAuthorizationServer,
+                                auth_server.possibly_invalid_spec());
+      } else {
+        it->second.init_calls.emplace_back(
+            InitAuthorizationCall{scope, std::move(callback)});
+      }
       return;
     }
 
@@ -68,8 +103,10 @@ class AuthorizationZonesManagerImpl
                            StatusCallback callback) override {
     AuthorizationZone* zone = GetAuthorizationZone(auth_server);
     if (!zone) {
-      std::move(callback).Run(StatusCode::kUnknownAuthorizationServer,
-                              auth_server.possibly_invalid_spec());
+      const StatusCode code = base::Contains(waiting_servers_, auth_server)
+                                  ? StatusCode::kAuthorizationNeeded
+                                  : StatusCode::kUnknownAuthorizationServer;
+      std::move(callback).Run(code, auth_server.possibly_invalid_spec());
       return;
     }
 
@@ -82,8 +119,10 @@ class AuthorizationZonesManagerImpl
                               StatusCallback callback) override {
     AuthorizationZone* zone = GetAuthorizationZone(auth_server);
     if (!zone) {
-      std::move(callback).Run(StatusCode::kUnknownAuthorizationServer,
-                              auth_server.possibly_invalid_spec());
+      const StatusCode code = base::Contains(waiting_servers_, auth_server)
+                                  ? StatusCode::kAuthorizationNeeded
+                                  : StatusCode::kUnknownAuthorizationServer;
+      std::move(callback).Run(code, auth_server.possibly_invalid_spec());
       return;
     }
 
@@ -103,20 +142,14 @@ class AuthorizationZonesManagerImpl
   }
 
  private:
-  // Helper method for adding a new element to `servers_`.
-  StatusCode ValidateURLAndSave(const GURL& auth_server,
-                                std::unique_ptr<AuthorizationZone> auth_zone) {
-    if (!auth_server.is_valid() || !auth_server.SchemeIs("https") ||
-        !auth_server.has_host() || auth_server.has_username() ||
-        auth_server.has_query() || auth_server.has_ref()) {
-      // TODO(pawliczek): log why the URL is invalid
-      return StatusCode::kInvalidURL;
-    }
-    if (!base::Contains(servers_, auth_server)) {
-      servers_.emplace(auth_server, std::move(auth_zone));
-    }
-    return StatusCode::kOK;
-  }
+  struct InitAuthorizationCall {
+    std::string scope;
+    StatusCallback callback;
+  };
+  struct WaitingServer {
+    std::unique_ptr<AuthorizationZone> server;
+    std::vector<InitAuthorizationCall> init_calls;
+  };
 
   // Returns a pointer to the corresponding element in `servers_` or nullptr if
   // `auth_server` is untrusted.
@@ -133,19 +166,44 @@ class AuthorizationZonesManagerImpl
   }
 
   void OnProfileAuthorizationServersInitialized() override {
-    // TODO(pawliczek)
-    NOTIMPLEMENTED();
+    for (auto& [url, ws] : waiting_servers_) {
+      auto [it, created] = servers_.emplace(url, std::move(ws.server));
+      if (created) {
+        sync_bridge_->AddAuthorizationServer(url);
+      }
+      for (InitAuthorizationCall& iac : ws.init_calls) {
+        it->second->InitAuthorization(iac.scope, std::move(iac.callback));
+      }
+    }
+    waiting_servers_.clear();
   }
 
-  void OnProfileAuthorizationServersUpdate(std::set<GURL> removed,
-                                           std::set<GURL> added) override {
-    // TODO(pawliczek)
-    NOTIMPLEMENTED();
+  void OnProfileAuthorizationServersUpdate(std::set<GURL> added,
+                                           std::set<GURL> deleted) override {
+    for (const GURL& url : deleted) {
+      auto it = servers_.find(url);
+      if (it == servers_.end()) {
+        continue;
+      }
+      // First, we have to remove the AuthorizationZone from `servers_` to make
+      // sure it is not accessed in any callbacks returned by
+      // MarkAuthorizationZoneAsUntrusted().
+      std::unique_ptr<AuthorizationZone> auth_zone = std::move(it->second);
+      servers_.erase(it);
+      auth_zone->MarkAuthorizationZoneAsUntrusted();
+    }
+    for (const GURL& url : added) {
+      if (!base::Contains(servers_, url)) {
+        servers_.emplace(url, auth_zone_creator_.Run(url, /*client_id=*/""));
+      }
+    }
   }
 
+  std::map<GURL, WaitingServer> waiting_servers_;
   std::unique_ptr<ProfileAuthServersSyncBridge> sync_bridge_;
   std::map<GURL, std::unique_ptr<AuthorizationZone>> servers_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+  CreateAuthZoneCallback auth_zone_creator_;
 };
 
 }  // namespace
@@ -154,6 +212,18 @@ std::unique_ptr<AuthorizationZonesManager> AuthorizationZonesManager::Create(
     Profile* profile) {
   DCHECK(profile);
   return std::make_unique<AuthorizationZonesManagerImpl>(profile);
+}
+
+std::unique_ptr<AuthorizationZonesManager>
+AuthorizationZonesManager::CreateForTesting(
+    Profile* profile,
+    CreateAuthZoneCallback auth_zone_creator,
+    std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+    syncer::OnceModelTypeStoreFactory store_factory) {
+  DCHECK(profile);
+  return std::make_unique<AuthorizationZonesManagerImpl>(
+      profile, std::move(auth_zone_creator), std::move(change_processor),
+      std::move(store_factory));
 }
 
 AuthorizationZonesManager::~AuthorizationZonesManager() = default;

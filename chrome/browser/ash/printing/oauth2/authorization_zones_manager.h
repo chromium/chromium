@@ -8,8 +8,10 @@
 #include <memory>
 #include <string>
 
+#include "base/callback.h"
 #include "chrome/browser/ash/printing/oauth2/status_code.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_sync_bridge.h"
 
 class GURL;
@@ -18,6 +20,10 @@ class Profile;
 namespace chromeos {
 class Uri;
 }  // namespace chromeos
+
+namespace syncer {
+class ModelTypeChangeProcessor;
+}  // namespace syncer
 
 namespace ash::printing::oauth2 {
 
@@ -64,18 +70,23 @@ class AuthorizationZone;
 // details.
 class AuthorizationZonesManager : public KeyedService {
  public:
+  using CreateAuthZoneCallback = base::RepeatingCallback<std::unique_ptr<
+      AuthorizationZone>(const GURL& url, const std::string& client_id)>;
+
   // `profile` must not be nullptr.
   static std::unique_ptr<AuthorizationZonesManager> Create(Profile* profile);
+  static std::unique_ptr<AuthorizationZonesManager> CreateForTesting(
+      Profile* profile,
+      CreateAuthZoneCallback auth_zone_creator,
+      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+      syncer::OnceModelTypeStoreFactory store_factory);
+
   ~AuthorizationZonesManager() override;
   virtual syncer::ModelTypeSyncBridge* GetModelTypeSyncBridge() = 0;
 
   // Marks `auth_server` as trusted.
   virtual StatusCode SaveAuthorizationServerAsTrusted(
       const GURL& auth_server) = 0;
-
-  virtual StatusCode SaveAuthorizationServerAsTrustedForTesting(
-      const GURL& auth_server,
-      std::unique_ptr<AuthorizationZone> auth_zone) = 0;
 
   // Starts authorization process. If successful, the `callback` is called
   // with StatusCode::kOK and with an authorization URL that must be opened in
