@@ -17,7 +17,6 @@
 #include "chromecast/common/mojom/activity_window.mojom.h"
 #include "chromecast/graphics/gestures/cast_gesture_handler.h"
 #include "chromecast/ui/back_gesture_router.h"
-#include "chromecast/ui/mojom/media_control_ui.mojom.h"
 #include "chromecast/ui/mojom/ui_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -75,9 +74,6 @@ class CastContentWindow : public mojom::CastContentWindow,
   // Cast activity or application calls it to request for moving out of the
   // screen.
   virtual void RequestMoveOut() = 0;
-
-  // Media control interface. Non-null on Aura platforms.
-  virtual mojom::MediaControlUi* media_controls();
 
   // Registers this as a delegate to BackGestureRouter.
   virtual void RegisterBackGestureRouter(

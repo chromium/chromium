@@ -357,7 +357,6 @@ cast_source_set("browser_base") {
     ]
 
     deps += [
-      "//chromecast/ui:media_control_ui",
       "//ui/aura",
       "//ui/views:views",
     ]

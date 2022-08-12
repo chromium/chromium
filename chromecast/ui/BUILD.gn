@@ -5,13 +5,6 @@
 import("//build/config/ui.gni")
 
 import("//chromecast/chromecast.gni")
-import("//components/vector_icons/vector_icons.gni")
-
-cast_source_set("public") {
-  sources = [ "media_overlay.h" ]
-
-  deps = [ "//base" ]
-}
 
 cast_source_set("display_settings_public") {
   sources = [
@@ -46,102 +39,6 @@ cast_source_set("display_settings_manager") {
   if (use_aura) {
     deps += [ "//chromecast/browser:display_configurator" ]
   }
-}
-
-cast_source_set("aura_components") {
-  sources = [
-    "aura_components.cc",
-    "aura_components.h",
-  ]
-
-  deps = [
-    ":public",
-    "//base",
-  ]
-
-  if (use_aura) {
-    sources += [
-      "aura_components_impl.cc",
-      "aura_components_impl.h",
-    ]
-
-    deps += [
-      ":media_overlay",
-      "//ui/views",
-    ]
-  } else {
-    sources += [ "aura_components_dummy.cc" ]
-  }
-
-  if (enable_media_overlay) {
-    defines = [ "ENABLE_MEDIA_OVERLAY" ]
-  }
-}
-
-if (use_aura) {
-  cast_source_set("media_control_ui") {
-    sources = [
-      "media_control_ui.cc",
-      "media_control_ui.h",
-    ]
-
-    deps = [
-      ":vector_icons",
-      "//base",
-      "//chromecast/base",
-      "//chromecast/graphics",
-      "//chromecast/ui/mojom",
-      "//ui/aura",
-      "//ui/views",
-    ]
-  }
-
-  cast_source_set("media_overlay") {
-    sources = [
-      "media_overlay_impl.cc",
-      "media_overlay_impl.h",
-    ]
-
-    deps = [
-      ":public",
-      "//base",
-      "//chromecast/app:resources",
-      "//chromecast/base",
-      "//chromecast/graphics",
-      "//chromecast/media/cma/pipeline",
-      "//chromecast/ui/mojom",
-      "//media",
-      "//ui/aura",
-      "//ui/views",
-    ]
-  }
-}
-
-# Rules for generating vector icon source files.
-# Adapted from //components/vector_icons/BUILD.gn
-
-aggregate_vector_icons("media_controls_vector_icons") {
-  icon_directory = "vector_icons"
-
-  sources = [
-    "back30.icon",
-    "forward30.icon",
-    "next.icon",
-    "pause.icon",
-    "play.icon",
-    "previous.icon",
-  ]
-}
-
-static_library("vector_icons") {
-  sources = get_target_outputs(":media_controls_vector_icons")
-
-  deps = [
-    ":media_controls_vector_icons",
-    "//base",
-    "//skia",
-    "//ui/gfx",
-  ]
 }
 
 cast_source_set("back_gesture_router") {

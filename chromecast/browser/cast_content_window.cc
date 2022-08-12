@@ -67,8 +67,4 @@ void CastContentWindow::NotifyVisibilityChange(VisibilityType visibility_type) {
   }
 }
 
-mojom::MediaControlUi* CastContentWindow::media_controls() {
-  return nullptr;
-}
-
 }  // namespace chromecast
