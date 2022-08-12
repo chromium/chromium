@@ -80,7 +80,10 @@ void IndexedSuggestionCandidateButton::BuildCandidate(
   //   |   |
   //   | 1 |
   //   +---+
-  auto* candidate_wrapper = AddChildView(std::make_unique<views::View>());
+
+  // Wrapper uses views::Label since it doesn't override the hover state of the
+  // button.
+  auto* candidate_wrapper = AddChildView(std::make_unique<views::Label>());
   views::FlexLayout* candidate_wrapper_layout =
       candidate_wrapper->SetLayoutManager(
           std::make_unique<views::FlexLayout>());
