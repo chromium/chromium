@@ -702,7 +702,7 @@ TypeConverter<IdentityProviderPtr, blink::IdentityProvider>::Convert(
 
   mojo_provider->config_url = blink::KURL(provider.configURL());
   mojo_provider->client_id = provider.clientId();
-  mojo_provider->nonce = provider.nonce();
+  mojo_provider->nonce = provider.getNonceOr("");
   return mojo_provider;
 }
 
