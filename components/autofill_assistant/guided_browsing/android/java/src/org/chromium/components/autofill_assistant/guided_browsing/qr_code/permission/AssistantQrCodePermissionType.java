@@ -10,7 +10,7 @@ import org.chromium.ui.permissions.PermissionConstants;
 
 public enum AssistantQrCodePermissionType {
     // List of permissions should be mentioned here
-    CAMERA(permission.CAMERA, "camera_img"),
+    CAMERA(permission.CAMERA, "videocam_img"),
     READ_MEDIA_IMAGES(PermissionConstants.READ_MEDIA_IMAGES, "folder_img"),
     READ_EXTERNAL_STORAGE(permission.READ_EXTERNAL_STORAGE, "folder_img");
 

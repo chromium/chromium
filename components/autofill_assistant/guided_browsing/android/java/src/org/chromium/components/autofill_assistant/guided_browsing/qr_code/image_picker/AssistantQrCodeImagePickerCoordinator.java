@@ -85,6 +85,7 @@ public class AssistantQrCodeImagePickerCoordinator {
 
     public void resume() {
         mPermissionCoordinator.updatePermissionSettings();
+        mPermissionCoordinator.maybePromptForPermissionOnce();
         mImagePickerModel.set(AssistantQrCodeImagePickerModel.IS_ON_FOREGROUND, true);
     }
 

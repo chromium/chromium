@@ -70,6 +70,11 @@ public class AssistantQrCodePermissionCoordinator {
                         mWindowAndroid, mRequiredPermission));
     }
 
+    /** Prompt the permission once. */
+    public void maybePromptForPermissionOnce() {
+        mPermissionView.maybePromptForPermissionOnce();
+    }
+
     /**
      * Returns an Intent to show the App Info page for the current app.
      */

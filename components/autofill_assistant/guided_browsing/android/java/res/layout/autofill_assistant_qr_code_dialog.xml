@@ -9,7 +9,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-  <LinearLayout
+  <RelativeLayout
       android:id="@+id/toolbar"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
@@ -25,12 +25,12 @@
 
   <TextView
       android:id="@+id/toolbar_title"
-      android:layout_width="fill_parent"
-      android:layout_height="fill_parent"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
       android:textAppearance="@style/TextAppearance.TextLarge.Primary"
-      android:gravity="center"/>
+      android:layout_centerInParent="true"/>
 
-  </LinearLayout>
+  </RelativeLayout>
 
   <FrameLayout
       android:id="@+id/qr_code_view"

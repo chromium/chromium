@@ -38,6 +38,7 @@ public class AssistantQrCodePermissionView {
 
     private boolean mHasPermission;
     private boolean mCanPromptForPermission;
+    private boolean mHasPromptedForPermissionOnce;
 
     /**
      * The AssistantQrCodePermissionView constructor.
@@ -55,6 +56,8 @@ public class AssistantQrCodePermissionView {
 
         mPermissionTextView = mPermissionView.findViewById(R.id.permission_text);
         mPermissionButton = mPermissionView.findViewById(R.id.permission_button);
+
+        mHasPromptedForPermissionOnce = true;
 
         // Updating permission view image based on the permission type.
         ChromeImageView permissionImageView = mPermissionView.findViewById(R.id.permission_image);
@@ -121,5 +124,20 @@ public class AssistantQrCodePermissionView {
         // When canPrompt value changes, the Permission view changes. We then ask user to open
         // settings, hence attach relevant listener.
         updatePermissionButtonBehaviour();
+    }
+
+    /**
+     * Prompt the permission once. This should be done only if the required permission is not
+     * granted and we can prompt the permission.
+     *
+     * Please ensure that both |mCanPromptForPermission| and |mHasPermission| are up to date. We
+     * only allow once to prompt the permission.
+     */
+    void maybePromptForPermissionOnce() {
+        if (mCanPromptForPermission && !mHasPermission && mHasPromptedForPermissionOnce) {
+            // Open the permission prompter to ask for the permissions.
+            mViewDelegate.promptForPermission();
+            mHasPromptedForPermissionOnce = !mHasPromptedForPermissionOnce;
+        }
     }
 }

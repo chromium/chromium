@@ -27,7 +27,7 @@
         android:layout_height="150dp"
         android:scaleType="center"
         android:importantForAccessibility="no"
-        app:srcCompat="@drawable/camera_img" />
+        app:srcCompat="@drawable/videocam_img" />
 
     <TextView
         android:id="@+id/permission_text"

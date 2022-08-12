@@ -84,6 +84,7 @@ public class AssistantQrCodeCameraScanCoordinator {
 
     public void resume() {
         mPermissionCoordinator.updatePermissionSettings();
+        mPermissionCoordinator.maybePromptForPermissionOnce();
         mCameraScanModel.set(AssistantQrCodeCameraScanModel.IS_ON_FOREGROUND, true);
     }
 
