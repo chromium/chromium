@@ -212,7 +212,7 @@ class NetworkPortalDetectorImpl : public NetworkPortalDetector,
   std::unique_ptr<PortalDetectorStrategy> strategy_;
 
   // Last received result from captive portal detector.
-  CaptivePortalStatus last_detection_result_ = CAPTIVE_PORTAL_STATUS_UNKNOWN;
+  CaptivePortalStatus last_detection_status_ = CAPTIVE_PORTAL_STATUS_UNKNOWN;
 
   // Number of detection attempts with same result in a row.
   int same_detection_result_count_ = 0;

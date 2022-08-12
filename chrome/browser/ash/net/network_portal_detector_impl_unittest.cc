@@ -152,19 +152,25 @@ class NetworkPortalDetectorImplTest
            guid == default_network_id;
   }
 
-  void CheckRequestTimeoutAndCompleteAttempt(
+  bool CheckRequestTimeoutAndCompleteAttempt(
       int expected_same_detection_result_count,
       int expected_no_response_result_count,
       int expected_request_timeout_sec,
       int net_error,
       int status_code) {
-    ASSERT_EQ(State::STATE_CHECKING_FOR_PORTAL, state());
-    ASSERT_EQ(expected_same_detection_result_count,
+    EXPECT_EQ(expected_same_detection_result_count,
               same_detection_result_count());
-    ASSERT_EQ(expected_no_response_result_count, no_response_result_count());
-    ASSERT_EQ(base::Seconds(expected_request_timeout_sec),
+    EXPECT_EQ(expected_no_response_result_count, no_response_result_count());
+    EXPECT_EQ(base::Seconds(expected_request_timeout_sec),
               get_next_attempt_timeout());
+    if (same_detection_result_count() != expected_same_detection_result_count ||
+        no_response_result_count() != expected_no_response_result_count ||
+        get_next_attempt_timeout() !=
+            base::Seconds(expected_request_timeout_sec)) {
+      return false;
+    }
     CompleteURLFetch(net_error, status_code, nullptr);
+    return true;
   }
 
   Profile* profile() { return profile_; }
@@ -296,22 +302,17 @@ TEST_F(NetworkPortalDetectorImplTest, NoPortal) {
   ASSERT_EQ(observer().status(),
             NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_UNKNOWN);
 
+  // Check HTTP 204 response code.
   SetConnected(kStubWireless1);
-
   EXPECT_EQ(State::STATE_CHECKING_FOR_PORTAL, state());
-  EXPECT_TRUE(
-      CheckPortalState(NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_UNKNOWN, -1,
-                       kStubWireless1));
 
   CompleteURLFetch(net::OK, 204, nullptr);
-
-  EXPECT_NE(State::STATE_IDLE, state());
-  EXPECT_TRUE(
-      CheckPortalState(NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE, 204,
-                       kStubWireless1));
+  EXPECT_EQ(State::STATE_IDLE, state());
+  EXPECT_EQ(observer().status(),
+            NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
 }
 
-TEST_F(NetworkPortalDetectorImplTest, Portal) {
+TEST_F(NetworkPortalDetectorImplTest, Portal200) {
   ASSERT_EQ(State::STATE_IDLE, state());
   ASSERT_EQ(observer().status(),
             NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_UNKNOWN);
@@ -321,30 +322,23 @@ TEST_F(NetworkPortalDetectorImplTest, Portal) {
   EXPECT_EQ(State::STATE_CHECKING_FOR_PORTAL, state());
 
   CompleteURLFetch(net::OK, 200, nullptr);
-
-  EXPECT_NE(State::STATE_IDLE, state());
+  EXPECT_EQ(State::STATE_IDLE, state());
   EXPECT_TRUE(
       CheckPortalState(NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL, 200,
                        kStubWireless1));
+}
 
-  // Check HTTP 301 response code.
-  SetConnected(kStubWireless2);
-  EXPECT_EQ(State::STATE_CHECKING_FOR_PORTAL, state());
-
-  CompleteURLFetch(net::OK, 301, nullptr);
-
-  EXPECT_NE(State::STATE_IDLE, state());
-  EXPECT_TRUE(
-      CheckPortalState(NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL, 301,
-                       kStubWireless2));
+TEST_F(NetworkPortalDetectorImplTest, Portal302) {
+  ASSERT_EQ(State::STATE_IDLE, state());
+  ASSERT_EQ(observer().status(),
+            NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_UNKNOWN);
 
   // Check HTTP 302 response code.
   SetConnected(kStubEthernet);
   EXPECT_EQ(State::STATE_CHECKING_FOR_PORTAL, state());
 
   CompleteURLFetch(net::OK, 302, nullptr);
-
-  EXPECT_NE(State::STATE_IDLE, state());
+  EXPECT_EQ(State::STATE_IDLE, state());
   EXPECT_TRUE(CheckPortalState(
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL, 302, kStubEthernet));
 }
@@ -359,7 +353,7 @@ TEST_F(NetworkPortalDetectorImplTest, Online2Offline) {
   EXPECT_EQ(State::STATE_CHECKING_FOR_PORTAL, state());
 
   CompleteURLFetch(net::OK, 204, nullptr);
-  EXPECT_NE(State::STATE_IDLE, state());
+  EXPECT_EQ(State::STATE_IDLE, state());
 
   EXPECT_EQ(observer().status(),
             NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
@@ -391,7 +385,7 @@ TEST_F(NetworkPortalDetectorImplTest, NetworkChanged) {
 
   // ethernet is in online state.
   CompleteURLFetch(net::OK, 204, nullptr);
-  EXPECT_NE(State::STATE_IDLE, state());
+  EXPECT_EQ(State::STATE_IDLE, state());
   EXPECT_TRUE(CheckPortalState(
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE, 204, kStubEthernet));
 }
@@ -406,7 +400,7 @@ TEST_F(NetworkPortalDetectorImplTest, NetworkStateReconnect) {
 
   CompleteURLFetch(net::OK, 204, nullptr);
 
-  EXPECT_NE(State::STATE_IDLE, state());
+  EXPECT_EQ(State::STATE_IDLE, state());
   EXPECT_TRUE(
       CheckPortalState(NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE, 204,
                        kStubWireless1));
@@ -418,7 +412,7 @@ TEST_F(NetworkPortalDetectorImplTest, NetworkStateReconnect) {
 
   CompleteURLFetch(net::OK, 204, nullptr);
 
-  EXPECT_NE(State::STATE_IDLE, state());
+  EXPECT_EQ(State::STATE_IDLE, state());
   EXPECT_TRUE(
       CheckPortalState(NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE, 204,
                        kStubWireless1));
@@ -433,7 +427,7 @@ TEST_F(NetworkPortalDetectorImplTest, NetworkStateChanged) {
 
   CompleteURLFetch(net::OK, 200, nullptr);
 
-  EXPECT_NE(State::STATE_IDLE, state());
+  EXPECT_EQ(State::STATE_IDLE, state());
   EXPECT_TRUE(
       CheckPortalState(NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL, 200,
                        kStubWireless1));
@@ -443,7 +437,7 @@ TEST_F(NetworkPortalDetectorImplTest, NetworkStateChanged) {
 
   CompleteURLFetch(net::OK, 204, nullptr);
 
-  EXPECT_NE(State::STATE_IDLE, state());
+  EXPECT_EQ(State::STATE_IDLE, state());
   EXPECT_TRUE(
       CheckPortalState(NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE, 204,
                        kStubWireless1));
@@ -453,7 +447,7 @@ TEST_F(NetworkPortalDetectorImplTest, NetworkStateChanged) {
 
   CompleteURLFetch(net::OK, 200, nullptr);
 
-  EXPECT_NE(State::STATE_IDLE, state());
+  EXPECT_EQ(State::STATE_IDLE, state());
   EXPECT_TRUE(
       CheckPortalState(NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL, 200,
                        kStubWireless1));
@@ -535,7 +529,7 @@ TEST_F(NetworkPortalDetectorImplTest, FirstAttemptFailed) {
   base::RunLoop().RunUntilIdle();
 
   CompleteURLFetch(net::OK, 204, nullptr);
-  EXPECT_NE(State::STATE_IDLE, state());
+  EXPECT_EQ(State::STATE_IDLE, state());
   EXPECT_EQ(0, no_response_result_count());
   EXPECT_TRUE(
       CheckPortalState(NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE, 204,
@@ -571,7 +565,7 @@ TEST_F(NetworkPortalDetectorImplTest, AllAttemptsFailed) {
   base::RunLoop().RunUntilIdle();
 
   CompleteURLFetch(net::OK, 503, retry_after);
-  EXPECT_NE(State::STATE_IDLE, state());
+  EXPECT_EQ(State::STATE_IDLE, state());
   EXPECT_EQ(3, no_response_result_count());
   EXPECT_TRUE(
       CheckPortalState(NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_OFFLINE,
@@ -585,21 +579,10 @@ TEST_F(NetworkPortalDetectorImplTest, ProxyAuthRequired) {
   SetConnected(kStubWireless1);
   CompleteURLFetch(net::OK, 407, nullptr);
   EXPECT_EQ(1, no_response_result_count());
-  EXPECT_EQ(State::STATE_PORTAL_CHECK_PENDING, state());
+  EXPECT_EQ(State::STATE_IDLE, state());
 
   // To run CaptivePortalDetector::DetectCaptivePortal().
   base::RunLoop().RunUntilIdle();
-
-  CompleteURLFetch(net::OK, 407, nullptr);
-  EXPECT_EQ(2, no_response_result_count());
-  EXPECT_EQ(State::STATE_PORTAL_CHECK_PENDING, state());
-
-  // To run CaptivePortalDetector::DetectCaptivePortal().
-  base::RunLoop().RunUntilIdle();
-
-  CompleteURLFetch(net::OK, 407, nullptr);
-  EXPECT_EQ(3, no_response_result_count());
-  EXPECT_NE(State::STATE_IDLE, state());
 
   EXPECT_TRUE(CheckPortalState(
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PROXY_AUTH_REQUIRED, 407,
@@ -615,21 +598,10 @@ TEST_F(NetworkPortalDetectorImplTest, NoResponseButBehindPortal) {
 
   CompleteURLFetch(net::ERR_CONNECTION_CLOSED, 0, nullptr);
   EXPECT_EQ(1, no_response_result_count());
-  EXPECT_EQ(State::STATE_PORTAL_CHECK_PENDING, state());
+  EXPECT_EQ(State::STATE_IDLE, state());
 
   // To run CaptivePortalDetector::DetectCaptivePortal().
   base::RunLoop().RunUntilIdle();
-
-  CompleteURLFetch(net::ERR_CONNECTION_CLOSED, 0, nullptr);
-  EXPECT_EQ(2, no_response_result_count());
-  EXPECT_EQ(State::STATE_PORTAL_CHECK_PENDING, state());
-
-  // To run CaptivePortalDetector::DetectCaptivePortal().
-  base::RunLoop().RunUntilIdle();
-
-  CompleteURLFetch(net::ERR_CONNECTION_CLOSED, 0, nullptr);
-  EXPECT_EQ(3, no_response_result_count());
-  EXPECT_NE(State::STATE_IDLE, state());
 
   EXPECT_TRUE(CheckPortalState(
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL, 0, kStubWireless1));
@@ -655,34 +627,21 @@ TEST_F(NetworkPortalDetectorImplTest, ErrorScreenStrategyForOnlineNetwork) {
   enable_error_screen_strategy();
   // To run CaptivePortalDetector::DetectCaptivePortal().
   base::RunLoop().RunUntilIdle();
-  CompleteURLFetch(net::OK, 204, nullptr);
 
-  EXPECT_EQ(State::STATE_PORTAL_CHECK_PENDING, state());
+  CompleteURLFetch(net::OK, 204, nullptr);
+  EXPECT_EQ(State::STATE_IDLE, state());
   EXPECT_TRUE(
       CheckPortalState(NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE, 204,
                        kStubWireless1));
-
-  // To run CaptivePortalDetector::DetectCaptivePortal().
-  base::RunLoop().RunUntilIdle();
-
-  CompleteURLFetch(net::OK, 204, nullptr);
-
-  EXPECT_EQ(State::STATE_PORTAL_CHECK_PENDING, state());
-  EXPECT_TRUE(
-      CheckPortalState(NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE, 204,
-                       kStubWireless1));
-
-  // To run CaptivePortalDetector::DetectCaptivePortal().
-  base::RunLoop().RunUntilIdle();
 
   disable_error_screen_strategy();
-
   EXPECT_EQ(State::STATE_PORTAL_CHECK_PENDING, state());
+
   // To run CaptivePortalDetector::DetectCaptivePortal().
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(State::STATE_CHECKING_FOR_PORTAL, state());
-  CompleteURLFetch(net::OK, 204, nullptr);
 
+  CompleteURLFetch(net::OK, 204, nullptr);
   EXPECT_TRUE(
       CheckPortalState(NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE, 204,
                        kStubWireless1));
@@ -717,13 +676,10 @@ TEST_F(NetworkPortalDetectorImplTest, ErrorScreenStrategyForPortalNetwork) {
 
   CompleteURLFetch(net::OK, 200, nullptr);
   EXPECT_EQ(0, no_response_result_count());
-  EXPECT_EQ(State::STATE_PORTAL_CHECK_PENDING, state());
+  EXPECT_EQ(State::STATE_IDLE, state());
   EXPECT_TRUE(
       CheckPortalState(NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL, 200,
                        kStubWireless1));
-
-  // To run CaptivePortalDetector::DetectCaptivePortal().
-  base::RunLoop().RunUntilIdle();
 
   disable_error_screen_strategy();
 
@@ -752,35 +708,6 @@ TEST_F(NetworkPortalDetectorImplTest, DetectionTimeoutIsCancelled) {
                        kStubWireless1));
 }
 
-TEST_F(NetworkPortalDetectorImplTest, TestDetectionRestart) {
-  ASSERT_EQ(State::STATE_IDLE, state());
-  set_delay_till_next_attempt(base::TimeDelta());
-
-  // First portal detection attempts determines ONLINE state.
-  SetConnected(kStubWireless1);
-  EXPECT_EQ(State::STATE_CHECKING_FOR_PORTAL, state());
-  StartPortalDetection();
-
-  CompleteURLFetch(net::OK, 204, nullptr);
-
-  EXPECT_TRUE(
-      CheckPortalState(NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE, 204,
-                       kStubWireless1));
-  EXPECT_NE(State::STATE_IDLE, state());
-
-  // First portal detection attempts determines PORTAL state.
-  EXPECT_EQ(State::STATE_PORTAL_CHECK_PENDING, state());
-
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(State::STATE_CHECKING_FOR_PORTAL, state());
-  CompleteURLFetch(net::OK, 200, nullptr);
-
-  EXPECT_TRUE(
-      CheckPortalState(NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL, 200,
-                       kStubWireless1));
-  EXPECT_NE(State::STATE_IDLE, state());
-}
-
 TEST_F(NetworkPortalDetectorImplTest, RequestTimeouts) {
   ASSERT_EQ(State::STATE_IDLE, state());
   set_delay_till_next_attempt(base::TimeDelta());
@@ -788,36 +715,36 @@ TEST_F(NetworkPortalDetectorImplTest, RequestTimeouts) {
   SetConnected(kStubWireless1);
 
   // First portal detection attempt uses 5sec timeout.
-  CheckRequestTimeoutAndCompleteAttempt(
+  EXPECT_TRUE(CheckRequestTimeoutAndCompleteAttempt(
       0 /* expected_same_detection_result_count */,
       0 /* expected_no_response_result_count */,
-      5 /* expected_request_timeout_sec */, net::ERR_CONNECTION_CLOSED, 0);
+      5 /* expected_request_timeout_sec */, net::ERR_CONNECTION_CLOSED, 0));
   EXPECT_EQ(State::STATE_PORTAL_CHECK_PENDING, state());
 
   // Second portal detection attempt uses 10sec timeout.
   base::RunLoop().RunUntilIdle();
-  CheckRequestTimeoutAndCompleteAttempt(
+  EXPECT_TRUE(CheckRequestTimeoutAndCompleteAttempt(
       1 /* expected_same_detection_result_count */,
       1 /* expected_no_response_result_count */,
-      10 /* expected_request_timeout_sec */, net::ERR_CONNECTION_CLOSED, 0);
+      10 /* expected_request_timeout_sec */, net::ERR_CONNECTION_CLOSED, 0));
   EXPECT_EQ(State::STATE_PORTAL_CHECK_PENDING, state());
 
   // Third portal detection attempt uses 15sec timeout.
   base::RunLoop().RunUntilIdle();
-  CheckRequestTimeoutAndCompleteAttempt(
+  EXPECT_TRUE(CheckRequestTimeoutAndCompleteAttempt(
       2 /* expected_same_detection_result_count */,
       2 /* expected_no_response_result_count */,
-      15 /* expected_request_timeout_sec */, net::ERR_CONNECTION_CLOSED, 0);
-  EXPECT_NE(State::STATE_IDLE, state());
+      15 /* expected_request_timeout_sec */, net::ERR_CONNECTION_CLOSED, 0));
+  EXPECT_EQ(State::STATE_IDLE, state());
 
   // Check that on the error screen 15sec timeout is used.
   enable_error_screen_strategy();
   EXPECT_EQ(State::STATE_PORTAL_CHECK_PENDING, state());
   base::RunLoop().RunUntilIdle();
-  CheckRequestTimeoutAndCompleteAttempt(
+  EXPECT_TRUE(CheckRequestTimeoutAndCompleteAttempt(
       0 /* expected_same_detection_result_count */,
       0 /* expected_no_response_result_count */,
-      15 /* expected_request_timeout_sec */, net::ERR_CONNECTION_CLOSED, 0);
+      15 /* expected_request_timeout_sec */, net::ERR_CONNECTION_CLOSED, 0));
   disable_error_screen_strategy();
   EXPECT_EQ(State::STATE_PORTAL_CHECK_PENDING, state());
 
@@ -826,29 +753,29 @@ TEST_F(NetworkPortalDetectorImplTest, RequestTimeouts) {
 
   // First portal detection attempt for wifi1 uses 5sec timeout.
   base::RunLoop().RunUntilIdle();
-  CheckRequestTimeoutAndCompleteAttempt(
+  EXPECT_TRUE(CheckRequestTimeoutAndCompleteAttempt(
       0 /* expected_same_detection_result_count */,
       0 /* expected_no_response_result_count */,
-      5 /* expected_request_timeout_sec */, net::ERR_CONNECTION_CLOSED, 0);
+      5 /* expected_request_timeout_sec */, net::ERR_CONNECTION_CLOSED, 0));
   EXPECT_EQ(State::STATE_PORTAL_CHECK_PENDING, state());
 
   // Second portal detection attempt for wifi1 also uses 5sec timeout.
   base::RunLoop().RunUntilIdle();
-  CheckRequestTimeoutAndCompleteAttempt(
+  EXPECT_TRUE(CheckRequestTimeoutAndCompleteAttempt(
       1 /* expected_same_detection_result_count */,
       1 /* expected_no_response_result_count */,
-      10 /* expected_request_timeout_sec */, net::OK, 204);
-  EXPECT_NE(State::STATE_IDLE, state());
+      10 /* expected_request_timeout_sec */, net::OK, 204));
+  EXPECT_EQ(State::STATE_IDLE, state());
 
   // Check that in error screen strategy detection for wifi1 15sec
   // timeout is used.
   enable_error_screen_strategy();
   EXPECT_EQ(State::STATE_PORTAL_CHECK_PENDING, state());
   base::RunLoop().RunUntilIdle();
-  CheckRequestTimeoutAndCompleteAttempt(
+  EXPECT_TRUE(CheckRequestTimeoutAndCompleteAttempt(
       0 /* expected_same_detection_result_count */,
       0 /* expected_no_response_result_count */,
-      15 /* expected_request_timeout_sec */, net::OK, 204);
+      15 /* expected_request_timeout_sec */, net::OK, 204));
   disable_error_screen_strategy();
   EXPECT_EQ(State::STATE_PORTAL_CHECK_PENDING, state());
 }
@@ -859,44 +786,29 @@ TEST_F(NetworkPortalDetectorImplTest, RequestTimeouts2) {
   SetConnected(kStubWireless1);
 
   // First portal detection attempt for wifi1 uses 5sec timeout.
-  CheckRequestTimeoutAndCompleteAttempt(
+  EXPECT_TRUE(CheckRequestTimeoutAndCompleteAttempt(
       0 /* expected_same_detection_result_count */,
       0 /* expected_no_response_result_count */,
-      5 /* expected_request_timeout_sec */, net::ERR_CONNECTION_CLOSED, 0);
+      5 /* expected_request_timeout_sec */, net::ERR_CONNECTION_CLOSED, 0));
   EXPECT_EQ(State::STATE_PORTAL_CHECK_PENDING, state());
 
   // Second portal detection attempt for wifi1 uses 10sec timeout.
   base::RunLoop().RunUntilIdle();
-  CheckRequestTimeoutAndCompleteAttempt(
+  EXPECT_TRUE(CheckRequestTimeoutAndCompleteAttempt(
       1 /* expected_same_detection_result_count */,
       1 /* expected_no_response_result_count */,
-      10 /* expected_request_timeout_sec */, net::ERR_CONNECTION_CLOSED, 0);
+      10 /* expected_request_timeout_sec */, net::ERR_CONNECTION_CLOSED, 0));
   EXPECT_EQ(State::STATE_PORTAL_CHECK_PENDING, state());
 
-  // Second portal detection attempt for wifi1 uses 15sec timeout.
+  // Third portal detection attempt for wifi1 uses 15sec timeout.
   base::RunLoop().RunUntilIdle();
-  CheckRequestTimeoutAndCompleteAttempt(
+  EXPECT_TRUE(CheckRequestTimeoutAndCompleteAttempt(
       2 /* expected_same_detection_result_count */,
       2 /* expected_no_response_result_count */,
-      15 /* expected_request_timeout_sec */, net::ERR_CONNECTION_CLOSED, 0);
-  EXPECT_NE(State::STATE_IDLE, state());
-  EXPECT_EQ(State::STATE_PORTAL_CHECK_PENDING, state());
+      15 /* expected_request_timeout_sec */, net::ERR_CONNECTION_CLOSED, 0));
 
-  // Third portal detection attempt for wifi1 uses 20sec timeout.
-  base::RunLoop().RunUntilIdle();
-  CheckRequestTimeoutAndCompleteAttempt(
-      3 /* expected_same_detection_result_count */,
-      3 /* expected_no_response_result_count */,
-      20 /* expected_request_timeout_sec */, net::OK, 204);
-  EXPECT_NE(State::STATE_IDLE, state());
-
-  // Fourth portal detection attempt for wifi1 uses 5sec timeout.
-  base::RunLoop().RunUntilIdle();
-  CheckRequestTimeoutAndCompleteAttempt(
-      1 /* expected_same_detection_result_count */,
-      0 /* expected_no_response_result_count */,
-      5 /* expected_request_timeout_sec */, net::OK, 204);
-  EXPECT_NE(State::STATE_IDLE, state());
+  // After 3 attempts, detection is completed.
+  EXPECT_EQ(State::STATE_IDLE, state());
 }
 
 }  // namespace ash

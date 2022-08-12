@@ -384,6 +384,9 @@ void NetworkPortalDetectorImpl::OnAttemptCompleted(
         // Take into account shill's detection results.
         status = CAPTIVE_PORTAL_STATUS_PORTAL;
       } else {
+        // We should only get here if Shill does not detect a portal but the
+        // Chrome detector does not receive a response. Use 'offline' to
+        // trigger continued detection.
         status = CAPTIVE_PORTAL_STATUS_OFFLINE;
       }
       break;
@@ -414,8 +417,8 @@ void NetworkPortalDetectorImpl::OnAttemptCompleted(
     UMA_HISTOGRAM_ENUMERATION("CaptivePortal.NetworkPortalDetectorType", type);
   }
 
-  if (last_detection_result_ != status) {
-    last_detection_result_ = status;
+  if (last_detection_status_ != status) {
+    last_detection_status_ = status;
     same_detection_result_count_ = 1;
     net::BackoffEntry::Policy policy = strategy_->policy();
     if (status == CAPTIVE_PORTAL_STATUS_ONLINE) {
@@ -436,9 +439,20 @@ void NetworkPortalDetectorImpl::OnAttemptCompleted(
   else
     no_response_result_count_ = 0;
 
-  if (status != CAPTIVE_PORTAL_STATUS_OFFLINE ||
-      same_detection_result_count_ >= kMaxOfflineResultsBeforeReport) {
+  if (status == CAPTIVE_PORTAL_STATUS_ONLINE ||
+      status == CAPTIVE_PORTAL_STATUS_PORTAL ||
+      status == CAPTIVE_PORTAL_STATUS_PROXY_AUTH_REQUIRED) {
+    // Chrome positively identified an online, portal or proxy auth state.
+    // No need to continue detection.
     DetectionCompleted(network, status, response_code);
+    return;
+  }
+
+  if (same_detection_result_count_ >= kMaxOfflineResultsBeforeReport) {
+    NET_LOG(EVENT) << "Max identical portal detection results reached: "
+                   << same_detection_result_count_ << " Status: " << status;
+    DetectionCompleted(network, status, response_code);
+    return;
   }
 
   // Observers (via DetectionCompleted) may already schedule a new attempt.
@@ -487,7 +501,7 @@ bool NetworkPortalDetectorImpl::AttemptTimeoutIsCancelledForTesting() const {
 }
 
 void NetworkPortalDetectorImpl::ResetStrategyAndCounters() {
-  last_detection_result_ = CAPTIVE_PORTAL_STATUS_UNKNOWN;
+  last_detection_status_ = CAPTIVE_PORTAL_STATUS_UNKNOWN;
   same_detection_result_count_ = 0;
   no_response_result_count_ = 0;
   strategy_->Reset();
