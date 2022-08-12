@@ -331,6 +331,9 @@ float GetWantedDropTargetOpacity(
     case SplitViewDragIndicators::WindowDraggingState::kFromTop:
     case SplitViewDragIndicators::WindowDraggingState::kFromShelf:
       return 1.f;
+    case SplitViewDragIndicators::WindowDraggingState::kFromFloat:
+      NOTREACHED();
+      return 0.f;
   }
 }
 

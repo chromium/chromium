@@ -219,7 +219,7 @@ bool FloatController::CanFloatWindowInTablet(aura::Window* window) {
   return true;
 }
 
-void FloatController::MaybeTuckFloatedWindow() {
+void FloatController::MaybeTuckFloatedWindowForTablet() {
   if (scoped_window_tucker_)
     return;
 
@@ -228,11 +228,11 @@ void FloatController::MaybeTuckFloatedWindow() {
   UpdateWindowBoundsForTablet(float_window_);
 }
 
-void FloatController::MaybeUntuckFloatedWindow() {
+void FloatController::MaybeUntuckFloatedWindowForTablet() {
   scoped_window_tucker_.reset();
 }
 
-void FloatController::OnDragCompleted(
+void FloatController::OnDragCompletedForTablet(
     const gfx::PointF& last_location_in_parent) {
   DCHECK(float_window_);
 
@@ -262,7 +262,7 @@ void FloatController::OnDragCompleted(
   UpdateWindowBoundsForTablet(float_window_);
 }
 
-void FloatController::OnFlingOrSwipe(bool left, bool up) {
+void FloatController::OnFlingOrSwipeForTablet(bool left, bool up) {
   DCHECK(float_window_);
   if (left && up) {
     magnetism_corner_ = MagnetismCorner::kTopLeft;
@@ -275,7 +275,7 @@ void FloatController::OnFlingOrSwipe(bool left, bool up) {
     magnetism_corner_ = MagnetismCorner::kBottomRight;
   }
 
-  MaybeTuckFloatedWindow();
+  MaybeTuckFloatedWindowForTablet();
 }
 
 void FloatController::OnWindowDestroying(aura::Window* window) {

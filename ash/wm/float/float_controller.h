@@ -62,19 +62,19 @@ class ASH_EXPORT FloatController : public aura::WindowObserver,
 
   // Tucks or untucks `float_window_`. Does nothing if the window is already
   // tucked or untucked.
-  void MaybeTuckFloatedWindow();
-  void MaybeUntuckFloatedWindow();
+  void MaybeTuckFloatedWindowForTablet();
+  void MaybeUntuckFloatedWindowForTablet();
 
   // Called by the resizer when a drag is completed. This assumes the dragged
   // window associated with the resizer is `float_window_`. Updates the bounds
   // and magnetism of the floated window.
-  void OnDragCompleted(const gfx::PointF& last_location_in_parent);
+  void OnDragCompletedForTablet(const gfx::PointF& last_location_in_parent);
 
   // Called by the resizer when a drag is completed by a fling or swipe gesture
   // event. Updates the magnetism of the window and then tucks the window
   // offscreen. `left` and `up` are used to determine the direction of the fling
   // or swipe gesture.
-  void OnFlingOrSwipe(bool left, bool up);
+  void OnFlingOrSwipeForTablet(bool left, bool up);
 
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;

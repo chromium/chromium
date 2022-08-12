@@ -32,10 +32,11 @@ enum class IndicatorType {
   kRightText = 8
 };
 
-// An overlay in overview mode which guides users while they are attempting to
-// enter splitview. Displays text and highlights when dragging an overview
-// window. Displays a highlight of where the window will end up when an overview
-// window has entered a snap region.
+// An overlay in which guides users while they are attempting to enter
+// splitview. Displays text and highlights when dragging an overview window.
+// Displays a highlight of where the window will end up when a window has
+// entered a snap region. Shown when the user is dragging an overview window,
+// dragging a floated window, or dragging a window from the shelf.
 class ASH_EXPORT SplitViewDragIndicators {
  public:
   // Enum for purposes of providing |SplitViewDragIndicators| with information
@@ -63,6 +64,12 @@ class ASH_EXPORT SplitViewDragIndicators {
     // dragging in a snap area, or the dragged window is not eligible to be
     // snapped in split view.
     kFromShelf,
+
+    // Started dragging from the float window state via the caption. Split view
+    // is supported. If this is the state, the window will not be snapped when
+    // released; it will either not be in the snapping region, or in the
+    // snapping region but not snappable.
+    kFromFloat,
 
     // Currently dragging in the |SplitViewController::LEFT| snap area, and the
     // dragged window is eligible to be snapped in split view.

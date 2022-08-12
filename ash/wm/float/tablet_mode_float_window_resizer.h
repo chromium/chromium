@@ -5,10 +5,12 @@
 #ifndef ASH_WM_FLOAT_TABLET_MODE_FLOAT_WINDOW_RESIZER_H_
 #define ASH_WM_FLOAT_TABLET_MODE_FLOAT_WINDOW_RESIZER_H_
 
+#include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/window_resizer.h"
 
 namespace ash {
 
+class SplitViewDragIndicators;
 class WindowState;
 
 // WindowResizer implementation for floated windows in tablet mode.
@@ -29,8 +31,16 @@ class TabletModeFloatWindowResizer : public WindowResizer {
   void FlingOrSwipe(ui::GestureEvent* event) override;
 
  private:
+  // Responsible for showing an indication of whether the dragged window will be
+  // snapped on drag complete.
+  std::unique_ptr<SplitViewDragIndicators> split_view_drag_indicators_;
+
   // The location in parent passed to `Drag()`.
   gfx::PointF last_location_in_parent_;
+
+  // The snap position computed in `Drag()`. It is then cached for use in
+  // `CompleteDrag()`.
+  SplitViewController::SnapPosition snap_position_ = SplitViewController::NONE;
 };
 
 }  // namespace ash

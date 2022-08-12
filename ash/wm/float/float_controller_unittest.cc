@@ -33,6 +33,18 @@
 
 namespace ash {
 
+// Gets the frame for `window` and prepares it for dragging.
+NonClientFrameViewAsh* SetUpAndGetFrame(aura::Window* window) {
+  // Exiting immersive mode because of float does not seem to trigger a layout
+  // like it does in production code. Here we force a layout, otherwise the
+  // client view will remain the size of the widget, and dragging it will give
+  // us HTCLIENT.
+  auto* frame = NonClientFrameViewAsh::Get(window);
+  DCHECK(frame);
+  frame->Layout();
+  return frame;
+}
+
 class WindowFloatTest : public AshTestBase {
  public:
   WindowFloatTest() = default;
@@ -352,13 +364,7 @@ TEST_F(TabletWindowFloatTest, DraggingMagnetism) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
 
   std::unique_ptr<aura::Window> window = CreateFloatedWindow();
-
-  // Exiting immersive mode because of float does not seem to trigger a layout
-  // like it does in production code. Here we force a layout, otherwise the
-  // client view will remain the size of the widget, and dragging it will give
-  // us HTCLIENT.
-  auto* frame = NonClientFrameViewAsh::Get(window.get());
-  frame->Layout();
+  NonClientFrameViewAsh* frame = SetUpAndGetFrame(window.get());
 
   const int padding = FloatController::kFloatWindowPaddingDp;
   const int shelf_size = ShelfConfig::Get()->shelf_size();
@@ -367,22 +373,20 @@ TEST_F(TabletWindowFloatTest, DraggingMagnetism) {
   EXPECT_EQ(gfx::Point(1600 - padding, 1000 - padding - shelf_size),
             window->bounds().bottom_right());
 
+  // Move the mouse somewhere in the top right, but not too right that it falls
+  // into the snap region. Test that on release, it magnetizes to the top right.
   HeaderView* header_view = frame->GetHeaderView();
   auto* event_generator = GetEventGenerator();
   event_generator->set_current_screen_location(
       header_view->GetBoundsInScreen().CenterPoint());
-  event_generator->PressLeftButton();
-  event_generator->MoveMouseTo(1590, 10);
-  event_generator->ReleaseLeftButton();
+  event_generator->DragMouseTo(1490, 10);
   EXPECT_EQ(gfx::Point(1600 - padding, padding), window->bounds().top_right());
 
-  // Move the mouse to somewhere in the top left. Test that on release, it
-  // magnetizes to the top left.
+  // Move the mouse to somewhere in the top left, but not too left that it falls
+  // into the snap region. Test that on release, it magnetizes to the top left.
   event_generator->set_current_screen_location(
       header_view->GetBoundsInScreen().CenterPoint());
-  event_generator->PressLeftButton();
-  event_generator->MoveMouseTo(10, 10);
-  event_generator->ReleaseLeftButton();
+  event_generator->DragMouseTo(110, 10);
   EXPECT_EQ(gfx::Point(padding, padding), window->bounds().origin());
 
   // Switch to portrait orientation and move the mouse somewhere in the bottom
@@ -390,11 +394,46 @@ TEST_F(TabletWindowFloatTest, DraggingMagnetism) {
   UpdateDisplay("1000x1600");
   event_generator->set_current_screen_location(
       header_view->GetBoundsInScreen().CenterPoint());
-  event_generator->PressLeftButton();
-  event_generator->MoveMouseTo(10, 1590);
-  event_generator->ReleaseLeftButton();
+  event_generator->DragMouseTo(110, 1590);
   EXPECT_EQ(gfx::Point(padding, 1600 - shelf_size - padding),
             window->bounds().bottom_left());
+}
+
+// Tests that if a floating window is dragged to the edges, it will snap.
+TEST_F(TabletWindowFloatTest, DraggingSnapping) {
+  // Use a set display size so we can drag to specific spots.
+  UpdateDisplay("1600x1000");
+
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+
+  std::unique_ptr<aura::Window> window = CreateFloatedWindow();
+  NonClientFrameViewAsh* frame = SetUpAndGetFrame(window.get());
+
+  auto* split_view_controller =
+      SplitViewController::Get(Shell::GetPrimaryRootWindow());
+  ASSERT_FALSE(split_view_controller->left_window());
+  ASSERT_FALSE(split_view_controller->right_window());
+
+  // Move the mouse to towards the right edge. Test that on release, it snaps
+  // right.
+  HeaderView* header_view = frame->GetHeaderView();
+  auto* event_generator = GetEventGenerator();
+  event_generator->set_current_screen_location(
+      header_view->GetBoundsInScreen().CenterPoint());
+  event_generator->DragMouseTo(1580, 500);
+  EXPECT_EQ(split_view_controller->right_window(), window.get());
+  ASSERT_TRUE(WindowState::Get(window.get())->IsSnapped());
+
+  // Float the window so we can drag it again.
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  ASSERT_TRUE(WindowState::Get(window.get())->IsFloated());
+
+  // Move the mouse to towards the left edge. Test that on release, it snaps
+  // left.
+  event_generator->set_current_screen_location(
+      header_view->GetBoundsInScreen().CenterPoint());
+  event_generator->DragMouseTo(20, 500);
+  EXPECT_EQ(split_view_controller->left_window(), window.get());
 }
 
 // Tests the functionality of tucking a window in tablet mode. Tucking a window
@@ -403,13 +442,7 @@ TEST_F(TabletWindowFloatTest, TuckedWindow) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
 
   std::unique_ptr<aura::Window> window = CreateFloatedWindow();
-
-  // Exiting immersive mode because of float does not seem to trigger a layout
-  // like it does in production code. Here we force a layout, otherwise the
-  // client view will remain the size of the widget, and dragging it will give
-  // us HTCLIENT.
-  auto* frame = NonClientFrameViewAsh::Get(window.get());
-  frame->Layout();
+  NonClientFrameViewAsh* frame = SetUpAndGetFrame(window.get());
 
   // Generate a fling to the top left corner. Tests that the window is tucked,
   // and 100 pixels are visible to the user.
