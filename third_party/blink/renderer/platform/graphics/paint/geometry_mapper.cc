@@ -230,62 +230,12 @@ bool GeometryMapper::LocalToAncestorVisualRectInternal(
     return true;
   }
 
-  PropertyTreeState last_state = local_state;
-  const auto* ancestor_filter_clip =
-      ancestor_state.Clip().NearestPixelMovingFilterClip();
-  const auto* filter_clip = local_state.Clip().NearestPixelMovingFilterClip();
-  while (filter_clip != ancestor_filter_clip) {
-    if (!filter_clip) {
-      // Abnormal clip hierarchy.
-      rect_to_map = InfiniteLooseFloatClipRect();
-      return true;
-    }
-
-    PropertyTreeState new_state(filter_clip->LocalTransformSpace().Unalias(),
-                                *filter_clip, last_state.Effect());
-    const auto* filter = filter_clip->PixelMovingFilter();
-    DCHECK(filter);
-    DCHECK_EQ(&filter->LocalTransformSpace().Unalias(), &new_state.Transform());
-    if (for_compositing_overlap == ForCompositingOverlap::kYes &&
-        filter->HasActiveFilterAnimation()) {
-      // Assume during the animation the filter can map |rect_to_map| to
-      // anywhere. Ancestor clips will still apply.
-      // TODO(crbug.com/1026653): Use animation bounds instead of infinite rect.
-      rect_to_map = InfiniteLooseFloatClipRect();
-    } else {
-      bool intersects =
-          LocalToAncestorVisualRectUnderSameFilterClip<for_compositing_overlap>(
-              last_state, new_state, rect_to_map, clip_behavior,
-              inclusive_behavior);
-      if (!intersects) {
-        rect_to_map = FloatClipRect(gfx::RectF());
-        return false;
-      }
-      if (!rect_to_map.IsInfinite())
-        rect_to_map.Rect() = filter->MapRect(rect_to_map.Rect());
-    }
-
-    last_state = new_state;
-    const auto* next_clip = filter_clip->UnaliasedParent();
-    DCHECK(next_clip);
-    last_state.SetClip(*next_clip);
-    filter_clip = next_clip->NearestPixelMovingFilterClip();
+  if (&local_state.Effect() != &ancestor_state.Effect() &&
+      &local_state.Clip() != &ancestor_state.Clip()) {
+    return SlowLocalToAncestorVisualRectWithEffects<for_compositing_overlap>(
+        local_state, ancestor_state, rect_to_map, clip_behavior,
+        inclusive_behavior);
   }
-
-  return LocalToAncestorVisualRectUnderSameFilterClip<for_compositing_overlap>(
-      last_state, ancestor_state, rect_to_map, clip_behavior,
-      inclusive_behavior);
-}
-
-template <GeometryMapper::ForCompositingOverlap for_compositing_overlap>
-bool GeometryMapper::LocalToAncestorVisualRectUnderSameFilterClip(
-    const PropertyTreeState& local_state,
-    const PropertyTreeState& ancestor_state,
-    FloatClipRect& rect_to_map,
-    OverlayScrollbarClipBehavior clip_behavior,
-    InclusiveIntersectOrNot inclusive_behavior) {
-  DCHECK_EQ(local_state.Clip().NearestPixelMovingFilterClip(),
-            ancestor_state.Clip().NearestPixelMovingFilterClip());
 
   ExtraProjectionResult extra_result;
   bool success = false;
@@ -340,6 +290,62 @@ bool GeometryMapper::LocalToAncestorVisualRectUnderSameFilterClip(
     return rect_to_map.InclusiveIntersect(clip_rect);
   rect_to_map.Intersect(clip_rect);
   return !rect_to_map.Rect().IsEmpty();
+}
+
+template <GeometryMapper::ForCompositingOverlap for_compositing_overlap>
+bool GeometryMapper::SlowLocalToAncestorVisualRectWithEffects(
+    const PropertyTreeState& local_state,
+    const PropertyTreeState& ancestor_state,
+    FloatClipRect& rect_to_map,
+    OverlayScrollbarClipBehavior clip_behavior,
+    InclusiveIntersectOrNot inclusive_behavior) {
+  PropertyTreeState last_state = local_state;
+  last_state.SetEffect(ancestor_state.Effect());
+  const auto* ancestor_filter_clip =
+      ancestor_state.Clip().NearestPixelMovingFilterClip();
+  const auto* filter_clip = local_state.Clip().NearestPixelMovingFilterClip();
+  while (filter_clip != ancestor_filter_clip) {
+    if (!filter_clip) {
+      // Abnormal clip hierarchy.
+      rect_to_map = InfiniteLooseFloatClipRect();
+      return true;
+    }
+
+    PropertyTreeState new_state(filter_clip->LocalTransformSpace().Unalias(),
+                                *filter_clip, last_state.Effect());
+    const auto* filter = filter_clip->PixelMovingFilter();
+    DCHECK(filter);
+    DCHECK_EQ(&filter->LocalTransformSpace().Unalias(), &new_state.Transform());
+    if (for_compositing_overlap == ForCompositingOverlap::kYes &&
+        filter->HasActiveFilterAnimation()) {
+      // Assume during the animation the filter can map |rect_to_map| to
+      // anywhere. Ancestor clips will still apply.
+      // TODO(crbug.com/1026653): Use animation bounds instead of infinite
+      // rect.
+      rect_to_map = InfiniteLooseFloatClipRect();
+    } else {
+      bool intersects =
+          LocalToAncestorVisualRectInternal<for_compositing_overlap>(
+              last_state, new_state, rect_to_map, clip_behavior,
+              inclusive_behavior);
+      if (!intersects) {
+        rect_to_map = FloatClipRect(gfx::RectF());
+        return false;
+      }
+      if (!rect_to_map.IsInfinite())
+        rect_to_map.Rect() = filter->MapRect(rect_to_map.Rect());
+    }
+
+    last_state = new_state;
+    const auto* next_clip = filter_clip->UnaliasedParent();
+    DCHECK(next_clip);
+    last_state.SetClip(*next_clip);
+    filter_clip = next_clip->NearestPixelMovingFilterClip();
+  }
+
+  return LocalToAncestorVisualRectInternal<for_compositing_overlap>(
+      last_state, ancestor_state, rect_to_map, clip_behavior,
+      inclusive_behavior);
 }
 
 FloatClipRect GeometryMapper::LocalToAncestorClipRect(
@@ -501,6 +507,9 @@ bool GeometryMapper::MightOverlapForCompositing(
     const PropertyTreeState& state2) {
   if (!RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled())
     return MightOverlapForCompositingLegacy(rect1, state1, rect2, state2);
+
+  if (&state1.Transform() == &state2.Transform())
+    return MightOverlapForCompositingInternal(rect1, state1, rect2, state2);
 
   const auto* scroll_translation1 =
       &state1.Transform().NearestScrollTranslationNode();

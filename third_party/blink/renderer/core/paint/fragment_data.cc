@@ -131,6 +131,20 @@ const ClipPaintPropertyNodeOrAlias& FragmentData::ContentsClip() const {
   return LocalBorderBoxProperties().Clip();
 }
 
+const EffectPaintPropertyNodeOrAlias& FragmentData::PreEffect() const {
+  if (const auto* properties = PaintProperties()) {
+    if (const auto* effect = properties->Effect()) {
+      DCHECK(effect->Parent());
+      return *effect->Parent();
+    }
+    if (const auto* filter = properties->Filter()) {
+      DCHECK(filter->Parent());
+      return *filter->Parent();
+    }
+  }
+  return LocalBorderBoxProperties().Effect();
+}
+
 const EffectPaintPropertyNodeOrAlias& FragmentData::ContentsEffect() const {
   if (const auto* properties = PaintProperties()) {
     if (properties->EffectIsolationNode())

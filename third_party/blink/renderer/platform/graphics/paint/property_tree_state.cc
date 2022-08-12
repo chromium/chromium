@@ -71,13 +71,20 @@ absl::optional<PropertyTreeState> PropertyTreeState::CanUpcastWith(
         &Transform().LowestCommonAncestor(guest.Transform()).Unalias();
   }
 
-  const auto& clip_lca = Clip().LowestCommonAncestor(guest.Clip()).Unalias();
-  if (ClipChainHasCompositedTransformTo(Clip(), clip_lca, *upcast_transform) ||
-      ClipChainHasCompositedTransformTo(guest.Clip(), clip_lca,
-                                        *upcast_transform))
-    return absl::nullopt;
+  const ClipPaintPropertyNode* upcast_clip = nullptr;
+  if (&Clip() == &guest.Clip()) {
+    upcast_clip = &Clip();
+  } else {
+    upcast_clip = &Clip().LowestCommonAncestor(guest.Clip()).Unalias();
+    if (ClipChainHasCompositedTransformTo(Clip(), *upcast_clip,
+                                          *upcast_transform) ||
+        ClipChainHasCompositedTransformTo(guest.Clip(), *upcast_clip,
+                                          *upcast_transform)) {
+      return absl::nullopt;
+    }
+  }
 
-  return PropertyTreeState(*upcast_transform, clip_lca, Effect());
+  return PropertyTreeState(*upcast_transform, *upcast_clip, Effect());
 }
 
 String PropertyTreeStateOrAlias::ToString() const {

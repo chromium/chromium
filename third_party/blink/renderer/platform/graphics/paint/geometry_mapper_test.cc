@@ -1162,21 +1162,26 @@ TEST_P(GeometryMapperTest, MightOverlapFixed) {
   }
 
   if (RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled()) {
-    auto scroll_state2 = CreateScrollTranslationState(
-        scroll_state1.GetPropertyTreeState(), -2345, -678,
-        gfx::Rect(20, 10, 200, 100), gfx::Size(3000, 2000));
-    // The result is false because the container rect of scroll_state2 doesn't
-    // intersect with the expanded fixed-position rect in scroll_state1.
-    EXPECT_FALSE(MightOverlapForCompositing(
-        gfx::RectF(0, 0, 100, 100), fixed_state, gfx::RectF(1, 2, 3, 4),
-        scroll_state2.GetPropertyTreeState()));
-
-    auto scroll_state3 = CreateScrollTranslationState(
-        scroll_state1.GetPropertyTreeState(), -234, -567,
-        gfx::Rect(0, 300, 500, 500), gfx::Size(1000, 2000));
-    EXPECT_TRUE(MightOverlapForCompositing(
-        gfx::RectF(0, 0, 100, 100), fixed_state, gfx::RectF(1, 2, 3, 4),
-        scroll_state3.GetPropertyTreeState()));
+    {
+      SCOPED_TRACE("fixed_state and scroll_state1");
+      auto scroll_state2 = CreateScrollTranslationState(
+          scroll_state1.GetPropertyTreeState(), -2345, -678,
+          gfx::Rect(20, 10, 200, 100), gfx::Size(3000, 2000));
+      // The result is false because the container rect of scroll_state2 doesn't
+      // intersect with the expanded fixed-position rect in scroll_state1.
+      EXPECT_FALSE(MightOverlapForCompositing(
+          gfx::RectF(0, 0, 100, 100), fixed_state, gfx::RectF(1, 2, 3, 4),
+          scroll_state2.GetPropertyTreeState()));
+    }
+    {
+      SCOPED_TRACE("fixed_state and scroll_state1");
+      auto scroll_state3 = CreateScrollTranslationState(
+          scroll_state1.GetPropertyTreeState(), -234, -567,
+          gfx::Rect(0, 300, 500, 500), gfx::Size(1000, 2000));
+      EXPECT_TRUE(MightOverlapForCompositing(
+          gfx::RectF(0, 0, 100, 100), fixed_state, gfx::RectF(1, 2, 3, 4),
+          scroll_state3.GetPropertyTreeState()));
+    }
   }
 }
 

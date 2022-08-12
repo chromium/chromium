@@ -281,7 +281,7 @@ class PLATFORM_EXPORT GeometryMapper {
       InclusiveIntersectOrNot);
 
   template <ForCompositingOverlap>
-  static bool LocalToAncestorVisualRectUnderSameFilterClip(
+  static bool SlowLocalToAncestorVisualRectWithEffects(
       const PropertyTreeState& local_state,
       const PropertyTreeState& ancestor_state,
       FloatClipRect& mapping_rect,

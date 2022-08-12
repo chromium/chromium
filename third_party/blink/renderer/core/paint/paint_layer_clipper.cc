@@ -291,6 +291,8 @@ void PaintLayerClipper::CalculateBackgroundClipRectWithGeometryMapper(
       context.root_fragment->LocalBorderBoxProperties();
   if (context.ShouldRespectRootLayerClip()) {
     destination_property_tree_state.SetClip(context.root_fragment->PreClip());
+    destination_property_tree_state.SetEffect(
+        context.root_fragment->PreEffect());
   } else {
     destination_property_tree_state.SetClip(
         context.root_fragment->ContentsClip());

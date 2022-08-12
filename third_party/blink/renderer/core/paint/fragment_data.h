@@ -189,9 +189,10 @@ class CORE_EXPORT FragmentData final : public GarbageCollected<FragmentData> {
 
   const TransformPaintPropertyNodeOrAlias& PreTransform() const;
   const ClipPaintPropertyNodeOrAlias& PreClip() const;
+  const EffectPaintPropertyNodeOrAlias& PreEffect() const;
 
-  const ClipPaintPropertyNodeOrAlias& ContentsClip() const;
   const TransformPaintPropertyNodeOrAlias& ContentsTransform() const;
+  const ClipPaintPropertyNodeOrAlias& ContentsClip() const;
   const EffectPaintPropertyNodeOrAlias& ContentsEffect() const;
 
   ~FragmentData() = default;
