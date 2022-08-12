@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
 
 #include <sys/types.h>
+#include <iterator>
 #include <string>
 
 #include "base/bind.h"
@@ -14,9 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/notreached.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
@@ -84,6 +83,18 @@ DlpFilesController::DlpFileMetadata::DlpFileMetadata(
     const std::string& source_url,
     bool is_dlp_restricted)
     : source_url(source_url), is_dlp_restricted(is_dlp_restricted) {}
+
+DlpFilesController::DlpFileRestrictionDetails::DlpFileRestrictionDetails() =
+    default;
+
+DlpFilesController::DlpFileRestrictionDetails::DlpFileRestrictionDetails(
+    DlpFileRestrictionDetails&&) = default;
+DlpFilesController::DlpFileRestrictionDetails&
+DlpFilesController::DlpFileRestrictionDetails::operator=(
+    DlpFilesController::DlpFileRestrictionDetails&&) = default;
+
+DlpFilesController::DlpFileRestrictionDetails::~DlpFileRestrictionDetails() =
+    default;
 
 DlpFilesController::DlpFilesController() = default;
 
@@ -213,16 +224,53 @@ void DlpFilesController::IsFilesTransferRestricted(
   std::move(result_callback).Run(std::move(restricted_files_sources));
 }
 
-std::map<std::string, std::set<std::string>>
+std::vector<DlpFilesController::DlpFileRestrictionDetails>
 DlpFilesController::GetDlpRestrictionDetails(const std::string& sourceUrl) {
   policy::DlpRulesManager* dlp_rules_manager =
       policy::DlpRulesManagerFactory::GetForPrimaryProfile();
   if (!dlp_rules_manager) {
     return {};
   }
-  // TODO(crbug.com/1346254): Call DlpRulesManager to get the restricted
-  // destinations and components; aggregate and convert to string format.
-  return {};
+
+  const GURL source(sourceUrl);
+  const DlpRulesManager::AggregatedDestinations aggregated_destinations =
+      dlp_rules_manager->GetAggregatedDestinations(
+          source, DlpRulesManager::Restriction::kFiles);
+  const DlpRulesManager::AggregatedComponents aggregated_components =
+      dlp_rules_manager->GetAggregatedComponents(
+          source, DlpRulesManager::Restriction::kFiles);
+
+  std::vector<DlpFilesController::DlpFileRestrictionDetails> result;
+  // Add levels for which urls are set.
+  for (const auto& [level, urls] : aggregated_destinations) {
+    DlpFileRestrictionDetails details;
+    details.level = level;
+    base::ranges::move(urls.begin(), urls.end(),
+                       std::back_inserter(details.urls));
+    // Add the components for this level, if any.
+    const auto it = aggregated_components.find(level);
+    if (it != aggregated_components.end()) {
+      base::ranges::move(it->second.begin(), it->second.end(),
+                         std::back_inserter(details.components));
+    }
+    result.emplace_back(std::move(details));
+  }
+
+  // There might be levels for which only components are set, so we need to add
+  // those separately.
+  for (const auto& [level, components] : aggregated_components) {
+    if (aggregated_destinations.find(level) != aggregated_destinations.end()) {
+      // Already added in the previous loop.
+      continue;
+    }
+    DlpFileRestrictionDetails details;
+    details.level = level;
+    base::ranges::move(components.begin(), components.end(),
+                       std::back_inserter(details.components));
+    result.emplace_back(std::move(details));
+  }
+
+  return result;
 }
 
 bool DlpFilesController::IsDlpPolicyMatched(const std::string& source_url) {
