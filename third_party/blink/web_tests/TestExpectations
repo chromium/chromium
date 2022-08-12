@@ -6896,6 +6896,7 @@ crbug.com/1299834 external/wpt/css/css-pseudo/first-letter-with-quote.html [ Fai
 
 # Remove from virtual tests when ReduceAcceptLanguage is turned on by default.
 crbug.com/1307484 http/tests/serviceworker/reduce-accept-language/fetch-event-headers.html [ Skip ]
+crbug.com/1307484 navigator_language/reduce_accept_language/* [ Skip ]
 
 # Sheriff 2022-05-20
 crbug.com/1291841 external/wpt/scroll-to-text-fragment/scroll-to-text-fragment-security.sub.html [ Pass Timeout ]

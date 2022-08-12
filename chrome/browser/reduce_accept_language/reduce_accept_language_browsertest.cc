@@ -147,6 +147,19 @@ class ReduceAcceptLanguageBrowserTest : public InProcessBrowserTest {
     }
   }
 
+  void VerifyNavigatorLanguages(
+      const std::vector<std::string>& expect_languages) {
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    base::Value languages_list =
+        content::EvalJs(web_contents, "navigator.languages").ExtractList();
+    std::vector<std::string> actual_languages;
+    for (auto& result : languages_list.GetListDeprecated())
+      actual_languages.push_back(result.GetString());
+
+    EXPECT_EQ(expect_languages, actual_languages);
+  }
+
   void SetPrefsAcceptLanguage(
       const std::vector<std::string>& accept_languages) {
     auto language_prefs = std::make_unique<language::LanguagePrefs>(
@@ -299,6 +312,7 @@ IN_PROC_BROWSER_TEST_F(DisableFeatureReduceAcceptLanguageBrowserTest,
   // network stack.
   NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginRequestUrl(),
                                                absl::nullopt);
+  VerifyNavigatorLanguages({"zh", "en-us"});
 }
 
 IN_PROC_BROWSER_TEST_F(DisableFeatureReduceAcceptLanguageBrowserTest,
@@ -382,6 +396,10 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 1);
   // Persist won't happen.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 0);
+
+  // Verify navigator.languages only returns an array length 1 if
+  // ReduceAcceptLanguage enabled.
+  VerifyNavigatorLanguages({"zh"});
 }
 
 IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,

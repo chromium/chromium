@@ -18,7 +18,8 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["http/tests/navigation/language",
               "http/tests/inspector-protocol/network",
-              "http/tests/serviceworker/reduce-accept-language/fetch-event-headers.html"],
+              "http/tests/serviceworker/reduce-accept-language/fetch-event-headers.html",
+              "navigator_language/reduce_accept_language"],
     "args": ["--enable-features=ReduceAcceptLanguage"]
   },
   {
