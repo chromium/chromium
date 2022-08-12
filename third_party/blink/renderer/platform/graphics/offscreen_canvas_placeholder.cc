@@ -23,13 +23,12 @@ PlaceholderIdMap& placeholderRegistry() {
   return s_placeholderRegistry;
 }
 
-void releaseFrameToDispatcher(
+void ReleaseFrameToDispatcher(
     base::WeakPtr<blink::CanvasResourceDispatcher> dispatcher,
-    scoped_refptr<blink::CanvasResource>&& oldImage,
+    scoped_refptr<blink::CanvasResource> oldImage,
     viz::ResourceId resourceId) {
-  oldImage = nullptr;  // Needed to unref'ed on the right thread
   if (dispatcher) {
-    dispatcher->ReclaimResource(resourceId);
+    dispatcher->ReclaimResource(resourceId, std::move(oldImage));
   }
 }
 
@@ -102,7 +101,7 @@ void OffscreenCanvasPlaceholder::ReleaseOffscreenCanvasFrame() {
   placeholder_frame_->Transfer();
   PostCrossThreadTask(
       *frame_dispatcher_task_runner_, FROM_HERE,
-      CrossThreadBindOnce(releaseFrameToDispatcher, frame_dispatcher_,
+      CrossThreadBindOnce(ReleaseFrameToDispatcher, frame_dispatcher_,
                           std::move(placeholder_frame_),
                           placeholder_frame_resource_id_));
 }

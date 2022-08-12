@@ -660,6 +660,19 @@ bool Canvas2DLayerBridge::Restore() {
   return ResourceProvider();
 }
 
+namespace {
+
+// Adapter for wrapping a CanvasResourceReleaseCallback into a
+// viz::ReleaseCallback
+void ReleaseCanvasResource(CanvasResource::ReleaseCallback callback,
+                           scoped_refptr<CanvasResource> canvas_resource,
+                           const gpu::SyncToken& sync_token,
+                           bool is_lost) {
+  std::move(callback).Run(std::move(canvas_resource), sync_token, is_lost);
+}
+
+}  // unnamed namespace
+
 bool Canvas2DLayerBridge::PrepareTransferableResource(
     cc::SharedBitmapIdRegistrar* bitmap_registrar,
     viz::TransferableResource* out_resource,
@@ -690,16 +703,20 @@ bool Canvas2DLayerBridge::PrepareTransferableResource(
   if (!frame || !frame->IsValid())
     return false;
 
-  // Note frame is kept alive via a reference kept in out_release_callback.
-  if (!frame->PrepareTransferableResource(out_resource, out_release_callback,
+  CanvasResource::ReleaseCallback release_callback;
+  if (!frame->PrepareTransferableResource(out_resource, &release_callback,
                                           kUnverifiedSyncToken) ||
       *out_resource == layer_->current_transferable_resource()) {
     // If the resource did not change, the release will be handled correctly
     // when the callback from the previous frame is dispatched. But run the
-    // |out_release_callback| to release the ref acquired above.
-    std::move(*out_release_callback).Run(gpu::SyncToken(), false /* is_lost */);
+    // |release_callback| to release the ref acquired above.
+    std::move(release_callback)
+        .Run(std::move(frame), gpu::SyncToken(), false /* is_lost */);
     return false;
   }
+  // Note: frame is kept alive via a reference kept in out_release_callback.
+  *out_release_callback = base::BindOnce(
+      ReleaseCanvasResource, std::move(release_callback), std::move(frame));
 
   return true;
 }

@@ -171,9 +171,14 @@ TEST_P(OffscreenCanvasTest, CompositorFrameOpacity) {
             EXPECT_NE(shared_quad_state_list.front()->are_contents_opaque,
                       context_alpha);
           })));
-  offscreen_canvas().PushFrame(canvas_resource, SkIRect::MakeWH(10, 10));
+  offscreen_canvas().PushFrame(std::move(canvas_resource),
+                               SkIRect::MakeWH(10, 10));
   platform->RunUntilIdle();
 
+  const auto canvas_resource2 = CanvasResourceSharedBitmap::Create(
+      SkImageInfo::MakeN32Premul(offscreen_canvas().Size().width(),
+                                 offscreen_canvas().Size().height()),
+      nullptr /* provider */, cc::PaintFlags::FilterQuality::kLow);
   EXPECT_CALL(mock_embedded_frame_sink_provider.mock_compositor_frame_sink(),
               SubmitCompositorFrameSync_(_))
       .WillOnce(::testing::WithArg<0>(
@@ -190,7 +195,8 @@ TEST_P(OffscreenCanvasTest, CompositorFrameOpacity) {
             EXPECT_NE(shared_quad_state_list.front()->are_contents_opaque,
                       context_alpha);
           })));
-  offscreen_canvas().Commit(canvas_resource, SkIRect::MakeWH(10, 10));
+  offscreen_canvas().Commit(std::move(canvas_resource2),
+                            SkIRect::MakeWH(10, 10));
   platform->RunUntilIdle();
 }
 

@@ -104,9 +104,12 @@ void CanvasResource::WaitSyncToken(const gpu::SyncToken& sync_token) {
 
 static void ReleaseFrameResources(
     base::WeakPtr<CanvasResourceProvider> resource_provider,
-    scoped_refptr<CanvasResource> resource,
+    scoped_refptr<CanvasResource>&& resource,
     const gpu::SyncToken& sync_token,
     bool lost_resource) {
+  if (!resource)
+    return;
+
   resource->WaitSyncToken(sync_token);
 
   if (resource_provider)
@@ -123,13 +126,12 @@ static void ReleaseFrameResources(
 
 bool CanvasResource::PrepareTransferableResource(
     viz::TransferableResource* out_resource,
-    viz::ReleaseCallback* out_callback,
+    CanvasResource::ReleaseCallback* out_callback,
     MailboxSyncMode sync_mode) {
   DCHECK(IsValid());
 
   DCHECK(out_callback);
-  *out_callback =
-      WTF::Bind(&ReleaseFrameResources, provider_, base::WrapRefCounted(this));
+  *out_callback = WTF::Bind(&ReleaseFrameResources, provider_);
 
   if (!out_resource)
     return true;

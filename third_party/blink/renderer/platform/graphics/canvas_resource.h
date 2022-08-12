@@ -65,6 +65,11 @@ class StaticBitmapImage;
 class PLATFORM_EXPORT CanvasResource
     : public WTF::ThreadSafeRefCounted<CanvasResource> {
  public:
+  using ReleaseCallback = base::OnceCallback<void(
+      scoped_refptr<blink::CanvasResource>&& canvas_resource,
+      const gpu::SyncToken& sync_token,
+      bool is_lost)>;
+
   virtual ~CanvasResource();
 
   // We perform a lazy copy on write if the canvas content needs to be updated
@@ -121,7 +126,7 @@ class PLATFORM_EXPORT CanvasResource
   // Provides a TransferableResource representation of this resource to share it
   // with the compositor.
   bool PrepareTransferableResource(viz::TransferableResource*,
-                                   viz::ReleaseCallback*,
+                                   ReleaseCallback*,
                                    MailboxSyncMode);
 
   // Issues a wait for this sync token on the context used by this resource for
