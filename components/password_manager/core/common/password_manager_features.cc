@@ -167,6 +167,11 @@ const base::Feature kPasswordDomainCapabilitiesFetching = {
 const base::Feature kPasswordImport = {"PasswordImport",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+const base::Feature kPasswordManagerRedesign{"PasswordManagerRedesign",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 // Enables password reuse detection.
 const base::Feature kPasswordReuseDetectionEnabled = {
     "PasswordReuseDetectionEnabled", base::FEATURE_ENABLED_BY_DEFAULT};

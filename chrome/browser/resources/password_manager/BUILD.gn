@@ -1,0 +1,18 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/browser/resources/tools/build_webui.gni")
+
+build_webui("build") {
+  grd_prefix = "password_manager"
+  static_files = [ "password_manager.html" ]
+  web_component_files = [ "password_manager_app.ts" ]
+  non_web_component_files = [ "password_manager.ts" ]
+
+  ts_deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+    "//ui/webui/resources/js/browser_command:build_ts",
+  ]
+}
