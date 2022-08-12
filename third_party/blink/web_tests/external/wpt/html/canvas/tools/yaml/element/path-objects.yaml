@@ -2548,6 +2548,18 @@
     assert_throws_js(RangeError, () => { ctx.roundRect(0, 0, 0, 0, [{x: -1, y: 1}, 1])});
     assert_throws_js(RangeError, () => { ctx.roundRect(0, 0, 0, 0, [{x: 1, y: -1}])});
 
+- name: 2d.path.roundrect.badinput
+  desc: roundRect() throws or does not throw errors given the strange inputs.
+  code: |
+    ctx.roundRect(0, 0, 100, 100, { foo: "bar" });  //=> DOMPointInit
+    ctx.roundRect(0, 0, 100, 100, undefined);       //=> "missing" -> 0
+    ctx.roundRect(0, 0, 100, 100, [[]]);            //=> « DOMPointInit »
+    ctx.roundRect(0, 0, 100, 100, [[25]]);          //=> « DOMPointInit »
+    ctx.roundRect(0, 0, 100, 100, [undefined]);     //=> « DOMPointInit »
+    @assert throws TypeError ctx.roundRect(0, 0, 100, 100, 0n);
+    @assert throws TypeError ctx.roundRect(0, 0, 100, 100, { x: 0n });
+    @assert throws TypeError ctx.roundRect(0, 0, 100, 100, [{ x: 0n }]);
+
 - name: 2d.path.ellipse.basics
   desc: Verify canvas throws error when drawing ellipse with negative radii.
   testing:
