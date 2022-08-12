@@ -4,10 +4,6 @@
 
 package org.chromium.chrome.browser.payments;
 
-import static org.chromium.chrome.browser.payments.PaymentRequestTestRule.DECEMBER;
-import static org.chromium.chrome.browser.payments.PaymentRequestTestRule.FIRST_BILLING_ADDRESS;
-import static org.chromium.chrome.browser.payments.PaymentRequestTestRule.NEXT_YEAR;
-
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
@@ -113,14 +109,16 @@ public class PaymentRequestCanMakePaymentMetricsTest implements MainActivityStar
         // Add a new credit card.
         mPaymentRequestTestRule.clickInPaymentMethodAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyToEdit());
-        mPaymentRequestTestRule.setSpinnerSelectionsInCardEditorAndWait(
-                new int[] {DECEMBER, NEXT_YEAR, FIRST_BILLING_ADDRESS},
-                mPaymentRequestTestRule.getBillingAddressChangeProcessed());
-        mPaymentRequestTestRule.setTextInCardEditorAndWait(
-                new String[] {"4111111111111111", "Jon Doe"},
-                mPaymentRequestTestRule.getEditorTextUpdate());
-        mPaymentRequestTestRule.clickInCardEditorAndWait(
-                R.id.editor_dialog_done_button, mPaymentRequestTestRule.getReadyToPay());
+        // TODO(crbug.com/1209835): This test will also need migrated away from basic-card before
+        // being re-enabled.
+        // mPaymentRequestTestRule.setSpinnerSelectionsInCardEditorAndWait(
+        //         new int[] {DECEMBER, NEXT_YEAR, FIRST_BILLING_ADDRESS},
+        //         mPaymentRequestTestRule.getBillingAddressChangeProcessed());
+        // mPaymentRequestTestRule.setTextInCardEditorAndWait(
+        //         new String[] {"4111111111111111", "Jon Doe"},
+        //         mPaymentRequestTestRule.getEditorTextUpdate());
+        // mPaymentRequestTestRule.clickInCardEditorAndWait(
+        //         R.id.editor_dialog_done_button, mPaymentRequestTestRule.getReadyToPay());
 
         // Complete the transaction.
         mPaymentRequestTestRule.clickAndWait(

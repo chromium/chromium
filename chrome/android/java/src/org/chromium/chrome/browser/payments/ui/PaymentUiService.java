@@ -524,7 +524,6 @@ public class PaymentUiService
                 /* selection = */ 0, new ArrayList<>(Arrays.asList(selectedApp)));
         mPaymentRequestUI.updateSection(
                 PaymentRequestUI.DataType.PAYMENT_METHODS, mPaymentMethodsSection);
-        mPaymentRequestUI.disableAddingNewCardsDuringRetry();
 
         // Go back to the payment sheet
         mPaymentRequestUI.onPayButtonProcessingCancelled();
@@ -1101,8 +1100,8 @@ public class PaymentUiService
         }
 
         mPaymentRequestUI = new PaymentRequestUI(activity, /*client=*/this,
-                /*canAddCards=*/false, !PaymentPreferencesUtil.isPaymentCompleteOnce(),
-                mMerchantName, mTopLevelOriginFormattedForDisplay,
+                !PaymentPreferencesUtil.isPaymentCompleteOnce(), mMerchantName,
+                mTopLevelOriginFormattedForDisplay,
                 SecurityStateModel.getSecurityLevelForWebContents(mWebContents),
                 new ShippingStrings(mParams.getPaymentOptions().shippingType),
                 mPaymentUisShowStateReconciler, Profile.fromWebContents(mWebContents));

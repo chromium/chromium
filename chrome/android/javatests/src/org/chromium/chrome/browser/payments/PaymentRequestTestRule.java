@@ -7,9 +7,7 @@ package org.chromium.chrome.browser.payments;
 import android.os.Handler;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -40,7 +38,6 @@ import org.chromium.chrome.browser.payments.ui.PaymentRequestUI;
 import org.chromium.chrome.browser.payments.ui.PaymentRequestUI.PaymentRequestObserverForTest;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.autofill.prefeditor.EditorObserverForTest;
-import org.chromium.components.autofill.prefeditor.EditorTextField;
 import org.chromium.components.payments.AbortReason;
 import org.chromium.components.payments.PayerData;
 import org.chromium.components.payments.PaymentApp;
@@ -454,15 +451,6 @@ public class PaymentRequestTestRule extends ChromeTabbedActivityTestRule
         helper.waitForCallback(callCount);
     }
 
-    /** Clicks on an element in the editor UI for credit cards. */
-    protected void clickInCardEditorAndWait(final int resourceId, CallbackHelper helper)
-            throws TimeoutException {
-        int callCount = helper.getCallCount();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> { mUI.getCardEditorDialog().findViewById(resourceId).performClick(); });
-        helper.waitForCallback(callCount);
-    }
-
     /** Clicks on an element in the editor UI. */
     protected void clickInEditorAndWait(final int resourceId, CallbackHelper helper)
             throws TimeoutException {
@@ -667,11 +655,6 @@ public class PaymentRequestTestRule extends ChromeTabbedActivityTestRule
         });
     }
 
-    /** Returns the focused view in the card editor view. */
-    protected View getCardEditorFocusedView() {
-        return mUI.getCardEditorDialog().getCurrentFocus();
-    }
-
     /**
      * Clicks on the label corresponding to the shipping address suggestion at the specified
      * |suggestionIndex|.
@@ -780,55 +763,9 @@ public class PaymentRequestTestRule extends ChromeTabbedActivityTestRule
                                    .getOptionRowAtIndex(index));
     }
 
-    /** Returns the selected spinner value in the editor UI for credit cards. */
-    protected String getSpinnerSelectionTextInCardEditor(final int dropdownIndex) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
-                ()
-                        -> mUI.getCardEditorDialog()
-                                   .getDropdownFieldsForTest()
-                                   .get(dropdownIndex)
-                                   .getSelectedItem()
-                                   .toString());
-    }
-
-    /** Returns the spinner value at the specified position in the editor UI for credit cards. */
-    protected String getSpinnerTextAtPositionInCardEditor(
-            final int dropdownIndex, final int itemPosition) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
-                ()
-                        -> mUI.getCardEditorDialog()
-                                   .getDropdownFieldsForTest()
-                                   .get(dropdownIndex)
-                                   .getItemAtPosition(itemPosition)
-                                   .toString());
-    }
-
-    /** Returns the number of items offered by the spinner in the editor UI for credit cards. */
-    protected int getSpinnerItemCountInCardEditor(final int dropdownIndex) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
-                ()
-                        -> mUI.getCardEditorDialog()
-                                   .getDropdownFieldsForTest()
-                                   .get(dropdownIndex)
-                                   .getCount());
-    }
-
     /** Returns the error message visible to the user in the credit card unmask prompt. */
     protected String getUnmaskPromptErrorMessage() {
         return mCardUnmaskPrompt.getErrorMessage();
-    }
-
-    /** Selects the spinner value in the editor UI for credit cards. */
-    protected void setSpinnerSelectionsInCardEditorAndWait(
-            final int[] selections, CallbackHelper helper) throws TimeoutException {
-        int callCount = helper.getCallCount();
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            List<Spinner> fields = mUI.getCardEditorDialog().getDropdownFieldsForTest();
-            for (int i = 0; i < selections.length && i < fields.size(); i++) {
-                fields.get(i).setSelection(selections[i]);
-            }
-        });
-        helper.waitForCallback(callCount);
     }
 
     /** Selects the spinner value in the editor UI. */
@@ -839,23 +776,6 @@ public class PaymentRequestTestRule extends ChromeTabbedActivityTestRule
                 ()
                         -> ((Spinner) mUI.getEditorDialog().findViewById(R.id.spinner))
                                    .setSelection(selection));
-        helper.waitForCallback(callCount);
-    }
-
-    /** Directly sets the text in the editor UI for credit cards. */
-    protected void setTextInCardEditorAndWait(final String[] values, CallbackHelper helper)
-            throws TimeoutException {
-        int callCount = helper.getCallCount();
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            ViewGroup contents = (ViewGroup) mUI.getCardEditorDialog().findViewById(R.id.contents);
-            Assert.assertNotNull(contents);
-            for (int i = 0, j = 0; i < contents.getChildCount() && j < values.length; i++) {
-                View view = contents.getChildAt(i);
-                if (view instanceof EditorTextField) {
-                    ((EditorTextField) view).getEditText().setText(values[j++]);
-                }
-            }
-        });
         helper.waitForCallback(callCount);
     }
 
@@ -870,17 +790,6 @@ public class PaymentRequestTestRule extends ChromeTabbedActivityTestRule
                 fields.get(i).setText(values[i]);
             }
         });
-        helper.waitForCallback(callCount);
-    }
-
-    /** Directly sets the checkbox selection in the editor UI for credit cards. */
-    protected void selectCheckboxAndWait(final int resourceId, final boolean isChecked,
-            CallbackHelper helper) throws TimeoutException {
-        int callCount = helper.getCallCount();
-        ThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> ((CheckBox) mUI.getCardEditorDialog().findViewById(resourceId))
-                                   .setChecked(isChecked));
         helper.waitForCallback(callCount);
     }
 
