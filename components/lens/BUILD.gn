@@ -11,6 +11,7 @@ static_library("lens") {
   ]
   deps = [
     "//base:base",
+    "//components/lens/proto/v1:lens_latencies_metadata_proto",
     "//net",
     "//url",
   ]
