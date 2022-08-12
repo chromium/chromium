@@ -120,6 +120,12 @@ struct RequestParams {
   // The isolation info of the request, this won't be persisted to db and will
   // be invalidate during download resumption in new browser session.
   absl::optional<net::IsolationInfo> isolation_info;
+
+  // First-party URL redirect policy: During server redirects, whether the
+  // first-party URL for cookies will need to be changed. Download is normally
+  // considered a main frame navigation. However, this is not true for
+  // background fetch.
+  bool update_first_party_url_on_redirect = true;
 };
 
 // The parameters that describe a download request made to the DownloadService.

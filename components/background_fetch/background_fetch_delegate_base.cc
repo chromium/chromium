@@ -102,6 +102,7 @@ void BackgroundFetchDelegateBase::DownloadUrl(
                           weak_ptr_factory_.GetWeakPtr());
   params.traffic_annotation =
       net::MutableNetworkTrafficAnnotationTag(traffic_annotation);
+  params.request_params.update_first_party_url_on_redirect = false;
 
   JobDetails* job_details = GetJobDetails(job_id);
   if (job_details->job_state == JobDetails::State::kPendingWillStartPaused ||
