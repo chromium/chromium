@@ -7094,13 +7094,13 @@ crbug.com/1352009 external/wpt/preload/preconnect.html [ Failure Pass ]
 crbug.com/1351811 external/wpt/css/css-transitions/no-transition-from-ua-to-blocking-stylesheet.html [ Failure Pass ]
 
 # Flakes on all platforms.
-crbug.com/1352209 [ Fuchsia ] wpt_internal/navigation-api/ordering-and-transition/navigate-cross-document-double.html [ Failure Pass ]
-crbug.com/1352209 [ Linux ] wpt_internal/navigation-api/ordering-and-transition/navigate-cross-document-double.html [ Failure Pass ]
-crbug.com/1352209 [ Mac10.13 ] wpt_internal/navigation-api/ordering-and-transition/navigate-cross-document-double.html [ Failure Pass ]
-crbug.com/1352209 [ Mac10.14 ] wpt_internal/navigation-api/ordering-and-transition/navigate-cross-document-double.html [ Failure Pass ]
-crbug.com/1352209 [ Mac11 ] wpt_internal/navigation-api/ordering-and-transition/navigate-cross-document-double.html [ Failure Pass ]
-crbug.com/1352209 [ Mac12-arm64 ] wpt_internal/navigation-api/ordering-and-transition/navigate-cross-document-double.html [ Failure Pass ]
-crbug.com/1352209 [ Win ] wpt_internal/navigation-api/ordering-and-transition/navigate-cross-document-double.html [ Failure Pass ]
+crbug.com/1310202 [ Fuchsia ] wpt_internal/navigation-api/ordering-and-transition/navigate-cross-document-double.html [ Failure Pass Timeout ]
+crbug.com/1310202 [ Linux ] wpt_internal/navigation-api/ordering-and-transition/navigate-cross-document-double.html [ Failure Pass Timeout ]
+crbug.com/1310202 [ Mac10.13 ] wpt_internal/navigation-api/ordering-and-transition/navigate-cross-document-double.html [ Failure Pass Timeout ]
+crbug.com/1310202 [ Mac10.14 ] wpt_internal/navigation-api/ordering-and-transition/navigate-cross-document-double.html [ Failure Pass Timeout ]
+crbug.com/1310202 [ Mac11 ] wpt_internal/navigation-api/ordering-and-transition/navigate-cross-document-double.html [ Failure Pass Timeout ]
+crbug.com/1310202 [ Mac12-arm64 ] wpt_internal/navigation-api/ordering-and-transition/navigate-cross-document-double.html [ Failure Pass Timeout ]
+crbug.com/1310202 [ Win ] wpt_internal/navigation-api/ordering-and-transition/navigate-cross-document-double.html [ Failure Pass Timeout ]
 
 # Sheriff 2022-08-12
 crbug.com/1350611 [ Mac10.15 ] external/wpt/html/browsers/browsing-the-web/remote-context-helper-tests/navigation-same-document.window.html [ Failure Pass ]
