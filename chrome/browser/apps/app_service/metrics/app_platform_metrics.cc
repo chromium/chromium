@@ -670,7 +670,7 @@ void AppPlatformMetrics::RecordAppLaunchUkm(AppType app_type,
 void AppPlatformMetrics::RecordAppUninstallUkm(
     AppType app_type,
     const std::string& app_id,
-    apps::mojom::UninstallSource uninstall_source) {
+    UninstallSource uninstall_source) {
   AppTypeName app_type_name = GetAppTypeName(
       profile_, app_type, app_id, apps::LaunchContainer::kLaunchContainerNone);
 

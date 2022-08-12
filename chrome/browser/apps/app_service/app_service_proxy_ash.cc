@@ -592,7 +592,8 @@ void AppServiceProxyAsh::PerformPostUninstallTasks(
   if (app_platform_metrics_service_ &&
       app_platform_metrics_service_->AppPlatformMetrics()) {
     app_platform_metrics_service_->AppPlatformMetrics()->RecordAppUninstallUkm(
-        app_type, app_id, uninstall_source);
+        app_type, app_id,
+        ConvertMojomUninstallSourceToUninstallSource(uninstall_source));
   }
 }
 

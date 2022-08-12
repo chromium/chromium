@@ -110,7 +110,7 @@ class MockAppPlatformMetricsObserver : public AppPlatformMetrics::Observer {
               OnAppUninstalled,
               (const std::string& app_id,
                AppType app_type,
-               apps::mojom::UninstallSource app_uninstall_source),
+               UninstallSource app_uninstall_source),
               (override));
 
   MOCK_METHOD(void,
@@ -903,7 +903,7 @@ class AppPlatformMetricsServiceTest : public testing::Test,
 
   void VerifyAppsUninstallUkm(const std::string& app_info,
                               AppTypeName app_type_name,
-                              apps::mojom::UninstallSource uninstall_source) {
+                              UninstallSource uninstall_source) {
     const auto entries =
         test_ukm_recorder()->GetEntriesByName("ChromeOSApp.UninstallApp");
     int count = 0;
@@ -2286,21 +2286,21 @@ TEST_P(AppPlatformMetricsServiceTest, UninstallAppUkm) {
   proxy->UninstallSilently(
       /*app_id=*/"a", apps::mojom::UninstallSource::kAppList);
   VerifyAppsUninstallUkm("app://com.google.A", AppTypeName::kArc,
-                         apps::mojom::UninstallSource::kAppList);
+                         UninstallSource::kAppList);
 
   proxy->UninstallSilently(
       /*app_id=*/MuxId(profile(), kChromeAppId),
       apps::mojom::UninstallSource::kAppList);
   VerifyAppsUninstallUkm("app://" + std::string(kChromeAppId),
                          AppTypeName::kStandaloneBrowserChromeApp,
-                         apps::mojom::UninstallSource::kAppList);
+                         UninstallSource::kAppList);
 
   proxy->UninstallSilently(
       /*app_id=*/MuxId(profile(), kExtensionId),
       apps::mojom::UninstallSource::kAppList);
   VerifyAppsUninstallUkm("app://" + std::string(kExtensionId),
                          AppTypeName::kStandaloneBrowserExtension,
-                         apps::mojom::UninstallSource::kAppList);
+                         UninstallSource::kAppList);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -2872,9 +2872,8 @@ TEST_P(AppPlatformMetricsObserverTest, ShouldNotifyObserverOnAppLaunch) {
 TEST_P(AppPlatformMetricsObserverTest, ShouldNotifyObserverOnAppUninstall) {
   // Uninstall a pre-installed app and verify the observer is notified.
   const std::string& app_id = "a";
-  EXPECT_CALL(observer_,
-              OnAppUninstalled(app_id, AppType::kArc,
-                               apps::mojom::UninstallSource::kAppList))
+  EXPECT_CALL(observer_, OnAppUninstalled(app_id, AppType::kArc,
+                                          UninstallSource::kAppList))
       .Times(1);
 
   auto* const proxy = AppServiceProxyFactory::GetForProfile(profile());
@@ -2912,9 +2911,8 @@ TEST_P(AppPlatformMetricsObserverTest, ShouldNotNotifyUnregisteredObservers) {
   // Uninstall a pre-installed app and verify the unregistered observer
   // is not notified.
   const std::string& app_id = "a";
-  EXPECT_CALL(observer_,
-              OnAppUninstalled(app_id, AppType::kArc,
-                               apps::mojom::UninstallSource::kAppList))
+  EXPECT_CALL(observer_, OnAppUninstalled(app_id, AppType::kArc,
+                                          UninstallSource::kAppList))
       .Times(0);
   proxy->UninstallSilently(app_id, apps::mojom::UninstallSource::kAppList);
   task_environment_.RunUntilIdle();

@@ -90,10 +90,9 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
                                apps::LaunchSource launch_source) {}
 
     // Invoked when app uninstall metrics are being reported.
-    virtual void OnAppUninstalled(
-        const std::string& app_id,
-        AppType app_type,
-        apps::mojom::UninstallSource app_uninstall_source) {}
+    virtual void OnAppUninstalled(const std::string& app_id,
+                                  AppType app_type,
+                                  UninstallSource app_uninstall_source) {}
 
     // Invoked when app usage metrics are being recorded (every 5 mins).
     virtual void OnAppUsage(const std::string& app_id,
@@ -172,7 +171,7 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   // Records UKM when uninstalling an app.
   void RecordAppUninstallUkm(AppType app_type,
                              const std::string& app_id,
-                             apps::mojom::UninstallSource uninstall_source);
+                             UninstallSource uninstall_source);
 
   void AddObserver(Observer* observer);
 
