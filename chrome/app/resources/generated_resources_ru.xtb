@@ -987,6 +987,7 @@
 <translation id="1907044622262489040">Использовать голосовой ввод. Нажмите Поиск + D и продиктуйте текст.</translation>
 <translation id="1908591798274282246">Восстановить закрытую группу</translation>
 <translation id="1909880997794698664">Всегда запускать устройство в режиме киоска?</translation>
+<translation id="1910721550319506122">Добро пожаловать!</translation>
 <translation id="1915073950770830761">Canary</translation>
 <translation id="1915307458270490472">Закрыть</translation>
 <translation id="1916502483199172559">Аватар по умолчанию (красный)</translation>
@@ -1871,6 +1872,7 @@
 <translation id="2727633948226935816">Больше не напоминать</translation>
 <translation id="2727712005121231835">Фактический размер</translation>
 <translation id="2729314457178420145">Также удалить данные о работе в браузере (<ph name="URL" />). Возможно, при этом вы выйдете из аккаунта на сайте google.com. <ph name="LEARN_MORE" /></translation>
+<translation id="2729327310379176711">Мы ищем новые способы ограничить отслеживание и сделать работу с браузером ещё безопаснее. Chrome <ph name="ESTIMATE_INTERESTS_LINK" /> и позволяет управлять ими. Сайты, которые вы посещаете, запрашивают у Chrome интересующие вас темы, чтобы показывать рекламу.</translation>
 <translation id="2730029791981212295">Резервное копирование приложений и файлов Linux…</translation>
 <translation id="2730901670247399077">Подсказки эмодзи</translation>
 <translation id="273093730430620027">Этой странице разрешен доступ к вашей камере.</translation>
@@ -2114,7 +2116,6 @@
 <translation id="2939908794993783865">Другие неактивные сайты</translation>
 <translation id="2939938020978911855">Показать доступные устройства Bluetooth</translation>
 <translation id="2941112035454246133">Низкий</translation>
-<translation id="2941696810925320401">Сайты обычно открывают и размещают окна, чтобы показать дополнительные документы или контент в полноэкранном режиме.</translation>
 <translation id="2942279350258725020">Android Сообщения</translation>
 <translation id="2942560570858569904">Ожидание...</translation>
 <translation id="2942581856830209953">Персонализировать эту страницу</translation>
@@ -3417,7 +3418,6 @@
 <translation id="4219558185499589032">Box</translation>
 <translation id="4220648711404560261">При активации произошла ошибка.</translation>
 <translation id="4225397296022057997">На всех сайтах</translation>
-<translation id="4227605727325220318">Добавить новый телефон Android</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Это расширение запрещено}one{Некоторые расширения запрещены}few{Некоторые расширения запрещены}many{Некоторые расширения запрещены}other{Некоторые расширения запрещены}}</translation>
 <translation id="4231095370974836764">Устанавливайте приложения и игры из Google Play на устройство <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="4231141543165771749">Закрыть настройки игры</translation>
@@ -3682,7 +3682,6 @@
 <translation id="4481467543947557978">service worker</translation>
 <translation id="4481530544597605423">Отключенные устройства</translation>
 <translation id="4482990632723642375">Недавно закрытая вкладка</translation>
-<translation id="4484922932728109422">Сайтам нельзя запрашивать сведения о ваших экранах, чтобы открывать и размещать окна</translation>
 <translation id="4487489714832036847">Вместо традиционного ПО на Chromebook устанавливаются приложения, которые откроют вам новые возможности для работы, развлечений и не только.</translation>
 <translation id="4488257340342212116">Разрешить сайтам использовать камеру</translation>
 <translation id="4488502501195719518">Удалить данные?</translation>
@@ -3792,6 +3791,7 @@
 <translation id="4579581181964204535">Трансляция с сайта <ph name="HOST_NAME" /> невозможна</translation>
 <translation id="4579876313423027742">Чтобы включить уведомления, перейдите в <ph name="LINK_BEGIN" />настройки браузера Chrome<ph name="LINK_END" />.</translation>
 <translation id="4580596421317071374">Место хранения паролей на этом устройстве: <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
+<translation id="4580626299762849806">Не удалось импортировать пароли. Убедитесь, что у файла <ph name="FILENAME" /> правильный формат.</translation>
 <translation id="4581774856936278355">Не удалось восстановить данные Linux</translation>
 <translation id="4582297591746054421">Обычно сайтам нужен доступ к буферу обмена, чтобы использовать некоторые функции, например сохранять форматирование скопированного текста.</translation>
 <translation id="4582563038311694664">Сбросить все настройки</translation>
@@ -4327,7 +4327,6 @@
 <translation id="5125751979347152379">Недопустимый URL.</translation>
 <translation id="5125967981703109366">Об этой карточке</translation>
 <translation id="5126611267288187364">Посмотреть изменения</translation>
-<translation id="5127242257756472928">Эти сайты не могут использовать сведения о ваших экранах, чтобы открывать и размещать окна</translation>
 <translation id="5127620150973591153">Код безопасного подключения: <ph name="TOKEN" />.</translation>
 <translation id="5127805178023152808">Синхронизация выключена</translation>
 <translation id="5127881134400491887">Управление сетевыми подключениями</translation>
@@ -5100,6 +5099,7 @@
 <translation id="5877064549588274448">Канал изменен. Чтобы изменения вступили в силу, перезапустите устройство.</translation>
 <translation id="5877584842898320529">Этот принтер недоступен или настроен неправильно.<ph name="BR" />Проверьте его или выберите другой.</translation>
 <translation id="5878945009165002849">Запретить сайтам показывать предложения войти в аккаунт через сервисы подтверждения личности</translation>
+<translation id="5882449899683447569">Не удалось импортировать пароли из-за ошибки.</translation>
 <translation id="5882919346125742463">Известные сети</translation>
 <translation id="5883356647197510494">Автоматически отключены разрешения "<ph name="PERMISSION_1" />" и "<ph name="PERMISSION_2" />"</translation>
 <translation id="5884474295213649357">Эта вкладка подключена к USB-устройству</translation>
@@ -6410,7 +6410,6 @@
 <translation id="7134098520442464001">Уменьшить размер текста</translation>
 <translation id="7135729336746831607">Включить Bluetooth?</translation>
 <translation id="7136694880210472378">Использовать по умолчанию</translation>
-<translation id="7137472406312798422">Сайтам можно запрашивать сведения о ваших экранах, чтобы открывать и размещать окна</translation>
 <translation id="7138678301420049075">Другое</translation>
 <translation id="7139627972753429585">Приложение "<ph name="APP_NAME" />" использует микрофон</translation>
 <translation id="7141105143012495934">Ошибка входа: не удалось получить данные аккаунта. Обратитесь к администратору или повторите попытку.</translation>
@@ -7323,7 +7322,6 @@
 <translation id="8028803902702117856">Скачивание файла <ph name="FILE_NAME" /> (<ph name="SIZE" />)</translation>
 <translation id="8028993641010258682">Размер</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> – требуется разрешение. Нажмите ⌘ + Option + Стрелка вверх, чтобы ответить.</translation>
-<translation id="8029539783236818164">Эти сайты могут использовать сведения о ваших экранах, чтобы открывать и размещать окна</translation>
 <translation id="8030169304546394654">Отключено</translation>
 <translation id="8030852056903932865">Одобрить</translation>
 <translation id="8032244173881942855">Невозможно транслировать вкладку</translation>
@@ -8550,6 +8548,7 @@
 <translation id="9219582468404818260">Помогите нам улучшить интернет</translation>
 <translation id="9220525904950070496">Удалить аккаунт</translation>
 <translation id="9220820413868316583">Поднимите палец и попробуйте ещё раз.</translation>
+<translation id="922152298093051471">Настроить Chrome</translation>
 <translation id="923467487918828349">Показать все</translation>
 <translation id="924818813611903184">Управление языковыми параметрами в настройках Chrome OS</translation>
 <translation id="929117907539171075">Офлайн-данные в установленном приложении будут также удалены.</translation>

@@ -100,6 +100,7 @@
 <translation id="1455242230282523554">भाषासम्बन्धी सेटिङहरू देखाउनुहोस्</translation>
 <translation id="1460620680449458626">भोल्युम म्युट गरिएको छ।</translation>
 <translation id="1467432559032391204">बाँया</translation>
+<translation id="146902737843070955">तपाईंका एड्मिनले यो सेटिङ बदल्न अनुरोध गर्नुभएको छ</translation>
 <translation id="147310119694673958">फोनको ब्याट्री <ph name="BATTERY_PERCENTAGE" />% बाँकी छ</translation>
 <translation id="1479909375538722835">पहुँचसम्बन्धी फ्लोटिङ मेनु</translation>
 <translation id="1480845547124508962"><ph name="CURRENT_TIME" />, पात्रोको भ्यू खोल्न इन्टर थिच्नुहोस्</translation>
@@ -837,6 +838,7 @@
 <translation id="5779721926447984944">पिन गरिएका फाइलहरू</translation>
 <translation id="5788127256798019331">Play मा भएका फाइलहरू</translation>
 <translation id="5790085346892983794">सफलता</translation>
+<translation id="5804651031882187592">"SIM लक गर्नुहोस्" सेटिङ अफ गर्नुहोस्</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> अन गर्न क्लिक गर्नुहोस्</translation>
 <translation id="5825969630400862129">कनेक्ट गरिएका यन्त्रहरूसम्बन्धी सेटिङ</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> मा <ph name="ROUTE_TITLE" /> बन्द गर्नुहोस्</translation>

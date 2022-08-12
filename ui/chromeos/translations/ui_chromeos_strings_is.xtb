@@ -5,6 +5,7 @@
 <translation id="1047956942837015229">Eyðir <ph name="COUNT" /> atriðum...</translation>
 <translation id="1049926623896334335">Word-skjal</translation>
 <translation id="1056775291175587022">Engin net</translation>
+<translation id="1056898198331236512">Viðvörun</translation>
 <translation id="1060368002126861100">Til að opna skrár með <ph name="APP_NAME" /> skaltu fyrst afrita þær í skráamöppu Windows.</translation>
 <translation id="1062407476771304334">Skipta út</translation>
 <translation id="1119447706177454957">Innri villa</translation>
@@ -244,6 +245,7 @@
 <translation id="3138624403379688522">Ógilt PIN-númer. <ph name="RETRIES" /> tilraunir eru eftir.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (byggist á vélbúnaði)</translation>
 <translation id="3188257591659621405">Skrárnar mínar</translation>
+<translation id="3194553149358267393">Engar nýlegar hljóðskrár</translation>
 <translation id="3197563288998582412">Breskt Dvorak</translation>
 <translation id="3202131003361292969">Slóð</translation>
 <translation id="3205852408225871810">Portúgalska (Brasilía)</translation>
@@ -284,10 +286,12 @@
 <translation id="3479552764303398839">Ekki núna</translation>
 <translation id="3486821258960016770">Mongólska</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> villur.</translation>
+<translation id="3495810061346586977">Skráin inniheldur trúnaðarmál og er háð takmörkunum stjórnandareglu. <ph name="BEGIN_LINK_HELP" />Nánar<ph name="END_LINK_HELP" /></translation>
 <translation id="3509680540198371098">Netkerfi <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" />% sendistyrkur, upplýsingar</translation>
 <translation id="3522708245912499433">Portúgalskt</translation>
 <translation id="3524311639100184459">Varúð: Þessar skrár eru til bráðabirgða og þeim kann að vera eytt sjálfkrafa til að losa um diskpláss.  <ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Mappa</translation>
+<translation id="3548125359243647069">Rangt PIN-númer var slegið inn of oft.</translation>
 <translation id="3549797760399244642">Fara á drive.google.com...</translation>
 <translation id="3553048479571901246">Til að opna skrár með <ph name="APP_NAME" /> skaltu fyrst afrita þær í skráamöppu Windows.</translation>
 <translation id="3556731189587832921">Enska (bandarísk) með alþjóðlegu tölvulyklaborði</translation>
@@ -300,6 +304,7 @@
 <translation id="3606220979431771195">Tyrkneskt F</translation>
 <translation id="3616113530831147358">Hljóð</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
+<translation id="3619593063686672873">Engin nýleg myndskeið</translation>
 <translation id="3620292326130836921">Allt afritað!</translation>
 <translation id="3634507049637220048">Netkerfi <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, stjórnað af kerfisstjóra, upplýsingar</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> atriði færð.</translation>
@@ -398,6 +403,7 @@
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> skrá</translation>
 <translation id="457386861538956877">Meira...</translation>
 <translation id="4579744207439506346">Bætti <ph name="ENTRY_NAME" /> við val.</translation>
+<translation id="4583436353463424810">Engin nýleg skjöl</translation>
 <translation id="4594543368593301662">Sýnir niðurstöður fyrir <ph name="SEARCH_TERM" />.</translation>
 <translation id="4599600860674643278">Sían var endurstillt.</translation>
 <translation id="4603392156942865207">Afritar <ph name="FILE_NAME" /> í <ph name="FOLDER_NAME" /></translation>
@@ -486,6 +492,7 @@
 <translation id="516592729076796170">Bandarískt Dvorak-lyklaborð fyrir forritara</translation>
 <translation id="5172749059808361023">Upplýsingar um takmörkun</translation>
 <translation id="5177526793333269655">Smámyndayfirlit</translation>
+<translation id="5181896909298187506">Engar nýlegar skrár</translation>
 <translation id="5194713942430106590">Smelltu til að raða dálkinum í hækkandi röð.</translation>
 <translation id="5211614973734216083">Færeyska</translation>
 <translation id="5218183485292899140">Svissneskt franskt</translation>
@@ -612,6 +619,7 @@
 <translation id="6267547857941397424">Netkerfi <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="SIGNAL_STRENGTH" />% sendistyrkur, <ph name="BATTERY_STATUS" />% hleðsla á rafhlöðu símans, tengjast</translation>
 <translation id="6269630227984243955">Malajíska</translation>
 <translation id="6287852322318138013">Veldu forrit til að opna þessa skrá</translation>
+<translation id="6295542640242147836">Læsa SIM-korti</translation>
 <translation id="6296410173147755564">Ógilt PUK-númer</translation>
 <translation id="6312403991423642364">Óþekkt netvilla</translation>
 <translation id="6317608858038767920">Sérstilltur nafnaþjónn <ph name="INPUT_INDEX" /></translation>
@@ -720,6 +728,7 @@
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Vista skrá sem</translation>
 <translation id="7229570126336867161">EVDO krafist</translation>
+<translation id="7230898482850090046">Kerfisstjórinn biður þig að slökkva á stillingunni „læsa SIM-korti“</translation>
 <translation id="7238097264433196391">Heiti drifs</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, upplýsingar</translation>
 <translation id="7246947237293279874">FTP-staðgengilsþjónn</translation>
@@ -740,6 +749,7 @@
 <translation id="7408870451288633753">Tékkneska</translation>
 <translation id="7417453074306512035">Eþíópískt lyklaborð</translation>
 <translation id="7417705661718309329">Google kort</translation>
+<translation id="7458955835361612701">Engar nýlegar myndir</translation>
 <translation id="7460898608667578234">Úkraínskt</translation>
 <translation id="7469894403370665791">Tengjast þessu neti sjálfkrafa</translation>
 <translation id="7486315294984620427">Svo hægt sé að sleppa skrám í Parallels Desktop verða þær að vera afritaðar í Windows-skrár.</translation>
@@ -751,6 +761,7 @@
 <translation id="7505167922889582512">Sýna faldar skrár</translation>
 <translation id="7514365320538308">Sækja</translation>
 <translation id="751507702149411736">Hvítrússneskt</translation>
+<translation id="7521790570754130607">Til að nota farsímagögn þarf PIN-númer</translation>
 <translation id="7532029025027028521">Persneska umritun</translation>
 <translation id="7544830582642184299">Veita Linux-forritum aðgang að skránum þínum á Google Drive. Breytingar samstillast við önnur tæki.</translation>
 <translation id="7547009467130558110">Strigaskór</translation>
@@ -775,6 +786,7 @@
 <translation id="76959938259365003">Ekki tókst að tæma ruslið.</translation>
 <translation id="770015031906360009">Grískt</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> afritað.</translation>
+<translation id="7708271999969613024">Þú þarft að slá inn 8 tölustafa PUK-númerið frá símafyrirtækinu til að nota þetta net.</translation>
 <translation id="7711920809702896782">Myndupplýsingar</translation>
 <translation id="7724603315864178912">Klippa</translation>
 <translation id="7730494089396812859">Sýna upplýsingar um afrit í skýi</translation>
@@ -869,6 +881,7 @@
 <translation id="8437209419043462667">Bandarískt</translation>
 <translation id="8452135315243592079">SIM-kort vantar</translation>
 <translation id="8456681095658380701">Ógilt heiti</translation>
+<translation id="8457767749626250697">SIM-kortið er læst</translation>
 <translation id="8459404855768962328">Afritun á þessu atriði er deilt með öllum sem hafa aðgang að samnýttu möppunni „<ph name="DESTINATION_NAME" />“.</translation>
 <translation id="8461467696380332069">Hægrismelltu á skrá og veldu „Festa á hillu“ til að fá skjótan aðgang að skránum þínum á hillunni.</translation>
 <translation id="8461914792118322307">Proxy-þjónn</translation>

@@ -100,6 +100,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1455242230282523554">Mostra la configuració d'idioma</translation>
 <translation id="1460620680449458626">El volum està silenciat.</translation>
 <translation id="1467432559032391204">Esquerra</translation>
+<translation id="146902737843070955">El teu administrador ha sol·licitat aquest canvi</translation>
 <translation id="147310119694673958">Bateria del telèfon: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1479909375538722835">Menú flotant d'accessibilitat</translation>
 <translation id="1480845547124508962"><ph name="CURRENT_TIME" />, prem tecla de retorn per obrir la visualització del calendari</translation>
@@ -837,6 +838,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="5779721926447984944">Fitxers fixats</translation>
 <translation id="5788127256798019331">Fitxers de Play</translation>
 <translation id="5790085346892983794">Amb èxit</translation>
+<translation id="5804651031882187592">Desactiva l'opció de configuració Bloqueja la SIM</translation>
 <translation id="5805809050170488595">Fes clic per activar <ph name="NETWORK_NAME" /></translation>
 <translation id="5825969630400862129">Configuració dels dispositius connectats</translation>
 <translation id="5837036133683224804">Atura <ph name="ROUTE_TITLE" /> a <ph name="RECEIVER_NAME" /></translation>

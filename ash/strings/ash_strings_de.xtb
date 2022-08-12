@@ -100,6 +100,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1455242230282523554">Spracheinstellungen anzeigen</translation>
 <translation id="1460620680449458626">Ton ist aus.</translation>
 <translation id="1467432559032391204">Links</translation>
+<translation id="146902737843070955">Dein Administrator hat diese Änderung angefragt</translation>
 <translation id="147310119694673958">Smartphone-Akku <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="1479909375538722835">Unverankertes Menü "Bedienungshilfen"</translation>
 <translation id="1480845547124508962"><ph name="CURRENT_TIME" /> – Drücke die Eingabetaste, um die Kalenderansicht zu öffnen</translation>
@@ -837,6 +838,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="5779721926447984944">Angepinnte Dateien</translation>
 <translation id="5788127256798019331">Google Play-Dateien</translation>
 <translation id="5790085346892983794">Abgeschlossen</translation>
+<translation id="5804651031882187592">Einstellung „SIM-Karte sperren“ deaktivieren</translation>
 <translation id="5805809050170488595">Zum Aktivieren von <ph name="NETWORK_NAME" /> klicken</translation>
 <translation id="5825969630400862129">Einstellungen für verbundene Geräte</translation>
 <translation id="5837036133683224804"><ph name="ROUTE_TITLE" /> auf <ph name="RECEIVER_NAME" /> beenden</translation>

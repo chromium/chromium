@@ -5,6 +5,7 @@
 <translation id="1047956942837015229">Sletter <ph name="COUNT" /> elementer ...</translation>
 <translation id="1049926623896334335">Word-dokument</translation>
 <translation id="1056775291175587022">Ingen nettverk</translation>
+<translation id="1056898198331236512">Advarsel</translation>
 <translation id="1060368002126861100">For å åpne filer med <ph name="APP_NAME" />, flytt dem til mappen for Windows-filer først.</translation>
 <translation id="1062407476771304334">Erstatt</translation>
 <translation id="1119447706177454957">Intern feil</translation>
@@ -244,6 +245,7 @@
 <translation id="3138624403379688522">Ugyldig PIN-kode. Du har <ph name="RETRIES" /> forsøk igjen.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (maskinvarestøttet)</translation>
 <translation id="3188257591659621405">Mine filer</translation>
+<translation id="3194553149358267393">Ingen nylige lydfiler</translation>
 <translation id="3197563288998582412">Britisk Dvorak</translation>
 <translation id="3202131003361292969">Bane</translation>
 <translation id="3205852408225871810">Portugisisk (Brasil)</translation>
@@ -302,6 +304,7 @@
 <translation id="3606220979431771195">Tyrkisk F</translation>
 <translation id="3616113530831147358">Lyd</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
+<translation id="3619593063686672873">Ingen nylige videoer</translation>
 <translation id="3620292326130836921">Alt er sikkerhetskopiert!</translation>
 <translation id="3634507049637220048">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – <ph name="CONNECTION_STATUS" /> – administreres av administratoren din</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> elementer er flyttet.</translation>
@@ -400,6 +403,7 @@
 <translation id="4572815280350369984"><ph name="FILE_TYPE" />-fil</translation>
 <translation id="457386861538956877">Mer</translation>
 <translation id="4579744207439506346">La til <ph name="ENTRY_NAME" /> i utvalget.</translation>
+<translation id="4583436353463424810">Ingen nylige dokumenter</translation>
 <translation id="4594543368593301662">Viser resultater for <ph name="SEARCH_TERM" />.</translation>
 <translation id="4599600860674643278">Filteret er tilbakestilt.</translation>
 <translation id="4603392156942865207">Kopierer <ph name="FILE_NAME" /> til <ph name="FOLDER_NAME" /></translation>
@@ -488,6 +492,7 @@
 <translation id="516592729076796170">Amerikansk programmeringstastatur (Dvorak)</translation>
 <translation id="5172749059808361023">Begrensningsdetaljer</translation>
 <translation id="5177526793333269655">Miniatyrbildevisning</translation>
+<translation id="5181896909298187506">Ingen nylige filer</translation>
 <translation id="5194713942430106590">Klikk for å sortere kolonnen i stigende rekkefølge.</translation>
 <translation id="5211614973734216083">Færøysk</translation>
 <translation id="5218183485292899140">Sveitsisk fransk</translation>
@@ -745,6 +750,7 @@
 <translation id="7408870451288633753">Tsjekkisk</translation>
 <translation id="7417453074306512035">Etiopisk tastatur</translation>
 <translation id="7417705661718309329">Google Maps</translation>
+<translation id="7458955835361612701">Ingen nylige bilder</translation>
 <translation id="7460898608667578234">Ukrainsk</translation>
 <translation id="7469894403370665791">Koble til dette nettverket automatisk</translation>
 <translation id="7486315294984620427">For å slippe filer i Parallels Desktop må du kopiere filen til Windows-filene.</translation>

@@ -5,6 +5,7 @@
 <translation id="1047956942837015229">အရာ <ph name="COUNT" />ခုကို ဖျက်နေ...</translation>
 <translation id="1049926623896334335">Word စာတမ်း</translation>
 <translation id="1056775291175587022">ကွန်ရက် မရှိပါ</translation>
+<translation id="1056898198331236512">သတိပေးချက်</translation>
 <translation id="1060368002126861100"><ph name="APP_NAME" /> ဖြင့် ဖိုင်များဖွင့်ရန် ၎င်းတို့ကို ဝင်းဒိုး ဖိုင်တွဲသို့ ဦးစွာရွှေ့ပါ။</translation>
 <translation id="1062407476771304334">အစားထိုးရန်</translation>
 <translation id="1119447706177454957">အတွင်းပိုင်း အမှား။</translation>
@@ -244,6 +245,7 @@
 <translation id="3138624403379688522">ပင်နံပါတ် မမှန်ပါ။ သင့်တွင် ကြိုးစားခွင့် <ph name="RETRIES" /> ကြိမ် ကျန်သည်။</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (စက်ပစ္စည်းကို အသုံးပြုထားသည်)</translation>
 <translation id="3188257591659621405">ကျွန်ုပ်၏ဖိုင်များ</translation>
+<translation id="3194553149358267393">လတ်တလောအသံဖိုင်များ မရှိပါ</translation>
 <translation id="3197563288998582412">ယူကေဒီဘိုရ</translation>
 <translation id="3202131003361292969">လမ်းကြောင်း</translation>
 <translation id="3205852408225871810">ပေါ်တူဂီ (ဘရာဇီး)</translation>
@@ -302,6 +304,7 @@
 <translation id="3606220979431771195">Turkish-F</translation>
 <translation id="3616113530831147358">အသံ</translation>
 <translation id="3619115746895587757">ကာပူချီနို</translation>
+<translation id="3619593063686672873">လတ်တလောဗီဒီယိုများ မရှိပါ</translation>
 <translation id="3620292326130836921">အားလုံးအရံသိမ်းဆည်းပြီးပါပြီ!</translation>
 <translation id="3634507049637220048">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ <ph name="CONNECTION_STATUS" />၊ သင့် 'ကြီးကြပ်သူ' က စီမံထားသည်၊ အသေးစိတ်များ</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> ခု ရွှေ့ပြီးပြီ။</translation>
@@ -400,6 +403,7 @@
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> ဖိုင်</translation>
 <translation id="457386861538956877">နောက်ထပ်...</translation>
 <translation id="4579744207439506346"><ph name="ENTRY_NAME" /> ကို ရွေးချယ်မှုသို့ ထည့်ထားသည်။</translation>
+<translation id="4583436353463424810">လတ်တလောမှတ်တမ်းများ မရှိပါ</translation>
 <translation id="4594543368593301662"><ph name="SEARCH_TERM" /> အတွက် ရလဒ်များ ပြထားသည်</translation>
 <translation id="4599600860674643278">ဖီလ်တာ ပြင်ဆင်သတ်မှတ်ပြီးပြီ။</translation>
 <translation id="4603392156942865207"><ph name="FILE_NAME" /> ကို <ph name="FOLDER_NAME" /> သို့ မိတ္တူကူးနေသည်</translation>
@@ -488,6 +492,7 @@
 <translation id="516592729076796170">US Programmer Dvorak</translation>
 <translation id="5172749059808361023">ကန့်သတ်ချက် အသေးစိတ်</translation>
 <translation id="5177526793333269655">လက်သည်းပုံ ကြည့်ရန်</translation>
+<translation id="5181896909298187506">လတ်တလောဖိုင်များ မရှိပါ</translation>
 <translation id="5194713942430106590">ကော်လံကို ငယ်စဉ်ကြီးလိုက်စီရန် နှိပ်ပါ။</translation>
 <translation id="5211614973734216083">ဖာရို</translation>
 <translation id="5218183485292899140">ဆွစ် ပြင်သစ်</translation>
@@ -744,6 +749,7 @@
 <translation id="7408870451288633753">ချက်</translation>
 <translation id="7417453074306512035">အီသီယိုးပီးယား ကီးဘုတ်</translation>
 <translation id="7417705661718309329">Google မြေပုံ</translation>
+<translation id="7458955835361612701">လတ်တလောပုံများ မရှိပါ</translation>
 <translation id="7460898608667578234">ယူကရိန်းနီးယန်း</translation>
 <translation id="7469894403370665791">ဒီကွန်ရက်သို့ အလိုအလျောက် ချိတ်ဆက်ရန်</translation>
 <translation id="7486315294984620427">Parallels Desktop တွင် ဖိုင်များဆွဲချရန် ဖိုင်ကို Windows ဖိုင်များသို့ မိတ္တူကူးရပါမည်။</translation>

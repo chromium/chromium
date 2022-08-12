@@ -149,6 +149,7 @@
 <translation id="2115956742084455574">ଭୁଲ୍ କୋଡ</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, ସଂସ୍କରଣ <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> GBରୁ <ph name="AVAILABLE_MEMORY" /> GB ଉପଲବ୍ଧ ଅଛି</translation>
+<translation id="2130871201950918186">5 ସେକେଣ୍ଡରେ ସିଷ୍ଟମ ରିଷ୍ଟାର୍ଟ ହେବ।</translation>
 <translation id="2138109643290557664">ଆନିମେସନ ମାଧ୍ୟମରେ ଦେଖନ୍ତୁ</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" />ଟି ଫଟୋ</translation>
@@ -211,6 +212,7 @@
 <translation id="2536159006530886390">ଇଣ୍ଟରନେଟ୍ ସହ ସଂଯୋଗ କରାଯାଇପାରିବ ନାହିଁ।</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> ପରୀକ୍ଷା ଚଲାଯାଉଛି...</translation>
 <translation id="2584559707064218956">ସେଟ ଅପ କରିବାକୁ, ସେଟିଂସକୁ ଯାଆନ୍ତୁ</translation>
+<translation id="2597774443162333062">ଡିବଗିଂ ପାଇଁ ଫାଇଲଗୁଡ଼ିକ Googleକୁ ପଠାଯିବ</translation>
 <translation id="2619761439309613843">ଦୈନିକ ରିଫ୍ରେଶ୍</translation>
 <translation id="2620436844016719705">ସିଷ୍ଟମ୍‌</translation>
 <translation id="2638662041295312666">ସାଇନ୍-ଇନ୍ ଛବି</translation>
@@ -672,6 +674,7 @@
 <translation id="6659594942844771486">ଟାବ୍</translation>
 <translation id="6692996468359469499">ଆପଣଙ୍କ ଚୟନ ସମ୍ବନ୍ଧିତ ସୂଚନା ପାଆନ୍ତୁ</translation>
 <translation id="6704062477274546131">DNS ରିଜୋଲ୍ୟୁସନ୍</translation>
+<translation id="6719240409382354629">ରିଷ୍ଟାର୍ଟ ପାଇଁ ପ୍ରସ୍ତୁତ ହେଉଛି...</translation>
 <translation id="6723839937902243910">ପାୱର୍</translation>
 <translation id="6723847290197874913">କୀବୋର୍ଡ ବ୍ୟାକଲାଇଟ</translation>
 <translation id="672609503628871915">କ’ଣ ନୂଆ ଅଛି ଦେଖନ୍ତୁ</translation>
@@ -889,6 +892,7 @@
 <translation id="8747900814994928677">ପରିବର୍ତ୍ତନକୁ ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos ଆଲବମ</translation>
+<translation id="8778600430213950389">କିଛି ତ୍ରୁଟି ହୋଇଛି। ଏହା ସମ୍ଭବତଃ ଏକ ହାର୍ଡୱେର ସମସ୍ୟା ଯୋଗୁଁ ହୋଇଥାଏ। ମୁଖ୍ୟ ବୋର୍ଡକୁ ବଦଳାନ୍ତୁ ଏବଂ ମରାମତି ପ୍ରକ୍ରିୟାକୁ ପୁଣି ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ।</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">ଏହି ନେଟୱାର୍କରେ ଏକ କ୍ୟାପ୍ଟିଭ ପୋର୍ଟାଲ ଥାଇପାରେ</translation>
 <translation id="8798099450830957504">ଡିଫଲ୍ଟ</translation>
@@ -942,6 +946,7 @@
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> ପାଇଁ ଟିକେଟ୍ ରିଫ୍ରେଶ୍ କରନ୍ତୁ</translation>
 <translation id="9106415115617144481">ପୃଷ୍ଠା <ph name="PAGE_NUMBER" />କୁ ସ୍କାନ୍ କରାଯାଉଛି</translation>
 <translation id="9111102763498581341">ଅନ୍‌ଲକ୍ କରନ୍ତୁ</translation>
+<translation id="9118126012493516930">ମରାମତି ସମ୍ପୂର୍ଣ୍ଣ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="9122602430962285795">ପୁଣି ସଂଯୋଗ କରିବାକୁ, ସେଟିଂସକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="9126720536733509015">ଗୋଟିଏ PDFରେ ଏକାଧିକ ପୃଷ୍ଠା ସେଭ୍ କରନ୍ତୁ</translation>
 <translation id="9137526406337347448">Google ସେବାଗୁଡ଼ିକ</translation>

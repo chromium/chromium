@@ -149,6 +149,7 @@
 <translation id="2115956742084455574">ভুল ক’ড</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, সংস্কৰণ <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> জিবিৰ <ph name="AVAILABLE_MEMORY" /> জিবি উপলব্ধ আছে</translation>
+<translation id="2130871201950918186">ছিষ্টেমটো ৫ ছেকেণ্ডত ৰিষ্টাৰ্ট হ’ব।</translation>
 <translation id="2138109643290557664">ভাসমান</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> খন ফট’</translation>
@@ -211,6 +212,7 @@
 <translation id="2536159006530886390">ইণ্টাৰনেটৰ সৈতে সংযোগ কৰিব নোৱাৰি।</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> পৰীক্ষা চলাই থকা হৈছে...</translation>
 <translation id="2584559707064218956">ছেট আপ কৰিবলৈ, ছেটিঙলৈ যাওক</translation>
+<translation id="2597774443162333062">ডিবাগ কৰাৰ বাবে ফাইলসমূহ Googleলৈ পঠিওৱা হ’ব</translation>
 <translation id="2619761439309613843">দৈনিক নতুন ৱালপেপাৰ</translation>
 <translation id="2620436844016719705">ছিষ্টেম</translation>
 <translation id="2638662041295312666">ছাইন-ইন প্ৰতিচ্ছবি</translation>
@@ -672,6 +674,7 @@
 <translation id="6659594942844771486">ব্ৰাউজাৰ টেব</translation>
 <translation id="6692996468359469499">আপুনি বাছনি সম্পর্কীয় তথ্য পাওক</translation>
 <translation id="6704062477274546131">DNS ৰিজ’লিউশ্বন</translation>
+<translation id="6719240409382354629">ৰিষ্টাৰ্ট কৰিবলৈ সাজু কৰি থকা হৈছে...</translation>
 <translation id="6723839937902243910">পাৱাৰ</translation>
 <translation id="6723847290197874913">কীব’ৰ্ডৰ বেকলাইট</translation>
 <translation id="672609503628871915">নতুন কি আছে চাওক</translation>
@@ -889,6 +892,7 @@
 <translation id="8747900814994928677">সলনি কৰাটো নিশ্চিত কৰক</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photosৰ এলবাম</translation>
+<translation id="8778600430213950389">কিবা ভুল হ’ল। এইটো খুব সম্ভৱ হাৰ্ডৱেৰৰ সমস্যাৰ কাৰণে হৈছে। মুখ্য ব’ৰ্ডখন সলনি কৰক আৰু পুনৰ মেৰামতিৰ প্ৰক্ৰিয়াটো চলাই চাওক।</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">এই নেটৱৰ্কটোৰ এটা কেপ্টিভ প’ৰ্টেল থাকিব পাৰে</translation>
 <translation id="8798099450830957504">ডিফ’ল্ট</translation>
@@ -942,6 +946,7 @@
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" />ৰ টিকেট ৰিফ্ৰেশ্ব কৰক</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" /> নম্বৰ পৃষ্ঠাখন স্কেন কৰি থকা হৈছে</translation>
 <translation id="9111102763498581341">আনলক</translation>
+<translation id="9118126012493516930">মেৰামতিৰ কাৰ্য সম্পূৰ্ণ কৰিব নোৱাৰি</translation>
 <translation id="9122602430962285795">পুনৰ সংযোগ কৰিবলৈ, ছেটিঙলৈ যাওক</translation>
 <translation id="9126720536733509015">একেটা PDFত একাধিক পৃষ্ঠা ছেভ কৰক</translation>
 <translation id="9137526406337347448">Google সেৱা</translation>

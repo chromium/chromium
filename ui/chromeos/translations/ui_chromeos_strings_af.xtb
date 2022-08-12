@@ -5,6 +5,7 @@
 <translation id="1047956942837015229">Tans besig om <ph name="COUNT" /> items uit te vee …</translation>
 <translation id="1049926623896334335">Word-dokument</translation>
 <translation id="1056775291175587022">Geen netwerke nie</translation>
+<translation id="1056898198331236512">Waarskuwing</translation>
 <translation id="1060368002126861100">Om lêers met <ph name="APP_NAME" /> oop te maak, moet jy hulle eers na die Windows-lêersvouer toe skuif.</translation>
 <translation id="1062407476771304334">Vervang</translation>
 <translation id="1119447706177454957">Interne fout</translation>
@@ -244,6 +245,7 @@
 <translation id="3138624403379688522">Ongeldige PIN. Jy het <ph name="RETRIES" /> pogings oor.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (hardeware-gesteun)</translation>
 <translation id="3188257591659621405">My lêers</translation>
+<translation id="3194553149358267393">Geen onlangse oudiolêers nie</translation>
 <translation id="3197563288998582412">VK Dvorak</translation>
 <translation id="3202131003361292969">Pad</translation>
 <translation id="3205852408225871810">Portugees (Brasilë)</translation>
@@ -302,6 +304,7 @@
 <translation id="3606220979431771195">Turkse F</translation>
 <translation id="3616113530831147358">Oudio</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
+<translation id="3619593063686672873">Geen onlangse video's nie</translation>
 <translation id="3620292326130836921">Alles is gerugsteun!</translation>
 <translation id="3634507049637220048">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, deur jou administrateur bestuur, besonderhede</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> items is geskuif.</translation>
@@ -400,6 +403,7 @@
 <translation id="4572815280350369984"><ph name="FILE_TYPE" />-lêer</translation>
 <translation id="457386861538956877">Nog meer …</translation>
 <translation id="4579744207439506346">Het <ph name="ENTRY_NAME" /> by seleksie gevoeg.</translation>
+<translation id="4583436353463424810">Geen onlangse dokumente nie</translation>
 <translation id="4594543368593301662">Wys tans resultate vir <ph name="SEARCH_TERM" />.</translation>
 <translation id="4599600860674643278">Filter is teruggestel.</translation>
 <translation id="4603392156942865207">Kopieer <ph name="FILE_NAME" /> nou na <ph name="FOLDER_NAME" /></translation>
@@ -488,6 +492,7 @@
 <translation id="516592729076796170">VSA-programmeerder-Dvorak</translation>
 <translation id="5172749059808361023">Beperkingbesonderhede</translation>
 <translation id="5177526793333269655">Miniprent-aansig</translation>
+<translation id="5181896909298187506">Geen onlangse lêers nie</translation>
 <translation id="5194713942430106590">Kies om die kolom in stygende volgorde te rangskik.</translation>
 <translation id="5211614973734216083">Faroëes</translation>
 <translation id="5218183485292899140">Switserse Frans</translation>
@@ -744,6 +749,7 @@
 <translation id="7408870451288633753">Tsjeggies</translation>
 <translation id="7417453074306512035">Etiopiese sleutelbord</translation>
 <translation id="7417705661718309329">Google-kaart</translation>
+<translation id="7458955835361612701">Geen onlangse prente nie</translation>
 <translation id="7460898608667578234">Oekraïens</translation>
 <translation id="7469894403370665791">Koppel outomaties aan hierdie netwerk</translation>
 <translation id="7486315294984620427">Die lêer moet na Windows-lêers gekopieer word om in Parallels Desktop gelos te word.</translation>

@@ -486,6 +486,7 @@
 <translation id="2219658597883514593">Επανεκκίνηση οδηγού</translation>
 <translation id="2219735899272417925">Απαιτείται επαναφορά της συσκευής</translation>
 <translation id="2224337661447660594">Χωρίς σύνδεση στο διαδίκτυο</translation>
+<translation id="2225927550500503913">Η εικονική κάρτα ενεργοποιήθηκε</translation>
 <translation id="2230458221926704099">Επιδιορθώστε τη σύνδεσή σας χρησιμοποιώντας την <ph name="BEGIN_LINK" />εφαρμογή διαγνωστικών ελέγχων<ph name="END_LINK" /></translation>
 <translation id="2239100178324503013">Αποστολή τώρα</translation>
 <translation id="2241693394036365668">Το αρχείο κατέβηκε</translation>
@@ -520,7 +521,6 @@
 <translation id="2318594867107319532">Τελευταία χρονική σήμανση πολιτικής:</translation>
 <translation id="2324604504973636700">Οικιακές συσκευές</translation>
 <translation id="2328651992442742497">Επιτρέπεται (προεπιλογή)</translation>
-<translation id="2329182534073751090">τοποθέτηση παραθύρου</translation>
 <translation id="2329473609445770916">Αυτός ο ιστότοπος ορίζει ενδιαφέροντα που άλλοι ιστότοποι μπορούν να χρησιμοποιούν για να σας εμφανίζουν διαφημίσεις</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, λήγει στις <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Η ρύθμιση ελέγχεται από τον διαχειριστή σας</translation>
@@ -632,7 +632,6 @@
             <ph name="LIST_ITEM" />Πληροφορίες που εισάγετε σε φόρμες
           <ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">C10 (Φάκελος)</translation>
-<translation id="2623663032199728144">Μπορεί να αιτηθεί τη χρήση πληροφοριών σχετικά με τις οθόνες σας</translation>
 <translation id="2625385379895617796">Το ρολόι σας πάει μπροστά</translation>
 <translation id="262745152991669301">Μπορεί να ζητά να συνδεθεί σε συσκευές USB.</translation>
 <translation id="2629325967560697240">Για να λάβετε το υψηλότερο επίπεδο ασφάλειας του Chrome, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />ενεργοποιήστε τη βελτιωμένη προστασία<ph name="END_ENHANCED_PROTECTION_LINK" />.</translation>
@@ -711,7 +710,6 @@
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και έπειτα το πλήκτρο Enter για να διαχειριστείτε την Ασφαλή περιήγηση και άλλες επιλογές από τις ρυθμίσεις του Chrome</translation>
 <translation id="2878197950673342043">Δίπλωση αφίσας</translation>
 <translation id="2878424575911748999">A1</translation>
-<translation id="2880660355386638022">Τοποθέτηση παραθύρου</translation>
 <translation id="2881276955470682203">Αποθήκευση κάρτας;</translation>
 <translation id="2882949212241984732">Δίπλωση με διπλό παράθυρο</translation>
 <translation id="2893773853358652045">Τέταρτο ρολό</translation>
@@ -1244,6 +1242,7 @@
 <translation id="4329871760342656885">Σφάλμα ανάλυσης πολιτικής: <ph name="ERROR" /></translation>
 <translation id="4331519897422864041">Μονάδα στοίβαξης 5</translation>
 <translation id="4331708818696583467">Μη ασφαλές</translation>
+<translation id="4333561522337981382">Διαχείριση παραθύρων σε όλες τις οθόνες σας</translation>
 <translation id="4340575312453649552">Αυτή η διαφήμιση καταργήθηκε από το Chrome επειδή χρησιμοποιεί υπερβολικά πολλούς πόρους στη συσκευή σας.</translation>
 <translation id="4340982228985273705">Αυτός ο υπολογιστής δεν έχει εντοπιστεί ως διαχειριζόμενος από επιχείρηση. Συνεπώς, η πολιτική μπορεί να εγκαθιστά αυτόματα μόνο επεκτάσεις οι οποίες φιλοξενούνται στο Chrome Webstore. Το URL ενημέρωσης του Chrome Webstore είναι το "<ph name="CWS_UPDATE_URL" />".</translation>
 <translation id="4346197816712207223">Αποδεκτές πιστωτικές κάρτες</translation>
@@ -1458,6 +1457,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />. Πατήστε το πλήκτρο Tab και μετά το πλήκτρο Enter για αναζήτηση.</translation>
 <translation id="4930153903256238152">Μεγάλη χωρητικότητα</translation>
+<translation id="4934780484581617878">Διαχείριση παραθύρων</translation>
 <translation id="4936134414789135531">Δεν ήταν δυνατή η εύρεση της τιμής <ph name="VALUE_NAME" /> που εισάχθηκε.</translation>
 <translation id="4936675324097895694">Οικονομικά</translation>
 <translation id="4940163644868678279">Ανώνυμη περιήγηση στο Chrome</translation>
@@ -1470,6 +1470,7 @@
 <translation id="4958444002117714549">Ανάπτυξη λίστας</translation>
 <translation id="4964505745997821360">Ασφάλεια υγείας</translation>
 <translation id="4968522289500246572">Αυτή η εφαρμογή σχεδιάστηκε για κινητά. Συνεπώς, η αλλαγή μεγέθους μπορεί να μην λειτουργεί σωστά. Η εφαρμογή ενδέχεται να παρουσιάσει προβλήματα ή να επανεκκινηθεί.</translation>
+<translation id="4968665849807487749">Μπορεί να ζητά να διαχειρίζεται παράθυρα σε όλες τις οθόνες σας</translation>
 <translation id="4969341057194253438">Διαγραφή εγγραφής</translation>
 <translation id="4973922308112707173">Διπλό τρύπημα στο επάνω μέρος</translation>
 <translation id="4976702386844183910">Τελευταία επίσκεψη <ph name="DATE" /></translation>
@@ -1952,6 +1953,7 @@
 <translation id="6300452962057769623">{0,plural, =0{Η επανεκκίνηση της συσκευής σας θα γίνει τώρα}=1{Η επανεκκίνηση της συσκευής σας θα γίνει σε 1 δευτερόλεπτο}other{Η επανεκκίνηση της συσκευής σας θα γίνει σε # δευτερόλεπτα}}</translation>
 <translation id="6302269476990306341">Διακοπή Βοηθού Google στο Chrome</translation>
 <translation id="6305205051461490394">Δεν είναι δυνατή η πρόσβαση στο <ph name="URL" />.</translation>
+<translation id="6311165245110979290">Η εικονική κάρτα είναι διαθέσιμη</translation>
 <translation id="6312113039770857350">Η ιστοσελίδα δεν είναι διαθέσιμη</translation>
 <translation id="6316226860534107313">Σκούτερ και μοτοποδήλατα</translation>
 <translation id="63172326633386613">Διαχείριση ρυθμίσεων προσβασιμότητας</translation>
@@ -1973,6 +1975,7 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Έλεγχος του διακομιστή μεσολάβησης, του τείχους προστασίας και της διαμόρφωσης ασφαλούς DNS<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">Διπλή συρραφή στα αριστερά</translation>
+<translation id="6374865374745447009">διαχείριση παραθύρων</translation>
 <translation id="6377268785556383139">1 αποτέλεσμα για την αναζήτηση "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">Ακολουθούν πιθανές χρεώσεις.</translation>
@@ -2296,6 +2299,7 @@
 <translation id="7305756307268530424">Έναρξη σε πιο αργή ταχύτητα</translation>
 <translation id="7308436126008021607">συγχρονισμός παρασκηνίου</translation>
 <translation id="7310392214323165548">Θα γίνει επανεκκίνηση της συσκευής πολύ σύντομα</translation>
+<translation id="7311244614769792472">Δεν βρέθηκαν αποτελέσματα</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Βοήθεια σύνδεσης</translation>
 <translation id="7323804146520582233">Απόκρυψη της ενότητας "<ph name="SECTION" />"</translation>
@@ -2786,7 +2790,6 @@
 <translation id="8663226718884576429">Σύνοψη παραγγελίας, <ph name="TOTAL_LABEL" />, Περισσότερες λεπτομέρειες</translation>
 <translation id="8666678546361132282">Αγγλικά
 </translation>
-<translation id="8669306706049782872">Να χρησιμοποιεί πληροφορίες για τις οθόνες σας για άνοιγμα και τοποθέτηση παραθύρων</translation>
 <translation id="867224526087042813">Υπογραφή</translation>
 <translation id="8672264262457010862">Επιχειρήσεις και βιομηχανία</translation>
 <translation id="8676424191133491403">Χωρίς καθυστέρηση</translation>

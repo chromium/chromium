@@ -149,6 +149,7 @@
 <translation id="2115956742084455574">Cod anghywir</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, fersiwn <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Mae <ph name="AVAILABLE_MEMORY" /> GB o <ph name="TOTAL_MEMORY" /> GB ar gael</translation>
+<translation id="2130871201950918186">Bydd y system yn ailgychwyn mewn 5 eiliad.</translation>
 <translation id="2138109643290557664">Arnofio heibio</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> o luniau</translation>
@@ -211,6 +212,7 @@
 <translation id="2536159006530886390">Ni ellir cysylltu â'r we.</translation>
 <translation id="2570743873672969996">Wrthi'n rhedeg y prawf <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">I osod, ewch i'r Gosodiadau</translation>
+<translation id="2597774443162333062">Bydd ffeiliau'n cael eu hanfon at Google i'w dadfygio</translation>
 <translation id="2619761439309613843">Ail-lwytho'n Ddyddiol</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="2638662041295312666">Llun mewngofnodi</translation>
@@ -672,6 +674,7 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="6659594942844771486">Tab</translation>
 <translation id="6692996468359469499">Cael gwybodaeth sy'n gysylltiedig â'ch dewis</translation>
 <translation id="6704062477274546131">Cydraniad DNS</translation>
+<translation id="6719240409382354629">Wrthi'n paratoi i ailgychwyn...</translation>
 <translation id="6723839937902243910">Pŵer</translation>
 <translation id="6723847290197874913">Ôl-olau bysellfwrdd</translation>
 <translation id="672609503628871915">Gweld beth sy'n newydd</translation>
@@ -889,6 +892,7 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="8747900814994928677">Cadarnhau'r newid</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Albwm Google Photos</translation>
+<translation id="8778600430213950389">Aeth rhywbeth o'i le. Mae hyn mwy na thebyg oherwydd problem caledwedd. Disodlwch y prif fwrdd a rhowch gynnig arall ar y broses atgyweirio.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Mae'n bosib bod gan y rhwydwaith hwn borth caeth</translation>
 <translation id="8798099450830957504">Diofyn</translation>
@@ -942,6 +946,7 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="910415269708673980">Adnewyddu'r tocyn ar gyfer <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Wrthi'n sganio'r dudalen <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Datgloi</translation>
+<translation id="9118126012493516930">Methu â chwblhau'r atgyweiriad</translation>
 <translation id="9122602430962285795">I ailgysylltu, ewch i'r Gosodiadau</translation>
 <translation id="9126720536733509015">Cadw mwy nag un ddogfen i un PDF</translation>
 <translation id="9137526406337347448">Gwasanaethau Google</translation>

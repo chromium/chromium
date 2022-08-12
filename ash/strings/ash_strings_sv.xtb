@@ -100,6 +100,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1455242230282523554">Visa språkinställningar</translation>
 <translation id="1460620680449458626">Ljudet är av.</translation>
 <translation id="1467432559032391204">Vänster</translation>
+<translation id="146902737843070955">Administratören har begärt denna ändring</translation>
 <translation id="147310119694673958">Telefonbatteri <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="1479909375538722835">Flytande tillgänglighetsmeny</translation>
 <translation id="1480845547124508962"><ph name="CURRENT_TIME" />. Öppna kalendervyn genom att trycka på Retur</translation>
@@ -837,6 +838,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="5779721926447984944">Filer som har fästs</translation>
 <translation id="5788127256798019331">Play-filer</translation>
 <translation id="5790085346892983794">Klart</translation>
+<translation id="5804651031882187592">Inaktivera inställningen Lås SIM</translation>
 <translation id="5805809050170488595">Klicka för att aktivera <ph name="NETWORK_NAME" /></translation>
 <translation id="5825969630400862129">Inställningar för anslutna enheter</translation>
 <translation id="5837036133683224804">Sluta casta <ph name="ROUTE_TITLE" /> till <ph name="RECEIVER_NAME" /></translation>

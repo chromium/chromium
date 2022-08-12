@@ -149,6 +149,7 @@
 <translation id="2115956742084455574">Hibás kód</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, verzió: <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" />/<ph name="AVAILABLE_MEMORY" /> GB áll rendelkezésre.</translation>
+<translation id="2130871201950918186">A rendszer öt másodpercen belül újraindul.</translation>
 <translation id="2138109643290557664">Lebegés</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> fotó</translation>
@@ -211,6 +212,7 @@
 <translation id="2536159006530886390">Nem lehet csatlakozni az internethez.</translation>
 <translation id="2570743873672969996">„<ph name="TEST_NAME" />” teszt futtatása…</translation>
 <translation id="2584559707064218956">A beállításhoz nyissa meg a Beállításokat</translation>
+<translation id="2597774443162333062">A fájlokat elküldjük a Google-nak hibaelhárításra</translation>
 <translation id="2619761439309613843">Napi frissítés</translation>
 <translation id="2620436844016719705">Rendszer</translation>
 <translation id="2638662041295312666">Bejelentkezési kép</translation>
@@ -672,6 +674,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="6659594942844771486">Lap</translation>
 <translation id="6692996468359469499">Információk kérése a kiválasztott elemmel kapcsolatban</translation>
 <translation id="6704062477274546131">DNS-feloldás</translation>
+<translation id="6719240409382354629">Felkészülés az újraindításra…</translation>
 <translation id="6723839937902243910">Energiaellátás</translation>
 <translation id="6723847290197874913">Billentyűzet háttérvilágítása</translation>
 <translation id="672609503628871915">Újdonságok</translation>
@@ -889,6 +892,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="8747900814994928677">Módosítás megerősítése</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Fotók-album</translation>
+<translation id="8778600430213950389">Hiba történt. Ezt valószínűleg hardverprobléma okozza. Cserélje ki az alaplapot, és próbálja újra a javítási folyamatot.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Előfordulhat, hogy a hálózat hitelesítési portállal rendelkezik</translation>
 <translation id="8798099450830957504">Alapértelmezett</translation>
@@ -942,6 +946,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="910415269708673980">Frissítse a következőhöz tartozó jegyet: <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />. oldal beolvasása…</translation>
 <translation id="9111102763498581341">Feloldás</translation>
+<translation id="9118126012493516930">Nem lehet elvégezni a javítást</translation>
 <translation id="9122602430962285795">Az újracsatlakozáshoz nyissa meg a Beállításokat.</translation>
 <translation id="9126720536733509015">Több oldal mentése egy PDF-be</translation>
 <translation id="9137526406337347448">Google Services</translation>

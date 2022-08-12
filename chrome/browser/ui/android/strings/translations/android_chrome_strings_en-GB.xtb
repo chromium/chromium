@@ -1143,6 +1143,7 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="7196215469483532480">Privacy guide explanation opened at full height</translation>
 <translation id="7207760545532569765">Restore <ph name="TAB_COUNT" /> tabs as new background tabs.</translation>
 <translation id="7208109991155904980">Reaction moved</translation>
+<translation id="7217781228893594884">Incognito tabs will be locked when you leave Chrome</translation>
 <translation id="7222235798733126207">Limited sharing between sites</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 download pending}other{# downloads pending}}</translation>
 <translation id="7242755609445462077">Stylised highlight <ph name="CURRENT_DATE" /></translation>

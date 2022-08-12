@@ -5,6 +5,7 @@
 <translation id="1047956942837015229"><ph name="COUNT" /> આઇટમ્સ કાઢી નાખી રહ્યું છે...</translation>
 <translation id="1049926623896334335">Word દસ્તાવેજ</translation>
 <translation id="1056775291175587022">કોઈ નેટવર્ક નથી</translation>
+<translation id="1056898198331236512">ચેતવણી</translation>
 <translation id="1060368002126861100"><ph name="APP_NAME" /> વડે ફાઇલો ખોલવા માટે, પહેલા તેમને Windowsના ફાઇલો ફોલ્ડરમાં ખસેડો.</translation>
 <translation id="1062407476771304334">બદલો</translation>
 <translation id="1119447706177454957">આંતરિક ભૂલ</translation>
@@ -244,6 +245,7 @@
 <translation id="3138624403379688522">અમાન્ય પિન. તમારા <ph name="RETRIES" /> પ્રયાસ બાકી છે.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (હાર્ડવેર સમર્થિત)</translation>
 <translation id="3188257591659621405">મારી ફાઇલો</translation>
+<translation id="3194553149358267393">તાજેતરની કોઈ ઑડિયો ફાઇલ નથી</translation>
 <translation id="3197563288998582412">યુકે ડ્વોરેક</translation>
 <translation id="3202131003361292969">પથ</translation>
 <translation id="3205852408225871810">પોર્ટુગીઝ (બ્રાઝિલ)</translation>
@@ -284,10 +286,12 @@
 <translation id="3479552764303398839">હમણાં નહીં</translation>
 <translation id="3486821258960016770">મૉંગોલિયન</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> ભૂલો.</translation>
+<translation id="3495810061346586977">આ ફાઇલ ગોપનીય છે અને ઍડમિનિસ્ટ્રેટરની પૉલિસી અનુસાર પ્રતિબંધોને આધીન છે. <ph name="BEGIN_LINK_HELP" />વધુ જાણો<ph name="END_LINK_HELP" /></translation>
 <translation id="3509680540198371098"><ph name="NETWORK_COUNT" />માંથી નેટવર્ક <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />%, વિગતો</translation>
 <translation id="3522708245912499433">પોર્ટુગીઝ</translation>
 <translation id="3524311639100184459">ચેતવણી: આ ફાઇલો અસ્થાયી છે અને બની શકે કે ડિસ્ક પર સ્પેસ ખાલી કરવા માટે તેમને ઑટોમૅટિક રીતે ડિલીટ કરવામાં આવે  <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">ફોલ્ડર</translation>
+<translation id="3548125359243647069">ઘણી બધી વખત કોઈ ખોટો પિન દાખલ કરવામાં આવ્યો છે.</translation>
 <translation id="3549797760399244642">drive.google.com પર જાઓ...</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" /> વડે ફાઇલો ખોલવા માટે, પહેલા તેમને Windowsના ફાઇલ ફોલ્ડરમાં કૉપિ કરો.</translation>
 <translation id="3556731189587832921">અંગ્રેજી (યુએસ), આંતરરાષ્ટ્રીય PC કીબોર્ડ સાથે</translation>
@@ -300,6 +304,7 @@
 <translation id="3606220979431771195">ટર્કિશ-F</translation>
 <translation id="3616113530831147358">ઑડિઓ</translation>
 <translation id="3619115746895587757">કૅપુચિનો</translation>
+<translation id="3619593063686672873">તાજેતરનો કોઈ વીડિયો નથી</translation>
 <translation id="3620292326130836921">તમામનો બેક અપ લેવાયો!</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_COUNT" />માંથી નેટવર્ક <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, તમારા વ્યવસ્થાપક દ્વારા મેનેજ કરવામાં આવે છે, વિગતો</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> આઇટમ ખસેડી.</translation>
@@ -398,6 +403,7 @@
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> ફાઇલ</translation>
 <translation id="457386861538956877">વધુ...</translation>
 <translation id="4579744207439506346"><ph name="ENTRY_NAME" /> પસંદગીમાં ઉમેર્યું.</translation>
+<translation id="4583436353463424810">તાજેતરનો કોઈ દસ્તાવેજ નથી</translation>
 <translation id="4594543368593301662"><ph name="SEARCH_TERM" /> માટે પરિણામો બતાવી રહ્યાં છીએ.</translation>
 <translation id="4599600860674643278">ફિલ્ટર રીસેટ કરવામાં આવ્યું છે.</translation>
 <translation id="4603392156942865207"><ph name="FILE_NAME" />ની <ph name="FOLDER_NAME" />માં કૉપિ કરી રહ્યાં છીએ</translation>
@@ -486,6 +492,7 @@
 <translation id="516592729076796170">યુએસ પ્રોગ્રામર ડ્વોરેક</translation>
 <translation id="5172749059808361023">પ્રતિબંધ સંબંધિત વિગતો</translation>
 <translation id="5177526793333269655">થંબનેલ દૃશ્ય</translation>
+<translation id="5181896909298187506">તાજેતરની કોઈ ફાઇલ નથી</translation>
 <translation id="5194713942430106590">કૉલમને ચઢતા ક્રમમાં સૉર્ટ કરવા માટે ક્લિક કરો.</translation>
 <translation id="5211614973734216083">ફૅરોઇઝ</translation>
 <translation id="5218183485292899140">સ્વિસ ફ્રેંચ</translation>
@@ -613,6 +620,7 @@
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" />માંથી <ph name="NETWORK_INDEX" /> નેટવર્ક, <ph name="PHONE_NAME" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />%, ફોનની બૅટરી <ph name="BATTERY_STATUS" />%, કનેક્ટ કરો</translation>
 <translation id="6269630227984243955">મલય</translation>
 <translation id="6287852322318138013">આ ફાઇલ ખોલવા માટે એક ઍપ્લિકેશન પસંદ કરો</translation>
+<translation id="6295542640242147836">સિમ કાર્ડ લૉક કરો</translation>
 <translation id="6296410173147755564">અમાન્ય PUK</translation>
 <translation id="6312403991423642364">અજ્ઞાત નેટવર્ક ભૂલ</translation>
 <translation id="6317608858038767920">કસ્ટમ નેમસર્વર <ph name="INPUT_INDEX" /></translation>
@@ -721,6 +729,7 @@
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">ફાઇલના રૂપમાં સાચવો</translation>
 <translation id="7229570126336867161">EVDO ની જરૂર છે</translation>
+<translation id="7230898482850090046">તમારા ઍડમિનિસ્ટ્રેટરે તમને "સિમ કાર્ડ લૉક કરો" સેટિંગ બંધ કરવાની વિનંતી કરી છે</translation>
 <translation id="7238097264433196391">ડ્રાઇવનું નામ</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, વિગતો</translation>
 <translation id="7246947237293279874">FTP પ્રૉક્સી</translation>
@@ -741,6 +750,7 @@
 <translation id="7408870451288633753">ચેક</translation>
 <translation id="7417453074306512035">ઇથિઓપિક કીબોર્ડ</translation>
 <translation id="7417705661718309329">Google નકશો</translation>
+<translation id="7458955835361612701">તાજેતરની કોઈ છબી નથી</translation>
 <translation id="7460898608667578234">યુક્રેનિયન</translation>
 <translation id="7469894403370665791">આ નેટવર્કમાં ઑટોમૅટિક રીતે કનેક્ટ કરો</translation>
 <translation id="7486315294984620427">ફાઇલોને Parallels Desktopમાં મૂકવા માટે, ફાઇલને Windows ફાઇલોમાં ખસેડવી આવશ્યક છે.</translation>
@@ -752,6 +762,7 @@
 <translation id="7505167922889582512">છુપાવેલી ફાઇલો દર્શાવો</translation>
 <translation id="7514365320538308">ડાઉનલોડ કરો</translation>
 <translation id="751507702149411736">બેલારુશિયન</translation>
+<translation id="7521790570754130607">મોબાઇલ ડેટાનો ઉપયોગ કરવા માટે કોઈ પિન આવશ્યક છે</translation>
 <translation id="7532029025027028521">ફારસી લિપ્યંતર</translation>
 <translation id="7544830582642184299">Linux ઍપને તમારી Google Driveમાંની ફાઇલોને ઍક્સેસ કરવાની પરવાનગી આપો. ફેરફારો તમારા બીજા ડિવાઇસ સાથે સિંક થશે.</translation>
 <translation id="7547009467130558110">સ્નીકર</translation>
@@ -776,6 +787,7 @@
 <translation id="76959938259365003">ટ્રેશને ખાલી કરવામાં નિષ્ફળ રહ્યાં.</translation>
 <translation id="770015031906360009">ગ્રીક</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> કૉપિ કરી.</translation>
+<translation id="7708271999969613024">આ નેટવર્કનો ઉપયોગ કરવા માટે, તમારે મોબાઇલ ઑપરેટર દ્વારા પ્રદાન કરેલી 8-અંકની 'પર્સનલ અનબ્લૉકિંગ કી' (PUK) દાખલ કરવાની જરૂર છે.</translation>
 <translation id="7711920809702896782">છબીની માહિતી</translation>
 <translation id="7724603315864178912">કાપો</translation>
 <translation id="7730494089396812859">મેઘ બેકઅપ વિગતો દર્શાવો</translation>
@@ -868,6 +880,7 @@
 <translation id="8437209419043462667">અમેરિકા</translation>
 <translation id="8452135315243592079">SIM કાર્ડ ખૂટે છે</translation>
 <translation id="8456681095658380701">અમાન્ય નામ</translation>
+<translation id="8457767749626250697">તમારું સિમ કાર્ડ લૉક છે</translation>
 <translation id="8459404855768962328">આ આઇટમ કૉપિ કરવાથી, શેર કરેલું '<ph name="DESTINATION_NAME" />' નામનું ફોલ્ડર જોઈ શકતા પ્રત્યેક વ્યક્તિ સાથે તેને શેર કરશે.</translation>
 <translation id="8461467696380332069">ફાઇલ પર રાઇટ-ક્લિક કરો અને શેલ્ફમાં તમારી ફાઇલોને ઝડપથી ઍક્સેસ કરવા માટે "શેલ્ફ પર પિન કરો" પસંદ કરો.</translation>
 <translation id="8461914792118322307">પ્રૉક્સી</translation>

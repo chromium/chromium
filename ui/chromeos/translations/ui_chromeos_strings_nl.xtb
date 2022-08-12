@@ -5,6 +5,7 @@
 <translation id="1047956942837015229"><ph name="COUNT" /> items verwijderen...</translation>
 <translation id="1049926623896334335">Word-document</translation>
 <translation id="1056775291175587022">Geen netwerken</translation>
+<translation id="1056898198331236512">Waarschuwing</translation>
 <translation id="1060368002126861100">Als je bestanden wilt openen met <ph name="APP_NAME" />, verplaats je ze eerst naar de bestandsmap van Windows.</translation>
 <translation id="1062407476771304334">Vervangen</translation>
 <translation id="1119447706177454957">Interne fout</translation>
@@ -244,6 +245,7 @@
 <translation id="3138624403379688522">Ongeldige pincode. Je hebt nog <ph name="RETRIES" /> pogingen.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (met hardwareondersteuning)</translation>
 <translation id="3188257591659621405">Mijn bestanden</translation>
+<translation id="3194553149358267393">Geen recente audiobestanden</translation>
 <translation id="3197563288998582412">Brits Dvorak</translation>
 <translation id="3202131003361292969">Pad</translation>
 <translation id="3205852408225871810">Portugees (Brazilië)</translation>
@@ -302,6 +304,7 @@
 <translation id="3606220979431771195">Turks-F</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
+<translation id="3619593063686672873">Geen recente video's</translation>
 <translation id="3620292326130836921">Er is een back-up van alles gemaakt</translation>
 <translation id="3634507049637220048">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, beheerd door je beheerder, details</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> items verplaatst.</translation>
@@ -400,6 +403,7 @@
 <translation id="4572815280350369984"><ph name="FILE_TYPE" />-bestand</translation>
 <translation id="457386861538956877">Meer...</translation>
 <translation id="4579744207439506346"><ph name="ENTRY_NAME" /> aan selectie toegevoegd.</translation>
+<translation id="4583436353463424810">Geen recente documenten</translation>
 <translation id="4594543368593301662">Resultaten voor <ph name="SEARCH_TERM" />.</translation>
 <translation id="4599600860674643278">Het filter is gereset.</translation>
 <translation id="4603392156942865207"><ph name="FILE_NAME" /> kopiëren naar <ph name="FOLDER_NAME" /></translation>
@@ -489,6 +493,7 @@
 <translation id="516592729076796170">Amerikaans Programmer Dvorak</translation>
 <translation id="5172749059808361023">Beperkingsdetails</translation>
 <translation id="5177526793333269655">Miniatuurweergave</translation>
+<translation id="5181896909298187506">Geen recente bestanden</translation>
 <translation id="5194713942430106590">Klik om de kolom in oplopende volgorde te sorteren.</translation>
 <translation id="5211614973734216083">Faeröers</translation>
 <translation id="5218183485292899140">Zwitsers Frans</translation>
@@ -746,6 +751,7 @@
 <translation id="7408870451288633753">Tsjechië</translation>
 <translation id="7417453074306512035">Ethiopisch toetsenbord</translation>
 <translation id="7417705661718309329">Google-kaart</translation>
+<translation id="7458955835361612701">Geen recente afbeeldingen</translation>
 <translation id="7460898608667578234">Oekraïens</translation>
 <translation id="7469894403370665791">Automatisch verbinding maken met dit netwerk</translation>
 <translation id="7486315294984620427">Als je bestanden wilt neerzetten in Parallels Desktop, moet het bestand worden gekopieerd naar de map met Windows-bestanden.</translation>

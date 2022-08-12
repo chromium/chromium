@@ -100,6 +100,7 @@
 <translation id="1455242230282523554">Показати налаштування мови</translation>
 <translation id="1460620680449458626">Гучність вимкнено.</translation>
 <translation id="1467432559032391204">Ліворуч</translation>
+<translation id="146902737843070955">Ваш адміністратор надіслав запит на цю зміну</translation>
 <translation id="147310119694673958">Заряд акумулятора телефона – <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1479909375538722835">Плаваюче меню спеціальних можливостей</translation>
 <translation id="1480845547124508962"><ph name="CURRENT_TIME" />; натисніть клавішу Enter, щоб відкрити запис у Календарі</translation>
@@ -837,6 +838,7 @@
 <translation id="5779721926447984944">Закріплені файли</translation>
 <translation id="5788127256798019331">Файли Play</translation>
 <translation id="5790085346892983794">Готово</translation>
+<translation id="5804651031882187592">Вимкніть налаштування блокування SIM-карти</translation>
 <translation id="5805809050170488595">Натисніть, щоб активувати мережу <ph name="NETWORK_NAME" /></translation>
 <translation id="5825969630400862129">Налаштування підключених пристроїв</translation>
 <translation id="5837036133683224804">Зупинити трансляцію <ph name="ROUTE_TITLE" /> на пристрій "<ph name="RECEIVER_NAME" />"</translation>

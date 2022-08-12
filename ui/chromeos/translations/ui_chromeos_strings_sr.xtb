@@ -5,6 +5,7 @@
 <translation id="1047956942837015229">Брисање ставки (<ph name="COUNT" />)...</translation>
 <translation id="1049926623896334335">Word документ</translation>
 <translation id="1056775291175587022">Нема мрежа</translation>
+<translation id="1056898198331236512">Упозорење</translation>
 <translation id="1060368002126861100">Да бисте отварали датотеке помоћу апликације <ph name="APP_NAME" />, прво их преместите у директоријум са Windows датотекама.</translation>
 <translation id="1062407476771304334">Замени</translation>
 <translation id="1119447706177454957">Интерна грешка</translation>
@@ -244,6 +245,7 @@
 <translation id="3138624403379688522">Неважећи PIN. Преосталих покушаја: <ph name="RETRIES" />.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (хардвер је сертификован)</translation>
 <translation id="3188257591659621405">Моје датотеке</translation>
+<translation id="3194553149358267393">Нема недавних аудио фајлова</translation>
 <translation id="3197563288998582412">УК Дворак</translation>
 <translation id="3202131003361292969">Путања</translation>
 <translation id="3205852408225871810">португалски (Бразил)</translation>
@@ -302,6 +304,7 @@
 <translation id="3606220979431771195">турска F</translation>
 <translation id="3616113530831147358">Аудио</translation>
 <translation id="3619115746895587757">Капучино</translation>
+<translation id="3619593063686672873">Нема недавних видео снимака</translation>
 <translation id="3620292326130836921">Направљене су резервне копије свих датотека!</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_INDEX" />. мрежа од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, управља администратор, детаљи</translation>
 <translation id="3645233063072417428">Премештених ставки: <ph name="NUMBER_OF_ITEMS" />.</translation>
@@ -400,6 +403,7 @@
 <translation id="4572815280350369984">Датотека <ph name="FILE_TYPE" /></translation>
 <translation id="457386861538956877">Још...</translation>
 <translation id="4579744207439506346">Ставка <ph name="ENTRY_NAME" /> је додата у избор.</translation>
+<translation id="4583436353463424810">Нема недавних докумената</translation>
 <translation id="4594543368593301662">Приказују се резултати за: <ph name="SEARCH_TERM" />.</translation>
 <translation id="4599600860674643278">Филтер је ресетован.</translation>
 <translation id="4603392156942865207"><ph name="FILE_NAME" /> се копира у директоријум <ph name="FOLDER_NAME" /></translation>
@@ -488,6 +492,7 @@
 <translation id="516592729076796170">Америчка Дворак тастатура за програмере</translation>
 <translation id="5172749059808361023">Детаљи ограничења</translation>
 <translation id="5177526793333269655">Приказ сличица</translation>
+<translation id="5181896909298187506">Нема недавних фајлова</translation>
 <translation id="5194713942430106590">Кликните да бисте сортирали ставке у колони по растућем редоследу.</translation>
 <translation id="5211614973734216083">фарски</translation>
 <translation id="5218183485292899140">швајцарска француска</translation>
@@ -745,6 +750,7 @@
 <translation id="7408870451288633753">чешки</translation>
 <translation id="7417453074306512035">Етиопљанска тастатура</translation>
 <translation id="7417705661718309329">Google мапа</translation>
+<translation id="7458955835361612701">Нема недавних слика</translation>
 <translation id="7460898608667578234">украјински</translation>
 <translation id="7469894403370665791">Аутоматски се повезуј са овом мрежом</translation>
 <translation id="7486315294984620427">Да бисте отпустили фајлове на Parallels Desktop, морате да их копирате у Windows фајлове.</translation>

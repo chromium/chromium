@@ -5,6 +5,7 @@
 <translation id="1047956942837015229">Ջնջվում է <ph name="COUNT" /> տարր…</translation>
 <translation id="1049926623896334335">Word փաստաթուղթ</translation>
 <translation id="1056775291175587022">Ցանց չկա</translation>
+<translation id="1056898198331236512">Զգուշացում</translation>
 <translation id="1060368002126861100"><ph name="APP_NAME" /> հավելվածի միջոցով ֆայլերը բացելու համար նախ տեղափոխեք դրանք Windows-ի ֆայլերի պանակ։</translation>
 <translation id="1062407476771304334">Փոխարինել</translation>
 <translation id="1119447706177454957">Ներքին սխալ</translation>
@@ -289,6 +290,7 @@
 <translation id="3522708245912499433">պորտուգալերեն</translation>
 <translation id="3524311639100184459">Ուշադրություն. այս ֆայլերը ժամանակավոր են և կարող են ավտոմատ ջնջվել՝ սկավառակի վրա տարածք ազատելու համար։  <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Պանակ</translation>
+<translation id="3548125359243647069">PIN կոդը սխալ է մուտքագրվել չափազանց շատ անգամներ։</translation>
 <translation id="3549797760399244642">Անցնել drive.google.com…</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" /> հավելվածի միջոցով ֆայլերը բացելու համար նախ պատճենեք դրանք Windows-ի ֆայլերի պանակ։</translation>
 <translation id="3556731189587832921">անգլերեն (ԱՄՆ)՝ միջազգային համակարգչային ստեղնաշարով</translation>
@@ -613,6 +615,7 @@
 <translation id="6267547857941397424">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="PHONE_NAME" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, մարտկոցի լիցքը՝ <ph name="BATTERY_STATUS" />%, կապակցում</translation>
 <translation id="6269630227984243955">մալայերեն</translation>
 <translation id="6287852322318138013">Այս ֆայլը բացելու համար ընտրեք հավելված</translation>
+<translation id="6295542640242147836">SIM քարտի կողպում</translation>
 <translation id="6296410173147755564">PUK կոդն անվավեր է</translation>
 <translation id="6312403991423642364">Ցանցի անհայտ սխալ</translation>
 <translation id="6317608858038767920">Հատուկ DNS սերվեր <ph name="INPUT_INDEX" /></translation>
@@ -721,6 +724,7 @@
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> ԳԲ</translation>
 <translation id="7191454237977785534">Պահել ֆայլը որպես</translation>
 <translation id="7229570126336867161">Հարկավոր է EVDO</translation>
+<translation id="7230898482850090046">Ադմինիստրատորը խնդրել է ձեզ անջատել SIM քարտի կողպման կարգավորումը</translation>
 <translation id="7238097264433196391">Կրիչի անունը</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, մանրամասներ</translation>
 <translation id="7246947237293279874">FTP պրոքսի սերվեր</translation>
@@ -752,6 +756,7 @@
 <translation id="7505167922889582512">Ցուցադրել թաքցված ֆայլերը</translation>
 <translation id="7514365320538308">Ներբեռնել</translation>
 <translation id="751507702149411736">Բելառուսական</translation>
+<translation id="7521790570754130607">Բջջային ինտերնետն օգտագործելու համար անհրաժեշտ է նշել PIN կոդը</translation>
 <translation id="7532029025027028521">պարսկերեն (տառադարձություն)</translation>
 <translation id="7544830582642184299">Հասանելի դարձրեք ձեր Google Drive-ի ֆայլերը Լինուքսին։ Փոփոխությունները կհամաժամացվեն ձեր մյուս սարքերի հետ։</translation>
 <translation id="7547009467130558110">Սպորտային կոշիկ</translation>
@@ -776,6 +781,7 @@
 <translation id="76959938259365003">Չհաջողվեց դատարկել աղբարկղը։</translation>
 <translation id="770015031906360009">Հունական</translation>
 <translation id="7705251383879779343">Պատճենվեց <ph name="FILE_NAME" /> տարր։</translation>
+<translation id="7708271999969613024">Այս ցանցն օգտագործելու համար անհրաժեշտ է մուտքագրել 8 թվանշանից բաղկացած անձնական արգելահանման բանալին (PUK), որը տրամադրվել է ձեր օպերատորի կողմից։</translation>
 <translation id="7711920809702896782">Տեղեկություններ պատկերի մասին</translation>
 <translation id="7724603315864178912">Կտրել</translation>
 <translation id="7730494089396812859">Ցույց տալ Ամպում կրկնօրինակելու մանրամասները</translation>
@@ -870,6 +876,7 @@
 <translation id="8437209419043462667">ԱՄՆ</translation>
 <translation id="8452135315243592079">SIM քարտը բացակայում է</translation>
 <translation id="8456681095658380701">Սխալ անուն</translation>
+<translation id="8457767749626250697">Ձեր SIM քարտը կողպված է</translation>
 <translation id="8459404855768962328">Այս տարրը պատճենելու դեպքում այն հասանելի կդառնա բոլորին, ում տեսանելի է «<ph name="DESTINATION_NAME" />» ընդհանուր պանակը։</translation>
 <translation id="8461467696380332069">Մկնիկի աջ կոճակով սեղմեք ֆայլի վրա և ընտրեք «Ամրացնել դարակում»։</translation>
 <translation id="8461914792118322307">Պրոքսի-սերվեր</translation>

@@ -5,6 +5,7 @@
 <translation id="1047956942837015229">Mazání <ph name="COUNT" /> položek...</translation>
 <translation id="1049926623896334335">Dokument aplikace Word</translation>
 <translation id="1056775291175587022">Žádné sítě</translation>
+<translation id="1056898198331236512">Upozornění</translation>
 <translation id="1060368002126861100">Pokud soubory chcete otevřít pomocí aplikace <ph name="APP_NAME" />, nejdříve je přesuňte do složky souborů Windows.</translation>
 <translation id="1062407476771304334">Nahradit</translation>
 <translation id="1119447706177454957">Interní chyba</translation>
@@ -244,6 +245,7 @@
 <translation id="3138624403379688522">Neplatný kód PIN. Počet zbývajících pokusů: <ph name="RETRIES" />.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (hardwarový)</translation>
 <translation id="3188257591659621405">Moje soubory</translation>
+<translation id="3194553149358267393">Žádné nedávné zvukové soubory</translation>
 <translation id="3197563288998582412">Britská klávesnice – Dvorak</translation>
 <translation id="3202131003361292969">Cesta</translation>
 <translation id="3205852408225871810">portugalština (Brazílie)</translation>
@@ -284,10 +286,12 @@
 <translation id="3479552764303398839">Teď ne</translation>
 <translation id="3486821258960016770">mongolština</translation>
 <translation id="3495304270784461826">Chyby: <ph name="COUNT" />.</translation>
+<translation id="3495810061346586977">Tento soubor je důvěrný a vztahují se na něj omezení ze strany zásad administrátora. <ph name="BEGIN_LINK_HELP" />Další informace<ph name="END_LINK_HELP" /></translation>
 <translation id="3509680540198371098">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, síla signálu: <ph name="SIGNAL_STRENGTH" /> %, podrobnosti</translation>
 <translation id="3522708245912499433">portugalština</translation>
 <translation id="3524311639100184459">Upozornění: Tyto soubory jsou dočasné a mohou být automaticky smazány kvůli uvolnění místa na disku.  <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Složka</translation>
+<translation id="3548125359243647069">Příliš mnohokrát jste zadali nesprávný PIN.</translation>
 <translation id="3549797760399244642">Přejít na stránky drive.google.com...</translation>
 <translation id="3553048479571901246">Pokud soubory chcete otevřít pomocí aplikace <ph name="APP_NAME" />, nejdříve je zkopírujte do složky souborů Windows.</translation>
 <translation id="3556731189587832921">angličtina (USA) s mezinárodní (PC) klávesnicí</translation>
@@ -300,6 +304,7 @@
 <translation id="3606220979431771195">Turecká klávesnice – F</translation>
 <translation id="3616113530831147358">Zvuk</translation>
 <translation id="3619115746895587757">Kapučíno</translation>
+<translation id="3619593063686672873">Žádná nedávná videa</translation>
 <translation id="3620292326130836921">Vše je zálohováno</translation>
 <translation id="3634507049637220048">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, spravováno administrátorem, podrobnosti</translation>
 <translation id="3645233063072417428">Přesunuté položky: <ph name="NUMBER_OF_ITEMS" />.</translation>
@@ -398,6 +403,7 @@
 <translation id="4572815280350369984">Soubor <ph name="FILE_TYPE" /></translation>
 <translation id="457386861538956877">Další...</translation>
 <translation id="4579744207439506346">Do výběru byla přidána položka <ph name="ENTRY_NAME" />.</translation>
+<translation id="4583436353463424810">Žádné nedávné dokumenty</translation>
 <translation id="4594543368593301662">Zobrazují se výsledky pro dotaz <ph name="SEARCH_TERM" />.</translation>
 <translation id="4599600860674643278">Filtr byl resetován.</translation>
 <translation id="4603392156942865207">Kopírování souboru <ph name="FILE_NAME" /> do složky <ph name="FOLDER_NAME" /></translation>
@@ -486,6 +492,7 @@
 <translation id="516592729076796170">Americká klávesnice Dvorak</translation>
 <translation id="5172749059808361023">Podrobnosti o omezení</translation>
 <translation id="5177526793333269655">Zobrazení miniatur</translation>
+<translation id="5181896909298187506">Žádné nedávné soubory</translation>
 <translation id="5194713942430106590">Kliknutím sloupec seřadíte vzestupně.</translation>
 <translation id="5211614973734216083">faerština</translation>
 <translation id="5218183485292899140">Švýcarská klávesnice (francouzština)</translation>
@@ -612,6 +619,7 @@
 <translation id="6267547857941397424">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, síla signálu: <ph name="SIGNAL_STRENGTH" /> %, baterie telefonu: <ph name="BATTERY_STATUS" /> %, připojit</translation>
 <translation id="6269630227984243955">malajština</translation>
 <translation id="6287852322318138013">Vyberte aplikaci, pomocí které soubor otevřete</translation>
+<translation id="6295542640242147836">Zamknout SIM kartu</translation>
 <translation id="6296410173147755564">Neplatný kód PUK</translation>
 <translation id="6312403991423642364">Neznámá chyba sítě</translation>
 <translation id="6317608858038767920">Vlastní názvový server <ph name="INPUT_INDEX" /></translation>
@@ -720,6 +728,7 @@
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Uložit soubor jako</translation>
 <translation id="7229570126336867161">Je zapotřebí technologie EVDO.</translation>
+<translation id="7230898482850090046">Váš administrátor vás požádal o vypnutí nastavení zámku SIM karty</translation>
 <translation id="7238097264433196391">Název Disku</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, podrobnosti</translation>
 <translation id="7246947237293279874">Proxy server protokolu FTP</translation>
@@ -740,6 +749,7 @@
 <translation id="7408870451288633753">čeština</translation>
 <translation id="7417453074306512035">Etiopská klávesnice</translation>
 <translation id="7417705661718309329">Mapa Google</translation>
+<translation id="7458955835361612701">Žádné nedávné obrázky</translation>
 <translation id="7460898608667578234">ukrajinština</translation>
 <translation id="7469894403370665791">Automaticky připojit k této síti</translation>
 <translation id="7486315294984620427">Pokud chcete soubor přetáhnout do nástroje Parallels Desktop, musíte ho zkopírovat mezi soubory systému Windows.</translation>
@@ -751,6 +761,7 @@
 <translation id="7505167922889582512">Zobrazit skryté soubory</translation>
 <translation id="7514365320538308">Stáhnout</translation>
 <translation id="751507702149411736">běloruština</translation>
+<translation id="7521790570754130607">K používání mobilních dat je potřeba PIN</translation>
 <translation id="7532029025027028521">perština (přepis)</translation>
 <translation id="7544830582642184299">Udělujete linuxovým aplikacím oprávnění přistupovat k souborům na vašem Disku Google. Změny se synchronizují do vašich ostatních zařízení.</translation>
 <translation id="7547009467130558110">Teniska</translation>
@@ -775,6 +786,7 @@
 <translation id="76959938259365003">Koš se nepodařilo vysypat.</translation>
 <translation id="770015031906360009">řečtina</translation>
 <translation id="7705251383879779343">Položka <ph name="FILE_NAME" /> byla zkopírována.</translation>
+<translation id="7708271999969613024">Pokud chcete tuto síť používat, je nutné zadat osmimístný klíč PUK, který vám poskytl operátor.</translation>
 <translation id="7711920809702896782">Informace o obrázku</translation>
 <translation id="7724603315864178912">Vyjmout</translation>
 <translation id="7730494089396812859">Zobrazit podrobnosti zálohování do cloudu</translation>
@@ -869,6 +881,7 @@
 <translation id="8437209419043462667">Americká klávesnice</translation>
 <translation id="8452135315243592079">Chybí SIM karta</translation>
 <translation id="8456681095658380701">Neplatný název</translation>
+<translation id="8457767749626250697">Vaše SIM karta je uzamčena</translation>
 <translation id="8459404855768962328">Když tuto položku zkopírujete, budete ji sdílet s každým, kdo může zobrazit sdílenou složku <ph name="DESTINATION_NAME" />.</translation>
 <translation id="8461467696380332069">Klikněte pravým tlačítkem na soubor a výběrem možnosti Připnout k poličce umožněte rychlý přístup k souborům na poličce.</translation>
 <translation id="8461914792118322307">Proxy server</translation>

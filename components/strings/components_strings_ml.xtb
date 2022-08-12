@@ -486,6 +486,7 @@
 <translation id="2219658597883514593">ട്യൂട്ടോറിയൽ റീസ്റ്റാർട്ട് ചെയ്യുക</translation>
 <translation id="2219735899272417925">ഉപകരണ റീസെറ്റ് ആവശ്യമാണ്</translation>
 <translation id="2224337661447660594">ഇന്റർനെറ്റ് ഇല്ല</translation>
+<translation id="2225927550500503913">വെർച്വൽ കാർഡ് ഓണാക്കി</translation>
 <translation id="2230458221926704099"><ph name="BEGIN_LINK" />ഡയഗണോസ്‌റ്റിക്‌സ് ആപ്പ്<ph name="END_LINK" /> ഉപയോഗിച്ച് കണകഷൻ പ്രശ്‌നം പരിഹരിക്കുക</translation>
 <translation id="2239100178324503013">ഇപ്പോൾ അയയ്‌ക്കുക</translation>
 <translation id="2241693394036365668">ഫയൽ ഡൗൺലോഡ് ചെയ്യുമ്പോൾ</translation>
@@ -520,7 +521,6 @@
 <translation id="2318594867107319532">അവസാന നയ ടൈംസ്റ്റാമ്പ്:</translation>
 <translation id="2324604504973636700">ഗൃഹോപകരണങ്ങൾ</translation>
 <translation id="2328651992442742497">അനുവദനീയമാണ് (ഡിഫോൾട്ട്)</translation>
-<translation id="2329182534073751090">വിൻഡോ പ്ലേസ്‌മെന്റ്</translation>
 <translation id="2329473609445770916">നിങ്ങൾക്ക് പരസ്യങ്ങൾ കാണിക്കാൻ മറ്റ് സൈറ്റുകൾക്ക് ഉപയോഗിക്കാനാകുന്ന താൽപ്പര്യങ്ങൾ ഈ സൈറ്റ് നിർവ്വചിക്കുന്നു</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, <ph name="EXPIRATION_DATE_ABBR" />-ന് കാലഹരണപ്പെടുന്നു</translation>
 <translation id="2337852623177822836">ക്രമീകരണം നിയന്ത്രിക്കുന്നത് നിങ്ങളുടെ അഡ്‌മിനിസ്‌ട്രേറ്ററാണ്</translation>
@@ -632,7 +632,6 @@
             <ph name="LIST_ITEM" />ഫോമുകളിൽ നൽകുന്ന വിവരങ്ങൾ
           <ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">C10 (എൻവലപ്പ്)</translation>
-<translation id="2623663032199728144">നിങ്ങളുടെ സ്ക്രീനുകളുടെ വിവരങ്ങൾ ഉപയോഗിക്കാൻ ആവശ്യപ്പെടാം</translation>
 <translation id="2625385379895617796">നിങ്ങളുടെ ക്ലോക്ക് വളരെ മുമ്പിലാണ്</translation>
 <translation id="262745152991669301">USB ഉപകരണങ്ങൾ കണക്റ്റ് ചെയ്യാൻ ആവശ്യപ്പെടാം</translation>
 <translation id="2629325967560697240">Chrome-ന്റെ ഏറ്റവും ഉയർന്ന സുരക്ഷ നേടാൻ, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />മെച്ചപ്പെടുത്തിയ പരിരക്ഷ ഓണാക്കുക<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
@@ -711,7 +710,6 @@
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ സുരക്ഷിത ബ്രൗസിംഗും മറ്റും മാനേജ് ചെയ്യാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
 <translation id="2878197950673342043">പോസ്‌റ്റർ മടക്ക്</translation>
 <translation id="2878424575911748999">A1</translation>
-<translation id="2880660355386638022">വിൻഡോ പ്ലെയ്‌സ്‌മെന്റ്</translation>
 <translation id="2881276955470682203">കാർഡ് സംരക്ഷിക്കണോ?</translation>
 <translation id="2882949212241984732">ഡബിൾ-ഗേറ്റ് മടക്ക്</translation>
 <translation id="2893773853358652045">നാലാമത്തെ റോൾ</translation>
@@ -1241,6 +1239,7 @@
 <translation id="4329871760342656885">നയം വിശകലനം ചെയ്യുന്നതിൽ പിശക്: <ph name="ERROR" /></translation>
 <translation id="4331519897422864041">സ്റ്റാക്കർ 5</translation>
 <translation id="4331708818696583467">സുരക്ഷിതമല്ല</translation>
+<translation id="4333561522337981382">നിങ്ങളുടെ എല്ലാ ഡിസ്‌പ്ലേകളിലും വിൻഡോകൾ മാനേജ് ചെയ്യുക</translation>
 <translation id="4340575312453649552">ഈ പരസ്യം നിങ്ങളുടെ ഉപകരണത്തിനുള്ള നിരവധി ഉറവിടങ്ങൾ ഉപയോഗിച്ചതിനാൽ, Chrome അത് നീക്കം ചെയ്‌തു.</translation>
 <translation id="4340982228985273705">എന്റർപ്രൈസ് നിയന്ത്രിക്കുന്ന തരത്തിൽ ഈ കമ്പ്യൂട്ടർ തിരിച്ചറിയപ്പെടുന്നില്ല, അതുകൊണ്ട് Chrome വെബ്‌സ്റ്റോറിൽ ഹോസ്റ്റ് ചെയ്‌തിട്ടുള്ള വിപുലീകരണങ്ങൾ മാത്രമാണ് നയത്തിന് സ്വയമേവ ഇൻസ്റ്റാൾ ചെയ്യാനാവുക. Chrome വെബ്‌സ്റ്റോർ അപ്‌ഡേറ്റ് URL "<ph name="CWS_UPDATE_URL" />" ആണ്.</translation>
 <translation id="4346197816712207223">സ്വീകരിക്കുന്ന ക്രെഡിറ്റ് കാർഡുകൾ</translation>
@@ -1454,6 +1453,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, തിരയാൻ 'Tab' അമർത്തുക, തുടർന്ന് 'Enter' അമർത്തുക</translation>
 <translation id="4930153903256238152">ഉയർന്ന ശേഷി</translation>
+<translation id="4934780484581617878">വിൻഡോ മാനേജ് ചെയ്യൽ</translation>
 <translation id="4936134414789135531">ചേർത്ത <ph name="VALUE_NAME" /> കണ്ടെത്താനായില്ല.</translation>
 <translation id="4936675324097895694">ധനകാര്യം</translation>
 <translation id="4940163644868678279">Chrome-ലെ അദൃശ്യ മോഡ്</translation>
@@ -1466,6 +1466,7 @@
 <translation id="4958444002117714549">ലിസ്റ്റ് വിപുലീകരിക്കുക</translation>
 <translation id="4964505745997821360">ആരോഗ്യ ഇൻഷുറൻസ്</translation>
 <translation id="4968522289500246572">ഈ ആപ്പ് മൊബൈലിനായി രൂപകൽപ്പന ചെയ്തതാണ്, അതിന്റെ വലുപ്പം ഉദ്ദേശിക്കുന്ന രീതിയിൽ മാറ്റാൻ കഴിഞ്ഞേക്കില്ല. ആപ്പിന് പ്രശ്നങ്ങൾ നേരിട്ടേക്കാം അല്ലെങ്കിൽ അത് റീസ്റ്റാർട്ട് ചെയ്തേക്കാം.</translation>
+<translation id="4968665849807487749">നിങ്ങളുടെ എല്ലാ ഡിസ്‌പ്ലേകളിലും വിൻഡോകൾ മാനേജ് ചെയ്യാൻ ആവശ്യപ്പെടാം</translation>
 <translation id="4969341057194253438">റെക്കോർഡിംഗ് ഇല്ലാതാക്കുക</translation>
 <translation id="4973922308112707173">മുകളിൽ ഇരട്ട പഞ്ച് ചെയ്യുക</translation>
 <translation id="4976702386844183910">അവസാനം സന്ദർശിച്ചത് <ph name="DATE" />-ന് ആണ്</translation>
@@ -1947,6 +1948,7 @@
 <translation id="6300452962057769623">{0,plural, =0{നിങ്ങളുടെ ഉപകരണം ഇപ്പോൾ റീസ്റ്റാർട്ട് ചെയ്യും}=1{നിങ്ങളുടെ ഉപകരണം 1 സെക്കൻഡിൽ റീസ്റ്റാർട്ട് ചെയ്യും}other{നിങ്ങളുടെ ഉപകരണം # സെക്കൻഡിൽ റീസ്റ്റാർട്ട് ചെയ്യും}}</translation>
 <translation id="6302269476990306341">Chrome സ്വമേധയാ പൂരിപ്പിക്കൽ നിർത്തുന്നതിലെ Google അസിസ്‌റ്റന്റ് സാന്നിധ്യം</translation>
 <translation id="6305205051461490394"><ph name="URL" /> ലഭ്യമല്ല.</translation>
+<translation id="6311165245110979290">വെർച്വൽ കാർഡ് ലഭ്യമാണ്</translation>
 <translation id="6312113039770857350">വെബ്പേജ് ലഭ്യമല്ല</translation>
 <translation id="6316226860534107313">സ്‌കൂട്ടറുകളും മോപ്പഡുകളും</translation>
 <translation id="63172326633386613">ഉപയോഗസഹായി ക്രമീകരണം മാനേജ് ചെയ്യുക</translation>
@@ -1968,6 +1970,7 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />പ്രോക്‌സിയും ഫയർവാളും സുരക്ഷിത DNS കോൺഫിഗറേഷനും പരിശോധിക്കുന്നു<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">ഇടതുവശത്ത് ഇരട്ട സ്‌റ്റേപ്പിൾ ചെയ്യുക</translation>
+<translation id="6374865374745447009">വിൻഡോ മാനേജ് ചെയ്യൽ</translation>
 <translation id="6377268785556383139">'<ph name="SEARCH_TEXT" />' എന്നതിനായി ഒരു ഫലം</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">ഭാവിയില്‍ നിരക്കുകള്‍ ഈടാക്കാനിടയുണ്ട്.</translation>
@@ -2291,6 +2294,7 @@
 <translation id="7305756307268530424">കുറഞ്ഞ വേഗതയിൽ ആരംഭിക്കുക</translation>
 <translation id="7308436126008021607">പശ്ചാത്തലം സമന്വയിപ്പിക്കൽ</translation>
 <translation id="7310392214323165548">ഉപകരണം ഉടൻ റീസ്റ്റാർട്ട് ചെയ്യും</translation>
+<translation id="7311244614769792472">ഫലങ്ങളൊന്നും കണ്ടെത്തിയില്ല</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">കണക്ഷൻ സഹായം</translation>
 <translation id="7323804146520582233">"<ph name="SECTION" />" വിഭാഗം മറയ്ക്കുക</translation>
@@ -2776,7 +2780,6 @@
 <translation id="865032292777205197">മോഷൻ സെൻസറുകൾ</translation>
 <translation id="8663226718884576429">ഓർഡർ സംഗ്രഹം, <ph name="TOTAL_LABEL" />, കൂടുതൽ വിശദാംശങ്ങൾ</translation>
 <translation id="8666678546361132282">ഇംഗ്ലീഷ്</translation>
-<translation id="8669306706049782872">വിൻഡോകൾ തുറന്ന് വയ്ക്കാൻ നിങ്ങളുടെ സ്ക്രീനുകളുടെ വിവരങ്ങൾ ഉപയോഗിക്കുക</translation>
 <translation id="867224526087042813">ഒപ്പ്</translation>
 <translation id="8672264262457010862">ബിസിനസും വ്യവസായവും</translation>
 <translation id="8676424191133491403">കാലതാമസമില്ല</translation>

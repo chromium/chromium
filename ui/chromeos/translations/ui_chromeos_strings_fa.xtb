@@ -5,6 +5,7 @@
 <translation id="1047956942837015229">در حال حذف <ph name="COUNT" /> مورد...</translation>
 <translation id="1049926623896334335">‏سند Word </translation>
 <translation id="1056775291175587022">شبکه‌ای وجود ندارد</translation>
+<translation id="1056898198331236512">اخطار</translation>
 <translation id="1060368002126861100">‏برای باز کردن فایل‌ها با <ph name="APP_NAME" />، ابتدا آن‌ها را به پوشه فایل‌های Windows منتقل کنید.</translation>
 <translation id="1062407476771304334">جایگزینی</translation>
 <translation id="1119447706177454957">خطای داخلی</translation>
@@ -244,6 +245,7 @@
 <translation id="3138624403379688522">پین نامعتبر است. <ph name="RETRIES" /> تلاش دیگر دارید.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (پشتیبان‌گیری‌شده در سخت‌افزار)</translation>
 <translation id="3188257591659621405">فایل‌های من</translation>
+<translation id="3194553149358267393">هیچ فایل صوتی‌ای در موارد اخیر وجود ندارد</translation>
 <translation id="3197563288998582412">دووارک بریتانیایی</translation>
 <translation id="3202131003361292969">مسیر</translation>
 <translation id="3205852408225871810">پرتغالی (برزیل)</translation>
@@ -302,6 +304,7 @@
 <translation id="3606220979431771195">‏ترکی F</translation>
 <translation id="3616113530831147358">صوتی</translation>
 <translation id="3619115746895587757">کاپوچینو</translation>
+<translation id="3619593063686672873">هیچ ویدیویی در موارد اخیر وجود ندارد</translation>
 <translation id="3620292326130836921">همه پشتیبان‌گیری شدند.</translation>
 <translation id="3634507049637220048">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="CONNECTION_STATUS" />، تحت‌مدیریت سرپرست، جزئیات</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> مورد منتقل شد.</translation>
@@ -400,6 +403,7 @@
 <translation id="4572815280350369984">فایل <ph name="FILE_TYPE" /></translation>
 <translation id="457386861538956877">بیشتر...</translation>
 <translation id="4579744207439506346"><ph name="ENTRY_NAME" /> به موارد انتخابی اضافه شد.</translation>
+<translation id="4583436353463424810">هیچ سندی در موارد اخیر وجود ندارد</translation>
 <translation id="4594543368593301662">درحال نمایش نتایج برای <ph name="SEARCH_TERM" />.</translation>
 <translation id="4599600860674643278">فیلتر بازنشانی شد.</translation>
 <translation id="4603392156942865207">درحال کپی کردن <ph name="FILE_NAME" /> در <ph name="FOLDER_NAME" /></translation>
@@ -488,6 +492,7 @@
 <translation id="516592729076796170">دووراک آمریکایی برنامه‌نویس‌ها</translation>
 <translation id="5172749059808361023">جزئیات محدودیت</translation>
 <translation id="5177526793333269655">نمای تصویر کوچک</translation>
+<translation id="5181896909298187506">هیچ فایلی در موارد اخیر وجود ندارد</translation>
 <translation id="5194713942430106590">کلیک کنید تا ستون به‌صورت صعودی مرتب شود.</translation>
 <translation id="5211614973734216083">فاروئی</translation>
 <translation id="5218183485292899140">فرانسوی سوئیس</translation>
@@ -745,6 +750,7 @@
 <translation id="7408870451288633753">چکی</translation>
 <translation id="7417453074306512035">صفحه‌کلید اتیوپیایی</translation>
 <translation id="7417705661718309329">‏نقشه Google</translation>
+<translation id="7458955835361612701">هیچ تصویری در موارد اخیر وجود ندارد</translation>
 <translation id="7460898608667578234">اوکراینی</translation>
 <translation id="7469894403370665791">اتصال به این شبکه به صورت خودکار</translation>
 <translation id="7486315294984620427">‏برای رها کردن فایل‌ها در Parallels Desktop، فایل موردنظر باید در فایل‌های Windows کپی شود.</translation>

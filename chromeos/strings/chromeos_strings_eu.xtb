@@ -149,6 +149,7 @@
 <translation id="2115956742084455574">Okerra da kodea</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, <ph name="MILESTONE_VERSION" /> bertsioa</translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB / <ph name="TOTAL_MEMORY" /> GB daude erabilgarri</translation>
+<translation id="2130871201950918186">Bost segundo barru berrabiaraziko da sistema.</translation>
 <translation id="2138109643290557664">Flotatu airean</translation>
 <translation id="2141644705054017895">% <ph name="PERCENTAGE_VALUE" /></translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> argazki</translation>
@@ -211,6 +212,7 @@
 <translation id="2536159006530886390">Ezin da konektatu Internetera.</translation>
 <translation id="2570743873672969996">Abian da <ph name="TEST_NAME" /> proba…</translation>
 <translation id="2584559707064218956">Konfiguratzeko, joan ezarpenetara</translation>
+<translation id="2597774443162333062">Google-ra bidaliko dira fitxategiak, bertan araztu ahal izateko</translation>
 <translation id="2619761439309613843">Freskatu egunero</translation>
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2638662041295312666">Saioa hasteko irudia</translation>
@@ -672,6 +674,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="6659594942844771486">Fitxa</translation>
 <translation id="6692996468359469499">Lortu hautatutakoari buruzko informazioa</translation>
 <translation id="6704062477274546131">DNS bidezko ebazpena</translation>
+<translation id="6719240409382354629">Berrabiarazteko prestatzen…</translation>
 <translation id="6723839937902243910">Bateria</translation>
 <translation id="6723847290197874913">Teklatuaren atzeko argiztapena</translation>
 <translation id="672609503628871915">Ikusi azken berrikuntzak</translation>
@@ -889,6 +892,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="8747900814994928677">Berretsi aldaketa</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Argazkiak zerbitzuko albuma</translation>
+<translation id="8778600430213950389">Arazoren bat izan da. Hardware-arazo bat dirudi. Ordeztu panel nagusia eta berrekin konponketa-prozesuari.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Baliteke sareak sare-zerbitzuaren atari bat edukitzea</translation>
 <translation id="8798099450830957504">Lehenetsia</translation>
@@ -942,6 +946,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="910415269708673980">Freskatu <ph name="PRINCIPAL_NAME" /> erabiltzailearen zerbitzu-eskaera</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />. orria eskaneatzen</translation>
 <translation id="9111102763498581341">Desblokeatu</translation>
+<translation id="9118126012493516930">Ezin da konpondu</translation>
 <translation id="9122602430962285795">Berriro konektatzeko, joan ezarpenetara</translation>
 <translation id="9126720536733509015">Gorde hainbat orri PDF bakar batean</translation>
 <translation id="9137526406337347448">Google-ren zerbitzuak</translation>

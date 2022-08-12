@@ -988,6 +988,7 @@
 <translation id="1907044622262489040">Уводзьце тэкст з дапамогай голасу. Каб зрабіць гэта, трэба націснуць Пошук + D і надыктаваць тэкст.</translation>
 <translation id="1908591798274282246">Зноў адкрыць закрытую групу</translation>
 <translation id="1909880997794698664">Вы ўпэўненыя, што рэжым кіёска павінен быць заўсёды ўключаны на прыладзе?</translation>
+<translation id="1910721550319506122">Вітаем!</translation>
 <translation id="1915073950770830761">canary</translation>
 <translation id="1915307458270490472">Закрыць</translation>
 <translation id="1916502483199172559">Стандартны чырвоны аватар</translation>
@@ -1872,6 +1873,7 @@
 <translation id="2727633948226935816">Больш не напамінаць</translation>
 <translation id="2727712005121231835">Фактычны памер</translation>
 <translation id="2729314457178420145">Таксама выдаліць гісторыю праглядаў сайта (<ph name="URL" />), што можа прывесці да выхаду з уліковага запісу на дамене Google.com. <ph name="LEARN_MORE" /></translation>
+<translation id="2729327310379176711">Chrome апрабоўвае новыя спосабы абмежавання механізмаў адсочвання вашых паводзін на сайтах, каб яшчэ надзейней абараняць вас у інтэрнэце. Chrome таксама <ph name="ESTIMATE_INTERESTS_LINK" /> і дае вам магчымасць кіраваць імі. Сайты, якія вы будзеце наведваць, могуць запытваць у Chrome інфармацыю пра вашы інтарэсы, каб паказваць вам рэкламу.</translation>
 <translation id="2730029791981212295">Ідзе рэзервовае капіраванне файлаў і праграм Linux</translation>
 <translation id="2730901670247399077">Прапановы эмодзі</translation>
 <translation id="273093730430620027">Гэта старонка выкарыстоўвае камеру.</translation>
@@ -2115,7 +2117,6 @@
 <translation id="2939908794993783865">Дадатковыя неактыўныя сайты</translation>
 <translation id="2939938020978911855">Паказаць даступныя прылады Bluetooth</translation>
 <translation id="2941112035454246133">Нізкі</translation>
-<translation id="2941696810925320401">Сайты звычайна адкрываюць і пэўным чынам размяшчаюць вокны, каб паказваць на вашых экранах дадатковыя дакументы або поўнаэкраннае змесціва</translation>
 <translation id="2942279350258725020">Паведамленні Android</translation>
 <translation id="2942560570858569904">Чаканне...</translation>
 <translation id="2942581856830209953">Наладзіць гэту старонку</translation>
@@ -3418,7 +3419,6 @@
 <translation id="4219558185499589032">Box</translation>
 <translation id="4220648711404560261">Падчас актывацыі ўзнікла памылка.</translation>
 <translation id="4225397296022057997">На ўсіх сайтах</translation>
-<translation id="4227605727325220318">Дадаць новы тэлефон Android</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Гэта пашырэнне забаронена}one{Некаторыя пашырэнні забаронены}few{Некаторыя пашырэнні забаронены}many{Некаторыя пашырэнні забаронены}other{Некаторыя пашырэнні забаронены}}</translation>
 <translation id="4231095370974836764">Усталёўвайце праграмы і гульні з Google Play на сваёй прыладзе "<ph name="DEVICE_TYPE" />". <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="4231141543165771749">Закрыць налады гульні</translation>
@@ -3683,7 +3683,6 @@
 <translation id="4481467543947557978">службовы сцэнарый</translation>
 <translation id="4481530544597605423">Разлучаныя прылады</translation>
 <translation id="4482990632723642375">Нядаўна закрытая ўкладка</translation>
-<translation id="4484922932728109422">Не дазваляць сайтам выкарыстоўваць звесткі пра экраны, каб адкрываць і размяшчаць вокны</translation>
 <translation id="4487489714832036847">Замест традыцыйнага праграмнага забеспячэння прылады Chromebook выкарыстоўваюць праграмы. Усталёўвайце праграмы для эфектыўнай работы, забаў і не толькі.</translation>
 <translation id="4488257340342212116">Дазволена выкарыстоўваць камеру</translation>
 <translation id="4488502501195719518">Выдаліць усе даныя?</translation>
@@ -3793,6 +3792,7 @@
 <translation id="4579581181964204535">Не ўдаецца трансліраваць <ph name="HOST_NAME" />.</translation>
 <translation id="4579876313423027742">Параметры апавяшчэнняў у браўзеры можна задаваць у <ph name="LINK_BEGIN" />Наладах браўзера Chrome<ph name="LINK_END" /></translation>
 <translation id="4580596421317071374">Паролі захоўваюцца ў сэрвісе "<ph name="GOOGLE_PASSWORD_MANAGER" />" на гэтай прыладзе.</translation>
+<translation id="4580626299762849806">Не ўдалося імпартаваць паролі. Упэўніцеся, што ў файла <ph name="FILENAME" /> правільны фармат.</translation>
 <translation id="4581774856936278355">Памылка падчас аднаўлення кантэйнера Linux</translation>
 <translation id="4582297591746054421">Сайты звычайна счытваюць ваш буфер абмену для работы такіх функцый, як захаванне фармату скапіраванага тэксту</translation>
 <translation id="4582563038311694664">Скінуць усе налады</translation>
@@ -4328,7 +4328,6 @@
 <translation id="5125751979347152379">Няправільны URL-адрас.</translation>
 <translation id="5125967981703109366">Інфармацыя пра гэту картку</translation>
 <translation id="5126611267288187364">Прагляд змяненняў</translation>
-<translation id="5127242257756472928">Не дазваляць выкарыстоўваць звесткі пра экраны, каб адкрываць і размяшчаць вокны</translation>
 <translation id="5127620150973591153">Абаронены ідэнтыфікатар падключэння: <ph name="TOKEN" /></translation>
 <translation id="5127805178023152808">Сінхранізацыя выключана</translation>
 <translation id="5127881134400491887">Кіраваць падключэннямі да сеткі</translation>
@@ -4558,6 +4557,7 @@
 <translation id="5350293332385664455">Выключыць Памочніка Google</translation>
 <translation id="535123479159372765">Тэкст скапіраваны з іншай прылады</translation>
 <translation id="5352033265844765294">Меткі часу</translation>
+<translation id="5352257124367865087">Кіраваць дазволамі сайтаў</translation>
 <translation id="5353252989841766347">Эспарт пароляў з Chrome</translation>
 <translation id="5355099869024327351">Дазволіць Памочніку паказваць вам апавяшчэнні</translation>
 <translation id="5355191726083956201">Палепшаная абарона ўключана</translation>
@@ -5059,6 +5059,7 @@
 <translation id="5843706793424741864">Шкала Фарэнгейта</translation>
 <translation id="5844574845205796324">Прапаноўваць для азнаямлення новае змесціва</translation>
 <translation id="5846200638699387931">Памылка сінтаксісу суаднясення: <ph name="ERROR_LINE" /></translation>
+<translation id="5846504156837627898">Кіраваць дазволамі сайтаў</translation>
 <translation id="5846807460505171493">Усталяванне абнаўленняў і праграм. Працягваючы, вы дазваляеце гэтай прыладзе аўтаматычна спампоўваць і ўсталёўваць абнаўленні і праграмы ад Google, вашага аператара і вытворцы прылады, у тым ліку праз сотавую перадачу даных. Некаторыя з гэтых праграм могуць прапаноўваць куплі з праграм.</translation>
 <translation id="5849212445710944278">Слова ўжо дададзена</translation>
 <translation id="5851868085455377790">Выдавец</translation>
@@ -5099,6 +5100,7 @@
 <translation id="5877064549588274448">Канал зменены. Перазапусціце прыладу, каб змены прымяніліся.</translation>
 <translation id="5877584842898320529">Выбраны прынтар недаступны або ўсталяваны няправільна. <ph name="BR" /> Праверце прынтар або выберыце іншы.</translation>
 <translation id="5878945009165002849">Блакіраваць запыты на ўваход ад сэрвісаў ідэнтыфікацыі</translation>
+<translation id="5882449899683447569">Нешта пайшло не так, і паролі не былі імпартаваны</translation>
 <translation id="5882919346125742463">Вядомыя сеткі</translation>
 <translation id="5883356647197510494">Заблакіравана аўтаматычна: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5884474295213649357">Гэта ўкладка падключана да прылады USB.</translation>
@@ -5623,6 +5625,7 @@
 <translation id="6398715114293939307">Выдаліць Краму Google Play</translation>
 <translation id="6398765197997659313">Выключыць поўнаэкранны рэжым</translation>
 <translation id="6399774419735315745">Шпіёнка</translation>
+<translation id="6400360390396538896">Заўсёды на <ph name="ORIGIN" /></translation>
 <translation id="6401458660421980302">Каб адправіць гэту ўкладку на іншую прыладу, увайдзіце з гэтай прылады ў Chrome</translation>
 <translation id="6401597285454423070">У вашым камп'ютары ўсталявана прылада бяспекі Trusted Platform Module (TPM), якая выкарыстоўваецца для рэалізацыі многіх крытычна важных функцый бяспекі ў Chrome OS. Каб даведацца больш, адкрыйце Даведачны цэнтр Chromebook: https://support.google.com/chromebook/?p=tpm.</translation>
 <translation id="6404187344102273690">Гульні Chromebook</translation>
@@ -6408,7 +6411,6 @@
 <translation id="7134098520442464001">Паменшыць тэкст</translation>
 <translation id="7135729336746831607">Уключыць Bluetooth?</translation>
 <translation id="7136694880210472378">Зрабіць стандартнай пошукавай сістэмай</translation>
-<translation id="7137472406312798422">Сайты могуць запытваць дазвол на выкарыстанне звестак пра вашы экраны, каб адкрываць і размяшчаць вокны</translation>
 <translation id="7138678301420049075">Іншыя</translation>
 <translation id="7139627972753429585">Праграма "<ph name="APP_NAME" />" выкарыстоўвае ваш мікрафон</translation>
 <translation id="7141105143012495934">Уваход не выкананы: не ўдалося атрымаць даныя ўліковага запісу. Звярніцеся да адміністратара або паўтарыце спробу.</translation>
@@ -7320,7 +7322,6 @@
 <translation id="8028803902702117856">Спампоўваецца файл "<ph name="FILE_NAME" />": <ph name="SIZE" /></translation>
 <translation id="8028993641010258682">Памер</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> – Запытаны дазвол. Каб адказаць, націсніце ⌘ + Option + стрэлка ўніз</translation>
-<translation id="8029539783236818164">Дазволена выкарыстоўваць звесткі пра экраны, каб адкрываць і размяшчаць вокны</translation>
 <translation id="8030169304546394654">Адключана</translation>
 <translation id="8030852056903932865">Ухваліць</translation>
 <translation id="8032244173881942855">Не ўдалося трансліраваць укладку.</translation>
@@ -8544,6 +8545,7 @@
 <translation id="9219582468404818260">Дапамажыце нам рабіць інтэрнэт лепшым</translation>
 <translation id="9220525904950070496">Выдаліць уліковы запіс</translation>
 <translation id="9220820413868316583">Адніміце палец і паўтарыце спробу.</translation>
+<translation id="922152298093051471">Наладзіць Chrome</translation>
 <translation id="923467487918828349">Паказаць усё</translation>
 <translation id="924818813611903184">Кіраванне моўнымі параметрамі ў наладах Chrome OS</translation>
 <translation id="929117907539171075">Пазасеткавыя даныя ва ўсталяванай праграме будуць таксама выдалены</translation>

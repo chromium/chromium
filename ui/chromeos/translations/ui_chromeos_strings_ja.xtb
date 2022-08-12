@@ -5,6 +5,7 @@
 <translation id="1047956942837015229"><ph name="COUNT" /> 件の項目を削除しています...</translation>
 <translation id="1049926623896334335">Word ドキュメント</translation>
 <translation id="1056775291175587022">なし</translation>
+<translation id="1056898198331236512">警告</translation>
 <translation id="1060368002126861100"><ph name="APP_NAME" /> でファイルを開くには、まず [Windows ファイル] フォルダにファイルを移動してください。</translation>
 <translation id="1062407476771304334">置換</translation>
 <translation id="1119447706177454957">内部エラー</translation>
@@ -244,6 +245,7 @@
 <translation id="3138624403379688522">無効な PIN です。入力できるのはあと <ph name="RETRIES" /> 回です。</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]（ハードウェアにより保護を強化）</translation>
 <translation id="3188257591659621405">マイファイル</translation>
+<translation id="3194553149358267393">最近使用した音声ファイルはありません</translation>
 <translation id="3197563288998582412">UK Dvorak 配列</translation>
 <translation id="3202131003361292969">パス</translation>
 <translation id="3205852408225871810">ポルトガル語（ブラジル）</translation>
@@ -302,6 +304,7 @@
 <translation id="3606220979431771195">トルコ語-F</translation>
 <translation id="3616113530831147358">音声</translation>
 <translation id="3619115746895587757">カプチーノ</translation>
+<translation id="3619593063686672873">最近視聴した動画はありません</translation>
 <translation id="3620292326130836921">すべてバックアップ済みです。</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="CONNECTION_STATUS" />、管理者によって管理、詳細</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> 件のアイテムを移動しました。</translation>
@@ -400,6 +403,7 @@
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> ファイル</translation>
 <translation id="457386861538956877">その他...</translation>
 <translation id="4579744207439506346"><ph name="ENTRY_NAME" /> を選択範囲に追加しました。</translation>
+<translation id="4583436353463424810">最近使用したドキュメントはありません</translation>
 <translation id="4594543368593301662">「<ph name="SEARCH_TERM" />」の検索結果を表示しています。</translation>
 <translation id="4599600860674643278">フィルタがリセットされました。</translation>
 <translation id="4603392156942865207"><ph name="FILE_NAME" /> を <ph name="FOLDER_NAME" /> にコピーしています</translation>
@@ -488,6 +492,7 @@
 <translation id="516592729076796170">US Programmer Dvorak 配列</translation>
 <translation id="5172749059808361023">制限の詳細</translation>
 <translation id="5177526793333269655">サムネイル ビュー</translation>
+<translation id="5181896909298187506">最近使用したファイルはありません</translation>
 <translation id="5194713942430106590">クリックすると、列が昇順で並べ替えられます。</translation>
 <translation id="5211614973734216083">フェロー語</translation>
 <translation id="5218183485292899140">フランス語（スイス）</translation>
@@ -745,6 +750,7 @@
 <translation id="7408870451288633753">チェコ語</translation>
 <translation id="7417453074306512035">エチオピア語キーボード</translation>
 <translation id="7417705661718309329">Google マップ</translation>
+<translation id="7458955835361612701">最近使用した画像はありません</translation>
 <translation id="7460898608667578234">ウクライナ語</translation>
 <translation id="7469894403370665791">このネットワークに自動接続する</translation>
 <translation id="7486315294984620427">Parallels Desktop にファイルをドロップするには、[Windows ファイル] にファイルをコピーする必要があります。</translation>

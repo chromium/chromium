@@ -5,6 +5,7 @@
 <translation id="1047956942837015229"><ph name="COUNT" /> ንጥሎችን በመሰረዝ ላይ...</translation>
 <translation id="1049926623896334335">የWord ሰነድ</translation>
 <translation id="1056775291175587022">ምንም አውታረ መረቦች የሉም</translation>
+<translation id="1056898198331236512">ማስጠንቀቂያ</translation>
 <translation id="1060368002126861100">ፋይሎችን በ<ph name="APP_NAME" /> ለመክፈት፣ መጀመሪያ ወደ የመስኮቶች ፋይሎች አቃፊዉ ይውሰዷቸው።</translation>
 <translation id="1062407476771304334">ተካ</translation>
 <translation id="1119447706177454957">ውስጣዊ ስህተት</translation>
@@ -289,6 +290,7 @@
 <translation id="3522708245912499433">ፖርቱጋሊኛ</translation>
 <translation id="3524311639100184459">ማስጠንቀቂያ፦ እነዚህ ፋይሎች ጊዜያዊ የሆኑና የአንጻፊ ቦታ ነጻ ለማስለቀቅ በራስ-ሰር ሊሰረዙ የሚችሉ ናቸው።  <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">አቃፊ</translation>
+<translation id="3548125359243647069">የተሳሳተ ፒን ከልክ በላይ ብዙ ጊዜ ገብቷል።</translation>
 <translation id="3549797760399244642">ወደ drive.google.com ይሂዱ...</translation>
 <translation id="3553048479571901246">ፋይሎችን በ<ph name="APP_NAME" /> ለመክፈት፣መጀመሪያ ወደ የመስኮቶች ፋይሎች አቃፊዉ ይቅዱዋቸው።</translation>
 <translation id="3556731189587832921">እንግሊዝኛ (አሜሪካ) በዓለም ከአቀፍ ፒሲ ቁልፍ ሰሌዳ</translation>
@@ -614,6 +616,7 @@
 <translation id="6267547857941397424">አውታረ መረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />፣ <ph name="PHONE_NAME" />፣ የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />%፣ የስልክ ባትሪ <ph name="BATTERY_STATUS" />%፣ አገናኝ</translation>
 <translation id="6269630227984243955">ማላይኛ</translation>
 <translation id="6287852322318138013">ይህን ፋይል የሚከፍቱበት መተግበሪያ ይምረጡ</translation>
+<translation id="6295542640242147836">ሲም ቆልፍ</translation>
 <translation id="6296410173147755564">ልክ ያልኾነ PUK</translation>
 <translation id="6312403991423642364">ያልታወቀ የአውታረ መረብ ስህተት</translation>
 <translation id="6317608858038767920">ብጁ የስም አገልጋይ <ph name="INPUT_INDEX" /></translation>
@@ -722,6 +725,7 @@
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> ጊባ</translation>
 <translation id="7191454237977785534">ፋይል አስቀምጥ እንደ</translation>
 <translation id="7229570126336867161">ኢቪዲኦ ያስፈልጋል</translation>
+<translation id="7230898482850090046">አስተዳዳሪዎ እርስዎ «የሲም ቆልፍ» ቅንብሩን እንዲያጠፉ ጠይቋል</translation>
 <translation id="7238097264433196391">የአንጻፊ ስም</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />፣ ዝርዝሮች</translation>
 <translation id="7246947237293279874">የኤፍቲፒ ተኪ</translation>
@@ -753,6 +757,7 @@
 <translation id="7505167922889582512">የተደበቁ ፋይሎችን አሳይ</translation>
 <translation id="7514365320538308">አውርድ</translation>
 <translation id="751507702149411736">ቤላራሻኛ</translation>
+<translation id="7521790570754130607">የተንቀሳቃሽ ስልክ ውሂብን ለመጠቀም ፒን ያስፈልጋል</translation>
 <translation id="7532029025027028521">በፋርስኛ ቋንቋ ፊደል መጻፍ</translation>
 <translation id="7544830582642184299">የLinux መተግበሪያዎች በእርስዎ Google Drive ውስጥ ፋይሎችን የመድረስ ፈቃድ ይስጧቸው። ለውጦች ከሌሎች መሣሪያዎችዎ ጋር ይሳመራሉ።</translation>
 <translation id="7547009467130558110">ስኒከር</translation>
@@ -777,6 +782,7 @@
 <translation id="76959938259365003">መጣያውን ባዶ ማድረግ አልተሳካም።</translation>
 <translation id="770015031906360009">ግሪክኛ</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> ተቀድቷል።</translation>
+<translation id="7708271999969613024">ይህን አውታረ መረብ ለመጠቀም በአገልግሎት አቅራቢው የቀረበውን ባለ8 አሃዝ የግል እገዳ ማንሻ ቁልፉን (PUK) ማስገባት ይኖርብዎታል።</translation>
 <translation id="7711920809702896782">የምስል መረጃ</translation>
 <translation id="7724603315864178912">ቁረጥ</translation>
 <translation id="7730494089396812859">የክላውድ ምትኬ ዝርዝሮችን አሳይ</translation>
@@ -871,6 +877,7 @@
 <translation id="8437209419043462667">አሜሪካ</translation>
 <translation id="8452135315243592079">ሲም ካርድ ይጎድላል</translation>
 <translation id="8456681095658380701">ልክ ያልሆነ ስም</translation>
+<translation id="8457767749626250697">የእርስዎ ሲም ተቆልፏል</translation>
 <translation id="8459404855768962328">ይህን ንጥል መቅዳት የተጋራውን አቃፊ «<ph name="DESTINATION_NAME" />» ማየት ለሚችል ለሁሉም ሰው እንዲጋራ ያደርገዋል።</translation>
 <translation id="8461467696380332069">በመደርደሪያ ውስጥ ያሉትን ፋይሎችዎ በፍጥነት ለመድረስ አንድ ፋይል በቀኝ ጠቅ ያድርጉ እና «ለመደርደሪያ ሰካ»ን ይምረጡ።</translation>
 <translation id="8461914792118322307">ተኪ</translation>

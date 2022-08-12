@@ -149,6 +149,7 @@
 <translation id="2115956742084455574">Code incorrect</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, version <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Espace disponible : <ph name="AVAILABLE_MEMORY" /> Go sur <ph name="TOTAL_MEMORY" /> Go</translation>
+<translation id="2130871201950918186">Le système redémarrera dans cinq secondes.</translation>
 <translation id="2138109643290557664">Vol en images</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> photos</translation>
@@ -211,6 +212,7 @@
 <translation id="2536159006530886390">Impossible de se connecter à Internet.</translation>
 <translation id="2570743873672969996">Le test <ph name="TEST_NAME" /> est en cours d'exécution…</translation>
 <translation id="2584559707064218956">Pour configurer le réseau, accédez à Paramètres</translation>
+<translation id="2597774443162333062">Les fichiers seront envoyés à Google pour un débogage</translation>
 <translation id="2619761439309613843">Actualiser tous les jours</translation>
 <translation id="2620436844016719705">Système</translation>
 <translation id="2638662041295312666">Image de connexion</translation>
@@ -672,6 +674,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="6659594942844771486">Onglet</translation>
 <translation id="6692996468359469499">Obtenir de l'information sur votre sélection</translation>
 <translation id="6704062477274546131">Résolution DNS</translation>
+<translation id="6719240409382354629">Préparation au redémarrage en cours…</translation>
 <translation id="6723839937902243910">Alimentation</translation>
 <translation id="6723847290197874913">Rétroéclairage du clavier</translation>
 <translation id="672609503628871915">Découvrir les nouveautés</translation>
@@ -889,6 +892,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="8747900814994928677">Confirmer la modification</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album Google Photos</translation>
+<translation id="8778600430213950389">Un problème est survenu. Cela est probablement dû à un problème d'origine matérielle. Remplacez la carte mère, puis réessayez le processus de réparation.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Ce réseau peut présenter un portail captif</translation>
 <translation id="8798099450830957504">Par défaut</translation>
@@ -942,6 +946,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="910415269708673980">Actualiser le ticket pour <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Numérisation de la page <ph name="PAGE_NUMBER" /> en cours…</translation>
 <translation id="9111102763498581341">Déverrouiller</translation>
+<translation id="9118126012493516930">Impossible de terminer la réparation</translation>
 <translation id="9122602430962285795">Pour vous reconnecter, accédez à Paramètres</translation>
 <translation id="9126720536733509015">Enregistrer plusieurs pages en un seul PDF</translation>
 <translation id="9137526406337347448">Services Google</translation>

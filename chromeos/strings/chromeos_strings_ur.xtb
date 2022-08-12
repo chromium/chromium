@@ -149,6 +149,7 @@
 <translation id="2115956742084455574">غلط کوڈ</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />، ورژن <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">‏‎<ph name="TOTAL_MEMORY" /> GB میں سے ‎<ph name="AVAILABLE_MEMORY" /> GB دستیاب ہے</translation>
+<translation id="2130871201950918186">سسٹم 5 سیکنڈ میں ری اسٹارٹ ہو جائے گا۔</translation>
 <translation id="2138109643290557664">اینیمیشن کے ذریعے دکھائيں</translation>
 <translation id="2141644705054017895">%<ph name="PERCENTAGE_VALUE" /></translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> تصاویر</translation>
@@ -211,6 +212,7 @@
 <translation id="2536159006530886390">انٹرنیٹ سے منسلک نہیں کر سکتے۔</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> ٹیسٹ چل رہا ہے...</translation>
 <translation id="2584559707064218956">سیٹ اپ کرنے کیلئے، ترتیبات پر جائیں</translation>
+<translation id="2597774443162333062">‏ڈیبگ کرنے کیلئے فائلز Google کو بھیج دی جائے گی</translation>
 <translation id="2619761439309613843">روزانہ ریفریش کریں</translation>
 <translation id="2620436844016719705">سسٹم</translation>
 <translation id="2638662041295312666">سائن ان کی تصویر</translation>
@@ -671,6 +673,7 @@
 <translation id="6659594942844771486">براؤزر ٹیب</translation>
 <translation id="6692996468359469499">اپنے انتخاب سے متعلق معلومات حاصل کریں</translation>
 <translation id="6704062477274546131">‏DNS ریزولیوشن</translation>
+<translation id="6719240409382354629">ری اسٹارٹ ہونے جا رہا ہے...</translation>
 <translation id="6723839937902243910">پاور</translation>
 <translation id="6723847290197874913">کی بورڈ بیک لائٹ</translation>
 <translation id="672609503628871915">دیکھیں کہ نیا کیا ہے</translation>
@@ -888,6 +891,7 @@
 <translation id="8747900814994928677">تبدیلی کی توثیق کریں</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">‏Google تصاویر کا البم</translation>
+<translation id="8778600430213950389">کچھ غلط ہو گیا۔ یہ ہارڈ ویئر کے مسئلے کی وجہ سے ہو سکتا ہے۔ مرکزی بورڈ تبدیل کریں اور مرمت کے عمل کو دوبارہ آزمائیں۔</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">اس نیٹ ورک میں ایک کیپٹو پورٹل ہو سکتا ہے</translation>
 <translation id="8798099450830957504">ڈیفالٹ</translation>
@@ -941,6 +945,7 @@
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> کے لیے ٹکٹ ریفریش کریں</translation>
 <translation id="9106415115617144481">اسکین شدہ صفحہ <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">غیر مقفل کریں</translation>
+<translation id="9118126012493516930">مرمت مکمل نہیں ہو سکی</translation>
 <translation id="9122602430962285795">دوبارہ منسلک ہونے کیلئے، ترتیبات پر جائیں</translation>
 <translation id="9126720536733509015">‏متعدد صفحات کو ایک PDF میں محفوظ کریں</translation>
 <translation id="9137526406337347448">‏Google سروسز</translation>

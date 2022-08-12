@@ -149,6 +149,7 @@
 <translation id="2115956742084455574">चुकीचा कोड</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, आवृत्ती <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> GB पैकी <ph name="AVAILABLE_MEMORY" /> उपलब्ध आहे</translation>
+<translation id="2130871201950918186">पाच सेकंदांमध्ये सिस्टीम रीस्टार्ट होईल.</translation>
 <translation id="2138109643290557664">तरंगत रहा</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> फोटो</translation>
@@ -211,6 +212,7 @@
 <translation id="2536159006530886390">इंटरनेटशी कनेक्ट करू शकत नाही.</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> चाचणी रन होत आहे...</translation>
 <translation id="2584559707064218956">सेट करण्यासाठी, सेटिंग्ज वर जा</translation>
+<translation id="2597774443162333062">फाइल डीबग करण्यासाठी Google कडे पाठवल्या जातील</translation>
 <translation id="2619761439309613843">दैनिक रिफ्रेश</translation>
 <translation id="2620436844016719705">सिस्टम</translation>
 <translation id="2638662041295312666">साइन इन इमेज</translation>
@@ -672,6 +674,7 @@
 <translation id="6659594942844771486">ब्राउझर टॅब</translation>
 <translation id="6692996468359469499">तुमच्या निवडीशी संबंधित माहिती मिळवा</translation>
 <translation id="6704062477274546131">DNS रिझोल्युशन</translation>
+<translation id="6719240409382354629">रीस्टार्ट करण्यासाठी तयार करत आहे…</translation>
 <translation id="6723839937902243910">सामर्थ्य</translation>
 <translation id="6723847290197874913">कीबोर्ड बॅकलाइट</translation>
 <translation id="672609503628871915">नवीन काय ते पहा</translation>
@@ -889,6 +892,7 @@
 <translation id="8747900814994928677">बदलाची खात्री करा</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos अल्बम</translation>
+<translation id="8778600430213950389">काहीतरी चूक झाली. हे बहुधा हार्डवेअरसंबंधित समस्येमुळे झाले आहे. मुख्य बोर्ड बदला आणि दुरुस्तीची प्रक्रिया पुन्हा करून पहा.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">या नेटवर्कवर कॅप्टिव्ह पोर्टल असू शकते</translation>
 <translation id="8798099450830957504">डीफॉल्ट</translation>
@@ -942,6 +946,7 @@
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> चे तिकीट रिफ्रेश करा</translation>
 <translation id="9106415115617144481">पेज <ph name="PAGE_NUMBER" /> स्कॅन करत आहे</translation>
 <translation id="9111102763498581341">अनलॉक करा</translation>
+<translation id="9118126012493516930">दुरुस्ती पूर्ण करू शकत नाही</translation>
 <translation id="9122602430962285795">पुन्हा कनेक्ट करण्यासाठी सेटिंग्ज वर जा</translation>
 <translation id="9126720536733509015">एका PDF मध्ये एकाहून अधिक पेज सेव्ह करा</translation>
 <translation id="9137526406337347448">Google सेवा</translation>

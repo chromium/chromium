@@ -149,6 +149,7 @@
 <translation id="2115956742084455574">Неправильний код</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, версія <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Доступно <ph name="AVAILABLE_MEMORY" /> з <ph name="TOTAL_MEMORY" /> ГБ</translation>
+<translation id="2130871201950918186">Система перезапуститься через 5 секунд.</translation>
 <translation id="2138109643290557664">Потік</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> фото</translation>
@@ -211,6 +212,7 @@
 <translation id="2536159006530886390">Не вдається підключитися до мережі.</translation>
 <translation id="2570743873672969996">Тестування (<ph name="TEST_NAME" />)…</translation>
 <translation id="2584559707064218956">Щоб вибрати параметри, перейдіть у налаштування</translation>
+<translation id="2597774443162333062">Файли буде надіслано в Google для налагодження</translation>
 <translation id="2619761439309613843">Щоденне оновлення</translation>
 <translation id="2620436844016719705">Система</translation>
 <translation id="2638662041295312666">Зображення облікового запису</translation>
@@ -672,6 +674,7 @@
 <translation id="6659594942844771486">Вкладка</translation>
 <translation id="6692996468359469499">Отримати інформацію, пов'язану з виділеним текстом</translation>
 <translation id="6704062477274546131">Розпізнавання DNS</translation>
+<translation id="6719240409382354629">Підготовка до перезапуску…</translation>
 <translation id="6723839937902243910">Заряд</translation>
 <translation id="6723847290197874913">Підсвічування клавіатури</translation>
 <translation id="672609503628871915">Докладніше про нові функції</translation>
@@ -889,6 +892,7 @@
 <translation id="8747900814994928677">Підтвердити зміни</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Альбом Google Фото</translation>
+<translation id="8778600430213950389">Сталася помилка. Імовірно, виникла проблема з апаратним забезпеченням. Замініть основну плату, а потім знову спробуйте виконати відновлення.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Можливо, для цієї мережі використовується адаптивний портал</translation>
 <translation id="8798099450830957504">За умовчанням</translation>
@@ -942,6 +946,7 @@
 <translation id="910415269708673980">Оновити квиток для користувача <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Сканування сторінки <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Розблокувати</translation>
+<translation id="9118126012493516930">Не вдалося виконати відновлення</translation>
 <translation id="9122602430962285795">Щоб знову підключитися, перейдіть у налаштування</translation>
 <translation id="9126720536733509015">Зберігати кілька сторінок в один файл PDF</translation>
 <translation id="9137526406337347448">Служби Google</translation>

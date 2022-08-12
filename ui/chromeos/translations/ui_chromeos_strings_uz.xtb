@@ -5,6 +5,7 @@
 <translation id="1047956942837015229">Fayllar (<ph name="COUNT" /> ta) o‘chirilmoqda...</translation>
 <translation id="1049926623896334335">Word hujjati</translation>
 <translation id="1056775291175587022">Tarmoq topilmadi</translation>
+<translation id="1056898198331236512">Ogohlantirish</translation>
 <translation id="1060368002126861100">Fayllarni <ph name="APP_NAME" /> ilovasidan ochishdan avval ularni Windows fayllari jildiga oling.</translation>
 <translation id="1062407476771304334">Almashtirish</translation>
 <translation id="1119447706177454957">Ichki xatolik</translation>
@@ -244,6 +245,7 @@
 <translation id="3138624403379688522">PIN kod xato. Sizda <ph name="RETRIES" /> ta urinish qoldi.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (qurilmada o‘rnatilgan)</translation>
 <translation id="3188257591659621405">Fayllarim</translation>
+<translation id="3194553149358267393">Oxirgi audio fayllar yoʻq</translation>
 <translation id="3197563288998582412">UK Dvorak</translation>
 <translation id="3202131003361292969">Fayl yo‘lagi</translation>
 <translation id="3205852408225871810">Portugal (Braziliya)</translation>
@@ -302,6 +304,7 @@
 <translation id="3606220979431771195">Turk-F klaviaturasi</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3619115746895587757">Kappuchino</translation>
+<translation id="3619593063686672873">Oxirgi videolar yoʻq</translation>
 <translation id="3620292326130836921">Ma’lumotlar saqlandi!</translation>
 <translation id="3634507049637220048">Tarmoq: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, Nomi: <ph name="NETWORK_NAME" />, Ulanish:<ph name="CONNECTION_STATUS" />, Administrator boshqaruvida, Batafsil</translation>
 <translation id="3645233063072417428">Boshqa joyga olindi: <ph name="NUMBER_OF_ITEMS" /></translation>
@@ -400,6 +403,7 @@
 <translation id="4572815280350369984"><ph name="FILE_TYPE" />-fayl</translation>
 <translation id="457386861538956877">Yana...</translation>
 <translation id="4579744207439506346"><ph name="ENTRY_NAME" /> tanlamaga kiritildi.</translation>
+<translation id="4583436353463424810">Oxirgi hujjatlar yoʻq</translation>
 <translation id="4594543368593301662">Natijalarini chiqarish: <ph name="SEARCH_TERM" /></translation>
 <translation id="4599600860674643278">Filtr asliga qaytarildi.</translation>
 <translation id="4603392156942865207"><ph name="FILE_NAME" /> fayli <ph name="FOLDER_NAME" /> jildiga nusxalanmoqda</translation>
@@ -488,6 +492,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="516592729076796170">Dasturchilar uchun Dvorak klaviaturasi</translation>
 <translation id="5172749059808361023">Cheklov tafsilotlari</translation>
 <translation id="5177526793333269655">Kichiklashtirilgan rasmlar</translation>
+<translation id="5181896909298187506">Oxirgi fayllar yoʻq</translation>
 <translation id="5194713942430106590">Ustundagi fayllar roʻyxatini oʻsish boʻyicha tartiblash.</translation>
 <translation id="5211614973734216083">Farer</translation>
 <translation id="5218183485292899140">Shveytsar klaviaturasi (Fransuz)</translation>
@@ -744,6 +749,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="7408870451288633753">Chex</translation>
 <translation id="7417453074306512035">Efiop klaviaturasi</translation>
 <translation id="7417705661718309329">Google xaritasi</translation>
+<translation id="7458955835361612701">Oxirgi rasmlar yoʻq</translation>
 <translation id="7460898608667578234">Ukrayin tili</translation>
 <translation id="7469894403370665791">Bu tarmoqqa avtomatik ravishda ulanish</translation>
 <translation id="7486315294984620427">Windowsga nusxalanishi kerak fayllarni Parallels Desktop oynasiga tashlang.</translation>

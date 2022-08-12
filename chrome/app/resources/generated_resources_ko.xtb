@@ -225,6 +225,7 @@
 <translation id="1199814941632954229">다음 인증서 프로필의 인증서가 프로비저닝되는 중입니다</translation>
 <translation id="120069043972472860">시청이 불가능할 정도</translation>
 <translation id="1201402288615127009">다음</translation>
+<translation id="1201564082781748151">비밀번호를 잊어버린 경우에도 로컬 데이터를 복원할 수 있습니다.</translation>
 <translation id="1202596434010270079">Kiosk 앱이 업데이트되었습니다. USB 메모리를 제거하세요.</translation>
 <translation id="120368089816228251">음표</translation>
 <translation id="1203942045716040624">공유한 작업자: <ph name="SCRIPT_URL" /></translation>
@@ -269,6 +270,7 @@
 <translation id="1243436884219965846">비밀번호 검토</translation>
 <translation id="1244265436519979884">현재 Linux 복원이 진행 중입니다.</translation>
 <translation id="1244303850296295656">확장 프로그램 오류</translation>
+<translation id="1245628370644070008">로컬 데이터 복구</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" /> VM을 설치할 수 없습니다. 이미지 URL이 <ph name="HTTP_ERROR" /> 오류 코드를 반환했습니다. 관리자에게 문의해 주세요.</translation>
 <translation id="1251366534849411931">열림 중괄호 누락: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">사이트 및 설치된 앱에서 저장한 <ph name="TOTAL_USAGE" />의 데이터가 삭제됩니다.</translation>
@@ -997,6 +999,7 @@
 <translation id="1907044622262489040">음성으로 입력할 수 있습니다. 검색 + D를 사용한 다음 말하세요.</translation>
 <translation id="1908591798274282246">닫은 그룹 다시 열기</translation>
 <translation id="1909880997794698664">이 기기를 영구적으로 키오스크 모드로 유지하시겠습니까?</translation>
+<translation id="1910721550319506122">반갑습니다!</translation>
 <translation id="1915073950770830761">canary</translation>
 <translation id="1915307458270490472">종료</translation>
 <translation id="1916502483199172559">기본 빨간색 아바타</translation>
@@ -1331,6 +1334,7 @@
 <translation id="222447520299472966">아트 갤러리 앨범을 하나 이상 선택해야 합니다.</translation>
 <translation id="2224551243087462610">폴더 이름 수정</translation>
 <translation id="2225864335125757863">계정 보호를 위해 다음 비밀번호를 즉시 변경하세요.</translation>
+<translation id="2225927550500503913">가상 카드 사용 설정됨</translation>
 <translation id="2226449515541314767">이 사이트는 MIDI 기기를 완전히 제어할 수 없도록 차단되었습니다.</translation>
 <translation id="2226826835915474236">비활성 바로가기</translation>
 <translation id="2226907662744526012">PIN 입력 시 자동 잠금 해제</translation>
@@ -2129,7 +2133,6 @@
 <translation id="2939908794993783865">추가 비활성 사이트</translation>
 <translation id="2939938020978911855">사용 가능한 블루투스 기기 표시</translation>
 <translation id="2941112035454246133">낮음</translation>
-<translation id="2941696810925320401">사이트에서는 일반적으로 창을 열고 배치하여 화면에 추가 문서 또는 전체 화면 콘텐츠를 표시합니다.</translation>
 <translation id="2942279350258725020">Android 메시지</translation>
 <translation id="2942560570858569904">대기 중...</translation>
 <translation id="2942581856830209953">페이지 맞춤설정</translation>
@@ -3430,7 +3433,6 @@
 <translation id="4219558185499589032">Box</translation>
 <translation id="4220648711404560261">활성화 중 오류가 발생했습니다.</translation>
 <translation id="4225397296022057997">모든 사이트에서</translation>
-<translation id="4227605727325220318">새 Android 휴대전화 추가</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{확장 프로그램이 허용되지 않음}other{일부 확장 프로그램이 허용되지 않음}}</translation>
 <translation id="4231095370974836764"><ph name="DEVICE_TYPE" />에서 Google Play 앱 및 게임을 설치하세요. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="4231141543165771749">게임 컨트롤 닫기</translation>
@@ -3695,7 +3697,6 @@
 <translation id="4481467543947557978">서비스 워커</translation>
 <translation id="4481530544597605423">페어링 해제된 기기</translation>
 <translation id="4482990632723642375">최근에 닫은 탭</translation>
-<translation id="4484922932728109422">사이트에서 화면 정보를 사용하여 창을 열고 배치하는 것을 허용하지 않음</translation>
 <translation id="4487489714832036847">Chromebook에서는 기존 소프트웨어 대신 앱을 사용합니다. 생산성, 엔터테인먼트 등을 위한 앱을 활용해 보세요.</translation>
 <translation id="4488257340342212116">카메라 사용이 허용됨</translation>
 <translation id="4488502501195719518">모든 데이터를 삭제하시겠습니까?</translation>
@@ -4016,7 +4017,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4794810983896241342">업데이트는 <ph name="BEGIN_LINK" />관리자<ph name="END_LINK" />가 관리합니다.</translation>
 <translation id="479536056609751218">웹페이지, HTML만</translation>
 <translation id="4796142525425001238">항상 복원</translation>
-<translation id="4797314204379834752">탭 그룹을 사용하여 작업 정리, 온라인 쇼핑 등을 시도해 보세요.</translation>
+<translation id="4797314204379834752">탭 그룹을 사용하여 작업 정리, 온라인 쇼핑 등을 해 보세요.</translation>
 <translation id="4798236378408895261"><ph name="BEGIN_LINK" />블루투스 로그<ph name="END_LINK" /> 첨부(Google 사내용)</translation>
 <translation id="479863874072008121">기기 관리</translation>
 <translation id="4800839971935185386">이름 및 아이콘 업데이트 검토</translation>
@@ -4342,7 +4343,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5125751979347152379">잘못된 URL입니다.</translation>
 <translation id="5125967981703109366">카드 정보</translation>
 <translation id="5126611267288187364">변경사항 보기</translation>
-<translation id="5127242257756472928">화면에 관한 정보를 사용하여 창을 열고 배치하는 것 허용되지 않음</translation>
 <translation id="5127620150973591153">보안 연결 ID: <ph name="TOKEN" /></translation>
 <translation id="5127805178023152808">동기화 사용 안함</translation>
 <translation id="5127881134400491887">네트워크 연결 관리</translation>
@@ -5245,6 +5245,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6003582434972667631">테마는 조직에서 설정합니다</translation>
 <translation id="6006484371116297560">기본</translation>
 <translation id="6007240208646052708">사용자의 언어로 음성 검색을 이용할 수 없습니다.</translation>
+<translation id="6010651352520077187">Google 번역을 사용 설정하면 사용자의 기본 언어로 사이트가 번역됩니다. 사이트를 자동으로 번역할 수도 있습니다.</translation>
 <translation id="6011193465932186973">지문</translation>
 <translation id="6011449291337289699">사이트 데이터 삭제</translation>
 <translation id="6011908034087870826"><ph name="DEVICE_NAME" /> 기기로 링크 전송 중</translation>
@@ -5557,6 +5558,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="630948338437014525">추억</translation>
 <translation id="6309510305002439352">마이크 사용 중지됨</translation>
 <translation id="6310141306111263820">eSIM 프로필을 설치할 수 없습니다. 도움이 필요하면 이동통신사에 문의하세요.</translation>
+<translation id="6311165245110979290">가상 카드 사용 가능</translation>
 <translation id="6311220991371174222">프로필을 여는 동안 문제가 발생했기 때문에 Chrome을 시작할 수 없습니다. Chrome을 다시 시작해 보세요.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{안전 확인이 1일 전에 실행됨}other{안전 확인이 {NUM_DAYS}일 전에 실행됨}}</translation>
 <translation id="6312638141433622592">지원되는 경우 기사를 리더 모드로 표시하는 옵션 제공</translation>
@@ -5785,6 +5787,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6532206849875187177">보안 및 로그인</translation>
 <translation id="6532527800157340614">액세스 토큰을 검색할 수 없어 로그인에 실패했습니다. 네트워크 연결을 확인한 다음 다시 시도해 보세요.</translation>
 <translation id="6532663472409656417">기업 등록됨</translation>
+<translation id="6533315466883598769">Google 번역 사용</translation>
 <translation id="6535331821390304775">항상 <ph name="ORIGIN" />에서 연결된 앱에 있는 이 유형의 링크를 열도록 허용</translation>
 <translation id="653659894138286600">문서 및 이미지 스캔</translation>
 <translation id="6537613839935722475">이름에는 문자, 숫자, 하이픈(-)을 사용할 수 있습니다.</translation>
@@ -6420,7 +6423,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7134098520442464001">텍스트 축소</translation>
 <translation id="7135729336746831607">블루투스를 사용 설정하시겠습니까?</translation>
 <translation id="7136694880210472378">기본으로 설정</translation>
-<translation id="7137472406312798422">사이트에서 화면 정보를 사용하여 창을 열고 배치하도록 요청할 수 있음</translation>
 <translation id="7138678301420049075">기타</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" />에서 마이크를 사용 중입니다.</translation>
 <translation id="7141105143012495934">계정 세부정보를 가져올 수 없어 로그인할 수 없습니다. 관리자에게 문의하거나 다시 시도해 주세요.</translation>
@@ -7335,7 +7337,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8028803902702117856"><ph name="SIZE" /> 다운로드 중, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">크기</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> - 권한 요청됨, ⌘ 키와 Option 키와 위쪽 화살표 키를 눌러 응답</translation>
-<translation id="8029539783236818164">화면에 관한 정보를 사용하여 창을 열고 배치하는 것 허용됨</translation>
 <translation id="8030169304546394654">연결 끊김</translation>
 <translation id="8030852056903932865">승인</translation>
 <translation id="8032244173881942855">탭을 전송할 수 없습니다.</translation>
@@ -8559,6 +8560,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9219582468404818260">더 나은 웹 환경을 만드는 데 함께해 주세요</translation>
 <translation id="9220525904950070496">계정 삭제</translation>
 <translation id="9220820413868316583">손가락을 뗀 뒤 다시 시도하세요.</translation>
+<translation id="922152298093051471">Chrome 맞춤설정</translation>
 <translation id="923467487918828349">모두 보기</translation>
 <translation id="924818813611903184">ChromeOS 설정에서 언어 관리</translation>
 <translation id="929117907539171075">설치된 앱의 오프라인 데이터도 삭제됩니다.</translation>

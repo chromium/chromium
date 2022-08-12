@@ -149,6 +149,7 @@
 <translation id="2115956742084455574">Cod greșit</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versiunea <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB din <ph name="TOTAL_MEMORY" /> GB disponibili</translation>
+<translation id="2130871201950918186">Sistemul va reporni în cinci secunde.</translation>
 <translation id="2138109643290557664">Float on by</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> fotografii</translation>
@@ -211,6 +212,7 @@
 <translation id="2536159006530886390">Nu ne putem conecta la internet.</translation>
 <translation id="2570743873672969996">Se rulează testul <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">Accesează Setările pentru configurare</translation>
+<translation id="2597774443162333062">Fișierele vor fi trimise la Google pentru remedierea erorilor</translation>
 <translation id="2619761439309613843">Actualizare zilnică</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2638662041295312666">Imagine de autentificare</translation>
@@ -672,6 +674,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="6659594942844771486">Filă</translation>
 <translation id="6692996468359469499">Obține informații despre selecție</translation>
 <translation id="6704062477274546131">Rezolvare DNS</translation>
+<translation id="6719240409382354629">Se pregătește repornirea…</translation>
 <translation id="6723839937902243910">Alimentare</translation>
 <translation id="6723847290197874913">Retroiluminarea tastaturii</translation>
 <translation id="672609503628871915">Vedeți noutățile</translation>
@@ -889,6 +892,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="8747900814994928677">Confirmă schimbarea</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album Google Foto</translation>
+<translation id="8778600430213950389">A apărut o eroare. Cel mai probabil, cauza este o problemă legată de hardware. Înlocuiește placa de bază și încearcă din nou procesul de reparare.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Această rețea poate să aibă un portal captiv</translation>
 <translation id="8798099450830957504">Prestabilit</translation>
@@ -942,6 +946,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="910415269708673980">Actualizează tichetul pentru <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Se scanează pagina <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Deblochează</translation>
+<translation id="9118126012493516930">Nu se poate finaliza repararea</translation>
 <translation id="9122602430962285795">Accesează Setări pentru reconectare</translation>
 <translation id="9126720536733509015">Salvează mai multe pagini într-un fișier PDF</translation>
 <translation id="9137526406337347448">Google Services</translation>

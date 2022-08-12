@@ -5,6 +5,7 @@
 <translation id="1047956942837015229">Διαγραφή <ph name="COUNT" /> στοιχείων…</translation>
 <translation id="1049926623896334335">Έγγραφο του Word</translation>
 <translation id="1056775291175587022">Κανένα δίκτυο</translation>
+<translation id="1056898198331236512">Προειδοποίηση</translation>
 <translation id="1060368002126861100">Για να ανοίξετε αρχεία με την εφαρμογή <ph name="APP_NAME" />, αρχικά, μετακινήστε τα στον φάκελο Αρχεία Windows.</translation>
 <translation id="1062407476771304334">Αντικατάσταση</translation>
 <translation id="1119447706177454957">Εσωτερικό σφάλμα</translation>
@@ -248,6 +249,7 @@
 <translation id="3138624403379688522">Μη έγκυρο PIN. Απομένουν <ph name="RETRIES" /> προσπάθειες.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (βασιζόμενο σε υλικό)</translation>
 <translation id="3188257591659621405">Τα αρχεία μου</translation>
+<translation id="3194553149358267393">Δεν υπάρχουν πρόσφατα αρχεία ήχου</translation>
 <translation id="3197563288998582412">Dvorak ΗΒ</translation>
 <translation id="3202131003361292969">Διαδρομή</translation>
 <translation id="3205852408225871810">Πορτογαλικά (Βραζιλίας)</translation>
@@ -290,10 +292,12 @@
 <translation id="3479552764303398839">Όχι τώρα</translation>
 <translation id="3486821258960016770">Μογγολικά</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> σφάλματα.</translation>
+<translation id="3495810061346586977">Αυτό το αρχείο είναι εμπιστευτικό και υπόκειται σε περιορισμούς βάσει της πολιτικής του διαχειριστή. <ph name="BEGIN_LINK_HELP" />Μάθετε περισσότερα<ph name="END_LINK_HELP" /></translation>
 <translation id="3509680540198371098">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Λεπτομέρειες</translation>
 <translation id="3522708245912499433">Πορτογαλικά</translation>
 <translation id="3524311639100184459">Προσοχή: Αυτά τα αρχεία είναι προσωρινά και ενδέχεται να διαγραφούν αυτόματα για να απελευθερωθεί χώρος στη μονάδα δίσκου.  <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Φάκελος</translation>
+<translation id="3548125359243647069">Έγινε εισαγωγή εσφαλμένου PIN πάρα πολλές φορές.</translation>
 <translation id="3549797760399244642">Μετάβαση στη διεύθυνση drive.google.com…</translation>
 <translation id="3553048479571901246">Για να ανοίξετε αρχεία με την εφαρμογή <ph name="APP_NAME" />, αρχικά, αντιγράψτε τα στον φάκελο Αρχεία Windows.</translation>
 <translation id="3556731189587832921">Αγγλικά (ΗΠΑ) με Διεθνές πληκτρολόγιο υπολογιστή</translation>
@@ -307,6 +311,7 @@
 <translation id="3606220979431771195">Τουρκικά-F</translation>
 <translation id="3616113530831147358">Ήχος</translation>
 <translation id="3619115746895587757">Καπουτσίνο</translation>
+<translation id="3619593063686672873">Δεν υπάρχουν πρόσφατα βίντεο</translation>
 <translation id="3620292326130836921">Δημιουργήθηκαν αντίγραφα ασφαλείας για όλα τα αρχεία!</translation>
 <translation id="3634507049637220048">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Διαχειριζόμενο από το διαχειριστή σας, Λεπτομέρειες</translation>
 <translation id="3645233063072417428">Μετακινήθηκαν <ph name="NUMBER_OF_ITEMS" /> στοιχεία.</translation>
@@ -406,6 +411,7 @@
 <translation id="4572815280350369984">Αρχείο <ph name="FILE_TYPE" /></translation>
 <translation id="457386861538956877">Περισσότερα...</translation>
 <translation id="4579744207439506346">Το <ph name="ENTRY_NAME" /> προστέθηκε στην επιλογή.</translation>
+<translation id="4583436353463424810">Δεν υπάρχουν πρόσφατα έγγραφα</translation>
 <translation id="4594543368593301662">Εμφάνιση αποτελεσμάτων για <ph name="SEARCH_TERM" />.</translation>
 <translation id="4599600860674643278">Έγινε επαναφορά του φίλτρου.</translation>
 <translation id="4603392156942865207">Αντιγραφή αρχείου <ph name="FILE_NAME" /> στον φάκελο <ph name="FOLDER_NAME" /></translation>
@@ -498,6 +504,7 @@
 <translation id="516592729076796170">US Programmer Dvorak</translation>
 <translation id="5172749059808361023">Λεπτομέρειες περιορισμού</translation>
 <translation id="5177526793333269655">Προβολή μικρογραφιών</translation>
+<translation id="5181896909298187506">Δεν υπάρχουν πρόσφατα αρχεία</translation>
 <translation id="5194713942430106590">Κάντε κλικ για ταξινόμηση της στήλης σε αύξουσα σειρά.</translation>
 <translation id="5211614973734216083">Φερόε</translation>
 <translation id="5218183485292899140">Γαλλικά Ελβετίας</translation>
@@ -626,6 +633,7 @@
 <translation id="6267547857941397424">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Μπαταρία τηλεφώνου <ph name="BATTERY_STATUS" />%, Σύνδεση</translation>
 <translation id="6269630227984243955">Μαλαισιανά</translation>
 <translation id="6287852322318138013">Επιλέξτε μια εφαρμογή για να ανοίξετε αυτό το αρχείο</translation>
+<translation id="6295542640242147836">Κλείδωμα SIM</translation>
 <translation id="6296410173147755564">Μη έγκυρος κωδικός PUK</translation>
 <translation id="6312403991423642364">Άγνωστο σφάλμα δικτύου</translation>
 <translation id="6317608858038767920">Προσαρμοσμένος διακομιστής ονομάτων <ph name="INPUT_INDEX" /></translation>
@@ -735,6 +743,7 @@
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Αποθήκευση αρχείου ως</translation>
 <translation id="7229570126336867161">Απαιτείται EVDO</translation>
+<translation id="7230898482850090046">Ο διαχειριστής σας ζήτησε να απενεργοποιήσετε τη ρύθμιση Κλείδωμα SIM.</translation>
 <translation id="7238097264433196391">Όνομα δίσκου</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, Λεπτομέρειες</translation>
 <translation id="7246947237293279874">Διακομιστής μεσολάβησης FTP</translation>
@@ -755,6 +764,7 @@
 <translation id="7408870451288633753">Τσεχικά</translation>
 <translation id="7417453074306512035">Πληκτρολόγιο Αιθιοπικών</translation>
 <translation id="7417705661718309329">Χάρτης Google</translation>
+<translation id="7458955835361612701">Δεν υπάρχουν πρόσφατες εικόνες</translation>
 <translation id="7460898608667578234">Ουκρανικά
 </translation>
 <translation id="7469894403370665791">Αυτόματη σύνδεση σε αυτό το δίκτυο</translation>
@@ -768,6 +778,7 @@
 <translation id="7514365320538308">Λήψη</translation>
 <translation id="751507702149411736">Λευκορωσικά
 </translation>
+<translation id="7521790570754130607">Απαιτείται PIN για τη χρήση δεδομένων κινητής τηλεφωνίας</translation>
 <translation id="7532029025027028521">Μεταγραφή σε Περσικά</translation>
 <translation id="7544830582642184299">Δώστε στις εφαρμογές Linux άδεια πρόσβασης σε αρχεία στο Google Drive σας. Οι αλλαγές θα συγχρονιστούν με τις άλλες συσκευές σας.</translation>
 <translation id="7547009467130558110">Αθλητικό παπούτσι</translation>
@@ -793,6 +804,7 @@
 <translation id="76959938259365003">Το άδειασμα του κάδου απέτυχε.</translation>
 <translation id="770015031906360009">Ελληνικά</translation>
 <translation id="7705251383879779343">Το αρχείο <ph name="FILE_NAME" /> αντιγράφηκε.</translation>
+<translation id="7708271999969613024">Για να χρησιμοποιήσετε αυτό το δίκτυο, πρέπει να εισαγάγετε το 8-ψήφιο προσωπικό κλειδί κατάργησης αποκλεισμού (PUK) που παρέχεται από την εταιρεία κινητής τηλεφωνίας.</translation>
 <translation id="7711920809702896782">Πληροφορίες εικόνας</translation>
 <translation id="7724603315864178912">Αποκοπή</translation>
 <translation id="7730494089396812859">Εμφάνιση λεπτομερειών αντιγράφου ασφαλείας στο cloud</translation>
@@ -889,6 +901,7 @@
 <translation id="8437209419043462667">ΗΠΑ</translation>
 <translation id="8452135315243592079">Κάρτα SIM που λείπει</translation>
 <translation id="8456681095658380701">Μη έγκυρο όνομα</translation>
+<translation id="8457767749626250697">Η κάρτα SIM είναι κλειδωμένη</translation>
 <translation id="8459404855768962328">Με την αντιγραφή αυτού του στοιχείου, αυτό θα κοινοποιηθεί σε όλους τους χρήστες που μπορούν να δουν τον κοινόχρηστο φάκελο "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="8461467696380332069">Κάντε δεξί κλικ σε ένα αρχείο και επιλέξτε Καρφίτσωμα στο ράφι, για να έχετε γρήγορη πρόσβαση στα αρχεία στο ράφι.</translation>
 <translation id="8461914792118322307">Διακομιστής μεσολάβησης</translation>

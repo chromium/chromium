@@ -149,6 +149,7 @@
 <translation id="2115956742084455574">Буруу код</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, <ph name="MILESTONE_VERSION" />-р хувилбар</translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> ГБ-аас <ph name="AVAILABLE_MEMORY" /> ГБ боломжтой</translation>
+<translation id="2130871201950918186">Систем 5 секундын дараа дахин эхэлнэ.</translation>
 <translation id="2138109643290557664">Хажуугаар хөвөх</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> зураг</translation>
@@ -211,6 +212,7 @@
 <translation id="2536159006530886390">Интернэтэд холбогдох боломжгүй байна.</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> тестийг ажиллуулж байна...</translation>
 <translation id="2584559707064218956">Тохируулахын тулд Тохиргоо руу очно уу</translation>
+<translation id="2597774443162333062">Файлыг дебаг хийхээр Google-д илгээж байна</translation>
 <translation id="2619761439309613843">Өдөр тутам сэргээх</translation>
 <translation id="2620436844016719705">Систем</translation>
 <translation id="2638662041295312666">Нэвтрэх зураг</translation>
@@ -672,6 +674,7 @@
 <translation id="6659594942844771486">Таб</translation>
 <translation id="6692996468359469499">Сонголттойгоо холбоотой мэдээлэл авах</translation>
 <translation id="6704062477274546131">DNS-н тайлал</translation>
+<translation id="6719240409382354629">Дахин эхлүүлэхээр бэлтгэж байна...</translation>
 <translation id="6723839937902243910">Эрчим хүч</translation>
 <translation id="6723847290197874913">Гарын дэвсгэр өнгө</translation>
 <translation id="672609503628871915">Шинэ зүйл юу байна?</translation>
@@ -889,6 +892,7 @@
 <translation id="8747900814994928677">Өөрчлөлтийг баталгаажуулах</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Зургийн цомог</translation>
+<translation id="8778600430213950389">Алдаа гарлаа. Энэ нь техник хангамжийн асуудалтай холбоотой байх магадлалтай. Үндсэн хавтанг сольж, засварын процессыг дахин оролдоно уу.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Энэ сүлжээнд дамжих портал байж болзошгүй</translation>
 <translation id="8798099450830957504">Гэрээ үл биелүүлэх</translation>
@@ -942,6 +946,7 @@
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" />-н тасалбарыг дахин шинэчлэх</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />-р хуудсыг скан хийж байна</translation>
 <translation id="9111102763498581341">Нээх</translation>
+<translation id="9118126012493516930">Засвар хийж чадахгүй байна</translation>
 <translation id="9122602430962285795">Дахин холбогдохын тулд Тохиргоо руу очно уу</translation>
 <translation id="9126720536733509015">Олон хуудсыг нэг PDF болгож хадгалах</translation>
 <translation id="9137526406337347448">Google-н үйлчилгээнүүд</translation>

@@ -149,6 +149,7 @@
 <translation id="2115956742084455574">Nesprávny kód</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, verzia <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">K dispozícii je <ph name="AVAILABLE_MEMORY" /> GB z <ph name="TOTAL_MEMORY" /> GB.</translation>
+<translation id="2130871201950918186">Systém sa o päť sekúnd reštartuje.</translation>
 <translation id="2138109643290557664">Plávajte ďalej</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2152882202543497059">Počet fotiek: <ph name="NUMBER" /></translation>
@@ -211,6 +212,7 @@
 <translation id="2536159006530886390">Nedá sa pripojiť k internetu.</translation>
 <translation id="2570743873672969996">Prebieha test <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">Ak chcete nastaviť sieť, prejdite do Nastavení</translation>
+<translation id="2597774443162333062">Súbory budú odoslané Googlu na účely ladenia</translation>
 <translation id="2619761439309613843">Obnovovať denne</translation>
 <translation id="2620436844016719705">Systém</translation>
 <translation id="2638662041295312666">Obrázok na prihlasovacej obrazovke</translation>
@@ -672,6 +674,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="6659594942844771486">Karta</translation>
 <translation id="6692996468359469499">Získajte informácie súvisiace s vaším výberom</translation>
 <translation id="6704062477274546131">Prevod adresy IP na názov domény systémom DNS</translation>
+<translation id="6719240409382354629">Pripravuje sa reštart...</translation>
 <translation id="6723839937902243910">Napájanie</translation>
 <translation id="6723847290197874913">Podsvietenie klávesnice</translation>
 <translation id="672609503628871915">Zobraziť novinky</translation>
@@ -889,6 +892,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="8747900814994928677">Potvrdenie zmeny</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album Fotiek Google</translation>
+<translation id="8778600430213950389">Niečo sa pokazilo. Pravdepodobne to spôsobil problém s hardvérom. Vymeňte hlavnú dosku a proces opravy zopakujte.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Táto sieť môže mať prihlasovací portál</translation>
 <translation id="8798099450830957504">Predvolené</translation>
@@ -942,6 +946,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="910415269708673980">Obnoviť tiket pre <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skenuje sa <ph name="PAGE_NUMBER" />. strana</translation>
 <translation id="9111102763498581341">Odomknúť</translation>
+<translation id="9118126012493516930">Oprava sa nedá dokončiť</translation>
 <translation id="9122602430962285795">Ak sa chcete znova pripojiť, prejdite do Nastavení</translation>
 <translation id="9126720536733509015">Ukladať viacero strán do jedného súboru PDF</translation>
 <translation id="9137526406337347448">Služby Google</translation>

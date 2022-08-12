@@ -149,6 +149,7 @@
 <translation id="2115956742084455574">កូដ​មិន​ត្រឹមត្រូវ</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, កំណែ <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">អាចប្រើបាន <ph name="AVAILABLE_MEMORY" /> GB នៃ <ph name="TOTAL_MEMORY" /> GB</translation>
+<translation id="2130871201950918186">ប្រព័ន្ធ​នឹង​ចាប់ផ្ដើម​ឡើងវិញ​ក្នុងរយៈពេល 5 វិនាទី​ទៀត។</translation>
 <translation id="2138109643290557664">រសាត់កាត់ពីលើ</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059">រូបថត <ph name="NUMBER" /> សន្លឹក</translation>
@@ -211,6 +212,7 @@
 <translation id="2536159006530886390">មិនអាចភ្ជាប់អ៊ីនធឺណិតបានទេ។</translation>
 <translation id="2570743873672969996">កំពុងដំណើរការតេស្ត <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">ដើម្បីរៀបចំ សូមចូលទៅកាន់ការកំណត់</translation>
+<translation id="2597774443162333062">ឯកសារ​នឹង​ត្រូវបាន​ផ្ញើ​ទៅ Google សម្រាប់​ការជួសជុល</translation>
 <translation id="2619761439309613843">ការផ្ទុក​ឡើងវិញ​ប្រចាំថ្ងៃ</translation>
 <translation id="2620436844016719705">ប្រព័ន្ធ</translation>
 <translation id="2638662041295312666">រូបភាពចូលគណនី</translation>
@@ -671,6 +673,7 @@
 <translation id="6659594942844771486">ផ្ទាំង</translation>
 <translation id="6692996468359469499">ទទួលបានព័ត៌មានពាក់ព័ន្ធនឹងការជ្រើសរើស​របស់អ្នក</translation>
 <translation id="6704062477274546131">ដំណោះស្រាយ DNS</translation>
+<translation id="6719240409382354629">កំពុងរៀបចំចាប់ផ្ដើម​ឡើងវិញ...</translation>
 <translation id="6723839937902243910">ថាមពល</translation>
 <translation id="6723847290197874913">ពន្លឺផ្នែកខាងក្រោយនៃក្ដារចុច</translation>
 <translation id="672609503628871915">មើលអ្វីដែលថ្មី</translation>
@@ -888,6 +891,7 @@
 <translation id="8747900814994928677">បញ្ជាក់​ការ​ផ្លាស់ប្ដូរ</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">អាល់ប៊ុម Google រូបថត</translation>
+<translation id="8778600430213950389">មានអ្វីមួយខុសប្រក្រតី។ ករណី​នេះ​ទំនងជាកើតឡើង​ដោយសារ​បញ្ហា​ហាតវែរ។ សូម​ប្ដូរ​បន្ទះ​មេ រួច​សាកល្បង​អនុវត្ត​ដំណើរការ​ជួសជុល​ម្ដងទៀត។</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">បណ្ដាញនេះអាចមានច្រកចូលប្រើបណ្ដាញ</translation>
 <translation id="8798099450830957504">លំនាំដើម</translation>
@@ -941,6 +945,7 @@
 <translation id="910415269708673980">ផ្ទុកសំបុត្រ​ឡើងវិញសម្រាប់ <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">កំពុង​ស្កេន​ទំព័រ <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">ដោះសោរ</translation>
+<translation id="9118126012493516930">មិនអាច​បញ្ចប់​ការជួលជុល​បាន​ទេ</translation>
 <translation id="9122602430962285795">ដើម្បីភ្ជាប់ឡើងវិញ សូមចូលទៅកាន់ការកំណត់</translation>
 <translation id="9126720536733509015">រក្សាទុក​ទំព័រច្រើន​ទៅជា PDF មួយ</translation>
 <translation id="9137526406337347448">សេវាកម្ម Google</translation>

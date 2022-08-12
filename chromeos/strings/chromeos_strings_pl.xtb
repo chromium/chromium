@@ -149,6 +149,7 @@
 <translation id="2115956742084455574">Nieprawidłowy kod</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, wersja <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Dostępne: <ph name="AVAILABLE_MEMORY" /> GB z <ph name="TOTAL_MEMORY" /> GB</translation>
+<translation id="2130871201950918186">System uruchomi się ponownie za 5 sekund.</translation>
 <translation id="2138109643290557664">Płyń z prądem</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059">Zdjęcia: <ph name="NUMBER" /></translation>
@@ -211,6 +212,7 @@
 <translation id="2536159006530886390">Nie udało się połączyć z internetem.</translation>
 <translation id="2570743873672969996">Wykonuję test <ph name="TEST_NAME" />…</translation>
 <translation id="2584559707064218956">Aby skonfigurować sieć, otwórz Ustawienia</translation>
+<translation id="2597774443162333062">Pliki zostaną wysłane do Google w celu debugowania</translation>
 <translation id="2619761439309613843">Codziennie nowa</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="2638662041295312666">Obraz użytkownika</translation>
@@ -672,6 +674,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="6659594942844771486">Karta</translation>
 <translation id="6692996468359469499">Uzyskiwanie informacji związanych z zaznaczoną treścią</translation>
 <translation id="6704062477274546131">Rozwiązywanie nazw DNS</translation>
+<translation id="6719240409382354629">Przygotowuję się do ponownego uruchomienia…</translation>
 <translation id="6723839937902243910">Zasilanie</translation>
 <translation id="6723847290197874913">Podświetlenie klawiatury</translation>
 <translation id="672609503628871915">Zobacz, co nowego</translation>
@@ -889,6 +892,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="8747900814994928677">Potwierdź zmianę</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album Zdjęcia Google</translation>
+<translation id="8778600430213950389">Coś poszło nie tak. Jest to najprawdopodobniej spowodowane problemem sprzętowym. Wymień płytę główną i spróbuj ponownie przeprowadzić proces naprawy.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">W sieci może znajdować się portal przechwytujący</translation>
 <translation id="8798099450830957504">Domyślny</translation>
@@ -942,6 +946,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="910415269708673980">Odśwież zgłoszenie przypisane do konta <ph name="PRINCIPAL_NAME" />.</translation>
 <translation id="9106415115617144481">Skanowanie strony <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Odblokuj</translation>
+<translation id="9118126012493516930">Nie udało się ukończyć naprawy</translation>
 <translation id="9122602430962285795">Aby połączyć się ponownie, otwórz Ustawienia</translation>
 <translation id="9126720536733509015">Zapisz kilka stron w 1 pliku PDF</translation>
 <translation id="9137526406337347448">Usługi Google</translation>

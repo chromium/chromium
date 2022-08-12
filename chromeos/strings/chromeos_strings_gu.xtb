@@ -149,6 +149,7 @@
 <translation id="2115956742084455574">ખોટો કોડ</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, વર્ઝન <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> GBમાંથી <ph name="AVAILABLE_MEMORY" /> GB ઉપલબ્ધ છે</translation>
+<translation id="2130871201950918186">5 સેકન્ડમાં સિસ્ટમ ફરી શરૂ થશે.</translation>
 <translation id="2138109643290557664">આસપાસમાં ફરો</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> ફોટા</translation>
@@ -211,6 +212,7 @@
 <translation id="2536159006530886390">ઇન્ટરનેટથી કનેક્ટ થઈ શકતા નથી.</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> પરીક્ષણ ચલાવી રહ્યાં છીએ…</translation>
 <translation id="2584559707064218956">સેટઅપ કરવા માટે, સેટિંગમાં જાઓ</translation>
+<translation id="2597774443162333062">ડિબગીંગ માટે ફાઇલ Googleને મોકલવામાં આવશે</translation>
 <translation id="2619761439309613843">દરરોજ રિફ્રેશ કરો</translation>
 <translation id="2620436844016719705">સિસ્ટમ</translation>
 <translation id="2638662041295312666">સાઇન ઇન છબી</translation>
@@ -671,6 +673,7 @@
 <translation id="6659594942844771486">બ્રાઉઝર ટૅબ</translation>
 <translation id="6692996468359469499">તમારી પસંદગી સંબંધિત માહિતી મેળવો</translation>
 <translation id="6704062477274546131">DNSનો ઉકેલ</translation>
+<translation id="6719240409382354629">ફરી શરૂ કરવાની તૈયારી કરી રહ્યાં છીએ...</translation>
 <translation id="6723839937902243910">પાવર</translation>
 <translation id="6723847290197874913">કીબોર્ડ બૅકલાઇટ</translation>
 <translation id="672609503628871915">શું નવું છે તે જુઓ</translation>
@@ -888,6 +891,7 @@
 <translation id="8747900814994928677">ફેરફાર કન્ફર્મ કરો</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos આલ્બમ</translation>
+<translation id="8778600430213950389">કંઈક ખોટું થયું. આ મોટે ભાગે હાર્ડવેર સંબંધિત સમસ્યાને કારણે થયું હોવાની શક્યતા છે. મુખ્ય બોર્ડ બદલો અને ફરી રિપૅર પ્રક્રિયા કરી જુઓ.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">આ નેટવર્કમાં કૅપ્ટિવ પોર્ટલ હોઈ શકે છે</translation>
 <translation id="8798099450830957504">ડિફૉલ્ટ</translation>
@@ -941,6 +945,7 @@
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> માટે ટિકિટ રિફ્રેશ કરો</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" /> નંબરનું પેજ સ્કૅન કરી રહ્યાં છીએ</translation>
 <translation id="9111102763498581341">અનલોક કરો</translation>
+<translation id="9118126012493516930">રિપૅર પ્રક્રિયા પૂર્ણ કરી શકાતી નથી</translation>
 <translation id="9122602430962285795">ફરીથી કનેક્ટ કરવા માટે, સેટિંગમાં જાઓ</translation>
 <translation id="9126720536733509015">એક PDFમાં એકથી વધુ પેજ સાચવો</translation>
 <translation id="9137526406337347448">Google સેવાઓ</translation>

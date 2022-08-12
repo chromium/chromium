@@ -149,6 +149,7 @@
 <translation id="2115956742084455574">Nepravilna koda</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, različica: <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Na voljo je <ph name="AVAILABLE_MEMORY" /> GB od skupno <ph name="TOTAL_MEMORY" /> GB.</translation>
+<translation id="2130871201950918186">Sistem se bo znova zagnal čez 5 sekund.</translation>
 <translation id="2138109643290557664">Lebdite mimo</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2152882202543497059">Št. fotografij: <ph name="NUMBER" /></translation>
@@ -211,6 +212,7 @@
 <translation id="2536159006530886390">Internetne povezave ni mogoče vzpostaviti.</translation>
 <translation id="2570743873672969996">Izvajanje preizkusa <ph name="TEST_NAME" /> …</translation>
 <translation id="2584559707064218956">Če želite nastaviti, odprite nastavitve.</translation>
+<translation id="2597774443162333062">Datoteke bodo poslane Googlu zaradi odpravljanja napak.</translation>
 <translation id="2619761439309613843">Dnevno osveževanje</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2638662041295312666">Slika za prijavo</translation>
@@ -672,6 +674,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="6659594942844771486">Zavihek</translation>
 <translation id="6692996468359469499">Prejemanje podatkov, povezanih z izborom</translation>
 <translation id="6704062477274546131">Razrešitev DNS-ja</translation>
+<translation id="6719240409382354629">Pripravljanje na vnovični zagon …</translation>
 <translation id="6723839937902243910">Napajanje</translation>
 <translation id="6723847290197874913">Osvetlitev tipkovnice</translation>
 <translation id="672609503628871915">Oglejte si novosti</translation>
@@ -889,6 +892,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="8747900814994928677">Potrditev spremembe</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album v Googlu Foto</translation>
+<translation id="8778600430213950389">Prišlo je do napake. To je najverjetneje zaradi težave s strojno opremo. Zamenjajte osnovno ploščo in poskusite znova s postopkom popravila.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">To omrežje ima morda prestrezni portal.</translation>
 <translation id="8798099450830957504">Privzeto</translation>
@@ -942,6 +946,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="910415269708673980">Osvežite kartonček za <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Optično branje <ph name="PAGE_NUMBER" />. strani</translation>
 <translation id="9111102763498581341">Odkleni</translation>
+<translation id="9118126012493516930">Popravila ni mogoče dokončati</translation>
 <translation id="9122602430962285795">Če želite znova vzpostaviti povezavo, odprite nastavitve.</translation>
 <translation id="9126720536733509015">Shrani več strani v eno datoteko PDF.</translation>
 <translation id="9137526406337347448">Googlove storitve</translation>

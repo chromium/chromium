@@ -100,6 +100,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1455242230282523554">Ipakita ang mga setting ng wika</translation>
 <translation id="1460620680449458626">Naka-mute ang volume.</translation>
 <translation id="1467432559032391204">Kaliwa</translation>
+<translation id="146902737843070955">Hiniling ng iyong administrator ang pagbabagong ito</translation>
 <translation id="147310119694673958"><ph name="BATTERY_PERCENTAGE" />% baterya ng telepono</translation>
 <translation id="1479909375538722835">Nakalutang na menu ng accessibility</translation>
 <translation id="1480845547124508962"><ph name="CURRENT_TIME" />, Pindutin ang enter key para buksan ang view ng Kalendaryo</translation>
@@ -837,6 +838,7 @@ Isaksak ang iyong device.</translation>
 <translation id="5779721926447984944">Mga naka-pin na file</translation>
 <translation id="5788127256798019331">Mga Play file</translation>
 <translation id="5790085346892983794">Tagumpay</translation>
+<translation id="5804651031882187592">I-off ang setting na "I-lock ang SIM"</translation>
 <translation id="5805809050170488595">I-click para ma-activate ang <ph name="NETWORK_NAME" /></translation>
 <translation id="5825969630400862129">Mga setting ng mga nakakonektang device</translation>
 <translation id="5837036133683224804">Ihinto ang <ph name="ROUTE_TITLE" /> sa <ph name="RECEIVER_NAME" /></translation>

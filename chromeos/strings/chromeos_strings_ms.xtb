@@ -149,6 +149,7 @@
 <translation id="2115956742084455574">Kod salah</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versi <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB daripada <ph name="TOTAL_MEMORY" /> GB tersedia</translation>
+<translation id="2130871201950918186">Sistem akan dimulakan semula dalam masa 5 saat.</translation>
 <translation id="2138109643290557664">Terapung-apung</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> foto</translation>
@@ -211,6 +212,7 @@
 <translation id="2536159006530886390">Tidak dapat menyambung kepada Internet.</translation>
 <translation id="2570743873672969996">Menjalankan ujian <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">Untuk membuat persediaan, pergi ke Tetapan</translation>
+<translation id="2597774443162333062">Fail akan dihantar kepada Google untuk dinyahpepijat</translation>
 <translation id="2619761439309613843">Muat Semula Harian</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2638662041295312666">Imej log masuk</translation>
@@ -672,6 +674,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="6659594942844771486">Tab</translation>
 <translation id="6692996468359469499">Dapatkan maklumat yang berkaitan dengan pilihan anda</translation>
 <translation id="6704062477274546131">Peleraian DNS</translation>
+<translation id="6719240409382354629">Bersedia untuk mulakan semula...</translation>
 <translation id="6723839937902243910">Kuasa</translation>
 <translation id="6723847290197874913">Lampu latar papan kekunci</translation>
 <translation id="672609503628871915">Lihat apa yang baharu</translation>
@@ -822,7 +825,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="8179976553408161302">Enter</translation>
 <translation id="819552138404104974">Log RMA</translation>
 <translation id="8206859287963243715">Selular</translation>
-<translation id="8208861521865154048">Manfaat</translation>
+<translation id="8208861521865154048">Kelebihan</translation>
 <translation id="8217675307824400706">Berhubung</translation>
 <translation id="8221728673725659466">Penentukuran selesai</translation>
 <translation id="8226628635270268143">Pilih foto dan album kegemaran anda</translation>
@@ -889,6 +892,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="8747900814994928677">Sahkan penukaran</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album Google Photos</translation>
+<translation id="8778600430213950389">Kesilapan telah berlaku. Ini berkemungkinan besar disebabkan oleh isu perkakasan. Gantikan papan utama dan cuba jalankan proses pembaikan sekali lagi.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Rangkaian ini mungkin mempunyai portal terbolot</translation>
 <translation id="8798099450830957504">Lalai</translation>
@@ -942,6 +946,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="910415269708673980">Muat semula tiket untuk <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Mengimbas halaman <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Buka kunci</translation>
+<translation id="9118126012493516930">Tidak dapat menyelesaikan pembaikan</translation>
 <translation id="9122602430962285795">Untuk menyambung semula, pergi ke Tetapan</translation>
 <translation id="9126720536733509015">Simpan berbilang halaman menjadi satu PDF</translation>
 <translation id="9137526406337347448">Perkhidmatan Google</translation>

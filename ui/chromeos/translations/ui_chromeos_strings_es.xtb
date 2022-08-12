@@ -5,6 +5,7 @@
 <translation id="1047956942837015229">Eliminando <ph name="COUNT" /> elementos...</translation>
 <translation id="1049926623896334335">Documento de Word</translation>
 <translation id="1056775291175587022">No hay redes</translation>
+<translation id="1056898198331236512">Advertencia</translation>
 <translation id="1060368002126861100">Para abrir archivos con <ph name="APP_NAME" />, primero debes moverlos a la carpeta de archivos de Windows.</translation>
 <translation id="1062407476771304334">Reemplazar</translation>
 <translation id="1119447706177454957">Error interno</translation>
@@ -284,10 +285,12 @@
 <translation id="3479552764303398839">Ahora no</translation>
 <translation id="3486821258960016770">Mongol</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> errores.</translation>
+<translation id="3495810061346586977">Este archivo es confidencial y está sujeto a restricciones según la política del administrador. <ph name="BEGIN_LINK_HELP" />Más información<ph name="END_LINK_HELP" /></translation>
 <translation id="3509680540198371098">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" /> %, detalles</translation>
 <translation id="3522708245912499433">Portugués</translation>
 <translation id="3524311639100184459">Aviso: Estos archivos son temporales y es posible que se eliminen automáticamente para liberar espacio en el disco.  <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Carpeta</translation>
+<translation id="3548125359243647069">Se ha introducido un PIN incorrecto demasiadas veces.</translation>
 <translation id="3549797760399244642">Ir a drive.google.com...</translation>
 <translation id="3553048479571901246">Para abrir archivos con <ph name="APP_NAME" />, primero debes copiarlos a la carpeta de archivos de Windows.</translation>
 <translation id="3556731189587832921">Inglés (EE. UU.) con teclado internacional (PC)</translation>
@@ -613,6 +616,7 @@
 <translation id="6267547857941397424">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" /> %, batería del teléfono: <ph name="BATTERY_STATUS" /> %, conectar</translation>
 <translation id="6269630227984243955">Malayo</translation>
 <translation id="6287852322318138013">Seleccionar una aplicación para abrir este archivo</translation>
+<translation id="6295542640242147836">Bloquear SIM</translation>
 <translation id="6296410173147755564">PUK no válido</translation>
 <translation id="6312403991423642364">Error desconocido de red</translation>
 <translation id="6317608858038767920">Servidor de nombres personalizado: <ph name="INPUT_INDEX" /></translation>
@@ -721,6 +725,7 @@
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Guardar archivo como</translation>
 <translation id="7229570126336867161">Es necesario el estándar EVDO.</translation>
+<translation id="7230898482850090046">Tu administrador te ha solicitado que desactives el ajuste Bloquear SIM</translation>
 <translation id="7238097264433196391">Nombre de la unidad</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, detalles</translation>
 <translation id="7246947237293279874">Proxy de FTP</translation>
@@ -752,6 +757,7 @@
 <translation id="7505167922889582512">Mostrar archivos ocultos</translation>
 <translation id="7514365320538308">Descargar</translation>
 <translation id="751507702149411736">Bielorruso</translation>
+<translation id="7521790570754130607">Se requiere un PIN para usar los datos móviles</translation>
 <translation id="7532029025027028521">Persa (transliteración)</translation>
 <translation id="7544830582642184299">Permite que las aplicaciones de Linux accedan a tus archivos de Google Drive. Los cambios se sincronizarán con tus otros dispositivos.</translation>
 <translation id="7547009467130558110">Zapatilla</translation>
@@ -776,6 +782,7 @@
 <translation id="76959938259365003">No se ha podido vaciar la papelera.</translation>
 <translation id="770015031906360009">Griego</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> copiado.</translation>
+<translation id="7708271999969613024">Para usar esta red, debes introducir el código PUK de 8 dígitos proporcionado por tu operador.</translation>
 <translation id="7711920809702896782">Información de la imagen</translation>
 <translation id="7724603315864178912">Cortar</translation>
 <translation id="7730494089396812859">Muestra detalles de la copia de seguridad en la nube</translation>
@@ -870,6 +877,7 @@
 <translation id="8437209419043462667">EE. UU.</translation>
 <translation id="8452135315243592079">Falta la tarjeta SIM</translation>
 <translation id="8456681095658380701">El nombre no es válido</translation>
+<translation id="8457767749626250697">Tu SIM está bloqueada</translation>
 <translation id="8459404855768962328">Si copias este elemento, se compartirá con todos los usuarios que puedan ver la carpeta compartida "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="8461467696380332069">Haz clic con el botón derecho en un archivo y selecciona Fijar en la estantería para acceder rápidamente a tus archivos desde la estantería.</translation>
 <translation id="8461914792118322307">Proxy</translation>

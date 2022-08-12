@@ -987,6 +987,7 @@
 <translation id="1907044622262489040">Մուտքագրեք տեքստը ձայնային հրահանգներով։ Օգտագործեք Որոնում + D դյուրանցումը, ապա սկսեք խոսել։</translation>
 <translation id="1908591798274282246">Վերականգնել փակված խումբը</translation>
 <translation id="1909880997794698664">Իսկապե՞ս այս սարքը մշտապես պահել kiosk ռեժիմում:</translation>
+<translation id="1910721550319506122">Ողջո՛ւյն:</translation>
 <translation id="1915073950770830761">Canary</translation>
 <translation id="1915307458270490472">Փակել</translation>
 <translation id="1916502483199172559">Կանխադրված կարմիր ավատար</translation>
@@ -1129,6 +1130,7 @@
 <translation id="2048653237708779538">Գործողությունը հասանելի չէ</translation>
 <translation id="2050339315714019657">Ուղղաձիգ</translation>
 <translation id="2052572566310583903">Ձեր մյուս սարքերում տեղադրված հավելվածները</translation>
+<translation id="2053105195397337973">Մենք ուսումնասիրում ենք օգտատերերի գործողությունների հետագծումը սահմանափակելու եղանակները՝ օգնելով կայքերին պայքարել գովազդային սպամի և խարդախության դեմ։</translation>
 <translation id="2053312383184521053">Անգործուն վիճակի տվյալներ</translation>
 <translation id="2054240652864153171">Ջնջե՞լ <ph name="PARTITION_SITE_NAME" /> կայքում առանձնացված <ph name="SITE_NAME" /> կայքի տվյալները</translation>
 <translation id="2055585478631012616">Դուք դուրս կգրվեք հաշվից այս կայքերում և բաց ներդիրներում</translation>
@@ -1870,6 +1872,7 @@
 <translation id="2727633948226935816">Այլևս չհիշեցնել</translation>
 <translation id="2727712005121231835">Actual Size</translation>
 <translation id="2729314457178420145">Ջնջել նաև այցելությունների պատմությունը (<ph name="URL" />)։ Նկատի ունեցեք, որ արդյունքում հնարավոր է դուրս գրվեք ձեր հաշվից Google.com կայքում։ <ph name="LEARN_MORE" /></translation>
+<translation id="2729327310379176711">Chrome-ը նոր եղանակներ է գտնում՝ ձեր գործողությունների հետագծումը նվազեցնելու և ձեր կողմից կայքերի այցելությունն ավելի անվտանգ դարձնելու համար։ Chrome-ը նաև <ph name="ESTIMATE_INTERESTS_LINK" /> և տալիս է ձեզ դրանք կառավարելու հնարավորություն։ Այնուհետև, կայքերը, որոնք այցելում եք, կարող են Chrome-ից իմանալ ձեր հետաքրքրությունները՝ գովազդ ցուցադրելու համար։</translation>
 <translation id="2730029791981212295">Լինուքսի հավելվածների ու ֆայլերի պահուստավորում</translation>
 <translation id="2730901670247399077">Էմոջիների առաջարկներ</translation>
 <translation id="273093730430620027">Այս էջն օգտագործում է ձեր տեսախցիկը:</translation>
@@ -2113,7 +2116,6 @@
 <translation id="2939908794993783865">Լրացուցիչ ոչ ակտիվ կայքեր</translation>
 <translation id="2939938020978911855">Ցուցադրել հասանելի Bluetooth սարքերը</translation>
 <translation id="2941112035454246133">Ցածր</translation>
-<translation id="2941696810925320401">Կայքերը սովորաբար պատուհաններ են բացում և տեղակայում՝ լրացուցիչ փաստաթղթեր կամ լիաէկրան ռեժիմում բովանդակություն ցուցադրելու համար։</translation>
 <translation id="2942279350258725020">Android Messages</translation>
 <translation id="2942560570858569904">Սպասում ենք օգտատիրոջ թույլտվությանը...</translation>
 <translation id="2942581856830209953">Անհատականացնել այս էջը</translation>
@@ -3415,7 +3417,6 @@
 <translation id="4219558185499589032">Box</translation>
 <translation id="4220648711404560261">Ակտիվացման ժամանակ սխալ առաջացավ։</translation>
 <translation id="4225397296022057997">Բոլոր կայքերում</translation>
-<translation id="4227605727325220318">Ավելացնել նոր Android հեռախոս</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Այս ընդլայնումը չի թույլատրվում օգտագործել}one{Այս ընդլայնումը չի թույլատրվում օգտագործել}other{Այս ընդլայնումները չի թույլատրվում օգտագործել}}</translation>
 <translation id="4231095370974836764"><ph name="DEVICE_TYPE" /> սարքում տեղադրեք հավելվածներ ու խաղեր Google Play-ից։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="4231141543165771749">Փակել խաղի կարգավորումները</translation>
@@ -3680,7 +3681,6 @@
 <translation id="4481467543947557978">service worker</translation>
 <translation id="4481530544597605423">Ապազուգակցված սարքեր</translation>
 <translation id="4482990632723642375">Վերջերս փակված ներդիր</translation>
-<translation id="4484922932728109422">Թույլ չտալ կայքերին օգտագործել ձեր էկրանների մասին տեղեկությունները՝ պատուհաններ բացելու և տեղակայելու նպատակով</translation>
 <translation id="4487489714832036847">Chromebook սարքերում ավանդական ծրագրերի փոխարեն հավելվածներ են օգտագործվում։ Տեղադրեք աշխատանքային, ժամանցային և այլ հավելվածներ։</translation>
 <translation id="4488257340342212116">Թույլատրվում է օգտագործել ձեր տեսախցիկը</translation>
 <translation id="4488502501195719518">Ջնջե՞լ բոլոր տվյալները</translation>
@@ -4326,7 +4326,6 @@
 <translation id="5125751979347152379">URL-ն անվավեր է:</translation>
 <translation id="5125967981703109366">Այս քարտի մասին</translation>
 <translation id="5126611267288187364">Դիտել փոփոխությունները</translation>
-<translation id="5127242257756472928">Չի թույլատրվում օգտագործել ձեր էկրանների մասին տեղեկությունները՝ պատուհաններ բացելու և տեղակայելու նպատակով</translation>
 <translation id="5127620150973591153">Անվտանգ միացման կոդ՝ <ph name="TOKEN" /></translation>
 <translation id="5127805178023152808">Համաժամացումն անջատված է</translation>
 <translation id="5127881134400491887">Կառավարել ցանցի միացումները</translation>
@@ -4558,6 +4557,7 @@
 <translation id="5350293332385664455">Անջատել Google Օգնականը</translation>
 <translation id="535123479159372765">Տեքստը պատճենվեց այլ սարքից</translation>
 <translation id="5352033265844765294">Ժամադրոշմ</translation>
+<translation id="5352257124367865087">Կառավարել կայքի թույլտվությունները</translation>
 <translation id="5353252989841766347">Գաղտնաբառերի արտահանում Chrome-ից</translation>
 <translation id="5355099869024327351">Թույլ տվեք Օգնականին ցուցադրել ծանուցումներ</translation>
 <translation id="5355191726083956201">Բարելավված պաշտպանությունը միացված է</translation>
@@ -4961,6 +4961,7 @@
 <translation id="5747552184818312860">Սպառվում է</translation>
 <translation id="5747785204778348146">Մշակողների վարկած - անկայուն</translation>
 <translation id="5747809636523347288">Տեղադրել և անցնել <ph name="URL" /> կայք</translation>
+<translation id="5751345516399502412">Ստուգել մոդեմի ռեժիմի պատրաստ լինելը</translation>
 <translation id="5755022574660047665">հիշողություններ Google Լուսանկարներից</translation>
 <translation id="5756163054456765343">Օ&amp;գնության կենտրոն</translation>
 <translation id="5757375109985023827">Ընտրեք ներդիր՝ դիտելու համար</translation>
@@ -5056,6 +5057,7 @@
 <translation id="5843706793424741864">Ֆարենհայտ</translation>
 <translation id="5844574845205796324">Առաջարկել նոր բովանդակություն ուսումնասիրման համար</translation>
 <translation id="5846200638699387931">Հարաբերությունների շարահյուսության սխալ՝ <ph name="ERROR_LINE" /></translation>
+<translation id="5846504156837627898">Կառավարել կայքի թույլտվությունները</translation>
 <translation id="5846807460505171493">Թարմացումների և հավելվածների տեղադրում։ Շարունակելով՝ դուք համաձայնում եք, որ այս սարքը նույնպես կարող է ավտոմատ ներբեռնել և տեղադրել Google-ի, ձեր օպերատորի և սարքի արտադրողի կողմից տրամադրվող թարմացումները և հավելվածները (նաև բջջային ինտերնետի միջոցով)։ Որոշ հավելվածներում կարող է առաջարկվել վճարովի բովանդակություն։</translation>
 <translation id="5849212445710944278">Արդեն ավելացված է</translation>
 <translation id="5851868085455377790">Թողարկող</translation>
@@ -5620,6 +5622,7 @@
 <translation id="6398715114293939307">Հեռացնել Google Play Խանութը</translation>
 <translation id="6398765197997659313">Ելնել լիաէկրան ռեժիմից</translation>
 <translation id="6399774419735315745">Լրտես</translation>
+<translation id="6400360390396538896">Միշտ <ph name="ORIGIN" /> կայքում</translation>
 <translation id="6401458660421980302">Այս ներդիրը մեկ այլ սարք ուղարկելու համար մուտք գործեք Chrome այդ սարքում</translation>
 <translation id="6401597285454423070">Ձեր համակարգիչը պարունակում է վստահելի հարթակի մոդուլի (TPM) անվտանգության սարք, որն օգտագործվում է ChromeOS-ում անվտանգության բազմաթիվ կարևոր գործառույթների համար։ Լրացուցիչ տեղեկությունների համար այցելեք Chromebook-ի Օգնության կենտրոն՝ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6404187344102273690">Խաղեր Chromebook-ում</translation>
@@ -6401,7 +6404,6 @@
 <translation id="7134098520442464001">Փոքրացնել տեքստը</translation>
 <translation id="7135729336746831607">Միացնե՞լ Bluetooth-ը</translation>
 <translation id="7136694880210472378">Դարձնել կանխադրված</translation>
-<translation id="7137472406312798422">Կայքերը կարող են պատուհաններ բացելու և տեղակայելու նպատակով ձեր էկրանների մասին տեղեկություններն օգտագործելու թույլտվություն հայցել</translation>
 <translation id="7138678301420049075">Այլ</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> հավելվածն օգտագործում է ձեր խոսափողը</translation>
 <translation id="7141105143012495934">Մուտքը չհաջողվեց, քանի որ ձեր հաշվի տվյալները չհաջողվեց առբերել: Կապվեք ադմինիստրատորի հետ կամ նորից փորձեք:</translation>
@@ -7218,6 +7220,7 @@
 <translation id="7939062555109487992">Ընդլայնված ընտրանքներ</translation>
 <translation id="7939328347457537652">Կառավարել սարքի հավաստագրերը</translation>
 <translation id="7939412583708276221">Տեղադրել</translation>
+<translation id="7941179291434537290">Մոդեմի ռեժիմի պատրաստ լինելը՝</translation>
 <translation id="7942349550061667556">Կարմիր</translation>
 <translation id="7943368935008348579">Ներբեռնել PDF ֆայլեր</translation>
 <translation id="7943837619101191061">Ավելացնել տեղադրություն…</translation>
@@ -7311,7 +7314,6 @@
 <translation id="8028803902702117856">Ներբեռնվում է <ph name="SIZE" />, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">Չափ</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> – Պահանջվում է թույլտվություն։ Արձագանքելու համար սեղմեք ⌘ + Option + վեր սլաք։</translation>
-<translation id="8029539783236818164">Թույլատրվում է օգտագործել ձեր էկրանների մասին տեղեկությունները՝ պատուհաններ բացելու և տեղակայելու նպատակով</translation>
 <translation id="8030169304546394654">Անջատված է</translation>
 <translation id="8030852056903932865">Հաստատել</translation>
 <translation id="8032244173881942855">Չհաջողվեց հեռարձակել ներդիրը:</translation>
@@ -7744,6 +7746,7 @@
 <translation id="8439506636278576865">Առաջարկել թարգմանել էջերն այս լեզվով</translation>
 <translation id="8440630305826533614">Լինուքսի հավելվածներ</translation>
 <translation id="844063558976952706">Միշտ այս կայքում</translation>
+<translation id="8441313165929432954">Միացնել/անջատել մոդեմի ռեժիմը</translation>
 <translation id="8443795068008423036">Թարմացրեք սարքի օպերացիոն համակարգը և նորից փորձեք։</translation>
 <translation id="8446884382197647889">Մանրամասն</translation>
 <translation id="8447409163267621480">Սկզբում սեղմեք Ctrl կամ Alt</translation>
@@ -8535,6 +8538,7 @@
 <translation id="9219582468404818260">Օգնեք մեզ բարելավել ցանցը</translation>
 <translation id="9220525904950070496">Հեռացնել հաշիվը</translation>
 <translation id="9220820413868316583">Բարձրացրեք մատը և նորից փորձեք։</translation>
+<translation id="922152298093051471">Անհատականացնել Chrome-ը</translation>
 <translation id="923467487918828349">Ցույց տալ բոլորը</translation>
 <translation id="924818813611903184">Կառավարել լեզուները ChromeOS-ի կարգավորումներում</translation>
 <translation id="929117907539171075">Տեղադրված հավելվածից պահված տվյալները նույնպես կջնջվեն</translation>

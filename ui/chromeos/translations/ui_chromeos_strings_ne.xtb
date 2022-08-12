@@ -5,6 +5,7 @@
 <translation id="1047956942837015229"><ph name="COUNT" /> वस्तुहरू मेटाउँदै...</translation>
 <translation id="1049926623896334335">शब्द कागजात</translation>
 <translation id="1056775291175587022">कुनै पनि नेटवर्क छैन</translation>
+<translation id="1056898198331236512">चेतावनी</translation>
 <translation id="1060368002126861100"><ph name="APP_NAME" /> मार्फत फाइलहरू खोल्न सर्वप्रथम ती फाइलहरू सारेर 'Windows फाइलहरू' फोल्डरमा लैजानुहोस्।</translation>
 <translation id="1062407476771304334">बदल्नुहोस्</translation>
 <translation id="1119447706177454957">आन्तरिक त्रुटि</translation>
@@ -244,6 +245,7 @@
 <translation id="3138624403379688522">PIN अवैध छ। तपाईं अझै <ph name="RETRIES" /> पटक प्रयास गर्न सक्नुहुन्छ।</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (हार्डवेयर समर्थित)</translation>
 <translation id="3188257591659621405">मेरा फाइलहरू</translation>
+<translation id="3194553149358267393">हालसालै कुनै पनि अडियो फाइल हेरिएको छैन</translation>
 <translation id="3197563288998582412">बेलायत ड्भोराक</translation>
 <translation id="3202131003361292969">पथ</translation>
 <translation id="3205852408225871810">पोर्तुगाली (ब्राजिल)</translation>
@@ -289,6 +291,7 @@
 <translation id="3522708245912499433">पोर्टुगिज</translation>
 <translation id="3524311639100184459">चेतावनी: यी फाइलहरू अस्थायी हुन् र भण्डारण स्थान खाली गर्नका निम्ति यी फाइल स्वतः मेटाइन सक्छन्।  <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">फोल्डर</translation>
+<translation id="3548125359243647069">तपाईंले अत्यन्तै धेरै पटक गलत PIN हाल्नुभयो।</translation>
 <translation id="3549797760399244642">drive.google.com मा जानुहोस् ...</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" /> मार्फत फाइलहरू खोल्न सर्वप्रथम ती फाइलहरू कपी गरेर 'Windows फाइलहरू' फोल्डरमा पेस्ट गर्नुहोस्।</translation>
 <translation id="3556731189587832921">अङ्ग्रेजी (सं. रा. अमेरिकी) अन्तर्राष्ट्रिय PC किबोर्ड</translation>
@@ -301,6 +304,7 @@
 <translation id="3606220979431771195">टर्किस-एफ</translation>
 <translation id="3616113530831147358">अडियो</translation>
 <translation id="3619115746895587757">कापाचिनो</translation>
+<translation id="3619593063686672873">हालसालै कुनै पनि भिडियो हेरिएको छैन</translation>
 <translation id="3620292326130836921">सबै जगेडा गरियो!</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /> मध्ये नेटवर्क <ph name="NETWORK_INDEX" />, तपाईंका प्रशासकले व्यवस्थित गर्नुभएको छ, विवरणहरू</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> वटा वस्तु सारिए।</translation>
@@ -399,6 +403,7 @@
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> फाइल</translation>
 <translation id="457386861538956877">थप...</translation>
 <translation id="4579744207439506346">चयनमा <ph name="ENTRY_NAME" /> थपियो।</translation>
+<translation id="4583436353463424810">हालसालै कुनै पनि डकुमेन्ट हेरिएको छैन</translation>
 <translation id="4594543368593301662"><ph name="SEARCH_TERM" /> का परिणामहरू देखाउँदै।</translation>
 <translation id="4599600860674643278">फिल्टर रिसेट गरियो।</translation>
 <translation id="4603392156942865207"><ph name="FOLDER_NAME" /> मा <ph name="FILE_NAME" /> कपी गरिँदै छ</translation>
@@ -487,6 +492,7 @@
 <translation id="516592729076796170">अमेरिकी प्रोग्रामर भोराक किबोर्ड</translation>
 <translation id="5172749059808361023">प्रतिबन्धसम्बन्धी विवरणहरू</translation>
 <translation id="5177526793333269655">थम्बनेल दृश्य</translation>
+<translation id="5181896909298187506">हालसालै कुनै पनि फाइल हेरिएको छैन</translation>
 <translation id="5194713942430106590">स्तम्भलाई बढ्दो क्रममा क्रमबद्ध गर्न क्लिक गर्नुहोस्।</translation>
 <translation id="5211614973734216083">फारोज</translation>
 <translation id="5218183485292899140">स्विस फ्रेन्च</translation>
@@ -613,6 +619,7 @@
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" /> मध्ये नेटवर्क <ph name="NETWORK_INDEX" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, फोनको ब्याट्री <ph name="BATTERY_STATUS" />%, जोड्नुहोस्</translation>
 <translation id="6269630227984243955">मले</translation>
 <translation id="6287852322318138013">यो फाइल खोल्न एक एप चयन गर्नुहोस्</translation>
+<translation id="6295542640242147836">SIM लक गर्नुहोस्</translation>
 <translation id="6296410173147755564">तपाईंले हाल्नुभएको PUK अवैध छ</translation>
 <translation id="6312403991423642364">अज्ञात सञ्जाल त्रुटि</translation>
 <translation id="6317608858038767920">इच्छ्याइएको nameserver <ph name="INPUT_INDEX" /></translation>
@@ -721,6 +728,7 @@
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> जि.बि.</translation>
 <translation id="7191454237977785534">यसको रूपमा फाइल बचत गर्नुहोस्</translation>
 <translation id="7229570126336867161">EVDO आवश्यक छ</translation>
+<translation id="7230898482850090046">तपाईंका सहायकले तपाईंलाई "SIM लक गर्नुहोस्" सेटिङ अफ गर्न अनुरोध गर्नुभएको छ</translation>
 <translation id="7238097264433196391">डिभाइसको नाम</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, विवरणहरू</translation>
 <translation id="7246947237293279874">FTP प्रोक्सी</translation>
@@ -741,6 +749,7 @@
 <translation id="7408870451288633753">चेक</translation>
 <translation id="7417453074306512035">इथियोपिक किबोर्ड</translation>
 <translation id="7417705661718309329">Google नक्सा</translation>
+<translation id="7458955835361612701">हालसालै कुनै पनि फोटो हेरिएको छैन</translation>
 <translation id="7460898608667578234">युक्रेनियन</translation>
 <translation id="7469894403370665791">यो नेटवर्कमा स्वचालित रूपमा कनेक्ट गर्नुहोस्</translation>
 <translation id="7486315294984620427">फाइल ड्र्याग गरेर Parallels Desktop मा ड्रप गर्न सो फाइल कपी गरेर 'Windows फाइलहरू' फोल्डरमा पेस्ट गर्नु पर्ने हुन्छ।</translation>
@@ -752,6 +761,7 @@
 <translation id="7505167922889582512">लुकेका फाइलहरू देखाउनुहोस्</translation>
 <translation id="7514365320538308">डाउनलोड गर्नुहोस्</translation>
 <translation id="751507702149411736">बेलारूसियन</translation>
+<translation id="7521790570754130607">मोबाइल डेटा प्रयोग गर्न PIN हाल्नु पर्ने हुन्छ</translation>
 <translation id="7532029025027028521">फारसी लिपि रूपान्तरण</translation>
 <translation id="7544830582642184299">Linux का एपलाई तपाईंको Google Drive मा रहेका फाइलहरूमाथि पहुँच राख्ने अनुमति दिनुहोस्। परिवर्तनहरू तपाईंका अन्य यन्त्रमा पनि सिंक हुने छन्।</translation>
 <translation id="7547009467130558110">स्निकर</translation>
@@ -776,6 +786,7 @@
 <translation id="76959938259365003">ट्र्यास खाली गर्न सकिएन।</translation>
 <translation id="770015031906360009">ग्रिक</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> कपी गरियो।</translation>
+<translation id="7708271999969613024">तपाईं यो नेटवर्क प्रयोग गर्न चाहनुहुन्छ भने तपाईंले सेवा प्रदायकले उपलब्ध गराएको ८ अङ्कको पर्सनल अनब्लकिङ की (PUK) हाल्नु पर्ने हुन्छ।</translation>
 <translation id="7711920809702896782">छविको जानकारी</translation>
 <translation id="7724603315864178912">काट्नुहोस्</translation>
 <translation id="7730494089396812859">क्लाउड जगेडा विवरणहरू देखाउनुहोस्</translation>
@@ -870,6 +881,7 @@
 <translation id="8437209419043462667">US</translation>
 <translation id="8452135315243592079">SIM कार्ड उपलब्ध छैन</translation>
 <translation id="8456681095658380701">अवैध नाम</translation>
+<translation id="8457767749626250697">तपाईंको SIM लक गरिएको छ</translation>
 <translation id="8459404855768962328">तपाईंले यो वस्तु कपी गर्नुभयो भने '<ph name="DESTINATION_NAME" />' नामक साझा फोल्डर हेर्न सक्ने सबै जनासँग यो वस्तु सेयर हुने छ।</translation>
 <translation id="8461467696380332069">आफ्ना फाइलहरू सेल्फबाट द्रुत रूपमा हेर्न तथा प्रयोग गर्न कुनै फाइलमा राइट क्लिक गर्नुहोस् र "सेल्फमा पिन गर्नुहोस्" चयन गर्नुहोस्।</translation>
 <translation id="8461914792118322307">प्रोक्सी</translation>

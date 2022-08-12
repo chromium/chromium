@@ -149,6 +149,7 @@
 <translation id="2115956742084455574">Forkert kode</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, version <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB ledig hukommelse ud af <ph name="TOTAL_MEMORY" /> GB</translation>
+<translation id="2130871201950918186">Systemet genstarter om 5 sekunder.</translation>
 <translation id="2138109643290557664">Float on by</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> billeder</translation>
@@ -211,6 +212,7 @@
 <translation id="2536159006530886390">Der kan ikke oprettes forbindelse til internettet.</translation>
 <translation id="2570743873672969996">Kører testen <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">Gå til Indstillinger for at konfigurere</translation>
+<translation id="2597774443162333062">Filerne sendes til Google til fejlretning</translation>
 <translation id="2619761439309613843">Nyt hver dag</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="2638662041295312666">Loginbillede</translation>
@@ -671,6 +673,7 @@
 <translation id="6659594942844771486">Fane</translation>
 <translation id="6692996468359469499">Få oplysninger om det, du har markeret</translation>
 <translation id="6704062477274546131">DNS-udførelse</translation>
+<translation id="6719240409382354629">Forbereder genstart...</translation>
 <translation id="6723839937902243910">Strøm</translation>
 <translation id="6723847290197874913">Tastaturlys</translation>
 <translation id="672609503628871915">Se de nye funktioner</translation>
@@ -888,6 +891,7 @@
 <translation id="8747900814994928677">Bekræft ændring</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Fotos-album</translation>
+<translation id="8778600430213950389">Noget gik galt. Årsagen er sandsynligvis et hardwareproblem. Udskift bundkortet, og prøv at udføre reparationsprocessen igen.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Dette netværk har muligvis en loginportal</translation>
 <translation id="8798099450830957504">Standard</translation>
@@ -941,6 +945,7 @@
 <translation id="910415269708673980">Gendan billetten for <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Scanner side <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Lås op</translation>
+<translation id="9118126012493516930">Reparationen kan ikke udføres</translation>
 <translation id="9122602430962285795">Gå til indstillinger for at genoprette forbindelsen</translation>
 <translation id="9126720536733509015">Gem flere sider i én PDF-fil</translation>
 <translation id="9137526406337347448">Google-tjenester</translation>

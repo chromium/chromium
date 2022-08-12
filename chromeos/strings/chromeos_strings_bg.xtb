@@ -149,6 +149,7 @@
 <translation id="2115956742084455574">Неправилен код</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, версия <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Налице: <ph name="AVAILABLE_MEMORY" /> ГБ от <ph name="TOTAL_MEMORY" /> ГБ</translation>
+<translation id="2130871201950918186">Системата ще се рестартира след 5 секунди.</translation>
 <translation id="2138109643290557664">По течението</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> снимки</translation>
@@ -211,6 +212,7 @@
 <translation id="2536159006530886390">Няма връзка с интернет.</translation>
 <translation id="2570743873672969996">Изпълняван тест: <ph name="TEST_NAME" /></translation>
 <translation id="2584559707064218956">За настройване отворете „Настройки“</translation>
+<translation id="2597774443162333062">Файловете ще бъдат изпратени до Google за отстраняване на грешки</translation>
 <translation id="2619761439309613843">Ежедневно опресняване</translation>
 <translation id="2620436844016719705">Система</translation>
 <translation id="2638662041295312666">Изображение при вход</translation>
@@ -672,6 +674,7 @@
 <translation id="6659594942844771486">Раздел</translation>
 <translation id="6692996468359469499">Получаване на информация, свързана с избраното от вас</translation>
 <translation id="6704062477274546131">Преобразуване от DNS</translation>
+<translation id="6719240409382354629">Устройството се подготвя за рестартиране...</translation>
 <translation id="6723839937902243910">Захранване</translation>
 <translation id="6723847290197874913">Фоново осветление на клавиатурата</translation>
 <translation id="672609503628871915">Вижте новите неща</translation>
@@ -889,6 +892,7 @@
 <translation id="8747900814994928677">Потвърждаване на промяната</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Албум в Google Снимки</translation>
+<translation id="8778600430213950389">Нещо се обърка. Това най-вероятно се дължи на проблем с хардуера. Заменете основната платка и опитайте отново процедурата за ремонт.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Тази мрежа може да има портал за удостоверяване</translation>
 <translation id="8798099450830957504">По подразбиране</translation>
@@ -942,6 +946,7 @@
 <translation id="910415269708673980">Опресняване на пропуска за <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Сканира се страница <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Отключване</translation>
+<translation id="9118126012493516930">Ремонтът не може да бъде завършен</translation>
 <translation id="9122602430962285795">За повторно свързване отворете „Настройки“</translation>
 <translation id="9126720536733509015">Запазване на няколко страници в един PDF файл</translation>
 <translation id="9137526406337347448">Услуги на Google</translation>

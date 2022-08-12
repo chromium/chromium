@@ -5,6 +5,7 @@
 <translation id="1047956942837015229"><ph name="COUNT" /> нерсе жок кылынууда…</translation>
 <translation id="1049926623896334335">Word документи</translation>
 <translation id="1056775291175587022">Тармактар жок</translation>
+<translation id="1056898198331236512">Эскертүү</translation>
 <translation id="1060368002126861100">Файлдарды <ph name="APP_NAME" /> колдонмосунда ачуу үчүн алгач аларды Windows папкасына жылдырыңыз.</translation>
 <translation id="1062407476771304334">Алмаштыруу</translation>
 <translation id="1119447706177454957">Ички ката</translation>
@@ -244,6 +245,7 @@
 <translation id="3138624403379688522">PIN код жараксыз. Сизде <ph name="RETRIES" /> аракет калды.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (аппараттык камсыздоонун камдык көчүрмөсү сакталды)</translation>
 <translation id="3188257591659621405">Менин файлдарым</translation>
+<translation id="3194553149358267393">Жаңы аудио файлдар жок</translation>
 <translation id="3197563288998582412">UK Dvorak</translation>
 <translation id="3202131003361292969">Жол</translation>
 <translation id="3205852408225871810">Португалча (Бразилия)</translation>
@@ -302,6 +304,7 @@
 <translation id="3606220979431771195">Түркчө-F</translation>
 <translation id="3616113530831147358">Аудио</translation>
 <translation id="3619115746895587757">Капучино</translation>
+<translation id="3619593063686672873">Жаңы видеолор жок</translation>
 <translation id="3620292326130836921">Баарынын камдык көчүрмөсү сакталды!</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак,<ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Администраторуңуз башкарат, Чоо-жайы</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> нерсе жылдырылды.</translation>
@@ -400,6 +403,7 @@
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> файл</translation>
 <translation id="457386861538956877">Дагы…</translation>
 <translation id="4579744207439506346"><ph name="ENTRY_NAME" /> тандоого кошулду.</translation>
+<translation id="4583436353463424810">Жаңы документтер жок</translation>
 <translation id="4594543368593301662"><ph name="SEARCH_TERM" /> боюнча жыйынтыктар көрсөтүлүүдө.</translation>
 <translation id="4599600860674643278">Чыпка өзгөртүлдү.</translation>
 <translation id="4603392156942865207"><ph name="FILE_NAME" /> <ph name="FOLDER_NAME" /> папкасына көчүрүлүүдө</translation>
@@ -488,6 +492,7 @@
 <translation id="516592729076796170">АКШ Программачы Dvorak</translation>
 <translation id="5172749059808361023">Чектөө жөнүндө маалымат</translation>
 <translation id="5177526793333269655">Бармакбасым көрүнүшү</translation>
+<translation id="5181896909298187506">Жаңы файлдар жок</translation>
 <translation id="5194713942430106590">Тилкени чоңойгон ыраатта иреттөө үчүн чыкылдатыңыз.</translation>
 <translation id="5211614973734216083">Фарерче</translation>
 <translation id="5218183485292899140">Французча (Швейцария)</translation>
@@ -744,6 +749,7 @@
 <translation id="7408870451288633753">Чехче</translation>
 <translation id="7417453074306512035">Эфиопчо баскычтоп</translation>
 <translation id="7417705661718309329">Google карта</translation>
+<translation id="7458955835361612701">Жаңы сүрөттөр жок</translation>
 <translation id="7460898608667578234">Украинче</translation>
 <translation id="7469894403370665791">Бул тармакка автоматтык түрдө туташуу</translation>
 <translation id="7486315294984620427">Parallels Desktop'ко файлды көчүрүү үчүн файл Windows файлдарына көчүрүлүшү керек.</translation>

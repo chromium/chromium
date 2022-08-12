@@ -5,6 +5,7 @@
 <translation id="1047956942837015229">Prebieha odstraňovanie <ph name="COUNT" /> položiek...</translation>
 <translation id="1049926623896334335">Dokument aplikácie Word</translation>
 <translation id="1056775291175587022">Žiadne siete</translation>
+<translation id="1056898198331236512">Upozornenie</translation>
 <translation id="1060368002126861100">Ak chcete otvoriť súbory pomocou aplikácie <ph name="APP_NAME" />, najprv ich presuňte do priečinka so súbormi systému Windows.</translation>
 <translation id="1062407476771304334">Nahradiť</translation>
 <translation id="1119447706177454957">Interná chyba</translation>
@@ -244,6 +245,7 @@
 <translation id="3138624403379688522">Neplatný kód PIN. Zostáva vám tento počet pokusov: <ph name="RETRIES" />.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (chránené hardvérom)</translation>
 <translation id="3188257591659621405">Moje súbory</translation>
+<translation id="3194553149358267393">Žiadne nedávne zvukové súbory</translation>
 <translation id="3197563288998582412">Anglická klávesnica s rozložením klávesov Dvorak</translation>
 <translation id="3202131003361292969">Cesta</translation>
 <translation id="3205852408225871810">Portugalská (Brazília) klávesnica</translation>
@@ -302,6 +304,7 @@
 <translation id="3606220979431771195">Turecká (typ F)</translation>
 <translation id="3616113530831147358">Zvuk</translation>
 <translation id="3619115746895587757">Kapučíno</translation>
+<translation id="3619593063686672873">Žiadne nedávne videá</translation>
 <translation id="3620292326130836921">Všetko je zálohované!</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ovládaná správcom, podrobnosti</translation>
 <translation id="3645233063072417428">Počet presunutých položiek: <ph name="NUMBER_OF_ITEMS" />.</translation>
@@ -400,6 +403,7 @@
 <translation id="4572815280350369984">Súbor <ph name="FILE_TYPE" /></translation>
 <translation id="457386861538956877">Viac...</translation>
 <translation id="4579744207439506346">Položka <ph name="ENTRY_NAME" /> bola pridaná do výberu.</translation>
+<translation id="4583436353463424810">Žiadne nedávne dokumenty</translation>
 <translation id="4594543368593301662">Zobrazujú sa výsledky pre dopyt <ph name="SEARCH_TERM" />.</translation>
 <translation id="4599600860674643278">Filter je resetovaný.</translation>
 <translation id="4603392156942865207"><ph name="FILE_NAME" /> sa kopíruje do priečinka <ph name="FOLDER_NAME" /></translation>
@@ -488,6 +492,7 @@
 <translation id="516592729076796170">US Programmer Dvorak</translation>
 <translation id="5172749059808361023">Podrobnosti o obmedzeniach</translation>
 <translation id="5177526793333269655">Zobrazenie miniatúr</translation>
+<translation id="5181896909298187506">Žiadne nedávne súbory</translation>
 <translation id="5194713942430106590">Kliknutím zoradíte stĺpec vo vzostupnom poradí.</translation>
 <translation id="5211614973734216083">Faerská klávesnica</translation>
 <translation id="5218183485292899140">Švajčiarska francúzska klávesnica</translation>
@@ -745,6 +750,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="7408870451288633753">Česká klávesnica</translation>
 <translation id="7417453074306512035">Etiópska klávesnica</translation>
 <translation id="7417705661718309329">Mapa Google</translation>
+<translation id="7458955835361612701">Žiadne nedávne obrázky</translation>
 <translation id="7460898608667578234">Ukrajinčina</translation>
 <translation id="7469894403370665791">Automaticky sa pripojiť k tejto sieti</translation>
 <translation id="7486315294984620427">Ak chcete vložiť súbory do aplikácie Parallels Desktop, musíte ich skopírovať do súborov pre Windows.</translation>

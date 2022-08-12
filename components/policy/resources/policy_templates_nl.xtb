@@ -757,6 +757,11 @@ Het veld <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> is beëindigd ten 
 
       Als je het beleid instelt, geeft dit aan welke extensies zijn uitgesloten van de lijst met verboden extensies. Gebruik de waarde <ph name="ALL_EXTENSIONS" /> voor <ph name="EXTENSION_INSTALL_BLACKLIST_POLICY_NAME" /> om alle extensies te verbieden. Gebruikers kunnen vervolgens alleen expliciet toegestane extensies installeren. Standaard worden alle extensies toegestaan. Maar als je extensies via beleid hebt verboden, gebruik je de lijst met toegestane extensies om dat beleid te wijzigen.</translation>
 <translation id="1781356041596378058">Met dit beleid wordt ook de toegang tot de ontwikkelaarsopties van Android beheerd. Als je dit beleid instelt op 'True', hebben gebruikers geen toegang tot ontwikkelaarsopties. Als je dit beleid instelt op 'False' of niet instelt, hebben gebruikers toegang tot ontwikkelaarsopties door zeven keer op het buildnummer te tikken in de app Instellingen van Android.</translation>
+<translation id="1783412593566930189">
+      Als je het beleid toepast (True), vraagt <ph name="PRODUCT_NAME" /> om toestemming van beheerde gebruikers voordat het apparaatsignalen deelt op onbeheerde apparaten om toegang te krijgen.
+
+      Als je het beleid niet toepast (False) of niet instelt, krijgt <ph name="PRODUCT_NAME" /> geen toestemming om apparaatsignalen te verzamelen.
+Voorbeelden van apparaatsignalen zijn (maar zijn niet beperkt tot) OS-informatie, register en aanwezigheid van bestanden.</translation>
 <translation id="1787790976045065845">Dit beleid is alleen van kracht als het beleid <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_POLICY_NAME" /> is ingesteld op <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" /> of <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" /> en een gebruiker die verificatie via een smartcard uitvoert, die smartcard verwijdert. Dit beleid geeft dan aan hoelang (in seconden) een melding wordt getoond waarin de gebruiker wordt geïnformeerd over de komende actie. Deze melding blokkeert het scherm. De actie wordt pas uitgevoerd nadat de melding is verlopen. De gebruiker kan voorkomen dat de actie wordt uitgevoerd door de smartcard terug te plaatsen voordat de melding verloopt. Als dit beleid is ingesteld op nul, wordt er geen melding getoond en wordt de actie meteen uitgevoerd.</translation>
 <translation id="1793346220873697538">Afdrukken met pincode standaard uitzetten</translation>
 <translation id="1794457906032475749">Als je dit beleid toepast, is de optie om bestaande browsegegevens te behouden bij het maken van een zakelijk profiel standaard aangevinkt.
@@ -5110,6 +5115,7 @@ Als je dit beleid instelt, worden afhankelijk van de waarde verschillende van de
 <translation id="6518102411616460786">Wachten tot het doelkanaal de kanaaldowngrade heeft verwerkt</translation>
 <translation id="6520802717075138474">Zoekmachines importeren uit standaardbrowser bij eerste uitvoering</translation>
 <translation id="6521971538031711337">Voorkomen dat een beheerde gebruiker de hostnaam van het apparaat instelt</translation>
+<translation id="6523079496775454310">Toestemmingsproces voor apparaatsignalen aanzetten voor beheerde gebruikers op onbeheerde apparaten</translation>
 <translation id="652593254122955308">Time-out tot inactief profiel wordt gesloten</translation>
 <translation id="6532026122543921610">Tenzij het beleid <ph name="SYSTEM_TIMEZONE_POLICY_NAME" /> de automatische tijdzonedetectie uitzet, wordt de methode voor automatische tijdzonedetectie uiteengezet als het beleid wordt ingesteld. Gebruikers kunnen deze methode niet wijzigen.
 
@@ -5201,6 +5207,7 @@ Als je ervoor kiest het volgende te gebruiken:
 <translation id="6584541828182430328">Waarschuwing voor volledig scherm niet tonen</translation>
 <translation id="6593350713192882944">Snelle antwoorden aanzetten</translation>
 <translation id="6594372503585248865">Verbindingsgerelateerde UI aanzetten op de externe hostdesktop bij een actieve verbinding</translation>
+<translation id="65947892191748867">Toestemmingsproces voor apparaatsignalen uitzetten voor beheerde gebruikers op onbeheerde apparaten</translation>
 <translation id="6596675965208703569">Met dit beleid geef je op hoelang (in seconden) een cast-apparaat dat eerder via een toegangscode of QR-code is geselecteerd, zichtbaar blijft in het <ph name="PRODUCT_NAME" />-menu met cast-apparaten.
       De levensduur van een item begint op het moment dat de toegangscode voor het eerst wordt opgegeven of de QR-code voor het eerst wordt gescand.
       Tijdens deze periode verschijnt het cast-apparaat in de lijst met cast-apparaten van het <ph name="PRODUCT_NAME" />-menu.
@@ -6443,6 +6450,7 @@ https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.ht
 
       De aanbevolen manier om het scherm te vergrendelen bij inactiviteit is de schermvergrendeling bij opschorting aanzetten en <ph name="PRODUCT_OS_NAME" /> opschorten na een inactieve periode. Gebruik dit beleid alleen als schermvergrendeling veel eerder moet plaatsvinden dan opschorting of als je helemaal niet wilt opschorten bij inactiviteit.</translation>
 <translation id="7895553628261067384">Externe toegang</translation>
+<translation id="7899952578398457262">Beheerde gebruikers om toestemming vragen om apparaatsignalen te delen op onbeheerde apparaten om toegang te krijgen</translation>
 <translation id="7900469325540540107">Browsegegevens standaard bewaren als je een zakelijk profiel maakt</translation>
 <translation id="7902040092815978832">Numeriek toetsenbord tonen voor wachtwoord</translation>
 <translation id="7904177352786629708">Als je het beleid toepast, wordt CNAME-lookup overgeslagen. De servernaam wordt gebruikt zoals deze is opgegeven tijdens het genereren van de Kerberos SPN.

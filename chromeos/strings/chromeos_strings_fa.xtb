@@ -149,6 +149,7 @@
 <translation id="2115956742084455574">کد نادرست است</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />، نسخه <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> گیگابایت از مجموع <ph name="TOTAL_MEMORY" /> گیگابایت دردسترس است</translation>
+<translation id="2130871201950918186">سیستم تا ۵ ثانیه دیگر بازراه‌اندازی خواهد شد.</translation>
 <translation id="2138109643290557664">شناور شدن</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />٪</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> عکس</translation>
@@ -211,6 +212,7 @@
 <translation id="2536159006530886390">اتصال به اینترنت ممکن نیست.</translation>
 <translation id="2570743873672969996">درحال اجرای آزمایش <ph name="TEST_NAME" />…</translation>
 <translation id="2584559707064218956">برای راه‌اندازی، به «تنظیمات» بروید</translation>
+<translation id="2597774443162333062">‏فایل‌ها برای اشکال‌زدایی به Google ارسال خواهد شد</translation>
 <translation id="2619761439309613843">بازخوانی روزانه</translation>
 <translation id="2620436844016719705">سیستم</translation>
 <translation id="2638662041295312666">تصویر ورود به سیستم</translation>
@@ -672,6 +674,7 @@
 <translation id="6659594942844771486">برگه</translation>
 <translation id="6692996468359469499">دریافت اطلاعاتی که با انتخابتان مرتبط است</translation>
 <translation id="6704062477274546131">وضوح ساناد</translation>
+<translation id="6719240409382354629">درحال آماده‌سازی برای بازراه‌اندازی…</translation>
 <translation id="6723839937902243910">نیرو</translation>
 <translation id="6723847290197874913">نور پس‌زمینه صفحه‌کلید</translation>
 <translation id="672609503628871915">مشاهده تازه‌ها</translation>
@@ -889,6 +892,7 @@
 <translation id="8747900814994928677">تأیید تغییر</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">‏آلبوم Google Photos</translation>
+<translation id="8778600430213950389">مشکلی پیش آمد. به‌احتمال زیاد دلیل آن مشکلی سخت‌افزاری است. برد اصلی را تعویض کنید و فرایند تعمیر را دوباره انجام دهید.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">ممکن است این شبکه درگاه مهمان داشته باشد</translation>
 <translation id="8798099450830957504">پیش‌فرض</translation>
@@ -942,6 +946,7 @@
 <translation id="910415269708673980">بازخوانی بلیت برای <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">درحال اسکن کردن صفحه <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">باز کردن قفل</translation>
+<translation id="9118126012493516930">تعمیر تکمیل نشد</translation>
 <translation id="9122602430962285795">برای اتصال مجدد، به «تنظیمات» بروید</translation>
 <translation id="9126720536733509015">‏ذخیره چند صفحه در یک فایل PDF</translation>
 <translation id="9137526406337347448">‏سرویس‌های Google</translation>

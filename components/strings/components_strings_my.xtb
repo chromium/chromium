@@ -487,6 +487,7 @@
 <translation id="2219658597883514593">ရှင်းလင်းပို့ချချက် ပြန်စရန်</translation>
 <translation id="2219735899272417925">စက်ကို ပြင်ဆင်သတ်မှတ်ရန် လိုအပ်သည်</translation>
 <translation id="2224337661447660594">အင်တာနက် မရှိပါ</translation>
+<translation id="2225927550500503913">ပကတိအသွင်ကတ် ဖွင့်ထားသည်</translation>
 <translation id="2230458221926704099">သင့်ချိတ်ဆက်မှုအား <ph name="BEGIN_LINK" />ပြဿနာအဖြေရှာသည့် အက်ပ်<ph name="END_LINK" /> ကိုအသုံးပြုပြီး ဖြေရှင်းပါ</translation>
 <translation id="2239100178324503013">ယခုပို့ရန်</translation>
 <translation id="2241693394036365668">ဖိုင်ကို ဒေါင်းလုဒ်လုပ်လိုက်သည်</translation>
@@ -521,7 +522,6 @@
 <translation id="2318594867107319532">မူဝါဒ၏ နောက်ဆုံးအချိန်ဖော်ပြချက်-</translation>
 <translation id="2324604504973636700">အိမ်သုံးပစ္စည်းများ</translation>
 <translation id="2328651992442742497">ခွင့်ပြုထားသည် (မူရင်း)</translation>
-<translation id="2329182534073751090">ဝင်းဒိုး နေရာချထားမှု</translation>
 <translation id="2329473609445770916">သင့်ကို ကြော်ငြာပြရန် အခြားဝဘ်ဆိုက်များသုံးနိုင်သော စိတ်ဝင်စားမှုများကို ဤဝဘ်ဆိုက်က သတ်မှတ်သည်</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />၊ <ph name="EXPIRATION_DATE_ABBR" /> တွင် သက်တမ်းကုန်မည်</translation>
 <translation id="2337852623177822836">သင်၏ စီမံခန့်ခွဲသူက ထိန်းချုပ်ထားသော ဆက်တင်</translation>
@@ -637,7 +637,6 @@
             <ph name="LIST_ITEM" />ဖောင်များတွင်ထည့်ထားသော အချက်အလက်
           <ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">C10 (စာအိတ်)</translation>
-<translation id="2623663032199728144">သင့်ဖန်သားပြင်အချက်အလက်ကို သုံးရန် ခွင့်တောင်းနိုင်သည်</translation>
 <translation id="2625385379895617796">သင်၏ နာရီမှာ စောနေ</translation>
 <translation id="262745152991669301">USB ကိရိယာများနှင့် ချိတ်ဆက်ရန် ခွင့်တောင်းနိုင်သည်</translation>
 <translation id="2629325967560697240">Chrome ၏ အမြင့်ဆုံးလုံခြုံရေး ရရှိရန် <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />အဆင့်မြှင့်တင်ထားသော ကာကွယ်မှုကို ဖွင့်ပါ<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
@@ -716,7 +715,6 @@
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ Chrome ဆက်တင်များတွင် သင်၏ ‘လုံခြုံစွာ ကြည့်ရှုခြင်း’ နှင့် အခြားအရာများကိုစီမံရန် တဘ်နှိပ်ပြီးနောက် Enter နှိပ်ပါ</translation>
 <translation id="2878197950673342043">ပိုစတာပုံ ခေါက်ရန်</translation>
 <translation id="2878424575911748999">A1</translation>
-<translation id="2880660355386638022">ဝင်းဒိုး နေရာချထားမှု</translation>
 <translation id="2881276955470682203">ကတ်ကို သိမ်းလိုပါသလား။</translation>
 <translation id="2882949212241984732">တံခါးနှစ်ရွက်ပုံစံ ခေါက်ရန်</translation>
 <translation id="2893773853358652045">လေးခုမြောက်အလိပ်</translation>
@@ -1948,6 +1946,7 @@
 <translation id="6300452962057769623">{0,plural, =0{သင့်စက်ကို ယခုပြန်စမည်}=1{သင့်စက်ကို 1 စက္ကန့်အတွင်း ပြန်စမည်}other{သင့်စက်ကို # စက္ကန့်အတွင်း ပြန်စမည်}}</translation>
 <translation id="6302269476990306341">Chrome အတွင်းရှိ Google Assistant ရပ်တန့်နေသည်</translation>
 <translation id="6305205051461490394"><ph name="URL" /> ကိုဆက်သွယ်၍မရနိုင်ပါ။</translation>
+<translation id="6311165245110979290">ပကတိအသွင်ကတ် ရနိုင်သည်</translation>
 <translation id="6312113039770857350">ဝဘ်စာမျက်နှာ မရှိ</translation>
 <translation id="6316226860534107313">စကူတာနှင့် စက်တပ် ခြေနင်းစက်ဘီးများ</translation>
 <translation id="63172326633386613">အများသုံးစွဲနိုင်မှု ဆက်တင်များ စီမံရန်</translation>
@@ -2293,6 +2292,7 @@
 <translation id="7305756307268530424">ဂိမ်းအနှေး စတင်ရန်</translation>
 <translation id="7308436126008021607">နောက်ခံတွင်စင့်ခ်လုပ်ခြင်း</translation>
 <translation id="7310392214323165548">များမကြာမီ စက် ပြန်စပါမည်</translation>
+<translation id="7311244614769792472">ရလဒ်မတွေ့ပါ</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">ချိတ်ဆက်မှု အကူအညီ</translation>
 <translation id="7323804146520582233">"<ph name="SECTION" />" ကဏ္ဍကို ဝှက်ရန်</translation>
@@ -2781,7 +2781,6 @@
 <translation id="865032292777205197">လှုပ်ရှားမှု အာရုံခံစနစ်များ</translation>
 <translation id="8663226718884576429">မှာယူမှု အနှစ်ချုပ်၊ <ph name="TOTAL_LABEL" />၊ နောက်ထပ် အသေးစိတ်အချက်အလက်များ</translation>
 <translation id="8666678546361132282">အင်္ဂလိပ်</translation>
-<translation id="8669306706049782872">ဝင်းဒိုးများဖွင့်ပြီး နေရာချထားရန် သင့်ဖန်သားပြင်အချက်အလက်ကို အသုံးပြုခြင်း</translation>
 <translation id="867224526087042813">လက်မှတ်</translation>
 <translation id="8672264262457010862">စီးပွားရေးနှင့် စက်မှုလုပ်ငန်း</translation>
 <translation id="8676424191133491403">မနှောင့်နှေးရ</translation>

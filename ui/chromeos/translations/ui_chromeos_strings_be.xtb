@@ -5,6 +5,7 @@
 <translation id="1047956942837015229">Ідзе выдаленне элементаў (<ph name="COUNT" />)...</translation>
 <translation id="1049926623896334335">Дакумент Word</translation>
 <translation id="1056775291175587022">Няма сетак</translation>
+<translation id="1056898198331236512">Папярэджанне</translation>
 <translation id="1060368002126861100">Каб адкрываць файлы ў праграме "<ph name="APP_NAME" />", спачатку перамясціце іх у папку файлаў Windows.</translation>
 <translation id="1062407476771304334">Замяніць</translation>
 <translation id="1119447706177454957">Унутраная памылка</translation>
@@ -284,10 +285,12 @@
 <translation id="3479552764303398839">Не зараз</translation>
 <translation id="3486821258960016770">Мангольская</translation>
 <translation id="3495304270784461826">Памылак: <ph name="COUNT" />.</translation>
+<translation id="3495810061346586977">Гэты файл з'яўляецца канфідэнцыяльным, і на яго распаўсюджваюцца абмежаванні зададзенай адміністратарам палітыкі. <ph name="BEGIN_LINK_HELP" />Даведацца больш<ph name="END_LINK_HELP" /></translation>
 <translation id="3509680540198371098">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, падрабязныя звесткі</translation>
 <translation id="3522708245912499433">Партугальская</translation>
 <translation id="3524311639100184459">Увага! Гэта часовыя файлы, і яны могуць быць аўтаматычна выдалены для вызвалення месца на дыску.  <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Папка</translation>
+<translation id="3548125359243647069">Занадта шмат разоў быў уведзены няправільны PIN-код.</translation>
 <translation id="3549797760399244642">Перайсці на drive.google.com...</translation>
 <translation id="3553048479571901246">Каб адкрываць файлы ў праграме "<ph name="APP_NAME" />", спачатку скапіруйце іх у папку файлаў Windows.</translation>
 <translation id="3556731189587832921">Англійская (ЗША) з міжнароднай клавіятурай для ПК</translation>
@@ -612,6 +615,7 @@
 <translation id="6267547857941397424">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, зарад акумулятара тэлефона – <ph name="BATTERY_STATUS" />%, падключыцца</translation>
 <translation id="6269630227984243955">Малайская</translation>
 <translation id="6287852322318138013">Выберыце, у якой праграме адкрыць гэты файл</translation>
+<translation id="6295542640242147836">Заблакіраваць SIM-карту</translation>
 <translation id="6296410173147755564">Няправільны PUK-код</translation>
 <translation id="6312403991423642364">Невядомая памылка сеткі</translation>
 <translation id="6317608858038767920">Адмысловы сервер даменных імён: <ph name="INPUT_INDEX" /></translation>
@@ -720,6 +724,7 @@
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> ГБ</translation>
 <translation id="7191454237977785534">Захаваць файл як</translation>
 <translation id="7229570126336867161">Патрабуецца EvDo</translation>
+<translation id="7230898482850090046">Адміністратар папрасіў вас выключыць наладу блакіроўкі SIM-карты</translation>
 <translation id="7238097264433196391">Назва дыска</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, падрабязныя звесткі</translation>
 <translation id="7246947237293279874">Проксі-сервер FTP</translation>
@@ -751,6 +756,7 @@
 <translation id="7505167922889582512">Паказаць схаваныя файлы</translation>
 <translation id="7514365320538308">Спампаваць</translation>
 <translation id="751507702149411736">Беларуская</translation>
+<translation id="7521790570754130607">Каб выкарыстоўваць мабільную перадачу даных, трэба ўвесці PIN-код</translation>
 <translation id="7532029025027028521">Персідская (транслітарацыя)</translation>
 <translation id="7544830582642184299">Даць праграмам Linux доступ да файлаў на Google Дыску. Змены будуць сінхранізавацца з іншымі прыладамі.</translation>
 <translation id="7547009467130558110">Красоўка</translation>
@@ -775,6 +781,7 @@
 <translation id="76959938259365003">Не ўдалося ачысціць сметніцу.</translation>
 <translation id="770015031906360009">Грэчаская</translation>
 <translation id="7705251383879779343">Элемент "<ph name="FILE_NAME" />" скапіраваны.</translation>
+<translation id="7708271999969613024">Каб выкарыстоўваць гэту сетку, вам неабходна ўвесці 8-значны PUK-код, атрыманы ад аператара.</translation>
 <translation id="7711920809702896782">Звесткі пра відарыс</translation>
 <translation id="7724603315864178912">Выразаць</translation>
 <translation id="7730494089396812859">Паказаць падрабязнасці рэзервовага капіравання ў воблака</translation>
@@ -869,6 +876,7 @@
 <translation id="8437209419043462667">ЗША</translation>
 <translation id="8452135315243592079">Адсутнічае SIM-карта</translation>
 <translation id="8456681095658380701">Недапушчальная назва</translation>
+<translation id="8457767749626250697">Ваша SIM-карта заблакіравана</translation>
 <translation id="8459404855768962328">Пры капіраванні гэтага элемента ён будзе абагулены з усімі карыстальнікамі, якія могуць бачыць абагуленую папку "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="8461467696380332069">Каб атрымаць хуткі доступ да файла праз паліцу, націсніце на яго правай кнопкай мышы і выберыце пункт "Замацаваць на паліцы".</translation>
 <translation id="8461914792118322307">Проксі-сервер</translation>

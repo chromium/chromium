@@ -5,6 +5,7 @@
 <translation id="1047956942837015229">Eliminazione di <ph name="COUNT" /> elementi...</translation>
 <translation id="1049926623896334335">Documento di Word</translation>
 <translation id="1056775291175587022">Nessuna rete</translation>
+<translation id="1056898198331236512">Avviso</translation>
 <translation id="1060368002126861100">Per aprire file con l'app <ph name="APP_NAME" />, devi prima spostarli nella cartella File di Windows.</translation>
 <translation id="1062407476771304334">Sostituisci</translation>
 <translation id="1119447706177454957">Errore interno</translation>
@@ -290,6 +291,7 @@
 <translation id="3522708245912499433">Portoghese</translation>
 <translation id="3524311639100184459">Attenzione: questi file sono temporanei e potrebbero essere eliminati automaticamente per liberare spazio su disco.  <ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Cartella</translation>
+<translation id="3548125359243647069">Hai inserito troppe volte un PIN non corretto.</translation>
 <translation id="3549797760399244642">Vai all'indirizzo drive.google.com...</translation>
 <translation id="3553048479571901246">Per aprire file con l'app <ph name="APP_NAME" />, devi prima copiarli nella cartella File di Windows.</translation>
 <translation id="3556731189587832921">Inglese (USA) con tastiera PC internazionale</translation>
@@ -617,6 +619,7 @@
 <translation id="6267547857941397424">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />%, batteria del telefono <ph name="BATTERY_STATUS" />%, connetti</translation>
 <translation id="6269630227984243955">Malese</translation>
 <translation id="6287852322318138013">Seleziona un'app per aprire questo file</translation>
+<translation id="6295542640242147836">Blocca SIM</translation>
 <translation id="6296410173147755564">PUK non valido</translation>
 <translation id="6312403991423642364">Errore di rete sconosciuto</translation>
 <translation id="6317608858038767920">Nameserver personalizzato <ph name="INPUT_INDEX" /></translation>
@@ -725,6 +728,7 @@
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Salva file con nome</translation>
 <translation id="7229570126336867161">Occorre EVDO</translation>
+<translation id="7230898482850090046">L'amministratore ti ha chiesto di disattivare l'impostazione "Blocca SIM"</translation>
 <translation id="7238097264433196391">Nome unità</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, dettagli</translation>
 <translation id="7246947237293279874">Proxy FTP</translation>
@@ -757,6 +761,7 @@
 <translation id="7505167922889582512">Mostra file nascosti</translation>
 <translation id="7514365320538308">Scarica</translation>
 <translation id="751507702149411736">Bielorusso</translation>
+<translation id="7521790570754130607">Viene richiesto un PIN per usare i dati mobili</translation>
 <translation id="7532029025027028521">Traslitterazione persiano</translation>
 <translation id="7544830582642184299">Concedi alle app Linux l'autorizzazione per accedere ai file nel tuo account Google Drive. Le modifiche verranno sincronizzate con i tuoi altri dispositivi.</translation>
 <translation id="7547009467130558110">Sneaker</translation>
@@ -781,6 +786,7 @@
 <translation id="76959938259365003">Impossibile svuotare il cestino.</translation>
 <translation id="770015031906360009">Greco</translation>
 <translation id="7705251383879779343">Elemento <ph name="FILE_NAME" /> copiato.</translation>
+<translation id="7708271999969613024">Per utilizzare questa rete, devi inserire il codice personale di sblocco (PUK) di 8 cifre fornito dall'operatore.</translation>
 <translation id="7711920809702896782">Info immagine</translation>
 <translation id="7724603315864178912">Taglia</translation>
 <translation id="7730494089396812859">Mostra dettagli backup nel cloud</translation>
@@ -875,6 +881,7 @@
 <translation id="8437209419043462667">USA</translation>
 <translation id="8452135315243592079">Scheda SIM mancante</translation>
 <translation id="8456681095658380701">Nome non valido</translation>
+<translation id="8457767749626250697">La SIM è bloccata</translation>
 <translation id="8459404855768962328">Se lo copi, questo elemento verrà condiviso con chiunque abbia accesso alla cartella condivisa "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="8461467696380332069">Fai clic con il pulsante destro del mouse su un file e seleziona "Blocca sulla barra delle app" per accedervi rapidamente dalla barra delle app.</translation>
 <translation id="8461914792118322307">Proxy</translation>

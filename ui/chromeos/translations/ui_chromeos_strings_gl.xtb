@@ -5,6 +5,7 @@
 <translation id="1047956942837015229">Eliminando <ph name="COUNT" /> elementos...</translation>
 <translation id="1049926623896334335">Documento de Word</translation>
 <translation id="1056775291175587022">Non se atoparon redes</translation>
+<translation id="1056898198331236512">Advertencia</translation>
 <translation id="1060368002126861100">Para poder abrir ficheiros coa aplicación <ph name="APP_NAME" />, debes movelos ao cartafol de ficheiros de Windows.</translation>
 <translation id="1062407476771304334">Substituír</translation>
 <translation id="1119447706177454957">Erro interno</translation>
@@ -289,6 +290,7 @@
 <translation id="3522708245912499433">Portugués</translation>
 <translation id="3524311639100184459">Precaución: Estes ficheiros son temporais e pódense eliminar automaticamente para liberar espazo no disco.  <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Cartafol</translation>
+<translation id="3548125359243647069">Meteuse un PIN incorrecto demasiadas veces.</translation>
 <translation id="3549797760399244642">Vai a drive.google.com...</translation>
 <translation id="3553048479571901246">Para poder abrir ficheiros coa aplicación <ph name="APP_NAME" />, debes copialos no cartafol de ficheiros de Windows.</translation>
 <translation id="3556731189587832921">Inglés (EUA) con teclado internacional (PC)</translation>
@@ -613,6 +615,7 @@
 <translation id="6267547857941397424">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /> %, batería do teléfono ao <ph name="BATTERY_STATUS" /> %, conectar</translation>
 <translation id="6269630227984243955">Malaio</translation>
 <translation id="6287852322318138013">Selecciona unha aplicación para abrir este ficheiro</translation>
+<translation id="6295542640242147836">Bloquear SIM</translation>
 <translation id="6296410173147755564">O PUK non é válido</translation>
 <translation id="6312403991423642364">Erro de rede descoñecido</translation>
 <translation id="6317608858038767920">Servidor de nomes personalizado <ph name="INPUT_INDEX" /></translation>
@@ -721,6 +724,7 @@
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Gardar ficheiro como</translation>
 <translation id="7229570126336867161">EVDO obrigatorio</translation>
+<translation id="7230898482850090046">O teu administrador solicitouche que desactives a opción Bloquear SIM.</translation>
 <translation id="7238097264433196391">Nome da unidade</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, detalles</translation>
 <translation id="7246947237293279874">Proxy FTP</translation>
@@ -752,6 +756,7 @@
 <translation id="7505167922889582512">Mostrar ficheiros ocultos</translation>
 <translation id="7514365320538308">Descargar</translation>
 <translation id="751507702149411736">Bielorruso</translation>
+<translation id="7521790570754130607">É necesario indicar un PIN para utilizar os datos móbiles</translation>
 <translation id="7532029025027028521">Persa (transliteración)</translation>
 <translation id="7544830582642184299">Concede permiso ás aplicacións de Linux para acceder aos ficheiros de Google Drive. Os cambios sincronizaranse cos demais dispositivos.</translation>
 <translation id="7547009467130558110">Zapatilla deportiva</translation>
@@ -776,6 +781,7 @@
 <translation id="76959938259365003">Non se puido baleirar a papeleira.</translation>
 <translation id="770015031906360009">Grego</translation>
 <translation id="7705251383879779343">Copiouse <ph name="FILE_NAME" />.</translation>
+<translation id="7708271999969613024">Para utilizar esta rede, tes que indicar a túa a clave de desbloqueo persoal (PUK) de 8 díxitos proporcionada polo operador.</translation>
 <translation id="7711920809702896782">Información da imaxe</translation>
 <translation id="7724603315864178912">Cortar</translation>
 <translation id="7730494089396812859">Mostra detalles da copia de seguranza na nube</translation>
@@ -870,6 +876,7 @@
 <translation id="8437209419043462667">EUA</translation>
 <translation id="8452135315243592079">Falta a tarxeta SIM</translation>
 <translation id="8456681095658380701">Nome non válido</translation>
+<translation id="8457767749626250697">A túa SIM está bloqueada</translation>
 <translation id="8459404855768962328">Ao copiar este elemento, compartirase con todas as persoas que poidan ver o cartafol compartido <ph name="DESTINATION_NAME" />.</translation>
 <translation id="8461467696380332069">Para acceder de forma rápida aos teus ficheiros no estante, fai clic co botón dereito nun ficheiro e selecciona Fixar no estante.</translation>
 <translation id="8461914792118322307">Proxy</translation>

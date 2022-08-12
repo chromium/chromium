@@ -100,6 +100,7 @@
 <translation id="1455242230282523554">عرض إعدادات اللغة</translation>
 <translation id="1460620680449458626">تم كتم الصوت.</translation>
 <translation id="1467432559032391204">اليسار</translation>
+<translation id="146902737843070955">طلب المشرف إجراء هذا التغيير.</translation>
 <translation id="147310119694673958">بطارية الهاتف: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1479909375538722835">قائمة "أدوات تسهيل الاستخدام" العائمة
 </translation>
@@ -839,6 +840,7 @@
 <translation id="5779721926447984944">الملفات التي تم تثبيتها</translation>
 <translation id="5788127256798019331">‏ملفات Play</translation>
 <translation id="5790085346892983794">تم بنجاح</translation>
+<translation id="5804651031882187592">‏إيقاف الإعداد "قفل شريحة SIM"</translation>
 <translation id="5805809050170488595">انقر لتفعيل <ph name="NETWORK_NAME" />.</translation>
 <translation id="5825969630400862129">إعدادات الأجهزة المتّصلة</translation>
 <translation id="5837036133683224804">إيقاف <ph name="ROUTE_TITLE" /> في <ph name="RECEIVER_NAME" /></translation>

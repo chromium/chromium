@@ -5,6 +5,7 @@
 <translation id="1047956942837015229">Видалення елементів (<ph name="COUNT" />)…</translation>
 <translation id="1049926623896334335">Документ Word</translation>
 <translation id="1056775291175587022">Немає мереж</translation>
+<translation id="1056898198331236512">Застереження</translation>
 <translation id="1060368002126861100">Щоб відкривати файли через додаток <ph name="APP_NAME" />, спершу перемістіть їх у папку з файлами в ОС Windows.</translation>
 <translation id="1062407476771304334">Замінити</translation>
 <translation id="1119447706177454957">Внутрішня помилка</translation>
@@ -244,6 +245,7 @@
 <translation id="3138624403379688522">Недійсний PIN-код. Залишилося спроб: <ph name="RETRIES" />.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (з апаратною підтримкою)</translation>
 <translation id="3188257591659621405">Мої файли</translation>
+<translation id="3194553149358267393">Немає нещодавніх аудіофайлів</translation>
 <translation id="3197563288998582412">Розкладка Дворака (Велика Британія)</translation>
 <translation id="3202131003361292969">Шлях</translation>
 <translation id="3205852408225871810">Португальська (Бразилія)</translation>
@@ -284,10 +286,12 @@
 <translation id="3479552764303398839">Не зараз</translation>
 <translation id="3486821258960016770">Монгольська</translation>
 <translation id="3495304270784461826">Помилок: <ph name="COUNT" />.</translation>
+<translation id="3495810061346586977">Цей файл конфіденційний і регулюється правилами адміністратора. <ph name="BEGIN_LINK_HELP" />Докладніше<ph name="END_LINK_HELP" /></translation>
 <translation id="3509680540198371098">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%. Докладніше</translation>
 <translation id="3522708245912499433">Португальська</translation>
 <translation id="3524311639100184459">Увага: ці файли тимчасові й можуть автоматично видалятися, щоб звільнити місце на диску.  <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Папка</translation>
+<translation id="3548125359243647069">Ви ввели неправильний PIN-код забагато разів.</translation>
 <translation id="3549797760399244642">Перейти на drive.google.com...</translation>
 <translation id="3553048479571901246">Щоб відкривати файли через додаток <ph name="APP_NAME" />, спершу скопіюйте їх у папку з файлами в ОС Windows.</translation>
 <translation id="3556731189587832921">Англійська (США), міжнародна розкладка для ПК</translation>
@@ -300,6 +304,7 @@
 <translation id="3606220979431771195">Турецька клавіатура F</translation>
 <translation id="3616113530831147358">Аудіо</translation>
 <translation id="3619115746895587757">Капучино</translation>
+<translation id="3619593063686672873">Немає нещодавніх відео</translation>
 <translation id="3620292326130836921">Усі файли імпортовано!</translation>
 <translation id="3634507049637220048">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />. Мережею керує адміністратор. Докладніше</translation>
 <translation id="3645233063072417428">Переміщено елементів: <ph name="NUMBER_OF_ITEMS" />.</translation>
@@ -398,6 +403,7 @@
 <translation id="4572815280350369984">Файл <ph name="FILE_TYPE" /></translation>
 <translation id="457386861538956877">Інші...</translation>
 <translation id="4579744207439506346">Додано до вибраного: <ph name="ENTRY_NAME" />.</translation>
+<translation id="4583436353463424810">Немає нещодавніх документів</translation>
 <translation id="4594543368593301662">Результати для запиту "<ph name="SEARCH_TERM" />".</translation>
 <translation id="4599600860674643278">Фільтр скинуто.</translation>
 <translation id="4603392156942865207">Копіювання файлу <ph name="FILE_NAME" /> у папку "<ph name="FOLDER_NAME" />"</translation>
@@ -486,6 +492,7 @@
 <translation id="516592729076796170">Розкладка Дворака для програмістів (США)</translation>
 <translation id="5172749059808361023">Відомості щодо обмеження</translation>
 <translation id="5177526793333269655">Перегляд ескізів</translation>
+<translation id="5181896909298187506">Немає нещодавніх файлів</translation>
 <translation id="5194713942430106590">Натисніть, щоб відсортувати стовпці в порядку зростання.</translation>
 <translation id="5211614973734216083">Фарерська</translation>
 <translation id="5218183485292899140">Французька (Швейцарія)</translation>
@@ -613,6 +620,7 @@
 <translation id="6267547857941397424">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%, рівень заряду акумулятора телефона – <ph name="BATTERY_STATUS" />%. Підключитися</translation>
 <translation id="6269630227984243955">Малайська</translation>
 <translation id="6287852322318138013">Вибрати програму, щоб відкрити цей файл</translation>
+<translation id="6295542640242147836">Заблокувати SIM-карту</translation>
 <translation id="6296410173147755564">Недійсний PUK-код</translation>
 <translation id="6312403991423642364">Невідома помилка мережі</translation>
 <translation id="6317608858038767920">Власний сервер імен <ph name="INPUT_INDEX" /></translation>
@@ -721,6 +729,7 @@
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> ГБ</translation>
 <translation id="7191454237977785534">Зберегти файл як</translation>
 <translation id="7229570126336867161">Потрібна мережа EVDO</translation>
+<translation id="7230898482850090046">Ваш адміністратор просить вимкнути налаштування блокування вашої SIM-карти</translation>
 <translation id="7238097264433196391">Назва диска</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, дeталі</translation>
 <translation id="7246947237293279874">Проксі-сервер FTP</translation>
@@ -741,6 +750,7 @@
 <translation id="7408870451288633753">Чеська</translation>
 <translation id="7417453074306512035">Ефіопська клавіатура</translation>
 <translation id="7417705661718309329">Карта Google</translation>
+<translation id="7458955835361612701">Немає нещодавніх зображень</translation>
 <translation id="7460898608667578234">Українська</translation>
 <translation id="7469894403370665791">Автоматично з'єднувати з цією мережею</translation>
 <translation id="7486315294984620427">Щоб перетягнути файли в Parallels Desktop, спершу скопіюйте їх у папку "Файли Windows".</translation>
@@ -752,6 +762,7 @@
 <translation id="7505167922889582512">Показати сховані файли</translation>
 <translation id="7514365320538308">Завантажити</translation>
 <translation id="751507702149411736">Білоруська</translation>
+<translation id="7521790570754130607">Щоб використовувати мобільний Інтернет, введіть PIN-код</translation>
 <translation id="7532029025027028521">Перська, транслітерація</translation>
 <translation id="7544830582642184299">Надайте додаткам Linux доступ до файлів на Google Диску. Зміни буде синхронізовано на інших ваших пристроях.</translation>
 <translation id="7547009467130558110">Кросівка</translation>
@@ -776,6 +787,7 @@
 <translation id="76959938259365003">Не вдалось очистити кошик.</translation>
 <translation id="770015031906360009">Грецька</translation>
 <translation id="7705251383879779343">Файл "<ph name="FILE_NAME" />" скопійовано.</translation>
+<translation id="7708271999969613024">Щоб використовувати цю мережу, введіть 8-значний PUK-код, який надав оператор.</translation>
 <translation id="7711920809702896782">Інформація про зображення</translation>
 <translation id="7724603315864178912">Вирізати</translation>
 <translation id="7730494089396812859">Показати деталі резервного копіювання в хмару</translation>
@@ -870,6 +882,7 @@
 <translation id="8437209419043462667">Американська</translation>
 <translation id="8452135315243592079">Немає SIM-карти</translation>
 <translation id="8456681095658380701">Недійсне ім’я</translation>
+<translation id="8457767749626250697">SIM-карту заблоковано</translation>
 <translation id="8459404855768962328">Якщо скопіювати цей файл, до нього отримають доступ усі користувачі, які можуть переглядати спільну папку "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="8461467696380332069">Натисніть правою кнопкою миші на файлі й виберіть "Закріпити на полиці", щоб швидко відкривати його.</translation>
 <translation id="8461914792118322307">Проксі-сервер</translation>

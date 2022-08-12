@@ -149,6 +149,7 @@
 <translation id="2115956742084455574">Код туура эмес</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, <ph name="MILESTONE_VERSION" /> версиясы</translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> Гб ичинен <ph name="AVAILABLE_MEMORY" /> Гб жеткиликтүү</translation>
+<translation id="2130871201950918186">Тутум 5 секунддан кийин өчүрүлүп-күйгүзүлөт</translation>
 <translation id="2138109643290557664">Калкыма</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> сүрөт</translation>
@@ -211,6 +212,7 @@
 <translation id="2536159006530886390">Интернетке туташпай жатат.</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> тести аткарылууда...</translation>
 <translation id="2584559707064218956">Тууралоо үчүн Жөндөөлөргө өтүңүз</translation>
+<translation id="2597774443162333062">Файлдар мүчүлүштүктөрдү оңдоо үчүн Google'га жөнөтүлөт</translation>
 <translation id="2619761439309613843">Күн сайын жаңыртуу</translation>
 <translation id="2620436844016719705">Тутум</translation>
 <translation id="2638662041295312666">Аккаунтка кирүү сүрөтү</translation>
@@ -672,6 +674,7 @@
 <translation id="6659594942844771486">Өтмөк</translation>
 <translation id="6692996468359469499">Сиз тандаган нерсеге тиешелүү маалыматты алуу</translation>
 <translation id="6704062477274546131">DNS дааналыгы</translation>
+<translation id="6719240409382354629">Өчүрүп-күйгүзүүгө даярдалууда…</translation>
 <translation id="6723839937902243910">Кубат</translation>
 <translation id="6723847290197874913">Баскычтоптун жарыгы</translation>
 <translation id="672609503628871915">Эмне жаңылык бар</translation>
@@ -889,6 +892,7 @@
 <translation id="8747900814994928677">Өзгөртүүнү ырастоо</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Фотодогу альбом</translation>
+<translation id="8778600430213950389">Бир жерден ката кетти. Бул аппараттык камсыздоодогу маселеге байланыштуу болушу мүмкүн. Негизги платаны алмаштырып, кайра оңдоп көрүңүз.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Бул тармактын кирүү бети болушу мүмкүн</translation>
 <translation id="8798099450830957504">Демейки</translation>
@@ -942,6 +946,7 @@
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> үчүн билетти жаңыртыңыз</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />-бет скандалууда</translation>
 <translation id="9111102763498581341">Кулпуну ачуу</translation>
+<translation id="9118126012493516930">Оңдолгон жок</translation>
 <translation id="9122602430962285795">Кайра туташуу үчүн Жөндөөлөргө өтүңүз</translation>
 <translation id="9126720536733509015">Бир нече бетти бир PDF файлына сактаңыз</translation>
 <translation id="9137526406337347448">Google кызматтары</translation>

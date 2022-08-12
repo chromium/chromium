@@ -5,6 +5,7 @@
 <translation id="1047956942837015229">Isusa izinto ezingu-<ph name="COUNT" />...</translation>
 <translation id="1049926623896334335">Idokhumenti ye-Word</translation>
 <translation id="1056775291175587022">Akuna-network</translation>
+<translation id="1056898198331236512">Isexwayiso</translation>
 <translation id="1060368002126861100">Ukuze uvule amafayela nge-<ph name="APP_NAME" />, wahambise kuqala kufolda lamafayela we-Windows.</translation>
 <translation id="1062407476771304334">Faka esikhundleni</translation>
 <translation id="1119447706177454957">Iphutha langaphakathi</translation>
@@ -244,6 +245,7 @@
 <translation id="3138624403379688522">Iphinikhodi engavumelekile Unemizamo engu-<ph name="RETRIES" /> esele.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (yenziwe isipele sezingxenyekazi zekhompuyutha)</translation>
 <translation id="3188257591659621405">Amafayela ami</translation>
+<translation id="3194553149358267393">Awekho amafayela omsindo akamuva</translation>
 <translation id="3197563288998582412">I-UK Dvorak</translation>
 <translation id="3202131003361292969">Indlela</translation>
 <translation id="3205852408225871810">Portuguese (Brazil)</translation>
@@ -302,6 +304,7 @@
 <translation id="3606220979431771195">I-Turkish-F</translation>
 <translation id="3616113530831147358">Umsindo</translation>
 <translation id="3619115746895587757">I-Cappuccino</translation>
+<translation id="3619593063686672873">Awekho amavidiyo akamuva</translation>
 <translation id="3620292326130836921">Konke kwenziwe isipele!</translation>
 <translation id="3634507049637220048">Inethiwekhi <ph name="NETWORK_INDEX" /> ye-<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Iphethwe umlawuli wakho, imininingwane</translation>
 <translation id="3645233063072417428">izinto ezihanjisiwe ezingu-<ph name="NUMBER_OF_ITEMS" />.</translation>
@@ -400,6 +403,7 @@
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> ifayela</translation>
 <translation id="457386861538956877">Okuningi...</translation>
 <translation id="4579744207439506346">Kungezwe i-<ph name="ENTRY_NAME" /> kukhetho.</translation>
+<translation id="4583436353463424810">Awekho amadokhumenti akamuva</translation>
 <translation id="4594543368593301662">Ibonisa imiphumela ye-<ph name="SEARCH_TERM" />.</translation>
 <translation id="4599600860674643278">Isihlungi sisethwe kabusha.</translation>
 <translation id="4603392156942865207">Ikopisha i-<ph name="FILE_NAME" /> ku-<ph name="FOLDER_NAME" /></translation>
@@ -488,6 +492,7 @@
 <translation id="516592729076796170">Umhleli wase-US we-Dvorak</translation>
 <translation id="5172749059808361023">Imininingwane yomkhawulo</translation>
 <translation id="5177526793333269655">Ukubuka kwesithombe esincane</translation>
+<translation id="5181896909298187506">Awekho amafayela akamuva</translation>
 <translation id="5194713942430106590">Chofoza ukuze uhlunge ikholomu nge-oda elikhuphukayo.</translation>
 <translation id="5211614973734216083">Isi-Faroese</translation>
 <translation id="5218183485292899140">Isi-Swiss French</translation>
@@ -744,6 +749,7 @@
 <translation id="7408870451288633753">Czech</translation>
 <translation id="7417453074306512035">Ikhibhodi ye-Ethiopic</translation>
 <translation id="7417705661718309329">Imephu ye-Google</translation>
+<translation id="7458955835361612701">Ayikho imifanekiso yakamuva</translation>
 <translation id="7460898608667578234">Isi-Ukrainian</translation>
 <translation id="7469894403370665791">Xhumeka ngokuzenzakalela kule nethiwekhi</translation>
 <translation id="7486315294984620427">Ukuze udedele amafayela ku-Parallels Desktop, ifayela kufanele likopishelwe kumafayela e-Windows.</translation>

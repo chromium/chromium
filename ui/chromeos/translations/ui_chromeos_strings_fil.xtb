@@ -5,6 +5,7 @@
 <translation id="1047956942837015229">Nagtatanggal ng <ph name="COUNT" /> (na) item...</translation>
 <translation id="1049926623896334335">Dokumento ng Word</translation>
 <translation id="1056775291175587022">Walang network</translation>
+<translation id="1056898198331236512">Babala</translation>
 <translation id="1060368002126861100">Para makapagbukas ng mga file gamit ang <ph name="APP_NAME" />, ilipat muna ang mga ito sa folder ng mga Windows file.</translation>
 <translation id="1062407476771304334">Palitan</translation>
 <translation id="1119447706177454957">Panloob na error</translation>
@@ -244,6 +245,7 @@
 <translation id="3138624403379688522">Invalid ang PIN. Mayroon ka na lang <ph name="RETRIES" /> (na) natitirang pagsubok.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (hardware-backed)</translation>
 <translation id="3188257591659621405">Aking mga file</translation>
+<translation id="3194553149358267393">Walang kamakailang audio file</translation>
 <translation id="3197563288998582412">UK Dvorak</translation>
 <translation id="3202131003361292969">Path</translation>
 <translation id="3205852408225871810">Portuguese (Brazil)</translation>
@@ -284,10 +286,12 @@
 <translation id="3479552764303398839">Hindi ngayon</translation>
 <translation id="3486821258960016770">Mongolian</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> (na) error.</translation>
+<translation id="3495810061346586977">Ang file na ito ay kumpidensyal at napapailalim sa mga paghihigpit ng patakaran ng administrator. <ph name="BEGIN_LINK_HELP" />Matuto pa<ph name="END_LINK_HELP" /></translation>
 <translation id="3509680540198371098">Network <ph name="NETWORK_INDEX" /> ng <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Mga Detalye</translation>
 <translation id="3522708245912499433">Portuguese</translation>
 <translation id="3524311639100184459">Mag-ingat: Ang mga file na ito ay pansamantala lang at puwedeng awtomatikong ma-delete para magbakante ng espasyo sa disk.  <ph name="BEGIN_LINK" />Matuto Pa<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Folder</translation>
+<translation id="3548125359243647069">Napakaraming beses nang naglagay ng maling PIN.</translation>
 <translation id="3549797760399244642">Pumunta sa drive.google.com...</translation>
 <translation id="3553048479571901246">Para makapagbukas ng mga file gamit ang <ph name="APP_NAME" />, kopyahin muna ang mga ito sa folder ng mga Windows file.</translation>
 <translation id="3556731189587832921">English (US) na may International PC keyboard</translation>
@@ -300,6 +304,7 @@
 <translation id="3606220979431771195">Turkish-F</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
+<translation id="3619593063686672873">Walang kamakailang video</translation>
 <translation id="3620292326130836921">Naka-back up na ang lahat!</translation>
 <translation id="3634507049637220048">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Pinapamahalaan ng iyong Administrator, Mga Detalye</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> (na) item ang inilipat.</translation>
@@ -398,6 +403,7 @@
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> na file</translation>
 <translation id="457386861538956877">Higit pa...</translation>
 <translation id="4579744207439506346">Idinagdag ang <ph name="ENTRY_NAME" /> sa pagpipilian.</translation>
+<translation id="4583436353463424810">Walang kamakailang dokumento</translation>
 <translation id="4594543368593301662">Ipinapakita ang mga resulta para sa <ph name="SEARCH_TERM" />.</translation>
 <translation id="4599600860674643278">Na-reset ang filter.</translation>
 <translation id="4603392156942865207">Kinokopya ang <ph name="FILE_NAME" /> sa <ph name="FOLDER_NAME" /></translation>
@@ -486,6 +492,7 @@
 <translation id="516592729076796170">US Programmer Dvorak</translation>
 <translation id="5172749059808361023">Mga detalye ng paghihigpit</translation>
 <translation id="5177526793333269655">View na thumbnail</translation>
+<translation id="5181896909298187506">Walang kamakailang file</translation>
 <translation id="5194713942430106590">I-click para pagbukud-bukurin ang column sa pataas na pagkakasunud-sunod.</translation>
 <translation id="5211614973734216083">Faroese</translation>
 <translation id="5218183485292899140">Swiss French</translation>
@@ -613,6 +620,7 @@
 <translation id="6267547857941397424">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Baterya ng Telepono <ph name="BATTERY_STATUS" />%, Kumonekta</translation>
 <translation id="6269630227984243955">Malay</translation>
 <translation id="6287852322318138013">Pumili ng isang app upang buksan ang file na ito</translation>
+<translation id="6295542640242147836">I-lock ang SIM</translation>
 <translation id="6296410173147755564">Invalid ang PUK</translation>
 <translation id="6312403991423642364">Hindi alam na error sa network</translation>
 <translation id="6317608858038767920">Custom na nameserver na <ph name="INPUT_INDEX" /></translation>
@@ -721,6 +729,7 @@
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">I-save ang file bilang</translation>
 <translation id="7229570126336867161">Kailangan ng EVDO</translation>
+<translation id="7230898482850090046">Hiniling sa iyo ng administrator mo na i-off ang setting na "I-lock ang SIM"</translation>
 <translation id="7238097264433196391">Pangalan ng drive</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, Mga Detalye</translation>
 <translation id="7246947237293279874">FTP Proxy</translation>
@@ -741,6 +750,7 @@
 <translation id="7408870451288633753">Czech</translation>
 <translation id="7417453074306512035">Ethiopic keyboard</translation>
 <translation id="7417705661718309329">Google map</translation>
+<translation id="7458955835361612701">Walang kamakailang larawan</translation>
 <translation id="7460898608667578234">Ukrainian</translation>
 <translation id="7469894403370665791">Awtomatikong kumonekta sa network na ito</translation>
 <translation id="7486315294984620427">Para makapag-drop ng mga file sa Parallels Desktop, dapat kopyahin ang file sa mga Windows file.</translation>
@@ -752,6 +762,7 @@
 <translation id="7505167922889582512">Magpakita ng mga natatagong file</translation>
 <translation id="7514365320538308">I-download</translation>
 <translation id="751507702149411736">Belarusian</translation>
+<translation id="7521790570754130607">Kailangan ng PIN para magamit ang mobile data</translation>
 <translation id="7532029025027028521">Persian Transliteration</translation>
 <translation id="7544830582642184299">Bigyan ang mga Linux app ng pahintulot na ma-access ang mga file sa iyong Google Drive. Masi-sync sa iba mo pang device ang mga pagbabago.</translation>
 <translation id="7547009467130558110">Sneaker</translation>
@@ -776,6 +787,7 @@
 <translation id="76959938259365003">Hindi naalis ang laman ng trash.</translation>
 <translation id="770015031906360009">Greko</translation>
 <translation id="7705251383879779343">Nakopya ang <ph name="FILE_NAME" />.</translation>
+<translation id="7708271999969613024">Para magamit ang network na ito, kailangan mong ilagay ang 8-digit na Personal Unblocking Key (PUK) na ibinigay ng carrier.</translation>
 <translation id="7711920809702896782">Impormasyon ng larawan</translation>
 <translation id="7724603315864178912">I-cut</translation>
 <translation id="7730494089396812859">Ipakita ang mga detalye ng pag-back up sa Cloud</translation>
@@ -870,6 +882,7 @@
 <translation id="8437209419043462667">US</translation>
 <translation id="8452135315243592079">Walang nakalagay na SIM card</translation>
 <translation id="8456681095658380701">Di-wastong pangalan</translation>
+<translation id="8457767749626250697">Naka-lock ang iyong SIM</translation>
 <translation id="8459404855768962328">Kapag kinopya ang item na ito, ibabahagi ito sa lahat ng nakakakita sa nakabahaging folder na '<ph name="DESTINATION_NAME" />.'</translation>
 <translation id="8461467696380332069">Mag-right click sa isang file, at piliin ang "I-pin sa shelf" para sa mabilis na pag-access sa iyong mga file sa shelf.</translation>
 <translation id="8461914792118322307">Proxy</translation>

@@ -5,6 +5,7 @@
 <translation id="1047956942837015229"><ph name="COUNT" /> елемента се изтриват...</translation>
 <translation id="1049926623896334335">Документ в Word</translation>
 <translation id="1056775291175587022">Няма мрежи</translation>
+<translation id="1056898198331236512">Предупреждение</translation>
 <translation id="1060368002126861100">За да отваряте файлове с(ъс) <ph name="APP_NAME" />, първо ги преместете в папката с файлове на Windows.</translation>
 <translation id="1062407476771304334">Замяна</translation>
 <translation id="1119447706177454957">Вътрешна грешка</translation>
@@ -244,6 +245,7 @@
 <translation id="3138624403379688522">Невалиден ПИН код. Остават ви <ph name="RETRIES" /> опита.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (с хардуерно съхраняване)</translation>
 <translation id="3188257591659621405">Моите файлове</translation>
+<translation id="3194553149358267393">Няма скорошни аудиофайлове</translation>
 <translation id="3197563288998582412">Британска (Дворак) клавиатура</translation>
 <translation id="3202131003361292969">Път</translation>
 <translation id="3205852408225871810">Португалски (Бразилия)</translation>
@@ -284,10 +286,12 @@
 <translation id="3479552764303398839">Не сега</translation>
 <translation id="3486821258960016770">Монголски</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> грешки.</translation>
+<translation id="3495810061346586977">Този файл е поверителен и е предмет на ограничения, наложени чрез администраторски правила. <ph name="BEGIN_LINK_HELP" />Научете повече<ph name="END_LINK_HELP" /></translation>
 <translation id="3509680540198371098">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, подробности</translation>
 <translation id="3522708245912499433">португалски</translation>
 <translation id="3524311639100184459">Внимание: Тези файлове са временни и може да бъдат изтрити автоматично, за да се освободи място на диска.  <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Папка</translation>
+<translation id="3548125359243647069">Въведохте грешен ПИН код твърде много пъти.</translation>
 <translation id="3549797760399244642">Към drive.google.com...</translation>
 <translation id="3553048479571901246">За да отваряте файлове с(ъс) <ph name="APP_NAME" />, първо ги копирайте в папката с файлове на Windows.</translation>
 <translation id="3556731189587832921">Английски (САЩ) с международна клавиатура (PC)</translation>
@@ -300,6 +304,7 @@
 <translation id="3606220979431771195">Турски (тип „F“)</translation>
 <translation id="3616113530831147358">Аудио</translation>
 <translation id="3619115746895587757">Капучино</translation>
+<translation id="3619593063686672873">Няма скорошни видеоклипове</translation>
 <translation id="3620292326130836921">На всичко бе създадено резервно копие!</translation>
 <translation id="3634507049637220048">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, управлява се от администратора ви, подробности</translation>
 <translation id="3645233063072417428">Преместихте <ph name="NUMBER_OF_ITEMS" /> елемента.</translation>
@@ -398,6 +403,7 @@
 <translation id="4572815280350369984">Файл от тип <ph name="FILE_TYPE" /></translation>
 <translation id="457386861538956877">Още...</translation>
 <translation id="4579744207439506346">Добавихте <ph name="ENTRY_NAME" /> към избраните.</translation>
+<translation id="4583436353463424810">Няма скорошни документи</translation>
 <translation id="4594543368593301662">Показани са резултати за „<ph name="SEARCH_TERM" />“.</translation>
 <translation id="4599600860674643278">Филтърът е нулиран.</translation>
 <translation id="4603392156942865207">„<ph name="FILE_NAME" />“ се копира в(ъв) „<ph name="FOLDER_NAME" />“</translation>
@@ -486,6 +492,7 @@
 <translation id="516592729076796170">Американска (Дворак) клавиатура за програмисти</translation>
 <translation id="5172749059808361023">Подробности за ограничението</translation>
 <translation id="5177526793333269655">Изглед с миниизображения</translation>
+<translation id="5181896909298187506">Няма скорошни файлове</translation>
 <translation id="5194713942430106590">Кликнете, за да сортирате колоната във възходящ ред.</translation>
 <translation id="5211614973734216083">Фарьорски</translation>
 <translation id="5218183485292899140">Швейцарска (френски) клавиатура</translation>
@@ -613,6 +620,7 @@
 <translation id="6267547857941397424">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, батерия на телефона <ph name="BATTERY_STATUS" />%, свързване</translation>
 <translation id="6269630227984243955">Малайски</translation>
 <translation id="6287852322318138013">Изберете приложение за отваряне на този файл</translation>
+<translation id="6295542640242147836">Заключване на SIM картата</translation>
 <translation id="6296410173147755564">Невалиден PUK код</translation>
 <translation id="6312403991423642364">Неизвестна мрежова грешка</translation>
 <translation id="6317608858038767920">Персонализиран сървър за имена <ph name="INPUT_INDEX" /></translation>
@@ -721,6 +729,7 @@
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> ГБ</translation>
 <translation id="7191454237977785534">Запазване на файла като</translation>
 <translation id="7229570126336867161">Необходим е EVDO</translation>
+<translation id="7230898482850090046">Администраторът ви поиска да изключите настройката за заключване на SIM картата</translation>
 <translation id="7238097264433196391">Име на устройството</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, подробности</translation>
 <translation id="7246947237293279874">FTP прокси сървър</translation>
@@ -741,6 +750,7 @@
 <translation id="7408870451288633753">Чешки</translation>
 <translation id="7417453074306512035">Етиопска клавиатура</translation>
 <translation id="7417705661718309329">Карта на Google</translation>
+<translation id="7458955835361612701">Няма скорошни изображения</translation>
 <translation id="7460898608667578234">украински</translation>
 <translation id="7469894403370665791">Автоматично свързване с тази мрежа</translation>
 <translation id="7486315294984620427">За да хванете и преместите файлове в Parallels Desktop, те трябва да бъдат копирани в папката с файлове на Windows.</translation>
@@ -752,6 +762,7 @@
 <translation id="7505167922889582512">Показване на скритите файлове</translation>
 <translation id="7514365320538308">Изтегляне</translation>
 <translation id="751507702149411736">белоруски</translation>
+<translation id="7521790570754130607">За използването на мобилни данни се изисква ПИН код</translation>
 <translation id="7532029025027028521">Персийски (транслитерация)</translation>
 <translation id="7544830582642184299">Даване на приложенията за Linux на достъп до файловете в профила ви в Google Диск. Промените ще се синхронизират с другите ви устройства.</translation>
 <translation id="7547009467130558110">Маратонка</translation>
@@ -776,6 +787,7 @@
 <translation id="76959938259365003">Кошчето не бе изпразнено.</translation>
 <translation id="770015031906360009">гръцки</translation>
 <translation id="7705251383879779343">Копирахте „<ph name="FILE_NAME" />“.</translation>
+<translation id="7708271999969613024">За да използвате тази мрежа, трябва да въведете 8-цифрения PUK код, предоставен от оператора.</translation>
 <translation id="7711920809702896782">Информация за изображението</translation>
 <translation id="7724603315864178912">Изрязване</translation>
 <translation id="7730494089396812859">Показване на подробностите за резервните копия в облака</translation>
@@ -870,6 +882,7 @@
 <translation id="8437209419043462667">Американска клавиатура</translation>
 <translation id="8452135315243592079">SIM картата липсва</translation>
 <translation id="8456681095658380701">Невалидно име</translation>
+<translation id="8457767749626250697">SIM картата ви е заключена</translation>
 <translation id="8459404855768962328">Ако копирате този елемент, той ще бъде споделен с всеки, който може да вижда споделената папка „<ph name="DESTINATION_NAME" />“.</translation>
 <translation id="8461467696380332069">Кликнете с десния бутон върху даден файл и изберете „Фиксиране в лавицата“, за да имате бърз достъп до него в лавицата.</translation>
 <translation id="8461914792118322307">Прокси сървър</translation>

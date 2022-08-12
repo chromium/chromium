@@ -5,6 +5,7 @@
 <translation id="1047956942837015229"><ph name="COUNT" /> ставки се бришат...</translation>
 <translation id="1049926623896334335">Документ во Word</translation>
 <translation id="1056775291175587022">Нема мрежи</translation>
+<translation id="1056898198331236512">Предупредување</translation>
 <translation id="1060368002126861100">За да отворате датотеки со <ph name="APP_NAME" />, прво преместете ги во папката со датотеки на Windows.</translation>
 <translation id="1062407476771304334">Замени</translation>
 <translation id="1119447706177454957">Внатрешна грешка</translation>
@@ -244,6 +245,7 @@
 <translation id="3138624403379688522">Погрешен PIN. Имате уште <ph name="RETRIES" /> обиди.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (со хардверски бекап)</translation>
 <translation id="3188257591659621405">Мои датотеки</translation>
+<translation id="3194553149358267393">Нема неодамнешни аудиодатотеки</translation>
 <translation id="3197563288998582412">UK Dvorak</translation>
 <translation id="3202131003361292969">Патека</translation>
 <translation id="3205852408225871810">португалски (Бразил)</translation>
@@ -302,6 +304,7 @@
 <translation id="3606220979431771195">Турска-F</translation>
 <translation id="3616113530831147358">Аудио</translation>
 <translation id="3619115746895587757">Капучино</translation>
+<translation id="3619593063686672873">Нема неодамнешни видеа</translation>
 <translation id="3620292326130836921">Сѐ е ископирано!</translation>
 <translation id="3634507049637220048">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, управувана од администраторот, детали</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> ставки се преместени.</translation>
@@ -400,6 +403,7 @@
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> датотека</translation>
 <translation id="457386861538956877">Повеќе…</translation>
 <translation id="4579744207439506346">Го додадовте <ph name="ENTRY_NAME" /> во изборот.</translation>
+<translation id="4583436353463424810">Нема неодамнешни документи</translation>
 <translation id="4594543368593301662">Се прикажуваат резултати за <ph name="SEARCH_TERM" />.</translation>
 <translation id="4599600860674643278">Филтерот е ресетиран.</translation>
 <translation id="4603392156942865207">Се копира <ph name="FILE_NAME" /> во <ph name="FOLDER_NAME" /></translation>
@@ -488,6 +492,7 @@
 <translation id="516592729076796170">US Programmer Dvorak</translation>
 <translation id="5172749059808361023">Детали за ограничувањата</translation>
 <translation id="5177526793333269655">Приказ на сликичка</translation>
+<translation id="5181896909298187506">Нема неодамнешни датотеки</translation>
 <translation id="5194713942430106590">Кликнете за подредување на колоната по растечки редослед.</translation>
 <translation id="5211614973734216083">фарски</translation>
 <translation id="5218183485292899140">Швајцарско-француски</translation>
@@ -744,6 +749,7 @@
 <translation id="7408870451288633753">чешки</translation>
 <translation id="7417453074306512035">етиопска тастатура</translation>
 <translation id="7417705661718309329">Карта на Google</translation>
+<translation id="7458955835361612701">Нема неодамнешни слики</translation>
 <translation id="7460898608667578234">украинска</translation>
 <translation id="7469894403370665791">Автоматски поврзи се на мрежава</translation>
 <translation id="7486315294984620427">За да пуштите датотеки во Parallels Desktop, датотеката мора да се копира во датотеките на Windows.</translation>

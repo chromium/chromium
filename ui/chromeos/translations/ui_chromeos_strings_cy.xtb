@@ -5,6 +5,7 @@
 <translation id="1047956942837015229">Wrthi'n dileu <ph name="COUNT" /> eitem...</translation>
 <translation id="1049926623896334335">Dogfen Word</translation>
 <translation id="1056775291175587022">Dim rhwydweithiau</translation>
+<translation id="1056898198331236512">Rhybudd</translation>
 <translation id="1060368002126861100">Er mwyn agor ffeiliau gyda <ph name="APP_NAME" />, symudwch nhw yn gyntaf i'r ffolder ffeiliau Windows.</translation>
 <translation id="1062407476771304334">Disodli</translation>
 <translation id="1119447706177454957">Gwall mewnol</translation>
@@ -244,6 +245,7 @@
 <translation id="3138624403379688522">PIN annilys. Mae gennych <ph name="RETRIES" /> ymgais ar ôl.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (gyda chefnogaeth caledwedd)</translation>
 <translation id="3188257591659621405">Fy ffeiliau</translation>
+<translation id="3194553149358267393">Dim ffeiliau sain diweddar</translation>
 <translation id="3197563288998582412">Dvoraky DU</translation>
 <translation id="3202131003361292969">Llwybr</translation>
 <translation id="3205852408225871810">Portiwgaleg (Brasil)</translation>
@@ -302,6 +304,7 @@
 <translation id="3606220979431771195">Twrceg-F</translation>
 <translation id="3616113530831147358">Sain</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
+<translation id="3619593063686672873">Dim fideos diweddar</translation>
 <translation id="3620292326130836921">Wedi gwneud copïau wrth gefn!</translation>
 <translation id="3634507049637220048">Rhwydwaith <ph name="NETWORK_INDEX" /> o <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Rheolwyd gan eich Gweinyddwr, Manylion</translation>
 <translation id="3645233063072417428">Cafodd <ph name="NUMBER_OF_ITEMS" /> eitem eu symud.</translation>
@@ -400,6 +403,7 @@
 <translation id="4572815280350369984">Ffeil <ph name="FILE_TYPE" /></translation>
 <translation id="457386861538956877">Rhagor...</translation>
 <translation id="4579744207439506346">Mae <ph name="ENTRY_NAME" /> wedi'i ychwanegu at y dewis.</translation>
+<translation id="4583436353463424810">Dim dogfennau diweddar</translation>
 <translation id="4594543368593301662">Dangos canlyniadau ar gyfer <ph name="SEARCH_TERM" />.</translation>
 <translation id="4599600860674643278">Hidlydd wedi'i ailosod.</translation>
 <translation id="4603392156942865207">Wrthi'n copïo <ph name="FILE_NAME" /> i <ph name="FOLDER_NAME" /></translation>
@@ -488,6 +492,7 @@
 <translation id="516592729076796170">Dvorak Rhaglennwr UDA</translation>
 <translation id="5172749059808361023">Manylion cyfyngiad</translation>
 <translation id="5177526793333269655">Gwedd fân-lun</translation>
+<translation id="5181896909298187506">Nid oes unrhyw ffeiliau diweddar</translation>
 <translation id="5194713942430106590">Cliciwch i drefnu'r golofn mewn trefn esgynnol.</translation>
 <translation id="5211614973734216083">Ffaroes</translation>
 <translation id="5218183485292899140">Ffrangeg y Swistir</translation>
@@ -744,6 +749,7 @@
 <translation id="7408870451288633753">Tsieceg</translation>
 <translation id="7417453074306512035">Bysellfwrdd Ethiopeg</translation>
 <translation id="7417705661718309329">Map Google</translation>
+<translation id="7458955835361612701">Dim lluniau diweddar</translation>
 <translation id="7460898608667578234">Iwcranaidd</translation>
 <translation id="7469894403370665791">Cysylltu'n awtomatig â'r rhwydwaith hwn</translation>
 <translation id="7486315294984620427">I ollwng ffeiliau yn Parallels Desktop, rhaid copïo'r ffeil i ffeiliau Windows.</translation>

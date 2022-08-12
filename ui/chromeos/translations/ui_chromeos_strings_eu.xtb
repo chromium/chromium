@@ -5,6 +5,7 @@
 <translation id="1047956942837015229"><ph name="COUNT" /> elementu ezabatzen…</translation>
 <translation id="1049926623896334335">Word dokumentua</translation>
 <translation id="1056775291175587022">Sarerik ez</translation>
+<translation id="1056898198331236512">Abisua</translation>
 <translation id="1060368002126861100">Fitxategiak <ph name="APP_NAME" /> aplikazioarekin irekitzeko, lehenik eraman itzazu Windows-eko fitxategien karpetara.</translation>
 <translation id="1062407476771304334">Ordeztu</translation>
 <translation id="1119447706177454957">Barneko errorea</translation>
@@ -244,6 +245,7 @@
 <translation id="3138624403379688522">PIN kodeak ez du balio. <ph name="RETRIES" /> saiakera gelditzen zaizkizu.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (hardwarean gordeta)</translation>
 <translation id="3188257591659621405">Nire fitxategiak</translation>
+<translation id="3194553149358267393">Ez dago azkenaldiko audio-fitxategirik</translation>
 <translation id="3197563288998582412">Erresuma Batuko Dvorak</translation>
 <translation id="3202131003361292969">Bide-izena</translation>
 <translation id="3205852408225871810">Portugaldarra (Brasil)</translation>
@@ -284,10 +286,12 @@
 <translation id="3479552764303398839">Orain ez</translation>
 <translation id="3486821258960016770">Mongoliarra</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> errore.</translation>
+<translation id="3495810061346586977">Fitxategia isilpekoa da, eta administratzailearen gidalerroek ezarritako murrizketen mende dago. <ph name="BEGIN_LINK_HELP" />Lortu informazio gehiago<ph name="END_LINK_HELP" /></translation>
 <translation id="3509680540198371098"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> sarea. <ph name="NETWORK_NAME" /> (<ph name="SECURITY_STATUS" />; <ph name="CONNECTION_STATUS" />). Seinalearen indarra: % <ph name="SIGNAL_STRENGTH" />. Xehetasunak.</translation>
 <translation id="3522708245912499433">Portugaldarra</translation>
 <translation id="3524311639100184459">Kontuz: fitxategi hauek aldi baterakoak dira eta agian automatikoki ezabatuko dira diskoan tokia egiteko.  <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Karpeta</translation>
+<translation id="3548125359243647069">PINa gehiegitan idatzi da oker.</translation>
 <translation id="3549797760399244642">Joan drive.google.com webgunera…</translation>
 <translation id="3553048479571901246">Fitxategiak <ph name="APP_NAME" /> aplikazioarekin irekitzeko, lehenik kopia itzazu Windows-eko fitxategien karpetan.</translation>
 <translation id="3556731189587832921">Ingelesa (AEB), nazioarteko teklatuarekin (ordenagailurako)</translation>
@@ -300,6 +304,7 @@
 <translation id="3606220979431771195">Turkiarra (F teklatua)</translation>
 <translation id="3616113530831147358">Audioa</translation>
 <translation id="3619115746895587757">Kaputxinoa</translation>
+<translation id="3619593063686672873">Ez dago azkenaldiko bideorik</translation>
 <translation id="3620292326130836921">Fitxategi guztien babeskopia egin da!</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> sarea. <ph name="NETWORK_NAME" /> (<ph name="CONNECTION_STATUS" />). Administratzaileak kudeatua. Xehetasunak.</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> elementu mugitu dira.</translation>
@@ -398,6 +403,7 @@
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> fitxategia</translation>
 <translation id="457386861538956877">Gehiago…</translation>
 <translation id="4579744207439506346">Gehitu da <ph name="ENTRY_NAME" /> hautapenean.</translation>
+<translation id="4583436353463424810">Ez dago azkenaldiko dokumenturik</translation>
 <translation id="4594543368593301662">"<ph name="SEARCH_TERM" />" bilaketaren emaitzak daude ikusgai.</translation>
 <translation id="4599600860674643278">Berrezarri da iragazkia.</translation>
 <translation id="4603392156942865207"><ph name="FILE_NAME" /> <ph name="FOLDER_NAME" /> karpetan kopiatzen</translation>
@@ -486,6 +492,7 @@
 <translation id="516592729076796170">AEBko programatzaileen Dvorak teklatua</translation>
 <translation id="5172749059808361023">Murrizketen xehetasunak</translation>
 <translation id="5177526793333269655">Irudi txikien ikuspegia</translation>
+<translation id="5181896909298187506">Ez dago azkenaldiko fitxategirik</translation>
 <translation id="5194713942430106590">Egin klik zutabea goranzko ordenan ezartzeko.</translation>
 <translation id="5211614973734216083">Faroetarra</translation>
 <translation id="5218183485292899140">Frantsesa (Suitza)</translation>
@@ -612,6 +619,7 @@
 <translation id="6267547857941397424"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />. Seinalearen indarra: % <ph name="SIGNAL_STRENGTH" />. Telefonoaren bateria: % <ph name="BATTERY_STATUS" />. Konektatu.</translation>
 <translation id="6269630227984243955">Malaysiarra</translation>
 <translation id="6287852322318138013">Hautatu fitxategia irekitzeko aplikazioa</translation>
+<translation id="6295542640242147836">Blokeatu SIMa</translation>
 <translation id="6296410173147755564">PUKak ez du balio</translation>
 <translation id="6312403991423642364">Sareko errore ezezaguna</translation>
 <translation id="6317608858038767920">Izenen zerbitzari pertsonalizatua: <ph name="INPUT_INDEX" /></translation>
@@ -720,6 +728,7 @@
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Gorde fitxategia honela</translation>
 <translation id="7229570126336867161">EvDO behar da</translation>
+<translation id="7230898482850090046">Administratzaileak "Blokeatu SIMa" ezarpena desaktibatzeko eskatu dizu</translation>
 <translation id="7238097264433196391">Unitatearen izena</translation>
 <translation id="7238643356913091553">Xehetasunak (<ph name="NETWORK_NAME" />)</translation>
 <translation id="7246947237293279874">FTP proxya</translation>
@@ -740,6 +749,7 @@
 <translation id="7408870451288633753">Txekiarra</translation>
 <translation id="7417453074306512035">Teklatu etiopiarra</translation>
 <translation id="7417705661718309329">Google mapa</translation>
+<translation id="7458955835361612701">Ez dago azkenaldiko irudirik</translation>
 <translation id="7460898608667578234">Ukrainarra</translation>
 <translation id="7469894403370665791">Konektatu automatikoki sare honetara</translation>
 <translation id="7486315294984620427">Fitxategiak Parallels Desktop-en jaregin ahal izateko, Windows-eko fitxategien karpetan kopiatu behar dira lehendabizi.</translation>
@@ -751,6 +761,7 @@
 <translation id="7505167922889582512">Erakutsi ezkutatutako fitxategiak</translation>
 <translation id="7514365320538308">Deskargatu</translation>
 <translation id="751507702149411736">Bielorrusiarra</translation>
+<translation id="7521790570754130607">PIN bat behar da datu-konexioa erabiltzeko</translation>
 <translation id="7532029025027028521">Persieraren transliterazioa</translation>
 <translation id="7544830582642184299">Eman Google Drive-ko fitxategiak atzitzeko baimena Linux-eko aplikazioei. Aldaketak beste gailuekin sinkronizatuko dira.</translation>
 <translation id="7547009467130558110">Kirol-oinetakoa</translation>
@@ -775,6 +786,7 @@
 <translation id="76959938259365003">Ezin izan da hustu zaborrontzia.</translation>
 <translation id="770015031906360009">Greziarra</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> kopiatu da.</translation>
+<translation id="7708271999969613024">Sare hori erabiltzeko, operadoreak emandako zortzi digituko desblokeatzeko gako pertsonala (PUKa) idatzi behar duzu.</translation>
 <translation id="7711920809702896782">Irudiari buruzko informazioa</translation>
 <translation id="7724603315864178912">Ebaki</translation>
 <translation id="7730494089396812859">Erakutsi hodeiko babeskopien xehetasunak</translation>
@@ -869,6 +881,7 @@
 <translation id="8437209419043462667">US</translation>
 <translation id="8452135315243592079">SIM txartela falta da</translation>
 <translation id="8456681095658380701">Izenak ez du balio</translation>
+<translation id="8457767749626250697">SIM txartela blokeatuta dago</translation>
 <translation id="8459404855768962328">Elementu hau kopiatuz gero, "<ph name="DESTINATION_NAME" />" karpeta partekatua ikus dezakeen edonorekin partekatuko da.</translation>
 <translation id="8461467696380332069">Egin klik eskuineko botoiarekin fitxategi batean eta hautatu "Ainguratu apalean"; horrela, apalean dauden fitxategietarako sarbide bizkorra izango duzu.</translation>
 <translation id="8461914792118322307">Proxya</translation>

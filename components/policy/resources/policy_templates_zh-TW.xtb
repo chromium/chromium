@@ -752,6 +752,11 @@
 
       你可以透過這項政策，指定要將哪些擴充功能從封鎖的擴充功能清單中排除。針對 <ph name="EXTENSION_INSTALL_BLACKLIST_POLICY_NAME" /> 使用「<ph name="ALL_EXTENSIONS" />」的設定值即可封鎖所有擴充功能，且使用者只能安裝明確允許的擴充功能。根據預設，系統會允許所有擴充功能。不過，如果你透過政策封鎖了擴充功能，請使用允許的擴充功能清單來變更該政策。</translation>
 <translation id="1781356041596378058">這項政策也可以控制 Android 開發人員選項的存取權。如果將這項政策設為 true，使用者將無法存取開發人員選項。如果將這項政策設為 false 或不予設定，使用者只要在 Android 設定應用程式中輕觸版本號碼 7 次，即可存取開發人員選項。</translation>
+<translation id="1783412593566930189">
+      如果將這項政策設為啟用 (True)，非受管裝置上的 <ph name="PRODUCT_NAME" /> 就會先徵求受管理使用者的同意，才分享裝置信號，以取得存取權。
+
+      如果將這項政策設為停用 (False) 或未設定，<ph name="PRODUCT_NAME" /> 就無法收集裝置信號
+      裝置信號的範例包括但不限於 OS 資訊、註冊資料庫、以及檔案是否存在。</translation>
 <translation id="1787790976045065845">只有當 <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_POLICY_NAME" /> 政策設為 <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" /> 或 <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />，且透過智慧型卡片驗證的使用者移除該智慧型卡片時，這項政策才會生效。這項政策會指定當系統通知使用者即將執行的動作時，通知要顯示幾秒。這項通知會遮住螢幕。系統會在這項通知到期後才執行動作。如要避免系統執行該動作，使用者可在通知到期之前重新插入智慧型卡片。如果將這項政策設為 0，則系統不會顯示通知，並會立即執行動作。</translation>
 <translation id="1793346220873697538">預設為停用 PIN 碼列印模式</translation>
 <translation id="1794457906032475749">如果啟用這項政策，系統預設會勾選保留在建立企業設定檔時所有現有瀏覽資料的選項。
@@ -2371,6 +2376,13 @@
       如果不設定 <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" /> 政策，則這項政策不會有任何作用。</translation>
 <translation id="3397883909301547525">不要在 <ph name="PRODUCT_OS_NAME" /> 啟動器中顯示推薦應用程式</translation>
 <translation id="3399859571630358395">強制停用快速配對功能 (快速藍牙配對)。</translation>
+<translation id="3408078762098350617">這項政策會控管 <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" /> 中已停用功能的使用者體驗。
+
+      如果將這項政策設為「已封鎖」，已停用的功能將無法使用，但仍會顯示在畫面上。
+
+      如果將這項政策設為「已隱藏」，已停用的功能將無法使用，而且不會顯示在畫面上。
+
+      如果未設定這項政策或設定的值無效，系統功能的停用模式將設為「已封鎖」。</translation>
 <translation id="341285788698114069">這項政策可控管音訊程序在 Windows 系統上的優先順序。
       如果啟用這項政策，系統將以高於一般優先順序的次序執行音訊程序。
       如果停用這項政策，系統將以一般優先順序執行音訊程序。
@@ -5083,6 +5095,7 @@
 <translation id="6518102411616460786">等待目標版本跟上版本降級</translation>
 <translation id="6520802717075138474">第一次執行時從預設瀏覽器匯入搜尋引擎</translation>
 <translation id="6521971538031711337">禁止受管理的使用者設定裝置主機名稱</translation>
+<translation id="6523079496775454310">在非受管裝置上詢問受管理使用者是否同意分享裝置信號</translation>
 <translation id="652593254122955308">逾時直到閒置的設定檔關閉為止</translation>
 <translation id="6532026122543921610">除非 <ph name="SYSTEM_TIMEZONE_POLICY_NAME" /> 政策停用了自動偵測時區的功能，否則你可以透過這項政策概括設定自動偵測時區的方法，且使用者無法變更這項設定。
 
@@ -5173,6 +5186,7 @@
 <translation id="6584541828182430328">停用顯示全螢幕警示的功能</translation>
 <translation id="6593350713192882944">啟用快速解答功能</translation>
 <translation id="6594372503585248865">連線時，在遠端主機桌面啟用連線相關 UI</translation>
+<translation id="65947892191748867">不在非受管裝置上詢問受管理使用者是否同意分享裝置信號</translation>
 <translation id="6596675965208703569">這項政策可針對先前透過存取碼或 QR 圖碼選取的投放裝置，指定其在 <ph name="PRODUCT_NAME" /> 投放裝置選單中顯示的時間 (以秒為單位)。
       裝置項目效期自初次輸入存取碼或初次掃描 QR 圖碼的時間點開始計算。
       在這段效期內，投放裝置會顯示在 <ph name="PRODUCT_NAME" /> 選單的投放裝置清單中。
@@ -5455,6 +5469,13 @@
       如果不設定這項政策，使用者可在螢幕鎖定畫面上啟用的應用程式組合則不會受到政策限制。</translation>
 <translation id="6882028194958060206">將 Flash 內容設定套用至所有內容 (已淘汰)</translation>
 <translation id="6889123056995503704">使用者決定版本降級行為</translation>
+<translation id="6893442532580358855">如果設定這項政策，就可以禁止系統載入網址已遭禁止的網頁。你可以透過這項政策的網址模式清單指定要禁止的網址。如果未設定這項政策，瀏覽器就不會禁止任何網址。網址模式必須符合一定的格式，詳情請參閱 https://www.chromium.org/administrators/url-blocklist-filter-format。<ph name="URL_ALLOWLIST_POLICY_NAME" /> 中最多可定義 1,000 個例外網址。
+
+      自 <ph name="PRODUCT_NAME" /> 73 版開始，你可以封鎖 javascript://* 網址。不過，這項政策只適用於在網址列 (或書籤小程式等) 輸入的 JavaScript 網址，內含動態載入資料的網頁內 JavaScript 網址則不在此限。舉例來說，即使你封鎖了 example.com/abc，example.com 仍可透過 XMLHTTPRequest 載入 example.com/abc。
+
+      自 <ph name="PRODUCT_NAME" /> 92 版起，系統在無頭模式下也會支援這項政策。
+
+      注意：封鎖內部 chrome://* 和 chrome-untrusted://* 網址可能會導致非預期的錯誤，使用者也可能會在特殊情況下突破內部網址封鎖。在不封鎖特定內部網址的情況下，看看是否可以使用其他更合適的政策。常見情形：不封鎖 chrome://settings/certificates，改為使用 <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME" />。不封鎖 chrome-untrusted://crosh，改為使用 <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />。</translation>
 <translation id="6894178810167845842">新分頁網址</translation>
 <translation id="6897730193187922386">禁止顯示 <ph name="CLOUD_PRINT_NAME" />淘汰訊息</translation>
 <translation id="6899705656741990703">自動偵測 Proxy 設定</translation>
@@ -6403,6 +6424,7 @@
 
       建議做法：如要針對閒置狀態鎖定螢幕，可以啟用在暫停狀態下鎖定螢幕的功能，然後讓 <ph name="PRODUCT_OS_NAME" />在閒置延遲時間過後進入暫停狀態。這項政策僅限用於兩種情況：螢幕鎖定觸發時間比暫停觸發時間早很多，或是你完全不想針對閒置狀態啟用暫停功能。</translation>
 <translation id="7895553628261067384">遠端存取</translation>
+<translation id="7899952578398457262">在非受管裝置上徵求受管理使用者的同意，才分享裝置信號，以取得存取權</translation>
 <translation id="7900469325540540107">預設在建立企業設定檔時保留瀏覽資料</translation>
 <translation id="7902040092815978832">在輸入密碼時顯示數字鍵盤</translation>
 <translation id="7904177352786629708">如果將這項政策設為啟用，系統會略過 CNAME 查詢。系統產生 Kerberos SPN 時會使用先前輸入的伺服器名稱。

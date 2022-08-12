@@ -149,6 +149,7 @@
 <translation id="2115956742084455574">Нетачан кôд</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, верзија <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Доступно: <ph name="AVAILABLE_MEMORY" /> GB од <ph name="TOTAL_MEMORY" /> GB</translation>
+<translation id="2130871201950918186">Систем ће се рестартовати за 5 секунди.</translation>
 <translation id="2138109643290557664">Наставите да плутате</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059">Слика: <ph name="NUMBER" /></translation>
@@ -211,6 +212,7 @@
 <translation id="2536159006530886390">Повезивање на интернет није успело.</translation>
 <translation id="2570743873672969996">Покреће се тест <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">Да бисте подесили мрежу, идите у Подешавања</translation>
+<translation id="2597774443162333062">Фајлови ће се послати Google-у ради отклањања грешака</translation>
 <translation id="2619761439309613843">Дневно освежавање</translation>
 <translation id="2620436844016719705">Систем</translation>
 <translation id="2638662041295312666">Слика за пријављивање</translation>
@@ -672,6 +674,7 @@
 <translation id="6659594942844771486">Картица</translation>
 <translation id="6692996468359469499">Пронађите информације у вези са вашим избором</translation>
 <translation id="6704062477274546131">DNS разрешавање</translation>
+<translation id="6719240409382354629">Припрема се рестартовање…</translation>
 <translation id="6723839937902243910">Енергија</translation>
 <translation id="6723847290197874913">Позадинско осветљење тастатуре</translation>
 <translation id="672609503628871915">Прикажи шта је ново</translation>
@@ -889,6 +892,7 @@
 <translation id="8747900814994928677">Потврдите промену</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Албум Google слика</translation>
+<translation id="8778600430213950389">Дошло је до грешке. До овога најчешће долази због проблема са хардвером. Замените главну плочу, па поново пробајте да извршите поправку.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Ова мрежа можда има улазни портал</translation>
 <translation id="8798099450830957504">Подразумевано</translation>
@@ -942,6 +946,7 @@
 <translation id="910415269708673980">Освежите тикет за <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Скенира се <ph name="PAGE_NUMBER" />. страница</translation>
 <translation id="9111102763498581341">Откључај</translation>
+<translation id="9118126012493516930">Поправка није успела</translation>
 <translation id="9122602430962285795">Да бисте се поново повезали, идите у Подешавања</translation>
 <translation id="9126720536733509015">Сачувајте више страница у један PDF документ</translation>
 <translation id="9137526406337347448">Google услуге</translation>

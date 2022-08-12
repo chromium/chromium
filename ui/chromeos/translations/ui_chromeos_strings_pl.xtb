@@ -5,6 +5,7 @@
 <translation id="1047956942837015229">Usuwam <ph name="COUNT" /> elementy(ów)...</translation>
 <translation id="1049926623896334335">Dokument Worda</translation>
 <translation id="1056775291175587022">Brak sieci</translation>
+<translation id="1056898198331236512">Ostrzeżenie</translation>
 <translation id="1060368002126861100">Aby otworzyć pliki w aplikacji <ph name="APP_NAME" />, najpierw przenieś je do folderu Pliki systemu Windows.</translation>
 <translation id="1062407476771304334">Zastąp</translation>
 <translation id="1119447706177454957">Błąd wewnętrzny</translation>
@@ -244,6 +245,7 @@
 <translation id="3138624403379688522">Nieprawidłowy kod PIN. Pozostałe próby: <ph name="RETRIES" />.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (obsługiwany sprzętowo)</translation>
 <translation id="3188257591659621405">Moje pliki</translation>
+<translation id="3194553149358267393">Brak nowych plików audio</translation>
 <translation id="3197563288998582412">brytyjska klawiatura Dvoraka</translation>
 <translation id="3202131003361292969">Ścieżka</translation>
 <translation id="3205852408225871810">Portugalski (Brazylia)</translation>
@@ -289,6 +291,7 @@
 <translation id="3522708245912499433">Portugalski</translation>
 <translation id="3524311639100184459">Uwaga: te pliki mają charakter tymczasowy i mogą zostać automatycznie usunięte w celu zwolnienia miejsca na dysku.  <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Folder</translation>
+<translation id="3548125359243647069">Zbyt wiele razy podano nieprawidłowy kod PIN.</translation>
 <translation id="3549797760399244642">Wejdź na drive.google.com...</translation>
 <translation id="3553048479571901246">Aby otworzyć pliki w aplikacji <ph name="APP_NAME" />, najpierw skopiuj je do folderu Pliki systemu Windows.</translation>
 <translation id="3556731189587832921">Angielski (USA) z komputerową klawiaturą międzynarodową</translation>
@@ -301,6 +304,7 @@
 <translation id="3606220979431771195">Turecki (wersja F)</translation>
 <translation id="3616113530831147358">Dźwięk</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
+<translation id="3619593063686672873">Brak nowych filmów</translation>
 <translation id="3620292326130836921">Wszystko ma już kopię zapasową.</translation>
 <translation id="3634507049637220048">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, zarządzana przez administratora, szczegóły</translation>
 <translation id="3645233063072417428">Liczba przeniesionych elementów: <ph name="NUMBER_OF_ITEMS" />.</translation>
@@ -399,6 +403,7 @@
 <translation id="4572815280350369984">Plik <ph name="FILE_TYPE" /></translation>
 <translation id="457386861538956877">Więcej</translation>
 <translation id="4579744207439506346">Do zaznaczenia dodano element <ph name="ENTRY_NAME" />.</translation>
+<translation id="4583436353463424810">Brak nowych dokumentów</translation>
 <translation id="4594543368593301662">Wyświetlam wyniki dla: <ph name="SEARCH_TERM" />.</translation>
 <translation id="4599600860674643278">Filtr został zresetowany.</translation>
 <translation id="4603392156942865207">Kopiuję plik <ph name="FILE_NAME" /> do folderu <ph name="FOLDER_NAME" /></translation>
@@ -487,6 +492,7 @@
 <translation id="516592729076796170">Amerykańska dewelopera (Dvorak)</translation>
 <translation id="5172749059808361023">Informacje o ograniczeniu</translation>
 <translation id="5177526793333269655">Widok miniatur</translation>
+<translation id="5181896909298187506">Brak nowych plików</translation>
 <translation id="5194713942430106590">Kliknij, by posortować kolumnę w kolejności rosnącej.</translation>
 <translation id="5211614973734216083">Farerski</translation>
 <translation id="5218183485292899140">szwajcarski francuski</translation>
@@ -614,6 +620,7 @@
 <translation id="6267547857941397424">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />%, bateria telefonu: <ph name="BATTERY_STATUS" />%, połącz</translation>
 <translation id="6269630227984243955">Malajski</translation>
 <translation id="6287852322318138013">Wybierz aplikację, by otworzyć ten plik</translation>
+<translation id="6295542640242147836">Zablokuj kartę SIM</translation>
 <translation id="6296410173147755564">Nieprawidłowy kod PUK</translation>
 <translation id="6312403991423642364">Nieznany błąd sieci</translation>
 <translation id="6317608858038767920">Niestandardowy serwer nazw <ph name="INPUT_INDEX" /></translation>
@@ -722,6 +729,7 @@
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Zapisz plik jako</translation>
 <translation id="7229570126336867161">Wymagana technologia EVDO</translation>
+<translation id="7230898482850090046">Administrator poprosił o wyłączenie ustawienia „Zablokuj kartę SIM”</translation>
 <translation id="7238097264433196391">Nazwa dysku</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, szczegóły</translation>
 <translation id="7246947237293279874">Serwer proxy FTP</translation>
@@ -742,6 +750,7 @@
 <translation id="7408870451288633753">Czeski</translation>
 <translation id="7417453074306512035">klawiatura etiopska</translation>
 <translation id="7417705661718309329">Mapa Google</translation>
+<translation id="7458955835361612701">Brak nowych obrazów</translation>
 <translation id="7460898608667578234">Ukraiński</translation>
 <translation id="7469894403370665791">Automatycznie łącz się z tą siecią</translation>
 <translation id="7486315294984620427">Aby można było przeciągnąć plik do Parallels Desktop, należy go skopiować do folderu Pliki systemu Windows.</translation>
@@ -753,6 +762,7 @@
 <translation id="7505167922889582512">Pokaż ukryte pliki</translation>
 <translation id="7514365320538308">Pobierz</translation>
 <translation id="751507702149411736">Białoruski</translation>
+<translation id="7521790570754130607">Do korzystania z mobilnej transmisji danych wymagany jest kod PIN</translation>
 <translation id="7532029025027028521">Perski – transliteracja</translation>
 <translation id="7544830582642184299">Przyznaj aplikacjom na Linuksa uprawnienia dostępu do plików na Dysku Google. Zmiany będą synchronizowane z innymi urządzeniami.</translation>
 <translation id="7547009467130558110">But sportowy</translation>
@@ -777,6 +787,7 @@
 <translation id="76959938259365003">Nie udało się opróżnić kosza.</translation>
 <translation id="770015031906360009">Grecki</translation>
 <translation id="7705251383879779343">Plik <ph name="FILE_NAME" /> został skopiowany.</translation>
+<translation id="7708271999969613024">Aby skorzystać z tej sieci, musisz wpisać 8-cyfrowy PUK otrzymany od operatora.</translation>
 <translation id="7711920809702896782">Informacje o pliku graficznym</translation>
 <translation id="7724603315864178912">Wytnij</translation>
 <translation id="7730494089396812859">Pokaż szczegóły kopii zapasowej w chmurze</translation>
@@ -871,6 +882,7 @@
 <translation id="8437209419043462667">amerykański</translation>
 <translation id="8452135315243592079">Brak karty SIM</translation>
 <translation id="8456681095658380701">Nieprawidłowa nazwa</translation>
+<translation id="8457767749626250697">Karta SIM jest zablokowana</translation>
 <translation id="8459404855768962328">Skopiowanie tego elementu spowoduje jego udostępnienie wszystkim osobom, które mogą widzieć udostępniony folder „<ph name="DESTINATION_NAME" />”.</translation>
 <translation id="8461467696380332069">Kliknij plik prawym przyciskiem i wybierz „Przypnij do półki”, by mieć szybki dostęp do swoich plików na półce.</translation>
 <translation id="8461914792118322307">Serwer proxy</translation>

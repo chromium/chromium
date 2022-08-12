@@ -5,6 +5,7 @@
 <translation id="1047956942837015229">S'estan suprimint <ph name="COUNT" /> elements...</translation>
 <translation id="1049926623896334335">Document de Word</translation>
 <translation id="1056775291175587022">Cap xarxa</translation>
+<translation id="1056898198331236512">Advertiment</translation>
 <translation id="1060368002126861100">Per obrir fitxers amb <ph name="APP_NAME" />, primer mou-los a la carpeta de fitxers de Windows.</translation>
 <translation id="1062407476771304334">Substitueix</translation>
 <translation id="1119447706177454957">Error intern</translation>
@@ -244,6 +245,7 @@
 <translation id="3138624403379688522">El PIN no és vàlid. Et queden <ph name="RETRIES" /> intents.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (emmagatzemat en maquinari)</translation>
 <translation id="3188257591659621405">Els meus fitxers</translation>
+<translation id="3194553149358267393">No hi ha cap fitxer d'àudio recent</translation>
 <translation id="3197563288998582412">Dvorak anglès</translation>
 <translation id="3202131003361292969">Camí</translation>
 <translation id="3205852408225871810">Portuguès (Brasil)</translation>
@@ -284,10 +286,12 @@
 <translation id="3479552764303398839">Ara no</translation>
 <translation id="3486821258960016770">Mongol</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> errors.</translation>
+<translation id="3495810061346586977">Aquest fitxer és confidencial i està subjecte a les restriccions de política de l'administrador. <ph name="BEGIN_LINK_HELP" />Més informació<ph name="END_LINK_HELP" /></translation>
 <translation id="3509680540198371098">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" />% d'intensitat del senyal, detalls</translation>
 <translation id="3522708245912499433">Portuguès</translation>
 <translation id="3524311639100184459">Compte: aquests fitxers són temporals i és possible que se suprimeixin automàticament per alliberar espai de disc.  <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Carpeta</translation>
+<translation id="3548125359243647069">S'ha introduït un PIN incorrecte massa vegades.</translation>
 <translation id="3549797760399244642">Ves a drive.google.com...</translation>
 <translation id="3553048479571901246">Per obrir fitxers amb <ph name="APP_NAME" />, primer copia'ls a la carpeta de fitxers de Windows.</translation>
 <translation id="3556731189587832921">Anglès (EUA) amb teclat internacional (PC)</translation>
@@ -300,6 +304,7 @@
 <translation id="3606220979431771195">Turc-F</translation>
 <translation id="3616113530831147358">Àudio</translation>
 <translation id="3619115746895587757">Caputxino</translation>
+<translation id="3619593063686672873">No hi ha cap vídeo recent</translation>
 <translation id="3620292326130836921">Tots els elements tenen una còpia de seguretat.</translation>
 <translation id="3634507049637220048">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, gestionada per l'administrador, detalls</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> elements moguts.</translation>
@@ -398,6 +403,7 @@
 <translation id="4572815280350369984">Fitxer <ph name="FILE_TYPE" /></translation>
 <translation id="457386861538956877">Més...</translation>
 <translation id="4579744207439506346">S'ha afegit <ph name="ENTRY_NAME" /> a la selecció.</translation>
+<translation id="4583436353463424810">No hi ha cap document recent</translation>
 <translation id="4594543368593301662">Es mostren els resultats per a <ph name="SEARCH_TERM" />.</translation>
 <translation id="4599600860674643278">S'ha restablert el filtre.</translation>
 <translation id="4603392156942865207">S'està copiant <ph name="FILE_NAME" /> a la carpeta <ph name="FOLDER_NAME" /></translation>
@@ -486,6 +492,7 @@
 <translation id="516592729076796170">Dvorak nord-americà per a programadors</translation>
 <translation id="5172749059808361023">Detalls de la restricció</translation>
 <translation id="5177526793333269655">Visualització de miniatures</translation>
+<translation id="5181896909298187506">No hi ha cap fitxer recent</translation>
 <translation id="5194713942430106590">Fes clic per veure les dades de la columna en ordre ascendent.</translation>
 <translation id="5211614973734216083">Feroès</translation>
 <translation id="5218183485292899140">Francès suís</translation>
@@ -613,6 +620,7 @@
 <translation id="6267547857941397424">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="SIGNAL_STRENGTH" />% d'intensitat del senyal, <ph name="BATTERY_STATUS" />% de bateria al telèfon, connecta</translation>
 <translation id="6269630227984243955">Malai</translation>
 <translation id="6287852322318138013">Selecció d'una aplicació per obrir el fitxer</translation>
+<translation id="6295542640242147836">Bloqueja la SIM</translation>
 <translation id="6296410173147755564">El PUK no és vàlid</translation>
 <translation id="6312403991423642364">Error de la xarxa desconegut</translation>
 <translation id="6317608858038767920">Servidor de noms personalitzat <ph name="INPUT_INDEX" /></translation>
@@ -721,6 +729,7 @@
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Anomena i desa</translation>
 <translation id="7229570126336867161">Es necessita EVDO</translation>
+<translation id="7230898482850090046">L'administrador ha sol·licitat que desactivis l'opció de configuració Bloqueja la SIM</translation>
 <translation id="7238097264433196391">Nom de la unitat</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, detalls</translation>
 <translation id="7246947237293279874">Servidor intermediari FTP</translation>
@@ -741,6 +750,7 @@
 <translation id="7408870451288633753">Txec</translation>
 <translation id="7417453074306512035">Teclat etíop</translation>
 <translation id="7417705661718309329">Mapa de Google</translation>
+<translation id="7458955835361612701">No hi ha cap imatge recent</translation>
 <translation id="7460898608667578234">Ucraïnès</translation>
 <translation id="7469894403370665791">Connecta automàticament a aquesta xarxa</translation>
 <translation id="7486315294984620427">Per deixar anar fitxers a Parallels Desktop, s'han de copiar a Fitxers de Windows.</translation>
@@ -752,6 +762,7 @@
 <translation id="7505167922889582512">Mostra els fitxers amagats</translation>
 <translation id="7514365320538308">Baixa</translation>
 <translation id="751507702149411736">Bielorús</translation>
+<translation id="7521790570754130607">Es requereix un PIN per utilitzar dades mòbils</translation>
 <translation id="7532029025027028521">Persa (transliteració)</translation>
 <translation id="7544830582642184299">Dona permís a les aplicacions de Linux per accedir als teus fitxers de Google Drive. Els canvis se sincronitzaran amb els altres dispositius.</translation>
 <translation id="7547009467130558110">Vamba</translation>
@@ -776,6 +787,7 @@
 <translation id="76959938259365003">No s'ha pogut buidar la paperera.</translation>
 <translation id="770015031906360009">Grec</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> s'ha copiat.</translation>
+<translation id="7708271999969613024">Per utilitzar aquesta xarxa, has d'introduir el número personal de desbloqueig (PUK) de 8 dígits proporcionat per l'operador.</translation>
 <translation id="7711920809702896782">Informació de la imatge</translation>
 <translation id="7724603315864178912">Retalla</translation>
 <translation id="7730494089396812859">Mostra els detalls de la còpia de seguretat a Cloud</translation>
@@ -870,6 +882,7 @@
 <translation id="8437209419043462667">Nord-americà</translation>
 <translation id="8452135315243592079">Falta la targeta SIM</translation>
 <translation id="8456681095658380701">El nom no és vàlid</translation>
+<translation id="8457767749626250697">La SIM està bloquejada</translation>
 <translation id="8459404855768962328">En copiar aquest element, es compartirà amb tothom que pugui veure la carpeta compartida "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="8461467696380332069">Fes clic amb el botó dret sobre un fitxer i selecciona Fixa al prestatge per accedir ràpidament als fitxers d'un prestatge.</translation>
 <translation id="8461914792118322307">Servidor intermediari</translation>

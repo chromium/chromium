@@ -5,6 +5,7 @@
 <translation id="1047956942837015229">Sletter <ph name="COUNT" /> elementer...</translation>
 <translation id="1049926623896334335">Word-dokument</translation>
 <translation id="1056775291175587022">Ingen netværk</translation>
+<translation id="1056898198331236512">Advarsel</translation>
 <translation id="1060368002126861100">Hvis du vil åbne filer med <ph name="APP_NAME" />, skal du først flytte dem til mappen med Windows-filer.</translation>
 <translation id="1062407476771304334">Erstat</translation>
 <translation id="1119447706177454957">Intern fejl</translation>
@@ -244,6 +245,7 @@
 <translation id="3138624403379688522">Pinkoden er ugyldig. Du har <ph name="RETRIES" /> forsøg tilbage.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (hardwarebaserede)</translation>
 <translation id="3188257591659621405">Mine filer</translation>
+<translation id="3194553149358267393">Du har ikke åbnet nogen lydfiler for nylig</translation>
 <translation id="3197563288998582412">Britisk (Dvorak)</translation>
 <translation id="3202131003361292969">Sti</translation>
 <translation id="3205852408225871810">Portugisisk (Brasilien)</translation>
@@ -302,6 +304,7 @@
 <translation id="3606220979431771195">Tyrkisk F</translation>
 <translation id="3616113530831147358">Lyd</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
+<translation id="3619593063686672873">Du har ikke åbnet nogen videoer for nylig</translation>
 <translation id="3620292326130836921">Alt er sikkerhedskopieret.</translation>
 <translation id="3634507049637220048">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, administreret af din administrator, oplysninger</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> elementer blev flyttet.</translation>
@@ -400,6 +403,7 @@
 <translation id="4572815280350369984"><ph name="FILE_TYPE" />-fil</translation>
 <translation id="457386861538956877">Flere...</translation>
 <translation id="4579744207439506346"><ph name="ENTRY_NAME" /> blev føjet til det valgte.</translation>
+<translation id="4583436353463424810">Du har ikke åbnet nogen dokumenter for nylig</translation>
 <translation id="4594543368593301662">Viser resultater for <ph name="SEARCH_TERM" />.</translation>
 <translation id="4599600860674643278">Filteret er nulstillet.</translation>
 <translation id="4603392156942865207">Kopierer <ph name="FILE_NAME" /> til <ph name="FOLDER_NAME" /></translation>
@@ -488,6 +492,7 @@
 <translation id="516592729076796170">Amerikansk (Programmer Dvorak) tastatur</translation>
 <translation id="5172749059808361023">Oplysninger om begrænsning</translation>
 <translation id="5177526793333269655">Miniaturevisning</translation>
+<translation id="5181896909298187506">Du har ikke åbnet nogen filer for nylig</translation>
 <translation id="5194713942430106590">Klik for at sortere kolonnen i stigende rækkefølge.</translation>
 <translation id="5211614973734216083">Færøsk</translation>
 <translation id="5218183485292899140">Schweizisk (fransk)</translation>
@@ -745,6 +750,7 @@
 <translation id="7408870451288633753">Tjekkisk</translation>
 <translation id="7417453074306512035">Etiopisk tastatur</translation>
 <translation id="7417705661718309329">Google-kort</translation>
+<translation id="7458955835361612701">Du har ikke åbnet nogen billeder for nylig</translation>
 <translation id="7460898608667578234">ukrainsk</translation>
 <translation id="7469894403370665791">Opret automatisk forbindelse til dette netværk</translation>
 <translation id="7486315294984620427">Filer skal først kopieres til mappen med Windows-filer, før du kan trække dem til Parallels Desktop.</translation>

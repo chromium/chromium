@@ -149,6 +149,7 @@
 <translation id="2115956742084455574">Código incorrecto</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versión <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB de <ph name="TOTAL_MEMORY" /> GB de memoria disponible</translation>
+<translation id="2130871201950918186">El sistema se reiniciará dentro de 5 segundos.</translation>
 <translation id="2138109643290557664">Sigue flotando</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> fotos</translation>
@@ -211,6 +212,7 @@
 <translation id="2536159006530886390">No puedo conectarme a Internet.</translation>
 <translation id="2570743873672969996">Ejecutando la prueba <ph name="TEST_NAME" />…</translation>
 <translation id="2584559707064218956">Para configurar la red, ve a Configuración</translation>
+<translation id="2597774443162333062">Los archivos se enviarán a Google para depurarlos</translation>
 <translation id="2619761439309613843">Cambiar diario</translation>
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2638662041295312666">Imagen de acceso</translation>
@@ -672,6 +674,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="6659594942844771486">Pestaña</translation>
 <translation id="6692996468359469499">Obtén información relacionada con tu selección</translation>
 <translation id="6704062477274546131">Resolución de DNS</translation>
+<translation id="6719240409382354629">Preparando el reinicio…</translation>
 <translation id="6723839937902243910">Alimentación</translation>
 <translation id="6723847290197874913">Retroiluminación del teclado</translation>
 <translation id="672609503628871915">Novedades</translation>
@@ -889,6 +892,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="8747900814994928677">Confirmar cambio</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Álbum de Google Fotos</translation>
+<translation id="8778600430213950389">Se produjo un error. Lo más probable es que se deba a un error de hardware. Reemplaza la placa principal y vuelve a intentar el proceso de reparación.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Es posible que esta red tenga un portal cautivo</translation>
 <translation id="8798099450830957504">Predeterminado</translation>
@@ -942,6 +946,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="910415269708673980">Actualizar ticket para <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Escaneando página <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Desbloquear</translation>
+<translation id="9118126012493516930">No se puede completar la reparación</translation>
 <translation id="9122602430962285795">Para restablecer la conexión, ve a Configuración</translation>
 <translation id="9126720536733509015">Guardar varias páginas en un PDF</translation>
 <translation id="9137526406337347448">Servicios de Google</translation>

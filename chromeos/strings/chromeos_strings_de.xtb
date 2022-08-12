@@ -149,6 +149,7 @@
 <translation id="2115956742084455574">Falscher Code</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, Version <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB von <ph name="TOTAL_MEMORY" /> GB sind verfügbar</translation>
+<translation id="2130871201950918186">Das System startet in 5 Sekunden neu.</translation>
 <translation id="2138109643290557664">Einfach treiben lassen</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> Fotos</translation>
@@ -211,6 +212,7 @@
 <translation id="2536159006530886390">Keine Verbindung zum Internet.</translation>
 <translation id="2570743873672969996">Test für <ph name="TEST_NAME" /> wird ausgeführt…</translation>
 <translation id="2584559707064218956">Gehe für die Einrichtung zu den Einstellungen</translation>
+<translation id="2597774443162333062">Dateien werden zur Fehlerbehebung an Google gesendet</translation>
 <translation id="2619761439309613843">Tägliche Aktualisierung</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="2638662041295312666">Log-in-Bild</translation>
@@ -672,6 +674,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="6659594942844771486">Tab</translation>
 <translation id="6692996468359469499">Informationen zu deiner Auswahl erhalten</translation>
 <translation id="6704062477274546131">DNS-Auflösung</translation>
+<translation id="6719240409382354629">Neustart wird vorbereitet…</translation>
 <translation id="6723839937902243910">Leistung</translation>
 <translation id="6723847290197874913">Hintergrundbeleuchtung der Tastatur</translation>
 <translation id="672609503628871915">Neuigkeiten</translation>
@@ -889,6 +892,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="8747900814994928677">Änderung bestätigen</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Fotos-Album</translation>
+<translation id="8778600430213950389">Ein Fehler ist aufgetreten. Dies ist wahrscheinlich auf ein Hardwareproblem zurückzuführen. Tausche die Hauptplatine aus und versuche es noch einmal.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Dieses Netzwerk hat möglicherweise ein Captive Portal</translation>
 <translation id="8798099450830957504">Standard</translation>
@@ -942,6 +946,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="910415269708673980">Aktualisiere das Ticket für <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Seite <ph name="PAGE_NUMBER" /> wird gescannt</translation>
 <translation id="9111102763498581341">Entsperren</translation>
+<translation id="9118126012493516930">Reparatur kann nicht abgeschlossen werden</translation>
 <translation id="9122602430962285795">Gehe zu den Einstellungen, um die Verbindung wiederherzustellen</translation>
 <translation id="9126720536733509015">Mehrere Seiten in einem PDF speichern</translation>
 <translation id="9137526406337347448">Google-Dienste</translation>

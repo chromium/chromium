@@ -149,6 +149,7 @@
 <translation id="2115956742084455574">కోడ్ తప్పు</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, వెర్షన్ <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> GBలో <ph name="AVAILABLE_MEMORY" /> GB అందుబాటులో ఉంది</translation>
+<translation id="2130871201950918186">5 సెకన్లలో సిస్టమ్ రీస్టార్ట్ అవుతుంది.</translation>
 <translation id="2138109643290557664">స్మృతులలో తేలిపోండి</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> ఫోటోలు</translation>
@@ -211,6 +212,7 @@
 <translation id="2536159006530886390">ఇంటర్నెట్‌కు కనెక్ట్ చేయడం సాధ్యపడదు.</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> పరీక్షను రన్ చేస్తోంది...</translation>
 <translation id="2584559707064218956">సెటప్ చేయడానికి, సెట్టింగ్‌లకు వెళ్లండి</translation>
+<translation id="2597774443162333062">డీబగ్గింగ్ కోసం ఫైల్స్ Googleకు పంపబడతాయి</translation>
 <translation id="2619761439309613843">రోజూ రిఫ్రెష్ అవుతుంది</translation>
 <translation id="2620436844016719705">సిస్టమ్</translation>
 <translation id="2638662041295312666">సైన్ ఇన్ ఇమేజ్</translation>
@@ -671,6 +673,7 @@
 <translation id="6659594942844771486">బ్రౌజర్ ట్యాబ్</translation>
 <translation id="6692996468359469499">మీ ఎంచుకున్న దానికి సంబంధించిన సమాచారాన్ని పొందండి</translation>
 <translation id="6704062477274546131">DNS రిజల్యూషన్</translation>
+<translation id="6719240409382354629">రీస్టార్ట్ చేయడానికి సిద్ధం అవుతోంది...</translation>
 <translation id="6723839937902243910">పవర్</translation>
 <translation id="6723847290197874913">కీబోర్డ్ బ్యాక్‌లైట్</translation>
 <translation id="672609503628871915">కొత్తగా ఏమి ఉన్నాయో చూడండి</translation>
@@ -888,6 +891,7 @@
 <translation id="8747900814994928677">మార్పును నిర్ధారించండి</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos ఆల్బమ్</translation>
+<translation id="8778600430213950389">ఏదో తప్పు జరిగింది. హార్డ్‌వేర్ సమస్య వలన ఇలా జరిగి ఉండవచ్చు. ప్రధాన బోర్డ్‌ను రీప్లేస్ చేసి, రిపేర్ ప్రాసెస్‌ను మళ్లీ ట్రై చేయండి.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">ఈ నెట్‌వర్క్‌లో క్యాప్టివ్ పోర్టల్ ఉండవచ్చు</translation>
 <translation id="8798099450830957504">డిఫాల్ట్</translation>
@@ -941,6 +945,7 @@
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> సంబంధిత టిక్కెట్‌ను రిఫ్రెష్ చేయండి</translation>
 <translation id="9106415115617144481">పేజీ <ph name="PAGE_NUMBER" />ని స్కాన్ చేస్తోంది</translation>
 <translation id="9111102763498581341">అన్‌లాక్ చేయి</translation>
+<translation id="9118126012493516930">రిపేర్‌ను పూర్తి చేయడం సాధ్యపడదు</translation>
 <translation id="9122602430962285795">తిరిగి కనెక్ట్ చేయడానికి, సెట్టింగ్‌లకు వెళ్లండి</translation>
 <translation id="9126720536733509015">పలు పేజీలను ఒక PDFగా సేవ్ చేయండి</translation>
 <translation id="9137526406337347448">Google సేవలు</translation>

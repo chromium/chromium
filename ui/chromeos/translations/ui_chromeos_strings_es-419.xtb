@@ -5,6 +5,7 @@
 <translation id="1047956942837015229">Eliminando <ph name="COUNT" /> elementos…</translation>
 <translation id="1049926623896334335">Documento de Word</translation>
 <translation id="1056775291175587022">No hay redes</translation>
+<translation id="1056898198331236512">Advertencia</translation>
 <translation id="1060368002126861100">Para abrir archivos con <ph name="APP_NAME" />, primero debes moverlos a la carpeta de archivos de Windows.</translation>
 <translation id="1062407476771304334">Reemplazar</translation>
 <translation id="1119447706177454957">Error interno</translation>
@@ -244,6 +245,7 @@
 <translation id="3138624403379688522">El PIN no es válido. Te quedan <ph name="RETRIES" /> intentos.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (copia de seguridad en hardware)</translation>
 <translation id="3188257591659621405">Mis archivos</translation>
+<translation id="3194553149358267393">No hay archivos de audio recientes.</translation>
 <translation id="3197563288998582412">Inglés (Reino Unido; Dvorak)</translation>
 <translation id="3202131003361292969">Ruta</translation>
 <translation id="3205852408225871810">Portugués (Brasil)</translation>
@@ -284,10 +286,12 @@
 <translation id="3479552764303398839">Ahora no</translation>
 <translation id="3486821258960016770">Mongol</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> errores</translation>
+<translation id="3495810061346586977">Este archivo es confidencial y está sujeto a las restricciones de la política del administrador. <ph name="BEGIN_LINK_HELP" />Más información<ph name="END_LINK_HELP" /></translation>
 <translation id="3509680540198371098">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" />%, detalles</translation>
 <translation id="3522708245912499433">Portugués</translation>
 <translation id="3524311639100184459">Precaución: Estos archivos son temporales y es posible que se borren automáticamente para liberar espacio en el disco.  <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Carpeta</translation>
+<translation id="3548125359243647069">Se ingresó el PIN de forma incorrecta demasiadas veces.</translation>
 <translation id="3549797760399244642">Ir a drive.google.com</translation>
 <translation id="3553048479571901246">Para abrir archivos con <ph name="APP_NAME" />, primero debes copiarlos a la carpeta de archivos de Windows.</translation>
 <translation id="3556731189587832921">Inglés (EE.UU.) con teclado internacional para PC</translation>
@@ -300,6 +304,7 @@
 <translation id="3606220979431771195">Turco-F</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3619115746895587757">Capuchino</translation>
+<translation id="3619593063686672873">No hay videos recientes.</translation>
 <translation id="3620292326130836921">Todos los archivos están guardados en una copia de seguridad.</translation>
 <translation id="3634507049637220048">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, administrada por tu administrador, detalles</translation>
 <translation id="3645233063072417428">Se movieron <ph name="NUMBER_OF_ITEMS" /> elementos.</translation>
@@ -398,6 +403,7 @@
 <translation id="4572815280350369984">Archivo <ph name="FILE_TYPE" /></translation>
 <translation id="457386861538956877">Más...</translation>
 <translation id="4579744207439506346">Se agregó <ph name="ENTRY_NAME" /> a la selección.</translation>
+<translation id="4583436353463424810">No hay documentos recientes.</translation>
 <translation id="4594543368593301662">Se muestran los resultados de <ph name="SEARCH_TERM" />.</translation>
 <translation id="4599600860674643278">Se restableció el filtro.</translation>
 <translation id="4603392156942865207">Copiando <ph name="FILE_NAME" /> a <ph name="FOLDER_NAME" /></translation>
@@ -486,6 +492,7 @@
 <translation id="516592729076796170">Programmer Dvorak, EE. UU.</translation>
 <translation id="5172749059808361023">Detalles de la restricción</translation>
 <translation id="5177526793333269655">Vista de miniatura</translation>
+<translation id="5181896909298187506">No hay archivos recientes.</translation>
 <translation id="5194713942430106590">Haz clic para ordenar la columna de forma ascendente.</translation>
 <translation id="5211614973734216083">Feroés</translation>
 <translation id="5218183485292899140">Francés (Suiza)</translation>
@@ -613,6 +620,7 @@
 <translation id="6267547857941397424">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" />%, nivel de la batería del teléfono: <ph name="BATTERY_STATUS" />%, conectar</translation>
 <translation id="6269630227984243955">Malayo</translation>
 <translation id="6287852322318138013">Seleccionar una aplicación para abrir este archivo</translation>
+<translation id="6295542640242147836">Bloquear SIM</translation>
 <translation id="6296410173147755564">La PUK no es válida.</translation>
 <translation id="6312403991423642364">Error de red desconocido</translation>
 <translation id="6317608858038767920">Nameserver personalizado <ph name="INPUT_INDEX" /></translation>
@@ -721,6 +729,7 @@
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Guardar archivo como</translation>
 <translation id="7229570126336867161">Se necesita EVDO</translation>
+<translation id="7230898482850090046">El administrador te solicitó que desactives la configuración "Bloquear SIM".</translation>
 <translation id="7238097264433196391">Nombre de la unidad</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, detalles</translation>
 <translation id="7246947237293279874">Proxy FTP</translation>
@@ -741,6 +750,7 @@
 <translation id="7408870451288633753">Checo</translation>
 <translation id="7417453074306512035">Teclado etíope</translation>
 <translation id="7417705661718309329">Mapa de Google</translation>
+<translation id="7458955835361612701">No hay imágenes recientes.</translation>
 <translation id="7460898608667578234">Ucraniano</translation>
 <translation id="7469894403370665791">Conectarse automáticamente a esta red</translation>
 <translation id="7486315294984620427">Para poder soltar un archivo en Parallels Desktop, este debe copiarse en Archivos de Windows.</translation>
@@ -752,6 +762,7 @@
 <translation id="7505167922889582512">Mostrar los archivos ocultos</translation>
 <translation id="7514365320538308">Descargar</translation>
 <translation id="751507702149411736">Bielorruso</translation>
+<translation id="7521790570754130607">Para usar datos móviles se requiere el PIN.</translation>
 <translation id="7532029025027028521">Persa (transliteración)</translation>
 <translation id="7544830582642184299">Permitir que las apps de Linux accedan a los archivos de tu cuenta de Google Drive. Se sincronizarán los cambios con tus otros dispositivos.</translation>
 <translation id="7547009467130558110">Calzado deportivo</translation>
@@ -776,6 +787,7 @@
 <translation id="76959938259365003">No se pudo vaciar la papelera.</translation>
 <translation id="770015031906360009">Griego</translation>
 <translation id="7705251383879779343">Se copió <ph name="FILE_NAME" />.</translation>
+<translation id="7708271999969613024">Para usar esta red, debes ingresar la clave personal de desbloqueo (PUK) de 8 dígitos que proporciona el operador.</translation>
 <translation id="7711920809702896782">Información de la imagen</translation>
 <translation id="7724603315864178912">Cortar</translation>
 <translation id="7730494089396812859">Mostrar detalles de la copia de seguridad en la nube</translation>
@@ -870,6 +882,7 @@
 <translation id="8437209419043462667">Inglés (Estados Unidos)</translation>
 <translation id="8452135315243592079">Falta la tarjeta SIM</translation>
 <translation id="8456681095658380701">Nombre no válido</translation>
+<translation id="8457767749626250697">Tu SIM está bloqueada</translation>
 <translation id="8459404855768962328">Si copias este elemento, se compartirá con las personas que pueden ver la carpeta compartida "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="8461467696380332069">Haz clic con el botón derecho en un archivo y selecciona "Fijar en la barra" para crear un acceso rápido en la barra.</translation>
 <translation id="8461914792118322307">Proxy</translation>

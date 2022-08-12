@@ -149,6 +149,7 @@
 <translation id="2115956742084455574">कोड गलत छ</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, संस्करण <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> जि.बि. मध्ये <ph name="AVAILABLE_MEMORY" /> जि.बि. उपलब्ध छ</translation>
+<translation id="2130871201950918186">सिस्टम ५ सेकेन्डपछि रिस्टार्ट हुने छ।</translation>
 <translation id="2138109643290557664">Float on by</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> वटा फोटो</translation>
@@ -211,6 +212,7 @@
 <translation id="2536159006530886390">इन्टरनेटमा कनेक्ट हुन सकेन।</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> परीक्षण गरिँदै छ...</translation>
 <translation id="2584559707064218956">नेटवर्क सेटअप गर्न सेटिङमा जानुहोस्</translation>
+<translation id="2597774443162333062">फाइलहरू डिबग प्रक्रियाका लागि Google मा पठाइने छन्</translation>
 <translation id="2619761439309613843">दैनिक पुनः ताजा गर्नुहोस्</translation>
 <translation id="2620436844016719705">सिस्टम</translation>
 <translation id="2638662041295312666">प्रोफाइल फोटो</translation>
@@ -671,6 +673,7 @@
 <translation id="6659594942844771486">ब्राउजर ट्याब</translation>
 <translation id="6692996468359469499">आफ्नो चयनसँग सम्बन्धित जानकारी प्राप्त गर्नुहोस्</translation>
 <translation id="6704062477274546131">DNS रिजोल्युसन</translation>
+<translation id="6719240409382354629">रिस्टार्ट गर्ने तयारी गरिँदै छ...</translation>
 <translation id="6723839937902243910">पावर</translation>
 <translation id="6723847290197874913">किबोर्डको ब्याकलाइट</translation>
 <translation id="672609503628871915">नयाँ के छ हेर्नुहोस्</translation>
@@ -888,6 +891,7 @@
 <translation id="8747900814994928677">परिवर्तनको पुष्टि गर्नुहोस्</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos को एल्बम</translation>
+<translation id="8778600430213950389">केही चिज गडबड भयो। हार्डवेयरसम्बन्धी समस्याका कारण यसो भएको हुन सक्छ। मुख्य बोर्ड बदल्नुहोस् र फेरि मर्मत प्रक्रिया पूरा गर्ने प्रयास गर्नुहोस्।</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">यो नेटवर्कमा कुनै क्याप्टिभ पोर्टल हुन सक्छ</translation>
 <translation id="8798099450830957504">डिफल्ट</translation>
@@ -941,6 +945,7 @@
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> को टिकट पुन: ताजा गर्नुहोस्</translation>
 <translation id="9106415115617144481">पेज <ph name="PAGE_NUMBER" /> स्क्यान गरिँदै छ</translation>
 <translation id="9111102763498581341">अनलक गर्नुहोस्</translation>
+<translation id="9118126012493516930">मर्मत प्रक्रिया पूरा गर्न सकिएन</translation>
 <translation id="9122602430962285795">पुनः कनेक्ट गर्न सेटिङमा जानुहोस्</translation>
 <translation id="9126720536733509015">थुप्रै पेजहरू स्क्यान गरी एउटै PDF फाइलमा सेभ गर्नुहोस्</translation>
 <translation id="9137526406337347448">Google का सेवाहरू</translation>

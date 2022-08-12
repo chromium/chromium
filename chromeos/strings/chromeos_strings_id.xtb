@@ -149,6 +149,7 @@
 <translation id="2115956742084455574">Kode salah</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versi <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Tersedia <ph name="AVAILABLE_MEMORY" /> GB dari <ph name="TOTAL_MEMORY" /> GB</translation>
+<translation id="2130871201950918186">Sistem akan dimulai ulang setelah 5 detik.</translation>
 <translation id="2138109643290557664">Bergerak mengambang</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> foto</translation>
@@ -211,6 +212,7 @@
 <translation id="2536159006530886390">Tidak dapat terhubung ke internet.</translation>
 <translation id="2570743873672969996">Menjalankan pengujian <ph name="TEST_NAME" /> ...</translation>
 <translation id="2584559707064218956">Untuk menyiapkan, buka Setelan</translation>
+<translation id="2597774443162333062">File akan dikirim ke Google untuk proses debug</translation>
 <translation id="2619761439309613843">Muat Ulang Harian</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2638662041295312666">Gambar login</translation>
@@ -672,6 +674,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="6659594942844771486">Tab</translation>
 <translation id="6692996468359469499">Dapatkan info terkait pilihan Anda</translation>
 <translation id="6704062477274546131">Resolusi DNS</translation>
+<translation id="6719240409382354629">Bersiap untuk memulai ulang ...</translation>
 <translation id="6723839937902243910">Daya</translation>
 <translation id="6723847290197874913">Lampu latar keyboard</translation>
 <translation id="672609503628871915">Lihat apa saja yang baru</translation>
@@ -889,6 +892,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="8747900814994928677">Konfirmasi perubahan</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album Google Foto</translation>
+<translation id="8778600430213950389">Terjadi error. Hal ini kemungkinan besar disebabkan oleh masalah hardware. Ganti main board dan coba proses perbaikan lagi.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Jaringan ini mungkin memiliki captive portal</translation>
 <translation id="8798099450830957504">Default</translation>
@@ -942,6 +946,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="910415269708673980">Perbarui tiket untuk <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Memindai halaman <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Buka kunci</translation>
+<translation id="9118126012493516930">Tidak dapat menyelesaikan perbaikan</translation>
 <translation id="9122602430962285795">Untuk menghubungkan kembali, buka Setelan</translation>
 <translation id="9126720536733509015">Simpan beberapa halaman ke satu PDF</translation>
 <translation id="9137526406337347448">Layanan Google</translation>

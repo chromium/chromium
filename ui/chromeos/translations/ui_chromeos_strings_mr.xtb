@@ -5,6 +5,7 @@
 <translation id="1047956942837015229"><ph name="COUNT" /> आयटम हटवत आहे...</translation>
 <translation id="1049926623896334335">Word दस्तऐवज</translation>
 <translation id="1056775291175587022">नेटवर्क नाहीत</translation>
+<translation id="1056898198331236512">चेतावणी</translation>
 <translation id="1060368002126861100"><ph name="APP_NAME" /> सोबत फाइल उघडण्यासाठी, प्रथम त्या Windows फाइल फोल्डरमध्ये हलवा.</translation>
 <translation id="1062407476771304334">पुनर्स्थित करा</translation>
 <translation id="1119447706177454957">अंतर्गत एरर</translation>
@@ -244,6 +245,7 @@
 <translation id="3138624403379688522">अवैध पिन. तुमच्याकडे <ph name="RETRIES" /> प्रयत्न शिल्लक आहेत.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (हार्डवेअर-बॅक्ड)</translation>
 <translation id="3188257591659621405">माझ्या फाइल</translation>
+<translation id="3194553149358267393">अलीकडील कोणत्याही ऑडिओ फाइल नाहीत</translation>
 <translation id="3197563288998582412">यूके द्वोराक</translation>
 <translation id="3202131003361292969">पथ</translation>
 <translation id="3205852408225871810">पोर्तुगीज (ब्राझील)</translation>
@@ -302,6 +304,7 @@
 <translation id="3606220979431771195">तुर्की-F</translation>
 <translation id="3616113530831147358">ऑडिओ</translation>
 <translation id="3619115746895587757">कॅपिचिनो</translation>
+<translation id="3619593063686672873">अलीकडील कोणतेही व्हिडिओ नाहीत</translation>
 <translation id="3620292326130836921">सर्व बॅकअप घेतला!</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, तुमच्या अ‍ॅडमिनिस्ट्रेटरने व्यवस्थापित केलेले, तपशील</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> आयटम हलवले.</translation>
@@ -400,6 +403,7 @@
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> फाइल</translation>
 <translation id="457386861538956877">अधिक...</translation>
 <translation id="4579744207439506346">निवडीमध्ये <ph name="ENTRY_NAME" /> जोडली/ले.</translation>
+<translation id="4583436353463424810">अलीकडील कोणतेही दस्तऐवज नाहीत</translation>
 <translation id="4594543368593301662"><ph name="SEARCH_TERM" /> साठी परिणाम दाखवत आहे.</translation>
 <translation id="4599600860674643278">फिल्टर रीसेट केला.</translation>
 <translation id="4603392156942865207"><ph name="FILE_NAME" /> <ph name="FOLDER_NAME" /> वर कॉपी करत आहे</translation>
@@ -488,6 +492,7 @@
 <translation id="516592729076796170">यूएस प्रोग्रामर द्वोराक</translation>
 <translation id="5172749059808361023">निर्बंध तपशील</translation>
 <translation id="5177526793333269655">थंबनेल व्ह्यू</translation>
+<translation id="5181896909298187506">अलीकडील कोणत्याही फाइल नाहीत</translation>
 <translation id="5194713942430106590">स्तंभाची चढत्या क्रमाने क्रमवारी लावण्यासाठी क्लिक करा.</translation>
 <translation id="5211614973734216083">फारोसे</translation>
 <translation id="5218183485292899140">स्विस फ्रेंच</translation>
@@ -745,6 +750,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="7408870451288633753">झेक</translation>
 <translation id="7417453074306512035">इथिओपिक कीबोर्ड</translation>
 <translation id="7417705661718309329">Google नकाशा</translation>
+<translation id="7458955835361612701">अलीकडील कोणत्याही इमेज नाहीत</translation>
 <translation id="7460898608667578234">यूक्रेनियन</translation>
 <translation id="7469894403370665791">या नेटवर्कशी स्वयंचलितपणे कनेक्ट व्हा</translation>
 <translation id="7486315294984620427">Parallels Desktop मध्ये फाइल ड्रॉप करण्यासाठी, Windows च्या फाइलमध्ये फाइल कॉपी करणे आवश्यक आहे.</translation>

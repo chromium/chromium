@@ -100,6 +100,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1455242230282523554">Kuva keeleseaded</translation>
 <translation id="1460620680449458626">Helitugevus on vaigistatud.</translation>
 <translation id="1467432559032391204">Vasakule</translation>
+<translation id="146902737843070955">Seda muudatust taotles teie administraator</translation>
 <translation id="147310119694673958">Telefoni aku: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1479909375538722835">Hõljuv juurdepääsetavuse menüü</translation>
 <translation id="1480845547124508962"><ph name="CURRENT_TIME" />, vajutage sisestusklahvi, et avada kalendrivaade</translation>
@@ -838,6 +839,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5779721926447984944">Kinnitatud failid</translation>
 <translation id="5788127256798019331">Play failid</translation>
 <translation id="5790085346892983794">Õnnestus</translation>
+<translation id="5804651031882187592">Lülitage seade „SIM-i lukustamine“ välja</translation>
 <translation id="5805809050170488595">Klõpsake võrgu <ph name="NETWORK_NAME" /> aktiveerimiseks</translation>
 <translation id="5825969630400862129">Ühendatud seadmete seaded</translation>
 <translation id="5837036133683224804">Katkesta <ph name="ROUTE_TITLE" /> asukohas <ph name="RECEIVER_NAME" /></translation>

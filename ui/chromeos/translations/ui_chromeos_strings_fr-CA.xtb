@@ -5,6 +5,7 @@
 <translation id="1047956942837015229">Suppression de <ph name="COUNT" /> éléments en cours…</translation>
 <translation id="1049926623896334335">Document Word</translation>
 <translation id="1056775291175587022">Aucun réseau</translation>
+<translation id="1056898198331236512">Avertissement</translation>
 <translation id="1060368002126861100">Pour ouvrir des fichiers avec <ph name="APP_NAME" />, déplacez-les d'abord dans le dossier des fichiers Windows.</translation>
 <translation id="1062407476771304334">Remplacer</translation>
 <translation id="1119447706177454957">Erreur interne</translation>
@@ -244,6 +245,7 @@
 <translation id="3138624403379688522">NIP incorrect. Il vous reste <ph name="RETRIES" /> tentatives.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (intégré au matériel)</translation>
 <translation id="3188257591659621405">Mes fichiers</translation>
+<translation id="3194553149358267393">Aucun fichier audio récent</translation>
 <translation id="3197563288998582412">Dvorak britannique</translation>
 <translation id="3202131003361292969">Chemin d'accès</translation>
 <translation id="3205852408225871810">Portugais (Brésil)</translation>
@@ -289,6 +291,7 @@
 <translation id="3522708245912499433">Portugais</translation>
 <translation id="3524311639100184459">Attention : Ces fichiers sont temporaires et peuvent être automatiquement supprimés pour libérer de l'espace disque.  <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Dossier</translation>
+<translation id="3548125359243647069">Un NIP incorrect a été entré un trop grand nombre de fois.</translation>
 <translation id="3549797760399244642">Accéder à drive.google.com...</translation>
 <translation id="3553048479571901246">Pour ouvrir des fichiers avec <ph name="APP_NAME" />, copiez-les d'abord dans le dossier des fichiers Windows.</translation>
 <translation id="3556731189587832921">Anglais (É.-U.) avec clavier international (PC)</translation>
@@ -301,6 +304,7 @@
 <translation id="3606220979431771195">Turc-F</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
+<translation id="3619593063686672873">Aucune vidéo récente</translation>
 <translation id="3620292326130836921">Tous les fichiers ont été sauvegardés!</translation>
 <translation id="3634507049637220048">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, géré par votre administrateur, détails</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> éléments déplacés.</translation>
@@ -399,6 +403,7 @@
 <translation id="4572815280350369984">Fichier <ph name="FILE_TYPE" /></translation>
 <translation id="457386861538956877">Autres...</translation>
 <translation id="4579744207439506346"><ph name="ENTRY_NAME" /> ajouté à la sélection.</translation>
+<translation id="4583436353463424810">Aucun document récent</translation>
 <translation id="4594543368593301662">Affichage des résultats pour <ph name="SEARCH_TERM" />.</translation>
 <translation id="4599600860674643278">Le filtre est réinitialisé.</translation>
 <translation id="4603392156942865207">Copie de <ph name="FILE_NAME" /> vers <ph name="FOLDER_NAME" /> en cours…</translation>
@@ -489,6 +494,7 @@
 <translation id="516592729076796170">Dvorak programmeur américain</translation>
 <translation id="5172749059808361023">Détails des restrictions</translation>
 <translation id="5177526793333269655">Affichage de miniatures</translation>
+<translation id="5181896909298187506">Aucun fichier récent</translation>
 <translation id="5194713942430106590">Cliquez ici pour trier la colonne par ordre croissant.</translation>
 <translation id="5211614973734216083">Féroïen</translation>
 <translation id="5218183485292899140">Français suisse</translation>
@@ -615,6 +621,7 @@
 <translation id="6267547857941397424">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, pile du téléphone : <ph name="BATTERY_STATUS" /> %, connexion</translation>
 <translation id="6269630227984243955">Malais</translation>
 <translation id="6287852322318138013">Sélectionner une application pour ouvrir ce fichier</translation>
+<translation id="6295542640242147836">Verrouiller la carte SIM</translation>
 <translation id="6296410173147755564">Clé personnelle de déblocage incorrecte</translation>
 <translation id="6312403991423642364">Erreur réseau inconnue</translation>
 <translation id="6317608858038767920">Serveur de nom de domaine personnalisé <ph name="INPUT_INDEX" /></translation>
@@ -723,6 +730,7 @@
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> Go</translation>
 <translation id="7191454237977785534">Enregistrer sous...</translation>
 <translation id="7229570126336867161">Technologie EvDo requise</translation>
+<translation id="7230898482850090046">Votre administrateur vous a demandé de désactiver le paramètre « Verrouiller la carte SIM »</translation>
 <translation id="7238097264433196391">Nom du lecteur</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, détails</translation>
 <translation id="7246947237293279874">Mandataire FTP</translation>
@@ -743,6 +751,7 @@
 <translation id="7408870451288633753">Tchèque</translation>
 <translation id="7417453074306512035">Clavier éthiopien</translation>
 <translation id="7417705661718309329">Carte Google</translation>
+<translation id="7458955835361612701">Aucune image récente</translation>
 <translation id="7460898608667578234">Ukrainien</translation>
 <translation id="7469894403370665791">Se connecter automatiquement à ce réseau</translation>
 <translation id="7486315294984620427">Pour déposer des fichiers dans Parallels Desktop, le fichier doit être copié dans le dossier Fichiers Windows.</translation>
@@ -754,6 +763,7 @@
 <translation id="7505167922889582512">Afficher les fichiers masqués</translation>
 <translation id="7514365320538308">Télécharger</translation>
 <translation id="751507702149411736">Biélorusse</translation>
+<translation id="7521790570754130607">Un NIP est nécessaire pour utiliser les données cellulaires</translation>
 <translation id="7532029025027028521">Perse (translittération)</translation>
 <translation id="7544830582642184299">Autoriser les applications Linux à accéder à vos fichiers sur Google Disque. Les modifications seront synchronisées sur vos autres appareils.</translation>
 <translation id="7547009467130558110">Espadrille</translation>
@@ -778,6 +788,7 @@
 <translation id="76959938259365003">Impossible de vider la corbeille.</translation>
 <translation id="770015031906360009">Grec</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> copié.</translation>
+<translation id="7708271999969613024">Pour utiliser ce réseau, vous devez entrer la clé personnelle de déblocage (PUK) à huit chiffres fournie par le fournisseur de service.</translation>
 <translation id="7711920809702896782">Renseignements sur le fichier image</translation>
 <translation id="7724603315864178912">Couper</translation>
 <translation id="7730494089396812859">Afficher les détails de la sauvegarde dans le nuage</translation>
@@ -872,6 +883,7 @@
 <translation id="8437209419043462667">Américain</translation>
 <translation id="8452135315243592079">Carte SIM manquante</translation>
 <translation id="8456681095658380701">Ce nom n'est pas valide</translation>
+<translation id="8457767749626250697">Votre carte SIM est verrouillée</translation>
 <translation id="8459404855768962328">En copiant cet élément, vous le partagerez avec quiconque peut accéder au dossier partagé « <ph name="DESTINATION_NAME" /> ».</translation>
 <translation id="8461467696380332069">Faites un clic droit sur un fichier et sélectionnez « Épingler sur l'étagère » afin d'accéder rapidement à vos fichiers sur l'étagère.</translation>
 <translation id="8461914792118322307">Mandataire</translation>

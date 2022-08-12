@@ -149,6 +149,7 @@
 <translation id="2115956742084455574">קוד שגוי</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, גרסה <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">‏הנפח הזמין: GB<ph name="AVAILABLE_MEMORY" /> מתוך GB<ph name="TOTAL_MEMORY" /></translation>
+<translation id="2130871201950918186">המערכת תופעל מחדש בעוד 5 שניות.</translation>
 <translation id="2138109643290557664">צפים ונהנים</translation>
 <translation id="2141644705054017895">‎<ph name="PERCENTAGE_VALUE" />%‎</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> תמונות</translation>
@@ -211,6 +212,7 @@
 <translation id="2536159006530886390">לא ניתן להתחבר לאינטרנט.</translation>
 <translation id="2570743873672969996">הבדיקה של <ph name="TEST_NAME" /> בתהליך…</translation>
 <translation id="2584559707064218956">כדי להגדיר את הרשת, צריך לעבור להגדרות</translation>
+<translation id="2597774443162333062">‏הקבצים יישלחו אל Google לניפוי באגים</translation>
 <translation id="2619761439309613843">רענון יומי</translation>
 <translation id="2620436844016719705">מערכת</translation>
 <translation id="2638662041295312666">תמונת המשתמש</translation>
@@ -672,6 +674,7 @@
 <translation id="6659594942844771486">כרטיסייה</translation>
 <translation id="6692996468359469499">קבלת מידע בקשר לבחירה שלך</translation>
 <translation id="6704062477274546131">‏פענוח DNS</translation>
+<translation id="6719240409382354629">בהכנה להפעלה מחדש…</translation>
 <translation id="6723839937902243910">חשמל</translation>
 <translation id="6723847290197874913">התאורה האחורית של המקלדת</translation>
 <translation id="672609503628871915">מה חדש</translation>
@@ -889,6 +892,7 @@
 <translation id="8747900814994928677">אישור השינוי</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">‏אלבום של Google Photos</translation>
+<translation id="8778600430213950389">משהו השתבש. הסיבה היא כנראה בעיה בחומרה. צריך להחליף את לוח האם ולנסות שוב את תהליך התיקון.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">יכול להיות שברשת הזאת יש פורטל שבוי</translation>
 <translation id="8798099450830957504">ברירת מחדל</translation>
@@ -942,6 +946,7 @@
 <translation id="910415269708673980">רענון הכרטיס עבור <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">מתבצעת סריקה של עמוד <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">ביטול נעילה</translation>
+<translation id="9118126012493516930">לא ניתן להשלים את התיקון</translation>
 <translation id="9122602430962285795">כדי להתחבר מחדש, צריך לעבור להגדרות</translation>
 <translation id="9126720536733509015">‏שמירת מספר דפים בקובץ PDF אחד</translation>
 <translation id="9137526406337347448">‏שירותי Google</translation>

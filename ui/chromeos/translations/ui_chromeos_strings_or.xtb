@@ -5,6 +5,7 @@
 <translation id="1047956942837015229"><ph name="COUNT" />ଟି ଆଇଟମ୍‍କୁ ଡିଲିଟ୍ କରାଯାଉଛି...</translation>
 <translation id="1049926623896334335">Word ଡକ୍ୟୁମେଣ୍ଟ</translation>
 <translation id="1056775291175587022">ନେଟୱାର୍କ ନାହିଁ</translation>
+<translation id="1056898198331236512">ଚେତାବନୀ</translation>
 <translation id="1060368002126861100"><ph name="APP_NAME" /> ମାଧ୍ୟମରେ ଫାଇଲଗୁଡ଼ିକ ଖୋଲିବାକୁ, ପ୍ରଥମେ ସେଗୁଡ଼ିକୁ Windows ଫାଇଲ୍ ଫୋଲ୍ଡରକୁ ମୁଭ୍ କରନ୍ତୁ।</translation>
 <translation id="1062407476771304334">ପ୍ରତିସ୍ଥାପନ କରନ୍ତୁ</translation>
 <translation id="1119447706177454957">ଇଣ୍ଟର୍ନଲ୍‌ ତ୍ରୁଟି</translation>
@@ -244,6 +245,7 @@
 <translation id="3138624403379688522">ଅବୈଧ PIN। ଆପଣଙ୍କ ପାଖରେ <ph name="RETRIES" />ଟି ପ୍ରଚେଷ୍ଟା ବାକି ଅଛି।</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (ହାର୍ଡୱେୟାର-ସମର୍ଥିତ)</translation>
 <translation id="3188257591659621405">ମୋ ଫାଇଲ୍‌ଗୁଡ଼ିକ</translation>
+<translation id="3194553149358267393">ବର୍ତ୍ତମାନର କୌଣସି ଅଡିଓ ଫାଇଲ ନାହିଁ</translation>
 <translation id="3197563288998582412">US ଡିଭୋରାକ୍</translation>
 <translation id="3202131003361292969">ପାଥ୍</translation>
 <translation id="3205852408225871810">ପର୍ତ୍ତୁଗୀଜ୍ (ବ୍ରାଜିଲ୍)</translation>
@@ -302,6 +304,7 @@
 <translation id="3606220979431771195">ତୁର୍କୀସ୍-F</translation>
 <translation id="3616113530831147358">ଅଡିଓ</translation>
 <translation id="3619115746895587757">କ୍ୟାପାଚିନୋ</translation>
+<translation id="3619593063686672873">ବର୍ତ୍ତମାନର କୌଣସି ଭିଡିଓ ନାହିଁ</translation>
 <translation id="3620292326130836921">ସମସ୍ତ ବ୍ୟାକ୍‍ଅପ୍‍ ନିଆଯାଇଛି!</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_COUNT" />ଟିର <ph name="NETWORK_INDEX" /> ନେଟ୍‌ୱାର୍କ, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /> ଆପଣଙ୍କ ଆଡ୍‍ମିନିଷ୍ଟ୍ରେଟର୍‌ଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ, ବିବରଣୀ</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" />ଟି ଆଇଟମ୍ ମୁଭ୍ କରାଯାଇଛି।</translation>
@@ -400,6 +403,7 @@
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> ଫାଇଲ୍‍</translation>
 <translation id="457386861538956877">ଅଧିକ...</translation>
 <translation id="4579744207439506346"><ph name="ENTRY_NAME" />କୁ ବଛାଯାଇଛି।</translation>
+<translation id="4583436353463424810">ବର୍ତ୍ତମାନର କୌଣସି ଡକ୍ୟୁମେଣ୍ଟ ନାହିଁ</translation>
 <translation id="4594543368593301662"><ph name="SEARCH_TERM" /> ପାଇଁ ଫଳାଫଳ ଦେଖାଉଛି।</translation>
 <translation id="4599600860674643278">ଫିଲ୍ଟର ରିସେଟ କରାଯାଇଛି।</translation>
 <translation id="4603392156942865207"><ph name="FOLDER_NAME" />କୁ <ph name="FILE_NAME" /> କପି କରାଯାଉଛି</translation>
@@ -488,6 +492,7 @@
 <translation id="516592729076796170">US ପ୍ରୋଗ୍ରାମର୍ ଡିଭୋରାକ୍</translation>
 <translation id="5172749059808361023">ପ୍ରତିବନ୍ଧକ ବିବରଣୀ</translation>
 <translation id="5177526793333269655">ଥମ୍ଵନେଲ୍ ଦର୍ଶନ</translation>
+<translation id="5181896909298187506">ବର୍ତ୍ତମାନର କୌଣସି ଫାଇଲ ନାହିଁ</translation>
 <translation id="5194713942430106590">କଲମ୍‍କୁ ସାନରୁ ବଡ଼ କ୍ରମରେ ସଜାଇବା ପାଇଁ କ୍ଲିକ୍ କରନ୍ତୁ।</translation>
 <translation id="5211614973734216083">ଫାରୋସି</translation>
 <translation id="5218183485292899140">ସୁଇସ୍ ଫ୍ରେଞ୍ଚ</translation>
@@ -739,6 +744,7 @@
 <translation id="7408870451288633753">ଚେକ୍</translation>
 <translation id="7417453074306512035">ଇଥିଓପିକ୍ କୀବୋର୍ଡ</translation>
 <translation id="7417705661718309329">Google ମ୍ୟାପ୍‌</translation>
+<translation id="7458955835361612701">ବର୍ତ୍ତମାନର କୌଣସି ଇମେଜ ନାହିଁ</translation>
 <translation id="7460898608667578234">ୟୁକ୍ରାନିଆନ୍</translation>
 <translation id="7469894403370665791">ସ୍ୱଚାଳିତ ଭାବେ ଏହି ନେଟ୍‍ୱର୍କ ସହ ସଂଯୋଗ କରନ୍ତୁ</translation>
 <translation id="7486315294984620427">Parallels Desktopରେ ଫାଇଲଗୁଡ଼ିକୁ ଡ୍ରପ୍ କରିବା ପାଇଁ ଫାଇଲକୁ Windows ଫାଇଲ୍ ଫୋଲ୍ଡରରେ କପି କରିବା ଆବଶ୍ୟକ।</translation>
