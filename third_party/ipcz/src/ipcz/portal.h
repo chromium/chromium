@@ -41,6 +41,7 @@ class Portal : public APIObjectImpl<Portal, APIObject::kPortal> {
 
   // ipcz portal API implementation:
   IpczResult QueryStatus(IpczPortalStatus& status);
+  IpczResult Merge(Portal& other);
 
   IpczResult Put(absl::Span<const uint8_t> data,
                  absl::Span<const IpczHandle> handles,

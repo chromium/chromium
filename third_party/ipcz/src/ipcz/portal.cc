@@ -68,6 +68,10 @@ IpczResult Portal::QueryStatus(IpczPortalStatus& status) {
   return IPCZ_RESULT_OK;
 }
 
+IpczResult Portal::Merge(Portal& other) {
+  return router_->MergeRoute(other.router());
+}
+
 IpczResult Portal::Put(absl::Span<const uint8_t> data,
                        absl::Span<const IpczHandle> handles,
                        const IpczPutLimits* limits) {

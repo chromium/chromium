@@ -110,7 +110,12 @@ void LocalRouterLink::AllocateParcelData(size_t num_bytes,
 
 void LocalRouterLink::AcceptParcel(Parcel& parcel) {
   if (Ref<Router> receiver = state_->GetRouter(side_.opposite())) {
-    receiver->AcceptInboundParcel(parcel);
+    if (state_->type() == LinkType::kCentral) {
+      receiver->AcceptInboundParcel(parcel);
+    } else {
+      ABSL_ASSERT(state_->type() == LinkType::kBridge);
+      receiver->AcceptOutboundParcel(parcel);
+    }
   }
 }
 

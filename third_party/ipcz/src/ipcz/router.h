@@ -160,6 +160,12 @@ class Router : public RefCounted {
                   IpczTrapConditionFlags* satisfied_condition_flags,
                   IpczPortalStatus* status);
 
+  // Attempts to merge this Router's route with the route terminated by `other`.
+  // Both `other` and this Router must be terminal routers on their own separate
+  // routes, and neither Router must have transmitted or retreived any parcels
+  // via Put or Get APIs.
+  IpczResult MergeRoute(const Ref<Router>& other);
+
   // Deserializes a new Router from `descriptor` received over `from_node_link`.
   static Ref<Router> Deserialize(const RouterDescriptor& descriptor,
                                  NodeLink& from_node_link);
@@ -320,6 +326,21 @@ class Router : public RefCounted {
                                   RemoteRouterLink& inward_link,
                                   FragmentRef<RouterLinkState> new_link_state);
 
+  // Attempts to start bypass of this Router, which must be on a bridge link, as
+  // well bypassing the bridge link itself and the bridge peer router on its
+  // other side. This method will attempt to lock this Router's outward link as
+  // well as the outward link of this Router's bridge peer. If either fails,
+  // both are left unlocked and this operation cannot yet proceed.
+  void MaybeStartBridgeBypass();
+
+  // Starts bypass of this Router, which must be on a bridge link and must have
+  // a local outward peer link. The router on the other side of the bridge must
+  // have a remote outward peer, and `link_state` if non-null will be used to
+  // establish a new remote link to that peer to bypass the entire bridge. If
+  // `link_state` is null, the operation will be deferred until a fragment can
+  // be allocated.
+  void StartBridgeBypassFromLocalPeer(FragmentRef<RouterLinkState> link_state);
+
   // Attempts to bypass the link identified by `requestor` in favor of a new
   // link that runs over `node_link`. If `new_link_state` is non-null, it will
   // be used for the RouterLinkState of the new RemoteRouterLink; otherwise one
@@ -357,6 +378,10 @@ class Router : public RefCounted {
   // our own side of the route. Only present for proxying routers: terminal
   // routers by definition can have no inward edge.
   absl::optional<RouteEdge> inward_edge_ ABSL_GUARDED_BY(mutex_);
+
+  // A special inward edge which when present bridges this route with another
+  // route. This is used only to implement route merging.
+  std::unique_ptr<RouteEdge> bridge_ ABSL_GUARDED_BY(mutex_);
 
   // Parcels received from the other end of the route. If this is a terminal
   // router, these may be retrieved by the application via a controlling portal;

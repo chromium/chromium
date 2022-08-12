@@ -18,10 +18,6 @@ using APITest = test::Test;
 
 TEST_F(APITest, Unimplemented) {
   EXPECT_EQ(IPCZ_RESULT_UNIMPLEMENTED,
-            ipcz().MergePortals(IPCZ_INVALID_HANDLE, IPCZ_INVALID_HANDLE,
-                                IPCZ_NO_FLAGS, nullptr));
-
-  EXPECT_EQ(IPCZ_RESULT_UNIMPLEMENTED,
             ipcz().BeginPut(IPCZ_INVALID_HANDLE, IPCZ_NO_FLAGS, nullptr,
                             nullptr, nullptr));
   EXPECT_EQ(IPCZ_RESULT_UNIMPLEMENTED,
@@ -186,6 +182,62 @@ TEST_F(APITest, QueryPortalStatus) {
   EXPECT_EQ(IPCZ_PORTAL_STATUS_DEAD, status.flags & IPCZ_PORTAL_STATUS_DEAD);
 
   CloseAll({a, node});
+}
+
+TEST_F(APITest, MergePortalsFailure) {
+  const IpczHandle node = CreateNode(kDefaultDriver);
+  auto [a, b] = OpenPortals(node);
+
+  // Invalid portal handles.
+  EXPECT_EQ(
+      IPCZ_RESULT_INVALID_ARGUMENT,
+      ipcz().MergePortals(a, IPCZ_INVALID_HANDLE, IPCZ_NO_FLAGS, nullptr));
+  EXPECT_EQ(
+      IPCZ_RESULT_INVALID_ARGUMENT,
+      ipcz().MergePortals(IPCZ_INVALID_HANDLE, a, IPCZ_NO_FLAGS, nullptr));
+  EXPECT_EQ(IPCZ_RESULT_INVALID_ARGUMENT,
+            ipcz().MergePortals(IPCZ_INVALID_HANDLE, IPCZ_INVALID_HANDLE,
+                                IPCZ_NO_FLAGS, nullptr));
+
+  // Can't merge into own peer.
+  EXPECT_EQ(IPCZ_RESULT_INVALID_ARGUMENT,
+            ipcz().MergePortals(a, b, IPCZ_NO_FLAGS, nullptr));
+
+  // Can't merge into self.
+  EXPECT_EQ(IPCZ_RESULT_INVALID_ARGUMENT,
+            ipcz().MergePortals(a, a, IPCZ_NO_FLAGS, nullptr));
+
+  auto [c, d] = OpenPortals(node);
+
+  // Can't merge a portal that's had parcels put into it.
+  EXPECT_EQ(IPCZ_RESULT_OK, Put(c, "!"));
+  EXPECT_EQ(IPCZ_RESULT_FAILED_PRECONDITION,
+            ipcz().MergePortals(a, c, IPCZ_NO_FLAGS, nullptr));
+
+  // Can't merge a portal that's had parcels retrieved from it.
+  std::string message;
+  EXPECT_EQ(IPCZ_RESULT_OK, Get(d, &message));
+  EXPECT_EQ(IPCZ_RESULT_FAILED_PRECONDITION,
+            ipcz().MergePortals(a, d, IPCZ_NO_FLAGS, nullptr));
+
+  CloseAll({a, b, c, d, node});
+}
+
+TEST_F(APITest, MergePortals) {
+  const IpczHandle node = CreateNode(kDefaultDriver);
+  auto [a, b] = OpenPortals(node);
+  auto [c, d] = OpenPortals(node);
+
+  EXPECT_EQ(IPCZ_RESULT_OK, Put(a, "!"));
+  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().MergePortals(b, c, IPCZ_NO_FLAGS, nullptr));
+
+  // The message from `a` should be routed to `d`, since `b` and `c` have been
+  // merged.
+  std::string message;
+  EXPECT_EQ(IPCZ_RESULT_OK, Get(d, &message));
+  EXPECT_EQ("!", message);
+
+  CloseAll({a, d, node});
 }
 
 TEST_F(APITest, PutGet) {

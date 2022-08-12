@@ -42,6 +42,14 @@ Ref<RouterLink> RouteEdge::ReleaseDecayingLink() {
   return std::move(decaying_link_);
 }
 
+Ref<Router> RouteEdge::GetLocalPeer() {
+  return primary_link_ ? primary_link_->GetLocalPeer() : nullptr;
+}
+
+Ref<Router> RouteEdge::GetDecayingLocalPeer() {
+  return decaying_link_ ? decaying_link_->GetLocalPeer() : nullptr;
+}
+
 bool RouteEdge::BeginPrimaryLinkDecay() {
   if (decaying_link_ || is_decay_deferred_) {
     return false;

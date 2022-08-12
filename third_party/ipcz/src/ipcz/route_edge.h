@@ -86,6 +86,14 @@ class RouteEdge {
   // Releases this edge's decaying link and returns a reference to it.
   Ref<RouterLink> ReleaseDecayingLink();
 
+  // If the primary link is present and is a LocalRouterLink, this returns the
+  // Router on the other side of the link. Otherwise it returns null.
+  Ref<Router> GetLocalPeer();
+
+  // If the decaying link is present and is a LocalRouterLink, this returns the
+  // Router on the other side of the link. Otherwise it returns null.
+  Ref<Router> GetDecayingLocalPeer();
+
   // Sets the current primary link to begin decay; or if there is no primary
   // link yet, marks this edge for deferred decay. In the latter case, the next
   // primary link adopted by this edge will immediately begin to decay. This may

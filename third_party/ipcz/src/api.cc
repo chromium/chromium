@@ -109,7 +109,22 @@ IpczResult MergePortals(IpczHandle portal0,
                         IpczHandle portal1,
                         uint32_t flags,
                         const void* options) {
-  return IPCZ_RESULT_UNIMPLEMENTED;
+  ipcz::Portal* first = ipcz::Portal::FromHandle(portal0);
+  ipcz::Portal* second = ipcz::Portal::FromHandle(portal1);
+  if (!first || !second) {
+    return IPCZ_RESULT_INVALID_ARGUMENT;
+  }
+
+  ipcz::Ref<ipcz::Portal> one(ipcz::RefCounted::kAdoptExistingRef, first);
+  ipcz::Ref<ipcz::Portal> two(ipcz::RefCounted::kAdoptExistingRef, second);
+  IpczResult result = one->Merge(*two);
+  if (result != IPCZ_RESULT_OK) {
+    one.release();
+    two.release();
+    return result;
+  }
+
+  return IPCZ_RESULT_OK;
 }
 
 IpczResult QueryPortalStatus(IpczHandle portal_handle,

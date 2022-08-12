@@ -96,6 +96,8 @@ class Ref : public GenericRef {
 
   T* release() { return static_cast<T*>(ReleaseImpl()); }
 
+  void swap(Ref<T>& other) noexcept { std::swap(ptr_, other.ptr_); }
+
   template <typename H>
   friend H AbslHashValue(H h, const Ref<T>& ref) {
     return H::combine(std::move(h), ref.get());

@@ -35,6 +35,7 @@ class TestBase {
   // Some trivial shorthand methods to access the ipcz API more conveniently.
   void Close(IpczHandle handle);
   void CloseAll(absl::Span<const IpczHandle> handles);
+  IpczResult Merge(IpczHandle a, IpczHandle b);
   IpczHandle CreateNode(const IpczDriver& driver,
                         IpczCreateNodeFlags flags = IPCZ_NO_FLAGS);
   std::pair<IpczHandle, IpczHandle> OpenPortals(IpczHandle node);

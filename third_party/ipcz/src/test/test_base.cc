@@ -55,6 +55,10 @@ void TestBase::CloseAll(absl::Span<const IpczHandle> handles) {
   }
 }
 
+IpczResult TestBase::Merge(IpczHandle a, IpczHandle b) {
+  return ipcz().MergePortals(a, b, IPCZ_NO_FLAGS, nullptr);
+}
+
 IpczHandle TestBase::CreateNode(const IpczDriver& driver,
                                 IpczCreateNodeFlags flags) {
   IpczHandle node;
