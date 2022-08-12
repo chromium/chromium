@@ -106,7 +106,7 @@ void DownloadDisplayController::OnNewItem(bool show_details) {
               GURL(), EXCLUSIVE_ACCESS_BUBBLE_TYPE_DOWNLOAD_STARTED,
               ExclusiveAccessBubbleHideCallback(),
               /*force_update=*/false);
-    } else {
+    } else if (download::ShouldShowDetailsAutomatically(browser_->profile())) {
       display_->ShowDetails();
     }
   }
@@ -122,7 +122,8 @@ void DownloadDisplayController::OnUpdatedItem(bool is_done,
     if (show_details_if_done) {
       if (browser_->window()->IsFullscreen()) {
         download_completed_while_fullscreen_ = true;
-      } else {
+      } else if (download::ShouldShowDetailsAutomatically(
+                     browser_->profile())) {
         display_->ShowDetails();
       }
     }
@@ -195,7 +196,8 @@ void DownloadDisplayController::OnFullscreenStateChanged() {
       bubble_controller_->GetAllItemsToDisplay();
   UpdateToolbarButtonState(all_models);
   int in_progress_count = InProgressDownloadCount(all_models);
-  if (in_progress_count > 0) {
+  if (in_progress_count > 0 &&
+      download::ShouldShowDetailsAutomatically(browser_->profile())) {
     display_->ShowDetails();
   }
 }

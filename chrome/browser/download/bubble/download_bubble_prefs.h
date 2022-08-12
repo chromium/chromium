@@ -18,6 +18,10 @@ bool IsDownloadBubbleV2Enabled(Profile* profile);
 // Called when deciding whether to show or hide the bubble.
 bool ShouldShowDownloadBubble(Profile* profile);
 
+// Called when deciding whehther to pop up the bubble automatically when a
+// download has started or completed.
+bool ShouldShowDetailsAutomatically(Profile* profile);
+
 bool IsDownloadConnectorEnabled(Profile* profile);
 
 }  // namespace download

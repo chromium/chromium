@@ -4762,13 +4762,12 @@ class DownloadExtensionBubbleEnabledTest : public DownloadExtensionTest {
     feature_list_.InitAndEnableFeature(safe_browsing::kDownloadBubble);
   }
 
-  bool IsDownloadToolbarButtonShowing() {
+  DownloadDisplay* GetDownloadToolbarButton() {
     return current_browser()
         ->window()
         ->GetDownloadBubbleUIController()
         ->GetDownloadDisplayController()
-        ->download_display_for_testing()
-        ->IsShowing();
+        ->download_display_for_testing();
   }
 
  private:
@@ -4784,15 +4783,15 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionBubbleEnabledTest,
 
   EXPECT_TRUE(RunFunction(new DownloadsSetUiOptionsFunction(),
                           R"([{"enabled": true}])"));
-  EXPECT_TRUE(IsDownloadToolbarButtonShowing());
+  EXPECT_TRUE(GetDownloadToolbarButton()->IsShowing());
 
   EXPECT_TRUE(RunFunction(new DownloadsSetUiOptionsFunction(),
                           R"([{"enabled": false}])"));
-  EXPECT_FALSE(IsDownloadToolbarButtonShowing());
+  EXPECT_FALSE(GetDownloadToolbarButton()->IsShowing());
 
   items[0]->Cancel(true);
   // Remain hidden on download updates.
-  EXPECT_FALSE(IsDownloadToolbarButtonShowing());
+  EXPECT_FALSE(GetDownloadToolbarButton()->IsShowing());
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -4804,7 +4803,33 @@ IN_PROC_BROWSER_TEST_F(
   DownloadManager::DownloadVector items;
   CreateTwoDownloads(&items);
   ScopedItemVectorCanceller delete_items(&items);
-  EXPECT_FALSE(IsDownloadToolbarButtonShowing());
+  EXPECT_FALSE(GetDownloadToolbarButton()->IsShowing());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    DownloadExtensionBubbleEnabledTest,
+    DownloadExtensionBubbleEnabledTest_SetUiOptionsShowDetails) {
+  LoadExtension("downloads_split");
+  DownloadManager::DownloadVector items;
+  CreateTwoDownloads(&items);
+  ScopedItemVectorCanceller delete_items(&items);
+
+  EXPECT_TRUE(GetDownloadToolbarButton()->IsShowing());
+  // Details are not shown because the download item is observed by an
+  // extension.
+  EXPECT_FALSE(GetDownloadToolbarButton()->IsShowingDetails());
+
+  items[0]->Cancel(true);
+  EXPECT_TRUE(GetDownloadToolbarButton()->IsShowing());
+  // Details are not shown because the download item is observed by an
+  // extension.
+  EXPECT_FALSE(GetDownloadToolbarButton()->IsShowingDetails());
+
+  DisableExtension(GetExtensionId());
+  items[1]->Cancel(true);
+  EXPECT_TRUE(GetDownloadToolbarButton()->IsShowing());
+  // Details are shown because the extension is disabled.
+  EXPECT_TRUE(GetDownloadToolbarButton()->IsShowingDetails());
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -4816,18 +4841,18 @@ IN_PROC_BROWSER_TEST_F(
   DownloadManager::DownloadVector items;
   CreateTwoDownloads(&items);
   ScopedItemVectorCanceller delete_items(&items);
-  EXPECT_FALSE(IsDownloadToolbarButtonShowing());
+  EXPECT_FALSE(GetDownloadToolbarButton()->IsShowing());
 
   GoOffTheRecord();
-  EXPECT_FALSE(IsDownloadToolbarButtonShowing());
+  EXPECT_FALSE(GetDownloadToolbarButton()->IsShowing());
 
   EXPECT_TRUE(RunFunction(new DownloadsSetUiOptionsFunction(),
                           R"([{"enabled": true}])"));
   items[0]->Cancel(true);
-  EXPECT_TRUE(IsDownloadToolbarButtonShowing());
+  EXPECT_TRUE(GetDownloadToolbarButton()->IsShowing());
 
   GoOnTheRecord();
-  EXPECT_TRUE(IsDownloadToolbarButtonShowing());
+  EXPECT_TRUE(GetDownloadToolbarButton()->IsShowing());
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -4839,7 +4864,7 @@ IN_PROC_BROWSER_TEST_F(
   DownloadManager::DownloadVector items;
   CreateTwoDownloads(&items);
   ScopedItemVectorCanceller delete_items(&items);
-  EXPECT_FALSE(IsDownloadToolbarButtonShowing());
+  EXPECT_FALSE(GetDownloadToolbarButton()->IsShowing());
 
   LoadSecondExtension("downloads_spanning");
   // Returns error because the first extension has disabled the UI.
@@ -4855,11 +4880,11 @@ IN_PROC_BROWSER_TEST_F(
   DisableExtension(GetExtensionId());
   items[0]->Pause();
   // The UI keeps disabled because the second extension has set it to disabled.
-  EXPECT_FALSE(IsDownloadToolbarButtonShowing());
+  EXPECT_FALSE(GetDownloadToolbarButton()->IsShowing());
 
   DisableExtension(GetSecondExtensionId());
   items[0]->Cancel(true);
-  EXPECT_TRUE(IsDownloadToolbarButtonShowing());
+  EXPECT_TRUE(GetDownloadToolbarButton()->IsShowing());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 

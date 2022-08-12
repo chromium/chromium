@@ -51,6 +51,15 @@ bool ShouldShowDownloadBubble(Profile* profile) {
       ->IsDownloadUiEnabled();
 }
 
+bool ShouldShowDetailsAutomatically(Profile* profile) {
+  // Do not show details automatically if this download is observed by at least
+  // one extension. This is to avoid conflicts between the download bubble and
+  // the extension bubble.
+  return !DownloadCoreServiceFactory::GetForBrowserContext(
+              profile->GetOriginalProfile())
+              ->IsDownloadObservedByExtension();
+}
+
 bool IsDownloadConnectorEnabled(Profile* profile) {
   auto* connector_service =
       enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(

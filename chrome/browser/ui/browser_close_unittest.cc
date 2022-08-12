@@ -76,6 +76,8 @@ class TestingDownloadCoreService : public DownloadCoreService {
 
   bool IsDownloadUiEnabled() override { return true; }
 
+  bool IsDownloadObservedByExtension() override { return false; }
+
   // KeyedService
   void Shutdown() override {}
 
