@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_line_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_mixin.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_outline_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/pointer_events_hit_rules.h"
@@ -225,7 +226,10 @@ bool FragmentRequiresLegacyFallback(const NGPhysicalFragment& fragment) {
   // cannot handle block fragmented objects.
   if (!fragment.IsFormattingContextRoot() || fragment.CanTraverse())
     return false;
-  DCHECK(!To<NGPhysicalBoxFragment>(&fragment)->BreakToken());
+  // We may get here in multiple-fragment cases if the object is repeated
+  // (inside table headers and footers, for instance).
+  DCHECK(!To<NGPhysicalBoxFragment>(&fragment)->BreakToken() ||
+         To<NGPhysicalBoxFragment>(&fragment)->BreakToken()->IsRepeated());
   return true;
 }
 
@@ -305,6 +309,8 @@ bool HitTestAllPhasesInFragment(const NGPhysicalBoxFragment& fragment,
   // considered part of the parent stacking context, not this new one.
 
   if (!fragment.CanTraverse()) {
+    if (!fragment.IsFirstForNode() && !CanPaintMultipleFragments(fragment))
+      return false;
     return fragment.GetMutableLayoutObject()->HitTestAllPhases(
         *result, hit_test_location, accumulated_offset);
   }
@@ -322,6 +328,8 @@ bool NodeAtPointInFragment(const NGPhysicalBoxFragment& fragment,
                            HitTestPhase phase,
                            HitTestResult* result) {
   if (!fragment.CanTraverse()) {
+    if (!fragment.IsFirstForNode() && !CanPaintMultipleFragments(fragment))
+      return false;
     return fragment.GetMutableLayoutObject()->NodeAtPoint(
         *result, hit_test_location, accumulated_offset, phase);
   }
@@ -378,14 +386,23 @@ void PaintFragment(const NGPhysicalBoxFragment& fragment,
     return;
   }
 
+  if (!fragment.IsFirstForNode() && !CanPaintMultipleFragments(fragment))
+    return;
+
+  // In case this object generated multiple fragments (e.g. repeated table
+  // headers / footers), set a fragment ID now, to help the legacy code look up
+  // the right FragmentData object (to use the right paint offset).
+  PaintInfo modified_paint_info(paint_info);
+  modified_paint_info.SetFragmentID(fragment.GetFragmentData()->FragmentID());
+
   auto* layout_object = fragment.GetLayoutObject();
   DCHECK(layout_object);
   if (fragment.IsPaintedAtomically() && fragment.IsLegacyLayoutRoot()) {
-    ObjectPainter(*layout_object).PaintAllPhasesAtomically(paint_info);
+    ObjectPainter(*layout_object).PaintAllPhasesAtomically(modified_paint_info);
   } else {
     // TODO(ikilpatrick): Once FragmentItem ships we should call the
     // NGBoxFragmentPainter directly for NG objects.
-    layout_object->Paint(paint_info);
+    layout_object->Paint(modified_paint_info);
   }
 }
 
@@ -428,6 +445,10 @@ void NGBoxFragmentPainter::PaintInternal(const PaintInfo& paint_info) {
   // and ScopedPaintState::adjusted_paint_info_.
   STACK_UNINITIALIZED ScopedPaintState paint_state(box_fragment_, paint_info);
   if (!ShouldPaint(paint_state))
+    return;
+
+  if (!box_fragment_.IsFirstForNode() &&
+      !CanPaintMultipleFragments(box_fragment_))
     return;
 
   PaintInfo& info = paint_state.MutablePaintInfo();
@@ -1864,6 +1885,9 @@ bool NGBoxFragmentPainter::NodeAtPoint(const HitTestContext& hit_test,
   // a fragment that doesn't intersect, and turn this into a DCHECK.
   if (!fragment.MayIntersect(*hit_test.result, hit_test.location,
                              physical_offset))
+    return false;
+
+  if (!fragment.IsFirstForNode() && !CanPaintMultipleFragments(fragment))
     return false;
 
   if (hit_test.phase == HitTestPhase::kForeground &&

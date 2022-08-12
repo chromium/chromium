@@ -960,8 +960,8 @@ void PrePaintTreeWalk::WalkChildren(
   const LayoutBox* box = DynamicTo<LayoutBox>(&object);
   if (box) {
     if (traversable_fragment) {
-      if (!box->IsLayoutFlowThread() && (!box->CanTraversePhysicalFragments() ||
-                                         !box->PhysicalFragmentCount())) {
+      if (!box->IsLayoutFlowThread() &&
+          (!box->IsLayoutNGObject() || !box->PhysicalFragmentCount())) {
         // Leave LayoutNGBoxFragment-accompanied child LayoutObject traversal,
         // since this object doesn't support that (or has no fragments (happens
         // for table columns)). We need to switch back to legacy LayoutObject
@@ -1011,7 +1011,7 @@ void PrePaintTreeWalk::WalkChildren(
     // box-tree-wise. This is only an issue for OOF descendants, though, so only
     // examine OOF containing blocks.
     if (box && box->CanContainAbsolutePositionObjects() &&
-        box->PhysicalFragmentCount()) {
+        box->IsLayoutNGObject() && box->PhysicalFragmentCount()) {
       DCHECK_EQ(box->PhysicalFragmentCount(), 1u);
       fragment = box->GetPhysicalFragment(0);
     }

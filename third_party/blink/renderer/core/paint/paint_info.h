@@ -124,7 +124,7 @@ struct CORE_EXPORT PaintInfo {
 
   // Returns the fragment of the current painting object matching the current
   // layer fragment.
-  const FragmentData* LegacyFragmentToPaint(const LayoutObject& object) const {
+  const FragmentData* FragmentToPaint(const LayoutObject& object) const {
     if (fragment_id_ == WTF::kNotFound)
       return &object.FirstFragment();
     for (const auto* fragment = &object.FirstFragment(); fragment;
@@ -137,23 +137,6 @@ struct CORE_EXPORT PaintInfo {
     return nullptr;
   }
 
-  const FragmentData* FragmentToPaint(const LayoutObject& object) const {
-    if (const auto* box = DynamicTo<LayoutBox>(&object)) {
-      // We're are looking up FragmentData via LayoutObject, even though the
-      // object has NG fragments. This happens with objects that don't support
-      // fragment traversal, such as replaced content. We cannot use legacy-
-      // based lookup in such cases, as we might not have set a fragment ID to
-      // match against. Since we got here, though, it has to mean that we should
-      // paint the one and only fragment.
-      if (box->PhysicalFragmentCount()) {
-        DCHECK_EQ(box->PhysicalFragmentCount(), 1u);
-        DCHECK(!box->FirstFragment().NextFragment());
-        return &box->FirstFragment();
-      }
-    }
-    return LegacyFragmentToPaint(object);
-  }
-
   // Returns the FragmentData of the specified physical fragment. If we're
   // performing fragment traversal, it will map directly to the right
   // FragmentData. Otherwise we'll fall back to matching against the current
@@ -162,7 +145,7 @@ struct CORE_EXPORT PaintInfo {
       const NGPhysicalFragment& fragment) const {
     if (fragment_id_ == WTF::kNotFound)
       return fragment.GetFragmentData();
-    return LegacyFragmentToPaint(*fragment.GetLayoutObject());
+    return FragmentToPaint(*fragment.GetLayoutObject());
   }
 
   wtf_size_t FragmentID() const { return fragment_id_; }

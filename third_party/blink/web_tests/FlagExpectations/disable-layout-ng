@@ -341,6 +341,7 @@ crbug.com/1078927 external/wpt/css/css-break/table/repeated-section/header.tenta
 crbug.com/1078927 external/wpt/css/css-break/table/repeated-section/hit-test-relative-in-transform.tentative.html [ Failure ]
 crbug.com/1078927 external/wpt/css/css-break/table/repeated-section/hit-test-relative.tentative.html [ Failure ]
 crbug.com/1078927 external/wpt/css/css-break/table/repeated-section/hit-test.tentative.html [ Failure ]
+crbug.com/1078927 external/wpt/css/css-break/table/repeated-section/image.tentative.html [ Failure ]
 crbug.com/1078927 external/wpt/css/css-break/table/repeated-section/inline-block.tentative.html [ Failure ]
 crbug.com/1078927 external/wpt/css/css-break/table/repeated-section/multicol.tentative.html [ Failure ]
 crbug.com/1078927 external/wpt/css/css-break/table/repeated-section/multiple-row-groups.tentative.html [ Failure ]

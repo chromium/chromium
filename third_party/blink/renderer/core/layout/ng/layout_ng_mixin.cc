@@ -57,7 +57,10 @@ void LayoutNGMixin<Base>::Paint(const PaintInfo& paint_info) const {
              LayoutNGBlockFlow::kForbidBreaks ||
          !Base::CanTraversePhysicalFragments() ||
          !Base::Parent()->CanTraversePhysicalFragments());
-  DCHECK_LE(Base::PhysicalFragmentCount(), 1u);
+  // We may get here in multiple-fragment cases if the object is repeated
+  // (inside table headers and footers, for instance).
+  DCHECK(Base::PhysicalFragmentCount() <= 1u ||
+         Base::GetPhysicalFragment(0)->BreakToken()->IsRepeated());
 
   // Avoid painting dirty objects because descendants maybe already destroyed.
   if (UNLIKELY(Base::NeedsLayout() &&
@@ -89,7 +92,10 @@ bool LayoutNGMixin<Base>::NodeAtPoint(HitTestResult& result,
              LayoutNGBlockFlow::kForbidBreaks ||
          !Base::CanTraversePhysicalFragments() ||
          !Base::Parent()->CanTraversePhysicalFragments());
-  DCHECK_LE(Base::PhysicalFragmentCount(), 1u);
+  // We may get here in multiple-fragment cases if the object is repeated
+  // (inside table headers and footers, for instance).
+  DCHECK(Base::PhysicalFragmentCount() <= 1u ||
+         Base::GetPhysicalFragment(0)->BreakToken()->IsRepeated());
 
   if (Base::PhysicalFragmentCount()) {
     const NGPhysicalBoxFragment* fragment = Base::GetPhysicalFragment(0);

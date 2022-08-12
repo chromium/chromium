@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/layout/layout_video.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_fragmentation_utils.h"
 #include "third_party/blink/renderer/core/paint/clip_path_clipper.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_box_fragment_painter.h"
 #include "third_party/blink/renderer/core/paint/object_paint_properties.h"
@@ -387,6 +388,14 @@ void PaintLayerPainter::PaintWithPhase(PaintPhase phase,
   const auto* layout_box_with_fragments =
       paint_layer_.GetLayoutBoxWithBlockFragments();
   wtf_size_t fragment_idx = 0u;
+
+  // The NG paint code guards against painting multiple fragments for content
+  // that doesn't support it, but the legacy paint code has no such guards.
+  // TODO(crbug.com/1229581): Remove this when everything is handled by NG.
+  bool multiple_fragments_allowed =
+      layout_box_with_fragments ||
+      CanPaintMultipleFragments(paint_layer_.GetLayoutObject());
+
   for (const auto* fragment = &paint_layer_.GetLayoutObject().FirstFragment();
        fragment; fragment = fragment->NextFragment(), ++fragment_idx) {
     const NGPhysicalBoxFragment* physical_fragment = nullptr;
@@ -402,6 +411,9 @@ void PaintLayerPainter::PaintWithPhase(PaintPhase phase,
 
     PaintFragmentWithPhase(phase, *fragment, physical_fragment, context,
                            paint_flags);
+
+    if (!multiple_fragments_allowed)
+      break;
   }
 }
 

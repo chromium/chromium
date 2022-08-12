@@ -494,6 +494,17 @@ LayoutUnit BlockSizeForFragmentation(
     const NGLayoutResult&,
     WritingDirectionMode container_writing_direction);
 
+// Return true if we support painting of multiple fragments for the given
+// content. Will return true for anything that is fragmentable / non-monolithic.
+// Will also return true for certain types of monolithic content, because, even
+// if it's unbreakable, it may generate multiple fragments, if it's part of
+// repeated content (such as table headers and footers). This is the case for
+// e.g. images, which may for instance be repeated in table headers /
+// footers. Return false for monolithic content that we don't want to repeat
+// (e.g. iframes).
+bool CanPaintMultipleFragments(const NGPhysicalBoxFragment&);
+bool CanPaintMultipleFragments(const LayoutObject&);
+
 }  // namespace blink
 
 WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::NGFlexColumnBreakInfo)

@@ -70,6 +70,7 @@
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_tree_as_text.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_clipper.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -1202,6 +1203,13 @@ void PaintLayer::CollectFragments(
 
   const LayoutBox* layout_box_with_fragments = GetLayoutBoxWithBlockFragments();
 
+  // The NG hit-testing code guards against painting multiple fragments for
+  // content that doesn't support it, but the legacy hit-testing code has no
+  // such guards.
+  // TODO(crbug.com/1229581): Remove this when everything is handled by NG.
+  bool multiple_fragments_allowed =
+      layout_box_with_fragments || CanPaintMultipleFragments(GetLayoutObject());
+
   // The inherited offset_from_root does not include any pagination offsets.
   // In the presence of fragmentation, we cannot use it.
   wtf_size_t physical_fragment_idx = 0u;
@@ -1244,6 +1252,9 @@ void PaintLayer::CollectFragments(
     fragment.fragment_idx = physical_fragment_idx;
 
     fragments.push_back(fragment);
+
+    if (!multiple_fragments_allowed)
+      break;
   }
 }
 

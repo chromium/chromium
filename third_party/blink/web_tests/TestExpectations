@@ -1748,7 +1748,6 @@ crbug.com/660611 fast/multicol/flexbox/doubly-nested-with-zero-width-flexbox-and
 
 ### Tests failing with LayoutNGTableFragmentation enabled:
 crbug.com/1078927 external/wpt/css/CSS2/floats-clear/clearance-containing-fragmented-float-crash.html [ Crash Failure ]
-crbug.com/1078927 external/wpt/css/css-break/iframe-in-repeated-table-header-crash.html [ Crash Failure ]
 crbug.com/1295905 [ Mac11-arm64 ] external/wpt/css/css-break/table/sections-and-captions-mixed-order.html [ Failure ]
 crbug.com/1078927 external/wpt/css/css-multicol/table/balance-table-with-border-spacing.html [ Failure ]
 crbug.com/1078927 fast/multicol/table-row-height-increase.html [ Failure ]
@@ -1776,10 +1775,6 @@ crbug.com/1121942 virtual/layout_ng_printing/printing/flexbox-with-overflow-in-b
 crbug.com/1121942 virtual/layout_ng_printing/printing/forced-break-tree-dump-only.html [ Failure ]
 crbug.com/1121942 virtual/layout_ng_printing/printing/multi-page-background.html [ Failure ]
 crbug.com/1121942 virtual/layout_ng_printing/printing/named-page-breaks.html [ Failure ]
-crbug.com/1121942 [ Linux ] virtual/layout_ng_printing/printing/overflow-auto.html [ Crash ]
-crbug.com/1121942 [ Mac11 ] virtual/layout_ng_printing/printing/overflow-auto.html [ Crash ]
-crbug.com/1121942 [ Mac12 ] virtual/layout_ng_printing/printing/overflow-auto.html [ Crash ]
-crbug.com/1121942 [ Win ] virtual/layout_ng_printing/printing/overflow-auto.html [ Crash ]
 crbug.com/1121942 virtual/layout_ng_printing/printing/page-break-avoid.html [ Failure ]
 crbug.com/1121942 virtual/layout_ng_printing/printing/page-orientation-propagated.html [ Failure ]
 crbug.com/1121942 virtual/layout_ng_printing/printing/page-orientation.html [ Failure ]

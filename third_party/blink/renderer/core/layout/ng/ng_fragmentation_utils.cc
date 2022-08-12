@@ -6,6 +6,7 @@
 
 #include "base/containers/adapters.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
@@ -1275,6 +1276,59 @@ LayoutUnit BlockSizeForFragmentation(
     block_size += annotation_overflow;
 
   return block_size;
+}
+
+bool CanPaintMultipleFragments(const NGPhysicalBoxFragment& fragment) {
+  if (!fragment.IsCSSBox())
+    return true;
+  DCHECK(fragment.GetLayoutObject());
+  return CanPaintMultipleFragments(*fragment.GetLayoutObject());
+}
+
+bool CanPaintMultipleFragments(const LayoutObject& layout_object) {
+  const auto* layout_box = DynamicTo<LayoutBox>(&layout_object);
+  // Only certain LayoutBox types are problematic.
+  if (!layout_box)
+    return true;
+
+  // If the object has been laid out inside the legacy engine, always return
+  // true.
+  if (!layout_box->PhysicalFragmentCount())
+    return true;
+
+  // If the object isn't monolithic, we're good.
+  if (layout_box->GetNGPaginationBreakability() != LayoutBox::kForbidBreaks)
+    return true;
+
+  // There seems to be many issues preventing us from allowing repeated
+  // scrollable containers, so we need to disallow them. Should we be able to
+  // fix all the issues some day (after removing the legacy layout code), we
+  // could change this policy. But for now we need to forbid this, which also
+  // means that we cannot paint repeated text input form elements (because they
+  // use scrollable containers internally) (if it makes sense at all to repeat
+  // form elements...).
+  if (layout_box->IsScrollContainer())
+    return false;
+
+  // It's somewhat problematic and strange to repeat most kinds of
+  // LayoutReplaced (how would that make sense for iframes, for instance?). For
+  // now, just allow regular images. We may consider expanding this list in the
+  // future. One reason for being extra strict for the time being is legacy
+  // layout / paint code, but it may be that it doesn't make a lot of sense to
+  // repeat too many types of replaced content, even if we should become
+  // technically capable of doing it.
+  if (layout_box->IsLayoutReplaced())
+    return layout_box->IsLayoutImage() && !layout_box->IsMedia();
+
+  if (auto* element = DynamicTo<Element>(layout_box->GetNode())) {
+    // We're already able to support *some* types of form controls, but for now,
+    // just disallow everything. Does it even make sense to allow repeated form
+    // controls?
+    if (element->IsFormControlElement())
+      return false;
+  }
+
+  return true;
 }
 
 }  // namespace blink

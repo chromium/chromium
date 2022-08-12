@@ -204,7 +204,10 @@ bool LayoutNGBlockFlowMixin<Base>::NodeAtPoint(
              LayoutNGBlockFlow::kForbidBreaks ||
          !Base::CanTraversePhysicalFragments() ||
          !Base::Parent()->CanTraversePhysicalFragments());
-  DCHECK_LE(Base::PhysicalFragmentCount(), 1u);
+  // We may get here in multiple-fragment cases if the object is repeated
+  // (inside table headers and footers, for instance).
+  DCHECK(Base::PhysicalFragmentCount() <= 1u ||
+         Base::GetPhysicalFragment(0)->BreakToken()->IsRepeated());
 
   if (!Base::MayIntersect(result, hit_test_location, accumulated_offset))
     return false;
