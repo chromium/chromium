@@ -63,7 +63,7 @@ BASE_EXPORT void UmaHistogramExactLinear(const char* name,
 //     kMaxValue = kOpenBookmark,
 //   };
 //   base::UmaHistogramEnumeration("My.Enumeration",
-//                                 NewTabPageAction::kUseSearchbox);
+//                                 NewTabPageAction::kClickTitle);
 template <typename T>
 void UmaHistogramEnumeration(const std::string& name, T sample) {
   static_assert(std::is_enum<T>::value, "T is not an enum.");
@@ -104,7 +104,7 @@ void UmaHistogramEnumeration(const char* name, T sample) {
 //     kCount,
 //   };
 //   base::UmaHistogramEnumeration("My.Enumeration",
-//                                 NewTabPageAction::kUseSearchbox,
+//                                 NewTabPageAction::kClickTitle,
 //                                 kCount);
 // Note: The value in |sample| must be strictly less than |enum_size|. This is
 // otherwise functionally equivalent to the above.
