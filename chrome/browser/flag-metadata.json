@@ -2734,7 +2734,7 @@
   {
     "name": "enable-reader-mode",
     "owners": [ "katie", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 104
+    "expiry_milestone": 112
   },
   {
     "name": "enable-reader-mode-in-cct",
