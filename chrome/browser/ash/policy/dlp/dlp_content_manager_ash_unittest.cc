@@ -98,7 +98,6 @@ class MockPrivacyScreenHelper : public ash::PrivacyScreenDlpHelper {
 using MockOnDlpRestrictionCheckedCallback =
     testing::StrictMock<base::MockCallback<OnDlpRestrictionCheckedCallback>>;
 
-// TODO(crbug.com/1262948): Enable and modify for lacros.
 class DlpContentManagerAshTest : public testing::Test {
  public:
   DlpContentManagerAshTest(const DlpContentManagerAshTest&) = delete;

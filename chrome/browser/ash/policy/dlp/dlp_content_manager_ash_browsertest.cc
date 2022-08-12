@@ -116,7 +116,9 @@ content::MediaStreamRequest CreateMediaStreamRequest(
 
 }  // namespace
 
-// TODO(crbug.com/1262948): Enable and modify for lacros.
+// These tests are for Ash-only features.
+// Other features should be tested in dlp_content_manager_browsertest.cc or
+// dlp_content_manager_lacros_browsertest.cc.
 // TODO(crbug.com/1322094): Add tests for OnWindowTitleChanged().
 class DlpContentManagerAshBrowserTest : public InProcessBrowserTest {
  public:
