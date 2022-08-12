@@ -2745,6 +2745,85 @@ TEST_F(SiteSettingsHandlerTest, ClearClientHints) {
   EXPECT_EQ(0U, client_hints_settings.size());
 }
 
+TEST_F(SiteSettingsHandlerTest, ClearReducedAcceptLanguage) {
+  // Confirm that when the user clears unpartitioned storage, or the eTLD+1
+  // group, reduce accept language are also cleared.
+  SetUpCookiesTreeModel();
+  handler()->OnStorageFetched();
+
+  GURL hosts[] = {GURL("https://example.com/"), GURL("https://www.example.com"),
+                  GURL("https://google.com/"), GURL("https://www.google.com/")};
+
+  HostContentSettingsMap* host_content_settings_map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  ContentSettingsForOneType accept_language_settings;
+
+  std::string language = "en-us";
+  base::Value accept_language_dictionary(base::Value::Type::DICTIONARY);
+  accept_language_dictionary.SetKey("reduce-accept-language",
+                                    base::Value(language));
+
+  // Add setting for the hosts.
+  for (const auto& host : hosts) {
+    host_content_settings_map->SetWebsiteSettingDefaultScope(
+        host, GURL(), ContentSettingsType::REDUCED_ACCEPT_LANGUAGE,
+        accept_language_dictionary.Clone());
+  }
+
+  // Clear at the eTLD+1 level and ensure affected origins are cleared.
+  base::Value args(base::Value::Type::LIST);
+  args.Append("example.com");
+  handler()->HandleClearEtldPlus1DataAndCookies(args.GetList());
+  host_content_settings_map->GetSettingsForOneType(
+      ContentSettingsType::REDUCED_ACCEPT_LANGUAGE, &accept_language_settings);
+  EXPECT_EQ(2U, accept_language_settings.size());
+
+  EXPECT_EQ(ContentSettingsPattern::FromURLNoWildcard(hosts[2]),
+            accept_language_settings.at(0).primary_pattern);
+  EXPECT_EQ(ContentSettingsPattern::Wildcard(),
+            accept_language_settings.at(0).secondary_pattern);
+  EXPECT_EQ(accept_language_dictionary,
+            accept_language_settings.at(0).setting_value);
+
+  EXPECT_EQ(ContentSettingsPattern::FromURLNoWildcard(hosts[3]),
+            accept_language_settings.at(1).primary_pattern);
+  EXPECT_EQ(ContentSettingsPattern::Wildcard(),
+            accept_language_settings.at(1).secondary_pattern);
+  EXPECT_EQ(accept_language_dictionary,
+            accept_language_settings.at(1).setting_value);
+
+  // Clear unpartitioned usage data, which should only affect the specific
+  // origin.
+  args.ClearList();
+  args.Append("https://google.com/");
+  handler()->HandleClearUnpartitionedUsage(args.GetList());
+
+  // Validate the reduce accept language has been cleared.
+  host_content_settings_map->GetSettingsForOneType(
+      ContentSettingsType::REDUCED_ACCEPT_LANGUAGE, &accept_language_settings);
+  EXPECT_EQ(1U, accept_language_settings.size());
+
+  // www.google.com should be the only remainining entry.
+  EXPECT_EQ(ContentSettingsPattern::FromURLNoWildcard(hosts[3]),
+            accept_language_settings.at(0).primary_pattern);
+  EXPECT_EQ(ContentSettingsPattern::Wildcard(),
+            accept_language_settings.at(0).secondary_pattern);
+  EXPECT_EQ(accept_language_dictionary,
+            accept_language_settings.at(0).setting_value);
+
+  // Clear unpartitioned usage data through HTTPS scheme, make sure https site
+  // reduced accept language have been cleared when the specific origin HTTPS
+  // scheme exist.
+  args.ClearList();
+  args.Append("http://www.google.com/");
+  handler()->HandleClearUnpartitionedUsage(args.GetList());
+
+  // Validate the reduced accept language has been cleared.
+  host_content_settings_map->GetSettingsForOneType(
+      ContentSettingsType::REDUCED_ACCEPT_LANGUAGE, &accept_language_settings);
+  EXPECT_EQ(0U, accept_language_settings.size());
+}
+
 TEST_F(SiteSettingsHandlerTest, HandleClearPartitionedUsage) {
   // Confirm that removing unpartitioned storage correctly removes the
   // appropriate nodes.

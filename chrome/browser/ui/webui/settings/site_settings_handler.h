@@ -127,6 +127,7 @@ class SiteSettingsHandler
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
                            HandleClearUnpartitionedUsage);
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, ClearClientHints);
+  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, ClearReducedAcceptLanguage);
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
                            HandleClearPartitionedUsage);
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, CookieSettingDescription);
