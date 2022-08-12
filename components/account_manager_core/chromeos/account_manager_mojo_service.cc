@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_addition_result.h"
@@ -161,6 +162,12 @@ void AccountManagerMojoService::CreateAccessTokenFetcher(
       /*receiver=*/pending_remote.InitWithNewPipeAndPassReceiver());
   pending_access_token_requests_.emplace_back(std::move(access_token_fetcher));
   std::move(callback).Run(std::move(pending_remote));
+}
+
+void AccountManagerMojoService::ReportAuthError(
+    mojom::AccountKeyPtr account,
+    mojom::GoogleServiceAuthErrorPtr error) {
+  NOTIMPLEMENTED();
 }
 
 void AccountManagerMojoService::OnTokenUpserted(

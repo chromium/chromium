@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "components/account_manager_core/account.h"
@@ -546,6 +547,12 @@ void AccountManagerFacadeImpl::OnAccountRemoved(
   for (auto& observer : observer_list_) {
     observer.OnAccountRemoved(maybe_account.value());
   }
+}
+
+void AccountManagerFacadeImpl::OnAuthErrorChanged(
+    crosapi::mojom::AccountKeyPtr account,
+    crosapi::mojom::GoogleServiceAuthErrorPtr error) {
+  NOTIMPLEMENTED();
 }
 
 void AccountManagerFacadeImpl::GetAccountsInternal(

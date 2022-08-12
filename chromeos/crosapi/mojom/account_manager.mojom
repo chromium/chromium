@@ -133,6 +133,9 @@ union AccessTokenResult {
 // Interface for observers of Chrome OS Account Manager.
 // This interface is implemented by lacros-chrome, and is used by ash-chrome to
 // send account update notifications.
+//
+// Next version: 2
+// Next method id: 3
 [Stable, Uuid="f75c4963-497b-411f-97ab-c53c7f6b46ed"]
 interface AccountManagerObserver {
   // Called when the token for |account| is updated/inserted.
@@ -148,6 +151,18 @@ interface AccountManagerObserver {
   // Note: Observers that may have cached access tokens for |account| must clear
   // their cache entry for this |account| on receiving this callback.
   OnAccountRemoved@1(Account account);
+
+  // Called when an `account`'s `error` status changes. See `ReportAuthError` in
+  // `AccountManager` interface for details.
+  // Note: Observers that may have cached access tokens for `account` must clear
+  // their cache entries for this `account` on receiving this callback. They may
+  // short-circuit future access token requests with an immediate `error` for a
+  // given `account` as appropriate (e.g. if the error is a non-transient
+  // error).
+  // Note: Observers must reset their cached error states (if any) for
+  // `account` - if the `state` of `error` is `kNone`.
+  [MinVersion = 1]
+  OnAuthErrorChanged@2(AccountKey account, GoogleServiceAuthError error);
 };
 
 // Interface for Chrome OS Account Manager.
@@ -159,7 +174,7 @@ interface AccountManagerObserver {
 // ARC++ uses components/arc/mojom/auth.mojom to talk to the Chrome OS Account
 // Manager.
 //
-// Next version: 9
+// Next version: 10
 // Next method id: 9
 [Stable, Uuid="85b9a674-9d8e-497f-98d5-22c8dca6f2b8"]
 interface AccountManager {
@@ -216,6 +231,19 @@ interface AccountManager {
   CreateAccessTokenFetcher@7(AccountKey account_key,
       string oauth_consumer_name) =>
           (pending_remote<AccessTokenFetcher> access_token_fetcher);
+
+  // Reports an `error` for `account`.
+  // The implementation uses a pubsub model to propagate errors for accounts.
+  // Any application can report (Publish) account errors. These errors will be
+  // fanned out to `AccountManagerObserver`s (Subscribers).
+  // A typical use-case is sharing of account error information between Ash and
+  // Lacros. Since these errors are OAuth errors, they can be discovered by any
+  // application (or the OS) - and must be communicated to other applications
+  // (or the OS).
+  // `account` must be a valid account known to Account Manager.
+  // Setting the error `state` as `kNone` resets the error state for `account`.
+  [MinVersion = 9]
+  ReportAuthError@8(AccountKey account, GoogleServiceAuthError error);
 };
 
 // Interface for fetching OAuth2 access tokens.

@@ -76,6 +76,9 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
   // crosapi::mojom::AccountManagerObserver overrides:
   void OnTokenUpserted(crosapi::mojom::AccountPtr account) override;
   void OnAccountRemoved(crosapi::mojom::AccountPtr account) override;
+  void OnAuthErrorChanged(
+      crosapi::mojom::AccountKeyPtr account,
+      crosapi::mojom::GoogleServiceAuthErrorPtr error) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(AccountManagerFacadeImplTest,

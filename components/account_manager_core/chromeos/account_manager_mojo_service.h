@@ -65,6 +65,8 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerMojoService
       mojom::AccountKeyPtr mojo_account_key,
       const std::string& oauth_consumer_name,
       CreateAccessTokenFetcherCallback callback) override;
+  void ReportAuthError(mojom::AccountKeyPtr account,
+                       mojom::GoogleServiceAuthErrorPtr error) override;
 
   // account_manager::AccountManager::Observer:
   void OnTokenUpserted(const account_manager::Account& account) override;

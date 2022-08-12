@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback_helpers.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
@@ -200,6 +201,12 @@ class FakeAccountManager : public crosapi::mojom::AccountManager {
     access_token_fetcher_->Bind(
         pending_remote.InitWithNewPipeAndPassReceiver());
     std::move(callback).Run(std::move(pending_remote));
+  }
+
+  void ReportAuthError(
+      crosapi::mojom::AccountKeyPtr account,
+      crosapi::mojom::GoogleServiceAuthErrorPtr error) override {
+    NOTIMPLEMENTED();
   }
 
   mojo::Remote<crosapi::mojom::AccountManager> CreateRemote() {
