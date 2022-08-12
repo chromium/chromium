@@ -70,6 +70,9 @@ void LoginScreenExtensionsLifetimeManager::Shutdown() {
 
   session_manager_observation_.Reset();
   extension_registry_observation_.Reset();
+
+  // Cancel posted tasks and bound callbacks, in case there are any.
+  weak_factory_.InvalidateWeakPtrs();
 }
 
 void LoginScreenExtensionsLifetimeManager::OnProfileAdded(Profile* profile) {
