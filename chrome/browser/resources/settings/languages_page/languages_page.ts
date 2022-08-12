@@ -172,6 +172,13 @@ export class SettingsLanguagesPageElement extends
   }
 
   /**
+   * Formats language index (zero-indexed)
+   */
+  private formatIndex_(index: number): string {
+    return (index+1).toLocaleString();
+  }
+
+  /**
    * Checks if there are supported languages that are not enabled but can be
    * enabled.
    * @return True if there is at least one available language.
