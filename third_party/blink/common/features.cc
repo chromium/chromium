@@ -1380,9 +1380,6 @@ const base::Feature kPrefetchAndroidFonts{"PrefetchAndroidFonts",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
-const base::Feature kCompositedCaret{"CompositedCaret",
-                                     base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kBackForwardCacheAppBanner{
     "BackForwardCacheAppBanner", base::FEATURE_DISABLED_BY_DEFAULT};
 
