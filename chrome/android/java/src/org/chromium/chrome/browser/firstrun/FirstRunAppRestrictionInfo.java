@@ -19,6 +19,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.components.policy.AbstractAppRestrictionsProvider;
 import org.chromium.components.policy.AppRestrictionsProvider;
 import org.chromium.components.policy.PolicySwitches;
 
@@ -140,6 +141,11 @@ class FirstRunAppRestrictionInfo {
         // be any app restrictions. But we do not have parsing logic in Java to understand if the
         // switch sets valid policies.
         if (CommandLine.getInstance().hasSwitch(PolicySwitches.CHROME_POLICY)) {
+            onRestrictionDetected(true, startTime);
+            return;
+        }
+
+        if (AbstractAppRestrictionsProvider.hasTestRestrictions()) {
             onRestrictionDetected(true, startTime);
             return;
         }

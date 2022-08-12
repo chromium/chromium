@@ -121,4 +121,9 @@ public abstract class AbstractAppRestrictionsProvider extends PolicyProvider {
                 (policies == null ? null : policies.keySet().toArray()));
         sTestRestrictions = policies;
     }
+
+    /** Returns whether any restrictions were set using {@link #setTestRestrictions}. */
+    public static boolean hasTestRestrictions() {
+        return sTestRestrictions != null;
+    }
 }

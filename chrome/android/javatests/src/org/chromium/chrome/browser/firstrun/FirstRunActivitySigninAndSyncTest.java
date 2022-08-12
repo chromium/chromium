@@ -29,7 +29,6 @@ import androidx.test.espresso.ViewAction;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matcher;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -37,7 +36,6 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -59,6 +57,7 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.externalauth.ExternalAuthUtils;
+import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
@@ -89,9 +88,6 @@ public class FirstRunActivitySigninAndSyncTest {
     @Mock
     private LocaleManagerDelegate mLocalManagerDelegateMock;
 
-    @Mock
-    private FirstRunAppRestrictionInfo mFirstRunAppRestrictionInfoMock;
-
     @Before
     public void setUp() {
         when(mLocalManagerDelegateMock.getSearchEnginePromoShowType())
@@ -101,11 +97,6 @@ public class FirstRunActivitySigninAndSyncTest {
         });
         when(mExternalAuthUtilsMock.canUseGooglePlayServices()).thenReturn(true);
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtilsMock);
-    }
-
-    @After
-    public void tearDown() {
-        FirstRunAppRestrictionInfo.setInitializedInstanceForTest(null);
     }
 
     @Test
@@ -146,10 +137,10 @@ public class FirstRunActivitySigninAndSyncTest {
 
     @Test
     @MediumTest
+    // ChildAccountStatusSupplier uses AppRestrictions to quickly detect non-supervised cases,
+    // adding at least one policy via AppRestrictions prevents that.
+    @Policies.Add(@Policies.Item(key = "ForceSafeSearch", string = "true"))
     public void continueButtonClickShowsSyncConsentPageWithChildAccount() {
-        // ChildAccountStatusSupplier uses AppRestrictions to quickly detect non-supervised cases.
-        Mockito.doNothing().when(mFirstRunAppRestrictionInfoMock).getHasAppRestriction(any());
-        FirstRunAppRestrictionInfo.setInitializedInstanceForTest(mFirstRunAppRestrictionInfoMock);
         mAccountManagerTestRule.addAccount(CHILD_EMAIL);
         launchFirstRunActivity();
         ensureCurrentPageIs(SigninFirstRunFragment.class);
