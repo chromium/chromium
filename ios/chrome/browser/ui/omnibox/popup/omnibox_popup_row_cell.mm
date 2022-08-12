@@ -342,12 +342,23 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
 
   // These constraints need to be removed when freezing the position of these
   // views. See -freezeLayoutGuidePositions for the reason why.
+
+  CGFloat iconXOffset = 0;
+  if (IsOmniboxActionsVisualTreatment2() && !IsRegularXRegularSizeClass(self)) {
+    // Inset the icons in variation 2, except in reg x reg size class where the
+    // alignment works well already. Flip the inset on RTL as it's not flipped
+    // automatically.
+    BOOL isRTL =
+        [UIView userInterfaceLayoutDirectionForSemanticContentAttribute:
+                    self.omniboxSemanticContentAttribute] ==
+        UIUserInterfaceLayoutDirectionRightToLeft;
+    iconXOffset = isRTL ? -kImageOffsetVariation2 : kImageOffsetVariation2;
+  }
+
   self.nonDeletingLayoutGuideConstraints = @[
     [self.leadingIconView.centerXAnchor
         constraintEqualToAnchor:imageLayoutGuide.centerXAnchor
-                       constant:IsOmniboxActionsVisualTreatment2()
-                                    ? kImageOffsetVariation2
-                                    : 0],
+                       constant:iconXOffset],
     stackViewToLayoutGuideLeading,
     stackViewToLayoutGuideTrailing,
   ];

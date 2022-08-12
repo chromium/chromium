@@ -132,7 +132,7 @@ const CGFloat kVerticalOffset = 6;
     [self initialLayout];
 
     if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET ||
-        IsOmniboxActionsEnabled()) {
+        IsSwiftUIPopupEnabled()) {
       self.bottomConstraint.active = YES;
       self.bottomSeparator.hidden = NO;
     }
