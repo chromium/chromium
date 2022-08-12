@@ -7,7 +7,7 @@ Revision: 4062a90162c96bf96a69a27998719f947d6f7297
 SHA-512: 23f384d3d94b5a5c6b90419127ffda9acbe1f860ce14a80b817586013e8b29a24ea18856848e10f996fe6e02721a9ac84288320b1d1f8496ef6e2237d7e89f9a
 License: Apache 2.0
 License File: LICENSE
-Security Critical: yes
+Security Critical: no
 CPEPrefix: unknown
 
 Description:
