@@ -170,9 +170,6 @@ class FirstPartySetsManager {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<FirstPartySetsManager> weak_factory_{this};
-
-  FRIEND_TEST_ALL_PREFIXES(PopulatedFirstPartySetsManagerTest,
-                           ComputeContextType);
 };
 
 }  // namespace network

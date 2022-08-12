@@ -925,24 +925,17 @@ TEST_F(OverrideSetsFirstPartySetsManagerTest, ComputeMetadata) {
                                             absl::nullopt);
   net::FirstPartySetEntry foo_associated_entry(foo, net::SiteType::kAssociated,
                                                0);
-  {
-    // member1 has been removed from its set.
-    net::FirstPartySetMetadata expected(
-        net::SamePartyContext(Type::kCrossParty), nullptr,
-        &example_primary_entry);
 
-    EXPECT_THAT(ComputeMetadataAndWait(member1, &example, {}),
-                testing::Eq(std::ref(expected)));
-  }
-  {
-    // member2 and foo are sites in a new set.
-    net::FirstPartySetMetadata expected(net::SamePartyContext(Type::kSameParty),
-                                        &foo_associated_entry,
-                                        &foo_primary_entry);
+  // member1 has been removed from its set.
+  EXPECT_EQ(ComputeMetadataAndWait(member1, &example, {}),
+            net::FirstPartySetMetadata(net::SamePartyContext(Type::kCrossParty),
+                                       nullptr, &example_primary_entry));
 
-    EXPECT_THAT(ComputeMetadataAndWait(member2, &foo, {}),
-                testing::Eq(std::ref(expected)));
-  }
+  // member2 and foo are sites in a new set.
+  EXPECT_EQ(
+      ComputeMetadataAndWait(member2, &foo, {}),
+      net::FirstPartySetMetadata(net::SamePartyContext(Type::kSameParty),
+                                 &foo_associated_entry, &foo_primary_entry));
 }
 
 }  // namespace network
