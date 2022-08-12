@@ -105,6 +105,7 @@ WaylandEventSource::TouchPoint::TouchPoint(gfx::PointF location,
   DCHECK(window);
 }
 
+// WaylandEventSource::PointerScrollData implementation
 WaylandEventSource::PointerScrollData::PointerScrollData() = default;
 WaylandEventSource::PointerScrollData::PointerScrollData(
     const PointerScrollData&) = default;
@@ -118,6 +119,14 @@ WaylandEventSource::PointerScrollData::operator=(const PointerScrollData&) =
 WaylandEventSource::PointerScrollData&
 WaylandEventSource::PointerScrollData::operator=(PointerScrollData&&) = default;
 
+// WaylandEventSource::PointerFrame implementation
+WaylandEventSource::PointerFrame::PointerFrame(const MouseEvent& e,
+                                               base::OnceCallback<void()> cb)
+    : event(e.Clone()), completion_cb(std::move(cb)) {}
+
+WaylandEventSource::PointerFrame::~PointerFrame() = default;
+
+// WaylandEventSource::TouchFrame implementation
 WaylandEventSource::TouchFrame::TouchFrame(const TouchEvent& e,
                                            base::OnceCallback<void()> cb)
     : event(e), completion_cb(std::move(cb)) {}
@@ -332,7 +341,20 @@ void WaylandEventSource::OnPointerFrameEvent() {
   }
 
   last_pointer_frame_time_ = now;
-  // TODO(https://crbug.com/1351376): Process pointer frame events queue here.
+
+  auto* target = window_manager_->GetCurrentPointerFocusedWindow();
+  if (!target)
+    return;
+
+  while (!pointer_frames_.empty()) {
+    // It is safe to pop the first queued event for processing.
+    auto pointer_frame = std::move(pointer_frames_.front());
+    pointer_frames_.pop_front();
+
+    SetTargetAndDispatchEvent(pointer_frame->event.get(), target);
+    if (!pointer_frame->completion_cb.is_null())
+      std::move(pointer_frame->completion_cb).Run();
+  }
 }
 
 void WaylandEventSource::OnPointerAxisSourceEvent(uint32_t axis_source) {
@@ -715,9 +737,6 @@ void WaylandEventSource::ProcessPointerScrollData() {
 #else
       false;
 #endif
-  auto* target = window_manager_->GetCurrentPointerFocusedWindow();
-  if (!target)
-    return;
 
   // Dispatch Fling event if pointer.axis_stop is notified and the recent
   // pointer.axis events meets the criteria to start fling scroll.
@@ -731,7 +750,8 @@ void WaylandEventSource::ProcessPointerScrollData() {
         vx == 0 && vy == 0 ? ET_SCROLL_FLING_CANCEL : ET_SCROLL_FLING_START,
         pointer_location_, pointer_location_, EventTimeForNow(), flags, vx, vy,
         vx, vy, kGestureScrollFingerCount);
-    SetTargetAndDispatchEvent(&event, target);
+    pointer_frames_.push_back(
+        std::make_unique<PointerFrame>(event, base::NullCallback()));
   } else if (pointer_scroll_data_->axis_source) {
     if (*pointer_scroll_data_->axis_source == WL_POINTER_AXIS_SOURCE_WHEEL ||
         *pointer_scroll_data_->axis_source ==
@@ -739,7 +759,8 @@ void WaylandEventSource::ProcessPointerScrollData() {
       MouseWheelEvent event(
           gfx::Vector2d(pointer_scroll_data_->dx, pointer_scroll_data_->dy),
           pointer_location_, pointer_location_, EventTimeForNow(), flags, 0);
-      SetTargetAndDispatchEvent(&event, target);
+      pointer_frames_.push_back(
+          std::make_unique<PointerFrame>(event, base::NullCallback()));
     } else if (*pointer_scroll_data_->axis_source ==
                    WL_POINTER_AXIS_SOURCE_FINGER ||
                *pointer_scroll_data_->axis_source ==
@@ -748,7 +769,8 @@ void WaylandEventSource::ProcessPointerScrollData() {
                         EventTimeForNow(), flags, pointer_scroll_data_->dx,
                         pointer_scroll_data_->dy, pointer_scroll_data_->dx,
                         pointer_scroll_data_->dy, kGestureScrollFingerCount);
-      SetTargetAndDispatchEvent(&event, target);
+      pointer_frames_.push_back(
+          std::make_unique<PointerFrame>(event, base::NullCallback()));
     }
 
     if (pointer_scroll_data_set_.size() + 1 > kPointerScrollDataSetMaxSize)
