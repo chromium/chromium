@@ -910,7 +910,13 @@ TEST_F(LoggingTest, BuildCrashString) {
             LogMessage("file.cc", 42, LOGGING_ERROR).BuildCrashString());
 
   // BuildCrashString() should strip path/to/file prefix.
-  LogMessage msg("../foo/bar/file.cc", 42, LOGGING_ERROR);
+  LogMessage msg(
+#if BUILDFLAG(IS_WIN)
+      "..\\foo\\bar\\file.cc",
+#else
+      "../foo/bar/file.cc",
+#endif  // BUILDFLAG(IS_WIN)
+      42, LOGGING_ERROR);
   msg.stream() << "Hello";
   EXPECT_EQ("file.cc:42: Hello", msg.BuildCrashString());
 }
