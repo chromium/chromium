@@ -51,6 +51,10 @@ MediaPlaylist& MediaPlaylist::operator=(MediaPlaylist&&) = default;
 
 MediaPlaylist::~MediaPlaylist() = default;
 
+Playlist::Kind MediaPlaylist::GetKind() const {
+  return Kind::kMediaPlaylist;
+}
+
 // static
 ParseStatus::Or<MediaPlaylist> MediaPlaylist::Parse(
     base::StringPiece source,

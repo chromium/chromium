@@ -25,7 +25,7 @@ class MEDIA_EXPORT MultivariantPlaylist final : public Playlist {
   MultivariantPlaylist(MultivariantPlaylist&&);
   MultivariantPlaylist& operator=(const MultivariantPlaylist&) = delete;
   MultivariantPlaylist& operator=(MultivariantPlaylist&&);
-  ~MultivariantPlaylist();
+  ~MultivariantPlaylist() override;
 
   // Returns all variants described by this playlist.
   const std::vector<VariantStream>& GetVariants() const { return variants_; }
@@ -34,6 +34,9 @@ class MEDIA_EXPORT MultivariantPlaylist final : public Playlist {
   const VariableDictionary& GetVariableDictionary() const {
     return variable_dictionary_;
   }
+
+  // `Playlist` implementation
+  Kind GetKind() const override;
 
   // Attempts to parse the multivariant playlist represented by `source`. `uri`
   // must be a valid, non-empty GURL referring to the URI of this playlist. If

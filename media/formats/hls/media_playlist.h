@@ -42,7 +42,10 @@ class MEDIA_EXPORT MediaPlaylist final : public Playlist {
   MediaPlaylist(MediaPlaylist&&);
   MediaPlaylist& operator=(const MediaPlaylist&) = delete;
   MediaPlaylist& operator=(MediaPlaylist&&);
-  ~MediaPlaylist();
+  ~MediaPlaylist() override;
+
+  // `Playlist` implementation
+  Kind GetKind() const override;
 
   // Returns all segments in this playlist, in chronological order. This vector
   // may be copied independently of this Playlist.

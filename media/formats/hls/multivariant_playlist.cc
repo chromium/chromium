@@ -12,6 +12,7 @@
 #include "base/strings/string_piece.h"
 #include "media/formats/hls/items.h"
 #include "media/formats/hls/parse_status.h"
+#include "media/formats/hls/playlist.h"
 #include "media/formats/hls/playlist_common.h"
 #include "media/formats/hls/source_string.h"
 #include "media/formats/hls/tags.h"
@@ -30,6 +31,10 @@ MultivariantPlaylist& MultivariantPlaylist::operator=(MultivariantPlaylist&&) =
     default;
 
 MultivariantPlaylist::~MultivariantPlaylist() = default;
+
+Playlist::Kind MultivariantPlaylist::GetKind() const {
+  return Kind::kMultivariantPlaylist;
+}
 
 // static
 ParseStatus::Or<MultivariantPlaylist> MultivariantPlaylist::Parse(
