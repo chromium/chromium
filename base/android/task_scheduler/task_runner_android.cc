@@ -92,13 +92,10 @@ void RunJavaTask(base::android::ScopedJavaGlobalRef<jobject> task,
   // JNIEnv is thread specific, but we don't know which thread we'll be run on
   // so we must look it up.
   std::string event_name = base::StrCat({"JniPostTask: ", runnable_class_name});
-  TRACE_EVENT_BEGIN_WITH_FLAGS0(
-      "toplevel", event_name.c_str(),
-      TRACE_EVENT_FLAG_JAVA_STRING_LITERALS | TRACE_EVENT_FLAG_COPY);
+  TRACE_EVENT("toplevel", nullptr, [&](::perfetto::EventContext& ctx) {
+    ctx.event()->set_name(event_name.c_str());
+  });
   JNI_Runnable::Java_Runnable_run(base::android::AttachCurrentThread(), task);
-  TRACE_EVENT_END_WITH_FLAGS0(
-      "toplevel", event_name.c_str(),
-      TRACE_EVENT_FLAG_JAVA_STRING_LITERALS | TRACE_EVENT_FLAG_COPY);
 }
 
 }  // namespace

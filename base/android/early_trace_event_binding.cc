@@ -104,12 +104,12 @@ static void JNI_EarlyTraceEvent_RecordEarlyAsyncBeginEvent(
     jlong id,
     jlong time_ns) {
   std::string name = ConvertJavaStringToUTF8(env, jname);
-
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP_AND_FLAGS0(
-      internal::kJavaTraceCategory, name.c_str(),
-      TRACE_ID_LOCAL(static_cast<uint64_t>(id)),
-      TimeTicks::FromJavaNanoTime(time_ns),
-      TRACE_EVENT_FLAG_JAVA_STRING_LITERALS | TRACE_EVENT_FLAG_COPY);
+  TRACE_EVENT_BEGIN(internal::kJavaTraceCategory, nullptr,
+                    perfetto::Track(static_cast<uint64_t>(id)),
+                    TimeTicks::FromJavaNanoTime(time_ns),
+                    [&](::perfetto::EventContext& ctx) {
+                      ctx.event()->set_name(name.c_str());
+                    });
 }
 
 static void JNI_EarlyTraceEvent_RecordEarlyAsyncEndEvent(
@@ -118,12 +118,8 @@ static void JNI_EarlyTraceEvent_RecordEarlyAsyncEndEvent(
     jlong id,
     jlong time_ns) {
   std::string name = ConvertJavaStringToUTF8(env, jname);
-
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP_AND_FLAGS0(
-      internal::kJavaTraceCategory, name.c_str(),
-      TRACE_ID_LOCAL(static_cast<uint64_t>(id)),
-      TimeTicks::FromJavaNanoTime(time_ns),
-      TRACE_EVENT_FLAG_JAVA_STRING_LITERALS | TRACE_EVENT_FLAG_COPY);
+  TRACE_EVENT_END(internal::kJavaTraceCategory,
+                  perfetto::Track(static_cast<uint64_t>(id)));
 }
 
 bool GetBackgroundStartupTracingFlag() {
