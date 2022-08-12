@@ -186,6 +186,37 @@ void RunAddHostPermission(Profile* profile,
   }
 }
 
+void GetMatchingExtensionsForSite(
+    Profile* profile,
+    const std::string& site,
+    std::vector<api::developer_private::MatchingExtensionInfo>* infos) {
+  scoped_refptr<ExtensionFunction> function = base::MakeRefCounted<
+      api::DeveloperPrivateGetMatchingExtensionsForSiteFunction>();
+  EXPECT_TRUE(api_test_utils::RunFunction(
+      function.get(), base::StringPrintf(R"(["%s"])", site.c_str()), profile))
+      << function->GetError();
+  const base::Value::List* results = function->GetResultList();
+  ASSERT_EQ(1u, results->size());
+  ASSERT_TRUE((*results)[0].is_list());
+
+  infos->clear();
+  for (const auto& value : (*results)[0].GetList()) {
+    infos->push_back(std::move(
+        *api::developer_private::MatchingExtensionInfo::FromValue(value)));
+  }
+}
+
+auto MatchMatchingExtensionInfo(
+    const std::string& extension_id,
+    const api::developer_private::HostAccess& host_access) {
+  return testing::AllOf(
+      testing::Field(&api::developer_private::MatchingExtensionInfo::id,
+                     extension_id),
+      testing::Field(
+          &api::developer_private::MatchingExtensionInfo::site_access,
+          host_access));
+}
+
 }  // namespace
 
 class DeveloperPrivateApiUnitTest : public ExtensionServiceTestWithInstall {
@@ -2201,6 +2232,88 @@ TEST_F(DeveloperPrivateApiUnitTest,
       "site": "https://example.com/*",
     }]
   }])");
+}
+
+TEST_F(DeveloperPrivateApiUnitTest,
+       DeveloperPrivateGetMatchingExtensionsForSite) {
+  namespace developer = api::developer_private;
+
+  scoped_refptr<const Extension> extension_1 =
+      ExtensionBuilder("test").AddPermission("*://mail.google.com/").Build();
+
+  scoped_refptr<const Extension> extension_2 =
+      ExtensionBuilder("test_2")
+          .AddPermission("*://images.google.com/")
+          .Build();
+  AddExtensionAndGrantPermissions(profile(), service(), *extension_1);
+  AddExtensionAndGrantPermissions(profile(), service(), *extension_2);
+
+  std::vector<developer::MatchingExtensionInfo> infos;
+  GetMatchingExtensionsForSite(profile(), "http://none.com/", &infos);
+  EXPECT_TRUE(infos.empty());
+
+  GetMatchingExtensionsForSite(profile(), "http://images.google.com/", &infos);
+
+  // "http://images.google.com/" should only match with `extension_2`.
+  EXPECT_THAT(infos, testing::UnorderedElementsAre(MatchMatchingExtensionInfo(
+                         extension_2->id(),
+                         developer::HostAccess::HOST_ACCESS_ON_ALL_SITES)));
+
+  service()->DisableExtension(extension_2->id(),
+                              disable_reason::DISABLE_USER_ACTION);
+  GetMatchingExtensionsForSite(profile(), "*://*.google.com/", &infos);
+
+  // "*://*.google.com/" should only match with both `extension_1` and
+  // `extension_2`.
+  EXPECT_THAT(infos, testing::UnorderedElementsAre(
+                         MatchMatchingExtensionInfo(
+                             extension_1->id(),
+                             developer::HostAccess::HOST_ACCESS_ON_ALL_SITES),
+                         MatchMatchingExtensionInfo(
+                             extension_2->id(),
+                             developer::HostAccess::HOST_ACCESS_ON_ALL_SITES)));
+}
+
+// Test that the host access returned by GetMatchingExtensionsForSite reflects
+// whether the extension has access to the queried site, or has withheld sites
+// in general.
+TEST_F(DeveloperPrivateApiUnitTest,
+       DeveloperPrivateGetMatchingExtensionsForSite_RuntimeGrantedHostAccess) {
+  namespace developer = api::developer_private;
+
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("test").AddPermission("<all_urls>").Build();
+  AddExtensionAndGrantPermissions(profile(), service(), *extension);
+
+  std::vector<developer::MatchingExtensionInfo> infos;
+  GetMatchingExtensionsForSite(profile(), "http://example.com/", &infos);
+
+  EXPECT_THAT(infos, testing::UnorderedElementsAre(MatchMatchingExtensionInfo(
+                         extension->id(),
+                         developer::HostAccess::HOST_ACCESS_ON_ALL_SITES)));
+
+  ScriptingPermissionsModifier modifier(profile(), extension.get());
+  EXPECT_FALSE(modifier.HasWithheldHostPermissions());
+  modifier.SetWithholdHostPermissions(true);
+
+  GetMatchingExtensionsForSite(profile(), "http://example.com/", &infos);
+  EXPECT_THAT(infos, testing::UnorderedElementsAre(MatchMatchingExtensionInfo(
+                         extension->id(),
+                         developer::HostAccess::HOST_ACCESS_ON_CLICK)));
+
+  RunAddHostPermission(profile(), *extension, "*://*.google.com/*",
+                       /*should_succeed=*/true, nullptr);
+
+  GetMatchingExtensionsForSite(profile(), "http://google.com/", &infos);
+  EXPECT_THAT(infos,
+              testing::UnorderedElementsAre(MatchMatchingExtensionInfo(
+                  extension->id(),
+                  developer::HostAccess::HOST_ACCESS_ON_SPECIFIC_SITES)));
+
+  GetMatchingExtensionsForSite(profile(), "http://example.com/", &infos);
+  EXPECT_THAT(infos, testing::UnorderedElementsAre(MatchMatchingExtensionInfo(
+                         extension->id(),
+                         developer::HostAccess::HOST_ACCESS_ON_CLICK)));
 }
 
 class DeveloperPrivateApiAllowlistUnitTest

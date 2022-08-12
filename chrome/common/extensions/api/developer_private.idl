@@ -404,6 +404,22 @@ namespace developerPrivate {
     SiteInfo[] sites;
   };
 
+  dictionary MatchingExtensionInfo {
+    // The id of the matching extension.
+    DOMString id;
+    // Describes the extension's access to the queried site from
+    // getMatchingExtensionsForSite. Note that the meaning is different from the
+    // original enum:
+    // - ON_CLICK: The extension requested access to the site but its access is
+    //   withheld.
+    // - ON_SPECIFIC_SITES: the extension is permitted to run on at least one
+    //   site specified by the queried site but has its access withheld on at
+    //   least one site in its host permissions.
+    // - ON_ALL_SITES: same as above except the extension has no withheld access
+    //   to its specified sites.
+    HostAccess siteAccess;
+  };
+
   enum PackStatus {
     SUCCESS,
     ERROR,
@@ -583,6 +599,8 @@ namespace developerPrivate {
   callback DragInstallInProgressCallback = void (DOMString loadGuid);
   callback UserSiteSettingsCallback = void (UserSiteSettings settings);
   callback UserAndExtensionSitesByEtldCallback = void (SiteGroup[] siteGroups);
+  callback GetMatchingExtensionsForSiteCallback =
+      void (MatchingExtensionInfo[] matchingExtensions);
 
   interface Functions {
     // Runs auto update for extensions and apps immediately.
@@ -759,7 +777,7 @@ namespace developerPrivate {
     // Returns the user specified site settings (which origins can extensions
     // always/never run on) for the current profile.
     [supportsPromises] static void getUserSiteSettings(
-        optional UserSiteSettingsCallback callback);
+        UserSiteSettingsCallback callback);
 
     // Adds hosts to the set of user permitted or restricted sites. If any hosts
     // are in the other set than what's specified in `options`, then they are
@@ -777,7 +795,13 @@ namespace developerPrivate {
     // Returns all hosts specified by user site settings, grouped by each host's
     // eTLD+1.
     [supportsPromises] static void getUserAndExtensionSitesByEtld(
-        optional UserAndExtensionSitesByEtldCallback callback);
+        UserAndExtensionSitesByEtldCallback callback);
+
+    // Returns a list of extensions which have at least one matching site in
+    // common between its set of host permissions and `site`.
+    [supportsPromises] static void getMatchingExtensionsForSite(
+        DOMString site,
+        GetMatchingExtensionsForSiteCallback callback);
 
     [nocompile, deprecated="Use management.setEnabled"]
         static void enable(DOMString id,

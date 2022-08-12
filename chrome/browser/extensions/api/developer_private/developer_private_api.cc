@@ -2418,6 +2418,66 @@ DeveloperPrivateGetUserAndExtensionSitesByEtldFunction::Run() {
           site_group_list)));
 }
 
+DeveloperPrivateGetMatchingExtensionsForSiteFunction::
+    DeveloperPrivateGetMatchingExtensionsForSiteFunction() = default;
+DeveloperPrivateGetMatchingExtensionsForSiteFunction::
+    ~DeveloperPrivateGetMatchingExtensionsForSiteFunction() = default;
+
+ExtensionFunction::ResponseAction
+DeveloperPrivateGetMatchingExtensionsForSiteFunction::Run() {
+  std::unique_ptr<developer::GetMatchingExtensionsForSite::Params> params(
+      developer::GetMatchingExtensionsForSite::Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  URLPattern parsed_site(Extension::kValidHostPermissionSchemes);
+  if (parsed_site.Parse(params->site) != URLPattern::ParseResult::kSuccess)
+    return RespondNow(Error("Invalid site: " + params->site));
+
+  std::vector<developer::MatchingExtensionInfo> matching_extensions;
+  URLPatternSet site_pattern({parsed_site});
+  std::unique_ptr<ExtensionSet> all_extensions =
+      ExtensionRegistry::Get(browser_context())
+          ->GenerateInstalledExtensionsSet();
+  for (const auto& extension : *all_extensions) {
+    const URLPatternSet& extension_withheld_sites =
+        extension->permissions_data()->withheld_permissions().effective_hosts();
+    const URLPatternSet granted_intersection =
+        URLPatternSet::CreateIntersection(
+            site_pattern,
+            extension->permissions_data()->GetEffectiveHostPermissions(),
+            URLPatternSet::IntersectionBehavior::kDetailed);
+    const URLPatternSet withheld_intersection =
+        URLPatternSet::CreateIntersection(
+            site_pattern, extension_withheld_sites,
+            URLPatternSet::IntersectionBehavior::kDetailed);
+
+    if (granted_intersection.is_empty() && withheld_intersection.is_empty())
+      continue;
+
+    // By default, return ON_CLICK if the extension has requested but does not
+    // have access to any sites that match `site_pattern`.
+    developer::HostAccess host_access = developer::HOST_ACCESS_ON_CLICK;
+
+    // If the extension has access to at least one site that matches
+    // `site_pattern`, return ON_ALL_SITES or ON_SPECIFIC_SITES depending on
+    // if the extension has any withheld sites.
+    if (!granted_intersection.is_empty()) {
+      host_access = extension_withheld_sites.is_empty()
+                        ? developer::HOST_ACCESS_ON_ALL_SITES
+                        : developer::HOST_ACCESS_ON_SPECIFIC_SITES;
+    }
+
+    developer::MatchingExtensionInfo matching_info;
+    matching_info.site_access = host_access;
+    matching_info.id = extension->id();
+    matching_extensions.push_back(std::move(matching_info));
+  }
+
+  return RespondNow(
+      ArgumentList(developer::GetMatchingExtensionsForSite::Results::Create(
+          matching_extensions)));
+}
+
 }  // namespace api
 
 }  // namespace extensions

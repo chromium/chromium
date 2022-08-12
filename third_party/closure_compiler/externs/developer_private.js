@@ -470,6 +470,14 @@ chrome.developerPrivate.SiteInfo;
 chrome.developerPrivate.SiteGroup;
 
 /**
+ * @typedef {{
+ *   id: string,
+ *   siteAccess: !chrome.developerPrivate.HostAccess
+ * }}
+ */
+chrome.developerPrivate.MatchingExtensionInfo;
+
+/**
  * @enum {string}
  */
 chrome.developerPrivate.PackStatus = {
@@ -852,6 +860,13 @@ chrome.developerPrivate.removeUserSpecifiedSites = function(options, callback) {
  * @param {function(!Array<!chrome.developerPrivate.SiteGroup>): void=} callback
  */
 chrome.developerPrivate.getUserAndExtensionSitesByEtld = function(callback) {};
+
+/**
+ * @param {string} site
+ * @param {function(!Array<!chrome.developerPrivate.MatchingExtensionInfo>): void=}
+ *     callback
+ */
+chrome.developerPrivate.getMatchingExtensionsForSite = function(site, callback) {};
 
 /**
  * @param {string} id
