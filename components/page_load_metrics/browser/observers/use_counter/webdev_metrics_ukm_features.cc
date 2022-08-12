@@ -42,6 +42,8 @@ UseCounterPageLoadMetricsObserver::GetAllowedWebDevMetricsUkmFeatures() {
            WebFeature::kFontSelectorCSSFontFamilyWebKitPrefixBody,
            WebFeature::kFontBuilderCSSFontFamilyWebKitPrefixBody,
            WebFeature::kScrollTimelineConstructor,
-           WebFeature::kCSSAtRuleScrollTimeline}));
+           WebFeature::kCSSAtRuleScrollTimeline,
+           WebFeature::kCSSAtRuleContainer,
+           WebFeature::kBlockingAttributeRenderToken}));
   return *opt_in_features;
 }
