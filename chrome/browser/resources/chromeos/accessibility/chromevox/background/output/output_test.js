@@ -111,6 +111,8 @@ ChromeVoxOutputE2ETest = class extends ChromeVoxNextE2ETest {
     await importModule('Msgs', '/chromevox/common/msgs.js');
     await importModule('AutomationUtil', '/common/automation_util.js');
     await importModule('TtsCategory', '/chromevox/common/tts_interface.js');
+    await importModule(
+        'AutomationPredicate', '/common/automation_predicate.js');
 
     window.Dir = AutomationUtil.Dir;
     this.forceContextualLastOutput();

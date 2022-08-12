@@ -6,11 +6,5 @@
  * @fileoverview Loads the panel script.
  */
 
-goog.require('AutomationPredicate');
-goog.require('PanelNodeMenuData');
-goog.require('PanelNodeMenuItemData');
-
 goog.require('constants');
 goog.require('goog.i18n.MessageFormat');
-
-goog.require('ALL_NODE_MENU_DATA');

@@ -5,13 +5,7 @@
 /**
  * @fileoverview Loader for the background page.
  */
-
-goog.require('AutomationPredicate');
 goog.require('JaPhoneticData');
-goog.require('PanelNodeMenuData');
-goog.require('PanelTabMenuItemData');
 
 goog.require('constants');
 goog.require('goog.i18n.MessageFormat');
-
-goog.require('ALL_NODE_MENU_DATA');

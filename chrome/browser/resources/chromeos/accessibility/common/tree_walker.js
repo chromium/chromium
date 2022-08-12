@@ -6,6 +6,8 @@
  * @fileoverview A tree walker over the automation tree.
  */
 
+import {AutomationPredicate} from './automation_predicate.js';
+
 /**
  * Defined phases of traversal from the initial node passed to an
  * AutomationTreeWalker instance.

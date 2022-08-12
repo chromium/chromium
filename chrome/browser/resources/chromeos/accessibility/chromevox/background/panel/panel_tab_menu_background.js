@@ -8,6 +8,7 @@
  */
 
 import {Msgs} from '../../common/msgs.js';
+import {PanelTabMenuItemData} from '../../common/panel_menu_data.js';
 
 export class PanelTabMenuBackground {
   /**

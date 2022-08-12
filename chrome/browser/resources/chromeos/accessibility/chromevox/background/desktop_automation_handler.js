@@ -5,6 +5,7 @@
 /**
  * @fileoverview Handles automation from a desktop automation node.
  */
+import {AutomationPredicate} from '../../common/automation_predicate.js';
 import {AutomationUtil} from '../../common/automation_util.js';
 import {WrappingCursor} from '../../common/cursors/cursor.js';
 import {CursorRange} from '../../common/cursors/range.js';

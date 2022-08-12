@@ -6,6 +6,7 @@
  * @fileoverview Handles automation intents for speech feedback.
  * Braille is *not* handled in this module.
  */
+import {AutomationPredicate} from '../../../common/automation_predicate.js';
 import {AutomationUtil} from '../../../common/automation_util.js';
 import {CursorRange} from '../../../common/cursors/range.js';
 import {Output} from '../output/output.js';

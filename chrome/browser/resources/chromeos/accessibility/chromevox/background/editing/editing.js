@@ -6,6 +6,7 @@
  * @fileoverview Processes events related to editing text and emits the
  * appropriate spoken and braille feedback.
  */
+import {AutomationPredicate} from '../../../common/automation_predicate.js';
 import {AutomationUtil} from '../../../common/automation_util.js';
 import {Cursor, CursorMovement, CursorUnit} from '../../../common/cursors/cursor.js';
 import {CursorRange} from '../../../common/cursors/range.js';

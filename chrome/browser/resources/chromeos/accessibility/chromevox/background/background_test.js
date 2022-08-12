@@ -60,6 +60,8 @@ ChromeVoxBackgroundTest = class extends ChromeVoxNextE2ETest {
         '/chromevox/common/braille/braille_key_types.js');
     await importModule('KeyCode', '/common/key_code.js');
     await importModule('QueueMode', '/chromevox/common/tts_interface.js');
+    await importModule(
+        'AutomationPredicate', '/common/automation_predicate.js');
 
     window.doGesture = this.doGesture;
     window.simulateHitTestResult = this.simulateHitTestResult;

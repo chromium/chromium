@@ -6,11 +6,13 @@
  * @fileoverview Calculates the menu items for the node menus in the ChromeVox
  * panel.
  */
+import {AutomationPredicate} from '../../../common/automation_predicate.js';
 import {AutomationUtil} from '../../../common/automation_util.js';
 import {CursorRange} from '../../../common/cursors/range.js';
 import {AutomationTreeWalker} from '../../../common/tree_walker.js';
 import {Msgs} from '../../common/msgs.js';
 import {PanelBridge} from '../../common/panel_bridge.js';
+import {PanelNodeMenuData, PanelNodeMenuId, PanelNodeMenuItemData} from '../../common/panel_menu_data.js';
 import {ChromeVoxState} from '../chromevox_state.js';
 import {Output} from '../output/output.js';
 import {OutputEventType} from '../output/output_types.js';

@@ -7,14 +7,16 @@
  * the automation tree.
  */
 
+import {AutomationPredicate} from '../automation_predicate.js';
+import {AutomationUtil} from '../automation_util.js';
+import {StringUtil} from '../string_util.js';
+
+import {AncestryRecoveryStrategy, RecoveryStrategy} from './recovery_strategy.js';
+
 const AutomationNode = chrome.automation.AutomationNode;
 const Dir = constants.Dir;
 const RoleType = chrome.automation.RoleType;
 const StateType = chrome.automation.StateType;
-
-import {StringUtil} from '../string_util.js';
-import {AutomationUtil} from '../automation_util.js';
-import {RecoveryStrategy, AncestryRecoveryStrategy} from './recovery_strategy.js';
 
 /**
  * The special index that represents a cursor pointing to a node without

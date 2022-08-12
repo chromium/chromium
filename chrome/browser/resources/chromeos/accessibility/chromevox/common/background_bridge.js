@@ -9,7 +9,8 @@
 
 import {BridgeConstants} from './bridge_constants.js';
 import {BridgeHelper} from './bridge_helper.js';
-import {SerializableLog} from './log_types.js';
+import {BaseLog, SerializableLog} from './log_types.js';
+import {PanelTabMenuItemData} from './panel_menu_data.js';
 
 export const BackgroundBridge = {};
 

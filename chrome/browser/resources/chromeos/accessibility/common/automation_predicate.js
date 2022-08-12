@@ -6,17 +6,9 @@
  * @fileoverview ChromeVox predicates for the automation extension API.
  */
 
-goog.provide('AutomationPredicate');
-goog.provide('AutomationPredicate.Binary');
-goog.provide('AutomationPredicate.Unary');
-
-goog.require('constants');
-
-goog.scope(function() {
 const AutomationNode = chrome.automation.AutomationNode;
 const InvalidState = chrome.automation.InvalidState;
 const MarkerType = chrome.automation.MarkerType;
-const Dir = constants.Dir;
 const Restriction = chrome.automation.Restriction;
 const Role = chrome.automation.RoleType;
 const State = chrome.automation.StateType;
@@ -110,7 +102,7 @@ const nodeNameContainedInStaticTextChildren = function(node) {
   return true;
 };
 
-AutomationPredicate = class {
+export class AutomationPredicate {
   constructor() {}
 
   /**
@@ -620,7 +612,7 @@ AutomationPredicate = class {
    * Returns a predicate that will match against the directed next cell taking
    * into account the current ancestor cell's position in the table.
    * @param {AutomationNode} start
-   * @param {{dir: (Dir|undefined),
+   * @param {{dir: (constants.Dir|undefined),
    *           row: (boolean|undefined),
    *          col: (boolean|undefined)}} opts
    * |dir|, specifies direction for |row or/and |col| movement by one cell.
@@ -635,7 +627,7 @@ AutomationPredicate = class {
       throw new Error('You must set either row or col to true');
     }
 
-    const dir = opts.dir || Dir.FORWARD;
+    const dir = opts.dir || constants.Dir.FORWARD;
 
     // Compute the row/col index defaulting to 0.
     let rowIndex = 0;
@@ -663,7 +655,7 @@ AutomationPredicate = class {
         throw 'Unsupported option.';
       }
 
-      if (dir === Dir.FORWARD) {
+      if (dir === constants.Dir.FORWARD) {
         return function(node) {
           return AutomationPredicate.cellLike(node) &&
               node.tableCellColumnIndex === colIndex &&
@@ -680,10 +672,10 @@ AutomationPredicate = class {
 
     // Adjust for the next/previous row/col.
     if (opts.row) {
-      rowIndex = dir === Dir.FORWARD ? rowIndex + 1 : rowIndex - 1;
+      rowIndex = dir === constants.Dir.FORWARD ? rowIndex + 1 : rowIndex - 1;
     }
     if (opts.col) {
-      colIndex = dir === Dir.FORWARD ? colIndex + 1 : colIndex - 1;
+      colIndex = dir === constants.Dir.FORWARD ? colIndex + 1 : colIndex - 1;
     }
 
     return function(node) {
@@ -814,7 +806,7 @@ AutomationPredicate = class {
       return AutomationPredicate.listLike(autoNode) && (autoNode !== avoidNode);
     };
   }
-};
+}
 
 /**
  * @typedef {function(!AutomationNode) : boolean}
@@ -991,5 +983,3 @@ AutomationPredicate.selectableText = AutomationPredicate.roles([
   Role.LINE_BREAK,
   Role.LIST_MARKER,
 ]);
-
-});  // goog.scope

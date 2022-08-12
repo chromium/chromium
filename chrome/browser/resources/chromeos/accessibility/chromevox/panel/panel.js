@@ -19,6 +19,7 @@ import {KeyUtil} from '../common/key_util.js';
 import {LocaleOutputHelper} from '../common/locale_output_helper.js';
 import {Msgs} from '../common/msgs.js';
 import {PanelCommand, PanelCommandType} from '../common/panel_command.js';
+import {ALL_PANEL_MENU_NODE_DATA, PanelNodeMenuData, PanelNodeMenuId, PanelNodeMenuItemData} from '../common/panel_menu_data.js';
 import {QueueMode} from '../common/tts_interface.js';
 
 import {ISearchUI} from './i_search_ui.js';
@@ -494,7 +495,7 @@ export class Panel extends PanelInterface {
             Panel.onClose();
           });
 
-      for (const menuData of ALL_NODE_MENU_DATA) {
+      for (const menuData of ALL_PANEL_MENU_NODE_DATA) {
         Panel.addNodeMenu(menuData);
       }
       await BackgroundBridge.PanelBackground.createAllNodeMenuBackgrounds(

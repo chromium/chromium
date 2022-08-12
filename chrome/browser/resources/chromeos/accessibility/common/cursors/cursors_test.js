@@ -42,6 +42,8 @@ AccessibilityExtensionCursorsTest = class extends ChromeVoxNextE2ETest {
         '/common/cursors/cursor.js');
 
     await importModule('AutomationUtil', '/common/automation_util.js');
+    await importModule(
+        'AutomationPredicate', '/common/automation_predicate.js');
     // Various aliases
     window.CHARACTER = CursorUnit.CHARACTER;
     window.WORD = CursorUnit.WORD;

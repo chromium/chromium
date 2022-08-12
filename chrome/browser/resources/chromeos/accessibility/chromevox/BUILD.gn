@@ -19,12 +19,10 @@ closure_library_dir =
 #
 # These files all use older Closure provide/require support for dependency management and will be transitioned to ES6 modules (see below).
 chromevox_modules = [
-  "../common/automation_predicate.js",
   "../common/constants.js",
   "background/braille/cursor_dots.js",
   "background/braille/pan_strategy.js",
   "common/extension_bridge.js",
-  "common/panel_menu_data.js",
   "injected/api_implementation.js",
   "injected/extension_bridge.js",
   "injected/loader.js",
@@ -35,6 +33,7 @@ chromevox_modules = [
 
 # ES6 modules.
 chromevox_es6_modules = [
+  "../common/automation_predicate.js",
   "../common/automation_util.js",
   "../common/cursors/cursor.js",
   "../common/cursors/range.js",
@@ -136,6 +135,7 @@ chromevox_es6_modules = [
   "common/msgs.js",
   "common/panel_bridge.js",
   "common/panel_command.js",
+  "common/panel_menu_data.js",
   "common/spannable.js",
   "common/tree_dumper.js",
   "common/tts_base.js",

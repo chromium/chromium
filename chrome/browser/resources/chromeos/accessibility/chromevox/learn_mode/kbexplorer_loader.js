@@ -5,5 +5,4 @@
 /**
  * @fileoverview Description of this file.
  */
-
 goog.require('constants');

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {AutomationPredicate} from '../common/automation_predicate.js';
 import {RectUtil} from '../common/rect_util.js';
 import {AutomationTreeWalkerRestriction} from '../common/tree_walker.js';
 
