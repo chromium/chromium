@@ -666,6 +666,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 public void multipleTabsPendingClosure(List<Tab> tabs, boolean isAllTabs) {
                     if (!isAllTabs) return;
                     NewTabPageUma.recordNTPImpression(NewTabPageUma.NTP_IMPESSION_POTENTIAL_NOTAB);
+                    openTabletTabSwitcherIfNoTabs();
                 }
             };
         } finally {
