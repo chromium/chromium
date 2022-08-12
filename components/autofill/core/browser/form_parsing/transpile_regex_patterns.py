@@ -134,27 +134,6 @@ def generate_cpp_constants(id_to_name_to_lang_to_patterns):
           p.copy() for ps in lang_to_patterns.values() for p in ps
       ]
 
-    # Map legacy raw integer literals to the JSON constant string.
-    # TODO(crbug.com/1312026): Remove once src-internal has been rolled.
-    def normalize_match_field_attributes(json):
-      constants = ['LABEL', 'NAME']
-      return [constants[c] if isinstance(c, int) else c for c in json]
-    def normalize_match_field_input_types(json):
-      constants = [
-          'TEXT', 'EMAIL', 'TELEPHONE', 'SELECT', 'TEXT_AREA', 'PASSWORD',
-          'NUMBER', 'SEARCH'
-      ]
-      return [constants[c] if isinstance(c, int) else c for c in json]
-    for lang_to_patterns in name_to_lang_to_patterns.values():
-      for patterns in lang_to_patterns.values():
-        for p in patterns:
-          if 'match_field_attributes' in p:
-            p['match_field_attributes'] = normalize_match_field_attributes(
-                p['match_field_attributes'])
-          if 'match_field_input_types' in p:
-            p['match_field_input_types'] = normalize_match_field_input_types(
-                p['match_field_input_types'])
-
     # Add the English patterns to all languages except for English itself and
     # the catch-all language ''.
     #
