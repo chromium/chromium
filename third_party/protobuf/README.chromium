@@ -124,3 +124,11 @@ Description of the patches:
   Imports https://critique.corp.google.com/cl/451177197 (a portion of
   https://github.com/protocolbuffers/protobuf/commit/6dd8af4ecfa7987bddb309862932886b84f1e4ef
   ).
+
+- 0033-no-enum-conversion-warn.patch
+
+  Avoid hitting the clang error -Wenum-constexpr-conversion by specifying width
+  of the enum.
+
+  Imports https://critique.corp.google.com/cl/466986872.
+
