@@ -455,8 +455,8 @@ void URLRequestHttpJob::DestroyTransaction() {
       transaction_->GetTotalReceivedBytes();
   total_sent_bytes_from_previous_transactions_ +=
       transaction_->GetTotalSentBytes();
-  transaction_.reset();
   response_info_ = nullptr;
+  transaction_.reset();
   override_response_headers_ = nullptr;
   receive_headers_end_ = base::TimeTicks();
 }
