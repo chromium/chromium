@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/projector/projector_metrics.h"
 #include "ash/public/cpp/projector/annotator_tool.h"
 #include "ash/public/cpp/projector/projector_controller.h"
 #include "ash/public/cpp/projector/projector_new_screencast_precondition.h"
@@ -246,10 +247,11 @@ void ProjectorClientImpl::OnEnablementPolicyChanged() {
   // TODO(b/240497023): convert to dcheck once confirm that the pointer is
   // always available at this point.
   if (!swa_manager) {
+    RecordPolicyChangeHandlingError(
+        ash::ProjectorPolicyChangeHandlingError::kSwaManager);
     return;
   }
   const bool is_installed =
-      swa_manager &&
       swa_manager->IsSystemWebApp(ash::kChromeUITrustedProjectorSwaAppId);
   // We can't enable or disable the app if it's not already installed.
   if (!is_installed)
@@ -266,6 +268,8 @@ void ProjectorClientImpl::OnEnablementPolicyChanged() {
   // TODO(b/240497023): convert to dcheck once confirm that the pointer is
   // always available at this point.
   if (!web_app_provider) {
+    RecordPolicyChangeHandlingError(
+        ash::ProjectorPolicyChangeHandlingError::kWebAppProvider);
     return;
   }
   web_app_provider->on_registry_ready().Post(
@@ -280,10 +284,18 @@ void ProjectorClientImpl::SetAppIsDisabled(bool disabled) {
   // TODO(b/240497023): convert to dcheck once confirm that the pointer is
   // always available at this point.
   if (!web_app_provider) {
+    RecordPolicyChangeHandlingError(ash::ProjectorPolicyChangeHandlingError::
+                                        kWebAppProviderOnRegistryReady);
     return;
   }
   auto* sync_bridge = &web_app_provider->sync_bridge();
-  DCHECK(sync_bridge);
+  // TODO(b/240497023): convert to dcheck once confirm that the pointer is
+  // always available at this point.
+  if (!sync_bridge) {
+    RecordPolicyChangeHandlingError(
+        ash::ProjectorPolicyChangeHandlingError::kSyncBridge);
+    return;
+  }
 
   sync_bridge->SetAppIsDisabled(ash::kChromeUITrustedProjectorSwaAppId,
                                 disabled);

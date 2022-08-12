@@ -34,6 +34,9 @@ constexpr char kProjectorPendingScreencastBatchIOTaskDurationHistogramName[] =
 constexpr char kProjectorPendingScreencastChangeIntervalHistogramName[] =
     "Ash.Projector.PendingScreencastChangeInterval";
 
+constexpr char kProjectorPolicyChangeHandlingErrorHistogramName[] =
+    "Ash.Projector.PolicyChangeHandlingError";
+
 // Appends the proper suffix to |prefix| based on whether the user is in tablet
 // mode or not.
 std::string GetHistogramName(const std::string& prefix) {
@@ -81,6 +84,13 @@ void RecordCreationFlowError(int message_id) {
   }
   base::UmaHistogramEnumeration(
       GetHistogramName(kProjectorCreationFlowErrorHistogramName), error);
+}
+
+ASH_EXPORT void RecordPolicyChangeHandlingError(
+    ProjectorPolicyChangeHandlingError error) {
+  base::UmaHistogramEnumeration(
+      GetHistogramName(kProjectorPolicyChangeHandlingErrorHistogramName),
+      error);
 }
 
 ASH_EXPORT void RecordPendingScreencastBatchIOTaskDuration(

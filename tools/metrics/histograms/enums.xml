@@ -80666,6 +80666,14 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="5" label="Magenta"/>
 </enum>
 
+<enum name="ProjectorPolicyChangeHandlingError">
+  <int value="0" label="SWA manager is not available"/>
+  <int value="1" label="Web app provider is not available"/>
+  <int value="2"
+      label="Web app provider is not available when registry is ready"/>
+  <int value="3" label="Sync bridge is not available"/>
+</enum>
+
 <enum name="ProjectorToolbar">
   <int value="0" label="Toolbar opened (Obsolete)"/>
   <int value="1" label="Toolbar closed (Obsolete)"/>

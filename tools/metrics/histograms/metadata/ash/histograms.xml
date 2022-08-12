@@ -3731,6 +3731,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Projector.PolicyChangeHandlingError"
+    enum="ProjectorPolicyChangeHandlingError" expires_after="2022-12-01">
+  <owner>llin@chromium.org</owner>
+  <owner>cros-projector@google.com</owner>
+  <summary>
+    Records the nullptr error that potentially caused a crash when handling
+    policy changes.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Projector.Toolbar.{TabletOrClamshell}"
     enum="ProjectorToolbar" expires_after="2022-12-01">
   <owner>tobyhuang@chromium.org</owner>

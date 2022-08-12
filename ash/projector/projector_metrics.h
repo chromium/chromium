@@ -93,6 +93,19 @@ enum class ProjectorCreationFlowError {
   kMaxValue = kTranscriptionError
 };
 
+// These enum values represent potential error that occurs at policy value
+// change handling and log to UMA. Entries should not be renumbered and numeric
+// values should never be reused. Please keep in sync with
+// "ProjectorPolicyChangeHandlingError" in
+// src/tools/metrics/histograms/enums.xml.
+enum class ProjectorPolicyChangeHandlingError {
+  kSwaManager = 0,
+  kWebAppProvider = 1,
+  kWebAppProviderOnRegistryReady = 2,
+  kSyncBridge = 3,
+  kMaxValue = kSyncBridge
+};
+
 // Records the buttons the user presses on the Projector toolbar.
 void RecordToolbarMetrics(ProjectorToolbar button);
 
@@ -114,6 +127,11 @@ void RecordPendingScreencastBatchIOTaskDuration(const base::TimeDelta duration);
 
 // Records the interval between the UI changes of pending screencasts.
 void RecordPendingScreencastChangeInterval(const base::TimeDelta interval);
+
+// Records potential error occurs at policy change.
+// TODO(b/240497023): remove this once confirmed the nullptr should never
+// occurs and the nullptr check is converted to DCEHCK.
+void RecordPolicyChangeHandlingError(ProjectorPolicyChangeHandlingError error);
 
 }  // namespace ash
 

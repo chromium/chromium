@@ -18,8 +18,6 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
-#include "components/soda/constants.h"
-#include "components/soda/soda_installer.h"
 
 namespace views {
 class WebView;
