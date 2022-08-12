@@ -58223,6 +58223,8 @@ from previous Chrome versions.
   <int value="-577982497" label="CupsPrintersUiOverhaul:enabled"/>
   <int value="-577503348" label="GridTabSwitcherForTablets:disabled"/>
   <int value="-576759065" label="HoldingSpaceInProgressAnimationV2:disabled"/>
+  <int value="-575081438"
+      label="OmniboxMostVisitedTilesFadingOnTablet:disabled"/>
   <int value="-574965003" label="LauncherLacrosIntegration:disabled"/>
   <int value="-574354898" label="PostQuantumCECPQ2:enabled"/>
   <int value="-574217217" label="kSignInProfileCreationEnterprise:enabled"/>
@@ -60560,6 +60562,7 @@ from previous Chrome versions.
   <int value="914708297" label="CCTResizableAllowResizeByUserGesture:enabled"/>
   <int value="915402820" label="RequestDesktopSiteExceptions:disabled"/>
   <int value="916316159" label="disable-new-app-list-mixer"/>
+  <int value="916841877" label="OmniboxMostVisitedTilesFadingOnTablet:enabled"/>
   <int value="917285134" label="AutofillAddressProfileSavePrompt:enabled"/>
   <int value="917561046" label="ConversionMeasurement:disabled"/>
   <int value="918046854" label="NtlmV2Enabled:disabled"/>

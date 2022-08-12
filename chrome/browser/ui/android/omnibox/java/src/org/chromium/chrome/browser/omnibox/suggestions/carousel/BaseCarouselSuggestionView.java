@@ -131,4 +131,13 @@ public class BaseCarouselSuggestionView extends LinearLayout {
         mItemSpacingPx = itemSpacingPx;
         mRecyclerView.requestLayout();
     }
+
+    /**
+     * Set the carousel to have horizontal fade effect.
+     *
+     * @param enableFade whether we should enable horizontal fade.
+     */
+    public void setCarouselHorizontalFade(boolean enableFade) {
+        mRecyclerView.setHorizontalFadingEdgeEnabled(enableFade);
+    }
 }

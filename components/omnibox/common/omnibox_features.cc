@@ -315,6 +315,10 @@ const base::Feature kOmniboxRemoveSuggestionHeaderCapitalization{
 const base::Feature kOmniboxRemoveSuggestionHeaderChevron{
     "OmniboxRemoveSuggestionHeaderChevron", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Feature used to add fading effect to most visited tiles on tablet.
+const base::Feature kOmniboxMostVisitedTilesFadingOnTablet{
+    "OmniboxMostVisitedTilesFadingOnTablet", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Feature used to add most visited tiles to the suggestions when the user is on
 // a search result page that does not do search term replacement.
 const base::Feature kOmniboxMostVisitedTilesOnSrp{

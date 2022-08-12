@@ -2007,6 +2007,12 @@ const char kOmniboxFocusTriggersContextualWebZeroSuggestDescription[] =
     "current URL. Will only work if user is signed-in and syncing, or is "
     "otherwise eligible to send the current page URL to the suggest server.";
 
+const char kOmniboxMostVisitedTilesFadingOnTabletName[] =
+    "Omnibox Most Visited Tiles fading on tablet";
+const char kOmniboxMostVisitedTilesFadingOnTabletDescription[] =
+    "Set most visited website tiles carousel to fade on horizontal ends on"
+    "tablet mode.";
+
 const char kOmniboxMostVisitedTilesOnSrpName[] =
     "Omnibox Most Visited Tiles on Search Results Page";
 const char kOmniboxMostVisitedTilesOnSrpDescription[] =

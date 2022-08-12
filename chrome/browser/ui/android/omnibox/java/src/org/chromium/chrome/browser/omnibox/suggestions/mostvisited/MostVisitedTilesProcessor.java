@@ -83,6 +83,8 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
 
     @Override
     public void onNativeInitialized() {
+        super.onNativeInitialized();
+
         mShouldWrapTitleText = ChromeFeatureList.isEnabled(
                 ChromeFeatureList.OMNIBOX_MOST_VISITED_TILES_TITLE_WRAP_AROUND);
         mEnableOrganicRepeatableQueries =
@@ -91,6 +93,8 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
 
     @Override
     public void populateModel(AutocompleteMatch suggestion, PropertyModel model, int matchIndex) {
+        super.populateModel(suggestion, model, matchIndex);
+
         final List<AutocompleteMatch.SuggestTile> tiles = suggestion.getSuggestTiles();
         final int tilesCount = tiles.size();
         final List<ListItem> tileList = new ArrayList<>(tilesCount);

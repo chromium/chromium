@@ -52,6 +52,9 @@ public final class BaseCarouselSuggestionViewBinder {
         } else if (key == SuggestionCommonProperties.DEVICE_FORM_FACTOR) {
             view.setItemSpacingPx(getItemSpacingPx(
                     model.get(SuggestionCommonProperties.DEVICE_FORM_FACTOR), view.getResources()));
+        } else if (key == BaseCarouselSuggestionViewProperties.HORIZONTAL_FADE) {
+            view.setCarouselHorizontalFade(
+                    model.get(BaseCarouselSuggestionViewProperties.HORIZONTAL_FADE));
         }
     }
 

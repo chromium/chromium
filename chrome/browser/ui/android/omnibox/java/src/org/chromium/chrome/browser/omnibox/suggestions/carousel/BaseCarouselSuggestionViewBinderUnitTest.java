@@ -237,4 +237,13 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
         Assert.assertEquals(landscapePadding,
                 BaseCarouselSuggestionViewBinder.getItemSpacingPx(FormFactor.TABLET, mResources));
     }
+
+    @Test
+    public void mView_setHorizontalFadingEdgeEnabled() {
+        mModel.set(BaseCarouselSuggestionViewProperties.HORIZONTAL_FADE, true);
+        verify(mView, times(1)).setCarouselHorizontalFade(true);
+
+        mModel.set(BaseCarouselSuggestionViewProperties.HORIZONTAL_FADE, false);
+        verify(mView, times(1)).setCarouselHorizontalFade(false);
+    }
 }

@@ -4793,6 +4793,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "omnibox-most-visited-tiles-fading-on-tablet",
+    "owners": [ "rongtan", "ender", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "omnibox-most-visited-tiles-on-srp",
     "owners": [ "rongtan", "ender", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 110

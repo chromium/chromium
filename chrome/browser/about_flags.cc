@@ -5211,6 +5211,12 @@ const FeatureEntry kFeatureEntries[] = {
          kOmniboxRemoveSuggestionHeaderChevronVariations,
          "OmniboxRemoveSuggestionHeaderChevron")},
 
+    {"omnibox-most-visited-tiles-fading-on-tablet",
+     flag_descriptions::kOmniboxMostVisitedTilesFadingOnTabletName,
+     flag_descriptions::kOmniboxMostVisitedTilesFadingOnTabletDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(omnibox::kOmniboxMostVisitedTilesFadingOnTablet)},
+
     {"omnibox-most-visited-tiles-on-srp",
      flag_descriptions::kOmniboxMostVisitedTilesOnSrpName,
      flag_descriptions::kOmniboxMostVisitedTilesOnSrpDescription, kOsAndroid,
