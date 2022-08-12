@@ -429,6 +429,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
 
    public:
     void ClearIsFirstForNode() { fragment_.is_first_for_node_ = false; }
+    void ClearPropagatedOOFs() { fragment_.ClearOutOfFlowData(); }
     void SetBreakToken(const NGBlockBreakToken* token) {
       fragment_.break_token_ = token;
     }

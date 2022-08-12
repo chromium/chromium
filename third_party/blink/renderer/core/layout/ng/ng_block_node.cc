@@ -710,6 +710,11 @@ const NGLayoutResult* NGBlockNode::LayoutRepeatableRoot(
   mutator.SetBreakToken(outgoing_break_token);
   if (!is_first) {
     mutator.ClearIsFirstForNode();
+
+    // Any OOFs whose containing block is an ancestor of the repeated section is
+    // not to be repeated.
+    mutator.ClearPropagatedOOFs();
+
     box_->SetLayoutResult(result, index);
   }
 

@@ -727,7 +727,7 @@ class CORE_EXPORT NGPhysicalFragment
   unsigned base_direction_ : 1;  // TextDirection
 
   Member<const NGBreakToken> break_token_;
-  const Member<OutOfFlowData> oof_data_;
+  Member<OutOfFlowData> oof_data_;
 };
 
 CORE_EXPORT std::ostream& operator<<(std::ostream&, const NGPhysicalFragment*);

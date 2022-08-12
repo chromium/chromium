@@ -521,6 +521,15 @@ bool NGPhysicalFragment::NeedsOOFPositionedInfoPropagation() const {
   return !!oof_data_;
 }
 
+void NGPhysicalFragment::ClearOutOfFlowData() {
+  if (!oof_data_)
+    return;
+  if (HasAnchorQuery())
+    oof_data_->oof_positioned_descendants.clear();
+  else
+    oof_data_ = nullptr;
+}
+
 NGPhysicalFragment::OutOfFlowData* NGPhysicalFragment::CloneOutOfFlowData()
     const {
   DCHECK(oof_data_);
