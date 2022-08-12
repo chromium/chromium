@@ -95234,7 +95234,7 @@
       ]
      ],
      "contain-layout-017.html": [
-      "c8118ad974844cd807e0dfbcc07a9a06469a308c",
+      "fd74c5a5f4aa81b14da7aaa3e6da927e30a2e9cb",
       [
        null,
        [
@@ -96027,7 +96027,7 @@
       ]
      ],
      "contain-paint-021.html": [
-      "a8ea1c8bfc2d9686d5fa1659a77e187ea8bbc28e",
+      "c1f145245d29702914c5e35d7a4a8053f452c156",
       [
        null,
        [
@@ -322491,7 +322491,7 @@
     ]
    },
    "lint.ignore": [
-    "1f6f823f704c809133a31d321f67ea82b2cf9fb4",
+    "d923bbf673dd6bbdb156b077091776c370e23f33",
     []
    ],
    "loading": {
@@ -325443,6 +325443,30 @@
      "b50f18ecce3ac62d3193a86d668f457c1e9629ab",
      []
     ]
+   },
+   "pending_beacon": {
+    "resources": {
+     "get_beacon.py": [
+      "32cb9a9ba30638bf0e5c7e54655ae87e7085978d",
+      []
+     ],
+     "iframe_create_beacon_no_send.html": [
+      "dfe047aac8c3d6b58b4c3771946835537c21e20a",
+      []
+     ],
+     "iframe_create_beacon_then_send.html": [
+      "0fa2ca01dc784bc1543b22615cedd1d9d36009f4",
+      []
+     ],
+     "pending_beacon-helper.js": [
+      "ca34e98f43809fb6863761acee1fedc07f8533df",
+      []
+     ],
+     "set_beacon.py": [
+      "41618adc54ed5e7ddf1a1bfaf81f76b11febf8fc",
+      []
+     ]
+    }
    },
    "performance-timeline": {
     "DIR_METADATA": [
@@ -506227,6 +506251,148 @@
       null,
       {
        "testdriver": true
+      }
+     ]
+    ]
+   },
+   "pending_beacon": {
+    "pending_beacon-basic.tentative.window.js": [
+     "82ec58a6bf3b978231358c597aff7c343a1fe0e8",
+     [
+      "pending_beacon/pending_beacon-basic.tentative.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/testharness.js"
+        ],
+        [
+         "script",
+         "/resources/testharnessreport.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "pending_beacon-deactivate.tentative.window.js": [
+     "4d8fb6be5aa4ea081f78e03f8de8aa0acb12efa2",
+     [
+      "pending_beacon/pending_beacon-deactivate.tentative.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/testharness.js"
+        ],
+        [
+         "script",
+         "/resources/testharnessreport.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "pending_beacon-sendnow.tentative.window.js": [
+     "cd3360aeecf29e4080228c2b6854b4c4c31cd3c9",
+     [
+      "pending_beacon/pending_beacon-sendnow.tentative.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/testharness.js"
+        ],
+        [
+         "script",
+         "/resources/testharnessreport.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ],
+        [
+         "script",
+         "./resources/pending_beacon-helper.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "pending_beacon-sendondiscard.tentative.window.js": [
+     "80d577004b7017cf64903fac1c8da399125becb0",
+     [
+      "pending_beacon/pending_beacon-sendondiscard.tentative.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/testharness.js"
+        ],
+        [
+         "script",
+         "/resources/testharnessreport.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ],
+        [
+         "script",
+         "./resources/pending_beacon-helper.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "pending_get_beacon-send.tentative.window.js": [
+     "7f52c082800cea4a4cac2dc57c0c99f727bbe98e",
+     [
+      "pending_beacon/pending_get_beacon-send.tentative.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/testharness.js"
+        ],
+        [
+         "script",
+         "/resources/testharnessreport.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ],
+        [
+         "script",
+         "./resources/pending_beacon-helper.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "pending_post_beacon-sendwithdata.tentative.window.js": [
+     "1c7c6cab50ba7133418045cf764e22a91beffe4c",
+     [
+      "pending_beacon/pending_post_beacon-sendwithdata.tentative.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/testharness.js"
+        ],
+        [
+         "script",
+         "/resources/testharnessreport.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ],
+        [
+         "script",
+         "./resources/pending_beacon-helper.js"
+        ]
+       ]
       }
      ]
     ]
