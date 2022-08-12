@@ -14,7 +14,6 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/prefs/pref_service.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -83,9 +82,7 @@ DlpRulesManager* DlpRulesManagerFactory::GetForPrimaryProfile() {
 }
 
 DlpRulesManagerFactory::DlpRulesManagerFactory()
-    : BrowserContextKeyedServiceFactory(
-          "DlpRulesManager",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("DlpRulesManager") {}
 
 bool DlpRulesManagerFactory::ServiceIsCreatedWithBrowserContext() const {
   // We have to create the instance immediately because it's responsible for

@@ -7,7 +7,6 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/commerce/coupons/coupon_db.h"
 #include "chrome/browser/commerce/coupons/coupon_service.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/storage_partition.h"
 
 // static
@@ -23,9 +22,7 @@ CouponService* CouponServiceFactory::GetForProfile(Profile* profile) {
 }
 
 CouponServiceFactory::CouponServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "CouponService",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("CouponService") {}
 
 CouponServiceFactory::~CouponServiceFactory() = default;
 

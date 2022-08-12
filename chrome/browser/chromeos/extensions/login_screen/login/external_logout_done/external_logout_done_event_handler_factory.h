@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_LOGIN_SCREEN_LOGIN_EXTERNAL_LOGOUT_DONE_EXTERNAL_LOGOUT_DONE_EVENT_HANDLER_FACTORY_H_
 
 #include "base/no_destructor.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace extensions {
 
@@ -14,7 +14,7 @@ class ExternalLogoutDoneEventHandler;
 
 // Factory for the `ExternalLogoutDoneEventHandler` KeyedService.
 class ExternalLogoutDoneEventHandlerFactory
-    : public BrowserContextKeyedServiceFactory {
+    : public ProfileKeyedServiceFactory {
  public:
   static ExternalLogoutDoneEventHandler* GetForBrowserContext(
       content::BrowserContext* browser_context);

@@ -6,14 +6,14 @@
 #define CHROME_BROWSER_CLIENT_HINTS_CLIENT_HINTS_FACTORY_H_
 
 #include "base/lazy_instance.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "content/public/browser/client_hints_controller_delegate.h"
 
 namespace content {
 class BrowserContext;
 }
 
-class ClientHintsFactory : public BrowserContextKeyedServiceFactory {
+class ClientHintsFactory : public ProfileKeyedServiceFactory {
  public:
   static content::ClientHintsControllerDelegate* GetForBrowserContext(
       content::BrowserContext* context);
@@ -31,8 +31,6 @@ class ClientHintsFactory : public BrowserContextKeyedServiceFactory {
 
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
 };

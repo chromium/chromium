@@ -18,7 +18,6 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/web_data_service_factory.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/buildflags/buildflags.h"
 
@@ -52,9 +51,9 @@ ChromeBrowsingDataRemoverDelegateFactory::GetForProfile(Profile* profile) {
 
 ChromeBrowsingDataRemoverDelegateFactory::
     ChromeBrowsingDataRemoverDelegateFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "BrowsingDataRemover",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::BuildForRegularAndIncognito()) {
   DependsOn(autofill::PersonalDataManagerFactory::GetInstance());
 #if BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(ENABLE_FEED_V2)
@@ -86,17 +85,10 @@ ChromeBrowsingDataRemoverDelegateFactory::
 ChromeBrowsingDataRemoverDelegateFactory::
     ~ChromeBrowsingDataRemoverDelegateFactory() {}
 
-content::BrowserContext*
-ChromeBrowsingDataRemoverDelegateFactory::GetBrowserContextToUse(
+KeyedService* ChromeBrowsingDataRemoverDelegateFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   // For guest profiles the browsing data is in the OTR profile.
   Profile* profile = static_cast<Profile*>(context);
   DCHECK(!profile->IsGuestSession() || profile->IsOffTheRecord());
-
-  return profile;
-}
-
-KeyedService* ChromeBrowsingDataRemoverDelegateFactory::BuildServiceInstanceFor(
-    content::BrowserContext* context) const {
   return new ChromeBrowsingDataRemoverDelegate(context);
 }

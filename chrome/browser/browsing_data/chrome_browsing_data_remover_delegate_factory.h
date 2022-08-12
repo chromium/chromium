@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_BROWSING_DATA_CHROME_BROWSING_DATA_REMOVER_DELEGATE_FACTORY_H_
 #define CHROME_BROWSER_BROWSING_DATA_CHROME_BROWSING_DATA_REMOVER_DELEGATE_FACTORY_H_
 
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace base {
 template <typename T>
@@ -16,7 +16,7 @@ class ChromeBrowsingDataRemoverDelegate;
 class Profile;
 
 class ChromeBrowsingDataRemoverDelegateFactory
-    : public BrowserContextKeyedServiceFactory {
+    : public ProfileKeyedServiceFactory {
  public:
   // Returns the singleton instance of ChromeBrowsingDataRemoverDelegateFactory.
   static ChromeBrowsingDataRemoverDelegateFactory* GetInstance();
@@ -37,8 +37,6 @@ class ChromeBrowsingDataRemoverDelegateFactory
   ~ChromeBrowsingDataRemoverDelegateFactory() override;
 
   // BrowserContextKeyedServiceFactory overrides:
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
 };

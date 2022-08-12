@@ -7,9 +7,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
@@ -42,7 +42,7 @@ class BrowsingDataHistoryObserverService
   void OnURLsDeleted(history::HistoryService* history_service,
                      const history::DeletionInfo& deletion_info) override;
 
-  class Factory : public BrowserContextKeyedServiceFactory {
+  class Factory : public ProfileKeyedServiceFactory {
    public:
     static Factory* GetInstance();
 

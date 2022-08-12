@@ -5,7 +5,6 @@
 #include "chrome/browser/chromeos/extensions/login_screen/login/external_logout_request/external_logout_request_event_handler_factory.h"
 
 #include "chrome/browser/chromeos/extensions/login_screen/login/external_logout_request/external_logout_request_event_handler.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/event_router_factory.h"
 
@@ -29,9 +28,7 @@ ExternalLogoutRequestEventHandlerFactory::GetInstance() {
 
 ExternalLogoutRequestEventHandlerFactory::
     ExternalLogoutRequestEventHandlerFactory()
-    : BrowserContextKeyedServiceFactory(
-          "ExternalLogoutRequestEventHandler",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("ExternalLogoutRequestEventHandler") {
   DependsOn(EventRouterFactory::GetInstance());
 }
 

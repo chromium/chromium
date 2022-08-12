@@ -13,11 +13,10 @@
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/browser_resources.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/extension_system.h"
@@ -28,7 +27,7 @@ namespace chromeos {
 namespace {
 
 class ContactCenterInsightsExtensionManagerFactory
-    : public BrowserContextKeyedServiceFactory {
+    : public ProfileKeyedServiceFactory {
  public:
   ContactCenterInsightsExtensionManagerFactory();
   ContactCenterInsightsExtensionManagerFactory(
@@ -48,9 +47,7 @@ class ContactCenterInsightsExtensionManagerFactory
 
 ContactCenterInsightsExtensionManagerFactory::
     ContactCenterInsightsExtensionManagerFactory()
-    : BrowserContextKeyedServiceFactory(
-          "ContactCenterInsightsExtensionManager",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("ContactCenterInsightsExtensionManager") {}
 
 ContactCenterInsightsExtensionManagerFactory::
     ~ContactCenterInsightsExtensionManagerFactory() = default;

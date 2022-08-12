@@ -6,7 +6,6 @@
 
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/cleanup_manager_lacros.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace chromeos {
 
@@ -25,21 +24,16 @@ CleanupManagerLacrosFactory* CleanupManagerLacrosFactory::GetInstance() {
 }
 
 CleanupManagerLacrosFactory::CleanupManagerLacrosFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "CleanupManagerLacros",
-          BrowserContextDependencyManager::GetInstance()) {}
+          // Service is available for incognito profiles.
+          ProfileSelections::BuildForRegularAndIncognito()) {}
 
 CleanupManagerLacrosFactory::~CleanupManagerLacrosFactory() = default;
 
 KeyedService* CleanupManagerLacrosFactory::BuildServiceInstanceFor(
     content::BrowserContext* browser_context) const {
   return new CleanupManagerLacros(browser_context);
-}
-
-content::BrowserContext* CleanupManagerLacrosFactory::GetBrowserContextToUse(
-    content::BrowserContext* browser_context) const {
-  // Service is available for incognito profiles.
-  return Profile::FromBrowserContext(browser_context);
 }
 
 bool CleanupManagerLacrosFactory::ServiceIsNULLWhileTesting() const {

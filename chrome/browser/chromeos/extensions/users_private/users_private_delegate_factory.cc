@@ -7,7 +7,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/extensions/users_private/users_private_delegate.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "extensions/browser/extension_system_provider.h"
 
 namespace extensions {
@@ -27,10 +26,7 @@ UsersPrivateDelegateFactory* UsersPrivateDelegateFactory::GetInstance() {
 }
 
 UsersPrivateDelegateFactory::UsersPrivateDelegateFactory()
-    : BrowserContextKeyedServiceFactory(
-          "UsersPrivateDelegate",
-          BrowserContextDependencyManager::GetInstance()) {
-}
+    : ProfileKeyedServiceFactory("UsersPrivateDelegate") {}
 
 UsersPrivateDelegateFactory::~UsersPrivateDelegateFactory() {
 }

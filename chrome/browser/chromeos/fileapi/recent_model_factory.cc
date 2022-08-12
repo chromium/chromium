@@ -11,9 +11,7 @@
 
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root_map_factory.h"
 #include "chrome/browser/chromeos/fileapi/recent_model.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace chromeos {
 
@@ -24,9 +22,9 @@ RecentModel* RecentModelFactory::GetForProfile(Profile* profile) {
 }
 
 RecentModelFactory::RecentModelFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "RecentModel",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::BuildRedirectedInIncognito()) {
   DependsOn(arc::ArcDocumentsProviderRootMapFactory::GetInstance());
 }
 
@@ -35,11 +33,6 @@ RecentModelFactory::~RecentModelFactory() = default;
 // static
 RecentModelFactory* RecentModelFactory::GetInstance() {
   return base::Singleton<RecentModelFactory>::get();
-}
-
-content::BrowserContext* RecentModelFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
 }
 
 KeyedService* RecentModelFactory::BuildServiceInstanceFor(

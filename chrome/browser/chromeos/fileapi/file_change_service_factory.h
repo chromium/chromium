@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_CHROMEOS_FILEAPI_FILE_CHANGE_SERVICE_FACTORY_H_
 
 #include "base/no_destructor.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace content {
 class BrowserContext;
@@ -19,7 +19,7 @@ class FileChangeService;
 // A factory which creates the service which notifies observers of file change
 // events from external file systems. There will exist at most one service
 // instance per browser context.
-class FileChangeServiceFactory : public BrowserContextKeyedServiceFactory {
+class FileChangeServiceFactory : public ProfileKeyedServiceFactory {
  public:
   // Returns the singleton factory instance.
   static FileChangeServiceFactory* GetInstance();
@@ -37,8 +37,6 @@ class FileChangeServiceFactory : public BrowserContextKeyedServiceFactory {
   ~FileChangeServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory:
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
 };

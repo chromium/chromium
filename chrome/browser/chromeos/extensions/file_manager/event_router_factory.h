@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_FILE_MANAGER_EVENT_ROUTER_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 
@@ -14,7 +14,7 @@ namespace file_manager {
 
 class EventRouter;
 
-class EventRouterFactory : public BrowserContextKeyedServiceFactory {
+class EventRouterFactory : public ProfileKeyedServiceFactory {
  public:
   // Returns the EventRouter for |profile|, creating it if
   // it is not yet created.
@@ -25,8 +25,6 @@ class EventRouterFactory : public BrowserContextKeyedServiceFactory {
 
  protected:
   // BrowserContextKeyedServiceFactory overrides:
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
   bool ServiceIsNULLWhileTesting() const override;
 

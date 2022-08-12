@@ -14,7 +14,6 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/common/buildflags.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/storage_partition.h"
@@ -261,9 +260,10 @@ BrowsingDataHistoryObserverService::Factory::GetInstance() {
 }
 
 BrowsingDataHistoryObserverService::Factory::Factory()
-    : BrowserContextKeyedServiceFactory(
-          "BrowsingDataHistoryObserverService",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("BrowsingDataHistoryObserverService",
+                                 ProfileSelections::Builder()
+                                     .WithGuest(ProfileSelection::kNone)
+                                     .Build()) {
   DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(TabRestoreServiceFactory::GetInstance());
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
@@ -279,8 +279,6 @@ KeyedService*
 BrowsingDataHistoryObserverService::Factory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  if (profile->IsOffTheRecord() || profile->IsGuestSession())
-    return nullptr;
   return new BrowsingDataHistoryObserverService(profile);
 }
 

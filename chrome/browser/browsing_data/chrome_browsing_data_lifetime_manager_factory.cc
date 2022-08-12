@@ -8,10 +8,8 @@
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_lifetime_manager.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate_factory.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/browsing_data/core/features.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/buildflags/buildflags.h"
 
@@ -30,29 +28,32 @@ ChromeBrowsingDataLifetimeManagerFactory::GetForProfile(Profile* profile) {
 
 ChromeBrowsingDataLifetimeManagerFactory::
     ChromeBrowsingDataLifetimeManagerFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "BrowsingDataLifetimeManager",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOwnInstance)
+              .WithGuest(ProfileSelection::kOffTheRecordOnly)
+              .Build()) {
   DependsOn(ChromeBrowsingDataRemoverDelegateFactory::GetInstance());
 }
 
 ChromeBrowsingDataLifetimeManagerFactory::
     ~ChromeBrowsingDataLifetimeManagerFactory() = default;
 
-content::BrowserContext*
-ChromeBrowsingDataLifetimeManagerFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
-}
-
 KeyedService* ChromeBrowsingDataLifetimeManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   if (!base::FeatureList::IsEnabled(
           browsing_data::features::kEnableBrowsingDataLifetimeManager))
     return nullptr;
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   Profile* profile = Profile::FromBrowserContext(context);
+  // This condition still needs to be explicitly stated here despite having
+  // ProfileKeyedService logic implemented because `IsGuestSession()` and
+  // `IsRegularProfile()` are not yet mutually exclusive in ASH and Lacros.
+  // TODO(rsult): remove this condition when `IsGuestSession() is fixed.
   if (profile->IsGuestSession() && !profile->IsOffTheRecord())
     return nullptr;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   return new ChromeBrowsingDataLifetimeManager(context);
 }
 

@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_USERS_PRIVATE_USERS_PRIVATE_DELEGATE_FACTORY_H__
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace context {
 class BrowserContext;
@@ -16,7 +16,7 @@ namespace extensions {
 class UsersPrivateDelegate;
 
 // BrowserContextKeyedServiceFactory for each UsersPrivateDelegate.
-class UsersPrivateDelegateFactory : public BrowserContextKeyedServiceFactory {
+class UsersPrivateDelegateFactory : public ProfileKeyedServiceFactory {
  public:
   static UsersPrivateDelegate* GetForBrowserContext(
       content::BrowserContext* browser_context);

@@ -11,7 +11,6 @@
 #include "components/browsing_topics/browsing_topics_service.h"
 #include "components/browsing_topics/browsing_topics_service_impl.h"
 #include "components/history/core/browser/history_service.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/optimization_guide/content/browser/page_content_annotations_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
@@ -35,9 +34,7 @@ BrowsingTopicsServiceFactory* BrowsingTopicsServiceFactory::GetInstance() {
 }
 
 BrowsingTopicsServiceFactory::BrowsingTopicsServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "BrowsingTopicsService",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("BrowsingTopicsService") {
   DependsOn(PrivacySandboxSettingsFactory::GetInstance());
   DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(PageContentAnnotationsServiceFactory::GetInstance());

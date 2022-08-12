@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_CERTIFICATE_PROVIDER_CERTIFICATE_PROVIDER_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_CERTIFICATE_PROVIDER_CERTIFICATE_PROVIDER_SERVICE_FACTORY_H_
 
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace base {
 template <typename T>
@@ -21,8 +21,7 @@ namespace chromeos {
 class CertificateProviderService;
 
 // Factory to create CertificateProviderService.
-class CertificateProviderServiceFactory
-    : public BrowserContextKeyedServiceFactory {
+class CertificateProviderServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static CertificateProviderService* GetForBrowserContext(
       content::BrowserContext* context);
@@ -40,8 +39,6 @@ class CertificateProviderServiceFactory
   CertificateProviderServiceFactory();
 
   // BrowserContextKeyedServiceFactory:
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;

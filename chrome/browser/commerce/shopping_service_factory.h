@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_COMMERCE_SHOPPING_SERVICE_FACTORY_H_
 
 #include "base/no_destructor.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace commerce {
 
 class ShoppingService;
 
-class ShoppingServiceFactory : public BrowserContextKeyedServiceFactory {
+class ShoppingServiceFactory : public ProfileKeyedServiceFactory {
  public:
   ShoppingServiceFactory(const ShoppingServiceFactory&) = delete;
   ShoppingServiceFactory& operator=(const ShoppingServiceFactory&) = delete;
@@ -32,8 +32,6 @@ class ShoppingServiceFactory : public BrowserContextKeyedServiceFactory {
 
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
   bool ServiceIsNULLWhileTesting() const override;

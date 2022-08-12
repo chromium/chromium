@@ -10,9 +10,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/chromeos/extensions/speech/speech_recognition_private_recognizer.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/common/extensions/api/speech_recognition_private.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/event_router_factory.h"
@@ -49,7 +48,7 @@ absl::optional<int> GetClientIdFromKey(const std::string& key) {
 // Factory to get or create an instance of SpeechRecognitionPrivateManager from
 // a browser context.
 class SpeechRecognitionPrivateManagerFactory
-    : public BrowserContextKeyedServiceFactory {
+    : public ProfileKeyedServiceFactory {
  public:
   SpeechRecognitionPrivateManagerFactory(
       const SpeechRecognitionPrivateManagerFactory&) = delete;
@@ -69,8 +68,6 @@ class SpeechRecognitionPrivateManagerFactory
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
 };
 
 // static
@@ -89,22 +86,17 @@ SpeechRecognitionPrivateManagerFactory::GetInstance() {
 }
 
 SpeechRecognitionPrivateManagerFactory::SpeechRecognitionPrivateManagerFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "SpeechRecognitionApiManager",
-          BrowserContextDependencyManager::GetInstance()) {
+          // Incognito profiles should use their own instance of the browser
+          // context.
+          ProfileSelections::BuildForRegularAndIncognito()) {
   DependsOn(EventRouterFactory::GetInstance());
 }
 
 KeyedService* SpeechRecognitionPrivateManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return new SpeechRecognitionPrivateManager(context);
-}
-
-content::BrowserContext*
-SpeechRecognitionPrivateManagerFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  // Incognito profiles should use their own instance of the browser context.
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
 }
 
 }  // namespace
