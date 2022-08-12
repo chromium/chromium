@@ -223,6 +223,7 @@ static LayoutObject* FirstLayoutObjectInSet(
     return multicol_set->FlowThread()->FirstChild();
   // Adjacent column content sets should not occur. We would have no way of
   // figuring out what each of them contains then.
+  CHECK(sibling->IsLayoutMultiColumnSpannerPlaceholder());
   LayoutBox* spanner = To<LayoutMultiColumnSpannerPlaceholder>(sibling)
                            ->LayoutObjectInFlowThread();
   return NextInPreOrderAfterChildrenSkippingOutOfFlow(
@@ -237,6 +238,7 @@ static LayoutObject* LastLayoutObjectInSet(LayoutMultiColumnSet* multicol_set) {
     return nullptr;
   // Adjacent column content sets should not occur. We would have no way of
   // figuring out what each of them contains then.
+  CHECK(sibling->IsLayoutMultiColumnSpannerPlaceholder());
   LayoutBox* spanner = To<LayoutMultiColumnSpannerPlaceholder>(sibling)
                            ->LayoutObjectInFlowThread();
   return PreviousInPreOrderSkippingOutOfFlow(
@@ -1275,15 +1277,19 @@ void LayoutMultiColumnFlowThread::FlowThreadDescendantWillBeRemoved(
   // set from the spanner placeholders that we've already found.
   LayoutMultiColumnSet* column_set_to_remove;
   if (adjacent_next_spanner_placeholder) {
-    column_set_to_remove = To<LayoutMultiColumnSet>(
-        adjacent_next_spanner_placeholder->PreviousSiblingMultiColumnBox());
+    LayoutBox* sibling =
+        adjacent_next_spanner_placeholder->PreviousSiblingMultiColumnBox();
+    CHECK(sibling->IsLayoutMultiColumnSet());
+    column_set_to_remove = To<LayoutMultiColumnSet>(sibling);
     DCHECK(
         !adjacent_previous_spanner_placeholder ||
         column_set_to_remove ==
             adjacent_previous_spanner_placeholder->NextSiblingMultiColumnBox());
   } else if (adjacent_previous_spanner_placeholder) {
-    column_set_to_remove = To<LayoutMultiColumnSet>(
-        adjacent_previous_spanner_placeholder->NextSiblingMultiColumnBox());
+    LayoutBox* sibling =
+        adjacent_previous_spanner_placeholder->NextSiblingMultiColumnBox();
+    CHECK(sibling->IsLayoutMultiColumnSet());
+    column_set_to_remove = To<LayoutMultiColumnSet>(sibling);
   } else {
     // If there were no adjacent spanners, it has to mean that there's only one
     // column set, since it's only spanners that may cause creation of
