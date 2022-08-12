@@ -173,14 +173,10 @@ IN_PROC_BROWSER_TEST_F(DomainReliabilityBrowserTest, Upload) {
   ASSERT_TRUE(dict->GetList("entries", &entries));
   ASSERT_EQ(1u, entries->GetListDeprecated().size());
 
-  const base::Value& entry_value = entries->GetListDeprecated()[0u];
-  ASSERT_TRUE(entry_value.is_dict());
-  const base::DictionaryValue& entry =
-      base::Value::AsDictionaryValue(entry_value);
-
-  std::string url;
-  ASSERT_TRUE(entry.GetString("url", &url));
-  EXPECT_EQ(url, error_url);
+  const base::Value& entry = entries->GetListDeprecated()[0u];
+  ASSERT_TRUE(entry.is_dict());
+  ASSERT_TRUE(entry.GetDict().FindString("url"));
+  EXPECT_EQ(*(entry.GetDict().FindString("url")), error_url);
 }
 
 IN_PROC_BROWSER_TEST_F(DomainReliabilityBrowserTest, UploadAtShutdown) {
