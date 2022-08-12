@@ -868,27 +868,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="UMA.UnsentLogs.Dropped" units="units"
-    expires_after="2022-12-04">
+<histogram name="UMA.UnsentLogs.Dropped" units="logs"
+    expires_after="2023-08-01">
   <owner>holte@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
+  <owner>lucnguyen@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
-    Counter for number of UMA unsent logs removed from persistent storage.
+    The number of unsent UMA logs removed from persistent storage. Emitted just
+    before unsent logs are trimmed. Unsent log trimming occurs immediately after
+    logs creation, upon successful log upload, or whenever MetricsService stops
+    recording.
   </summary>
 </histogram>
 
 <histogram name="UMA.UnsentLogs.DroppedSize" units="bytes"
-    expires_after="2022-12-04">
+    expires_after="2023-08-01">
   <owner>akirabaruah@chromium.org</owner>
   <owner>rkaplow@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
+  <owner>lucnguyen@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
     Size of unsent logs removed from persistent storage due to exceeding the
-    individual log size limit. Unsent log trimming occurs immediately after
-    initial logs creation, upon successful log upload, or whenever
-    MetricsService stops recording.
+    individual log size limit. Unsent log trimming occurs immediately after logs
+    creation, upon successful log upload, or whenever MetricsService stops
+    recording.
   </summary>
 </histogram>
 
@@ -896,6 +901,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-08-01">
   <owner>michaelbai@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
+  <owner>lucnguyen@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
     The size of all persistent initial or ongoing logs that have been
@@ -908,10 +914,11 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-08-01">
   <owner>michaelbai@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
+  <owner>lucnguyen@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
-    The number of UMA sent samples in the previous browser run; it is recorded
-    on the browser start up.
+    The number of UMA histogram samples that were sent in the previous browser
+    run. Emitted when the browser starts up.
   </summary>
 </histogram>
 
@@ -919,10 +926,11 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-08-01">
   <owner>michaelbai@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
+  <owner>lucnguyen@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
-    The number of UMA unsent samples in the previous browser run; it is recorded
-    on the browser start up.
+    The number of UMA histogram samples that were not yet sent in the previous
+    browser run. Emitted when the browser starts up.
   </summary>
 </histogram>
 
@@ -930,6 +938,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-08-01">
   <owner>michaelbai@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
+  <owner>lucnguyen@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
     The percentage of the unsent samples over the total in the previous browser
