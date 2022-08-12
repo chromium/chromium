@@ -145,7 +145,6 @@ class CC_EXPORT GpuImageDecodeCache
                                SkColorType color_type,
                                size_t max_working_set_bytes,
                                int max_texture_size,
-                               PaintImage::GeneratorClientId client_id,
                                RasterDarkModeFilter* const dark_mode_filter);
   ~GpuImageDecodeCache() override;
 

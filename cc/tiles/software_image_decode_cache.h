@@ -38,8 +38,7 @@ class CC_EXPORT SoftwareImageDecodeCache
   enum class TaskProcessingResult { kFullDecode, kLockOnly, kCancelled };
 
   SoftwareImageDecodeCache(SkColorType color_type,
-                           size_t locked_memory_limit_bytes,
-                           PaintImage::GeneratorClientId generator_client_id);
+                           size_t locked_memory_limit_bytes);
   ~SoftwareImageDecodeCache() override;
 
   // ImageDecodeCache overrides.

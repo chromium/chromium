@@ -43,8 +43,7 @@ FakeTileManager::FakeTileManager(TileManagerClient* client,
                   TileManagerSettings()),
       image_decode_cache_(
           kN32_SkColorType,
-          LayerTreeSettings().decoded_image_working_set_budget_bytes,
-          PaintImage::GetNextGeneratorClientId()) {
+          LayerTreeSettings().decoded_image_working_set_budget_bytes) {
   SetResources(resource_pool, &image_decode_cache_, GetGlobalTaskGraphRunner(),
                GetGlobalRasterBufferProvider(),
                /*use_gpu_rasterization=*/false, nullptr);

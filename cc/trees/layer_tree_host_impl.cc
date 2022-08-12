@@ -432,7 +432,6 @@ LayerTreeHostImpl::LayerTreeHostImpl(
       image_animation_controller_(GetTaskRunner(),
                                   this,
                                   settings_.enable_image_animation_resync),
-      paint_image_generator_client_id_(PaintImage::GetNextGeneratorClientId()),
       compositor_frame_reporting_controller_(
           std::make_unique<CompositorFrameReportingController>(
               /*should_report_histograms=*/!settings
@@ -3562,7 +3561,7 @@ void LayerTreeHostImpl::CreateTileManagerResources() {
         viz::ResourceFormatToClosestSkColorType(/*gpu_compositing=*/true,
                                                 tile_format),
         settings_.decoded_image_working_set_budget_bytes, max_texture_size_,
-        paint_image_generator_client_id_, dark_mode_filter_);
+        dark_mode_filter_);
 
     pending_raster_queries_ = std::make_unique<RasterQueryQueue>(
         layer_tree_frame_sink_->worker_context_provider());
@@ -3571,8 +3570,7 @@ void LayerTreeHostImpl::CreateTileManagerResources() {
     bool gpu_compositing = !!layer_tree_frame_sink_->context_provider();
     image_decode_cache_ = std::make_unique<SoftwareImageDecodeCache>(
         viz::ResourceFormatToClosestSkColorType(gpu_compositing, tile_format),
-        settings_.decoded_image_working_set_budget_bytes,
-        paint_image_generator_client_id_);
+        settings_.decoded_image_working_set_budget_bytes);
   }
 
   raster_buffer_provider_ = CreateRasterBufferProvider();

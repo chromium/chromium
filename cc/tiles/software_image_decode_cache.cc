@@ -153,12 +153,11 @@ PaintFlags::FilterQuality GetDecodedFilterQuality(
 
 SoftwareImageDecodeCache::SoftwareImageDecodeCache(
     SkColorType color_type,
-    size_t locked_memory_limit_bytes,
-    PaintImage::GeneratorClientId generator_client_id)
+    size_t locked_memory_limit_bytes)
     : decoded_images_(ImageLRUCache::NO_AUTO_EVICT),
       locked_images_budget_(locked_memory_limit_bytes),
       color_type_(color_type),
-      generator_client_id_(generator_client_id),
+      generator_client_id_(PaintImage::GetNextGeneratorClientId()),
       max_items_in_cache_(kNormalMaxItemsInCacheForSoftware) {
   DCHECK_NE(generator_client_id_, PaintImage::kDefaultGeneratorClientId);
   // In certain cases, ThreadTaskRunnerHandle isn't set (Android Webview).

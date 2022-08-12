@@ -1244,8 +1244,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   PresentationTimeCallbackBuffer presentation_time_callbacks_;
 
-  const PaintImage::GeneratorClientId paint_image_generator_client_id_;
-
   // `compositor_frame_reporting_controller_` has a dependency on
   // `dropped_frame_counter_` so it must be declared last and deleted first;
   std::unique_ptr<CompositorFrameReportingController>

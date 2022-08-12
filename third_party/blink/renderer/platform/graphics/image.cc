@@ -87,14 +87,12 @@ cc::ImageDecodeCache& Image::SharedCCDecodeCache(SkColorType color_type) {
   if (color_type == kRGBA_F16_SkColorType) {
     DEFINE_THREAD_SAFE_STATIC_LOCAL(
         cc::SoftwareImageDecodeCache, image_decode_cache,
-        (kRGBA_F16_SkColorType, kLockedMemoryLimitBytes,
-         PaintImage::GetNextGeneratorClientId()));
+        (kRGBA_F16_SkColorType, kLockedMemoryLimitBytes));
     return image_decode_cache;
   }
   DEFINE_THREAD_SAFE_STATIC_LOCAL(cc::SoftwareImageDecodeCache,
                                   image_decode_cache,
-                                  (kN32_SkColorType, kLockedMemoryLimitBytes,
-                                   PaintImage::GetNextGeneratorClientId()));
+                                  (kN32_SkColorType, kLockedMemoryLimitBytes));
   return image_decode_cache;
 }
 
