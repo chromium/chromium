@@ -7902,6 +7902,31 @@
             ]
         }
     ],
+    "ReduceUserAgentPlatformOsCpu": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "all_except_legacy_windows_platform": "true",
+                        "legacy_windows_platform": "true"
+                    },
+                    "enable_features": [
+                        "ReduceUserAgentPlatformOsCpu"
+                    ]
+                }
+            ]
+        }
+    ],
     "RelatedSearches": [
         {
             "platforms": [
