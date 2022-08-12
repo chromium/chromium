@@ -6532,14 +6532,14 @@ bool ChromeContentBrowserClient::SetupEmbedderSandboxParameters(
     // ScreenAI service needs read access to ScreenAI component path, so that it
     // would be able to find the latest downloaded version, and load its binary
     // and all enclosed model files.
-    base::FilePath screen_ai_component_path = screen_ai::GetComponentPath();
-    if (screen_ai_component_path.empty()) {
-      VLOG(1) << "Screen AI library not found.";
+    base::FilePath screen_ai_component_dir = screen_ai::GetComponentDir();
+    if (screen_ai_component_dir.empty()) {
+      VLOG(1) << "Screen AI component not found.";
       return false;
     }
 
     CHECK(client->SetParameter(sandbox::policy::kParamScreenAiComponentPath,
-                               screen_ai_component_path.value()));
+                               screen_ai_component_dir.value()));
     return true;
 #endif
   }

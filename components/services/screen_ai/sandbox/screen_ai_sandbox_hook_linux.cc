@@ -18,9 +18,9 @@ using sandbox::syscall_broker::MakeBrokerCommandSet;
 namespace screen_ai {
 
 bool ScreenAIPreSandboxHook(sandbox::policy::SandboxLinux::Options options) {
-  base::FilePath library_path = screen_ai::GetLatestLibraryFilePath();
+  base::FilePath library_path = screen_ai::GetLatestComponentBinaryPath();
   if (library_path.empty()) {
-    VLOG(1) << "Screen AI library not found.";
+    VLOG(1) << "Screen AI component binary not found.";
   } else {
     void* screen_ai_library = dlopen(library_path.value().c_str(),
                                      RTLD_LAZY | RTLD_GLOBAL | RTLD_NODELETE);
@@ -34,7 +34,7 @@ bool ScreenAIPreSandboxHook(sandbox::policy::SandboxLinux::Options options) {
       VLOG(2) << "Screen AI library loaded pre-sandboxing:" << library_path;
     }
   }
-  screen_ai::StoreLibraryBinaryPath(library_path);
+  screen_ai::StoreComponentBinaryPath(library_path);
 
   auto* instance = sandbox::policy::SandboxLinux::GetInstance();
 

@@ -15,7 +15,7 @@ namespace {
 const base::FilePath::CharType kScreenAISubDirName[] =
     FILE_PATH_LITERAL("screen_ai");
 
-const base::FilePath::CharType kScreenAILibraryFileName[] =
+const base::FilePath::CharType kScreenAIComponentBinaryName[] =
     FILE_PATH_LITERAL("libchrome_screen_ai.so");
 
 enum {
@@ -34,7 +34,7 @@ base::FilePath GetRelativeInstallDir() {
   return base::FilePath(kScreenAISubDirName);
 }
 
-base::FilePath GetComponentPath() {
+base::FilePath GetComponentDir() {
   base::FilePath components_dir;
   base::PathService::Get(component_updater::DIR_COMPONENT_USER,
                          &components_dir);
@@ -44,8 +44,8 @@ base::FilePath GetComponentPath() {
   return components_dir.Append(kScreenAISubDirName);
 }
 
-base::FilePath GetLatestLibraryFilePath() {
-  base::FilePath screen_ai_dir = GetComponentPath();
+base::FilePath GetLatestComponentBinaryPath() {
+  base::FilePath screen_ai_dir = GetComponentDir();
   if (screen_ai_dir.empty())
     return base::FilePath();
 
@@ -60,19 +60,19 @@ base::FilePath GetLatestLibraryFilePath() {
         latest_version_dir < version_dir ? version_dir : latest_version_dir;
   }
 
-  base::FilePath library_path =
-      latest_version_dir.Append(kScreenAILibraryFileName);
-  if (!base::PathExists(library_path))
+  base::FilePath component_path =
+      latest_version_dir.Append(kScreenAIComponentBinaryName);
+  if (!base::PathExists(component_path))
     return base::FilePath();
 
-  return library_path;
+  return component_path;
 }
 
-void StoreLibraryBinaryPath(const base::FilePath& path) {
+void StoreComponentBinaryPath(const base::FilePath& path) {
   base::PathService::Override(PATH_SCREEN_AI_LIBRARY_BINARY, path);
 }
 
-base::FilePath GetStoredLibraryBinaryPath() {
+base::FilePath GetStoredComponentBinaryPath() {
   base::FilePath path;
   base::PathService::Get(PATH_SCREEN_AI_LIBRARY_BINARY, &path);
   return path;

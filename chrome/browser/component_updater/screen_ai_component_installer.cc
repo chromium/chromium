@@ -76,10 +76,8 @@ void ScreenAIComponentInstallerPolicy::ComponentReady(
 bool ScreenAIComponentInstallerPolicy::VerifyInstallation(
     const base::Value& manifest,
     const base::FilePath& install_dir) const {
-  // TODO(https://crbug.com/1278249): Consider trying to open and initialize the
-  // library.
-  VLOG(1) << "Verifying Screen AI Library in " << install_dir.value();
-  return screen_ai::GetLatestLibraryFilePath().DirName() == install_dir;
+  VLOG(1) << "Verifying Screen AI component in " << install_dir.value();
+  return screen_ai::GetLatestComponentBinaryPath().DirName() == install_dir;
 }
 
 base::FilePath ScreenAIComponentInstallerPolicy::GetRelativeInstallDir() const {
@@ -104,8 +102,9 @@ ScreenAIComponentInstallerPolicy::GetInstallerAttributes() const {
 // static
 void ScreenAIComponentInstallerPolicy::DeleteLibraryOrScheduleDeletionIfNeeded(
     PrefService* global_prefs) {
-  base::FilePath library_path = screen_ai::GetLatestLibraryFilePath();
-  if (library_path.empty())
+  base::FilePath component_binary_path =
+      screen_ai::GetLatestComponentBinaryPath();
+  if (component_binary_path.empty())
     return;
 
   base::Time deletion_time =
@@ -122,9 +121,9 @@ void ScreenAIComponentInstallerPolicy::DeleteLibraryOrScheduleDeletionIfNeeded(
   if (deletion_time <= base::Time::Now()) {
     // If there are more than one instance of the library, delete them as well.
     do {
-      base::DeletePathRecursively(library_path.DirName());
-      library_path = screen_ai::GetLatestLibraryFilePath();
-    } while (!library_path.empty());
+      base::DeletePathRecursively(component_binary_path.DirName());
+      component_binary_path = screen_ai::GetLatestComponentBinaryPath();
+    } while (!component_binary_path.empty());
     global_prefs->SetTime(prefs::kScreenAIScheduledDeletionTimePrefName,
                           base::Time());
   }

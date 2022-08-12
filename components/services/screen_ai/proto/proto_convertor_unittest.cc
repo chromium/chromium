@@ -435,7 +435,7 @@ INSTANTIATE_TEST_SUITE_P(TestCases,
                          ProtoConvertorViewHierarchyTest,
                          testing::Range(0, kProtoConversionTestCasesCount));
 
-TEST_P(ProtoConvertorViewHierarchyTest, EndToEndTest) {
+TEST_P(ProtoConvertorViewHierarchyTest, AxTreeJsonToProtoTest) {
   const base::FilePath kInputJsonPath = GetInputFilePath();
   const base::FilePath kExpectedProtoPath = GetExpectedFilePath();
 
