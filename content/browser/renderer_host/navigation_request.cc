@@ -1718,7 +1718,8 @@ NavigationRequest::NavigationRequest(
 
     // Add reduced accept language header.
     if (auto reduce_accept_lang_utils =
-            ReduceAcceptLanguageUtils::Create(browser_context)) {
+            ReduceAcceptLanguageUtils::Create(browser_context);
+        reduce_accept_lang_utils && !devtools_accept_language_override_) {
       // Add the Accept-Language header with the reduce accept language value.
       // Chromium network stack won't overwrite the value if Accept-Language
       // header was already added in the request header.
@@ -4242,7 +4243,8 @@ void NavigationRequest::OnStartChecksComplete(
       devtools_accepted_stream_types;
   devtools_instrumentation::ApplyNetworkRequestOverrides(
       frame_tree_node_, begin_params_.get(), &report_raw_headers,
-      &devtools_accepted_stream_types, &devtools_user_agent_override_);
+      &devtools_accepted_stream_types, &devtools_user_agent_override_,
+      &devtools_accept_language_override_);
   devtools_instrumentation::OnNavigationRequestWillBeSent(*this);
 
   // Merge headers with embedder's headers.
@@ -4502,8 +4504,11 @@ void NavigationRequest::OnRedirectChecksComplete(
   }
 
   // Add reduced accept language header to the current request.
+  // If devtools has overridden the Accept-Language header, skip reduce
+  // Accept-Language header.
   if (auto reduce_accept_lang_utils =
-          ReduceAcceptLanguageUtils::Create(browser_context)) {
+          ReduceAcceptLanguageUtils::Create(browser_context);
+      reduce_accept_lang_utils && !devtools_accept_language_override_) {
     net::HttpRequestHeaders accept_language_headers;
     absl::optional<std::string> reduced_accept_language =
         reduce_accept_lang_utils.value()

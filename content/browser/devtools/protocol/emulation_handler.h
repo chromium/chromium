@@ -94,9 +94,11 @@ class EmulationHandler : public DevToolsDomainHandler,
 
   // Applies the network request header overrides on `headers`.  If the
   // User-Agent header was overridden, `user_agent_overridden` is set to true;
-  // otherwise, it's set to false.
+  // otherwise, it's set to false. If the Accept-Language header was overridden,
+  // `accept_language_overridden` is set to true; otherwise, it's set to false.
   void ApplyOverrides(net::HttpRequestHeaders* headers,
-                      bool* user_agent_overridden);
+                      bool* user_agent_overridden,
+                      bool* accept_language_overridden);
   bool ApplyUserAgentMetadataOverrides(
       absl::optional<blink::UserAgentMetadata>* override_out);
 

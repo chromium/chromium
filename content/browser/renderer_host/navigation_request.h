@@ -1658,6 +1658,10 @@ class CONTENT_EXPORT NavigationRequest
   // Whether devtools overrides were applied on the User-Agent request header.
   bool devtools_user_agent_override_ = false;
 
+  // Whether devtools overrides were applied on the Accept-Language request
+  // header.
+  bool devtools_accept_language_override_ = false;
+
   // The type of RenderFrameHost associated with this navigation.
   AssociatedRenderFrameHostType associated_rfh_type_ =
       AssociatedRenderFrameHostType::NONE;

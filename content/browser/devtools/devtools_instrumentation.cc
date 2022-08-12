@@ -646,8 +646,10 @@ void ApplyNetworkRequestOverrides(
     bool* report_raw_headers,
     absl::optional<std::vector<net::SourceStream::SourceType>>*
         devtools_accepted_stream_types,
-    bool* devtools_user_agent_overridden) {
+    bool* devtools_user_agent_overridden,
+    bool* devtools_accept_language_overridden) {
   *devtools_user_agent_overridden = false;
+  *devtools_accept_language_overridden = false;
   bool disable_cache = false;
   DevToolsAgentHostImpl* agent_host =
       RenderFrameDevToolsAgentHost::GetFor(frame_tree_node);
@@ -678,8 +680,11 @@ void ApplyNetworkRequestOverrides(
 
   for (auto* emulation : protocol::EmulationHandler::ForAgentHost(agent_host)) {
     bool ua_overridden = false;
-    emulation->ApplyOverrides(&headers, &ua_overridden);
+    bool accept_language_overridden = false;
+    emulation->ApplyOverrides(&headers, &ua_overridden,
+                              &accept_language_overridden);
     *devtools_user_agent_overridden |= ua_overridden;
+    *devtools_accept_language_overridden |= accept_language_overridden;
   }
 
   if (disable_cache) {

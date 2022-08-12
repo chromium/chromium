@@ -739,7 +739,14 @@ String FrameFetchContext::GetReducedAcceptLanguage() const {
     return frozen_state_->reduced_accept_language;
   LocalFrame* frame = document_->GetFrame();
   DCHECK(frame);
-  return frame->GetReducedAcceptLanguage().GetString();
+  // If accept language override from inspector emulation, set Accept-Language
+  // header as the overridden value.
+  String override_accept_language;
+  probe::ApplyAcceptLanguageOverride(Probe(), &override_accept_language);
+  return override_accept_language.IsEmpty()
+             ? frame->GetReducedAcceptLanguage().GetString()
+             : network_utils::GenerateAcceptLanguageHeader(
+                   override_accept_language);
 }
 
 float FrameFetchContext::GetDevicePixelRatio() const {

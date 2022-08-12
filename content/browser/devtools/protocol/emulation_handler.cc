@@ -643,7 +643,8 @@ void EmulationHandler::UpdateDeviceEmulationStateForHost(
 }
 
 void EmulationHandler::ApplyOverrides(net::HttpRequestHeaders* headers,
-                                      bool* user_agent_overridden) {
+                                      bool* user_agent_overridden,
+                                      bool* accept_language_overridden) {
   if (!user_agent_.empty()) {
     headers->SetHeader(net::HttpRequestHeaders::kUserAgent, user_agent_);
   }
@@ -653,6 +654,7 @@ void EmulationHandler::ApplyOverrides(net::HttpRequestHeaders* headers,
         net::HttpRequestHeaders::kAcceptLanguage,
         net::HttpUtil::GenerateAcceptLanguageHeader(accept_language_));
   }
+  *accept_language_overridden = !accept_language_.empty();
   if (!prefers_color_scheme_.empty()) {
     const auto& prefersColorSchemeClientHintHeader =
         network::GetClientHintToNameMap().at(

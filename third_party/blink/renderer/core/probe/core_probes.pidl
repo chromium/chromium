@@ -87,6 +87,7 @@ interface CoreProbes {
   void DidFireWebGLErrorOrWarning(Element*, const String& message);
   void DidResizeMainFrame(LocalFrame*);
   void ApplyAcceptLanguageOverride(ExecutionContext*, String* accept_language);
+  void ApplyAcceptLanguageOverride(CoreProbeSink*, String* accept_language);
   void ApplyHardwareConcurrencyOverride(CoreProbeSink*, unsigned int& hardware_concurrency);
   void ApplyUserAgentOverride(CoreProbeSink*, String* user_agent);
   void ApplyUserAgentMetadataOverride(CoreProbeSink*, absl::optional<blink::UserAgentMetadata>* ua_metadata_override);
