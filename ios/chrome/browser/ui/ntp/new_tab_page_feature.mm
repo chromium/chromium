@@ -17,9 +17,6 @@ const base::Feature kEnableDiscoverFeedPreview{
 const base::Feature kDiscoverFeedGhostCardsEnabled{
     "DiscoverFeedGhostCardsEnabled", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kEnableDiscoverFeedShorterCache{
-    "EnableDiscoverFeedShorterCache", base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kEnableDiscoverFeedDiscoFeedEndpoint{
     "EnableDiscoFeedEndpoint", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -51,10 +48,6 @@ bool IsDiscoverFeedPreviewEnabled() {
 
 bool IsDiscoverFeedGhostCardsEnabled() {
   return base::FeatureList::IsEnabled(kDiscoverFeedGhostCardsEnabled);
-}
-
-bool IsDiscoverFeedShorterCacheEnabled() {
-  return base::FeatureList::IsEnabled(kEnableDiscoverFeedShorterCache);
 }
 
 bool IsNTPViewHierarchyRepairEnabled() {

@@ -14,9 +14,6 @@ extern const base::Feature kEnableDiscoverFeedPreview;
 // Feature flag to show ghost cards when refreshing the discover feed.
 extern const base::Feature kDiscoverFeedGhostCardsEnabled;
 
-// Feature flag to enable shorter cache so that more ghost cards appear.
-extern const base::Feature kEnableDiscoverFeedShorterCache;
-
 // Feature flag to enable static resource serving for the Discover feed.
 extern const base::Feature kEnableDiscoverFeedStaticResourceServing;
 
@@ -56,9 +53,6 @@ extern const base::Feature kEnableFeedAblation;
 
 // Whether the Discover feed content preview is shown in the context menu.
 bool IsDiscoverFeedPreviewEnabled();
-
-// Whether the Discover feed shorter cache is enabled.
-bool IsDiscoverFeedShorterCacheEnabled();
 
 // Whether the NTP view hierarchy repair is enabled.
 bool IsNTPViewHierarchyRepairEnabled();

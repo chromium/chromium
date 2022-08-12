@@ -254,10 +254,6 @@ extern const char kEnableDiscoverFeedPreviewDescription[];
 extern const char kEnableDiscoverFeedGhostCardsName[];
 extern const char kEnableDiscoverFeedGhostCardsDescription[];
 
-// Title and description for the flag to shorten the cache.
-extern const char kEnableDiscoverFeedShorterCacheName[];
-extern const char kEnableDiscoverFeedShorterCacheDescription[];
-
 // Title and description for the flag to enable the discover feed static
 // resource serving.
 extern const char kEnableDiscoverFeedStaticResourceServingName[];
