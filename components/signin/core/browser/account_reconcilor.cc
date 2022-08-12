@@ -710,7 +710,7 @@ void AccountReconcilor::ScheduleStartReconcileIfChromeAccountsChanged() {
     SetState(AccountReconcilorState::ACCOUNT_RECONCILOR_SCHEDULED);
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(&AccountReconcilor::StartReconcile,
-                                  base::Unretained(this),
+                                  weak_factory_.GetWeakPtr(),
                                   Trigger::kTokenChangeDuringReconcile));
   } else if (error_during_last_reconcile_.state() ==
              GoogleServiceAuthError::NONE) {
