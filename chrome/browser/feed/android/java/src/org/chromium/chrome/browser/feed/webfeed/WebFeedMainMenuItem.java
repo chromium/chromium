@@ -21,6 +21,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.FeedFeatures;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.R;
@@ -30,11 +31,14 @@ import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge.WebFeedMetadata;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController.FeedLauncher;
 import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.crow.CrowButtonDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
+import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.ui.UiUtils;
@@ -284,6 +288,9 @@ public class WebFeedMainMenuItem extends FrameLayout {
         mCrowButton.setOnClickListener((view) -> {
             if (mTab == null) return;
             RecordUserAction.record("Crow.LaunchCustomTab.AppMenu");
+            Tracker tracker = TrackerFactory.getTrackerForProfile(
+                    Profile.fromWebContents(mTab.getWebContents()));
+            tracker.notifyEvent(EventConstants.CROW_TAB_MENU_ITEM_CLICKED);
             Activity activity = mTab.getWindowAndroid().getActivity().get();
             mCrowButtonDelegate.requestCanonicalUrl(mTab, (canonicalUrl) -> {
                 mCrowButtonDelegate.launchCustomTab(activity, mUrl, canonicalUrl, isFollowing);
