@@ -100,6 +100,22 @@ EventsProto MakeExternalEventProto(const std::vector<uint64_t>& ids) {
   return proto;
 }
 
+class TestRecorder : public StructuredMetricsClient::RecordingDelegate {
+ public:
+  TestRecorder() = default;
+  TestRecorder(const TestRecorder& recorder) = delete;
+  TestRecorder& operator=(const TestRecorder& recorder) = delete;
+  ~TestRecorder() override = default;
+
+  void RecordEvent(Event&& event) override {
+    auto event_base = EventBase::FromEvent(std::move(event));
+    if (event_base.has_value())
+      Recorder::GetInstance()->Record(std::move(event_base.value()));
+  }
+
+  bool IsReadyToRecord() const override { return true; }
+};
+
 }  // namespace
 
 class StructuredMetricsProviderTest : public testing::Test {
@@ -108,7 +124,7 @@ class StructuredMetricsProviderTest : public testing::Test {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     Recorder::GetInstance()->SetUiTaskRunner(
         task_environment_.GetMainThreadTaskRunner());
-    StructuredMetricsClient::Get()->SetDelegate(Recorder::GetInstance());
+    StructuredMetricsClient::Get()->SetDelegate(&recorder_);
     // Move the mock date forward from day 0, because KeyData assumes that day 0
     // is a bug.
     task_environment_.AdvanceClock(base::Days(1000));
@@ -269,6 +285,9 @@ class StructuredMetricsProviderTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::HistogramTester histogram_tester_;
   base::ScopedTempDir temp_dir_;
+
+ private:
+  TestRecorder recorder_;
 };
 
 // Test with kDelayUploadUntilHwid feature enabled.

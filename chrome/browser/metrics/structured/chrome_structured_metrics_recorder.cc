@@ -6,15 +6,12 @@
 
 #include <stdint.h>
 
-#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "build/chromeos_buildflags.h"
 #include "components/metrics/structured/histogram_util.h"
-#include "components/metrics/structured/structured_metrics_features.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/metrics/structured/ash_structured_metrics_recorder.h"  // nogncheck
-#include "components/metrics/structured/recorder.h"  // nogncheck
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "base/task/current_thread.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -44,18 +41,10 @@ ChromeStructuredMetricsRecorder::ChromeStructuredMetricsRecorder() {
 // TODO(jongahn): Make a static factory class and pass it into ctor.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   delegate_ = std::make_unique<AshStructuredMetricsRecorder>();
-
-  // Write using the mojo interface using AshStructuredMetricsRecorder if
-  // feature is enabled.
-  base::FeatureList::IsEnabled(kUseCrosApiInterface)
-      ? StructuredMetricsClient::Get()->SetDelegate(this)
-      : StructuredMetricsClient::Get()->SetDelegate(Recorder::GetInstance());
+  StructuredMetricsClient::Get()->SetDelegate(this);
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   delegate_ = std::make_unique<LacrosStructuredMetricsRecorder>();
-
-  // Only enabled if the cros api feature is enabled.
-  if (base::FeatureList::IsEnabled(kUseCrosApiInterface))
-    StructuredMetricsClient::Get()->SetDelegate(this);
+  StructuredMetricsClient::Get()->SetDelegate(this);
 #endif
 }
 
@@ -76,33 +65,20 @@ void ChromeStructuredMetricsRecorder::Initialize() {
   LogInitializationInStructuredMetrics(StructuredMetricsPlatform::kAshChrome);
 
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Should only be enabled on Lacros if feature is enabled.
-  if (base::FeatureList::IsEnabled(kUseCrosApiInterface)) {
-    auto* lacros_recorder =
-        static_cast<LacrosStructuredMetricsRecorder*>(delegate_.get());
+  auto* lacros_recorder =
+      static_cast<LacrosStructuredMetricsRecorder*>(delegate_.get());
 
-    // Ensure that the sequence is the ui thread.
-    DCHECK(base::CurrentUIThread::IsSet());
-    lacros_recorder->SetSequence(base::SequencedTaskRunnerHandle::Get());
-    LogInitializationInStructuredMetrics(
-        StructuredMetricsPlatform::kLacrosChrome);
-  } else {
-    LogInitializationInStructuredMetrics(
-        StructuredMetricsPlatform::kUninitialized);
-  }
+  // Ensure that the sequence is the ui thread.
+  DCHECK(base::CurrentUIThread::IsSet());
+  lacros_recorder->SetSequence(base::SequencedTaskRunnerHandle::Get());
+  LogInitializationInStructuredMetrics(
+      StructuredMetricsPlatform::kLacrosChrome);
 #endif
 }
 
 void ChromeStructuredMetricsRecorder::RecordEvent(Event&& event) {
   DCHECK(IsReadyToRecord());
   delegate_->RecordEvent(std::move(event));
-  LogIsEventRecordedUsingMojo(true);
-}
-
-void ChromeStructuredMetricsRecorder::Record(EventBase&& event_base) {
-  DCHECK(IsReadyToRecord());
-  delegate_->Record(std::move(event_base));
-  LogIsEventRecordedUsingMojo(true);
 }
 
 bool ChromeStructuredMetricsRecorder::IsReadyToRecord() const {

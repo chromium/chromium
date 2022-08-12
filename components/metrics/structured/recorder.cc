@@ -25,12 +25,6 @@ Recorder* Recorder::GetInstance() {
   return recorder.get();
 }
 
-void Recorder::RecordEvent(Event&& event) {
-  auto event_base = EventBase::FromEvent(std::move(event));
-  if (event_base.has_value())
-    Record(std::move(event_base.value()));
-}
-
 void Recorder::Record(EventBase&& event) {
   // All calls to StructuredMetricsProvider (the observer) must be on the UI
   // sequence, so re-call Record if needed. If a UI task runner hasn't been set
@@ -47,12 +41,6 @@ void Recorder::Record(EventBase&& event) {
     return;
   }
 
-  // If the feature is disabled, it means that the event was recorded directly
-  // and not through the mojo API.
-  if (!base::FeatureList::IsEnabled(kUseCrosApiInterface)) {
-    LogIsEventRecordedUsingMojo(false);
-  }
-
   DCHECK(base::CurrentUIThread::IsSet());
   for (auto& observer : observers_)
     observer.OnRecord(event);
@@ -62,11 +50,6 @@ void Recorder::Record(EventBase&& event) {
     // StructuredMetricsProvider::OnRecord.
     LogEventRecordingState(EventRecordingState::kProviderMissing);
   }
-}
-
-bool Recorder::IsReadyToRecord() const {
-  // No initialization needed. Always ready to record.
-  return true;
 }
 
 void Recorder::ProfileAdded(const base::FilePath& profile_path) {

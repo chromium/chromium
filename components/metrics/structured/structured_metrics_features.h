@@ -15,11 +15,6 @@ extern const base::Feature kStructuredMetrics;
 
 extern const base::Feature kBluetoothSessionizedMetrics;
 
-// Enabling this feature will have structured metrics use the crosapi interface
-// to record structured metrics rather than direct writes. This enables
-// processes not in Chrome Ash (ie Lacros) to use Structured metrics.
-extern const base::Feature kUseCrosApiInterface;
-
 // Delays appending structured metrics events until HWID has been loaded.
 extern const base::Feature kDelayUploadUntilHwid;
 

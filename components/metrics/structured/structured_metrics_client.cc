@@ -26,11 +26,6 @@ void StructuredMetricsClient::Record(Event&& event) {
     delegate_->RecordEvent(std::move(event));
 }
 
-void StructuredMetricsClient::Record(EventBase&& event_base) {
-  if (delegate_ && delegate_->IsReadyToRecord())
-    delegate_->Record(std::move(event_base));
-}
-
 void StructuredMetricsClient::SetDelegate(RecordingDelegate* delegate) {
   delegate_ = delegate;
 }

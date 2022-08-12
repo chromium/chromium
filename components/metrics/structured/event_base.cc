@@ -34,10 +34,6 @@ EventBase::EventBase(uint64_t event_name_hash,
 EventBase::EventBase(const EventBase& other) = default;
 EventBase::~EventBase() = default;
 
-void EventBase::Record() {
-  StructuredMetricsClient::Get()->Record(std::move(*this));
-}
-
 absl::optional<int> EventBase::LastKeyRotation() {
   return Recorder::GetInstance()->LastKeyRotation(project_name_hash_);
 }

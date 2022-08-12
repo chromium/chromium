@@ -5,14 +5,14 @@
 #include "components/metrics/structured/neutrino_logging_util.h"
 
 #include "components/metrics/metrics_pref_names.h"
-#include "components/metrics/structured/structured_events.h"
+#include "components/metrics/structured/structured_mojo_events.h"
 
 namespace metrics {
 namespace structured {
 
 void NeutrinoDevicesLogWithLocalState(PrefService* local_state,
                                       NeutrinoDevicesLocation location) {
-  auto code_point = events::neutrino_devices::CodePoint();
+  auto code_point = events::v2::neutrino_devices::CodePoint();
   if (local_state &&
       local_state->HasPrefPath(metrics::prefs::kMetricsClientID)) {
     const std::string client_id =
@@ -27,7 +27,7 @@ void NeutrinoDevicesLogEnrollmentWithLocalState(
     PrefService* local_state,
     bool is_managed,
     NeutrinoDevicesLocation location) {
-  auto enrollment = events::neutrino_devices::Enrollment();
+  auto enrollment = events::v2::neutrino_devices::Enrollment();
   if (local_state &&
       local_state->HasPrefPath(metrics::prefs::kMetricsClientID)) {
     const std::string client_id =

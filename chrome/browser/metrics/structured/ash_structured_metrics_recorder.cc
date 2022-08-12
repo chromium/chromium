@@ -43,14 +43,6 @@ void AshStructuredMetricsRecorder::RecordEvent(Event&& event) {
   remote_->Record(events);
 }
 
-// TODO(crbug.com/1249222): Delete this once migration is complete.
-//
-// EventBase should not be used with the mojo API and this function call
-// will be removed in the future.
-void AshStructuredMetricsRecorder::Record(EventBase&& event_base) {
-  VLOG(2) << "AshStructuredMetricsRecorder should use event.";
-}
-
 bool AshStructuredMetricsRecorder::IsReadyToRecord() const {
   // Remote doesn't have to be bound to since the remote can queue up messages.
   // Should be ready to record the moment it is initialized.

@@ -93,34 +93,6 @@ source_set("common") {
   ]
 }
 
-action("gen_structured_events") {
-  script = "//tools/metrics/structured/gen_events.py"
-
-  # Re-generate the outputs if the codegen code changes:
-  inputs = [
-    "//tools/metrics/structured/codegen.py",
-    "//tools/metrics/structured/gen_events.py",
-    "//tools/metrics/structured/model.py",
-    "//tools/metrics/structured/model_util.py",
-    "//tools/metrics/structured/templates.py",
-  ]
-  sources = [ "//tools/metrics/structured/structured.xml" ]
-
-  outdir = "$target_gen_dir"
-
-  outputs = [
-    outdir + "/structured_events.cc",
-    outdir + "/structured_events.h",
-  ]
-
-  args = [
-    "--input",
-    rebase_path(sources[0], root_build_dir),
-    "--output",
-    rebase_path(outdir, root_build_dir),
-  ]
-}
-
 # TODO(crbug.com/1249222): Rename this to gen_structured_events and
 # delete old target once migration is complete.
 action("gen_structured_mojo_events") {
@@ -152,12 +124,10 @@ action("gen_structured_mojo_events") {
 }
 
 static_library("structured_events") {
-  sources = get_target_outputs(":gen_structured_events") +
-            get_target_outputs(":gen_structured_mojo_events")
+  sources = get_target_outputs(":gen_structured_mojo_events")
 
   deps = [
     ":common",
-    ":gen_structured_events",
     ":gen_structured_mojo_events",
     "//base",
   ]
@@ -193,10 +163,10 @@ action("gen_structured_metrics_validator") {
 
 static_library("structured_metrics_validator") {
   sources = get_target_outputs(":gen_structured_metrics_validator") + [
-              "event_validator.h",
               "event_validator.cc",
-              "project_validator.h",
+              "event_validator.h",
               "project_validator.cc",
+              "project_validator.h",
             ]
 
   deps = [

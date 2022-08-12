@@ -16,10 +16,6 @@ const base::Feature kStructuredMetrics{"EnableStructuredMetrics",
 const base::Feature kBluetoothSessionizedMetrics{
     "BluetoothSessionizedMetrics", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// TODO(crbug/1249222): Clean feature up by 05/02/2023.
-const base::Feature kUseCrosApiInterface{"UseCrosApiInterface",
-                                         base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kDelayUploadUntilHwid("DelayUploadUntilHwid",
                                           base::FEATURE_DISABLED_BY_DEFAULT);
 

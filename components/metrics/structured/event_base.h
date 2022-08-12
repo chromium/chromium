@@ -56,10 +56,6 @@ class EventBase {
     std::string string_value;
   };
 
-  // Finalizes the event and sends it for recording. After this call, the event
-  // is left in an invalid state and should not be used further.
-  void Record();
-
   // Returns when the key for |project_name_hash| was last rotated, in days
   // since epoch. Returns nullopt if the information is not available.
   absl::optional<int> LastKeyRotation();

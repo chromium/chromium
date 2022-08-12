@@ -13,10 +13,6 @@
 namespace metrics {
 namespace structured {
 
-// TODO(crbug.com/1249222): Remove forward-declaration as well as EventBase
-// calls once migration is complete.
-class EventBase;
-
 // Singleton to interact with StructuredMetrics.
 //
 // It allows a delegate to be set to control the recording logic as different
@@ -32,7 +28,6 @@ class StructuredMetricsClient {
 
     // Recording logic.
     virtual void RecordEvent(Event&& event) = 0;
-    virtual void Record(EventBase&& event_base) = 0;
   };
 
   StructuredMetricsClient(const StructuredMetricsClient& client) = delete;
@@ -45,7 +40,6 @@ class StructuredMetricsClient {
 
   // Forwards to |delegate_|. If no delegate has been set, then no-op.
   void Record(Event&& event);
-  void Record(EventBase&& event_base);
 
   // Sets the delegate for the client's recording logic. Should be called before
   // anything else. |this| does not take ownership of |delegate| and assumes

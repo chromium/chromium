@@ -11,15 +11,10 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_run_loop_timeout.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/idle_service_ash.h"
-#include "chrome/browser/metrics/structured/chrome_structured_metrics_recorder.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "chromeos/login/login_state/login_state.h"
 #include "components/metrics/structured/event.h"
 #include "components/metrics/structured/event_base.h"
 #include "components/metrics/structured/recorder.h"
-#include "components/metrics/structured/structured_metrics_features.h"
 #include "components/metrics/structured/structured_mojo_events.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -44,9 +39,7 @@ constexpr uint64_t kEventOneHash = UINT64_C(13593049295042080097);
 class AshStructuredMetricsRecorderTest : public MixinBasedInProcessBrowserTest,
                                          Recorder::RecorderImpl {
  public:
-  AshStructuredMetricsRecorderTest() {
-    feature_list_.InitAndEnableFeature(kUseCrosApiInterface);
-  }
+  AshStructuredMetricsRecorderTest() = default;
 
   void SetUpInProcessBrowserTestFixture() override {
     Recorder::GetInstance()->AddObserver(this);
@@ -80,8 +73,6 @@ class AshStructuredMetricsRecorderTest : public MixinBasedInProcessBrowserTest,
                                                       base::Seconds(3)};
 
   EventDelegate event_delegate_;
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(AshStructuredMetricsRecorderTest,

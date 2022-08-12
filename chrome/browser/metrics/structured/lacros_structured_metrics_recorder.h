@@ -41,7 +41,6 @@ class LacrosStructuredMetricsRecorder
 
   // RecordingDelegate:
   void RecordEvent(Event&& event) override;
-  void Record(EventBase&& event_base) override;
   bool IsReadyToRecord() const override;
 
  private:

@@ -9,7 +9,6 @@
 
 #include "base/no_destructor.h"
 #include "components/metrics/structured/event.h"
-#include "components/metrics/structured/event_base.h"
 #include "components/metrics/structured/structured_metrics_client.h"
 #include "components/metrics/structured/structured_mojo_events.h"
 
@@ -28,7 +27,7 @@ using RecordingDelegate = StructuredMetricsClient::RecordingDelegate;
 // This class delegates to a Recorder that will be created on ctor.
 // |Initialize()| should be called ASAP. When |Initialize()| should be called is
 // platform specific.
-class ChromeStructuredMetricsRecorder : RecordingDelegate {
+class ChromeStructuredMetricsRecorder : public RecordingDelegate {
  public:
   // Pointer to singleton.
   static ChromeStructuredMetricsRecorder* Get();
@@ -50,7 +49,6 @@ class ChromeStructuredMetricsRecorder : RecordingDelegate {
 
   // RecordingDelegate:
   void RecordEvent(Event&& event) override;
-  void Record(EventBase&& event_base) override;
   bool IsReadyToRecord() const override;
 
  private:

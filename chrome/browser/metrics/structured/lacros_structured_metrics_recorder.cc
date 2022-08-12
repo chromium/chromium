@@ -78,14 +78,6 @@ void LacrosStructuredMetricsRecorder::RecordEvent(Event&& event) {
   remote->Record(events);
 }
 
-// TODO(crbug.com/1249222): Delete this once migration is complete.
-//
-// EventBase should not be used with the mojo API and this function call
-// will be removed in the future.
-void LacrosStructuredMetricsRecorder::Record(EventBase&& event_base) {
-  VLOG(2) << "LacrosStructuredMetricsRecorder should use event.";
-}
-
 bool LacrosStructuredMetricsRecorder::IsReadyToRecord() const {
   return static_cast<bool>(sequence_task_runner_);
 }
