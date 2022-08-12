@@ -38,7 +38,7 @@
 #include "third_party/blink/renderer/modules/mediastream/media_error_state.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
 #include "third_party/blink/renderer/modules/mediastream/navigator_media_stream.h"
-#include "third_party/blink/renderer/modules/mediastream/user_media_controller.h"
+#include "third_party/blink/renderer/modules/mediastream/user_media_client.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/microtask.h"
@@ -228,7 +228,7 @@ ScriptPromise MediaDevices::SendUserMediaRequest(
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                      "No media device controller available; "
+                                      "No media device client available; "
                                       "is this a detached window?");
     return ScriptPromise();
   }
@@ -249,7 +249,7 @@ ScriptPromise MediaDevices::SendUserMediaRequest(
       media_type, resolver, std::move(on_success_follow_up));
 
   LocalDOMWindow* window = LocalDOMWindow::From(script_state);
-  UserMediaController* user_media = UserMediaController::From(window);
+  UserMediaClient* user_media_client = UserMediaClient::From(window);
   constexpr IdentifiableSurface::Type surface_type =
       IdentifiableSurface::Type::kMediaDevices_GetUserMedia;
   IdentifiableSurface surface;
@@ -258,8 +258,9 @@ ScriptPromise MediaDevices::SendUserMediaRequest(
         surface_type, TokenFromConstraints(options));
   }
   MediaErrorState error_state;
-  UserMediaRequest* request = UserMediaRequest::Create(
-      window, user_media, media_type, options, callbacks, error_state, surface);
+  UserMediaRequest* request =
+      UserMediaRequest::Create(window, user_media_client, media_type, options,
+                               callbacks, error_state, surface);
   if (!request) {
     DCHECK(error_state.HadException());
     if (error_state.CanGenerateException()) {
@@ -293,7 +294,7 @@ ScriptPromise MediaDevices::getDisplayMediaSet(
   if (!context) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        "No media device controller available; is this a detached window?");
+        "No media device client available; is this a detached window?");
     return ScriptPromise();
   }
 
@@ -310,7 +311,7 @@ ScriptPromise MediaDevices::getDisplayMedia(
   if (!context) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        "No media device controller available; is this a detached window?");
+        "No media device client available; is this a detached window?");
     return ScriptPromise();
   }
 

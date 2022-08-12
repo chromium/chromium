@@ -37,8 +37,12 @@ class LocalFrame;
 // object. This includes getUserMedia and enumerateDevices. It must be created,
 // called and destroyed on the render thread.
 class MODULES_EXPORT UserMediaClient
-    : public GarbageCollected<UserMediaClient> {
+    : public GarbageCollected<UserMediaClient>,
+      public Supplement<LocalDOMWindow>,
+      public ExecutionContextLifecycleObserver {
  public:
+  static const char kSupplementName[];
+
   // TODO(guidou): Make all constructors private and replace with Create methods
   // that return a std::unique_ptr. This class is intended for instantiation on
   // the free store. https://crbug.com/764293
@@ -52,21 +56,25 @@ class MODULES_EXPORT UserMediaClient
   UserMediaClient(const UserMediaClient&) = delete;
   UserMediaClient& operator=(const UserMediaClient&) = delete;
 
-  virtual ~UserMediaClient();
+  ~UserMediaClient() override;
 
   void RequestUserMedia(UserMediaRequest* user_media_request);
   void CancelUserMediaRequest(UserMediaRequest* user_media_request);
   void ApplyConstraints(blink::ApplyConstraintsRequest* user_media_request);
   void StopTrack(MediaStreamComponent* track);
-  void ContextDestroyed();
+
+  // ExecutionContextLifecycleObserver implementation.
+  void ContextDestroyed() override;
 
   bool IsCapturing();
+
+  static UserMediaClient* From(LocalDOMWindow*);
 
 #if !BUILDFLAG(IS_ANDROID)
   void FocusCapturedSurface(const String& label, bool focus);
 #endif
 
-  void Trace(Visitor*) const;
+  void Trace(Visitor*) const override;
 
   void SetMediaDevicesDispatcherForTesting(
       mojo::PendingRemote<blink::mojom::blink::MediaDevicesDispatcherHost>
@@ -115,8 +123,7 @@ class MODULES_EXPORT UserMediaClient
 
   blink::mojom::blink::MediaDevicesDispatcherHost* GetMediaDevicesDispatcher();
 
-  // LocalFrame instance associated with the UserMediaController that
-  // own this UserMediaClient.
+  // LocalFrame instance that own this UserMediaClient.
   WeakMember<LocalFrame> frame_;
 
   // |user_media_processor_| is a unique_ptr for testing purposes.

@@ -53,7 +53,7 @@
 #include "third_party/blink/renderer/modules/mediastream/media_stream_set.h"
 #include "third_party/blink/renderer/modules/mediastream/overconstrained_error.h"
 #include "third_party/blink/renderer/modules/mediastream/transferred_media_stream_track.h"
-#include "third_party/blink/renderer/modules/mediastream/user_media_controller.h"
+#include "third_party/blink/renderer/modules/mediastream/user_media_client.h"
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_tracker.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -307,7 +307,7 @@ MediaConstraints ParseOptions(
 
 UserMediaRequest* UserMediaRequest::Create(
     ExecutionContext* context,
-    UserMediaController* controller,
+    UserMediaClient* client,
     UserMediaRequestType media_type,
     const MediaStreamConstraints* options,
     Callbacks* callbacks,
@@ -402,9 +402,8 @@ UserMediaRequest* UserMediaRequest::Create(
     CountVideoConstraintUses(context, video);
 
   UserMediaRequest* const result = MakeGarbageCollected<UserMediaRequest>(
-      context, controller, media_type, audio, video,
-      options->preferCurrentTab(), options->autoSelectAllScreens(), callbacks,
-      surface);
+      context, client, media_type, audio, video, options->preferCurrentTab(),
+      options->autoSelectAllScreens(), callbacks, surface);
 
   // The default is to include.
   // Note that this option is no-op if audio is not requested.
@@ -426,7 +425,7 @@ UserMediaRequest* UserMediaRequest::CreateForTesting(
 }
 
 UserMediaRequest::UserMediaRequest(ExecutionContext* context,
-                                   UserMediaController* controller,
+                                   UserMediaClient* client,
                                    UserMediaRequestType media_type,
                                    MediaConstraints audio,
                                    MediaConstraints video,
@@ -443,7 +442,7 @@ UserMediaRequest::UserMediaRequest(ExecutionContext* context,
       should_disable_hardware_noise_suppression_(
           RuntimeEnabledFeatures::DisableHardwareNoiseSuppressionEnabled(
               context)),
-      controller_(controller),
+      client_(client),
       callbacks_(callbacks),
       surface_(surface) {
   if (should_disable_hardware_noise_suppression_) {
@@ -521,8 +520,8 @@ LocalDOMWindow* UserMediaRequest::GetWindow() {
 }
 
 void UserMediaRequest::Start() {
-  if (controller_)
-    controller_->RequestUserMedia(this);
+  if (client_)
+    client_->RequestUserMedia(this);
 }
 
 void UserMediaRequest::Succeed(
@@ -647,8 +646,8 @@ void UserMediaRequest::Fail(Error name, const String& message) {
 void UserMediaRequest::ContextDestroyed() {
   if (!is_resolved_)
     blink::WebRtcLogMessage("UMR::ContextDestroyed. Request not resolved.");
-  if (controller_) {
-    controller_->CancelUserMediaRequest(this);
+  if (client_) {
+    client_->CancelUserMediaRequest(this);
     if (!is_resolved_) {
       blink::WebRtcLogMessage(base::StringPrintf(
           "UMR::ContextDestroyed. Resolving unsolved request. "
@@ -660,12 +659,12 @@ void UserMediaRequest::ContextDestroyed() {
                                            DOMExceptionCode::kAbortError,
                                            "Context destroyed")));
     }
-    controller_ = nullptr;
+    client_ = nullptr;
   }
 }
 
 void UserMediaRequest::Trace(Visitor* visitor) const {
-  visitor->Trace(controller_);
+  visitor->Trace(client_);
   visitor->Trace(callbacks_);
   visitor->Trace(transferred_track_);
   ExecutionContextLifecycleObserver::Trace(visitor);

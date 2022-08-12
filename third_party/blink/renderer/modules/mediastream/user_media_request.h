@@ -47,7 +47,7 @@ class MediaErrorState;
 class MediaStreamConstraints;
 class ScriptWrappable;
 class TransferredMediaStreamTrack;
-class UserMediaController;
+class UserMediaClient;
 
 enum class UserMediaRequestType { kUserMedia, kDisplayMedia, kDisplayMediaSet };
 
@@ -89,7 +89,7 @@ class MODULES_EXPORT UserMediaRequest final
   class V8Callbacks;
 
   static UserMediaRequest* Create(ExecutionContext*,
-                                  UserMediaController*,
+                                  UserMediaClient*,
                                   UserMediaRequestType media_type,
                                   const MediaStreamConstraints* options,
                                   Callbacks*,
@@ -99,7 +99,7 @@ class MODULES_EXPORT UserMediaRequest final
                                             const MediaConstraints& video);
 
   UserMediaRequest(ExecutionContext*,
-                   UserMediaController*,
+                   UserMediaClient*,
                    UserMediaRequestType media_type,
                    MediaConstraints audio,
                    MediaConstraints video,
@@ -178,7 +178,7 @@ class MODULES_EXPORT UserMediaRequest final
   bool has_transient_user_activation_ = false;
   int32_t request_id_ = -1;
 
-  Member<UserMediaController> controller_;
+  Member<UserMediaClient> client_;
 
   Member<Callbacks> callbacks_;
   IdentifiableSurface surface_;

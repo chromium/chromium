@@ -8,7 +8,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/mediastream/media_error_state.h"
 #include "third_party/blink/renderer/modules/mediastream/transferred_media_stream_track.h"
-#include "third_party/blink/renderer/modules/mediastream/user_media_controller.h"
+#include "third_party/blink/renderer/modules/mediastream/user_media_client.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_request.h"
 
 namespace blink {
@@ -69,11 +69,15 @@ MediaStreamTrack* MediaStreamTrack::FromTransferredState(
   if (!window)
     return nullptr;
 
-  UserMediaController* user_media = UserMediaController::From(window);
+  UserMediaClient* user_media_client = UserMediaClient::From(window);
+  if (!user_media_client) {
+    return nullptr;
+  }
+
   MediaErrorState error_state;
   // TODO(1288839): Set media_type, options, callbacks, surface appropriately
   UserMediaRequest* request = UserMediaRequest::Create(
-      window, user_media, UserMediaRequestType::kDisplayMedia,
+      window, user_media_client, UserMediaRequestType::kDisplayMedia,
       MediaStreamConstraints::Create(),
       MakeGarbageCollected<GetOpenDeviceRequestCallbacks>(), error_state,
       IdentifiableSurface());

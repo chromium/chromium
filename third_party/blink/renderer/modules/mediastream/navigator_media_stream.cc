@@ -36,7 +36,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/modules/mediastream/identifiability_metrics.h"
 #include "third_party/blink/renderer/modules/mediastream/media_error_state.h"
-#include "third_party/blink/renderer/modules/mediastream/user_media_controller.h"
+#include "third_party/blink/renderer/modules/mediastream/user_media_client.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_request.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
@@ -86,12 +86,15 @@ void NavigatorMediaStream::getUserMedia(
   if (!navigator.DomWindow()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        "No user media controller available; is this a detached window?");
+        "No user media client available; is this a detached window?");
     return;
   }
 
-  UserMediaController* user_media =
-      UserMediaController::From(navigator.DomWindow());
+  UserMediaClient* user_media = UserMediaClient::From(navigator.DomWindow());
+  // Navigator::DomWindow() should not return a non-null detached window, so we
+  // should also successfully get a UserMediaClient from it.
+  DCHECK(user_media) << "Missing UserMediaClient on a non-null DomWindow";
+
   IdentifiableSurface surface;
   constexpr IdentifiableSurface::Type surface_type =
       IdentifiableSurface::Type::kNavigator_GetUserMedia;

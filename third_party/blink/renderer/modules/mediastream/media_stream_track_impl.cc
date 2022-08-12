@@ -56,7 +56,7 @@
 #include "third_party/blink/renderer/modules/mediastream/overconstrained_error.h"
 #include "third_party/blink/renderer/modules/mediastream/processed_local_audio_source.h"
 #include "third_party/blink/renderer/modules/mediastream/transferred_media_stream_track.h"
-#include "third_party/blink/renderer/modules/mediastream/user_media_controller.h"
+#include "third_party/blink/renderer/modules/mediastream/user_media_client.h"
 #include "third_party/blink/renderer/modules/mediastream/webaudio_media_stream_audio_sink.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -438,10 +438,10 @@ void MediaStreamTrackImpl::stopTrack(ExecutionContext* execution_context) {
 
   setReadyState(MediaStreamSource::kReadyStateEnded);
   feature_handle_for_scheduler_.reset();
-  UserMediaController* user_media =
-      UserMediaController::From(To<LocalDOMWindow>(execution_context));
-  if (user_media)
-    user_media->StopTrack(Component());
+  UserMediaClient* user_media_client =
+      UserMediaClient::From(To<LocalDOMWindow>(execution_context));
+  if (user_media_client)
+    user_media_client->StopTrack(Component());
 
   PropagateTrackEnded();
 }
@@ -749,7 +749,7 @@ void MediaStreamTrackImpl::applyConstraints(
     }
   }
 
-  // Resolve empty constraints here instead of relying on UserMediaController
+  // Resolve empty constraints here instead of relying on UserMediaClient
   // because the empty constraints have already been applied to image capture
   // and the promise must resolve. Empty constraints do not change any setting,
   // so resolving here is OK.
@@ -759,16 +759,17 @@ void MediaStreamTrackImpl::applyConstraints(
     return;
   }
 
-  UserMediaController* user_media =
-      UserMediaController::From(To<LocalDOMWindow>(execution_context));
-  if (!user_media) {
+  UserMediaClient* user_media_client =
+      UserMediaClient::From(To<LocalDOMWindow>(execution_context));
+  if (!user_media_client) {
     resolver->Reject(OverconstrainedError::Create(
         String(), "Cannot apply constraints due to unexpected error"));
     return;
   }
 
-  user_media->ApplyConstraints(MakeGarbageCollected<ApplyConstraintsRequest>(
-      Component(), web_constraints, resolver));
+  user_media_client->ApplyConstraints(
+      MakeGarbageCollected<ApplyConstraintsRequest>(Component(),
+                                                    web_constraints, resolver));
   return;
 }
 
