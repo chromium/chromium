@@ -81,10 +81,10 @@ std::string GetStringValue(const base::Value& dict, const char* key) {
 }
 
 // Returns whether added.
-bool AppendIfNotPresent(base::ListValue* list, base::Value value) {
-  if (base::Contains(list->GetListDeprecated(), value))
+bool AppendIfNotPresent(base::Value::List& list, base::Value value) {
+  if (base::Contains(list, value))
     return false;
-  list->Append(std::move(value));
+  list.Append(std::move(value));
   return true;
 }
 
@@ -554,14 +554,13 @@ void FakeShillManagerClient::AddDevice(const std::string& device_path) {
 
 void FakeShillManagerClient::RemoveDevice(const std::string& device_path) {
   base::Value device_path_value(device_path);
-  if (GetListProperty(shill::kDevicesProperty)
-          ->EraseListValue(device_path_value)) {
+  if (GetListProperty(shill::kDevicesProperty).EraseValue(device_path_value)) {
     CallNotifyObserversPropertyChanged(shill::kDevicesProperty);
   }
 }
 
 void FakeShillManagerClient::ClearDevices() {
-  GetListProperty(shill::kDevicesProperty)->ClearList();
+  GetListProperty(shill::kDevicesProperty).clear();
   CallNotifyObserversPropertyChanged(shill::kDevicesProperty);
 }
 
@@ -581,11 +580,11 @@ void FakeShillManagerClient::AddTechnology(const std::string& type,
 void FakeShillManagerClient::RemoveTechnology(const std::string& type) {
   base::Value type_value(type);
   if (GetListProperty(shill::kAvailableTechnologiesProperty)
-          ->EraseListValue(type_value)) {
+          .EraseValue(type_value)) {
     CallNotifyObserversPropertyChanged(shill::kAvailableTechnologiesProperty);
   }
   if (GetListProperty(shill::kEnabledTechnologiesProperty)
-          ->EraseListValue(type_value)) {
+          .EraseValue(type_value)) {
     CallNotifyObserversPropertyChanged(shill::kEnabledTechnologiesProperty);
   }
 }
@@ -597,7 +596,7 @@ void FakeShillManagerClient::SetTechnologyInitializing(const std::string& type,
             GetListProperty(shill::kUninitializedTechnologiesProperty),
             base::Value(type))) {
       if (GetListProperty(shill::kEnabledTechnologiesProperty)
-              ->EraseListValue(base::Value(type))) {
+              .EraseValue(base::Value(type))) {
         CallNotifyObserversPropertyChanged(shill::kEnabledTechnologiesProperty);
       }
 
@@ -606,7 +605,7 @@ void FakeShillManagerClient::SetTechnologyInitializing(const std::string& type,
     }
   } else {
     if (GetListProperty(shill::kUninitializedTechnologiesProperty)
-            ->EraseListValue(base::Value(type))) {
+            .EraseValue(base::Value(type))) {
       CallNotifyObserversPropertyChanged(
           shill::kUninitializedTechnologiesProperty);
     }
@@ -644,12 +643,12 @@ void FakeShillManagerClient::SetTechnologyProhibited(const std::string& type,
 void FakeShillManagerClient::SetTechnologyEnabled(const std::string& type,
                                                   base::OnceClosure callback,
                                                   bool enabled) {
-  base::ListValue* enabled_list =
+  base::Value::List& enabled_list =
       GetListProperty(shill::kEnabledTechnologiesProperty);
   if (enabled)
     AppendIfNotPresent(enabled_list, base::Value(type));
   else
-    enabled_list->EraseListValue(base::Value(type));
+    enabled_list.EraseValue(base::Value(type));
   CallNotifyObserversPropertyChanged(shill::kEnabledTechnologiesProperty);
   base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(callback));
   // May affect available services.
@@ -698,13 +697,13 @@ void FakeShillManagerClient::RemoveManagerService(
   VLOG(2) << "RemoveManagerService: " << service_path;
   base::Value service_path_value(service_path);
   GetListProperty(shill::kServiceCompleteListProperty)
-      ->EraseListValue(service_path_value);
+      .EraseValue(service_path_value);
   CallNotifyObserversPropertyChanged(shill::kServiceCompleteListProperty);
 }
 
 void FakeShillManagerClient::ClearManagerServices() {
   VLOG(1) << "ClearManagerServices";
-  GetListProperty(shill::kServiceCompleteListProperty)->ClearList();
+  GetListProperty(shill::kServiceCompleteListProperty).clear();
   CallNotifyObserversPropertyChanged(shill::kServiceCompleteListProperty);
 }
 
@@ -1197,15 +1196,11 @@ void FakeShillManagerClient::NotifyObserversPropertyChanged(
     observer.OnPropertyChanged(property, *value);
 }
 
-base::ListValue* FakeShillManagerClient::GetListProperty(
+base::Value::List& FakeShillManagerClient::GetListProperty(
     const std::string& property) {
-  base::Value* list_property =
-      stub_properties_.FindKeyOfType(property, base::Value::Type::LIST);
-  if (!list_property) {
-    list_property =
-        stub_properties_.SetKey(property, base::Value(base::Value::Type::LIST));
-  }
-  return static_cast<base::ListValue*>(list_property);
+  base::Value::List* list_property =
+      stub_properties_.GetDict().EnsureList(property);
+  return *list_property;
 }
 
 bool FakeShillManagerClient::TechnologyEnabled(const std::string& type) const {
@@ -1244,10 +1239,10 @@ base::Value FakeShillManagerClient::GetEnabledServiceList() const {
 }
 
 void FakeShillManagerClient::ClearProfiles() {
-  if (GetListProperty(shill::kProfilesProperty)->GetListDeprecated().empty()) {
+  if (GetListProperty(shill::kProfilesProperty).empty()) {
     return;
   }
-  GetListProperty(shill::kProfilesProperty)->ClearList();
+  GetListProperty(shill::kProfilesProperty).clear();
   CallNotifyObserversPropertyChanged(shill::kProfilesProperty);
 }
 

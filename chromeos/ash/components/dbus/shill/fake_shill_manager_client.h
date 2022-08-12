@@ -136,7 +136,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
   void PassStubGeoNetworks(DBusMethodCallback<base::Value> callback) const;
   void CallNotifyObserversPropertyChanged(const std::string& property);
   void NotifyObserversPropertyChanged(const std::string& property);
-  base::ListValue* GetListProperty(const std::string& property);
+  base::Value::List& GetListProperty(const std::string& property);
   bool TechnologyEnabled(const std::string& type) const;
   void ScanCompleted(const std::string& device_path);
 
