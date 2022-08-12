@@ -13,7 +13,9 @@
 #include "base/guid.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/cancelable_task_tracker.h"
 #include "base/task/sequenced_task_runner_helpers.h"
+#include "base/task/task_runner_util.h"
 #include "components/account_id/account_id.h"
 #include "components/desks_storage/core/desk_model.h"
 
@@ -82,10 +84,12 @@ class LocalDeskDataManager : public DeskModel {
  private:
   friend class ash::OverviewTestBase;
 
-  // Loads templates from `local_saved_desk_path_` into the
+  // Loads templates from `user_data_dir_path` into the
   // `saved_desks_list_`, based on the template's desk type, if the cache is not
   // loaded yet.
   void EnsureCacheIsLoaded(
+      const base::FilePath& user_data_dir_path,
+      CacheStatus* cache_status_ptr,
       std::map<base::GUID, std::unique_ptr<ash::DeskTemplate>>* entries_ptr);
 
   // Gets all entries from user's `local_saved_desk_path_`.
@@ -144,6 +148,7 @@ class LocalDeskDataManager : public DeskModel {
 
   // Wrapper method to load the read files into the `saved_desks_list_` cache.
   void MoveEntriesIntoCache(
+      std::unique_ptr<CacheStatus> cache_status_ptr,
       std::unique_ptr<std::map<base::GUID, std::unique_ptr<ash::DeskTemplate>>>
           entries_ptr);
 
