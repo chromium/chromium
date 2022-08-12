@@ -58773,6 +58773,7 @@ from previous Chrome versions.
   <int value="-214618160" label="ESimPolicy:enabled"/>
   <int value="-213518852" label="protect-sync-credential:enabled"/>
   <int value="-213214894" label="enable-chromevox-arc-support"/>
+  <int value="-211162053" label="OmniboxHeaderPaddingUpdate:enabled"/>
   <int value="-208587977" label="OmniboxMaterialDesignWeatherIcons:enabled"/>
   <int value="-208435024" label="EnableUsernameCorrection:enabled"/>
   <int value="-206393363" label="enable-scroll-prediction"/>
@@ -61542,6 +61543,7 @@ from previous Chrome versions.
   <int value="1548776701" label="AllBookmarks:disabled"/>
   <int value="1548942246" label="PassiveDocumentEventListeners:disabled"/>
   <int value="1552753678" label="DnsHttpssvc:disabled"/>
+  <int value="1553017633" label="OmniboxHeaderPaddingUpdate:disabled"/>
   <int value="1553310752" label="AccessibilityCursorColor:enabled"/>
   <int value="1553422694" label="EnablePalmOnMaxTouchMajor:enabled"/>
   <int value="1553430984" label="Projector:enabled"/>

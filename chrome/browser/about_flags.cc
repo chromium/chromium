@@ -5177,6 +5177,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kOmniboxAssistantVoiceSearch,
                                     kOmniboxAssistantVoiceSearchVariations,
                                     "OmniboxAssistantVoiceSearch")},
+
+    {"omnibox-header-padding-update",
+     flag_descriptions::kOmniboxHeaderPaddingUpdateName,
+     flag_descriptions::kOmniboxHeaderPaddingUpdateDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(omnibox::kOmniboxHeaderPaddingUpdate)},
+
     {"omnibox-modernize-visual-update",
      flag_descriptions::kOmniboxModernizeVisualUpdateName,
      flag_descriptions::kOmniboxModernizeVisualUpdateDescription, kOsAndroid,

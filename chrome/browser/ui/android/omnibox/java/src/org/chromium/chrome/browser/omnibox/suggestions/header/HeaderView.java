@@ -56,13 +56,8 @@ public class HeaderView extends SimpleHorizontalLayoutView {
         mHeaderText.setEllipsize(TruncateAt.END);
         TextViewCompat.setTextAppearance(
                 mHeaderText, ChromeColors.getTextMediumThickSecondaryStyle(false));
-        mHeaderText.setMinHeight(context.getResources().getDimensionPixelSize(
-                R.dimen.omnibox_suggestion_header_height));
         mHeaderText.setGravity(Gravity.CENTER_VERTICAL);
         mHeaderText.setTextAlignment(TextView.TEXT_ALIGNMENT_VIEW_START);
-        mHeaderText.setPaddingRelative(context.getResources().getDimensionPixelSize(
-                                               R.dimen.omnibox_suggestion_header_margin_start),
-                0, 0, 0);
         addView(mHeaderText);
 
         mHeaderIcon = new AppCompatImageView(context);
@@ -150,6 +145,16 @@ public class HeaderView extends SimpleHorizontalLayoutView {
     void setShouldRemoveSuggestionHeaderCapitalization(
             boolean shouldRemoveSuggestionHeaderCapitalization) {
         mHeaderText.setAllCaps(!shouldRemoveSuggestionHeaderCapitalization);
+    }
+
+    /**
+     * Specifies the paddings for suggestion header.
+     *
+     * @param shouldUpdateHeaderPadding true, if suggestion header's padding should be updated.
+     */
+    void setUpdateHeaderPadding(int minHeight, int paddingMarginStart, int paddingMarginTop) {
+        mHeaderText.setMinHeight(minHeight);
+        mHeaderText.setPaddingRelative(paddingMarginStart, paddingMarginTop, 0, 0);
     }
 
     @Override

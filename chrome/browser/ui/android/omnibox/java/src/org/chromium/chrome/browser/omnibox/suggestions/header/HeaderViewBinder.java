@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.header;
 
+import android.content.res.Resources;
+
 import androidx.core.view.ViewCompat;
 import androidx.core.widget.TextViewCompat;
 
@@ -51,6 +53,22 @@ public class HeaderViewBinder {
         } else if (propertyKey == HeaderViewProperties.SHOULD_REMOVE_CAPITALIZATION) {
             view.setShouldRemoveSuggestionHeaderCapitalization(
                     model.get(HeaderViewProperties.SHOULD_REMOVE_CAPITALIZATION));
+        } else if (propertyKey == HeaderViewProperties.USE_UPDATED_HEADER_PADDING) {
+            boolean useUpdatedHeaderPadding =
+                    model.get(HeaderViewProperties.USE_UPDATED_HEADER_PADDING);
+            Resources res = view.getResources();
+
+            int minHeight = res.getDimensionPixelSize(useUpdatedHeaderPadding
+                            ? R.dimen.omnibox_suggestion_header_height_modern
+                            : R.dimen.omnibox_suggestion_header_height);
+            int paddingMarginStart = res.getDimensionPixelSize(useUpdatedHeaderPadding
+                            ? R.dimen.omnibox_suggestion_header_margin_start_modern
+                            : R.dimen.omnibox_suggestion_header_margin_start);
+            int paddingMarginTop = useUpdatedHeaderPadding
+                    ? res.getDimensionPixelSize(R.dimen.omnibox_suggestion_header_margin_top)
+                    : 0;
+
+            view.setUpdateHeaderPadding(minHeight, paddingMarginStart, paddingMarginTop);
         }
     }
 }

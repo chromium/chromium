@@ -23,6 +23,7 @@ public class HeaderProcessor implements DropdownItemProcessor {
     private boolean mShouldRemoveSuggestionHeaderChevron;
     private boolean mAllowGroupCollapsedState;
     private boolean mShouldRemoveSuggestionHeaderCapitalization;
+    private boolean mUseUpdatedHeaderPadding;
 
     /**
      * @param context An Android context.
@@ -62,6 +63,7 @@ public class HeaderProcessor implements DropdownItemProcessor {
         model.set(HeaderViewProperties.SHOULD_REMOVE_CHEVRON, mShouldRemoveSuggestionHeaderChevron);
         model.set(HeaderViewProperties.SHOULD_REMOVE_CAPITALIZATION,
                 mShouldRemoveSuggestionHeaderCapitalization);
+        model.set(HeaderViewProperties.USE_UPDATED_HEADER_PADDING, mUseUpdatedHeaderPadding);
         if (mAllowGroupCollapsedState) {
             model.set(HeaderViewProperties.DELEGATE, new HeaderViewProperties.Delegate() {
                 @Override
@@ -103,6 +105,9 @@ public class HeaderProcessor implements DropdownItemProcessor {
 
         mShouldRemoveSuggestionHeaderCapitalization = ChromeFeatureList.isEnabled(
                 ChromeFeatureList.OMNIBOX_REMOVE_SUGGESTION_HEADER_CAPITALIZATION);
+
+        mUseUpdatedHeaderPadding =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.OMNIBOX_HEADER_PADDING_UPDATE);
     }
 
     @Override
