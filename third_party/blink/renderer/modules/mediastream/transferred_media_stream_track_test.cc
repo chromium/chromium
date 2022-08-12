@@ -17,6 +17,7 @@ namespace blink {
 
 namespace {
 using testing::_;
+using testing::Return;
 
 class TestObserver : public GarbageCollected<TestObserver>,
                      public MediaStreamTrack::Observer {
@@ -263,6 +264,88 @@ TEST_F(TransferredMediaStreamTrackTest, ObserversAddedToImpl) {
       MakeGarbageCollected<testing::NiceMock<MockMediaStreamTrack>>();
   EXPECT_CALL(*mock_impl_, AddObserver(_));
   transferred_track_->SetImplementation(mock_impl_);
+}
+
+TEST_F(TransferredMediaStreamTrackTest, CloneInitialProperties) {
+  V8TestingScope scope;
+  CustomSetUp(scope);
+
+  MediaStreamTrack* clone =
+      transferred_track_->clone(scope.GetExecutionContext());
+
+  EXPECT_EQ(clone->kind(), "video");
+  EXPECT_EQ(clone->id(), "");
+  EXPECT_EQ(clone->label(), "dummy");
+  EXPECT_EQ(clone->enabled(), true);
+  EXPECT_EQ(clone->muted(), false);
+  EXPECT_EQ(clone->ContentHint(), "");
+  EXPECT_EQ(clone->readyState(), "live");
+  EXPECT_EQ(clone->GetReadyState(), MediaStreamSource::kReadyStateLive);
+  EXPECT_EQ(clone->Ended(), false);
+  EXPECT_EQ(clone->serializable_session_id(), absl::nullopt);
+}
+
+TEST_F(TransferredMediaStreamTrackTest, CloneSetImplementation) {
+  V8TestingScope scope;
+  CustomSetUp(scope);
+  TransferredMediaStreamTrack* clone =
+      static_cast<TransferredMediaStreamTrack*>(
+          transferred_track_->clone(scope.GetExecutionContext()));
+  MockMediaStreamTrack* mock_impl_ =
+      MakeGarbageCollected<testing::NiceMock<MockMediaStreamTrack>>();
+  EXPECT_CALL(*mock_impl_, clone(_))
+      .WillOnce(Return(
+          MakeGarbageCollected<testing::NiceMock<MockMediaStreamTrack>>()));
+
+  transferred_track_->SetImplementation(mock_impl_);
+
+  EXPECT_TRUE(clone->HasImplementation());
+}
+
+TEST_F(TransferredMediaStreamTrackTest, CloneMutationsReplayed) {
+  V8TestingScope scope;
+  CustomSetUp(scope);
+
+  transferred_track_->setEnabled(false);
+
+  TransferredMediaStreamTrack* clone =
+      static_cast<TransferredMediaStreamTrack*>(
+          transferred_track_->clone(scope.GetExecutionContext()));
+
+  MockMediaStreamTrack* mock_impl_ =
+      MakeGarbageCollected<testing::NiceMock<MockMediaStreamTrack>>();
+  EXPECT_CALL(*mock_impl_, clone(_))
+      .WillOnce(Return(
+          MakeGarbageCollected<testing::NiceMock<MockMediaStreamTrack>>()));
+  transferred_track_->SetImplementation(mock_impl_);
+
+  EXPECT_EQ(transferred_track_->enabled(), false);
+  EXPECT_EQ(clone->enabled(), false);
+}
+
+TEST_F(TransferredMediaStreamTrackTest, CloneDoesntIncludeLaterMutations) {
+  V8TestingScope scope;
+  CustomSetUp(scope);
+
+  // Clone, the track, then disable the original. The clone should still be
+  // enabled.
+  transferred_track_->setEnabled(true);
+  MediaStreamTrack* clone =
+      transferred_track_->clone(scope.GetExecutionContext());
+  transferred_track_->setEnabled(false);
+
+  MockMediaStreamTrack* mock_impl_ =
+      MakeGarbageCollected<testing::NiceMock<MockMediaStreamTrack>>();
+  EXPECT_CALL(*mock_impl_, clone(_)).WillOnce([&](ExecutionContext*) {
+    MockMediaStreamTrack* mock_clone_impl_ =
+        MakeGarbageCollected<testing::NiceMock<MockMediaStreamTrack>>();
+    mock_clone_impl_->setEnabled(mock_impl_->enabled());
+    return mock_clone_impl_;
+  });
+  transferred_track_->SetImplementation(mock_impl_);
+
+  EXPECT_EQ(transferred_track_->enabled(), false);
+  EXPECT_EQ(clone->enabled(), true);
 }
 
 }  // namespace blink

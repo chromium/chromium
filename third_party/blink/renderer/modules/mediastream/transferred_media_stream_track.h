@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
@@ -106,7 +107,12 @@ class MODULES_EXPORT TransferredMediaStreamTrack : public MediaStreamTrack {
 
  private:
   // Enumerates function names which can change the state of MediaStreamTrack.
-  enum SetterFunction { APPLY_CONSTRAINTS, SET_CONTENT_HINT, SET_ENABLED };
+  enum SetterFunction {
+    APPLY_CONSTRAINTS,
+    SET_CONTENT_HINT,
+    SET_ENABLED,
+    CLONE
+  };
 
   void applyConstraints(ScriptPromiseResolver*,
                         const MediaTrackConstraints*) override;
@@ -133,6 +139,7 @@ class MODULES_EXPORT TransferredMediaStreamTrack : public MediaStreamTrack {
   WTF::Deque<String> content_hint_list_;
   WTF::Deque<ConstraintsPair> constraints_list_;
   WTF::Deque<bool> enabled_state_list_;
+  HeapDeque<Member<TransferredMediaStreamTrack>> clone_list_;
   WeakMember<ExecutionContext> execution_context_;
   TransferredValues data_;
   Member<EventPropagator> event_propagator_;

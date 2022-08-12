@@ -131,9 +131,13 @@ MediaStreamTrack* TransferredMediaStreamTrack::clone(
   if (track_) {
     return track_->clone(execution_context);
   }
-  // TODO(https://crbug.com/1288839): Create another TransferredMediaStreamTrack
-  // and call track_->clone() once track_ is initialized.
-  return nullptr;
+
+  auto* cloned_tmst = MakeGarbageCollected<TransferredMediaStreamTrack>(
+      execution_context, data_);
+
+  setter_call_order_.push_back(CLONE);
+  clone_list_.push_back(cloned_tmst);
+  return cloned_tmst;
 }
 
 void TransferredMediaStreamTrack::stopTrack(
@@ -217,6 +221,12 @@ void TransferredMediaStreamTrack::SetImplementation(MediaStreamTrack* track) {
       case SET_ENABLED: {
         track->setEnabled(enabled_state_list_.front());
         enabled_state_list_.pop_front();
+        break;
+      }
+      case CLONE: {
+        MediaStreamTrack* real_track_clone = track->clone(execution_context_);
+        clone_list_.front()->SetImplementation(real_track_clone);
+        clone_list_.pop_front();
         break;
       }
     }
@@ -384,6 +394,7 @@ void TransferredMediaStreamTrack::Trace(Visitor* visitor) const {
   visitor->Trace(execution_context_);
   visitor->Trace(event_propagator_);
   visitor->Trace(observers_);
+  visitor->Trace(clone_list_);
 }
 
 }  // namespace blink
