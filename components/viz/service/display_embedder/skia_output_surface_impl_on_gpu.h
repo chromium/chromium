@@ -170,8 +170,6 @@ class SkiaOutputSurfaceImplOnGpu
   void SwapBuffersSkipped();
   void EnsureBackbuffer();
   void DiscardBackbuffer();
-  // If is |is_overlay| is true, the ScopedWriteAccess will be saved and kept
-  // open until PostSubmit().
   void FinishPaintRenderPass(
       const gpu::Mailbox& mailbox,
       sk_sp<SkDeferredDisplayList> ddl,
@@ -179,14 +177,14 @@ class SkiaOutputSurfaceImplOnGpu
       std::vector<ImageContextImpl*> image_contexts,
       std::vector<gpu::SyncToken> sync_tokens,
       base::OnceClosure on_finished,
-      base::OnceCallback<void(gfx::GpuFenceHandle)> return_release_fence_cb,
-      bool is_overlay);
+      base::OnceCallback<void(gfx::GpuFenceHandle)> return_release_fence_cb);
   // Deletes resources for RenderPasses in |ids|. Also takes ownership of
   // |images_contexts| and destroys them on GPU thread.
   void RemoveRenderPassResource(
       std::vector<AggregatedRenderPassId> ids,
       std::vector<std::unique_ptr<ImageContextImpl>> image_contexts);
-  void CopyOutput(const copy_output::RenderPassGeometry& geometry,
+  void CopyOutput(AggregatedRenderPassId id,
+                  const copy_output::RenderPassGeometry& geometry,
                   const gfx::ColorSpace& color_space,
                   std::unique_ptr<CopyOutputRequest> request,
                   const gpu::Mailbox& mailbox);
@@ -273,17 +271,6 @@ class SkiaOutputSurfaceImplOnGpu
 
     std::vector<GrBackendSemaphore> begin_semaphores;
     std::vector<GrBackendSemaphore> end_semaphores;
-  };
-
-  struct OverlayPassAccess {
-    OverlayPassAccess();
-    OverlayPassAccess(OverlayPassAccess&& other);
-    OverlayPassAccess& operator=(OverlayPassAccess&& other);
-    ~OverlayPassAccess();
-
-    std::unique_ptr<gpu::SkiaImageRepresentation> skia_representation;
-    std::unique_ptr<gpu::SkiaImageRepresentation::ScopedWriteAccess>
-        scoped_access;
   };
 
   bool Initialize();
@@ -504,11 +491,6 @@ class SkiaOutputSurfaceImplOnGpu
 
   std::unique_ptr<SkiaOutputDevice> output_device_;
   std::unique_ptr<SkiaOutputDevice::ScopedPaint> scoped_output_device_paint_;
-
-  // Overlayed render passes need to keep their write access open until after
-  // submit. These will be set in FinishPaintRenderPass() if |is_overlay| is
-  // true and destroyed in PostSubmit().
-  base::flat_map<gpu::Mailbox, OverlayPassAccess> overlay_pass_accesses_;
 
   absl::optional<OverlayProcessorInterface::OutputSurfaceOverlayPlane>
       output_surface_plane_;

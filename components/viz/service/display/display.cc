@@ -659,7 +659,10 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
   if (params.max_pending_swaps >= 0 && skia_output_surface_ &&
       skia_output_surface_->capabilities()
           .supports_dynamic_frame_buffer_allocation) {
-    renderer_->EnsureMinNumberOfBuffers(params.max_pending_swaps + 1);
+    if (skia_output_surface_->EnsureMinNumberOfBuffers(
+            params.max_pending_swaps + 1)) {
+      renderer_->ReallocatedFrameBuffers();
+    }
   }
 
   gfx::OverlayTransform current_display_transform = gfx::OVERLAY_TRANSFORM_NONE;

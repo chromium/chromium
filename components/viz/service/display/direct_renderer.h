@@ -165,17 +165,6 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   // Puts the draw time wall in trace file relative to the |ready_timestamp|.
   virtual void AddCompositeTimeTraces(base::TimeTicks ready_timestamp);
 
-  // Returns the current frame buffer damage.
-  virtual gfx::Rect GetCurrentFramebufferDamage() const;
-
-  // Reshapes the output surface.
-  virtual void Reshape(const OutputSurface::ReshapeParams& reshape_params);
-
-  // Set the number of frame buffers to use when
-  // `supports_dynamic_frame_buffer_allocation` is true. `n` must satisfy
-  // 0 < n <= capabilities_.number_of_buffers.
-  virtual void EnsureMinNumberOfBuffers(int n) {}
-
   // Return the bounding rect of previously drawn delegated ink trail.
   gfx::Rect GetDelegatedInkTrailDamageRect();
 
