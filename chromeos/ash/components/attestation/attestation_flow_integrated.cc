@@ -18,6 +18,7 @@
 #include "chromeos/ash/components/attestation/attestation_flow_utils.h"
 #include "chromeos/ash/components/dbus/attestation/attestation_client.h"
 #include "chromeos/ash/components/dbus/attestation/interface.pb.h"
+#include "chromeos/dbus/constants/attestation_constants.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "components/account_id/account_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -83,6 +84,8 @@ absl::optional<::attestation::CertificateProfile> ProfileToAttestationProtoEnum(
           ENTERPRISE_ENROLLMENT_CERTIFICATE;
     case PROFILE_SOFT_BIND_CERTIFICATE:
       return ::attestation::CertificateProfile::SOFT_BIND_CERTIFICATE;
+    case PROFILE_DEVICE_SETUP_CERTIFICATE:
+      return ::attestation::CertificateProfile::DEVICE_SETUP_CERTIFICATE;
     default:
       return {};
   }

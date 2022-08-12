@@ -26,6 +26,8 @@ std::string GetKeyNameForProfile(
       return std::string(kContentProtectionKeyPrefix) + request_origin;
     case PROFILE_SOFT_BIND_CERTIFICATE:
       return kSoftBindKey;
+    case PROFILE_DEVICE_SETUP_CERTIFICATE:
+      return kDeviceSetupKey;
   }
   NOTREACHED();
   return "";

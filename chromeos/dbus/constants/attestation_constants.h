@@ -51,7 +51,10 @@ enum AttestationCertificateProfile {
   PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE = 7,
   // A profile for certificates intended for local authorities which are
   // used to bind software keys.
-  PROFILE_SOFT_BIND_CERTIFICATE = 10
+  PROFILE_SOFT_BIND_CERTIFICATE = 10,
+  // A profile for certificates intended for setting up ChromeOS devices using
+  // other authenticated devices.
+  PROFILE_DEVICE_SETUP_CERTIFICATE = 11,
 };
 
 // Status for operations involving an attestation server.
@@ -94,6 +97,11 @@ extern const char kContentProtectionKeyPrefix[];
 COMPONENT_EXPORT(CHROMEOS_DBUS_CONSTANTS)
 extern const char kSoftBindKey[];
 
+// The key name for the device setup certificate. This key should always be
+// stored as a DEVICE_KEY.
+COMPONENT_EXPORT(CHROMEOS_DBUS_CONSTANTS)
+extern const char kDeviceSetupKey[];
+
 }  // namespace attestation
 }  // namespace chromeos
 
@@ -109,6 +117,7 @@ using ::chromeos::attestation::AttestationKeyType;
 using ::chromeos::attestation::AttestationStatus;
 using ::chromeos::attestation::DEFAULT_PCA;
 using ::chromeos::attestation::kContentProtectionKeyPrefix;
+using ::chromeos::attestation::kDeviceSetupKey;
 using ::chromeos::attestation::kEnterpriseEnrollmentKey;
 using ::chromeos::attestation::kEnterpriseMachineKey;
 using ::chromeos::attestation::kEnterpriseUserKey;
@@ -117,6 +126,7 @@ using ::chromeos::attestation::KEY_USER;
 using ::chromeos::attestation::kSoftBindKey;
 using ::chromeos::attestation::PrivacyCAType;
 using ::chromeos::attestation::PROFILE_CONTENT_PROTECTION_CERTIFICATE;
+using ::chromeos::attestation::PROFILE_DEVICE_SETUP_CERTIFICATE;
 using ::chromeos::attestation::PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE;
 using ::chromeos::attestation::PROFILE_ENTERPRISE_MACHINE_CERTIFICATE;
 using ::chromeos::attestation::PROFILE_ENTERPRISE_USER_CERTIFICATE;

@@ -12,6 +12,7 @@ const char kEnterpriseEnrollmentKey[] = "attest-ent-enrollment";
 const char kEnterpriseUserKey[] = "attest-ent-user";
 const char kContentProtectionKeyPrefix[] = "attest-cp-";
 const char kSoftBindKey[] = "attest-soft-bind";
+const char kDeviceSetupKey[] = "attest-device-setup";
 
 }  // namespace attestation
 }  // namespace chromeos
