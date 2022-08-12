@@ -25,20 +25,21 @@ TEST_F(CorsTest, CheckAccessDetectsWildcardOriginNotAllowed) {
   const std::string allow_all_header("*");
 
   // Access-Control-Allow-Origin '*' works.
-  absl::optional<CorsErrorStatus> error1 =
+  const auto result =
       CheckAccess(response_url, allow_all_header /* allow_origin_header */,
                   absl::nullopt /* allow_credentials_header */,
                   network::mojom::CredentialsMode::kOmit, origin);
-  EXPECT_FALSE(error1);
+  EXPECT_TRUE(result.has_value());
 
   // Access-Control-Allow-Origin '*' should not be allowed if credentials mode
   // is kInclude.
-  absl::optional<CorsErrorStatus> error2 =
+  const auto result2 =
       CheckAccess(response_url, allow_all_header /* allow_origin_header */,
                   absl::nullopt /* allow_credentials_header */,
                   network::mojom::CredentialsMode::kInclude, origin);
-  ASSERT_TRUE(error2);
-  EXPECT_EQ(mojom::CorsError::kWildcardOriginNotAllowed, error2->cors_error);
+  ASSERT_FALSE(result2.has_value());
+  EXPECT_EQ(mojom::CorsError::kWildcardOriginNotAllowed,
+            result2.error().cors_error);
 }
 
 // Tests if CheckAccess detects kMissingAllowOriginHeader error correctly.
@@ -47,12 +48,13 @@ TEST_F(CorsTest, CheckAccessDetectsMissingAllowOriginHeader) {
   const url::Origin origin = url::Origin::Create(GURL("http://google.com"));
 
   // Access-Control-Allow-Origin is missed.
-  absl::optional<CorsErrorStatus> error =
+  const auto result =
       CheckAccess(response_url, absl::nullopt /* allow_origin_header */,
                   absl::nullopt /* allow_credentials_header */,
                   network::mojom::CredentialsMode::kOmit, origin);
-  ASSERT_TRUE(error);
-  EXPECT_EQ(mojom::CorsError::kMissingAllowOriginHeader, error->cors_error);
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(mojom::CorsError::kMissingAllowOriginHeader,
+            result.error().cors_error);
 }
 
 // Tests if CheckAccess detects kMultipleAllowOriginValues error
@@ -63,21 +65,23 @@ TEST_F(CorsTest, CheckAccessDetectsMultipleAllowOriginValues) {
 
   const std::string space_separated_multiple_origins(
       "http://example.com http://another.example.com");
-  absl::optional<CorsErrorStatus> error1 = CheckAccess(
+  const auto result1 = CheckAccess(
       response_url, space_separated_multiple_origins /* allow_origin_header */,
       absl::nullopt /* allow_credentials_header */,
       network::mojom::CredentialsMode::kOmit, origin);
-  ASSERT_TRUE(error1);
-  EXPECT_EQ(mojom::CorsError::kMultipleAllowOriginValues, error1->cors_error);
+  ASSERT_FALSE(result1.has_value());
+  EXPECT_EQ(mojom::CorsError::kMultipleAllowOriginValues,
+            result1.error().cors_error);
 
   const std::string comma_separated_multiple_origins(
       "http://example.com,http://another.example.com");
-  absl::optional<CorsErrorStatus> error2 = CheckAccess(
+  const auto result2 = CheckAccess(
       response_url, comma_separated_multiple_origins /* allow_origin_header */,
       absl::nullopt /* allow_credentials_header */,
       network::mojom::CredentialsMode::kOmit, origin);
-  ASSERT_TRUE(error2);
-  EXPECT_EQ(mojom::CorsError::kMultipleAllowOriginValues, error2->cors_error);
+  ASSERT_FALSE(result2.has_value());
+  EXPECT_EQ(mojom::CorsError::kMultipleAllowOriginValues,
+            result2.error().cors_error);
 }
 
 // Tests if CheckAccess detects kInvalidAllowOriginValue error correctly.
@@ -85,13 +89,14 @@ TEST_F(CorsTest, CheckAccessDetectsInvalidAllowOriginValue) {
   const GURL response_url("http://example.com/data");
   const url::Origin origin = url::Origin::Create(GURL("http://google.com"));
 
-  absl::optional<CorsErrorStatus> error = CheckAccess(
+  const auto result = CheckAccess(
       response_url, std::string("invalid.origin") /* allow_origin_header */,
       absl::nullopt /* allow_credentials_header */,
       network::mojom::CredentialsMode::kOmit, origin);
-  ASSERT_TRUE(error);
-  EXPECT_EQ(mojom::CorsError::kInvalidAllowOriginValue, error->cors_error);
-  EXPECT_EQ("invalid.origin", error->failed_parameter);
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(mojom::CorsError::kInvalidAllowOriginValue,
+            result.error().cors_error);
+  EXPECT_EQ("invalid.origin", result.error().failed_parameter);
 }
 
 // Tests if CheckAccess detects kAllowOriginMismatch error correctly.
@@ -99,31 +104,31 @@ TEST_F(CorsTest, CheckAccessDetectsAllowOriginMismatch) {
   const GURL response_url("http://example.com/data");
   const url::Origin origin = url::Origin::Create(GURL("http://google.com"));
 
-  absl::optional<CorsErrorStatus> error1 =
+  const auto result1 =
       CheckAccess(response_url, origin.Serialize() /* allow_origin_header */,
                   absl::nullopt /* allow_credentials_header */,
                   network::mojom::CredentialsMode::kOmit, origin);
-  ASSERT_FALSE(error1);
+  ASSERT_TRUE(result1.has_value());
 
-  absl::optional<CorsErrorStatus> error2 = CheckAccess(
+  const auto result2 = CheckAccess(
       response_url,
       std::string("http://not.google.com") /* allow_origin_header */,
       absl::nullopt /* allow_credentials_header */,
       network::mojom::CredentialsMode::kOmit, origin);
-  ASSERT_TRUE(error2);
-  EXPECT_EQ(mojom::CorsError::kAllowOriginMismatch, error2->cors_error);
-  EXPECT_EQ("http://not.google.com", error2->failed_parameter);
+  ASSERT_FALSE(result2.has_value());
+  EXPECT_EQ(mojom::CorsError::kAllowOriginMismatch, result2.error().cors_error);
+  EXPECT_EQ("http://not.google.com", result2.error().failed_parameter);
 
   // Allow "null" value to match serialized unique origins.
   const std::string null_string("null");
   const url::Origin null_origin;
   EXPECT_EQ(null_string, null_origin.Serialize());
 
-  absl::optional<CorsErrorStatus> error3 =
+  const auto result3 =
       CheckAccess(response_url, null_string /* allow_origin_header */,
                   absl::nullopt /* allow_credentials_header */,
                   network::mojom::CredentialsMode::kOmit, null_origin);
-  EXPECT_FALSE(error3);
+  EXPECT_TRUE(result3.has_value());
 }
 
 // Tests if CheckAccess detects kInvalidAllowCredentials error correctly.
@@ -131,19 +136,20 @@ TEST_F(CorsTest, CheckAccessDetectsInvalidAllowCredential) {
   const GURL response_url("http://example.com/data");
   const url::Origin origin = url::Origin::Create(GURL("http://google.com"));
 
-  absl::optional<CorsErrorStatus> error1 =
+  const auto result1 =
       CheckAccess(response_url, origin.Serialize() /* allow_origin_header */,
                   std::string("true") /* allow_credentials_header */,
                   network::mojom::CredentialsMode::kInclude, origin);
-  ASSERT_FALSE(error1);
+  ASSERT_TRUE(result1.has_value());
 
-  absl::optional<CorsErrorStatus> error2 =
+  const auto restul2 =
       CheckAccess(response_url, origin.Serialize() /* allow_origin_header */,
                   std::string("fuga") /* allow_credentials_header */,
                   network::mojom::CredentialsMode::kInclude, origin);
-  ASSERT_TRUE(error2);
-  EXPECT_EQ(mojom::CorsError::kInvalidAllowCredentials, error2->cors_error);
-  EXPECT_EQ("fuga", error2->failed_parameter);
+  ASSERT_FALSE(restul2.has_value());
+  EXPECT_EQ(mojom::CorsError::kInvalidAllowCredentials,
+            restul2.error().cors_error);
+  EXPECT_EQ("fuga", restul2.error().failed_parameter);
 }
 
 // Should match unexposed enum in cors.cc

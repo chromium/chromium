@@ -214,7 +214,7 @@ std::unique_ptr<ResourceRequest> CreatePreflightRequest(
 // According to the note at https://fetch.spec.whatwg.org/#cors-preflight-fetch
 // step 6, even for a preflight check, `credentials_mode` should be checked on
 // the actual request rather than preflight one.
-absl::optional<CorsErrorStatus> CheckPreflightAccess(
+base::expected<void, CorsErrorStatus> CheckPreflightAccess(
     const GURL& response_url,
     const int response_status_code,
     const absl::optional<std::string>& allow_origin_header,
@@ -222,12 +222,12 @@ absl::optional<CorsErrorStatus> CheckPreflightAccess(
     mojom::CredentialsMode actual_credentials_mode,
     const url::Origin& origin) {
   // Step 7 of https://fetch.spec.whatwg.org/#cors-preflight-fetch
-  auto error_status =
+  auto cors_result =
       CheckAccess(response_url, allow_origin_header, allow_credentials_header,
                   actual_credentials_mode, origin);
   const bool has_ok_status = IsOkStatus(response_status_code);
 
-  AccessCheckResult result = (error_status || !has_ok_status)
+  AccessCheckResult result = (!cors_result.has_value() || !has_ok_status)
                                  ? AccessCheckResult::kNotPermittedInPreflight
                                  : AccessCheckResult::kPermittedInPreflight;
   UMA_HISTOGRAM_ENUMERATION("Net.Cors.AccessCheckResult", result);
@@ -237,30 +237,30 @@ absl::optional<CorsErrorStatus> CheckPreflightAccess(
   }
 
   // Prefer using a preflight specific error code.
-  if (error_status) {
-    switch (error_status->cors_error) {
+  if (!cors_result.has_value()) {
+    switch (cors_result.error().cors_error) {
       case mojom::CorsError::kWildcardOriginNotAllowed:
-        error_status->cors_error =
+        cors_result.error().cors_error =
             mojom::CorsError::kPreflightWildcardOriginNotAllowed;
         break;
       case mojom::CorsError::kMissingAllowOriginHeader:
-        error_status->cors_error =
+        cors_result.error().cors_error =
             mojom::CorsError::kPreflightMissingAllowOriginHeader;
         break;
       case mojom::CorsError::kMultipleAllowOriginValues:
-        error_status->cors_error =
+        cors_result.error().cors_error =
             mojom::CorsError::kPreflightMultipleAllowOriginValues;
         break;
       case mojom::CorsError::kInvalidAllowOriginValue:
-        error_status->cors_error =
+        cors_result.error().cors_error =
             mojom::CorsError::kPreflightInvalidAllowOriginValue;
         break;
       case mojom::CorsError::kAllowOriginMismatch:
-        error_status->cors_error =
+        cors_result.error().cors_error =
             mojom::CorsError::kPreflightAllowOriginMismatch;
         break;
       case mojom::CorsError::kInvalidAllowCredentials:
-        error_status->cors_error =
+        cors_result.error().cors_error =
             mojom::CorsError::kPreflightInvalidAllowCredentials;
         break;
       default:
@@ -268,13 +268,13 @@ absl::optional<CorsErrorStatus> CheckPreflightAccess(
         break;
     }
   } else if (!has_ok_status) {
-    error_status = absl::make_optional<CorsErrorStatus>(
+    cors_result = base::unexpected<CorsErrorStatus>(
         mojom::CorsError::kPreflightInvalidStatus);
   } else {
-    return absl::nullopt;
+    base::expected<void, CorsErrorStatus>();
   }
 
-  return error_status;
+  return cors_result;
 }
 
 // Checks errors for the "Access-Control-Allow-Private-Network" header.
@@ -321,15 +321,18 @@ std::unique_ptr<PreflightResult> CreatePreflightResult(
     absl::optional<CorsErrorStatus>* detected_error_status) {
   DCHECK(detected_error_status);
 
-  *detected_error_status = CheckPreflightAccess(
+  auto check_result = CheckPreflightAccess(
       final_url, head.headers ? head.headers->response_code() : 0,
       GetHeaderString(head.headers, header_names::kAccessControlAllowOrigin),
       GetHeaderString(head.headers,
                       header_names::kAccessControlAllowCredentials),
       original_request.credentials_mode,
       tainted ? url::Origin() : *original_request.request_initiator);
-  if (*detected_error_status)
+  if (!check_result.has_value()) {
+    *detected_error_status = std::move(check_result.error());
     return nullptr;
+  }
+  *detected_error_status = absl::nullopt;
 
   absl::optional<CorsErrorStatus> status =
       CheckAllowPrivateNetworkHeader(head, original_request);
@@ -607,7 +610,7 @@ PreflightController::CreatePreflightResultForTesting(
 }
 
 // static
-absl::optional<CorsErrorStatus>
+base::expected<void, CorsErrorStatus>
 PreflightController::CheckPreflightAccessForTesting(
     const GURL& response_url,
     const int response_status_code,

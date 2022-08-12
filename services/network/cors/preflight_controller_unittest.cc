@@ -977,33 +977,34 @@ TEST_F(PreflightControllerTest, CheckPreflightAccessDetectsErrorStatus) {
   const std::string allow_all_header("*");
 
   // Status 200-299 should pass.
-  EXPECT_FALSE(PreflightController::CheckPreflightAccessForTesting(
-      response_url, 200, allow_all_header,
-      /*allow_credentials_header=*/absl::nullopt,
-      network::mojom::CredentialsMode::kOmit, origin));
-  EXPECT_FALSE(PreflightController::CheckPreflightAccessForTesting(
-      response_url, 299, allow_all_header,
-      /*allow_credentials_header=*/absl::nullopt,
-      network::mojom::CredentialsMode::kOmit, origin));
+  EXPECT_TRUE(PreflightController::CheckPreflightAccessForTesting(
+                  response_url, 200, allow_all_header,
+                  /*allow_credentials_header=*/absl::nullopt,
+                  network::mojom::CredentialsMode::kOmit, origin)
+                  .has_value());
+  EXPECT_TRUE(PreflightController::CheckPreflightAccessForTesting(
+                  response_url, 299, allow_all_header,
+                  /*allow_credentials_header=*/absl::nullopt,
+                  network::mojom::CredentialsMode::kOmit, origin)
+                  .has_value());
 
   // Status 300 should fail.
-  absl::optional<CorsErrorStatus> invalid_status_error =
-      PreflightController::CheckPreflightAccessForTesting(
-          response_url, 300, allow_all_header,
-          /*allow_credentials_header=*/absl::nullopt,
-          network::mojom::CredentialsMode::kOmit, origin);
-  ASSERT_TRUE(invalid_status_error);
+  const auto result300 = PreflightController::CheckPreflightAccessForTesting(
+      response_url, 300, allow_all_header,
+      /*allow_credentials_header=*/absl::nullopt,
+      network::mojom::CredentialsMode::kOmit, origin);
+  ASSERT_FALSE(result300.has_value());
   EXPECT_EQ(mojom::CorsError::kPreflightInvalidStatus,
-            invalid_status_error->cors_error);
+            result300.error().cors_error);
 
   // Status 0 should fail too.
-  invalid_status_error = PreflightController::CheckPreflightAccessForTesting(
+  const auto result0 = PreflightController::CheckPreflightAccessForTesting(
       response_url, 0, allow_all_header,
       /*allow_credentials_header=*/absl::nullopt,
       network::mojom::CredentialsMode::kOmit, origin);
-  ASSERT_TRUE(invalid_status_error);
+  ASSERT_FALSE(result0.has_value());
   EXPECT_EQ(mojom::CorsError::kPreflightInvalidStatus,
-            invalid_status_error->cors_error);
+            result0.error().cors_error);
 }
 
 }  // namespace

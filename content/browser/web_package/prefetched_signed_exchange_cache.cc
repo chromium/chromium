@@ -221,7 +221,7 @@ class InnerResponseURLLoader : public network::mojom::URLLoader {
 
     if (network::cors::ShouldCheckCors(request.url, request.request_initiator,
                                        request.mode)) {
-      const auto error_status = network::cors::CheckAccessAndReportMetrics(
+      const auto result = network::cors::CheckAccessAndReportMetrics(
           request.url,
           GetHeaderString(
               *response_,
@@ -230,8 +230,8 @@ class InnerResponseURLLoader : public network::mojom::URLLoader {
               *response_,
               network::cors::header_names::kAccessControlAllowCredentials),
           request.credentials_mode, *request.request_initiator);
-      if (error_status) {
-        client_->OnComplete(network::URLLoaderCompletionStatus(*error_status));
+      if (!result.has_value()) {
+        client_->OnComplete(network::URLLoaderCompletionStatus(result.error()));
         return;
       }
     }

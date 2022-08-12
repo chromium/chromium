@@ -495,7 +495,7 @@ void CorsURLLoader::OnReceiveResponse(mojom::URLResponseHeadPtr response_head,
       request_.is_revalidating && response_head->headers &&
       response_head->headers->response_code() == 304;
   if (fetch_cors_flag_ && !is_304_for_revalidation) {
-    const auto error_status = CheckAccessAndReportMetrics(
+    const auto result = CheckAccessAndReportMetrics(
         request_.url,
         GetHeaderString(*response_head,
                         header_names::kAccessControlAllowOrigin),
@@ -503,8 +503,8 @@ void CorsURLLoader::OnReceiveResponse(mojom::URLResponseHeadPtr response_head,
                         header_names::kAccessControlAllowCredentials),
         request_.credentials_mode,
         tainted_ ? url::Origin() : *request_.request_initiator);
-    if (error_status) {
-      HandleComplete(URLLoaderCompletionStatus(*error_status));
+    if (!result.has_value()) {
+      HandleComplete(URLLoaderCompletionStatus(result.error()));
       return;
     }
   }
@@ -539,7 +539,7 @@ void CorsURLLoader::OnReceiveRedirect(const net::RedirectInfo& redirect_info,
   // If `CORS flag` is set and a CORS check for `request` and `response` returns
   // failure, then return a network error.
   if (fetch_cors_flag_ && IsCorsEnabledRequestMode(request_.mode)) {
-    const auto error_status = CheckAccessAndReportMetrics(
+    const auto result = CheckAccessAndReportMetrics(
         request_.url,
         GetHeaderString(*response_head,
                         header_names::kAccessControlAllowOrigin),
@@ -547,8 +547,8 @@ void CorsURLLoader::OnReceiveRedirect(const net::RedirectInfo& redirect_info,
                         header_names::kAccessControlAllowCredentials),
         request_.credentials_mode,
         tainted_ ? url::Origin() : *request_.request_initiator);
-    if (error_status) {
-      HandleComplete(URLLoaderCompletionStatus(*error_status));
+    if (!result.has_value()) {
+      HandleComplete(URLLoaderCompletionStatus(result.error()));
       return;
     }
   }

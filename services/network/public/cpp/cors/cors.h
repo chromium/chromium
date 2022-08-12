@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/types/expected.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
 #include "services/network/public/mojom/cors.mojom-shared.h"
@@ -68,7 +69,7 @@ enum class AccessCheckResult {
 // Performs a CORS access check on the response parameters.
 // This implements https://fetch.spec.whatwg.org/#concept-cors-check
 COMPONENT_EXPORT(NETWORK_CPP)
-absl::optional<CorsErrorStatus> CheckAccess(
+base::expected<void, CorsErrorStatus> CheckAccess(
     const GURL& response_url,
     const absl::optional<std::string>& allow_origin_header,
     const absl::optional<std::string>& allow_credentials_header,
@@ -77,7 +78,7 @@ absl::optional<CorsErrorStatus> CheckAccess(
 
 // Performs a CORS access check and reports result and error.
 COMPONENT_EXPORT(NETWORK_CPP)
-absl::optional<CorsErrorStatus> CheckAccessAndReportMetrics(
+base::expected<void, CorsErrorStatus> CheckAccessAndReportMetrics(
     const GURL& response_url,
     const absl::optional<std::string>& allow_origin_header,
     const absl::optional<std::string>& allow_credentials_header,

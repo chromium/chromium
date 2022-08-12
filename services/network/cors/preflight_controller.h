@@ -11,6 +11,7 @@
 #include "base/component_export.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/raw_ptr.h"
+#include "base/types/expected.h"
 #include "base/types/strong_alias.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/cors/preflight_cache.h"
@@ -84,7 +85,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightController final {
       absl::optional<CorsErrorStatus>* detected_error_status);
 
   // Checks CORS aceess on the CORS-preflight response parameters for testing.
-  static absl::optional<CorsErrorStatus> CheckPreflightAccessForTesting(
+  static base::expected<void, CorsErrorStatus> CheckPreflightAccessForTesting(
       const GURL& response_url,
       const int response_status_code,
       const absl::optional<std::string>& allow_origin_header,

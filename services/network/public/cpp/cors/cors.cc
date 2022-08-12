@@ -145,7 +145,7 @@ const char kAccessControlRequestPrivateNetwork[] =
 }  // namespace header_names
 
 // See https://fetch.spec.whatwg.org/#cors-check.
-absl::optional<CorsErrorStatus> CheckAccess(
+base::expected<void, CorsErrorStatus> CheckAccess(
     const GURL& response_url,
     const absl::optional<std::string>& allow_origin_header,
     const absl::optional<std::string>& allow_credentials_header,
@@ -156,7 +156,7 @@ absl::optional<CorsErrorStatus> CheckAccess(
     // to be sent, even with Access-Control-Allow-Credentials set to true.
     // See https://fetch.spec.whatwg.org/#cors-protocol-and-credentials.
     if (credentials_mode != mojom::CredentialsMode::kInclude)
-      return absl::nullopt;
+      return base::expected<void, CorsErrorStatus>();
 
     // Since the credential is a concept for network schemes, we perform the
     // wildcard check only for HTTP and HTTPS. This is a quick hack to allow
@@ -164,10 +164,13 @@ absl::optional<CorsErrorStatus> CheckAccess(
     // TODO(https://crbug.com/736308): Once the callers exist only in the
     // browser process or network service, this check won't be needed any more
     // because it is always for network requests there.
-    if (response_url.SchemeIsHTTPOrHTTPS())
-      return CorsErrorStatus(mojom::CorsError::kWildcardOriginNotAllowed);
+    if (response_url.SchemeIsHTTPOrHTTPS()) {
+      return base::unexpected<CorsErrorStatus>(
+          CorsErrorStatus(mojom::CorsError::kWildcardOriginNotAllowed));
+    }
   } else if (!allow_origin_header) {
-    return CorsErrorStatus(mojom::CorsError::kMissingAllowOriginHeader);
+    return base::unexpected<CorsErrorStatus>(
+        CorsErrorStatus(mojom::CorsError::kMissingAllowOriginHeader));
   } else if (*allow_origin_header != origin.Serialize()) {
     // We do not use url::Origin::IsSameOriginWith() here for two reasons below.
     //  1. Allow "null" to match here. The latest spec does not have a clear
@@ -186,26 +189,26 @@ absl::optional<CorsErrorStatus> CheckAccess(
     // Does not allow to have multiple origins in the allow origin header.
     // See https://fetch.spec.whatwg.org/#http-access-control-allow-origin.
     if (allow_origin_header->find_first_of(" ,") != std::string::npos) {
-      return CorsErrorStatus(mojom::CorsError::kMultipleAllowOriginValues,
-                             *allow_origin_header);
+      return base::unexpected<CorsErrorStatus>(CorsErrorStatus(
+          mojom::CorsError::kMultipleAllowOriginValues, *allow_origin_header));
     }
 
     // Check valid "null" first since GURL assumes it as invalid.
     if (*allow_origin_header == "null") {
-      return CorsErrorStatus(mojom::CorsError::kAllowOriginMismatch,
-                             *allow_origin_header);
+      return base::unexpected<CorsErrorStatus>(CorsErrorStatus(
+          mojom::CorsError::kAllowOriginMismatch, *allow_origin_header));
     }
 
     // As commented above, this validation is not strict as an origin
     // validation, but should be ok for providing error details to developers.
     GURL header_origin(*allow_origin_header);
     if (!header_origin.is_valid()) {
-      return CorsErrorStatus(mojom::CorsError::kInvalidAllowOriginValue,
-                             *allow_origin_header);
+      return base::unexpected<CorsErrorStatus>(CorsErrorStatus(
+          mojom::CorsError::kInvalidAllowOriginValue, *allow_origin_header));
     }
 
-    return CorsErrorStatus(mojom::CorsError::kAllowOriginMismatch,
-                           *allow_origin_header);
+    return base::unexpected<CorsErrorStatus>(CorsErrorStatus(
+        mojom::CorsError::kAllowOriginMismatch, *allow_origin_header));
   }
 
   if (credentials_mode == mojom::CredentialsMode::kInclude) {
@@ -213,31 +216,33 @@ absl::optional<CorsErrorStatus> CheckAccess(
     // This check should be case sensitive.
     // See also https://fetch.spec.whatwg.org/#http-new-header-syntax.
     if (allow_credentials_header != kLowerCaseTrue) {
-      return CorsErrorStatus(mojom::CorsError::kInvalidAllowCredentials,
-                             allow_credentials_header.value_or(std::string()));
+      return base::unexpected<CorsErrorStatus>(
+          CorsErrorStatus(mojom::CorsError::kInvalidAllowCredentials,
+                          allow_credentials_header.value_or(std::string())));
     }
   }
-  return absl::nullopt;
+  return base::expected<void, CorsErrorStatus>();
 }
 
-absl::optional<CorsErrorStatus> CheckAccessAndReportMetrics(
+base::expected<void, CorsErrorStatus> CheckAccessAndReportMetrics(
     const GURL& response_url,
     const absl::optional<std::string>& allow_origin_header,
     const absl::optional<std::string>& allow_credentials_header,
     mojom::CredentialsMode credentials_mode,
     const url::Origin& origin) {
-  absl::optional<CorsErrorStatus> error_status =
+  auto check_result =
       CheckAccess(response_url, allow_origin_header, allow_credentials_header,
                   credentials_mode, origin);
-  cors::AccessCheckResult result = error_status
-                                       ? cors::AccessCheckResult::kNotPermitted
-                                       : cors::AccessCheckResult::kPermitted;
+  cors::AccessCheckResult result = check_result.has_value()
+                                       ? cors::AccessCheckResult::kPermitted
+                                       : cors::AccessCheckResult::kNotPermitted;
+
   base::UmaHistogramEnumeration("Net.Cors.AccessCheckResult", result);
   if (!IsOriginPotentiallyTrustworthy(origin)) {
     base::UmaHistogramEnumeration(
         "Net.Cors.AccessCheckResult.NotSecureRequestor", result);
   }
-  return error_status;
+  return check_result;
 }
 
 bool ShouldCheckCors(const GURL& request_url,
