@@ -463,11 +463,11 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   // measure while the flatland migration is in progress (fxbug.dev/90502).
   virtual void UpdateDeviceScaleFactor();
 
-  // Accessors.
-  ui::AXTreeID ax_tree_id() const { return ax_tree_id_; }
-
   float device_scale_factor() const;
-  ui::AXTree* ax_tree() const { return tree_.get(); }
+
+  ui::AXSerializableTree* ax_serializable_tree() const {
+    return static_cast<ui::AXSerializableTree*>(ax_tree());
+  }
 
   // AXTreeObserver implementation.
   void OnTreeDataChanged(ui::AXTree* tree,
@@ -626,9 +626,6 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   // once when this subtree is first connected.
   bool connected_to_parent_tree_node_;
 
-  // The global ID of this accessibility tree.
-  ui::AXTreeID ax_tree_id_;
-
   // The device scale factor for the view associated with this frame,
   // cached each time there's any update to the accessibility tree.
   float device_scale_factor_;
@@ -709,9 +706,6 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   // called first.
   BrowserAccessibility* AXTreeHitTest(
       const gfx::Point& blink_screen_point) const;
-
-  // The underlying tree of accessibility objects.
-  std::unique_ptr<ui::AXSerializableTree> tree_;
 
   ui::AXEventGenerator event_generator_;
 

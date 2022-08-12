@@ -155,6 +155,7 @@ component("accessibility") {
     "ax_tree.h",
     "ax_tree_combiner.cc",
     "ax_tree_combiner.h",
+    "ax_tree_manager.cc",
     "ax_tree_manager.h",
     "ax_tree_manager_base.cc",
     "ax_tree_manager_base.h",

@@ -30,7 +30,7 @@ class AX_EXPORT TestAXTreeManager : public AXTreeManager {
   // Takes ownership of |tree|.
   explicit TestAXTreeManager(std::unique_ptr<AXTree> tree);
 
-  virtual ~TestAXTreeManager();
+  ~TestAXTreeManager() override;
 
   TestAXTreeManager(const TestAXTreeManager& manager) = delete;
   TestAXTreeManager& operator=(const TestAXTreeManager& manager) = delete;
@@ -54,9 +54,6 @@ class AX_EXPORT TestAXTreeManager : public AXTreeManager {
   AXNode* GetRootAsAXNode() const override;
   AXNode* GetParentNodeFromParentTreeAsAXNode() const override;
   std::string ToString() const override;
-
- private:
-  std::unique_ptr<AXTree> tree_;
 };
 
 }  // namespace ui

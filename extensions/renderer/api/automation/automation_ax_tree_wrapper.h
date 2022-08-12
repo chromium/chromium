@@ -48,7 +48,6 @@ class AutomationAXTreeWrapper : public ui::AXTreeObserver,
       const std::string& app_id,
       const AutomationInternalCustomBindings* owner);
 
-  ui::AXTree* tree() { return &tree_; }
   AutomationInternalCustomBindings* owner() { return owner_; }
 
   // Called by AutomationInternalCustomBindings::OnAccessibilityEvents on
@@ -138,8 +137,6 @@ class AutomationAXTreeWrapper : public ui::AXTreeObserver,
                         ui::AXNode* node,
                         bool is_ignored_new_value) override;
 
-  ui::AXTreeID tree_id_;
-  ui::AXTree tree_;
   AutomationInternalCustomBindings* owner_;
   std::vector<int> deleted_node_ids_;
   std::vector<int> text_changed_node_ids_;
