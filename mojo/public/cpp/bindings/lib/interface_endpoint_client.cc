@@ -674,6 +674,12 @@ bool InterfaceEndpointClient::HandleIncomingMessage(Message* message) {
 
 void InterfaceEndpointClient::NotifyError(
     const absl::optional<DisconnectReason>& reason) {
+  TRACE_EVENT("toplevel", "Closed mojo endpoint",
+              [&](perfetto::EventContext& ctx) {
+                auto* info = ctx.event()->set_chrome_mojo_event_info();
+                info->set_mojo_interface_tag(interface_name_);
+              });
+
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (encountered_error_)
