@@ -163,7 +163,7 @@ bool AtDomainWithPathPrefix(GURL url,
 }
 
 template <size_t N>
-bool IsAllowedUrlWithPathPrefix(const char* (&allowedDomainAndPaths)[N][2],
+bool IsMatchedUrlWithPathPrefix(const char* (&allowedDomainAndPaths)[N][2],
                                 GURL url) {
   if (IsTestUrl(url) || IsInternalWebsite(url))
     return true;
@@ -200,7 +200,7 @@ bool IsAllowedUrlLegacy(const char* (&allowedDomainAndPaths)[N][2]) {
 }
 
 template <size_t N>
-bool IsAllowedApp(const char* (&allowedApps)[N]) {
+bool IsMatchedApp(const char* (&allowedApps)[N]) {
   // WMHelper is not available in Chrome on Linux.
   if (!exo::WMHelper::HasInstance())
     return false;
@@ -227,17 +227,17 @@ bool IsAllowedApp(const char* (&allowedApps)[N]) {
 
 bool IsAllowedUrlOrAppForPersonalInfoSuggestion() {
   return IsAllowedUrlLegacy(kAllowedDomainAndPathsForPersonalInfoSuggester) ||
-         IsAllowedApp(kAllowedAppsForPersonalInfoSuggester);
+         IsMatchedApp(kAllowedAppsForPersonalInfoSuggester);
 }
 
 bool IsAllowedUrlOrAppForEmojiSuggestion() {
   return IsAllowedUrlLegacy(kAllowedDomainAndPathsForEmojiSuggester) ||
-         IsAllowedApp(kAllowedAppsForEmojiSuggester);
+         IsMatchedApp(kAllowedAppsForEmojiSuggester);
 }
 
 bool IsAllowedUrlOrAppForMultiWordSuggestion() {
   return IsAllowedUrlLegacy(kAllowedDomainAndPathsForMultiWordSuggester) ||
-         IsAllowedApp(kAllowedAppsForMultiWordSuggester);
+         IsMatchedApp(kAllowedAppsForMultiWordSuggester);
 }
 
 void ReturnEnabledSuggestions(
@@ -248,20 +248,23 @@ void ReturnEnabledSuggestions(
     return;
   }
 
+  // Allow-list (will only allow if matched)
   bool emoji_suggestions_allowed =
-      IsAllowedUrlWithPathPrefix(kAllowedDomainAndPathsForEmojiSuggester,
+      IsMatchedUrlWithPathPrefix(kAllowedDomainAndPathsForEmojiSuggester,
                                  *current_url) ||
-      IsAllowedApp(kAllowedAppsForEmojiSuggester);
+      IsMatchedApp(kAllowedAppsForEmojiSuggester);
 
+  // Allow-list (will only allow if matched)
   bool multi_word_suggestions_allowed =
-      IsAllowedUrlWithPathPrefix(kAllowedDomainAndPathsForMultiWordSuggester,
+      IsMatchedUrlWithPathPrefix(kAllowedDomainAndPathsForMultiWordSuggester,
                                  *current_url) ||
-      IsAllowedApp(kAllowedAppsForMultiWordSuggester);
+      IsMatchedApp(kAllowedAppsForMultiWordSuggester);
 
+  // Allow-list (will only allow if matched)
   bool personal_info_suggestions_allowed =
-      IsAllowedUrlWithPathPrefix(kAllowedDomainAndPathsForPersonalInfoSuggester,
+      IsMatchedUrlWithPathPrefix(kAllowedDomainAndPathsForPersonalInfoSuggester,
                                  *current_url) ||
-      IsAllowedApp(kAllowedAppsForPersonalInfoSuggester);
+      IsMatchedApp(kAllowedAppsForPersonalInfoSuggester);
 
   std::move(callback).Run(AssistiveSuggesterSwitch::EnabledSuggestions{
       .emoji_suggestions = emoji_suggestions_allowed,
