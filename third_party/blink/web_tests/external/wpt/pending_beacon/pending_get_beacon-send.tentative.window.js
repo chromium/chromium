@@ -9,7 +9,7 @@ const baseUrl = `${location.protocol}//${location.host}`;
 
 parallelPromiseTest(async t => {
   const uuid = token();
-  const url = generateSetBeaconCountURL(uuid);
+  const url = generateSetBeaconURL(uuid);
 
   let beacon = new PendingGetBeacon('/');
 
@@ -17,12 +17,12 @@ parallelPromiseTest(async t => {
   assert_equals(beacon.url, url);
   beacon.sendNow();
 
-  await expectBeaconCount(uuid, 1);
+  await expectBeacon(uuid, {count: 1});
 }, 'PendingGetBeacon is sent to the updated URL');
 
 parallelPromiseTest(async t => {
   const uuid = token();
-  const url = generateSetBeaconCountURL(uuid);
+  const url = generateSetBeaconURL(uuid);
 
   let beacon = new PendingGetBeacon('/0');
 
@@ -36,5 +36,5 @@ parallelPromiseTest(async t => {
 
   beacon.sendNow();
 
-  await expectBeaconCount(uuid, 1);
+  await expectBeacon(uuid, {count: 1});
 }, 'PendingGetBeacon is sent to the last updated URL');
