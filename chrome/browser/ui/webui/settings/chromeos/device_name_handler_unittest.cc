@@ -68,15 +68,15 @@ class DeviceNameHandlerTest : public testing::Test {
     EXPECT_EQ("settings.updateDeviceNameMetadata",
               call_data.arg1()->GetString());
 
-    const base::DictionaryValue* returned_data;
-    ASSERT_TRUE(call_data.arg2()->GetAsDictionary(&returned_data));
+    ASSERT_TRUE(call_data.arg2()->is_dict());
+    const base::Value::Dict& returned_data = call_data.arg2()->GetDict();
 
-    std::string device_name;
-    returned_data->GetString("deviceName", &device_name);
-    EXPECT_EQ(expected_device_name, device_name);
+    const std::string* device_name = returned_data.FindString("deviceName");
+    ASSERT_TRUE(device_name);
+    EXPECT_EQ(expected_device_name, *device_name);
 
     absl::optional<int> device_name_state =
-        returned_data->FindIntKey("deviceNameState");
+        returned_data.FindInt("deviceNameState");
     ASSERT_TRUE(device_name_state);
     EXPECT_EQ(static_cast<int>(expected_device_name_state), *device_name_state);
   }
