@@ -50,7 +50,7 @@ const base::Feature kEnableFullscreenAPI{"EnableFullscreenAPI",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kMediaPermissionsControl{"MediaPermissionsControl",
-                                             base::FEATURE_ENABLED_BY_DEFAULT};
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kUseLoadSimulatedRequestForOfflinePage{
     "UseLoadSimulatedRequestForErrorPageNavigation",
