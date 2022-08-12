@@ -15,6 +15,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/optimization_guide/content/browser/page_content_annotations_validator.h"
+#include "components/optimization_guide/core/entity_metadata.h"
 #include "components/optimization_guide/core/local_page_entities_metadata_provider.h"
 #include "components/optimization_guide/core/noisy_metrics_recorder.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
@@ -583,19 +584,29 @@ void PageContentAnnotationsService::OnEntityMetadataRetrieved(
     const std::string& entity_id,
     int weight,
     const absl::optional<EntityMetadata>& entity_metadata) {
-  if (!optimization_guide_logger_ || !entity_metadata.has_value())
+  if (!entity_metadata.has_value())
     return;
 
   GURL::Replacements replacements;
   replacements.ClearQuery();
   replacements.ClearRef();
 
-  OPTIMIZATION_GUIDE_LOGGER(
-      optimization_guide_common::mojom::LogSource::PAGE_CONTENT_ANNOTATIONS,
-      optimization_guide_logger_)
-      << "Entities: Url=" << url.ReplaceComponents(replacements)
-      << " Weight=" << std::to_string(weight) << ". "
-      << entity_metadata->ToHumanReadableString();
+  for (const auto& collection : entity_metadata->collections) {
+    PageEntityCollection page_entity_collection =
+        GetPageEntityCollectionForString(collection);
+    base::UmaHistogramEnumeration(
+        "OptimizationGuide.PageContentAnnotations.EntityCollection_50",
+        page_entity_collection);
+  }
+
+  if (optimization_guide_logger_) {
+    OPTIMIZATION_GUIDE_LOGGER(
+        optimization_guide_common::mojom::LogSource::PAGE_CONTENT_ANNOTATIONS,
+        optimization_guide_logger_)
+        << "Entities: Url=" << url.ReplaceComponents(replacements)
+        << " Weight=" << base::NumberToString(weight) << ". "
+        << entity_metadata->ToHumanReadableString();
+  }
 }
 
 // static

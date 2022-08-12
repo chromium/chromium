@@ -633,6 +633,20 @@ chromium-metrics-reviews@google.com.
   <token key="AnnotationType" variants="AnnotationType"/>
 </histogram>
 
+<histogram name="OptimizationGuide.PageContentAnnotations.EntityCollection_50"
+    enum="OptimizationGuidePageEntityCollection" expires_after="2022-11-20">
+  <owner>tbansal@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Emits all collections associated high weight entities (with score equal or
+    higher than 50 on a scale of 0 to 100) associated with a page visit.
+
+    Note that these are emitted when the user browses to a webpage. When that
+    happens, multiple collections may be emitted per webpage. Only the
+    collections associated with high weight entities are recorded.
+  </summary>
+</histogram>
+
 <histogram
     name="OptimizationGuide.PageContentAnnotations.JobExecutionTime.{AnnotationType}"
     units="ms" expires_after="M109">
