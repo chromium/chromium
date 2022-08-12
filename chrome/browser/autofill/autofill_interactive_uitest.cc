@@ -3726,6 +3726,23 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, ShadowDOM) {
   EXPECT_EQ("78744", Js("getZip()"));
 }
 
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, ShadowDOMNoInference) {
+  CreateTestProfile();
+  GURL url = embedded_test_server()->GetURL(
+      "a.com", "/autofill/shadowdom-no-inference.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  ASSERT_TRUE(AutofillFlow(ElementExpr("getNameElement()"), this));
+
+  auto Js = [this](const std::string& code) {
+    return content::EvalJs(GetWebContents(), code);
+  };
+
+  EXPECT_EQ("Milton C. Waddams", Js("getName()"));
+  EXPECT_EQ("4120 Freidrich Lane", Js("getAddress()"));
+  EXPECT_EQ("TX", Js("getState()"));
+}
+
 // ChromeVox is only available on ChromeOS.
 #if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(ENABLE_EXTENSIONS)
 
