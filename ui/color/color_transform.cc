@@ -205,6 +205,21 @@ ColorTransform GetColorWithMaxContrast(ColorTransform transform) {
   return base::BindRepeating(generator, std::move(transform));
 }
 
+ColorTransform GetEndpointColorWithMinContrast(ColorTransform transform) {
+  const auto generator = [](ColorTransform transform, SkColor input_color,
+                            const ColorMixer& mixer) {
+    const SkColor transform_color = transform.Run(input_color, mixer);
+    const SkColor result_color =
+        color_utils::GetEndpointColorWithMinContrast(transform_color);
+    DVLOG(2) << "ColorTransform GetEndPointColorWithMinContrast:"
+             << " Input Color: " << SkColorName(input_color)
+             << " Transform Color: " << SkColorName(transform_color)
+             << " Result Color: " << SkColorName(result_color);
+    return result_color;
+  };
+  return base::BindRepeating(generator, std::move(transform));
+}
+
 ColorTransform GetResultingPaintColor(ColorTransform foreground_transform,
                                       ColorTransform background_transform) {
   const auto generator = [](ColorTransform foreground_transform,

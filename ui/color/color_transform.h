@@ -95,6 +95,11 @@ COMPONENT_EXPORT(COLOR) ColorTransform FromTransformInput();
 COMPONENT_EXPORT(COLOR)
 ColorTransform GetColorWithMaxContrast(ColorTransform transform);
 
+// A transform which returns the end point color with min contrast against the
+// result of |transform|.
+COMPONENT_EXPORT(COLOR)
+ColorTransform GetEndpointColorWithMinContrast(ColorTransform transform);
+
 // A transform which returns the resulting paint color of the result of
 // |foreground_transform| over the result of |background_transform|.
 COMPONENT_EXPORT(COLOR)
