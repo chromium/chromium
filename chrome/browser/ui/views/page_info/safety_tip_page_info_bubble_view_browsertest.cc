@@ -1329,6 +1329,10 @@ IN_PROC_BROWSER_TEST_F(
 // be removed from the code including CheckHeuristicsUkmRecord.
 IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
                        TriggerOnComboSquatting) {
+  // Set a launch config with 100% rollout for Combo Squatting.
+  reputation::AddSafetyTipHeuristicLaunchConfigForTesting(
+      reputation::HeuristicLaunchConfig::HEURISTIC_COMBO_SQUATTING_TOP_DOMAINS,
+      100);
   base::HistogramTester histograms;
   const GURL kNavigatedUrl = GetURL("google-login.com");
   SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
@@ -1378,6 +1382,10 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
 // triggers `lookalike` heuristic.
 IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
                        TriggerOnlyOnComboSquatting) {
+  // Set a launch config with 100% rollout for Combo Squatting.
+  reputation::AddSafetyTipHeuristicLaunchConfigForTesting(
+      reputation::HeuristicLaunchConfig::HEURISTIC_COMBO_SQUATTING_TOP_DOMAINS,
+      100);
   base::HistogramTester histograms;
   const GURL kNavigatedUrl = GetURL("costco-login.com");
   SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
@@ -1430,6 +1438,11 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
 // heuristic.
 IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
                        TriggerOnComboSquattingSiteEngagement) {
+  // Set a launch config with 100% rollout for Combo Squatting.
+  reputation::AddSafetyTipHeuristicLaunchConfigForTesting(
+      reputation::HeuristicLaunchConfig::
+          HEURISTIC_COMBO_SQUATTING_ENGAGED_SITES,
+      100);
   base::HistogramTester histograms;
   const GURL kEngagedUrl = GetURL("example.com");
   const GURL kNavigatedUrl = GetURL("example-login.com");
@@ -1472,6 +1485,49 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   CheckRecordedHeuristicsUkmCount(2);
   CheckHeuristicsUkmRecord({kNavigatedUrl, {false, true, false}}, 0);
   CheckHeuristicsUkmRecord({kNavigatedUrl, {false, true, false}}, 1);
+}
+
+// This test checks that Safety Tip is not showing when the Combo Squatting
+// is not enabled for hard coded list by gradual roll out.
+IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
+                       NotTriggerOnComboSquattingButNotLaunched) {
+  base::HistogramTester histograms;
+  const GURL kNavigatedUrl = GetURL("costco-login.com");
+  SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
+
+  NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
+
+  histograms.ExpectTotalCount(lookalikes::kHistogramName, 1);
+  histograms.ExpectBucketCount(lookalikes::kHistogramName,
+                               NavigationSuggestionEvent::kComboSquatting, 1);
+
+  // Make sure that the UI is not showing, and that no UKM data has been
+  // recorded.
+  ASSERT_FALSE(IsUIShowing());
+  CheckRecordedHeuristicsUkmCount(0);
+}
+
+// This test checks that Safety Tip is not showing when the Combo Squatting
+// is not enabled for engaged sites by gradual roll out.
+IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
+                       NotTriggerOnComboSquattingSiteEngagementNotLaunched) {
+  base::HistogramTester histograms;
+  const GURL kEngagedUrl = GetURL("example.com");
+  const GURL kNavigatedUrl = GetURL("example-login.com");
+  SetEngagementScore(browser(), kEngagedUrl, kHighEngagement);
+  SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
+
+  NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
+
+  histograms.ExpectTotalCount(lookalikes::kHistogramName, 1);
+  histograms.ExpectBucketCount(
+      lookalikes::kHistogramName,
+      NavigationSuggestionEvent::kComboSquattingSiteEngagement, 1);
+
+  // Make sure that the UI is not showing, and that no UKM data has been
+  // recorded.
+  ASSERT_FALSE(IsUIShowing());
+  CheckRecordedHeuristicsUkmCount(0);
 }
 
 // Tests for Digital Asset Links for lookalike checks.

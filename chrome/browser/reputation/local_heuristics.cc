@@ -111,9 +111,17 @@ bool ShouldTriggerSafetyTipFromLookalike(
           reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP_TOP_SITES,
           navigated_domain.domain_and_registry, chrome::GetChannel());
     case LookalikeUrlMatchType::kComboSquatting:
-      return true;
+      return IsHeuristicEnabledForHostname(
+          config,
+          reputation::HeuristicLaunchConfig::
+              HEURISTIC_COMBO_SQUATTING_TOP_DOMAINS,
+          navigated_domain.domain_and_registry, chrome::GetChannel());
     case LookalikeUrlMatchType::kComboSquattingSiteEngagement:
-      return true;
+      return IsHeuristicEnabledForHostname(
+          config,
+          reputation::HeuristicLaunchConfig::
+              HEURISTIC_COMBO_SQUATTING_ENGAGED_SITES,
+          navigated_domain.domain_and_registry, chrome::GetChannel());
     case LookalikeUrlMatchType::kNone:
       NOTREACHED();
   }
