@@ -838,6 +838,9 @@
   <message name="IDS_SETTINGS_PASSWORDS_IMPORT_FAILURES_SUMMARY" desc="Message is shown on the dialog for importing passwords if some passwords weren't imported.">
     Passwords not imported (<ph name="COUNT"><ex>42</ex>$1</ph>)
   </message>
+  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_ALREADY_ACTIVE" desc="Message is shown on the dialog for importing passwords if there is the import process is already running in another tab.">
+    You're already importing passwords in another tab
+  </message>
   <message name="IDS_SETTINGS_PASSWORDS_EXPORT_MENU_ITEM" desc="A menu item in the More Actions menu above the password list in Chrome's settings. Selecting this action will open a dialog, through which the user can export their passwords outside of Chrome.">
     Export passwords...
   </message>

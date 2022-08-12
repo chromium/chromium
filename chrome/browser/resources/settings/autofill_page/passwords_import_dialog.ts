@@ -11,6 +11,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/md_select_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import '../settings_shared.css.js';
 import '../site_favicon.js';
 
@@ -37,6 +38,7 @@ export enum ImportDialogState {
   START,
   ERROR,
   SUCCESS,
+  ALREADY_ACTIVE,
 }
 
 enum StoreOption {
@@ -72,6 +74,11 @@ export class PasswordsImportDialogElement extends
 
       descriptionText_: String,
 
+      inProgress_: {
+        type: Boolean,
+        value: false,
+      },
+
       results_: Object,
     };
   }
@@ -85,6 +92,7 @@ export class PasswordsImportDialogElement extends
   // store users who choose to import passwords to their account.
   private passwordsSavedToAccount_: boolean;
   private descriptionText_: string;
+  private inProgress_: boolean;
   private passwordManager_: PasswordManagerProxy =
       PasswordManagerImpl.getInstance();
 
@@ -139,6 +147,7 @@ export class PasswordsImportDialogElement extends
    * Handler for clicking the 'chooseFile' button. It triggers import flow.
    */
   private async onChooseFileClick_() {
+    this.inProgress_ = true;
     // For "non-account-store-users" users passwords are stored in the "profile"
     // (DEVICE) store.
     let destinationStore = chrome.passwordsPrivate.PasswordStoreSet.DEVICE;
@@ -151,6 +160,7 @@ export class PasswordsImportDialogElement extends
     }
     this.results_ =
         await this.passwordManager_.importPasswords(destinationStore);
+    this.inProgress_ = false;
     switch (this.results_.status) {
       case chrome.passwordsPrivate.ImportResultsStatus.SUCCESS:
         this.handleSuccess_();
@@ -167,6 +177,10 @@ export class PasswordsImportDialogElement extends
       case chrome.passwordsPrivate.ImportResultsStatus.DISMISSED:
         // Dialog state should not change if a system file picker was dismissed.
         return;
+      case chrome.passwordsPrivate.ImportResultsStatus.IMPORT_ALREADY_ACTIVE:
+        this.descriptionText_ = this.i18n('importPasswordsAlreadyActive');
+        this.dialogState = ImportDialogState.ALREADY_ACTIVE;
+        break;
       default:
         assertNotReached();
     }
