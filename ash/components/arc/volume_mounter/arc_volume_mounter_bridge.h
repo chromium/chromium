@@ -76,7 +76,7 @@ class ArcVolumeMounterBridge
   void OnMountEvent(
       ash::disks::DiskMountManager::MountEvent event,
       ash::MountError error_code,
-      const ash::disks::DiskMountManager::MountPointInfo& mount_info) override;
+      const ash::disks::DiskMountManager::MountPoint& mount_info) override;
 
   // ConnectionObserver<mojom::VolumeMounterInstance> overrides:
   void OnConnectionClosed() override;

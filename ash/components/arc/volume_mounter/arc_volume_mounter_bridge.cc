@@ -208,7 +208,7 @@ void ArcVolumeMounterBridge::OnVisibleStoragesChanged() {
 void ArcVolumeMounterBridge::OnMountEvent(
     DiskMountManager::MountEvent event,
     ash::MountError error_code,
-    const DiskMountManager::MountPointInfo& mount_info) {
+    const DiskMountManager::MountPoint& mount_info) {
   DCHECK(delegate_);
 
   // Skip mount events for volumes that are not shared with ARC (e.g., those
