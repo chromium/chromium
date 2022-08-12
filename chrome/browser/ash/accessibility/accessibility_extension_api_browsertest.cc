@@ -5,7 +5,10 @@
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/ui/accessibility_confirmation_dialog.h"
 #include "ash/shell.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/dictation_bubble_test_helper.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
@@ -293,6 +296,26 @@ IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest,
   // Enable Dictation to allow the API to work.
   Shell::Get()->accessibility_controller()->dictation().SetEnabled(true);
   ASSERT_TRUE(RunSubtest("testInstallPumpkinForDictation")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest,
+                       GetDlcContentsDlcNotOnDevice) {
+  ASSERT_TRUE(RunSubtest("testGetDlcContentsDlcNotOnDevice")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest, GetDlcContentsSuccess) {
+  // Create a fake DLC file. We need to put this in a ScopedTempDir because this
+  // test doesn't have write access to the actual DLC directory
+  // (/run/imageloader/).
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir dlc_dir;
+  ASSERT_TRUE(dlc_dir.CreateUniqueTempDir());
+  AccessibilityManager::Get()->SetDlcPathForTest(dlc_dir.GetPath());
+  std::string content = "Fake DLC file content";
+  ASSERT_TRUE(
+      base::WriteFile(dlc_dir.GetPath().Append("voice.zvoice"), content));
+
+  ASSERT_TRUE(RunSubtest("testGetDlcContentsSuccess")) << message_;
 }
 
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,

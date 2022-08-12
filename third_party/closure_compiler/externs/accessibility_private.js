@@ -324,6 +324,13 @@ chrome.accessibilityPrivate.DictationBubbleHintType = {
 chrome.accessibilityPrivate.DictationBubbleProperties;
 
 /**
+ * @enum {string}
+ */
+chrome.accessibilityPrivate.DlcType = {
+  TTS_ES_US: 'ttsEsUs',
+};
+
+/**
  * Property to indicate whether event source should default to touch.
  * @type {number}
  */
@@ -560,6 +567,14 @@ chrome.accessibilityPrivate.updateDictationBubble = function(properties) {};
  * Cancels the current and queued speech from ChromeVox.
  */
 chrome.accessibilityPrivate.silenceSpokenFeedback = function() {};
+
+/**
+ * Returns the contents of a DLC.
+ * @param {!chrome.accessibilityPrivate.DlcType} dlc The DLC of interest.
+ * @param {function(ArrayBuffer): void} callback A callback that is run when the
+ *     contents are returned.
+ */
+chrome.accessibilityPrivate.getDlcContents = function(dlc, callback) {};
 
 /**
  * Fired whenever ChromeVox should output introduction.

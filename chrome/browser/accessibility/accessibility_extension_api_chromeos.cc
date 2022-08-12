@@ -882,3 +882,29 @@ void AccessibilityPrivateInstallPumpkinForDictationFunction::
     OnPumpkinInstallFinished(bool success) {
   Respond(OneArgument(base::Value(success)));
 }
+
+ExtensionFunction::ResponseAction
+AccessibilityPrivateGetDlcContentsFunction::Run() {
+  std::unique_ptr<accessibility_private::GetDlcContents::Params> params(
+      accessibility_private::GetDlcContents::Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+  accessibility_private::DlcType dlc = params->dlc;
+
+  AccessibilityManager::Get()->GetDlcContents(
+      dlc,
+      base::BindOnce(
+          &AccessibilityPrivateGetDlcContentsFunction::OnDlcContentsRetrieved,
+          base::RetainedRef(this)));
+  return RespondLater();
+}
+
+void AccessibilityPrivateGetDlcContentsFunction::OnDlcContentsRetrieved(
+    const std::vector<uint8_t>& contents,
+    absl::optional<std::string> error) {
+  if (error.has_value()) {
+    Respond(Error(error.value()));
+    return;
+  }
+
+  Respond(OneArgument(base::Value(contents)));
+}

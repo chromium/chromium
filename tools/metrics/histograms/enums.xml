@@ -35337,6 +35337,7 @@ Called by update_extension_histograms.py.-->
   <int value="1696" label="AUTOTESTPRIVATE_SETALLOWEDPREF"/>
   <int value="1697" label="PASSWORDSPRIVATE_REQUESTCREDENTIALDETAILS"/>
   <int value="1698" label="DEVELOPERPRIVATE_GETMATCHINGEXTENSIONSFORSITE"/>
+  <int value="1699" label="ACCESSIBILITY_PRIVATE_GETDLCCONTENTS"/>
 </enum>
 
 <enum name="ExtensionIconState">

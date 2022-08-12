@@ -22,6 +22,7 @@
 #include "chrome/browser/extensions/api/braille_display_private/braille_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
+#include "chrome/common/extensions/api/accessibility_private.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
@@ -86,6 +87,9 @@ using AccessibilityStatusCallbackList =
     base::RepeatingCallbackList<void(const AccessibilityStatusEventDetails&)>;
 using AccessibilityStatusCallback =
     AccessibilityStatusCallbackList::CallbackType;
+using GetDlcContentsCallback =
+    base::OnceCallback<void(const std::vector<uint8_t>&,
+                            absl::optional<std::string>)>;
 
 class AccessibilityPanelWidgetObserver;
 
@@ -395,6 +399,11 @@ class AccessibilityManager
   // value of false.
   void InstallPumpkinForDictation(base::OnceCallback<void(bool)> callback);
 
+  // Reads the contents of a DLC file and runs `callback` with the results.
+  void GetDlcContents(::extensions::api::accessibility_private::DlcType dlc,
+                      GetDlcContentsCallback callback);
+  void SetDlcPathForTest(base::FilePath path);
+
  protected:
   AccessibilityManager();
   ~AccessibilityManager() override;
@@ -513,6 +522,10 @@ class AccessibilityManager
 
   void OnAppTerminating();
 
+  // Returns a full file path given a DLC.
+  base::FilePath DlcTypeToPath(
+      ::extensions::api::accessibility_private::DlcType dlc);
+
   // Profile which has the current a11y context.
   Profile* profile_ = nullptr;
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
@@ -601,6 +614,8 @@ class AccessibilityManager
 
   base::OnceCallback<void(bool)> install_pumpkin_callback_;
   bool is_pumpkin_installed_for_testing_ = false;
+
+  base::FilePath dlc_path_for_test_;
 
   base::CallbackListSubscription focus_changed_subscription_;
 

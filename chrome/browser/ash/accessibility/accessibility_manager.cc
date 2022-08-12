@@ -26,6 +26,8 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/files/file_util.h"
+#include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
@@ -35,6 +37,9 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "base/values.h"
 #include "chrome/browser/accessibility/accessibility_extension_api_chromeos.h"
 #include "chrome/browser/ash/accessibility/accessibility_extension_loader.h"
@@ -57,7 +62,6 @@
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/common/chrome_paths.h"
-#include "chrome/common/extensions/api/accessibility_private.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -100,6 +104,7 @@
 namespace ash {
 namespace {
 
+using ::extensions::api::accessibility_private::DlcType;
 using ::extensions::api::braille_display_private::BrailleController;
 using ::extensions::api::braille_display_private::DisplayState;
 using ::extensions::api::braille_display_private::KeyEvent;
@@ -120,6 +125,10 @@ const char kUserBluetoothBrailleDisplayAddress[] =
 
 // The name of the Brltty upstart job.
 constexpr char kBrlttyUpstartJobName[] = "brltty";
+
+// The path to the tts-es-us DLC.
+constexpr char kTtsEsUsDlcPath[] =
+    "/run/imageloader/tts-es-us/package/root/voice.zvoice";
 
 static AccessibilityManager* g_accessibility_manager = nullptr;
 
@@ -207,6 +216,58 @@ absl::optional<bool> GetDictationOfflineNudgePrefForLocale(
   const base::Value::Dict& offline_nudges = profile->GetPrefs()->GetValueDict(
       prefs::kAccessibilityDictationLocaleOfflineNudge);
   return offline_nudges.FindBoolByDottedPath(dictation_locale);
+}
+
+// Represents response data returned by `ReadDlcFile`.
+struct ReadDlcFileResponse {
+  ReadDlcFileResponse(std::vector<uint8_t> contents,
+                      absl::optional<std::string> error)
+      : contents(contents), error(error) {}
+  ~ReadDlcFileResponse() = default;
+  ReadDlcFileResponse(const ReadDlcFileResponse&) = default;
+  ReadDlcFileResponse& operator=(const ReadDlcFileResponse&) = default;
+
+  // The content of the DLC file.
+  std::vector<uint8_t> contents;
+  // An error, if any.
+  absl::optional<std::string> error;
+};
+
+// Reads the contents of a DLC file specified by `path`. Must run asynchronously
+// on a new ThreadPool.
+ReadDlcFileResponse ReadDlcFile(base::FilePath path) {
+  DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+
+  std::string error;
+  if (!base::PathExists(path)) {
+    error = "Error: DLC file does not exist on-device: " + path.AsUTF8Unsafe();
+    return ReadDlcFileResponse(std::vector<uint8_t>(), error);
+  }
+
+  int64_t file_size = 0;
+  if (!base::GetFileSize(path, &file_size) || (file_size <= 0)) {
+    error = "Error: failed to read size of file: " + path.AsUTF8Unsafe();
+    return ReadDlcFileResponse(std::vector<uint8_t>(), error);
+  }
+
+  std::vector<uint8_t> contents(file_size);
+  int bytes_read =
+      base::ReadFile(path, reinterpret_cast<char*>(contents.data()),
+                     base::checked_cast<int>(file_size));
+  if (bytes_read != file_size) {
+    error = "Error: could not read file: " + path.AsUTF8Unsafe();
+    return ReadDlcFileResponse(std::vector<uint8_t>(), error);
+  }
+
+  return ReadDlcFileResponse(contents, absl::nullopt);
+}
+
+// Runs when `ReadDlcFile` returns the contents of a file.
+void OnReadDlcFile(GetDlcContentsCallback callback,
+                   ReadDlcFileResponse response) {
+  std::move(callback).Run(response.contents, response.error);
 }
 
 }  // namespace
@@ -2236,6 +2297,30 @@ void AccessibilityManager::OnPumpkinError(const std::string& error) {
   std::move(install_pumpkin_callback_).Run(false);
   is_pumpkin_installed_for_testing_ = false;
   // TODO(akihiroota): Consider showing the error message to the user.
+}
+
+void AccessibilityManager::GetDlcContents(DlcType dlc,
+                                          GetDlcContentsCallback callback) {
+  base::FilePath path = DlcTypeToPath(dlc);
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()}, base::BindOnce(&ReadDlcFile, path),
+      base::BindOnce(&OnReadDlcFile, std::move(callback)));
+}
+
+base::FilePath AccessibilityManager::DlcTypeToPath(DlcType dlc) {
+  bool use_test_dlc_path = !dlc_path_for_test_.empty();
+  switch (dlc) {
+    case DlcType::DLC_TYPE_TTSESUS:
+      return use_test_dlc_path ? dlc_path_for_test_.Append("voice.zvoice")
+                               : base::FilePath(kTtsEsUsDlcPath);
+    case DlcType::DLC_TYPE_NONE:
+      NOTREACHED();
+      return base::FilePath();
+  }
+}
+
+void AccessibilityManager::SetDlcPathForTest(base::FilePath path) {
+  dlc_path_for_test_ = std::move(path);
 }
 
 }  // namespace ash

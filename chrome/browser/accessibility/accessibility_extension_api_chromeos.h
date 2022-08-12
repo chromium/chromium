@@ -8,6 +8,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/extensions/api/accessibility_private.h"
 #include "extensions/browser/extension_function.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // API function that enables or disables web content accessibility support.
 class AccessibilityPrivateSetNativeAccessibilityEnabledFunction
@@ -276,6 +277,17 @@ class AccessibilityPrivateInstallPumpkinForDictationFunction
                              ACCESSIBILITY_PRIVATE_INSTALLPUMPKINFORDICTATION)
  private:
   void OnPumpkinInstallFinished(bool success);
+};
+
+// API function that retrieves DLC file contents.
+class AccessibilityPrivateGetDlcContentsFunction : public ExtensionFunction {
+  ~AccessibilityPrivateGetDlcContentsFunction() override = default;
+  ResponseAction Run() override;
+  DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.getDlcContents",
+                             ACCESSIBILITY_PRIVATE_GETDLCCONTENTS)
+ private:
+  void OnDlcContentsRetrieved(const std::vector<uint8_t>& contents,
+                              absl::optional<std::string> error);
 };
 
 #endif  // CHROME_BROWSER_ACCESSIBILITY_ACCESSIBILITY_EXTENSION_API_CHROMEOS_H_

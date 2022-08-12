@@ -159,6 +159,26 @@ var availableTests = [
       chrome.test.succeed();
     });
   },
+
+  function testGetDlcContentsDlcNotOnDevice() {
+    const ttsDlc = chrome.accessibilityPrivate.DlcType.TTS_ES_US;
+    const error = 'Error: DLC file does not exist on-device: ' +
+        '/run/imageloader/tts-es-us/package/root/voice.zvoice';
+    chrome.accessibilityPrivate.getDlcContents(ttsDlc, (contents) => {
+      chrome.test.assertLastError(error);
+      chrome.test.succeed();
+    });
+  },
+
+  function testGetDlcContentsSuccess() {
+    const ttsDlc = chrome.accessibilityPrivate.DlcType.TTS_ES_US;
+    chrome.accessibilityPrivate.getDlcContents(ttsDlc, (contents) => {
+      chrome.test.assertNoLastError();
+      chrome.test.assertEq(
+          'Fake DLC file content', new TextDecoder().decode(contents));
+      chrome.test.succeed();
+    });
+  }
 ];
 
 chrome.test.getConfig(function(config) {

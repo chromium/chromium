@@ -285,6 +285,12 @@
             "optional": true
           }
         }
+      },
+      {
+        "id": "DlcType",
+        "type": "string",
+        "enum": ["ttsEsUs"],
+        "description": "Types of accessibility-specific DLCs."
       }
     ],
     "properties": {
@@ -733,6 +739,29 @@
         "type": "function",
         "description": "Cancels the current and queued speech from ChromeVox.",
         "parameters": []
+      },
+      {
+        "name": "getDlcContents",
+        "type": "function",
+        "description": "Returns the contents of a DLC.",
+        "parameters": [
+          {
+            "name": "dlc",
+            "$ref": "DlcType",
+            "description": "The DLC of interest."
+          }
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "A callback that is run when the contents are returned.",
+          "parameters": [
+            {
+              "name": "contents",
+              "type": "binary",
+              "description": "The contents of the DLC as a Uint8Array."
+            }
+          ]
+        }
       }
     ],
     "events": [
