@@ -31,6 +31,28 @@ async function triggerImportHelper(
   await passwordManager.whenCalled('importPasswords');
 }
 
+function assertIntialStatePartsAndClose(
+    importDialog: PasswordsImportDialogElement, expectedDescription: string) {
+  assertEquals(ImportDialogState.START, importDialog.dialogState);
+
+  const cancel = importDialog.shadowRoot!.querySelector<HTMLElement>('#cancel');
+  assertTrue(!!cancel);
+  const chooseFile =
+      importDialog.shadowRoot!.querySelector<HTMLElement>('#chooseFile');
+  assertTrue(!!chooseFile);
+
+  assertTrue(isVisible(cancel));
+  assertTrue(isVisible(chooseFile));
+
+  assertEquals(importDialog.i18n('cancel'), cancel.textContent!.trim());
+  assertEquals(
+      importDialog.i18n('importPasswordsChooseFile'),
+      chooseFile.textContent!.trim());
+  assertEquals(
+      expectedDescription, importDialog.$.descriptionText.textContent!.trim());
+  cancel.click();
+}
+
 suite('PasswordsImportDialog', function() {
   let passwordManager: TestPasswordManagerProxy;
   let pluralString: TestPluralStringProxy;
@@ -46,29 +68,37 @@ suite('PasswordsImportDialog', function() {
     elementFactory = new PasswordSectionElementFactory(document);
   });
 
-  test('hasCorrectInitialState', async function() {
-    const importDialog = elementFactory.createPasswordsImportDialog();
-    assertEquals(ImportDialogState.START, importDialog.dialogState);
+  test('hasCorrectNonSyncingInitialState', async function() {
+    const importDialog = elementFactory.createPasswordsImportDialog(
+        /*isUserSyncingPasswords=*/ false, /*isAccountStoreUser=*/ false);
 
-    const cancel =
-        importDialog.shadowRoot!.querySelector<HTMLElement>('#cancel');
-    assertTrue(!!cancel);
-    const chooseFile =
-        importDialog.shadowRoot!.querySelector<HTMLElement>('#chooseFile');
-    assertTrue(!!chooseFile);
+    assertIntialStatePartsAndClose(
+        importDialog, importDialog.i18n('importPasswordsDescriptionDevice'));
 
-    assertTrue(isVisible(cancel));
-    assertTrue(isVisible(chooseFile));
+    await eventToPromise('close', importDialog);
+  });
 
-    assertEquals(importDialog.i18n('cancel'), cancel.textContent!.trim());
-    assertEquals(
-        importDialog.i18n('importPasswordsChooseFile'),
-        chooseFile.textContent!.trim());
-    assertEquals(
-        importDialog.i18n('importPasswordsGenericDescription'),
-        importDialog.$.descriptionText.textContent!.trim());
+  test('hasCorrectSyncingInitialState', async function() {
+    const importDialog = elementFactory.createPasswordsImportDialog(
+        /*isUserSyncingPasswords=*/ true, /*isAccountStoreUser=*/ false,
+        /*accountEmail=*/ 'test@test.com');
 
-    cancel.click();
+    assertIntialStatePartsAndClose(
+        importDialog,
+        importDialog.i18n(
+            'importPasswordsDescriptionAccount', 'test@test.com'));
+
+    await eventToPromise('close', importDialog);
+  });
+
+  test('hasCorrectButterInitialState', async function() {
+    const importDialog = elementFactory.createPasswordsImportDialog(
+        /*isUserSyncingPasswords=*/ false, /*isAccountStoreUser=*/ true,
+        /*accountEmail=*/ 'test@test.com');
+
+    assertIntialStatePartsAndClose(
+        importDialog, importDialog.i18n('importPasswordsGenericDescription'));
+
     await eventToPromise('close', importDialog);
   });
 

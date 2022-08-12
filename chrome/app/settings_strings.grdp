@@ -619,8 +619,8 @@
   <message name="IDS_SETTINGS_PASSWORD_ADD_FOOTNOTE" desc="A footnote for the dialog which allows the user to add a new password.">
     Make sure you're saving your current password for this site
   </message>
-  <message name="IDS_SETTINGS_PASSWORD_ADD_STORE_OPTION_ACCOUNT" desc="An option of the store picker shown in the add password dialog if saving to the account">
-    Save in your Google Account (<ph name="EMAIL">$1<ex>username@gmail.com</ex></ph>)
+  <message name="IDS_SETTINGS_PASSWORD_STORE_PICKER_OPTION_ACCOUNT" desc="An option of the store picker shown in the add password dialog if saving to the Google Password Manager">
+    Save to Google Password Manager (<ph name="EMAIL">$1<ex>username@gmail.com</ex></ph>)
   </message>
   <message name="IDS_SETTINGS_PASSWORD_COPY" desc="Label for a context menu item that allows to copy the selected password into clipboard.">
     Copy password
@@ -783,13 +783,27 @@
   <message name="IDS_SETTINGS_PASSWORDS_IMPORT_CHOOSE_FILE" desc="A button in the dialog for importing passwords from Chrome. Passwords will be imported from the file, which the user will be asked to choose after initiating this action.">
     Choose file
   </message>
-  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_DESCRIPTION_GENERIC" desc="Text shown to the user on the dialog for importing passwords, before the user has chosen the file to import passwords from.">
-    To import passwords, select a CSV file.
+  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_DESCRIPTION_ACCOUNT_STORE_USERS" desc="Text shown to the account store users (who has the option to store passwords localy or in Google Password manager) on the dialog for importing passwords, before the user has chosen the file to import passwords from.">
+    To import passwords, select a CSV file
+  </message>
+  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_DESCRIPTION_SYNCING_USERS" desc="Text shown to the signed in user (whose passwords are synced with Google Password Manager) on the dialog for importing passwords, before the user has chosen the file to import passwords from.">
+    To import passwords to your Google Password Manager, select a CSV file
+  </message>
+  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_DESCRIPTION_SIGNEDOUT_USERS" desc="Text shown to the user (whose passwords are store locally on their device) on the dialog for importing passwords, before the user has chosen the file to import passwords from.">
+    To import passwords to this device, select a CSV file
   </message>
   <message name="IDS_SETTINGS_PASSWORDS_IMPORT_SUCCESS_SUMMARY_DEVICE" desc="Text on the dialog for importing passwords that shows how many passwords have been stored on the user device, after the user has chosen the file to import passwords from.">
     {NUM_PASSWORDS, plural,
      =1 {1 password imported to this device}
      other {{NUM_PASSWORDS} passwords imported to this device}}
+  </message>
+  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_SUCCESS_SUMMARY_ACCOUNT" desc="Text on the dialog for importing passwords that shows how many passwords have been saved to Google Password Manager, after the user has chosen the file to import passwords from.">
+    {NUM_PASSWORDS, plural,
+     =1 {1 password imported to your Google Password Manager (<ph name="USER_EMAIL"><ex>elisa.g.becket@gmail.com</ex>$1</ph>)}
+     other {{NUM_PASSWORDS} passwords imported to your Google Password Manager (<ph name="USER_EMAIL"><ex>elisa.g.becket@gmail.com</ex>$1</ph>)}}
+  </message>
+  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_STORE_PICKER_ACCESSIBLE_NAME" desc="Accessible name of destination dropdown in the passwords import dialog">
+    Select where to import your passwords
   </message>
   <message name="IDS_SETTINGS_PASSWORDS_IMPORT_SUCCESS_TIP" desc="Message is shown on the dialog for importing passwords, after a successful import. It is an advice for the user, that they should consider deleting the file, which they used for importing passwords from.">
     Consider deleting <ph name="FILENAME"><ex>file_name.csv</ex>$1</ph>, so others who use this device can't see your passwords.

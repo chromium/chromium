@@ -331,8 +331,14 @@ export class PasswordSectionElementFactory {
   /**
    * Helper method used to create a passwords import dialog.
    */
-  createPasswordsImportDialog(): PasswordsImportDialogElement {
+  createPasswordsImportDialog(
+      isUserSyncingPasswords: boolean = false,
+      isAccountStoreUser: boolean = false,
+      accountEmail: string = ''): PasswordsImportDialogElement {
     const dialog = this.document.createElement('passwords-import-dialog');
+    dialog.isUserSyncingPasswords = isUserSyncingPasswords;
+    dialog.isAccountStoreUser = isAccountStoreUser;
+    dialog.accountEmail = accountEmail;
     this.document.body.appendChild(dialog);
     flush();
     return dialog;

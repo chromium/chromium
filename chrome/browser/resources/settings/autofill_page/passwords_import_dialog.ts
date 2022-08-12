@@ -9,6 +9,7 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/cr_elements/md_select_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../settings_shared.css.js';
 import '../site_favicon.js';
@@ -26,6 +27,7 @@ export interface PasswordsImportDialogElement {
   $: {
     dialog: CrDialogElement,
     descriptionText: HTMLElement,
+    storePicker: HTMLSelectElement,
   };
 }
 
@@ -35,6 +37,11 @@ export enum ImportDialogState {
   START,
   ERROR,
   SUCCESS,
+}
+
+enum StoreOption {
+  ACCOUNT = 'account',
+  DEVICE = 'device',
 }
 
 export class PasswordsImportDialogElement extends
@@ -57,6 +64,12 @@ export class PasswordsImportDialogElement extends
         readOnly: true,
       },
 
+      storeOptionEnum_: {
+        type: Object,
+        value: StoreOption,
+        readOnly: true,
+      },
+
       descriptionText_: String,
 
       results_: Object,
@@ -64,14 +77,37 @@ export class PasswordsImportDialogElement extends
   }
 
   dialogState: ImportDialogState;
+  isUserSyncingPasswords: boolean;
+  isAccountStoreUser: boolean;
+  accountEmail: string;
   private results_: chrome.passwordsPrivate.ImportResults|null;
+  // Refers both to syncing users with sync enabled for passwords and account
+  // store users who choose to import passwords to their account.
+  private passwordsSavedToAccount_: boolean;
   private descriptionText_: string;
   private passwordManager_: PasswordManagerProxy =
       PasswordManagerImpl.getInstance();
 
   override connectedCallback() {
     super.connectedCallback();
-    this.descriptionText_ = this.i18n('importPasswordsGenericDescription');
+
+    if (this.isAccountStoreUser) {
+      this.descriptionText_ = this.i18n('importPasswordsGenericDescription');
+      PasswordManagerImpl.getInstance().isAccountStoreDefault().then(
+          isAccountStoreDefault => {
+            this.passwordsSavedToAccount_ = isAccountStoreDefault;
+            this.$.storePicker.value = isAccountStoreDefault ?
+                StoreOption.ACCOUNT :
+                StoreOption.DEVICE;
+          });
+    } else if (this.isUserSyncingPasswords) {
+      this.passwordsSavedToAccount_ = true;
+      this.descriptionText_ =
+          this.i18n('importPasswordsDescriptionAccount', this.accountEmail);
+    } else {
+      this.passwordsSavedToAccount_ = false;
+      this.descriptionText_ = this.i18n('importPasswordsDescriptionDevice');
+    }
     this.dialogState = ImportDialogState.START;
   }
 
@@ -95,12 +131,26 @@ export class PasswordsImportDialogElement extends
         !!this.results_!.failedImports.length;
   }
 
+  private shouldShowStorePicker_(): boolean {
+    return this.isState_(ImportDialogState.START) && this.isAccountStoreUser;
+  }
+
   /**
    * Handler for clicking the 'chooseFile' button. It triggers import flow.
    */
   private async onChooseFileClick_() {
-    this.results_ = await this.passwordManager_.importPasswords(
-        chrome.passwordsPrivate.PasswordStoreSet.DEVICE);
+    // For "non-account-store-users" users passwords are stored in the "profile"
+    // (DEVICE) store.
+    let destinationStore = chrome.passwordsPrivate.PasswordStoreSet.DEVICE;
+    if (this.isAccountStoreUser) {
+      this.passwordsSavedToAccount_ =
+          this.$.storePicker.value === StoreOption.ACCOUNT;
+      if (this.passwordsSavedToAccount_) {
+        destinationStore = chrome.passwordsPrivate.PasswordStoreSet.ACCOUNT;
+      }
+    }
+    this.results_ =
+        await this.passwordManager_.importPasswords(destinationStore);
     switch (this.results_.status) {
       case chrome.passwordsPrivate.ImportResultsStatus.SUCCESS:
         this.handleSuccess_();
@@ -124,11 +174,23 @@ export class PasswordsImportDialogElement extends
 
   private async handleSuccess_() {
     assert(this.results_);
-    this.descriptionText_ =
-        await PluralStringProxyImpl.getInstance().getPluralString(
-            'importPasswordsSuccessSummaryDevice',
-            this.results_.numberImported);
+    if (this.passwordsSavedToAccount_) {
+      const descriptionText =
+          await PluralStringProxyImpl.getInstance().getPluralString(
+              'importPasswordsSuccessSummaryAccount',
+              this.results_.numberImported);
+      this.descriptionText_ = descriptionText.replace('$1', this.accountEmail);
+    } else {
+      this.descriptionText_ =
+          await PluralStringProxyImpl.getInstance().getPluralString(
+              'importPasswordsSuccessSummaryDevice',
+              this.results_.numberImported);
+    }
     this.dialogState = ImportDialogState.SUCCESS;
+  }
+
+  private getStoreOptionAccountText_(): string {
+    return this.i18n('addPasswordStoreOptionAccount', this.accountEmail!);
   }
 
   private getSuccessTip_(): string {
@@ -162,12 +224,12 @@ export class PasswordsImportDialogElement extends
       case chrome.passwordsPrivate.ImportEntryStatus.LONG_USERNAME:
         return this.i18n('importPasswordsLongUsername');
       case chrome.passwordsPrivate.ImportEntryStatus.CONFLICT_PROFILE:
-        // TODO(crbug/1325290): for syncing users this should be "account
-        // conflict".
+        if (!this.isAccountStoreUser && this.isUserSyncingPasswords) {
+          return this.i18n('importPasswordsConflictAccount', this.accountEmail);
+        }
         return this.i18n('importPasswordsConflictDevice');
       case chrome.passwordsPrivate.ImportEntryStatus.CONFLICT_ACCOUNT:
-        // TODO(crbug/1325290): fill with real data.
-        return this.i18n('importPasswordsConflictAccount', '');
+        return this.i18n('importPasswordsConflictAccount', this.accountEmail);
     }
     assertNotReached();
   }
