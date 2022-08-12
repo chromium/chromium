@@ -275,15 +275,15 @@ bool ParseExtensionManifestData(const base::FilePath& extension_dir_path,
                   << extension_dir_path.value() << ": " << error_message;
     return false;
   }
-  std::string version_string;
-  if (!extension_manifest->GetString(extensions::manifest_keys::kVersion,
-                                     &version_string)) {
+  const std::string* version_string = extension_manifest->GetDict().FindString(
+      extensions::manifest_keys::kVersion);
+  if (!version_string) {
     ADD_FAILURE() << "Failed to load extension version from "
                   << extension_dir_path.value()
                   << ": manifest key missing or has wrong type";
     return false;
   }
-  *extension_version = base::Version(version_string);
+  *extension_version = base::Version(*version_string);
   if (!extension_version->IsValid()) {
     ADD_FAILURE() << "Failed to load extension version from "
                   << extension_dir_path.value() << ": bad format";
