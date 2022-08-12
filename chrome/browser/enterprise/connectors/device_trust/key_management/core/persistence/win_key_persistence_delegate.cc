@@ -94,7 +94,9 @@ std::unique_ptr<SigningKeyPair> WinKeyPersistenceDelegate::LoadKeyPair() {
 
 std::unique_ptr<SigningKeyPair> WinKeyPersistenceDelegate::CreateKeyPair() {
   auto acceptable_algorithms = {
-      crypto::SignatureVerifier::ECDSA_SHA256,
+      // This a temporary fix to bug b/240187326 where The unexportable key when
+      // given the span of acceptable algorithms fails to create a TPM key using
+      // the ECDSA_SHA256 algorithm but works for the RSA algorithm.
       crypto::SignatureVerifier::RSA_PKCS1_SHA256,
   };
 
@@ -102,6 +104,10 @@ std::unique_ptr<SigningKeyPair> WinKeyPersistenceDelegate::CreateKeyPair() {
   KeyPersistenceDelegate::KeyTrustLevel trust_level =
       BPKUR::CHROME_BROWSER_HW_KEY;
   if (!provider) {
+    acceptable_algorithms = {
+        crypto::SignatureVerifier::ECDSA_SHA256,
+        crypto::SignatureVerifier::RSA_PKCS1_SHA256,
+    };
     provider = std::make_unique<ECSigningKeyProvider>();
     trust_level = BPKUR::CHROME_BROWSER_OS_KEY;
   }
