@@ -526,7 +526,9 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   // Blend modes that require compositing with layers when shadows are drawn.
   ALWAYS_INLINE bool BlendModeRequiresLayersForShadows(SkBlendMode blendMode) {
     return blendMode == SkBlendMode::kDstOver ||
+           blendMode == SkBlendMode::kPlus ||
            blendMode == SkBlendMode::kMultiply ||
+           blendMode == SkBlendMode::kXor ||
            blendMode == SkBlendMode::kOverlay ||
            blendMode == SkBlendMode::kDarken ||
            blendMode == SkBlendMode::kLighten ||
