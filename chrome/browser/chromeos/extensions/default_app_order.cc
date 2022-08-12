@@ -173,16 +173,17 @@ void GetDefault(std::vector<std::string>* app_ids) {
     web_app::kCalculatorAppId,
     extension_misc::kCalculatorAppId,
 
+    web_app::kMediaAppId,
     web_app::kCursiveAppId,
     web_app::kCanvasAppId,
+
+    ash::kChromeUITrustedProjectorSwaAppId,
     extension_misc::kTextEditorAppId,
+    guest_os::kTerminalSystemAppId,
+
     web_app::kYoutubeTVAppId,
     web_app::kGoogleNewsAppId,
     extensions::kWebStoreAppId,
-
-    guest_os::kTerminalSystemAppId,
-    web_app::kMediaAppId,
-    ash::kChromeUITrustedProjectorSwaAppId,
 
     arc::kLightRoomAppId,
     arc::kInfinitePainterAppId,
