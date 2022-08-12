@@ -748,6 +748,10 @@ bool EventTarget::dispatchEventForBindings(Event* event,
 
   event->SetTrusted(false);
 
+  // https://linear.app/replay/issue/RUN-466
+  recordreplay::Assert("EventTarget::dispatchEventForBindings #5 %lu",
+                       recordreplay::PointerId(this));
+
   // Return whether the event was cancelled or not to JS not that it
   // might have actually been default handled; so check only against
   // CanceledByEventHandler.
@@ -756,6 +760,10 @@ bool EventTarget::dispatchEventForBindings(Event* event,
 }
 
 DispatchEventResult EventTarget::DispatchEvent(Event& event) {
+  // https://linear.app/replay/issue/RUN-466
+  recordreplay::Assert("EventTarget::DispatchEvent %lu",
+                       recordreplay::PointerId(this));
+
   event.SetTrusted(true);
   return DispatchEventInternal(event);
 }

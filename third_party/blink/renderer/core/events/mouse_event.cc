@@ -402,6 +402,11 @@ DispatchEventResult MouseEvent::DispatchEvent(EventDispatcher& dispatcher) {
   double_click_event.SetTrusted(isTrusted());
   if (DefaultHandled())
     double_click_event.SetDefaultHandled();
+
+  // https://linear.app/replay/issue/RUN-466
+  recordreplay::Assert("MouseEvent::DispatchEvent #5 %lu",
+                       recordreplay::PointerId(&dispatcher.GetNode()));
+
   DispatchEventResult double_click_dispatch_result =
       EventDispatcher::DispatchEvent(dispatcher.GetNode(), double_click_event);
   if (double_click_dispatch_result != DispatchEventResult::kNotCanceled)
