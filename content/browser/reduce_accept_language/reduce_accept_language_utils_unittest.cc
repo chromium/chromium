@@ -188,8 +188,6 @@ TEST_F(AcceptLanguageUtilsTests, AddNavigationRequestAcceptLanguageHeaders) {
   scoped_feature_list.InitWithFeatures(
       {network::features::kReduceAcceptLanguage}, {});
   {
-    EXPECT_TRUE(ReduceAcceptLanguageUtils::IsReduceAcceptLanguageEnabled());
-
     // Verify root frame node has the accept language header.
     net::HttpRequestHeaders headers;
     absl::optional<std::string> added_accept_language =

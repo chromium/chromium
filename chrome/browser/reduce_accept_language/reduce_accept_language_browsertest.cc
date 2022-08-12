@@ -92,6 +92,16 @@ class ReduceAcceptLanguageBrowserTest : public InProcessBrowserTest {
     expected_request_urls_ = expected_request_urls;
   }
 
+  GURL CreateServiceWorkerRequestUrl() const {
+    return GURL(
+        base::StrCat({kFirstPartyOriginUrl, "/create_service_worker.html"}));
+  }
+
+  GURL NavigationPreloadWorkerRequestUrl() const {
+    return GURL(
+        base::StrCat({kFirstPartyOriginUrl, "/navigation_preload_worker.js"}));
+  }
+
   GURL SameOriginRequestUrl() const {
     return GURL(
         base::StrCat({kFirstPartyOriginUrl, "/same_origin_request.html"}));
@@ -149,6 +159,11 @@ class ReduceAcceptLanguageBrowserTest : public InProcessBrowserTest {
   virtual void EnabledFeatures() = 0;
   base::test::ScopedFeatureList scoped_feature_list_;
 
+  // Returns whether a given |header| has been received for the last request.
+  bool HasReceivedHeader(const std::string& header) const {
+    return url_loader_interceptor_->GetLastRequestHeaders().HasHeader(header);
+  }
+
  private:
   // Returns the value of the Accept-Language request header from the last sent
   // request, or nullopt if the header could not be read.
@@ -169,7 +184,13 @@ class ReduceAcceptLanguageBrowserTest : public InProcessBrowserTest {
         expected_request_urls_.end())
       return false;
 
-    std::string headers = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n";
+    std::string headers = "HTTP/1.1 200 OK\r\n";
+    if (params->url_request.url == NavigationPreloadWorkerRequestUrl()) {
+      base::StrAppend(&headers, {"Content-Type: text/javascript\r\n"});
+    } else {
+      base::StrAppend(&headers, {"Content-Type: text/html\r\n"});
+    }
+
     if (test_options_.is_fenced_frame) {
       base::StrAppend(&headers, {"Supports-Loading-Mode: fenced-frame\r\n"});
     }
@@ -190,7 +211,18 @@ class ReduceAcceptLanguageBrowserTest : public InProcessBrowserTest {
       base::StrAppend(&headers, {BuildResponseHeader()});
     }
 
-    std::string resource_path = "chrome/test/data/reduce_accept_language";
+    static constexpr auto kServiceWorkerPaths =
+        base::MakeFixedFlatSet<base::StringPiece>({
+            "/create_service_worker.html",
+            "/navigation_preload_worker.js",
+        });
+
+    std::string resource_path;
+    if (base::Contains(kServiceWorkerPaths, path)) {
+      resource_path = "chrome/test/data/service_worker";
+    } else {
+      resource_path = "chrome/test/data/reduce_accept_language";
+    }
     resource_path.append(
         static_cast<std::string>(params->url_request.url.path_piece()));
 
@@ -311,11 +343,14 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
 
   SetPrefsAcceptLanguage(base::SplitString(
       kLargeLanguages, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL));
-  // Expect accept-language set as the first user's accept-language
-  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginRequestUrl(), "zh");
+  // Expect accept-language set as the negotiation language.
+  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginRequestUrl(), "en-US");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 1);
+  // same_origin_request_url request has two fetch Prefs requests: one fetch
+  // for initially adding header and another one for restart fetch.
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 2);
+  // One store for same_origin_request_url main frame.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
 
   // Disable script for first party origin.
@@ -363,6 +398,10 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginRequestUrl(), "zh");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  // Ensure metrics report correctly.
+  histograms.ExpectBucketCount(
+      "ReduceAcceptLanguage.AcceptLanguageNegotiationRestart",
+      /*=kVariantsAndContentLanguageHeaderPresent=*/2, 0);
   histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 1);
   // Persist won't happen.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 0);
@@ -382,7 +421,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginRequestUrl(), "zh");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  // One request, one prefs fetch when initial add header.
+  // One request, one prefs fetch when initially adding header.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 1);
   // Persist won't happen.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 0);
@@ -402,7 +441,11 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginRequestUrl(), "zh");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  // One request, one Prefs fetch request when initial add header.
+  // Ensure no restart happens.
+  histograms.ExpectBucketCount(
+      "ReduceAcceptLanguage.AcceptLanguageNegotiationRestart",
+      /*=kNavigationRestarted=*/3, 0);
+  // One request, one Prefs fetch request when initially adding header.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 1);
   // Persist won't happen.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 0);
@@ -419,21 +462,118 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
 
   SetPrefsAcceptLanguage({"zh", "en-us"});
 
-  // TODO(victortan) For now, we haven't add the resend request logic, we expect
-  // accept-language set as the first user's accept-language for the first
-  // request.
-  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginRequestUrl(), "zh");
-
-  // The second request should send out with the negotiation language en-us,
-  // since sites have page language available in users' preferred language
-  // en-us.
+  // Expect accept-language set as negotiated language: en-us.
   NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginRequestUrl(), "en-us");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  // Total two requests, each has one Prefs fetch request when initial add
-  // header.
+  // Ensure only restart once.
+  histograms.ExpectBucketCount(
+      "ReduceAcceptLanguage.AcceptLanguageNegotiationRestart",
+      /*=kNavigationRestarted=*/3, 1);
+  // One request same_origin_request_url: one Prefs fetch request when initial
+  // add header.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 2);
-  histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 2);
+  // One store for same_origin_request_url main frame.
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
+
+  base::HistogramTester histograms_after;
+  SetTestOptions({.content_language_in_parent = "en-us",
+                  .variants_in_parent = "accept-language=(es en-US)",
+                  .vary_in_parent = "accept-language"},
+                 {SameOriginRequestUrl()});
+
+  // The second request should send out with the first matched negotiation
+  // language en-us instead of ja.
+  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginRequestUrl(), "en-us");
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  // Ensure no restart happen.
+  histograms_after.ExpectBucketCount(
+      "ReduceAcceptLanguage.AcceptLanguageNegotiationRestart",
+      /*=kNavigationRestarted=*/3, 0);
+  // One request same_origin_request_url: one fetch for initially adding header
+  // and no restart fetch.
+  histograms_after.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 1);
+  // One store for same_origin_request_url main frame.
+  histograms_after.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
+}
+
+// Verify no endless resend requests for the service worker navigation preload
+// requests.
+IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
+                       ServiceWorkerNavigationPreload) {
+  SetTestOptions(
+      {.content_language_in_parent = "es",
+       .variants_in_parent = "accept-language=(es en-US)",
+       .vary_in_parent = "accept-language"},
+      {CreateServiceWorkerRequestUrl(), NavigationPreloadWorkerRequestUrl()});
+
+  SetPrefsAcceptLanguage({"zh", "en-us"});
+
+  base::HistogramTester histograms;
+  // Expect accept-language set as negotiated language: en-us.
+  NavigateAndVerifyAcceptLanguageOfLastRequest(CreateServiceWorkerRequestUrl(),
+                                               "en-us");
+  // Register a service worker that uses navigation preload.
+  EXPECT_EQ("DONE", EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                           "register('/navigation_preload_worker.js', '/');"));
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  // Total two Prefs fetch requests: one for initially adding header and another
+  // one for the restart request adding header.
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 2);
+  // One store for create_service_worker_request_url main frame.
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
+
+  // Verify "Service-Worker-Navigation-Preload" is present and no future resend
+  // requests when site responses with expected content-language 'en-us'.
+  base::HistogramTester histograms2;
+  SetTestOptions(
+      {.content_language_in_parent = "en-us",
+       .variants_in_parent = "accept-language=(es en-US)",
+       .vary_in_parent = "accept-language"},
+      {CreateServiceWorkerRequestUrl(), NavigationPreloadWorkerRequestUrl()});
+
+  NavigateAndVerifyAcceptLanguageOfLastRequest(CreateServiceWorkerRequestUrl(),
+                                               "en-us");
+  EXPECT_TRUE(HasReceivedHeader("Service-Worker-Navigation-Preload"));
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  // One Prefs fetch request when initially adding header. No restart.
+  histograms2.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 1);
+  histograms2.ExpectBucketCount(
+      "ReduceAcceptLanguage.AcceptLanguageNegotiationRestart",
+      /*=kServiceWorkerPreloadRequest=*/2, 1);
+  // Ensure no restart happen.
+  histograms2.ExpectBucketCount(
+      "ReduceAcceptLanguage.AcceptLanguageNegotiationRestart",
+      /*=kNavigationRestarted=*/3, 0);
+  histograms2.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 0);
+
+  // Verify "Service-Worker-Navigation-Preload" is present and no future resend
+  // requests even when site made mistake responding with unexpected
+  // content-language 'es'.
+  base::HistogramTester histograms3;
+  SetTestOptions(
+      {.content_language_in_parent = "es",
+       .variants_in_parent = "accept-language=(es en-US)",
+       .vary_in_parent = "accept-language"},
+      {CreateServiceWorkerRequestUrl(), NavigationPreloadWorkerRequestUrl()});
+
+  NavigateAndVerifyAcceptLanguageOfLastRequest(CreateServiceWorkerRequestUrl(),
+                                               "en-us");
+  EXPECT_TRUE(HasReceivedHeader("Service-Worker-Navigation-Preload"));
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  // One Prefs fetch request when initially adding header.
+  histograms3.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 1);
+  histograms3.ExpectBucketCount(
+      "ReduceAcceptLanguage.AcceptLanguageNegotiationRestart",
+      /*=kServiceWorkerPreloadRequest=*/2, 1);
+  // Ensure no restart happen.
+  histograms3.ExpectBucketCount(
+      "ReduceAcceptLanguage.AcceptLanguageNegotiationRestart",
+      /*=kNavigationRestarted=*/3, 0);
+  histograms3.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 0);
 }
 
 IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
@@ -447,17 +587,18 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
 
   SetPrefsAcceptLanguage({"es", "en-us"});
 
-  // TODO(victortan) For now, we haven't add the resend request logic, we expect
-  // accept-language set as the first user's accept-language for the first
-  // request.
   NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginRequestUrl(), "es");
+  // Ensure no restart happen.
+  histograms.ExpectBucketCount(
+      "ReduceAcceptLanguage.AcceptLanguageNegotiationRestart",
+      /*=kNavigationRestarted=*/3, 0);
 
   // The second request should send out with the same preferred language.
   NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginRequestUrl(), "es");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  // Total two requests, each has one Prefs fetch request when initial add
-  // header.
+  // For above two same_origin_request_url requests, both only have one Prefs
+  // fetch when initially adding header.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 2);
   // Expect no perf storage updates.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 0);
@@ -474,20 +615,39 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
 
   SetPrefsAcceptLanguage({"zh", "en-us", "ja"});
 
-  // TODO(victortan) For now, we haven't add the resend request logic, we expect
-  // accept-language set as the first user's accept-language for the first
-  // request.
-  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginRequestUrl(), "zh");
+  // Expect accept-language set as negotiated language: en-us.
+  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginRequestUrl(), "en-us");
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  // Ensure only restart once.
+  histograms.ExpectBucketCount(
+      "ReduceAcceptLanguage.AcceptLanguageNegotiationRestart",
+      /*=kNavigationRestarted=*/3, 1);
+  // One request same_origin_request_url: one fetch for initially adding header
+  // and another one for restart fetch.
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 2);
+  // One store for same_origin_request_url main frame.
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
+
+  base::HistogramTester histograms_after;
+  SetTestOptions({.content_language_in_parent = "en-us",
+                  .variants_in_parent = "accept-language=(es en-US)",
+                  .vary_in_parent = "accept-language"},
+                 {SameOriginRequestUrl()});
 
   // The second request should send out with the first matched negotiation
   // language en-us instead of ja.
   NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginRequestUrl(), "en-us");
-
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  // Total two requests, each has one Prefs fetch request when initial add
-  // header.
-  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 2);
-  histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 2);
+  // Ensure no restart happen.
+  histograms_after.ExpectBucketCount(
+      "ReduceAcceptLanguage.AcceptLanguageNegotiationRestart",
+      /*=kNavigationRestarted=*/3, 0);
+  // One request same_origin_request_url: one fetch for initially adding header
+  // and no restart fetch.
+  histograms_after.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 1);
+  // One store for same_origin_request_url main frame.
+  histograms_after.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
@@ -501,20 +661,44 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
 
   SetPrefsAcceptLanguage({"zh", "ja"});
 
-  // TODO(victortan) For now, we haven't add the resend request logic, we expect
-  // accept-language set as the first user's accept-language for the first
-  // request.
+  // Expect accept-language set as the first user's accept-language.
   NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginRequestUrl(), "zh");
+  // Ensure no restart happen.
+  histograms.ExpectBucketCount(
+      "ReduceAcceptLanguage.AcceptLanguageNegotiationRestart",
+      /*=kNavigationRestarted=*/3, 0);
 
   // The second request should send out with the same first preferred language.
   NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginRequestUrl(), "zh");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  // Total two requests, each has one Prefs fetch request when initial add
-  // header.
+  // For above two same_origin_request_url requests: each has one Prefs fetch
+  // request when initially adding header.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 2);
   // Expect no perf storage updates.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
+                       PersistedAcceptLanguageNotAvailable) {
+  base::HistogramTester histograms;
+
+  SetTestOptions({.content_language_in_parent = "es",
+                  .variants_in_parent = "accept-language=(es ja en-US)",
+                  .vary_in_parent = "accept-language"},
+                 {SameOriginRequestUrl()});
+
+  SetPrefsAcceptLanguage({"zh", "ja", "en-US"});
+  // The first request should send out with the negotiated language which is ja.
+  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginRequestUrl(), "ja");
+
+  SetPrefsAcceptLanguage({"zh", "en-US"});
+  // The second request should send out with the new negotiated language en-us.
+  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginRequestUrl(), "en-US");
+  SetPrefsAcceptLanguage({"zh"});
+  // The third request should send out with the first accept-language since the
+  // persisted language not available in latest user's accept-language list.
+  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginRequestUrl(), "zh");
 }
 
 IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
@@ -536,9 +720,16 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   NavigateAndVerifyAcceptLanguageOfLastRequest(sameOriginIframeUrl(), "en-US");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  // Total two requests, each has one Prefs fetch request when initial add
-  // header.
-  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 2);
+  // Ensure restart happen once.
+  histograms.ExpectBucketCount(
+      "ReduceAcceptLanguage.AcceptLanguageNegotiationRestart",
+      /*=kNavigationRestarted=*/3, 1);
+
+  // Total two different url requests:
+  // * same_origin_iframe_url: one fetch for initially adding header and another
+  // one for the restart request adding header.
+  // * simple_request_url: one fetch for initially adding header.
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 3);
 
   EXPECT_EQ(LastRequestUrl().path(), "/subframe_simple.html");
 
@@ -569,19 +760,21 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
 
   SetPrefsAcceptLanguage({"zh", "en-us"});
 
-  // TODO(victortan) For now, we haven't add the resend request logic, we
-  // expect Subresource img request has the same language as the main frame
-  // request.
-  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginImgUrl(), "zh");
+  // Subresource img request expect to be the language after language
+  // negotiation.
+  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginImgUrl(), "en-us");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  // Total two requests, only same_origin_img_url request has one Prefs fetch
-  // request when initial add header. For image request, it will directly read
-  // the persisted from the navigation commit reduced accept language.
-  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 1);
-  // Only the first request has persisted language, embedded requests won't
-  // persisted.
-  histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
+  // Ensure restart happen once.
+  histograms.ExpectBucketCount(
+      "ReduceAcceptLanguage.AcceptLanguageNegotiationRestart",
+      /*=kNavigationRestarted=*/3, 1);
+  // Total two different URL requests, only same_origin_img_url request has two
+  // fetch Prefs requests: one fetch for initially adding header and another one
+  // for the restart request adding header. For image request, it will directly
+  // read the persisted from the navigation commit reduced accept language.
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 2);
+  // One store for same_origin_img_url main frame.
 
   EXPECT_EQ(LastRequestUrl().path(), "/subresource_simple.jpg");
 }
@@ -604,11 +797,16 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   NavigateAndVerifyAcceptLanguageOfLastRequest(sameOriginIframeUrl(), "en-us");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  // Total two requests, each has one Prefs fetch request when initial add
-  // header.
-  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 2);
-  // Only the first request has persisted language, embedded requests won't
-  // persisted.
+  // Ensure restart happen once.
+  histograms.ExpectBucketCount(
+      "ReduceAcceptLanguage.AcceptLanguageNegotiationRestart",
+      /*=kNavigationRestarted=*/3, 1);
+  // Total two different URL requests:
+  // * same_origin_iframe_url: one fetch for initially adding header and another
+  // one for the restart request adding header.
+  // * simple_request_url: one fetch for initially adding header.
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 3);
+  // One store for same_origin_iframe_url main frame.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
 
   EXPECT_EQ(LastRequestUrl().path(), "/subframe_simple.html");
@@ -632,11 +830,16 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   NavigateAndVerifyAcceptLanguageOfLastRequest(sameOriginIframeUrl(), "en-us");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  // Total two requests, each has one Prefs fetch request when initial add
-  // header.
-  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 2);
-  // Only the first request has persisted language, embedded requests won't
-  // persisted.
+  // Ensure restart happen once.
+  histograms.ExpectBucketCount(
+      "ReduceAcceptLanguage.AcceptLanguageNegotiationRestart",
+      /*=kNavigationRestarted=*/3, 1);
+  // Total two different URL requests:
+  // * same_origin_iframe_url: one fetch for initially adding header and another
+  // one for the restart request adding header.
+  // * simple_request_url: one fetch for initially adding header.
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 3);
+  // One store for same_origin_iframe_url main frame.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
 
   EXPECT_EQ(LastRequestUrl().path(), "/subframe_simple.html");
@@ -660,9 +863,16 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   NavigateAndVerifyAcceptLanguageOfLastRequest(sameOriginIframeUrl(), "en-us");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  // Total two requests, each has one Prefs fetch request when initial add
-  // header.
-  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 2);
+  // Ensure restart happen once.
+  histograms.ExpectBucketCount(
+      "ReduceAcceptLanguage.AcceptLanguageNegotiationRestart",
+      /*=kNavigationRestarted=*/3, 1);
+  // Total two different URL requests:
+  // * same_origin_iframe_url: one fetch for initially adding header and another
+  // one for the restart request adding header.
+  // * simple_request_url: one fetch for initially adding header.
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 3);
+  // One store for same_origin_iframe_url main frame.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
 
   EXPECT_EQ(LastRequestUrl().path(), "/subframe_simple.html");
@@ -686,9 +896,16 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   NavigateAndVerifyAcceptLanguageOfLastRequest(sameOriginIframeUrl(), "en-us");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  // Total two requests, each has one Prefs fetch request when initial add
-  // header.
-  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 2);
+  // Ensure restart happen once.
+  histograms.ExpectBucketCount(
+      "ReduceAcceptLanguage.AcceptLanguageNegotiationRestart",
+      /*=kNavigationRestarted=*/3, 1);
+  // Total two different URL requests:
+  // * same_origin_iframe_url: one fetch for initially adding header and another
+  // one for the restart request adding header.
+  // * simple_request_url: one fetch for initially adding header.
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 3);
+  // One store for same_origin_iframe_url main frame.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
 
   EXPECT_EQ(LastRequestUrl().path(), "/subframe_simple.html");
@@ -772,9 +989,16 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyReduceAcceptLanguageBrowserTest,
   NavigateAndVerifyAcceptLanguageOfLastRequest(CrossOriginIframeUrl(), "en-us");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  // Total two requests, each has one Prefs fetch request when initial add
-  // header.
-  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 2);
+  // Ensure restart happen once.
+  histograms.ExpectBucketCount(
+      "ReduceAcceptLanguage.AcceptLanguageNegotiationRestart",
+      /*=kNavigationRestarted=*/3, 1);
+  // Total two different URL requests:
+  // * cross_origin_iframe_url: one fetch for initially adding header and
+  // another one for the restart request adding header.
+  // * simple_3p_request_url: one fetch for initially adding header.
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 3);
+  // One store for same_origin_iframe_url main frame.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
 
   EXPECT_EQ(LastRequestUrl().path(), "/subframe_simple_3p.html");
@@ -802,13 +1026,18 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyReduceAcceptLanguageBrowserTest,
       CrossOriginIframeWithSubresourceUrl(), "en-us");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  // Ensure restart happen once.
+  histograms.ExpectBucketCount(
+      "ReduceAcceptLanguage.AcceptLanguageNegotiationRestart",
+      /*=kNavigationRestarted=*/3, 1);
   // Fetch reduce accept-language when visiting the following three URLs, for
   // css request, it won't pass to navigation layer:
-  // * cross_origin_iframe_with_subrequests_url
-  // * iframe_3p_request_url
-  // * other_site_basic_request_url
-  // each request has one Prefs fetch request when initial add header.
-  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 3);
+  // * cross_origin_iframe_with_subrequests_url(2):one fetch for initially
+  // adding header and another one for the restart request adding header.
+  // * iframe_3p_request_url(1): one fetch for initially adding header.
+  // * other_site_b_basic_request_url(1): one fetch for initially adding header.
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 4);
+  // One store for cross_region_iframe_url main frame.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
 
   EXPECT_EQ(LastRequestUrl().path(), "/subframe_iframe_basic.html");
@@ -835,7 +1064,18 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyReduceAcceptLanguageBrowserTest,
                                                "en-us");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 2);
+  // Ensure restart happen once.
+  histograms.ExpectBucketCount(
+      "ReduceAcceptLanguage.AcceptLanguageNegotiationRestart",
+      /*=kNavigationRestarted=*/3, 1);
+  // Fetch reduce accept-language when visiting the following three URLs, for
+  // css request, it won't pass to navigation layer:
+  // * top_level_with_iframe_redirect_url(2):one fetch for initially adding
+  // header and another one for the restart request adding header.
+  // * subframe_3p_request_url(1): one fetch for initially adding header.
+  // * other_site_css_request_url(0): directly read from commit parameter.
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 3);
+  // One store for top_level_with_iframe_redirect_url main frame.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
 
   EXPECT_EQ(LastRequestUrl().path(), "/subresource_redirect_style.css");
@@ -926,7 +1166,16 @@ IN_PROC_BROWSER_TEST_P(FencedFrameReduceAcceptLanguageBrowserTest,
                                                "zh");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 2);
+  // Ensure restart happen once.
+  histograms.ExpectBucketCount(
+      "ReduceAcceptLanguage.AcceptLanguageNegotiationRestart",
+      /*=kNavigationRestarted=*/3, 1);
+  // Total two different URL requests:
+  // * cross_region_fenced_frame_url(2):one fetch for initially adding
+  // header and another one for the restart request adding header.
+  // * simple_3p_request_url(1): one fetch for initially adding header.
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 3);
+  // One store for cross_region_fenced_frame_url main frame.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
 
   EXPECT_EQ(LastRequestUrl().path(), "/subframe_simple_3p.html");
@@ -953,8 +1202,406 @@ IN_PROC_BROWSER_TEST_P(FencedFrameReduceAcceptLanguageBrowserTest,
                                                "zh");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 2);
+  // Ensure restart happen once.
+  histograms.ExpectBucketCount(
+      "ReduceAcceptLanguage.AcceptLanguageNegotiationRestart",
+      /*=kNavigationRestarted=*/3, 1);
+  // Total two different URL requests:
+  // * same_origin_fenced_frame_url(2):one fetch for initially adding
+  // header and another one for the restart request adding header.
+  // * simple_request_url(1): one fetch for initially adding header.
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 3);
+  // One store for cross_region_fenced_frame_url main frame.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
 
   EXPECT_EQ("/subframe_simple.html", LastRequestUrl().path());
+}
+
+// Browser tests verify redirect same origin with different cases.
+class SameOriginRedirectReduceAcceptLanguageBrowserTest
+    : public ReduceAcceptLanguageBrowserTest {
+ public:
+  SameOriginRedirectReduceAcceptLanguageBrowserTest()
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    https_server_.ServeFilesFromSourceDirectory(
+        "chrome/test/data/reduce_accept_language");
+
+    https_server_.RegisterRequestMonitor(
+        base::BindRepeating(&SameOriginRedirectReduceAcceptLanguageBrowserTest::
+                                MonitorResourceRequest,
+                            base::Unretained(this)));
+
+    https_server_.RegisterRequestHandler(
+        base::BindRepeating(&SameOriginRedirectReduceAcceptLanguageBrowserTest::
+                                RequestHandlerRedirect,
+                            base::Unretained(this)));
+
+    EXPECT_TRUE(https_server_.Start());
+
+    same_origin_redirect_ = https_server_.GetURL("/same_origin_redirect.html");
+    same_origin_redirect_a_ =
+        https_server_.GetURL("/same_origin_redirect_a.html");
+    same_origin_redirect_b_ =
+        https_server_.GetURL("/same_origin_redirect_b.html");
+  }
+
+  static constexpr const char kAcceptLanguage[] = "accept-language";
+  static constexpr auto kValidPaths =
+      base::MakeFixedFlatSet<base::StringPiece>({
+          "/same_origin_redirect.html",
+          "/same_origin_redirect_a.html",
+          "/same_origin_redirect_b.html",
+      });
+
+  GURL same_origin_redirect() const { return same_origin_redirect_; }
+
+  GURL same_origin_redirect_a() const { return same_origin_redirect_a_; }
+
+  GURL same_origin_redirect_b() const { return same_origin_redirect_b_; }
+
+  void SetOptions(const std::string& content_language_a,
+                  const std::string& content_language_b) {
+    content_language_a_ = content_language_a;
+    content_language_b_ = content_language_b;
+  }
+
+  void VerifyURLAndAcceptLanguageSequence(
+      const std::vector<std::vector<std::string>>& expect_url_accept_language) {
+    EXPECT_EQ(actual_url_accept_language_, expect_url_accept_language);
+  }
+
+ protected:
+  void EnabledFeatures() override {
+    std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
+    feature_list->InitializeFromCommandLine("ReduceAcceptLanguage", "");
+    scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
+  }
+
+ private:
+  // Intercepts only the requests that for same origin redirect tests.
+  std::unique_ptr<net::test_server::HttpResponse> RequestHandlerRedirect(
+      const net::test_server::HttpRequest& request) {
+    if (!base::Contains(kValidPaths, request.relative_url))
+      return nullptr;
+
+    std::string accept_language;
+    if (request.headers.find(kAcceptLanguage) != request.headers.end())
+      accept_language = request.headers.find(kAcceptLanguage)->second;
+
+    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+    if (request.relative_url == "/same_origin_redirect.html") {
+      response->set_code(net::HTTP_FOUND);
+      // Assume site supports content_language_a_ and content_language_b_. If
+      // accept-language matches content_language_b_ then returns
+      // content_language_b_, otherwise returns content_language_a_.
+      if (accept_language == content_language_b_) {
+        response->AddCustomHeader("Content-Language", content_language_b_);
+        response->AddCustomHeader("Location", same_origin_redirect_b().spec());
+      } else {
+        response->AddCustomHeader("Content-Language", content_language_a_);
+        response->AddCustomHeader("Location", same_origin_redirect_a().spec());
+      }
+    } else if (request.relative_url == "/same_origin_redirect_a.html") {
+      response->set_code(net::HTTP_OK);
+      response->AddCustomHeader("Content-Language", content_language_a_);
+    } else if (request.relative_url == "/same_origin_redirect_b.html") {
+      response->set_code(net::HTTP_OK);
+      response->AddCustomHeader("Content-Language", content_language_b_);
+    }
+
+    response->AddCustomHeader(
+        "Variants", base::StrCat({"accept-language=(", content_language_a_, " ",
+                                  content_language_b_, ")"}));
+    return std::move(response);
+  }
+
+  // Called by `https_server_`.
+  void MonitorResourceRequest(const net::test_server::HttpRequest& request) {
+    if (!base::Contains(kValidPaths, request.relative_url))
+      return;
+
+    if (request.headers.find(kAcceptLanguage) != request.headers.end()) {
+      actual_url_accept_language_.push_back(
+          {request.GetURL().spec(),
+           request.headers.find(kAcceptLanguage)->second});
+    }
+  }
+
+  GURL same_origin_redirect_;
+  GURL same_origin_redirect_a_;
+  GURL same_origin_redirect_b_;
+  net::EmbeddedTestServer https_server_;
+  std::string content_language_a_;
+  std::string content_language_b_;
+  std::vector<std::vector<std::string>> actual_url_accept_language_;
+};
+
+IN_PROC_BROWSER_TEST_F(SameOriginRedirectReduceAcceptLanguageBrowserTest,
+                       MatchFirstLanguage) {
+  SetPrefsAcceptLanguage({"en", "ja"});
+  SetOptions(/*content_language_a=*/"en", /*content_language_b=*/"ja");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), same_origin_redirect()));
+
+  // 1. initial request to main request(/) with first user accept-language
+  // en.
+  // 2. initial request to A(/en) with the language matches the expected
+  // accept-language.
+  VerifyURLAndAcceptLanguageSequence({{same_origin_redirect().spec(), "en"},
+                                      {same_origin_redirect_a().spec(), "en"}});
+}
+
+IN_PROC_BROWSER_TEST_F(SameOriginRedirectReduceAcceptLanguageBrowserTest,
+                       MatchSecondaryLanguage) {
+  SetPrefsAcceptLanguage({"zh-CN", "ja"});
+  SetOptions(/*content_language_a=*/"en", /*content_language_b=*/"ja");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), same_origin_redirect()));
+
+  // 1. initial request to main request(/) with first user accept-language
+  // zh-CN.
+  // 2. restart request to main request(/) with the persisted language ja after
+  // language negotiation.
+  // 3. initial request to B(/ja) with the language matches the expected
+  // accept-language.
+  VerifyURLAndAcceptLanguageSequence({{same_origin_redirect().spec(), "zh-CN"},
+                                      {same_origin_redirect().spec(), "ja"},
+                                      {same_origin_redirect_b().spec(), "ja"}});
+}
+
+// Browser tests verify redirect cross origin A to B with different cases.
+class CrossOriginRedirectReduceAcceptLanguageBrowserTest
+    : public ReduceAcceptLanguageBrowserTest {
+ public:
+  CrossOriginRedirectReduceAcceptLanguageBrowserTest()
+      : https_server_a_(net::EmbeddedTestServer::TYPE_HTTPS),
+        https_server_b_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    https_server_a_.ServeFilesFromSourceDirectory(
+        "chrome/test/data/reduce_accept_language");
+    https_server_b_.ServeFilesFromSourceDirectory(
+        "chrome/test/data/reduce_accept_language");
+
+    https_server_a_.RegisterRequestMonitor(base::BindRepeating(
+        &CrossOriginRedirectReduceAcceptLanguageBrowserTest::
+            MonitorResourceRequest,
+        base::Unretained(this)));
+
+    https_server_a_.RegisterRequestHandler(base::BindRepeating(
+        &CrossOriginRedirectReduceAcceptLanguageBrowserTest::
+            RequestHandlerRedirect,
+        base::Unretained(this)));
+
+    https_server_b_.RegisterRequestMonitor(base::BindRepeating(
+        &CrossOriginRedirectReduceAcceptLanguageBrowserTest::
+            MonitorResourceRequest,
+        base::Unretained(this)));
+    https_server_b_.RegisterRequestHandler(base::BindRepeating(
+        &CrossOriginRedirectReduceAcceptLanguageBrowserTest::
+            RequestHandlerRedirect,
+        base::Unretained(this)));
+
+    EXPECT_TRUE(https_server_a_.Start());
+    EXPECT_TRUE(https_server_b_.Start());
+    // Make sure two origins are different.
+    EXPECT_NE(https_server_a_.base_url(), https_server_b_.base_url());
+    cross_origin_redirect_a_ =
+        https_server_a_.GetURL("/cross_origin_redirect_a.html");
+    cross_origin_redirect_b_ =
+        https_server_b_.GetURL("/cross_origin_redirect_b.html");
+  }
+
+  static constexpr const char kAcceptLanguage[] = "accept-language";
+  static constexpr auto kValidPaths =
+      base::MakeFixedFlatSet<base::StringPiece>({
+          "/cross_origin_redirect_a.html",
+          "/cross_origin_redirect_b.html",
+      });
+
+  GURL cross_origin_redirect_a() const { return cross_origin_redirect_a_; }
+
+  GURL cross_origin_redirect_b() const { return cross_origin_redirect_b_; }
+
+  void SetOptions(const std::vector<std::string> variants_accept_language_a,
+                  const std::vector<std::string> variants_accept_language_b) {
+    variants_accept_language_a_ = variants_accept_language_a;
+    variants_accept_language_b_ = variants_accept_language_b;
+  }
+
+  void ResetURLAndAcceptLanguageSequence() {
+    actual_url_accept_language_.clear();
+  }
+
+  void VerifyURLAndAcceptLanguageSequence(
+      const std::vector<std::vector<std::string>>& expect_url_accept_language) {
+    EXPECT_EQ(actual_url_accept_language_, expect_url_accept_language);
+  }
+
+ protected:
+  void EnabledFeatures() override {
+    std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
+    feature_list->InitializeFromCommandLine("ReduceAcceptLanguage", "");
+    scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
+  }
+
+ private:
+  // Intercepts only the requests that for cross origin redirect tests.
+  std::unique_ptr<net::test_server::HttpResponse> RequestHandlerRedirect(
+      const net::test_server::HttpRequest& request) {
+    if (!base::Contains(kValidPaths, request.relative_url))
+      return nullptr;
+
+    std::string accept_language;
+    if (request.headers.find(kAcceptLanguage) != request.headers.end())
+      accept_language = request.headers.find(kAcceptLanguage)->second;
+
+    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+    if (request.relative_url == "/cross_origin_redirect_a.html") {
+      response->set_code(net::HTTP_FOUND);
+      response->AddCustomHeader(
+          "Content-Language",
+          GetResponseContentLanguage(accept_language,
+                                     variants_accept_language_a_));
+      response->AddCustomHeader(
+          "Variants",
+          base::StrCat({"accept-language=(",
+                        base::JoinString(variants_accept_language_a_, " "),
+                        ")"}));
+      response->AddCustomHeader("Location", cross_origin_redirect_b().spec());
+    } else if (request.relative_url == "/cross_origin_redirect_b.html") {
+      response->set_code(net::HTTP_OK);
+      response->AddCustomHeader(
+          "Content-Language",
+          GetResponseContentLanguage(accept_language,
+                                     variants_accept_language_b_));
+      response->AddCustomHeader(
+          "Variants",
+          base::StrCat({"accept-language=(",
+                        base::JoinString(variants_accept_language_b_, " "),
+                        ")"}));
+    }
+    return std::move(response);
+  }
+
+  // Called by `https_server_`.
+  void MonitorResourceRequest(const net::test_server::HttpRequest& request) {
+    if (!base::Contains(kValidPaths, request.relative_url))
+      return;
+
+    if (request.headers.find(kAcceptLanguage) != request.headers.end()) {
+      actual_url_accept_language_.push_back(
+          {request.GetURL().spec(),
+           request.headers.find(kAcceptLanguage)->second});
+    }
+  }
+
+  // Mock the site set content-language behavior. If site supports the language
+  // in the accept-language request header, set the content-language the same as
+  // accept-language, otherwise set as the first available language.
+  std::string GetResponseContentLanguage(
+      const std::string& accept_language,
+      const std::vector<std::string>& variants_languages) {
+    auto iter =
+        std::find_if(variants_languages.begin(), variants_languages.end(),
+                     [&](const std::string& available_language) {
+                       return accept_language == available_language;
+                     });
+    return iter != variants_languages.end() ? *iter : variants_languages[0];
+  }
+
+  GURL cross_origin_redirect_a_;
+  GURL cross_origin_redirect_b_;
+  net::EmbeddedTestServer https_server_a_;
+  net::EmbeddedTestServer https_server_b_;
+  std::vector<std::string> variants_accept_language_a_;
+  std::vector<std::string> variants_accept_language_b_;
+  std::vector<std::vector<std::string>> actual_url_accept_language_;
+};
+
+IN_PROC_BROWSER_TEST_F(CrossOriginRedirectReduceAcceptLanguageBrowserTest,
+                       RestartOnA) {
+  SetPrefsAcceptLanguage({"en-us", "zh"});
+  SetOptions(/*variants_accept_language_a=*/{"ja", "zh"},
+             /*variants_accept_language_b=*/{"en-us"});
+
+  // initial redirect request.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), cross_origin_redirect_a()));
+
+  // 1. initial request to A with first user accept-language en-us.
+  // 2. restart request to A with the persisted language zh.
+  // 3. initial request to B with the first user accept-language en-us.
+  VerifyURLAndAcceptLanguageSequence(
+      {{cross_origin_redirect_a().spec(), "en-us"},
+       {cross_origin_redirect_a().spec(), "zh"},
+       {cross_origin_redirect_b().spec(), "en-us"}});
+
+  ResetURLAndAcceptLanguageSequence();
+
+  // Secondary redirect request expects no restarts.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), cross_origin_redirect_a()));
+  VerifyURLAndAcceptLanguageSequence(
+      {{cross_origin_redirect_a().spec(), "zh"},
+       {cross_origin_redirect_b().spec(), "en-us"}});
+}
+
+IN_PROC_BROWSER_TEST_F(CrossOriginRedirectReduceAcceptLanguageBrowserTest,
+                       RestartOnB) {
+  SetPrefsAcceptLanguage({"en-us", "zh"});
+  SetOptions(/*variants_accept_language_a=*/{"en-us", "zh"},
+             /*variants_accept_language_b=*/{"de", "zh"});
+
+  // initial redirect request.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), cross_origin_redirect_a()));
+
+  // 1. initial request to A with first user accept-language en-us.
+  // 2. initial request to B with the first user accept-language en-us.
+  // 3. restart request to A with first user accept-language en-us.
+  // 4. restart request to B with the persisted language zh.
+  VerifyURLAndAcceptLanguageSequence(
+      {{cross_origin_redirect_a().spec(), "en-us"},
+       {cross_origin_redirect_b().spec(), "en-us"},
+       {cross_origin_redirect_a().spec(), "en-us"},
+       {cross_origin_redirect_b().spec(), "zh"}});
+
+  ResetURLAndAcceptLanguageSequence();
+
+  // Secondary redirect request expects no restarts.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), cross_origin_redirect_a()));
+  VerifyURLAndAcceptLanguageSequence(
+      {{cross_origin_redirect_a().spec(), "en-us"},
+       {cross_origin_redirect_b().spec(), "zh"}});
+}
+
+IN_PROC_BROWSER_TEST_F(CrossOriginRedirectReduceAcceptLanguageBrowserTest,
+                       RestartBothAB) {
+  SetPrefsAcceptLanguage({"en-us", "zh"});
+  SetOptions(/*variants_accept_language_a=*/{"ja", "zh"},
+             /*variants_accept_language_b=*/{"de", "zh"});
+
+  // initial redirect request.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), cross_origin_redirect_a()));
+
+  // 1. initial request to A with first user accept-language en-us.
+  // 2. restart request to A with the persisted language zh.
+  // 3. initial request to B with the first user accept-language en-us.
+  // 4. restart request to A since redirect the original URL with persisted
+  // language zh.
+  // 5. restart request to B with the persisted language zh.
+  VerifyURLAndAcceptLanguageSequence(
+      {{cross_origin_redirect_a().spec(), "en-us"},
+       {cross_origin_redirect_a().spec(), "zh"},
+       {cross_origin_redirect_b().spec(), "en-us"},
+       {cross_origin_redirect_a().spec(), "zh"},
+       {cross_origin_redirect_b().spec(), "zh"}});
+
+  ResetURLAndAcceptLanguageSequence();
+
+  // Secondary redirect request expects no restarts.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), cross_origin_redirect_a()));
+  VerifyURLAndAcceptLanguageSequence(
+      {{cross_origin_redirect_a().spec(), "zh"},
+       {cross_origin_redirect_b().spec(), "zh"}});
 }

@@ -48,7 +48,7 @@ ReduceAcceptLanguageUtils::~ReduceAcceptLanguageUtils() = default;
 absl::optional<ReduceAcceptLanguageUtils> ReduceAcceptLanguageUtils::Create(
     BrowserContext* browser_context) {
   DCHECK(browser_context);
-  if (!IsReduceAcceptLanguageEnabled())
+  if (!base::FeatureList::IsEnabled(network::features::kReduceAcceptLanguage))
     return absl::nullopt;
   ReduceAcceptLanguageControllerDelegate* reduce_accept_lang_delegate =
       browser_context->GetReduceAcceptLanguageControllerDelegate();
@@ -56,11 +56,6 @@ absl::optional<ReduceAcceptLanguageUtils> ReduceAcceptLanguageUtils::Create(
     return absl::nullopt;
   return absl::make_optional<ReduceAcceptLanguageUtils>(
       *reduce_accept_lang_delegate);
-}
-
-// static
-bool ReduceAcceptLanguageUtils::IsReduceAcceptLanguageEnabled() {
-  return base::FeatureList::IsEnabled(network::features::kReduceAcceptLanguage);
 }
 
 // static
@@ -167,7 +162,7 @@ ReduceAcceptLanguageUtils::LookupReducedAcceptLanguage(
     FrameTreeNode* frame_tree_node) {
   DCHECK(frame_tree_node);
 
-  if (!IsReduceAcceptLanguageEnabled() ||
+  if (!base::FeatureList::IsEnabled(network::features::kReduceAcceptLanguage) ||
       !ShouldReduceAcceptLanguage(request_origin)) {
     return absl::nullopt;
   }

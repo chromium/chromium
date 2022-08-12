@@ -9,9 +9,11 @@
 #include "components/variations/net/variations_url_loader_throttle.h"
 #include "content/browser/client_hints/client_hints.h"
 #include "content/browser/client_hints/critical_client_hints_throttle.h"
+#include "content/browser/reduce_accept_language/reduce_accept_language_throttle.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/client_hints_controller_delegate.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/reduce_accept_language_controller_delegate.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "net/base/load_flags.h"
@@ -55,6 +57,19 @@ CreateContentBrowserURLLoaderThrottles(
     throttles.push_back(std::make_unique<CriticalClientHintsThrottle>(
         browser_context, client_hint_delegate, frame_tree_node_id));
   }
+
+  // Creating a throttle only for outermost main frames to persist the reduced
+  // accept language for an origin and to restart requests if needed, due to
+  // language negotiation.
+  if (base::FeatureList::IsEnabled(network::features::kReduceAcceptLanguage)) {
+    ReduceAcceptLanguageControllerDelegate* reduce_accept_lang_delegate =
+        browser_context->GetReduceAcceptLanguageControllerDelegate();
+    if (request.is_outermost_main_frame && reduce_accept_lang_delegate) {
+      throttles.push_back(std::make_unique<ReduceAcceptLanguageThrottle>(
+          *reduce_accept_lang_delegate));
+    }
+  }
+
   return throttles;
 }
 

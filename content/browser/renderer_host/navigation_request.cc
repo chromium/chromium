@@ -4908,18 +4908,6 @@ void NavigationRequest::CommitNavigation() {
                                          ->GetStoragePartition()
                                          ->GetCookieManagerForBrowserProcess());
 
-  if (auto reduce_accept_lang_utils =
-          ReduceAcceptLanguageUtils::Create(browser_context)) {
-    // TODO(crbug.com/1323776) Add supporting resend request after language
-    // negotiation.
-    if (response() && frame_tree_node_->IsOutermostMainFrame()) {
-      reduce_accept_lang_utils.value()
-          .ReadAndPersistAcceptLanguageForNavigation(
-              GetOriginToCommit(), GetRequestHeaders(),
-              response()->parsed_headers);
-    }
-  }
-
   // Generate a UKM source and track it on NavigationRequest. This will be
   // passed down to the blink::Document to be created, if any, and used for UKM
   // source creation when navigation has successfully committed.

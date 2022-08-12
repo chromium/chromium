@@ -10908,8 +10908,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ReduceAcceptLanguage.AcceptLanguageNegotiationRestart"
+    enum="AcceptLanguageNegotiationRestart" expires_after="2023-06-01">
+  <owner>awillia@chromium.org</owner>
+  <owner>miketaylr@chromium.org</owner>
+  <owner>victortan@chromium.org</owner>
+  <summary>
+    Count of requests restarted or the reason why not restarted when reducing
+    accept-language HTTP header.
+  </summary>
+</histogram>
+
 <histogram name="ReduceAcceptLanguage.FetchLatency" units="ms"
-    expires_after="2023-01-01">
+    expires_after="2023-06-01">
   <owner>awillia@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
   <owner>victortan@chromium.org</owner>
@@ -10921,7 +10932,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReduceAcceptLanguage.StoreLatency" units="ms"
-    expires_after="2023-01-01">
+    expires_after="2023-06-01">
   <owner>awillia@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
   <owner>victortan@chromium.org</owner>
@@ -10933,7 +10944,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReduceAcceptLanguage.UpdateSize" units="count"
-    expires_after="2023-01-01">
+    expires_after="2023-06-01">
   <owner>awillia@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
   <owner>victortan@chromium.org</owner>

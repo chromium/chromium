@@ -37,9 +37,6 @@ class CONTENT_EXPORT ReduceAcceptLanguageUtils {
   static absl::optional<ReduceAcceptLanguageUtils> Create(
       BrowserContext* browser_context);
 
-  // Return true if reduce accept language feature is enabled.
-  static bool IsReduceAcceptLanguageEnabled();
-
   // Returns true if `accept_language` matches `content_language` using the
   // Basic Filtering scheme. See RFC4647 of Section 3.3.
   static bool DoesAcceptLanguageMatchContentLanguage(
