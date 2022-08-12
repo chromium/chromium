@@ -15,7 +15,7 @@ namespace {
 
 std::unique_ptr<DomainReliabilityConfig> MakeBaseConfig() {
   DomainReliabilityConfig* config = new DomainReliabilityConfig();
-  config->origin = GURL("https://example/");
+  config->origin = url::Origin::Create(GURL("https://example/"));
   config->include_subdomains = false;
   config->collectors.push_back(
       std::make_unique<GURL>("https://example/upload"));
@@ -42,7 +42,7 @@ TEST_F(DomainReliabilityConfigTest, IsValid) {
   EXPECT_TRUE(config->IsValid());
 
   config = MakeSampleConfig();
-  config->origin = GURL();
+  config->origin = url::Origin();
   EXPECT_FALSE(config->IsValid());
 
   config = MakeSampleConfig();
@@ -79,7 +79,7 @@ TEST_F(DomainReliabilityConfigTest, FromJSON) {
       DomainReliabilityConfig::FromJSON(config_json));
 
   EXPECT_TRUE(config);
-  EXPECT_EQ("https://example/", config->origin.spec());
+  EXPECT_EQ("https://example", config->origin.Serialize());
   EXPECT_FALSE(config->include_subdomains);
   EXPECT_EQ(1u, config->collectors.size());
   EXPECT_EQ(GURL("https://example/upload"), *config->collectors[0]);

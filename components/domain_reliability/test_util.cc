@@ -182,11 +182,12 @@ DomainReliabilityScheduler::Params MakeTestSchedulerParams() {
 }
 
 std::unique_ptr<DomainReliabilityConfig> MakeTestConfig() {
-  return MakeTestConfigWithOrigin(GURL("https://example/"));
+  return MakeTestConfigWithOrigin(
+      url::Origin::Create(GURL("https://example/")));
 }
 
 std::unique_ptr<DomainReliabilityConfig> MakeTestConfigWithOrigin(
-    const GURL& origin) {
+    const url::Origin& origin) {
   DomainReliabilityConfig* config = new DomainReliabilityConfig();
   config->origin = origin;
   config->collectors.push_back(

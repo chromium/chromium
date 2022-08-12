@@ -278,7 +278,7 @@ class TestNetworkContext : public mojom::NetworkContext {
       const std::string& host,
       DeleteDynamicDataForHostCallback callback) override {}
   void AddDomainReliabilityContextForTesting(
-      const GURL& origin,
+      const url::Origin& origin,
       const GURL& upload_url,
       AddDomainReliabilityContextForTestingCallback callback) override {}
   void ForceDomainReliabilityUploadsForTesting(

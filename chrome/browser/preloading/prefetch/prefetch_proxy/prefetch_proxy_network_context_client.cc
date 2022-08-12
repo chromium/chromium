@@ -32,7 +32,7 @@ void PrefetchProxyNetworkContextClient::OnCanSendReportingReports(
 }
 
 void PrefetchProxyNetworkContextClient::OnCanSendDomainReliabilityUpload(
-    const GURL& origin,
+    const url::Origin& origin,
     OnCanSendDomainReliabilityUploadCallback callback) {
   std::move(callback).Run(false);
 }

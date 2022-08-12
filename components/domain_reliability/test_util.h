@@ -147,7 +147,7 @@ class MockTime : public MockableTime {
 
 std::unique_ptr<DomainReliabilityConfig> MakeTestConfig();
 std::unique_ptr<DomainReliabilityConfig> MakeTestConfigWithOrigin(
-    const GURL& origin);
+    const url::Origin& origin);
 DomainReliabilityScheduler::Params MakeTestSchedulerParams();
 
 }  // namespace domain_reliability

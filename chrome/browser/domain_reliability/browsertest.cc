@@ -145,8 +145,8 @@ IN_PROC_BROWSER_TEST_F(DomainReliabilityBrowserTest, Upload) {
 
   {
     mojo::ScopedAllowSyncCallForTesting allow_sync_call;
-    GetNetworkContext()->AddDomainReliabilityContextForTesting(
-        test_server()->base_url().DeprecatedGetOriginAsURL(), upload_url);
+    GetNetworkContext()->AddDomainReliabilityContextForTesting(  // IN-TEST
+        test_server()->GetOrigin(), upload_url);
   }
 
   // Trigger an error.
@@ -189,8 +189,8 @@ IN_PROC_BROWSER_TEST_F(DomainReliabilityBrowserTest, UploadAtShutdown) {
   GURL upload_url = test_server()->GetURL("/hung");
   {
     mojo::ScopedAllowSyncCallForTesting allow_sync_call;
-    GetNetworkContext()->AddDomainReliabilityContextForTesting(
-        GURL("https://localhost/"), upload_url);
+    GetNetworkContext()->AddDomainReliabilityContextForTesting(  // IN-TEST
+        url::Origin::Create(GURL("https://localhost/")), upload_url);
   }
 
   ASSERT_TRUE(
@@ -215,8 +215,8 @@ IN_PROC_BROWSER_TEST_F(DomainReliabilityBrowserTest, RequestAtShutdown) {
   GURL hung_url = test_server()->GetURL("/hung");
   {
     mojo::ScopedAllowSyncCallForTesting allow_sync_call;
-    GetNetworkContext()->AddDomainReliabilityContextForTesting(hung_url,
-                                                               hung_url);
+    GetNetworkContext()->AddDomainReliabilityContextForTesting(  // IN-TEST
+        url::Origin::Create(hung_url), hung_url);
   }
 
   // Use a SimpleURLLoader so we can leak the mojo pipe, ensuring that URLLoader

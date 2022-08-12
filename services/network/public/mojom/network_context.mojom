@@ -799,7 +799,7 @@ interface NetworkContextClient {
       (array<url.mojom.Origin> origins);
 
   // Checks if a Domain Reliability report can be uploaded for the given origin.
-  OnCanSendDomainReliabilityUpload(url.mojom.Url origin) => (bool allowed);
+  OnCanSendDomainReliabilityUpload(url.mojom.Origin origin) => (bool allowed);
 
   // Called to generate an auth token for SPNEGO authentication on Android.
   [EnableIf=is_android]
@@ -1459,7 +1459,7 @@ interface NetworkContext {
   [Sync]
   // Adds a Domain Reliability Context.
   AddDomainReliabilityContextForTesting(
-    url.mojom.Url origin, url.mojom.Url upload_url) => ();
+    url.mojom.Origin origin, url.mojom.Url upload_url) => ();
 
   [Sync]
   // Forces all pending Domain Reliability uploads to run now, even if their

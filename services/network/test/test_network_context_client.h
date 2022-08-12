@@ -40,7 +40,7 @@ class TestNetworkContextClient : public network::mojom::NetworkContextClient {
       const std::vector<url::Origin>& origins,
       OnCanSendReportingReportsCallback callback) override {}
   void OnCanSendDomainReliabilityUpload(
-      const GURL& origin,
+      const url::Origin& origin,
       OnCanSendDomainReliabilityUploadCallback callback) override {}
 #if BUILDFLAG(IS_ANDROID)
   void OnGenerateHttpNegotiateAuthToken(

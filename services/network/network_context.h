@@ -459,7 +459,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       mojom::SignedExchangeReportPtr report,
       const net::NetworkIsolationKey& network_isolation_key) override;
   void AddDomainReliabilityContextForTesting(
-      const GURL& origin,
+      const url::Origin& origin,
       const GURL& upload_url,
       AddDomainReliabilityContextForTestingCallback callback) override;
   void ForceDomainReliabilityUploadsForTesting(
@@ -646,7 +646,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   void DestroySocketManager(P2PSocketManager* socket_manager);
 #endif  // BUILDFLAG(IS_P2P_ENABLED)
 
-  void CanUploadDomainReliability(const GURL& origin,
+  void CanUploadDomainReliability(const url::Origin& origin,
                                   base::OnceCallback<void(bool)> callback);
 
   void OnVerifyCertForSignedExchangeComplete(uint64_t cert_verify_id,

@@ -43,7 +43,7 @@ class DOMAIN_RELIABILITY_EXPORT DomainReliabilityContext {
   static const int kMaxUploadDepthToSchedule;
 
   using UploadAllowedCallback =
-      base::RepeatingCallback<void(const GURL&,
+      base::RepeatingCallback<void(const url::Origin&,
                                    base::OnceCallback<void(bool)>)>;
 
   DomainReliabilityContext(

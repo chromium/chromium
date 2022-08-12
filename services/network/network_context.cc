@@ -2063,7 +2063,7 @@ void NetworkContext::CreateMdnsResponder(
 }
 
 void NetworkContext::AddDomainReliabilityContextForTesting(
-    const GURL& origin,
+    const url::Origin& origin,
     const GURL& upload_url,
     AddDomainReliabilityContextForTestingCallback callback) {
   auto config = std::make_unique<domain_reliability::DomainReliabilityConfig>();
@@ -2824,7 +2824,7 @@ void NetworkContext::DestroySocketManager(P2PSocketManager* socket_manager) {
 #endif  // BUILDFLAG(IS_P2P_ENABLED)
 
 void NetworkContext::CanUploadDomainReliability(
-    const GURL& origin,
+    const url::Origin& origin,
     base::OnceCallback<void(bool)> callback) {
   client_->OnCanSendDomainReliabilityUpload(
       origin,

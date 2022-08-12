@@ -2050,17 +2050,16 @@ void StoragePartitionImpl::OnCanSendReportingReports(
 }
 
 void StoragePartitionImpl::OnCanSendDomainReliabilityUpload(
-    const GURL& origin,
+    const url::Origin& origin,
     OnCanSendDomainReliabilityUploadCallback callback) {
   DCHECK(initialized_);
   PermissionController* permission_controller =
       browser_context_->GetPermissionController();
-  std::move(callback).Run(permission_controller
-                              ->GetPermissionResultForOriginWithoutContext(
-                                  blink::PermissionType::BACKGROUND_SYNC,
-                                  url::Origin::Create(origin))
-                              .status ==
-                          blink::mojom::PermissionStatus::GRANTED);
+  std::move(callback).Run(
+      permission_controller
+          ->GetPermissionResultForOriginWithoutContext(
+              blink::PermissionType::BACKGROUND_SYNC, origin)
+          .status == blink::mojom::PermissionStatus::GRANTED);
 }
 
 void StoragePartitionImpl::OnClearSiteData(

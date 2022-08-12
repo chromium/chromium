@@ -194,7 +194,7 @@ class DomainReliabilityContextTest : public testing::Test {
     return beacons.empty();
   }
 
-  const GURL& upload_allowed_origin() { return upload_allowed_origin_; }
+  const url::Origin& upload_allowed_origin() { return upload_allowed_origin_; }
 
   void CallUploadAllowedResultCallback(bool allowed) {
     DCHECK(!upload_allowed_result_callback_.is_null());
@@ -227,7 +227,7 @@ class DomainReliabilityContextTest : public testing::Test {
     ++num_uploads_;
   }
 
-  void UploadAllowedCallback(const GURL& origin,
+  void UploadAllowedCallback(const url::Origin& origin,
                              base::OnceCallback<void(bool)> callback) {
     upload_allowed_origin_ = origin;
     upload_allowed_result_callback_ = std::move(callback);
@@ -243,7 +243,7 @@ class DomainReliabilityContextTest : public testing::Test {
   net::NetworkIsolationKey upload_network_isolation_key_;
   DomainReliabilityUploader::UploadCallback upload_callback_;
 
-  GURL upload_allowed_origin_;
+  url::Origin upload_allowed_origin_;
   base::OnceCallback<void(bool)> upload_allowed_result_callback_;
 };
 

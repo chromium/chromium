@@ -533,14 +533,15 @@ std::unique_ptr<const DomainReliabilityConfig> CreateGoogleConfig(
   bool include_subdomains = params.include_subdomains && !is_www;
 
   auto config = std::make_unique<DomainReliabilityConfig>();
-  config->origin = GURL("https://" + hostname + "/");
+  GURL url("https://" + hostname + "/");
+  config->origin = url::Origin::Create(url);
   config->include_subdomains = include_subdomains;
   config->collectors.clear();
   if (params.include_origin_specific_collector) {
     GURL::Replacements replacements;
     replacements.SetPathStr(kGoogleOriginSpecificCollectorPathString);
     config->collectors.push_back(
-        std::make_unique<GURL>(config->origin.ReplaceComponents(replacements)));
+        std::make_unique<GURL>(url.ReplaceComponents(replacements)));
   }
   for (const char* collector : kGoogleStandardCollectors) {
     config->collectors.push_back(std::make_unique<GURL>(collector));

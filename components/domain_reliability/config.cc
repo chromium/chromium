@@ -19,10 +19,15 @@ bool ConvertURL(const base::Value* value, GURL* url) {
   return url->is_valid();
 }
 
-bool ConvertOrigin(const base::Value* value, GURL* url) {
-  return ConvertURL(value, url) && !url->has_username() &&
-         !url->has_password() && url->SchemeIs(url::kHttpsScheme) &&
-         url->path_piece() == "/" && !url->has_query() && !url->has_ref();
+bool ConvertOrigin(const base::Value* value, url::Origin* origin) {
+  GURL url;
+  if (ConvertURL(value, &url) && !url.has_username() && !url.has_password() &&
+      url.SchemeIs(url::kHttpsScheme) && url.path_piece() == "/" &&
+      !url.has_query() && !url.has_ref()) {
+    *origin = url::Origin::Create(url);
+    return true;
+  }
+  return false;
 }
 
 bool IsValidSampleRate(double p) {
@@ -58,7 +63,7 @@ DomainReliabilityConfig::FromJSON(const base::StringPiece& json) {
 }
 
 bool DomainReliabilityConfig::IsValid() const {
-  if (!origin.is_valid() || collectors.empty() ||
+  if (origin.opaque() || collectors.empty() ||
       !IsValidSampleRate(success_sample_rate) ||
       !IsValidSampleRate(failure_sample_rate)) {
     return false;
@@ -79,7 +84,7 @@ double DomainReliabilityConfig::GetSampleRate(bool request_successful) const {
 // static
 void DomainReliabilityConfig::RegisterJSONConverter(
     base::JSONValueConverter<DomainReliabilityConfig>* converter) {
-  converter->RegisterCustomValueField<GURL>(
+  converter->RegisterCustomValueField<url::Origin>(
       "origin", &DomainReliabilityConfig::origin, &ConvertOrigin);
   converter->RegisterBoolField("include_subdomains",
                                &DomainReliabilityConfig::include_subdomains);

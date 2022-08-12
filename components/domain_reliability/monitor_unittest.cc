@@ -115,7 +115,7 @@ class DomainReliabilityMonitorTest : public testing::Test {
   }
 
   const DomainReliabilityContext* CreateAndAddContextForOrigin(
-      const GURL& origin,
+      const url::Origin& origin,
       bool wildcard) {
     std::unique_ptr<DomainReliabilityConfig> config(
         MakeTestConfigWithOrigin(origin));
@@ -428,20 +428,22 @@ TEST_F(DomainReliabilityMonitorTest, ClearBeacons) {
 TEST_F(DomainReliabilityMonitorTest, ClearBeaconsWithFilter) {
   base::HistogramTester histograms;
   // Create two contexts, each with one beacon.
-  GURL origin1("http://example.com/");
-  GURL origin2("http://example.org/");
+  GURL url1("http://example.com/");
+  GURL url2("http://example.org/");
+  auto origin1 = url::Origin::Create(url1);
+  auto origin2 = url::Origin::Create(url2);
 
   const DomainReliabilityContext* context1 =
       CreateAndAddContextForOrigin(origin1, false);
   RequestInfo request = MakeRequestInfo();
-  request.url = origin1;
+  request.url = url1;
   request.net_error = net::ERR_CONNECTION_RESET;
   OnRequestLegComplete(request);
 
   const DomainReliabilityContext* context2 =
       CreateAndAddContextForOrigin(origin2, false);
   request = MakeRequestInfo();
-  request.url = origin2;
+  request.url = url2;
   request.net_error = net::ERR_CONNECTION_RESET;
   OnRequestLegComplete(request);
 
@@ -451,7 +453,7 @@ TEST_F(DomainReliabilityMonitorTest, ClearBeaconsWithFilter) {
                                                    const url::Origin& origin2) {
                                                   return origin1 == origin2;
                                                 },
-                                                url::Origin::Create(origin1)));
+                                                origin1));
 
   // Beacons for |context1| were cleared. Beacons for |context2| and
   // the contexts themselves were not.
@@ -490,8 +492,8 @@ TEST_F(DomainReliabilityMonitorTest, ClearContexts) {
 }
 
 TEST_F(DomainReliabilityMonitorTest, ClearContextsWithFilter) {
-  GURL origin1("http://example.com/");
-  GURL origin2("http://example.org/");
+  auto origin1 = url::Origin::Create(GURL("http://example.com/"));
+  auto origin2 = url::Origin::Create(GURL("http://example.org/"));
 
   CreateAndAddContextForOrigin(origin1, false);
   CreateAndAddContextForOrigin(origin2, false);
@@ -505,15 +507,15 @@ TEST_F(DomainReliabilityMonitorTest, ClearContextsWithFilter) {
           [](const url::Origin& origin1, const url::Origin& origin2) {
             return origin1 == origin2;
           },
-          url::Origin::Create(origin1)));
+          origin1));
 
   // Only one of the contexts should have been deleted.
   EXPECT_EQ(1u, monitor_.contexts_size_for_testing());
 }
 
 TEST_F(DomainReliabilityMonitorTest, WildcardMatchesSelf) {
-  const DomainReliabilityContext* context =
-      CreateAndAddContextForOrigin(GURL("https://wildcard/"), true);
+  const DomainReliabilityContext* context = CreateAndAddContextForOrigin(
+      url::Origin::Create(GURL("https://wildcard/")), true);
 
   RequestInfo request = MakeRequestInfo();
   request.url = GURL("http://wildcard/");
@@ -524,8 +526,8 @@ TEST_F(DomainReliabilityMonitorTest, WildcardMatchesSelf) {
 }
 
 TEST_F(DomainReliabilityMonitorTest, WildcardMatchesSubdomain) {
-  const DomainReliabilityContext* context =
-      CreateAndAddContextForOrigin(GURL("https://wildcard/"), true);
+  const DomainReliabilityContext* context = CreateAndAddContextForOrigin(
+      url::Origin::Create(GURL("https://wildcard/")), true);
 
   RequestInfo request = MakeRequestInfo();
   request.url = GURL("http://test.wildcard/");
@@ -536,8 +538,8 @@ TEST_F(DomainReliabilityMonitorTest, WildcardMatchesSubdomain) {
 }
 
 TEST_F(DomainReliabilityMonitorTest, WildcardDoesntMatchSubsubdomain) {
-  const DomainReliabilityContext* context =
-      CreateAndAddContextForOrigin(GURL("https://wildcard/"), true);
+  const DomainReliabilityContext* context = CreateAndAddContextForOrigin(
+      url::Origin::Create(GURL("https://wildcard/")), true);
 
   RequestInfo request = MakeRequestInfo();
   request.url = GURL("http://test.test.wildcard/");
@@ -548,10 +550,10 @@ TEST_F(DomainReliabilityMonitorTest, WildcardDoesntMatchSubsubdomain) {
 }
 
 TEST_F(DomainReliabilityMonitorTest, WildcardPrefersSelfToParentWildcard) {
-  const DomainReliabilityContext* context1 =
-      CreateAndAddContextForOrigin(GURL("https://test.wildcard/"), false);
-  const DomainReliabilityContext* context2 =
-      CreateAndAddContextForOrigin(GURL("https://wildcard/"), true);
+  const DomainReliabilityContext* context1 = CreateAndAddContextForOrigin(
+      url::Origin::Create(GURL("https://test.wildcard/")), false);
+  const DomainReliabilityContext* context2 = CreateAndAddContextForOrigin(
+      url::Origin::Create(GURL("https://wildcard/")), true);
 
   RequestInfo request = MakeRequestInfo();
   request.url = GURL("http://test.wildcard/");
@@ -564,10 +566,10 @@ TEST_F(DomainReliabilityMonitorTest, WildcardPrefersSelfToParentWildcard) {
 
 TEST_F(DomainReliabilityMonitorTest,
     WildcardPrefersSelfWildcardToParentWildcard) {
-  const DomainReliabilityContext* context1 =
-      CreateAndAddContextForOrigin(GURL("https://test.wildcard/"), true);
-  const DomainReliabilityContext* context2 =
-      CreateAndAddContextForOrigin(GURL("https://wildcard/"), true);
+  const DomainReliabilityContext* context1 = CreateAndAddContextForOrigin(
+      url::Origin::Create(GURL("https://test.wildcard/")), true);
+  const DomainReliabilityContext* context2 = CreateAndAddContextForOrigin(
+      url::Origin::Create(GURL("https://wildcard/")), true);
 
   RequestInfo request = MakeRequestInfo();
   request.url = GURL("http://test.wildcard/");
@@ -593,7 +595,7 @@ TEST_F(DomainReliabilityMonitorTest, RealRequest) {
   ASSERT_TRUE(test_server.Start());
 
   std::unique_ptr<DomainReliabilityConfig> config(
-      MakeTestConfigWithOrigin(test_server.base_url()));
+      MakeTestConfigWithOrigin(test_server.GetOrigin()));
   const DomainReliabilityContext* context =
       monitor_.AddContextForTesting(std::move(config));
 

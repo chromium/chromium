@@ -67,8 +67,7 @@ void DomainReliabilityContextManager::ClearBeacons(
     const base::RepeatingCallback<bool(const url::Origin&)>& origin_filter) {
   for (auto& context_entry : contexts_) {
     if (origin_filter.is_null() ||
-        origin_filter.Run(
-            url::Origin::Create(context_entry.second->config().origin))) {
+        origin_filter.Run(context_entry.second->config().origin)) {
       context_entry.second->ClearBeacons();
     }
   }
@@ -93,7 +92,7 @@ void DomainReliabilityContextManager::RemoveContexts(
   }
 
   for (auto it = contexts_.begin(); it != contexts_.end();) {
-    if (origin_filter.Run(url::Origin::Create(it->second->config().origin))) {
+    if (origin_filter.Run(it->second->config().origin)) {
       it = contexts_.erase(it);
       continue;
     }
