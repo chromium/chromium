@@ -526,10 +526,14 @@ void DesksController::NewDesk(DesksCreationRemovalSource source) {
                       /*set_by_user=*/false);
   }
 
-  auto* shell = Shell::Get();
-  shell->accessibility_controller()->TriggerAccessibilityAlertWithMessage(
-      l10n_util::GetStringFUTF8(IDS_ASH_VIRTUAL_DESKS_ALERT_NEW_DESK_CREATED,
-                                base::NumberToString16(desks_.size())));
+  // Don't trigger an a11y alert when the source is kLaunchTemplate because
+  // CreateNewDeskForTemplate will trigger an alert instead.
+  if (source != DesksCreationRemovalSource::kLaunchTemplate) {
+    auto* shell = Shell::Get();
+    shell->accessibility_controller()->TriggerAccessibilityAlertWithMessage(
+        l10n_util::GetStringFUTF8(IDS_ASH_VIRTUAL_DESKS_ALERT_NEW_DESK_CREATED,
+                                  base::NumberToString16(desks_.size())));
+  }
 
   for (auto& observer : observers_)
     observer.OnDeskAdded(new_desk);
@@ -1077,6 +1081,10 @@ void DesksController::CreateNewDeskForTemplate(
 
   if (!desk_name.empty()) {
     desk->SetName(desk_name, /*set_by_user=*/true);
+    Shell::Get()
+        ->accessibility_controller()
+        ->TriggerAccessibilityAlertWithMessage(l10n_util::GetStringFUTF8(
+            IDS_ASH_VIRTUAL_DESKS_ALERT_NEW_DESK_CREATED, desk_name));
   }
   // Force update user prefs because `SetName()` does not trigger it.
   desks_restore_util::UpdatePrimaryUserDeskNamesPrefs();
