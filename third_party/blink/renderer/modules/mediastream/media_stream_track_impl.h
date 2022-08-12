@@ -84,7 +84,7 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
   String ContentHint() const override;
   void SetContentHint(const String&) override;
   String readyState() const override;
-  MediaStreamTrack* clone(ScriptState*) override;
+  MediaStreamTrack* clone(ExecutionContext*) override;
   void stopTrack(ExecutionContext*) override;
   MediaTrackCapabilities* getCapabilities() const override;
   MediaTrackConstraints* getConstraints() const override;

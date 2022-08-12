@@ -38,7 +38,7 @@ class MODULES_EXPORT FocusableMediaStreamTrack : public MediaStreamTrackImpl {
              ExceptionState& exception_state);
 
   // Clones raise an error if focus() is called.
-  FocusableMediaStreamTrack* clone(ScriptState*) override;
+  FocusableMediaStreamTrack* clone(ExecutionContext*) override;
 
  protected:
   // Given a partially built FocusableMediaStreamTrack, finishes the job

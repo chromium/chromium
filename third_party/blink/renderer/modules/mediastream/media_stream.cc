@@ -383,10 +383,10 @@ MediaStream* MediaStream::clone(ScriptState* script_state) {
   ExecutionContext* context = ExecutionContext::From(script_state);
   for (MediaStreamTrackVector::iterator iter = audio_tracks_.begin();
        iter != audio_tracks_.end(); ++iter)
-    tracks.push_back((*iter)->clone(script_state));
+    tracks.push_back((*iter)->clone(ExecutionContext::From(script_state)));
   for (MediaStreamTrackVector::iterator iter = video_tracks_.begin();
        iter != video_tracks_.end(); ++iter)
-    tracks.push_back((*iter)->clone(script_state));
+    tracks.push_back((*iter)->clone(ExecutionContext::From(script_state)));
   return MediaStream::Create(context, tracks);
 }
 

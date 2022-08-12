@@ -46,7 +46,7 @@ class MODULES_EXPORT BrowserCaptureMediaStreamTrack final
 
   ScriptPromise cropTo(ScriptState*, CropTarget*, ExceptionState&);
 
-  BrowserCaptureMediaStreamTrack* clone(ScriptState*) override;
+  BrowserCaptureMediaStreamTrack* clone(ExecutionContext*) override;
 
  private:
 #if !BUILDFLAG(IS_ANDROID)

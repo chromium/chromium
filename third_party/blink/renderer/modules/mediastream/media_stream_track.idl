@@ -47,7 +47,7 @@ enum MediaStreamTrackState {
     // https://w3c.github.io/mediacapture-handle/identity/
     [RuntimeEnabled = CaptureHandle] attribute EventHandler oncapturehandlechange;
 
-    [CallWith=ScriptState] MediaStreamTrack clone();
+    [CallWith=ExecutionContext] MediaStreamTrack clone();
     [ImplementedAs=stopTrack, CallWith=ExecutionContext] void stop();
 
     MediaTrackCapabilities getCapabilities();

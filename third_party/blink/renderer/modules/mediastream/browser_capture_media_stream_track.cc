@@ -242,12 +242,12 @@ ScriptPromise BrowserCaptureMediaStreamTrack::cropTo(
 }
 
 BrowserCaptureMediaStreamTrack* BrowserCaptureMediaStreamTrack::clone(
-    ScriptState* script_state) {
+    ExecutionContext* execution_context) {
   // Instantiate the clone.
   BrowserCaptureMediaStreamTrack* cloned_track =
       MakeGarbageCollected<BrowserCaptureMediaStreamTrack>(
-          ExecutionContext::From(script_state), Component()->Clone(),
-          GetReadyState(), base::DoNothing(), descriptor_id(),
+          execution_context, Component()->Clone(), GetReadyState(),
+          base::DoNothing(), descriptor_id(),
           /*is_clone=*/true);
 
   // Copy state. (Note: Invokes FocusableMediaStreamTrack::CloneInternal().)

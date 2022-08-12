@@ -23,7 +23,7 @@ void CanvasCaptureMediaStreamTrack::requestFrame() {
 }
 
 CanvasCaptureMediaStreamTrack* CanvasCaptureMediaStreamTrack::clone(
-    ScriptState* script_state) {
+    ExecutionContext* script_state) {
   MediaStreamComponent* cloned_component =
       Component()->Clone(std::make_unique<blink::MediaStreamVideoTrack>(
           MediaStreamVideoSource::GetVideoSource(Component()->Source()),

@@ -127,9 +127,9 @@ String TransferredMediaStreamTrack::readyState() const {
 }
 
 MediaStreamTrack* TransferredMediaStreamTrack::clone(
-    ScriptState* script_state) {
+    ExecutionContext* execution_context) {
   if (track_) {
-    return track_->clone(script_state);
+    return track_->clone(execution_context);
   }
   // TODO(https://crbug.com/1288839): Create another TransferredMediaStreamTrack
   // and call track_->clone() once track_ is initialized.

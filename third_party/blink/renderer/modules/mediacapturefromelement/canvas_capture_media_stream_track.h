@@ -35,7 +35,7 @@ class CanvasCaptureMediaStreamTrack final : public MediaStreamTrackImpl {
   HTMLCanvasElement* canvas() const;
   void requestFrame();
 
-  CanvasCaptureMediaStreamTrack* clone(ScriptState*) override;
+  CanvasCaptureMediaStreamTrack* clone(ExecutionContext*) override;
 
   void Trace(Visitor*) const override;
 

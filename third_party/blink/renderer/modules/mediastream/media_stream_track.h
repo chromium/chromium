@@ -85,7 +85,7 @@ class MODULES_EXPORT MediaStreamTrack
   virtual String readyState() const = 0;
   virtual void SetContentHint(const String&) = 0;
   virtual void stopTrack(ExecutionContext*) = 0;
-  virtual MediaStreamTrack* clone(ScriptState*) = 0;
+  virtual MediaStreamTrack* clone(ExecutionContext*) = 0;
   virtual MediaTrackCapabilities* getCapabilities() const = 0;
   virtual MediaTrackConstraints* getConstraints() const = 0;
   virtual MediaTrackSettings* getSettings() const = 0;

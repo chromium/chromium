@@ -94,12 +94,12 @@ void FocusableMediaStreamTrack::focus(
 }
 
 FocusableMediaStreamTrack* FocusableMediaStreamTrack::clone(
-    ScriptState* script_state) {
+    ExecutionContext* execution_context) {
   // Instantiate the clone.
   FocusableMediaStreamTrack* cloned_track =
       MakeGarbageCollected<FocusableMediaStreamTrack>(
-          ExecutionContext::From(script_state), Component()->Clone(),
-          GetReadyState(), base::DoNothing(), descriptor_id_,
+          execution_context, Component()->Clone(), GetReadyState(),
+          base::DoNothing(), descriptor_id_,
           /*is_clone=*/true);
 
   // Copy state.

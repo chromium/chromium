@@ -446,14 +446,15 @@ void MediaStreamTrackImpl::stopTrack(ExecutionContext* execution_context) {
   PropagateTrackEnded();
 }
 
-MediaStreamTrack* MediaStreamTrackImpl::clone(ScriptState* script_state) {
+MediaStreamTrack* MediaStreamTrackImpl::clone(
+    ExecutionContext* execution_context) {
   SendLogMessage(String::Format("%s()", __func__));
 
   // Instantiate the clone.
   MediaStreamTrackImpl* cloned_track =
       MakeGarbageCollected<MediaStreamTrackImpl>(
-          ExecutionContext::From(script_state), Component()->Clone(),
-          ready_state_, base::DoNothing());
+          execution_context, Component()->Clone(), ready_state_,
+          base::DoNothing());
 
   // Copy state.
   CloneInternal(cloned_track);

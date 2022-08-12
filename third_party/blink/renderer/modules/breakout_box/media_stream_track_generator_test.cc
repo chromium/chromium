@@ -199,7 +199,7 @@ TEST_F(MediaStreamTrackGeneratorTest, Clone) {
   ScriptState* script_state = v8_scope.GetScriptState();
   MediaStreamTrackGenerator* original = MediaStreamTrackGenerator::Create(
       script_state, "video", v8_scope.GetExceptionState());
-  MediaStreamTrack* clone = original->clone(script_state);
+  MediaStreamTrack* clone = original->clone(v8_scope.GetExecutionContext());
   EXPECT_FALSE(original->Ended());
   EXPECT_FALSE(clone->Ended());
 
@@ -276,7 +276,7 @@ TEST_F(MediaStreamTrackGeneratorTest, CloneStopSource) {
   ScriptState* script_state = v8_scope.GetScriptState();
   MediaStreamTrackGenerator* original = MediaStreamTrackGenerator::Create(
       script_state, "video", v8_scope.GetExceptionState());
-  MediaStreamTrack* clone = original->clone(script_state);
+  MediaStreamTrack* clone = original->clone(v8_scope.GetExecutionContext());
   EXPECT_FALSE(original->Ended());
   EXPECT_FALSE(clone->Ended());
 
