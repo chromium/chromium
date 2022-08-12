@@ -247,23 +247,22 @@ void V8FunctionExecutor::Trace(Visitor* visitor) const {
 
 }  // namespace
 
-void PausableScriptExecutor::CreateAndRun(
-    LocalDOMWindow* window,
-    v8::Local<v8::Context> context,
-    v8::Local<v8::Function> function,
-    v8::Local<v8::Value> receiver,
-    int argc,
-    v8::Local<v8::Value> argv[],
-    WebScriptExecutionCallback* callback) {
+void PausableScriptExecutor::CreateAndRun(LocalDOMWindow* window,
+                                          v8::Local<v8::Context> context,
+                                          v8::Local<v8::Function> function,
+                                          v8::Local<v8::Value> receiver,
+                                          int argc,
+                                          v8::Local<v8::Value> argv[],
+                                          WebScriptExecutionCallback callback) {
   ScriptState* script_state = ScriptState::From(context);
   if (!script_state->ContextIsValid()) {
     if (callback)
-      callback->Completed(Vector<v8::Local<v8::Value>>());
+      std::move(callback).Run(Vector<v8::Local<v8::Value>>(), {});
     return;
   }
   PausableScriptExecutor* executor =
       MakeGarbageCollected<PausableScriptExecutor>(
-          window, script_state, callback,
+          window, script_state, std::move(callback),
           MakeGarbageCollected<V8FunctionExecutor>(
               window->GetIsolate(), function, receiver, argc, argv));
   executor->Run();
@@ -276,7 +275,7 @@ void PausableScriptExecutor::ContextDestroyed() {
     // is permitted. Ensure a valid scope is present for the callback.
     // See https://crbug.com/840719.
     ScriptState::Scope script_scope(script_state_);
-    callback_->Completed(Vector<v8::Local<v8::Value>>());
+    std::move(callback_).Run(Vector<v8::Local<v8::Value>>(), {});
   }
   Dispose();
 }
@@ -286,11 +285,11 @@ PausableScriptExecutor::PausableScriptExecutor(
     scoped_refptr<DOMWrapperWorld> world,
     Vector<WebScriptSource> sources,
     mojom::blink::UserActivationOption user_gesture,
-    WebScriptExecutionCallback* callback)
+    WebScriptExecutionCallback callback)
     : PausableScriptExecutor(
           window,
           ToScriptState(window, *world),
-          callback,
+          std::move(callback),
           MakeGarbageCollected<WebScriptExecutor>(std::move(sources),
                                                   world->GetWorldId(),
                                                   user_gesture)) {}
@@ -298,11 +297,11 @@ PausableScriptExecutor::PausableScriptExecutor(
 PausableScriptExecutor::PausableScriptExecutor(
     LocalDOMWindow* window,
     ScriptState* script_state,
-    WebScriptExecutionCallback* callback,
+    WebScriptExecutionCallback callback,
     Executor* executor)
     : ExecutionContextLifecycleObserver(window),
       script_state_(script_state),
-      callback_(callback),
+      callback_(std::move(callback)),
       blocking_option_(mojom::blink::LoadEventBlockingOption::kDoNotBlock),
       executor_(executor) {
   CHECK(script_state_);
@@ -343,8 +342,7 @@ void PausableScriptExecutor::PostExecuteAndDestroySelf(
 void PausableScriptExecutor::ExecuteAndDestroySelf() {
   CHECK(script_state_->ContextIsValid());
 
-  if (callback_)
-    callback_->WillExecute();
+  start_time_ = base::TimeTicks::Now();
 
   auto* window = To<LocalDOMWindow>(GetExecutionContext());
   ScriptState::Scope script_scope(script_state_);
@@ -388,7 +386,7 @@ void PausableScriptExecutor::HandleResults(
     window->document()->DecrementLoadEventDelayCount();
 
   if (callback_)
-    callback_->Completed(results);
+    std::move(callback_).Run(results, start_time_);
 
   Dispose();
 }

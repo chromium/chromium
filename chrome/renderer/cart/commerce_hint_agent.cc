@@ -804,53 +804,36 @@ void CommerceHintAgent::ExtractCartWithUpdatedScript(
   blink::WebScriptSource source = blink::WebScriptSource(
       GetProductExtractionScript(product_id_json, cart_extraction_script));
 
-  if (!javascript_request_) {
-    // This singleton never gets deleted, and will out-live CommerceHintAgen.
-    javascript_request_ = new JavaScriptRequest(weak_factory_.GetWeakPtr());
-  }
   main_frame->RequestExecuteScript(
       ISOLATED_WORLD_ID_CHROME_INTERNAL, base::make_span(&source, 1),
       blink::mojom::UserActivationOption::kDoNotActivate,
       blink::mojom::EvaluationTiming::kAsynchronous,
-      blink::mojom::LoadEventBlockingOption::kDoNotBlock, javascript_request_,
+      blink::mojom::LoadEventBlockingOption::kDoNotBlock,
+      base::BindOnce(&CommerceHintAgent::OnProductsExtracted,
+                     weak_factory_.GetWeakPtr()),
       blink::BackForwardCacheAware::kAllow,
       blink::mojom::PromiseResultOption::kAwait);
 }
 
-CommerceHintAgent::JavaScriptRequest::JavaScriptRequest(
-    base::WeakPtr<CommerceHintAgent> agent)
-    : agent_(std::move(agent)) {}
-
-CommerceHintAgent::JavaScriptRequest::~JavaScriptRequest() = default;
-
-void CommerceHintAgent::JavaScriptRequest::WillExecute() {
-  start_time_ = base::TimeTicks::Now();
-}
-
-void CommerceHintAgent::JavaScriptRequest::Completed(
-    const blink::WebVector<v8::Local<v8::Value>>& result) {
+void CommerceHintAgent::OnProductsExtracted(
+    const blink::WebVector<v8::Local<v8::Value>>& result,
+    base::TimeTicks start_time) {
   // Only record when the start time is correctly captured.
-  DCHECK(!start_time_.is_null());
-  if (!agent_)
-    return;
+  DCHECK(!start_time.is_null());
   if (result.empty() || result[0].IsEmpty())
     return;
-  blink::WebLocalFrame* main_frame = agent_->render_frame()->GetWebFrame();
+  blink::WebLocalFrame* main_frame = render_frame()->GetWebFrame();
   v8::Local<v8::Context> context = main_frame->MainWorldScriptContext();
   std::unique_ptr<base::Value> results =
       content::V8ValueConverter::Create()->FromV8Value(result[0], context);
   if (!results->is_dict())
     return;
-  if (!start_time_.is_null()) {
+  if (!start_time.is_null()) {
     results->GetDict().Set(
         "execution_ms",
-        (base::TimeTicks::Now() - start_time_).InMillisecondsF());
+        (base::TimeTicks::Now() - start_time).InMillisecondsF());
   }
-  agent_->OnProductsExtracted(std::move(results));
-}
 
-void CommerceHintAgent::OnProductsExtracted(
-    std::unique_ptr<base::Value> results) {
   if (!results) {
     DLOG(ERROR) << "OnProductsExtracted() got empty results";
     return;

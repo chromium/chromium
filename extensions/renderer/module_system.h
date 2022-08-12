@@ -15,7 +15,7 @@
 #include "base/compiler_specific.h"
 #include "extensions/renderer/native_handler.h"
 #include "extensions/renderer/object_backed_native_handler.h"
-#include "extensions/renderer/script_injection_callback.h"
+#include "third_party/blink/public/web/web_script_execution_callback.h"
 #include "v8/include/v8-forward.h"
 #include "v8/include/v8-object.h"
 #include "v8/include/v8-persistent-handle.h"
@@ -104,7 +104,7 @@ class ModuleSystem : public ObjectBackedNativeHandler {
                             const std::string& method_name,
                             int argc,
                             v8::Local<v8::Value> argv[],
-                            ScriptInjectionCallback::CompleteCallback callback);
+                            blink::WebScriptExecutionCallback callback);
 
   // Register |native_handler| as a potential target for requireNative(), so
   // calls to requireNative(|name|) from JS will return a new object created by

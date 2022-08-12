@@ -7,6 +7,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/mojom/script/script_evaluation_params.mojom-blink.h"
+#include "third_party/blink/public/web/web_script_execution_callback.h"
 #include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -21,7 +22,6 @@ namespace blink {
 
 class LocalDOMWindow;
 class ScriptState;
-class WebScriptExecutionCallback;
 
 class CORE_EXPORT PausableScriptExecutor final
     : public GarbageCollected<PausableScriptExecutor>,
@@ -33,7 +33,7 @@ class CORE_EXPORT PausableScriptExecutor final
                            v8::Local<v8::Value> receiver,
                            int argc,
                            v8::Local<v8::Value> argv[],
-                           WebScriptExecutionCallback*);
+                           WebScriptExecutionCallback);
 
   class Executor : public GarbageCollected<Executor> {
    public:
@@ -48,10 +48,10 @@ class CORE_EXPORT PausableScriptExecutor final
                          scoped_refptr<DOMWrapperWorld>,
                          Vector<WebScriptSource>,
                          mojom::blink::UserActivationOption,
-                         WebScriptExecutionCallback*);
+                         WebScriptExecutionCallback);
   PausableScriptExecutor(LocalDOMWindow*,
                          ScriptState*,
-                         WebScriptExecutionCallback*,
+                         WebScriptExecutionCallback,
                          Executor*);
   ~PausableScriptExecutor() override;
 
@@ -74,7 +74,8 @@ class CORE_EXPORT PausableScriptExecutor final
   void HandleResults(const Vector<v8::Local<v8::Value>>& results);
 
   Member<ScriptState> script_state_;
-  WebScriptExecutionCallback* callback_;
+  WebScriptExecutionCallback callback_;
+  base::TimeTicks start_time_;
   mojom::blink::LoadEventBlockingOption blocking_option_;
   TaskHandle task_handle_;
 

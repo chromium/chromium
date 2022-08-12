@@ -1071,11 +1071,11 @@ void WebLocalFrameImpl::RequestExecuteV8Function(
     v8::Local<v8::Value> receiver,
     int argc,
     v8::Local<v8::Value> argv[],
-    WebScriptExecutionCallback* callback) {
+    WebScriptExecutionCallback callback) {
   DCHECK(GetFrame());
   PausableScriptExecutor::CreateAndRun(GetFrame()->DomWindow(), context,
                                        function, receiver, argc, argv,
-                                       callback);
+                                       std::move(callback));
 }
 
 void WebLocalFrameImpl::RequestExecuteScript(
@@ -1084,7 +1084,7 @@ void WebLocalFrameImpl::RequestExecuteScript(
     mojom::blink::UserActivationOption user_gesture,
     mojom::blink::EvaluationTiming evaluation_timing,
     mojom::blink::LoadEventBlockingOption blocking_option,
-    WebScriptExecutionCallback* callback,
+    WebScriptExecutionCallback callback,
     BackForwardCacheAware back_forward_cache_aware,
     mojom::blink::PromiseResultOption promise_behavior) {
   DCHECK(GetFrame());
@@ -1108,7 +1108,7 @@ void WebLocalFrameImpl::RequestExecuteScript(
                         base::checked_cast<wtf_size_t>(sources.size()));
   auto* executor = MakeGarbageCollected<PausableScriptExecutor>(
       GetFrame()->DomWindow(), std::move(world), std::move(script_sources),
-      user_gesture, callback);
+      user_gesture, std::move(callback));
   executor->set_wait_for_promise(promise_behavior);
   switch (evaluation_timing) {
     case mojom::blink::EvaluationTiming::kAsynchronous:

@@ -323,7 +323,7 @@ void ModuleSystem::CallModuleMethodSafe(const std::string& module_name,
   v8::HandleScope handle_scope(GetIsolate());
   v8::Local<v8::Value> no_args;
   CallModuleMethodSafe(module_name, method_name, 0, &no_args,
-                       ScriptInjectionCallback::CompleteCallback());
+                       blink::WebScriptExecutionCallback());
 }
 
 void ModuleSystem::CallModuleMethodSafe(
@@ -331,7 +331,7 @@ void ModuleSystem::CallModuleMethodSafe(
     const std::string& method_name,
     std::vector<v8::Local<v8::Value>>* args) {
   CallModuleMethodSafe(module_name, method_name, args->size(), args->data(),
-                       ScriptInjectionCallback::CompleteCallback());
+                       blink::WebScriptExecutionCallback());
 }
 
 void ModuleSystem::CallModuleMethodSafe(const std::string& module_name,
@@ -339,7 +339,7 @@ void ModuleSystem::CallModuleMethodSafe(const std::string& module_name,
                                         int argc,
                                         v8::Local<v8::Value> argv[]) {
   CallModuleMethodSafe(module_name, method_name, argc, argv,
-                       ScriptInjectionCallback::CompleteCallback());
+                       blink::WebScriptExecutionCallback());
 }
 
 void ModuleSystem::CallModuleMethodSafe(
@@ -347,7 +347,7 @@ void ModuleSystem::CallModuleMethodSafe(
     const std::string& method_name,
     int argc,
     v8::Local<v8::Value> argv[],
-    ScriptInjectionCallback::CompleteCallback callback) {
+    blink::WebScriptExecutionCallback callback) {
   TRACE_EVENT2("v8", "v8.callModuleMethodSafe", "module_name", module_name,
                "method_name", method_name);
 

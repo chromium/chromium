@@ -27,7 +27,6 @@
 #include "extensions/renderer/dom_activity_logger.h"
 #include "extensions/renderer/extension_frame_helper.h"
 #include "extensions/renderer/extensions_renderer_client.h"
-#include "extensions/renderer/script_injection_callback.h"
 #include "extensions/renderer/scripts_run_info.h"
 #include "extensions/renderer/trace_util.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -36,6 +35,7 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/public/web/web_script_execution_callback.h"
 #include "third_party/blink/public/web/web_script_source.h"
 #include "url/gurl.h"
 
@@ -92,38 +92,6 @@ int GetIsolatedWorldIdForInstance(const InjectionHost* injection_host) {
 
   return id;
 }
-
-// This class manages its own lifetime.
-class TimedScriptInjectionCallback : public ScriptInjectionCallback {
- public:
-  TimedScriptInjectionCallback(base::WeakPtr<ScriptInjection> injection)
-      : ScriptInjectionCallback(
-            base::BindOnce(&TimedScriptInjectionCallback::OnCompleted,
-                           base::Unretained(this))),
-        injection_(injection) {}
-  ~TimedScriptInjectionCallback() override {}
-
-  void OnCompleted(const std::vector<v8::Local<v8::Value>>& result) {
-    if (injection_) {
-      base::TimeTicks timestamp(base::TimeTicks::Now());
-      absl::optional<base::TimeDelta> elapsed;
-      // If the script will never execute (such as if the context is destroyed),
-      // willExecute() will not be called, but OnCompleted() will. Only log a
-      // time for execution if the script, in fact, executed.
-      if (!start_time_.is_null())
-        elapsed = timestamp - start_time_;
-      injection_->OnJsInjectionCompleted(result, elapsed);
-    }
-  }
-
-  void WillExecute() override {
-    start_time_ = base::TimeTicks::Now();
-  }
-
- private:
-  base::WeakPtr<ScriptInjection> injection_;
-  base::TimeTicks start_time_;
-};
 
 }  // namespace
 
@@ -328,9 +296,6 @@ void ScriptInjection::InjectJs(std::set<std::string>* executing_scripts,
       run_location_, executing_scripts, num_injected_js_scripts);
   DCHECK(!sources.empty());
 
-  std::unique_ptr<blink::WebScriptExecutionCallback> callback(
-      new TimedScriptInjectionCallback(weak_ptr_factory_.GetWeakPtr()));
-
   base::ElapsedTimer exec_timer;
 
   // For content scripts executing during page load, we run them asynchronously
@@ -364,15 +329,25 @@ void ScriptInjection::InjectJs(std::set<std::string>* executing_scripts,
   }
   render_frame_->GetWebFrame()->RequestExecuteScript(
       world_id, sources, injector_->IsUserGesture(), execution_option,
-      blink::mojom::LoadEventBlockingOption::kBlock, callback.release(),
+      blink::mojom::LoadEventBlockingOption::kBlock,
+      base::BindOnce(&ScriptInjection::OnJsInjectionCompleted,
+                     weak_ptr_factory_.GetWeakPtr()),
       blink::BackForwardCacheAware::kPossiblyDisallow,
       injector_->ShouldWaitForPromise());
 }
 
 void ScriptInjection::OnJsInjectionCompleted(
-    const std::vector<v8::Local<v8::Value>>& results,
-    absl::optional<base::TimeDelta> elapsed) {
+    const blink::WebVector<v8::Local<v8::Value>>& results,
+    base::TimeTicks start_time) {
   DCHECK(!did_inject_js_);
+
+  base::TimeTicks timestamp(base::TimeTicks::Now());
+  absl::optional<base::TimeDelta> elapsed;
+  // If the script will never execute (such as if the context is destroyed),
+  // `start_time` is null. Only log a time for execution if the script, in fact,
+  // executed.
+  if (!start_time.is_null())
+    elapsed = timestamp - start_time;
 
   if (injection_host_->id().type == mojom::HostID::HostType::kExtensions &&
       elapsed) {

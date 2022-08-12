@@ -279,15 +279,14 @@ content::RenderFrame* ScriptContext::GetRenderFrame() const {
 void ScriptContext::SafeCallFunction(const v8::Local<v8::Function>& function,
                                      int argc,
                                      v8::Local<v8::Value> argv[]) {
-  SafeCallFunction(function, argc, argv,
-                   ScriptInjectionCallback::CompleteCallback());
+  SafeCallFunction(function, argc, argv, blink::WebScriptExecutionCallback());
 }
 
 void ScriptContext::SafeCallFunction(
     const v8::Local<v8::Function>& function,
     int argc,
     v8::Local<v8::Value> argv[],
-    ScriptInjectionCallback::CompleteCallback callback) {
+    blink::WebScriptExecutionCallback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
   v8::HandleScope handle_scope(isolate());
   v8::Context::Scope scope(v8_context());
@@ -295,20 +294,16 @@ void ScriptContext::SafeCallFunction(
                                  v8::MicrotasksScope::kDoNotRunMicrotasks);
   v8::Local<v8::Object> global = v8_context()->Global();
   if (web_frame_) {
-    ScriptInjectionCallback* wrapper_callback = nullptr;
-    if (!callback.is_null()) {
-      // ScriptInjectionCallback manages its own lifetime.
-      wrapper_callback = new ScriptInjectionCallback(std::move(callback));
-    }
     web_frame_->RequestExecuteV8Function(v8_context(), function, global, argc,
-                                         argv, wrapper_callback);
+                                         argv, std::move(callback));
   } else {
+    auto start_time = base::TimeTicks::Now();
     v8::MaybeLocal<v8::Value> maybe_result =
         function->Call(v8_context(), global, argc, argv);
     v8::Local<v8::Value> result;
     if (!callback.is_null() && maybe_result.ToLocal(&result)) {
       std::vector<v8::Local<v8::Value>> results(1, result);
-      std::move(callback).Run(results);
+      std::move(callback).Run(results, start_time);
     }
   }
 }

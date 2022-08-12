@@ -20,7 +20,7 @@
 #include "extensions/common/script_constants.h"
 #include "extensions/renderer/module_system.h"
 #include "extensions/renderer/safe_builtins.h"
-#include "extensions/renderer/script_injection_callback.h"
+#include "third_party/blink/public/web/web_script_execution_callback.h"
 #include "url/gurl.h"
 #include "v8-exception.h"
 #include "v8/include/v8-context.h"
@@ -129,7 +129,7 @@ class ScriptContext {
   void SafeCallFunction(const v8::Local<v8::Function>& function,
                         int argc,
                         v8::Local<v8::Value> argv[],
-                        ScriptInjectionCallback::CompleteCallback callback);
+                        blink::WebScriptExecutionCallback callback);
 
   // Returns the availability of the API |api_name|.
   Feature::Availability GetAvailability(const std::string& api_name);

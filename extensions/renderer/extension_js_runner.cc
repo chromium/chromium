@@ -7,8 +7,8 @@
 #include "base/bind.h"
 #include "content/public/renderer/worker_thread.h"
 #include "extensions/renderer/script_context.h"
-#include "extensions/renderer/script_injection_callback.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/public/web/web_script_execution_callback.h"
 #include "v8/include/v8-function.h"
 #include "v8/include/v8-isolate.h"
 #include "v8/include/v8-microtask-queue.h"
@@ -24,7 +24,7 @@ void ExtensionJSRunner::RunJSFunction(v8::Local<v8::Function> function,
                                       int argc,
                                       v8::Local<v8::Value> argv[],
                                       ResultCallback callback) {
-  ScriptInjectionCallback::CompleteCallback wrapper_callback;
+  blink::WebScriptExecutionCallback wrapper_callback;
   if (callback) {
     wrapper_callback =
         base::BindOnce(&ExtensionJSRunner::OnFunctionComplete,
@@ -75,7 +75,8 @@ v8::MaybeLocal<v8::Value> ExtensionJSRunner::RunJSFunctionSync(
 
 void ExtensionJSRunner::OnFunctionComplete(
     ResultCallback callback,
-    const std::vector<v8::Local<v8::Value>>& results) {
+    const blink::WebVector<v8::Local<v8::Value>>& results,
+    base::TimeTicks start_time) {
   DCHECK(script_context_->is_valid());
 
   v8::MaybeLocal<v8::Value> result;

@@ -190,8 +190,6 @@ source_set("renderer") {
     "script_context_set_iterable.h",
     "script_injection.cc",
     "script_injection.h",
-    "script_injection_callback.cc",
-    "script_injection_callback.h",
     "script_injection_manager.cc",
     "script_injection_manager.h",
     "script_injector.h",

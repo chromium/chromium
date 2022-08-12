@@ -116,8 +116,7 @@ void JsBinding::OnPostMessage(const std::u16string& message) {
   v8::Local<v8::Object> self = GetWrapper(isolate).ToLocalChecked();
   v8::Local<v8::Function> on_message = GetOnMessage(isolate);
   if (!on_message.IsEmpty()) {
-    web_frame->RequestExecuteV8Function(context, on_message, self, 1, argv,
-                                        nullptr);
+    web_frame->RequestExecuteV8Function(context, on_message, self, 1, argv, {});
   }
 
   // Copy the listeners so that if the listener modifies the list in some way
@@ -130,8 +129,7 @@ void JsBinding::OnPostMessage(const std::u16string& message) {
   for (const auto& listener : listeners_copy) {
     // Ensure the listener is still registered.
     if (base::Contains(listeners_, listener)) {
-      web_frame->RequestExecuteV8Function(context, listener, self, 1, argv,
-                                          nullptr);
+      web_frame->RequestExecuteV8Function(context, listener, self, 1, argv, {});
     }
   }
 }

@@ -20,17 +20,16 @@
 namespace blink {
 namespace virtual_time_test {
 
-class ScriptExecutionCallbackHelper : public WebScriptExecutionCallback {
+class ScriptExecutionCallbackHelper final {
  public:
   const String Result() const { return result_; }
-
- private:
-  void Completed(const WebVector<v8::Local<v8::Value>>& values) override {
+  void Completed(const WebVector<v8::Local<v8::Value>>& values,
+                 base::TimeTicks start_time) {
     if (!values.empty() && !values[0].IsEmpty() && values[0]->IsString()) {
       result_ = ToCoreString(v8::Local<v8::String>::Cast(values[0]));
     }
   }
-
+ private:
   String result_;
 };
 
@@ -51,7 +50,9 @@ class VirtualTimeTest : public SimTest {
         DOMWrapperWorld::kMainWorldId, base::make_span(&source, 1),
         mojom::blink::UserActivationOption::kDoNotActivate,
         mojom::blink::EvaluationTiming::kSynchronous,
-        mojom::blink::LoadEventBlockingOption::kDoNotBlock, &callback_helper,
+        mojom::blink::LoadEventBlockingOption::kDoNotBlock,
+        base::BindOnce(&ScriptExecutionCallbackHelper::Completed,
+                       base::Unretained(&callback_helper)),
         BackForwardCacheAware::kAllow,
         mojom::blink::PromiseResultOption::kDoNotWait);
 

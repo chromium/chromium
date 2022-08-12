@@ -6,7 +6,9 @@
 #define EXTENSIONS_RENDERER_EXTENSION_JS_RUNNER_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "extensions/renderer/bindings/js_runner.h"
+#include "third_party/blink/public/platform/web_vector.h"
 #include "v8/include/v8-forward.h"
 
 namespace extensions {
@@ -37,7 +39,8 @@ class ExtensionJSRunner : public JSRunner {
  private:
   // Called with the result of executing the JS function.
   void OnFunctionComplete(ResultCallback callback,
-                          const std::vector<v8::Local<v8::Value>>& results);
+                          const blink::WebVector<v8::Local<v8::Value>>& results,
+                          base::TimeTicks start_time);
 
   // The associated ScriptContext. Guaranteed to outlive this object.
   ScriptContext* const script_context_;

@@ -49,6 +49,7 @@
 #include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_frame_load_type.h"
 #include "third_party/blink/public/web/web_history_item.h"
+#include "third_party/blink/public/web/web_script_execution_callback.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/base/ime/ime_text_span.h"
 #include "ui/gfx/range/range.h"
@@ -89,7 +90,6 @@ class WebPerformance;
 class WebPlugin;
 class WebPrintClient;
 class WebRange;
-class WebScriptExecutionCallback;
 class WebSpellCheckPanelHostClient;
 class WebString;
 class WebTextCheckClient;
@@ -413,7 +413,7 @@ class WebLocalFrame : public WebFrame {
                                         v8::Local<v8::Value> receiver,
                                         int argc,
                                         v8::Local<v8::Value> argv[],
-                                        WebScriptExecutionCallback*) = 0;
+                                        WebScriptExecutionCallback) = 0;
 
   // Executes the script in the main world of the page.
   // Use kMainDOMWorldId to execute in the main world; otherwise,
@@ -423,7 +423,7 @@ class WebLocalFrame : public WebFrame {
                                     mojom::UserActivationOption,
                                     mojom::EvaluationTiming,
                                     mojom::LoadEventBlockingOption,
-                                    WebScriptExecutionCallback*,
+                                    WebScriptExecutionCallback,
                                     BackForwardCacheAware,
                                     mojom::PromiseResultOption) = 0;
 

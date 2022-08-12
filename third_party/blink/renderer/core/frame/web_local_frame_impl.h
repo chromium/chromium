@@ -90,7 +90,6 @@ class WebFrameWidgetImpl;
 class WebNode;
 class WebPerformance;
 class WebRemoteFrameImpl;
-class WebScriptExecutionCallback;
 class WebSpellCheckPanelHostClient;
 class WebView;
 class WebViewImpl;
@@ -182,13 +181,13 @@ class CORE_EXPORT WebLocalFrameImpl final
                                 v8::Local<v8::Value> receiver,
                                 int argc,
                                 v8::Local<v8::Value> argv[],
-                                WebScriptExecutionCallback*) override;
+                                WebScriptExecutionCallback) override;
   void RequestExecuteScript(int32_t world_id,
                             base::span<const WebScriptSource> sources,
                             mojom::blink::UserActivationOption,
                             mojom::blink::EvaluationTiming,
                             mojom::blink::LoadEventBlockingOption,
-                            WebScriptExecutionCallback*,
+                            WebScriptExecutionCallback,
                             BackForwardCacheAware back_forward_cache_aware,
                             mojom::blink::PromiseResultOption) override;
   void Alert(const WebString& message) override;

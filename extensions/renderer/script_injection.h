@@ -93,8 +93,9 @@ class ScriptInjection {
 
   // Called when JS injection for the given frame has been completed or
   // cancelled.
-  void OnJsInjectionCompleted(const std::vector<v8::Local<v8::Value>>& results,
-                              absl::optional<base::TimeDelta> elapsed);
+  void OnJsInjectionCompleted(
+      const blink::WebVector<v8::Local<v8::Value>>& results,
+      base::TimeTicks start_time);
 
  private:
   class FrameWatcher;
