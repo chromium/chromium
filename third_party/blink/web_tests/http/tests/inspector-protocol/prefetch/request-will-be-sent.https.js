@@ -8,31 +8,32 @@
     let finalizedRequests = 0;
     let events = [];
     let requestIds = [];
-    function store(event, title){
+    function store(event, title, order){
       const requestId = event.params.requestId;
       if(!requestIds.includes(requestId)) {
         requestIds.push(requestId)
       }
-      events.push({id: requestId, title: title, params: event.params});
+      events.push({id: requestId, title: title, order: order, params: event.params});
     }
     function checkResolve() {
       finalizedRequests++;
       if(finalizedRequests >= 2) {
-        resolve({requestIds, events});
+        resolve({requestIds, events: events.sort((x,y)=>x.order-y.order)});
       }
     }
-    dp.Network.onRequestWillBeSent(event => store(event, 'Network.onRequestWillBeSent'));
-    dp.Network.onRequestWillBeSentExtraInfo(event => store(event, 'Network.onRequestWillBeSentExtraInfo'));
-    dp.Network.onResponseReceived(event => store(event, 'Network.onResponseReceived'));
-    dp.Network.onLoadingFinished(event => { store(event, 'Network.onLoadingFinished'); checkResolve();});
-    dp.Network.onLoadingFailed(event => { store(event, 'Network.onLoadingFailed'); checkResolve();});
+    dp.Network.onRequestWillBeSent(event => store(event, 'Network.onRequestWillBeSent', 0));
+    dp.Network.onRequestWillBeSentExtraInfo(event => store(event, 'Network.onRequestWillBeSentExtraInfo', 1));
+    dp.Network.onResponseReceived(event => store(event, 'Network.onResponseReceived', 2));
+    dp.Network.onResponseReceivedExtraInfo(event => store(event, 'Network.onResponseReceivedExtraInfo', 3));
+    dp.Network.onLoadingFinished(event => { store(event, 'Network.onLoadingFinished', 4); checkResolve();});
+    dp.Network.onLoadingFailed(event => { store(event, 'Network.onLoadingFailed', 5); checkResolve();});
   });
 
   page.navigate("https://127.0.0.1:8443/inspector-protocol/prefetch/resources/prefetch.https.html")
 
   let prefetchRequestId = await testPromise.then((result) => {
     let prefetchRequestId = undefined;
-    const stabilizeNames = [...TestRunner.stabilizeNames, 'wallTime', 'requestTime', 'responseTime', 'Date', 'receiveHeadersEnd', 'sendStart', 'sendEnd', 'ETag', 'Last-Modified', 'User-Agent'];
+    const stabilizeNames = [...TestRunner.stabilizeNames, 'wallTime', 'requestTime', 'responseTime', 'Date', 'receiveHeadersEnd', 'sendStart', 'sendEnd', 'ETag', 'Last-Modified', 'User-Agent', 'headersText'];
     let {requestIds, events} = result;
     for(let i=0; i<requestIds.length; ++i) {
       testRunner.log(`Message ${i}`);

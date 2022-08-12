@@ -51,6 +51,8 @@ class CONTENT_EXPORT SpeculationHostImpl final
   void OnPrefetchBodyDataReceived(const std::string& request_id,
                                   const std::string& body,
                                   bool is_base64_encoded) override;
+  mojo::PendingRemote<network::mojom::DevToolsObserver>
+  MakeSelfOwnedNetworkServiceDevToolsObserver() override;
 
  private:
   SpeculationHostImpl(

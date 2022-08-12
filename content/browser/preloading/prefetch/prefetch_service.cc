@@ -594,9 +594,12 @@ void PrefetchService::StartSinglePrefetch(
   request->headers.RemoveHeader("User-Agent");
   request->trusted_params = trusted_params;
   request->site_for_cookies = trusted_params.isolation_info.site_for_cookies();
+  request->devtools_request_id = prefetch_container->RequestId();
 
   const auto& devtools_observer = prefetch_container->GetDevToolsObserver();
   if (devtools_observer && !prefetch_container->IsDecoy()) {
+    request->trusted_params->devtools_observer =
+        devtools_observer->MakeSelfOwnedNetworkServiceDevToolsObserver();
     devtools_observer->OnStartSinglePrefetch(prefetch_container->RequestId(),
                                              *request);
   }

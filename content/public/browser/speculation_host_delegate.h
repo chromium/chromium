@@ -11,6 +11,10 @@
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom.h"
 
+namespace Network::mojom {
+class DevToolsObserver;
+}  // namespace Network::mojom
+
 namespace content {
 class CONTENT_EXPORT SpeculationHostDevToolsObserver {
  public:
@@ -27,6 +31,8 @@ class CONTENT_EXPORT SpeculationHostDevToolsObserver {
   virtual void OnPrefetchBodyDataReceived(const std::string& request_id,
                                           const std::string& body,
                                           bool is_base64_encoded) = 0;
+  virtual mojo::PendingRemote<network::mojom::DevToolsObserver>
+  MakeSelfOwnedNetworkServiceDevToolsObserver() = 0;
 };
 
 // Allow embedders to handle speculation candidates with their own strategies.

@@ -2072,13 +2072,6 @@ void NetworkHandler::PrefetchRequestWillBeSent(
       std::move(redirect_response),
       std::string(Network::ResourceTypeEnum::Prefetch), std::move(frame_token),
       request.has_user_gesture);
-
-  // TODO: cookies, security status and full list of headers should be
-  // implemented. https://crbug.com/1315706.
-  frontend_->RequestWillBeSentExtraInfo(
-      request_id, BuildProtocolAssociatedCookies({}),
-      BuildRequestHeaders(request.headers, request.referrer),
-      GetConnectTiming(timestamp), MaybeBuildClientSecurityState({}));
 }
 
 void NetworkHandler::NavigationRequestWillBeSent(
