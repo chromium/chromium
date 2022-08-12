@@ -212,7 +212,7 @@ void HTMLAnchorElement::DefaultEventHandler(Event& event) {
 }
 
 bool HTMLAnchorElement::HasActivationBehavior() const {
-  return true;
+  return IsLink();
 }
 
 void HTMLAnchorElement::SetActive(bool active) {
