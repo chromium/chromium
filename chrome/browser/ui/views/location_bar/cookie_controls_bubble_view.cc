@@ -108,7 +108,7 @@ CookieControlsBubbleView::CookieControlsBubbleView(
     content::WebContents* web_contents,
     content_settings::CookieControlsController* controller)
     : LocationBarBubbleDelegateView(anchor_view, web_contents),
-      controller_(controller) {
+      controller_(controller->AsWeakPtr()) {
   SetShowTitle(true);
   SetShowCloseButton(true);
   controller_observation_.Observe(controller);
@@ -250,7 +250,7 @@ std::u16string CookieControlsBubbleView::GetWindowTitle() const {
   switch (status_) {
     case CookieControlsStatus::kEnabled:
       return l10n_util::GetPluralStringFUTF16(
-          (controller_->FirstPartyCookiesBlocked()
+          (controller_ && controller_->FirstPartyCookiesBlocked()
                ? IDS_COOKIE_CONTROLS_DIALOG_TITLE_ALL_BLOCKED
                : IDS_COOKIE_CONTROLS_DIALOG_TITLE),
           blocked_cookies_.value_or(0));
@@ -271,10 +271,14 @@ void CookieControlsBubbleView::WindowClosing() {
   if (this_bubble)
     g_instance = nullptr;
 
-  controller_->OnUiClosing();
+  if (controller_)
+    controller_->OnUiClosing();
 }
 
 void CookieControlsBubbleView::OnDialogAccepted() {
+  if (!controller_)
+    return;
+
   if (intermediate_step_ == IntermediateStep::kTurnOffButton) {
     controller_->OnCookieBlockingEnabledForSite(false);
   } else {

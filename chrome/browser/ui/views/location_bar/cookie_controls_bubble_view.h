@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_COOKIE_CONTROLS_BUBBLE_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/cookie_controls/cookie_controls_service.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "components/content_settings/browser/ui/cookie_controls_controller.h"
@@ -85,7 +86,7 @@ class CookieControlsBubbleView : public LocationBarBubbleDelegateView,
   void OnTooltipBubbleShown(views::TooltipIcon* icon) override;
   void OnTooltipIconDestroying(views::TooltipIcon* icon) override;
 
-  raw_ptr<content_settings::CookieControlsController> controller_ = nullptr;
+  base::WeakPtr<content_settings::CookieControlsController> controller_;
 
   CookieControlsStatus status_ = CookieControlsStatus::kUninitialized;
 
