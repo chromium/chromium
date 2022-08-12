@@ -312,7 +312,7 @@ try_.builder(
     mirrors = builder_config.copy_from("linux-wayland-rel"),
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
     tryjob = try_.job(
-        experiment_percentage = 1,
+        experiment_percentage = 5,
     ),
 )
 
