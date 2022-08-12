@@ -528,7 +528,11 @@ void DesksController::NewDesk(DesksCreationRemovalSource source) {
 
   // Don't trigger an a11y alert when the source is kLaunchTemplate because
   // CreateNewDeskForTemplate will trigger an alert instead.
-  if (source != DesksCreationRemovalSource::kLaunchTemplate) {
+  // Dont trigger when the source is kSaveAndRecall because the
+  // DESK_TEMPLATES_MODE_ENTERED alert triggered in
+  // OverviewSession::ShowDesksTemplatesGrids should be shown instead.
+  if (source != DesksCreationRemovalSource::kLaunchTemplate &&
+      source != DesksCreationRemovalSource::kSaveAndRecall) {
     auto* shell = Shell::Get();
     shell->accessibility_controller()->TriggerAccessibilityAlertWithMessage(
         l10n_util::GetStringFUTF8(IDS_ASH_VIRTUAL_DESKS_ALERT_NEW_DESK_CREATED,
