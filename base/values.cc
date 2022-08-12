@@ -44,51 +44,6 @@ static_assert(std::size(kTypeNames) ==
                   static_cast<size_t>(Value::Type::LIST) + 1,
               "kTypeNames Has Wrong Size");
 
-std::unique_ptr<Value> CopyWithoutEmptyChildren(const Value& node);
-
-// Make a deep copy of |node|, but don't include empty lists or dictionaries
-// in the copy. It's possible for this function to return NULL and it
-// expects |node| to always be non-NULL.
-std::unique_ptr<Value> CopyListWithoutEmptyChildren(const Value& list) {
-  Value copy(Value::Type::LIST);
-  for (const auto& entry : list.GetListDeprecated()) {
-    std::unique_ptr<Value> child_copy = CopyWithoutEmptyChildren(entry);
-    if (child_copy)
-      copy.Append(std::move(*child_copy));
-  }
-  return copy.GetListDeprecated().empty()
-             ? nullptr
-             : std::make_unique<Value>(std::move(copy));
-}
-
-std::unique_ptr<DictionaryValue> CopyDictionaryWithoutEmptyChildren(
-    const DictionaryValue& dict) {
-  std::unique_ptr<DictionaryValue> copy;
-  for (auto it : dict.DictItems()) {
-    std::unique_ptr<Value> child_copy = CopyWithoutEmptyChildren(it.second);
-    if (child_copy) {
-      if (!copy)
-        copy = std::make_unique<DictionaryValue>();
-      copy->SetKey(it.first, std::move(*child_copy));
-    }
-  }
-  return copy;
-}
-
-std::unique_ptr<Value> CopyWithoutEmptyChildren(const Value& node) {
-  switch (node.type()) {
-    case Value::Type::LIST:
-      return CopyListWithoutEmptyChildren(static_cast<const ListValue&>(node));
-
-    case Value::Type::DICTIONARY:
-      return CopyDictionaryWithoutEmptyChildren(
-          static_cast<const DictionaryValue&>(node));
-
-    default:
-      return std::make_unique<Value>(node.Clone());
-  }
-}
-
 // Helper class to enumerate the path components from a StringPiece
 // without performing heap allocations. Components are simply separated
 // by single dots (e.g. "foo.bar.baz"  -> ["foo", "bar", "baz"]).
@@ -1711,15 +1666,6 @@ bool DictionaryValue::GetList(StringPiece path,
 bool DictionaryValue::GetList(StringPiece path, ListValue** out_value) {
   return as_const(*this).GetList(path,
                                  const_cast<const ListValue**>(out_value));
-}
-
-std::unique_ptr<DictionaryValue> DictionaryValue::DeepCopyWithoutEmptyChildren()
-    const {
-  std::unique_ptr<DictionaryValue> copy =
-      CopyDictionaryWithoutEmptyChildren(*this);
-  if (!copy)
-    copy = std::make_unique<DictionaryValue>();
-  return copy;
 }
 
 void DictionaryValue::Swap(DictionaryValue* other) {

@@ -1355,10 +1355,6 @@ class BASE_EXPORT DictionaryValue : public Value {
   bool GetList(StringPiece path, const ListValue** out_value) const;
   bool GetList(StringPiece path, ListValue** out_value);
 
-  // Makes a copy of `this` but doesn't include empty dictionaries and lists in
-  // the copy.  This never returns NULL, even if `this` itself is empty.
-  std::unique_ptr<DictionaryValue> DeepCopyWithoutEmptyChildren() const;
-
   // Swaps contents with the `other` dictionary.
   void Swap(DictionaryValue* other);
 
