@@ -113,8 +113,8 @@ void InputMethodEngine::Initialize(
     profile_observation_.Observe(profile);
     input_method_settings_snapshot_ =
         profile->GetPrefs()
-            ->GetDictionary(prefs::kLanguageInputMethodSpecificSettings)
-            ->Clone();
+            ->GetValueDict(prefs::kLanguageInputMethodSpecificSettings)
+            .Clone();
 
     pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
     pref_change_registrar_->Init(profile->GetPrefs());
@@ -1097,21 +1097,19 @@ void InputMethodEngine::HideInputView() {
 }
 
 void InputMethodEngine::OnInputMethodOptionsChanged() {
-  const base::Value* new_settings = profile_->GetPrefs()->GetDictionary(
+  const base::Value::Dict& new_settings = profile_->GetPrefs()->GetValueDict(
       prefs::kLanguageInputMethodSpecificSettings);
-  const base::DictionaryValue& old_settings =
-      base::Value::AsDictionaryValue(input_method_settings_snapshot_);
-  for (const auto it : new_settings->DictItems()) {
-    if (old_settings.FindKey(it.first)) {
-      if (*(old_settings.FindPath(it.first)) !=
-          *(new_settings->FindPath(it.first))) {
-        observer_->OnInputMethodOptionsChanged(it.first);
+  const base::Value::Dict& old_settings = input_method_settings_snapshot_;
+  for (const auto&& [path, value] : new_settings) {
+    if (const base::Value* old_value = old_settings.Find(path)) {
+      if (*old_value != value) {
+        observer_->OnInputMethodOptionsChanged(path);
       }
     } else {
-      observer_->OnInputMethodOptionsChanged(it.first);
+      observer_->OnInputMethodOptionsChanged(path);
     }
   }
-  input_method_settings_snapshot_ = new_settings->Clone();
+  input_method_settings_snapshot_ = new_settings.Clone();
 }
 
 void InputMethodEngine::UpdateComposition(

@@ -94,7 +94,7 @@ std::string GetPrefKeyForEngineId(const std::string& engine_id) {
 }
 
 mojom::LatinSettingsPtr CreateLatinSettings(
-    const base::Value& input_method_specific_pref,
+    const base::Value::Dict& input_method_specific_pref,
     const PrefService& prefs,
     const std::string& engine_id) {
   auto settings = mojom::LatinSettings::New();
@@ -102,8 +102,7 @@ mojom::LatinSettingsPtr CreateLatinSettings(
       base::StartsWith(engine_id, "experimental_",
                        base::CompareCase::SENSITIVE) ||
       base::FeatureList::IsEnabled(features::kAutocorrectParamsTuning) ||
-      input_method_specific_pref
-              .FindIntKey("physicalKeyboardAutoCorrectionLevel")
+      input_method_specific_pref.FindInt("physicalKeyboardAutoCorrectionLevel")
               .value_or(0) > 0;
   settings->predictive_writing =
       features::IsAssistiveMultiWordEnabled() &&
@@ -129,33 +128,33 @@ mojom::KoreanLayout KoreanLayoutToMojom(const std::string& layout) {
 }
 
 mojom::KoreanSettingsPtr CreateKoreanSettings(
-    const base::Value& input_method_specific_pref) {
+    const base::Value::Dict& input_method_specific_pref) {
   auto settings = mojom::KoreanSettings::New();
   settings->input_multiple_syllables =
-      !input_method_specific_pref.FindBoolKey("koreanEnableSyllableInput")
+      !input_method_specific_pref.FindBool("koreanEnableSyllableInput")
            .value_or(true);
   const std::string* prefs_layout =
-      input_method_specific_pref.FindStringKey("koreanKeyboardLayout");
+      input_method_specific_pref.FindString("koreanKeyboardLayout");
   settings->layout = prefs_layout ? KoreanLayoutToMojom(*prefs_layout)
                                   : mojom::KoreanLayout::kDubeolsik;
   return settings;
 }
 
 mojom::FuzzyPinyinSettingsPtr CreateFuzzyPinyinSettings(
-    const base::Value& pref) {
+    const base::Value::Dict& pref) {
   auto settings = mojom::FuzzyPinyinSettings::New();
-  settings->an_ang = pref.FindBoolKey("an:ang").value_or(false);
-  settings->en_eng = pref.FindBoolKey("en:eng").value_or(false);
-  settings->ian_iang = pref.FindBoolKey("ian:iang").value_or(false);
-  settings->k_g = pref.FindBoolKey("k:g").value_or(false);
-  settings->r_l = pref.FindBoolKey("r:l").value_or(false);
-  settings->uan_uang = pref.FindBoolKey("uan:uang").value_or(false);
-  settings->c_ch = pref.FindBoolKey("c:ch").value_or(false);
-  settings->f_h = pref.FindBoolKey("f:h").value_or(false);
-  settings->in_ing = pref.FindBoolKey("in:ing").value_or(false);
-  settings->l_n = pref.FindBoolKey("l:n").value_or(false);
-  settings->s_sh = pref.FindBoolKey("s:sh").value_or(false);
-  settings->z_zh = pref.FindBoolKey("z:zh").value_or(false);
+  settings->an_ang = pref.FindBool("an:ang").value_or(false);
+  settings->en_eng = pref.FindBool("en:eng").value_or(false);
+  settings->ian_iang = pref.FindBool("ian:iang").value_or(false);
+  settings->k_g = pref.FindBool("k:g").value_or(false);
+  settings->r_l = pref.FindBool("r:l").value_or(false);
+  settings->uan_uang = pref.FindBool("uan:uang").value_or(false);
+  settings->c_ch = pref.FindBool("c:ch").value_or(false);
+  settings->f_h = pref.FindBool("f:h").value_or(false);
+  settings->in_ing = pref.FindBool("in:ing").value_or(false);
+  settings->l_n = pref.FindBool("l:n").value_or(false);
+  settings->s_sh = pref.FindBool("s:sh").value_or(false);
+  settings->z_zh = pref.FindBool("z:zh").value_or(false);
   return settings;
 }
 
@@ -170,28 +169,28 @@ mojom::PinyinLayout PinyinLayoutToMojom(const std::string& layout) {
 }
 
 mojom::PinyinSettingsPtr CreatePinyinSettings(
-    const base::Value& input_method_specific_pref) {
+    const base::Value::Dict& input_method_specific_pref) {
   auto settings = mojom::PinyinSettings::New();
   settings->fuzzy_pinyin =
       CreateFuzzyPinyinSettings(input_method_specific_pref);
   const std::string* prefs_layout =
-      input_method_specific_pref.FindStringKey("xkbLayout");
+      input_method_specific_pref.FindString("xkbLayout");
   settings->layout = prefs_layout ? PinyinLayoutToMojom(*prefs_layout)
                                   : mojom::PinyinLayout::kUsQwerty;
   settings->use_hyphen_and_equals_to_page_candidates =
-      input_method_specific_pref.FindBoolKey("pinyinEnableUpperPaging")
+      input_method_specific_pref.FindBool("pinyinEnableUpperPaging")
           .value_or(true);
   settings->use_comma_and_period_to_page_candidates =
-      input_method_specific_pref.FindBoolKey("pinyinEnableLowerPaging")
+      input_method_specific_pref.FindBool("pinyinEnableLowerPaging")
           .value_or(true);
   settings->default_to_chinese =
-      input_method_specific_pref.FindBoolKey("pinyinDefaultChinese")
+      input_method_specific_pref.FindBool("pinyinDefaultChinese")
           .value_or(true);
   settings->default_to_full_width_characters =
-      input_method_specific_pref.FindBoolKey("pinyinFullWidthCharacter")
+      input_method_specific_pref.FindBool("pinyinFullWidthCharacter")
           .value_or(false);
   settings->default_to_full_width_punctuation =
-      input_method_specific_pref.FindBoolKey("pinyinChinesePunctuation")
+      input_method_specific_pref.FindBool("pinyinChinesePunctuation")
           .value_or(true);
   return settings;
 }
@@ -232,14 +231,14 @@ uint32_t ZhuyinPageSizeToInt(const std::string& page_size) {
 }
 
 mojom::ZhuyinSettingsPtr CreateZhuyinSettings(
-    const base::Value& input_method_specific_pref) {
+    const base::Value::Dict& input_method_specific_pref) {
   auto settings = mojom::ZhuyinSettings::New();
   settings->layout = ZhuyinLayoutToMojom(ValueOrEmpty(
-      input_method_specific_pref.FindStringKey("zhuyinKeyboardLayout")));
-  settings->selection_keys = ZhuyinSelectionKeysToMojom(ValueOrEmpty(
-      input_method_specific_pref.FindStringKey("zhuyinSelectKeys")));
+      input_method_specific_pref.FindString("zhuyinKeyboardLayout")));
+  settings->selection_keys = ZhuyinSelectionKeysToMojom(
+      ValueOrEmpty(input_method_specific_pref.FindString("zhuyinSelectKeys")));
   settings->page_size = ZhuyinPageSizeToInt(
-      ValueOrEmpty(input_method_specific_pref.FindStringKey("zhuyinPageSize")));
+      ValueOrEmpty(input_method_specific_pref.FindString("zhuyinPageSize")));
   return settings;
 }
 
@@ -250,8 +249,8 @@ mojom::InputMethodSettingsPtr CreateSettingsFromPrefs(
     const std::string& engine_id) {
   // All input method settings are stored in a single pref whose value is a
   // dictionary.
-  const base::Value& all_input_method_pref =
-      *prefs.GetDictionary(::prefs::kLanguageInputMethodSpecificSettings);
+  const base::Value::Dict& all_input_method_pref =
+      prefs.GetValueDict(::prefs::kLanguageInputMethodSpecificSettings);
 
   // For each input method, the dictionary contains an entry, with the key being
   // a string that identifies the input method, and the value being a
@@ -259,12 +258,12 @@ mojom::InputMethodSettingsPtr CreateSettingsFromPrefs(
   // The subdictionary structure depends on the type of input method it's for.
   // The subdictionary may be null if the user hasn't changed any settings for
   // that input method.
-  const base::Value* input_method_specific_pref_or_null =
-      all_input_method_pref.FindDictKey(GetPrefKeyForEngineId(engine_id));
+  const base::Value::Dict* input_method_specific_pref_or_null =
+      all_input_method_pref.FindDict(GetPrefKeyForEngineId(engine_id));
 
   // For convenience, pass an empty dictionary if there are no settings for this
   // input method yet.
-  base::DictionaryValue empty_value;
+  base::Value::Dict empty_value;
   const auto& input_method_specific_pref =
       input_method_specific_pref_or_null ? *input_method_specific_pref_or_null
                                          : empty_value;

@@ -406,7 +406,7 @@ class InputMethodEngine : virtual public ui::IMEEngineHandlerInterface,
 
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
-  base::Value input_method_settings_snapshot_;
+  base::Value::Dict input_method_settings_snapshot_;
 
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 };
