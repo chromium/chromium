@@ -841,14 +841,13 @@ PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
   PA_DCHECK(!slot_span->get_freelist_head());
   PA_DCHECK(!slot_span->is_full());
 
-  size_t size = slot_size;
   uintptr_t slot_span_start =
       SlotSpanMetadata<thread_safe>::ToSlotSpanStart(slot_span);
   // If we got here, the first unallocated slot is either partially or fully on
   // an uncommitted page. If the latter, it must be at the start of that page.
   uintptr_t return_slot =
-      slot_span_start + (size * slot_span->num_allocated_slots);
-  uintptr_t next_slot = return_slot + size;
+      slot_span_start + (slot_size * slot_span->num_allocated_slots);
+  uintptr_t next_slot = return_slot + slot_size;
   uintptr_t commit_start = base::bits::AlignUp(return_slot, SystemPageSize());
   PA_DCHECK(next_slot > commit_start);
   uintptr_t commit_end = base::bits::AlignUp(next_slot, SystemPageSize());
@@ -862,7 +861,7 @@ PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
   slot_span->num_allocated_slots++;
   // Round down, because a slot that doesn't fully fit in the new page(s) isn't
   // provisioned.
-  size_t slots_to_provision = (commit_end - return_slot) / size;
+  size_t slots_to_provision = (commit_end - return_slot) / slot_size;
   slot_span->num_unprovisioned_slots -= slots_to_provision;
   PA_DCHECK(slot_span->num_allocated_slots +
                 slot_span->num_unprovisioned_slots <=
@@ -880,31 +879,31 @@ PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
         PageAccessibilityDisposition::kRequireUpdate);
   }
 
-  if (PA_LIKELY(size <= kMaxMemoryTaggingSize)) {
+  if (PA_LIKELY(slot_size <= kMaxMemoryTaggingSize)) {
     // Ensure the MTE-tag of the memory pointed by |return_slot| is unguessable.
-    TagMemoryRangeRandomly(return_slot, size);
+    TagMemoryRangeRandomly(return_slot, slot_size);
   }
 #if defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
-  PartitionTagSetValue(return_slot, size, root->GetNewPartitionTag());
+  PartitionTagSetValue(return_slot, slot_size, root->GetNewPartitionTag());
 #endif  // defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
 
   // Add all slots that fit within so far committed pages to the free list.
   PartitionFreelistEntry* prev_entry = nullptr;
-  uintptr_t next_slot_end = next_slot + size;
+  uintptr_t next_slot_end = next_slot + slot_size;
   size_t free_list_entries_added = 0;
   while (next_slot_end <= commit_end) {
     void* next_slot_ptr;
-    if (PA_LIKELY(size <= kMaxMemoryTaggingSize)) {
+    if (PA_LIKELY(slot_size <= kMaxMemoryTaggingSize)) {
       // Ensure the MTE-tag of the memory pointed by other provisioned slot is
       // unguessable. They will be returned to the app as is, and the MTE-tag
       // will only change upon calling Free().
-      next_slot_ptr = TagMemoryRangeRandomly(next_slot, size);
+      next_slot_ptr = TagMemoryRangeRandomly(next_slot, slot_size);
     } else {
       // No MTE-tagging for larger slots, just cast.
       next_slot_ptr = reinterpret_cast<void*>(next_slot);
     }
 #if defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
-    PartitionTagSetValue(next_slot, size, root->GetNewPartitionTag());
+    PartitionTagSetValue(next_slot, slot_size, root->GetNewPartitionTag());
 #endif  // defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
     auto* entry = PartitionFreelistEntry::EmplaceAndInitNull(next_slot_ptr);
     if (!slot_span->get_freelist_head()) {
@@ -916,7 +915,7 @@ PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
       prev_entry->SetNext(entry);
     }
     next_slot = next_slot_end;
-    next_slot_end = next_slot + size;
+    next_slot_end = next_slot + slot_size;
     prev_entry = entry;
 #if BUILDFLAG(PA_DCHECK_IS_ON)
     free_list_entries_added++;
