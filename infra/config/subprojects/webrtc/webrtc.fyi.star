@@ -91,6 +91,7 @@ builder(
     name = "WebRTC Chromium FYI Mac Builder",
     goma_backend = goma.backend.RBE_PROD,
     os = os.MAC_ANY,
+    xcode = xcode.x14main,
 )
 
 builder(
