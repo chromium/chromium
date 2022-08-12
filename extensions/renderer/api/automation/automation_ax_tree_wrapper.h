@@ -19,8 +19,7 @@ class AutomationInternalCustomBindings;
 
 // A class that wraps one AXTree and all of the additional state
 // and helper methods needed to use it for the automation API.
-class AutomationAXTreeWrapper : public ui::AXTreeObserver,
-                                public ui::AXTreeManager {
+class AutomationAXTreeWrapper : public ui::AXTreeManager {
  public:
   AutomationAXTreeWrapper(ui::AXTreeID tree_id,
                           AutomationInternalCustomBindings* owner);

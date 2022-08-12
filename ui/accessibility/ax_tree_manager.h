@@ -17,12 +17,12 @@ class AXNode;
 // Abstract interface for a class that owns an AXTree and manages its
 // connections to other AXTrees in the same page or desktop (parent and child
 // trees).
-class AX_EXPORT AXTreeManager {
+class AX_EXPORT AXTreeManager : public AXTreeObserver {
  public:
   AXTreeManager(const AXTreeManager&) = delete;
   AXTreeManager& operator=(const AXTreeManager&) = delete;
 
-  virtual ~AXTreeManager();
+  ~AXTreeManager() override;
 
   // Returns the AXNode with the given |node_id| from the tree that has the
   // given |tree_id|. This allows for callers to access nodes outside of their
@@ -66,6 +66,24 @@ class AX_EXPORT AXTreeManager {
 
   const AXTreeID& ax_tree_id() const { return ax_tree_id_; }
   AXTree* ax_tree() const { return ax_tree_.get(); }
+
+  // AXTreeObserver implementation.
+  void OnTreeDataChanged(ui::AXTree* tree,
+                         const ui::AXTreeData& old_data,
+                         const ui::AXTreeData& new_data) override {}
+  void OnNodeWillBeDeleted(ui::AXTree* tree, ui::AXNode* node) override {}
+  void OnSubtreeWillBeDeleted(ui::AXTree* tree, ui::AXNode* node) override {}
+  void OnNodeCreated(ui::AXTree* tree, ui::AXNode* node) override {}
+  void OnNodeDeleted(ui::AXTree* tree, int32_t node_id) override {}
+  void OnNodeReparented(ui::AXTree* tree, ui::AXNode* node) override {}
+  void OnRoleChanged(ui::AXTree* tree,
+                     ui::AXNode* node,
+                     ax::mojom::Role old_role,
+                     ax::mojom::Role new_role) override {}
+  void OnAtomicUpdateFinished(
+      ui::AXTree* tree,
+      bool root_changed,
+      const std::vector<ui::AXTreeObserver::Change>& changes) override {}
 
  protected:
   AXTreeManager();

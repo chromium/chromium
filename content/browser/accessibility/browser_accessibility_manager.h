@@ -139,8 +139,7 @@ struct BrowserAccessibilityFindInPageInfo {
 
 // Manages a tree of BrowserAccessibility objects.
 class CONTENT_EXPORT BrowserAccessibilityManager
-    : public ui::AXTreeObserver,
-      public ui::AXPlatformTreeManager,
+    : public ui::AXPlatformTreeManager,
       public WebContentsObserver {
  public:
   // Creates the platform-specific BrowserAccessibilityManager.
