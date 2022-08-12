@@ -42,7 +42,7 @@ DeviceOperationHandler::PendingOperation::~PendingOperation() = default;
 
 // static
 const base::TimeDelta DeviceOperationHandler::kOperationTimeout =
-    base::Milliseconds(5000);
+    base::Seconds(15);
 
 DeviceOperationHandler::DeviceOperationHandler(
     AdapterStateController* adapter_state_controller)
