@@ -4,12 +4,12 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/web-animations/testcommon.js"></script>
 <style>
-  #scrollers > div {
+  main > div {
     overflow: hidden;
     width: 100px;
     height: 100px;
   }
-  #scrollers > div > div {
+  main > div > div {
     height: 200px;
   }
   @keyframes expand {
@@ -27,11 +27,11 @@
     animation-timing-function: steps(10, end);
   }
 </style>
-<div id=scrollers>
+<main>
   <div id=scroller1><div></div></div>
   <div id=scroller2><div></div></div>
-</div>
-<div id=container></div>
+  <div id=container></div>
+</main>
 <script>
   // Force layout of scrollers.
   scroller1.offsetTop;

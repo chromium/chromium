@@ -40,18 +40,19 @@
     animation: expand_height 10s timeline2;
   }
 </style>
-<main id=main></main>
-<div id=element1></div>
-<div>
-  <div id=element2></div>
-</div>
+<main id=main>
+  <div id=element1></div>
+  <div>
+    <div id=element2></div>
+  </div>
+</main>
 <script>
     function insertScroller(id) {
       let scroller = document.createElement('div');
       scroller.setAttribute('id', id);
       scroller.setAttribute('class', 'scroller');
       scroller.append(document.createElement('div'));
-      main.append(scroller);
+      main.insertBefore(scroller, element1);
     }
 
     promise_test(async () => {

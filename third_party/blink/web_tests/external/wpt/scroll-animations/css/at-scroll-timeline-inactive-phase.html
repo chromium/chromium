@@ -24,22 +24,24 @@
     animation-timeline: timeline;
   }
 </style>
-<div id="container"></div>
-<div id=element></div>
+<div id="container">
+  <div id=element></div>
+</div>
 <script>
 
 promise_test(async (t) => {
+  let div = document.createElement('div');
+  div.setAttribute('id', 'scroller');
+  div.innerHTML = '<div id=contents></div>';
+  let style = document.createElement('style');
+  style.textContent = `
+    @scroll-timeline timeline {
+      source: selector(#scroller);
+    }
+  `;
   try {
-    container.innerHTML = `
-      <div id=scroller>
-        <div id=contents></div>
-      </div>
-      <style>
-        @scroll-timeline timeline {
-          source: selector(#scroller);
-        }
-      </style>
-    `;
+    container.insertBefore(style, element);
+    container.insertBefore(div, style);
 
     // The source has no layout box at the time the scroll timeline is created.
     assert_equals(getComputedStyle(element).width, '0px');
@@ -49,7 +51,8 @@ promise_test(async (t) => {
     // The timeline should now be active, and the animation should apply:
     assert_equals(getComputedStyle(element).width, '100px');
   } finally {
-    container.innerHTML = '';
+    style.remove();
+    div.remove();
   }
 }, 'Animation does not apply when timeline is initially inactive');
 

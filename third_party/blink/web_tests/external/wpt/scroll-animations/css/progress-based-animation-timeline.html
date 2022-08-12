@@ -5,16 +5,12 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/web-animations/testcommon.js"></script>
 <style>
-  #scrollers {
-    overflow: hidden;
-    height: 0px;
-  }
-  #scrollers > div {
+  main > div {
     overflow: hidden;
     width: 100px;
     height: 100px;
   }
-  #scrollers > div > div {
+  main > div > div {
     height: 200px;
   }
 
@@ -38,10 +34,10 @@
     #element { animation-play-state: paused; }
   }
 </style>
-<div id=scrollers>
+<main>
   <div id=scroller1><div></div></div>
-</div>
-<div id=element></div>
+  <div id=element></div>
+</main>
 <script>
   // Force layout of scrollers.
   scroller1.offsetTop;
