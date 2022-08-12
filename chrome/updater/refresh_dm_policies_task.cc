@@ -13,7 +13,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/bind_post_task.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/device_management/dm_client.h"
@@ -36,8 +35,14 @@ void RefreshDMPoliciesTask::Run(base::OnceClosure callback) {
 
   // `RefreshDMPoliciesTask::FetchPolicy` can block and therefore is running
   // under a task runner with `base::MayBlock()`.
-  base::ThreadPool::CreateSingleThreadTaskRunner(
-      {base::MayBlock()}, base::SingleThreadTaskRunnerThreadMode::DEDICATED)
+  []() {
+    constexpr base::TaskTraits KMayBlockTraits = {base::MayBlock()};
+#if BUILDFLAG(IS_WIN)
+    return base::ThreadPool::CreateCOMSTATaskRunner(KMayBlockTraits);
+#else
+    return base::ThreadPool::CreateSequencedTaskRunner(KMayBlockTraits);
+#endif
+  }()
       ->PostTask(FROM_HERE, base::BindOnce(&RefreshDMPoliciesTask::FetchPolicy,
                                            this, std::move(callback)));
 }
