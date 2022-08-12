@@ -872,6 +872,10 @@ const base::Feature kHoldingSpaceInProgressDownloadsNotificationSuppression{
     "HoldingSpaceInProgressNotificationSuppression",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables suggestions in the pinned files section of Holding Space.
+const base::Feature kHoldingSpaceSuggestions{"HoldingSpaceSuggestions",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Control whether the hotspot tethering is enabled. When enabled, it will allow
 // the Chromebook to share its cellular internet connection to other devices.
 const base::Feature kHotspot{"Hotspot", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -2010,6 +2014,10 @@ bool IsHideShelfControlsInTabletModeEnabled() {
 bool IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled() {
   return base::FeatureList::IsEnabled(
       kHoldingSpaceInProgressDownloadsNotificationSuppression);
+}
+
+bool IsHoldingSpaceSuggestionsEnabled() {
+  return base::FeatureList::IsEnabled(kHoldingSpaceSuggestions);
 }
 
 bool IsHostnameSettingEnabled() {

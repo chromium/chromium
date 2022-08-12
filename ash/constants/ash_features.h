@@ -363,6 +363,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature
     kHoldingSpaceInProgressDownloadsNotificationSuppression;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kHoldingSpaceSuggestions;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kHotspot;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kVirtualKeyboardNewHeader;
@@ -754,6 +756,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHideArcMediaNotificationsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHideShelfControlsInTabletModeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHoldingSpaceSuggestionsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHostnameSettingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHotspotEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsImprovedDesksKeyboardShortcutsEnabled();
