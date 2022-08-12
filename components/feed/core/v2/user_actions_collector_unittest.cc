@@ -11,6 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/feed/core/common/pref_names.h"
 #include "components/feed/core/proto/v2/user_actions_store.pb.h"
@@ -18,6 +19,7 @@
 #include "components/feed/core/v2/prefs.h"
 #include "components/feed/core/v2/public/common_enums.h"
 #include "components/feed/core/v2/public/feed_api.h"
+#include "components/feed/feed_feature_list.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -30,6 +32,7 @@ namespace {
 class UserActionsCollectorTest : public testing::Test {
  public:
   UserActionsCollectorTest() {
+    feature_list_.InitAndEnableFeature(kPersonalizeFeedUnsignedUsers);
     feed::RegisterProfilePrefs(profile_prefs_.registry());
     user_actions_collector_ =
         std::make_unique<UserActionsCollector>(&profile_prefs_);
@@ -55,6 +58,7 @@ class UserActionsCollectorTest : public testing::Test {
   }
 
  protected:
+  base::test::ScopedFeatureList feature_list_;
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   TestingPrefServiceSimple profile_prefs_;

@@ -105,7 +105,7 @@ std::string GetFeedReferrerUrl() {
 }
 
 const base::Feature kPersonalizeFeedUnsignedUsers{
-    "PersonalizeFeedUnsignedUsers", base::FEATURE_ENABLED_BY_DEFAULT};
+    "PersonalizeFeedUnsignedUsers", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kInfoCardAcknowledgementTracking{
     "InfoCardAcknowledgementTracking", base::FEATURE_DISABLED_BY_DEFAULT};
