@@ -9,7 +9,6 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/web_applications/test/fake_data_retriever.h"
-#include "chrome/browser/web_applications/test/fake_install_finalizer.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
 #include "chrome/browser/web_applications/test/test_file_utils.h"
@@ -139,17 +138,14 @@ class WebAppInstallCommandTest : public WebAppTest {
   std::unique_ptr<WebAppDataRetriever> SetupFakeDataRetriever(
       IconsMap icons_map,
       IconsDownloadedResult result,
-      const std::vector<int>& http_status_codes) {
-    DCHECK_EQ(icons_map.size(), http_status_codes.size());
+      int http_status_codes) {
     auto data_retriever = std::make_unique<FakeDataRetriever>();
 
     data_retriever->SetIconsDownloadedResult(result);
 
-    int icon_index = 0;
     DownloadedIconsHttpResults http_results;
     for (const auto& url_and_bitmap : icons_map) {
-      http_results[url_and_bitmap.first] = http_status_codes[icon_index];
-      ++icon_index;
+      http_results[url_and_bitmap.first] = http_status_codes;
     }
     data_retriever->SetDownloadedIconsHttpResults(std::move(http_results));
 
@@ -332,7 +328,6 @@ TEST_F(WebAppInstallCommandTest, WriteDataToDisk) {
                                   static_cast<int>(IconPurpose::kMinValue) + 1,
       "All purposes covered");
 
-  auto data_retriever = std::make_unique<FakeDataRetriever>();
   auto manifest = CreateValidManifest();
 
   // Prepare all the data to be fetched or downloaded.
@@ -351,8 +346,7 @@ TEST_F(WebAppInstallCommandTest, WriteDataToDisk) {
       icons_map[icon_url] = {CreateSquareIcon(s, purpose_info.color)};
     }
   }
-
-  data_retriever->SetIcons(std::move(icons_map));
+  int num_of_icons = icons_map.size();
 
   // TestingProfile creates temp directory if TestingProfile::path_ is empty
   // (i.e. if TestingProfile::Builder::SetPath was not called by a test fixture)
@@ -362,7 +356,10 @@ TEST_F(WebAppInstallCommandTest, WriteDataToDisk) {
   EXPECT_FALSE(file_utils().DirectoryExists(manifest_resources_directory));
 
   EXPECT_EQ(
-      InstallAndWait(kWebAppId, std::move(data_retriever),
+      InstallAndWait(kWebAppId,
+                     SetupFakeDataRetriever(std::move(icons_map),
+                                            IconsDownloadedResult::kCompleted,
+                                            net::HttpStatusCode::HTTP_OK),
                      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
                      CreateDialogCallback(true),
                      std::make_unique<WebAppInstallInfo>(), std::move(manifest),
@@ -415,6 +412,138 @@ TEST_F(WebAppInstallCommandTest, WriteDataToDisk) {
 
     EXPECT_TRUE(pngs.empty());
   }
+  const int http_code_class_ok = 2;  // HTTP_OK is 200.
+  histogram_tester().ExpectBucketCount(
+      "WebApp.Icon.HttpStatusCodeClassOnCreate", http_code_class_ok,
+      num_of_icons);
+  histogram_tester().ExpectTotalCount("WebApp.Icon.HttpStatusCodeClassOnSync",
+                                      0);
+
+  histogram_tester().ExpectBucketCount("WebApp.Icon.DownloadedResultOnCreate",
+                                       IconsDownloadedResult::kCompleted, 1);
+
+  histogram_tester().ExpectBucketCount(
+      "WebApp.Icon.DownloadedHttpStatusCodeOnCreate",
+      net::HttpStatusCode::HTTP_OK, 1);
+}
+
+TEST_F(WebAppInstallCommandTest, GetIcons_PrimaryPageChanged) {
+  const base::FilePath web_apps_dir = GetWebAppsRootDirectory(profile());
+  const base::FilePath manifest_resources_directory =
+      GetManifestResourcesDirectory(web_apps_dir);
+  EXPECT_FALSE(file_utils().DirectoryExists(manifest_resources_directory));
+
+  IconsMap icons_map;
+  EXPECT_EQ(
+      InstallAndWait(
+          kWebAppId,
+          SetupFakeDataRetriever(std::move(icons_map),
+                                 IconsDownloadedResult::kPrimaryPageChanged,
+                                 net::HttpStatusCode::HTTP_OK),
+          webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
+          CreateDialogCallback(true), std::make_unique<WebAppInstallInfo>(),
+          CreateValidManifest(), kWebAppManifestUrl,
+          WebAppInstallFlow::kInstallSite, /*install_params=*/absl::nullopt),
+      webapps::InstallResultCode::kSuccessNewInstall);
+
+  EXPECT_TRUE(file_utils().DirectoryExists(manifest_resources_directory));
+
+  const base::FilePath temp_dir = web_apps_dir.AppendASCII("Temp");
+  EXPECT_TRUE(file_utils().DirectoryExists(temp_dir));
+  EXPECT_TRUE(file_utils().IsDirectoryEmpty(temp_dir));
+
+  for (const std::string icon_dir :
+       {"Icons", "Icons Monochrome", "Icons Maskable"}) {
+    const base::FilePath app_dir =
+        manifest_resources_directory.AppendASCII(kWebAppId);
+    EXPECT_TRUE(file_utils().DirectoryExists(app_dir));
+
+    const base::FilePath icons_dir = app_dir.AppendASCII(icon_dir);
+    EXPECT_TRUE(file_utils().DirectoryExists(icons_dir));
+
+    std::map<SquareSizePx, SkBitmap> pngs =
+        ReadPngsFromDirectory(&file_utils(), icons_dir);
+    if (icon_dir == "Icons") {
+      // Auto generated ANY icons.
+      EXPECT_EQ(GetIconSizes().size(), pngs.size());
+      EXPECT_TRUE(ContainsOneIconOfEachSize(pngs));
+    } else {
+      EXPECT_TRUE(pngs.empty());
+    }
+  }
+
+  histogram_tester().ExpectTotalCount("WebApp.Icon.HttpStatusCodeClassOnCreate",
+                                      0);
+  histogram_tester().ExpectTotalCount("WebApp.Icon.HttpStatusCodeClassOnSync",
+                                      0);
+
+  histogram_tester().ExpectBucketCount(
+      "WebApp.Icon.DownloadedResultOnCreate",
+      IconsDownloadedResult::kPrimaryPageChanged, 1);
+  histogram_tester().ExpectTotalCount("WebApp.Icon.DownloadedResultOnSync", 0);
+
+  histogram_tester().ExpectTotalCount(
+      "WebApp.Icon.DownloadedHttpStatusCodeOnCreate", 0);
+  histogram_tester().ExpectTotalCount(
+      "WebApp.Icon.DownloadedHttpStatusCodeOnSync", 0);
+}
+
+TEST_F(WebAppInstallCommandTest, GetIcons_IconNotFound) {
+  const base::FilePath web_apps_dir = GetWebAppsRootDirectory(profile());
+  const base::FilePath manifest_resources_directory =
+      GetManifestResourcesDirectory(web_apps_dir);
+  EXPECT_FALSE(file_utils().DirectoryExists(manifest_resources_directory));
+
+  IconsMap icons_map;
+  AddEmptyIconToIconsMap(GURL("https://example.com/app.ico"), &icons_map);
+
+  EXPECT_EQ(
+      InstallAndWait(
+          kWebAppId,
+          SetupFakeDataRetriever(std::move(icons_map),
+                                 IconsDownloadedResult::kCompleted,
+                                 net::HttpStatusCode::HTTP_NOT_FOUND),
+          webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
+          CreateDialogCallback(true), std::make_unique<WebAppInstallInfo>(),
+          CreateValidManifest(), kWebAppManifestUrl,
+          WebAppInstallFlow::kInstallSite, /*install_params=*/absl::nullopt),
+      webapps::InstallResultCode::kSuccessNewInstall);
+
+  EXPECT_TRUE(file_utils().DirectoryExists(manifest_resources_directory));
+
+  const base::FilePath temp_dir = web_apps_dir.AppendASCII("Temp");
+  EXPECT_TRUE(file_utils().DirectoryExists(temp_dir));
+  EXPECT_TRUE(file_utils().IsDirectoryEmpty(temp_dir));
+
+  for (const std::string icon_dir :
+       {"Icons", "Icons Monochrome", "Icons Maskable"}) {
+    const base::FilePath app_dir =
+        manifest_resources_directory.AppendASCII(kWebAppId);
+    EXPECT_TRUE(file_utils().DirectoryExists(app_dir));
+
+    const base::FilePath icons_dir = app_dir.AppendASCII(icon_dir);
+    EXPECT_TRUE(file_utils().DirectoryExists(icons_dir));
+
+    std::map<SquareSizePx, SkBitmap> pngs =
+        ReadPngsFromDirectory(&file_utils(), icons_dir);
+    if (icon_dir == "Icons") {
+      // Auto generated ANY icons.
+      EXPECT_EQ(GetIconSizes().size(), pngs.size());
+      EXPECT_TRUE(ContainsOneIconOfEachSize(pngs));
+    } else {
+      EXPECT_TRUE(pngs.empty());
+    }
+  }
+
+  histogram_tester().ExpectBucketCount("WebApp.Icon.DownloadedResultOnCreate",
+                                       IconsDownloadedResult::kCompleted, 1);
+  histogram_tester().ExpectTotalCount("WebApp.Icon.DownloadedResultOnSync", 0);
+
+  histogram_tester().ExpectBucketCount(
+      "WebApp.Icon.DownloadedHttpStatusCodeOnCreate",
+      net::HttpStatusCode::HTTP_NOT_FOUND, 1);
+  histogram_tester().ExpectTotalCount(
+      "WebApp.Icon.DownloadedHttpStatusCodeOnSync", 0);
 }
 
 TEST_F(WebAppInstallCommandTest, WriteDataToDiskFailed) {
@@ -436,7 +565,7 @@ TEST_F(WebAppInstallCommandTest, WriteDataToDiskFailed) {
           kWebAppId,
           SetupFakeDataRetriever(std::move(icons_map),
                                  IconsDownloadedResult::kCompleted,
-                                 {net::HttpStatusCode::HTTP_OK}),
+                                 net::HttpStatusCode::HTTP_OK),
           webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
           CreateDialogCallback(true), std::make_unique<WebAppInstallInfo>(),
           CreateValidManifest(), kWebAppManifestUrl,
@@ -472,152 +601,6 @@ TEST_F(WebAppInstallCommandTest, IntentToPlayStore) {
       webapps::InstallResultCode::kIntentToPlayStore);
 }
 #endif
-
-class WebAppInstallCommandTestWithFakeFinalizer
-    : public WebAppInstallCommandTest {
- public:
-  void SetUp() override {
-    WebAppTest::SetUp();
-    FakeWebAppProvider* provider = FakeWebAppProvider::Get(profile());
-    provider->SetDefaultFakeSubsystems();
-    auto finalizer = std::make_unique<FakeInstallFinalizer>();
-    fake_install_finalizer_ = finalizer.get();
-    provider->SetInstallFinalizer(std::move(finalizer));
-    provider->SetRunSubsystemStartupTasks(true);
-
-    test::AwaitStartWebAppProviderAndSubsystems(profile());
-  }
-
-  void TearDown() override { WebAppTest::TearDown(); }
-
-  FakeInstallFinalizer* fake_install_finalizer() {
-    return fake_install_finalizer_;
-  }
-
- private:
-  raw_ptr<FakeInstallFinalizer> fake_install_finalizer_ = nullptr;
-};
-
-TEST_F(WebAppInstallCommandTestWithFakeFinalizer, GetIcons) {
-  const GURL icon_url = GURL("https://example.com/app.ico");
-  const SkColor color = SK_ColorBLUE;
-
-  // Generate one icon as if it was downloaded.
-  IconsMap icons_map;
-  AddIconToIconsMap(icon_url, icon_size::k128, color, &icons_map);
-
-  EXPECT_EQ(
-      InstallAndWait(
-          kWebAppId,
-          SetupFakeDataRetriever(std::move(icons_map),
-                                 IconsDownloadedResult::kCompleted,
-                                 {net::HttpStatusCode::HTTP_OK}),
-          webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
-          CreateDialogCallback(true), std::make_unique<WebAppInstallInfo>(),
-          CreateValidManifest(), kWebAppManifestUrl,
-          WebAppInstallFlow::kInstallSite, /*install_params=*/absl::nullopt),
-      webapps::InstallResultCode::kSuccessNewInstall);
-
-  std::unique_ptr<WebAppInstallInfo> web_app_info =
-      fake_install_finalizer()->web_app_info();
-
-  // Make sure that icons have been generated for all sub sizes.
-  EXPECT_TRUE(ContainsOneIconOfEachSize(web_app_info->icon_bitmaps.any));
-
-  // Generated icons are not considered part of the manifest icons.
-  EXPECT_TRUE(web_app_info->manifest_icons.empty());
-
-  // Generated icons are not considered part of the manifest shortcut icons.
-  EXPECT_TRUE(web_app_info->shortcuts_menu_item_infos.empty());
-
-  const int http_code_class_ok = 2;  // HTTP_OK is 200.
-  histogram_tester().ExpectUniqueSample(
-      "WebApp.Icon.HttpStatusCodeClassOnCreate", http_code_class_ok, 1);
-  histogram_tester().ExpectTotalCount("WebApp.Icon.HttpStatusCodeClassOnSync",
-                                      0);
-
-  histogram_tester().ExpectBucketCount("WebApp.Icon.DownloadedResultOnCreate",
-                                       IconsDownloadedResult::kCompleted, 1);
-
-  histogram_tester().ExpectBucketCount(
-      "WebApp.Icon.DownloadedHttpStatusCodeOnCreate",
-      net::HttpStatusCode::HTTP_OK, 1);
-}
-
-TEST_F(WebAppInstallCommandTestWithFakeFinalizer, GetIcons_PrimaryPageChanged) {
-  IconsMap icons_map;
-  EXPECT_EQ(
-      InstallAndWait(
-          kWebAppId,
-          SetupFakeDataRetriever(std::move(icons_map),
-                                 IconsDownloadedResult::kPrimaryPageChanged,
-                                 /*http_status_codes=*/{}),
-          webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
-          CreateDialogCallback(true), std::make_unique<WebAppInstallInfo>(),
-          CreateValidManifest(), kWebAppManifestUrl,
-          WebAppInstallFlow::kInstallSite, /*install_params=*/absl::nullopt),
-      webapps::InstallResultCode::kSuccessNewInstall);
-
-  std::unique_ptr<WebAppInstallInfo> web_app_info =
-      fake_install_finalizer()->web_app_info();
-
-  // Make sure that icons have been generated for all sizes.
-  EXPECT_TRUE(ContainsOneIconOfEachSize(web_app_info->icon_bitmaps.any));
-
-  // Generated icons are not considered part of the manifest icons.
-  EXPECT_TRUE(web_app_info->manifest_icons.empty());
-
-  // Generated icons are not considered part of the manifest shortcut icons.
-  EXPECT_TRUE(web_app_info->shortcuts_menu_item_infos.empty());
-
-  histogram_tester().ExpectTotalCount("WebApp.Icon.HttpStatusCodeClassOnCreate",
-                                      0);
-  histogram_tester().ExpectTotalCount("WebApp.Icon.HttpStatusCodeClassOnSync",
-                                      0);
-
-  histogram_tester().ExpectBucketCount(
-      "WebApp.Icon.DownloadedResultOnCreate",
-      IconsDownloadedResult::kPrimaryPageChanged, 1);
-  histogram_tester().ExpectTotalCount("WebApp.Icon.DownloadedResultOnSync", 0);
-
-  histogram_tester().ExpectTotalCount(
-      "WebApp.Icon.DownloadedHttpStatusCodeOnCreate", 0);
-  histogram_tester().ExpectTotalCount(
-      "WebApp.Icon.DownloadedHttpStatusCodeOnSync", 0);
-}
-
-TEST_F(WebAppInstallCommandTestWithFakeFinalizer, GetIcons_IconNotFound) {
-  IconsMap icons_map;
-  AddEmptyIconToIconsMap(GURL("https://example.com/app.ico"), &icons_map);
-
-  EXPECT_EQ(
-      InstallAndWait(
-          kWebAppId,
-          SetupFakeDataRetriever(std::move(icons_map),
-                                 IconsDownloadedResult::kCompleted,
-                                 {net::HttpStatusCode::HTTP_NOT_FOUND}),
-          webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
-          CreateDialogCallback(true), std::make_unique<WebAppInstallInfo>(),
-          CreateValidManifest(), kWebAppManifestUrl,
-          WebAppInstallFlow::kInstallSite, /*install_params=*/absl::nullopt),
-      webapps::InstallResultCode::kSuccessNewInstall);
-
-  std::unique_ptr<WebAppInstallInfo> web_app_info =
-      fake_install_finalizer()->web_app_info();
-  EXPECT_TRUE(ContainsOneIconOfEachSize(web_app_info->icon_bitmaps.any));
-  EXPECT_TRUE(web_app_info->manifest_icons.empty());
-  EXPECT_TRUE(web_app_info->shortcuts_menu_item_infos.empty());
-
-  histogram_tester().ExpectBucketCount("WebApp.Icon.DownloadedResultOnCreate",
-                                       IconsDownloadedResult::kCompleted, 1);
-  histogram_tester().ExpectTotalCount("WebApp.Icon.DownloadedResultOnSync", 0);
-
-  histogram_tester().ExpectBucketCount(
-      "WebApp.Icon.DownloadedHttpStatusCodeOnCreate",
-      net::HttpStatusCode::HTTP_NOT_FOUND, 1);
-  histogram_tester().ExpectTotalCount(
-      "WebApp.Icon.DownloadedHttpStatusCodeOnSync", 0);
-}
 
 }  // namespace
 }  // namespace web_app
