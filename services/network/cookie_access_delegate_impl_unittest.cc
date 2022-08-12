@@ -45,18 +45,12 @@ TEST_F(CookieAccessDelegateImplTest, NullFirstPartySetsManager) {
 
   // Same as the default ctor, but just to be explicit:
   net::FirstPartySetMetadata expected_metadata(net::SamePartyContext(),
-                                               /*frame_owner=*/nullptr,
-                                               /*top_frame_owner=*/nullptr);
+                                               /*frame_entry=*/nullptr,
+                                               /*top_frame_entry=*/nullptr);
   EXPECT_THAT(delegate().ComputeFirstPartySetMetadataMaybeAsync(
                   site, &site, {},
                   base::BindOnce([](net::FirstPartySetMetadata) { FAIL(); })),
               Optional(std::ref(expected_metadata)));
-
-  EXPECT_THAT(delegate().FindFirstPartySetOwner(
-                  site, base::BindOnce([](FirstPartySetsManager::OwnerResult) {
-                    FAIL();
-                  })),
-              Optional(absl::nullopt));
 
   EXPECT_THAT(
       delegate().FindFirstPartySetOwners(

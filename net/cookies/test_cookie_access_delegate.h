@@ -17,7 +17,6 @@
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/first_party_set_entry.h"
 #include "net/cookies/first_party_set_metadata.h"
-#include "net/cookies/same_party_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
@@ -47,10 +46,6 @@ class TestCookieAccessDelegate : public CookieAccessDelegate {
       const SchemefulSite* top_frame_site,
       const std::set<SchemefulSite>& party_context,
       base::OnceCallback<void(FirstPartySetMetadata)> callback) const override;
-  absl::optional<absl::optional<FirstPartySetEntry>> FindFirstPartySetOwner(
-      const SchemefulSite& site,
-      base::OnceCallback<void(absl::optional<FirstPartySetEntry>)> callback)
-      const override;
   absl::optional<base::flat_map<SchemefulSite, FirstPartySetEntry>>
   FindFirstPartySetOwners(
       const base::flat_set<SchemefulSite>& sites,

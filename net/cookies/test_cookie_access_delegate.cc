@@ -75,14 +75,6 @@ TestCookieAccessDelegate::FindFirstPartySetOwnerSync(
                                           : absl::nullopt;
 }
 
-absl::optional<absl::optional<FirstPartySetEntry>>
-TestCookieAccessDelegate::FindFirstPartySetOwner(
-    const SchemefulSite& site,
-    base::OnceCallback<void(absl::optional<FirstPartySetEntry>)> callback)
-    const {
-  return RunMaybeAsync(FindFirstPartySetOwnerSync(site), std::move(callback));
-}
-
 absl::optional<base::flat_map<SchemefulSite, FirstPartySetEntry>>
 TestCookieAccessDelegate::FindFirstPartySetOwners(
     const base::flat_set<SchemefulSite>& sites,

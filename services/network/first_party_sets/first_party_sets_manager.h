@@ -29,7 +29,6 @@ namespace network {
 // answers queries about First-Party Sets after they've been loaded.
 class FirstPartySetsManager {
  public:
-  using OwnerResult = absl::optional<net::FirstPartySetEntry>;
   using OwnersResult =
       base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>;
   using FlattenedSets =
@@ -68,28 +67,11 @@ class FirstPartySetsManager {
   // Sets the enabled_ attribute for testing.
   void SetEnabledForTesting(bool enabled);
 
-  // Returns optional(nullopt) if First-Party Sets is disabled or if the input
-  // is not in a nontrivial set.
-  // If FPS is enabled and the input site is in a nontrivial set, then this
-  // returns a non-empty optional containing the owner site of that set.
-  //
-  // This may return a result synchronously, or asynchronously invoke `callback`
-  // with the result. The callback will be invoked iff the return value is
-  // nullopt; i.e. a result will be provided via return value or callback, but
-  // not both, and not neither.
-  //
-  // Note that there is a semantic difference between optional(nullopt) and
-  // nullopt.
-  [[nodiscard]] absl::optional<OwnerResult> FindOwner(
-      const net::SchemefulSite& site,
-      const FirstPartySetsContextConfig& fps_context_config,
-      base::OnceCallback<void(OwnerResult)> callback);
-
-  // Batched version of `FindOwner`. Returns the mapping of sites to owners for
-  // the given input sites (if an owner exists).
+  // Returns the mapping of sites to entries for the given input sites (if an
+  // entry exists).
   //
   // When FPS is disabled, returns an empty map.
-  // When FPS is enabled, this maps each input site to its owner (if one
+  // When FPS is enabled, this maps each input site to its entry (if one
   // exists), and returns the resulting mapping. If a site isn't in a
   // non-trivial First-Party Set, it is not added to the output map.
   //
@@ -133,20 +115,12 @@ class FirstPartySetsManager {
       const std::set<net::SchemefulSite>& party_context,
       const FirstPartySetsContextConfig& fps_context_config) const;
 
-  // Same as `FindOwner`, but plumbs the result into the callback. Must only be
-  // called once the instance is fully initialized.
-  void FindOwnerAndInvoke(const net::SchemefulSite& site,
-                          const FirstPartySetsContextConfig& fps_context_config,
-                          base::OnceCallback<void(OwnerResult)> callback,
-                          base::ElapsedTimer timer) const;
-
-  // Returns `site`'s owner (optionally inferring a singleton set if necessary),
-  // or `nullopt` if `site` has no owner. `fps_context_config` is the
-  // configuration to be used in this context.
+  // Returns `site`'s entry, or `nullopt` if `site` has no entry.
+  // `fps_context_config` is the configuration to be used in this context.
   //
   // This is synchronous, and must not be called until the instance is fully
   // initialized.
-  OwnerResult FindOwnerInternal(
+  absl::optional<net::FirstPartySetEntry> FindEntry(
       const net::SchemefulSite& site,
       const FirstPartySetsContextConfig& fps_context_config) const;
 

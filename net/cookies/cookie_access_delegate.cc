@@ -17,11 +17,11 @@ namespace net {
 namespace {
 CookiePartitionKey CreateCookiePartitionKeyFromFirstPartySetEntry(
     const CookiePartitionKey& cookie_partition_key,
-    absl::optional<FirstPartySetEntry> first_party_set_entry) {
-  if (!first_party_set_entry) {
+    base::flat_map<net::SchemefulSite, FirstPartySetEntry> entries) {
+  if (entries.empty()) {
     return cookie_partition_key;
   }
-  return CookiePartitionKey::FromWire(first_party_set_entry.value().primary(),
+  return CookiePartitionKey::FromWire(entries.begin()->second.primary(),
                                       cookie_partition_key.nonce());
 }
 }  // namespace
@@ -47,15 +47,15 @@ CookieAccessDelegate::FirstPartySetifyPartitionKey(
     return cookie_partition_key;
   }
 
-  absl::optional<absl::optional<FirstPartySetEntry>> maybe_entry =
-      delegate->FindFirstPartySetOwner(
-          cookie_partition_key.site(),
+  absl::optional<base::flat_map<net::SchemefulSite, FirstPartySetEntry>>
+      maybe_entries = delegate->FindFirstPartySetOwners(
+          {cookie_partition_key.site()},
           base::BindOnce(&CreateCookiePartitionKeyFromFirstPartySetEntry,
                          cookie_partition_key)
               .Then(std::move(callback)));
-  if (maybe_entry.has_value())
-    return CreateCookiePartitionKeyFromFirstPartySetEntry(cookie_partition_key,
-                                                          maybe_entry.value());
+  if (maybe_entries.has_value())
+    return CreateCookiePartitionKeyFromFirstPartySetEntry(
+        cookie_partition_key, maybe_entries.value());
 
   return absl::nullopt;
 }

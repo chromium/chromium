@@ -68,22 +68,9 @@ class NET_EXPORT CookieAccessDelegate {
       const std::set<net::SchemefulSite>& party_context,
       base::OnceCallback<void(FirstPartySetMetadata)> callback) const = 0;
 
-  // Computes the owner of a `site`'s First-Party Set if `site` is in a
-  // non-trivial set; `nullopt` otherwise.
-  //
-  // This may return a result synchronously, or asynchronously invoke `callback`
-  // with the result. The callback will be invoked iff the return value is
-  // nullopt; i.e. a result will be provided via return value or callback, but
-  // not both, and not neither.
-  [[nodiscard]] virtual absl::optional<absl::optional<net::FirstPartySetEntry>>
-  FindFirstPartySetOwner(
-      const net::SchemefulSite& site,
-      base::OnceCallback<void(absl::optional<net::FirstPartySetEntry>)>
-          callback) const = 0;
-
-  // Computes the owners of a set of sites' First-Party Sets if the site are in
-  // non-trivial sets. If a given site is not in a non-trivial set, the output
-  // does not contain a corresponding owner.
+  // Returns the entries of a set of sites if the sites are in non-trivial sets.
+  // If a given site is not in a non-trivial set, the output does not contain a
+  // corresponding entry.
   //
   // This may return a result synchronously, or asynchronously invoke `callback`
   // with the result. The callback will be invoked iff the return value is

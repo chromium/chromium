@@ -56,16 +56,16 @@ bool FirstPartySetsManager::IsContextSamePartyWithSite(
     const std::set<net::SchemefulSite>& party_context,
     const FirstPartySetsContextConfig& fps_context_config) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const FirstPartySetsManager::OwnerResult site_entry =
-      FindOwnerInternal(site, fps_context_config);
+  const absl::optional<net::FirstPartySetEntry> site_entry =
+      FindEntry(site, fps_context_config);
   if (!site_entry.has_value())
     return false;
 
   const auto is_in_same_set_as_frame_site =
       [this, &site_entry,
        &fps_context_config](const net::SchemefulSite& context_site) -> bool {
-    const FirstPartySetsManager::OwnerResult context_entry =
-        FindOwnerInternal(context_site, fps_context_config);
+    const absl::optional<net::FirstPartySetEntry> context_entry =
+        FindEntry(context_site, fps_context_config);
     return context_entry.has_value() &&
            context_entry->primary() == site_entry->primary();
   };
@@ -137,17 +137,16 @@ net::FirstPartySetMetadata FirstPartySetsManager::ComputeMetadataInternal(
       "Cookie.FirstPartySets.ComputeContext.Latency", timer.Elapsed(),
       base::Microseconds(1), base::Milliseconds(100), 50);
 
-  FirstPartySetsManager::OwnerResult top_frame_owner =
-      top_frame_site ? FindOwnerInternal(*top_frame_site, fps_context_config)
+  absl::optional<net::FirstPartySetEntry> top_frame_owner =
+      top_frame_site ? FindEntry(*top_frame_site, fps_context_config)
                      : absl::nullopt;
 
   return net::FirstPartySetMetadata(
-      context,
-      base::OptionalOrNullptr(FindOwnerInternal(site, fps_context_config)),
+      context, base::OptionalOrNullptr(FindEntry(site, fps_context_config)),
       base::OptionalOrNullptr(top_frame_owner));
 }
 
-FirstPartySetsManager::OwnerResult FirstPartySetsManager::FindOwnerInternal(
+absl::optional<net::FirstPartySetEntry> FirstPartySetsManager::FindEntry(
     const net::SchemefulSite& site,
     const FirstPartySetsContextConfig& fps_context_config) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -158,7 +157,7 @@ FirstPartySetsManager::OwnerResult FirstPartySetsManager::FindOwnerInternal(
   net::SchemefulSite normalized_site = site;
   normalized_site.ConvertWebSocketToHttp();
 
-  FirstPartySetsManager::OwnerResult entry;
+  absl::optional<net::FirstPartySetEntry> entry;
 
   if (is_enabled()) {
     // Check if `normalized_site` can be found in the customizations first.
@@ -179,37 +178,6 @@ FirstPartySetsManager::OwnerResult FirstPartySetsManager::FindOwnerInternal(
       "Cookie.FirstPartySets.FindOwner.Latency", timer.Elapsed(),
       base::Microseconds(1), base::Milliseconds(100), 50);
   return entry;
-}
-
-absl::optional<FirstPartySetsManager::OwnerResult>
-FirstPartySetsManager::FindOwner(
-    const net::SchemefulSite& site,
-    const FirstPartySetsContextConfig& fps_context_config,
-    base::OnceCallback<void(FirstPartySetsManager::OwnerResult)> callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!sets_.has_value()) {
-    EnqueuePendingQuery(base::BindOnce(
-        &FirstPartySetsManager::FindOwnerAndInvoke, weak_factory_.GetWeakPtr(),
-        site, fps_context_config, std::move(callback), base::ElapsedTimer()));
-    return absl::nullopt;
-  }
-
-  return FindOwnerInternal(site, fps_context_config);
-}
-
-void FirstPartySetsManager::FindOwnerAndInvoke(
-    const net::SchemefulSite& site,
-    const FirstPartySetsContextConfig& fps_context_config,
-    base::OnceCallback<void(FirstPartySetsManager::OwnerResult)> callback,
-    base::ElapsedTimer timer) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(sets_.has_value());
-
-  UMA_HISTOGRAM_TIMES("Cookie.FirstPartySets.EnqueueingDelay.FindOwner",
-                      timer.Elapsed());
-
-  std::move(callback).Run(FindOwnerInternal(site, fps_context_config));
 }
 
 absl::optional<FirstPartySetsManager::OwnersResult>
@@ -253,8 +221,8 @@ FirstPartySetsManager::OwnersResult FirstPartySetsManager::FindOwnersInternal(
   std::vector<std::pair<net::SchemefulSite, net::FirstPartySetEntry>>
       sites_to_entries;
   for (const net::SchemefulSite& site : sites) {
-    const FirstPartySetsManager::OwnerResult entry =
-        FindOwnerInternal(site, fps_context_config);
+    const absl::optional<net::FirstPartySetEntry> entry =
+        FindEntry(site, fps_context_config);
     if (entry.has_value()) {
       sites_to_entries.emplace_back(site, entry.value());
     }
