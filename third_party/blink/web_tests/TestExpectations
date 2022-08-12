@@ -1386,8 +1386,6 @@ crbug.com/910725 external/wpt/css/css-tables/tentative/paint/overflow-hidden-tab
 
 crbug.com/880802 external/wpt/css/css-contain/contain-layout-017.html [ Failure ]
 crbug.com/880802 external/wpt/css/css-contain/contain-paint-021.html [ Failure ]
-crbug.com/882367 external/wpt/css/css-contain/contain-paint-clip-015.html [ Failure ]
-crbug.com/882367 external/wpt/css/css-contain/contain-paint-clip-016.html [ Failure ]
 crbug.com/882385 external/wpt/css/css-contain/quote-scoping-001.html [ Failure ]
 crbug.com/882385 external/wpt/css/css-contain/quote-scoping-002.html [ Failure ]
 crbug.com/882385 external/wpt/css/css-contain/quote-scoping-003.html [ Failure ]
