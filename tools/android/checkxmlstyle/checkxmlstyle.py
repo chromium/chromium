@@ -261,24 +261,26 @@ def _CheckColorPaletteReferences(input_api, output_api):
 def _CheckSemanticColorsReferences(input_api, output_api):
   """
   Checks colors defined in semantic_colors_non_adaptive.xml only referencing
-  resources in color_palette.xml.
+  resources in self or color_palette.xml.
   """
   errors = []
-  color_palette = None
+  usable_colors = None
 
   for f in IncludedFiles(input_api):
     if not f.LocalPath().endswith('/semantic_colors_non_adaptive.xml'):
       continue
 
-    if color_palette is None:
+    if usable_colors is None:
       color_palette = _colorXml2Dict(
         input_api.ReadFile(helpers.COLOR_PALETTE_PATH))
+      self_palette = _colorXml2Dict(input_api.ReadFile(f.AbsoluteLocalPath()))
+      usable_colors = {**color_palette, **self_palette}
     for line_number, line in f.ChangedContents():
       r = helpers.COLOR_REFERENCE_PATTERN.search(line)
       if not r:
         continue
-      color = r.group()
-      if _removePrefix(color) not in color_palette:
+      color_ref = r.group()
+      if _removePrefix(color_ref) not in usable_colors:
         errors.append(
             '  %s:%d\n    \t%s' % (f.LocalPath(), line_number, line.strip()))
 
