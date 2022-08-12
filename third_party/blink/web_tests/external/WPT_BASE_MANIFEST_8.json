@@ -831,6 +831,13 @@
          null,
          {}
         ]
+       ],
+       "special-elements-crash.html": [
+        "469e53460efd04ca6df377d06ffb2fd71c781748",
+        [
+         null,
+         {}
+        ]
        ]
       },
       "table-in-abspos-multicol-with-nested-meter-crash.html": [
@@ -87625,6 +87632,19 @@
        ],
        "header.tentative.html": [
         "6f4ad01097ea0525c7c513ae9f74ede800d7d7cf",
+        [
+         null,
+         [
+          [
+           "/css/reference/ref-filled-green-100px-square.xht",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "image.tentative.html": [
+        "72fea010d0e4d87ba647e25a5b2f0f401f4a3c48",
         [
          null,
          [
@@ -522697,6 +522717,20 @@
     ],
     "scrollbars.html": [
      "129e74e5cd969795adbf728dcdd448adfd112bac",
+     [
+      null,
+      {}
+     ]
+    ],
+    "svg-with-css-box-001.html": [
+     "4ec0a7de72f74650d4748f2819f865de7afd51cc",
+     [
+      null,
+      {}
+     ]
+    ],
+    "svg-with-css-box-002.svg": [
+     "3c009641db3a92f18cae8856890feb1027b58566",
      [
       null,
       {}

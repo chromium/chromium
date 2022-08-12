@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+PASS ResizeObserver implemented
+PASS guard
+FAIL test0: observe `foreignObject` SVG in HTML document assert_unreached: Timed out waiting for notification. (1000ms) Reached unreachable code
+FAIL test1: observe inline SVG in HTML assert_unreached: Timed out waiting for notification. (1000ms) Reached unreachable code
+Harness: the test ran to completion.
+
