@@ -518,7 +518,7 @@ suite('languages page', () => {
         });
 
     test(
-        'setting device language does not move already enabled language to front',
+        'setting device language moves already enabled language to front',
         async () => {
           languageHelper.setPrefValue(
               'intl.accept_languages', 'en-US,sw,en-CA');
@@ -534,8 +534,8 @@ suite('languages page', () => {
           assertEquals(
               'en-CA',
               await browserProxy.whenCalled('setProspectiveUILanguage'));
-          assertFalse(languageHelper.getPref('intl.accept_languages')
-                          .value.startsWith('en-CA'));
+          assertTrue(languageHelper.getPref('intl.accept_languages')
+                         .value.startsWith('en-CA'));
         });
 
     // Test that searching languages works whether the displayed or native

@@ -178,12 +178,14 @@ class OsSettingsChangeDeviceLanguageDialogElement extends
     assert(this.selectedLanguage_);
     const languageCode = this.selectedLanguage_.code;
     this.languageHelper.setProspectiveUILanguage(languageCode);
-    // If the language isn't enabled yet, it should be added and moved to top.
-    // If it's already present, we don't do anything.
+    // If the language isn't enabled yet, it should be added.
     if (!this.languageHelper.isLanguageEnabled(languageCode)) {
       this.languageHelper.enableLanguage(languageCode);
-      this.languageHelper.moveLanguageToFront(languageCode);
     }
+    // The new language should always be moved to the top, as users get confused
+    // that websites are displaying in a different language:
+    // https://crbug.com/1330209
+    this.languageHelper.moveLanguageToFront(languageCode);
     recordSettingChange();
     LanguagesMetricsProxyImpl.getInstance().recordInteraction(
         LanguagesPageInteraction.RESTART);
