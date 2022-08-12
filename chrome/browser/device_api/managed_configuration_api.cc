@@ -4,11 +4,15 @@
 
 #include "chrome/browser/device_api/managed_configuration_api.h"
 
+#include <memory>
+#include <tuple>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/contains.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/task/thread_pool.h"
+#include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/device_api/managed_configuration_store.h"
 #include "chrome/browser/net/system_network_context_manager.h"
@@ -115,9 +119,7 @@ class ManagedConfigurationAPI::ManagedConfigurationDownloader {
 ManagedConfigurationAPI::ManagedConfigurationAPI(Profile* profile)
     : profile_(profile),
       stores_path_(
-          profile->GetPath().AppendASCII(kManagedConfigurationDirectoryName)),
-      backend_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
+          profile->GetPath().AppendASCII(kManagedConfigurationDirectoryName)) {
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(profile_->GetPrefs());
   pref_change_registrar_->Add(
@@ -145,16 +147,21 @@ void ManagedConfigurationAPI::GetOriginPolicyConfiguration(
   if (!CanHaveManagedStore(origin)) {
     return std::move(callback).Run(nullptr);
   }
-  backend_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&ManagedConfigurationAPI::GetConfigurationOnBackend,
-                     base::Unretained(this), origin, keys),
-      std::move(callback));
+
+  if (!base::Contains(store_map_, origin))
+    return std::move(callback).Run(nullptr);
+
+  store_map_[origin]
+      .AsyncCall(&ManagedConfigurationStore::Get)
+      .WithArgs(std::move(keys))
+      .Then(std::move(callback));
 }
 
 void ManagedConfigurationAPI::AddObserver(Observer* observer) {
-  if (CanHaveManagedStore(observer->GetOrigin())) {
-    GetOrLoadStoreForOrigin(observer->GetOrigin())->AddObserver(observer);
+  url::Origin origin = observer->GetOrigin();
+  if (CanHaveManagedStore(origin)) {
+    MaybeCreateStoreForOrigin(origin);
+    observers_[origin].AddObserver(observer);
   } else {
     unmanaged_observers_.insert(observer);
   }
@@ -167,7 +174,7 @@ void ManagedConfigurationAPI::RemoveObserver(Observer* observer) {
     return;
   }
 
-  GetOrLoadStoreForOrigin(observer->GetOrigin())->RemoveObserver(observer);
+  observers_[observer->GetOrigin()].RemoveObserver(observer);
 }
 
 bool ManagedConfigurationAPI::CanHaveManagedStore(const url::Origin& origin) {
@@ -216,37 +223,17 @@ void ManagedConfigurationAPI::OnConfigurationPolicyChanged() {
   PromoteObservers();
 }
 
-ManagedConfigurationStore* ManagedConfigurationAPI::GetOrLoadStoreForOrigin(
+void ManagedConfigurationAPI::MaybeCreateStoreForOrigin(
     const url::Origin& origin) {
-  auto it = store_map_.find(origin);
-  if (it != store_map_.end())
-    return it->second.get();
+  if (base::Contains(store_map_, origin))
+    return;
+
   // Create the store now, and serve the cached policy until the PolicyService
   // sends updated values.
-  auto store = std::make_unique<ManagedConfigurationStore>(
-      backend_task_runner_, origin, GetStoreLocation(origin));
-  ManagedConfigurationStore* store_ptr = store.get();
-  store_map_[origin] = std::move(store);
-  return store_ptr;
-}
-
-std::unique_ptr<base::DictionaryValue>
-ManagedConfigurationAPI::GetConfigurationOnBackend(
-    const url::Origin& origin,
-    const std::vector<std::string>& keys) {
-  // If there was no policy set for this origin, there is no reason to create
-  // or load a store.
-  if (!base::Contains(store_map_, origin))
-    return nullptr;
-
-  value_store::LeveldbValueStore::ReadResult result =
-      store_map_[origin]->Get(keys);
-  if (!result.status().ok())
-    return nullptr;
-
-  auto dict = std::make_unique<base::DictionaryValue>();
-  dict->Swap(&result.settings());
-  return dict;
+  store_map_[origin] = base::SequenceBound<ManagedConfigurationStore>(
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}),
+      origin, GetStoreLocation(origin));
 }
 
 base::FilePath ManagedConfigurationAPI::GetStoreLocation(
@@ -333,17 +320,24 @@ void ManagedConfigurationAPI::ProcessDecodedConfiguration(
 void ManagedConfigurationAPI::PostStoreConfiguration(
     const url::Origin& origin,
     base::DictionaryValue configuration) {
-  // Safe to use unretained here, since we own the task runner.
-  backend_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ManagedConfigurationAPI::StoreConfigurationOnBackend,
-                     base::Unretained(this), origin, std::move(configuration)));
+  MaybeCreateStoreForOrigin(origin);
+  store_map_[origin]
+      .AsyncCall(&ManagedConfigurationStore::SetCurrentPolicy)
+      .WithArgs(std::move(configuration))
+      .Then(base::BindOnce(
+          &ManagedConfigurationAPI::InformObserversIfConfigurationChanged,
+          weak_ptr_factory_.GetWeakPtr(), origin));
 }
 
-void ManagedConfigurationAPI::StoreConfigurationOnBackend(
+void ManagedConfigurationAPI::InformObserversIfConfigurationChanged(
     const url::Origin& origin,
-    base::DictionaryValue configuration) {
-  GetOrLoadStoreForOrigin(origin)->SetCurrentPolicy(configuration);
+    bool has_changed) {
+  if (!has_changed || !base::Contains(observers_, origin))
+    return;
+
+  for (auto& observer : observers_[origin]) {
+    observer.OnManagedConfigurationChanged();
+  }
 }
 
 void ManagedConfigurationAPI::PromoteObservers() {

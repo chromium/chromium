@@ -4,44 +4,24 @@
 
 #include "chrome/browser/device_api/managed_configuration_store.h"
 
-ManagedConfigurationStore::ManagedConfigurationStore(
-    scoped_refptr<base::SequencedTaskRunner> backend_sequence,
-    const url::Origin& origin,
-    const base::FilePath& path)
-    : backend_sequence_(backend_sequence),
-      origin_(origin),
-      path_(path),
-      observers_(new base::ObserverListThreadSafe<
-                 ManagedConfigurationAPI::Observer>()) {}
+#include "base/logging.h"
 
-void ManagedConfigurationStore::InitializeOnBackend() {
+ManagedConfigurationStore::ManagedConfigurationStore(const url::Origin& origin,
+                                                     const base::FilePath& path)
+    : origin_(origin), path_(path) {}
+
+ManagedConfigurationStore::~ManagedConfigurationStore() = default;
+
+void ManagedConfigurationStore::Initialize() {
   // LeveldbValueStore can only be initialized on a blocking sequnece.
-  DCHECK(backend_sequence_->RunsTasksInCurrentSequence());
   store_ = std::make_unique<value_store::LeveldbValueStore>(
       "OriginManagedConfiguration", path_);
 }
 
-ManagedConfigurationStore::~ManagedConfigurationStore() {
-  // Delete ValueStore on the FILE thread, since it can only operate on that
-  // thread.
-  backend_sequence_->DeleteSoon(FROM_HERE, std::move(store_));
-}
-
-void ManagedConfigurationStore::AddObserver(
-    ManagedConfigurationAPI::Observer* observer) {
-  observers_->AddObserver(observer);
-}
-
-void ManagedConfigurationStore::RemoveObserver(
-    ManagedConfigurationAPI::Observer* observer) {
-  observers_->RemoveObserver(observer);
-}
-
-void ManagedConfigurationStore::SetCurrentPolicy(
+bool ManagedConfigurationStore::SetCurrentPolicy(
     const base::DictionaryValue& current_configuration) {
-  DCHECK(backend_sequence_->RunsTasksInCurrentSequence());
   if (!store_)
-    InitializeOnBackend();
+    Initialize();
   // Get the previous policies stored in the database.
   base::DictionaryValue previous_policy;
   value_store::ValueStore::ReadResult read_result = store_->Get();
@@ -78,17 +58,18 @@ void ManagedConfigurationStore::SetCurrentPolicy(
     store_updated |= !result.changes().empty();
   }
 
-  if (!store_updated)
-    return;
-  observers_->Notify(
-      FROM_HERE,
-      &ManagedConfigurationAPI::Observer::OnManagedConfigurationChanged);
+  return store_updated;
 }
 
-value_store::ValueStore::ReadResult ManagedConfigurationStore::Get(
+std::unique_ptr<base::DictionaryValue> ManagedConfigurationStore::Get(
     const std::vector<std::string>& keys) {
-  DCHECK(backend_sequence_->RunsTasksInCurrentSequence());
   if (!store_)
-    InitializeOnBackend();
-  return store_->Get(keys);
+    Initialize();
+
+  auto result = store_->Get(keys);
+
+  if (!result.status().ok())
+    return nullptr;
+
+  return result.PassSettings();
 }
