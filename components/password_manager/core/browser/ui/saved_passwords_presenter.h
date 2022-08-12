@@ -59,7 +59,7 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   };
 
   // Result of EditSavedCredentials.
-  enum EditResult {
+  enum class EditResult {
     // Some credentials were successfully updated.
     kSuccess,
     // New credential matches the old one so nothing was changed.
@@ -72,6 +72,11 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
     kEmptyPassword,
     kMaxValue = kEmptyPassword,
   };
+
+  enum class AddResult { kSuccess, kInvalid, kAlreadyExisits };
+
+  using AddCredentialsCallback =
+      base::OnceCallback<void(const std::vector<AddResult>&)>;
 
   explicit SavedPasswordsPresenter(
       scoped_refptr<PasswordStoreInterface> profile_store,
@@ -103,9 +108,12 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   // is not supported.
   //
   // For a single credential the behaviour is identical to AddCredential method.
+  //
+  // The result is conveyed in AddCredentialsCallback: a vector of corresponding
+  // AddResult statuses.
   void AddCredentials(const std::vector<CredentialUIEntry>& credentials,
                       password_manager::PasswordForm::Type type,
-                      base::OnceClosure completion);
+                      AddCredentialsCallback completion);
 
   // Modifies all the saved credentials matching |original_credential| to
   // |updated_credential|. Only username, password, notes and password issues
@@ -134,10 +142,9 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
 
  private:
   // Adds the |credential| to the specified store.
-  // The credential won't be added if  |credential|'s data is not valid (invalid
-  // url/empty password), or an entry with such signon_realm and username
-  // already exists in any (profile or account) store.
-  // `completion` will be run in every case.
+  // Expects a credential that is valid to be added - can be verefied by
+  // calling `CanBeAdded()` before. `completion` callback wil be run after the
+  // DB call is completed.
   void AddCredentialAsync(const CredentialUIEntry& credential,
                           password_manager::PasswordForm::Type type,
                           base::OnceClosure completion);
@@ -164,11 +171,10 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   void RemoveObservers();
   void AddObservers();
 
-  // Returns false if a |credential| has invalid data or already exist.
-  // Otherwise returns true.
-  bool CanBeAdded(const CredentialUIEntry& credential);
-
-  void CollectCredentialResults(const std::vector<bool>& results);
+  // Returns the expected result for adding |credential|, looks for
+  // missing/invalid fields and checks if the credential already exists in the
+  // memory cache.
+  AddResult GetExpectedAddResult(const CredentialUIEntry& credential) const;
 
   // Returns the `profile_store_` or `account_store_` if `form` is stored in
   // the profile store or the account store accordingly. This function should

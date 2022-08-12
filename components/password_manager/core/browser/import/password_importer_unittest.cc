@@ -21,8 +21,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#include "base/test/task_environment.h"
-
 using testing::IsEmpty;
 
 namespace password_manager {
@@ -99,7 +97,7 @@ class PasswordImporterTest : public testing::Test {
 };
 
 TEST_F(PasswordImporterTest, CSVImport) {
-  const char kTestCSVInput[] =
+  constexpr char kTestCSVInput[] =
       "Url,Username,Password\n"
       "http://accounts.google.com/a/LoginAuth,test@gmail.com,test1\n";
 
@@ -107,13 +105,42 @@ TEST_F(PasswordImporterTest, CSVImport) {
 
   base::FilePath input_path =
       temp_directory_.GetPath().AppendASCII(kTestFileName);
-  ASSERT_EQ(static_cast<int>(strlen(kTestCSVInput)),
-            base::WriteFile(input_path, kTestCSVInput, strlen(kTestCSVInput)));
+  ASSERT_EQ(
+      static_cast<int>(std::size(kTestCSVInput)),
+      base::WriteFile(input_path, kTestCSVInput, std::size(kTestCSVInput)));
   ASSERT_NO_FATAL_FAILURE(StartImportAndWaitForCompletion(input_path));
 
   histogram_tester.ExpectTotalCount("PasswordManager.ImportDuration", 1);
-  histogram_tester.ExpectTotalCount(
-      "PasswordManager.ImportedPasswordsPerUserInCSV", 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.ImportedPasswordsPerUserInCSV", 1, 1);
+
+  ASSERT_EQ(1u, imported_passwords().size());
+  EXPECT_EQ(GURL(kTestOriginURL), imported_passwords()[0].url);
+  EXPECT_EQ(kTestSignonRealm, imported_passwords()[0].signon_realm);
+  EXPECT_EQ(kTestUsername, imported_passwords()[0].username);
+  EXPECT_EQ(kTestPassword, imported_passwords()[0].password);
+}
+
+TEST_F(PasswordImporterTest, PartialImportSucceeds) {
+  // This tests that when some rows aren't valid (2nd row in this case is
+  // missing a site), only valid rows are imported.
+  constexpr char kTestCSVInput[] =
+      "Url,Username,Password\n"
+      "http://accounts.google.com/a/LoginAuth,test@gmail.com,test1\n"
+      ",test@gmail.com,test1\n";
+
+  base::HistogramTester histogram_tester;
+
+  base::FilePath input_path =
+      temp_directory_.GetPath().AppendASCII(kTestFileName);
+  ASSERT_EQ(
+      static_cast<int>(std::size(kTestCSVInput)),
+      base::WriteFile(input_path, kTestCSVInput, std::size(kTestCSVInput)));
+  ASSERT_NO_FATAL_FAILURE(StartImportAndWaitForCompletion(input_path));
+
+  histogram_tester.ExpectTotalCount("PasswordManager.ImportDuration", 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.ImportedPasswordsPerUserInCSV", 1, 1);
 
   ASSERT_EQ(1u, imported_passwords().size());
   EXPECT_EQ(GURL(kTestOriginURL), imported_passwords()[0].url);

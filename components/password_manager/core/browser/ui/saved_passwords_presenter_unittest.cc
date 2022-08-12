@@ -874,11 +874,13 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest, AddCredentialsToBothStores) {
 
 // Empty list should not crash.
 TEST_F(SavedPasswordsPresenterTest, AddCredentialsListEmpty) {
-  base::MockCallback<base::OnceClosure> completion_callback;
+  base::MockCallback<SavedPasswordsPresenter::AddCredentialsCallback>
+      completion_callback;
   presenter().AddCredentials({},
                              password_manager::PasswordForm::Type::kImported,
                              completion_callback.Get());
-  EXPECT_CALL(completion_callback, Run());
+  EXPECT_CALL(completion_callback,
+              Run(std::vector<SavedPasswordsPresenter::AddResult>{}));
   RunUntilIdle();
 }
 
@@ -898,12 +900,16 @@ TEST_F(SavedPasswordsPresenterTest, AddCredentialsListOnePassword) {
   EXPECT_CALL(observer, OnSavedPasswordsChanged(
                             UnorderedElementsAre(profile_store_form)));
 
-  base::MockCallback<base::OnceClosure> completion_callback;
+  base::MockCallback<SavedPasswordsPresenter::AddCredentialsCallback>
+      completion_callback;
+  CredentialUIEntry profile_store_cred(profile_store_form);
   presenter().AddCredentials(
-      {CredentialUIEntry(profile_store_form)},
+      {profile_store_cred},
       password_manager::PasswordForm::Type::kManuallyAdded,
       completion_callback.Get());
-  EXPECT_CALL(completion_callback, Run());
+  EXPECT_CALL(completion_callback,
+              Run(std::vector<SavedPasswordsPresenter::AddResult>{
+                  SavedPasswordsPresenter::AddResult::kSuccess}));
   RunUntilIdle();
   presenter().RemoveObserver(&observer);
 }
@@ -929,16 +935,65 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest,
   StrictMockSavedPasswordsPresenterObserver observer;
   presenter().AddObserver(&observer);
 
-  base::MockCallback<base::OnceClosure> completion_callback;
+  base::MockCallback<SavedPasswordsPresenter::AddCredentialsCallback>
+      completion_callback;
 
   EXPECT_CALL(observer, OnSavedPasswordsChanged(UnorderedElementsAre(
                             account_store_form_1, account_store_form_2)));
+
+  CredentialUIEntry account_store_cred_1(account_store_form_1);
+  CredentialUIEntry account_store_cred_2(account_store_form_2);
+
   presenter().AddCredentials(
-      {CredentialUIEntry(account_store_form_1),
-       CredentialUIEntry(account_store_form_2)},
+      {account_store_cred_1, account_store_cred_2},
       password_manager::PasswordForm::Type::kManuallyAdded,
       completion_callback.Get());
-  EXPECT_CALL(completion_callback, Run());
+  EXPECT_CALL(completion_callback,
+              Run(std::vector<SavedPasswordsPresenter::AddResult>{
+                  SavedPasswordsPresenter::AddResult::kSuccess,
+                  SavedPasswordsPresenter::AddResult::kSuccess}));
+  RunUntilIdle();
+  presenter().RemoveObserver(&observer);
+}
+
+// Tests whether adding 2 passwords (1 invalid, 1 valid) notifies observers with
+// only the valid password and returns the correct list of statuses.
+TEST_F(SavedPasswordsPresenterTest,
+       AddCredentialsListPasswordProfileStoreWithOneInvalid) {
+  PasswordForm profile_store_form_1 =
+      CreateTestPasswordForm(PasswordForm::Store::kProfileStore, /*index=*/0);
+  profile_store_form_1.password_value = u"";
+  profile_store_form_1.type =
+      password_manager::PasswordForm::Type::kManuallyAdded;
+  profile_store_form_1.date_created = base::Time::Now();
+  profile_store_form_1.date_password_modified = base::Time::Now();
+
+  PasswordForm profile_store_form_2 =
+      CreateTestPasswordForm(PasswordForm::Store::kProfileStore, /*index=*/1);
+  profile_store_form_2.type =
+      password_manager::PasswordForm::Type::kManuallyAdded;
+  profile_store_form_2.date_created = base::Time::Now();
+  profile_store_form_2.date_password_modified = base::Time::Now();
+
+  StrictMockSavedPasswordsPresenterObserver observer;
+  presenter().AddObserver(&observer);
+
+  base::MockCallback<SavedPasswordsPresenter::AddCredentialsCallback>
+      completion_callback;
+
+  EXPECT_CALL(observer, OnSavedPasswordsChanged(
+                            UnorderedElementsAre(profile_store_form_2)));
+
+  CredentialUIEntry profile_store_cred_1(profile_store_form_1);
+  CredentialUIEntry profile_store_cred_2(profile_store_form_2);
+  presenter().AddCredentials(
+      {profile_store_cred_1, profile_store_cred_2},
+      password_manager::PasswordForm::Type::kManuallyAdded,
+      completion_callback.Get());
+  EXPECT_CALL(completion_callback,
+              Run(std::vector<SavedPasswordsPresenter::AddResult>{
+                  SavedPasswordsPresenter::AddResult::kInvalid,
+                  SavedPasswordsPresenter::AddResult::kSuccess}));
   RunUntilIdle();
   presenter().RemoveObserver(&observer);
 }
