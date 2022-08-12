@@ -10,6 +10,7 @@ import os
 import pkg_repo
 import re
 import subprocess
+import sys
 import target
 import time
 
@@ -19,6 +20,10 @@ import ffx_session
 from common import ATTACH_RETRY_SECONDS, EnsurePathExists, \
                    GetHostToolPathFromPlatform, RunGnSdkFunction, \
                    SubprocessCallWithTimeout
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                             'test')))
+from compatible_utils import get_sdk_hash
 
 # The maximum times to attempt mDNS resolution when connecting to a freshly
 # booted Fuchsia instance before aborting.
@@ -33,9 +38,6 @@ BOOT_DISCOVERY_DELAY_SECS = 4
 # Time between a reboot command is issued and when connection attempts from the
 # host begin.
 _REBOOT_SLEEP_PERIOD = 20
-
-# File indicating version of an image downloaded to the host
-_BUILD_ARGS = "buildargs.gn"
 
 # File on device that indicates Fuchsia version.
 _ON_DEVICE_VERSION_FILE = '/config/build-info/version'
@@ -245,7 +247,7 @@ class DeviceTarget(target.Target):
         return
 
       # If accessible, check version.
-      new_version = self._GetSdkHash()
+      new_version = get_sdk_hash(self._system_image_dir)
       installed_version = self._GetInstalledSdkVersion()
       if new_version == installed_version:
         logging.info('Fuchsia version installed on device matches Chromium '
@@ -284,36 +286,6 @@ class DeviceTarget(target.Target):
     """
     return (self.GetFileAsString(_ON_DEVICE_PRODUCT_FILE).strip(),
             self.GetFileAsString(_ON_DEVICE_VERSION_FILE).strip())
-
-  def _GetSdkHash(self):
-    """Read version of hash in pre-installed package directory.
-    Returns:
-      Tuple of (product, version) of image to be installed.
-    Raises:
-      VersionNotFoundError: if contents of buildargs.gn cannot be found or the
-      version number cannot be extracted.
-    """
-
-    # TODO(crbug.com/1261961): Stop processing buildargs.gn directly.
-    with open(os.path.join(self._system_image_dir, _BUILD_ARGS)) as f:
-      contents = f.readlines()
-    if not contents:
-      raise VersionNotFoundError('Could not retrieve %s' % _BUILD_ARGS)
-    version_key = 'build_info_version'
-    product_key = 'build_info_product'
-    info_keys = [product_key, version_key]
-    version_info = {}
-    for line in contents:
-      for k in info_keys:
-        match = re.match(r'%s = "(.*)"' % k, line)
-        if match:
-          version_info[k] = match.group(1)
-    if not (version_key in version_info and product_key in version_info):
-      raise VersionNotFoundError(
-          'Could not extract version info from %s. Contents: %s' %
-          (_BUILD_ARGS, contents))
-
-    return (version_info[product_key], version_info[version_key])
 
   def GetPkgRepo(self):
     if not self._pkg_repo:

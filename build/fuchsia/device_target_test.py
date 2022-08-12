@@ -9,6 +9,7 @@ import subprocess
 import time
 import unittest
 import unittest.mock as mock
+
 from argparse import Namespace
 from device_target import DeviceTarget
 from ermine_ctl import ErmineCtl
@@ -157,7 +158,7 @@ class TestDiscoverDeviceTarget(unittest.TestCase):
     with DeviceTarget.CreateFromArgs(self.args) as device_target_instance, \
          mock.patch.object(DeviceTarget, '_Discover') as mock_discover, \
          mock.patch.object(DeviceTarget, '_ConnectToTarget') as mock_connect, \
-         mock.patch.object(DeviceTarget, '_GetSdkHash') as mock_hash, \
+         mock.patch('device_target.get_sdk_hash') as mock_hash, \
          mock.patch.object(
             DeviceTarget, '_GetInstalledSdkVersion') as mock_version, \
          mock.patch.object(
@@ -178,7 +179,7 @@ class TestDiscoverDeviceTarget(unittest.TestCase):
     with DeviceTarget.CreateFromArgs(self.args) as device_target_instance, \
          mock.patch.object(DeviceTarget, '_Discover') as mock_discover, \
          mock.patch.object(DeviceTarget, '_ConnectToTarget') as mock_ready, \
-         mock.patch.object(DeviceTarget, '_GetSdkHash') as mock_hash, \
+         mock.patch('device_target.get_sdk_hash') as mock_hash, \
          mock.patch.object(
             DeviceTarget, '_GetInstalledSdkVersion') as mock_version, \
          mock.patch.object(

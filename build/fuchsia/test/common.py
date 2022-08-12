@@ -137,6 +137,7 @@ def register_device_args(parser: ArgumentParser) -> None:
     """Register device arguments."""
     device_args = parser.add_argument_group('device', 'device arguments')
     device_args.add_argument('--target-id',
+                             default=os.environ.get('FUCHSIA_NODENAME'),
                              help=('Specify the target device. This could be '
                                    'a node-name (e.g. fuchsia-emulator) or an '
                                    'an ip address along with an optional port '

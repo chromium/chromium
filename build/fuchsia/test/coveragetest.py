@@ -11,7 +11,9 @@ import unittest
 
 import coverage  # pylint: disable=import-error
 
-COVERED_FILES = ['log_manager.py', 'publish_package.py', 'serve_repo.py']
+COVERED_FILES = [
+    'flash_device.py', 'log_manager.py', 'publish_package.py', 'serve_repo.py'
+]
 
 
 def main():
