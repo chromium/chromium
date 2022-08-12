@@ -5318,6 +5318,11 @@
     "expiry_milestone": 106
   },
   {
+    "name": "productivity-launcher-image-search",
+    "owners": [ "yulunwu","cros-system-ui-eng@google.com" ],
+    "expiry_milestone": 106
+  },
+  {
     "name":"productivity-reorder-apps",
     "owners":["andrewxu", "cros-system-ui-eng@google.com" ],
     "expiry_milestone": 105

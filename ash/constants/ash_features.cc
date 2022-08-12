@@ -841,6 +841,10 @@ const base::Feature kHelpAppLauncherSearch{"HelpAppLauncherSearch",
 // Enable ChromeOS hibernation features.
 const base::Feature kHibernate{"Hibernate", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables image search for productivity launcher.
+const base::Feature kProductivityLauncherImageSearch{
+    "ProductivityLauncherImageSearch", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables the flag to synchronize launcher item colors. It is
 // in effect only when kLauncherAppSort is enabled.
 const base::Feature kLauncherItemColorSync{"LauncherItemColorSync",
@@ -2134,6 +2138,11 @@ bool IsLockScreenInlineReplyEnabled() {
 
 bool IsLockScreenNotificationsEnabled() {
   return base::FeatureList::IsEnabled(kLockScreenNotifications);
+}
+
+bool IsProductivityLauncherImageSearchEnabled() {
+  return base::FeatureList::IsEnabled(kProductivityLauncher) &&
+         base::FeatureList::IsEnabled(kProductivityLauncherImageSearch);
 }
 
 bool IsMacAddressRandomizationEnabled() {

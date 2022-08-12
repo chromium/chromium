@@ -5626,6 +5626,12 @@ const char kProductivityLauncherDescription[] =
     "To evaluate an enhanced Launcher experience that aims to improve app "
     "workflows by optimizing access to apps, app content, and app actions.";
 
+const char kProductivityLauncherImageSearchName[] =
+    "Productivity Launcher experiment: Launcher Image Search";
+const char kProductivityLauncherImageSearchDescription[] =
+    "To evaluate the viability of image search as part of Productivity "
+    "Launcher Search.";
+
 const char kProjectorName[] = "Enable Projector";
 const char kProjectorDescription[] =
     "Enables Projects SWA and associated recording tools";

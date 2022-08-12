@@ -3217,6 +3217,9 @@ extern const char kPhoneHubFeatureSetupErrorHandlingDescription[];
 extern const char kProductivityLauncherName[];
 extern const char kProductivityLauncherDescription[];
 
+extern const char kProductivityLauncherImageSearchName[];
+extern const char kProductivityLauncherImageSearchDescription[];
+
 extern const char kProjectorName[];
 extern const char kProjectorDescription[];
 

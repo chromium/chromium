@@ -340,6 +340,8 @@ extern const base::Feature kHandwritingGestureEditing;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kHandwritingLegacyRecognition;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kProductivityLauncherImageSearch;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kLauncherItemColorSync;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kHandwritingLegacyRecognitionAllLang;
@@ -832,6 +834,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPipRoundedCornersEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPolyDevicePairingAllowed();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPrivacyIndicatorsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProductivityLauncherEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProductivityLauncherImageSearchEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorAllUserEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorManagedUserEnabled();
