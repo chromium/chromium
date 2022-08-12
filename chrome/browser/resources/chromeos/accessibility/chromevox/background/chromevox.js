@@ -6,6 +6,7 @@
  * @fileoverview Defines a global object.
  */
 
+import {constants} from '../../common/constants.js';
 import {AbstractEarcons} from '../common/abstract_earcons.js';
 import {BrailleInterface} from '../common/braille/braille_interface.js';
 import {TtsInterface} from '../common/tts_interface.js';

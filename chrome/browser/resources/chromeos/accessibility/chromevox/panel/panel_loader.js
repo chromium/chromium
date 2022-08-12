@@ -5,6 +5,4 @@
 /**
  * @fileoverview Loads the panel script.
  */
-
-goog.require('constants');
 goog.require('goog.i18n.MessageFormat');

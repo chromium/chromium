@@ -3,6 +3,6 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview Description of this file.
+ * @fileoverview This file is empty, but the closure compiler requires an entry
+ * point. As such this file is that entry point.
  */
-goog.require('constants');

@@ -7,6 +7,8 @@
  * ring location.
  */
 
+import {constants} from '../../common/constants.js';
+
 export const FocusBounds = {
   /** @return {!Array<!chrome.accessibilityPrivate.ScreenRect>} */
   get() {

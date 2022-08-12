@@ -9,5 +9,4 @@
 goog.require('BluetoothBrailleDisplayListener');
 goog.require('BluetoothBrailleDisplayManager');
 
-goog.require('constants');
 goog.require('goog.i18n.MessageFormat');

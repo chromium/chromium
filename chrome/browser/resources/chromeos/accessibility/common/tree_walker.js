@@ -7,6 +7,7 @@
  */
 
 import {AutomationPredicate} from './automation_predicate.js';
+import {constants} from './constants.js';
 
 /**
  * Defined phases of traversal from the initial node passed to an

@@ -7,5 +7,4 @@
  */
 goog.require('JaPhoneticData');
 
-goog.require('constants');
 goog.require('goog.i18n.MessageFormat');

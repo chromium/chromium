@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {AutomationUtil} from '../common/automation_util.js';
+import {constants} from '../common/constants.js';
 
 import {NodeUtils} from './node_utils.js';
 import {ParagraphUtils} from './paragraph_utils.js';

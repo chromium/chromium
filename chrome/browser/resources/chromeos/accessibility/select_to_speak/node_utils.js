@@ -4,6 +4,7 @@
 
 import {AutomationPredicate} from '../common/automation_predicate.js';
 import {AutomationUtil} from '../common/automation_util.js';
+import {constants} from '../common/constants.js';
 import {RectUtil} from '../common/rect_util.js';
 
 import {ParagraphUtils} from './paragraph_utils.js';

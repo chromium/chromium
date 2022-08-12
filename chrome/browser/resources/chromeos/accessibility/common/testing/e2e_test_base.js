@@ -27,6 +27,7 @@ E2ETestBase = class extends AccessibilityTestBase {
     await super.setUpDeferred();
     await importModule('EventGenerator', '/common/event_generator.js');
     await importModule('KeyCode', '/common/key_code.js');
+    await importModule('constants', '/common/constants.js');
   }
 
   /** @override */

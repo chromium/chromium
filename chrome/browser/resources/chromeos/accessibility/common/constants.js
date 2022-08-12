@@ -6,8 +6,7 @@
  * @fileoverview Constants used throughout ChromeVox.
  */
 
-goog.provide('constants');
-
+export const constants = {};
 /**
  * Possible directions to perform tree traversals.
  * @enum {string}

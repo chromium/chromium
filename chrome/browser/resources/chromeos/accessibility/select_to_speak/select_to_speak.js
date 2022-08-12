@@ -4,6 +4,7 @@
 
 import {AutomationPredicate} from '../common/automation_predicate.js';
 import {AutomationUtil} from '../common/automation_util.js';
+import {constants} from '../common/constants.js';
 
 import {InputHandler} from './input_handler.js';
 import {MetricsUtils} from './metrics_utils.js';

@@ -26,14 +26,6 @@ AccessibilityExtensionCursorsTest = class extends ChromeVoxNextE2ETest {
   }
 
   /** @override */
-  setUp() {
-    super.setUp();
-    // Various aliases.
-    window.BACKWARD = constants.Dir.BACKWARD;
-    window.FORWARD = constants.Dir.FORWARD;
-  }
-
-  /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
     await importModule('CursorRange', '/common/cursors/range.js');
@@ -44,6 +36,7 @@ AccessibilityExtensionCursorsTest = class extends ChromeVoxNextE2ETest {
     await importModule('AutomationUtil', '/common/automation_util.js');
     await importModule(
         'AutomationPredicate', '/common/automation_predicate.js');
+    await importModule('constants', '/common/constants.js');
     // Various aliases
     window.CHARACTER = CursorUnit.CHARACTER;
     window.WORD = CursorUnit.WORD;
@@ -52,6 +45,8 @@ AccessibilityExtensionCursorsTest = class extends ChromeVoxNextE2ETest {
     window.BOUND = CursorMovement.BOUND;
     window.DIRECTIONAL = CursorMovement.DIRECTIONAL;
     window.SYNC = CursorMovement.SYNC;
+    window.BACKWARD = constants.Dir.BACKWARD;
+    window.FORWARD = constants.Dir.FORWARD;
   }
 
   /**

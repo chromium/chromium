@@ -6,6 +6,7 @@
  * @fileoverview Handles page loading sounds based on automation events.
  */
 import {AutomationUtil} from '../../common/automation_util.js';
+import {constants} from '../../common/constants.js';
 import {Earcon} from '../common/abstract_earcons.js';
 import {ChromeVoxEvent} from '../common/custom_automation_event.js';
 

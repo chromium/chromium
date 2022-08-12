@@ -7,6 +7,7 @@
  * extension API.
  */
 
+import {constants} from '../../common/constants.js';
 import {AbstractTts} from '../common/abstract_tts.js';
 import {Msgs} from '../common/msgs.js';
 import {PanelCommand, PanelCommandType} from '../common/panel_command.js';

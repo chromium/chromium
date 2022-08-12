@@ -6,6 +6,7 @@
  * @fileoverview Handles logic for the ChromeVox panel that requires state from
  * the background context.
  */
+import {constants} from '../../../common/constants.js';
 import {CursorRange} from '../../../common/cursors/range.js';
 import {Earcon} from '../../common/abstract_earcons.js';
 import {BridgeConstants} from '../../common/bridge_constants.js';

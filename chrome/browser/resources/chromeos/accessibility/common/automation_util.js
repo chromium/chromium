@@ -7,6 +7,7 @@
  */
 
 import {AutomationPredicate} from './automation_predicate.js';
+import {constants} from './constants.js';
 import {AutomationTreeWalker, AutomationTreeWalkerRestriction} from './tree_walker.js';
 
 const AutomationNode = chrome.automation.AutomationNode;

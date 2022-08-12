@@ -5,6 +5,7 @@
 /**
  * @fileoverview Handles automation events on the currently focused node.
  */
+import {constants} from '../../common/constants.js';
 import {CursorRange} from '../../common/cursors/range.js';
 import {ChromeVoxEvent} from '../common/custom_automation_event.js';
 import {QueueMode, TtsSpeechProperties} from '../common/tts_interface.js';

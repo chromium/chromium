@@ -169,7 +169,6 @@ js2gtest("accessibility_tests") {
   ]
   gen_include_files = [
     "../select_to_speak/select_to_speak_e2e_test_base.js",
-    "automation_predicate.js",
     "testing/accessibility_test_base.js",
     "testing/assert_additions.js",
     "testing/callback_helper.js",

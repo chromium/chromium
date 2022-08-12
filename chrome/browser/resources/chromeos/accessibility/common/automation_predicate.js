@@ -6,6 +6,8 @@
  * @fileoverview ChromeVox predicates for the automation extension API.
  */
 
+import {constants} from './constants.js';
+
 const AutomationNode = chrome.automation.AutomationNode;
 const InvalidState = chrome.automation.InvalidState;
 const MarkerType = chrome.automation.MarkerType;

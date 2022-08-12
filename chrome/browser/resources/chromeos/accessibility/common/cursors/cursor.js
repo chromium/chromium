@@ -9,6 +9,7 @@
 
 import {AutomationPredicate} from '../automation_predicate.js';
 import {AutomationUtil} from '../automation_util.js';
+import {constants} from '../constants.js';
 import {StringUtil} from '../string_util.js';
 
 import {AncestryRecoveryStrategy, RecoveryStrategy} from './recovery_strategy.js';
