@@ -114,7 +114,9 @@
                            completion:^(UIImage* image) {
                              // Make sure cell is still displaying the same
                              // suggestion.
-                             if (omniboxIcon.imageURL.gurl != imageURL) {
+                             if (!weakSelf.omniboxIcon.imageURL ||
+                                 weakSelf.omniboxIcon.imageURL.gurl !=
+                                     imageURL) {
                                return;
                              }
                              [weakSelf addOverlayImageView];
@@ -133,12 +135,15 @@
       // Load favicon.
       GURL pageURL = omniboxIcon.imageURL.gurl;
       __weak OmniboxIconView* weakSelf = self;
-      [self.faviconRetriever fetchFavicon:pageURL
-                               completion:^(UIImage* image) {
-                                 if (pageURL == omniboxIcon.imageURL.gurl) {
-                                   weakSelf.mainImageView.image = image;
-                                 }
-                               }];
+      [self.faviconRetriever
+          fetchFavicon:pageURL
+            completion:^(UIImage* image) {
+              if (!weakSelf.omniboxIcon.imageURL ||
+                  pageURL != weakSelf.omniboxIcon.imageURL.gurl) {
+                return;
+              }
+              weakSelf.mainImageView.image = image;
+            }];
       break;
     }
     case OmniboxIconTypeSuggestionIcon:
