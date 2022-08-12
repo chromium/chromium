@@ -122,14 +122,16 @@ public class DemoPaintPreview implements PlayerManager.Listener {
 
     private class DemoPaintPreviewTabObserver extends EmptyTabObserver {
         @Override
-        public void onDidStartNavigation(Tab tab, NavigationHandle navigationHandle) {
+        public void onDidStartNavigationInPrimaryMainFrame(
+                Tab tab, NavigationHandle navigationHandle) {
             if (!mTabbedPaintPreview.isAttached()) return;
-
-            // Ignore navigations from subframes. We should only remove the paint preview
-            // player when the user navigates to a new page.
-            if (!navigationHandle.isInPrimaryMainFrame()) return;
-
             removePaintPreviewDemo();
+        }
+
+        @Override
+        public void onDidStartNavigationNoop(Tab tab, NavigationHandle navigationHandle) {
+            if (!mTabbedPaintPreview.isAttached()) return;
+            if (!navigationHandle.isInPrimaryMainFrame()) return;
         }
     }
 }

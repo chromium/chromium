@@ -399,8 +399,9 @@ public class CouponPersistedTabData extends PersistedTabData {
         registerIsTabSaveEnabledSupplier(mIsTabSaveEnabledSupplier);
         mUrlUpdatedObserver = new EmptyTabObserver() {
             @Override
-            public void onDidStartNavigation(Tab tab, NavigationHandle navigationHandle) {
-                if (!navigationHandle.isInPrimaryMainFrame() || navigationHandle.isSameDocument()) {
+            public void onDidStartNavigationInPrimaryMainFrame(
+                    Tab tab, NavigationHandle navigationHandle) {
+                if (navigationHandle.isSameDocument()) {
                     return;
                 }
                 // User is navigating to a different page - as detected by a change in URL
@@ -408,6 +409,12 @@ public class CouponPersistedTabData extends PersistedTabData {
                     resetCoupon();
                 }
             }
+
+            @Override
+            public void onDidStartNavigationNoop(Tab tab, NavigationHandle navigationHandle) {
+                if (!navigationHandle.isInPrimaryMainFrame()) return;
+            }
+
             @Override
             public void onDidFinishNavigation(Tab tab, NavigationHandle navigationHandle) {
                 String scheme = navigationHandle.getUrl().getScheme();

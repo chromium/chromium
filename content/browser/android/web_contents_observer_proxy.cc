@@ -9,6 +9,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/android/navigation_handle_proxy.h"
@@ -28,6 +29,13 @@ using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
 using base::android::ConvertUTF8ToJavaString;
 using base::android::ConvertUTF16ToJavaString;
+
+namespace features {
+
+const base::Feature kNotifyJavaSupriouslyToMeasurePerf{
+    "NotifyJavaSupriouslyToMeasurePerf", base::FEATURE_DISABLED_BY_DEFAULT};
+
+}  // namespace features
 
 namespace content {
 
@@ -140,9 +148,16 @@ void WebContentsObserverProxy::PrimaryMainDocumentElementAvailable() {
 
 void WebContentsObserverProxy::DidStartNavigation(
     NavigationHandle* navigation_handle) {
-  Java_WebContentsObserverProxy_didStartNavigation(
-      AttachCurrentThread(), java_observer_,
-      navigation_handle->GetJavaNavigationHandle());
+  if (navigation_handle->IsInPrimaryMainFrame()) {
+    Java_WebContentsObserverProxy_didStartNavigationInPrimaryMainFrame(
+        AttachCurrentThread(), java_observer_,
+        navigation_handle->GetJavaNavigationHandle());
+  } else if (base::FeatureList::IsEnabled(
+                 features::kNotifyJavaSupriouslyToMeasurePerf)) {
+    Java_WebContentsObserverProxy_didStartNavigationNoop(
+        AttachCurrentThread(), java_observer_,
+        navigation_handle->GetJavaNavigationHandle());
+  }
 }
 
 void WebContentsObserverProxy::DidRedirectNavigation(

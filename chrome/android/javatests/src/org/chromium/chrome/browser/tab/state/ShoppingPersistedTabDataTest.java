@@ -498,25 +498,21 @@ public class ShoppingPersistedTabDataTest {
                 HintsProto.OptimizationType.SHOPPING_PAGE_PREDICTOR.getNumber(),
                 OptimizationGuideDecision.TRUE, null);
         NavigationHandle navigationHandle = mock(NavigationHandle.class);
-        for (boolean isInPrimaryMainFrame : new boolean[] {false, true}) {
-            for (boolean isSameDocument : new boolean[] {false, true}) {
-                ShoppingPersistedTabData shoppingPersistedTabData =
-                        new ShoppingPersistedTabData(tab);
-                shoppingPersistedTabData.setPriceMicros(42_000_000L);
-                shoppingPersistedTabData.setPreviousPriceMicros(60_000_000L);
-                shoppingPersistedTabData.setCurrencyCode("USD");
-                shoppingPersistedTabData.setPriceDropGurl(
-                        ShoppingPersistedTabDataTestUtils.DEFAULT_GURL);
+        for (boolean isSameDocument : new boolean[] {false, true}) {
+            ShoppingPersistedTabData shoppingPersistedTabData = new ShoppingPersistedTabData(tab);
+            shoppingPersistedTabData.setPriceMicros(42_000_000L);
+            shoppingPersistedTabData.setPreviousPriceMicros(60_000_000L);
+            shoppingPersistedTabData.setCurrencyCode("USD");
+            shoppingPersistedTabData.setPriceDropGurl(
+                    ShoppingPersistedTabDataTestUtils.DEFAULT_GURL);
+            Assert.assertNotNull(shoppingPersistedTabData.getPriceDrop());
+            doReturn(isSameDocument).when(navigationHandle).isSameDocument();
+            shoppingPersistedTabData.getUrlUpdatedObserverForTesting()
+                    .onDidStartNavigationInPrimaryMainFrame(tab, navigationHandle);
+            if (!isSameDocument) {
+                Assert.assertNull(shoppingPersistedTabData.getPriceDrop());
+            } else {
                 Assert.assertNotNull(shoppingPersistedTabData.getPriceDrop());
-                doReturn(isInPrimaryMainFrame).when(navigationHandle).isInPrimaryMainFrame();
-                doReturn(isSameDocument).when(navigationHandle).isSameDocument();
-                shoppingPersistedTabData.getUrlUpdatedObserverForTesting().onDidStartNavigation(
-                        tab, navigationHandle);
-                if (isInPrimaryMainFrame && !isSameDocument) {
-                    Assert.assertNull(shoppingPersistedTabData.getPriceDrop());
-                } else {
-                    Assert.assertNotNull(shoppingPersistedTabData.getPriceDrop());
-                }
             }
         }
     }
@@ -551,12 +547,12 @@ public class ShoppingPersistedTabDataTest {
         shoppingPersistedTabData.setCurrencyCode("USD");
         shoppingPersistedTabData.setPriceDropGurl(gurl1);
         Assert.assertNotNull(shoppingPersistedTabData.getPriceDrop());
-        shoppingPersistedTabData.getUrlUpdatedObserverForTesting().onDidStartNavigation(
-                tab, navigationHandle);
+        shoppingPersistedTabData.getUrlUpdatedObserverForTesting()
+                .onDidStartNavigationInPrimaryMainFrame(tab, navigationHandle);
         Assert.assertNotNull(shoppingPersistedTabData.getPriceDrop());
         doReturn(gurl2).when(navigationHandle).getUrl();
-        shoppingPersistedTabData.getUrlUpdatedObserverForTesting().onDidStartNavigation(
-                tab, navigationHandle);
+        shoppingPersistedTabData.getUrlUpdatedObserverForTesting()
+                .onDidStartNavigationInPrimaryMainFrame(tab, navigationHandle);
         Assert.assertNull(shoppingPersistedTabData.getPriceDrop());
     }
 

@@ -235,14 +235,22 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
         }
 
         @Override
-        public void didStartNavigation(NavigationHandle navigation) {
-            if (navigation.isInPrimaryMainFrame() && !navigation.isSameDocument()) {
+        public void didStartNavigationInPrimaryMainFrame(NavigationHandle navigation) {
+            if (!navigation.isSameDocument()) {
                 mTab.didStartPageLoad(navigation.getUrl());
             }
 
             RewindableIterator<TabObserver> observers = mTab.getTabObservers();
             while (observers.hasNext()) {
-                observers.next().onDidStartNavigation(mTab, navigation);
+                observers.next().onDidStartNavigationInPrimaryMainFrame(mTab, navigation);
+            }
+        }
+
+        @Override
+        public void didStartNavigationNoop(NavigationHandle navigation) {
+            RewindableIterator<TabObserver> observers = mTab.getTabObservers();
+            while (observers.hasNext()) {
+                observers.next().onDidStartNavigationNoop(mTab, navigation);
             }
         }
 

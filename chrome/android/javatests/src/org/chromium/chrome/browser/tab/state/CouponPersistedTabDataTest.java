@@ -367,24 +367,20 @@ public class CouponPersistedTabDataTest {
         MockTab tab = new MockTab(1, false);
         mockEndpointResponse(EMPTY_ENDPOINT_RESPONSE);
         NavigationHandle navigationHandle = mock(NavigationHandle.class);
-        for (boolean isInPrimaryMainFrame : new boolean[] {false, true}) {
-            for (boolean isSameDocument : new boolean[] {false, true}) {
-                CouponPersistedTabData.Coupon coupon = new CouponPersistedTabData.Coupon(
-                        EXPECTED_NAME_GENERAL_CASE_AMOUNT, EXPECTED_NAME_GENERAL_CASE_AMOUNT,
-                        EXPECTED_TYPE_GENERAL_CASE_AMOUNT, EXPECTED_UNITS_GENERAL_CASE_AMOUNT,
-                        SERIALIZE_DESERIALIZE_DISCOUNT_TYPE);
-                CouponPersistedTabData couponPersistedTabData =
-                        new CouponPersistedTabData(tab, coupon);
+        for (boolean isSameDocument : new boolean[] {false, true}) {
+            CouponPersistedTabData.Coupon coupon = new CouponPersistedTabData.Coupon(
+                    EXPECTED_NAME_GENERAL_CASE_AMOUNT, EXPECTED_NAME_GENERAL_CASE_AMOUNT,
+                    EXPECTED_TYPE_GENERAL_CASE_AMOUNT, EXPECTED_UNITS_GENERAL_CASE_AMOUNT,
+                    SERIALIZE_DESERIALIZE_DISCOUNT_TYPE);
+            CouponPersistedTabData couponPersistedTabData = new CouponPersistedTabData(tab, coupon);
+            Assert.assertNotNull(couponPersistedTabData.getCoupon());
+            doReturn(isSameDocument).when(navigationHandle).isSameDocument();
+            couponPersistedTabData.getUrlUpdatedObserverForTesting()
+                    .onDidStartNavigationInPrimaryMainFrame(tab, navigationHandle);
+            if (!isSameDocument) {
+                Assert.assertNull(couponPersistedTabData.getCoupon());
+            } else {
                 Assert.assertNotNull(couponPersistedTabData.getCoupon());
-                doReturn(isInPrimaryMainFrame).when(navigationHandle).isInPrimaryMainFrame();
-                doReturn(isSameDocument).when(navigationHandle).isSameDocument();
-                couponPersistedTabData.getUrlUpdatedObserverForTesting().onDidStartNavigation(
-                        tab, navigationHandle);
-                if (isInPrimaryMainFrame && !isSameDocument) {
-                    Assert.assertNull(couponPersistedTabData.getCoupon());
-                } else {
-                    Assert.assertNotNull(couponPersistedTabData.getCoupon());
-                }
             }
         }
     }
@@ -444,12 +440,12 @@ public class CouponPersistedTabDataTest {
                         EXPECTED_UNITS_GENERAL_CASE_AMOUNT, SERIALIZE_DESERIALIZE_DISCOUNT_TYPE);
         CouponPersistedTabData couponPersistedTabData = new CouponPersistedTabData(tab, coupon);
         Assert.assertNotNull(couponPersistedTabData.getCoupon());
-        couponPersistedTabData.getUrlUpdatedObserverForTesting().onDidStartNavigation(
-                tab, navigationHandle);
+        couponPersistedTabData.getUrlUpdatedObserverForTesting()
+                .onDidStartNavigationInPrimaryMainFrame(tab, navigationHandle);
         Assert.assertNotNull(couponPersistedTabData.getCoupon());
         doReturn(VALID_URL_2).when(navigationHandle).getUrl();
-        couponPersistedTabData.getUrlUpdatedObserverForTesting().onDidStartNavigation(
-                tab, navigationHandle);
+        couponPersistedTabData.getUrlUpdatedObserverForTesting()
+                .onDidStartNavigationInPrimaryMainFrame(tab, navigationHandle);
         Assert.assertNull(couponPersistedTabData.getCoupon());
     }
 

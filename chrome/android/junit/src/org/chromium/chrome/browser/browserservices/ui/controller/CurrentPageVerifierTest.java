@@ -193,7 +193,7 @@ public class CurrentPageVerifierTest {
                 false /* isExternalProtocol */, 0 /* navigationId */, false /* isPageActivation */,
                 false /* isReload */);
         for (CustomTabTabObserver tabObserver : mTabObserverCaptor.getAllValues()) {
-            tabObserver.onDidStartNavigation(mTab, navigation);
+            tabObserver.onDidStartNavigationInPrimaryMainFrame(mTab, navigation);
         }
 
         navigation.didFinish(gurl, false /* isErrorPage */, true /* hasCommitted */,
