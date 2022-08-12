@@ -30,7 +30,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.TimingMetric;
 import org.chromium.base.task.PostTask;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -195,8 +194,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         });
 
         final Resources resources = context.getResources();
-        int paddingSide =
-                CachedFeatureFlags.isEnabled(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
+        int paddingSide = ChromeFeatureList.sOmniboxModernizeVisualUpdate.isEnabled()
                 ? resources.getDimensionPixelOffset(R.dimen.omnibox_suggestion_list_padding_side)
                 : 0;
         int paddingBottom =

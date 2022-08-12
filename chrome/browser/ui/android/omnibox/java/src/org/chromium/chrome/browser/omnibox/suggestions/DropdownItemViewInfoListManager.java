@@ -11,7 +11,6 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.AutocompleteResult;
@@ -179,7 +178,7 @@ class DropdownItemViewInfoListManager {
      * @param type The type of the suggestion.
      */
     private boolean suggestionShouldHaveBackground(@OmniboxSuggestionUiType int type) {
-        return CachedFeatureFlags.isEnabled(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
+        return ChromeFeatureList.sOmniboxModernizeVisualUpdate.isEnabled()
                 && (type == OmniboxSuggestionUiType.DEFAULT
                         || type == OmniboxSuggestionUiType.EDIT_URL_SUGGESTION
                         || type == OmniboxSuggestionUiType.ANSWER_SUGGESTION
