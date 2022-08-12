@@ -21729,17 +21729,38 @@ be describing additional metrics about the same event.
     <summary>
       Records the display mode of the added Webapp.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="SameAsManifestStartUrl" enum="Boolean">
     <summary>
       Record whether `start_url` for the Shortcuts is the same as the current
       page url.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="ShortcutReason" enum="InstallableStatusCode">
     <summary>
       Record an StatusCode for why this site is not WebAPK compatible.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
