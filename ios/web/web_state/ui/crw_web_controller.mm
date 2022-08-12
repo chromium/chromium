@@ -1630,8 +1630,7 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
           requireGestureRecognizerToFail:swipeRecognizer];
     }
 
-    if (web::GetWebClient()->EnableLongPressUIContextMenu() &&
-        web::GetWebClient()->EnableLongPressAndForceTouchHandling()) {
+    if (web::GetWebClient()->EnableLongPressUIContextMenu()) {
       self.contextMenuController =
           [[CRWContextMenuController alloc] initWithWebView:self.webView
                                                    webState:self.webStateImpl];

@@ -51,7 +51,6 @@ class ChromeWebClient : public web::WebClient {
                         int64_t navigation_id,
                         base::OnceCallback<void(NSString*)> callback) override;
   UIView* GetWindowedContainer() override;
-  bool EnableLongPressAndForceTouchHandling() const override;
   bool EnableLongPressUIContextMenu() const override;
   web::UserAgentType GetDefaultUserAgent(web::WebState* web_state,
                                          const GURL& url) const override;

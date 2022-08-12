@@ -163,11 +163,6 @@ class WebClient {
   // Instructs the embedder to return a container that is attached to a window.
   virtual UIView* GetWindowedContainer();
 
-  // Enables the logic to handle long press and force
-  // touch through action sheet. Should return false to use the context menu
-  // API. Defaults to return true.
-  virtual bool EnableLongPressAndForceTouchHandling() const;
-
   // Enables the logic to handle long press context menu with UIContextMenu.
   virtual bool EnableLongPressUIContextMenu() const;
 

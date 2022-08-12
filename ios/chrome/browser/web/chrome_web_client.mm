@@ -423,10 +423,6 @@ UIView* ChromeWebClient::GetWindowedContainer() {
   return windowed_container_;
 }
 
-bool ChromeWebClient::EnableLongPressAndForceTouchHandling() const {
-  return !web::features::UseWebViewNativeContextMenuWeb();
-}
-
 bool ChromeWebClient::EnableLongPressUIContextMenu() const {
   return true;
 }

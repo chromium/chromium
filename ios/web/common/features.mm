@@ -37,9 +37,6 @@ const base::Feature kRecordSnapshotSize{"RecordSnapshotSize",
 const base::Feature kSetRequestAttribution{"SetRequestAttribution",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kDefaultWebViewContextMenu{
-    "DefaultWebViewContextMenu", base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kDisableNonHTMLScreenshotOnIOS15{
     "DisableNonHTMLScreenshotOnIOS15", base::FEATURE_ENABLED_BY_DEFAULT};
 
@@ -58,10 +55,6 @@ const base::Feature kUseLoadSimulatedRequestForOfflinePage{
 
 const base::Feature kEnableWebPageAnnotations{
     "EnableWebPageAnnotations", base::FEATURE_DISABLED_BY_DEFAULT};
-
-bool UseWebViewNativeContextMenuWeb() {
-  return base::FeatureList::IsEnabled(kDefaultWebViewContextMenu);
-}
 
 bool ShouldTakeScreenshotOnNonHTMLContent() {
   if (@available(iOS 15, *)) {

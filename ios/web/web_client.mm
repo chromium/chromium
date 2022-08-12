@@ -98,10 +98,6 @@ UIView* WebClient::GetWindowedContainer() {
   return nullptr;
 }
 
-bool WebClient::EnableLongPressAndForceTouchHandling() const {
-  return true;
-}
-
 bool WebClient::EnableLongPressUIContextMenu() const {
   return false;
 }

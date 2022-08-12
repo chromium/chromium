@@ -800,10 +800,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillFillMerchantPromoCodeFields)},
-    {"default-wkwebview-context-menu",
-     flag_descriptions::kDefaultWebViewContextMenuName,
-     flag_descriptions::kDefaultWebViewContextMenuDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(web::features::kDefaultWebViewContextMenu)},
     {"new-overflow-menu", flag_descriptions::kNewOverflowMenuName,
      flag_descriptions::kNewOverflowMenuDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kNewOverflowMenu)},

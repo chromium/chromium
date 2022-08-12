@@ -204,12 +204,6 @@ const char kAddSettingForDefaultPageModeDescription[] =
     "When enabled, the user can choose if they want the page in Desktop or "
     "Mobile mode.";
 
-const char kDefaultWebViewContextMenuName[] =
-    "Use the default WebKit context menus";
-const char kDefaultWebViewContextMenuDescription[] =
-    "When enabled, the default context menus from WebKit will be used in web "
-    "content.";
-
 const char kDelayThresholdMinutesToUpdateGaiaCookieName[] =
     "Delay for polling (in minutes) to verify the existence of GAIA cookies.";
 const char kDelayThresholdMinutesToUpdateGaiaCookieDescription[] =

@@ -176,11 +176,6 @@ extern const char kDefaultBrowserIntentsShowSettingsDescription[];
 extern const char kAddSettingForDefaultPageModeName[];
 extern const char kAddSettingForDefaultPageModeDescription[];
 
-// Title and description for the flag to use default WebKit context menu in web
-// content.
-extern const char kDefaultWebViewContextMenuName[];
-extern const char kDefaultWebViewContextMenuDescription[];
-
 // Title and description for the flag to control the delay (in minutes) for
 // polling for the existence of Gaia cookies for google.com.
 extern const char kDelayThresholdMinutesToUpdateGaiaCookieName[];
