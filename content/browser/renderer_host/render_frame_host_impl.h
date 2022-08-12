@@ -4083,9 +4083,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // or not it can be frozen.
   std::unique_ptr<FeatureObserver> feature_observer_;
 
-  // Optional PeakGpuMemoryTracker, when this frame is the main frame. Created
-  // by NavigationRequest, ownership is maintained until the frame has stopped
-  // loading. Or newer navigations occur.
+  // Optional PeakGpuMemoryTracker, when this frame is the primary main frame.
+  // Created by NavigationRequest, ownership is maintained until the frame has
+  // stopped loading. Or newer navigations occur.
   std::unique_ptr<PeakGpuMemoryTracker> loading_mem_tracker_;
 
   scoped_refptr<WebAuthRequestSecurityChecker>
