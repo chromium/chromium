@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
+#include "base/feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/projector/projector_utils.h"
@@ -13,6 +14,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/version_info/channel.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "third_party/blink/public/common/features.h"
 
 ChromeUntrustedProjectorUIDelegate::ChromeUntrustedProjectorUIDelegate() =
     default;
@@ -35,8 +37,11 @@ void ChromeUntrustedProjectorUIDelegate::PopulateLoadTimeData(
   source->AddBoolean(
       "isUseOAuthForGetVideoInfoEnabled",
       ash::features::IsProjectorUseOAuthForGetVideoInfoEnabled());
-  source->AddBoolean("isLocalPlaybackEnabled",
-                     ash::features::IsProjectorLocalPlaybackEnabled());
+  source->AddBoolean(
+      "isLocalPlaybackEnabled",
+      ash::features::IsProjectorLocalPlaybackEnabled() &&
+          // The local playback feature depends on the file handling API.
+          base::FeatureList::IsEnabled(blink::features::kFileHandlingAPI));
   source->AddString("appLocale", g_browser_process->GetApplicationLocale());
 }
 
