@@ -351,6 +351,13 @@ public class StatusView extends LinearLayout {
             // become stale. Reset it.
             resetAnimationStatus();
         }
+
+        // If the icon's visibility changes while layout is pending, we can end up in a bad state
+        // due to a stale measurement cache. forceLayout() will invalidate the cache without
+        // bubbling the request to parent views.
+        if (isInLayout()) {
+            forceLayout();
+        }
     }
 
     /**
