@@ -184,9 +184,7 @@ BrowserAccessibilityManager::BrowserAccessibilityManager(
       connected_to_parent_tree_node_(false),
       device_scale_factor_(1.0f),
       use_custom_device_scale_factor_for_testing_(false),
-      event_generator_(ax_tree()) {
-  tree_observation_.Observe(ax_tree());
-}
+      event_generator_(ax_tree()) {}
 
 BrowserAccessibilityManager::BrowserAccessibilityManager(
     const ui::AXTreeUpdate& initial_tree,
@@ -202,7 +200,6 @@ BrowserAccessibilityManager::BrowserAccessibilityManager(
       device_scale_factor_(1.0f),
       use_custom_device_scale_factor_for_testing_(false),
       event_generator_(ax_tree()) {
-  tree_observation_.Observe(ax_tree());
   Initialize(initial_tree);
 }
 
@@ -1695,14 +1692,6 @@ ui::AXPlatformNode* BrowserAccessibilityManager::GetPlatformNodeFromTree(
 ui::AXPlatformNode* BrowserAccessibilityManager::GetPlatformNodeFromTree(
     const ui::AXNode& node) const {
   return GetPlatformNodeFromTree(node.id());
-}
-
-void BrowserAccessibilityManager::AddObserver(ui::AXTreeObserver* observer) {
-  ax_tree()->AddObserver(observer);
-}
-
-void BrowserAccessibilityManager::RemoveObserver(ui::AXTreeObserver* observer) {
-  ax_tree()->RemoveObserver(observer);
 }
 
 ui::AXTreeID BrowserAccessibilityManager::GetTreeID() const {

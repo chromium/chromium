@@ -41,11 +41,6 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
   // Returns nullptr if |node_id| is not found.
   virtual AXNode* GetNodeFromTree(const AXNodeID node_id) const = 0;
 
-  // Use `AddObserver` and `RemoveObserver` when you want to be notified when
-  // changes happen to an `XTree`
-  virtual void AddObserver(AXTreeObserver* observer) {}
-  virtual void RemoveObserver(AXTreeObserver* observer) {}
-
   // Returns the tree id of the tree managed by this AXTreeManager.
   virtual AXTreeID GetTreeID() const = 0;
 
@@ -110,6 +105,14 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
   friend class TestAXTreeManager;
 
   static AXTreeManagerMap& GetMap();
+
+  // Automatically stops observing notifications from the AXTree when this class
+  // is destructed.
+  //
+  // This member needs to be destructed before any observed AXTrees. Since
+  // destructors for non-static member fields are called in the reverse order of
+  // declaration, do not move this member above other members.
+  base::ScopedObservation<AXTree, AXTreeObserver> tree_observation_{this};
 };
 
 }  // namespace ui

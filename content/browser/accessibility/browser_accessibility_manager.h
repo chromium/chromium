@@ -16,7 +16,6 @@
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "cc/base/rtree.h"
 #include "content/browser/accessibility/browser_accessibility.h"
@@ -493,8 +492,6 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   ui::AXPlatformNode* GetPlatformNodeFromTree(
       const ui::AXNodeID node_id) const override;
   ui::AXPlatformNode* GetPlatformNodeFromTree(const ui::AXNode&) const override;
-  void AddObserver(ui::AXTreeObserver* observer) override;
-  void RemoveObserver(ui::AXTreeObserver* observer) override;
   ui::AXTreeID GetTreeID() const override;
   ui::AXTreeID GetParentTreeID() const override;
   ui::AXNode* GetRootAsAXNode() const override;
@@ -711,15 +708,6 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   // Only used on the root node for AXTree hit testing as an alternative to
   // ApproximateHitTest when used without a renderer.
   std::unique_ptr<cc::RTree<ui::AXNodeID>> cached_node_rtree_;
-
-  // Automatically stops observing notifications from the AXTree when this class
-  // is destructed.
-  //
-  // This member needs to be destructed before any observed AXTrees. Since
-  // destructors for non-static member fields are called in the reverse order of
-  // declaration, do not move this member above other members.
-  base::ScopedObservation<ui::AXTree, ui::AXTreeObserver> tree_observation_{
-      this};
 };
 
 }  // namespace content

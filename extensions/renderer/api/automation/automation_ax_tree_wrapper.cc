@@ -44,14 +44,11 @@ AutomationAXTreeWrapper::AutomationAXTreeWrapper(
     AutomationInternalCustomBindings* owner)
     : ui::AXTreeManager(tree_id, std::make_unique<ui::AXTree>()),
       owner_(owner),
-      event_generator_(ax_tree()) {
-  ax_tree_->AddObserver(this);
-}
+      event_generator_(ax_tree()) {}
 
 AutomationAXTreeWrapper::~AutomationAXTreeWrapper() {
   // Stop observing so we don't get a callback for every node being deleted.
   event_generator_.SetTree(nullptr);
-  ax_tree_->RemoveObserver(this);
 }
 
 // static
