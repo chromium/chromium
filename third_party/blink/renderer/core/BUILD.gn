@@ -802,6 +802,7 @@ process_json5_files("make_core_generated_html_element_factory") {
     "$blink_core_output_dir/html_names.cc",
     "$blink_core_output_dir/html_names.h",
   ]
+  other_args = [ "--generate_tag_enum" ]
 }
 
 process_json5_files("make_core_generated_html_element_type_helpers") {

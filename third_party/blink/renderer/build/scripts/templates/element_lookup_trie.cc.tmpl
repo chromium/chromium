@@ -10,15 +10,33 @@
 #include "third_party/blink/renderer/core/{{namespace|lower}}_names.h"
 
 namespace blink {
+namespace {
 
-const AtomicString& lookup{{namespace}}Tag(const UChar* data, unsigned length) {
+template <typename CharType>
+{{namespace|lower}}_names::HTMLTag lookup{{namespace}}TagImpl(
+    const CharType* data,
+    unsigned length) {
   DCHECK(data);
   DCHECK(length);
   {% macro trie_return_statement(tag) -%}
-  {{namespace|lower}}_names::{{tag|symbol}}Tag.LocalName()
+  {{namespace|lower}}_names::HTMLTag::{{tag|symbol}};
   {%- endmacro %}
   {{ trie_length_switch(length_tries, trie_return_statement, false) | indent(4) }}
-  return g_null_atom;
+  return {{namespace|lower}}_names::HTMLTag::kUnknown;
+}
+
+}  // namespace
+
+CORE_EXPORT {{namespace|lower}}_names::HTMLTag lookup{{namespace}}Tag(
+    const UChar* data,
+    unsigned length) {
+  return lookupHTMLTagImpl(data, length);
+}
+
+CORE_EXPORT {{namespace|lower}}_names::HTMLTag lookup{{namespace}}Tag(
+    const LChar* data,
+    unsigned length) {
+  return lookupHTMLTagImpl(data, length);
 }
 
 }  // namespace blink

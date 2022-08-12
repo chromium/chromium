@@ -55,7 +55,7 @@ class MakeElementFactoryWriter(MakeQualifiedNamesWriter):
         })
     filters = MakeQualifiedNamesWriter.filters
 
-    def __init__(self, json5_file_paths, output_dir):
+    def __init__(self, json5_file_paths, output_dir, generate_tag_enum=False):
         super(MakeElementFactoryWriter, self).__init__(json5_file_paths,
                                                        output_dir)
 
@@ -96,6 +96,8 @@ class MakeElementFactoryWriter(MakeQualifiedNamesWriter):
             fallback_js_interface,
             'input_files':
             self._input_files,
+            'generate_tag_enum':
+            generate_tag_enum
         })
 
     @template_expander.use_jinja(

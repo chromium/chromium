@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/html/parser/html_token.h"
 #include "third_party/blink/renderer/core/html_element_lookup_trie.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
@@ -128,11 +129,13 @@ class CORE_EXPORT AtomicHTMLToken {
       case HTMLToken::kStartTag:
       case HTMLToken::kEndTag: {
         self_closing_ = token.SelfClosing();
-        if (const AtomicString& tag_name =
-                lookupHTMLTag(token.GetName().data(), token.GetName().size()))
-          name_ = tag_name;
-        else
+        const html_names::HTMLTag html_tag =
+            lookupHTMLTag(token.GetName().data(), token.GetName().size());
+        if (html_tag != html_names::HTMLTag::kUnknown) {
+          name_ = html_names::TagToQualifedName(html_tag).LocalName();
+        } else {
           name_ = token.GetName().AsAtomicString();
+        }
         const HTMLToken::AttributeList& attributes = token.Attributes();
 
         // This limit is set fairly arbitrarily; the main point is to avoid

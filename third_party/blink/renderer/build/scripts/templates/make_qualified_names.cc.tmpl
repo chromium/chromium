@@ -104,5 +104,19 @@ void Init() {
   DCHECK_EQ(attr_i, kAttrsCount);
 }
 
+{% if generate_tag_enum %}
+const blink::{{namespace}}QualifiedName& TagToQualifedName(
+    {{namespace}}Tag tag) {
+  switch (tag) {
+{% for tag in tags|sort(attribute='name', case_sensitive=True) %}
+    case {{namespace}}Tag::{{tag|symbol}}:
+      return {{tag|symbol}}Tag;
+{% endfor %}
+    case {{namespace}}Tag::kUnknown:
+      return static_cast<const blink::{{namespace}}QualifiedName&>(g_null_name);
+  }
+}
+{% endif %}
+
 }  // namespace {{cpp_namespace}}
 }  // namespace blink

@@ -332,9 +332,16 @@ class Maker(object):
 
         parser.add_argument("--gperf", default="gperf")
         parser.add_argument("--output_dir", default=os.getcwd())
+        parser.add_argument("--generate_tag_enum",
+                            default=False,
+                            action='store_true')
         args = parser.parse_args()
 
-        writer = self._writer_class(args.files, args.output_dir)
+        if args.generate_tag_enum:
+            writer = self._writer_class(args.files, args.output_dir,
+                                        args.generate_tag_enum)
+        else:
+            writer = self._writer_class(args.files, args.output_dir)
         writer.set_gperf_path(args.gperf)
         writer.write_files(args.output_dir)
         writer.cleanup_files(args.output_dir)
