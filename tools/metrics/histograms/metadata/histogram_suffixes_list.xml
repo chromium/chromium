@@ -3596,7 +3596,8 @@ chromium-metrics-reviews@google.com.
 </histogram_suffixes>
 
 <histogram_suffixes name="LiveTabCountMetrics" separator=".">
-  <suffix name="" label="Recorded with 0 live tabs open in the browser.">
+  <suffix name="ByLiveTabCount.0Tab"
+      label="Recorded with 0 live tabs open in the browser.">
     <obsolete>
       These suffixes is used to record metrics with live tab count information.
       As part of crbug.com/1317494, these suffixes are replaced by
