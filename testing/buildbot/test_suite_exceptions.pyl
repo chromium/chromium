@@ -392,10 +392,6 @@
         'args': [
           '--release',
           '--android',
-          # TODO(crbug.com/912120): Breakpad was entirely disabled on
-          # Android. Remove this when it no longer affects Android crash
-          # log handling.
-          '--disable-breakpad',
           # TODO(crbug.com/875172): run on the real GPU since the
           # software fallback, SwiftShader, isn't yet for 32-bit ARM.
           '--additional-driver-flag=--use-gpu-in-tests',
@@ -682,10 +678,6 @@
         'args': [
           '--release',
           '--android',
-          # TODO(crbug.com/912120): Breakpad was entirely disabled on
-          # Android. Remove this when it no longer affects Android crash
-          # log handling.
-          '--disable-breakpad',
           # TODO(crbug.com/875172): run on the real GPU since the
           # software fallback, SwiftShader, isn't yet for 32-bit ARM.
           '--additional-driver-flag=--use-gpu-in-tests',
@@ -778,15 +770,6 @@
           'Release_x64',
         ],
       }
-    },
-  },
-  'breakpad_unittests': {
-    'modifications': {
-      'android-asan': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.asan.breakpad_unittests.filter',
-        ],
-      },
     },
   },
   'browser_tests': {

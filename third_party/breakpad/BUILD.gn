@@ -733,10 +733,7 @@ if (is_linux || is_chromeos || is_android) {
       "//testing/gtest:gtest_main",
     ]
 
-    data_deps = [
-      ":linux_dumper_unittest_helper",
-      "//testing/buildbot/filters:breakpad_unittests_filters",
-    ]
+    data_deps = [ ":linux_dumper_unittest_helper" ]
 
     include_dirs = [
       "linux",  # Use our copy of breakpad_googletest_includes.h

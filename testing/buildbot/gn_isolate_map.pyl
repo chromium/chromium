@@ -286,10 +286,6 @@
     "label": "//third_party/boringssl:boringssl_ssl_tests",
     "type": "console_test_launcher",
   },
-  "breakpad_unittests": {
-    "label": "//third_party/breakpad:breakpad_unittests",
-    "type": "console_test_launcher",
-  },
   "browser_tests": {
     "label": "//chrome/test:browser_tests",
     "type": "windowed_test_launcher",

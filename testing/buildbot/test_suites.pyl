@@ -266,7 +266,6 @@
         ],
       },
       'android_webview_unittests': {},
-      'breakpad_unittests': {},
       'content_shell_test_apk': {
         'swarming': {
           'shards': 3,
