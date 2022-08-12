@@ -593,6 +593,18 @@ TEST_F(InputMethodAshTest, ExtractCompositionTextTest_NoAttribute) {
             composition_text.ime_text_spans[0].thickness);
 }
 
+TEST_F(InputMethodAshTest, SetCompositionTextFails) {
+  InputMethodAsh ime(this);
+  FakeTextInputClient fake_text_input_client(TEXT_INPUT_TYPE_TEXT);
+  ime.SetFocusedTextInputClient(&fake_text_input_client);
+
+  EXPECT_EQ(ime.GetTextInputType(), TEXT_INPUT_TYPE_TEXT);
+  // Intentionally have a range start that does not exist.
+  EXPECT_FALSE(ime.SetCompositionRange(10000, 5, {}));
+
+  ime.SetFocusedTextInputClient(nullptr);
+}
+
 TEST_F(InputMethodAshTest, ExtractCompositionTextTest_SingleUnderline) {
   const uint32_t kCursorPos = 2UL;
 

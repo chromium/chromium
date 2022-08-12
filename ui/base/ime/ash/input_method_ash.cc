@@ -373,8 +373,9 @@ bool InputMethodAsh::SetCompositionRange(
   if (!client->GetEditableSelectionRange(&range))
     return false;
 
-  const gfx::Range composition_range(range.start() - before,
-                                     range.end() + after);
+  const gfx::Range composition_range(
+      range.start() >= before ? range.start() - before : 0,
+      range.end() + after);
 
   // Check that the composition range is valid.
   gfx::Range text_range;
