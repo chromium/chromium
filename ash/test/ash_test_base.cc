@@ -346,6 +346,13 @@ void AshTestBase::SetPixelTestInitParam(const pixel_test::InitParams& params) {
   pixel_diff_init_params_ = params;
 }
 
+void AshTestBase::StabilizeUIForPixelTest() {
+  // This function should only be used in a pixel test.
+  CHECK(pixel_diff_init_params_);
+
+  ash_test_helper_->StabilizeUIForPixelTest();
+}
+
 void AshTestBase::SetUserPref(const std::string& user_email,
                               const std::string& path,
                               const base::Value& value) {

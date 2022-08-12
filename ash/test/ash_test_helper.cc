@@ -375,13 +375,11 @@ void AshTestHelper::SetUp(InitParams init_params) {
   AccelerometerReader::GetInstance()->SetECLidAngleDriverStatusForTesting(
       ECLidAngleDriverStatus::NOT_SUPPORTED);
 
+  // Call `StabilizeUIForPixelTest()` after the user session is activated (if
+  // any) in the test setup.
   if (ui_stabilizer_) {
     DCHECK(init_params.pixel_test_init_params);
-    const gfx::Size primary_display_size =
-        display::Screen::GetScreen()
-            ->GetDisplayNearestWindow(Shell::GetPrimaryRootWindow())
-            .size();
-    ui_stabilizer_->StabilizeUi(primary_display_size);
+    StabilizeUIForPixelTest();
   }
 }
 
@@ -397,6 +395,14 @@ void AshTestHelper::SimulateUserLogin(const AccountId& account_id,
   session_controller_client_->SwitchActiveUser(account_id);
   session_controller_client_->SetSessionState(
       session_manager::SessionState::ACTIVE);
+}
+
+void AshTestHelper::StabilizeUIForPixelTest() {
+  const gfx::Size primary_display_size =
+      display::Screen::GetScreen()
+          ->GetDisplayNearestWindow(Shell::GetPrimaryRootWindow())
+          .size();
+  ui_stabilizer_->StabilizeUi(primary_display_size);
 }
 
 }  // namespace ash
