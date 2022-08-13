@@ -320,7 +320,7 @@ void CheckInstallation(UpdaterScope scope,
   }
 }
 
-// Returns true is any updater process is found running in any session in the
+// Returns true if any updater process is found running in any session in the
 // system, regardless of its path.
 bool IsUpdaterRunning() {
   return test::IsProcessRunning(GetExecutableRelativePath().value());

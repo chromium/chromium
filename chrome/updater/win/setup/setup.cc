@@ -42,32 +42,6 @@
 namespace updater {
 namespace {
 
-// Adds work items to register the per-user internal COM Server with Windows.
-void AddComServerWorkItems(const base::FilePath& com_server_path,
-                           WorkItemList* list) {
-  DCHECK(list);
-  if (com_server_path.empty()) {
-    LOG(DFATAL) << "com_server_path is invalid.";
-    return;
-  }
-
-  for (const auto& clsid : GetSideBySideServers(UpdaterScope::kUser)) {
-    AddInstallServerWorkItems(HKEY_CURRENT_USER, clsid, com_server_path, true,
-                              list);
-  }
-}
-
-// Adds work items to register the COM Interfaces with Windows.
-void AddComInterfacesWorkItems(HKEY root,
-                               const base::FilePath& typelib_path,
-                               WorkItemList* list) {
-  DCHECK(list);
-
-  for (const auto& iid : GetSideBySideInterfaces()) {
-    AddInstallComInterfaceWorkItems(root, typelib_path, iid, list);
-  }
-}
-
 // Returns a list of base file names which the setup copies to the install
 // directory. The source of these files is either the unpacked metainstaller
 // archive, or the `out` directory of the build, if a command line argument is
@@ -98,16 +72,6 @@ std::vector<base::FilePath> GetSetupFiles(const base::FilePath& source_dir) {
 int Setup(UpdaterScope scope) {
   VLOG(1) << __func__ << ", scope: " << scope;
   DCHECK(scope == UpdaterScope::kUser || ::IsUserAnAdmin());
-  HKEY key;
-  switch (scope) {
-    case UpdaterScope::kSystem:
-      key = HKEY_LOCAL_MACHINE;
-      break;
-    case UpdaterScope::kUser:
-      key = HKEY_CURRENT_USER;
-      break;
-  }
-
   auto scoped_com_initializer =
       std::make_unique<base::win::ScopedCOMInitializer>(
           base::win::ScopedCOMInitializer::kMTA);
@@ -152,6 +116,7 @@ int Setup(UpdaterScope scope) {
                                       WorkItem::ALWAYS);
   }
 
+  const HKEY key = UpdaterScopeToHKeyRoot(scope);
   for (const auto& key_path :
        {GetRegistryKeyClientsUpdater(), GetRegistryKeyClientStateUpdater()}) {
     install_list->AddCreateRegKeyWorkItem(key, key_path, KEY_WOW64_32KEY);
@@ -165,11 +130,9 @@ int Setup(UpdaterScope scope) {
 
   const base::FilePath updater_exe = GetExecutableRelativePath();
 
-  AddComInterfacesWorkItems(key, versioned_dir->Append(updater_exe),
-                            install_list.get());
   switch (scope) {
     case UpdaterScope::kUser:
-      AddComServerWorkItems(versioned_dir->Append(updater_exe),
+      AddComServerWorkItems(versioned_dir->Append(updater_exe), true,
                             install_list.get());
       break;
     case UpdaterScope::kSystem:

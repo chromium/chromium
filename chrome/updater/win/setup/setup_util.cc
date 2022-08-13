@@ -12,6 +12,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
@@ -135,6 +136,10 @@ std::vector<IID> GetActiveInterfaces() {
   };
 }
 
+std::vector<IID> GetInterfaces(bool is_internal) {
+  return is_internal ? GetSideBySideInterfaces() : GetActiveInterfaces();
+}
+
 std::vector<CLSID> GetSideBySideServers(UpdaterScope scope) {
   switch (scope) {
     case UpdaterScope::kUser:
@@ -160,6 +165,10 @@ std::vector<CLSID> GetActiveServers(UpdaterScope scope) {
           __uuidof(ProcessLauncherClass),
       };
   }
+}
+
+std::vector<CLSID> GetServers(bool is_internal, UpdaterScope scope) {
+  return is_internal ? GetSideBySideServers(scope) : GetActiveServers(scope);
 }
 
 void AddInstallComInterfaceWorkItems(HKEY root,
@@ -237,7 +246,26 @@ void AddInstallServerWorkItems(HKEY root,
       run_com_server_command.GetCommandLineString(), true);
 }
 
-// Adds work items to register the COM Service with Windows.
+void AddComServerWorkItems(const base::FilePath& com_server_path,
+                           bool is_internal,
+                           WorkItemList* list) {
+  DCHECK(list);
+  if (com_server_path.empty()) {
+    LOG(DFATAL) << "com_server_path is invalid.";
+    return;
+  }
+
+  for (const auto& clsid : GetServers(is_internal, UpdaterScope::kUser)) {
+    AddInstallServerWorkItems(HKEY_CURRENT_USER, clsid, com_server_path,
+                              is_internal, list);
+  }
+
+  for (const auto& iid : GetInterfaces(is_internal)) {
+    AddInstallComInterfaceWorkItems(HKEY_CURRENT_USER, com_server_path, iid,
+                                    list);
+  }
+}
+
 void AddComServiceWorkItems(const base::FilePath& com_service_path,
                             bool internal_service,
                             WorkItemList* list) {
@@ -267,13 +295,9 @@ void AddComServiceWorkItems(const base::FilePath& com_service_path,
       GetServiceName(internal_service).c_str(),
       GetServiceDisplayName(internal_service).c_str(), SERVICE_AUTO_START,
       com_service_command, com_switch, UPDATER_KEY,
-      internal_service ? GetSideBySideServers(UpdaterScope::kSystem)
-                       : GetActiveServers(UpdaterScope::kSystem),
-      {}));
+      GetServers(internal_service, UpdaterScope::kSystem), {}));
 
-  const std::vector<GUID> com_interfaces_to_install =
-      internal_service ? GetSideBySideInterfaces() : GetActiveInterfaces();
-  for (const auto& iid : com_interfaces_to_install) {
+  for (const auto& iid : GetInterfaces(internal_service)) {
     AddInstallComInterfaceWorkItems(HKEY_LOCAL_MACHINE, com_service_path, iid,
                                     list);
   }

@@ -79,7 +79,12 @@ void AddInstallServerWorkItems(HKEY root,
                                bool internal_service,
                                WorkItemList* list);
 
-// Adds work items to `list` to install the COM service.
+// Adds work items to register the per-user COM server.
+void AddComServerWorkItems(const base::FilePath& com_server_path,
+                           bool is_internal,
+                           WorkItemList* list);
+
+// Adds work items to register the COM service.
 void AddComServiceWorkItems(const base::FilePath& com_service_path,
                             bool internal_service,
                             WorkItemList* list);

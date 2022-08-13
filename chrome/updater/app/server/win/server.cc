@@ -284,9 +284,6 @@ bool ComServerApp::SwapInNewVersion() {
   const base::FilePath updater_path =
       versioned_directory->Append(GetExecutableRelativePath());
 
-  HKEY root = (updater_scope() == UpdaterScope::kSystem) ? HKEY_LOCAL_MACHINE
-                                                         : HKEY_CURRENT_USER;
-
   installer::SelfCleaningTempDir temp_dir;
   if (!CreateSecureTempDir(updater_scope(), temp_dir)) {
     return false;
@@ -296,21 +293,15 @@ bool ComServerApp::SwapInNewVersion() {
     return false;
   }
 
-  if (!SwapGoogleUpdate(updater_scope(), updater_path, temp_dir.path(), root,
-                        list.get())) {
+  if (!SwapGoogleUpdate(updater_scope(), updater_path, temp_dir.path(),
+                        UpdaterScopeToHKeyRoot(updater_scope()), list.get())) {
     return false;
   }
 
   if (updater_scope() == UpdaterScope::kSystem) {
     AddComServiceWorkItems(updater_path, false, list.get());
   } else {
-    for (const CLSID& clsid : GetActiveServers(updater_scope())) {
-      AddInstallServerWorkItems(root, clsid, updater_path, false, list.get());
-    }
-
-    for (const GUID& iid : GetActiveInterfaces()) {
-      AddInstallComInterfaceWorkItems(root, updater_path, iid, list.get());
-    }
+    AddComServerWorkItems(updater_path, false, list.get());
   }
 
   return list->Do();
@@ -319,8 +310,7 @@ bool ComServerApp::SwapInNewVersion() {
 bool ComServerApp::MigrateLegacyUpdaters(
     base::RepeatingCallback<void(const RegistrationRequest&)>
         register_callback) {
-  HKEY root = (updater_scope() == UpdaterScope::kSystem) ? HKEY_LOCAL_MACHINE
-                                                         : HKEY_CURRENT_USER;
+  const HKEY root = UpdaterScopeToHKeyRoot(updater_scope());
   for (base::win::RegistryKeyIterator it(root, CLIENTS_KEY, KEY_WOW64_32KEY);
        it.Valid(); ++it) {
     const std::wstring app_id = it.Name();
