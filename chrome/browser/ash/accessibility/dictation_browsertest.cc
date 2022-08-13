@@ -938,7 +938,13 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsTest, MacroSucceededMetric) {
                                        /*expected_bucket_count=*/1);
 }
 
-IN_PROC_BROWSER_TEST_P(DictationCommandsTest, Help) {
+// Flaky on Linux (crbug.com/1348608).
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_Help DISABLED_Help
+#else
+#define MAYBE_Help Help
+#endif
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, MAYBE_Help) {
   SendFinalResultAndWait("help");
 
   // Wait for the help URL to load.
