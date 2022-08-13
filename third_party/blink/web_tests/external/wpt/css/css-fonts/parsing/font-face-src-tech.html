@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<title>CSS Fonts 4 test: parsing the tech() function in the src descriptor</title>
+<link rel="help" href="https://drafts.csswg.org/css-fonts/#font-face-src-parsing">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style id="testStyle">
+</style>
+<script>
+  const sheet = testStyle.sheet;
+  tests = [
+    // No tech() function
+    { src: 'url("foo.ttf")', valid: true },
+    // Empty tech() is not valid
+    { src: 'url("foo.ttf") tech()', valid: false },
+    // Check that each valid keyword is accepted
+    { src: 'url("foo.ttf") tech(feature-opentype)', valid: true },
+    { src: 'url("foo.ttf") tech(feature-aat)', valid: true },
+    { src: 'url("foo.ttf") tech(feature-graphite)', valid: true },
+    { src: 'url("foo.ttf") tech(color-colrv0)', valid: true },
+    { src: 'url("foo.ttf") tech(color-colrv1)', valid: true },
+    { src: 'url("foo.ttf") tech(color-svg)', valid: true },
+    { src: 'url("foo.ttf") tech(color-sbix)', valid: true },
+    { src: 'url("foo.ttf") tech(color-cbdt)', valid: true },
+    { src: 'url("foo.ttf") tech(variations)', valid: true },
+    { src: 'url("foo.ttf") tech(palettes)', valid: true },
+    { src: 'url("foo.ttf") tech(incremental)', valid: true },
+    // tech() does not accept strings (unlike format()!)
+    { src: 'url("foo.ttf") tech("feature-opentype")', valid: false },
+    { src: 'url("foo.ttf") tech("color-colrv0")', valid: false },
+    { src: 'url("foo.ttf") tech("variations")', valid: false },
+    // tech() accepts a comma-separated list of keywords
+    { src: 'url("foo.ttf") tech(feature-opentype, color-colrv0, variations, palettes)', valid: true },
+    { src: 'url("foo.ttf") tech(incremental, color-svg, feature-graphite, feature-aat)', valid: true },
+    { src: 'url("foo.ttf") tech(feature-opentype color-colrv0 variations palettes)', valid: false },
+    // Invalid font-tech keywords should be a parse error
+    { src: 'url("foo.ttf") tech(auto)', valid: false },
+    { src: 'url("foo.ttf") tech(default)', valid: false },
+    { src: 'url("foo.ttf") tech(inherit)', valid: false },
+    { src: 'url("foo.ttf") tech(initial)', valid: false },
+    { src: 'url("foo.ttf") tech(none)', valid: false },
+    { src: 'url("foo.ttf") tech(normal)', valid: false },
+    { src: 'url("foo.ttf") tech(xyzzy)', valid: false },
+    // format() function must precede tech() if both are present
+    { src: 'url("foo.ttf") format(opentype) tech(feature-opentype)', valid: true },
+    { src: 'url("foo.ttf") tech(feature-opentype) format(opentype)', valid: false },
+  ];
+
+  // Assert that the two arguments have the same set of keywords in the tech() function,
+  // (although their ordering may differ).
+  function check_same_tech(serialized, specified) {
+    if (!specified.includes("tech(")) {
+      assert_false(serialized.includes("tech("), "expected no tech() function");
+      return;
+    }
+    // Extract the lists of tech() keywords and sort them for comparison.
+    const tech = /tech\((.+)\)/;
+    var specified_techs = tech.exec(specified)[1].split(/,\s*/).sort().join(", ");
+    var serialized_techs = tech.exec(serialized)[1].split(/,\s*/).sort().join(", ");
+    assert_equals(specified_techs, serialized_techs, "expected matching tech() lists");
+  }
+
+  for (let t of tests) {
+    test(() => {
+      assert_equals(sheet.cssRules.length, 0, "testSheet should initially be empty");
+      sheet.insertRule("@font-face { src: " + t.src + "}");
+      try {
+        assert_equals(sheet.cssRules[0].style.getPropertyValue("src") != "", t.valid);
+        if (t.valid) {
+          check_same_tech(sheet.cssRules[0].style.getPropertyValue("src"), t.src);
+        }
+      } finally {
+        sheet.deleteRule(0);
+      }
+    }, "Check that src: " + t.src + " is " + (t.valid ? "valid" : "invalid"));
+  }
+</script>

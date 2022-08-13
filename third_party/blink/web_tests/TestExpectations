@@ -317,11 +317,11 @@ crbug.com/1311705 virtual/document-transition-wide-gamut/wpt_internal/document-t
 crbug.com/1311705 virtual/document-transition-wide-gamut/wpt_internal/document-transition/old-content-captures-different-size.html [ Failure ]
 crbug.com/1311705 virtual/document-transition-wide-gamut/wpt_internal/document-transition/old-content-captures-opacity.html [ Failure ]
 
-crbug.com/1351556 virtual/document-transition-wide-gamut/wpt_internal/document-transition/commit-timeout-crash.html [ Timeout Failure ]
-crbug.com/1351556 [ Win ] virtual/document-transition-wide-gamut/wpt_internal/document-transition/nothing-captured.html [ Timeout Failure ]
-crbug.com/1351556 [ Mac11 ] virtual/document-transition-wide-gamut/wpt_internal/document-transition/nothing-captured.html [ Timeout Failure ]
-crbug.com/1351556 [ Win ] virtual/document-transition/wpt_internal/document-transition/nothing-captured.html [ Timeout Failure ]
-crbug.com/1351556 [ Mac11 ] virtual/document-transition/wpt_internal/document-transition/nothing-captured.html [ Timeout Failure ]
+crbug.com/1351556 virtual/document-transition-wide-gamut/wpt_internal/document-transition/commit-timeout-crash.html [ Failure Timeout ]
+crbug.com/1351556 [ Win ] virtual/document-transition-wide-gamut/wpt_internal/document-transition/nothing-captured.html [ Failure Timeout ]
+crbug.com/1351556 [ Mac11 ] virtual/document-transition-wide-gamut/wpt_internal/document-transition/nothing-captured.html [ Failure Timeout ]
+crbug.com/1351556 [ Win ] virtual/document-transition/wpt_internal/document-transition/nothing-captured.html [ Failure Timeout ]
+crbug.com/1351556 [ Mac11 ] virtual/document-transition/wpt_internal/document-transition/nothing-captured.html [ Failure Timeout ]
 crbug.com/1351556 virtual/document-transition/document-transition/capture-callback-exception.html [ Failure ]
 crbug.com/1351556 virtual/document-transition-wide-gamut/document-transition/capture-callback-exception.html [ Failure ]
 
