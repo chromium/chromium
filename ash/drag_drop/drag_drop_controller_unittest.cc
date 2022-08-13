@@ -1413,6 +1413,43 @@ TEST_F(DragDropControllerTest, DragTabChangesDragOperationToMove) {
   EXPECT_EQ(operation, DragOperation::kMove);
 }
 
+// Verifies that a tab drag does not crash (UAF) on source window destruction.
+TEST_F(DragDropControllerTest, DragTabDoesNotCrashOnSourceWindowDestruction) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kWebUITabStripTabDragIntegration);
+
+  EXPECT_CALL(*mock_shell_delegate(), IsTabDrag(_))
+      .Times(1)
+      .WillOnce(Return(true));
+
+  std::unique_ptr<views::Widget> widget = CreateFramelessWidget();
+  aura::Window* window = widget->GetNativeWindow();
+
+  // Posted task will be run when the inner loop runs in StartDragAndDrop.
+  ui::test::EventGenerator generator(window->GetRootWindow(), window);
+  generator.PressLeftButton();
+  // For drag enter.
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&ui::test::EventGenerator::MoveMouseBy,
+                                base::Unretained(&generator), 0, 1));
+  // Forces a |TabDragDropDelegate::source_window_| destruction.
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce([](std::unique_ptr<views::Widget>) {}, std::move(widget)));
+  // For perform drop.
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&ui::test::EventGenerator::ReleaseLeftButton,
+                                base::Unretained(&generator)));
+
+  drag_drop_controller_->set_should_block_during_drag_drop(true);
+  DragOperation operation = drag_drop_controller_->StartDragAndDrop(
+      std::make_unique<ui::OSExchangeData>(), window->GetRootWindow(), window,
+      gfx::Point(5, 5), ui::DragDropTypes::DRAG_NONE,
+      ui::mojom::DragEventSource::kMouse);
+
+  EXPECT_EQ(operation, DragOperation::kNone);
+}
+
 TEST_F(DragDropControllerTest, ToplevelWindowDragDelegate) {
   std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
       aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(), -1,

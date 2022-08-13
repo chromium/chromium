@@ -114,6 +114,9 @@ TabDragDropDelegate::TabDragDropDelegate(
 TabDragDropDelegate::~TabDragDropDelegate() {
   tab_dragging_recorder_.reset();
 
+  if (source_window_->is_destroying())
+    return;
+
   if (!source_window_->GetProperty(kIsSourceWindowForDrag))
     return;
 
