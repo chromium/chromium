@@ -4,13 +4,13 @@
 
 #include "components/cast_streaming/renderer/cast_streaming_demuxer.h"
 
-#include <type_traits>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
+#include "components/cast_streaming/public/demuxer_stream_traits.h"
 #include "components/cast_streaming/renderer/decoder_buffer_reader.h"
 #include "components/cast_streaming/renderer/demuxer_connector.h"
 #include "media/base/audio_decoder_config.h"
@@ -30,18 +30,18 @@ namespace {
 //
 // |TMojoRemoteType| is the interface used for requesting data buffers.
 // Currently expected to be either AudioBufferRequester or VideoBufferRequester.
-// |TStreamInfoType| is the StreamInfo that may be returned by this call, either
-// AudioStreamInfo or VideoStreamInfo.
-// |TGetBufferResponseType| is the response type to a GetBuffer() call. Either
-// GetAudioBufferResponse or GetVideoBufferResponse.
-template <typename TMojoRemoteType,
-          typename TStreamInfoType,
-          typename TGetBufferResponseType>
-class CastStreamingDemuxerStream : public media::DemuxerStream {
+template <typename TMojoRemoteType>
+class CastStreamingDemuxerStream : public DemuxerStreamTraits<TMojoRemoteType>,
+                                   public media::DemuxerStream {
  public:
+  // See DemuxerStreamTraits for further details on these types.
+  using Traits = DemuxerStreamTraits<TMojoRemoteType>;
+  using StreamInfoType = typename Traits::StreamInfoType;
+  using ConfigType = typename Traits::ConfigType;
+
   CastStreamingDemuxerStream(
       mojo::PendingRemote<TMojoRemoteType> pending_remote,
-      TStreamInfoType stream_initialization_info)
+      StreamInfoType stream_initialization_info)
       : remote_(std::move(pending_remote)), weak_factory_(this) {
     // Mojo service disconnection means the Cast Streaming Session ended and no
     // further buffer will be requested. kAborted will be returned to the media
@@ -69,10 +69,6 @@ class CastStreamingDemuxerStream : public media::DemuxerStream {
   }
 
  protected:
-  // Deduce the Config type associated with this Mojo API (either
-  // media::AudioDecoderConfig or media::VideoDecoderConfig).
-  typedef decltype(TStreamInfoType::element_type::decoder_config) ConfigType;
-
   const ConfigType& config() {
     DCHECK(decoder_config_);
     return decoder_config_.value();
@@ -131,7 +127,8 @@ class CastStreamingDemuxerStream : public media::DemuxerStream {
   }
 
   // Processes a new buffer as received over mojo.
-  void OnGetBufferDone(TGetBufferResponseType get_buffer_response) {
+  void OnGetBufferDone(
+      typename Traits::GetBufferResponseType get_buffer_response) {
     DVLOG(3) << __func__;
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(buffer_reader_);
@@ -148,7 +145,7 @@ class CastStreamingDemuxerStream : public media::DemuxerStream {
   // Called when a new config is received over mojo. Sets for the next call to
   // DemuxerStream::Read() to signal for a new config, and replaces the data
   // pipe which is used to read buffers in future.
-  void OnNewConfig(TStreamInfoType data_stream_info) {
+  void OnNewConfig(StreamInfoType data_stream_info) {
     DCHECK(data_stream_info);
     DVLOG(1) << __func__ << ": config info: "
              << data_stream_info->decoder_config.AsHumanReadableString();
@@ -270,14 +267,10 @@ class CastStreamingDemuxerStream : public media::DemuxerStream {
 }  // namespace
 
 class CastStreamingAudioDemuxerStream final
-    : public CastStreamingDemuxerStream<mojom::AudioBufferRequester,
-                                        mojom::AudioStreamInfoPtr,
-                                        mojom::GetAudioBufferResponsePtr> {
+    : public CastStreamingDemuxerStream<mojom::AudioBufferRequester> {
  public:
   using CastStreamingDemuxerStream<
-      mojom::AudioBufferRequester,
-      mojom::AudioStreamInfoPtr,
-      mojom::GetAudioBufferResponsePtr>::CastStreamingDemuxerStream;
+      mojom::AudioBufferRequester>::CastStreamingDemuxerStream;
 
   ~CastStreamingAudioDemuxerStream() override = default;
 
@@ -292,14 +285,10 @@ class CastStreamingAudioDemuxerStream final
 };
 
 class CastStreamingVideoDemuxerStream final
-    : public CastStreamingDemuxerStream<mojom::VideoBufferRequester,
-                                        mojom::VideoStreamInfoPtr,
-                                        mojom::GetVideoBufferResponsePtr> {
+    : public CastStreamingDemuxerStream<mojom::VideoBufferRequester> {
  public:
   using CastStreamingDemuxerStream<
-      mojom::VideoBufferRequester,
-      mojom::VideoStreamInfoPtr,
-      mojom::GetVideoBufferResponsePtr>::CastStreamingDemuxerStream;
+      mojom::VideoBufferRequester>::CastStreamingDemuxerStream;
 
   ~CastStreamingVideoDemuxerStream() override = default;
 

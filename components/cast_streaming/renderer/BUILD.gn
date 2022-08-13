@@ -54,6 +54,7 @@ source_set("resource_provider_impl") {
     ":decoder_buffer_reader",
     "//base",
     "//components/cast_streaming/public",
+    "//components/cast_streaming/public:demuxer_stream_traits",
     "//components/cast_streaming/public/mojom",
     "//media",
     "//media/mojo/common",

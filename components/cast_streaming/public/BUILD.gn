@@ -18,6 +18,10 @@ source_set("public") {
   ]
 }
 
+source_set("demuxer_stream_traits") {
+  sources = [ "demuxer_stream_traits.h" ]
+}
+
 source_set("config_conversions") {
   deps = [
     "//base",

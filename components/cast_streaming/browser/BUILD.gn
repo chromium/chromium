@@ -176,6 +176,7 @@ source_set("demuxer_stream_data_provider") {
   deps = [
     ":demuxer_stream_client",
     "//base",
+    "//components/cast_streaming/public:demuxer_stream_traits",
     "//components/cast_streaming/public/mojom",
     "//media",
     "//media/mojo/common",
