@@ -35,8 +35,7 @@ class CORE_EXPORT CullRectUpdater {
   void Update();
 
   static void PaintPropertiesChanged(const LayoutObject&,
-                                     const PaintPropertiesChangeInfo&,
-                                     const gfx::Vector2dF& old_scroll_offset);
+                                     const PaintPropertiesChangeInfo&);
 
  private:
   friend class OverriddenCullRectScope;

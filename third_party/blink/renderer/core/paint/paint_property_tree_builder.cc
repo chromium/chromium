@@ -4236,8 +4236,7 @@ void PaintPropertyTreeBuilder::IssueInvalidationsAfterUpdate() {
     }
   }
 
-  CullRectUpdater::PaintPropertiesChanged(object_, properties_changed_,
-                                          context_.old_scroll_offset);
+  CullRectUpdater::PaintPropertiesChanged(object_, properties_changed_);
 }
 
 }  // namespace blink

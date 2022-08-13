@@ -617,6 +617,13 @@ class CORE_EXPORT PaintLayerScrollableArea final
   // Force scrollbars off for reconstruction.
   void RemoveScrollbarsForReconstruction();
 
+  void DidUpdateCullRect() {
+    last_cull_rect_update_scroll_offset_ = scroll_offset_;
+  }
+  ScrollOffset LastCullRectUpdateScrollOffset() const {
+    return last_cull_rect_update_scroll_offset_;
+  }
+
  private:
   // This also updates main thread scrolling reasons and the LayoutBox's
   // background paint location.
@@ -789,6 +796,8 @@ class CORE_EXPORT PaintLayerScrollableArea final
   gfx::Rect horizontal_scrollbar_visual_rect_;
   gfx::Rect vertical_scrollbar_visual_rect_;
   gfx::Rect scroll_corner_and_resizer_visual_rect_;
+
+  ScrollOffset last_cull_rect_update_scroll_offset_;
 
   class ScrollingBackgroundDisplayItemClient final
       : public GarbageCollected<ScrollingBackgroundDisplayItemClient>,

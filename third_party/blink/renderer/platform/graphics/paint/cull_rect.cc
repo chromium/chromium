@@ -9,24 +9,27 @@
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scroll_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
-static constexpr int kReasonablePixelLimit =
-    std::numeric_limits<int>::max() / 2;
+namespace {
+
+constexpr int kReasonablePixelLimit = std::numeric_limits<int>::max() / 2;
+constexpr int kChangedEnoughMinimumDistance = 512;
+
+// Number of pixels to expand in root coordinates for cull rect under
+// composited scroll translation or other composited transform.
+constexpr int kPixelDistanceToExpand = 4000;
 
 // Returns the number of pixels to expand the cull rect for composited scroll
 // and transform.
-static int LocalPixelDistanceToExpand(
+int LocalPixelDistanceToExpand(
     const TransformPaintPropertyNode& root_transform,
     const TransformPaintPropertyNode& local_transform) {
-  // Number of pixels to expand in root coordinates for cull rect under
-  // composited scroll translation or other composited transform.
-  static constexpr int kPixelDistanceToExpand = 4000;
-
   gfx::RectF rect(0, 0, 1, 1);
   GeometryMapper::SourceToDestinationRect(root_transform, local_transform,
                                           rect);
@@ -38,6 +41,8 @@ static int LocalPixelDistanceToExpand(
     return kPixelDistanceToExpand;
   return scale * kPixelDistanceToExpand;
 }
+
+}  // anonymous namespace
 
 bool CullRect::Intersects(const gfx::Rect& rect) const {
   if (rect.IsEmpty())
@@ -300,7 +305,6 @@ bool CullRect::ChangedEnough(
   if (old_rect.IsEmpty())
     return true;
 
-  static constexpr int kChangedEnoughMinimumDistance = 512;
   auto expanded_old_rect = old_rect;
   expanded_old_rect.Outset(kChangedEnoughMinimumDistance);
   if (!expanded_old_rect.Contains(new_rect))
@@ -339,6 +343,32 @@ bool CullRect::ChangedEnough(
     return true;
 
   return false;
+}
+
+bool CullRect::HasScrolledEnough(
+    const gfx::Vector2dF& delta,
+    const TransformPaintPropertyNode& scroll_translation) {
+  if (!RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled())
+    return !delta.IsZero();
+
+  if (!scroll_translation.ScrollNode() ||
+      !scroll_translation.HasDirectCompositingReasons()) {
+    return !delta.IsZero();
+  }
+  if (std::abs(delta.x()) < kChangedEnoughMinimumDistance &&
+      std::abs(delta.y()) < kChangedEnoughMinimumDistance) {
+    return false;
+  }
+
+  // Return false if the scroll won't expose more contents in the scrolled
+  // direction.
+  gfx::Rect contents_rect = scroll_translation.ScrollNode()->ContentsRect();
+  if (Rect().Contains(contents_rect))
+    return false;
+  return (delta.x() < 0 && Rect().x() != contents_rect.x()) ||
+         (delta.x() > 0 && Rect().right() != contents_rect.right()) ||
+         (delta.y() < 0 && Rect().y() != contents_rect.y()) ||
+         (delta.y() > 0 && Rect().bottom() != contents_rect.bottom());
 }
 
 }  // namespace blink

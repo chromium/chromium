@@ -59,6 +59,9 @@ class PLATFORM_EXPORT CullRect {
 
   const gfx::Rect& Rect() const { return rect_; }
 
+  bool HasScrolledEnough(const gfx::Vector2dF& delta,
+                         const TransformPaintPropertyNode&);
+
   String ToString() const { return String(rect_.ToString()); }
 
  private:

@@ -488,29 +488,49 @@ TEST_P(CullRectUpdaterTest, ContentsCullRectCoveringWholeContentsRect) {
   GetDocument().GetSettings()->SetPreferCompositingToLCDTextEnabled(true);
   SetBodyInnerHTML(R"HTML(
     <div id="scroller" style="width: 400px; height: 400px; overflow: scroll">
-      <div style="width: 600px; height: 8100px"></div>
+      <div style="width: 600px; height: 7000px"></div>
       <div id="child" style="will-change: transform; height: 20px"></div>
     </div>
   )HTML");
 
   EXPECT_EQ(gfx::Rect(0, 0, 600, 4400), GetContentsCullRect("scroller").Rect());
-  EXPECT_EQ(gfx::Rect(-4000, -8100, 8600, 4400), GetCullRect("child").Rect());
+  EXPECT_EQ(gfx::Rect(-4000, -7000, 8600, 4400), GetCullRect("child").Rect());
 
   auto* scroller = GetDocument().getElementById("scroller");
-  scroller->scrollTo(0, 3600);
+  scroller->scrollTo(0, 2500);
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(gfx::Rect(0, 0, 600, 8000), GetContentsCullRect("scroller").Rect());
-  EXPECT_EQ(gfx::Rect(-4000, -8100, 8600, 8000), GetCullRect("child").Rect());
+  EXPECT_EQ(gfx::Rect(0, 0, 600, 6900), GetContentsCullRect("scroller").Rect());
+  EXPECT_EQ(gfx::Rect(-4000, -7000, 8600, 6900), GetCullRect("child").Rect());
 
-  scroller->scrollTo(0, 3800);
+  scroller->scrollTo(0, 2800);
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(gfx::Rect(0, 0, 600, 8120), GetContentsCullRect("scroller").Rect());
-  EXPECT_EQ(gfx::Rect(-4000, -8100, 8600, 8120), GetCullRect("child").Rect());
+  if (RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled()) {
+    // Cull rects are not updated with a small scroll delta.
+    EXPECT_EQ(gfx::Rect(0, 0, 600, 6900),
+              GetContentsCullRect("scroller").Rect());
+    EXPECT_EQ(gfx::Rect(-4000, -7000, 8600, 6900), GetCullRect("child").Rect());
+  } else {
+    EXPECT_EQ(gfx::Rect(0, 0, 600, 7020),
+              GetContentsCullRect("scroller").Rect());
+    EXPECT_EQ(gfx::Rect(-4000, -7000, 8600, 7020), GetCullRect("child").Rect());
+  }
 
+  scroller->scrollTo(0, 3100);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(gfx::Rect(0, 0, 600, 7020), GetContentsCullRect("scroller").Rect());
+  EXPECT_EQ(gfx::Rect(-4000, -7000, 8600, 7020), GetCullRect("child").Rect());
+
+  // We will use the same cull rects that cover the whole contents on further
+  // scroll.
   scroller->scrollTo(0, 4000);
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(gfx::Rect(0, 0, 600, 8120), GetContentsCullRect("scroller").Rect());
-  EXPECT_EQ(gfx::Rect(-4000, -8100, 8600, 8120), GetCullRect("child").Rect());
+  EXPECT_EQ(gfx::Rect(0, 0, 600, 7020), GetContentsCullRect("scroller").Rect());
+  EXPECT_EQ(gfx::Rect(-4000, -7000, 8600, 7020), GetCullRect("child").Rect());
+
+  scroller->scrollTo(0, 0);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(gfx::Rect(0, 0, 600, 7020), GetContentsCullRect("scroller").Rect());
+  EXPECT_EQ(gfx::Rect(-4000, -7000, 8600, 7020), GetCullRect("child").Rect());
 }
 
 TEST_P(CullRectUpdaterTest, SVGForeignObject) {
@@ -734,20 +754,48 @@ TEST_P(CullRectUpdateOnPaintPropertyChangeTest, ScrollContentsSizeChange) {
 
 TEST_P(CullRectUpdateOnPaintPropertyChangeTest, SmallContentsScroll) {
   // TODO(wangxianzhu): Optimize for scrollers with small contents.
-  TestTargetScroll(ScrollOffset(), ScrollOffset(100, 200), false, true, false);
+  bool needs_cull_rect_update =
+      !RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled();
+  TestTargetScroll(ScrollOffset(), ScrollOffset(100, 200), false,
+                   needs_cull_rect_update, false);
   TestTargetScroll(ScrollOffset(100, 200), ScrollOffset(1000, 1000), false,
-                   true, false);
-  TestTargetScroll(ScrollOffset(1000, 1000), ScrollOffset(), false, true,
-                   false);
+                   needs_cull_rect_update, false);
+  TestTargetScroll(ScrollOffset(1000, 1000), ScrollOffset(), false,
+                   needs_cull_rect_update, false);
 }
 
-TEST_P(CullRectUpdateOnPaintPropertyChangeTest, LargeContentsScroll) {
+TEST_P(CullRectUpdateOnPaintPropertyChangeTest,
+       LargeContentsScrollSmallDeltaOrNotExposingNewContents) {
   html_ = html_ + "<style>#child { width: 10000px; height: 10000px; }</style>";
-  // TODO(wangxianzhu): Optimize for small scroll delta.
-  TestTargetScroll(ScrollOffset(), ScrollOffset(100, 200), false, true, false);
-  TestTargetScroll(ScrollOffset(100, 200), ScrollOffset(8000, 8000), false,
+  // Scroll offset changes that are small or won't expose new contents don't
+  // need cull rect update when ScrollUpdateOptimizationsEnabled.
+  bool needs_cull_rect_update =
+      !RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled();
+  TestTargetScroll(ScrollOffset(), ScrollOffset(200, 200), false,
+                   needs_cull_rect_update, false);
+  TestTargetScroll(ScrollOffset(200, 200), ScrollOffset(), false,
+                   needs_cull_rect_update, false);
+  TestTargetScroll(ScrollOffset(2000, 2000), ScrollOffset(), false,
+                   needs_cull_rect_update, false);
+  TestTargetScroll(ScrollOffset(7000, 7000), ScrollOffset(8000, 8000), false,
+                   needs_cull_rect_update, false);
+}
+
+TEST_P(CullRectUpdateOnPaintPropertyChangeTest,
+       LargeContentsScrollExposingNewContents) {
+  html_ = html_ + "<style>#child { width: 10000px; height: 10000px; }</style>";
+  // Big scroll offset changes that will expose new contents to paint need cull
+  // rect update.
+  TestTargetScroll(ScrollOffset(100, 200), ScrollOffset(100, 800), false, true,
+                   true);
+  TestTargetScroll(ScrollOffset(100, 800), ScrollOffset(700, 800), false, true,
+                   true);
+  TestTargetScroll(ScrollOffset(700, 800), ScrollOffset(1700, 1800), false,
                    true, true);
-  TestTargetScroll(ScrollOffset(8000, 8000), ScrollOffset(), false, true, true);
+  TestTargetScroll(ScrollOffset(8000, 8000), ScrollOffset(0, 8000), false, true,
+                   true);
+  TestTargetScroll(ScrollOffset(8000, 100), ScrollOffset(), false, true, true);
+  TestTargetScroll(ScrollOffset(100, 8000), ScrollOffset(), false, true, true);
 }
 
 }  // namespace blink
