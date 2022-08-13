@@ -34,6 +34,11 @@ void SetCurrentDialog(std::unique_ptr<AccessCodeCastDialog> dialog) {
 // The corner radius for system dialogs.
 constexpr int kSystemDialogCornerRadiusDp = 12;
 
+// The default width, height without footnote, height with footnote for the dialog container.
+const int kDialogWidthDefault = 448;
+const int kDialogHeightDefault = 271;
+const int kDialogHeightFootnote = 330;
+
 AccessCodeCastDialog::AccessCodeCastDialog(
     const CastModeSet& cast_mode_set,
     std::unique_ptr<MediaRouteStarter> media_route_starter)
@@ -156,14 +161,11 @@ void AccessCodeCastDialog::GetWebUIMessageHandlers(
     std::vector<content::WebUIMessageHandler*>* handlers) const {}
 
 void AccessCodeCastDialog::GetDialogSize(gfx::Size* size) const {
-  const int kDefaultWidth = 448;
-  const int kDefaultHeight = 271;
-  const int kRememberDevicesHeight = 310;
   base::TimeDelta duration_pref = GetAccessCodeDeviceDurationPref(
       context_->GetPrefs());
   bool rememberDevices = duration_pref != base::Seconds(0);
-  size->SetSize(kDefaultWidth,
-      rememberDevices ? kRememberDevicesHeight : kDefaultHeight);
+  size->SetSize(kDialogWidthDefault,
+      rememberDevices ? kDialogHeightFootnote : kDialogHeightDefault);
 }
 
 std::string AccessCodeCastDialog::GetDialogArgs() const {
