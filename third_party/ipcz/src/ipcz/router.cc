@@ -474,6 +474,81 @@ IpczResult Router::GetNextInboundParcel(IpczGetFlags flags,
   return IPCZ_RESULT_OK;
 }
 
+IpczResult Router::BeginGetNextIncomingParcel(const void** data,
+                                              size_t* num_data_bytes,
+                                              size_t* num_handles) {
+  absl::MutexLock lock(&mutex_);
+  if (inward_edge_) {
+    return IPCZ_RESULT_INVALID_ARGUMENT;
+  }
+
+  if (!inbound_parcels_.HasNextElement()) {
+    return IPCZ_RESULT_UNAVAILABLE;
+  }
+
+  Parcel& p = inbound_parcels_.NextElement();
+  if (data) {
+    *data = p.data_view().data();
+  }
+  if (num_data_bytes) {
+    *num_data_bytes = p.data_size();
+  }
+  if (num_handles) {
+    *num_handles = p.num_objects();
+  }
+  if ((p.data_size() && (!data || !num_data_bytes)) ||
+      (p.num_objects() && !num_handles)) {
+    return IPCZ_RESULT_RESOURCE_EXHAUSTED;
+  }
+
+  return IPCZ_RESULT_OK;
+}
+
+IpczResult Router::CommitGetNextIncomingParcel(size_t num_data_bytes_consumed,
+                                               absl::Span<IpczHandle> handles) {
+  Ref<RouterLink> link_to_notify;
+  TrapEventDispatcher dispatcher;
+  {
+    absl::MutexLock lock(&mutex_);
+    if (inward_edge_) {
+      return IPCZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (!inbound_parcels_.HasNextElement()) {
+      return IPCZ_RESULT_INVALID_ARGUMENT;
+    }
+
+    Parcel& p = inbound_parcels_.NextElement();
+    if (num_data_bytes_consumed > p.data_size() ||
+        handles.size() > p.num_objects()) {
+      return IPCZ_RESULT_OUT_OF_RANGE;
+    }
+
+    const bool ok = inbound_parcels_.Consume(num_data_bytes_consumed, handles);
+    ABSL_ASSERT(ok);
+
+    status_.num_local_parcels = inbound_parcels_.GetNumAvailableElements();
+    status_.num_local_bytes = inbound_parcels_.GetTotalAvailableElementSize();
+    if (inbound_parcels_.IsSequenceFullyConsumed()) {
+      status_.flags |= IPCZ_PORTAL_STATUS_DEAD;
+    }
+    traps_.UpdatePortalStatus(
+        status_, TrapSet::UpdateReason::kLocalParcelConsumed, dispatcher);
+
+    const Ref<RouterLink>& outward_link = outward_edge_.primary_link();
+    if (outward_link && outward_link->GetType().is_central() &&
+        outward_link->UpdateInboundQueueState(status_.num_local_parcels,
+                                              status_.num_local_bytes)) {
+      link_to_notify = outward_link;
+    }
+  }
+
+  if (link_to_notify) {
+    link_to_notify->NotifyDataConsumed();
+  }
+
+  return IPCZ_RESULT_OK;
+}
+
 IpczResult Router::Trap(const IpczTrapConditions& conditions,
                         IpczTrapEventHandler handler,
                         uint64_t context,

@@ -104,6 +104,88 @@ TEST_P(QueueingTest, RemoteQueueFeedback) {
   Close(c);
 }
 
+MULTINODE_TEST_NODE(QueueingTestNode, TwoPhaseQueueingClient) {
+  IpczHandle b = ConnectToBroker();
+  WaitForDirectRemoteLink(b);
+  EXPECT_EQ(IPCZ_RESULT_OK, Put(b, "go"));
+
+  EXPECT_EQ(IPCZ_RESULT_OK,
+            WaitForConditions(b, {.flags = IPCZ_TRAP_ABOVE_MIN_LOCAL_PARCELS,
+                                  .min_local_parcels = 0}));
+  size_t num_bytes;
+  const void* data;
+  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().BeginGet(b, IPCZ_NO_FLAGS, nullptr, &data,
+                                            &num_bytes, nullptr));
+
+  // The producer should only have been able to put 3 out of its 4 bytes.
+  EXPECT_EQ("ipc",
+            std::string_view(reinterpret_cast<const char*>(data), num_bytes));
+  EXPECT_EQ(IPCZ_RESULT_OK,
+            ipcz().EndGet(b, num_bytes, 0, IPCZ_NO_FLAGS, nullptr, nullptr));
+
+  Close(b);
+}
+
+TEST_P(QueueingTest, TwoPhaseQueueing) {
+  IpczHandle c = SpawnTestNode<TwoPhaseQueueingClient>();
+  WaitForDirectRemoteLink(c);
+
+  std::string message;
+  EXPECT_EQ(IPCZ_RESULT_OK, WaitToGet(c, &message));
+  EXPECT_EQ("go", message);
+
+  const IpczPutLimits limits = {
+      .size = sizeof(limits),
+      .max_queued_parcels = 1,
+      .max_queued_bytes = 3,
+  };
+
+  size_t num_bytes = 4;
+  void* data;
+  const IpczBeginPutOptions options = {.size = sizeof(options),
+                                       .limits = &limits};
+  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().BeginPut(c, IPCZ_BEGIN_PUT_ALLOW_PARTIAL,
+                                            &options, &num_bytes, &data));
+
+  // There should not be enough space for all 4 bytes.
+  EXPECT_EQ(3u, num_bytes);
+  memcpy(data, "ipc", 3);
+  EXPECT_EQ(IPCZ_RESULT_OK,
+            ipcz().EndPut(c, num_bytes, nullptr, 0, IPCZ_NO_FLAGS, nullptr));
+
+  EXPECT_EQ(IPCZ_RESULT_OK, WaitForConditionFlags(c, IPCZ_TRAP_PEER_CLOSED));
+  Close(c);
+}
+
+MULTINODE_TEST_NODE(QueueingTestNode, TwoPhaseFeedbackClient) {
+  IpczHandle b = ConnectToBroker();
+  WaitForDirectRemoteLink(b);
+
+  EXPECT_EQ(IPCZ_RESULT_OK,
+            WaitForConditions(b, {.flags = IPCZ_TRAP_ABOVE_MIN_LOCAL_PARCELS,
+                                  .min_local_parcels = 0}));
+  size_t num_bytes;
+  const void* data;
+  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().BeginGet(b, IPCZ_NO_FLAGS, nullptr, &data,
+                                            &num_bytes, nullptr));
+
+  EXPECT_EQ("hello?",
+            std::string_view(reinterpret_cast<const char*>(data), num_bytes));
+  EXPECT_EQ(IPCZ_RESULT_OK,
+            ipcz().EndGet(b, num_bytes, 0, IPCZ_NO_FLAGS, nullptr, nullptr));
+  Close(b);
+}
+
+TEST_P(QueueingTest, TwoPhaseFeedback) {
+  IpczHandle c = SpawnTestNode<TwoPhaseFeedbackClient>();
+  WaitForDirectRemoteLink(c);
+  EXPECT_EQ(IPCZ_RESULT_OK, Put(c, "hello?"));
+  EXPECT_EQ(IPCZ_RESULT_OK,
+            WaitForConditions(c, {.flags = IPCZ_TRAP_BELOW_MAX_REMOTE_PARCELS,
+                                  .max_remote_parcels = 1}));
+  Close(c);
+}
+
 INSTANTIATE_MULTINODE_TEST_SUITE_P(QueueingTest);
 
 }  // namespace
