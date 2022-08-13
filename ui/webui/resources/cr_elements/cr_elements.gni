@@ -37,6 +37,7 @@ if (include_polymer) {
     "cr_link_row/cr_link_row.ts",
     "cr_profile_avatar_selector/cr_profile_avatar_selector_grid.ts",
     "cr_profile_avatar_selector/cr_profile_avatar_selector.ts",
+    "cr_radio_group/cr_radio_group.ts",
     "cr_search_field/cr_search_field.ts",
     "cr_slider/cr_slider.ts",
     "cr_tabs/cr_tabs.ts",

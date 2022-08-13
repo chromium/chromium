@@ -174,7 +174,6 @@ checked_in_dts_files = [
   "cr_elements/cr_radio_button/cr_card_radio_button.m.d.ts",
   "cr_elements/cr_radio_button/cr_radio_button_behavior.m.d.ts",
   "cr_elements/cr_radio_button/cr_radio_button.m.d.ts",
-  "cr_elements/cr_radio_group/cr_radio_group.d.ts",
   "cr_elements/cr_scrollable_behavior.m.d.ts",
   "cr_elements/cr_toggle/cr_toggle.m.d.ts",
   "cr_elements/find_shortcut_behavior.d.ts",
