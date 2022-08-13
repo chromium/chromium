@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/system_logs/bluetooth_log_source.h"
 
-#include "base/json/json_writer.h"
 #include "content/public/browser/browser_thread.h"
 #include "device/bluetooth/floss/floss_features.h"
 
@@ -12,8 +11,7 @@ namespace system_logs {
 
 namespace {
 
-constexpr char kBluetoothLogEntry[] = "CHROMEOS_BLUETOOTH";
-constexpr char kIsFloss[] = "Floss";
+constexpr char kBluetoothFlossLogEntry[] = "CHROMEOS_BLUETOOTH_FLOSS";
 
 }  // namespace
 
@@ -25,16 +23,10 @@ void BluetoothLogSource::Fetch(SysLogsSourceCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!callback.is_null());
 
-  auto bluetooth_log = base::Value(base::Value::Type::DICTIONARY);
   auto response = std::make_unique<SystemLogsResponse>();
-  std::string json;
 
-  bluetooth_log.SetBoolKey(kIsFloss, floss::features::IsFlossEnabled());
-
-  base::JSONWriter::WriteWithOptions(
-      bluetooth_log, base::JSONWriter::OPTIONS_PRETTY_PRINT, &json);
-
-  (*response)[kBluetoothLogEntry] = std::move(json);
+  (*response)[kBluetoothFlossLogEntry] =
+      floss::features::IsFlossEnabled() ? "enabled" : "disabled";
   std::move(callback).Run(std::move(response));
 }
 
