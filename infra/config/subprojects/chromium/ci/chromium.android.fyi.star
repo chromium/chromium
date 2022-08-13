@@ -202,6 +202,29 @@ ci.builder(
 
 ci.builder(
     name = "android-12-x64-fyi-rel",
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+                "enable_reclient",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "x64_builder",
+        ),
+        build_gs_bucket = "chromium-android-archive",
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "emulator|x64|rel",
         short_name = "12",
@@ -210,10 +233,7 @@ ci.builder(
     # So they need longer timeouts
     # Matching the execution time out of the android-12-x64-rel
     execution_timeout = 4 * time.hour,
-    # Set to an empty list to avoid chromium-gitiles-trigger triggering new
-    # builds. Also we don't set any `schedule` since this builder is for
-    # reference only and should not run any new builds.
-    triggered_by = [],
+    triggered_by = ["ci/android-12-x64-rel"],
 )
 
 ci.builder(

@@ -128,6 +128,7 @@ source_set("content_browsertests_filters") {
   data = [
     "//testing/buildbot/filters/android.asan.content_browsertests.filter",
     "//testing/buildbot/filters/android.emulator_12.content_browsertests.filter",
+    "//testing/buildbot/filters/android.emulator_12.oop_network_service_content_browsertests.filter",
     "//testing/buildbot/filters/android.emulator_m.content_browsertests.filter",
     "//testing/buildbot/filters/android.emulator_n.content_browsertests.filter",
     "//testing/buildbot/filters/android.emulator_p.content_browsertests.filter",

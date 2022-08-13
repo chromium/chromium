@@ -4111,6 +4111,18 @@
       },
     },
 
+    'oop_network_service_tests': {
+      'oop_network_service_content_browsertests': {
+        'args': [
+          '--disable-features=NetworkServiceInProcess2',
+        ],
+        'swarming': {
+          'shards': 25,
+        },
+        'test': 'content_browsertests',
+      },
+    },
+
     'opus_tests': {
       'opus_tests': {
         'args': [
@@ -6090,6 +6102,10 @@
         ]
       },
       'webview_ui_instrumentation_tests': {},
+    },
+
+    'android_12_emulator_fyi_gtests': {
+      'oop_network_service_tests': {},
     },
 
     'android_12_emulator_gtests': {

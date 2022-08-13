@@ -2879,6 +2879,15 @@
       'ToTWin64(dll)',
     ],
   },
+  'oop_network_service_content_browsertests': {
+    'modifications': {
+       'android-12-x64-fyi-rel': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.oop_network_service_content_browsertests.filter',
+        ],
+      },
+    },
+  },
   'overlay_prioritization_viz_unittests': {
     'remove_from': [
       # Reduce CQ load
