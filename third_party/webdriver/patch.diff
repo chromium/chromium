@@ -1,5 +1,5 @@
 diff --git a/javascript/atoms/dom.js b/javascript/atoms/dom.js
-index 68dbdacc16..d8519f518e 100644
+index d4a9aae978..ccf4f8c452 100644
 --- a/javascript/atoms/dom.js
 +++ b/javascript/atoms/dom.js
 @@ -587,14 +587,8 @@ bot.dom.isShown = function(elem, opt_ignoreOpacity) {
@@ -19,25 +19,7 @@ index 68dbdacc16..d8519f518e 100644
      }
  
      if (parent && (parent.nodeType == goog.dom.NodeType.DOCUMENT ||
-@@ -609,7 +603,7 @@ bot.dom.isShown = function(elem, opt_ignoreOpacity) {
-       return false;
-     }
- 
--    return parent && displayed(parent);
-+    return !!parent && displayed(parent);
-   }
- 
-   return bot.dom.isShown_(elem, !!opt_ignoreOpacity, displayed);
-@@ -1175,7 +1169,7 @@ bot.dom.appendVisibleTextLinesFromTextNode_ = function(textNode, lines,
-   }
- 
-   if (textTransform == 'capitalize') {
--    text = text.replace(/(^|\s|\b)(\S)/g, function() {
-+    text = text.replace(/(^|[^\d\p{L}\p{S}])([\p{Ll}|\p{S}])/gu, function() {
-       return arguments[1] + arguments[2].toUpperCase();
-     });
-   } else if (textTransform == 'uppercase') {
-@@ -1270,13 +1264,6 @@ bot.dom.getOpacityNonIE_ = function(elem) {
+@@ -1272,13 +1266,6 @@ bot.dom.getOpacityNonIE_ = function(elem) {
  bot.dom.getParentNodeInComposedDom = function(node) {
    var /**@type {Node}*/ parent = node.parentNode;
  
@@ -51,7 +33,7 @@ index 68dbdacc16..d8519f518e 100644
    // Shadow DOM V0 (deprecated)
    if (node.getDestinationInsertionPoints) {
      var destinations = node.getDestinationInsertionPoints();
-@@ -1285,6 +1272,13 @@ bot.dom.getParentNodeInComposedDom = function(node) {
+@@ -1287,6 +1274,13 @@ bot.dom.getParentNodeInComposedDom = function(node) {
      }
    }
  
@@ -66,7 +48,7 @@ index 68dbdacc16..d8519f518e 100644
  };
  
 diff --git a/javascript/atoms/mouse.js b/javascript/atoms/mouse.js
-index 737ed50f62..1bc9e858f5 100644
+index cdf195cf18..321c983220 100644
 --- a/javascript/atoms/mouse.js
 +++ b/javascript/atoms/mouse.js
 @@ -143,7 +143,7 @@ bot.Mouse.NO_BUTTON_VALUE_INDEX_ = 3;
@@ -78,7 +60,7 @@ index 737ed50f62..1bc9e858f5 100644
   * GECKO         0 1 2 X   0 1 2 X    0 0 0 0    0 0 0 0    X X 2 X
   * </pre>
   * @private {!Object.<bot.events.EventType, !Array.<?number>>}
-@@ -163,8 +163,8 @@ bot.Mouse.MOUSE_BUTTON_VALUE_MAP_ = (function() {
+@@ -163,8 +163,8 @@ bot.Mouse.MOUSE_BUTTON_VALUE_MAP_ = (function () {
      buttonValueMap[bot.events.EventType.CLICK] = [0, 1, 2, null];
      buttonValueMap[bot.events.EventType.CONTEXTMENU] = [null, null, 2, null];
      buttonValueMap[bot.events.EventType.MOUSEUP] = [0, 1, 2, null];
