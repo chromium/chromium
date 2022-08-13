@@ -104,11 +104,7 @@ void AddControlsColors(ui::ColorMixer& mixer,
       use_dark_color ? ui::ColorTransform(SkColorSetA(SK_ColorWHITE, 0x1A))
                      : ui::ColorTransform(SkColorSetA(SK_ColorBLACK, 0x0D));
   mixer[kColorAshControlBackgroundColorAlert] = {cros_tokens::kColorAlert};
-  // TOOD(skau): Replace with kColorWarning when it's determined that light can
-  // be Yellow900 instead.
-  mixer[kColorAshControlBackgroundColorWarning] =
-      use_dark_color ? ui::ColorTransform(gfx::kGoogleYellow300)
-                     : ui::ColorTransform(gfx::kGoogleYellow600);
+  mixer[kColorAshControlBackgroundColorWarning] = {cros_tokens::kColorWarning};
   mixer[kColorAshControlBackgroundColorPositive] = {
       cros_tokens::kColorPositive};
   mixer[kColorAshFocusAuraColor] =

@@ -201,7 +201,7 @@ INSTANTIATE_TEST_SUITE_P(
           SkColorSetRGB(0xD9, 0x30, 0x25)},
          {ColorMode::kLight,
           ColorProvider::ControlsLayerType::kControlBackgroundColorWarning,
-          SkColorSetRGB(0xF9, 0xAB, 0x0)},
+          SkColorSetRGB(0xE3, 0x74, 0x0)},
          {ColorMode::kLight,
           ColorProvider::ControlsLayerType::kControlBackgroundColorPositive,
           SkColorSetRGB(0x1E, 0x8E, 0x3E)},
