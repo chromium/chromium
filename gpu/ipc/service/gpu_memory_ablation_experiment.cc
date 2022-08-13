@@ -155,7 +155,7 @@ void GpuMemoryAblationExperiment::AllocateGpuMemory() {
     return;
 
   auto* canvas = write_access->surface()->getCanvas();
-  canvas->clear(SK_ColorWHITE);
+  canvas->clear(SkColors::kWhite);
 
   mailboxes_.push_back(mailbox);
 }
