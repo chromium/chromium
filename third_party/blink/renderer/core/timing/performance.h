@@ -160,6 +160,7 @@ class CORE_EXPORT Performance : public EventTargetWithInlineData {
 
   void clearResourceTimings();
   void setResourceTimingBufferSize(unsigned);
+  void setBackForwardCacheRestorationBufferSizeForTest(unsigned);
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(resourcetimingbufferfull,
                                   kResourcetimingbufferfull)
@@ -217,6 +218,10 @@ class CORE_EXPORT Performance : public EventTargetWithInlineData {
 
   void clearMarks(const AtomicString& mark_name);
   void clearMarks() { return clearMarks(AtomicString()); }
+
+  void AddBackForwardCacheRestoration(base::TimeTicks start_time,
+                                      base::TimeTicks pageshow_start_time,
+                                      base::TimeTicks pageshow_end_time);
 
   // This enum is used to index different possible strings for for UMA enum
   // histogram. New enum values can be added, but existing enums must never be
@@ -372,6 +377,7 @@ class CORE_EXPORT Performance : public EventTargetWithInlineData {
   // buffer is full, until the resourcetimingbufferfull event fires.
   PerformanceEntryDeque resource_timing_secondary_buffer_;
   unsigned resource_timing_buffer_size_limit_;
+  unsigned back_forward_cache_restoration_buffer_size_limit_;
   // A flag indicating that the buffer became full, the appropriate event was
   // queued, but haven't yet fired.
   bool resource_timing_buffer_full_event_pending_ = false;
@@ -383,6 +389,7 @@ class CORE_EXPORT Performance : public EventTargetWithInlineData {
   PerformanceEntryVector largest_contentful_paint_buffer_;
   PerformanceEntryVector longtask_buffer_;
   PerformanceEntryVector visibility_state_buffer_;
+  PerformanceEntryVector back_forward_cache_restoration_buffer_;
   Member<PerformanceEntry> navigation_timing_;
   Member<UserTiming> user_timing_;
   Member<PerformanceEntry> first_paint_timing_;

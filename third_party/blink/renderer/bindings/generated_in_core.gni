@@ -577,6 +577,8 @@ generated_interface_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_audio_track.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_audio_track_list.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_audio_track_list.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_back_forward_cache_restoration.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_back_forward_cache_restoration.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_bar_prop.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_bar_prop.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_before_create_policy_event.cc",

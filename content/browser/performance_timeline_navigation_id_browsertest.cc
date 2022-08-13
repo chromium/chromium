@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/logging.h"
-#include "content/browser/back_forward_cache_browsertest.h"
 
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
@@ -17,9 +15,9 @@
 
 namespace content {
 
-class NavigationIdBrowserTest : public ContentBrowserTest {
+class PerformanceTimelineNavigationIdBrowserTest : public ContentBrowserTest {
  public:
-  NavigationIdBrowserTest() = default;
+  PerformanceTimelineNavigationIdBrowserTest() = default;
 
  protected:
   void SetUpOnMainThread() override {
@@ -53,7 +51,8 @@ class NavigationIdBrowserTest : public ContentBrowserTest {
 
 // This test case is to verify PerformanceEntry.navigationId gets incremented
 // for each back/forward cache restore.
-IN_PROC_BROWSER_TEST_F(NavigationIdBrowserTest, BackForwardCacheRestore) {
+IN_PROC_BROWSER_TEST_F(PerformanceTimelineNavigationIdBrowserTest,
+                       BackForwardCacheRestore) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url1(embedded_test_server()->GetURL("a.com", "/title1.html"));
   const GURL url2(embedded_test_server()->GetURL("b.com", "/title1.html"));
@@ -94,7 +93,8 @@ IN_PROC_BROWSER_TEST_F(NavigationIdBrowserTest, BackForwardCacheRestore) {
 // This test case is to verify the navigation id of a frame does not increment
 // if the page load is not a back/forward cache restore, even with the
 // back/forward cache feature enabled.
-IN_PROC_BROWSER_TEST_F(NavigationIdBrowserTest, NonBackForwardCacheRestore) {
+IN_PROC_BROWSER_TEST_F(PerformanceTimelineNavigationIdBrowserTest,
+                       NonBackForwardCacheRestore) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url1(embedded_test_server()->GetURL("a.com", "/title1.html"));
   const GURL url2(embedded_test_server()->GetURL("b.com", "/title1.html"));

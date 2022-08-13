@@ -443,4 +443,7 @@
     [RaisesException, CallWith=ScriptState] any createWritableStreamAndSink(long queueSize, DOMString optimizer);
 
     void setAllowPerChunkTransferring(ReadableStream stream);
+
+    void setBackForwardCacheRestorationBufferSize(long maxSize);
+
 };

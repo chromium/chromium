@@ -660,6 +660,7 @@ static_idl_files_in_core = get_path_info(
           "//third_party/blink/renderer/core/svg/svg_use_element.idl",
           "//third_party/blink/renderer/core/svg/svg_view_element.idl",
           "//third_party/blink/renderer/core/svg/svg_zoom_and_pan.idl",
+          "//third_party/blink/renderer/core/timing/back_forward_cache_restoration.idl",
           "//third_party/blink/renderer/core/timing/dom_high_res_time_stamp.idl",
           "//third_party/blink/renderer/core/timing/epoch_time_stamp.idl",
           "//third_party/blink/renderer/core/timing/event_counts.idl",

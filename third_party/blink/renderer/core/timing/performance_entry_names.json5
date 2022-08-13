@@ -18,5 +18,6 @@
     "resource",
     "taskattribution",
     "visibility-state",
+    "back-forward-cache-restoration",
   ],
 }

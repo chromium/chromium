@@ -62,6 +62,7 @@
 #include "third_party/blink/renderer/core/loader/document_load_timing.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/timing/back_forward_cache_restoration.h"
 #include "third_party/blink/renderer/core/timing/background_tracing_helper.h"
 #include "third_party/blink/renderer/core/timing/largest_contentful_paint.h"
 #include "third_party/blink/renderer/core/timing/layout_shift.h"
@@ -85,6 +86,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_timing_info.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "v8/include/v8-metrics.h"
@@ -130,9 +132,14 @@ void RecordLongTaskUkm(ExecutionContext* execution_context,
 }
 
 PerformanceEntry::EntryType kDroppableEntryTypes[] = {
-    PerformanceEntry::kResource,    PerformanceEntry::kLongTask,
-    PerformanceEntry::kElement,     PerformanceEntry::kEvent,
-    PerformanceEntry::kLayoutShift, PerformanceEntry::kLargestContentfulPaint};
+    PerformanceEntry::kResource,
+    PerformanceEntry::kLongTask,
+    PerformanceEntry::kElement,
+    PerformanceEntry::kEvent,
+    PerformanceEntry::kLayoutShift,
+    PerformanceEntry::kLargestContentfulPaint,
+    PerformanceEntry::kBackForwardCacheRestoration,
+};
 
 }  // namespace
 
@@ -144,6 +151,7 @@ constexpr size_t kDefaultElementTimingBufferSize = 150;
 constexpr size_t kDefaultLayoutShiftBufferSize = 150;
 constexpr size_t kDefaultLargestContenfulPaintSize = 150;
 constexpr size_t kDefaultLongTaskBufferSize = 200;
+constexpr size_t kDefaultBackForwardCacheRestorationBufferSize = 200;
 
 Performance::Performance(
     base::TimeTicks time_origin,
@@ -151,6 +159,8 @@ Performance::Performance(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     ExecutionContext* context)
     : resource_timing_buffer_size_limit_(kDefaultResourceTimingBufferSize),
+      back_forward_cache_restoration_buffer_size_limit_(
+          kDefaultBackForwardCacheRestorationBufferSize),
       event_timing_buffer_max_size_(kDefaultEventTimingBufferSize),
       element_timing_buffer_max_size_(kDefaultElementTimingBufferSize),
       user_timing_(nullptr),
@@ -235,6 +245,9 @@ PerformanceEntryVector Performance::getEntries() {
     entries.push_back(first_paint_timing_);
   if (first_contentful_paint_timing_)
     entries.push_back(first_contentful_paint_timing_);
+
+  if (RuntimeEnabledFeatures::NavigationIdEnabled())
+    entries.AppendVector(back_forward_cache_restoration_buffer_);
 
   std::sort(entries.begin(), entries.end(),
             PerformanceEntry::StartTimeCompareLessThan);
@@ -331,6 +344,10 @@ PerformanceEntryVector Performance::getEntriesByTypeInternal(
     case PerformanceEntry::kVisibilityState:
       entries.AppendVector(visibility_state_buffer_);
       break;
+    case PerformanceEntry::kBackForwardCacheRestoration:
+      if (RuntimeEnabledFeatures::NavigationIdEnabled())
+        entries.AppendVector(back_forward_cache_restoration_buffer_);
+      break;
     case PerformanceEntry::kInvalid:
       break;
   }
@@ -406,6 +423,11 @@ void Performance::clearResourceTimings() {
 
 void Performance::setResourceTimingBufferSize(unsigned size) {
   resource_timing_buffer_size_limit_ = size;
+}
+
+void Performance::setBackForwardCacheRestorationBufferSizeForTest(
+    unsigned size) {
+  back_forward_cache_restoration_buffer_size_limit_ = size;
 }
 
 bool Performance::PassesTimingAllowCheck(
@@ -758,6 +780,26 @@ void Performance::AddLongTaskTiming(base::TimeTicks start_time,
     RecordLongTaskUkm(execution_context,
                       base::Milliseconds(dom_high_res_start_time),
                       end_time - start_time);
+  }
+  NotifyObserversOfEntry(*entry);
+}
+
+void Performance::AddBackForwardCacheRestoration(
+    base::TimeTicks start_time,
+    base::TimeTicks pageshow_start_time,
+    base::TimeTicks pageshow_end_time) {
+  auto* entry = MakeGarbageCollected<BackForwardCacheRestoration>(
+      MonotonicTimeToDOMHighResTimeStamp(start_time),
+      MonotonicTimeToDOMHighResTimeStamp(pageshow_start_time),
+      MonotonicTimeToDOMHighResTimeStamp(pageshow_end_time),
+      PerformanceEntry::GetNavigationId(GetExecutionContext()));
+  if (back_forward_cache_restoration_buffer_.size() <
+      back_forward_cache_restoration_buffer_size_limit_) {
+    back_forward_cache_restoration_buffer_.push_back(entry);
+  } else {
+    ++(dropped_entries_count_map_
+           .find(PerformanceEntry::kBackForwardCacheRestoration)
+           ->value);
   }
   NotifyObserversOfEntry(*entry);
 }
@@ -1119,6 +1161,7 @@ void Performance::Trace(Visitor* visitor) const {
   visitor->Trace(largest_contentful_paint_buffer_);
   visitor->Trace(longtask_buffer_);
   visitor->Trace(visibility_state_buffer_);
+  visitor->Trace(back_forward_cache_restoration_buffer_);
   visitor->Trace(navigation_timing_);
   visitor->Trace(user_timing_);
   visitor->Trace(first_paint_timing_);

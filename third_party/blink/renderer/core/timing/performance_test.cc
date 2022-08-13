@@ -13,17 +13,27 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/core/timing/back_forward_cache_restoration.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/core/timing/performance_long_task_timing.h"
 #include "third_party/blink/renderer/core/timing/performance_observer.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 
 namespace blink {
+namespace {
+constexpr int kTimeOrigin = 1;
+constexpr int kEvent1Time = 123;
+constexpr int kEvent1PageshowStart = 456;
+constexpr int kEvent1PageshowEnd = 789;
+constexpr int kEvent2Time = 321;
+constexpr int kEvent2PageshowStart = 654;
+constexpr int kEvent2PageshowEnd = 987;
+}  // namespace
 
 class TestPerformance : public Performance {
  public:
   explicit TestPerformance(ScriptState* script_state)
-      : Performance(base::TimeTicks(),
+      : Performance(base::TimeTicks() + base::Milliseconds(kTimeOrigin),
                     ExecutionContext::From(script_state)
                         ->CrossOriginIsolatedCapability(),
                     ExecutionContext::From(script_state)
@@ -76,6 +86,9 @@ class PerformanceTest : public PageTestBase {
     return observer_->performance_entries_.size();
   }
 
+  PerformanceEntryVector PerformanceEntriesInObserver() {
+    return observer_->performance_entries_;
+  }
   static bool AllowsTimingRedirect(
       const Vector<ResourceResponse>& redirect_chain,
       const ResourceResponse& final_response,
@@ -83,6 +96,35 @@ class PerformanceTest : public PageTestBase {
       ExecutionContext* context) {
     return Performance::AllowsTimingRedirect(
         redirect_chain, final_response, initiator_security_origin, context);
+  }
+
+  void CheckBackForwardCacheRestoration(PerformanceEntryVector entries) {
+    // Expect there are 2 back forward cache restoration entries.
+    EXPECT_EQ(2, std::count_if(entries.begin(), entries.end(),
+                               [](const PerformanceEntry* e) -> bool {
+                                 return e->entryType() ==
+                                        "back-forward-cache-restoration";
+                               }));
+
+    // Retain only back forward cache restoration entries.
+    entries.erase(std::remove_if(entries.begin(), entries.end(),
+                                 [](const PerformanceEntry* e) -> bool {
+                                   return e->entryType() !=
+                                          "back-forward-cache-restoration";
+                                 }),
+                  entries.end());
+
+    BackForwardCacheRestoration* b1 =
+        static_cast<BackForwardCacheRestoration*>(entries[0].Get());
+    EXPECT_EQ(kEvent1Time - kTimeOrigin, b1->startTime());
+    EXPECT_EQ(kEvent1PageshowStart - kTimeOrigin, b1->pageshowEventStart());
+    EXPECT_EQ(kEvent1PageshowEnd - kTimeOrigin, b1->pageshowEventEnd());
+
+    BackForwardCacheRestoration* b2 =
+        static_cast<BackForwardCacheRestoration*>(entries[1].Get());
+    EXPECT_EQ(kEvent2Time - kTimeOrigin, b2->startTime());
+    EXPECT_EQ(kEvent2PageshowStart - kTimeOrigin, b2->pageshowEventStart());
+    EXPECT_EQ(kEvent2PageshowEnd - kTimeOrigin, b2->pageshowEventEnd());
   }
 
   Persistent<TestPerformance> base_;
@@ -205,4 +247,38 @@ TEST_F(PerformanceTest, AllowsTimingRedirect) {
                                    GetExecutionContext()));
 }
 
+TEST_F(PerformanceTest, BackForwardCacheRestoration) {
+  V8TestingScope scope;
+  Initialize(scope.GetScriptState());
+
+  NonThrowableExceptionState exception_state;
+  PerformanceObserverInit* options = PerformanceObserverInit::Create();
+
+  Vector<String> entry_type_vec;
+  entry_type_vec.push_back("back-forward-cache-restoration");
+  options->setEntryTypes(entry_type_vec);
+  observer_->observe(options, exception_state);
+
+  EXPECT_TRUE(base_->HasPerformanceObserverFor(
+      PerformanceEntry::kBackForwardCacheRestoration));
+
+  base_->AddBackForwardCacheRestoration(
+      base::TimeTicks() + base::Milliseconds(kEvent1Time),
+      base::TimeTicks() + base::Milliseconds(kEvent1PageshowStart),
+      base::TimeTicks() + base::Milliseconds(kEvent1PageshowEnd));
+
+  base_->AddBackForwardCacheRestoration(
+      base::TimeTicks() + base::Milliseconds(kEvent2Time),
+      base::TimeTicks() + base::Milliseconds(kEvent2PageshowStart),
+      base::TimeTicks() + base::Milliseconds(kEvent2PageshowEnd));
+
+  auto entries = PerformanceEntriesInObserver();
+  CheckBackForwardCacheRestoration(entries);
+
+  entries = base_->getEntries();
+  CheckBackForwardCacheRestoration(entries);
+
+  entries = base_->getEntriesByType("back-forward-cache-restoration");
+  CheckBackForwardCacheRestoration(entries);
+}
 }  // namespace blink

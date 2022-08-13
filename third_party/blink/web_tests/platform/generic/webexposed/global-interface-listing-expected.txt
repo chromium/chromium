@@ -444,6 +444,12 @@ interface AuthenticatorResponse
     attribute @@toStringTag
     getter clientDataJSON
     method constructor
+interface BackForwardCacheRestoration : PerformanceEntry
+    attribute @@toStringTag
+    getter pageshowEventEnd
+    getter pageshowEventStart
+    method constructor
+    method toJSON
 interface BackgroundFetchManager
     attribute @@toStringTag
     method constructor

@@ -622,6 +622,7 @@ class Internals final : public ScriptWrappable {
                                           ExceptionState&);
 
   void setAllowPerChunkTransferring(ReadableStream* stream);
+  void setBackForwardCacheRestorationBufferSize(unsigned int maxSize);
 
  private:
   Document* ContextDocument() const;
