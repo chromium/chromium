@@ -149,6 +149,7 @@
 <translation id="2115956742084455574">Nepareizs kods</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versija <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Pieejamais apjoms: <ph name="AVAILABLE_MEMORY" /> GB no <ph name="TOTAL_MEMORY" /> GB</translation>
+<translation id="2130871201950918186">Sistēma tiks restartēta pēc 5 sekundēm.</translation>
 <translation id="2138109643290557664">Lidojums</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> fotoattēli</translation>
@@ -211,6 +212,7 @@
 <translation id="2536159006530886390">Nevar izveidot savienojumu ar internetu.</translation>
 <translation id="2570743873672969996">Notiek testa “<ph name="TEST_NAME" />” izpilde...</translation>
 <translation id="2584559707064218956">Lai iestatītu, pārejiet uz iestatījumiem.</translation>
+<translation id="2597774443162333062">Fails tiks nosūtīts Google serveriem atkļūdošanai.</translation>
 <translation id="2619761439309613843">Nomainīt katru dienu</translation>
 <translation id="2620436844016719705">Sistēma</translation>
 <translation id="2638662041295312666">Pierakstīšanās attēls</translation>
@@ -672,6 +674,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="6659594942844771486">Cilne</translation>
 <translation id="6692996468359469499">Iespēja saņemt informāciju par atlasīto saturu</translation>
 <translation id="6704062477274546131">DNS atrise</translation>
+<translation id="6719240409382354629">Notiek gatavošanās restartēšanai…</translation>
 <translation id="6723839937902243910">Strāvas padeve</translation>
 <translation id="6723847290197874913">Tastatūras fona apgaismojums</translation>
 <translation id="672609503628871915">Uzzināt jaunumus</translation>
@@ -889,6 +892,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="8747900814994928677">Apstiprināt izmaiņas</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google fotoattēlu albumi</translation>
+<translation id="8778600430213950389">Radās kļūda. Visticamāk, tā radās aparatūras problēmas dēļ. Nomainiet mātesplati un vēlreiz mēģiniet veikt labošanu.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Iespējams, tīklam ir caurlaides lapa</translation>
 <translation id="8798099450830957504">Noklusējums</translation>
@@ -942,6 +946,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="910415269708673980">Atsvaidziniet <ph name="PRINCIPAL_NAME" /> biļeti</translation>
 <translation id="9106415115617144481">Notiek <ph name="PAGE_NUMBER" />. lapas skenēšana</translation>
 <translation id="9111102763498581341">Atbloķēt</translation>
+<translation id="9118126012493516930">Nevar pabeigt labošanu</translation>
 <translation id="9122602430962285795">Lai atkārtoti izveidotu savienojumu, pārejiet uz iestatījumiem.</translation>
 <translation id="9126720536733509015">Saglabāt vairākas lapas vienā PDF failā</translation>
 <translation id="9137526406337347448">Google pakalpojumi</translation>

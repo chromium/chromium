@@ -510,6 +510,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1480663089572535854">Pode regressar para alterar a atribuição de "Selecionar". Pode sempre desativar a análise automática nas Definições.</translation>
 <translation id="1481537595330271162">Ocorreu um erro ao redimensionar o disco.</translation>
 <translation id="1482626744466814421">Adicionar este separador aos marcadores…</translation>
+<translation id="1482772681918035149">editar palavras-passe</translation>
 <translation id="1483493594462132177">Enviar</translation>
 <translation id="1484979925941077974">O site está a utilizar o Bluetooth.</translation>
 <translation id="1485015260175968628">Esta pode agora:</translation>
@@ -524,6 +525,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1500801317528437432">Saber mais acerca das Apps do Chrome não suportadas</translation>
 <translation id="150411034776756821">Remover <ph name="SITE" /></translation>
 <translation id="1504551620756424144">As pastas partilhadas estão disponíveis no Windows em <ph name="BASE_DIR" />.</translation>
+<translation id="1505494256539862015">exportar palavras-passe</translation>
 <translation id="1506061864768559482">Motor de pesquisa</translation>
 <translation id="1507170440449692343">Esta página foi impedida de aceder à sua câmara.</translation>
 <translation id="1507246803636407672">&amp;Rejeitar</translation>
@@ -598,6 +600,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (convidado)</translation>
 <translation id="1572266655485775982">Ativar Wi-Fi</translation>
 <translation id="1572876035008611720">Introduza o seu email</translation>
+<translation id="1573117025466282241">Usar telemóvel com código QR</translation>
 <translation id="1575741822946219011">Idiomas e métodos de introdução</translation>
 <translation id="1576594961618857597">Avatar branco predefinido</translation>
 <translation id="1578558981922970608">Forçar fecho</translation>
@@ -701,7 +704,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1645516838734033527">Para manter o seu <ph name="DEVICE_TYPE" /> protegido, o Smart Lock requer um bloqueio de ecrã no telemóvel.</translation>
 <translation id="1646982517418478057">Introduza uma palavra-passe para encriptar este certificado</translation>
 <translation id="1647408325348388858">Abrir e editar <ph name="FILE_NAME" /> nesta app Web?</translation>
-<translation id="1648528859488547844">Utilizar Wi-Fi ou redes móveis para determinar a localização</translation>
+<translation id="1648528859488547844">Usar Wi-Fi ou redes móveis para determinar a localização</translation>
 <translation id="164936512206786300">Dessincronizar dispositivo Bluetooth</translation>
 <translation id="1651008383952180276">Tem de introduzir a mesma frase de acesso duas vezes</translation>
 <translation id="1652326691684645429">Ativar a funcionalidade Partilhar na proximidade</translation>
@@ -2962,6 +2965,7 @@ Pretende pará-lo?</translation>
 <translation id="3778740492972734840">Ferramentas &amp;do programador</translation>
 <translation id="3778868487658107119">Faça-lhe perguntas. Diga-lhe para realizar tarefas. É o seu Google pessoal, sempre pronto para ajudar.</translation>
 <translation id="3781742599892759500">Acesso ao microfone do Linux</translation>
+<translation id="3783889407390048282">Liberte espaço para evitar perder o acesso ao Android.</translation>
 <translation id="3784472333786002075">Os cookies são ficheiros criados pelos Websites. Existem dois tipos de cookies: os cookies originais são criados pelo site ao qual acede. O site é apresentado na barra de endereço. Os cookies de terceiros são criados por outros sites. Estes sites possuem algum do conteúdo, tal como anúncios ou imagens, que vê no Website ao qual acede.</translation>
 <translation id="3785308913036335955">Mostrar Atalho das Apps</translation>
 <translation id="3785727820640310185">Palavras-passe guardadas para este site</translation>
@@ -4275,6 +4279,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5066100345385738837">Gerir DNS seguro nas definições do ChromeOS</translation>
 <translation id="5067399438976153555">Sempre ativado</translation>
 <translation id="5067867186035333991">Perguntar se <ph name="HOST" /> pretende aceder ao seu microfone</translation>
+<translation id="5068553687099139861">mostrar palavras-passe</translation>
 <translation id="5068918910148307423">Não permitir que os sites fechados recentemente concluam o envio e a receção de dados</translation>
 <translation id="5068919226082848014">Piza</translation>
 <translation id="5070710277167211639">Atualizar as navegações para HTTPS e avisar antes de carregar sites que não o suportam</translation>
@@ -6427,6 +6432,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7152478047064750137">Esta extensão não requer autorizações especiais.</translation>
 <translation id="7154130902455071009">Alterar a página de início para: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Foto existente da câmara ou do ficheiro</translation>
+<translation id="7159953856712257647">Instalada por predefinição</translation>
 <translation id="7160182524506337403">Agora, pode ver as notificações do seu telemóvel</translation>
 <translation id="7163202347044721291">A validar o código de ativação…</translation>
 <translation id="716640248772308851">A extensão "<ph name="EXTENSION" />" consegue ler imagens, ficheiros de vídeo e de som nas localizações confirmadas.</translation>
@@ -7639,6 +7645,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8314835274931377415">Pretende iniciar a configuração do acesso por comutador?</translation>
 <translation id="8317582043908962055">Reconhecer texto em P&amp;DF</translation>
 <translation id="8317671367883557781">Adicionar ligação de rede</translation>
+<translation id="8317965619823678157">copiar palavras-passe</translation>
 <translation id="8318266828739827371">Use uma vista de ecrã dividido para ver a área ampliada do ecrã. Use Pesquisa + Ctrl + D para ativar e desativar a lupa ancorada.</translation>
 <translation id="8319414634934645341">Utilização alargada da chave</translation>
 <translation id="8321837372750396788">Este <ph name="DEVICE_TYPE" /> vai ser gerido por <ph name="MANAGER" />.</translation>
@@ -8566,6 +8573,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="929117907539171075">Os dados offline na app instalada também serão limpos.</translation>
 <translation id="930268624053534560">Data/hora em detalhe</translation>
 <translation id="930893132043726269">Está atualmente em roaming</translation>
+<translation id="93140074055951850">As apps Android foram paradas</translation>
 <translation id="932327136139879170">Página inicial</translation>
 <translation id="932508678520956232">Não foi possível iniciar a impressão.</translation>
 <translation id="933427034780221291">{NUM_FILES,plural, =1{Este ficheiro é demasiado grande para uma verificação de segurança. Pode carregar ficheiros até 50 MB.}other{Alguns destes ficheiros são demasiado grandes para uma verificação de segurança. Pode carregar ficheiros até 50 MB.}}</translation>

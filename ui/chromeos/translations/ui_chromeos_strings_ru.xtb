@@ -245,6 +245,7 @@
 <translation id="3138624403379688522">Недействительный PIN-код. Осталось попыток: <ph name="RETRIES" />.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> (<ph name="ISSUED_TO" />). Поддерживается аппаратным обеспечением.</translation>
 <translation id="3188257591659621405">Мои файлы</translation>
+<translation id="3194553149358267393">Нет недавних аудиофайлов.</translation>
 <translation id="3197563288998582412">Британская (раскладка Дворака)</translation>
 <translation id="3202131003361292969">Путь</translation>
 <translation id="3205852408225871810">Португальский (Бразилия)</translation>
@@ -303,6 +304,7 @@
 <translation id="3606220979431771195">Турецкая раскладка</translation>
 <translation id="3616113530831147358">Аудио</translation>
 <translation id="3619115746895587757">Капучино</translation>
+<translation id="3619593063686672873">Нет недавних видео.</translation>
 <translation id="3620292326130836921">Данные сохранены!</translation>
 <translation id="3634507049637220048">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, название – "<ph name="NETWORK_NAME" />", статус подключения – "<ph name="CONNECTION_STATUS" />", под управлением администратора, подробная информация</translation>
 <translation id="3645233063072417428">Перемещено объектов: <ph name="NUMBER_OF_ITEMS" />.</translation>
@@ -401,6 +403,7 @@
 <translation id="4572815280350369984"><ph name="FILE_TYPE" />-файл</translation>
 <translation id="457386861538956877">Ещё...</translation>
 <translation id="4579744207439506346">Выбран объект "<ph name="ENTRY_NAME" />".</translation>
+<translation id="4583436353463424810">Нет недавних документов.</translation>
 <translation id="4594543368593301662">Результаты поиска по запросу "<ph name="SEARCH_TERM" />".</translation>
 <translation id="4599600860674643278">Фильтр сброшен.</translation>
 <translation id="4603392156942865207">Копирование файла "<ph name="FILE_NAME" />" в папку "<ph name="FOLDER_NAME" />"…</translation>
@@ -489,6 +492,7 @@
 <translation id="516592729076796170">Клавиатура Дворака для программистов (США)</translation>
 <translation id="5172749059808361023">Сведения об ограничениях</translation>
 <translation id="5177526793333269655">Уменьшенные изображения</translation>
+<translation id="5181896909298187506">Нет недавних файлов.</translation>
 <translation id="5194713942430106590">Нажмите, чтобы отсортировать значения в столбце по возрастанию.</translation>
 <translation id="5211614973734216083">Фарерский</translation>
 <translation id="5218183485292899140">Швейцарская (французская)</translation>
@@ -746,6 +750,7 @@
 <translation id="7408870451288633753">Чешский</translation>
 <translation id="7417453074306512035">Эфиопская раскладка</translation>
 <translation id="7417705661718309329">Карта Google</translation>
+<translation id="7458955835361612701">Нет недавних изображений.</translation>
 <translation id="7460898608667578234">Украинский</translation>
 <translation id="7469894403370665791">Автоматически подключаться к этой сети</translation>
 <translation id="7486315294984620427">Чтобы загрузить файлы в Parallels Desktop, скопируйте их в папку "Файлы Windows".</translation>

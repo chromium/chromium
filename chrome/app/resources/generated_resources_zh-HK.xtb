@@ -513,6 +513,7 @@
 <translation id="1480663089572535854">您可以返回變更「選取」的指派設定，亦可隨時在「設定」中關閉自動掃瞄。</translation>
 <translation id="1481537595330271162">調整磁碟大小時發生錯誤</translation>
 <translation id="1482626744466814421">將此分頁加入書籤…</translation>
+<translation id="1482772681918035149">編輯密碼</translation>
 <translation id="1483493594462132177">傳送</translation>
 <translation id="1484979925941077974">網站正在使用藍牙</translation>
 <translation id="1485015260175968628">現在可以：</translation>
@@ -527,6 +528,7 @@
 <translation id="1500801317528437432">進一步了解唔支援嘅 Chrome 應用程式</translation>
 <translation id="150411034776756821">移除 <ph name="SITE" /></translation>
 <translation id="1504551620756424144">在 Windows 中，您可以前往 <ph name="BASE_DIR" /> 存取共用資料夾。</translation>
+<translation id="1505494256539862015">匯出密碼</translation>
 <translation id="1506061864768559482">搜尋引擎</translation>
 <translation id="1507170440449692343">系統已封鎖這個網頁存取您的相機。</translation>
 <translation id="1507246803636407672">捨棄(&amp;D)</translation>
@@ -2977,6 +2979,7 @@
 <translation id="3778740492972734840">開發人員工具(&amp;D)</translation>
 <translation id="3778868487658107119">度身訂造的「Google 助理」隨時為您提供協助，不但可根據您的問題提供解答，還可以按指令執行各種操作。</translation>
 <translation id="3781742599892759500">Linux 的麥克風存取權</translation>
+<translation id="3783889407390048282">請釋出空間，以免無法存取 Android。</translation>
 <translation id="3784472333786002075">Cookie 是網站所建立的檔案，並可分為兩種：第一方 Cookie 由您瀏覽的網站建立，網址列上會顯示該網站的網址。第三方 Cookie 則由其他網站建立。這些網站擁有您所瀏覽網站的部分內容，例如廣告和圖片。</translation>
 <translation id="3785308913036335955">顯示應用程式捷徑</translation>
 <translation id="3785727820640310185">已儲存此網站的密碼</translation>
@@ -4291,6 +4294,7 @@
 <translation id="5066100345385738837">在 Chrome OS 設定中管理安全 DNS</translation>
 <translation id="5067399438976153555">保持開啟</translation>
 <translation id="5067867186035333991">當 <ph name="HOST" /> 要求存取麥克風時詢問我。</translation>
+<translation id="5068553687099139861">顯示密碼</translation>
 <translation id="5068918910148307423">不允許最近關閉的網站完成傳送和接收資料的動作</translation>
 <translation id="5068919226082848014">薄餅</translation>
 <translation id="5070710277167211639">將瀏覽升級為採用 HTTPS，並在載入不支援該協定的網站前發出警告</translation>
@@ -6440,6 +6444,7 @@
 <translation id="7152478047064750137">這個擴充程式不需要任何特殊權限</translation>
 <translation id="7154130902455071009">將您的起始網頁變更為：<ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">相機或檔案中的現有照片</translation>
+<translation id="7159953856712257647">預設已安裝</translation>
 <translation id="7160182524506337403">您現可查看手機的通知</translation>
 <translation id="7163202347044721291">正在驗證啟動碼…</translation>
 <translation id="716640248772308851">「<ph name="EXTENSION" />」對於勾選位置中的圖片、影片和音效檔案具有讀取權限。</translation>
@@ -7652,6 +7657,7 @@
 <translation id="8314835274931377415">要開始設定按鈕控制功能嗎？</translation>
 <translation id="8317582043908962055">識別 P&amp;DF 文字</translation>
 <translation id="8317671367883557781">新增網絡連線</translation>
+<translation id="8317965619823678157">複製密碼</translation>
 <translation id="8318266828739827371">使用分割螢幕檢視模式查看畫面放大的區域。使用搜尋鍵 + Ctrl + D 鍵即可開啟或關閉固定放大鏡。</translation>
 <translation id="8319414634934645341">擴充金鑰使用方法</translation>
 <translation id="8321837372750396788">此 <ph name="DEVICE_TYPE" /> 將由 <ph name="MANAGER" /> 管理。</translation>
@@ -8579,6 +8585,7 @@
 <translation id="929117907539171075">系統亦會清除已安裝應用程式的離線資料</translation>
 <translation id="930268624053534560">詳細的時間戳</translation>
 <translation id="930893132043726269">目前正在使用漫遊</translation>
+<translation id="93140074055951850">Android 應用程式已停止</translation>
 <translation id="932327136139879170">首頁</translation>
 <translation id="932508678520956232">無法初始化列印操作。</translation>
 <translation id="933427034780221291">{NUM_FILES,plural, =1{此檔案太大，無法進行安全檢查。您可上載的檔案大小上限為 50 MB。}other{這些檔案部分太大，無法進行安全檢查。您可上載的檔案大小上限為 50 MB。}}</translation>

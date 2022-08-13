@@ -245,6 +245,7 @@
 <translation id="3138624403379688522">Kodi PIN i pavlefshëm Të kanë mbetur edhe <ph name="RETRIES" /> përpjekje.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (mbështetu nga hardueri)</translation>
 <translation id="3188257591659621405">Skedarët e mi</translation>
+<translation id="3194553149358267393">Nuk ka skedarë audio të fundit</translation>
 <translation id="3197563288998582412">dvorak britanik</translation>
 <translation id="3202131003361292969">Shtegu</translation>
 <translation id="3205852408225871810">Portugalisht (Brazil)</translation>
@@ -303,6 +304,7 @@
 <translation id="3606220979431771195">Turke me F</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3619115746895587757">Kapuçino</translation>
+<translation id="3619593063686672873">Nuk ka video të fundit</translation>
 <translation id="3620292326130836921">Të gjitha u rezervuan!</translation>
 <translation id="3634507049637220048">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, menaxhuar nga administratori yt, detaje</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> artikuj janë zhvendosur.</translation>
@@ -401,6 +403,7 @@
 <translation id="4572815280350369984">Skedar <ph name="FILE_TYPE" /></translation>
 <translation id="457386861538956877">Më shumë...</translation>
 <translation id="4579744207439506346"><ph name="ENTRY_NAME" /> u shtua te zgjedhja.</translation>
+<translation id="4583436353463424810">Nuk ka dokumente të fundit</translation>
 <translation id="4594543368593301662">Po shfaq rezultate për <ph name="SEARCH_TERM" />.</translation>
 <translation id="4599600860674643278">Filtri është rivendosur.</translation>
 <translation id="4603392156942865207">Po kopjon <ph name="FILE_NAME" /> në <ph name="FOLDER_NAME" /></translation>
@@ -489,6 +492,7 @@
 <translation id="516592729076796170">Amerikane Dvorak për programues</translation>
 <translation id="5172749059808361023">Detajet për kufizimet</translation>
 <translation id="5177526793333269655">Pamje miniaturë</translation>
+<translation id="5181896909298187506">Nuk ka skedarë të fundit</translation>
 <translation id="5194713942430106590">Kliko për të renditur kolonën në rend ngjitës.</translation>
 <translation id="5211614973734216083">Faroisht</translation>
 <translation id="5218183485292899140">Frëngjishte zvicerane</translation>
@@ -745,6 +749,7 @@
 <translation id="7408870451288633753">Çekisht</translation>
 <translation id="7417453074306512035">Tastiera në etiopisht</translation>
 <translation id="7417705661718309329">Hartë e Google</translation>
+<translation id="7458955835361612701">Nuk ka imazhe të fundit</translation>
 <translation id="7460898608667578234">Ukrainisht</translation>
 <translation id="7469894403370665791">Lidhu automatikisht me këtë rrjet</translation>
 <translation id="7486315294984620427">Për t'i lëshuar skedarët në Parallels Desktop, skedari duhet të kopjohet te dosja e skedarëve të Windows.</translation>

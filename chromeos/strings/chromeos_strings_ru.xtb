@@ -149,6 +149,7 @@
 <translation id="2115956742084455574">Неверный код</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, версия <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Доступно <ph name="AVAILABLE_MEMORY" /> из <ph name="TOTAL_MEMORY" /> ГБ.</translation>
+<translation id="2130871201950918186">Система будет перезапущена через 5 секунд.</translation>
 <translation id="2138109643290557664">Течение воды</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> фото</translation>
@@ -211,6 +212,7 @@
 <translation id="2536159006530886390">Ошибка подключения к Интернету.</translation>
 <translation id="2570743873672969996">Запуск теста "<ph name="TEST_NAME" />"…</translation>
 <translation id="2584559707064218956">Чтобы задать конфигурацию сети, перейдите в настройки.</translation>
+<translation id="2597774443162333062">Файлы будут отправлены в Google для отладки</translation>
 <translation id="2619761439309613843">Обновлять ежедневно</translation>
 <translation id="2620436844016719705">Система</translation>
 <translation id="2638662041295312666">Изображение на странице входа</translation>
@@ -672,6 +674,7 @@
 <translation id="6659594942844771486">Вкладка</translation>
 <translation id="6692996468359469499">Получайте информацию об объектах на экране</translation>
 <translation id="6704062477274546131">Разрешение DNS</translation>
+<translation id="6719240409382354629">Подготовка к перезапуску…</translation>
 <translation id="6723839937902243910">Питание</translation>
 <translation id="6723847290197874913">Подсветка клавиатуры</translation>
 <translation id="672609503628871915">Узнать, что нового</translation>
@@ -889,6 +892,7 @@
 <translation id="8747900814994928677">Подтверждение изменений</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Альбом в Google Фото</translation>
+<translation id="8778600430213950389">Произошла ошибка. Скорее всего, она связана с аппаратным обеспечением. Замените материнскую плату и попробуйте еще раз выполнить ремонт.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">У этой сети может быть страница входа.</translation>
 <translation id="8798099450830957504">По умолчанию</translation>
@@ -942,6 +946,7 @@
 <translation id="910415269708673980">Обновите билет для аккаунта <ph name="PRINCIPAL_NAME" />.</translation>
 <translation id="9106415115617144481">Сканирование страницы <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Разблокировать</translation>
+<translation id="9118126012493516930">Не удается завершить ремонт</translation>
 <translation id="9122602430962285795">Чтобы снова подключиться к сети, перейдите в настройки.</translation>
 <translation id="9126720536733509015">Сохранить несколько страниц в один PDF-файл</translation>
 <translation id="9137526406337347448">Сервисы Google</translation>

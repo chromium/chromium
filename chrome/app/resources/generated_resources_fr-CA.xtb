@@ -599,6 +599,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (invité)</translation>
 <translation id="1572266655485775982">Wi-Fi activé</translation>
 <translation id="1572876035008611720">Entrez votre adresse de courriel</translation>
+<translation id="1573117025466282241">Utiliser le téléphone avec un code QR</translation>
 <translation id="1575741822946219011">Langues et méthodes d'entrée</translation>
 <translation id="1576594961618857597">Avatar blanc par défaut</translation>
 <translation id="1578558981922970608">Forcer la fermeture</translation>
@@ -1746,6 +1747,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2602501489742255173">Glissez votre doigt vers le haut pour commencer</translation>
 <translation id="2603115962224169880">Nettoyer l'ordinateur</translation>
 <translation id="2603355571917519942">Voice Match est prête à être utilisée</translation>
+<translation id="2604129989323098489">Les sites demandent généralement à accéder à des renseignements sur vos écrans pour pouvoir ouvrir et positionner des fenêtres intelligemment, comme afficher des documents ou du contenu en mode plein écran côte à côte.</translation>
 <translation id="2604255671529671813">Erreur de connexion réseau</translation>
 <translation id="2605668923777146443">Accédez à <ph name="LINK_BEGIN" />Paramètres<ph name="LINK_END" /> pour voir les options Better Together qui s'offrent à vous.</translation>
 <translation id="2606246518223360146">Associer les données</translation>
@@ -5378,6 +5380,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6130692320435119637">Ajouter un réseau Wi-Fi</translation>
 <translation id="6130887916931372608">Touche de clavier</translation>
 <translation id="6135823405800500595">Assurez-vous que votre téléphone est à proximité et déverrouillé, et que le Bluetooth et le Wi-Fi sont activés</translation>
+<translation id="6135826623269483856">Non autorisé à gérer les fenêtres sur tous vos écrans</translation>
 <translation id="6136114942382973861">Fermer la barre des téléchargements</translation>
 <translation id="6136287496450963112">Votre clé de sécurité n'est pas protégée par un NIP. Pour gérer les empreintes digitales, commencez par créer un NIP.</translation>
 <translation id="6138680304137685902">Signature X9.62 ECDSA avec SHA-384</translation>
@@ -7386,6 +7389,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
     <ph name="BEGIN_PARAGRAPH3" />Vous pouvez désactiver ce service dans les paramètres.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8076492880354921740">Onglets</translation>
 <translation id="8076835018653442223">Votre administrateur a désactivé l'accès aux fichiers locaux sur votre appareil</translation>
+<translation id="80798452873915119">Les sites peuvent demander à gérer les fenêtres sur tous vos écrans</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Votre session est gérée par <ph name="MANAGER_NAME" />. Les administrateurs peuvent supprimer votre profil ainsi que surveiller votre trafic réseau.</translation>
 <translation id="8081989000209387414">Désactiver le débogage PDA?</translation>
@@ -7690,6 +7694,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8371695176452482769">Parlez maintenant</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Désactiver le son sur le site}one{Désactiver le son sur le site}other{Désactiver le son sur les sites}}</translation>
 <translation id="8373652277231415614">Répertoires partagés de Crostini</translation>
+<translation id="8374243500935816406">Ne pas autoriser les sites à gérer les fenêtres sur tous vos écrans</translation>
 <translation id="8376137163494131156">Dites-nous ce qui se passe avec la technologie Google Cast.</translation>
 <translation id="8376384591331888629">Y compris les témoins tiers sur ce site</translation>
 <translation id="8376451933628734023">Si cette application Web essaie de se faire passer pour une autre, désinstallez-la.</translation>
@@ -7984,6 +7989,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8670537393737592796">Pour revenir ici rapidement, installez <ph name="APP_NAME" /> en cliquant sur le bouton d'installation</translation>
 <translation id="867085395664725367">Une erreur de serveur temporaire s'est produite.</translation>
 <translation id="8673026256276578048">Rechercher sur Internet...</translation>
+<translation id="867329473311423817">Autorisé à gérer les fenêtres sur tous vos écrans</translation>
 <translation id="8673383193459449849">Problème de serveur</translation>
 <translation id="8674903726754070732">Malheureusement, votre ordinateur est configuré avec un identifiant de matériel malformé. Cela empêche l'installation des derniers correctifs de sécurité pour Chrome OS. Votre ordinateur <ph name="BEGIN_BOLD" />peut ainsi être vulnérable aux attaques malveillantes<ph name="END_BOLD" />.</translation>
 <translation id="8675704450909805533">Le programme d'installation n'a pas trouvé de destination valide pour l'installation de <ph name="DEVICE_OS" />.</translation>

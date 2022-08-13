@@ -149,6 +149,7 @@
 <translation id="2115956742084455574">වැරදි කේතයකි</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, අනුවාදය <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" />කින් <ph name="AVAILABLE_MEMORY" /> GB ලබා ගත හැකිය</translation>
+<translation id="2130871201950918186">තත්පර 5කින් පද්ධතිය නැවත ආරම්භ වේ.</translation>
 <translation id="2138109643290557664">පාවී යන්න</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059">ඡායාරූප <ph name="NUMBER" />ක්</translation>
@@ -211,6 +212,7 @@
 <translation id="2536159006530886390">අන්තර්ජාලයට සම්බන්ධ විය නොහැකිය.</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> පරීක්ෂාව ධාවනය කරමින්...</translation>
 <translation id="2584559707064218956">පිහිටුවීමට, සැකසීම් වෙත යන්න</translation>
+<translation id="2597774443162333062">නිදොස් කිරීම සඳහා ගොනු Google වෙත යවනු ලැබේ</translation>
 <translation id="2619761439309613843">දිනපතා නැවුම් කිරීම</translation>
 <translation id="2620436844016719705">පද්ධතිය</translation>
 <translation id="2638662041295312666">පුරන රූපය</translation>
@@ -672,6 +674,7 @@
 <translation id="6659594942844771486">ටැබ</translation>
 <translation id="6692996468359469499">ඔබේ තේරීමට අදාළ තොරතුරු ලබා ගන්න</translation>
 <translation id="6704062477274546131">DNS විභේදනය</translation>
+<translation id="6719240409382354629">යළි ආරම්භ කිරීමට සූදානම් වෙමින්...</translation>
 <translation id="6723839937902243910">බලය</translation>
 <translation id="6723847290197874913">යතුරු පුවරු පසු ආලෝකය</translation>
 <translation id="672609503628871915">අළුත් මොනවාදැයි බලන්න</translation>
@@ -889,6 +892,7 @@
 <translation id="8747900814994928677">වෙනස් කිරීම තහවුරු කරන්න</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google ඡායාරූප ඇල්බමය</translation>
+<translation id="8778600430213950389">යමක් වැරදිණි. මෙය බොහෝ විට දෘඪාංග ගැටලුවක් නිසා විය හැක. ප්‍රවර්ධන පුවරුව ප්‍රතිස්ථාපනය කර නැවත අලුත්වැඩියා කිරීමේ ක්‍රියාවලිය උත්සාහ කරන්න.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">මෙම ජාලයට පිවිසුම් දොරටුවක් තිබිය හැකිය</translation>
 <translation id="8798099450830957504">පෙරනිමි</translation>
@@ -942,6 +946,7 @@
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> සඳහා ප්‍රවේශපත්‍රය නැවුම් කරන්න</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" /> පිටුව ස්කෑන් කරමින්</translation>
 <translation id="9111102763498581341">අගුලු හරන්න</translation>
+<translation id="9118126012493516930">අලුත්වැඩියාව සම්පූර්ණ කළ නොහැක</translation>
 <translation id="9122602430962285795">යළි සම්බන්ධ වීමට, සැකසීම් වෙත යන්න</translation>
 <translation id="9126720536733509015">එක් PDF එකකට පිටු කිහිපයක් සුරකින්න</translation>
 <translation id="9137526406337347448">Google සේවා</translation>

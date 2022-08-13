@@ -1379,6 +1379,7 @@ Web e PWAs. No momento, com suporte apenas no
 <translation id="2341509917222115272">Se a política for definida como "Ativada" ou deixada sem definição, o usuário poderá parear clientes e hosts durante a conexão, eliminando a necessidade de inserir um PIN todas as vezes.
 
       Se a política for definida como "Desativada", esse recurso não estará disponível.</translation>
+<translation id="2342066287156668839">Ativar cota persistente.</translation>
 <translation id="2345547870894930157">Ativar DNS sobre HTTPS sem substituto inseguro</translation>
 <translation id="2349117476121456297">Se esta política for definida como verdadeira, a primeira linha de teclas do teclado funcionará como comandos de teclas de função. Pressionar a tecla de pesquisa faz com que elas voltem a funcionar como teclas de mídia.
 
@@ -2704,6 +2705,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 
       Se a política for definida como "Desativada" ou não for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá o desligamento do dispositivo.</translation>
 <translation id="3763515772647897871">Dia da semana em que a verificação de atualização precisa ocorrer, interpretado no fuso horário local do dispositivo. Usado apenas quando "frequency" for definido como "WEEKLY".</translation>
+<translation id="376375951585423504">Desativar cota persistente.</translation>
 <translation id="3765260570442823273">Duração da mensagem de aviso de saída de usuário ocioso</translation>
 <translation id="3770407495263198786">A definição da política permite aos administradores configurar uma lista de impressoras para os usuários. A seleção da impressora ocorre na primeira vez que os usuários tentam imprimir.
 
@@ -5587,6 +5589,10 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
       Observação: o bloqueio de URLs internos chrome://* e chrome-untrusted://* pode gerar erros inesperados ou ser burlado em casos especiais. Em vez de bloquear determinados URLs internos, veja se há políticas mais específicas disponíveis. Casos comuns: em vez de bloquear chrome://settings/certificates, use a <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME" />. Em vez de bloquear chrome-untrusted://crosh, use a <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />.</translation>
 <translation id="6894178810167845842">URL da página "Nova guia"</translation>
 <translation id="6897730193187922386">Suprimir mensagens de suspensão de uso do <ph name="CLOUD_PRINT_NAME" /></translation>
+<translation id="6899495066226330266">Não vai mais haver suporte para a inicialização da cota persistente da versão M106. Esta política vai reativar a funcionalidade de cota persistente até a versão M107.
+      Se a política for ativada, o webkitRequestFileSystem com tipo persistente vai funcionar com essa cota.
+      Se ela for desativada ou deixada sem definição, o webkitRequestFileSystem com tipo persistente vai operar com uma cota temporária.
+      </translation>
 <translation id="6899705656741990703">Detectar automaticamente configurações de proxy</translation>
 <translation id="6902561336084511004">Oferece as configurações dos servidores de impressão disponíveis.
 
@@ -6837,6 +6843,7 @@ Se a política não for definida, a tela de privacidade ficará inicialmente des
 <translation id="8229912067600517877">Ativar as Ferramentas para desenvolvedores</translation>
 <translation id="8238421250255592181">Uma sinalização booleana indicando se o teclado na tela pode oferecer preenchimento automático.</translation>
 <translation id="8239109177194627162">Desativar o preenchimento automático de cartões de crédito</translation>
+<translation id="8239143983379015783">Forçar a ativação da cota persistente</translation>
 <translation id="8244171102276095471">Ativar pacotes de criptografia RC4 em TLS</translation>
 <translation id="8244525275280476362">Atraso máximo de busca após a invalidação de uma política</translation>
 <translation id="8245574649143980200">Se a política for deixada sem definição ou for ativada, os usuários poderão ver e usar o item de menu da pesquisa por região do <ph name="GOOGLE_LENS_PRODUCT_NAME" /> no menu de contexto. Se ela for desativada, os usuários não verão a pesquisa por região do <ph name="GOOGLE_LENS_PRODUCT_NAME" /> no menu de contexto quando a pesquisa por região do <ph name="GOOGLE_LENS_PRODUCT_NAME" /> estiver disponível.</translation>

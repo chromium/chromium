@@ -245,6 +245,7 @@
 <translation id="3138624403379688522">Geçersiz PIN. <ph name="RETRIES" /> deneme hakkınız kaldı.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (donanım destekli)</translation>
 <translation id="3188257591659621405">Dosyalarım</translation>
+<translation id="3194553149358267393">Yakın tarihli ses dosyası yok</translation>
 <translation id="3197563288998582412">İngiltere Dvorak</translation>
 <translation id="3202131003361292969">Yol</translation>
 <translation id="3205852408225871810">Portekizce (Brezilya)</translation>
@@ -303,6 +304,7 @@
 <translation id="3606220979431771195">Türkçe-F</translation>
 <translation id="3616113530831147358">Ses</translation>
 <translation id="3619115746895587757">Kapuçino</translation>
+<translation id="3619593063686672873">Yakın tarihli video yok</translation>
 <translation id="3620292326130836921">Tümü yedeklendi!</translation>
 <translation id="3634507049637220048">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Yöneticiniz tarafından yönetiliyor, Ayrıntılar</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> öğe taşındı.</translation>
@@ -401,6 +403,7 @@
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> dosyası</translation>
 <translation id="457386861538956877">Diğer...</translation>
 <translation id="4579744207439506346"><ph name="ENTRY_NAME" /> seçime eklendi.</translation>
+<translation id="4583436353463424810">Yakın tarihli doküman yok</translation>
 <translation id="4594543368593301662"><ph name="SEARCH_TERM" /> için sonuçlar gösteriliyor.</translation>
 <translation id="4599600860674643278">Filtre sıfırlandı.</translation>
 <translation id="4603392156942865207"><ph name="FILE_NAME" /> adlı dosya <ph name="FOLDER_NAME" /> klasörüne kopyalanıyor</translation>
@@ -489,6 +492,7 @@
 <translation id="516592729076796170">ABD Programcı Dvorak</translation>
 <translation id="5172749059808361023">Kısıtlama ayrıntıları</translation>
 <translation id="5177526793333269655">Küçük resim görünümü</translation>
+<translation id="5181896909298187506">Yakın tarihli dosya yok</translation>
 <translation id="5194713942430106590">Sütunu artan düzende sıralamak için tıklayın.</translation>
 <translation id="5211614973734216083">Faroe dili</translation>
 <translation id="5218183485292899140">İsviçre Fransızcası</translation>
@@ -746,6 +750,7 @@
 <translation id="7408870451288633753">Çekçe</translation>
 <translation id="7417453074306512035">Etiyopya dili klavye</translation>
 <translation id="7417705661718309329">Google harita</translation>
+<translation id="7458955835361612701">Yakın tarihli resim yok</translation>
 <translation id="7460898608667578234">Ukraynaca</translation>
 <translation id="7469894403370665791">Bu ağa otomatik olarak bağlan</translation>
 <translation id="7486315294984620427">Dosyaları Parallels Desktop'a bırakabilmek için Windows dosyalarına kopyalamak gerekir.</translation>

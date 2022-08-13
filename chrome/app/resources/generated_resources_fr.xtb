@@ -224,6 +224,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1199814941632954229">Les certificats sont en cours de préparation pour ces profils</translation>
 <translation id="120069043972472860">Impossible à regarder</translation>
 <translation id="1201402288615127009">Suivant</translation>
+<translation id="1201564082781748151">Les données locales peuvent être restaurées si vous oubliez votre mot de passe</translation>
 <translation id="1202596434010270079">L'application kiosque a été mise à jour. Veuillez débrancher la clé USB.</translation>
 <translation id="120368089816228251">Note de musique</translation>
 <translation id="1203942045716040624">Nœud de calcul partagé : <ph name="SCRIPT_URL" /></translation>
@@ -268,6 +269,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1243436884219965846">Vérifier les mots de passe</translation>
 <translation id="1244265436519979884">Restauration Linux…</translation>
 <translation id="1244303850296295656">Erreur au niveau des extensions.</translation>
+<translation id="1245628370644070008">Récupération des données locales</translation>
 <translation id="1246863218384630739">Impossible d'installer <ph name="VM_NAME" />, car l'URL de l'image a renvoyé une erreur <ph name="HTTP_ERROR" />. Veuillez contacter votre administrateur.</translation>
 <translation id="1251366534849411931">Accolade ouvrante attendue : <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Cette action effacera <ph name="TOTAL_USAGE" /> des données stockées par les sites et les applications installées</translation>
@@ -1321,6 +1323,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="222447520299472966">Vous devez sélectionner au moins un album de la galerie d'art</translation>
 <translation id="2224551243087462610">Modifier le nom du dossier</translation>
 <translation id="2225864335125757863">Modifiez ces mots de passe immédiatement pour protéger votre compte :</translation>
+<translation id="2225927550500503913">Carte virtuelle activée</translation>
 <translation id="2226449515541314767">Le contrôle total des appareils MIDI a été bloqué pour ce site.</translation>
 <translation id="2226826835915474236">Raccourcis inactifs</translation>
 <translation id="2226907662744526012">Déverrouiller automatiquement une fois le code saisi</translation>
@@ -5229,6 +5232,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6003582434972667631">Thème défini par votre organisation</translation>
 <translation id="6006484371116297560">Classique</translation>
 <translation id="6007240208646052708">La recherche vocale n'est pas disponible dans votre langue.</translation>
+<translation id="6010651352520077187">Lorsque cette option est activée, Google Traduction vous propose de traduire les sites dans la langue de votre choix. Il peut aussi traduire automatiquement des sites.</translation>
 <translation id="6011193465932186973">Empreinte digitale</translation>
 <translation id="6011449291337289699">Effacer les données des sites</translation>
 <translation id="6011908034087870826">Envoi du lien à l'appareil <ph name="DEVICE_NAME" /></translation>
@@ -5541,6 +5545,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="630948338437014525">souvenirs</translation>
 <translation id="6309510305002439352">Micro désactivé</translation>
 <translation id="6310141306111263820">Impossible d'installer le profil eSIM. Pour obtenir de l'aide, veuillez contacter votre opérateur.</translation>
+<translation id="6311165245110979290">Carte virtuelle disponible</translation>
 <translation id="6311220991371174222">Impossible de démarrer Chrome, car une erreur s'est produite lors de l'ouverture de votre profil. Essayez de relancer Chrome.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Contrôle de sécurité effectué il y a 1 jour}one{Contrôle de sécurité effectué il y a {NUM_DAYS} jour}other{Contrôle de sécurité effectué il y a {NUM_DAYS} jours}}</translation>
 <translation id="6312638141433622592">Proposer d'afficher les articles en mode Lecteur, s'il est disponible</translation>
@@ -5769,6 +5774,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6532206849875187177">Sécurité et connexion</translation>
 <translation id="6532527800157340614">Échec de la connexion dû à l'impossibilité de récupérer votre jeton d'accès. Veuillez vérifier votre connexion réseau, puis réessayer.</translation>
 <translation id="6532663472409656417">Entreprise inscrite</translation>
+<translation id="6533315466883598769">Utiliser Google Traduction</translation>
 <translation id="6535331821390304775">Toujours autoriser <ph name="ORIGIN" /> à ouvrir les liens de ce type dans l'application associée</translation>
 <translation id="653659894138286600">Numériser les documents et les images</translation>
 <translation id="6537613839935722475">Le nom peut contenir des lettres, des chiffres et des traits d'union (-)</translation>

@@ -1240,6 +1240,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4329871760342656885">Napaka pri razčlenjevanju pravilnika: <ph name="ERROR" /></translation>
 <translation id="4331519897422864041">Zlagalnik 5</translation>
 <translation id="4331708818696583467">Ni varno</translation>
+<translation id="4333561522337981382">Upravljati okna na vseh zaslonih</translation>
 <translation id="4340575312453649552">Ta oglas je uporabljal preveč sredstev za napravo, zato ga je Chrome odstranil.</translation>
 <translation id="4340982228985273705">Ta računalnik ni zaznan kot računalnik, ki ga upravlja podjetje, zato lahko pravilnik samodejno namesti samo razširitve, ki gostujejo v Spletni trgovini Chrome. URL za posodobitve v Spletni trgovini Chrome je »<ph name="CWS_UPDATE_URL" />«.</translation>
 <translation id="4346197816712207223">Sprejete kreditne kartice</translation>
@@ -1453,6 +1454,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite iskati</translation>
 <translation id="4930153903256238152">Velika zmogljivost</translation>
+<translation id="4934780484581617878">Upravljanje oken</translation>
 <translation id="4936134414789135531">Vstavljenega elementa <ph name="VALUE_NAME" /> ni bilo mogoče najti.</translation>
 <translation id="4936675324097895694">Finance</translation>
 <translation id="4940163644868678279">Anonimni način v Chromu</translation>
@@ -1465,6 +1467,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4958444002117714549">Razširi seznam</translation>
 <translation id="4964505745997821360">Zdravstveno zavarovanje</translation>
 <translation id="4968522289500246572">Ta aplikacija je zasnovana za mobilne naprave in sprememba velikosti morda ne bo delovala pravilno. Z aplikacijo bodo morda težave ali pa se bo znova zagnala.</translation>
+<translation id="4968665849807487749">Lahko zahteva upravljanje oken na vseh zaslonih.</translation>
 <translation id="4969341057194253438">Izbriši posnetek</translation>
 <translation id="4973922308112707173">Dvojno luknjanje zgoraj</translation>
 <translation id="4976702386844183910">Nazadnje obiskano: <ph name="DATE" /></translation>
@@ -1968,6 +1971,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Preveriti strežnik proxy, požarni zid in konfiguracijo varnega strežnika DNS<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">Dvojno spenjanje na levi</translation>
+<translation id="6374865374745447009">upravljanje oken</translation>
 <translation id="6377268785556383139">1 rezultat za »<ph name="SEARCH_TEXT" />«</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">Morda bo prišlo do bremenitev.</translation>

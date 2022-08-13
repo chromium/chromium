@@ -196,6 +196,7 @@
 <translation id="1174391930667737831">গোপনীয়তা সংক্রান্ত হাব</translation>
 <translation id="117445914942805388">আপনার সিঙ্ক করা সমস্ত ডিভাইস এবং Google অ্যাকাউন্ট থেকে ব্রাউজিং ডেটা খালি করার জন্য <ph name="BEGIN_LINK" />সিঙ্ক সেটিংস দেখুন<ph name="END_LINK" />।</translation>
 <translation id="1175364870820465910">&amp;প্রিন্ট...</translation>
+<translation id="1176378369905028399">এই অ্যাকাউন্টের জন্য একটি পাসওয়ার্ড আগে থেকেই Google Password Manager (<ph name="USER_EMAIL" />)-এ স্টোর করা আছে</translation>
 <translation id="1176471985365269981">আপনার ডিভাইসে ফাইল অথবা ফোল্ডার এডিট করার অনুমতি নেই</translation>
 <translation id="1177863135347784049">কাস্টম</translation>
 <translation id="1178581264944972037">বিরতি</translation>
@@ -808,6 +809,7 @@
 <translation id="1745732479023874451">পরিচিতি ম্যানেজ করুন</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}one{এই ওয়েব অ্যাপে #টি ফাইল খুলবেন এবং এডিট করবেন?}other{এই ওয়েব অ্যাপে #টি ফাইল খুলবেন এবং এডিট করবেন?}}</translation>
 <translation id="1748563609363301860">আপনার Google অ্যাকাউন্ট অথবা শুধুমাত্র এই ডিভাইসে আপনি পাসওয়ার্ড সেভ করতে পারবেন</translation>
+<translation id="1749733017156547309">পাসওয়ার্ড দিতে হবে</translation>
 <translation id="1750172676754093297">আপনার নিরাপত্তা কী-তে ফিঙ্গারপ্রিন্ট স্টোর করা যায় না</translation>
 <translation id="1751249301761991853">ব্যক্তিগত</translation>
 <translation id="1751262127955453661"><ph name="ORIGIN" /> <ph name="FOLDERNAME" /> ফোল্ডারের ফাইলগুলি এডিট করতে পারবে, যতক্ষণ না আপনি এই সাইটের জন্য সব ট্যাব বন্ধ করে দিচ্ছেন</translation>
@@ -1805,6 +1807,7 @@
 <translation id="2645047101481282803">আপনার ডিভাইস <ph name="PROFILE_NAME" /> ম্যানেজ করে</translation>
 <translation id="2645270499129074468">{NUM_PASSWORDS,plural, =1{এই ডিভাইসে ১টি পাসওয়ার্ড ইমপোর্ট করা হয়েছে}one{এই ডিভাইসে {NUM_PASSWORDS}টি পাসওয়ার্ড ইমপোর্ট করা হয়েছে}other{এই ডিভাইসে {NUM_PASSWORDS}টি পাসওয়ার্ড ইমপোর্ট করা হয়েছে}}</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2645515095874728277">এই অ্যাকাউন্টের জন্য একটি পাসওয়ার্ড আগে থেকেই এই ডিভাইসে স্টোর করা আছে</translation>
 <translation id="2649045351178520408">Base64-এনকোড হওয়া ASCII, সার্টিফিকেটের শৃঙ্খলা</translation>
 <translation id="2652129567809778422">পাসওয়ার্ড বেছে নিন</translation>
 <translation id="2653033005692233957">সার্চ করা যায়নি</translation>
@@ -2165,6 +2168,7 @@
 <translation id="2972581237482394796">&amp;পুনরায় করুন</translation>
 <translation id="2973324205039581528">সাইটটি মিউট করুন</translation>
 <translation id="2973537811036309675">সাইড প্যানেল</translation>
+<translation id="2975761176769946178">URL দিতে হবে</translation>
 <translation id="2976557544729462544">কিছু ডিভাইস সঠিকভাবে বা সম্পূর্ণরূপে পারফর্ম করার জন্য 'ডেটা অ্যাক্সেস সুরক্ষা' বন্ধ রাখতে হবে।</translation>
 <translation id="2977480621796371840">গ্রুপ থেকে সরান</translation>
 <translation id="2979639724566107830">নতুন উইন্ডোতে খুলুন</translation>
@@ -2406,6 +2410,7 @@
 <translation id="3227137524299004712">মাইক্রোফোন</translation>
 <translation id="3232754137068452469">ওয়েব অ্যাপ</translation>
 <translation id="3233271424239923319">Linux অ্যাপ ও ফাইল ব্যাক-আপ করুন</translation>
+<translation id="3234251228180563751">ইউজারনেমে ১০০০টির বেশি অক্ষর আছে</translation>
 <translation id="3234978181857588512">ডিভাইসে সেভ করুন</translation>
 <translation id="3238192140106069382">কানেক্ট এবং যাচাই করা হচ্ছে</translation>
 <translation id="3239373508713281971"><ph name="APP_NAME" /> ক্ষেত্রে প্রয়োগ করা সময়সীমা সরানো হয়েছে</translation>
@@ -5227,6 +5232,7 @@
 <translation id="5975792506968920132">ব্যাটারি চার্জের শতাংশ মান</translation>
 <translation id="5976160379964388480">অন্যান্য</translation>
 <translation id="5978277834170881274">&amp;প্রাথমিক বানান পরীক্ষা ব্যবহার করুন</translation>
+<translation id="5978493744931296692">আপনার অ্যাডমিনিস্ট্রেটর অন্যান্য প্রোফাইল বন্ধ করে দিয়েছেন</translation>
 <translation id="5979084224081478209">পাসওয়ার্ড চেক করুন</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{আপনি ১টি সম্ভাব্য ক্ষতিকর এক্সটেনশন আবার চালু করে দিয়েছেন}one{আপনি {NUM_EXTENSIONS}টি সম্ভাব্য ক্ষতিকর এক্সটেনশন আবার চালু করে দিয়েছেন}other{আপনি {NUM_EXTENSIONS}টি সম্ভাব্য ক্ষতিকর এক্সটেনশন আবার চালু করে দিয়েছেন}}</translation>
 <translation id="5979353814339191480">এই বিকল্প ডেটা প্ল্যান বা মোবাইল নেটওয়ার্ক ডংগলের সাথে Chromebook-এর জন্য প্রযোজ্য অথবা পোর্টেবল হটস্পটে টেথারিংয়ের সময় ব্যবহার করা যায়</translation>
@@ -8022,6 +8028,7 @@
 <translation id="8683081248374354009">গ্রুপ রিসেট করুন</translation>
 <translation id="8688672835843460752">উপলব্ধ</translation>
 <translation id="8690129572193755009">সাইটগুলি প্রোটোকল নিয়ন্ত্রণ করতে চাইতে পারে</translation>
+<translation id="8692107307702113268">পাসওয়ার্ডে ১০০০টির বেশি অক্ষর আছে</translation>
 <translation id="8695139659682234808">সেট আপ করা হয়ে গেলে অভিভাবকীয় নিয়ন্ত্রণ যোগ করুন</translation>
 <translation id="8695825812785969222">Open &amp;Location...</translation>
 <translation id="8698269656364382265">আগের স্ক্রিনে ফিরে যেতে, বাঁদিক থেকে সোয়াইপ করুন।</translation>
@@ -8303,6 +8310,7 @@
 <translation id="8960638196855923532">আপনি এখন আপনার ফোনের বিজ্ঞপ্তি এবং অ্যাপ দেখতে পারেন</translation>
 <translation id="8962051932294470566">আপনি একসাথে কেবল একটি ফাইল শেয়ার করতে পারবেন। বর্তমান ফাইলটি ট্রান্সফার করা হয়ে গেলে, আবার চেষ্টা করুন।</translation>
 <translation id="8962083179518285172">বিবরণ লুকান</translation>
+<translation id="8962863356073277855">URL ফর্ম্যাটটি https://www.example.com হতে হবে</translation>
 <translation id="8962918469425892674">এই সাইটটি মোশন এবং লাইট সেন্সর ব্যবহার করছে।</translation>
 <translation id="8965037249707889821">পুরানো পাসওয়ার্ড লিখুন</translation>
 <translation id="89667524227025535">আপনার ডিভাইসের ক্যামেরা ব্যবহার করে একটি QR কোড স্ক্যান করুন অথবা আপনার পরিষেবা প্রদানকারীর থেকে পাওয়া অ্যাক্টিভেশন কোড লিখুন</translation>
@@ -8573,6 +8581,7 @@
 <translation id="9220525904950070496">অ্যাকাউন্ট সরান</translation>
 <translation id="9220820413868316583">তুলে নিন এবং আবার চেষ্টা করুন।</translation>
 <translation id="922152298093051471">Chrome কাস্টমাইজ করুন</translation>
+<translation id="9222839025964079645">পাসওয়ার্ড ইমপোর্ট করা হয়নি (<ph name="COUNT" />টি)</translation>
 <translation id="923467487918828349">সমস্ত দেখান</translation>
 <translation id="924818813611903184">ChromeOS সেটিংসে ভাষা ম্যানেজ করুন</translation>
 <translation id="929117907539171075">ইনস্টল করা অ্যাপের অফলাইন ডেটা মুছে ফেলা হবে</translation>

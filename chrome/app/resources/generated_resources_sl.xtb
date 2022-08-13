@@ -196,6 +196,7 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1174391930667737831">Središče za zasebnost</translation>
 <translation id="117445914942805388">Če želite izbrisati podatke brskanja iz vseh sinhroniziranih naprav in Google Računa, <ph name="BEGIN_LINK" />odprite nastavitve sinhronizacije<ph name="END_LINK" />.</translation>
 <translation id="1175364870820465910">&amp;Natisni ...</translation>
+<translation id="1176378369905028399">Geslo za ta račun je že shranjeno v Googlovem upravitelju gesel (<ph name="USER_EMAIL" />).</translation>
 <translation id="1176471985365269981">Ni dovoljeno urejanje datotek ali map v napravi.</translation>
 <translation id="1177863135347784049">Po meri</translation>
 <translation id="1178581264944972037">Prekini</translation>
@@ -809,6 +810,7 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1745732479023874451">Upravljanje stikov</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}one{Želite odpreti in urediti # datoteko v tej spletni aplikaciji?}two{Želite odpreti in urediti # datoteki v tej spletni aplikaciji?}few{Želite odpreti in urediti # datoteke v tej spletni aplikaciji?}other{Želite odpreti in urediti # datotek v tej spletni aplikaciji?}}</translation>
 <translation id="1748563609363301860">To geslo lahko shranite v računu Google ali samo v tej napravi</translation>
+<translation id="1749733017156547309">Vnesti morate geslo.</translation>
 <translation id="1750172676754093297">Vaš varnostni ključ ne more shranjevati prstnih odtisov</translation>
 <translation id="1751249301761991853">Osebno</translation>
 <translation id="1751262127955453661">Spletno mesto <ph name="ORIGIN" /> bo lahko urejalo datoteke v mapi <ph name="FOLDERNAME" />, dokler ne zaprete vseh zavihkov tega spletnega mesta</translation>
@@ -1760,6 +1762,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2602501489742255173">Povlecite navzgor, če želite začeti</translation>
 <translation id="2603115962224169880">Čiščenje računalnika</translation>
 <translation id="2603355571917519942">Funkcija Voice Match je pripravljena</translation>
+<translation id="2604129989323098489">Spletna mesta običajno zahtevajo podatke o vaših zaslonih, da lahko inteligentno odpirajo in postavljajo okna, na primer prikazujejo dokumente ali celozaslonsko vsebino drugo ob drugi.</translation>
 <translation id="2604255671529671813">Napaka v omrežni povezavi</translation>
 <translation id="2605668923777146443">Odprite <ph name="LINK_BEGIN" />nastavitve<ph name="LINK_END" />, če si želite ogledati možnosti funkcije Better Together.</translation>
 <translation id="2606246518223360146">Poveži podatke</translation>
@@ -1805,6 +1808,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2645047101481282803">Napravo upravlja <ph name="PROFILE_NAME" />.</translation>
 <translation id="2645270499129074468">{NUM_PASSWORDS,plural, =1{1 geslo je uvoženo v to napravo.}one{{NUM_PASSWORDS} geslo je uvoženo v to napravo.}two{{NUM_PASSWORDS} gesli sta uvoženi v to napravo.}few{{NUM_PASSWORDS} gesla so uvožena v to napravo.}other{{NUM_PASSWORDS} gesel je uvoženih v to napravo.}}</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
+<translation id="2645515095874728277">Geslo za ta račun je že shranjeno v tej napravi.</translation>
 <translation id="2649045351178520408">Base64 kodiran ASCII, veriga potrdil</translation>
 <translation id="2652129567809778422">Izbira gesla</translation>
 <translation id="2653033005692233957">Iskanje ni uspelo</translation>
@@ -2165,6 +2169,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="2972581237482394796">&amp;Uveljavi</translation>
 <translation id="2973324205039581528">Izklopi zvok spletnega mesta</translation>
 <translation id="2973537811036309675">Stransko podokno</translation>
+<translation id="2975761176769946178">Vnesti morate URL.</translation>
 <translation id="2976557544729462544">Nekatere naprave zahtevajo, da onemogočite zaščito dostopa do podatkov, če želite, da delujejo ustrezno ali s polno zmogljivostjo.</translation>
 <translation id="2977480621796371840">Odstrani iz skupine</translation>
 <translation id="2979639724566107830">Odpri v novem oknu</translation>
@@ -2406,6 +2411,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3232754137068452469">Spletna aplikacija</translation>
 <translation id="3233271424239923319">Varnostno kopiranje aplikacij in datotek za Linux</translation>
+<translation id="3234251228180563751">Uporabniško ime vsebuje več kot 1000 znakov.</translation>
 <translation id="3234978181857588512">Shrani v napravo</translation>
 <translation id="3238192140106069382">Vzpostavljanje povezave in preverjanje</translation>
 <translation id="3239373508713281971">Časovna omejitev je odstranjena za aplikacijo <ph name="APP_NAME" /></translation>
@@ -5227,6 +5233,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="5975792506968920132">Napolnjenost akumulatorja</translation>
 <translation id="5976160379964388480">Drugo</translation>
 <translation id="5978277834170881274">&amp;Uporaba osnovnega preverjanja črkovanja</translation>
+<translation id="5978493744931296692">Skrbnik je onemogočil druge profile.</translation>
 <translation id="5979084224081478209">Preveri gesla</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{Znova ste vklopili eno morebiti škodljivo razširitev}one{Znova ste vklopili {NUM_EXTENSIONS} morebiti škodljivo razširitev}two{Znova ste vklopili {NUM_EXTENSIONS} morebiti škodljivi razširitvi}few{Znova ste vklopili {NUM_EXTENSIONS} morebiti škodljive razširitve}other{Znova ste vklopili {NUM_EXTENSIONS} morebiti škodljivih razširitev}}</translation>
 <translation id="5979353814339191480">Ta možnost velja za Chromebooke s podatkovnim paketom ali ključkom za mobilno omrežje oziroma za tiste, ki imajo povezavo s prenosno dostopno točko vzpostavljeno z internetom prek mobilnega telefona.</translation>
@@ -5391,6 +5398,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6130692320435119637">Dodaj Wi-Fi</translation>
 <translation id="6130887916931372608">Tipka tipkovnice</translation>
 <translation id="6135823405800500595">Poskrbite, da je telefon v bližini, odklenjen in ima vklopljeni povezavi Bluetooth in Wi-Fi.</translation>
+<translation id="6135826623269483856">Upravljanje oken na vseh zaslonih ni dovoljeno.</translation>
 <translation id="6136114942382973861">Zapri vrstico za prenose</translation>
 <translation id="6136287496450963112">Vaš varnostni ključ ni zaščiten s kodo PIN. Če želite upravljati prstne odtise, naprej ustvarite kodo PIN.</translation>
 <translation id="6138680304137685902">Podpis X9.62 ECDSA z algoritmom SHA-384</translation>
@@ -7404,6 +7412,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
     <ph name="BEGIN_PARAGRAPH3" />To storitev lahko izklopite v nastavitvah.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8076492880354921740">Zavihki</translation>
 <translation id="8076835018653442223">Skrbnik je onemogočil dostop do lokalnih datotek v vaši napravi</translation>
+<translation id="80798452873915119">Spletna mesta lahko zahtevajo upravljanje oken na vseh zaslonih.</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Sejo upravlja <ph name="MANAGER_NAME" />. Skrbniki lahko izbrišejo profil in nadzirajo omrežni promet.</translation>
 <translation id="8081989000209387414">Želite onemogočiti odpravljanje napak z mostom za odpravljanje težav s sistemom Android (ADB)?</translation>
@@ -7708,6 +7717,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8371695176452482769">Začnite govoriti</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Izklop zvoka spletnega mesta}one{Izklop zvoka spletnih mest}two{Izklop zvoka spletnih mest}few{Izklop zvoka spletnih mest}other{Izklop zvoka spletnih mest}}</translation>
 <translation id="8373652277231415614">Imeniki Crostini, deljeni z drugimi</translation>
+<translation id="8374243500935816406">Spletnim mestom ni dovoljeno upravljati oken na vseh zaslonih.</translation>
 <translation id="8376137163494131156">Povejte nam, kaj se dogaja z Googlom Cast.</translation>
 <translation id="8376384591331888629">Vključno s piškotki drugih mest na tem spletnem mestu</translation>
 <translation id="8376451933628734023">Če vas ta spletni program poskuša zavesti, da gre za drug program, ga odmestite.</translation>
@@ -8002,6 +8012,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8670537393737592796">Če se želite hitro vrniti sem, s klikom gumba za namestitev namestite aplikacijo <ph name="APP_NAME" />.</translation>
 <translation id="867085395664725367">Prišlo je do začasne napake strežnika.</translation>
 <translation id="8673026256276578048">Iskanje v spletu ...</translation>
+<translation id="867329473311423817">Upravljanje oken na vseh zasloni je dovoljeno.</translation>
 <translation id="8673383193459449849">Težava s strežnikom</translation>
 <translation id="8674903726754070732">Vaš računalnik je konfiguriran s popačenim ID-jem strojne opreme. Zaradi tega Chrome OS ne more namestiti najnovejših varnostnih popravkov in vaš računalnik <ph name="BEGIN_BOLD" />je lahko še bolj izpostavljen zlonamernim napadom<ph name="END_BOLD" />.</translation>
 <translation id="8675704450909805533">Namestitveni program ni uspel najti veljavnega cilja za namestitev sistema <ph name="DEVICE_OS" />.</translation>
@@ -8022,6 +8033,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8683081248374354009">Ponastavi skupino</translation>
 <translation id="8688672835843460752">Na voljo</translation>
 <translation id="8690129572193755009">Spletna mesta lahko zahtevajo obravnavo protokolov.</translation>
+<translation id="8692107307702113268">Geslo vsebuje več kot 1000 znakov.</translation>
 <translation id="8695139659682234808">Dodajanje starševskega nadzora po nastavitvi</translation>
 <translation id="8695825812785969222">Odpri &amp;mesto ...</translation>
 <translation id="8698269656364382265">Če se želite vrniti na prejšnji zaslon, s prstom povlecite od leve strani.</translation>
@@ -8305,6 +8317,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="8960638196855923532">Zdaj si lahko ogledate obvestila in aplikacije telefona</translation>
 <translation id="8962051932294470566">Hkrati lahko delite samo eno datoteko. Poskusite znova, ko bo trenutni prenos končan.</translation>
 <translation id="8962083179518285172">Skrij podrobnosti</translation>
+<translation id="8962863356073277855">URL mora biti v obliki https://www.example.com.</translation>
 <translation id="8962918469425892674">To spletno mesto uporablja tipala gibanja ali svetlobe.</translation>
 <translation id="8965037249707889821">Vnesite staro geslo</translation>
 <translation id="89667524227025535">Optično preberite kodo QR s fotoaparatom naprave ali vnesite kodo za aktiviranje, ki jo zagotovi operater.</translation>
@@ -8575,6 +8588,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="9220525904950070496">Odstranitev računa</translation>
 <translation id="9220820413868316583">Dvignite prst, nato poskusite znova.</translation>
 <translation id="922152298093051471">Prilagodi Chrome</translation>
+<translation id="9222839025964079645">Gesla niso bila uvožena (<ph name="COUNT" />).</translation>
 <translation id="923467487918828349">Pokaži vse</translation>
 <translation id="924818813611903184">Upravljanje jezikov v nastavitvah sistema Chrome OS</translation>
 <translation id="929117907539171075">Izbrisani bodo tudi podatki brez povezave v nameščeni aplikaciji</translation>

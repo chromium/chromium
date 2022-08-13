@@ -149,6 +149,7 @@
 <translation id="2115956742084455574">Fel kod</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, version <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB av <ph name="TOTAL_MEMORY" /> GB är tillgängligt</translation>
+<translation id="2130871201950918186">Om fem sekunder startas enheten om.</translation>
 <translation id="2138109643290557664">Med strömmen</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> foton</translation>
@@ -211,6 +212,7 @@
 <translation id="2536159006530886390">Det gick inte att ansluta till internet.</translation>
 <translation id="2570743873672969996">Kör test av <ph name="TEST_NAME" /> …</translation>
 <translation id="2584559707064218956">Öppna inställningarna för att konfigurera det</translation>
+<translation id="2597774443162333062">Filerna skickas till Google för felsökning</translation>
 <translation id="2619761439309613843">Daglig uppdatering</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="2638662041295312666">Inloggningsbild</translation>
@@ -672,6 +674,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="6659594942844771486">Flik</translation>
 <translation id="6692996468359469499">Få information utifrån det du markerar</translation>
 <translation id="6704062477274546131">DNS-matchning</translation>
+<translation id="6719240409382354629">Förbereder omstart …</translation>
 <translation id="6723839937902243910">Batteri</translation>
 <translation id="6723847290197874913">Tangentbordets bakgrundsbelysning</translation>
 <translation id="672609503628871915">Kolla nyheterna</translation>
@@ -889,6 +892,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="8747900814994928677">Bekräfta ändring</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album i Google Foto</translation>
+<translation id="8778600430213950389">Något gick fel. Det beror troligtvis på ett problem med maskinvaran. Byt ut moderkortet och testa att reparera igen.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Nätverket kan ha en infångstportal</translation>
 <translation id="8798099450830957504">Standard</translation>
@@ -942,6 +946,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="910415269708673980">Uppdatera biljetten för <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skannar sidan <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Lås upp</translation>
+<translation id="9118126012493516930">Det gick inte att slutföra reparationen</translation>
 <translation id="9122602430962285795">Öppna inställningarna för att återansluta</translation>
 <translation id="9126720536733509015">Spara flera sidor till en PDF</translation>
 <translation id="9137526406337347448">Google Services</translation>

@@ -486,6 +486,7 @@
 <translation id="2219658597883514593">重启教程</translation>
 <translation id="2219735899272417925">需要重置设备</translation>
 <translation id="2224337661447660594">未连接到互联网</translation>
+<translation id="2225927550500503913">虚拟卡已开启</translation>
 <translation id="2230458221926704099">请使用<ph name="BEGIN_LINK" />诊断应用<ph name="END_LINK" />修复网络连接</translation>
 <translation id="2239100178324503013">立即发送</translation>
 <translation id="2241693394036365668">下载文件</translation>
@@ -1940,6 +1941,7 @@
 <translation id="6300452962057769623">{0,plural, =0{您的设备将立即重启}=1{您的设备将在 1 秒后重启}other{您的设备将在 # 秒后重启}}</translation>
 <translation id="6302269476990306341">Chrome 中的 Google 助理即将停止工作</translation>
 <translation id="6305205051461490394">无法访问 <ph name="URL" />。</translation>
+<translation id="6311165245110979290">有可用的虚拟卡</translation>
 <translation id="6312113039770857350">网页无法打开</translation>
 <translation id="6316226860534107313">踏板车与机动脚踏两用车</translation>
 <translation id="63172326633386613">管理无障碍设置</translation>
@@ -2284,6 +2286,7 @@
 <translation id="7305756307268530424">启用慢速模式</translation>
 <translation id="7308436126008021607">后台同步</translation>
 <translation id="7310392214323165548">设备很快就会重启</translation>
+<translation id="7311244614769792472">找不到任何结果</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">与连接相关的帮助</translation>
 <translation id="7323804146520582233">隐藏“<ph name="SECTION" />”部分</translation>

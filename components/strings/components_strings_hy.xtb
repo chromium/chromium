@@ -486,6 +486,7 @@
 <translation id="2219658597883514593">Նորից բացել ուղեցույցը</translation>
 <translation id="2219735899272417925">Պահանջվում է վերակայել սարքը</translation>
 <translation id="2224337661447660594">Ինտերնետ կապ չկա</translation>
+<translation id="2225927550500503913">Վիրտուալ քարտը միացված է</translation>
 <translation id="2230458221926704099">Ստուգեք ձեր կապը <ph name="BEGIN_LINK" />ախտորոշիչ հավելվածի<ph name="END_LINK" /> օգնությամբ</translation>
 <translation id="2239100178324503013">Ուղարկել</translation>
 <translation id="2241693394036365668">Ֆայլի ներբեռնում</translation>
@@ -1946,6 +1947,7 @@
 <translation id="6300452962057769623">{0,plural, =0{Սարքը հիմա կվերագործարկվի}=1{Սարքը կվերագործարկվի 1 վայրկյանից}one{Սարքը կվերագործարկվի # վայրկյանից}other{Սարքը կվերագործարկվի # վայրկյանից}}</translation>
 <translation id="6302269476990306341">Google Օգնականը Chrome-ում կանջատվի</translation>
 <translation id="6305205051461490394"><ph name="URL" />-ն անհասանելի է:</translation>
+<translation id="6311165245110979290">Հասանելի է վիրտուալ քարտ</translation>
 <translation id="6312113039770857350">Կայքէջն անհասանելի է</translation>
 <translation id="6316226860534107313">Մոտոցիկլետներ և մոպեդներ</translation>
 <translation id="63172326633386613">Կառավարել հատուկ գործառույթների կարգավորումները</translation>
@@ -2290,6 +2292,7 @@
 <translation id="7305756307268530424">Գործարկել ավելի դանդաղ</translation>
 <translation id="7308436126008021607">ֆոնային համաժամացում</translation>
 <translation id="7310392214323165548">Սարքը շուտով կվերագործարկվի</translation>
+<translation id="7311244614769792472">Ոչինչ չի գտնվել</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Օգնություն կապի խնդիրների դեպքում</translation>
 <translation id="7323804146520582233">Թաքցնել «<ph name="SECTION" />» բաժինը</translation>

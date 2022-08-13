@@ -191,6 +191,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1430915738399379752">Print</translation>
 <translation id="1432187715652018471">page wants to install a service handler.</translation>
 <translation id="1432581352905426595">Manage search engines</translation>
+<translation id="1435940442311036198">Use a passkey on a different device</translation>
 <translation id="1436185428532214179">Can ask to edit files and folders on your device</translation>
 <translation id="1442386063175183758">Right gate fold</translation>
 <translation id="1442987760062738829">Punch</translation>
@@ -1407,7 +1408,9 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4798078619018708837">Enter the expiry date and CVC for <ph name="CREDIT_CARD" /> to update your card details. Once you confirm, card details from your Google Account will be shared with this site.</translation>
 <translation id="4800132727771399293">Check your expiration date and CVC and try again</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
+<translation id="4806051791961048632">Use Touch ID</translation>
 <translation id="4809079943450490359">Instructions from your device administrator:</translation>
+<translation id="4811450222531576619">Learn about its source and topic</translation>
 <translation id="4812751092864334025">Wearable technology</translation>
 <translation id="4813512666221746211">Network error</translation>
 <translation id="4816492930507672669">Fit to page</translation>
@@ -1680,6 +1683,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5509780412636533143">Managed bookmarks</translation>
 <translation id="5510481203689988000">This setting is controlled in Cookie settings.</translation>
 <translation id="5510766032865166053">It may have been moved or deleted.</translation>
+<translation id="5513528801833998679">Use device sign-in</translation>
 <translation id="5518670652865028077">Arts and entertainment</translation>
 <translation id="5519516356611866228">With your changes</translation>
 <translation id="5523118979700054094">Policy name</translation>
@@ -1707,6 +1711,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5571083550517324815">Can’t pick up from this address. Select a different address.</translation>
 <translation id="557886905979275351">Razors and shavers</translation>
 <translation id="5580958916614886209">Check your expiry month and try again</translation>
+<translation id="558420943003240152">Manage passwords and passkeys…</translation>
 <translation id="5586446728396275693">No saved addresses</translation>
 <translation id="5587987780934666589">Platform user</translation>
 <translation id="5593349413089863479">Connection is not fully secure</translation>
@@ -1771,6 +1776,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5765072501007116331">To see delivery methods and requirements, select an address</translation>
 <translation id="57689295674415555">Virtual card number not filled in?</translation>
 <translation id="5776313857861697733">Priority</translation>
+<translation id="5778389256418062749">Use a passkey on a different device</translation>
 <translation id="5781136890105823427">Experiment enabled</translation>
 <translation id="578305955206182703">Amber</translation>
 <translation id="57838592816432529">Mute</translation>
@@ -2529,6 +2535,7 @@ Additional details:
 <translation id="7880146494886811634">Save Address</translation>
 <translation id="7882421473871500483">Brown</translation>
 <translation id="7882995332186050355">Cargo trucks and trailers</translation>
+<translation id="788679692472636252">Manage passwords and passkeys…</translation>
 <translation id="7887683347370398519">Check your CVC and try again</translation>
 <translation id="7887885240995164102">Enter picture-in-picture</translation>
 <translation id="7888575728750733395">Print rendering intent</translation>

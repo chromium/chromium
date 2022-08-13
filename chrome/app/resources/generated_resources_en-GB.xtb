@@ -513,6 +513,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1480663089572535854">You can go back to change the assignment for 'Select'. You can always turn off auto-scan in Settings.</translation>
 <translation id="1481537595330271162">Error resizing disk</translation>
 <translation id="1482626744466814421">Bookmark This Tab...</translation>
+<translation id="1482772681918035149">edit passwords</translation>
 <translation id="1483493594462132177">Send</translation>
 <translation id="1484979925941077974">Site is using Bluetooth</translation>
 <translation id="1485015260175968628">It can now:</translation>
@@ -527,6 +528,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1500801317528437432">Learn more about unsupported Chrome Apps</translation>
 <translation id="150411034776756821">Remove <ph name="SITE" /></translation>
 <translation id="1504551620756424144">Shared folders are available in Windows at <ph name="BASE_DIR" />.</translation>
+<translation id="1505494256539862015">export passwords</translation>
 <translation id="1506061864768559482">Search engine</translation>
 <translation id="1507170440449692343">This page has been blocked from accessing your camera.</translation>
 <translation id="1507246803636407672">&amp;Discard</translation>
@@ -2977,6 +2979,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3778740492972734840">&amp;Developer tools</translation>
 <translation id="3778868487658107119">Ask it questions. Tell it to do things. It's your personal Google, always ready to help.</translation>
 <translation id="3781742599892759500">Linux microphone access</translation>
+<translation id="3783889407390048282">Free up space to avoid losing access to Android.</translation>
 <translation id="3784472333786002075">Cookies are files created by websites. There are two types of cookies: first-party cookies are created by the site that you visit. The site is shown on the address bar. Third-party cookies are created by other sites. These sites own some of the content, like ads or images, that you see on the website that you visit.</translation>
 <translation id="3785308913036335955">Show Apps Shortcut</translation>
 <translation id="3785727820640310185">Saved passwords for this site</translation>
@@ -4291,6 +4294,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5066100345385738837">Manage Secure DNS in Chrome OS settings</translation>
 <translation id="5067399438976153555">Always on</translation>
 <translation id="5067867186035333991">Ask if <ph name="HOST" /> wants to access your microphone</translation>
+<translation id="5068553687099139861">show passwords</translation>
 <translation id="5068918910148307423">Do not allow recently closed sites to finish sending and receiving data</translation>
 <translation id="5068919226082848014">Pizza</translation>
 <translation id="5070710277167211639">Upgrade navigations to HTTPS and warn you before loading sites that don't support it</translation>
@@ -6442,6 +6446,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7152478047064750137">This extension requires no special permissions</translation>
 <translation id="7154130902455071009">Change your start page to: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Existing photo from camera or file</translation>
+<translation id="7159953856712257647">Installed by default</translation>
 <translation id="7160182524506337403">You can now view your phone's notifications</translation>
 <translation id="7163202347044721291">Verifying activation code…</translation>
 <translation id="716640248772308851">"<ph name="EXTENSION" />" can read images, video and sound files in the ticked locations.</translation>
@@ -7654,6 +7659,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8314835274931377415">Start Switch Access setup?</translation>
 <translation id="8317582043908962055">Recognise PDF text</translation>
 <translation id="8317671367883557781">Add network connection</translation>
+<translation id="8317965619823678157">copy passwords</translation>
 <translation id="8318266828739827371">Use a split-screen view to see the magnified area of your screen. Use Search + Ctrl + D to turn docked magnifier on and off.</translation>
 <translation id="8319414634934645341">Extended Key Usage</translation>
 <translation id="8321837372750396788">This <ph name="DEVICE_TYPE" /> will be managed by <ph name="MANAGER" />.</translation>
@@ -8581,6 +8587,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="929117907539171075">Offline data in installed app will also be cleared</translation>
 <translation id="930268624053534560">Detailed Timestamps</translation>
 <translation id="930893132043726269">Currently roaming</translation>
+<translation id="93140074055951850">Android apps were stopped</translation>
 <translation id="932327136139879170">Home</translation>
 <translation id="932508678520956232">Could not initiate printing.</translation>
 <translation id="933427034780221291">{NUM_FILES,plural, =1{This file is too big for a security check. You can upload files up to 50 MB.}other{Some of these files are too big for a security check. You can upload files up to 50 MB.}}</translation>

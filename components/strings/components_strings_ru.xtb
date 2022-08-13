@@ -486,6 +486,7 @@
 <translation id="2219658597883514593">Открыть руководство</translation>
 <translation id="2219735899272417925">требуется сбросить настройки устройства</translation>
 <translation id="2224337661447660594">Нет подключения к Интернету</translation>
+<translation id="2225927550500503913">Виртуальная карта включена</translation>
 <translation id="2230458221926704099">Чтобы устранить неполадки, проведите <ph name="BEGIN_LINK" />диагностику<ph name="END_LINK" /> подключения.</translation>
 <translation id="2239100178324503013">Отправить</translation>
 <translation id="2241693394036365668">Скачан файл</translation>
@@ -1944,6 +1945,7 @@
 <translation id="6300452962057769623">{0,plural, =0{Устройство сейчас перезапустится}=1{Устройство перезапустится через 1 секунду}one{Устройство перезапустится через # секунду}few{Устройство перезапустится через # секунды}many{Устройство перезапустится через # секунд}other{Устройство перезапустится через # секунды}}</translation>
 <translation id="6302269476990306341">Google Ассистент в Chrome отключится</translation>
 <translation id="6305205051461490394">Сайт <ph name="URL" /> недоступен.</translation>
+<translation id="6311165245110979290">Виртуальная карта доступна</translation>
 <translation id="6312113039770857350">Не удалось открыть веб-страницу</translation>
 <translation id="6316226860534107313">Мотороллеры и мопеды</translation>
 <translation id="63172326633386613">Открыть настройки специальных возможностей</translation>
@@ -2288,6 +2290,7 @@
 <translation id="7305756307268530424">Запустить медленнее</translation>
 <translation id="7308436126008021607">Фоновая синхронизация</translation>
 <translation id="7310392214323165548">Скоро устройство будет перезагружено</translation>
+<translation id="7311244614769792472">Ничего не найдено</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Устранение ошибок при подключении к Интернету</translation>
 <translation id="7323804146520582233">Скрыть раздел "<ph name="SECTION" />"</translation>

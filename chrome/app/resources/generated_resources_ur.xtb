@@ -1746,6 +1746,7 @@
 <translation id="2602501489742255173">شروع کرنے کیلئے اوپر سوائپ کریں</translation>
 <translation id="2603115962224169880">کمپیوٹر صاف کریں</translation>
 <translation id="2603355571917519942">‏Voice Match تیار ہے</translation>
+<translation id="2604129989323098489">سائٹس عام طور پر آپ کے ڈسپلیز کے بارے میں معلومات طلب کرتی ہیں تاکہ وہ ونڈوز کو اچھے طریقے سے کھول سکیں اور رکھ سکیں، جیسے دستاویزات یا پوری اسکرین مواد کو ساتھ ساتھ دکھانا</translation>
 <translation id="2604255671529671813">نیٹ ورک کنکشن میں خرابی</translation>
 <translation id="2605668923777146443">‏Better Together کی خاطر اپنے اختیارات دیکھنے کیلئے <ph name="LINK_BEGIN" />ترتیبات<ph name="LINK_END" /> پر جائیں۔</translation>
 <translation id="2606246518223360146">ڈیٹا کو لنک کریں</translation>
@@ -5377,6 +5378,7 @@
 <translation id="6130692320435119637">‏Wi-Fi شامل کریں</translation>
 <translation id="6130887916931372608">کی بورڈ کی کلید</translation>
 <translation id="6135823405800500595">‏یقینی بنائیں کہ آپ کا فون قریب ہے، غیر مقفل ہے، اور بلوٹوتھ اور Wi-Fi آن ہیں</translation>
+<translation id="6135826623269483856">آپ کے سبھی ڈسپلیز پر ونڈوز کا نظم کرنے کی اجازت نہیں ہے</translation>
 <translation id="6136114942382973861">ڈاؤن لوڈز بار بند کریں</translation>
 <translation id="6136287496450963112">‏آپ کی سیکیورٹی کلید PIN کے ذریعے محفوظ نہیں ہے۔ فنگر پرنٹس کا نظم کرنے کیلئے، پہلے ایک PIN تخلیق کریں۔</translation>
 <translation id="6138680304137685902">‏SHA-384 کے ساتھ X9.62 ECDSA دستخط</translation>
@@ -7382,6 +7384,7 @@
     <ph name="BEGIN_PARAGRAPH3" />آپ ترتیبات میں اس سروس کو آف کر سکتے ہیں۔<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8076492880354921740">ٹیبز</translation>
 <translation id="8076835018653442223">آپ کے آلے پر مقامی فائلوں تک رسائی آپ کے منتظم کی طرف سے غیر فعال کر دی گئی ہے</translation>
+<translation id="80798452873915119">سائٹس آپ کے سبھی ڈسپلیز پر ونڈوز کا نظم کرنے کو کہہ سکتی ہیں</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">آپ کا سیشن <ph name="MANAGER_NAME" /> کے زیر انتظام ہے۔ منتظمین آپ کی پروفائل حذف کر سکتے ہیں اور آپ کے نیٹ ورک ٹریفک کی نگرانی بھی کر سکتے ہیں۔</translation>
 <translation id="8081989000209387414">‏ADB ڈیبگنگ غیر فعال کریں؟</translation>
@@ -7686,6 +7689,7 @@
 <translation id="8371695176452482769">اب بولیں</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{سائٹ کی آواز بند کریں}other{سائٹس کی آواز بند کریں}}</translation>
 <translation id="8373652277231415614">‏Crostini کی اشتراک کردہ ڈائرکٹریز</translation>
+<translation id="8374243500935816406">سائٹس کو اپنے تمام ڈسپلیز پر ونڈوز کا نظم کرنے کی اجازت نہ دیں</translation>
 <translation id="8376137163494131156">‏ہمیں بتائیں کہ Google Cast کے ساتھ کیا ہو رہا ہے۔</translation>
 <translation id="8376384591331888629">اس سائٹ میں فریق ثالث کوکیز سمیت</translation>
 <translation id="8376451933628734023">اگر یہ ویب ایپ آپ کو سوچنے پر مجبور کر رہی ہو کہ یہ ایک مختلف ایپ ہے تو اسے اَن انسٹال کریں۔</translation>
@@ -7980,6 +7984,7 @@
 <translation id="8670537393737592796">فوری طور پر یہاں واپس آنے کے لیے، 'انسٹال کریں' بٹن پر کلک کر کے <ph name="APP_NAME" /> انسٹال کریں</translation>
 <translation id="867085395664725367">سرور کی عارضی خرابی پیش آگئی۔</translation>
 <translation id="8673026256276578048">ویب پر تلاش کریں…</translation>
+<translation id="867329473311423817">آپ کے تمام ڈسپلیز پر ونڈوز کا نظم کرنے کی اجازت ہے</translation>
 <translation id="8673383193459449849">سرور کا مسئلہ</translation>
 <translation id="8674903726754070732">‏بدقسمتی سے، آپ کا کمپیوٹر خراب ہارڈویئر ID کے ساتھ کنفیگر کیا ہوا ہے۔ یہ ChromeOS کو تازہ ترین سیکیورٹی اصلاحات کے ساتھ اپ ڈیٹ ہونے سے روکتا ہے اور آپ کے کمپیوٹر کو <ph name="BEGIN_BOLD" />نقصان دہ حملوں سے خطرہ ہو سکتا ہے<ph name="END_BOLD" />۔</translation>
 <translation id="8675704450909805533"><ph name="DEVICE_OS" /> انسٹال کرنے کیلئے انسٹالر ایک درست منزل کو تلاش نہیں کر سکا۔</translation>

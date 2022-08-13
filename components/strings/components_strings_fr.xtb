@@ -486,6 +486,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2219658597883514593">Relancer le tutoriel</translation>
 <translation id="2219735899272417925">Réinitialisation de l'appareil requise</translation>
 <translation id="2224337661447660594">Aucun accès à Internet</translation>
+<translation id="2225927550500503913">Carte virtuelle activée</translation>
 <translation id="2230458221926704099">Vérifiez la connexion à l'aide de l'<ph name="BEGIN_LINK" />application de diagnostic<ph name="END_LINK" />.</translation>
 <translation id="2239100178324503013">Envoyer maintenant</translation>
 <translation id="2241693394036365668">Fichier téléchargé</translation>
@@ -1945,6 +1946,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6300452962057769623">{0,plural, =0{Votre appareil va redémarrer maintenant}=1{Votre appareil va redémarrer dans 1 seconde}one{Votre appareil va redémarrer dans # seconde}other{Votre appareil va redémarrer dans # secondes}}</translation>
 <translation id="6302269476990306341">Arrêt de l'Assistant Google dans Chrome</translation>
 <translation id="6305205051461490394"><ph name="URL" /> est inaccessible.</translation>
+<translation id="6311165245110979290">Carte virtuelle disponible</translation>
 <translation id="6312113039770857350">Page Web non disponible</translation>
 <translation id="6316226860534107313">Scooters et cyclomoteurs</translation>
 <translation id="63172326633386613">Gérer les paramètres d'accessibilité</translation>
@@ -2290,6 +2292,7 @@ Informations supplémentaires :
 <translation id="7305756307268530424">Vitesse plus lente</translation>
 <translation id="7308436126008021607">synchronisation en arrière-plan</translation>
 <translation id="7310392214323165548">Redémarrage imminent</translation>
+<translation id="7311244614769792472">Aucun résultat trouvé</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Aide à la connexion</translation>
 <translation id="7323804146520582233">Masquer la section "<ph name="SECTION" />"</translation>

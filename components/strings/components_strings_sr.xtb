@@ -1240,6 +1240,7 @@
 <translation id="4329871760342656885">Грешка при рашчлањивању смерница: <ph name="ERROR" /></translation>
 <translation id="4331519897422864041">5. преграда за слагање</translation>
 <translation id="4331708818696583467">Није безбедан</translation>
+<translation id="4333561522337981382">Управљајте прозорима на свим екранима</translation>
 <translation id="4340575312453649552">Овај оглас је користио превише ресурса за уређај, па га је Chrome уклонио.</translation>
 <translation id="4340982228985273705">Откривено је да овим рачунаром не управља предузеће, па смернице могу аутоматски да инсталирају само додатке који се хостују у Chrome веб-продавници. URL ажурирања у Chrome веб-продавници је „<ph name="CWS_UPDATE_URL" />“.</translation>
 <translation id="4346197816712207223">Кредитне картице које се прихватају</translation>
@@ -1453,6 +1454,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте претражили</translation>
 <translation id="4930153903256238152">Велики капацитет</translation>
+<translation id="4934780484581617878">Управљање прозорима</translation>
 <translation id="4936134414789135531">Уметнута вредност <ph name="VALUE_NAME" /> није пронађена.</translation>
 <translation id="4936675324097895694">Финансије</translation>
 <translation id="4940163644868678279">Без архивирања у Chrome-у</translation>
@@ -1465,6 +1467,7 @@
 <translation id="4958444002117714549">Прошири листу</translation>
 <translation id="4964505745997821360">Здравствено осигурање</translation>
 <translation id="4968522289500246572">Ова апликација је дизајнирана за мобилне уређаје и можда неће променити величину на правилан начин. Можда ће имати проблеме или се рестартовати.</translation>
+<translation id="4968665849807487749">Може да тражи да управља прозорима на свим екранима</translation>
 <translation id="4969341057194253438">Избриши снимак</translation>
 <translation id="4973922308112707173">Двоструко бушење на врху</translation>
 <translation id="4976702386844183910">Последња посета: <ph name="DATE" /></translation>
@@ -1967,6 +1970,7 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />да проверите конфигурацију проксија, заштитног зида и безбедног DNS-а<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">Двоструко спајање на левој страни</translation>
+<translation id="6374865374745447009">управљање прозорима</translation>
 <translation id="6377268785556383139">1 резултат за „<ph name="SEARCH_TEXT" />“</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">Очекују вас потенцијални трошкови.</translation>

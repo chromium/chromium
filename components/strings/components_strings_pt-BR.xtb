@@ -1240,6 +1240,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4329871760342656885">Erro de análise da política: <ph name="ERROR" /></translation>
 <translation id="4331519897422864041">Empilhador 5</translation>
 <translation id="4331708818696583467">Não seguro</translation>
+<translation id="4333561522337981382">Gerenciar janelas em todas as telas</translation>
 <translation id="4340575312453649552">O anúncio usava muitos recursos do seu dispositivo, por isso, ele foi removido pelo Chrome.</translation>
 <translation id="4340982228985273705">Este computador não foi detectado como gerenciado por empresa, portanto, a política só pode instalar automaticamente as extensões hospedadas na Chrome Web Store. O URL de atualização da Chrome Web Store é o seguinte: <ph name="CWS_UPDATE_URL" />.</translation>
 <translation id="4346197816712207223">Cartões de crédito aceitos</translation>
@@ -1453,6 +1454,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione "Tab" e "Enter" para pesquisar</translation>
 <translation id="4930153903256238152">Grande capacidade</translation>
+<translation id="4934780484581617878">Gerenciamento de janelas</translation>
 <translation id="4936134414789135531">Não foi possível localizar o valor de <ph name="VALUE_NAME" /> inserido.</translation>
 <translation id="4936675324097895694">Finanças</translation>
 <translation id="4940163644868678279">Navegação anônima no Chrome</translation>
@@ -1465,6 +1467,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4958444002117714549">Expandir lista</translation>
 <translation id="4964505745997821360">Plano de saúde</translation>
 <translation id="4968522289500246572">Este app foi criado para dispositivos móveis e pode não ser redimensionado corretamente. Pode haver erros ou talvez o app seja reiniciado.</translation>
+<translation id="4968665849807487749">Pode pedir para gerenciar janelas em todas as suas telas</translation>
 <translation id="4969341057194253438">Excluir gravação</translation>
 <translation id="4973922308112707173">Perfuração dupla na parte superior</translation>
 <translation id="4976702386844183910">Última visita: <ph name="DATE" /></translation>
@@ -1968,6 +1971,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />verificar o proxy, o firewall e a configuração de DNS seguro<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">Dois grampos no lado esquerdo</translation>
+<translation id="6374865374745447009">Gerenciamento de janelas</translation>
 <translation id="6377268785556383139">1 resultado para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">Acesso sujeito a cobranças.</translation>

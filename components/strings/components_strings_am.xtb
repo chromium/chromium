@@ -486,6 +486,7 @@
 <translation id="2219658597883514593">አጋዥ ሥልጠናን እንደገና ጀምር</translation>
 <translation id="2219735899272417925">የመሣሪያ ዳግም ማስጀመር ያስፈልጋል</translation>
 <translation id="2224337661447660594">ምንም በይነመረብ የለም</translation>
+<translation id="2225927550500503913">ምናባዊ ካርድ በርቷል</translation>
 <translation id="2230458221926704099"><ph name="BEGIN_LINK" />የመመርመሪያ መተግበሪያውን<ph name="END_LINK" /> በመጠቀም ግንኙነትዎን ያስተካክሉት</translation>
 <translation id="2239100178324503013">አሁን ላክ</translation>
 <translation id="2241693394036365668">ፋይል ወርዷል</translation>
@@ -1944,6 +1945,7 @@
 <translation id="6300452962057769623">{0,plural, =0{መሣሪያዎ አሁን ዳግም ይነሳል}=1{መሣሪያዎ በ1 ሰከንድ ውስጥ ዳግም ይነሳል}one{መሣሪያዎ በ# ሰከንዶች ውስጥ ዳግም ይነሳል}other{መሣሪያዎ በ# ሰከንዶች ውስጥ ዳግም ይነሳል}}</translation>
 <translation id="6302269476990306341">በChrome ውስጥ Google ረዳት እያቆመ ነው</translation>
 <translation id="6305205051461490394"><ph name="URL" /> ሊደረስበት አይችልም።</translation>
+<translation id="6311165245110979290">ምናባዊ ካርድ አለ</translation>
 <translation id="6312113039770857350">ድረ-ገጽ አይገኝም</translation>
 <translation id="6316226860534107313">ስኩተሮች እና ሞፔዶች</translation>
 <translation id="63172326633386613">የተደራሽነት ቅንብሮችን ያቀናብሩ</translation>
@@ -2288,6 +2290,7 @@
 <translation id="7305756307268530424">በዝግታ ይጀምሩ</translation>
 <translation id="7308436126008021607">የዳራ ስምረት</translation>
 <translation id="7310392214323165548">መሣሪያው በጣም በቅርቡ እንደገና ይጀምራል</translation>
+<translation id="7311244614769792472">ምንም ውጤቶች አልተገኙም</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">የግንኙነት እገዛ</translation>
 <translation id="7323804146520582233">የ«<ph name="SECTION" />» ክፍሉን ሰርዝ</translation>

@@ -486,6 +486,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2219658597883514593">Eğitimi baştan başlat</translation>
 <translation id="2219735899272417925">Cihazın sıfırlanması gerekiyor</translation>
 <translation id="2224337661447660594">İnternet bağlantısı yok</translation>
+<translation id="2225927550500503913">Sanal kart etkin</translation>
 <translation id="2230458221926704099"><ph name="BEGIN_LINK" />Tanılama uygulamasını<ph name="END_LINK" /> kullanarak bağlantınızı düzeltin</translation>
 <translation id="2239100178324503013">Şimdi gönder</translation>
 <translation id="2241693394036365668">Dosya indirme</translation>
@@ -1945,6 +1946,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6300452962057769623">{0,plural, =0{Cihazınız şimdi yeniden başlatılacak}=1{Cihazınız 1 saniye içinde yeniden başlatılacak}other{Cihazınız # saniye içinde yeniden başlatılacak}}</translation>
 <translation id="6302269476990306341">Chrome'da Google Asistan durduruluyor</translation>
 <translation id="6305205051461490394"><ph name="URL" /> adresine ulaşılamıyor.</translation>
+<translation id="6311165245110979290">Sanal kart mevcut</translation>
 <translation id="6312113039770857350">Web sayfası mevcut değil</translation>
 <translation id="6316226860534107313">Scooter'lar ve mopetler</translation>
 <translation id="63172326633386613">Erişilebilirlik ayarlarını yönet</translation>
@@ -2289,6 +2291,7 @@ Ek ayrıntılar:
 <translation id="7305756307268530424">Daha yavaş başlat</translation>
 <translation id="7308436126008021607">arka plan senkronizasyonu</translation>
 <translation id="7310392214323165548">Cihaz çok yakında yeniden başlatılacak</translation>
+<translation id="7311244614769792472">Sonuç bulunamadı</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Bağlantı Yardımı</translation>
 <translation id="7323804146520582233">"<ph name="SECTION" />" bölümünü gizle</translation>

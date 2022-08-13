@@ -245,6 +245,7 @@
 <translation id="3138624403379688522">Няправільны PIN-код. Засталося спроб: <ph name="RETRIES" />.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (апаратна забяспечаны)</translation>
 <translation id="3188257591659621405">Мае файлы</translation>
+<translation id="3194553149358267393">Няма нядаўніх аўдыяфайлаў</translation>
 <translation id="3197563288998582412">Вялікабрытанія (раскладка Дворака)</translation>
 <translation id="3202131003361292969">Шлях</translation>
 <translation id="3205852408225871810">Партугальская (Бразілія)</translation>
@@ -303,6 +304,7 @@
 <translation id="3606220979431771195">Турэцкая-F</translation>
 <translation id="3616113530831147358">Аўдыя</translation>
 <translation id="3619115746895587757">Капучына</translation>
+<translation id="3619593063686672873">Няма нядаўніх відэа</translation>
 <translation id="3620292326130836921">Усё захавана ў рэзервовую копію!</translation>
 <translation id="3634507049637220048">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, знаходзіцца пад кіраваннем адміністратара, падрабязныя звесткі</translation>
 <translation id="3645233063072417428">Перамешчана элементаў: <ph name="NUMBER_OF_ITEMS" /></translation>
@@ -401,6 +403,7 @@
 <translation id="4572815280350369984">Файл <ph name="FILE_TYPE" /></translation>
 <translation id="457386861538956877">Яшчэ...</translation>
 <translation id="4579744207439506346">Дададзена да выбранага: <ph name="ENTRY_NAME" />.</translation>
+<translation id="4583436353463424810">Няма нядаўніх дакументаў</translation>
 <translation id="4594543368593301662">Паказваюцца вынікі па запыце "<ph name="SEARCH_TERM" />".</translation>
 <translation id="4599600860674643278">Фільтр скінуты.</translation>
 <translation id="4603392156942865207">Ідзе капіраванне файла "<ph name="FILE_NAME" />" у папку "<ph name="FOLDER_NAME" />"</translation>
@@ -489,6 +492,7 @@
 <translation id="516592729076796170">Праграмісцкая Дворака для ЗША</translation>
 <translation id="5172749059808361023">Звесткі пра абмежаванні</translation>
 <translation id="5177526793333269655">Рэжым мініяцюр</translation>
+<translation id="5181896909298187506">Няма нядаўніх файлаў</translation>
 <translation id="5194713942430106590">Каб адсартаваць слупок па ўзрастанні, націсніце тут.</translation>
 <translation id="5211614973734216083">Фарэрская</translation>
 <translation id="5218183485292899140">Французская (Швейцарыя)</translation>
@@ -745,6 +749,7 @@
 <translation id="7408870451288633753">Чэшская</translation>
 <translation id="7417453074306512035">Эфіопская раскладка</translation>
 <translation id="7417705661718309329">Карта Google</translation>
+<translation id="7458955835361612701">Няма нядаўніх відарысаў</translation>
 <translation id="7460898608667578234">Украінская</translation>
 <translation id="7469894403370665791">Падключацца да гэтай сеткі аўтаматычна</translation>
 <translation id="7486315294984620427">Каб перацягнуць файл у Parallels Desktop, яго неабходна скапіраваць у папку "Файлы Windows".</translation>

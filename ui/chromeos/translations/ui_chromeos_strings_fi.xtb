@@ -245,6 +245,7 @@
 <translation id="3138624403379688522">Väärä PIN-koodi. Sinulla on <ph name="RETRIES" /> yritystä jäljellä.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (laitteiston tukema)</translation>
 <translation id="3188257591659621405">Omat tiedostot</translation>
+<translation id="3194553149358267393">Ei viimeaikaisia audiotiedostoja</translation>
 <translation id="3197563288998582412">UK, Dvorak</translation>
 <translation id="3202131003361292969">Reitti</translation>
 <translation id="3205852408225871810">portugali (Brasilia)</translation>
@@ -303,6 +304,7 @@
 <translation id="3606220979431771195">Turkki (tyyppi F)</translation>
 <translation id="3616113530831147358">Ääni</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
+<translation id="3619593063686672873">Ei viimeaikaisia videoita</translation>
 <translation id="3620292326130836921">Kaikki on varmuuskopioitu!</translation>
 <translation id="3634507049637220048">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, järjestelmänvalvojan hallinnoima, lisätietoja</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> kohdetta siirretty</translation>
@@ -401,6 +403,7 @@
 <translation id="4572815280350369984"><ph name="FILE_TYPE" />-tiedosto</translation>
 <translation id="457386861538956877">Lisää...</translation>
 <translation id="4579744207439506346"><ph name="ENTRY_NAME" /> lisättiin valintaan.</translation>
+<translation id="4583436353463424810">Ei viimeaikaisia dokumentteja</translation>
 <translation id="4594543368593301662">Näytetään tulokset haulla <ph name="SEARCH_TERM" /></translation>
 <translation id="4599600860674643278">Suodatin on nollattu.</translation>
 <translation id="4603392156942865207">Kopioidaan <ph name="FILE_NAME" /> kansioon <ph name="FOLDER_NAME" /></translation>
@@ -489,6 +492,7 @@
 <translation id="516592729076796170">US, Dvorak ohjelmoijille</translation>
 <translation id="5172749059808361023">Rajoitustiedot</translation>
 <translation id="5177526793333269655">Pikkukuvanäkymä</translation>
+<translation id="5181896909298187506">Ei viimeaikaisia tiedostoja</translation>
 <translation id="5194713942430106590">Klikkaa, jos haluat lajitella nousevaan järjestykseen.</translation>
 <translation id="5211614973734216083">fääri</translation>
 <translation id="5218183485292899140">ranska (Sveitsi)</translation>
@@ -746,6 +750,7 @@
 <translation id="7408870451288633753">tšekki</translation>
 <translation id="7417453074306512035">Etiopialainen näppäimistö</translation>
 <translation id="7417705661718309329">Google-kartta</translation>
+<translation id="7458955835361612701">Ei viimeaikaisia kuvia</translation>
 <translation id="7460898608667578234">ukraina</translation>
 <translation id="7469894403370665791">Yhdistä automaattisesti tähän verkkoon</translation>
 <translation id="7486315294984620427">Jotta voit pudottaa tiedostoja Parallels Desktopiin, tiedosto on kopioitava Windows-tiedostoihin.</translation>

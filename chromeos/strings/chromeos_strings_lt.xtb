@@ -149,6 +149,7 @@
 <translation id="2115956742084455574">Kodas netinkamas</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, <ph name="MILESTONE_VERSION" /> versija</translation>
 <translation id="2126937207024182736">Pasiekiama: <ph name="AVAILABLE_MEMORY" /> GB iš <ph name="TOTAL_MEMORY" /> GB</translation>
+<translation id="2130871201950918186">Sistema bus paleista iš naujo po penkių sekundžių.</translation>
 <translation id="2138109643290557664">Skriek šalin</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> proc.</translation>
 <translation id="2152882202543497059">Nuotraukų: <ph name="NUMBER" /></translation>
@@ -211,6 +212,7 @@
 <translation id="2536159006530886390">Nepavyko prisijungti prie interneto.</translation>
 <translation id="2570743873672969996">Vykdomas „<ph name="TEST_NAME" />“ bandymas...</translation>
 <translation id="2584559707064218956">Norėdami nustatyti eikite į Nustatymus</translation>
+<translation id="2597774443162333062">Failai bus išsiųsti į sistemą „Google“, kad būtų suderinti</translation>
 <translation id="2619761439309613843">Atnaujinimas per dieną</translation>
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2638662041295312666">Prisijungimo vaizdas</translation>
@@ -672,6 +674,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="6659594942844771486">Skirtukas</translation>
 <translation id="6692996468359469499">Su pasirinkimu susijusios informacijos gavimas</translation>
 <translation id="6704062477274546131">DNS pavadinimų vertimas</translation>
+<translation id="6719240409382354629">Ruošiamasi paleisti iš naujo...</translation>
 <translation id="6723839937902243910">Maitinimas</translation>
 <translation id="6723847290197874913">Klaviatūros foninis apšvietimas</translation>
 <translation id="672609503628871915">Sužinokite, kas naujo</translation>
@@ -889,6 +892,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="8747900814994928677">Patvirtinti pakeitimą</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">„Google“ nuotraukų albumas</translation>
+<translation id="8778600430213950389">Kažkas nepavyko. Greičiausiai tai galėjo nutikti dėl aparatinės įrangos problemos. Pakeiskite pagrindinę plokštę ir bandykite taisyti dar kartą.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Šiame tinkle gali būti fiksuotasis portalas</translation>
 <translation id="8798099450830957504">Numatytasis</translation>
@@ -942,6 +946,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="910415269708673980">Atnaujinkite <ph name="PRINCIPAL_NAME" /> bilietą</translation>
 <translation id="9106415115617144481">Nuskaitomas <ph name="PAGE_NUMBER" /> psl.</translation>
 <translation id="9111102763498581341">Atrakinti</translation>
+<translation id="9118126012493516930">Nepavyko užbaigti taisymo operacijos</translation>
 <translation id="9122602430962285795">Norėdami prisijungti iš naujo, eikite į Nustatymus</translation>
 <translation id="9126720536733509015">Išsaugokite kelis puslapius viename PDF</translation>
 <translation id="9137526406337347448">„Google“ paslaugos</translation>

@@ -1758,6 +1758,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2602501489742255173">Mag-swipe pataas para makapagsimula</translation>
 <translation id="2603115962224169880">Linisin ang computer</translation>
 <translation id="2603355571917519942">Handa na ang Voice Match</translation>
+<translation id="2604129989323098489">Karaniwang nanghihingi ang mga site ng impormasyon tungkol sa iyong mga display para mahusay na makapagbukas at makapaglagay ng mga window ang mga ito, tulad ng pagpapakita ng mga dokumento o full-screen na content nang magkatabi</translation>
 <translation id="2604255671529671813">Error sa koneksyon ng network</translation>
 <translation id="2605668923777146443">Pumunta sa <ph name="LINK_BEGIN" />Mga Setting<ph name="LINK_END" /> para makita ang iyong mga opsyon para sa Better Together.</translation>
 <translation id="2606246518223360146">I-link ang Data</translation>
@@ -5387,6 +5388,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="6130692320435119637">Magdagdag ng Wi-Fi</translation>
 <translation id="6130887916931372608">Key ng Keyboard</translation>
 <translation id="6135823405800500595">Tiyaking nasa malapit ang iyong telepono, naka-unlock, at naka-on ang Bluetooth at Wi-Fi</translation>
+<translation id="6135826623269483856">Hindi pinapayagang pamahalaan ang mga window sa lahat ng iyong display</translation>
 <translation id="6136114942382973861">Isara ang bar ng mga download</translation>
 <translation id="6136287496450963112">Hindi pinoprotektahan ng PIN ang iyong security key. Para pamahalaan ang mga fingerprint, gumawa muna ng PIN.</translation>
 <translation id="6138680304137685902">X9.62 ECDSA Signature na may SHA-384</translation>
@@ -7396,6 +7398,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
     <ph name="BEGIN_PARAGRAPH3" />Maaari mong i-off ang serbisyong ito sa Mga Setting.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8076492880354921740">Mga Tab</translation>
 <translation id="8076835018653442223">Na-disable ng iyong administrator ang access sa mga lokal na file sa iyong device</translation>
+<translation id="80798452873915119">Puwedeng magtanong ang mga site na pamahalaan ang mga window sa lahat ng iyong display</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Pinapamahalaan ng <ph name="MANAGER_NAME" /> ang iyong session. Magagawa ng mga administrator na i-delete ang iyong profile at subaybayan ang trapiko sa network mo.</translation>
 <translation id="8081989000209387414">I-disable ang pag-debug ng ADB?</translation>
@@ -7700,6 +7703,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8371695176452482769">Magsalita ngayon</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{I-mute ang Site}one{I-mute ang Mga Site}other{I-mute ang Mga Site}}</translation>
 <translation id="8373652277231415614">Mga nakabahaging directory ng Crostini</translation>
+<translation id="8374243500935816406">Huwag payagan ang mga site na pamahalaan ang mga window sa lahat ng iyong display</translation>
 <translation id="8376137163494131156">Sabihin sa amin kung ano ang nangyayari sa paggamit ng Google Cast.</translation>
 <translation id="8376384591331888629">Kasama ang third-party na cookies sa site na ito</translation>
 <translation id="8376451933628734023">Kung sinusubukan kang linlangin ng web app na ito para maisip mong ibang app ito, i-uninstall ito.</translation>
@@ -7995,6 +7999,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8670537393737592796">Para mabilis na makabalik dito, i-install ang <ph name="APP_NAME" /> sa pamamagitan ng pag-click sa button na i-install</translation>
 <translation id="867085395664725367">Nagkaroon ng pansamantalang error sa server.</translation>
 <translation id="8673026256276578048">Hanapan ang Web...</translation>
+<translation id="867329473311423817">Pinapayagang pamahalaan ang mga window sa lahat ng iyong display</translation>
 <translation id="8673383193459449849">Problema sa server</translation>
 <translation id="8674903726754070732">Sa kasamaang-palad, na-configure ang iyong computer gamit ang isang hardware ID na mali ang pagkakabuo. Pinipigilan nito ang ChromeOS na mag-update sa mga pinakabagong pag-aayos sa seguridad at <ph name="BEGIN_BOLD" />posibleng maging mahina sa mga nakakapinsalang pag-atake<ph name="END_BOLD" /> ang iyong computer.</translation>
 <translation id="8675704450909805533">Hindi makakita ang installer ng valid na destinasyon para i-install ang <ph name="DEVICE_OS" />.</translation>

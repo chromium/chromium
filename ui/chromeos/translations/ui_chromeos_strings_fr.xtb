@@ -245,6 +245,7 @@
 <translation id="3138624403379688522">Code PIN incorrect. Il vous reste <ph name="RETRIES" /> tentatives.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (matériel requis)</translation>
 <translation id="3188257591659621405">Mes fichiers</translation>
+<translation id="3194553149358267393">Aucun fichier audio récent</translation>
 <translation id="3197563288998582412">Dvorak britannique</translation>
 <translation id="3202131003361292969">Chemin d'accès</translation>
 <translation id="3205852408225871810">Portugais (Brésil)</translation>
@@ -303,6 +304,7 @@
 <translation id="3606220979431771195">Turc en F</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
+<translation id="3619593063686672873">Aucune vidéo récente</translation>
 <translation id="3620292326130836921">Tout le contenu a été sauvegardé</translation>
 <translation id="3634507049637220048">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, géré par votre administrateur, détails</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> éléments déplacés.</translation>
@@ -401,6 +403,7 @@
 <translation id="4572815280350369984">Fichier <ph name="FILE_TYPE" /></translation>
 <translation id="457386861538956877">Autres...</translation>
 <translation id="4579744207439506346">Élément <ph name="ENTRY_NAME" /> ajouté à la sélection.</translation>
+<translation id="4583436353463424810">Aucun document récent</translation>
 <translation id="4594543368593301662">Résultats de recherche pour <ph name="SEARCH_TERM" />.</translation>
 <translation id="4599600860674643278">Le filtre est réinitialisé.</translation>
 <translation id="4603392156942865207">Copie du fichier <ph name="FILE_NAME" /> dans <ph name="FOLDER_NAME" />…</translation>
@@ -489,6 +492,7 @@
 <translation id="516592729076796170">Dvorak américain pour programmeurs</translation>
 <translation id="5172749059808361023">Détails des restrictions</translation>
 <translation id="5177526793333269655">Afficher les vignettes</translation>
+<translation id="5181896909298187506">Aucun fichier récent</translation>
 <translation id="5194713942430106590">Cliquez pour trier la colonne par ordre croissant.</translation>
 <translation id="5211614973734216083">Féroïen</translation>
 <translation id="5218183485292899140">Français suisse</translation>
@@ -746,6 +750,7 @@
 <translation id="7408870451288633753">Tchèque</translation>
 <translation id="7417453074306512035">Clavier éthiopien</translation>
 <translation id="7417705661718309329">Carte Google</translation>
+<translation id="7458955835361612701">Aucune image récente</translation>
 <translation id="7460898608667578234">Ukrainien</translation>
 <translation id="7469894403370665791">Se connecter automatiquement à ce réseau</translation>
 <translation id="7486315294984620427">Pour déposer des fichiers dans Parallels Desktop, vous devez copier le fichier dans le dossier "Fichiers Windows".</translation>

@@ -1240,6 +1240,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4329871760342656885">Lỗi khi phân tích cú pháp chính sách: <ph name="ERROR" /></translation>
 <translation id="4331519897422864041">Khay xếp chồng 5</translation>
 <translation id="4331708818696583467">Không bảo mật</translation>
+<translation id="4333561522337981382">Quản lý các cửa sổ trên tất cả màn hình của bạn</translation>
 <translation id="4340575312453649552">Chrome đã xóa quảng cáo này vì quảng cáo sử dụng quá nhiều tài nguyên của thiết bị.</translation>
 <translation id="4340982228985273705">Máy tính này không được coi là máy tính do doanh nghiệp quản lý, vì vậy, chính sách này chỉ có thể tự động cài đặt các tiện ích được lưu trữ trên Cửa hàng Chrome trực tuyến. URL cập nhật Cửa hàng Chrome trực tuyến là "<ph name="CWS_UPDATE_URL" />".</translation>
 <translation id="4346197816712207223">Thẻ tín dụng được chấp nhận</translation>
@@ -1453,6 +1454,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, nhấn phím Tab rồi nhấn Enter để tìm kiếm</translation>
 <translation id="4930153903256238152">Dung tích lớn</translation>
+<translation id="4934780484581617878">Quản lý cửa sổ</translation>
 <translation id="4936134414789135531">Không tìm thấy <ph name="VALUE_NAME" /> đã chèn.</translation>
 <translation id="4936675324097895694">Tài chính</translation>
 <translation id="4940163644868678279">Chế độ ẩn danh trên Chrome</translation>
@@ -1465,6 +1467,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4958444002117714549">Mở rộng danh sách</translation>
 <translation id="4964505745997821360">Bảo hiểm y tế</translation>
 <translation id="4968522289500246572">Ứng dụng này được thiết kế cho thiết bị di động và có thể thay đổi kích thước không chuẩn xác. Ứng dụng có thể gặp sự cố hoặc khởi động lại.</translation>
+<translation id="4968665849807487749">Có thể yêu cầu quản lý các cửa sổ trên tất cả màn hình của bạn</translation>
 <translation id="4969341057194253438">Xóa bản ghi</translation>
 <translation id="4973922308112707173">Đục 2 lỗ trên cùng</translation>
 <translation id="4976702386844183910">Lần truy cập gần đây nhất: <ph name="DATE" /></translation>
@@ -1968,6 +1971,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Kiểm tra cấu hình proxy, tường lửa và DNS bảo mật<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">Dập 2 ghim bên trái</translation>
+<translation id="6374865374745447009">quản lý cửa sổ</translation>
 <translation id="6377268785556383139">1 kết quả cho '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">Nếu tiếp tục, bạn có thể bị tính phí.</translation>

@@ -1240,6 +1240,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4329871760342656885">Þáttunarvilla reglu: <ph name="ERROR" /></translation>
 <translation id="4331519897422864041">Staflari 5</translation>
 <translation id="4331708818696583467">Ekki öruggt</translation>
+<translation id="4333561522337981382">Stjórna gluggum á öllum skjáum</translation>
 <translation id="4340575312453649552">Chrome fjarlægði þessa auglýsingu vegna þess að hún notaði of mikið af gögnum fyrir tækið þitt.</translation>
 <translation id="4340982228985273705">Tölvunni virðist ekki vera stýrt af fyrirtæki og því getur reglan aðeins sett sjálfkrafa upp viðbætur sem hýstar eru í vefverslun Chrome. Uppfærsluvefslóð vefverslunar Chrome er „<ph name="CWS_UPDATE_URL" />“.</translation>
 <translation id="4346197816712207223">Kreditkort sem tekið er við</translation>
@@ -1453,6 +1454,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á Tab og svo Enter til að leita</translation>
 <translation id="4930153903256238152">Stór bakki</translation>
+<translation id="4934780484581617878">Gluggastjórnun</translation>
 <translation id="4936134414789135531"><ph name="VALUE_NAME" /> sem sett var inn fannst ekki.</translation>
 <translation id="4936675324097895694">Fjármál</translation>
 <translation id="4940163644868678279">Huliðsstilling í Chrome</translation>
@@ -1465,6 +1467,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4958444002117714549">Stækka lista</translation>
 <translation id="4964505745997821360">Sjúkratryggingar</translation>
 <translation id="4968522289500246572">Þetta forrit er hannað fyrir snjalltæki og óvíst er að breytingar á stærð komi vel út. Vandamál gætu komið upp í forritinu eða endurræsing þess gæti átt sér stað.</translation>
+<translation id="4968665849807487749">Getur beðið um að stjórna gluggum á öllum skjáum</translation>
 <translation id="4969341057194253438">Eyða upptöku</translation>
 <translation id="4973922308112707173">Tvö göt efst</translation>
 <translation id="4976702386844183910">Síðast skoðað <ph name="DATE" /></translation>
@@ -1968,6 +1971,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Athuga staðgengilsþjóninn, eldvegginn og stillingar fyrir öruggan DNS-þjón<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">Tvö hefti vinstra megin</translation>
+<translation id="6374865374745447009">gluggastjórnun</translation>
 <translation id="6377268785556383139">Ein niðurstaða fyrir „<ph name="SEARCH_TEXT" />“</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">Hugsanleg gjöld framundan.</translation>

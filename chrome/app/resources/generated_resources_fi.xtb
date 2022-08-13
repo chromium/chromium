@@ -225,6 +225,7 @@
 <translation id="1199814941632954229">Näille varmenneprofiileille tarjotaan varmenteita</translation>
 <translation id="120069043972472860">Mahdoton katsoa</translation>
 <translation id="1201402288615127009">Seuraava</translation>
+<translation id="1201564082781748151">Paikalliset tiedot voidaan palauttaa, jos unohdat salasanan</translation>
 <translation id="1202596434010270079">Kioskisovellus päivitettiin. Irrota USB-tikku.</translation>
 <translation id="120368089816228251">Nuotti</translation>
 <translation id="1203942045716040624">Shared Worker: <ph name="SCRIPT_URL" /></translation>
@@ -269,6 +270,7 @@
 <translation id="1243436884219965846">Tarkista salasanat</translation>
 <translation id="1244265436519979884">Linux-palautus käynnissä</translation>
 <translation id="1244303850296295656">Laajennusvirhe</translation>
+<translation id="1245628370644070008">Paikallisen datan palauttaminen</translation>
 <translation id="1246863218384630739">Asennus (<ph name="VM_NAME" />) epäonnistui: kuvan URL-osoite palautti <ph name="HTTP_ERROR" />-virhekoodin. Ota yhteyttä järjestelmänvalvojaan.</translation>
 <translation id="1251366534849411931">Odotettu aloittava kaarisulje: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Tämä poistaa <ph name="TOTAL_USAGE" /> dataa, jonka sivustot ja niiden asentamat sovellukset ovat tallentaneet.</translation>
@@ -1331,6 +1333,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="222447520299472966">Ainakin yksi Taidegalleria-albumi on valittava</translation>
 <translation id="2224551243087462610">Muokkaa kansion nimeä</translation>
 <translation id="2225864335125757863">Vaihda nämä salasanat heti pitääksesi tilin suojattuna:</translation>
+<translation id="2225927550500503913">Virtuaalinen kortti on päällä</translation>
 <translation id="2226449515541314767">Tältä sivustolta on estetty MIDI-laitteiden täysi käyttöoikeus.</translation>
 <translation id="2226826835915474236">Ei-aktiiviset pikakomennot</translation>
 <translation id="2226907662744526012">Avaa lukitus automaattisesti, kun PIN-koodi lisätään</translation>
@@ -5239,6 +5242,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6003582434972667631">Organisaatiosi on valinnut teeman</translation>
 <translation id="6006484371116297560">Perinteinen</translation>
 <translation id="6007240208646052708">Puhehaku ei ole käytettävissä kielelläsi.</translation>
+<translation id="6010651352520077187">Kun tämä on päällä, Google Kääntäjä tarjoaa sivustojen kääntämistä haluamallesi kielelle. Se voi myös kääntää sivustoja automaattisesti.</translation>
 <translation id="6011193465932186973">Sormenjälki</translation>
 <translation id="6011449291337289699">Tyhjennä sivustotiedot</translation>
 <translation id="6011908034087870826">Lähetetään linkki: <ph name="DEVICE_NAME" /></translation>
@@ -5551,6 +5555,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="630948338437014525">muistot</translation>
 <translation id="6309510305002439352">Mikrofoni poistettu käytöstä</translation>
 <translation id="6310141306111263820">eSIM-profiilia ei voitu asentaa. Pyydä apua operaattorilta.</translation>
+<translation id="6311165245110979290">Virtuaalinen kortti on saatavilla</translation>
 <translation id="6311220991371174222">Chromea ei voi käynnistää, koska profiilia avattaessa tapahtui virhe. Yritä käynnistää Chrome uudelleen.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Turvatarkistus suoritettiin 1 päivä sitten}other{Turvatarkistus suoritettiin {NUM_DAYS} päivää sitten}}</translation>
 <translation id="6312638141433622592">Tarjoa lukijatilaa, jos artikkeli tukee sitä</translation>
@@ -5779,6 +5784,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6532206849875187177">Suojaus ja sisäänkirjautuminen</translation>
 <translation id="6532527800157340614">Sisäänkirjautuminen epäonnistui, koska käyttötunnustasi ei voitu noutaa. Tarkista verkkoyhteys ja yritä uudelleen.</translation>
 <translation id="6532663472409656417">Yritys rekisteröity</translation>
+<translation id="6533315466883598769">Käytä Google Kääntäjää</translation>
 <translation id="6535331821390304775"><ph name="ORIGIN" /> saa aina avata tällaiset linkit sovelluksessaan</translation>
 <translation id="653659894138286600">Skannaa asiakirjoja ja kuvia</translation>
 <translation id="6537613839935722475">Nimessä voi olla kirjaimia, numeroita ja yhdysmerkkejä (-)</translation>

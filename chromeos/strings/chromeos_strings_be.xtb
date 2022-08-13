@@ -149,6 +149,7 @@
 <translation id="2115956742084455574">Няправільны код</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, версія <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Даступна: <ph name="AVAILABLE_MEMORY" /> з <ph name="TOTAL_MEMORY" /> ГБ</translation>
+<translation id="2130871201950918186">Сістэма перазапусціцца праз 5 секунд.</translation>
 <translation id="2138109643290557664">Плывучы міма</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> фота</translation>
@@ -211,6 +212,7 @@
 <translation id="2536159006530886390">Не ўдаецца падключыцца да інтэрнэту.</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> праходзіць праверку...</translation>
 <translation id="2584559707064218956">Каб задаць канфігурацыю, перайдзіце ў Налады</translation>
+<translation id="2597774443162333062">Файлы будуць адпраўлены ў Google на адладку</translation>
 <translation id="2619761439309613843">Штодзённае абнаўленне</translation>
 <translation id="2620436844016719705">Сістэма</translation>
 <translation id="2638662041295312666">Відарыс уліковага запісу</translation>
@@ -672,6 +674,7 @@
 <translation id="6659594942844771486">Укладка</translation>
 <translation id="6692996468359469499">Атрыманне інфармацыі, звязанай з вылучаным вамі</translation>
 <translation id="6704062477274546131">Супастаўленне імён DNS</translation>
+<translation id="6719240409382354629">Ідзе падрыхтоўка да перазапуску...</translation>
 <translation id="6723839937902243910">Кнопка сілкавання</translation>
 <translation id="6723847290197874913">Падсветка клавіятуры</translation>
 <translation id="672609503628871915">Пазнаёмцеся з навінкамі</translation>
@@ -889,6 +892,7 @@
 <translation id="8747900814994928677">Пацвярджэнне змен</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Альбом Google Фота</translation>
+<translation id="8778600430213950389">Нешта пайшло не так. Хутчэй за ўсё гэта звязана з няспраўнасцю апаратнага забеспячэння. Замяніце мацярынскую плату і паспрабуйце выканаць рамонт яшчэ раз.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Гэта сетка можа мець партал узаемадзеяння</translation>
 <translation id="8798099450830957504">Стандартна</translation>
@@ -942,6 +946,7 @@
 <translation id="910415269708673980">Абнавіце білет для <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Сканіруецца старонка <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Разблакіраваць</translation>
+<translation id="9118126012493516930">Не ўдаецца завяршыць рамонт</translation>
 <translation id="9122602430962285795">Каб зноў падключыцца да сеткі, перайдзіце ў Налады</translation>
 <translation id="9126720536733509015">Захаваць некалькі старонак у адзін PDF-файл</translation>
 <translation id="9137526406337347448">Сэрвісы Google</translation>

@@ -602,6 +602,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (visitante)</translation>
 <translation id="1572266655485775982">Ativar Wi-Fi</translation>
 <translation id="1572876035008611720">Digite seu e-mail</translation>
+<translation id="1573117025466282241">Usar smartphone com um código QR</translation>
 <translation id="1575741822946219011">Idiomas e entradas</translation>
 <translation id="1576594961618857597">Avatar branco padrão</translation>
 <translation id="1578558981922970608">Forçar fechamento</translation>
@@ -1760,6 +1761,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2602501489742255173">Deslize para cima para começar</translation>
 <translation id="2603115962224169880">Limpar o computador</translation>
 <translation id="2603355571917519942">O Voice Match está pronto</translation>
+<translation id="2604129989323098489">Os sites geralmente pedem informações sobre as telas para poderem abrir e posicionar as janelas de maneira inteligente, por exemplo, mostrando documentos ou conteúdo em tela cheia lado a lado</translation>
 <translation id="2604255671529671813">Erro de conexão da rede</translation>
 <translation id="2605668923777146443">Acesse <ph name="LINK_BEGIN" />Configurações<ph name="LINK_END" /> para ver suas opções do Better Together.</translation>
 <translation id="2606246518223360146">Vincular dados</translation>
@@ -4025,7 +4027,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4794810983896241342">As atualizações são gerenciadas pelo <ph name="BEGIN_LINK" />seu administrador<ph name="END_LINK" /></translation>
 <translation id="479536056609751218">Página da web, somente HTML</translation>
 <translation id="4796142525425001238">Sempre restaurar</translation>
-<translation id="4797314204379834752">Tente usar grupo de guias para organizar tarefas, fazer compras on-line e muito mais</translation>
+<translation id="4797314204379834752">Tente usar grupos de guias para organizar tarefas, fazer compras on-line e muito mais</translation>
 <translation id="4798236378408895261">Anexar <ph name="BEGIN_LINK" />registros de Bluetooth<ph name="END_LINK" /> (interno do Google)</translation>
 <translation id="479863874072008121">Gerenciar dispositivos</translation>
 <translation id="4800839971935185386">Revisar atualizações de nome e ícone</translation>
@@ -5395,6 +5397,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6130692320435119637">Adicionar Wi-Fi</translation>
 <translation id="6130887916931372608">Tecla</translation>
 <translation id="6135823405800500595">O smartphone precisa estar por perto, desbloqueado e com o Bluetooth e o Wi-Fi ativados</translation>
+<translation id="6135826623269483856">Sem permissão para gerenciar janelas em todas as suas telas</translation>
 <translation id="6136114942382973861">Fechar barra de downloads</translation>
 <translation id="6136287496450963112">Sua chave de segurança não está protegida com um PIN. Crie um PIN para gerenciar impressões digitais.</translation>
 <translation id="6138680304137685902">Assinatura X9.62 ECDSA com SHA-384</translation>
@@ -5513,7 +5516,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6254503684448816922">Compromisso da chave</translation>
 <translation id="6254892857036829079">Perfeita</translation>
 <translation id="6257602895346497974">Ativar a sincronização…</translation>
-<translation id="62586649943626337">Organizar as guias usando grupos</translation>
+<translation id="62586649943626337">Organize as guias usando grupos</translation>
 <translation id="6262371516389954471">Seus backups são enviados para o Google e criptografados usando a senha da sua Conta do Google.</translation>
 <translation id="6263082573641595914">Versão da autoridade de certificação da Microsoft</translation>
 <translation id="6263284346895336537">Não crítico</translation>
@@ -7404,6 +7407,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
     <ph name="BEGIN_PARAGRAPH3" />É possível desativar esse serviço nas configurações.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8076492880354921740">Guias</translation>
 <translation id="8076835018653442223">O acesso aos arquivos locais do seu dispositivo foi desativado pelo administrador</translation>
+<translation id="80798452873915119">Os sites podem pedir para gerenciar janelas em todas as suas telas</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Sua sessão é gerenciada por <ph name="MANAGER_NAME" />. Os administradores podem excluir seu perfil e também monitorar o tráfego de rede.</translation>
 <translation id="8081989000209387414">Desativar a depuração do adb?</translation>
@@ -7708,6 +7712,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8371695176452482769">Fale agora</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Desativar som do site}one{Desativar som do site}other{Desativar som dos sites}}</translation>
 <translation id="8373652277231415614">Diretórios compartilhados do Crostini</translation>
+<translation id="8374243500935816406">Não permitir que os sites gerenciem janelas em todas as suas telas</translation>
 <translation id="8376137163494131156">Conte o que está acontecendo com o Google Cast</translation>
 <translation id="8376384591331888629">Incluir também os cookies de terceiros desse site</translation>
 <translation id="8376451933628734023">Se este app da Web estiver tentando se passar por outro app, desinstale-o.</translation>
@@ -8002,6 +8007,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8670537393737592796">Para voltar aqui rapidamente, instale o app <ph name="APP_NAME" /> clicando no botão de instalação</translation>
 <translation id="867085395664725367">Ocorreu um erro temporário no servidor.</translation>
 <translation id="8673026256276578048">Pesquisar na web...</translation>
+<translation id="867329473311423817">Com permissão para gerenciar janelas em todas as suas telas</translation>
 <translation id="8673383193459449849">Problema no servidor</translation>
 <translation id="8674903726754070732">Infelizmente, seu computador está configurado com um ID de hardware mal formado. Isso impede que o ChromeOS seja atualizado com as correções de segurança mais recentes e, por isso, ele <ph name="BEGIN_BOLD" />pode ficar vulnerável a ataques maliciosos<ph name="END_BOLD" />.</translation>
 <translation id="8675704450909805533">O instalador não encontrou um destino válido para instalar o <ph name="DEVICE_OS" />.</translation>

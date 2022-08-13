@@ -1236,6 +1236,7 @@
 <translation id="4329871760342656885">கொள்கையைப் பாகுபடுத்துவதில் பிழை: <ph name="ERROR" /></translation>
 <translation id="4331519897422864041">ஸ்டேக்கர் 5</translation>
 <translation id="4331708818696583467">பாதுகாப்பற்றது</translation>
+<translation id="4333561522337981382">உங்கள் டிஸ்ப்ளேக்கள் அனைத்திலும் சாளரங்களை நிர்வகிக்க விரும்புகிறது</translation>
 <translation id="4340575312453649552">இந்த விளம்பரம் உங்கள் சாதனத்தின் செயல்திறனை பாதிப்பதால் அதனை Chrome அகற்றிவிட்டது.</translation>
 <translation id="4340982228985273705">இந்தக் கம்ப்யூட்டரானது நிறுவனத்தால் நிர்வகிக்கப்படுவதாகக் கண்டறியப்படவில்லை. எனவே, கொள்கையால் Chrome இணைய அங்காடியில் ஹோஸ்ட் செய்யப்படும் நீட்டிப்புகளை மட்டும் தானாக நிறுவ முடியும். "<ph name="CWS_UPDATE_URL" />" என்பது Chrome இணைய அங்காடிப் புதுப்பிப்பு URL ஆகும்.</translation>
 <translation id="4346197816712207223">ஏற்கப்படும் கிரெடிட் கார்டுகள்</translation>
@@ -1449,6 +1450,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, தேட Tab விசையை அழுத்திய பிறகு Enter விசையை அழுத்துங்கள்</translation>
 <translation id="4930153903256238152">அதிக கொள்ளளவு</translation>
+<translation id="4934780484581617878">சாளரங்களை நிர்வகித்தல்</translation>
 <translation id="4936134414789135531">சேர்க்கப்பட்ட <ph name="VALUE_NAME" /> ஐக் கண்டறிய முடியவில்லை.</translation>
 <translation id="4936675324097895694">நிதி</translation>
 <translation id="4940163644868678279">Chrome மறைநிலைப் பயன்முறை</translation>
@@ -1461,6 +1463,7 @@
 <translation id="4958444002117714549">பட்டியலை விரி</translation>
 <translation id="4964505745997821360">உடல்நலக் காப்பீடு</translation>
 <translation id="4968522289500246572">மொபைல் சாதனங்களுக்காக இந்த ஆப்ஸ் வடிவமைக்கப்பட்டுள்ளதால் இதன் அளவைச் சரியாக மாற்ற முடியாமல் போகலாம். அத்துடன் இதில் சிக்கல்கள் ஏற்படலாம் அல்லது இது மீண்டும் தொடங்கலாம்.</translation>
+<translation id="4968665849807487749">உங்கள் டிஸ்ப்ளேக்கள் அனைத்திலும் சாளரங்களை நிர்வகிப்பதற்கான அனுமதியைக் கேட்கலாம்</translation>
 <translation id="4969341057194253438">ரெக்கார்டிங்கை நீக்கு</translation>
 <translation id="4973922308112707173">டூயல் பஞ்ச் டாப்</translation>
 <translation id="4976702386844183910">கடைசியாகப் பார்த்தது: <ph name="DATE" /></translation>
@@ -1963,6 +1966,7 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />ப்ராக்ஸி, ஃபயர்வால், பாதுகாப்பான DNS உள்ளமைவு ஆகியவற்றைச் சரிபாருங்கள்<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">டூயல் ஸ்டேப்பில் லெஃப்ட்</translation>
+<translation id="6374865374745447009">சாளரங்களை நிர்வகித்தல்</translation>
 <translation id="6377268785556383139">'<ph name="SEARCH_TEXT" />'க்கு 1 முடிவு உள்ளது</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">கட்டணங்கள் விதிக்கப்படச் சாத்தியமுள்ளது.</translation>

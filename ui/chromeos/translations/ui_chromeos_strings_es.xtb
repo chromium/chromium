@@ -245,6 +245,7 @@
 <translation id="3138624403379688522">PIN no válido. Te quedan <ph name="RETRIES" /> intentos.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (respaldado por hardware)</translation>
 <translation id="3188257591659621405">Mis archivos</translation>
+<translation id="3194553149358267393">No hay archivos de audio recientes</translation>
 <translation id="3197563288998582412">Reino Unido (Dvorak)</translation>
 <translation id="3202131003361292969">Ruta</translation>
 <translation id="3205852408225871810">Portugués (Brasil)</translation>
@@ -303,6 +304,7 @@
 <translation id="3606220979431771195">Turco-F</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3619115746895587757">Capuchino</translation>
+<translation id="3619593063686672873">No hay vídeos recientes</translation>
 <translation id="3620292326130836921">Se ha realizado la copia de seguridad de todos los archivos</translation>
 <translation id="3634507049637220048">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, gestionada por el administrador, detalles</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> elementos movidos.</translation>
@@ -401,6 +403,7 @@
 <translation id="4572815280350369984">Archivo <ph name="FILE_TYPE" /></translation>
 <translation id="457386861538956877">Más...</translation>
 <translation id="4579744207439506346">Se ha añadido <ph name="ENTRY_NAME" /> a la selección.</translation>
+<translation id="4583436353463424810">No hay documentos recientes</translation>
 <translation id="4594543368593301662">Mostrando resultados de <ph name="SEARCH_TERM" />.</translation>
 <translation id="4599600860674643278">El filtro se ha restablecido.</translation>
 <translation id="4603392156942865207">Copiando <ph name="FILE_NAME" /> en <ph name="FOLDER_NAME" /></translation>
@@ -489,6 +492,7 @@
 <translation id="516592729076796170">Programmer Dvorak de EE. UU.</translation>
 <translation id="5172749059808361023">Detalles de las restricciones</translation>
 <translation id="5177526793333269655">Vista de miniaturas</translation>
+<translation id="5181896909298187506">No hay archivos recientes</translation>
 <translation id="5194713942430106590">Haz clic para mostrar la columna en orden ascendente.</translation>
 <translation id="5211614973734216083">Feroés</translation>
 <translation id="5218183485292899140">Francés (suizo)</translation>
@@ -746,6 +750,7 @@
 <translation id="7408870451288633753">Checo</translation>
 <translation id="7417453074306512035">Teclado etíope</translation>
 <translation id="7417705661718309329">Mapa de Google</translation>
+<translation id="7458955835361612701">No hay imágenes recientes</translation>
 <translation id="7460898608667578234">Ucraniano</translation>
 <translation id="7469894403370665791">Conectarse automáticamente a esta red</translation>
 <translation id="7486315294984620427">Para soltar archivos en Parallels Desktop, primero tienen que estar copiados en Archivos de Windows.</translation>

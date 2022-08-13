@@ -1741,6 +1741,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2602501489742255173">Prevucite nagore da biste započeli</translation>
 <translation id="2603115962224169880">Očistite računar</translation>
 <translation id="2603355571917519942">Voice Match je spreman</translation>
+<translation id="2604129989323098489">Sajtovi obično traže informacije o ekranima kako bi mogli da inteligentno otvaraju i postavljaju prozore, na primer, da prikazuju dokumente ili sadržaj preko celog ekrana jedno do drugog</translation>
 <translation id="2604255671529671813">Greška mrežne veze</translation>
 <translation id="2605668923777146443">Idite u <ph name="LINK_BEGIN" />Podešavanja<ph name="LINK_END" /> da biste videli opcije za Better Together.</translation>
 <translation id="2606246518223360146">Poveži podatke</translation>
@@ -5369,6 +5370,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6130692320435119637">Dodaj WiFi</translation>
 <translation id="6130887916931372608">Taster tastature</translation>
 <translation id="6135823405800500595">Uverite se da je telefon u blizini, da je otključan i da su Bluetooth i WiFi uključeni</translation>
+<translation id="6135826623269483856">Nije im dozvoljeno da upravljaju prozorima na svim ekranima</translation>
 <translation id="6136114942382973861">Zatvori traku sa preuzimanjima</translation>
 <translation id="6136287496450963112">Bezbednosni ključ nije zaštićen PIN-om. Da biste upravljali otiscima prstiju, prvo napravite PIN.</translation>
 <translation id="6138680304137685902">Potpis X9.62 ECDSA putem SHA-384</translation>
@@ -7379,6 +7381,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
     <ph name="BEGIN_PARAGRAPH3" />Ovu uslugu možete da isključite u Podešavanjima.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8076492880354921740">Kartice</translation>
 <translation id="8076835018653442223">Administrator je onemogućio pristup lokalnim datotekama na uređaju</translation>
+<translation id="80798452873915119">Sajtovi mogu da zatraže da upravljaju prozorima na svim ekranima</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Sesijom upravlja <ph name="MANAGER_NAME" />. Administratori mogu da izbrišu vaš profil i da nadgledaju vaš mrežni saobraćaj.</translation>
 <translation id="8081989000209387414">Želite da onemogućite ADB otklanjanje grešaka?</translation>
@@ -7683,6 +7686,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8371695176452482769">Počnite da govorite</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Isključi zvuk sajta}one{Isključi zvuk sajtova}few{Isključi zvuk sajtova}other{Isključi zvuk sajtova}}</translation>
 <translation id="8373652277231415614">Deljeni Crostini direktorijumi</translation>
+<translation id="8374243500935816406">Ne dozvoljavajte sajtovima da upravljaju prozorima na svim ekranima</translation>
 <translation id="8376137163494131156">Recite nam šta se dešava sa Google Cast-om.</translation>
 <translation id="8376384591331888629">Uključujući kolačiće trećih strana na ovom sajtu</translation>
 <translation id="8376451933628734023">Ako ova veb-aplikacija pokušava da vas prevari da je neka druga aplikacija, deinstalirajte je.</translation>
@@ -7977,6 +7981,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8670537393737592796">Da biste se ovde brzo vraćali, instalirajte aplikaciju <ph name="APP_NAME" /> klikom na dugme Instaliraj</translation>
 <translation id="867085395664725367">Došlo je do privremene greške servera.</translation>
 <translation id="8673026256276578048">Pretraži Veb...</translation>
+<translation id="867329473311423817">Dozvoljeno im je da upravljaju prozorima na svim ekranima</translation>
 <translation id="8673383193459449849">Problem sa serverom</translation>
 <translation id="8674903726754070732">Nažalost, računar je konfigurisan pomoću pogrešno formatiranog ID-a hardvera. To sprečava da se Chrome OS ažurira najnovijim bezbednosnim ispravkama i računar <ph name="BEGIN_BOLD" />može da bude podložan zlonamernim napadima<ph name="END_BOLD" />.</translation>
 <translation id="8675704450909805533">Program za instalaciju nije uspeo da pronađe ispravno odredište za instaliranje sistema <ph name="DEVICE_OS" />.</translation>

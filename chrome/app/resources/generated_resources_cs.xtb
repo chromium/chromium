@@ -1744,6 +1744,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2602501489742255173">Začněte přejetím nahoru</translation>
 <translation id="2603115962224169880">Vyčištění počítače</translation>
 <translation id="2603355571917519942">Funkce Voice Match je připravena</translation>
+<translation id="2604129989323098489">Weby obvykle žádají informace o obrazovkách, aby mohly inteligentně otevírat a umisťovat okna, například zobrazit dokumenty nebo obsah na celou obrazovku vedle sebe</translation>
 <translation id="2604255671529671813">Chyba připojení k síti</translation>
 <translation id="2605668923777146443">Možnosti funkce Better Together jsou k dispozici v <ph name="LINK_BEGIN" />Nastavení<ph name="LINK_END" />.</translation>
 <translation id="2606246518223360146">Propojit data</translation>
@@ -5368,6 +5369,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6130692320435119637">Přidat Wi-Fi</translation>
 <translation id="6130887916931372608">Klávesa</translation>
 <translation id="6135823405800500595">Ujistěte se, že je telefon blízko, že je odemknutý a že jsou zapnuté Bluetooth a Wi-Fi</translation>
+<translation id="6135826623269483856">Nemá povoleno spravovat okna na všech obrazovkách</translation>
 <translation id="6136114942382973861">Zavřít lištu se staženými soubory</translation>
 <translation id="6136287496450963112">Váš bezpečnostní klíč není chráněn kódem PIN. Pokud chcete spravovat otisky prstů, nejdříve vytvořte PIN.</translation>
 <translation id="6138680304137685902">Podpis X9.62 ECDSA s SHA-384</translation>
@@ -7378,6 +7380,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
     <ph name="BEGIN_PARAGRAPH3" />Tuto možnost můžete vypnout v Nastavení.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8076492880354921740">Karty</translation>
 <translation id="8076835018653442223">Správce přístup k místním souborům v tomto zařízení zakázal</translation>
+<translation id="80798452873915119">Weby mohou žádat o správu oken na všech obrazovkách</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Vaši relaci spravuje doména <ph name="MANAGER_NAME" />. Administrátoři mohou smazat váš profil a také sledovat síťový provoz.</translation>
 <translation id="8081989000209387414">Deaktivovat ladění ADB?</translation>
@@ -7682,6 +7685,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8371695176452482769">Mluvte</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Vypnout zvuk webu}few{Vypnout zvuk webů}many{Vypnout zvuk webů}other{Vypnout zvuk webů}}</translation>
 <translation id="8373652277231415614">Sdílené adresáře Crostini</translation>
+<translation id="8374243500935816406">Nepovolovat webům spravovat okna na všech obrazovkách</translation>
 <translation id="8376137163494131156">Řekněte nám, co se děje s fungováním technologie Google Cast.</translation>
 <translation id="8376384591331888629">Včetně souborů cookie třetích stran na tomto webu</translation>
 <translation id="8376451933628734023">Pokud se vás tato webová aplikace snaží přesvědčit, že se jedná o jinou aplikaci, odinstalujte ji.</translation>
@@ -7976,6 +7980,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8670537393737592796">Chcete-li se sem rychle vrátit, nainstalujte si aplikaci <ph name="APP_NAME" /> kliknutím na tlačítko instalace</translation>
 <translation id="867085395664725367">Došlo k dočasné chybě serveru.</translation>
 <translation id="8673026256276578048">Vyhledávání na webu...</translation>
+<translation id="867329473311423817">Má povoleno spravovat okna na všech obrazovkách</translation>
 <translation id="8673383193459449849">Problém se serverem</translation>
 <translation id="8674903726754070732">Váš počítač je bohužel nakonfigurován pomocí chybného čísla hardwaru. Systému ChromeOS to zabraňuje získat aktualizace s nejnovějšími bezpečnostními opravami, a počítač tak <ph name="BEGIN_BOLD" />může být zranitelnější vůči škodlivým útokům<ph name="END_BOLD" />.</translation>
 <translation id="8675704450909805533">Instalačnímu programu se nepodařilo najít platný cíl k instalaci systému <ph name="DEVICE_OS" />.</translation>

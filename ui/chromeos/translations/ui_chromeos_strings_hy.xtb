@@ -245,6 +245,7 @@
 <translation id="3138624403379688522">PIN կոդն անվավեր է։ Մնաց <ph name="RETRIES" /> փորձ։</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (ապարատային աջակցում)</translation>
 <translation id="3188257591659621405">Իմ ֆայլերը</translation>
+<translation id="3194553149358267393">Վերջերս բացված աուդիո ֆայլեր չկան</translation>
 <translation id="3197563288998582412">ՄԹ Դվորակ</translation>
 <translation id="3202131003361292969">Ուղի</translation>
 <translation id="3205852408225871810">պորտուգալերեն (Բրազիլիա)</translation>
@@ -303,6 +304,7 @@
 <translation id="3606220979431771195">Թուրքական F</translation>
 <translation id="3616113530831147358">Աուդիո</translation>
 <translation id="3619115746895587757">Կապուչինո</translation>
+<translation id="3619593063686672873">Վերջերս դիտված տեսանյութեր չկան</translation>
 <translation id="3620292326130836921">Բոլորը ֆայլերը կրկնօրինակվեցին:</translation>
 <translation id="3634507049637220048">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, կառավարվում է ձեր ադմինիստրատորի կողմից, մանրամասներ</translation>
 <translation id="3645233063072417428">Տեղափոխվեց <ph name="NUMBER_OF_ITEMS" /> տարր։</translation>
@@ -401,6 +403,7 @@
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> ֆայլ</translation>
 <translation id="457386861538956877">Ավելին…</translation>
 <translation id="4579744207439506346">«<ph name="ENTRY_NAME" />» գրառումն ավելացվեց ընտրվածքին:</translation>
+<translation id="4583436353463424810">Վերջերս բացված փաստաթղթեր չկան</translation>
 <translation id="4594543368593301662">Ցուցադրված են «<ph name="SEARCH_TERM" />» հարցումով որոնման արդյունքները:</translation>
 <translation id="4599600860674643278">Զտիչը վերակայված է։</translation>
 <translation id="4603392156942865207">«<ph name="FILE_NAME" />» ֆայլը պատճենվում է «<ph name="FOLDER_NAME" />» պանակում</translation>
@@ -489,6 +492,7 @@
 <translation id="516592729076796170">ԱՄՆ ծրագրավորող Դվորակ</translation>
 <translation id="5172749059808361023">Սահմանափակումների մասին մանրամասներ</translation>
 <translation id="5177526793333269655">Մանրապատկերի տեսք</translation>
+<translation id="5181896909298187506">Վերջերս բացված ֆայլեր չկան</translation>
 <translation id="5194713942430106590">Սեղմեք՝ սյունակներն ըստ աճման կարգի տեսակավորելու համար։</translation>
 <translation id="5211614973734216083">ֆարյորերեն</translation>
 <translation id="5218183485292899140">Շվեյցարական (ֆրանսիական)</translation>
@@ -745,6 +749,7 @@
 <translation id="7408870451288633753">չեխերեն</translation>
 <translation id="7417453074306512035">Եթովպերենի ստեղնաշար</translation>
 <translation id="7417705661718309329">Google քարտեզ</translation>
+<translation id="7458955835361612701">Վերջերս դիտված պատկերներ չկան</translation>
 <translation id="7460898608667578234">Ուկրաինական</translation>
 <translation id="7469894403370665791">Ավտոմատ միանալ այս ցանցին</translation>
 <translation id="7486315294984620427">Ֆայլերը Parallels Desktop քաշելու և թողնելու համար նախ պատճենեք դրանք «Windows-ի ֆայլեր» պանակում։</translation>

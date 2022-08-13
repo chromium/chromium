@@ -245,6 +245,7 @@
 <translation id="3138624403379688522">PIN nav derīgs. Atlikuši <ph name="RETRIES" /> mēģinājumi.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (ar krātuvi aparatūrā)</translation>
 <translation id="3188257591659621405">Mani faili</translation>
+<translation id="3194553149358267393">Nav nesenu audio failu</translation>
 <translation id="3197563288998582412">Lielbritānijas Dvorak</translation>
 <translation id="3202131003361292969">Ceļš</translation>
 <translation id="3205852408225871810">Portugāļu (Brazīlija)</translation>
@@ -303,6 +304,7 @@
 <translation id="3606220979431771195">Turku-F</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3619115746895587757">Kapučīno</translation>
+<translation id="3619593063686672873">Nav nesenu videoklipu</translation>
 <translation id="3620292326130836921">Visi faili ir dublēti.</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_INDEX" />. tīkls no <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, pārvalda jūsu administrators, informācija</translation>
 <translation id="3645233063072417428">Pārvietoti vienumi: <ph name="NUMBER_OF_ITEMS" />.</translation>
@@ -401,6 +403,7 @@
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> fails</translation>
 <translation id="457386861538956877">Vēl...</translation>
 <translation id="4579744207439506346">Vienums “<ph name="ENTRY_NAME" />” ir pievienots atlasei.</translation>
+<translation id="4583436353463424810">Nav nesenu dokumentu</translation>
 <translation id="4594543368593301662">Tiek rādīti rezultāti šādam vaicājumam: <ph name="SEARCH_TERM" />.</translation>
 <translation id="4599600860674643278">Filtrs ir atiestatīts.</translation>
 <translation id="4603392156942865207">Fails “<ph name="FILE_NAME" />” tiek kopēts uz mapi “<ph name="FOLDER_NAME" />”</translation>
@@ -489,6 +492,7 @@
 <translation id="516592729076796170">US Programmer Dvorak</translation>
 <translation id="5172749059808361023">Informācija par ierobežojumiem</translation>
 <translation id="5177526793333269655">Sīktēlu skatījums</translation>
+<translation id="5181896909298187506">Nav nesenu failu</translation>
 <translation id="5194713942430106590">Noklikšķiniet, lai kārtotu kolonnas augošā secībā.</translation>
 <translation id="5211614973734216083">Fēru</translation>
 <translation id="5218183485292899140">Šveices franču</translation>
@@ -746,6 +750,7 @@
 <translation id="7408870451288633753">Čehu</translation>
 <translation id="7417453074306512035">Gēzu rakstības tastatūra</translation>
 <translation id="7417705661718309329">Google karte</translation>
+<translation id="7458955835361612701">Nav nesenu attēlu</translation>
 <translation id="7460898608667578234">Ukraiņu valoda</translation>
 <translation id="7469894403370665791">Automātiski pievienoties šim tīklam</translation>
 <translation id="7486315294984620427">Lai nomestu failus darbvirsmā Parallels Desktop, attiecīgajam failam ir jābūt kopētam Windows failos.</translation>

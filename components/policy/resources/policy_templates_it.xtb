@@ -1381,6 +1381,7 @@ Lasciare il criterio non impostato significa che nessuna estensione è esente da
 <translation id="2341509917222115272">Se il criterio viene impostato su Attivato o se non viene configurato, gli utenti possono accoppiare client e host in fase di connessione, senza dover inserire un codice PIN ogni volta.
 
       Se il criterio viene impostato su Disattivato, questa funzionalità non è disponibile.</translation>
+<translation id="2342066287156668839">Attiva la quota permanente.</translation>
 <translation id="2345547870894930157">Attiva DNS over HTTPS senza fallback non sicuro</translation>
 <translation id="2349117476121456297">Se il criterio è impostato su True, i tasti della fila superiore della tastiera riprodurranno i comandi dei tasti funzione. Per ripristinare il comportamento dei tasti multimediali, è necessario premere il tasto per la ricerca.
 
@@ -2708,6 +2709,7 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 
       Se il criterio viene impostato su Disattivato o se non viene configurato, <ph name="PRODUCT_OS_NAME" /> consente agli utenti di arrestare il dispositivo.</translation>
 <translation id="3763515772647897871">Il giorno della settimana in cui dovrebbe essere eseguito il controllo della disponibilità di aggiornamenti, nel fuso orario locale del dispositivo. Questo criterio viene usato soltanto se il valore del criterio "frequency" è "WEEKLY".</translation>
+<translation id="376375951585423504">Disattiva la quota permanente.</translation>
 <translation id="3765260570442823273">Durata del messaggio di avviso di uscita per inattività</translation>
 <translation id="3770407495263198786">La configurazione del criterio consente agli amministratori di impostare un elenco di stampanti per i loro utenti. La selezione della stampante viene effettuata la prima volta che gli utenti provano a stampare.
 
@@ -5566,6 +5568,10 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
       Nota: il blocco degli URL interni chrome://* e chrome-untrusted://* può causare errori imprevisti o essere aggirato in casi speciali. Anziché bloccare determinati URL interni, controlla se sono disponibili criteri più specifici. Casi comuni: anziché bloccare chrome://settings/certificates, usa il criterio <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME" />. Anziché bloccare chrome-untrusted://crosh, usa il criterio <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />.</translation>
 <translation id="6894178810167845842">URL della pagina Nuova scheda</translation>
 <translation id="6897730193187922386">Elimina messaggi relativi al ritiro di <ph name="CLOUD_PRINT_NAME" /></translation>
+<translation id="6899495066226330266">L'avvio della quota permanente M106 non sarà più supportato. Questo criterio consente di riattivare la funzionalità della quota permanente fino alla versione M107.
+      Se questo criterio viene impostato su Enabled, webkitRequestFileSystem con tipo permanente funzionerà con la quota permanente.
+      Se questo criterio non viene configurato o se viene impostato su Disabled, webkitRequestFileSystem con tipo permanente funzionerà con la quota temporanea.
+      </translation>
 <translation id="6899705656741990703">Rileva automaticamente impostazioni proxy</translation>
 <translation id="6902561336084511004">Consente di specificare le configurazioni dei server di stampa disponibili.
 
@@ -6819,6 +6825,7 @@ Se questo criterio non viene impostato, verrà applicato il comportamento predef
 <translation id="8229912067600517877">Attiva Strumenti per sviluppatori</translation>
 <translation id="8238421250255592181">Un flag booleano che indica se la tastiera sullo schermo può offrire la funzionalità di completamento automatico.</translation>
 <translation id="8239109177194627162">Disattiva la compilazione automatica per le carte di credito</translation>
+<translation id="8239143983379015783">Forza l'attivazione della quota permanente</translation>
 <translation id="8244171102276095471">Attiva i pacchetti di crittografia RC4 in TLS</translation>
 <translation id="8244525275280476362">Ritardo di recupero massimo dopo l'invalidazione di una norma</translation>
 <translation id="8245574649143980200">Se il criterio non viene configurato o se viene impostato su Attivato, gli utenti possono visualizzare la voce di menu per la ricerca per sezione di <ph name="GOOGLE_LENS_PRODUCT_NAME" /> nel menu contestuale. Se viene impostato su Disattivato, gli utenti non vedranno la voce di menu per la ricerca per sezione di <ph name="GOOGLE_LENS_PRODUCT_NAME" /> se la ricerca per sezione di <ph name="GOOGLE_LENS_PRODUCT_NAME" /> è supportata.</translation>

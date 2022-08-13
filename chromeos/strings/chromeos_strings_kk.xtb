@@ -149,6 +149,7 @@
 <translation id="2115956742084455574">Код дұрыс емес</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, <ph name="MILESTONE_VERSION" />-нұсқа</translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" />/<ph name="TOTAL_MEMORY" /> ГБ қолжетімді.</translation>
+<translation id="2130871201950918186">Жүйе 5 секундтан кейін өшіп қосылады.</translation>
 <translation id="2138109643290557664">Қалқу</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> фотосурет</translation>
@@ -211,6 +212,7 @@
 <translation id="2536159006530886390">Интернетке қосыла алмай жатыр.</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> сынағы жүруде…</translation>
 <translation id="2584559707064218956">Реттеу үшін "Параметрлер" бөліміне өтіңіз.</translation>
+<translation id="2597774443162333062">Қатесін түзету үшін файлдар Google-ға жіберіледі.</translation>
 <translation id="2619761439309613843">Күн сайын жаңарту</translation>
 <translation id="2620436844016719705">Жүйе</translation>
 <translation id="2638662041295312666">Кіру суреті</translation>
@@ -671,6 +673,7 @@
 <translation id="6659594942844771486">Қойынды</translation>
 <translation id="6692996468359469499">Таңдауға қатысты ақпарат алу</translation>
 <translation id="6704062477274546131">DNS ажыратымдылығы</translation>
+<translation id="6719240409382354629">Өшіп қосылуға дайындалып жатыр…</translation>
 <translation id="6723839937902243910">Күш</translation>
 <translation id="6723847290197874913">Пернетақта жарығы</translation>
 <translation id="672609503628871915">Жаңалықтарды қарау</translation>
@@ -888,6 +891,7 @@
 <translation id="8747900814994928677">Өзгерісті растау</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos альбомы</translation>
+<translation id="8778600430213950389">Бірдеңе дұрыс болмады. Жабдықта ақау туындаған болуы мүмкін. Негізгі тақтаны ауыстырыңыз да, жөндеу процесін қайталап көріңіз.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Бұл желіде адаптивті портал болуы мүмкін.</translation>
 <translation id="8798099450830957504">Әдепкі</translation>
@@ -941,6 +945,7 @@
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> үшін билетті жаңарту</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />-бет сканерленуде</translation>
 <translation id="9111102763498581341">Құлпын ашу</translation>
+<translation id="9118126012493516930">Жөндеуді аяқтау мүмкін емес</translation>
 <translation id="9122602430962285795">Қайта қосылу үшін "Параметрлер" бетіне өтіңіз.</translation>
 <translation id="9126720536733509015">Бірнеше бетті бір PDF файлына сақтау</translation>
 <translation id="9137526406337347448">Google қызметтері</translation>

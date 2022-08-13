@@ -1742,6 +1742,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2602501489742255173">Llisca cap amunt per començar</translation>
 <translation id="2603115962224169880">Neteja l'ordinador</translation>
 <translation id="2603355571917519942">Voice Match està a punt</translation>
+<translation id="2604129989323098489">Els llocs web solen demanar informació sobre les pantalles perquè puguin obrir i col·locar finestres de manera intel·ligent, com ara mostrar documents o contingut en pantalla completa en paral·lel</translation>
 <translation id="2604255671529671813">Error de connexió a la xarxa</translation>
 <translation id="2605668923777146443">Per veure les opcions de Better Together, ves a <ph name="LINK_BEGIN" />Configuració<ph name="LINK_END" />.</translation>
 <translation id="2606246518223360146">Enllaça les dades</translation>
@@ -5368,6 +5369,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6130692320435119637">Afegeix una Wi‑Fi</translation>
 <translation id="6130887916931372608">Tecla del teclat</translation>
 <translation id="6135823405800500595">Comprova que el telèfon sigui a prop teu, que estigui desbloquejat i que tingui el Bluetooth i la Wi-Fi activats</translation>
+<translation id="6135826623269483856">No tenen permís per gestionar finestres en totes les pantalles</translation>
 <translation id="6136114942382973861">Tanca la barra de baixades</translation>
 <translation id="6136287496450963112">La clau de seguretat no està protegida amb un PIN. Crea'n un per gestionar les empremtes digitals.</translation>
 <translation id="6138680304137685902">Signatura d'ECDSA X9.62 amb SHA-384</translation>
@@ -7375,6 +7377,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
     <ph name="BEGIN_PARAGRAPH3" />Pots desactivar aquest servei a Configuració.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8076492880354921740">Pestanyes</translation>
 <translation id="8076835018653442223">L'administrador ha desactivat l'accés als fitxers locals del dispositiu</translation>
+<translation id="80798452873915119">Els llocs web poden demanar permís per gestionar finestres en totes les pantalles</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">La sessió està gestionada per <ph name="MANAGER_NAME" />. Els administradors poden suprimir el teu perfil i també monitorar el teu trànsit de xarxa.</translation>
 <translation id="8081989000209387414">Vols desactivar la depuració d'ADB?</translation>
@@ -7680,6 +7683,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8371695176452482769">Parla ara</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Silencia el lloc web}other{Silencia els llocs web}}</translation>
 <translation id="8373652277231415614">Directoris compartits de Crostini</translation>
+<translation id="8374243500935816406">No permetis que els llocs web gestionin finestres en totes les pantalles</translation>
 <translation id="8376137163494131156">Explica'ns què passa amb Google Cast.</translation>
 <translation id="8376384591331888629">Incloses les galetes de tercers en aquest lloc web</translation>
 <translation id="8376451933628734023">Si aquesta aplicació web està provant d'enganyar-te perquè pensis que és una altra aplicació, desinstal·la-la.</translation>
@@ -7974,6 +7978,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8670537393737592796">Per tornar aquí ràpidament, instal·la <ph name="APP_NAME" /> fent clic al botó d'instal·lació</translation>
 <translation id="867085395664725367">S'ha produït un error temporal del servidor.</translation>
 <translation id="8673026256276578048">Cerca al web...</translation>
+<translation id="867329473311423817">Tenen permís per gestionar finestres en totes les pantalles</translation>
 <translation id="8673383193459449849">Problema del servidor</translation>
 <translation id="8674903726754070732">Malauradament, l'ordinador està configurat amb un identificador de maquinari que té un format incorrecte. Això impedeix a Chrome OS actualitzar-se amb les darreres correccions de seguretat i <ph name="BEGIN_BOLD" />pot ser que l'ordinador sigui vulnerable a atacs maliciosos<ph name="END_BOLD" />.</translation>
 <translation id="8675704450909805533">L'instal·lador no ha pogut trobar cap destinació vàlida per instal·lar <ph name="DEVICE_OS" />.</translation>

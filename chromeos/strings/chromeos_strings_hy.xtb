@@ -149,6 +149,7 @@
 <translation id="2115956742084455574">Կոդը սխալ է</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, տարբերակ <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> ԳԲ-ից հասանելի է <ph name="AVAILABLE_MEMORY" /> ԳԲ</translation>
+<translation id="2130871201950918186">Համակարգը 5 վայրկյանից կվերագործարկվի։</translation>
 <translation id="2138109643290557664">Տատանումներ</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> լուսանկար</translation>
@@ -211,6 +212,7 @@
 <translation id="2536159006530886390">Չհաջողվեց միանալ ինտերնետին։</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" />ը ստուգվում է…</translation>
 <translation id="2584559707064218956">Ցանցը կարգավորելու համար անցեք Կարգավորումներ</translation>
+<translation id="2597774443162333062">Վրիպազերծման համար ֆայլերը կուղարկվեն Google-ին</translation>
 <translation id="2619761439309613843">Ամենօրյա թարմացում</translation>
 <translation id="2620436844016719705">Համակարգ</translation>
 <translation id="2638662041295312666">Մուտքի պատկեր</translation>
@@ -672,6 +674,7 @@
 <translation id="6659594942844771486">Ներդիր</translation>
 <translation id="6692996468359469499">Ստացեք տեղեկություններ էկրանի տարրերի վերաբերյալ</translation>
 <translation id="6704062477274546131">DNS-ի լուծաչափ</translation>
+<translation id="6719240409382354629">Սարքը նախապատրաստվում է վերագործարկման…</translation>
 <translation id="6723839937902243910">Սնուցում</translation>
 <translation id="6723847290197874913">Ստեղնաշարի հետնալույս</translation>
 <translation id="672609503628871915">Իմանալ՝ ինչ նոր բան կա</translation>
@@ -889,6 +892,7 @@
 <translation id="8747900814994928677">Հաստատեք փոփոխությունը</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Լուսանկարների ալբոմ</translation>
+<translation id="8778600430213950389">Սխալ առաջացավ։ Ամենայն հավանականությամբ սա կապված է սարքակազմի խնդրի հետ։ Փոխարինեք մայր պլատան և նորից սկսեք վերանորոգման գործընթացը։</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Այս ցանցը կարող է մուտքի էջ ունենալ</translation>
 <translation id="8798099450830957504">Կանխադրված</translation>
@@ -942,6 +946,7 @@
 <translation id="910415269708673980">Թարմացրեք <ph name="PRINCIPAL_NAME" /> հաշվի տոմսը</translation>
 <translation id="9106415115617144481">Սկանավորվում է էջ <ph name="PAGE_NUMBER" />-ը</translation>
 <translation id="9111102763498581341">Ապակողպել</translation>
+<translation id="9118126012493516930">Չհաջողվեց ավարտել վերանորոգումը</translation>
 <translation id="9122602430962285795">Նորից միանալու համար անցեք Կարգավորումներ</translation>
 <translation id="9126720536733509015">Պահեք մի քանի էջ մեկ PDF ֆայլում</translation>
 <translation id="9137526406337347448">Google-ի ծառայություններ</translation>

@@ -1242,6 +1242,7 @@
 <translation id="4329871760342656885">پالیسی کو پارس کرنے میں خرابی: <ph name="ERROR" /></translation>
 <translation id="4331519897422864041">اسٹیکر 5</translation>
 <translation id="4331708818696583467">محفوظ نہیں</translation>
+<translation id="4333561522337981382">اپنے سبھی ڈسپلیز پر ونڈوز کا نظم کریں</translation>
 <translation id="4340575312453649552">‏اس اشتہار نے آپ کے آلہ کے لیے بہت سے وسائل کا استعمال کیا، لہذا Chrome نے اسے ہٹا دیا ہے۔</translation>
 <translation id="4340982228985273705">‏اس کمپیوٹر کا انٹرپرائز کے زیر انتظام کے طور پر پتہ نہیں چلا ہے، اسلئے پالیسی خودکار طور پر صرف Chrome ویب اسٹور پر میزبانی کردہ ایکسٹینشنز انسٹال کر سکتی ہے۔ Chrome ویب اسٹور اپ ڈیٹ URL "<ph name="CWS_UPDATE_URL" />" ہے۔</translation>
 <translation id="4346197816712207223">قبول کردہ کریڈٹ کارڈز</translation>
@@ -1455,6 +1456,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101">‏<ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />، تلاش کرنے کیلئے Tab، پھر Enter دبائیں</translation>
 <translation id="4930153903256238152">بڑی گنجائش</translation>
+<translation id="4934780484581617878">ونڈو کا نظم و نسق</translation>
 <translation id="4936134414789135531">داخل کردہ <ph name="VALUE_NAME" /> نہیں مل سکا۔</translation>
 <translation id="4936675324097895694">فائنانس</translation>
 <translation id="4940163644868678279">‏Chrome میں پوشیدگی وضع</translation>
@@ -1467,6 +1469,7 @@
 <translation id="4958444002117714549">فہرست پھیلائیں</translation>
 <translation id="4964505745997821360">ہیلتھ انشورنس</translation>
 <translation id="4968522289500246572">یہ ایپ موبائل کیلئے ڈیزائن کی گئی ہے اور ممکن ہے کہ اس کا سائز صحیح طریقے سے تبدیل نہ ہو۔ اس کو استعمال کرنے میں مسائل کا سامنا ہو سکتا ہے یا ری اسٹارٹ کرنا پڑ سکتی ہے۔</translation>
+<translation id="4968665849807487749">آپ کے سبھی ڈسپلیز پر ونڈوز کا نظم کرنے کے لیے کہہ سکتے ہیں</translation>
 <translation id="4969341057194253438">ریکارڈنگ حذف کریں</translation>
 <translation id="4973922308112707173">اوپر دُہرا سوراخ</translation>
 <translation id="4976702386844183910">آخری بار ملاحظہ کردہ <ph name="DATE" /></translation>
@@ -1971,6 +1974,7 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329">‏<ph name="BEGIN_LINK" />پراکسی، فائروال اور محفوظ DNS کنفیگریشن کو چیک کرنے کی کوشش کریں<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">بائیں طرف دُہری سٹیپل</translation>
+<translation id="6374865374745447009">ونڈو کا نظم و نسق</translation>
 <translation id="6377268785556383139">'<ph name="SEARCH_TEXT" />' کا 1 نتیجہ</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">آگے ممکنہ چارجز لیے جا سکتے ہيں۔</translation>

@@ -53,6 +53,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1225748608451425081">O seu Chromebook está bloqueado devido a um problema conhecido. Poderá iniciar sessão dentro de <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Parar seleção</translation>
 <translation id="1239161794459865856">A funcionalidade <ph name="FEATURE_NAME" /> está ligada.</translation>
+<translation id="1240638468526743569">Uma app</translation>
 <translation id="1246890715821376239">Apps não suportadas</translation>
 <translation id="1247372569136754018">Microfone (interno)</translation>
 <translation id="1247519845643687288">Apps recentes</translation>
@@ -685,6 +686,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" />% de bateria</translation>
 <translation id="4917385247580444890">Forte</translation>
 <translation id="4918086044614829423">Aceitar</translation>
+<translation id="4919841137949306064">A app <ph name="APP_NAME" /> está a usar a câmara neste momento</translation>
 <translation id="4925542575807923399">O gestor para esta conta requer que esta conta seja a primeira conta com sessão iniciada num início de sessão integrado.</translation>
 <translation id="4938176435186993759">Ocultar todas as sugestões</translation>
 <translation id="4945196315133970626">Desativar notificações</translation>
@@ -914,6 +916,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="6220928844947387476">Agora, pode gravar-se a si e ao ecrã em simultâneo</translation>
 <translation id="622484624075952240">Para baixo</translation>
 <translation id="6231419273573514727">O desempenho do periférico pode estar limitado</translation>
+<translation id="6232891689835436217">A app <ph name="APP_NAME" /> está a usar a câmara e o microfone neste momento</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Bloqueado na horizontal</translation>
 <translation id="6259254695169772643">Utilize a caneta stylus para selecionar.</translation>
@@ -1132,6 +1135,7 @@ Nova instalação</translation>
 <translation id="7544300628205093162">A retroiluminação do teclado está ativada</translation>
 <translation id="7548434653388805669">Hora de dormir</translation>
 <translation id="7551643184018910560">Fixar na prateleira</translation>
+<translation id="7557816257942363084">A app <ph name="APP_NAME" /> está a usar o microfone neste momento</translation>
 <translation id="7561982940498449837">Fechar menu</translation>
 <translation id="7564874036684306347">A movimentação de janelas para outro ambiente de trabalho pode provocar um comportamento inesperado. É possível dividir as notificações, as janelas e as caixas de diálogo subsequentes entre ambientes de trabalho.</translation>
 <translation id="7569509451529460200">O braille e o ChromeVox estão ativados</translation>

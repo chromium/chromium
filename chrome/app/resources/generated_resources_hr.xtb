@@ -602,6 +602,7 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (Gost)</translation>
 <translation id="1572266655485775982">Omogućivanje Wi-Fija</translation>
 <translation id="1572876035008611720">Unesite e-adresu</translation>
+<translation id="1573117025466282241">Upotrijebite telefon s QR kodom</translation>
 <translation id="1575741822946219011">Jezici i unosi</translation>
 <translation id="1576594961618857597">Zadani bijeli avatar</translation>
 <translation id="1578558981922970608">Prisilno zatvori</translation>
@@ -1749,6 +1750,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2602501489742255173">Prijeđite prstom prema gore za početak</translation>
 <translation id="2603115962224169880">Očistite računalo</translation>
 <translation id="2603355571917519942">Voice Match je spreman</translation>
+<translation id="2604129989323098489">Web-lokacije obično traže informacije o zaslonima kako bi inteligentno mogle otvarati i postavljati prozore, kao što su usporedno prikazivanje dokumenata ili sadržaja na cijelom zaslonu</translation>
 <translation id="2604255671529671813">Pogreška mrežne veze</translation>
 <translation id="2605668923777146443">Otvorite <ph name="LINK_BEGIN" />Postavke<ph name="LINK_END" /> da biste vidjeli svoje opcije za Better Together.</translation>
 <translation id="2606246518223360146">Poveži podatke</translation>
@@ -5380,6 +5382,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6130692320435119637">Dodaj Wi-Fi</translation>
 <translation id="6130887916931372608">Tipka tipkovnice</translation>
 <translation id="6135823405800500595">Telefon vam treba biti blizu, otključan, a Bluetooth i Wi-Fi uključeni.</translation>
+<translation id="6135826623269483856">Nije dopušteno upravljanje prozorima na svim zaslonima</translation>
 <translation id="6136114942382973861">Zatvori traku preuzimanja</translation>
 <translation id="6136287496450963112">Vaš sigurnosni ključ nije zaštićen PIN-om. Za upravljanje otiscima prstiju najprije izradite PIN.</translation>
 <translation id="6138680304137685902">X9.62 ECDSA potpis uz SHA-384</translation>
@@ -7391,6 +7394,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
     <ph name="BEGIN_PARAGRAPH3" />Tu uslugu možete isključiti u Postavkama.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8076492880354921740">Kartice</translation>
 <translation id="8076835018653442223">Pristup lokalnim datotekama na vašem uređaju onemogućio je administrator</translation>
+<translation id="80798452873915119">Web-lokacije mogu tražiti dopuštenje za upravljanje prozorima na svim zaslonima</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Vašom sesijom upravlja <ph name="MANAGER_NAME" />. Administratori mogu izbrisati vaš profil te pratiti vaš mrežni promet.</translation>
 <translation id="8081989000209387414">Onemogućiti ADB otklanjanje pogrešaka?</translation>
@@ -7696,6 +7700,7 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="8371695176452482769">Govorite sad</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Isključi zvuk na web-lokaciji}one{Isključi zvuk na web-lokacijama}few{Isključi zvuk na web-lokacijama}other{Isključi zvuk na web-lokacijama}}</translation>
 <translation id="8373652277231415614">Crostinijevi dijeljeni direktoriji</translation>
+<translation id="8374243500935816406">Ne dopuštaj web-lokacijama da upravljaju prozorima na svim zaslonima</translation>
 <translation id="8376137163494131156">Recite nam što se događa s Google Castom.</translation>
 <translation id="8376384591331888629">Uključujući kolačiće treće strane na ovoj web-lokaciji</translation>
 <translation id="8376451933628734023">Ako vas ova web-aplikacija pokušava prevariti kako biste pomislili da je neka druga aplikacija, deinstalirajte je.</translation>
@@ -7990,6 +7995,7 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="8670537393737592796">Da biste se brzo vratili ovdje, instalirajte aplikaciju <ph name="APP_NAME" /> klikom na gumb za instaliranje</translation>
 <translation id="867085395664725367">Došlo je do privremene pogreške poslužitelja.</translation>
 <translation id="8673026256276578048">Pretraživanje weba...</translation>
+<translation id="867329473311423817">Dopušteno je upravljanje prozorima na svim zaslonima</translation>
 <translation id="8673383193459449849">Problem s poslužiteljem</translation>
 <translation id="8674903726754070732">Nažalost, vaše je računalo konfigurirano s pogrešno oblikovanim ID-jem hardvera. To sprječava ažuriranje Chrome OS-a najnovijim sigurnosnim popravcima, pa bi vaše računalo <ph name="BEGIN_BOLD" />moglo biti ranjivo na zlonamjerne napade<ph name="END_BOLD" />.</translation>
 <translation id="8675704450909805533">Program za instalaciju nije uspio pronaći važeće odredište za instaliranje OS-a <ph name="DEVICE_OS" />.</translation>

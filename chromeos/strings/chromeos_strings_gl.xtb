@@ -149,6 +149,7 @@
 <translation id="2115956742084455574">Código incorrecto</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versión <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Memoria dispoñible: <ph name="AVAILABLE_MEMORY" /> GB de <ph name="TOTAL_MEMORY" /> GB</translation>
+<translation id="2130871201950918186">O sistema reiniciarase dentro de 5 segundos.</translation>
 <translation id="2138109643290557664">Flotación</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> fotos</translation>
@@ -211,6 +212,7 @@
 <translation id="2536159006530886390">Non foi posible conectarse a Internet.</translation>
 <translation id="2570743873672969996">Executando proba de <ph name="TEST_NAME" />…</translation>
 <translation id="2584559707064218956">Para axustar as opcións, vai a Configuración</translation>
+<translation id="2597774443162333062">Enviaranse os ficheiros a Google para proceder á depuración</translation>
 <translation id="2619761439309613843">Actualización diaria</translation>
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2638662041295312666">Imaxe de inicio de sesión</translation>
@@ -672,6 +674,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="6659594942844771486">Pestana</translation>
 <translation id="6692996468359469499">Consultar a información relacionada coa túa selección</translation>
 <translation id="6704062477274546131">Resolución de DNS</translation>
+<translation id="6719240409382354629">Preparándose para reiniciar o dispositivo…</translation>
 <translation id="6723839937902243910">A</translation>
 <translation id="6723847290197874913">Luz traseira do teclado</translation>
 <translation id="672609503628871915">Ver as novidades</translation>
@@ -889,6 +892,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="8747900814994928677">Confirmar o cambio</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Álbums de Google Fotos</translation>
+<translation id="8778600430213950389">Produciuse un erro. É probable que se deba a un problema co hardware. Substitúe a placa base e tenta levar a cabo de novo o proceso de reparación.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Esta rede pode ter un portal cativo</translation>
 <translation id="8798099450830957504">Predeterminado</translation>
@@ -942,6 +946,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="910415269708673980">Actualiza o tícket de <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Escaneando páxina <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Desbloquear</translation>
+<translation id="9118126012493516930">Non se puido completar a reparación</translation>
 <translation id="9122602430962285795">Para volver establecer conexión, vai a Configuración</translation>
 <translation id="9126720536733509015">Gardar varias páxinas nun mesmo PDF</translation>
 <translation id="9137526406337347448">Servizos de Google</translation>

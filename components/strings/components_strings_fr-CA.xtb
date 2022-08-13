@@ -1240,6 +1240,7 @@
 <translation id="4329871760342656885">Erreur d'analyse de politique : <ph name="ERROR" /></translation>
 <translation id="4331519897422864041">Empileur 5</translation>
 <translation id="4331708818696583467">Pas sécuritaire</translation>
+<translation id="4333561522337981382">Gérer les fenêtres sur tous vos écrans</translation>
 <translation id="4340575312453649552">Cette annonce utilisait trop de ressources pour votre appareil, alors Chrome l'a supprimée.</translation>
 <translation id="4340982228985273705">Cet ordinateur n'est pas détecté comme étant géré par une entreprise, la politique peut donc uniquement installer des extensions hébergées par la boutique Chrome Webstore. L'URL de mise à jour de la boutique Chrome Webstore est « <ph name="CWS_UPDATE_URL" /> ».</translation>
 <translation id="4346197816712207223">Cartes de crédit acceptées</translation>
@@ -1453,6 +1454,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Tabulation, puis sur la touche Entrée pour lancer la recherche</translation>
 <translation id="4930153903256238152">Grande capacité</translation>
+<translation id="4934780484581617878">Gestion des fenêtres</translation>
 <translation id="4936134414789135531">Impossible de trouver le <ph name="VALUE_NAME" /> inséré.</translation>
 <translation id="4936675324097895694">Finance</translation>
 <translation id="4940163644868678279">Navigation privée dans Chrome</translation>
@@ -1465,6 +1467,7 @@
 <translation id="4958444002117714549">Développer la liste</translation>
 <translation id="4964505745997821360">Assurance maladie</translation>
 <translation id="4968522289500246572">Cette application est développée pour les appareils mobiles et elle ne sera peut-être pas bien redimensionnée. L'application peut rencontrer des problèmes ou redémarrer.</translation>
+<translation id="4968665849807487749">Peut demander à gérer les fenêtres sur tous vos écrans</translation>
 <translation id="4969341057194253438">Supprimer l'enregistrement</translation>
 <translation id="4973922308112707173">Double perforation en haut</translation>
 <translation id="4976702386844183910">Dernière visite : <ph name="DATE" /></translation>
@@ -1968,6 +1971,7 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Vérifier la configuration du mandataire, du pare-feu et du DNS sécurisé<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">Double agrafe à gauche</translation>
+<translation id="6374865374745447009">gestion des fenêtres</translation>
 <translation id="6377268785556383139">1 résultat trouvé pour « <ph name="SEARCH_TEXT" /> »</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">Possibilité de frais facturés plus tard.</translation>

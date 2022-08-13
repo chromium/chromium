@@ -245,6 +245,7 @@
 <translation id="3138624403379688522">PIN 码无效。您还有 <ph name="RETRIES" /> 次尝试机会。</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]（由硬件支持）</translation>
 <translation id="3188257591659621405">我的文件</translation>
+<translation id="3194553149358267393">没有任何近期音频文件</translation>
 <translation id="3197563288998582412">英国英语(Dvorak)</translation>
 <translation id="3202131003361292969">路径</translation>
 <translation id="3205852408225871810">葡萄牙语（巴西）</translation>
@@ -303,6 +304,7 @@
 <translation id="3606220979431771195">土耳其语 F</translation>
 <translation id="3616113530831147358">音频</translation>
 <translation id="3619115746895587757">卡布奇诺</translation>
+<translation id="3619593063686672873">没有任何近期视频</translation>
 <translation id="3620292326130836921">所有文件都已备份！</translation>
 <translation id="3634507049637220048">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，<ph name="CONNECTION_STATUS" />，由您的管理员管理，详细信息</translation>
 <translation id="3645233063072417428">已移动 <ph name="NUMBER_OF_ITEMS" /> 项。</translation>
@@ -401,6 +403,7 @@
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> 文件</translation>
 <translation id="457386861538956877">更多...</translation>
 <translation id="4579744207439506346">已将<ph name="ENTRY_NAME" />增加到已选项。</translation>
+<translation id="4583436353463424810">没有任何近期文档</translation>
 <translation id="4594543368593301662">目前显示的是与“<ph name="SEARCH_TERM" />”相符的搜索结果。</translation>
 <translation id="4599600860674643278">已重置过滤器。</translation>
 <translation id="4603392156942865207">正在将 <ph name="FILE_NAME" /> 复制到“<ph name="FOLDER_NAME" />”</translation>
@@ -489,6 +492,7 @@
 <translation id="516592729076796170">美式 Programmer Dvorak 键盘</translation>
 <translation id="5172749059808361023">限制详情</translation>
 <translation id="5177526793333269655">缩略图视图</translation>
+<translation id="5181896909298187506">没有任何近期文件</translation>
 <translation id="5194713942430106590">点击即可按升序对此列排序。</translation>
 <translation id="5211614973734216083">法罗语</translation>
 <translation id="5218183485292899140">瑞士法语</translation>
@@ -741,6 +745,7 @@
 <translation id="7408870451288633753">捷克语</translation>
 <translation id="7417453074306512035">埃塞俄比亚语键盘</translation>
 <translation id="7417705661718309329">Google 地图</translation>
+<translation id="7458955835361612701">没有任何近期图片</translation>
 <translation id="7460898608667578234">乌克兰语</translation>
 <translation id="7469894403370665791">自动连接到该网络</translation>
 <translation id="7486315294984620427">若要将某个文件拖放到 Parallels Desktop，必须先将此文件复制到“Windows 文件”文件夹。</translation>

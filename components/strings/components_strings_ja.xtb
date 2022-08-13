@@ -1240,6 +1240,7 @@
 <translation id="4329871760342656885">ポリシー解析エラー: <ph name="ERROR" /></translation>
 <translation id="4331519897422864041">スタッカー 5</translation>
 <translation id="4331708818696583467">保護されていない通信</translation>
+<translation id="4333561522337981382">全ディスプレイのウィンドウを管理する</translation>
 <translation id="4340575312453649552">この広告は、デバイスのリソース消費が多すぎるため、Chrome によって削除されました。</translation>
 <translation id="4340982228985273705">このパソコンは企業の管理対象として検出されていないため、ポリシーで自動的にインストールできるのは Chrome ウェブストアでホストされている拡張機能のみとなります。Chrome ウェブストアの更新 URL は「<ph name="CWS_UPDATE_URL" />」です。</translation>
 <translation id="4346197816712207223">利用可能なクレジット カード</translation>
@@ -1453,6 +1454,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" /> / <ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと検索します</translation>
 <translation id="4930153903256238152">大容量</translation>
+<translation id="4934780484581617878">ウィンドウ管理</translation>
 <translation id="4936134414789135531">挿入された <ph name="VALUE_NAME" /> が見つかりませんでした。</translation>
 <translation id="4936675324097895694">金融</translation>
 <translation id="4940163644868678279">Chrome のシークレット モード</translation>
@@ -1465,6 +1467,7 @@
 <translation id="4958444002117714549">リストを展開する</translation>
 <translation id="4964505745997821360">健康保険</translation>
 <translation id="4968522289500246572">このアプリはモバイル向けに設計されているため、適切にサイズ変更されない可能性があります。アプリに問題が生じたり、再起動したりすることがあります。</translation>
+<translation id="4968665849807487749">全ディスプレイのウィンドウ管理をリクエストできます</translation>
 <translation id="4969341057194253438">録画を削除</translation>
 <translation id="4973922308112707173">2 穴パンチ（上）</translation>
 <translation id="4976702386844183910">最終アクセス日: <ph name="DATE" /></translation>
@@ -1968,6 +1971,7 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />プロキシ、ファイアウォール、セキュア DNS の設定を確認する<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">2 か所のステープル（左）</translation>
+<translation id="6374865374745447009">ウィンドウ管理</translation>
 <translation id="6377268785556383139">「<ph name="SEARCH_TEXT" />」に対する 1 件の検索結果</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">続行すると料金が請求される可能性があります。</translation>

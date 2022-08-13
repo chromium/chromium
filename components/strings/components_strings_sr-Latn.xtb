@@ -1240,6 +1240,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4329871760342656885">Greška pri raščlanjivanju smernica: <ph name="ERROR" /></translation>
 <translation id="4331519897422864041">5. pregrada za slaganje</translation>
 <translation id="4331708818696583467">Nije bezbedan</translation>
+<translation id="4333561522337981382">Upravljajte prozorima na svim ekranima</translation>
 <translation id="4340575312453649552">Ovaj oglas je koristio previše resursa za uređaj, pa ga je Chrome uklonio.</translation>
 <translation id="4340982228985273705">Otkriveno je da ovim računarom ne upravlja preduzeće, pa smernice mogu automatski da instaliraju samo dodatke koji se hostuju u Chrome veb-prodavnici. URL ažuriranja u Chrome veb-prodavnici je „<ph name="CWS_UPDATE_URL" />“.</translation>
 <translation id="4346197816712207223">Kreditne kartice koje se prihvataju</translation>
@@ -1453,6 +1454,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, pa Enter da biste pretražili</translation>
 <translation id="4930153903256238152">Veliki kapacitet</translation>
+<translation id="4934780484581617878">Upravljanje prozorima</translation>
 <translation id="4936134414789135531">Umetnuta vrednost <ph name="VALUE_NAME" /> nije pronađena.</translation>
 <translation id="4936675324097895694">Finansije</translation>
 <translation id="4940163644868678279">Bez arhiviranja u Chrome-u</translation>
@@ -1465,6 +1467,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4958444002117714549">Proširi listu</translation>
 <translation id="4964505745997821360">Zdravstveno osiguranje</translation>
 <translation id="4968522289500246572">Ova aplikacija je dizajnirana za mobilne uređaje i možda neće promeniti veličinu na pravilan način. Možda će imati probleme ili se restartovati.</translation>
+<translation id="4968665849807487749">Može da traži da upravlja prozorima na svim ekranima</translation>
 <translation id="4969341057194253438">Izbriši snimak</translation>
 <translation id="4973922308112707173">Dvostruko bušenje na vrhu</translation>
 <translation id="4976702386844183910">Poslednja poseta: <ph name="DATE" /></translation>
@@ -1967,6 +1970,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />da proverite konfiguraciju proksija, zaštitnog zida i bezbednog DNS-a<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">Dvostruko spajanje na levoj strani</translation>
+<translation id="6374865374745447009">upravljanje prozorima</translation>
 <translation id="6377268785556383139">1 rezultat za „<ph name="SEARCH_TEXT" />“</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">Očekuju vas potencijalni troškovi.</translation>

@@ -1237,6 +1237,7 @@
 <translation id="4329871760342656885">नीति पार्स गर्ने क्रममा त्रुटि भयो: <ph name="ERROR" /></translation>
 <translation id="4331519897422864041">स्ट्याकर ५</translation>
 <translation id="4331708818696583467">सुरक्षित छैन</translation>
+<translation id="4333561522337981382">तपाईंका सबै डिस्प्लेमा विन्डो व्यवस्थापन गर्न</translation>
 <translation id="4340575312453649552">यो विज्ञापनले तपाईंको डिभाइसका अत्यधिक धेरै स्रोतहरू प्रयोग गरेको हुनाले Chrome ले यसलाई हटायो।</translation>
 <translation id="4340982228985273705">यो कम्प्युटरलाई इन्टरप्राइजद्वारा व्यवस्थापन नगरिएको हुनाले नीति अनुसार Chrome को वेबस्टोरले होस्ट गरेका विस्तारहरू स्वतः स्थापना गर्न सकिन्छ। Chrome को वेबस्टोरको अद्यावधिक URL "<ph name="CWS_UPDATE_URL" />" हो।</translation>
 <translation id="4346197816712207223">स्वीकार गरिने क्रेडिट कार्डहरू</translation>
@@ -1450,6 +1451,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, खोज्नका लागि Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="4930153903256238152">धेरै क्षमता भएको</translation>
+<translation id="4934780484581617878">विन्डो व्यवस्थापन</translation>
 <translation id="4936134414789135531">हालिएको <ph name="VALUE_NAME" /> भेट्टाउन सकिएन।</translation>
 <translation id="4936675324097895694">अर्थ वाणिज्य</translation>
 <translation id="4940163644868678279">Chrome मा उपलब्ध इन्कोग्निटो मोड</translation>
@@ -1462,6 +1464,7 @@
 <translation id="4958444002117714549">सूची विस्तारित गर्नुहोस्</translation>
 <translation id="4964505745997821360">स्वास्थ्य बिमा</translation>
 <translation id="4968522289500246572">यो एप मोबाइलमा चलाउने प्रयोजनले बनाइएको हो र यसको आकार सही तरिकाले परिवर्तन नहुन सक्छ। यो एपमा समस्या देखिन सक्छ वा यो एप आफैँ रिस्टार्ट हुन सक्छ।</translation>
+<translation id="4968665849807487749">यसले तपाईंका सबै डिस्प्लेमा विन्डो व्यवस्थापन गर्ने अनुमति माग्न सक्छ</translation>
 <translation id="4969341057194253438">रेकर्डिङ मेटाउनुहोस्</translation>
 <translation id="4973922308112707173">सिरानमा दुई प्वाल</translation>
 <translation id="4976702386844183910">पछिल्लो पटक खोलिएको मिति: <ph name="DATE" /></translation>
@@ -1965,6 +1968,7 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />प्रोक्सी, फायरवाल र सुरक्षित DNS कन्फिगुरेसनको जाँच गर्दै<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">बायाँपट्टि दुई स्टिच</translation>
+<translation id="6374865374745447009">विन्डो व्यवस्थापन</translation>
 <translation id="6377268785556383139">'<ph name="SEARCH_TEXT" />' को १ परिणाम</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">यो साइटले तपाईंलाई झुक्याएर शुल्कहरू लिन सक्छ।</translation>

@@ -245,6 +245,7 @@
 <translation id="3138624403379688522">ልክ ያልኾነ ፒን። እርስዎ <ph name="RETRIES" /> ቀሪ ሙከራዎች አሉዎት።</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (በሃርድዌር የሚደገፍ)</translation>
 <translation id="3188257591659621405">የእኔ ፋይሎች</translation>
+<translation id="3194553149358267393">ምንም የቅርብ ጊዜ ኦዲዮ ፋይሎች የሉም</translation>
 <translation id="3197563288998582412">ዩኬ ድቮራክ</translation>
 <translation id="3202131003361292969">ዱካ</translation>
 <translation id="3205852408225871810">ፖርቱጋልኛ (ብራዚል)</translation>
@@ -303,6 +304,7 @@
 <translation id="3606220979431771195">የቱርክኛ-F</translation>
 <translation id="3616113530831147358">ድምጽ</translation>
 <translation id="3619115746895587757">ካፑቺኖ</translation>
+<translation id="3619593063686672873">ምንም የቅርብ ጊዜ ቪድዮዎች የሉም</translation>
 <translation id="3620292326130836921">ሁሉም በምትኬ ተቀምጧል!</translation>
 <translation id="3634507049637220048">አውታረመረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />፣ <ph name="CONNECTION_STATUS" />፣ በእርስዎ አስተዳዳሪ የሚተዳደር፣ ዝርዝሮች</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> ንጥሎች ተወስደዋል።</translation>
@@ -401,6 +403,7 @@
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> ፋይል</translation>
 <translation id="457386861538956877">ተጨማሪ...</translation>
 <translation id="4579744207439506346"><ph name="ENTRY_NAME" /> ወደ ምርጫ ታክለዋል።</translation>
+<translation id="4583436353463424810">ምንም የቅርብ ጊዜ ሰነዶች የሉም</translation>
 <translation id="4594543368593301662">ለ <ph name="SEARCH_TERM" /> ውጤቶችን በማሳየት ላይ።</translation>
 <translation id="4599600860674643278">ማጣሪያ ዳግም ተጀምሯል።</translation>
 <translation id="4603392156942865207"><ph name="FILE_NAME" /> ወደ <ph name="FOLDER_NAME" /> በመቅዳት ላይ</translation>
@@ -489,6 +492,7 @@
 <translation id="516592729076796170">የአሜሪካ Dvorak ፕሮግራመር</translation>
 <translation id="5172749059808361023">የገደብ ዝርዝሮች</translation>
 <translation id="5177526793333269655">ድንክዬ ትይታ</translation>
+<translation id="5181896909298187506">ምንም የቅርብ ጊዜ ፋይሎች የሉም</translation>
 <translation id="5194713942430106590">በሽቅብታ ቅደም ተከተል ዓምዱን ለመደርደር ጠቅ ያድርጉ።</translation>
 <translation id="5211614973734216083">ፋሮኛ</translation>
 <translation id="5218183485292899140">የስዊዝ ፈረንሳይኛ</translation>
@@ -746,6 +750,7 @@
 <translation id="7408870451288633753">ቼክ</translation>
 <translation id="7417453074306512035">የግዕዝ ቁልፍ ሰሌዳ</translation>
 <translation id="7417705661718309329">Google ካርታ</translation>
+<translation id="7458955835361612701">ምንም የቅርብ ጊዜ ምስሎች የሉም</translation>
 <translation id="7460898608667578234">ዩክረኒኛ</translation>
 <translation id="7469894403370665791">ከዚህ አውታረ መረብ ጋር በራስ-ሰር ይገናኙ</translation>
 <translation id="7486315294984620427">በParallels Desktop ውስጥ ፋይሎችን ለመጣል ፋይሉ ወደ Windows ፋይሎች መቀዳት አለበት።</translation>

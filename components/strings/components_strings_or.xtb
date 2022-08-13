@@ -1237,6 +1237,7 @@
 <translation id="4329871760342656885">ନୀତି ପାର୍ସ୍ କରିବା ସମୟରେ ତ୍ରୁଟି: <ph name="ERROR" /></translation>
 <translation id="4331519897422864041">ଷ୍ଟାକର୍ 5</translation>
 <translation id="4331708818696583467">ଅସୁରକ୍ଷିତ</translation>
+<translation id="4333561522337981382">ଆପଣଙ୍କ ସମସ୍ତ ଡିସପ୍ଲେରେ ୱିଣ୍ଡୋଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="4340575312453649552">ଏହି ବିଜ୍ଞାପନ ଆପଣଙ୍କ ଡିଭାଇସ ପାଇଁ ଅନେକଗୁଡ଼ିଏ ରିସୋର୍ସ୍ ବ୍ୟବହାର କରିଛି, ଯାହା ଫଳରେ Chrome ଏହାକୁ କାଢ଼ି ଦେଇଛି।</translation>
 <translation id="4340982228985273705">ଏହି କମ୍ପ୍ୟୁଟର୍‌କୁ ଏଣ୍ଟରପ୍ରାଇଜ୍ ପରିଚାଳିତରୂପେ ଚିହ୍ନଟ କରାଯାଇନାହିଁ, ତେଣୁ ଏହି ନୀତି କେବଳ Chrome ୱେବ୍‌ଷ୍ଟୋର୍‌ରେ ହୋଷ୍ଟ କରାଯାଇଥିବା ଏକ୍ସଟେନ୍‌ସନ୍‌ଗୁଡ଼ିକୁ ସ୍ୱଚାଳିତରୂପେ ଇନ୍‌ଷ୍ଟଲ୍ କରିପାରିବ। "<ph name="CWS_UPDATE_URL" />" ହେଉଛି Chrome ୱେବ୍‌ଷ୍ଟୋର୍ ଅପ୍‌ଡେଟ୍ URL।</translation>
 <translation id="4346197816712207223">ସ୍ଵୀକାର କରାଯାଇଥିବା କ୍ରେଡିଟ୍ କାର୍ଡଗୁଡ଼ିକ</translation>
@@ -1451,6 +1452,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, ସନ୍ଧାନ କରିବାକୁ Tab ତାପରେ Enter ଦବାନ୍ତୁ</translation>
 <translation id="4930153903256238152">ଅଧିକ କ୍ଷମତାସମ୍ପନ୍ନ</translation>
+<translation id="4934780484581617878">ୱିଣ୍ଡୋ ପରିଚାଳନା</translation>
 <translation id="4936134414789135531">ଇନସାର୍ଟ କରାଯାଇଥିବା <ph name="VALUE_NAME" /> ମିଳିଲା ନାହିଁ।</translation>
 <translation id="4936675324097895694">ଫାଇନାନ୍ସ</translation>
 <translation id="4940163644868678279">Chromeରେ ଇନକଗ୍ନିଟୋ</translation>
@@ -1463,6 +1465,7 @@
 <translation id="4958444002117714549">ତାଲିକାକୁ ପ୍ରସାରିତ କରନ୍ତୁ</translation>
 <translation id="4964505745997821360">ସ୍ଵାସ୍ଥ୍ୟ ବୀମା</translation>
 <translation id="4968522289500246572">ଏହି ଆପକୁ ମୋବାଇଲ ପାଇଁ ଡିଜାଇନ୍ କରାଯାଇଛି ଏବଂ ଏହା ଭଲ ଭାବରେ ରିସାଇଜ୍ ହୋଇନପାରେ। ଆପରେ ସମସ୍ୟା ହୋଇପାରେ କିମ୍ୱା ଏହା ରିଷ୍ଟାର୍ଟ ହୋଇପାରେ।</translation>
+<translation id="4968665849807487749">ଆପଣଙ୍କ ସମସ୍ତ ଡିସପ୍ଲେରେ ୱିଣ୍ଡୋଗୁଡ଼ିକୁ ପରିଚାଳନା କରିବା ପାଇଁ ଅନୁମତି ମାଗିପାରିବେ</translation>
 <translation id="4969341057194253438">ରେକର୍ଡିଂ ଡିଲିଟ କରନ୍ତୁ</translation>
 <translation id="4973922308112707173">ଉପର ପଟରେ ଦୁଇଟି ପଞ୍ଚ୍</translation>
 <translation id="4976702386844183910">ଗତ ଥର <ph name="DATE" />ରେ ଭିଜିଟ୍ କରାଯାଇଛି</translation>
@@ -1965,6 +1968,7 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />ପ୍ରକ୍ସି, ଫାୟାରୱାଲ୍ ଏବଂ ସୁରକ୍ଷିତ DNS କନଫିଗରେସନ୍ ଯାଞ୍ଚ କରାଯାଉଛି<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">ବାମ ପଟରେ ଦୁଇଟି ଷ୍ଟାପଲ୍</translation>
+<translation id="6374865374745447009">ୱିଣ୍ଡୋ ପରିଚାଳନା</translation>
 <translation id="6377268785556383139">'<ph name="SEARCH_TEXT" />' ପାଇଁ 1ଟି ଫଳାଫଳ</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">ଆଗକୁ ସମ୍ଭବତଃ ଶୁଳ୍କ ଦେବାକୁ ପଡ଼ିପାରେ।</translation>
