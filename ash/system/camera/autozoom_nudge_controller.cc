@@ -30,20 +30,12 @@ AutozoomNudgeController::AutozoomNudgeController(
     : autozoom_controller_(autozoom_controller) {
   autozoom_controller_->AddObserver(this);
 
-  auto* camera_hal_dispatcher = media::CameraHalDispatcherImpl::GetInstance();
-  if (camera_hal_dispatcher)
-    camera_hal_dispatcher->AddActiveClientObserver(this);
-
   if (base::FeatureList::IsEnabled(features::kAutozoomNudgeSessionReset))
     Shell::Get()->session_controller()->AddObserver(this);
 }
 
 AutozoomNudgeController::~AutozoomNudgeController() {
   autozoom_controller_->RemoveObserver(this);
-
-  auto* camera_hal_dispatcher = media::CameraHalDispatcherImpl::GetInstance();
-  if (camera_hal_dispatcher)
-    camera_hal_dispatcher->RemoveActiveClientObserver(this);
 
   if (base::FeatureList::IsEnabled(features::kAutozoomNudgeSessionReset))
     Shell::Get()->session_controller()->RemoveObserver(this);
@@ -128,10 +120,8 @@ bool AutozoomNudgeController::ShouldShowNudge(PrefService* prefs) {
   return (base::Time::Now() - last_shown_time) > kMinInterval;
 }
 
-void AutozoomNudgeController::OnActiveClientChange(
-    cros::mojom::CameraClientType type,
-    bool is_active) {
-  if (!is_active)
+void AutozoomNudgeController::OnAutozoomControlEnabledChanged(bool enabled) {
+  if (!enabled)
     return;
 
   PrefService* prefs =

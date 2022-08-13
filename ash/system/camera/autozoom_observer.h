@@ -15,6 +15,9 @@ class AutozoomObserver : public base::CheckedObserver {
   // Called when the autozoom state has changed.
   virtual void OnAutozoomStateChanged(
       cros::mojom::CameraAutoFramingState state) {}
+
+  // Called when the autozoom control enabled state has changed.
+  virtual void OnAutozoomControlEnabledChanged(bool enabled) {}
 };
 
 }  // namespace ash

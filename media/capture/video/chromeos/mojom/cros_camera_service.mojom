@@ -120,7 +120,7 @@ interface CameraHalDispatcher {
 
 // The CrOS camera HAL v3 Mojo server.
 //
-// Next method ID: 5
+// Next method ID: 6
 interface CameraHalServer {
   // A caller calls CreateChannel to create a new Mojo channel to the camera
   // HAL v3 adapter.  Upon successfully binding of |camera_module_receiver|, the
@@ -144,6 +144,10 @@ interface CameraHalServer {
   // Enable or disable the camera software privacy switch.
   [MinVersion=8]
   SetCameraSWPrivacySwitchState@4(CameraPrivacySwitchState state);
+
+  // Get if the HAL supports auto framing.
+  [MinVersion=9]
+  GetAutoFramingSupported@5() => (bool supported);
 };
 
 // CameraHalServerCallbacks is an interface for CameraHalServer to notify

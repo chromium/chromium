@@ -236,6 +236,8 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
       cros::mojom::CameraClientType type);
 
   void SetAutoFramingState(cros::mojom::CameraAutoFramingState state);
+  void GetAutoFramingSupported(
+      cros::mojom::CameraHalServer::GetAutoFramingSupportedCallback callback);
 
  private:
   friend struct base::DefaultSingletonTraits<CameraHalDispatcherImpl>;
@@ -295,6 +297,8 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
 
   void SetAutoFramingStateOnProxyThread(
       cros::mojom::CameraAutoFramingState state);
+  void GetAutoFramingSupportedOnProxyThread(
+      cros::mojom::CameraHalServer::GetAutoFramingSupportedCallback callback);
 
   void StopOnProxyThread();
 
@@ -341,6 +345,9 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
 
   cros::mojom::CameraAutoFramingState current_auto_framing_state_ =
       cros::mojom::CameraAutoFramingState::OFF;
+
+  cros::mojom::CameraHalServer::GetAutoFramingSupportedCallback
+      auto_framing_supported_callback_;
 
   scoped_refptr<base::ObserverListThreadSafe<CameraPrivacySwitchObserver>>
       privacy_switch_observers_;

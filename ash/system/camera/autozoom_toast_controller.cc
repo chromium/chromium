@@ -27,25 +27,13 @@ void AutozoomToastController::Delegate::RemoveAutozoomObserver(
   Shell::Get()->autozoom_controller()->RemoveObserver(observer);
 }
 
-void AutozoomToastController::Delegate::AddCameraActiveClientObserver(
-    media::CameraActiveClientObserver* observer) {
-  auto* camera_hal_dispatcher = media::CameraHalDispatcherImpl::GetInstance();
-  if (camera_hal_dispatcher) {
-    camera_hal_dispatcher->AddActiveClientObserver(observer);
-  }
-}
-
-void AutozoomToastController::Delegate::RemoveCameraActiveClientObserver(
-    media::CameraActiveClientObserver* observer) {
-  auto* camera_hal_dispatcher = media::CameraHalDispatcherImpl::GetInstance();
-  if (camera_hal_dispatcher) {
-    camera_hal_dispatcher->RemoveActiveClientObserver(observer);
-  }
-}
-
-bool AutozoomToastController::Delegate::AutozoomEnabled() {
+bool AutozoomToastController::Delegate::IsAutozoomEnabled() {
   return Shell::Get()->autozoom_controller()->GetState() !=
          cros::mojom::CameraAutoFramingState::OFF;
+}
+
+bool AutozoomToastController::Delegate::IsAutozoomControlEnabled() {
+  return Shell::Get()->autozoom_controller()->IsAutozoomControlEnabled();
 }
 
 AutozoomToastController::AutozoomToastController(
@@ -53,13 +41,11 @@ AutozoomToastController::AutozoomToastController(
     std::unique_ptr<Delegate> delegate)
     : tray_(tray), delegate_(std::move(delegate)) {
   delegate_->AddAutozoomObserver(this);
-  delegate_->AddCameraActiveClientObserver(this);
 }
 
 AutozoomToastController::~AutozoomToastController() {
   if (bubble_widget_ && !bubble_widget_->IsClosed())
     bubble_widget_->CloseNow();
-  delegate_->RemoveCameraActiveClientObserver(this);
   delegate_->RemoveAutozoomObserver(this);
 }
 
@@ -164,7 +150,7 @@ void AutozoomToastController::OnAutozoomStateChanged(
 
 void AutozoomToastController::UpdateToastView() {
   if (toast_view_) {
-    toast_view_->SetAutozoomEnabled(/*enabled=*/delegate_->AutozoomEnabled());
+    toast_view_->SetAutozoomEnabled(/*enabled=*/delegate_->IsAutozoomEnabled());
     int width = base::clamp(toast_view_->GetPreferredSize().width(),
                             kAutozoomToastMinWidth, kAutozoomToastMaxWidth);
     bubble_view_->SetPreferredWidth(width);
@@ -175,12 +161,9 @@ void AutozoomToastController::StopAutocloseTimer() {
   close_timer_.Stop();
 }
 
-void AutozoomToastController::OnActiveClientChange(
-    cros::mojom::CameraClientType type,
-    bool is_active) {
-  // TODO(pihsun): Should this only be shown for some client type?
-  if (is_active) {
-    if (delegate_->AutozoomEnabled()) {
+void AutozoomToastController::OnAutozoomControlEnabledChanged(bool enabled) {
+  if (enabled) {
+    if (delegate_->IsAutozoomEnabled()) {
       ShowToast();
     } else {
       HideToast();

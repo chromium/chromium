@@ -10,7 +10,6 @@
 #include "ash/system/camera/autozoom_observer.h"
 #include "ash/system/tray/system_nudge_controller.h"
 #include "base/time/time.h"
-#include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 
 class PrefService;
 class PrefRegistrySimple;
@@ -19,11 +18,9 @@ namespace ash {
 
 class AutozoomControllerImpl;
 
-class ASH_EXPORT AutozoomNudgeController
-    : public SystemNudgeController,
-      public AutozoomObserver,
-      public SessionObserver,
-      public media::CameraActiveClientObserver {
+class ASH_EXPORT AutozoomNudgeController : public SystemNudgeController,
+                                           public AutozoomObserver,
+                                           public SessionObserver {
  public:
   explicit AutozoomNudgeController(AutozoomControllerImpl* controller);
   AutozoomNudgeController(const AutozoomNudgeController&) = delete;
@@ -57,10 +54,7 @@ class ASH_EXPORT AutozoomNudgeController
   // AutozoomObserver:
   void OnAutozoomStateChanged(
       cros::mojom::CameraAutoFramingState state) override;
-
-  // CameraActiveClientObserver:
-  void OnActiveClientChange(cros::mojom::CameraClientType type,
-                            bool is_active) override;
+  void OnAutozoomControlEnabledChanged(bool enabled) override;
 
   // Owned by ash/Shell.
   AutozoomControllerImpl* const autozoom_controller_;

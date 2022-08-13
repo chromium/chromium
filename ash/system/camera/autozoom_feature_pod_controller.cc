@@ -16,21 +16,11 @@
 namespace ash {
 
 AutozoomFeaturePodController::AutozoomFeaturePodController() {
-  auto* camera_hal_dispatcher = media::CameraHalDispatcherImpl::GetInstance();
-  if (camera_hal_dispatcher) {
-    camera_hal_dispatcher->AddActiveClientObserver(this);
-  }
-
   Shell::Get()->autozoom_controller()->AddObserver(this);
 }
 
 AutozoomFeaturePodController::~AutozoomFeaturePodController() {
   Shell::Get()->autozoom_controller()->RemoveObserver(this);
-
-  auto* camera_hal_dispatcher = media::CameraHalDispatcherImpl::GetInstance();
-  if (camera_hal_dispatcher) {
-    camera_hal_dispatcher->RemoveActiveClientObserver(this);
-  }
 }
 
 FeaturePodButton* AutozoomFeaturePodController::CreateButton() {
@@ -67,13 +57,18 @@ void AutozoomFeaturePodController::UpdateButtonVisibility() {
     return;
 
   button_->SetVisible(
-      Shell::Get()->session_controller()->ShouldEnableSettings() &&
-      active_camera_client_count_ > 0);
+      Shell::Get()->autozoom_controller()->IsAutozoomControlEnabled() &&
+      Shell::Get()->session_controller()->ShouldEnableSettings());
 }
 
 void AutozoomFeaturePodController::OnAutozoomStateChanged(
     cros::mojom::CameraAutoFramingState state) {
   UpdateButton(state);
+}
+
+void AutozoomFeaturePodController::OnAutozoomControlEnabledChanged(
+    bool enabled) {
+  UpdateButtonVisibility();
 }
 
 void AutozoomFeaturePodController::UpdateButton(
@@ -106,18 +101,6 @@ void AutozoomFeaturePodController::UpdateButton(
   button_->SetSubLabel(button_label);
   button_->SetIconAndLabelTooltips(l10n_util::GetStringFUTF16(
       IDS_ASH_STATUS_TRAY_AUTOZOOM_TOGGLE_TOOLTIP, tooltip_state));
-}
-
-void AutozoomFeaturePodController::OnActiveClientChange(
-    cros::mojom::CameraClientType type,
-    bool is_active) {
-  if (is_active) {
-    active_camera_client_count_++;
-  } else {
-    active_camera_client_count_--;
-  }
-
-  UpdateButtonVisibility();
 }
 
 }  // namespace ash

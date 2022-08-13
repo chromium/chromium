@@ -23,6 +23,7 @@
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
@@ -440,6 +441,10 @@ void CameraHalDispatcherImpl::RegisterServerWithToken(
   camera_hal_server_.set_disconnect_handler(
       base::BindOnce(&CameraHalDispatcherImpl::OnCameraHalServerConnectionError,
                      base::Unretained(this)));
+  if (auto_framing_supported_callback_) {
+    camera_hal_server_->GetAutoFramingSupported(
+        std::move(auto_framing_supported_callback_));
+  }
   camera_hal_server_->SetAutoFramingState(current_auto_framing_state_);
   CAMERA_LOG(EVENT) << "Camera HAL server registered";
   std::move(callback).Run(
@@ -931,6 +936,38 @@ void CameraHalDispatcherImpl::SetAutoFramingStateOnProxyThread(
   if (camera_hal_server_) {
     camera_hal_server_->SetAutoFramingState(state);
   }
+}
+
+void CameraHalDispatcherImpl::GetAutoFramingSupported(
+    cros::mojom::CameraHalServer::GetAutoFramingSupportedCallback callback) {
+  if (!proxy_thread_.IsRunning()) {
+    std::move(callback).Run(false);
+    return;
+  }
+  // Unretained reference is safe here because CameraHalDispatcherImpl owns
+  // |proxy_thread_|.
+  proxy_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &CameraHalDispatcherImpl::GetAutoFramingSupportedOnProxyThread,
+          base::Unretained(this),
+          // Make sure to hop back to the current thread for the reply.
+          base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
+                             std::move(callback), FROM_HERE)));
+}
+
+void CameraHalDispatcherImpl::GetAutoFramingSupportedOnProxyThread(
+    cros::mojom::CameraHalServer::GetAutoFramingSupportedCallback callback) {
+  DCHECK(proxy_task_runner_->BelongsToCurrentThread());
+  if (!camera_hal_server_) {
+    // TODO(pihsun): Currently only AutozoomControllerImpl calls
+    // GetAutoFramingSupported. Support multiple call to the function using
+    // CallbackList if it's needed.
+    DCHECK(!auto_framing_supported_callback_);
+    auto_framing_supported_callback_ = std::move(callback);
+    return;
+  }
+  camera_hal_server_->GetAutoFramingSupported(std::move(callback));
 }
 
 TokenManager* CameraHalDispatcherImpl::GetTokenManagerForTesting() {

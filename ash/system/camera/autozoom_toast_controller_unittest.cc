@@ -21,19 +21,9 @@ class TestDelegate : public AutozoomToastController::Delegate {
     autozoom_observer = nullptr;
   }
 
-  void AddCameraActiveClientObserver(
-      media::CameraActiveClientObserver* observer) override {
-    ASSERT_EQ(camera_observer, nullptr);
-    camera_observer = observer;
-  }
+  bool IsAutozoomEnabled() override { return autozoom_enabled_; }
 
-  void RemoveCameraActiveClientObserver(
-      media::CameraActiveClientObserver* observer) override {
-    ASSERT_EQ(camera_observer, observer);
-    camera_observer = nullptr;
-  }
-
-  bool AutozoomEnabled() override { return autozoom_enabled_; }
+  bool IsAutozoomControlEnabled() override { return autozoom_control_enabled_; }
 
   void SetAutozoomEnabled(bool autozoom_enabled) {
     autozoom_enabled_ = autozoom_enabled;
@@ -44,17 +34,19 @@ class TestDelegate : public AutozoomToastController::Delegate {
     }
   }
 
-  void SetCameraActive(bool is_active) {
-    ASSERT_NE(camera_observer, nullptr);
-    camera_observer->OnActiveClientChange(
-        cros::mojom::CameraClientType::ASH_CHROME, is_active);
+  void SetAutozoomControlEnabled(bool autozoom_control_enabled) {
+    autozoom_control_enabled_ = autozoom_control_enabled;
+    if (autozoom_observer != nullptr) {
+      autozoom_observer->OnAutozoomControlEnabledChanged(
+          autozoom_control_enabled_);
+    }
   }
 
   AutozoomObserver* autozoom_observer = nullptr;
-  media::CameraActiveClientObserver* camera_observer = nullptr;
 
  private:
   bool autozoom_enabled_ = false;
+  bool autozoom_control_enabled_ = false;
 };
 
 class AutozoomToastControllerTest : public AshTestBase {
@@ -93,7 +85,7 @@ TEST_F(AutozoomToastControllerTest, ShowToastWhenCameraActive) {
   EXPECT_EQ(bubble_widget(), nullptr);
 
   // No toast when enabling camera when autozoom is disabled.
-  delegate_->SetCameraActive(true);
+  delegate_->SetAutozoomControlEnabled(true);
   EXPECT_EQ(bubble_widget(), nullptr);
 
   // No toast when enabling autozoom when camera is already active.
@@ -101,8 +93,8 @@ TEST_F(AutozoomToastControllerTest, ShowToastWhenCameraActive) {
   EXPECT_EQ(bubble_widget(), nullptr);
 
   // Toast is shown when autozoom is enabled when camera become active.
-  delegate_->SetCameraActive(false);
-  delegate_->SetCameraActive(true);
+  delegate_->SetAutozoomControlEnabled(false);
+  delegate_->SetAutozoomControlEnabled(true);
   ASSERT_NE(bubble_widget(), nullptr);
   EXPECT_TRUE(bubble_widget()->IsVisible());
 }

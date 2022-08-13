@@ -10,7 +10,6 @@
 #include "ash/system/camera/autozoom_toast_view.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "base/timer/timer.h"
-#include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 
 namespace ash {
 
@@ -18,10 +17,8 @@ class UnifiedSystemTray;
 
 // Controller class for the autozoom toast, which is shown when the autozoom is
 // on and camera is opened.
-class ASH_EXPORT AutozoomToastController
-    : public TrayBubbleView::Delegate,
-      public AutozoomObserver,
-      public media::CameraActiveClientObserver {
+class ASH_EXPORT AutozoomToastController : public TrayBubbleView::Delegate,
+                                           public AutozoomObserver {
  public:
   // The Delegate interface handles adding and removing observers on behalf of
   // AutozoomToastController. This is used for unit tests.
@@ -38,13 +35,9 @@ class ASH_EXPORT AutozoomToastController
 
     virtual void RemoveAutozoomObserver(AutozoomObserver* observer);
 
-    virtual void AddCameraActiveClientObserver(
-        media::CameraActiveClientObserver* observer);
+    virtual bool IsAutozoomEnabled();
 
-    virtual void RemoveCameraActiveClientObserver(
-        media::CameraActiveClientObserver* observer);
-
-    virtual bool AutozoomEnabled();
+    virtual bool IsAutozoomControlEnabled();
   };
 
   AutozoomToastController(UnifiedSystemTray* tray,
@@ -76,10 +69,7 @@ class ASH_EXPORT AutozoomToastController
   // AutozoomObserver:
   void OnAutozoomStateChanged(
       cros::mojom::CameraAutoFramingState state) override;
-
-  // CameraActiveClientObserver:
-  void OnActiveClientChange(cros::mojom::CameraClientType type,
-                            bool is_active) override;
+  void OnAutozoomControlEnabledChanged(bool enabled) override;
 
   // Updates the toast UI with the current privacy screen state.
   void UpdateToastView();
