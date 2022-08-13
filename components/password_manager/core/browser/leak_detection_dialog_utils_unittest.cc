@@ -280,15 +280,8 @@ TEST_P(BulkCheckCredentialLeakDialogUtilsTest, Buttons) {
 
 TEST_P(BulkCheckCredentialLeakDialogUtilsTest, Title) {
   SCOPED_TRACE(testing::Message() << GetParam().leak_type);
-  int leak_title_id;
-#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
-  leak_title_id = IDS_CREDENTIAL_LEAK_TITLE_CHECK_GPM;
-#else
-  leak_title_id = IDS_CREDENTIAL_LEAK_TITLE_CHECK;
-#endif
-
   EXPECT_EQ(l10n_util::GetStringUTF16(GetParam().should_check_passwords
-                                          ? leak_title_id
+                                          ? IDS_CREDENTIAL_LEAK_TITLE_CHECK_GPM
                                           : IDS_CREDENTIAL_LEAK_TITLE_CHANGE),
             GetTitle(GetParam().leak_type));
 }
