@@ -184,10 +184,14 @@ void LocalWindowProxy::Initialize() {
     SetSecurityToken(origin.get());
   }
 
-  // After creating the first context, we are ready to set up the state used
-  // to process driver commands when recording/replaying, and to create
-  // checkpoints. Create the first checkpoint at which execution can pause.
-  if (recordreplay::IsRecordingOrReplaying() && !gRecordReplayStateInitialized) {
+  // After creating the first context that is associated with a non-empty
+  // origin, we are ready to set up the state used to process driver commands
+  // when recording/replaying, and to create checkpoints. Create the first
+  // checkpoint at which execution can pause.
+  if (recordreplay::IsRecordingOrReplaying() &&
+      origin &&
+      !origin->Host().IsEmpty() &&
+      !gRecordReplayStateInitialized) {
     gRecordReplayStateInitialized = true;
     SetupRecordReplayCommands(GetIsolate());
     recordreplay::NewCheckpoint();
@@ -606,12 +610,13 @@ LocalWindowProxy::LocalWindowProxy(v8::Isolate* isolate,
   gLatestLocalWindowProxy = this;
 }
 
-void RecordReplayStateEnsureInitialized() {
-  if (recordreplay::IsRecordingOrReplaying() && !gRecordReplayStateInitialized) {
-    CHECK(gLatestLocalWindowProxy);
+bool RecordReplayStateEnsureInitialized() {
+  if (recordreplay::IsRecordingOrReplaying() &&
+      !gRecordReplayStateInitialized &&
+      gLatestLocalWindowProxy) {
     gLatestLocalWindowProxy->InitializeIfNeeded();
-    CHECK(gRecordReplayStateInitialized);
   }
+  return gRecordReplayStateInitialized;
 }
 
 }  // namespace blink

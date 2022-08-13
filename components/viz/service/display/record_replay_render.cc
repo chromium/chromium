@@ -14,7 +14,7 @@
 #include "ui/gfx/codec/jpeg_codec.h"
 
 namespace blink {
-extern void RecordReplayStateEnsureInitialized();
+extern bool RecordReplayStateEnsureInitialized();
 }
 
 namespace viz {
@@ -190,9 +190,11 @@ static size_t gLastCommitBookmark;
 void RecordReplayOnCommitPaint() {
   // Record/replay state has to be initialized before the first paint
   // starts, as a checkpoint must have been taken.
-  blink::RecordReplayStateEnsureInitialized();
-
-  gCurrentPaintBookmark = V8RecordReplayPaintStart();
+  if (blink::RecordReplayStateEnsureInitialized()) {
+    gCurrentPaintBookmark = V8RecordReplayPaintStart();
+  } else {
+    gCurrentPaintBookmark = 0;
+  }
 }
 
 void RecordReplayOnReadyToCommit() {
