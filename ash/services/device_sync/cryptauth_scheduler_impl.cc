@@ -473,12 +473,12 @@ bool CryptAuthSchedulerImpl::DoesMachineHaveNetworkConnectivity() const {
 void CryptAuthSchedulerImpl::InitializePendingRequest(
     RequestType request_type) {
   // Queue up the persisted scheduled request if applicable.
-  const base::Value* client_metadata_from_pref =
-      pref_service_->Get(GetPendingRequestPrefName(request_type));
-  if (client_metadata_from_pref->GetString() != kNoClientMetadata) {
+  const base::Value& client_metadata_from_pref =
+      pref_service_->GetValue(GetPendingRequestPrefName(request_type));
+  if (client_metadata_from_pref.GetString() != kNoClientMetadata) {
     pending_requests_[request_type] =
         util::DecodeProtoMessageFromValueString<cryptauthv2::ClientMetadata>(
-            client_metadata_from_pref);
+            &client_metadata_from_pref);
   }
 
   // If we are recovering from a failure, reset the failure count to 1 in the
