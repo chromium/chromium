@@ -37,9 +37,4 @@ public abstract class AsyncTabCreator extends TabCreator {
     public abstract void createNewTab(
             AsyncTabCreationParams asyncParams, @TabLaunchType int type, int parentId);
 
-    /**
-     * Passes the supplied web app launch intent to the IntentHandler.
-     * @param intent Web app launch intent.
-     */
-    public abstract void createNewStandaloneFrame(Intent intent);
 }

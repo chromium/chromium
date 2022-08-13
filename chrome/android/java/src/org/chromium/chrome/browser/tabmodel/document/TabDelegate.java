@@ -197,10 +197,4 @@ public class TabDelegate extends AsyncTabCreator {
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     }
 
-    @Override
-    public void createNewStandaloneFrame(Intent intent) {
-        assert intent != null;
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
-        IntentHandler.startActivityForTrustedIntent(intent);
-    }
 }

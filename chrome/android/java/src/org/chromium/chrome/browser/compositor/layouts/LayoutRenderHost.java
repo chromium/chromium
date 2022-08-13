@@ -62,8 +62,4 @@ public interface LayoutRenderHost {
      */
     ResourceManager getResourceManager();
 
-    /**
-     * Called when something has changed in the Compositor rendered view system.
-     */
-    void invalidateAccessibilityProvider();
 }

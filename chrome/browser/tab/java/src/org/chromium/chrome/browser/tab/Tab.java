@@ -28,6 +28,8 @@ import java.lang.annotation.RetentionPolicy;
  * presents it to users who perceive it as one of the 'pages' managed by Chrome.
  */
 public interface Tab extends TabLifecycle {
+
+    public static final int INVALID_PAGE_ID = -1;
     public static final int INVALID_TAB_ID = -1;
 
     @IntDef({TabLoadStatus.PAGE_LOAD_FAILED, TabLoadStatus.DEFAULT_PAGE_LOAD})
@@ -283,4 +285,5 @@ public interface Tab extends TabLifecycle {
      * @return true if the {@link Tab} is a custom tab.
      */
     boolean isCustomTab();
+
 }

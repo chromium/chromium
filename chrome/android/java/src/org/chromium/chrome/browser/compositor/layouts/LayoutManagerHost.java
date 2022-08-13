@@ -110,11 +110,6 @@ public interface LayoutManagerHost {
     FullscreenManager getFullscreenManager();
 
     /**
-     * Called when the currently visible content has been changed.
-     */
-    void onContentChanged();
-
-    /**
      * Hides the the keyboard if it was opened for the ContentView.
      * @param postHideTask A task to run after the keyboard is done hiding and the view's
      *         layout has been updated.  If the keyboard was not shown, the task will run

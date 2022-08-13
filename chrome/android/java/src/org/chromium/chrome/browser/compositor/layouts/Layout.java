@@ -299,7 +299,7 @@ public abstract class Layout {
      * @param orientation                   The new orientation.  Valid values are defined by
      *                                      {@link Orientation}.
      */
-    final void sizeChanged(RectF visibleViewportPx, RectF screenViewportPx,
+    public final void sizeChanged(RectF visibleViewportPx, RectF screenViewportPx,
             int topBrowserControlsHeightPx, int bottomBrowserControlsHeightPx,
             @Orientation int orientation) {
         // 1. Pull out this Layout's width and height properties based on the viewport.

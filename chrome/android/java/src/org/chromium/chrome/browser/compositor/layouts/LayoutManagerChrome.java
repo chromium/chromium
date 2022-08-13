@@ -97,14 +97,6 @@ public class LayoutManagerChrome extends LayoutManagerImpl
         }
     }
 
-    /**
-     * @return The {@link SwipeHandler} responsible for processing swipe events for the toolbar.
-     */
-    @Override
-    public SwipeHandler getToolbarSwipeHandler() {
-        return mToolbarSwipeHandler;
-    }
-
     @Override
     public SwipeHandler createToolbarSwipeHandler(boolean supportSwipeDown) {
         return new ToolbarSwipeHandler(supportSwipeDown);

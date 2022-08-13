@@ -1590,8 +1590,6 @@ public abstract class ChromeActivity
                 mManualFillingComponentSupplier.get().getBottomInsetSupplier());
         compositorViewHolder.onFinishNativeInitialization(getTabModelSelector(), this);
 
-        SwipeHandler swipeHandler = layoutManager.getToolbarSwipeHandler();
-
         mActivityTabProvider.setLayoutStateProvider(layoutManager);
 
         if (mContextualSearchManagerSupplier.hasValue()) {

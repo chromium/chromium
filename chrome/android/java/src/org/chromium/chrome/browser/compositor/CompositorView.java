@@ -489,12 +489,12 @@ public class CompositorView
         IntentWithRequestMetadataHandler.getInstance().clear();
     }
 
-    void onPhysicalBackingSizeChanged(WebContents webContents, int width, int height) {
+    public void onPhysicalBackingSizeChanged(WebContents webContents, int width, int height) {
         CompositorViewJni.get().onPhysicalBackingSizeChanged(
                 mNativeCompositorView, CompositorView.this, webContents, width, height);
     }
 
-    void onControlsResizeViewChanged(WebContents webContents, boolean controlsResizeView) {
+    public void onControlsResizeViewChanged(WebContents webContents, boolean controlsResizeView) {
         CompositorViewJni.get().onControlsResizeViewChanged(
                 mNativeCompositorView, CompositorView.this, webContents, controlsResizeView);
     }
@@ -507,7 +507,7 @@ public class CompositorView
      * @param width  When the keyboard is shown, it has the width of the view, else, 0.
      * @param height When the keyboard is shown, it has the height of the keyboard, else, 0.
      */
-    void notifyVirtualKeyboardOverlayRect(
+    public void notifyVirtualKeyboardOverlayRect(
             WebContents webContents, int x, int y, int width, int height) {
         CompositorViewJni.get().notifyVirtualKeyboardOverlayRect(
                 mNativeCompositorView, CompositorView.this, webContents, x, y, width, height);

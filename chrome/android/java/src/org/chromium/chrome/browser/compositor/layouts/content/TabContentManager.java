@@ -140,6 +140,10 @@ public class TabContentManager {
         return val;
     }
 
+    public TabContentManager(Context context) {
+        this(context, null, true, null);
+    }
+
     /**
      * @param context               The context that this cache is created in.
      * @param contentOffsetProvider The provider of content parameter.
@@ -283,7 +287,7 @@ public class TabContentManager {
 
     private Bitmap readbackNativeView(View viewToDraw, float scale, NativePage nativePage) {
         Bitmap bitmap = null;
-        float overlayTranslateY = mContentOffsetProvider.getOverlayTranslateY();
+        float overlayTranslateY = mContentOffsetProvider == null ? 0 : mContentOffsetProvider.getOverlayTranslateY();
 
         float leftMargin = 0.f;
         float topMargin = 0.f;

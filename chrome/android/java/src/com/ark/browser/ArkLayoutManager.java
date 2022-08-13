@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.compositor.layouts;
+package com.ark.browser;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -12,20 +12,27 @@ import android.os.SystemClock;
 import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 
 import androidx.annotation.VisibleForTesting;
 
+import com.ark.browser.tab.PageCacheManager;
+
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanel;
+import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.Layout.Orientation;
+import org.chromium.chrome.browser.compositor.layouts.LayoutManagerHost;
+import org.chromium.chrome.browser.compositor.layouts.LayoutProvider;
+import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
+import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
+import org.chromium.chrome.browser.compositor.layouts.SceneChangeObserver;
+import org.chromium.chrome.browser.compositor.layouts.StaticLayout;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
@@ -44,7 +51,6 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -53,7 +59,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
-import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.SPenSupport;
@@ -74,7 +79,7 @@ import java.util.Map;
  * A class that is responsible for managing an active {@link Layout} to show to the screen.  This
  * includes lifecycle managment like showing/hiding this {@link Layout}.
  */
-public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost, LayoutProvider {
+public class ArkLayoutManager implements ManagedLayoutManager, LayoutUpdateHost, LayoutProvider {
     /** Sampling at 60 fps. */
     private static final long FRAME_DELTA_TIME_MS = 16;
 
@@ -92,18 +97,7 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
 
     // Layouts
     /** A {@link Layout} used for showing a normal web page. */
-    protected StaticLayout mStaticLayout;
-
-    private final ViewGroup mContentContainer;
-
-    // External Dependencies
-    private TabModelSelector mTabModelSelector;
-
-    private TabModelSelectorObserver mTabModelSelectorObserver;
-    private TabModelSelectorTabObserver mTabModelSelectorTabObserver;
-
-    // An observer for watching TabModelFilters changes events.
-    private TabModelObserver mTabModelFilterObserver;
+    protected ArkStaticLayout mStaticLayout;
 
     // External Observers
     private final ObserverList<LayoutStateObserver> mLayoutObservers = new ObserverList<>();
@@ -144,9 +138,6 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
     /** The animation handler responsible for updating all the browser compositor's animations. */
     private final CompositorAnimationHandler mAnimationHandler;
 
-    private final ObservableSupplierImpl<TabModelSelector> mTabModelSelectorSupplier =
-            new ObservableSupplierImpl<>();
-    private final ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
     private final CompositorModelChangeProcessor.FrameRequestSupplier mFrameRequestSupplier;
 
     private BrowserControlsStateProvider mBrowserControlsStateProvider;
@@ -158,97 +149,13 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
     private Map<Class, Integer> mOverlayOrderMap = new HashMap<>();
 
     /**
-     * Protected class to handle {@link TabModelObserver} related tasks. Extending classes will
-     * need to override any related calls to add new functionality
-     */
-    protected class LayoutManagerTabModelObserver implements TabModelObserver {
-        @Override
-        public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
-            if (type == TabSelectionType.FROM_OMNIBOX) {
-                switchToTab(tab, lastId);
-            } else if (tab.getId() != lastId) {
-                tabSelected(tab.getId(), lastId, tab.isIncognito());
-            }
-        }
-
-        @Override
-        public void willAddTab(Tab tab, @TabLaunchType int type) {
-            // Open the new tab
-            if (type == TabLaunchType.FROM_RESTORE || type == TabLaunchType.FROM_REPARENTING
-                    || type == TabLaunchType.FROM_EXTERNAL_APP
-                    || type == TabLaunchType.FROM_LAUNCHER_SHORTCUT
-                    || type == TabLaunchType.FROM_STARTUP
-                    || type == TabLaunchType.FROM_APP_WIDGET) {
-                return;
-            }
-
-            tabCreating(getTabModelSelector().getCurrentTabId(), tab.isIncognito());
-        }
-
-        @Override
-        public void didAddTab(
-                Tab tab, @TabLaunchType int launchType, @TabCreationState int creationState) {
-            int tabId = tab.getId();
-            if (launchType == TabLaunchType.FROM_RESTORE) {
-                getActiveLayout().onTabRestored(time(), tabId);
-            } else {
-                boolean incognito = tab.isIncognito();
-                boolean willBeSelected = launchType != TabLaunchType.FROM_LONGPRESS_BACKGROUND
-                                && launchType != TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP
-                                && launchType != TabLaunchType.FROM_RECENT_TABS
-                        || (!getTabModelSelector().isIncognitoSelected() && incognito);
-                float lastTapX = LocalizationUtils.isLayoutRtl() ? mHost.getWidth() * mPxToDp : 0.f;
-                float lastTapY = 0.f;
-                if (launchType != TabLaunchType.FROM_CHROME_UI) {
-                    float heightDelta = mHost.getHeightMinusBrowserControls() * mPxToDp;
-                    lastTapX = mPxToDp * mLastTapX;
-                    lastTapY = mPxToDp * mLastTapY - heightDelta;
-                }
-
-                tabCreated(tabId, getTabModelSelector().getCurrentTabId(), launchType, incognito,
-                        willBeSelected, lastTapX, lastTapY);
-            }
-        }
-
-        @Override
-        public void willCloseAllTabs(boolean isIncognito) {
-            onTabsAllClosing(isIncognito);
-        }
-
-        @Override
-        public void didCloseTab(Tab tab) {
-            tabClosed(tab.getId(), tab.isIncognito(), false);
-        }
-
-        @Override
-        public void tabPendingClosure(Tab tab) {
-            tabClosed(tab.getId(), tab.isIncognito(), false);
-        }
-
-        @Override
-        public void tabClosureCommitted(Tab tab) {
-            LayoutManagerImpl.this.tabClosureCommitted(tab.getId(), tab.isIncognito());
-        }
-
-        @Override
-        public void tabRemoved(Tab tab) {
-            tabClosed(tab.getId(), tab.isIncognito(), true);
-        }
-    }
-
-    /**
-     * Creates a {@link LayoutManagerImpl} instance.
+     * Creates a {@link ArkLayoutManager} instance.
      * @param host A {@link LayoutManagerHost} instance.
-     * @param contentContainer A {@link ViewGroup} for Android views to be bound to.
-     * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
      */
-    public LayoutManagerImpl(LayoutManagerHost host, ViewGroup contentContainer,
-            ObservableSupplier<TabContentManager> tabContentManagerSupplier) {
+    public ArkLayoutManager(LayoutManagerHost host) {
         mHost = host;
         mPxToDp = 1.f / mHost.getContext().getResources().getDisplayMetrics().density;
-        mTabContentManagerSupplier = tabContentManagerSupplier;
         mContext = host.getContext();
-        LayoutRenderHost renderHost = host.getLayoutRenderHost();
 
         // clang-format off
         // Overlays are ordered back (closest to the web content) to front.
@@ -257,9 +164,6 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
         // clang-format on
 
         for (int i = 0; i < overlayOrder.length; i++) mOverlayOrderMap.put(overlayOrder[i], i);
-
-        assert contentContainer != null;
-        mContentContainer = contentContainer;
 
         mAnimationHandler = new CompositorAnimationHandler(this::requestUpdate);
 
@@ -289,7 +193,7 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
     }
 
     /**
-     * Gives the {@link LayoutManagerImpl} a chance to intercept and process touch events from the
+     * Gives the {@link ArkLayoutManager} a chance to intercept and process touch events from the
      * Android {@link View} system.
      * @param e                 The {@link MotionEvent} that might be intercepted.
      * @param isKeyboardShowing Whether or not the keyboard is showing.
@@ -334,7 +238,7 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
     }
 
     /**
-     * Gives the {@link LayoutManagerImpl} a chance to process the touch events from the Android
+     * Gives the {@link ArkLayoutManager} a chance to process the touch events from the Android
      * {@link View} system.
      * @param e A {@link MotionEvent} instance.
      * @return  Whether or not {@code e} was consumed.
@@ -393,7 +297,7 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
      * Updates the state of the layout.
      * @param timeMs The time in milliseconds.
      * @param dtMs   The delta time since the last update in milliseconds.
-     * @return       Whether or not the {@link LayoutManagerImpl} needs more updates.
+     * @return       Whether or not the {@link ArkLayoutManager} needs more updates.
      */
     @VisibleForTesting
     boolean onUpdate(long timeMs, long dtMs) {
@@ -431,79 +335,24 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
     }
 
     /**
-     * Initializes the {@link LayoutManagerImpl}.  Must be called before using this object.
-     * @param selector                 A {@link TabModelSelector} instance.
-     * @param creator                  A {@link TabCreatorManager} instance.
+     * Initializes the {@link ArkLayoutManager}.  Must be called before using this object.
      * @param dynamicResourceLoader    A {@link DynamicResourceLoader} instance.
      */
-    public void init(TabModelSelector selector, TabCreatorManager creator,
-            DynamicResourceLoader dynamicResourceLoader) {
+    public void init(TabContentManager tabContentManager, DynamicResourceLoader dynamicResourceLoader) {
         LayoutRenderHost renderHost = mHost.getLayoutRenderHost();
 
         mBrowserControlsStateProvider = mHost.getBrowserControlsManager();
 
         // Build Layouts
-        mStaticLayout = new StaticLayout(mContext, this, renderHost, mHost, mFrameRequestSupplier,
-                selector, mTabContentManagerSupplier.get(), mBrowserControlsStateProvider);
+        mStaticLayout = new ArkStaticLayout(mContext, this, renderHost, mHost, mFrameRequestSupplier,
+                tabContentManager, mBrowserControlsStateProvider);
 
-        setNextLayout(null, true);
+//        setNextLayout(null, true);
 
         // Set the dynamic resource loader for all overlay panels.
         mOverlayPanelManager.setDynamicResourceLoader(dynamicResourceLoader);
-        mOverlayPanelManager.setContainerView(mContentContainer);
 
-        // The {@link setTabModelSelector} should be called after all of the initialization above
-        // complete. See https://crbug.com/1132948.
-        if (mTabModelSelector == null) {
-            setTabModelSelector(selector);
-        }
-    }
-
-    // TODO(hanxi): Passes the TabModelSelectorSupplier in the constructor since the
-    // mTabModelSelector should only be set once.
-    public void setTabModelSelector(TabModelSelector selector) {
-        mTabModelSelector = selector;
-        mTabModelSelectorSupplier.set(selector);
-        mTabModelSelectorTabObserver = new TabModelSelectorTabObserver(mTabModelSelector) {
-            @Override
-            public void onShown(Tab tab, @TabSelectionType int type) {
-                initLayoutTabFromHost(tab.getId());
-            }
-
-            @Override
-            public void onHidden(Tab tab, @TabHidingType int type) {
-                initLayoutTabFromHost(tab.getId());
-            }
-
-            @Override
-            public void onContentChanged(Tab tab) {
-                initLayoutTabFromHost(tab.getId());
-            }
-
-            @Override
-            public void onBackgroundColorChanged(Tab tab, int color) {
-                initLayoutTabFromHost(tab.getId());
-            }
-
-            @Override
-            public void onDidChangeThemeColor(Tab tab, int color) {
-                initLayoutTabFromHost(tab.getId());
-            }
-        };
-
-        if (mNextActiveLayout != null) startShowing(mNextActiveLayout, true);
-
-        mTabModelSelectorObserver = new TabModelSelectorObserver() {
-            @Override
-            public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
-                tabModelSwitched(newModel.isIncognito());
-            }
-        };
-        selector.addObserver(mTabModelSelectorObserver);
-
-        mTabModelFilterObserver = createTabModelObserver();
-        getTabModelSelector().getTabModelFilterProvider().addTabModelFilterObserver(
-                mTabModelFilterObserver);
+        startShowing(mStaticLayout, true);
     }
 
     @Override
@@ -512,14 +361,6 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
         mSceneChangeObservers.clear();
         if (mStaticLayout != null) mStaticLayout.destroy();
         if (mOverlayPanelManager != null) mOverlayPanelManager.destroy();
-        if (mTabModelSelectorTabObserver != null) mTabModelSelectorTabObserver.destroy();
-        if (mTabModelSelectorObserver != null) {
-            getTabModelSelector().removeObserver(mTabModelSelectorObserver);
-        }
-        if (mTabModelFilterObserver != null) {
-            getTabModelSelector().getTabModelFilterProvider().removeTabModelFilterObserver(
-                    mTabModelFilterObserver);
-        }
     }
 
     /** @return A resource manager to pull textures from. */
@@ -534,6 +375,13 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
             PropertyModelChangeProcessor.ViewBinder<PropertyModel, V, PropertyKey> viewBinder) {
         return CompositorModelChangeProcessor.create(
                 model, view, viewBinder, mFrameRequestSupplier, true);
+    }
+
+    public void onPageSelected(Tab tab) {
+        if (tab == null) {
+            return;
+        }
+        mStaticLayout.setStaticTab(tab);
     }
 
     /**
@@ -641,13 +489,6 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
         return mStaticLayout;
     }
 
-    /**
-     * @return The {@link TabModelObserver} instance this class should be using.
-     */
-    protected LayoutManagerChrome.LayoutManagerTabModelObserver createTabModelObserver() {
-        return new LayoutManagerChrome.LayoutManagerTabModelObserver();
-    }
-
     @VisibleForTesting
     public void tabSelected(int tabId, int prevId, boolean incognito) {
         // Update the model here so we properly set the right selected TabModel.
@@ -660,47 +501,10 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
      * Should be called when a tab creating event is triggered (called before the tab is done being
      * created).
      * @param sourceId    The id of the creating tab if any.
-     * @param url         The url of the created tab.
      * @param isIncognito Whether or not created tab will be incognito.
      */
     protected void tabCreating(int sourceId, boolean isIncognito) {
         if (getActiveLayout() != null) getActiveLayout().onTabCreating(sourceId);
-    }
-
-    /**
-     * Should be called when a tab created event is triggered.
-     * @param id             The id of the tab that was created.
-     * @param sourceId       The id of the creating tab if any.
-     * @param launchType     How the tab was launched.
-     * @param incognito      Whether or not the created tab is incognito.
-     * @param willBeSelected Whether or not the created tab will be selected.
-     * @param originX        The x coordinate of the action that created this tab in dp.
-     * @param originY        The y coordinate of the action that created this tab in dp.
-     */
-    protected void tabCreated(int id, int sourceId, @TabLaunchType int launchType,
-            boolean incognito, boolean willBeSelected, float originX, float originY) {
-        int newIndex = TabModelUtils.getTabIndexById(getTabModelSelector().getModel(incognito), id);
-        getActiveLayout().onTabCreated(
-                time(), id, newIndex, sourceId, incognito, !willBeSelected, originX, originY);
-    }
-
-    /**
-     * Should be called when a tab closed event is triggered.
-     * @param id         The id of the closed tab.
-     * @param nextId     The id of the next tab that will be visible, if any.
-     * @param incognito  Whether or not the closed tab is incognito.
-     * @param tabRemoved Whether the tab was removed from the model (e.g. for reparenting), rather
-     *                   than closed and destroyed.
-     */
-    protected void tabClosed(int id, int nextId, boolean incognito, boolean tabRemoved) {
-        if (getActiveLayout() != null) getActiveLayout().onTabClosed(time(), id, nextId, incognito);
-    }
-
-    private void tabClosed(int tabId, boolean incognito, boolean tabRemoved) {
-        Tab currentTab =
-                getTabModelSelector() != null ? getTabModelSelector().getCurrentTab() : null;
-        int nextTabId = currentTab != null ? currentTab.getId() : Tab.INVALID_TAB_ID;
-        tabClosed(tabId, nextTabId, incognito, tabRemoved);
     }
 
     /**
@@ -730,10 +534,9 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
 
     @Override
     public void initLayoutTabFromHost(final int tabId) {
-        if (getTabModelSelector() == null || getActiveLayout() == null) return;
+        if (getActiveLayout() == null) return;
 
-        TabModelSelector selector = getTabModelSelector();
-        Tab tab = selector.getTabById(tabId);
+        Tab tab = PageCacheManager.getInstance().findPage(tabId);
         if (tab == null) return;
 
         LayoutTab layoutTab = mTabCache.get(tabId);
@@ -784,13 +587,6 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
 
     @Override
     public void releaseResourcesForTab(int tabId) {}
-
-    /**
-     * @return The {@link TabModelSelector} instance this class knows about.
-     */
-    protected TabModelSelector getTabModelSelector() {
-        return mTabModelSelector;
-    }
 
     /**
      * @return The next {@link Layout} that will be shown.  If no {@link Layout} has been set
@@ -879,17 +675,6 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
 
     @Override
     public void doneHiding() {
-        // TODO: If next layout is default layout clear caches (should this be a sub layout thing?)
-
-        assert mNextActiveLayout != null : "Need to have a next active layout.";
-        if (mNextActiveLayout != null) {
-            // Notify LayoutObservers the active layout is finished hiding.
-            for (LayoutStateObserver observer : mLayoutObservers) {
-                observer.onFinishedHiding(getActiveLayout().getLayoutType());
-            }
-
-            startShowing(mNextActiveLayout, mAnimateNextLayout);
-        }
     }
 
     @Override
@@ -934,18 +719,7 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
 
         // Set the new layout
         setNextLayout(null, true);
-        Layout oldLayout = getActiveLayout();
-        if (oldLayout != layout) {
-            if (oldLayout != null) {
-                oldLayout.forceAnimationToFinish();
-                oldLayout.detachViews();
-
-                // TODO(crbug.com/1108496): hide oldLayout if it's not hidden.
-            }
-            layout.contextChanged(mHost.getContext());
-            layout.attachViews(mContentContainer);
-            mActiveLayout = layout;
-        }
+        mActiveLayout = layout;
 
         BrowserControlsVisibilityManager controlsVisibilityManager =
                 mHost.getBrowserControlsManager();
@@ -1018,15 +792,6 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
     }
 
     /**
-     * Creates a {@link SwipeHandler} instance.
-     * @param supportSwipeDown Whether or not to the handler should support swipe down gesture.
-     * @return The {@link SwipeHandler} cerated.
-     */
-    public SwipeHandler createToolbarSwipeHandler(boolean supportSwipeDown) {
-        return null;
-    }
-
-    /**
      * Should be called when the user presses the back button on the phone.
      * @return Whether or not the back button was consumed by the active {@link Layout}.
      */
@@ -1058,16 +823,6 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
         mSceneOverlays.add(index, overlay);
     }
 
-    @VisibleForTesting
-    void setSceneOverlayOrderForTesting(Map<Class, Integer> order) {
-        mOverlayOrderMap = order;
-    }
-
-    @VisibleForTesting
-    List<SceneOverlay> getSceneOverlaysForTesting() {
-        return mSceneOverlays;
-    }
-
     /**
      * Clears all content associated with {@code tabId} from the internal caches.
      * @param tabId The id of the tab to clear.
@@ -1085,16 +840,6 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
     @VisibleForTesting
     public LayoutTab getLayoutTabForTesting(int tabId) {
         return mTabCache.get(tabId);
-    }
-
-    /**
-     * Should be called when a tab switch event is triggered, only can switch to the Tab which in
-     * the current TabModel.
-     * @param tab        The tab that will be switched to.
-     * @param lastTabId  The id of the tab that was switched from.
-     */
-    protected void switchToTab(Tab tab, int lastTabId) {
-        tabSelected(tab.getId(), lastTabId, tab.isIncognito());
     }
 
     // LayoutStateProvider implementation.

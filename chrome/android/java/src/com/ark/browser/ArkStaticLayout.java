@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.compositor.layouts;
+package com.ark.browser;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -13,6 +13,10 @@ import android.os.Handler;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.compositor.layouts.Layout;
+import org.chromium.chrome.browser.compositor.layouts.LayoutManagerHost;
+import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
+import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.scene_layer.StaticTabSceneLayer;
@@ -24,10 +28,7 @@ import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.tabmodel.TabSwitchMetrics;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
@@ -41,12 +42,13 @@ import java.util.Arrays;
 import java.util.LinkedList;
 
 // TODO(meiliang): Rename to StaticLayoutMediator.
+
 /**
  * A {@link Layout} that shows a single tab at full screen. This tab is chosen based on the
  * {@link #tabSelecting(long, int)} call, and is used to show a thumbnail of a {@link Tab}
  * until that {@link Tab} is ready to be shown.
  */
-public class StaticLayout extends Layout {
+public class ArkStaticLayout extends Layout {
     public static final String TAG = "StaticLayout";
 
     private static final int HIDE_TIMEOUT_MS = 2000;
@@ -83,10 +85,6 @@ public class StaticLayout extends Layout {
     private final Handler mHandler;
     private boolean mUnstalling;
 
-    private TabModelSelector mTabModelSelector;
-    private TabModelSelectorTabModelObserver mTabModelSelectorTabModelObserver;
-    private TabModelSelectorTabObserver mTabModelSelectorTabObserver;
-
     private BrowserControlsStateProvider mBrowserControlsStateProvider;
     private BrowserControlsStateProvider.Observer mBrowserControlsStateProviderObserver;
 
@@ -102,21 +100,20 @@ public class StaticLayout extends Layout {
     private float mPxToDp;
 
     /**
-     * Creates an instance of the {@link StaticLayout}.
+     * Creates an instance of the {@link ArkStaticLayout}.
      * @param context             The current Android's context.
      * @param updateHost          The {@link LayoutUpdateHost} view for this layout.
      * @param renderHost          The {@link LayoutRenderHost} view for this layout.
      * @param viewHost            The {@link LayoutManagerHost} view for this layout
      * @param requestSupplier Frame request supplier for Compositor MCP.
-     * @param tabModelSelector {@link TabModelSelector} instance.
-     * @param tabContentManager {@link TabContentsManager} instance.
+     * @param tabContentManager {@link TabContentManager} instance.
      * @param browserControlsStateProvider A {@link BrowserControlsStateProvider}.
      */
-    public StaticLayout(Context context, LayoutUpdateHost updateHost, LayoutRenderHost renderHost,
-            LayoutManagerHost viewHost,
-            CompositorModelChangeProcessor.FrameRequestSupplier requestSupplier,
-            TabModelSelector tabModelSelector, TabContentManager tabContentManager,
-            BrowserControlsStateProvider browserControlsStateProvider) {
+    public ArkStaticLayout(Context context, LayoutUpdateHost updateHost, LayoutRenderHost renderHost,
+                           LayoutManagerHost viewHost,
+                           CompositorModelChangeProcessor.FrameRequestSupplier requestSupplier,
+                           TabContentManager tabContentManager,
+                           BrowserControlsStateProvider browserControlsStateProvider) {
         super(context, updateHost, renderHost);
         mContext = context;
         // Only handle tab lifecycle on tablets.
@@ -125,9 +122,6 @@ public class StaticLayout extends Layout {
         mRequestSupplier = requestSupplier;
         assert tabContentManager != null;
         mTabContentManager = tabContentManager;
-
-        assert tabModelSelector != null;
-        setTabModelSelector(tabModelSelector);
 
         mModel = new PropertyModel.Builder(LayoutTab.ALL_KEYS)
                          .with(LayoutTab.TAB_ID, Tab.INVALID_TAB_ID)
@@ -170,68 +164,9 @@ public class StaticLayout extends Layout {
                 mModel, mSceneLayer, StaticTabSceneLayer::bind, mRequestSupplier);
     }
 
-    private void setTabModelSelector(TabModelSelector tabModelSelector) {
-        assert tabModelSelector != null;
-        assert mTabModelSelector == null : "The TabModelSelector should set at most once";
-
-        mTabModelSelector = tabModelSelector;
-        // TODO(crbug.com/1070281): Investigating to use ActivityTabProvider instead.
-        mTabModelSelectorTabModelObserver = new TabModelSelectorTabModelObserver(tabModelSelector) {
-            @Override
-            public void didSelectTab(Tab tab, int type, int lastId) {
-                if (mIsActive) setStaticTab(tab);
-            }
-        };
-
-        mTabModelSelectorTabObserver = new TabModelSelectorTabObserver(tabModelSelector) {
-            @Override
-            public void onPageLoadFinished(Tab tab, GURL url) {
-                if (mIsActive) unstallImmediately(tab.getId());
-            }
-            @Override
-            public void onShown(Tab tab, @TabSelectionType int type) {
-                if (mModel.get(LayoutTab.TAB_ID) != tab.getId()) {
-                    setStaticTab(tab);
-                } else {
-                    updateStaticTab(tab);
-                }
-            }
-
-            @Override
-            public void onContentChanged(Tab tab) {
-                updateStaticTab(tab);
-            }
-
-            @Override
-            public void onBackgroundColorChanged(Tab tab, int color) {
-                updateStaticTab(tab);
-            }
-
-            @Override
-            public void onDidChangeThemeColor(Tab tab, int color) {
-                updateStaticTab(tab);
-            }
-        };
-    }
-
     @Override
     public @ViewportMode int getViewportMode() {
         return ViewportMode.DYNAMIC_BROWSER_CONTROLS;
-    }
-
-    /**
-     * Initialize the layout to be shown.
-     * @param time   The current time of the app in ms.
-     * @param animate Whether to play an entry animation.
-     */
-    @Override
-    public void show(long time, boolean animate) {
-        super.show(time, animate);
-
-        mIsActive = true;
-        Tab tab = mTabModelSelector.getCurrentTab();
-        if (tab == null) return;
-        setStaticTab(tab);
     }
 
     @Override
@@ -282,7 +217,7 @@ public class StaticLayout extends Layout {
         mUnstalling = false;
     }
 
-    private void setStaticTab(Tab tab) {
+    public void setStaticTab(Tab tab) {
         assert tab != null;
 
         if (mModel.get(LayoutTab.TAB_ID) == tab.getId() && !mModel.get(LayoutTab.SHOULD_STALL)) {
@@ -340,11 +275,6 @@ public class StaticLayout extends Layout {
     private float getTextBoxAlphaForToolbarBackground(Tab tab) {
         if (sToolbarTextBoxAlphaForTesting != null) return sToolbarTextBoxAlphaForTesting;
         return 0.5f;
-    }
-
-    @VisibleForTesting
-    void setToolbarTextBoxAlphaForTesting(Float alpha) {
-        sToolbarTextBoxAlphaForTesting = alpha;
     }
 
     // Whether the tab is ready to display or it should be faded in as it loads.
@@ -426,14 +356,6 @@ public class StaticLayout extends Layout {
             mMcp.destroy();
             mMcp = null;
         }
-        if (mTabModelSelector != null) {
-            mTabModelSelectorTabModelObserver.destroy();
-            mTabModelSelectorTabObserver.destroy();
-        }
     }
 
-    @VisibleForTesting
-    public int getCurrentTabIdForTesting() {
-        return mModel.get(LayoutTab.TAB_ID);
-    }
 }

@@ -3,6 +3,38 @@
 # found in the LICENSE file.
 
 chrome_java_sources = [
+  "java/src/com/ark/browser/ArkCompositorViewHolder.java",
+  "java/src/com/ark/browser/ArkLayoutManager.java",
+  "java/src/com/ark/browser/ArkLayoutManagerImpl.java",
+  "java/src/com/ark/browser/ArkStaticLayout.java",
+  "java/src/com/ark/browser/BrowserActivity.java",
+  "java/src/com/ark/browser/TestTabDelegate.java",
+  "java/src/com/ark/browser/TestTabModel.java",
+
+  "java/src/com/ark/browser/tab/DbModel.java",
+  "java/src/com/ark/browser/tab/EmptyTabInfoObserver.java",
+  "java/src/com/ark/browser/tab/EmptyTabManagerObserver.java",
+  "java/src/com/ark/browser/tab/PageCacheManager.java",
+  "java/src/com/ark/browser/tab/PageInfo.java",
+  "java/src/com/ark/browser/tab/PageInfoManager.java",
+  "java/src/com/ark/browser/tab/TabInfo.java",
+  "java/src/com/ark/browser/tab/TabInfoManager.java",
+  "java/src/com/ark/browser/tab/TabInfoObserver.java",
+  "java/src/com/ark/browser/tab/TabListManager.java",
+  "java/src/com/ark/browser/tab/TabManagerObserver.java",
+  "java/src/com/ark/browser/tab/TabSnapshotManager.java",
+  "java/src/com/ark/browser/tab/core/IPage.java",
+  "java/src/com/ark/browser/tab/core/IPageGroup.java",
+  "java/src/com/ark/browser/tab/core/IPageInfo.java",
+  "java/src/com/ark/browser/tab/core/ITab.java",
+  "java/src/com/ark/browser/tab/core/ITabGroup.java",
+  "java/src/com/ark/browser/tab/core/PageGroupImpl.java",
+  "java/src/com/ark/browser/tab/core/PageImpl.java",
+  "java/src/com/ark/browser/tab/core/TabGroupImpl.java",
+  "java/src/com/ark/browser/tab/core/TabImpl.java",
+
+  "java/src/com/ark/browser/utils/ThreadPool.java",
+
   "java/src/org/chromium/chrome/browser/ActivityTabProvider.java",
   "java/src/org/chromium/chrome/browser/ActivityUtils.java",
   "java/src/org/chromium/chrome/browser/AppHooks.java",
