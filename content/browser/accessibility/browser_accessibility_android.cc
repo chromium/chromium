@@ -1211,7 +1211,7 @@ int BrowserAccessibilityAndroid::GetItemIndex() const {
     if (max > min && value >= min && value <= max)
       index = static_cast<int>(((value - min)) * 100 / (max - min));
   } else {
-    absl::optional<int> pos_in_set = GetPosInSet();
+    absl::optional<int> pos_in_set = node()->GetPosInSet();
     if (pos_in_set && *pos_in_set > 0)
       index = *pos_in_set - 1;
   }
@@ -1227,8 +1227,8 @@ int BrowserAccessibilityAndroid::GetItemCount() const {
     // as a percentage is not meaningful in those cases.
     count = 100;
   } else {
-    if (IsCollection() && GetSetSize())
-      count = *GetSetSize();
+    if (IsCollection() && node()->GetSetSize())
+      count = *node()->GetSetSize();
   }
   return count;
 }
@@ -1578,8 +1578,8 @@ int BrowserAccessibilityAndroid::RowCount() const {
   if (!IsCollection())
     return 0;
 
-  if (GetSetSize())
-    return *GetSetSize();
+  if (node()->GetSetSize())
+    return *node()->GetSetSize();
 
   return node()->GetTableRowCount().value_or(0);
 }
@@ -1591,7 +1591,7 @@ int BrowserAccessibilityAndroid::ColumnCount() const {
 }
 
 int BrowserAccessibilityAndroid::RowIndex() const {
-  absl::optional<int> pos_in_set = GetPosInSet();
+  absl::optional<int> pos_in_set = node()->GetPosInSet();
   if (pos_in_set && pos_in_set > 0)
     return *pos_in_set - 1;
   return node()->GetTableCellRowIndex().value_or(0);
