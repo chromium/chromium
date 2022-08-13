@@ -87552,6 +87552,32 @@
          {}
         ]
        ],
+       "abspos-uncontained-text.html": [
+        "e0485816bfa71b9329187ea135b400e7ad598dff",
+        [
+         null,
+         [
+          [
+           "/css/css-break/table/repeated-section/abspos-uncontained-text-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "abspos-uncontained.tentative.html": [
+        "d8b84ce72e3e95bc07571c38ea0336f297b1e95c",
+        [
+         null,
+         [
+          [
+           "/css/reference/ref-filled-green-100px-square.xht",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "abspos.tentative.html": [
         "a7297f1dd559f5bb38a1143d0371d17d4ee29bba",
         [
@@ -265489,6 +265515,12 @@
       []
      ],
      "table": {
+      "repeated-section": {
+       "abspos-uncontained-text-ref.html": [
+        "a7c2eeb5b8e05397d606776fc8b470e451a12b04",
+        []
+       ]
+      },
       "sections-and-captions-mixed-order-ref.html": [
        "b3265c92c6a47f8bbcb86312a85734a0d16a5075",
        []
@@ -309136,7 +309168,7 @@
          []
         ],
         "path-objects.yaml": [
-         "0ca97e762cd1e178b64146424203de2f181119b5",
+         "f3306cd5bd08c168732d8a30d76fde49cd7904e7",
          []
         ],
         "pixel-manipulation.yaml": [
@@ -380839,6 +380871,13 @@
         {}
        ]
       ],
+      "font-face-src-format.html": [
+       "34ed5ec5390724696efae41b86e0d0a0a873215e",
+       [
+        null,
+        {}
+       ]
+      ],
       "font-face-src-local.html": [
        "d7c8cba18cd88705ee98c0d5b719ce6fb499f429",
        [
@@ -395352,6 +395391,13 @@
      ],
      "transform-getBoundingClientRect-001.html": [
       "15adf31f0d1ef57ec7edcb80a140c34d37cec31e",
+      [
+       null,
+       {}
+      ]
+     ],
+     "transform-hit-testing.html": [
+      "6a890dc367b7cf46fd17c261ef742d092ba38bb5",
       [
        null,
        {}
@@ -451224,6 +451270,13 @@
          {}
         ]
        ],
+       "2d.path.roundrect.badinput.html": [
+        "d18e99b4ed10a71ffd0c46eb3068f1d1a070e025",
+        [
+         null,
+         {}
+        ]
+       ],
        "2d.path.roundrect.closed.html": [
         "780323cfed15ed81c1a0496a484706e4ef248e56",
         [
@@ -451296,6 +451349,13 @@
        ],
        "2d.path.roundrect.radius.negative.html": [
         "c7c0bda6ff71befc9232dfeedbc5a9fe417557a0",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.roundrect.radius.noargument.html": [
+        "7e5f387014d39bb1056f4530211a38cfe35721b6",
         [
          null,
          {}
@@ -493277,6 +493337,13 @@
       }
      ]
     ],
+    "local-shift-without-viewport-shift-2.html": [
+     "7074bca7bac48cf6ed4c18364bd5c3c0e46b1128",
+     [
+      null,
+      {}
+     ]
+    ],
     "local-shift-without-viewport-shift.html": [
      "d635ed50561019ed9bc61f2a895675fa0cba5fee",
      [
@@ -493469,6 +493536,13 @@
       {}
      ]
     ],
+    "shift-with-counter-scroll-and-translate.html": [
+     "a51920fc98681f0effed9812cc771ee18818035d",
+     [
+      null,
+      {}
+     ]
+    ],
     "shift-with-counterscroll-2.html": [
      "d99723010ef87036f8db24c4d959a2400b876796",
      [
@@ -493576,6 +493650,20 @@
     ],
     "transform.html": [
      "98f94f53cc441a6aef593ad46041fee6f0efb328",
+     [
+      null,
+      {}
+     ]
+    ],
+    "translate-change.html": [
+     "ddfc041700aac29f64fa9304c813c2e276c0c825",
+     [
+      null,
+      {}
+     ]
+    ],
+    "translate-counter-layout-shift.html": [
+     "18e03ad7f2980544f2a694844e1ba158471ae83e",
      [
       null,
       {}
@@ -525568,7 +525656,7 @@
       ]
      ],
      "animation-timeline-multiple.html": [
-      "dd3bfb0d75bd6a00acc132276c300e3682e2158e",
+      "d223860a069e865388c3eb630d9c196e96c008d1",
       [
        null,
        {}
@@ -525610,28 +525698,28 @@
       ]
      ],
      "at-scroll-timeline-dynamic.tentative.html": [
-      "3effbd654b2dda345af20c34915d5c3d2bc289a6",
+      "b646623acfd86232c5f63b4091bfc4e5f20c4770",
       [
        null,
        {}
       ]
      ],
      "at-scroll-timeline-ignored.tentative.html": [
-      "c2ad063002f8956a7d39307737b6512a45dd4653",
+      "44d4155f74bbbef2f7408abde84918b78e5bdfdf",
       [
        null,
        {}
       ]
      ],
      "at-scroll-timeline-inactive-phase.html": [
-      "1f803ef4662f3932e74e623b818161eb2e1c7490",
+      "a50583dfd0641855fc59f3fd55f6085bbfd9654d",
       [
        null,
        {}
       ]
      ],
      "at-scroll-timeline-multi-pass.tentative.html": [
-      "c4977405b79ed57759f3f4ffc62a389062414f04",
+      "f10929f73a8038488126da77bc5573f5861b57f3",
       [
        null,
        {}
@@ -525666,7 +525754,7 @@
       ]
      ],
      "at-scroll-timeline-source-invalidation.tentative.html": [
-      "35fa53f14de4b87d2fbb7fcfbf4f51457e0fe03b",
+      "f1ffc35c80c7da31c9ba453647d0bca7aa97cbf8",
       [
        null,
        {}
@@ -525694,7 +525782,7 @@
       ]
      ],
      "progress-based-animation-timeline.html": [
-      "c768f180efbed29091d010bb77bb5dec8cca5c3d",
+      "bd7d797fffa8689ce7518b3328e6b077485bda1e",
       [
        null,
        {}
