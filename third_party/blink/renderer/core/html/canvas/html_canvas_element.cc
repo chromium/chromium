@@ -818,8 +818,9 @@ void HTMLCanvasElement::Paint(GraphicsContext& context,
                               bool flatten_composited_layers) {
   if (context_creation_was_blocked_ ||
       (context_ && context_->isContextLost())) {
+    float dpr = GetDocument().DevicePixelRatio();
     std::pair<Image*, float> broken_canvas_and_image_scale_factor =
-        BrokenCanvas(GetDocument().DevicePixelRatio());
+        BrokenCanvas(dpr);
     Image* broken_canvas = broken_canvas_and_image_scale_factor.first;
     context.Save();
     context.FillRect(
@@ -834,6 +835,8 @@ void HTMLCanvasElement::Paint(GraphicsContext& context,
     gfx::PointF upper_left =
         gfx::PointF(r.PixelSnappedOffset()) +
         gfx::Vector2dF(icon_size.width(), icon_size.height());
+    // Make the icon more visually prominent on high-DPI displays.
+    icon_size.Scale(dpr);
     context.DrawImage(broken_canvas, Image::kSyncDecode,
                       ImageAutoDarkMode::Disabled(),
                       gfx::RectF(upper_left, icon_size));
