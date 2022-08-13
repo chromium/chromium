@@ -66,20 +66,20 @@ BrowserFeaturePromoSnoozeService::ReadSnoozeData(
     const base::Feature& iph_feature) {
   std::string path_prefix = std::string(iph_feature.name) + ".";
 
-  const auto* const pref_data =
-      profile_->GetPrefs()->GetDictionary(kIPHSnoozeDataPath);
+  const auto& pref_data =
+      profile_->GetPrefs()->GetValueDict(kIPHSnoozeDataPath);
   absl::optional<bool> is_dismissed =
-      pref_data->FindBoolPath(path_prefix + kIPHIsDismissedPath);
+      pref_data.FindBoolByDottedPath(path_prefix + kIPHIsDismissedPath);
   absl::optional<base::Time> show_time = base::ValueToTime(
-      pref_data->FindPath(path_prefix + kIPHLastShowTimePath));
+      pref_data.FindByDottedPath(path_prefix + kIPHLastShowTimePath));
   absl::optional<base::Time> snooze_time = base::ValueToTime(
-      pref_data->FindPath(path_prefix + kIPHLastSnoozeTimePath));
+      pref_data.FindByDottedPath(path_prefix + kIPHLastSnoozeTimePath));
   absl::optional<base::TimeDelta> snooze_duration = base::ValueToTimeDelta(
-      pref_data->FindPath(path_prefix + kIPHLastSnoozeDurationPath));
+      pref_data.FindByDottedPath(path_prefix + kIPHLastSnoozeDurationPath));
   absl::optional<int> snooze_count =
-      pref_data->FindIntPath(path_prefix + kIPHSnoozeCountPath);
+      pref_data.FindIntByDottedPath(path_prefix + kIPHSnoozeCountPath);
   absl::optional<int> show_count =
-      pref_data->FindIntPath(path_prefix + kIPHShowCountPath);
+      pref_data.FindIntByDottedPath(path_prefix + kIPHShowCountPath);
 
   absl::optional<SnoozeData> snooze_data;
 
