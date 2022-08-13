@@ -275,9 +275,9 @@ void SiteIsolationPolicy::ApplyPersistedIsolatedOrigins(
   // they can be used if password-triggered isolation is re-enabled later.
   if (IsIsolationForPasswordSitesEnabled()) {
     std::vector<url::Origin> origins;
-    for (const auto& value : user_prefs::UserPrefs::Get(browser_context)
-                                 ->GetList(prefs::kUserTriggeredIsolatedOrigins)
-                                 ->GetListDeprecated()) {
+    for (const auto& value :
+         user_prefs::UserPrefs::Get(browser_context)
+             ->GetValueList(prefs::kUserTriggeredIsolatedOrigins)) {
       origins.push_back(url::Origin::Create(GURL(value.GetString())));
     }
 
@@ -298,32 +298,30 @@ void SiteIsolationPolicy::ApplyPersistedIsolatedOrigins(
     std::vector<std::string> expired_entries;
 
     auto* pref_service = user_prefs::UserPrefs::Get(browser_context);
-    auto* dict =
-        pref_service->GetDictionary(prefs::kWebTriggeredIsolatedOrigins);
-    if (dict) {
-      for (auto site_time_pair : dict->DictItems()) {
-        // Only isolate origins that haven't expired.
-        absl::optional<base::Time> timestamp =
-            base::ValueToTime(site_time_pair.second);
-        base::TimeDelta expiration_timeout =
-            ::features::
-                kSiteIsolationForCrossOriginOpenerPolicyExpirationTimeoutParam
-                    .Get();
-        if (timestamp.has_value() &&
-            base::Time::Now() - timestamp.value() <= expiration_timeout) {
-          origins.push_back(url::Origin::Create(GURL(site_time_pair.first)));
-        } else {
-          expired_entries.push_back(site_time_pair.first);
-        }
+    const auto& dict =
+        pref_service->GetValueDict(prefs::kWebTriggeredIsolatedOrigins);
+    for (auto site_time_pair : dict) {
+      // Only isolate origins that haven't expired.
+      absl::optional<base::Time> timestamp =
+          base::ValueToTime(site_time_pair.second);
+      base::TimeDelta expiration_timeout =
+          ::features::
+              kSiteIsolationForCrossOriginOpenerPolicyExpirationTimeoutParam
+                  .Get();
+      if (timestamp.has_value() &&
+          base::Time::Now() - timestamp.value() <= expiration_timeout) {
+        origins.push_back(url::Origin::Create(GURL(site_time_pair.first)));
+      } else {
+        expired_entries.push_back(site_time_pair.first);
       }
-      // Remove expired entries (as well as those with an invalid timestamp).
-      if (!expired_entries.empty()) {
-        DictionaryPrefUpdate update(pref_service,
-                                    prefs::kWebTriggeredIsolatedOrigins);
-        base::Value* updated_dict = update.Get();
-        for (const auto& entry : expired_entries)
-          updated_dict->RemoveKey(entry);
-      }
+    }
+    // Remove expired entries (as well as those with an invalid timestamp).
+    if (!expired_entries.empty()) {
+      DictionaryPrefUpdate update(pref_service,
+                                  prefs::kWebTriggeredIsolatedOrigins);
+      base::Value* updated_dict = update.Get();
+      for (const auto& entry : expired_entries)
+        updated_dict->RemoveKey(entry);
     }
 
     if (!origins.empty()) {
