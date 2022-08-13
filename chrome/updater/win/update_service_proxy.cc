@@ -68,8 +68,13 @@ HRESULT CreateUpdater(UpdaterScope scope,
   if (FAILED(hr))
     return hr;
   hr = server.As(&updater);
-  VLOG_IF(2, FAILED(hr)) << "Failed to query the updater interface: "
+
+  // TODO(crbug.com/1341471) - revert the CL that introduced the check after
+  // the bug is resolved.
+  VLOG_IF(2, FAILED(hr)) << "Failed to query the updater interface. "
                          << std::hex << hr;
+  CHECK(SUCCEEDED(hr));
+
   return hr;
 }
 

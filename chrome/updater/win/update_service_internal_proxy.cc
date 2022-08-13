@@ -151,12 +151,12 @@ void UpdateServiceInternalProxy::RunOnSTA(base::OnceClosure callback) {
 
   Microsoft::WRL::ComPtr<IUpdaterInternal> updater_internal;
   hr = server.As(&updater_internal);
-  if (FAILED(hr)) {
-    VLOG(2) << "Failed to query the updater_internal interface. " << std::hex
-            << hr;
-    std::move(callback).Run();
-    return;
-  }
+
+  // TODO(crbug.com/1341471) - revert the CL that introduced the check after
+  // the bug is resolved.
+  VLOG_IF(2, FAILED(hr)) << "Failed to query the updater_internal interface. "
+                         << std::hex << hr;
+  CHECK(SUCCEEDED(hr));
 
   // The COM RPC takes ownership of the `rpc_callback` and owns a reference to
   // the `updater_internal` object as well. As long as the `rpc_callback`
