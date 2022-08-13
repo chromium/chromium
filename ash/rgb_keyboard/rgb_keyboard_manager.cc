@@ -14,6 +14,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/logging.h"
+#include "base/system/sys_info.h"
 #include "chromeos/ash/components/dbus/rgbkbd/rgbkbd_client.h"
 
 namespace ash {
@@ -121,7 +122,9 @@ void RgbKeyboardManager::OnCapabilityUpdatedForTesting(
 void RgbKeyboardManager::OnGetRgbKeyboardCapabilities(
     absl::optional<rgbkbd::RgbKeyboardCapabilities> reply) {
   if (!reply.has_value()) {
-    LOG(ERROR) << "No response received for GetRgbKeyboardCapabilities";
+    if (base::SysInfo::IsRunningOnChromeOS()) {
+      LOG(ERROR) << "No response received for GetRgbKeyboardCapabilities";
+    }
     return;
   }
 
