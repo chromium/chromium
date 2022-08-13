@@ -611,8 +611,7 @@ CGFloat GetModuleWidthForHorizontalTraitCollection(
       height +=
           MostVisitedCellSize(
               UIApplication.sharedApplication.preferredContentSizeCategory)
-              .height +
-          kMostVisitedBottomMargin;
+              .height;
     }
   }
   if (self.returnToRecentTabTile) {
