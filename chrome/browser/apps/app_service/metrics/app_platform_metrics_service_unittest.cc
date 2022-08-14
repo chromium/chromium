@@ -2283,21 +2283,25 @@ TEST_P(AppPlatformMetricsServiceTest, UninstallAppUkm) {
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
   proxy->SetAppPlatformMetricsServiceForTesting(GetAppPlatformMetricsService());
 
+  FakePublisher fake_arc_apps(proxy, AppType::kArc);
+  FakePublisher fake_standalone_browser_chrome_app(
+      proxy, AppType::kStandaloneBrowserChromeApp);
+  FakePublisher fake_standalone_browser_extension(
+      proxy, AppType::kStandaloneBrowserExtension);
+
   proxy->UninstallSilently(
-      /*app_id=*/"a", apps::mojom::UninstallSource::kAppList);
+      /*app_id=*/"a", UninstallSource::kAppList);
   VerifyAppsUninstallUkm("app://com.google.A", AppTypeName::kArc,
                          UninstallSource::kAppList);
 
   proxy->UninstallSilently(
-      /*app_id=*/MuxId(profile(), kChromeAppId),
-      apps::mojom::UninstallSource::kAppList);
+      /*app_id=*/MuxId(profile(), kChromeAppId), UninstallSource::kAppList);
   VerifyAppsUninstallUkm("app://" + std::string(kChromeAppId),
                          AppTypeName::kStandaloneBrowserChromeApp,
                          UninstallSource::kAppList);
 
   proxy->UninstallSilently(
-      /*app_id=*/MuxId(profile(), kExtensionId),
-      apps::mojom::UninstallSource::kAppList);
+      /*app_id=*/MuxId(profile(), kExtensionId), UninstallSource::kAppList);
   VerifyAppsUninstallUkm("app://" + std::string(kExtensionId),
                          AppTypeName::kStandaloneBrowserExtension,
                          UninstallSource::kAppList);
@@ -2878,7 +2882,8 @@ TEST_P(AppPlatformMetricsObserverTest, ShouldNotifyObserverOnAppUninstall) {
 
   auto* const proxy = AppServiceProxyFactory::GetForProfile(profile());
   proxy->SetAppPlatformMetricsServiceForTesting(GetAppPlatformMetricsService());
-  proxy->UninstallSilently(app_id, apps::mojom::UninstallSource::kAppList);
+  FakePublisher fake_arc_apps(proxy, AppType::kArc);
+  proxy->UninstallSilently(app_id, UninstallSource::kAppList);
   task_environment_.RunUntilIdle();
 }
 
@@ -2914,7 +2919,7 @@ TEST_P(AppPlatformMetricsObserverTest, ShouldNotNotifyUnregisteredObservers) {
   EXPECT_CALL(observer_, OnAppUninstalled(app_id, AppType::kArc,
                                           UninstallSource::kAppList))
       .Times(0);
-  proxy->UninstallSilently(app_id, apps::mojom::UninstallSource::kAppList);
+  proxy->UninstallSilently(app_id, UninstallSource::kAppList);
   task_environment_.RunUntilIdle();
 }
 

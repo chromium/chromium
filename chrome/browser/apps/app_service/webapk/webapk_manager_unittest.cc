@@ -212,8 +212,8 @@ TEST_F(WebApkManagerTest, RemovesAppUninstalledFromChrome) {
   StartWebApkManager();
   arc_test()->app_instance()->SendRefreshPackageList({});
 
-  app_service_proxy()->UninstallSilently(
-      app_id, apps::mojom::UninstallSource::kUnknown);
+  app_service_proxy()->UninstallSilently(app_id,
+                                         apps::UninstallSource::kUnknown);
   app_service_test()->FlushMojoCalls();
 
   ASSERT_FALSE(apps::webapk_prefs::GetWebApkPackageName(profile(), app_id));

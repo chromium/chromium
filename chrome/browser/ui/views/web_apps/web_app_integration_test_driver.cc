@@ -1396,7 +1396,7 @@ void WebAppIntegrationTestDriver::UninstallFromList(Site site) {
   // call the normal method.
   apps::AppServiceProxy* app_service_proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile());
-  app_service_proxy->Uninstall(app_id, apps::mojom::UninstallSource::kAppList,
+  app_service_proxy->Uninstall(app_id, apps::UninstallSource::kAppList,
                                nullptr);
 #else
   content::TestWebUI test_web_ui;

@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/webui/settings/ash/app_management/app_management_uma.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/features.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/vector_icons.h"
@@ -91,9 +92,9 @@ void StandaloneBrowserExtensionAppContextMenu::ExecuteCommand(int command_id,
     }
 
     case ash::UNINSTALL: {
-      apps::mojom::UninstallSource uninstall_source =
-          (source_ == Source::kShelf) ? apps::mojom::UninstallSource::kShelf
-                                      : apps::mojom::UninstallSource::kAppList;
+      apps::UninstallSource uninstall_source =
+          (source_ == Source::kShelf) ? apps::UninstallSource::kShelf
+                                      : apps::UninstallSource::kAppList;
       aura::Window* window =
           (source_ == Source::kShelf)
               ? AppListClientImpl::GetInstance()->GetAppListWindow()
@@ -101,7 +102,15 @@ void StandaloneBrowserExtensionAppContextMenu::ExecuteCommand(int command_id,
       apps::AppServiceProxy* proxy =
           apps::AppServiceProxyFactory::GetForProfile(
               ProfileManager::GetPrimaryUserProfile());
-      proxy->Uninstall(app_id_, uninstall_source, /*parent_window=*/window);
+      if (base::FeatureList::IsEnabled(
+              apps::kAppServiceUninstallWithoutMojom)) {
+        proxy->Uninstall(app_id_, uninstall_source, /*parent_window=*/window);
+      } else {
+        proxy->Uninstall(app_id_,
+                         apps::ConvertUninstallSourceToMojomUninstallSource(
+                             uninstall_source),
+                         /*parent_window=*/window);
+      }
       return;
     }
     case ash::SHOW_APP_INFO: {

@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/webui/settings/ash/app_management/app_management_uma.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -76,8 +77,13 @@ void AppListControllerDelegate::DoShowAppInfoFlow(Profile* profile,
 
 void AppListControllerDelegate::UninstallApp(Profile* profile,
                                              const std::string& app_id) {
-  apps::AppServiceProxyFactory::GetForProfile(profile)->Uninstall(
-      app_id, apps::mojom::UninstallSource::kAppList, GetAppListWindow());
+  if (base::FeatureList::IsEnabled(apps::kAppServiceUninstallWithoutMojom)) {
+    apps::AppServiceProxyFactory::GetForProfile(profile)->Uninstall(
+        app_id, apps::UninstallSource::kAppList, GetAppListWindow());
+  } else {
+    apps::AppServiceProxyFactory::GetForProfile(profile)->Uninstall(
+        app_id, apps::mojom::UninstallSource::kAppList, GetAppListWindow());
+  }
 }
 
 void AppListControllerDelegate::ShowOptionsPage(Profile* profile,

@@ -121,7 +121,7 @@ class MediaAccessExtensionAppsTest : public extensions::PlatformAppBrowserTest {
 
   void UninstallApp(const std::string& app_id) {
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
-    proxy->UninstallSilently(app_id, apps::mojom::UninstallSource::kAppList);
+    proxy->UninstallSilently(app_id, apps::UninstallSource::kAppList);
     proxy->FlushMojoCallsForTesting();
   }
 
