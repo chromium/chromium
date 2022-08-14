@@ -66,9 +66,8 @@ class RemovableStorageProviderChromeOsUnitTest : public testing::Test {
                   bool is_parent,
                   bool has_media,
                   bool on_boot_device) {
-    ash::disks::DiskMountManager::MountPointInfo mount_info(
-        device_path, kMountPath, ash::MountType::kDevice,
-        ash::disks::MOUNT_CONDITION_NONE);
+    ash::disks::DiskMountManager::MountPoint mount_info{
+        device_path, kMountPath, ash::MountType::kDevice};
     disk_mount_manager_mock_->CreateDiskEntryForMountDevice(
         mount_info, kDeviceId, kDeviceName, vendor_name, product_name,
         device_type, kDeviceSize, is_parent, has_media, on_boot_device,

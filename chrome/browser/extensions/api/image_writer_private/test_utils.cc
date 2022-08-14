@@ -246,9 +246,7 @@ void ImageWriterTestUtils::SetUp() {
 
   // Adds a disk entry for test_device_path_ with the same device and file path.
   disk_manager->CreateDiskEntryForMountDevice(
-      ash::disks::DiskMountManager::MountPointInfo(
-          test_device_path_.value(), "/dummy/mount", ash::MountType::kDevice,
-          ash::disks::MOUNT_CONDITION_NONE),
+      {test_device_path_.value(), "/dummy/mount", ash::MountType::kDevice},
       "device_id", "device_label", "Vendor", "Product", ash::DeviceType::kUSB,
       kTestFileSize, true, true, true, false, kTestFileSystemType);
   disk_manager->SetupDefaultReplies();
