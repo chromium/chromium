@@ -189,6 +189,10 @@ bool CopyExecutionModeFromIdlToMojo(const ExecutionContext& execution_context,
       output.execution_mode =
           mojom::blink::InterestGroup::ExecutionMode::kCompatibilityMode;
       break;
+    case V8WorkletExecutionMode::Enum::kGroupByOrigin:
+      output.execution_mode =
+          mojom::blink::InterestGroup::ExecutionMode::kGroupedByOriginMode;
+      break;
     default:
       exception_state.ThrowTypeError(ErrorInvalidInterestGroup(
           input, "executionMode", input.executionMode().AsString(),

@@ -43,6 +43,8 @@ class UnboundScript;
 
 namespace auction_worklet {
 
+class ContextRecycler;
+
 // Represents a bidder worklet for FLEDGE
 // (https://github.com/WICG/turtledove/blob/main/FLEDGE.md). Loads and runs the
 // bidder worklet's Javascript.
@@ -102,6 +104,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet {
   // mojom::BidderWorklet implementation:
   void GenerateBid(
       mojom::BidderWorkletNonSharedParamsPtr bidder_worklet_non_shared_params,
+      const url::Origin& interest_group_join_origin,
       const absl::optional<std::string>& auction_signals_json,
       const absl::optional<std::string>& per_buyer_signals_json,
       const absl::optional<base::TimeDelta> per_buyer_timeout,
@@ -137,6 +140,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet {
     ~GenerateBidTask();
 
     mojom::BidderWorkletNonSharedParamsPtr bidder_worklet_non_shared_params;
+    url::Origin interest_group_join_origin;
     absl::optional<std::string> auction_signals_json;
     absl::optional<std::string> per_buyer_signals_json;
     absl::optional<base::TimeDelta> per_buyer_timeout;
@@ -232,6 +236,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet {
 
     void GenerateBid(
         mojom::BidderWorkletNonSharedParamsPtr bidder_worklet_non_shared_params,
+        const url::Origin& interest_group_join_origin,
         const absl::optional<std::string>& auction_signals_json,
         const absl::optional<std::string>& per_buyer_signals_json,
         const absl::optional<base::TimeDelta> per_buyer_timeout,
@@ -288,6 +293,9 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet {
     const url::Origin top_window_origin_;
     const absl::optional<GURL> wasm_helper_url_;
     const absl::optional<GURL> trusted_bidding_signals_url_;
+
+    std::unique_ptr<ContextRecycler> context_recycler_for_origin_group_mode_;
+    url::Origin join_origin_for_origin_group_mode_;
 
     SEQUENCE_CHECKER(v8_sequence_checker_);
   };

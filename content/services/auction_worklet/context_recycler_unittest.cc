@@ -77,7 +77,9 @@ class ContextRecyclerTest : public testing::Test {
     if (!maybe_arg.IsEmpty())
       args.push_back(maybe_arg);
     return helper_->RunScript(scope.GetContext(), script,
-                              /*debug_id=*/nullptr, function_name, args,
+                              /*debug_id=*/nullptr,
+                              AuctionV8Helper::ExecMode::kTopLevelAndFunction,
+                              function_name, args,
                               /*script_timeout=*/absl::nullopt, error_msgs);
   }
 

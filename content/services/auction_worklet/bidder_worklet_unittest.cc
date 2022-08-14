@@ -144,6 +144,9 @@ class BidderWorkletTest : public testing::Test {
   void SetDefaultParameters() {
     interest_group_name_ = "Fred";
     interest_group_user_bidding_signals_ = absl::nullopt;
+    join_origin_ = url::Origin::Create(GURL("https://url.test/"));
+    execution_mode_ =
+        blink::mojom::InterestGroup::ExecutionMode::kCompatibilityMode;
 
     interest_group_ads_.clear();
     interest_group_ads_.emplace_back(blink::InterestGroup::Ad(
@@ -348,7 +351,7 @@ class BidderWorkletTest : public testing::Test {
   // configuration.
   mojom::BidderWorkletNonSharedParamsPtr CreateBidderWorkletNonSharedParams() {
     return mojom::BidderWorkletNonSharedParams::New(
-        interest_group_name_, daily_update_url_,
+        interest_group_name_, execution_mode_, daily_update_url_,
         interest_group_trusted_bidding_signals_keys_,
         interest_group_user_bidding_signals_, interest_group_ads_,
         interest_group_ad_components_);
@@ -397,7 +400,7 @@ class BidderWorkletTest : public testing::Test {
 
   void GenerateBid(mojom::BidderWorklet* bidder_worklet) {
     bidder_worklet->GenerateBid(
-        CreateBidderWorkletNonSharedParams(), auction_signals_,
+        CreateBidderWorkletNonSharedParams(), join_origin_, auction_signals_,
         per_buyer_signals_, per_buyer_timeout_, browser_signal_seller_origin_,
         browser_signal_top_level_seller_origin_, CreateBiddingBrowserSignals(),
         auction_start_time_,
@@ -411,7 +414,7 @@ class BidderWorkletTest : public testing::Test {
   void GenerateBidExpectingCallbackNotInvoked(
       mojom::BidderWorklet* bidder_worklet) {
     bidder_worklet->GenerateBid(
-        CreateBidderWorkletNonSharedParams(), auction_signals_,
+        CreateBidderWorkletNonSharedParams(), join_origin_, auction_signals_,
         per_buyer_signals_, per_buyer_timeout_, browser_signal_seller_origin_,
         browser_signal_top_level_seller_origin_, CreateBiddingBrowserSignals(),
         auction_start_time_,
@@ -514,6 +517,9 @@ class BidderWorkletTest : public testing::Test {
   // BidderWorklet.
   std::string interest_group_name_;
   GURL interest_group_bidding_url_ = GURL("https://url.test/");
+  url::Origin join_origin_;
+  blink::mojom::InterestGroup::ExecutionMode execution_mode_ =
+      blink::mojom::InterestGroup::ExecutionMode::kCompatibilityMode;
   absl::optional<GURL> interest_group_wasm_url_;
   absl::optional<std::string> interest_group_user_bidding_signals_;
   std::vector<blink::InterestGroup::Ad> interest_group_ads_;
@@ -1573,7 +1579,7 @@ TEST_F(BidderWorkletTest, GenerateBidParallel) {
     for (size_t i = 0; i < kNumGenerateBidCalls; ++i) {
       size_t bid_value = i + 1;
       bidder_worklet->GenerateBid(
-          CreateBidderWorkletNonSharedParams(),
+          CreateBidderWorkletNonSharedParams(), join_origin_,
           /*auction_signals_json=*/base::NumberToString(bid_value),
           per_buyer_signals_, per_buyer_timeout_, browser_signal_seller_origin_,
           browser_signal_top_level_seller_origin_,
@@ -1668,8 +1674,8 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched1) {
     interest_group_fields->trusted_bidding_signals_keys->push_back(
         base::NumberToString(i));
     bidder_worklet->GenerateBid(
-        std::move(interest_group_fields), auction_signals_, per_buyer_signals_,
-        per_buyer_timeout_, browser_signal_seller_origin_,
+        std::move(interest_group_fields), join_origin_, auction_signals_,
+        per_buyer_signals_, per_buyer_timeout_, browser_signal_seller_origin_,
         browser_signal_top_level_seller_origin_, CreateBiddingBrowserSignals(),
         auction_start_time_,
         /*trace_id=*/1,
@@ -1770,8 +1776,8 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched2) {
     interest_group_fields->trusted_bidding_signals_keys->push_back(
         base::NumberToString(i));
     bidder_worklet->GenerateBid(
-        std::move(interest_group_fields), auction_signals_, per_buyer_signals_,
-        per_buyer_timeout_, browser_signal_seller_origin_,
+        std::move(interest_group_fields), join_origin_, auction_signals_,
+        per_buyer_signals_, per_buyer_timeout_, browser_signal_seller_origin_,
         browser_signal_top_level_seller_origin_, CreateBiddingBrowserSignals(),
         auction_start_time_,
         /*trace_id=*/1,
@@ -1878,8 +1884,8 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched3) {
     interest_group_fields->trusted_bidding_signals_keys->push_back(
         base::NumberToString(i));
     bidder_worklet->GenerateBid(
-        std::move(interest_group_fields), auction_signals_, per_buyer_signals_,
-        per_buyer_timeout_, browser_signal_seller_origin_,
+        std::move(interest_group_fields), join_origin_, auction_signals_,
+        per_buyer_signals_, per_buyer_timeout_, browser_signal_seller_origin_,
         browser_signal_top_level_seller_origin_, CreateBiddingBrowserSignals(),
         auction_start_time_,
         /*trace_id=*/1,
@@ -1965,8 +1971,8 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelNotBatched) {
     interest_group_fields->trusted_bidding_signals_keys->push_back(
         base::NumberToString(i));
     bidder_worklet->GenerateBid(
-        std::move(interest_group_fields), auction_signals_, per_buyer_signals_,
-        per_buyer_timeout_, browser_signal_seller_origin_,
+        std::move(interest_group_fields), join_origin_, auction_signals_,
+        per_buyer_signals_, per_buyer_timeout_, browser_signal_seller_origin_,
         browser_signal_top_level_seller_origin_, CreateBiddingBrowserSignals(),
         auction_start_time_,
         /*trace_id=*/1,
@@ -3871,6 +3877,73 @@ TEST_F(BidderWorkletTest, UnloadWhilePaused) {
 
   // This won't terminate if the V8 thread is still blocked in debugger.
   task_environment_.RunUntilIdle();
+}
+
+TEST_F(BidderWorkletTest, ExecutionModeGroupByOrigin) {
+  const char kScript[] = R"(
+    if (!('count' in globalThis))
+      globalThis.count = 0;
+    function generateBid() {
+      ++count;
+      return {ad: ["ad"], bid:count, render:"https://response.test/"};
+    }
+  )";
+
+  mojo::Remote<mojom::BidderWorklet> bidder_worklet = CreateWorklet();
+  AddJavascriptResponse(&url_loader_factory_, interest_group_bidding_url_,
+                        kScript);
+
+  // Run 1, start group.
+  execution_mode_ =
+      blink::mojom::InterestGroup::ExecutionMode::kGroupedByOriginMode;
+  join_origin_ = url::Origin::Create(GURL("https://url.test/"));
+  GenerateBid(bidder_worklet.get());
+  load_script_run_loop_ = std::make_unique<base::RunLoop>();
+  load_script_run_loop_->Run();
+  ASSERT_TRUE(bid_);
+  EXPECT_EQ(1, bid_->bid);
+
+  // Run 2, same group.
+  GenerateBid(bidder_worklet.get());
+  load_script_run_loop_ = std::make_unique<base::RunLoop>();
+  load_script_run_loop_->Run();
+  ASSERT_TRUE(bid_);
+  EXPECT_EQ(2, bid_->bid);
+
+  // Run 3, not in group.
+  execution_mode_ =
+      blink::mojom::InterestGroup::ExecutionMode::kCompatibilityMode;
+  join_origin_ = url::Origin::Create(GURL("https://url2.test/"));
+  GenerateBid(bidder_worklet.get());
+  load_script_run_loop_ = std::make_unique<base::RunLoop>();
+  load_script_run_loop_->Run();
+  ASSERT_TRUE(bid_);
+  EXPECT_EQ(1, bid_->bid);
+
+  // Run 4, back to group.
+  execution_mode_ =
+      blink::mojom::InterestGroup::ExecutionMode::kGroupedByOriginMode;
+  join_origin_ = url::Origin::Create(GURL("https://url.test/"));
+  GenerateBid(bidder_worklet.get());
+  load_script_run_loop_ = std::make_unique<base::RunLoop>();
+  load_script_run_loop_->Run();
+  ASSERT_TRUE(bid_);
+  EXPECT_EQ(3, bid_->bid);
+
+  // Run 5, different group.
+  join_origin_ = url::Origin::Create(GURL("https://url2.test/"));
+  GenerateBid(bidder_worklet.get());
+  load_script_run_loop_ = std::make_unique<base::RunLoop>();
+  load_script_run_loop_->Run();
+  ASSERT_TRUE(bid_);
+  EXPECT_EQ(1, bid_->bid);
+
+  // Run 5, different group cont'd.
+  GenerateBid(bidder_worklet.get());
+  load_script_run_loop_ = std::make_unique<base::RunLoop>();
+  load_script_run_loop_->Run();
+  ASSERT_TRUE(bid_);
+  EXPECT_EQ(2, bid_->bid);
 }
 
 class BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest

@@ -7,7 +7,7 @@
 
 enum WorkletExecutionMode {
   "compatibility",
-  // "groupByOrigin",
+  "groupByOrigin",
   // "frozenContext",
 };
 

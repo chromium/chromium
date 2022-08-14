@@ -183,6 +183,7 @@ int BidderWorklet::context_group_id_for_testing() const {
 
 void BidderWorklet::GenerateBid(
     mojom::BidderWorkletNonSharedParamsPtr bidder_worklet_non_shared_params,
+    const url::Origin& interest_group_join_origin,
     const absl::optional<std::string>& auction_signals_json,
     const absl::optional<std::string>& per_buyer_signals_json,
     const absl::optional<base::TimeDelta> per_buyer_timeout,
@@ -198,6 +199,7 @@ void BidderWorklet::GenerateBid(
   auto generate_bid_task = generate_bid_tasks_.begin();
   generate_bid_task->bidder_worklet_non_shared_params =
       std::move(bidder_worklet_non_shared_params);
+  generate_bid_task->interest_group_join_origin = interest_group_join_origin;
   generate_bid_task->auction_signals_json = auction_signals_json;
   generate_bid_task->per_buyer_signals_json = per_buyer_signals_json;
   generate_bid_task->per_buyer_timeout = per_buyer_timeout;
@@ -418,6 +420,7 @@ void BidderWorklet::V8State::ReportWin(
   bool script_failed =
       v8_helper_
           ->RunScript(context, worklet_script_.Get(isolate), debug_id_.get(),
+                      AuctionV8Helper::ExecMode::kTopLevelAndFunction,
                       "reportWin", args, /*script_timeout=*/absl::nullopt,
                       errors_out)
           .IsEmpty();
@@ -447,6 +450,7 @@ void BidderWorklet::V8State::ReportWin(
 
 void BidderWorklet::V8State::GenerateBid(
     mojom::BidderWorkletNonSharedParamsPtr bidder_worklet_non_shared_params,
+    const url::Origin& interest_group_join_origin,
     const absl::optional<std::string>& auction_signals_json,
     const absl::optional<std::string>& per_buyer_signals_json,
     const absl::optional<base::TimeDelta> per_buyer_timeout,
@@ -469,17 +473,39 @@ void BidderWorklet::V8State::GenerateBid(
 
   AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper_.get());
   v8::Isolate* isolate = v8_helper_->isolate();
-  // Short lived context, to avoid leaking data at global scope between either
-  // repeated calls to this worklet, or to calls to any other worklet.
-  ContextRecycler context_recycler(v8_helper_.get());
-  context_recycler.AddForDebuggingOnlyBindings();
-  context_recycler.AddPrivateAggregationBindings();
-  context_recycler.AddSetBidBindings();
-  context_recycler.AddSetPriorityBindings();
+  ContextRecycler* context_recycler = nullptr;
+  std::unique_ptr<ContextRecycler> fresh_context_recycler;
 
-  ContextRecyclerScope context_recycler_scope(context_recycler);
+  bool reused_context = false;
+  // See if we can reuse an existing context in group-by-origin mode.
+  bool group_by_origin_mode =
+      (bidder_worklet_non_shared_params->execution_mode ==
+       blink::mojom::InterestGroup::ExecutionMode::kGroupedByOriginMode);
+  if (group_by_origin_mode && context_recycler_for_origin_group_mode_ &&
+      join_origin_for_origin_group_mode_ == interest_group_join_origin) {
+    context_recycler = context_recycler_for_origin_group_mode_.get();
+    reused_context = true;
+  }
+
+  if (!context_recycler) {
+    fresh_context_recycler =
+        std::make_unique<ContextRecycler>(v8_helper_.get());
+    fresh_context_recycler->AddForDebuggingOnlyBindings();
+    fresh_context_recycler->AddPrivateAggregationBindings();
+    fresh_context_recycler->AddSetBidBindings();
+    fresh_context_recycler->AddSetPriorityBindings();
+    context_recycler = fresh_context_recycler.get();
+  }
+
+  // Save a reusable context.
+  if (group_by_origin_mode && fresh_context_recycler) {
+    context_recycler_for_origin_group_mode_ = std::move(fresh_context_recycler);
+    join_origin_for_origin_group_mode_ = interest_group_join_origin;
+  }
+
+  ContextRecyclerScope context_recycler_scope(*context_recycler);
   v8::Local<v8::Context> context = context_recycler_scope.GetContext();
-  context_recycler.set_bid_bindings()->ReInitialize(
+  context_recycler->set_bid_bindings()->ReInitialize(
       start, browser_signal_top_level_seller_origin.has_value(),
       &bidder_worklet_non_shared_params->ads,
       &bidder_worklet_non_shared_params->ad_components);
@@ -635,28 +661,30 @@ void BidderWorklet::V8State::GenerateBid(
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "generate_bid", trace_id);
   bool got_return_value =
       v8_helper_
-          ->RunScript(context, worklet_script_.Get(isolate), debug_id_.get(),
-                      "generateBid", args, std::move(per_buyer_timeout),
-                      errors_out)
+          ->RunScript(
+              context, worklet_script_.Get(isolate), debug_id_.get(),
+              reused_context ? AuctionV8Helper::ExecMode::kFunctionOnly
+                             : AuctionV8Helper::ExecMode::kTopLevelAndFunction,
+              "generateBid", args, std::move(per_buyer_timeout), errors_out)
           .ToLocal(&generate_bid_result);
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "generate_bid", trace_id);
 
   if (got_return_value) {
-    context_recycler.set_bid_bindings()->SetBid(
+    context_recycler->set_bid_bindings()->SetBid(
         generate_bid_result,
         base::StrCat({script_source_url_.spec(), " generateBid() "}),
         errors_out);
   }
 
-  if (!context_recycler.set_bid_bindings()->has_bid()) {
+  if (!context_recycler->set_bid_bindings()->has_bid()) {
     // If we either don't have a valid return value, or we have no return value
     // and no intermediate result was given through setBid, return an error.
     // Keep debug loss reports and Private Aggregation API requests since
     // `generateBid()` might use them to detect script timeout or failures.
     PostErrorBidCallbackToUserThread(
         std::move(callback), std::move(errors_out),
-        context_recycler.for_debugging_only_bindings()->TakeLossReportUrl(),
-        context_recycler.private_aggregation_bindings()
+        context_recycler->for_debugging_only_bindings()->TakeLossReportUrl(),
+        context_recycler->private_aggregation_bindings()
             ->TakePrivateAggregationRequests());
     return;
   }
@@ -664,12 +692,12 @@ void BidderWorklet::V8State::GenerateBid(
   user_thread_->PostTask(
       FROM_HERE,
       base::BindOnce(
-          std::move(callback), context_recycler.set_bid_bindings()->TakeBid(),
+          std::move(callback), context_recycler->set_bid_bindings()->TakeBid(),
           bidding_signals_data_version,
-          context_recycler.for_debugging_only_bindings()->TakeLossReportUrl(),
-          context_recycler.for_debugging_only_bindings()->TakeWinReportUrl(),
-          context_recycler.set_priority_bindings()->set_priority(),
-          context_recycler.private_aggregation_bindings()
+          context_recycler->for_debugging_only_bindings()->TakeLossReportUrl(),
+          context_recycler->for_debugging_only_bindings()->TakeWinReportUrl(),
+          context_recycler->set_priority_bindings()->set_priority(),
+          context_recycler->private_aggregation_bindings()
               ->TakePrivateAggregationRequests(),
           std::move(errors_out)));
 }
@@ -875,6 +903,7 @@ void BidderWorklet::GenerateBidIfReady(GenerateBidTaskList::iterator task) {
           &BidderWorklet::V8State::GenerateBid,
           base::Unretained(v8_state_.get()),
           std::move(task->bidder_worklet_non_shared_params),
+          std::move(task->interest_group_join_origin),
           std::move(task->auction_signals_json),
           std::move(task->per_buyer_signals_json),
           std::move(task->per_buyer_timeout),

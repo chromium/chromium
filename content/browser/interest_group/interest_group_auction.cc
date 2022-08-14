@@ -104,6 +104,16 @@ struct StorageInterestGroupDescByPriority {
   }
 };
 
+struct StorageInterestGroupDescByPriorityAndGroupByJoinOrigin {
+  bool operator()(const StorageInterestGroup& a,
+                  const StorageInterestGroup& b) {
+    return std::tie(a.interest_group.priority, a.joining_origin,
+                    a.interest_group.execution_mode) >
+           std::tie(b.interest_group.priority, b.joining_origin,
+                    b.interest_group.execution_mode);
+  }
+};
+
 }  // namespace
 
 InterestGroupAuction::BidState::BidState() = default;
@@ -208,19 +218,28 @@ class InterestGroupAuction::BuyerHelper {
     if (size_limit == 0)
       return;
 
-    StorageInterestGroupDescByPriority cmp;
-    std::sort(interest_groups.begin(), interest_groups.end(), cmp);
+    // Sort by descending priority, also grouping entries within each priority
+    // band to permit context reuse if the executionMode allows it.
+    std::sort(interest_groups.begin(), interest_groups.end(),
+              StorageInterestGroupDescByPriorityAndGroupByJoinOrigin());
     // Randomize order of interest groups with lowest allowed priority. This
     // effectively performs a random sample among interest groups with the same
     // priority.
     double min_priority =
         interest_groups[size_limit - 1].interest_group.priority;
-    auto rand_begin = std::lower_bound(
-        interest_groups.begin(), interest_groups.end(), min_priority, cmp);
+    auto rand_begin =
+        std::lower_bound(interest_groups.begin(), interest_groups.end(),
+                         min_priority, StorageInterestGroupDescByPriority());
     auto rand_end =
-        std::upper_bound(rand_begin, interest_groups.end(), min_priority, cmp);
+        std::upper_bound(rand_begin, interest_groups.end(), min_priority,
+                         StorageInterestGroupDescByPriority());
     base::RandomShuffle(rand_begin, rand_end);
     interest_groups.resize(size_limit);
+
+    // Restore the origin grouping within lowest priority band among the subset
+    // that was kept after shuffling.
+    std::sort(rand_begin, interest_groups.end(),
+              StorageInterestGroupDescByPriorityAndGroupByJoinOrigin());
 
     // Set up remaining interest groups to generate bids.
     for (auto& bidder : interest_groups) {
@@ -391,10 +410,12 @@ class InterestGroupAuction::BuyerHelper {
 
     bid_state->worklet_handle->GetBidderWorklet()->GenerateBid(
         auction_worklet::mojom::BidderWorkletNonSharedParams::New(
-            interest_group.name, interest_group.daily_update_url,
+            interest_group.name, interest_group.execution_mode,
+            interest_group.daily_update_url,
             interest_group.trusted_bidding_signals_keys,
             interest_group.user_bidding_signals, interest_group.ads,
             interest_group.ad_components),
+        bid_state->bidder.joining_origin,
         auction_->config_->non_shared_params.auction_signals,
         auction_->PerBuyerSignals(bid_state),
         auction_->PerBuyerTimeout(bid_state), auction_->config_->seller,

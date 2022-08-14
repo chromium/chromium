@@ -37,6 +37,8 @@ struct PreviousWin {
 // See blink.mojom.InterestGroup for documentation on individual fields.
 struct BidderWorkletNonSharedParams {
   string name;
+  blink.mojom.InterestGroup.ExecutionMode execution_mode;
+
   url.mojom.Url? daily_update_url;
   array<string>? trusted_bidding_signals_keys;
   string? user_bidding_signals;
@@ -104,6 +106,9 @@ interface BidderWorklet {
   //  InterestGroup definitions of the InterestGroups that can share this
   //  BidderWorklet.
   //
+  // `interest_group_join_origin` is the origin from which the interest group
+  //  was joined; can affect context reuse in certain execution modes.
+  //
   // `auction_signals_json` The JSON representation of the auction signals for
   //  the auction, specified by the publisher page and provided to bidder
   //  worklets competing in an auction.
@@ -170,6 +175,7 @@ interface BidderWorklet {
   //  errors from failing to load the worklet script.
   GenerateBid(
       BidderWorkletNonSharedParams bidder_worklet_non_shared_params,
+      url.mojom.Origin interest_group_join_origin,
       string? auction_signals_json,
       string? per_buyer_signals_json,
       mojo_base.mojom.TimeDelta? per_buyer_timeout,

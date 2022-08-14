@@ -864,6 +864,7 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
   void GenerateBid(
       auction_worklet::mojom::BidderWorkletNonSharedParamsPtr
           bidder_worklet_non_shared_params,
+      const url::Origin& interest_group_join_origin,
       const absl::optional<std::string>& auction_signals_json,
       const absl::optional<std::string>& per_buyer_signals_json,
       const absl::optional<base::TimeDelta> per_buyer_timeout,
@@ -1618,7 +1619,7 @@ class AuctionRunnerTest : public testing::Test,
     for (auto& bidder : bidders) {
       for (int i = 0; i < bidder.bidding_browser_signals->join_count; i++) {
         interest_group_manager_->JoinInterestGroup(
-            bidder.interest_group, bidder.interest_group.owner.GetURL());
+            bidder.interest_group, bidder.joining_origin.GetURL());
       }
       for (int i = 0; i < bidder.bidding_browser_signals->bid_count; i++) {
         interest_group_manager_->RecordInterestGroupBids(
@@ -1777,6 +1778,7 @@ class AuctionRunnerTest : public testing::Test,
     storage_group.bidding_browser_signals =
         auction_worklet::mojom::BiddingBrowserSignals::New(
             3, 5, std::move(previous_wins));
+    storage_group.joining_origin = storage_group.interest_group.owner;
     return storage_group;
   }
 
@@ -7633,6 +7635,69 @@ TEST_F(AuctionRunnerTest, SizeLimitHighestPriorityGroupHasNoBidScript) {
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   EXPECT_EQ(InterestGroupKey(kBidder1, kBidder1Name), result_.winning_group_id);
   EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_url);
+}
+
+TEST_F(AuctionRunnerTest, ExecutionModeGroupByOrigin) {
+  // Test of GroupByOrigin execution mode at AuctionRunner level;
+  // this primarily shows that the sorting actually groups things, and that
+  // distinct groups are kept separate.
+  const char kScript[] = R"(
+    if (!('count' in globalThis))
+      globalThis.count = 0;
+    function generateBid() {
+      ++count;
+      return {ad: ["ad"], bid:count, render:"https://response.test/"};
+    }
+    function reportWin(auctionSignals, perBuyerSignals, sellerSignals,
+                       browserSignals) {
+      sendReportTo("https://adplatform.com/metrics/" + browserSignals.bid);
+    }
+  )";
+
+  const char kSellerScript[] = R"(
+    function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
+                     browserSignals) {
+      return {desirability: bid,
+              ad: adMetadata};
+    }
+    function reportResult() {}
+  )";
+
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
+                                         kScript);
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         kSellerScript);
+
+  std::vector<StorageInterestGroup> bidders;
+  // Add 5 groupByOrigin, 2 regular execution mode IGs.
+  for (int i = 0; i < 7; ++i) {
+    StorageInterestGroup ig = MakeInterestGroup(
+        kBidder1, kBidder1Name + base::NumberToString(i), kBidder1Url,
+        /* trusted_bidding_signals_url=*/absl::nullopt,
+        /* trusted_bidding_signals_keys=*/{}, GURL("https://response.test/"));
+    ig.joining_origin = url::Origin::Create(GURL("https://sports.example.org"));
+    ig.interest_group.execution_mode =
+        i < 5 ? blink::InterestGroup::ExecutionMode::kGroupedByOriginMode
+              : blink::InterestGroup::ExecutionMode::kCompatibilityMode;
+    bidders.push_back(std::move(ig));
+  }
+
+  // Add one with different join origin.
+  StorageInterestGroup ig = MakeInterestGroup(
+      kBidder1, kBidder1Name + std::string("8"), kBidder1Url,
+      /* trusted_bidding_signals_url=*/absl::nullopt,
+      /* trusted_bidding_signals_keys=*/{}, GURL("https://response.test/"));
+  ig.joining_origin = url::Origin::Create(GURL("https://shopping.example.us"));
+  ig.interest_group.execution_mode =
+      blink::InterestGroup::ExecutionMode::kGroupedByOriginMode;
+  bidders.push_back(std::move(ig));
+
+  StartAuction(kSellerUrl, std::move(bidders));
+  auction_run_loop_->Run();
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+  ASSERT_TRUE(result_.winning_group_id);
+  EXPECT_THAT(result_.report_urls,
+              testing::ElementsAre(GURL("https://adplatform.com/metrics/5")));
 }
 
 // Enable and test forDebuggingOnly.reportAdAuctionLoss() and

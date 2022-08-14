@@ -526,6 +526,7 @@ void SellerWorklet::V8State::ScoreAd(
   bool got_return_value =
       v8_helper_
           ->RunScript(context, worklet_script_.Get(isolate), debug_id_.get(),
+                      AuctionV8Helper::ExecMode::kTopLevelAndFunction,
                       "scoreAd", args, std::move(seller_timeout), errors_out)
           .ToLocal(&score_ad_result);
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "score_ad", trace_id);
@@ -776,6 +777,7 @@ void SellerWorklet::V8State::ReportResult(
   bool got_return_value =
       v8_helper_
           ->RunScript(context, worklet_script_.Get(isolate), debug_id_.get(),
+                      AuctionV8Helper::ExecMode::kTopLevelAndFunction,
                       "reportResult", args, /*script_timeout=*/absl::nullopt,
                       errors_out)
           .ToLocal(&signals_for_winner_value);
