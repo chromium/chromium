@@ -66,7 +66,7 @@ class StorageHandler : public ::settings::SettingsPageUIHandler,
   void OnMountEvent(
       ash::disks::DiskMountManager::MountEvent event,
       chromeos::MountError error_code,
-      const ash::disks::DiskMountManager::MountPointInfo& mount_info) override;
+      const ash::disks::DiskMountManager::MountPoint& mount_info) override;
 
   // chromeos::settings::calculator::SizeCalculator::Observer:
   void OnSizeCalculated(

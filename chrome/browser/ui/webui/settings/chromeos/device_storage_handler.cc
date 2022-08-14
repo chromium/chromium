@@ -201,7 +201,7 @@ void StorageHandler::HandleUpdateExternalStorages(
 void StorageHandler::UpdateExternalStorages() {
   base::Value::List devices;
   for (const auto& itr : DiskMountManager::GetInstance()->mount_points()) {
-    const DiskMountManager::MountPointInfo& mount_info = itr.second;
+    const DiskMountManager::MountPoint& mount_info = itr.second;
     if (!IsEligibleForAndroidStorage(mount_info.source_path))
       continue;
 
@@ -237,7 +237,7 @@ void StorageHandler::OnArcPlayStoreEnabledChanged(bool enabled) {
 void StorageHandler::OnMountEvent(
     DiskMountManager::MountEvent event,
     chromeos::MountError error_code,
-    const DiskMountManager::MountPointInfo& mount_info) {
+    const DiskMountManager::MountPoint& mount_info) {
   if (error_code != chromeos::MountError::kNone)
     return;
 
