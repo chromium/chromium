@@ -1236,6 +1236,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4329871760342656885">Chyba analýzy pravidiel: <ph name="ERROR" /></translation>
 <translation id="4331519897422864041">Odkladač č. 5</translation>
 <translation id="4331708818696583467">Nezabezpečené</translation>
+<translation id="4333561522337981382">Správa okien na všetkých obrazovkách</translation>
 <translation id="4340575312453649552">Táto reklama využívala príliš veľa zdrojov vášho zariadenia, takže ju Chrome odstránil.</translation>
 <translation id="4340982228985273705">Tento počítač nebol rozpoznaný ako spravovaný podnikom, takže pravidlá môžu automaticky inštalovať iba rozšírenia hostené v Internetovom obchode Chrome. Webová adresa aktualizácie z Internetového obchodu Chrome je <ph name="CWS_UPDATE_URL" />.</translation>
 <translation id="4346197816712207223">Akceptované kreditné karty</translation>
@@ -1449,6 +1450,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, stlačením klávesov Tab a potom Enter spustite vyhľadávanie</translation>
 <translation id="4930153903256238152">Veľká kapacita</translation>
+<translation id="4934780484581617878">Správa okien</translation>
 <translation id="4936134414789135531">Vloženú hodnotu <ph name="VALUE_NAME" /> sa nepodarilo nájsť.</translation>
 <translation id="4936675324097895694">Financie</translation>
 <translation id="4940163644868678279">Režim inkognito v Chrome</translation>
@@ -1461,6 +1463,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4958444002117714549">Rozbaliť zoznam</translation>
 <translation id="4964505745997821360">Zdravotné poistenie</translation>
 <translation id="4968522289500246572">Táto aplikácia je určená pre mobilné zariadenia a jej veľkosť sa nemusí náležite zmeniť. Môžu sa v nej vyskytnúť problémy alebo sa môže reštartovať.</translation>
+<translation id="4968665849807487749">Môže žiadať o povolenie spravovať okná na všetkých obrazovkách</translation>
 <translation id="4969341057194253438">Odstrániť nahrávku</translation>
 <translation id="4973922308112707173">Dve dierky hore</translation>
 <translation id="4976702386844183910">Naposledy navštívené <ph name="DATE" /></translation>
@@ -1963,6 +1966,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Skontrolujte proxy server, bránu firewall a konfiguráciu zabezpečeného servera DNS<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">Dve spinky vľavo</translation>
+<translation id="6374865374745447009">správu okien</translation>
 <translation id="6377268785556383139">1 výsledok pre hľadaný výraz „<ph name="SEARCH_TEXT" />“</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">Ak prejdete ďalej, môžu vám byť účtované poplatky.</translation>

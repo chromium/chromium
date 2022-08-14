@@ -196,6 +196,7 @@
 <translation id="1174391930667737831">ສູນຄວາມເປັນສ່ວນຕົວ</translation>
 <translation id="117445914942805388">ເພື່ອລຶບລ້າງຂໍ້ມູນການທ່ອງເວັບອອກຈາກອຸປະກອນທີ່ຊິ້ງຂໍ້ມູນຂອງທ່ານທັງໝົດ ແລະ ບັນຊີ Google ຂອງທ່ານ, ກະລຸນາ <ph name="BEGIN_LINK" />ເຂົ້າຫາການຕັ້ງຄ່າການຊິ້ງຂໍ້ມູນ<ph name="END_LINK" />.</translation>
 <translation id="1175364870820465910">ພິມ...</translation>
+<translation id="1176378369905028399">ລະຫັດຜ່ານສຳລັບບັນຊີນີ້ໄດ້ຖືກຈັດເກັບໄວ້ໃນຕົວຈັດການລະຫັດຜ່ານ Google ຂອງທ່ານແລ້ວ (<ph name="USER_EMAIL" />)</translation>
 <translation id="1176471985365269981">ບໍ່ໄດ້ຮັບອະນຸຍາດໃຫ້ແກ້ໄຂໄຟລ໌ ຫຼື ໂຟນເດີຢູ່ອຸປະກອນຂອງທ່ານ</translation>
 <translation id="1177863135347784049">ກໍານົດເອງ</translation>
 <translation id="1178581264944972037">ຢຸດຊົ່ວຄາວ</translation>
@@ -804,6 +805,7 @@
 <translation id="1745732479023874451">ຈັດການລາຍຊື່ຜູ້ຕິດຕໍ່</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{ເປີດ ແລະ ແກ້ໄຂ # ໄຟລ໌ໃນເວັບແອັບນີ້ບໍ?}}</translation>
 <translation id="1748563609363301860">ທ່ານສາມາດບັນທຶກລະຫັດຜ່ານນີ້ໄວ້ໃນບັນຊີ Google ຂອງທ່ານ ຫຼື ໃນອຸປະກອນນີ້ໄດ້ເທົ່ານັ້ນ</translation>
+<translation id="1749733017156547309">ຕ້ອງໃສ່ລະຫັດຜ່ານ</translation>
 <translation id="1750172676754093297">ກະແຈຄວາມປອດໄພຂອງທ່ານບໍ່ສາມາດເກັບຮັກສາລາຍນິ້ວມືໄວ້ໄດ້</translation>
 <translation id="1751249301761991853">ສ່ວນຕົວ</translation>
 <translation id="1751262127955453661"><ph name="ORIGIN" /> ຈະສາມາດແກ້ໄຂໄຟລ໌ໃນ <ph name="FOLDERNAME" /> ຈົນກວ່າທ່ານປິດແຖບທັງໝົດສຳລັບເວັບໄຊນີ້</translation>
@@ -1801,6 +1803,7 @@
 <translation id="2645047101481282803">ອຸປະກອນຂອງທ່ານຖືກຈັດການໂດຍ <ph name="PROFILE_NAME" /></translation>
 <translation id="2645270499129074468">{NUM_PASSWORDS,plural, =1{ລະຫັດຜ່ານ 1 ລາຍການໄດ້ຖືກນໍາເຂົ້າໃນອຸປະກອນນີ້}other{ລະຫັດຜ່ານ {NUM_PASSWORDS} ໄດ້ຖືກນໍາເຂົ້າໃນອຸປະກອນນີ້}}</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2645515095874728277">ລະຫັດຜ່ານສຳລັບບັນຊີນີ້ໄດ້ຖືກຈັດເກັບໄວ້ໃນອຸປະກອນນີ້ແລ້ວ</translation>
 <translation id="2649045351178520408">Base64-encoded ASCII, ຕ່ອງໂສ້ໃບຢັ້ງຢືນ</translation>
 <translation id="2652129567809778422">ເລືອກລະຫັດຜ່ານ</translation>
 <translation id="2653033005692233957">ຊອກຫາບໍ່ສຳເລັດ</translation>
@@ -2161,6 +2164,7 @@
 <translation id="2972581237482394796">ເຮັດຄືນ</translation>
 <translation id="2973324205039581528">ປິດສຽງເວັບໄຊ</translation>
 <translation id="2973537811036309675">ແຜງຄວບຄຸມດ້ານຂ້າງ</translation>
+<translation id="2975761176769946178">ຕ້ອງລະບຸ URL</translation>
 <translation id="2976557544729462544">ອຸປະກອນບາງຢ່າງຕ້ອງການໃຫ້ທ່ານປິດການນຳໃຊ້ການປົກປ້ອງການເຂົ້າເຖິງຂໍ້ມູນເພື່ອໃຫ້ເຮັດວຽກໄດ້ຢ່າງຖືກຕ້ອງ ຫຼື ເຕັມປະສິດທິພາບ.</translation>
 <translation id="2977480621796371840">ລຶບອອກຈາກກຸ່ມ</translation>
 <translation id="2979639724566107830">ເປີດໃນໜ້າຈໍໃໝ່</translation>
@@ -2402,6 +2406,7 @@
 <translation id="3227137524299004712">ໄມໂຄຣໂຟນ</translation>
 <translation id="3232754137068452469">ແອັບຂອງເວັບ</translation>
 <translation id="3233271424239923319">ສຳຮອງແອັບ ແລະ ໄຟລ໌ Linux</translation>
+<translation id="3234251228180563751">ຊື່ຜູ້ໃຊ້ມີຫຼາຍກວ່າ 1000 ຕົວອັກສອນ</translation>
 <translation id="3234978181857588512">ບັນທຶກໃສ່ອຸປະກອນ</translation>
 <translation id="3238192140106069382">ກຳລັງເຊື່ອມຕໍ່ ແລະ ຢັ້ງຢືນ</translation>
 <translation id="3239373508713281971">ລຶບຂີດຈຳກັດເວລາສຳລັບ <ph name="APP_NAME" /> ອອກແລ້ວ</translation>
@@ -5220,6 +5225,7 @@
 <translation id="5975792506968920132">ເປີເຊັນສາກແບັດເຕີຣີ</translation>
 <translation id="5976160379964388480">ອື່ນໆ</translation>
 <translation id="5978277834170881274">&amp;ໃຊ້ການກວດການສະກົດຄຳພື້ນຖານ</translation>
+<translation id="5978493744931296692">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານໄດ້ປິດການນຳໃຊ້ໂປຣໄຟລ໌ອື່ນ</translation>
 <translation id="5979084224081478209">ກວດເບິ່ງລະຫັດຜ່ານ</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{ທ່ານໄດ້ເປີດສ່ວນຂະຫຍາຍທີ່ອາດຈະເປັນອັນຕະລາຍຄືນໃໝ່ 1 ລາຍການແລ້ວ}other{ທ່ານໄດ້ເປີດສ່ວນຂະຫຍາຍທີ່ອາດຈະເປັນອັນຕະລາຍຄືນໃໝ່ {NUM_EXTENSIONS} ລາຍການແລ້ວ}}</translation>
 <translation id="5979353814339191480">ຕົວເລືອກນີ້ນຳໃຊ້ກັບ Chromebooks ທີ່ມີແພັກເກດອິນເຕີເນັດ ຫຼື dongle ເຄືອຂ່າຍມືຖື ຫຼື ເມື່ອປ່ອຍສັນຍານຫາຮັອດສະປອດແບບພົກພາ</translation>
@@ -8007,6 +8013,7 @@
 <translation id="8683081248374354009">ຣີເຊັດກຸ່ມ</translation>
 <translation id="8688672835843460752">ຍັງເຫຼືອ</translation>
 <translation id="8690129572193755009">ເວັບໄຊສາມາດຂໍຈັດການໂປຣໂຕຄໍໄດ້</translation>
+<translation id="8692107307702113268">ລະຫັດຜ່ານມີຫຼາຍກວ່າ 1000 ຕົວອັກສອນ</translation>
 <translation id="8695139659682234808">ເພີ່ມການຄວບຄຸມຂອງພໍ່ແມ່ຫຼັງຈາກການຕັ້ງຄ່າ</translation>
 <translation id="8695825812785969222">ເປີດ​​ທີ່ຕັ້ງ...</translation>
 <translation id="8698269656364382265">ປັດຈາກເບື້ອງຊ້າຍເພື່ອກັບຄືນຫາໜ້າຈໍຜ່ານມາ.</translation>
@@ -8287,6 +8294,7 @@
 <translation id="8960638196855923532">ຕອນນີ້ທ່ານສາມາດເບິ່ງການແຈ້ງເຕືອນ ແລະ ແອັບຫຼ້າສຸດຂອງໂທລະສັບທ່ານໄດ້ແລ້ວ</translation>
 <translation id="8962051932294470566">ທ່ານສາມາດແບ່ງປັນໄດ້ເທື່ອລະໄຟລ໌ເທົ່ານັ້ນ. ລອງອີກຄັ້ງເມື່ອການໂອນຍ້າຍໃນປັດຈຸບັນສຳເລັດແລ້ວ.</translation>
 <translation id="8962083179518285172">ເຊື່ອງ​ລາຍ​ລະ​ອຽດ</translation>
+<translation id="8962863356073277855">ຮູບແບບ URL ຄວນເປັນ https://www.example.com</translation>
 <translation id="8962918469425892674">ເວັບໄຊນີ້ກຳລັງໃຊ້ເຊັນເຊີກວດຈັບການເຄື່ອນໄຫວ ຫຼື ແສງ.</translation>
 <translation id="8965037249707889821">ປ້ອນລະ​ຫັດ​ຜ່ານ​ເກົ່າ</translation>
 <translation id="89667524227025535">ສະແກນລະຫັດ QR ໂດຍໃຊ້ກ້ອງຖ່າຍຮູບອຸປະກອນຂອງທ່ານ ຫຼື ໃສ່ລະຫັດການເປີດໃຊ້ທີ່ຜູ້ບໍລິການຂອງທ່ານສົ່ງໃຫ້</translation>
@@ -8557,6 +8565,7 @@
 <translation id="9220525904950070496">ລົບບັນ​ຊີອອກ</translation>
 <translation id="9220820413868316583">ຍົກນິ້ວມືຂຶ້ນແລ້ວລອງອີກຄັ້ງ.</translation>
 <translation id="922152298093051471">ປັບແຕ່ງ Chrome</translation>
+<translation id="9222839025964079645">ລະຫັດຜ່ານບໍ່ໄດ້ຖືກນຳເຂົ້າ (<ph name="COUNT" />)</translation>
 <translation id="923467487918828349">ສະ​ແດງ​ທັງ​ຫມົດ</translation>
 <translation id="924818813611903184">ຈັດການພາສາໃນການຕັ້ງຄ່າ ChromeOS</translation>
 <translation id="929117907539171075">ລະບົບຈະລຶບລ້າງຂໍ້ມູນອອບລາຍໃນແອັບທີ່ຕິດຕັ້ງນຳ</translation>

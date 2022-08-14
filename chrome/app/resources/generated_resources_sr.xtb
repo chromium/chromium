@@ -194,6 +194,7 @@
 <translation id="1174391930667737831">Центар за приватност</translation>
 <translation id="117445914942805388">Да бисте обрисали податке прегледања са свих синхронизованих уређаја и са Google налога, <ph name="BEGIN_LINK" />идите у подешавања синхронизације<ph name="END_LINK" />.</translation>
 <translation id="1175364870820465910">&amp;Одштампај...</translation>
+<translation id="1176378369905028399">Лозинка за овај налог је већ сачувана у Google менаџеру лозинки (<ph name="USER_EMAIL" />)</translation>
 <translation id="1176471985365269981">Није им дозвољено да мењају фајлове или фолдере на уређају</translation>
 <translation id="1177863135347784049">Прилагођено</translation>
 <translation id="1178581264944972037">Паузирај</translation>
@@ -794,6 +795,7 @@
 <translation id="1745732479023874451">Управљајте контактима</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}one{Желите да отворите и измените # фајл у овој веб-апликацији?}few{Желите да отворите и измените # фајла у овој веб-апликацији?}other{Желите да отворите и измените # фајлова у овој веб-апликацији?}}</translation>
 <translation id="1748563609363301860">Можете да сачувате ову лозинку на Google налогу или само на овом уређају</translation>
+<translation id="1749733017156547309">Лозинка је обавезна</translation>
 <translation id="1750172676754093297">Безбедносни кључ не може да чува отиске прстију</translation>
 <translation id="1751249301761991853">Лично</translation>
 <translation id="1751262127955453661"><ph name="ORIGIN" /> ће моћи да мења датотеке у директоријуму <ph name="FOLDERNAME" /> док не затворите све картице овог сајта</translation>
@@ -1787,6 +1789,7 @@
 <translation id="2645047101481282803">Уређајем управља <ph name="PROFILE_NAME" /></translation>
 <translation id="2645270499129074468">{NUM_PASSWORDS,plural, =1{На овај уређај је увезена 1 лозинка}one{На овај уређај је увезена {NUM_PASSWORDS} лозинка}few{На овај уређај су увезене {NUM_PASSWORDS} лозинке}other{На овај уређај је увезено {NUM_PASSWORDS} лозинки}}</translation>
 <translation id="2645435784669275700">Chrome ОС</translation>
+<translation id="2645515095874728277">Лозинка за овај налог је већ сачувана на овом уређају</translation>
 <translation id="2649045351178520408">ASCII датотека шифрована методом „Base64“, ланац сертификата</translation>
 <translation id="2652129567809778422">Изаберите лозинку</translation>
 <translation id="2653033005692233957">Претрага није успела</translation>
@@ -2147,6 +2150,7 @@
 <translation id="2972581237482394796">&amp;Понови радњу</translation>
 <translation id="2973324205039581528">Искључи звук сајта</translation>
 <translation id="2973537811036309675">Бочна табла</translation>
+<translation id="2975761176769946178">URL је обавезан</translation>
 <translation id="2976557544729462544">Неки уређаји захтевају да онемогућите заштиту приступа подацима како би исправно радили или имали максимални учинак.</translation>
 <translation id="2977480621796371840">Уклони из групе</translation>
 <translation id="2979639724566107830">Отворите у новом прозору</translation>
@@ -2388,6 +2392,7 @@
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="3232754137068452469">Веб-апликација</translation>
 <translation id="3233271424239923319">Направите резервне копије Linux апликација и датотека</translation>
+<translation id="3234251228180563751">Корисничко име премашује 1000 знакова</translation>
 <translation id="3234978181857588512">Сачувај на уређају</translation>
 <translation id="3238192140106069382">Повезује се и верификује</translation>
 <translation id="3239373508713281971">Временско ограничење је уклоњено за апликацију <ph name="APP_NAME" /></translation>
@@ -5206,6 +5211,7 @@
 <translation id="5975792506968920132">Проценат напуњености батерије</translation>
 <translation id="5976160379964388480">Други</translation>
 <translation id="5978277834170881274">&amp;Користи основну проверу правописа</translation>
+<translation id="5978493744931296692">Администратор је онемогућио друге профиле</translation>
 <translation id="5979084224081478209">Провери лозинке</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{Поново сте укључили 1 потенцијално штетан додатак}one{Поново сте укључили {NUM_EXTENSIONS} потенцијално штетан додатак}few{Поново сте укључили {NUM_EXTENSIONS} потенцијално штетна додатка}other{Поново сте укључили {NUM_EXTENSIONS} потенцијално штетних додатака}}</translation>
 <translation id="5979353814339191480">Ова опција важи за Chromebook-ове са донглом за тарифни пакет или мобилну мрежу, односно при привезивању на преносиви хотспот</translation>
@@ -8002,6 +8008,7 @@
 <translation id="8683081248374354009">Ресетуј групу</translation>
 <translation id="8688672835843460752">Доступно</translation>
 <translation id="8690129572193755009">Сајтови могу да траже да управљају протоколима</translation>
+<translation id="8692107307702113268">Лозинка премашује 1000 знакова</translation>
 <translation id="8695139659682234808">Додајте родитељски надзор после подешавања</translation>
 <translation id="8695825812785969222">Open &amp;Location... (Отвори локацију)</translation>
 <translation id="8698269656364382265">Да бисте се вратили на претходни екран, превуците почев од леве стране.</translation>
@@ -8284,6 +8291,7 @@
 <translation id="8960638196855923532">Сада можете да прегледате обавештења и апликације на телефону</translation>
 <translation id="8962051932294470566">Можете да делите фајлове само један по један. Пробајте поново када се заврши актуелни пренос.</translation>
 <translation id="8962083179518285172">Сакриј детаље</translation>
+<translation id="8962863356073277855">Формат URL-а треба да буде https://www.example.com</translation>
 <translation id="8962918469425892674">Овај сајт користи сензоре покрета или светла.</translation>
 <translation id="8965037249707889821">Унесите стару лозинку</translation>
 <translation id="89667524227025535">Скенирајте QR кôд помоћу камере уређаја или унесите активациони кôд који сте добили од мобилног оператера</translation>
@@ -8554,6 +8562,7 @@
 <translation id="9220525904950070496">Уклањање налога</translation>
 <translation id="9220820413868316583">Подигните, па пробајте поново.</translation>
 <translation id="922152298093051471">Прилагодите Chrome</translation>
+<translation id="9222839025964079645">Лозинке нису увезене (<ph name="COUNT" />)</translation>
 <translation id="923467487918828349">Прикажи све</translation>
 <translation id="924818813611903184">Управљајте језицима у подешавањима Chrome ОС-а</translation>
 <translation id="929117907539171075">Бришу се и офлајн подаци у инсталираној апликацији</translation>

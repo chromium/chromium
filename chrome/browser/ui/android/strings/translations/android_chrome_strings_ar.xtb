@@ -607,7 +607,7 @@
 <translation id="438319986296050901">مشاركة البطاقة فقط</translation>
 <translation id="4384468725000734951">‏استخدام محرك Sogou للبحث</translation>
 <translation id="4402611456429872546">جارٍ تنزيل حزمة اللغة <ph name="LANG" />…</translation>
-<translation id="4404568932422911380">ليست هناك إشارات مرجعية</translation>
+<translation id="4404568932422911380">ليست هناك إشارات مرجعية.</translation>
 <translation id="4405224443901389797">نقل إلى...</translation>
 <translation id="4405636711880428279">هل تريد إزالة بطاقتك الإفتراضية؟</translation>
 <translation id="4409271659088619928">محرّك البحث المستخدَم لديك هو <ph name="DSE" />. يمكنك الاطّلاع على تعليمات محرّك البحث الذي تستخدمه بشأن حذف سجلّ البحث إذا كان يوفّر هذه الميزة.</translation>
@@ -1144,6 +1144,7 @@
 <translation id="7196215469483532480">تم فتح شرح دليل الخصوصية بطول الشاشة.</translation>
 <translation id="7207760545532569765">استعادة <ph name="TAB_COUNT" /> علامة تبويب كعلامات تبويب جديدة في الخلفية</translation>
 <translation id="7208109991155904980">تم نقل الرمز التعبيري للتفاعل.</translation>
+<translation id="7217781228893594884">‏سيتم قفل علامات التبويب في وضع التصفّح المتخفي عند إغلاق Chrome</translation>
 <translation id="7222235798733126207">المشاركة المحدودة بين المواقع الإلكترونية</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{هناك تنزيل واحد مُعلَّق}zero{هناك # تنزيل مُعلَّق}two{هناك تنزيلان (#) مُعلَّقان}few{هناك # عمليات تنزيل مُعلَّقة}many{هناك # تنزيلًا مُعلَّقًا}other{هناك # تنزيل مُعلَّق}}</translation>
 <translation id="7242755609445462077">ملاحظة مميّزة تم تنميطها بتاريخ <ph name="CURRENT_DATE" /></translation>

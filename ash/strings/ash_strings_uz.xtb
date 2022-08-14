@@ -53,6 +53,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1225748608451425081">Chromebook qurilmangiz tanish xatolik tufayli qulflanib qoldi. Hisobingizga vaqtincha kira olmaysiz: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Matnni tanlashni toʻxtatish</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> ulandi.</translation>
+<translation id="1240638468526743569">Ilova</translation>
 <translation id="1246890715821376239">Ishlamaydigan ilovalar</translation>
 <translation id="1247372569136754018">Mikrofon (ichki)</translation>
 <translation id="1247519845643687288">Oxirgi ilovalar</translation>
@@ -685,6 +686,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="490788395437447240">Batareya quvvati: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="4917385247580444890">Kuchli</translation>
 <translation id="4918086044614829423">Qabul qilish</translation>
+<translation id="4919841137949306064"><ph name="APP_NAME" /> hozir kameradan foydalanmoqda</translation>
 <translation id="4925542575807923399">Bu hisobning administratori ko‘plab tizimga kirish seanslarida birinchi bo‘lib shu hisobga kirishni talab qiladi.</translation>
 <translation id="4938176435186993759">Barcha takliflarni berkitish</translation>
 <translation id="4945196315133970626">Bildirishnoma kelmasin</translation>
@@ -914,6 +916,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="6220928844947387476">Endi siz bir vaqtda ekran va veb kamera tasvirlarini yozib olishingiz mumkin.</translation>
 <translation id="622484624075952240">Pastga</translation>
 <translation id="6231419273573514727">Tashqi qurilmalar samaradorligi cheklanishi mumkin</translation>
+<translation id="6232891689835436217"><ph name="APP_NAME" /> hozir kamera va mikrofondan foydalanmoqda</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Gorizontal holatda qulflangan</translation>
 <translation id="6259254695169772643">Stilus yordamida tanlang</translation>
@@ -1132,6 +1135,7 @@ yangi oʻrnatilgan</translation>
 <translation id="7544300628205093162">Klaviatura orqa chirogʻi yoniq</translation>
 <translation id="7548434653388805669">Uyqu vaqti keldi</translation>
 <translation id="7551643184018910560">Javonga qadab qo‘yish</translation>
+<translation id="7557816257942363084"><ph name="APP_NAME" /> hozir mikrofondan foydalanmoqda</translation>
 <translation id="7561982940498449837">Menyuni yopish</translation>
 <translation id="7564874036684306347">Oynalarni boshqa ish stoliga ko‘chirish oqibatida kutilmagan xatti-harakatlar sodir bo‘lishi mumkin. Bildirishnomalar va muloqot oynalari turli ekranlarda ko‘rsatiladi.</translation>
 <translation id="7569509451529460200">Brayl yozuvi va ChromeVox yoqildi</translation>

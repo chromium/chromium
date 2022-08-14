@@ -191,6 +191,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1430915738399379752">Chop etish</translation>
 <translation id="1432187715652018471">sahifa xizmatga ishlov beruvchi vosita oʻrnatishga urinmoqda.</translation>
 <translation id="1432581352905426595">Qidiruv tizimlarini boshqarish</translation>
+<translation id="1435940442311036198">Kodni boshqa qurilmada ishlating</translation>
 <translation id="1436185428532214179">Qurilmangizdagi fayl yoki jildlarni tahrirlash uchun ruxsat soʻrashi mumkin</translation>
 <translation id="1442386063175183758">Oʻng tomonni darvozasimon taxlash</translation>
 <translation id="1442987760062738829">Teshik ochish</translation>
@@ -1402,7 +1403,9 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4798078619018708837"><ph name="CREDIT_CARD" /> kartasining amal qilish muddati va CVC kodini kiritib, bank kartangiz maʼlumotlarini yangilang. Tasdiqlangandan soʻng, Google hisobingizdagi bank karta ma’lumotlari bu saytda saqlanib qoladi.</translation>
 <translation id="4800132727771399293">Kartangiz orqasidagi CVC-kod muddatini tekshiring va qaytadan urinib ko‘ring.</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
+<translation id="4806051791961048632">Touch ID ishlatish</translation>
 <translation id="4809079943450490359">Administrator korsatmalari:</translation>
+<translation id="4811450222531576619">Manbasi va mavzusi haqida batafsil</translation>
 <translation id="4812751092864334025">Taqiladigan texnologiyalar</translation>
 <translation id="4813512666221746211">Tarmoq xatoligi</translation>
 <translation id="4816492930507672669">Sahifa hajmiga moslash</translation>
@@ -1675,6 +1678,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5509780412636533143">Boshqariladigan xatcho‘plar</translation>
 <translation id="5510481203689988000">Bu sozlama Cookie sozlamalari orqali boshqariladi</translation>
 <translation id="5510766032865166053">Fayl boshqa joyga ko‘chirilgan yoki o‘chirib yuborilgan bo‘lishi mumkin.</translation>
+<translation id="5513528801833998679">Qurilmaga kirish</translation>
 <translation id="5518670652865028077">Madaniy hordiq</translation>
 <translation id="5519516356611866228">Tahriringiz saqlangan</translation>
 <translation id="5523118979700054094">Parametr nomi</translation>
@@ -1702,6 +1706,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5571083550517324815">Bu manzildan olib keta olmaymiz. Boshqa manzilni tanlang.</translation>
 <translation id="557886905979275351">Ustaralar</translation>
 <translation id="5580958916614886209">Kartangiz muddatining tugash oyini tekshiring va yana urinib ko‘ring.</translation>
+<translation id="558420943003240152">Parol va kodlarni boshqarish…</translation>
 <translation id="5586446728396275693">Hech qanday manzil saqlanmagan</translation>
 <translation id="5587987780934666589">Platforma foydalanuvchisi</translation>
 <translation id="5593349413089863479">Aloqa butunlay xavfsiz emas</translation>
@@ -1766,6 +1771,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5765072501007116331">Yetkazib berish usuli va talablari bilan tanishish uchun manzilni tanlang</translation>
 <translation id="57689295674415555">Virtual karta raqami kiritilmadimi?</translation>
 <translation id="5776313857861697733">Muhimligi</translation>
+<translation id="5778389256418062749">Kodni boshqa qurilmada ishlating</translation>
 <translation id="5781136890105823427">Tajribaviy funksiya yoqildi</translation>
 <translation id="578305955206182703">Qahrabo rang</translation>
 <translation id="57838592816432529">Ovozni o‘chirib qo‘yish</translation>
@@ -2523,6 +2529,7 @@ Batafsil axborot:
 <translation id="7880146494886811634">Manzilni saqlash</translation>
 <translation id="7882421473871500483">Jigarrang</translation>
 <translation id="7882995332186050355">Yuk mashinalari va tirkamalar</translation>
+<translation id="788679692472636252">Parol va kodlarni boshqarish…</translation>
 <translation id="7887683347370398519">CVC-kodni tekshiring va qayta urinib ko‘ring.</translation>
 <translation id="7887885240995164102">Tasvir ustida tasvir rejimiga kirish</translation>
 <translation id="7888575728750733395">Bosma uchun rangli renderlash usuli</translation>

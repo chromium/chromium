@@ -1242,6 +1242,7 @@
 <translation id="4329871760342656885">خطأ في تحليل السياسات: <ph name="ERROR" /></translation>
 <translation id="4331519897422864041">المكدِّس 5</translation>
 <translation id="4331708818696583467">غير آمن</translation>
+<translation id="4333561522337981382">إدارة النوافذ على جميع شاشات أجهزتك</translation>
 <translation id="4340575312453649552">‏يستخدم هذا الإعلان العديد من الموارد لجهازك، لذلك أزاله متصفِّح Chrome.</translation>
 <translation id="4340982228985273705">‏لا يتم رصد جهاز الكمبيوتر هذا كمؤسسة مُدارة حتى تتمكن السياسة فقط من التثبيت التلقائي للإضافات التي تمت استضافتها في سوق Chrome الإلكتروني. ويكون عنوان URL للتحديث في سوق Chrome الإلكتروني هو "<ph name="CWS_UPDATE_URL" />".</translation>
 <translation id="4346197816712207223">بطاقات الائتمان المقبولة</translation>
@@ -1456,6 +1457,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101">‏<ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح التبويب (Tab) ثم مفتاح Enter للبحث.</translation>
 <translation id="4930153903256238152">سِعة كبيرة</translation>
+<translation id="4934780484581617878">إدارة النوافذ</translation>
 <translation id="4936134414789135531">تعذَّر العثور على قيمة <ph name="VALUE_NAME" /> التي تم إدراجها.</translation>
 <translation id="4936675324097895694">خدمات مالية</translation>
 <translation id="4940163644868678279">‏وضع التصفّح المتخفي في متصفّح Chrome</translation>
@@ -1468,6 +1470,7 @@
 <translation id="4958444002117714549">توسيع القائمة</translation>
 <translation id="4964505745997821360">خدمات تأمين صحي</translation>
 <translation id="4968522289500246572">هذا التطبيق مصمّم للعمل مع الأجهزة الجوّالة وقد يتعذّر تغيير حجمه بشكل مناسب. من الممكن أن يواجه التطبيق بعض المشاكل أو يتعرّض لإعادة التشغيل.</translation>
+<translation id="4968665849807487749">السماح للموقع الإلكتروني بطلب إدارة النوافذ على جميع شاشات أجهزتك</translation>
 <translation id="4969341057194253438">حذف التسجيل</translation>
 <translation id="4973922308112707173">عمل ثقبَين بالأعلى</translation>
 <translation id="4976702386844183910">تاريخ آخر زيارة للموقع الإلكتروني: <ph name="DATE" /></translation>
@@ -1971,6 +1974,7 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />التحقّق من ضبط الخادم الوكيل والجدار الناري ونظام أسماء النطاقات الآمن<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">وضع دبوسَين يسارًا</translation>
+<translation id="6374865374745447009">إدارة النوافذ</translation>
 <translation id="6377268785556383139">نتيجة بحث واحدة عن "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">رسوم محتملة في انتظارك.</translation>

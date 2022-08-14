@@ -1241,6 +1241,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4329871760342656885">Politikos analizavimo klaida: <ph name="ERROR" /></translation>
 <translation id="4331519897422864041">5 dėtuvė</translation>
 <translation id="4331708818696583467">Nesaugi</translation>
+<translation id="4333561522337981382">Tvarkyti langus visuose ekranuose</translation>
 <translation id="4340575312453649552">Šis skelbimas naudojo per daug įrenginio išteklių, tad „Chrome“ jį pašalino.</translation>
 <translation id="4340982228985273705">Šis kompiuteris neaptinkamas kaip valdomas įmonės, todėl taikant politiką galima automatiškai įdiegti tik „Chrome“ internetinėje parduotuvėje priglobiamus plėtinius. „Chrome“ internetinės parduotuvės atnaujinimo URL yra „<ph name="CWS_UPDATE_URL" />“.</translation>
 <translation id="4346197816712207223">Tinkamos kredito kortelės</translation>
@@ -1454,6 +1455,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" /> / <ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, norėdami ieškoti paspauskite skirtuką, tada – „Enter“</translation>
 <translation id="4930153903256238152">Didelė talpa</translation>
+<translation id="4934780484581617878">Langų tvarkymas</translation>
 <translation id="4936134414789135531">Nepavyko rasti įterptos vertės „<ph name="VALUE_NAME" />“.</translation>
 <translation id="4936675324097895694">Finansai</translation>
 <translation id="4940163644868678279">Inkognito režimas naršyklėje „Chrome“</translation>
@@ -1466,6 +1468,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4958444002117714549">Išskleisti sąrašą</translation>
 <translation id="4964505745997821360">Sveikatos draudimas</translation>
 <translation id="4968522289500246572">Ši programa sukurta mobiliesiems įrenginiams, todėl jos dydis gali būti pakeistas netinkamai. Programoje gali kilti problemų arba ji gali būti paleista iš naujo.</translation>
+<translation id="4968665849807487749">Gali būti prašoma tvarkyti langus visuose ekranuose</translation>
 <translation id="4969341057194253438">Ištrinti įrašą</translation>
 <translation id="4973922308112707173">Dvi skylės viršuje</translation>
 <translation id="4976702386844183910">Paskutinį kartą lankytasi <ph name="DATE" /></translation>
@@ -1969,6 +1972,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Tikrinama tarpinio serverio, užkardos ir saugios DNS konfigūracija<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">Dvi sankabėlės kairėje</translation>
+<translation id="6374865374745447009">langų tvarkymas</translation>
 <translation id="6377268785556383139">Rezultatų pagal užklausą „<ph name="SEARCH_TEXT" />“: 1</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">Galimi apmokestinimai.</translation>

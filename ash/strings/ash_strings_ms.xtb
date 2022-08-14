@@ -53,6 +53,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1225748608451425081">Chromebook anda dikunci kerana isu yang diketahui. Anda akan dapat log masuk selepas: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Berhenti memilih</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> disambungkan.</translation>
+<translation id="1240638468526743569">Apl</translation>
 <translation id="1246890715821376239">Apl tidak disokong</translation>
 <translation id="1247372569136754018">Mikrofon (dalaman)</translation>
 <translation id="1247519845643687288">Apl terbaharu</translation>
@@ -686,6 +687,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="490788395437447240">Bateri <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="4917385247580444890">Kuat</translation>
 <translation id="4918086044614829423">Terima</translation>
+<translation id="4919841137949306064"><ph name="APP_NAME" /> sedang menggunakan kamera anda pada masa ini</translation>
 <translation id="4925542575807923399">Pentadbir akaun ini memerlukan akaun ini menjadi akaun dilog masuk yang pertama dalam sesi berbilang log masuk.</translation>
 <translation id="4938176435186993759">Sembunyikan semua cadangan</translation>
 <translation id="4945196315133970626">Matikan pemberitahuan</translation>
@@ -915,6 +917,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="6220928844947387476">Kini anda boleh merakam diri anda dan skrin anda secara serentak</translation>
 <translation id="622484624075952240">Bawah</translation>
 <translation id="6231419273573514727">Prestasi peranti persisian mungkin terhad</translation>
+<translation id="6232891689835436217"><ph name="APP_NAME" /> sedang menggunakan kamera dan mikrofon anda pada masa ini</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Dikunci mendatar</translation>
 <translation id="6259254695169772643">Gunakan stilus anda untuk memilih</translation>
@@ -1133,6 +1136,7 @@ Pemasangan baharu</translation>
 <translation id="7544300628205093162">Cahaya belakang papan kekunci dihidupkan</translation>
 <translation id="7548434653388805669">Masa untuk tidur</translation>
 <translation id="7551643184018910560">Sematkan pada rak</translation>
+<translation id="7557816257942363084"><ph name="APP_NAME" /> sedang menggunakan Mikrofon anda pada masa ini</translation>
 <translation id="7561982940498449837">Tutup menu</translation>
 <translation id="7564874036684306347">Tindakan memindahkan tetingkap ke desktop lain boleh menyebabkan gelagat yang tidak dijangka. Pemberitahuan, tetingkap dan dialog yang seterusnya mungkin dipisahkan antara desktop.</translation>
 <translation id="7569509451529460200">Braille dan ChromeVox didayakan</translation>

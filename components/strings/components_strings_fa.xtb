@@ -1240,6 +1240,7 @@
 <translation id="4329871760342656885">خطای تجزیه خط‌مشی: <ph name="ERROR" /></translation>
 <translation id="4331519897422864041">پشته‌ساز ۵</translation>
 <translation id="4331708818696583467">امن نیست</translation>
+<translation id="4333561522337981382">پنجره‌های همه نمایشگرهایتان را مدیریت کند</translation>
 <translation id="4340575312453649552">‏این آگهی از منابع زیادی برای دستگاهتان استفاده کرده بود، بنابراین Chrome آن را حذف کرد.</translation>
 <translation id="4340982228985273705">‏این رایانه به‌صورت سازمانی مدیریت نمی‌شود، بنابراین خط‌مشی تنها می‌تواند به‌صورت خودکار افزونه‌های میزبانی‌شده در «نت‌بازار Chrome» را نصب کند. نشانی وب به‌روزرسانی «نت‌بازار Chrome» «<ph name="CWS_UPDATE_URL" />» است.</translation>
 <translation id="4346197816712207223">کارت‌های اعتباری قابل‌‌قبول</translation>
@@ -1453,6 +1454,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101">‏<ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />، برای جستجو کردن، ابتدا کلید Tab و سپس Enter را فشار دهید</translation>
 <translation id="4930153903256238152">ظرفیت زیاد</translation>
+<translation id="4934780484581617878">مدیریت پنجره</translation>
 <translation id="4936134414789135531"><ph name="VALUE_NAME" /> درج‌شده پیدا نشد.</translation>
 <translation id="4936675324097895694">امور مالی</translation>
 <translation id="4940163644868678279">‏«حالت ناشناس» در Chrome</translation>
@@ -1465,6 +1467,7 @@
 <translation id="4958444002117714549">بزرگ کردن فهرست</translation>
 <translation id="4964505745997821360">بیمه درمانی</translation>
 <translation id="4968522289500246572">این برنامه برای تلفن همراه طراحی شده است و ممکن است با تغییر اندازه سازگار نباشد. برنامه ممکن است با مشکلاتی روبرو شود یا بازراه‌اندازی شود.</translation>
+<translation id="4968665849807487749">می‌تواند درخواست کند پنجره‌های همه نمایشگرهایتان را مدیریت کند</translation>
 <translation id="4969341057194253438">حذف ویدیوی ضبط‌شده</translation>
 <translation id="4973922308112707173">دو سوراخ در بالا</translation>
 <translation id="4976702386844183910">آخرین بازدید: <ph name="DATE" /></translation>
@@ -1968,6 +1971,7 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329">‏<ph name="BEGIN_LINK" />بررسی پیکربندی پراکسی، دیوار آتش و DNS امن<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">دو منگنه در چپ</translation>
+<translation id="6374865374745447009">مدیریت پنجره</translation>
 <translation id="6377268785556383139">۱ نتیجه برای «<ph name="SEARCH_TEXT" />»</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">احتمالاً هزینه‌هایی اعمال می‌شود.</translation>

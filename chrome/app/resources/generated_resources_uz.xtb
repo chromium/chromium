@@ -511,6 +511,7 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1480663089572535854">Ortga qaytib, “Tanlash” tayinlovini oʻzgartirish mumkin. Sozlamalar orqali istalgan vaqt avto-skanerlashni faolsizlantirish mumkin.</translation>
 <translation id="1481537595330271162">Disk hajmi oʻzgarmadi</translation>
 <translation id="1482626744466814421">Bu varaqni bukmarklash...</translation>
+<translation id="1482772681918035149">parollarni tahrirlash</translation>
 <translation id="1483493594462132177">Yuborish</translation>
 <translation id="1484979925941077974">Saytda Bluetooth ishlatilmoqda</translation>
 <translation id="1485015260175968628">Ruxsatlar:</translation>
@@ -525,6 +526,7 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1500801317528437432">Eskirgan Chrome ilovalari haqida batafsil</translation>
 <translation id="150411034776756821"><ph name="SITE" /> saytini olib tashlash</translation>
 <translation id="1504551620756424144">Ulashilgan jildlar Windowsda <ph name="BASE_DIR" /> manziliga ulangan.</translation>
+<translation id="1505494256539862015">parollarni eksport qilish</translation>
 <translation id="1506061864768559482">Qidiruv tizimi</translation>
 <translation id="1507170440449692343">Bu sahifaga kameradan foydalanish taqiqlandi.</translation>
 <translation id="1507246803636407672">&amp;Bekor qilish</translation>
@@ -2964,6 +2966,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3778740492972734840">&amp;Dasturchilar asboblari</translation>
 <translation id="3778868487658107119">Undan savol va biror ishni bajarishni so‘rang. U yordamchingiz. Doim yordam berishga tayyor.</translation>
 <translation id="3781742599892759500">Linux tizimidagi mikrofondan foydalanish</translation>
+<translation id="3783889407390048282">Androidga ruxsatni saqlab qolish uchun xotiradan joy oching.</translation>
 <translation id="3784472333786002075">Cookie fayllar — veb-saytlar tomonidan yaratilgan fayllar. Cookie fayllar ikki xil boʻladi: Ichki cookielar saytlarga kirganingizda yaratiladi. Saytlar manzillar qatorida chiqadi. Tashqi cookie fayllar boshqa saytlar tomonidan yaratiladi. Bunday saytlarga ochilgan sahifadagi kontent, reklama yoki rasmlar tegishli boʻlishi mumkin.</translation>
 <translation id="3785308913036335955">Ilovalar yorlig‘ini ko‘rsatish</translation>
 <translation id="3785727820640310185">Bu sayt uchun saqlangan parollar</translation>
@@ -4278,6 +4281,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5066100345385738837">Xavfsiz DNS parametrlarini ChromeOS sozlamalaridan boshqaring</translation>
 <translation id="5067399438976153555">Har doim yoniq</translation>
 <translation id="5067867186035333991"><ph name="HOST" /> mikrofonga kirmoqchi bo‘lsa, ruxsat so‘ralsin</translation>
+<translation id="5068553687099139861">parollarni ochish</translation>
 <translation id="5068918910148307423">Yaqinda yopilgan saytlarga ma’lumot yuborish va qabul qilish taqiqlansin</translation>
 <translation id="5068919226082848014">Pitsa</translation>
 <translation id="5070710277167211639">Barcha sahifalar HTTPS orqali ochilsin va saytlarni yuklashdan oldin ularning protokolga mosligi haqida ogohlantirilsin</translation>
@@ -6429,6 +6433,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7152478047064750137">Bu kengaytma hech qanday maxsus ruxsat talab qilmaydi</translation>
 <translation id="7154130902455071009">Boshlash sahifani quyidagisiga almashtirish: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Kamera yoki galereyadan olingan surat</translation>
+<translation id="7159953856712257647">Standart oʻrnatildi</translation>
 <translation id="7160182524506337403">Endi siz telefoningizdagi bildirishnomalarni koʻra olasiz</translation>
 <translation id="7163202347044721291">Aktivatsiya kodi tasdiqlanmoqda…</translation>
 <translation id="716640248772308851">“<ph name="EXTENSION" />” kengaytmasi belgilangan jildlardan rasm, audio va video fayllarni o‘qishi mumkin.</translation>
@@ -7639,6 +7644,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8314835274931377415">Switch Accessni sozlash boshlansinmi?</translation>
 <translation id="8317582043908962055">P&amp;DF matnni tanitish</translation>
 <translation id="8317671367883557781">Yangi tarmoqqa ulanish</translation>
+<translation id="8317965619823678157">parollarni nusxalash</translation>
 <translation id="8318266828739827371">Ekrandagi kattalashtirilgan hududni koʻrish uchun ekranni ikkiga ajrating. Mahkamlangan lupani yoqish yoki oʻchirish uchun Search+Ctrl+D tugmalarini bosing.</translation>
 <translation id="8319414634934645341">Kalitdan keng miqyosda foydalanish</translation>
 <translation id="8321837372750396788">Bu <ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> tomonidan boshqariladi.</translation>
@@ -8566,6 +8572,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="929117907539171075">Oʻrnatilgan ilovadagi oflayn maʼlumotlar ham tozalab tashlanadi.</translation>
 <translation id="930268624053534560">Batafsil vaqt nishonlari</translation>
 <translation id="930893132043726269">Hozir roumingda</translation>
+<translation id="93140074055951850">Android ilovalar toʻxtatildi</translation>
 <translation id="932327136139879170">Bosh sahifa</translation>
 <translation id="932508678520956232">Chop etishni boshlab bo‘lmadi.</translation>
 <translation id="933427034780221291">{NUM_FILES,plural, =1{Bu fayl juda katta hajmdaligi uchun uni tekshirish imkonsiz. 50 MB gacha fayllarni yuklash mumkin.}other{Bu fayllarning ayrimlari juda katta hajmdaligi uchun uni tekshirish imkonsiz. 50 MB gacha fayllarni yuklash mumkin.}}</translation>
