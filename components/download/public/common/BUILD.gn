@@ -46,8 +46,6 @@ component("public") {
     "download_response_handler.h",
     "download_save_info.cc",
     "download_save_info.h",
-    "download_schedule.cc",
-    "download_schedule.h",
     "download_source.h",
     "download_start_observer.h",
     "download_stats.h",
@@ -175,10 +173,7 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "auto_resumption_handler_unittest.cc",
-    "download_schedule_unittest.cc",
-  ]
+  sources = [ "auto_resumption_handler_unittest.cc" ]
 
   deps = [
     ":public",

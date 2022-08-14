@@ -12,7 +12,6 @@
 #include "components/download/public/common/download_create_info.h"
 #include "components/download/public/common/download_file.h"
 #include "components/download/public/common/download_item_impl.h"
-#include "components/download/public/common/download_schedule.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"

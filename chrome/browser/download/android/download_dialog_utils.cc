@@ -35,13 +35,11 @@ void DownloadDialogUtils::CreateNewFileDone(
     download::PathValidationResult result,
     const base::FilePath& target_path) {
   if (result == download::PathValidationResult::SUCCESS) {
-    std::move(callback).Run(DownloadConfirmationResult::CONFIRMED, target_path,
-                            absl::nullopt /*download_schedule*/);
+    std::move(callback).Run(DownloadConfirmationResult::CONFIRMED, target_path);
 
   } else {
     std::move(callback).Run(DownloadConfirmationResult::FAILED,
-                            base::FilePath(),
-                            absl::nullopt /*download_schedule*/);
+                            base::FilePath());
   }
 }
 

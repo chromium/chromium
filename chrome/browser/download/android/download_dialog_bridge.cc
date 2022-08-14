@@ -100,15 +100,6 @@ void DownloadDialogBridge::OnComplete(
   dialog_result.file_path = base::FilePath(
       base::android::ConvertJavaStringToUTF8(env, returned_path));
 
-  if (on_wifi) {
-    dialog_result.download_schedule =
-        download::DownloadSchedule(true /*only_on_wifi*/, absl::nullopt);
-  }
-  if (start_time > 0) {
-    dialog_result.download_schedule = download::DownloadSchedule(
-        false /*only_on_wifi*/, base::Time::FromJavaTime(start_time));
-  }
-
   CompleteSelection(std::move(dialog_result));
   is_dialog_showing_ = false;
 }

@@ -132,8 +132,6 @@ class MockDownloadItem : public DownloadItem {
   MOCK_CONST_METHOD0(RequireSafetyChecks, bool());
   MOCK_CONST_METHOD0(IsParallelDownload, bool());
   MOCK_CONST_METHOD0(GetDownloadCreationType, DownloadCreationType());
-  MOCK_CONST_METHOD0(GetDownloadSchedule,
-                     const absl::optional<DownloadSchedule>&());
   MOCK_CONST_METHOD0(GetCredentialsMode, ::network::mojom::CredentialsMode());
   MOCK_METHOD((const absl::optional<net::IsolationInfo>&),
               GetIsolationInfo,
@@ -150,10 +148,6 @@ class MockDownloadItem : public DownloadItem {
   MOCK_METHOD1(SimulateErrorForTesting, void(DownloadInterruptReason));
   MOCK_METHOD2(Rename, void(const base::FilePath&, RenameDownloadCallback));
   MOCK_METHOD1(OnAsyncScanningCompleted, void(DownloadDangerType));
-  MOCK_METHOD(void,
-              OnDownloadScheduleChanged,
-              (absl::optional<DownloadSchedule>),
-              (override));
 
  private:
   base::ObserverList<Observer>::Unchecked observers_;

@@ -578,14 +578,12 @@ DownloadTargetDeterminer::DoRequestConfirmation() {
 
 void DownloadTargetDeterminer::RequestConfirmationDone(
     DownloadConfirmationResult result,
-    const base::FilePath& virtual_path,
-    absl::optional<download::DownloadSchedule> download_schedule) {
+    const base::FilePath& virtual_path) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!download_->IsTransient());
   DVLOG(20) << "User selected path:" << virtual_path.AsUTF8Unsafe();
 #if BUILDFLAG(IS_ANDROID)
   is_checking_dialog_confirmed_path_ = false;
-  download_schedule_ = std::move(download_schedule);
 #endif
   if (result == DownloadConfirmationResult::CANCELED) {
     RecordDownloadCancelReason(DownloadCancelReason::kTargetConfirmationResult);
@@ -1046,7 +1044,6 @@ void DownloadTargetDeterminer::ScheduleCallbackAndDeleteSelf(
   target_info->mime_type = mime_type_;
   target_info->is_filetype_handled_safely = is_filetype_handled_safely_;
   target_info->mixed_content_status = mixed_content_status_;
-  target_info->download_schedule = std::move(download_schedule_);
 #if BUILDFLAG(IS_ANDROID)
   // If |virtual_path_| is content URI, there is no need to prompt the user.
   if (local_path_.IsContentUri() && !virtual_path_.IsContentUri()) {

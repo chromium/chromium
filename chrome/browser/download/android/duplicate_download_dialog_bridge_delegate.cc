@@ -85,8 +85,7 @@ void DuplicateDownloadDialogBridgeDelegate::OnConfirmed(
                        std::move(callback)));
   } else {
     std::move(callback).Run(DownloadConfirmationResult::CANCELED,
-                            base::FilePath(),
-                            absl::nullopt /*download_schedule*/);
+                            base::FilePath());
   }
 }
 

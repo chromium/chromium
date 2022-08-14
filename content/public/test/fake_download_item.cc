@@ -202,11 +202,6 @@ FakeDownloadItem::GetDownloadCreationType() const {
   return download::DownloadItem::DownloadCreationType::TYPE_ACTIVE_DOWNLOAD;
 }
 
-const absl::optional<download::DownloadSchedule>&
-FakeDownloadItem::GetDownloadSchedule() const {
-  return download_schedule_;
-}
-
 ::network::mojom::CredentialsMode FakeDownloadItem::GetCredentialsMode() const {
   return ::network::mojom::CredentialsMode::kInclude;
 }
@@ -328,11 +323,6 @@ void FakeDownloadItem::Rename(const base::FilePath& name,
 
 void FakeDownloadItem::OnAsyncScanningCompleted(
     download::DownloadDangerType danger_type) {
-  NOTREACHED();
-}
-
-void FakeDownloadItem::OnDownloadScheduleChanged(
-    absl::optional<download::DownloadSchedule> schedule) {
   NOTREACHED();
 }
 

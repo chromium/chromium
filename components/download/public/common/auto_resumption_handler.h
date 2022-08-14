@@ -99,13 +99,6 @@ class COMPONENTS_DOWNLOAD_EXPORT AutoResumptionHandler
   bool ShouldResumeNow(download::DownloadItem* download) const;
   bool IsAutoResumableDownload(download::DownloadItem* item) const;
 
-  // Returns whether the user has scheduled the download to happen later.
-  static bool ShouldDownloadLater(DownloadItem* item, base::Time now);
-
-  // Reschedule the download later background task. May cancel the task when no
-  // need to run a future task.
-  void RescheduleDownloadLaterTask(const std::vector<DownloadItem*> downloads);
-
   // Listens to network events to stop/resume downloads accordingly.
   std::unique_ptr<download::NetworkStatusListener> network_listener_;
 

@@ -7,7 +7,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/download/public/common/download_features.h"
-#include "components/download/public/common/download_schedule.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -52,8 +51,6 @@ InProgressInfo CreateInProgressInfo() {
       std::make_pair<std::string, std::string>("123", "456"));
   info.request_headers.emplace_back(
       std::make_pair<std::string, std::string>("ABC", "def"));
-  info.download_schedule = absl::make_optional<DownloadSchedule>(
-      false /*only_on_wifi*/, absl::nullopt);
   info.credentials_mode = ::network::mojom::CredentialsMode::kOmit;
   return info;
 }
@@ -207,40 +204,6 @@ TEST_F(DownloadDBConversionsTest, DownloadDBEntry) {
 
   entry.download_info = CreateDownloadInfo();
   EXPECT_EQ(entry, DownloadDBEntryFromProto(DownloadDBEntryToProto(entry)));
-}
-
-TEST_F(DownloadDBConversionsTest, DownloadSchedule) {
-  const bool kOnlyOnWifi = true;
-  DownloadSchedule download_schedule(kOnlyOnWifi, absl::nullopt /*start_time*/);
-  // InProgressInfo.metered is used to set DownloadSchedule.only_on_wifi.
-  auto persisted_download_schedule = DownloadScheduleFromProto(
-      DownloadScheduleToProto(download_schedule), !kOnlyOnWifi);
-  EXPECT_FALSE(persisted_download_schedule.only_on_wifi());
-  EXPECT_TRUE(download_schedule.only_on_wifi());
-
-  base::Time time;
-  bool success = base::Time::FromUTCString("2020-06-11 15:41", &time);
-  ASSERT_TRUE(success);
-  download_schedule = DownloadSchedule(kOnlyOnWifi, time);
-  persisted_download_schedule = DownloadScheduleFromProto(
-      DownloadScheduleToProto(download_schedule), kOnlyOnWifi);
-  EXPECT_EQ(persisted_download_schedule, download_schedule);
-}
-
-// Test to verify that when download later feature is disabled, download
-// schedule will not be loaded.
-TEST_F(DownloadDBConversionsTest, DownloadLaterDisabled) {
-  scoped_feature_list()->Reset();
-  scoped_feature_list()->InitAndDisableFeature(features::kDownloadLater);
-
-  DownloadDBEntry entry;
-  entry.download_info = CreateDownloadInfo();
-  EXPECT_TRUE(
-      entry.download_info->in_progress_info->download_schedule.has_value());
-
-  auto new_entry = DownloadDBEntryFromProto(DownloadDBEntryToProto(entry));
-  EXPECT_FALSE(
-      new_entry.download_info->in_progress_info->download_schedule.has_value());
 }
 
 }  // namespace download

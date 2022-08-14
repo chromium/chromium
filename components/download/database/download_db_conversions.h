@@ -13,7 +13,6 @@
 #include "components/download/database/in_progress/ukm_info.h"
 #include "components/download/database/proto/download_entry.pb.h"
 #include "components/download/database/proto/download_source.pb.h"
-#include "components/download/public/common/download_schedule.h"
 
 namespace download {
 
@@ -52,13 +51,6 @@ class DownloadDBConversions {
   static download_pb::UkmInfo UkmInfoToProto(const UkmInfo& ukm_info);
 
   static UkmInfo UkmInfoFromProto(const download_pb::UkmInfo& proto);
-
-  static download_pb::DownloadSchedule DownloadScheduleToProto(
-      const DownloadSchedule& download_schedule);
-
-  static DownloadSchedule DownloadScheduleFromProto(
-      const download_pb::DownloadSchedule& proto,
-      bool metered);
 
   static download_pb::DownloadInfo DownloadInfoToProto(
       const DownloadInfo& download_info);

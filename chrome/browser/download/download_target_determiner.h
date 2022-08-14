@@ -210,10 +210,8 @@ class DownloadTargetDeterminer : public download::DownloadItem::Observer {
 
   // Callback invoked after the file picker completes. Cancels the download if
   // the user cancels the file picker.
-  void RequestConfirmationDone(
-      DownloadConfirmationResult result,
-      const base::FilePath& virtual_path,
-      absl::optional<download::DownloadSchedule> download_schedule);
+  void RequestConfirmationDone(DownloadConfirmationResult result,
+                               const base::FilePath& virtual_path);
 
 #if BUILDFLAG(IS_ANDROID)
   // Callback invoked after the incognito message has been accepted/rejected
@@ -374,7 +372,6 @@ class DownloadTargetDeterminer : public download::DownloadItem::Observer {
   raw_ptr<DownloadTargetDeterminerDelegate> delegate_;
   CompletionCallback completion_callback_;
   base::CancelableTaskTracker history_tracker_;
-  absl::optional<download::DownloadSchedule> download_schedule_;
 
   base::WeakPtrFactory<DownloadTargetDeterminer> weak_ptr_factory_{this};
 };
