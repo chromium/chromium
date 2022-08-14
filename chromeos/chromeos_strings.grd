@@ -3200,7 +3200,13 @@ Try tapping the mic to ask me anything.
         Preparing to restart...
       </message>
       <message name="IDS_SHIMLESS_RMA_REBOOT_PAGE_MESSAGE" desc="The message for the reboot page explaining how soon the device will reboot.">
-        System will restart in 5 seconds.
+        System will restart in <ph name="DELAY_DURATION">$1<ex>5</ex></ph> seconds.
+      </message>
+      <message name="IDS_SHIMLESS_RMA_REBOOT_PAGE_SHUTDOWN_TITLE" desc="The title for the shut down page. The shut down page is shown when the device is preparing to shut down.">
+        Preparing to shut down...
+      </message>
+      <message name="IDS_SHIMLESS_RMA_REBOOT_PAGE_SHUTDOWN_MESSAGE" desc="The message for the shut down page explaining how soon the device will shut down.">
+        System will shut down in <ph name="DELAY_DURATION">$1<ex>5</ex></ph> seconds.
       </message>
       <!-- Wipe device page -->
       <message name="IDS_SHIMLESS_RMA_WIPE_DEVICE_TITLE" desc="Title for the page where the user chooses whether to erase the data or keep/preserve the data on the device.">

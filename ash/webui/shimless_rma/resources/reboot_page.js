@@ -9,6 +9,12 @@ import './shimless_rma_shared_css.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {RmadErrorCode} from './shimless_rma_types.js';
+
+// The displayed value for how many seconds you wait before the reboot or shut
+// down.
+const DELAY_DURATION = '2';
+
 /**
  * @fileoverview
  * 'reboot-page' is displayed while waiting for a reboot.
@@ -29,6 +35,38 @@ export class RebootPage extends RebootPageBase {
 
   static get template() {
     return html`{__html_template__}`;
+  }
+
+  static get properties() {
+    return {
+      /**
+       * Set by shimless_rma.js.
+       * @type {RmadErrorCode}
+       */
+      errorCode: {
+        type: Object,
+      },
+    };
+  }
+
+  /**
+   * @return {string}
+   * @protected
+   */
+  getPageTitle_() {
+    return this.errorCode === RmadErrorCode.kExpectReboot ?
+        this.i18n('rebootPageTitle') :
+        this.i18n('shutdownPageTitle');
+  }
+
+  /**
+   * @return {string}
+   * @protected
+   */
+  getPageInstructions_() {
+    return this.errorCode === RmadErrorCode.kExpectReboot ?
+        this.i18n('rebootPageMessage', DELAY_DURATION) :
+        this.i18n('shutdownPageMessage', DELAY_DURATION);
   }
 }
 

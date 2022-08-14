@@ -533,8 +533,9 @@ export class ShimlessRma extends ShimlessRmaBase {
     }
 
     // This is a special case for showing the reboot page when the platform
-    // sends the error code for expecting a reboot.
-    if (stateResult.stateResult.error === RmadErrorCode.kExpectReboot) {
+    // sends the error code for expecting a reboot or a shut down.
+    if (stateResult.stateResult.error === RmadErrorCode.kExpectReboot ||
+        stateResult.stateResult.error === RmadErrorCode.kExpectShutdown) {
       const rebootState = {
         stateResult: {
           state: State.kReboot,

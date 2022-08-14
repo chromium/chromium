@@ -317,9 +317,11 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
       {"hardwareErrorMessage", IDS_SHIMLESS_RMA_HARDWARE_ERROR_MESSAGE},
       {"hardwareErrorShutDownButton",
        IDS_SHIMLESS_RMA_HARDWARE_SHUTDOWN_BUTTON},
-      // Hardware error
-      {"RebootPageTitle", IDS_SHIMLESS_RMA_REBOOT_PAGE_TITLE},
-      {"RebootPageMessage", IDS_SHIMLESS_RMA_REBOOT_PAGE_MESSAGE},
+      // Reboot page
+      {"rebootPageTitle", IDS_SHIMLESS_RMA_REBOOT_PAGE_TITLE},
+      {"rebootPageMessage", IDS_SHIMLESS_RMA_REBOOT_PAGE_MESSAGE},
+      {"shutdownPageTitle", IDS_SHIMLESS_RMA_REBOOT_PAGE_SHUTDOWN_TITLE},
+      {"shutdownPageMessage", IDS_SHIMLESS_RMA_REBOOT_PAGE_SHUTDOWN_MESSAGE},
       // Wipe device page
       {"wipeDeviceTitleText", IDS_SHIMLESS_RMA_WIPE_DEVICE_TITLE},
       {"wipeDeviceRemoveDataLabel",

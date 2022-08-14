@@ -3,9 +3,9 @@
 
 <base-page>
   <div slot="left-pane">
-    <h1>[[i18n('RebootPageTitle')]]</h1>
+    <h1>[[getPageTitle_(errorCode)]]</h1>
     <div class="instructions">
-      [[i18n('RebootPageMessage')]]
+      [[getPageInstructions_(errorCode)]]
     </div>
   </div>
   <div slot="right-pane">
