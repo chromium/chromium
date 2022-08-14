@@ -942,10 +942,8 @@ class DeviceStatusCollectorTest : public testing::Test {
 
  protected:
   void AddMountPoint(const std::string& mount_point) {
-    mount_point_map_.insert(DiskMountManager::MountPointMap::value_type(
-        mount_point, DiskMountManager::MountPointInfo(
-                         mount_point, mount_point, ash::MountType::kDevice,
-                         ash::disks::MOUNT_CONDITION_NONE)));
+    mount_point_map_.insert(
+        {mount_point, mount_point, ash::MountType::kDevice});
   }
 
   virtual void RestartStatusCollector(
@@ -1174,7 +1172,7 @@ class DeviceStatusCollectorTest : public testing::Test {
   ChromeContentClient content_client_;
   ChromeContentBrowserClient browser_content_client_;
   chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
-  DiskMountManager::MountPointMap mount_point_map_;
+  DiskMountManager::MountPoints mount_point_map_;
   ash::ScopedStubInstallAttributes scoped_stub_install_attributes_;
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
   ash::FakeOwnerSettingsService owner_settings_service_{
@@ -1840,7 +1838,7 @@ TEST_F(DeviceStatusCollectorTest, TestVolumeInfo) {
   int size = 12345678;
   for (const auto& mount_info :
        DiskMountManager::GetInstance()->mount_points()) {
-    expected_mount_points.push_back(mount_info.first);
+    expected_mount_points.push_back(mount_info.mount_path);
   }
   expected_mount_points.push_back(kExternalMountPoint);
 

@@ -75,7 +75,7 @@ class FakeDiskMountManager : public ash::disks::DiskMountManager {
   const DiskMap& disks() const override;
   const ash::disks::Disk* FindDiskBySourcePath(
       const std::string& source_path) const override;
-  const MountPointMap& mount_points() const override;
+  const MountPoints& mount_points() const override;
   void EnsureMountInfoRefreshed(EnsureMountInfoRefreshedCallback callback,
                                 bool force) override;
   void MountPath(const std::string& source_path,
@@ -113,7 +113,7 @@ class FakeDiskMountManager : public ash::disks::DiskMountManager {
   base::queue<base::OnceClosure> pending_unmount_callbacks_;
 
   DiskMap disks_;
-  MountPointMap mount_points_;
+  MountPoints mount_points_;
 
   std::vector<MountRequest> mount_requests_;
   std::vector<std::string> unmount_requests_;

@@ -150,7 +150,7 @@ class DiskMountManagerImpl : public DiskMountManager,
   void FormatMountedDevice(const std::string& mount_path,
                            FormatFileSystemType filesystem,
                            const std::string& label) override {
-    MountPointMap::const_iterator mount_point = mount_points_.find(mount_path);
+    MountPoints::const_iterator mount_point = mount_points_.find(mount_path);
     if (mount_point == mount_points_.end()) {
       LOG(ERROR) << "Cannot find mount point '" << mount_path << "'";
       // We can't call OnFormatCompleted until |pending_format_changes_| has
@@ -160,7 +160,7 @@ class DiskMountManagerImpl : public DiskMountManager,
       return;
     }
 
-    std::string device_path = mount_point->second.source_path;
+    std::string device_path = mount_point->source_path;
     const std::string filesystem_str = FormatFileSystemTypeToString(filesystem);
     pending_format_changes_[device_path] = {filesystem_str, label};
 
@@ -209,7 +209,7 @@ class DiskMountManagerImpl : public DiskMountManager,
 
   void RenameMountedDevice(const std::string& mount_path,
                            const std::string& volume_name) override {
-    MountPointMap::const_iterator mount_point = mount_points_.find(mount_path);
+    MountPoints::const_iterator mount_point = mount_points_.find(mount_path);
     if (mount_point == mount_points_.end()) {
       LOG(ERROR) << "Cannot find mount point '" << mount_path << "'";
       // We can't call OnRenameCompleted until |pending_rename_changes_| has
@@ -219,7 +219,7 @@ class DiskMountManagerImpl : public DiskMountManager,
       return;
     }
 
-    std::string device_path = mount_point->second.source_path;
+    std::string device_path = mount_point->source_path;
     pending_rename_changes_[device_path] = volume_name;
 
     DiskMap::const_iterator iter = disks_.find(device_path);
@@ -316,7 +316,7 @@ class DiskMountManagerImpl : public DiskMountManager,
   }
 
   // DiskMountManager override.
-  const MountPointMap& mount_points() const override { return mount_points_; }
+  const MountPoints& mount_points() const override { return mount_points_; }
 
   // DiskMountManager override.
   bool AddDiskForTest(std::unique_ptr<Disk> disk) override {
@@ -342,7 +342,7 @@ class DiskMountManagerImpl : public DiskMountManager,
       return false;
     }
 
-    mount_points_.emplace(mount_point.mount_path, mount_point);
+    mount_points_.insert(mount_point);
     return true;
   }
 
@@ -381,7 +381,7 @@ class DiskMountManagerImpl : public DiskMountManager,
 
   void RemountRemovableDrive(const Disk& disk, MountAccessMode access_mode) {
     const std::string& mount_path = disk.mount_path();
-    MountPointMap::const_iterator mount_point = mount_points_.find(mount_path);
+    MountPoints::const_iterator mount_point = mount_points_.find(mount_path);
     if (mount_point == mount_points_.end()) {
       // Not in mount_points_. This happens when the mount_points and disks_ are
       // inconsistent.
@@ -390,7 +390,8 @@ class DiskMountManagerImpl : public DiskMountManager,
                         MountType::kDevice, mount_path});
       return;
     }
-    const std::string& source_path = mount_point->second.source_path;
+
+    const std::string& source_path = mount_point->source_path;
 
     // Update the access mode option passed to CrosDisks.
     // This is needed because CrosDisks service methods doesn't return the info
@@ -399,10 +400,10 @@ class DiskMountManagerImpl : public DiskMountManager,
     access_modes_[source_path] = access_mode;
 
     cros_disks_client_->Mount(
-        mount_point->second.source_path, std::string(), std::string(), {},
-        access_mode, REMOUNT_OPTION_REMOUNT_EXISTING_DEVICE,
+        source_path, std::string(), std::string(), {}, access_mode,
+        REMOUNT_OPTION_REMOUNT_EXISTING_DEVICE,
         BindOnce(&DiskMountManagerImpl::OnMount, weak_ptr_factory_.GetWeakPtr(),
-                 source_path, mount_point->second.mount_type));
+                 source_path, mount_point->mount_type));
   }
 
   // Unmounts all mount points whose source path is transitively parented by
@@ -414,7 +415,7 @@ class DiskMountManagerImpl : public DiskMountManager,
     if (mount_path.back() != '/')
       mount_path += '/';
 
-    for (const auto& [_, mount_point] : mount_points_) {
+    for (const auto& mount_point : mount_points_) {
       if (base::StartsWith(mount_point.source_path, mount_path,
                            base::CompareCase::SENSITIVE)) {
         UnmountPath(mount_point.mount_path,
@@ -474,8 +475,9 @@ class DiskMountManagerImpl : public DiskMountManager,
 
     // If the device is corrupted but it's still possible to format it, it will
     // be fake mounted.
-    if (entry.error_code == MountError::kNone || mount_info.mount_condition) {
-      mount_points_.emplace(mount_info.mount_path, mount_info);
+    if (entry.error_code == MountError::kNone ||
+        mount_condition != MOUNT_CONDITION_NONE) {
+      mount_points_.insert(mount_info);
     }
 
     Disk* disk = nullptr;
@@ -538,10 +540,10 @@ class DiskMountManagerImpl : public DiskMountManager,
       error = MountError::kNone;
     }
 
-    if (const MountPointMap::const_iterator mp_it =
+    if (const MountPoints::const_iterator mp_it =
             mount_points_.find(mount_path);
         mp_it != mount_points_.end()) {
-      const MountPoint& mp = mp_it->second;
+      const MountPoint& mp = *mp_it;
       NotifyMountStatusUpdate(UNMOUNTING, error, mp);
 
       if (error == MountError::kNone) {
@@ -1036,7 +1038,7 @@ class DiskMountManagerImpl : public DiskMountManager,
   DiskMountManager::DiskMap disks_;
 
   std::map<std::string, MountPathCallback> mount_callbacks_;
-  DiskMountManager::MountPointMap mount_points_;
+  DiskMountManager::MountPoints mount_points_;
 
   // A map entry with a key of the device path will be created upon calling
   // GetDeviceProperties(), for deferring mount events, and removed once it has

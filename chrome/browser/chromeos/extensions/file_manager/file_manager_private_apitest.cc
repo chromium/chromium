@@ -270,23 +270,19 @@ class FileManagerPrivateApiTest : public extensions::ExtensionApiTest {
       }
     };
 
-    for (size_t i = 0; i < std::size(kTestMountPoints); i++) {
-      mount_points_.insert(DiskMountManager::MountPointMap::value_type(
-          kTestMountPoints[i].mount_path,
-          DiskMountManager::MountPoint{kTestMountPoints[i].source_path,
-                                       kTestMountPoints[i].mount_path,
-                                       kTestMountPoints[i].mount_type,
-                                       kTestMountPoints[i].mount_condition}));
-      int disk_info_index = kTestMountPoints[i].disk_info_index;
-      if (kTestMountPoints[i].disk_info_index >= 0) {
+    for (const auto& mp : kTestMountPoints) {
+      mount_points_.insert(
+          {mp.source_path, mp.mount_path, mp.mount_type, mp.mount_condition});
+      int disk_info_index = mp.disk_info_index;
+      if (mp.disk_info_index >= 0) {
         EXPECT_GT(std::size(kTestDisks), static_cast<size_t>(disk_info_index));
         if (static_cast<size_t>(disk_info_index) >= std::size(kTestDisks))
           return;
 
         std::unique_ptr<Disk> disk =
             Disk::Builder()
-                .SetDevicePath(kTestMountPoints[i].source_path)
-                .SetMountPath(kTestMountPoints[i].mount_path)
+                .SetDevicePath(mp.source_path)
+                .SetMountPath(mp.mount_path)
                 .SetWriteDisabledByPolicy(
                     kTestDisks[disk_info_index].write_disabled_by_policy)
                 .SetFilePath(kTestDisks[disk_info_index].file_path)
@@ -313,8 +309,8 @@ class FileManagerPrivateApiTest : public extensions::ExtensionApiTest {
                 .SetBaseMountPath(kTestDisks[disk_info_index].base_mount_path)
                 .Build();
 
-        volumes_.insert(DiskMountManager::DiskMap::value_type(
-            kTestMountPoints[i].source_path, std::move(disk)));
+        volumes_.insert(DiskMountManager::DiskMap::value_type(mp.source_path,
+                                                              std::move(disk)));
       }
     }
   }
@@ -360,7 +356,7 @@ class FileManagerPrivateApiTest : public extensions::ExtensionApiTest {
   base::ScopedTempDir temp_dir_;
   ash::disks::MockDiskMountManager* disk_mount_manager_mock_;
   DiskMountManager::DiskMap volumes_;
-  DiskMountManager::MountPointMap mount_points_;
+  DiskMountManager::MountPoints mount_points_;
   file_manager::EventRouter* event_router_ = nullptr;
 };
 

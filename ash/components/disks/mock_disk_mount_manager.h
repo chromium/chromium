@@ -37,7 +37,7 @@ class MockDiskMountManager : public DiskMountManager {
               FindDiskBySourcePath,
               (const std::string&),
               (const, override));
-  MOCK_METHOD(const DiskMountManager::MountPointMap&,
+  MOCK_METHOD(const DiskMountManager::MountPoints&,
               mount_points,
               (),
               (const, override));
@@ -125,7 +125,7 @@ class MockDiskMountManager : public DiskMountManager {
   // Is used to implement disks.
   const DiskMountManager::DiskMap& disksInternal() const { return disks_; }
 
-  const DiskMountManager::MountPointMap& mountPointsInternal() const;
+  const DiskMountManager::MountPoints& mountPointsInternal() const;
 
   // Returns Disk object associated with the |source_path| or NULL on failure.
   const Disk* FindDiskBySourcePathInternal(
@@ -145,7 +145,7 @@ class MockDiskMountManager : public DiskMountManager {
   DiskMountManager::DiskMap disks_;
 
   // The list of existing mount points.
-  DiskMountManager::MountPointMap mount_points_;
+  DiskMountManager::MountPoints mount_points_;
 };
 
 }  // namespace disks

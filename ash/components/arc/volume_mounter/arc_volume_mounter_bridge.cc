@@ -152,9 +152,10 @@ void ArcVolumeMounterBridge::SendAllMountEvents() {
 
   SendMountEventForMyFiles();
 
-  for (const auto& keyValue : DiskMountManager::GetInstance()->mount_points()) {
+  for (const auto& mount_point :
+       DiskMountManager::GetInstance()->mount_points()) {
     OnMountEvent(DiskMountManager::MountEvent::MOUNTING, ash::MountError::kNone,
-                 keyValue.second);
+                 mount_point);
   }
 }
 
@@ -193,15 +194,15 @@ bool ArcVolumeMounterBridge::IsVisibleToAndroidApps(
 
 void ArcVolumeMounterBridge::OnVisibleStoragesChanged() {
   // Remount all external mount points when the list of visible storage changes.
-  for (const auto& key_value :
+  for (const auto& mount_point :
        DiskMountManager::GetInstance()->mount_points()) {
     OnMountEvent(DiskMountManager::MountEvent::UNMOUNTING,
-                 ash::MountError::kNone, key_value.second);
+                 ash::MountError::kNone, mount_point);
   }
-  for (const auto& key_value :
+  for (const auto& mount_point :
        DiskMountManager::GetInstance()->mount_points()) {
     OnMountEvent(DiskMountManager::MountEvent::MOUNTING, ash::MountError::kNone,
-                 key_value.second);
+                 mount_point);
   }
 }
 

@@ -9,10 +9,12 @@
 
 #include <map>
 #include <memory>
+#include <set>
 
 #include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/observer_list_types.h"
+#include "base/strings/string_piece.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 
 namespace ash {
@@ -98,8 +100,24 @@ class COMPONENT_EXPORT(ASH_DISKS) DiskMountManager {
   // TODO Remove once the transition to plain MountPoint is finished.
   using MountPointInfo = MountPoint;
 
-  // MountPointMap key is mount_path.
-  typedef std::map<std::string, MountPoint> MountPointMap;
+  // Comparator sorting MountPoint objects by mount_path.
+  struct SortByMountPath {
+    using is_transparent = void;
+
+    template <typename A, typename B>
+    bool operator()(const A& a, const B& b) const {
+      return GetKey(a) < GetKey(b);
+    }
+
+    static base::StringPiece GetKey(const base::StringPiece a) { return a; }
+
+    static base::StringPiece GetKey(const MountPoint& mp) {
+      return mp.mount_path;
+    }
+  };
+
+  // MountPoints indexed by mount_path.
+  typedef std::set<MountPoint, SortByMountPath> MountPoints;
 
   // A callback function type which is called after UnmountDeviceRecursively
   // finishes.
@@ -166,7 +184,7 @@ class COMPONENT_EXPORT(ASH_DISKS) DiskMountManager {
       const std::string& source_path) const = 0;
 
   // Gets the list of mount points.
-  virtual const MountPointMap& mount_points() const = 0;
+  virtual const MountPoints& mount_points() const = 0;
 
   // Refreshes all the information about mounting if it is not yet done and
   // invokes |callback| when finished. If the information is already refreshed

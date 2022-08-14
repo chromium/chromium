@@ -1499,9 +1499,9 @@ void VolumeManager::OnExternalStorageDisabledChanged() {
     // indefinitely. So make a set of all the mount points that should be
     // unmounted (all external media mounts), and iterate through them.
     std::vector<std::string> remaining_mount_paths;
-    for (auto& mount_point : disk_mount_manager_->mount_points()) {
-      if (mount_point.second.mount_type == ash::MountType::kDevice) {
-        remaining_mount_paths.push_back(mount_point.first);
+    for (const auto& mount_point : disk_mount_manager_->mount_points()) {
+      if (mount_point.mount_type == ash::MountType::kDevice) {
+        remaining_mount_paths.push_back(mount_point.mount_path);
       }
     }
     if (remaining_mount_paths.empty()) {
@@ -1733,22 +1733,20 @@ void VolumeManager::OnDiskMountManagerRefreshed(bool success) {
 
   std::vector<std::unique_ptr<Volume>> archives;
 
-  const ash::disks::DiskMountManager::MountPointMap& mount_points =
+  const ash::disks::DiskMountManager::MountPoints& mount_points =
       disk_mount_manager_->mount_points();
   for (const auto& mount_point : mount_points) {
-    switch (mount_point.second.mount_type) {
+    switch (mount_point.mount_type) {
       case ash::MountType::kArchive: {
         // Archives are mounted after other types of volume. See below.
-        archives.push_back(
-            Volume::CreateForRemovable(mount_point.second, nullptr));
+        archives.push_back(Volume::CreateForRemovable(mount_point, nullptr));
         break;
       }
       case ash::MountType::kDevice: {
-        DoMountEvent(
-            ash::MountError::kNone,
-            Volume::CreateForRemovable(
-                mount_point.second, disk_mount_manager_->FindDiskBySourcePath(
-                                        mount_point.second.source_path)));
+        DoMountEvent(ash::MountError::kNone,
+                     Volume::CreateForRemovable(
+                         mount_point, disk_mount_manager_->FindDiskBySourcePath(
+                                          mount_point.source_path)));
         break;
       }
       case ash::MountType::kNetworkStorage: {

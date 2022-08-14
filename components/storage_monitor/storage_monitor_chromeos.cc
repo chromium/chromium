@@ -142,13 +142,14 @@ void StorageMonitorCros::CheckExistingMountPoints() {
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
 
-  for (const auto& it : DiskMountManager::GetInstance()->mount_points()) {
+  for (const auto& mount_point :
+       DiskMountManager::GetInstance()->mount_points()) {
     base::PostTaskAndReplyWithResult(
         blocking_task_runner.get(), FROM_HERE,
         base::BindOnce(&MediaStorageUtil::HasDcim,
-                       base::FilePath(it.second.mount_path)),
+                       base::FilePath(mount_point.mount_path)),
         base::BindOnce(&StorageMonitorCros::AddMountedPath,
-                       weak_ptr_factory_.GetWeakPtr(), it.second));
+                       weak_ptr_factory_.GetWeakPtr(), mount_point));
   }
 
   // Note: Relies on scheduled tasks on the |blocking_task_runner| being

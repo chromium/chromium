@@ -183,8 +183,7 @@ std::string GetSourcePathForRemovableMedia(const std::string& volume_name) {
   const auto& mount_points =
       ash::disks::DiskMountManager::GetInstance()->mount_points();
   const auto found = mount_points.find(mount_path);
-  return found == mount_points.end() ? std::string()
-                                     : found->second.source_path;
+  return found == mount_points.end() ? std::string() : found->source_path;
 }
 
 // Returns the UUID of a removable device using its volume name as a key.

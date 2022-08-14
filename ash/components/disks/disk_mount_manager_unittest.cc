@@ -520,9 +520,8 @@ class DiskMountManagerTest : public testing::Test {
   // Checks if disk mount manager contains a mount point with specified mount
   // path.
   bool HasMountPoint(const std::string& mount_path) {
-    const DiskMountManager::MountPointMap& mount_points =
-        DiskMountManager::GetInstance()->mount_points();
-    return mount_points.find(mount_path) != mount_points.end();
+    return DiskMountManager::GetInstance()->mount_points().count(mount_path) !=
+           0;
   }
 
  private:

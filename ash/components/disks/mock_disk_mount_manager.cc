@@ -189,8 +189,8 @@ void MockDiskMountManager::RemoveDiskEntryForMountDevice(
   disks_.erase(mount_info.source_path);
 }
 
-const DiskMountManager::MountPointMap&
-MockDiskMountManager::mountPointsInternal() const {
+const DiskMountManager::MountPoints& MockDiskMountManager::mountPointsInternal()
+    const {
   return mount_points_;
 }
 

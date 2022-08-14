@@ -59,7 +59,7 @@ const ash::disks::Disk* FakeDiskMountManager::FindDiskBySourcePath(
   return iter != disks_.end() ? iter->second.get() : nullptr;
 }
 
-const ash::disks::DiskMountManager::MountPointMap&
+const ash::disks::DiskMountManager::MountPoints&
 FakeDiskMountManager::mount_points() const {
   return mount_points_;
 }
@@ -82,7 +82,7 @@ void FakeDiskMountManager::MountPath(
                                mount_options, type, access_mode);
 
   const MountPoint mount_point{source_path, source_path, type};
-  mount_points_.insert(make_pair(source_path, mount_point));
+  mount_points_.insert(mount_point);
   std::move(callback).Run(ash::MountError::kNone, mount_point);
   for (auto& observer : observers_) {
     observer.OnMountEvent(DiskMountManager::MOUNTING, ash::MountError::kNone,
@@ -100,11 +100,11 @@ void FakeDiskMountManager::UnmountPath(const std::string& mount_path,
     error = unmount_iter->second;
     unmount_errors_.erase(unmount_iter);
   } else {
-    MountPointMap::iterator iter = mount_points_.find(mount_path);
+    MountPoints::iterator iter = mount_points_.find(mount_path);
     if (iter == mount_points_.end())
       return;
 
-    const MountPoint mount_point = iter->second;
+    const MountPoint mount_point = *iter;
     mount_points_.erase(iter);
     for (auto& observer : observers_) {
       observer.OnMountEvent(DiskMountManager::UNMOUNTING,
@@ -172,7 +172,7 @@ bool FakeDiskMountManager::AddMountPointForTest(const MountPoint& mount_point) {
     return false;
   }
 
-  mount_points_.insert(std::make_pair(mount_point.mount_path, mount_point));
+  mount_points_.insert(mount_point);
   return true;
 }
 

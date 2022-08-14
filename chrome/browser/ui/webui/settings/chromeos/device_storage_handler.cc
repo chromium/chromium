@@ -200,13 +200,13 @@ void StorageHandler::HandleUpdateExternalStorages(
 
 void StorageHandler::UpdateExternalStorages() {
   base::Value::List devices;
-  for (const auto& itr : DiskMountManager::GetInstance()->mount_points()) {
-    const DiskMountManager::MountPoint& mount_info = itr.second;
-    if (!IsEligibleForAndroidStorage(mount_info.source_path))
+  for (const auto& mount_point :
+       DiskMountManager::GetInstance()->mount_points()) {
+    if (!IsEligibleForAndroidStorage(mount_point.source_path))
       continue;
 
     const Disk* disk = DiskMountManager::GetInstance()->FindDiskBySourcePath(
-        mount_info.source_path);
+        mount_point.source_path);
 
     // Assigning a dummy UUID for diskless volume for testing.
     const std::string uuid = disk ? disk->fs_uuid() : kDummyUuid;
@@ -217,7 +217,7 @@ void StorageHandler::UpdateExternalStorages() {
       // That is, we use the base name of mount path instead in such cases.
       // TODO(fukino): Share the implementation to compute the volume name with
       // Files app. crbug.com/1002535.
-      label = base::FilePath(mount_info.mount_path).BaseName().AsUTF8Unsafe();
+      label = base::FilePath(mount_point.mount_path).BaseName().AsUTF8Unsafe();
     }
     base::Value::Dict device;
     device.Set("uuid", uuid);
