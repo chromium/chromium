@@ -109,7 +109,7 @@ AccessibilityPrivateSetNativeAccessibilityEnabledFunction::Run() {
   } else {
     content::BrowserAccessibilityState::GetInstance()->DisableAccessibility();
   }
-  return RespondNow(NoArguments());
+  return RespondNow(WithArguments());
 }
 
 ExtensionFunction::ResponseAction
@@ -127,7 +127,7 @@ AccessibilityPrivateOpenSettingsSubpageFunction::Run() {
         profile, params->subpage);
   }
 
-  return RespondNow(NoArguments());
+  return RespondNow(WithArguments());
 }
 
 ExtensionFunction::ResponseAction
@@ -214,7 +214,7 @@ AccessibilityPrivateSetFocusRingsFunction::Run() {
     accessibility_manager->SetFocusRing(id, std::move(focus_ring));
   }
 
-  return RespondNow(NoArguments());
+  return RespondNow(WithArguments());
 }
 
 ExtensionFunction::ResponseAction
@@ -235,7 +235,7 @@ AccessibilityPrivateSetHighlightsFunction::Run() {
   // Set the highlights to cover all of these rects.
   AccessibilityManager::Get()->SetHighlights(rects, color);
 
-  return RespondNow(NoArguments());
+  return RespondNow(WithArguments());
 }
 
 ExtensionFunction::ResponseAction
@@ -260,7 +260,7 @@ AccessibilityPrivateSetKeyboardListenerFunction::Run() {
 
   ash::EventRewriterController::Get()->CaptureAllKeysForSpokenFeedback(
       enabled && capture);
-  return RespondNow(NoArguments());
+  return RespondNow(WithArguments());
 }
 
 ExtensionFunction::ResponseAction
@@ -269,7 +269,7 @@ AccessibilityPrivateDarkenScreenFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(args()[0].is_bool());
   bool darken = args()[0].GetBool();
   AccessibilityManager::Get()->SetDarkenScreen(darken);
-  return RespondNow(NoArguments());
+  return RespondNow(WithArguments());
 }
 
 ExtensionFunction::ResponseAction
@@ -348,7 +348,7 @@ AccessibilityPrivateSendSyntheticKeyEventFunction::Run() {
   DCHECK(host);
   // This skips rewriters.
   host->DeliverEventToSink(synthetic_key_event.get());
-  return RespondNow(NoArguments());
+  return RespondNow(WithArguments());
 }
 
 ExtensionFunction::ResponseAction
@@ -357,7 +357,7 @@ AccessibilityPrivateEnableMouseEventsFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(args()[0].is_bool());
   bool enabled = args()[0].GetBool();
   ash::EventRewriterController::Get()->SetSendMouseEvents(enabled);
-  return RespondNow(NoArguments());
+  return RespondNow(WithArguments());
 }
 
 ExtensionFunction::ResponseAction
@@ -427,11 +427,11 @@ AccessibilityPrivateSendSyntheticMouseEventFunction::Run() {
       display::Screen::GetScreen()->GetDisplayNearestPoint(location_in_screen);
   auto* host = ash::GetWindowTreeHostForDisplay(display.id());
   if (!host)
-    return RespondNow(NoArguments());
+    return RespondNow(WithArguments());
 
   aura::Window* root_window = host->window();
   if (!root_window)
-    return RespondNow(NoArguments());
+    return RespondNow(WithArguments());
 
   aura::client::CursorClient* cursor_client =
       aura::client::GetCursorClient(root_window);
@@ -460,7 +460,7 @@ AccessibilityPrivateSendSyntheticMouseEventFunction::Run() {
     cursor_client->DisableMouseEvents();
   }
 
-  return RespondNow(NoArguments());
+  return RespondNow(WithArguments());
 }
 
 ExtensionFunction::ResponseAction
@@ -488,7 +488,7 @@ AccessibilityPrivateSetSelectToSpeakStateFunction::Run() {
   auto* accessibility_manager = AccessibilityManager::Get();
   accessibility_manager->SetSelectToSpeakState(state);
 
-  return RespondNow(NoArguments());
+  return RespondNow(WithArguments());
 }
 
 ExtensionFunction::ResponseAction
@@ -502,7 +502,7 @@ AccessibilityPrivateHandleScrollableBoundsForPointFoundFunction::Run() {
                    params->rect.height);
   ash::AccessibilityController::Get()->HandleAutoclickScrollableBoundsFound(
       bounds);
-  return RespondNow(NoArguments());
+  return RespondNow(WithArguments());
 }
 
 ExtensionFunction::ResponseAction
@@ -517,7 +517,7 @@ AccessibilityPrivateMoveMagnifierToRectFunction::Run() {
   DCHECK(magnification_manager);
   magnification_manager->HandleMoveMagnifierToRectIfEnabled(bounds);
 
-  return RespondNow(NoArguments());
+  return RespondNow(WithArguments());
 }
 
 ExtensionFunction::ResponseAction
@@ -532,7 +532,7 @@ AccessibilityPrivateMagnifierCenterOnPointFunction::Run() {
   DCHECK(magnification_manager);
   magnification_manager->HandleMagnifierCenterOnPointIfEnabled(point_in_screen);
 
-  return RespondNow(NoArguments());
+  return RespondNow(WithArguments());
 }
 
 ExtensionFunction::ResponseAction
@@ -549,7 +549,7 @@ AccessibilityPrivateToggleDictationFunction::Run() {
 
   ash::AccessibilityController::Get()->ToggleDictationFromSource(source);
 
-  return RespondNow(NoArguments());
+  return RespondNow(WithArguments());
 }
 
 ExtensionFunction::ResponseAction
@@ -576,7 +576,7 @@ AccessibilityPrivateUpdateSwitchAccessBubbleFunction::Run() {
       ash::AccessibilityController::Get()->HideSwitchAccessBackButton();
     else if (params->bubble == accessibility_private::SWITCH_ACCESS_BUBBLE_MENU)
       ash::AccessibilityController::Get()->HideSwitchAccessMenu();
-    return RespondNow(NoArguments());
+    return RespondNow(WithArguments());
   }
 
   if (!params->anchor)
@@ -588,7 +588,7 @@ AccessibilityPrivateUpdateSwitchAccessBubbleFunction::Run() {
   if (params->bubble ==
       accessibility_private::SWITCH_ACCESS_BUBBLE_BACKBUTTON) {
     ash::AccessibilityController::Get()->ShowSwitchAccessBackButton(anchor);
-    return RespondNow(NoArguments());
+    return RespondNow(WithArguments());
   }
 
   if (!params->actions)
@@ -608,7 +608,7 @@ AccessibilityPrivateUpdateSwitchAccessBubbleFunction::Run() {
 
   ash::AccessibilityController::Get()->ShowSwitchAccessMenu(anchor,
                                                             actions_to_show);
-  return RespondNow(NoArguments());
+  return RespondNow(WithArguments());
 }
 
 ExtensionFunction::ResponseAction
@@ -629,7 +629,7 @@ AccessibilityPrivateSetPointScanStateFunction::Run() {
       break;
   }
 
-  return RespondNow(NoArguments());
+  return RespondNow(WithArguments());
 }
 
 AccessibilityPrivateGetBatteryDescriptionFunction::
@@ -640,8 +640,8 @@ AccessibilityPrivateGetBatteryDescriptionFunction::
 
 ExtensionFunction::ResponseAction
 AccessibilityPrivateGetBatteryDescriptionFunction::Run() {
-  return RespondNow(OneArgument(base::Value(
-      ash::AccessibilityController::Get()->GetBatteryDescription())));
+  return RespondNow(WithArguments(
+      ash::AccessibilityController::Get()->GetBatteryDescription()));
 }
 
 ExtensionFunction::ResponseAction
@@ -654,7 +654,7 @@ AccessibilityPrivateSetVirtualKeyboardVisibleFunction::Run() {
   ash::AccessibilityController::Get()->SetVirtualKeyboardVisible(
       params->is_visible);
 
-  return RespondNow(NoArguments());
+  return RespondNow(WithArguments());
 }
 
 ExtensionFunction::ResponseAction
@@ -678,7 +678,7 @@ AccessibilityPrivatePerformAcceleratorActionFunction::Run() {
 
   ash::AccessibilityController::Get()->PerformAcceleratorAction(
       accelerator_action);
-  return RespondNow(NoArguments());
+  return RespondNow(WithArguments());
 }
 
 ExtensionFunction::ResponseAction
@@ -708,7 +708,7 @@ AccessibilityPrivateIsFeatureEnabledFunction::Run() {
       return RespondNow(Error("Unrecognized feature"));
   }
 
-  return RespondNow(OneArgument(base::Value(enabled)));
+  return RespondNow(WithArguments(enabled));
 }
 
 ExtensionFunction::ResponseAction
@@ -720,7 +720,7 @@ AccessibilityPrivateUpdateSelectToSpeakPanelFunction::Run() {
 
   if (!params->show) {
     ash::AccessibilityController::Get()->HideSelectToSpeakPanel();
-    return RespondNow(NoArguments());
+    return RespondNow(WithArguments());
   }
 
   if (!params->anchor || !params->is_paused || !params->speed)
@@ -732,7 +732,7 @@ AccessibilityPrivateUpdateSelectToSpeakPanelFunction::Run() {
   ash::AccessibilityController::Get()->ShowSelectToSpeakPanel(
       anchor, *params->is_paused, *params->speed);
 
-  return RespondNow(NoArguments());
+  return RespondNow(WithArguments());
 }
 
 ExtensionFunction::ResponseAction
@@ -761,7 +761,7 @@ AccessibilityPrivateShowConfirmationDialogFunction::Run() {
 
 void AccessibilityPrivateShowConfirmationDialogFunction::OnDialogResult(
     bool confirmed) {
-  Respond(OneArgument(base::Value(confirmed)));
+  Respond(WithArguments(confirmed));
 }
 
 ExtensionFunction::ResponseAction
@@ -785,8 +785,8 @@ AccessibilityPrivateGetLocalizedDomKeyStringForKeyCodeFunction::Run() {
       if (dom_key.IsDeadKey() || !dom_key.IsValid()) {
         return RespondNow(Error("Invalid key code"));
       }
-      return RespondNow(OneArgument(
-          base::Value(ui::KeycodeConverter::DomKeyToKeyString(dom_key))));
+      return RespondNow(
+          WithArguments(ui::KeycodeConverter::DomKeyToKeyString(dom_key)));
     }
   }
 
@@ -799,11 +799,11 @@ AccessibilityPrivateGetLocalizedDomKeyStringForKeyCodeFunction::Run() {
         dom_key.IsDeadKey()) {
       continue;
     }
-    return RespondNow(OneArgument(
-        base::Value(ui::KeycodeConverter::DomKeyToKeyString((dom_key)))));
+    return RespondNow(
+        WithArguments(ui::KeycodeConverter::DomKeyToKeyString((dom_key))));
   }
 
-  return RespondNow(OneArgument(base::Value(std::string())));
+  return RespondNow(WithArguments(std::string()));
 }
 
 ExtensionFunction::ResponseAction
@@ -860,13 +860,13 @@ AccessibilityPrivateUpdateDictationBubbleFunction::Run() {
 
   ash::AccessibilityController::Get()->UpdateDictationBubble(properties.visible,
                                                              icon, text, hints);
-  return RespondNow(NoArguments());
+  return RespondNow(WithArguments());
 }
 
 ExtensionFunction::ResponseAction
 AccessibilityPrivateSilenceSpokenFeedbackFunction::Run() {
   ash::AccessibilityController::Get()->SilenceSpokenFeedback();
-  return RespondNow(NoArguments());
+  return RespondNow(WithArguments());
 }
 
 ExtensionFunction::ResponseAction
@@ -880,7 +880,7 @@ AccessibilityPrivateInstallPumpkinForDictationFunction::Run() {
 
 void AccessibilityPrivateInstallPumpkinForDictationFunction::
     OnPumpkinInstallFinished(bool success) {
-  Respond(OneArgument(base::Value(success)));
+  Respond(WithArguments(success));
 }
 
 ExtensionFunction::ResponseAction
@@ -906,5 +906,5 @@ void AccessibilityPrivateGetDlcContentsFunction::OnDlcContentsRetrieved(
     return;
   }
 
-  Respond(OneArgument(base::Value(contents)));
+  Respond(WithArguments(base::Value(contents)));
 }
