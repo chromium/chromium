@@ -16,7 +16,7 @@
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/web_contents.h"
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_WIN)
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "ui/aura/window.h"
@@ -42,7 +42,9 @@ DownloadFilePicker::DownloadFilePicker(download::DownloadItem* item,
   DCHECK(item);
   item->AddObserver(this);
   WebContents* web_contents = content::DownloadItemUtils::GetWebContents(item);
-  if (!web_contents || !web_contents->GetNativeView()) {
+  // Extension download may not have associated webcontents.
+  if (item->GetDownloadSource() != download::DownloadSource::EXTENSION_API &&
+      (!web_contents || !web_contents->GetNativeView())) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(&DownloadFilePicker::FileSelectionCanceled,
                                   base::Unretained(this), nullptr));
@@ -79,10 +81,10 @@ DownloadFilePicker::DownloadFilePicker(download::DownloadItem* item,
   // If select_file_dialog_ issued by extension API,
   // (e.g. chrome.downloads.download), the |owning_window| host
   // could be null, then it will cause the select file dialog is not modal
-  // dialog in Linux. See SelectFileImpl() in select_file_dialog_linux_gtk.cc.
-  // Here we make owning_window host to browser current active window
-  // if it is null. https://crbug.com/1301898
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  // dialog in Linux (See SelectFileImpl() in select_file_dialog_linux_gtk.cc).
+  // and windows.Here we make owning_window host to browser current active
+  // window if it is null. https://crbug.com/1301898
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_WIN)
   if (!owning_window || !owning_window->GetHost()) {
     owning_window = BrowserList::GetInstance()
                         ->GetLastActive()
