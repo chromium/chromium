@@ -51,7 +51,7 @@ class WriterThread : public base::PlatformThread::Delegate {
       // Time delay so that the writer thread does not
       // "burn out" too fast.
       for (uint32_t _ = 0; _ < kNumTimeDelay; ++_) {
-        ++delay_counter;
+        delay_counter = delay_counter + 1;
       }
     }
   }
@@ -88,7 +88,7 @@ class ReaderThread : public base::PlatformThread::Delegate {
 
       // Time buffer/delay element for writer to squeeze in
       for (uint32_t _ = 0; _ < kNumTimeDelay; ++_) {
-        delay_counter++;
+        delay_counter = delay_counter + 1;
       }
     }
   }
