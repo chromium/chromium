@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL COEP:unsafe-none ServiceWorker assert_equals: expected "ServiceWorker: Proxying" but got "ServiceWorker: Fetch success"
-Harness: the test ran to completion.
-

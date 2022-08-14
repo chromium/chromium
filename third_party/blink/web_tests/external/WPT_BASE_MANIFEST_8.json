@@ -385046,6 +385046,27 @@
       ]
      ],
      "parsing": {
+      "gradient-interpolation-method-computed.html": [
+       "b6a91784d644aff899eef654c939553c91537973",
+       [
+        null,
+        {}
+       ]
+      ],
+      "gradient-interpolation-method-invalid.html": [
+       "336a387e3c212bea459e8a3834ca54537b6d2c9d",
+       [
+        null,
+        {}
+       ]
+      ],
+      "gradient-interpolation-method-valid.html": [
+       "d71d8da28482bed2bfa8ef99fcdee7761eceee1c",
+       [
+        null,
+        {}
+       ]
+      ],
       "gradient-position-invalid.html": [
        "63ac09fc17ede201f4008f68d5b6c626bbe5f238",
        [
