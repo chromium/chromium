@@ -31,7 +31,8 @@ def _CheckNo_Context_bindService_Added(input_api, output_api):
 
   def _FilterFile(affected_file):
     skipFiles = (input_api.DEFAULT_FILES_TO_SKIP +
-                  (r'.*android_webview[\\\/]js_sandbox[\\\/].*',))
+      (r'.*android_webview[/\\]common[/\\]services[/\\]ServiceHelper\.java',
+        r'.*android_webview[/\\]js_sandbox[/\\].*',))
     return input_api.FilterSourceFile(
         affected_file,
         files_to_skip=skipFiles,
