@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "media/base/media_log.h"
@@ -154,6 +155,8 @@ bool MojoVideoEncodeAccelerator::Initialize(
 
 void MojoVideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
                                         bool force_keyframe) {
+  TRACE_EVENT1("media", "MojoVideoEncodeAccelerator::Encode", "timestamp",
+               frame->timestamp());
   DVLOG(2) << __func__ << " tstamp=" << frame->timestamp();
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   size_t num_planes = VideoFrame::NumPlanes(frame->format());

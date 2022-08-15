@@ -16,6 +16,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/bitstream_buffer.h"
@@ -337,6 +338,9 @@ void VideoEncodeAcceleratorAdapter::EncodeOnAcceleratorThread(
     scoped_refptr<VideoFrame> frame,
     bool key_frame,
     EncoderStatusCB done_cb) {
+  TRACE_EVENT1("media",
+               "VideoEncodeAcceleratorAdapter::EncodeOnAcceleratorThread",
+               "timestamp", frame->timestamp());
   DCHECK_CALLED_ON_VALID_SEQUENCE(accelerator_sequence_checker_);
 
   if (state_ == State::kWaitingForFirstFrame ||
@@ -730,6 +734,7 @@ EncoderStatus::Or<scoped_refptr<VideoFrame>>
 VideoEncodeAcceleratorAdapter::PrepareCpuFrame(
     const gfx::Size& size,
     scoped_refptr<VideoFrame> src_frame) {
+  TRACE_EVENT0("media", "VideoEncodeAcceleratorAdapter::PrepareCpuFrame");
   auto handle = input_pool_->MaybeAllocateBuffer(input_buffer_size_);
   if (!handle)
     return EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode);
@@ -769,6 +774,7 @@ EncoderStatus::Or<scoped_refptr<VideoFrame>>
 VideoEncodeAcceleratorAdapter::PrepareGpuFrame(
     const gfx::Size& size,
     scoped_refptr<VideoFrame> src_frame) {
+  TRACE_EVENT0("media", "VideoEncodeAcceleratorAdapter::PrepareGpuFrame");
   DCHECK_CALLED_ON_VALID_SEQUENCE(accelerator_sequence_checker_);
   DCHECK(src_frame);
   if (src_frame->HasGpuMemoryBuffer() &&
