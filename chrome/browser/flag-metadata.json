@@ -6427,7 +6427,7 @@
   {
     "name": "use-multiple-overlays",
     "owners": [ "khaslett", "//components/viz/OWNERS" ],
-    "expiry_milestone": 104
+    "expiry_milestone": 110
   },
   {
     "name": "use-passthrough-command-decoder",
