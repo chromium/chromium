@@ -3480,25 +3480,6 @@
             ]
         }
     ],
-    "DesktopNtpFre": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Fre",
-                    "enable_features": [
-                        "NtpModulesFirstRunExperience"
-                    ]
-                }
-            ]
-        }
-    ],
     "DesktopNtpModules": [
         {
             "platforms": [

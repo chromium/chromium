@@ -61,3 +61,13 @@ bool IsCartModuleEnabled() {
     return IsOsSupportedForCart() && IsInUS();
   }
 }
+
+bool IsModuleFreEnabled() {
+  if (base::FeatureList::GetInstance()->IsFeatureOverridden(
+          ntp_features::kNtpModulesFirstRunExperience.name)) {
+    return base::FeatureList::IsEnabled(
+        ntp_features::kNtpModulesFirstRunExperience);
+  } else {
+    return IsInUS();
+  }
+}

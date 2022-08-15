@@ -21,7 +21,8 @@ class NewTabPageUtilEnableFlagBrowserTest : public NewTabPageUtilBrowserTest {
  public:
   NewTabPageUtilEnableFlagBrowserTest() {
     features_.InitWithFeatures({ntp_features::kNtpRecipeTasksModule,
-                                ntp_features::kNtpChromeCartModule},
+                                ntp_features::kNtpChromeCartModule,
+                                ntp_features::kNtpModulesFirstRunExperience},
                                {});
   }
 };
@@ -29,8 +30,10 @@ class NewTabPageUtilEnableFlagBrowserTest : public NewTabPageUtilBrowserTest {
 class NewTabPageUtilDisableFlagBrowserTest : public NewTabPageUtilBrowserTest {
  public:
   NewTabPageUtilDisableFlagBrowserTest() {
-    features_.InitWithFeatures({}, {ntp_features::kNtpRecipeTasksModule,
-                                    ntp_features::kNtpChromeCartModule});
+    features_.InitWithFeatures({},
+                               {ntp_features::kNtpRecipeTasksModule,
+                                ntp_features::kNtpChromeCartModule,
+                                ntp_features::kNtpModulesFirstRunExperience});
   }
 };
 
@@ -87,4 +90,26 @@ IN_PROC_BROWSER_TEST_F(NewTabPageUtilDisableFlagBrowserTest,
   auto locale = std::make_unique<ScopedBrowserLocale>("en-US");
   g_browser_process->variations_service()->OverrideStoredPermanentCountry("us");
   EXPECT_FALSE(IsCartModuleEnabled());
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageUtilBrowserTest, EnableFreByToT) {
+  auto locale = std::make_unique<ScopedBrowserLocale>("en-US");
+  g_browser_process->variations_service()->OverrideStoredPermanentCountry("us");
+  EXPECT_TRUE(IsModuleFreEnabled());
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageUtilBrowserTest, DisableFreByToT) {
+  auto locale = std::make_unique<ScopedBrowserLocale>("en-US");
+  g_browser_process->variations_service()->OverrideStoredPermanentCountry("ca");
+  EXPECT_FALSE(IsModuleFreEnabled());
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageUtilEnableFlagBrowserTest, EnableFreByFlag) {
+  EXPECT_TRUE(IsModuleFreEnabled());
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageUtilDisableFlagBrowserTest, DisableFreByFlag) {
+  auto locale = std::make_unique<ScopedBrowserLocale>("en-US");
+  g_browser_process->variations_service()->OverrideStoredPermanentCountry("us");
+  EXPECT_FALSE(IsModuleFreEnabled());
 }
