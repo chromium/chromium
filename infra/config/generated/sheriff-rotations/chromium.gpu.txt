@@ -22,6 +22,7 @@ ci/GPU FYI Win x64 Builder (dbg)
 ci/GPU FYI Win x64 DX12 Vulkan Builder
 ci/GPU FYI Win x64 DX12 Vulkan Builder (dbg)
 ci/GPU FYI XR Win x64 Builder
+ci/GPU Flake Finder
 ci/GPU Linux Builder
 ci/GPU Mac Builder
 ci/GPU Win x64 Builder

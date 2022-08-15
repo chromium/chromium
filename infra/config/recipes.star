@@ -167,6 +167,11 @@ build_recipe(
 )
 
 build_recipe(
+    name = "recipe:chromium_expectation_files/expectation_file_scripts",
+    bootstrappable = True,
+)
+
+build_recipe(
     name = "recipe:chromium_export_metadata",
 )
 
