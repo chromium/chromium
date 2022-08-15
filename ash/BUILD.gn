@@ -3430,6 +3430,8 @@ static_library("test_support") {
     "test/ash_pixel_test_init_params.h",
     "test/ash_test_base.cc",
     "test/ash_test_base.h",
+    "test/ash_test_color_generator.cc",
+    "test/ash_test_color_generator.h",
     "test/ash_test_helper.cc",
     "test/ash_test_helper.h",
     "test/ash_test_suite.cc",

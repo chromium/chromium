@@ -13,11 +13,6 @@
 namespace ash {
 namespace {
 
-// The array of the candidate colors for app icons.
-constexpr std::array<SkColor, 7> kColorArray = {
-    SK_ColorWHITE,  SK_ColorRED,  SK_ColorGREEN,  SK_ColorBLUE,
-    SK_ColorYELLOW, SK_ColorCYAN, SK_ColorMAGENTA};
-
 // Create a test 1x1 icon image with a given |color|.
 gfx::ImageSkia CreateImageSkiaIcon(SkColor color) {
   SkBitmap bitmap;
@@ -55,7 +50,9 @@ void ScrollableShelfTestBase::PopulateAppShortcut(int number,
                                                   bool use_alternative_color) {
   for (int i = 0; i < number; i++)
     AddAppShortcutWithIconColor(
-        TYPE_PINNED_APP, use_alternative_color ? GetNextColor() : SK_ColorRED);
+        TYPE_PINNED_APP, use_alternative_color
+                             ? icon_color_generator_.GetAlternativeColor()
+                             : icon_color_generator_.default_color());
 }
 
 void ScrollableShelfTestBase::AddAppShortcutsUntilOverflow(
@@ -63,7 +60,9 @@ void ScrollableShelfTestBase::AddAppShortcutsUntilOverflow(
   while (scrollable_shelf_view_->layout_strategy_for_test() ==
          ScrollableShelfView::kNotShowArrowButtons) {
     AddAppShortcutWithIconColor(
-        TYPE_PINNED_APP, use_alternative_color ? GetNextColor() : SK_ColorRED);
+        TYPE_PINNED_APP, use_alternative_color
+                             ? icon_color_generator_.GetAlternativeColor()
+                             : icon_color_generator_.default_color());
   }
 }
 
@@ -78,12 +77,6 @@ ShelfID ScrollableShelfTestBase::AddAppShortcutWithIconColor(
   test_api_->RunMessageLoopUntilAnimationsDone();
 
   return item.id;
-}
-
-SkColor ScrollableShelfTestBase::GetNextColor() {
-  const SkColor color = kColorArray[next_color_index_];
-  next_color_index_ = (next_color_index_ + 1) % kColorArray.size();
-  return color;
 }
 
 }  // namespace ash

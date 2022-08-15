@@ -7,6 +7,7 @@
 
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/ash_test_color_generator.h"
 
 namespace ash {
 class ScrollableShelfView;
@@ -38,10 +39,6 @@ class ScrollableShelfTestBase : public AshTestBase {
   // Adds a shelf item of the specified type and color.
   ShelfID AddAppShortcutWithIconColor(ShelfItemType item_type, SkColor color);
 
-  // Returns a color used to paint an icon. Called when neighboring pinned
-  // apps should have different icon colors.
-  SkColor GetNextColor();
-
   ScrollableShelfView* scrollable_shelf_view_ = nullptr;
   ShelfView* shelf_view_ = nullptr;
   std::unique_ptr<ShelfViewTestAPI> test_api_;
@@ -49,9 +46,7 @@ class ScrollableShelfTestBase : public AshTestBase {
   // Used as the id of the next pinned app. Updates when an app is pinned.
   int id_ = 0;
 
-  // Indicates the color to be returned by `GetNextColor()`. Updates when
-  // `GetNextColor()` is called.
-  size_t next_color_index_ = 0;
+  AshTestColorGenerator icon_color_generator_{/*default_color=*/SK_ColorRED};
 };
 
 }  // namespace ash
