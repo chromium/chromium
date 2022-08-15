@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.page_info.SiteSettingsHelper;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.TabUtils.LoadIfNeededCaller;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
@@ -51,6 +52,15 @@ public class RequestDesktopUtils {
             "default_on_on_low_end_devices";
     static final String PARAM_SHOW_MESSAGE_ON_GLOBAL_SETTING_DEFAULT_ON =
             "show_message_on_default_on";
+
+    static final String PARAM_GLOBAL_SETTING_OPT_IN_ENABLED = "show_opt_in_message";
+    static final String PARAM_GLOBAL_SETTING_OPT_IN_DISPLAY_SIZE_MIN_THRESHOLD_INCHES =
+            "opt_in_display_size_min_threshold_inches";
+    static final double DEFAULT_GLOBAL_SETTING_OPT_IN_DISPLAY_SIZE_MIN_THRESHOLD_INCHES = 10.0;
+    static final String PARAM_GLOBAL_SETTING_OPT_IN_DISPLAY_SIZE_MAX_THRESHOLD_INCHES =
+            "opt_in_display_size_max_threshold_inches";
+    static final double DEFAULT_GLOBAL_SETTING_OPT_IN_DISPLAY_SIZE_MAX_THRESHOLD_INCHES =
+            Double.MAX_VALUE;
 
     // Note: these values must match the UserAgentRequestType enum in enums.xml.
     @IntDef({UserAgentRequestType.REQUEST_DESKTOP, UserAgentRequestType.REQUEST_MOBILE})
@@ -156,8 +166,15 @@ public class RequestDesktopUtils {
      * @param displaySizeInInches The device primary display size, in inches.
      * @return Whether the desktop site global setting should be default-enabled.
      */
-    public static boolean shouldDefaultEnableGlobalSetting(double displaySizeInInches) {
+    static boolean shouldDefaultEnableGlobalSetting(double displaySizeInInches) {
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS)) {
+            return false;
+        }
+
+        // If the device is part of an opt-in experiment arm, avoid default-enabling the setting.
+        if (ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                    ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS,
+                    PARAM_GLOBAL_SETTING_OPT_IN_ENABLED, false)) {
             return false;
         }
 
@@ -265,6 +282,105 @@ public class RequestDesktopUtils {
         messageDispatcher.enqueueWindowScopedMessage(message, false);
         SharedPreferencesManager.getInstance().removeKey(
                 ChromePreferenceKeys.DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_SHOW_MESSAGE);
+        return true;
+    }
+
+    /**
+     * @param displaySizeInInches The device primary display size, in inches.
+     * @param profile The current {@link Profile}.
+     * @return Whether the message to opt-in to the desktop site global setting should be shown.
+     */
+    static boolean shouldShowGlobalSettingOptInMessage(
+            double displaySizeInInches, Profile profile) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS)) {
+            return false;
+        }
+
+        // Present the message only if opt-in is enabled.
+        if (!ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                    ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS,
+                    PARAM_GLOBAL_SETTING_OPT_IN_ENABLED, false)) {
+            return false;
+        }
+
+        // Present the message at most once on a device.
+        if (SharedPreferencesManager.getInstance().contains(
+                    ChromePreferenceKeys.DESKTOP_SITE_GLOBAL_SETTING_OPT_IN_MESSAGE_SHOWN)) {
+            return false;
+        }
+
+        // Present the message only if the user has not previously updated the global setting.
+        if (SharedPreferencesManager.getInstance().contains(
+                    SingleCategorySettings
+                            .USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY)) {
+            return false;
+        }
+
+        // Present the message only if the desktop site global setting is off.
+        if (WebsitePreferenceBridge.isCategoryEnabled(
+                    profile, ContentSettingsType.REQUEST_DESKTOP_SITE)) {
+            return false;
+        }
+
+        // Present the message only if the device falls within the range of screen sizes for the
+        // opt-in.
+        return displaySizeInInches >= ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
+                       ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS,
+                       PARAM_GLOBAL_SETTING_OPT_IN_DISPLAY_SIZE_MIN_THRESHOLD_INCHES,
+                       DEFAULT_GLOBAL_SETTING_OPT_IN_DISPLAY_SIZE_MIN_THRESHOLD_INCHES)
+                && displaySizeInInches < ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
+                           ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS,
+                           PARAM_GLOBAL_SETTING_OPT_IN_DISPLAY_SIZE_MAX_THRESHOLD_INCHES,
+                           DEFAULT_GLOBAL_SETTING_OPT_IN_DISPLAY_SIZE_MAX_THRESHOLD_INCHES);
+    }
+
+    /**
+     * Creates and shows a message to the user to opt-in to the desktop site global setting based on
+     * device conditions.
+     * @param displaySizeInInches The device primary display size, in inches.
+     * @param profile The current {@link Profile}.
+     * @param messageDispatcher The {@link MessageDispatcher} to enqueue the message.
+     * @param context The current context.
+     * @param tab The {@link Tab} where the message is shown.
+     * @return Whether the opt-in message was shown.
+     */
+    public static boolean maybeShowGlobalSettingOptInMessage(double displaySizeInInches,
+            Profile profile, MessageDispatcher messageDispatcher, Context context, Tab tab) {
+        if (messageDispatcher == null) return false;
+
+        if (!shouldShowGlobalSettingOptInMessage(displaySizeInInches, profile)) {
+            return false;
+        }
+
+        Resources resources = context.getResources();
+        PropertyModel message =
+                new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                        .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                MessageIdentifier.DESKTOP_SITE_GLOBAL_OPT_IN)
+                        .with(MessageBannerProperties.TITLE,
+                                resources.getString(R.string.rds_global_opt_in_message_title))
+                        .with(MessageBannerProperties.ICON_RESOURCE_ID,
+                                R.drawable.ic_desktop_windows)
+                        .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT,
+                                resources.getString(R.string.yes))
+                        .with(MessageBannerProperties.ON_PRIMARY_ACTION,
+                                () -> {
+                                    WebsitePreferenceBridge.setCategoryEnabled(profile,
+                                            ContentSettingsType.REQUEST_DESKTOP_SITE, true);
+                                    // TODO(crbug.com/1350274): Remove this explicit load when this
+                                    // bug is addressed.
+                                    if (tab != null) {
+                                        tab.loadIfNeeded(
+                                                LoadIfNeededCaller
+                                                        .MAYBE_SHOW_GLOBAL_SETTING_OPT_IN_MESSAGE);
+                                    }
+                                    return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
+                                })
+                        .build();
+
+        messageDispatcher.enqueueWindowScopedMessage(message, false);
+        SharedPreferencesManager.getInstance().writeBoolean(
+                ChromePreferenceKeys.DESKTOP_SITE_GLOBAL_SETTING_OPT_IN_MESSAGE_SHOWN, true);
         return true;
     }
 }

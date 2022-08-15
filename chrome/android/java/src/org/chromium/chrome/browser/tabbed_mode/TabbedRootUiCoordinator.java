@@ -658,6 +658,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
 
         if (!didTriggerPromo) {
+            didTriggerPromo = RequestDesktopUtils.maybeShowGlobalSettingOptInMessage(
+                    getPrimaryDisplaySizeInInches(), Profile.getLastUsedRegularProfile(),
+                    mMessageDispatcher, mActivity, mActivityTabProvider.get());
+        }
+
+        if (!didTriggerPromo) {
             didTriggerPromo = RequestDesktopUtils.maybeShowDefaultEnableGlobalSettingMessage(
                     Profile.getLastUsedRegularProfile(), mMessageDispatcher, mActivity);
         }

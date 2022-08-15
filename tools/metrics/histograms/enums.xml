@@ -65772,6 +65772,7 @@ Called by update_use_counter_css.py.-->
   <int value="31" label="ExternalNavigation"/>
   <int value="32" label="FramebustBlocked"/>
   <int value="33" label="DesktopSiteGlobalDefaultOptOut"/>
+  <int value="34" label="DesktopSiteGlobalOptIn"/>
 </enum>
 
 <enum name="MessageLoopProblems">
