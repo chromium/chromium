@@ -1440,15 +1440,14 @@ void GpuDataManagerImplPrivate::ProcessCrashed() {
                          &GpuDataManagerObserver::OnGpuProcessCrashed);
 }
 
-std::unique_ptr<base::ListValue> GpuDataManagerImplPrivate::GetLogMessages()
-    const {
-  auto value = std::make_unique<base::ListValue>();
+base::Value::List GpuDataManagerImplPrivate::GetLogMessages() const {
+  base::Value::List value;
   for (const auto& log_message : log_messages_) {
     base::Value::Dict dict;
     dict.Set("level", log_message.level);
     dict.Set("header", log_message.header);
     dict.Set("message", log_message.message);
-    value->GetList().Append(std::move(dict));
+    value.Append(std::move(dict));
   }
   return value;
 }

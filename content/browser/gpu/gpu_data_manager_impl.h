@@ -170,8 +170,8 @@ class CONTENT_EXPORT GpuDataManagerImpl : public GpuDataManager,
 
   void ProcessCrashed();
 
-  // Returns a new copy of the ListValue.
-  std::unique_ptr<base::ListValue> GetLogMessages() const;
+  // Returns a base::Value::List with the log messages.
+  base::Value::List GetLogMessages() const;
 
   // Called when switching GPUs.
   void HandleGpuSwitch();

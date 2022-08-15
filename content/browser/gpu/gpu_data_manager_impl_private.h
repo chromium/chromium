@@ -121,7 +121,7 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
 
   void ProcessCrashed();
 
-  std::unique_ptr<base::ListValue> GetLogMessages() const;
+  base::Value::List GetLogMessages() const;
 
   void HandleGpuSwitch();
 
