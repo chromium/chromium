@@ -163,17 +163,17 @@ IN_PROC_BROWSER_TEST_F(DomainReliabilityBrowserTest, Upload) {
   EXPECT_EQ(1, request_count);
   EXPECT_NE("", last_request_content);
 
-  auto body = base::JSONReader::ReadDeprecated(last_request_content);
+  auto body = base::JSONReader::Read(last_request_content);
   ASSERT_TRUE(body);
+  ASSERT_TRUE(body->is_dict());
 
-  const base::DictionaryValue* dict;
-  ASSERT_TRUE(body->GetAsDictionary(&dict));
+  const base::Value::Dict& dict = body->GetDict();
 
-  const base::ListValue* entries;
-  ASSERT_TRUE(dict->GetList("entries", &entries));
-  ASSERT_EQ(1u, entries->GetListDeprecated().size());
+  const base::Value::List* entries = dict.FindList("entries");
+  ASSERT_TRUE(entries);
+  ASSERT_EQ(1u, entries->size());
 
-  const base::Value& entry = entries->GetListDeprecated()[0u];
+  const base::Value& entry = (*entries)[0u];
   ASSERT_TRUE(entry.is_dict());
   ASSERT_TRUE(entry.GetDict().FindString("url"));
   EXPECT_EQ(*(entry.GetDict().FindString("url")), error_url);
