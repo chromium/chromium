@@ -6717,20 +6717,13 @@
     "OptimizeNetworkBuffers2": [
         {
             "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
+                "android_webview"
             ],
             "experiments": [
                 {
-                    "name": "64KB_20220629",
+                    "name": "32KB_input_stream_20220815",
                     "params": {
-                        "bytes_read_limit": "65536",
-                        "filter_source_stream_buffer_size": "65536"
+                        "max_input_stream_bytes_available_unknown": "32768"
                     },
                     "enable_features": [
                         "OptimizeNetworkBuffers2"
