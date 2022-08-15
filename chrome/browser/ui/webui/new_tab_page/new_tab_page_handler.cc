@@ -355,66 +355,67 @@ new_tab_page::mojom::PromoPtr MakePromo(const PromoData& data) {
   // PromoService to base::Value. The middle-slot promo part is then reencoded
   // from base::Value to a JSON string stored in |data.middle_slot_json|.
   auto middle_slot = base::JSONReader::Read(data.middle_slot_json);
-  if (!middle_slot.has_value() ||
-      middle_slot.value().FindBoolPath("hidden").value_or(false)) {
+  if (!middle_slot.has_value())
     return nullptr;
-  }
+
+  base::Value::Dict& middle_slot_dict = middle_slot->GetDict();
+  if (middle_slot_dict.FindBoolByDottedPath("hidden").value_or(false))
+    return nullptr;
+
   auto promo = new_tab_page::mojom::Promo::New();
   promo->id = data.promo_id;
-  if (middle_slot.has_value()) {
-    auto* parts = middle_slot.value().FindListPath("part");
-    if (parts) {
-      std::vector<new_tab_page::mojom::PromoPartPtr> mojom_parts;
-      for (const base::Value& part : parts->GetListDeprecated()) {
-        const base::Value::Dict& part_dict = part.GetDict();
-        if (part_dict.Find("image")) {
-          auto mojom_image = new_tab_page::mojom::PromoImagePart::New();
-          auto* image_url = part_dict.FindStringByDottedPath("image.image_url");
-          if (!image_url || image_url->empty()) {
-            continue;
-          }
-          mojom_image->image_url = GURL(*image_url);
-          auto* target = part_dict.FindStringByDottedPath("image.target");
-          if (target && !target->empty()) {
-            mojom_image->target = GURL(*target);
-          }
-          mojom_parts.push_back(
-              new_tab_page::mojom::PromoPart::NewImage(std::move(mojom_image)));
-        } else if (part_dict.Find("link")) {
-          auto mojom_link = new_tab_page::mojom::PromoLinkPart::New();
-          auto* url = part_dict.FindStringByDottedPath("link.url");
-          if (!url || url->empty()) {
-            continue;
-          }
-          mojom_link->url = GURL(*url);
-          auto* text = part_dict.FindStringByDottedPath("link.text");
-          if (!text || text->empty()) {
-            continue;
-          }
-          mojom_link->text = *text;
-          auto* color = part_dict.FindStringByDottedPath("link.color");
-          if (color && !color->empty()) {
-            mojom_link->color = *color;
-          }
-          mojom_parts.push_back(
-              new_tab_page::mojom::PromoPart::NewLink(std::move(mojom_link)));
-        } else if (part_dict.Find("text")) {
-          auto mojom_text = new_tab_page::mojom::PromoTextPart::New();
-          auto* text = part_dict.FindStringByDottedPath("text.text");
-          if (!text || text->empty()) {
-            continue;
-          }
-          mojom_text->text = *text;
-          auto* color = part_dict.FindStringByDottedPath("text.color");
-          if (color && !color->empty()) {
-            mojom_text->color = *color;
-          }
-          mojom_parts.push_back(
-              new_tab_page::mojom::PromoPart::NewText(std::move(mojom_text)));
+  auto* parts = middle_slot_dict.FindList("part");
+  if (parts) {
+    std::vector<new_tab_page::mojom::PromoPartPtr> mojom_parts;
+    for (const base::Value& part : *parts) {
+      const base::Value::Dict& part_dict = part.GetDict();
+      if (part_dict.Find("image")) {
+        auto mojom_image = new_tab_page::mojom::PromoImagePart::New();
+        auto* image_url = part_dict.FindStringByDottedPath("image.image_url");
+        if (!image_url || image_url->empty()) {
+          continue;
         }
+        mojom_image->image_url = GURL(*image_url);
+        auto* target = part_dict.FindStringByDottedPath("image.target");
+        if (target && !target->empty()) {
+          mojom_image->target = GURL(*target);
+        }
+        mojom_parts.push_back(
+            new_tab_page::mojom::PromoPart::NewImage(std::move(mojom_image)));
+      } else if (part_dict.Find("link")) {
+        auto mojom_link = new_tab_page::mojom::PromoLinkPart::New();
+        auto* url = part_dict.FindStringByDottedPath("link.url");
+        if (!url || url->empty()) {
+          continue;
+        }
+        mojom_link->url = GURL(*url);
+        auto* text = part_dict.FindStringByDottedPath("link.text");
+        if (!text || text->empty()) {
+          continue;
+        }
+        mojom_link->text = *text;
+        auto* color = part_dict.FindStringByDottedPath("link.color");
+        if (color && !color->empty()) {
+          mojom_link->color = *color;
+        }
+        mojom_parts.push_back(
+            new_tab_page::mojom::PromoPart::NewLink(std::move(mojom_link)));
+      } else if (part_dict.Find("text")) {
+        auto mojom_text = new_tab_page::mojom::PromoTextPart::New();
+        auto* text = part_dict.FindStringByDottedPath("text.text");
+        if (!text || text->empty()) {
+          continue;
+        }
+        mojom_text->text = *text;
+        auto* color = part_dict.FindStringByDottedPath("text.color");
+        if (color && !color->empty()) {
+          mojom_text->color = *color;
+        }
+        mojom_parts.push_back(
+            new_tab_page::mojom::PromoPart::NewText(std::move(mojom_text)));
       }
-      promo->middle_slot_parts = std::move(mojom_parts);
     }
+    promo->middle_slot_parts = std::move(mojom_parts);
   }
   promo->log_url = data.promo_log_url;
   return promo;
@@ -690,12 +691,13 @@ void NewTabPageHandler::SetModulesVisible(bool visible) {
 void NewTabPageHandler::SetModuleDisabled(const std::string& module_id,
                                           bool disabled) {
   ListPrefUpdate update(profile_->GetPrefs(), prefs::kNtpDisabledModules);
+  base::Value::List& list = update->GetList();
   base::Value module_id_value(module_id);
   if (disabled) {
-    if (!base::Contains(update->GetListDeprecated(), module_id_value))
-      update->Append(std::move(module_id_value));
+    if (!base::Contains(list, module_id_value))
+      list.Append(std::move(module_id_value));
   } else {
-    update->EraseListValue(module_id_value);
+    list.EraseValue(module_id_value);
   }
   UpdateDisabledModules();
 }
@@ -726,11 +728,12 @@ void NewTabPageHandler::OnModulesLoadedWithData() {
 
 void NewTabPageHandler::SetModulesOrder(
     const std::vector<std::string>& module_ids) {
-  base::Value module_ids_value(base::Value::Type::LIST);
+  base::Value::List module_ids_value;
   for (const auto& module_id : module_ids) {
     module_ids_value.Append(module_id);
   }
-  profile_->GetPrefs()->Set(prefs::kNtpModulesOrder, module_ids_value);
+  profile_->GetPrefs()->SetList(prefs::kNtpModulesOrder,
+                                std::move(module_ids_value));
 }
 
 void NewTabPageHandler::GetModulesOrder(GetModulesOrderCallback callback) {
@@ -1268,25 +1271,23 @@ void NewTabPageHandler::OnLogFetchResult(OnDoodleImageRenderedCallback callback,
     return;
   }
 
-  auto* target_url_params_value = value->FindPath("ddllog.target_url_params");
+  base::Value::Dict& dict = value->GetDict();
+  auto* target_url_params_value =
+      dict.FindStringByDottedPath("ddllog.target_url_params");
   auto target_url_params =
-      target_url_params_value && target_url_params_value->is_string()
-          ? target_url_params_value->GetString()
-          : "";
+      target_url_params_value ? *target_url_params_value : "";
   auto* interaction_log_url_value =
-      value->FindPath("ddllog.interaction_log_url");
+      dict.FindStringByDottedPath("ddllog.interaction_log_url");
   auto interaction_log_url =
-      interaction_log_url_value && interaction_log_url_value->is_string()
+      interaction_log_url_value
           ? absl::optional<GURL>(
                 GURL(TemplateURLServiceFactory::GetForProfile(profile_)
                          ->search_terms_data()
                          .GoogleBaseURLValue())
-                    .Resolve(interaction_log_url_value->GetString()))
+                    .Resolve(*interaction_log_url_value))
           : absl::nullopt;
-  auto* encoded_ei_value = value->FindPath("ddllog.encoded_ei");
-  auto encoded_ei = encoded_ei_value && encoded_ei_value->is_string()
-                        ? encoded_ei_value->GetString()
-                        : "";
+  auto* encoded_ei_value = dict.FindStringByDottedPath("ddllog.encoded_ei");
+  auto encoded_ei = encoded_ei_value ? *encoded_ei_value : "";
   std::move(callback).Run(target_url_params, interaction_log_url, encoded_ei);
 }
 
