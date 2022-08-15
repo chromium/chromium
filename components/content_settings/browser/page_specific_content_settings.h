@@ -211,6 +211,11 @@ class PageSpecificContentSettings
       const GURL& url,
       bool blocked_by_policy);
 
+  // Called when content access is blocked in the renderer process.
+  static void ContentBlocked(int render_process_id,
+                             int render_frame_id,
+                             ContentSettingsType type);
+
   // Called when a specific Shared Worker was accessed.
   static void SharedWorkerAccessed(int render_process_id,
                                    int render_frame_id,

@@ -50,6 +50,9 @@
 #include "url/origin.h"
 
 using content::BrowserThread;
+using StorageType =
+    content_settings::mojom::ContentSettingsManager::StorageType;
+using LifecycleState = content::RenderFrameHost::LifecycleState;
 
 namespace content_settings {
 namespace {
@@ -111,6 +114,11 @@ class WebContentsHandler
   // Notifies all registered |SiteDataObserver|s.
   void NotifySiteDataObservers();
 
+  // Queues update sent while the navigation is still in progress. The update
+  // is run after the navigation completes (DidFinishNavigation).
+  void AddPendingCommitUpdate(content::GlobalRenderFrameHostId id,
+                              base::OnceClosure update);
+
   Delegate* delegate() { return delegate_.get(); }
 
  private:
@@ -152,12 +160,35 @@ class WebContentsHandler
   // All currently registered |SiteDataObserver|s.
   base::ObserverList<SiteDataObserver>::Unchecked observer_list_;
 
+  std::map<content::GlobalRenderFrameHostId, std::vector<base::OnceClosure>>
+      pending_commit_updates_;
+
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
-}  // namespace
+// Certain notifications for content accesses (script/storage) can be
+// received from the renderer while the RFH is in the kPendingCommit lifecycle
+// state. At this point, no PageSpecificContentSettings object is created (as
+// this only happens in DidFinishNavigation), so we queue up the update until
+// DidFinishNavigation is called. This method returns true if the update is
+// queued, false otherwise.
+template <typename Method, typename... Args>
+bool DelayUntilCommitIfNecessary(content::RenderFrameHost* rfh,
+                                 Method method,
+                                 Args... args) {
+  if (!rfh)
+    return false;
+  if (rfh->GetLifecycleState() == LifecycleState::kPendingCommit) {
+    WebContentsHandler::FromWebContents(
+        content::WebContents::FromRenderFrameHost(rfh))
+        ->AddPendingCommitUpdate(rfh->GetGlobalId(),
+                                 base::BindOnce(method, args...));
+    return true;
+  }
+  return false;
+}
 
-using StorageType = mojom::ContentSettingsManager::StorageType;
+}  // namespace
 
 InflightNavigationContentSettings::InflightNavigationContentSettings(
     content::NavigationHandle&) {}
@@ -293,6 +324,16 @@ void WebContentsHandler::DidFinishNavigation(
       TransferNavigationContentSettingsToCommittedDocument(
           *inflight_settings, navigation_handle->GetRenderFrameHost());
     }
+
+    content::GlobalRenderFrameHostId rfh_id =
+        navigation_handle->GetRenderFrameHost()->GetGlobalId();
+    auto it = pending_commit_updates_.find(rfh_id);
+    if (it != pending_commit_updates_.end()) {
+      for (auto& update : it->second) {
+        std::move(update).Run();
+      }
+      pending_commit_updates_.erase(it);
+    }
   }
 
   if (navigation_handle->IsPrerenderedPageActivation()) {
@@ -318,6 +359,17 @@ void WebContentsHandler::RemoveSiteDataObserver(SiteDataObserver* observer) {
 void WebContentsHandler::NotifySiteDataObservers() {
   for (SiteDataObserver& observer : observer_list_)
     observer.OnSiteDataAccessed();
+}
+
+void WebContentsHandler::AddPendingCommitUpdate(
+    content::GlobalRenderFrameHostId id,
+    base::OnceClosure update) {
+#if DCHECK_IS_ON()
+  content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(id);
+  DCHECK(rfh);
+  DCHECK_EQ(rfh->GetLifecycleState(), LifecycleState::kPendingCommit);
+#endif
+  pending_commit_updates_[id].push_back(std::move(update));
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(WebContentsHandler);
@@ -364,7 +416,7 @@ PageSpecificContentSettings::PageSpecificContentSettings(content::Page& page,
       microphone_camera_state_(MICROPHONE_CAMERA_NOT_ACCESSED) {
   observation_.Observe(map_.get());
   if (page.GetMainDocument().GetLifecycleState() ==
-      content::RenderFrameHost::LifecycleState::kPrerendering) {
+      LifecycleState::kPrerendering) {
     updates_queued_during_prerender_ = std::make_unique<PendingUpdates>();
   }
 }
@@ -412,17 +464,37 @@ PageSpecificContentSettings::GetDelegateForWebContents(
 }
 
 // static
-void PageSpecificContentSettings::StorageAccessed(
-    mojom::ContentSettingsManager::StorageType storage_type,
-    int render_process_id,
-    int render_frame_id,
-    const GURL& url,
-    bool blocked_by_policy) {
+void PageSpecificContentSettings::StorageAccessed(StorageType storage_type,
+                                                  int render_process_id,
+                                                  int render_frame_id,
+                                                  const GURL& url,
+                                                  bool blocked_by_policy) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  content::RenderFrameHost* rfh =
+      content::RenderFrameHost::FromID(render_process_id, render_frame_id);
+  if (DelayUntilCommitIfNecessary(
+          rfh, &PageSpecificContentSettings::StorageAccessed, storage_type,
+          render_process_id, render_frame_id, url, blocked_by_policy))
+    return;
   PageSpecificContentSettings* settings =
       GetForFrame(render_process_id, render_frame_id);
   if (settings)
     settings->OnStorageAccessed(storage_type, url, blocked_by_policy);
+}
+
+// static
+void PageSpecificContentSettings::ContentBlocked(int render_process_id,
+                                                 int render_frame_id,
+                                                 ContentSettingsType type) {
+  content::RenderFrameHost* rfh =
+      content::RenderFrameHost::FromID(render_process_id, render_frame_id);
+  if (DelayUntilCommitIfNecessary(rfh,
+                                  &PageSpecificContentSettings::ContentBlocked,
+                                  render_process_id, render_frame_id, type))
+    return;
+  PageSpecificContentSettings* settings = GetForFrame(rfh);
+  if (settings)
+    settings->OnContentBlocked(type);
 }
 
 // static

@@ -54,6 +54,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/commit_message_delayer.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/ppapi_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
@@ -1193,6 +1194,40 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsTest, NonMainFrameRulesAreUpdated) {
   EXPECT_EQ(2u, GetRenderFrameHostCount(main_frame));
 }
 
+// Simulates script being blocked in the renderer and notifying the browser
+// before DidCommitNavigation is sent to the browser (i.e. while the RFH is
+// still pending commit).
+IN_PROC_BROWSER_TEST_F(ContentSettingsTest, RendererUpdateWhilePendingCommit) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  const GURL initial_url =
+      embedded_test_server()->GetURL("a.test", "/title1.html");
+  const GURL second_url =
+      embedded_test_server()->GetURL("b.test", "/title1.html");
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+
+  content::CommitMessageDelayer delayer(
+      web_contents, second_url,
+      base::BindOnce([](content::RenderFrameHost* rfh) {
+        auto global_id = rfh->GetGlobalId();
+        // Call ContentBlocked while the RFH is pending commit.
+        PageSpecificContentSettings::ContentBlocked(
+            global_id.child_id, global_id.frame_routing_id,
+            ContentSettingsType::JAVASCRIPT);
+      }));
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), second_url, WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_NONE);
+  delayer.Wait();
+
+  EXPECT_TRUE(PageSpecificContentSettings::GetForFrame(
+                  web_contents->GetPrimaryMainFrame())
+                  ->IsContentBlocked(ContentSettingsType::JAVASCRIPT));
+}
+
 class ContentSettingsWorkerModulesBrowserTest : public ContentSettingsTest {
  public:
   ContentSettingsWorkerModulesBrowserTest() = default;
@@ -1812,9 +1847,8 @@ class ContentSettingsWorkerModulesWithFencedFrameBrowserTest
   content::test::FencedFrameTestHelper fenced_frame_test_helper_;
 };
 
-// Flaky on multiple platforms: https://crbug.com/1348048
 IN_PROC_BROWSER_TEST_F(ContentSettingsWorkerModulesWithFencedFrameBrowserTest,
-                       DISABLED_WorkerImportModuleBlocked) {
+                       WorkerImportModuleBlocked) {
   const std::string script = base::StringPrintf(
       "import('%s')\n"
       "  .then(module => postMessage(module.msg), _ => postMessage('Failed'));",

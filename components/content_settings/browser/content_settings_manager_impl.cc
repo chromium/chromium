@@ -104,11 +104,8 @@ void OnContentBlockedOnUI(int render_process_id,
                           int32_t render_frame_id,
                           ContentSettingsType type) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  PageSpecificContentSettings* settings =
-      PageSpecificContentSettings::GetForFrame(render_process_id,
-                                               render_frame_id);
-  if (settings)
-    settings->OnContentBlocked(type);
+  PageSpecificContentSettings::ContentBlocked(render_process_id,
+                                              render_frame_id, type);
 }
 
 // We may or may not be on the UI thread depending on whether the
