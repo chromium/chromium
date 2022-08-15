@@ -604,12 +604,12 @@ public class TabSwitcherMediatorUnitTest {
         initAndAssertAllProperties();
         // Mock that mTab1 is not the only tab in the current tab model and it will be closed.
         doReturn(2).when(mTabModel).getCount();
-        mTabModelObserverCaptor.getValue().willCloseTab(mTab1, false);
+        mTabModelObserverCaptor.getValue().willCloseTab(mTab1, false, true);
         verify(mMessageItemsController, never()).removeAllAppendedMessage();
 
         // Mock that mTab1 is the only tab in the current tab model and it will be closed.
         doReturn(1).when(mTabModel).getCount();
-        mTabModelObserverCaptor.getValue().willCloseTab(mTab1, false);
+        mTabModelObserverCaptor.getValue().willCloseTab(mTab1, false, true);
         verify(mMessageItemsController).removeAllAppendedMessage();
     }
 
@@ -634,17 +634,17 @@ public class TabSwitcherMediatorUnitTest {
 
         doReturn(1).when(mTabModel).getCount();
         doReturn(TAB1_ID).when(mPriceMessageService).getBindingTabId();
-        mTabModelObserverCaptor.getValue().willCloseTab(mTab1, false);
+        mTabModelObserverCaptor.getValue().willCloseTab(mTab1, false, true);
         verify(mPriceWelcomeMessageController, times(0)).removePriceWelcomeMessage();
 
         doReturn(2).when(mTabModel).getCount();
         doReturn(TAB2_ID).when(mPriceMessageService).getBindingTabId();
-        mTabModelObserverCaptor.getValue().willCloseTab(mTab1, false);
+        mTabModelObserverCaptor.getValue().willCloseTab(mTab1, false, true);
         verify(mPriceWelcomeMessageController, times(0)).removePriceWelcomeMessage();
 
         doReturn(2).when(mTabModel).getCount();
         doReturn(TAB1_ID).when(mPriceMessageService).getBindingTabId();
-        mTabModelObserverCaptor.getValue().willCloseTab(mTab1, false);
+        mTabModelObserverCaptor.getValue().willCloseTab(mTab1, false, true);
         verify(mPriceWelcomeMessageController, times(1)).removePriceWelcomeMessage();
     }
 

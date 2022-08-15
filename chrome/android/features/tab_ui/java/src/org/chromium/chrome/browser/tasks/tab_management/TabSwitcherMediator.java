@@ -353,7 +353,7 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
             }
 
             @Override
-            public void willCloseTab(Tab tab, boolean animate) {
+            public void willCloseTab(Tab tab, boolean animate, boolean didCloseAlone) {
                 if (mTabModelSelector.getCurrentModel().getCount() == 1) {
                     messageItemsController.removeAllAppendedMessage();
                 } else if (mPriceMessageService != null

@@ -176,7 +176,7 @@ public class TabGridDialogMediator
             }
 
             @Override
-            public void willCloseTab(Tab tab, boolean animate) {
+            public void willCloseTab(Tab tab, boolean animate, boolean didCloseAlone) {
                 List<Tab> relatedTabs = getRelatedTabs(tab.getId());
                 // If the group is empty, update the animation and hide the dialog.
                 if (relatedTabs.size() == 0) {

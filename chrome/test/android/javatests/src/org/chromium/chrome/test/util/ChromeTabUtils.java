@@ -557,7 +557,7 @@ public class ChromeTabUtils {
         final CallbackHelper closeCallback = new CallbackHelper();
         final TabModelObserver observer = new TabModelObserver() {
             @Override
-            public void willCloseTab(Tab tab, boolean animate) {
+            public void willCloseTab(Tab tab, boolean animate, boolean didCloseAlone) {
                 closeCallback.notifyCalled();
             }
         };

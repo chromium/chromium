@@ -715,7 +715,7 @@ class TabListMediator {
             }
 
             @Override
-            public void willCloseTab(Tab tab, boolean animate) {
+            public void willCloseTab(Tab tab, boolean animate, boolean didCloseAlone) {
                 if (mModel.indexFromId(tab.getId()) == TabModel.INVALID_TAB_INDEX) return;
                 tab.removeObserver(mTabObserver);
                 mModel.removeAt(mModel.indexFromId(tab.getId()));

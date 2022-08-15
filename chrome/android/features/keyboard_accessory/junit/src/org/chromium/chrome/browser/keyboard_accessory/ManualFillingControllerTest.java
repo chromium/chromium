@@ -528,7 +528,7 @@ public class ManualFillingControllerTest {
                 mLastMockWebContents, AccessoryTabType.PASSWORDS, new PropertyProvider<>());
 
         // Simulate closing the tab (uncommitted):
-        mMediator.getTabModelObserverForTesting().willCloseTab(tab, false);
+        mMediator.getTabModelObserverForTesting().willCloseTab(tab, false, true);
         mMediator.getTabObserverForTesting().onHidden(tab, TabHidingType.CHANGED_TABS);
         getStateForBrowserTab().getWebContentsObserverForTesting().wasHidden();
         // The state should be kept if the closure wasn't committed.
@@ -1185,7 +1185,7 @@ public class ManualFillingControllerTest {
      * @param tabToBeClosed The mocked {@link Tab} to be closed. Needs |getId()|.
      */
     private void closeBrowserTab(ManualFillingMediator mediator, Tab tabToBeClosed) {
-        mediator.getTabModelObserverForTesting().willCloseTab(tabToBeClosed, false);
+        mediator.getTabModelObserverForTesting().willCloseTab(tabToBeClosed, false, true);
         mediator.getTabObserverForTesting().onHidden(tabToBeClosed, TabHidingType.CHANGED_TABS);
         mCache.getStateFor(mLastMockWebContents).getWebContentsObserverForTesting().wasHidden();
         mLastMockWebContents = null;

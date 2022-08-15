@@ -46,7 +46,7 @@ class TabModelObserverJniBridge implements TabModelObserver {
     }
 
     @Override
-    public final void willCloseTab(Tab tab, boolean animate) {
+    public final void willCloseTab(Tab tab, boolean animate, boolean didCloseAlone) {
         assert mNativeTabModelObserverJniBridge != 0;
         TabModelObserverJniBridgeJni.get().willCloseTab(
                 mNativeTabModelObserverJniBridge, TabModelObserverJniBridge.this, tab, animate);

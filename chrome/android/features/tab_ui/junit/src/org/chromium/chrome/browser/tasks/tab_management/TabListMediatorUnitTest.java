@@ -685,7 +685,7 @@ public class TabListMediatorUnitTest {
 
         assertThat(mModel.size(), equalTo(2));
 
-        mTabModelObserverCaptor.getValue().willCloseTab(mTab2, false);
+        mTabModelObserverCaptor.getValue().willCloseTab(mTab2, false, true);
 
         assertThat(mModel.size(), equalTo(1));
         assertThat(mModel.get(0).model.get(TabProperties.TAB_ID), equalTo(TAB1_ID));
@@ -696,7 +696,7 @@ public class TabListMediatorUnitTest {
         initAndAssertAllProperties();
 
         mTabModelObserverCaptor.getValue().willCloseTab(
-                prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL), false);
+                prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL), false, true);
 
         assertThat(mModel.size(), equalTo(2));
     }
@@ -2315,7 +2315,7 @@ public class TabListMediatorUnitTest {
         mMediator.setActionOnAllRelatedTabsForTesting(true);
 
         assertThat(mModel.size(), equalTo(2));
-        mTabModelObserverCaptor.getValue().willCloseTab(mTab2, false);
+        mTabModelObserverCaptor.getValue().willCloseTab(mTab2, false, true);
         verify(mTab2).removeObserver(mTabObserverCaptor.getValue());
         assertThat(mModel.size(), equalTo(1));
         assertThat(mModel.get(0).model.get(TabProperties.TAB_ID), equalTo(TAB1_ID));
@@ -2327,7 +2327,7 @@ public class TabListMediatorUnitTest {
         mMediator.setActionOnAllRelatedTabsForTesting(true);
 
         assertThat(mModel.size(), equalTo(2));
-        mTabModelObserverCaptor.getValue().willCloseTab(mTab2, false);
+        mTabModelObserverCaptor.getValue().willCloseTab(mTab2, false, true);
         assertThat(mModel.size(), equalTo(1));
 
         // Assume that TabModelFilter is already updated to reflect closed tab is undone.

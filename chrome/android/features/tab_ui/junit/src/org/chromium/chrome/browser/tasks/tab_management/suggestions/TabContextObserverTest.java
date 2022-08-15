@@ -96,7 +96,7 @@ public class TabContextObserverTest {
     public void testCloseTab() {
         TabContextObserverTestHelper tabContextObserverTestHelper =
                 new TabContextObserverTestHelper(mTabModelSelector);
-        tabContextObserverTestHelper.mTabModelObserver.willCloseTab(null, false);
+        tabContextObserverTestHelper.mTabModelObserver.willCloseTab(null, false, true);
         Assert.assertEquals(TabContextObserver.TabContextChangeReason.TAB_CLOSED,
                 tabContextObserverTestHelper.getChangeReason());
     }

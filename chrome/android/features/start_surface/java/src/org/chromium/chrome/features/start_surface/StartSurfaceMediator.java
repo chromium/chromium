@@ -224,7 +224,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
             // normal tabs.
             mNormalTabModelObserver = new TabModelObserver() {
                 @Override
-                public void willCloseTab(Tab tab, boolean animate) {
+                public void willCloseTab(Tab tab, boolean animate, boolean didCloseAlone) {
                     if (mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE
                             && mTabModelSelector.getModel(false).getCount() <= 1) {
                         setTabCarouselVisibility(false);

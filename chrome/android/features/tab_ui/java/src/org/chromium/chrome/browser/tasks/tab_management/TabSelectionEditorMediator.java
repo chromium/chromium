@@ -121,7 +121,7 @@ class TabSelectionEditorMediator
             }
 
             @Override
-            public void willCloseTab(Tab tab, boolean animate) {
+            public void willCloseTab(Tab tab, boolean animate, boolean didCloseAlone) {
                 if (isEditorVisible()) hide();
             }
         };

@@ -96,8 +96,8 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
     protected LayoutManagerTabModelObserver createTabModelObserver() {
         return new LayoutManagerTabModelObserver() {
             @Override
-            public void willCloseTab(Tab tab, boolean animate) {
-                super.willCloseTab(tab, animate);
+            public void willCloseTab(Tab tab, boolean animate, boolean didCloseAlone) {
+                super.willCloseTab(tab, animate, didCloseAlone);
                 if (animate) tabClosing(tab.getId());
             }
         };

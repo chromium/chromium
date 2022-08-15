@@ -30,11 +30,12 @@ public interface TabModelObserver {
 
     /**
      * Called when a tab starts closing.
-     *
      * @param tab The tab to close.
      * @param animate Whether or not to animate the closing.
+     * @param didCloseAlone indicates whether tab will close by itself VS as part of multiple/all
+     *                      tab closures.
      */
-    default void willCloseTab(Tab tab, boolean animate) {}
+    default void willCloseTab(Tab tab, boolean animate, boolean didCloseAlone) {}
 
     /**
      * Called right before {@code tab} will be destroyed. Called for each tab.

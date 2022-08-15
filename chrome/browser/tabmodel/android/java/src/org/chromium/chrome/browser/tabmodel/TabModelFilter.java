@@ -229,10 +229,10 @@ public abstract class TabModelFilter implements TabModelObserver, TabList {
     }
 
     @Override
-    public void willCloseTab(Tab tab, boolean animate) {
+    public void willCloseTab(Tab tab, boolean animate, boolean didCloseAlone) {
         closeTab(tab);
         for (TabModelObserver observer : mFilteredObservers) {
-            observer.willCloseTab(tab, animate);
+            observer.willCloseTab(tab, animate, didCloseAlone);
         }
     }
 

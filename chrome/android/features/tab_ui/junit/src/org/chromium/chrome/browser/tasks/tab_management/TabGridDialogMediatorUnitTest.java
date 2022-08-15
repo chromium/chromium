@@ -445,7 +445,7 @@ public class TabGridDialogMediatorUnitTest {
         mModel.set(TabGridPanelProperties.HEADER_TITLE, null);
         mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, true);
 
-        mTabModelObserverCaptor.getValue().willCloseTab(mTab2, false);
+        mTabModelObserverCaptor.getValue().willCloseTab(mTab2, false, true);
 
         // Current tab ID should not update.
         assertThat(mMediator.getCurrentTabIdForTesting(), equalTo(TAB1_ID));
@@ -465,7 +465,7 @@ public class TabGridDialogMediatorUnitTest {
         mModel.set(TabGridPanelProperties.HEADER_TITLE, null);
         mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, true);
 
-        mTabModelObserverCaptor.getValue().willCloseTab(mTab2, false);
+        mTabModelObserverCaptor.getValue().willCloseTab(mTab2, false, true);
 
         // Current tab ID should be updated to TAB1_ID now.
         assertThat(mMediator.getCurrentTabIdForTesting(), equalTo(TAB1_ID));
@@ -483,7 +483,7 @@ public class TabGridDialogMediatorUnitTest {
         mModel.set(TabGridPanelProperties.ANIMATION_SOURCE_VIEW, mView);
         mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, true);
 
-        mTabModelObserverCaptor.getValue().willCloseTab(mTab1, false);
+        mTabModelObserverCaptor.getValue().willCloseTab(mTab1, false, true);
 
         assertThat(mModel.get(TabGridPanelProperties.ANIMATION_SOURCE_VIEW), equalTo(null));
         verify(mDialogController).resetWithListOfTabs(null);
@@ -506,7 +506,7 @@ public class TabGridDialogMediatorUnitTest {
         mModel.set(TabGridPanelProperties.HEADER_TITLE, null);
         mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, false);
 
-        mTabModelObserverCaptor.getValue().willCloseTab(mTab2, false);
+        mTabModelObserverCaptor.getValue().willCloseTab(mTab2, false, true);
 
         // Current tab ID should be updated to TAB1_ID now.
         assertThat(mMediator.getCurrentTabIdForTesting(), equalTo(TAB1_ID));
@@ -538,7 +538,7 @@ public class TabGridDialogMediatorUnitTest {
         assertThat(mTabGroupTitleEditor.getTabGroupTitle(
                            CriticalPersistedTabData.from(mTab1).getRootId()),
                 equalTo(CUSTOMIZED_DIALOG_TITLE));
-        mTabModelObserverCaptor.getValue().willCloseTab(newTab, false);
+        mTabModelObserverCaptor.getValue().willCloseTab(newTab, false, true);
 
         // Dialog title should still be the stored title.
         assertThat(
@@ -563,7 +563,7 @@ public class TabGridDialogMediatorUnitTest {
         // Mock that we have a stored title stored with reference to root ID of newTab.
         doReturn(CUSTOMIZED_DIALOG_TITLE).when(mTabGroupTitleEditor).getTabGroupTitle(TAB3_ID);
 
-        mTabModelObserverCaptor.getValue().willCloseTab(newTab, false);
+        mTabModelObserverCaptor.getValue().willCloseTab(newTab, false, true);
 
         // Dialog title should still be the stored title even if the root tab is closed.
         assertThat(
@@ -586,7 +586,7 @@ public class TabGridDialogMediatorUnitTest {
         // Mock that we have a stored title stored with reference to root ID of tab1.
         doReturn(CUSTOMIZED_DIALOG_TITLE).when(mTabGroupTitleEditor).getTabGroupTitle(TAB1_ID);
 
-        mTabModelObserverCaptor.getValue().willCloseTab(mTab2, false);
+        mTabModelObserverCaptor.getValue().willCloseTab(mTab2, false, true);
 
         // Even if there is a stored title for tab1, it is now a single tab, so we won't show the
         // stored title.

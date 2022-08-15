@@ -527,7 +527,7 @@ public class TabGroupUiMediatorUnitTest {
         initAndAssertProperties(mTab2);
 
         // Mock closing tab 2, and tab 3 then gets selected. They are in the same group.
-        mTabModelObserverArgumentCaptor.getValue().willCloseTab(mTab2, true);
+        mTabModelObserverArgumentCaptor.getValue().willCloseTab(mTab2, true, true);
         mTabModelObserverArgumentCaptor.getValue().didSelectTab(
                 mTab3, TabSelectionType.FROM_CLOSE, TAB2_ID);
 
@@ -541,7 +541,7 @@ public class TabGroupUiMediatorUnitTest {
         initAndAssertProperties(mTab1);
 
         // Mock closing tab 1, and tab 2 then gets selected. They are in different group.
-        mTabModelObserverArgumentCaptor.getValue().willCloseTab(mTab1, true);
+        mTabModelObserverArgumentCaptor.getValue().willCloseTab(mTab1, true, true);
         mTabModelObserverArgumentCaptor.getValue().didSelectTab(
                 mTab2, TabSelectionType.FROM_CLOSE, TAB1_ID);
 
@@ -557,11 +557,11 @@ public class TabGroupUiMediatorUnitTest {
 
         // Mock closing tab 2 and tab, then tab 1 gets selected. They are in different group. Right
         // now tab group UI is visible.
-        mTabModelObserverArgumentCaptor.getValue().willCloseTab(mTab2, true);
+        mTabModelObserverArgumentCaptor.getValue().willCloseTab(mTab2, true, true);
         mTabModelObserverArgumentCaptor.getValue().didSelectTab(
                 mTab3, TabSelectionType.FROM_CLOSE, TAB2_ID);
         doReturn(new ArrayList<>()).when(mTabGroupModelFilter).getRelatedTabList(TAB3_ID);
-        mTabModelObserverArgumentCaptor.getValue().willCloseTab(mTab3, true);
+        mTabModelObserverArgumentCaptor.getValue().willCloseTab(mTab3, true, true);
         mTabModelObserverArgumentCaptor.getValue().didSelectTab(
                 mTab1, TabSelectionType.FROM_CLOSE, TAB3_ID);
 

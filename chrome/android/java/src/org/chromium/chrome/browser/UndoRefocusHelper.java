@@ -40,7 +40,6 @@ public class UndoRefocusHelper implements DestroyObserver {
     private LayoutStateProvider.LayoutStateObserver mLayoutStateObserver;
     private TabModelSelectorTabModelObserver mTabModelSelectorTabModelObserver;
     private Integer mSelectedTabIdWhenTabClosed;
-    private boolean mWillCloseMultipleTabs;
     private boolean mTabSwitcherActive;
     private Callback<LayoutManagerImpl> mLayoutManagerSupplierCallback;
     private boolean mIsTablet;
@@ -89,8 +88,9 @@ public class UndoRefocusHelper implements DestroyObserver {
     private void observeTabModel() {
         mTabModelSelectorTabModelObserver = new TabModelSelectorTabModelObserver(mModelSelector) {
             @Override
-            public void willCloseTab(Tab tab, boolean animate) {
-                if (mWillCloseMultipleTabs || tab.isIncognito()) return;
+            public void willCloseTab(Tab tab, boolean animate, boolean didCloseAlone) {
+                // Tabs not closed alone are handled in #willCloseMultipleTabs and #willCloseAllTabs
+                if (!didCloseAlone || tab.isIncognito()) return;
 
                 int tabId = tab.getId();
                 if (!mTabSwitcherActive && mIsTablet) {
@@ -101,21 +101,8 @@ public class UndoRefocusHelper implements DestroyObserver {
             }
 
             @Override
-            public void didSelectTab(Tab tab, int type, int lastId) {
-                // Undoing a selected tab closure, after manually switching tabs shouldn't switch
-                // focus to the reopened tab.
-                if (type == TabSelectionType.FROM_USER || type == TabSelectionType.FROM_OMNIBOX
-                        || type == TabSelectionType.FROM_NEW) {
-                    resetSelectionsForUndo();
-                }
-            }
-
-            // TODO (crbug.com/1351406) Fix case of undo closing multiple tabs followed by single
-            // tab.
-            @Override
             public void willCloseMultipleTabs(boolean allowUndo, List<Tab> tabs) {
                 if (!allowUndo || tabs.size() < 1) return;
-                mWillCloseMultipleTabs = true;
 
                 // Record metric only once for the set.
                 // Use the first id to track the set.
@@ -135,7 +122,6 @@ public class UndoRefocusHelper implements DestroyObserver {
                 int selectedTabIdx = mModelSelector.getModel(false).index();
                 Tab selectedTab = mModelSelector.getModel(false).getTabAt(selectedTabIdx);
                 maybeSetSelectedTabId(selectedTab);
-                mWillCloseMultipleTabs = true;
                 // Record metric only once for the set.
                 // Use the selected id to track the set.
                 if (!mTabSwitcherActive && mIsTablet) {
@@ -144,14 +130,18 @@ public class UndoRefocusHelper implements DestroyObserver {
             }
 
             @Override
+            public void didSelectTab(Tab tab, int type, int lastId) {
+                // Undoing a selected tab closure, after manually switching tabs shouldn't switch
+                // focus to the reopened tab.
+                if (type == TabSelectionType.FROM_USER || type == TabSelectionType.FROM_OMNIBOX
+                        || type == TabSelectionType.FROM_NEW) {
+                    resetSelectionsForUndo();
+                }
+            }
+
+            @Override
             public void tabClosureUndone(Tab tab) {
                 int id = tab.getId();
-                if (mWillCloseMultipleTabs) {
-                    // allTabsClosureUndone does not receive set of Ids to pass to record method.
-                    // Hence we record here first.
-                    recordClosureCancellation(id);
-                    return;
-                }
                 recordClosureCancellation(id);
                 if (mSelectedTabIdWhenTabClosed != null && mSelectedTabIdWhenTabClosed == id) {
                     selectPreviouslySelectedTab();
@@ -250,7 +240,6 @@ public class UndoRefocusHelper implements DestroyObserver {
      * are reset so the next undo closure action does not reselect the reopened tab.
      */
     private void resetSelectionsForUndo() {
-        mWillCloseMultipleTabs = false;
         mSelectedTabIdWhenTabClosed = null;
     }
 

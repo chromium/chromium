@@ -48,7 +48,7 @@ public abstract class TabContextObserver {
             }
 
             @Override
-            public void willCloseTab(Tab tab, boolean animate) {
+            public void willCloseTab(Tab tab, boolean animate, boolean didCloseAlone) {
                 onTabContextChanged(TabContextChangeReason.TAB_CLOSED);
             }
         };
