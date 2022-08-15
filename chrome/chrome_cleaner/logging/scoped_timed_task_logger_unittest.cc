@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/logging.h"
+#include "base/test/bind.h"
 #include "chrome/chrome_cleaner/test/test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -53,11 +54,9 @@ class ScopedTimedTaskLoggerTest : public testing::Test {
     active_logging_messages_ = nullptr;
   }
 
-  void timer_callback(const base::TimeDelta&) { callback_called_ = true; }
-
+ private:
   std::vector<std::string> logging_messages_;
   static std::vector<std::string>* active_logging_messages_;
-  bool callback_called_ = false;
 };
 
 std::vector<std::string>* ScopedTimedTaskLoggerTest::active_logging_messages_ =
@@ -66,11 +65,12 @@ std::vector<std::string>* ScopedTimedTaskLoggerTest::active_logging_messages_ =
 }  // namespace
 
 TEST_F(ScopedTimedTaskLoggerTest, CallbackCalled) {
+  bool callback_called = false;
   {
-    ScopedTimedTaskLogger timer(base::BindOnce(
-        &ScopedTimedTaskLoggerTest::timer_callback, base::Unretained(this)));
+    ScopedTimedTaskLogger timer(base::BindLambdaForTesting(
+        [&](const base::TimeDelta&) { callback_called = true; }));
   }
-  EXPECT_TRUE(callback_called_);
+  EXPECT_TRUE(callback_called);
 }
 
 TEST_F(ScopedTimedTaskLoggerTest, NoLog) {

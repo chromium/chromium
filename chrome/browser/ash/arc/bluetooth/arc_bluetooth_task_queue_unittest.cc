@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ash/arc/bluetooth/arc_bluetooth_task_queue.h"
 
-#include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace arc {
@@ -14,7 +14,7 @@ TEST(ArcBluetoothTaskQueueTest, Serial) {
   bool done = false;
   ArcBluetoothTaskQueue task_queue;
   task_queue.Push(base::DoNothing());
-  task_queue.Push(base::BindOnce([](bool* done) { *done = true; }, &done));
+  task_queue.Push(base::BindLambdaForTesting([&]() { done = true; }));
   EXPECT_FALSE(done);
   task_queue.Pop();
   EXPECT_TRUE(done);
@@ -24,9 +24,9 @@ TEST(ArcBluetoothTaskQueueTest, Serial) {
 TEST(ArcBluetoothTaskQueueTest, Order) {
   std::string str;
   ArcBluetoothTaskQueue task_queue;
-  task_queue.Push(base::BindOnce([](std::string* str) { *str += '1'; }, &str));
-  task_queue.Push(base::BindOnce([](std::string* str) { *str += '2'; }, &str));
-  task_queue.Push(base::BindOnce([](std::string* str) { *str += '3'; }, &str));
+  task_queue.Push(base::BindLambdaForTesting([&]() { str += '1'; }));
+  task_queue.Push(base::BindLambdaForTesting([&]() { str += '2'; }));
+  task_queue.Push(base::BindLambdaForTesting([&]() { str += '3'; }));
   task_queue.Pop();
   task_queue.Pop();
   task_queue.Pop();

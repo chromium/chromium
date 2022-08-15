@@ -10,12 +10,12 @@
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_file_system_instance.h"
-#include "base/bind.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/arc/fileapi/chrome_content_provider_url_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -101,14 +101,12 @@ TEST_F(ArcFileSystemBridgeTest, GetFileName) {
   base::RunLoop run_loop;
   arc_file_system_bridge_->GetFileName(
       EncodeToChromeContentProviderUrl(GURL(kTestUrl)).spec(),
-      base::BindOnce(
-          [](base::RunLoop* run_loop,
-             const absl::optional<std::string>& result) {
-            run_loop->Quit();
+      base::BindLambdaForTesting(
+          [&](const absl::optional<std::string>& result) {
+            run_loop.Quit();
             ASSERT_TRUE(result.has_value());
             EXPECT_EQ("hello.txt", result.value());
-          },
-          &run_loop));
+          }));
   run_loop.Run();
 }
 
@@ -122,14 +120,12 @@ TEST_F(ArcFileSystemBridgeTest, GetFileNameNonASCII) {
   base::RunLoop run_loop;
   arc_file_system_bridge_->GetFileName(
       EncodeToChromeContentProviderUrl(url).spec(),
-      base::BindOnce(
-          [](base::RunLoop* run_loop, const std::string& expected,
-             const absl::optional<std::string>& result) {
-            run_loop->Quit();
+      base::BindLambdaForTesting(
+          [&](const absl::optional<std::string>& result) {
+            run_loop.Quit();
             ASSERT_TRUE(result.has_value());
-            EXPECT_EQ(expected, result.value());
-          },
-          &run_loop, filename));
+            EXPECT_EQ(filename, result.value());
+          }));
   run_loop.Run();
 }
 
@@ -141,14 +137,12 @@ TEST_F(ArcFileSystemBridgeTest, GetFileNameLockIcon) {
   base::RunLoop run_loop;
   arc_file_system_bridge_->GetFileName(
       EncodeToChromeContentProviderUrl(url).spec(),
-      base::BindOnce(
-          [](base::RunLoop* run_loop,
-             const absl::optional<std::string>& result) {
-            run_loop->Quit();
+      base::BindLambdaForTesting(
+          [&](const absl::optional<std::string>& result) {
+            run_loop.Quit();
             ASSERT_TRUE(result.has_value());
             EXPECT_EQ("\xF0\x9F\x94\x92", result.value());
-          },
-          &run_loop));
+          }));
   run_loop.Run();
 }
 
@@ -159,13 +153,11 @@ TEST_F(ArcFileSystemBridgeTest, GetFileNameEscapedPathSeparator) {
   base::RunLoop run_loop;
   arc_file_system_bridge_->GetFileName(
       EncodeToChromeContentProviderUrl(url).spec(),
-      base::BindOnce(
-          [](base::RunLoop* run_loop,
-             const absl::optional<std::string>& result) {
-            run_loop->Quit();
+      base::BindLambdaForTesting(
+          [&](const absl::optional<std::string>& result) {
+            run_loop.Quit();
             ASSERT_FALSE(result.has_value());
-          },
-          &run_loop));
+          }));
   run_loop.Run();
 }
 
@@ -173,12 +165,10 @@ TEST_F(ArcFileSystemBridgeTest, GetFileSize) {
   base::RunLoop run_loop;
   arc_file_system_bridge_->GetFileSize(
       EncodeToChromeContentProviderUrl(GURL(kTestUrl)).spec(),
-      base::BindOnce(
-          [](base::RunLoop* run_loop, int64_t result) {
-            EXPECT_EQ(kTestFileSize, result);
-            run_loop->Quit();
-          },
-          &run_loop));
+      base::BindLambdaForTesting([&](int64_t result) {
+        EXPECT_EQ(kTestFileSize, result);
+        run_loop.Quit();
+      }));
   run_loop.Run();
 }
 
@@ -189,14 +179,11 @@ TEST_F(ArcFileSystemBridgeTest, GetLastModified) {
   base::RunLoop run_loop;
   arc_file_system_bridge_->GetLastModified(
       EncodeToChromeContentProviderUrl(GURL(kTestUrl)),
-      base::BindOnce(
-          [](base::RunLoop* run_loop, const base::Time& expected,
-             const absl::optional<base::Time> result) {
-            ASSERT_TRUE(result.has_value());
-            EXPECT_EQ(expected, result.value());
-            run_loop->Quit();
-          },
-          &run_loop, expected));
+      base::BindLambdaForTesting([&](const absl::optional<base::Time> result) {
+        ASSERT_TRUE(result.has_value());
+        EXPECT_EQ(expected, result.value());
+        run_loop.Quit();
+      }));
   run_loop.Run();
 }
 
@@ -204,14 +191,12 @@ TEST_F(ArcFileSystemBridgeTest, GetFileType) {
   base::RunLoop run_loop;
   arc_file_system_bridge_->GetFileType(
       EncodeToChromeContentProviderUrl(GURL(kTestUrl)).spec(),
-      base::BindOnce(
-          [](base::RunLoop* run_loop,
-             const absl::optional<std::string>& result) {
+      base::BindLambdaForTesting(
+          [&](const absl::optional<std::string>& result) {
             ASSERT_TRUE(result.has_value());
             EXPECT_EQ(kTestFileType, result.value());
-            run_loop->Quit();
-          },
-          &run_loop));
+            run_loop.Quit();
+          }));
   run_loop.Run();
 }
 
@@ -227,14 +212,11 @@ TEST_F(ArcFileSystemBridgeTest, GetVirtualFileId) {
   base::RunLoop run_loop;
   arc_file_system_bridge_->GetVirtualFileId(
       EncodeToChromeContentProviderUrl(GURL(kTestUrl)).spec(),
-      base::BindOnce(
-          [](base::RunLoop* run_loop, const char* kId,
-             const absl::optional<std::string>& id) {
-            ASSERT_NE(absl::nullopt, id);
-            EXPECT_EQ(kId, id.value());
-            run_loop->Quit();
-          },
-          &run_loop, kId));
+      base::BindLambdaForTesting([&](const absl::optional<std::string>& id) {
+        ASSERT_NE(absl::nullopt, id);
+        EXPECT_EQ(kId, id.value());
+        run_loop.Quit();
+      }));
   run_loop.Run();
 
   content::RunAllTasksUntilIdle();
@@ -262,12 +244,10 @@ TEST_F(ArcFileSystemBridgeTest, OpenFileToRead) {
   base::RunLoop run_loop;
   arc_file_system_bridge_->OpenFileToRead(
       EncodeToChromeContentProviderUrl(GURL(kTestUrl)).spec(),
-      base::BindOnce(
-          [](base::RunLoop* run_loop, mojo::ScopedHandle result) {
-            EXPECT_TRUE(result.is_valid());
-            run_loop->Quit();
-          },
-          &run_loop));
+      base::BindLambdaForTesting([&](mojo::ScopedHandle result) {
+        EXPECT_TRUE(result.is_valid());
+        run_loop.Quit();
+      }));
   run_loop.Run();
 
   // HandleReadRequest().

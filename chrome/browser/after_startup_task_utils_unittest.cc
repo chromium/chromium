@@ -14,6 +14,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
+#include "base/test/bind.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
@@ -110,7 +111,7 @@ class AfterStartupTaskTest : public testing::Test {
         FROM_HERE,
         base::BindOnce(&AfterStartupTaskUtils::PostTask, from_here,
                        std::move(task_runner), std::move(task)),
-        base::BindOnce(&base::RunLoop::Quit, base::Unretained(&run_loop)));
+        base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
     run_loop.Run();
   }
 
@@ -119,7 +120,7 @@ class AfterStartupTaskTest : public testing::Test {
     base::RunLoop run_loop;
     background_sequence_->real_runner()->PostTaskAndReply(
         FROM_HERE, base::DoNothing(),
-        base::BindOnce(&base::RunLoop::Quit, base::Unretained(&run_loop)));
+        base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
     run_loop.Run();
   }
 
