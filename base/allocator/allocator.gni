@@ -89,7 +89,7 @@ _is_mcp_supported = is_win && use_allocator == "partition"
 declare_args() {
   # We jam MTECheckedPtr off by default, but can set it to
   # `_is_mcp_supported` to activate it.
-  use_mte_checked_ptr = false
+  use_mte_checked_ptr = _is_mcp_supported
 }
 
 declare_args() {
