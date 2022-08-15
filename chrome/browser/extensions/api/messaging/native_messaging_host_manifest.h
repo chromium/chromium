@@ -9,11 +9,8 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/values.h"
 #include "extensions/common/url_pattern_set.h"
-
-namespace base {
-class DictionaryValue;
-}
 
 namespace extensions {
 
@@ -52,7 +49,7 @@ class NativeMessagingHostManifest {
 
   // Parses manifest |dictionary|. In case of an error sets |error_message| and
   // returns false.
-  bool Parse(base::DictionaryValue* dictionary, std::string* error_message);
+  bool Parse(const base::Value::Dict& dict, std::string* error_message);
 
   std::string name_;
   std::string description_;

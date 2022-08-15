@@ -288,25 +288,36 @@ TEST_F(NativeMessagingTest, EchoConnect) {
   run_loop_->Run();
   ASSERT_FALSE(last_message_.empty());
   ASSERT_TRUE(last_message_parsed_);
+  ASSERT_TRUE(last_message_parsed_->is_dict());
 
   std::string expected_url = std::string("chrome-extension://") +
-      ScopedTestNativeMessagingHost::kExtensionId + "/";
-  EXPECT_EQ(1, last_message_parsed_->FindIntKey("id"));
-  std::string text;
-  EXPECT_TRUE(last_message_parsed_->GetString("echo.text", &text));
-  EXPECT_EQ("Hello.", text);
-  std::string url;
-  EXPECT_TRUE(last_message_parsed_->GetString("caller_url", &url));
-  EXPECT_EQ(expected_url, url);
+                             ScopedTestNativeMessagingHost::kExtensionId + "/";
+
+  {
+    const base::Value::Dict& dict = last_message_parsed_->GetDict();
+    EXPECT_EQ(1, last_message_parsed_->FindIntKey("id"));
+    const std::string* text = dict.FindStringByDottedPath("echo.text");
+    ASSERT_TRUE(text);
+    EXPECT_EQ("Hello.", *text);
+    const std::string* url = dict.FindString("caller_url");
+    EXPECT_TRUE(url);
+    EXPECT_EQ(expected_url, *url);
+  }
 
   native_message_host_->OnMessage("{\"foo\": \"bar\"}");
   run_loop_ = std::make_unique<base::RunLoop>();
   run_loop_->Run();
-  EXPECT_EQ(2, last_message_parsed_->FindIntKey("id"));
-  EXPECT_TRUE(last_message_parsed_->GetString("echo.foo", &text));
-  EXPECT_EQ("bar", text);
-  EXPECT_TRUE(last_message_parsed_->GetString("caller_url", &url));
-  EXPECT_EQ(expected_url, url);
+
+  {
+    const base::Value::Dict& dict = last_message_parsed_->GetDict();
+    EXPECT_EQ(2, last_message_parsed_->FindIntKey("id"));
+    const std::string* text = dict.FindStringByDottedPath("echo.foo");
+    ASSERT_TRUE(text);
+    EXPECT_EQ("bar", *text);
+    const std::string* url = dict.FindString("caller_url");
+    ASSERT_TRUE(url);
+    EXPECT_EQ(expected_url, *url);
+  }
 
   const base::Value* args = nullptr;
   ASSERT_TRUE(last_message_parsed_->Get("args", &args));
