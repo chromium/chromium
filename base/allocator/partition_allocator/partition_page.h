@@ -420,6 +420,18 @@ PA_ALWAYS_INLINE PartitionPage<thread_safe>* PartitionSuperPageToMetadataArea(
 }
 
 template <bool thread_safe>
+PA_ALWAYS_INLINE const PartitionPage<thread_safe>* GetSubsequentPageMetadata(
+    const PartitionPage<thread_safe>* page) {
+  return page + 1;
+}
+
+template <bool thread_safe>
+PA_ALWAYS_INLINE PartitionPage<thread_safe>* GetSubsequentPageMetadata(
+    PartitionPage<thread_safe>* page) {
+  return page + 1;
+}
+
+template <bool thread_safe>
 PA_ALWAYS_INLINE PartitionSuperPageExtentEntry<thread_safe>*
 PartitionSuperPageToExtent(uintptr_t super_page) {
   // The very first entry of the metadata is the super page extent entry.
@@ -678,15 +690,16 @@ template <bool thread_safe>
 PA_ALWAYS_INLINE void SlotSpanMetadata<thread_safe>::SetRawSize(
     size_t raw_size) {
   PA_DCHECK(CanStoreRawSize());
-  auto* the_next_page = reinterpret_cast<PartitionPage<thread_safe>*>(this) + 1;
+  auto* the_next_page = GetSubsequentPageMetadata(
+      reinterpret_cast<PartitionPage<thread_safe>*>(this));
   the_next_page->subsequent_page_metadata.raw_size = raw_size;
 }
 
 template <bool thread_safe>
 PA_ALWAYS_INLINE size_t SlotSpanMetadata<thread_safe>::GetRawSize() const {
   PA_DCHECK(CanStoreRawSize());
-  auto* the_next_page =
-      reinterpret_cast<const PartitionPage<thread_safe>*>(this) + 1;
+  auto* the_next_page = GetSubsequentPageMetadata(
+      reinterpret_cast<const PartitionPage<thread_safe>*>(this));
   return the_next_page->subsequent_page_metadata.raw_size;
 }
 
@@ -694,7 +707,8 @@ template <bool thread_safe>
 PA_ALWAYS_INLINE PartitionTag*
 SlotSpanMetadata<thread_safe>::DirectMapMTETag() {
   PA_DCHECK(bucket->is_direct_mapped());
-  auto* the_next_page = reinterpret_cast<PartitionPage<thread_safe>*>(this) + 1;
+  auto* the_next_page = GetSubsequentPageMetadata(
+      reinterpret_cast<PartitionPage<thread_safe>*>(this));
   return &the_next_page->subsequent_page_metadata.direct_map_tag;
 }
 
