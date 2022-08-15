@@ -38,14 +38,19 @@ class FloatingWorkspaceService : public KeyedService {
   void TryRestoreMostRecentlyUsedSession();
 
  private:
-  const sync_sessions::SyncedSession* GetMostRecentlyUsedRemoteSession();
+  // Virtual for testing.
+  virtual const sync_sessions::SyncedSession*
+  GetMostRecentlyUsedRemoteSession();
 
-  const sync_sessions::SyncedSession* GetLocalSession();
+  // Virtual for testing.
+  virtual const sync_sessions::SyncedSession* GetLocalSession();
 
-  void RestoreForeignSessionWindows(
+  // Virtual for testing.
+  virtual void RestoreForeignSessionWindows(
       const sync_sessions::SyncedSession* session);
 
-  void RestoreLocalSessionWindows();
+  // Virtual for testing.
+  virtual void RestoreLocalSessionWindows();
 
   sync_sessions::OpenTabsUIDelegate* GetOpenTabsUIDelegate();
 
