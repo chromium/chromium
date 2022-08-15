@@ -24,6 +24,8 @@ namespace features {
 // interactive_ui_tests pass on Wayland.
 extern const base::Feature kAllowWindowDragUsingSystemDragDrop;
 
+extern const base::Feature kFlexOrgManagementDisclosure;
+
 extern const base::Feature kChromeLabs;
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

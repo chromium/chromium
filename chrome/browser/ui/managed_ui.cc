@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/managed_ui.h"
 
+#include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -13,6 +14,7 @@
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/management/management_ui_handler.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/policy/core/browser/webui/policy_data_utils.h"
@@ -78,29 +80,36 @@ bool ShouldDisplayManagedUi(Profile* profile) {
 
 #if !BUILDFLAG(IS_ANDROID)
 std::u16string GetManagedUiMenuItemLabel(Profile* profile) {
-  absl::optional<std::string> account_manager =
-      GetAccountManagerIdentity(profile);
+  absl::optional<std::string> manager = GetAccountManagerIdentity(profile);
+  if (!manager &&
+      base::FeatureList::IsEnabled(features::kFlexOrgManagementDisclosure)) {
+    manager = GetDeviceManagerIdentity();
+  }
 
   int string_id = IDS_MANAGED;
   std::vector<std::u16string> replacements;
-  if (account_manager) {
+
+  if (manager) {
     string_id = IDS_MANAGED_BY;
-    replacements.push_back(base::UTF8ToUTF16(*account_manager));
+    replacements.push_back(base::UTF8ToUTF16(*manager));
   }
 
   return l10n_util::GetStringFUTF16(string_id, replacements, nullptr);
 }
 
 std::u16string GetManagedUiWebUILabel(Profile* profile) {
-  absl::optional<std::string> account_manager =
-      GetAccountManagerIdentity(profile);
+  absl::optional<std::string> manager = GetAccountManagerIdentity(profile);
+  if (!manager &&
+      base::FeatureList::IsEnabled(features::kFlexOrgManagementDisclosure)) {
+    manager = GetDeviceManagerIdentity();
+  }
 
   int string_id = IDS_MANAGED_WITH_HYPERLINK;
   std::vector<std::u16string> replacements;
   replacements.push_back(base::UTF8ToUTF16(chrome::kChromeUIManagementURL));
-  if (account_manager) {
+  if (manager) {
     string_id = IDS_MANAGED_BY_WITH_HYPERLINK;
-    replacements.push_back(base::UTF8ToUTF16(*account_manager));
+    replacements.push_back(base::UTF8ToUTF16(*manager));
   }
 
   return l10n_util::GetStringFUTF16(string_id, replacements, nullptr);
@@ -149,7 +158,9 @@ absl::optional<std::string> GetSessionManagerIdentity() {
 #endif
 
 absl::optional<std::string> GetAccountManagerIdentity(Profile* profile) {
-  if (!policy::ManagementServiceFactory::GetForProfile(profile)->IsManaged())
+  if (!policy::ManagementServiceFactory::GetForProfile(profile)
+           ->HasManagementAuthority(
+               policy::EnterpriseManagementAuthority::CLOUD))
     return absl::nullopt;
 
   const absl::optional<std::string> managed_by =

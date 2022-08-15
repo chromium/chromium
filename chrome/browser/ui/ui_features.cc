@@ -16,6 +16,17 @@ namespace features {
 const base::Feature kAllowWindowDragUsingSystemDragDrop{
     "AllowWindowDragUsingSystemDragDrop", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables showing the email of the flex org admin that setup CBCM in the
+// management disclosures.
+
+#if BUILDFLAG(IS_CHROMEOS)
+extern const base::Feature kFlexOrgManagementDisclosure{
+    "FlexOrgManagementDisclosure", base::FEATURE_DISABLED_BY_DEFAULT};
+#else
+extern const base::Feature kFlexOrgManagementDisclosure{
+    "FlexOrgManagementDisclosure", base::FEATURE_ENABLED_BY_DEFAULT};
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 // Enables Chrome Labs menu in the toolbar. See https://crbug.com/1145666
 const base::Feature kChromeLabs{"ChromeLabs",
                                 base::FEATURE_DISABLED_BY_DEFAULT};
