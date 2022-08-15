@@ -241,7 +241,7 @@ public class GestureListenerManagerImpl
     }
 
     @CalledByNative
-    private void onEventAck(int event, boolean consumed) {
+    private void onEventAck(int event, boolean consumed, float scrollOffsetX, float scrollOffsetY) {
         switch (event) {
             case EventType.GESTURE_FLING_START:
                 // If we're here, then |consumed| is false as otherwise #onFlingStart() would have
@@ -445,7 +445,9 @@ public class GestureListenerManagerImpl
 
         final boolean gestureScrollInProgress = mIsGestureScrollInProgress;
         setGestureScrollInProgress(false);
-        if (gestureScrollInProgress) updateOnScrollEnd();
+        if (gestureScrollInProgress) {
+            updateOnScrollEnd();
+        }
         resetFlingGesture();
     }
 

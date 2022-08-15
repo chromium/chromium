@@ -405,6 +405,12 @@ enum FocusState
   kNotFocusedAndNotActive
 };
 
+// TODO(sinansahin): DidOverscrollParams and TouchActionOptional can be moved
+//  into this struct as well.
+struct ScrollResultData {
+  gfx.mojom.PointF? root_scroll_offset;
+};
+
 // Interface exposed by the renderer to the browser. This class represents
 // an input interface for an associated Widget object. See FrameWidgetInputHandler
 // for an interface at the frame level.
@@ -469,7 +475,8 @@ interface WidgetInputHandler {
          ui.mojom.LatencyInfo updated_latency,
          blink.mojom.InputEventResultState state,
          DidOverscrollParams? overscroll,
-         TouchActionOptional? touch_action);
+         TouchActionOptional? touch_action,
+         ScrollResultData? scroll_result_data);
 
   // Sends a non-blocking input event to the render widget. The behaviour
   // of this API is the same as DispatchEvent just that there is no callback

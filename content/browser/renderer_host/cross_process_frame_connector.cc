@@ -23,6 +23,7 @@
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom.h"
+#include "third_party/blink/public/mojom/input/input_handler.mojom-forward.h"
 #include "ui/gfx/geometry/dip_util.h"
 
 namespace content {
@@ -260,7 +261,8 @@ bool CrossProcessFrameConnector::TransformPointToCoordSpaceForView(
 
 void CrossProcessFrameConnector::ForwardAckedTouchpadZoomEvent(
     const blink::WebGestureEvent& event,
-    blink::mojom::InputEventResultState ack_result) {
+    blink::mojom::InputEventResultState ack_result,
+    blink::mojom::ScrollResultDataPtr scroll_result_data) {
   auto* root_view = GetRootRenderWidgetHostView();
   if (!root_view)
     return;
@@ -269,7 +271,8 @@ void CrossProcessFrameConnector::ForwardAckedTouchpadZoomEvent(
   const gfx::PointF root_point =
       view_->TransformPointToRootCoordSpaceF(event.PositionInWidget());
   root_event.SetPositionInWidget(root_point);
-  root_view->GestureEventAck(root_event, ack_result);
+  root_view->GestureEventAck(root_event, ack_result,
+                             std::move(scroll_result_data));
 }
 
 bool CrossProcessFrameConnector::BubbleScrollEvent(
@@ -507,12 +510,14 @@ void CrossProcessFrameConnector::DidUpdateVisualProperties(
 
 void CrossProcessFrameConnector::DidAckGestureEvent(
     const blink::WebGestureEvent& event,
-    blink::mojom::InputEventResultState ack_result) {
+    blink::mojom::InputEventResultState ack_result,
+    blink::mojom::ScrollResultDataPtr scroll_result_data) {
   auto* root_view = GetRootRenderWidgetHostView();
   if (!root_view)
     return;
 
-  root_view->ChildDidAckGestureEvent(event, ack_result);
+  root_view->ChildDidAckGestureEvent(event, ack_result,
+                                     std::move(scroll_result_data));
 }
 
 void CrossProcessFrameConnector::SetVisibilityForChildViews(

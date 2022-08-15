@@ -35,6 +35,7 @@
 #include "third_party/blink/public/common/input/web_touch_event.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom.h"
 #include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom.h"
+#include "third_party/blink/public/mojom/input/input_handler.mojom-forward.h"
 #include "ui/base/ime/mojom/text_input_state.mojom.h"
 #include "ui/display/display_util.h"
 #include "ui/gfx/geometry/dip_util.h"
@@ -549,7 +550,8 @@ void RenderWidgetHostViewChildFrame::StopFlingingIfNecessary(
 
 void RenderWidgetHostViewChildFrame::GestureEventAck(
     const blink::WebGestureEvent& event,
-    blink::mojom::InputEventResultState ack_result) {
+    blink::mojom::InputEventResultState ack_result,
+    blink::mojom::ScrollResultDataPtr scroll_result_data) {
   // Stop flinging if a GSU event with momentum phase is sent to the renderer
   // but not consumed.
   StopFlingingIfNecessary(event, ack_result);
@@ -558,7 +560,9 @@ void RenderWidgetHostViewChildFrame::GestureEventAck(
     return;
 
   if (event.IsTouchpadZoomEvent())
-    ProcessTouchpadZoomEventAckInRoot(event, ack_result);
+    ProcessTouchpadZoomEventAckInRoot(
+        event, ack_result,
+        scroll_result_data ? scroll_result_data.Clone() : nullptr);
 
   // GestureScrollBegin is a blocking event; It is forwarded for bubbling if
   // its ack is not consumed. For the rest of the scroll events
@@ -582,15 +586,18 @@ void RenderWidgetHostViewChildFrame::GestureEventAck(
     }
   }
 
-  frame_connector_->DidAckGestureEvent(event, ack_result);
+  frame_connector_->DidAckGestureEvent(event, ack_result,
+                                       std::move(scroll_result_data));
 }
 
 void RenderWidgetHostViewChildFrame::ProcessTouchpadZoomEventAckInRoot(
     const blink::WebGestureEvent& event,
-    blink::mojom::InputEventResultState ack_result) {
+    blink::mojom::InputEventResultState ack_result,
+    blink::mojom::ScrollResultDataPtr scroll_result_data) {
   DCHECK(event.IsTouchpadZoomEvent());
 
-  frame_connector_->ForwardAckedTouchpadZoomEvent(event, ack_result);
+  frame_connector_->ForwardAckedTouchpadZoomEvent(
+      event, ack_result, std::move(scroll_result_data));
 }
 
 void RenderWidgetHostViewChildFrame::ForwardTouchpadZoomEventIfNecessary(

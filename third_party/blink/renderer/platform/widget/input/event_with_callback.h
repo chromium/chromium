@@ -9,6 +9,7 @@
 
 #include "base/time/time.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
+#include "third_party/blink/public/mojom/input/input_handler.mojom-blink-forward.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/widget/input/input_handler_proxy.h"
 #include "ui/latency/latency_info.h"
@@ -54,7 +55,8 @@ class PLATFORM_EXPORT EventWithCallback {
   void RunCallbacks(InputHandlerProxy::EventDisposition,
                     const ui::LatencyInfo& latency,
                     std::unique_ptr<InputHandlerProxy::DidOverscrollParams>,
-                    const WebInputEventAttribution&);
+                    const WebInputEventAttribution&,
+                    mojom::blink::ScrollResultDataPtr scroll_result_data);
 
   const WebInputEvent& event() const { return event_->Event(); }
   WebInputEvent* event_pointer() { return event_->EventPointer(); }

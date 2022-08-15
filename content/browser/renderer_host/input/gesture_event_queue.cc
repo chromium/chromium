@@ -8,6 +8,7 @@
 #include "base/trace_event/trace_event.h"
 #include "content/browser/renderer_host/input/touchpad_tap_suppression_controller.h"
 #include "content/browser/renderer_host/input/touchscreen_tap_suppression_controller.h"
+#include "third_party/blink/public/mojom/input/input_handler.mojom.h"
 #include "ui/events/blink/blink_features.h"
 #include "ui/events/blink/web_input_event_traits.h"
 
@@ -16,8 +17,8 @@ using blink::WebInputEvent;
 
 namespace content {
 
-GestureEventQueue::GestureEventWithLatencyInfoAndAckState::
-    GestureEventWithLatencyInfoAndAckState(
+GestureEventQueue::GestureEventWithLatencyInfoAckStateAndScrollResultData::
+    GestureEventWithLatencyInfoAckStateAndScrollResultData(
         const GestureEventWithLatencyInfo& event)
     : GestureEventWithLatencyInfo(event) {}
 
@@ -157,7 +158,8 @@ void GestureEventQueue::ProcessGestureAck(
     blink::mojom::InputEventResultSource ack_source,
     blink::mojom::InputEventResultState ack_result,
     WebInputEvent::Type type,
-    const ui::LatencyInfo& latency) {
+    const ui::LatencyInfo& latency,
+    blink::mojom::ScrollResultDataPtr scroll_result_data) {
   TRACE_EVENT0("input", "GestureEventQueue::ProcessGestureAck");
 
   if (sent_events_awaiting_ack_.empty()) {
@@ -174,6 +176,7 @@ void GestureEventQueue::ProcessGestureAck(
     if (outstanding_event.event.GetType() == type) {
       outstanding_event.latency.AddNewLatencyFrom(latency);
       outstanding_event.set_ack_info(ack_source, ack_result);
+      outstanding_event.set_scroll_result_data(std::move(scroll_result_data));
       break;
     }
   }
@@ -191,17 +194,24 @@ void GestureEventQueue::AckCompletedEvents() {
     auto iter = sent_events_awaiting_ack_.begin();
     if (iter->ack_state() == blink::mojom::InputEventResultState::kUnknown)
       break;
-    GestureEventWithLatencyInfoAndAckState event = *iter;
+    GestureEventWithLatencyInfoAckStateAndScrollResultData event = *iter;
     sent_events_awaiting_ack_.erase(iter);
-    AckGestureEventToClient(event, event.ack_source(), event.ack_state());
+
+    auto scroll_result_data = blink::mojom::ScrollResultData::New(
+        event.scroll_result_data().root_scroll_offset);
+
+    AckGestureEventToClient(event, event.ack_source(), event.ack_state(),
+                            std::move(scroll_result_data));
   }
 }
 
 void GestureEventQueue::AckGestureEventToClient(
     const GestureEventWithLatencyInfo& event_with_latency,
     blink::mojom::InputEventResultSource ack_source,
-    blink::mojom::InputEventResultState ack_result) {
-  client_->OnGestureEventAck(event_with_latency, ack_source, ack_result);
+    blink::mojom::InputEventResultState ack_result,
+    blink::mojom::ScrollResultDataPtr scroll_result_data) {
+  client_->OnGestureEventAck(event_with_latency, ack_source, ack_result,
+                             std::move(scroll_result_data));
 }
 
 TouchpadTapSuppressionController*

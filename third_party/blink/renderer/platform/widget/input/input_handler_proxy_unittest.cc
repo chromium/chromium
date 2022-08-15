@@ -482,7 +482,8 @@ InputHandlerProxy::EventDisposition HandleInputEventWithLatencyInfo(
               std::unique_ptr<blink::WebCoalescedInputEvent> event,
               std::unique_ptr<InputHandlerProxy::DidOverscrollParams> callback,
               const WebInputEventAttribution& attribution,
-              std::unique_ptr<cc::EventMetrics> metrics) {
+              std::unique_ptr<cc::EventMetrics> metrics,
+              mojom::blink::ScrollResultDataPtr scroll_result_data) {
             event_disposition = disposition;
           }));
   return event_disposition;
@@ -509,7 +510,8 @@ InputHandlerProxy::EventDisposition HandleInputEventAndFlushEventQueue(
               std::unique_ptr<blink::WebCoalescedInputEvent> event,
               std::unique_ptr<InputHandlerProxy::DidOverscrollParams> callback,
               const WebInputEventAttribution& attribution,
-              std::unique_ptr<cc::EventMetrics> metrics) {
+              std::unique_ptr<cc::EventMetrics> metrics,
+              mojom::blink::ScrollResultDataPtr scroll_result_data) {
             event_disposition = disposition;
           }));
 
@@ -568,7 +570,8 @@ class InputHandlerProxyEventQueueTest : public testing::Test {
       std::unique_ptr<WebCoalescedInputEvent> input_event,
       std::unique_ptr<InputHandlerProxy::DidOverscrollParams> overscroll_params,
       const WebInputEventAttribution& attribution,
-      std::unique_ptr<cc::EventMetrics> metrics) {
+      std::unique_ptr<cc::EventMetrics> metrics,
+      mojom::blink::ScrollResultDataPtr scroll_result_data) {
     event_disposition_recorder_.push_back(event_disposition);
     latency_info_recorder_.push_back(input_event->latency_info());
   }
@@ -2109,7 +2112,8 @@ class UnifiedScrollingInputHandlerProxyTest : public testing::Test {
       std::unique_ptr<WebCoalescedInputEvent> input_event,
       std::unique_ptr<InputHandlerProxy::DidOverscrollParams> overscroll_params,
       const WebInputEventAttribution& attribution,
-      std::unique_ptr<cc::EventMetrics> metrics) {
+      std::unique_ptr<cc::EventMetrics> metrics,
+      mojom::blink::ScrollResultDataPtr scroll_result_data) {
     if (out_disposition)
       *out_disposition = event_disposition;
   }

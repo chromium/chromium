@@ -25,6 +25,7 @@
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_input_event_attribution.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
+#include "third_party/blink/public/mojom/input/input_handler.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -72,7 +73,8 @@ void CallCallback(
     mojom::blink::InputEventResultState result_state,
     const ui::LatencyInfo& latency_info,
     mojom::blink::DidOverscrollParamsPtr overscroll_params,
-    absl::optional<cc::TouchAction> touch_action) {
+    absl::optional<cc::TouchAction> touch_action,
+    mojom::blink::ScrollResultDataPtr scroll_result_data) {
   ui::LatencyInfo::TraceIntermediateFlowEvents(
       {latency_info}, ChromeLatencyInfo::STEP_HANDLED_INPUT_EVENT_IMPL);
   std::move(callback).Run(
@@ -80,7 +82,8 @@ void CallCallback(
       result_state, std::move(overscroll_params),
       touch_action
           ? mojom::blink::TouchActionOptional::New(touch_action.value())
-          : nullptr);
+          : nullptr,
+      std::move(scroll_result_data));
 }
 
 mojom::blink::InputEventResultState InputEventDispositionToAck(
@@ -570,9 +573,10 @@ void WidgetInputHandlerManager::DispatchEvent(
 
   if (suppress_input && !allow_pre_commit_input_ && !event_is_move) {
     if (callback) {
-      std::move(callback).Run(
-          mojom::blink::InputEventResultSource::kMainThread, ui::LatencyInfo(),
-          mojom::blink::InputEventResultState::kNotConsumed, nullptr, nullptr);
+      std::move(callback).Run(mojom::blink::InputEventResultSource::kMainThread,
+                              ui::LatencyInfo(),
+                              mojom::blink::InputEventResultState::kNotConsumed,
+                              nullptr, nullptr, /*scroll_result_data=*/nullptr);
     }
     return;
   }
@@ -624,8 +628,8 @@ void WidgetInputHandlerManager::DispatchEvent(
         std::move(callback).Run(
             mojom::blink::InputEventResultSource::kMainThread,
             ui::LatencyInfo(),
-            mojom::blink::InputEventResultState::kNotConsumed, nullptr,
-            nullptr);
+            mojom::blink::InputEventResultState::kNotConsumed, nullptr, nullptr,
+            /*scroll_result_data=*/nullptr);
       }
       return;
     }
@@ -804,7 +808,7 @@ void WidgetInputHandlerManager::DispatchDirectlyToWidget(
       std::move(callback).Run(mojom::blink::InputEventResultSource::kMainThread,
                               event->latency_info(),
                               mojom::blink::InputEventResultState::kNotConsumed,
-                              nullptr, nullptr);
+                              nullptr, nullptr, nullptr);
     }
     return;
   }
@@ -835,7 +839,7 @@ void WidgetInputHandlerManager::FindScrollTargetReply(
         .Run(mojom::blink::InputEventResultSource::kMainThread,
              ui::LatencyInfo(),
              mojom::blink::InputEventResultState::kNotConsumed, nullptr,
-             nullptr);
+             nullptr, nullptr);
     return;
   }
 
@@ -864,7 +868,8 @@ void WidgetInputHandlerManager::DidHandleInputEventSentToCompositor(
     std::unique_ptr<WebCoalescedInputEvent> event,
     std::unique_ptr<InputHandlerProxy::DidOverscrollParams> overscroll_params,
     const WebInputEventAttribution& attribution,
-    std::unique_ptr<cc::EventMetrics> metrics) {
+    std::unique_ptr<cc::EventMetrics> metrics,
+    mojom::blink::ScrollResultDataPtr scroll_result_data) {
   TRACE_EVENT1("input",
                "WidgetInputHandlerManager::DidHandleInputEventSentToCompositor",
                "Disposition", event_disposition);
@@ -974,7 +979,8 @@ void WidgetInputHandlerManager::DidHandleInputEventSentToCompositor(
         ToDidOverscrollParams(overscroll_params.get()),
         touch_action
             ? mojom::blink::TouchActionOptional::New(touch_action.value())
-            : nullptr);
+            : nullptr,
+        std::move(scroll_result_data));
   }
 }
 
@@ -1026,7 +1032,8 @@ void WidgetInputHandlerManager::DidHandleInputEventSentToMain(
     compositor_thread_default_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(CallCallback, std::move(callback), ack_state,
                                   latency_info, std::move(overscroll_params),
-                                  touch_action_for_ack));
+                                  touch_action_for_ack,
+                                  /*scroll_result_data=*/nullptr));
   } else {
     // Otherwise call the callback immediately.
     std::move(callback).Run(
@@ -1036,7 +1043,8 @@ void WidgetInputHandlerManager::DidHandleInputEventSentToMain(
         latency_info, ack_state, std::move(overscroll_params),
         touch_action_for_ack ? mojom::blink::TouchActionOptional::New(
                                    touch_action_for_ack.value())
-                             : nullptr);
+                             : nullptr,
+        /*scroll_result_data=*/nullptr);
   }
 }
 

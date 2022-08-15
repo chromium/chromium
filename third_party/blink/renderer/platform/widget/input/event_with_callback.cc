@@ -8,6 +8,7 @@
 #include "base/trace_event/trace_event.h"
 #include "cc/metrics/event_metrics.h"
 #include "third_party/blink/public/common/input/web_input_event_attribution.h"
+#include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
 
 namespace blink {
 
@@ -79,7 +80,8 @@ void EventWithCallback::RunCallbacks(
     const ui::LatencyInfo& latency,
     std::unique_ptr<InputHandlerProxy::DidOverscrollParams>
         did_overscroll_params,
-    const WebInputEventAttribution& attribution) {
+    const WebInputEventAttribution& attribution,
+    mojom::blink::ScrollResultDataPtr scroll_result_data) {
   // |original_events_| could be empty if this is the scroll event extracted
   // from the matrix multiplication.
   if (original_events_.size() == 0)
@@ -94,7 +96,8 @@ void EventWithCallback::RunCallbacks(
                ? std::make_unique<InputHandlerProxy::DidOverscrollParams>(
                      *did_overscroll_params)
                : nullptr,
-           attribution, std::move(oldest_event.metrics_));
+           attribution, std::move(oldest_event.metrics_),
+           scroll_result_data ? scroll_result_data->Clone() : nullptr);
   original_events_.pop_front();
 
   // If the event was handled on the compositor thread, ack other events with
@@ -124,7 +127,8 @@ void EventWithCallback::RunCallbacks(
                  ? std::make_unique<InputHandlerProxy::DidOverscrollParams>(
                        *did_overscroll_params)
                  : nullptr,
-             attribution, std::move(coalesced_event.metrics_));
+             attribution, std::move(coalesced_event.metrics_),
+             scroll_result_data ? scroll_result_data->Clone() : nullptr);
   }
 }
 

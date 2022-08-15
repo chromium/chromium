@@ -5,6 +5,7 @@
 #include "content/browser/renderer_host/render_widget_host_view_mac.h"
 
 #import <Carbon/Carbon.h>
+#include "third_party/blink/public/mojom/input/input_handler.mojom-forward.h"
 
 #include <limits>
 #include <memory>
@@ -1358,7 +1359,8 @@ RenderWidgetHostViewMac::GetKeyboardLayoutMap() {
 
 void RenderWidgetHostViewMac::GestureEventAck(
     const WebGestureEvent& event,
-    blink::mojom::InputEventResultState ack_result) {
+    blink::mojom::InputEventResultState ack_result,
+    blink::mojom::ScrollResultDataPtr scroll_result_data) {
   ForwardTouchpadZoomEventIfNecessary(event, ack_result);
 
   // Stop flinging if a GSU event with momentum phase is sent to the renderer

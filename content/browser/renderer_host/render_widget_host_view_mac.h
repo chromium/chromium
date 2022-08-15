@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_RENDERER_HOST_RENDER_WIDGET_HOST_VIEW_MAC_H_
 
 #include "base/memory/raw_ptr.h"
+#include "third_party/blink/public/mojom/input/input_handler.mojom-forward.h"
 
 #import <Cocoa/Cocoa.h>
 
@@ -178,8 +179,10 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   void UnlockKeyboard() override;
   bool IsKeyboardLocked() override;
   base::flat_map<std::string, std::string> GetKeyboardLayoutMap() override;
-  void GestureEventAck(const blink::WebGestureEvent& event,
-                       blink::mojom::InputEventResultState ack_result) override;
+  void GestureEventAck(
+      const blink::WebGestureEvent& event,
+      blink::mojom::InputEventResultState ack_result,
+      blink::mojom::ScrollResultDataPtr scroll_result_data) override;
   void ProcessAckedTouchEvent(
       const TouchEventWithLatencyInfo& touch,
       blink::mojom::InputEventResultState ack_result) override;

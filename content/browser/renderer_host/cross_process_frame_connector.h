@@ -19,6 +19,7 @@
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom.h"
 #include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
+#include "third_party/blink/public/mojom/input/input_handler.mojom-forward.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_result.mojom-shared.h"
 #include "ui/display/screen_infos.h"
 #include "ui/gfx/geometry/rect.h"
@@ -165,7 +166,8 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
   // for processing.
   void ForwardAckedTouchpadZoomEvent(
       const blink::WebGestureEvent& event,
-      blink::mojom::InputEventResultState ack_result);
+      blink::mojom::InputEventResultState ack_result,
+      blink::mojom::ScrollResultDataPtr scroll_result_data);
 
   // A gesture scroll sequence that is not consumed by a child must be bubbled
   // to ancestors who may consume it.
@@ -251,7 +253,8 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
   bool has_size() const { return has_size_; }
 
   void DidAckGestureEvent(const blink::WebGestureEvent& event,
-                          blink::mojom::InputEventResultState ack_result);
+                          blink::mojom::InputEventResultState ack_result,
+                          blink::mojom::ScrollResultDataPtr scroll_result_data);
 
   // Called by RenderWidgetHostViewChildFrame to update the visibility of any
   // nested child RWHVCFs inside it.
