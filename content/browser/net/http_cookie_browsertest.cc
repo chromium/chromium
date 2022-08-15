@@ -7,6 +7,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
@@ -1233,8 +1234,15 @@ IN_PROC_BROWSER_TEST_F(SubresourcePartitionedCookiesOriginTrialBrowserTest,
 
 // Test that the partitioned cookie is reverted to unpartitioned if the site
 // sends a Set-Cookie with Partitioned but an invalid OT token.
+// TODO(crbug.com/1353084): Very flaky on Mac. Somewhat flaky on other
+// platforms.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_InvalidToken DISABLED_InvalidToken
+#else
+#define MAYBE_InvalidToken InvalidToken
+#endif
 IN_PROC_BROWSER_TEST_F(SubresourcePartitionedCookiesOriginTrialBrowserTest,
-                       InvalidToken) {
+                       MAYBE_InvalidToken) {
   SetCookie(
       "__Host-foo", "bar", CookieUrl(),
       net::CookiePartitionKey::FromURLForTesting(GURL("https://example.com")));
