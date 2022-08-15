@@ -21,6 +21,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/trace_event/trace_event.h"
@@ -136,6 +137,13 @@ std::u16string ReduceInputTextForMatching(const std::u16string& input) {
   }
 
   return remaining;
+}
+
+// Indicates whether to deactivate fuzzy processing due to device performance
+// and memory constraints. This prevents loading, updating, and fuzzy search.
+bool ShouldBypassForLowEndDevice() {
+  return OmniboxFieldTrial::kFuzzyUrlSuggestionsLowEndBypass.Get() &&
+         base::SysInfo::IsLowEndDevice();
 }
 
 }  // namespace
@@ -514,6 +522,14 @@ void HistoryFuzzyProvider::RecordOpenMatchMetrics(
 
 HistoryFuzzyProvider::HistoryFuzzyProvider(AutocompleteProviderClient* client)
     : HistoryProvider(AutocompleteProvider::TYPE_HISTORY_FUZZY, client) {
+  if (ShouldBypassForLowEndDevice()) {
+    // Note, this early return will prevent loading from database, which saves
+    // memory and prevents this provider from working to find fuzzy matches.
+    // See also the early return in `Start` below; `urls_loaded_event_` never
+    // signals because the signaling task is never run.
+    return;
+  }
+
   history_service_observation_.Observe(client->GetHistoryService());
   client->GetHistoryService()->ScheduleDBTask(
       FROM_HERE,
@@ -533,6 +549,8 @@ void HistoryFuzzyProvider::Start(const AutocompleteInput& input,
     return;
   }
 
+  // Note this will always return early when bypassing for low-end devices;
+  // see comment in constructor.
   if (!urls_loaded_event_.IsSignaled()) {
     return;
   }
@@ -705,6 +723,9 @@ void HistoryFuzzyProvider::OnURLVisited(
     history::HistoryService* history_service,
     const history::URLRow& url_row,
     const history::VisitRow& new_visit) {
+  if (ShouldBypassForLowEndDevice()) {
+    return;
+  }
   DVLOG(1) << "URL Visit: " << url_row.url();
   if (root_.TerminalCount() <
       std::min(OmniboxFieldTrial::MaxNumHQPUrlsIndexedAtStartup(),
@@ -716,6 +737,9 @@ void HistoryFuzzyProvider::OnURLVisited(
 void HistoryFuzzyProvider::OnURLsDeleted(
     history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {
+  if (ShouldBypassForLowEndDevice()) {
+    return;
+  }
   // Note, this implementation is conservative in terms of user privacy; it
   // deletes hosts from the trie if any URL with the given host is deleted.
   if (deletion_info.IsAllHistory()) {

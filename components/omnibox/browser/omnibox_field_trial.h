@@ -357,6 +357,8 @@ int KeywordScoreForSufficientlyCompleteMatch();
 bool IsFuzzyUrlSuggestionsEnabled();
 // Indicates whether fuzzy match behavior is counterfactual.
 extern const base::FeatureParam<bool> kFuzzyUrlSuggestionsCounterfactual;
+// Indicates whether to bypass fuzzy processing when `IsLowEndDevice` is true.
+extern const base::FeatureParam<bool> kFuzzyUrlSuggestionsLowEndBypass;
 
 // Simply a convenient wrapper for testing a flag. Used downstream for an
 // assortment of keyword mode experiments.

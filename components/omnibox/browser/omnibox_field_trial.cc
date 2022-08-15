@@ -601,6 +601,12 @@ const base::FeatureParam<bool>
         "FuzzyUrlSuggestionsCounterfactual",
         false);
 
+const base::FeatureParam<bool>
+    OmniboxFieldTrial::kFuzzyUrlSuggestionsLowEndBypass(
+        &omnibox::kOmniboxFuzzyUrlSuggestions,
+        "FuzzyUrlSuggestionsLowEndBypass",
+        false);
+
 bool OmniboxFieldTrial::IsExperimentalKeywordModeEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kExperimentalKeywordMode);
 }
