@@ -62,13 +62,22 @@ static void JNI_CrowBridge_GetRecentVisitCountsToHost(
 }
 
 static base::android::ScopedJavaLocalRef<jstring>
-JNI_CrowBridge_GetPublicationIDForHost(
+JNI_CrowBridge_GetPublicationIDFromAllowlist(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& host) {
   std::string publication_id =
-      crow::CrowConfiguration::GetInstance()->GetPublicationID(
+      crow::CrowConfiguration::GetInstance()->GetPublicationIDFromAllowlist(
           base::android::ConvertJavaStringToUTF8(env, host));
   base::android::ScopedJavaLocalRef<jstring> j_publication_id =
       base::android::ConvertUTF8ToJavaString(env, publication_id);
   return j_publication_id;
+}
+
+static jboolean JNI_CrowBridge_DenylistContainsHost(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jstring>& host) {
+  bool on_denylist =
+      crow::CrowConfiguration::GetInstance()->DenylistContainsHost(
+          base::android::ConvertJavaStringToUTF8(env, host));
+  return on_denylist;
 }

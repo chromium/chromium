@@ -59,7 +59,14 @@ public class CrowButtonDelegateImpl implements CrowButtonDelegate {
             callback.onResult(false);
             return;
         }
-        // Check our (current) exact list first.
+
+        // Any host present in the denylist should not have the feature enabled.
+        if (CrowBridge.denylistContainsHost(url.getHost())) {
+            callback.onResult(false);
+            return;
+        }
+
+        // Check for an exact match against our allowlist.
         // Fall back to page optimizations if the study param is enabled.
         if (!getPublicationId(url).equals(DOMAIN_ID_NONE)) {
             callback.onResult(true);
@@ -130,8 +137,8 @@ public class CrowButtonDelegateImpl implements CrowButtonDelegate {
     private String getPublicationId(GURL url) {
         String host = url.getHost();
 
-        // First check the downloaded component.
-        String publicationID = CrowBridge.getPublicationIDForHost(host);
+        // Check the allowlist for an exact match.
+        String publicationID = CrowBridge.getPublicationIDFromAllowlist(host);
         if (!publicationID.isEmpty()) {
             return publicationID;
         }

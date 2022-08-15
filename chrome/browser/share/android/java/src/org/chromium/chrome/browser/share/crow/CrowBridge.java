@@ -41,13 +41,22 @@ class CrowBridge {
      * Returns the publication ID for a hostname; empty string if host is not on the allowlist.
      * @param host The hostname to check against the allowlist.
      */
-    static String getPublicationIDForHost(String host) {
-        return CrowBridgeJni.get().getPublicationIDForHost(host);
+    static String getPublicationIDFromAllowlist(String host) {
+        return CrowBridgeJni.get().getPublicationIDFromAllowlist(host);
+    }
+
+    /**
+     * Returns whether |host| is on the denylist.
+     * @param host The hostname to check against the denylist.
+     */
+    static boolean denylistContainsHost(String host) {
+        return CrowBridgeJni.get().denylistContainsHost(host);
     }
 
     @NativeMethods
     interface Natives {
         void getRecentVisitCountsToHost(GURL url, int numDays, Callback<int[]> callback);
-        String getPublicationIDForHost(String host);
+        String getPublicationIDFromAllowlist(String host);
+        boolean denylistContainsHost(String host);
     }
 }

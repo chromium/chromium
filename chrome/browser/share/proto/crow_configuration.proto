@@ -11,10 +11,14 @@ option optimize_for = LITE_RUNTIME;
 // Information about an allowlisted hostname.
 // A wire-compatible proto is maintained in the server code base.
 message CrowConfiguration {
+  // List of allowed publisher ID/host mappings.
   repeated Publisher publisher = 1;
 
   // Allowed locales. Feature is initially en-US.
   repeated string allowed_country_codes = 2;
+
+  // Disallowed hostnames, takes priority over |publisher.host|.
+  repeated string denied_hosts = 3;
 }
 
 message Publisher {

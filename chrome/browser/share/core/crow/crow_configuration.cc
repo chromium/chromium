@@ -54,11 +54,24 @@ void CrowConfiguration::PopulateFromBinaryPb(const std::string& binary_pb) {
       domains_.insert(std::make_pair(host, publisher.publication_id()));
     }
   }
+
+  denied_hosts_.clear();
+  for (const std::string& host : config->denied_hosts()) {
+    denied_hosts_.insert(host);
+  }
 }
 
-std::string CrowConfiguration::GetPublicationID(const std::string& host) const {
+std::string CrowConfiguration::GetPublicationIDFromAllowlist(
+    const std::string& host) const {
   AutoLock lock(lock_);
+
   return domains_.count(host) > 0 ? domains_.at(host) : "";
+}
+
+bool CrowConfiguration::DenylistContainsHost(const std::string& host) const {
+  AutoLock lock(lock_);
+
+  return denied_hosts_.count(host) > 0;
 }
 
 }  // namespace crow
