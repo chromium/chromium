@@ -20,6 +20,7 @@ specific_include_rules = {
     "+chrome/browser/extensions/test_extension_environment.h",
     "+chrome/browser/profiles/profile_manager.h",
     "+chrome/browser/ui/simple_message_box_internal.h",
+    "+chrome/common/chrome_result_codes.h",
     "+chrome/common/chrome_switches.h",
     "+chrome/test/base/testing_profile.h",
     # Temporary allowed testing include.

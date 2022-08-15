@@ -12,7 +12,8 @@ bool IsNormalResultCode(ResultCode code) {
   // translated back to the normal exit code to indicate nothing went wrong
   // here.
   if (code == RESULT_CODE_NORMAL_EXIT_UPGRADE_RELAUNCHED ||
-      code == RESULT_CODE_NORMAL_EXIT_PACK_EXTENSION_SUCCESS) {
+      code == RESULT_CODE_NORMAL_EXIT_PACK_EXTENSION_SUCCESS ||
+      code == RESULT_CODE_NORMAL_EXIT_PROCESS_NOTIFIED) {
     return true;
   }
 

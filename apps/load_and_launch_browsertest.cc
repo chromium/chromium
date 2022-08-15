@@ -22,6 +22,7 @@
 #include "chrome/browser/extensions/load_error_reporter.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/simple_message_box_internal.h"
+#include "chrome/common/chrome_result_codes.h"
 #include "chrome/common/chrome_switches.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -82,7 +83,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
   int exit_code;
   ASSERT_TRUE(process.WaitForExitWithTimeout(TestTimeouts::action_timeout(),
                                              &exit_code));
-  ASSERT_EQ(0, exit_code);
+  ASSERT_EQ(chrome::RESULT_CODE_NORMAL_EXIT_PROCESS_NOTIFIED, exit_code);
 }
 
 // TODO(jackhou): Enable this test once it works on OSX. It currently does not
@@ -124,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
   int exit_code;
   ASSERT_TRUE(process.WaitForExitWithTimeout(TestTimeouts::action_timeout(),
                                              &exit_code));
-  ASSERT_EQ(0, exit_code);
+  ASSERT_EQ(chrome::RESULT_CODE_NORMAL_EXIT_PROCESS_NOTIFIED, exit_code);
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)

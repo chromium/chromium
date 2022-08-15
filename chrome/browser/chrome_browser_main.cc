@@ -1434,15 +1434,7 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
                          base::UTF16ToWide(l10n_util::GetStringUTF16(
                              IDS_USED_EXISTING_BROWSER)))
                          .c_str());
-
-      // Having a differentiated return type for testing allows for tests to
-      // verify proper handling of some switches. When not testing, stick to
-      // the standard Unix convention of returning zero when things went as
-      // expected.
-      if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-              switches::kTestType))
-        return chrome::RESULT_CODE_NORMAL_EXIT_PROCESS_NOTIFIED;
-      return content::RESULT_CODE_NORMAL_EXIT;
+      return chrome::RESULT_CODE_NORMAL_EXIT_PROCESS_NOTIFIED;
 
     case ProcessSingleton::PROFILE_IN_USE:
       return chrome::RESULT_CODE_PROFILE_IN_USE;
