@@ -178,10 +178,10 @@ public abstract class PaymentApp extends EditableOption {
     }
 
     /**
-     * @return Whether presence of this payment app should cause the
-     *         PaymentRequest.canMakePayment() to return true.
+     * @return Whether this payment app should cause PaymentRequest.hasEnrolledInstrument() to
+     *         return true.
      */
-    public boolean canMakePayment() {
+    public boolean hasEnrolledInstrument() {
         return true;
     }
 

@@ -105,7 +105,7 @@ bool JniPaymentApp::HandlesPayerPhone(JNIEnv* env) {
   return payment_app_->HandlesPayerPhone();
 }
 
-bool JniPaymentApp::CanMakePayment(JNIEnv* env) {
+bool JniPaymentApp::HasEnrolledInstrument(JNIEnv* env) {
   // ChromePaymentRequestService.java uses this value to determine whether
   // PaymentRequest.hasEnrolledInstrument() should return true.
   return payment_app_->HasEnrolledInstrument();

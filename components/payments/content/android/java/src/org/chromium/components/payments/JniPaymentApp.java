@@ -123,8 +123,8 @@ public class JniPaymentApp extends PaymentApp {
     }
 
     @Override
-    public boolean canMakePayment() {
-        return JniPaymentAppJni.get().canMakePayment(mNativeObject);
+    public boolean hasEnrolledInstrument() {
+        return JniPaymentAppJni.get().hasEnrolledInstrument(mNativeObject);
     }
 
     @Override
@@ -220,7 +220,7 @@ public class JniPaymentApp extends PaymentApp {
         boolean handlesPayerName(long nativeJniPaymentApp);
         boolean handlesPayerEmail(long nativeJniPaymentApp);
         boolean handlesPayerPhone(long nativeJniPaymentApp);
-        boolean canMakePayment(long nativeJniPaymentApp);
+        boolean hasEnrolledInstrument(long nativeJniPaymentApp);
         boolean canPreselect(long nativeJniPaymentApp);
         void invokePaymentApp(long nativeJniPaymentApp, JniPaymentApp callback);
         void updateWith(long nativeJniPaymentApp, ByteBuffer responseByteBuffer);

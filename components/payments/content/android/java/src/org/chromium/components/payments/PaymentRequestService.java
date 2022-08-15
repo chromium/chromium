@@ -1038,7 +1038,7 @@ public class PaymentRequestService
     public void onPaymentAppCreated(PaymentApp paymentApp) {
         if (mBrowserPaymentRequest == null) return;
         if (!mBrowserPaymentRequest.onPaymentAppCreated(paymentApp)) return;
-        mHasEnrolledInstrument |= paymentApp.canMakePayment();
+        mHasEnrolledInstrument |= paymentApp.hasEnrolledInstrument();
         mHasNonAutofillApp |= paymentApp.getPaymentAppType() != PaymentAppType.AUTOFILL;
 
         // Note that only a test can add autofill payment apps when basic-card feature is disabled.

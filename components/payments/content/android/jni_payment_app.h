@@ -40,7 +40,7 @@ class JniPaymentApp : public PaymentApp::Delegate {
 
   bool HandlesPayerPhone(JNIEnv* env);
 
-  bool CanMakePayment(JNIEnv* env);
+  bool HasEnrolledInstrument(JNIEnv* env);
 
   bool CanPreselect(JNIEnv* env);
 

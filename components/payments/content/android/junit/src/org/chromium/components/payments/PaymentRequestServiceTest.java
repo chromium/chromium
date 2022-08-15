@@ -235,7 +235,7 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
 
     private PaymentApp createDefaultPaymentApp() {
         PaymentApp app = Mockito.mock(PaymentApp.class);
-        Mockito.doReturn(true).when(app).canMakePayment();
+        Mockito.doReturn(true).when(app).hasEnrolledInstrument();
         return app;
     }
 
