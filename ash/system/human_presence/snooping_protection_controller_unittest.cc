@@ -12,6 +12,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
+#include "ash/system/human_presence/human_presence_metrics.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
@@ -27,22 +28,13 @@
 namespace ash {
 namespace {
 
+namespace metrics = ash::snooping_protection_metrics;
+
 // The minimum positive window length will be in the range of a few seconds.
 // Here we define two windows that will surely be shorter and longer resp. than
 // the positive window length.
 constexpr base::TimeDelta kShortTime = base::Milliseconds(30);
 constexpr base::TimeDelta kLongTime = base::Seconds(30);
-
-// UMA metric names.
-// TODO(b/233679833): Move these metrics names into a common file.
-constexpr char kSnoopingProtectionEnabledName[] =
-    "ChromeOS.HPS.SnoopingProtection.Enabled";
-constexpr char kSnoopingProtectionNegativeName[] =
-    "ChromeOS.HPS.SnoopingProtection.Negative.Duration";
-constexpr char kSnoopingProtectionPositiveName[] =
-    "ChromeOS.HPS.SnoopingProtection.Positive.Duration";
-constexpr char kSnoopingProtectionFlakeyDetectionName[] =
-    "ChromeOS.HPS.SnoopingProtection.FlakeyDetection";
 
 // A fixture that provides access to a fake daemon and an instance of the
 // controller hooked up to the test environment.
@@ -509,15 +501,15 @@ TEST_F(SnoopingProtectionControllerTestMetrics, EnableDisablePref) {
   base::HistogramTester tester;
 
   SimulateLogin();
-  tester.ExpectTotalCount(kSnoopingProtectionEnabledName, 0);
+  tester.ExpectTotalCount(metrics::kEnabledHistogramName, 0);
 
   SetEnabledPref(true);
-  tester.ExpectBucketCount(kSnoopingProtectionEnabledName, 1, 1);
-  tester.ExpectTotalCount(kSnoopingProtectionEnabledName, 1);
+  tester.ExpectBucketCount(metrics::kEnabledHistogramName, 1, 1);
+  tester.ExpectTotalCount(metrics::kEnabledHistogramName, 1);
 
   SetEnabledPref(false);
-  tester.ExpectBucketCount(kSnoopingProtectionEnabledName, 0, 1);
-  tester.ExpectTotalCount(kSnoopingProtectionEnabledName, 2);
+  tester.ExpectBucketCount(metrics::kEnabledHistogramName, 0, 1);
+  tester.ExpectTotalCount(metrics::kEnabledHistogramName, 2);
 }
 
 TEST_F(SnoopingProtectionControllerTestMetrics, Duration) {
@@ -530,32 +522,34 @@ TEST_F(SnoopingProtectionControllerTestMetrics, Duration) {
   // The first HpsNotifyChanged will not log anything.
   state.set_value(hps::HpsResult::POSITIVE);
   controller_->OnHpsNotifyChanged(state);
-  tester.ExpectTotalCount(kSnoopingProtectionPositiveName, 0);
-  tester.ExpectTotalCount(kSnoopingProtectionNegativeName, 0);
+  tester.ExpectTotalCount(metrics::kPositiveDurationHistogramName, 0);
+  tester.ExpectTotalCount(metrics::kNegativeDurationHistogramName, 0);
 
   task_environment()->FastForwardBy(kLongTime);
 
-  // Send UNKNOWN will log a kSnoopingProtectionPositiveName event.
+  // Send UNKNOWN will log a positive duration event.
   state.set_value(hps::HpsResult::UNKNOWN);
   controller_->OnHpsNotifyChanged(state);
-  tester.ExpectTimeBucketCount(kSnoopingProtectionPositiveName, kLongTime, 1);
-  tester.ExpectTotalCount(kSnoopingProtectionPositiveName, 1);
-  tester.ExpectTotalCount(kSnoopingProtectionNegativeName, 0);
+  tester.ExpectTimeBucketCount(metrics::kPositiveDurationHistogramName,
+                               kLongTime, 1);
+  tester.ExpectTotalCount(metrics::kPositiveDurationHistogramName, 1);
+  tester.ExpectTotalCount(metrics::kNegativeDurationHistogramName, 0);
 
   task_environment()->FastForwardBy(kLongTime);
 
   // Send NEGATIVE a second time will not log anything.
   state.set_value(hps::HpsResult::NEGATIVE);
   controller_->OnHpsNotifyChanged(state);
-  tester.ExpectTotalCount(kSnoopingProtectionPositiveName, 1);
-  tester.ExpectTotalCount(kSnoopingProtectionNegativeName, 0);
+  tester.ExpectTotalCount(metrics::kPositiveDurationHistogramName, 1);
+  tester.ExpectTotalCount(metrics::kNegativeDurationHistogramName, 0);
 
-  // Send POSITIVE will log a kSnoopingProtectionNegativeName event.
+  // Send POSITIVE will log a negative duration event.
   state.set_value(hps::HpsResult::POSITIVE);
   controller_->OnHpsNotifyChanged(state);
-  tester.ExpectTimeBucketCount(kSnoopingProtectionNegativeName, kLongTime, 1);
-  tester.ExpectTotalCount(kSnoopingProtectionPositiveName, 1);
-  tester.ExpectTotalCount(kSnoopingProtectionNegativeName, 1);
+  tester.ExpectTimeBucketCount(metrics::kNegativeDurationHistogramName,
+                               kLongTime, 1);
+  tester.ExpectTotalCount(metrics::kPositiveDurationHistogramName, 1);
+  tester.ExpectTotalCount(metrics::kNegativeDurationHistogramName, 1);
 }
 
 TEST_F(SnoopingProtectionControllerTestMetrics, ShutDownTest) {
@@ -568,31 +562,33 @@ TEST_F(SnoopingProtectionControllerTestMetrics, ShutDownTest) {
   // The first HpsNotifyChanged will not log anything.
   state.set_value(hps::HpsResult::POSITIVE);
   controller_->OnHpsNotifyChanged(state);
-  tester.ExpectTotalCount(kSnoopingProtectionPositiveName, 0);
-  tester.ExpectTotalCount(kSnoopingProtectionNegativeName, 0);
+  tester.ExpectTotalCount(metrics::kPositiveDurationHistogramName, 0);
+  tester.ExpectTotalCount(metrics::kNegativeDurationHistogramName, 0);
 
   task_environment()->FastForwardBy(kLongTime);
 
   dbus_client_->Shutdown();
-  tester.ExpectTimeBucketCount(kSnoopingProtectionPositiveName, kLongTime, 1);
-  tester.ExpectTotalCount(kSnoopingProtectionPositiveName, 1);
-  tester.ExpectTotalCount(kSnoopingProtectionNegativeName, 0);
+  tester.ExpectTimeBucketCount(metrics::kPositiveDurationHistogramName,
+                               kLongTime, 1);
+  tester.ExpectTotalCount(metrics::kPositiveDurationHistogramName, 1);
+  tester.ExpectTotalCount(metrics::kNegativeDurationHistogramName, 0);
   dbus_client_->Restart();
 
   // Send NEGATIVE will not log anything because of the shutdown.
   state.set_value(hps::HpsResult::NEGATIVE);
   controller_->OnHpsNotifyChanged(state);
-  tester.ExpectTotalCount(kSnoopingProtectionPositiveName, 1);
-  tester.ExpectTotalCount(kSnoopingProtectionNegativeName, 0);
+  tester.ExpectTotalCount(metrics::kPositiveDurationHistogramName, 1);
+  tester.ExpectTotalCount(metrics::kNegativeDurationHistogramName, 0);
 
   task_environment()->FastForwardBy(kLongTime);
 
-  // Send POSITIVE will log a kSnoopingProtectionNegativeName event.
+  // Send POSITIVE will log a negative duration event.
   state.set_value(hps::HpsResult::POSITIVE);
   controller_->OnHpsNotifyChanged(state);
-  tester.ExpectTimeBucketCount(kSnoopingProtectionNegativeName, kLongTime, 1);
-  tester.ExpectTotalCount(kSnoopingProtectionPositiveName, 1);
-  tester.ExpectTotalCount(kSnoopingProtectionNegativeName, 1);
+  tester.ExpectTimeBucketCount(metrics::kNegativeDurationHistogramName,
+                               kLongTime, 1);
+  tester.ExpectTotalCount(metrics::kPositiveDurationHistogramName, 1);
+  tester.ExpectTotalCount(metrics::kNegativeDurationHistogramName, 1);
 }
 
 TEST_F(SnoopingProtectionControllerTestMetrics, FlakeyDetection) {
@@ -605,18 +601,18 @@ TEST_F(SnoopingProtectionControllerTestMetrics, FlakeyDetection) {
   // The first HpsNotifyChanged will not log anything.
   state.set_value(hps::HpsResult::POSITIVE);
   controller_->OnHpsNotifyChanged(state);
-  tester.ExpectTotalCount(kSnoopingProtectionPositiveName, 0);
-  tester.ExpectTotalCount(kSnoopingProtectionNegativeName, 0);
-  tester.ExpectTotalCount(kSnoopingProtectionFlakeyDetectionName, 0);
+  tester.ExpectTotalCount(metrics::kPositiveDurationHistogramName, 0);
+  tester.ExpectTotalCount(metrics::kNegativeDurationHistogramName, 0);
+  tester.ExpectTotalCount(metrics::kFlakeyHistogramName, 0);
   EXPECT_TRUE(controller_->SnooperPresent());
 
   task_environment()->FastForwardBy(kShortTime);
   // Send NEGATIVE after a short period of time will log a flakey detection.
   state.set_value(hps::HpsResult::NEGATIVE);
   controller_->OnHpsNotifyChanged(state);
-  tester.ExpectTotalCount(kSnoopingProtectionPositiveName, 0);
-  tester.ExpectTotalCount(kSnoopingProtectionNegativeName, 0);
-  tester.ExpectTotalCount(kSnoopingProtectionFlakeyDetectionName, 1);
+  tester.ExpectTotalCount(metrics::kPositiveDurationHistogramName, 0);
+  tester.ExpectTotalCount(metrics::kNegativeDurationHistogramName, 0);
+  tester.ExpectTotalCount(metrics::kFlakeyHistogramName, 1);
   EXPECT_TRUE(controller_->SnooperPresent());
 
   task_environment()->FastForwardBy(kShortTime);
@@ -624,17 +620,17 @@ TEST_F(SnoopingProtectionControllerTestMetrics, FlakeyDetection) {
   // detection.
   state.set_value(hps::HpsResult::NEGATIVE);
   controller_->OnHpsNotifyChanged(state);
-  tester.ExpectTotalCount(kSnoopingProtectionPositiveName, 0);
-  tester.ExpectTotalCount(kSnoopingProtectionNegativeName, 0);
-  tester.ExpectTotalCount(kSnoopingProtectionFlakeyDetectionName, 2);
+  tester.ExpectTotalCount(metrics::kPositiveDurationHistogramName, 0);
+  tester.ExpectTotalCount(metrics::kNegativeDurationHistogramName, 0);
+  tester.ExpectTotalCount(metrics::kFlakeyHistogramName, 2);
   EXPECT_TRUE(controller_->SnooperPresent());
 
   task_environment()->FastForwardBy(kLongTime);
   state.set_value(hps::HpsResult::NEGATIVE);
   controller_->OnHpsNotifyChanged(state);
-  tester.ExpectTotalCount(kSnoopingProtectionPositiveName, 1);
-  tester.ExpectTotalCount(kSnoopingProtectionNegativeName, 0);
-  tester.ExpectTotalCount(kSnoopingProtectionFlakeyDetectionName, 2);
+  tester.ExpectTotalCount(metrics::kPositiveDurationHistogramName, 1);
+  tester.ExpectTotalCount(metrics::kNegativeDurationHistogramName, 0);
+  tester.ExpectTotalCount(metrics::kFlakeyHistogramName, 2);
   EXPECT_FALSE(controller_->SnooperPresent());
 
   // Send POSITIVE after a short period of time will NOT log a flakey detection
@@ -642,9 +638,9 @@ TEST_F(SnoopingProtectionControllerTestMetrics, FlakeyDetection) {
   task_environment()->FastForwardBy(kShortTime);
   state.set_value(hps::HpsResult::POSITIVE);
   controller_->OnHpsNotifyChanged(state);
-  tester.ExpectTotalCount(kSnoopingProtectionPositiveName, 1);
-  tester.ExpectTotalCount(kSnoopingProtectionNegativeName, 1);
-  tester.ExpectTotalCount(kSnoopingProtectionFlakeyDetectionName, 2);
+  tester.ExpectTotalCount(metrics::kPositiveDurationHistogramName, 1);
+  tester.ExpectTotalCount(metrics::kNegativeDurationHistogramName, 1);
+  tester.ExpectTotalCount(metrics::kFlakeyHistogramName, 2);
   EXPECT_TRUE(controller_->SnooperPresent());
 }
 
@@ -659,14 +655,14 @@ TEST_F(SnoopingProtectionControllerTestMetrics,
   // The first HpsNotifyChanged will not log anything.
   state.set_value(hps::HpsResult::POSITIVE);
   controller_->OnHpsNotifyChanged(state);
-  tester.ExpectTotalCount(kSnoopingProtectionFlakeyDetectionName, 0);
+  tester.ExpectTotalCount(metrics::kFlakeyHistogramName, 0);
 
   // Changing Orientation will disable HpsNotify and make the Present state to
   // be false.
   task_environment()->FastForwardBy(kShortTime);
   controller_->OnOrientationChanged(/*suitable_for_human_presence=*/false);
   controller_->OnOrientationChanged(/*suitable_for_human_presence=*/true);
-  tester.ExpectTotalCount(kSnoopingProtectionFlakeyDetectionName, 0);
+  tester.ExpectTotalCount(metrics::kFlakeyHistogramName, 0);
   EXPECT_FALSE(controller_->SnooperPresent());
 
   // Send NEGATIVE after a short period of time will log a flakey detection
@@ -674,7 +670,7 @@ TEST_F(SnoopingProtectionControllerTestMetrics,
   // controller_->SnooperPresent state into false.
   state.set_value(hps::HpsResult::NEGATIVE);
   controller_->OnHpsNotifyChanged(state);
-  tester.ExpectTotalCount(kSnoopingProtectionFlakeyDetectionName, 0);
+  tester.ExpectTotalCount(metrics::kFlakeyHistogramName, 0);
 }
 
 }  // namespace

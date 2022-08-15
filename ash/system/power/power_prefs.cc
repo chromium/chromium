@@ -11,6 +11,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/system/human_presence/human_presence_metrics.h"
 #include "ash/system/human_presence/lock_on_leave_controller.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -34,6 +35,8 @@ using PeakShiftDayConfig =
 
 using AdvancedBatteryChargeModeDayConfig =
     power_manager::PowerManagementPolicy::AdvancedBatteryChargeModeDayConfig;
+
+namespace qd_metrics = ash::quick_dim_metrics;
 
 chromeos::PowerPolicyController::Action GetPowerPolicyAction(
     const PrefService* prefs,
@@ -255,7 +258,7 @@ void PowerPrefs::UpdatePowerPolicyFromPrefsChange() {
       prefs->GetBoolean(prefs::kPowerQuickDimEnabled);
   if (quick_dim_pref_enabled_ != new_quick_dim_pref_enabled) {
     quick_dim_pref_enabled_ = new_quick_dim_pref_enabled;
-    base::UmaHistogramBoolean("ChromeOS.HPS.QuickDim.Enabled",
+    base::UmaHistogramBoolean(qd_metrics::kEnabledHistogramName,
                               quick_dim_pref_enabled_);
   }
 

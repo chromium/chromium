@@ -15,6 +15,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
+#include "ash/system/human_presence/human_presence_metrics.h"
 #include "ash/test/ash_test_base.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
@@ -36,6 +37,8 @@
 #include "components/prefs/testing_pref_store.h"
 
 using session_manager::SessionState;
+
+namespace qd_metrics = ash::quick_dim_metrics;
 
 namespace ash {
 
@@ -606,8 +609,8 @@ TEST_F(PowerPrefsTest, QuickDimMetrics) {
   const char kUserEmail[] = "user@example.net";
 
   // Initial pref loading shouldn't be logged as manual pref change.
-  EXPECT_TRUE(
-      histogram_tester_.GetAllSamples("ChromeOS.HPS.QuickDim.Enabled").empty());
+  EXPECT_TRUE(histogram_tester_.GetAllSamples(qd_metrics::kEnabledHistogramName)
+                  .empty());
 
   // Initial pref value is false, so manually updating it to true should be
   // logged.
@@ -615,12 +618,12 @@ TEST_F(PowerPrefsTest, QuickDimMetrics) {
 
   const std::vector<base::Bucket> login_screen_buckets = {
       base::Bucket(true, 1)};
-  EXPECT_EQ(histogram_tester_.GetAllSamples("ChromeOS.HPS.QuickDim.Enabled"),
+  EXPECT_EQ(histogram_tester_.GetAllSamples(qd_metrics::kEnabledHistogramName),
             login_screen_buckets);
 
   // Loading a new pref service isn't a manual update, so shouldn't be logged.
   SimulateUserLogin(kUserEmail);
-  EXPECT_EQ(histogram_tester_.GetAllSamples("ChromeOS.HPS.QuickDim.Enabled"),
+  EXPECT_EQ(histogram_tester_.GetAllSamples(qd_metrics::kEnabledHistogramName),
             login_screen_buckets);
 
   // We now re-enable the feature, which *is* a manual toggle (because the
@@ -629,7 +632,7 @@ TEST_F(PowerPrefsTest, QuickDimMetrics) {
 
   // Login screen and user have both enabled the feature.
   const std::vector<base::Bucket> user_enable_buckets = {base::Bucket(true, 2)};
-  EXPECT_EQ(histogram_tester_.GetAllSamples("ChromeOS.HPS.QuickDim.Enabled"),
+  EXPECT_EQ(histogram_tester_.GetAllSamples(qd_metrics::kEnabledHistogramName),
             user_enable_buckets);
 
   // Manual disable should also be logged.
@@ -637,12 +640,12 @@ TEST_F(PowerPrefsTest, QuickDimMetrics) {
 
   const std::vector<base::Bucket> user_disable_buckets = {
       base::Bucket(false, 1), base::Bucket(true, 2)};
-  EXPECT_EQ(histogram_tester_.GetAllSamples("ChromeOS.HPS.QuickDim.Enabled"),
+  EXPECT_EQ(histogram_tester_.GetAllSamples(qd_metrics::kEnabledHistogramName),
             user_disable_buckets);
 
   // Redundant pref change shouldn't be logged.
   SetQuickDimPreference(false);
-  EXPECT_EQ(histogram_tester_.GetAllSamples("ChromeOS.HPS.QuickDim.Enabled"),
+  EXPECT_EQ(histogram_tester_.GetAllSamples(qd_metrics::kEnabledHistogramName),
             user_disable_buckets);
 }
 

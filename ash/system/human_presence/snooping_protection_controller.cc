@@ -10,6 +10,7 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/system/human_presence/human_presence_metrics.h"
 #include "ash/system/human_presence/snooping_protection_notification_blocker.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -29,19 +30,8 @@
 #include "ui/message_center/message_center.h"
 
 namespace ash {
-namespace {
-// Number of buckets to log SnoopingProtection present result.
-constexpr int kSnoopingProtectionDurationNumBucket = 100;
-// Minimum value for the SnoopingProtection.Positive.Duration and
-// SnoopingProtection.Negative.Duration.
-constexpr base::TimeDelta kSnoopingProtectionDurationMin = base::Seconds(1);
-// Maximum value for SnoopingProtection.Positive.Duration; Longer than 1 hour is
-// considered as 1 hour.
-constexpr base::TimeDelta kSnoopingProtectionPositiveMax = base::Hours(1);
-// Maximum value for SnoopingProtection.Negative.Duration; Longer than 1 day is
-// considered as 1 day.
-constexpr base::TimeDelta kSnoopingProtectionNegativeMax = base::Hours(24);
-}  // namespace
+
+namespace metrics = ash::snooping_protection_metrics;
 
 SnoopingProtectionController::SnoopingProtectionController()
     : notification_blocker_(
@@ -351,8 +341,7 @@ void SnoopingProtectionController::UpdatePrefState() {
 
   ReconfigureService(&new_state);
   UpdateSnooperStatus(new_state);
-  base::UmaHistogramBoolean("ChromeOS.HPS.SnoopingProtection.Enabled",
-                            pref_enabled);
+  base::UmaHistogramBoolean(metrics::kEnabledHistogramName, pref_enabled);
 }
 
 void SnoopingProtectionController::OnMinWindowExpired() {
@@ -374,15 +363,15 @@ void SnoopingProtectionController::LogPresenceWindow(bool was_present) {
   last_presence_report_time_ = now;
 
   if (was_present) {
-    base::UmaHistogramCustomTimes(
-        "ChromeOS.HPS.SnoopingProtection.Positive.Duration",
-        time_since_last_report, kSnoopingProtectionDurationMin,
-        kSnoopingProtectionPositiveMax, kSnoopingProtectionDurationNumBucket);
+    base::UmaHistogramCustomTimes(metrics::kPositiveDurationHistogramName,
+                                  time_since_last_report, metrics::kDurationMin,
+                                  metrics::kPositiveDurationMax,
+                                  metrics::kDurationNumBuckets);
   } else {
-    base::UmaHistogramCustomTimes(
-        "ChromeOS.HPS.SnoopingProtection.Negative.Duration",
-        time_since_last_report, kSnoopingProtectionDurationMin,
-        kSnoopingProtectionNegativeMax, kSnoopingProtectionDurationNumBucket);
+    base::UmaHistogramCustomTimes(metrics::kNegativeDurationHistogramName,
+                                  time_since_last_report, metrics::kDurationMin,
+                                  metrics::kNegativeDurationMax,
+                                  metrics::kDurationNumBuckets);
   }
 }
 
