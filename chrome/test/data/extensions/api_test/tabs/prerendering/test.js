@@ -77,7 +77,7 @@ async function testGetTitleByDocumentId() {
 
 // Checks if injected scripts continue working while activating the pre-rendered
 // pages. Also, checks if content scripts can activate the pre-rendered page.
-async function testActivationOnExecution() {
+async function testActivateOnExecution() {
   await setup();
   await new Promise(resolve => {
     // Inject a script that keeps alive until the page activation.
@@ -97,21 +97,41 @@ async function testActivationOnExecution() {
   // Start monitoring tab update events.
   chrome.tabs.onUpdated.addListener(function cb(updatedTabId, changeInfo, tab) {
     chrome.test.assertEq(tabId, updatedTabId);
-    if (changeInfo.title && changeInfo.title == 'activated') {
+    if (changeInfo.title && changeInfo.title === 'activated') {
       chrome.tabs.onUpdated.removeListener(cb);
       chrome.test.succeed();
     }
   });
 
   // Inject a script that activates the pre-rendered page.
-  await new Promise(resolve => {
-    chrome.tabs.executeScript(
-        tabId, {code: 'window.location.href = "./prerendering.html";'},
-        result => {
-          // No results, but just checks if it doesn't crash.
-          resolve();
+  chrome.tabs.executeScript(
+      tabId, {code: 'window.location.href = "./prerendering.html";'});
+}
+
+async function testExecuteAfterActivation() {
+  await setup();
+
+  // Start monitoring tab update events.
+  chrome.tabs.onUpdated.addListener(function cb(updatedTabId, changeInfo, tab) {
+    chrome.test.assertEq(tabId, updatedTabId);
+    if (changeInfo.status && changeInfo.status === 'complete') {
+      // Specify the hidden FrameTreeNodeId for the activated frame. JavaScript
+      // could not know it, but it should just work as 0 is just an alternative
+      // and internal FrameTreeNodeId should also work like a frameId.
+      chrome.tabs.executeScript(
+        tabId, { frameId: 1, code: 'document.title' },
+        results => {
+          chrome.tabs.onUpdated.removeListener(cb);
+          chrome.test.assertEq(1, results.length);
+          chrome.test.assertEq('prerendering', results[0]);
+          chrome.test.succeed();
         });
+    }
   });
+
+  // Inject a script that activates the pre-rendered page.
+  chrome.tabs.executeScript(
+      tabId, {code: 'window.location.href = "./prerendering.html";'});
 }
 
 // Checks if navigation via chrome.tabs.update() doesn't activate pre-rendered
@@ -147,7 +167,8 @@ chrome.test.getConfig(async config => {
     testGetTitleForAllFrames,
     testGetTitleByFrameId,
     testGetTitleByDocumentId,
-    testActivationOnExecution,
+    testActivateOnExecution,
+    testExecuteAfterActivation,
     testDontActivateByUpdate,
   ]);
 });
