@@ -5709,6 +5709,8 @@ static_library("browser") {
       "chromeos/extensions/login_screen/login_state/login_state_api.h",
       "chromeos/extensions/login_screen/login_state/session_state_changed_event_dispatcher.cc",
       "chromeos/extensions/login_screen/login_state/session_state_changed_event_dispatcher.h",
+      "chromeos/reporting/metric_default_utils.cc",
+      "chromeos/reporting/metric_default_utils.h",
       "chromeos/reporting/network/network_bandwidth_sampler.cc",
       "chromeos/reporting/network/network_bandwidth_sampler.h",
       "chromeos/tablet_mode/chrome_content_browser_client_tablet_mode_part.cc",

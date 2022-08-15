@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/usb/usb_events_observer.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/chromeos/reporting/metric_default_utils.h"
 #include "chrome/browser/chromeos/reporting/network/network_bandwidth_sampler.h"
 #include "components/reporting/client/report_queue.h"
 #include "components/reporting/client/report_queue_configuration.h"
@@ -29,53 +30,6 @@
 namespace em = enterprise_management;
 
 namespace reporting {
-namespace {
-
-constexpr base::TimeDelta kDefaultReportUploadFrequencyForTesting =
-    base::Minutes(5);
-constexpr base::TimeDelta kDefaultCollectionRateForTesting = base::Minutes(2);
-constexpr base::TimeDelta kDefaultEventCheckingRateForTesting =
-    base::Minutes(1);
-
-constexpr base::TimeDelta kInitDelay = base::Minutes(1);
-constexpr base::TimeDelta kInitialUploadDelay = base::Minutes(3);
-
-constexpr base::TimeDelta kDefaultReportUploadFrequency = base::Hours(3);
-constexpr base::TimeDelta kDefaultNetworkTelemetryCollectionRate =
-    base::Minutes(60);
-constexpr base::TimeDelta kDefaultNetworkTelemetryEventCheckingRate =
-    base::Minutes(10);
-constexpr base::TimeDelta kDefaultAudioTelemetryCollectionRate =
-    base::Minutes(10);
-
-constexpr bool kReportDeviceNetworkStatusDefaultValue = true;
-constexpr bool kReportDeviceAudioStatusDefaultValue = true;
-constexpr bool kReportDevicePeripheralsDefaultValue = false;
-
-base::TimeDelta GetDefaultRate(base::TimeDelta default_rate,
-                               base::TimeDelta testing_rate) {
-  // If telemetry testing rates flag is enabled, use `testing_rate` to reduce
-  // time before metric collection and reporting.
-  return base::FeatureList::IsEnabled(
-             MetricRateController::kEnableTelemetryTestingRates)
-             ? testing_rate
-             : default_rate;
-}
-
-base::TimeDelta GetDefaultReportUploadFrequency() {
-  return GetDefaultRate(kDefaultReportUploadFrequency,
-                        kDefaultReportUploadFrequencyForTesting);
-}
-
-base::TimeDelta GetDefaultCollectionRate(base::TimeDelta default_rate) {
-  return GetDefaultRate(default_rate, kDefaultCollectionRateForTesting);
-}
-
-base::TimeDelta GetDefaultEventCheckingRate(base::TimeDelta default_rate) {
-  return GetDefaultRate(default_rate, kDefaultEventCheckingRateForTesting);
-}
-
-}  // namespace
 
 bool MetricReportingManager::Delegate::IsAffiliated(Profile* profile) {
   const user_manager::User* const user =
@@ -197,12 +151,12 @@ MetricReportingManager::Delegate::CreateEventObserverManager(
 }
 
 base::TimeDelta MetricReportingManager::Delegate::GetInitDelay() const {
-  return kInitDelay;
+  return metrics::kInitDelay;
 }
 
 base::TimeDelta MetricReportingManager::Delegate::GetInitialUploadDelay()
     const {
-  return kInitialUploadDelay;
+  return metrics::kInitialUploadDelay;
 }
 
 // static
@@ -234,7 +188,7 @@ void MetricReportingManager::OnLogin(Profile* profile) {
   user_telemetry_report_queue_ = delegate_->CreatePeriodicUploadReportQueue(
       EventType::kUser, Destination::TELEMETRY_METRIC, Priority::MANUAL_BATCH,
       &reporting_settings_, ::ash::kReportUploadFrequency,
-      GetDefaultReportUploadFrequency());
+      metrics::GetDefaultReportUploadFrequency());
 
   InitOnAffiliatedLogin();
   delayed_init_on_login_timer_.Start(
@@ -262,7 +216,7 @@ MetricReportingManager::MetricReportingManager(
   telemetry_report_queue_ = delegate_->CreatePeriodicUploadReportQueue(
       EventType::kDevice, Destination::TELEMETRY_METRIC, Priority::MANUAL_BATCH,
       &reporting_settings_, ::ash::kReportUploadFrequency,
-      GetDefaultReportUploadFrequency());
+      metrics::GetDefaultReportUploadFrequency());
   event_report_queue_ = delegate_->CreateMetricReportQueue(
       EventType::kDevice, Destination::EVENT_METRIC, Priority::SLOW_BATCH);
   peripheral_events_and_telemetry_report_queue_ =
@@ -341,12 +295,12 @@ void MetricReportingManager::InitOnAffiliatedLogin() {
   InitEventObserverManager(
       std::make_unique<AudioEventsObserver>(),
       /*enable_setting_path=*/::ash::kReportDeviceAudioStatus,
-      kReportDeviceAudioStatusDefaultValue);
+      metrics::kReportDeviceAudioStatusDefaultValue);
   // Network health events observer.
   InitEventObserverManager(
       std::make_unique<NetworkEventsObserver>(),
       /*enable_setting_path=*/::ash::kReportDeviceNetworkStatus,
-      kReportDeviceNetworkStatusDefaultValue);
+      metrics::kReportDeviceNetworkStatusDefaultValue);
   InitPeripheralsCollectors();
 }
 
@@ -462,9 +416,10 @@ void MetricReportingManager::InitNetworkCollectors(Profile* profile) {
   InitPeriodicCollector(
       std::move(network_telemetry_sampler), telemetry_report_queue_.get(),
       /*enable_setting_path=*/::ash::kReportDeviceNetworkStatus,
-      kReportDeviceNetworkStatusDefaultValue,
+      metrics::kReportDeviceNetworkStatusDefaultValue,
       ::ash::kReportDeviceNetworkTelemetryCollectionRateMs,
-      GetDefaultCollectionRate(kDefaultNetworkTelemetryCollectionRate));
+      metrics::GetDefaultCollectionRate(
+          metrics::kDefaultNetworkTelemetryCollectionRate));
 
   // HttpsLatency events.
   InitPeriodicEventCollector(
@@ -472,29 +427,32 @@ void MetricReportingManager::InitNetworkCollectors(Profile* profile) {
       std::make_unique<HttpsLatencyEventDetector>(), /*additional_samplers=*/{},
       event_report_queue_.get(),
       /*enable_setting_path=*/::ash::kReportDeviceNetworkStatus,
-      kReportDeviceNetworkStatusDefaultValue,
+      metrics::kReportDeviceNetworkStatusDefaultValue,
       ::ash::kReportDeviceNetworkTelemetryEventCheckingRateMs,
-      GetDefaultEventCheckingRate(kDefaultNetworkTelemetryEventCheckingRate));
+      metrics::GetDefaultEventCheckingRate(
+          metrics::kDefaultNetworkTelemetryEventCheckingRate));
 
   // Network bandwidth telemetry.
   InitPeriodicCollector(
       std::move(network_bandwidth_sampler), user_telemetry_report_queue_.get(),
       /*enable_setting_path=*/::ash::kReportDeviceNetworkStatus,
-      kReportDeviceNetworkStatusDefaultValue,
+      metrics::kReportDeviceNetworkStatusDefaultValue,
       ::ash::kReportDeviceNetworkTelemetryCollectionRateMs,
-      GetDefaultCollectionRate(kDefaultNetworkTelemetryCollectionRate));
+      metrics::GetDefaultCollectionRate(
+          metrics::kDefaultNetworkTelemetryCollectionRate));
 }
 
 void MetricReportingManager::InitAudioCollectors() {
   auto audio_telemetry_sampler = std::make_unique<CrosHealthdMetricSampler>(
       chromeos::cros_healthd::mojom::ProbeCategoryEnum::kAudio,
       CrosHealthdMetricSampler::MetricType::kTelemetry);
-  InitPeriodicCollector(
-      std::move(audio_telemetry_sampler), telemetry_report_queue_.get(),
-      /*enable_setting_path=*/::ash::kReportDeviceAudioStatus,
-      kReportDeviceAudioStatusDefaultValue,
-      ::ash::kReportDeviceAudioStatusCheckingRateMs,
-      GetDefaultCollectionRate(kDefaultAudioTelemetryCollectionRate));
+  InitPeriodicCollector(std::move(audio_telemetry_sampler),
+                        telemetry_report_queue_.get(),
+                        /*enable_setting_path=*/::ash::kReportDeviceAudioStatus,
+                        metrics::kReportDeviceAudioStatusDefaultValue,
+                        ::ash::kReportDeviceAudioStatusCheckingRateMs,
+                        metrics::GetDefaultCollectionRate(
+                            metrics::kDefaultAudioTelemetryCollectionRate));
 }
 
 void MetricReportingManager::InitPeripheralsCollectors() {
@@ -505,7 +463,8 @@ void MetricReportingManager::InitPeripheralsCollectors() {
   event_observer_managers_.emplace_back(delegate_->CreateEventObserverManager(
       std::make_unique<UsbEventsObserver>(),
       peripheral_events_and_telemetry_report_queue_.get(), &reporting_settings_,
-      ::ash::kReportDevicePeripherals, kReportDevicePeripheralsDefaultValue,
+      ::ash::kReportDevicePeripherals,
+      metrics::kReportDevicePeripheralsDefaultValue,
       /*additional_samplers=*/std::vector<Sampler*>()));
 
   auto peripheral_telemetry_sampler =
@@ -517,7 +476,8 @@ void MetricReportingManager::InitPeripheralsCollectors() {
   CreateCrosHealthdOneShotCollector(
       chromeos::cros_healthd::mojom::ProbeCategoryEnum::kBus,
       CrosHealthdMetricSampler::MetricType::kTelemetry,
-      ash::kReportDevicePeripherals, kReportDevicePeripheralsDefaultValue,
+      ash::kReportDevicePeripherals,
+      metrics::kReportDevicePeripheralsDefaultValue,
       peripheral_events_and_telemetry_report_queue_.get());
 }
 }  // namespace reporting
