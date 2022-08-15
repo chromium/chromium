@@ -120,7 +120,7 @@ SpellcheckService::SpellcheckService(content::BrowserContext* context)
     // load a non-existent Hunspell dictionary, and so that Hunspell
     // spellchecking isn't broken because of the failed load.
     ListPrefUpdate update(prefs, spellcheck::prefs::kSpellCheckDictionaries);
-    update->EraseListValueIf([](const base::Value& entry) {
+    update->GetList().EraseIf([](const base::Value& entry) {
       return spellcheck::GetCorrespondingSpellCheckLanguage(entry.GetString())
           .empty();
     });
@@ -191,8 +191,7 @@ void SpellcheckService::GetDictionaries(
   PrefService* prefs = user_prefs::UserPrefs::Get(browser_context);
   std::set<std::string> spellcheck_dictionaries;
   for (const auto& value :
-       prefs->GetList(spellcheck::prefs::kSpellCheckDictionaries)
-           ->GetListDeprecated()) {
+       prefs->GetValueList(spellcheck::prefs::kSpellCheckDictionaries)) {
     const std::string* dictionary = value.GetIfString();
     if (dictionary)
       spellcheck_dictionaries.insert(*dictionary);
@@ -330,8 +329,8 @@ void SpellcheckService::EnableFirstUserLanguageForSpellcheck(
     PrefService* prefs) {
   // Ensure that spellcheck is enabled for the first language in the
   // accept languages list.
-  base::Value user_dictionaries =
-      prefs->GetList(spellcheck::prefs::kSpellCheckDictionaries)->Clone();
+  base::Value::List user_dictionaries =
+      prefs->GetValueList(spellcheck::prefs::kSpellCheckDictionaries).Clone();
   std::vector<std::string> user_languages =
       base::SplitString(prefs->GetString(language::prefs::kAcceptLanguages),
                         ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
@@ -353,7 +352,7 @@ void SpellcheckService::EnableFirstUserLanguageForSpellcheck(
   }
 
   bool first_user_language_spellchecked = false;
-  for (const auto& dictionary_value : user_dictionaries.GetListDeprecated()) {
+  for (const auto& dictionary_value : user_dictionaries) {
     first_user_language_spellchecked =
         base::Contains(dictionary_value.GetString(), first_user_language);
     if (first_user_language_spellchecked)
@@ -361,9 +360,10 @@ void SpellcheckService::EnableFirstUserLanguageForSpellcheck(
   }
 
   if (!first_user_language_spellchecked) {
-    user_dictionaries.Insert(user_dictionaries.GetListDeprecated().begin(),
+    user_dictionaries.Insert(user_dictionaries.begin(),
                              base::Value(first_user_language));
-    prefs->Set(spellcheck::prefs::kSpellCheckDictionaries, user_dictionaries);
+    prefs->SetList(spellcheck::prefs::kSpellCheckDictionaries,
+                   std::move(user_dictionaries));
   }
 }
 #endif  // BUILDFLAG(IS_WIN)
@@ -654,7 +654,7 @@ void SpellcheckService::InitWindowsDictionaryLanguages(
   // When following object goes out of scope, preference change observers will
   // be notified (even if there is no preference change).
   ListPrefUpdate update(prefs, spellcheck::prefs::kSpellCheckDictionaries);
-  update->EraseListValueIf([this](const base::Value& entry) {
+  update->GetList().EraseIf([this](const base::Value& entry) {
     const std::string dictionary_name = entry.GetString();
     return (!UsesWindowsDictionary(dictionary_name) &&
             spellcheck::GetCorrespondingSpellCheckLanguage(dictionary_name)
