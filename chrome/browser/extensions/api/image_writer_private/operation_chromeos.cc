@@ -72,9 +72,9 @@ void Operation::UnmountVolumesCallback(base::OnceClosure continuation,
     return;
   }
 
-  const DiskMountManager::DiskMap& disks =
+  const DiskMountManager::Disks& disks =
       DiskMountManager::GetInstance()->disks();
-  DiskMountManager::DiskMap::const_iterator iter =
+  DiskMountManager::Disks::const_iterator iter =
       disks.find(device_path_.value());
 
   if (iter == disks.end()) {
@@ -84,7 +84,7 @@ void Operation::UnmountVolumesCallback(base::OnceClosure continuation,
     return;
   }
 
-  StartWriteOnUIThread(iter->second->file_path(), std::move(continuation));
+  StartWriteOnUIThread(iter->get()->file_path(), std::move(continuation));
 }
 
 void Operation::StartWriteOnUIThread(const std::string& target_path,

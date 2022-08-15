@@ -1248,8 +1248,8 @@ void VolumeManager::OnRenameEvent(
       std::string mount_label;
       auto disk_map_iter = disk_mount_manager_->disks().find(device_path);
       if (disk_map_iter != disk_mount_manager_->disks().end() &&
-          !disk_map_iter->second->base_mount_path().empty()) {
-        mount_label = base::FilePath(disk_map_iter->second->base_mount_path())
+          !disk_map_iter->get()->base_mount_path().empty()) {
+        mount_label = base::FilePath(disk_map_iter->get()->base_mount_path())
                           .BaseName()
                           .AsUTF8Unsafe();
       }

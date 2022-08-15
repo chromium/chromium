@@ -32,7 +32,7 @@ class MockDiskMountManager : public DiskMountManager {
   // DiskMountManager override.
   void AddObserver(DiskMountManager::Observer*) override;
   void RemoveObserver(DiskMountManager::Observer*) override;
-  MOCK_METHOD(const DiskMountManager::DiskMap&, disks, (), (const, override));
+  MOCK_METHOD(const DiskMountManager::Disks&, disks, (), (const, override));
   MOCK_METHOD(const Disk*,
               FindDiskBySourcePath,
               (const std::string&),
@@ -123,7 +123,7 @@ class MockDiskMountManager : public DiskMountManager {
   void RemoveObserverInternal(DiskMountManager::Observer* observer);
 
   // Is used to implement disks.
-  const DiskMountManager::DiskMap& disksInternal() const { return disks_; }
+  const DiskMountManager::Disks& disksInternal() const { return disks_; }
 
   const DiskMountManager::MountPoints& mountPointsInternal() const;
 
@@ -142,7 +142,7 @@ class MockDiskMountManager : public DiskMountManager {
   base::ObserverList<DiskMountManager::Observer> observers_;
 
   // The list of disks found.
-  DiskMountManager::DiskMap disks_;
+  DiskMountManager::Disks disks_;
 
   // The list of existing mount points.
   DiskMountManager::MountPoints mount_points_;

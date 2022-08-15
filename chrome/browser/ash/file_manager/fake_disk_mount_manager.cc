@@ -48,15 +48,14 @@ void FakeDiskMountManager::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-const ash::disks::DiskMountManager::DiskMap& FakeDiskMountManager::disks()
-    const {
+const ash::disks::DiskMountManager::Disks& FakeDiskMountManager::disks() const {
   return disks_;
 }
 
 const ash::disks::Disk* FakeDiskMountManager::FindDiskBySourcePath(
     const std::string& source_path) const {
-  DiskMap::const_iterator iter = disks_.find(source_path);
-  return iter != disks_.end() ? iter->second.get() : nullptr;
+  Disks::const_iterator iter = disks_.find(source_path);
+  return iter != disks_.end() ? iter->get() : nullptr;
 }
 
 const ash::disks::DiskMountManager::MountPoints&
@@ -162,7 +161,7 @@ void FakeDiskMountManager::UnmountDeviceRecursively(
 bool FakeDiskMountManager::AddDiskForTest(
     std::unique_ptr<ash::disks::Disk> disk) {
   DCHECK(disk);
-  return disks_.insert(make_pair(disk->device_path(), std::move(disk))).second;
+  return disks_.insert(std::move(disk)).second;
 }
 
 bool FakeDiskMountManager::AddMountPointForTest(const MountPoint& mount_point) {

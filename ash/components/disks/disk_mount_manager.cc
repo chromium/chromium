@@ -20,7 +20,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
-#include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
@@ -102,8 +101,8 @@ class DiskMountManagerImpl : public DiskMountManager,
 
     // Hidden and non-existent devices should not be mounted.
     if (type == MountType::kDevice) {
-      DiskMap::const_iterator it = disks_.find(source_path);
-      if (it == disks_.end() || it->second->is_hidden()) {
+      Disks::const_iterator it = disks_.find(source_path);
+      if (it == disks_.end() || it->get()->is_hidden()) {
         OnMountCompleted({MountError::kInternal, source_path, type});
         return;
       }
@@ -133,16 +132,16 @@ class DiskMountManagerImpl : public DiskMountManager,
 
   void RemountAllRemovableDrives(MountAccessMode mode) override {
     // TODO(yamaguchi): Retry for tentative remount failures. crbug.com/661455
-    for (const auto& device_path_and_disk : disks_) {
-      const Disk& disk = *device_path_and_disk.second;
-      if (disk.is_read_only_hardware()) {
+    for (const auto& disk : disks_) {
+      DCHECK(disk);
+      if (disk->is_read_only_hardware()) {
         // Read-only devices can be mounted in RO mode only. No need to remount.
         continue;
       }
-      if (!disk.is_mounted()) {
+      if (!disk->is_mounted()) {
         continue;
       }
-      RemountRemovableDrive(disk, mode);
+      RemountRemovableDrive(*disk, mode);
     }
   }
 
@@ -164,13 +163,13 @@ class DiskMountManagerImpl : public DiskMountManager,
     const std::string filesystem_str = FormatFileSystemTypeToString(filesystem);
     pending_format_changes_[device_path] = {filesystem_str, label};
 
-    DiskMap::const_iterator disk = disks_.find(device_path);
+    Disks::const_iterator disk = disks_.find(device_path);
     if (disk == disks_.end()) {
       LOG(ERROR) << "Cannot find device '" << device_path << "'";
       OnFormatCompleted(FormatError::kUnknown, device_path);
       return;
     }
-    if (disk->second->is_read_only()) {
+    if (disk->get()->is_read_only()) {
       LOG(ERROR) << "Device '" << device_path << "' is read-only";
       OnFormatCompleted(FormatError::kDeviceNotAllowed, device_path);
       return;
@@ -182,7 +181,7 @@ class DiskMountManagerImpl : public DiskMountManager,
       return;
     }
 
-    UnmountPath(disk->second->mount_path(),
+    UnmountPath(disk->get()->mount_path(),
                 BindOnce(&DiskMountManagerImpl::OnUnmountPathForFormat,
                          weak_ptr_factory_.GetWeakPtr(), device_path,
                          filesystem, label));
@@ -192,7 +191,7 @@ class DiskMountManagerImpl : public DiskMountManager,
   void SinglePartitionFormatDevice(const std::string& device_path,
                                    FormatFileSystemType filesystem,
                                    const std::string& label) override {
-    DiskMap::const_iterator disk_iter = disks_.find(device_path);
+    Disks::const_iterator disk_iter = disks_.find(device_path);
     if (disk_iter == disks_.end()) {
       LOG(ERROR) << "Cannot find device '" << device_path << "'";
       OnPartitionCompleted(device_path, filesystem, label,
@@ -222,21 +221,21 @@ class DiskMountManagerImpl : public DiskMountManager,
     std::string device_path = mount_point->source_path;
     pending_rename_changes_[device_path] = volume_name;
 
-    DiskMap::const_iterator iter = disks_.find(device_path);
+    Disks::const_iterator iter = disks_.find(device_path);
     if (iter == disks_.end()) {
       LOG(ERROR) << "Cannot find device '" << device_path << "'";
       OnRenameCompleted(RenameError::kUnknown, device_path);
       return;
     }
 
-    if (iter->second->is_read_only()) {
+    if (iter->get()->is_read_only()) {
       LOG(ERROR) << "Device '" << device_path << "' is read-only";
       OnRenameCompleted(RenameError::kDeviceNotAllowed, device_path);
       return;
     }
 
     UnmountPath(
-        iter->second->mount_path(),
+        iter->get()->mount_path(),
         BindOnce(&DiskMountManagerImpl::OnUnmountPathForRename,
                  weak_ptr_factory_.GetWeakPtr(), device_path, volume_name));
   }
@@ -249,7 +248,7 @@ class DiskMountManagerImpl : public DiskMountManager,
 
     // Get list of all devices to unmount.
     int device_path_len = device_path.length();
-    for (const auto& [_, disk] : disks_) {
+    for (const auto& disk : disks_) {
       if (!disk->mount_path().empty() &&
           strncmp(device_path.c_str(), disk->device_path().c_str(),
                   device_path_len) == 0) {
@@ -306,13 +305,13 @@ class DiskMountManagerImpl : public DiskMountManager,
   }
 
   // DiskMountManager override.
-  const DiskMap& disks() const override { return disks_; }
+  const Disks& disks() const override { return disks_; }
 
   // DiskMountManager override.
   const Disk* FindDiskBySourcePath(
       const std::string& source_path) const override {
-    DiskMap::const_iterator disk_it = disks_.find(source_path);
-    return disk_it == disks_.end() ? nullptr : disk_it->second.get();
+    Disks::const_iterator disk_it = disks_.find(source_path);
+    return disk_it == disks_.end() ? nullptr : disk_it->get();
   }
 
   // DiskMountManager override.
@@ -325,7 +324,7 @@ class DiskMountManagerImpl : public DiskMountManager,
       return false;
     }
 
-    disks_.emplace(disk->device_path(), std::move(disk));
+    disks_.insert(std::move(disk));
     return true;
   }
 
@@ -484,9 +483,9 @@ class DiskMountManagerImpl : public DiskMountManager,
     if ((entry.error_code == MountError::kNone || mount_info.mount_condition) &&
         mount_info.mount_type == MountType::kDevice &&
         !mount_info.source_path.empty() && !mount_info.mount_path.empty()) {
-      DiskMap::iterator disk_map_iter = disks_.find(mount_info.source_path);
+      Disks::iterator disk_map_iter = disks_.find(mount_info.source_path);
       if (disk_map_iter != disks_.end()) {  // disk might have been removed?
-        disk = disk_map_iter->second.get();
+        disk = disk_map_iter->get();
         DCHECK(disk);
         // Currently the MountCompleted signal doesn't tell whether the device
         // is mounted in read-only mode or not. Instead use the mount option
@@ -547,9 +546,9 @@ class DiskMountManagerImpl : public DiskMountManager,
       NotifyMountStatusUpdate(UNMOUNTING, error, mp);
 
       if (error == MountError::kNone) {
-        if (const DiskMap::iterator disk_it = disks_.find(mp.source_path);
+        if (const Disks::iterator disk_it = disks_.find(mp.source_path);
             disk_it != disks_.end()) {
-          Disk* const disk = disk_it->second.get();
+          Disk* const disk = disk_it->get();
           DCHECK(disk);
           disk->clear_mount_path();
           disk->set_mounted(false);
@@ -567,8 +566,7 @@ class DiskMountManagerImpl : public DiskMountManager,
                               FormatFileSystemType filesystem,
                               const std::string& label,
                               MountError error_code) {
-    if (error_code == MountError::kNone &&
-        disks_.find(device_path) != disks_.end()) {
+    if (error_code == MountError::kNone && disks_.count(device_path) != 0) {
       FormatUnmountedDevice(device_path, filesystem, label);
     } else {
       OnFormatCompleted(FormatError::kUnknown, device_path);
@@ -579,8 +577,7 @@ class DiskMountManagerImpl : public DiskMountManager,
                                                FormatFileSystemType filesystem,
                                                const std::string& label,
                                                MountError error_code) {
-    if (error_code != MountError::kNone ||
-        disks_.find(device_path) == disks_.end()) {
+    if (error_code != MountError::kNone || disks_.count(device_path) == 0) {
       OnPartitionCompleted(device_path, filesystem, label,
                            PartitionError::kUnknown);
       return;
@@ -593,8 +590,8 @@ class DiskMountManagerImpl : public DiskMountManager,
   void FormatUnmountedDevice(const std::string& device_path,
                              FormatFileSystemType filesystem,
                              const std::string& label) {
-    DiskMap::const_iterator disk = disks_.find(device_path);
-    DCHECK(disk != disks_.end() && disk->second->mount_path().empty());
+    Disks::const_iterator disk = disks_.find(device_path);
+    DCHECK(disk != disks_.end() && disk->get()->mount_path().empty());
 
     base::UmaHistogramEnumeration("FileBrowser.FormatFileSystemType",
                                   filesystem);
@@ -631,7 +628,7 @@ class DiskMountManagerImpl : public DiskMountManager,
 
     // disk might have been removed by now?
     if (iter != disks_.end()) {
-      Disk* disk = iter->second.get();
+      Disk* const disk = iter->get();
       DCHECK(disk);
 
       if (pending_change != pending_format_changes_.end() &&
@@ -652,16 +649,16 @@ class DiskMountManagerImpl : public DiskMountManager,
   void SinglePartitionFormatUnmountedDevice(const std::string& device_path,
                                             FormatFileSystemType filesystem,
                                             const std::string& label) {
-    DiskMap::const_iterator disk = disks_.find(device_path);
-    DCHECK(disk != disks_.end() && disk->second->mount_path().empty());
+    Disks::const_iterator disk = disks_.find(device_path);
+    DCHECK(disk != disks_.end() && disk->get()->mount_path().empty());
 
-    pending_partitioning_disks_.insert(disk->second->device_path());
+    pending_partitioning_disks_.insert(disk->get()->device_path());
 
     NotifyPartitionStatusUpdate(PARTITION_STARTED, PartitionError::kNone,
                                 device_path, label);
 
     cros_disks_client_->SinglePartitionFormat(
-        disk->second->file_path(),
+        disk->get()->file_path(),
         BindOnce(&DiskMountManagerImpl::OnPartitionCompleted,
                  weak_ptr_factory_.GetWeakPtr(), device_path, filesystem,
                  label));
@@ -675,7 +672,7 @@ class DiskMountManagerImpl : public DiskMountManager,
 
     // disk might have been removed by now?
     if (iter != disks_.end()) {
-      Disk* disk = iter->second.get();
+      Disk* const disk = iter->get();
       DCHECK(disk);
 
       if (error_code == PartitionError::kNone) {
@@ -688,7 +685,7 @@ class DiskMountManagerImpl : public DiskMountManager,
 
     } else {
       // Remove disk from pending partitioning list if disk removed.
-      pending_partitioning_disks_.erase(iter->second->device_path());
+      pending_partitioning_disks_.erase(device_path);
     }
 
     NotifyPartitionStatusUpdate(PARTITION_COMPLETED, error_code, device_path,
@@ -699,7 +696,7 @@ class DiskMountManagerImpl : public DiskMountManager,
                                FormatFileSystemType filesystem,
                                const std::string& label,
                                bool success) {
-    DiskMap::const_iterator device_disk = disks_.find(device_path);
+    Disks::const_iterator device_disk = disks_.find(device_path);
     if (device_disk == disks_.end()) {
       LOG(ERROR) << "Device not found, maybe ejected";
       pending_partitioning_disks_.erase(device_path);
@@ -711,12 +708,11 @@ class DiskMountManagerImpl : public DiskMountManager,
 
     std::string new_partition_device_path;
     // Find new partition using common storage path with parent device.
-    for (DiskMountManager::DiskMap::const_iterator it = disks_.begin();
-         it != disks_.end(); ++it) {
-      if (it->second->storage_device_path() ==
-              device_disk->second->storage_device_path() &&
-          !it->second->is_parent()) {
-        new_partition_device_path = it->second->device_path();
+    for (const auto& candidate : disks_) {
+      if (candidate->storage_device_path() ==
+              device_disk->get()->storage_device_path() &&
+          !candidate->is_parent()) {
+        new_partition_device_path = candidate->device_path();
         break;
       }
     }
@@ -749,8 +745,7 @@ class DiskMountManagerImpl : public DiskMountManager,
   void OnUnmountPathForRename(const std::string& device_path,
                               const std::string& volume_name,
                               MountError error_code) {
-    if (error_code != MountError::kNone ||
-        disks_.find(device_path) == disks_.end()) {
+    if (error_code != MountError::kNone || disks_.count(device_path) == 0) {
       OnRenameCompleted(RenameError::kUnknown, device_path);
       return;
     }
@@ -761,8 +756,8 @@ class DiskMountManagerImpl : public DiskMountManager,
   // Start device renaming
   void RenameUnmountedDevice(const std::string& device_path,
                              const std::string& volume_name) {
-    DiskMap::const_iterator disk = disks_.find(device_path);
-    DCHECK(disk != disks_.end() && disk->second->mount_path().empty());
+    const Disks::const_iterator disk = disks_.find(device_path);
+    DCHECK(disk != disks_.end() && disk->get()->mount_path().empty());
 
     cros_disks_client_->Rename(
         device_path, volume_name,
@@ -796,7 +791,7 @@ class DiskMountManagerImpl : public DiskMountManager,
 
     // disk might have been removed by now?
     if (iter != disks_.end()) {
-      Disk* disk = iter->second.get();
+      Disk* const disk = iter->get();
       DCHECK(disk);
 
       if (pending_change != pending_rename_changes_.end() &&
@@ -834,10 +829,10 @@ class DiskMountManagerImpl : public DiskMountManager,
     bool is_new = true;
     bool is_first_mount = false;
     std::string base_mount_path = std::string();
-    DiskMap::iterator iter = disks_.find(disk_info.device_path());
+    Disks::iterator iter = disks_.find(disk_info.device_path());
     if (iter != disks_.end()) {
-      is_first_mount = iter->second->is_first_mount();
-      base_mount_path = iter->second->base_mount_path();
+      is_first_mount = iter->get()->is_first_mount();
+      base_mount_path = iter->get()->base_mount_path();
       disks_.erase(iter);
       is_new = false;
     }
@@ -850,12 +845,14 @@ class DiskMountManagerImpl : public DiskMountManager,
     bool write_disabled_by_policy =
         access_mode != access_modes_.end() &&
         access_mode->second == chromeos::MOUNT_ACCESS_MODE_READ_ONLY;
-    Disk* disk = new Disk(disk_info, write_disabled_by_policy, base_mount_path);
+    std::unique_ptr<Disk> disk = std::make_unique<Disk>(
+        disk_info, write_disabled_by_policy, base_mount_path);
     if (!is_new) {
       disk->set_is_first_mount(is_first_mount);
     }
-    disks_.emplace(disk_info.device_path(), base::WrapUnique(disk));
-    NotifyDiskStatusUpdate(is_new ? DISK_ADDED : DISK_CHANGED, *disk);
+    const auto [it, ok] = disks_.insert(std::move(disk));
+    DCHECK(ok);
+    NotifyDiskStatusUpdate(is_new ? DISK_ADDED : DISK_CHANGED, **it);
     RunDeferredMountEvents(disk_info.device_path());
   }
 
@@ -863,8 +860,8 @@ class DiskMountManagerImpl : public DiskMountManager,
   // enumerated.
   void RefreshAfterEnumerateDevices(const std::vector<std::string>& devices) {
     std::set<std::string> current_device_set(devices.begin(), devices.end());
-    for (DiskMap::iterator iter = disks_.begin(); iter != disks_.end();) {
-      if (current_device_set.find(iter->first) == current_device_set.end()) {
+    for (Disks::iterator iter = disks_.begin(); iter != disks_.end();) {
+      if (current_device_set.count(iter->get()->device_path()) == 0) {
         iter = disks_.erase(iter);
       } else {
         ++iter;
@@ -937,9 +934,9 @@ class DiskMountManagerImpl : public DiskMountManager,
       }
       case CROS_DISKS_DISK_REMOVED: {
         // Search and remove disks that are no longer present.
-        DiskMountManager::DiskMap::iterator iter = disks_.find(device_path);
+        DiskMountManager::Disks::iterator iter = disks_.find(device_path);
         if (iter != disks_.end()) {
-          Disk* disk = iter->second.get();
+          Disk* disk = iter->get();
           NotifyDiskStatusUpdate(DISK_REMOVED, *disk);
           disks_.erase(iter);
         }
@@ -1035,7 +1032,7 @@ class DiskMountManagerImpl : public DiskMountManager,
   CrosDisksClient* const cros_disks_client_ = chromeos::CrosDisksClient::Get();
 
   // The list of disks found.
-  DiskMountManager::DiskMap disks_;
+  DiskMountManager::Disks disks_;
 
   std::map<std::string, MountPathCallback> mount_callbacks_;
   DiskMountManager::MountPoints mount_points_;

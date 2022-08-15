@@ -131,9 +131,9 @@ void StorageMonitorCros::Init() {
 void StorageMonitorCros::CheckExistingMountPoints() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  for (const auto& it : DiskMountManager::GetInstance()->disks()) {
-    if (it.second->IsStatefulPartition()) {
-      AddFixedStorageDisk(*it.second);
+  for (const auto& disk : DiskMountManager::GetInstance()->disks()) {
+    if (disk->IsStatefulPartition()) {
+      AddFixedStorageDisk(*disk);
       break;
     }
   }

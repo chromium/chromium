@@ -305,7 +305,7 @@ class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
   device::FakeUsbDeviceManager device_manager_;
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
   disks::MockDiskMountManager* mock_disk_mount_manager_;
-  disks::DiskMountManager::DiskMap disks_;
+  disks::DiskMountManager::Disks disks_;
 
   ash::FakeCiceroneClient* fake_cicerone_client_;
   FakeConciergeClient* fake_concierge_client_;

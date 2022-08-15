@@ -72,7 +72,7 @@ class FakeDiskMountManager : public ash::disks::DiskMountManager {
   // DiskMountManager overrides.
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
-  const DiskMap& disks() const override;
+  const Disks& disks() const override;
   const ash::disks::Disk* FindDiskBySourcePath(
       const std::string& source_path) const override;
   const MountPoints& mount_points() const override;
@@ -112,7 +112,7 @@ class FakeDiskMountManager : public ash::disks::DiskMountManager {
   base::ObserverList<Observer> observers_;
   base::queue<base::OnceClosure> pending_unmount_callbacks_;
 
-  DiskMap disks_;
+  Disks disks_;
   MountPoints mount_points_;
 
   std::vector<MountRequest> mount_requests_;

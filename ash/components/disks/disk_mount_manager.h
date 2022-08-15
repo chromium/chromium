@@ -7,10 +7,10 @@
 
 #include <stdint.h>
 
-#include <map>
 #include <memory>
 #include <set>
 
+#include "ash/components/disks/disk.h"
 #include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/observer_list_types.h"
@@ -19,8 +19,6 @@
 
 namespace ash {
 namespace disks {
-
-class Disk;
 
 // Condition of mounted filesystem.
 enum MountCondition {
@@ -74,7 +72,24 @@ class COMPONENT_EXPORT(ASH_DISKS) DiskMountManager {
 
   enum RenameEvent { RENAME_STARTED, RENAME_COMPLETED };
 
-  typedef std::map<std::string, std::unique_ptr<Disk>> DiskMap;
+  // Comparator sorting Disk objects by device_path.
+  struct SortByDevicePath {
+    using is_transparent = void;
+
+    template <typename A, typename B>
+    bool operator()(const A& a, const B& b) const {
+      return GetKey(a) < GetKey(b);
+    }
+
+    static base::StringPiece GetKey(const base::StringPiece a) { return a; }
+
+    static base::StringPiece GetKey(const std::unique_ptr<Disk>& disk) {
+      DCHECK(disk);
+      return disk->device_path();
+    }
+  };
+
+  using Disks = std::set<std::unique_ptr<Disk>, SortByDevicePath>;
 
   // Information about a mount point.
   struct MountPoint {
@@ -177,7 +192,7 @@ class COMPONENT_EXPORT(ASH_DISKS) DiskMountManager {
   virtual void RemoveObserver(Observer* observer) = 0;
 
   // Gets the list of disks found.
-  virtual const DiskMap& disks() const = 0;
+  virtual const Disks& disks() const = 0;
 
   // Returns Disk object corresponding to |source_path| or NULL on failure.
   virtual const Disk* FindDiskBySourcePath(

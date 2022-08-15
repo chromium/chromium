@@ -366,7 +366,7 @@ class MockDiskMountManagerObserver : public DiskMountManager::Observer {
     // It can be verified later besides the arguments.
     events_.push_back(std::make_unique<MountEvent>(
         event, error_code, mount_point,
-        *manager_->disks().find(mount_point.source_path)->second));
+        *manager_->disks().find(mount_point.source_path)->get()));
   }
 
   // Gets invocation history to be verified by testcases.
@@ -564,8 +564,8 @@ class DiskMountManagerTest : public testing::Test {
   void InitDisksAndMountPoints() {
     // Disks should be  added first (when adding device mount points it is
     // expected that the corresponding disk is already added).
-    for (size_t i = 0; i < std::size(kTestDisks); i++)
-      AddTestDisk(kTestDisks[i]);
+    for (const TestDiskInfo& disk : kTestDisks)
+      AddTestDisk(disk);
 
     AddTestMountPoint(
         {"/archive/source_path", "/archive/mount_path", MountType::kArchive});
@@ -815,7 +815,7 @@ TEST_F(DiskMountManagerTest, Format_FormatFails) {
 // Tests the case when formatting completes successfully.
 TEST_F(DiskMountManagerTest, Format_FormatSuccess) {
   DiskMountManager* manager = DiskMountManager::GetInstance();
-  const DiskMountManager::DiskMap& disks = manager->disks();
+  const DiskMountManager::Disks& disks = manager->disks();
 
   // Set up cros disks client mocks.
   // Both unmount and format device cals are successful in this test.
@@ -858,9 +858,9 @@ TEST_F(DiskMountManagerTest, Format_FormatSuccess) {
 
   // Disk should have new values for file system type and device label name
   EXPECT_EQ(kFormatFileSystemType1String,
-            disks.find(kDevice1SourcePath)->second->file_system_type());
+            disks.find(kDevice1SourcePath)->get()->file_system_type());
   EXPECT_EQ(kFormatLabel1,
-            disks.find(kDevice1SourcePath)->second->device_label());
+            disks.find(kDevice1SourcePath)->get()->device_label());
 }
 
 // Tests that it's possible to format the device twice in a row (this may not be
@@ -981,7 +981,8 @@ TEST_F(DiskMountManagerTest, MountPath_RecordAccessMode) {
         // below comment about the 2nd source.
         EXPECT_TRUE(manager->disks()
                         .find(mount_point.source_path)
-                        ->second->is_read_only());
+                        ->get()
+                        ->is_read_only());
       });
 
   manager->MountPath(kSourcePath1, kSourceFormat, std::string(), {},
@@ -1014,11 +1015,11 @@ TEST_F(DiskMountManagerTest, MountPath_RecordAccessMode) {
   EXPECT_TRUE(secondMountEvent.disk->is_read_only());
 
   // Verify the final state of manager->disks.
-  const DiskMountManager::DiskMap& disks = manager->disks();
+  const DiskMountManager::Disks& disks = manager->disks();
   ASSERT_GT(disks.count(kSourcePath1), 0U);
-  EXPECT_FALSE(disks.find(kSourcePath1)->second->is_read_only());
+  EXPECT_FALSE(disks.find(kSourcePath1)->get()->is_read_only());
   ASSERT_GT(disks.count(kSourcePath2), 0U);
-  EXPECT_TRUE(disks.find(kSourcePath2)->second->is_read_only());
+  EXPECT_TRUE(disks.find(kSourcePath2)->get()->is_read_only());
 }
 
 TEST_F(DiskMountManagerTest, MountPath_ReadOnlyDevice) {
@@ -1046,10 +1047,10 @@ TEST_F(DiskMountManagerTest, MountPath_ReadOnlyDevice) {
   ASSERT_EQ(1U, observer_->GetEventCount());
   VerifyMountEvent(observer_->GetMountEvent(0), DiskMountManager::MOUNTING,
                    MountError::kNone, kReadOnlyDeviceMountPath);
-  const DiskMountManager::DiskMap& disks = manager->disks();
+  const DiskMountManager::Disks& disks = manager->disks();
   ASSERT_GT(disks.count(kReadOnlyDeviceSourcePath), 0U);
   // The mounted disk should preserve the read-only flag of the block device.
-  EXPECT_TRUE(disks.find(kReadOnlyDeviceSourcePath)->second->is_read_only());
+  EXPECT_TRUE(disks.find(kReadOnlyDeviceSourcePath)->get()->is_read_only());
 }
 
 TEST_F(DiskMountManagerTest, MountPath_DoubleCall) {
@@ -1371,7 +1372,7 @@ TEST_F(DiskMountManagerTest, Rename_RenameFails) {
 // Tests the case when renaming completes successfully.
 TEST_F(DiskMountManagerTest, Rename_RenameSuccess) {
   DiskMountManager* manager = DiskMountManager::GetInstance();
-  const DiskMountManager::DiskMap& disks = manager->disks();
+  const DiskMountManager::Disks& disks = manager->disks();
   // Set up cros disks client mocks.
   // Both unmount and rename device calls are successful in this test.
 
@@ -1410,14 +1411,14 @@ TEST_F(DiskMountManagerTest, Rename_RenameSuccess) {
             observer_->GetRenameEvent(2));
 
   // Disk should have new value for device label name
-  EXPECT_EQ("MYUSB1", disks.find(kDevice1SourcePath)->second->device_label());
+  EXPECT_EQ("MYUSB1", disks.find(kDevice1SourcePath)->get()->device_label());
 }
 
 // Tests that it's possible to rename the device twice in a row (this may not be
 // true if the list of pending renames is not properly cleared).
 TEST_F(DiskMountManagerTest, Rename_ConsecutiveRenameCalls) {
   DiskMountManager* manager = DiskMountManager::GetInstance();
-  const DiskMountManager::DiskMap& disks = manager->disks();
+  const DiskMountManager::Disks& disks = manager->disks();
   // All unmount and rename device calls are successful in this test.
   // Each of the should be made twice (once for each renaming task).
 
@@ -1435,7 +1436,7 @@ TEST_F(DiskMountManagerTest, Rename_ConsecutiveRenameCalls) {
   EXPECT_EQ(kDevice1SourcePath,
             fake_cros_disks_client_->last_rename_device_path());
   EXPECT_EQ("MYUSB", fake_cros_disks_client_->last_rename_volume_name());
-  EXPECT_EQ("", disks.find(kDevice1SourcePath)->second->base_mount_path());
+  EXPECT_EQ("", disks.find(kDevice1SourcePath)->get()->base_mount_path());
 
   // The device should be unmounted by now.
   EXPECT_FALSE(HasMountPoint(kDevice1MountPath));
@@ -1451,7 +1452,7 @@ TEST_F(DiskMountManagerTest, Rename_ConsecutiveRenameCalls) {
 
   EXPECT_TRUE(HasMountPoint(kDevice1MountPath));
 
-  auto previousMountPath = disks.find(kDevice1SourcePath)->second->mount_path();
+  auto previousMountPath = disks.find(kDevice1SourcePath)->get()->mount_path();
   // Try renaming again.
   DiskMountManager::GetInstance()->RenameMountedDevice(kDevice1MountPath,
                                                        "MYUSB2");
@@ -1468,7 +1469,7 @@ TEST_F(DiskMountManagerTest, Rename_ConsecutiveRenameCalls) {
   EXPECT_EQ("MYUSB2", fake_cros_disks_client_->last_rename_volume_name());
   // Base mount path should be set to previous mount path.
   EXPECT_EQ(previousMountPath,
-            disks.find(kDevice1SourcePath)->second->base_mount_path());
+            disks.find(kDevice1SourcePath)->get()->base_mount_path());
 
   // Simulate cros_disks reporting success.
   fake_cros_disks_client_->NotifyRenameCompleted(RenameError::kNone,

@@ -936,16 +936,13 @@ FileManagerPrivateSinglePartitionFormatFunction::Run() {
   const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  const DiskMountManager::DiskMap& disks =
+  const DiskMountManager::Disks& disks =
       DiskMountManager::GetInstance()->disks();
 
-  ash::disks::Disk* device_disk;
-  DiskMountManager::DiskMap::const_iterator it;
-
-  for (it = disks.begin(); it != disks.end(); ++it) {
-    if (it->second->storage_device_path() == params->device_storage_path &&
-        it->second->is_parent()) {
-      device_disk = it->second.get();
+  DiskMountManager::Disks::const_iterator it = disks.begin();
+  for (; it != disks.end(); ++it) {
+    if (it->get()->storage_device_path() == params->device_storage_path &&
+        it->get()->is_parent()) {
       break;
     }
   }
@@ -953,6 +950,9 @@ FileManagerPrivateSinglePartitionFormatFunction::Run() {
   if (it == disks.end()) {
     return RespondNow(Error("Device not found"));
   }
+
+  const ash::disks::Disk* const device_disk = it->get();
+  DCHECK(device_disk);
 
   if (device_disk->is_read_only()) {
     return RespondNow(Error("Invalid device"));

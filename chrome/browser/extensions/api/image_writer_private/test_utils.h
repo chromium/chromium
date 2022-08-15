@@ -78,7 +78,7 @@ class FakeDiskMountManager : public ash::disks::MockDiskMountManager {
       UnmountDeviceRecursivelyCallbackType callback) override;
 
  private:
-  DiskMap disks_;
+  Disks disks_;
 };
 #endif
 

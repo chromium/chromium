@@ -309,15 +309,14 @@ class FileManagerPrivateApiTest : public extensions::ExtensionApiTest {
                 .SetBaseMountPath(kTestDisks[disk_info_index].base_mount_path)
                 .Build();
 
-        volumes_.insert(DiskMountManager::DiskMap::value_type(mp.source_path,
-                                                              std::move(disk)));
+        volumes_.insert(std::move(disk));
       }
     }
   }
 
   const Disk* FindVolumeBySourcePath(const std::string& source_path) {
     auto volume_it = volumes_.find(source_path);
-    return (volume_it == volumes_.end()) ? nullptr : volume_it->second.get();
+    return (volume_it == volumes_.end()) ? nullptr : volume_it->get();
   }
 
  protected:
@@ -355,7 +354,7 @@ class FileManagerPrivateApiTest : public extensions::ExtensionApiTest {
 
   base::ScopedTempDir temp_dir_;
   ash::disks::MockDiskMountManager* disk_mount_manager_mock_;
-  DiskMountManager::DiskMap volumes_;
+  DiskMountManager::Disks volumes_;
   DiskMountManager::MountPoints mount_points_;
   file_manager::EventRouter* event_router_ = nullptr;
 };
