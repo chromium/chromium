@@ -768,7 +768,7 @@ void HTMLCanvasElement::NotifyListenersCanvasChanged() {
       SourceImageStatus status;
       source_image = GetSourceImageForCanvasInternal(&status);
       if (status != kNormalSourceImageStatus)
-        return;
+        continue;
     }
 
     // Here we need to use the SharedGpuContext as some of the images may
@@ -1160,11 +1160,14 @@ void HTMLCanvasElement::CollectStyleForPresentationAttribute(
 }
 
 void HTMLCanvasElement::AddListener(CanvasDrawListener* listener) {
+  // The presence of a listener forces OffscrenCanvas animations to be active
   listeners_.insert(listener);
+  UpdateSuspendOffscreenCanvasAnimation();
 }
 
 void HTMLCanvasElement::RemoveListener(CanvasDrawListener* listener) {
   listeners_.erase(listener);
+  UpdateSuspendOffscreenCanvasAnimation();
 }
 
 bool HTMLCanvasElement::OriginClean() const {
@@ -1330,17 +1333,21 @@ void HTMLCanvasElement::DiscardResourceProvider() {
   dirty_rect_ = gfx::RectF();
 }
 
-void HTMLCanvasElement::PageVisibilityChanged() {
-  bool hidden = !GetPage()->IsPageVisible();
-  // If we are still painting, then continue to allow animations, even if the
-  // page is otherwise hidden.
+void HTMLCanvasElement::UpdateSuspendOffscreenCanvasAnimation() {
   SetSuspendOffscreenCanvasAnimation(
       GetPage()->GetVisibilityState() ==
-      mojom::blink::PageVisibilityState::kHidden);
+          mojom::blink::PageVisibilityState::kHidden &&
+      !HasCanvasCapture());
+}
 
+void HTMLCanvasElement::PageVisibilityChanged() {
+  // If we are still painting, then continue to allow animations, even if the
+  // page is otherwise hidden.
+  UpdateSuspendOffscreenCanvasAnimation();
   if (!context_)
     return;
 
+  bool hidden = !GetPage()->IsPageVisible();
   context_->SetIsInHiddenPage(hidden);
   if (hidden && (IsWebGL() || IsWebGPU()))
     DiscardResourceProvider();

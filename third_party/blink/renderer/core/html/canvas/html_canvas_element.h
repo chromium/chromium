@@ -276,6 +276,8 @@ class CORE_EXPORT HTMLCanvasElement final
     return DispatchEvent(*event);
   }
 
+  void UpdateSuspendOffscreenCanvasAnimation();
+
   // Gets the settings of this Html Canvas Element. If there is a frame, it will
   // return the settings from the frame. If it is a frameless element it will
   // try to fetch the global dom window and get the settings from there.
