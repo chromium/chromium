@@ -245,27 +245,32 @@ class GeolocationNetworkProviderTest : public testing::Test {
     return pretty;
   }
 
-  static testing::AssertionResult JsonGetList(
-      const std::string& field,
-      const base::DictionaryValue& dict,
-      const base::ListValue** output_list) {
-    if (!dict.GetList(field, output_list))
+  static std::string PrettyJson(const base::Value::Dict& dict_value) {
+    return PrettyJson(base::Value(dict_value.Clone()));
+  }
+
+  static testing::AssertionResult JsonGetList(const std::string& field,
+                                              const base::Value::Dict& dict,
+                                              base::Value::List* output_list) {
+    const base::Value::List* list = dict.FindList(field);
+    if (!list)
       return testing::AssertionFailure() << "Dictionary " << PrettyJson(dict)
                                          << " is missing list field " << field;
+    *output_list = list->Clone();
     return testing::AssertionSuccess();
   }
 
   static testing::AssertionResult JsonFieldEquals(
       const std::string& field,
-      const base::DictionaryValue& expected,
-      const base::DictionaryValue& actual) {
-    const base::Value* expected_value;
-    const base::Value* actual_value;
-    if (!expected.Get(field, &expected_value))
+      const base::Value::Dict& expected,
+      const base::Value::Dict& actual) {
+    const base::Value* expected_value = expected.Find(field);
+    const base::Value* actual_value = actual.Find(field);
+    if (!expected_value)
       return testing::AssertionFailure()
              << "Expected dictionary " << PrettyJson(expected)
              << " is missing field " << field;
-    if (!expected.Get(field, &actual_value))
+    if (!actual_value)
       return testing::AssertionFailure()
              << "Actual dictionary " << PrettyJson(actual)
              << " is missing field " << field;
@@ -292,9 +297,9 @@ class GeolocationNetworkProviderTest : public testing::Test {
     absl::optional<base::Value> parsed_json =
         base::JSONReader::Read(upload_data);
     ASSERT_TRUE(parsed_json);
+    ASSERT_TRUE(parsed_json->is_dict());
 
-    const base::DictionaryValue* request_json;
-    ASSERT_TRUE(parsed_json->GetAsDictionary(&request_json));
+    const base::Value::Dict& request_json = parsed_json->GetDict();
 
     if (expected_wifi_aps) {
       base::Value::List expected_wifi_aps_json;
@@ -302,19 +307,16 @@ class GeolocationNetworkProviderTest : public testing::Test {
                                       &expected_wifi_aps_json);
       EXPECT_EQ(size_t(expected_wifi_aps), expected_wifi_aps_json.size());
 
-      const base::ListValue* wifi_aps_json;
+      base::Value::List wifi_aps_json;
       ASSERT_TRUE(
-          JsonGetList("wifiAccessPoints", *request_json, &wifi_aps_json));
+          JsonGetList("wifiAccessPoints", request_json, &wifi_aps_json));
       for (size_t i = 0; i < expected_wifi_aps_json.size(); ++i) {
         const base::Value& expected_json_value = expected_wifi_aps_json[i];
         ASSERT_TRUE(expected_json_value.is_dict());
-        const base::DictionaryValue& expected_json =
-            base::Value::AsDictionaryValue(expected_json_value);
-        const base::Value& actual_json_value =
-            wifi_aps_json->GetListDeprecated()[i];
+        const base::Value::Dict& expected_json = expected_json_value.GetDict();
+        const base::Value& actual_json_value = wifi_aps_json[i];
         ASSERT_TRUE(actual_json_value.is_dict());
-        const base::DictionaryValue& actual_json =
-            base::Value::AsDictionaryValue(actual_json_value);
+        const base::Value::Dict& actual_json = actual_json_value.GetDict();
         ASSERT_TRUE(JsonFieldEquals("macAddress", expected_json, actual_json));
         ASSERT_TRUE(
             JsonFieldEquals("signalStrength", expected_json, actual_json));
@@ -323,7 +325,7 @@ class GeolocationNetworkProviderTest : public testing::Test {
             JsonFieldEquals("signalToNoiseRatio", expected_json, actual_json));
       }
     } else {
-      ASSERT_FALSE(request_json->FindKey("wifiAccessPoints"));
+      ASSERT_FALSE(request_json.Find("wifiAccessPoints"));
     }
   }
 
