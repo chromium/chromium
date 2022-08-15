@@ -1950,7 +1950,9 @@ crbug.com/626703 [ Mac11 ] virtual/fsa-incognito/external/wpt/file-system-access
 # The following tests never pass in the default Blink test runner due to forced
 # frame updates, but still pass in the full browser. They are only run in the
 # no-forced-frame-updates virtual test suite.
+external/wpt/css/css-transitions/render-blocking/* [ Skip ]
 external/wpt/html/dom/render-blocking/* [ Skip ]
+virtual/no-forced-frame-updates/external/wpt/css/css-transitions/render-blocking/* [ Pass ]
 virtual/no-forced-frame-updates/external/wpt/html/dom/render-blocking/* [ Pass ]
 
 # Tests in the virtual/origin-agent-cluster-default suite. These tests

@@ -1231,7 +1231,10 @@
   {
     "prefix": "no-forced-frame-updates",
     "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["external/wpt/html/dom/render-blocking"],
+    "bases": [
+      "external/wpt/css/css-transitions/render-blocking",
+      "external/wpt/html/dom/render-blocking"
+    ],
     "args": ["--enable-features=NoForcedFrameUpdatesForWebTests"]
   },
   {
