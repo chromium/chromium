@@ -111,8 +111,6 @@ class LanguagePackManager : public DlcserviceClient::Observer {
   // Installs the Language Pack.
   // It takes a callback that will be triggered once the operation is done.
   // A state is passed to the callback.
-  // TODO(crbug.com/1320137): If |feature_id| has a corresponding Base Pack,
-  // then the Base Pack should be installed first.
   void InstallPack(const std::string& feature_id,
                    const std::string& locale,
                    OnInstallCompleteCallback callback);

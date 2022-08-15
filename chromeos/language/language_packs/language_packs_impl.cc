@@ -12,6 +12,7 @@
 
 namespace chromeos::language_packs {
 
+using ::chromeos::language::mojom::BasePackInfo;
 using ::chromeos::language::mojom::FeatureId;
 using ::chromeos::language::mojom::LanguagePackInfo;
 using ::chromeos::language::mojom::LanguagePacks;
@@ -59,6 +60,22 @@ void OnOperationComplete(LanguagePacksImpl::GetPackInfoCallback mojo_callback,
 
   base::UmaHistogramEnumeration("ChromeOS.LanguagePacks.Mojo.PackStateResponse",
                                 info->pack_state);
+
+  std::move(mojo_callback).Run(std::move(info));
+}
+
+// Called when InstallBasePack() from Language Packs is complete.
+void OnInstallBasePackComplete(
+    LanguagePacksImpl::InstallBasePackCallback mojo_callback,
+    const PackResult& pack_result) {
+  auto info = BasePackInfo::New();
+  info->pack_state = GetPackStateFromStatusCode(pack_result.pack_state);
+  if (pack_result.pack_state == PackResult::INSTALLED) {
+    info->path = pack_result.path;
+  }
+
+  base::UmaHistogramEnumeration(
+      "ChromeOS.LanguagePacks.Mojo.BasePackStateResponse", info->pack_state);
 
   std::move(mojo_callback).Run(std::move(info));
 }
@@ -115,6 +132,25 @@ void LanguagePacksImpl::InstallPack(FeatureId feature_id,
         base::BindOnce(&OnOperationComplete, std::move(mojo_callback)));
   } else {
     auto info = LanguagePackInfo::New();
+    info->pack_state = PackState::ERROR;
+    std::move(mojo_callback).Run(std::move(info));
+  }
+}
+
+void LanguagePacksImpl::InstallBasePack(FeatureId feature_id,
+                                        InstallBasePackCallback mojo_callback) {
+  base::UmaHistogramEnumeration(
+      "ChromeOS.LanguagePacks.Mojo.InstallBasePack.Feature", feature_id);
+
+  LanguagePackManager* lp = LanguagePackManager::GetInstance();
+  const absl::optional<std::string> pack_id =
+      ConvertMojoFeatureToPackId(feature_id);
+
+  if (pack_id.has_value()) {
+    lp->InstallBasePack(*pack_id, base::BindOnce(&OnInstallBasePackComplete,
+                                                 std::move(mojo_callback)));
+  } else {
+    auto info = BasePackInfo::New();
     info->pack_state = PackState::ERROR;
     std::move(mojo_callback).Run(std::move(info));
   }

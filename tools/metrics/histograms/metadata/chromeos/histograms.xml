@@ -1183,6 +1183,16 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.LanguagePacks.Mojo.BasePackStateResponse"
+    enum="LanguagePackMojoPackState" expires_after="2022-12-11">
+  <owner>mlcui@google.com</owner>
+  <owner>cros-borders-eng@google.com</owner>
+  <summary>
+    Records the state of what state a base pack is in (whether it's installed or
+    not) when the language packs Mojo interface responds to an IPC.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.LanguagePacks.Mojo.GetPackInfo.Feature"
     enum="LanguagePackMojoFeatureId" expires_after="2022-12-04">
   <owner>mlcui@google.com</owner>
@@ -1190,6 +1200,16 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Records which feature was requested by callers of the language packs Mojo
     interface's &quot;GetPackInfo&quot; IPC call.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.LanguagePacks.Mojo.InstallBasePack.Feature"
+    enum="LanguagePackMojoFeatureId" expires_after="2022-12-11">
+  <owner>mlcui@google.com</owner>
+  <owner>cros-borders-eng@google.com</owner>
+  <summary>
+    Records which feature was requested by callers of the language packs Mojo
+    interface's &quot;InstallBasePack&quot; IPC call.
   </summary>
 </histogram>
 

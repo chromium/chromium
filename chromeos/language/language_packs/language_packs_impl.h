@@ -35,6 +35,8 @@ class LanguagePacksImpl : public chromeos::language::mojom::LanguagePacks {
   void InstallPack(chromeos::language::mojom::FeatureId feature_id,
                    const std::string& language,
                    InstallPackCallback callback) override;
+  void InstallBasePack(chromeos::language::mojom::FeatureId feature_id,
+                       InstallBasePackCallback callback) override;
 
  private:
   mojo::ReceiverSet<chromeos::language::mojom::LanguagePacks> receivers_;
