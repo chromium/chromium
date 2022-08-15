@@ -85,32 +85,28 @@ TEST_P(CullRectUpdaterTest, VerticalRightLeftWritingModeDocument) {
 
 TEST_P(CullRectUpdaterTest, ScaledCullRect) {
   SetBodyInnerHTML(R"HTML(
+    <style>body { margin: 0 }</style>
     <div id='target'
          style='width: 200px; height: 300px; will-change: transform;
-                transform: scaleX(3) scaleY(0.5)'>
+                transform: scaleX(2) scaleY(0.75); transform-origin: 0 0'>
     </div>
   )HTML");
 
   // The expansion is 4000 / max(scaleX, scaleY).
-  // TODO(wangxianzhu): The above comment is not right. We should probably
-  // adjust LocalPixelDistanceToExpand() to make the comment true.
-  EXPECT_EQ(gfx::Rect(-7936, -8166, 16267, 17200),
-            GetCullRect("target").Rect());
+  EXPECT_EQ(gfx::Rect(-2000, -2000, 4400, 4800), GetCullRect("target").Rect());
 }
 
 TEST_P(CullRectUpdaterTest, ScaledCullRectUnderCompositedScroller) {
   SetBodyInnerHTML(R"HTML(
     <div style='width: 200px; height: 300px; overflow: scroll; background: blue;
-                transform: scaleX(3) scaleY(0.5)'>
+                transform: scaleX(2) scaleY(0.75)'>
       <div id='target' style='height: 400px; position: relative'></div>
       <div style='width: 10000px; height: 10000px'></div>
     </div>
   )HTML");
 
   // The expansion is 4000 / max(scaleX, scaleY).
-  // TODO(wangxianzhu): The above comment is not right. We should probably
-  // adjust LocalPixelDistanceToExpand() to make the comment true.
-  EXPECT_EQ(gfx::Rect(0, 0, 8200, 8300), GetCullRect("target").Rect());
+  EXPECT_EQ(gfx::Rect(0, 0, 2200, 2300), GetCullRect("target").Rect());
 }
 
 TEST_P(CullRectUpdaterTest, ScaledAndRotatedCullRect) {
@@ -123,8 +119,6 @@ TEST_P(CullRectUpdaterTest, ScaledAndRotatedCullRect) {
 
   // The expansion 6599 is 4000 * max_dimension(1x1 rect projected from screen
   // to local).
-  // TODO(wangxianzhu): The above comment is not right. We should probably
-  // adjust LocalPixelDistanceToExpand() to make the comment true.
   EXPECT_EQ(gfx::Rect(-6748, -6836, 14236, 14236),
             GetCullRect("target").Rect());
 }
@@ -141,8 +135,6 @@ TEST_P(CullRectUpdaterTest, ScaledAndRotatedCullRectUnderCompositedScroller) {
 
   // The expansion 6599 is 4000 * max_dimension(1x1 rect projected from screen
   // to local).
-  // TODO(wangxianzhu): The above comment is not right. We should probably
-  // adjust LocalPixelDistanceToExpand() to make the comment true.
   EXPECT_EQ(gfx::Rect(0, 0, 6799, 6899), GetCullRect("target").Rect());
   EXPECT_EQ(gfx::Rect(0, 0, 6799, 6899), GetContentsCullRect("target").Rect());
 }
@@ -205,16 +197,17 @@ TEST_P(CullRectUpdaterTest, PerspectiveCullRect) {
       GetCullRect("target").Rect().Contains(gfx::Rect(0, 0, 2000, 3000)));
 }
 
-TEST_P(CullRectUpdaterTest, 3D45DegRotatedTallCullRect) {
+TEST_P(CullRectUpdaterTest, 3D60DegRotatedTallCullRect) {
   SetBodyInnerHTML(R"HTML(
     <style>body { margin: 0 }</style>
     <div id='target'
-         style='width: 200px; height: 10000px; transform: rotateY(45deg)'>
+         style='width: 200px; height: 10000px; transform: rotateY(60deg)'>
     </div>
   )HTML");
 
-  EXPECT_TRUE(
-      GetCullRect("target").Rect().Contains(gfx::Rect(0, 0, 200, 10000)));
+  // The cull rect is expanded in the y direction for the root scroller, and
+  // x direction for |target| itself.
+  EXPECT_EQ(gfx::Rect(-4100, 0, 9600, 4600), GetCullRect("target").Rect());
 }
 
 TEST_P(CullRectUpdaterTest, FixedPositionInNonScrollableViewCullRect) {

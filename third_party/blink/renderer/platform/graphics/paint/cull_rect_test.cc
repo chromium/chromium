@@ -297,35 +297,6 @@ TEST_F(CullRectTest, ChangedEnoughOldRectTouchingEdge) {
   EXPECT_FALSE(ChangedEnough(gfx::Rect(300, 400, 100, 100), new_rect, bounds));
 }
 
-TEST_F(CullRectTest, ApplyPaintPropertiesSameState) {
-  auto transform =
-      CreateTransform(t0(), TransformationMatrix().Translate(1, 2));
-  auto clip = CreateClip(c0(), t0(), FloatRoundedRect(1, 2, 3, 4));
-  PropertyTreeState root = PropertyTreeState::Root();
-  PropertyTreeState state(*transform, *clip, e0());
-
-  CullRect cull_rect1(gfx::Rect(1, 1, 50, 50));
-  cull_rect1.ApplyPaintProperties(state, state, state, absl::nullopt);
-  EXPECT_EQ(gfx::Rect(1, 1, 50, 50), cull_rect1.Rect());
-  cull_rect1.ApplyPaintProperties(root, state, state, absl::nullopt);
-  EXPECT_EQ(gfx::Rect(1, 1, 50, 50), cull_rect1.Rect());
-
-  CullRect old_cull_rect = cull_rect1;
-  old_cull_rect.Move(gfx::Vector2d(1, 1));
-  CullRect cull_rect2(gfx::Rect(1, 1, 50, 50));
-  // Should ignore old_cull_rect.
-  cull_rect2.ApplyPaintProperties(state, state, state, old_cull_rect);
-  EXPECT_EQ(cull_rect1, cull_rect2);
-  cull_rect2.ApplyPaintProperties(root, state, state, old_cull_rect);
-  EXPECT_EQ(cull_rect1, cull_rect2);
-
-  CullRect infinite = CullRect::Infinite();
-  infinite.ApplyPaintProperties(state, state, state, absl::nullopt);
-  EXPECT_TRUE(infinite.IsInfinite());
-  infinite.ApplyPaintProperties(root, state, state, absl::nullopt);
-  EXPECT_TRUE(infinite.IsInfinite());
-}
-
 TEST_F(CullRectTest, ApplyPaintPropertiesWithoutClipScroll) {
   auto t1 = CreateTransform(t0(), TransformationMatrix().Translate(1, 2));
   auto t2 = CreateTransform(*t1, TransformationMatrix().Translate(10, 20));
@@ -605,15 +576,15 @@ TEST_F(CullRectTest, CompositedTranslationUnderClip) {
   PropertyTreeState root = PropertyTreeState::Root();
   auto c1 = CreateClip(c0(), t0(), FloatRoundedRect(100, 200, 300, 400));
   auto t1 = CreateTransform(
-      t0(), TransformationMatrix().Translate(10, 20).Scale3d(2, 3, 1),
+      t0(), TransformationMatrix().Translate(10, 20).Scale3d(2, 4, 1),
       gfx::Point3F(), CompositingReason::kWillChangeTransform);
   PropertyTreeState state1(*t1, *c1, e0());
 
   CullRect cull_rect1(gfx::Rect(0, 0, 300, 500));
   cull_rect1.ApplyPaintProperties(root, root, state1, absl::nullopt);
   // The result in NonCompositedTransformUnderClip expanded by 2000 (scaled by
-  // maximum of 1/2 and 1/3).
-  EXPECT_EQ(gfx::Rect(-1955, -1940, 4100, 4100), cull_rect1.Rect());
+  // minimum of 1/2 and 1/4).
+  EXPECT_EQ(gfx::Rect(-955, -955, 2100, 2075), cull_rect1.Rect());
 
   CullRect cull_rect2(gfx::Rect(0, 0, 300, 500));
   CullRect old_cull_rect = cull_rect1;
@@ -630,7 +601,7 @@ TEST_F(CullRectTest, CompositedTranslationUnderClip) {
 
   CullRect cull_rect4 = CullRect::Infinite();
   cull_rect4.ApplyPaintProperties(root, root, state1, absl::nullopt);
-  EXPECT_EQ(gfx::Rect(-1955, -1940, 4150, 4134), cull_rect4.Rect());
+  EXPECT_EQ(gfx::Rect(-955, -955, 2150, 2100), cull_rect4.Rect());
 
   CullRect cull_rect5;
   cull_rect4.ApplyPaintProperties(root, root, state1, absl::nullopt);

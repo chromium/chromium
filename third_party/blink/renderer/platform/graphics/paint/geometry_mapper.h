@@ -162,6 +162,10 @@ class PLATFORM_EXPORT GeometryMapper {
     SourceToDestinationProjection(source, destination).MapRect(mapping_rect);
   }
 
+  static float SourceToDestinationApproximateMinimumScale(
+      const TransformPaintPropertyNode& source,
+      const TransformPaintPropertyNode& destination);
+
   // Returns the clip rect between |local_state| and |ancestor_state|. The clip
   // rect is the total clip rect that should be applied when painting contents
   // of |local_state| in |ancestor_state| space. Because this clip rect applies

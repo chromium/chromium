@@ -200,6 +200,24 @@ GeometryMapper::SourceToDestinationProjectionInternal(
   return Translation2DOrMatrix(matrix);
 }
 
+float GeometryMapper::SourceToDestinationApproximateMinimumScale(
+    const TransformPaintPropertyNode& source,
+    const TransformPaintPropertyNode& destination) {
+  if (&source == &destination)
+    return 1.f;
+
+  const auto& source_cache = source.GetTransformCache();
+  const auto& destination_cache = destination.GetTransformCache();
+  if (source_cache.root_of_2d_translation() ==
+      destination_cache.root_of_2d_translation()) {
+    return 1.f;
+  }
+
+  gfx::RectF rect(0, 0, 1, 1);
+  SourceToDestinationRect(source, destination, rect);
+  return std::min(rect.width(), rect.height());
+}
+
 bool GeometryMapper::LocalToAncestorVisualRect(
     const PropertyTreeState& local_state,
     const PropertyTreeState& ancestor_state,

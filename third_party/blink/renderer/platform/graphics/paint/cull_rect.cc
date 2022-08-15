@@ -18,7 +18,7 @@ namespace blink {
 
 namespace {
 
-constexpr int kReasonablePixelLimit = std::numeric_limits<int>::max() / 2;
+constexpr int kReasonablePixelLimit = kIntMaxForLayoutUnit;
 constexpr int kChangedEnoughMinimumDistance = 512;
 
 // Number of pixels to expand in root coordinates for cull rect under
@@ -30,11 +30,8 @@ constexpr int kPixelDistanceToExpand = 4000;
 int LocalPixelDistanceToExpand(
     const TransformPaintPropertyNode& root_transform,
     const TransformPaintPropertyNode& local_transform) {
-  gfx::RectF rect(0, 0, 1, 1);
-  GeometryMapper::SourceToDestinationRect(root_transform, local_transform,
-                                          rect);
-  // Now rect.Size() is the size of a screen pixel in local coordinates.
-  float scale = std::max(rect.width(), rect.height());
+  float scale = GeometryMapper::SourceToDestinationApproximateMinimumScale(
+      root_transform, local_transform);
   // A very big scale may be caused by non-invertable near non-invertable
   // transforms. Fallback to scale 1. The limit is heuristic.
   if (scale > kReasonablePixelLimit / kPixelDistanceToExpand)
@@ -136,6 +133,13 @@ bool CullRect::ApplyPaintProperties(
     const PropertyTreeState& source,
     const PropertyTreeState& destination,
     const absl::optional<CullRect>& old_cull_rect) {
+  // The caller should check this before calling this function.
+  DCHECK_NE(source, destination);
+
+  // Only a clip can make an infinite cull rect finite.
+  if (IsInfinite() && &destination.Clip() == &source.Clip())
+    return false;
+
   Vector<const TransformPaintPropertyNode*, 4> scroll_translations;
   Vector<const ClipPaintPropertyNode*, 4> clips;
   bool abnormal_hierarchy = false;
@@ -171,7 +175,8 @@ bool CullRect::ApplyPaintProperties(
     // Either the transform or the clip of |source| is not an ancestor of
     // |destination|. Map infinite rect from the root.
     *this = Infinite();
-    return ApplyPaintProperties(root, root, destination, old_cull_rect);
+    return root != destination &&
+           ApplyPaintProperties(root, root, destination, old_cull_rect);
   }
 
   // These are either the source transform/clip or the last scroll
