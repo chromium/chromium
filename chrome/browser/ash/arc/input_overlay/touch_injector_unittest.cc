@@ -337,7 +337,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
   EXPECT_TRUE(IsPointsEqual(expectA1, event->root_location_f()));
   EXPECT_EQ(0, event->pointer_details().id);
   // Next touch position.
-  EXPECT_EQ(1, actionA->current_position_index());
+  EXPECT_EQ(1, actionA->current_position_idx());
   // Unregister the event rewriter to see if extra events are sent.
   injector_->UnRegisterEventRewriter();
 

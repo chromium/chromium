@@ -51,6 +51,10 @@ class TouchInjector : public ui::EventRewriter {
   ~TouchInjector() override;
 
   aura::Window* target_window() { return target_window_; }
+  const gfx::RectF& content_bounds() { return content_bounds_; }
+  const gfx::Transform* rotation_transform() {
+    return rotation_transform_.get();
+  }
   const std::vector<std::unique_ptr<Action>>& actions() const {
     return actions_;
   }
@@ -128,6 +132,11 @@ class TouchInjector : public ui::EventRewriter {
   void OnInputMenuViewRemoved();
   void NotifyFirstTimeLaunch();
 
+  // Update |content_bounds_| and touch positions for each |actions_| for
+  // different reasons.
+  void UpdateForDisplayMetricsChanged();
+  void UpdateForWindowBoundsChanged();
+
   // UMA stats.
   void RecordMenuStateOnLaunch();
 
@@ -204,6 +213,7 @@ class TouchInjector : public ui::EventRewriter {
   DisplayOverlayController* GetControllerForTesting();
 
   raw_ptr<aura::Window> target_window_;
+  gfx::RectF content_bounds_;
   base::WeakPtr<ui::EventRewriterContinuation> continuation_;
   std::vector<std::unique_ptr<Action>> actions_;
   base::ScopedObservation<ui::EventSource,

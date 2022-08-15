@@ -277,32 +277,6 @@ bool Action::IsOverlapped(const InputElement& input_element) {
   return binding.IsOverlapped(input_element);
 }
 
-absl::optional<gfx::PointF> Action::CalculateTouchPosition(
-    const gfx::RectF& content_bounds,
-    const gfx::Transform* rotation_transform) {
-  if (locations_.empty())
-    return absl::nullopt;
-  DCHECK(current_position_index_ < locations_.size());
-  Position* position = locations_[current_position_index_].get();
-  const gfx::PointF point = position->CalculatePosition(content_bounds);
-
-  float scale = target_window_->GetHost()->device_scale_factor();
-
-  gfx::PointF root_point = gfx::PointF(point);
-  gfx::PointF origin = content_bounds.origin();
-  root_point.Offset(origin.x(), origin.y());
-
-  gfx::PointF root_location = gfx::PointF(root_point);
-  root_location.Scale(scale);
-  if (rotation_transform)
-    rotation_transform->TransformPoint(&root_location);
-
-  VLOG(1) << "Calculate touch position: local position {" << point.ToString()
-          << "}, root location {" << root_point.ToString()
-          << "}, root location in pixels {" << root_location.ToString() << "}";
-  return absl::make_optional(root_location);
-}
-
 absl::optional<ui::TouchEvent> Action::GetTouchCanceledEvent() {
   if (!touch_id_)
     return absl::nullopt;
@@ -374,12 +348,12 @@ void Action::OnTouchReleased() {
   keys_pressed_.clear();
   if (locations_.empty())
     return;
-  current_position_index_ = (current_position_index_ + 1) % locations_.size();
+  current_position_idx_ = (current_position_idx_ + 1) % locations_.size();
 }
 
 void Action::OnTouchCancelled() {
   OnTouchReleased();
-  current_position_index_ = 0;
+  current_position_idx_ = 0;
 }
 
 void Action::PostUnbindProcess() {
@@ -404,6 +378,37 @@ std::unique_ptr<ActionProto> Action::ConvertToProtoIfCustomized() {
   proto->set_allocated_input_element(
       current_binding_->ConvertToProto().release());
   return proto;
+}
+
+void Action::UpdateTouchDownPositions(
+    const gfx::RectF& content_bounds,
+    const gfx::Transform* rotation_transform) {
+  if (locations_.empty())
+    return;
+
+  touch_down_positions_.clear();
+
+  for (int i = 0; i < locations_.size(); i++) {
+    Position* position = locations_[i].get();
+    const gfx::PointF point = position->CalculatePosition(content_bounds);
+
+    float scale = target_window_->GetHost()->device_scale_factor();
+
+    gfx::PointF root_point = gfx::PointF(point);
+    gfx::PointF origin = content_bounds.origin();
+    root_point.Offset(origin.x(), origin.y());
+
+    gfx::PointF root_location = gfx::PointF(root_point);
+    root_location.Scale(scale);
+    if (rotation_transform)
+      rotation_transform->TransformPoint(&root_location);
+    touch_down_positions_.emplace_back(root_location);
+    VLOG(1) << "Calculate touch position for location at index " << i
+            << ": local position {" << point.ToString() << "}, root location {"
+            << root_point.ToString() << "}, root location in pixels {"
+            << root_location.ToString() << "}";
+  }
+  DCHECK_EQ(touch_down_positions_.size(), locations_.size());
 }
 
 }  // namespace input_overlay

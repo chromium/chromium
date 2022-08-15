@@ -367,7 +367,7 @@ void ArcInputOverlayManager::OnWindowBoundsChanged(
   if (it == input_overlay_enabled_windows_.end())
     return;
 
-  it->second->Update();
+  it->second->UpdateForWindowBoundsChanged();
 }
 
 void ArcInputOverlayManager::Shutdown() {
@@ -428,7 +428,7 @@ void ArcInputOverlayManager::OnDisplayMetricsChanged(
   if (it == input_overlay_enabled_windows_.end())
     return;
 
-  it->second->Update();
+  it->second->UpdateForDisplayMetricsChanged();
 }
 
 }  // namespace arc

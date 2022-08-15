@@ -183,19 +183,8 @@ void TouchInjector::UnRegisterEventRewriter() {
 }
 
 void TouchInjector::Update() {
-  if (rotation_transform_)
-    rotation_transform_.reset();
-
-  auto display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(target_window_);
-  // No need to transform if there is no rotation.
-  if (display.panel_rotation() == display::Display::ROTATE_0)
-    return;
-
-  rotation_transform_ =
-      std::make_unique<gfx::Transform>(ash::CreateRotationTransform(
-          display::Display::ROTATE_0, display.panel_rotation(),
-          gfx::SizeF(display.GetSizeInPixel())));
+  UpdateForDisplayMetricsChanged();
+  UpdateForWindowBoundsChanged();
 }
 
 void TouchInjector::OnBindingChange(
@@ -234,16 +223,14 @@ void TouchInjector::OnBindingSave() {
 }
 
 void TouchInjector::OnBindingCancel() {
-  auto bounds = CalculateWindowContentBounds(target_window_);
   for (auto& action : actions_)
-    action->CancelPendingBind(bounds);
+    action->CancelPendingBind(content_bounds_);
   display_overlay_controller_->SetDisplayMode(DisplayMode::kView);
 }
 
 void TouchInjector::OnBindingRestore() {
-  auto bounds = CalculateWindowContentBounds(target_window_);
   for (auto& action : actions_)
-    action->RestoreToDefault(bounds);
+    action->RestoreToDefault(content_bounds_);
 }
 
 const std::string* TouchInjector::GetPackageName() const {
@@ -283,6 +270,32 @@ void TouchInjector::OnInputMenuViewRemoved() {
 void TouchInjector::NotifyFirstTimeLaunch() {
   first_launch_ = true;
   show_nudge_ = true;
+}
+
+void TouchInjector::UpdateForDisplayMetricsChanged() {
+  if (rotation_transform_)
+    rotation_transform_.reset();
+
+  auto display =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(target_window_);
+  // No need to transform if there is no rotation.
+  if (display.panel_rotation() == display::Display::ROTATE_0)
+    return;
+
+  rotation_transform_ =
+      std::make_unique<gfx::Transform>(ash::CreateRotationTransform(
+          display::Display::ROTATE_0, display.panel_rotation(),
+          gfx::SizeF(display.GetSizeInPixel())));
+
+  UpdateForWindowBoundsChanged();
+}
+
+void TouchInjector::UpdateForWindowBoundsChanged() {
+  content_bounds_ = CalculateWindowContentBounds(target_window_);
+  for (auto& action : actions_) {
+    action->UpdateTouchDownPositions(content_bounds_,
+                                     rotation_transform_.get());
+  }
 }
 
 void TouchInjector::CleanupTouchEvents() {
@@ -450,7 +463,6 @@ ui::EventDispatchDetails TouchInjector::RewriteEvent(
     const ui::Event& event,
     const ui::EventRewriter::Continuation continuation) {
   continuation_ = continuation;
-  auto bounds = CalculateWindowContentBounds(target_window_);
 
   // This is for Tab key as Accessibility requirement.
   // - For key event, Tab key is used to enter into the |kPreMenu| mode. And any
@@ -476,7 +488,7 @@ ui::EventDispatchDetails TouchInjector::RewriteEvent(
       } else {
         return SendEvent(continuation, &event);
       }
-    } else if (LocatedEventOnMenuEntry(event, bounds,
+    } else if (LocatedEventOnMenuEntry(event, content_bounds_,
                                        /*press_required=*/false)) {
       return SendEvent(continuation, &event);
     } else {
@@ -489,7 +501,8 @@ ui::EventDispatchDetails TouchInjector::RewriteEvent(
 
   // |display_overlay_controller_| is null for unittest.
   if (display_overlay_controller_ &&
-      LocatedEventOnMenuEntry(event, bounds, /*press_required=*/true)) {
+      LocatedEventOnMenuEntry(event, content_bounds_,
+                              /*press_required=*/true)) {
     // Release all active touches when the display mode is changed from |kView|
     // to |kMenu|.
     CleanupTouchEvents();
@@ -509,7 +522,7 @@ ui::EventDispatchDetails TouchInjector::RewriteEvent(
     target_window_->GetHost()->ConvertPixelsToDIP(&location);
     auto location_f = gfx::PointF(location);
     // Send touch event as it is if the event is outside of the content bounds.
-    if (!bounds.Contains(location_f))
+    if (!content_bounds_.Contains(location_f))
       return SendEvent(continuation, &event);
 
     std::unique_ptr<ui::TouchEvent> new_touch_event =
@@ -535,9 +548,9 @@ ui::EventDispatchDetails TouchInjector::RewriteEvent(
   std::list<ui::TouchEvent> touch_events;
   for (auto& action : actions_) {
     bool keep_original_event = false;
-    bool rewritten = action->RewriteEvent(event, bounds, is_mouse_locked_,
-                                          rotation_transform_.get(),
-                                          touch_events, keep_original_event);
+    bool rewritten = action->RewriteEvent(
+        event, content_bounds_, is_mouse_locked_, rotation_transform_.get(),
+        touch_events, keep_original_event);
     if (!rewritten)
       continue;
     if (keep_original_event)

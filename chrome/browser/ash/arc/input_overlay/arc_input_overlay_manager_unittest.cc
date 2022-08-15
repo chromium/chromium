@@ -227,7 +227,6 @@ TEST_F(ArcInputOverlayManagerTest, TestKeyEventSourceRewriterForMultiDisplay) {
       exo_test_helper(), root_windows[1], kEnabledPackageName);
   // I/O takes time here.
   task_environment()->FastForwardBy(kIORead);
-  // arc_window->SetBounds(display1, gfx::Rect(1010, 910, 100, 100));
   // Make sure to dismiss the educational dialog in beforehand.
   auto* injector = GetTouchInjector(arc_window->GetWindow());
   EXPECT_TRUE(injector);
@@ -307,6 +306,69 @@ TEST_F(ArcInputOverlayManagerTest, TestKeyEventSourceRewriterForMultiDisplay) {
   EXPECT_TRUE(event_capturer.key_events().empty());
   event_capturer.Clear();
   root_windows[0]->RemovePostTargetHandler(&event_capturer);
+}
+
+TEST_F(ArcInputOverlayManagerTest, TestWindowBoundsChanged) {
+  auto* focus_client =
+      aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow());
+  auto arc_window = std::make_unique<input_overlay::test::ArcTestWindow>(
+      exo_test_helper(), ash::Shell::GetPrimaryRootWindow(),
+      kEnabledPackageName);
+  // I/O takes time here.
+  task_environment()->FastForwardBy(kIORead);
+  // Make sure to dismiss the educational dialog in beforehand.
+  auto* injector = GetTouchInjector(arc_window->GetWindow());
+  DCHECK(injector);
+  focus_client->FocusWindow(arc_window->GetWindow());
+  DismissEducationalDialog(injector);
+  EXPECT_EQ(injector->content_bounds(), gfx::RectF(10, 10, 100, 100));
+  EXPECT_EQ(injector->actions()[0]->touch_down_positions()[0],
+            gfx::PointF(60, 60));
+  EXPECT_EQ(injector->actions()[1]->touch_down_positions()[0],
+            gfx::PointF(100, 100));
+
+  // Confirm the content bounds and touch down positions are updated after
+  // window bounds changed.
+  auto display = display::Screen::GetScreen()->GetDisplayMatching(
+      ash::Shell::GetPrimaryRootWindow()->GetBoundsInScreen());
+  arc_window->SetBounds(display, gfx::Rect(10, 10, 150, 150));
+  EXPECT_EQ(injector->content_bounds(), gfx::RectF(10, 10, 150, 150));
+  EXPECT_EQ(injector->actions()[0]->touch_down_positions()[0],
+            gfx::PointF(85, 85));
+  EXPECT_EQ(injector->actions()[1]->touch_down_positions()[0],
+            gfx::PointF(145, 145));
+}
+
+TEST_F(ArcInputOverlayManagerTest, TestDisplayRotationChanged) {
+  aura::client::FocusClient* focus_client =
+      aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow());
+  auto arc_window = std::make_unique<input_overlay::test::ArcTestWindow>(
+      exo_test_helper(), ash::Shell::GetPrimaryRootWindow(),
+      kEnabledPackageName);
+  // I/O takes time here.
+  task_environment()->FastForwardBy(kIORead);
+  // Make sure to dismiss the educational dialog in beforehand.
+  auto* injector = GetTouchInjector(arc_window->GetWindow());
+  DCHECK(injector);
+  focus_client->FocusWindow(arc_window->GetWindow());
+  DismissEducationalDialog(injector);
+  EXPECT_FALSE(injector->rotation_transform());
+  EXPECT_EQ(injector->content_bounds(), gfx::RectF(10, 10, 100, 100));
+  EXPECT_EQ(injector->actions()[0]->touch_down_positions()[0],
+            gfx::PointF(60, 60));
+  EXPECT_EQ(injector->actions()[1]->touch_down_positions()[0],
+            gfx::PointF(100, 100));
+
+  // Confirm the touch down positions are updated after display rotated.
+  UpdateDisplay("800x600/r");
+  EXPECT_TRUE(injector->rotation_transform());
+  EXPECT_EQ(injector->content_bounds(), gfx::RectF(10, 10, 100, 100));
+  auto expect_pos = gfx::PointF(60, 60);
+  injector->rotation_transform()->TransformPoint(&expect_pos);
+  EXPECT_EQ(injector->actions()[0]->touch_down_positions()[0], expect_pos);
+  expect_pos = gfx::PointF(100, 100);
+  injector->rotation_transform()->TransformPoint(&expect_pos);
+  EXPECT_EQ(injector->actions()[1]->touch_down_positions()[0], expect_pos);
 }
 
 }  // namespace arc
