@@ -62,7 +62,6 @@ source_set("browser") {
   ]
 
   deps = [
-    ":settings_resources",
     "//base",
     "//components/autofill/core/browser",
     "//components/autofill/ios/browser",
@@ -103,6 +102,7 @@ source_set("browser") {
     "//ios/chrome/browser/complex_tasks",
     "//ios/chrome/browser/download/background_service",
     "//ios/chrome/browser/itunes_urls",
+    "//ios/chrome/browser/resources:settings_resources",
     "//ios/chrome/browser/sync/glue",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
@@ -284,38 +284,6 @@ source_set("browser_impl") {
   if (use_allocator_shim) {
     deps += [ "//components/heap_profiling/in_process" ]
   }
-}
-
-tweak_info_plist("experimental_info_plist") {
-  info_plists = [ "resources/Settings.bundle/Experimental.plist" ]
-  if (ios_enable_metrickit) {
-    info_plists += [ "resources/Settings.bundle/ExperimentalMetricKit.plist" ]
-  }
-  if (ios_enable_sandbox_dump) {
-    info_plists += [ "resources/Settings.bundle/ExperimentalSandboxDump.plist" ]
-  }
-  info_plists += [ "resources/Settings.bundle/ExperimentalFlags.plist" ]
-}
-
-bundle_data("settings_experimental_synctypeslist_plist") {
-  sources =
-      [ "resources/Settings.bundle/ExperimentalSyncTypesListDisabled.plist" ]
-  outputs = [ "{{bundle_resources_dir}}/Settings.bundle/{{source_file_part}}" ]
-}
-
-bundle_data("settings_resources_experimental_plist") {
-  public_deps = [
-    ":experimental_info_plist",
-    ":settings_experimental_synctypeslist_plist",
-  ]
-  sources = get_target_outputs(":experimental_info_plist")
-  outputs = [ "{{bundle_resources_dir}}/Settings.bundle/Experimental.plist" ]
-}
-
-bundle_data("settings_resources") {
-  public_deps = [ ":settings_resources_experimental_plist" ]
-  sources = [ "resources/Settings.bundle/Root.plist" ]
-  outputs = [ "{{bundle_resources_dir}}/Settings.bundle/{{source_file_part}}" ]
 }
 
 source_set("unit_tests") {
