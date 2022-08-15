@@ -1906,9 +1906,7 @@ IN_PROC_BROWSER_TEST_F(SignedExchangeSubresourcePrefetchBrowserTest,
   EXPECT_EQ(1, script2_request_counter->GetRequestCount());
 }
 
-// TODO(crbug.com/1350046): Flaky.
-IN_PROC_BROWSER_TEST_F(SignedExchangeSubresourcePrefetchBrowserTest,
-                       DISABLED_CORS) {
+IN_PROC_BROWSER_TEST_F(SignedExchangeSubresourcePrefetchBrowserTest, CORS) {
   std::unique_ptr<net::EmbeddedTestServer> data_server =
       std::make_unique<net::EmbeddedTestServer>(
           net::EmbeddedTestServer::TYPE_HTTPS);
@@ -2096,18 +2094,26 @@ IN_PROC_BROWSER_TEST_F(SignedExchangeSubresourcePrefetchBrowserTest,
                    CreateSignedExchangeResponseEntry(
                        base::StringPrintf(R"(
 <head><title>Prefetch Target (SXG)</title><script>
-let results = [];
-(async function(requests) {
-  for (let i = 0; i < requests.length; ++i) {
-    try {
-      const res = await fetch(requests[i]);
-      results.push(await res.text());
-    } catch (err) {
-      results.push('failed');
-    }
+  const requests = [%s];
+  const promises = [];
+  for (const request of requests) {
+    promises.push((async (request) => {
+      try {
+        const res = await fetch(request);
+        const result = await res.text();
+        console.log(request.url + ': ' + result);
+        return result;
+      } catch (err) {
+        console.log(request.url + ': failed');
+        return 'failed';
+      }
+    })(request));
   }
-  document.title = 'done';
-})([%s]);
+  let results = null;
+  Promise.all(promises).then((values) => {
+    results = values;
+    document.title = 'done';
+  });
 </script></head>)",
                                           requests_list_string.c_str()),
                        {{"link", target_sxg_outer_link_header}}));
