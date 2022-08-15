@@ -49,6 +49,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/compositor/compositor_switches.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -4258,7 +4259,12 @@ TEST_F(ProjectorCaptureModeCameraTest,
 class CaptureModeCameraFramesTest : public CaptureModeCameraTest,
                                     public testing::WithParamInterface<bool> {
  public:
-  CaptureModeCameraFramesTest() = default;
+  CaptureModeCameraFramesTest() {
+    // Ensure pixels get drawn since they are verified by tests.
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        ::switches::kEnablePixelOutputInTests);
+  }
+
   CaptureModeCameraFramesTest(const CaptureModeCameraFramesTest&) = delete;
   CaptureModeCameraFramesTest& operator=(const CaptureModeCameraFramesTest&) =
       delete;
