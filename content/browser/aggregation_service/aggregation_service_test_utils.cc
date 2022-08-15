@@ -402,6 +402,28 @@ void MockAggregationService::NotifyReportHandled(
     observer.OnReportHandled(request, report, report_handled_time, status);
 }
 
+AggregatableReportRequestsAndIdsBuilder::
+    AggregatableReportRequestsAndIdsBuilder() = default;
+
+AggregatableReportRequestsAndIdsBuilder::
+    ~AggregatableReportRequestsAndIdsBuilder() = default;
+
+AggregatableReportRequestsAndIdsBuilder&&
+AggregatableReportRequestsAndIdsBuilder::AddRequestWithID(
+    AggregatableReportRequest request,
+    AggregationServiceStorage::RequestId id) && {
+  requests_.push_back(AggregationServiceStorage::RequestAndId({
+      .request = std::move(request),
+      .id = id,
+  }));
+  return std::move(*this);
+}
+
+std::vector<AggregationServiceStorage::RequestAndId>
+AggregatableReportRequestsAndIdsBuilder::Build() && {
+  return std::move(requests_);
+}
+
 std::ostream& operator<<(
     std::ostream& out,
     AggregationServicePayloadContents::Operation operation) {

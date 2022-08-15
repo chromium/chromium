@@ -521,4 +521,16 @@ TEST(AggregatableReportTest, ReportingPathEmpty_NotSetInRequest) {
   EXPECT_FALSE(request->GetReportingUrl().is_valid());
 }
 
+TEST(AggregatableReportTest, EmptyPayloads) {
+  AggregatableReport report(/*payloads=*/{}, "example_shared_info");
+
+  std::string report_json_string;
+  base::JSONWriter::Write(base::Value(report.GetAsJson()), &report_json_string);
+
+  const char kExpectedJsonString[] = R"({)"
+                                     R"("shared_info":"example_shared_info")"
+                                     R"(})";
+  EXPECT_EQ(report_json_string, kExpectedJsonString);
+}
+
 }  // namespace content

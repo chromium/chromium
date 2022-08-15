@@ -241,7 +241,8 @@ class CONTENT_EXPORT AggregatableReport {
 
  private:
   // This vector should have an entry for each processing URL specified in
-  // the original AggregatableReportRequest.
+  // the original AggregatableReportRequest. Might be empty for reports created
+  // for the WebUI if prior to assembly or if assembly failed.
   std::vector<AggregationServicePayload> payloads_;
 
   std::string shared_info_;

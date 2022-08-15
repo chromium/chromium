@@ -186,6 +186,21 @@ class MockAggregationService : public AggregationService {
       observers_;
 };
 
+class AggregatableReportRequestsAndIdsBuilder {
+ public:
+  AggregatableReportRequestsAndIdsBuilder();
+  ~AggregatableReportRequestsAndIdsBuilder();
+
+  AggregatableReportRequestsAndIdsBuilder&& AddRequestWithID(
+      AggregatableReportRequest request,
+      AggregationServiceStorage::RequestId id) &&;
+
+  std::vector<AggregationServiceStorage::RequestAndId> Build() &&;
+
+ private:
+  std::vector<AggregationServiceStorage::RequestAndId> requests_;
+};
+
 // Only used for logging in tests.
 std::ostream& operator<<(
     std::ostream& out,

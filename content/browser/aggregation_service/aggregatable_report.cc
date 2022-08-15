@@ -738,21 +738,25 @@ base::Value::Dict AggregatableReport::GetAsJson() const {
 
   value.Set("shared_info", shared_info_);
 
-  base::Value::List payloads_list_value;
-  for (const AggregationServicePayload& payload : payloads_) {
-    base::Value::Dict payload_dict_value;
-    payload_dict_value.Set("payload", base::Base64Encode(payload.payload));
-    payload_dict_value.Set("key_id", payload.key_id);
-    if (payload.debug_cleartext_payload.has_value()) {
-      payload_dict_value.Set(
-          "debug_cleartext_payload",
-          base::Base64Encode(payload.debug_cleartext_payload.value()));
+  // When invoked for reports being shown in the WebUI, `payloads_` may be empty
+  // prior to assembly or if assembly failed.
+  if (!payloads_.empty()) {
+    base::Value::List payloads_list_value;
+    for (const AggregationServicePayload& payload : payloads_) {
+      base::Value::Dict payload_dict_value;
+      payload_dict_value.Set("payload", base::Base64Encode(payload.payload));
+      payload_dict_value.Set("key_id", payload.key_id);
+      if (payload.debug_cleartext_payload.has_value()) {
+        payload_dict_value.Set(
+            "debug_cleartext_payload",
+            base::Base64Encode(payload.debug_cleartext_payload.value()));
+      }
+
+      payloads_list_value.Append(std::move(payload_dict_value));
     }
 
-    payloads_list_value.Append(std::move(payload_dict_value));
+    value.Set("aggregation_service_payloads", std::move(payloads_list_value));
   }
-
-  value.Set("aggregation_service_payloads", std::move(payloads_list_value));
 
   return value;
 }

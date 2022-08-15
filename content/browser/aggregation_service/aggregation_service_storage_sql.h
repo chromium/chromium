@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "base/time/time.h"
 #include "content/browser/aggregation_service/aggregation_service_storage.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/storage_partition.h"
@@ -23,7 +24,6 @@ class GURL;
 
 namespace base {
 class Clock;
-class Time;
 }  // namespace base
 
 namespace sql {
