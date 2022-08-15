@@ -25,22 +25,25 @@ Status FindMobileDevice(std::string device_name,
     return Status(kUnknownError, "could not parse mobile device list because " +
                                      parsed_json.error().message);
 
-  base::DictionaryValue* mobile_devices;
-  if (!parsed_json->GetAsDictionary(&mobile_devices))
+  if (!parsed_json->is_dict())
     return Status(kUnknownError, "malformed device metrics dictionary");
+  base::Value::Dict& mobile_devices = parsed_json->GetDict();
 
-  base::DictionaryValue* device = NULL;
-  if (!mobile_devices->GetDictionary(device_name, &device))
+  const base::Value::Dict* device =
+      mobile_devices.FindDictByDottedPath(device_name);
+  if (!device)
     return Status(kUnknownError, "must be a valid device");
 
   std::unique_ptr<MobileDevice> tmp_mobile_device(new MobileDevice());
-  std::string device_metrics_string;
-  if (!device->GetString("userAgent", &tmp_mobile_device->user_agent)) {
+  const std::string* maybe_ua = device->FindString("userAgent");
+  if (!maybe_ua) {
     return Status(kUnknownError,
                   "malformed device user agent: should be a string");
   }
-  absl::optional<int> maybe_width = device->FindIntKey("width");
-  absl::optional<int> maybe_height = device->FindIntKey("height");
+  tmp_mobile_device->user_agent = *maybe_ua;
+
+  absl::optional<int> maybe_width = device->FindInt("width");
+  absl::optional<int> maybe_height = device->FindInt("height");
   if (!maybe_width) {
     return Status(kUnknownError,
                   "malformed device width: should be an integer");
@@ -51,16 +54,16 @@ Status FindMobileDevice(std::string device_name,
   }
 
   absl::optional<double> maybe_device_scale_factor =
-      device->FindDoubleKey("deviceScaleFactor");
+      device->FindDouble("deviceScaleFactor");
   if (!maybe_device_scale_factor) {
     return Status(kUnknownError,
                   "malformed device scale factor: should be a double");
   }
-  absl::optional<bool> touch = device->FindBoolKey("touch");
+  absl::optional<bool> touch = device->FindBool("touch");
   if (!touch) {
     return Status(kUnknownError, "malformed touch: should be a bool");
   }
-  absl::optional<bool> mobile = device->FindBoolKey("mobile");
+  absl::optional<bool> mobile = device->FindBool("mobile");
   if (!mobile) {
     return Status(kUnknownError, "malformed mobile: should be a bool");
   }

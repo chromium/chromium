@@ -217,13 +217,16 @@ std::unique_ptr<base::ListValue> WebDriverLog::GetAndClearEntries() {
 bool GetFirstErrorMessageFromList(const base::ListValue* list,
                                   std::string* message) {
   for (const auto& entry : list->GetList()) {
-    const base::DictionaryValue* log_entry = nullptr;
-    if (entry.GetAsDictionary(&log_entry)) {
-      std::string level;
-      if (log_entry->GetString("level", &level))
-        if (level == kLevelToName[Log::kError])
-          if (log_entry->GetString("message", message))
-            return true;
+    if (entry.is_dict()) {
+      const base::Value::Dict& log_entry = entry.GetDict();
+      const std::string* level = log_entry.FindString("level");
+      if (!level || *level != kLevelToName[Log::kError])
+        continue;
+
+      if (const std::string* maybe_message = log_entry.FindString("message")) {
+        *message = *maybe_message;
+        return true;
+      }
     }
   }
   return false;
