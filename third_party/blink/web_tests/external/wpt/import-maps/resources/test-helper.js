@@ -107,15 +107,7 @@ function testInIframe(importMapString, importMapBaseURL, testScript) {
     <script src="/resources/testharness.js"></script>
     <script src="/import-maps/resources/test-helper.js"></script>
     <base href="${importMapBaseURL}">
-  `;
-  if (importMapString) {
-    content += `
-      <script type="importmap">
-      ${importMapString}
-      </sc` + `ript>
-    `;
-  }
-  content += `
+    <script type="importmap">${importMapString}</script>
     <body>
     <script>
     setup({ allow_uncaught_exception: true });
@@ -180,16 +172,9 @@ function testInIframeInjectBase(importMapString, importMapBaseURL, testScript) {
     <script src="/resources/testharness.js"></script>
     <script src="/import-maps/resources/test-helper.js"></script>
     <script src="/import-maps/resources/inject-base.js?pipe=sub&baseurl=${importMapBaseURL}"></script>
-  `;
-
-  if (importMapString) {
-    content += `
-      <script type="importmap">
+    <script type="importmap">
       ${importMapString}
-      </sc` + `ript>
-    `;
-  }
-  content += `
+    </script>
     <body>
     <script>
     setup({ allow_uncaught_exception: true });

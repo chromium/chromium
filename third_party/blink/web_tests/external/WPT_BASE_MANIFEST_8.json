@@ -2194,6 +2194,20 @@
         {}
        ]
       ],
+      "table-caption-change-descendant-display-type.html": [
+       "c44fcca5acd5c4672c9c12bd7f0f4b520bd71c35",
+       [
+        null,
+        {}
+       ]
+      ],
+      "table-caption-inline-block-remove-child.html": [
+       "721f1e888903759ba5fd38281cf26e1674df48f5",
+       [
+        null,
+        {}
+       ]
+      ],
       "table-cell-writing-mode-root.html": [
        "394989e00970e713ca9244ccbf0b2bf42c5b7d42",
        [
@@ -320589,7 +320603,7 @@
       []
      ],
      "test-helper.js": [
-      "78215b2d017ac8cc1e647540245da859ae29e452",
+      "f6a6a30cc516f44f4c55813706eae87e73a3288c",
       []
      ]
     },
