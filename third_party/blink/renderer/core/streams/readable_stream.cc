@@ -1325,39 +1325,53 @@ ReadableStream* ReadableStream::Create(ScriptState* script_state,
 ReadableStream* ReadableStream::CreateByteStream(
     ScriptState* script_state,
     UnderlyingByteSourceBase* underlying_byte_source) {
+  // https://streams.spec.whatwg.org/#abstract-opdef-createreadablebytestream
+  // 1. Let stream be a new ReadableStream.
+  auto* stream = MakeGarbageCollected<ReadableStream>();
+
+  // Construction of the byte stream cannot fail because the trivial start
+  // algorithm will not throw.
+  NonThrowableExceptionState exception_state;
+  InitByteStream(script_state, stream, underlying_byte_source, exception_state);
+
+  // 5. Return stream.
+  return stream;
+}
+
+void ReadableStream::InitByteStream(
+    ScriptState* script_state,
+    ReadableStream* stream,
+    UnderlyingByteSourceBase* underlying_byte_source,
+    ExceptionState& exception_state) {
   auto* pull_algorithm =
       MakeGarbageCollected<PullAlgorithm>(underlying_byte_source);
   auto* cancel_algorithm =
       MakeGarbageCollected<CancelAlgorithm>(underlying_byte_source);
 
-  // Construction of the byte stream cannot fail because the trivial start
-  // algorithm will not throw.
-  NonThrowableExceptionState exception_state;
-  auto* stream =
-      CreateByteStream(script_state, CreateTrivialStartAlgorithm(),
-                       pull_algorithm, cancel_algorithm, exception_state);
-  DCHECK(stream);
-
-  ReadableStreamController* controller = stream->readable_stream_controller_;
-  pull_algorithm->SetController(To<ReadableByteStreamController>(controller));
-  return stream;
-}
-
-ReadableStream* ReadableStream::CreateByteStream(
-    ScriptState* script_state,
-    StreamStartAlgorithm* start_algorithm,
-    StreamAlgorithm* pull_algorithm,
-    StreamAlgorithm* cancel_algorithm,
-    ExceptionState& exception_state) {
+  // Step 3 of
   // https://streams.spec.whatwg.org/#abstract-opdef-createreadablebytestream
-  // 1. Let stream be a new ReadableStream.
-  auto* stream = MakeGarbageCollected<ReadableStream>();
-
-  // 2. Perform ! InitializeReadableStream(stream).
-  Initialize(stream);
-
   // 3. Let controller be a new ReadableByteStreamController.
   auto* controller = MakeGarbageCollected<ReadableByteStreamController>();
+
+  InitByteStream(script_state, stream, controller,
+                 CreateTrivialStartAlgorithm(), pull_algorithm,
+                 cancel_algorithm, exception_state);
+  DCHECK(!exception_state.HadException());
+
+  pull_algorithm->SetController(controller);
+}
+
+void ReadableStream::InitByteStream(ScriptState* script_state,
+                                    ReadableStream* stream,
+                                    ReadableByteStreamController* controller,
+                                    StreamStartAlgorithm* start_algorithm,
+                                    StreamAlgorithm* pull_algorithm,
+                                    StreamAlgorithm* cancel_algorithm,
+                                    ExceptionState& exception_state) {
+  // Step 2 and 4 of
+  // https://streams.spec.whatwg.org/#abstract-opdef-createreadablebytestream
+  // 2. Perform ! InitializeReadableStream(stream).
+  Initialize(stream);
 
   // 4. Perform ? SetUpReadableByteStreamController(stream, controller,
   // startAlgorithm, pullAlgorithm, cancelAlgorithm, 0, undefined).
@@ -1365,11 +1379,8 @@ ReadableStream* ReadableStream::CreateByteStream(
                                       start_algorithm, pull_algorithm,
                                       cancel_algorithm, 0, 0, exception_state);
   if (exception_state.HadException()) {
-    return nullptr;
+    return;
   }
-
-  // 5. Return stream.
-  return stream;
 }
 
 ReadableStream::ReadableStream() = default;
