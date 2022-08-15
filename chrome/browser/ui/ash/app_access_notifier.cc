@@ -14,7 +14,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/account_id/account_id.h"
@@ -36,13 +35,10 @@ apps::AppCapabilityAccessCache* GetAppCapabilityAccessCache(
 }
 
 apps::AppRegistryCache* GetActiveUserAppRegistryCache() {
-  auto* manager = user_manager::UserManager::Get();
-  const user_manager::User* active_user = manager->GetActiveUser();
-  if (!active_user)
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  if (!profile)
     return nullptr;
 
-  auto account_id = active_user->GetAccountId();
-  Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(active_user);
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile);
   return &proxy->AppRegistryCache();
@@ -68,6 +64,19 @@ absl::optional<std::u16string> MapAppIdToShortName(
   }
 
   return absl::nullopt;
+}
+
+void LaunchApp(const std::string& app_id) {
+  // TODO(crbug/1351250): Finish this function.
+}
+
+// Launch the native settings page of the app with `app_id`.
+void LaunchAppSettings(const std::string& app_id) {
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  if (!profile)
+    return;
+  apps::AppServiceProxyFactory::GetForProfile(profile)->OpenNativeSettings(
+      app_id);
 }
 
 }  // namespace
@@ -109,10 +118,15 @@ void AppAccessNotifier::OnCapabilityAccessUpdate(
 
   if (ash::features::IsPrivacyIndicatorsEnabled()) {
     auto app_id = update.AppId();
+
+    auto launch_app = base::BindRepeating(&LaunchApp, app_id);
+    auto launch_settings = base::BindRepeating(&LaunchAppSettings, app_id);
     ash::ModifyPrivacyIndicatorsNotification(
         app_id,
         GetAppShortNameFromAppId(app_id, GetActiveUserAppRegistryCache()),
-        camera_is_used, microphone_is_used);
+        camera_is_used, microphone_is_used,
+        base::MakeRefCounted<ash::PrivacyIndicatorsNotificationDelegate>(
+            launch_app, launch_settings));
   }
 
   if (microphone_is_used) {
