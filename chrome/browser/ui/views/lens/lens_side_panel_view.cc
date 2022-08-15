@@ -143,7 +143,8 @@ void LensSidePanelView::CreateAndInstallHeader(
           views::DistanceMetric::DISTANCE_RELATED_CONTROL_HORIZONTAL),
       0,
       chrome_layout_provider->GetDistanceMetric(
-          ChromeDistanceMetric::DISTANCE_SIDE_PANEL_HEADER_RIGHT_MARGIN)));
+          ChromeDistanceMetric::
+              DISTANCE_SIDE_PANEL_HEADER_INTERIOR_MARGIN_HORIZONTAL)));
   // Set alignments for horizontal (main) and vertical (cross) axes.
   header->SetMainAxisAlignment(views::LayoutAlignment::kStart);
   header->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);

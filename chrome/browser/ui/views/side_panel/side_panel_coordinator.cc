@@ -461,7 +461,8 @@ std::unique_ptr<views::View> SidePanelCoordinator::CreateHeader() {
   // Set the interior margins of the header on the left and right sides.
   header->SetInteriorMargin(gfx::Insets::VH(
       0, chrome_layout_provider->GetDistanceMetric(
-             views::DistanceMetric::DISTANCE_RELATED_CONTROL_HORIZONTAL)));
+             ChromeDistanceMetric::
+                 DISTANCE_SIDE_PANEL_HEADER_INTERIOR_MARGIN_HORIZONTAL)));
   // Set alignments for horizontal (main) and vertical (cross) axes.
   header->SetMainAxisAlignment(views::LayoutAlignment::kStart);
   header->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
