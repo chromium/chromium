@@ -13,6 +13,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/values.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/common/extensions/api/cookies.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
@@ -79,7 +80,7 @@ class CookiesEventRouter : public BrowserListObserver {
   void DispatchEvent(content::BrowserContext* context,
                      events::HistogramValue histogram_value,
                      const std::string& event_name,
-                     std::unique_ptr<base::ListValue> event_args,
+                     base::Value::List event_args,
                      const GURL& cookie_domain);
 
   raw_ptr<Profile> profile_;

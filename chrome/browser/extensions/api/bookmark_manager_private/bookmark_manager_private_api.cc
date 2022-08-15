@@ -340,7 +340,7 @@ ExtensionFunction::ResponseValue ClipboardBookmarkManagerFunction::CopyOrCut(
   if (cut && HasPermanentNodes(nodes))
     return Error(bookmark_keys::kModifySpecialError);
   bookmarks::CopyToClipboard(model, nodes, cut);
-  return NoArguments();
+  return WithArguments();
 }
 
 ExtensionFunction::ResponseValue
@@ -395,7 +395,7 @@ BookmarkManagerPrivatePasteFunction::RunOnReady() {
     highest_index = parent_node->children().size();
 
   bookmarks::PasteFromClipboard(model, parent_node, highest_index);
-  return NoArguments();
+  return WithArguments();
 }
 
 ExtensionFunction::ResponseValue
@@ -406,7 +406,7 @@ BookmarkManagerPrivateCanPasteFunction::RunOnReady() {
 
   PrefService* prefs = user_prefs::UserPrefs::Get(GetProfile());
   if (!prefs->GetBoolean(bookmarks::prefs::kEditBookmarksEnabled))
-    return OneArgument(base::Value(false));
+    return WithArguments(false);
 
   BookmarkModel* model =
       BookmarkModelFactory::GetForBrowserContext(GetProfile());
@@ -414,7 +414,7 @@ BookmarkManagerPrivateCanPasteFunction::RunOnReady() {
   if (!parent_node)
     return Error(bookmark_keys::kNoParentError);
   bool can_paste = bookmarks::CanPasteFromClipboard(model, parent_node);
-  return OneArgument(base::Value(can_paste));
+  return WithArguments(can_paste);
 }
 
 ExtensionFunction::ResponseValue
@@ -434,7 +434,7 @@ BookmarkManagerPrivateSortChildrenFunction::RunOnReady() {
   if (!CanBeModified(parent_node, &error))
     return Error(error);
   model->SortChildren(parent_node);
-  return NoArguments();
+  return WithArguments();
 }
 
 ExtensionFunction::ResponseValue
@@ -463,7 +463,7 @@ BookmarkManagerPrivateStartDragFunction::RunOnReady() {
       GetProfile(), {std::move(nodes), params->drag_node_index, web_contents,
                      source, gfx::Point(params->x, params->y)});
 
-  return NoArguments();
+  return WithArguments();
 }
 
 ExtensionFunction::ResponseValue
@@ -502,7 +502,7 @@ BookmarkManagerPrivateDropFunction::RunOnReady() {
       GetProfile(), *drag_data, drop_parent, drop_index, copy);
 
   router->ClearBookmarkNodeData();
-  return NoArguments();
+  return WithArguments();
 }
 
 ExtensionFunction::ResponseValue
@@ -556,7 +556,7 @@ BookmarkManagerPrivateRemoveTreesFunction::RunOnReady() {
       return Error(error);
   }
 
-  return NoArguments();
+  return WithArguments();
 }
 
 ExtensionFunction::ResponseValue
@@ -566,7 +566,7 @@ BookmarkManagerPrivateUndoFunction::RunOnReady() {
 
   BookmarkUndoServiceFactory::GetForProfile(GetProfile())->undo_manager()->
       Undo();
-  return NoArguments();
+  return WithArguments();
 }
 
 ExtensionFunction::ResponseValue
@@ -576,7 +576,7 @@ BookmarkManagerPrivateRedoFunction::RunOnReady() {
 
   BookmarkUndoServiceFactory::GetForProfile(GetProfile())->undo_manager()->
       Redo();
-  return NoArguments();
+  return WithArguments();
 }
 
 ExtensionFunction::ResponseValue
@@ -604,7 +604,7 @@ BookmarkManagerPrivateOpenInNewTabFunction::RunOnReady() {
   if (!result)
     return Error(error);
 
-  return NoArguments();
+  return WithArguments();
 }
 
 ExtensionFunction::ResponseValue
@@ -678,7 +678,7 @@ BookmarkManagerPrivateOpenInNewWindowFunction::RunOnReady() {
     first_tab = false;
   }
 
-  return NoArguments();
+  return WithArguments();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(BookmarkManagerPrivateDragEventRouter);

@@ -278,7 +278,7 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveAddressFunction::Run() {
     personal_data->AddProfile(profile);
   }
 
-  return RespondNow(NoArguments());
+  return RespondNow(WithArguments());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -337,7 +337,7 @@ AutofillPrivateGetAddressComponentsFunction::Run() {
   address_components.Set("components", std::move(rows));
   address_components.Set("languageCode", language_code);
 
-  return RespondNow(OneArgument(base::Value(std::move(address_components))));
+  return RespondNow(WithArguments(std::move(address_components)));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -414,7 +414,7 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveCreditCardFunction::Run() {
   if (use_existing_card) {
     // Only updates when the card info changes.
     if (existing_card && existing_card->Compare(credit_card) == 0)
-      return RespondNow(NoArguments());
+      return RespondNow(WithArguments());
 
     // Record when nickname is updated.
     if (credit_card.HasNonEmptyValidNickname() &&
@@ -434,7 +434,7 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveCreditCardFunction::Run() {
     }
   }
 
-  return RespondNow(NoArguments());
+  return RespondNow(WithArguments());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -453,7 +453,7 @@ ExtensionFunction::ResponseAction AutofillPrivateRemoveEntryFunction::Run() {
 
   personal_data->RemoveByGUID(parameters->guid);
 
-  return RespondNow(NoArguments());
+  return RespondNow(WithArguments());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -477,7 +477,7 @@ AutofillPrivateValidatePhoneNumbersFunction::Run() {
   RemoveDuplicatePhoneNumberAtIndex(params->index_of_new_number,
                                     params->country_code, phone_numbers);
 
-  return RespondNow(OneArgument(base::Value(std::move(phone_numbers))));
+  return RespondNow(WithArguments(std::move(phone_numbers)));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -496,7 +496,7 @@ ExtensionFunction::ResponseAction AutofillPrivateMaskCreditCardFunction::Run() {
 
   personal_data->ResetFullServerCard(parameters->guid);
 
-  return RespondNow(NoArguments());
+  return RespondNow(WithArguments());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -554,7 +554,7 @@ AutofillPrivateMigrateCreditCardsFunction::Run() {
   local_card_migration_manager->GetMigratableCreditCards();
   local_card_migration_manager->AttemptToOfferLocalCardMigration(
       /*is_from_settings_page=*/true);
-  return RespondNow(NoArguments());
+  return RespondNow(WithArguments());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -570,7 +570,7 @@ AutofillPrivateLogServerCardLinkClickedFunction::Run() {
     return RespondNow(Error(kErrorDataUnavailable));
 
   personal_data->LogServerCardLinkClicked();
-  return RespondNow(NoArguments());
+  return RespondNow(WithArguments());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -596,7 +596,7 @@ AutofillPrivateSetCreditCardFIDOAuthEnabledStateFunction::Run() {
 
   credit_card_access_manager->OnSettingsPageFIDOAuthToggled(
       parameters->enabled);
-  return RespondNow(NoArguments());
+  return RespondNow(WithArguments());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -650,7 +650,7 @@ ExtensionFunction::ResponseAction AutofillPrivateAddVirtualCardFunction::Run() {
 
   virtual_card_enrollment_manager->InitVirtualCardEnroll(
       *card, autofill::VirtualCardEnrollmentSource::kSettingsPage);
-  return RespondNow(NoArguments());
+  return RespondNow(WithArguments());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -692,7 +692,7 @@ AutofillPrivateRemoveVirtualCardFunction::Run() {
   virtual_card_enrollment_manager->Unenroll(
       card->instrument_id(),
       /*virtual_card_enrollment_update_response_callback=*/absl::nullopt);
-  return RespondNow(NoArguments());
+  return RespondNow(WithArguments());
 }
 
 }  // namespace extensions

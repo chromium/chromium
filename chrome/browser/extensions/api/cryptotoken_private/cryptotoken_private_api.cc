@@ -122,7 +122,7 @@ CryptotokenPrivateCanOriginAssertAppIdFunction::Run() {
   }
 
   if (origin_url == app_id_url) {
-    return RespondNow(OneArgument(base::Value(true)));
+    return RespondNow(WithArguments(true));
   }
 
   // Fetch the eTLD+1 of both.
@@ -143,7 +143,7 @@ CryptotokenPrivateCanOriginAssertAppIdFunction::Run() {
         "Could not find an eTLD for appId *", params->app_id_url)));
   }
   if (origin_etldp1 == app_id_etldp1) {
-    return RespondNow(OneArgument(base::Value(true)));
+    return RespondNow(WithArguments(true));
   }
   // For legacy purposes, allow google.com origins to assert certain
   // gstatic.com appIds.
@@ -151,10 +151,10 @@ CryptotokenPrivateCanOriginAssertAppIdFunction::Run() {
   if (origin_etldp1 == kGoogleDotCom) {
     for (const char* id : kGoogleGstaticAppIds) {
       if (params->app_id_url == id)
-        return RespondNow(OneArgument(base::Value(true)));
+        return RespondNow(WithArguments(true));
     }
   }
-  return RespondNow(OneArgument(base::Value(false)));
+  return RespondNow(WithArguments(false));
 }
 
 CryptotokenPrivateIsAppIdHashInEnterpriseContextFunction::
@@ -205,7 +205,7 @@ CryptotokenPrivateCanAppIdGetAttestationFunction::Run() {
 
   for (const auto& entry : permit_attestation) {
     if (entry.GetString() == app_id)
-      return RespondNow(OneArgument(base::Value(true)));
+      return RespondNow(WithArguments(true));
   }
 
   // If the origin is blocked, reject attestation.
@@ -213,14 +213,14 @@ CryptotokenPrivateCanAppIdGetAttestationFunction::Run() {
           device::fido_filter::Operation::MAKE_CREDENTIAL, origin.Serialize(),
           /*device=*/absl::nullopt, /*id=*/absl::nullopt) ==
       device::fido_filter::Action::NO_ATTESTATION) {
-    return RespondNow(OneArgument(base::Value(false)));
+    return RespondNow(WithArguments(false));
   }
 
   // If prompting is disabled, allow attestation because that is the historical
   // behavior.
   if (!base::FeatureList::IsEnabled(
           ::features::kSecurityKeyAttestationPrompt)) {
-    return RespondNow(OneArgument(base::Value(true)));
+    return RespondNow(WithArguments(true));
   }
 
 #if BUILDFLAG(IS_WIN)
@@ -236,7 +236,7 @@ CryptotokenPrivateCanAppIdGetAttestationFunction::Run() {
       device::WinWebAuthnApi::GetDefault()->IsAvailable() &&
       device::WinWebAuthnApi::GetDefault()->Version() >=
           WEBAUTHN_API_VERSION_2) {
-    return RespondNow(OneArgument(base::Value(true)));
+    return RespondNow(WithArguments(true));
   }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -272,7 +272,7 @@ CryptotokenPrivateCanAppIdGetAttestationFunction::Run() {
 }
 
 void CryptotokenPrivateCanAppIdGetAttestationFunction::Complete(bool result) {
-  Respond(OneArgument(base::Value(result)));
+  Respond(WithArguments(result));
 }
 
 CryptotokenPrivateCanMakeU2fApiRequestFunction::
@@ -294,7 +294,7 @@ CryptotokenPrivateCanMakeU2fApiRequestFunction::Run() {
   if (!ash::ProfileHelper::IsRegularProfile(
           Profile::FromBrowserContext(browser_context()))) {
     DCHECK_EQ(params->options.tab_id, api::tabs::TAB_ID_NONE);
-    return RespondNow(OneArgument(base::Value(true)));
+    return RespondNow(WithArguments(true));
   }
 #endif
 
@@ -336,7 +336,7 @@ CryptotokenPrivateCanMakeU2fApiRequestFunction::Run() {
   // (crbug.com/1257293).
   if (!base::FeatureList::IsEnabled(device::kU2fPermissionPrompt) ||
       u2f_api_origin_trial_enabled) {
-    return RespondNow(OneArgument(base::Value(true)));
+    return RespondNow(WithArguments(true));
   }
 
   permissions::PermissionRequestManager* permission_request_manager =
@@ -361,7 +361,7 @@ CryptotokenPrivateCanMakeU2fApiRequestFunction::Run() {
 }
 
 void CryptotokenPrivateCanMakeU2fApiRequestFunction::Complete(bool result) {
-  Respond(OneArgument(base::Value(result)));
+  Respond(WithArguments(result));
 }
 
 ExtensionFunction::ResponseAction
@@ -378,7 +378,7 @@ CryptotokenPrivateRecordRegisterRequestFunction::Run() {
 
   page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(
       frame, blink::mojom::WebFeature::kU2FCryptotokenRegister);
-  return RespondNow(NoArguments());
+  return RespondNow(WithArguments());
 }
 
 ExtensionFunction::ResponseAction
@@ -394,7 +394,7 @@ CryptotokenPrivateRecordSignRequestFunction::Run() {
 
   page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(
       frame, blink::mojom::WebFeature::kU2FCryptotokenSign);
-  return RespondNow(NoArguments());
+  return RespondNow(WithArguments());
 }
 
 }  // namespace api

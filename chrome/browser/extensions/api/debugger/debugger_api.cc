@@ -836,7 +836,7 @@ ExtensionFunction::ResponseAction DebuggerGetTargetsFunction::Run() {
     result.Append(SerializeTarget(host));
   }
 
-  return RespondNow(OneArgument(base::Value(std::move(result))));
+  return RespondNow(WithArguments(std::move(result)));
 }
 
 }  // namespace extensions

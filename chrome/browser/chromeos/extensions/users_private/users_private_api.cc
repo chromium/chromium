@@ -92,9 +92,8 @@ api::users_private::User CreateUnknownApiUser(const std::string& email) {
   return api_user;
 }
 
-std::unique_ptr<base::ListValue> GetUsersList(
-    content::BrowserContext* browser_context) {
-  std::unique_ptr<base::ListValue> user_list(new base::ListValue);
+base::Value::List GetUsersList(content::BrowserContext* browser_context) {
+  base::Value::List user_list;
 
   if (!CanModifyUserList(browser_context))
     return user_list;
@@ -140,7 +139,7 @@ std::unique_ptr<base::ListValue> GetUsersList(
     std::string email = maybe_email ? *maybe_email : std::string();
     AccountId account_id = AccountId::FromUserEmail(email);
     const user_manager::User* user = user_manager->FindUser(account_id);
-    user_list->Append(base::Value::FromUniquePtrValue(
+    user_list.Append(base::Value::FromUniquePtrValue(
         (user ? CreateApiUser(email, *user) : CreateUnknownApiUser(email))
             .ToValue()));
   }
@@ -164,8 +163,7 @@ UsersPrivateGetUsersFunction::UsersPrivateGetUsersFunction() = default;
 UsersPrivateGetUsersFunction::~UsersPrivateGetUsersFunction() = default;
 
 ExtensionFunction::ResponseAction UsersPrivateGetUsersFunction::Run() {
-  return RespondNow(OneArgument(
-      base::Value::FromUniquePtrValue(GetUsersList(browser_context()))));
+  return RespondNow(WithArguments(GetUsersList(browser_context())));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -182,9 +180,9 @@ ExtensionFunction::ResponseAction UsersPrivateIsUserInListFunction::Run() {
 
   std::string username = gaia::CanonicalizeEmail(parameters->email);
   if (IsExistingUser(username)) {
-    return RespondNow(OneArgument(base::Value(true)));
+    return RespondNow(WithArguments(true));
   }
-  return RespondNow(OneArgument(base::Value(false)));
+  return RespondNow(WithArguments(false));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -201,12 +199,12 @@ ExtensionFunction::ResponseAction UsersPrivateAddUserFunction::Run() {
 
   // Non-owners should not be able to add users.
   if (!CanModifyUserList(browser_context())) {
-    return RespondNow(OneArgument(base::Value(false)));
+    return RespondNow(WithArguments(false));
   }
 
   std::string username = gaia::CanonicalizeEmail(parameters->email);
   if (IsExistingUser(username)) {
-    return RespondNow(OneArgument(base::Value(false)));
+    return RespondNow(WithArguments(false));
   }
 
   base::Value username_value(username);
@@ -216,7 +214,7 @@ ExtensionFunction::ResponseAction UsersPrivateAddUserFunction::Run() {
   PrefsUtil* prefs_util = delegate->GetPrefsUtil();
   bool added = prefs_util->AppendToListCrosSetting(ash::kAccountsPrefUsers,
                                                    username_value);
-  return RespondNow(OneArgument(base::Value(added)));
+  return RespondNow(WithArguments(added));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -233,7 +231,7 @@ ExtensionFunction::ResponseAction UsersPrivateRemoveUserFunction::Run() {
 
   // Non-owners should not be able to remove users.
   if (!CanModifyUserList(browser_context())) {
-    return RespondNow(OneArgument(base::Value(false)));
+    return RespondNow(WithArguments(false));
   }
 
   base::Value canonical_email(gaia::CanonicalizeEmail(parameters->email));
@@ -247,7 +245,7 @@ ExtensionFunction::ResponseAction UsersPrivateRemoveUserFunction::Run() {
       AccountId::FromUserEmail(parameters->email),
       user_manager::UserRemovalReason::LOCAL_USER_INITIATED,
       /*delegate=*/nullptr);
-  return RespondNow(OneArgument(base::Value(removed)));
+  return RespondNow(WithArguments(removed));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -260,7 +258,7 @@ UsersPrivateIsUserListManagedFunction::
     ~UsersPrivateIsUserListManagedFunction() {}
 
 ExtensionFunction::ResponseAction UsersPrivateIsUserListManagedFunction::Run() {
-  return RespondNow(OneArgument(base::Value(IsDeviceEnterpriseManaged())));
+  return RespondNow(WithArguments(IsDeviceEnterpriseManaged()));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -275,7 +273,7 @@ UsersPrivateGetCurrentUserFunction::~UsersPrivateGetCurrentUserFunction() =
 ExtensionFunction::ResponseAction UsersPrivateGetCurrentUserFunction::Run() {
   const user_manager::User* user = ash::ProfileHelper::Get()->GetUserByProfile(
       Profile::FromBrowserContext(browser_context()));
-  return user ? RespondNow(OneArgument(base::Value::FromUniquePtrValue(
+  return user ? RespondNow(WithArguments(base::Value::FromUniquePtrValue(
                     CreateApiUser(user->GetAccountId().GetUserEmail(), *user)
                         .ToValue())))
               : RespondNow(Error("No Current User"));
@@ -296,11 +294,10 @@ ExtensionFunction::ResponseAction UsersPrivateGetLoginStatusFunction::Run() {
   const bool is_screen_locked =
       session_manager::SessionManager::Get()->IsScreenLocked();
 
-  auto result = std::make_unique<base::DictionaryValue>();
-  result->SetKey("isLoggedIn", base::Value(is_logged_in));
-  result->SetKey("isScreenLocked", base::Value(is_screen_locked));
-  return RespondNow(
-      OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
+  base::Value::Dict result;
+  result.Set("isLoggedIn", base::Value(is_logged_in));
+  result.Set("isScreenLocked", base::Value(is_screen_locked));
+  return RespondNow(WithArguments(std::move(result)));
 }
 
 }  // namespace extensions
