@@ -19,9 +19,8 @@
 #include "ui/base/webui/web_ui_util.h"
 
 CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
-    : ui::MojoBubbleWebUIController(web_ui) {
-  Profile* profile = Profile::FromWebUI(web_ui);
-
+    : ui::MojoBubbleWebUIController(web_ui),
+      profile_(Profile::FromWebUI(web_ui)) {
   content::WebUIDataSource* source = content::WebUIDataSource::Create(
       chrome::kChromeUICustomizeChromeSidePanelHost);
 
@@ -36,7 +35,7 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
                       kSidePanelCustomizeChromeResourcesSize),
       IDR_SIDE_PANEL_CUSTOMIZE_CHROME_CUSTOMIZE_CHROME_HTML);
 
-  content::WebUIDataSource::Add(profile, source);
+  content::WebUIDataSource::Add(profile_, source);
 }
 
 CustomizeChromeUI::~CustomizeChromeUI() = default;
