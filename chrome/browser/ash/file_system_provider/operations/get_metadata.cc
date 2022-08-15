@@ -49,17 +49,19 @@ bool ConvertRequestValueToFileInfo(std::unique_ptr<RequestValue> value,
         std::make_unique<int64_t>(static_cast<int64_t>(*params->metadata.size));
 
   if (fields & ProvidedFileSystemInterface::METADATA_FIELD_MODIFICATION_TIME) {
-    std::string input_modification_time;
-    params->metadata.modification_time->additional_properties.GetString(
-        "value", &input_modification_time);
+    const std::string* input_modification_time =
+        params->metadata.modification_time->additional_properties.GetDict()
+            .FindString("value");
 
-    // Allow to pass invalid modification time, since there is no way to verify
-    // it easily on any earlier stage.
-    base::Time output_modification_time;
-    std::ignore = base::Time::FromString(input_modification_time.c_str(),
-                                         &output_modification_time);
-    output->modification_time =
-        std::make_unique<base::Time>(output_modification_time);
+    if (input_modification_time) {
+      // Allow to pass invalid modification time, since there is no way to
+      // verify it easily on any earlier stage.
+      base::Time output_modification_time;
+      std::ignore = base::Time::FromString(input_modification_time->c_str(),
+                                           &output_modification_time);
+      output->modification_time =
+          std::make_unique<base::Time>(output_modification_time);
+    }
   }
 
   if (fields & ProvidedFileSystemInterface::METADATA_FIELD_MIME_TYPE &&
@@ -103,9 +105,10 @@ bool ValidateIDLEntryMetadata(
   if (fields & ProvidedFileSystemInterface::METADATA_FIELD_MODIFICATION_TIME) {
     if (!metadata.modification_time)
       return false;
-    std::string input_modification_time;
-    if (!metadata.modification_time->additional_properties.GetString(
-            "value", &input_modification_time)) {
+    const std::string* input_modification_time =
+        metadata.modification_time->additional_properties.GetDict().FindString(
+            "value");
+    if (!input_modification_time) {
       return false;
     }
   }
