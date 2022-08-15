@@ -4,9 +4,11 @@
 
 package org.chromium.content.browser;
 
+import android.graphics.Point;
 import android.view.HapticFeedbackConstants;
 import android.view.View;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
@@ -257,7 +259,8 @@ public class GestureListenerManagerImpl
                 if (!consumed) break;
                 destroyPastePopup();
                 for (mIterator.rewind(); mIterator.hasNext();) {
-                    mIterator.next().onScrollUpdateGestureConsumed();
+                    Point scrollOffset = getRootScrollOffsetStruct(scrollOffsetX, scrollOffsetY);
+                    mIterator.next().onScrollUpdateGestureConsumed(scrollOffset);
                 }
                 break;
             case EventType.GESTURE_SCROLL_END:
@@ -284,6 +287,20 @@ public class GestureListenerManagerImpl
             default:
                 break;
         }
+    }
+
+    /**
+     * Returns a {@link Point} with the given x and y scroll offset values. Returns null if the
+     * values are invalid, i.e. negative.
+     *
+     * @param scrollOffsetX Horizontal scroll offset in pixels.
+     * @param scrollOffsetY Vertical scroll offset in pixels.
+     */
+    private static @Nullable Point getRootScrollOffsetStruct(
+            float scrollOffsetX, float scrollOffsetY) {
+        if (scrollOffsetX < 0 || scrollOffsetY < 0) return null;
+
+        return new Point((int) scrollOffsetX, (int) scrollOffsetY);
     }
 
     /**

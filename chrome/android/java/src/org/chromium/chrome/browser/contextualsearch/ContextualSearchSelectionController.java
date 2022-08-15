@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.contextualsearch;
 
 import android.app.Activity;
+import android.graphics.Point;
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
@@ -132,7 +133,7 @@ public class ContextualSearchSelectionController {
         }
 
         @Override
-        public void onScrollUpdateGestureConsumed() {
+        public void onScrollUpdateGestureConsumed(Point rootScrollOffset) {
             // The onScrollEnded notification is unreliable, so mark time during scroll updates too.
             // See crbug.com/600863.
             mLastScrollTimeNs = System.nanoTime();

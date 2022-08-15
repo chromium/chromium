@@ -4,6 +4,10 @@
 
 package org.chromium.content_public.browser;
 
+import android.graphics.Point;
+
+import androidx.annotation.Nullable;
+
 /**
  * An interface that is notified of events and state changes related to gesture processing
  * from content layer.
@@ -34,8 +38,11 @@ public abstract class GestureStateListener {
      * This callback is called whenever any layer is scrolled (like a frame or div). It is
      * not called when a JS touch handler consumes the event (preventDefault), it is not called
      * for JS-initiated scrolling.
+     *
+     * @param rootScrollOffset Updated root scroll offset if the scroll was consumed by the
+     *                         viewport, null otherwise.
      */
-    public void onScrollUpdateGestureConsumed() {}
+    public void onScrollUpdateGestureConsumed(@Nullable Point rootScrollOffset) {}
 
     /**
      * Called when a scroll gesture has started.
