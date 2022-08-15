@@ -2495,15 +2495,15 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     intent, IntentHandler.EXTRA_OPEN_ADDITIONAL_URLS_IN_TAB_GROUP, false);
             if (additionalUrls != null) {
                 final Tab parent = openAdditionalUrlsInTabGroup ? firstTab : null;
+                @TabLaunchType
+                int additionalUrlLaunchType = openAdditionalUrlsInTabGroup
+                        ? TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP
+                        : TabLaunchType.FROM_RESTORE;
                 for (int i = 0; i < additionalUrls.size(); i++) {
-                    // Tabs with a parent are always inserted at parent_index +1. In order for the
-                    // final order of tabs to reflect the order given in additionalUrls, we need to
-                    // iterate in reverse order.
-                    String url = parent == null ? additionalUrls.get(i)
-                                                : additionalUrls.get(additionalUrls.size() - i - 1);
+                    String url = additionalUrls.get(i);
                     LoadUrlParams copy = LoadUrlParams.copy(loadUrlParams);
                     copy.setUrl(url);
-                    tabCreator.createNewTab(copy, TabLaunchType.FROM_RESTORE, parent);
+                    tabCreator.createNewTab(copy, additionalUrlLaunchType, parent);
                 }
             }
             return firstTab;

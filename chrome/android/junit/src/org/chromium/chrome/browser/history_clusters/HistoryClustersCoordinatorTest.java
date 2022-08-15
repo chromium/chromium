@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.history_clusters;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -100,7 +101,7 @@ public class HistoryClustersCoordinatorTest {
 
         @Override
         public boolean isSeparateActivity() {
-            return true;
+            return mIsSeparateActivity;
         }
 
         @Override
@@ -156,6 +157,11 @@ public class HistoryClustersCoordinatorTest {
         public void markVisitForRemoval(ClusterVisit clusterVisit) {
             mVisitsForRemoval.add(clusterVisit);
         }
+
+        @Override
+        public boolean areTabGroupsEnabled() {
+            return mAreTabGroupsEnabled;
+        }
     }
 
     @Rule
@@ -204,6 +210,8 @@ public class HistoryClustersCoordinatorTest {
             new TestHistoryClustersDelegate();
     private List<ClusterVisit> mVisitsForRemoval = new ArrayList<>();
     private SelectionDelegate<ClusterVisit> mSelectionDelegate = new SelectionDelegate<>();
+    private boolean mIsSeparateActivity = true;
+    private boolean mAreTabGroupsEnabled = true;
 
     @Before
     public void setUp() {
@@ -463,6 +471,31 @@ public class HistoryClustersCoordinatorTest {
         endButton = viewHolder.itemView.findViewById(R.id.end_button);
         assertEquals(endButton.getContentDescription(),
                 mActivity.getString(R.string.accessibility_list_remove_button, mVisit2.getTitle()));
+    }
+
+    @Test
+    public void testMenuItemVisibility() {
+        mIsSeparateActivity = false;
+        mAreTabGroupsEnabled = false;
+        mHistoryClustersCoordinator.inflateActivityView();
+        HistoryClustersToolbar toolbar = mHistoryClustersCoordinator.getActivityContentView()
+                                                 .findViewById(R.id.selectable_list)
+                                                 .findViewById(R.id.action_bar);
+
+        assertNotNull(toolbar);
+        assertNull(toolbar.getMenu().findItem(R.id.close_menu_id));
+        assertNull(toolbar.getMenu().findItem(R.id.selection_mode_open_in_tab_group));
+
+        mIsSeparateActivity = true;
+        mAreTabGroupsEnabled = true;
+        mHistoryClustersCoordinator.inflateActivityView();
+        toolbar = mHistoryClustersCoordinator.getActivityContentView()
+                          .findViewById(R.id.selectable_list)
+                          .findViewById(R.id.action_bar);
+
+        assertNotNull(toolbar);
+        assertNotNull(toolbar.getMenu().findItem(R.id.close_menu_id));
+        assertNotNull(toolbar.getMenu().findItem(R.id.selection_mode_open_in_tab_group));
     }
 
     private <T> void fulfillPromise(Promise<T> promise, T result) {

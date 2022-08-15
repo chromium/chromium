@@ -198,6 +198,11 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener, Snac
         if (!mDelegate.isSeparateActivity()) {
             mToolbar.getMenu().removeItem(R.id.close_menu_id);
         }
+
+        if (!mDelegate.areTabGroupsEnabled()) {
+            mToolbar.getMenu().removeItem(R.id.selection_mode_open_in_tab_group);
+        }
+
         mToolbar.setInfoMenuItem(R.id.info_menu_id);
         mDelegate.shouldShowPrivacyDisclaimerSupplier().addObserver(
                 (show) -> mToolbar.updateInfoMenuItem(true, show));

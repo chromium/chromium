@@ -97,4 +97,9 @@ public interface HistoryClustersDelegate {
      * that it should remove the HistoryClusters UI.
      */
     default void onOptOut() {}
+
+    /** Whether tab group creation is enabled. */
+    default boolean areTabGroupsEnabled() {
+        return true;
+    }
 }
