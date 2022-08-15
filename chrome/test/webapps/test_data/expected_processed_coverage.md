@@ -13,3 +13,7 @@
 
 # Generated from the fourth test:
 | C | state_change_a(Dog) |  state_change_a(Chicken) |  check_b(Chicken, Green) |
+
+# Generated from fifth test
+| MWLC | state_change_a(Dog) | check_a(Dog) |
+| MWLC | state_change_a(Dog) | check_a(Chicken) |

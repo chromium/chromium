@@ -12,6 +12,7 @@ from file_reading import read_actions_file, read_enums_file
 from file_reading import read_platform_supported_actions
 from file_reading import read_unprocessed_coverage_tests_file
 from models import Action
+from models import EnumsByType
 from models import ActionsByName
 from models import ActionType
 from models import CoverageTest
@@ -80,6 +81,7 @@ class TestAnalysisTest(unittest.TestCase):
 
         actions: ActionsByName = {}
         action_base_name_to_default_param = {}
+        enums: EnumsByType = {}
         with open(actions_filename, "r", encoding="utf-8") as f, \
                 open(supported_actions_filename, "r", encoding="utf-8") \
                     as supported_actions_file, \
@@ -95,7 +97,8 @@ class TestAnalysisTest(unittest.TestCase):
         coverage_tests: List[CoverageTest] = []
         with open(coverage_filename, "r", encoding="utf-8") as f:
             coverage_tests = read_unprocessed_coverage_tests_file(
-                f.readlines(), actions, action_base_name_to_default_param)
+                f.readlines(), actions, enums,
+                action_base_name_to_default_param)
         coverage_tests = expand_parameterized_tests(coverage_tests)
 
         # Compare with expected
@@ -104,7 +107,8 @@ class TestAnalysisTest(unittest.TestCase):
                                           "expected_processed_coverage.md")
         with open(processed_filename, "r", encoding="utf-8") as f:
             expected_processed_tests = read_unprocessed_coverage_tests_file(
-                f.readlines(), actions, action_base_name_to_default_param)
+                f.readlines(), actions, enums,
+                action_base_name_to_default_param)
 
         # Hack for easy comparison and printing: transform coverage tests into
         # a Tuple[List[str], Set[TestPlatform]].

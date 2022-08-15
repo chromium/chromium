@@ -9,6 +9,7 @@ from typing import List
 import unittest
 
 from file_reading import enumerate_all_argument_combinations
+from file_reading import expand_tests_from_action_parameter_wildcards
 from file_reading import enumerate_markdown_file_lines_to_table_rows
 from file_reading import human_friendly_name_to_canonical_action_name
 from file_reading import get_tests_in_browsertest
@@ -173,9 +174,10 @@ class TestAnalysisTest(unittest.TestCase):
         with open(coverage_filename) as f:
             coverage_tsv = f.readlines()
             coverage_tests = read_unprocessed_coverage_tests_file(
-                coverage_tsv, actions, action_base_name_to_default_param)
+                coverage_tsv, actions, enums,
+                action_base_name_to_default_param)
 
-        self.assertEqual(len(coverage_tests), 4)
+        self.assertEqual(6, len(coverage_tests))
 
     def test_browsertest_detection(self):
         browsertest_filename = os.path.join(TEST_DATA_DIR, "tests_default.cc")
@@ -189,6 +191,26 @@ class TestAnalysisTest(unittest.TestCase):
             self.assertEqual(
                 {TestPlatform.LINUX, TestPlatform.CHROME_OS, TestPlatform.MAC},
                 tests_and_platforms)
+
+    def test_action_param_expansion(self):
+        enum_map: Dict[str, ArgEnum] = {
+            "EnumType": ArgEnum("EnumType", ["Value1", "Value2"], None)
+        }
+        actions: List[str] = [
+            "Action1(EnumType::All)", "Action2(EnumType::All, EnumType::All)"
+        ]
+
+        combinations = expand_tests_from_action_parameter_wildcards(
+            enum_map, actions)
+        expected = [['Action1(Value1)', 'Action2(Value1, Value1)'],
+                    ['Action1(Value2)', 'Action2(Value1, Value1)'],
+                    ['Action1(Value1)', 'Action2(Value1, Value2)'],
+                    ['Action1(Value2)', 'Action2(Value1, Value2)'],
+                    ['Action1(Value1)', 'Action2(Value2, Value1)'],
+                    ['Action1(Value2)', 'Action2(Value2, Value1)'],
+                    ['Action1(Value1)', 'Action2(Value2, Value2)'],
+                    ['Action1(Value2)', 'Action2(Value2, Value2)']]
+        self.assertCountEqual(combinations, expected)
 
 
 if __name__ == '__main__':

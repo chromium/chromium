@@ -68,7 +68,7 @@ def generate_framework_tests_and_coverage(
         actions_csv, enums, platform_supported_actions)
 
     required_coverage_tests = read_unprocessed_coverage_tests_file(
-        coverage_required_file.readlines(), actions,
+        coverage_required_file.readlines(), actions, enums,
         action_base_name_to_default_param)
 
     required_coverage_tests = expand_parameterized_tests(

@@ -59,6 +59,8 @@ When creating tests, there emerged a common scenario where a given action could 
 
 To accept arguments, list the argument [types][cuj-enums-sheet] you wish to accept in the "Argument Types" column in the actions [file][cuj-actions-sheet]. If an required argument type does not exist, please add it to that [file][cuj-enums-sheet].
 
+When a test specified as action with arguments, it can also specify `ArgType::All`, which will create a separate test for every possible value of that argument.
+
 To allow for future de-parsing of modes (when generating C++ tests), modes will always be PascalCase.
 
 ##### Default argument values
@@ -245,6 +247,8 @@ An action template without arguments specifies one action whose name matches the
 An action template with arguments that can take N * M * (...etc) values for all combinations of each argument type specified. The action names are the concatenations of the template name and the corresponding value name, separated by an underscore (`_`). For example, the `clear_app_badge` template generates the `clear_app_badge_SiteA` and `clear_app_badge_SiteB` actions. A three-argument action like `install_policy_app` may generate many actions, for example: `install_policy_app_SiteA_Windowed_NoShortcut`, `install_policy_app_SiteA_Windowed_Shortcut`, `install_policy_app_SiteA_Browser_NoShortcut`, etc
 
 The templates also support [parameterizing](#parameterized-action) an action, which causes any test that uses the action to be expanded into multiple tests, one per specified output action. Arguments carry over into the output action by using bash-style string replacement of argument values. If an output action doesn't support a given argument value then that parameterization is simply excluded during test generation.
+
+Similarly, the templates support specifying `ArgType::All` as an argument, signifying that the test can be expanded into multiple tests, one for each argument value. This is also supported in the parameterized actions field.
 
 To see any "skipped" parameterized output functions, please run the script with the `-v` option to see the log.
 

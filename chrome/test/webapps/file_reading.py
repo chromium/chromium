@@ -19,6 +19,7 @@ from models import ArgEnum
 from models import ActionType
 from models import ActionsByName
 from models import CoverageTest
+from models import EnumsByType
 from models import PartialAndFullCoverageByBaseName
 from models import TestIdsByPlatform
 from models import TestIdsByPlatformSet
@@ -64,6 +65,61 @@ def enumerate_all_argument_combinations(argument_types: List[ArgEnum]
     for combination in sub_combinations:
         for value in last_type.values:
             output.append(combination + [value])
+    return output
+
+
+def expand_wildcards_in_action(action: str, enums: EnumsByType) -> List[str]:
+    """
+    Takes an action string that could contain enum wildcards, and returns the
+    list of all combinations of actions with all wildcards fully expanded.
+
+    Example input:
+    - action: 'Action(EnumType::All, EnumType::All)'
+    - enums: {'EnumType': EnumType('EnumType', ['Value1', 'Value2'])}
+    Example output:
+    - ['Action(Value1, Value1)', 'Action(Value1, Value2)',
+       'Action(Value2, Value1)', 'Action(Value2, Value2)']
+    """
+    if "::All" not in action:
+        return [action]
+    output: List[str] = []
+    for type, enum in enums.items():
+        wildcard_str = type + "::All"
+        if wildcard_str in action:
+            prefix = action[:action.index(wildcard_str)]
+            postfix = action[action.index(wildcard_str) + len(wildcard_str):]
+            for value in enum.values:
+                output.extend(
+                    expand_wildcards_in_action(prefix + value + postfix,
+                                               enums))
+    return output
+
+
+def expand_tests_from_action_parameter_wildcards(enums: EnumsByType,
+                                                 actions: List[str]
+                                                 ) -> List[List[str]]:
+    """
+    Takes a list of actions for a test that could contain argument wildcards.
+    Returns a list of tests the expand out all combination of argument
+    wildcards.
+    Example input:
+    - actions: ['Action1(EnumType::All), Action2(EnumType::All)']
+    - enums: {'EnumType': EnumType('EnumType', ['Value1', 'Value2'])}
+    Example output:
+    - [['Action1(Value1)', 'Action2(Value1)'],
+       ['Action1(Value1)', 'Action2(Value2)'],
+       ['Action1(Value2)', 'Action2(Value1)'],
+       ['Action1(Value2)', 'Action2(Value2)']]
+    """
+    if not actions:
+        return [[]]
+    current_elements: List[str] = expand_wildcards_in_action(actions[0], enums)
+    output: List[List[str]] = []
+    following_output = expand_tests_from_action_parameter_wildcards(
+        enums, actions[1:])
+    for following_list in following_output:
+        for element in current_elements:
+            output.append([element] + following_list)
     return output
 
 
@@ -159,10 +215,10 @@ def read_platform_supported_actions(csv_file
     return actions_base_name_to_coverage
 
 
-def read_enums_file(enums_file_lines: List[str]) -> Dict[str, ArgEnum]:
+def read_enums_file(enums_file_lines: List[str]) -> EnumsByType:
     """Reads the enums markdown file.
     """
-    enums_by_type: Dict[str, ArgEnum] = {}
+    enums_by_type: EnumsByType = {}
     for i, row in enumerate_markdown_file_lines_to_table_rows(
             enums_file_lines):
         if len(row) < MIN_COLUMNS_ENUMS_FILE:
@@ -321,13 +377,19 @@ def read_actions_file(
             for human_friendly_action_name in output_unresolved_action_names:
                 bash_replaced_name = resolve_bash_style_replacement(
                     human_friendly_action_name, arg_combination)
+
+                # Handle any wildcards in the actions
+                wildcart_expanded_actions = expand_wildcards_in_action(
+                    bash_replaced_name, enums_by_type)
+
                 # Output actions for parameterized actions are not allowed to
                 # use 'defaults', and the action author must explicitly
                 # populate all arguments with bash-style replacements or static
                 # values.
-                output_canonical_action_names.append(
-                    human_friendly_name_to_canonical_action_name(
-                        bash_replaced_name, {}))
+                for action_name in wildcart_expanded_actions:
+                    output_canonical_action_names.append(
+                        human_friendly_name_to_canonical_action_name(
+                            action_name, {}))
 
             if name in actions_by_name:
                 raise ValueError(f"Cannot add duplicate action {name} on row "
@@ -374,6 +436,7 @@ def read_actions_file(
 
 def read_unprocessed_coverage_tests_file(
         coverage_file_lines: List[str], actions_by_name: ActionsByName,
+        enums_by_type: EnumsByType,
         action_base_name_to_default_arg: Dict[str, str]) -> List[CoverageTest]:
     """Reads the coverage tests markdown file.
 
@@ -402,21 +465,30 @@ def read_unprocessed_coverage_tests_file(
         platforms = TestPlatform.get_platforms_from_chars(row[0])
         if len(platforms) == 0:
             raise ValueError(f"Row {i} has invalid platforms: {row[0]}")
-        actions = []
-        for action_name in row[1:]:
-            action_name = action_name.strip()
-            if action_name == "":
-                continue
-            action_name = human_friendly_name_to_canonical_action_name(
-                action_name, action_base_name_to_default_arg)
-            if action_name not in actions_by_name:
-                missing_actions.append(action_name)
-                logging.error(f"Could not find action on row {i!r}: "
-                              f"{action_name}")
-                continue
-            actions.append(actions_by_name[action_name])
-        coverage_test = CoverageTest(actions, platforms)
-        required_coverage_tests.append(coverage_test)
+        # Filter out all blank actions.
+        original_action_strs = [
+            action_str for action_str in row[1:] if action_str.strip()
+        ]
+        # If any of the actions had parameter wildcards (like
+        # "WindowOption::All"), then this expands those into multiple tests.
+        expanded_tests = expand_tests_from_action_parameter_wildcards(
+            enums_by_type, original_action_strs)
+        for test_actions in expanded_tests:
+            actions: List[Action] = []
+            for action_name in test_actions:
+                action_name = action_name.strip()
+                if action_name == "":
+                    continue
+                action_name = human_friendly_name_to_canonical_action_name(
+                    action_name, action_base_name_to_default_arg)
+                if action_name not in actions_by_name:
+                    missing_actions.append(action_name)
+                    logging.error(f"Could not find action on row {i!r}: "
+                                  f"{action_name}")
+                    continue
+                actions.append(actions_by_name[action_name])
+            coverage_test = CoverageTest(actions, platforms)
+            required_coverage_tests.append(coverage_test)
     if missing_actions:
         raise ValueError(f"Actions missing from actions dictionary: "
                          f"{', '.join(missing_actions)}")

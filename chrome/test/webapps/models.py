@@ -314,5 +314,6 @@ TestIdsByPlatformSet = Dict[FrozenSet[TestPlatform], Set[TestId]]
 CoverageTestsByPlatformSet = Dict[FrozenSet[TestPlatform], List[CoverageTest]]
 CoverageTestsByPlatform = Dict[TestPlatform, List[CoverageTest]]
 ActionsByName = Dict[str, Action]
+EnumsByType = Dict[str, ArgEnum]
 PartialAndFullCoverageByBaseName = Dict[
     str, Tuple[Set[TestPlatform], Set[TestPlatform]]]
