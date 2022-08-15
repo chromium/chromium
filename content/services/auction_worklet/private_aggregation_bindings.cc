@@ -140,14 +140,16 @@ void PrivateAggregationBindings::SendHistogramReport(
   v8::Local<v8::Value> js_bucket;
   v8::Local<v8::Value> js_value;
 
-  if (!dict.Get("bucket", &js_bucket) || js_bucket.IsEmpty()) {
+  if (!dict.Get("bucket", &js_bucket) || js_bucket.IsEmpty() ||
+      js_bucket->IsNullOrUndefined()) {
     isolate->ThrowException(
         v8::Exception::TypeError(v8_helper->CreateStringFromLiteral(
             "Invalid or missing bucket in sendHistogramReport argument")));
     return;
   }
 
-  if (!dict.Get("value", &js_value) || js_value.IsEmpty()) {
+  if (!dict.Get("value", &js_value) || js_value.IsEmpty() ||
+      js_value->IsNullOrUndefined()) {
     isolate->ThrowException(
         v8::Exception::TypeError(v8_helper->CreateStringFromLiteral(
             "Invalid or missing value in sendHistogramReport argument")));
