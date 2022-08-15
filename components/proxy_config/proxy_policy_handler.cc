@@ -276,11 +276,13 @@ void ProxyPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
 const base::Value* ProxyPolicyHandler::GetProxyPolicyValue(
     const base::Value* value,
     const char* policy_name) {
-  const base::DictionaryValue* settings;
-  if (!value || !value->GetAsDictionary(&settings))
+  if (!value)
+    return nullptr;
+  const base::Value::Dict* settings = value->GetIfDict();
+  if (!settings)
     return nullptr;
 
-  const base::Value* policy_value = settings->FindPath(policy_name);
+  const base::Value* policy_value = settings->Find(policy_name);
   if (!policy_value || policy_value->is_none())
     return nullptr;
   const std::string* tmp = policy_value->GetIfString();
