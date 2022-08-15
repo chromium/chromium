@@ -17,8 +17,7 @@
 @interface KeyboardObserverHelper ()
 
 // Flag that indicates if the keyboard is on screen.
-@property(nonatomic, readwrite, getter=isKeyboardOnScreen)
-    BOOL keyboardOnScreen;
+@property(nonatomic, readwrite, getter=isKeyboardVisible) BOOL keyboardVisible;
 
 // Current keyboard state.
 @property(nonatomic, readwrite, getter=getKeyboardState)
@@ -131,14 +130,19 @@
   return nil;
 }
 
++ (UIScreen*)keyboardScreen {
+  UIView* keyboardView = [self keyboardView];
+  return keyboardView.window.screen;
+}
+
 #pragma mark - Keyboard Notifications
 
 - (void)keyboardWillShow:(NSNotification*)notification {
-  self.keyboardOnScreen = YES;
+  self.keyboardVisible = YES;
 }
 
 - (void)keyboardWillHide:(NSNotification*)notification {
-  self.keyboardOnScreen = NO;
+  self.keyboardVisible = NO;
 }
 
 - (void)keyboardWillDidChangeFrame:(NSNotification*)notification {

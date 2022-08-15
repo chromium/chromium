@@ -40,14 +40,17 @@ typedef struct {
 // Adds consumer of KeyboardObserverHelper.
 - (void)addConsumer:(id<KeyboardObserverHelperConsumer>)consumer;
 
-// Flag that indicates if the keyboard is on screen.
-// TODO(crbug.com/974226): look into deprecating keyboardOnScreen for
-// isKeyboardVisible.
-@property(nonatomic, readonly, getter=isKeyboardOnScreen) BOOL keyboardOnScreen;
+// Flag that indicates if the keyboard is visible.
+@property(nonatomic, readonly, getter=isKeyboardVisible) BOOL keyboardVisible;
 
 // Returns keyboard's height if it covers the full width of the display,
 // otherwise returns 0. Note: This includes the keyboard accessory's height.
+// See also: `keyboardScreen`.
 @property(nonatomic, readonly) CGFloat visibleKeyboardHeight;
+
+// Screen where the keyboard is displayed. For use in multi-screen set-ups, like
+// Stage Manager.
++ (UIScreen*)keyboardScreen;
 
 @end
 
