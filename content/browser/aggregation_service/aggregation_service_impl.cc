@@ -10,8 +10,10 @@
 #include <utility>
 #include <vector>
 
+#include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
@@ -144,18 +146,12 @@ void AggregationServiceImpl::ScheduleReport(
 
 void AggregationServiceImpl::OnScheduledReportTimeReached(
     std::vector<AggregationServiceStorage::RequestAndId> requests_and_ids) {
-  for (AggregationServiceStorage::RequestAndId& elem : requests_and_ids) {
-    GURL reporting_url = elem.request.GetReportingUrl();
-    AssembleReport(
-        std::move(elem.request),
-        base::BindOnce(
-            &AggregationServiceImpl::OnReportAssemblyComplete,
-            // `base::Unretained` is safe as the assembler is owned by `this`.
-            base::Unretained(this), elem.id, std::move(reporting_url)));
-  }
+  AssembleAndSendReports(std::move(requests_and_ids),
+                         /*done=*/base::DoNothing());
 }
 
 void AggregationServiceImpl::OnReportAssemblyComplete(
+    base::OnceClosure done,
     AggregationServiceStorage::RequestId request_id,
     GURL reporting_url,
     absl::optional<AggregatableReport> report,
@@ -163,6 +159,7 @@ void AggregationServiceImpl::OnReportAssemblyComplete(
   DCHECK_EQ(report.has_value(),
             status == AggregatableReportAssembler::AssemblyStatus::kOk);
   if (!report.has_value()) {
+    std::move(done).Run();
     scheduler_->NotifyInProgressRequestFailed(request_id);
     return;
   }
@@ -172,12 +169,15 @@ void AggregationServiceImpl::OnReportAssemblyComplete(
              base::BindOnce(
                  &AggregationServiceImpl::OnReportSendingComplete,
                  // `base::Unretained` is safe as the sender is owned by `this`.
-                 base::Unretained(this), request_id));
+                 base::Unretained(this), std::move(done), request_id));
 }
 
 void AggregationServiceImpl::OnReportSendingComplete(
+    base::OnceClosure done,
     AggregationServiceStorage::RequestId request_id,
     AggregatableReportSender::RequestStatus status) {
+  std::move(done).Run();
+
   if (status == AggregatableReportSender::RequestStatus::kOk) {
     scheduler_->NotifyInProgressRequestSucceeded(request_id);
   } else {
@@ -190,6 +190,51 @@ void AggregationServiceImpl::SetPublicKeysForTesting(
     const PublicKeyset& keyset) {
   storage_.AsyncCall(&AggregationServiceStorage::SetPublicKeys)
       .WithArgs(url, keyset);
+}
+
+void AggregationServiceImpl::AssembleAndSendReports(
+    std::vector<AggregationServiceStorage::RequestAndId> requests_and_ids,
+    base::RepeatingClosure done) {
+  for (AggregationServiceStorage::RequestAndId& elem : requests_and_ids) {
+    GURL reporting_url = elem.request.GetReportingUrl();
+    AssembleReport(
+        std::move(elem.request),
+        base::BindOnce(
+            &AggregationServiceImpl::OnReportAssemblyComplete,
+            // `base::Unretained` is safe as the assembler is owned by `this`.
+            base::Unretained(this), done, elem.id, std::move(reporting_url)));
+  }
+}
+
+void AggregationServiceImpl::GetPendingReportRequestsForWebUI(
+    base::OnceCallback<
+        void(std::vector<AggregationServiceStorage::RequestAndId>)> callback) {
+  storage_.AsyncCall(&AggregationServiceStorage::GetRequestsReportingOnOrBefore)
+      .WithArgs(/*not_after_time=*/base::Time::Max())
+      .Then(std::move(callback));
+}
+
+void AggregationServiceImpl::SendReportsForWebUI(
+    const std::vector<AggregationServiceStorage::RequestId>& ids,
+    base::OnceClosure reports_sent_callback) {
+  storage_.AsyncCall(&AggregationServiceStorage::GetRequests)
+      .WithArgs(ids)
+      .Then(base::BindOnce(
+          &AggregationServiceImpl::OnGetRequestsToSendFromWebUI,
+          weak_factory_.GetWeakPtr(), std::move(reports_sent_callback)));
+}
+
+void AggregationServiceImpl::OnGetRequestsToSendFromWebUI(
+    base::OnceClosure reports_sent_callback,
+    std::vector<AggregationServiceStorage::RequestAndId> requests_and_ids) {
+  if (requests_and_ids.empty()) {
+    std::move(reports_sent_callback).Run();
+    return;
+  }
+
+  auto barrier = base::BarrierClosure(requests_and_ids.size(),
+                                      std::move(reports_sent_callback));
+  AssembleAndSendReports(std::move(requests_and_ids), std::move(barrier));
 }
 
 }  // namespace content

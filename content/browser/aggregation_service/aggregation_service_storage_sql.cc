@@ -527,6 +527,38 @@ AggregationServiceStorageSql::GetRequestsReportingOnOrBefore(
   return result;
 }
 
+std::vector<AggregationServiceStorage::RequestAndId>
+AggregationServiceStorageSql::GetRequests(
+    const std::vector<AggregationServiceStorage::RequestId>& ids) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!EnsureDatabaseOpen(DbCreationPolicy::kFailIfAbsent))
+    return {};
+
+  static constexpr char kGetRequestSql[] =
+      "SELECT request_id,request_proto FROM report_requests "
+      "WHERE request_id=?";
+  sql::Statement statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kGetRequestSql));
+
+  std::vector<AggregationServiceStorage::RequestAndId> result;
+  for (AggregationServiceStorage::RequestId id : ids) {
+    statement.Reset(/*clear_bound_vars=*/true);
+    statement.BindInt64(0, *id);
+    if (!statement.Step())
+      continue;
+    absl::optional<AggregatableReportRequest> parsed_request =
+        AggregatableReportRequest::Deserialize(statement.ColumnBlob(1));
+    if (!parsed_request)
+      continue;
+    result.push_back(AggregationServiceStorage::RequestAndId{
+        .request = std::move(*parsed_request),
+        .id = id,
+    });
+  }
+  return result;
+}
+
 absl::optional<base::Time>
 AggregationServiceStorageSql::AdjustOfflineReportTimes(
     base::Time now,

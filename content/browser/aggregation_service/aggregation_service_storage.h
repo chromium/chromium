@@ -71,11 +71,16 @@ class AggregationServiceStorage {
       base::Time strictly_after_time) = 0;
 
   // Returns requests with report times on or before `not_after_time`. The
-  // returned reports are ordered by report time.
+  // returned requests are ordered by report time.
   // TODO(crbug.com/1340046): Limit the number of in-progress reports kept in
   // memory at the same time.
   virtual std::vector<RequestAndId> GetRequestsReportingOnOrBefore(
       base::Time not_after_time) = 0;
+
+  // Returns the requests with the given IDs. Empty vector is returned if `ids`
+  // is empty.
+  virtual std::vector<RequestAndId> GetRequests(
+      const std::vector<RequestId>& ids) = 0;
 
   // Adjusts the report time of all reports with report times strictly before
   // `now`. Each new report time is `now` + a random delay. The random delay for

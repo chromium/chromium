@@ -4,6 +4,7 @@
 
 #include "content/browser/aggregation_service/aggregation_service_impl.h"
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <map>
@@ -18,6 +19,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
@@ -29,11 +31,17 @@
 #include "content/public/test/browser_task_environment.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {
+
+namespace {
+using aggregation_service::RequestIdIs;
+using testing::ElementsAre;
+}  // namespace
 
 // TODO(alexmt): Consider rewriting these tests using gmock.
 
@@ -49,6 +57,11 @@ class TestAggregatableReportAssembler : public AggregatableReportAssembler {
   void AssembleReport(AggregatableReportRequest request,
                       AssemblyCallback callback) override {
     callbacks_.emplace(unique_id_counter_++, std::move(callback));
+
+    if (callbacks_.size() < min_requests_count_)
+      return;
+
+    wait_loop_.Quit();
   }
 
   void TriggerResponse(int64_t report_id,
@@ -61,9 +74,19 @@ class TestAggregatableReportAssembler : public AggregatableReportAssembler {
     callbacks_.erase(report_id);
   }
 
+  void WaitForRequests(size_t num_requests) {
+    min_requests_count_ = num_requests;
+    if (callbacks_.size() >= num_requests)
+      return;
+    wait_loop_.Run();
+  }
+
  private:
   int64_t unique_id_counter_ = 0;
   std::map<int64_t, AssemblyCallback> callbacks_;
+
+  size_t min_requests_count_ = 0;
+  base::RunLoop wait_loop_;
 };
 
 class TestAggregatableReportSender : public AggregatableReportSender {
@@ -209,6 +232,12 @@ class AggregationServiceImplTest : public testing::Test {
 
   void ScheduleReport(AggregatableReportRequest request) {
     service()->ScheduleReport(std::move(request));
+  }
+
+  void StoreReport(AggregatableReportRequest request) {
+    service()
+        ->storage_.AsyncCall(&AggregationServiceStorage::StoreRequest)
+        .WithArgs(std::move(request));
   }
 
   AggregationServiceImpl* service() { return service_impl_.get(); }
@@ -451,6 +480,34 @@ TEST_F(AggregationServiceImplTest,
       scheduler()
           ->WasRequestSuccessful(AggregationServiceStorage::RequestId(2))
           .value());
+}
+
+TEST_F(AggregationServiceImplTest, GetPendingReportRequestsForWebUI) {
+  StoreReport(aggregation_service::CreateExampleRequest());
+  StoreReport(aggregation_service::CreateExampleRequest());
+
+  base::RunLoop run_loop;
+  service()->GetPendingReportRequestsForWebUI(base::BindLambdaForTesting(
+      [&](std::vector<AggregationServiceStorage::RequestAndId>
+              requests_and_ids) {
+        // IDs autoincrement from 1.
+        EXPECT_THAT(
+            requests_and_ids,
+            ElementsAre(RequestIdIs(AggregationServiceStorage::RequestId(1)),
+                        RequestIdIs(AggregationServiceStorage::RequestId(2))));
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_F(AggregationServiceImplTest, SendReportsForWebUI) {
+  StoreReport(aggregation_service::CreateExampleRequest());
+
+  // IDs autoincrement from 1.
+  service()->SendReportsForWebUI({AggregationServiceStorage::RequestId(1)},
+                                 base::DoNothing());
+
+  assembler()->WaitForRequests(/*num_requests=*/1);
 }
 
 }  // namespace content

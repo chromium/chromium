@@ -85,6 +85,10 @@ std::vector<uint8_t> DecryptPayloadWithHpke(
     const EVP_HPKE_KEY& key,
     const std::string& expected_serialized_shared_info);
 
+MATCHER_P(RequestIdIs, matcher, "") {
+  return ExplainMatchResult(matcher, arg.id, result_listener);
+}
+
 }  // namespace aggregation_service
 
 // The strings "ABCD1234" and "EFGH5678", Base64-decoded to bytes. Note that
@@ -147,6 +151,19 @@ class MockAggregationService : public AggregationService {
   MOCK_METHOD(void,
               ScheduleReport,
               (AggregatableReportRequest report_request),
+              (override));
+
+  MOCK_METHOD(
+      void,
+      GetPendingReportRequestsForWebUI,
+      (base::OnceCallback<
+          void(std::vector<AggregationServiceStorage::RequestAndId>)> callback),
+      (override));
+
+  MOCK_METHOD(void,
+              SendReportsForWebUI,
+              (const std::vector<AggregationServiceStorage::RequestId>& ids,
+               base::OnceClosure reports_sent_callback),
               (override));
 };
 
