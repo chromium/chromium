@@ -6042,7 +6042,6 @@ crbug.com/1222097 [ Mac ] external/wpt/html/semantics/embedded-content/media-ele
 crbug.com/1231989 [ Linux ] external/wpt/html/cross-origin-embedder-policy/shared-workers.https.html [ Failure Pass ]
 
 # Sheriff 2021-07-28
-crbug.com/1233781 http/tests/serviceworker/window-close-during-registration.html [ Failure Pass ]
 crbug.com/1234057 external/wpt/css/css-paint-api/no-op-animation.https.html [ Failure Pass ]
 
 # Temporarily disabling progress based worklet animation tests.
