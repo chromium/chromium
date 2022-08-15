@@ -154,7 +154,11 @@ class MediaFoundationRendererTest : public testing::Test {
   }
 
  protected:
-  base::win::ScopedCOMInitializer com_initializer_;
+  // IMF* interfaces (e.g. IMediaProtectionPMPServer or
+  // IMFContentDecryptionModule) may require an MTA to run successfully.
+  base::win::ScopedCOMInitializer com_initializer_{
+      base::win::ScopedCOMInitializer::kMTA};
+
   base::test::TaskEnvironment task_environment_;
   base::MockOnceCallback<void(bool)> set_cdm_cb_;
   base::MockOnceCallback<void(PipelineStatus)> renderer_init_cb_;
