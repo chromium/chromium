@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <string>
+#include <tuple>
 #include <utility>
 
 #include "ipcz/ipcz.h"

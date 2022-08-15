@@ -5,6 +5,7 @@
 #include "ipcz/router_link_state.h"
 
 #include <cstring>
+#include <limits>
 
 #include "ipcz/link_side.h"
 
