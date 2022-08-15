@@ -6335,6 +6335,21 @@
             ]
         }
     ],
+    "NotifyJavaSpuriouslyToMeasurePerf": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "NotifyJavaSpuriouslyToMeasurePerf"
+                    ]
+                }
+            ]
+        }
+    ],
     "NtpRealboxDesignUpdates": [
         {
             "platforms": [

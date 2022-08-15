@@ -32,8 +32,8 @@ using base::android::ConvertUTF16ToJavaString;
 
 namespace features {
 
-const base::Feature kNotifyJavaSupriouslyToMeasurePerf{
-    "NotifyJavaSupriouslyToMeasurePerf", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kNotifyJavaSpuriouslyToMeasurePerf{
+    "NotifyJavaSpuriouslyToMeasurePerf", base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace features
 
@@ -157,7 +157,7 @@ void WebContentsObserverProxy::DidStartNavigation(
         AttachCurrentThread(), java_observer_,
         navigation_handle->GetJavaNavigationHandle());
   } else if (base::FeatureList::IsEnabled(
-                 features::kNotifyJavaSupriouslyToMeasurePerf)) {
+                 features::kNotifyJavaSpuriouslyToMeasurePerf)) {
     Java_WebContentsObserverProxy_didStartNavigationNoop(
         AttachCurrentThread(), java_observer_,
         navigation_handle->GetJavaNavigationHandle());
