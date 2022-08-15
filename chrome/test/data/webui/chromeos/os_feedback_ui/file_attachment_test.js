@@ -5,7 +5,10 @@
 import 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-lite.js';
 import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js';
 
+import {FakeFeedbackServiceProvider} from 'chrome://os-feedback/fake_feedback_service_provider.js';
+import {FeedbackAppPreSubmitAction} from 'chrome://os-feedback/feedback_types.js';
 import {FileAttachmentElement} from 'chrome://os-feedback/file_attachment.js';
+import {setFeedbackServiceProviderForTesting} from 'chrome://os-feedback/mojo_interface_provider.js';
 import {mojoString16ToString} from 'chrome://resources/ash/common/mojo_utils.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 
@@ -21,8 +24,13 @@ export function fileAttachmentTestSuite() {
   /** @type {?FileAttachmentElement} */
   let page = null;
 
+  /** @type {?FakeFeedbackServiceProvider} */
+  let feedbackServiceProvider;
+
   setup(() => {
     document.body.innerHTML = '';
+    feedbackServiceProvider = new FakeFeedbackServiceProvider();
+    setFeedbackServiceProviderForTesting(feedbackServiceProvider);
   });
 
   teardown(() => {
@@ -57,6 +65,17 @@ export function fileAttachmentTestSuite() {
     const element = getElement(selector);
     assertTrue(!!element);
     return element.textContent.trim();
+  }
+
+  /**
+   * @param {number} callCounts
+   * @param {FeedbackAppPreSubmitAction} action
+   * @private
+   */
+  function verifyRecordPreSubmitActionCallCount(callCounts, action) {
+    assertEquals(
+        callCounts,
+        feedbackServiceProvider.getRecordPreSubmitActionCallCount(action));
   }
 
   // Test the page is loaded with expected HTML elements.
@@ -301,6 +320,8 @@ export function fileAttachmentTestSuite() {
   // focus on the close dialog icon button.
   test('selectedImagePreviewDialog', async () => {
     await initializePage();
+    verifyRecordPreSubmitActionCallCount(
+        0, FeedbackAppPreSubmitAction.kViewedImage);
     const fakeData = [12, 11, 99];
 
     /** @type {!File} */
@@ -327,6 +348,9 @@ export function fileAttachmentTestSuite() {
     const imageClickPromise = eventToPromise('click', imageButton);
     imageButton.click();
     await imageClickPromise;
+
+    verifyRecordPreSubmitActionCallCount(
+        1, FeedbackAppPreSubmitAction.kViewedImage);
 
     // The preview dialog's title should be set properly.
     assertEquals('fake.png', getElementContent('#modalDialogTitleText'));

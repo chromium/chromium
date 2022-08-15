@@ -5880,6 +5880,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Feedback.ChromeOSApp.ViewedImage" units="boolean"
+    expires_after="2023-07-27">
+  <owner>longbowei@google.com</owner>
+  <owner>xiangdongkong@google.com</owner>
+  <owner>cros-feedback-app@google.com</owner>
+  <summary>
+    Record number of times the user viewed the attached image. Fires when user
+    clicks the thumbnail and views the larger image.
+  </summary>
+</histogram>
+
+<histogram name="Feedback.ChromeOSApp.ViewedMetrics" units="boolean"
+    expires_after="2023-07-27">
+  <owner>longbowei@google.com</owner>
+  <owner>xiangdongkong@google.com</owner>
+  <owner>cros-feedback-app@google.com</owner>
+  <summary>
+    Record number of times the user viewed the metrics. Fires when user clicks
+    metrics link and views metrics.
+  </summary>
+</histogram>
+
 <histogram name="Feedback.ChromeOSApp.ViewedScreenshot" units="boolean"
     expires_after="2023-07-27">
   <owner>longbowei@google.com</owner>
@@ -5888,6 +5910,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     Record number of times the user viewed the screenshot. Fires when user
     clicks the thumbnail on and views the larger screenshot.
+  </summary>
+</histogram>
+
+<histogram name="Feedback.ChromeOSApp.ViewedSystemAndAppInfo" units="boolean"
+    expires_after="2023-07-27">
+  <owner>longbowei@google.com</owner>
+  <owner>xiangdongkong@google.com</owner>
+  <owner>cros-feedback-app@google.com</owner>
+  <summary>
+    Record number of times the user viewed the system and app information. Fires
+    when system and app info link is clicked.
   </summary>
 </histogram>
 

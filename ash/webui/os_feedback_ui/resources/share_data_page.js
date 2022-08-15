@@ -316,13 +316,19 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
     const sysInfoLink = this.shadowRoot.querySelector('#sysInfoLink');
     // Setting href causes <a> tag to display as link.
     sysInfoLink.setAttribute('href', '#');
-    sysInfoLink.addEventListener(
-        'click', (e) => void this.handleOpenSystemInfoDialog_(e));
+    sysInfoLink.addEventListener('click', (e) => {
+      this.handleOpenSystemInfoDialog_(e);
+      this.feedbackServiceProvider_.recordPreSubmitAction(
+          FeedbackAppPreSubmitAction.kViewedSystemAndAppInfo);
+    });
 
     const histogramsLink = this.shadowRoot.querySelector('#histogramsLink');
     histogramsLink.setAttribute('href', '#');
-    histogramsLink.addEventListener(
-        'click', (e) => void this.handleOpenMetricsDialog_(e));
+    histogramsLink.addEventListener('click', (e) => {
+      this.handleOpenMetricsDialog_(e);
+      this.feedbackServiceProvider_.recordPreSubmitAction(
+          FeedbackAppPreSubmitAction.kViewedMetrics);
+    });
   }
 
   /** @private */

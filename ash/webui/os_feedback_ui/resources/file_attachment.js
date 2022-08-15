@@ -15,7 +15,8 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {AttachedFile} from './feedback_types.js';
+import {AttachedFile, FeedbackAppPreSubmitAction, FeedbackServiceProviderInterface} from './feedback_types.js';
+import {getFeedbackServiceProvider} from './mojo_interface_provider.js';
 
 /**
  * @fileoverview
@@ -80,6 +81,9 @@ export class FileAttachmentElement extends FileAttachmentElementBase {
      * @protected {boolean}
      */
     this.hasSelectedAFile_;
+
+    /** @private {!FeedbackServiceProviderInterface} */
+    this.feedbackServiceProvider_ = getFeedbackServiceProvider();
   }
 
   ready() {
@@ -155,6 +159,8 @@ export class FileAttachmentElement extends FileAttachmentElementBase {
   handleSelectedImageClick_() {
     this.$.selectedImageDialog.showModal();
     this.$.closeDialogButton.focus();
+    this.feedbackServiceProvider_.recordPreSubmitAction(
+        FeedbackAppPreSubmitAction.kViewedImage);
   }
 
   /** @protected */

@@ -20,6 +20,11 @@ constexpr char kFeedbackAppIncludedScreenshot[] =
     "Feedback.ChromeOSApp.IncludedScreenshot";
 constexpr char kFeedbackAppViewedScreenshot[] =
     "Feedback.ChromeOSApp.ViewedScreenshot";
+constexpr char kFeedbackAppViewedImage[] = "Feedback.ChromeOSApp.ViewedImage";
+constexpr char kFeedbackAppViewedMetrics[] =
+    "Feedback.ChromeOSApp.ViewedMetrics";
+constexpr char kFeedbackAppViewedSystemAndAppInfo[] =
+    "Feedback.ChromeOSApp.ViewedSystemAndAppInfo";
 constexpr char kFeedbackAppCanContactUser[] =
     "Feedback.ChromeOSApp.CanContactUser";
 constexpr char kFeedbackAppIncludedFile[] = "Feedback.ChromeOSApp.IncludedFile";

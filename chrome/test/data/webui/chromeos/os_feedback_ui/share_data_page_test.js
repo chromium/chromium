@@ -594,31 +594,39 @@ export function shareDataPageTestSuite() {
   });
 
   /**
-   * Test that feedbackServiceProvider.openMetricsDialog is called
-   * when #histogramsLink ("metrics") link is clicked.
+   * Test that openMetricsDialog and recordPreSubmitAction are called when
+   * #histogramsLink ("metrics") link is clicked.
    */
   test('openMetricsDialog', async () => {
     await initializePage();
 
     assertEquals(0, feedbackServiceProvider.getOpenMetricsDialogCallCount());
+    verifyRecordPreSubmitActionCallCount(
+        0, FeedbackAppPreSubmitAction.kViewedMetrics);
 
     getElement('#histogramsLink').click();
 
     assertEquals(1, feedbackServiceProvider.getOpenMetricsDialogCallCount());
+    verifyRecordPreSubmitActionCallCount(
+        1, FeedbackAppPreSubmitAction.kViewedMetrics);
   });
 
   /**
-   * Test that feedbackServiceProvider.openSystemInfoDialog is called
-   * when #sysInfoLink ("system and app info") link is clicked.
+   * Test that openSystemInfoDialog and recordPreSubmitAction are called when
+   * #sysInfoLink ("system and app info") link is clicked.
    */
   test('openSystemInfoDialog', async () => {
     await initializePage();
 
     assertEquals(0, feedbackServiceProvider.getOpenSystemInfoDialogCallCount());
+    verifyRecordPreSubmitActionCallCount(
+        0, FeedbackAppPreSubmitAction.kViewedSystemAndAppInfo);
 
     getElement('#sysInfoLink').click();
 
     assertEquals(1, feedbackServiceProvider.getOpenSystemInfoDialogCallCount());
+    verifyRecordPreSubmitActionCallCount(
+        1, FeedbackAppPreSubmitAction.kViewedSystemAndAppInfo);
   });
 
   /**

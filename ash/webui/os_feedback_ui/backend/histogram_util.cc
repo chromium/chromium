@@ -17,8 +17,23 @@ void EmitFeedbackAppPostSubmitAction(
 }
 
 void EmitFeedbackAppPreSubmitAction(mojom::FeedbackAppPreSubmitAction action) {
-  // TODO(longbowei) Add preSubmit actions and use switch case statement.
-  base::UmaHistogramBoolean(kFeedbackAppViewedScreenshot, true);
+  switch (action) {
+    case mojom::FeedbackAppPreSubmitAction::kViewedScreenshot:
+      base::UmaHistogramBoolean(kFeedbackAppViewedScreenshot, true);
+      break;
+    case mojom::FeedbackAppPreSubmitAction::kViewedImage:
+      base::UmaHistogramBoolean(kFeedbackAppViewedImage, true);
+      break;
+    case mojom::FeedbackAppPreSubmitAction::kViewedSystemAndAppInfo:
+      base::UmaHistogramBoolean(kFeedbackAppViewedSystemAndAppInfo, true);
+      break;
+    case mojom::FeedbackAppPreSubmitAction::kViewedMetrics:
+      base::UmaHistogramBoolean(kFeedbackAppViewedMetrics, true);
+      break;
+    // TODO(longbowei): Handle ViewedHelpContent case.
+    case mojom::FeedbackAppPreSubmitAction::kViewedHelpContent:
+      break;
+  }
 }
 
 void EmitFeedbackAppIncludedScreenshot(bool included_screenshot) {
