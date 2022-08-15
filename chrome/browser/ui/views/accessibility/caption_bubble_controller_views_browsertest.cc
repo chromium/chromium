@@ -166,6 +166,12 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
   }
 
   bool OnPartialTranscription(std::string text) {
+    // TODO(crbug.com/1351722): This is a workaround for some tests which were
+    // passing by side effect of the AccessibilityChecker's checks. The full
+    // analysis can be found in the bug.
+    if (auto* label = GetLabel())
+      label->GetTooltipText(gfx::Point());
+
     return OnPartialTranscription(text, GetCaptionBubbleContext());
   }
 
@@ -176,6 +182,12 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
   }
 
   bool OnFinalTranscription(std::string text) {
+    // TODO(crbug.com/1351722): This is a workaround for some tests which were
+    // passing by side effect of the AccessibilityChecker's checks. The full
+    // analysis can be found in the bug.
+    if (auto* label = GetLabel())
+      label->GetTooltipText(gfx::Point());
+
     return OnFinalTranscription(text, GetCaptionBubbleContext());
   }
 
@@ -297,9 +309,8 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, LaysOutCaptionLabel) {
   EXPECT_EQ(bubble_width, bubble_bounds.width());
 }
 
-// TODO(crbug.com/1352615): Failing on multiple builders.
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
-                       DISABLED_CaptionTitleShownAtFirst) {
+                       CaptionTitleShownAtFirst) {
   // With one line of text, the title is visible and positioned between the
   // top of the bubble and top of the label.
   OnPartialTranscription("Cats rock");
@@ -845,9 +856,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, ChangeMedia) {
   EXPECT_FALSE(IsWidgetVisible());
 }
 
-// TODO(crbug.com/1352615): Failing on multiple builders.
-IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
-                       DISABLED_TruncatesFinalText) {
+IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, TruncatesFinalText) {
   // Make a string with 30 lines of 500 characters each.
   std::string text;
   std::string line(497, 'a');
@@ -968,9 +977,8 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, AccessibleTextSetUp) {
                 ax::mojom::StringAttribute::kName));
 }
 
-// TODO(crbug.com/1352615): Failing on multiple builders.
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
-                       DISABLED_AccessibleTextSplitsIntoNodesByLine) {
+                       AccessibleTextSplitsIntoNodesByLine) {
   // Make a line of 500 characters.
   std::string line(499, 'a');
   line.push_back(' ');
@@ -1015,9 +1023,8 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   EXPECT_EQ("3 dogs survived the Titanic sinking.", GetAXLineText()[0]);
 }
 
-// TODO(crbug.com/1352615): Failing on multiple builders.
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
-                       DISABLED_AccessibleTextTruncates) {
+                       AccessibleTextTruncates) {
   // Make a string with 30 lines of 500 characters each.
   std::string text;
   std::string line(497, 'a');
