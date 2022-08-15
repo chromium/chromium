@@ -1347,9 +1347,8 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
   switch (command_id) {
     case CommandNewTabToRight: {
       base::RecordAction(UserMetricsAction("TabContextMenu_NewTab"));
-      UMA_HISTOGRAM_ENUMERATION("Tab.NewTab",
-                                TabStripModel::NEW_TAB_CONTEXT_MENU,
-                                TabStripModel::NEW_TAB_ENUM_COUNT);
+      UMA_HISTOGRAM_ENUMERATION("Tab.NewTab", NewTabTypes::NEW_TAB_CONTEXT_MENU,
+                                NewTabTypes::NEW_TAB_ENUM_COUNT);
       delegate()->AddTabAt(GURL(), context_index + 1, true,
                            GetTabGroupForTab(context_index));
       break;

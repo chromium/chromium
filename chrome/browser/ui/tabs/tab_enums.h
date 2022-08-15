@@ -73,4 +73,32 @@ enum AddTabTypes {
   ADD_INHERIT_OPENER = 1 << 3,
 };
 
+// Enumerates different ways to open a new tab. Does not apply to opening
+// existing links or searches in a new tab, only to brand new empty tabs.
+// KEEP IN SYNC WITH THE NewTabType ENUM IN enums.xml.
+// NEW VALUES MUST BE APPENDED AND AVOID CHANGING ANY PRE-EXISTING VALUES.
+enum NewTabTypes {
+  // New tab was opened using the new tab button on the tab strip.
+  NEW_TAB_BUTTON = 0,
+
+  // New tab was opened using the menu command - either through the keyboard
+  // shortcut, or by opening the menu and selecting the command. Applies to
+  // both app menu and the menu bar's File menu (on platforms that have one).
+  NEW_TAB_COMMAND = 1,
+
+  // New tab was opened through the context menu on the tab strip.
+  NEW_TAB_CONTEXT_MENU = 2,
+
+  // New tab was opened through the new tab button in the toolbar for the
+  // WebUI touch-optimized tab strip.
+  NEW_TAB_BUTTON_IN_TOOLBAR_FOR_TOUCH = 3,
+
+  // New tab was opened through the new tab button inside of the WebUI tab
+  // strip.
+  NEW_TAB_BUTTON_IN_WEBUI_TAB_STRIP = 4,
+
+  // Number of enum entries, used for UMA histogram reporting macros.
+  NEW_TAB_ENUM_COUNT = 5,
+};
+
 #endif  // CHROME_BROWSER_UI_TABS_TAB_ENUMS_H_

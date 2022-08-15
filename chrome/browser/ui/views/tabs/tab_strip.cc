@@ -1892,8 +1892,8 @@ void TabStrip::NewTabButtonPressed(const ui::Event& event) {
   new_tab_button_pressed_start_time_ = base::TimeTicks::Now();
 
   base::RecordAction(base::UserMetricsAction("NewTab_Button"));
-  UMA_HISTOGRAM_ENUMERATION("Tab.NewTab", TabStripModel::NEW_TAB_BUTTON,
-                            TabStripModel::NEW_TAB_ENUM_COUNT);
+  UMA_HISTOGRAM_ENUMERATION("Tab.NewTab", NewTabTypes::NEW_TAB_BUTTON,
+                            NewTabTypes::NEW_TAB_ENUM_COUNT);
   if (event.IsMouseEvent()) {
     // Prevent the hover card from popping back in immediately. This forces a
     // normal fade-in.

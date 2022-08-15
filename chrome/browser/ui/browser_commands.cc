@@ -740,8 +740,8 @@ void NewTab(Browser* browser) {
   // TODO(asvitkine): This is invoked programmatically from several places.
   // Audit the code and change it so that the histogram only gets collected for
   // user-initiated commands.
-  UMA_HISTOGRAM_ENUMERATION("Tab.NewTab", TabStripModel::NEW_TAB_COMMAND,
-                            TabStripModel::NEW_TAB_ENUM_COUNT);
+  UMA_HISTOGRAM_ENUMERATION("Tab.NewTab", NewTabTypes::NEW_TAB_COMMAND,
+                            NewTabTypes::NEW_TAB_ENUM_COUNT);
 
   // Notify IPH that new tab was opened.
   auto* reopen_tab_iph =
