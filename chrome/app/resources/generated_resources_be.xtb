@@ -600,6 +600,7 @@
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (Госць)</translation>
 <translation id="1572266655485775982">Уключэнне Wi-Fi</translation>
 <translation id="1572876035008611720">Увядзіце адрас электроннай пошты</translation>
+<translation id="1573117025466282241">Адсканіраваць QR-код з дапамогай тэлефона</translation>
 <translation id="1575741822946219011">Мовы і метады ўводу</translation>
 <translation id="1576594961618857597">Стандартны белы аватар</translation>
 <translation id="1578558981922970608">Прымусова завяршыць</translation>
@@ -650,7 +651,6 @@
 <translation id="1613149688105334014">Старыя версіі праграм Chrome перастануць адкрывацца пасля снежня 2022 г. Вы можаце праверыць наяўнасць новай версіі.</translation>
 <translation id="1614511179807650956">Магчыма, вы дасягнулі ліміту мабільнай перадачы даных. Каб купіць дадатковы трафік, наведайце партал актывацыі <ph name="NAME" /></translation>
 <translation id="161460670679785907">Не ўдалося знайсці тэлефон</translation>
-<translation id="1615337439947999338">Захаваць ва Уліковым запісе Google (<ph name="EMAIL" />)</translation>
 <translation id="1615433306336820465">Кіраванне данымі для ўваходу, захаванымі на ключы бяспекі</translation>
 <translation id="1616206807336925449">Пашырэнне не патрабуе спецыяльных дазволаў.</translation>
 <translation id="1616298854599875024">Не ўдалося імпартаваць пашырэнне "<ph name="IMPORT_NAME" />": гэта не абагулены модуль</translation>
@@ -3173,7 +3173,6 @@
 <translation id="397105322502079400">Ідзе разлік...</translation>
 <translation id="3971764089670057203">Лічбавыя адбіткі на гэтым ключы бяспекі</translation>
 <translation id="3973005893595042880">Карыстальнік не мае дазволу</translation>
-<translation id="3973062011568994448">Каб імпартаваць паролі, выберыце файл CSV.</translation>
 <translation id="3973660817924297510">Праверка пароляў (<ph name="CHECKED_PASSWORDS" /> з <ph name="TOTAL_PASSWORDS" />)…</translation>
 <translation id="3974514184580396500">Для пераходу да наступнага элемента на экране, выкарыстоўваць пераключальнік "Далей"</translation>
 <translation id="3975201861340929143">Тлумачэнне</translation>

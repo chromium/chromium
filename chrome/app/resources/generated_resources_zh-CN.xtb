@@ -194,6 +194,7 @@
 <translation id="1174391930667737831">隐私权中心</translation>
 <translation id="117445914942805388">要想清除您的所有已同步设备中的浏览数据以及您的 Google 帐号中的浏览数据，请<ph name="BEGIN_LINK" />访问同步设置<ph name="END_LINK" />。</translation>
 <translation id="1175364870820465910">打印(&amp;P)...</translation>
+<translation id="1176378369905028399">此帐号的密码已经存储在您的 Google 密码管理工具 (<ph name="USER_EMAIL" />) 中</translation>
 <translation id="1176471985365269981">不得修改您设备上的文件或文件夹</translation>
 <translation id="1177863135347784049">自定义</translation>
 <translation id="1178581264944972037">暂停</translation>
@@ -642,7 +643,6 @@
 <translation id="1613149688105334014">2022 年 12 月之后，多款旧版 Chrome 应用将无法开启。您可查看是否有可用的新版本。</translation>
 <translation id="1614511179807650956">您的移动数据流量配额可能已经用完。若想购买更多流量，请前往“<ph name="NAME" />”激活门户网站</translation>
 <translation id="161460670679785907">检测不到您的手机</translation>
-<translation id="1615337439947999338">保存到您的 Google 帐号 (<ph name="EMAIL" />) 中</translation>
 <translation id="1615433306336820465">管理您的安全密钥上存储的登录数据</translation>
 <translation id="1616206807336925449">此扩展程序无需任何特殊权限。</translation>
 <translation id="1616298854599875024">无法导入扩展程序“<ph name="IMPORT_NAME" />”，因为它不是共享模块</translation>
@@ -790,6 +790,7 @@
 <translation id="1745732479023874451">管理联系人</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{要在此 Web 应用中打开并修改 # 个文件吗？}}</translation>
 <translation id="1748563609363301860">您可以将这个密码保存到您的 Google 帐号中，或者仅保存到此设备上</translation>
+<translation id="1749733017156547309">必须输入密码</translation>
 <translation id="1750172676754093297">您的安全密钥无法存储指纹</translation>
 <translation id="1751249301761991853">个人</translation>
 <translation id="1751262127955453661"><ph name="ORIGIN" /> 将能够修改“<ph name="FOLDERNAME" />”中的文件，除非您关闭此网站的所有标签页</translation>
@@ -1734,6 +1735,7 @@
 <translation id="2602501489742255173">向上滑动即可开始使用</translation>
 <translation id="2603115962224169880">清理计算机</translation>
 <translation id="2603355571917519942">Voice Match 已设置完毕</translation>
+<translation id="2604129989323098489">网站通常会询问您的显示屏的相关信息，以便智能地打开和放置窗口，例如并排显示文档或全屏内容</translation>
 <translation id="2604255671529671813">网络连接错误</translation>
 <translation id="2605668923777146443">转到<ph name="LINK_BEGIN" />设置<ph name="LINK_END" />即可查看您的 Better Together 选项。</translation>
 <translation id="2606246518223360146">关联数据</translation>
@@ -1779,6 +1781,7 @@
 <translation id="2645047101481282803">您的设备由 <ph name="PROFILE_NAME" /> 管理</translation>
 <translation id="2645270499129074468">{NUM_PASSWORDS,plural, =1{已将 1 个密码导入此设备}other{已将 {NUM_PASSWORDS} 个密码导入此设备}}</translation>
 <translation id="2645435784669275700">Chrome 操作系统</translation>
+<translation id="2645515095874728277">此帐号的密码已经存储在该设备上</translation>
 <translation id="2649045351178520408">Base64 编码 ASCII，证书链</translation>
 <translation id="2652129567809778422">选择密码</translation>
 <translation id="2653033005692233957">搜索失败</translation>
@@ -2139,6 +2142,7 @@
 <translation id="2972581237482394796">重做(&amp;R)</translation>
 <translation id="2973324205039581528">将网站静音</translation>
 <translation id="2973537811036309675">侧边栏</translation>
+<translation id="2975761176769946178">必须提供网址</translation>
 <translation id="2976557544729462544">某些设备需要停用数据访问保护设置才能正常运行或马力全开。</translation>
 <translation id="2977480621796371840">从组中移除</translation>
 <translation id="2979639724566107830">在新窗口中打开</translation>
@@ -2380,6 +2384,7 @@
 <translation id="3227137524299004712">麦克风</translation>
 <translation id="3232754137068452469">网络应用</translation>
 <translation id="3233271424239923319">备份 Linux 应用和文件</translation>
+<translation id="3234251228180563751">用户名长度超过了 1,000 个字符</translation>
 <translation id="3234978181857588512">保存到设备</translation>
 <translation id="3238192140106069382">正在连接并验证</translation>
 <translation id="3239373508713281971">“<ph name="APP_NAME" />”的使用时限已被移除</translation>
@@ -3161,7 +3166,6 @@
 <translation id="397105322502079400">正在计算...</translation>
 <translation id="3971764089670057203">此安全密钥上的指纹</translation>
 <translation id="3973005893595042880">不允许此用户运行虚拟机</translation>
-<translation id="3973062011568994448">如要导入密码，请选择相应的 CSV 文件。</translation>
 <translation id="3973660817924297510">正在检查密码 (<ph name="CHECKED_PASSWORDS" />/<ph name="TOTAL_PASSWORDS" />)…</translation>
 <translation id="3974514184580396500">使用“下一项”即可在屏幕上向前移动焦点</translation>
 <translation id="3975201861340929143">说明</translation>
@@ -5192,6 +5196,7 @@
 <translation id="5975792506968920132">电池充电百分比</translation>
 <translation id="5976160379964388480">其他</translation>
 <translation id="5978277834170881274">使用基本拼写检查(&amp;U)</translation>
+<translation id="5978493744931296692">您的管理员已停用其他个人资料</translation>
 <translation id="5979084224081478209">检查密码</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{您重新开启了 1 个可能有害的扩展程序}other{您重新开启了 {NUM_EXTENSIONS} 个可能有害的扩展程序}}</translation>
 <translation id="5979353814339191480">此选项适用于以下类型的 Chromebook：具有流量套餐或移动网络加密狗，或者已通过“网络共享”功能连接到便携式热点</translation>
@@ -5356,6 +5361,7 @@
 <translation id="6130692320435119637">添加 Wi-Fi</translation>
 <translation id="6130887916931372608">键盘按键</translation>
 <translation id="6135823405800500595">请确保您的手机就在附近、处于解锁状态，且已开启蓝牙和 Wi-Fi</translation>
+<translation id="6135826623269483856">不得管理您的所有显示屏上的窗口</translation>
 <translation id="6136114942382973861">关闭下载内容栏</translation>
 <translation id="6136287496450963112">您尚未设置 PIN 码来保护您的安全密钥。若要管理指纹，请先创建一个 PIN 码。</translation>
 <translation id="6138680304137685902">采用 SHA-384 算法的 X9.62 ECDSA 签名</translation>
@@ -7362,6 +7368,7 @@
     <ph name="BEGIN_PARAGRAPH3" />您可在“设置”部分中关闭此服务。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8076492880354921740">标签页</translation>
 <translation id="8076835018653442223">您的管理员已禁止访问您设备上的本地文件</translation>
+<translation id="80798452873915119">网站可以询问能否管理您的所有显示屏上的窗口</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">您的会话由 <ph name="MANAGER_NAME" /> 管理。管理员可以删除您的个人资料和监控您的网络流量。</translation>
 <translation id="8081989000209387414">停用 ADB 调试？</translation>
@@ -7666,6 +7673,7 @@
 <translation id="8371695176452482769">请开始说话</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{将这个网站静音}other{将这些网站静音}}</translation>
 <translation id="8373652277231415614">Crostini 共享目录</translation>
+<translation id="8374243500935816406">不允许网站管理您的所有显示屏上的窗口</translation>
 <translation id="8376137163494131156">请将 Google Cast 发生的情况告诉我们。</translation>
 <translation id="8376384591331888629">包括此网站上的第三方 Cookie</translation>
 <translation id="8376451933628734023">如果此 Web 应用试图诱骗您认为它是另一款应用，请卸载它。</translation>
@@ -7960,6 +7968,7 @@
 <translation id="8670537393737592796">若要快速返回到这里，请点击安装按钮以安装“<ph name="APP_NAME" />”</translation>
 <translation id="867085395664725367">服务器发生了暂时性错误。</translation>
 <translation id="8673026256276578048">搜索网页...</translation>
+<translation id="867329473311423817">可以管理您的所有显示屏上的窗口</translation>
 <translation id="8673383193459449849">服务器出现问题</translation>
 <translation id="8674903726754070732">很遗憾，您的计算机配置了格式错误的硬件 ID。这导致 Chrome 操作系统无法使用最新的安全修正程序进行更新，以致您的计算机<ph name="BEGIN_BOLD" />很容易遭到恶意攻击<ph name="END_BOLD" />。</translation>
 <translation id="8675704450909805533">安装程序找不到可安装 <ph name="DEVICE_OS" /> 的有效目的地。</translation>
@@ -7980,6 +7989,7 @@
 <translation id="8683081248374354009">重置群组</translation>
 <translation id="8688672835843460752">可用</translation>
 <translation id="8690129572193755009">网站可以请求处理协议</translation>
+<translation id="8692107307702113268">密码长度超过了 1,000 个字符</translation>
 <translation id="8695139659682234808">在完成设置后添加家长控制功能</translation>
 <translation id="8695825812785969222">打开位置(&amp;L)...</translation>
 <translation id="8698269656364382265">要返回到上一个屏幕，请从屏幕左侧向右侧滑动。</translation>
@@ -8260,6 +8270,7 @@
 <translation id="8960638196855923532">您现在可以查看手机中的通知和应用</translation>
 <translation id="8962051932294470566">您一次只能分享 1 个文件。请在当前传输任务完成后重试。</translation>
 <translation id="8962083179518285172">隐藏详细信息</translation>
+<translation id="8962863356073277855">网址格式应为 https://www.example.com</translation>
 <translation id="8962918469425892674">此网站正在使用动态传感器或光传感器。</translation>
 <translation id="8965037249707889821">输入旧密码</translation>
 <translation id="89667524227025535">请使用您设备的摄像头扫描二维码，或者输入您的运营商提供的激活码</translation>
@@ -8530,6 +8541,7 @@
 <translation id="9220525904950070496">移除帐号</translation>
 <translation id="9220820413868316583">请抬起手指，然后重试。</translation>
 <translation id="922152298093051471">自定义 Chrome</translation>
+<translation id="9222839025964079645">未导入的密码（<ph name="COUNT" /> 个）</translation>
 <translation id="923467487918828349">显示全部</translation>
 <translation id="924818813611903184">在 Chrome 操作系统设置中管理语言</translation>
 <translation id="929117907539171075">已安装应用中的离线数据也会被清除</translation>

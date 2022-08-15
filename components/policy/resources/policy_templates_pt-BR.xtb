@@ -442,18 +442,6 @@ Se você ativar ou não configurar essa política, a rolagem via URL para fragme
 
 Se você desativar a política, essa rolagem será desativada.</translation>
 <translation id="1474273443907024088">Desativar TLS False Start</translation>
-<translation id="1476128579011024193">
-      Se esta política for definida como <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />, depois de fazer login em uma conta gerenciada sujeita à política, o usuário vai receber uma solicitação para criar um novo perfil para a conta.
-      Se esta política for definida como <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" />, depois de fazer login em uma conta gerenciada sujeita à política, o usuário vai receber uma solicitação para criar um novo perfil para a conta com a opção de manter os dados de navegação existentes. Essa opção tem suporte no Chrome 102 e em versões mais recentes.
-
-      Se esta política for definida como <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" />, depois de fazer login em uma conta gerenciada sujeita à política, o usuário vai receber uma solicitação para criar um novo perfil para a conta. Este perfil não vai permitir contas secundárias.
-      Se esta política for definida como <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT_KEEP_EXISTING_DATA" />, depois de fazer login em uma conta gerenciada sujeita à política, o usuário vai receber uma solicitação para criar um novo perfil para a conta com a opção de manter os dados de navegação existentes. Este perfil não vai permitir contas secundárias. Essa opção tem suporte no Chrome 102 e em versões mais recentes.
-
-      Se a política for definida como <ph name="POLICY_VALUE_NONE" /> ou for deixada sem definição, as contas gerenciadas não vão ter restrições. Isso pode fazer com a conta gerenciada se torne uma conta secundária. Com isso ela perde a capacidade de receber políticas definidas pelo administrador para a conta.
-
-      Se esta política for definida no dispositivo, todas as contas no navegador vão ficar sujeitas a ela.
-      Se esta política for definida na conta, somente essa conta vai ser afetada no navegador.
-    </translation>
 <translation id="1477934438414550161">TLS 1.2</translation>
 <translation id="1479427764273213107">Se a política for definida, será configurada uma lista de dispositivos USB que o usuário pode remover do driver de kernel dele para uso pela API chrome.usb diretamente dentro de um app da Web. As entradas são pares de um identificador de fornecedor e um identificador de produto USB para reconhecer um hardware específico.
 

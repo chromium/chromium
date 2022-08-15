@@ -149,7 +149,6 @@
 <translation id="2115956742084455574">Incorrect code</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, version <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB of <ph name="TOTAL_MEMORY" /> GB available</translation>
-<translation id="2130871201950918186">System will restart in five seconds.</translation>
 <translation id="2138109643290557664">Float on by</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> photos</translation>
@@ -336,6 +335,7 @@
 <translation id="3866249974567520381">Description</translation>
 <translation id="387301095347517405">The number of times that your battery has gone through a full charging cycle</translation>
 <translation id="3885327323343477505">Change screen saver</translation>
+<translation id="3913541166352922049">System will shut down in <ph name="DELAY_DURATION" /> seconds.</translation>
 <translation id="3923184630988645767">Data usage</translation>
 <translation id="3924044641767672375">Connecting to Wi-Fi is recommended to make the repair process easier. Your network will be saved.</translation>
 <translation id="3932043219784172185">No device connected</translation>
@@ -521,6 +521,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="5346687412805619883">Local network</translation>
 <translation id="5358174242040570474">Something went wrong. Try choosing a wallpaper again or reopen the app.</translation>
 <translation id="5372659122375744710">Wi-Fi network is not secure</translation>
+<translation id="5376136733560434719">Preparing to shut down…</translation>
 <translation id="5376354385557966694">Automatic light mode</translation>
 <translation id="537872351913703572">Device will go to a different user or organisation</translation>
 <translation id="5389159777326897627">Wallpaper and style</translation>
@@ -750,6 +751,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Scanning completed. 1 page scanned}other{Scanning completed. {NUMBER_OF_PAGES} pages scanned}}</translation>
 <translation id="7469648432129124067">Portal detected</translation>
+<translation id="7478405245077383528">System will restart in <ph name="DELAY_DURATION" /> seconds.</translation>
 <translation id="7481312909269577407">Forward</translation>
 <translation id="7487067081878637334">Technology</translation>
 <translation id="7490813197707563893">MAC address</translation>

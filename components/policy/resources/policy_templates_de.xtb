@@ -443,18 +443,6 @@ Wenn du diese Richtlinie aktivierst oder nicht konfigurierst, wird das Scrollen 
 
 Wenn du diese Richtlinie deaktivierst, wird das Scrollen zu bestimmten Textfragmenten auf Webseiten via URL deaktiviert.</translation>
 <translation id="1474273443907024088">TLS-Funktion "False Start" deaktivieren</translation>
-<translation id="1476128579011024193">
-      Wenn diese Richtlinie auf „<ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />“ gesetzt ist, wird der Nutzer nach der Anmeldung in einem verwalteten Konto, das dieser Richtlinie unterliegt, aufgefordert, ein neues Profil für das Konto zu erstellen.
-      Ist sie auf „<ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" />“ gesetzt, wird der Nutzer nach der Anmeldung in einem verwalteten Konto, das dieser Richtlinie unterliegt, aufgefordert, ein neues Profil für das Konto zu erstellen, und hat die Option, alle bestehenden Browserdaten beizubehalten. Diese Option wird in Chrome 102 und höher unterstützt.
-
-      Wenn die Richtlinie auf „<ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" />“ gesetzt ist, wird der Nutzer nach der Anmeldung in einem verwalteten Konto, das dieser Richtlinie unterliegt, aufgefordert, ein neues Profil für das Konto zu erstellen. In diesem Profil sind keine sekundären Konten zugelassen.
-      Wenn diese Richtlinie auf „<ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT_KEEP_EXISTING_DATA" />“ gesetzt ist, wird der Nutzer nach der Anmeldung in einem verwalteten Konto, das dieser Richtlinie unterliegt, aufgefordert, ein neues Profil für das Konto zu erstellen, und hat die Option, alle bestehenden Browserdaten beizubehalten. In diesem Profil sind keine sekundären Konten zugelassen. Diese Option wird in Chrome 102 und höher unterstützt.
-
-      Wenn diese Richtlinie auf „<ph name="POLICY_VALUE_NONE" />“ gesetzt oder nicht konfiguriert ist, gelten für verwaltete Konten keine Einschränkungen. Das kann dazu führen, dass ein verwaltetes Konto ein sekundäres Konto ist. Hierdurch gelten für das Konto keine Richtlinien, die durch den Administrator für das Konto festgelegt werden.
-
-      Wenn diese Richtlinie auf Geräteebene konfiguriert ist, unterliegen ihr alle Konten im Browser.
-      Ist sie auf Kontoebene konfiguriert, unterliegt ihr nur dieses Konto.
-    </translation>
 <translation id="1477934438414550161">TLS 1.2</translation>
 <translation id="1479427764273213107">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste der USB-Geräte definieren, die vom jeweiligen Kerneltreiber getrennt werden können, um über die chrome.usb API direkt in einer Webanwendung eingesetzt zu werden. Die Einträge bestehen aus der ID des USB-Herstellers und der Produkt-ID, über die die Hardware identifiziert werden kann.
 

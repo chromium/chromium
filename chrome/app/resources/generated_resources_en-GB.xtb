@@ -654,7 +654,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1613149688105334014">Old versions of Chrome Apps won't open after December 2022. You can check if there's a new version available.</translation>
 <translation id="1614511179807650956">You may have used up your mobile data allowance. Visit the <ph name="NAME" /> activation portal to buy more data</translation>
 <translation id="161460670679785907">Unable to detect your phone</translation>
-<translation id="1615337439947999338">Save in your Google Account (<ph name="EMAIL" />)</translation>
 <translation id="1615433306336820465">Manage sign-in data stored on your security key</translation>
 <translation id="1616206807336925449">This extension requires no special permissions.</translation>
 <translation id="1616298854599875024">Unable to import extension '<ph name="IMPORT_NAME" />' because it is not a shared module</translation>
@@ -955,6 +954,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1864400682872660285">Cooler</translation>
 <translation id="1864454756846565995">USB-C device (rear port)</translation>
 <translation id="1865769994591826607">Same-site connections only</translation>
+<translation id="186594096341696655">Decrease rate</translation>
 <translation id="186612162884103683">"<ph name="EXTENSION" />" can read and write images, video and sound files in the ticked locations.</translation>
 <translation id="1867780286110144690"><ph name="PRODUCT_NAME" /> is ready to complete your installation</translation>
 <translation id="1868553836791672080">Password check is not available in Chromium</translation>
@@ -1146,6 +1146,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2048554637254265991">Error starting the container manager. Please try again.</translation>
 <translation id="2048653237708779538">Action not available</translation>
 <translation id="2050339315714019657">Portrait</translation>
+<translation id="2051943168842512672">{NUM_PASSWORDS,plural, =1{1 password imported to your Google Password Manager (<ph name="USER_EMAIL" />)}other{{NUM_PASSWORDS} passwords imported to your Google Password Manager (<ph name="USER_EMAIL" />)}}</translation>
 <translation id="2052572566310583903">Installed on your other devices</translation>
 <translation id="2053105195397337973">We’re exploring ways to restrict tracking while enabling sites to stop ad spam and fraud.</translation>
 <translation id="2053312383184521053">Idle State Data</translation>
@@ -1919,6 +1920,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2742448780373473567">Installing <ph name="DEVICE_OS" /> will overwrite all data on your device.</translation>
 <translation id="274290345632688601">Restoring Linux apps &amp; files</translation>
 <translation id="274318651891194348">Searching for keyboard</translation>
+<translation id="2743301740238894839">Start</translation>
 <translation id="2743387203779672305">Copy to clipboard</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
 <translation id="2747266560080989517">This file has sensitive or dangerous content. Ask its owner to fix it.</translation>
@@ -2431,6 +2433,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3255355328033513170">All data stored by <ph name="SITE_GROUP_NAME" /> and any sites under it will be deleted. This includes cookies. You'll be signed out of these sites, including in open tabs.</translation>
 <translation id="3257733480216378006">Allow <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />?</translation>
 <translation id="3259723213051400722">Please try again.</translation>
+<translation id="3261090393424563833">Increase rate</translation>
 <translation id="3261268979727295785">For older children, you can add parental controls once you finish setup. You'll find information on parental controls in the Explore app.</translation>
 <translation id="3262986719682892278">Too big</translation>
 <translation id="3264544094376351444">Sans-serif font</translation>
@@ -2940,6 +2943,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3747077776423672805">To remove apps, go to Settings &gt; Google Play Store &gt; Manage Android preferences &gt; Apps or Application manager. Then tap the app that you want to uninstall (you may need to swipe right or left to find the app). Then tap Uninstall or Disable.</translation>
 <translation id="3747603683749989726">Turn on enhanced security?</translation>
 <translation id="3748706263662799310">Report a bug</translation>
+<translation id="3750304496241836236">To import passwords to your Google Password Manager, select a CSV file</translation>
 <translation id="3750562496035670393">Chrome saved your password to this device, but you can save it to your Google Account instead. Then, all passwords in your Google Account will also be available while you're signed in.</translation>
 <translation id="3752253558646317685">Get your child to keep lifting their finger to save the fingerprint</translation>
 <translation id="3753033997400164841">Store once. Use everywhere</translation>
@@ -3195,7 +3199,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="397105322502079400">Calculating...</translation>
 <translation id="3971764089670057203">Fingerprints on this security key</translation>
 <translation id="3973005893595042880">User is not allowed</translation>
-<translation id="3973062011568994448">To import passwords, select a CSV file.</translation>
 <translation id="3973660817924297510">Checking passwords (<ph name="CHECKED_PASSWORDS" /> of <ph name="TOTAL_PASSWORDS" />)…</translation>
 <translation id="3974514184580396500">Use 'Next' to move your focus forward on the screen</translation>
 <translation id="3975201861340929143">Explanation</translation>
@@ -4113,6 +4116,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4871370605780490696">Add bookmark</translation>
 <translation id="4871568871368204250">Turn off sync</translation>
 <translation id="4871719318659334896">Close group</translation>
+<translation id="4872192066608821120">To import passwords, select a CSV file</translation>
 <translation id="4873312501243535625">Media File Checker</translation>
 <translation id="4876273079589074638">Help our engineers investigate and fix this crash. List exact steps if you can. No detail is too small!</translation>
 <translation id="4876895919560854374">Lock and unlock the screen</translation>
@@ -5457,6 +5461,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6206199626856438589">You'll be signed out of displayed sites, including in open tabs</translation>
 <translation id="6206311232642889873">Cop&amp;y Image</translation>
 <translation id="6207200176136643843">Reset to default zoom level</translation>
+<translation id="6207806976844244951">Save to Google Password Manager (<ph name="EMAIL" />)</translation>
 <translation id="6207937957461833379">Country/Region</translation>
 <translation id="6208382900683142153">Trust tokens improve privacy on the web and can't be used to find out who you are.</translation>
 <translation id="6208521041562685716">Mobile data being activated</translation>
@@ -5696,6 +5701,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6436610005579237680">To get responses that are more tailored to you, let Google Assistant access a screenshot of what’s on your screen when you ask questions. Your Assistant may also use info about songs or videos that are playing.</translation>
 <translation id="6436778875248895551">The extension '<ph name="EXTENSION_NAME" />' was blocked by your administrator</translation>
 <translation id="6438234780621650381">Reset settings</translation>
+<translation id="6438475350605608554">You're already importing passwords in another tab</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> – Audio playing</translation>
 <translation id="6442187272350399447">Happy</translation>
 <translation id="6442445294758185945">Couldn't download the update. Please try again later.</translation>
@@ -5706,6 +5712,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6446213738085045933">Create desktop shortcut</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6450876761651513209">Change your privacy-related settings</translation>
+<translation id="645119363824354176">To import passwords to this device, select a CSV file</translation>
 <translation id="6451344358166983408">Site or page</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> and 1 other tab}other{<ph name="PAGE_TITLE" /> and # other tabs}}</translation>
 <translation id="6451689256222386810">If you forget your passphrase or want to change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />.</translation>
@@ -5969,6 +5976,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6691936601825168937">&amp;Forward</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 page}other{{COUNT} pages}}</translation>
 <translation id="6694430008315398925">Setting up Steam</translation>
+<translation id="6697172646384837537">Select where to import your passwords</translation>
 <translation id="6697492270171225480">Show suggestions for similar pages when a page can't be found</translation>
 <translation id="6697690052557311665">To share, right-click on a folder in Files app, then select 'Share with Linux'.</translation>
 <translation id="6698810901424468597">Read and change your data on <ph name="WEBSITE_1" /> and <ph name="WEBSITE_2" /></translation>
@@ -6066,6 +6074,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6795371939514004514">Auto-scan lets you move through items on the screen automatically. When an item is highlighted, press 'Select' to activate it.</translation>
 <translation id="6795884519221689054">Panda</translation>
+<translation id="6796509790850723820">Render</translation>
 <translation id="6797493596609571643">Oops, something went wrong.</translation>
 <translation id="6798420440063423019">The security key is locked because the wrong PIN was entered too many times. You'll need to reset the security key.</translation>
 <translation id="679845623837196966">Show reading list</translation>
@@ -6609,6 +6618,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7340431621085453413"><ph name="FULLSCREEN_ORIGIN" /> is now full screen.</translation>
 <translation id="7340650977506865820">Site is sharing your screen</translation>
 <translation id="7340757554212515731">Automatically sends crash reports as well as diagnostic and usage data to Google</translation>
+<translation id="734088800888587319">Network metrics</translation>
 <translation id="7341834142292923918">Wants access to this site</translation>
 <translation id="7343372807593926528">Please describe the problem before sending feedback.</translation>
 <translation id="7344585835349671209">Manage HTTPS/SSL certificates on your device</translation>
@@ -8453,6 +8463,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="9088917181875854783">Please confirm that  this passkey is shown on "<ph name="DEVICE_NAME" />":</translation>
 <translation id="9089416786594320554">Input methods</translation>
 <translation id="9090044809052745245">How your device appears to others</translation>
+<translation id="9093470422440389061">Wi-Fi performance metrics</translation>
 <translation id="9094033019050270033">Update password</translation>
 <translation id="9094038138851891550">Username invalid</translation>
 <translation id="9094859731829297286">Are you sure that you want to reserve a fixed-size disk for Linux?</translation>

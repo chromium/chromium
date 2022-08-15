@@ -286,12 +286,12 @@
 <translation id="3479552764303398839">略過</translation>
 <translation id="3486821258960016770">蒙古文</translation>
 <translation id="3495304270784461826">發生 <ph name="COUNT" /> 個錯誤。</translation>
-<translation id="3495810061346586977">這是機密檔案，因此受到管理員政策限制。<ph name="BEGIN_LINK_HELP" />瞭解詳情<ph name="END_LINK_HELP" /></translation>
+<translation id="3495810061346586977">這是機密檔案，因此受管理員政策限制。<ph name="BEGIN_LINK_HELP" />瞭解詳情<ph name="END_LINK_HELP" /></translation>
 <translation id="3509680540198371098">第 <ph name="NETWORK_INDEX" /> 個網絡，一共有 <ph name="NETWORK_COUNT" /> 個網絡，<ph name="NETWORK_NAME" />，<ph name="SECURITY_STATUS" />，<ph name="CONNECTION_STATUS" />，訊號強度係 <ph name="SIGNAL_STRENGTH" />%，詳情</translation>
 <translation id="3522708245912499433">葡萄牙文</translation>
 <translation id="3524311639100184459">注意：系統可能會自動刪除這些暫存檔案，以釋放磁碟空間。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">資料夾</translation>
-<translation id="3548125359243647069">PIN 碼輸入錯誤次數太多。</translation>
+<translation id="3548125359243647069">您輸入錯誤 PIN 的次數過多。</translation>
 <translation id="3549797760399244642">前往 drive.google.com…</translation>
 <translation id="3553048479571901246">如要透過「<ph name="APP_NAME" />」開啟檔案，請先將檔案複製至 Windows 資料夾。</translation>
 <translation id="3556731189587832921">英文 (美國)，國際 (PC) 鍵盤</translation>
@@ -729,7 +729,7 @@
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">另存新檔</translation>
 <translation id="7229570126336867161">需要 EVDO</translation>
-<translation id="7230898482850090046">管理員已要求你關閉「鎖定 SIM 卡」設定</translation>
+<translation id="7230898482850090046">管理員已要求您關閉「鎖定 SIM 卡」設定</translation>
 <translation id="7238097264433196391">雲端硬碟名稱</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />，詳情</translation>
 <translation id="7246947237293279874">FTP Proxy</translation>
@@ -762,7 +762,7 @@
 <translation id="7505167922889582512">顯示已隱藏的檔案</translation>
 <translation id="7514365320538308">下載</translation>
 <translation id="751507702149411736">白俄羅斯文</translation>
-<translation id="7521790570754130607">必須輸入 PIN 碼才能使用行動數據</translation>
+<translation id="7521790570754130607">必須輸入 PIN 才能使用流動數據</translation>
 <translation id="7532029025027028521">波斯文 (音譯)</translation>
 <translation id="7544830582642184299">允許 Linux 應用程式存取「Google 雲端硬碟」的檔案。變更將會同步至您的其他裝置。</translation>
 <translation id="7547009467130558110">運動鞋</translation>
@@ -787,7 +787,7 @@
 <translation id="76959938259365003">無法清空垃圾桶。</translation>
 <translation id="770015031906360009">希臘文</translation>
 <translation id="7705251383879779343">已複製 <ph name="FILE_NAME" />。</translation>
-<translation id="7708271999969613024">如要使用這個網路，請輸入由電信業者提供的 8 位數個人解鎖金鑰 (PUK)。</translation>
+<translation id="7708271999969613024">如要使用此網絡，您需要輸入由流動網絡供應商提供的 8 位數個人解鎖金鑰 (PUK)。</translation>
 <translation id="7711920809702896782">圖片資料</translation>
 <translation id="7724603315864178912">剪下</translation>
 <translation id="7730494089396812859">顯示雲端備份詳情</translation>

@@ -653,7 +653,6 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1613149688105334014">Após dezembro de 2022, não será possível abrir as versões antigas dos apps do Chrome. Verifique se há uma nova versão disponível.</translation>
 <translation id="1614511179807650956">Você pode ter esgotado sua cota de dados móveis. Visite o portal de ativação do <ph name="NAME" /> para comprar mais dados</translation>
 <translation id="161460670679785907">Não foi possível detectar seu smartphone</translation>
-<translation id="1615337439947999338">Salvar na sua Conta do Google (<ph name="EMAIL" />)</translation>
 <translation id="1615433306336820465">Gerenciar os dados de login armazenados na sua chave de segurança</translation>
 <translation id="1616206807336925449">Esta extensão não requer permissões especiais.</translation>
 <translation id="1616298854599875024">Não foi possível importar a extensão "<ph name="IMPORT_NAME" />", porque ela não é um módulo compartilhado</translation>
@@ -3194,7 +3193,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="3971764089670057203">Impressões digitais nesta chave de segurança</translation>
 <translation id="3973005893595042880">O usuário não é permitido</translation>
-<translation id="3973062011568994448">Para importar senhas, selecione um arquivo CSV.</translation>
 <translation id="3973660817924297510">Verificando senhas (<ph name="CHECKED_PASSWORDS" /> de <ph name="TOTAL_PASSWORDS" />)…</translation>
 <translation id="3974514184580396500">Use “Próxima” para mover o foco para frente na tela</translation>
 <translation id="3975201861340929143">Explicação</translation>

@@ -149,7 +149,6 @@
 <translation id="2115956742084455574">驗證碼錯誤</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />，版本 <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">可用空間：<ph name="AVAILABLE_MEMORY" /> GB (共 <ph name="TOTAL_MEMORY" /> GB)</translation>
-<translation id="2130871201950918186">系統將於 5 秒後重新啟動。</translation>
 <translation id="2138109643290557664">一飄而過</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> 張相片</translation>
