@@ -6540,6 +6540,38 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                   ->has_received_user_gesture_before_nav());
 }
 
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       CancelPrerenderWhenIsOverridingUserAgentDiffers) {
+  const std::string user_agent_override = "foo";
+
+  // Navigate to an initial page.
+  const GURL initial_url = GetUrl("/empty.html");
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  // Enable user agent override for future navigations.
+  UserAgentInjector injector(shell()->web_contents(), user_agent_override);
+
+  const GURL prerendering_url = GetUrl("/empty.html?prerender");
+
+  // Start prerendering.
+  const int host_id = AddPrerender(prerendering_url);
+
+  RenderFrameHostImpl* prerender_rfh =
+      static_cast<RenderFrameHostImpl*>(GetPrerenderedMainFrameHost(host_id));
+  EXPECT_EQ(user_agent_override, EvalJs(prerender_rfh, "navigator.userAgent"));
+
+  // Stop overriding user agent from now on.
+  injector.set_is_overriding_user_agent(false);
+
+  // Activate the prerendered page.
+  content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
+  NavigatePrimaryPage(prerendering_url);
+  host_observer.WaitForDestroyed();
+
+  ExpectFinalStatusForSpeculationRule(
+      PrerenderHost::FinalStatus::kTriggerDestroyed);
+}
+
 class PrerenderPreloaderHoldbackBrowserTest : public PrerenderBrowserTest {
  public:
   PrerenderPreloaderHoldbackBrowserTest() {
