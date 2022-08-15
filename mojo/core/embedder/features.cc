@@ -28,5 +28,8 @@ const base::Feature kMojoPosixUseWritev{"MojoPosixUseWritev",
 const base::Feature kMojoInlineMessagePayloads{
     "MojoInlineMessagePayloads", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kMojoAvoidRandomPipeId{"MojoAvoidRandomPipeId",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace core
 }  // namespace mojo

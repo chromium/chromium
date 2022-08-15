@@ -116,6 +116,7 @@ template("core_impl_source_set") {
       "//mojo/core/embedder:features",
       "//mojo/core/ports",
       "//mojo/public/c/system:headers",
+      "//mojo/public/cpp/bindings:mojo_buildflags",
       "//mojo/public/cpp/platform",
       "//third_party/ipcz/src:ipcz_chromium",
     ]

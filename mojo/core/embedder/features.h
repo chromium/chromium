@@ -34,6 +34,9 @@ extern const base::Feature kMojoPosixUseWritev;
 COMPONENT_EXPORT(MOJO_CORE_EMBEDDER_FEATURES)
 extern const base::Feature kMojoInlineMessagePayloads;
 
+COMPONENT_EXPORT(MOJO_CORE_EMBEDDER_FEATURES)
+extern const base::Feature kMojoAvoidRandomPipeId;
+
 }  // namespace core
 }  // namespace mojo
 
