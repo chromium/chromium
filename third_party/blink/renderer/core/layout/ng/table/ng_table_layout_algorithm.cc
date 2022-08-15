@@ -94,10 +94,17 @@ NGTableLayoutAlgorithm::CaptionResult LayoutCaption(
     const NGBlockBreakToken* break_token = nullptr) {
   const NGLayoutResult* layout_result =
       caption.Layout(caption_constraint_space, break_token);
-  NGFragment fragment(table_constraint_space.GetWritingDirection(),
-                      layout_result->PhysicalFragment());
-  ResolveInlineMargins(caption.Style(), table_style, table_inline_size,
-                       fragment.InlineSize(), &margins);
+
+  if (layout_result->Status() == NGLayoutResult::kSuccess) {
+    NGFragment fragment(table_constraint_space.GetWritingDirection(),
+                        layout_result->PhysicalFragment());
+    ResolveInlineMargins(caption.Style(), table_style, table_inline_size,
+                         fragment.InlineSize(), &margins);
+  } else {
+    DCHECK(caption_constraint_space.HasBlockFragmentation());
+    DCHECK_EQ(layout_result->Status(),
+              NGLayoutResult::kOutOfFragmentainerSpace);
+  }
 
   return {caption, layout_result, margins};
 }
@@ -1139,6 +1146,11 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
       CaptionResult caption = LayoutCaption(
           ConstraintSpace(), Style(), container_builder_.InlineSize(),
           child_space, child, margins, child_break_token);
+      if (caption.layout_result->Status() != NGLayoutResult::kSuccess) {
+        DCHECK_EQ(caption.layout_result->Status(),
+                  NGLayoutResult::kOutOfFragmentainerSpace);
+        return container_builder_.Abort(caption.layout_result->Status());
+      }
       child_result = caption.layout_result;
       child_inline_offset = caption.margins.inline_start;
     } else {
