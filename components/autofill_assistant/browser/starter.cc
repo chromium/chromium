@@ -17,6 +17,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "components/autofill_assistant/browser/assistant_field_trial_util.h"
+#include "components/autofill_assistant/browser/common_dependencies.h"
 #include "components/autofill_assistant/browser/features.h"
 #include "components/autofill_assistant/browser/intent_strings.h"
 #include "components/autofill_assistant/browser/service/api_key_fetcher.h"
@@ -386,15 +387,17 @@ void Starter::Init() {
   bool switched_from_cct_to_tab = prev_is_custom_tab && !is_custom_tab_;
   bool proactive_help_setting_enabled =
       platform_delegate_->GetProactiveHelpSettingEnabled();
-  bool msbb_setting_enabled =
-      platform_delegate_->GetMakeSearchesAndBrowsingBetterEnabled();
+  bool msbb_setting_enabled = platform_delegate_->GetCommonDependencies()
+                                  ->GetMakeSearchesAndBrowsingBetterEnabled(
+                                      web_contents()->GetBrowserContext());
   bool feature_module_installed =
       platform_delegate_->GetFeatureModuleInstalled();
   bool prev_fetch_trigger_scripts_on_navigation =
       fetch_trigger_scripts_on_navigation_;
 
-  starter_heuristic_->InitFromHeuristicConfigs(heuristic_configs_,
-                                               platform_delegate_.get());
+  starter_heuristic_->InitFromHeuristicConfigs(
+      heuristic_configs_, platform_delegate_.get(),
+      web_contents()->GetBrowserContext());
   fetch_trigger_scripts_on_navigation_ = starter_heuristic_->HasConditionSets();
 
   // If there is a pending startup, re-check that the settings are still
@@ -491,7 +494,9 @@ void Starter::Start(std::unique_ptr<TriggerContext> trigger_context) {
 
   StartupMode startup_mode = StartupUtil().ChooseStartupModeForIntent(
       *pending_trigger_context_,
-      {platform_delegate_->GetMakeSearchesAndBrowsingBetterEnabled(),
+      {platform_delegate_->GetCommonDependencies()
+           ->GetMakeSearchesAndBrowsingBetterEnabled(
+               web_contents()->GetBrowserContext()),
        platform_delegate_->GetProactiveHelpSettingEnabled(),
        platform_delegate_->GetFeatureModuleInstalled()});
   Metrics::RecordStartRequest(ukm_recorder_, current_ukm_source_id_,

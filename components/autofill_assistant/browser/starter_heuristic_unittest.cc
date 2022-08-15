@@ -11,10 +11,13 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/autofill_assistant/browser/fake_common_dependencies.h"
 #include "components/autofill_assistant/browser/fake_starter_platform_delegate.h"
 #include "components/autofill_assistant/browser/features.h"
 #include "components/autofill_assistant/browser/starter_heuristic_configs/finch_starter_heuristic_config.h"
 #include "components/autofill_assistant/browser/starter_heuristic_configs/legacy_starter_heuristic_config.h"
+#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_browser_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill_assistant {
@@ -48,11 +51,13 @@ class StarterHeuristicTest : public testing::Test {
 
     std::vector<std::unique_ptr<StarterHeuristicConfig>> configs;
     configs.emplace_back(std::make_unique<LegacyStarterHeuristicConfig>());
-    starter_heuristic.InitFromHeuristicConfigs(configs,
-                                               &fake_platform_delegate_);
+    starter_heuristic.InitFromHeuristicConfigs(
+        configs, &fake_platform_delegate_, &context_);
   }
 
  protected:
+  content::BrowserTaskEnvironment task_environment_;
+  content::TestBrowserContext context_;
   FakeStarterPlatformDelegate fake_platform_delegate_;
 
  private:
@@ -99,14 +104,13 @@ TEST_F(StarterHeuristicTest, RunHeuristicAsync) {
         }
         )json");
 
-  base::test::TaskEnvironment task_environment;
   base::MockCallback<
       base::OnceCallback<void(const base::flat_set<std::string>&)>>
       callback;
   EXPECT_CALL(callback, Run(base::flat_set<std::string>{"FAKE_INTENT_CART"}));
   starter_heuristic->RunHeuristicAsync(GURL("https://www.example.com/cart"),
                                        callback.Get());
-  task_environment.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(StarterHeuristicTest, DenylistedDomains) {
@@ -299,8 +303,8 @@ TEST_F(StarterHeuristicTest, MultipleUrlHeuristicTrials) {
   auto starter_heuristic = base::MakeRefCounted<StarterHeuristic>();
   fake_platform_delegate_.is_custom_tab_ = true;
   fake_platform_delegate_.is_web_layer_ = false;
-  starter_heuristic->InitFromHeuristicConfigs(configs,
-                                              &fake_platform_delegate_);
+  starter_heuristic->InitFromHeuristicConfigs(configs, &fake_platform_delegate_,
+                                              &context_);
 
   // Denylisted in all configs.
   EXPECT_THAT(IsHeuristicMatchForTest(*starter_heuristic,
@@ -326,8 +330,8 @@ TEST_F(StarterHeuristicTest, MultipleUrlHeuristicTrials) {
               ElementsAre("LEGACY_INTENT", "NEW_INTENT_A", "NEW_INTENT_B"));
 
   fake_platform_delegate_.is_custom_tab_ = false;
-  starter_heuristic->InitFromHeuristicConfigs(configs,
-                                              &fake_platform_delegate_);
+  starter_heuristic->InitFromHeuristicConfigs(configs, &fake_platform_delegate_,
+                                              &context_);
   EXPECT_THAT(IsHeuristicMatchForTest(*starter_heuristic,
                                       GURL("https://different.com/cart")),
               ElementsAre("NEW_INTENT_B"));

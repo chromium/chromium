@@ -77,7 +77,6 @@ class StarterDelegateAndroid
   void HideOnboarding() override;
   bool GetProactiveHelpSettingEnabled() const override;
   void SetProactiveHelpSettingEnabled(bool enabled) override;
-  bool GetMakeSearchesAndBrowsingBetterEnabled() const override;
   bool GetIsLoggedIn() override;
   bool GetIsSupervisedUser() override;
   bool GetIsAllowedForMachineLearning() override;

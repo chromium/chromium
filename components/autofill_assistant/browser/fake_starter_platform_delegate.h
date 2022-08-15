@@ -50,7 +50,6 @@ class FakeStarterPlatformDelegate : public StarterPlatformDelegate {
   void HideOnboarding() override;
   bool GetProactiveHelpSettingEnabled() const override;
   void SetProactiveHelpSettingEnabled(bool enabled) override;
-  bool GetMakeSearchesAndBrowsingBetterEnabled() const override;
   bool GetIsLoggedIn() override;
   bool GetIsSupervisedUser() override;
   bool GetIsAllowedForMachineLearning() override;
@@ -82,7 +81,6 @@ class FakeStarterPlatformDelegate : public StarterPlatformDelegate {
       base::OnceCallback<void(bool, OnboardingResult)> result_callback)>
       on_show_onboarding_callback_;
   bool proactive_help_enabled_ = true;
-  bool msbb_enabled_ = true;
   bool is_logged_in_ = true;
   bool is_supervised_user_ = false;
   bool is_allowed_for_machine_learning_ = true;

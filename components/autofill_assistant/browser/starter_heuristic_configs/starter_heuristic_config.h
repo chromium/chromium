@@ -12,6 +12,10 @@
 #include "components/autofill_assistant/browser/script_parameters.h"
 #include "components/autofill_assistant/browser/starter_platform_delegate.h"
 
+namespace content {
+class BrowserContext;
+}  // namespace content
+
 namespace autofill_assistant {
 
 // Base class for starter heuristic configs. Instances of this class define
@@ -32,7 +36,8 @@ class StarterHeuristicConfig {
   // URLMatcherConditionSet dictionary as defined by the URLMatcherFactory
   // (components/url_matcher/url_matcher_factory.h).
   virtual const base::Value::List& GetConditionSetsForClientState(
-      StarterPlatformDelegate* platform_delegate) const = 0;
+      StarterPlatformDelegate* platform_delegate,
+      content::BrowserContext* browser_context) const = 0;
 
   // Returns the list of denylisted domains for this config.
   virtual const base::flat_set<std::string>& GetDenylistedDomains() const = 0;

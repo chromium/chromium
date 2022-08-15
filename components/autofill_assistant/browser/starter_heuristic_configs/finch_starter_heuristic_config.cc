@@ -21,7 +21,8 @@ const std::string& FinchStarterHeuristicConfig::GetIntent() const {
 
 const base::Value::List&
 FinchStarterHeuristicConfig::GetConditionSetsForClientState(
-    StarterPlatformDelegate* platform_delegate) const {
+    StarterPlatformDelegate* platform_delegate,
+    content::BrowserContext* browser_context) const {
   static const base::NoDestructor<base::Value> empty_list(
       base::Value::Type::LIST);
   if (platform_delegate->GetIsSupervisedUser() ||
@@ -52,7 +53,8 @@ FinchStarterHeuristicConfig::GetConditionSetsForClientState(
     return empty_list->GetList();
   }
 
-  if (!platform_delegate->GetMakeSearchesAndBrowsingBetterEnabled() &&
+  if (!platform_delegate->GetCommonDependencies()
+           ->GetMakeSearchesAndBrowsingBetterEnabled(browser_context) &&
       !enabled_without_msbb_) {
     return empty_list->GetList();
   }

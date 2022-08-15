@@ -239,17 +239,6 @@ void StarterDelegateAndroid::SetProactiveHelpSettingEnabled(bool enabled) {
       base::android::AttachCurrentThread(), enabled);
 }
 
-bool StarterDelegateAndroid::GetMakeSearchesAndBrowsingBetterEnabled() const {
-  if (!java_object_) {
-    // Failsafe, should never happen.
-    NOTREACHED();
-    return false;
-  }
-
-  return Java_Starter_getMakeSearchesAndBrowsingBetterSettingEnabled(
-      base::android::AttachCurrentThread(), java_object_);
-}
-
 bool StarterDelegateAndroid::GetIsLoggedIn() {
   return !GetCommonDependencies()
               ->GetSignedInEmail(GetWebContents().GetBrowserContext())

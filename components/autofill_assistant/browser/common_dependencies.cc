@@ -13,4 +13,14 @@ bool CommonDependencies::IsAllowedForMachineLearning(
   return true;
 }
 
+bool CommonDependencies::GetMakeSearchesAndBrowsingBetterEnabled(
+    content::BrowserContext* browser_context) const {
+  return false;
+}
+
+bool CommonDependencies::GetMetricsReportingEnabled(
+    content::BrowserContext* browser_context) const {
+  return false;
+}
+
 }  // namespace autofill_assistant

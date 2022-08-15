@@ -92,11 +92,6 @@ void StarterDelegateDesktop::SetProactiveHelpSettingEnabled(bool enabled) {
   NOTREACHED();
 }
 
-bool StarterDelegateDesktop::GetMakeSearchesAndBrowsingBetterEnabled() const {
-  // Only relevant for trigger scripts, which don't exist in headless.
-  return false;
-}
-
 bool StarterDelegateDesktop::GetIsLoggedIn() {
   return !common_dependencies_
               ->GetSignedInEmail(GetWebContents().GetBrowserContext())

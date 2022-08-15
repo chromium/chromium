@@ -24,7 +24,6 @@ public class AutofillAssistantTabHelper {
                                               -> TabUtils.getActivity(tab),
                 tab.getWebContents(), new AssistantStaticDependenciesChrome(),
                 AssistantDependencyUtilsChrome::isGsa,
-                AssistantDependencyUtilsChrome::isMakeSearchesAndBrowsingBetterSettingEnabled,
                 new AssistantModuleInstallUiProviderChrome(tab));
         AssistantDependencyUtilsChrome.attachTabObserver(tab, starter);
         tab.getUserDataHost().setUserData(USER_DATA_KEY, starter);

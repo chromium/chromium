@@ -5,9 +5,11 @@
 #include "components/autofill_assistant/browser/starter_heuristic_configs/finch_starter_heuristic_config.h"
 #include "base/json/json_reader.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/autofill_assistant/browser/fake_common_dependencies.h"
 #include "components/autofill_assistant/browser/fake_starter_platform_delegate.h"
 #include "components/autofill_assistant/browser/features.h"
-
+#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_browser_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill_assistant {
@@ -49,6 +51,8 @@ class FinchStarterHeuristicConfigTest : public testing::Test {
         /* disabled_features = */ {});
   }
 
+  content::BrowserTaskEnvironment task_environment_;
+  content::TestBrowserContext context_;
   FakeStarterPlatformDelegate fake_platform_delegate_;
 
  private:
@@ -60,16 +64,16 @@ TEST_F(FinchStarterHeuristicConfigTest, SmokeTest) {
 
   FinchStarterHeuristicConfig config_enabled(base::FeatureParam<std::string>{
       &features::kAutofillAssistantUrlHeuristic1, "some_key", ""});
-  EXPECT_THAT(
-      config_enabled.GetConditionSetsForClientState(&fake_platform_delegate_),
-      SizeIs(1));
+  EXPECT_THAT(config_enabled.GetConditionSetsForClientState(
+                  &fake_platform_delegate_, &context_),
+              SizeIs(1));
 
   // UrlHeuristic2 was not enabled, so this should return the empty list.
   FinchStarterHeuristicConfig config_default_disabled(
       base::FeatureParam<std::string>{
           &features::kAutofillAssistantUrlHeuristic2, "some_key", ""});
   EXPECT_THAT(config_default_disabled.GetConditionSetsForClientState(
-                  &fake_platform_delegate_),
+                  &fake_platform_delegate_, &context_),
               IsEmpty());
 }
 
@@ -82,7 +86,8 @@ TEST_F(FinchStarterHeuristicConfigTest, DefaultHeuristicParsedCorrectly) {
   EXPECT_THAT(
       config.GetDenylistedDomains(),
       UnorderedElementsAreArray(std::vector<std::string>{"example.com"}));
-  EXPECT_EQ(config.GetConditionSetsForClientState(&fake_platform_delegate_),
+  EXPECT_EQ(config.GetConditionSetsForClientState(&fake_platform_delegate_,
+                                                  &context_),
             base::JSONReader::Read(R"([
             {
               "conditionSet":{
@@ -99,11 +104,13 @@ TEST_F(FinchStarterHeuristicConfigTest, DisabledForSupervisedUsers) {
       &features::kAutofillAssistantUrlHeuristic1, "some_key", ""});
 
   fake_platform_delegate_.is_supervised_user_ = true;
-  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_),
+  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_,
+                                                    &context_),
               IsEmpty());
 
   fake_platform_delegate_.is_supervised_user_ = false;
-  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_),
+  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_,
+                                                    &context_),
               SizeIs(1));
 }
 
@@ -114,11 +121,13 @@ TEST_F(FinchStarterHeuristicConfigTest,
       &features::kAutofillAssistantUrlHeuristic1, "some_key", ""});
 
   fake_platform_delegate_.is_allowed_for_machine_learning_ = false;
-  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_),
+  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_,
+                                                    &context_),
               IsEmpty());
 
   fake_platform_delegate_.is_allowed_for_machine_learning_ = true;
-  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_),
+  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_,
+                                                    &context_),
               SizeIs(1));
 }
 
@@ -128,11 +137,13 @@ TEST_F(FinchStarterHeuristicConfigTest, DisabledIfProactiveHelpSettingOff) {
       &features::kAutofillAssistantUrlHeuristic1, "some_key", ""});
 
   fake_platform_delegate_.proactive_help_enabled_ = false;
-  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_),
+  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_,
+                                                    &context_),
               IsEmpty());
 
   fake_platform_delegate_.proactive_help_enabled_ = true;
-  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_),
+  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_,
+                                                    &context_),
               SizeIs(1));
 }
 
@@ -156,7 +167,8 @@ TEST_F(FinchStarterHeuristicConfigTest, FlagsDefaultToFalse) {
 
   FinchStarterHeuristicConfig config(base::FeatureParam<std::string>{
       &features::kAutofillAssistantUrlHeuristic1, "some_key", ""});
-  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_),
+  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_,
+                                                    &context_),
               IsEmpty());
 }
 
@@ -185,22 +197,26 @@ TEST_F(FinchStarterHeuristicConfigTest, EnabledInCustomTabsOnly) {
   fake_platform_delegate_.is_web_layer_ = false;
   fake_platform_delegate_.is_tab_created_by_gsa_ = false;
   fake_platform_delegate_.is_custom_tab_ = true;
-  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_),
+  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_,
+                                                    &context_),
               IsEmpty());
 
   fake_platform_delegate_.is_tab_created_by_gsa_ = true;
   fake_platform_delegate_.is_custom_tab_ = true;
-  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_),
+  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_,
+                                                    &context_),
               SizeIs(1));
 
   fake_platform_delegate_.is_custom_tab_ = false;
-  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_),
+  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_,
+                                                    &context_),
               IsEmpty());
 
   // In reality, these two flags should be mutually exclusive.
   fake_platform_delegate_.is_custom_tab_ = true;
   fake_platform_delegate_.is_web_layer_ = true;
-  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_),
+  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_,
+                                                    &context_),
               IsEmpty());
 }
 
@@ -228,16 +244,19 @@ TEST_F(FinchStarterHeuristicConfigTest, EnabledInRegularTabsOnly) {
 
   fake_platform_delegate_.is_custom_tab_ = false;
   fake_platform_delegate_.is_web_layer_ = false;
-  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_),
+  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_,
+                                                    &context_),
               SizeIs(1));
 
   fake_platform_delegate_.is_custom_tab_ = true;
-  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_),
+  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_,
+                                                    &context_),
               IsEmpty());
 
   fake_platform_delegate_.is_custom_tab_ = false;
   fake_platform_delegate_.is_web_layer_ = true;
-  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_),
+  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_,
+                                                    &context_),
               IsEmpty());
 }
 
@@ -265,11 +284,13 @@ TEST_F(FinchStarterHeuristicConfigTest, EnabledInWeblayerOnly) {
 
   fake_platform_delegate_.is_custom_tab_ = false;
   fake_platform_delegate_.is_web_layer_ = true;
-  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_),
+  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_,
+                                                    &context_),
               SizeIs(1));
 
   fake_platform_delegate_.is_web_layer_ = false;
-  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_),
+  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_,
+                                                    &context_),
               IsEmpty());
 }
 
@@ -299,22 +320,26 @@ TEST_F(FinchStarterHeuristicConfigTest, EnabledForSignedOutUsers) {
   fake_platform_delegate_.is_web_layer_ = false;
   fake_platform_delegate_.is_custom_tab_ = true;
   fake_platform_delegate_.is_logged_in_ = true;
-  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_),
+  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_,
+                                                    &context_),
               SizeIs(1));
 
   fake_platform_delegate_.is_custom_tab_ = true;
   fake_platform_delegate_.is_logged_in_ = false;
-  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_),
+  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_,
+                                                    &context_),
               SizeIs(1));
 
   fake_platform_delegate_.is_custom_tab_ = false;
   fake_platform_delegate_.is_logged_in_ = true;
-  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_),
+  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_,
+                                                    &context_),
               IsEmpty());
 
   fake_platform_delegate_.is_custom_tab_ = false;
   fake_platform_delegate_.is_logged_in_ = false;
-  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_),
+  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_,
+                                                    &context_),
               IsEmpty());
 }
 
@@ -343,23 +368,27 @@ TEST_F(FinchStarterHeuristicConfigTest, EnabledWithoutMsbb) {
 
   fake_platform_delegate_.is_web_layer_ = false;
   fake_platform_delegate_.is_custom_tab_ = true;
-  fake_platform_delegate_.msbb_enabled_ = false;
-  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_),
+  fake_platform_delegate_.fake_common_dependencies_.msbb_enabled_ = false;
+  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_,
+                                                    &context_),
               SizeIs(1));
 
   fake_platform_delegate_.is_custom_tab_ = true;
-  fake_platform_delegate_.msbb_enabled_ = true;
-  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_),
+  fake_platform_delegate_.fake_common_dependencies_.msbb_enabled_ = true;
+  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_,
+                                                    &context_),
               SizeIs(1));
 
   fake_platform_delegate_.is_custom_tab_ = false;
-  fake_platform_delegate_.msbb_enabled_ = true;
-  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_),
+  fake_platform_delegate_.fake_common_dependencies_.msbb_enabled_ = true;
+  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_,
+                                                    &context_),
               IsEmpty());
 
   fake_platform_delegate_.is_custom_tab_ = false;
-  fake_platform_delegate_.msbb_enabled_ = false;
-  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_),
+  fake_platform_delegate_.fake_common_dependencies_.msbb_enabled_ = false;
+  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_,
+                                                    &context_),
               IsEmpty());
 }
 
@@ -392,11 +421,13 @@ TEST_F(FinchStarterHeuristicConfigTest, MultipleConditionSets) {
 
   fake_platform_delegate_.is_web_layer_ = false;
   fake_platform_delegate_.is_custom_tab_ = true;
-  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_),
+  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_,
+                                                    &context_),
               SizeIs(2));
 
   fake_platform_delegate_.is_custom_tab_ = false;
-  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_),
+  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_,
+                                                    &context_),
               IsEmpty());
 }
 

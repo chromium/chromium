@@ -590,7 +590,7 @@ TEST_F(StarterTest, RegularStartupFailsIfOnboardingRejected) {
 
 TEST_F(StarterTest, RpcTriggerScriptFailsIfMsbbIsDisabled) {
   SetupPlatformDelegateForReturningUser();
-  fake_platform_delegate_.msbb_enabled_ = false;
+  fake_platform_delegate_.fake_common_dependencies_.msbb_enabled_ = false;
   base::flat_map<std::string, std::string> script_parameters = {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "false"},
@@ -970,7 +970,7 @@ TEST_F(StarterTest, ImplicitStartupOnSupportedDomainWithoutLogin) {
   auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_list->InitAndEnableFeature(
       features::kAutofillAssistantInCCTTriggering);
-  fake_platform_delegate_.msbb_enabled_ = true;
+  fake_platform_delegate_.fake_common_dependencies_.msbb_enabled_ = true;
   fake_platform_delegate_.proactive_help_enabled_ = true;
   fake_platform_delegate_.is_logged_in_ = false;
   fake_platform_delegate_.is_web_layer_ = false;
@@ -1078,7 +1078,7 @@ TEST_F(StarterTest, DoNotStartImplicitlyIfNotLoggedInForWebLayer) {
   auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_list->InitAndEnableFeature(
       features::kAutofillAssistantInCCTTriggering);
-  fake_platform_delegate_.msbb_enabled_ = true;
+  fake_platform_delegate_.fake_common_dependencies_.msbb_enabled_ = true;
   fake_platform_delegate_.proactive_help_enabled_ = true;
   fake_platform_delegate_.is_logged_in_ = false;
   fake_platform_delegate_.is_web_layer_ = true;
@@ -1096,7 +1096,7 @@ TEST_F(StarterTest, ImplicitStartupOnSupportedDomainWithLoginForWebLayer) {
   auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_list->InitAndEnableFeature(
       features::kAutofillAssistantInCCTTriggering);
-  fake_platform_delegate_.msbb_enabled_ = true;
+  fake_platform_delegate_.fake_common_dependencies_.msbb_enabled_ = true;
   fake_platform_delegate_.proactive_help_enabled_ = true;
   fake_platform_delegate_.is_logged_in_ = true;
   fake_platform_delegate_.is_web_layer_ = true;

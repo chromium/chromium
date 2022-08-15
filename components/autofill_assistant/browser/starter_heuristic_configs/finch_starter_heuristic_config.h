@@ -60,7 +60,8 @@ class FinchStarterHeuristicConfig : public StarterHeuristicConfig {
   // Overrides HeuristicConfig:
   const std::string& GetIntent() const override;
   const base::Value::List& GetConditionSetsForClientState(
-      StarterPlatformDelegate* platform_delegate) const override;
+      StarterPlatformDelegate* platform_delegate,
+      content::BrowserContext* browser_context) const override;
   const base::flat_set<std::string>& GetDenylistedDomains() const override;
 
  private:

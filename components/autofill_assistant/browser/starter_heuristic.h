@@ -17,6 +17,10 @@
 #include "components/url_matcher/url_matcher_factory.h"
 #include "url/gurl.h"
 
+namespace content {
+class BrowserContext;
+}  // namespace content
+
 namespace autofill_assistant {
 
 // Utility that implements a heuristic for autofill-assistant URLs.
@@ -33,7 +37,8 @@ class StarterHeuristic : public base::RefCountedThreadSafe<StarterHeuristic> {
   // the current client state.
   void InitFromHeuristicConfigs(
       const std::vector<std::unique_ptr<StarterHeuristicConfig>>& configs,
-      StarterPlatformDelegate* platform_delegate);
+      StarterPlatformDelegate* platform_delegate,
+      content::BrowserContext* browser_context);
 
   // Returns true if at least one condition set is available. There is no point
   // in running the heuristic otherwise.

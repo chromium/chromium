@@ -52,6 +52,14 @@ class MockCommonDependencies : public CommonDependencies {
               (content::BrowserContext*),
               (const override));
   MOCK_METHOD(version_info::Channel, GetChannel, (), (const override));
+  MOCK_METHOD(bool,
+              GetMakeSearchesAndBrowsingBetterEnabled,
+              (content::BrowserContext*),
+              (const override));
+  MOCK_METHOD(bool,
+              GetMetricsReportingEnabled,
+              (content::BrowserContext*),
+              (const override));
 };
 
 }  // namespace autofill_assistant

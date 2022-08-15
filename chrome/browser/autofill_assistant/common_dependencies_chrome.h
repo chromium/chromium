@@ -55,6 +55,12 @@ class CommonDependenciesChrome : public CommonDependencies {
       content::BrowserContext* browser_context) const override;
 
   version_info::Channel GetChannel() const override;
+
+  bool GetMakeSearchesAndBrowsingBetterEnabled(
+      content::BrowserContext* browser_context) const override;
+
+  bool GetMetricsReportingEnabled(
+      content::BrowserContext* browser_context) const override;
 };
 
 }  // namespace autofill_assistant

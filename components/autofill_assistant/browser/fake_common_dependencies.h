@@ -36,6 +36,10 @@ class FakeCommonDependencies : public CommonDependencies {
   signin::IdentityManager* GetIdentityManager(
       content::BrowserContext* browser_context) const override;
   version_info::Channel GetChannel() const override;
+  bool GetMakeSearchesAndBrowsingBetterEnabled(
+      content::BrowserContext* browser_context) const override;
+  bool GetMetricsReportingEnabled(
+      content::BrowserContext* browser_context) const override;
 
   // Intentionally public to allow tests direct access.
   std::string locale_;
@@ -45,6 +49,8 @@ class FakeCommonDependencies : public CommonDependencies {
   bool is_allowed_for_machine_learning_ = true;
   bool is_weblayer_ = false;
   version_info::Channel channel_ = version_info::Channel::UNKNOWN;
+  bool msbb_enabled_ = true;
+  bool uma_enabled_ = true;
 };
 
 }  // namespace autofill_assistant

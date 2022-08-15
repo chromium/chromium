@@ -67,4 +67,14 @@ version_info::Channel FakeCommonDependencies::GetChannel() const {
   return channel_;
 }
 
+bool FakeCommonDependencies::GetMakeSearchesAndBrowsingBetterEnabled(
+    content::BrowserContext* browser_context) const {
+  return msbb_enabled_;
+}
+
+bool FakeCommonDependencies::GetMetricsReportingEnabled(
+    content::BrowserContext* browser_context) const {
+  return uma_enabled_;
+}
+
 }  // namespace autofill_assistant

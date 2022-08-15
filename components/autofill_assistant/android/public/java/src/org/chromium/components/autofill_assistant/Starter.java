@@ -32,7 +32,6 @@ public class Starter implements AssistantTabObserver, UserData {
 
     private final AssistantStaticDependencies mStaticDependencies;
     private final AssistantIsGsaFunction mIsGsaFunction;
-    private final AssistantIsMsbbEnabledFunction mIsMsbbEnabledFunction;
     private final AssistantModuleInstallUi.Provider mModuleInstallUiProvider;
 
     /**
@@ -70,12 +69,10 @@ public class Starter implements AssistantTabObserver, UserData {
      */
     public Starter(Supplier<Activity> activitySupplier, @Nullable WebContents webContents,
             AssistantStaticDependencies staticDependencies, AssistantIsGsaFunction isGsaFunction,
-            AssistantIsMsbbEnabledFunction isMsbbEnabledFunction,
             AssistantModuleInstallUi.Provider moduleInstallUiProvider) {
         mActivitySupplier = activitySupplier;
         mStaticDependencies = staticDependencies;
         mIsGsaFunction = isGsaFunction;
-        mIsMsbbEnabledFunction = isMsbbEnabledFunction;
         mModuleInstallUiProvider = moduleInstallUiProvider;
         detectWebContentsChange(webContents);
     }
@@ -283,11 +280,6 @@ public class Starter implements AssistantTabObserver, UserData {
     @CalledByNative
     private static void setProactiveHelpSettingEnabled(boolean enabled) {
         AutofillAssistantPreferencesUtil.setProactiveHelpPreference(enabled);
-    }
-
-    @CalledByNative
-    private boolean getMakeSearchesAndBrowsingBetterSettingEnabled() {
-        return mIsMsbbEnabledFunction.getAsBoolean();
     }
 
     private AutofillAssistantModuleEntry getModuleOrThrow() {

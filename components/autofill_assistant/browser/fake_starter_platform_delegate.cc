@@ -98,11 +98,6 @@ void FakeStarterPlatformDelegate::SetProactiveHelpSettingEnabled(bool enabled) {
   proactive_help_enabled_ = enabled;
 }
 
-bool FakeStarterPlatformDelegate::GetMakeSearchesAndBrowsingBetterEnabled()
-    const {
-  return msbb_enabled_;
-}
-
 bool FakeStarterPlatformDelegate::GetIsLoggedIn() {
   return is_logged_in_;
 }
