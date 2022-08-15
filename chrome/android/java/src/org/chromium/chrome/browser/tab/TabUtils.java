@@ -65,7 +65,8 @@ public class TabUtils {
      */
     @IntDef({LoadIfNeededCaller.SET_TAB, LoadIfNeededCaller.ON_ACTIVITY_SHOWN,
             LoadIfNeededCaller.ON_ACTIVITY_SHOWN_THEN_SHOW, LoadIfNeededCaller.REQUEST_TO_SHOW_TAB,
-            LoadIfNeededCaller.REQUEST_TO_SHOW_TAB_THEN_SHOW, LoadIfNeededCaller.OTHER})
+            LoadIfNeededCaller.REQUEST_TO_SHOW_TAB_THEN_SHOW,
+            LoadIfNeededCaller.ON_FINISH_NATIVE_INITIALIZATION, LoadIfNeededCaller.OTHER})
     @Retention(RetentionPolicy.SOURCE)
     public @interface LoadIfNeededCaller {
         int SET_TAB = 0;
@@ -73,7 +74,8 @@ public class TabUtils {
         int ON_ACTIVITY_SHOWN_THEN_SHOW = 2;
         int REQUEST_TO_SHOW_TAB = 3;
         int REQUEST_TO_SHOW_TAB_THEN_SHOW = 4;
-        int OTHER = 5;
+        int ON_FINISH_NATIVE_INITIALIZATION = 5;
+        int OTHER = 6;
     }
 
     // Do not instantiate this class.

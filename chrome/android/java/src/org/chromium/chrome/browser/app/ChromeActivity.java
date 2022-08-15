@@ -1682,16 +1682,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         mRemoveWindowBackgroundDone = true;
     }
 
-    /**
-     * @return The primary display size of the device, in inches.
-     */
-    private double getPrimaryDisplaySizeInInches() {
-        DisplayAndroid display = DisplayAndroid.getNonMultiDisplay(this);
-        double xInches = display.getDisplayWidth() / display.getXdpi();
-        double yInches = display.getDisplayHeight() / display.getYdpi();
-        return Math.sqrt(Math.pow(xInches, 2) + Math.pow(yInches, 2));
-    }
-
     @Override
     public void finishNativeInitialization() {
         mNativeInitialized = true;
@@ -1717,14 +1707,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         }
 
         super.finishNativeInitialization();
-
-        if (RequestDesktopUtils.maybeDefaultEnableGlobalSetting(
-                    getPrimaryDisplaySizeInInches(), Profile.getLastUsedRegularProfile())) {
-            // TODO(crbug.com/1350274): Remove this explicit load when this bug is addressed.
-            if (getActivityTab() != null) {
-                getActivityTab().loadIfNeeded(LoadIfNeededCaller.OTHER);
-            }
-        }
 
         mManualFillingComponentSupplier.get().initialize(getWindowAndroid(),
                 mRootUiCoordinator.getBottomSheetController(),

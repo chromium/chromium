@@ -87,6 +87,7 @@ import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.status_indicator.StatusIndicatorCoordinator;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsService;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsServiceFactory;
+import org.chromium.chrome.browser.tab.RequestDesktopUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -654,6 +655,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         if (!didTriggerPromo) {
             didTriggerPromo = triggerPromo(intentWithEffect);
+        }
+
+        if (!didTriggerPromo) {
+            didTriggerPromo = RequestDesktopUtils.maybeShowDefaultEnableGlobalSettingMessage(
+                    Profile.getLastUsedRegularProfile(), mMessageDispatcher, mActivity);
         }
 
         if (!didTriggerPromo) {

@@ -149,6 +149,8 @@ public class MessagesMetrics {
                 return "FramebustBlocked";
             case MessageIdentifier.INVALID_MESSAGE:
                 return "InvalidMessage";
+            case MessageIdentifier.DESKTOP_SITE_GLOBAL_DEFAULT_OPT_OUT:
+                return "DesktopSiteGlobalDefaultOptOut";
             default:
                 return "Unknown";
         }

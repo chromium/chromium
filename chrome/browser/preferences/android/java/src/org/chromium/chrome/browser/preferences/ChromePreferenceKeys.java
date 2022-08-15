@@ -242,6 +242,12 @@ public final class ChromePreferenceKeys {
      */
     public static final String DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING =
             "Chrome.RequestDesktopSiteGlobalSetting.DefaultEnabled";
+    /**
+     * Indicates whether an opt-out message should be shown after the desktop site global setting
+     * was enabled by default for a device.
+     */
+    public static final String DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_SHOW_MESSAGE =
+            "Chrome.RequestDesktopSiteGlobalSetting.DefaultEnabledShowMessage";
 
     public static final String DOWNLOAD_AUTO_RESUMPTION_ATTEMPT_LEFT = "ResumptionAttemptLeft";
     public static final String DOWNLOAD_FOREGROUND_SERVICE_OBSERVERS = "ForegroundServiceObservers";
@@ -1019,6 +1025,7 @@ public final class ChromePreferenceKeys {
                 DEFAULT_BROWSER_PROMO_PROMOED_COUNT,
                 DEFAULT_BROWSER_PROMO_SESSION_COUNT,
                 DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING,
+                DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_SHOW_MESSAGE,
                 DOWNLOAD_INTERSTITIAL_DOWNLOAD_PENDING_REMOVAL,
                 EXPLORE_OFFLINE_CONTENT_AVAILABILITY_STATUS,
                 FEED_ARTICLES_LIST_VISIBLE,

@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.reengagement.ReengagementNotificationController;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.tab.RequestDesktopUtils;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
@@ -313,5 +314,13 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
      */
     void handleCloseAnimation(Runnable finishRunnable) {
         mCustomTabHeightStrategy.handleCloseAnimation(finishRunnable);
+    }
+
+    /**
+     * Runs a set of deferred startup tasks.
+     */
+    void onDeferredStartup() {
+        RequestDesktopUtils.maybeShowDefaultEnableGlobalSettingMessage(
+                Profile.getLastUsedRegularProfile(), mMessageDispatcher, mActivity);
     }
 }

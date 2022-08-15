@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.tab;
 
+import android.content.Context;
+import android.content.res.Resources;
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
@@ -11,17 +13,25 @@ import androidx.annotation.Nullable;
 import org.chromium.base.SysUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.page_info.SiteSettingsHelper;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
+import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.messages.MessageBannerProperties;
+import org.chromium.components.messages.MessageDispatcher;
+import org.chromium.components.messages.MessageIdentifier;
+import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.content_public.browser.BrowserContextHandle;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
@@ -39,6 +49,8 @@ public class RequestDesktopUtils {
     static final double DEFAULT_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES = 12.0;
     static final String PARAM_GLOBAL_SETTING_DEFAULT_ON_ON_LOW_END_DEVICES =
             "default_on_on_low_end_devices";
+    static final String PARAM_SHOW_MESSAGE_ON_GLOBAL_SETTING_DEFAULT_ON =
+            "show_message_on_default_on";
 
     // Note: these values must match the UserAgentRequestType enum in enums.xml.
     @IntDef({UserAgentRequestType.REQUEST_DESKTOP, UserAgentRequestType.REQUEST_MOBILE})
@@ -186,6 +198,73 @@ public class RequestDesktopUtils {
                 profile, ContentSettingsType.REQUEST_DESKTOP_SITE, true);
         SharedPreferencesManager.getInstance().writeBoolean(
                 ChromePreferenceKeys.DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING, true);
+        // This key will be added only once, since this method will be invoked only once on a
+        // device. Once the corresponding message is shown, the key will be removed since the
+        // message will also be shown at most once.
+        SharedPreferencesManager.getInstance().writeBoolean(
+                ChromePreferenceKeys.DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_SHOW_MESSAGE,
+                true);
+        return true;
+    }
+
+    /**
+     * Creates and shows a message to notify the user of a default update to the desktop site global
+     * setting.
+     * @param profile The current {@link Profile}.
+     * @param messageDispatcher The {@link MessageDispatcher} to enqueue the message.
+     * @param context The current context.
+     * @return Whether the message was shown.
+     */
+    public static boolean maybeShowDefaultEnableGlobalSettingMessage(
+            Profile profile, MessageDispatcher messageDispatcher, Context context) {
+        if (messageDispatcher == null) return false;
+
+        // Present the message only if the global setting has been default-enabled.
+        if (!SharedPreferencesManager.getInstance().contains(
+                    ChromePreferenceKeys
+                            .DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_SHOW_MESSAGE)) {
+            return false;
+        }
+
+        // Since there might be a delay in triggering this message after the desktop site global
+        // setting is default-enabled, it could be possible that the user subsequently disabled the
+        // setting. Present the message only if the setting is enabled.
+        if (!WebsitePreferenceBridge.isCategoryEnabled(
+                    profile, ContentSettingsType.REQUEST_DESKTOP_SITE)) {
+            SharedPreferencesManager.getInstance().removeKey(
+                    ChromePreferenceKeys.DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_SHOW_MESSAGE);
+            return false;
+        }
+
+        // Do not show the message if disabled through Finch.
+        if (!ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                    ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS,
+                    PARAM_SHOW_MESSAGE_ON_GLOBAL_SETTING_DEFAULT_ON, true)) {
+            return false;
+        }
+
+        Resources resources = context.getResources();
+        PropertyModel message =
+                new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                        .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                MessageIdentifier.DESKTOP_SITE_GLOBAL_DEFAULT_OPT_OUT)
+                        .with(MessageBannerProperties.TITLE,
+                                resources.getString(R.string.rds_global_default_on_message_title))
+                        .with(MessageBannerProperties.ICON_RESOURCE_ID,
+                                R.drawable.ic_desktop_windows)
+                        .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT,
+                                resources.getString(R.string.rds_global_default_on_message_button))
+                        .with(MessageBannerProperties.ON_PRIMARY_ACTION,
+                                () -> {
+                                    SiteSettingsHelper.showCategorySettings(context,
+                                            SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE);
+                                    return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
+                                })
+                        .build();
+
+        messageDispatcher.enqueueWindowScopedMessage(message, false);
+        SharedPreferencesManager.getInstance().removeKey(
+                ChromePreferenceKeys.DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_SHOW_MESSAGE);
         return true;
     }
 }

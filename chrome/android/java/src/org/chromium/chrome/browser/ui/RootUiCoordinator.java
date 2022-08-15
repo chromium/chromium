@@ -107,8 +107,10 @@ import org.chromium.chrome.browser.share.scroll_capture.ScrollCaptureManager;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsServiceFactory;
 import org.chromium.chrome.browser.tab.AccessibilityVisibilityHandler;
 import org.chromium.chrome.browser.tab.AutofillSessionLifetimeController;
+import org.chromium.chrome.browser.tab.RequestDesktopUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabUtils.LoadIfNeededCaller;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
@@ -160,6 +162,7 @@ import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -789,6 +792,15 @@ public class RootUiCoordinator
         }
 
         new OneShotCallback<>(mProfileSupplier, this::initHistoryClustersCoordinator);
+
+        if (RequestDesktopUtils.maybeDefaultEnableGlobalSetting(
+                    getPrimaryDisplaySizeInInches(), Profile.getLastUsedRegularProfile())) {
+            // TODO(crbug.com/1350274): Remove this explicit load when this bug is addressed.
+            if (mActivityTabProvider != null && mActivityTabProvider.get() != null) {
+                mActivityTabProvider.get().loadIfNeeded(
+                        LoadIfNeededCaller.ON_FINISH_NATIVE_INITIALIZATION);
+            }
+        }
     }
 
     private void initIncognitoReauthController() {
@@ -801,6 +813,16 @@ public class RootUiCoordinator
                         mActivityLifecycleDispatcher, mLayoutStateProviderOneShotSupplier,
                         mProfileSupplier, incognitoReauthCoordinatorFactory);
         mIncognitoReauthControllerOneshotSupplier.set(incognitoReauthController);
+    }
+
+    /**
+     * @return The primary display size of the device, in inches.
+     */
+    private double getPrimaryDisplaySizeInInches() {
+        DisplayAndroid display = DisplayAndroid.getNonMultiDisplay(mActivity);
+        double xInches = display.getDisplayWidth() / display.getXdpi();
+        double yInches = display.getDisplayHeight() / display.getYdpi();
+        return Math.sqrt(Math.pow(xInches, 2) + Math.pow(yInches, 2));
     }
 
     /**

@@ -3859,6 +3859,14 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Take survey
       </message>
 
+      <!-- Request Desktop Site -->
+      <message name="IDS_RDS_GLOBAL_DEFAULT_ON_MESSAGE_TITLE" desc="Title of the message shown when the desktop site global setting is default-enabled on premium tablets.">
+        Desktop sites requested by default
+      </message>
+      <message name="IDS_RDS_GLOBAL_DEFAULT_ON_MESSAGE_BUTTON" desc="Text on the button reflecting an opt-out of the default setting update.">
+        Update settings
+      </message>
+
       <!-- Accessibility -->
 
       <message name="IDS_ACCESSIBILITY_TOOLBAR_BTN_MENU_UPDATE" desc="Content description for the menu button when it is covered by the update icon that is displayed when a newer version of Chrome is available.">

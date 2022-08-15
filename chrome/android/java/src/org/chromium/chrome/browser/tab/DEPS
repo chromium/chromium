@@ -72,6 +72,9 @@ specific_include_rules = {
     "+chrome/android/java/src/org/chromium/chrome/browser/LaunchIntentDispatcher.java",
     "+chrome/android/java/src/org/chromium/chrome/browser/customtabs/CustomTabIntentDataProvider.java",
   ],
+  'RequestDesktopUtils\.java': [
+    "+chrome/android/java/src/org/chromium/chrome/browser/page_info/SiteSettingsHelper.java"
+  ],
   'TabImpl\.java': [
     "+chrome/android/features/vr/java/src/org/chromium/chrome/browser/vr/VrModuleProvider.java",
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
@@ -110,5 +113,5 @@ specific_include_rules = {
   ],
   'TabWebContentsObserver\.java': [
     "+chrome/android/java/src/org/chromium/chrome/browser/display_cutout/DisplayCutoutTabHelper.java",
-  ]
+  ],
 }

@@ -65757,6 +65757,7 @@ Called by update_use_counter_css.py.-->
   <int value="30" label="OfferNotification"/>
   <int value="31" label="ExternalNavigation"/>
   <int value="32" label="FramebustBlocked"/>
+  <int value="33" label="DesktopSiteGlobalDefaultOptOut"/>
 </enum>
 
 <enum name="MessageLoopProblems">
