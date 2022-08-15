@@ -14,6 +14,8 @@
 #include "crypto/openssl_util.h"
 #include "third_party/boringssl/src/include/openssl/rand.h"
 
+#include <sys/random.h>
+
 namespace webcrypto {
 
 Status GenerateWebCryptoSecretKey(const blink::WebCryptoKeyAlgorithm& algorithm,
@@ -21,17 +23,21 @@ Status GenerateWebCryptoSecretKey(const blink::WebCryptoKeyAlgorithm& algorithm,
                                   blink::WebCryptoKeyUsageMask usages,
                                   unsigned int keylen_bits,
                                   GenerateKeyResult* result) {
-  // https://linear.app/replay/issue/RUN-470
-  recordreplay::Assert("GenerateWebCryptoSecretKey %u", keylen_bits);
-
   crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
 
   unsigned int keylen_bytes = NumBitsToBytes(keylen_bits);
   std::vector<uint8_t> random_bytes(keylen_bytes, 0);
 
   if (keylen_bytes > 0) {
-    if (!RAND_bytes(random_bytes.data(), keylen_bytes))
-      return Status::OperationError();
+    // Avoid calling RAND_bytes when recording/replaying as it can behave in
+    // non-deterministic ways.
+    if (recordreplay::IsRecordingOrReplaying()) {
+      if (getrandom(random_bytes.data(), keylen_bytes, 0) != keylen_bytes)
+        return Status::OperationError();
+    } else {
+      if (!RAND_bytes(random_bytes.data(), keylen_bytes))
+        return Status::OperationError();
+    }
     TruncateToBitLength(keylen_bits, &random_bytes);
   }
 
