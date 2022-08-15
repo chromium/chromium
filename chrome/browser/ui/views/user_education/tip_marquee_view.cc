@@ -119,7 +119,7 @@ class TestTipMarqueeViewLearnMoreBubble
   }
 
  private:
-  void OnAccept() { marquee_->ClearTip(); }
+  void OnAccept() { marquee_->ClearAndHideTip(); }
 
   const raw_ptr<TipMarqueeView> marquee_;
 };
@@ -137,9 +137,9 @@ void MaybeShowTestTipMarqueeView(TipMarqueeView* marquee) {
     const std::string test_type =
         command_line->GetSwitchValueASCII(kTipMarqueeViewTestSwitch);
     if (test_type == kTipMarqueeViewTestTypeSimple) {
-      marquee->SetTip(kTipMarqueeViewTestText);
+      marquee->SetAndShowTip(kTipMarqueeViewTestText);
     } else if (test_type == kTipMarqueeViewTestTypeLearnMore) {
-      marquee->SetTip(
+      marquee->SetAndShowTip(
           kTipMarqueeViewTestText,
           base::BindRepeating(&ShowTestTipMarqueeViewLearnMoreBubble));
     } else {
@@ -183,7 +183,7 @@ class TipMarqueeOverflowBubbleView : public views::BubbleDialogDelegateView {
  private:
   void OnAccept() {
     LOG(WARNING) << "OnAccept()";
-    tip_marquee_view_->ClearTip();
+    tip_marquee_view_->ClearAndHideTip();
   }
 
   const raw_ptr<TipMarqueeView> tip_marquee_view_;
@@ -198,10 +198,10 @@ constexpr int TipMarqueeView::kTipMarqueeIconSize;
 constexpr int TipMarqueeView::kTipMarqueeIconPadding;
 constexpr int TipMarqueeView::kTipMarqueeIconTotalWidth;
 
-TipMarqueeView::TipMarqueeView(int text_context, int text_style) {
+TipMarqueeView::TipMarqueeView() {
   tip_text_label_ = AddChildView(std::make_unique<views::StyledLabel>());
-  tip_text_label_->SetTextContext(text_context);
-  tip_text_label_->SetDefaultTextStyle(text_style);
+  tip_text_label_->SetTextContext(views::style::CONTEXT_LABEL);
+  tip_text_label_->SetDefaultTextStyle(views::style::STYLE_PRIMARY);
   // TODO(dfried): Figure out how to set elide behavior.
   // tip_text_label_->SetElideBehavior(gfx::ElideBehavior::ELIDE_TAIL);
 
@@ -215,7 +215,7 @@ TipMarqueeView::TipMarqueeView(int text_context, int text_style) {
 
 TipMarqueeView::~TipMarqueeView() = default;
 
-bool TipMarqueeView::SetTip(
+bool TipMarqueeView::SetAndShowTip(
     const std::u16string& tip_text,
     LearnMoreLinkClickedCallback learn_more_link_clicked_callback) {
   tip_text_ = tip_text;
@@ -239,7 +239,7 @@ bool TipMarqueeView::SetTip(
   return !collapsed_;
 }
 
-void TipMarqueeView::ClearTip() {
+void TipMarqueeView::ClearAndHideTip() {
   if (show_tip_widget_)
     show_tip_widget_->Close();
   tip_text_label_->SetText(std::u16string());
@@ -322,7 +322,7 @@ std::u16string TipMarqueeView::GetTooltipText(const gfx::Point& p) const {
 
 void TipMarqueeView::LinkClicked() {
   if (!learn_more_link_clicked_callback_) {
-    ClearTip();
+    ClearAndHideTip();
     return;
   }
   if (GetProperty(views::kAnchoredDialogKey))
