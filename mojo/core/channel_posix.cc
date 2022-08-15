@@ -201,15 +201,23 @@ bool ChannelPosix::GetReadPlatformHandles(const void* payload,
                                           bool* deferred) {
   if (num_handles > std::numeric_limits<uint16_t>::max())
     return false;
-  if (incoming_fds_.size() < num_handles)
-    return true;
 
-  handles->resize(num_handles);
-  for (size_t i = 0; i < num_handles; ++i) {
-    handles->at(i) = PlatformHandle(std::move(incoming_fds_.front()));
-    incoming_fds_.pop_front();
+  return GetReadPlatformHandlesForIpcz(num_handles, *handles);
+}
+
+bool ChannelPosix::GetReadPlatformHandlesForIpcz(
+    size_t num_handles,
+    std::vector<PlatformHandle>& handles) {
+  if (incoming_fds_.size() < num_handles) {
+    return true;
   }
 
+  DCHECK(handles.empty());
+  handles.reserve(num_handles);
+  while (num_handles--) {
+    handles.emplace_back(std::move(incoming_fds_.front()));
+    incoming_fds_.pop_front();
+  }
   return true;
 }
 

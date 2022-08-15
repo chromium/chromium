@@ -110,9 +110,9 @@ class MessageView {
     offset_ += num_bytes;
   }
 
-  std::vector<PlatformHandleInTransit> TakeHandles() {
-    if (handles_.empty())
-      return std::vector<PlatformHandleInTransit>();
+  std::vector<PlatformHandleInTransit> TakeHandles(bool unwrap_fds) {
+    if (handles_.empty() || !unwrap_fds)
+      return std::move(handles_);
 
     // We can only pass Fuchsia handles via IPC, so unwrap any FDIO file-
     // descriptors in |handles_| into the underlying handles, with metadata in
@@ -231,6 +231,22 @@ class ChannelFuchsia : public Channel,
     return true;
   }
 
+  bool GetReadPlatformHandlesForIpcz(
+      size_t num_handles,
+      std::vector<PlatformHandle>& handles) override {
+    if (incoming_handles_.size() < num_handles) {
+      return true;
+    }
+
+    DCHECK(handles.empty());
+    handles.reserve(num_handles);
+    for (size_t i = 0; i < num_handles; ++i) {
+      handles.emplace_back(std::move(incoming_handles_.front()));
+      incoming_handles_.pop_front();
+    }
+    return true;
+  }
+
  private:
   ~ChannelFuchsia() override { DCHECK(!read_watch_); }
 
@@ -333,7 +349,7 @@ class ChannelFuchsia : public Channel,
       message_view.advance_data_offset(write_bytes);
 
       std::vector<PlatformHandleInTransit> outgoing_handles =
-          message_view.TakeHandles();
+          message_view.TakeHandles(/*unwrap_fds=*/!is_for_ipcz());
       zx_handle_t handles[ZX_CHANNEL_MAX_MSG_HANDLES] = {};
       size_t handles_count = outgoing_handles.size();
 

@@ -49,6 +49,8 @@ class TestChannel : public Channel {
                     size_t extra_header_size,
                     std::vector<PlatformHandle>* handles,
                     bool* deferred));
+  MOCK_METHOD2(GetReadPlatformHandlesForIpcz,
+               bool(size_t, std::vector<PlatformHandle>&));
   MOCK_METHOD0(Start, void());
   MOCK_METHOD0(ShutDownImpl, void());
   MOCK_METHOD0(LeakHandle, void());

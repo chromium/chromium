@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/nonscannable_memory.h"
 #include "base/memory/raw_ptr.h"
@@ -127,6 +128,20 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
       char padding[6];
     };
 
+    // Header used for all messages when the Channel backs an ipcz transport.
+    struct ALIGNAS(8) IpczHeader {
+      // The size of this header in bytes. Used for versioning.
+      uint16_t size;
+
+      // Number of handles attached to the message, out-of-band from its data.
+      // Always zero on Windows, where handles are serialized as inlined data.
+      uint16_t num_handles;
+
+      // Total size of this message in bytes. This is the size of this header
+      // plus the size of any message data immediately following it.
+      uint32_t num_bytes;
+    };
+
 #if BUILDFLAG(IS_MAC)
     struct MachPortsEntry {
       // The PlatformHandle::Type.
@@ -175,6 +190,9 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
                                     size_t max_handles,
                                     size_t payload_size,
                                     MessageType message_type);
+
+    static MessagePtr CreateIpczMessage(base::span<const uint8_t> data,
+                                        std::vector<PlatformHandle> handles);
 
     // Extends the portion of the total message capacity which contains
     // meaningful payload data. Storage capacity which falls outside of this
@@ -256,9 +274,12 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
 
   // Delegate methods are called from the I/O task runner with which the Channel
   // was created (see Channel::Create).
-  class Delegate {
+  class MOJO_SYSTEM_IMPL_EXPORT Delegate {
    public:
     virtual ~Delegate() = default;
+
+    // Indicates whether the listener on this Channel is an ipcz transport.
+    virtual bool IsIpczTransport() const;
 
     // Notify of a received message. |payload| is not owned and must not be
     // retained; it will be null if |payload_size| is 0. |handles| are
@@ -269,6 +290,11 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
 
     // Notify that an error has occured and the Channel will cease operation.
     virtual void OnChannelError(Error error) = 0;
+
+    // Notify that the Channel is about to be destroyed and will definitely not
+    // call into the Delegate again. Only called for Channels that back an ipcz
+    // transport.
+    virtual void OnChannelDestroyed();
   };
 
   // Creates a new Channel around a |platform_handle|, taking ownership of the
@@ -281,6 +307,17 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
       HandlePolicy handle_policy,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
 
+  // Creates a new Channel similar to above, but for use as a driver transport
+  // in the ipcz-based Mojo implementation. The main difference between these
+  // Channel instances and others is that these ones use a simplified message
+  // header, and the Channel is no longer responsible for encoding or decoding
+  // any metadata about transmitted PlatformHandles, since the ipcz driver takes
+  // care of that.
+  static scoped_refptr<Channel> CreateForIpczDriver(
+      Delegate* delegate,
+      PlatformChannelEndpoint endpoint,
+      scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
+
   Channel(const Channel&) = delete;
   Channel& operator=(const Channel&) = delete;
 
@@ -290,6 +327,8 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
 #endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_MAC)
 
   static void set_use_trivial_messages(bool use_trivial_messages);
+
+  bool is_for_ipcz() const { return is_for_ipcz_; }
 
   // SupportsChannelUpgrade will return true if this channel is capable of being
   // upgraded.
@@ -412,6 +451,15 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
                                       std::vector<PlatformHandle>* handles,
                                       bool* deferred) = 0;
 
+  // Consumes exactly `num_handles` received handles and appends them to
+  // `handles` before returning true. If the Channel doesn't have enough
+  // unconsumed handles ready to satisfy this request, `handles` is unmodified
+  // but this still returns true. If any kind of error condition is detected,
+  // this returns false.
+  virtual bool GetReadPlatformHandlesForIpcz(
+      size_t num_handles,
+      std::vector<PlatformHandle>& handles) = 0;
+
   // Handles a received control message. Returns |true| if the message is
   // accepted, or |false| otherwise.
   virtual bool OnControlMessage(Message::MessageType message_type,
@@ -424,6 +472,7 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
 
   class ReadBuffer;
 
+  const bool is_for_ipcz_;
   raw_ptr<Delegate> delegate_;
   HandlePolicy handle_policy_;
   const std::unique_ptr<ReadBuffer> read_buffer_;

@@ -49,6 +49,10 @@ class MojoTestBase : public testing::Test {
 
     ~ClientController();
 
+#if !BUILDFLAG(IS_IOS)
+    const base::Process& process() const { return helper_.test_child(); }
+#endif
+
     MojoHandle pipe() const { return pipe_.get().value(); }
 
     int WaitForShutdown();
@@ -76,6 +80,14 @@ class MojoTestBase : public testing::Test {
     ClientController& c = StartClient(client_name);
     handler(c.pipe());
     return c.WaitForShutdown();
+  }
+
+  template <typename HandlerFunc>
+  void RunTestClientWithController(const std::string& client_name,
+                                   HandlerFunc handler) {
+    ClientController& c = StartClient(client_name);
+    handler(c);
+    EXPECT_EQ(0, c.WaitForShutdown());
   }
 
   // Closes a handle and expects success.

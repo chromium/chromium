@@ -194,6 +194,14 @@ class ChannelWin : public Channel,
     return true;
   }
 
+  bool GetReadPlatformHandlesForIpcz(
+      size_t num_handles,
+      std::vector<PlatformHandle>& handles) override {
+    // Always a validation failure if we're asked for handles on Windows,
+    // because ChannelWin for ipcz never sends handles out-of-band from data.
+    return false;
+  }
+
  private:
   // May run on any thread.
   ~ChannelWin() override = default;

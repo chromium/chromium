@@ -11,6 +11,7 @@
 #include <limits>
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "base/memory/nonscannable_memory.h"
 #include "base/memory/ptr_util.h"
@@ -84,6 +85,57 @@ Channel::AlignedBuffer MakeAlignedBuffer(size_t size) {
 }
 
 struct TrivialMessage;
+
+// The type of message always used by a Channel which backs an ipcz transport.
+// Most of the inherited Message interface is unused since it's only called by
+// the original Mojo Core implementation.
+struct IpczMessage : public Channel::Message {
+  IpczMessage(base::span<const uint8_t> data,
+              std::vector<PlatformHandle> handles)
+      : data_(sizeof(IpczHeader) + data.size()) {
+    size_ = data_.size();
+    IpczHeader& header = *reinterpret_cast<IpczHeader*>(data_.data());
+    header.size = sizeof(IpczHeader);
+
+    DCHECK_LE(handles.size(), std::numeric_limits<uint16_t>::max());
+    DCHECK_LE(data_.size(), std::numeric_limits<uint32_t>::max());
+    header.num_handles = static_cast<uint16_t>(handles.size());
+    header.num_bytes = static_cast<uint32_t>(data_.size());
+    memcpy(&header + 1, data.data(), data.size());
+
+    handles_.reserve(handles.size());
+    for (PlatformHandle& handle : handles) {
+      handles_.emplace_back(std::move(handle));
+    }
+  }
+  ~IpczMessage() override = default;
+
+  // Channel::Message:
+  void SetHandles(std::vector<PlatformHandle>) override { NOTREACHED(); }
+  void SetHandles(std::vector<PlatformHandleInTransit>) override {
+    NOTREACHED();
+  }
+  std::vector<PlatformHandleInTransit> TakeHandles() override {
+    return std::move(handles_);
+  }
+  size_t NumHandlesForTransit() const override { return handles_.size(); }
+
+  const void* data() const override { return data_.data(); }
+  void* mutable_data() const override {
+    NOTREACHED();
+    return nullptr;
+  }
+  size_t capacity() const override { return data_.size(); }
+
+  bool ExtendPayload(size_t) override {
+    NOTREACHED();
+    return false;
+  }
+
+ private:
+  std::vector<uint8_t> data_;
+  std::vector<PlatformHandleInTransit> handles_;
+};
 
 // A complex message can be large or contain file handles.
 struct ComplexMessage : public Channel::Message {
@@ -219,6 +271,13 @@ Channel::MessagePtr Channel::Message::CreateMessage(size_t capacity,
 
   return base::WrapUnique<Channel::Message>(
       new ComplexMessage(capacity, payload_size, max_handles, message_type));
+}
+
+// static
+Channel::MessagePtr Channel::Message::CreateIpczMessage(
+    base::span<const uint8_t> data,
+    std::vector<PlatformHandle> handles) {
+  return std::make_unique<IpczMessage>(data, std::move(handles));
 }
 
 // static
@@ -803,20 +862,47 @@ class Channel::ReadBuffer {
   size_t num_occupied_bytes_ = 0;
 };
 
+bool Channel::Delegate::IsIpczTransport() const {
+  return false;
+}
+
+void Channel::Delegate::OnChannelDestroyed() {}
+
 Channel::Channel(Delegate* delegate,
                  HandlePolicy handle_policy,
                  DispatchBufferPolicy buffer_policy)
-    : delegate_(delegate),
+    : is_for_ipcz_(delegate ? delegate->IsIpczTransport() : false),
+      delegate_(delegate),
       handle_policy_(handle_policy),
       read_buffer_(buffer_policy == DispatchBufferPolicy::kManaged
                        ? new ReadBuffer
                        : nullptr) {}
 
-Channel::~Channel() = default;
+Channel::~Channel() {
+  if (is_for_ipcz()) {
+    DCHECK(delegate_);
+    delegate_->OnChannelDestroyed();
+  }
+}
+
+// static
+scoped_refptr<Channel> Channel::CreateForIpczDriver(
+    Delegate* delegate,
+    PlatformChannelEndpoint endpoint,
+    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner) {
+  scoped_refptr<Channel> channel =
+      Create(delegate, ConnectionParams(std::move(endpoint)),
+             HandlePolicy::kAcceptHandles, std::move(io_task_runner));
+  return channel;
+}
 
 void Channel::ShutDown() {
   ShutDownImpl();
-  delegate_ = nullptr;
+  if (!is_for_ipcz()) {
+    // When Channel is used for an ipcz transport, we leave `delegate_` intact
+    // so the Channel can notify once it's finally being destroyed.
+    delegate_ = nullptr;
+  }
 }
 
 char* Channel::GetReadBuffer(size_t* buffer_capacity) {
@@ -833,7 +919,10 @@ bool Channel::OnReadComplete(size_t bytes_read, size_t* next_read_size_hint) {
   DCHECK(read_buffer_);
   *next_read_size_hint = kReadBufferSize;
   read_buffer_->Claim(bytes_read);
-  while (read_buffer_->num_occupied_bytes() >= sizeof(Message::LegacyHeader)) {
+
+  const size_t header_size = is_for_ipcz_ ? sizeof(Message::IpczHeader)
+                                          : sizeof(Message::LegacyHeader);
+  while (read_buffer_->num_occupied_bytes() >= header_size) {
     // Ensure the occupied data is properly aligned. If it isn't, a SIGBUS could
     // happen on architectures that don't allow misaligned words access (i.e.
     // anything other than x86). Only re-align when necessary to avoid copies.
@@ -865,6 +954,39 @@ Channel::DispatchResult Channel::TryDispatchMessage(
     size_t* size_hint) {
   TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("toplevel.ipc"),
               "Mojo dispatch message");
+  if (is_for_ipcz_) {
+    // This has already been validated.
+    DCHECK_GE(buffer.size(), sizeof(Message::IpczHeader));
+
+    const auto& header =
+        *reinterpret_cast<const Message::IpczHeader*>(buffer.data());
+    const size_t header_size = header.size;
+    const size_t num_bytes = header.num_bytes;
+    const size_t num_handles = header.num_handles;
+    if (header_size < sizeof(header) || num_bytes < header_size) {
+      return DispatchResult::kError;
+    }
+
+    if (buffer.size() < num_bytes) {
+      *size_hint = num_bytes - buffer.size();
+      return DispatchResult::kNotEnoughData;
+    }
+
+    std::vector<PlatformHandle> handles;
+    if (num_handles > 0) {
+      if (handle_policy_ == HandlePolicy::kRejectHandles ||
+          !GetReadPlatformHandlesForIpcz(num_handles, handles)) {
+        return DispatchResult::kError;
+      }
+      if (handles.empty()) {
+        return DispatchResult::kMissingHandles;
+      }
+    }
+    auto data = buffer.first(num_bytes).subspan(header_size);
+    delegate_->OnChannelMessage(data.data(), data.size(), std::move(handles));
+    *size_hint = num_bytes;
+    return DispatchResult::kOK;
+  }
 
   // We have at least enough data available for a LegacyHeader.
   const Message::LegacyHeader* legacy_header =

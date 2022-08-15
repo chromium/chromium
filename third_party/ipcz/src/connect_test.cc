@@ -189,6 +189,13 @@ MULTINODE_TEST_NODE(ConnectTestNode, BadNonBrokerReferralClient) {
                                  std::size(kBadMessage), nullptr, 0,
                                  IPCZ_NO_FLAGS, nullptr));
 
+  auto ignore_activity =
+      [](IpczHandle, const void*, size_t, const IpczDriverHandle*, size_t,
+         IpczTransportActivityFlags, const void*) { return IPCZ_RESULT_OK; };
+  EXPECT_EQ(IPCZ_RESULT_OK, GetDriver().ActivateTransport(
+                                transports.theirs, IPCZ_INVALID_HANDLE,
+                                ignore_activity, IPCZ_NO_FLAGS, nullptr));
+
   // Now refer our imaginary other node using our end of the transport. The
   // broker should reject the referral and we should eventually observe
   // disconnection of our initial portal to the referred node.
@@ -198,6 +205,9 @@ MULTINODE_TEST_NODE(ConnectTestNode, BadNonBrokerReferralClient) {
                                IPCZ_CONNECT_NODE_SHARE_BROKER, nullptr, &p));
   EXPECT_EQ(IPCZ_RESULT_OK, WaitForConditionFlags(p, IPCZ_TRAP_PEER_CLOSED));
   CloseAll({b, p});
+
+  EXPECT_EQ(IPCZ_RESULT_OK, GetDriver().DeactivateTransport(
+                                transports.theirs, IPCZ_NO_FLAGS, nullptr));
   EXPECT_EQ(IPCZ_RESULT_OK,
             GetDriver().Close(transports.theirs, IPCZ_NO_FLAGS, nullptr));
 }
