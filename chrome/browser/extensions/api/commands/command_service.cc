@@ -639,21 +639,17 @@ void CommandService::RemoveKeybindingPrefs(const std::string& extension_id,
     if (!IsForCurrentPlatform(it.first))
       continue;
 
-    const base::DictionaryValue* item = nullptr;
-    it.second.GetAsDictionary(&item);
+    const base::Value::Dict& dict = it.second.GetDict();
+    const std::string* extension = dict.FindString(kExtension);
 
-    std::string extension;
-    item->GetString(kExtension, &extension);
-
-    if (extension == extension_id) {
+    if (extension && *extension == extension_id) {
       // If |command_name| is specified, delete only that command. Otherwise,
       // delete all commands.
-      std::string command;
-      item->GetString(kCommandName, &command);
-      if (!command_name.empty() && command_name != command)
+      const std::string* command = dict.FindString(kCommandName);
+      if (command && !command_name.empty() && command_name != *command)
         continue;
 
-      removed_commands.push_back(FindCommandByName(extension_id, command));
+      removed_commands.push_back(FindCommandByName(extension_id, *command));
       keys_to_remove.push_back(it.first);
     }
   }
