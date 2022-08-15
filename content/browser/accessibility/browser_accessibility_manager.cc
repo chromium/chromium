@@ -14,6 +14,7 @@
 #include "base/auto_reset.h"
 #include "base/containers/adapters.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
 #include "base/trace_event/trace_event.h"
@@ -504,6 +505,9 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
     const AXEventNotificationDetails& details) {
   TRACE_EVENT0("accessibility",
                "BrowserAccessibilityManager::OnAccessibilityEvents");
+  SCOPED_UMA_HISTOGRAM_TIMER(
+      "Accessibility.Performance.BrowserAccessibilityManager::"
+      "OnAccessibilityEvents");
 
 #if DCHECK_IS_ON()
   base::AutoReset<bool> auto_reset(&in_on_accessibility_events_, true);

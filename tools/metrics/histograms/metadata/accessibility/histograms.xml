@@ -1348,6 +1348,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Accessibility.Performance.BrowserAccessibilityManager::OnAccessibilityEvents"
+    units="ms" expires_after="2023-01-22">
+  <owner>aleventhal@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks time spent on the browser main thread handling accessibility events
+    sent from the renderer process and processed by BrowserAccessibilityManager.
+
+    Accessibility.Performance.HandleAXEvents can still often record values when
+    processing is relatively cheap because we exit before handing off the nodes
+    to BrowserAccessibilityManager for various reasons (e.g. BFCache). This
+    histogram only measures events which are processed by
+    BrowserAccessibilityManager and thus should have a better histogram to
+    understand the cost of doing so, and be used to meaure optimizations.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.Performance.HandleAXEvents" units="ms"
     expires_after="2023-01-22">
   <owner>aleventhal@chromium.org</owner>
