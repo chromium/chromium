@@ -2722,6 +2722,7 @@ ChromeContentBrowserClient::AllowServiceWorker(
     const absl::optional<url::Origin>& top_frame_origin,
     const GURL& script_url,
     content::BrowserContext* context) {
+  DCHECK(context);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   GURL first_party_url = top_frame_origin ? top_frame_origin->GetURL() : GURL();
 
