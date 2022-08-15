@@ -40,7 +40,8 @@ import java.util.Set;
  * is also responsible for resetting the selectable tab grid based on visibility property.
  */
 class TabSelectionEditorMediator
-        implements TabSelectionEditorCoordinator.TabSelectionEditorController {
+        implements TabSelectionEditorCoordinator.TabSelectionEditorController,
+                   TabSelectionEditorAction.ActionDelegate {
     // TODO(977271): Unify similar interfaces in other components that used the TabListCoordinator.
     /**
      * Interface for resetting the selectable tab grid.
@@ -50,8 +51,9 @@ class TabSelectionEditorMediator
          * Handles the reset event.
          * @param tabs List of {@link Tab}s to reset.
          * @param preSelectedCount First {@code preSelectedCount} {@code tabs} are pre-selected.
+         * @param quickMode whether to use quick mode.
          */
-        void resetWithListOfTabs(@Nullable List<Tab> tabs, int preSelectedCount);
+        void resetWithListOfTabs(@Nullable List<Tab> tabs, int preSelectedCount, boolean quickMode);
     }
 
     private final Context mContext;
@@ -66,6 +68,7 @@ class TabSelectionEditorMediator
     private TabSelectionEditorCoordinator.TabSelectionEditorNavigationProvider mNavigationProvider;
     private final ObservableSupplierImpl<Boolean> mBackPressChangedSupplier =
             new ObservableSupplierImpl<>();
+    private final List<Tab> mVisibleTabs = new ArrayList<>();
 
     private PropertyListModel<PropertyModel, PropertyKey> mActionListModel;
     private ListModelChangeProcessor mActionChangeProcessor;
@@ -173,9 +176,10 @@ class TabSelectionEditorMediator
         if (mActionListModel == null) return;
 
         for (PropertyModel model : mActionListModel) {
-            // TODO(ckitagawa): update these tints with input from UX. Add a check if the action
-            // ignores icon tints (for the select/deselect all button).
+            // TODO(ckitagawa): update these tints with input from UX.
             model.set(TabSelectionEditorActionProperties.TEXT_TINT, toolbarTintColorList);
+            if (model.get(TabSelectionEditorActionProperties.SKIP_ICON_TINT)) continue;
+
             model.set(TabSelectionEditorActionProperties.ICON_TINT, toolbarTintColorList);
         }
     }
@@ -190,6 +194,8 @@ class TabSelectionEditorMediator
 
     @Override
     public void show(List<Tab> tabs, int preSelectedTabCount) {
+        mVisibleTabs.clear();
+        mVisibleTabs.addAll(tabs);
         mSelectionDelegate.setSelectionModeEnabledForZeroItems(true);
 
         if (preSelectedTabCount > 0) {
@@ -204,7 +210,7 @@ class TabSelectionEditorMediator
             mSelectionDelegate.setSelectedItems(preSelectedTabIds);
         }
 
-        mResetHandler.resetWithListOfTabs(tabs, preSelectedTabCount);
+        mResetHandler.resetWithListOfTabs(tabs, preSelectedTabCount, /*quickMode=*/false);
 
         mModel.set(TabSelectionEditorProperties.IS_VISIBLE, true);
     }
@@ -257,7 +263,7 @@ class TabSelectionEditorMediator
 
         mActionListModel.clear();
         for (TabSelectionEditorAction action : actions) {
-            action.configure(mTabModelSelector, mSelectionDelegate);
+            action.configure(mTabModelSelector, mSelectionDelegate, this);
             mActionListModel.add(action.getPropertyModel());
         }
         if (navigationProvider != null) {
@@ -286,13 +292,38 @@ class TabSelectionEditorMediator
 
     @Override
     public void hide() {
-        mResetHandler.resetWithListOfTabs(null, 0);
+        mVisibleTabs.clear();
+        mResetHandler.resetWithListOfTabs(null, 0, /*quickMode=*/false);
         mModel.set(TabSelectionEditorProperties.IS_VISIBLE, false);
     }
 
     @Override
     public boolean isVisible() {
         return isEditorVisible();
+    }
+
+    @Override
+    public void selectAll() {
+        Set<Integer> selectedTabIds = mSelectionDelegate.getSelectedItems();
+        for (Tab tab : mVisibleTabs) {
+            selectedTabIds.add(tab.getId());
+        }
+        mSelectionDelegate.setSelectedItems(selectedTabIds);
+        mResetHandler.resetWithListOfTabs(mVisibleTabs, mVisibleTabs.size(), /*quickMode=*/true);
+    }
+
+    @Override
+    public void deselectAll() {
+        Set<Integer> selectedTabIds = mSelectionDelegate.getSelectedItems();
+        selectedTabIds.clear();
+        mSelectionDelegate.setSelectedItems(selectedTabIds);
+        mResetHandler.resetWithListOfTabs(mVisibleTabs, 0, /*quickMode=*/true);
+    }
+
+    @Override
+    public boolean areAllTabsSelected() {
+        Set<Integer> selectedTabIds = mSelectionDelegate.getSelectedItems();
+        return selectedTabIds.size() == mVisibleTabs.size();
     }
 
     /**

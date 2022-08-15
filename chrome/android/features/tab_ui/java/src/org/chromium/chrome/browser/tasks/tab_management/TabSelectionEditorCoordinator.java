@@ -22,6 +22,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -211,9 +212,11 @@ class TabSelectionEditorCoordinator {
      * Resets {@link TabListCoordinator} with the provided list.
      * @param tabs List of {@link Tab}s to reset.
      * @param preSelectedCount First {@code preSelectedCount} {@code tabs} are pre-selected.
+     * @param quickMode whether to use quick mode.
      */
-    void resetWithListOfTabs(@Nullable List<Tab> tabs, int preSelectedCount) {
-        mTabListCoordinator.resetWithListOfTabs(tabs);
+    void resetWithListOfTabs(@Nullable List<Tab> tabs, int preSelectedCount, boolean quickMode) {
+        mTabListCoordinator.resetWithListOfTabs(
+                PseudoTab.getListOfPseudoTab(tabs), quickMode, /*mruMode=*/false);
 
         if (tabs != null && preSelectedCount > 0 && preSelectedCount < tabs.size()) {
             mTabListCoordinator.addSpecialListItem(preSelectedCount, TabProperties.UiType.DIVIDER,

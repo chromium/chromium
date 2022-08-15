@@ -23,6 +23,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.ActionDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.ActionObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.ButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.IconPosition;
@@ -46,6 +47,8 @@ public class TabSelectionEditorCloseActionUnitTest {
     private TabModelSelector mTabModelSelector;
     @Mock
     private SelectionDelegate<Integer> mSelectionDelegate;
+    @Mock
+    private ActionDelegate mDelegate;
     private MockTabModel mTabModel;
     private TabSelectionEditorAction mAction;
 
@@ -56,7 +59,7 @@ public class TabSelectionEditorCloseActionUnitTest {
                 ShowMode.MENU_ONLY, ButtonType.TEXT, IconPosition.START);
         mTabModel = spy(new MockTabModel(false, null));
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
-        mAction.configure(mTabModelSelector, mSelectionDelegate);
+        mAction.configure(mTabModelSelector, mSelectionDelegate, mDelegate);
     }
 
     @Test
@@ -113,14 +116,16 @@ public class TabSelectionEditorCloseActionUnitTest {
         };
         mAction.addActionObserver(observer);
 
-        Assert.assertTrue(mAction.performAction());
+        Assert.assertTrue(mAction.perform());
         verify(mTabModel).closeMultipleTabs(tabs, true);
+        verify(mDelegate).hide();
 
         helper.waitForFirst();
         mAction.removeActionObserver(observer);
 
-        Assert.assertTrue(mAction.performAction());
+        Assert.assertTrue(mAction.perform());
         verify(mTabModel, times(2)).closeMultipleTabs(tabs, true);
+        verify(mDelegate, times(2)).hide();
         Assert.assertEquals(1, helper.getCallCount());
     }
 }

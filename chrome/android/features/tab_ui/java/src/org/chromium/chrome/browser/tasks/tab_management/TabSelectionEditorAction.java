@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ContextUtils;
@@ -83,16 +84,42 @@ public abstract class TabSelectionEditorAction {
         // TODO(ckitagawa): Determine if this can be removed or moved to post processing.
 
         /**
-         * Called at the start of {@link TabSelectionEditorAction#performAction()} before an action
+         * Called at the start of {@link TabSelectionEditorAction#perform()} before an action
          * is executed.
          * @param tabs The list of tabs that will be acted on.
          */
         void preProcessSelectedTabs(List<Tab> tabs);
     }
 
+    /**
+     * Delegate for handling additional selection and control actions for the TabSelectionEditor.
+     */
+    public interface ActionDelegate {
+        /**
+         * Selects all tabs in the current selection editor.
+         */
+        void selectAll();
+
+        /**
+         * Clears all selected tabs.
+         */
+        void deselectAll();
+
+        /**
+         * Whether all the tabs in the editor are selected.
+         */
+        boolean areAllTabsSelected();
+
+        /**
+         * Hides the selection editor.
+         */
+        void hide();
+    }
+
     private ObserverList<ActionObserver> mObsevers = new ObserverList<>();
     private PropertyModel mModel;
-    protected TabModelSelector mTabModelSelector;
+    private TabModelSelector mTabModelSelector;
+    private ActionDelegate mActionDelegate;
     private SelectionDelegate<Integer> mSelectionDelegate;
 
     public TabSelectionEditorAction(int menuItemId, @ShowMode int showMode,
@@ -118,8 +145,8 @@ public abstract class TabSelectionEditorAction {
                                 ColorStateList.valueOf(Color.TRANSPARENT))
                         .with(TabSelectionEditorActionProperties.ICON_TINT,
                                 ColorStateList.valueOf(Color.TRANSPARENT))
-                        .with(TabSelectionEditorActionProperties.ON_CLICK_LISTENER,
-                                this::performAction)
+                        .with(TabSelectionEditorActionProperties.SKIP_ICON_TINT, false)
+                        .with(TabSelectionEditorActionProperties.ON_CLICK_LISTENER, this::perform)
                         .with(TabSelectionEditorActionProperties.ON_SELECTION_STATE_CHANGE,
                                 this::onSelectionStateChange)
                         .build();
@@ -148,6 +175,15 @@ public abstract class TabSelectionEditorAction {
     }
 
     /**
+     * Defaults to notifying observers of when an action is taken. Should be overridden to false if
+     * the action changes the selection state rather than taking an action.
+     * @return Whether to notify obsevers of the action.
+     */
+    public boolean shouldNotifyObserversOfAction() {
+        return true;
+    }
+
+    /**
      * Actions should override this to decide if an action should be enabled and
      * to provide the enabled state and count to the PropertyModel.
      * @param tabIds the list of selected tab ids.
@@ -156,32 +192,62 @@ public abstract class TabSelectionEditorAction {
     public abstract void onSelectionStateChange(List<Integer> tabIds);
 
     /**
-     * Processes the selected tabs from the selection list. Override this and call
-     * {@code super.performAction()} as the first action in the method if taking a standard action.
-     * If the action only changes the list of selected tabs do not call the super method.
+     * Processes the selected tabs from the selection list.
+     * @param tabs a list of tabs from getTabsFromSelection().
+     */
+    public abstract void performAction(List<Tab> tabs);
+
+    /**
+     * @return Whether to hide the editor after tabking the action.
+     */
+    public abstract boolean shouldHideEditorAfterAction();
+
+    /**
+     * Processes the selected tabs from the selection list.
      * @return whether an action was taken.
      */
-    public boolean performAction() {
-        List<Tab> tabs = getTabsFromSelection();
+    public boolean perform() {
+        assert mActionDelegate != null;
 
-        for (ActionObserver obs : mObsevers) {
-            obs.preProcessSelectedTabs(tabs);
+        List<Tab> tabs = getTabsFromSelection();
+        if (shouldNotifyObserversOfAction()) {
+            for (ActionObserver obs : mObsevers) {
+                obs.preProcessSelectedTabs(tabs);
+            }
+        }
+        performAction(tabs);
+        if (shouldHideEditorAfterAction()) {
+            mActionDelegate.hide();
         }
         return true;
     }
 
     /**
      * Called by {@link TabModelSelectionEditorMediator} to supply additional dependencies.
-     * TODO(ckitagawa): Supply a delegate for additional dependencies on TabSelectionEditorMediator.
+     * @param tabModelSelector that this action should act on.
+     * @param selectionDelegate to get selected tab IDs from.
+     * @param actionDelegate to control the TabSelectionEditor.
      */
-    void configure(
-            TabModelSelector tabModelSelector, SelectionDelegate<Integer> selectionDelegate) {
+    void configure(@NonNull TabModelSelector tabModelSelector,
+            @NonNull SelectionDelegate<Integer> selectionDelegate,
+            @NonNull ActionDelegate actionDelegate) {
         mTabModelSelector = tabModelSelector;
         mSelectionDelegate = selectionDelegate;
+        mActionDelegate = actionDelegate;
     }
 
     PropertyModel getPropertyModel() {
         return mModel;
+    }
+
+    protected @NonNull TabModelSelector getTabModelSelector() {
+        assert mTabModelSelector != null;
+        return mTabModelSelector;
+    }
+
+    protected @NonNull ActionDelegate getActionDelegate() {
+        assert mActionDelegate != null;
+        return mActionDelegate;
     }
 
     protected void setEnabledAndItemCount(boolean enabled, int itemCount) {

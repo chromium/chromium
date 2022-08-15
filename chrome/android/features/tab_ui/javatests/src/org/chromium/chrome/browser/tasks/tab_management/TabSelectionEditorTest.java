@@ -411,6 +411,44 @@ public class TabSelectionEditorTest {
 
     @Test
     @MediumTest
+    @EnableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    public void testSelectionAction_IndividualTabSelection() {
+        prepareBlankTab(2, false);
+        List<Tab> tabs = getTabsInCurrentTabModel();
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            List<TabSelectionEditorAction> actions = new ArrayList<>();
+            actions.add(TabSelectionEditorSelectionAction.createAction(
+                    sActivityTestRule.getActivity(), ShowMode.IF_ROOM, ButtonType.ICON_AND_TEXT,
+                    IconPosition.END, /*isIncognito=*/false));
+
+            mTabSelectionEditorController.configureToolbarWithMenuItems(actions, null);
+            mTabSelectionEditorController.show(tabs);
+        });
+
+        final int selectionId = R.id.tab_selection_editor_selection_menu_item;
+        mRobot.resultRobot.verifyToolbarActionViewEnabled(selectionId)
+                .verifyToolbarActionViewWithText(selectionId, "Select all");
+
+        mRobot.actionRobot.clickItemAtAdapterPosition(0);
+
+        mRobot.resultRobot.verifyToolbarActionViewEnabled(selectionId)
+                .verifyToolbarActionViewWithText(selectionId, "Select all");
+
+        mRobot.actionRobot.clickItemAtAdapterPosition(1);
+
+        mRobot.resultRobot.verifyToolbarActionViewEnabled(selectionId)
+                .verifyToolbarActionViewWithText(selectionId, "Deselect all");
+
+        mRobot.actionRobot.clickItemAtAdapterPosition(0);
+
+        mRobot.resultRobot.verifyToolbarActionViewEnabled(selectionId)
+                .verifyToolbarActionViewWithText(selectionId, "Select all");
+    }
+
+    @Test
+    @MediumTest
     public void testShowTabsWithPreSelectedTabs() {
         prepareBlankTab(2, false);
         List<Tab> tabs = getTabsInCurrentTabModel();
@@ -568,6 +606,51 @@ public class TabSelectionEditorTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @EnableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
+    public void testSelectionAction_Toggle() throws IOException {
+        prepareBlankTab(3, false);
+        List<Tab> tabs = getTabsInCurrentTabModel();
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            List<TabSelectionEditorAction> actions = new ArrayList<>();
+            actions.add(TabSelectionEditorSelectionAction.createAction(
+                    sActivityTestRule.getActivity(), ShowMode.IF_ROOM, ButtonType.ICON_AND_TEXT,
+                    IconPosition.END, /*isIncognito=*/false));
+
+            mTabSelectionEditorController.configureToolbarWithMenuItems(actions, null);
+            mTabSelectionEditorController.show(tabs);
+        });
+
+        final int selectionId = R.id.tab_selection_editor_selection_menu_item;
+        mRobot.resultRobot.verifyToolbarActionViewEnabled(selectionId)
+                .verifyToolbarActionViewWithText(selectionId, "Select all");
+
+        mRobot.actionRobot.clickToolbarActionView(selectionId);
+        mRobot.resultRobot.verifyToolbarActionViewEnabled(selectionId)
+                .verifyToolbarActionViewWithText(selectionId, "Deselect all")
+                .verifyItemSelectedAtAdapterPosition(0)
+                .verifyItemSelectedAtAdapterPosition(1)
+                .verifyItemSelectedAtAdapterPosition(2)
+                .verifyToolbarSelectionText("3 selected");
+
+        ChromeRenderTestRule.sanitize(mTabSelectionEditorLayout);
+        mRenderTestRule.render(mTabSelectionEditorLayout, "selection_action_all_tabs_selected");
+
+        mRobot.actionRobot.clickToolbarActionView(selectionId);
+        mRobot.resultRobot.verifyToolbarActionViewEnabled(selectionId)
+                .verifyToolbarActionViewWithText(selectionId, "Select all")
+                .verifyItemNotSelectedAtAdapterPosition(0)
+                .verifyItemNotSelectedAtAdapterPosition(1)
+                .verifyItemNotSelectedAtAdapterPosition(2);
+
+        ChromeRenderTestRule.sanitize(mTabSelectionEditorLayout);
+        mRenderTestRule.render(mTabSelectionEditorLayout, "selection_action_all_tabs_deselected");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
     @CommandLineFlags.Add(BaseSwitches.ENABLE_LOW_END_DEVICE_MODE)
     @EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_LOW_END_DEVICE})
@@ -683,7 +766,7 @@ public class TabSelectionEditorTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
     public void testToolbarActionViewAndMenuItemContentDescription() {
         prepareBlankTab(2, false);
         List<Tab> tabs = getTabsInCurrentTabModel();

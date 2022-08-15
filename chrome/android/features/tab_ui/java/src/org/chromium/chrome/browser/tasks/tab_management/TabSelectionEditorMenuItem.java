@@ -129,7 +129,12 @@ public class TabSelectionEditorMenuItem {
         }
     }
 
-    public void setIconTint(ColorStateList colorStateList) {
+    public void setIconTint(@Nullable ColorStateList colorStateList) {
+        // A null colorStateList is used with TabSelectionEditorActionProperties.SKIP_ICON_TINT
+        // = true to signal that a custom tint is used. Ignore null so that this custom tint is
+        // not overridden.
+        if (colorStateList == null) return;
+
         MenuItemCompat.setIconTintList(mMenuItem, colorStateList);
         if (mActionView != null) {
             TextViewCompat.setCompoundDrawableTintList(mActionView, colorStateList);

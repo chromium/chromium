@@ -156,6 +156,45 @@ public class TabUiThemeProvider {
     }
 
     /**
+     * Returns the {@link ColorInt} to use for the {@link TabSelectionEditorSelectionAction}
+     * icon background.
+     *
+     * @param context {@link Context} used to retrieve color.
+     * @param isIncognito Whether the color is used for incognito mode.
+     * @param allTabsSelected Whether all tabs are selected.
+     * @return The {@link ColorInt} for select all icon background.
+     */
+    public static @ColorInt int getSelectionActionIconBackgroundColor(
+            Context context, boolean isIncognito, boolean allTabsSelected) {
+        if (isIncognito) {
+            return context.getColor(
+                    R.color.incognito_tab_selection_editor_selection_action_bg_color);
+        } else {
+            @ColorInt
+            int colorInt = allTabsSelected
+                    ? MaterialColors.getColor(context, org.chromium.chrome.R.attr.colorPrimary, TAG)
+                    : MaterialColors.getColor(context, R.attr.colorOnSurfaceVariant, TAG);
+            return colorInt;
+        }
+    }
+
+    /**
+     * Returns the {@link ColorInt} to use for the "check" drawable on the
+     * {@link TabSelectionEditorSelectionAction}.
+     *
+     * @param context {@link Context} used to retrieve color.
+     * @param isIncognito Whether the color is used for incognito mode.
+     * @return The {@link ColorInt} for "check" drawable.
+     */
+    public static @ColorInt int getSelectionActionIconCheckedDrawableColor(
+            Context context, boolean isIncognito) {
+        if (isIncognito) {
+            return context.getColor(R.color.incognito_tab_selection_editor_selection_action_check);
+        }
+        return MaterialColors.getColor(context, org.chromium.chrome.R.attr.colorOnPrimary, TAG);
+    }
+
+    /**
      * Returns the divider color for tab grid card based on the incognito mode.
      *
      * @param context {@link Context} used to retrieve color.

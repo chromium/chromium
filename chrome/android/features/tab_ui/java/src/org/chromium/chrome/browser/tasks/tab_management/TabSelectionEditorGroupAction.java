@@ -39,27 +39,29 @@ public class TabSelectionEditorGroupAction extends TabSelectionEditorAction {
 
     @Override
     public void onSelectionStateChange(List<Integer> tabIds) {
-        assert mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter()
+        assert getTabModelSelector().getTabModelFilterProvider().getCurrentTabModelFilter()
                         instanceof TabGroupModelFilter;
 
         setEnabledAndItemCount(tabIds.size() > 1, tabIds.size());
     }
 
     @Override
-    public boolean performAction() {
-        super.performAction();
-        assert mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter()
+    public void performAction(List<Tab> tabs) {
+        assert getTabModelSelector().getTabModelFilterProvider().getCurrentTabModelFilter()
                         instanceof TabGroupModelFilter;
-        List<Tab> tabs = getTabsFromSelection();
 
-        Tab destinationTab = getDestinationTab(tabs, mTabModelSelector);
-        TabGroupModelFilter tabGroupModelFilter =
-                (TabGroupModelFilter) mTabModelSelector.getTabModelFilterProvider()
-                        .getCurrentTabModelFilter();
+        Tab destinationTab = getDestinationTab(tabs, getTabModelSelector());
+        TabGroupModelFilter tabGroupModelFilter = (TabGroupModelFilter) getTabModelSelector()
+                                                          .getTabModelFilterProvider()
+                                                          .getCurrentTabModelFilter();
         tabGroupModelFilter.mergeListOfTabsToGroup(tabs, destinationTab, false, true);
 
         RecordUserAction.record("TabMultiSelect.Done");
         RecordUserAction.record("TabGroup.Created.TabMultiSelect");
+    }
+
+    @Override
+    public boolean shouldHideEditorAfterAction() {
         return true;
     }
 

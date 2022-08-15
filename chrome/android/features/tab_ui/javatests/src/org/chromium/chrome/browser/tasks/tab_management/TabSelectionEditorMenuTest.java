@@ -37,6 +37,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.ActionDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.ActionObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.ButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.IconPosition;
@@ -109,6 +110,14 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
             mLastTabIdList = tabs;
             setEnabledAndItemCount(mShouldEnableAction, tabs.size());
         }
+
+        @Override
+        public void performAction(List<Tab> tabs) {}
+
+        @Override
+        public boolean shouldHideEditorAfterAction() {
+            return false;
+        }
     }
 
     @Mock
@@ -117,6 +126,8 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
     private TabModelSelector mTabModelSelector;
     @Mock
     private SelectionDelegate<Integer> mSelectionDelegate;
+    @Mock
+    private ActionDelegate mDelegate;
 
     private List<Tab> mTabs = new ArrayList<>();
 
@@ -179,7 +190,7 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
             action.getPropertyModel().set(TabSelectionEditorActionProperties.ICON_TINT,
                     AppCompatResources.getColorStateList(
                             getActivity(), R.color.default_icon_color_tint_list));
-            action.configure(mTabModelSelector, mSelectionDelegate);
+            action.configure(mTabModelSelector, mSelectionDelegate, mDelegate);
             models.add(action.getPropertyModel());
         }
         mPropertyListModel.addAll(models, 0);

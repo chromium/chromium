@@ -1224,7 +1224,7 @@ class TabListMediator {
             if (tabsList == null) return true;
             for (int i = 0; i < tabsList.size(); i++) {
                 PseudoTab tab = tabsList.get(i);
-                boolean isSelected = mTabModelSelector.getCurrentTabId() == tab.getId();
+                boolean isSelected = isSelectedTab(tab, mTabModelSelector.getCurrentTabId());
                 updateTab(mModel.indexOfNthTabCard(i), tab, isSelected, false, quickMode);
             }
             return true;

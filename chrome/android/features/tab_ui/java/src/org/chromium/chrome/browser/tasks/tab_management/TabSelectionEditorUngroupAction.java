@@ -36,26 +36,28 @@ public class TabSelectionEditorUngroupAction extends TabSelectionEditorAction {
 
     @Override
     public void onSelectionStateChange(List<Integer> tabIds) {
-        assert mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter()
+        assert getTabModelSelector().getTabModelFilterProvider().getCurrentTabModelFilter()
                         instanceof TabGroupModelFilter;
 
         setEnabledAndItemCount(!tabIds.isEmpty(), tabIds.size());
     }
 
     @Override
-    public boolean performAction() {
-        super.performAction();
-        assert mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter()
+    public void performAction(List<Tab> tabs) {
+        assert getTabModelSelector().getTabModelFilterProvider().getCurrentTabModelFilter()
                         instanceof TabGroupModelFilter;
-        List<Tab> tabs = getTabsFromSelection();
 
-        TabGroupModelFilter filter =
-                (TabGroupModelFilter) mTabModelSelector.getTabModelFilterProvider()
-                        .getCurrentTabModelFilter();
+        TabGroupModelFilter filter = (TabGroupModelFilter) getTabModelSelector()
+                                             .getTabModelFilterProvider()
+                                             .getCurrentTabModelFilter();
         for (Tab tab : tabs) {
             filter.moveTabOutOfGroup(tab.getId());
         }
         RecordUserAction.record("TabGridDialog.RemoveFromGroup.TabMultiSelect");
+    }
+
+    @Override
+    public boolean shouldHideEditorAfterAction() {
         return true;
     }
 }

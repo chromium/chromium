@@ -247,6 +247,12 @@
       <message name="IDS_ACCESSIBILITY_TAB_SELECTION_EDITOR" desc="Accessibility string for Tab Selection Editor view. This string is announced when the Tab Selection Editor is shown to screen.">
         Multi-select mode
       </message>
+      <message name="IDS_TAB_SELECTION_EDITOR_SELECT_ALL" desc="This text button is shown in the Tab Selection Editor Toolbar. When the user taps the button, Chrome selects all the tabs shown in the editor.">
+        Select all
+      </message>
+      <message name="IDS_TAB_SELECTION_EDITOR_DESELECT_ALL" desc="This text button is shown in the Tab Selection Editor Toolbar. When the user taps the button, Chrome deselects all the tabs shown in the editor.">
+        Deselect all
+      </message>
 
       <!-- Tab Grid Dialog strings -->
       <message name="IDS_TAB_GRID_DIALOG_REMOVE_FROM_GROUP" desc="This text shows on the ungroup bar in TabGridDialog. When user drags a tab and drops it on the ungroup bar, this tab will be moved out of the group.">
