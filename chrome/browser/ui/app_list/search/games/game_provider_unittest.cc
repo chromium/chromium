@@ -138,6 +138,27 @@ TEST_P(GameProviderTest, SearchResultsMatchQuery) {
                                                   Title(u"Third Title")));
 }
 
+// Tests that scores are not greatly affected by characters such as apostrophe.
+TEST_P(GameProviderTest, SpecialCharactersIgnored) {
+  GameProvider::GameIndex index;
+  index.push_back(MakeAppsResult(u"titles one"));
+  index.push_back(MakeAppsResult(u"title's one"));
+  provider()->SetGameIndexForTest(std::move(index));
+
+  // Expect that the results have similar scores.
+  StartSearch(u"titles");
+  ASSERT_EQ(LastResults().size(), 2);
+  double score_diff =
+      abs(LastResults()[0]->relevance() - LastResults()[1]->relevance());
+  EXPECT_LT(score_diff, 0.01);
+
+  StartSearch(u"title's");
+  ASSERT_EQ(LastResults().size(), 2);
+  score_diff =
+      abs(LastResults()[0]->relevance() - LastResults()[1]->relevance());
+  EXPECT_LT(score_diff, 0.01);
+}
+
 TEST_P(GameProviderTest, Policy) {
   SetUpTestingIndex();
 

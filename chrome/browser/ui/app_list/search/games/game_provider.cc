@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/apps/app_discovery_service/app_discovery_service.h"
@@ -39,9 +40,9 @@ using ::ash::string_matching::TokenizedString;
 // Parameters for FuzzyTokenizedStringMatch.
 constexpr bool kUseWeightedRatio = false;
 constexpr bool kUseEditDistance = false;
-constexpr double kRelevanceThreshold = 0.32;
 constexpr double kPartialMatchPenaltyRate = 0.9;
 
+constexpr double kRelevanceThreshold = 0.65;
 constexpr size_t kMaxResults = 3u;
 constexpr double kEpsilon = 1e-5;
 
@@ -76,10 +77,22 @@ bool EnabledByPolicy(Profile* profile) {
   return suggested_content_enabled;
 }
 
+// Game titles often contain special characters. Strip out some common ones
+// before searching.
+// This does not affect query highlighting, which calculates matched portions of
+// text in a separate post-processing step.
+std::u16string GetStrippedText(const std::u16string& text) {
+  std::u16string stripped_text;
+  // In order, these are: apostrophe, left quote, right quote, TM, circled R.
+  base::RemoveChars(text, u"\'\u2018\u2019\u2122\u24C7", &stripped_text);
+  return stripped_text;
+}
+
 double CalculateTitleRelevance(const TokenizedString& tokenized_query,
                                const std::u16string& game_title) {
-  const TokenizedString tokenized_title(game_title,
-                                        TokenizedString::Mode::kCamelCase);
+  std::u16string stripped_title = GetStrippedText(game_title);
+  const TokenizedString tokenized_title(stripped_title,
+                                        TokenizedString::Mode::kWords);
 
   if (tokenized_query.text().empty() || tokenized_title.text().empty()) {
     static constexpr double kDefaultRelevance = 0.0;
@@ -96,7 +109,9 @@ std::vector<std::pair<const apps::Result*, double>> SearchGames(
     const GameProvider::GameIndex* index) {
   DCHECK(index);
 
-  TokenizedString tokenized_query(query, TokenizedString::Mode::kCamelCase);
+  std::u16string stripped_query = GetStrippedText(query);
+  TokenizedString tokenized_query(stripped_query,
+                                  TokenizedString::Mode::kWords);
   std::vector<std::pair<const apps::Result*, double>> matches;
   for (const auto& game : *index) {
     double relevance =
