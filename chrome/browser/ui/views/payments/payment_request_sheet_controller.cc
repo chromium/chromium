@@ -374,11 +374,7 @@ bool PaymentRequestSheetController::ShouldShowPrimaryButton() {
 }
 
 std::u16string PaymentRequestSheetController::GetPrimaryButtonLabel() {
-  const bool continue_button =
-      state()->selected_app() &&
-      state()->selected_app()->type() != PaymentApp::Type::AUTOFILL;
-  return l10n_util::GetStringUTF16(
-      continue_button ? IDS_PAYMENTS_CONTINUE_BUTTON : IDS_PAYMENTS_PAY_BUTTON);
+  return l10n_util::GetStringUTF16(IDS_PAYMENTS_CONTINUE_BUTTON);
 }
 
 PaymentRequestSheetController::ButtonCallback

@@ -23,10 +23,6 @@ int GetSortingGroup(const PaymentApp& app) {
     case PaymentApp::Type::SERVICE_WORKER_APP:
     case PaymentApp::Type::NATIVE_MOBILE_APP:
       return 2;
-    case PaymentApp::Type::AUTOFILL:
-      // TODO(https://crbug.com/1209835): Remove PaymentApp::Type::AUTOFILL.
-      NOTREACHED() << "Autofill payment app is no longer supported";
-      return 99;
     case PaymentApp::Type::UNDEFINED:
       NOTREACHED();
       return 99;

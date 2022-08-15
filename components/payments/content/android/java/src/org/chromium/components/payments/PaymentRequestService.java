@@ -145,12 +145,6 @@ public class PaymentRequestService
     /** True if canMakePayment() and hasEnrolledInstrument() are forced to return true. */
     private boolean mCanMakePaymentEvenWithoutApps;
 
-    /**
-     * Whether there's at least one app that is not an autofill card. Should be read only after all
-     * payment apps have been queried.
-     */
-    private boolean mHasNonAutofillApp;
-
     private boolean mIsCanMakePaymentResponsePending;
     private boolean mIsHasEnrolledInstrumentResponsePending;
     @Nullable
@@ -776,24 +770,19 @@ public class PaymentRequestService
     private void logSelectedMethod(PaymentApp invokedPaymentApp) {
         @PaymentMethodCategory
         int category = PaymentMethodCategory.OTHER;
-        if (invokedPaymentApp.getPaymentAppType() == PaymentAppType.AUTOFILL) {
-            category = PaymentMethodCategory.BASIC_CARD;
-        } else {
-            for (String method : invokedPaymentApp.getInstrumentMethodNames()) {
-                if (method.equals(MethodStrings.ANDROID_PAY)
-                        || method.equals(MethodStrings.GOOGLE_PAY)) {
-                    category = PaymentMethodCategory.GOOGLE;
-                    break;
-                } else if (method.equals(MethodStrings.GOOGLE_PLAY_BILLING)) {
-                    assert invokedPaymentApp.getPaymentAppType()
-                            == PaymentAppType.NATIVE_MOBILE_APP;
-                    category = PaymentMethodCategory.PLAY_BILLING;
-                    break;
-                } else if (method.equals(MethodStrings.SECURE_PAYMENT_CONFIRMATION)) {
-                    assert invokedPaymentApp.getPaymentAppType() == PaymentAppType.INTERNAL;
-                    category = PaymentMethodCategory.SECURE_PAYMENT_CONFIRMATION;
-                    break;
-                }
+        for (String method : invokedPaymentApp.getInstrumentMethodNames()) {
+            if (method.equals(MethodStrings.ANDROID_PAY)
+                    || method.equals(MethodStrings.GOOGLE_PAY)) {
+                category = PaymentMethodCategory.GOOGLE;
+                break;
+            } else if (method.equals(MethodStrings.GOOGLE_PLAY_BILLING)) {
+                assert invokedPaymentApp.getPaymentAppType() == PaymentAppType.NATIVE_MOBILE_APP;
+                category = PaymentMethodCategory.PLAY_BILLING;
+                break;
+            } else if (method.equals(MethodStrings.SECURE_PAYMENT_CONFIRMATION)) {
+                assert invokedPaymentApp.getPaymentAppType() == PaymentAppType.INTERNAL;
+                category = PaymentMethodCategory.SECURE_PAYMENT_CONFIRMATION;
+                break;
             }
         }
 
@@ -1039,13 +1028,8 @@ public class PaymentRequestService
         if (mBrowserPaymentRequest == null) return;
         if (!mBrowserPaymentRequest.onPaymentAppCreated(paymentApp)) return;
         mHasEnrolledInstrument |= paymentApp.hasEnrolledInstrument();
-        mHasNonAutofillApp |= paymentApp.getPaymentAppType() != PaymentAppType.AUTOFILL;
 
-        // Note that only a test can add autofill payment apps when basic-card feature is disabled.
-        if (PaymentFeatureList.isEnabled(PaymentFeatureList.PAYMENT_REQUEST_BASIC_CARD)
-                && paymentApp.getPaymentAppType() == PaymentAppType.AUTOFILL) {
-            mJourneyLogger.setAvailableMethod(PaymentMethodCategory.BASIC_CARD);
-        } else if (paymentApp.getInstrumentMethodNames().contains(MethodStrings.GOOGLE_PAY)
+        if (paymentApp.getInstrumentMethodNames().contains(MethodStrings.GOOGLE_PAY)
                 || paymentApp.getInstrumentMethodNames().contains(MethodStrings.ANDROID_PAY)) {
             mJourneyLogger.setAvailableMethod(PaymentMethodCategory.GOOGLE);
         } else {
@@ -1212,8 +1196,7 @@ public class PaymentRequestService
     private static boolean onlySingleAppCanProvideAllRequiredInformation(
             PaymentOptions options, List<PaymentApp> allApps) {
         if (!PaymentOptionsUtils.requestAnyInformation(options)) {
-            return allApps.size() == 1
-                    && allApps.get(0).getPaymentAppType() != PaymentAppType.AUTOFILL;
+            return allApps.size() == 1;
         }
 
         boolean anAppCanProvideAllInfo = false;

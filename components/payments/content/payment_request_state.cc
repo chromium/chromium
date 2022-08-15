@@ -169,11 +169,8 @@ bool PaymentRequestState::IsOffTheRecord() const {
 
 void PaymentRequestState::OnPaymentAppCreated(std::unique_ptr<PaymentApp> app) {
   if (journey_logger_) {
-    if (app->type() == PaymentApp::Type::AUTOFILL) {
-      journey_logger_->SetAvailableMethod(
-          JourneyLogger::PaymentMethodCategory::kBasicCard);
-    } else if (base::Contains(app->GetAppMethodNames(), methods::kGooglePay) ||
-               base::Contains(app->GetAppMethodNames(), methods::kAndroidPay)) {
+    if (base::Contains(app->GetAppMethodNames(), methods::kGooglePay) ||
+        base::Contains(app->GetAppMethodNames(), methods::kAndroidPay)) {
       journey_logger_->SetAvailableMethod(
           JourneyLogger::PaymentMethodCategory::kGoogle);
     } else {

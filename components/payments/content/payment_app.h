@@ -33,8 +33,6 @@ class PaymentApp {
     // Undefined type of payment app. Can be used for setting the default return
     // value of an abstract class or an interface.
     UNDEFINED,
-    // The payment app built into the browser that uses the autofill data.
-    AUTOFILL,
     // A 3rd-party platform-specific mobile app, such as an Android app
     // integrated via
     // https://developers.google.com/web/fundamentals/payments/payment-apps-developer-guide/android-payment-apps

@@ -51,13 +51,12 @@ class PaymentMethodListItem : public PaymentRequestItemList::Item {
                         PaymentRequestItemList* list,
                         base::WeakPtr<PaymentRequestDialogView> dialog,
                         bool selected)
-      : PaymentRequestItemList::Item(
-            spec,
-            state,
-            list,
-            selected,
-            /*clickable=*/true,
-            /*show_edit_button=*/app->type() == PaymentApp::Type::AUTOFILL),
+      : PaymentRequestItemList::Item(spec,
+                                     state,
+                                     list,
+                                     selected,
+                                     /*clickable=*/true,
+                                     /*show_edit_button=*/false),
         app_(app),
         dialog_(dialog) {
     Init();
@@ -69,28 +68,6 @@ class PaymentMethodListItem : public PaymentRequestItemList::Item {
   ~PaymentMethodListItem() override {}
 
  private:
-  void ShowEditor() {
-    if (!app_)
-      return;
-
-    switch (app_->type()) {
-      case PaymentApp::Type::AUTOFILL:
-        // TODO(https://crbug.com/1209835): Remove this method entirely.
-        NOTREACHED() << "Autofill payment app is no longer supported";
-        return;
-      case PaymentApp::Type::UNDEFINED:
-        // Intentionally fall through.
-      case PaymentApp::Type::NATIVE_MOBILE_APP:
-        // Intentionally fall through.
-      case PaymentApp::Type::SERVICE_WORKER_APP:
-        // Intentionally fall through.
-      case PaymentApp::Type::INTERNAL:
-        // We cannot edit these types of payment apps.
-        return;
-    }
-    NOTREACHED();
-  }
-
   // PaymentRequestItemList::Item:
   std::unique_ptr<views::View> CreateExtraView() override {
     return app_ ? CreateAppIconView(app_->icon_resource_id(),
@@ -156,9 +133,9 @@ class PaymentMethodListItem : public PaymentRequestItemList::Item {
     return app_ && app_->IsCompleteForPayment();
   }
 
-  void PerformSelectionFallback() override { ShowEditor(); }
+  void PerformSelectionFallback() override {}
 
-  void EditButtonPressed() override { ShowEditor(); }
+  void EditButtonPressed() override {}
 
   base::WeakPtr<PaymentApp> app_;
   base::WeakPtr<PaymentRequestDialogView> dialog_;

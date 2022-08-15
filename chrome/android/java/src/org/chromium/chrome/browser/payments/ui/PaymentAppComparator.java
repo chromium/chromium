@@ -8,7 +8,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.payments.PaymentPreferencesUtil;
 import org.chromium.components.autofill.Completable;
 import org.chromium.components.payments.PaymentApp;
-import org.chromium.components.payments.PaymentAppType;
 import org.chromium.components.payments.PaymentRequestParams;
 import org.chromium.payments.mojom.PaymentOptions;
 
@@ -82,22 +81,16 @@ import java.util.Comparator;
 
     /**
      * Sorts the payment apps by several rules:
-     * Rule 1: Non-autofill before autofill.
-     * Rule 2: Complete apps before incomplete apps.
-     * Rule 3: When shipping address is requested, apps which will handle shipping address before
+     * Rule 1: Complete apps before incomplete apps.
+     * Rule 2: When shipping address is requested, apps which will handle shipping address before
      * others.
-     * Rule 4: When payer's contact information is requested, apps which will handle more required
+     * Rule 3: When payer's contact information is requested, apps which will handle more required
      * contact fields (name, email, phone) come before others.
-     * Rule 5: Preselectable apps before non-preselectable apps.
-     * Rule 6: Frequently and recently used apps before rarely and non-recently used apps.
+     * Rule 4: Preselectable apps before non-preselectable apps.
+     * Rule 5: Frequently and recently used apps before rarely and non-recently used apps.
      */
     @Override
     public int compare(PaymentApp a, PaymentApp b) {
-        // Non-autofill apps first.
-        int autofill = (a.getPaymentAppType() == PaymentAppType.AUTOFILL ? 1 : 0)
-                - (b.getPaymentAppType() == PaymentAppType.AUTOFILL ? 1 : 0);
-        if (autofill != 0) return autofill;
-
         // Complete cards before cards with missing information.
         int completeness = compareCompletablesByCompleteness(b, a);
         if (completeness != 0) return completeness;

@@ -10,7 +10,6 @@ import android.content.Context;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.payments.ui.PaymentUiService;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -366,9 +365,7 @@ public class ChromePaymentRequestService
     // Implements BrowserPaymentRequest:
     @Override
     public void onInstrumentDetailsLoading() {
-        assert mPaymentUiService.getSelectedPaymentApp() == null
-                || mPaymentUiService.getSelectedPaymentApp().getPaymentAppType()
-                        == PaymentAppType.AUTOFILL;
+        assert mPaymentUiService.getSelectedPaymentApp() == null;
         mPaymentUiService.showProcessingMessage();
     }
 
@@ -383,7 +380,7 @@ public class ChromePaymentRequestService
                         mPaymentUiService.getSelectedContact(), selectedPaymentApp,
                         mSpec.getPaymentOptions());
         mPaymentRequestService.invokePaymentApp(selectedPaymentApp, paymentResponseHelper);
-        return selectedPaymentApp.getPaymentAppType() != PaymentAppType.AUTOFILL;
+        return true;
     }
 
     private PaymentHandlerHost getPaymentHandlerHost() {
@@ -485,15 +482,6 @@ public class ChromePaymentRequestService
     // Implements BrowserPaymentRequest:
     @Override
     public void onInstrumentDetailsReady() {
-        // If the payment app was an Autofill credit card with an identifier, record its use.
-        PaymentApp selectedPaymentApp = mPaymentUiService.getSelectedPaymentApp();
-        if (selectedPaymentApp != null
-                && selectedPaymentApp.getPaymentAppType() == PaymentAppType.AUTOFILL
-                && !selectedPaymentApp.getIdentifier().isEmpty()) {
-            PersonalDataManager.getInstance().recordAndLogCreditCardUse(
-                    selectedPaymentApp.getIdentifier());
-        }
-
         // Showing the app selector UI if we were previously skipping it so the loading
         // spinner shows up until the merchant notifies that payment was completed.
         if (mHasSkippedAppSelector) {
