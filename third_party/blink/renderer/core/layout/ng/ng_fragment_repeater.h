@@ -26,12 +26,8 @@ class NGFragmentRepeater {
   STACK_ALLOCATED();
 
  public:
-  explicit NGFragmentRepeater(bool is_first_clone,
-                              bool is_last_fragment,
-                              bool is_inside_nested_fragmentainer = false)
-      : is_first_clone_(is_first_clone),
-        is_last_fragment_(is_last_fragment),
-        is_inside_nested_fragmentainer_(is_inside_nested_fragmentainer) {}
+  NGFragmentRepeater(bool is_first_clone, bool is_last_fragment)
+      : is_first_clone_(is_first_clone), is_last_fragment_(is_last_fragment) {}
 
   // Deep-clone the subtree of an already shallowly cloned fragment. This will
   // also create new break tokens inside, in order to set unique sequence
@@ -52,10 +48,6 @@ class NGFragmentRepeater {
   // True when at the last container fragment. No outgoing "repeat" break tokens
   // should be created then.
   bool is_last_fragment_;
-
-  // True when we are cloning a subset of the tree in which an inner
-  // fragmentainer was found.
-  bool is_inside_nested_fragmentainer_;
 };
 
 }  // namespace blink

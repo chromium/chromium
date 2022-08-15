@@ -710,7 +710,7 @@ const NGLayoutResult* NGBlockNode::LayoutRepeatableRoot(
   // numbers right, which is important when adding the result to the LayoutBox,
   // and it's also needed by pre-paint / paint.
   const NGBlockBreakToken* outgoing_break_token = nullptr;
-  if (constraint_space.IsRepeatable())
+  if (constraint_space.ShouldRepeat())
     outgoing_break_token = NGBlockBreakToken::CreateRepeated(*this, index);
   auto mutator = fragment.GetMutableForCloning();
   mutator.SetBreakToken(outgoing_break_token);
@@ -724,7 +724,7 @@ const NGLayoutResult* NGBlockNode::LayoutRepeatableRoot(
     box_->SetLayoutResult(result, index);
   }
 
-  if (!constraint_space.IsRepeatable()) {
+  if (!constraint_space.ShouldRepeat()) {
     // This is the last fragment. It won't be repeated again. We have already
     // created fragments for the repeated nodes, but the cloning was shallow.
     // We're now ready to deep-clone the entire subtree for each repeated

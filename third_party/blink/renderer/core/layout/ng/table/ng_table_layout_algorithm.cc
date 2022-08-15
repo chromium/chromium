@@ -990,7 +990,8 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
                                               section_index);
 
     if (repeat_mode != kNotRepeated) {
-      section_space_builder.SetIsRepeatable(repeat_mode == kMayRepeatAgain);
+      section_space_builder.SetShouldRepeat(repeat_mode == kMayRepeatAgain);
+      section_space_builder.SetIsInsideRepeatableContent(true);
     } else if (ConstraintSpace().HasBlockFragmentation()) {
       SetupSpaceBuilderForFragmentation(
           ConstraintSpace(), section, block_offset, &section_space_builder,
@@ -1024,12 +1025,15 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
   bool has_repeated_header = false;
   absl::optional<LayoutUnit> pending_repeated_footer_block_size;
 
+  // Before fragmented layout we need to go through the table's children, to
+  // look for repeatable headers and footers. This is especially important for
+  // footers, since we need to reserve space for it after any preceding
+  // non-repeated sections (typically tbody). We'll only repeat headers /
+  // footers if we're not already inside repeatable content, though.
+  // See crbug.com/1352931
   if (ConstraintSpace().HasKnownFragmentainerBlockSize() &&
+      !ConstraintSpace().IsInsideRepeatableContent() &&
       (grouped_children.header || grouped_children.footer)) {
-    // Before layout, we need to go through the table's children, to look for
-    // repeatable headers and footers. This is especially important for footers,
-    // since we need to reserve space for it after any preceding non-repeated
-    // sections (typically tbody).
     LayoutUnit max_section_block_size =
         ConstraintSpace().FragmentainerBlockSize() / 4;
     NGTableChildIterator child_iterator(grouped_children, BreakToken());

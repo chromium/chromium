@@ -38,8 +38,9 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
                                  adjust_inline_size_if_needed) {
     if (parent_space.ShouldPropagateChildBreakValues())
       SetShouldPropagateChildBreakValues();
-    if (parent_space.IsRepeatable())
-      SetIsRepeatable(/*is_repeatable*/ true);
+    if (parent_space.ShouldRepeat())
+      SetShouldRepeat(true);
+    SetIsInsideRepeatableContent(parent_space.IsInsideRepeatableContent());
   }
 
   // The setters on this builder are in the writing mode of parent_writing_mode.
@@ -149,8 +150,10 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
     space_.EnsureRareData()->is_at_fragmentainer_start = true;
   }
 
-  void SetIsRepeatable(bool is_repeatable) {
-    space_.EnsureRareData()->is_repeatable = is_repeatable;
+  void SetShouldRepeat(bool b) { space_.EnsureRareData()->should_repeat = b; }
+
+  void SetIsInsideRepeatableContent(bool b) {
+    space_.EnsureRareData()->is_inside_repeatable_content = b;
   }
 
   void SetIsFixedInlineSize(bool b) {

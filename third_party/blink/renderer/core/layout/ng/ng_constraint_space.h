@@ -399,11 +399,20 @@ class CORE_EXPORT NGConstraintSpace final {
     return HasRareData() && rare_data_->is_at_fragmentainer_start;
   }
 
-  // Return true if the content is repeatable inside block fragmentation, which
-  // is the case when an element is fixed positioned (printing only), or a
+  // Return true if the content will be repeated in the next fragmentainer.
+  // This is the case when an element is fixed positioned (printing only), or a
+  // repeatable table header / footer. Will return false even for repeatable
+  // content, if we can tell for sure that this is the last time that the node
+  // will repeat.
+  bool ShouldRepeat() const {
+    return HasRareData() && rare_data_->should_repeat;
+  }
+
+  // Return true if we're inside repeatable content inside block fragmentation,
+  // which is the case when an element is fixed positioned (printing only), or a
   // repeatable table header / footer.
-  bool IsRepeatable() const {
-    return HasRareData() && rare_data_->is_repeatable;
+  bool IsInsideRepeatableContent() const {
+    return HasRareData() && rare_data_->is_inside_repeatable_content;
   }
 
   // Whether the current constraint space is for the newly established
@@ -856,7 +865,8 @@ class CORE_EXPORT NGConstraintSpace final {
           min_break_appeal(kBreakAppealLastResort),
           propagate_child_break_values(false),
           is_at_fragmentainer_start(false),
-          is_repeatable(false) {}
+          should_repeat(false),
+          is_inside_repeatable_content(false) {}
     RareData(const RareData& other)
         : percentage_resolution_size(other.percentage_resolution_size),
           replaced_percentage_resolution_block_size(
@@ -885,7 +895,8 @@ class CORE_EXPORT NGConstraintSpace final {
           min_break_appeal(other.min_break_appeal),
           propagate_child_break_values(other.propagate_child_break_values),
           is_at_fragmentainer_start(other.is_at_fragmentainer_start),
-          is_repeatable(other.is_repeatable) {
+          should_repeat(other.should_repeat),
+          is_inside_repeatable_content(other.is_inside_repeatable_content) {
       switch (GetDataUnionType()) {
         case DataUnionType::kNone:
           break;
@@ -960,7 +971,8 @@ class CORE_EXPORT NGConstraintSpace final {
           is_in_column_bfc != other.is_in_column_bfc ||
           min_break_appeal != other.min_break_appeal ||
           propagate_child_break_values != other.propagate_child_break_values ||
-          is_repeatable != other.is_repeatable)
+          should_repeat != other.should_repeat ||
+          is_inside_repeatable_content != other.is_inside_repeatable_content)
         return false;
 
       switch (GetDataUnionType()) {
@@ -995,7 +1007,7 @@ class CORE_EXPORT NGConstraintSpace final {
           should_ignore_forced_breaks || is_in_column_bfc ||
           min_break_appeal != kBreakAppealLastResort ||
           propagate_child_break_values || is_at_fragmentainer_start ||
-          is_repeatable)
+          should_repeat || is_inside_repeatable_content)
         return false;
 
       switch (GetDataUnionType()) {
@@ -1276,7 +1288,8 @@ class CORE_EXPORT NGConstraintSpace final {
     unsigned min_break_appeal : kNGBreakAppealBitsNeeded;
     unsigned propagate_child_break_values : 1;
     unsigned is_at_fragmentainer_start : 1;
-    unsigned is_repeatable : 1;
+    unsigned should_repeat : 1;
+    unsigned is_inside_repeatable_content : 1;
 
    private:
     struct BlockData {

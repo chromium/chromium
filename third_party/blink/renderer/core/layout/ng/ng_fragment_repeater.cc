@@ -126,10 +126,7 @@ void NGFragmentRepeater::CloneChildFragments(
         child.fragment = &child_result->PhysicalFragment();
       } else if (child_box->IsFragmentainerBox()) {
         child_box = NGPhysicalBoxFragment::Clone(*child_box);
-        NGFragmentRepeater child_repeater(
-            is_first_clone_, is_last_fragment_,
-            /* is_inside_nested_fragmentainer */ true);
-        child_repeater.CloneChildFragments(*child_box);
+        CloneChildFragments(*child_box);
         child.fragment = child_box;
       }
     } else if (child->IsLineBox()) {
@@ -211,8 +208,7 @@ const NGLayoutResult* NGFragmentRepeater::GetClonableLayoutResult(
   for (const NGLayoutResult* result : layout_box.GetLayoutResults()) {
     const NGBlockBreakToken* break_token =
         To<NGPhysicalBoxFragment>(result->PhysicalFragment()).BreakToken();
-    if (!break_token ||
-        (break_token->IsRepeated() && !is_inside_nested_fragmentainer_))
+    if (!break_token || break_token->IsRepeated())
       return result;
   }
   NOTREACHED();
