@@ -547,6 +547,9 @@ const base::Feature kHappinessTrackingPersonalizationWallpaper{
 // Enables the Happiness Tracking System for Media App PDF survey.
 const base::Feature kHappinessTrackingMediaAppPdf{
     "HappinessTrackingMediaAppPdf", base::FEATURE_DISABLED_BY_DEFAULT};
+// Enables or disables the Happiness Tracking System for Camera App survey.
+const base::Feature kHappinessTrackingSystemCameraApp{
+    "HappinessTrackingCameraApp", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
 // Hides the origin text from showing up briefly in WebApp windows.

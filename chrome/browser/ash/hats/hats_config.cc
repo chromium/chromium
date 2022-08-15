@@ -157,4 +157,14 @@ const HatsConfig kHatsMediaAppPdfSurvey = {
     prefs::kHatsMediaAppPdfCycleEndTs,  // hatsCycleEndTimestampPrefName
 };
 
+// Camera App Survey -- shown after an user captured a photo/video or left the
+// app with session > 15 seconds.
+const HatsConfig kHatsCameraAppSurvey = {
+    ::features::kHappinessTrackingSystemCameraApp,  // feature
+    "Browser.ChromeOS.HatsSatisfaction.CameraApp",  // histogram_name
+    base::Days(90),                                 // new_device_threshold
+    prefs::kHatsCameraAppDeviceIsSelected,          // is_selected_pref_name
+    prefs::kHatsCameraAppSurveyCycleEndTs,  // cycle_end_timestamp_pref_name
+};
+
 }  // namespace ash

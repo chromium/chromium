@@ -97,6 +97,7 @@ chromium-metrics-reviews@google.com.
   <token key="Survey">
     <variant name=".ArcGames"/>
     <variant name=".Audio"/>
+    <variant name=".CameraApp"/>
     <variant name=".Ent"/>
     <variant name=".General"/>
     <variant name=".MediaAppPdf"/>
