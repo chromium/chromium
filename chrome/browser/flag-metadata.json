@@ -34,11 +34,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "access-code-cast-device-duration",
-    "owners": [ "gbj@google.com", "cros-edu-team@google.com" ],
-    "expiry_milestone": 105
-  },
-  {
     "name": "accessible-pdf-form",
     "owners": [ "asku@microsoft.com", "mohitb@microsoft.com" ],
     "expiry_milestone": 105

@@ -62,10 +62,5 @@ constexpr char kAccessCodeCastFlagParamType[] = "access_code_cast_duration_s";
 namespace switches {
 constexpr char kDiscoveryEndpointSwitch[] = "access-code-cast-url";
 
-// This value is hardcoded in chrome/browser/flag-metadata.json -- please ensure
-// that file is updated if this value is changed.
-constexpr char kAccessCodeCastDeviceDurationSwitch[] =
-    "access-code-cast-device-duration";
-
 }  // namespace switches
 }  // namespace media_router

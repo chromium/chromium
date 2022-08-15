@@ -8884,13 +8884,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kSafetyCheckPermissions)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if !BUILDFLAG(IS_ANDROID)
-    {media_router::switches::kAccessCodeCastDeviceDurationSwitch,
-     flag_descriptions::kAccessCodeCastDeviceDurationName,
-     flag_descriptions::kAccessCodeCastDeviceDurationDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kAccessCodeCastRememberDevices)},
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(IS_ANDROID)
     {"bulk-tab-restore-android", flag_descriptions::kBulkTabRestoreAndroidName,
      flag_descriptions::kBulkTabRestoreAndroidDescription, kOsAndroid,
@@ -9264,14 +9257,6 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
       channel != version_info::Channel::UNKNOWN) {
     return true;
   }
-#if !BUILDFLAG(IS_ANDROID)
-  // Only show the AccessCodeCast duration flag if the AccessCodeCast Ui is
-  // displayed and it is only available on Dev/Canary channels.
-  if (!strcmp(media_router::switches::kAccessCodeCastDeviceDurationSwitch,
-              entry.internal_name)) {
-    return !media_router::IsAccessCodeCastEnabled();
-  }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
   // HDR mode works, but displays everything horribly wrong prior to windows 10.

@@ -45,10 +45,6 @@ namespace switches {
 // Specifies the URL from which to obtain cast discovery information.
 extern const char kDiscoveryEndpointSwitch[];
 
-// Specifies and overwrites the duration that should be set for the
-// kAccessCodeCastDeviceDuration.
-extern const char kAccessCodeCastDeviceDurationSwitch[];
-
 }  // namespace switches
 }  // namespace media_router
 
