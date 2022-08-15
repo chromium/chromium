@@ -318,8 +318,7 @@ TerminalPrivateOpenTerminalProcessFunction::OpenProcess(
     std::string vm_name = GetSwitch(params_args, &cmdline, kSwitchVmName,
                                     crostini::kCrostiniDefaultVmName);
     std::string container_name =
-        GetSwitch(params_args, &cmdline, kSwitchTargetContainer,
-                  crostini::kCrostiniDefaultContainerName);
+        GetSwitch(params_args, &cmdline, kSwitchTargetContainer, "");
     GetSwitch(params_args, &cmdline, kSwitchCurrentWorkingDir, "");
     std::string startup_id = params_args.GetSwitchValueASCII(kSwitchStartupId);
     guest_id_ = std::make_unique<guest_os::GuestId>(guest_os::VmType::UNKNOWN,
