@@ -264,11 +264,6 @@ TEST_F(LanguageSettingsPrivateApiTest, SetTranslateTargetLanguageTest) {
       api_test_utils::RunFunctionAndReturnSingleResult(function.get(),
                                                        "[\"af\"]", profile());
   ASSERT_EQ(translate_prefs_->GetRecentTargetLanguage(), "af");
-
-  std::vector<std::string> content_languages_after;
-  translate_prefs_->GetLanguageList(&content_languages_after);
-  ASSERT_EQ(std::vector<std::string>({"en-US", "en", "af"}),
-            content_languages_after);
 }
 
 TEST_F(LanguageSettingsPrivateApiTest, GetNeverTranslateLanguagesListTest) {

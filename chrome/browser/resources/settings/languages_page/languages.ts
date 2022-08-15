@@ -879,8 +879,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
   }
 
   /**
-   * Sets the translate target language and adds it to the content languages if
-   * not already there.
+   * Sets the translate target language.
    */
   setTranslateTargetLanguage(languageCode: string) {
     this.languageSettingsPrivate_.setTranslateTargetLanguage(languageCode);

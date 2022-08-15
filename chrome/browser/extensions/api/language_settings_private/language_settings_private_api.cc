@@ -681,7 +681,6 @@ LanguageSettingsPrivateSetTranslateTargetLanguageFunction::Run() {
       CreateTranslatePrefsForBrowserContext(browser_context());
 
   std::string chrome_language = language_code;
-  translate_prefs->AddToLanguageList(language_code, false);
 
   if (language_code == translate_prefs->GetRecentTargetLanguage()) {
     return RespondNow(NoArguments());
