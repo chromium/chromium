@@ -13,4 +13,7 @@ extern const CGSize kReturnToRecentTabSize;
 // Accessibility Identifier for the NTP Promo view.
 extern NSString* const kContentSuggestionsWhatsNewIdentifier;
 
+// Accessibility Identifier for QuerySuggestionView.
+extern NSString* const kQuerySuggestionViewA11yIdentifierPrefix;
+
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CELLS_CONTENT_SUGGESTIONS_CELLS_CONSTANTS_H_
