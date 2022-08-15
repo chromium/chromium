@@ -1859,8 +1859,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Navigator.ReducedUserAgent" enum="Boolean"
-    expires_after="2022-09-25">
+    expires_after="M110">
   <owner>miketaylr@chromium.org</owner>
+  <owner>victortan@chromium.org</owner>
   <owner>potassium-katabolism@google.com</owner>
   <summary>
     Whether the navigator.userAgent and navigator.appVersion JavaScript getters
