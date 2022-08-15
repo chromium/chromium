@@ -201,11 +201,8 @@ TEST_F(MojoFacadeTest, Watch) {
   // Write to the other end of the pipe.
   NSDictionary* write = @{
     @"name" : @"MojoHandle.writeMessage",
-    @"args" : @{
-      @"handle" : @(handle1),
-      @"handles" : @[],
-      @"buffer" : @"QUJDRA=="  // "ABCD"
-    },
+    @"args" :
+        @{@"handle" : @(handle1), @"handles" : @[], @"buffer" : @{@"0" : @0}},
   };
   std::string result_as_string = facade()->HandleMojoMessage(GetJson(write));
   EXPECT_FALSE(result_as_string.empty());
@@ -241,7 +238,7 @@ TEST_F(MojoFacadeTest, ReadWrite) {
     @"args" : @{
       @"handle" : @(handle1),
       @"handles" : @[],
-      @"buffer" : @"QUJDRA=="  // "ABCD"
+      @"buffer" : @{@"0" : @9, @"1" : @2, @"2" : @2008}
     },
   };
   std::string result_as_string = facade()->HandleMojoMessage(GetJson(write));
@@ -260,7 +257,7 @@ TEST_F(MojoFacadeTest, ReadWrite) {
   NSDictionary* message = GetObject(facade()->HandleMojoMessage(GetJson(read)));
   EXPECT_TRUE([message isKindOfClass:[NSDictionary class]]);
   EXPECT_TRUE(message);
-  NSArray* expected_message = @[ @65, @66, @67, @68 ];
+  NSArray* expected_message = @[ @9, @2, @216 ];  // 2008 does not fit 8-bit.
   EXPECT_NSEQ(expected_message, message[@"buffer"]);
   EXPECT_FALSE([message[@"handles"] count]);
   EXPECT_EQ(MOJO_RESULT_OK, [message[@"result"] unsignedIntValue]);
