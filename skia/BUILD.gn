@@ -326,7 +326,7 @@ component("skia") {
   sources += skia_effects_imagefilter_public
 
   # The imported Skia gni source paths are made absolute by gn.
-  defines = skia_core_defines
+  defines = []
   sources += skia_sksl_sources
   sources += skia_utils_sources
   sources += skia_xps_sources
@@ -662,7 +662,7 @@ template("skia_source_set") {
 
 # Split out for targeted removal of the afdo_optimize_size config on Android.
 skia_source_set("skia_core_and_effects") {
-  defines = skia_core_defines
+  defines = []
   sources = skia_core_sources
   sources += skia_effects_sources
   sources += skia_effects_imagefilter_sources
