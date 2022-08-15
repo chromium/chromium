@@ -48,7 +48,7 @@ try_.builder(
 try_.builder(
     name = "mac-osxbeta-rel",
     mirrors = [
-        "ci/Mac Builder",
+        "ci/Mac Builder (dbg)",
         "ci/mac-osxbeta-rel",
     ],
     builderless = False,

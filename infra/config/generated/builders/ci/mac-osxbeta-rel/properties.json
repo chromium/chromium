@@ -6,7 +6,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "Mac Builder",
+              "builder": "Mac Builder (dbg)",
               "project": "chromium"
             },
             "builder_spec": {
@@ -15,18 +15,14 @@
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
                 "apply_configs": [
-                  "mb",
-                  "goma_use_local"
+                  "mb"
                 ],
-                "build_config": "Release",
+                "build_config": "Debug",
                 "config": "chromium",
                 "target_bits": 64,
                 "target_platform": "mac"
               },
               "legacy_gclient_config": {
-                "apply_configs": [
-                  "use_clang_coverage"
-                ],
                 "config": "chromium"
               }
             }
@@ -59,7 +55,7 @@
               },
               "parent": {
                 "bucket": "ci",
-                "builder": "Mac Builder",
+                "builder": "Mac Builder (dbg)",
                 "project": "chromium"
               }
             }
@@ -79,7 +75,7 @@
           "group": "tryserver.chromium.mac"
         },
         {
-          "builder": "mac_chromium_compile_rel_ng",
+          "builder": "mac_chromium_compile_dbg_ng",
           "group": "tryserver.chromium.mac"
         }
       ]

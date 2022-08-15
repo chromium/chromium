@@ -756,7 +756,7 @@ ci.thin_tester(
     builderless = False,
     os = os.MAC_DEFAULT,
     cores = 12,
-    triggered_by = ["ci/Mac Builder"],
+    triggered_by = ["ci/Mac Builder (dbg)"],
 )
 
 ci.builder(
