@@ -420,6 +420,7 @@ void AUHALStream::UpdatePlayoutTimestamp(const AudioTimeStamp* timestamp) {
         static_cast<UInt32>(timestamp->mSampleTime - last_sample_time_);
     DCHECK_GE(sample_time_diff, last_number_of_frames_);
     UInt32 lost_frames = sample_time_diff - last_number_of_frames_;
+    current_lost_frames_ += lost_frames;
     base::TimeDelta lost_audio_duration =
         AudioTimestampHelper::FramesToTime(lost_frames, params_.sample_rate());
     glitch_reporter_.UpdateStats(lost_audio_duration);
