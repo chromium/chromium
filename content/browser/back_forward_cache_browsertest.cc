@@ -145,14 +145,6 @@ void BackForwardCacheBrowserTest::NotifyNotRestoredReasons(
   tree_result_ = std::move(tree_result);
 }
 
-  // Disables checking metrics that are recorded recardless of the domains. By
-  // default, this class' Expect* function checks the metrics both for the
-  // specific domain and for all domains at the same time. In the case when the
-  // test results need to be different, call this function.
-void BackForwardCacheBrowserTest::DisableCheckingMetricsForAllSites() {
-  check_all_sites_ = false;
-}
-
 void BackForwardCacheBrowserTest::SetUpCommandLine(
     base::CommandLine* command_line) {
   ContentBrowserTest::SetUpCommandLine(command_line);
@@ -274,110 +266,6 @@ bool BackForwardCacheBrowserTest::HistogramContainsIntValue(
   return it != histogram_values.end();
 }
 
-void BackForwardCacheBrowserTest::ExpectOutcomeDidNotChange(
-    base::Location location) {
-  EXPECT_EQ(expected_outcomes_,
-            histogram_tester_.GetAllSamples(
-                "BackForwardCache.HistoryNavigationOutcome"))
-      << location.ToString();
-
-  if (!check_all_sites_)
-    return;
-
-  EXPECT_EQ(expected_outcomes_,
-            histogram_tester_.GetAllSamples(
-                "BackForwardCache.AllSites.HistoryNavigationOutcome"))
-      << location.ToString();
-
-  std::string is_served_from_bfcache =
-      "BackForwardCache.IsServedFromBackForwardCache";
-  EXPECT_THAT(
-      ukm_recorder_->GetMetrics("HistoryNavigation", {is_served_from_bfcache}),
-      expected_ukm_outcomes_)
-      << location.ToString();
-}
-
-void BackForwardCacheBrowserTest::ExpectRestored(base::Location location) {
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored,
-                location);
-  ExpectReasons({}, {}, {}, {}, {}, location);
-}
-
-void BackForwardCacheBrowserTest::ExpectNotRestored(
-    std::vector<BackForwardCacheMetrics::NotRestoredReason> not_restored,
-    std::vector<blink::scheduler::WebSchedulerTrackedFeature> block_listed,
-    const std::vector<ShouldSwapBrowsingInstance>& not_swapped,
-    const std::vector<BackForwardCache::DisabledReason>&
-        disabled_for_render_frame_host,
-    const std::vector<uint64_t>& disallow_activation,
-    base::Location location) {
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kNotRestored,
-                location);
-  ExpectReasons(not_restored, block_listed, not_swapped,
-                disabled_for_render_frame_host, disallow_activation, location);
-}
-
-void BackForwardCacheBrowserTest::ExpectNotRestoredDidNotChange(
-    base::Location location) {
-  EXPECT_EQ(expected_not_restored_,
-            histogram_tester_.GetAllSamples(
-                "BackForwardCache.HistoryNavigationOutcome."
-                "NotRestoredReason"))
-      << location.ToString();
-
-  std::string not_restored_reasons = "BackForwardCache.NotRestoredReasons";
-
-  if (!check_all_sites_)
-    return;
-
-  EXPECT_EQ(expected_not_restored_,
-            histogram_tester_.GetAllSamples(
-                "BackForwardCache.AllSites.HistoryNavigationOutcome."
-                "NotRestoredReason"))
-      << location.ToString();
-
-  EXPECT_THAT(
-      ukm_recorder_->GetMetrics("HistoryNavigation", {not_restored_reasons}),
-      expected_ukm_not_restored_reasons_)
-      << location.ToString();
-}
-
-void BackForwardCacheBrowserTest::ExpectBlocklistedFeature(
-    blink::scheduler::WebSchedulerTrackedFeature feature,
-    base::Location location) {
-  ExpectBlocklistedFeatures({feature}, location);
-}
-
-void BackForwardCacheBrowserTest::ExpectBrowsingInstanceNotSwappedReason(
-    ShouldSwapBrowsingInstance reason,
-    base::Location location) {
-  ExpectBrowsingInstanceNotSwappedReasons({reason}, location);
-}
-
-void BackForwardCacheBrowserTest::ExpectEvictedAfterCommitted(
-    std::vector<BackForwardCacheMetrics::EvictedAfterDocumentRestoredReason>
-        reasons,
-    base::Location location) {
-  for (BackForwardCacheMetrics::EvictedAfterDocumentRestoredReason reason :
-       reasons) {
-    base::HistogramBase::Sample sample = base::HistogramBase::Sample(reason);
-    AddSampleToBuckets(&expected_eviction_after_committing_, sample);
-  }
-
-  EXPECT_THAT(histogram_tester_.GetAllSamples(
-                  "BackForwardCache.EvictedAfterDocumentRestoredReason"),
-              UnorderedElementsAreArray(expected_eviction_after_committing_))
-      << location.ToString();
-  if (!check_all_sites_)
-    return;
-
-  EXPECT_THAT(
-      histogram_tester_.GetAllSamples(
-          "BackForwardCache.AllSites.EvictedAfterDocumentRestoredReason"),
-      UnorderedElementsAreArray(expected_eviction_after_committing_))
-      << location.ToString();
-}
-
 void BackForwardCacheBrowserTest::EvictByJavaScript(RenderFrameHostImpl* rfh) {
   // Run JavaScript on a page in the back-forward cache. The page should be
   // evicted. As the frame is deleted, ExecJs returns false without executing.
@@ -432,14 +320,8 @@ net::EmbeddedTestServer* BackForwardCacheBrowserTest::https_server() {
   return https_server_.get();
 }
 
-void BackForwardCacheBrowserTest::ExpectTotalCount(
-    base::StringPiece name,
-    base::HistogramBase::Count count) {
-  histogram_tester_.ExpectTotalCount(name, count);
-}
-
-  // Do not fail this test if a message from a renderer arrives at the browser
-  // for a cached page.
+// Do not fail this test if a message from a renderer arrives at the browser
+// for a cached page.
 void BackForwardCacheBrowserTest::DoNotFailForUnexpectedMessagesWhileCached() {
   fail_for_unexpected_messages_while_cached_ = false;
 }
@@ -485,193 +367,6 @@ void BackForwardCacheBrowserTest::ReleaseKeyboardLock(
           resolve();
         });
       )"));
-}
-
-void BackForwardCacheBrowserTest::AddSampleToBuckets(
-    std::vector<base::Bucket>* buckets,
-    base::HistogramBase::Sample sample) {
-  auto it = std::find_if(
-      buckets->begin(), buckets->end(),
-      [sample](const base::Bucket& bucket) { return bucket.min == sample; });
-  if (it == buckets->end()) {
-    buckets->push_back(base::Bucket(sample, 1));
-  } else {
-    it->count++;
-  }
-}
-
-void BackForwardCacheBrowserTest::ExpectOutcome(
-    BackForwardCacheMetrics::HistoryNavigationOutcome outcome,
-    base::Location location) {
-  base::HistogramBase::Sample sample = base::HistogramBase::Sample(outcome);
-  AddSampleToBuckets(&expected_outcomes_, sample);
-
-  EXPECT_THAT(histogram_tester_.GetAllSamples(
-                  "BackForwardCache.HistoryNavigationOutcome"),
-              UnorderedElementsAreArray(expected_outcomes_))
-      << location.ToString();
-  if (!check_all_sites_)
-    return;
-
-  EXPECT_THAT(histogram_tester_.GetAllSamples(
-                  "BackForwardCache.AllSites.HistoryNavigationOutcome"),
-              UnorderedElementsAreArray(expected_outcomes_))
-      << location.ToString();
-
-  std::string is_served_from_bfcache =
-      "BackForwardCache.IsServedFromBackForwardCache";
-  bool ukm_outcome =
-      outcome == BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored;
-  expected_ukm_outcomes_.push_back(
-      {{is_served_from_bfcache, static_cast<int64_t>(ukm_outcome)}});
-  EXPECT_THAT(
-      ukm_recorder_->GetMetrics("HistoryNavigation", {is_served_from_bfcache}),
-      expected_ukm_outcomes_)
-      << location.ToString();
-}
-
-void BackForwardCacheBrowserTest::ExpectReasons(
-    std::vector<BackForwardCacheMetrics::NotRestoredReason> not_restored,
-    std::vector<blink::scheduler::WebSchedulerTrackedFeature> block_listed,
-    const std::vector<ShouldSwapBrowsingInstance>& not_swapped,
-    const std::vector<BackForwardCache::DisabledReason>&
-        disabled_for_render_frame_host,
-    const std::vector<uint64_t>& disallow_activation,
-    base::Location location) {
-  // Check that the expected reasons are consistent.
-  bool expect_blocklisted =
-      std::count(
-          not_restored.begin(), not_restored.end(),
-          BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures) > 0;
-  bool has_blocklisted = block_listed.size() > 0;
-  EXPECT_EQ(expect_blocklisted, has_blocklisted);
-  bool expect_disabled_for_render_frame_host =
-      std::count(not_restored.begin(), not_restored.end(),
-                 BackForwardCacheMetrics::NotRestoredReason::
-                     kDisableForRenderFrameHostCalled) > 0;
-  bool has_disabled_for_render_frame_host =
-      disabled_for_render_frame_host.size() > 0;
-  EXPECT_EQ(expect_disabled_for_render_frame_host,
-            has_disabled_for_render_frame_host);
-
-  // Check that the reasons are as expected.
-  ExpectNotRestoredReasons(not_restored, location);
-  ExpectBlocklistedFeatures(block_listed, location);
-  ExpectBrowsingInstanceNotSwappedReasons(not_swapped, location);
-  ExpectDisabledWithReasons(disabled_for_render_frame_host, location);
-  ExpectDisallowActivationReasons(disallow_activation, location);
-}
-
-void BackForwardCacheBrowserTest::ExpectNotRestoredReasons(
-    std::vector<BackForwardCacheMetrics::NotRestoredReason> reasons,
-    base::Location location) {
-  uint64_t not_restored_reasons_bits = 0;
-  for (BackForwardCacheMetrics::NotRestoredReason reason : reasons) {
-    base::HistogramBase::Sample sample = base::HistogramBase::Sample(reason);
-    AddSampleToBuckets(&expected_not_restored_, sample);
-    not_restored_reasons_bits |= 1ull << static_cast<int>(reason);
-  }
-
-  EXPECT_THAT(histogram_tester_.GetAllSamples(
-                  "BackForwardCache.HistoryNavigationOutcome."
-                  "NotRestoredReason"),
-              UnorderedElementsAreArray(expected_not_restored_))
-      << location.ToString();
-
-  if (!check_all_sites_)
-    return;
-
-  EXPECT_THAT(histogram_tester_.GetAllSamples(
-                  "BackForwardCache.AllSites.HistoryNavigationOutcome."
-                  "NotRestoredReason"),
-              UnorderedElementsAreArray(expected_not_restored_))
-      << location.ToString();
-
-  std::string not_restored_reasons = "BackForwardCache.NotRestoredReasons";
-  expected_ukm_not_restored_reasons_.push_back(
-      {{not_restored_reasons, not_restored_reasons_bits}});
-  EXPECT_THAT(
-      ukm_recorder_->GetMetrics("HistoryNavigation", {not_restored_reasons}),
-      expected_ukm_not_restored_reasons_)
-      << location.ToString();
-}
-
-void BackForwardCacheBrowserTest::ExpectBlocklistedFeatures(
-    std::vector<blink::scheduler::WebSchedulerTrackedFeature> features,
-    base::Location location) {
-  for (auto feature : features) {
-    base::HistogramBase::Sample sample = base::HistogramBase::Sample(feature);
-    AddSampleToBuckets(&expected_blocklisted_features_, sample);
-  }
-
-  EXPECT_THAT(histogram_tester_.GetAllSamples(
-                  "BackForwardCache.HistoryNavigationOutcome."
-                  "BlocklistedFeature"),
-              UnorderedElementsAreArray(expected_blocklisted_features_))
-      << location.ToString();
-
-  if (!check_all_sites_)
-    return;
-
-  EXPECT_THAT(histogram_tester_.GetAllSamples(
-                  "BackForwardCache.AllSites.HistoryNavigationOutcome."
-                  "BlocklistedFeature"),
-              UnorderedElementsAreArray(expected_blocklisted_features_))
-      << location.ToString();
-}
-
-void BackForwardCacheBrowserTest::ExpectDisabledWithReasons(
-    const std::vector<BackForwardCache::DisabledReason>& reasons,
-    base::Location location) {
-  for (BackForwardCache::DisabledReason reason : reasons) {
-    base::HistogramBase::Sample sample = base::HistogramBase::Sample(
-        content::BackForwardCacheMetrics::MetricValue(reason));
-    AddSampleToBuckets(&expected_disabled_reasons_, sample);
-  }
-  EXPECT_THAT(histogram_tester_.GetAllSamples(
-                  "BackForwardCache.HistoryNavigationOutcome."
-                  "DisabledForRenderFrameHostReason2"),
-              UnorderedElementsAreArray(expected_disabled_reasons_))
-      << location.ToString();
-}
-
-void BackForwardCacheBrowserTest::ExpectDisallowActivationReasons(
-    const std::vector<uint64_t>& reasons,
-    base::Location location) {
-  for (const uint64_t& reason : reasons) {
-    base::HistogramBase::Sample sample(reason);
-    AddSampleToBuckets(&expected_disallow_activation_reasons_, sample);
-  }
-  EXPECT_THAT(histogram_tester_.GetAllSamples(
-                  "BackForwardCache.HistoryNavigationOutcome."
-                  "DisallowActivationReason"),
-              UnorderedElementsAreArray(expected_disallow_activation_reasons_))
-      << location.ToString();
-}
-
-void BackForwardCacheBrowserTest::ExpectBrowsingInstanceNotSwappedReasons(
-    const std::vector<ShouldSwapBrowsingInstance>& reasons,
-    base::Location location) {
-  for (auto reason : reasons) {
-    base::HistogramBase::Sample sample = base::HistogramBase::Sample(reason);
-    AddSampleToBuckets(&expected_browsing_instance_not_swapped_reasons_,
-                       sample);
-  }
-  EXPECT_THAT(histogram_tester_.GetAllSamples(
-                  "BackForwardCache.HistoryNavigationOutcome."
-                  "BrowsingInstanceNotSwappedReason"),
-              UnorderedElementsAreArray(
-                  expected_browsing_instance_not_swapped_reasons_))
-      << location.ToString();
-  if (!check_all_sites_)
-    return;
-
-  EXPECT_THAT(histogram_tester_.GetAllSamples(
-                  "BackForwardCache.AllSites.HistoryNavigationOutcome."
-                  "BrowsingInstanceNotSwappedReason"),
-              UnorderedElementsAreArray(
-                  expected_browsing_instance_not_swapped_reasons_))
-      << location.ToString();
 }
 
 void BackForwardCacheBrowserTest::NavigateAndBlock(GURL url,
@@ -2949,6 +2644,10 @@ void BackForwardCacheBrowserTest::ExpectNotRestoredDueToBlocklistedFeature(
       {NotRestoredReason::kBlocklistedFeatures},
       {blink::scheduler::WebSchedulerTrackedFeature::kContainsPlugins}, {}, {},
       {}, location);
+}
+
+ukm::TestAutoSetUkmRecorder* BackForwardCacheBrowserTest::ukm_recorder() {
+  return ukm_recorder_.get();
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
