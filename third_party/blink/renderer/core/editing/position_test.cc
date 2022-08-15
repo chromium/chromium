@@ -72,6 +72,25 @@ TEST_F(PositionTest, editingPositionOfWithEditingIgnoresContent) {
             Position::EditingPositionOf(textarea, 3));
 }
 
+// http://crbug.com/1248760
+TEST_F(PositionTest, LastPositionInOrAfterNodeNotInFlatTree) {
+  SetBodyContent("<option><select>A</select></option>");
+  const Element& document_element = *GetDocument().documentElement();
+  const Element& select = *GetDocument().QuerySelector("select");
+
+  EXPECT_EQ(Position::LastPositionInNode(document_element),
+            Position::LastPositionInOrAfterNode(document_element));
+  EXPECT_EQ(PositionInFlatTree::LastPositionInNode(document_element),
+            PositionInFlatTree::LastPositionInOrAfterNode(document_element));
+
+  // Note: <select> isn't appeared in flat tree, because <option> doesn't
+  // take it as valid child node.
+  EXPECT_EQ(Position::AfterNode(select),
+            Position::LastPositionInOrAfterNode(select));
+  EXPECT_EQ(PositionInFlatTree::LastPositionInNode(select),
+            PositionInFlatTree::LastPositionInOrAfterNode(select));
+}
+
 TEST_F(PositionTest, NodeAsRangeLastNode) {
   const char* body_content =
       "<p id='p1'>11</p><p id='p2'></p><p id='p3'>33</p>";

@@ -577,8 +577,9 @@ PositionTemplate<Strategy>::FirstPositionInOrBeforeNode(const Node& node) {
 template <typename Strategy>
 PositionTemplate<Strategy>
 PositionTemplate<Strategy>::LastPositionInOrAfterNode(const Node& node) {
-  return EditingIgnoresContent(node) ? AfterNode(node)
-                                     : LastPositionInNode(node);
+  return EditingIgnoresContent(node) && Strategy::Parent(node)
+             ? AfterNode(node)
+             : LastPositionInNode(node);
 }
 
 PositionInFlatTree ToPositionInFlatTree(const Position& pos) {
