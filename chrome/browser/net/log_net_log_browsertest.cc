@@ -94,22 +94,22 @@ class LogNetLogExplicitFileTest
         << "Could not read: " << net_log_path_;
 
     // Parse it as JSON.
-    auto parsed = base::JSONReader::ReadDeprecated(file_contents);
+    auto parsed = base::JSONReader::Read(file_contents);
     ASSERT_TRUE(parsed);
 
     // Ensure the root value is a dictionary.
-    base::DictionaryValue* main;
-    ASSERT_TRUE(parsed->GetAsDictionary(&main));
+    ASSERT_TRUE(parsed->is_dict());
+    const base::Value::Dict& main = parsed->GetDict();
 
     // Ensure it has a "constants" property.
-    base::DictionaryValue* constants;
-    ASSERT_TRUE(main->GetDictionary("constants", &constants));
-    ASSERT_FALSE(constants->DictEmpty());
+    const base::Value::Dict* constants = main.FindDict("constants");
+    ASSERT_TRUE(constants);
+    ASSERT_FALSE(constants->empty());
 
     // Ensure it has an "events" property.
-    base::ListValue* events;
-    ASSERT_TRUE(main->GetList("events", &events));
-    ASSERT_FALSE(events->GetListDeprecated().empty());
+    const base::Value::List* events = main.FindList("events");
+    ASSERT_TRUE(events);
+    ASSERT_FALSE(events->empty());
 
     // Verify that cookies were stripped when the --net-log-capture-mode flag
     // was omitted, and not stripped when it was given a value of
