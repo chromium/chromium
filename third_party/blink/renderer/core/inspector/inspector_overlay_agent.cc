@@ -1286,11 +1286,14 @@ void InspectorOverlayAgent::Reset(
   reset_data->setDouble("pageScaleFactor",
                         GetFrame()->GetPage()->GetVisualViewport().Scale());
 
-  gfx::Rect viewport_in_screen =
-      GetFrame()->GetPage()->GetChromeClient().ViewportToScreen(
-          gfx::Rect(gfx::Point(), viewport_size), GetFrame()->View());
+  float physical_to_dips =
+      1.f / GetFrame()->GetPage()->GetChromeClient().WindowToViewportScalar(
+                GetFrame(), 1.f);
+  gfx::Size viewport_size_in_dips =
+      gfx::ScaleToFlooredSize(viewport_size, physical_to_dips);
+
   reset_data->setObject("viewportSize",
-                        BuildObjectForSize(viewport_in_screen.size()));
+                        BuildObjectForSize(viewport_size_in_dips));
   reset_data->setObject("viewportSizeForMediaQueries",
                         BuildObjectForSize(viewport_size_for_media_queries));
 

@@ -359,6 +359,7 @@ _CONFIG = [
             'gfx::RectToSkIRect',
             'gfx::RectToSkRect',
             'gfx::ScaleToCeiledSize',
+            'gfx::ScaleToEnclosedRect',
             'gfx::ScaleToEnclosingRect',
             'gfx::ScaleToFlooredSize',
             'gfx::ScaleToRoundedRect',

@@ -1529,12 +1529,19 @@ Response InspectorPageAgent::getLayoutMetrics(
                              .setClientHeight(visible_contents.height())
                              .build();
 
-  // `visible_contents` is in DIP or DP depending on the
-  // `enable-use-zoom-for-dsf` flag. Normlisation needed to convert it to CSS
-  // pixels. Details: https://crbug.com/1181313
+  // PageZoomFactor takes CSS pixels to device/physical pixels. It includes
+  // both browser ctrl+/- zoom as well as the device scale factor for screen
+  // density. Note: we don't account for pinch-zoom, even though it scales a
+  // CSS pixel, since "device pixels" coming from Blink are also unscaled by
+  // pinch-zoom.
+  float css_to_physical = main_frame->PageZoomFactor();
+  float physical_to_css = 1.f / css_to_physical;
+
+  // `visible_contents` is in physical pixels. Normlisation is needed to
+  // convert it to CSS pixels. Details: https://crbug.com/1181313
   gfx::Rect css_visible_contents =
-      main_frame->GetPage()->GetChromeClient().ViewportToScreen(
-          visible_contents, main_frame->View());
+      gfx::ScaleToEnclosedRect(visible_contents, physical_to_css);
+
   *out_css_layout_viewport = protocol::Page::LayoutViewport::create()
                                  .setPageX(css_visible_contents.x())
                                  .setPageY(css_visible_contents.y())
@@ -1543,7 +1550,6 @@ Response InspectorPageAgent::getLayoutMetrics(
                                  .build();
 
   LocalFrameView* frame_view = main_frame->View();
-  ScrollOffset page_offset = frame_view->GetScrollableArea()->GetScrollOffset();
 
   gfx::Size content_size = frame_view->GetScrollableArea()->ContentsSize();
   *out_content_size = protocol::DOM::Rect::create()
@@ -1553,38 +1559,32 @@ Response InspectorPageAgent::getLayoutMetrics(
                           .setHeight(content_size.height())
                           .build();
 
-  // `content_size` is in DIP or DP depending on the
-  // `enable-use-zoom-for-dsf` flag. Normlisation needed to convert it to CSS
-  // pixels. Details: https://crbug.com/1181313
-  gfx::Rect css_content_size =
-      main_frame->GetPage()->GetChromeClient().ViewportToScreen(
-          gfx::Rect(content_size), main_frame->View());
+  // `content_size` is in physical pixels. Normlisation is needed to convert it
+  // to CSS pixels. Details: https://crbug.com/1181313
+  gfx::Size css_content_size =
+      gfx::ScaleToFlooredSize(content_size, physical_to_css);
   *out_css_content_size = protocol::DOM::Rect::create()
-                              .setX(css_content_size.x())
-                              .setY(css_content_size.y())
+                              .setX(0.0)
+                              .setY(0.0)
                               .setWidth(css_content_size.width())
                               .setHeight(css_content_size.height())
                               .build();
 
-  // page_zoom is either CSS-to-DP or CSS-to-DIP depending on
-  // enable-use-zoom-for-dsf flag.
-  float page_zoom = main_frame->PageZoomFactor();
-  // page_zoom_factor is CSS to DIP (device independent pixels).
+  // page_zoom_factor transforms CSS pixels into DIPs (device independent
+  // pixels).  This is the zoom factor coming only from browser ctrl+/-
+  // zooming.
   float page_zoom_factor =
-      page_zoom /
+      css_to_physical /
       main_frame->GetPage()->GetChromeClient().WindowToViewportScalar(
-          main_frame, 1);
+          main_frame, 1.f);
   gfx::RectF visible_rect = visual_viewport.VisibleRect();
   float scale = visual_viewport.Scale();
+  ScrollOffset page_offset = frame_view->GetScrollableArea()->GetScrollOffset();
   *out_visual_viewport = protocol::Page::VisualViewport::create()
-                             .setOffsetX(AdjustForAbsoluteZoom::AdjustScroll(
-                                 visible_rect.x(), page_zoom))
-                             .setOffsetY(AdjustForAbsoluteZoom::AdjustScroll(
-                                 visible_rect.y(), page_zoom))
-                             .setPageX(AdjustForAbsoluteZoom::AdjustScroll(
-                                 page_offset.x(), page_zoom))
-                             .setPageY(AdjustForAbsoluteZoom::AdjustScroll(
-                                 page_offset.y(), page_zoom))
+                             .setOffsetX(visible_rect.x() * physical_to_css)
+                             .setOffsetY(visible_rect.y() * physical_to_css)
+                             .setPageX(page_offset.x() * physical_to_css)
+                             .setPageY(page_offset.y() * physical_to_css)
                              .setClientWidth(visible_rect.width())
                              .setClientHeight(visible_rect.height())
                              .setScale(scale)
@@ -1593,18 +1593,12 @@ Response InspectorPageAgent::getLayoutMetrics(
 
   *out_css_visual_viewport =
       protocol::Page::VisualViewport::create()
-          .setOffsetX(
-              AdjustForAbsoluteZoom::AdjustScroll(visible_rect.x(), page_zoom))
-          .setOffsetY(
-              AdjustForAbsoluteZoom::AdjustScroll(visible_rect.y(), page_zoom))
-          .setPageX(
-              AdjustForAbsoluteZoom::AdjustScroll(page_offset.x(), page_zoom))
-          .setPageY(
-              AdjustForAbsoluteZoom::AdjustScroll(page_offset.y(), page_zoom))
-          .setClientWidth(AdjustForAbsoluteZoom::AdjustScroll(
-              visible_rect.width(), page_zoom))
-          .setClientHeight(AdjustForAbsoluteZoom::AdjustScroll(
-              visible_rect.height(), page_zoom))
+          .setOffsetX(visible_rect.x() * physical_to_css)
+          .setOffsetY(visible_rect.y() * physical_to_css)
+          .setPageX(page_offset.x() * physical_to_css)
+          .setPageY(page_offset.y() * physical_to_css)
+          .setClientWidth(visible_rect.width() * physical_to_css)
+          .setClientHeight(visible_rect.height() * physical_to_css)
           .setScale(scale)
           .setZoom(page_zoom_factor)
           .build();
