@@ -25,9 +25,9 @@ namespace {
 // net::HttpStatusCode enum. To allow distinguishing standard HTTP status code
 // from custom ones, we define this array that will contain all standard codes.
 constexpr net::HttpStatusCode kStandardHttpStatusCodes[] = {
-#define HTTP_STATUS(label, code, reason) net::HttpStatusCode(code),
+#define HTTP_STATUS_ENUM_VALUE(label, code, reason) net::HttpStatusCode(code),
 #include "net/http/http_status_code_list.h"
-#undef HTTP_STATUS
+#undef HTTP_STATUS_ENUM_VALUE
 };
 
 }  // namespace

@@ -12,9 +12,9 @@ namespace net {
 // HTTP status codes.
 enum HttpStatusCode {
 
-#define HTTP_STATUS(label, code, reason) HTTP_ ## label = code,
+#define HTTP_STATUS_ENUM_VALUE(label, code, reason) HTTP_##label = code,
 #include "net/http/http_status_code_list.h"
-#undef HTTP_STATUS
+#undef HTTP_STATUS_ENUM_VALUE
 
 };
 
