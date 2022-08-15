@@ -86,7 +86,6 @@ import org.chromium.base.UserData;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.content.browser.WindowEventObserver;
 import org.chromium.content.browser.WindowEventObserverManager;
 import org.chromium.content.browser.accessibility.AccessibilityDelegate.AccessibilityCoordinates;
@@ -169,42 +168,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     // once per this time interval in milliseconds for a given focused node.
     private static final int CONTENT_INVALID_THROTTLE_DELAY = 4500;
 
-    // These are constant names of UMA histograms, and values for custom count histogram.
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public static final String PERCENTAGE_DROPPED_HISTOGRAM =
-            "Accessibility.Android.OnDemand.PercentageDropped";
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public static final String PERCENTAGE_DROPPED_HISTOGRAM_AXMODE_COMPLETE =
-            "Accessibility.Android.OnDemand.PercentageDropped.Complete";
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public static final String PERCENTAGE_DROPPED_HISTOGRAM_AXMODE_BASIC =
-            "Accessibility.Android.OnDemand.PercentageDropped.Basic";
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public static final String EVENTS_DROPPED_HISTOGRAM =
-            "Accessibility.Android.OnDemand.EventsDropped";
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public static final String ONE_HUNDRED_PERCENT_HISTOGRAM =
-            "Accessibility.Android.OnDemand.OneHundredPercentEventsDropped";
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public static final String ONE_HUNDRED_PERCENT_HISTOGRAM_AXMODE_COMPLETE =
-            "Accessibility.Android.OnDemand.OneHundredPercentEventsDropped.Complete";
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public static final String ONE_HUNDRED_PERCENT_HISTOGRAM_AXMODE_BASIC =
-            "Accessibility.Android.OnDemand.OneHundredPercentEventsDropped.Basic";
-    private static final int EVENTS_DROPPED_HISTOGRAM_MIN_BUCKET = 1;
-    private static final int EVENTS_DROPPED_HISTOGRAM_MAX_BUCKET = 10000;
-    private static final int EVENTS_DROPPED_HISTOGRAM_BUCKET_COUNT = 100;
-
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public static final String CACHE_MAX_NODES_HISTOGRAM =
-            "Accessibility.Android.Cache.MaxNodesInCache";
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public static final String CACHE_PERCENTAGE_RETRIEVED_FROM_CAHCE_HISTOGRAM =
-            "Accessibility.Android.Cache.PercentageRetrievedFromCache";
-    private static final int CACHE_MAX_NODES_MIN_BUCKET = 1;
-    private static final int CACHE_MAX_NODES_MAX_BUCKET = 3000;
-    private static final int CACHE_MAX_NODES_BUCKET_COUNT = 100;
-
     // Static instances of the two types of extra data keys that can be added to nodes.
     private static final List<String> sTextCharacterLocation =
             Collections.singletonList(EXTRA_DATA_TEXT_CHARACTER_LOCATION_KEY);
@@ -238,6 +201,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
     // Tracker for all actions performed and events sent by this instance, used for testing.
     private AccessibilityActionAndEventTracker mTracker;
+
+    private AccessibilityHistogramRecorder mHistogramRecorder;
 
     // Whether or not the next selection event should be fired. We only want to sent one traverse
     // and one selection event per granularity move, this ensures no double events while still
@@ -277,17 +242,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     // invalid for that node. Used to ensure we report content invalid on a node once per interval.
     private int mLastContentInvalidViewId;
     private long mLastContentInvalidUtteranceTime;
-
-    // These track the total number of enqueued events, and the total number of dispatched events,
-    // so we can report the percentage/number of dropped events.
-    private int mTotalEnqueuedEvents;
-    private int mTotalDispatchedEvents;
-
-    // These track the usage of the |mNodeInfoCache| to report metrics on the max number of items
-    // that were stored in the cache, and the percentage of requests retrieved from the cache.
-    private int mMaxNodesInCache;
-    private int mNodeWasReturnedFromCache;
-    private int mNodeWasCreatedFromScratch;
 
     // Set of all nodes that have received a request to populate image data. The request only needs
     // to be run once per node, and it completes asynchronously. We track which nodes have already
@@ -397,6 +351,10 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                         return true;
                     }
                 }, eventThrottleDelays, viewIndependentEvents, new HashSet<Integer>(), false);
+
+        // Need to be initialized before AXTreeUpdate initialization because updateMaxNodesInCache
+        // gets called then
+        mHistogramRecorder = new AccessibilityHistogramRecorder();
 
         if (mDelegate.getNativeAXTree() != 0) {
             initializeNativeWithAXTreeUpdate(mDelegate.getNativeAXTree());
@@ -522,12 +480,12 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
     @VisibleForTesting
     public void forceRecordUMAHistogramsForTesting() {
-        recordUMAHistograms();
+        mHistogramRecorder.recordEventsHistograms();
     }
 
     @VisibleForTesting
     public void forceRecordCacheUMAHistogramsForTesting() {
-        recordCacheUMAHistograms();
+        mHistogramRecorder.recordCacheHistograms();
     }
 
     @VisibleForTesting
@@ -557,87 +515,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         mCaptioningController.stopListening();
         if (!isNativeInitialized()) return;
         ContextUtils.getApplicationContext().unregisterReceiver(mBroadcastReceiver);
-
-        // If the OnDemand feature is enabled, log UMA metrics and reset counters.
-        if (ContentFeatureList.isEnabled(ContentFeatureList.ON_DEMAND_ACCESSIBILITY_EVENTS)) {
-            recordUMAHistograms();
-        }
-
-        // Always track the histograms for cache usage statistics.
-        recordCacheUMAHistograms();
-    }
-
-    // Helper method to record UMA histograms for OnDemand feature and reset counters.
-    private void recordUMAHistograms() {
-        // To investigate whether adding more AXModes could be beneficial, track separate
-        // stats when both the ComputeAXMode and OnDemand features are enabled.
-        boolean isComputeAXModeEnabled =
-                ContentFeatureList.isEnabled(ContentFeatureList.COMPUTE_AX_MODE);
-        // There are only 2 AXModes, kAXModeComplete is used when a screenreader is active.
-        boolean isAXModeComplete = BrowserAccessibilityState.screenReaderMode();
-
-        // If we did not enqueue any events, we can ignore the data as a trivial case.
-        if (mTotalEnqueuedEvents > 0) {
-            // Log the percentage dropped (dispatching 0 events should be 100% dropped).
-            int percentSent = (int) (mTotalDispatchedEvents * 1.0 / mTotalEnqueuedEvents * 100.0);
-            RecordHistogram.recordPercentageHistogram(
-                    PERCENTAGE_DROPPED_HISTOGRAM, 100 - percentSent);
-            // Log the percentage dropped per AXMode as well.
-            if (isComputeAXModeEnabled) {
-                RecordHistogram.recordPercentageHistogram(isAXModeComplete
-                                ? PERCENTAGE_DROPPED_HISTOGRAM_AXMODE_COMPLETE
-                                : PERCENTAGE_DROPPED_HISTOGRAM_AXMODE_BASIC,
-                        100 - percentSent);
-            }
-
-            // Log the total number of dropped events. (Not relevant to be tracked per AXMode)
-            RecordHistogram.recordCustomCountHistogram(EVENTS_DROPPED_HISTOGRAM,
-                    mTotalEnqueuedEvents - mTotalDispatchedEvents,
-                    EVENTS_DROPPED_HISTOGRAM_MIN_BUCKET, EVENTS_DROPPED_HISTOGRAM_MAX_BUCKET,
-                    EVENTS_DROPPED_HISTOGRAM_BUCKET_COUNT);
-
-            // If 100% of events were dropped, also track the number of dropped events in a
-            // separate bucket.
-            if (percentSent == 0) {
-                RecordHistogram.recordCustomCountHistogram(ONE_HUNDRED_PERCENT_HISTOGRAM,
-                        mTotalEnqueuedEvents - mTotalDispatchedEvents,
-                        EVENTS_DROPPED_HISTOGRAM_MIN_BUCKET, EVENTS_DROPPED_HISTOGRAM_MAX_BUCKET,
-                        EVENTS_DROPPED_HISTOGRAM_BUCKET_COUNT);
-
-                // Log the 100% events count per AXMode as well.
-                if (isComputeAXModeEnabled) {
-                    RecordHistogram.recordCustomCountHistogram(isAXModeComplete
-                                    ? ONE_HUNDRED_PERCENT_HISTOGRAM_AXMODE_COMPLETE
-                                    : ONE_HUNDRED_PERCENT_HISTOGRAM_AXMODE_BASIC,
-                            mTotalEnqueuedEvents - mTotalDispatchedEvents,
-                            EVENTS_DROPPED_HISTOGRAM_MIN_BUCKET,
-                            EVENTS_DROPPED_HISTOGRAM_MAX_BUCKET,
-                            EVENTS_DROPPED_HISTOGRAM_BUCKET_COUNT);
-                }
-            }
-        }
-
-        // Reset counters.
-        mTotalEnqueuedEvents = 0;
-        mTotalDispatchedEvents = 0;
-    }
-
-    // Helper method to record UMA histograms for cache usage statistics.
-    private void recordCacheUMAHistograms() {
-        RecordHistogram.recordCustomCountHistogram(CACHE_MAX_NODES_HISTOGRAM, mMaxNodesInCache,
-                CACHE_MAX_NODES_MIN_BUCKET, CACHE_MAX_NODES_MAX_BUCKET,
-                CACHE_MAX_NODES_BUCKET_COUNT);
-
-        int totalNodeRequests = mNodeWasReturnedFromCache + mNodeWasCreatedFromScratch;
-        int percentFromCache = (int) (mNodeWasReturnedFromCache * 1.0 / totalNodeRequests * 100.0);
-
-        RecordHistogram.recordPercentageHistogram(
-                CACHE_PERCENTAGE_RETRIEVED_FROM_CAHCE_HISTOGRAM, percentFromCache);
-
-        // Reset counters.
-        mMaxNodesInCache = 0;
-        mNodeWasReturnedFromCache = 0;
-        mNodeWasCreatedFromScratch = 0;
+        mHistogramRecorder.recordHistograms();
     }
 
     @Override
@@ -753,7 +631,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
     @CalledByNative
     public void updateMaxNodesInCache() {
-        mMaxNodesInCache = Math.max(mMaxNodesInCache, mNodeInfoCache.size());
+        mHistogramRecorder.updateMaxNodesInCache(mNodeInfoCache.size());
     }
 
     @CalledByNative
@@ -804,7 +682,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                     cachedNode.addAction(ACTION_ACCESSIBILITY_FOCUS);
                 }
 
-                mNodeWasReturnedFromCache++;
+                mHistogramRecorder.incrementNodeWasReturnedFromCache();
                 return cachedNode;
             } else {
                 // If the node is no longer valid, wipe it from the cache and return null
@@ -827,7 +705,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                         mNativeObj, info, virtualViewId)) {
                 // After successfully populating this node, add it to our cache then return.
                 mNodeInfoCache.put(virtualViewId, AccessibilityNodeInfoCompat.obtain(info));
-                mNodeWasCreatedFromScratch++;
+                mHistogramRecorder.incrementNodeWasCreatedFromScratch();
                 return info;
             } else {
                 info.recycle();
@@ -1516,7 +1394,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             return;
         }
 
-        mTotalEnqueuedEvents++;
+        mHistogramRecorder.incrementEnqueuedEvents();
         mEventDispatcher.enqueueEvent(virtualViewId, eventType);
     }
 
@@ -2080,7 +1958,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         // transiently null (such as during teardown, switching tabs...). Also ensure that
         // accessibility is still enabled, throttling may result in events sent late.
         if (mView.getParent() != null && isAccessibilityEnabled()) {
-            mTotalDispatchedEvents++;
+            mHistogramRecorder.incrementDispatchedEvents();
             if (mTracker != null) mTracker.addEvent(event);
             try {
                 mView.getParent().requestSendAccessibilityEvent(mView, event);

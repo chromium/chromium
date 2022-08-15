@@ -45,9 +45,15 @@ import static org.chromium.content.browser.accessibility.AccessibilityContentShe
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.sRangeInfoMatcher;
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.sTextMatcher;
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.sViewIdResourceNameMatcher;
-import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.CACHE_MAX_NODES_HISTOGRAM;
-import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.CACHE_PERCENTAGE_RETRIEVED_FROM_CAHCE_HISTOGRAM;
-import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.EVENTS_DROPPED_HISTOGRAM;
+import static org.chromium.content.browser.accessibility.AccessibilityHistogramRecorder.CACHE_MAX_NODES_HISTOGRAM;
+import static org.chromium.content.browser.accessibility.AccessibilityHistogramRecorder.CACHE_PERCENTAGE_RETRIEVED_FROM_CACHE_HISTOGRAM;
+import static org.chromium.content.browser.accessibility.AccessibilityHistogramRecorder.EVENTS_DROPPED_HISTOGRAM;
+import static org.chromium.content.browser.accessibility.AccessibilityHistogramRecorder.ONE_HUNDRED_PERCENT_HISTOGRAM;
+import static org.chromium.content.browser.accessibility.AccessibilityHistogramRecorder.ONE_HUNDRED_PERCENT_HISTOGRAM_AXMODE_BASIC;
+import static org.chromium.content.browser.accessibility.AccessibilityHistogramRecorder.ONE_HUNDRED_PERCENT_HISTOGRAM_AXMODE_COMPLETE;
+import static org.chromium.content.browser.accessibility.AccessibilityHistogramRecorder.PERCENTAGE_DROPPED_HISTOGRAM;
+import static org.chromium.content.browser.accessibility.AccessibilityHistogramRecorder.PERCENTAGE_DROPPED_HISTOGRAM_AXMODE_BASIC;
+import static org.chromium.content.browser.accessibility.AccessibilityHistogramRecorder.PERCENTAGE_DROPPED_HISTOGRAM_AXMODE_COMPLETE;
 import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.EXTRAS_DATA_REQUEST_IMAGE_DATA_KEY;
 import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.EXTRAS_KEY_CHROME_ROLE;
 import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.EXTRAS_KEY_IMAGE_DATA;
@@ -57,12 +63,6 @@ import static org.chromium.content.browser.accessibility.WebContentsAccessibilit
 import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.EXTRA_DATA_TEXT_CHARACTER_LOCATION_ARG_LENGTH;
 import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.EXTRA_DATA_TEXT_CHARACTER_LOCATION_ARG_START_INDEX;
 import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.EXTRA_DATA_TEXT_CHARACTER_LOCATION_KEY;
-import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.ONE_HUNDRED_PERCENT_HISTOGRAM;
-import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.ONE_HUNDRED_PERCENT_HISTOGRAM_AXMODE_BASIC;
-import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.ONE_HUNDRED_PERCENT_HISTOGRAM_AXMODE_COMPLETE;
-import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.PERCENTAGE_DROPPED_HISTOGRAM;
-import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.PERCENTAGE_DROPPED_HISTOGRAM_AXMODE_BASIC;
-import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.PERCENTAGE_DROPPED_HISTOGRAM_AXMODE_COMPLETE;
 
 import android.annotation.SuppressLint;
 import android.content.ClipData;
@@ -92,6 +92,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
@@ -113,6 +114,7 @@ import java.util.concurrent.ExecutionException;
  * implements the interface.
  */
 @RunWith(ContentJUnit4ClassRunner.class)
+@DoNotBatch(reason = "Flaky tests")
 @SuppressLint("VisibleForTests")
 public class WebContentsAccessibilityTest {
     // Test output error messages
@@ -556,7 +558,7 @@ public class WebContentsAccessibilityTest {
                 RecordHistogram.getHistogramTotalCountForTesting(CACHE_MAX_NODES_HISTOGRAM));
         Assert.assertEquals(UMA_HISTOGRAM_ERROR, 1,
                 RecordHistogram.getHistogramTotalCountForTesting(
-                        CACHE_PERCENTAGE_RETRIEVED_FROM_CAHCE_HISTOGRAM));
+                        CACHE_PERCENTAGE_RETRIEVED_FROM_CACHE_HISTOGRAM));
     }
 
     /**
