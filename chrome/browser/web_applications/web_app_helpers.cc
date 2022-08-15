@@ -66,7 +66,8 @@ std::string GenerateAppIdUnhashed(
   if (manifest_id.has_value()) {
     GURL app_id(start_url.DeprecatedGetOriginAsURL().spec() +
                 manifest_id.value());
-    DCHECK(app_id.is_valid());
+    DCHECK(app_id.is_valid())
+        << "start_url: " << start_url << ", manifest_id = " << *manifest_id;
     return app_id.spec();
   }
   return start_url.spec();
