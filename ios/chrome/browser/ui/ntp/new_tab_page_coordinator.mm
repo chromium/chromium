@@ -1075,18 +1075,7 @@ namespace {
 
   // Requests feeds here if the correct flags and prefs are enabled.
   if ([self shouldFeedBeVisible]) {
-    FeedModelConfiguration* discoverFeedConfiguration =
-        [FeedModelConfiguration discoverFeedModelConfiguration];
-    self.discoverFeedService->CreateFeedModel(discoverFeedConfiguration);
-
     if ([self isFollowingFeedAvailable]) {
-      FeedModelConfiguration* followingFeedConfiguration =
-          [FeedModelConfiguration
-              followingModelConfigurationWithSortType:
-                  (FollowingFeedSortType)self.prefService->GetInteger(
-                      prefs::kNTPFollowingFeedSortType)];
-      self.discoverFeedService->CreateFeedModel(followingFeedConfiguration);
-
       switch (self.selectedFeed) {
         case FeedTypeDiscover:
           self.feedViewController = [self discoverFeed];
@@ -1130,6 +1119,10 @@ namespace {
     return nil;
   }
 
+  FeedModelConfiguration* discoverFeedConfiguration =
+      [FeedModelConfiguration discoverFeedModelConfiguration];
+  self.discoverFeedService->CreateFeedModel(discoverFeedConfiguration);
+
   UIViewController* discoverFeed =
       self.discoverFeedService->NewDiscoverFeedViewControllerWithConfiguration(
           [self feedViewControllerConfiguration]);
@@ -1141,6 +1134,12 @@ namespace {
   if (tests_hook::DisableDiscoverFeed()) {
     return nil;
   }
+
+  FeedModelConfiguration* followingFeedConfiguration = [FeedModelConfiguration
+      followingModelConfigurationWithSortType:
+          (FollowingFeedSortType)self.prefService->GetInteger(
+              prefs::kNTPFollowingFeedSortType)];
+  self.discoverFeedService->CreateFeedModel(followingFeedConfiguration);
 
   UIViewController* followingFeed =
       self.discoverFeedService->NewFollowingFeedViewControllerWithConfiguration(
