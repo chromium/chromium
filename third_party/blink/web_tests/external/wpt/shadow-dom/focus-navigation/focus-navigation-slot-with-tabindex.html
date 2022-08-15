@@ -1,8 +1,11 @@
 <!DOCTYPE html>
-<script src='../resources/testharness.js'></script>
-<script src='../resources/testharnessreport.js'></script>
-<script src='resources/shadow-dom.js'></script>
-<script src='resources/focus-utils.js'></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="resources/shadow-dom.js"></script>
+<script src="resources/focus-utils.js"></script>
 <div id='log'></div>
 <p>
   document tree: [i0 -> [x-foo]]<br>
@@ -38,7 +41,7 @@
 <script>
 'use strict';
 
-test(() => {
+promise_test(async () => {
     let xfoo = document.getElementById('x-foo');
     convertTemplatesToShadowRootsWithin(xfoo);
 
@@ -55,8 +58,8 @@ test(() => {
         'x-foo/x-bar/k1',
     ];
 
-    assert_focus_navigation_forward(elements);
+    await assert_focus_navigation_forward(elements);
     elements.reverse();
-    assert_focus_navigation_backward(elements);
+    await assert_focus_navigation_backward(elements);
 }, 'Slots tabindex should be considred in focus navigation.');
 </script>

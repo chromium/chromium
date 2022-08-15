@@ -2829,6 +2829,26 @@ crbug.com/893480 external/wpt/html/semantics/forms/the-input-element/checkable-a
 crbug.com/893480 external/wpt/html/semantics/forms/the-button-element/active-onblur.html [ Failure Timeout ]
 crbug.com/893480 external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-canceling.html [ Failure ]
 crbug.com/893480 external/wpt/html/semantics/interactive-elements/the-dialog-element/inert-node-is-uneditable.html [ Failure ]
+# tests in this group need implementation of focus navigation forward/backward
+crbug.com/893480 external/wpt/shadow-dom/focus-navigation/delegatesFocus-highlight-sibling.html [ Failure ]
+crbug.com/893480 external/wpt/shadow-dom/focus-navigation/focus-navigation.html [ Failure ]
+crbug.com/893480 external/wpt/shadow-dom/focus-navigation/focus-navigation-slot-fallback.html [ Failure ]
+crbug.com/893480 external/wpt/shadow-dom/focus-navigation/focus-navigation-slot-fallback-default-tabindex.html [ Failure ]
+crbug.com/893480 external/wpt/shadow-dom/focus-navigation/focus-navigation-slot-nested.html [ Failure ]
+crbug.com/893480 external/wpt/shadow-dom/focus-navigation/focus-navigation-slot-nested-2levels.html [ Failure ]
+crbug.com/893480 external/wpt/shadow-dom/focus-navigation/focus-navigation-slot-nested-delegatesFocus.html [ Failure ]
+crbug.com/893480 external/wpt/shadow-dom/focus-navigation/focus-navigation-slot-nested-fallback.html [ Failure ]
+crbug.com/893480 external/wpt/shadow-dom/focus-navigation/focus-navigation-slot-shadow-in-fallback.html [ Failure ]
+crbug.com/893480 external/wpt/shadow-dom/focus-navigation/focus-navigation-slot-shadow-in-slot.html [ Failure ]
+crbug.com/893480 external/wpt/shadow-dom/focus-navigation/focus-navigation-slot-with-tabindex.html [ Failure ]
+crbug.com/893480 external/wpt/shadow-dom/focus-navigation/focus-navigation-slots.html [ Failure ]
+crbug.com/893480 external/wpt/shadow-dom/focus-navigation/focus-navigation-slots-in-slot.html [ Failure ]
+crbug.com/893480 external/wpt/shadow-dom/focus-navigation/focus-navigation-with-delegatesFocus.html [ Failure ]
+crbug.com/893480 external/wpt/shadow-dom/focus-navigation/focus-nested-slots.html [ Failure ]
+crbug.com/893480 external/wpt/shadow-dom/focus-navigation/focus-reverse-unassignable-slot.html [ Failure ]
+crbug.com/893480 external/wpt/shadow-dom/focus-navigation/focus-reverse-unassigned-slot.html [ Failure ]
+crbug.com/893480 external/wpt/shadow-dom/focus-navigation/focus-unassignable-slot.html [ Failure ]
+crbug.com/893480 external/wpt/shadow-dom/focus-navigation/focus-with-negative-index.html [ Failure ]
 
 # needs implementation of test_driver_internal.action_sequence
 # for these tests there is an exception when scrolling: element click intercepted error

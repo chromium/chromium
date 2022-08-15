@@ -8,8 +8,7 @@
 <script>
 'use strict';
 
-function prepareDOMTree(parent, delegatesFocus)
-{
+function prepareDOMTree(parent, delegatesFocus) {
     parent.innerHTML = '';
     let host = document.createElement('div');
     host.id = 'shadowHost';
@@ -24,6 +23,8 @@ var innerDiv;
 var inputA;
 var inputB;
 
+// TODO(https://crbug.com/1350218): Replace this with test_diver.click() and
+// move test to WPT
 function clickOn(el) {
     eventSender.mouseMoveTo(el.offsetLeft + 8, el.offsetTop + 8);
     eventSender.mouseDown();

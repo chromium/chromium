@@ -1,8 +1,11 @@
 <!DOCTYPE html>
-<script src='../resources/testharness.js'></script>
-<script src='../resources/testharnessreport.js'></script>
-<script src='resources/shadow-dom.js'></script>
-<script src='resources/focus-utils.js'></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="resources/shadow-dom.js"></script>
+<script src="resources/focus-utils.js"></script>
 <div id="log"></div>
 
 <input id="i0" tabindex=0 value="i0">
@@ -27,7 +30,7 @@
 <script>
 'use strict';
 
-test(() => {
+promise_test(async () => {
     let fallback = document.getElementById('fallback');
     convertTemplatesToShadowRootsWithin(fallback);
 
@@ -38,8 +41,8 @@ test(() => {
         'fallback/x-foo/a2'
     ];
 
-    assert_focus_navigation_forward(elements);
+    await assert_focus_navigation_forward(elements);
     elements.reverse();
-    assert_focus_navigation_backward(elements);
+    await assert_focus_navigation_backward(elements);
 }, 'Focus should cover assigned elements of an assigned slot, as well as elements that are directly assigned to a slot.');
 </script>
