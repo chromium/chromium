@@ -200,7 +200,9 @@
     self.shouldFocusFakebox = NO;
   }
 
-  if (!self.isFeedVisible) {
+  if (self.isFeedVisible) {
+    [self updateFeedInsetsForMinimumHeight];
+  } else {
     [self setMinimumHeight];
   }
 
