@@ -325,8 +325,6 @@ class TabStrip : public views::View,
   views::SizeBounds GetAvailableSize(const View* child) const override;
   void Layout() override;
   void ChildPreferredSizeChanged(views::View* child) override;
-  gfx::Size GetMinimumSize() const override;
-  gfx::Size CalculatePreferredSize() const override;
   // These system drag & drop methods are forwarded to TabDragController to
   // support its fallback tab dragging mode in the case where the platform
   // can't support the usual run loop based mode.
