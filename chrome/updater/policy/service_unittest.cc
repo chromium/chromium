@@ -126,7 +126,7 @@ TEST(PolicyService, DefaultPolicyValue) {
 
   int last_check = 0;
   EXPECT_TRUE(policy_service->GetLastCheckPeriodMinutes(nullptr, &last_check));
-  EXPECT_EQ(last_check, 14430);
+  EXPECT_EQ(last_check, 270);
 
   int install_policy = 0;
   EXPECT_TRUE(policy_service->GetEffectivePolicyForAppInstalls(

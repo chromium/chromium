@@ -7,15 +7,10 @@
 #include <string>
 #include <vector>
 
+#include "base/time/time.h"
 #include "chrome/updater/constants.h"
 
 namespace updater {
-
-namespace {
-
-const int kDelayOneHour = 60 * 60;
-
-}  // namespace
 
 UpdatesSuppressedTimes::UpdatesSuppressedTimes() = default;
 
@@ -106,7 +101,7 @@ std::string DefaultValuesPolicyManager::source() const {
 }
 
 bool DefaultValuesPolicyManager::GetLastCheckPeriodMinutes(int* minutes) const {
-  *minutes = 4 * kDelayOneHour + 30;
+  *minutes = kDefaultLastCheckPeriod.InMinutes();
   return true;
 }
 

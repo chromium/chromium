@@ -1046,7 +1046,7 @@ void ExpectLegacyPolicyStatusSucceeds(UpdaterScope scope) {
   Microsoft::WRL::ComPtr<IPolicyStatusValue> policy_status_value;
   ASSERT_HRESULT_SUCCEEDED(
       policy_status2->get_lastCheckPeriodMinutes(&policy_status_value));
-  ExpectPolicyStatusValues(policy_status_value, L"default", L"14430",
+  ExpectPolicyStatusValues(policy_status_value, L"default", L"270",
                            VARIANT_FALSE);
 
   const base::win::ScopedBstr test_app(L"test1");

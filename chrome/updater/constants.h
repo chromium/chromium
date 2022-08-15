@@ -205,6 +205,10 @@ extern const char kDevOverrideFileName[];
 // to complete.
 constexpr base::TimeDelta kWaitForAppInstaller = base::Minutes(15);
 
+// The default last check period is 4.5 hours.
+constexpr base::TimeDelta kDefaultLastCheckPeriod =
+    base::Hours(4) + base::Minutes(30);
+
 #if BUILDFLAG(IS_WIN)
 // How often the installer progress from registry is sampled. This value may
 // be changed to provide a smoother progress experience (crbug.com/1067475).

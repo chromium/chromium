@@ -44,7 +44,8 @@ bool ShouldSkipCheck(scoped_refptr<Configurator> config,
       base::Time::NowFromSystemTime() - persisted_data->GetLastChecked();
   if (time_since_update.is_positive() && time_since_update < check_delay) {
     VLOG(0) << "Skipping checking for updates: last update was "
-            << time_since_update.InMinutes() << " minutes ago.";
+            << time_since_update.InMinutes()
+            << " minutes ago. check_delay == " << check_delay.InMinutes();
     return true;
   }
 
