@@ -676,6 +676,12 @@ const NGLayoutResult* NGBlockNode::SimplifiedLayout(
 const NGLayoutResult* NGBlockNode::LayoutRepeatableRoot(
     const NGConstraintSpace& constraint_space,
     const NGBlockBreakToken* break_token) const {
+  // We read and write the physical fragments vector in LayoutBox here, which
+  // isn't allowed if side-effects are disabled. However, if side-effects are
+  // disabled, we shouldn't be here anyway, since we shouldn't be performing
+  // block fragmentation then (and therefore never repeat content).
+  DCHECK(!NGDisableSideEffectsScope::IsDisabled());
+
   // When laying out repeatable content, we cannot at the same time allow it to
   // break inside.
   DCHECK(!constraint_space.HasBlockFragmentation());
