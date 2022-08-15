@@ -42,7 +42,6 @@ namespace base {
 class Clock;
 class FilePath;
 class SequencedTaskRunner;
-class Value;
 }  // namespace base
 
 namespace storage {
@@ -184,9 +183,6 @@ class CONTENT_EXPORT IndexedDBContextImpl
   std::vector<storage::BucketLocator> GetAllBuckets();
   absl::optional<storage::BucketLocator> LookUpBucket(
       storage::BucketId bucket_id);
-
-  // Used by IndexedDBInternalsUI to populate internals page.
-  base::Value* GetAllBucketsDetails();
 
   // GetStoragePaths returns all paths owned by this database, in arbitrary
   // order.

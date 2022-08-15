@@ -65,7 +65,7 @@ class IndexedDBInternalsHandler : public WebUIMessageHandler {
 
  private:
   void GetAllBuckets(const base::Value::List& args);
-  void OnBucketsReady(const base::Value& storage_keys,
+  void OnBucketsReady(const base::Value::List& storage_keys,
                       const base::FilePath& path);
 
   void DownloadBucketData(const base::Value::List& args);

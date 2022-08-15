@@ -99,16 +99,16 @@ void IndexedDBInternalsHandler::GetAllBuckets(const base::Value::List& args) {
                     return;
 
                   handler->OnBucketsReady(
-                      base::Value(std::move(info_list)),
-                      incognito ? base::FilePath() : partition_path);
+                      info_list, incognito ? base::FilePath() : partition_path);
                 },
                 handler, partition->GetPath()));
           },
           weak_factory_.GetWeakPtr()));
 }
 
-void IndexedDBInternalsHandler::OnBucketsReady(const base::Value& storage_keys,
-                                               const base::FilePath& path) {
+void IndexedDBInternalsHandler::OnBucketsReady(
+    const base::Value::List& storage_keys,
+    const base::FilePath& path) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // TODO(https://crbug.com/1199077): Fix this name as part of storage key
   // migration.

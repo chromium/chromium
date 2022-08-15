@@ -409,27 +409,26 @@ void IndexedDBContextImpl::GetAllBucketsDetails(
 
   base::Value::List list;
   for (const auto& bucket_locator : bucket_locators) {
-    base::Value info(base::Value::Type::DICTIONARY);
+    base::Value::Dict info;
     // TODO(https://crbug.com/1199077): Serialize storage key directly
     // once supported by OriginDetails.
     // TODO(estade): replace this Value dict with mojom.
-    info.SetStringKey("url", bucket_locator.storage_key.origin().Serialize());
-    info.SetDoubleKey("bucket_id", bucket_locator.id.GetUnsafeValue());
-    info.SetDoubleKey("size",
-                      static_cast<double>(GetBucketDiskUsage(bucket_locator)));
-    info.SetDoubleKey("last_modified",
-                      GetBucketLastModified(bucket_locator).ToJsTime());
+    info.Set("url", bucket_locator.storage_key.origin().Serialize());
+    info.Set("bucket_id",
+             static_cast<double>(bucket_locator.id.GetUnsafeValue()));
+    info.Set("size", static_cast<double>(GetBucketDiskUsage(bucket_locator)));
+    info.Set("last_modified", GetBucketLastModified(bucket_locator).ToJsTime());
 
-    base::Value paths(base::Value::Type::LIST);
+    base::Value::List paths;
     if (!is_incognito()) {
       for (const base::FilePath& path : GetStoragePaths(bucket_locator))
         paths.Append(path.AsUTF8Unsafe());
     } else {
       paths.Append("N/A");
     }
-    info.SetKey("paths", std::move(paths));
-    info.SetDoubleKey("connection_count",
-                      GetConnectionCountSync(bucket_locator.id));
+    info.Set("paths", std::move(paths));
+    info.Set("connection_count",
+             static_cast<double>(GetConnectionCountSync(bucket_locator.id)));
 
     // This ends up being O(NlogN), where N = number of open databases. We
     // iterate over all open databases to extract just those in the
@@ -443,83 +442,85 @@ void IndexedDBContextImpl::GetAllBucketsDetails(
     std::vector<IndexedDBDatabase*> databases =
         indexeddb_factory_->GetOpenDatabasesForBucket(bucket_locator);
     // TODO(jsbell): Sort by name?
-    base::Value database_list(base::Value::Type::LIST);
+    base::Value::List database_list;
 
     for (IndexedDBDatabase* db : databases) {
-      base::Value db_info(base::Value::Type::DICTIONARY);
+      base::Value::Dict db_info;
 
-      db_info.SetStringKey("name", db->name());
-      db_info.SetDoubleKey("connection_count", db->ConnectionCount());
-      db_info.SetDoubleKey("active_open_delete", db->ActiveOpenDeleteCount());
-      db_info.SetDoubleKey("pending_open_delete", db->PendingOpenDeleteCount());
+      db_info.Set("name", db->name());
+      db_info.Set("connection_count",
+                  static_cast<double>(db->ConnectionCount()));
+      db_info.Set("active_open_delete",
+                  static_cast<double>(db->ActiveOpenDeleteCount()));
+      db_info.Set("pending_open_delete",
+                  static_cast<double>(db->PendingOpenDeleteCount()));
 
-      base::Value transaction_list(base::Value::Type::LIST);
+      base::Value::List transaction_list;
 
       for (IndexedDBConnection* connection : db->connections()) {
         for (const auto& transaction_id_pair : connection->transactions()) {
           const auto* transaction = transaction_id_pair.second.get();
-          base::Value transaction_info(base::Value::Type::DICTIONARY);
+          base::Value::Dict transaction_info;
 
           switch (transaction->mode()) {
             case blink::mojom::IDBTransactionMode::ReadOnly:
-              transaction_info.SetStringKey("mode", "readonly");
+              transaction_info.Set("mode", "readonly");
               break;
             case blink::mojom::IDBTransactionMode::ReadWrite:
-              transaction_info.SetStringKey("mode", "readwrite");
+              transaction_info.Set("mode", "readwrite");
               break;
             case blink::mojom::IDBTransactionMode::VersionChange:
-              transaction_info.SetStringKey("mode", "versionchange");
+              transaction_info.Set("mode", "versionchange");
               break;
           }
 
           switch (transaction->state()) {
             case IndexedDBTransaction::CREATED:
-              transaction_info.SetStringKey("status", "blocked");
+              transaction_info.Set("status", "blocked");
               break;
             case IndexedDBTransaction::STARTED:
               if (transaction->diagnostics().tasks_scheduled > 0)
-                transaction_info.SetStringKey("status", "running");
+                transaction_info.Set("status", "running");
               else
-                transaction_info.SetStringKey("status", "started");
+                transaction_info.Set("status", "started");
               break;
             case IndexedDBTransaction::COMMITTING:
-              transaction_info.SetStringKey("status", "committing");
+              transaction_info.Set("status", "committing");
               break;
             case IndexedDBTransaction::FINISHED:
-              transaction_info.SetStringKey("status", "finished");
+              transaction_info.Set("status", "finished");
               break;
           }
 
-          transaction_info.SetDoubleKey("tid", transaction->id());
-          transaction_info.SetDoubleKey(
-              "age",
-              (base::Time::Now() - transaction->diagnostics().creation_time)
-                  .InMillisecondsF());
-          transaction_info.SetDoubleKey(
+          transaction_info.Set("tid", static_cast<double>(transaction->id()));
+          transaction_info.Set("age", (base::Time::Now() -
+                                       transaction->diagnostics().creation_time)
+                                          .InMillisecondsF());
+          transaction_info.Set(
               "runtime",
               (base::Time::Now() - transaction->diagnostics().start_time)
                   .InMillisecondsF());
-          transaction_info.SetDoubleKey(
-              "tasks_scheduled", transaction->diagnostics().tasks_scheduled);
-          transaction_info.SetDoubleKey(
-              "tasks_completed", transaction->diagnostics().tasks_completed);
+          transaction_info.Set("tasks_scheduled",
+                               transaction->diagnostics().tasks_scheduled);
+          transaction_info.Set("tasks_completed",
+                               transaction->diagnostics().tasks_completed);
 
-          base::Value scope(base::Value::Type::LIST);
+          base::Value::List scope;
           for (const auto& id : transaction->scope()) {
             auto stores_it = db->metadata().object_stores.find(id);
             if (stores_it != db->metadata().object_stores.end())
               scope.Append(stores_it->second.name);
           }
 
-          transaction_info.SetKey("scope", std::move(scope));
+          transaction_info.Set("scope", std::move(scope));
           transaction_list.Append(std::move(transaction_info));
         }
       }
-      db_info.SetKey("transactions", std::move(transaction_list));
+      db_info.Set("transactions", std::move(transaction_list));
 
       database_list.Append(std::move(db_info));
     }
-    info.SetKey("databases", std::move(database_list));
+    info.Set("databases", std::move(database_list));
     list.Append(std::move(info));
   }
 
