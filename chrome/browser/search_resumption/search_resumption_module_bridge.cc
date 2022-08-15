@@ -43,8 +43,10 @@ void SearchResumptionModuleBridge::FetchSuggestions(
   args.request_source = TemplateURLRef::NON_SEARCHBOX_NTP;
   args.current_page_url = ConvertJavaStringToUTF8(env, j_page_url);
   start_suggest_service_->FetchSuggestions(
-      args, base::BindOnce(&SearchResumptionModuleBridge::OnSuggestionsReceived,
-                           weak_ptr_factory_.GetWeakPtr()));
+      args,
+      base::BindOnce(&SearchResumptionModuleBridge::OnSuggestionsReceived,
+                     weak_ptr_factory_.GetWeakPtr()),
+      true /* fetch_from_server */);
 }
 
 SearchResumptionModuleBridge::~SearchResumptionModuleBridge() = default;
