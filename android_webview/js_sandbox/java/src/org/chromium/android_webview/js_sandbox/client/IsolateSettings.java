@@ -18,6 +18,10 @@ public class IsolateSettings {
      *
      * A heap size of 0 indicates no limit. Default value of the heap size limit is 0.
      *
+     * The limit which is applied in practice may not be exact. For example, the limit may
+     * internally be rounded up to some multiple of bytes, be increased to some minimum value, or
+     * reduced to some maximum supported value.
+     *
      * @param size heap size in bytes
      */
     @RequiresFeature(name = JsSandbox.ISOLATE_MAX_HEAP_SIZE,

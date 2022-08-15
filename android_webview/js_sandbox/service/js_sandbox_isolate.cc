@@ -47,6 +47,24 @@ namespace {
 // this once error handling is in place.
 constexpr base::StringPiece resource_name = "<expression>";
 
+// AdjustToValidHeapSize will either round the provided heap size up to a valid
+// allocation page size or clip the value to the maximum supported heap size.
+size_t AdjustToValidHeapSize(const uint64_t heap_size_bytes) {
+  // The value of 64K should just work on all platforms. Smaller page sizes
+  // might work in practice, although we currently don't have long-term
+  // guarantees. This value is not necessarily the same as the system's memory
+  // page size. https://bugs.chromium.org/p/v8/issues/detail?id=13172#c6
+  constexpr size_t page_size = 65536;
+  constexpr size_t max_supported_heap_size =
+      (size_t)UINT_MAX / page_size * page_size;
+
+  if (heap_size_bytes < (uint64_t)max_supported_heap_size) {
+    return ((size_t)heap_size_bytes + (page_size - 1)) / page_size * page_size;
+  } else {
+    return max_supported_heap_size;
+  }
+}
+
 v8::Local<v8::String> GetSourceLine(v8::Isolate* isolate,
                                     v8::Local<v8::Message> message) {
   auto maybe = message->GetSourceLine(isolate->GetCurrentContext());
@@ -309,12 +327,8 @@ void JsSandboxIsolate::InitializeIsolateOnThread() {
   std::unique_ptr<v8::Isolate::CreateParams> params =
       gin::IsolateHolder::getDefaultIsolateParams();
   if (isolate_max_heap_size_bytes_ > 0) {
-    if ((uint64_t)isolate_max_heap_size_bytes_ < UINT_MAX) {
-      params->constraints.ConfigureDefaultsFromHeapSize(
-          0, isolate_max_heap_size_bytes_);
-    } else {
-      params->constraints.ConfigureDefaultsFromHeapSize(0, UINT_MAX);
-    }
+    params->constraints.ConfigureDefaultsFromHeapSize(
+        0, AdjustToValidHeapSize(isolate_max_heap_size_bytes_));
   }
   isolate_holder_ = std::make_unique<gin::IsolateHolder>(
       base::ThreadTaskRunnerHandle::Get(),
