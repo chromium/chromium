@@ -19,6 +19,7 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
+#include "url/url_constants.h"
 
 namespace extensions {
 
@@ -170,8 +171,15 @@ bool WebAccessibleResourcesInfo::IsResourceWebAccessible(
     const Extension* extension,
     const std::string& relative_path,
     const absl::optional<url::Origin>& initiator_origin) {
-  auto initiator_url =
-      initiator_origin.has_value() ? initiator_origin->GetURL() : GURL();
+  GURL initiator_url;
+  if (initiator_origin) {
+    if (initiator_origin->opaque()) {
+      initiator_url =
+          initiator_origin->GetTupleOrPrecursorTupleIfOpaque().GetURL();
+    } else {
+      initiator_url = initiator_origin->GetURL();
+    }
+  }
   const WebAccessibleResourcesInfo* info = GetResourcesInfo(extension);
   if (!info) {  // No web-accessible resources
     return false;
@@ -183,6 +191,7 @@ bool WebAccessibleResourcesInfo::IsResourceWebAccessible(
       if (extension->manifest_version() < 3)
         return true;
 
+      // Match patterns.
       if (entry.matches.MatchesURL(initiator_url))
         return true;
       if (initiator_url.SchemeIs(extensions::kExtensionScheme) &&
