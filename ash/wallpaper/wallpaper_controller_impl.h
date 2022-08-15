@@ -203,6 +203,12 @@ class ASH_EXPORT WallpaperControllerImpl
   // state is not available).
   bool SetUserWallpaperInfo(const AccountId& account_id,
                             const WallpaperInfo& info);
+  // Overload for |SetUserWallpaperInfo| that allow callers to specify
+  // whether |account_id| is ephemeral. Used for callers before signin has
+  // occurred and |is_ephemeral| cannot be determined by session controller.
+  bool SetUserWallpaperInfo(const AccountId& account_id,
+                            bool is_ephemeral,
+                            const WallpaperInfo& info);
 
   // Gets encoded wallpaper from cache. Returns true if success.
   bool GetWallpaperFromCache(const AccountId& account_id,
@@ -266,6 +272,7 @@ class ASH_EXPORT WallpaperControllerImpl
       const base::FilePath& customized_default_small_path,
       const base::FilePath& customized_default_large_path) override;
   void SetPolicyWallpaper(const AccountId& account_id,
+                          user_manager::UserType user_type,
                           const std::string& data) override;
   void SetDevicePolicyWallpaperPath(
       const base::FilePath& device_policy_wallpaper_path) override;
@@ -550,6 +557,7 @@ class ASH_EXPORT WallpaperControllerImpl
   // |show_wallpaper| is true, otherwise only sets the wallpaper info and
   // updates the cache.
   void SaveAndSetWallpaper(const AccountId& account_id,
+                           bool is_ephemeral,
                            const std::string& file_name,
                            const std::string& file_path,
                            WallpaperType type,
@@ -560,6 +568,7 @@ class ASH_EXPORT WallpaperControllerImpl
   // |image_saved| is only called on success.
   void SaveAndSetWallpaperWithCompletion(
       const AccountId& account_id,
+      bool is_ephemeral,
       const std::string& file_name,
       const std::string& file_path,
       WallpaperType type,
@@ -570,6 +579,7 @@ class ASH_EXPORT WallpaperControllerImpl
 
   void SaveAndSetWallpaperWithCompletionFilesId(
       const AccountId& account_id,
+      bool is_ephemeral,
       const std::string& file_name,
       const std::string& file_path,
       WallpaperType type,
@@ -743,6 +753,9 @@ class ASH_EXPORT WallpaperControllerImpl
   void HandleSettingOnlineWallpaperFromWallpaperInfo(
       const AccountId& account_id,
       const WallpaperInfo& info);
+
+  void CleanUpBeforeSettingUserWallpaperInfo(const AccountId& account_id,
+                                             const WallpaperInfo& info);
 
   bool locked_ = false;
 

@@ -104,6 +104,19 @@ class ASH_EXPORT WallpaperPrefManager
   virtual bool SetUserWallpaperInfo(const AccountId& account_id,
                                     const WallpaperInfo& info) = 0;
 
+  // Overload for |GetUserWallpaperInfo| that allow callers to specify
+  // whether |account_id| is ephemeral. Used for callers before signin has
+  // occurred and |is_ephemeral| cannot be determined by session controller.
+  virtual bool GetUserWallpaperInfo(const AccountId& account_id,
+                                    bool is_ephemeral,
+                                    WallpaperInfo* info) const = 0;
+  // Overload for |SetUserWallpaperInfo| that allow callers to specify
+  // whether |account_id| is ephemeral. Used for callers before signin has
+  // occurred and |is_ephemeral| cannot be determined by session controller.
+  virtual bool SetUserWallpaperInfo(const AccountId& account_id,
+                                    bool is_ephemeral,
+                                    const WallpaperInfo& info) = 0;
+
   // Remove the wallpaper entry for |account_id|.
   virtual void RemoveUserWallpaperInfo(const AccountId& account_id) = 0;
 

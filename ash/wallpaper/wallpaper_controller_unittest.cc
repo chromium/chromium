@@ -54,6 +54,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/user_names.h"
+#include "components/user_manager/user_type.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -1246,7 +1247,8 @@ TEST_F(WallpaperControllerTest, SetAndRemovePolicyWallpaper) {
   // Set a policy wallpaper. Verify that the user becomes policy controlled and
   // the wallpaper info is updated.
   ClearWallpaperCount();
-  controller_->SetPolicyWallpaper(account_id_1, std::string() /*data=*/);
+  controller_->SetPolicyWallpaper(account_id_1, user_manager::USER_TYPE_REGULAR,
+                                  std::string() /*data=*/);
   RunAllTasksUntilIdle();
   EXPECT_TRUE(
       pref_manager_->GetUserWallpaperInfo(account_id_1, &wallpaper_info));
@@ -1463,7 +1465,8 @@ TEST_F(WallpaperControllerTest, SetThirdPartyWallpaper) {
 
   // Set a policy wallpaper for |kUser2|. Verify that |kUser2| becomes policy
   // controlled.
-  controller_->SetPolicyWallpaper(account_id_2, std::string() /*data=*/);
+  controller_->SetPolicyWallpaper(account_id_2, user_manager::USER_TYPE_REGULAR,
+                                  std::string() /*data=*/);
   RunAllTasksUntilIdle();
   EXPECT_TRUE(controller_->IsWallpaperControlledByPolicy(account_id_2));
   EXPECT_TRUE(controller_->IsActiveUserWallpaperControlledByPolicy());
@@ -1649,7 +1652,8 @@ TEST_F(WallpaperControllerTest,
   // Second, set a user policy for which is being set for another
   // user and verifying that the policy has been applied successfully.
   WallpaperInfo policy_wallpaper_info;
-  controller_->SetPolicyWallpaper(account_id_1, /*data=*/std::string());
+  controller_->SetPolicyWallpaper(account_id_1, user_manager::USER_TYPE_REGULAR,
+                                  /*data=*/std::string());
   EXPECT_TRUE(pref_manager_->GetUserWallpaperInfo(account_id_1,
                                                   &policy_wallpaper_info));
   WallpaperInfo expected_policy_wallpaper_info(
@@ -1812,7 +1816,8 @@ TEST_F(WallpaperControllerTest, IgnoreWallpaperRequestWhenPolicyIsEnforced) {
   SimulateUserLogin(account_id_1);
 
   // Set a policy wallpaper for the user. Verify the user is policy controlled.
-  controller_->SetPolicyWallpaper(account_id_1, std::string() /*data=*/);
+  controller_->SetPolicyWallpaper(account_id_1, user_manager::USER_TYPE_REGULAR,
+                                  std::string() /*data=*/);
   RunAllTasksUntilIdle();
   EXPECT_TRUE(controller_->IsWallpaperControlledByPolicy(account_id_1));
 
@@ -2310,9 +2315,42 @@ TEST_F(WallpaperControllerTest, IsActiveUserWallpaperControlledByPolicy) {
   EXPECT_FALSE(controller_->IsActiveUserWallpaperControlledByPolicy());
   // Set a policy wallpaper for the active user. Verify that the active user
   // becomes policy controlled.
-  controller_->SetPolicyWallpaper(account_id_1, std::string() /*data=*/);
+  controller_->SetPolicyWallpaper(account_id_1, user_manager::USER_TYPE_REGULAR,
+                                  std::string() /*data=*/);
   RunAllTasksUntilIdle();
   EXPECT_TRUE(controller_->IsActiveUserWallpaperControlledByPolicy());
+
+  // Switch the active user. Verify the active user is not policy controlled.
+  SimulateUserLogin(account_id_2);
+  EXPECT_FALSE(controller_->IsActiveUserWallpaperControlledByPolicy());
+
+  // Logs out. Verify that it returns false since there's no active user.
+  ClearLogin();
+  EXPECT_FALSE(controller_->IsActiveUserWallpaperControlledByPolicy());
+}
+
+TEST_F(WallpaperControllerTest,
+       IsManagedGuestSessionWallpaperControlledByPolicy) {
+  SetBypassDecode();
+  // Simulate the login screen. Verify that it returns false since there's no
+  // active user.
+  ClearLogin();
+  EXPECT_FALSE(controller_->IsActiveUserWallpaperControlledByPolicy());
+
+  // Set a policy wallpaper for the managed guest session. Verify that the
+  // managed guest session becomes policy controlled.
+  controller_->SetPolicyWallpaper(account_id_1,
+                                  user_manager::USER_TYPE_PUBLIC_ACCOUNT,
+                                  std::string() /*data=*/);
+  SimulateUserLogin(account_id_1, user_manager::USER_TYPE_PUBLIC_ACCOUNT);
+  RunAllTasksUntilIdle();
+  EXPECT_TRUE(controller_->IsWallpaperControlledByPolicy(account_id_1));
+
+  // Verify the wallpaper policy is applied after logging in.
+  ClearWallpaperCount();
+  controller_->ShowUserWallpaper(account_id_1);
+  EXPECT_EQ(1, GetWallpaperCount());
+  ASSERT_EQ(controller_->GetWallpaperType(), WallpaperType::kPolicy);
 
   // Switch the active user. Verify the active user is not policy controlled.
   SimulateUserLogin(account_id_2);

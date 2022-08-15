@@ -10,6 +10,7 @@
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "base/notreached.h"
 #include "components/account_id/account_id.h"
+#include "components/user_manager/user_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -142,8 +143,10 @@ void TestWallpaperController::SetCustomizedDefaultWallpaperPaths(
   NOTIMPLEMENTED();
 }
 
-void TestWallpaperController::SetPolicyWallpaper(const AccountId& account_id,
-                                                 const std::string& data) {
+void TestWallpaperController::SetPolicyWallpaper(
+    const AccountId& account_id,
+    user_manager::UserType user_type,
+    const std::string& data) {
   NOTIMPLEMENTED();
 }
 

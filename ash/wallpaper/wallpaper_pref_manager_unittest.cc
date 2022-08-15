@@ -20,6 +20,7 @@
 #include "base/test/task_environment.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/user_manager/user_type.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -219,6 +220,18 @@ TEST_F(WallpaperPrefManagerTest, GetWallpaperInfoNothingToGet_Ephemeral) {
   profile_helper_->is_ephemeral = true;
   WallpaperInfo info;
   EXPECT_FALSE(pref_manager_->GetUserWallpaperInfo(account_id_1, &info));
+}
+
+TEST_F(WallpaperPrefManagerTest,
+       GetWallpaperInfo_FromEphemeralForManagedGuestSessions) {
+  WallpaperInfo expected_info = InfoWithType(WallpaperType::kPolicy);
+  pref_manager_->SetUserWallpaperInfo(account_id_1, /*is_ephemeral=*/true,
+                                      expected_info);
+
+  WallpaperInfo actual_info;
+  EXPECT_TRUE(pref_manager_->GetUserWallpaperInfo(
+      account_id_1, /*is_ephemeral=*/true, &actual_info));
+  EXPECT_EQ(expected_info, actual_info);
 }
 
 TEST_F(WallpaperPrefManagerTest, SetWallpaperInfo_EphemeralDoesNotChangeLocal) {

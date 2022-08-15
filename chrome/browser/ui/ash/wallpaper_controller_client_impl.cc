@@ -384,7 +384,8 @@ void WallpaperControllerClientImpl::SetPolicyWallpaper(
   if (!data || !IsKnownUser(account_id))
     return;
 
-  wallpaper_controller_->SetPolicyWallpaper(account_id, *data);
+  wallpaper_controller_->SetPolicyWallpaper(account_id, GetUserType(account_id),
+                                            *data);
 }
 
 bool WallpaperControllerClientImpl::SetThirdPartyWallpaper(

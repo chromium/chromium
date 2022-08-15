@@ -942,22 +942,15 @@ bool WallpaperControllerImpl::IsBlurAllowedForLockState() const {
 
 bool WallpaperControllerImpl::SetUserWallpaperInfo(const AccountId& account_id,
                                                    const WallpaperInfo& info) {
-  if (info.type != WallpaperType::kDaily &&
-      info.type != WallpaperType::kOnceGooglePhotos &&
-      info.type != WallpaperType::kDailyGooglePhotos) {
-    update_wallpaper_timer_.Stop();
-  }
-
-  if (info.type == WallpaperType::kOnceGooglePhotos)
-    StartGooglePhotosStalenessTimer();
-
-  if (info.type != WallpaperType::kOnceGooglePhotos &&
-      info.type != WallpaperType::kDailyGooglePhotos) {
-    sequenced_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&DeleteGooglePhotosCache, account_id));
-  }
-
+  CleanUpBeforeSettingUserWallpaperInfo(account_id, info);
   return pref_manager_->SetUserWallpaperInfo(account_id, info);
+}
+
+bool WallpaperControllerImpl::SetUserWallpaperInfo(const AccountId& account_id,
+                                                   bool is_ephemeral,
+                                                   const WallpaperInfo& info) {
+  CleanUpBeforeSettingUserWallpaperInfo(account_id, info);
+  return pref_manager_->SetUserWallpaperInfo(account_id, is_ephemeral, info);
 }
 
 bool WallpaperControllerImpl::GetUserWallpaperInfo(const AccountId& account_id,
@@ -1073,11 +1066,11 @@ void WallpaperControllerImpl::SetCustomWallpaper(const AccountId& account_id,
   const bool is_active_user = IsActiveUser(account_id);
   if (preview_mode) {
     DCHECK(is_active_user);
-    confirm_preview_wallpaper_callback_ =
-        base::BindOnce(&WallpaperControllerImpl::SaveAndSetWallpaper,
-                       weak_factory_.GetWeakPtr(), account_id, file_name,
-                       file_path, WallpaperType::kCustomized, layout,
-                       /*show_wallpaper=*/false, image);
+    confirm_preview_wallpaper_callback_ = base::BindOnce(
+        &WallpaperControllerImpl::SaveAndSetWallpaper,
+        weak_factory_.GetWeakPtr(), account_id, IsEphemeralUser(account_id),
+        file_name, file_path, WallpaperType::kCustomized, layout,
+        /*show_wallpaper=*/false, image);
     reload_preview_wallpaper_callback_ = base::BindRepeating(
         &WallpaperControllerImpl::ShowWallpaperImage,
         weak_factory_.GetWeakPtr(), image,
@@ -1088,7 +1081,8 @@ void WallpaperControllerImpl::SetCustomWallpaper(const AccountId& account_id,
     reload_preview_wallpaper_callback_.Run();
   } else {
     SaveAndSetWallpaperWithCompletion(
-        account_id, file_name, file_path, WallpaperType::kCustomized, layout,
+        account_id, IsEphemeralUser(account_id), file_name, file_path,
+        WallpaperType::kCustomized, layout,
         /*show_wallpaper=*/is_active_user, image,
         base::BindOnce(
             &WallpaperControllerImpl::SaveWallpaperToDriveFsAndSyncInfo,
@@ -1332,18 +1326,24 @@ void WallpaperControllerImpl::SetCustomizedDefaultWallpaperPaths(
                           base::DoNothing());
 }
 
-void WallpaperControllerImpl::SetPolicyWallpaper(const AccountId& account_id,
-                                                 const std::string& data) {
+void WallpaperControllerImpl::SetPolicyWallpaper(
+    const AccountId& account_id,
+    user_manager::UserType user_type,
+    const std::string& data) {
   // There is no visible wallpaper in kiosk mode.
   if (IsInKioskMode())
     return;
+
+  DCHECK(user_type == user_manager::USER_TYPE_REGULAR ||
+         user_type == user_manager::USER_TYPE_PUBLIC_ACCOUNT);
 
   // Updates the screen only when the user with this account_id has logged in.
   const bool show_wallpaper = IsActiveUser(account_id);
   image_util::DecodeImageCallback callback = base::BindOnce(
       &WallpaperControllerImpl::SaveAndSetWallpaper, weak_factory_.GetWeakPtr(),
-      account_id, kPolicyWallpaperFile, /*file_path=*/"",
-      WallpaperType::kPolicy, WALLPAPER_LAYOUT_CENTER_CROPPED, show_wallpaper);
+      account_id, user_type == user_manager::USER_TYPE_PUBLIC_ACCOUNT,
+      kPolicyWallpaperFile, /*file_path=*/"", WallpaperType::kPolicy,
+      WALLPAPER_LAYOUT_CENTER_CROPPED, show_wallpaper);
 
   if (bypass_decode_for_testing_) {
     std::move(callback).Run(CreateSolidColorWallpaper(kDefaultWallpaperColor));
@@ -1379,8 +1379,8 @@ bool WallpaperControllerImpl::SetThirdPartyWallpaper(
   bool allowed_to_show_wallpaper = IsActiveUser(account_id);
 
   if (allowed_to_set_wallpaper) {
-    SaveAndSetWallpaper(account_id, file_name, /*file_path=*/"",
-                        WallpaperType::kCustomized, layout,
+    SaveAndSetWallpaper(account_id, IsEphemeralUser(account_id), file_name,
+                        /*file_path=*/"", WallpaperType::kCustomized, layout,
                         allowed_to_show_wallpaper, image);
   }
   return allowed_to_set_wallpaper && allowed_to_show_wallpaper;
@@ -2543,19 +2543,21 @@ void WallpaperControllerImpl::OnDefaultWallpaperDecoded(
 }
 
 void WallpaperControllerImpl::SaveAndSetWallpaper(const AccountId& account_id,
+                                                  bool is_ephemeral,
                                                   const std::string& file_name,
                                                   const std::string& file_path,
                                                   WallpaperType type,
                                                   WallpaperLayout layout,
                                                   bool show_wallpaper,
                                                   const gfx::ImageSkia& image) {
-  SaveAndSetWallpaperWithCompletion(account_id, file_name, file_path, type,
-                                    layout, show_wallpaper, image,
-                                    base::DoNothing());
+  SaveAndSetWallpaperWithCompletion(account_id, is_ephemeral, file_name,
+                                    file_path, type, layout, show_wallpaper,
+                                    image, base::DoNothing());
 }
 
 void WallpaperControllerImpl::SaveAndSetWallpaperWithCompletion(
     const AccountId& account_id,
+    bool is_ephemeral,
     const std::string& file_name,
     const std::string& file_path,
     WallpaperType type,
@@ -2568,13 +2570,15 @@ void WallpaperControllerImpl::SaveAndSetWallpaperWithCompletion(
         account_id,
         base::BindOnce(
             &WallpaperControllerImpl::SaveAndSetWallpaperWithCompletionFilesId,
-            weak_factory_.GetWeakPtr(), account_id, file_name, file_path, type,
-            layout, show_wallpaper, image, std::move(image_saved_callback)));
+            weak_factory_.GetWeakPtr(), account_id, is_ephemeral, file_name,
+            file_path, type, layout, show_wallpaper, image,
+            std::move(image_saved_callback)));
   }
 }
 
 void WallpaperControllerImpl::SaveAndSetWallpaperWithCompletionFilesId(
     const AccountId& account_id,
+    bool is_ephemeral,
     const std::string& file_name,
     const std::string& file_path,
     WallpaperType type,
@@ -2597,7 +2601,7 @@ void WallpaperControllerImpl::SaveAndSetWallpaperWithCompletionFilesId(
   // appropriate wallpaper resolution.
   WallpaperInfo info = {relative_path, layout, type, base::Time::Now(),
                         file_path};
-  if (!SetUserWallpaperInfo(account_id, info)) {
+  if (!SetUserWallpaperInfo(account_id, is_ephemeral, info)) {
     LOG(ERROR) << "Setting user wallpaper info fails. This should never happen "
                   "except in tests.";
   }
@@ -2607,9 +2611,7 @@ void WallpaperControllerImpl::SaveAndSetWallpaperWithCompletionFilesId(
                              wallpaper_files_id, file_name);
 
   const bool should_save_to_disk =
-      !IsEphemeralUser(account_id) ||
-      (type == WallpaperType::kPolicy &&
-       GetUserType(account_id) == user_manager::USER_TYPE_PUBLIC_ACCOUNT);
+      !IsEphemeralUser(account_id) && !is_ephemeral;
 
   if (should_save_to_disk) {
     image.EnsureRepsForSupportedScales();
@@ -3239,8 +3241,9 @@ void WallpaperControllerImpl::HandleCustomWallpaperInfoSyncedIn(
   std::string file_path = info.user_file_path;
   ReadAndDecodeWallpaper(
       base::BindOnce(&WallpaperControllerImpl::SaveAndSetWallpaper,
-                     weak_factory_.GetWeakPtr(), account_id, file_name,
-                     file_path, WallpaperType::kCustomized, info.layout,
+                     weak_factory_.GetWeakPtr(), account_id,
+                     IsEphemeralUser(account_id), file_name, file_path,
+                     WallpaperType::kCustomized, info.layout,
                      /*show_wallpaper=*/true),
       drivefs_path);
 }
@@ -3326,6 +3329,25 @@ void WallpaperControllerImpl::HandleSettingOnlineWallpaperFromWallpaperInfo(
 
   variant_info_fetcher_->FetchOnlineWallpaper(account_id, info, GetColorMode(),
                                               std::move(callback));
+}
+
+void WallpaperControllerImpl::CleanUpBeforeSettingUserWallpaperInfo(
+    const AccountId& account_id,
+    const WallpaperInfo& info) {
+  if (info.type != WallpaperType::kDaily &&
+      info.type != WallpaperType::kOnceGooglePhotos &&
+      info.type != WallpaperType::kDailyGooglePhotos) {
+    update_wallpaper_timer_.Stop();
+  }
+
+  if (info.type == WallpaperType::kOnceGooglePhotos)
+    StartGooglePhotosStalenessTimer();
+
+  if (info.type != WallpaperType::kOnceGooglePhotos &&
+      info.type != WallpaperType::kDailyGooglePhotos) {
+    sequenced_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&DeleteGooglePhotosCache, account_id));
+  }
 }
 
 }  // namespace ash

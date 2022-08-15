@@ -309,7 +309,20 @@ class WallpaperPrefManagerImpl : public WallpaperPrefManager {
 
   bool GetUserWallpaperInfo(const AccountId& account_id,
                             WallpaperInfo* info) const override {
-    if (profile_helper_->IsEphemeral(account_id)) {
+    const bool is_ephemeral = profile_helper_->IsEphemeral(account_id);
+    return GetUserWallpaperInfo(account_id, is_ephemeral, info);
+  }
+
+  bool SetUserWallpaperInfo(const AccountId& account_id,
+                            const WallpaperInfo& info) override {
+    const bool is_ephemeral = profile_helper_->IsEphemeral(account_id);
+    return SetUserWallpaperInfo(account_id, is_ephemeral, info);
+  }
+
+  bool GetUserWallpaperInfo(const AccountId& account_id,
+                            bool is_ephemeral,
+                            WallpaperInfo* info) const override {
+    if (is_ephemeral) {
       // Ephemeral users do not save anything to local state. Return true if the
       // info can be found in the map, otherwise return false.
       auto it = ephemeral_users_wallpaper_info_.find(account_id);
@@ -324,8 +337,9 @@ class WallpaperPrefManagerImpl : public WallpaperPrefManager {
   }
 
   bool SetUserWallpaperInfo(const AccountId& account_id,
+                            bool is_ephemeral,
                             const WallpaperInfo& info) override {
-    if (profile_helper_->IsEphemeral(account_id)) {
+    if (is_ephemeral) {
       ephemeral_users_wallpaper_info_.insert_or_assign(account_id, info);
       return true;
     }

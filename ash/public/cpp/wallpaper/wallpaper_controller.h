@@ -175,10 +175,15 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   // Sets wallpaper from policy. If the user has logged in, show the policy
   // wallpaper immediately, otherwise, the policy wallpaper will be shown the
   // next time |ShowUserWallpaper| is called. Note: it is different from device
-  // policy.
+  // policy. This function may be called on the login screen, thus it's
+  // responsibility of the caller to provide the correct |user_type| for such
+  // case i.e. |user_type| should be derived by using
+  // |user_manager::UserManager|.
   // |account_id|: The user's account id.
+  // |user_type|: The type of user.
   // |data|: The data used to decode the image.
   virtual void SetPolicyWallpaper(const AccountId& account_id,
+                                  user_manager::UserType user_type,
                                   const std::string& data) = 0;
 
   // Sets the path of device policy wallpaper.
