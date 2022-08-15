@@ -969,4 +969,79 @@ TEST_F(CrOSComponentInstallerTest, LoadCache) {
   ASSERT_EQ(mount_path1, load_cache.begin()->second.path);
 }
 
+// Tests that when the load cache is removed for a given component successive
+// loads will load the newest installed version.
+TEST_F(CrOSComponentInstallerTest,
+       RemovingLoadCacheEntryAllowsLoadingNewComponentVersions) {
+  // Create and register version 1.0 of an installed component.
+  absl::optional<base::FilePath> install_path = CreateInstalledComponent(
+      kTestComponentName, "1.0", kTestComponentValidMinEnvVersion);
+  ASSERT_TRUE(install_path.has_value());
+
+  image_loader_client()->SetMountPathForComponent(
+      kTestComponentName, base::FilePath(kTestComponentMountPath));
+
+  TestUpdater updater;
+  std::unique_ptr<MockComponentUpdateService> update_service =
+      CreateUpdateServiceForMultiRegistration(kTestComponentName, &updater, 2);
+  scoped_refptr<CrOSComponentInstaller> cros_component_manager =
+      base::MakeRefCounted<CrOSComponentInstaller>(nullptr,
+                                                   update_service.get());
+  cros_component_manager->RegisterInstalled();
+  RunUntilIdle();
+  EXPECT_FALSE(updater.HasPendingUpdate(kTestComponentName));
+  EXPECT_EQ(install_path.value(),
+            cros_component_manager->GetCompatiblePath(kTestComponentName));
+
+  absl::optional<CrOSComponentManager::Error> load_result1;
+  base::FilePath mount_path1;
+  cros_component_manager->Load(
+      kTestComponentName, CrOSComponentManager::MountPolicy::kMount,
+      CrOSComponentManager::UpdatePolicy::kDontForce,
+      base::BindOnce(&RecordLoadResult, &load_result1, &mount_path1));
+
+  // Loading the component should successfully load the latest installed version
+  // (1.0) and populate the load cache.
+  auto& load_cache = cros_component_manager->GetLoadCacheForTesting();
+  EXPECT_EQ(load_cache.size(), 1u);
+  RunUntilIdle();
+  EXPECT_TRUE(load_result1.has_value());
+  VerifyComponentLoaded(cros_component_manager, kTestComponentName,
+                        load_result1,
+                        GetInstalledComponentPath(kTestComponentName, "1.0"));
+
+  // The component manager should remove the load cache entry for the test
+  // component when requested.
+  cros_component_manager->RemoveLoadCacheEntry(kTestComponentName);
+  EXPECT_EQ(load_cache.size(), 0u);
+
+  // Create and register version 2.0 of the same component.
+  absl::optional<base::FilePath> install_path2 = CreateInstalledComponent(
+      kTestComponentName, "2.0", kTestComponentValidMinEnvVersion);
+  ASSERT_TRUE(install_path2.has_value());
+
+  cros_component_manager->RegisterInstalled();
+  RunUntilIdle();
+  EXPECT_FALSE(updater.HasPendingUpdate(kTestComponentName));
+  EXPECT_EQ(install_path2.value(),
+            cros_component_manager->GetCompatiblePath(kTestComponentName));
+
+  // Loading the component should successfully load the latest installed version
+  // (2.0) and populate the load cache.
+  absl::optional<CrOSComponentManager::Error> load_result2;
+  base::FilePath mount_path2;
+  cros_component_manager->Load(
+      kTestComponentName, CrOSComponentManager::MountPolicy::kMount,
+      CrOSComponentManager::UpdatePolicy::kDontForce,
+      base::BindOnce(&RecordLoadResult, &load_result2, &mount_path2));
+
+  EXPECT_EQ(load_cache.size(), 1u);
+  RunUntilIdle();
+  EXPECT_TRUE(load_result2.has_value());
+  VerifyComponentLoaded(cros_component_manager, kTestComponentName,
+                        load_result2,
+                        GetInstalledComponentPath(kTestComponentName, "2.0"));
+  EXPECT_EQ(mount_path1, mount_path2);
+}
+
 }  // namespace component_updater
