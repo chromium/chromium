@@ -1095,7 +1095,12 @@ void SVGElement::SetNeedsStyleRecalcForInstances(
   if (set.IsEmpty())
     return;
 
+  std::vector<SVGElement*> members;
   for (SVGElement* instance : set)
+    members.push_back(instance);
+  std::sort(members.begin(), members.end(), recordreplay::CompareByPointerId());
+
+  for (SVGElement* instance : members)
     instance->SetNeedsStyleRecalc(change_type, reason);
 }
 
