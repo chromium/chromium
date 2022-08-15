@@ -1277,7 +1277,7 @@
       // crbug.com/989916
       name: "LayoutNGForeignObject",
       depends_on: ["LayoutNG"],
-      status: "stable",
+      status: "test",
     },
     {
       // crbug.com/1346221
