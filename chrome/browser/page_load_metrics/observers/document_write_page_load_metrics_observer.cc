@@ -32,6 +32,19 @@ DocumentWritePageLoadMetricsObserver::OnFencedFramesStart(
   return STOP_OBSERVING;
 }
 
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+DocumentWritePageLoadMetricsObserver::OnPrerenderStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  // This class measures effect of `document.write()` on parsing and FCP.
+  // As `document.write()` is strongly discouraged [1], we think it is enough to
+  // record non prerendered case and this class doesn't support prerendering.
+  //
+  // [1]
+  // https://html.spec.whatwg.org/multipage/dynamic-markup-insertion.html#dom-document-write-dev
+  return STOP_OBSERVING;
+}
+
 void DocumentWritePageLoadMetricsObserver::OnFirstContentfulPaintInPage(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   if (GetDelegate().GetMainFrameMetadata().behavior_flags &
