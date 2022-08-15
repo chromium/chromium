@@ -141,6 +141,8 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
       int http_status,
       const std::string& response,
       const ServiceRequestSender::ResponseInfo& response_info);
+  void RegisterExperimentSyntheticFieldTrial(
+      const std::vector<std::string>& experiments) const;
   GURL GetCurrentURL() const;
   void OnEffectiveVisibilityChanged();
   void OnOnboardingFinished(bool onboardingShown, OnboardingResult result);
