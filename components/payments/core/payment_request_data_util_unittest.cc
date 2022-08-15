@@ -16,8 +16,6 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/payments/core/basic_card_response.h"
 #include "components/payments/core/payment_address.h"
 #include "components/payments/core/payment_method_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -57,40 +55,6 @@ TEST(PaymentRequestDataUtilTest, GetPaymentAddressFromAutofillProfile) {
       "\"region\":\"CA\","
       "\"sortingCode\":\"\"}",
       json_address);
-}
-
-// Tests that the basic card response constructed from a credit card with
-// associated billing address has the right structure once serialized.
-TEST(PaymentRequestDataUtilTest, GetBasicCardResponseFromAutofillCreditCard) {
-  autofill::AutofillProfile address = autofill::test::GetFullProfile();
-  autofill::CreditCard card = autofill::test::GetCreditCard();
-  card.set_billing_address_id(address.guid());
-  base::Value::Dict response_value =
-      payments::data_util::GetBasicCardResponseFromAutofillCreditCard(
-          card, u"123", address, "en-US")
-          ->ToValueDict();
-  std::string json_response;
-  base::JSONWriter::Write(response_value, &json_response);
-  EXPECT_EQ(base::StringPrintf(
-                "{\"billingAddress\":"
-                "{\"addressLine\":[\"666 Erebus St.\",\"Apt 8\"],"
-                "\"city\":\"Elysium\","
-                "\"country\":\"US\","
-                "\"dependentLocality\":\"\","
-                "\"organization\":\"Underworld\","
-                "\"phone\":\"16502111111\","
-                "\"postalCode\":\"91111\","
-                "\"recipient\":\"John H. Doe\","
-                "\"region\":\"CA\","
-                "\"sortingCode\":\"\"},"
-                "\"cardNumber\":\"4111111111111111\","
-                "\"cardSecurityCode\":\"123\","
-                "\"cardholderName\":\"Test User\","
-                "\"expiryMonth\":\"%s\","
-                "\"expiryYear\":\"%s\"}",
-                base::UTF16ToUTF8(card.Expiration2DigitMonthAsString()).c_str(),
-                base::UTF16ToUTF8(card.Expiration4DigitYearAsString()).c_str()),
-            json_response);
 }
 
 // A test fixture to check ParseSupportedMethods() returns empty identifier

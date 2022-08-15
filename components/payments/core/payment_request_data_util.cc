@@ -16,7 +16,6 @@
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/validation.h"
-#include "components/payments/core/basic_card_response.h"
 #include "components/payments/core/method_strings.h"
 #include "components/payments/core/payment_method_data.h"
 #include "components/payments/core/payments_validators.h"
@@ -66,26 +65,6 @@ mojom::PaymentAddressPtr GetPaymentAddressFromAutofillProfile(
   return payment_address;
 }
 
-std::unique_ptr<BasicCardResponse> GetBasicCardResponseFromAutofillCreditCard(
-    const autofill::CreditCard& card,
-    const std::u16string& cvc,
-    const autofill::AutofillProfile& billing_profile,
-    const std::string& app_locale) {
-  std::unique_ptr<BasicCardResponse> response =
-      std::make_unique<BasicCardResponse>();
-  response->cardholder_name = card.GetRawInfo(autofill::CREDIT_CARD_NAME_FULL);
-  response->card_number = card.GetRawInfo(autofill::CREDIT_CARD_NUMBER);
-  response->expiry_month = card.GetRawInfo(autofill::CREDIT_CARD_EXP_MONTH);
-  response->expiry_year =
-      card.GetRawInfo(autofill::CREDIT_CARD_EXP_4_DIGIT_YEAR);
-  response->card_security_code = cvc;
-
-  response->billing_address =
-      GetPaymentAddressFromAutofillProfile(billing_profile, app_locale);
-
-  return response;
-}
-
 void ParseSupportedMethods(
     const std::vector<PaymentMethodData>& method_data,
     std::vector<GURL>* out_url_payment_method_identifiers,
@@ -112,26 +91,6 @@ void ParseSupportedMethods(
         out_url_payment_method_identifiers->push_back(url);
     }
   }
-}
-
-std::u16string FormatCardNumberForDisplay(const std::u16string& card_number) {
-  std::u16string number = autofill::CreditCard::StripSeparators(card_number);
-  if (number.empty() || !base::IsAsciiDigit(number[0]))
-    return card_number;
-
-  std::vector<size_t> positions = {4U, 9U, 14U};
-  if (autofill::CreditCard::GetCardNetwork(number) ==
-      autofill::kAmericanExpressCard) {
-    positions = {4U, 11U};
-  }
-
-  static constexpr char16_t kSeparator = u' ';
-  for (size_t i : positions) {
-    if (number.size() > i)
-      number.insert(i, 1U, kSeparator);
-  }
-
-  return number;
 }
 
 std::unique_ptr<std::map<std::string, std::set<std::string>>>
