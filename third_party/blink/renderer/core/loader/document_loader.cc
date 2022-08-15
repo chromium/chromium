@@ -149,7 +149,7 @@
 namespace blink {
 
 const base::Feature kCacheInlineScriptCode{"CacheInlineScriptCode",
-                                           base::FEATURE_ENABLED_BY_DEFAULT};
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
 namespace {
 
