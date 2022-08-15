@@ -63,7 +63,9 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
                      const SkIRect& damage_rect,
                      bool needs_vertical_flip,
                      bool is_opaque);
-  void ReclaimResource(viz::ResourceId, scoped_refptr<CanvasResource>&&);
+  // virtual for mocking
+  virtual void ReclaimResource(viz::ResourceId,
+                               scoped_refptr<CanvasResource>&&);
   void DispatchFrameSync(scoped_refptr<CanvasResource>&&,
                          base::TimeTicks commit_start_time,
                          const SkIRect& damage_rect,
@@ -95,6 +97,7 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
   void SetPlaceholderCanvasDispatcher(int placeholder_canvas_id);
 
  private:
+  friend class OffscreenCanvasPlaceholderTest;
   friend class CanvasResourceDispatcherTest;
   struct FrameResource;
 

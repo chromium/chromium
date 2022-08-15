@@ -71,6 +71,25 @@ void CanvasResource::OnDestroy() {
 #endif
 }
 
+void CanvasResource::Release() {
+  if (last_unref_callback_ && HasOneRef()) {
+    // "this" will not be destroyed if last_unref_callback_ retains the
+    // reference.
+#if DCHECK_IS_ON()
+    auto last_ref = base::WrapRefCounted(this);
+    WTF::ThreadSafeRefCounted<CanvasResource>::Release();  // does not destroy.
+#else
+    // In a DCHECK build, AdoptRef would fail because it is only supposed to be
+    // used on new objects.  Nonetheless, we prefer to use AdoptRef "illegally"
+    // in non-DCHECK builds to avoid unnecessary atomic operations.
+    auto last_ref = base::AdoptRef(this);
+#endif
+    std::move(last_unref_callback_).Run(std::move(last_ref));
+  } else {
+    WTF::ThreadSafeRefCounted<CanvasResource>::Release();
+  }
+}
+
 gpu::InterfaceBase* CanvasResource::InterfaceBase() const {
   if (!ContextProviderWrapper())
     return nullptr;
@@ -120,7 +139,8 @@ static void ReleaseFrameResources(
   // resource.
   if (lost_resource)
     resource->NotifyResourceLost();
-  if (resource_provider && !lost_resource && resource->IsRecycleable())
+  if (resource_provider && !lost_resource && resource->IsRecycleable() &&
+      resource->HasOneRef())
     resource_provider->RecycleResource(std::move(resource));
 }
 
@@ -1073,11 +1093,19 @@ scoped_refptr<ExternalCanvasResource> ExternalCanvasResource::Create(
 }
 
 ExternalCanvasResource::~ExternalCanvasResource() {
+  // Should always be destroyed on thread of origin.
+  DCHECK(!is_cross_thread());
   OnDestroy();
 }
 
 bool ExternalCanvasResource::IsValid() const {
-  return context_provider_wrapper_ && HasGpuMailbox();
+  // On same thread we need to make sure context was not dropped, but
+  // in the cross-thread case, checking a WeakPtr in not thread safe, not
+  // to mention that we will use a shared context rather than the context
+  // of origin to access the resource. In that case we will find out
+  // whether the resource was dropped later, when we attempt to access the
+  // mailbox.
+  return (is_cross_thread() || context_provider_wrapper_) && HasGpuMailbox();
 }
 
 void ExternalCanvasResource::Abandon() {
@@ -1150,6 +1178,8 @@ const gpu::SyncToken ExternalCanvasResource::GetSyncToken() {
 
 base::WeakPtr<WebGraphicsContext3DProviderWrapper>
 ExternalCanvasResource::ContextProviderWrapper() const {
+  // The context provider is not thread-safe, nor is the WeakPtr that holds it.
+  DCHECK(!is_cross_thread());
   return context_provider_wrapper_;
 }
 

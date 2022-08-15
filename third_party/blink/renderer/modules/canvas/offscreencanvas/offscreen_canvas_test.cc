@@ -149,7 +149,7 @@ TEST_P(OffscreenCanvasTest, CompositorFrameOpacity) {
 
   const bool context_alpha = GetParam().alpha;
 
-  const auto canvas_resource = CanvasResourceSharedBitmap::Create(
+  auto canvas_resource = CanvasResourceSharedBitmap::Create(
       SkImageInfo::MakeN32Premul(offscreen_canvas().Size().width(),
                                  offscreen_canvas().Size().height()),
       nullptr /* provider */, cc::PaintFlags::FilterQuality::kLow);
@@ -175,7 +175,7 @@ TEST_P(OffscreenCanvasTest, CompositorFrameOpacity) {
                                SkIRect::MakeWH(10, 10));
   platform->RunUntilIdle();
 
-  const auto canvas_resource2 = CanvasResourceSharedBitmap::Create(
+  auto canvas_resource2 = CanvasResourceSharedBitmap::Create(
       SkImageInfo::MakeN32Premul(offscreen_canvas().Size().width(),
                                  offscreen_canvas().Size().height()),
       nullptr /* provider */, cc::PaintFlags::FilterQuality::kLow);

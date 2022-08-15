@@ -70,12 +70,29 @@ class PLATFORM_EXPORT CanvasResource
       const gpu::SyncToken& sync_token,
       bool is_lost)>;
 
+  using LastUnrefCallback = base::OnceCallback<void(
+      scoped_refptr<blink::CanvasResource> canvas_resource)>;
+
   virtual ~CanvasResource();
+
+  // Non-virtual override of ThreadSafeRefCounted::Release
+  void Release();
+
+  // Set a callback that will be invoked as the last outstanding reference to
+  // this CanvasResource goes out of scope.  This provides a last chance hook
+  // to intercept a canvas before it get destroyed. For resources that need to
+  // be destroyed on their thread of origin, this hook can be used to return
+  // resources to their creators.
+  void SetLastUnrefCallback(LastUnrefCallback callback) {
+    last_unref_callback_ = std::move(callback);
+  }
 
   // We perform a lazy copy on write if the canvas content needs to be updated
   // while its current resource is in use. In order to avoid re-allocating
   // resources, its preferable to reuse a resource if its no longer in use.
-  // This API indicates whether a resource can be recycled.
+  // This API indicates whether a resource can be recycled.  This method does
+  // not however check whether the resource is still in use (e.g. has
+  // outstanding references).
   virtual bool IsRecycleable() const = 0;
 
   // Returns true if rendering to the resource is accelerated.
@@ -231,6 +248,7 @@ class PLATFORM_EXPORT CanvasResource
   base::WeakPtr<CanvasResourceProvider> provider_;
   SkColorInfo info_;
   cc::PaintFlags::FilterQuality filter_quality_;
+  LastUnrefCallback last_unref_callback_;
 #if DCHECK_IS_ON()
   bool did_call_on_destroy_ = false;
 #endif
