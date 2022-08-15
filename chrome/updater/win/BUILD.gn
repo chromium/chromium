@@ -56,8 +56,6 @@ source_set("updater_executable") {
 }
 
 executable("updater") {
-  configs -= [ "//build/config/compiler:cet_shadow_stack" ]
-
   deps = [
     ":updater_executable",
     ":version_resources",
@@ -66,8 +64,6 @@ executable("updater") {
 }
 
 executable("updater_test") {
-  configs -= [ "//build/config/compiler:cet_shadow_stack" ]
-
   deps = [
     ":updater_executable",
     ":version_resources_test",
