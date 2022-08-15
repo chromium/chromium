@@ -20,7 +20,6 @@
 #include "net/cookies/site_for_cookies.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
-#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -519,10 +518,6 @@ constexpr char IdpNetworkRequestManager::kManifestFilePath[];
 std::unique_ptr<IdpNetworkRequestManager> IdpNetworkRequestManager::Create(
     const GURL& provider,
     RenderFrameHostImpl* host) {
-  // FedCM is restricted to secure contexts.
-  if (!network::IsOriginPotentiallyTrustworthy(url::Origin::Create(provider)))
-    return nullptr;
-
   // Use the browser process URL loader factory because it has cross-origin
   // read blocking disabled. This is safe because even though these are
   // renderer-initiated fetches, the browser parses the responses and does not
@@ -583,8 +578,10 @@ void IdpNetworkRequestManager::FetchManifestList(
       IdpNetworkRequestManager::ComputeManifestListUrl(provider_);
 
   if (!manifest_list_url) {
-    OnManifestListParsed(std::move(callback), FetchStatus::kHttpNotFoundError,
-                         data_decoder::DataDecoder::ValueOrError());
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(&OnManifestListParsed, std::move(callback),
+                                  FetchStatus::kHttpNotFoundError,
+                                  data_decoder::DataDecoder::ValueOrError()));
     return;
   }
 

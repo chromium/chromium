@@ -386,7 +386,9 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
     fetched_endpoints_ |= FetchedEndpoint::MANIFEST_LIST;
     std::set<GURL> url_set(config_.manifest_list.provider_urls.begin(),
                            config_.manifest_list.provider_urls.end());
-    std::move(callback).Run(FetchStatus::kSuccess, url_set);
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), FetchStatus::kSuccess, url_set));
   }
 
   void FetchManifest(absl::optional<int> idp_brand_icon_ideal_size,
@@ -399,25 +401,33 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
     endpoints.accounts = config_.manifest.accounts_endpoint;
     endpoints.client_metadata = config_.manifest.client_metadata_endpoint;
     endpoints.revocation = config_.manifest.revocation_endpoint;
-    std::move(callback).Run(config_.manifest.fetch_status, endpoints,
-                            IdentityProviderMetadata());
+
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), config_.manifest.fetch_status,
+                       endpoints, IdentityProviderMetadata()));
   }
 
   void FetchClientMetadata(const GURL& endpoint,
                            const std::string& client_id,
                            FetchClientMetadataCallback callback) override {
     fetched_endpoints_ |= FetchedEndpoint::CLIENT_METADATA;
-    std::move(callback).Run(config_.client_metadata.fetch_status,
-                            IdpNetworkRequestManager::ClientMetadata{
-                                config_.client_metadata.privacy_policy_url,
-                                config_.client_metadata.terms_of_service_url});
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback),
+                       config_.client_metadata.fetch_status,
+                       IdpNetworkRequestManager::ClientMetadata{
+                           config_.client_metadata.privacy_policy_url,
+                           config_.client_metadata.terms_of_service_url}));
   }
 
   void SendAccountsRequest(const GURL& accounts_url,
                            const std::string& client_id,
                            AccountsRequestCallback callback) override {
     fetched_endpoints_ |= FetchedEndpoint::ACCOUNTS;
-    std::move(callback).Run(config_.accounts_response, config_.accounts);
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  config_.accounts_response, config_.accounts));
   }
 
   void SendTokenRequest(const GURL& token_url,
@@ -430,10 +440,12 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
                                                         : std::string();
     base::OnceCallback bound_callback = base::BindOnce(
         std::move(callback), config_.token_response, delivered_token);
-    if (config_.delay_token_response)
+    if (config_.delay_token_response) {
       delayed_callbacks_.push_back(std::move(bound_callback));
-    else
-      std::move(bound_callback).Run();
+    } else {
+      base::SequencedTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, std::move(bound_callback));
+    }
   }
 
   int get_fetched_endpoints() { return fetched_endpoints_; }
@@ -697,6 +709,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
 
     // Ensure that the request makes its way to FederatedAuthRequestImpl.
     request_remote_.FlushForTesting();
+    base::RunLoop().RunUntilIdle();
     if (wait_for_callback) {
       // Fast forward clock so that the pending
       // FederatedAuthRequestImpl::OnRejectRequest() task, if any, gets a
@@ -743,9 +756,11 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
                         dismiss_callback) {
                   displayed_accounts_ =
                       AccountList(accounts.begin(), accounts.end());
-                  std::move(on_selected)
-                      .Run(accounts[0].id,
-                           accounts[0].login_state == LoginState::kSignIn);
+                  base::SequencedTaskRunnerHandle::Get()->PostTask(
+                      FROM_HERE,
+                      base::BindOnce(
+                          std::move(on_selected), accounts[0].id,
+                          accounts[0].login_state == LoginState::kSignIn));
                 }));
       }
     } else {
@@ -941,7 +956,7 @@ TEST_F(FederatedAuthRequestImplTest, ManifestListNotInList) {
   RequestExpectations request_not_in_list = {
       RequestTokenStatus::kError,
       FederatedAuthRequestResult::kErrorManifestNotInManifestList,
-      FetchedEndpoint::MANIFEST_LIST};
+      FetchedEndpoint::MANIFEST_LIST | FetchedEndpoint::MANIFEST};
 
   RequestParameters parameters{"https://not-in-list.example", kClientId, kNonce,
                                /*prefer_auto_sign_in=*/false};
@@ -962,7 +977,7 @@ TEST_F(FederatedAuthRequestImplTest, ManifestListHasNoFilename) {
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
       FederatedAuthRequestResult::kErrorManifestNotInManifestList,
-      FetchedEndpoint::MANIFEST_LIST};
+      FetchedEndpoint::MANIFEST_LIST | FetchedEndpoint::MANIFEST};
   RunAuthTest(parameters, expectations, config);
 }
 
@@ -1028,6 +1043,23 @@ TEST_F(FederatedAuthRequestImplTest, AccountEndpointDifferentOriginIdp) {
       FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse,
       FetchedEndpoint::MANIFEST | FetchedEndpoint::MANIFEST_LIST};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
+}
+
+// Test that request fails if the idp is not https.
+TEST_F(FederatedAuthRequestImplTest, ProviderNotTrustworthy) {
+  RequestParameters request = kDefaultRequestParameters;
+  request.provider = "http://idp.example/fedcm.json";
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.manifest_list.provider_urls =
+      std::set<std::string>{kProviderUrl};
+  RequestExpectations expectations = {RequestTokenStatus::kError,
+                                      FederatedAuthRequestResult::kError,
+                                      /*fetched_endpoints=*/0};
+  RunAuthTest(request, expectations, configuration);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Blink.FedCm.Status.RequestIdToken",
+      TokenStatus::kRpNotPotentiallyTrustworthy, 1);
 }
 
 // Test that request fails if accounts endpoint cannot be reached.

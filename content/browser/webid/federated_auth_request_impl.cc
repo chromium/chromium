@@ -29,6 +29,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/page_visibility_state.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "ui/accessibility/ax_mode.h"
@@ -313,16 +314,17 @@ void FederatedAuthRequestImpl::RequestToken(
   prefer_auto_sign_in_ = prefer_auto_sign_in && IsFedCmAutoSigninEnabled();
   start_time_ = base::TimeTicks::Now();
 
-  // TODO(crbug.com/1307709): Handle network managers for multiple IDPs.
-  network_manager_ = CreateNetworkManager(identity_provider_ptr->config_url);
-  if (!network_manager_) {
-    fedcm_metrics_->RecordRequestTokenStatus(TokenStatus::kNoNetworkManager);
-    // TODO(yigu): this is due to provider url being non-secure. We should
-    // reject early in the renderer process.
+  if (!network::IsOriginPotentiallyTrustworthy(
+          url::Origin::Create(identity_provider_ptr->config_url))) {
+    fedcm_metrics_->RecordRequestTokenStatus(
+        TokenStatus::kRpNotPotentiallyTrustworthy);
     CompleteRequest(FederatedAuthRequestResult::kError, "",
                     /*should_delay_callback=*/false);
     return;
   }
+
+  // TODO(crbug.com/1307709): Handle network managers for multiple IDPs.
+  network_manager_ = CreateNetworkManager(identity_provider_ptr->config_url);
 
   FederatedApiPermissionStatus permission_status =
       api_permission_delegate_->GetApiPermissionStatus(origin());
@@ -413,11 +415,12 @@ void FederatedAuthRequestImpl::LogoutRps(
     logout_requests_.push(std::move(request));
   }
 
-  network_manager_ = CreateNetworkManager(origin().GetURL());
-  if (!network_manager_) {
+  if (!network::IsOriginPotentiallyTrustworthy(origin())) {
     CompleteLogoutRequest(LogoutRpsStatus::kError);
     return;
   }
+
+  network_manager_ = CreateNetworkManager(origin().GetURL());
 
   if (!IsFedCmIdpSignoutEnabled()) {
     CompleteLogoutRequest(LogoutRpsStatus::kError);
@@ -477,14 +480,8 @@ void FederatedAuthRequestImpl::FetchManifest(
   } else {
     manifest_list_checked_ = true;
   }
-  // network_manager_ can be null here during tests when FetchManifestList
-  // synchronously calls the callback with an error, in which case CleanUp()
-  // will set the network_manager_ to null. If that happens we can safely
-  // skip calling FetchManifest.
-  if (network_manager_) {
-    network_manager_->FetchManifest(icon_ideal_size, icon_minimum_size,
-                                    std::move(manifest_callback));
-  }
+  network_manager_->FetchManifest(icon_ideal_size, icon_minimum_size,
+                                  std::move(manifest_callback));
 }
 
 void FederatedAuthRequestImpl::OnManifestListFetched(
