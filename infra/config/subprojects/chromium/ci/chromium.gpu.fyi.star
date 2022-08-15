@@ -205,6 +205,7 @@ ci.gpu.linux_builder(
     executable = "recipe:chromium_expectation_files/expectation_file_scripts",
     # This will eventually be set up to run on a schedule, but only support
     # manual triggering for now until we get a successful build.
+    schedule = "triggered",
     triggered_by = [],
     service_account = "chromium-automated-expectation@chops-service-accounts.iam.gserviceaccount.com",
     properties = {
