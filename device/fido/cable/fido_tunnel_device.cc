@@ -253,7 +253,7 @@ std::string FidoTunnelDevice::GetId() const {
 
 FidoTransportProtocol FidoTunnelDevice::DeviceTransport() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy;
+  return FidoTransportProtocol::kHybrid;
 }
 
 base::WeakPtr<FidoDevice> FidoTunnelDevice::GetWeakPtr() {

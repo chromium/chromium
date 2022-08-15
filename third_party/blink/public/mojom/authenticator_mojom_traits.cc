@@ -20,12 +20,12 @@ EnumTraits<blink::mojom::AuthenticatorTransport,
       return blink::mojom::AuthenticatorTransport::NFC;
     case ::device::FidoTransportProtocol::kBluetoothLowEnergy:
       return blink::mojom::AuthenticatorTransport::BLE;
-    case ::device::FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy:
-      return blink::mojom::AuthenticatorTransport::CABLE;
+    case ::device::FidoTransportProtocol::kHybrid:
+      return blink::mojom::AuthenticatorTransport::HYBRID;
     case ::device::FidoTransportProtocol::kInternal:
       return blink::mojom::AuthenticatorTransport::INTERNAL;
     case ::device::FidoTransportProtocol::kAndroidAccessory:
-      return blink::mojom::AuthenticatorTransport::CABLE;
+      return blink::mojom::AuthenticatorTransport::HYBRID;
   }
   NOTREACHED();
   return blink::mojom::AuthenticatorTransport::USB;
@@ -46,9 +46,8 @@ bool EnumTraits<blink::mojom::AuthenticatorTransport,
     case blink::mojom::AuthenticatorTransport::BLE:
       *output = ::device::FidoTransportProtocol::kBluetoothLowEnergy;
       return true;
-    case blink::mojom::AuthenticatorTransport::CABLE:
-      *output =
-          ::device::FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy;
+    case blink::mojom::AuthenticatorTransport::HYBRID:
+      *output = ::device::FidoTransportProtocol::kHybrid;
       return true;
     case blink::mojom::AuthenticatorTransport::INTERNAL:
       *output = ::device::FidoTransportProtocol::kInternal;

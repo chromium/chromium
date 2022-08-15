@@ -161,7 +161,7 @@ static uint32_t ToWinTransportsMask(
       case FidoTransportProtocol::kBluetoothLowEnergy:
         result |= WEBAUTHN_CTAP_TRANSPORT_BLE;
         break;
-      case FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy:
+      case FidoTransportProtocol::kHybrid:
       case FidoTransportProtocol::kAndroidAccessory:
         // caBLE is unsupported by the Windows API.
         break;

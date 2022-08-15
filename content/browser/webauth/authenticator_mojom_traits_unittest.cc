@@ -90,8 +90,7 @@ TEST(AuthenticatorMojomTraitsTest, SerializeCredentialDescriptors) {
       FidoTransportProtocol::kUsbHumanInterfaceDevice);
   success_cases[2].transports.emplace(
       FidoTransportProtocol::kNearFieldCommunication);
-  success_cases[2].transports.emplace(
-      FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy);
+  success_cases[2].transports.emplace(FidoTransportProtocol::kHybrid);
   success_cases[2].transports.emplace(
       FidoTransportProtocol::kBluetoothLowEnergy);
 

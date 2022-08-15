@@ -180,8 +180,9 @@ TypeConverter<absl::optional<AuthenticatorTransport>, String>::Convert(
     return AuthenticatorTransport::NFC;
   if (transport == "ble")
     return AuthenticatorTransport::BLE;
-  if (transport == "cable")
-    return AuthenticatorTransport::CABLE;
+  // "cable" is the old name for "hybrid" and we accept either.
+  if (transport == "cable" || transport == "hybrid")
+    return AuthenticatorTransport::HYBRID;
   if (transport == "internal")
     return AuthenticatorTransport::INTERNAL;
   return absl::nullopt;
@@ -196,8 +197,8 @@ String TypeConverter<String, AuthenticatorTransport>::Convert(
     return "nfc";
   if (transport == AuthenticatorTransport::BLE)
     return "ble";
-  if (transport == AuthenticatorTransport::CABLE)
-    return "cable";
+  if (transport == AuthenticatorTransport::HYBRID)
+    return "hybrid";
   if (transport == AuthenticatorTransport::INTERNAL)
     return "internal";
   NOTREACHED();
@@ -398,7 +399,7 @@ TypeConverter<PublicKeyCredentialDescriptorPtr,
   } else {
     mojo_descriptor->transports = {
         AuthenticatorTransport::USB, AuthenticatorTransport::BLE,
-        AuthenticatorTransport::NFC, AuthenticatorTransport::CABLE,
+        AuthenticatorTransport::NFC, AuthenticatorTransport::HYBRID,
         AuthenticatorTransport::INTERNAL};
   }
   return mojo_descriptor;

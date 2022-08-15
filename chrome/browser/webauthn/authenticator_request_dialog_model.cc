@@ -53,7 +53,7 @@ constexpr int GetMessageIdForTransportDescription(
       return IDS_WEBAUTHN_TRANSPORT_USB;
     case AuthenticatorTransport::kInternal:
       return IDS_WEBAUTHN_TRANSPORT_INTERNAL;
-    case AuthenticatorTransport::kCloudAssistedBluetoothLowEnergy:
+    case AuthenticatorTransport::kHybrid:
       return IDS_WEBAUTHN_TRANSPORT_CABLE;
     case AuthenticatorTransport::kAndroidAccessory:
       return IDS_WEBAUTHN_TRANSPORT_AOA;
@@ -79,7 +79,7 @@ constexpr int GetMessageIdForTransportShortDescription(
       return IDS_WEBAUTHN_TRANSPORT_POPUP_USB;
     case AuthenticatorTransport::kInternal:
       return IDS_WEBAUTHN_TRANSPORT_POPUP_INTERNAL;
-    case AuthenticatorTransport::kCloudAssistedBluetoothLowEnergy:
+    case AuthenticatorTransport::kHybrid:
       return IDS_WEBAUTHN_TRANSPORT_POPUP_CABLE;
     case AuthenticatorTransport::kAndroidAccessory:
       return IDS_WEBAUTHN_TRANSPORT_POPUP_AOA;
@@ -105,7 +105,7 @@ constexpr const gfx::VectorIcon* GetTransportIcon(
       return &vector_icons::kUsbIcon;
     case AuthenticatorTransport::kInternal:
       return &kLaptopIcon;
-    case AuthenticatorTransport::kCloudAssistedBluetoothLowEnergy:
+    case AuthenticatorTransport::kHybrid:
       return &kSmartphoneIcon;
     case AuthenticatorTransport::kAndroidAccessory:
       return &kUsbCableIcon;
@@ -897,7 +897,7 @@ void AuthenticatorRequestDialogModel::StartGuidedFlowForTransport(
     case AuthenticatorTransport::kInternal:
       StartPlatformAuthenticatorFlow();
       break;
-    case AuthenticatorTransport::kCloudAssistedBluetoothLowEnergy:
+    case AuthenticatorTransport::kHybrid:
       EnsureBleAdapterIsPoweredAndContinueWithStep(Step::kCableActivate);
       break;
     case AuthenticatorTransport::kAndroidAccessory:
@@ -1052,7 +1052,7 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms(
       AuthenticatorTransport::kInternal,
   };
 
-  const auto kCable = AuthenticatorTransport::kCloudAssistedBluetoothLowEnergy;
+  const auto kCable = AuthenticatorTransport::kHybrid;
   bool include_add_phone_option = false;
 
   if (cable_ui_type_) {

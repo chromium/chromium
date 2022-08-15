@@ -49,7 +49,7 @@
   const u2fCableError = await dp.WebAuthn.addVirtualAuthenticator({
     options: {
       protocol: "u2f",
-      transport: "cable",
+      transport: "hybrid",
       hasResidentKey: false,
       hasUserVerification: false,
     },

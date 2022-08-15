@@ -137,8 +137,7 @@ void FidoRequestHandlerBase::InitDiscoveries(
     // device communication block (only GetAssertionRequestHandler uses
     // caBLE). Otherwise, do not instantiate any other transports.
     base::EraseIf(available_transports, [](auto transport) {
-      return transport !=
-             FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy;
+      return transport != FidoTransportProtocol::kHybrid;
     });
   }
 #endif  // BUILDFLAG(IS_WIN)
@@ -196,7 +195,7 @@ void FidoRequestHandlerBase::InitDiscoveries(
   if (can_call_ble_apis &&
       device::BluetoothAdapterFactory::Get()->IsLowEnergySupported() &&
       base::Contains(transport_availability_info_.available_transports,
-                     FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy)) {
+                     FidoTransportProtocol::kHybrid)) {
     transport_availability_callback_readiness_->ble_information_pending = true;
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
@@ -242,7 +241,7 @@ void FidoRequestHandlerBase::OnBluetoothAdapterEnumerated(
     bool is_peripheral_role_supported) {
   if (!is_present) {
     transport_availability_info_.available_transports.erase(
-        FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy);
+        FidoTransportProtocol::kHybrid);
   }
 
   transport_availability_callback_readiness_->ble_information_pending = false;

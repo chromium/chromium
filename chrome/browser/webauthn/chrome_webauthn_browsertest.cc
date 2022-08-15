@@ -475,13 +475,12 @@ class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
 
     std::vector<std::unique_ptr<device::FidoDiscoveryBase>> Create(
         device::FidoTransportProtocol transport) override {
-      if (transport !=
-          device::FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy) {
+      if (transport != device::FidoTransportProtocol::kHybrid) {
         return {};
       }
 
       auto discovery = std::make_unique<PendingDiscovery>(
-          device::FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy);
+          device::FidoTransportProtocol::kHybrid);
       add_authenticator_callback_ = discovery->GetAddAuthenticatorCallback();
       return SingleDiscovery(std::move(discovery));
     }
@@ -655,8 +654,7 @@ class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
         ChromeAuthenticatorRequestDelegate* delegate,
         device::FidoRequestHandlerBase::TransportAvailabilityInfo* tai)
         override {
-      tai->available_transports.insert(
-          device::FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy);
+      tai->available_transports.insert(device::FidoTransportProtocol::kHybrid);
       tai->is_ble_powered = true;
     }
 

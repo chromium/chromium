@@ -121,7 +121,7 @@ std::string FidoCableDevice::GetId() const {
 }
 
 FidoTransportProtocol FidoCableDevice::DeviceTransport() const {
-  return FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy;
+  return FidoTransportProtocol::kHybrid;
 }
 
 FidoDevice::CancelToken FidoCableDevice::DeviceTransact(

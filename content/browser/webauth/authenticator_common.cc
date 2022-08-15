@@ -293,13 +293,12 @@ base::flat_set<device::FidoTransportProtocol> GetWebAuthnTransports(
     transports.insert(device::FidoTransportProtocol::kInternal);
   }
 
-  transports.insert(
-      device::FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy);
+  transports.insert(device::FidoTransportProtocol::kHybrid);
 
   // kAndroidAccessory doesn't work on Windows because of USB stack issues.
   // Note: even if this value were inserted it wouldn't take effect on Windows
   // versions with a native API because FidoRequestHandlerBase filters out
-  // non-kCloudAssistedBluetoothLowEnergy transports in that case.
+  // non-kHybrid transports in that case.
 #if !BUILDFLAG(IS_WIN)
   // In order for AOA to be active the |AuthenticatorRequestClientDelegate|
   // must still configure a |UsbDeviceManager|.
@@ -1316,8 +1315,7 @@ void AuthenticatorCommon::OnRegisterResponse(
         is_transport_used_internal =
             *transport == device::FidoTransportProtocol::kInternal;
         is_transport_used_cable =
-            *transport ==
-            device::FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy;
+            *transport == device::FidoTransportProtocol::kHybrid;
       }
 
       const auto attestation =

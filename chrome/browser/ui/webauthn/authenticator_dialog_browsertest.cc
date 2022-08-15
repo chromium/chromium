@@ -49,7 +49,7 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
     transport_availability.available_transports = {
         AuthenticatorTransport::kUsbHumanInterfaceDevice,
         AuthenticatorTransport::kInternal,
-        AuthenticatorTransport::kCloudAssistedBluetoothLowEnergy,
+        AuthenticatorTransport::kHybrid,
         AuthenticatorTransport::kAndroidAccessory,
     };
     if (name == "cable_server_link_activate") {

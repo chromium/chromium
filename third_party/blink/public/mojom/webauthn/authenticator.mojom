@@ -57,7 +57,7 @@ enum AuthenticatorTransport {
   USB,
   NFC,
   BLE,
-  CABLE,
+  HYBRID,
   INTERNAL,
 };
 

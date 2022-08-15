@@ -9,7 +9,8 @@ namespace device {
 const char kUsbHumanInterfaceDevice[] = "usb";
 const char kNearFieldCommunication[] = "nfc";
 const char kBluetoothLowEnergy[] = "ble";
-const char kCloudAssistedBluetoothLowEnergy[] = "cable";
+const char kCable[] = "hybrid";
+const char kHybrid[] = "hybrid";
 const char kInternal[] = "internal";
 
 absl::optional<FidoTransportProtocol> ConvertToFidoTransportProtocol(
@@ -20,8 +21,11 @@ absl::optional<FidoTransportProtocol> ConvertToFidoTransportProtocol(
     return FidoTransportProtocol::kNearFieldCommunication;
   else if (protocol == kBluetoothLowEnergy)
     return FidoTransportProtocol::kBluetoothLowEnergy;
-  else if (protocol == kCloudAssistedBluetoothLowEnergy)
-    return FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy;
+  else if (protocol == kHybrid)
+    return FidoTransportProtocol::kHybrid;
+  else if (protocol == kCable)
+    // This is the old name for "hybrid".
+    return FidoTransportProtocol::kHybrid;
   else if (protocol == kInternal)
     return FidoTransportProtocol::kInternal;
   else
@@ -36,14 +40,14 @@ base::StringPiece ToString(FidoTransportProtocol protocol) {
       return kNearFieldCommunication;
     case FidoTransportProtocol::kBluetoothLowEnergy:
       return kBluetoothLowEnergy;
-    case FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy:
-      return kCloudAssistedBluetoothLowEnergy;
+    case FidoTransportProtocol::kHybrid:
+      return kHybrid;
     case FidoTransportProtocol::kInternal:
       return kInternal;
     case FidoTransportProtocol::kAndroidAccessory:
       // The Android accessory transport is not exposed to the outside world and
       // is considered a flavour of caBLE.
-      return kCloudAssistedBluetoothLowEnergy;
+      return kHybrid;
   }
 }
 
@@ -55,7 +59,7 @@ AuthenticatorAttachment AuthenticatorAttachmentFromTransport(
     case FidoTransportProtocol::kUsbHumanInterfaceDevice:
     case FidoTransportProtocol::kNearFieldCommunication:
     case FidoTransportProtocol::kBluetoothLowEnergy:
-    case FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy:
+    case FidoTransportProtocol::kHybrid:
     case FidoTransportProtocol::kAndroidAccessory:
       return AuthenticatorAttachment::kCrossPlatform;
   }

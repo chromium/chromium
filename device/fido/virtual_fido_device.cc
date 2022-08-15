@@ -527,7 +527,7 @@ VirtualFidoDevice::GenerateAttestationCertificate(
   uint8_t transport_bit;
   switch (DeviceTransport()) {
     case FidoTransportProtocol::kBluetoothLowEnergy:
-    case FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy:
+    case FidoTransportProtocol::kHybrid:
       transport_bit = 1;
       break;
     case FidoTransportProtocol::kUsbHumanInterfaceDevice:

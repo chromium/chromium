@@ -89,7 +89,7 @@ void FidoDevice::SetDeviceInfo(AuthenticatorGetInfoResponse device_info) {
 bool FidoDevice::NoSilentRequests() const {
   // caBLE devices do not support silent requests.
   const auto transport = DeviceTransport();
-  return transport == FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy ||
+  return transport == FidoTransportProtocol::kHybrid ||
          transport == FidoTransportProtocol::kAndroidAccessory;
 }
 

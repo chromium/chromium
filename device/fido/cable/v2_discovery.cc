@@ -56,8 +56,7 @@ Discovery::Discovery(
         pairing_callback,
     absl::optional<base::RepeatingCallback<void(size_t)>>
         invalidated_pairing_callback)
-    : FidoDeviceDiscovery(
-          FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy),
+    : FidoDeviceDiscovery(FidoTransportProtocol::kHybrid),
       request_type_(request_type),
       network_context_(network_context),
       qr_keys_(KeysFromQRGeneratorKey(qr_generator_key)),

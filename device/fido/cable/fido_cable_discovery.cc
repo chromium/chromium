@@ -141,8 +141,7 @@ FidoCableDiscovery::ObservedDeviceData::~ObservedDeviceData() = default;
 
 FidoCableDiscovery::FidoCableDiscovery(
     std::vector<CableDiscoveryData> discovery_data)
-    : FidoDeviceDiscovery(
-          FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy),
+    : FidoDeviceDiscovery(FidoTransportProtocol::kHybrid),
       discovery_data_(std::move(discovery_data)) {
 // Windows currently does not support multiple EIDs, thus we ignore any extra
 // discovery data.

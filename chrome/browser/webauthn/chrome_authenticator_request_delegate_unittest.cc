@@ -477,8 +477,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateWindowsBehaviorTest,
   AuthenticatorRequestDialogModel::TransportAvailabilityInfo tai;
   tai.has_win_native_api_authenticator = true;
   tai.win_native_api_authenticator_id = "ID";
-  tai.available_transports.insert(
-      device::FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy);
+  tai.available_transports.insert(device::FidoTransportProtocol::kHybrid);
 
   CreateObjectsUnderTest();
   delegate_->dialog_model()->set_cable_transport_info(

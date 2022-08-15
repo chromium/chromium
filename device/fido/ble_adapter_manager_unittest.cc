@@ -67,9 +67,8 @@ class FakeFidoRequestHandlerBase : public FidoRequestHandlerBase {
  public:
   FakeFidoRequestHandlerBase(MockObserver* observer,
                              FidoDiscoveryFactory* fido_discovery_factory)
-      : FidoRequestHandlerBase(
-            fido_discovery_factory,
-            {FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy}) {
+      : FidoRequestHandlerBase(fido_discovery_factory,
+                               {FidoTransportProtocol::kHybrid}) {
     set_observer(observer);
     Start();
   }

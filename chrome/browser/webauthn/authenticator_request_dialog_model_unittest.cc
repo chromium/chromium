@@ -38,7 +38,7 @@ const base::flat_set<AuthenticatorTransport> kAllTransports = {
     AuthenticatorTransport::kUsbHumanInterfaceDevice,
     AuthenticatorTransport::kNearFieldCommunication,
     AuthenticatorTransport::kInternal,
-    AuthenticatorTransport::kCloudAssistedBluetoothLowEnergy,
+    AuthenticatorTransport::kHybrid,
 };
 
 const base::flat_set<AuthenticatorTransport> kAllTransportsWithoutCable = {
@@ -154,7 +154,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
   const auto ga = RequestType::kGetAssertion;
   const auto usb = AuthenticatorTransport::kUsbHumanInterfaceDevice;
   const auto internal = AuthenticatorTransport::kInternal;
-  const auto cable = AuthenticatorTransport::kCloudAssistedBluetoothLowEnergy;
+  const auto cable = AuthenticatorTransport::kHybrid;
   const auto aoa = AuthenticatorTransport::kAndroidAccessory;
   const auto v1 = TransportAvailabilityParam::kHasCableV1Extension;
   const auto v2 = TransportAvailabilityParam::kHasCableV2Extension;
@@ -335,8 +335,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, WinCancel) {
     AuthenticatorRequestDialogModel::TransportAvailabilityInfo tai;
     tai.has_win_native_api_authenticator = true;
     tai.win_native_api_authenticator_id = "ID";
-    tai.available_transports.insert(
-        device::FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy);
+    tai.available_transports.insert(device::FidoTransportProtocol::kHybrid);
 
     AuthenticatorRequestDialogModel model(/*web_contents=*/nullptr);
     model.set_cable_transport_info(absl::nullopt, {}, base::DoNothing(),
@@ -431,8 +430,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Cable2ndFactorFlows) {
     transports_info.is_ble_powered = test.ble_power == BLEPower::ON;
     transports_info.can_power_on_ble_adapter = true;
     transports_info.request_type = test.request_type;
-    transports_info.available_transports = {
-        AuthenticatorTransport::kCloudAssistedBluetoothLowEnergy};
+    transports_info.available_transports = {AuthenticatorTransport::kHybrid};
     transports_info.is_off_the_record_context =
         test.profile == Profile::INCOGNITO;
 
@@ -533,8 +531,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, BleAdapterAlreadyPowered) {
     AuthenticatorTransport transport;
     Step expected_final_step;
   } kTestCases[] = {
-      {AuthenticatorTransport::kCloudAssistedBluetoothLowEnergy,
-       Step::kCableActivate},
+      {AuthenticatorTransport::kHybrid, Step::kCableActivate},
   };
 
   for (const auto test_case : kTestCases) {
@@ -562,8 +559,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, BleAdapterNeedToBeManuallyPowered) {
     AuthenticatorTransport transport;
     Step expected_final_step;
   } kTestCases[] = {
-      {AuthenticatorTransport::kCloudAssistedBluetoothLowEnergy,
-       Step::kCableActivate},
+      {AuthenticatorTransport::kHybrid, Step::kCableActivate},
   };
 
   for (const auto test_case : kTestCases) {
@@ -606,8 +602,7 @@ TEST_F(AuthenticatorRequestDialogModelTest,
     AuthenticatorTransport transport;
     Step expected_final_step;
   } kTestCases[] = {
-      {AuthenticatorTransport::kCloudAssistedBluetoothLowEnergy,
-       Step::kCableActivate},
+      {AuthenticatorTransport::kHybrid, Step::kCableActivate},
   };
 
   for (const auto test_case : kTestCases) {

@@ -127,7 +127,7 @@ class FidoGetAssertionHandlerTest : public ::testing::Test {
     using Transport = FidoTransportProtocol;
     if (base::Contains(transports, Transport::kUsbHumanInterfaceDevice))
       discovery()->WaitForCallToStartAndSimulateSuccess();
-    if (base::Contains(transports, Transport::kCloudAssistedBluetoothLowEnergy))
+    if (base::Contains(transports, Transport::kHybrid))
       cable_discovery()->WaitForCallToStartAndSimulateSuccess();
     if (base::Contains(transports, Transport::kNearFieldCommunication))
       nfc_discovery()->WaitForCallToStartAndSimulateSuccess();
@@ -139,8 +139,7 @@ class FidoGetAssertionHandlerTest : public ::testing::Test {
 
     if (!base::Contains(transports, Transport::kUsbHumanInterfaceDevice))
       EXPECT_FALSE(discovery()->is_start_requested());
-    if (!base::Contains(transports,
-                        Transport::kCloudAssistedBluetoothLowEnergy))
+    if (!base::Contains(transports, Transport::kHybrid))
       EXPECT_FALSE(cable_discovery()->is_start_requested());
     if (!base::Contains(transports, Transport::kNearFieldCommunication))
       EXPECT_FALSE(nfc_discovery()->is_start_requested());
@@ -155,11 +154,10 @@ class FidoGetAssertionHandlerTest : public ::testing::Test {
   void ExpectAllTransportsAreAllowedForRequest(
       GetAssertionRequestHandler* request_handler) {
     ExpectAllowedTransportsForRequestAre(
-        request_handler,
-        {FidoTransportProtocol::kUsbHumanInterfaceDevice,
-         FidoTransportProtocol::kInternal,
-         FidoTransportProtocol::kNearFieldCommunication,
-         FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy});
+        request_handler, {FidoTransportProtocol::kUsbHumanInterfaceDevice,
+                          FidoTransportProtocol::kInternal,
+                          FidoTransportProtocol::kNearFieldCommunication,
+                          FidoTransportProtocol::kHybrid});
   }
 
   test::FakeFidoDiscovery* discovery() const { return discovery_; }
@@ -193,7 +191,7 @@ class FidoGetAssertionHandlerTest : public ::testing::Test {
       FidoTransportProtocol::kUsbHumanInterfaceDevice,
       FidoTransportProtocol::kInternal,
       FidoTransportProtocol::kNearFieldCommunication,
-      FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy};
+      FidoTransportProtocol::kHybrid};
   std::unique_ptr<BluetoothAdapterFactory::GlobalValuesForTesting>
       bluetooth_config_ =
           BluetoothAdapterFactory::Get()->InitGlobalValuesForTesting();
@@ -492,7 +490,7 @@ TEST_F(FidoGetAssertionHandlerTest, SupportedTransportsAreOnlyNfc) {
 TEST_F(FidoGetAssertionHandlerTest,
        SupportedTransportsAreOnlyCableAndInternal) {
   const base::flat_set<FidoTransportProtocol> kCableAndInternal = {
-      FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy,
+      FidoTransportProtocol::kHybrid,
       FidoTransportProtocol::kInternal,
   };
 

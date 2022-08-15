@@ -48,7 +48,7 @@ std::vector<std::unique_ptr<FidoDiscoveryBase>> FidoDiscoveryFactory::Create(
           std::make_unique<FidoHidDiscovery>(hid_ignore_list_));
     case FidoTransportProtocol::kBluetoothLowEnergy:
       return {};
-    case FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy:
+    case FidoTransportProtocol::kHybrid:
 #if BUILDFLAG(IS_MAC)
       if (!base::IsProcessSelfResponsible()) {
         // On recent macOS a process must have listed Bluetooth metadata in

@@ -138,8 +138,7 @@ class AuthenticatorDialogViewTest : public DialogBrowserTest {
           transport_availability;
       transport_availability.available_transports = {
           AuthenticatorTransport::kUsbHumanInterfaceDevice,
-          AuthenticatorTransport::kInternal,
-          AuthenticatorTransport::kCloudAssistedBluetoothLowEnergy};
+          AuthenticatorTransport::kInternal, AuthenticatorTransport::kHybrid};
 
       std::array<uint8_t, device::kP256X962Length> public_key = {0};
       AuthenticatorRequestDialogModel::PairedPhone phone("Phone", 0,
