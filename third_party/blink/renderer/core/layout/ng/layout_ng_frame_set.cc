@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_frame_set.h"
 
 #include "third_party/blink/renderer/core/html/html_frame_set_element.h"
+#include "third_party/blink/renderer/platform/cursors.h"
+#include "ui/base/cursor/cursor.h"
 
 namespace blink {
 
@@ -20,6 +22,35 @@ const char* LayoutNGFrameSet::GetName() const {
 bool LayoutNGFrameSet::IsOfType(LayoutObjectType type) const {
   NOT_DESTROYED();
   return type == kLayoutObjectNGFrameSet || LayoutNGBlock::IsOfType(type);
+}
+
+bool LayoutNGFrameSet::IsChildAllowed(LayoutObject* child,
+                                      const ComputedStyle&) const {
+  NOT_DESTROYED();
+  return child->IsFrame() || child->IsLayoutNGFrameSet();
+}
+
+void LayoutNGFrameSet::UpdateBlockLayout(bool relayout_children) {
+  if (IsOutOfFlowPositioned())
+    UpdateOutOfFlowBlockLayout();
+  else
+    UpdateInFlowBlockLayout();
+}
+
+CursorDirective LayoutNGFrameSet::GetCursor(const PhysicalOffset& point,
+                                            ui::Cursor& cursor) const {
+  NOT_DESTROYED();
+  const auto& frame_set = *To<HTMLFrameSetElement>(GetNode());
+  gfx::Point rounded_point = ToRoundedPoint(point);
+  if (frame_set.CanResizeRow(rounded_point)) {
+    cursor = RowResizeCursor();
+    return kSetCursor;
+  }
+  if (frame_set.CanResizeColumn(rounded_point)) {
+    cursor = ColumnResizeCursor();
+    return kSetCursor;
+  }
+  return LayoutBox::GetCursor(point, cursor);
 }
 
 }  // namespace blink
