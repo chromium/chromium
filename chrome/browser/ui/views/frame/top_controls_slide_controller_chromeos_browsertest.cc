@@ -98,7 +98,7 @@ class LayoutTestView : public views::View {
   explicit LayoutTestView(BrowserView* parent) {
     DCHECK(parent);
     parent->AddChildView(this);
-    parent->Layout();
+    parent->GetWidget()->LayoutRootViewIfNecessary();
     layout_count_ = 0;
   }
   ~LayoutTestView() override = default;

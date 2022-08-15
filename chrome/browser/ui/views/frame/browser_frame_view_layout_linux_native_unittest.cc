@@ -250,7 +250,7 @@ TEST_F(BrowserFrameViewLayoutLinuxNativeTest, NativeNavButtons) {
   layout_manager_->SetButtonOrdering(leading_buttons, trailing_buttons);
   ResetNativeNavButtonImagesFromButtonProvider();
 
-  root_view_->Layout();
+  RunScheduledLayout(root_view_);
 
   const int frame_top_thickness = FrameInsets().top();
 

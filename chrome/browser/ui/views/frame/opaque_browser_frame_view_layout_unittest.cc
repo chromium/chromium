@@ -370,7 +370,7 @@ class OpaqueBrowserFrameViewLayoutTest
 TEST_P(OpaqueBrowserFrameViewLayoutTest, BasicWindow) {
   // Tests the layout of a default chrome window with a tabstrip and no window
   // title.
-  root_view_->Layout();
+  RunScheduledLayout(root_view_);
   ExpectCaptionButtons(false, 0);
   ExpectTabStripAndMinimumSize(false);
   ExpectWindowIcon(false);
@@ -385,7 +385,7 @@ TEST_P(OpaqueBrowserFrameViewLayoutTest, WindowButtonsOnLeft) {
   leading_buttons.push_back(views::FrameButton::kMaximize);
   layout_manager_->SetButtonOrdering(leading_buttons, trailing_buttons);
 
-  root_view_->Layout();
+  RunScheduledLayout(root_view_);
   ExpectCaptionButtons(true, 0);
   ExpectTabStripAndMinimumSize(true);
   ExpectWindowIcon(true);
@@ -396,7 +396,7 @@ TEST_P(OpaqueBrowserFrameViewLayoutTest, WithoutCaptionButtons) {
   // should force the tab strip to be condensed).
   delegate_->set_show_caption_buttons(false);
 
-  root_view_->Layout();
+  RunScheduledLayout(root_view_);
   ExpectCaptionButtons(false, 0);
   ExpectTabStripAndMinimumSize(false);
   ExpectWindowIcon(false);
@@ -407,7 +407,7 @@ TEST_P(OpaqueBrowserFrameViewLayoutTest, WindowWithTitleAndIcon) {
   delegate_->set_window_title(u"Window Title");
   AddWindowTitleIcons();
 
-  root_view_->Layout();
+  RunScheduledLayout(root_view_);
   ExpectCaptionButtons(false, 0);
   ExpectWindowIcon(false);
   ExpectWindowTitle();

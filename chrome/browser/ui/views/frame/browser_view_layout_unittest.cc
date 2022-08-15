@@ -160,9 +160,9 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
 
   ~BrowserViewLayoutTest() override {}
 
-  BrowserViewLayout* layout() { return layout_.get(); }
+  BrowserViewLayout* layout() { return layout_; }
   MockBrowserViewLayoutDelegate* delegate() { return delegate_; }
-  views::View* root_view() { return root_view_.get(); }
+  views::View* browser_view() { return browser_view_.get(); }
   views::View* top_container() { return top_container_; }
   TabStrip* tab_strip() { return tab_strip_; }
   views::View* webui_tab_strip() { return webui_tab_strip_; }
@@ -174,13 +174,13 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
 
-    root_view_ = CreateFixedSizeView(gfx::Size(800, 600));
+    browser_view_ = CreateFixedSizeView(gfx::Size(800, 600));
 
     immersive_mode_controller_ =
         std::make_unique<MockImmersiveModeController>();
 
     top_container_ =
-        root_view_->AddChildView(CreateFixedSizeView(gfx::Size(800, 60)));
+        browser_view_->AddChildView(CreateFixedSizeView(gfx::Size(800, 60)));
     auto tab_strip = std::make_unique<TabStrip>(
         std::make_unique<FakeBaseTabStripController>());
     tab_strip_ = tab_strip.get();
@@ -194,11 +194,11 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
     separator_ =
         top_container_->AddChildView(std::make_unique<views::Separator>());
 
-    infobar_container_ = root_view_->AddChildView(
+    infobar_container_ = browser_view_->AddChildView(
         std::make_unique<InfoBarContainerView>(nullptr));
 
     contents_container_ =
-        root_view_->AddChildView(CreateFixedSizeView(gfx::Size(800, 600)));
+        browser_view_->AddChildView(CreateFixedSizeView(gfx::Size(800, 600)));
     devtools_web_view_ = contents_container_->AddChildView(
         CreateFixedSizeView(gfx::Size(800, 600)));
     devtools_web_view_->SetVisible(false);
@@ -208,10 +208,9 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
         std::make_unique<ContentsLayoutManager>(devtools_web_view_,
                                                 contents_web_view_));
 
-    // TODO(jamescook): Attach |layout_| to |root_view_|?
     auto delegate = std::make_unique<MockBrowserViewLayoutDelegate>();
     delegate_ = delegate.get();
-    layout_ = std::make_unique<BrowserViewLayout>(
+    auto layout = std::make_unique<BrowserViewLayout>(
         std::move(delegate),
         /*host_view=*/nullptr,
         /*browser_view=*/nullptr, top_container_, tab_strip_region_view,
@@ -222,15 +221,17 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
         /*right_aligned_side_panel_separator=*/nullptr,
         /*lens_side_panel=*/nullptr, immersive_mode_controller_.get(),
         separator_);
-    layout_->set_webui_tab_strip(webui_tab_strip());
+    layout->set_webui_tab_strip(webui_tab_strip());
+    layout_ = layout.get();
+    browser_view_->SetLayoutManager(std::move(layout));
   }
 
  private:
-  std::unique_ptr<BrowserViewLayout> layout_;
+  BrowserViewLayout* layout_;
   raw_ptr<MockBrowserViewLayoutDelegate> delegate_;  // Owned by |layout_|.
-  std::unique_ptr<views::View> root_view_;
+  std::unique_ptr<views::View> browser_view_;
 
-  // Views owned by |root_view_|.
+  // Views owned by |browser_view_|.
   raw_ptr<views::View> top_container_;
   raw_ptr<TabStrip> tab_strip_;
   raw_ptr<views::View> webui_tab_strip_;
@@ -256,7 +257,7 @@ TEST_F(BrowserViewLayoutTest, Layout) {
   delegate()->set_tab_strip_visible(false);
   delegate()->set_toolbar_visible(false);
   delegate()->set_bookmark_bar_visible(false);
-  layout()->Layout(root_view());
+  RunScheduledLayout(browser_view());
 
   // Top views are zero-height.
   EXPECT_EQ(gfx::Rect(0, 0, 0, 0), tab_strip()->bounds());
@@ -267,7 +268,7 @@ TEST_F(BrowserViewLayoutTest, Layout) {
 
   // Turn on the toolbar, like in a pop-up window.
   delegate()->set_toolbar_visible(true);
-  layout()->Layout(root_view());
+  RunScheduledLayout(browser_view());
 
   // Now the toolbar has bounds and other views shift down.
   EXPECT_EQ(gfx::Rect(0, 0, 0, 0), tab_strip()->bounds());
@@ -279,7 +280,7 @@ TEST_F(BrowserViewLayoutTest, Layout) {
 
   // Disable the contents separator.
   delegate()->set_content_separator_enabled(false);
-  layout()->Layout(root_view());
+  RunScheduledLayout(browser_view());
 
   // Now the separator is not visible and the content grows vertically.
   EXPECT_EQ(gfx::Rect(0, 0, 0, 0), tab_strip()->bounds());
@@ -315,7 +316,7 @@ TEST_F(BrowserViewLayoutTest, LayoutContentsWithTopControlsSlideBehavior) {
   delegate()->set_toolbar_visible(true);
   delegate()->set_top_controls_slide_enabled(true);
   delegate()->set_top_controls_shown_ratio(1.f);
-  layout()->Layout(root_view());
+  RunScheduledLayout(browser_view());
   EXPECT_EQ(gfx::Rect(0, 0, 800, 30), top_container()->bounds());
   EXPECT_EQ(gfx::Rect(0, 0, 800, kToolbarHeight), toolbar()->bounds());
   EXPECT_EQ(gfx::Rect(0, kToolbarHeight, 800, views::Separator::kThickness),
@@ -324,7 +325,7 @@ TEST_F(BrowserViewLayoutTest, LayoutContentsWithTopControlsSlideBehavior) {
 
   // Top controls are half shown, half hidden.
   delegate()->set_top_controls_shown_ratio(0.5f);
-  layout()->Layout(root_view());
+  RunScheduledLayout(browser_view());
   EXPECT_EQ(gfx::Rect(0, 0, 800, 30), top_container()->bounds());
   EXPECT_EQ(gfx::Rect(0, 0, 800, kToolbarHeight), toolbar()->bounds());
   EXPECT_EQ(gfx::Rect(0, kToolbarHeight, 800, views::Separator::kThickness),
@@ -334,7 +335,7 @@ TEST_F(BrowserViewLayoutTest, LayoutContentsWithTopControlsSlideBehavior) {
   // Top controls are fully hidden. the contents are expanded in height by an
   // amount equal to the top controls height.
   delegate()->set_top_controls_shown_ratio(0.f);
-  layout()->Layout(root_view());
+  RunScheduledLayout(browser_view());
   EXPECT_EQ(gfx::Rect(0, -30, 800, 30), top_container()->bounds());
   EXPECT_EQ(gfx::Rect(0, 0, 800, kToolbarHeight), toolbar()->bounds());
   EXPECT_EQ(gfx::Rect(0, kToolbarHeight, 800, views::Separator::kThickness),
@@ -346,12 +347,12 @@ TEST_F(BrowserViewLayoutTest, WebUITabStripPushesDownContents) {
   delegate()->set_tab_strip_visible(false);
   delegate()->set_toolbar_visible(true);
   webui_tab_strip()->SetVisible(false);
-  layout()->Layout(root_view());
+  RunScheduledLayout(browser_view());
   const gfx::Rect original_contents_bounds = contents_container()->bounds();
   EXPECT_EQ(gfx::Size(), webui_tab_strip()->size());
 
   webui_tab_strip()->SetVisible(true);
-  layout()->Layout(root_view());
+  RunScheduledLayout(browser_view());
   EXPECT_LT(0, webui_tab_strip()->size().height());
   EXPECT_EQ(original_contents_bounds.size(), contents_container()->size());
   EXPECT_EQ(webui_tab_strip()->size().height(),

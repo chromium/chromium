@@ -963,7 +963,7 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewAshTest,
 
   // In order to receive focus, the geo icon must be laid out (and be both
   // visible and nonzero size).
-  web_app_frame_toolbar_->Layout();
+  RunScheduledLayouts();
 
   EXPECT_FALSE(web_app_menu_button_->HasFocus());
   EXPECT_FALSE(geolocation_icon->HasFocus());
