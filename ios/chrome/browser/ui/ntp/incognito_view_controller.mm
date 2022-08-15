@@ -55,7 +55,6 @@
                        showTopIncognitoImageAndTitle:YES];
     view.URLLoaderDelegate = self;
     self.incognitoView = view;
-
   } else {
     IncognitoView* view = [[IncognitoView alloc] initWithFrame:self.view.bounds
                                  showTopIncognitoImageAndTitle:YES];
