@@ -44,6 +44,11 @@ AssistiveWindowButton CreateButtonFor(size_t index,
   return button;
 }
 
+void RecordActionMetric(IMEPKLongpressDiacriticAction action) {
+  base::UmaHistogramEnumeration(
+      "InputMethod.PhysicalKeyboard.LongpressDiacritics.Action", action);
+}
+
 void RecordAcceptanceCharCodeMetric(const std::u16string diacritic) {
   // Recording -1 as default value just in case there are issues with
   // encoding in utf-16 that means some character isn't
@@ -85,6 +90,7 @@ bool LongpressDiacriticsSuggester::TrySuggestOnLongpress(char key_character) {
         focused_context_id_.value(), properties, &error);
     if (error.empty()) {
       displayed_window_base_character_ = key_character;
+      RecordActionMetric(IMEPKLongpressDiacriticAction::kShowWindow);
       return true;
     }
     LOG(ERROR) << "Unable to suggest diacritics on longpress: " << error;
@@ -216,6 +222,7 @@ bool LongpressDiacriticsSuggester::AcceptSuggestion(size_t index) {
     LOG(ERROR) << "Failed to accept suggestion. " << error;
     return false;
   }
+  RecordActionMetric(IMEPKLongpressDiacriticAction::kAccept);
   RecordAcceptanceCharCodeMetric(current_suggestions[index]);
   Reset();
   return true;
@@ -241,6 +248,7 @@ void LongpressDiacriticsSuggester::DismissSuggestion() {
     LOG(ERROR) << "Failed to dismiss suggestion. " << error;
     return;
   }
+  RecordActionMetric(IMEPKLongpressDiacriticAction::kDismiss);
   Reset();
   return;
 }

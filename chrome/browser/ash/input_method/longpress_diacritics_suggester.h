@@ -50,6 +50,15 @@ constexpr auto kDefaultDiacriticsMap =
          {'u', u"ú;û;ü;ù;ū"},
          {'U', u"Ú;Û;Ü;Ù;Ū"}});
 
+// Must match IMEPKLongpressDiacriticAction in
+// tools/metrics/histograms/enums.xml
+enum class IMEPKLongpressDiacriticAction {
+  kShowWindow = 0,
+  kAccept = 1,
+  kDismiss = 2,
+  kMaxValue = kDismiss,
+};
+
 class LongpressDiacriticsSuggester : public Suggester {
  public:
   explicit LongpressDiacriticsSuggester(

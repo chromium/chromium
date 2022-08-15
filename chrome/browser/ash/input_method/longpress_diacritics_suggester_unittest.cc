@@ -663,6 +663,66 @@ TEST_P(LongpressDiacriticsSuggesterTest, RecordsAcceptanceCharCodeMetric) {
   }
 }
 
+TEST_P(LongpressDiacriticsSuggesterTest, RecordsShowWindowActionMetric) {
+  base::HistogramTester histogram_tester;
+  FakeSuggestionHandler suggestion_handler;
+  LongpressDiacriticsSuggester suggester =
+      LongpressDiacriticsSuggester(&suggestion_handler);
+  suggester.OnFocus(kContextId);
+
+  suggester.TrySuggestOnLongpress(GetParam().longpress_char);
+
+  histogram_tester.ExpectUniqueSample(
+      "InputMethod.PhysicalKeyboard.LongpressDiacritics.Action",
+      IMEPKLongpressDiacriticAction::kShowWindow, 1);
+}
+
+TEST_P(LongpressDiacriticsSuggesterTest, RecordsAcceptActionMetric) {
+  base::HistogramTester histogram_tester;
+  FakeSuggestionHandler suggestion_handler;
+  LongpressDiacriticsSuggester suggester =
+      LongpressDiacriticsSuggester(&suggestion_handler);
+  suggester.OnFocus(kContextId);
+
+  suggester.TrySuggestOnLongpress(GetParam().longpress_char);
+  suggester.HandleKeyEvent(CreateKeyEventFromCode(ui::DomCode::DIGIT1));
+
+  histogram_tester.ExpectBucketCount(
+      "InputMethod.PhysicalKeyboard.LongpressDiacritics.Action",
+      IMEPKLongpressDiacriticAction::kAccept, 1);
+}
+
+TEST_P(LongpressDiacriticsSuggesterTest, RecordsDismissActionMetricOnEsc) {
+  base::HistogramTester histogram_tester;
+  FakeSuggestionHandler suggestion_handler;
+  LongpressDiacriticsSuggester suggester =
+      LongpressDiacriticsSuggester(&suggestion_handler);
+  suggester.OnFocus(kContextId);
+
+  suggester.TrySuggestOnLongpress(GetParam().longpress_char);
+  suggester.HandleKeyEvent(CreateKeyEventFromCode(ui::DomCode::ESCAPE));
+
+  histogram_tester.ExpectBucketCount(
+      "InputMethod.PhysicalKeyboard.LongpressDiacritics.Action",
+      IMEPKLongpressDiacriticAction::kDismiss, 1);
+}
+
+TEST_P(LongpressDiacriticsSuggesterTest,
+       RecordsDismissActionMetricOnOtherKeyPress) {
+  base::HistogramTester histogram_tester;
+  FakeSuggestionHandler suggestion_handler;
+  LongpressDiacriticsSuggester suggester =
+      LongpressDiacriticsSuggester(&suggestion_handler);
+  suggester.OnFocus(kContextId);
+
+  suggester.TrySuggestOnLongpress(GetParam().longpress_char);
+  suggester.HandleKeyEvent(CreateKeyEventFromCode(GetParam().code));
+
+  histogram_tester.ExpectBucketCount(
+      "InputMethod.PhysicalKeyboard.LongpressDiacritics.Action",
+      IMEPKLongpressDiacriticAction::kDismiss, 1);
+}
+
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     LongpressDiacriticsSuggesterTest,
