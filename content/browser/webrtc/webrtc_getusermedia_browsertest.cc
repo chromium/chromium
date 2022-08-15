@@ -144,23 +144,21 @@ class WebRtcGetUserMediaBrowserTest : public WebRtcContentBrowserTestBase {
         devices_as_json, base::JSON_ALLOW_TRAILING_COMMAS);
 
     ASSERT_TRUE(parsed_json.has_value()) << parsed_json.error().message;
-    EXPECT_EQ(parsed_json->type(), base::Value::Type::LIST);
-
     ASSERT_TRUE(parsed_json->is_list());
 
-    for (const auto& entry : parsed_json->GetListDeprecated()) {
-      const base::DictionaryValue* dict;
-      std::string kind;
-      std::string device_id;
-      ASSERT_TRUE(entry.GetAsDictionary(&dict));
-      ASSERT_TRUE(dict->GetString("kind", &kind));
-      ASSERT_TRUE(dict->GetString("id", &device_id));
-      ASSERT_FALSE(device_id.empty());
-      EXPECT_TRUE(kind == "audio" || kind == "video");
-      if (kind == "audio") {
-        audio_ids->push_back(device_id);
-      } else if (kind == "video") {
-        video_ids->push_back(device_id);
+    for (const auto& entry : parsed_json->GetList()) {
+      const base::Value::Dict* dict = entry.GetIfDict();
+      ASSERT_TRUE(dict);
+      const std::string* kind = dict->FindString("kind");
+      const std::string* device_id = dict->FindString("id");
+      ASSERT_TRUE(kind);
+      ASSERT_TRUE(device_id);
+      ASSERT_FALSE(device_id->empty());
+      EXPECT_TRUE(*kind == "audio" || *kind == "video");
+      if (*kind == "audio") {
+        audio_ids->push_back(*device_id);
+      } else if (*kind == "video") {
+        video_ids->push_back(*device_id);
       }
     }
     ASSERT_FALSE(audio_ids->empty());
