@@ -34,7 +34,7 @@ bool IsNTP(content::WebContents* web_contents) {
   // the page does.
   content::NavigationEntry* entry =
       web_contents->GetController().GetLastCommittedEntry();
-  if (!entry)
+  if (!entry || entry->IsInitialEntry())
     entry = web_contents->GetController().GetVisibleEntry();
   if (!entry)
     return false;
