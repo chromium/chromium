@@ -29,7 +29,7 @@ ConciergeClient* g_instance = nullptr;
 
 // TODO(nverne): revert to TIMEOUT_USE_DEFAULT when StartVm no longer requires
 // unnecessary long running crypto calculations.
-constexpr int kConciergeDBusTimeoutMs = 160 * 1000;
+constexpr int kConciergeDBusTimeoutMs = 300 * 1000;
 
 }  // namespace
 
