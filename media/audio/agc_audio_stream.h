@@ -68,7 +68,8 @@ template <typename AudioInterface>
 class MEDIA_EXPORT AgcAudioStream : public AudioInterface {
  public:
   // Time between two successive timer events.
-  static const int kIntervalBetweenVolumeUpdatesMs = 1000;
+  static constexpr base::TimeDelta kIntervalBetweenVolumeUpdates =
+      base::Milliseconds(1000);
 
   AgcAudioStream()
       : agc_is_enabled_(false), max_volume_(0.0), normalized_volume_(0.0) {
@@ -103,8 +104,8 @@ class MEDIA_EXPORT AgcAudioStream : public AudioInterface {
     // volume from 0.
     QueryAndStoreNewMicrophoneVolume();
 
-    timer_.Start(FROM_HERE, base::Milliseconds(kIntervalBetweenVolumeUpdatesMs),
-                 this, &AgcAudioStream::QueryAndStoreNewMicrophoneVolume);
+    timer_.Start(FROM_HERE, kIntervalBetweenVolumeUpdates, this,
+                 &AgcAudioStream::QueryAndStoreNewMicrophoneVolume);
   }
 
   // Stops the periodic timer which periodically checks and updates the
