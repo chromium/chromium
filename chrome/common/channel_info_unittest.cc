@@ -4,7 +4,6 @@
 
 #include "chrome/common/channel_info.h"
 
-#include "base/debug/debugging_buildflags.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -139,13 +138,8 @@ INSTANTIATE_TEST_SUITE_P(
     Stable,
     ChannelInfoTest,
     ::testing::Values(Param(ScopedChannelOverride::Channel::kStable,
-#if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
-                            "-dcheck",
-                            "-dcheck",
-#else
                             "",
                             "",
-#endif  // BUILDFLAG(DCHECK_IS_CONFIGURABLE)
                             version_info::Channel::STABLE,
                             /*is_extended_stable=*/false,
                             /*posix_data_dir_suffix=*/"")));
@@ -153,13 +147,8 @@ INSTANTIATE_TEST_SUITE_P(
     ExtendedStable,
     ChannelInfoTest,
     ::testing::Values(Param(ScopedChannelOverride::Channel::kExtendedStable,
-#if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
-                            "-dcheck",
-                            "extended-dcheck",
-#else
                             "",
                             "extended",
-#endif  // BUILDFLAG(DCHECK_IS_CONFIGURABLE)
                             version_info::Channel::STABLE,
                             /*is_extended_stable=*/true,
                             /*posix_data_dir_suffix=*/"")));
@@ -167,13 +156,8 @@ INSTANTIATE_TEST_SUITE_P(
     Beta,
     ChannelInfoTest,
     ::testing::Values(Param(ScopedChannelOverride::Channel::kBeta,
-#if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
-                            "beta-dcheck",
-                            "beta-dcheck",
-#else
                             "beta",
                             "beta",
-#endif  // BUILDFLAG(DCHECK_IS_CONFIGURABLE)
                             version_info::Channel::BETA,
                             /*is_extended_stable=*/false,
                             /*posix_data_dir_suffix=*/"-beta")));
@@ -181,13 +165,8 @@ INSTANTIATE_TEST_SUITE_P(
     Dev,
     ChannelInfoTest,
     ::testing::Values(Param(ScopedChannelOverride::Channel::kDev,
-#if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
-                            "dev-dcheck",
-                            "dev-dcheck",
-#else
                             "dev",
                             "dev",
-#endif  // BUILDFLAG(DCHECK_IS_CONFIGURABLE)
                             version_info::Channel::DEV,
                             /*is_extended_stable=*/false,
                             /*posix_data_dir_suffix=*/"-unstable")));
@@ -197,13 +176,8 @@ INSTANTIATE_TEST_SUITE_P(
     Canary,
     ChannelInfoTest,
     ::testing::Values(Param(ScopedChannelOverride::Channel::kCanary,
-#if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
-                            "canary-dcheck",
-                            "canary-dcheck",
-#else
                             "canary",
                             "canary",
-#endif  // BUILDFLAG(DCHECK_IS_CONFIGURABLE)
                             version_info::Channel::CANARY,
                             /*is_extended_stable=*/false,
                             /*posix_data_dir_suffix=*/"")));

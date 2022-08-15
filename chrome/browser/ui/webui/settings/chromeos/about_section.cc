@@ -37,7 +37,6 @@
 #include "components/strings/grit/components_chromium_strings.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_manager/user_manager.h"
-#include "components/version_info/version_info.h"
 #include "components/version_ui/version_ui_constants.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -413,18 +412,8 @@ void AboutSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
     html_source->AddBoolean("showConsumerAutoUpdateToggle", show_cau_toggle);
   }
 
-  html_source->AddString(
-      "aboutBrowserVersion",
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_ABOUT_PAGE_BROWSER_VERSION,
-          base::UTF8ToUTF16(version_info::GetVersionNumber()),
-          l10n_util::GetStringUTF16(version_info::IsOfficialBuild()
-                                        ? IDS_VERSION_UI_OFFICIAL
-                                        : IDS_VERSION_UI_UNOFFICIAL),
-          // Extended stable channel is not supported on Chrome OS Ash.
-          base::UTF8ToUTF16(
-              chrome::GetChannelName(chrome::WithExtendedStable(false))),
-          l10n_util::GetStringUTF16(VersionUI::VersionProcessorVariation())));
+  html_source->AddString("aboutBrowserVersion",
+                         VersionUI::GetAnnotatedVersionStringForUi());
   html_source->AddString(
       "aboutProductCopyright",
       base::i18n::MessageFormatter::FormatWithNumberedArgs(

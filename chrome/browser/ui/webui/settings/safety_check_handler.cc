@@ -30,7 +30,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/version_info/version_info.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
@@ -598,15 +597,7 @@ std::u16string SafetyCheckHandler::GetStringForUpdates(UpdateStatus status) {
           IDS_SETTINGS_SAFETY_CHECK_UPDATES_FAILED,
           base::ASCIIToUTF16(chrome::kChromeFixUpdateProblems));
     case UpdateStatus::kUnknown:
-      return l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_ABOUT_PAGE_BROWSER_VERSION,
-          base::UTF8ToUTF16(version_info::GetVersionNumber()),
-          l10n_util::GetStringUTF16(version_info::IsOfficialBuild()
-                                        ? IDS_VERSION_UI_OFFICIAL
-                                        : IDS_VERSION_UI_UNOFFICIAL),
-          base::UTF8ToUTF16(
-              chrome::GetChannelName(chrome::WithExtendedStable(true))),
-          l10n_util::GetStringUTF16(VersionUI::VersionProcessorVariation()));
+      return VersionUI::GetAnnotatedVersionStringForUi();
     // This state is only used on Android for recording metrics. This codepath
     // is unreachable.
     case UpdateStatus::kOutdated:

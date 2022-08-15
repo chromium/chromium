@@ -5,10 +5,15 @@
 #include "chrome/browser/ui/webui/version/version_ui.h"
 
 #include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "base/command_line.h"
+#include "base/debug/debugging_buildflags.h"
 #include "base/i18n/message_formatter.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -115,6 +120,22 @@ WebUIDataSource* CreateVersionUIDataSource() {
   return html_source;
 }
 
+std::string GetProductModifier() {
+  std::vector<std::string> modifier_parts;
+  if (std::string channel_name =
+          chrome::GetChannelName(chrome::WithExtendedStable(true));
+      !channel_name.empty()) {
+    modifier_parts.push_back(std::move(channel_name));
+  }
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  modifier_parts.emplace_back("lacros");
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
+  modifier_parts.emplace_back("dcheck");
+#endif  // BUILDFLAG(DCHECK_IS_CONFIGURABLE)
+  return base::JoinString(modifier_parts, "-");
+}
+
 }  // namespace
 
 VersionUI::VersionUI(content::WebUI* web_ui)
@@ -181,16 +202,9 @@ void VersionUI::AddVersionDetailStrings(content::WebUIDataSource* html_source) {
   // Data strings.
   html_source->AddString(version_ui::kVersion,
                          version_info::GetVersionNumber());
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // On Lacros, add channel string with "Lacros".
-  html_source->AddString(
-      version_ui::kVersionModifier,
-      "Lacros/" + chrome::GetChannelName(chrome::WithExtendedStable(true)));
-#else
-  html_source->AddString(
-      version_ui::kVersionModifier,
-      chrome::GetChannelName(chrome::WithExtendedStable(true)));
-#endif
+
+  html_source->AddString(version_ui::kVersionModifier, GetProductModifier());
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   auto* init_params = chromeos::BrowserParamsProxy::Get();
   html_source->AddString(version_ui::kAshChromeVersion,
@@ -253,3 +267,17 @@ void VersionUI::AddVersionDetailStrings(content::WebUIDataSource* html_source) {
   html_source->AddString(version_ui::kSanitizer,
                          version_info::GetSanitizerList());
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+// static
+std::u16string VersionUI::GetAnnotatedVersionStringForUi() {
+  return l10n_util::GetStringFUTF16(
+      IDS_SETTINGS_ABOUT_PAGE_BROWSER_VERSION,
+      base::UTF8ToUTF16(version_info::GetVersionNumber()),
+      l10n_util::GetStringUTF16(version_info::IsOfficialBuild()
+                                    ? IDS_VERSION_UI_OFFICIAL
+                                    : IDS_VERSION_UI_UNOFFICIAL),
+      base::UTF8ToUTF16(GetProductModifier()),
+      l10n_util::GetStringUTF16(VersionUI::VersionProcessorVariation()));
+}
+#endif  // !BUILDFLAG(IS_ANDROID)

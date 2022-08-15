@@ -44,11 +44,10 @@ std::string GetVersionString(WithExtendedStable with_extended_stable);
 // effect on Chrome OS Ash or Android due to lack of support for extended stable
 // on those configurations.
 //
-// On Windows, the channel name may be modified with additional information
-// after a hyphen (e.g., "canary-dcheck"). In branded builds, when the channel
-// cannot be determined, "unknown" will be returned. In unbranded builds, the
-// modifier is usually an empty string (""), although on Linux, it may vary in
-// certain distributions. To simply test the channel, use GetChannel().
+// In branded builds, when the channel cannot be determined, "unknown" will be
+// returned. In unbranded builds, the modifier is usually an empty string (""),
+// although on Linux, it may vary in certain distributions. To simply test the
+// channel, use GetChannel().
 std::string GetChannelName(WithExtendedStable with_extended_stable);
 
 // Returns the channel for the installation. In branded builds, this will be

@@ -52,9 +52,6 @@ class AboutHandler : public settings::SettingsPageUIHandler,
   // UpgradeObserver implementation.
   void OnUpgradeRecommended() override;
 
-  // Returns the browser version as a string.
-  static std::u16string BuildBrowserVersionString();
-
  protected:
   // Used to test the EOL string displayed in the About details page.
   void set_clock(base::Clock* clock) { clock_ = clock; }

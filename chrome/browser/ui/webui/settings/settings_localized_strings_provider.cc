@@ -74,7 +74,6 @@
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_service_utils.h"
 #include "components/sync/driver/sync_user_settings.h"
-#include "components/version_info/version_info.h"
 #include "components/zoom/page_zoom_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -291,23 +290,7 @@ void AddAboutStrings(content::WebUIDataSource* html_source, Profile* profile) {
       l10n_util::GetStringUTF16(IDS_SETTINGS_UPGRADE_UP_TO_DATE));
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // On Lacros, we don't have the concept of channels, in their usual semantics.
-  // Replace the channel string with "Lacros". https://crbug.com/1215734.
-  std::string channel_name = "Lacros";
-#else
-  std::string channel_name =
-      chrome::GetChannelName(chrome::WithExtendedStable(true));
-#endif
-
-  std::u16string browser_version = l10n_util::GetStringFUTF16(
-      IDS_SETTINGS_ABOUT_PAGE_BROWSER_VERSION,
-      base::UTF8ToUTF16(version_info::GetVersionNumber()),
-      l10n_util::GetStringUTF16(version_info::IsOfficialBuild()
-                                    ? IDS_VERSION_UI_OFFICIAL
-                                    : IDS_VERSION_UI_UNOFFICIAL),
-      base::UTF8ToUTF16(channel_name),
-      l10n_util::GetStringUTF16(VersionUI::VersionProcessorVariation()));
+  std::u16string browser_version = VersionUI::GetAnnotatedVersionStringForUi();
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Lacros is in development so we don't worry about l10n for now. This message

@@ -24,6 +24,7 @@
 #include "chrome/browser/extensions/api/passwords_private/test_passwords_private_delegate.h"
 #include "chrome/browser/extensions/test_extension_service.h"
 #include "chrome/browser/ui/webui/help/test_version_updater.h"
+#include "chrome/browser/ui/webui/version/version_ui.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/api/passwords_private.h"
@@ -492,27 +493,6 @@ TEST_F(SafetyCheckHandlerTest, CheckUpdates_Relaunch) {
 }
 
 TEST_F(SafetyCheckHandlerTest, CheckUpdates_Disabled) {
-  const char* processor_variation = nullptr;
-#if BUILDFLAG(IS_MAC)
-  switch (base::mac::GetCPUType()) {
-    case base::mac::CPUType::kIntel:
-      processor_variation = " (x86_64)";
-      break;
-    case base::mac::CPUType::kTranslatedIntel:
-      processor_variation = " (x86_64 translated)";
-      break;
-    case base::mac::CPUType::kArm:
-      processor_variation = " (arm64)";
-      break;
-  }
-#elif defined(ARCH_CPU_64_BITS)
-  processor_variation = " (64-bit)";
-#elif defined(ARCH_CPU_32_BITS)
-  processor_variation = " (32-bit)";
-#else
-#error Update for a processor that is neither 32-bit nor 64-bit.
-#endif  // OS_*
-
   version_updater_->SetReturnedStatus(VersionUpdater::Status::DISABLED);
   safety_check_->PerformSafetyCheck();
   // TODO(crbug/1072432): Since the UNKNOWN state is not present in JS in M83,
@@ -523,12 +503,7 @@ TEST_F(SafetyCheckHandlerTest, CheckUpdates_Disabled) {
           static_cast<int>(SafetyCheckHandler::UpdateStatus::kFailedOffline));
   ASSERT_TRUE(event);
   VerifyDisplayString(
-      event, "Version " + version_info::GetVersionNumber() + " (" +
-                 (version_info::IsOfficialBuild() ? "Official Build"
-                                                  : "Developer Build") +
-                 ") " +
-                 chrome::GetChannelName(chrome::WithExtendedStable(true)) +
-                 processor_variation);
+      event, base::UTF16ToUTF8(VersionUI::GetAnnotatedVersionStringForUi()));
   histogram_tester_.ExpectBucketCount(
       "Settings.SafetyCheck.UpdatesResult",
       SafetyCheckHandler::UpdateStatus::kUnknown, 1);
