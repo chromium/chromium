@@ -69,7 +69,7 @@ class LacrosLauncher : public crosapi::BrowserManagerObserver {
     }
 
     callback_ = std::move(callback);
-    browser_manager()->InitializeAndStartIfNeeded();
+    browser_manager()->InitializeAndStart();
     browser_manager_observation_.Observe(browser_manager());
   }
 
