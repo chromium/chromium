@@ -1,23 +1,4 @@
 {
-  "$build/chromium_expectation_files/expectation_file_scripts": {
-    "scripts": [
-      {
-        "args": [
-          "--project",
-          "chrome-unexpected-pass-data",
-          "--no-prompt-for-user-input"
-        ],
-        "cl_title": "Suppress flaky GPU tests",
-        "reviewer_list": [
-          "bsheedy@chromium.org"
-        ],
-        "script": "content/test/gpu/suppress_flakes.py",
-        "script_type": "FLAKE_FINDER",
-        "step_name": "suppress_gpu_flakes",
-        "submit_type": "MANUAL"
-      }
-    ]
-  },
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "builder_db": {
@@ -70,6 +51,25 @@
   "builder_group": "chromium.gpu.fyi",
   "perf_dashboard_machine_group": "ChromiumGPUFYI",
   "recipe": "chromium_expectation_files/expectation_file_scripts",
+  "scripts": [
+    {
+      "args": [
+        "--project",
+        "chrome-unexpected-pass-data",
+        "--no-prompt-for-user-input"
+      ],
+      "cl_title": "Suppress flaky GPU tests",
+      "reviewer_list": {
+        "reviewer": [
+          "bsheedy@chromium.org"
+        ]
+      },
+      "script": "content/test/gpu/suppress_flakes.py",
+      "script_type": "FLAKE_FINDER",
+      "step_name": "suppress_gpu_flakes",
+      "submit_type": "MANUAL"
+    }
+  ],
   "sheriff_rotations": [
     "chromium.gpu"
   ]

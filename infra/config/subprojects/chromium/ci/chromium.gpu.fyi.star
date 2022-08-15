@@ -209,25 +209,23 @@ ci.gpu.linux_builder(
     triggered_by = [],
     service_account = "chromium-automated-expectation@chops-service-accounts.iam.gserviceaccount.com",
     properties = {
-        "$build/chromium_expectation_files/expectation_file_scripts": {
-            "scripts": [
-                {
-                    "step_name": "suppress_gpu_flakes",
-                    "script": "content/test/gpu/suppress_flakes.py",
-                    "script_type": "FLAKE_FINDER",
-                    "submit_type": "MANUAL",
-                    "reviewer_list": [
-                        "bsheedy@chromium.org",
-                    ],
-                    "cl_title": "Suppress flaky GPU tests",
-                    "args": [
-                        "--project",
-                        "chrome-unexpected-pass-data",
-                        "--no-prompt-for-user-input",
-                    ],
+        "scripts": [
+            {
+                "step_name": "suppress_gpu_flakes",
+                "script": "content/test/gpu/suppress_flakes.py",
+                "script_type": "FLAKE_FINDER",
+                "submit_type": "MANUAL",
+                "reviewer_list": {
+                    "reviewer": ["bsheedy@chromium.org"],
                 },
-            ],
-        },
+                "cl_title": "Suppress flaky GPU tests",
+                "args": [
+                    "--project",
+                    "chrome-unexpected-pass-data",
+                    "--no-prompt-for-user-input",
+                ],
+            },
+        ],
     },
 )
 
