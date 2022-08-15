@@ -684,9 +684,6 @@ public class PaymentRequestService
                     methodTypes.add(PaymentMethodCategory.OTHER);
             }
         }
-        if (BasicCardUtils.merchantSupportsBasicCard(methodDataMap)) {
-            methodTypes.add(PaymentMethodCategory.BASIC_CARD);
-        }
 
         mJourneyLogger.setRequestedPaymentMethods(methodTypes);
     }

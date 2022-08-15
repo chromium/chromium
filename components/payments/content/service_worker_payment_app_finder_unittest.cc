@@ -4,8 +4,6 @@
 
 #include "components/payments/content/service_worker_payment_app_finder.h"
 
-#include "base/test/scoped_feature_list.h"
-#include "content/public/common/content_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
 
@@ -160,58 +158,6 @@ TEST_F(ServiceWorkerPaymentAppFinderTest,
   ASSERT_NE(apps.end(), apps.find(0));
   EXPECT_EQ(std::vector<std::string>{"unknown-method"},
             apps.find(0)->second->enabled_methods);
-}
-
-class ServiceWorkerPaymentAppFinderBasicCardEnabledTest
-    : public ServiceWorkerPaymentAppFinderTest {
- public:
-  ServiceWorkerPaymentAppFinderBasicCardEnabledTest(
-      const ServiceWorkerPaymentAppFinderBasicCardEnabledTest&) = delete;
-  ServiceWorkerPaymentAppFinderBasicCardEnabledTest& operator=(
-      const ServiceWorkerPaymentAppFinderBasicCardEnabledTest&) = delete;
-
- protected:
-  ServiceWorkerPaymentAppFinderBasicCardEnabledTest() {
-    feature_list_.InitAndEnableFeature(::features::kPaymentRequestBasicCard);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(ServiceWorkerPaymentAppFinderBasicCardEnabledTest,
-       RemoveAppsWithoutMatchingMethodData_NoNetworkCapabilities) {
-  std::vector<mojom::PaymentMethodDataPtr> requested_methods;
-  requested_methods.emplace_back(mojom::PaymentMethodData::New());
-  requested_methods.back()->supported_method = "basic-card";
-  requested_methods.back()->supported_networks = {
-      mojom::BasicCardNetwork::AMEX};
-  content::InstalledPaymentAppsFinder::PaymentApps apps;
-  apps[0] = std::make_unique<content::StoredPaymentApp>();
-  apps[0]->enabled_methods = {"basic-card"};
-
-  RemoveAppsWithoutMatchingMethodData(requested_methods, &apps);
-
-  EXPECT_TRUE(apps.empty());
-}
-
-TEST_F(ServiceWorkerPaymentAppFinderBasicCardEnabledTest,
-       RemoveAppsWithoutMatchingMethodData_NoMatchingNetworkCapabilities) {
-  std::vector<mojom::PaymentMethodDataPtr> requested_methods;
-  requested_methods.emplace_back(mojom::PaymentMethodData::New());
-  requested_methods.back()->supported_method = "basic-card";
-  requested_methods.back()->supported_networks = {
-      mojom::BasicCardNetwork::AMEX};
-  content::InstalledPaymentAppsFinder::PaymentApps apps;
-  apps[0] = std::make_unique<content::StoredPaymentApp>();
-  apps[0]->enabled_methods = {"basic-card"};
-  apps[0]->capabilities.emplace_back();
-  apps[0]->capabilities.back().supported_card_networks = {
-      static_cast<int32_t>(mojom::BasicCardNetwork::VISA)};
-
-  RemoveAppsWithoutMatchingMethodData(requested_methods, &apps);
-
-  EXPECT_TRUE(apps.empty());
 }
 
 }  // namespace payments

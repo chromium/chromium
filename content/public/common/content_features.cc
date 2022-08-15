@@ -849,11 +849,6 @@ const base::Feature kServiceWorkerPaymentApps{"ServiceWorkerPaymentApps",
 const base::Feature kWebPaymentAPICSP{"WebPaymentAPICSP",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enable the basic-card payment method from the PaymentRequest API. This has
-// been disabled since M100 and is soon to be removed: crbug.com/1209835.
-const base::Feature kPaymentRequestBasicCard{"PaymentRequestBasicCard",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Use this feature to experiment terminating a service worker when it doesn't
 // control any clients: https://crbug.com/1043845.
 const base::Feature kServiceWorkerTerminationOnNoControllee{

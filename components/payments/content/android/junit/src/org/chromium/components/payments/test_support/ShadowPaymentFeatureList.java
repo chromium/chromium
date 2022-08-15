@@ -36,8 +36,6 @@ public class ShadowPaymentFeatureList {
         ShadowPaymentFeatureList.setFeatureEnabled(
                 PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION, true);
         ShadowPaymentFeatureList.setFeatureEnabled(
-                PaymentFeatureList.PAYMENT_REQUEST_BASIC_CARD, true);
-        ShadowPaymentFeatureList.setFeatureEnabled(
                 PaymentFeatureList.IDENTITY_IN_CAN_MAKE_PAYMENT_EVENT_FEATURE, true);
     }
 

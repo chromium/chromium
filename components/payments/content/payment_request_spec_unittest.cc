@@ -22,10 +22,10 @@ namespace payments {
 using ::testing::ElementsAre;
 using ::testing::UnorderedElementsAre;
 
-class PaymentRequestSpecTestBase : public testing::Test,
-                                   public PaymentRequestSpec::Observer {
+class PaymentRequestSpecTest : public testing::Test,
+                               public PaymentRequestSpec::Observer {
  protected:
-  ~PaymentRequestSpecTestBase() override = default;
+  ~PaymentRequestSpecTest() override = default;
 
   void OnSpecUpdated() override { on_spec_updated_called_ = true; }
 
@@ -51,29 +51,12 @@ class PaymentRequestSpecTestBase : public testing::Test,
  private:
   std::unique_ptr<PaymentRequestSpec> spec_;
   bool on_spec_updated_called_ = false;
-  base::WeakPtrFactory<PaymentRequestSpecTestBase> weak_ptr_factory_{this};
-};
-
-class PaymentRequestSpecBasiCardEnabledTest
-    : public PaymentRequestSpecTestBase {
- public:
-  PaymentRequestSpecBasiCardEnabledTest(
-      const PaymentRequestSpecBasiCardEnabledTest&) = delete;
-  PaymentRequestSpecBasiCardEnabledTest& operator=(
-      const PaymentRequestSpecBasiCardEnabledTest&) = delete;
-
- protected:
-  PaymentRequestSpecBasiCardEnabledTest() {
-    feature_list_.InitAndEnableFeature(::features::kPaymentRequestBasicCard);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
+  base::WeakPtrFactory<PaymentRequestSpecTest> weak_ptr_factory_{this};
 };
 
 // Test that the last shipping option is selected, even in the case of
 // updateWith.
-TEST_F(PaymentRequestSpecBasiCardEnabledTest, ShippingOptionsSelection) {
+TEST_F(PaymentRequestSpecTest, ShippingOptionsSelection) {
   std::vector<mojom::PaymentShippingOptionPtr> shipping_options;
   mojom::PaymentShippingOptionPtr option = mojom::PaymentShippingOption::New();
   option->id = "option:1";
@@ -116,8 +99,7 @@ TEST_F(PaymentRequestSpecBasiCardEnabledTest, ShippingOptionsSelection) {
 
 // Test that the last shipping option is selected, even in the case of
 // updateWith.
-TEST_F(PaymentRequestSpecBasiCardEnabledTest,
-       ShippingOptionsSelection_NoOptionsAtAll) {
+TEST_F(PaymentRequestSpecTest, ShippingOptionsSelection_NoOptionsAtAll) {
   // No options are provided at first.
   mojom::PaymentOptionsPtr options = mojom::PaymentOptions::New();
   options->request_shipping = true;
@@ -156,7 +138,7 @@ TEST_F(PaymentRequestSpecBasiCardEnabledTest,
 
 // Test that the last shipping option is selected, even in the case of
 // updateWith.
-TEST_F(PaymentRequestSpecBasiCardEnabledTest, UpdateWithNoShippingOptions) {
+TEST_F(PaymentRequestSpecTest, UpdateWithNoShippingOptions) {
   std::vector<mojom::PaymentShippingOptionPtr> shipping_options;
   mojom::PaymentShippingOptionPtr option = mojom::PaymentShippingOption::New();
   option->id = "option:1";
@@ -183,8 +165,7 @@ TEST_F(PaymentRequestSpecBasiCardEnabledTest, UpdateWithNoShippingOptions) {
   EXPECT_TRUE(spec()->selected_shipping_option_error().empty());
 }
 
-TEST_F(PaymentRequestSpecBasiCardEnabledTest,
-       SingleCurrencyWithoutDisplayItems) {
+TEST_F(PaymentRequestSpecTest, SingleCurrencyWithoutDisplayItems) {
   mojom::PaymentDetailsPtr details = mojom::PaymentDetails::New();
   mojom::PaymentItemPtr total = mojom::PaymentItem::New();
   mojom::PaymentCurrencyAmountPtr amount = mojom::PaymentCurrencyAmount::New();
@@ -198,7 +179,7 @@ TEST_F(PaymentRequestSpecBasiCardEnabledTest,
   EXPECT_FALSE(spec()->IsMixedCurrency());
 }
 
-TEST_F(PaymentRequestSpecBasiCardEnabledTest, SingleCurrencyWithDisplayItems) {
+TEST_F(PaymentRequestSpecTest, SingleCurrencyWithDisplayItems) {
   mojom::PaymentDetailsPtr details = mojom::PaymentDetails::New();
   mojom::PaymentItemPtr total = mojom::PaymentItem::New();
   mojom::PaymentCurrencyAmountPtr amount = mojom::PaymentCurrencyAmount::New();
@@ -221,8 +202,7 @@ TEST_F(PaymentRequestSpecBasiCardEnabledTest, SingleCurrencyWithDisplayItems) {
   EXPECT_FALSE(spec()->IsMixedCurrency());
 }
 
-TEST_F(PaymentRequestSpecBasiCardEnabledTest,
-       MultipleCurrenciesWithOneDisplayItem) {
+TEST_F(PaymentRequestSpecTest, MultipleCurrenciesWithOneDisplayItem) {
   mojom::PaymentDetailsPtr details = mojom::PaymentDetails::New();
   mojom::PaymentItemPtr total = mojom::PaymentItem::New();
   mojom::PaymentCurrencyAmountPtr amount = mojom::PaymentCurrencyAmount::New();
@@ -246,8 +226,7 @@ TEST_F(PaymentRequestSpecBasiCardEnabledTest,
   EXPECT_TRUE(spec()->IsMixedCurrency());
 }
 
-TEST_F(PaymentRequestSpecBasiCardEnabledTest,
-       MultipleCurrenciesWithTwoDisplayItem) {
+TEST_F(PaymentRequestSpecTest, MultipleCurrenciesWithTwoDisplayItem) {
   mojom::PaymentDetailsPtr details = mojom::PaymentDetails::New();
   mojom::PaymentItemPtr total = mojom::PaymentItem::New();
   mojom::PaymentCurrencyAmountPtr amount = mojom::PaymentCurrencyAmount::New();
@@ -278,7 +257,7 @@ TEST_F(PaymentRequestSpecBasiCardEnabledTest,
   EXPECT_TRUE(spec()->IsMixedCurrency());
 }
 
-TEST_F(PaymentRequestSpecBasiCardEnabledTest, RetryWithShippingAddressErrors) {
+TEST_F(PaymentRequestSpecTest, RetryWithShippingAddressErrors) {
   mojom::PaymentOptionsPtr options = mojom::PaymentOptions::New();
   options->request_shipping = true;
   RecreateSpecWithOptionsAndDetails(std::move(options),
@@ -305,7 +284,7 @@ TEST_F(PaymentRequestSpecBasiCardEnabledTest, RetryWithShippingAddressErrors) {
   EXPECT_TRUE(spec()->has_shipping_address_error());
 }
 
-TEST_F(PaymentRequestSpecBasiCardEnabledTest, RetryWithPayerErrors) {
+TEST_F(PaymentRequestSpecTest, RetryWithPayerErrors) {
   mojom::PaymentOptionsPtr options = mojom::PaymentOptions::New();
   options->request_payer_email = true;
   options->request_payer_name = true;

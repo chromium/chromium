@@ -7,9 +7,7 @@
 #include "base/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "content/browser/payments/payment_app_content_unittest_base.h"
-#include "content/public/common/content_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/payments/payment_app.mojom.h"
 #include "url/gurl.h"
@@ -262,64 +260,7 @@ TEST_F(PaymentManagerTest, ClearPaymentInstruments) {
   ASSERT_EQ(0U, keys.size());
 }
 
-class PaymentManagerBasicCardEnabledTest : public PaymentManagerTest {
- public:
-  PaymentManagerBasicCardEnabledTest(
-      const PaymentManagerBasicCardEnabledTest&) = delete;
-  PaymentManagerBasicCardEnabledTest& operator=(
-      const PaymentManagerBasicCardEnabledTest&) = delete;
-
- protected:
-  PaymentManagerBasicCardEnabledTest() {
-    feature_list_.InitAndEnableFeature(::features::kPaymentRequestBasicCard);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(PaymentManagerBasicCardEnabledTest, SetAndGetPaymentInstrument) {
-  PaymentHandlerStatus write_status = PaymentHandlerStatus::NOT_FOUND;
-  PaymentInstrumentPtr write_details = PaymentInstrument::New();
-  write_details->name = "Visa ending ****4756";
-  write_details->method = "visa";
-  write_details->stringified_capabilities = "{}";
-  SetPaymentInstrument("test_key", std::move(write_details), &write_status);
-  // Write the first instrument of a web payment app will return
-  // FETCH_PAYMENT_APP_INFO_FAILED since the web app's manifest is not
-  // available, but the write of the instrument is succeed, otherwise will
-  // return the other errors.
-  ASSERT_EQ(PaymentHandlerStatus::FETCH_PAYMENT_APP_INFO_FAILED, write_status);
-
-  PaymentHandlerStatus read_status = PaymentHandlerStatus::NOT_FOUND;
-  PaymentInstrumentPtr read_details;
-  GetPaymentInstrument("test_key", &read_details, &read_status);
-  ASSERT_EQ(PaymentHandlerStatus::SUCCESS, read_status);
-  EXPECT_EQ("Visa ending ****4756", read_details->name);
-  EXPECT_EQ("visa", read_details->method);
-  EXPECT_EQ("{}", read_details->stringified_capabilities);
-}
-
-class PaymentManagerBasicCardDisabledTest : public PaymentManagerTest {
- public:
-  PaymentManagerBasicCardDisabledTest(
-      const PaymentManagerBasicCardDisabledTest&) = delete;
-  PaymentManagerBasicCardDisabledTest& operator=(
-      const PaymentManagerBasicCardDisabledTest&) = delete;
-
- protected:
-  PaymentManagerBasicCardDisabledTest() {
-    feature_list_.InitAndDisableFeature(::features::kPaymentRequestBasicCard);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// This test corresponds to the test of the same name in
-// PaymentManagerBasicCardEnabledTest. The only difference between them is
-// the expected value of read_details->stringified_capabilities.
-TEST_F(PaymentManagerBasicCardDisabledTest, SetAndGetPaymentInstrument) {
+TEST_F(PaymentManagerTest, SetAndGetPaymentInstrument) {
   PaymentHandlerStatus write_status = PaymentHandlerStatus::NOT_FOUND;
   PaymentInstrumentPtr write_details = PaymentInstrument::New();
   write_details->name = "ChromePay: chrome@chromepay.com";

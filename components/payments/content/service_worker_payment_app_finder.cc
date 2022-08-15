@@ -43,34 +43,6 @@
 namespace payments {
 namespace {
 
-// Returns true if |requested| is empty or contains at least one of the items in
-// |capabilities|.
-template <typename T>
-bool CapabilityMatches(const std::vector<T>& requested,
-                       const std::vector<int32_t>& capabilities) {
-  if (requested.empty())
-    return true;
-  for (const auto& request : requested) {
-    if (base::Contains(capabilities, static_cast<int32_t>(request)))
-      return true;
-  }
-  return false;
-}
-
-// Returns true if the basic-card |capabilities| of the payment app match the
-// |request|.
-bool BasicCardCapabilitiesMatch(
-    const std::vector<content::StoredCapabilities>& capabilities,
-    const mojom::PaymentMethodDataPtr& request) {
-  for (const auto& capability : capabilities) {
-    if (CapabilityMatches(request->supported_networks,
-                          capability.supported_card_networks)) {
-      return true;
-    }
-  }
-  return capabilities.empty() && request->supported_networks.empty();
-}
-
 // Returns true if |app| supports at least one of the |requests|.
 bool AppSupportsAtLeastOneRequestedMethodData(
     const content::StoredPaymentApp& app,
@@ -78,12 +50,7 @@ bool AppSupportsAtLeastOneRequestedMethodData(
   for (const auto& enabled_method : app.enabled_methods) {
     for (const auto& request : requests) {
       if (enabled_method == request->supported_method) {
-        if (!base::FeatureList::IsEnabled(::features::kPaymentRequestBasicCard))
-          return true;
-        if (enabled_method != methods::kBasicCard ||
-            BasicCardCapabilitiesMatch(app.capabilities, request)) {
-          return true;
-        }
+        return true;
       }
     }
   }
