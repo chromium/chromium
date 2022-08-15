@@ -111,10 +111,9 @@ void ExternalCacheImpl::OnDamagedFileDetected(const base::FilePath& path) {
       continue;
     }
 
-    std::string external_crx;
-    if (entry->GetString(extensions::ExternalProviderImpl::kExternalCrx,
-                         &external_crx) &&
-        external_crx == path.value()) {
+    const std::string* external_crx = entry->GetDict().FindString(
+        extensions::ExternalProviderImpl::kExternalCrx);
+    if (external_crx && *external_crx == path.value()) {
       extensions::ExtensionId id = it.key();
       LOG(ERROR) << "ExternalCacheImpl extension at " << path.value()
                  << " failed to install, deleting it.";
@@ -232,9 +231,15 @@ bool ExternalCacheImpl::GetExtensionExistingVersion(
     const extensions::ExtensionId& id,
     std::string* version) {
   base::DictionaryValue* extension_dictionary = nullptr;
-  return cached_extensions_->GetDictionary(id, &extension_dictionary) &&
-         extension_dictionary->GetString(
-             extensions::ExternalProviderImpl::kExternalVersion, version);
+  if (!cached_extensions_->GetDictionary(id, &extension_dictionary)) {
+    return false;
+  }
+  const std::string* val = extension_dictionary->GetDict().FindString(
+      extensions::ExternalProviderImpl::kExternalVersion);
+  if (!val)
+    return false;
+  *version = *val;
+  return true;
 }
 
 void ExternalCacheImpl::UpdateExtensionLoader() {
