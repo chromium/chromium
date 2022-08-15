@@ -424,6 +424,11 @@ bool PictureLayerTiling::ShouldCreateTileAt(
   // Do the intersection test in content space to match the corresponding check
   // on the active tree and avoid floating point inconsistencies.
   for (gfx::Rect layer_rect : *layer_invalidation) {
+    // https://linear.app/replay/issue/RUN-467
+    recordreplay::Assert("PictureLayerTiling::ShouldCreateTileAt #5.1 %d %d %d %d",
+                         layer_rect.x(), layer_rect.y(),
+                         layer_rect.width(), layer_rect.height());
+
     gfx::Rect invalid_content_rect =
         EnclosingContentsRectFromLayerRect(layer_rect);
     if (invalid_content_rect.Intersects(info.content_rect)) {
