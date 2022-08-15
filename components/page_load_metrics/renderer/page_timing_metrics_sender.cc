@@ -90,12 +90,19 @@ void PageTimingMetricsSender::DidObserveNewFeatureUsage(
 void PageTimingMetricsSender::DidObserveNewCssPropertyUsage(
     blink::mojom::CSSSampleId css_property,
     bool is_animated) {
+  // https://linear.app/replay/issue/RUN-469
+  recordreplay::Assert("PageTimingMetricsSender::DidObserveNewCssPropertyUsage %d %d",
+                       (int)css_property, is_animated);
+
   size_t css_property_id = static_cast<size_t>(css_property);
   if (is_animated && !animated_css_properties_sent_.test(css_property_id)) {
     animated_css_properties_sent_.set(css_property_id);
     new_features_->animated_css_properties.push_back(css_property);
     EnsureSendTimer();
   } else if (!is_animated && !css_properties_sent_.test(css_property_id)) {
+    // https://linear.app/replay/issue/RUN-469
+    recordreplay::Assert("PageTimingMetricsSender::DidObserveNewCssPropertyUsage #1");
+
     css_properties_sent_.set(css_property_id);
     new_features_->css_properties.push_back(css_property);
     EnsureSendTimer();
