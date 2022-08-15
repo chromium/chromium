@@ -8,6 +8,7 @@
 
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/input_method/fake_suggestion_handler.h"
 #include "chrome/browser/ash/input_method/suggestion_enums.h"
 #include "chrome/test/base/testing_profile.h"
@@ -34,6 +35,19 @@ using LongpressDiacriticsSuggesterTest =
 using AssistiveWindowButton = ui::ime::AssistiveWindowButton;
 
 const int kContextId = 24601;
+
+const auto kDigitToDomCode = base::MakeFixedFlatMap<int, ui::DomCode>({
+    {0, ui::DomCode::DIGIT0},
+    {1, ui::DomCode::DIGIT1},
+    {2, ui::DomCode::DIGIT2},
+    {3, ui::DomCode::DIGIT3},
+    {4, ui::DomCode::DIGIT4},
+    {5, ui::DomCode::DIGIT5},
+    {6, ui::DomCode::DIGIT6},
+    {7, ui::DomCode::DIGIT7},
+    {8, ui::DomCode::DIGIT8},
+    {9, ui::DomCode::DIGIT9},
+});
 
 ui::KeyEvent CreateKeyEventFromCode(const ui::DomCode& code) {
   return ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_UNKNOWN, code, ui::EF_NONE,
@@ -621,6 +635,32 @@ TEST_P(LongpressDiacriticsSuggesterTest, ReturnsDiacriticsProposeActionType) {
 
   EXPECT_EQ(suggester.GetProposeActionType(),
             AssistiveType::kLongpressDiacritics);
+}
+
+TEST_P(LongpressDiacriticsSuggesterTest, RecordsAcceptanceCharCodeMetric) {
+  base::HistogramTester histogram_tester;
+
+  FakeSuggestionHandler suggestion_handler;
+  LongpressDiacriticsSuggester suggester =
+      LongpressDiacriticsSuggester(&suggestion_handler);
+  suggester.OnFocus(kContextId);
+
+  int histogram_accept_count = 0;
+  for (int i = 0; i < 9 && i < GetParam().candidates.size(); i++) {
+    // Insert using dom code for index + 1 (i.e. DIGIT1 inserts 0th index
+    // candidate)
+    ui::DomCode dom_code = kDigitToDomCode.find(i + 1)->second;
+    suggester.TrySuggestOnLongpress(GetParam().longpress_char);
+    suggester.HandleKeyEvent(CreateKeyEventFromCode(dom_code));
+
+    histogram_tester.ExpectTotalCount(
+        "InputMethod.PhysicalKeyboard.LongpressDiacritics.AcceptedChar",
+        ++histogram_accept_count);
+    int char_code = int(GetParam().candidates[i][0]);
+    histogram_tester.ExpectBucketCount(
+        "InputMethod.PhysicalKeyboard.LongpressDiacritics.AcceptedChar",
+        char_code, 1);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(

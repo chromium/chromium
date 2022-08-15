@@ -50054,6 +50054,83 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="2" label="UNDO"/>
 </enum>
 
+<enum name="IMEPKLongpressDiacriticUnicodeCharacterCode">
+<!--
+Do not add the actual diacritical or non basic ascii characters to the text of this file.
+Unsupported non-ascii characters will cause issues with xml presubmits.
+  -->
+
+  <int value="-1" label="UNKOWN CHARACTER"/>
+  <int value="192" label="Latin Capital Letter A with grave"/>
+  <int value="193" label="Latin Capital letter A with acute"/>
+  <int value="194" label="Latin Capital letter A with circumflex"/>
+  <int value="195" label="Latin Capital letter A with tilde"/>
+  <int value="196" label="Latin Capital letter A with diaeresis"/>
+  <int value="197" label="Latin Capital letter A with ring above"/>
+  <int value="198" label="Latin Capital letter AE"/>
+  <int value="199" label="Latin Capital letter C with cedilla"/>
+  <int value="200" label="Latin Capital letter E with grave"/>
+  <int value="201" label="Latin Capital letter E with acute"/>
+  <int value="202" label="Latin Capital letter E with circumflex"/>
+  <int value="203" label="Latin Capital letter E with diaeresis"/>
+  <int value="204" label="Latin Capital letter I with grave"/>
+  <int value="205" label="Latin Capital letter I with acute"/>
+  <int value="206" label="Latin Capital letter I with circumflex"/>
+  <int value="207" label="Latin Capital letter I with diaeresis"/>
+  <int value="209" label="Latin Capital letter N with tilde"/>
+  <int value="210" label="Latin Capital letter O with grave"/>
+  <int value="211" label="Latin Capital letter O with acute"/>
+  <int value="212" label="Latin Capital letter O with circumflex"/>
+  <int value="213" label="Latin Capital letter O with tilde"/>
+  <int value="214" label="Latin Capital letter O with diaeresis"/>
+  <int value="216" label="Latin Capital letter O with stroke"/>
+  <int value="217" label="Latin Capital letter U with grave"/>
+  <int value="218" label="Latin Capital letter U with acute"/>
+  <int value="219" label="Latin Capital Letter U with circumflex"/>
+  <int value="220" label="Latin Capital Letter U with diaeresis"/>
+  <int value="223" label="Latin Small Letter sharp S"/>
+  <int value="224" label="Latin Small Letter A with grave"/>
+  <int value="225" label="Latin Small Letter A with acute"/>
+  <int value="226" label="Latin Small Letter A with circumflex"/>
+  <int value="227" label="Latin Small Letter A with tilde"/>
+  <int value="228" label="Latin Small Letter A with diaeresis"/>
+  <int value="229" label="Latin Small Letter A with ring above"/>
+  <int value="230" label="Latin Small Letter AE"/>
+  <int value="231" label="Latin Small Letter C with cedilla"/>
+  <int value="232" label="Latin Small Letter E with grave"/>
+  <int value="233" label="Latin Small Letter E with acute"/>
+  <int value="234" label="Latin Small Letter E with circumflex"/>
+  <int value="235" label="Latin Small Letter E with diaeresis"/>
+  <int value="236" label="Latin Small Letter I with grave"/>
+  <int value="237" label="Latin Small Letter I with acute"/>
+  <int value="238" label="Latin Small Letter I with circumflex"/>
+  <int value="239" label="Latin Small Letter I with diaeresis"/>
+  <int value="241" label="Latin Small Letter N with tilde"/>
+  <int value="242" label="Latin Small Letter O with grave"/>
+  <int value="243" label="Latin Small Letter O with acute"/>
+  <int value="244" label="Latin Small Letter O with circumflex"/>
+  <int value="245" label="Latin Small Letter O with tilde"/>
+  <int value="246" label="Latin Small Letter O with diaeresis"/>
+  <int value="248" label="Latin Small Letter O with stroke"/>
+  <int value="249" label="Latin Small Letter U with grave"/>
+  <int value="250" label="Latin Small Letter U with acute"/>
+  <int value="251" label="Latin Small Letter U with circumflex"/>
+  <int value="252" label="Latin Small Letter U with diaeresis"/>
+  <int value="256" label="Latin Capital Letter A with macron"/>
+  <int value="257" label="Latin Small Letter A with macron"/>
+  <int value="274" label="Latin Capital Letter E with macron"/>
+  <int value="275" label="Latin Small Letter E with macron"/>
+  <int value="298" label="Latin Capital Letter I with macron"/>
+  <int value="299" label="Latin Small Letter I with macron"/>
+  <int value="332" label="Latin Capital Letter O with macron"/>
+  <int value="333" label="Latin Small Letter O with macron"/>
+  <int value="338" label="Latin Capital Ligature OE"/>
+  <int value="339" label="Latin Small Ligature OE"/>
+  <int value="362" label="Latin Capital Letter U with macron"/>
+  <int value="363" label="Latin Small Letter U with macron"/>
+  <int value="7838" label="Capital sharp s, German"/>
+</enum>
+
 <enum name="IMERegisterProxyView">
   <obsolete>
     Removed as of Jan 2020.
