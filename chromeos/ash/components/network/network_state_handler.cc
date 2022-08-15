@@ -42,6 +42,7 @@ constexpr char kReasonUpdate[] = "Update";
 constexpr char kReasonUpdateIPConfig[] = "UpdateIPConfig";
 constexpr char kReasonUpdateDeviceIPConfig[] = "UpdateDeviceIPConfig";
 constexpr char kReasonTether[] = "Tether Change";
+constexpr char kReasonPortal[] = "Portal State Change";
 
 bool ConnectionStateChanged(const NetworkState* network,
                             const std::string& prev_connection_state) {
@@ -571,10 +572,11 @@ void NetworkStateHandler::SetNetworkChromePortalState(
                 << NetworkPathId(service_path) << " = " << portal_state;
   auto prev_portal_state = network->GetPortalState();
   network->set_chrome_portal_state(portal_state);
-  if (prev_portal_state == network->GetPortalState())
+  if (prev_portal_state == network->GetPortalState() ||
+      service_path != default_network_path_) {
     return;
-  network_list_sorted_ = false;
-  OnNetworkConnectionStateChanged(network);
+  }
+  NotifyDefaultNetworkChanged(kReasonPortal);
 }
 
 std::string NetworkStateHandler::FormattedHardwareAddressForType(
@@ -2073,9 +2075,9 @@ void NetworkStateHandler::NotifyDefaultNetworkChanged(
     observer.DefaultNetworkChanged(default_network);
 
   if (default_network &&
-      (default_network->GetPortalState() != default_network_portal_state_ ||
+      (default_network->shill_portal_state() != default_network_portal_state_ ||
        default_network->proxy_config() != default_network_proxy_config_)) {
-    default_network_portal_state_ = default_network->GetPortalState();
+    default_network_portal_state_ = default_network->shill_portal_state();
     default_network_proxy_config_ = default_network->proxy_config().Clone();
     NET_LOG(EVENT) << "NOTIFY: PortalStateChanged: "
                    << default_network_portal_state_;
