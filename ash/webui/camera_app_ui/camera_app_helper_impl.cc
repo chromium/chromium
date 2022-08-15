@@ -12,7 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/trace_event/trace_event.h"
+#include "base/trace_event/typed_macros.h"
 #include "chromeos/utils/pdf_conversion.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/url_util.h"
@@ -143,11 +143,13 @@ void CameraAppHelperImpl::IsTabletMode(IsTabletModeCallback callback) {
 }
 
 void CameraAppHelperImpl::StartPerfEventTrace(const std::string& event) {
-  TRACE_EVENT_BEGIN0("camera", event.c_str());
+  TRACE_EVENT_BEGIN("camera", nullptr, [&](perfetto::EventContext ctx) {
+    ctx.event()->set_name(event);
+  });
 }
 
 void CameraAppHelperImpl::StopPerfEventTrace(const std::string& event) {
-  TRACE_EVENT_END0("camera", event.c_str());
+  TRACE_EVENT_END("camera");
 }
 
 void CameraAppHelperImpl::SetTabletMonitor(
