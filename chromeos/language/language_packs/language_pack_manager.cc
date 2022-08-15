@@ -84,7 +84,7 @@ const base::flat_map<std::string, std::string>& GetAllBasePackDlcIds() {
   // Map of all features and corresponding Base Pack DLC IDs.
   static const base::NoDestructor<base::flat_map<std::string, std::string>>
       all_dlc_ids({
-          {kHandwritingFeatureId, "handwriting"},
+          {kHandwritingFeatureId, "handwriting-base"},
       });
 
   return *all_dlc_ids;
