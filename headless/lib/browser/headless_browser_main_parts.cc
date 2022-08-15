@@ -72,6 +72,10 @@ void HeadlessBrowserMainParts::WillRunMainMessageLoop(
 }
 
 void HeadlessBrowserMainParts::PostMainMessageLoopRun() {
+  // HeadlessBrowserImpl::Shutdown() is supposed to remove all browser contexts
+  // and therefore all associated web contents, however crbug.com/1342152
+  // implies it may not be happening.
+  CHECK_EQ(0U, browser_->GetAllBrowserContexts().size());
   if (devtools_http_handler_started_) {
     StopLocalDevToolsHttpHandler();
     devtools_http_handler_started_ = false;
