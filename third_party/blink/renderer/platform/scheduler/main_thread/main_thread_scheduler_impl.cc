@@ -1334,9 +1334,7 @@ void MainThreadSchedulerImpl::DidHandleInputEventOnMainThread(
       UpdatePolicyLocked(UpdateType::kMayEarlyOutIfPolicyUnchanged);
     }
   }
-  if (result != WebInputEventResult::kNotHandled &&
-      result != WebInputEventResult::kHandledSuppressed &&
-      !PendingUserInput::IsContinuousEventType(web_input_event.GetType())) {
+  if (!PendingUserInput::IsContinuousEventType(web_input_event.GetType())) {
     main_thread_only().did_handle_discrete_input_event = true;
   }
 }
