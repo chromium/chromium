@@ -350,6 +350,8 @@ public final class ProductionSupportedFlagList {
                     "Controls whether or not canceled delayed tasks are removed from task queues."),
             Flag.baseFeature(BlinkFeatures.THROTTLE_INTERSECTION_OBSERVER_UMA,
                     "Reduces fine-grained UMA metrics for IntersectionObserver."),
+            Flag.baseFeature(BlinkFeatures.PRETOKENIZE_CSS,
+                    "If enabled, CSS will be tokenized in a background thread when possible."),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };

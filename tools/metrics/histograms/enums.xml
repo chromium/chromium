@@ -58325,6 +58325,7 @@ from previous Chrome versions.
   <int value="-574217217" label="kSignInProfileCreationEnterprise:enabled"/>
   <int value="-574000901" label="AVIF:enabled"/>
   <int value="-573570330" label="QuickAnswersTranslationCloudAPI:disabled"/>
+  <int value="-572285609" label="PretokenizeCss:enabled"/>
   <int value="-572112724" label="DialogTouchBar:disabled"/>
   <int value="-572012175" label="AssistantEnableStereoAudioInput:disabled"/>
   <int value="-571655232" label="SideSearch:enabled"/>
@@ -59223,6 +59224,7 @@ from previous Chrome versions.
   <int value="4277967" label="SideSearchStatePerTab:disabled"/>
   <int value="4588113" label="CacheOneGoogleBar:disabled"/>
   <int value="5654819" label="CrostiniGpuSupport:disabled"/>
+  <int value="5719625" label="PretokenizeCss:disabled"/>
   <int value="6041813" label="PermissionChipGestureSensitive:disabled"/>
   <int value="6332888" label="PrivateNetworkAccessSendPreflights:enabled"/>
   <int value="6523501" label="lacros-availability-ignore"/>
