@@ -6,7 +6,10 @@
 #define CHROME_BROWSER_ASH_INPUT_METHOD_ASSISTIVE_WINDOW_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 
+#include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ash/input_method/assistive_window_properties.h"
 #include "chrome/browser/ash/input_method/ui/assistive_accessibility_view.h"
 #include "chrome/browser/ash/input_method/ui/assistive_delegate.h"
@@ -73,6 +76,8 @@ class AssistiveWindowController : public views::WidgetObserver,
   void InitUndoWindow();
   void InitGrammarSuggestionWindow();
   void InitAccessibilityView();
+  void DisplayCompletionSuggestion(const ui::ime::SuggestionDetails& details);
+  void ClearPendingSuggestionTimer();
 
   const AssistiveWindowControllerDelegate* delegate_;
   AssistiveWindowProperties window_;
@@ -83,6 +88,9 @@ class AssistiveWindowController : public views::WidgetObserver,
   std::u16string suggestion_text_;
   size_t confirmed_length_ = 0;
   Bounds bounds_;
+  std::unique_ptr<base::OneShotTimer> pending_suggestion_timer_;
+
+  base::WeakPtrFactory<AssistiveWindowController> weak_ptr_factory_{this};
 };
 
 }  // namespace input_method
