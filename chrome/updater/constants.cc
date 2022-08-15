@@ -34,6 +34,7 @@ const char kCrashMeSwitch[] = "crash-me";
 const char kCrashHandlerSwitch[] = "crash-handler";
 const char kUpdateSwitch[] = "update";
 const char kInstallSwitch[] = "install";
+const char kRuntimeSwitch[] = "runtime";
 const char kUninstallSwitch[] = "uninstall";
 const char kUninstallSelfSwitch[] = "uninstall-self";
 const char kUninstallIfUnusedSwitch[] = "uninstall-if-unused";

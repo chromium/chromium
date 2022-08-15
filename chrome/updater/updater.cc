@@ -159,6 +159,7 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
 
   if (command_line->HasSwitch(kInstallSwitch) ||
       command_line->HasSwitch(kTagSwitch) ||
+      command_line->HasSwitch(kRuntimeSwitch) ||
       command_line->HasSwitch(kHandoffSwitch)) {
     return MakeAppInstall()->Run();
   }
@@ -188,20 +189,14 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
 const char* GetUpdaterCommand(const base::CommandLine* command_line) {
   // Contains the literals which are associated with specific updater commands.
   const char* commands[] = {
-      kWindowsServiceSwitch,
-      kCrashHandlerSwitch,
-      kInstallSwitch,
-      kRecoverSwitch,
-      kServerSwitch,
-      kTagSwitch,
-      kTestSwitch,
-      kUninstallIfUnusedSwitch,
-      kUninstallSelfSwitch,
-      kUninstallSwitch,
-      kUpdateSwitch,
-      kWakeSwitch,
-      kHealthCheckSwitch,
-      kHandoffSwitch,
+      kWindowsServiceSwitch, kCrashHandlerSwitch,
+      kInstallSwitch,        kRecoverSwitch,
+      kServerSwitch,         kTagSwitch,
+      kTestSwitch,           kUninstallIfUnusedSwitch,
+      kUninstallSelfSwitch,  kUninstallSwitch,
+      kUpdateSwitch,         kWakeSwitch,
+      kHealthCheckSwitch,    kHandoffSwitch,
+      kRuntimeSwitch,
   };
   const char** it = std::find_if(
       std::begin(commands), std::end(commands),

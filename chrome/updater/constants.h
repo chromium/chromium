@@ -79,6 +79,7 @@ extern const char kUpdateSwitch[];
 
 // Installs the updater.
 extern const char kInstallSwitch[];
+extern const char kRuntimeSwitch[];
 
 // Contains the meta installer tag. The tag is a string of arguments, separated
 // by a delimiter (in this case, the delimiter is =). The tag is typically
