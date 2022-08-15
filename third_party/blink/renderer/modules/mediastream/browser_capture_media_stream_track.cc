@@ -246,8 +246,8 @@ BrowserCaptureMediaStreamTrack* BrowserCaptureMediaStreamTrack::clone(
   // Instantiate the clone.
   BrowserCaptureMediaStreamTrack* cloned_track =
       MakeGarbageCollected<BrowserCaptureMediaStreamTrack>(
-          execution_context, Component()->Clone(), GetReadyState(),
-          base::DoNothing(), descriptor_id(),
+          execution_context, Component()->Clone(ClonePlatformTrack()),
+          GetReadyState(), base::DoNothing(), descriptor_id(),
           /*is_clone=*/true);
 
   // Copy state. (Note: Invokes FocusableMediaStreamTrack::CloneInternal().)

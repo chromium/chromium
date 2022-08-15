@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_reader.h"
+#include "third_party/blink/renderer/modules/mediastream/local_media_stream_audio_source.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_sink.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
@@ -42,6 +43,25 @@ class TestObserver : public GarbageCollected<TestObserver>,
   int observation_count_ = 0;
 };
 
+std::unique_ptr<MockMediaStreamVideoSource> MakeMockMediaStreamVideoSource() {
+  return base::WrapUnique(new MockMediaStreamVideoSource(
+      media::VideoCaptureFormat(gfx::Size(640, 480), 30.0,
+                                media::PIXEL_FORMAT_I420),
+      true));
+}
+
+std::unique_ptr<blink::LocalMediaStreamAudioSource>
+MakeLocalMediaStreamAudioSource() {
+  blink::MediaStreamDevice device;
+  device.type = blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE;
+  return std::make_unique<blink::LocalMediaStreamAudioSource>(
+      /*blink::WebLocalFrame=*/nullptr, device,
+      /*requested_buffer_size=*/nullptr,
+      /*disable_local_echo=*/false,
+      blink::WebPlatformMediaStreamSource::ConstraintsRepeatingCallback(),
+      blink::scheduler::GetSingleThreadTaskRunnerForTesting());
+}
+
 }  // namespace
 
 class MediaStreamTrackImplTest : public testing::Test {
@@ -49,6 +69,8 @@ class MediaStreamTrackImplTest : public testing::Test {
   ~MediaStreamTrackImplTest() override {
     WebHeap::CollectAllGarbageForTesting();
   }
+
+  ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
 };
 
 TEST_F(MediaStreamTrackImplTest, StopTrackTriggersObservers) {
@@ -143,6 +165,58 @@ TEST_F(MediaStreamTrackImplTest, MutedDoesntUpdateAfterEnding) {
   source->SetReadyState(MediaStreamSource::kReadyStateMuted);
 
   EXPECT_EQ(track->muted(), false);
+}
+
+TEST_F(MediaStreamTrackImplTest, CloneVideoTrack) {
+  V8TestingScope v8_scope;
+
+  std::unique_ptr<MediaStreamVideoSource> platform_source =
+      MakeMockMediaStreamVideoSource();
+  MediaStreamVideoSource* platform_source_ptr = platform_source.get();
+  MediaStreamSource* source = MakeGarbageCollected<MediaStreamSource>(
+      "id", MediaStreamSource::StreamType::kTypeVideo, "name",
+      false /* remote */, std::move(platform_source));
+  auto platform_track = std::make_unique<MediaStreamVideoTrack>(
+      platform_source_ptr,
+      WebPlatformMediaStreamSource::ConstraintsOnceCallback(),
+      true /* enabled */);
+  MediaStreamComponent* component =
+      MakeGarbageCollected<MediaStreamComponentImpl>(source,
+                                                     std::move(platform_track));
+  MediaStreamTrack* track = MakeGarbageCollected<MediaStreamTrackImpl>(
+      v8_scope.GetExecutionContext(), component);
+
+  MediaStreamTrack* clone = track->clone(v8_scope.GetExecutionContext());
+
+  // The clone should have a component initialized with a MediaStreamVideoTrack
+  // instance as its platform track.
+  EXPECT_TRUE(clone->Component()->GetPlatformTrack());
+  EXPECT_TRUE(MediaStreamVideoTrack::From(clone->Component()));
+
+  // Clones should share the same source object.
+  EXPECT_EQ(clone->Component()->Source(), source);
+}
+
+TEST_F(MediaStreamTrackImplTest, CloneAudioTrack) {
+  V8TestingScope v8_scope;
+
+  MediaStreamSource* source = MakeGarbageCollected<MediaStreamSource>(
+      "id", MediaStreamSource::StreamType::kTypeAudio, "name",
+      false /* remote */, MakeLocalMediaStreamAudioSource());
+  MediaStreamComponent* component =
+      MakeGarbageCollected<MediaStreamComponentImpl>(source);
+  MediaStreamTrack* track = MakeGarbageCollected<MediaStreamTrackImpl>(
+      v8_scope.GetExecutionContext(), component);
+
+  MediaStreamTrack* clone = track->clone(v8_scope.GetExecutionContext());
+
+  // The clone should have a component initialized with a MediaStreamAudioTrack
+  // instance as its platform track.
+  EXPECT_TRUE(clone->Component()->GetPlatformTrack());
+  EXPECT_TRUE(MediaStreamAudioTrack::From(clone->Component()));
+
+  // Clones should share the same source object.
+  EXPECT_EQ(clone->Component()->Source(), source);
 }
 
 }  // namespace blink

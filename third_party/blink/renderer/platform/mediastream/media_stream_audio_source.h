@@ -148,12 +148,12 @@ class PLATFORM_EXPORT MediaStreamAudioSource
     return error_code_;
   }
 
- protected:
   // Returns a new MediaStreamAudioTrack. |id| is the blink track's ID in UTF-8.
   // Subclasses may override this to provide an extended implementation.
   virtual std::unique_ptr<MediaStreamAudioTrack> CreateMediaStreamAudioTrack(
       const std::string& id);
 
+ protected:
   // Returns true if the source has already been started and has not yet been
   // stopped. Otherwise, attempts to start the source and returns true if
   // successful. While the source is running, it may provide audio on any thread
