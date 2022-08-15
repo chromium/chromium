@@ -25,6 +25,13 @@ void RunCallbackWithError(base::File::Error error,
 
 }  // namespace
 
+ParsedTrashInfoData::ParsedTrashInfoData() = default;
+ParsedTrashInfoData::~ParsedTrashInfoData() = default;
+
+ParsedTrashInfoData::ParsedTrashInfoData(ParsedTrashInfoData&& other) = default;
+ParsedTrashInfoData& ParsedTrashInfoData::operator=(
+    ParsedTrashInfoData&& other) = default;
+
 TrashInfoValidator::TrashInfoValidator(Profile* profile,
                                        const base::FilePath& base_path) {
   enabled_trash_locations_ =
@@ -100,14 +107,15 @@ void TrashInfoValidator::OnTrashedFileExists(
   auto complete_callback = base::BindPostTask(
       base::SequencedTaskRunnerHandle::Get(),
       base::BindOnce(&TrashInfoValidator::OnTrashInfoParsed,
-                     weak_ptr_factory_.GetWeakPtr(), mount_point_path,
-                     trashed_file_location, std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), trash_info_path,
+                     mount_point_path, trashed_file_location,
+                     std::move(callback)));
 
-  parser_->ParseTrashInfoFile(std::move(trash_info_path),
-                              std::move(complete_callback));
+  parser_->ParseTrashInfoFile(trash_info_path, std::move(complete_callback));
 }
 
 void TrashInfoValidator::OnTrashInfoParsed(
+    const base::FilePath& trash_info_path,
     const base::FilePath& mount_point_path,
     const base::FilePath& trashed_file_location,
     ValidateAndParseTrashInfoCallback callback,
@@ -133,11 +141,11 @@ void TrashInfoValidator::OnTrashInfoParsed(
       base::StringPiece(restore_path.value()).substr(1);
   base::FilePath absolute_restore_path = mount_point_path.Append(relative_path);
 
-  ParsedTrashInfoData parsed_data = {
-      .trashed_file_path = std::move(trashed_file_location),
-      .absolute_restore_path = std::move(absolute_restore_path),
-      .deletion_date = std::move(deletion_date),
-  };
+  ParsedTrashInfoData parsed_data;
+  parsed_data.trash_info_path = std::move(trash_info_path);
+  parsed_data.trashed_file_path = std::move(trashed_file_location);
+  parsed_data.absolute_restore_path = std::move(absolute_restore_path);
+  parsed_data.deletion_date = std::move(deletion_date);
 
   std::move(callback).Run(
       base::FileErrorOr<ParsedTrashInfoData>(std::move(parsed_data)));

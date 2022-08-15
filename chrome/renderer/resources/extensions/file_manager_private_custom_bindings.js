@@ -387,6 +387,22 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
         }
         fileManagerPrivateInternal.startIOTask(type, urls, newParams, callback);
       });
+
+  apiFunctions.setHandleRequest(
+      'parseTrashInfoFiles', function(entries, callback) {
+        const urls = entries.map(entry => getEntryURL(entry));
+        fileManagerPrivateInternal.parseTrashInfoFiles(
+            urls, function(entryDescriptions) {
+              // Convert the restoreEntry to a DirectoryEntry and the deletion
+              // date to a JS Date.
+              callback(entryDescriptions.map(description => {
+                description.restoreEntry =
+                    GetExternalFileEntry(description.restoreEntry);
+                description.deletionDate = new Date(description.deletionDate);
+                return description;
+              }));
+            });
+      });
 });
 
 bindingUtil.registerEventArgumentMassager(

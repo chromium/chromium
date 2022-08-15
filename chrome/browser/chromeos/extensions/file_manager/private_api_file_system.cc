@@ -18,6 +18,7 @@
 #include "ash/components/disks/disk.h"
 #include "ash/components/disks/disk_mount_manager.h"
 #include "ash/constants/ash_features.h"
+#include "base/barrier_callback.h"
 #include "base/bind.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
@@ -1866,6 +1867,121 @@ FileManagerPrivateCancelIOTaskFunction::Run() {
 
   volume_manager->io_task_controller()->Cancel(params->task_id);
   return RespondNow(NoArguments());
+}
+
+FileManagerPrivateInternalParseTrashInfoFilesFunction::
+    FileManagerPrivateInternalParseTrashInfoFilesFunction() = default;
+
+FileManagerPrivateInternalParseTrashInfoFilesFunction::
+    ~FileManagerPrivateInternalParseTrashInfoFilesFunction() = default;
+
+ExtensionFunction::ResponseAction
+FileManagerPrivateInternalParseTrashInfoFilesFunction::Run() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  using extensions::api::file_manager_private_internal::ParseTrashInfoFiles::
+      Params;
+  const std::unique_ptr<Params> params(Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  auto* const profile = Profile::FromBrowserContext(browser_context());
+  file_system_context_ =
+      file_manager::util::GetFileSystemContextForRenderFrameHost(
+          profile, render_frame_host());
+
+  std::vector<base::FilePath> trash_info_paths;
+  for (const std::string& url : params->urls) {
+    storage::FileSystemURL cracked_url =
+        file_system_context_->CrackURLInFirstPartyContext(GURL(url));
+    if (!cracked_url.is_valid()) {
+      return RespondNow(Error("Invalid source url."));
+    }
+    trash_info_paths.push_back(cracked_url.path());
+  }
+
+  validator_ = std::make_unique<file_manager::trash::TrashInfoValidator>(
+      profile, /*base_path=*/base::FilePath());
+
+  auto barrier_callback = base::BarrierCallback<
+      base::FileErrorOr<file_manager::trash::ParsedTrashInfoData>>(
+      trash_info_paths.size(),
+      base::BindOnce(&FileManagerPrivateInternalParseTrashInfoFilesFunction::
+                         OnTrashInfoFilesParsed,
+                     this));
+
+  for (const base::FilePath& path : trash_info_paths) {
+    validator_->ValidateAndParseTrashInfo(std::move(path), barrier_callback);
+  }
+
+  return RespondLater();
+}
+
+void FileManagerPrivateInternalParseTrashInfoFilesFunction::
+    OnTrashInfoFilesParsed(
+        std::vector<base::FileErrorOr<file_manager::trash::ParsedTrashInfoData>>
+            parsed_data) {
+  file_manager::util::FileDefinitionList file_definition_list;
+  std::vector<file_manager::trash::ParsedTrashInfoData> valid_data;
+  url::Origin origin = render_frame_host()->GetLastCommittedOrigin();
+
+  for (auto& trash_info_data : parsed_data) {
+    if (trash_info_data.is_error()) {
+      LOG(ERROR) << "Failed parsing trashinfo file: "
+                 << trash_info_data.error();
+      continue;
+    }
+
+    file_manager::util::FileDefinition file_definition;
+    if (!file_manager::util::ConvertAbsoluteFilePathToRelativeFileSystemPath(
+            Profile::FromBrowserContext(browser_context()), origin.GetURL(),
+            trash_info_data.value().absolute_restore_path,
+            &file_definition.virtual_path)) {
+      LOG(ERROR) << "Failed to convert absolute path to relative path";
+      continue;
+    }
+
+    file_definition_list.push_back(std::move(file_definition));
+    valid_data.push_back(std::move(trash_info_data.value()));
+  }
+
+  file_manager::util::ConvertFileDefinitionListToEntryDefinitionList(
+      file_system_context_, origin, std::move(file_definition_list),
+      base::BindOnce(&FileManagerPrivateInternalParseTrashInfoFilesFunction::
+                         OnConvertFileDefinitionListToEntryDefinitionList,
+                     this, std::move(valid_data)));
+}
+
+void FileManagerPrivateInternalParseTrashInfoFilesFunction::
+    OnConvertFileDefinitionListToEntryDefinitionList(
+        std::vector<file_manager::trash::ParsedTrashInfoData> parsed_data,
+        std::unique_ptr<file_manager::util::EntryDefinitionList>
+            entry_definition_list) {
+  DCHECK_EQ(parsed_data.size(), entry_definition_list->size());
+  std::vector<api::file_manager_private_internal::ParsedTrashInfoFile> results;
+
+  for (int i = 0; i < parsed_data.size(); ++i) {
+    const auto& [trash_info_path, trashed_file_path, absolute_restore_path,
+                 deletion_date] = parsed_data[i];
+    api::file_manager_private_internal::ParsedTrashInfoFile info;
+
+    info.restore_entry.file_system_name =
+        entry_definition_list->at(i).file_system_name;
+    info.restore_entry.file_system_root =
+        entry_definition_list->at(i).file_system_root_url;
+    info.restore_entry.file_full_path =
+        base::FilePath("/")
+            .Append(entry_definition_list->at(i).full_path)
+            .value();
+    info.restore_entry.file_is_directory =
+        entry_definition_list->at(i).is_directory;
+    info.trash_info_file_name = trash_info_path.BaseName().value();
+    info.deletion_date = deletion_date.ToJsTimeIgnoringNull();
+
+    results.push_back(std::move(info));
+  }
+
+  Respond(ArgumentList(extensions::api::file_manager_private_internal::
+                           ParseTrashInfoFiles::Results::Create(results)));
 }
 
 }  // namespace extensions

@@ -17,6 +17,11 @@ namespace fileManagerPrivateInternal {
     DOMString? destinationFolderUrl;
     DOMString? password;
   };
+  dictionary ParsedTrashInfoFile {
+    EntryDescription restoreEntry;
+    DOMString trashInfoFileName;
+    double deletionDate;
+  };
 
   callback SimpleCallback = void();
   callback ResolveIsolatedEntriesCallback = void(EntryDescription[] entries);
@@ -53,6 +58,7 @@ namespace fileManagerPrivateInternal {
   callback GetThumbnailCallback = void(DOMString ThumbnailDataUrl);
   callback BooleanCallback = void(boolean result);
   callback GetVolumeRootCallback = void(EntryDescription rootDir);
+callback ParseTrashInfoFilesCallback = void(ParsedTrashInfoFile[] files);
 
   interface Functions {
     static void resolveIsolatedEntries(DOMString[] urls,
@@ -155,5 +161,7 @@ namespace fileManagerPrivateInternal {
                             DOMString[] urls,
                             IOTaskParams params,
                             optional IOTaskIdCallback callback);
+    static void parseTrashInfoFiles(DOMString[] urls,
+                                    ParseTrashInfoFilesCallback callback);
   };
 };

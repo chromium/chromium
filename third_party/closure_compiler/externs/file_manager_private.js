@@ -772,6 +772,15 @@ chrome.fileManagerPrivate.DlpLevel = {
 chrome.fileManagerPrivate.DlpRestrictionDetails;
 
 /**
+ * @typedef {{
+ *   restoreEntry: !Entry,
+ *   trashInfoFileName: string,
+ *   deletionDate: Date,
+ * }}
+ */
+chrome.fileManagerPrivate.ParsedTrashInfoFile;
+
+/**
  * Logout the current user for navigating to the re-authentication screen for
  * the Google account.
  */
@@ -1530,6 +1539,15 @@ chrome.fileManagerPrivate.openManageSyncSettings = function() {};
  *     of the title bar.
  */
 chrome.fileManagerPrivate.getFrameColor = function(callback) {};
+
+/**
+ * Parses the supplied .trashinfo files and returns the successfully parsed
+ * data.
+ * @param {!Array<!Entry>} entries
+ * @param {function(!Array<!chrome.fileManagerPrivate.ParsedTrashInfoFile>):
+ *     void} callback
+ */
+chrome.fileManagerPrivate.parseTrashInfoFiles = function(entries, callback) {};
 
 /** @type {!ChromeEvent} */
 chrome.fileManagerPrivate.onMountCompleted;

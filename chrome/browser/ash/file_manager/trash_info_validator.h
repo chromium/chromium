@@ -19,6 +19,16 @@ namespace file_manager::trash {
 // On a successful parse of .trashinfo files, returns the restoration path,
 // deletion date and actual location of the trashed file.
 struct ParsedTrashInfoData {
+  ParsedTrashInfoData();
+  ~ParsedTrashInfoData();
+
+  ParsedTrashInfoData(ParsedTrashInfoData&& other);
+  ParsedTrashInfoData& operator=(ParsedTrashInfoData&& other);
+
+  // The on-disk location of the .trashinfo file, e.g.
+  // .Trash/info/foo.txt.trashinfo.
+  base::FilePath trash_info_path;
+
   // The actual on-disk location of the trashed file, e.g. .Trash/files/foo.txt.
   base::FilePath trashed_file_path;
 
@@ -87,7 +97,8 @@ class TrashInfoValidator {
                            bool exists);
 
   // Invoked when the TrashService has finished parsing the .trashinfo file.
-  void OnTrashInfoParsed(const base::FilePath& mount_point_path,
+  void OnTrashInfoParsed(const base::FilePath& trash_info_path,
+                         const base::FilePath& mount_point_path,
                          const base::FilePath& trashed_file_location,
                          ValidateAndParseTrashInfoCallback callback,
                          base::File::Error status,

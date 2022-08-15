@@ -1071,6 +1071,19 @@ dictionary MountableGuest {
   VmType vmType;
 };
 
+dictionary ParsedTrashInfoFile {
+  // The entry that the trashed file should be restored to. This does not exist
+  // but is used to identify whether the parent location still exists and
+  // identify the file name to restore to.
+  [instanceOf=Entry] object restoreEntry;
+
+  // The file name for the .trashinfo.
+  DOMString trashInfoFileName;
+
+  // The date the file was originally deleted.
+  double deletionDate;
+};
+
 // Callback that does not take arguments.
 callback SimpleCallback = void();
 
@@ -1241,6 +1254,8 @@ callback HoldingSpaceStateCallback = void(HoldingSpaceState state);
 
 // |guests| List of Guest OSs which have available mounts.
 callback ListMountableGuestsCallback = void(MountableGuest[] guest);
+
+callback ParseTrashInfoFilesCallback = void(ParsedTrashInfoFile[] files);
 
 interface Functions {
   // Logout the current user for navigating to the re-authentication screen for
@@ -1789,6 +1804,11 @@ interface Functions {
 
   // Opens the dialog to manage the currently syncing folders.
   static void openManageSyncSettings();
+
+  // Validates and parses the supplied `entries` as .trashinfo files.
+  [nocompile]
+  static void parseTrashInfoFiles([instanceOf=Entry] object[] entries,
+                                  ParseTrashInfoFilesCallback callback);
 };
 
 // Events supported by fileManagerPrivate API. These events are broadcasted.

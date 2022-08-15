@@ -18,6 +18,7 @@
 #include "ash/components/drivefs/mojom/drivefs.mojom-forward.h"
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/file_manager/trash_info_validator.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/extensions/file_manager/logged_extension_function.h"
 #include "components/drive/file_errors.h"
@@ -537,6 +538,43 @@ class FileManagerPrivateCancelIOTaskFunction : public LoggedExtensionFunction {
 
   // ExtensionFunction overrides
   ResponseAction Run() override;
+};
+
+class FileManagerPrivateInternalParseTrashInfoFilesFunction
+    : public LoggedExtensionFunction {
+ public:
+  FileManagerPrivateInternalParseTrashInfoFilesFunction();
+
+  DECLARE_EXTENSION_FUNCTION("fileManagerPrivateInternal.parseTrashInfoFiles",
+                             FILEMANAGERPRIVATEINTERNAL_PARSETRASHINFOFILES)
+
+ protected:
+  ~FileManagerPrivateInternalParseTrashInfoFilesFunction() override;
+
+  // ExtensionFunction overrides
+  ResponseAction Run() override;
+
+ private:
+  // Invoked after calling the `ValidateAndParseTrashInfoFile` with all the data
+  // retrieved from the .trashinfo files. If any are error'd out they are logged
+  // and ultimately discarded.
+  void OnTrashInfoFilesParsed(
+      std::vector<base::FileErrorOr<file_manager::trash::ParsedTrashInfoData>>
+          parsed_data);
+
+  // After converting the restorePath (converted to Entry to ensure we can
+  // perform a getMetadata on it to verify existence) zip the 2 `std::vector`'s
+  // together to return back to the UI.
+  void OnConvertFileDefinitionListToEntryDefinitionList(
+      std::vector<file_manager::trash::ParsedTrashInfoData> parsed_data,
+      std::unique_ptr<file_manager::util::EntryDefinitionList>
+          entry_definition_list);
+
+  scoped_refptr<storage::FileSystemContext> file_system_context_;
+
+  // The TrashInfoValidator that maintains a connection to the TrashService
+  // which performs the parsing.
+  std::unique_ptr<file_manager::trash::TrashInfoValidator> validator_ = nullptr;
 };
 
 }  // namespace extensions
