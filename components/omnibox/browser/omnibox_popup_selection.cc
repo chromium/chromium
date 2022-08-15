@@ -52,15 +52,26 @@ bool OmniboxPopupSelection::IsControlPresentOnMatch(
 
   switch (state) {
     case FOCUSED_BUTTON_HEADER: {
-      // For the first match, if it a suggestion_group_id, then it has a header.
-      if (line == 0)
-        return match.suggestion_group_id.has_value();
+      // Trivial case where there's no header at all.
+      if (!match.suggestion_group_id.has_value()) {
+        return false;
+      }
+      // Empty string headers are not rendered and should not be traversed.
+      if (result.GetHeaderForSuggestionGroup(match.suggestion_group_id.value())
+              .empty()) {
+        return false;
+      }
 
-      // Otherwise, we only show headers that are distinct from the previous
+      // Now we know there's an existing header. First line header is always
+      // distinct from the previous match (because there is no previous match).
+      if (line == 0) {
+        return true;
+      }
+
+      // Otherwise, we verify that this header is distinct from the previous
       // match's header.
       const auto& previous_match = result.match_at(line - 1);
-      return match.suggestion_group_id.has_value() &&
-             match.suggestion_group_id != previous_match.suggestion_group_id;
+      return match.suggestion_group_id != previous_match.suggestion_group_id;
     }
     case NORMAL:
       return true;

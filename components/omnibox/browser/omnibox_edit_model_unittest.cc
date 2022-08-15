@@ -720,7 +720,7 @@ TEST_F(OmniboxEditModelPopupTest, PopupPositionChanging) {
 
 TEST_F(OmniboxEditModelPopupTest, PopupStepSelection) {
   ACMatches matches;
-  for (size_t i = 0; i < 5; ++i) {
+  for (size_t i = 0; i < 6; ++i) {
     AutocompleteMatch match(nullptr, 1000, false,
                             AutocompleteMatchType::URL_WHAT_YOU_TYPED);
     match.keyword = u"match";
@@ -743,12 +743,16 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelection) {
   // Make match index 4 have a suggestion_group_id to test header behavior.
   const auto kNewGroupId = SuggestionGroupId::kNonPersonalizedZeroSuggest1;
   matches[4].suggestion_group_id = kNewGroupId;
+  // Make match index 5 have a suggestion_group_id but no header text.
+  matches[5].suggestion_group_id = SuggestionGroupId::kHistoryCluster;
 
   auto* result = &model()->autocomplete_controller()->result_;
   result->AppendMatches(matches);
 
   SuggestionGroupsMap suggestion_groups_map;
   suggestion_groups_map[kNewGroupId].header = u"header";
+  suggestion_groups_map[SuggestionGroupId::kHistoryCluster].header = u"";
+
   // Do not set the original_group_id on purpose to test that default visibility
   // can be safely queried via AutocompleteResult::IsSuggestionGroupHidden().
   result->MergeSuggestionGroupsMap(suggestion_groups_map);
@@ -760,12 +764,12 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelection) {
   EXPECT_EQ(0u, model()->GetPopupSelection().line);
 
   // Step by lines forward.
-  for (size_t n : {1, 2, 3, 4, 0}) {
+  for (size_t n : {1, 2, 3, 4, 5, 0}) {
     model()->StepPopupSelection(Selection::kForward, Selection::kWholeLine);
     EXPECT_EQ(n, model()->GetPopupSelection().line);
   }
   // Step by lines backward.
-  for (size_t n : {4, 3, 2, 1, 0}) {
+  for (size_t n : {5, 4, 3, 2, 1, 0}) {
     model()->StepPopupSelection(Selection::kBackward, Selection::kWholeLine);
     EXPECT_EQ(n, model()->GetPopupSelection().line);
   }
@@ -782,6 +786,7 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelection) {
            Selection(3, Selection::FOCUSED_BUTTON_REMOVE_SUGGESTION),
            Selection(4, Selection::FOCUSED_BUTTON_HEADER),
            Selection(4, Selection::NORMAL),
+           Selection(5, Selection::NORMAL),
            Selection(0, Selection::NORMAL),
        }) {
     model()->StepPopupSelection(Selection::kForward, Selection::kStateOrLine);
@@ -790,6 +795,7 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelection) {
   // Step by states backward. Unlike prior to suggestion button row, there is
   // no difference in behavior for KEYWORD mode moving forward or backward.
   for (auto selection : {
+           Selection(5, Selection::NORMAL),
            Selection(4, Selection::NORMAL),
            Selection(4, Selection::FOCUSED_BUTTON_HEADER),
            Selection(3, Selection::FOCUSED_BUTTON_REMOVE_SUGGESTION),
@@ -801,6 +807,7 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelection) {
            Selection(1, Selection::FOCUSED_BUTTON_REMOVE_SUGGESTION),
            Selection(1, Selection::NORMAL),
            Selection(0, Selection::NORMAL),
+           Selection(5, Selection::NORMAL),
            Selection(4, Selection::NORMAL),
            Selection(4, Selection::FOCUSED_BUTTON_HEADER),
            Selection(3, Selection::FOCUSED_BUTTON_REMOVE_SUGGESTION),
@@ -813,7 +820,7 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelection) {
   model()->StepPopupSelection(Selection::kBackward, Selection::kAllLines);
   EXPECT_EQ(Selection(0, Selection::NORMAL), model()->GetPopupSelection());
   model()->StepPopupSelection(Selection::kForward, Selection::kAllLines);
-  EXPECT_EQ(Selection(4, Selection::NORMAL), model()->GetPopupSelection());
+  EXPECT_EQ(Selection(5, Selection::NORMAL), model()->GetPopupSelection());
 }
 
 TEST_F(OmniboxEditModelPopupTest, PopupStepSelectionWithHiddenGroupIds) {
