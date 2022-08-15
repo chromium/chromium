@@ -226,6 +226,10 @@ class WebNavigationApiTest : public ExtensionApiTest {
     // with deferred commits.
     command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
   }
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
 };
 
 class WebNavigationApiBackForwardCacheTest : public WebNavigationApiTest {
@@ -249,20 +253,12 @@ class WebNavigationApiTestWithContextType
     : public WebNavigationApiTest,
       public testing::WithParamInterface<ContextType> {
  public:
-  WebNavigationApiTestWithContextType()
-      : WebNavigationApiTest(GetParam()),
-        prerender_helper_(base::BindRepeating(
-            &WebNavigationApiTestWithContextType::GetWebContents,
-            base::Unretained(this))) {}
+  WebNavigationApiTestWithContextType() : WebNavigationApiTest(GetParam()) {}
   ~WebNavigationApiTestWithContextType() override = default;
   WebNavigationApiTestWithContextType(
       const WebNavigationApiTestWithContextType&) = delete;
   WebNavigationApiTestWithContextType& operator=(
       const WebNavigationApiTestWithContextType&) = delete;
-
-  content::WebContents* GetWebContents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
-  }
 
  protected:
   [[nodiscard]] bool RunTest(const char* name,
@@ -270,9 +266,22 @@ class WebNavigationApiTestWithContextType
     return RunExtensionTest(name, {},
                             {.allow_in_incognito = allow_in_incognito});
   }
+};
+
+class WebNavigationApiPrerenderTestWithContextType
+    : public WebNavigationApiTest,
+      public testing::WithParamInterface<ContextType> {
+ public:
+  WebNavigationApiPrerenderTestWithContextType()
+      : WebNavigationApiTest(GetParam()) {}
+  ~WebNavigationApiPrerenderTestWithContextType() override = default;
+  WebNavigationApiPrerenderTestWithContextType(
+      const WebNavigationApiPrerenderTestWithContextType&) = delete;
+  WebNavigationApiPrerenderTestWithContextType& operator=(
+      const WebNavigationApiPrerenderTestWithContextType&) = delete;
 
  private:
-  content::test::PrerenderTestHelper prerender_helper_;
+  content::test::ScopedPrerenderFeatureList prerender_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, Api) {
@@ -282,6 +291,17 @@ IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, Api) {
 IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, GetFrame) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("webnavigation/getFrame")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_P(WebNavigationApiPrerenderTestWithContextType, GetFrame) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  ASSERT_TRUE(RunExtensionTest("webnavigation/getFrame")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_P(WebNavigationApiPrerenderTestWithContextType,
+                       Prerendering) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  ASSERT_TRUE(RunExtensionTest("webnavigation/prerendering")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, GetFrameIncognito) {
@@ -303,6 +323,12 @@ INSTANTIATE_TEST_SUITE_P(PersistentBackground,
                          testing::Values(ContextType::kPersistentBackground));
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          WebNavigationApiTestWithContextType,
+                         testing::Values(ContextType::kServiceWorker));
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         WebNavigationApiPrerenderTestWithContextType,
+                         testing::Values(ContextType::kPersistentBackground));
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         WebNavigationApiPrerenderTestWithContextType,
                          testing::Values(ContextType::kServiceWorker));
 
 IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, ClientRedirect) {
