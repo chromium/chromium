@@ -7120,7 +7120,7 @@ crbug.com/1310202 [ Win ] wpt_internal/navigation-api/ordering-and-transition/na
 
 # Sheriff 2022-08-12
 crbug.com/1350611 [ Mac10.15 ] external/wpt/html/browsers/browsing-the-web/remote-context-helper-tests/navigation-same-document.window.html [ Failure Pass ]
-crbug.com/1352248 [ Mac10.15 ] virtual/disable-frequency-capping-for-overlay-popup-detection/http/tests/subresource_filter/overlay_popup_ad/overlay-popup-non-ad-followed-by-ad.html [ Failure Pass ]
+crbug.com/1352248 virtual/disable-frequency-capping-for-overlay-popup-detection/http/tests/subresource_filter/overlay_popup_ad/overlay-popup-non-ad-followed-by-ad.html [ Failure Pass ]
 crbug.com/1352543 [ Linux ] http/tests/devtools/elements/styles-3/styles-disable-then-delete.js [ Failure Pass ]
 crbug.com/1352545 [ Linux ] external/wpt/html/cross-origin-opener-policy/coop-sandbox-redirects-cuts-opener.https.html [ Failure Pass ]
 crbug.com/1352545 [ Linux ] external/wpt/html/interaction/focus/chrome-object-tab-focus-bug.html [ Failure Pass ]
