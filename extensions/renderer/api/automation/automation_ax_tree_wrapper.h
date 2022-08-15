@@ -6,7 +6,6 @@
 #define EXTENSIONS_RENDERER_API_AUTOMATION_AUTOMATION_AX_TREE_WRAPPER_H_
 
 #include "extensions/common/api/automation.h"
-#include "ui/accessibility/ax_event_generator.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_manager.h"
@@ -138,7 +137,6 @@ class AutomationAXTreeWrapper : public ui::AXTreeManager {
   AutomationInternalCustomBindings* owner_;
   std::vector<int> deleted_node_ids_;
   std::vector<int> text_changed_node_ids_;
-  ui::AXEventGenerator event_generator_;
 
   int32_t accessibility_focused_id_ = ui::kInvalidAXNodeID;
 

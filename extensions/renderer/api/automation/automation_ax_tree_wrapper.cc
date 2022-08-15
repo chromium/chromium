@@ -43,8 +43,7 @@ AutomationAXTreeWrapper::AutomationAXTreeWrapper(
     ui::AXTreeID tree_id,
     AutomationInternalCustomBindings* owner)
     : ui::AXTreeManager(tree_id, std::make_unique<ui::AXTree>()),
-      owner_(owner),
-      event_generator_(ax_tree()) {}
+      owner_(owner) {}
 
 AutomationAXTreeWrapper::~AutomationAXTreeWrapper() = default;
 
