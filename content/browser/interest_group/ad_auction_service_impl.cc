@@ -241,12 +241,11 @@ class FencedFrameURLMappingObserver
   ~FencedFrameURLMappingObserver() override = default;
 
   void OnFencedFrameURLMappingComplete(
-      absl::optional<GURL> mapped_url,
-      absl::optional<AdAuctionData> ad_auction_data,
-      absl::optional<FencedFrameURLMapping::PendingAdComponentsMap>
-          pending_ad_components_map,
-      ReportingMetadata& reporting_metadata) override {
-    mapped_url_ = mapped_url;
+      const absl::optional<FencedFrameURLMapping::FencedFrameProperties>&
+          properties) override {
+    if (properties) {
+      mapped_url_ = properties->mapped_url;
+    }
     called_ = true;
   }
 

@@ -529,6 +529,19 @@ class CONTENT_EXPORT FrameTreeNode {
   void SetSrcdocValue(const std::string& srcdoc_value);
   const std::string& srcdoc_value() const { return srcdoc_value_; }
 
+  void set_fenced_frame_properties(
+      absl::optional<FencedFrameURLMapping::FencedFrameProperties>&
+          fenced_frame_properties) {
+    DCHECK_EQ(fenced_frame_status_,
+              RenderFrameHostImpl::FencedFrameStatus::kFencedFrameRoot);
+    fenced_frame_properties_ = fenced_frame_properties;
+  }
+
+  const absl::optional<FencedFrameURLMapping::FencedFrameProperties>&
+  fenced_frame_properties() {
+    return fenced_frame_properties_;
+  }
+
   void set_shared_storage_budget_metadata(
       FencedFrameURLMapping::SharedStorageBudgetMetadata*
           shared_storage_budget_metadata) {
@@ -769,6 +782,13 @@ class CONTENT_EXPORT FrameTreeNode {
 
   const RenderFrameHostImpl::FencedFrameStatus fenced_frame_status_ =
       RenderFrameHostImpl::FencedFrameStatus::kNotNestedInFencedFrame;
+
+  // If this is a fenced frame resulting from a urn:uuid navigation, this
+  // contains all the metadata specifying the resulting context.
+  // TODO(crbug.com/1347953): Replace redundant variables in this file with
+  // accesses to the fields of this object.
+  absl::optional<FencedFrameURLMapping::FencedFrameProperties>
+      fenced_frame_properties_;
 
   // If this is a fenced frame resulting from a shared storage url selection
   // operation, this contains the metadata for shared storage budget charging.

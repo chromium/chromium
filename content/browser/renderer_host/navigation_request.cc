@@ -2066,14 +2066,11 @@ bool NavigationRequest::NeedFencedFrameURLMapping() {
 }
 
 void NavigationRequest::OnFencedFrameURLMappingComplete(
-    absl::optional<GURL> mapped_url,
-    absl::optional<AdAuctionData> ad_auction_data,
-    absl::optional<FencedFrameURLMapping::PendingAdComponentsMap>
-        pending_ad_components_map,
-    ReportingMetadata& reporting_metadata) {
+    const absl::optional<FencedFrameURLMapping::FencedFrameProperties>&
+        properties) {
   is_deferred_on_fenced_frame_url_mapping_ = false;
 
-  if (mapped_url) {
+  if (properties) {
     // The URN mapping can happen on regular iframes if the feature
     // `AllowURNsInIframes` is enabled. We will ignore the leakage via iframe,
     // and will only track the shared storage budget for fenced frame.
@@ -2083,15 +2080,16 @@ void NavigationRequest::OnFencedFrameURLMappingComplete(
               common_params_->url);
     }
 
-    common_params_->url = mapped_url.value();
-    commit_params_->original_url = mapped_url.value();
-    ad_auction_data_ = std::move(ad_auction_data);
+    fenced_frame_properties_ = properties;
+    common_params_->url = properties->mapped_url;
+    commit_params_->original_url = properties->mapped_url;
+    ad_auction_data_ = properties->ad_auction_data;
     // TODO(crbug/1281643): move into commit_params_->ad_auction_components
     // directly.
-    pending_ad_components_map_ = std::move(pending_ad_components_map);
-    if (!reporting_metadata.metadata.empty()) {
+    pending_ad_components_map_ = properties->pending_ad_components_map;
+    if (!properties->reporting_metadata.metadata.empty()) {
       commit_params_->fenced_frame_reporting_metadata =
-          reporting_metadata.Clone();
+          properties->reporting_metadata.Clone();
     }
   } else {
     if (frame_tree_node_->IsFencedFrameRoot() &&
@@ -6105,6 +6103,12 @@ void NavigationRequest::DidCommitNavigation(
   }
   previous_main_frame_url_ = previous_main_frame_url;
   navigation_type_ = navigation_type;
+
+  // When the embedder navigates a fenced frame root, the navigation
+  // installs a new set of inner fenced frame properties.
+  if (is_embedder_initiated_fenced_frame_navigation_) {
+    frame_tree_node()->set_fenced_frame_properties(fenced_frame_properties_);
+  }
 
   // Same-document navigations won't affect budget metadata.
   if (!DidEncounterError() && !IsSameDocument()) {

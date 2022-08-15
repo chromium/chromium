@@ -51,16 +51,20 @@ TestFencedFrameURLMappingResultObserver::
     ~TestFencedFrameURLMappingResultObserver() = default;
 
 void TestFencedFrameURLMappingResultObserver::OnFencedFrameURLMappingComplete(
-    absl::optional<GURL> mapped_url,
-    absl::optional<AdAuctionData> ad_auction_data,
-    absl::optional<FencedFrameURLMapping::PendingAdComponentsMap>
-        pending_ad_components_map,
-    ReportingMetadata& reporting_metadata) {
+    const absl::optional<FencedFrameURLMapping::FencedFrameProperties>&
+        properties) {
   mapping_complete_observed_ = true;
-  mapped_url_ = std::move(mapped_url);
-  ad_auction_data_ = ad_auction_data;
-  pending_ad_components_map_ = std::move(pending_ad_components_map);
-  reporting_metadata_ = reporting_metadata;
+  if (properties) {
+    mapped_url_ = properties->mapped_url;
+    ad_auction_data_ = properties->ad_auction_data;
+    pending_ad_components_map_ = properties->pending_ad_components_map;
+    reporting_metadata_ = properties->reporting_metadata;
+  } else {
+    mapped_url_ = absl::nullopt;
+    ad_auction_data_ = absl::nullopt;
+    pending_ad_components_map_ = absl::nullopt;
+    reporting_metadata_ = ReportingMetadata();
+  }
 }
 
 }  // namespace content

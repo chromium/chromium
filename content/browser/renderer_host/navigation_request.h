@@ -1041,11 +1041,8 @@ class CONTENT_EXPORT NavigationRequest
   // Called from `FencedFrameURLMapping` when the mapping decision is made, and
   // resume the deferred navigation.
   void OnFencedFrameURLMappingComplete(
-      absl::optional<GURL> mapped_url,
-      absl::optional<AdAuctionData> ad_auction_data,
-      absl::optional<FencedFrameURLMapping::PendingAdComponentsMap>
-          pending_ad_components_map,
-      ReportingMetadata& reporting_metadata) override;
+      const absl::optional<FencedFrameURLMapping::FencedFrameProperties>&
+          properties) override;
 
   // Called from BeginNavigation(), OnPrerenderingActivationChecksComplete(),
   // or OnFencedFrameURLMappingComplete().
@@ -2103,6 +2100,19 @@ class CONTENT_EXPORT NavigationRequest
   // (urn:uuid). The most recent navigation may be the current
   // NavigationRequest.
   const bool is_target_fenced_frame_root_originating_from_opaque_url_ = false;
+
+  // On every embedder-initiated navigation of a fenced frame, we reinitialize
+  // the fenced frame properties.
+  // If the embedder-initiated navigation is to an opaque url (urn:uuid), i.e.
+  // `is_embedder_initiated_fenced_frame_opaque_url_navigation_`, then
+  // this will be non-empty (containing the properties bound to the opaque url),
+  // and we will store this new set of fenced frame properties in the fenced
+  // frame root FrameTreeNode.
+  // If the embedder-initiated navigation is not to an opaque url, then
+  // this will be nullopt, and we will install it in order to clear the old
+  // fenced frame properties.
+  absl::optional<FencedFrameURLMapping::FencedFrameProperties>
+      fenced_frame_properties_;
 
   // If this navigation is a load in a fenced frame of a URN URL that resulted
   // from an interest group auction, this contains some information about the

@@ -36,11 +36,8 @@ class TestFencedFrameURLMappingResultObserver
   ~TestFencedFrameURLMappingResultObserver() override;
 
   void OnFencedFrameURLMappingComplete(
-      absl::optional<GURL> mapped_url,
-      absl::optional<AdAuctionData> ad_auction_data,
-      absl::optional<FencedFrameURLMapping::PendingAdComponentsMap>
-          pending_ad_components_map,
-      ReportingMetadata& reporting_metadata) override;
+      const absl::optional<FencedFrameURLMapping::FencedFrameProperties>&
+          properties) override;
 
   bool mapping_complete_observed() const { return mapping_complete_observed_; }
 
