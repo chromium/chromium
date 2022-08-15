@@ -2889,7 +2889,8 @@ const Element* NearestOpenAncestralPopupRecursive(
   int position = -1;
   auto update = [&ancestor, &position, &popup_positions,
                  upper_bound](const Element* popup) {
-    if (popup && popup->popupOpen()) {
+    if (popup && popup->popupOpen() &&
+        popup->PopupType() != PopupValueType::kManual) {
       DCHECK(popup_positions.Contains(popup));
       int new_position = popup_positions.at(popup);
       if (new_position > position && new_position < upper_bound) {
@@ -2994,14 +2995,16 @@ const Element* Element::NearestOpenAncestralPopup(const Node* node,
          current_node = FlatTreeTraversal::Parent(*current_node)) {
       if (auto* current_element = DynamicTo<Element>(current_node);
           current_element && current_element->HasValidPopupAttribute() &&
-          current_element->popupOpen()) {
+          current_element->popupOpen() &&
+          current_element->PopupType() != PopupValueType::kManual) {
         upper_bound =
             std::max(upper_bound, popup_positions.at(current_element) + 1);
       }
       if (auto* form_control =
               DynamicTo<HTMLFormControlElement>(current_node)) {
         if (auto target_pop_up = form_control->popupTargetElement().element;
-            target_pop_up && target_pop_up->popupOpen()) {
+            target_pop_up && target_pop_up->popupOpen() &&
+            target_pop_up->PopupType() != PopupValueType::kManual) {
           upper_bound =
               std::max(upper_bound, popup_positions.at(target_pop_up) + 1);
         }
