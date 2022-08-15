@@ -99,10 +99,16 @@ class GPU_GLES2_EXPORT SharedImageBacking {
   const Mailbox& mailbox() const { return mailbox_; }
   size_t estimated_size() const { return estimated_size_; }
   bool is_thread_safe() const { return !!lock_; }
+  bool is_reference_counted() const { return is_reference_counted_; }
+
   void OnContextLost();
 
   // Creates SkImageInfo matching backing size, format, alpha and color space.
   SkImageInfo AsSkImageInfo() const;
+
+  // Disables reference counting for backing. No references should be added,
+  // either before or after this is called.
+  void SetNotReferencedCounted();
 
   // Concrete functions to manage a ref count.
   void AddRef(SharedImageRepresentation* representation);
@@ -276,6 +282,8 @@ class GPU_GLES2_EXPORT SharedImageBacking {
   const SkAlphaType alpha_type_;
   const uint32_t usage_;
   const size_t estimated_size_;
+
+  bool is_reference_counted_ = true;
 
   raw_ptr<SharedImageFactory> factory_ = nullptr;
 

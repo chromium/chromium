@@ -177,8 +177,14 @@ SharedImageBacking::ProduceLegacyOverlay(SharedImageManager* manager,
 }
 #endif
 
+void SharedImageBacking::SetNotReferencedCounted() {
+  DCHECK(!HasAnyRefs());
+  is_reference_counted_ = false;
+}
+
 void SharedImageBacking::AddRef(SharedImageRepresentation* representation) {
   AutoLock auto_lock(this);
+  DCHECK(is_reference_counted_);
 
   bool first_ref = refs_.empty();
   refs_.push_back(representation);
@@ -190,6 +196,7 @@ void SharedImageBacking::AddRef(SharedImageRepresentation* representation) {
 
 void SharedImageBacking::ReleaseRef(SharedImageRepresentation* representation) {
   AutoLock auto_lock(this);
+  DCHECK(is_reference_counted_);
 
   auto found = std::find(refs_.begin(), refs_.end(), representation);
   DCHECK(found != refs_.end());

@@ -65,12 +65,15 @@ class GLTextureImageBacking : public ClearTrackingSharedImageBacking {
       MemoryTypeTracker* tracker,
       scoped_refptr<SharedContextState> context_state) override;
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override;
+  bool UploadFromMemory(const SkPixmap& pixmap) override;
 
   bool IsPassthrough() const { return is_passthrough_; }
 
   const bool is_passthrough_;
   gles2::Texture* texture_ = nullptr;
   scoped_refptr<gles2::TexturePassthrough> passthrough_texture_;
+
+  GLTextureImageBackingHelper::InitializeGLTextureParams texture_params_;
 
   sk_sp<SkPromiseImageTexture> cached_promise_texture_;
   scoped_refptr<gl::GLImageEGL> image_egl_;
