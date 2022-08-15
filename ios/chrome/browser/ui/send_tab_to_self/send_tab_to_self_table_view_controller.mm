@@ -142,6 +142,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
           initWithType:ItemTypeManageDevices];
   manageDevicesItem.accountAvatar = self.accountAvatar;
   manageDevicesItem.accountEmail = self.accountEmail;
+  manageDevicesItem.showManageDevicesLink = !_targetDeviceList.empty();
   manageDevicesItem.delegate = self.delegate;
   [model addItem:manageDevicesItem
       toSectionWithIdentifier:kSectionIdentifierEnumZero];

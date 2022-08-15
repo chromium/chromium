@@ -20,6 +20,8 @@
 @property(nonatomic, strong) UIImage* accountAvatar;
 // Email of the account sharing a tab.
 @property(nonatomic, strong) NSString* accountEmail;
+// Whether to display a link to the list of known devices for this account.
+@property(nonatomic, assign) BOOL showManageDevicesLink;
 // Delegate to open the link upon click.
 @property(nonatomic, weak) id<SendTabToSelfModalDelegate> delegate;
 
