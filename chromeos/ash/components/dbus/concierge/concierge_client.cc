@@ -141,6 +141,14 @@ class ConciergeClientImpl : public ConciergeClient {
                      std::move(callback));
   }
 
+  void StartVmWithFds(std::vector<base::ScopedFD> fds,
+                      const vm_tools::concierge::StartVmRequest& request,
+                      DBusMethodCallback<vm_tools::concierge::StartVmResponse>
+                          callback) override {
+    CallMethodWithFds(concierge::kStartVmMethod, request, std::move(fds),
+                      std::move(callback));
+  }
+
   void StopVm(const concierge::StopVmRequest& request,
               DBusMethodCallback<concierge::StopVmResponse> callback) override {
     CallMethod(concierge::kStopVmMethod, request, std::move(callback));
@@ -290,10 +298,10 @@ class ConciergeClientImpl : public ConciergeClient {
 
  private:
   template <typename RequestProto, typename ResponseProto>
-  void CallMethodWithFd(const std::string& method_name,
-                        const RequestProto& request,
-                        base::ScopedFD fd,
-                        DBusMethodCallback<ResponseProto> callback) {
+  void CallMethodWithFds(const std::string& method_name,
+                         const RequestProto& request,
+                         std::vector<base::ScopedFD> fds,
+                         DBusMethodCallback<ResponseProto> callback) {
     dbus::MethodCall method_call(concierge::kVmConciergeInterface, method_name);
     dbus::MessageWriter writer(&method_call);
 
@@ -304,13 +312,26 @@ class ConciergeClientImpl : public ConciergeClient {
       return;
     }
 
-    if (fd.is_valid())
-      writer.AppendFileDescriptor(fd.get());
+    for (auto& fd : fds) {
+      if (fd.is_valid())
+        writer.AppendFileDescriptor(fd.get());
+    }
 
     concierge_proxy_->CallMethod(
         &method_call, kConciergeDBusTimeoutMs,
         base::BindOnce(&ConciergeClientImpl::OnDBusProtoResponse<ResponseProto>,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
+  template <typename RequestProto, typename ResponseProto>
+  void CallMethodWithFd(const std::string& method_name,
+                        const RequestProto& request,
+                        base::ScopedFD fd,
+                        DBusMethodCallback<ResponseProto> callback) {
+    std::vector<base::ScopedFD> fds;
+    fds.push_back(std::move(fd));
+    CallMethodWithFds(method_name, request, std::move(fds),
+                      std::move(callback));
   }
 
   template <typename RequestProto, typename ResponseProto>

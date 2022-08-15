@@ -149,10 +149,19 @@ class COMPONENT_EXPORT(CONCIERGE) ConciergeClient : public DBusClient {
       DBusMethodCallback<vm_tools::concierge::StartVmResponse> callback) = 0;
 
   // Starts a Termina VM if there is not already one running.
-  // |fd| references an extra image for concierge to use.
+  // |fds| references an extra image for concierge to use.
   // |callback| is called after the method call finishes.
   virtual void StartVmWithFd(
       base::ScopedFD fd,
+      const vm_tools::concierge::StartVmRequest& request,
+      DBusMethodCallback<vm_tools::concierge::StartVmResponse> callback) = 0;
+
+  // Starts a Termina VM if there is not already one running.
+  // |fds| contains any number of file descriptors to be passed to concierge in
+  // |the order they appear in the vector.
+  // |callback| is called after the method call finishes.
+  virtual void StartVmWithFds(
+      std::vector<base::ScopedFD> fds,
       const vm_tools::concierge::StartVmRequest& request,
       DBusMethodCallback<vm_tools::concierge::StartVmResponse> callback) = 0;
 

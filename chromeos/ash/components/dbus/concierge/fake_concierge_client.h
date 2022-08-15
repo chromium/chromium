@@ -78,6 +78,10 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
                      const vm_tools::concierge::StartVmRequest& request,
                      DBusMethodCallback<vm_tools::concierge::StartVmResponse>
                          callback) override;
+  void StartVmWithFds(std::vector<base::ScopedFD> fd,
+                      const vm_tools::concierge::StartVmRequest& request,
+                      DBusMethodCallback<vm_tools::concierge::StartVmResponse>
+                          callback) override;
   void StopVm(const vm_tools::concierge::StopVmRequest& request,
               DBusMethodCallback<vm_tools::concierge::StopVmResponse> callback)
       override;
