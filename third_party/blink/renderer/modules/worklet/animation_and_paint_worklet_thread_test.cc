@@ -91,7 +91,7 @@ class AnimationAndPaintWorkletThreadTest : public PageTestBase,
         JSModuleScript::CreateForTest(Modulator::From(script_state), module,
                                       js_url)
             ->RunScriptOnScriptStateAndReturnValue(script_state);
-    EXPECT_FALSE(GetResult(script_state, result).IsEmpty());
+    EXPECT_FALSE(GetResult(script_state, std::move(result)).IsEmpty());
     wait_event->Signal();
   }
 };

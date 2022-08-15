@@ -251,8 +251,10 @@ TEST_F(ModuleRecordTest, EvaluationErrorIsRemembered) {
       JSModuleScript::CreateForTest(modulator, module, js_url_c)
           ->RunScriptOnScriptStateAndReturnValue(scope.GetScriptState());
 
-  v8::Local<v8::Value> exception1 = GetException(state, evaluation_result1);
-  v8::Local<v8::Value> exception2 = GetException(state, evaluation_result2);
+  v8::Local<v8::Value> exception1 =
+      GetException(state, std::move(evaluation_result1));
+  v8::Local<v8::Value> exception2 =
+      GetException(state, std::move(evaluation_result2));
   EXPECT_FALSE(exception1.IsEmpty());
   EXPECT_FALSE(exception2.IsEmpty());
   EXPECT_EQ(exception1, exception2);
@@ -315,7 +317,8 @@ TEST_F(ModuleRecordTest, EvaluateCaptureError) {
       JSModuleScript::CreateForTest(modulator, module, js_url)
           ->RunScriptOnScriptStateAndReturnValue(scope.GetScriptState());
 
-  v8::Local<v8::Value> exception = GetException(scope.GetScriptState(), result);
+  v8::Local<v8::Value> exception =
+      GetException(scope.GetScriptState(), std::move(result));
   ASSERT_TRUE(exception->IsString());
   EXPECT_EQ("bar", ToCoreString(exception.As<v8::String>()));
 }

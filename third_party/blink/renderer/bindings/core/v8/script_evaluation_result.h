@@ -27,9 +27,10 @@ class CORE_EXPORT ScriptEvaluationResult final {
 
  public:
   ScriptEvaluationResult() = delete;
-  ScriptEvaluationResult(const ScriptEvaluationResult& value) = default;
-  ScriptEvaluationResult& operator=(const ScriptEvaluationResult& value) =
-      default;
+  ScriptEvaluationResult(const ScriptEvaluationResult&) = delete;
+  ScriptEvaluationResult& operator=(const ScriptEvaluationResult&) = delete;
+  ScriptEvaluationResult(ScriptEvaluationResult&&) = default;
+  ScriptEvaluationResult& operator=(ScriptEvaluationResult&&) = default;
   ~ScriptEvaluationResult() = default;
 
   enum class ResultType {

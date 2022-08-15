@@ -164,9 +164,9 @@ class AudioWorkletGlobalScopeTest : public PageTestBase, public ModuleTestBase {
                                       js_url)
             ->RunScriptOnScriptStateAndReturnValue(script_state);
     if (expect_success) {
-      EXPECT_FALSE(GetResult(script_state, result).IsEmpty());
+      EXPECT_FALSE(GetResult(script_state, std::move(result)).IsEmpty());
     } else {
-      EXPECT_FALSE(GetException(script_state, result).IsEmpty());
+      EXPECT_FALSE(GetException(script_state, std::move(result)).IsEmpty());
     }
   }
 
