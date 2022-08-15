@@ -465,6 +465,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cookie.MaxSameSiteNoneCookiesPerKey" units="units"
+    expires_after="2023-02-01">
+  <owner>dylancutler@chromium.org</owner>
+  <owner>src/net/cookies/OWNERS</owner>
+  <summary>
+    Maximum number of SameSite=None cookies that belong to a single domain on
+    the client. This histogram will be used to inform the
+    per-partition-per-domain limit for partitioned cookies. Recorded every 10
+    minutes of active browsing time.
+  </summary>
+</histogram>
+
 <histogram name="Cookie.NumDomainPurgedKeys" units="keys"
     expires_after="2022-08-28">
   <owner>cfredric@chromium.org</owner>

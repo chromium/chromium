@@ -2252,6 +2252,20 @@ bool CookieMonster::DoRecordPeriodicStats() {
   // Can be up to kMaxCookies.
   UMA_HISTOGRAM_COUNTS_10000("Cookie.NumKeys", num_keys_);
 
+  std::map<std::string, size_t> n_same_site_none_cookies;
+  for (const auto& [host_key, host_cookie] : cookies_) {
+    if (!host_cookie || !host_cookie->IsEffectivelySameSiteNone())
+      continue;
+    n_same_site_none_cookies[host_key]++;
+  }
+  size_t max_n_cookies = 0;
+  for (const auto& entry : n_same_site_none_cookies) {
+    max_n_cookies = std::max(max_n_cookies, entry.second);
+  }
+  // Can be up to 180 cookies, the max per-domain.
+  base::UmaHistogramCounts1000("Cookie.MaxSameSiteNoneCookiesPerKey",
+                               max_n_cookies);
+
   // Collect stats for partitioned cookies if they are enabled.
   if (base::FeatureList::IsEnabled(features::kPartitionedCookies)) {
     base::UmaHistogramCounts1000("Cookie.PartitionCount",
