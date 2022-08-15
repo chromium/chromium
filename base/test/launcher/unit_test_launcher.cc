@@ -39,10 +39,6 @@
 #include "base/files/file_descriptor_watcher_posix.h"
 #endif
 
-#if BUILDFLAG(IS_WIN)
-#include "base/debug/handle_hooks_win.h"
-#endif
-
 namespace base {
 
 namespace {
@@ -174,9 +170,6 @@ int LaunchUnitTestsInternal(RunTestSuiteCallback run_test_suite,
       force_single_process = true;
     }
   }
-#if BUILDFLAG(IS_WIN)
-  base::debug::HandleHooks::PatchLoadedModules();
-#endif  // BUILDFLAG(IS_WIN)
 
   if (CommandLine::ForCurrentProcess()->HasSwitch(kGTestHelpFlag) ||
       CommandLine::ForCurrentProcess()->HasSwitch(kGTestListTestsFlag) ||

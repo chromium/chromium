@@ -80,6 +80,8 @@
 #include <crtdbg.h>
 #endif  // _DEBUG
 #include <windows.h>
+
+#include "base/debug/handle_hooks_win.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace base {
@@ -339,6 +341,10 @@ void TestSuite::InitializeFromCommandLine(int argc, wchar_t** argv) {
 
 void TestSuite::PreInitialize() {
   DCHECK(!is_initialized_);
+
+#if BUILDFLAG(IS_WIN)
+  base::debug::HandleHooks::PatchLoadedModules();
+#endif  // BUILDFLAG(IS_WIN)
 
   // The default death_test_style of "fast" is a frequent source of subtle test
   // flakiness. And on some platforms like macOS, use of system libraries after
