@@ -51,7 +51,9 @@ public interface ProcessScopeDependencyProvider {
      * Provides experimental feature state to xsurface implementations.
      */
     public interface FeatureStateProvider {
-        boolean isFeatureActive(String experimentName);
+        boolean isFeatureActive(String featureName);
+        boolean getBooleanParameterValue(
+                String featureName, String paramName, boolean defaultValue);
     }
 
     /**
@@ -60,7 +62,18 @@ public interface ProcessScopeDependencyProvider {
      * The returned function must be called on the UI thread.
      */
     default FeatureStateProvider getFeatureStateProvider() {
-        return (var experimentName) -> false;
+        return new FeatureStateProvider() {
+            @Override
+            public boolean isFeatureActive(String featureName) {
+                return false;
+            }
+
+            @Override
+            public boolean getBooleanParameterValue(
+                    String featureName, String paramName, boolean defaultValue) {
+                return false;
+            }
+        };
     }
 
     /** @see {Log.e} */

@@ -159,7 +159,19 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
 
     @Override
     public ProcessScopeDependencyProvider.FeatureStateProvider getFeatureStateProvider() {
-        return ChromeFeatureList::isEnabled;
+        return new ProcessScopeDependencyProvider.FeatureStateProvider() {
+            @Override
+            public boolean isFeatureActive(String featureName) {
+                return ChromeFeatureList.isEnabled(featureName);
+            }
+
+            @Override
+            public boolean getBooleanParameterValue(
+                    String featureName, String paramName, boolean defaultValue) {
+                return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                        featureName, paramName, defaultValue);
+            }
+        };
     }
 
     /**
