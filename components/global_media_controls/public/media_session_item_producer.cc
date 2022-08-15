@@ -290,9 +290,6 @@ void MediaSessionItemProducer::OnFocusGained(
                 this, id, session->source_name.value_or(std::string()),
                 std::move(item_controller), std::move(session->session_info)),
             std::move(session_controller)));
-
-    for (auto& observer : observers_)
-      observer.OnMediaSessionItemCreated(id);
   }
 }
 
@@ -388,10 +385,6 @@ void MediaSessionItemProducer::RemoveItem(const std::string& id) {
   active_controllable_session_ids_.erase(id);
   frozen_session_ids_.erase(id);
   inactive_session_ids_.erase(id);
-
-  for (auto& observer : observers_)
-    observer.OnMediaSessionItemDestroyed(id);
-
   item_manager_->HideItem(id);
   sessions_.erase(id);
 }

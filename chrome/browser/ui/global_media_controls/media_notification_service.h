@@ -65,8 +65,6 @@ class MediaNotificationService
       base::RepeatingCallback<void(bool)> callback) override;
 
   // global_media_controls::MediaSessionItemProducerObserver:
-  void OnMediaSessionItemCreated(const std::string& id) override {}
-  void OnMediaSessionItemDestroyed(const std::string& id) override {}
   void OnMediaSessionActionButtonPressed(
       const std::string& id,
       media_session::mojom::MediaSessionAction action) override;
