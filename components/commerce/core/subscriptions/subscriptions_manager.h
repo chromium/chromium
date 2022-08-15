@@ -13,6 +13,8 @@
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
+#include "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
+#include "components/session_proto_db/session_proto_storage.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
 
@@ -31,7 +33,10 @@ class SubscriptionsManager : public signin::IdentityManager::Observer {
  public:
   SubscriptionsManager(
       signin::IdentityManager* identity_manager,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      SessionProtoStorage<
+          commerce_subscription_db::CommerceSubscriptionContentProto>*
+          subscription_proto_db);
   // Used for tests. The passed in objects are ordinarily created with
   // parameters from the non-test constructor.
   SubscriptionsManager(signin::IdentityManager* identity_manager,

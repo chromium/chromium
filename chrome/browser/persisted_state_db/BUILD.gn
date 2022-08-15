@@ -20,6 +20,7 @@ source_set("persisted_state_db") {
 
   deps = [
     "//base:base",
+    "//components/commerce/core:commerce_subscription_db_content_proto",
     "//components/commerce/core:persisted_state_db_content_proto",
     "//components/keyed_service/content",
     "//components/leveldb_proto",
@@ -30,7 +31,6 @@ source_set("persisted_state_db") {
   if (is_android) {
     deps += [
       "//chrome/browser/tab:jni_headers",
-      "//components/commerce/core:commerce_subscription_db_content_proto",
       "//components/commerce/core:merchant_signal_db_proto",
     ]
   } else {

@@ -18,6 +18,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/metrics/metrics_utils.h"
+#include "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
 #include "components/commerce/core/proto/merchant_trust.pb.h"
 #include "components/commerce/core/proto/price_tracking.pb.h"
 #include "components/commerce/core/shopping_bookmark_model_observer.h"
@@ -28,6 +29,7 @@
 #include "components/optimization_guide/core/new_optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/hints.pb.h"
+#include "components/session_proto_db/session_proto_storage.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/resource/resource_bundle.h"
 
@@ -55,7 +57,10 @@ ShoppingService::ShoppingService(
     optimization_guide::NewOptimizationGuideDecider* opt_guide,
     PrefService* pref_service,
     signin::IdentityManager* identity_manager,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    SessionProtoStorage<
+        commerce_subscription_db::CommerceSubscriptionContentProto>*
+        subscription_proto_db)
     : opt_guide_(opt_guide),
       pref_service_(pref_service),
       weak_ptr_factory_(this) {
@@ -77,9 +82,9 @@ ShoppingService::ShoppingService(
     opt_guide_->RegisterOptimizationTypes(types);
   }
 
-  if (identity_manager) {
+  if (identity_manager && subscription_proto_db) {
     subscriptions_manager_ = std::make_unique<SubscriptionsManager>(
-        identity_manager, std::move(url_loader_factory));
+        identity_manager, std::move(url_loader_factory), subscription_proto_db);
   }
 
   if (bookmark_model) {

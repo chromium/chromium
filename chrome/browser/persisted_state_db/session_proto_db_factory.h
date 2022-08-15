@@ -7,6 +7,7 @@
 
 #include "base/no_destructor.h"
 #include "build/build_config.h"
+#include "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/session_proto_db/session_proto_db.h"
@@ -17,7 +18,6 @@
 #include "components/commerce/core/proto/cart_db_content.pb.h"
 #include "components/commerce/core/proto/coupon_db_content.pb.h"
 #else
-#include "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
 #include "components/commerce/core/proto/merchant_signal_db_content.pb.h"
 #endif
 
@@ -38,12 +38,13 @@ GetChromeCartSessionProtoDBFactory();
 SessionProtoDBFactory<coupon_db::CouponContentProto>*
 GetCouponSessionProtoDBFactory();
 #else
-SessionProtoDBFactory<
-    commerce_subscription_db::CommerceSubscriptionContentProto>*
-GetCommerceSubscriptionSessionProtoDBFactory();
 SessionProtoDBFactory<merchant_signal_db::MerchantSignalContentProto>*
 GetMerchantSignalSessionProtoDBFactory();
 #endif
+
+SessionProtoDBFactory<
+    commerce_subscription_db::CommerceSubscriptionContentProto>*
+GetCommerceSubscriptionSessionProtoDBFactory();
 
 // Factory to create a ProtoDB per browsing session (BrowserContext) and per
 // proto. Incognito is currently not supported and the factory will return
@@ -109,6 +110,13 @@ KeyedService* SessionProtoDBFactory<T>::BuildServiceInstanceFor(
         context, proto_database_provider,
         context->GetPath().AppendASCII(kPersistedStateDBFolder),
         leveldb_proto::ProtoDbType::PERSISTED_STATE_DATABASE);
+  } else if (std::is_base_of<
+                 commerce_subscription_db::CommerceSubscriptionContentProto,
+                 T>::value) {
+    return new SessionProtoDB<T>(
+        context, proto_database_provider,
+        context->GetPath().AppendASCII(kCommerceSubscriptionDBFolder),
+        leveldb_proto::ProtoDbType::COMMERCE_SUBSCRIPTION_DATABASE);
 #if !BUILDFLAG(IS_ANDROID)
   } else if (std::is_base_of<cart_db::ChromeCartContentProto, T>::value) {
     return new SessionProtoDB<T>(
@@ -121,13 +129,6 @@ KeyedService* SessionProtoDBFactory<T>::BuildServiceInstanceFor(
         context->GetPath().AppendASCII(kCouponDBFolder),
         leveldb_proto::ProtoDbType::COUPON_DATABASE);
 #else
-  } else if (std::is_base_of<
-                 commerce_subscription_db::CommerceSubscriptionContentProto,
-                 T>::value) {
-    return new SessionProtoDB<T>(
-        context, proto_database_provider,
-        context->GetPath().AppendASCII(kCommerceSubscriptionDBFolder),
-        leveldb_proto::ProtoDbType::COMMERCE_SUBSCRIPTION_DATABASE);
   } else if (std::is_base_of<merchant_signal_db::MerchantSignalContentProto,
                              T>::value) {
     return new SessionProtoDB<T>(

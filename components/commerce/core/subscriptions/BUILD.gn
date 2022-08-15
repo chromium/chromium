@@ -16,8 +16,11 @@ source_set("subscriptions") {
 
   deps = [
     "//base",
+    "//components/commerce/core:commerce_subscription_db_content_proto",
     "//components/commerce/core:feature_list",
     "//components/endpoint_fetcher:endpoint_fetcher",
+    "//components/leveldb_proto",
+    "//components/session_proto_db:core",
     "//components/signin/public/identity_manager:identity_manager",
     "//net/traffic_annotation:traffic_annotation",
     "//services/data_decoder/public/cpp",
@@ -34,6 +37,7 @@ source_set("subscriptions_unit_tests") {
     ":subscriptions",
     "//base/test:test_support",
     "//components/commerce/core:feature_list",
+    "//components/leveldb_proto",
     "//components/signin/public/identity_manager:test_support",
     "//services/network/public/cpp:cpp",
     "//testing/gmock",

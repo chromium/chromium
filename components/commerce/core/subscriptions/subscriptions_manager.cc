@@ -7,6 +7,7 @@
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
 #include "components/commerce/core/subscriptions/subscriptions_server_proxy.h"
 #include "components/commerce/core/subscriptions/subscriptions_storage.h"
+#include "components/session_proto_db/session_proto_storage.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #include <queue>
@@ -16,12 +17,16 @@ namespace commerce {
 
 SubscriptionsManager::SubscriptionsManager(
     signin::IdentityManager* identity_manager,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : SubscriptionsManager(identity_manager,
-                           std::make_unique<SubscriptionsServerProxy>(
-                               identity_manager,
-                               std::move(url_loader_factory)),
-                           std::make_unique<SubscriptionsStorage>()) {}
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    SessionProtoStorage<
+        commerce_subscription_db::CommerceSubscriptionContentProto>*
+        subscription_proto_db)
+    : SubscriptionsManager(
+          identity_manager,
+          std::make_unique<SubscriptionsServerProxy>(
+              identity_manager,
+              std::move(url_loader_factory)),
+          std::make_unique<SubscriptionsStorage>(subscription_proto_db)) {}
 
 SubscriptionsManager::SubscriptionsManager(
     signin::IdentityManager* identity_manager,

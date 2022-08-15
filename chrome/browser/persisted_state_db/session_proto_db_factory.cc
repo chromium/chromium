@@ -23,6 +23,23 @@ SessionProtoDBFactory<
   return GetPersistedStateSessionProtoDBFactory();
 }
 
+SessionProtoDBFactory<
+    commerce_subscription_db::CommerceSubscriptionContentProto>*
+GetCommerceSubscriptionSessionProtoDBFactory() {
+  static base::NoDestructor<SessionProtoDBFactory<
+      commerce_subscription_db::CommerceSubscriptionContentProto>>
+      instance;
+  return instance.get();
+}
+
+template <>
+SessionProtoDBFactory<
+    commerce_subscription_db::CommerceSubscriptionContentProto>*
+SessionProtoDBFactory<
+    commerce_subscription_db::CommerceSubscriptionContentProto>::GetInstance() {
+  return GetCommerceSubscriptionSessionProtoDBFactory();
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 SessionProtoDBFactory<cart_db::ChromeCartContentProto>*
 GetChromeCartSessionProtoDBFactory() {
@@ -53,23 +70,6 @@ SessionProtoDBFactory<coupon_db::CouponContentProto>::GetInstance() {
 }
 
 #else
-SessionProtoDBFactory<
-    commerce_subscription_db::CommerceSubscriptionContentProto>*
-GetCommerceSubscriptionSessionProtoDBFactory() {
-  static base::NoDestructor<SessionProtoDBFactory<
-      commerce_subscription_db::CommerceSubscriptionContentProto>>
-      instance;
-  return instance.get();
-}
-
-template <>
-SessionProtoDBFactory<
-    commerce_subscription_db::CommerceSubscriptionContentProto>*
-SessionProtoDBFactory<
-    commerce_subscription_db::CommerceSubscriptionContentProto>::GetInstance() {
-  return GetCommerceSubscriptionSessionProtoDBFactory();
-}
-
 SessionProtoDBFactory<merchant_signal_db::MerchantSignalContentProto>*
 GetMerchantSignalSessionProtoDBFactory() {
   static base::NoDestructor<

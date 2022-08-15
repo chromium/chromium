@@ -79,11 +79,6 @@ if (is_android) {
     proto_in_dir = "//"
     sources = [ "proto/merchant_signal_db_content.proto" ]
   }
-
-  proto_library("commerce_subscription_db_content_proto") {
-    proto_in_dir = "//"
-    sources = [ "proto/commerce_subscription_db_content.proto" ]
-  }
 } else {
   proto_library("cart_db_content_proto") {
     proto_in_dir = "//"
@@ -99,6 +94,11 @@ if (is_android) {
 proto_library("persisted_state_db_content_proto") {
   proto_in_dir = "//"
   sources = [ "proto/persisted_state_db_content.proto" ]
+}
+
+proto_library("commerce_subscription_db_content_proto") {
+  proto_in_dir = "//"
+  sources = [ "proto/commerce_subscription_db_content.proto" ]
 }
 
 source_set("commerce_heuristics_data") {
@@ -159,6 +159,7 @@ static_library("shopping_service") {
   ]
 
   deps = [
+    ":commerce_subscription_db_content_proto",
     ":feature_list",
     ":metrics",
     ":proto",
@@ -166,12 +167,14 @@ static_library("shopping_service") {
     "//components/bookmarks/browser",
     "//components/commerce/core/subscriptions:subscriptions",
     "//components/keyed_service/core",
+    "//components/leveldb_proto",
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/power_bookmarks/core",
     "//components/power_bookmarks/core:proto",
     "//components/prefs:prefs",
     "//components/resources:components_resources_grit",
+    "//components/session_proto_db:core",
     "//services/data_decoder/public/cpp",
     "//services/network/public/cpp:cpp",
     "//ui/base",

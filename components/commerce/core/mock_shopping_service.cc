@@ -7,7 +7,12 @@
 namespace commerce {
 
 MockShoppingService::MockShoppingService()
-    : commerce::ShoppingService(nullptr, nullptr, nullptr, nullptr, nullptr) {}
+    : commerce::ShoppingService(nullptr,
+                                nullptr,
+                                nullptr,
+                                nullptr,
+                                nullptr,
+                                nullptr) {}
 
 MockShoppingService::~MockShoppingService() = default;
 

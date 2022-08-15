@@ -17,6 +17,7 @@
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
+#include "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -25,6 +26,9 @@ class GURL;
 class PrefService;
 
 class PrefRegistrySimple;
+
+template <typename T>
+class SessionProtoStorage;
 
 namespace base {
 class Value;
@@ -142,7 +146,10 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
       optimization_guide::NewOptimizationGuideDecider* opt_guide,
       PrefService* pref_service,
       signin::IdentityManager* identity_manager,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      SessionProtoStorage<
+          commerce_subscription_db::CommerceSubscriptionContentProto>*
+          subscription_proto_db);
   ~ShoppingService() override;
 
   ShoppingService(const ShoppingService&) = delete;

@@ -167,7 +167,8 @@ ShoppingServiceTestBase::ShoppingServiceTestBase()
       bookmark_model_.get(), opt_guide_.get(), pref_service_.get(),
       identity_test_env_->identity_manager(),
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-          test_url_loader_factory_.get()));
+          test_url_loader_factory_.get()),
+      nullptr);
 }
 
 ShoppingServiceTestBase::~ShoppingServiceTestBase() = default;

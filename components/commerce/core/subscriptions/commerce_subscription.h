@@ -9,6 +9,16 @@
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+/**
+ * To add a new SubscriptionType / IdentifierType / ManagementType:
+ * 1. Define the type in the enum class in commerce_subscription.h.
+ * 2. Update the conversion methods between the type and std::string in
+ * commerce_subscription.cc.
+ * 3. Add the corresponding entry in {@link
+ * commerce_subscription_db_content.proto} to ensure the storage works
+ * correctly.
+ */
+
 namespace commerce {
 
 // The type of subscription.
@@ -73,6 +83,13 @@ struct CommerceSubscription {
   int64_t timestamp;
   absl::optional<UserSeenOffer> user_seen_offer;
 };
+
+std::string SubscriptionTypeToString(SubscriptionType type);
+SubscriptionType StringToSubscriptionType(const std::string& s);
+std::string SubscriptionIdTypeToString(IdentifierType type);
+IdentifierType StringToSubscriptionIdType(const std::string& s);
+std::string SubscriptionManagementTypeToString(ManagementType type);
+ManagementType StringToSubscriptionManagementType(const std::string& s);
 
 }  // namespace commerce
 

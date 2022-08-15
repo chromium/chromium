@@ -6,6 +6,19 @@
 
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
 
+namespace {
+
+const char kSubscriptionTypePriceTrack[] = "PRICE_TRACK";
+const char kSubscriptionTypeUnspecified[] = "TYPE_UNSPECIFIED";
+const char kSubscriptionIdTypeOfferId[] = "OFFER_ID";
+const char kSubscriptionIdTypeProductClusterId[] = "PRODUCT_CLUSTER_ID";
+const char kSubscriptionIdTypeUnspecified[] = "IDENTIFIER_TYPE_UNSPECIFIED";
+const char kSubscriptionManagementTypeChrome[] = "CHROME_MANAGED";
+const char kSubscriptionManagementTypeUser[] = "USER_MANAGED";
+const char kSubscriptionManagementTypeUnspecified[] = "TYPE_UNSPECIFIED";
+
+}  // namespace
+
 namespace commerce {
 
 UserSeenOffer::UserSeenOffer(std::string offer_id,
@@ -38,5 +51,55 @@ CommerceSubscription::CommerceSubscription(const CommerceSubscription&) =
 CommerceSubscription& CommerceSubscription::operator=(
     const CommerceSubscription&) = default;
 CommerceSubscription::~CommerceSubscription() = default;
+
+std::string SubscriptionTypeToString(SubscriptionType type) {
+  if (SubscriptionType::kPriceTrack == type)
+    return kSubscriptionTypePriceTrack;
+  else
+    return kSubscriptionTypeUnspecified;
+}
+
+SubscriptionType StringToSubscriptionType(const std::string& s) {
+  if (((std::string)kSubscriptionTypePriceTrack) == s)
+    return SubscriptionType::kPriceTrack;
+  else
+    return SubscriptionType::kTypeUnspecified;
+}
+
+std::string SubscriptionIdTypeToString(IdentifierType type) {
+  if (IdentifierType::kOfferId == type)
+    return kSubscriptionIdTypeOfferId;
+  else if (IdentifierType::kProductClusterId == type)
+    return kSubscriptionIdTypeProductClusterId;
+  else
+    return kSubscriptionIdTypeUnspecified;
+}
+
+IdentifierType StringToSubscriptionIdType(const std::string& s) {
+  if (((std::string)kSubscriptionIdTypeOfferId) == s)
+    return IdentifierType::kOfferId;
+  else if (((std::string)kSubscriptionIdTypeProductClusterId) == s)
+    return IdentifierType::kProductClusterId;
+  else
+    return IdentifierType::kIdentifierTypeUnspecified;
+}
+
+std::string SubscriptionManagementTypeToString(ManagementType type) {
+  if (ManagementType::kChromeManaged == type)
+    return kSubscriptionManagementTypeChrome;
+  else if (ManagementType::kUserManaged == type)
+    return kSubscriptionManagementTypeUser;
+  else
+    return kSubscriptionManagementTypeUnspecified;
+}
+
+ManagementType StringToSubscriptionManagementType(const std::string& s) {
+  if (((std::string)kSubscriptionManagementTypeChrome) == s)
+    return ManagementType::kChromeManaged;
+  else if (((std::string)kSubscriptionManagementTypeUser) == s)
+    return ManagementType::kUserManaged;
+  else
+    return ManagementType::kTypeUnspecified;
+}
 
 }  // namespace commerce

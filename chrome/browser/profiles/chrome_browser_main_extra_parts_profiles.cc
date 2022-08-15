@@ -120,6 +120,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/breadcrumbs/core/breadcrumbs_status.h"
 #include "components/captive_portal/core/buildflags.h"
+#include "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
 #include "components/commerce/core/proto/persisted_state_db_content.pb.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
@@ -144,7 +145,6 @@
 #include "chrome/browser/commerce/merchant_viewer/merchant_viewer_data_manager_factory.h"
 #include "chrome/browser/media/android/cdm/media_drm_origin_id_manager_factory.h"
 #include "components/commerce/core/commerce_feature_list.h"
-#include "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
 #include "components/commerce/core/proto/merchant_signal_db_content.pb.h"
 #else
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -473,10 +473,8 @@ void ChromeBrowserMainExtraPartsProfiles::
   SessionProtoDBFactory<cart_db::ChromeCartContentProto>::GetInstance();
   SessionProtoDBFactory<coupon_db::CouponContentProto>::GetInstance();
 #endif
-#if BUILDFLAG(IS_ANDROID)
   SessionProtoDBFactory<commerce_subscription_db::
                             CommerceSubscriptionContentProto>::GetInstance();
-#endif
 #if BUILDFLAG(IS_ANDROID)
   SessionProtoDBFactory<
       merchant_signal_db::MerchantSignalContentProto>::GetInstance();

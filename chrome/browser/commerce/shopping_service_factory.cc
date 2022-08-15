@@ -7,8 +7,10 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/persisted_state_db/session_proto_db_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/storage_partition.h"
@@ -42,6 +44,9 @@ ShoppingServiceFactory::ShoppingServiceFactory()
   DependsOn(BookmarkModelFactory::GetInstance());
   DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(SessionProtoDBFactory<
+            commerce_subscription_db::CommerceSubscriptionContentProto>::
+                GetInstance());
 }
 
 KeyedService* ShoppingServiceFactory::BuildServiceInstanceFor(
@@ -52,7 +57,10 @@ KeyedService* ShoppingServiceFactory::BuildServiceInstanceFor(
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
       profile->GetPrefs(), IdentityManagerFactory::GetForProfile(profile),
       profile->GetDefaultStoragePartition()
-          ->GetURLLoaderFactoryForBrowserProcess());
+          ->GetURLLoaderFactoryForBrowserProcess(),
+      SessionProtoDBFactory<commerce_subscription_db::
+                                CommerceSubscriptionContentProto>::GetInstance()
+          ->GetForProfile(context));
 }
 
 bool ShoppingServiceFactory::ServiceIsCreatedWithBrowserContext() const {

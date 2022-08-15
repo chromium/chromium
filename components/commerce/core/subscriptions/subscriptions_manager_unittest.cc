@@ -103,7 +103,7 @@ class MockSubscriptionsServerProxy : public SubscriptionsServerProxy {
 
 class MockSubscriptionsStorage : public SubscriptionsStorage {
  public:
-  MockSubscriptionsStorage() = default;
+  MockSubscriptionsStorage() : SubscriptionsStorage(nullptr) {}
   MockSubscriptionsStorage(const MockSubscriptionsStorage&) = delete;
   MockSubscriptionsStorage operator=(const MockSubscriptionsStorage&) = delete;
   ~MockSubscriptionsStorage() override = default;
