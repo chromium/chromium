@@ -215,7 +215,7 @@ void WaylandPopup::UpdateVisualSize(const gfx::Size& size_px,
 }
 
 void WaylandPopup::ApplyPendingBounds() {
-  if (HasPendingConfigures()) {
+  if (has_pending_configures()) {
     base::AutoReset<bool> auto_reset(&wayland_sets_bounds_, true);
     WaylandWindow::ApplyPendingBounds();
   }

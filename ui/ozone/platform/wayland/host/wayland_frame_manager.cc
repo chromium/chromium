@@ -114,8 +114,12 @@ void WaylandFrameManager::MaybeProcessPendingFrame() {
       submitted_frames_.back()->wl_frame_callback) {
     return;
   }
-  // Window is not configured, need to wait.
-  if (!window_->can_submit_frames())
+
+  // Window is still neither configured nor has pending configure bounds, need
+  // to wait. Probably happens only in early stages of window initialization.
+  // TODO(crbug.com/1313023): Check whether this is still needed, otherwise
+  // move/merge into the block after UpdateVisualSize() call below.
+  if (!window_->received_configure_event())
     return;
 
   // Ensure wl_buffer existence. This is called for the first time in the
@@ -136,8 +140,26 @@ void WaylandFrameManager::MaybeProcessPendingFrame() {
     return;
   }
 
-  std::unique_ptr<WaylandFrame> playback = std::move(pending_frames_.front());
-  PlayBackFrame(std::move(playback));
+  // If processing a valid frame, update window's visual size, which may result
+  // in surface configuration being done, i.e: xdg_surface set_window_geometry +
+  // ack_configure requests being issued.
+  const wl::WaylandOverlayConfig& config = frame->root_config;
+  if (!frame->buffer_lost && !!config.buffer_id) {
+    window_->UpdateVisualSize(gfx::ToRoundedSize(config.bounds_rect.size()),
+                              config.surface_scale_factor);
+  }
+
+  // Skip this frame if:
+  // 1. It can't be submitted due to lost buffers.
+  // 2. Even after updating visual size above, |window_| is still not fully
+  //    configured, which might mean that the current frame sent by the gpu
+  //    is still out-of-sync with the pending configure sequences received from
+  //    the Wayland compositor. This avoids protocol errors as observed in
+  //    https://crbug.com/1313023.
+  if (frame->buffer_lost || !IsSurfaceConfigured())
+    DiscardFrame(std::move(pending_frames_.front()));
+  else
+    PlayBackFrame(std::move(pending_frames_.front()));
 
   pending_frames_.pop_front();
 
@@ -151,24 +173,12 @@ void WaylandFrameManager::MaybeProcessPendingFrame() {
 }
 
 void WaylandFrameManager::PlayBackFrame(std::unique_ptr<WaylandFrame> frame) {
-  // Skip this frame if we can't playback this frame due to lost buffers.
-  if (frame->buffer_lost) {
-    frame->feedback = gfx::PresentationFeedback::Failure();
-    submitted_frames_.push_back(std::move(frame));
-    VerifyNumberOfSubmittedFrames();
-    MaybeProcessSubmittedFrames();
-    return;
-  }
+  DCHECK(!frame->buffer_lost);
+  DCHECK(IsSurfaceConfigured());
 
   auto* root_surface = frame->root_surface.get();
   auto& root_config = frame->root_config;
   bool empty_frame = !root_config.buffer_id;
-
-  if (!empty_frame) {
-    window_->UpdateVisualSize(
-        gfx::ToRoundedSize(root_config.bounds_rect.size()),
-        root_config.surface_scale_factor);
-  }
 
   // Configure subsurfaces. Traverse the deque backwards s.t. we can set
   // frame_callback and presentation_feedback on the top-most possible surface.
@@ -225,6 +235,13 @@ void WaylandFrameManager::PlayBackFrame(std::unique_ptr<WaylandFrame> frame) {
 
   VerifyNumberOfSubmittedFrames();
 
+  MaybeProcessSubmittedFrames();
+}
+
+void WaylandFrameManager::DiscardFrame(std::unique_ptr<WaylandFrame> frame) {
+  frame->feedback = gfx::PresentationFeedback::Failure();
+  submitted_frames_.push_back(std::move(frame));
+  VerifyNumberOfSubmittedFrames();
   MaybeProcessSubmittedFrames();
 }
 
@@ -665,6 +682,21 @@ void WaylandFrameManager::ClearStates(bool closing) {
          (submitted_frames_.size() == 1 &&
           submitted_frames_.back()->submission_acked &&
           submitted_frames_.back()->presentation_acked));
+}
+
+bool WaylandFrameManager::IsSurfaceConfigured() const {
+  // TODO(crbug.com/1346534): Lacros fractional scale is still buggy, at least
+  // until migration of WaylandWindow to use DIP instead of pixels to store
+  // window bounds (see crbug.com/1306688). Rounding issues may lead to bounds
+  // mismatches when processing visual updates (i.e: set_geometry/ack_configure
+  // are not sent). As of now, however, Exo does not send protocol error when
+  // attaching buffers to non-configured surfaces. Thus, return
+  // received_configure_event until it gets fixed.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  return window_->received_configure_event();
+#else
+  return window_->IsSurfaceConfigured();
+#endif
 }
 
 }  // namespace ui

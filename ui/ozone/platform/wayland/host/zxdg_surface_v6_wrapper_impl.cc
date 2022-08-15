@@ -74,8 +74,15 @@ void ZXDGSurfaceV6WrapperImpl::Configure(
   auto* surface = static_cast<ZXDGSurfaceV6WrapperImpl*>(data);
   DCHECK(surface);
 
-  surface->wayland_window_->HandleSurfaceConfigure(serial);
-  surface->wayland_window_->OnSurfaceConfigureEvent();
+  // Calls to HandleSurfaceConfigure() might end up hiding the enclosing
+  // toplevel window, and deleting this object.
+  auto weak_window = surface->wayland_window_->AsWeakPtr();
+  weak_window->HandleSurfaceConfigure(serial);
+
+  if (!weak_window)
+    return;
+
+  weak_window->OnSurfaceConfigureEvent();
 }
 
 zxdg_surface_v6* ZXDGSurfaceV6WrapperImpl::zxdg_surface() const {

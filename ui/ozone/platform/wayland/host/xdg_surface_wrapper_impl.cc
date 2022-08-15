@@ -74,10 +74,10 @@ void XDGSurfaceWrapperImpl::Configure(void* data,
   // toplevel window, and deleting this object.
   auto weak_window = surface->wayland_window_->AsWeakPtr();
   weak_window->HandleSurfaceConfigure(serial);
-  
+
   if (!weak_window)
     return;
-  
+
   weak_window->OnSurfaceConfigureEvent();
 }
 

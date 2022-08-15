@@ -122,6 +122,8 @@ class WaylandFrameManager {
 
  private:
   void PlayBackFrame(std::unique_ptr<WaylandFrame> frame);
+  void DiscardFrame(std::unique_ptr<WaylandFrame> frame);
+
   // Configures |surface| but does not commit wl_surface states yet.
   void ApplySurfaceConfigure(WaylandFrame* frame,
                              WaylandSurface* surface,
@@ -175,6 +177,8 @@ class WaylandFrameManager {
   // |frame::buffer_lost| is set and false is returned. That means that the
   // frame must not be used for the further submission.
   bool EnsureWlBuffersExist(WaylandFrame& frame);
+
+  bool IsSurfaceConfigured() const;
 
   const raw_ptr<WaylandWindow> window_;
 
