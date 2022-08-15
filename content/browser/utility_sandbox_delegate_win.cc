@@ -105,6 +105,64 @@ bool PrintBackendPreSpawnTarget(sandbox::TargetPolicy* policy) {
   policy->SetDelayedIntegrityLevel(sandbox::INTEGRITY_LEVEL_LOW);
   return true;
 }
+
+std::string UtilityAppContainerId(base::CommandLine& cmd_line) {
+  return base::WideToUTF8(cmd_line.GetProgram().value());
+}
+
+bool IconReaderPreSpawnTarget(sandbox::TargetPolicy* policy) {
+  policy->SetTokenLevel(sandbox::USER_RESTRICTED_SAME_ACCESS,
+                        sandbox::USER_LOCKDOWN);
+  policy->SetDelayedIntegrityLevel(sandbox::INTEGRITY_LEVEL_UNTRUSTED);
+  policy->SetIntegrityLevel(sandbox::INTEGRITY_LEVEL_LOW);
+  policy->SetLockdownDefaultDacl();
+  policy->SetAlternateDesktop(true);
+
+  sandbox::MitigationFlags flags = policy->GetDelayedProcessMitigations();
+  flags |= sandbox::MITIGATION_DYNAMIC_CODE_DISABLE;
+  if (sandbox::SBOX_ALL_OK != policy->SetDelayedProcessMitigations(flags))
+    return false;
+
+  auto* config = policy->GetConfig();
+  if (config->IsConfigured())
+    return true;
+
+  // Allow file read. These should match IconLoader::GroupForFilepath().
+  config->AddRule(sandbox::SubSystem::kFiles,
+                  sandbox::Semantics::kFilesAllowReadonly, L"\\??\\*.exe");
+  config->AddRule(sandbox::SubSystem::kFiles,
+                  sandbox::Semantics::kFilesAllowReadonly, L"\\??\\*.dll");
+  config->AddRule(sandbox::SubSystem::kFiles,
+                  sandbox::Semantics::kFilesAllowReadonly, L"\\??\\*.ico");
+  return true;
+}
+
+bool XrCompositingPreSpawnTarget(sandbox::TargetPolicy* policy,
+                                 base::CommandLine& cmd_line,
+                                 sandbox::mojom::Sandbox sandbox_type) {
+  if (!base::FeatureList::IsEnabled(sandbox::policy::features::kXRSandbox))
+    return true;
+  // TODO(https://crbug.com/881919): Try to harden the XR Compositor
+  // sandbox to use mitigations and restrict the token.
+
+  // Unprotected token/job.
+  policy->SetTokenLevel(sandbox::USER_UNPROTECTED, sandbox::USER_UNPROTECTED);
+  sandbox::policy::SandboxWin::SetJobLevel(
+      sandbox_type, sandbox::JobLevel::kUnprotected, 0, policy);
+
+  // There were issues with some mitigations, causing an inability
+  // to load OpenVR and Oculus APIs.
+  policy->SetProcessMitigations(0);
+  policy->SetDelayedProcessMitigations(0);
+
+  std::string appcontainer_id = UtilityAppContainerId(cmd_line);
+  auto result = sandbox::policy::SandboxWin::AddAppContainerProfileToPolicy(
+      cmd_line, sandbox_type, appcontainer_id, policy);
+  if (result != sandbox::SBOX_ALL_OK)
+    return false;
+
+  return true;
+}
 }  // namespace
 
 std::string UtilitySandboxedProcessLauncherDelegate::GetSandboxTag() {
@@ -114,19 +172,21 @@ std::string UtilitySandboxedProcessLauncherDelegate::GetSandboxTag() {
 
 bool UtilitySandboxedProcessLauncherDelegate::GetAppContainerId(
     std::string* appcontainer_id) {
-  if (sandbox_type_ == sandbox::mojom::Sandbox::kNetwork) {
-    *appcontainer_id = base::WideToUTF8(cmd_line_.GetProgram().value());
-    return true;
+  switch (sandbox_type_) {
+    case sandbox::mojom::Sandbox::kMediaFoundationCdm:
+    case sandbox::mojom::Sandbox::kNetwork:
+    case sandbox::mojom::Sandbox::kWindowsSystemProxyResolver:
+      *appcontainer_id = UtilityAppContainerId(cmd_line_);
+      return true;
+    case sandbox::mojom::Sandbox::kXrCompositing:
+      if (base::FeatureList::IsEnabled(sandbox::policy::features::kXRSandbox)) {
+        *appcontainer_id = UtilityAppContainerId(cmd_line_);
+        return true;
+      }
+      return false;
+    default:
+      return false;
   }
-
-  if ((sandbox_type_ == sandbox::mojom::Sandbox::kXrCompositing &&
-       base::FeatureList::IsEnabled(sandbox::policy::features::kXRSandbox)) ||
-      sandbox_type_ == sandbox::mojom::Sandbox::kMediaFoundationCdm ||
-      sandbox_type_ == sandbox::mojom::Sandbox::kWindowsSystemProxyResolver) {
-    *appcontainer_id = base::WideToUTF8(cmd_line_.GetProgram().value());
-    return true;
-  }
-  return false;
 }
 
 bool UtilitySandboxedProcessLauncherDelegate::DisableDefaultPolicy() {
@@ -179,54 +239,13 @@ bool UtilitySandboxedProcessLauncherDelegate::PreSpawnTarget(
   }
 
   if (sandbox_type_ == sandbox::mojom::Sandbox::kIconReader) {
-    policy->SetTokenLevel(sandbox::USER_RESTRICTED_SAME_ACCESS,
-                          sandbox::USER_LOCKDOWN);
-    policy->SetDelayedIntegrityLevel(sandbox::INTEGRITY_LEVEL_UNTRUSTED);
-    policy->SetIntegrityLevel(sandbox::INTEGRITY_LEVEL_LOW);
-    policy->SetLockdownDefaultDacl();
-    policy->SetAlternateDesktop(true);
-
-    sandbox::MitigationFlags flags = policy->GetDelayedProcessMitigations();
-    flags |= sandbox::MITIGATION_DYNAMIC_CODE_DISABLE;
-    if (sandbox::SBOX_ALL_OK != policy->SetDelayedProcessMitigations(flags))
+    if (!IconReaderPreSpawnTarget(policy))
       return false;
-
-    if (!policy->GetConfig()->IsConfigured()) {
-      auto* config = policy->GetConfig();
-      // Allow file read. These should match IconLoader::GroupForFilepath().
-      config->AddRule(sandbox::SubSystem::kFiles,
-                      sandbox::Semantics::kFilesAllowReadonly, L"\\??\\*.exe");
-      config->AddRule(sandbox::SubSystem::kFiles,
-                      sandbox::Semantics::kFilesAllowReadonly, L"\\??\\*.dll");
-      config->AddRule(sandbox::SubSystem::kFiles,
-                      sandbox::Semantics::kFilesAllowReadonly, L"\\??\\*.ico");
-    }
   }
 
-  if (sandbox_type_ == sandbox::mojom::Sandbox::kXrCompositing &&
-      base::FeatureList::IsEnabled(sandbox::policy::features::kXRSandbox)) {
-    // There were issues with some mitigations, causing an inability
-    // to load OpenVR and Oculus APIs.
-    // TODO(https://crbug.com/881919): Try to harden the XR Compositor
-    // sandbox to use mitigations and restrict the token.
-    policy->SetProcessMitigations(0);
-    policy->SetDelayedProcessMitigations(0);
-
-    std::string appcontainer_id;
-    if (!GetAppContainerId(&appcontainer_id)) {
+  if (sandbox_type_ == sandbox::mojom::Sandbox::kXrCompositing) {
+    if (!XrCompositingPreSpawnTarget(policy, cmd_line_, sandbox_type_))
       return false;
-    }
-    sandbox::ResultCode result =
-        sandbox::policy::SandboxWin::AddAppContainerProfileToPolicy(
-            cmd_line_, sandbox_type_, appcontainer_id, policy);
-    if (result != sandbox::SBOX_ALL_OK) {
-      return false;
-    }
-
-    // Unprotected token/job.
-    policy->SetTokenLevel(sandbox::USER_UNPROTECTED, sandbox::USER_UNPROTECTED);
-    sandbox::policy::SandboxWin::SetJobLevel(
-        sandbox_type_, sandbox::JobLevel::kUnprotected, 0, policy);
   }
 
   if (sandbox_type_ == sandbox::mojom::Sandbox::kMediaFoundationCdm ||
