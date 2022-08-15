@@ -37,7 +37,8 @@ class RenderWidgetHostNSViewBridgeOwner
       mojo::PendingAssociatedRemote<mojom::RenderWidgetHostNSViewHost> client,
       mojo::PendingAssociatedReceiver<mojom::RenderWidgetHostNSView>
           bridge_receiver)
-      : host_(std::move(client)) {
+      : host_(std::move(client),
+              ui::WindowResizeHelperMac::Get()->task_runner()) {
     bridge_ = std::make_unique<remote_cocoa::RenderWidgetHostNSViewBridge>(
         host_.get(), this, view_id,
         base::BindOnce(&RenderWidgetHostNSViewBridgeOwner::OnMojoDisconnect,

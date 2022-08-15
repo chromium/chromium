@@ -7,6 +7,7 @@
 #include "components/remote_cocoa/app_shim/ns_view_ids.h"
 #import "content/app_shim_remote_cocoa/web_contents_view_cocoa.h"
 #include "content/browser/web_contents/web_contents_view_mac.h"
+#include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
 #include "ui/gfx/image/image_skia_util_mac.h"
 
 namespace remote_cocoa {
@@ -14,7 +15,8 @@ namespace remote_cocoa {
 WebContentsNSViewBridge::WebContentsNSViewBridge(
     uint64_t view_id,
     mojo::PendingAssociatedRemote<mojom::WebContentsNSViewHost> client)
-    : host_(std::move(client)) {
+    : host_(std::move(client),
+            ui::WindowResizeHelperMac::Get()->task_runner()) {
   ns_view_.reset(
       [[WebContentsViewCocoa alloc] initWithViewsHostableView:nullptr]);
   [ns_view_ setHost:host_.get()];
