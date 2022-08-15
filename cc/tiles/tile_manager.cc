@@ -1227,7 +1227,8 @@ scoped_refptr<TileTask> TileManager::CreateRasterTask(
   gfx::Rect invalidated_rect = tile->invalidated_content_rect();
 
   // https://linear.app/replay/issue/RUN-464
-  recordreplay::Assert("TileManager::CreateRasterTask #2 %d %d %d %d",
+  recordreplay::Assert("TileManager::CreateRasterTask #2 %d %d %d %d %d",
+                       (int)tile->id(),
                        invalidated_rect.x(), invalidated_rect.y(),
                        invalidated_rect.width(), invalidated_rect.height());
 

@@ -139,6 +139,14 @@ void PictureLayerTiling::CreateMissingTilesInLiveTilesRect() {
             invalid_content_rect.Intersect(tile_rect);
             invalidated.Union(invalid_content_rect);
           }
+
+          // https://linear.app/replay/issue/RUN-464
+          recordreplay::Assert("PictureLayerTiling::CreateMissingTilesInLiveTilesRect #5 %d %d %d %d %d %d",
+                               (int)tile->id(),
+                               invalidated.x(), invalidated.y(),
+                               invalidated.width(), invalidated.height(),
+                               (int)old_tile->id());
+
           tile->SetInvalidated(invalidated, old_tile->id());
         }
       }
@@ -316,8 +324,16 @@ void PictureLayerTiling::RemoveTilesInRegion(const Region& layer_invalidation,
     std::unique_ptr<Tile> old_tile = TakeTileAt(key.index_x, key.index_y);
     if (recreate_tiles && old_tile) {
       Tile::CreateInfo info = CreateInfoForTile(key.index_x, key.index_y);
-      if (Tile* tile = CreateTile(info))
+      if (Tile* tile = CreateTile(info)) {
+        // https://linear.app/replay/issue/RUN-464
+        recordreplay::Assert("PictureLayerTiling::RemoveTilesInRegion #5 %d %d %d %d %d %d",
+                             (int)tile->id(),
+                             invalid_content_rect.x(), invalid_content_rect.y(),
+                             invalid_content_rect.width(), invalid_content_rect.height(),
+                             (int)old_tile->id());
+
         tile->SetInvalidated(invalid_content_rect, old_tile->id());
+      }
     }
   }
 }
