@@ -319,61 +319,6 @@ chromium-metrics-reviews@google.com.
   <summary>True when a service worker times out 5 mins after request.</summary>
 </histogram>
 
-<histogram name="PaymentRequest.TimeToCheckout.Completed" units="ms"
-    expires_after="2023-01-15">
-  <owner>rouslan@chromium.org</owner>
-  <owner>web-payments-team@google.com</owner>
-  <summary>
-    Records the time between a payment request .show() and its completion.
-  </summary>
-</histogram>
-
-<histogram name="PaymentRequest.TimeToCheckout.Completed.Shown" units="ms"
-    expires_after="2022-11-22">
-<!-- Name completed by histogram_suffixes name="PaymentRequestCompletedInstrument" -->
-
-  <owner>rouslan@chromium.org</owner>
-  <owner>web-payments-team@google.com</owner>
-  <summary>
-    Records the time between a payment request .show() and its completion when
-    payment sheet is shown.
-  </summary>
-</histogram>
-
-<histogram name="PaymentRequest.TimeToCheckout.Completed.SkippedShow"
-    units="ms" expires_after="2023-01-15">
-<!-- Name completed by histogram_suffixes name="PaymentRequestCompletedInstrument" -->
-
-  <owner>rouslan@chromium.org</owner>
-  <owner>web-payments-team@google.com</owner>
-  <summary>
-    Records the time between a payment request .show() and its completion when
-    payment sheet is skipped.
-  </summary>
-</histogram>
-
-<histogram name="PaymentRequest.TimeToCheckout.OtherAborted" units="ms"
-    expires_after="2022-05-01">
-  <owner>rouslan@chromium.org</owner>
-  <owner>web-payments-team@google.com</owner>
-  <summary>
-    Records the time between a payment request .show() and its termination by
-    any factors other than the user (e.g. merchant).
-  </summary>
-</histogram>
-
-<histogram name="PaymentRequest.TimeToCheckout.UserAborted" units="ms"
-    expires_after="2022-07-03">
-<!-- Name completed by histogram_suffixes name="PaymentRequestPaymentSheetShowStatus" -->
-
-  <owner>rouslan@chromium.org</owner>
-  <owner>web-payments-team@google.com</owner>
-  <summary>
-    Records the time between a payment request .show() and its termination by
-    user.
-  </summary>
-</histogram>
-
 <histogram name="PaymentRequest.TransactionAmount.Completed"
     enum="PaymentRequestTransactionSize" expires_after="2023-01-15">
   <owner>rouslan@chromium.org</owner>

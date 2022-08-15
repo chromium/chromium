@@ -7175,31 +7175,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="PasswordManager.FillingAssistance"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="PaymentRequestCompletedInstrument" separator=".">
-  <suffix name="BasicCard"
-      label="Request is completed using basic card method."/>
-  <suffix name="Google"
-      label="Request is completed using Google payment instrument."/>
-  <suffix name="Other"
-      label="Request is completed using other payment instruments."/>
-  <suffix name="PlayBilling"
-      label="Request is completed using Google Play Billing instrument."/>
-  <suffix name="SecurePaymentConfirmation"
-      label="Request is completed using secure payment confirmation
-             instrument."/>
-  <affected-histogram name="PaymentRequest.TimeToCheckout.Completed.Shown"/>
-  <affected-histogram
-      name="PaymentRequest.TimeToCheckout.Completed.SkippedShow"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="PaymentRequestPaymentSheetShowStatus" separator=".">
-  <suffix name="BeforeShow"
-      label="Request is terminated before request.show()."/>
-  <suffix name="Shown" label="Payment sheet is shown."/>
-  <suffix name="SkippedShow" label="Payment sheet is skipped."/>
-  <affected-histogram name="PaymentRequest.TimeToCheckout.UserAborted"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="PerformanceHintsSource" separator=".">
   <suffix name="FastHostHint" label="From the fast host bloom filter."/>
   <suffix name="LinkHint" label="From the link hints of the current page."/>
