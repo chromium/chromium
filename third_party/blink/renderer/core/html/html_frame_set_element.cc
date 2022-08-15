@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/layout/layout_frame_set.h"
+#include "third_party/blink/renderer/core/layout/layout_object_factory.h"
 #include "third_party/blink/renderer/core/layout/ng/frame_set_layout_data.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_frame_set.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
@@ -343,7 +344,7 @@ LayoutObject* HTMLFrameSetElement::CreateLayoutObject(
     const ComputedStyle& style,
     LegacyLayout legacy) {
   if (style.ContentBehavesAsNormal())
-    return MakeGarbageCollected<LayoutFrameSet>(this);
+    return LayoutObjectFactory::CreateFrameSet(*this, style, legacy);
   return LayoutObject::CreateObject(this, style, legacy);
 }
 

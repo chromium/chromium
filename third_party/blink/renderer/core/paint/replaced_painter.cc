@@ -99,7 +99,7 @@ bool ReplacedPainter::ShouldPaintBoxDecorationBackground(
     const PaintInfo& paint_info) {
   // LayoutFrameSet paints everything in the foreground phase.
   if (layout_replaced_.IsLayoutEmbeddedContent() &&
-      layout_replaced_.Parent()->IsFrameSet())
+      layout_replaced_.Parent()->IsFrameSetIncludingNG())
     return paint_info.phase == PaintPhase::kForeground;
   return ShouldPaintSelfBlockBackground(paint_info.phase);
 }

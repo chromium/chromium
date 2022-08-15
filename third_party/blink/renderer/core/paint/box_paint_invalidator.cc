@@ -169,7 +169,7 @@ PaintInvalidationReason BoxPaintInvalidator::ComputePaintInvalidationReason() {
     return PaintInvalidationReason::kGeometry;
 
   // Needs to repaint frame boundaries.
-  if (box_.IsFrameSet())
+  if (box_.IsFrameSetIncludingNG())
     return PaintInvalidationReason::kGeometry;
 
   // Needs to repaint column rules.

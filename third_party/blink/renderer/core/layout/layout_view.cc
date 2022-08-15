@@ -658,7 +658,8 @@ void LayoutView::CalculateScrollbarModes(
   Document& document = GetDocument();
   if (Node* body = document.body()) {
     // Framesets can't scroll.
-    if (body->GetLayoutObject() && body->GetLayoutObject()->IsFrameSet())
+    if (body->GetLayoutObject() &&
+        body->GetLayoutObject()->IsFrameSetIncludingNG())
       RETURN_SCROLLBAR_MODE(mojom::blink::ScrollbarMode::kAlwaysOff);
   }
 

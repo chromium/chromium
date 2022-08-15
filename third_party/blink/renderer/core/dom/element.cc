@@ -429,7 +429,8 @@ bool NeedsLegacyLayoutForEntireDocument(Document& document) {
   // layout (because of the above check), which would re-attach all layout
   // objects, which would cause the frameset to lose state of some sort, leaving
   // everything blank when printed.
-  if (document.IsFrameSet()) {
+  if (document.IsFrameSet() &&
+      !RuntimeEnabledFeatures::LayoutNGFrameSetEnabled()) {
     UseCounter::Count(document, WebFeature::kLegacyLayoutByFrameSet);
     return true;
   }
