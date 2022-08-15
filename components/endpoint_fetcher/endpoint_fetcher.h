@@ -124,7 +124,7 @@ class EndpointFetcher {
   virtual ~EndpointFetcher();
 
   // TODO(crbug.com/999256) enable cancellation support
-  void Fetch(EndpointFetcherCallback callback);
+  virtual void Fetch(EndpointFetcherCallback callback);
   virtual void PerformRequest(EndpointFetcherCallback endpoint_fetcher_callback,
                               const char* key);
 

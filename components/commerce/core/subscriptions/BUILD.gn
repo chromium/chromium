@@ -31,14 +31,24 @@ source_set("subscriptions") {
 source_set("subscriptions_unit_tests") {
   testonly = true
 
-  sources = [ "subscriptions_manager_unittest.cc" ]
+  sources = [
+    "subscriptions_manager_unittest.cc",
+    "subscriptions_server_proxy_unittest.cc",
+    "subscriptions_storage_unittest.cc",
+  ]
 
   deps = [
     ":subscriptions",
     "//base/test:test_support",
+    "//components/commerce/core:commerce_subscription_db_content_proto",
     "//components/commerce/core:feature_list",
+    "//components/endpoint_fetcher:endpoint_fetcher",
     "//components/leveldb_proto",
+    "//components/session_proto_db:core",
     "//components/signin/public/identity_manager:test_support",
+    "//net/traffic_annotation:test_support",
+    "//services/data_decoder/public/cpp:test_support",
+    "//services/network:test_support",
     "//services/network/public/cpp:cpp",
     "//testing/gmock",
     "//testing/gtest",

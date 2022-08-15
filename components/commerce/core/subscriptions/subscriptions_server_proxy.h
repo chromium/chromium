@@ -58,13 +58,15 @@ class SubscriptionsServerProxy {
   virtual void Get(SubscriptionType type,
                    GetSubscriptionsFetcherCallback callback);
 
- private:
-  std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
+ protected:
+  // This method could be overridden in tests.
+  virtual std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
       const GURL& url,
       const std::string& http_method,
       const std::string& post_data,
       const net::NetworkTrafficAnnotationTag& annotation_tag);
 
+ private:
   // Handle Create or Delete response.
   void HandleManageSubscriptionsResponses(
       ManageSubscriptionsFetcherCallback callback,
