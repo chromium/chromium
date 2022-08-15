@@ -40,6 +40,7 @@ import org.chromium.base.SysUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.Restriction;
@@ -320,6 +321,7 @@ public class TabSelectionEditorTest {
     @MediumTest
     @EnableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @DisabledTest(message = "https://crbug.com/1352950")
     public void testConfigureToolbarMenuItems() {
         prepareBlankTab(2, false);
         List<Tab> tabs = getTabsInCurrentTabModel();
@@ -348,6 +350,9 @@ public class TabSelectionEditorTest {
                 closeId, "Close");
         verifyToolbarMenuItemState(groupId, /*enabled=*/true);
 
+        // TODO(crbug.com/1352950): This step failed to deselect the first tab. It is likely
+        // verifyToolbarMenuItemState() left the menu open (race condition?) so the deselect click
+        // got consumed prior to clicking on the tab.
         for (int i = 0; i < tabs.size(); i++) {
             mRobot.actionRobot.clickItemAtAdapterPosition(i);
         }
