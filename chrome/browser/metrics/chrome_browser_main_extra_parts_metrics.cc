@@ -7,6 +7,7 @@
 #include <cmath>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/allocator/partition_alloc_support.h"
 #include "base/bind.h"
@@ -373,25 +374,18 @@ void OnShellHandlerConnectionError() {
 }
 
 // Record the UMA histogram when a response is received.
-void OnIsPinnedToTaskbarResult(bool succeeded,
-                               bool is_pinned_to_taskbar,
-                               bool is_pinned_to_taskbar_verb_check) {
+void OnIsPinnedToTaskbarResult(bool succeeded, bool is_pinned_to_taskbar) {
   RecordPinnedToTaskbarProcessError(false);
 
   // Used for histograms; do not reorder.
   enum Result { NOT_PINNED = 0, PINNED = 1, FAILURE = 2, NUM_RESULTS };
 
-  Result result_no_verb_check = FAILURE;
-  Result result_verb_check = FAILURE;
-  if (succeeded) {
-    result_no_verb_check = is_pinned_to_taskbar ? PINNED : NOT_PINNED;
-    result_verb_check = is_pinned_to_taskbar_verb_check ? PINNED : NOT_PINNED;
-  }
+  Result result = FAILURE;
+  if (succeeded)
+    result = is_pinned_to_taskbar ? PINNED : NOT_PINNED;
 
-  base::UmaHistogramEnumeration("Windows.IsPinnedToTaskbar", result_verb_check,
+  base::UmaHistogramEnumeration("Windows.IsPinnedToTaskbar", result,
                                 NUM_RESULTS);
-  base::UmaHistogramEnumeration("Windows.IsPinnedToTaskbar2",
-                                result_no_verb_check, NUM_RESULTS);
 }
 
 // Records the pinned state of the current executable into a histogram. Should

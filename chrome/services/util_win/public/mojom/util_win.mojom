@@ -140,8 +140,7 @@ enum ShortcutOperation {
 interface UtilWin {
   // Returns the pinned state of the current executable.
   IsPinnedToTaskbar() => (bool succeeded,
-                          bool is_pinned_to_taskbar,
-                          bool is_pinned_to_taskbar_verb_check);
+                          bool is_pinned_to_taskbar);
 
   // Unpins all shortcuts in `shortcut_paths`.
   UnpinShortcuts(array<mojo_base.mojom.FilePath> shortcut_paths)

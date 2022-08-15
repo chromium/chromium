@@ -471,9 +471,7 @@ class IsPinnedToTaskbarHelper {
                           ResultCallback result_callback);
 
   void OnConnectionError();
-  void OnIsPinnedToTaskbarResult(bool succeeded,
-                                 bool is_pinned_to_taskbar,
-                                 bool is_pinned_to_taskbar_verb_check);
+  void OnIsPinnedToTaskbarResult(bool succeeded, bool is_pinned_to_taskbar);
 
   mojo::Remote<chrome::mojom::UtilWin> remote_util_win_;
 
@@ -516,12 +514,10 @@ void IsPinnedToTaskbarHelper::OnConnectionError() {
 
 void IsPinnedToTaskbarHelper::OnIsPinnedToTaskbarResult(
     bool succeeded,
-    bool is_pinned_to_taskbar,
-    bool is_pinned_to_taskbar_verb_check) {
+    bool is_pinned_to_taskbar) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::move(result_callback_)
-      .Run(succeeded, is_pinned_to_taskbar, is_pinned_to_taskbar_verb_check);
+  std::move(result_callback_).Run(succeeded, is_pinned_to_taskbar);
   delete this;
 }
 
