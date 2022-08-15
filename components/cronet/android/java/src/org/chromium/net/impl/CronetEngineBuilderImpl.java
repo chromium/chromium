@@ -270,12 +270,8 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
     public CronetEngineBuilderImpl enableHttpCache(@HttpCacheSetting int cacheMode, long maxSize) {
         HttpCacheMode cacheModeEnum = HttpCacheMode.fromPublicBuilderCacheMode(cacheMode);
 
-        if (cacheModeEnum.getType() == HttpCacheType.DISK) {
-            if (storagePath() == null) {
-                throw new IllegalArgumentException("Storage path must be set");
-            }
-        } else if (storagePath() != null) {
-            throw new IllegalArgumentException("Storage path must not be set");
+        if (cacheModeEnum.getType() == HttpCacheType.DISK && storagePath() == null) {
+            throw new IllegalArgumentException("Storage path must be set");
         }
 
         mHttpCacheMode = cacheModeEnum;

@@ -5,7 +5,9 @@
 package org.chromium.net;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import static org.chromium.net.CronetTestRule.getContext;
 import static org.chromium.net.CronetTestRule.getTestStorage;
@@ -225,6 +227,69 @@ public class DiskStorageTest {
         assertEquals(dummyContent, stringBuilder.toString());
         File diskCacheDir = new File(testStorage + "/disk_cache");
         assertTrue(diskCacheDir.exists());
+        File prefsDir = new File(testStorage + "/prefs");
+        assertTrue(prefsDir.exists());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Cronet"})
+    @OnlyRunNativeCronet
+    // Tests that enableHttpCache throws if storage path not set
+    public void testEnableHttpCacheThrowsIfStoragePathNotSet() throws Exception {
+        // Initialize a CronetEngine and shut it down.
+        ExperimentalCronetEngine.Builder builder =
+                new ExperimentalCronetEngine.Builder(getContext());
+        try {
+            builder.enableHttpCache(CronetEngine.Builder.HTTP_CACHE_DISK, 1024 * 1024);
+            fail("Enabling http cache without a storage path should throw an exception");
+        } catch (IllegalArgumentException e) {
+            // Expected
+        }
+
+        CronetEngine cronetEngine = builder.build();
+        TestUrlRequestCallback callback = new TestUrlRequestCallback();
+        String url = NativeTestServer.getFileURL("/cacheable.txt");
+        UrlRequest.Builder requestBuilder =
+                cronetEngine.newUrlRequestBuilder(url, callback, callback.getExecutor());
+        UrlRequest urlRequest = requestBuilder.build();
+        urlRequest.start();
+        callback.blockForDone();
+        assertEquals(200, callback.mResponseInfo.getHttpStatusCode());
+        cronetEngine.shutdown();
+
+        String testStorage = getTestStorage(getContext());
+        File diskCacheDir = new File(testStorage + "/disk_cache");
+        assertFalse(diskCacheDir.exists());
+        File prefsDir = new File(testStorage + "/prefs");
+        assertFalse(prefsDir.exists());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Cronet"})
+    @OnlyRunNativeCronet
+    // Tests that prefs file is created even if httpcache isn't enabled
+    public void testPrefsFileCreatedWithoutHttpCache() throws Exception {
+        // Initialize a CronetEngine and shut it down.
+        String testStorage = getTestStorage(getContext());
+        ExperimentalCronetEngine.Builder builder =
+                new ExperimentalCronetEngine.Builder(getContext());
+        builder.setStoragePath(testStorage);
+
+        CronetEngine cronetEngine = builder.build();
+        TestUrlRequestCallback callback = new TestUrlRequestCallback();
+        String url = NativeTestServer.getFileURL("/cacheable.txt");
+        UrlRequest.Builder requestBuilder =
+                cronetEngine.newUrlRequestBuilder(url, callback, callback.getExecutor());
+        UrlRequest urlRequest = requestBuilder.build();
+        urlRequest.start();
+        callback.blockForDone();
+        assertEquals(200, callback.mResponseInfo.getHttpStatusCode());
+        cronetEngine.shutdown();
+
+        File diskCacheDir = new File(testStorage + "/disk_cache");
+        assertFalse(diskCacheDir.exists());
         File prefsDir = new File(testStorage + "/prefs");
         assertTrue(prefsDir.exists());
     }
