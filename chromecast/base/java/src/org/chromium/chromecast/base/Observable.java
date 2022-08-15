@@ -104,16 +104,47 @@ public abstract class Observable<T> {
     }
 
     /**
+     * Returns an Observable that combines the state of all of this Observable's data into
+     * a single activation of type A, where the state is combined by successively applying |acc|
+     * when this Observable adds data, and |dim| when this Observable removes data.
+     *
+     * By default, if |this| is empty, then the result Observable will be activated with the value
+     * of |start|. If |this| is activated with data, then that T-typed data and the current A-typed
+     * data from the result Observable will be fed to |acc| to calculate the new A-typed data for
+     * the result Observable. If |this| has data deactivated, then that data, along with the current
+     * A-typed data from the result Observable, will be fed to |dim| to calculate the new A-typed
+     * data for the result Observable.
+     *
+     * There is always exactly one activation in the result Observable.
+     *
+     * This method provides a generic way to combine the state of multiple activations, "remember"
+     * previous activations, or keep track of ordering in a way that can't be done with pure monadic
+     * operations.
+     */
+    public final <A> Observable<A> fold(A start, BiFunction<A, T, A> acc, BiFunction<A, T, A> dim) {
+        return make(observer -> {
+            Cell<A> current = new Cell<>(start);
+            Subscription sub = subscribe(t -> {
+                current.mutate(a -> acc.apply(a, t));
+                return () -> current.mutate(a -> dim.apply(a, t));
+            });
+            return Scopes.combine(sub, current.subscribe(observer))::close;
+        });
+    }
+
+    /**
+     * Returns an Observable that contains the number of activations in |this|, which updates
+     * dynamically as |this| updates.
+     */
+    public final Observable<Integer> count() {
+        return fold(0, (n, x) -> n + 1, (n, x) -> n - 1);
+    }
+
+    /**
      * Returns an Observable that is activated only when the given Observable is not activated.
      */
     public static Observable<?> not(Observable<?> observable) {
-        Controller<Unit> opposite = new Controller<>();
-        opposite.set(Unit.unit());
-        observable.subscribe(x -> {
-            opposite.reset();
-            return () -> opposite.set(Unit.unit());
-        });
-        return opposite;
+        return observable.count().filter(n -> n == 0);
     }
 
     /**
