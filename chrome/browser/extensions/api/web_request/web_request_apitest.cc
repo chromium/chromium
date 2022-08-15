@@ -333,8 +333,18 @@ void WaitForExtraHeadersListener(base::WaitableEvent* event,
 
 }  // namespace
 
+using ContextType = ExtensionBrowserTest::ContextType;
+
 class ExtensionWebRequestApiTest : public ExtensionApiTest {
  public:
+  explicit ExtensionWebRequestApiTest(
+      ContextType context_type = ContextType::kFromManifest)
+      : ExtensionApiTest(context_type) {}
+  ExtensionWebRequestApiTest(const ExtensionWebRequestApiTest&) = delete;
+  ExtensionWebRequestApiTest& operator=(const ExtensionWebRequestApiTest&) =
+      delete;
+  ~ExtensionWebRequestApiTest() override = default;
+
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -348,12 +358,12 @@ class ExtensionWebRequestApiTest : public ExtensionApiTest {
                                     kOriginTrialPublicKeyForTesting);
   }
 
-  void RunPermissionTest(
-      const char* extension_directory,
-      bool load_extension_with_incognito_permission,
-      bool wait_for_extension_loaded_in_incognito,
-      const char* expected_content_regular_window,
-      const char* exptected_content_incognito_window);
+  void RunPermissionTest(const char* extension_directory,
+                         bool load_extension_with_incognito_permission,
+                         bool wait_for_extension_loaded_in_incognito,
+                         const char* expected_content_regular_window,
+                         const char* exptected_content_incognito_window,
+                         ContextType context_type);
 
   mojo::PendingRemote<network::mojom::URLLoaderFactory>
   CreateURLLoaderFactory() {
@@ -1030,7 +1040,8 @@ void ExtensionWebRequestApiTest::RunPermissionTest(
     bool load_extension_with_incognito_permission,
     bool wait_for_extension_loaded_in_incognito,
     const char* expected_content_regular_window,
-    const char* exptected_content_incognito_window) {
+    const char* exptected_content_incognito_window,
+    ContextType context_type) {
   ResultCatcher catcher;
   catcher.RestrictToBrowserContext(browser()->profile());
   ResultCatcher catcher_incognito;
@@ -1043,7 +1054,8 @@ void ExtensionWebRequestApiTest::RunPermissionTest(
   ASSERT_TRUE(LoadExtension(
       test_data_dir_.AppendASCII("webrequest_permissions")
           .AppendASCII(extension_directory),
-      {.allow_in_incognito = load_extension_with_incognito_permission}));
+      {.allow_in_incognito = load_extension_with_incognito_permission,
+       .context_type = context_type}));
 
   // Test that navigation in regular window is properly redirected.
   EXPECT_TRUE(listener.WaitUntilSatisfied());
@@ -1082,33 +1094,55 @@ void ExtensionWebRequestApiTest::RunPermissionTest(
   EXPECT_EQ(exptected_content_incognito_window, body);
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
+class ExtensionWebRequestApiTestWithContextType
+    : public ExtensionWebRequestApiTest,
+      public testing::WithParamInterface<ContextType> {
+ public:
+  ExtensionWebRequestApiTestWithContextType()
+      : ExtensionWebRequestApiTest(GetParam()) {}
+  ExtensionWebRequestApiTestWithContextType(
+      const ExtensionWebRequestApiTestWithContextType&) = delete;
+  ExtensionWebRequestApiTestWithContextType& operator=(
+      const ExtensionWebRequestApiTestWithContextType&) = delete;
+  ~ExtensionWebRequestApiTestWithContextType() override = default;
+};
+
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         ExtensionWebRequestApiTestWithContextType,
+                         ::testing::Values(ContextType::kPersistentBackground));
+
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         ExtensionWebRequestApiTestWithContextType,
+                         ::testing::Values(ContextType::kServiceWorker));
+
+IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
                        WebRequestDeclarativePermissionSpanning1) {
   // Test spanning with incognito permission.
   ASSERT_TRUE(StartEmbeddedTestServer());
-  RunPermissionTest("spanning", true, false, "redirected1", "redirected1");
+  RunPermissionTest("spanning", true, false, "redirected1", "redirected1",
+                    GetParam());
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
+IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
                        WebRequestDeclarativePermissionSpanning2) {
   // Test spanning without incognito permission.
   ASSERT_TRUE(StartEmbeddedTestServer());
-  RunPermissionTest("spanning", false, false, "redirected1", "");
+  RunPermissionTest("spanning", false, false, "redirected1", "", GetParam());
 }
 
-
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
+IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
                        WebRequestDeclarativePermissionSplit1) {
   // Test split with incognito permission.
   ASSERT_TRUE(StartEmbeddedTestServer());
-  RunPermissionTest("split", true, true, "redirected1", "redirected2");
+  RunPermissionTest("split", true, true, "redirected1", "redirected2",
+                    GetParam());
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
+IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
                        WebRequestDeclarativePermissionSplit2) {
   // Test split without incognito permission.
   ASSERT_TRUE(StartEmbeddedTestServer());
-  RunPermissionTest("split", false, false, "redirected1", "");
+  RunPermissionTest("split", false, false, "redirected1", "", GetParam());
 }
 
 // TODO(crbug.com/238179): Cure these flaky tests.
@@ -1128,7 +1162,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, DISABLED_PostData2) {
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
+IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
                        DeclarativeSendMessage) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("webrequest_sendmessage")) << message_;
@@ -1137,7 +1171,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
 // Check that reloading an extension that runs in incognito split mode and
 // has two active background pages with registered events does not crash the
 // browser. Regression test for http://crbug.com/224094
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, IncognitoSplitModeReload) {
+IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
+                       IncognitoSplitModeReload) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   // Wait for rules to be set up.
   ExtensionTestMessageListener listener("done");
@@ -1163,7 +1198,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, IncognitoSplitModeReload) {
   EXPECT_TRUE(listener_incognito2.WaitUntilSatisfied());
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, ExtensionRequests) {
+IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
+                       ExtensionRequests) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ExtensionTestMessageListener listener_main1("web_request_status1",
                                               ReplyBehavior::kWillReply);
@@ -1180,10 +1216,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, ExtensionRequests) {
   EXPECT_TRUE(listener_main2.WaitUntilSatisfied());
 
   // Perform some network activity in an app and another extension.
+  ASSERT_TRUE(
+      LoadExtension(test_data_dir_.AppendASCII("webrequest_extensions/app"),
+                    {.context_type = ContextType::kFromManifest}));
   ASSERT_TRUE(LoadExtension(
-          test_data_dir_.AppendASCII("webrequest_extensions/app")));
-  ASSERT_TRUE(LoadExtension(
-          test_data_dir_.AppendASCII("webrequest_extensions/extension")));
+      test_data_dir_.AppendASCII("webrequest_extensions/extension"),
+      {.context_type = ContextType::kFromManifest}));
 
   EXPECT_TRUE(listener_app.WaitUntilSatisfied());
   EXPECT_TRUE(listener_extension.WaitUntilSatisfied());
@@ -1268,7 +1306,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, HostedAppRequest) {
 }
 
 // Tests that WebRequest works with runtime host permissions.
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
+IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
                        WebRequestWithWithheldPermissions) {
   content::SetupCrossSiteRedirector(embedded_test_server());
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -1389,7 +1427,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
 
 // Test that extensions with granted runtime host permissions to a tab can
 // intercept cross-origin requests from that tab.
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
+IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
                        WebRequestWithheldPermissionsCrossOriginRequests) {
   content::SetupCrossSiteRedirector(embedded_test_server());
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -1439,7 +1477,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
 // Tests behavior when an extension has withheld access to a request's URL, but
 // not the initiator's (tab's) URL. Regression test for
 // https://crbug.com/891586.
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
+IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
                        WithheldHostPermissionsForCrossOriginWithoutInitiator) {
   content::SetupCrossSiteRedirector(embedded_test_server());
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -1505,7 +1543,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
 // Verify that requests to clientsX.google.com are protected properly.
 // First test requests from a standard renderer and then a request from the
 // browser process.
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
+IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
                        WebRequestClientsGoogleComProtection) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -1597,7 +1635,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
 }
 
 // Verify that requests for PAC scripts are protected properly.
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
+IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
                        WebRequestPacRequestProtection) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -1645,7 +1683,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
 
 // Checks that the Dice response header is protected for Gaia URLs, but not
 // other URLs.
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
+IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
                        WebRequestDiceHeaderProtection) {
   // Load an extension that registers a listener for webRequest events, and
   // wait until it is initialized.
@@ -1844,7 +1882,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiWebTransportTest, ServiceWorker) {
 }
 
 // Test behavior when intercepting requests from a browser-initiated url fetch.
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
+IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
                        WebRequestURLLoaderInterception) {
   // Create an extension that intercepts (and blocks) requests to example.com.
   TestExtensionDir test_dir;
@@ -2011,7 +2049,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
 
 // Test that extensions need host permissions to both the request url and
 // initiator to intercept a request.
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, InitiatorAccessRequired) {
+IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
+                       InitiatorAccessRequired) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   ExtensionTestMessageListener listener("ready");
@@ -2172,15 +2211,19 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
 }
 
 // Test fixture which sets a custom NTP Page.
-class NTPInterceptionWebRequestAPITest : public ExtensionApiTest {
+class NTPInterceptionWebRequestAPITest
+    : public ExtensionApiTest,
+      public testing::WithParamInterface<ContextType> {
  public:
   NTPInterceptionWebRequestAPITest()
-      : https_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
+      : ExtensionApiTest(GetParam()),
+        https_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
   NTPInterceptionWebRequestAPITest(const NTPInterceptionWebRequestAPITest&) =
       delete;
   NTPInterceptionWebRequestAPITest& operator=(
       const NTPInterceptionWebRequestAPITest&) = delete;
+  ~NTPInterceptionWebRequestAPITest() override = default;
 
   // ExtensionApiTest override:
   void SetUpOnMainThread() override {
@@ -2203,9 +2246,17 @@ class NTPInterceptionWebRequestAPITest : public ExtensionApiTest {
   net::EmbeddedTestServer https_test_server_;
 };
 
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         NTPInterceptionWebRequestAPITest,
+                         ::testing::Values(ContextType::kPersistentBackground));
+
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         NTPInterceptionWebRequestAPITest,
+                         ::testing::Values(ContextType::kServiceWorker));
+
 // Ensures that requests made by the NTP Instant renderer are hidden from the
 // Web Request API. Regression test for crbug.com/797461.
-IN_PROC_BROWSER_TEST_F(NTPInterceptionWebRequestAPITest,
+IN_PROC_BROWSER_TEST_P(NTPInterceptionWebRequestAPITest,
                        NTPRendererRequestsHidden) {
   // Loads an extension which tries to intercept requests to
   // "fake_ntp_script.js", which will be loaded as part of the NTP renderer.
@@ -2265,15 +2316,17 @@ IN_PROC_BROWSER_TEST_F(NTPInterceptionWebRequestAPITest,
 // the WebUI NTP can't be intercepted by extensions.
 class WebUiNtpInterceptionWebRequestAPITest
     : public ExtensionApiTest,
-      public OneGoogleBarServiceObserver {
+      public OneGoogleBarServiceObserver,
+      public testing::WithParamInterface<ContextType> {
  public:
   WebUiNtpInterceptionWebRequestAPITest()
-      : https_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
-
+      : ExtensionApiTest(GetParam()),
+        https_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
   WebUiNtpInterceptionWebRequestAPITest(
       const WebUiNtpInterceptionWebRequestAPITest&) = delete;
   WebUiNtpInterceptionWebRequestAPITest& operator=(
       const WebUiNtpInterceptionWebRequestAPITest&) = delete;
+  ~WebUiNtpInterceptionWebRequestAPITest() override = default;
 
   // ExtensionApiTest override:
   void SetUp() override {
@@ -2346,7 +2399,15 @@ class WebUiNtpInterceptionWebRequestAPITest
   base::Lock lock_;
 };
 
-IN_PROC_BROWSER_TEST_F(WebUiNtpInterceptionWebRequestAPITest,
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         WebUiNtpInterceptionWebRequestAPITest,
+                         ::testing::Values(ContextType::kPersistentBackground));
+
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         WebUiNtpInterceptionWebRequestAPITest,
+                         ::testing::Values(ContextType::kServiceWorker));
+
+IN_PROC_BROWSER_TEST_P(WebUiNtpInterceptionWebRequestAPITest,
                        OneGoogleBarRequestsHidden) {
   // Loads an extension which tries to intercept requests to the OneGoogleBar.
   ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
@@ -2398,9 +2459,29 @@ IN_PROC_BROWSER_TEST_F(DevToolsFrontendInWebRequestApiTest, HiddenRequests) {
       << message_;
 }
 
+class WebRequestApiTestWithManagementPolicy
+    : public ExtensionApiTestWithManagementPolicy,
+      public testing::WithParamInterface<ContextType> {
+ public:
+  WebRequestApiTestWithManagementPolicy()
+      : ExtensionApiTestWithManagementPolicy(GetParam()) {}
+  ~WebRequestApiTestWithManagementPolicy() override = default;
+  WebRequestApiTestWithManagementPolicy(
+      const WebRequestApiTestWithManagementPolicy&) = delete;
+  WebRequestApiTestWithManagementPolicy& operator=(
+      const WebRequestApiTestWithManagementPolicy&) = delete;
+};
+
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         WebRequestApiTestWithManagementPolicy,
+                         ::testing::Values(ContextType::kPersistentBackground));
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         WebRequestApiTestWithManagementPolicy,
+                         ::testing::Values(ContextType::kServiceWorker));
+
 // Tests that the webRequest events aren't dispatched when the request initiator
 // is protected by policy.
-IN_PROC_BROWSER_TEST_F(ExtensionApiTestWithManagementPolicy,
+IN_PROC_BROWSER_TEST_P(WebRequestApiTestWithManagementPolicy,
                        InitiatorProtectedByPolicy) {
   // We expect that no request will be hidden or modification blocked. This
   // means that the request to example.com will be seen by the extension.
@@ -2479,7 +2560,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTestWithManagementPolicy,
 
 // Tests that the webRequest events aren't dispatched when the URL of the
 // request is protected by policy.
-IN_PROC_BROWSER_TEST_F(ExtensionApiTestWithManagementPolicy,
+IN_PROC_BROWSER_TEST_P(WebRequestApiTestWithManagementPolicy,
                        UrlProtectedByPolicy) {
   // Host protected by policy.
   const std::string protected_domain = "example.com";
@@ -2532,7 +2613,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTestWithManagementPolicy,
 // navigation. This replicates most of the tests from
 // WebRequestWithWithheldPermissions with a protected host. Granting a tab
 // specific permission shouldn't bypass our policy.
-IN_PROC_BROWSER_TEST_F(ExtensionApiTestWithManagementPolicy,
+IN_PROC_BROWSER_TEST_P(WebRequestApiTestWithManagementPolicy,
                        WebRequestProtectedByPolicy) {
   // Host protected by policy.
   const std::string protected_domain = "example.com";
@@ -2597,7 +2678,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTestWithManagementPolicy,
 
 // A test fixture which mocks the Time::Now() function to ensure that the
 // default clock returns monotonically increasing time.
-class ExtensionWebRequestMockedClockTest : public ExtensionWebRequestApiTest {
+class ExtensionWebRequestMockedClockTest
+    : public ExtensionWebRequestApiTestWithContextType {
  public:
   ExtensionWebRequestMockedClockTest()
       : scoped_time_clock_override_(&ExtensionWebRequestMockedClockTest::Now,
@@ -2619,9 +2701,16 @@ class ExtensionWebRequestMockedClockTest : public ExtensionWebRequestApiTest {
   base::subtle::ScopedTimeClockOverrides scoped_time_clock_override_;
 };
 
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         ExtensionWebRequestMockedClockTest,
+                         ::testing::Values(ContextType::kPersistentBackground));
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         ExtensionWebRequestMockedClockTest,
+                         ::testing::Values(ContextType::kServiceWorker));
+
 // Tests that we correctly dispatch the OnActionIgnored event on an extension
 // if the extension's proposed redirect is ignored.
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestMockedClockTest,
+IN_PROC_BROWSER_TEST_P(ExtensionWebRequestMockedClockTest,
                        OnActionIgnored_Redirect) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
@@ -2703,7 +2792,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestMockedClockTest,
 }
 
 // Regression test for http://crbug.com/1074282.
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, StaleHeadersAfterRedirect) {
+IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
+                       StaleHeadersAfterRedirect) {
   TestExtensionDir test_dir;
   test_dir.WriteManifest(R"({
         "name": "Web Request Stale Headers Test",
@@ -2782,7 +2872,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, StaleHeadersAfterRedirect) {
       0);
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, ChangeHeaderUMAs) {
+IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
+                       ChangeHeaderUMAs) {
   using RequestHeaderType =
       extension_web_request_api_helpers::RequestHeaderType;
   using ResponseHeaderType =
@@ -2878,7 +2969,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, ChangeHeaderUMAs) {
                             ResponseHeaderType::kNone, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, RemoveHeaderUMAs) {
+IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
+                       RemoveHeaderUMAs) {
   using RequestHeaderType =
       extension_web_request_api_helpers::RequestHeaderType;
   using ResponseHeaderType =
@@ -2949,12 +3041,29 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, RemoveHeaderUMAs) {
                             ResponseHeaderType::kNone, 1);
 }
 
-// The parameter is for opt_extraInfoSpec passed to addEventListener.
-// 'blocking' and 'requestHeaders' if it's false, and 'extraHeaders' in addition
-// to them if it's true.
-class ServiceWorkerWebRequestApiTest : public testing::WithParamInterface<bool>,
-                                       public ExtensionApiTest {
+struct SWTestParams {
+  SWTestParams(bool extra_info_spec, ContextType context_type)
+      : extra_info_spec(extra_info_spec), context_type(context_type) {}
+
+  // This parameter is for opt_extraInfoSpec passed to addEventListener.
+  // 'blocking' and 'requestHeaders' if it's false, and 'extraHeaders' in
+  // addition to them if it's true.
+  bool extra_info_spec;
+  ContextType context_type;
+};
+
+class ServiceWorkerWebRequestApiTest
+    : public testing::WithParamInterface<SWTestParams>,
+      public ExtensionApiTest {
  public:
+  ServiceWorkerWebRequestApiTest()
+      : ExtensionApiTest(GetParam().context_type) {}
+  ~ServiceWorkerWebRequestApiTest() override = default;
+  ServiceWorkerWebRequestApiTest(const ServiceWorkerWebRequestApiTest&) =
+      delete;
+  ServiceWorkerWebRequestApiTest& operator=(
+      const ServiceWorkerWebRequestApiTest&) = delete;
+
   // The options passed as opt_extraInfoSpec to addEventListener.
   enum class ExtraInfoSpec {
     // 'blocking', 'requestHeaders'
@@ -2964,7 +3073,8 @@ class ServiceWorkerWebRequestApiTest : public testing::WithParamInterface<bool>,
   };
 
   static ExtraInfoSpec GetExtraInfoSpec() {
-    return GetParam() ? ExtraInfoSpec::kExtraHeaders : ExtraInfoSpec::kDefault;
+    return GetParam().extra_info_spec ? ExtraInfoSpec::kExtraHeaders
+                                      : ExtraInfoSpec::kDefault;
   }
 
   void InstallRequestHeaderModifyingExtension() {
@@ -3046,9 +3156,25 @@ class ServiceWorkerWebRequestApiTest : public testing::WithParamInterface<bool>,
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         ServiceWorkerWebRequestApiTest,
-                         ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    PersistentBackgroundWithExtraHeaders,
+    ServiceWorkerWebRequestApiTest,
+    ::testing::Values(SWTestParams(true, ContextType::kPersistentBackground)));
+
+INSTANTIATE_TEST_SUITE_P(
+    PersistentBackground,
+    ServiceWorkerWebRequestApiTest,
+    ::testing::Values(SWTestParams(false, ContextType::kPersistentBackground)));
+
+INSTANTIATE_TEST_SUITE_P(
+    ServiceWorkerWithExtraHeaders,
+    ServiceWorkerWebRequestApiTest,
+    ::testing::Values(SWTestParams(true, ContextType::kServiceWorker)));
+
+INSTANTIATE_TEST_SUITE_P(
+    ServiceWorker,
+    ServiceWorkerWebRequestApiTest,
+    ::testing::Values(SWTestParams(false, ContextType::kServiceWorker)));
 
 IN_PROC_BROWSER_TEST_P(ServiceWorkerWebRequestApiTest, ServiceWorkerFetch) {
   RunServiceWorkerFetchTest("fetch_event_respond_with_fetch.js");
@@ -3370,7 +3496,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerWebRequestApiTest,
 // Ensure we don't strip off initiator incorrectly in web request events when
 // both the normal and incognito contexts are active. Regression test for
 // crbug.com/934398.
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
+IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
                        Initiator_SpanningIncognito) {
   embedded_test_server()->ServeFilesFromSourceDirectory("chrome/test/data");
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -3428,7 +3554,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
 // Ensure we don't strip off initiator incorrectly in web request events when
 // both the normal and incognito contexts are active. Regression test for
 // crbug.com/934398.
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, Initiator_SplitIncognito) {
+IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
+                       Initiator_SplitIncognito) {
   embedded_test_server()->ServeFilesFromSourceDirectory("chrome/test/data");
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -3483,7 +3610,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleXHRRequest(
 
 // Regression test for http://crbug.com/971206. The responseHeaders should still
 // be present in onBeforeRedirect even for HSTS upgrade.
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
+IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
                        ExtraHeadersWithHSTSUpgrade) {
   net::EmbeddedTestServer https_test_server(
       net::EmbeddedTestServer::TYPE_HTTPS);
@@ -3555,7 +3682,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
 }
 
 // Regression test for https://crbug.com/1019614.
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, HSTSUpgradeAfterRedirect) {
+IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
+                       HSTSUpgradeAfterRedirect) {
   net::EmbeddedTestServer https_test_server(
       net::EmbeddedTestServer::TYPE_HTTPS);
   https_test_server.ServeFilesFromDirectory(
@@ -3606,10 +3734,29 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, HSTSUpgradeAfterRedirect) {
   EXPECT_EQ(final_url, web_contents->GetLastCommittedURL());
 }
 
+struct SWBTestParams {
+  SWBTestParams(bool extra_info_spec, ContextType context_type)
+      : extra_info_spec(extra_info_spec), context_type(context_type) {}
+
+  // The parameter is for opt_extraInfoSpec passed to addEventListener.
+  // 'blocking' if it's false, and 'extraHeaders' in addition to them
+  // if it's true.
+  bool extra_info_spec;
+  ContextType context_type;
+};
+
 class SubresourceWebBundlesWebRequestApiTest
-    : public testing::WithParamInterface<bool>,
+    : public testing::WithParamInterface<SWBTestParams>,
       public ExtensionApiTest {
  public:
+  SubresourceWebBundlesWebRequestApiTest()
+      : ExtensionApiTest(GetParam().context_type) {}
+  ~SubresourceWebBundlesWebRequestApiTest() override = default;
+  SubresourceWebBundlesWebRequestApiTest(
+      const SubresourceWebBundlesWebRequestApiTest&) = delete;
+  SubresourceWebBundlesWebRequestApiTest& operator=(
+      const SubresourceWebBundlesWebRequestApiTest&) = delete;
+
   void SetUp() override {
     feature_list_.InitWithFeatures({features::kSubresourceWebBundles}, {});
     ExtensionApiTest::SetUp();
@@ -3625,7 +3772,8 @@ class SubresourceWebBundlesWebRequestApiTest
   };
 
   static ExtraInfoSpec GetExtraInfoSpec() {
-    return GetParam() ? ExtraInfoSpec::kExtraHeaders : ExtraInfoSpec::kDefault;
+    return GetParam().extra_info_spec ? ExtraInfoSpec::kExtraHeaders
+                                      : ExtraInfoSpec::kDefault;
   }
 
   bool TryLoadScript(const std::string& script_src) {
@@ -3727,9 +3875,26 @@ class SubresourceWebBundlesWebRequestApiTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         SubresourceWebBundlesWebRequestApiTest,
-                         ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    PersistentBackgroundWithExtraHeaders,
+    SubresourceWebBundlesWebRequestApiTest,
+    ::testing::Values(SWBTestParams(true, ContextType::kPersistentBackground)));
+
+INSTANTIATE_TEST_SUITE_P(
+    PersistentBackground,
+    SubresourceWebBundlesWebRequestApiTest,
+    ::testing::Values(SWBTestParams(false,
+                                    ContextType::kPersistentBackground)));
+
+INSTANTIATE_TEST_SUITE_P(
+    ServiceWorkerWithExtraHeaders,
+    SubresourceWebBundlesWebRequestApiTest,
+    ::testing::Values(SWBTestParams(true, ContextType::kServiceWorker)));
+
+INSTANTIATE_TEST_SUITE_P(
+    ServiceWorker,
+    SubresourceWebBundlesWebRequestApiTest,
+    ::testing::Values(SWBTestParams(false, ContextType::kServiceWorker)));
 
 // Ensure web request listeners can intercept requests for a web bundle and its
 // subresources.
@@ -4408,10 +4573,24 @@ enum class RedirectType {
   kOnHeadersReceived,
 };
 
+struct RITestParams {
+  RITestParams(RedirectType redirect_type, ContextType context_type)
+      : redirect_type(redirect_type), context_type(context_type) {}
+
+  RedirectType redirect_type;
+  ContextType context_type;
+};
+
 class RedirectInfoWebRequestApiTest
-    : public testing::WithParamInterface<RedirectType>,
+    : public testing::WithParamInterface<RITestParams>,
       public ExtensionApiTest {
  public:
+  RedirectInfoWebRequestApiTest() : ExtensionApiTest(GetParam().context_type) {}
+  ~RedirectInfoWebRequestApiTest() override = default;
+  RedirectInfoWebRequestApiTest(const RedirectInfoWebRequestApiTest&) = delete;
+  RedirectInfoWebRequestApiTest& operator=(
+      const RedirectInfoWebRequestApiTest&) = delete;
+
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -4428,9 +4607,8 @@ class RedirectInfoWebRequestApiTest
           "background": { "scripts": ["background.js"], "persistent": true },
           "permissions": ["<all_urls>", "webRequest", "webRequestBlocking"]
         })");
-    test_dir.WriteFile(
-        FILE_PATH_LITERAL("background.js"),
-        base::StringPrintf(R"(
+    test_dir.WriteFile(FILE_PATH_LITERAL("background.js"),
+                       base::StringPrintf(R"(
           chrome.webRequest.%s.addListener(function(details) {
             if (details.type == '%s' &&
                 details.url.includes('hello.html')) {
@@ -4441,10 +4619,11 @@ class RedirectInfoWebRequestApiTest
           }, {urls: ['*://original.test/*']}, ['blocking']);
           chrome.test.sendMessage('ready');
         )",
-                           GetParam() == RedirectType::kOnBeforeRequest
-                               ? "onBeforeRequest"
-                               : "onHeadersReceived",
-                           resource_type.c_str()));
+                                          GetParam().redirect_type ==
+                                                  RedirectType::kOnBeforeRequest
+                                              ? "onBeforeRequest"
+                                              : "onHeadersReceived",
+                                          resource_type.c_str()));
     ExtensionTestMessageListener listener("ready");
     const Extension* extension = LoadExtension(test_dir.UnpackedPath());
     ASSERT_TRUE(extension);
@@ -4455,10 +4634,29 @@ class RedirectInfoWebRequestApiTest
   TestExtensionDir test_dir_;
 };
 
-INSTANTIATE_TEST_SUITE_P(RedirectMode,
-                         RedirectInfoWebRequestApiTest,
-                         ::testing::Values(RedirectType::kOnBeforeRequest,
-                                           RedirectType::kOnHeadersReceived));
+INSTANTIATE_TEST_SUITE_P(
+    PersistentBackgroundOnBeforeRequest,
+    RedirectInfoWebRequestApiTest,
+    ::testing::Values(RITestParams(RedirectType::kOnBeforeRequest,
+                                   ContextType::kPersistentBackground)));
+
+INSTANTIATE_TEST_SUITE_P(
+    PersistentBackgroundOnHeadersReceived,
+    RedirectInfoWebRequestApiTest,
+    ::testing::Values(RITestParams(RedirectType::kOnHeadersReceived,
+                                   ContextType::kPersistentBackground)));
+
+INSTANTIATE_TEST_SUITE_P(
+    ServiceWorkerOnBeforeRequest,
+    RedirectInfoWebRequestApiTest,
+    ::testing::Values(RITestParams(RedirectType::kOnBeforeRequest,
+                                   ContextType::kServiceWorker)));
+
+INSTANTIATE_TEST_SUITE_P(
+    ServiceWorkerOnHeadersReceived,
+    RedirectInfoWebRequestApiTest,
+    ::testing::Values(RITestParams(RedirectType::kOnHeadersReceived,
+                                   ContextType::kServiceWorker)));
 
 // Test that a main frame request redirected by an extension has the correct
 // site_for_cookies and network_isolation_key parameters.
@@ -4668,10 +4866,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiIdentifiabilityTest,
       blink::IdentifiableSurface::Type::kExtensionCancelRequest));
 }
 
-class ProxyCORSWebRequestApiTest : public ExtensionApiTest {
+class ProxyCORSWebRequestApiTest
+    : public ExtensionApiTest,
+      public testing::WithParamInterface<ContextType> {
  public:
-  ProxyCORSWebRequestApiTest() = default;
+  ProxyCORSWebRequestApiTest() : ExtensionApiTest(GetParam()) {}
   ~ProxyCORSWebRequestApiTest() override = default;
+  ProxyCORSWebRequestApiTest(const ProxyCORSWebRequestApiTest&) = delete;
+  ProxyCORSWebRequestApiTest& operator=(const ProxyCORSWebRequestApiTest&) =
+      delete;
 
  protected:
   class ProceedLoginDialog : public content::NotificationObserver {
@@ -4807,10 +5010,18 @@ class ProxyCORSWebRequestApiTest : public ExtensionApiTest {
   net::EmbeddedTestServer proxy_cors_server_;
 };
 
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         ProxyCORSWebRequestApiTest,
+                         ::testing::Values(ContextType::kPersistentBackground));
+
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         ProxyCORSWebRequestApiTest,
+                         ::testing::Values(ContextType::kServiceWorker));
+
 // Regression test for crbug.com/1212625
 // Test that CORS preflight request which requires proxy auth completes
 // successfully instead of being cancelled after proxy auth required response.
-IN_PROC_BROWSER_TEST_F(ProxyCORSWebRequestApiTest,
+IN_PROC_BROWSER_TEST_P(ProxyCORSWebRequestApiTest,
                        PreflightCompletesSuccessfully) {
   ProceedLoginDialog login_dialog(kCORSProxyUser, kCORSProxyPass);
   ExtensionTestMessageListener ready_listener("ready");

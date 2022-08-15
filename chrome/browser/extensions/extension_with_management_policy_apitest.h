@@ -23,7 +23,8 @@ struct ManagementPolicyRequestLog {
 class ExtensionApiTestWithManagementPolicy
     : public extensions::ExtensionApiTest {
  public:
-  ExtensionApiTestWithManagementPolicy();
+  explicit ExtensionApiTestWithManagementPolicy(
+      ContextType context_type = ContextType::kFromManifest);
 
   ExtensionApiTestWithManagementPolicy(
       const ExtensionApiTestWithManagementPolicy&) = delete;
