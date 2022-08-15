@@ -384,11 +384,11 @@ class VariationsService
   GURL insecure_variations_server_url_;
 
   // Tracks whether the initial request to the variations server had completed.
-  bool initial_request_completed_;
+  bool initial_request_completed_ = false;
 
   // Tracks whether any errors resolving delta compression were encountered
   // since the last time a seed was fetched successfully.
-  bool delta_error_since_last_success_;
+  bool delta_error_since_last_success_ = false;
 
   // Helper class used to tell this service if it's allowed to make network
   // resource requests.
@@ -400,7 +400,7 @@ class VariationsService
   base::TimeTicks last_request_started_time_;
 
   // The number of requests to the variations server that have been performed.
-  int request_count_;
+  int request_count_ = 0;
 
   // List of observers of the VariationsService.
   base::ObserverList<Observer>::Unchecked observer_list_;
@@ -412,7 +412,7 @@ class VariationsService
   VariationsFieldTrialCreator field_trial_creator_;
 
   // True if the last request was a retry over http.
-  bool last_request_was_http_retry_;
+  bool last_request_was_http_retry_ = false;
 
   // When not empty, contains an override for the os name in the variations
   // server url.
