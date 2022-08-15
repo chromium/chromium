@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/layout/ng/legacy_layout_tree_walking.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_absolute_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_disable_side_effects_scope.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_out_of_flow_positioned_node.h"
@@ -256,6 +257,12 @@ bool NGOutOfFlowLayoutPart::SweepLegacyCandidates(
 
 void NGOutOfFlowLayoutPart::HandleFragmentation(
     ColumnBalancingInfo* column_balancing_info) {
+  // OOF fragmentation depends on LayoutBox data being up-to-date, which isn't
+  // the case if side-effects are disabled. So we cannot safely do anything
+  // here.
+  if (NGDisableSideEffectsScope::IsDisabled())
+    return;
+
   if (!column_balancing_info &&
       (!container_builder_->IsBlockFragmentationContextRoot() ||
        has_block_fragmentation_))
@@ -1109,8 +1116,7 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
         // column balancing. However, if the containing block has not finished
         // layout, we should wait to lay out the OOF in case its position is
         // dependent on its containing block's final size.
-        if (containing_block->PhysicalFragments().IsEmpty() ||
-            containing_block->PhysicalFragments().back().BreakToken()) {
+        if (containing_block->PhysicalFragments().back().BreakToken()) {
           delayed_descendants_.push_back(descendant);
           continue;
         }
