@@ -2827,7 +2827,6 @@ TEST_F(MenuControllerTest, ContextMenuInitializesAuraWindowWhenShown) {
             anchor->anchor_position);
   EXPECT_EQ(ui::OwnedWindowAnchorGravity::kBottomRight, anchor->anchor_gravity);
   EXPECT_EQ((ui::OwnedWindowConstraintAdjustment::kAdjustmentSlideX |
-             ui::OwnedWindowConstraintAdjustment::kAdjustmentSlideY |
              ui::OwnedWindowConstraintAdjustment::kAdjustmentFlipY |
              ui::OwnedWindowConstraintAdjustment::kAdjustmentRezizeY),
             anchor->constraint_adjustment);
