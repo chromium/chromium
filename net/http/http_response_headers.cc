@@ -636,9 +636,9 @@ HttpVersion HttpResponseHeaders::ParseVersion(
     std::string::const_iterator line_end) {
   std::string::const_iterator p = line_begin;
 
-  // RFC2616 sec 3.1: HTTP-Version   = "HTTP" "/" 1*DIGIT "." 1*DIGIT
-  // TODO: (1*DIGIT apparently means one or more digits, but we only handle 1).
-  // TODO: handle leading zeros, which is allowed by the rfc1616 sec 3.1.
+  // RFC9112 Section 2.3:
+  // HTTP-version  = HTTP-name "/" DIGIT "." DIGIT
+  // HTTP-name     = %s"HTTP"
 
   if (!base::StartsWith(base::MakeStringPiece(line_begin, line_end), "http",
                         base::CompareCase::INSENSITIVE_ASCII)) {
