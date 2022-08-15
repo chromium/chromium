@@ -14,24 +14,39 @@ namespace ash {
 
 namespace {
 
-constexpr char kTestTypeStr[] = "echo";
-constexpr SystemExtensionId kTestId = {1, 2, 3, 4};
-constexpr char kTestIdStr[] = "01020304";
-constexpr char kTestName[] = "Sample System Web Extension";
-constexpr char kTestShortName[] = "Sample SWX";
-constexpr char kTestServiceWorkerURL[] = "/sw.js";
+constexpr char kFirstTypeStr[] = "echo";
+constexpr SystemExtensionId kFirstId = {1, 2, 3, 4};
+constexpr char kFirstIdStr[] = "01020304";
+constexpr char kFirstName[] = "Sample System Web Extension";
+constexpr char kFirstShortName[] = "Sample SWX";
+constexpr char kFirstServiceWorkerURL[] = "/sw.js";
+
+constexpr char kSecondTypeStr[] = "echo";
+constexpr SystemExtensionId kSecondId = {5, 6, 7, 8};
+constexpr char kSecondIdStr[] = "05060708";
+constexpr char kSecondName[] = "Second System Extension";
+constexpr char kSecondShortName[] = "Second SX";
+constexpr char kSecondServiceWorkerURL[] = "/sw.js";
 
 class SystemExtensionsPersistenceManagerTest
     : public ChromeRenderViewHostTestHarness {
  public:
   SystemExtensionsPersistenceManagerTest() {
-    test_system_extension_.id = kTestId;
-    test_system_extension_.manifest.Set("type", kTestTypeStr);
-    test_system_extension_.manifest.Set("id", kTestIdStr);
-    test_system_extension_.manifest.Set("name", kTestName);
-    test_system_extension_.manifest.Set("short_name", kTestShortName);
-    test_system_extension_.manifest.Set("service_worker_url",
-                                        kTestServiceWorkerURL);
+    first_test_system_extension_.id = kFirstId;
+    first_test_system_extension_.manifest.Set("type", kFirstTypeStr);
+    first_test_system_extension_.manifest.Set("id", kFirstIdStr);
+    first_test_system_extension_.manifest.Set("name", kFirstName);
+    first_test_system_extension_.manifest.Set("short_name", kFirstShortName);
+    first_test_system_extension_.manifest.Set("service_worker_url",
+                                              kFirstServiceWorkerURL);
+
+    second_test_system_extension_.id = kSecondId;
+    second_test_system_extension_.manifest.Set("type", kSecondTypeStr);
+    second_test_system_extension_.manifest.Set("id", kSecondIdStr);
+    second_test_system_extension_.manifest.Set("name", kSecondName);
+    second_test_system_extension_.manifest.Set("short_name", kSecondShortName);
+    second_test_system_extension_.manifest.Set("service_worker_url",
+                                               kSecondServiceWorkerURL);
   }
 
   void SetUp() override {
@@ -42,16 +57,25 @@ class SystemExtensionsPersistenceManagerTest
   }
 
  protected:
-  const SystemExtension& test_system_extension() {
-    return test_system_extension_;
+  const SystemExtension& first_test_system_extension() {
+    return first_test_system_extension_;
   }
 
-  const base::Value::Dict& test_manifest() {
-    return test_system_extension_.manifest;
+  const SystemExtension& second_test_system_extension() {
+    return second_test_system_extension_;
+  }
+
+  const base::Value::Dict& first_test_manifest() {
+    return first_test_system_extension_.manifest;
+  }
+
+  const base::Value::Dict& second_test_manifest() {
+    return second_test_system_extension_.manifest;
   }
 
  private:
-  SystemExtension test_system_extension_;
+  SystemExtension first_test_system_extension_;
+  SystemExtension second_test_system_extension_;
 };
 
 }  // namespace
@@ -60,7 +84,7 @@ class SystemExtensionsPersistenceManagerTest
 // System Extensions.
 TEST_F(SystemExtensionsPersistenceManagerTest, WriteAndRemovePrefs) {
   SystemExtensionsPersistenceManager manager(profile());
-  manager.Persist(test_system_extension());
+  manager.Persist(first_test_system_extension());
 
   // Test that the extension was saved into a pref.
   auto* prefs = profile()->GetPrefs();
@@ -68,41 +92,138 @@ TEST_F(SystemExtensionsPersistenceManagerTest, WriteAndRemovePrefs) {
     const base::Value::Dict& persisted_system_extensions_map =
         prefs->GetValueDict("system_extensions.persisted");
     auto* persisted_system_extension =
-        persisted_system_extensions_map.FindDict(kTestIdStr);
+        persisted_system_extensions_map.FindDict(kFirstIdStr);
     EXPECT_EQ(*persisted_system_extension->FindDict("manifest"),
-              test_manifest());
+              first_test_manifest());
   }
 
-  // Test the API returns the correct value.
+  // Test the API returns the correct values.
   absl::optional<SystemExtensionPersistenceInfo> persistence_info =
-      manager.Get(kTestId);
-  EXPECT_EQ(persistence_info->manifest, test_manifest());
+      manager.Get(kFirstId);
+  EXPECT_EQ(persistence_info->manifest, first_test_manifest());
+  std::vector<SystemExtensionPersistenceInfo> persistence_infos =
+      manager.GetAll();
+  EXPECT_EQ(persistence_infos.size(), 1u);
+  EXPECT_EQ(persistence_infos[0].manifest, first_test_manifest());
 
-  manager.Delete(kTestId);
+  manager.Delete(kFirstId);
 
   // Test that the System Extension was removed from prefs.
   {
     const base::Value::Dict& persisted_system_extensions_map =
         prefs->GetValueDict("system_extensions.persisted");
     auto* persisted_system_extension =
-        persisted_system_extensions_map.FindDict(kTestIdStr);
+        persisted_system_extensions_map.FindDict(kFirstIdStr);
     EXPECT_FALSE(persisted_system_extension);
   }
 
   // Test that the API no longer returns the System Extension.
-  EXPECT_FALSE(manager.Get(kTestId));
+  EXPECT_FALSE(manager.Get(kFirstId));
+  EXPECT_TRUE(manager.GetAll().empty());
+}
+
+TEST_F(SystemExtensionsPersistenceManagerTest, WriteAndRemovePrefs_Multiple) {
+  SystemExtensionsPersistenceManager manager(profile());
+  manager.Persist(first_test_system_extension());
+  manager.Persist(second_test_system_extension());
+
+  // Test that the extension was saved into a pref.
+  auto* prefs = profile()->GetPrefs();
+  {
+    const base::Value::Dict& persisted_system_extensions_map =
+        prefs->GetValueDict("system_extensions.persisted");
+
+    auto* first_persisted_system_extension =
+        persisted_system_extensions_map.FindDict(kFirstIdStr);
+    EXPECT_EQ(*first_persisted_system_extension->FindDict("manifest"),
+              first_test_manifest());
+
+    auto* second_persisted_system_extension =
+        persisted_system_extensions_map.FindDict(kSecondIdStr);
+    EXPECT_EQ(*second_persisted_system_extension->FindDict("manifest"),
+              second_test_manifest());
+  }
+
+  // Test the API returns the correct values.
+  {
+    std::vector<SystemExtensionPersistenceInfo> persistence_infos =
+        manager.GetAll();
+    EXPECT_EQ(persistence_infos.size(), 2u);
+
+    const SystemExtensionPersistenceInfo& first_persistence_info =
+        persistence_infos[0].id == kFirstId ? persistence_infos[0]
+                                            : persistence_infos[1];
+    const SystemExtensionPersistenceInfo& second_persistence_info =
+        persistence_infos[0].id == kSecondId ? persistence_infos[0]
+                                             : persistence_infos[1];
+
+    EXPECT_EQ(first_persistence_info.manifest, first_test_manifest());
+    EXPECT_EQ(second_persistence_info.manifest, second_test_manifest());
+
+    EXPECT_EQ(manager.Get(kFirstId)->manifest, first_test_manifest());
+    EXPECT_EQ(manager.Get(kSecondId)->manifest, second_test_manifest());
+  }
+
+  manager.Delete(kFirstId);
+
+  // Test that the System Extension was removed from prefs.
+  {
+    const base::Value::Dict& persisted_system_extensions_map =
+        prefs->GetValueDict("system_extensions.persisted");
+
+    auto* first_persisted_system_extension =
+        persisted_system_extensions_map.FindDict(kFirstIdStr);
+    EXPECT_FALSE(first_persisted_system_extension);
+
+    // The second System Extension should still be in prefs.
+    auto* second_persisted_system_extension =
+        persisted_system_extensions_map.FindDict(kSecondIdStr);
+    EXPECT_EQ(*second_persisted_system_extension->FindDict("manifest"),
+              second_test_manifest());
+  }
+
+  // Test that the API no longer returns the first System Extension but still
+  // returns the second System Extension.
+  {
+    std::vector<SystemExtensionPersistenceInfo> persistence_infos =
+        manager.GetAll();
+    EXPECT_EQ(persistence_infos.size(), 1u);
+    EXPECT_EQ(persistence_infos[0].manifest, second_test_manifest());
+
+    EXPECT_FALSE(manager.Get(kFirstId));
+    EXPECT_EQ(manager.Get(kSecondId)->manifest, second_test_manifest());
+  }
+
+  manager.Delete(kSecondId);
+
+  // Test that the last System Extension was removed from prefs.
+  {
+    const base::Value::Dict& persisted_system_extensions_map =
+        prefs->GetValueDict("system_extensions.persisted");
+    EXPECT_TRUE(persisted_system_extensions_map.empty());
+  }
+
+  // Test that the API no longer returns any System Extensions.
+  {
+    std::vector<SystemExtensionPersistenceInfo> persistence_infos =
+        manager.GetAll();
+    EXPECT_TRUE(persistence_infos.empty());
+
+    EXPECT_FALSE(manager.Get(kFirstId));
+    EXPECT_FALSE(manager.Get(kSecondId));
+  }
 }
 
 // Tests that persisting a System Extension with the same id twice
 // overwrites the original System Extension.
 TEST_F(SystemExtensionsPersistenceManagerTest, PersistTwice) {
   SystemExtensionsPersistenceManager manager(profile());
-  manager.Persist(test_system_extension());
+  manager.Persist(first_test_system_extension());
 
   // The second System Extension has the same id but a different name.
   SystemExtension second_system_extension;
-  second_system_extension.id = kTestId;
-  second_system_extension.manifest = test_manifest().Clone();
+  second_system_extension.id = kFirstId;
+  second_system_extension.manifest = first_test_manifest().Clone();
   second_system_extension.manifest.Set("name", "Second System Extension");
 
   manager.Persist(second_system_extension);
@@ -110,14 +231,14 @@ TEST_F(SystemExtensionsPersistenceManagerTest, PersistTwice) {
   // Test that the saved manifest is the correct one i.e. from the second
   // System Extension.
   absl::optional<SystemExtensionPersistenceInfo> persistence_info =
-      manager.Get(kTestId);
+      manager.Get(kFirstId);
   EXPECT_EQ(persistence_info->manifest, second_system_extension.manifest);
 }
 
 // Tests deleting a non-existent System Extension doesn't crash.
 TEST_F(SystemExtensionsPersistenceManagerTest, RemoveNonExistent) {
   SystemExtensionsPersistenceManager manager(profile());
-  manager.Delete(kTestId);
+  manager.Delete(kFirstId);
 }
 
 }  // namespace ash

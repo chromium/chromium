@@ -37,6 +37,11 @@ class SystemExtensionsSandboxedUnpacker {
       base::StringPiece system_extension_manifest_string,
       GetSystemExtensionFromCallback callback);
 
+  // Attempts to create a SystemExtension object from a parsed manifest
+  // Value::Dict.
+  InstallStatusOrSystemExtension GetSystemExtensionFromValue(
+      const base::Value::Dict& parsed_manifest);
+
  private:
   // Helper class to run blocking IO operations on a separate thread.
   class IOHelper {

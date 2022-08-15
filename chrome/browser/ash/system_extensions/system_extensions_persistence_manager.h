@@ -49,6 +49,7 @@ class SystemExtensionsPersistenceManager {
   // persistent storage, or nullopt if it's not.
   absl::optional<SystemExtensionPersistenceInfo> Get(
       const SystemExtensionId& system_extension_id);
+  std::vector<SystemExtensionPersistenceInfo> GetAll();
 
  private:
   // Safe to hold a pointer because the parent class is owned by Profile.

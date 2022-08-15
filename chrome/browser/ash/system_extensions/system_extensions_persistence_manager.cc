@@ -81,4 +81,26 @@ SystemExtensionsPersistenceManager::Get(
   return info;
 }
 
+std::vector<SystemExtensionPersistenceInfo>
+SystemExtensionsPersistenceManager::GetAll() {
+  std::vector<SystemExtensionPersistenceInfo> infos;
+
+  auto* prefs = profile_->GetPrefs();
+  const base::Value::Dict& persisted_system_extensions_map =
+      prefs->GetValueDict(prefs::kPersistedSystemExtensions);
+  for (const auto [id_str, _] : persisted_system_extensions_map) {
+    absl::optional<SystemExtensionId> id = SystemExtension::StringToId(id_str);
+    if (!id)
+      continue;
+
+    absl::optional<SystemExtensionPersistenceInfo> info = Get(id.value());
+    if (!info)
+      continue;
+
+    infos.emplace_back(std::move(info.value()));
+  }
+
+  return infos;
+}
+
 }  // namespace ash

@@ -45,18 +45,44 @@ SystemExtensionsInstallManager::SystemExtensionsInstallManager(
       registry_manager_(registry_manager),
       registry_(registry),
       persistence_manager_(persistence_manager) {
+  RegisterPreviouslyPersistedSystemExtensions();
   InstallFromCommandLineIfNecessary();
 }
 
 SystemExtensionsInstallManager::~SystemExtensionsInstallManager() = default;
 
+void SystemExtensionsInstallManager::
+    RegisterPreviouslyPersistedSystemExtensions() {
+  const std::vector<SystemExtensionPersistenceInfo> persisted_infos =
+      persistence_manager_->GetAll();
+  for (const auto& persisted_info : persisted_infos) {
+    InstallStatusOrSystemExtension status_or_extension =
+        sandboxed_unpacker_.GetSystemExtensionFromValue(
+            persisted_info.manifest);
+
+    if (!status_or_extension.ok()) {
+      LOG(ERROR) << "Failed to register System Extension from Persistence "
+                 << "Manager.";
+      continue;
+    }
+
+    RegisterSystemExtension(std::move(status_or_extension).value());
+  }
+
+  on_register_previously_persisted_finished_.Signal();
+}
+
 void SystemExtensionsInstallManager::InstallUnpackedExtensionFromDir(
     const base::FilePath& unpacked_system_extension_dir,
     OnceInstallCallback final_callback) {
+  DCHECK(on_register_previously_persisted_finished_.is_signaled());
+
   StartInstallation(std::move(final_callback), unpacked_system_extension_dir);
 }
 
 void SystemExtensionsInstallManager::InstallFromCommandLineIfNecessary() {
+  DCHECK(on_register_previously_persisted_finished_.is_signaled());
+
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (!command_line->HasSwitch(ash::switches::kInstallSystemExtension)) {
     return;
@@ -128,19 +154,26 @@ void SystemExtensionsInstallManager::OnAssetsCopiedToProfileDir(
     return;
   }
 
-  // Installation Step #3: Create a WebUIConfig so that resources are served.
+  // Installation Step #3: Persist the System Extension across restarts.
+  persistence_manager_->Persist(system_extension);
+
+  SystemExtensionId id = system_extension.id;
+  RegisterSystemExtension(std::move(system_extension));
+
+  std::move(final_callback).Run(std::move(id));
+}
+
+void SystemExtensionsInstallManager::RegisterSystemExtension(
+    SystemExtension system_extension) {
+  // Installation Step #4: Create a WebUIConfig so that resources are served.
   auto config = std::make_unique<SystemExtensionsWebUIConfig>(system_extension);
   content::WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
       std::move(config));
-
-  // Installation Step #4: Persist the System Extension across restarts.
-  persistence_manager_->Persist(system_extension);
 
   // Installation Step #5: Add the System Extension to the registry.
   SystemExtensionId id = system_extension.id;
   registry_manager_->AddSystemExtension(std::move(system_extension));
 
-  std::move(final_callback).Run(std::move(id));
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(&SystemExtensionsInstallManager::RegisterServiceWorker,
