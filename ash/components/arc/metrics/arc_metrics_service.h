@@ -149,6 +149,22 @@ class ArcMetricsService : public KeyedService,
   void ReportMemoryPressure(const std::vector<uint8_t>& psiFile) override;
   void ReportProvisioningPreSignIn() override;
   void ReportWaylandLateTimingDuration(base::TimeDelta duration) override;
+  void ReportNonAndroidPlayFilesCount(
+      uint32_t number_of_directories,
+      uint32_t number_of_non_directories) override;
+  void ReportPerAppFileStatsOfAndroidDataDirs(
+      uint32_t number_of_directories,
+      uint32_t number_of_non_directories,
+      uint32_t size_in_kilobytes) override;
+  void ReportTotalFileStatsOfAndroidDataDirs(uint32_t number_of_directories,
+                                             uint32_t number_of_non_directories,
+                                             uint32_t size_in_kilobytes,
+                                             base::TimeDelta duration) override;
+  void ReportTotalFileStatsOfAndroidDataSubdir(
+      mojom::AndroidDataSubdirectory target,
+      uint32_t number_of_directories,
+      uint32_t number_of_non_directories,
+      uint32_t size_in_kilobytes) override;
 
   // wm::ActivationChangeObserver overrides.
   // Records to UMA when a user has interacted with an ARC app window.

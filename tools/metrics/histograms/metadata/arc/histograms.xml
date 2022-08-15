@@ -22,6 +22,18 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="AndroidDataSizeMeasurementTargetDirectories">
+  <variant name="All"
+      summary="Android directories /data/app, /data/data, /data/media/0 and
+               /data/user_de/0 combined"/>
+  <variant name="DEStorageRootUserDir"
+      summary="Android /data/user_de/0 directory"/>
+  <variant name="ExternalDataRootUserDir"
+      summary="Android /data/media/0 directory"/>
+  <variant name="InternalDataDir" summary="Android /data/data directory"/>
+  <variant name="UserInstalledAppDir" summary="Android /data/app directory"/>
+</variants>
+
 <variants name="ArcAccessibilityFeatures">
   <variant name="DockedMagnifier"/>
   <variant name="FullscreenMagnifier"/>
@@ -90,6 +102,13 @@ chromium-metrics-reviews@google.com.
   <variant name=".RobotAccount"
       summary="Managed devices with a robot account (Public Session or Kiosk)"/>
   <variant name=".Unmanaged" summary="User with optional Play Store feature"/>
+</variants>
+
+<variants name="FileTypeByDirectoryOrNot">
+  <variant name="Directories" summary="directories"/>
+  <variant name="Files"
+      summary="files (all file system entries including directories)"/>
+  <variant name="NonDirectories" summary="non-directory files"/>
 </variants>
 
 <variants name="SuccessFailure">
@@ -214,6 +233,70 @@ chromium-metrics-reviews@google.com.
   <owner>yusukes@google.com</owner>
   <owner>khmel@google.com</owner>
   <summary>The time elapsed for booting up the ARC instance.</summary>
+</histogram>
+
+<histogram name="Arc.AndroidData.PerApp.Size" units="KB"
+    expires_after="2023-07-01">
+  <owner>momohatt@google.com</owner>
+  <owner>arc-storage@google.com</owner>
+  <summary>
+    The total size of data an application has in Android /data directory. This
+    is defined as the per-application sum of the size of application-specific
+    directories in /data/app, /data/data, /data/media/0/Android/(data|obb) and
+    /data/user_de/0. The data is collected once per device, on the first ARC
+    boot after the device upgrades to a ChromeOS version with this metric.
+  </summary>
+</histogram>
+
+<histogram name="Arc.AndroidData.PerApp.{FileTypeByDirectoryOrNot}"
+    units="count" expires_after="2023-07-01">
+  <owner>momohatt@google.com</owner>
+  <owner>arc-storage@google.com</owner>
+  <summary>
+    The total number of {FileTypeByDirectoryOrNot} an application has in Android
+    /data directory. This is defined as the per-application sum of the numbers
+    in application-specific directories under /data/app, /data/data,
+    /data/media/0/Android/(data|obb) and /data/user_de/0. The data is collected
+    once per device, on the first ARC boot after the device upgrades to a
+    ChromeOS version with this metric.
+  </summary>
+  <token key="FileTypeByDirectoryOrNot" variants="FileTypeByDirectoryOrNot"/>
+</histogram>
+
+<histogram name="Arc.AndroidData.Total.{Target}.Size" units="KB"
+    expires_after="2023-07-01">
+  <owner>momohatt@google.com</owner>
+  <owner>arc-storage@google.com</owner>
+  <summary>
+    The size of {Target}. The data is collected once per device, on the first
+    ARC boot after the device upgrades to a ChromeOS version with this metric.
+  </summary>
+  <token key="Target" variants="AndroidDataSizeMeasurementTargetDirectories"/>
+</histogram>
+
+<histogram name="Arc.AndroidData.Total.{Target}.{FileTypeByDirectoryOrNot}"
+    units="count" expires_after="2023-07-01">
+  <owner>momohatt@google.com</owner>
+  <owner>arc-storage@google.com</owner>
+  <summary>
+    The number of {FileTypeByDirectoryOrNot} in {Target}. The data is collected
+    once per device, on the first ARC boot after the device upgrades to a
+    ChromeOS version with this metric.
+  </summary>
+  <token key="FileTypeByDirectoryOrNot" variants="FileTypeByDirectoryOrNot"/>
+  <token key="Target" variants="AndroidDataSizeMeasurementTargetDirectories"/>
+</histogram>
+
+<histogram name="Arc.AndroidData.TraversalDuration" units="ms"
+    expires_after="2023-07-01">
+  <owner>momohatt@google.com</owner>
+  <owner>arc-storage@google.com</owner>
+  <summary>
+    The duration of the file system traversal to take the statistics about the
+    content of Android /data directory. The data is collected once per device,
+    on the first ARC boot after the device upgrades to a ChromeOS version that
+    ships with this metric.
+  </summary>
 </histogram>
 
 <histogram name="Arc.Anr.{AnrPeriod}" units="ANRs" expires_after="2022-09-01">
@@ -1515,6 +1598,19 @@ chromium-metrics-reviews@google.com.
   <token key="ArcUserTypes" variants="ArcUserTypes">
     <variant name=""/>
   </token>
+</histogram>
+
+<histogram name="Arc.PlayFilesCount.{FileTypeByDirectoryOrNot}" units="count"
+    expires_after="2023-07-01">
+  <owner>momohatt@google.com</owner>
+  <owner>arc-storage@google.com</owner>
+  <summary>
+    The number of {FileTypeByDirectoryOrNot} under the &quot;Play files&quot;
+    folder in ChromeOS Files app except for the &quot;Android&quot; directory.
+    The data is collected once per device, on the first ARC boot after the
+    device upgrades to a ChromeOS version with this metric.
+  </summary>
+  <token key="FileTypeByDirectoryOrNot" variants="FileTypeByDirectoryOrNot"/>
 </histogram>
 
 <histogram name="Arc.PlayStoreLaunch.TimeDelta" units="ms"
