@@ -521,7 +521,8 @@ TEST_F(AssistantOnboardingViewTest, DarkAndLightTheme) {
   EXPECT_EQ(intro_label_color, text_primary_color);
 }
 
-TEST_F(AssistantOnboardingViewTest, DarkAndLightModeFlagOff) {
+// TODO(crbug.com/1352671): Flaky.
+TEST_F(AssistantOnboardingViewTest, DISABLED_DarkAndLightModeFlagOff) {
   // ProductivityLauncher uses DarkLightMode colors.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
