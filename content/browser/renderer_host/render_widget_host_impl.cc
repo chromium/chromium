@@ -2523,8 +2523,12 @@ void RenderWidgetHostImpl::SetPopupBounds(const gfx::Rect& bounds,
 void RenderWidgetHostImpl::ShowPopup(const gfx::Rect& initial_screen_rect,
                                      const gfx::Rect& anchor_screen_rect,
                                      ShowPopupCallback callback) {
-  delegate_->ShowCreatedWidget(GetProcess()->GetID(), GetRoutingID(),
-                               initial_screen_rect, anchor_screen_rect);
+  // `delegate_` may be null since this message may be received from when
+  // the delegate shutdown but this widget is not yet destroyed.
+  if (delegate_) {
+    delegate_->ShowCreatedWidget(GetProcess()->GetID(), GetRoutingID(),
+                                 initial_screen_rect, anchor_screen_rect);
+  }
   std::move(callback).Run();
 }
 
