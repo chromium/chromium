@@ -108,6 +108,7 @@ TEST_P(WaylandWindowManagerTest, GetCurrentFocusedWindow) {
   wl::MockSurface* surface = server_.GetObject<wl::MockSurface>(
       window1->root_surface()->GetSurfaceId());
   wl_pointer_send_enter(pointer->resource(), 1, surface->resource(), 0, 0);
+  wl_pointer_send_frame(pointer->resource());
 
   Sync();
 
@@ -118,6 +119,7 @@ TEST_P(WaylandWindowManagerTest, GetCurrentFocusedWindow) {
   EXPECT_TRUE(window1.get() == manager_->GetCurrentPointerFocusedWindow());
 
   wl_pointer_send_leave(pointer->resource(), 2, surface->resource());
+  wl_pointer_send_frame(pointer->resource());
 
   Sync();
 

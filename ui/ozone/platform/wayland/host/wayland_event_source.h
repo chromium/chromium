@@ -113,7 +113,8 @@ class WaylandEventSource : public PlatformEventSource,
 
   // WaylandPointer::Delegate
   void OnPointerFocusChanged(WaylandWindow* window,
-                             const gfx::PointF& location) override;
+                             const gfx::PointF& location,
+                             wl::EventDispatchPolicy dispatch_policy) override;
   void OnPointerButtonEvent(EventType evtype,
                             int changed_button,
                             WaylandWindow* window = nullptr) override;

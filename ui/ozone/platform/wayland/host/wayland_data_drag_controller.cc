@@ -257,10 +257,12 @@ void WaylandDataDragController::OnDragEnter(WaylandWindow* window,
 
   if (pointer_grabber_for_window_drag_) {
     DCHECK(drag_source_.has_value());
-    if (*drag_source_ == DragSource::kMouse)
-      pointer_delegate_->OnPointerFocusChanged(window, location);
-    else
+    if (*drag_source_ == DragSource::kMouse) {
+      pointer_delegate_->OnPointerFocusChanged(
+          window, location, wl::EventDispatchPolicy::kImmediate);
+    } else {
       touch_delegate_->OnTouchFocusChanged(window);
+    }
 
     pointer_grabber_for_window_drag_ =
         window_manager_->GetCurrentPointerOrTouchFocusedWindow();

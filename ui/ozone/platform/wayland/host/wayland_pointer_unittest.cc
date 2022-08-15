@@ -99,6 +99,7 @@ ACTION_P(CloneEvent, ptr) {
 
 TEST_P(WaylandPointerTest, Enter) {
   wl_pointer_send_enter(pointer_->resource(), 1, surface_->resource(), 0, 0);
+  wl_pointer_send_frame(pointer_->resource());
 
   std::unique_ptr<Event> event;
   EXPECT_CALL(delegate_, DispatchEvent(_)).WillOnce(CloneEvent(&event));
@@ -134,9 +135,15 @@ TEST_P(WaylandPointerTest, Leave) {
   ASSERT_TRUE(other_surface);
 
   wl_pointer_send_enter(pointer_->resource(), 1, surface_->resource(), 0, 0);
+  wl_pointer_send_frame(pointer_->resource());
+
   wl_pointer_send_leave(pointer_->resource(), 2, surface_->resource());
+  wl_pointer_send_frame(pointer_->resource());
+
   wl_pointer_send_enter(pointer_->resource(), 3, other_surface->resource(), 0,
                         0);
+  wl_pointer_send_frame(pointer_->resource());
+
   wl_pointer_send_button(pointer_->resource(), 4, 1004, BTN_LEFT,
                          WL_POINTER_BUTTON_STATE_PRESSED);
   EXPECT_CALL(delegate_, DispatchEvent(_)).Times(2);
@@ -205,6 +212,7 @@ TEST_P(WaylandPointerTest, MotionDragged) {
 TEST_P(WaylandPointerTest, AxisSourceTypes) {
   uint32_t time = 1001;
   wl_pointer_send_enter(pointer_->resource(), 1, surface_->resource(), 0, 0);
+  wl_pointer_send_frame(pointer_->resource());
   Sync();  // We're interested only in checking axis source types events in this
            // test case, so skip Enter event here.
 
@@ -251,7 +259,7 @@ TEST_P(WaylandPointerTest, AxisSourceTypes) {
 TEST_P(WaylandPointerTest, Axis) {
   wl_pointer_send_enter(pointer_->resource(), 1, surface_->resource(),
                         wl_fixed_from_int(0), wl_fixed_from_int(0));
-
+  wl_pointer_send_frame(pointer_->resource());
   Sync();
 
   for (uint32_t axis :
@@ -290,6 +298,7 @@ TEST_P(WaylandPointerTest, Axis) {
 TEST_P(WaylandPointerTest, SetBitmap) {
   wl_pointer_send_enter(pointer_->resource(), 1, surface_->resource(),
                         wl_fixed_from_int(10), wl_fixed_from_int(10));
+  wl_pointer_send_frame(pointer_->resource());
   Sync();
 
   SkBitmap dummy_cursor;
@@ -331,6 +340,7 @@ TEST_P(WaylandPointerTest, SetBitmapAndScaleOnPointerFocus) {
 
     wl_pointer_send_enter(pointer_->resource(), ++serial, surface_->resource(),
                           wl_fixed_from_int(10), wl_fixed_from_int(10));
+    wl_pointer_send_frame(pointer_->resource());
     Sync();
 
     // Set a cursor.
@@ -341,6 +351,7 @@ TEST_P(WaylandPointerTest, SetBitmapAndScaleOnPointerFocus) {
     connection_->ScheduleFlush();
 
     wl_pointer_send_leave(pointer_->resource(), ++serial, surface_->resource());
+    wl_pointer_send_frame(pointer_->resource());
     Sync();
     Mock::VerifyAndClearExpectations(pointer_);
 
@@ -353,6 +364,7 @@ TEST_P(WaylandPointerTest, SetBitmapAndScaleOnPointerFocus) {
     EXPECT_CALL(*pointer_, SetCursor(Ne(nullptr), 5, 8));
     wl_pointer_send_enter(pointer_->resource(), ++serial, surface_->resource(),
                           wl_fixed_from_int(50), wl_fixed_from_int(75));
+    wl_pointer_send_frame(pointer_->resource());
     Sync();
 
     connection_->ScheduleFlush();
@@ -362,6 +374,7 @@ TEST_P(WaylandPointerTest, SetBitmapAndScaleOnPointerFocus) {
 
     // Reset the focus for the next iteration.
     wl_pointer_send_leave(pointer_->resource(), ++serial, surface_->resource());
+    wl_pointer_send_frame(pointer_->resource());
     Sync();
     connection_->ScheduleFlush();
     Sync();
@@ -375,9 +388,10 @@ TEST_P(WaylandPointerTest, FlingVertical) {
   uint32_t time = 1001;
   wl_pointer_send_enter(pointer_->resource(), ++serial, surface_->resource(),
                         wl_fixed_from_int(50), wl_fixed_from_int(75));
+  wl_pointer_send_frame(pointer_->resource());
+
   wl_pointer_send_button(pointer_->resource(), ++serial, ++time, BTN_RIGHT,
                          WL_POINTER_BUTTON_STATE_PRESSED);
-
   Sync();
 
   std::unique_ptr<Event> event1, event2, event3;
@@ -429,9 +443,10 @@ TEST_P(WaylandPointerTest, FlingHorizontal) {
   uint32_t time = 1001;
   wl_pointer_send_enter(pointer_->resource(), ++serial, surface_->resource(),
                         wl_fixed_from_int(50), wl_fixed_from_int(75));
+  wl_pointer_send_frame(pointer_->resource());
+
   wl_pointer_send_button(pointer_->resource(), ++serial, ++time, BTN_RIGHT,
                          WL_POINTER_BUTTON_STATE_PRESSED);
-
   Sync();
 
   std::unique_ptr<Event> event1, event2, event3;
@@ -483,9 +498,10 @@ TEST_P(WaylandPointerTest, FlingCancel) {
   uint32_t time = 1001;
   wl_pointer_send_enter(pointer_->resource(), ++serial, surface_->resource(),
                         wl_fixed_from_int(50), wl_fixed_from_int(75));
+  wl_pointer_send_frame(pointer_->resource());
+
   wl_pointer_send_button(pointer_->resource(), ++serial, ++time, BTN_RIGHT,
                          WL_POINTER_BUTTON_STATE_PRESSED);
-
   Sync();
 
   std::unique_ptr<Event> event1, event2, event3, event4;
@@ -549,9 +565,10 @@ TEST_P(WaylandPointerTest, FlingDiagonal) {
   uint32_t time = 1001;
   wl_pointer_send_enter(pointer_->resource(), ++serial, surface_->resource(),
                         wl_fixed_from_int(50), wl_fixed_from_int(75));
+  wl_pointer_send_frame(pointer_->resource());
+
   wl_pointer_send_button(pointer_->resource(), ++serial, ++time, BTN_RIGHT,
                          WL_POINTER_BUTTON_STATE_PRESSED);
-
   Sync();
 
   std::unique_ptr<Event> event1, event2, event3;

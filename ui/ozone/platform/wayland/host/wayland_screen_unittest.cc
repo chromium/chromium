@@ -638,6 +638,7 @@ TEST_P(WaylandScreenTest, GetCursorScreenPoint) {
   uint32_t time = 1002;
   wl_pointer_send_enter(pointer->resource(), ++serial, surface->resource(), 0,
                         0);
+  wl_pointer_send_frame(pointer->resource());
   wl_pointer_send_motion(pointer->resource(), ++time, wl_fixed_from_int(10),
                          wl_fixed_from_int(20));
 
@@ -651,8 +652,10 @@ TEST_P(WaylandScreenTest, GetCursorScreenPoint) {
   ASSERT_TRUE(second_surface);
   // Now, leave the first surface and enter second one.
   wl_pointer_send_leave(pointer->resource(), ++serial, surface->resource());
+  wl_pointer_send_frame(pointer->resource());
   wl_pointer_send_enter(pointer->resource(), ++serial,
                         second_surface->resource(), 0, 0);
+  wl_pointer_send_frame(pointer->resource());
   wl_pointer_send_motion(pointer->resource(), ++time, wl_fixed_from_int(20),
                          wl_fixed_from_int(10));
 
@@ -664,6 +667,7 @@ TEST_P(WaylandScreenTest, GetCursorScreenPoint) {
   // Clear pointer focus.
   wl_pointer_send_leave(pointer->resource(), ++serial,
                         second_surface->resource());
+  wl_pointer_send_frame(pointer->resource());
 
   Sync();
 
@@ -694,6 +698,7 @@ TEST_P(WaylandScreenTest, GetCursorScreenPoint) {
 
   wl_pointer_send_enter(pointer->resource(), ++serial, menu_surface->resource(),
                         0, 0);
+  wl_pointer_send_frame(pointer->resource());
   wl_pointer_send_motion(pointer->resource(), ++time, wl_fixed_from_int(2),
                          wl_fixed_from_int(1));
 
@@ -709,8 +714,10 @@ TEST_P(WaylandScreenTest, GetCursorScreenPoint) {
   // Leave the menu window and enter the top level window.
   wl_pointer_send_leave(pointer->resource(), ++serial,
                         menu_surface->resource());
+  wl_pointer_send_frame(pointer->resource());
   wl_pointer_send_enter(pointer->resource(), ++serial,
                         second_surface->resource(), 0, 0);
+  wl_pointer_send_frame(pointer->resource());
   wl_pointer_send_motion(pointer->resource(), ++time, wl_fixed_from_int(1912),
                          wl_fixed_from_int(1071));
 
@@ -722,6 +729,7 @@ TEST_P(WaylandScreenTest, GetCursorScreenPoint) {
 
   wl_pointer_send_leave(pointer->resource(), ++serial,
                         second_surface->resource());
+  wl_pointer_send_frame(pointer->resource());
 
   // Now, create a nested menu window and make sure that the cursor screen point
   // still has been correct. The location of the window is on the right side of
@@ -741,6 +749,7 @@ TEST_P(WaylandScreenTest, GetCursorScreenPoint) {
 
   wl_pointer_send_enter(pointer->resource(), ++serial,
                         nested_menu_surface->resource(), 0, 0);
+  wl_pointer_send_frame(pointer->resource());
   wl_pointer_send_motion(pointer->resource(), ++time, wl_fixed_from_int(2),
                          wl_fixed_from_int(3));
 
@@ -752,8 +761,10 @@ TEST_P(WaylandScreenTest, GetCursorScreenPoint) {
   // point still must be reported correctly.
   wl_pointer_send_leave(pointer->resource(), ++serial,
                         nested_menu_surface->resource());
+  wl_pointer_send_frame(pointer->resource());
   wl_pointer_send_enter(pointer->resource(), ++serial, menu_surface->resource(),
                         0, 0);
+  wl_pointer_send_frame(pointer->resource());
   wl_pointer_send_motion(pointer->resource(), ++time, wl_fixed_from_int(2),
                          wl_fixed_from_int(1));
 

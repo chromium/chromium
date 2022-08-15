@@ -3110,6 +3110,7 @@ TEST_P(WaylandWindowTest, DoesNotGrabPopupUnlessParentHasGrab) {
   auto* pointer_resource = server_.seat()->pointer()->resource();
   wl_pointer_send_enter(pointer_resource, 3u /*serial*/,
                         server_root_menu_surface->resource(), 0, 0);
+  wl_pointer_send_frame(pointer_resource);
   wl_pointer_send_button(pointer_resource, 4u /*serial*/, 1, BTN_LEFT,
                          WL_POINTER_BUTTON_STATE_PRESSED);
   EXPECT_CALL(delegate, DispatchEvent(_)).Times(2);
@@ -3133,6 +3134,7 @@ TEST_P(WaylandWindowTest, DoesNotGrabPopupUnlessParentHasGrab) {
 
   wl_pointer_send_leave(pointer_resource, 5u /*serial*/,
                         server_root_menu_surface->resource());
+  wl_pointer_send_frame(pointer_resource);
   Sync();
 }
 

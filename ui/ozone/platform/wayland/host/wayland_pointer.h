@@ -17,6 +17,10 @@ class PointF;
 class Vector2dF;
 }  // namespace gfx
 
+namespace wl {
+enum class EventDispatchPolicy;
+}  // namespace wl
+
 namespace ui {
 
 class WaylandConnection;
@@ -109,8 +113,10 @@ class WaylandPointer {
 
 class WaylandPointer::Delegate {
  public:
-  virtual void OnPointerFocusChanged(WaylandWindow* window,
-                                     const gfx::PointF& location) = 0;
+  virtual void OnPointerFocusChanged(
+      WaylandWindow* window,
+      const gfx::PointF& location,
+      wl::EventDispatchPolicy dispatch_policy) = 0;
   virtual void OnPointerButtonEvent(EventType evtype,
                                     int changed_button,
                                     WaylandWindow* window = nullptr) = 0;

@@ -250,8 +250,10 @@ uint32_t WaylandEventSource::OnKeyboardKeyEvent(
   return DispatchEvent(&event);
 }
 
-void WaylandEventSource::OnPointerFocusChanged(WaylandWindow* window,
-                                               const gfx::PointF& location) {
+void WaylandEventSource::OnPointerFocusChanged(
+    WaylandWindow* window,
+    const gfx::PointF& location,
+    wl::EventDispatchPolicy dispatch_policy) {
   bool focused = !!window;
   if (focused) {
     // Save new pointer location.
@@ -259,17 +261,29 @@ void WaylandEventSource::OnPointerFocusChanged(WaylandWindow* window,
     window_manager_->SetPointerFocusedWindow(window);
   }
 
+  auto closure = focused ? base::NullCallback()
+                         : base::BindOnce(
+                               [](WaylandWindowManager* wwm) {
+                                 wwm->SetPointerFocusedWindow(nullptr);
+                               },
+                               window_manager_);
+
   auto* target = window_manager_->GetCurrentPointerFocusedWindow();
   if (target) {
     EventType type = focused ? ET_MOUSE_ENTERED : ET_MOUSE_EXITED;
     MouseEvent event(type, pointer_location_, pointer_location_,
                      EventTimeForNow(), pointer_flags_, 0);
-    SetTargetAndDispatchEvent(&event, target);
+    if (dispatch_policy == wl::EventDispatchPolicy::kImmediate) {
+      SetTargetAndDispatchEvent(&event, target);
+    } else {
+      pointer_frames_.push_back(
+          std::make_unique<PointerFrame>(event, std::move(closure)));
+      return;
+    }
   }
 
-  if (!focused) {
-    window_manager_->SetPointerFocusedWindow(nullptr);
-  }
+  if (!closure.is_null())
+    std::move(closure).Run();
 }
 
 void WaylandEventSource::OnPointerButtonEvent(EventType type,

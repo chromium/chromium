@@ -89,6 +89,7 @@ TEST_P(WaylandEventSourceTest, CheckPointerButtonHandling) {
   wl_resource* pointer_res = server_.seat()->pointer()->resource();
 
   wl_pointer_send_enter(pointer_res, serial++, surface_res, 0, 0);
+  wl_pointer_send_frame(pointer_res);
   wl_pointer_send_button(pointer_res, serial++, tstamp++, BTN_LEFT,
                          WL_POINTER_BUTTON_STATE_PRESSED);
   EXPECT_CALL(delegate, DispatchEvent(_)).Times(2);

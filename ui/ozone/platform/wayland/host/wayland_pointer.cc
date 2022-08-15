@@ -11,6 +11,7 @@
 #include "ui/events/types/event_type.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 
@@ -35,7 +36,8 @@ WaylandPointer::~WaylandPointer() {
   // Even though, WaylandPointer::Leave is always called when Wayland destroys
   // wl_pointer, it's better to be explicit as some Wayland compositors may have
   // bugs.
-  delegate_->OnPointerFocusChanged(nullptr, {});
+  delegate_->OnPointerFocusChanged(nullptr, {},
+                                   wl::EventDispatchPolicy::kImmediate);
   delegate_->OnResetPointerFlags();
 }
 
@@ -55,7 +57,8 @@ void WaylandPointer::Enter(void* data,
                        static_cast<float>(wl_fixed_to_double(surface_y))};
 
   pointer->delegate_->OnPointerFocusChanged(
-      window, pointer->connection_->MaybeConvertLocation(location, window));
+      window, pointer->connection_->MaybeConvertLocation(location, window),
+      wl::EventDispatchPolicy::kOnFrame);
 }
 
 // static
@@ -67,8 +70,12 @@ void WaylandPointer::Leave(void* data,
   pointer->connection_->serial_tracker().ResetSerial(
       wl::SerialType::kMouseEnter);
 
+  // TODO(https://crrev.com/c/1352584): Switch from kImmediate to kOnFrame when
+  // Exo comply with other compositors in how it isolates each
+  // wl_pointer.enter|leave event with their respective wl_pointer.frame.
   pointer->delegate_->OnPointerFocusChanged(
-      nullptr, pointer->delegate_->GetPointerLocation());
+      nullptr, pointer->delegate_->GetPointerLocation(),
+      wl::EventDispatchPolicy::kImmediate);
 }
 
 // static

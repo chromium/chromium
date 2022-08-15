@@ -71,6 +71,7 @@ void WaylandDragDropTest::SendPointerEnter(
       window->root_surface()->GetSurfaceId());
   wl_pointer_send_enter(pointer_->resource(), NextSerial(), surface->resource(),
                         0, 0);
+  wl_pointer_send_frame(pointer_->resource());
 }
 
 void WaylandDragDropTest::SendPointerLeave(
@@ -80,6 +81,7 @@ void WaylandDragDropTest::SendPointerLeave(
       window->root_surface()->GetSurfaceId());
   wl_pointer_send_leave(pointer_->resource(), NextSerial(),
                         surface->resource());
+  wl_pointer_send_frame(pointer_->resource());
 }
 
 void WaylandDragDropTest::SendPointerButton(
