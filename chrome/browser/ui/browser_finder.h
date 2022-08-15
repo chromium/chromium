@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_BROWSER_FINDER_H_
 
 #include <stddef.h>
+#include <vector>
 
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/native_widget_types.h"
