@@ -49,7 +49,8 @@ export class BookmarkFolderElement extends PolymerElement {
       open_: {
         type: Boolean,
         value: false,
-        computed: 'computeIsOpen_(openFolders, folder.id)',
+        computed:
+            'computeIsOpen_(openFolders, folder.id, folder.children.length)',
       },
 
       openFolders: Array,
@@ -169,7 +170,8 @@ export class BookmarkFolderElement extends PolymerElement {
 
   private computeIsOpen_() {
     return Boolean(this.openFolders) &&
-        this.openFolders.includes(this.folder.id);
+        this.openFolders.includes(this.folder.id) && this.folder.children &&
+        this.folder.children.length > 0;
   }
 
   private getFocusableRows_(): HTMLElement[] {
