@@ -10,31 +10,54 @@
 <div popup>Popup</div>
 
 <script>
-promise_test(async t => {
-  const popup = document.querySelector('[popup]');
-  let showCount = 0;
-  let hideCount = 0;
-  await new Promise(resolve => window.addEventListener('load',() => resolve()));
-  assert_false(popup.matches(':top-layer'));
-  document.addEventListener('show',() => ++showCount);
-  document.addEventListener('hide',() => ++hideCount);
-  assert_equals(0,showCount);
-  assert_equals(0,hideCount);
-  popup.showPopUp();
-  assert_true(popup.matches(':top-layer'));
-  assert_equals(1,showCount);
-  assert_equals(0,hideCount);
-  await waitForRender();
-  assert_true(popup.matches(':top-layer'));
-  popup.hidePopUp();
-  assert_false(popup.matches(':top-layer'));
-  assert_equals(1,showCount);
-  assert_equals(1,hideCount);
-  await waitForRender();
-  // No additional events after animation frame
-  assert_false(popup.matches(':top-layer'));
-  assert_equals(1,showCount);
-  assert_equals(1,hideCount);
-}, 'Show and hide events get properly dispatched for popups');
+window.onload = () => {
+  promise_test(async t => {
+    const popup = document.querySelector('[popup]');
+    let showCount = 0;
+    let hideCount = 0;
+    assert_false(popup.matches(':top-layer'));
+    const controller = new AbortController();
+    const signal = controller.signal;
+    t.add_cleanup(() => controller.abort());
+    document.addEventListener('show',() => ++showCount, {signal});
+    document.addEventListener('hide',() => ++hideCount, {signal});
+    assert_equals(0,showCount);
+    assert_equals(0,hideCount);
+    popup.showPopUp();
+    assert_true(popup.matches(':top-layer'));
+    assert_equals(1,showCount);
+    assert_equals(0,hideCount);
+    await waitForRender();
+    assert_true(popup.matches(':top-layer'));
+    popup.hidePopUp();
+    assert_false(popup.matches(':top-layer'));
+    assert_equals(1,showCount);
+    assert_equals(1,hideCount);
+    await waitForRender();
+    // No additional events after animation frame
+    assert_false(popup.matches(':top-layer'));
+    assert_equals(1,showCount);
+    assert_equals(1,hideCount);
+  }, 'Show and hide events get properly dispatched for popups');
 
+  promise_test(async t => {
+    const popUp = document.querySelector('[popup]');
+    const controller = new AbortController();
+    const signal = controller.signal;
+    t.add_cleanup(() => controller.abort());
+    let cancel = true;
+    popUp.addEventListener('show',(e) => {
+      if (cancel)
+        e.preventDefault();
+    }, {signal});
+    assert_false(popUp.matches(':top-layer'));
+    popUp.showPopUp();
+    assert_false(popUp.matches(':top-layer'),'The "show" event should be cancelable');
+    cancel = false;
+    popUp.showPopUp();
+    assert_true(popUp.matches(':top-layer'));
+    popUp.hidePopUp();
+    assert_false(popUp.matches(':top-layer'));
+  }, 'Show event is cancelable');
+};
 </script>
