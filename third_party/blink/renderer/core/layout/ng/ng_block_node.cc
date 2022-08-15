@@ -1844,9 +1844,11 @@ const NGLayoutResult* NGBlockNode::LayoutAtomicInline(
       parent_constraint_space.ReplacedPercentageResolutionSize());
   NGConstraintSpace constraint_space = builder.ToConstraintSpace();
   const NGLayoutResult* result = Layout(constraint_space);
-  // TODO(kojii): Investigate why ClearNeedsLayout() isn't called automatically
-  // when it's being laid out.
-  GetLayoutBox()->ClearNeedsLayout();
+  if (!NGDisableSideEffectsScope::IsDisabled()) {
+    // TODO(kojii): Investigate why ClearNeedsLayout() isn't called
+    // automatically when it's being laid out.
+    GetLayoutBox()->ClearNeedsLayout();
+  }
   return result;
 }
 
