@@ -16,9 +16,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.js_sandbox.client.EvaluationFailedException;
+import org.chromium.android_webview.js_sandbox.client.IsolateSettings;
 import org.chromium.android_webview.js_sandbox.client.IsolateTerminatedException;
 import org.chromium.android_webview.js_sandbox.client.JsIsolate;
 import org.chromium.android_webview.js_sandbox.client.JsSandbox;
+import org.chromium.android_webview.js_sandbox.client.SandboxDeadException;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.DisabledTest;
@@ -469,6 +471,36 @@ public class WebViewJsSandboxTest {
             String result = resultFuture1.get(5, TimeUnit.SECONDS);
 
             Assert.assertEquals(expected, result);
+        }
+    }
+
+    @Test
+    @MediumTest
+    public void testHeapSize() throws Throwable {
+        // We need to beat the v8 optimizer to ensure it really allocates the required memory.
+        final String code = "this.array = Array(10000000).fill(Math.random(), 0);"
+                + "var arrayLength = this.array.length;"
+                + "var sum = 0;"
+                + "for (var i = 0; i < arrayLength; i++) {"
+                + " sum+=this.array[i];"
+                + "}";
+        Context context = ContextUtils.getApplicationContext();
+        ListenableFuture<JsSandbox> JsSandboxFuture = JsSandbox.newConnectedInstanceAsync(context);
+        try (JsSandbox jsSandbox = JsSandboxFuture.get(5, TimeUnit.SECONDS)) {
+            Assume.assumeTrue(jsSandbox.isFeatureSupported(JsSandbox.ISOLATE_MAX_HEAP_SIZE));
+            IsolateSettings isolateStartupParameters = new IsolateSettings();
+            isolateStartupParameters.setMaxHeapSizeBytes(1000);
+            try (JsIsolate jsIsolate = jsSandbox.createIsolate(isolateStartupParameters)) {
+                ListenableFuture<String> resultFuture = jsIsolate.evaluateJavascriptAsync(code);
+                try {
+                    resultFuture.get(5, TimeUnit.SECONDS);
+                    Assert.fail("Should have thrown.");
+                } catch (ExecutionException e) {
+                    if (!(e.getCause() instanceof SandboxDeadException)) {
+                        throw e;
+                    }
+                }
+            }
         }
     }
 }

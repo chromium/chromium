@@ -20,6 +20,12 @@ interface IJsSandboxService {
     const String ISOLATE_TERMINATION = "ISOLATE_TERMINATION";
 
     /**
+     * Feature flag indicating that isolate creation can take a parameter
+     * to set the maximum heap size limit of the isolate.
+     */
+    const String ISOLATE_MAX_HEAP_SIZE_LIMIT = "ISOLATE_MAX_HEAP_SIZE_LIMIT";
+
+    /**
      * This feature flag is a combination of three sub-features:
      * - If evaluateJavascript() returns a promise, we wait for the promise
      *   to resolve and then return the resolved value.
@@ -34,4 +40,7 @@ interface IJsSandboxService {
      * @return A list of feature names supported by this implementation.
      */
     List<String> getSupportedFeatures() = 1;
+
+    IJsSandboxIsolate createIsolateWithMaxHeapSizeBytes(long maxHeapSize) = 2;
+
 }

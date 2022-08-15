@@ -21,12 +21,18 @@ public class JsSandboxService extends Service {
     private static final String TAG = "JsSandboxService";
 
     private static final List<String> SUPPORTED_FEATURES = Arrays.asList(
-            IJsSandboxService.ISOLATE_TERMINATION, IJsSandboxService.WASM_FROM_ARRAY_BUFFER);
+            IJsSandboxService.ISOLATE_TERMINATION, IJsSandboxService.WASM_FROM_ARRAY_BUFFER,
+            IJsSandboxService.ISOLATE_MAX_HEAP_SIZE_LIMIT);
 
     private final IJsSandboxService.Stub mBinder = new IJsSandboxService.Stub() {
         @Override
         public IJsSandboxIsolate createIsolate() {
             return new JsSandboxIsolate();
+        }
+
+        @Override
+        public IJsSandboxIsolate createIsolateWithMaxHeapSizeBytes(long maxHeapSizeBytes) {
+            return new JsSandboxIsolate(maxHeapSizeBytes);
         }
 
         @Override
