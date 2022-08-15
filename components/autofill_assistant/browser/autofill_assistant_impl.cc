@@ -7,7 +7,9 @@
 #include <memory>
 #include <vector>
 
+#include "base/ranges/algorithm.h"
 #include "base/time/default_tick_clock.h"
+#include "components/autofill/core/common/signatures.h"
 #include "components/autofill_assistant/browser/common_dependencies.h"
 #include "components/autofill_assistant/browser/desktop/starter_delegate_desktop.h"
 #include "components/autofill_assistant/browser/headless/client_headless.h"
@@ -61,6 +63,29 @@ void OnCapabilitiesResponse(
 
     for (const auto& param : match.script_parameters_override()) {
       info.script_parameters[param.name()] = param.value();
+    }
+
+    if (match.has_bundle_capabilities_information() &&
+        match.bundle_capabilities_information().has_chrome_fast_checkout() &&
+        !match.bundle_capabilities_information()
+             .chrome_fast_checkout()
+             .trigger_form_signatures()
+             .empty()) {
+      // Source and the target vector are abbreviated due to their length.
+      auto& source = match.bundle_capabilities_information()
+                         .chrome_fast_checkout()
+                         .trigger_form_signatures();
+
+      info.bundle_capabilities_information =
+          AutofillAssistant::BundleCapabilitiesInformation();
+      std::vector<autofill::FormSignature>& target =
+          info.bundle_capabilities_information.value().trigger_form_signatures;
+
+      target.reserve(source.size());
+      base::ranges::transform(source, std::back_inserter(target),
+                              [](uint64_t signature) {
+                                return autofill::FormSignature(signature);
+                              });
     }
 
     infos.push_back(info);

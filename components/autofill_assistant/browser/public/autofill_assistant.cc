@@ -10,16 +10,28 @@
 #include "base/containers/span.h"
 #include "base/hash/legacy_hash.h"
 #include "base/strings/string_util.h"
+#include "components/autofill/core/common/signatures.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace autofill_assistant {
 
+AutofillAssistant::BundleCapabilitiesInformation::
+    BundleCapabilitiesInformation() = default;
+AutofillAssistant::BundleCapabilitiesInformation::
+    ~BundleCapabilitiesInformation() = default;
+AutofillAssistant::BundleCapabilitiesInformation::BundleCapabilitiesInformation(
+    const BundleCapabilitiesInformation& other) = default;
+
 AutofillAssistant::CapabilitiesInfo::CapabilitiesInfo() = default;
 AutofillAssistant::CapabilitiesInfo::CapabilitiesInfo(
     const std::string& url,
-    const base::flat_map<std::string, std::string>& script_parameters)
-    : url(url), script_parameters(script_parameters) {}
+    const base::flat_map<std::string, std::string>& script_parameters,
+    const absl::optional<BundleCapabilitiesInformation>&
+        bundle_capabilities_information)
+    : url(url),
+      script_parameters(script_parameters),
+      bundle_capabilities_information(bundle_capabilities_information) {}
 AutofillAssistant::CapabilitiesInfo::~CapabilitiesInfo() = default;
 AutofillAssistant::CapabilitiesInfo::CapabilitiesInfo(
     const CapabilitiesInfo& other) = default;

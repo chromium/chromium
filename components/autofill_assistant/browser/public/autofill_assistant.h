@@ -12,6 +12,11 @@
 #include "base/containers/flat_map.h"
 #include "components/autofill_assistant/browser/public/external_action_delegate.h"
 #include "components/autofill_assistant/browser/public/headless_script_controller.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace autofill {
+class FormSignature;
+}  // namespace autofill
 
 namespace content {
 class WebContents;
@@ -28,17 +33,33 @@ class WebsiteLoginManager;
 // Abstract interface for exported services.
 class AutofillAssistant {
  public:
+  // The C++ (parsed) version of `BundleCapabilitiesInformationProto`.
+  struct BundleCapabilitiesInformation {
+    BundleCapabilitiesInformation();
+    virtual ~BundleCapabilitiesInformation();
+    BundleCapabilitiesInformation(const BundleCapabilitiesInformation& other);
+
+    // The form signatures that the script may be started on.
+    std::vector<autofill::FormSignature> trigger_form_signatures;
+  };
+
   struct CapabilitiesInfo {
     CapabilitiesInfo();
     CapabilitiesInfo(
         const std::string& url,
-        const base::flat_map<std::string, std::string>& script_parameters);
+        const base::flat_map<std::string, std::string>& script_parameters,
+        const absl::optional<BundleCapabilitiesInformation>&
+            bundle_capabilities_information = absl::nullopt);
     ~CapabilitiesInfo();
     CapabilitiesInfo(const CapabilitiesInfo& other);
     CapabilitiesInfo& operator=(const CapabilitiesInfo& other);
 
     std::string url;
     base::flat_map<std::string, std::string> script_parameters;
+    // Additional information specified in the bundle that is needed prior to
+    // starting the script.
+    absl::optional<BundleCapabilitiesInformation>
+        bundle_capabilities_information;
   };
 
   using GetCapabilitiesResponseCallback =

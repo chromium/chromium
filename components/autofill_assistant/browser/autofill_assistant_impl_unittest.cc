@@ -7,6 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "components/autofill/core/common/signatures.h"
 #include "components/autofill_assistant/browser/mock_common_dependencies.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/service/mock_service_request_sender.h"
@@ -17,12 +18,13 @@
 namespace autofill_assistant {
 namespace {
 
-using ::base::test::RunOnceCallback;
-using ::testing::_;
-using ::testing::NiceMock;
-using ::testing::Return;
-using ::testing::SaveArg;
-using ::testing::UnorderedElementsAreArray;
+using autofill::FormSignature;
+using base::test::RunOnceCallback;
+using testing::_;
+using testing::NiceMock;
+using testing::Return;
+using testing::SaveArg;
+using testing::UnorderedElementsAreArray;
 
 const char kScriptServerUrl[] = "https://www.fake.backend.com/script_server";
 
@@ -58,10 +60,17 @@ class AutofillAssistantImpTest : public testing::Test {
 
 }  // namespace
 
+bool operator==(const AutofillAssistant::BundleCapabilitiesInformation& lhs,
+                const AutofillAssistant::BundleCapabilitiesInformation& rhs) {
+  return (lhs.trigger_form_signatures == rhs.trigger_form_signatures);
+}
+
 bool operator==(const AutofillAssistant::CapabilitiesInfo& lhs,
                 const AutofillAssistant::CapabilitiesInfo& rhs) {
-  return std::tie(lhs.url, lhs.script_parameters) ==
-         std::tie(rhs.url, rhs.script_parameters);
+  return std::tie(lhs.url, lhs.script_parameters,
+                  lhs.bundle_capabilities_information) ==
+         std::tie(rhs.url, rhs.script_parameters,
+                  rhs.bundle_capabilities_information);
 }
 
 TEST_F(AutofillAssistantImpTest, GetCapabilitiesByHashPrefixEmptyRespose) {
@@ -123,8 +132,22 @@ TEST_F(AutofillAssistantImpTest, GetCapabilitiesByHashPrefix) {
       proto.add_match_info();
   match_info2->set_url_match("http://exampleB.com");
 
+  BundleCapabilitiesInformationProto::ChromeFastCheckoutProto*
+      fast_checkout_proto =
+          match_info2->mutable_bundle_capabilities_information()
+              ->mutable_chrome_fast_checkout();
+
+  fast_checkout_proto->add_trigger_form_signatures(123ull);
+  fast_checkout_proto->add_trigger_form_signatures(18446744073709551615ull);
+
   std::string serialized_proto;
   proto.SerializeToString(&serialized_proto);
+
+  AutofillAssistant::BundleCapabilitiesInformation
+      bundle_capabilities_information;
+  bundle_capabilities_information.trigger_form_signatures =
+      std::vector<FormSignature>{FormSignature(123ull),
+                                 FormSignature(18446744073709551615ull)};
 
   EXPECT_CALL(*mock_request_sender_,
               OnSendRequest(GURL(kScriptServerUrl), _, _,
@@ -138,7 +161,9 @@ TEST_F(AutofillAssistantImpTest, GetCapabilitiesByHashPrefix) {
           UnorderedElementsAreArray(
               std::vector<AutofillAssistant::CapabilitiesInfo>{
                   {"http://exampleA.com", {{"EXPERIMENT_IDS", "3345172"}}},
-                  {"http://exampleB.com", {}}})));
+                  {"http://exampleB.com",
+                   {},
+                   bundle_capabilities_information}})));
 
   service_->GetCapabilitiesByHashPrefix(16, {1339}, "DUMMY_INTENT",
                                         mock_response_callback_.Get());
