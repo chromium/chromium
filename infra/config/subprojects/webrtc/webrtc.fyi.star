@@ -104,6 +104,7 @@ builder(
     name = "WebRTC Chromium FYI Mac Tester",
     os = os.MAC_ANY,
     triggered_by = ["WebRTC Chromium FYI Mac Builder"],
+    xcode = xcode.x14main,
 )
 
 builder(
