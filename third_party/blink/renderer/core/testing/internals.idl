@@ -142,6 +142,7 @@
 
     [RaisesException] long lastSpellCheckRequestSequence(Document document);
     [RaisesException] long lastSpellCheckProcessedSequence(Document document);
+    [RaisesException] long spellCheckedTextLength(Document document);
     [RaisesException] void cancelCurrentSpellCheckRequest(Document document);
     [RaisesException] DOMString idleTimeSpellCheckerState(Document document);
     [RaisesException] void runIdleTimeSpellChecker(Document document);

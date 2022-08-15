@@ -165,9 +165,7 @@ void SpellCheckRequest::SetCheckerAndSequence(SpellCheckRequester* requester,
 }
 
 SpellCheckRequester::SpellCheckRequester(LocalDOMWindow& window)
-    : window_(&window),
-      last_request_sequence_(0),
-      last_processed_sequence_(0) {}
+    : window_(&window) {}
 
 SpellCheckRequester::~SpellCheckRequester() = default;
 
@@ -192,6 +190,8 @@ bool SpellCheckRequester::RequestCheckingFor(const EphemeralRange& range,
   SpellCheckRequest* request = SpellCheckRequest::Create(range, request_num);
   if (!request)
     return false;
+
+  spell_checked_text_length_ += request->GetText().length();
 
   DCHECK_EQ(request->Sequence(),
             SpellCheckRequest::kUnrequestedTextCheckingSequence);

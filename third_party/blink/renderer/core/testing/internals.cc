@@ -2041,6 +2041,20 @@ int Internals::lastSpellCheckProcessedSequence(
   return requester->LastProcessedSequence();
 }
 
+int Internals::spellCheckedTextLength(Document* document,
+                                      ExceptionState& exception_state) {
+  SpellCheckRequester* requester = GetSpellCheckRequester(document);
+
+  if (!requester) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidAccessError,
+        "No spell check requestor can be obtained for the provided document.");
+    return -1;
+  }
+
+  return requester->SpellCheckedTextLength();
+}
+
 void Internals::cancelCurrentSpellCheckRequest(
     Document* document,
     ExceptionState& exception_state) {

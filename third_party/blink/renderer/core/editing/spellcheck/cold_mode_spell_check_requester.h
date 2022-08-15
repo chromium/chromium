@@ -35,7 +35,13 @@ class ColdModeSpellCheckRequester
 
   void Invoke(IdleDeadline*);
 
+  // Called when code mode checking is currently not needed (due to, e.g., user
+  // has resumed active).
   void ClearProgress();
+
+  // Called when document is detached or spellchecking is globally disabled.
+  void Deactivate();
+
   bool FullyChecked() const;
 
   void Trace(Visitor*) const;
@@ -45,14 +51,24 @@ class ColdModeSpellCheckRequester
 
   const Element* CurrentFocusedEditable() const;
 
-  void RequestCheckingForNextChunk();
+  enum class CheckingType { kNone, kLocal, kFull };
+  CheckingType AccumulateTextDeltaAndComputeCheckingType(
+      const Element& element_to_check);
+
+  void RequestLocalChecking(const Element& element_to_check);
+
+  void RequestFullChecking(const Element& element_to_check, IdleDeadline*);
+
+  // Returns true if there's anything remaining to check, false otherwise
+  bool RequestCheckingForNextChunk();
   void SetHasFullyChecked();
 
   // The window this cold mode checker belongs to.
   const Member<LocalDOMWindow> window_;
 
-  // The root editable element checked in the last invocation. |nullptr| if not
-  // invoked yet or didn't find any root editable element to check.
+  // The root editable element checked in the last invocation for full checking.
+  // |nullptr| if not invoked yet or didn't find any root editable element for
+  // full checking.
   Member<const Element> root_editable_;
 
   // If |root_editable_| is non-null and hasn't been fully checked, the id of
@@ -60,6 +76,17 @@ class ColdModeSpellCheckRequester
   // Otherwise, |kInvalidChunkIndex| and null.
   int last_chunk_index_;
   Member<Range> remaining_check_range_;
+
+  // After fully checking an element, we don't want to repeatedly check its
+  // content in full unless a significant amount of change has taken place. We
+  // heuristically measure this as the accumulated length change in the element
+  // since the last time it was fully checked.
+  struct FullyCheckedEditableEntry {
+    int previous_checked_length = 0;
+    int accumulated_delta = 0;
+  };
+  HeapHashMap<Member<const Element>, FullyCheckedEditableEntry>
+      fully_checked_root_editables_;
 
   // A test-only flag for forcing lifecycle advancing.
   mutable bool needs_more_invocation_for_testing_;
