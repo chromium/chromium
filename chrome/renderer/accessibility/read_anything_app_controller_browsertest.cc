@@ -144,10 +144,13 @@ TEST_F(ReadAnythingAppControllerTest, GetTextContent) {
   std::string text_content = "Hello";
   std::string missing_text_content = "";
   std::string more_text_content = " world";
+  basic_snapshot_.nodes[1].role = ax::mojom::Role::kStaticText;
   basic_snapshot_.nodes[1].SetName(text_content);
   basic_snapshot_.nodes[1].SetNameFrom(ax::mojom::NameFrom::kContents);
+  basic_snapshot_.nodes[2].role = ax::mojom::Role::kStaticText;
   basic_snapshot_.nodes[2].SetName(missing_text_content);
   basic_snapshot_.nodes[2].SetNameFrom(ax::mojom::NameFrom::kContents);
+  basic_snapshot_.nodes[3].role = ax::mojom::Role::kStaticText;
   basic_snapshot_.nodes[3].SetName(more_text_content);
   basic_snapshot_.nodes[3].SetNameFrom(ax::mojom::NameFrom::kContents);
   OnAXTreeDistilled(basic_snapshot_, {});

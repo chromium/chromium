@@ -112,8 +112,7 @@ enum Event {
 // Next value: 209
 [Extensible, Stable, Uuid="d258eb73-e0cc-490c-b881-80ee11d3fec2"]
 enum Role {
-  // Used for role="none"/"presentation" -- ignored in platform tree.
-  [Default]kNone = 0,
+  [Default]kUnknown = 181, // The role has not been set.
   kAbbr = 1,
   kAlert = 2,
   kAlertDialog = 3,
@@ -281,6 +280,7 @@ enum Role {
   kMenuListPopup = 128,
   kMeter = 129,
   kNavigation = 130,
+  kNone = 0, // Used for role="none"/"presentation"; ignored in platform tree.
   kNote = 131,
   kPane = 132,
   kParagraph = 133,
@@ -333,7 +333,6 @@ enum Role {
   kTree = 178,
   kTreeGrid = 179,
   kTreeItem = 180,
-  kUnknown = 181,
   kVideo = 182,
   kWebView = 183,
   kWindow = 184,

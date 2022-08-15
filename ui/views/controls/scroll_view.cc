@@ -904,6 +904,7 @@ void ScrollView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   if (!contents_)
     return;
 
+  node_data->role = ax::mojom::Role::kScrollView;
   node_data->AddIntAttribute(ax::mojom::IntAttribute::kScrollX,
                              CurrentOffset().x());
   node_data->AddIntAttribute(ax::mojom::IntAttribute::kScrollXMin,

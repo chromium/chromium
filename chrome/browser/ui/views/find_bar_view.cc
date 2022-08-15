@@ -80,6 +80,7 @@ class FindBarMatchCountLabel : public views::Label {
   }
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
+    node_data->role = ax::mojom::Role::kStatus;
     if (!last_result_) {
       node_data->SetNameExplicitlyEmpty();
     } else if (last_result_->number_of_matches() < 1) {
@@ -91,7 +92,6 @@ class FindBarMatchCountLabel : public views::Label {
           base::FormatNumber(last_result_->active_match_ordinal()),
           base::FormatNumber(last_result_->number_of_matches())));
     }
-    node_data->role = ax::mojom::Role::kStatus;
   }
 
   void SetResult(const find_in_page::FindNotificationDetails& result) {

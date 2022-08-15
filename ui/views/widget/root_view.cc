@@ -682,8 +682,8 @@ void RootView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   auto* widget_delegate = GetWidget()->widget_delegate();
   if (!widget_delegate)
     return;
-  node_data->SetName(widget_delegate->GetAccessibleWindowTitle());
   node_data->role = widget_delegate->GetAccessibleWindowRole();
+  node_data->SetName(widget_delegate->GetAccessibleWindowTitle());
 }
 
 void RootView::UpdateParentLayer() {

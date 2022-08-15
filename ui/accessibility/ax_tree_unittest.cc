@@ -975,6 +975,7 @@ TEST(AXTreeTest, ImplicitAttributeDelete) {
   initial_state.root_id = 1;
   initial_state.nodes.resize(1);
   initial_state.nodes[0].id = 1;
+  initial_state.nodes[0].role = ax::mojom::Role::kGroup;
   initial_state.nodes[0].SetName("Node 1 name");
   AXTree tree(initial_state);
 

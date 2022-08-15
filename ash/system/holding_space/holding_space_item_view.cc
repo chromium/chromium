@@ -134,6 +134,7 @@ HoldingSpaceItemView::HoldingSpaceItemView(HoldingSpaceViewDelegate* delegate,
   SetNotifyEnterExitOnChild(true);
 
   // Accessibility.
+  GetViewAccessibility().OverrideRole(ax::mojom::Role::kListItem);
   GetViewAccessibility().OverrideName(item->GetAccessibleName());
 
   // When the description is not specified, tooltip text will be used.
@@ -143,8 +144,6 @@ HoldingSpaceItemView::HoldingSpaceItemView(HoldingSpaceViewDelegate* delegate,
   // to the empty string. See crrev.com/c/3218112.
   GetViewAccessibility().OverrideDescription(
       std::u16string(), ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
-
-  GetViewAccessibility().OverrideRole(ax::mojom::Role::kListItem);
 
   // Layer.
   SetPaintToLayer();

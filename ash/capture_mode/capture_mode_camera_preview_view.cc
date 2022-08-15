@@ -338,9 +338,9 @@ void CameraPreviewView::Layout() {
 
 void CameraPreviewView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   views::View::GetAccessibleNodeData(node_data);
+  node_data->role = ax::mojom::Role::kVideo;
   node_data->SetName(
       l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_CAMERA_PREVIEW_FOCUSED));
-  node_data->role = ax::mojom::Role::kVideo;
 }
 
 views::View* CameraPreviewView::GetView() {

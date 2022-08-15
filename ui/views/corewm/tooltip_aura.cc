@@ -141,8 +141,8 @@ class TooltipView : public views::View {
   gfx::RenderText* render_text_for_test() { return render_text_.get(); }
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    node_data->SetName(render_text_->GetDisplayText());
     node_data->role = ax::mojom::Role::kTooltip;
+    node_data->SetName(render_text_->GetDisplayText());
   }
 
  private:

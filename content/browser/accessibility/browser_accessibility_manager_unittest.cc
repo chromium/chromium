@@ -1421,6 +1421,7 @@ TEST_F(BrowserAccessibilityManagerTest, TestHitTestScaled) {
   ui::AXNodeData parent_childtree;
   parent_childtree.id = 3;
   parent_childtree.AddChildTreeId(child_update.tree_data.tree_id);
+  parent_childtree.role = ax::mojom::Role::kGenericContainer;
   parent_childtree.SetName("parent_childtree");
   parent_childtree.relative_bounds.bounds = gfx::RectF(100, 100, 100, 100);
 

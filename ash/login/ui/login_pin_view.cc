@@ -177,8 +177,8 @@ class BasePinButton : public views::View {
   }
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    node_data->SetName(accessible_name_);
     node_data->role = ax::mojom::Role::kButton;
+    node_data->SetName(accessible_name_);
   }
 
  protected:

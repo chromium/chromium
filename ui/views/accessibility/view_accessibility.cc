@@ -364,6 +364,16 @@ void ViewAccessibility::OverrideName(const std::string& name,
             name_from == ax::mojom::NameFrom::kAttributeExplicitlyEmpty)
       << "If the name is being removed to improve the user experience, "
          "|name_from| should be set to |kAttributeExplicitlyEmpty|.";
+
+  // |AXNodeData::SetName| expects a valid role. Some Views call |OverrideRole|
+  // prior to overriding the name. For those that don't, see if we can get the
+  // default role from the View.
+  if (custom_data_.role == ax::mojom::Role::kUnknown) {
+    ui::AXNodeData data;
+    view_->GetAccessibleNodeData(&data);
+    custom_data_.role = data.role;
+  }
+
   custom_data_.SetNameFrom(name_from);
   custom_data_.SetName(name);
 }
@@ -393,17 +403,22 @@ void ViewAccessibility::OverrideLabelledBy(
   // the two sources.
   ui::AXNodeData label_data;
   const_cast<View*>(labelled_by_view)->GetAccessibleNodeData(&label_data);
-  custom_data_.SetName(
+  const std::string& label =
       label_data.GetStringAttribute(ax::mojom::StringAttribute::kName).empty()
           ? labelled_by_view->GetViewAccessibility()
                 .custom_data_.GetStringAttribute(
                     ax::mojom::StringAttribute::kName)
-          : label_data.GetStringAttribute(ax::mojom::StringAttribute::kName));
+          : label_data.GetStringAttribute(ax::mojom::StringAttribute::kName);
+
+  // |OverrideName| includes logic to populate custom_data_.role with the
+  // View's default role in cases where |OverrideRole| was not called (yet).
+  // This ensures |AXNodeData::SetName| is not called with |Role::kUnknown|.
+  OverrideName(label, name_from);
+
   int32_t labelled_by_id =
       labelled_by_view->GetViewAccessibility().GetUniqueId().Get();
   custom_data_.AddIntListAttribute(ax::mojom::IntListAttribute::kLabelledbyIds,
                                    {labelled_by_id});
-  custom_data_.SetNameFrom(name_from);
 }
 
 void ViewAccessibility::OverrideDescription(

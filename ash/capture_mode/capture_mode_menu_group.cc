@@ -122,8 +122,8 @@ class CaptureModeMenuHeader
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
     View::GetAccessibleNodeData(node_data);
-    node_data->SetName(GetHeaderLabel());
     node_data->role = ax::mojom::Role::kHeader;
+    node_data->SetName(GetHeaderLabel());
   }
 
   // CaptureModeSessionFocusCycler::HighlightableView:
@@ -249,8 +249,8 @@ class CaptureModeOption
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
     Button::GetAccessibleNodeData(node_data);
-    node_data->SetName(GetOptionLabel());
     node_data->role = ax::mojom::Role::kRadioButton;
+    node_data->SetName(GetOptionLabel());
     node_data->SetCheckedState(IsOptionChecked()
                                    ? ax::mojom::CheckedState::kTrue
                                    : ax::mojom::CheckedState::kFalse);

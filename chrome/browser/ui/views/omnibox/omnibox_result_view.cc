@@ -76,11 +76,11 @@ class OmniboxRemoveSuggestionButton : public views::ImageButton {
   }
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    node_data->SetName(
-        l10n_util::GetStringUTF16(IDS_ACC_REMOVE_SUGGESTION_BUTTON));
     // Although this appears visually as a button, expose as a list box option
     // so that it matches the other options within its list box container.
     node_data->role = ax::mojom::Role::kListBoxOption;
+    node_data->SetName(
+        l10n_util::GetStringUTF16(IDS_ACC_REMOVE_SUGGESTION_BUTTON));
   }
 };
 
@@ -470,6 +470,8 @@ void OmniboxResultView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // ax::mojom::IntAttribute::kPosInSet/SET_SIZE and providing it via text as
   // well would result in duplicate announcements.
 
+  node_data->role = ax::mojom::Role::kListBoxOption;
+
   // TODO(tommycli): We re-fetch the original match from the popup model,
   // because |match_| already has its contents and description swapped by this
   // class, and we don't want that for the bubble. We should improve this.
@@ -486,7 +488,6 @@ void OmniboxResultView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
     node_data->SetName(label);
   }
 
-  node_data->role = ax::mojom::Role::kListBoxOption;
   node_data->AddIntAttribute(ax::mojom::IntAttribute::kPosInSet,
                              model_index_ + 1);
   node_data->AddIntAttribute(ax::mojom::IntAttribute::kSetSize,

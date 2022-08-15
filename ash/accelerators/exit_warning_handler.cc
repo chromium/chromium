@@ -78,8 +78,8 @@ class ExitWarningWidgetDelegateView : public views::WidgetDelegateView {
   }
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    node_data->SetName(accessible_name_);
     node_data->role = ax::mojom::Role::kAlert;
+    node_data->SetName(accessible_name_);
   }
 
  private:

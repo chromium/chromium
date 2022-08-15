@@ -17,8 +17,8 @@ SuggestionAccessibilityLabel::~SuggestionAccessibilityLabel() = default;
 
 void SuggestionAccessibilityLabel::GetAccessibleNodeData(
     ui::AXNodeData* node_data) {
-  node_data->SetName(GetAccessibleName());
   node_data->role = ax::mojom::Role::kImeCandidate;
+  node_data->SetName(GetAccessibleName());
   node_data->AddStringAttribute(
       ax::mojom::StringAttribute::kContainerLiveStatus, "polite");
 }

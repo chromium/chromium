@@ -44,8 +44,8 @@ void CaptureModeToggleButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   ImageButton::GetAccessibleNodeData(node_data);
   const std::u16string tooltip = GetTooltipText(gfx::Point());
   DCHECK(!tooltip.empty());
-  node_data->SetName(tooltip);
   node_data->role = ax::mojom::Role::kToggleButton;
+  node_data->SetName(tooltip);
   node_data->SetCheckedState(GetToggled() ? ax::mojom::CheckedState::kTrue
                                           : ax::mojom::CheckedState::kFalse);
 }

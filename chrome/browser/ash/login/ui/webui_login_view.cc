@@ -407,9 +407,9 @@ void WebUILoginView::OnLoginPromptVisible() {
 }
 
 void WebUILoginView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  node_data->role = ax::mojom::Role::kWindow;
   node_data->SetName(
       l10n_util::GetStringUTF16(IDS_OOBE_ACCESSIBLE_SCREEN_NAME));
-  node_data->role = ax::mojom::Role::kWindow;
 }
 
 BEGIN_METADATA(WebUILoginView, views::View)

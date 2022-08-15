@@ -594,6 +594,7 @@ export class AutomationPredicate {
              Role.GROUP,
              Role.IMAGE,
              Role.PARAGRAPH,
+             Role.SCROLL_VIEW,
              Role.STATIC_TEXT,
              Role.SVG_ROOT,
              Role.TABLE_HEADER_CONTAINER,
@@ -919,6 +920,7 @@ AutomationPredicate.structuralContainer = AutomationPredicate.roles([
   Role.PLUGIN_OBJECT,
   Role.UNKNOWN,
   Role.PANE,
+  Role.SCROLL_VIEW,
 ]);
 
 

@@ -132,9 +132,9 @@ ui::AXTreeUpdate GetSnapshotFromV8SnapshotLite(
       continue;
     ui::AXNodeData ax_node_data;
     SetAXNodeDataId(isolate, &v8_node_dict, &ax_node_data);
+    SetAXNodeDataRole(isolate, &v8_node_dict, &ax_node_data);
     SetAXNodeDataName(isolate, &v8_node_dict, &ax_node_data);
     SetAXNodeDataChildIds(isolate, &v8_node_dict, &ax_node_data);
-    SetAXNodeDataRole(isolate, &v8_node_dict, &ax_node_data);
     SetAXNodeDataHierarchicalLevel(isolate, &v8_node_dict, &ax_node_data);
     SetAXNodeDataUrl(isolate, &v8_node_dict, &ax_node_data);
     snapshot.nodes.push_back(ax_node_data);

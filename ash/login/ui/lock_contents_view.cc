@@ -904,11 +904,11 @@ void LockContentsView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   ShelfWidget* shelf_widget = shelf->shelf_widget();
   GetViewAccessibility().OverrideNextFocus(shelf_widget);
   GetViewAccessibility().OverridePreviousFocus(shelf->GetStatusAreaWidget());
+  node_data->role = ax::mojom::Role::kWindow;
   node_data->SetName(
       l10n_util::GetStringUTF16(screen_type_ == LockScreen::ScreenType::kLogin
                                     ? IDS_ASH_LOGIN_SCREEN_ACCESSIBLE_NAME
                                     : IDS_ASH_LOCK_SCREEN_ACCESSIBLE_NAME));
-  node_data->role = ax::mojom::Role::kWindow;
 }
 
 bool LockContentsView::AcceleratorPressed(const ui::Accelerator& accelerator) {

@@ -1272,9 +1272,9 @@ void AutofillPopupWarningView::GetAccessibleNodeData(
   if (!controller)
     return;
 
+  node_data->role = ax::mojom::Role::kStaticText;
   node_data->SetName(
       controller->GetSuggestionAt(GetLineNumber()).main_text.value);
-  node_data->role = ax::mojom::Role::kStaticText;
 }
 
 void AutofillPopupWarningView::CreateContent() {

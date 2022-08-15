@@ -279,6 +279,7 @@ const char* LoginRemoveAccountDialog::GetClassName() const {
 
 void LoginRemoveAccountDialog::GetAccessibleNodeData(
     ui::AXNodeData* node_data) {
+  node_data->role = ax::mojom::Role::kDialog;
   if (remove_user_button_) {
     node_data->SetName(l10n_util::GetStringUTF16(
         IDS_ASH_LOGIN_POD_REMOVE_ACCOUNT_ACCESSIBLE_NAME));
@@ -294,7 +295,6 @@ void LoginRemoveAccountDialog::GetAccessibleNodeData(
       node_data->SetDescription(email_label_->GetText());
     }
   }
-  node_data->role = ax::mojom::Role::kDialog;
   node_data->AddBoolAttribute(ax::mojom::BoolAttribute::kModal, true);
 }
 

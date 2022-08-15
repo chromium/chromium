@@ -262,8 +262,8 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest,
   widget->GetRootView()->AddChildView(view2);
   views::AXAuraObjWrapper* wrapper2 = cache_ptr->GetOrCreate(view2);
   views::View* view3 = new views::View();
-  view3->GetViewAccessibility().OverrideName("view3");
   view3->GetViewAccessibility().OverrideRole(ax::mojom::Role::kDialog);
+  view3->GetViewAccessibility().OverrideName("view3");
   view3->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   widget->GetRootView()->AddChildView(view3);
   views::AXAuraObjWrapper* wrapper3 = cache_ptr->GetOrCreate(view3);

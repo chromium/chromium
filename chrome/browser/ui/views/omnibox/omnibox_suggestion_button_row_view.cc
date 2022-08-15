@@ -126,10 +126,10 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
   }
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    node_data->SetName(GetAccessibleName());
     // Although this appears visually as a button, expose as a list box option
     // so that it matches the other options within its list box container.
     node_data->role = ax::mojom::Role::kListBoxOption;
+    node_data->SetName(GetAccessibleName());
   }
 
   void SetIcon(const gfx::VectorIcon& icon) {

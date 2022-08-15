@@ -178,8 +178,8 @@ class IdleAppNameNotificationDelegateView
   }
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    node_data->SetName(spoken_text_);
     node_data->role = ax::mojom::Role::kAlert;
+    node_data->SetName(spoken_text_);
   }
 
   // ImplicitAnimationObserver overrides
