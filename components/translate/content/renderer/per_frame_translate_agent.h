@@ -138,10 +138,6 @@ class PerFrameTranslateAgent : public content::RenderFrameObserver,
   // with |error|.
   void NotifyBrowserTranslationFailed(TranslateErrors::Type error);
 
-  // Convenience method to access the main frame.  Can return nullptr, typically
-  // if the page is being closed.
-  blink::WebLocalFrame* GetMainFrame();
-
   // The states associated with the current translation.
   TranslateFrameCallback translate_callback_pending_;
   std::string source_lang_;
