@@ -63,6 +63,9 @@ class BuilderList(object):
                     len(builders_dict[builder]['specifiers']) == 2)
         self._flag_spec_to_port = self._find_ports_for_flag_specific_options()
 
+    def __repr__(self):
+        return 'BuilderList(%s)' % self._builders
+
     def _find_ports_for_flag_specific_options(self):
         flag_spec_to_port = {}
         for builder_name, builder in self._builders.items():

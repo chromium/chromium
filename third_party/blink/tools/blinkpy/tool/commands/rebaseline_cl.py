@@ -11,7 +11,12 @@ import optparse
 import re
 
 from blinkpy.common.net.git_cl import GitCL, TryJobStatus
+from blinkpy.common.net.rpc import Build, RPCError
 from blinkpy.common.path_finder import PathFinder
+from blinkpy.tool.commands.build_resolver import (
+    BuildResolver,
+    UnresolvedBuildException,
+)
 from blinkpy.tool.commands.command import check_file_option
 from blinkpy.tool.commands.rebaseline import AbstractParallelRebaselineCommand
 from blinkpy.tool.commands.rebaseline import TestBaselineSet
@@ -114,6 +119,7 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
     def execute(self, options, args, tool):
         self._tool = tool
         self._dry_run = options.dry_run
+        self._resultdb_fetcher = options.resultDB
         self.git_cl = self.git_cl or GitCL(tool)
         # '--dry-run' implies '--no-trigger-jobs'.
         options.trigger_jobs = options.trigger_jobs and not self._dry_run
@@ -141,39 +147,30 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
                     'Aborted: builder %s not found in builder list.' % options.flag_specific)
                 return 1
 
-        if options.resultDB:
-            self._resultdb_fetcher = True
-        jobs = self.git_cl.latest_try_jobs(
-            builder_names=self.selected_try_bots, patchset=options.patchset)
-
-        self._log_jobs(jobs)
-        builders_with_no_jobs = self.selected_try_bots - {
-            b.builder_name
-            for b in jobs
-        }
-
-        if not options.trigger_jobs and not jobs:
-            _log.info("Aborted: no try jobs and '--no-trigger-jobs' or "
-                      "'--dry-run' passed.")
+        build_resolver = BuildResolver(
+            self._tool.builders,
+            self.git_cl,
+            can_trigger_jobs=(options.trigger_jobs and not self._dry_run))
+        builds = [Build(builder) for builder in self.selected_try_bots]
+        try:
+            jobs = build_resolver.resolve_builds(builds, options.patchset)
+        except RPCError as error:
+            _log.error('%s', error)
+            _, payload, _, _ = error.request
+            _log.error('Request payload: %s', json.dumps(payload, indent=2))
+            return 1
+        except UnresolvedBuildException as error:
+            _log.error('%s', error)
             return 1
 
-        if options.use_blink_try_bots_only:
-            if not builders_with_no_jobs:
-                _log.info("All try bots have been run. ")
-                _log.info("Using only the try bots results")
-            elif options.trigger_jobs:
-                _log.info("Triggering try bots only.")
-
-        if options.trigger_jobs and builders_with_no_jobs:
-            self.trigger_try_jobs(builders_with_no_jobs)
-            return 1
         jobs_to_results = self._fetch_results(jobs)
         builders_with_results = {b.builder_name for b in jobs_to_results}
         builders_without_results = (
             set(self.selected_try_bots) - builders_with_results)
         if builders_without_results:
             _log.info('There are some builders with no results:')
-            self._log_builder_list(builders_without_results)
+            for builder in sorted(builders_without_results):
+                _log.info('  %s', builder)
 
         if options.fill_missing is None and builders_without_results:
             should_continue = self._tool.user.confirm(
@@ -216,9 +213,6 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
             for path in unstaged_baselines:
                 _log.error('  %s', path)
             return False
-        if self._get_issue_number() is None:
-            _log.error('No issue number for current branch.')
-            return False
         return True
 
     @property
@@ -236,53 +230,6 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         return frozenset(
             self._tool.builders.all_flag_specific_try_builder_names(
                 flag_specific=flag_specific))
-
-    def _get_issue_number(self):
-        """Returns the current CL issue number, or None."""
-        issue = self.git_cl.get_issue_number()
-        if not issue.isdigit():
-            return None
-        return int(issue)
-
-    def trigger_try_jobs(self, builders):
-        """Triggers try jobs for the given builders."""
-        _log.info('Triggering try jobs:')
-        for builder in sorted(builders):
-            _log.info('  %s', builder)
-        self.git_cl.trigger_try_jobs(builders)
-        _log.info('Once all pending try jobs have finished, please re-run\n'
-                  'blink_tool.py rebaseline-cl to fetch new baselines.')
-
-    def _log_jobs(self, jobs):
-        """Logs the current state of the try jobs.
-
-        This includes which jobs were started or finished or missing,
-        and their current state.
-
-        Args:
-            jobs: A dict mapping Build objects to TryJobStatus objects.
-        """
-        finished_jobs = {b for b, s in jobs.items() if s.status == 'COMPLETED'}
-        if self.selected_try_bots.issubset(
-            {b.builder_name
-             for b in finished_jobs}):
-            _log.info('Finished try jobs found for all try bots.')
-            return
-
-        if finished_jobs:
-            _log.info('Finished try jobs:')
-            self._log_builder_list({b.builder_name for b in finished_jobs})
-        else:
-            _log.info('No finished try jobs.')
-
-        unfinished_jobs = {b for b in jobs if b not in finished_jobs}
-        if unfinished_jobs:
-            _log.info('Scheduled or started try jobs:')
-            self._log_builder_list({b.builder_name for b in unfinished_jobs})
-
-    def _log_builder_list(self, builders):
-        for builder in sorted(builders):
-            _log.info('  %s', builder)
 
     def _fetch_results(self, jobs):
         """Fetches results for all of the given builds.
@@ -533,7 +480,7 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
             if not missing_ports:
                 continue
             _log.info('For %s:', test_prefix)
-            for port in missing_ports:
+            for port in sorted(missing_ports):
                 build = self._choose_fill_in_build(port, build_port_pairs)
                 _log.info('Using "%s" build %d for %s.', build.builder_name,
                           build.build_number, port)

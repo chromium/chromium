@@ -26,25 +26,31 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import collections
 import logging
 import json
+from typing import NamedTuple, Optional
 from urllib.parse import urlunsplit
 
 import six
 
 from blinkpy.common.memoized import memoized
+from blinkpy.common.net.luci_auth import LuciAuth
 
 _log = logging.getLogger(__name__)
 
 # These characters always appear at the beginning of the RPC response.
 RESPONSE_PREFIX = b")]}'"
 
-# Represents a combination of builder and build number.
-# If build number is None, this represents the latest build for a given builder.
-Build = collections.namedtuple('Build',
-                               ['builder_name', 'build_number', 'build_id'],
-                               defaults=[None, None])
+
+class Build(NamedTuple):
+    """A combination of builder and build number.
+
+    If the build number is absent, this represents the latest build for a given
+    builder.
+    """
+    builder_name: str
+    build_number: Optional[int] = None
+    build_id: Optional[str] = None
 
 
 class RPCError(Exception):
@@ -75,6 +81,10 @@ class BaseRPC:
         self._luci_auth = luci_auth
         self._hostname = hostname
         self._service = service
+
+    @classmethod
+    def from_host(cls, host, *args, **kwargs):
+        return cls(host.web, LuciAuth(host), *args, **kwargs)
 
     @memoized
     def _make_url(self, method):

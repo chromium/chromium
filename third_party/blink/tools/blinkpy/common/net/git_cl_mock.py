@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 from blinkpy.common.net.git_cl import CLStatus, GitCL
+from blinkpy.common.net.rpc import BuildbucketClient
 from blinkpy.common.system.executive import ScriptError
 
 # pylint: disable=unused-argument
@@ -26,6 +27,7 @@ class MockGitCL(object):
             time_out: Whether to simulate timing out while waiting.
             git_error_output: A dict of git-cl args to exception output.
         """
+        self.bb_client = BuildbucketClient.from_host(host)
         self._builders = host.builders.all_try_builder_names()
         self._status = status
         self._try_job_results = try_job_results

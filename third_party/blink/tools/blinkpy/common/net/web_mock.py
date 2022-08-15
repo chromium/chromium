@@ -26,7 +26,10 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import json
 from six.moves.urllib.error import HTTPError
+
+from blinkpy.common.net.rpc import RESPONSE_PREFIX
 
 
 class MockWeb(object):
@@ -47,6 +50,18 @@ class MockWeb(object):
     def request(self, method, url, data=None, headers=None):  # pylint: disable=unused-argument
         self.requests.append((url, data))
         return MockResponse(self.responses.pop(0))
+
+    def append_prpc_response(self, payload, status_code=200, headers=None):
+        headers = headers or {}
+        headers.setdefault('Content-Type', 'application/json')
+        self.responses.append({
+            'status_code':
+            200,
+            'body':
+            RESPONSE_PREFIX + json.dumps(payload).encode(),
+            'headers':
+            headers,
+        })
 
 
 class MockResponse(object):

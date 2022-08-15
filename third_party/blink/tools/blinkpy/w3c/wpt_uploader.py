@@ -13,7 +13,6 @@ import requests
 import six
 import tempfile
 
-from blinkpy.common.net.luci_auth import LuciAuth
 from blinkpy.common.net.rpc import BuildbucketClient
 from blinkpy.common.system.log_utils import configure_logging
 
@@ -23,7 +22,7 @@ _log = logging.getLogger(__name__)
 class WptReportUploader(object):
     def __init__(self, host):
         self._host = host
-        self._bb_client = BuildbucketClient(host.web, LuciAuth(host))
+        self._bb_client = BuildbucketClient.from_host(host)
         self.options = None
         self._dry_run = False
         configure_logging(logging_level=logging.INFO, include_time=True)

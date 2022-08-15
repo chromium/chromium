@@ -12,11 +12,11 @@ import json
 import logging
 import re
 import six
+from typing import Literal, Mapping, NamedTuple
 
 from blinkpy.common.checkout.git import Git
-from blinkpy.common.net.luci_auth import LuciAuth
-from blinkpy.common.net.results_fetcher import Build, filter_latest_builds
-from blinkpy.common.net.rpc import BuildbucketClient
+from blinkpy.common.net.results_fetcher import filter_latest_builds
+from blinkpy.common.net.rpc import Build, BuildbucketClient
 
 _log = logging.getLogger(__name__)
 
@@ -25,31 +25,19 @@ _log = logging.getLogger(__name__)
 _COMMANDS_THAT_TAKE_REFRESH_TOKEN = ('try', )
 
 
-class CLStatus(
-        collections.namedtuple('CLStatus', ('status', 'try_job_results'))):
-    """Represents the current status of a particular CL.
-
-    It contains both the CL's status as reported by `git-cl status' as well as
-    a mapping of Build objects to TryJobStatus objects.
-    """
-    pass
-
-
-class TryJobStatus(
-        collections.namedtuple('TryJobStatus', ('status', 'result'))):
-    """Represents a current status of a particular job.
+# TODO(crbug.com/1299650): Rename to `BuildStatus` to include CI builds.
+class TryJobStatus(NamedTuple):
+    """The current status of a particular build.
 
     Specifically, whether it is scheduled or started or finished, and if
-    it is finished, whether it failed or succeeded. If it failed,
+    it is finished, whether it failed or succeeded.
     """
-
-    def __new__(cls, status, result=None):
-        assert status in ('SCHEDULED', 'STARTED', 'COMPLETED')
-        assert result in (None, 'FAILURE', 'SUCCESS', 'CANCELED')
-        return super(TryJobStatus, cls).__new__(cls, status, result)
+    status: Literal['MISSING', 'TRIGGERED', 'SCHEDULED', 'STARTED',
+                    'COMPLETED']
+    result: Literal[None, 'FAILURE', 'SUCCESS', 'CANCELED'] = None
 
     @staticmethod
-    def from_bb_status(bb_status):
+    def from_bb_status(bb_status: str) -> 'TryJobStatus':
         """Converts a buildbucket status into a TryJobStatus object."""
         assert bb_status in ('SCHEDULED', 'STARTED', 'SUCCESS', 'FAILURE',
                              'INFRA_FAILURE', 'CANCELLED')
@@ -63,6 +51,19 @@ class TryJobStatus(
                 'FAILURE' if bb_status == 'INFRA_FAILURE' else bb_status)
 
 
+BuildStatuses = Mapping[Build, TryJobStatus]
+
+
+class CLStatus(NamedTuple):
+    """The current status of a particular CL.
+
+    It contains both the CL's status as reported by `git-cl status' as well as
+    a mapping of Build objects to TryJobStatus objects.
+    """
+    status: str
+    try_job_results: BuildStatuses
+
+
 class GitCL(object):
     def __init__(self,
                  host,
@@ -70,8 +71,7 @@ class GitCL(object):
                  cwd=None,
                  bb_client=None):
         self._host = host
-        self.bb_client = bb_client or BuildbucketClient(
-            host.web, LuciAuth(host))
+        self.bb_client = bb_client or BuildbucketClient.from_host(host)
         self._auth_refresh_token_json = auth_refresh_token_json
         self._cwd = cwd
         self._git_executable_name = Git.find_executable_name(

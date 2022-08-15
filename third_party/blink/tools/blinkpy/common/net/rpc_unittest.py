@@ -6,7 +6,6 @@ import json
 import unittest
 
 from blinkpy.common.host_mock import MockHost
-from blinkpy.common.net.luci_auth import LuciAuth
 from blinkpy.common.net.rpc import Build, BuildbucketClient, RPCError
 
 
@@ -18,20 +17,10 @@ class BuildbucketTest(unittest.TestCase):
 
     def setUp(self):
         self.host = MockHost()
-        self.client = BuildbucketClient(
-            self.host.web,
-            LuciAuth(self.host),
-            'cr-buildbucket.appspot.com',
-            'buildbucket.v2.Builds',
-        )
-
-    def add_response(self, response, status=200):
-        self.host.web.responses.append({
-            'status_code':
-            status,
-            'body':
-            b")]}'" + json.dumps(response).encode(),
-        })
+        self.client = BuildbucketClient.from_host(
+            self.host,
+            hostname='cr-buildbucket.appspot.com',
+            service='buildbucket.v2.Builds')
 
     def test_search_builds_one_page(self):
         predicate = {
@@ -41,7 +30,7 @@ class BuildbucketTest(unittest.TestCase):
                 'builder': 'linux-rel',
             },
         }
-        self.add_response({
+        self.host.web.append_prpc_response({
             'builds': [{
                 'id': '123',
                 'number': 123
@@ -74,7 +63,7 @@ class BuildbucketTest(unittest.TestCase):
                 'builder': 'linux-rel',
             },
         }
-        self.add_response({
+        self.host.web.append_prpc_response({
             'builds': [{
                 'id': '123',
                 'number': 123
@@ -85,7 +74,7 @@ class BuildbucketTest(unittest.TestCase):
             'nextPageToken':
             'id>789',
         })
-        self.add_response({
+        self.host.web.append_prpc_response({
             'builds': [{
                 'id': '789',
                 'number': 789
@@ -122,13 +111,17 @@ class BuildbucketTest(unittest.TestCase):
         self.assertEqual(build3, {'id': '789', 'number': 789})
 
     def test_search_builds_no_next_token(self):
-        self.add_response({'builds': [{'id': '123', 'number': 123}]})
+        self.host.web.append_prpc_response(
+            {'builds': [{
+                'id': '123',
+                'number': 123
+            }]})
         builds = self.client.search_builds({}, ['id', 'number'], count=3)
         self.assertEqual(len(self.host.web.requests), 1)
         self.assertEqual(builds, [{'id': '123', 'number': 123}])
 
     def test_execute_batch(self):
-        self.add_response({
+        self.host.web.append_prpc_response({
             'responses': [{
                 'getBuild': {
                     'id': '123'
@@ -176,7 +169,7 @@ class BuildbucketTest(unittest.TestCase):
         self.assertEqual(build3, {'id': '789'})
 
     def test_execute_batch_with_error(self):
-        self.add_response({
+        self.host.web.append_prpc_response({
             'responses': [{
                 'error': {
                     'code': 5,
