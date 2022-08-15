@@ -9,19 +9,9 @@
 #include "ash/shelf/shelf_test_util.h"
 #include "ash/shelf/shelf_view_test_api.h"
 #include "ash/shelf/shelf_widget.h"
+#include "ash/test/ash_test_util.h"
 
 namespace ash {
-namespace {
-
-// Create a test 1x1 icon image with a given |color|.
-gfx::ImageSkia CreateImageSkiaIcon(SkColor color) {
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(1, 1);
-  bitmap.eraseColor(color);
-  return gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
-}
-
-}  // namespace
 
 ScrollableShelfTestBase::ScrollableShelfTestBase() = default;
 
@@ -70,7 +60,8 @@ ShelfID ScrollableShelfTestBase::AddAppShortcutWithIconColor(
     ShelfItemType item_type,
     SkColor color) {
   ShelfItem item = ShelfTestUtil::AddAppShortcutWithIcon(
-      base::NumberToString(id_++), item_type, CreateImageSkiaIcon(color));
+      base::NumberToString(id_++), item_type,
+      CreateSolidColorTestImage(gfx::Size(1, 1), color));
 
   // Wait for shelf view's bounds animation to end. Otherwise the scrollable
   // shelf's bounds are not updated yet.

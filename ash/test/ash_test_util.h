@@ -7,9 +7,16 @@
 
 #include <cstddef>
 
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/image/image_skia.h"
+
 namespace base {
 class FilePath;
 class TimeDelta;
+}
+
+namespace gfx {
+class Size;
 }
 
 namespace ash {
@@ -31,6 +38,10 @@ void GiveItSomeTimeForDebugging(base::TimeDelta time_duration);
 // Returns true if the system tray of the root window specified by
 // `root_window_index` is visible.
 bool IsSystemTrayForRootWindowVisible(size_t root_window_index);
+
+// Creates a pure color image of the specified size.
+gfx::ImageSkia CreateSolidColorTestImage(const gfx::Size& image_size,
+                                         SkColor color);
 
 }  // namespace ash
 

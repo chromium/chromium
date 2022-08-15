@@ -4,6 +4,7 @@
 
 #include "ash/app_list/test/app_list_test_helper.h"
 
+#include <string>
 #include <utility>
 
 #include "ash/app_list/app_list_bubble_presenter.h"
@@ -28,6 +29,7 @@
 #include "ash/app_list/views/search_result_page_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
+#include "ash/test/ash_test_util.h"
 #include "base/guid.h"
 #include "base/run_loop.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -36,6 +38,9 @@
 namespace ash {
 
 namespace {
+
+// The size of the app list item solid-colored icons.
+constexpr gfx::Size kIconImageSize(56, 56);
 
 // An app list should be either a bubble app list or a fullscreen app list.
 // Returns true if a bubble app list should be used under the current mode.
@@ -146,11 +151,42 @@ void AppListTestHelper::CheckState(AppListViewState state) {
 }
 
 void AppListTestHelper::AddAppItems(int num_apps) {
+  AddAppItemsWithColorAndName(num_apps, IconColorType::kNotSet,
+                              /*set_name=*/false);
+}
+
+void AppListTestHelper::AddAppItemsWithColorAndName(int num_apps,
+                                                    IconColorType color_type,
+                                                    bool set_name) {
   AppListModel* const model = AppListModelProvider::Get()->model();
   const int num_apps_already_added = model->top_level_item_list()->item_count();
   for (int i = 0; i < num_apps; i++) {
-    model->AddItem(std::make_unique<AppListItem>(
-        test::AppListTestModel::GetItemName(i + num_apps_already_added)));
+    const std::string id(
+        test::AppListTestModel::GetItemName(i + num_apps_already_added));
+    auto item = std::make_unique<AppListItem>(id);
+    absl::optional<SkColor> solid_color;
+    switch (color_type) {
+      case IconColorType::kDefaultColor:
+        solid_color = icon_color_generator_.default_color();
+        break;
+      case IconColorType::kAlternativeColor:
+        solid_color = icon_color_generator_.GetAlternativeColor();
+        break;
+      case IconColorType::kNotSet:
+        break;
+    }
+
+    if (solid_color) {
+      // Skip the calculation of the icon color from the generated solid-colored
+      // icon to save some time.
+      item->SetDefaultIconAndColor(
+          CreateSolidColorTestImage(kIconImageSize, *solid_color), IconColor());
+    }
+
+    auto* item_ptr = item.get();
+    model->AddItem(std::move(item));
+    if (set_name)
+      model->SetItemName(item_ptr, id);
   }
 }
 

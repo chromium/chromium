@@ -12,6 +12,7 @@
 #include "ash/app_list/model/app_list_test_model.h"
 #include "ash/app_list/model/search/search_model.h"
 #include "ash/app_list/test_app_list_client.h"
+#include "ash/test/ash_test_color_generator.h"
 #include "ui/gfx/animation/tween.h"
 
 namespace base {
@@ -44,6 +45,19 @@ enum class AppListViewState;
 
 class AppListTestHelper {
  public:
+  // The color types of app list item icons.
+  enum class IconColorType {
+    // Use the default icon color which is SK_ColorRED.
+    kDefaultColor,
+
+    // This color type guarantees that the neighboring app list items added by
+    // the test helper have different icon colors.
+    kAlternativeColor,
+
+    // The icon is transparent.
+    kNotSet,
+  };
+
   AppListTestHelper();
 
   AppListTestHelper(const AppListTestHelper&) = delete;
@@ -101,8 +115,15 @@ class AppListTestHelper {
   // If a folder view is shown, waits until the folder animations complete.
   void WaitForFolderAnimation();
 
-  // Adds `num_apps` to the app list model.
+  // Adds `num_apps` to the app list model. These app items have transparent
+  // icons and their names are not set.
   void AddAppItems(int num_apps);
+
+  // Similar to `AddAppItems()` but provides the options to set item icon colors
+  // and names.
+  void AddAppItemsWithColorAndName(int num_apps,
+                                   IconColorType color_type,
+                                   bool set_name);
 
   // Adds a page break item to the app list model.
   void AddPageBreakItem();
@@ -164,6 +185,8 @@ class AppListTestHelper {
   SearchModel search_model_;
   AppListControllerImpl* app_list_controller_ = nullptr;
   std::unique_ptr<TestAppListClient> app_list_client_;
+
+  AshTestColorGenerator icon_color_generator_{/*default_color=*/SK_ColorRED};
 };
 
 }  // namespace ash

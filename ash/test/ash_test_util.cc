@@ -64,4 +64,13 @@ bool IsSystemTrayForRootWindowVisible(size_t root_window_index) {
   return controller->GetStatusAreaWidget()->unified_system_tray()->GetVisible();
 }
 
+gfx::ImageSkia CreateSolidColorTestImage(const gfx::Size& image_size,
+                                         SkColor color) {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(image_size.width(), image_size.height());
+  bitmap.eraseColor(color);
+  gfx::ImageSkia image = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
+  return image;
+}
+
 }  // namespace ash
