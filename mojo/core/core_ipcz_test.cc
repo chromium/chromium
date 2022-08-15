@@ -180,5 +180,85 @@ TEST_F(CoreIpczTest, MessagePipes) {
   EXPECT_EQ(MOJO_RESULT_OK, mojo().Close(d));
 }
 
+TEST_F(CoreIpczTest, Traps) {
+  MojoHandle a, b;
+  EXPECT_EQ(MOJO_RESULT_OK, mojo().CreateMessagePipe(nullptr, &a, &b));
+
+  // A simple trap event handler which treats its event context as a
+  // MojoTrapEvent pointer, where the fired event will be copied.
+  auto handler = [](const MojoTrapEvent* event) {
+    *reinterpret_cast<MojoTrapEvent*>(event->trigger_context) = *event;
+  };
+  MojoHandle trap;
+  EXPECT_EQ(MOJO_RESULT_OK, mojo().CreateTrap(handler, nullptr, &trap));
+
+  // Initialize these events with an impossible result code.
+  MojoTrapEvent readable_event = {.result = MOJO_RESULT_UNKNOWN};
+  MojoTrapEvent writable_event = {.result = MOJO_RESULT_UNKNOWN};
+  uintptr_t kReadableContext = reinterpret_cast<uintptr_t>(&readable_event);
+  uintptr_t kWritableContext = reinterpret_cast<uintptr_t>(&writable_event);
+  EXPECT_EQ(MOJO_RESULT_OK,
+            mojo().AddTrigger(trap, b, MOJO_HANDLE_SIGNAL_READABLE,
+                              MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
+                              kReadableContext, nullptr));
+  EXPECT_EQ(MOJO_RESULT_OK,
+            mojo().AddTrigger(trap, b, MOJO_HANDLE_SIGNAL_WRITABLE,
+                              MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
+                              kWritableContext, nullptr));
+
+  // Arming should fail because the pipe is always writable.
+  uint32_t num_events = 1;
+  MojoTrapEvent event = {.struct_size = sizeof(event)};
+  EXPECT_EQ(MOJO_RESULT_FAILED_PRECONDITION,
+            mojo().ArmTrap(trap, nullptr, &num_events, &event));
+  EXPECT_EQ(kWritableContext, event.trigger_context);
+  EXPECT_EQ(MOJO_RESULT_OK, event.result);
+
+  // But we should be able to arm after removing that trigger. Trigger removal
+  // should also notify the writable trigger of cancellation.
+  EXPECT_EQ(MOJO_RESULT_OK,
+            mojo().RemoveTrigger(trap, kWritableContext, nullptr));
+  EXPECT_EQ(MOJO_RESULT_CANCELLED, writable_event.result);
+  EXPECT_EQ(MOJO_RESULT_OK, mojo().ArmTrap(trap, nullptr, nullptr, nullptr));
+
+  // Making `b` readable by writing to `a` should immediately activate the
+  // remaining trigger.
+  EXPECT_EQ(MOJO_RESULT_UNKNOWN, readable_event.result);
+  EXPECT_EQ(MOJO_RESULT_OK,
+            mojo().WriteMessage(a, CreateMessage("lol"), nullptr));
+  EXPECT_EQ(MOJO_RESULT_CANCELLED, writable_event.result);
+  EXPECT_EQ(MOJO_RESULT_OK, readable_event.result);
+
+  // Clear the pipe and re-arm the trap.
+  MojoMessageHandle message;
+  EXPECT_EQ(MOJO_RESULT_OK, mojo().ReadMessage(b, nullptr, &message));
+  EXPECT_EQ(MOJO_RESULT_OK, mojo().DestroyMessage(message));
+  EXPECT_EQ(MOJO_RESULT_OK, mojo().ArmTrap(trap, nullptr, nullptr, nullptr));
+
+  // Closing `a` should activate the readable trigger again, this time to signal
+  // its permanent unsatisfiability.
+  EXPECT_EQ(MOJO_RESULT_OK, readable_event.result);
+  EXPECT_EQ(MOJO_RESULT_OK, mojo().Close(a));
+  EXPECT_EQ(MOJO_RESULT_FAILED_PRECONDITION, readable_event.result);
+
+  // Closing `b` itself should elicit one final cancellation event.
+  EXPECT_EQ(MOJO_RESULT_OK, mojo().Close(b));
+  EXPECT_EQ(MOJO_RESULT_CANCELLED, readable_event.result);
+
+  // Finally, closing the trap with an active trigger should also elicit a
+  // cancellation event.
+  EXPECT_EQ(MOJO_RESULT_OK, mojo().CreateMessagePipe(nullptr, &a, &b));
+  readable_event.result = MOJO_RESULT_UNKNOWN;
+  EXPECT_EQ(MOJO_RESULT_OK,
+            mojo().AddTrigger(trap, b, MOJO_HANDLE_SIGNAL_READABLE,
+                              MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
+                              kReadableContext, nullptr));
+  EXPECT_EQ(MOJO_RESULT_OK, mojo().Close(trap));
+  EXPECT_EQ(MOJO_RESULT_CANCELLED, readable_event.result);
+
+  EXPECT_EQ(MOJO_RESULT_OK, mojo().Close(a));
+  EXPECT_EQ(MOJO_RESULT_OK, mojo().Close(b));
+}
+
 }  // namespace
 }  // namespace mojo::core

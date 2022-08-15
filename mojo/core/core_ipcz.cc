@@ -15,6 +15,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "mojo/core/ipcz_api.h"
+#include "mojo/core/ipcz_driver/mojo_trap.h"
 #include "third_party/ipcz/include/ipcz/ipcz.h"
 
 namespace mojo::core {
@@ -434,7 +435,12 @@ MojoResult MojoGetBufferInfoIpcz(MojoHandle buffer_handle,
 MojoResult MojoCreateTrapIpcz(MojoTrapEventHandler handler,
                               const MojoCreateTrapOptions* options,
                               MojoHandle* trap_handle) {
-  return MOJO_RESULT_UNIMPLEMENTED;
+  if (!handler || !trap_handle) {
+    return MOJO_RESULT_INVALID_ARGUMENT;
+  }
+
+  *trap_handle = ipcz_driver::MojoTrap::MakeBoxed(handler);
+  return MOJO_RESULT_OK;
 }
 
 MojoResult MojoAddTriggerIpcz(MojoHandle trap_handle,
@@ -443,20 +449,32 @@ MojoResult MojoAddTriggerIpcz(MojoHandle trap_handle,
                               MojoTriggerCondition condition,
                               uintptr_t context,
                               const MojoAddTriggerOptions* options) {
-  return MOJO_RESULT_UNIMPLEMENTED;
+  auto* trap = ipcz_driver::MojoTrap::FromBox(trap_handle);
+  if (!trap) {
+    return MOJO_RESULT_INVALID_ARGUMENT;
+  }
+  return trap->AddTrigger(handle, signals, condition, context);
 }
 
 MojoResult MojoRemoveTriggerIpcz(MojoHandle trap_handle,
                                  uintptr_t context,
                                  const MojoRemoveTriggerOptions* options) {
-  return MOJO_RESULT_UNIMPLEMENTED;
+  auto* trap = ipcz_driver::MojoTrap::FromBox(trap_handle);
+  if (!trap) {
+    return MOJO_RESULT_INVALID_ARGUMENT;
+  }
+  return trap->RemoveTrigger(context);
 }
 
 MojoResult MojoArmTrapIpcz(MojoHandle trap_handle,
                            const MojoArmTrapOptions* options,
                            uint32_t* num_blocking_events,
                            MojoTrapEvent* blocking_events) {
-  return MOJO_RESULT_UNIMPLEMENTED;
+  auto* trap = ipcz_driver::MojoTrap::FromBox(trap_handle);
+  if (!trap) {
+    return MOJO_RESULT_INVALID_ARGUMENT;
+  }
+  return trap->Arm(blocking_events, num_blocking_events);
 }
 
 MojoResult MojoWrapPlatformHandleIpcz(
