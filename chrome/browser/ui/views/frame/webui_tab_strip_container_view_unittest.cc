@@ -51,13 +51,11 @@ TEST_F(WebUITabStripContainerViewTest, TouchModeTransition) {
   EXPECT_FALSE(browser_view()->GetTabStripVisible());
 
   ui::TouchUiController::TouchUiScoperForTesting disable_touch_mode(false);
-  browser_view()->Layout();
   EXPECT_FALSE(WebUITabStripContainerView::UseTouchableTabStrip(
       browser_view()->browser()));
   EXPECT_TRUE(browser_view()->GetTabStripVisible());
 
   ui::TouchUiController::TouchUiScoperForTesting reenable_touch_mode(true);
-  browser_view()->Layout();
   EXPECT_TRUE(WebUITabStripContainerView::UseTouchableTabStrip(
       browser_view()->browser()));
   EXPECT_FALSE(browser_view()->GetTabStripVisible());

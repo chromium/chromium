@@ -205,7 +205,7 @@ IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewTest, StaticTitleBarHeight) {
   if (!InstallAndLaunchWebApp())
     return;
 
-  opaque_browser_frame_view_->Layout();
+  RunScheduledLayouts();
   const int title_bar_height = GetRestoredTitleBarHeight();
   EXPECT_GT(title_bar_height, 0);
 
@@ -213,7 +213,7 @@ IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewTest, StaticTitleBarHeight) {
   const int container_height = web_app_frame_toolbar_->height();
   web_app_frame_toolbar_->get_right_container_for_testing()->AddChildView(
       new views::StaticSizedView(gfx::Size(1, title_bar_height * 2)));
-  opaque_browser_frame_view_->Layout();
+  RunScheduledLayouts();
 
   // The height of the web app frame toolbar and title bar should not be
   // affected.

@@ -93,7 +93,6 @@ IN_PROC_BROWSER_TEST_F(GlassBrowserFrameViewTest,
 
   glass_frame_view->frame()->Maximize();
 
-  static_cast<views::View*>(glass_frame_view)->Layout();
   auto* maximize_button = GetMaximizeButton();
 
   // Button isn't visible, and should be disabled.
@@ -125,7 +124,6 @@ IN_PROC_BROWSER_TEST_F(GlassBrowserFrameViewTest,
 
   glass_frame_view->frame()->Maximize();
 
-  static_cast<views::View*>(glass_frame_view)->Layout();
   auto* maximize_button = GetMaximizeButton();
   EXPECT_FALSE(maximize_button->GetVisible());
   EXPECT_TRUE(maximize_button->GetEnabled());
@@ -210,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewTest, MaximizedLayout) {
     return;
 
   glass_frame_view_->frame()->Maximize();
-  static_cast<views::View*>(glass_frame_view_)->Layout();
+  RunScheduledLayouts();
 
   DCHECK_GT(glass_frame_view_->window_title_for_testing()->x(), 0);
   DCHECK_GE(glass_frame_view_->web_app_frame_toolbar_for_testing()->y(), 0);
@@ -221,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewTest, RTLTopRightHitTest) {
   if (!InstallAndLaunchWebApp())
     return;
 
-  static_cast<views::View*>(glass_frame_view_)->Layout();
+  RunScheduledLayouts();
 
   // Avoid the top right resize corner.
   constexpr int kInset = 10;

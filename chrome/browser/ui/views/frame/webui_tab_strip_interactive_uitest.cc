@@ -55,7 +55,7 @@ IN_PROC_BROWSER_TEST_F(WebUITabStripInteractiveTest,
   omnibox->SetUserText(u"");
 
   container->SetVisibleForTesting(true);
-  browser_view->Layout();
+  RunScheduledLayouts();
 
   EXPECT_FALSE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
 
@@ -93,7 +93,7 @@ IN_PROC_BROWSER_TEST_F(WebUITabStripInteractiveTest,
 
   // Open the tab strip
   container->SetVisibleForTesting(true);
-  browser_view->Layout();
+  RunScheduledLayouts();
 
   base::RunLoop click_loop;
   ui_test_utils::MoveMouseToCenterAndPress(
@@ -116,7 +116,7 @@ IN_PROC_BROWSER_TEST_F(WebUITabStripInteractiveTest,
 
   // Open the tab strip
   container->SetVisibleForTesting(true);
-  browser_view->Layout();
+  RunScheduledLayouts();
 
   base::RunLoop click_loop;
   ui_test_utils::MoveMouseToCenterAndPress(container, ui_controls::LEFT,
@@ -157,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(WebUITabStripInteractiveTest, CanUseInImmersiveMode) {
 
   // Try opening the tab strip.
   container->SetVisibleForTesting(true);
-  browser_view->Layout();
+  RunScheduledLayouts();
   EXPECT_TRUE(container->GetVisible());
   EXPECT_FALSE(container->bounds().IsEmpty());
   EXPECT_TRUE(immersive_mode_controller->IsRevealed());
