@@ -748,7 +748,15 @@ GREYLayoutConstraint* BelowConstraint() {
 // If browser is already signed in and the user opens the advanced settings then
 // selects "No thanks", the user should stay signed in, but sync should be
 // turned off.
-- (void)testAdvancedSettingsSignedInSyncOff {
+// TODO(crbug.com/1352970): Flaky on iOS simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testAdvancedSettingsSignedInSyncOff \
+  DISABLED_testAdvancedSettingsSignedInSyncOff
+#else
+#define MAYBE_testAdvancedSettingsSignedInSyncOff \
+  testAdvancedSettingsSignedInSyncOff
+#endif
+- (void)MAYBE_testAdvancedSettingsSignedInSyncOff {
   // Sign-in browser.
   FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
