@@ -63,6 +63,10 @@ class JavaService : public Service {
                    const UserData* user_data,
                    ServiceRequestSender::ResponseCallback callback) override;
 
+  void ReportProgress(const std::string& token,
+                      const std::string& payload,
+                      ServiceRequestSender::ResponseCallback callback) override;
+
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_service_;
 };

@@ -67,6 +67,13 @@ class MockService : public Service {
               UpdateJsFlowLibraryLoaded,
               (bool js_flow_library_loaded),
               (override));
+
+  MOCK_METHOD(void,
+              ReportProgress,
+              (const std::string& token,
+               const std::string& payload,
+               ServiceRequestSender::ResponseCallback callback),
+              (override));
 };
 
 }  // namespace autofill_assistant

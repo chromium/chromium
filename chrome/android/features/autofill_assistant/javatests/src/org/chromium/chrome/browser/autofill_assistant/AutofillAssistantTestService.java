@@ -236,6 +236,10 @@ public class AutofillAssistantTestService
         return returnValue;
     }
 
+    @CalledByNative
+    private byte[] reportProgressNative() {
+        return new byte[0];
+    }
     @NativeMethods
     interface Natives {
         long javaServiceCreate(AutofillAssistantTestService service);

@@ -66,5 +66,11 @@ TEST(ServerUrlFetcherTest, GetUserDataEndpoint) {
       Eq(GURL("https://www.example.com/v1/userData")));
 }
 
+TEST(ServerUrlFetcherTest, GetReportProgressEndpoint) {
+  EXPECT_THAT(ServerUrlFetcher(GURL("https://www.example.com"))
+                  .GetReportProgressEndpoint(),
+              Eq(GURL("https://www.example.com/v1/reportProgress")));
+}
+
 }  // namespace
 }  // namespace autofill_assistant

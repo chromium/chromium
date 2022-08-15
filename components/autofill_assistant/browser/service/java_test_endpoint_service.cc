@@ -130,4 +130,11 @@ void JavaTestEndpointService::GetUserData(
   service_impl_->GetUserData(options, run_id, user_data, std::move(callback));
 }
 
+void JavaTestEndpointService::ReportProgress(
+    const std::string& token,
+    const std::string& payload,
+    ServiceRequestSender::ResponseCallback callback) {
+  service_impl_->ReportProgress(token, payload, std::move(callback));
+}
+
 }  // namespace autofill_assistant

@@ -105,4 +105,17 @@ void JavaService::GetUserData(const CollectUserDataOptions& options,
                           ServiceRequestSender::ResponseInfo{});
 }
 
+void JavaService::ReportProgress(
+    const std::string& token,
+    const std::string& payload,
+    ServiceRequestSender::ResponseCallback callback) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  auto jresponse = Java_AutofillAssistantTestService_reportProgressNative(
+      env, java_service_);
+  std::string response;
+  base::android::JavaByteArrayToString(env, jresponse, &response);
+  std::move(callback).Run(net::HTTP_OK, response,
+                          ServiceRequestSender::ResponseInfo{});
+}
+
 }  // namespace autofill_assistant

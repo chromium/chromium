@@ -3600,3 +3600,16 @@ message ExternalActionProto {
     optional external.ResultInfo result_info = 1;
   }
 }
+
+// Fire-and-forget RPC request to report script progress.
+message ReportProgressRequestProto {
+  // Token sent for the current flow by the initial call to GetActions.
+  optional bytes token = 1;
+  // Data to be logged; generated at script compile time.
+  optional bytes payload = 2;
+}
+
+message ReportProgressProto {
+  // Data to be logged; generated at script compile time.
+  optional string payload = 1;
+}

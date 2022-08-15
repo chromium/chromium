@@ -868,6 +868,20 @@ std::string ProtocolUtils::CreateGetTriggerScriptsRequest(
 }
 
 // static
+std::string ProtocolUtils::CreateReportProgressRequest(
+    const std::string& token,
+    const std::string& payload) {
+  ReportProgressRequestProto request_proto;
+  *request_proto.mutable_token() = token;
+  *request_proto.mutable_payload() = payload;
+
+  std::string serialized_request_proto;
+  bool success = request_proto.SerializeToString(&serialized_request_proto);
+  DCHECK(success);
+  return serialized_request_proto;
+}
+
+// static
 bool ProtocolUtils::ParseTriggerScripts(
     const std::string& response,
     std::vector<std::unique_ptr<TriggerScript>>* trigger_scripts,

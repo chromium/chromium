@@ -693,4 +693,13 @@ TEST_F(ProtocolUtilsTest, ComputeNetworkStats) {
             expected_stats);
 }
 
+TEST_F(ProtocolUtilsTest, CreateReportProgressRequest) {
+  ReportProgressRequestProto request;
+  EXPECT_TRUE(request.ParseFromString(
+      ProtocolUtils::CreateReportProgressRequest("token", "payload")));
+
+  EXPECT_EQ("token", request.token());
+  EXPECT_EQ("payload", request.payload());
+}
+
 }  // namespace autofill_assistant

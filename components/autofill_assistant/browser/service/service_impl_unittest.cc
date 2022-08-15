@@ -264,5 +264,21 @@ TEST_F(ServiceImplTest, UpdateJsFlowLibraryLoaded) {
   service_->UpdateJsFlowLibraryLoaded(true);
 }
 
+TEST_F(ServiceImplTest, ReportProgress) {
+  const std::string token = "token";
+  const std::string payload = "payload";
+
+  EXPECT_CALL(
+      *mock_request_sender_,
+      OnSendRequest(GURL(kActionServerUrl),
+                    ProtocolUtils::CreateReportProgressRequest(token, payload),
+                    _, RpcType::REPORT_PROGRESS))
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, std::string(""),
+                                   ServiceRequestSender::ResponseInfo{}));
+  EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, std::string(""), _));
+
+  service_->ReportProgress("token", "payload", mock_response_callback_.Get());
+}
+
 }  // namespace
 }  // namespace autofill_assistant

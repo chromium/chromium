@@ -218,4 +218,15 @@ void ServiceImpl::UpdateJsFlowLibraryLoaded(const bool js_flow_library_loaded) {
   client_context_->UpdateJsFlowLibraryLoaded(js_flow_library_loaded);
 }
 
+void ServiceImpl::ReportProgress(
+    const std::string& token,
+    const std::string& payload,
+    ServiceRequestSender::ResponseCallback callback) {
+  // TODO(b/242136158): Check for UMA & MSBB here before sending request.
+  request_sender_->SendRequest(
+      script_action_server_url_,
+      ProtocolUtils::CreateReportProgressRequest(token, payload),
+      GetDefaultAuthMode(), std::move(callback), RpcType::REPORT_PROGRESS);
+}
+
 }  // namespace autofill_assistant

@@ -62,7 +62,12 @@ class Service {
 
   virtual void UpdateAnnotateDomModelContext(int64_t model_version) {}
 
-  virtual void UpdateJsFlowLibraryLoaded(bool js_flow_library_loaded){};
+  virtual void UpdateJsFlowLibraryLoaded(bool js_flow_library_loaded) {}
+
+  virtual void ReportProgress(
+      const std::string& token,
+      const std::string& payload,
+      ServiceRequestSender::ResponseCallback callback) = 0;
 
  protected:
   Service() = default;
