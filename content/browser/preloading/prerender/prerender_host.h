@@ -92,7 +92,9 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
     // kEmbedderTriggeredAndRedirected = 32,
     kEmbedderTriggeredAndSameOriginRedirected = 33,
     kEmbedderTriggeredAndCrossOriginRedirected = 34,
-    kEmbedderTriggeredAndDestroyed = 35,
+    // Deprecated. This has the same meaning as kTriggerDestroyed because the
+    // metric's name includes trigger type.
+    // kEmbedderTriggeredAndDestroyed = 35,
     kMemoryLimitExceeded = 36,
     kFailToGetMemoryUsage = 37,
     kDataSaverEnabled = 38,

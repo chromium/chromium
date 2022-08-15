@@ -16,8 +16,7 @@ PrerenderHandleImpl::PrerenderHandleImpl(
       frame_tree_node_id_(frame_tree_node_id),
       prerendering_url_(prerendering_url) {
   DCHECK(!prerendering_url_.is_empty());
-  // PrerenderHandleImpl is now designed only for embedder triggers (e.g.,
-  // recording kEmbedderTriggeredAndDestroyed on the destructor). If you use
+  // PrerenderHandleImpl is now designed only for embedder triggers. If you use
   // this handle for other triggers, please make sure to update the logging etc.
   auto* prerender_host =
       prerender_host_registry_->FindNonReservedHostById(frame_tree_node_id);
@@ -28,8 +27,7 @@ PrerenderHandleImpl::PrerenderHandleImpl(
 PrerenderHandleImpl::~PrerenderHandleImpl() {
   if (prerender_host_registry_) {
     prerender_host_registry_->CancelHost(
-        frame_tree_node_id_,
-        PrerenderHost::FinalStatus::kEmbedderTriggeredAndDestroyed);
+        frame_tree_node_id_, PrerenderHost::FinalStatus::kTriggerDestroyed);
   }
 }
 

@@ -1421,8 +1421,6 @@ Page::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
     case PrerenderHost::FinalStatus::kEmbedderTriggeredAndCrossOriginRedirected:
       return Page::PrerenderFinalStatusEnum::
           EmbedderTriggeredAndCrossOriginRedirected;
-    case PrerenderHost::FinalStatus::kEmbedderTriggeredAndDestroyed:
-      return Page::PrerenderFinalStatusEnum::EmbedderTriggeredAndDestroyed;
     case PrerenderHost::FinalStatus::kEmbedderTriggeredAndSameOriginRedirected:
       return Page::PrerenderFinalStatusEnum::
           EmbedderTriggeredAndSameOriginRedirected;

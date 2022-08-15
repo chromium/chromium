@@ -644,9 +644,8 @@ void PrerenderHost::SetFailureReason(FinalStatus status) {
     // explicitly do not propagate failure reasons if the prerender was actually
     // successful (kActivated), or if prerender was successfully prepared but
     // then destroyed because it wasn't needed for a subsequent navigation
-    // (kTriggerDestroyed, kEmbedderTriggeredAndDestroyed).
+    // (kTriggerDestroyed).
     case FinalStatus::kActivated:
-    case FinalStatus::kEmbedderTriggeredAndDestroyed:
     case FinalStatus::kTriggerDestroyed:
       return;
     case FinalStatus::kDestroyed:
