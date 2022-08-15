@@ -86,7 +86,8 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
     private final PropertyModel mToolbarModel;
     private final RoundedIconGenerator mIconGenerator;
     private final LargeIconBridge mLargeIconBridge;
-    private final int mFaviconSize;
+    private final int mMinFaviconSize;
+    private final int mDisplayedFaviconSize;
     private Promise<HistoryClustersResult> mPromise;
     private final HistoryClustersDelegate mDelegate;
     private final CallbackController mCallbackController = new CallbackController();
@@ -135,7 +136,8 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
         mResources = resources;
         mToolbarModel = toolbarModel;
         mDelegate = historyClustersDelegate;
-        mFaviconSize = mResources.getDimensionPixelSize(R.dimen.default_favicon_min_size);
+        mMinFaviconSize = mResources.getDimensionPixelSize(R.dimen.default_favicon_min_size);
+        mDisplayedFaviconSize = mResources.getDimensionPixelSize(R.dimen.default_favicon_size);
         mIconGenerator = FaviconUtils.createCircularIconGenerator(mContext);
         mClock = clock;
         mTemplateUrlService = templateUrlService;
@@ -432,12 +434,12 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
                                         (v) -> deleteVisits(Arrays.asList(visit)))
                                 .build();
                 if (mLargeIconBridge != null) {
-                    mLargeIconBridge.getLargeIconForUrl(visit.getNormalizedUrl(), mFaviconSize,
+                    mLargeIconBridge.getLargeIconForUrl(visit.getNormalizedUrl(), mMinFaviconSize,
                             (Bitmap icon, int fallbackColor, boolean isFallbackColorDefault,
                                     int iconType) -> {
                                 Drawable drawable = FaviconUtils.getIconDrawableWithoutFilter(icon,
                                         visit.getNormalizedUrl(), fallbackColor, mIconGenerator,
-                                        mResources, mFaviconSize);
+                                        mResources, mDisplayedFaviconSize);
                                 visitModel.set(
                                         HistoryClustersItemProperties.ICON_DRAWABLE, drawable);
                             });
