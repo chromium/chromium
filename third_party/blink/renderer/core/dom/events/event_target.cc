@@ -761,8 +761,9 @@ bool EventTarget::dispatchEventForBindings(Event* event,
 
 DispatchEventResult EventTarget::DispatchEvent(Event& event) {
   // https://linear.app/replay/issue/RUN-466
-  recordreplay::Assert("EventTarget::DispatchEvent %lu",
-                       recordreplay::PointerId(this));
+  recordreplay::Assert("EventTarget::DispatchEvent %lu %s",
+                       recordreplay::PointerId(this),
+                       event.type().GetString().Ascii().c_str());
 
   event.SetTrusted(true);
   return DispatchEventInternal(event);
