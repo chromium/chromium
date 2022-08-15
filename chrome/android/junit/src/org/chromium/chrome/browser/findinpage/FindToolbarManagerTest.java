@@ -46,7 +46,7 @@ public class FindToolbarManagerTest {
         Mockito.doReturn(mFindToolbar).when(mViewStub).inflate();
 
         mFindToolbarManager = new FindToolbarManager(
-                mViewStub, mTabModelSelector, Mockito.mock(WindowAndroid.class), null);
+                mViewStub, mTabModelSelector, Mockito.mock(WindowAndroid.class), null, null);
     }
 
     @Test

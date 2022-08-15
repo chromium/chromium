@@ -9,7 +9,9 @@ import android.view.View;
 import android.view.ViewStub;
 
 import org.chromium.base.ObserverList;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -22,6 +24,7 @@ public class FindToolbarManager {
     private final WindowAndroid mWindowAndroid;
     private final ActionMode.Callback mCallback;
     private final ObserverList<FindToolbarObserver> mObservers;
+    private final BackPressManager mBackPressManager;
 
     /**
      * Creates an instance of a {@link FindToolbarManager}.
@@ -30,13 +33,16 @@ public class FindToolbarManager {
      * @param windowAndroid The {@link WindowAndroid} for the containing activity.
      * @param callback The ActionMode.Callback that will be used when selection occurs on the
      *         {@link FindToolbar}.
+     * @param backPressManager The {@link BackPressManager} for intercepting back press.
      */
     public FindToolbarManager(ViewStub findToolbarStub, TabModelSelector tabModelSelector,
-            WindowAndroid windowAndroid, ActionMode.Callback callback) {
+            WindowAndroid windowAndroid, ActionMode.Callback callback,
+            BackPressManager backPressManager) {
         mFindToolbarStub = findToolbarStub;
         mTabModelSelector = tabModelSelector;
         mWindowAndroid = windowAndroid;
         mCallback = callback;
+        mBackPressManager = backPressManager;
         mObservers = new ObserverList<FindToolbarObserver>();
     }
 
@@ -91,7 +97,12 @@ public class FindToolbarManager {
                 }
             });
         }
-
+        if (mBackPressManager != null && BackPressManager.isEnabled()) {
+            if (mBackPressManager.has(BackPressHandler.Type.FIND_TOOLBAR)) {
+                mBackPressManager.removeHandler(BackPressHandler.Type.FIND_TOOLBAR);
+            }
+            mBackPressManager.addHandler(mFindToolbar, BackPressHandler.Type.FIND_TOOLBAR);
+        }
         mFindToolbar.activate();
     }
 
