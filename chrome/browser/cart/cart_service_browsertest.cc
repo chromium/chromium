@@ -177,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(CartServiceBrowserTest, TestNotShowSkippedMerchants) {
 
 // TODO(crbug.com/1246293): Flaky on Linux, ChromeOS, and Mac.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
-#define MAYBE_TestNavigationUKMCollection DISALBED_TestNavigationUKMCollection
+#define MAYBE_TestNavigationUKMCollection DISABLED_TestNavigationUKMCollection
 #else
 #define MAYBE_TestNavigationUKMCollection TestNavigationUKMCollection
 #endif
