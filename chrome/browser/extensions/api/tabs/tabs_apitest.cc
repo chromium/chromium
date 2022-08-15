@@ -482,7 +482,8 @@ class ExtensionApiTabPrerenderingTest : public ExtensionApiTabTest {
   content::test::PrerenderTestHelper prerender_helper_;
 };
 
-IN_PROC_BROWSER_TEST_F(ExtensionApiTabPrerenderingTest, Prerendering) {
+// TODO(crbug.com/1352966): Flaky on multiple platforms.
+IN_PROC_BROWSER_TEST_F(ExtensionApiTabPrerenderingTest, DISABLED_Prerendering) {
   ASSERT_TRUE(RunExtensionTest("tabs/prerendering")) << message_;
 }
 
