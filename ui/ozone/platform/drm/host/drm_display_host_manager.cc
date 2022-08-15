@@ -33,6 +33,8 @@ namespace ui {
 
 namespace {
 
+constexpr int kDriverReadySleepMs = 100;
+
 typedef base::OnceCallback<void(const base::FilePath&,
                                 const base::FilePath&,
                                 std::unique_ptr<DrmDeviceHandle>)>
@@ -103,14 +105,16 @@ struct DisplayCard {
   absl::optional<std::string> driver;
 };
 
-base::FilePath GetPrimaryDisplayCardPath() {
-  struct drm_mode_card_res res;
+std::vector<DisplayCard> GetValidDisplayCards() {
   std::vector<DisplayCard> cards;
-  for (int i = 0; /* end on first card# that does not exist */; i++) {
-    std::string card_path = base::StringPrintf(kDefaultGraphicsCardPattern, i);
+
+  for (int card_number = 0; /* end on first card# that does not exist */;
+       card_number++) {
+    std::string card_path =
+        base::StringPrintf(kDefaultGraphicsCardPattern, card_number);
 
     if (access(card_path.c_str(), F_OK) != 0) {
-      if (i == 0) /* card paths may start with 0 or 1 */
+      if (card_number == 0) /* card paths may start with 0 or 1 */
         continue;
       else
         break;
@@ -122,27 +126,44 @@ base::FilePath GetPrimaryDisplayCardPath() {
       continue;
     }
 
+    struct drm_mode_card_res res;
     memset(&res, 0, sizeof(struct drm_mode_card_res));
     int ret = drmIoctl(fd.get(), DRM_IOCTL_MODE_GETRESOURCES, &res);
     VPLOG_IF(1, ret) << "Failed to get DRM resources for '" << card_path << "'";
 
-    if (ret == 0 && res.count_crtcs > 0)
+    if (ret == 0 && res.count_crtcs > 0) {
       cards.push_back(
           {base::FilePath(card_path), GetDrmDriverNameFromFd(fd.get())});
-  }
-
-  // Find the card with the most preferred driver.
-  const auto preferred_drivers = GetPreferredDrmDrivers();
-  for (const auto* preferred_driver : preferred_drivers) {
-    for (const auto& card : cards) {
-      if (card.driver == preferred_driver)
-        return card.path;
     }
   }
 
-  // Fall back to the first usable card.
-  if (!cards.empty())
-    return cards[0].path;
+  return cards;
+}
+
+base::FilePath GetPrimaryDisplayCardPath() {
+  // The kernel might not have the DRM driver ready yet. This can happen when
+  // the DRM driver binding has been deferred, waiting on dependencies to be
+  // ready. Instead of failing if the driver isn't ready, retry until it's
+  // there before crashing.
+  for (int i = 0; i < 10; ++i) {
+    std::vector<DisplayCard> cards = GetValidDisplayCards();
+
+    // Find the card with the most preferred driver.
+    const auto preferred_drivers = GetPreferredDrmDrivers();
+    for (const auto* preferred_driver : preferred_drivers) {
+      for (const auto& card : cards) {
+        if (card.driver == preferred_driver)
+          return card.path;
+      }
+    }
+
+    // Fall back to the first usable card.
+    if (!cards.empty())
+      return cards[0].path;
+
+    // If no card is ready, sleep and try again.
+    usleep(kDriverReadySleepMs * 1000);
+  }
 
   LOG(FATAL) << "Failed to open primary graphics device.";
   return base::FilePath();  // Not reached.
