@@ -31,8 +31,8 @@
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
-#include "components/sync/test/engine/mock_model_type_worker.h"
-#include "components/sync/test/model/fake_model_type_sync_bridge.h"
+#include "components/sync/test/fake_model_type_sync_bridge.h"
+#include "components/sync/test/mock_model_type_worker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using sync_pb::EntityMetadata;

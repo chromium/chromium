@@ -4,7 +4,7 @@
 
 #include "chrome/browser/sync/test/integration/device_info_helper.h"
 #include "components/sync/protocol/sync_entity.pb.h"
-#include "components/sync/test/fake_server/fake_server.h"
+#include "components/sync/test/fake_server.h"
 
 ServerDeviceInfoMatchChecker::ServerDeviceInfoMatchChecker(
     const Matcher& matcher)

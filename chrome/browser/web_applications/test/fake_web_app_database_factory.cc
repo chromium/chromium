@@ -12,7 +12,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_store.h"
-#include "components/sync/test/model/model_type_store_test_util.h"
+#include "components/sync/test/model_type_store_test_util.h"
 
 namespace web_app {
 

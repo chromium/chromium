@@ -50,10 +50,10 @@
 #include "components/sync/protocol/preference_specifics.pb.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
-#include "components/sync/test/engine/mock_connection_manager.h"
-#include "components/sync/test/engine/mock_model_type_processor.h"
-#include "components/sync/test/engine/mock_nudge_handler.h"
 #include "components/sync/test/fake_sync_encryption_handler.h"
+#include "components/sync/test/mock_connection_manager.h"
+#include "components/sync/test/mock_model_type_processor.h"
+#include "components/sync/test/mock_nudge_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

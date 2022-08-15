@@ -9,7 +9,7 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/invalidations/fcm_registration_token_observer.h"
 #include "components/sync/protocol/sync_invalidations_payload.pb.h"
-#include "components/sync/test/fake_server/fake_server.h"
+#include "components/sync/test/fake_server.h"
 
 namespace syncer {
 class FCMHandler;

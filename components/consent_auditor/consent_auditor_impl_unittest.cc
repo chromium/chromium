@@ -19,7 +19,7 @@
 #include "components/consent_auditor/pref_names.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync/protocol/user_consent_specifics.pb.h"
-#include "components/sync/test/model/fake_model_type_controller_delegate.h"
+#include "components/sync/test/fake_model_type_controller_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

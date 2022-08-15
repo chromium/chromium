@@ -20,7 +20,7 @@
 #include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/history_specifics.pb.h"
-#include "components/sync/test/model/forwarding_model_type_change_processor.h"
+#include "components/sync/test/forwarding_model_type_change_processor.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "testing/gmock/include/gmock/gmock.h"

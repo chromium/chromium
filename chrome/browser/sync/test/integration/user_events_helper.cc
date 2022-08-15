@@ -6,7 +6,7 @@
 
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
-#include "components/sync/test/fake_server/fake_server.h"
+#include "components/sync/test/fake_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using fake_server::FakeServer;

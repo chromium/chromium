@@ -10,7 +10,7 @@
 #include "base/callback.h"
 #include "base/callback_list.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "components/sync/test/model/mock_model_type_change_processor.h"
+#include "components/sync/test/mock_model_type_change_processor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 class KeyedService;

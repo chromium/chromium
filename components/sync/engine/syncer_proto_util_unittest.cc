@@ -15,7 +15,7 @@
 #include "components/sync/protocol/password_specifics.pb.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
-#include "components/sync/test/engine/mock_connection_manager.h"
+#include "components/sync/test/mock_connection_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;

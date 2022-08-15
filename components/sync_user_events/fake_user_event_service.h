@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "components/sync/protocol/user_event_specifics.pb.h"
-#include "components/sync/test/model/fake_model_type_controller_delegate.h"
+#include "components/sync/test/fake_model_type_controller_delegate.h"
 #include "components/sync_user_events/user_event_service.h"
 
 namespace syncer {

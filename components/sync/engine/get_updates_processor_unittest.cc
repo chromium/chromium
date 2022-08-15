@@ -21,8 +21,8 @@
 #include "components/sync/engine/get_updates_delegate.h"
 #include "components/sync/engine/update_handler.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
-#include "components/sync/test/engine/mock_update_handler.h"
 #include "components/sync/test/mock_invalidation.h"
+#include "components/sync/test/mock_update_handler.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace syncer {

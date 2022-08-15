@@ -41,8 +41,8 @@
 #include "components/app_constants/constants.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/sync/model/string_ordinal.h"
-#include "components/sync/test/model/fake_sync_change_processor.h"
-#include "components/sync/test/model/sync_error_factory_mock.h"
+#include "components/sync/test/fake_sync_change_processor.h"
+#include "components/sync/test/sync_error_factory_mock.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_system.h"
 

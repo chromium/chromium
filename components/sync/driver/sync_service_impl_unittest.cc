@@ -45,7 +45,7 @@
 #include "components/sync/driver/sync_service_utils.h"
 #include "components/sync/driver/sync_token_status.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
-#include "components/sync/test/engine/fake_sync_engine.h"
+#include "components/sync/test/fake_sync_engine.h"
 #include "components/version_info/version_info_values.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_METRICS_TESTING_SYNC_METRICS_TEST_UTILS_H_
 
 #include "base/memory/weak_ptr.h"
-#include "components/sync/test/fake_server/fake_server.h"
+#include "components/sync/test/fake_server.h"
 
 // Helpers to support sync in metrics browser tests.
 

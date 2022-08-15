@@ -13,7 +13,7 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/sync/driver/sync_service.h"
-#include "components/sync/test/model/fake_model_type_controller_delegate.h"
+#import "components/sync/test/fake_model_type_controller_delegate.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/sync_user_events/global_id_mapper.h"

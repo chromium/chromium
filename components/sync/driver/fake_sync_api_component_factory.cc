@@ -6,7 +6,7 @@
 
 #include "base/test/bind.h"
 #include "components/sync/driver/data_type_manager_impl.h"
-#include "components/sync/test/engine/fake_sync_engine.h"
+#include "components/sync/test/fake_sync_engine.h"
 
 namespace syncer {
 

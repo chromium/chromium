@@ -24,7 +24,7 @@
 #include "components/sync/protocol/sharing_message_specifics.pb.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/protocol/sync_entity.pb.h"
-#include "components/sync/test/engine/fake_cryptographer.h"
+#include "components/sync/test/fake_cryptographer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace syncer {

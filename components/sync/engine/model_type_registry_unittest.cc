@@ -13,9 +13,9 @@
 #include "components/sync/engine/cancelation_signal.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/protocol/model_type_state.pb.h"
-#include "components/sync/test/engine/fake_model_type_processor.h"
-#include "components/sync/test/engine/mock_nudge_handler.h"
+#include "components/sync/test/fake_model_type_processor.h"
 #include "components/sync/test/fake_sync_encryption_handler.h"
+#include "components/sync/test/mock_nudge_handler.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace syncer {

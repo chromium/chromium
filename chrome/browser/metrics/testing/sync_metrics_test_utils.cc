@@ -10,7 +10,7 @@
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/sync/test/fake_server/fake_server_network_resources.h"
+#include "components/sync/test/fake_server_network_resources.h"
 
 namespace metrics {
 namespace test {

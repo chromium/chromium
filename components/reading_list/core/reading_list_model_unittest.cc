@@ -12,7 +12,7 @@
 #include "components/reading_list/core/reading_list_store_delegate.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_error.h"
-#include "components/sync/test/model/mock_model_type_change_processor.h"
+#include "components/sync/test/mock_model_type_change_processor.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {

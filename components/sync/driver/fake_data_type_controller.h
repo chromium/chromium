@@ -9,7 +9,7 @@
 
 #include "components/sync/base/sync_mode.h"
 #include "components/sync/driver/model_type_controller.h"
-#include "components/sync/test/model/fake_model_type_controller_delegate.h"
+#include "components/sync/test/fake_model_type_controller_delegate.h"
 
 namespace syncer {
 

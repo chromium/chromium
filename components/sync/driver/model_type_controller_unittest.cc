@@ -23,7 +23,7 @@
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/forwarding_model_type_controller_delegate.h"
 #include "components/sync/model/type_entities_count.h"
-#include "components/sync/test/engine/fake_model_type_processor.h"
+#include "components/sync/test/fake_model_type_processor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_SYNC_TEST_INTEGRATION_FAKE_SERVER_INVALIDATION_SENDER_H_
 
 #include "components/sync/base/model_type.h"
-#include "components/sync/test/fake_server/fake_server.h"
+#include "components/sync/test/fake_server.h"
 
 namespace invalidation {
 class FCMNetworkHandler;

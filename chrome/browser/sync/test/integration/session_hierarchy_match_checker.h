@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_SYNC_TEST_INTEGRATION_SESSION_HIERARCHY_MATCH_CHECKER_H_
 
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
-#include "components/sync/test/fake_server/fake_server_verifier.h"
-#include "components/sync/test/fake_server/sessions_hierarchy.h"
+#include "components/sync/test/fake_server_verifier.h"
+#include "components/sync/test/sessions_hierarchy.h"
 
 // Checker to block until the FakeServer records a SessionsHierarchy identical
 // to the SessionsHierarchy specified in the constructor.

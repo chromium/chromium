@@ -11,8 +11,8 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/driver/test_sync_service.h"
 #include "components/sync/protocol/user_event_specifics.pb.h"
-#include "components/sync/test/model/mock_model_type_change_processor.h"
-#include "components/sync/test/model/model_type_store_test_util.h"
+#include "components/sync/test/mock_model_type_change_processor.h"
+#include "components/sync/test/model_type_store_test_util.h"
 #include "components/sync_user_events/user_event_sync_bridge.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

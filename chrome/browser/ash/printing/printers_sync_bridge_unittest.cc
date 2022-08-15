@@ -10,7 +10,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/printing/printers_sync_bridge.h"
-#include "components/sync/test/model/model_type_store_test_util.h"
+#include "components/sync/test/model_type_store_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
