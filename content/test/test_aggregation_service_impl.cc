@@ -55,6 +55,7 @@ mojom::AggregationServiceMode ConvertToAggregationMode(
 
 void HandleAggregatableReportCallback(
     base::OnceCallback<void(base::Value::Dict)> callback,
+    AggregatableReportRequest,
     absl::optional<AggregatableReport> report,
     AggregatableReportAssembler::AssemblyStatus status) {
   if (!report.has_value()) {

@@ -48,12 +48,12 @@ using AssemblyStatus = AggregatableReportAssembler::AssemblyStatus;
 constexpr char kReportAssemblerStatusHistogramName[] =
     "PrivacySandbox.AggregationService.ReportAssembler.Status";
 
-auto MoveRequestAndReturnReport(absl::optional<AggregatableReportRequest>* out,
-                                AggregatableReport report) {
+auto CloneRequestAndReturnReport(absl::optional<AggregatableReportRequest>* out,
+                                 AggregatableReport report) {
   return [out, report = std::move(report)](
-             AggregatableReportRequest report_request,
+             const AggregatableReportRequest& report_request,
              std::vector<PublicKey> public_keys) {
-    *out = std::move(report_request);
+    *out = aggregation_service::CloneReportRequest(report_request);
     return std::move(report);
   };
 }
@@ -74,7 +74,7 @@ class MockAggregatableReportProvider : public AggregatableReport::Provider {
  public:
   MOCK_METHOD(absl::optional<AggregatableReport>,
               CreateFromRequestAndPublicKeys,
-              (AggregatableReportRequest, std::vector<PublicKey>),
+              (const AggregatableReportRequest&, std::vector<PublicKey>),
               (const, override));
 };
 
@@ -125,7 +125,7 @@ TEST_F(AggregatableReportAssemblerTest, BothKeyFetchesFail_ErrorReturned) {
       .WillOnce(base::test::RunOnceCallback<1>(
           absl::nullopt, PublicKeyFetchStatus::kPublicKeyFetchFailed));
   EXPECT_CALL(callback(),
-              Run(Eq(absl::nullopt), AssemblyStatus::kPublicKeyFetchFailed));
+              Run(_, Eq(absl::nullopt), AssemblyStatus::kPublicKeyFetchFailed));
 
   EXPECT_CALL(*report_provider(), CreateFromRequestAndPublicKeys(_, _))
       .Times(0);
@@ -152,7 +152,7 @@ TEST_F(AggregatableReportAssemblerTest, FirstKeyFetchFails_ErrorReturned) {
           aggregation_service::GenerateKey().public_key,
           PublicKeyFetchStatus::kOk));
   EXPECT_CALL(callback(),
-              Run(Eq(absl::nullopt), AssemblyStatus::kPublicKeyFetchFailed));
+              Run(_, Eq(absl::nullopt), AssemblyStatus::kPublicKeyFetchFailed));
 
   EXPECT_CALL(*report_provider(), CreateFromRequestAndPublicKeys(_, _))
       .Times(0);
@@ -179,7 +179,7 @@ TEST_F(AggregatableReportAssemblerTest, SecondKeyFetchFails_ErrorReturned) {
       .WillOnce(base::test::RunOnceCallback<1>(
           absl::nullopt, PublicKeyFetchStatus::kPublicKeyFetchFailed));
   EXPECT_CALL(callback(),
-              Run(Eq(absl::nullopt), AssemblyStatus::kPublicKeyFetchFailed));
+              Run(_, Eq(absl::nullopt), AssemblyStatus::kPublicKeyFetchFailed));
 
   EXPECT_CALL(*report_provider(), CreateFromRequestAndPublicKeys(_, _))
       .Times(0);
@@ -205,7 +205,7 @@ TEST_F(AggregatableReportAssemblerTest,
 
   absl::optional<AggregatableReport> report =
       AggregatableReport::Provider().CreateFromRequestAndPublicKeys(
-          aggregation_service::CloneReportRequest(request), public_keys);
+          request, public_keys);
   ASSERT_TRUE(report.has_value());
 
   EXPECT_CALL(*fetcher(), GetPublicKey(processing_urls[0], _))
@@ -214,13 +214,13 @@ TEST_F(AggregatableReportAssemblerTest,
   EXPECT_CALL(*fetcher(), GetPublicKey(processing_urls[1], _))
       .WillOnce(base::test::RunOnceCallback<1>(public_keys[1],
                                                PublicKeyFetchStatus::kOk));
-  EXPECT_CALL(callback(), Run(report, AssemblyStatus::kOk));
+  EXPECT_CALL(callback(), Run(_, report, AssemblyStatus::kOk));
 
   absl::optional<AggregatableReportRequest> actual_request;
   EXPECT_CALL(*report_provider(),
               CreateFromRequestAndPublicKeys(_, public_keys))
-      .WillOnce(MoveRequestAndReturnReport(&actual_request,
-                                           std::move(report.value())));
+      .WillOnce(CloneRequestAndReturnReport(&actual_request,
+                                            std::move(report.value())));
 
   assembler()->AssembleReport(aggregation_service::CloneReportRequest(request),
                               callback().Get());
@@ -244,19 +244,19 @@ TEST_F(AggregatableReportAssemblerTest,
 
   absl::optional<AggregatableReport> report =
       AggregatableReport::Provider().CreateFromRequestAndPublicKeys(
-          aggregation_service::CloneReportRequest(request), {public_key});
+          request, {public_key});
   ASSERT_TRUE(report.has_value());
 
   EXPECT_CALL(*fetcher(), GetPublicKey)
       .WillOnce(base::test::RunOnceCallback<1>(public_key,
                                                PublicKeyFetchStatus::kOk));
-  EXPECT_CALL(callback(), Run(report, AssemblyStatus::kOk));
+  EXPECT_CALL(callback(), Run(_, report, AssemblyStatus::kOk));
 
   absl::optional<AggregatableReportRequest> actual_request;
   EXPECT_CALL(*report_provider(), CreateFromRequestAndPublicKeys(
                                       _, std::vector<PublicKey>{public_key}))
-      .WillOnce(MoveRequestAndReturnReport(&actual_request,
-                                           std::move(report.value())));
+      .WillOnce(CloneRequestAndReturnReport(&actual_request,
+                                            std::move(report.value())));
 
   assembler()->AssembleReport(aggregation_service::CloneReportRequest(request),
                               callback().Get());
@@ -279,7 +279,7 @@ TEST_F(AggregatableReportAssemblerTest, OnlyKeyFetchFails_ErrorReturned) {
       .WillOnce(base::test::RunOnceCallback<1>(
           absl::nullopt, PublicKeyFetchStatus::kPublicKeyFetchFailed));
   EXPECT_CALL(callback(),
-              Run(Eq(absl::nullopt), AssemblyStatus::kPublicKeyFetchFailed));
+              Run(_, Eq(absl::nullopt), AssemblyStatus::kPublicKeyFetchFailed));
 
   EXPECT_CALL(*report_provider(), CreateFromRequestAndPublicKeys(_, _))
       .Times(0);
@@ -305,7 +305,7 @@ TEST_F(AggregatableReportAssemblerTest,
 
   absl::optional<AggregatableReport> report =
       AggregatableReport::Provider().CreateFromRequestAndPublicKeys(
-          aggregation_service::CloneReportRequest(request), public_keys);
+          request, public_keys);
   ASSERT_TRUE(report.has_value());
 
   std::vector<FetchCallback> pending_callbacks(2);
@@ -313,13 +313,13 @@ TEST_F(AggregatableReportAssemblerTest,
       .WillOnce(MoveArg<1>(&pending_callbacks.front()));
   EXPECT_CALL(*fetcher(), GetPublicKey(processing_urls[1], _))
       .WillOnce(MoveArg<1>(&pending_callbacks.back()));
-  EXPECT_CALL(callback(), Run(report, AssemblyStatus::kOk));
+  EXPECT_CALL(callback(), Run(_, report, AssemblyStatus::kOk));
 
   absl::optional<AggregatableReportRequest> actual_request;
   EXPECT_CALL(*report_provider(),
               CreateFromRequestAndPublicKeys(_, public_keys))
-      .WillOnce(MoveRequestAndReturnReport(&actual_request,
-                                           std::move(report.value())));
+      .WillOnce(CloneRequestAndReturnReport(&actual_request,
+                                            std::move(report.value())));
 
   assembler()->AssembleReport(aggregation_service::CloneReportRequest(request),
                               callback().Get());
@@ -364,7 +364,7 @@ TEST_F(AggregatableReportAssemblerTest,
 
   absl::optional<AggregatableReport> report =
       AggregatableReport::Provider().CreateFromRequestAndPublicKeys(
-          aggregation_service::CloneReportRequest(request), {public_key});
+          request, {public_key});
   ASSERT_TRUE(report.has_value());
 
   std::vector<FetchCallback> pending_callbacks(2);
@@ -372,15 +372,15 @@ TEST_F(AggregatableReportAssemblerTest,
       .WillOnce(MoveArg<1>(&pending_callbacks.front()))
       .WillOnce(MoveArg<1>(&pending_callbacks.back()));
 
-  EXPECT_CALL(callback(), Run(report, AssemblyStatus::kOk)).Times(2);
+  EXPECT_CALL(callback(), Run(_, report, AssemblyStatus::kOk)).Times(2);
 
   absl::optional<AggregatableReportRequest> first_request;
   absl::optional<AggregatableReportRequest> second_request;
   EXPECT_CALL(*report_provider(), CreateFromRequestAndPublicKeys(
                                       _, std::vector<PublicKey>{public_key}))
-      .WillOnce(MoveRequestAndReturnReport(&first_request, report.value()))
-      .WillOnce(MoveRequestAndReturnReport(&second_request,
-                                           std::move(report.value())));
+      .WillOnce(CloneRequestAndReturnReport(&first_request, report.value()))
+      .WillOnce(CloneRequestAndReturnReport(&second_request,
+                                            std::move(report.value())));
 
   assembler()->AssembleReport(aggregation_service::CloneReportRequest(request),
                               callback().Get());
@@ -429,11 +429,11 @@ TEST_F(AggregatableReportAssemblerTest,
           pending_callbacks.push_back(std::move(callback));
         }));
 
-    EXPECT_CALL(callback(), Run(_, _)).Times(0);
+    EXPECT_CALL(callback(), Run).Times(0);
 
     EXPECT_CALL(checkpoint, Call(current_check++));
 
-    EXPECT_CALL(callback(), Run(Eq(absl::nullopt),
+    EXPECT_CALL(callback(), Run(_, Eq(absl::nullopt),
                                 AssemblyStatus::kTooManySimultaneousRequests))
         .Times(1);
 
@@ -444,7 +444,7 @@ TEST_F(AggregatableReportAssemblerTest,
       EXPECT_CALL(checkpoint, Call(current_check++));
       EXPECT_CALL(*report_provider(), CreateFromRequestAndPublicKeys)
           .WillOnce(Return(report));
-      EXPECT_CALL(callback(), Run(report, AssemblyStatus::kOk));
+      EXPECT_CALL(callback(), Run(_, report, AssemblyStatus::kOk));
     }
   }
 

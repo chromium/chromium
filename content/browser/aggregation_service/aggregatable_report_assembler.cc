@@ -126,7 +126,7 @@ void AggregatableReportAssembler::AssembleReport(
   if (pending_requests_.size() >= kMaxSimultaneousRequests) {
     RecordAssemblyStatus(AssemblyStatus::kTooManySimultaneousRequests);
 
-    std::move(callback).Run(absl::nullopt,
+    std::move(callback).Run(std::move(report_request), absl::nullopt,
                             AssemblyStatus::kTooManySimultaneousRequests);
     return;
   }
@@ -182,7 +182,8 @@ void AggregatableReportAssembler::OnAllPublicKeysFetched(
       RecordAssemblyStatus(AssemblyStatus::kPublicKeyFetchFailed);
 
       std::move(pending_request.callback)
-          .Run(absl::nullopt, AssemblyStatus::kPublicKeyFetchFailed);
+          .Run(std::move(pending_request.report_request), absl::nullopt,
+               AssemblyStatus::kPublicKeyFetchFailed);
       pending_requests_.erase(report_id);
       return;
     }
@@ -192,13 +193,14 @@ void AggregatableReportAssembler::OnAllPublicKeysFetched(
 
   absl::optional<AggregatableReport> assembled_report =
       report_provider_->CreateFromRequestAndPublicKeys(
-          std::move(pending_request.report_request), std::move(public_keys));
+          pending_request.report_request, std::move(public_keys));
   AssemblyStatus assembly_status =
       assembled_report ? AssemblyStatus::kOk : AssemblyStatus::kAssemblyFailed;
   RecordAssemblyStatus(assembly_status);
 
   std::move(pending_request.callback)
-      .Run(std::move(assembled_report), assembly_status);
+      .Run(std::move(pending_request.report_request),
+           std::move(assembled_report), assembly_status);
 
   pending_requests_.erase(report_id);
 }

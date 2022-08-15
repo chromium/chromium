@@ -378,6 +378,30 @@ MockAggregationService::MockAggregationService() = default;
 
 MockAggregationService::~MockAggregationService() = default;
 
+void MockAggregationService::AddObserver(AggregationServiceObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void MockAggregationService::RemoveObserver(
+    AggregationServiceObserver* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+void MockAggregationService::NotifyRequestStorageModified() {
+  for (auto& observer : observers_) {
+    observer.OnRequestStorageModified();
+  }
+}
+
+void MockAggregationService::NotifyReportHandled(
+    AggregationServiceStorage::RequestAndId request,
+    absl::optional<AggregatableReport> report,
+    base::Time report_handled_time,
+    AggregationServiceObserver::ReportStatus status) {
+  for (auto& observer : observers_)
+    observer.OnReportHandled(request, report, report_handled_time, status);
+}
+
 std::ostream& operator<<(
     std::ostream& out,
     AggregationServicePayloadContents::Operation operation) {

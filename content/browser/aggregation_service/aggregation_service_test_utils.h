@@ -12,9 +12,12 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/observer_list.h"
 #include "base/threading/sequence_bound.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
+#include "content/browser/aggregation_service/aggregation_service_observer.h"
+#include "content/browser/aggregation_service/aggregation_service_storage.h"
 #include "content/browser/aggregation_service/aggregation_service_storage_context.h"
 #include "content/browser/aggregation_service/public_key.h"
 #include "content/common/aggregatable_report.mojom.h"
@@ -165,6 +168,22 @@ class MockAggregationService : public AggregationService {
               (const std::vector<AggregationServiceStorage::RequestId>& ids,
                base::OnceClosure reports_sent_callback),
               (override));
+
+  void AddObserver(AggregationServiceObserver* observer) override;
+
+  void RemoveObserver(AggregationServiceObserver* observer) override;
+
+  void NotifyRequestStorageModified();
+
+  // `report_handled_time` indicates when the report has been handled.
+  void NotifyReportHandled(AggregationServiceStorage::RequestAndId request,
+                           absl::optional<AggregatableReport> report,
+                           base::Time report_handled_time,
+                           AggregationServiceObserver::ReportStatus status);
+
+ private:
+  base::ObserverList<AggregationServiceObserver, /*check_empty=*/true>
+      observers_;
 };
 
 // Only used for logging in tests.

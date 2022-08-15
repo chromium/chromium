@@ -17,18 +17,23 @@
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/weak_ptr.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregatable_report_assembler.h"
 #include "content/browser/aggregation_service/aggregatable_report_scheduler.h"
 #include "content/browser/aggregation_service/aggregatable_report_sender.h"
+#include "content/browser/aggregation_service/aggregation_service_observer.h"
+#include "content/browser/aggregation_service/aggregation_service_storage.h"
 #include "content/browser/aggregation_service/aggregation_service_storage_sql.h"
 #include "content/browser/aggregation_service/public_key.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/storage_partition.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -136,12 +141,21 @@ void AggregationServiceImpl::ClearData(
     base::OnceClosure done) {
   storage_.AsyncCall(&AggregationServiceStorage::ClearDataBetween)
       .WithArgs(delete_begin, delete_end, std::move(filter))
-      .Then(std::move(done));
+      .Then(base::BindOnce(
+          [](base::OnceClosure done,
+             base::WeakPtr<AggregationServiceImpl> aggregation_service) {
+            std::move(done).Run();
+
+            if (aggregation_service)
+              aggregation_service->NotifyRequestStorageModified();
+          },
+          std::move(done), weak_factory_.GetWeakPtr()));
 }
 
 void AggregationServiceImpl::ScheduleReport(
     AggregatableReportRequest report_request) {
   scheduler_->ScheduleRequest(std::move(report_request));
+  NotifyRequestStorageModified();
 }
 
 void AggregationServiceImpl::OnScheduledReportTimeReached(
@@ -154,35 +168,63 @@ void AggregationServiceImpl::OnReportAssemblyComplete(
     base::OnceClosure done,
     AggregationServiceStorage::RequestId request_id,
     GURL reporting_url,
+    AggregatableReportRequest report_request,
     absl::optional<AggregatableReport> report,
     AggregatableReportAssembler::AssemblyStatus status) {
   DCHECK_EQ(report.has_value(),
             status == AggregatableReportAssembler::AssemblyStatus::kOk);
   if (!report.has_value()) {
     std::move(done).Run();
+
     scheduler_->NotifyInProgressRequestFailed(request_id);
+    NotifyReportHandled(
+        AggregationServiceStorage::RequestAndId{
+            .request = std::move(report_request),
+            .id = request_id,
+        },
+        /*report=*/absl::nullopt,
+        AggregationServiceObserver::ReportStatus::kFailedToAssemble);
+    NotifyRequestStorageModified();
     return;
   }
 
-  SendReport(reporting_url, report.value(),
+  base::Value value(report->GetAsJson());
+  SendReport(reporting_url, value,
              /*callback=*/
              base::BindOnce(
                  &AggregationServiceImpl::OnReportSendingComplete,
                  // `base::Unretained` is safe as the sender is owned by `this`.
-                 base::Unretained(this), std::move(done), request_id));
+                 base::Unretained(this), std::move(done),
+                 AggregationServiceStorage::RequestAndId{
+                     .request = std::move(report_request),
+                     .id = request_id,
+                 },
+                 std::move(*report)));
 }
 
 void AggregationServiceImpl::OnReportSendingComplete(
     base::OnceClosure done,
-    AggregationServiceStorage::RequestId request_id,
+    AggregationServiceStorage::RequestAndId request_and_id,
+    AggregatableReport report,
     AggregatableReportSender::RequestStatus status) {
   std::move(done).Run();
 
-  if (status == AggregatableReportSender::RequestStatus::kOk) {
-    scheduler_->NotifyInProgressRequestSucceeded(request_id);
-  } else {
-    scheduler_->NotifyInProgressRequestFailed(request_id);
+  AggregationServiceObserver::ReportStatus observer_status;
+  switch (status) {
+    case AggregatableReportSender::RequestStatus::kOk:
+      observer_status = AggregationServiceObserver::ReportStatus::kSent;
+      scheduler_->NotifyInProgressRequestSucceeded(request_and_id.id);
+      break;
+    case AggregatableReportSender::RequestStatus::kNetworkError:
+    case AggregatableReportSender::RequestStatus::kServerError:
+      observer_status = AggregationServiceObserver::ReportStatus::kFailedToSend;
+      scheduler_->NotifyInProgressRequestFailed(request_and_id.id);
+      break;
   }
+
+  NotifyReportHandled(std::move(request_and_id), std::move(report),
+                      observer_status);
+  NotifyRequestStorageModified();
 }
 
 void AggregationServiceImpl::SetPublicKeysForTesting(
@@ -235,6 +277,32 @@ void AggregationServiceImpl::OnGetRequestsToSendFromWebUI(
   auto barrier = base::BarrierClosure(requests_and_ids.size(),
                                       std::move(reports_sent_callback));
   AssembleAndSendReports(std::move(requests_and_ids), std::move(barrier));
+}
+
+void AggregationServiceImpl::AddObserver(AggregationServiceObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void AggregationServiceImpl::RemoveObserver(
+    AggregationServiceObserver* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+void AggregationServiceImpl::NotifyReportHandled(
+    AggregationServiceStorage::RequestAndId request_and_id,
+    absl::optional<AggregatableReport> report,
+    AggregationServiceObserver::ReportStatus status) {
+  base::Time now = base::Time::Now();
+  for (auto& observer : observers_) {
+    observer.OnReportHandled(request_and_id, report,
+                             /*report_handled_time=*/now, status);
+  }
+}
+
+void AggregationServiceImpl::NotifyRequestStorageModified() {
+  for (auto& observer : observers_) {
+    observer.OnRequestStorageModified();
+  }
 }
 
 }  // namespace content

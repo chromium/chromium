@@ -154,7 +154,7 @@ class CONTENT_EXPORT AggregatableReport {
     // correspond to `report_request.processing_urls`, which should be
     // sorted. Returns `absl::nullopt` if an error occurred during construction.
     virtual absl::optional<AggregatableReport> CreateFromRequestAndPublicKeys(
-        AggregatableReportRequest report_request,
+        const AggregatableReportRequest& report_request,
         std::vector<PublicKey> public_keys) const;
 
     // Sets whether to disable encryption of the payload(s). Should only be used

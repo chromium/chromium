@@ -22,6 +22,7 @@ class Value;
 
 namespace content {
 
+class AggregationServiceObserver;
 class AggregatableReport;
 class AggregatableReportRequest;
 class BrowserContext;
@@ -88,6 +89,10 @@ class AggregationService {
   virtual void SendReportsForWebUI(
       const std::vector<AggregationServiceStorage::RequestId>& ids,
       base::OnceClosure reports_sent_callback) = 0;
+
+  virtual void AddObserver(AggregationServiceObserver* observer) = 0;
+
+  virtual void RemoveObserver(AggregationServiceObserver* observer) = 0;
 };
 
 }  // namespace content

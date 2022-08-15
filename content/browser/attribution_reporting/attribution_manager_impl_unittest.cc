@@ -1163,7 +1163,8 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_NotifiesObservers) {
       .Times(3)
       .WillRepeatedly([](AggregatableReportRequest request,
                          AggregationService::AssemblyCallback callback) {
-        std::move(callback).Run(CreateExampleAggregatableReport(),
+        std::move(callback).Run(std::move(request),
+                                CreateExampleAggregatableReport(),
                                 AggregationService::AssemblyStatus::kOk);
       });
 
@@ -1696,7 +1697,8 @@ TEST_F(AttributionManagerImplTest, DebugReport_SentImmediately) {
       EXPECT_CALL(*aggregation_service_, AssembleReport)
           .WillOnce([](AggregatableReportRequest request,
                        AggregationService::AssemblyCallback callback) {
-            std::move(callback).Run(CreateExampleAggregatableReport(),
+            std::move(callback).Run(std::move(request),
+                                    CreateExampleAggregatableReport(),
                                     AggregationService::AssemblyStatus::kOk);
           });
     } else {
@@ -1790,7 +1792,8 @@ TEST_F(AttributionManagerImplTest,
     EXPECT_CALL(*aggregation_service_, AssembleReport)
         .WillOnce([](AggregatableReportRequest request,
                      AggregationService::AssemblyCallback callback) {
-          std::move(callback).Run(CreateExampleAggregatableReport(),
+          std::move(callback).Run(std::move(request),
+                                  CreateExampleAggregatableReport(),
                                   AggregationService::AssemblyStatus::kOk);
         });
   }
@@ -1849,7 +1852,7 @@ TEST_F(AttributionManagerImplTest,
         .WillOnce([](AggregatableReportRequest request,
                      AggregationService::AssemblyCallback callback) {
           std::move(callback).Run(
-              absl::nullopt,
+              std::move(request), absl::nullopt,
               AggregationService::AssemblyStatus::kAssemblyFailed);
         });
   }

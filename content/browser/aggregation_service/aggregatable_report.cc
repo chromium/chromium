@@ -666,7 +666,7 @@ AggregatableReport::Provider::~Provider() = default;
 
 absl::optional<AggregatableReport>
 AggregatableReport::Provider::CreateFromRequestAndPublicKeys(
-    AggregatableReportRequest report_request,
+    const AggregatableReportRequest& report_request,
     std::vector<PublicKey> public_keys) const {
   const size_t num_processing_urls = public_keys.size();
   DCHECK_EQ(num_processing_urls, report_request.processing_urls().size());

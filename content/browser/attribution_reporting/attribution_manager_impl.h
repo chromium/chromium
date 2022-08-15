@@ -40,6 +40,7 @@ class SpecialStoragePolicy;
 namespace content {
 
 class AggregatableReport;
+class AggregatableReportRequest;
 class AttributionCookieChecker;
 class AttributionDataHostManager;
 class AttributionStorage;
@@ -148,6 +149,7 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
       AttributionReport report,
       bool is_debug_report,
       ReportSentCallback callback,
+      AggregatableReportRequest,
       absl::optional<AggregatableReport> assembled_report,
       AggregationService::AssemblyStatus);
   void MarkReportCompleted(AttributionReport::Id report_id);

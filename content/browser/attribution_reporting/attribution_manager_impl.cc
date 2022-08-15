@@ -872,6 +872,7 @@ void AttributionManagerImpl::OnAggregatableReportAssembled(
     AttributionReport report,
     bool is_debug_report,
     ReportSentCallback callback,
+    AggregatableReportRequest,
     absl::optional<AggregatableReport> assembled_report,
     AggregationService::AssemblyStatus) {
   if (!assembled_report.has_value()) {
