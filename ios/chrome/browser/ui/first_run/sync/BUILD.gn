@@ -80,7 +80,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/consent_auditor:test_support",
     "//components/prefs",
-    "//components/sync/driver:test_support",
+    "//components/sync:test_support",
     "//components/unified_consent",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/browser/browser_state:test_support",

@@ -48,7 +48,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/sync",
-    "//components/sync:test_support_model",
+    "//components/sync:test_support",
     "//testing/gtest",
     "//url",
   ]

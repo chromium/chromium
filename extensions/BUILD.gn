@@ -353,7 +353,7 @@ source_set("chrome_extensions_browsertests_sources") {
     "//components/resources",
     "//components/strings",
     "//components/sync",
-    "//components/sync:test_support_model",
+    "//components/sync:test_support",
     "//components/translate/core/common",
     "//crypto:test_support",
     "//device/bluetooth:mocks",

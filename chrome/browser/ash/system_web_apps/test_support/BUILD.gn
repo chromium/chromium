@@ -41,7 +41,7 @@ source_set("test_support") {
     "//components/services/app_service/public/cpp:app_url_handling",
     "//components/services/app_service/public/cpp:protocol_handling",
     "//components/services/app_service/public/cpp:types",
-    "//components/sync:test_support_model",
+    "//components/sync:test_support",
     "//components/sync_preferences:test_support",
     "//components/webapps/browser",
     "//content/test:test_support",

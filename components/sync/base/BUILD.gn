@@ -89,28 +89,3 @@ static_library("base") {
 
   defines = [ "SYNC_USER_AGENT_PRODUCT=$sync_user_agent_product" ]
 }
-
-# TODO(crbug.com/948661): The other sync targets have their test support targets
-# declared outside of the production code directory. Do the same for this one.
-static_library("test_support") {
-  testonly = true
-  sources = [
-    "../test/mock_invalidation.cc",
-    "../test/mock_invalidation.h",
-    "../test/mock_invalidation_tracker.cc",
-    "../test/mock_invalidation_tracker.h",
-    "../test/trackable_mock_invalidation.cc",
-    "../test/trackable_mock_invalidation.h",
-    "model_type_test_util.cc",
-    "model_type_test_util.h",
-  ]
-
-  public_deps = [
-    "//base",
-    "//components/sync/base",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-}

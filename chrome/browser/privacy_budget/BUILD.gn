@@ -115,7 +115,7 @@ source_set("browser_tests") {
     "//chrome/test:sync_integration_test_support",
     "//chrome/test:test_support",
     "//components/metrics_services_manager",
-    "//components/sync/test/fake_server",
+    "//components/sync:test_support",
     "//components/ukm:test_support",
     "//components/ukm:ukm_test_helper",
     "//components/unified_consent",

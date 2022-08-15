@@ -25,15 +25,3 @@ static_library("invalidations") {
     "//components/sync/base",
   ]
 }
-
-static_library("test_support") {
-  testonly = true
-  sources = [
-    "mock_sync_invalidations_service.cc",
-    "mock_sync_invalidations_service.h",
-  ]
-
-  public_deps = [ "//components/sync/invalidations" ]
-
-  deps = [ "//testing/gmock" ]
-}

@@ -103,7 +103,7 @@ static_library("test_support") {
 
   public_deps = [ ":sync_device_info" ]
 
-  deps = [ "//components/sync:test_support_model" ]
+  deps = [ "//components/sync:test_support" ]
 }
 
 source_set("unit_tests") {
@@ -127,7 +127,6 @@ source_set("unit_tests") {
     "//build:chromeos_buildflags",
     "//components/prefs:test_support",
     "//components/sync:test_support",
-    "//components/sync/invalidations:test_support",
     "//components/version_info:version_string",
     "//testing/gmock",
     "//testing/gtest",

@@ -142,7 +142,7 @@ source_set("unit_tests") {
     "//components/browser_sync",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
-    "//components/sync:test_support_model",
+    "//components/sync:test_support",
     "//components/sync_sessions",
     "//components/sync_user_events",
     "//ios/chrome/browser/browser_state:test_support",

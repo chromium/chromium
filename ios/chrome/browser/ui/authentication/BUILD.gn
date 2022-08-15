@@ -120,7 +120,7 @@ source_set("unit_tests") {
     "//components/prefs",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
-    "//components/sync/driver:test_support",
+    "//components/sync:test_support",
     "//components/sync_preferences",
     "//components/sync_preferences:test_support",
     "//components/variations",

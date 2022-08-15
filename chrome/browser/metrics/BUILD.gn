@@ -17,7 +17,7 @@ source_set("test_support") {
     "//chrome/browser",
     "//chrome/test:sync_integration_test_support",
     "//components/signin/public/identity_manager",
-    "//components/sync/test/fake_server",
+    "//components/sync:test_support",
     "//third_party/metrics_proto",
   ]
 

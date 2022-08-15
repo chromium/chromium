@@ -54,7 +54,7 @@ source_set("unit_tests") {
     "//components/reading_list/core:core",
     "//components/reading_list/features:flags",
     "//components/sync",
-    "//components/sync:test_support_model",
+    "//components/sync:test_support",
     "//skia",
     "//testing/gmock",
     "//testing/gtest",

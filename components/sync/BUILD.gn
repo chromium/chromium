@@ -21,29 +21,40 @@ group("sync") {
   }
 }
 
-group("test_support") {
+static_library("test_support") {
   testonly = true
 
-  public_deps = [
-    ":sync",
-    ":test_support_engine",
-    ":test_support_model",
-    "//components/sync/base:test_support",
-    "//components/sync/driver:test_support",
-  ]
-  if (!is_android) {
-    public_deps += [ "//components/sync/trusted_vault:test_support" ]
-  }
-  if (is_chromeos_lacros) {
-    public_deps += [ "//components/sync/chromeos/lacros:test_support" ]
-  }
-}
-
-static_library("test_support_engine") {
-  testonly = true
   sources = [
+    "base/model_type_test_util.cc",
+    "base/model_type_test_util.h",
+    "driver/data_type_manager_mock.cc",
+    "driver/data_type_manager_mock.h",
+    "driver/fake_data_type_controller.cc",
+    "driver/fake_data_type_controller.h",
+    "driver/fake_sync_api_component_factory.cc",
+    "driver/fake_sync_api_component_factory.h",
+    "driver/fake_sync_service.cc",
+    "driver/fake_sync_service.h",
+    "driver/mock_sync_service.cc",
+    "driver/mock_sync_service.h",
+    "driver/mock_trusted_vault_client.cc",
+    "driver/mock_trusted_vault_client.h",
+    "driver/sync_client_mock.cc",
+    "driver/sync_client_mock.h",
+    "driver/sync_service_impl_bundle.cc",
+    "driver/sync_service_impl_bundle.h",
+    "driver/sync_user_settings_mock.cc",
+    "driver/sync_user_settings_mock.h",
+    "driver/test_sync_service.cc",
+    "driver/test_sync_service.h",
+    "driver/test_sync_user_settings.cc",
+    "driver/test_sync_user_settings.h",
     "engine/cycle/mock_debug_info_getter.cc",
     "engine/cycle/mock_debug_info_getter.h",
+    "invalidations/mock_sync_invalidations_service.cc",
+    "invalidations/mock_sync_invalidations_service.h",
+    "nigori/nigori_test_utils.cc",
+    "nigori/nigori_test_utils.h",
     "test/engine/fake_cryptographer.cc",
     "test/engine/fake_cryptographer.h",
     "test/engine/fake_model_type_connector.cc",
@@ -74,23 +85,28 @@ static_library("test_support_engine") {
     "test/engine/sync_engine_host_stub.h",
     "test/engine/test_engine_components_factory.cc",
     "test/engine/test_engine_components_factory.h",
+    "test/fake_server/bookmark_entity_builder.cc",
+    "test/fake_server/bookmark_entity_builder.h",
+    "test/fake_server/entity_builder_factory.cc",
+    "test/fake_server/entity_builder_factory.h",
+    "test/fake_server/fake_server.cc",
+    "test/fake_server/fake_server.h",
+    "test/fake_server/fake_server_http_post_provider.cc",
+    "test/fake_server/fake_server_http_post_provider.h",
+    "test/fake_server/fake_server_network_resources.cc",
+    "test/fake_server/fake_server_network_resources.h",
+    "test/fake_server/fake_server_nigori_helper.cc",
+    "test/fake_server/fake_server_nigori_helper.h",
+    "test/fake_server/fake_server_verifier.cc",
+    "test/fake_server/fake_server_verifier.h",
+    "test/fake_server/sessions_hierarchy.cc",
+    "test/fake_server/sessions_hierarchy.h",
     "test/fake_sync_encryption_handler.cc",
     "test/fake_sync_encryption_handler.h",
-  ]
-
-  public_deps = [ "//components/sync/base:test_support" ]
-
-  deps = [
-    ":sync",
-    "//services/network:test_support",
-  ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-}
-
-static_library("test_support_model") {
-  testonly = true
-  sources = [
+    "test/mock_invalidation.cc",
+    "test/mock_invalidation.h",
+    "test/mock_invalidation_tracker.cc",
+    "test/mock_invalidation_tracker.h",
     "test/model/fake_model_type_controller_delegate.cc",
     "test/model/fake_model_type_controller_delegate.h",
     "test/model/fake_model_type_sync_bridge.cc",
@@ -112,24 +128,67 @@ static_library("test_support_model") {
     "test/model/test_matchers.h",
     "test/model/test_model_type_store_service.cc",
     "test/model/test_model_type_store_service.h",
+    "test/trackable_mock_invalidation.cc",
+    "test/trackable_mock_invalidation.h",
   ]
 
-  public_deps = [ "//components/sync/base:test_support" ]
-
-  deps = [ ":sync" ]
-}
-
-static_library("test_support_nigori") {
-  testonly = true
-  sources = [
-    "nigori/nigori_test_utils.cc",
-    "nigori/nigori_test_utils.h",
+  public_deps = [
+    ":sync",
+    "//base",
+    "//components/sync/invalidations",
+    "//services/network:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/protobuf:protobuf_lite",
   ]
 
   deps = [
-    ":sync",
+    "//base",
+    "//base/test:test_support",
+    "//build:chromeos_buildflags",
+    "//components/bookmarks/browser",
+    "//components/invalidation/impl:test_support",
+    "//components/pref_registry",
+    "//components/prefs:test_support",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/version_info",
+    "//components/version_info:generate_version_info",
+    "//google_apis",
+    "//net",
+    "//net:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp:cpp",
     "//testing/gtest",
+    "//ui/gfx",
+    "//url",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  if (!is_android) {
+    sources += [
+      "trusted_vault/fake_security_domains_server.cc",
+      "trusted_vault/fake_security_domains_server.h",
+    ]
+  }
+
+  if (is_chromeos_lacros) {
+    sources += [
+      "chromeos/lacros/fake_sync_explicit_passphrase_client_ash.cc",
+      "chromeos/lacros/fake_sync_explicit_passphrase_client_ash.h",
+      "chromeos/lacros/fake_sync_mojo_service.cc",
+      "chromeos/lacros/fake_sync_mojo_service.h",
+      "chromeos/lacros/fake_sync_user_settings_client_ash.cc",
+      "chromeos/lacros/fake_sync_user_settings_client_ash.h",
+    ]
+
+    public_deps += [
+      "//chromeos/crosapi/mojom",
+      "//mojo/public/cpp/bindings",
+      "//testing/gmock",
+    ]
+  }
 }
 
 source_set("unit_tests") {
@@ -243,9 +302,7 @@ source_set("unit_tests") {
 
   deps = [
     ":sync",
-    ":test_support_engine",
-    ":test_support_model",
-    ":test_support_nigori",
+    ":test_support",
     "//base",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
@@ -257,9 +314,6 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//components/signin/public/base:test_support",
     "//components/signin/public/identity_manager:test_support",
-    "//components/sync/base:test_support",
-    "//components/sync/driver:test_support",
-    "//components/sync/invalidations:test_support",
     "//components/variations:test_support",
     "//components/version_info",
     "//components/version_info:generate_version_info",
