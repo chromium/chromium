@@ -4571,28 +4571,24 @@ class ScopedDataSaverTestContentBrowserClient
   raw_ptr<ContentBrowserClient> old_client;
 };
 
-// Tests that the data saver doesn't prevent image load in a prerendered page.
+// Tests that prerender doesn't run when Data Saver mode is enabled.
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DataSaver) {
   const GURL kInitialUrl = GetUrl("/empty.html");
-  const GURL kPrerenderingUrl = GetUrl("/prerender/image.html");
-  const GURL kImageUrl = GetUrl("/blank.jpg");
+  const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender");
 
   // Enable data saver.
   ScopedDataSaverTestContentBrowserClient scoped_content_browser_client;
   shell()->web_contents()->OnWebPreferencesChanged();
 
-  // Navigate to an initial page.
+  test::PrerenderHostRegistryObserver observer(*web_contents_impl());
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-  ASSERT_EQ(shell()->web_contents()->GetLastCommittedURL(), kInitialUrl);
+  AddPrerenderAsync(kPrerenderingUrl);
+  observer.WaitForTrigger(kPrerenderingUrl);
 
-  // Start prerendering `kPrerenderingUrl`.
-  ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
-  AddPrerender(kPrerenderingUrl);
-  EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
-
-  // A request for the image in the prerendered page shouldn't be prevented by
-  // the data saver.
-  EXPECT_EQ(GetRequestCount(kImageUrl), 1);
+  // Prerendering should fail.
+  ExpectFinalStatusForSpeculationRule(
+      PrerenderHost::FinalStatus::kDataSaverEnabled);
+  EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
 }
 
 // Tests that loading=lazy doesn't prevent image load in a prerendered page.

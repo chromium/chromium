@@ -23,6 +23,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "content/public/common/content_client.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -121,6 +122,17 @@ int PrerenderHostRegistry::CreateAndStartHost(
                                      attributes, ukm::kInvalidSourceId);
       if (attempt)
         attempt->SetEligibility(PreloadingEligibility::kLowMemory);
+      return RenderFrameHost::kNoFrameTreeNodeId;
+    }
+
+    // Don't prerender when the Data Saver setting is enabled.
+    if (GetContentClient()->browser()->IsDataSaverEnabled(
+            web_contents.GetBrowserContext())) {
+      RecordPrerenderHostFinalStatus(
+          PrerenderHost::FinalStatus::kDataSaverEnabled, attributes,
+          ukm::kInvalidSourceId);
+      if (attempt)
+        attempt->SetEligibility(PreloadingEligibility::kDataSaverEnabled);
       return RenderFrameHost::kNoFrameTreeNodeId;
     }
 

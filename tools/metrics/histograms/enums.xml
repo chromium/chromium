@@ -78940,6 +78940,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="35" label="kEmbedderTriggeredAndDestroyed"/>
   <int value="36" label="kMemoryLimitExceeded"/>
   <int value="37" label="kFailToGetMemoryUsage"/>
+  <int value="38" label="kDataSaverEnabled"/>
 </enum>
 
 <enum name="PrerenderHoverEvent">

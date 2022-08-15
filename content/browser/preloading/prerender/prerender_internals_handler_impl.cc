@@ -82,6 +82,8 @@ const char* FinalStatusToString(PrerenderHost::FinalStatus final_status) {
       return "MemoryLimitExceeded";
     case PrerenderHost::FinalStatus::kFailToGetMemoryUsage:
       return "FailToGetMemoryUsage";
+    case PrerenderHost::FinalStatus::kDataSaverEnabled:
+      return "DataSaverEnabled";
   }
   NOTREACHED();
   return "";

@@ -107,6 +107,9 @@ enum class PreloadingEligibility {
   // Preloading was ineligible as running JavaScript was disabled for the URL.
   kJavascriptDisabled = 6,
 
+  // Preloading was ineligible because the Data Saver setting was enabled.
+  kDataSaverEnabled = 7,
+
   // TODO(crbug.com/1309934): Add more specific ineligibility reasons subject to
   // each preloading operation
   // This constant is used to define the value from which embedders can add more
