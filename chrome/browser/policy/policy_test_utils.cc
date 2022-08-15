@@ -61,7 +61,6 @@ void PolicyTest::UpdateProviderPolicy(const PolicyMap& policy) {
   SetEnterpriseUsersDefaults(&policy_with_defaults);
 #endif
   provider_.UpdateChromePolicy(policy_with_defaults);
-  DCHECK(base::CurrentThread::Get());
 }
 
 // static

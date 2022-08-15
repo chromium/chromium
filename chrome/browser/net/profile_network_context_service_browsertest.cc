@@ -552,40 +552,35 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceDiskCacheBrowsertest,
   EXPECT_EQ(kCacheSize, network_context_params.http_cache_max_size);
 }
 
-#if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED) || \
-    BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-namespace {
-void UnblockOnProfileCreation(base::RunLoop* run_loop,
-                              Profile* profile,
-                              Profile::CreateStatus status) {
-  if (status == Profile::CREATE_STATUS_INITIALIZED)
-    run_loop->Quit();
-}
-}  // namespace
-#endif
-
 #if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
 class ProfileNetworkContextServiceCertVerifierBuiltinPermissionsPolicyTest
     : public policy::PolicyTest,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<
+          std::tuple<bool, absl::optional<bool>>> {
  public:
   void SetUpInProcessBrowserTestFixture() override {
     scoped_feature_list_.InitWithFeatureState(
         net::features::kCertVerifierBuiltinFeature,
-        use_builtin_cert_verifier());
+        feature_use_builtin_cert_verifier());
 
     content::SetCertVerifierServiceFactoryForTesting(
         &test_cert_verifier_service_factory_);
 
     policy::PolicyTest::SetUpInProcessBrowserTestFixture();
+
+#if BUILDFLAG(BUILTIN_CERT_VERIFIER_POLICY_SUPPORTED)
+    auto policy_val = policy_use_builtin_cert_verifier();
+    if (policy_val.has_value()) {
+      policy::PolicyMap policies;
+      SetPolicy(&policies, policy::key::kBuiltinCertificateVerifierEnabled,
+                base::Value(*policy_val));
+      UpdateProviderPolicy(policies);
+    }
+#endif
   }
 
   void TearDownInProcessBrowserTestFixture() override {
     content::SetCertVerifierServiceFactoryForTesting(nullptr);
-  }
-
-  void SetUpOnMainThread() override {
-    test_cert_verifier_service_factory_.ReleaseAllCertVerifierParams();
   }
 
   void ExpectUseBuiltinCertVerifierCorrect(
@@ -605,18 +600,20 @@ class ProfileNetworkContextServiceCertVerifierBuiltinPermissionsPolicyTest
     test_cert_verifier_service_factory_.ReleaseAllCertVerifierParams();
   }
 
-  Profile* CreateNewProfile() {
-    ProfileManager* profile_manager = g_browser_process->profile_manager();
-    base::FilePath new_path =
-        profile_manager->GenerateNextProfileDirectoryPath();
-    base::RunLoop run_loop;
-    profile_manager->CreateProfileAsync(
-        new_path, base::BindRepeating(&UnblockOnProfileCreation, &run_loop));
-    run_loop.Run();
-    return profile_manager->GetProfileByPath(new_path);
+  bool feature_use_builtin_cert_verifier() const {
+    return std::get<0>(GetParam());
   }
 
-  bool use_builtin_cert_verifier() const { return GetParam(); }
+  absl::optional<bool> policy_use_builtin_cert_verifier() const {
+    return std::get<1>(GetParam());
+  }
+
+  bool expected_use_builtin_cert_verifier() const {
+    auto policy_val = policy_use_builtin_cert_verifier();
+    if (policy_val.has_value())
+      return *policy_val;
+    return feature_use_builtin_cert_verifier();
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -628,74 +625,64 @@ class ProfileNetworkContextServiceCertVerifierBuiltinPermissionsPolicyTest
 IN_PROC_BROWSER_TEST_P(
     ProfileNetworkContextServiceCertVerifierBuiltinPermissionsPolicyTest,
     Test) {
-  {
-    CreateNewProfile()->GetDefaultStoragePartition()->GetNetworkContext();
-
-    ExpectUseBuiltinCertVerifierCorrect(
-        use_builtin_cert_verifier()
-            ? cert_verifier::mojom::CertVerifierCreationParams::
-                  CertVerifierImpl::kBuiltin
-            : cert_verifier::mojom::CertVerifierCreationParams::
-                  CertVerifierImpl::kSystem);
-  }
-
-#if BUILDFLAG(BUILTIN_CERT_VERIFIER_POLICY_SUPPORTED)
-  // If the BuiltinCertificateVerifierEnabled policy is set it should override
-  // the feature flag.
-  policy::PolicyMap policies;
-  SetPolicy(&policies, policy::key::kBuiltinCertificateVerifierEnabled,
-            base::Value(true));
-  UpdateProviderPolicy(policies);
-
-  {
-    CreateNewProfile()->GetDefaultStoragePartition()->GetNetworkContext();
-
-    ExpectUseBuiltinCertVerifierCorrect(
-        cert_verifier::mojom::CertVerifierCreationParams::CertVerifierImpl::
-            kBuiltin);
-  }
-
-  SetPolicy(&policies, policy::key::kBuiltinCertificateVerifierEnabled,
-            base::Value(false));
-  UpdateProviderPolicy(policies);
-
-  {
-    CreateNewProfile()->GetDefaultStoragePartition()->GetNetworkContext();
-
-    ExpectUseBuiltinCertVerifierCorrect(
-        cert_verifier::mojom::CertVerifierCreationParams::CertVerifierImpl::
-            kSystem);
-  }
-#endif  // BUILDFLAG(BUILTIN_CERT_VERIFIER_POLICY_SUPPORTED)
+  ExpectUseBuiltinCertVerifierCorrect(
+      expected_use_builtin_cert_verifier()
+          ? cert_verifier::mojom::CertVerifierCreationParams::CertVerifierImpl::
+                kBuiltin
+          : cert_verifier::mojom::CertVerifierCreationParams::CertVerifierImpl::
+                kSystem);
 }
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     ProfileNetworkContextServiceCertVerifierBuiltinPermissionsPolicyTest,
-    ::testing::Bool());
+    ::testing::Combine(::testing::Bool(),
+                       ::testing::Values(absl::nullopt
+#if BUILDFLAG(BUILTIN_CERT_VERIFIER_POLICY_SUPPORTED)
+                                         ,
+                                         false,
+                                         true
+#endif
+                                         )),
+    [](const testing::TestParamInfo<
+        ProfileNetworkContextServiceCertVerifierBuiltinPermissionsPolicyTest::
+            ParamType>& info) {
+      return absl::StrCat(
+          std::get<0>(info.param) ? "FeatureTrue" : "FeatureFalse",
+          std::get<1>(info.param).has_value()
+              ? (*std::get<1>(info.param) ? "PolicyTrue" : "PolicyFalse")
+              : "PolicyNotSet");
+    });
 #endif  // BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 class ProfileNetworkContextServiceChromeRootStorePermissionsPolicyTest
     : public policy::PolicyTest,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<
+          std::tuple<bool, absl::optional<bool>>> {
  public:
   void SetUpInProcessBrowserTestFixture() override {
     scoped_feature_list_.InitWithFeatureState(
-        net::features::kChromeRootStoreUsed, use_chrome_root_store());
+        net::features::kChromeRootStoreUsed, feature_use_chrome_root_store());
 
     content::SetCertVerifierServiceFactoryForTesting(
         &test_cert_verifier_service_factory_);
 
     policy::PolicyTest::SetUpInProcessBrowserTestFixture();
+
+#if BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
+    auto policy_val = policy_use_chrome_root_store();
+    if (policy_val.has_value()) {
+      policy::PolicyMap policies;
+      SetPolicy(&policies, policy::key::kChromeRootStoreEnabled,
+                base::Value(*policy_val));
+      UpdateProviderPolicy(policies);
+    }
+#endif
   }
 
   void TearDownInProcessBrowserTestFixture() override {
     content::SetCertVerifierServiceFactoryForTesting(nullptr);
-  }
-
-  void SetUpOnMainThread() override {
-    test_cert_verifier_service_factory_.ReleaseAllCertVerifierParams();
   }
 
   void ExpectUseChromeRootStoreCorrect(
@@ -715,18 +702,18 @@ class ProfileNetworkContextServiceChromeRootStorePermissionsPolicyTest
     test_cert_verifier_service_factory_.ReleaseAllCertVerifierParams();
   }
 
-  Profile* CreateNewProfile() {
-    ProfileManager* profile_manager = g_browser_process->profile_manager();
-    base::FilePath new_path =
-        profile_manager->GenerateNextProfileDirectoryPath();
-    base::RunLoop run_loop;
-    profile_manager->CreateProfileAsync(
-        new_path, base::BindRepeating(&UnblockOnProfileCreation, &run_loop));
-    run_loop.Run();
-    return profile_manager->GetProfileByPath(new_path);
+  bool feature_use_chrome_root_store() const { return std::get<0>(GetParam()); }
+
+  absl::optional<bool> policy_use_chrome_root_store() const {
+    return std::get<1>(GetParam());
   }
 
-  bool use_chrome_root_store() const { return GetParam(); }
+  bool expected_use_chrome_root_store() const {
+    auto policy_val = policy_use_chrome_root_store();
+    if (policy_val.has_value())
+      return *policy_val;
+    return feature_use_chrome_root_store();
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -738,50 +725,34 @@ class ProfileNetworkContextServiceChromeRootStorePermissionsPolicyTest
 IN_PROC_BROWSER_TEST_P(
     ProfileNetworkContextServiceChromeRootStorePermissionsPolicyTest,
     Test) {
-  {
-    CreateNewProfile()->GetDefaultStoragePartition()->GetNetworkContext();
-
-    ExpectUseChromeRootStoreCorrect(
-        use_chrome_root_store()
-            ? cert_verifier::mojom::CertVerifierCreationParams::ChromeRootImpl::
-                  kRootChrome
-            : cert_verifier::mojom::CertVerifierCreationParams::ChromeRootImpl::
-                  kRootSystem);
-  }
-
-#if BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
-  // If the BuiltinCertificateVerifierEnabled policy is set it should override
-  // the feature flag.
-  policy::PolicyMap policies;
-  SetPolicy(&policies, policy::key::kChromeRootStoreEnabled, base::Value(true));
-  UpdateProviderPolicy(policies);
-
-  {
-    CreateNewProfile()->GetDefaultStoragePartition()->GetNetworkContext();
-
-    ExpectUseChromeRootStoreCorrect(
-        cert_verifier::mojom::CertVerifierCreationParams::ChromeRootImpl::
-            kRootChrome);
-  }
-
-  SetPolicy(&policies, policy::key::kChromeRootStoreEnabled,
-            base::Value(false));
-  UpdateProviderPolicy(policies);
-
-  {
-    CreateNewProfile()->GetDefaultStoragePartition()->GetNetworkContext();
-
-    ExpectUseChromeRootStoreCorrect(
-        cert_verifier::mojom::CertVerifierCreationParams::ChromeRootImpl::
-            kRootSystem);
-  }
-#endif  // BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
+  ExpectUseChromeRootStoreCorrect(
+      expected_use_chrome_root_store()
+          ? cert_verifier::mojom::CertVerifierCreationParams::ChromeRootImpl::
+                kRootChrome
+          : cert_verifier::mojom::CertVerifierCreationParams::ChromeRootImpl::
+                kRootSystem);
 }
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     ProfileNetworkContextServiceChromeRootStorePermissionsPolicyTest,
-    ::testing::Bool());
+    ::testing::Combine(::testing::Bool(),
+                       ::testing::Values(absl::nullopt
+#if BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
+                                         ,
+                                         false,
+                                         true
+#endif
+                                         )),
+    [](const testing::TestParamInfo<
+        ProfileNetworkContextServiceChromeRootStorePermissionsPolicyTest::
+            ParamType>& info) {
+      return absl::StrCat(
+          std::get<0>(info.param) ? "FeatureTrue" : "FeatureFalse",
+          std::get<1>(info.param).has_value()
+              ? (*std::get<1>(info.param) ? "PolicyTrue" : "PolicyFalse")
+              : "PolicyNotSet");
+    });
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 
 #if BUILDFLAG(IS_CHROMEOS)
