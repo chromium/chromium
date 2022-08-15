@@ -215,30 +215,30 @@ class NET_EXPORT CookieInclusionStatus {
 
   // These enums encode the context downgrade warnings + the secureness of the
   // url sending/setting the cookie. They're used for metrics only. The format
-  // is {context}_{schemeful_context}_{samesite_value}_{securness}.
-  // NO_DOWNGRADE_{securness} indicates that a cookie didn't have a breaking
+  // is k{context}{schemeful_context}{samesite_value}{securness}.
+  // kNoDowngrade{securness} indicates that a cookie didn't have a breaking
   // context downgrade and was A) included B) excluded only due to insufficient
   // same-site context. I.e. the cookie wasn't excluded due to other reasons
   // such as third-party cookie blocking. Keep this in line with
   // SameSiteCookieContextBreakingDowngradeWithSecureness in enums.xml.
-  enum ContextDowngradeMetricValues {
-    NO_DOWNGRADE_INSECURE = 0,
-    NO_DOWNGRADE_SECURE = 1,
+  enum class ContextDowngradeMetricValues {
+    kNoDowngradeInsecure = 0,
+    kNoDowngradeSecure = 1,
 
-    STRICT_LAX_STRICT_INSECURE = 2,
-    STRICT_CROSS_STRICT_INSECURE = 3,
-    STRICT_CROSS_LAX_INSECURE = 4,
-    LAX_CROSS_STRICT_INSECURE = 5,
-    LAX_CROSS_LAX_INSECURE = 6,
+    kStrictLaxStrictInsecure = 2,
+    kStrictCrossStrictInsecure = 3,
+    kStrictCrossLaxInsecure = 4,
+    kLaxCrossStrictInsecure = 5,
+    kLaxCrossLaxInsecure = 6,
 
-    STRICT_LAX_STRICT_SECURE = 7,
-    STRICT_CROSS_STRICT_SECURE = 8,
-    STRICT_CROSS_LAX_SECURE = 9,
-    LAX_CROSS_STRICT_SECURE = 10,
-    LAX_CROSS_LAX_SECURE = 11,
+    kStrictLaxStrictSecure = 7,
+    kStrictCrossStrictSecure = 8,
+    kStrictCrossLaxSecure = 9,
+    kLaxCrossStrictSecure = 10,
+    kLaxCrossLaxSecure = 11,
 
     // Keep last.
-    kMaxValue = LAX_CROSS_LAX_SECURE
+    kMaxValue = kLaxCrossLaxSecure
   };
 
   using ExclusionReasonBitset =

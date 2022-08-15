@@ -170,28 +170,26 @@ CookieInclusionStatus::GetBreakingDowngradeMetricsEnumValue(
   switch (reason) {
     case WarningReason::WARN_STRICT_LAX_DOWNGRADE_STRICT_SAMESITE:
       return url_is_secure
-                 ? ContextDowngradeMetricValues::STRICT_LAX_STRICT_SECURE
-                 : ContextDowngradeMetricValues::STRICT_LAX_STRICT_INSECURE;
+                 ? ContextDowngradeMetricValues::kStrictLaxStrictSecure
+                 : ContextDowngradeMetricValues::kStrictLaxStrictInsecure;
     case WarningReason::WARN_STRICT_CROSS_DOWNGRADE_STRICT_SAMESITE:
       return url_is_secure
-                 ? ContextDowngradeMetricValues::STRICT_CROSS_STRICT_SECURE
-                 : ContextDowngradeMetricValues::STRICT_CROSS_STRICT_INSECURE;
+                 ? ContextDowngradeMetricValues::kStrictCrossStrictSecure
+                 : ContextDowngradeMetricValues::kStrictCrossStrictInsecure;
     case WarningReason::WARN_STRICT_CROSS_DOWNGRADE_LAX_SAMESITE:
       return url_is_secure
-                 ? ContextDowngradeMetricValues::STRICT_CROSS_LAX_SECURE
-                 : ContextDowngradeMetricValues::STRICT_CROSS_LAX_INSECURE;
+                 ? ContextDowngradeMetricValues::kStrictCrossLaxSecure
+                 : ContextDowngradeMetricValues::kStrictCrossLaxInsecure;
     case WarningReason::WARN_LAX_CROSS_DOWNGRADE_STRICT_SAMESITE:
       return url_is_secure
-                 ? ContextDowngradeMetricValues::LAX_CROSS_STRICT_SECURE
-                 : ContextDowngradeMetricValues::LAX_CROSS_STRICT_INSECURE;
+                 ? ContextDowngradeMetricValues::kLaxCrossStrictSecure
+                 : ContextDowngradeMetricValues::kLaxCrossStrictInsecure;
     case WarningReason::WARN_LAX_CROSS_DOWNGRADE_LAX_SAMESITE:
-      return url_is_secure
-                 ? ContextDowngradeMetricValues::LAX_CROSS_LAX_SECURE
-                 : ContextDowngradeMetricValues::LAX_CROSS_LAX_INSECURE;
+      return url_is_secure ? ContextDowngradeMetricValues::kLaxCrossLaxSecure
+                           : ContextDowngradeMetricValues::kLaxCrossLaxInsecure;
     default:
-      return url_is_secure
-                 ? ContextDowngradeMetricValues::NO_DOWNGRADE_SECURE
-                 : ContextDowngradeMetricValues::NO_DOWNGRADE_INSECURE;
+      return url_is_secure ? ContextDowngradeMetricValues::kNoDowngradeSecure
+                           : ContextDowngradeMetricValues::kNoDowngradeInsecure;
   }
 }
 

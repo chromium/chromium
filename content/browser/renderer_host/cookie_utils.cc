@@ -24,14 +24,16 @@ void RecordContextDowngradeUKM(RenderFrameHost* rfh,
   DCHECK(rfh);
   ukm::SourceId source_id = rfh->GetPageUkmSourceId();
 
+  auto downgrade_metric =
+      static_cast<int64_t>(status.GetBreakingDowngradeMetricsEnumValue(url));
   if (access_type == CookieAccessDetails::Type::kRead) {
     ukm::builders::SchemefulSameSiteContextDowngrade(source_id)
-        .SetRequestPerCookie(status.GetBreakingDowngradeMetricsEnumValue(url))
+        .SetRequestPerCookie(downgrade_metric)
         .Record(ukm::UkmRecorder::Get());
   } else {
     DCHECK(access_type == CookieAccessDetails::Type::kChange);
     ukm::builders::SchemefulSameSiteContextDowngrade(source_id)
-        .SetResponsePerCookie(status.GetBreakingDowngradeMetricsEnumValue(url))
+        .SetResponsePerCookie(downgrade_metric)
         .Record(ukm::UkmRecorder::Get());
   }
 }
