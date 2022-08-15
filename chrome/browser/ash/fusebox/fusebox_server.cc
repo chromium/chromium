@@ -264,7 +264,7 @@ Server* Server::GetInstance() {
   return g_server_instance;
 }
 
-Server::Server() {
+Server::Server(Delegate* delegate) : delegate_(delegate) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!g_server_instance);
   g_server_instance = this;
@@ -300,6 +300,9 @@ void Server::RegisterFSURLPrefix(const std::string& subdir,
   std::string trimmed =
       std::string(base::TrimString(fs_url_prefix, "/", base::TRIM_TRAILING));
   prefix_map_.insert({subdir, PrefixMapEntry(trimmed, read_only)});
+  if (delegate_) {
+    delegate_->OnRegisterFSURLPrefix(subdir);
+  }
 }
 
 void Server::UnregisterFSURLPrefix(const std::string& subdir) {
@@ -308,6 +311,9 @@ void Server::UnregisterFSURLPrefix(const std::string& subdir) {
   auto iter = prefix_map_.find(subdir);
   if (iter != prefix_map_.end()) {
     prefix_map_.erase(iter);
+  }
+  if (delegate_) {
+    delegate_->OnUnregisterFSURLPrefix(subdir);
   }
 }
 

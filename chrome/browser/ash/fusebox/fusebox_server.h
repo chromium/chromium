@@ -16,10 +16,19 @@ namespace fusebox {
 
 class Server {
  public:
+  struct Delegate {
+    // These methods cause D-Bus signals to be sent that a storage unit (as
+    // named by the "subdir" in "/media/fuse/fusebox/subdir") has been attached
+    // or detached.
+    virtual void OnRegisterFSURLPrefix(const std::string& subdir) = 0;
+    virtual void OnUnregisterFSURLPrefix(const std::string& subdir) = 0;
+  };
+
   // Returns a pointer to the global Server instance.
   static Server* GetInstance();
 
-  Server();
+  // The delegate should live longer than the server.
+  explicit Server(Delegate* delegate);
   Server(const Server&) = delete;
   Server& operator=(const Server&) = delete;
   ~Server();
@@ -99,6 +108,7 @@ class Server {
   using PrefixMap = std::map<std::string, PrefixMapEntry>;
 
  private:
+  Delegate* delegate_;
   fusebox::MonikerMap moniker_map_;
   PrefixMap prefix_map_;
 };

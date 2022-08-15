@@ -136,7 +136,7 @@ void ReplyToStat(dbus::MethodCall* method_call,
 
 }  // namespace
 
-FuseBoxServiceProvider::FuseBoxServiceProvider() = default;
+FuseBoxServiceProvider::FuseBoxServiceProvider() : server_(this) {}
 
 FuseBoxServiceProvider::~FuseBoxServiceProvider() = default;
 
@@ -146,6 +146,7 @@ void FuseBoxServiceProvider::Start(scoped_refptr<dbus::ExportedObject> object) {
     return;
   }
 
+  exported_object_ = object;
   object->ExportMethod(fusebox::kFuseBoxServiceInterface, fusebox::kCloseMethod,
                        base::BindRepeating(&FuseBoxServiceProvider::Close,
                                            weak_ptr_factory_.GetWeakPtr()),
@@ -167,6 +168,29 @@ void FuseBoxServiceProvider::Start(scoped_refptr<dbus::ExportedObject> object) {
                        base::BindRepeating(&FuseBoxServiceProvider::Stat,
                                            weak_ptr_factory_.GetWeakPtr()),
                        base::BindOnce(&OnExportedCallback));
+}
+
+void FuseBoxServiceProvider::OnRegisterFSURLPrefix(const std::string& subdir) {
+  if (!exported_object_) {
+    return;
+  }
+  dbus::Signal signal(fusebox::kFuseBoxServiceInterface,
+                      fusebox::kStorageAttachedSignal);
+  dbus::MessageWriter writer(&signal);
+  writer.AppendString(subdir);
+  exported_object_->SendSignal(&signal);
+}
+
+void FuseBoxServiceProvider::OnUnregisterFSURLPrefix(
+    const std::string& subdir) {
+  if (!exported_object_) {
+    return;
+  }
+  dbus::Signal signal(fusebox::kFuseBoxServiceInterface,
+                      fusebox::kStorageDetachedSignal);
+  dbus::MessageWriter writer(&signal);
+  writer.AppendString(subdir);
+  exported_object_->SendSignal(&signal);
 }
 
 void FuseBoxServiceProvider::Close(
