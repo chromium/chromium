@@ -49,4 +49,8 @@ void EmitFeedbackAppIncludedSystemInfo(bool included_system_info) {
                             included_system_info);
 }
 
+void EmitFeedbackAppDescriptionLength(int length) {
+  base::UmaHistogramCounts1000(kFeedbackAppDescriptionLength, length);
+}
+
 }  // namespace ash::os_feedback_ui::metrics

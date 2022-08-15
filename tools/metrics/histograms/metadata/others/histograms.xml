@@ -5791,6 +5791,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Feedback.ChromeOSApp.DescriptionLength" units="characters"
+    expires_after="2023-07-27">
+  <owner>longbowei@google.com</owner>
+  <owner>xiangdongkong@google.com</owner>
+  <owner>cros-feedback-app@google.com</owner>
+  <summary>
+    Record the length of description in the textbox. Fires when the feedback
+    report is being sent.
+  </summary>
+</histogram>
+
 <histogram name="Feedback.ChromeOSApp.IncludedEmail" units="boolean"
     expires_after="2023-07-27">
   <owner>longbowei@google.com</owner>

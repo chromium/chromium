@@ -248,6 +248,10 @@ void ChromeOsFeedbackDelegate::SendReport(
   // report is submitted.
   ash::os_feedback_ui::metrics::EmitFeedbackAppIncludedSystemInfo(
       report->include_system_logs_and_histograms);
+  // Records the length of description in the textbox when the feedback
+  // report is submitted.
+  ash::os_feedback_ui::metrics::EmitFeedbackAppDescriptionLength(
+      report->description.length());
 
   feedback_service_->SendFeedback(
       feedback_params, feedback_data,
