@@ -24,7 +24,6 @@ import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
@@ -42,7 +41,6 @@ public class BookmarkSaveFlowCoordinator {
     private final PropertyModelChangeProcessor<PropertyModel, ViewLookupCachingFrameLayout,
             PropertyKey> mChangeProcessor;
     private final DestroyChecker mDestroyChecker;
-    private final BottomSheetObserver mSheetObserver;
 
     private BottomSheetController mBottomSheetController;
     private BookmarkSaveFlowBottomSheetContent mBottomSheetContent;
@@ -65,15 +63,6 @@ public class BookmarkSaveFlowCoordinator {
             @NonNull UserEducationHelper userEducationHelper) {
         mContext = context;
         mBottomSheetController = bottomSheetController;
-        mSheetObserver = new EmptyBottomSheetObserver() {
-            @Override
-            public void onSheetContentChanged(BottomSheetContent newContent) {
-                if (newContent != mBottomSheetContent) {
-                    destroy();
-                }
-            }
-        };
-        mBottomSheetController.addObserver(mSheetObserver);
         mUserEducationHelper = userEducationHelper;
         mBookmarkModel = new BookmarkModel();
         mDestroyChecker = new DestroyChecker();
@@ -175,8 +164,6 @@ public class BookmarkSaveFlowCoordinator {
         mDestroyChecker.checkNotDestroyed();
         mDestroyChecker.destroy();
 
-        mBottomSheetController.removeObserver(mSheetObserver);
-
         // The bottom sheet was closed by a means other than one of the edit actions.
         if (mClosedViaRunnable) {
             RecordUserAction.record("MobileBookmark.SaveFlow.ClosedWithoutEditAction");
@@ -217,7 +204,9 @@ public class BookmarkSaveFlowCoordinator {
         }
 
         @Override
-        public void destroy() {}
+        public void destroy() {
+            BookmarkSaveFlowCoordinator.this.destroy();
+        }
 
         @Override
         public int getPriority() {
