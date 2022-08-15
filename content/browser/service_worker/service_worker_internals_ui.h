@@ -56,7 +56,7 @@ class ServiceWorkerInternalsHandler : public WebUIMessageHandler {
   void OnErrorEvent(const std::string& event_name,
                     int partition_id,
                     int64_t version_id,
-                    base::Value details);
+                    const base::Value::Dict& details);
   void OnRegistrationEvent(const std::string& event_name, const GURL& scope);
   void OnDidGetRegistrations(
       int partition_id,

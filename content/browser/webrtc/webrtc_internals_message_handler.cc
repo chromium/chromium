@@ -145,8 +145,7 @@ void WebRTCInternalsMessageHandler::OnDOMLoadDone(
   params.Set("eventLogRecordingsToggleable",
              webrtc_internals_->CanToggleEventLogRecordings());
 
-  ResolveJavascriptCallback(base::Value(callback_id),
-                            base::Value(std::move(params)));
+  ResolveJavascriptCallback(base::Value(callback_id), params);
 }
 
 void WebRTCInternalsMessageHandler::OnUpdate(const std::string& event_name,

@@ -294,7 +294,7 @@ class ServiceWorkerInternalsHandler::PartitionObserver
     details.Set("sourceURL", info.source_url.spec());
 
     handler_->OnErrorEvent("error-reported", partition_id_, version_id,
-                           base::Value(std::move(details)));
+                           details);
   }
   void OnReportConsoleMessage(int64_t version_id,
                               const GURL& scope,
@@ -311,7 +311,7 @@ class ServiceWorkerInternalsHandler::PartitionObserver
     details.Set("lineNumber", message.line_number);
     details.Set("sourceURL", message.source_url.spec());
     handler_->OnErrorEvent("console-message-reported", partition_id_,
-                           version_id, base::Value(std::move(details)));
+                           version_id, details);
   }
   void OnRegistrationCompleted(int64_t registration_id,
                                const GURL& scope,
@@ -422,10 +422,11 @@ void ServiceWorkerInternalsHandler::OnVersionStateChanged(int partition_id,
                     base::Value(base::NumberToString(version_id)));
 }
 
-void ServiceWorkerInternalsHandler::OnErrorEvent(const std::string& event_name,
-                                                 int partition_id,
-                                                 int64_t version_id,
-                                                 base::Value details) {
+void ServiceWorkerInternalsHandler::OnErrorEvent(
+    const std::string& event_name,
+    int partition_id,
+    int64_t version_id,
+    const base::Value::Dict& details) {
   FireWebUIListener(event_name, base::Value(partition_id),
                     base::Value(base::NumberToString(version_id)), details);
 }
@@ -448,8 +449,7 @@ void ServiceWorkerInternalsHandler::OnDidGetRegistrations(
   registrations.Set("liveVersions", GetVersionListValue(live_versions));
   registrations.Set("storedRegistrations",
                     GetRegistrationListValue(stored_registrations));
-  FireWebUIListener("partition-data", base::Value(std::move(registrations)),
-                    base::Value(partition_id),
+  FireWebUIListener("partition-data", registrations, base::Value(partition_id),
                     base::Value(context_path.AsUTF8Unsafe()));
 }
 
@@ -467,8 +467,7 @@ void ServiceWorkerInternalsHandler::HandleGetOptions(const Value::List& args) {
   base::Value::Dict options;
   options.Set("debug_on_start", ServiceWorkerDevToolsManager::GetInstance()
                                     ->debug_service_worker_on_start());
-  ResolveJavascriptCallback(base::Value(callback_id),
-                            base::Value(std::move(options)));
+  ResolveJavascriptCallback(base::Value(callback_id), options);
 }
 
 void ServiceWorkerInternalsHandler::HandleSetOption(
