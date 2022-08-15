@@ -425,9 +425,11 @@ void CreateOrUpdateShortcuts(const base::FilePath& target,
   // previous location (under a subdirectory) and, if so, move it to the new
   // location.
   base::FilePath old_shortcut_path;
-  ShellUtil::GetShortcutPath(
-      ShellUtil::SHORTCUT_LOCATION_START_MENU_CHROME_DIR_DEPRECATED,
-      shortcut_level, &old_shortcut_path);
+  if (!ShellUtil::GetShortcutPath(
+          ShellUtil::SHORTCUT_LOCATION_START_MENU_CHROME_DIR_DEPRECATED,
+          shortcut_level, &old_shortcut_path)) {
+    return;
+  }
   if (base::PathExists(old_shortcut_path)) {
     ShellUtil::MoveExistingShortcut(
         ShellUtil::SHORTCUT_LOCATION_START_MENU_CHROME_DIR_DEPRECATED,

@@ -238,37 +238,38 @@ class ShellUtilShortcutTest : public testing::Test {
 TEST_F(ShellUtilShortcutTest, GetShortcutPath) {
   base::FilePath path;
 
-  ShellUtil::GetShortcutPath(ShellUtil::SHORTCUT_LOCATION_DESKTOP,
-                             ShellUtil::CURRENT_USER, &path);
+  ASSERT_TRUE(ShellUtil::GetShortcutPath(ShellUtil::SHORTCUT_LOCATION_DESKTOP,
+                                         ShellUtil::CURRENT_USER, &path));
   EXPECT_EQ(fake_user_desktop_.GetPath(), path);
 
-  ShellUtil::GetShortcutPath(ShellUtil::SHORTCUT_LOCATION_DESKTOP,
-                             ShellUtil::SYSTEM_LEVEL, &path);
+  ASSERT_TRUE(ShellUtil::GetShortcutPath(ShellUtil::SHORTCUT_LOCATION_DESKTOP,
+                                         ShellUtil::SYSTEM_LEVEL, &path));
   EXPECT_EQ(fake_common_desktop_.GetPath(), path);
 
-  ShellUtil::GetShortcutPath(ShellUtil::SHORTCUT_LOCATION_QUICK_LAUNCH,
-                             ShellUtil::CURRENT_USER, &path);
+  ASSERT_TRUE(
+      ShellUtil::GetShortcutPath(ShellUtil::SHORTCUT_LOCATION_QUICK_LAUNCH,
+                                 ShellUtil::CURRENT_USER, &path));
   EXPECT_EQ(fake_user_quick_launch_.GetPath(), path);
 
   std::wstring start_menu_subfolder =
       InstallUtil::GetChromeShortcutDirNameDeprecated();
-  ShellUtil::GetShortcutPath(
+  ASSERT_TRUE(ShellUtil::GetShortcutPath(
       ShellUtil::SHORTCUT_LOCATION_START_MENU_CHROME_DIR_DEPRECATED,
-      ShellUtil::CURRENT_USER, &path);
+      ShellUtil::CURRENT_USER, &path));
   EXPECT_EQ(fake_start_menu_.GetPath().Append(start_menu_subfolder), path);
 
-  ShellUtil::GetShortcutPath(
+  ASSERT_TRUE(ShellUtil::GetShortcutPath(
       ShellUtil::SHORTCUT_LOCATION_START_MENU_CHROME_DIR_DEPRECATED,
-      ShellUtil::SYSTEM_LEVEL, &path);
+      ShellUtil::SYSTEM_LEVEL, &path));
   EXPECT_EQ(fake_common_start_menu_.GetPath().Append(start_menu_subfolder),
             path);
 
-  ShellUtil::GetShortcutPath(ShellUtil::SHORTCUT_LOCATION_STARTUP,
-                             ShellUtil::SYSTEM_LEVEL, &path);
+  ASSERT_TRUE(ShellUtil::GetShortcutPath(ShellUtil::SHORTCUT_LOCATION_STARTUP,
+                                         ShellUtil::SYSTEM_LEVEL, &path));
   EXPECT_EQ(fake_common_startup_.GetPath(), path);
 
-  ShellUtil::GetShortcutPath(ShellUtil::SHORTCUT_LOCATION_STARTUP,
-                             ShellUtil::CURRENT_USER, &path);
+  ASSERT_TRUE(ShellUtil::GetShortcutPath(ShellUtil::SHORTCUT_LOCATION_STARTUP,
+                                         ShellUtil::CURRENT_USER, &path));
   EXPECT_EQ(fake_user_startup_.GetPath(), path);
 }
 

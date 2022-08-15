@@ -1974,10 +1974,8 @@ bool ShellUtil::GetShortcutPath(ShortcutLocation location,
       break;
   }
 
-  if (!base::PathService::Get(dir_key, path) || path->empty()) {
-    NOTREACHED() << dir_key;
+  if (!base::PathService::Get(dir_key, path) || path->empty())
     return false;
-  }
 
   if (!folder_to_append.empty())
     *path = path->Append(folder_to_append);
