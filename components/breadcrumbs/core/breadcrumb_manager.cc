@@ -37,16 +37,6 @@ BreadcrumbManager::BreadcrumbManager(base::TimeTicks start_time)
 
 BreadcrumbManager::~BreadcrumbManager() = default;
 
-size_t BreadcrumbManager::GetEventCount() {
-  DropOldEvents();
-
-  size_t count = 0;
-  for (const EventBucket& event_bucket : base::Reversed(event_buckets_)) {
-    count += event_bucket.events.size();
-  }
-  return count;
-}
-
 const std::list<std::string> BreadcrumbManager::GetEvents(
     size_t event_count_limit) {
   DropOldEvents();

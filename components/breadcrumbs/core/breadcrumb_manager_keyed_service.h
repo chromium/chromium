@@ -37,10 +37,6 @@ class BreadcrumbManagerKeyedService : public KeyedService {
   void AddObserver(BreadcrumbManagerObserver* observer);
   void RemoveObserver(BreadcrumbManagerObserver* observer);
 
-  // Returns the number of collected breadcrumb events which are still relevant.
-  // See |BreadcrumbManager::GetEventCount| for details.
-  size_t GetEventCount();
-
   // Returns up to |event_count_limit| events from the underlying
   // |breadcrumb_manager|. See |BreadcrumbManager::GetEvents| for returned event
   // details.
