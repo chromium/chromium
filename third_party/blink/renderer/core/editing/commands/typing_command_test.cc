@@ -22,6 +22,27 @@ namespace blink {
 
 class TypingCommandTest : public EditingTestBase {};
 
+// http://crbug.com/1322746
+TEST_F(TypingCommandTest, DeleteInsignificantText) {
+  InsertStyleElement(
+      "b { display: inline-block; width: 100px; }"
+      "div { width: 100px; }");
+  Selection().SetSelection(
+      SetSelectionTextToBody("<div contenteditable>"
+                             "|<b><pre></pre></b> <a>abc</a>"
+                             "</div>"),
+      SetSelectionOptions());
+  EditingState editing_state;
+  TypingCommand::ForwardDeleteKeyPressed(GetDocument(), &editing_state);
+  ASSERT_FALSE(editing_state.IsAborted());
+
+  EXPECT_EQ(
+      u8"<div contenteditable>"
+      "|\u00A0<a>abc</a>"
+      "</div>",
+      GetSelectionTextFromBody());
+}
+
 // This is a regression test for https://crbug.com/585048
 TEST_F(TypingCommandTest, insertLineBreakWithIllFormedHTML) {
   SetBodyContent("<div contenteditable></div>");
