@@ -39,6 +39,7 @@ export class HoldingSpaceUtil {
     return [
       VolumeManagerCommon.VolumeType.ANDROID_FILES,
       VolumeManagerCommon.VolumeType.CROSTINI,
+      VolumeManagerCommon.VolumeType.GUEST_OS,
       VolumeManagerCommon.VolumeType.DRIVE,
       VolumeManagerCommon.VolumeType.DOWNLOADS,
     ];

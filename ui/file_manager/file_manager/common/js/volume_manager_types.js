@@ -268,6 +268,7 @@ VolumeManagerCommon.VolumeType.isNative = type => {
       type === VolumeManagerCommon.VolumeType.DRIVE ||
       type === VolumeManagerCommon.VolumeType.ANDROID_FILES ||
       type === VolumeManagerCommon.VolumeType.CROSTINI ||
+      type === VolumeManagerCommon.VolumeType.GUEST_OS ||
       type === VolumeManagerCommon.VolumeType.REMOVABLE ||
       type === VolumeManagerCommon.VolumeType.ARCHIVE ||
       type === VolumeManagerCommon.VolumeType.SMB;
