@@ -870,6 +870,144 @@ TEST_F(MultiWordSuggesterTest, DoesntRecordIfSuggestionLengthIsBig) {
       "InputMethod.Assistive.MultiWord.SuggestionLength", 0);
 }
 
+TEST_F(MultiWordSuggesterTest, RecordsCouldPossiblyShowCompletionSuggestion) {
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.CouldPossiblyShowSuggestion", 0);
+
+  // For a completion suggestion to show, we need to have the cursor at the end
+  // of the text.
+  suggester_->OnFocus(kFocusedContextId);
+  suggester_->OnSurroundingTextChanged(u"how", 3, 3);
+
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.CouldPossiblyShowSuggestion", 1);
+  histogram_tester.ExpectUniqueSample(
+      "InputMethod.Assistive.MultiWord.CouldPossiblyShowSuggestion",
+      /*sample=*/MultiWordSuggestionType::kCompletion,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(MultiWordSuggesterTest, RecordsCouldPossiblyShowPredictionSuggestion) {
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.CouldPossiblyShowSuggestion", 0);
+
+  // For a prediction suggestion to show, we need to have a whitespace char at
+  // the end of the text, and the cursor must be at the end of the text.
+  suggester_->OnFocus(kFocusedContextId);
+  suggester_->OnSurroundingTextChanged(u"how ", 4, 4);
+
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.CouldPossiblyShowSuggestion", 1);
+  histogram_tester.ExpectUniqueSample(
+      "InputMethod.Assistive.MultiWord.CouldPossiblyShowSuggestion",
+      /*sample=*/MultiWordSuggestionType::kPrediction,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(MultiWordSuggesterTest,
+       DoesNotRecordCouldPossiblyShowSuggestionWhenCursorNotAtEndOfText) {
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.CouldPossiblyShowSuggestion", 0);
+
+  suggester_->OnFocus(kFocusedContextId);
+  suggester_->OnSurroundingTextChanged(u"how are you today", 4, 4);
+  suggester_->OnSurroundingTextChanged(u"how are you today", 3, 3);
+  suggester_->OnSurroundingTextChanged(u"how are you today", 0, 0);
+  suggester_->OnSurroundingTextChanged(u"how are you today", 16, 16);
+  suggester_->OnSurroundingTextChanged(u"how are you today", 10, 10);
+
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.CouldPossiblyShowSuggestion", 0);
+}
+
+TEST_F(MultiWordSuggesterTest,
+       DoesNotRecordCouldPossiblyShowSuggestionWhenThereIsASelection) {
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.CouldPossiblyShowSuggestion", 0);
+
+  suggester_->OnFocus(kFocusedContextId);
+  suggester_->OnSurroundingTextChanged(u"how are you today", 4, 17);
+  suggester_->OnSurroundingTextChanged(u"how are you today", 0, 17);
+  suggester_->OnSurroundingTextChanged(u"how are you today", 16, 17);
+
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.CouldPossiblyShowSuggestion", 0);
+}
+
+TEST_F(MultiWordSuggesterTest,
+       DoesNotRecordCouldPossiblyShowSuggestionWhenTextLengthIsSmall) {
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.CouldPossiblyShowSuggestion", 0);
+
+  suggester_->OnFocus(kFocusedContextId);
+  suggester_->OnSurroundingTextChanged(u"", 0, 0);
+  suggester_->OnSurroundingTextChanged(u"h", 1, 1);
+  suggester_->OnSurroundingTextChanged(u"ho", 2, 2);
+
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.CouldPossiblyShowSuggestion", 0);
+}
+
+TEST_F(MultiWordSuggesterTest,
+       RecordsCouldPossiblyShowSuggestionForMultipleConsecutiveTextUpdates) {
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.CouldPossiblyShowSuggestion", 0);
+
+  suggester_->OnFocus(kFocusedContextId);
+  suggester_->OnSurroundingTextChanged(u"how ", 4, 4);
+  suggester_->OnSurroundingTextChanged(u"how a", 5, 5);
+  suggester_->OnSurroundingTextChanged(u"how ar", 6, 6);
+  suggester_->OnSurroundingTextChanged(u"how are", 7, 7);
+  suggester_->OnSurroundingTextChanged(u"how are ", 8, 8);
+
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.CouldPossiblyShowSuggestion", 5);
+  histogram_tester.ExpectBucketCount(
+      "InputMethod.Assistive.MultiWord.CouldPossiblyShowSuggestion",
+      /*sample=*/MultiWordSuggestionType::kPrediction,
+      /*expected_count=*/2);
+  histogram_tester.ExpectBucketCount(
+      "InputMethod.Assistive.MultiWord.CouldPossiblyShowSuggestion",
+      /*sample=*/MultiWordSuggestionType::kCompletion,
+      /*expected_count=*/3);
+}
+TEST_F(MultiWordSuggesterTest,
+       DoesNotRecordCouldPossiblyShowSuggestionWhenSuggestionIsShowing) {
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "how are you"},
+  };
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.CouldPossiblyShowSuggestion", 0);
+
+  suggester_->OnFocus(kFocusedContextId);
+  suggester_->OnSurroundingTextChanged(u"how ", 4, 4);
+  suggester_->OnExternalSuggestionsUpdated(suggestions);
+  suggester_->OnSurroundingTextChanged(u"how a", 5, 5);
+  suggester_->OnSurroundingTextChanged(u"how ar", 6, 6);
+  suggester_->OnSurroundingTextChanged(u"how are", 7, 7);
+  suggester_->OnSurroundingTextChanged(u"how are ", 8, 8);
+
+  // Only one metric should be recorded, when we receive a surrounding text
+  // event prior to the suggestions being generated and shown to the user. Each
+  // subsequent surrounding text event should NOT record the metric.
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.CouldPossiblyShowSuggestion", 1);
+  histogram_tester.ExpectUniqueSample(
+      "InputMethod.Assistive.MultiWord.CouldPossiblyShowSuggestion",
+      /*sample=*/MultiWordSuggestionType::kPrediction,
+      /*expected_bucket_count=*/1);
+}
+
 TEST_F(MultiWordSuggesterTest,
        SurroundingTextChangesDoNotTriggerAnnouncements) {
   suggester_->OnFocus(kFocusedContextId);

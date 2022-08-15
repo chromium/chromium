@@ -9,10 +9,12 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/services/ime/public/cpp/suggestions.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/input_method/suggestion_enums.h"
 #include "chrome/browser/ash/input_method/ui/suggestion_details.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -28,6 +30,7 @@ using ime::TextSuggestionType;
 
 // Used for UmaHistogramExactLinear, should remain <= 101.
 constexpr size_t kMaxSuggestionLength = 101;
+constexpr size_t kMinimumNumberOfCharsToProduceSuggestion = 3;
 constexpr char kMultiWordFirstAcceptTimeDays[] = "multi_word_first_accept";
 constexpr char16_t kSuggestionShownMessage[] =
     u"predictive writing candidate shown, press down to select or "
@@ -66,6 +69,18 @@ size_t CalculateConfirmedLength(const std::u16string& surrounding_text,
   return 0;
 }
 
+MultiWordSuggestionType ToSuggestionType(
+    const ime::TextSuggestionMode& suggestion_mode) {
+  switch (suggestion_mode) {
+    case ime::TextSuggestionMode::kCompletion:
+      return MultiWordSuggestionType::kCompletion;
+    case ime::TextSuggestionMode::kPrediction:
+      return MultiWordSuggestionType::kPrediction;
+    default:
+      return MultiWordSuggestionType::kUnknown;
+  }
+}
+
 void RecordTimeToAccept(base::TimeDelta delta) {
   base::UmaHistogramTimes("InputMethod.Assistive.TimeToAccept.MultiWord",
                           delta);
@@ -80,6 +95,13 @@ void RecordSuggestionLength(size_t suggestion_length) {
   base::UmaHistogramExactLinear(
       "InputMethod.Assistive.MultiWord.SuggestionLength", suggestion_length,
       kMaxSuggestionLength);
+}
+
+void RecordCouldPossiblyShowSuggestion(
+    const ime::TextSuggestionMode& suggestion_mode) {
+  base::UmaHistogramEnumeration(
+      "InputMethod.Assistive.MultiWord.CouldPossiblyShowSuggestion",
+      ToSuggestionType(suggestion_mode));
 }
 
 absl::optional<int> GetTimeFirstAcceptedSuggestion(Profile* profile) {
@@ -108,6 +130,17 @@ bool ShouldShowTabGuide(Profile* profile) {
   base::TimeDelta time_since_epoch =
       base::Time::Now() - base::Time::UnixEpoch();
   return (time_since_epoch - first_accepted) <= base::Days(7);
+}
+
+bool CouldSuggestWithSurroundingText(const base::StringPiece16& text,
+                                     size_t cursor_pos,
+                                     size_t anchor_pos) {
+  return cursor_pos == anchor_pos && cursor_pos == text.size() &&
+         text.size() >= kMinimumNumberOfCharsToProduceSuggestion;
+}
+
+bool WouldBeInCompletionMode(const base::StringPiece16& text) {
+  return !text.empty() && std::isalpha(text.back());
 }
 
 // TODO(crbug/1146266): Add DismissedAccuracy metric back in.
@@ -143,6 +176,13 @@ void MultiWordSuggester::OnBlur() {
 void MultiWordSuggester::OnSurroundingTextChanged(const std::u16string& text,
                                                   size_t cursor_pos,
                                                   size_t anchor_pos) {
+  if (CouldSuggestWithSurroundingText(text, cursor_pos, anchor_pos) &&
+      !state_.IsSuggestionShowing()) {
+    RecordCouldPossiblyShowSuggestion(
+        WouldBeInCompletionMode(text) ? ime::TextSuggestionMode::kCompletion
+                                      : ime::TextSuggestionMode::kPrediction);
+  }
+
   auto surrounding_text = SuggestionState::SurroundingText{
       .text = text,
       .cursor_pos = cursor_pos,

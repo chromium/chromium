@@ -569,7 +569,8 @@ void AssistiveSuggester::ProcessOnSurroundingTextChanged(
   if (!IsAssistiveFeatureEnabled() || !focused_context_id_.has_value())
     return;
 
-  if (IsMultiWordSuggestEnabled()) {
+  if (IsMultiWordSuggestEnabled() &&
+      enabled_suggestions.multi_word_suggestions) {
     // Only multi word cares about tracking the current state of the text
     // field
     multi_word_suggester_.OnSurroundingTextChanged(text, cursor_pos,
