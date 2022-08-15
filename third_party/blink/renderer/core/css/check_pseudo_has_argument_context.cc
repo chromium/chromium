@@ -14,16 +14,22 @@ CheckPseudoHasArgumentContext::GetCurrentRelationAndNextCompound(
     const CSSSelector* compound_selector,
     CSSSelector::RelationType& relation) {
   DCHECK(compound_selector);
+  const CSSSelector* next_compound = nullptr;
+  CheckPseudoHasFastRejectFilter::CompoundContext compound_context;
   for (const CSSSelector* simple_selector = compound_selector; simple_selector;
        simple_selector = simple_selector->TagHistory()) {
-    CheckPseudoHasFastRejectFilter::CollectPseudoHasArgumentHashes(
-        pseudo_has_argument_hashes_, simple_selector);
-
+    if (simple_selector->GetPseudoType() == CSSSelector::kPseudoHover)
+      compound_context.contains_hover = true;
     relation = simple_selector->Relation();
-    if (relation != CSSSelector::kSubSelector)
-      return simple_selector->TagHistory();
+    if (relation == CSSSelector::kSubSelector)
+      continue;
+    next_compound = simple_selector->TagHistory();
+    break;
   }
-  return nullptr;
+  CheckPseudoHasFastRejectFilter::CollectPseudoHasArgumentHashesFromCompound(
+      pseudo_has_argument_hashes_, compound_selector, compound_context);
+
+  return next_compound;
 }
 
 CheckPseudoHasArgumentContext::CheckPseudoHasArgumentContext(
