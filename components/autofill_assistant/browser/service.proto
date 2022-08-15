@@ -231,6 +231,19 @@ message GetCapabilitiesByHashPrefixRequestProto {
   repeated ScriptParameterProto script_parameters = 4;
 }
 
+// Information that is passed from the bundle to the caller in GetCapabilities
+// RPC requests.
+// Next ID: 2
+message BundleCapabilitiesInformationProto {
+  // Information used by Chrome's FastCheckout vertical.
+  message ChromeFastCheckoutProto {
+    // A list of form signatures on which to trigger the bundle.
+    repeated uint64 trigger_form_signatures = 1 [packed = true];
+  }
+
+  optional ChromeFastCheckoutProto chrome_fast_checkout = 1;
+}
+
 message GetCapabilitiesByHashPrefixResponseProto {
   message MatchInfoProto {
     // Domain url that matches one of the requested hash prefixes.
@@ -242,6 +255,11 @@ message GetCapabilitiesByHashPrefixResponseProto {
     // Clients are required to add those parameters themselves if needed to.
     // They are omitted here to reduce the size of the response.
     repeated ScriptParameterProto script_parameters_override = 2;
+
+    // Additional information that a bundle may wish to pass to the caller of
+    // the GetCapabilities RPC call.
+    optional BundleCapabilitiesInformationProto
+        bundle_capabilities_information = 3;
   }
   // Match information for the requested hash prefixes. No correlation should
   // be assumed between the order of returned info and the order of requested
