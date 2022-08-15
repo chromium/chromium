@@ -291,36 +291,35 @@ namespace {
   self.feedMetricsRecorder.feedControlDelegate = self;
   self.feedMetricsRecorder.followDelegate = self;
 
-    self.headerController =
-        [[ContentSuggestionsHeaderViewController alloc] init];
-    // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
-    // clean up.
-    self.headerController.dispatcher =
-        static_cast<id<ApplicationCommands, BrowserCommands, OmniboxCommands,
-                       FakeboxFocuser>>(self.browser->GetCommandDispatcher());
-    self.headerController.commandHandler = self;
-    self.headerController.delegate = self.ntpMediator;
+  self.headerController = [[ContentSuggestionsHeaderViewController alloc] init];
+  // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
+  // clean up.
+  self.headerController.dispatcher =
+      static_cast<id<ApplicationCommands, BrowserCommands, OmniboxCommands,
+                     FakeboxFocuser>>(self.browser->GetCommandDispatcher());
+  self.headerController.commandHandler = self;
+  self.headerController.delegate = self.ntpMediator;
 
-    self.headerController.readingListModel =
-        ReadingListModelFactory::GetForBrowserState(
-            self.browser->GetBrowserState());
-    self.headerController.toolbarDelegate = self.toolbarDelegate;
-    self.ntpMediator.consumer = self.headerController;
-    self.headerController.baseViewController = self.baseViewController;
+  self.headerController.readingListModel =
+      ReadingListModelFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+  self.headerController.toolbarDelegate = self.toolbarDelegate;
+  self.ntpMediator.consumer = self.headerController;
+  self.headerController.baseViewController = self.baseViewController;
 
-    // Only handle app state for the new First Run UI.
-    if (base::FeatureList::IsEnabled(kEnableFREUIModuleIOS)) {
-      SceneState* sceneState =
-          SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
-      AppState* appState = sceneState.appState;
-      [appState addObserver:self];
+  // Only handle app state for the new First Run UI.
+  if (base::FeatureList::IsEnabled(kEnableFREUIModuleIOS)) {
+    SceneState* sceneState =
+        SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+    AppState* appState = sceneState.appState;
+    [appState addObserver:self];
 
-      // Do not focus on omnibox for voice over if there are other screens to
-      // show.
-      if (appState.initStage < InitStageFinal) {
-        self.headerController.focusOmniboxWhenViewAppears = NO;
-      }
+    // Do not focus on omnibox for voice over if there are other screens to
+    // show.
+    if (appState.initStage < InitStageFinal) {
+      self.headerController.focusOmniboxWhenViewAppears = NO;
     }
+  }
 
   if (IsDiscoverFeedTopSyncPromoEnabled()) {
     self.feedTopSectionCoordinator = [self createFeedTopSectionCoordinator];
@@ -596,6 +595,10 @@ namespace {
 }
 
 - (void)selectFeedType:(FeedType)feedType {
+  if (!self.started) {
+    self.selectedFeed = feedType;
+    return;
+  }
   [self handleFeedSelected:feedType];
 }
 
@@ -639,8 +642,6 @@ namespace {
 
   // Saves scroll position before changing feed.
   CGFloat scrollPosition = [self.ntpViewController scrollPosition];
-
-  [self.feedMetricsRecorder recordFeedSelected:feedType];
 
   if (feedType == FeedTypeFollowing) {
     // Clears dot and notifies service that the Following feed content has

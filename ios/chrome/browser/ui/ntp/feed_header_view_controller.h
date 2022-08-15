@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/discover_feed/feed_constants.h"
 
 @protocol FeedControlDelegate;
+@class FeedMetricsRecorder;
 @protocol NewTabPageDelegate;
 
 @interface FeedHeaderViewController : UIViewController
@@ -25,6 +26,9 @@
 
 // The currently selected sorting for the Following feed.
 @property(nonatomic, assign) FollowingFeedSortType followingFeedSortType;
+
+// Feed metrics recorder.
+@property(nonatomic, weak) FeedMetricsRecorder* feedMetricsRecorder;
 
 // Initializes the header with the currently selected feed and the Following
 // feed's sort type.

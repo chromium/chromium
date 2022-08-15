@@ -3213,6 +3213,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     // If a new web state is inserted, the user has opened a new NTP. Since we
     // share the NTP coordinator across web states, the feed type could be
     // different from default, so we reset it.
+    // TODO(crbug.com/1352935): Use NTPHelper in NTPCoordinator.
     FeedType defaultFeedType = NTPHelper->DefaultFeedType();
     if (reason == ActiveWebStateChangeReason::Inserted &&
         self.ntpCoordinator.selectedFeed != defaultFeedType) {
