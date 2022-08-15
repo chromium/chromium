@@ -12,9 +12,8 @@ class ReloadPageDialogViewBrowserTest : public ExtensionsDialogBrowserTest {
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
     auto extension = InstallExtension("Extension");
-    bool show_checkbox = true;
     extensions::ShowReloadPageDialog(browser(), {extension->id()},
-                                     show_checkbox, base::DoNothing());
+                                     base::DoNothing());
   }
 };
 

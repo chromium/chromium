@@ -27,21 +27,20 @@ ExtensionsToolbarContainer* GetExtensionsToolbarContainer(
                       : nullptr;
 }
 
-// Returns the extensions button when multiple `extension_ids` are given.
-// Otherwise returns the action view corresponding to the single extension if it
-// exists, or the extensions menu button.
+// Returns the action view corresponding to the extension if a single
+// extension is specified in  extension_ids ; otherwise, returns the
+// extensions button.
 views::View* GetDialogAnchorView(
     ExtensionsToolbarContainer* container,
     const std::vector<extensions::ExtensionId>& extension_ids) {
   DCHECK(container);
-  DCHECK(!extension_ids.empty());
 
-  if (extension_ids.size() > 1) {
-    return container->GetExtensionsButton();
+  if (extension_ids.size() == 1) {
+    views::View* const action_view = container->GetViewForId(extension_ids[0]);
+    return action_view ? action_view : container->GetExtensionsButton();
   }
 
-  views::View* const action_view = container->GetViewForId(extension_ids[0]);
-  return action_view ? action_view : container->GetExtensionsButton();
+  return container->GetExtensionsButton();
 }
 
 }  // namespace
@@ -108,14 +107,14 @@ void ShowDialog(ExtensionsToolbarContainer* container,
   views::Widget* widget =
       views::BubbleDialogDelegate::CreateBubble(std::move(bubble));
 
-  if (extension_ids.size() > 1) {
-    // Show the widget using the default dialog anchor view.
-    widget->Show();
-  } else {
+  if (extension_ids.size() == 1) {
     // Show the widget using the anchor view of the specific extension (which
     // the container may need to popup out).
     // TODO(emiliapaz): Consider moving showing the widget for extension to the
     // utils to declutter the container file.
     container->ShowWidgetForExtension(widget, extension_ids[0]);
+  } else {
+    // Show the widget using the default dialog anchor view.
+    widget->Show();
   }
 }

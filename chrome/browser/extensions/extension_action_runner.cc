@@ -164,11 +164,9 @@ void ExtensionActionRunner::GrantTabPermissions(
                               SitePermissionsHelper::SiteAccess::kOnClick;
                      }));
 
-  // Running the action a single time does not update permissions.
-  constexpr bool update_permissions = false;
   std::vector<ExtensionId> extension_ids = GetExtensionIds(extensions);
   ShowReloadPageBubble(
-      extension_ids, update_permissions,
+      extension_ids,
       base::BindOnce(&ExtensionActionRunner::
                          OnReloadPageBubbleAcceptedForGrantTabPermissions,
                      weak_factory_.GetWeakPtr(), extension_ids, url));
@@ -191,10 +189,9 @@ void ExtensionActionRunner::HandlePageAccessModified(
   // confidence on blocking the extension. Also, this scenario should not be
   // that common and therefore hopefully is not too noisy.
   if (revoking_permissions || PageNeedsRefreshToRun(extension)) {
-    constexpr bool update_permissions = true;
-    std::vector<ExtensionId> extension_ids{extension->id()};
+    std::vector<ExtensionId> extension_ids;
     ShowReloadPageBubble(
-        extension_ids, update_permissions,
+        extension_ids,
         base::BindOnce(
             &ExtensionActionRunner::
                 OnReloadPageBubbleAcceptedForExtensionSiteAccessChange,
@@ -299,10 +296,9 @@ void ExtensionActionRunner::HandleUserSiteSettingModified(
   }
 
   if (refresh_required) {
-    std::vector<extensions::ExtensionId> extension_ids(action_ids.begin(),
-                                                       action_ids.end());
+    std::vector<extensions::ExtensionId> extension_ids;
     ShowReloadPageBubble(
-        extension_ids, true,
+        extension_ids,
         base::BindOnce(&ExtensionActionRunner::
                            OnReloadPageBubbleAcceptedForUserSiteSettingsChange,
                        weak_factory_.GetWeakPtr(), origin, new_site_settings));
@@ -519,7 +515,6 @@ void ExtensionActionRunner::LogUMA() const {
 
 void ExtensionActionRunner::ShowReloadPageBubble(
     const std::vector<ExtensionId>& extension_ids,
-    bool update_permissions,
     base::OnceClosure callback) {
   // For testing, simulate the bubble being accepted by directly invoking the
   // callback, or rejected by skipping the callback.
@@ -540,8 +535,7 @@ void ExtensionActionRunner::ShowReloadPageBubble(
   if (!extensions_container)
     return;
 
-  ShowReloadPageDialog(browser, extension_ids, update_permissions,
-                       std::move(callback));
+  ShowReloadPageDialog(browser, extension_ids, std::move(callback));
 }
 
 void ExtensionActionRunner::OnReloadPageBubbleAcceptedForGrantTabPermissions(

@@ -10,10 +10,11 @@
 
 class Browser;
 
+// TODO(emiliapaz): We do not need to have a separate `Show` method in views
+// code anymore. Inline this inside `ShowReloadPageDialog`.
 static void ShowReloadPageDialogView(
     Browser* browser,
     const std::vector<extensions::ExtensionId>& extension_ids,
-    bool is_updating_permissions,
     base::OnceClosure callback);
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_RELOAD_PAGE_DIALOG_VIEW_H_

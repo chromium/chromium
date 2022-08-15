@@ -192,7 +192,6 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   // action for the given |extension_ids|. |callback| is invoked when the
   // bubble is closed.
   void ShowReloadPageBubble(const std::vector<ExtensionId>& extension_ids,
-                            bool update_permissions,
                             base::OnceClosure callback);
 
   // Called when the reload page bubble is accepted. Grants one time site access

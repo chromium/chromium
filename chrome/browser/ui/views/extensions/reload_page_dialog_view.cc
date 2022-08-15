@@ -26,19 +26,19 @@ namespace extensions {
 void ShowReloadPageDialog(
     Browser* browser,
     const std::vector<extensions::ExtensionId>& extension_ids,
-    bool is_updating_permissions,
     base::OnceClosure callback) {
-  ShowReloadPageDialogView(browser, extension_ids, is_updating_permissions,
-                           std::move(callback));
+  ShowReloadPageDialogView(browser, extension_ids, std::move(callback));
 }
 
 }  // namespace extensions
 
 namespace {
 
-std::u16string GetTitle(const std::vector<ToolbarActionViewController*> actions,
-                        bool is_updating_permissions) {
-  if (is_updating_permissions) {
+// TODO(emiliapaz): Rename the string ids from `BLOCKED_ACTIONS` TO
+// `RELOAD_PAGE` to avoid confusion.
+std::u16string GetTitle(
+    const std::vector<ToolbarActionViewController*> actions) {
+  if (actions.size() == 0) {
     return l10n_util::GetStringUTF16(
         IDS_EXTENSION_BLOCKED_ACTION_BUBBLE_UPDATE_PERMISSIONS_TITLE);
   }
@@ -57,7 +57,6 @@ std::u16string GetTitle(const std::vector<ToolbarActionViewController*> actions,
 void ShowReloadPageDialogView(
     Browser* browser,
     const std::vector<extensions::ExtensionId>& extension_ids,
-    bool is_updating_permissions,
     base::OnceClosure callback) {
   ExtensionsToolbarContainer* const container =
       GetExtensionsToolbarContainer(browser);
@@ -71,7 +70,7 @@ void ShowReloadPageDialogView(
       actions.push_back(container->GetActionForId(extension_id));
     }
 
-    dialog_builder.SetTitle(GetTitle(actions, is_updating_permissions))
+    dialog_builder.SetTitle(GetTitle(actions))
         .AddOkButton(base::BindOnce(std::move(callback)),
                      l10n_util::GetStringUTF16(
                          IDS_EXTENSION_BLOCKED_ACTION_BUBBLE_OK_BUTTON));
@@ -80,7 +79,7 @@ void ShowReloadPageDialogView(
         browser->tab_strip_model()->GetActiveWebContents();
     if (extension_ids.size() == 1) {
       dialog_builder.SetIcon(GetIcon(actions[0], web_contents));
-    } else {
+    } else if (extension_ids.size() > 1) {
       for (auto* action : actions) {
         dialog_builder.AddMenuItem(
             GetIcon(action, web_contents), action->GetActionName(),

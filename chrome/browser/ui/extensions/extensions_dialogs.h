@@ -55,13 +55,11 @@ void ShowExtensionInstallFrictionDialog(
     base::OnceCallback<void(bool)> callback);
 
 // Shows a dialog when extensions require a refresh for their action
-// to be run or blocked. The dialog content is based on whether caller
-// `is_updating_permissions`. When the dialog is accepted, `callback` is
+// to be run or blocked. When the dialog is accepted, `callback` is
 // invoked.
 void ShowReloadPageDialog(
     Browser* browser,
     const std::vector<extensions::ExtensionId>& extension_ids,
-    bool is_updating_permissions,
     base::OnceClosure callback);
 
 // Shows a dialog with a warning to the user that their settings have been
