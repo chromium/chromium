@@ -114,8 +114,9 @@ FileSystemAccessPermissionView::FileSystemAccessPermissionView(
 
 FileSystemAccessPermissionView::~FileSystemAccessPermissionView() {
   // Make sure the dialog ends up calling the callback no matter what.
-  if (!callback_.is_null())
+  if (callback_)
     Close();
+  DCHECK(!callback_);
 }
 
 views::Widget* FileSystemAccessPermissionView::ShowDialog(
