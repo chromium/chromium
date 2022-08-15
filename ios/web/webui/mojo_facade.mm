@@ -4,28 +4,27 @@
 
 #import "ios/web/webui/mojo_facade.h"
 
-#import <stdint.h>
+#include <stdint.h>
 
-#import <limits>
-#import <utility>
-#import <vector>
+#include <limits>
+#include <utility>
+#include <vector>
 
 #import <Foundation/Foundation.h>
 
-#import "base/base64.h"
-#import "base/bind.h"
+#include "base/bind.h"
 #import "base/ios/block_types.h"
-#import "base/json/json_reader.h"
-#import "base/json/json_writer.h"
-#import "base/strings/string_number_conversions.h"
-#import "base/strings/sys_string_conversions.h"
-#import "base/values.h"
-#import "ios/web/public/js_messaging/web_frame.h"
+#include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/sys_string_conversions.h"
+#include "base/values.h"
+#include "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frame_util.h"
-#import "ios/web/public/thread/web_thread.h"
+#include "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_state.h"
-#import "mojo/public/cpp/bindings/generic_pending_receiver.h"
-#import "mojo/public/cpp/system/core.h"
+#include "mojo/public/cpp/bindings/generic_pending_receiver.h"
+#include "mojo/public/cpp/system/core.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -137,7 +136,7 @@ base::Value MojoFacade::HandleMojoHandleWriteMessage(base::Value args) {
   CHECK(handles_list);
 
   const base::Value* buffer =
-      args.FindKeyOfType("buffer", base::Value::Type::STRING);
+      args.FindKeyOfType("buffer", base::Value::Type::DICTIONARY);
   CHECK(buffer);
 
   int flags = MOJO_WRITE_MESSAGE_FLAG_NONE;
@@ -148,15 +147,19 @@ base::Value MojoFacade::HandleMojoHandleWriteMessage(base::Value args) {
     int one_handle = handles_list_storage[i].GetInt();
     handles[i] = one_handle;
   }
-  absl::optional<std::vector<uint8_t>> bytes =
-      base::Base64Decode(buffer->GetString());
-  if (!bytes) {
-    return base::Value(static_cast<int>(MOJO_RESULT_INVALID_ARGUMENT));
+
+  std::vector<uint8_t> bytes(buffer->DictSize());
+  for (const auto item : buffer->DictItems()) {
+    size_t index = std::numeric_limits<size_t>::max();
+    CHECK(base::StringToSizeT(item.first, &index));
+    CHECK(index < bytes.size());
+    int one_byte = item.second.GetInt();
+    bytes[index] = one_byte;
   }
 
   mojo::MessagePipeHandle message_pipe(static_cast<MojoHandle>(*handle));
   MojoResult result =
-      mojo::WriteMessageRaw(message_pipe, bytes->data(), bytes->size(),
+      mojo::WriteMessageRaw(message_pipe, bytes.data(), bytes.size(),
                             handles.data(), handles.size(), flags);
 
   return base::Value(static_cast<int>(result));
