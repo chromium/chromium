@@ -96,6 +96,9 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
+#include "url/origin.h"
+#include "url/url_constants.h"
+
 struct AwDrawSWFunctionTable;
 
 using autofill::ContentAutofillDriverFactory;
@@ -1457,12 +1460,23 @@ void AwContents::RenderViewHostChanged(content::RenderViewHost* old_host,
 }
 
 void AwContents::PrimaryPageChanged(content::Page& page) {
-  std::string scheme = page.GetMainDocument().GetLastCommittedURL().scheme();
+  const url::Origin& origin = page.GetMainDocument().GetLastCommittedOrigin();
+  const std::string& scheme = origin.scheme();
   if (scheme_ != scheme) {
     scheme_ = scheme;
     AwBrowserProcess::GetInstance()
         ->visibility_metrics_logger()
         ->ClientVisibilityChanged(this);
+  }
+
+  if (scheme == url::kHttpsScheme || scheme == url::kHttpScheme) {
+    JNIEnv* env = AttachCurrentThread();
+    ScopedJavaLocalRef<jobject> j_ref = java_ref_.get(env);
+    if (j_ref) {
+      uint32_t origin_hash = base::PersistentHash(origin.Serialize());
+      jlong j_origin_hash = static_cast<jlong>(origin_hash);
+      Java_AwContents_logOriginVisit(env, j_ref, j_origin_hash);
+    }
   }
 }
 

@@ -4362,6 +4362,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.OriginsVisited" units="origins"
+    expires_after="2022-11-11">
+  <owner>mvanouwerkerk@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Measures the count of distinct http and https origins visited per day in
+    WebView. The purpose of this metric is to slice it by package name to help
+    characterize the usage of that package.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.PageTimeSpent2.{Scheme}{Party}" units="ms"
     expires_after="2022-07-01">
   <obsolete>
