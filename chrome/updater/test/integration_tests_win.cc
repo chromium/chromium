@@ -1067,6 +1067,8 @@ void ExpectLegacyPolicyStatusSucceeds(UpdaterScope scope) {
       test_app.Get(), &policy_status_value));
   ExpectPolicyStatusValues(policy_status_value, L"default", L"false",
                            VARIANT_FALSE);
+
+  ASSERT_HRESULT_SUCCEEDED(policy_status2->refreshPolicies());
 }
 
 int RunVPythonCommand(const base::CommandLine& command_line) {

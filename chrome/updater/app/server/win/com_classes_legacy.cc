@@ -44,6 +44,7 @@
 #include "chrome/updater/policy/manager.h"
 #include "chrome/updater/policy/service.h"
 #include "chrome/updater/prefs.h"
+#include "chrome/updater/refresh_dm_policies_task.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
@@ -916,9 +917,16 @@ STDMETHODIMP PolicyStatusImpl::get_lastCheckedTime(DATE* last_checked) {
   return S_OK;
 }
 
-// TODO(crbug.com/1293203): Implement this method.
 STDMETHODIMP PolicyStatusImpl::refreshPolicies() {
-  return E_NOTIMPL;
+  AppServerSingletonInstance()->main_task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&RefreshDMPoliciesTask::Run,
+                     base::MakeRefCounted<RefreshDMPoliciesTask>(
+                         AppServerSingletonInstance()->config(),
+                         AppServerSingletonInstance()->main_task_runner()),
+                     base::DoNothing()));
+
+  return S_OK;
 }
 
 STDMETHODIMP PolicyStatusImpl::get_lastCheckPeriodMinutes(

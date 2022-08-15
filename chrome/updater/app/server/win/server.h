@@ -13,12 +13,12 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/updater/app/app.h"
 #include "chrome/updater/app/app_server.h"
+#include "chrome/updater/configurator.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/update_service_internal.h"
 
 namespace updater {
 
-class Configurator;
 struct RegistrationRequest;
 
 // The COM objects involved in this server are free threaded. Incoming COM calls
@@ -55,6 +55,8 @@ class ComServerApp : public AppServer {
   }
 
   scoped_refptr<const UpdaterPrefs> prefs() const { return AppServer::prefs(); }
+
+  scoped_refptr<Configurator> config() const { return AppServer::config(); }
 
   // Handles COM factory unregistration then triggers program shutdown. This
   // function runs on a COM RPC thread when the WRL module is destroyed.

@@ -82,12 +82,11 @@ base::OnceClosure AppServer::ModeCheck() {
     if (!local_prefs->GetQualified()) {
       global_prefs = nullptr;
       prefs_ = local_prefs;
+      config_ = base::MakeRefCounted<Configurator>(prefs_, external_constants_);
       return IsInternalService()
                  ? base::BindOnce(&AppServer::ActiveDutyInternal, this,
                                   MakeQualifyingUpdateServiceInternal(
-                                      base::MakeRefCounted<Configurator>(
-                                          prefs_, external_constants_),
-                                      local_prefs))
+                                      config_, local_prefs))
                  : base::BindOnce(&AppServer::ActiveDuty, this,
                                   MakeInactiveUpdateService());
     }
@@ -106,10 +105,9 @@ base::OnceClosure AppServer::ModeCheck() {
 
   server_starts_ = global_prefs->CountServerStarts();
   prefs_ = global_prefs;
-  return base::BindOnce(
-      &AppServer::ActiveDuty, this,
-      base::MakeRefCounted<UpdateServiceImpl>(
-          base::MakeRefCounted<Configurator>(prefs_, external_constants_)));
+  config_ = base::MakeRefCounted<Configurator>(prefs_, external_constants_);
+  return base::BindOnce(&AppServer::ActiveDuty, this,
+                        base::MakeRefCounted<UpdateServiceImpl>(config_));
 }
 
 void AppServer::Uninitialize() {
