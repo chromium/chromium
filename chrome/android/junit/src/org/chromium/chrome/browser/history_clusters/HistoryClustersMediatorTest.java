@@ -517,26 +517,47 @@ public class HistoryClustersMediatorTest {
     @Test
     public void testToggleClusterVisibility() {
         PropertyModel clusterModel = new PropertyModel(HistoryClustersItemProperties.ALL_KEYS);
+        PropertyModel clusterModel2 = new PropertyModel(HistoryClustersItemProperties.ALL_KEYS);
         PropertyModel visitModel1 = new PropertyModel(HistoryClustersItemProperties.ALL_KEYS);
         PropertyModel visitModel2 = new PropertyModel(HistoryClustersItemProperties.ALL_KEYS);
-        PropertyModel clusterModel2 = new PropertyModel(HistoryClustersItemProperties.ALL_KEYS);
+        PropertyModel visitModel3 = new PropertyModel(HistoryClustersItemProperties.ALL_KEYS);
+        PropertyModel visitModel4 = new PropertyModel(HistoryClustersItemProperties.ALL_KEYS);
         List<ListItem> visitItemsToHide = Arrays.asList(new ListItem(ItemType.VISIT, visitModel1),
                 new ListItem(ItemType.VISIT, visitModel2));
-        mModelList.add(new ListItem(ItemType.CLUSTER, clusterModel));
+        List<ListItem> visitItemsToHide2 = Arrays.asList(new ListItem(ItemType.VISIT, visitModel3),
+                new ListItem(ItemType.VISIT, visitModel4));
+        ListItem clusterItem1 = new ListItem(ItemType.CLUSTER, clusterModel);
+        ListItem clusterItem2 = new ListItem(ItemType.CLUSTER, clusterModel2);
+        mModelList.add(clusterItem1);
         mModelList.addAll(visitItemsToHide);
-        mModelList.add(new ListItem(ItemType.CLUSTER, clusterModel2));
+        mModelList.add(clusterItem2);
+        mModelList.addAll(visitItemsToHide2);
 
-        mMediator.hideCluster(clusterModel, visitItemsToHide);
+        mMediator.hideCluster(clusterItem1, visitItemsToHide);
         assertEquals(mModelList.indexOf(visitItemsToHide.get(0)), -1);
         assertEquals(mModelList.indexOf(visitItemsToHide.get(1)), -1);
-        assertEquals(2, mModelList.size());
+        assertEquals(4, mModelList.size());
         assertEquals(ClusterViewAccessibilityState.EXPANDABLE,
                 clusterModel.get(HistoryClustersItemProperties.ACCESSIBILITY_STATE));
 
-        mMediator.showCluster(clusterModel, visitItemsToHide, 1);
+        mMediator.hideCluster(clusterItem2, visitItemsToHide2);
+        assertEquals(mModelList.indexOf(visitItemsToHide2.get(0)), -1);
+        assertEquals(mModelList.indexOf(visitItemsToHide2.get(1)), -1);
+        assertEquals(2, mModelList.size());
+        assertEquals(ClusterViewAccessibilityState.EXPANDABLE,
+                clusterModel2.get(HistoryClustersItemProperties.ACCESSIBILITY_STATE));
+
+        mMediator.showCluster(clusterItem2, visitItemsToHide2);
+        assertEquals(mModelList.indexOf(visitItemsToHide2.get(0)), 2);
+        assertEquals(mModelList.indexOf(visitItemsToHide2.get(1)), 3);
+        assertEquals(4, mModelList.size());
+        assertEquals(ClusterViewAccessibilityState.COLLAPSIBLE,
+                clusterModel2.get(HistoryClustersItemProperties.ACCESSIBILITY_STATE));
+
+        mMediator.showCluster(clusterItem1, visitItemsToHide);
         assertEquals(mModelList.indexOf(visitItemsToHide.get(0)), 1);
         assertEquals(mModelList.indexOf(visitItemsToHide.get(1)), 2);
-        assertEquals(4, mModelList.size());
+        assertEquals(6, mModelList.size());
         assertEquals(ClusterViewAccessibilityState.COLLAPSIBLE,
                 clusterModel.get(HistoryClustersItemProperties.ACCESSIBILITY_STATE));
     }
