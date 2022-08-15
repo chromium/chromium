@@ -203,10 +203,16 @@ std::vector<uint8_t> BuildGetInfoResponse() {
   options.emplace("rk",
                   base::FeatureList::IsEnabled(device::kWebAuthCableDisco));
 
+  std::vector<cbor::Value> transports;
+  transports.emplace_back("cable");
+  transports.emplace_back("hybrid");
+  transports.emplace_back("internal");
+
   cbor::Value::MapValue response_map;
   response_map.emplace(1, std::move(versions));
   response_map.emplace(3, aaguid);
   response_map.emplace(4, std::move(options));
+  response_map.emplace(9, std::move(transports));
 
   return cbor::Writer::Write(cbor::Value(std::move(response_map))).value();
 }
