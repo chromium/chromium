@@ -10,6 +10,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/bind.h"
+#include "base/callback_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -201,19 +202,22 @@ ItemSuggestCache::Results::~Results() = default;
 
 ItemSuggestCache::ItemSuggestCache(
     Profile* profile,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    base::RepeatingCallback<void()> on_results_updated)
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : made_request_(false),
       enabled_(kEnabled.Get()),
       server_url_(kServerUrl.Get()),
       multiple_queries_per_session_(kMultipleQueriesPerSession.Get()),
-      on_results_updated_(on_results_updated),
       profile_(profile),
       url_loader_factory_(std::move(url_loader_factory)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 ItemSuggestCache::~ItemSuggestCache() = default;
+
+base::CallbackListSubscription ItemSuggestCache::RegisterCallback(
+    ItemSuggestCache::OnResultsCallback callback) {
+  return on_results_callback_list_.Add(std::move(callback));
+}
 
 absl::optional<ItemSuggestCache::Results> ItemSuggestCache::GetResults() {
   // Return a copy because a pointer to |results_| will become invalid whenever
@@ -387,7 +391,7 @@ void ItemSuggestCache::OnJsonParsed(
     LogStatus(Status::kOk);
     LogLatency(base::TimeTicks::Now() - update_start_time_);
     results_ = std::move(results.value());
-    on_results_updated_.Run();
+    on_results_callback_list_.Notify();
   }
 }
 

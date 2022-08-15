@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_FILES_ITEM_SUGGEST_CACHE_H_
 #define CHROME_BROWSER_UI_APP_LIST_SEARCH_FILES_ITEM_SUGGEST_CACHE_H_
 
+#include "base/callback_list.h"
 #include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -56,12 +57,17 @@ class ItemSuggestCache {
 
   ItemSuggestCache(
       Profile* profile,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      base::RepeatingCallback<void()> on_results_updated);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   ~ItemSuggestCache();
 
   ItemSuggestCache(const ItemSuggestCache&) = delete;
   ItemSuggestCache& operator=(const ItemSuggestCache&) = delete;
+
+  using OnResultsCallback = base::RepeatingCallback<void()>;
+  using OnResultsCallbackList = base::RepeatingCallbackList<void()>;
+
+  // Registers a callback to be run whenever the results are updated.
+  base::CallbackListSubscription RegisterCallback(OnResultsCallback callback);
 
   // Returns the results currently in the cache. A null result indicates that
   // the cache has not been successfully updated.
@@ -154,7 +160,8 @@ class ItemSuggestCache {
   // Whether we should query item suggest more than once per session.
   const bool multiple_queries_per_session_;
 
-  base::RepeatingCallback<void()> on_results_updated_;
+  // List of callbacks to run when results are updated.
+  OnResultsCallbackList on_results_callback_list_;
 
   Profile* profile_;
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher> token_fetcher_;

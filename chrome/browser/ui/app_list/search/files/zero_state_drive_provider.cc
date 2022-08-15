@@ -148,25 +148,29 @@ ZeroStateDriveProvider::ZeroStateDriveProvider(
     Profile* profile,
     SearchController* search_controller,
     drive::DriveIntegrationService* drive_service,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    std::unique_ptr<ItemSuggestCache> item_suggest_cache)
     : profile_(profile),
       drive_service_(drive_service),
       session_manager_(session_manager::SessionManager::Get()),
       construction_time_(base::Time::Now()),
-      item_suggest_cache_(
-          profile,
-          std::move(url_loader_factory),
-          base::BindRepeating(&ZeroStateDriveProvider::OnCacheUpdated,
-                              base::Unretained(this))),
+      item_suggest_cache_(std::move(item_suggest_cache)),
       max_last_modified_time_(base::Days(base::GetFieldTrialParamByFeatureAsInt(
           ash::features::kProductivityLauncher,
           "max_last_modified_time",
           8))) {
-  DCHECK(profile_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(profile_);
+  DCHECK(item_suggest_cache_);
+
   task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::TaskPriority::USER_BLOCKING, base::MayBlock(),
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
+
+  // It's safe to use Unretained(this) by contract of the
+  // CallbackListSubscription.
+  item_suggest_subscription_ =
+      item_suggest_cache_->RegisterCallback(base::BindRepeating(
+          &ZeroStateDriveProvider::OnCacheUpdated, base::Unretained(this)));
 
   if (drive_service_) {
     if (drive_service_->IsMounted()) {
@@ -277,7 +281,7 @@ void ZeroStateDriveProvider::StartZeroState() {
   weak_factory_.InvalidateWeakPtrs();
 
   // Get the most recent results from the cache.
-  cache_results_ = item_suggest_cache_.GetResults();
+  cache_results_ = item_suggest_cache_->GetResults();
   if (!cache_results_) {
     LogStatus(Status::kNoResults);
     return;
@@ -395,7 +399,7 @@ void ZeroStateDriveProvider::OnCacheUpdated() {
 
 void ZeroStateDriveProvider::MaybeUpdateCache() {
   if (base::Time::Now() - kFirstUpdateDelay > construction_time_) {
-    item_suggest_cache_.UpdateCache();
+    item_suggest_cache_->UpdateCache();
   }
 }
 

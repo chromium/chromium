@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/components/drivefs/mojom/drivefs.mojom.h"
+#include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -33,11 +34,10 @@ class ZeroStateDriveProvider : public SearchProvider,
                                public session_manager::SessionManagerObserver,
                                public chromeos::PowerManagerClient::Observer {
  public:
-  ZeroStateDriveProvider(
-      Profile* profile,
-      SearchController* search_controller,
-      drive::DriveIntegrationService* drive_service,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+  ZeroStateDriveProvider(Profile* profile,
+                         SearchController* search_controller,
+                         drive::DriveIntegrationService* drive_service,
+                         std::unique_ptr<ItemSuggestCache> item_suggest_cache);
   ~ZeroStateDriveProvider() override;
 
   ZeroStateDriveProvider(const ZeroStateDriveProvider&) = delete;
@@ -115,7 +115,8 @@ class ZeroStateDriveProvider : public SearchProvider,
 
   const base::Time construction_time_;
 
-  ItemSuggestCache item_suggest_cache_;
+  std::unique_ptr<ItemSuggestCache> item_suggest_cache_;
+  base::CallbackListSubscription item_suggest_subscription_;
 
   // The most recent results retrieved from |item_suggested_cache_|. This is
   // updated on a call to Start and is used only to store the results until
