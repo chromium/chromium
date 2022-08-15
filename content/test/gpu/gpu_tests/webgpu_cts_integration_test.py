@@ -373,31 +373,6 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
       elif response_type == MESSAGE_TYPE_TEST_FINISHED:
         VerifyMessageOrderTestFinished(message_state)
-        # TODO(crbug.com/1340602): Remove log, etc. once the Dawn code has
-        # been updated to send multiple message types.
-        if 's' in response:
-          result.status = response['s']
-        if 'l' in response:
-          result.log_pieces.append(response['l'])
-        if 'js_duration_ms' in response:
-          js_duration = response['js_duration_ms'] / 1000
-          # Specify the precision to avoid scientific notation. Nanoseconds
-          # should be more precision than we need anyways.
-          self.additionalTags[JAVASCRIPT_DURATION] = '%.9fs' % js_duration
-
-        if 'final' in response:
-          is_final_payload = response['final']
-          # Get multiple log pieces if necessary, e.g. if a monolithic log
-          # would have gone over the max payload size.
-          while not is_final_payload:
-            future = asyncio.run_coroutine_threadsafe(
-                asyncio.wait_for(WebGpuCtsIntegrationTest.websocket.recv(),
-                                 MULTI_PAYLOAD_TIMEOUT),
-                WebGpuCtsIntegrationTest.event_loop)
-            response = future.result()
-            response = json.loads(response)
-            result.log_pieces.append(response['l'])
-            is_final_payload = response['final']
         break
 
       else:
@@ -567,9 +542,9 @@ def VerifyMessageOrderTestFinished(message_state: Dict[str, bool]) -> None:
     message_state: A map from message type to a boolean denoting whether a
         message of that type has been received before.
   """
-  # TODO(crbug.com/1340602): Add message state verification once the Dawn code
-  # has been updated to send multiple message types.
-  del message_state  # currently unused
+  if not message_state[MESSAGE_TYPE_TEST_LOG]:
+    raise WebGpuMessageProtocolError(
+        'Received finish message before log message')
 
 
 def TestNameFromInputs(query: str, worker: bool) -> str:
