@@ -3280,6 +3280,12 @@ const char kBackGestureRefactorAndroidName[] = "Back Gesture Refactor";
 const char kBackGestureRefactorAndroidDescription[] =
     "Enable Back Gesture Refactor.";
 
+const char kBindingManagerUseNotPerceptibleBindingName[] =
+    "Reduced background renderer binding";
+const char kBindingManagerUseNotPerceptibleBindingDescription[] =
+    "When enabled, uses a not perceptible binding for background renderers "
+    "used in the current session if able.";
+
 const char kBulkTabRestoreAndroidName[] = "Recent Tabs Bulk Restore";
 const char kBulkTabRestoreAndroidDescription[] =
     "Enables restoration of bulk tab closures (e.g. close all tabs, close "

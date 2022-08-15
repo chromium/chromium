@@ -2416,6 +2416,16 @@ Unknown properties are collapsed to zero. -->
   <int value="17" label="Utility process foreground OOM"/>
   <int value="18" label="All utility process crashes"/>
   <int value="19" label="Renderer shutdown from RenderProcessHost::Shutdown"/>
+  <int value="20"
+      label="Invisible renderer in foreground app with visible binding killed"/>
+  <int value="21"
+      label="Invisible renderer in foreground app with visible binding oom"/>
+  <int value="22"
+      label="Invisible renderer in foreground app with not perceptible
+             binding killed"/>
+  <int value="23"
+      label="Invisible renderer in foreground app with not perceptible
+             binding oom"/>
 </enum>
 
 <enum name="AndroidProcessedMinidumps">
@@ -58850,6 +58860,8 @@ from previous Chrome versions.
   <int value="-218843425" label="auto-framing-override"/>
   <int value="-217930860" label="EnableAutomaticSnooze:disabled"/>
   <int value="-217885320" label="CdmFactoryDaemon:disabled"/>
+  <int value="-217352290"
+      label="BindingManagerUseNotPerceptibleBinding:disabled"/>
   <int value="-216219963" label="ash-shelf-color-scheme"/>
   <int value="-216189310"
       label="DebugHistoryInterventionNoUserActivation:enabled"/>
@@ -59499,6 +59511,8 @@ from previous Chrome versions.
   <int value="193865288" label="EnableSuggestedLocalFiles:enabled"/>
   <int value="194573877" label="MacViewsNativeDialogs:disabled"/>
   <int value="194645300" label="FileTransferEnterpriseConnector:disabled"/>
+  <int value="194822286"
+      label="BindingManagerUseNotPerceptibleBinding:enabled"/>
   <int value="194895489" label="passive-listeners-default"/>
   <int value="195112080" label="DeskTemplateSync:enabled"/>
   <int value="195335115" label="AudioWorkletRealtimeThread:disabled"/>

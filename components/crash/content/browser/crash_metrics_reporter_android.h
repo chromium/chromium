@@ -51,7 +51,11 @@ class CrashMetricsReporter {
     kUtilityForegroundOom = 17,
     kUtilityCrashAll = 18,
     kRendererProcessHostShutdown = 19,
-    kMaxValue = kRendererProcessHostShutdown
+    kRendererForegroundInvisibleWithVisibleBindingKilled = 20,
+    kRendererForegroundInvisibleWithVisibleBindingOom = 21,
+    kRendererForegroundInvisibleWithNotPerceptibleBindingKilled = 22,
+    kRendererForegroundInvisibleWithNotPerceptibleBindingOom = 23,
+    kMaxValue = kRendererForegroundInvisibleWithNotPerceptibleBindingOom
   };
   using ReportedCrashTypeSet = base::flat_set<ProcessedCrashCounts>;
 

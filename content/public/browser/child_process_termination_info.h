@@ -43,7 +43,7 @@ struct CONTENT_EXPORT ChildProcessTerminationInfo {
   // the same as not having main frames.
   bool renderer_was_subframe = false;
 
-  // True if child service has strong or moderate binding at time of death.
+  // Child service binding state at time of death.
   base::android::ChildBindingState binding_state =
       base::android::ChildBindingState::UNBOUND;
 

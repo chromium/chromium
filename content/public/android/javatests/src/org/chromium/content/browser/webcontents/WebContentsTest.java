@@ -412,16 +412,15 @@ public class WebContentsTest {
 
         final ChildProcessConnection connection = getSandboxedChildProcessConnection();
         // Need to poll here because there is an intentional delay for removing binding.
-        CriteriaHelper.pollInstrumentationThread(
-                ()
-                        -> ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
-                                () -> !connection.isModerateBindingBound()),
-                "Failed to remove moderate binding");
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            return ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
+                    () -> !connection.isVisibleBindingBound());
+        }, "Failed to remove moderate binding");
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> webContents.setImportance(ChildProcessImportance.MODERATE));
         ChildProcessLauncherTestUtils.runOnLauncherThreadBlocking(
-                () -> Assert.assertTrue(connection.isModerateBindingBound()));
+                () -> Assert.assertTrue(connection.isVisibleBindingBound()));
     }
 
     @Test

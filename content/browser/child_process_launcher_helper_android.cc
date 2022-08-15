@@ -158,8 +158,7 @@ ChildProcessLauncherHelper::LaunchProcessOnLauncherThread(
 
 void ChildProcessLauncherHelper::AfterLaunchOnLauncherThread(
     const ChildProcessLauncherHelper::Process& process,
-    const base::LaunchOptions& options) {
-}
+    const base::LaunchOptions& options) {}
 
 ChildProcessTerminationInfo ChildProcessLauncherHelper::GetTerminationInfo(
     const ChildProcessLauncherHelper::Process& process,
@@ -178,7 +177,7 @@ ChildProcessTerminationInfo ChildProcessLauncherHelper::GetTerminationInfo(
       app_state == base::android::APPLICATION_STATE_HAS_PAUSED_ACTIVITIES;
 
   if (app_foreground &&
-      (info.binding_state == base::android::ChildBindingState::MODERATE ||
+      (info.binding_state == base::android::ChildBindingState::VISIBLE ||
        info.binding_state == base::android::ChildBindingState::STRONG)) {
     info.status = base::TERMINATION_STATUS_OOM_PROTECTED;
   } else {
@@ -262,9 +261,7 @@ void ChildProcessLauncherHelper::DumpProcessStack(
 // Called from ChildProcessLauncher.java when the ChildProcess was started.
 // |handle| is the processID of the child process as originated in Java, 0 if
 // the ChildProcess could not be created.
-void ChildProcessLauncherHelper::OnChildProcessStarted(
-    JNIEnv*,
-    jint handle) {
+void ChildProcessLauncherHelper::OnChildProcessStarted(JNIEnv*, jint handle) {
   DCHECK(CurrentlyOnProcessLauncherTaskRunner());
   scoped_refptr<ChildProcessLauncherHelper> ref(this);
   Release();  // Balances with LaunchProcessOnLauncherThread.

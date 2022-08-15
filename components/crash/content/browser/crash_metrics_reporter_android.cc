@@ -201,16 +201,29 @@ void CrashMetricsReporter::ChildProcessExited(
                 &reported_counts);
           }
           break;
-        case base::android::ChildBindingState::MODERATE:
+        case base::android::ChildBindingState::VISIBLE:
           if (intentional_kill || info.normal_termination) {
             ReportCrashCount(
                 ProcessedCrashCounts::
-                    kRendererForegroundInvisibleWithModerateBindingKilled,
+                    kRendererForegroundInvisibleWithVisibleBindingKilled,
                 &reported_counts);
           } else {
             ReportCrashCount(
                 ProcessedCrashCounts::
-                    kRendererForegroundInvisibleWithModerateBindingOom,
+                    kRendererForegroundInvisibleWithVisibleBindingOom,
+                &reported_counts);
+          }
+          break;
+        case base::android::ChildBindingState::NOT_PERCEPTIBLE:
+          if (intentional_kill || info.normal_termination) {
+            ReportCrashCount(
+                ProcessedCrashCounts::
+                    kRendererForegroundInvisibleWithNotPerceptibleBindingKilled,
+                &reported_counts);
+          } else {
+            ReportCrashCount(
+                ProcessedCrashCounts::
+                    kRendererForegroundInvisibleWithNotPerceptibleBindingOom,
                 &reported_counts);
           }
           break;

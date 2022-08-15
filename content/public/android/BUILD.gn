@@ -650,6 +650,7 @@ robolectric_binary("content_junit_tests") {
     "//base:base_java_process_launcher_test_support",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//content/public/common:common_java",
     "//content/public/test/android:content_java_test_support",
     "//media/mojo/mojom:mojom_java",
     "//mojo/public/java:base_java",

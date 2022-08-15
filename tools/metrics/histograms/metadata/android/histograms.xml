@@ -58,11 +58,16 @@ chromium-metrics-reviews@google.com.
 <variants name="ChildProcessConnectionMetricsBindingState">
   <variant name="ContentModerate"
       summary="Moderate binding excluding BindingManager bindings"/>
+  <variant name="ContentVisible"
+      summary="Visible binding excluding BindingManager bindings"/>
   <variant name="ContentWaived"
       summary="Waived binding excluding BindingManager bindings"/>
   <variant name="Moderate" summary="strongest binding of Moderate"/>
+  <variant name="Not Perceptible"
+      summary="strongest binding of Not Perceptible"/>
   <variant name="Strong" summary="strongest binding of Strong"/>
-  <variant name="Waivable" summary="Moderate binding only from BindingManager"/>
+  <variant name="Visible" summary="strongest binding of Visible"/>
+  <variant name="Waivable" summary="binding only from BindingManager"/>
   <variant name="Waived" summary="strongest binding of Waived"/>
 </variants>
 
@@ -2288,6 +2293,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.ModerateBindingCount" units="bindings"
     expires_after="M77">
+  <obsolete>
+    Expired in M77. See Android.ChildProcessBinding.*
+  </obsolete>
   <owner>tedchoc@chromium.org</owner>
   <owner>clank-team@google.com</owner>
   <summary>

@@ -356,7 +356,7 @@ public final class ChildProcessLauncherHelperImpl {
     private long mStartTimeMs;
 
     // This is the current computed importance from all the inputs from setPriority.
-    // The initial value is MODERATE since a newly created connection has moderate bindings.
+    // The initial value is MODERATE since a newly created connection has visible bindings.
     private @ChildProcessImportance int mEffectiveImportance = ChildProcessImportance.MODERATE;
     private boolean mVisible;
 
@@ -768,7 +768,7 @@ public final class ChildProcessLauncherHelperImpl {
                     // Nothing to add.
                     break;
                 case ChildProcessImportance.MODERATE:
-                    connection.addModerateBinding();
+                    connection.addVisibleBinding();
                     break;
                 case ChildProcessImportance.IMPORTANT:
                     connection.addStrongBinding();
@@ -793,7 +793,7 @@ public final class ChildProcessLauncherHelperImpl {
                         // Nothing to remove.
                         break;
                     case ChildProcessImportance.MODERATE:
-                        connection.removeModerateBinding();
+                        connection.removeVisibleBinding();
                         break;
                     case ChildProcessImportance.IMPORTANT:
                         connection.removeStrongBinding();

@@ -1204,6 +1204,12 @@ const base::Feature kBackgroundMediaRendererHasModerateBinding{
     "BackgroundMediaRendererHasModerateBinding",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// When this feature is enabled the BindingManager for non-low-end devices will
+// use a not perceptible binding for background renderers on Android Q+.
+const base::Feature kBindingManagerUseNotPerceptibleBinding{
+    "BindingManagerUseNotPerceptibleBinding",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Reduce the priority of GPU process when in background so it is more likely
 // to be killed first if the OS needs more memory.
 const base::Feature kReduceGpuPriorityOnBackground{

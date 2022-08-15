@@ -9119,6 +9119,14 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(::features::kReduceGpuPriorityOnBackground)},
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+    {"binding-manager-use-not-perceptible-binding",
+     flag_descriptions::kBindingManagerUseNotPerceptibleBindingName,
+     flag_descriptions::kBindingManagerUseNotPerceptibleBindingDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(::features::kBindingManagerUseNotPerceptibleBinding)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

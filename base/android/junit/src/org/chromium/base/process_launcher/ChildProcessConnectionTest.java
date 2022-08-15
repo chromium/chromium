@@ -237,7 +237,7 @@ public class ChildProcessConnectionTest {
         ChildProcessConnection connection = createDefaultTestConnection();
         assertNotNull(mFirstServiceConnection);
         connection.start(false /* useStrongBinding */, mServiceCallback);
-        Assert.assertTrue(connection.isModerateBindingBound());
+        Assert.assertTrue(connection.isVisibleBindingBound());
         Assert.assertFalse(connection.didOnServiceConnectedForTesting());
         verify(mServiceCallback, never()).onChildStarted();
         verify(mServiceCallback, never()).onChildStartFailed(any());
@@ -260,7 +260,7 @@ public class ChildProcessConnectionTest {
         doReturn(false).when(mFirstServiceConnection).bindServiceConnection();
         connection.start(false /* useStrongBinding */, mServiceCallback);
 
-        Assert.assertFalse(connection.isModerateBindingBound());
+        Assert.assertFalse(connection.isVisibleBindingBound());
         Assert.assertFalse(connection.didOnServiceConnectedForTesting());
         verify(mServiceCallback, never()).onChildStarted();
         verify(mServiceCallback, never()).onChildStartFailed(any());
@@ -501,10 +501,15 @@ public class ChildProcessConnectionTest {
         verify(mConnectionCallback, times(1)).onConnected(connection);
 
         // Add strong binding so that connection is oom protected.
-        connection.removeModerateBinding();
+        connection.removeVisibleBinding();
         assertEquals(ChildBindingState.WAIVED, connection.bindingStateCurrentOrWhenDied());
-        connection.addModerateBinding();
-        assertEquals(ChildBindingState.MODERATE, connection.bindingStateCurrentOrWhenDied());
+        if (ChildProcessConnection.supportNotPerceptibleBinding()) {
+            connection.addNotPerceptibleBinding();
+            assertEquals(
+                    ChildBindingState.NOT_PERCEPTIBLE, connection.bindingStateCurrentOrWhenDied());
+        }
+        connection.addVisibleBinding();
+        assertEquals(ChildBindingState.VISIBLE, connection.bindingStateCurrentOrWhenDied());
         connection.addStrongBinding();
         assertEquals(ChildBindingState.STRONG, connection.bindingStateCurrentOrWhenDied());
 
