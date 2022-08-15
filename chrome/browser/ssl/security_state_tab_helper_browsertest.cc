@@ -1211,7 +1211,7 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTest, AddedTab) {
 
   content::WebContents* raw_new_contents = new_contents.get();
   browser()->tab_strip_model()->InsertWebContentsAt(0, std::move(new_contents),
-                                                    TabStripModel::ADD_NONE);
+                                                    AddTabTypes::ADD_NONE);
   CheckSecurityInfoForSecure(raw_new_contents, security_state::SECURE, false,
                              false, false,
                              false /* expect cert status error */);

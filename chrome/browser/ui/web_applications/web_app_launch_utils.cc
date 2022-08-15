@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
@@ -111,16 +112,16 @@ Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
           /*index=*/0,
           source_tabstrip->DetachWebContentsAtForInsertion(
               source_tabstrip->GetIndexOfWebContents(contents)),
-          (TabStripModel::ADD_INHERIT_OPENER | TabStripModel::ADD_ACTIVE |
-           TabStripModel::ADD_PINNED));
+          (AddTabTypes::ADD_INHERIT_OPENER | AddTabTypes::ADD_ACTIVE |
+           AddTabTypes::ADD_PINNED));
       target_tabstrip->DetachAndDeleteWebContentsAt(1);
     } else {
       target_tabstrip->InsertWebContentsAt(
           /*index=*/0,
           source_tabstrip->DetachWebContentsAtForInsertion(
               source_tabstrip->GetIndexOfWebContents(contents)),
-          (TabStripModel::ADD_INHERIT_OPENER | TabStripModel::ADD_ACTIVE |
-           TabStripModel::ADD_PINNED));
+          (AddTabTypes::ADD_INHERIT_OPENER | AddTabTypes::ADD_ACTIVE |
+           AddTabTypes::ADD_PINNED));
     }
   } else {
     MaybeAddPinnedHomeTab(target_browser, app_id);
@@ -309,7 +310,7 @@ void MaybeAddPinnedHomeTab(Browser* browser, const std::string& app_id) {
     NavigateParams home_tab_nav_params(browser, pinned_home_tab_url.value(),
                                        ui::PAGE_TRANSITION_AUTO_BOOKMARK);
     home_tab_nav_params.disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
-    home_tab_nav_params.tabstrip_add_types |= TabStripModel::ADD_PINNED;
+    home_tab_nav_params.tabstrip_add_types |= AddTabTypes::ADD_PINNED;
     Navigate(&home_tab_nav_params);
   }
 }

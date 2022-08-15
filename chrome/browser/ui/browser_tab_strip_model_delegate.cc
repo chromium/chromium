@@ -82,7 +82,7 @@ Browser* BrowserTabStripModelDelegate::CreateNewStripWithContents(
     // Enforce that there is an active tab in the strip at all times by forcing
     // the first web contents to be marked as active.
     if (i == 0)
-      item.add_types |= TabStripModel::ADD_ACTIVE;
+      item.add_types |= AddTabTypes::ADD_ACTIVE;
 
     content::WebContents* raw_web_contents = item.web_contents.get();
     new_model->InsertWebContentsAt(

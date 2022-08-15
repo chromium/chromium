@@ -142,11 +142,11 @@ WebContents* AddRestoredTabImpl(std::unique_ptr<WebContents> web_contents,
                                 bool from_session_restore) {
   TabStripModel* const tab_strip_model = browser->tab_strip_model();
 
-  int add_types = select ? TabStripModel::ADD_ACTIVE : TabStripModel::ADD_NONE;
+  int add_types = select ? AddTabTypes::ADD_ACTIVE : AddTabTypes::ADD_NONE;
   if (pin) {
     tab_index =
         std::min(tab_index, tab_strip_model->IndexOfFirstNonPinnedTab());
-    add_types |= TabStripModel::ADD_PINNED;
+    add_types |= AddTabTypes::ADD_PINNED;
   }
 
   const absl::optional<tab_groups::TabGroupId> surrounding_group =
@@ -293,7 +293,7 @@ WebContents* ReplaceRestoredTab(
   int insertion_index = tab_strip->active_index();
   tab_strip->InsertWebContentsAt(
       insertion_index + 1, std::move(web_contents),
-      TabStripModel::ADD_ACTIVE | TabStripModel::ADD_INHERIT_OPENER);
+      AddTabTypes::ADD_ACTIVE | AddTabTypes::ADD_INHERIT_OPENER);
   tab_strip->CloseWebContentsAt(insertion_index, TabCloseTypes::CLOSE_NONE);
 
   LoadRestoredTabIfVisible(browser, raw_web_contents);

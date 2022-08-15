@@ -238,7 +238,7 @@ IN_PROC_BROWSER_TEST_P(
   std::unique_ptr<content::WebContents> web_contents =
       browser2->tab_strip_model()->DetachWebContentsAtForInsertion(0);
   browser()->tab_strip_model()->InsertWebContentsAt(1, std::move(web_contents),
-                                                    TabStripModel::ADD_ACTIVE);
+                                                    AddTabTypes::ADD_ACTIVE);
 
   ASSERT_EQ(2, browser()->tab_strip_model()->GetTabCount());
   ASSERT_EQ(1, browser()->tab_strip_model()->active_index());
@@ -704,7 +704,7 @@ IN_PROC_BROWSER_TEST_F(
   std::unique_ptr<content::WebContents> web_contents =
       browser2->tab_strip_model()->DetachWebContentsAtForInsertion(2);
   browser()->tab_strip_model()->InsertWebContentsAt(3, std::move(web_contents),
-                                                    TabStripModel::ADD_ACTIVE);
+                                                    AddTabTypes::ADD_ACTIVE);
 
   // The global panel should now be visibe in browser2 and the contextual panel
   // should be visible in browser1.

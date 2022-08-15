@@ -13,6 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/render_frame_host.h"
@@ -171,10 +172,10 @@ struct NavigateParams {
   // NEW_BACKGROUND_TAB   target browser is an app browser  NEW_FOREGROUND_TAB
   // OFF_THE_RECORD       target browser profile is incog.  NEW_FOREGROUND_TAB
   //
-  // If disposition is NEW_BACKGROUND_TAB, TabStripModel::ADD_ACTIVE is
+  // If disposition is NEW_BACKGROUND_TAB, AddTabTypes::ADD_ACTIVE is
   // removed from |tabstrip_add_types| automatically.
   // If disposition is one of NEW_WINDOW, NEW_POPUP, NEW_FOREGROUND_TAB or
-  // SINGLETON_TAB, then TabStripModel::ADD_ACTIVE is automatically added to
+  // SINGLETON_TAB, then AddTabTypes::ADD_ACTIVE is automatically added to
   // |tabstrip_add_types|.
   WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB;
 
@@ -261,7 +262,7 @@ struct NavigateParams {
   // A bitmask of values defined in TabStripModel::AddTabTypes. Helps
   // determine where to insert a new tab and whether or not it should be
   // selected, among other properties.
-  int tabstrip_add_types = TabStripModel::ADD_ACTIVE;
+  int tabstrip_add_types = AddTabTypes::ADD_ACTIVE;
 #endif
 
   // The profile that is initiating the navigation. If there is a non-NULL

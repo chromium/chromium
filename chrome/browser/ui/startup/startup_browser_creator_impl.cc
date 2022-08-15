@@ -281,11 +281,10 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(
       continue;
     }
 
-    int add_types =
-        first_tab ? TabStripModel::ADD_ACTIVE : TabStripModel::ADD_NONE;
-    add_types |= TabStripModel::ADD_FORCE_INDEX;
+    int add_types = first_tab ? AddTabTypes::ADD_ACTIVE : AddTabTypes::ADD_NONE;
+    add_types |= AddTabTypes::ADD_FORCE_INDEX;
     if (tabs[i].type == StartupTab::Type::kPinned)
-      add_types |= TabStripModel::ADD_PINNED;
+      add_types |= AddTabTypes::ADD_PINNED;
 
     NavigateParams params(browser, tabs[i].url,
                           ui::PAGE_TRANSITION_AUTO_TOPLEVEL);

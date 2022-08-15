@@ -63,7 +63,7 @@ NavigateParams GetSingletonTabNavigateParams(Browser* browser,
   params.disposition = WindowOpenDisposition::SINGLETON_TAB;
   params.window_action = NavigateParams::SHOW_WINDOW;
   params.user_gesture = true;
-  params.tabstrip_add_types |= TabStripModel::ADD_INHERIT_OPENER;
+  params.tabstrip_add_types |= AddTabTypes::ADD_INHERIT_OPENER;
   return params;
 }
 

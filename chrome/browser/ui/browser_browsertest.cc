@@ -1167,7 +1167,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, TabClosingWhenRemovingExtension) {
   extensions_tab_helper->SetExtensionApp(extension_app);
 
   model->AddWebContents(std::move(app_contents), 0,
-                        ui::PageTransitionFromInt(0), TabStripModel::ADD_NONE);
+                        ui::PageTransitionFromInt(0), AddTabTypes::ADD_NONE);
   model->SetTabPinned(0, true);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 

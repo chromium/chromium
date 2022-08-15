@@ -389,7 +389,7 @@ IN_PROC_BROWSER_TEST_F(TabActivityWatcherTest, TabDrag) {
   // reactivating the tab, but to the user, it never leaves the foreground, so
   // we don't log a foregrounded event for it.
   browser_2->tab_strip_model()->InsertWebContentsAt(
-      1, std::move(owned_dragged_contents), TabStripModel::ADD_NONE);
+      1, std::move(owned_dragged_contents), AddTabTypes::ADD_NONE);
   dragged_contents->WasShown();
   browser_2->tab_strip_model()->ActivateTabAt(
       1, TabStripUserGestureDetails(

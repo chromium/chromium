@@ -143,7 +143,7 @@ bool OpenDeprecatedApplicationPrompt(Profile* profile,
 
   NavigateParams params(browser, url, ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-  params.tabstrip_add_types = TabStripModel::ADD_ACTIVE;
+  params.tabstrip_add_types = AddTabTypes::ADD_ACTIVE;
   Navigate(&params);
 
   browser->window()->Show();

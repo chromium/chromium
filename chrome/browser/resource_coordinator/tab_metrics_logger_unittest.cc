@@ -496,7 +496,7 @@ TEST_F(TabMetricsLoggerTest, CreateWindowFeaturesTestMoveTabToOtherWindow) {
       FakeBrowserWindow::CreateBrowserWithFakeWindowForParams(params);
   created_browser->window()->Activate();
   created_browser->tab_strip_model()->InsertWebContentsAt(
-      0, std::move(dragged_tab), TabStripModel::ADD_ACTIVE);
+      0, std::move(dragged_tab), AddTabTypes::ADD_ACTIVE);
 
   WindowFeatures created_browser_metrics{WindowMetricsEvent::TYPE_TABBED,
                                          WindowMetricsEvent::SHOW_STATE_NORMAL,

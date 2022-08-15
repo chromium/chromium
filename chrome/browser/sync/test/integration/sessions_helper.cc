@@ -170,7 +170,7 @@ void MoveTab(int from_browser_index, int to_browser_index, int tab_index) {
       test()->GetBrowser(to_browser_index)->tab_strip_model();
   target_strip->InsertWebContentsAt(target_strip->count(),
                                     std::move(detached_contents),
-                                    TabStripModel::ADD_ACTIVE);
+                                    AddTabTypes::ADD_ACTIVE);
 }
 
 void NavigateTab(int browser_index, const GURL& url) {

@@ -1109,7 +1109,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, Tabstrip_InsertAtIndex) {
   NavigateParams params(MakeNavigateParams());
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   params.tabstrip_index = 0;
-  params.tabstrip_add_types = TabStripModel::ADD_FORCE_INDEX;
+  params.tabstrip_add_types = AddTabTypes::ADD_FORCE_INDEX;
   Navigate(&params);
 
   // Navigate() should have inserted a new tab at slot 0 in the tabstrip.

@@ -82,7 +82,7 @@ class TestTabStatsTracker : public TabStatsTracker {
       std::unique_ptr<content::WebContents> tab =
           test_harness->CreateTestWebContents();
       tab_strip_model->InsertWebContentsAt(
-          tab_strip_model->count(), std::move(tab), TabStripModel::ADD_ACTIVE);
+          tab_strip_model->count(), std::move(tab), AddTabTypes::ADD_ACTIVE);
     }
     EXPECT_EQ(tab_stats_data_store()->tab_stats().total_tab_count,
               static_cast<size_t>(tab_strip_model->count()));

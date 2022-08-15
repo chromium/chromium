@@ -248,7 +248,7 @@ TEST_F(CommanderEntityMatchTest, TabOnlyAudibleExcludesOthers) {
   CreateTabs({u"A", u"B", u"C"});
   browser()->tab_strip_model()->InsertWebContentsAt(
       1, content::WebContentsTester::CreateTestWebContents(profile(), nullptr),
-      TabStripModel::ADD_NONE);
+      AddTabTypes::ADD_NONE);
   content::WebContentsTester::For(
       browser()->tab_strip_model()->GetWebContentsAt(1))
       ->SetIsCurrentlyAudible(true);

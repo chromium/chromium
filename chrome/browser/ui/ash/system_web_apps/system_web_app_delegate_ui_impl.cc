@@ -76,7 +76,7 @@ Browser* SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
     NavigateParams nav_params(browser, url, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
     // TODO(crbug.com/1308961): Migrate to use PWA pinned home tab when ready.
     if (ShouldPinTab(url)) {
-      nav_params.tabstrip_add_types |= TabStripModel::ADD_PINNED;
+      nav_params.tabstrip_add_types |= AddTabTypes::ADD_PINNED;
     }
     web_contents =
         web_app::NavigateWebAppUsingParams(params.app_id, nav_params);

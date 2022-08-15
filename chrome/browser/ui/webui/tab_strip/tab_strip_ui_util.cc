@@ -69,12 +69,12 @@ void MoveTabAcrossWindows(Browser* source_browser,
       source_browser->tab_strip_model()->DetachWebContentsAtForInsertion(
           from_index);
 
-  int add_types = TabStripModel::ADD_NONE;
+  int add_types = AddTabTypes::ADD_NONE;
   if (was_active) {
-    add_types |= TabStripModel::ADD_ACTIVE;
+    add_types |= AddTabTypes::ADD_ACTIVE;
   }
   if (was_pinned) {
-    add_types |= TabStripModel::ADD_PINNED;
+    add_types |= AddTabTypes::ADD_PINNED;
   }
 
   target_browser->tab_strip_model()->InsertWebContentsAt(

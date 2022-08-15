@@ -367,7 +367,7 @@ int MoveTabToWindow(ExtensionFunction* function,
     target_index = target_tab_strip->count();
 
   return target_tab_strip->InsertWebContentsAt(
-      target_index, std::move(web_contents), TabStripModel::ADD_NONE);
+      target_index, std::move(web_contents), AddTabTypes::ADD_NONE);
 }
 
 // This function sets the state of the browser window to a "locked"
@@ -794,7 +794,7 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
       if (!target_tab_strip)
         return RespondNow(Error(tabs_constants::kTabStripNotEditableError));
       target_tab_strip->InsertWebContentsAt(
-          urls.size(), std::move(detached_tab), TabStripModel::ADD_NONE);
+          urls.size(), std::move(detached_tab), AddTabTypes::ADD_NONE);
     }
   }
   // Create a new tab if the created window is still empty. Don't create a new

@@ -294,7 +294,7 @@ IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleViewBrowserTest,
   // Drag out into a dragging window. E.g. see steps in [BrowserWindowController
   // detachTabsToNewWindow:..].
   std::vector<TabStripModelDelegate::NewStripContents> contentses(1);
-  contentses.back().add_types = TabStripModel::ADD_ACTIVE;
+  contentses.back().add_types = AddTabTypes::ADD_ACTIVE;
   contentses.back().web_contents = strip->DetachWebContentsAtForInsertion(0);
   Browser* dragging_browser = strip->delegate()->CreateNewStripWithContents(
       std::move(contentses), gfx::Rect(100, 100, 640, 480), false);
@@ -305,7 +305,7 @@ IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleViewBrowserTest,
   std::unique_ptr<content::WebContents> removed_contents =
       drag_strip->DetachWebContentsAtForInsertion(0);
   strip->InsertWebContentsAt(0, std::move(removed_contents),
-                             TabStripModel::ADD_ACTIVE);
+                             AddTabTypes::ADD_ACTIVE);
 
   // Clear the request. There should be no crash.
   test_api_->SimulateWebContentsDestroyed();

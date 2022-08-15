@@ -3236,7 +3236,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, ReattachWebContents) {
   // factories hear about such frames, this would crash.
   tab_strip_model->AddWebContents(std::move(detached_web_contents), -1,
                                   ::ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
-                                  TabStripModel::ADD_ACTIVE);
+                                  AddTabTypes::ADD_ACTIVE);
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,

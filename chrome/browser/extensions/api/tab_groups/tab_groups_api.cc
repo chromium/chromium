@@ -316,7 +316,7 @@ bool TabGroupsMoveFunction::MoveGroup(int group_id,
       // Attach tabs in consecutive indices, to insert them in the same order.
       target_tab_strip->InsertWebContentsAt(new_index + i,
                                             std::move(web_contents),
-                                            TabStripModel::ADD_NONE, *group);
+                                            AddTabTypes::ADD_NONE, *group);
     }
 
     return true;

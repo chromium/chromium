@@ -1544,7 +1544,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, TabDragAndDrop) {
   std::unique_ptr<content::WebContents> detached_tab =
       tab_strip_model1->DetachWebContentsAtForInsertion(1);
   tab_strip_model2->InsertWebContentsAt(1, std::move(detached_tab),
-                                        TabStripModel::ADD_ACTIVE);
+                                        AddTabTypes::ADD_ACTIVE);
   EXPECT_EQ(1, tab_strip_model1->count());
   EXPECT_EQ(2, tab_strip_model2->count());
   EXPECT_EQ(ash::STATUS_RUNNING, shelf_model()->items()[browser_index].status);

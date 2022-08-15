@@ -400,7 +400,7 @@ void NormalizeDisposition(NavigateParams* params) {
       // Disposition trumps add types. ADD_ACTIVE is a default, so we need to
       // remove it if disposition implies the tab is going to open in the
       // background.
-      params->tabstrip_add_types &= ~TabStripModel::ADD_ACTIVE;
+      params->tabstrip_add_types &= ~AddTabTypes::ADD_ACTIVE;
       break;
 
     case WindowOpenDisposition::NEW_PICTURE_IN_PICTURE:
@@ -418,7 +418,7 @@ void NormalizeDisposition(NavigateParams* params) {
     }
     case WindowOpenDisposition::NEW_FOREGROUND_TAB:
     case WindowOpenDisposition::SINGLETON_TAB:
-      params->tabstrip_add_types |= TabStripModel::ADD_ACTIVE;
+      params->tabstrip_add_types |= AddTabTypes::ADD_ACTIVE;
       break;
 
     default:
@@ -801,7 +801,7 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
   if (params->source_contents &&
       (params->disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB ||
        params->disposition == WindowOpenDisposition::NEW_WINDOW) &&
-      (params->tabstrip_add_types & TabStripModel::ADD_INHERIT_OPENER))
+      (params->tabstrip_add_types & AddTabTypes::ADD_INHERIT_OPENER))
     params->source_contents->Focus();
 
   if (params->source_contents == contents_to_navigate_or_insert) {
@@ -816,7 +816,7 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
     // If some non-default value is set for the index, we should tell the
     // TabStripModel to respect it.
     if (params->tabstrip_index != -1)
-      params->tabstrip_add_types |= TabStripModel::ADD_FORCE_INDEX;
+      params->tabstrip_add_types |= AddTabTypes::ADD_FORCE_INDEX;
 
     // Maybe notify that an open operation has been done from a gesture.
     // TODO(crbug.com/1129028): preferably pipe this information through the

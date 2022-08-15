@@ -1316,9 +1316,9 @@ void TabDragController::Attach(TabDragContext* attached_context,
 
     base::AutoReset<bool> setter(&is_mutating_, true);
     for (size_t i = first_tab_index(); i < drag_data_.size(); ++i) {
-      int add_types = TabStripModel::ADD_NONE;
+      int add_types = AddTabTypes::ADD_NONE;
       if (drag_data_[i].pinned)
-        add_types |= TabStripModel::ADD_PINNED;
+        add_types |= AddTabTypes::ADD_PINNED;
 
       // We should have owned_contents here, this CHECK is used to gather data
       // for https://crbug.com/677806.
@@ -1893,7 +1893,7 @@ void TabDragController::RevertDragAt(size_t drag_index) {
       //             somehow.
       source_context_->GetTabStripModel()->InsertWebContentsAt(
           target_index, std::move(detached_web_contents),
-          (data->pinned ? TabStripModel::ADD_PINNED : 0));
+          (data->pinned ? AddTabTypes::ADD_PINNED : 0));
     } else {
       // The Tab was moved within the TabDragContext where the drag
       // was initiated. Move it back to the starting location.
@@ -1917,7 +1917,7 @@ void TabDragController::RevertDragAt(size_t drag_index) {
     // We need to put it back into the source TabDragContext.
     source_context_->GetTabStripModel()->InsertWebContentsAt(
         target_index, std::move(data->owned_contents),
-        (data->pinned ? TabStripModel::ADD_PINNED : 0));
+        (data->pinned ? AddTabTypes::ADD_PINNED : 0));
   }
   TabStripModel* source_model = source_context_->GetTabStripModel();
   source_model->UpdateGroupForDragRevert(
@@ -1975,8 +1975,8 @@ void TabDragController::CompleteDrag() {
       // for https://crbug.com/677806.
       CHECK(drag_data_[i].owned_contents);
       item.web_contents = std::move(drag_data_[i].owned_contents);
-      item.add_types = drag_data_[i].pinned ? TabStripModel::ADD_PINNED
-                                            : TabStripModel::ADD_NONE;
+      item.add_types = drag_data_[i].pinned ? AddTabTypes::ADD_PINNED
+                                            : AddTabTypes::ADD_NONE;
       contentses.push_back(std::move(item));
     }
 

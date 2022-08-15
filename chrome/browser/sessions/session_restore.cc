@@ -891,9 +891,9 @@ class SessionRestoreImpl : public BrowserListObserver {
         whats_new::StartWhatsNewFetch(browser);
         continue;
       }
-      int add_types = TabStripModel::ADD_FORCE_INDEX;
+      int add_types = AddTabTypes::ADD_FORCE_INDEX;
       if (is_first_tab)
-        add_types |= TabStripModel::ADD_ACTIVE;
+        add_types |= AddTabTypes::ADD_ACTIVE;
       NavigateParams params(browser, url, ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
       params.disposition = is_first_tab
                                ? WindowOpenDisposition::NEW_FOREGROUND_TAB

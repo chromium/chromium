@@ -941,7 +941,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, TabDrag) {
   // Attach.
   int dst_index = browser1->tab_strip_model()->count();
   browser1->tab_strip_model()->InsertWebContentsAt(
-      dst_index, std::move(detached), TabStripModel::ADD_ACTIVE);
+      dst_index, std::move(detached), AddTabTypes::ADD_ACTIVE);
   recorder.Verify({
       // background tab in the dragged-from browser gets activated when the
       // active tab is detached
@@ -995,7 +995,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, MoveTabToAppWindow) {
   // Attach.
   int dst_index = browser2->tab_strip_model()->count();
   browser2->tab_strip_model()->InsertWebContentsAt(
-      dst_index, std::move(detached), TabStripModel::ADD_ACTIVE);
+      dst_index, std::move(detached), AddTabTypes::ADD_ACTIVE);
   recorder.Verify({
       // source browser goes into background when app browser is created
       {"updated", 1, kChromeWindow, "", window1, "", kInactive, false},

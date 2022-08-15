@@ -91,27 +91,6 @@ class TabGroupModelFactory {
 ////////////////////////////////////////////////////////////////////////////////
 class TabStripModel : public TabGroupController {
  public:
-  // Constants used when adding tabs.
-  enum AddTabTypes {
-    // Used to indicate nothing special should happen to the newly inserted tab.
-    ADD_NONE = 0,
-
-    // The tab should be active.
-    ADD_ACTIVE = 1 << 0,
-
-    // The tab should be pinned.
-    ADD_PINNED = 1 << 1,
-
-    // If not set the insertion index of the WebContents is left up to the Order
-    // Controller associated, so the final insertion index may differ from the
-    // specified index. Otherwise the index supplied is used.
-    ADD_FORCE_INDEX = 1 << 2,
-
-    // If set the newly inserted tab's opener is set to the active tab. If not
-    // set the tab may still inherit the opener under certain situations.
-    ADD_INHERIT_OPENER = 1 << 3,
-  };
-
   // Enumerates different ways to open a new tab. Does not apply to opening
   // existing links or searches in a new tab, only to brand new empty tabs.
   // KEEP IN SYNC WITH THE NewTabType ENUM IN enums.xml.

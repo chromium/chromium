@@ -1315,7 +1315,7 @@ IN_PROC_BROWSER_TEST_F(
           active_contents()->GetBrowserContext(), nullptr));
   content::WebContents* raw_new_contents = new_contents.get();
   browser()->tab_strip_model()->InsertWebContentsAt(1, std::move(new_contents),
-                                                    TabStripModel::ADD_ACTIVE);
+                                                    AddTabTypes::ADD_ACTIVE);
   EXPECT_EQ(active_contents(), raw_new_contents);
 
   // Simple page with 1 cross origin (out-of-process) <iframe>.
@@ -1383,7 +1383,7 @@ IN_PROC_BROWSER_TEST_F(
           active_contents()->GetBrowserContext(), nullptr));
   content::WebContents* raw_new_contents = new_contents.get();
   browser()->tab_strip_model()->InsertWebContentsAt(1, std::move(new_contents),
-                                                    TabStripModel::ADD_ACTIVE);
+                                                    AddTabTypes::ADD_ACTIVE);
   EXPECT_EQ(active_contents(), raw_new_contents);
 
   // Simple page with no <iframe>s.
