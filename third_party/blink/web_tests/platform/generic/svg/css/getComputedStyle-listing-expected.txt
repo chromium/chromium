@@ -15,7 +15,6 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 -webkit-box-reflect: none
 -webkit-font-smoothing: auto
 -webkit-highlight: none
--webkit-hyphenate-character: auto
 -webkit-line-break: auto
 -webkit-line-clamp: none
 -webkit-locale: auto
@@ -197,6 +196,7 @@ grid-template-areas: none
 grid-template-columns: none
 grid-template-rows: none
 height: 100px
+hyphenate-character: auto
 hyphens: manual
 image-orientation: from-image
 image-rendering: auto

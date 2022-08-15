@@ -15,7 +15,6 @@ All changes to this list should go through Blink's feature review process: http:
     -webkit-box-reflect
     -webkit-font-smoothing
     -webkit-highlight
-    -webkit-hyphenate-character
     -webkit-line-break
     -webkit-line-clamp
     -webkit-locale
@@ -209,6 +208,7 @@ All changes to this list should go through Blink's feature review process: http:
     grid-template-columns
     grid-template-rows
     height
+    hyphenate-character
     hyphens
     image-orientation
     image-rendering
@@ -871,6 +871,8 @@ All changes to this list should go through Blink's feature review process: http:
         flex-wrap
     -webkit-font-feature-settings
         font-feature-settings
+    -webkit-hyphenate-character
+        hyphenate-character
     -webkit-justify-content
         justify-content
     -webkit-logical-height

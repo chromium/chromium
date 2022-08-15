@@ -8029,7 +8029,7 @@ const CSSValue* WebkitHighlight::CSSValueFromComputedStyleInternal(
   return MakeGarbageCollected<CSSStringValue>(style.Highlight());
 }
 
-const CSSValue* WebkitHyphenateCharacter::ParseSingleValue(
+const CSSValue* HyphenateCharacter::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext&,
     const CSSParserLocalContext&) const {
@@ -8038,7 +8038,7 @@ const CSSValue* WebkitHyphenateCharacter::ParseSingleValue(
   return css_parsing_utils::ConsumeString(range);
 }
 
-const CSSValue* WebkitHyphenateCharacter::CSSValueFromComputedStyleInternal(
+const CSSValue* HyphenateCharacter::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {

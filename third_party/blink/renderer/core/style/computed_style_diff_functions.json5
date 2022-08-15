@@ -77,7 +77,7 @@
                 "text-indent", "text-align-last", "TextIndentLine", "EffectiveZoom",
                 "word-break", "overflow-wrap", "-webkit-line-break",
                 "-webkit-text-security", "hyphens", "HyphenationLimitBefore",
-                "HyphenationLimitAfter", "-webkit-hyphenate-character",
+                "HyphenationLimitAfter", "hyphenate-character",
                 "image-orientation", "-webkit-ruby-position",
                 "TextEmphasisMark", "text-emphasis-position",
                 "TextEmphasisCustomMark", "text-justify", "text-orientation",

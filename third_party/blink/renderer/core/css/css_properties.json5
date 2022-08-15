@@ -5213,7 +5213,7 @@
       converter: "ConvertString<CSSValueID::kNone>",
     },
     {
-      name: "-webkit-hyphenate-character",
+      name: "hyphenate-character",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       inherited: true,
       field_group: "*",
@@ -7569,6 +7569,10 @@
     {
       name: "-webkit-font-feature-settings",
       alias_for: "font-feature-settings",
+    },
+    {
+      name: "-webkit-hyphenate-character",
+      alias_for: "hyphenate-character",
     },
     {
       name: "-webkit-justify-content",

@@ -3911,15 +3911,11 @@ crbug.com/1015331 external/wpt/css/css-text/white-space/eol-spaces-bidi-001.html
 crbug.com/899264 external/wpt/css/css-text/letter-spacing/letter-spacing-control-chars-001.html [ Failure ]
 
 crbug.com/1290460 [ Mac ] external/wpt/css/css-text/letter-spacing/letter-spacing-bengali-yaphala-001.html [ Failure ]
-crbug.com/1281208 external/wpt/css/css-text/hyphens/hyphenate-character-001.html [ Failure ]
 crbug.com/1281208 external/wpt/css/css-text/hyphens/hyphenate-character-002.html [ Failure ]
-crbug.com/1281208 external/wpt/css/css-text/hyphens/hyphenate-character-003.html [ Failure ]
-crbug.com/1281208 external/wpt/css/css-text/hyphens/hyphenate-character-004.html [ Failure ]
 crbug.com/1281208 external/wpt/css/css-text/hyphens/hyphenate-character-005.html [ Failure ]
 crbug.com/1281208 external/wpt/css/css-text/hyphens/hyphens-vertical-001.html [ Failure ]
 crbug.com/1281208 external/wpt/css/css-text/hyphens/hyphens-vertical-002.html [ Failure ]
 crbug.com/1281208 external/wpt/css/css-text/hyphens/hyphens-vertical-003.html [ Failure ]
-crbug.com/1281208 external/wpt/css/css-text/hyphens/hyphens-vertical-004.html [ Failure ]
 
 crbug.com/1223979 external/wpt/css/css-text/line-breaking/segment-break-transformation-removable-1.html [ Failure ]
 crbug.com/1223979 external/wpt/css/css-text/line-breaking/segment-break-transformation-removable-2.html [ Failure ]

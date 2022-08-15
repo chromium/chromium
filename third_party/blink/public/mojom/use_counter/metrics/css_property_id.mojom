@@ -301,7 +301,7 @@ enum CSSSampleId {
     kGridRow = 249,
     kGridAutoFlow = 250,
     kWebkitHighlight = 251,
-    kWebkitHyphenateCharacter = 252,
+    kAliasWebkitHyphenateCharacter = 252,
     // kWebkitHyphenateLimitAfter = 253,
     // kWebkitHyphenateLimitBefore = 254,
     // kWebkitHyphenateLimitLines = 255,
@@ -774,6 +774,7 @@ enum CSSSampleId {
     kAnchorScroll = 721,
     kPopUpShowDelay = 722,
     kPopUpHideDelay = 723,
+    kHyphenateCharacter = 724,
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).
     // 2. Run the src/tools/metrics/histograms/update_use_counter_css.py script

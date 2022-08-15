@@ -63656,7 +63656,7 @@ Called by update_use_counter_css.py.-->
   <int value="249" label="grid-row"/>
   <int value="250" label="grid-auto-flow"/>
   <int value="251" label="webkit-highlight"/>
-  <int value="252" label="webkit-hyphenate-character"/>
+  <int value="252" label="alias-webkit-hyphenate-character"/>
   <int value="253" label="webkit-hyphenate-limit-after"/>
   <int value="254" label="webkit-hyphenate-limit-before"/>
   <int value="255" label="webkit-hyphenate-limit-lines"/>
@@ -64128,6 +64128,7 @@ Called by update_use_counter_css.py.-->
   <int value="721" label="anchor-scroll"/>
   <int value="722" label="pop-up-show-delay"/>
   <int value="723" label="pop-up-hide-delay"/>
+  <int value="724" label="hyphenate-character"/>
 </enum>
 
 <enum name="MappedEditingCommands">
