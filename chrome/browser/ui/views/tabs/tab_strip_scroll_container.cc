@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/tabs/tab_strip_scroll_container.h"
 
+#include "base/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "cc/paint/paint_shader.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -185,6 +186,10 @@ TabStripScrollContainer::TabStripScrollContainer(
       views::FlexSpecification(base::BindRepeating(
           &TabScrollContainerFlexRule, base::Unretained(tab_strip_))));
 
+  on_contents_scrolled_subscription_ = scroll_view->AddContentsScrolledCallback(
+      base::BindRepeating(&TabStripScrollContainer::OnContentsScrolledCallback,
+                          base::Unretained(this)));
+
   std::unique_ptr<views::View> scroll_button_container =
       std::make_unique<views::View>();
   views::FlexLayout* scroll_button_layout =
@@ -223,6 +228,24 @@ void TabStripScrollContainer::OnViewPreferredSizeChanged(views::View* view) {
   DCHECK_EQ(tab_strip_, view);
 
   PreferredSizeChanged();
+}
+
+void TabStripScrollContainer::OnContentsScrolledCallback() {
+  views::Widget* root_widget = tab_strip_->GetWidget();
+  std::set<views::Widget*> children_widgets;
+  views::Widget::GetAllOwnedWidgets(root_widget->GetNativeView(),
+                                    &children_widgets);
+
+  for (auto* child_widget : children_widgets) {
+    views::BubbleDialogDelegate* bdd =
+        child_widget->widget_delegate()->AsBubbleDialogDelegate();
+    if (bdd) {
+      views::View* anchor_view = bdd->GetAnchorView();
+      if (this->Contains(anchor_view)) {
+        child_widget->Hide();
+      }
+    }
+  }
 }
 
 int TabStripScrollContainer::GetTabStripAvailableWidth() const {

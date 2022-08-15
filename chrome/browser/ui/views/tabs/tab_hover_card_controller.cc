@@ -199,8 +199,7 @@ class TabHoverCardController::EventSniffer : public ui::EventObserver {
     event_monitor_ = views::EventMonitor::CreateWindowMonitor(
         this, controller_->tab_strip_->GetWidget()->GetNativeWindow(),
         {ui::ET_KEY_PRESSED, ui::ET_KEY_RELEASED, ui::ET_MOUSE_PRESSED,
-         ui::ET_MOUSE_RELEASED, ui::ET_GESTURE_BEGIN, ui::ET_GESTURE_END,
-         ui::ET_MOUSEWHEEL});
+         ui::ET_MOUSE_RELEASED, ui::ET_GESTURE_BEGIN, ui::ET_GESTURE_END});
   }
 
   ~EventSniffer() override = default;

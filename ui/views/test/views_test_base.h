@@ -92,6 +92,8 @@ class ViewsTestBase : public PlatformTest {
       Widget::InitParams::Type type =
           Widget::InitParams::TYPE_WINDOW_FRAMELESS);
 
+  virtual std::unique_ptr<Widget> CreateTestWidget(Widget::InitParams params);
+
   bool HasCompositingManager() const;
 
   // Simulate an OS-level destruction of the native window held by |widget|.

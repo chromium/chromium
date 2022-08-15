@@ -33,6 +33,8 @@ class TabStripScrollContainer : public views::View, views::ViewObserver {
 
   bool IsRectInWindowCaption(const gfx::Rect& rect);
 
+  void OnContentsScrolledCallback();
+
   raw_ptr<views::ImageButton> GetLeadingScrollButtonForTesting() {
     return leading_scroll_button_;
   }
@@ -49,6 +51,9 @@ class TabStripScrollContainer : public views::View, views::ViewObserver {
 
   // Scrolls the tabstrip towards the last tab in the tabstrip.
   void ScrollTowardsTrailingTab();
+
+  // Subscription for scrolling of content view
+  base::CallbackListSubscription on_contents_scrolled_subscription_;
 
   void FrameColorsChanged();
 
