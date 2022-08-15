@@ -9,6 +9,8 @@
 
 import {Msgs} from '../common/msgs.js';
 
+import {BluetoothBrailleDisplayListener, BluetoothBrailleDisplayManager} from './bluetooth_braille_display_manager.js';
+
 /**
  * A widget used for interacting with bluetooth braille displays.
  * @implements {BluetoothBrailleDisplayListener}

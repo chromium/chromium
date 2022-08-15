@@ -39,10 +39,6 @@ ChromeVoxBluetoothBrailleDisplayUITest = class extends ChromeVoxNextE2ETest {
   }
 };
 
-/** @override */
-ChromeVoxBluetoothBrailleDisplayUITest.prototype.closureModuleDeps =
-    ['BluetoothBrailleDisplayManager'];
-
 AX_TEST_F('ChromeVoxBluetoothBrailleDisplayUITest', 'NoDisplays', function() {
   const ui = new BluetoothBrailleDisplayUI();
   ui.attach(document.body);

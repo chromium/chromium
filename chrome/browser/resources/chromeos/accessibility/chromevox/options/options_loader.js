@@ -6,7 +6,4 @@
  * @fileoverview Loads the options script.
  */
 
-goog.require('BluetoothBrailleDisplayListener');
-goog.require('BluetoothBrailleDisplayManager');
-
 goog.require('goog.i18n.MessageFormat');

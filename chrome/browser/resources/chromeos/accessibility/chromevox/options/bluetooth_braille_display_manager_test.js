@@ -3,26 +3,8 @@
 // found in the LICENSE file.
 
 // Include test fixture.
-GEN_INCLUDE(['../testing/chromevox_webui_test_base.js']);
+GEN_INCLUDE(['../testing/chromevox_next_e2e_test_base.js']);
 GEN_INCLUDE(['../testing/fake_objects.js']);
-
-GEN('#include "content/public/test/browser_test.h"');
-
-// Fake out the Chrome API namespace we depend on.
-var chrome = {};
-/** Fake chrome.brailleDisplayPrivate object. */
-chrome.brailleDisplayPrivate = {};
-/** Fake chrome.bluetooth object. */
-chrome.bluetooth = {};
-chrome.bluetooth.getDevices = devices => {};
-chrome.bluetooth.onDeviceAdded = new FakeChromeEvent();
-chrome.bluetooth.onDeviceChanged = new FakeChromeEvent();
-chrome.bluetooth.onDeviceRemoved = new FakeChromeEvent();
-/** Fake chrome.bluetoothPrivate object. */
-chrome.bluetoothPrivate = {};
-chrome.bluetoothPrivate.onPairing = new FakeChromeEvent();
-/** Fake chrome.accessibilityPrivate object. */
-chrome.accessibilityPrivate = {};
 
 /**
  * A fake BluetoothBraileDisplayManagerListener.
@@ -47,12 +29,15 @@ class FakeBluetoothBrailleDisplayManagerListener {
  * Test fixture.
  */
 ChromeVoxBluetoothBrailleDisplayManagerWebUITest =
-    class extends ChromeVoxWebUITestBase {};
-
-/** @override */
-ChromeVoxBluetoothBrailleDisplayManagerWebUITest.prototype.closureModuleDeps = [
-  'BluetoothBrailleDisplayManager',
-];
+    class extends ChromeVoxNextE2ETest {
+  /** @override */
+  async setUpDeferred() {
+    await super.setUpDeferred();
+    await importModule(
+        'BluetoothBrailleDisplayManager',
+        '/chromevox/options/bluetooth_braille_display_manager.js');
+  }
+};
 
 ChromeVoxBluetoothBrailleDisplayManagerWebUITest.prototype.isAsync = true;
 TEST_F(
