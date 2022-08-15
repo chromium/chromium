@@ -1258,7 +1258,7 @@
     },
     {
       name: "LayoutNGBlockFragmentation",
-      implied_by: ["LayoutNGPrinting", "LayoutNGTableFragmentation"],
+      implied_by: ["LayoutNGPrinting"],
       status: "stable",
     },
     {
@@ -1303,8 +1303,8 @@
       // Block fragmentation support in the table layout algorithm.
       // https://drafts.csswg.org/css-tables-3/#fragmentation
       name: "LayoutNGTableFragmentation",
-      depends_on: ["LayoutNG"],
-      status: "test",
+      depends_on: ["LayoutNG","LayoutNGBlockFragmentation"],
+      status: "stable",
     },
     {
       name: "LayoutNGView",
