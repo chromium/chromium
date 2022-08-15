@@ -148,6 +148,8 @@ source_set("common") {
     "origin_util.cc",
     "partition_alloc_support.cc",
     "partition_alloc_support.h",
+    "private_aggregation_features.cc",
+    "private_aggregation_features.h",
     "process_type.cc",
     "process_visibility_tracker.cc",
     "process_visibility_tracker.h",
@@ -431,7 +433,10 @@ if (is_linux || is_chromeos) {
 
 # See comment at the top of //content/BUILD.gn for how this works.
 group("for_content_tests") {
-  visibility = [ "//content/test/*" ]
+  visibility = [
+    "//content/services/auction_worklet:tests",
+    "//content/test/*",
+  ]
   if (!is_component_build) {
     public_deps = [ ":common" ]
   }

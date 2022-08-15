@@ -21,6 +21,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "content/common/private_aggregation_features.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
@@ -2870,138 +2871,6 @@ TEST_F(BidderWorkletTest, GenerateBidSetPriority) {
       /*expected_set_priority=*/9.0);
 }
 
-TEST_F(BidderWorkletTest, GenerateBidPrivateAggregationRequests) {
-  auction_worklet::mojom::PrivateAggregationRequestPtr kExpectedRequest1 =
-      auction_worklet::mojom::PrivateAggregationRequest::New(
-          content::mojom::AggregatableReportHistogramContribution::New(
-              /*bucket=*/123,
-              /*value=*/45),
-          content::mojom::AggregationServiceMode::kDefault);
-  auction_worklet::mojom::PrivateAggregationRequestPtr kExpectedRequest2 =
-      auction_worklet::mojom::PrivateAggregationRequest::New(
-          content::mojom::AggregatableReportHistogramContribution::New(
-              /*bucket=*/absl::MakeInt128(/*high=*/1, /*low=*/0),
-              /*value=*/1),
-          content::mojom::AggregationServiceMode::kDefault);
-
-  {
-    PrivateAggregationRequests expected_pa_requests;
-    expected_pa_requests.push_back(kExpectedRequest1.Clone());
-
-    RunGenerateBidWithJavascriptExpectingResult(
-        CreateGenerateBidScript(
-            R"({ad: "ad", bid:1, render:"https://response.test/" })",
-            /*extra_code=*/R"(
-            privateAggregation.sendHistogramReport({bucket: 123, value: 45});
-          )"),
-        /*expected_bid=*/
-        mojom::BidderWorkletBid::New(
-            "\"ad\"", 1, GURL("https://response.test/"),
-            /*ad_components=*/absl::nullopt, base::TimeDelta()),
-        /*expected_data_version=*/absl::nullopt,
-        /*expected_errors=*/{},
-        /*expected_debug_loss_report_url=*/absl::nullopt,
-        /*expected_debug_win_report_url=*/absl::nullopt,
-        /*expected_set_priority=*/absl::nullopt,
-        std::move(expected_pa_requests));
-  }
-
-  // BigInt bucket
-  {
-    PrivateAggregationRequests expected_pa_requests;
-    expected_pa_requests.push_back(kExpectedRequest1.Clone());
-
-    RunGenerateBidWithJavascriptExpectingResult(
-        CreateGenerateBidScript(
-            R"({ad: "ad", bid:1, render:"https://response.test/" })",
-            /*extra_code=*/R"(
-            privateAggregation.sendHistogramReport({bucket: 123n, value: 45});
-          )"),
-        /*expected_bid=*/
-        mojom::BidderWorkletBid::New(
-            "\"ad\"", 1, GURL("https://response.test/"),
-            /*ad_components=*/absl::nullopt, base::TimeDelta()),
-        /*expected_data_version=*/absl::nullopt,
-        /*expected_errors=*/{},
-        /*expected_debug_loss_report_url=*/absl::nullopt,
-        /*expected_debug_win_report_url=*/absl::nullopt,
-        /*expected_set_priority=*/absl::nullopt,
-        std::move(expected_pa_requests));
-  }
-
-  // Large bucket
-  {
-    PrivateAggregationRequests expected_pa_requests;
-    expected_pa_requests.push_back(kExpectedRequest2.Clone());
-
-    RunGenerateBidWithJavascriptExpectingResult(
-        CreateGenerateBidScript(
-            R"({ad: "ad", bid:1, render:"https://response.test/" })",
-            /*extra_code=*/R"(
-            privateAggregation.sendHistogramReport(
-                {bucket: 18446744073709551616n, value: 1});
-          )"),
-        /*expected_bid=*/
-        mojom::BidderWorkletBid::New(
-            "\"ad\"", 1, GURL("https://response.test/"),
-            /*ad_components=*/absl::nullopt, base::TimeDelta()),
-        /*expected_data_version=*/absl::nullopt,
-        /*expected_errors=*/{},
-        /*expected_debug_loss_report_url=*/absl::nullopt,
-        /*expected_debug_win_report_url=*/absl::nullopt,
-        /*expected_set_priority=*/absl::nullopt,
-        std::move(expected_pa_requests));
-  }
-
-  // Multiple requests
-  {
-    PrivateAggregationRequests expected_pa_requests;
-    expected_pa_requests.push_back(kExpectedRequest1.Clone());
-    expected_pa_requests.push_back(kExpectedRequest2.Clone());
-
-    RunGenerateBidWithJavascriptExpectingResult(
-        CreateGenerateBidScript(
-            R"({ad: "ad", bid:1, render:"https://response.test/" })",
-            /*extra_code=*/R"(
-            privateAggregation.sendHistogramReport({bucket: 123, value: 45});
-            privateAggregation.sendHistogramReport(
-                {bucket: 18446744073709551616n, value: 1});
-          )"),
-        /*expected_bid=*/
-        mojom::BidderWorkletBid::New(
-            "\"ad\"", 1, GURL("https://response.test/"),
-            /*ad_components=*/absl::nullopt, base::TimeDelta()),
-        /*expected_data_version=*/absl::nullopt,
-        /*expected_errors=*/{},
-        /*expected_debug_loss_report_url=*/absl::nullopt,
-        /*expected_debug_win_report_url=*/absl::nullopt,
-        /*expected_set_priority=*/absl::nullopt,
-        std::move(expected_pa_requests));
-  }
-
-  // An unrelated exception after sendHistogramReport shouldn't block the report
-  {
-    PrivateAggregationRequests expected_pa_requests;
-    expected_pa_requests.push_back(kExpectedRequest1.Clone());
-
-    RunGenerateBidWithJavascriptExpectingResult(
-        CreateGenerateBidScript(
-            R"({ad: "ad", bid:1, render:"https://response.test/" })",
-            /*extra_code=*/R"(
-            privateAggregation.sendHistogramReport({bucket: 123, value: 45});
-            error;
-          )"),
-        /*expected_bid=*/mojom::BidderWorkletBidPtr(),
-        /*expected_data_version=*/absl::nullopt,
-        /*expected_errors=*/
-        {"https://url.test/:6 Uncaught ReferenceError: error is not defined."},
-        /*expected_debug_loss_report_url=*/absl::nullopt,
-        /*expected_debug_win_report_url=*/absl::nullopt,
-        /*expected_set_priority=*/absl::nullopt,
-        std::move(expected_pa_requests));
-  }
-}
-
 TEST_F(BidderWorkletTest, ReportWin) {
   RunReportWinWithFunctionBodyExpectingResult(
       "", /*expected_report_url =*/absl::nullopt);
@@ -4229,7 +4098,149 @@ TEST_F(BidderWorkletTest, ReportWinRegisterAdBeacon) {
        "reporting url for key 'view': 'http://view.example.com/'."});
 }
 
-TEST_F(BidderWorkletTest, ReportWinPrivateAggregationRequests) {
+class BidderWorkletPrivateAggregationEnabledTest : public BidderWorkletTest {
+ public:
+  BidderWorkletPrivateAggregationEnabledTest() {
+    scoped_feature_list_.InitAndEnableFeature(content::kPrivateAggregationApi);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
+  auction_worklet::mojom::PrivateAggregationRequestPtr kExpectedRequest1 =
+      auction_worklet::mojom::PrivateAggregationRequest::New(
+          content::mojom::AggregatableReportHistogramContribution::New(
+              /*bucket=*/123,
+              /*value=*/45),
+          content::mojom::AggregationServiceMode::kDefault);
+  auction_worklet::mojom::PrivateAggregationRequestPtr kExpectedRequest2 =
+      auction_worklet::mojom::PrivateAggregationRequest::New(
+          content::mojom::AggregatableReportHistogramContribution::New(
+              /*bucket=*/absl::MakeInt128(/*high=*/1, /*low=*/0),
+              /*value=*/1),
+          content::mojom::AggregationServiceMode::kDefault);
+
+  {
+    PrivateAggregationRequests expected_pa_requests;
+    expected_pa_requests.push_back(kExpectedRequest1.Clone());
+
+    RunGenerateBidWithJavascriptExpectingResult(
+        CreateGenerateBidScript(
+            R"({ad: "ad", bid:1, render:"https://response.test/" })",
+            /*extra_code=*/R"(
+            privateAggregation.sendHistogramReport({bucket: 123, value: 45});
+          )"),
+        /*expected_bid=*/
+        mojom::BidderWorkletBid::New(
+            "\"ad\"", 1, GURL("https://response.test/"),
+            /*ad_components=*/absl::nullopt, base::TimeDelta()),
+        /*expected_data_version=*/absl::nullopt,
+        /*expected_errors=*/{},
+        /*expected_debug_loss_report_url=*/absl::nullopt,
+        /*expected_debug_win_report_url=*/absl::nullopt,
+        /*expected_set_priority=*/absl::nullopt,
+        std::move(expected_pa_requests));
+  }
+
+  // BigInt bucket
+  {
+    PrivateAggregationRequests expected_pa_requests;
+    expected_pa_requests.push_back(kExpectedRequest1.Clone());
+
+    RunGenerateBidWithJavascriptExpectingResult(
+        CreateGenerateBidScript(
+            R"({ad: "ad", bid:1, render:"https://response.test/" })",
+            /*extra_code=*/R"(
+            privateAggregation.sendHistogramReport({bucket: 123n, value: 45});
+          )"),
+        /*expected_bid=*/
+        mojom::BidderWorkletBid::New(
+            "\"ad\"", 1, GURL("https://response.test/"),
+            /*ad_components=*/absl::nullopt, base::TimeDelta()),
+        /*expected_data_version=*/absl::nullopt,
+        /*expected_errors=*/{},
+        /*expected_debug_loss_report_url=*/absl::nullopt,
+        /*expected_debug_win_report_url=*/absl::nullopt,
+        /*expected_set_priority=*/absl::nullopt,
+        std::move(expected_pa_requests));
+  }
+
+  // Large bucket
+  {
+    PrivateAggregationRequests expected_pa_requests;
+    expected_pa_requests.push_back(kExpectedRequest2.Clone());
+
+    RunGenerateBidWithJavascriptExpectingResult(
+        CreateGenerateBidScript(
+            R"({ad: "ad", bid:1, render:"https://response.test/" })",
+            /*extra_code=*/R"(
+            privateAggregation.sendHistogramReport(
+                {bucket: 18446744073709551616n, value: 1});
+          )"),
+        /*expected_bid=*/
+        mojom::BidderWorkletBid::New(
+            "\"ad\"", 1, GURL("https://response.test/"),
+            /*ad_components=*/absl::nullopt, base::TimeDelta()),
+        /*expected_data_version=*/absl::nullopt,
+        /*expected_errors=*/{},
+        /*expected_debug_loss_report_url=*/absl::nullopt,
+        /*expected_debug_win_report_url=*/absl::nullopt,
+        /*expected_set_priority=*/absl::nullopt,
+        std::move(expected_pa_requests));
+  }
+
+  // Multiple requests
+  {
+    PrivateAggregationRequests expected_pa_requests;
+    expected_pa_requests.push_back(kExpectedRequest1.Clone());
+    expected_pa_requests.push_back(kExpectedRequest2.Clone());
+
+    RunGenerateBidWithJavascriptExpectingResult(
+        CreateGenerateBidScript(
+            R"({ad: "ad", bid:1, render:"https://response.test/" })",
+            /*extra_code=*/R"(
+            privateAggregation.sendHistogramReport({bucket: 123, value: 45});
+            privateAggregation.sendHistogramReport(
+                {bucket: 18446744073709551616n, value: 1});
+          )"),
+        /*expected_bid=*/
+        mojom::BidderWorkletBid::New(
+            "\"ad\"", 1, GURL("https://response.test/"),
+            /*ad_components=*/absl::nullopt, base::TimeDelta()),
+        /*expected_data_version=*/absl::nullopt,
+        /*expected_errors=*/{},
+        /*expected_debug_loss_report_url=*/absl::nullopt,
+        /*expected_debug_win_report_url=*/absl::nullopt,
+        /*expected_set_priority=*/absl::nullopt,
+        std::move(expected_pa_requests));
+  }
+
+  // An unrelated exception after sendHistogramReport shouldn't block the report
+  {
+    PrivateAggregationRequests expected_pa_requests;
+    expected_pa_requests.push_back(kExpectedRequest1.Clone());
+
+    RunGenerateBidWithJavascriptExpectingResult(
+        CreateGenerateBidScript(
+            R"({ad: "ad", bid:1, render:"https://response.test/" })",
+            /*extra_code=*/R"(
+            privateAggregation.sendHistogramReport({bucket: 123, value: 45});
+            error;
+          )"),
+        /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+        /*expected_data_version=*/absl::nullopt,
+        /*expected_errors=*/
+        {"https://url.test/:6 Uncaught ReferenceError: error is not defined."},
+        /*expected_debug_loss_report_url=*/absl::nullopt,
+        /*expected_debug_win_report_url=*/absl::nullopt,
+        /*expected_set_priority=*/absl::nullopt,
+        std::move(expected_pa_requests));
+  }
+}
+
+TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
   auction_worklet::mojom::PrivateAggregationRequestPtr kExpectedRequest1 =
       auction_worklet::mojom::PrivateAggregationRequest::New(
           content::mojom::AggregatableReportHistogramContribution::New(
@@ -4318,6 +4329,46 @@ TEST_F(BidderWorkletTest, ReportWinPrivateAggregationRequests) {
         {"https://url.test/:12 Uncaught ReferenceError: error is not "
          "defined."});
   }
+}
+
+class BidderWorkletPrivateAggregationDisabledTest : public BidderWorkletTest {
+ public:
+  BidderWorkletPrivateAggregationDisabledTest() {
+    scoped_feature_list_.InitAndDisableFeature(content::kPrivateAggregationApi);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(BidderWorkletPrivateAggregationDisabledTest, GenerateBid) {
+  RunGenerateBidWithJavascriptExpectingResult(
+      CreateGenerateBidScript(
+          R"({ad: "ad", bid:1, render:"https://response.test/" })",
+          /*extra_code=*/R"(
+            privateAggregation.sendHistogramReport({bucket: 123, value: 45});
+          )"),
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      /*expected_errors=*/
+      {"https://url.test/:5 Uncaught ReferenceError: privateAggregation is not "
+       "defined."},
+      /*expected_debug_loss_report_url=*/absl::nullopt,
+      /*expected_debug_win_report_url=*/absl::nullopt,
+      /*expected_set_priority=*/absl::nullopt,
+      /*expected_pa_requests=*/{});
+}
+
+TEST_F(BidderWorkletPrivateAggregationDisabledTest, ReportWin) {
+  RunReportWinWithFunctionBodyExpectingResult(
+      R"(
+          privateAggregation.sendHistogramReport({bucket: 123, value: 45});
+        )",
+      /*expected_report_url =*/absl::nullopt,
+      /*expected_ad_beacon_map=*/{}, /*expected_pa_requests=*/{},
+      /*expected_errors=*/
+      {"https://url.test/:11 Uncaught ReferenceError: privateAggregation is "
+       "not defined."});
 }
 
 }  // namespace

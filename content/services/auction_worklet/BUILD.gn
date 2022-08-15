@@ -84,6 +84,7 @@ source_set("auction_worklet") {
     ":protocol_sources",
     "//base",
     "//content:export",
+    "//content/common",
     "//gin",
     "//mojo/public/cpp/bindings",
     "//net",
@@ -136,6 +137,7 @@ source_set("tests") {
   deps = [
     "//base",
     "//base/test:test_support",
+    "//content/common:for_content_tests",
     "//gin",
     "//net",
     "//services/network:test_support",

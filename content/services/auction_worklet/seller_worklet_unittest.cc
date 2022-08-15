@@ -18,6 +18,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "content/common/private_aggregation_features.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/worklet_devtools_debug_test_util.h"
@@ -1570,110 +1571,6 @@ TEST_F(SellerWorkletTest, ScoreAdParallelTrustedScoringSignalsBatched3) {
   run_loop.Run();
 }
 
-TEST_F(SellerWorkletTest, ScoreAdPrivateAggregationRequests) {
-  auction_worklet::mojom::PrivateAggregationRequestPtr kExpectedRequest1 =
-      auction_worklet::mojom::PrivateAggregationRequest::New(
-          content::mojom::AggregatableReportHistogramContribution::New(
-              /*bucket=*/123,
-              /*value=*/45),
-          content::mojom::AggregationServiceMode::kDefault);
-  auction_worklet::mojom::PrivateAggregationRequestPtr kExpectedRequest2 =
-      auction_worklet::mojom::PrivateAggregationRequest::New(
-          content::mojom::AggregatableReportHistogramContribution::New(
-              /*bucket=*/absl::MakeInt128(/*high=*/1, /*low=*/0),
-              /*value=*/1),
-          content::mojom::AggregationServiceMode::kDefault);
-
-  {
-    PrivateAggregationRequests expected_pa_requests;
-    expected_pa_requests.push_back(kExpectedRequest1.Clone());
-
-    RunScoreAdWithJavascriptExpectingResult(
-        CreateScoreAdScript(
-            "5",
-            "privateAggregation.sendHistogramReport({bucket: 123, value: 45})"),
-        5, /*expected_errors=*/{},
-        mojom::ComponentAuctionModifiedBidParamsPtr(),
-        /*expected_data_version=*/absl::nullopt,
-        /*expected_debug_loss_report_url=*/absl::nullopt,
-        /*expected_debug_win_report_url=*/absl::nullopt,
-        std::move(expected_pa_requests));
-  }
-
-  // BigInt bucket
-  {
-    PrivateAggregationRequests expected_pa_requests;
-    expected_pa_requests.push_back(kExpectedRequest1.Clone());
-
-    RunScoreAdWithJavascriptExpectingResult(
-        CreateScoreAdScript("5",
-                            "privateAggregation.sendHistogramReport("
-                            "{bucket: 123n, value: 45})"),
-        5, /*expected_errors=*/{},
-        mojom::ComponentAuctionModifiedBidParamsPtr(),
-        /*expected_data_version=*/absl::nullopt,
-        /*expected_debug_loss_report_url=*/absl::nullopt,
-        /*expected_debug_win_report_url=*/absl::nullopt,
-        std::move(expected_pa_requests));
-  }
-
-  // Large bucket
-  {
-    PrivateAggregationRequests expected_pa_requests;
-    expected_pa_requests.push_back(kExpectedRequest2.Clone());
-
-    RunScoreAdWithJavascriptExpectingResult(
-        CreateScoreAdScript("5",
-                            "privateAggregation.sendHistogramReport("
-                            "{bucket: 18446744073709551616n, value: 1})"),
-        5, /*expected_errors=*/{},
-        mojom::ComponentAuctionModifiedBidParamsPtr(),
-        /*expected_data_version=*/absl::nullopt,
-        /*expected_debug_loss_report_url=*/absl::nullopt,
-        /*expected_debug_win_report_url=*/absl::nullopt,
-        std::move(expected_pa_requests));
-  }
-
-  // Multiple requests
-  {
-    PrivateAggregationRequests expected_pa_requests;
-    expected_pa_requests.push_back(kExpectedRequest1.Clone());
-    expected_pa_requests.push_back(kExpectedRequest2.Clone());
-
-    RunScoreAdWithJavascriptExpectingResult(
-        CreateScoreAdScript("5", R"(
-          privateAggregation.sendHistogramReport({bucket: 123, value: 45});
-          privateAggregation.sendHistogramReport({bucket: 18446744073709551616n,
-                                                  value: 1});
-        )"),
-        5, /*expected_errors=*/{},
-        mojom::ComponentAuctionModifiedBidParamsPtr(),
-        /*expected_data_version=*/absl::nullopt,
-        /*expected_debug_loss_report_url=*/absl::nullopt,
-        /*expected_debug_win_report_url=*/absl::nullopt,
-        std::move(expected_pa_requests));
-  }
-
-  // An unrelated exception after sendHistogramReport shouldn't block the report
-  {
-    PrivateAggregationRequests expected_pa_requests;
-    expected_pa_requests.push_back(kExpectedRequest1.Clone());
-
-    RunScoreAdWithJavascriptExpectingResult(
-        CreateScoreAdScript("5", R"(
-          privateAggregation.sendHistogramReport({bucket: 123, value: 45});
-          error;
-        )"),
-        0, /*expected_errors=*/
-        {"https://url.test/:6 Uncaught ReferenceError: error is not defined."},
-        mojom::ComponentAuctionModifiedBidParamsPtr(),
-        /*expected_data_version=*/absl::nullopt,
-        /*expected_debug_loss_report_url=*/absl::nullopt,
-        /*expected_debug_win_report_url=*/absl::nullopt,
-        std::move(expected_pa_requests));
-  }
-}
-
 // Test multiple ReportWin() calls on a single worklet, in parallel. Do this
 // twice, once before the worklet has loaded its Javascript, and once after, to
 // make sure both cases work.
@@ -2185,101 +2082,6 @@ TEST_F(SellerWorkletTest, ReportResultRegisterAdBeacon) {
       /*expected_pa_requests=*/{},
       {"https://url.test/:9 Uncaught TypeError: registerAdBeacon invalid "
        "reporting url for key 'view': 'http://view.example.com/'."});
-}
-
-TEST_F(SellerWorkletTest, ReportResultPrivateAggregationRequests) {
-  auction_worklet::mojom::PrivateAggregationRequestPtr kExpectedRequest1 =
-      auction_worklet::mojom::PrivateAggregationRequest::New(
-          content::mojom::AggregatableReportHistogramContribution::New(
-              /*bucket=*/123,
-              /*value=*/45),
-          content::mojom::AggregationServiceMode::kDefault);
-  auction_worklet::mojom::PrivateAggregationRequestPtr kExpectedRequest2 =
-      auction_worklet::mojom::PrivateAggregationRequest::New(
-          content::mojom::AggregatableReportHistogramContribution::New(
-              /*bucket=*/absl::MakeInt128(/*high=*/1, /*low=*/0),
-              /*value=*/1),
-          content::mojom::AggregationServiceMode::kDefault);
-
-  {
-    PrivateAggregationRequests expected_pa_requests;
-    expected_pa_requests.push_back(kExpectedRequest1.Clone());
-
-    RunReportResultCreatedScriptExpectingResult(
-        R"(5)",
-        R"(privateAggregation.sendHistogramReport({bucket: 123, value: 45});)",
-        /*expected_signals_for_winner=*/"5",
-        /*expected_report_url=*/absl::nullopt, /*expected_ad_beacon_map=*/{},
-        std::move(expected_pa_requests),
-        /*expected_errors=*/{});
-  }
-
-  // BigInt bucket
-  {
-    PrivateAggregationRequests expected_pa_requests;
-    expected_pa_requests.push_back(kExpectedRequest1.Clone());
-
-    RunReportResultCreatedScriptExpectingResult(
-        R"(5)",
-        R"(privateAggregation.sendHistogramReport({bucket: 123n, value: 45});)",
-        /*expected_signals_for_winner=*/"5",
-        /*expected_report_url=*/absl::nullopt, /*expected_ad_beacon_map=*/{},
-        std::move(expected_pa_requests),
-        /*expected_errors=*/{});
-  }
-
-  // Large bucket
-  {
-    PrivateAggregationRequests expected_pa_requests;
-    expected_pa_requests.push_back(kExpectedRequest2.Clone());
-
-    RunReportResultCreatedScriptExpectingResult(
-        R"(5)",
-        R"(privateAggregation.sendHistogramReport(
-            {bucket: 18446744073709551616n, value: 1});)",
-        /*expected_signals_for_winner=*/"5",
-        /*expected_report_url=*/absl::nullopt, /*expected_ad_beacon_map=*/{},
-        std::move(expected_pa_requests),
-        /*expected_errors=*/{});
-  }
-
-  // Multiple requests
-  {
-    PrivateAggregationRequests expected_pa_requests;
-    expected_pa_requests.push_back(kExpectedRequest1.Clone());
-    expected_pa_requests.push_back(kExpectedRequest2.Clone());
-
-    RunReportResultCreatedScriptExpectingResult(
-        R"(5)",
-        R"(
-          privateAggregation.sendHistogramReport({bucket: 123, value: 45});
-          privateAggregation.sendHistogramReport({bucket: 18446744073709551616n,
-                                                  value: 1});
-        )",
-        /*expected_signals_for_winner=*/"5",
-        /*expected_report_url=*/absl::nullopt, /*expected_ad_beacon_map=*/{},
-        std::move(expected_pa_requests),
-        /*expected_errors=*/{});
-  }
-
-  // An unrelated exception after sendHistogramReport shouldn't block the report
-  {
-    PrivateAggregationRequests expected_pa_requests;
-    expected_pa_requests.push_back(kExpectedRequest1.Clone());
-
-    RunReportResultCreatedScriptExpectingResult(
-        R"(5)",
-        R"(
-          privateAggregation.sendHistogramReport({bucket: 123, value: 45});
-          error;
-        )",
-        /*expected_signals_for_winner=*/absl::nullopt,
-        /*expected_report_url=*/absl::nullopt, /*expected_ad_beacon_map=*/{},
-        std::move(expected_pa_requests),
-        /*expected_errors=*/
-        {"https://url.test/:11 Uncaught ReferenceError: error is not "
-         "defined."});
-  }
 }
 
 TEST_F(SellerWorkletTest, ReportResultBid) {
@@ -3456,6 +3258,252 @@ TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
             }));
     run_loop.Run();
   }
+}
+
+class SellerWorkletPrivateAggregationEnabledTest : public SellerWorkletTest {
+ public:
+  SellerWorkletPrivateAggregationEnabledTest() {
+    scoped_feature_list_.InitAndEnableFeature(content::kPrivateAggregationApi);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(SellerWorkletPrivateAggregationEnabledTest, ScoreAd) {
+  auction_worklet::mojom::PrivateAggregationRequestPtr kExpectedRequest1 =
+      auction_worklet::mojom::PrivateAggregationRequest::New(
+          content::mojom::AggregatableReportHistogramContribution::New(
+              /*bucket=*/123,
+              /*value=*/45),
+          content::mojom::AggregationServiceMode::kDefault);
+  auction_worklet::mojom::PrivateAggregationRequestPtr kExpectedRequest2 =
+      auction_worklet::mojom::PrivateAggregationRequest::New(
+          content::mojom::AggregatableReportHistogramContribution::New(
+              /*bucket=*/absl::MakeInt128(/*high=*/1, /*low=*/0),
+              /*value=*/1),
+          content::mojom::AggregationServiceMode::kDefault);
+
+  {
+    PrivateAggregationRequests expected_pa_requests;
+    expected_pa_requests.push_back(kExpectedRequest1.Clone());
+
+    RunScoreAdWithJavascriptExpectingResult(
+        CreateScoreAdScript(
+            "5",
+            "privateAggregation.sendHistogramReport({bucket: 123, value: 45})"),
+        5, /*expected_errors=*/{},
+        mojom::ComponentAuctionModifiedBidParamsPtr(),
+        /*expected_data_version=*/absl::nullopt,
+        /*expected_debug_loss_report_url=*/absl::nullopt,
+        /*expected_debug_win_report_url=*/absl::nullopt,
+        std::move(expected_pa_requests));
+  }
+
+  // BigInt bucket
+  {
+    PrivateAggregationRequests expected_pa_requests;
+    expected_pa_requests.push_back(kExpectedRequest1.Clone());
+
+    RunScoreAdWithJavascriptExpectingResult(
+        CreateScoreAdScript("5",
+                            "privateAggregation.sendHistogramReport("
+                            "{bucket: 123n, value: 45})"),
+        5, /*expected_errors=*/{},
+        mojom::ComponentAuctionModifiedBidParamsPtr(),
+        /*expected_data_version=*/absl::nullopt,
+        /*expected_debug_loss_report_url=*/absl::nullopt,
+        /*expected_debug_win_report_url=*/absl::nullopt,
+        std::move(expected_pa_requests));
+  }
+
+  // Large bucket
+  {
+    PrivateAggregationRequests expected_pa_requests;
+    expected_pa_requests.push_back(kExpectedRequest2.Clone());
+
+    RunScoreAdWithJavascriptExpectingResult(
+        CreateScoreAdScript("5",
+                            "privateAggregation.sendHistogramReport("
+                            "{bucket: 18446744073709551616n, value: 1})"),
+        5, /*expected_errors=*/{},
+        mojom::ComponentAuctionModifiedBidParamsPtr(),
+        /*expected_data_version=*/absl::nullopt,
+        /*expected_debug_loss_report_url=*/absl::nullopt,
+        /*expected_debug_win_report_url=*/absl::nullopt,
+        std::move(expected_pa_requests));
+  }
+
+  // Multiple requests
+  {
+    PrivateAggregationRequests expected_pa_requests;
+    expected_pa_requests.push_back(kExpectedRequest1.Clone());
+    expected_pa_requests.push_back(kExpectedRequest2.Clone());
+
+    RunScoreAdWithJavascriptExpectingResult(
+        CreateScoreAdScript("5", R"(
+          privateAggregation.sendHistogramReport({bucket: 123, value: 45});
+          privateAggregation.sendHistogramReport({bucket: 18446744073709551616n,
+                                                  value: 1});
+        )"),
+        5, /*expected_errors=*/{},
+        mojom::ComponentAuctionModifiedBidParamsPtr(),
+        /*expected_data_version=*/absl::nullopt,
+        /*expected_debug_loss_report_url=*/absl::nullopt,
+        /*expected_debug_win_report_url=*/absl::nullopt,
+        std::move(expected_pa_requests));
+  }
+
+  // An unrelated exception after sendHistogramReport shouldn't block the report
+  {
+    PrivateAggregationRequests expected_pa_requests;
+    expected_pa_requests.push_back(kExpectedRequest1.Clone());
+
+    RunScoreAdWithJavascriptExpectingResult(
+        CreateScoreAdScript("5", R"(
+          privateAggregation.sendHistogramReport({bucket: 123, value: 45});
+          error;
+        )"),
+        0, /*expected_errors=*/
+        {"https://url.test/:6 Uncaught ReferenceError: error is not defined."},
+        mojom::ComponentAuctionModifiedBidParamsPtr(),
+        /*expected_data_version=*/absl::nullopt,
+        /*expected_debug_loss_report_url=*/absl::nullopt,
+        /*expected_debug_win_report_url=*/absl::nullopt,
+        std::move(expected_pa_requests));
+  }
+}
+
+TEST_F(SellerWorkletPrivateAggregationEnabledTest, ReportResult) {
+  auction_worklet::mojom::PrivateAggregationRequestPtr kExpectedRequest1 =
+      auction_worklet::mojom::PrivateAggregationRequest::New(
+          content::mojom::AggregatableReportHistogramContribution::New(
+              /*bucket=*/123,
+              /*value=*/45),
+          content::mojom::AggregationServiceMode::kDefault);
+  auction_worklet::mojom::PrivateAggregationRequestPtr kExpectedRequest2 =
+      auction_worklet::mojom::PrivateAggregationRequest::New(
+          content::mojom::AggregatableReportHistogramContribution::New(
+              /*bucket=*/absl::MakeInt128(/*high=*/1, /*low=*/0),
+              /*value=*/1),
+          content::mojom::AggregationServiceMode::kDefault);
+
+  {
+    PrivateAggregationRequests expected_pa_requests;
+    expected_pa_requests.push_back(kExpectedRequest1.Clone());
+
+    RunReportResultCreatedScriptExpectingResult(
+        R"(5)",
+        R"(privateAggregation.sendHistogramReport({bucket: 123, value: 45});)",
+        /*expected_signals_for_winner=*/"5",
+        /*expected_report_url=*/absl::nullopt, /*expected_ad_beacon_map=*/{},
+        std::move(expected_pa_requests),
+        /*expected_errors=*/{});
+  }
+
+  // BigInt bucket
+  {
+    PrivateAggregationRequests expected_pa_requests;
+    expected_pa_requests.push_back(kExpectedRequest1.Clone());
+
+    RunReportResultCreatedScriptExpectingResult(
+        R"(5)",
+        R"(privateAggregation.sendHistogramReport({bucket: 123n, value: 45});)",
+        /*expected_signals_for_winner=*/"5",
+        /*expected_report_url=*/absl::nullopt, /*expected_ad_beacon_map=*/{},
+        std::move(expected_pa_requests),
+        /*expected_errors=*/{});
+  }
+
+  // Large bucket
+  {
+    PrivateAggregationRequests expected_pa_requests;
+    expected_pa_requests.push_back(kExpectedRequest2.Clone());
+
+    RunReportResultCreatedScriptExpectingResult(
+        R"(5)",
+        R"(privateAggregation.sendHistogramReport(
+            {bucket: 18446744073709551616n, value: 1});)",
+        /*expected_signals_for_winner=*/"5",
+        /*expected_report_url=*/absl::nullopt, /*expected_ad_beacon_map=*/{},
+        std::move(expected_pa_requests),
+        /*expected_errors=*/{});
+  }
+
+  // Multiple requests
+  {
+    PrivateAggregationRequests expected_pa_requests;
+    expected_pa_requests.push_back(kExpectedRequest1.Clone());
+    expected_pa_requests.push_back(kExpectedRequest2.Clone());
+
+    RunReportResultCreatedScriptExpectingResult(
+        R"(5)",
+        R"(
+          privateAggregation.sendHistogramReport({bucket: 123, value: 45});
+          privateAggregation.sendHistogramReport({bucket: 18446744073709551616n,
+                                                  value: 1});
+        )",
+        /*expected_signals_for_winner=*/"5",
+        /*expected_report_url=*/absl::nullopt, /*expected_ad_beacon_map=*/{},
+        std::move(expected_pa_requests),
+        /*expected_errors=*/{});
+  }
+
+  // An unrelated exception after sendHistogramReport shouldn't block the report
+  {
+    PrivateAggregationRequests expected_pa_requests;
+    expected_pa_requests.push_back(kExpectedRequest1.Clone());
+
+    RunReportResultCreatedScriptExpectingResult(
+        R"(5)",
+        R"(
+          privateAggregation.sendHistogramReport({bucket: 123, value: 45});
+          error;
+        )",
+        /*expected_signals_for_winner=*/absl::nullopt,
+        /*expected_report_url=*/absl::nullopt, /*expected_ad_beacon_map=*/{},
+        std::move(expected_pa_requests),
+        /*expected_errors=*/
+        {"https://url.test/:11 Uncaught ReferenceError: error is not "
+         "defined."});
+  }
+}
+
+class SellerWorkletPrivateAggregationDisabledTest : public SellerWorkletTest {
+ public:
+  SellerWorkletPrivateAggregationDisabledTest() {
+    scoped_feature_list_.InitAndDisableFeature(content::kPrivateAggregationApi);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(SellerWorkletPrivateAggregationDisabledTest, ScoreAd) {
+  RunScoreAdWithJavascriptExpectingResult(
+      CreateScoreAdScript(
+          "5",
+          "privateAggregation.sendHistogramReport({bucket: 123, value: 45})"),
+      0, /*expected_errors=*/
+      {"https://url.test/:4 Uncaught ReferenceError: privateAggregation is not "
+       "defined."},
+      mojom::ComponentAuctionModifiedBidParamsPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      /*expected_debug_loss_report_url=*/absl::nullopt,
+      /*expected_debug_win_report_url=*/absl::nullopt,
+      /*expected_pa_requests=*/{});
+}
+
+TEST_F(SellerWorkletPrivateAggregationDisabledTest, ReportResult) {
+  RunReportResultCreatedScriptExpectingResult(
+      R"(5)",
+      R"(privateAggregation.sendHistogramReport({bucket: 123, value: 45});)",
+      /*expected_signals_for_winner=*/absl::nullopt,
+      /*expected_report_url=*/absl::nullopt, /*expected_ad_beacon_map=*/{},
+      /*expected_pa_requests=*/{},
+      /*expected_errors=*/
+      {"https://url.test/:9 Uncaught ReferenceError: privateAggregation is "
+       "not defined."});
 }
 
 }  // namespace

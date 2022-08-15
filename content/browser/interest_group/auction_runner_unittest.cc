@@ -35,6 +35,7 @@
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/common/aggregatable_report.mojom-shared.h"
+#include "content/common/private_aggregation_features.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
@@ -1495,11 +1496,13 @@ class AuctionRunnerTest : public testing::Test,
     std::vector<auction_worklet::mojom::PreviousWinPtr> bidder2_prev_wins;
   };
 
-  AuctionRunnerTest()
+  explicit AuctionRunnerTest(bool should_enable_private_aggregation = true)
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     mojo::SetDefaultProcessErrorHandler(base::BindRepeating(
         &AuctionRunnerTest::OnBadMessage, base::Unretained(this)));
     DebuggableAuctionWorkletTracker::GetInstance()->AddObserver(this);
+    scoped_feature_list_.InitWithFeatureState(
+        content::kPrivateAggregationApi, should_enable_private_aggregation);
   }
 
   ~AuctionRunnerTest() override {
@@ -2059,6 +2062,8 @@ class AuctionRunnerTest : public testing::Test,
   // corresponding participant types.
   std::set<url::Origin> disallowed_sellers_;
   std::set<url::Origin> disallowed_buyers_;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   base::test::TaskEnvironment task_environment_;
 
@@ -9098,6 +9103,46 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
       testing::UnorderedElementsAre(GURL("https://bidder11.test/win/"),
                                     GURL("https://seller3.test/win/11"),
                                     GURL("https://seller0.test/win/11")));
+}
+
+// Enable and test forDebuggingOnly.reportAdAuctionLoss() and
+// forDebuggingOnly.reportAdAuctionWin() APIs.
+class AuctionRunnerPrivateAggregationAPIDisabledTest
+    : public AuctionRunnerTest {
+ public:
+  AuctionRunnerPrivateAggregationAPIDisabledTest()
+      : AuctionRunnerTest(/*should_enable_private_aggregation=*/false) {}
+};
+
+TEST_F(AuctionRunnerPrivateAggregationAPIDisabledTest, ReportsNotSent) {
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/2,
+                    kBidder1, kBidder1Name,
+                    /*has_signals=*/true, "k1", "a",
+                    /*report_post_auction_signals=*/true));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/2,
+                    kBidder2, kBidder2Name,
+                    /*has_signals=*/true, "l2", "b",
+                    /*report_post_auction_signals=*/true));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kSellerUrl,
+      MakeAuctionScript(/*report_post_auction_signals=*/true));
+  auction_worklet::AddBidderJsonResponse(
+      &url_loader_factory_,
+      GURL(kBidder1TrustedSignalsUrl.spec() +
+           "?hostname=publisher1.com&keys=k1,k2"),
+      kBidder1SignalsJson);
+  auction_worklet::AddBidderJsonResponse(
+      &url_loader_factory_,
+      GURL(kBidder2TrustedSignalsUrl.spec() +
+           "?hostname=publisher1.com&keys=l1,l2"),
+      kBidder2SignalsJson);
+
+  const Result& res = RunStandardAuction();
+  EXPECT_TRUE(res.private_aggregation_requests.empty());
 }
 
 }  // namespace

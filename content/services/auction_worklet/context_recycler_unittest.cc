@@ -15,6 +15,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/common/aggregatable_report.mojom-shared.h"
 #include "content/common/aggregatable_report.mojom.h"
+#include "content/common/private_aggregation_features.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/for_debugging_only_bindings.h"
 #include "content/services/auction_worklet/private_aggregation_bindings.h"
@@ -511,8 +512,20 @@ TEST_F(ContextRecyclerTest, SetPriorityBindings) {
   }
 }
 
+class ContextRecyclerPrivateAggregationEnabledTest
+    : public ContextRecyclerTest {
+ public:
+  ContextRecyclerPrivateAggregationEnabledTest() {
+    scoped_feature_list_.InitAndEnableFeature(content::kPrivateAggregationApi);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 // Exercise PrivateAggregationBindings, and make sure they reset properly.
-TEST_F(ContextRecyclerTest, PrivateAggregationBindings) {
+TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
+       PrivateAggregationBindings) {
   using PrivateAggregationRequests =
       std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>;
 
@@ -858,6 +871,57 @@ TEST_F(ContextRecyclerTest, PrivateAggregationBindings) {
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
                     ->TakePrivateAggregationRequests()
                     .empty());
+  }
+}
+
+class ContextRecyclerPrivateAggregationDisabledTest
+    : public ContextRecyclerTest {
+ public:
+  ContextRecyclerPrivateAggregationDisabledTest() {
+    scoped_feature_list_.InitAndDisableFeature(content::kPrivateAggregationApi);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Exercise PrivateAggregationBindings, and make sure they reset properly.
+TEST_F(ContextRecyclerPrivateAggregationDisabledTest,
+       PrivateAggregationBindings) {
+  using PrivateAggregationRequests =
+      std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>;
+
+  const char kScript[] = R"(
+    function test(args) {
+      privateAggregation.sendHistogramReport(args);
+    }
+  )";
+
+  v8::Local<v8::UnboundScript> script = Compile(kScript);
+  ASSERT_FALSE(script.IsEmpty());
+
+  ContextRecycler context_recycler(helper_.get());
+  context_recycler.AddPrivateAggregationBindings();
+
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("bucket", 123);
+    dict.Set("value", 45);
+
+    Run(scope, script, "test", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), dict));
+    EXPECT_THAT(
+        error_msgs,
+        ElementsAre("https://example.org/script.js:3 Uncaught ReferenceError: "
+                    "privateAggregation is not defined."));
+
+    PrivateAggregationRequests pa_requests =
+        context_recycler.private_aggregation_bindings()
+            ->TakePrivateAggregationRequests();
+    ASSERT_TRUE(pa_requests.empty());
   }
 }
 

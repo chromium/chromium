@@ -10,8 +10,10 @@
 #include <string>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/strings/string_util.h"
 #include "content/common/aggregatable_report.mojom.h"
+#include "content/common/private_aggregation_features.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "gin/converter.h"
@@ -78,6 +80,10 @@ PrivateAggregationBindings::~PrivateAggregationBindings() = default;
 
 void PrivateAggregationBindings::FillInGlobalTemplate(
     v8::Local<v8::ObjectTemplate> global_template) {
+  if (!base::FeatureList::IsEnabled(content::kPrivateAggregationApi)) {
+    return;
+  }
+
   v8::Local<v8::External> v8_this =
       v8::External::New(v8_helper_->isolate(), this);
 
