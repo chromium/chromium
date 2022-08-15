@@ -13,6 +13,7 @@ import android.os.RemoteException;
 import android.view.SurfaceControlViewHost;
 import android.view.WindowManager;
 
+import org.chromium.browserfragment.interfaces.IBooleanCallback;
 import org.chromium.browserfragment.interfaces.IBrowserFragmentDelegate;
 import org.chromium.browserfragment.interfaces.IBrowserFragmentDelegateClient;
 import org.chromium.browserfragment.interfaces.ITabCallback;
@@ -153,5 +154,17 @@ class BrowserFragmentDelegate extends IBrowserFragmentDelegate.Stub {
     @Override
     public void setTabObserverDelegate(ITabObserverDelegate tabObserverDelegate) {
         mTabDelegate.setObserver(tabObserverDelegate);
+    }
+
+    @Override
+    public void tryNavigateBack(IBooleanCallback callback) {
+        mHandler.post(() -> {
+            mFragment.getBrowser().tryNavigateBack(didNavigate -> {
+                try {
+                    callback.onResult(didNavigate);
+                } catch (RemoteException e) {
+                }
+            });
+        });
     }
 }

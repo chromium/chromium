@@ -463,7 +463,7 @@ public class BrowserImpl extends IBrowser.Stub implements View.OnAttachStateChan
     }
 
     @Override
-    public List getTabs() {
+    public List<TabImpl> getTabs() {
         StrictModeWorkaround.apply();
         return Arrays.asList(BrowserImplJni.get().getTabs(mNativeBrowser));
     }
@@ -472,6 +472,17 @@ public class BrowserImpl extends IBrowser.Stub implements View.OnAttachStateChan
     public int getActiveTabId() {
         StrictModeWorkaround.apply();
         return getActiveTab() != null ? getActiveTab().getId() : 0;
+    }
+
+    @Override
+    public int[] getTabIds() {
+        StrictModeWorkaround.apply();
+        List<TabImpl> tabs = getTabs();
+        int[] ids = new int[tabs.size()];
+        for(int i = 0; i < tabs.size(); i++) {
+            ids[i] = tabs.get(i).getId();
+        }
+        return ids;
     }
 
     @Override

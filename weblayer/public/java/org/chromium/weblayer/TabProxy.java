@@ -14,7 +14,7 @@ import org.chromium.browserfragment.interfaces.ITabProxy;
  * and the Tab implementation in WebLayer.
  */
 class TabProxy extends ITabProxy.Stub {
-    private Handler mHandler = new Handler(Looper.getMainLooper());
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
 
     private int mTabId;
     private String mGuid;
@@ -24,8 +24,21 @@ class TabProxy extends ITabProxy.Stub {
         mGuid = tab.getGuid();
     }
 
+    void invalidate() {
+        mTabId = -1;
+        mGuid = null;
+    }
+
+    boolean isValid() {
+        return mGuid != null;
+    }
+
     private Tab getTab() {
-        return Tab.getTabById(mTabId);
+        Tab tab = Tab.getTabById(mTabId);
+        if (tab == null) {
+            // TODO(swestphal): Raise exception.
+        }
+        return tab;
     }
 
     @Override
@@ -33,6 +46,14 @@ class TabProxy extends ITabProxy.Stub {
         mHandler.post(() -> {
             Tab tab = getTab();
             tab.getBrowser().setActiveTab(tab);
+        });
+    }
+
+    @Override
+    public void close() {
+        mHandler.post(() -> {
+            getTab().dispatchBeforeUnloadAndClose();
+            invalidate();
         });
     }
 }

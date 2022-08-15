@@ -12,7 +12,7 @@ import org.chromium.browserfragment.interfaces.ITabParams;
 import org.chromium.browserfragment.interfaces.ITabProxy;
 
 /**
- * Tab controls of the tab content.
+ * Tab controls the tab content and state.
  */
 public class Tab {
     private ITabProxy mTabProxy;
@@ -35,11 +35,21 @@ public class Tab {
     }
 
     /**
-     * Sets this tab to active.
+     * Sets this Tab to active.
      */
     public void setActive() {
         try {
             mTabProxy.setActive();
+        } catch (RemoteException e) {
+        }
+    }
+
+    /*
+     * Closes this Tab.
+     */
+    public void close() {
+        try {
+            mTabProxy.close();
         } catch (RemoteException e) {
         }
     }

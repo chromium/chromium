@@ -9,7 +9,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.RemoteException;
 
-import org.chromium.browserfragment.interfaces.IRequestNavigationCallback;
+import org.chromium.browserfragment.interfaces.IBooleanCallback;
 import org.chromium.browserfragment.interfaces.ITabNavigationControllerProxy;
 
 class TabNavigationControllerProxy extends ITabNavigationControllerProxy.Stub {
@@ -41,20 +41,20 @@ class TabNavigationControllerProxy extends ITabNavigationControllerProxy.Stub {
     }
 
     @Override
-    public void canGoBack(IRequestNavigationCallback callback) {
+    public void canGoBack(IBooleanCallback callback) {
         mHandler.post(() -> {
             try {
-                callback.canNavigate(mNavigationController.canGoBack());
+                callback.onResult(mNavigationController.canGoBack());
             } catch (RemoteException e) {
             }
         });
     }
 
     @Override
-    public void canGoForward(IRequestNavigationCallback callback) {
+    public void canGoForward(IBooleanCallback callback) {
         mHandler.post(() -> {
             try {
-                callback.canNavigate(mNavigationController.canGoForward());
+                callback.onResult(mNavigationController.canGoForward());
             } catch (RemoteException e) {
             }
         });

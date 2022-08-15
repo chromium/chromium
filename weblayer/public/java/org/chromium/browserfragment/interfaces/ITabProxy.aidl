@@ -8,4 +8,5 @@ import org.chromium.browserfragment.interfaces.ITabNavigationControllerProxy;
 
 oneway interface ITabProxy {
   void setActive() = 1;
+  void close() = 2;
 }

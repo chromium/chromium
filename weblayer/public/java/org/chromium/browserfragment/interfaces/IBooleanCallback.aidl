@@ -4,6 +4,6 @@
 
 package org.chromium.browserfragment.interfaces;
 
-oneway interface IRequestNavigationCallback {
-    void canNavigate(in boolean result) = 1;
+oneway interface IBooleanCallback {
+    void onResult(in boolean result) = 1;
 }

@@ -6,9 +6,10 @@ package org.chromium.browserfragment.interfaces;
 
 import android.os.Bundle;
 import org.chromium.browserfragment.interfaces.IBrowserFragmentDelegateClient;
-import org.chromium.browserfragment.interfaces.ITabCallback;
+import org.chromium.browserfragment.interfaces.IBooleanCallback;
 import org.chromium.browserfragment.interfaces.ITabObserverDelegate;
 import org.chromium.browserfragment.interfaces.ITabProxy;
+import org.chromium.browserfragment.interfaces.ITabCallback;
 
 oneway interface IBrowserFragmentDelegate {
     void setClient(in IBrowserFragmentDelegateClient client) = 1;
@@ -32,4 +33,5 @@ oneway interface IBrowserFragmentDelegate {
     // Tab operations.
     void getActiveTab(ITabCallback callback) = 14;
     void setTabObserverDelegate(ITabObserverDelegate tabObserverDelegate) = 15;
+    void tryNavigateBack(IBooleanCallback callback) = 17;
 }

@@ -177,11 +177,11 @@ process_version("client_version") {
 android_aidl("browserfragment_aidl") {
   import_include = [ "." ]
   sources = [
+    "org/chromium/browserfragment/interfaces/IBooleanCallback.aidl",
     "org/chromium/browserfragment/interfaces/IBrowserFragmentDelegate.aidl",
     "org/chromium/browserfragment/interfaces/IBrowserFragmentDelegateClient.aidl",
     "org/chromium/browserfragment/interfaces/IBrowserSandboxCallback.aidl",
     "org/chromium/browserfragment/interfaces/IBrowserSandboxService.aidl",
-    "org/chromium/browserfragment/interfaces/IRequestNavigationCallback.aidl",
     "org/chromium/browserfragment/interfaces/ITabCallback.aidl",
     "org/chromium/browserfragment/interfaces/ITabNavigationControllerProxy.aidl",
     "org/chromium/browserfragment/interfaces/ITabObserverDelegate.aidl",

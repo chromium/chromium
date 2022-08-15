@@ -11,7 +11,7 @@ import androidx.concurrent.futures.CallbackToFutureAdapter;
 
 import com.google.common.util.concurrent.ListenableFuture;
 
-import org.chromium.browserfragment.interfaces.IRequestNavigationCallback;
+import org.chromium.browserfragment.interfaces.IBooleanCallback;
 import org.chromium.browserfragment.interfaces.ITabNavigationControllerProxy;
 
 /**
@@ -20,7 +20,7 @@ import org.chromium.browserfragment.interfaces.ITabNavigationControllerProxy;
 public class TabNavigationController {
     private final ITabNavigationControllerProxy mTabNavigationControllerProxy;
 
-    private final class RequestNavigationCallback extends IRequestNavigationCallback.Stub {
+    private final class RequestNavigationCallback extends IBooleanCallback.Stub {
         private CallbackToFutureAdapter.Completer<Boolean> mCompleter;
 
         RequestNavigationCallback(CallbackToFutureAdapter.Completer<Boolean> completer) {
@@ -28,7 +28,7 @@ public class TabNavigationController {
         }
 
         @Override
-        public void canNavigate(boolean possible) {
+        public void onResult(boolean possible) {
             mCompleter.set(possible);
         }
     };

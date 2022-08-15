@@ -76,6 +76,7 @@ public class BrowserFragment extends Fragment {
         mBrowser = browser;
         mDelegate = delegate;
         mDelegate.setClient(mClient);
+        mDelegate.setTabObserverDelegate(mTabObserverDelegate);
     }
 
     @Override

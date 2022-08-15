@@ -4,12 +4,13 @@
 
 package org.chromium.browserfragment.interfaces;
 
-import org.chromium.browserfragment.interfaces.IRequestNavigationCallback;
+import org.chromium.browserfragment.interfaces.IBooleanCallback;
 
 oneway interface ITabNavigationControllerProxy {
     void navigate(in String uri) = 1;
     void goBack() = 2;
     void goForward() = 3;
-    void canGoBack(IRequestNavigationCallback callback) = 4;
-    void canGoForward(IRequestNavigationCallback callback) = 5;
+    void canGoBack(IBooleanCallback callback) = 4;
+    void canGoForward(IBooleanCallback callback) = 5;
+
 }

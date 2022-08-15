@@ -245,6 +245,21 @@ public class Browser {
     }
 
     /**
+     * Returns a List of Tabs as saved in the native Browser.
+     *
+     * @return The Tabs.
+     */
+    @NonNull
+    private int[] getTabIds() {
+        ThreadCheck.ensureOnUiThread();
+        try {
+            return mImpl.getTabIds();
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+    }
+
+    /**
      * Disposes a Tab. If {@link tab} is the active Tab, no Tab is made active. After this call
      *  {@link tab} should not be used.
      *
@@ -266,6 +281,47 @@ public class Browser {
         } catch (RemoteException e) {
             throw new APICallException(e);
         }
+    }
+
+    /**
+     * Navigates to the previous navigation across all tabs according to tabs in native Browser.
+     */
+    void tryNavigateBack(@NonNull Callback<Boolean> callback) {
+        Tab activeTab = getActiveTab();
+        if (activeTab == null) {
+            callback.onResult(false);
+            return;
+        }
+        if (activeTab.dismissTransientUi()) {
+            callback.onResult(true);
+            return;
+        }
+        NavigationController controller = activeTab.getNavigationController();
+        if (controller.canGoBack()) {
+            controller.goBack();
+            callback.onResult(true);
+            return;
+        }
+        int[] tabIds = getTabIds();
+        if (tabIds.length > 1) {
+            Tab previousTab = null;
+            int activeTabId = activeTab.getId();
+            int prevId = -1;
+            for (int id : tabIds) {
+                if (id == activeTabId) {
+                    previousTab = Tab.getTabById(prevId);
+                    break;
+                }
+                prevId = id;
+            }
+            if (previousTab != null) {
+                activeTab.dispatchBeforeUnloadAndClose();
+                setActiveTab(previousTab);
+                callback.onResult(true);
+                return;
+            }
+        }
+        callback.onResult(false);
     }
 
     /**
