@@ -7,9 +7,7 @@ import fnmatch
 import json
 import logging
 import os
-import subprocess
 import sys
-import tempfile
 import threading
 from typing import Any, Dict, List
 import unittest
@@ -24,8 +22,9 @@ import gpu_path_util
 
 EXPECTATIONS_FILE = os.path.join(gpu_path_util.CHROMIUM_SRC_DIR, 'third_party',
                                  'dawn', 'webgpu-cts', 'expectations.txt')
-LIST_SCRIPT = os.path.join(gpu_path_util.CHROMIUM_SRC_DIR, 'third_party',
-                           'dawn', 'webgpu-cts', 'scripts', 'list.py')
+TEST_LIST_FILE = os.path.join(gpu_path_util.CHROMIUM_SRC_DIR, 'third_party',
+                              'dawn', 'third_party', 'gn', 'webgpu-cts',
+                              'test_list.txt')
 WORKER_TEST_GLOB_FILE = os.path.join(gpu_path_util.CHROMIUM_SRC_DIR,
                                      'third_party', 'dawn', 'webgpu-cts',
                                      'worker_test_globs.txt')
@@ -104,7 +103,6 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
   _build_dir = None
 
-  _typescript_tempdir = tempfile.TemporaryDirectory()
   _test_list = None
   _worker_test_globs = None
 
@@ -254,20 +252,13 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   def GenerateGpuTests(cls, options: ct.ParsedCmdArgs) -> ct.TestGenerator:
     cls.SetClassVariablesFromOptions(options)
     if cls._test_list is None:
-      p = subprocess.run([
-          sys.executable, LIST_SCRIPT, '--js-out-dir',
-          cls._typescript_tempdir.name
-      ],
-                         stdout=subprocess.PIPE,
-                         check=True)
-      cls._test_list = p.stdout.decode('utf-8').splitlines()
+      with open(TEST_LIST_FILE) as f:
+        cls._test_list = [l for l in f.read().splitlines() if l]
     if cls._worker_test_globs is None:
       with open(WORKER_TEST_GLOB_FILE) as f:
         contents = f.read()
       cls._worker_test_globs = [l for l in contents.splitlines() if l]
     for line in cls._test_list:  # pylint:disable=not-an-iterable
-      if not line:
-        continue
       test_inputs = [line, False]
       for wg in cls._worker_test_globs:  # pylint:disable=not-an-iterable
         if fnmatch.fnmatch(line, wg):

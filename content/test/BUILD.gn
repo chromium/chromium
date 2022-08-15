@@ -862,9 +862,6 @@ group("telemetry_gpu_integration_test_support") {
   data_deps = [
     ":telemetry_gpu_integration_test_data",
 
-    # For WebGPU CTS tests.
-    "//third_party/dawn/webgpu-cts",
-
     # For anything using Skia Gold (pixel, maps).
     "//ui/base:goldctl",
   ]
@@ -893,6 +890,10 @@ group("telemetry_gpu_common_data") {
 
     "//content/test/gpu/gpu_project_config.py",
     "//content/test/gpu/run_gpu_integration_test.py",
+  ]
+  data_deps = [
+    # For WebGPU CTS tests.
+    "//third_party/dawn/webgpu-cts",
   ]
 }
 
