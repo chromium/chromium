@@ -635,9 +635,9 @@ class CORE_EXPORT NGPhysicalFragment
     return oof_data_ && !oof_data_->anchor_query.IsEmpty();
   }
   const NGPhysicalAnchorQuery* AnchorQuery() const {
-    if (oof_data_)
-      return &oof_data_->anchor_query;
-    return nullptr;
+    if (!HasAnchorQuery())
+      return nullptr;
+    return &oof_data_->anchor_query;
   }
 
   NGFragmentedOutOfFlowData* FragmentedOutOfFlowData() const;

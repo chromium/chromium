@@ -337,7 +337,7 @@ TEST_F(NGAnchorQueryTest, OutOfFlow) {
 
   // Anchor names of out-of-flow positioned objects are propagated to their
   // containing blocks.
-  EXPECT_NE(AnchorQueryByElementId("middle"), nullptr);
+  EXPECT_EQ(AnchorQueryByElementId("middle"), nullptr);
 }
 
 // Relative-positioning should shift the rectangles.
