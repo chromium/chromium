@@ -3423,7 +3423,7 @@ void LayerTreeHostImpl::OnMemoryPressure(
   if (!base::SysInfo::IsLowEndDevice())
     return;
 
-  if (level != base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL)
+  if (!ImageDecodeCacheUtils::ShouldEvictCaches(level))
     return;
 
     // TODO(crbug.com/1189208): Unlocking decoded-image-tracker images causes
@@ -3441,14 +3441,15 @@ void LayerTreeHostImpl::OnMemoryPressure(
     recycle_tree_->OnPurgeMemory();
 
   EvictAllUIResources();
-  if (image_decode_cache_) {
-    image_decode_cache_->SetShouldAggressivelyFreeResources(true);
-    image_decode_cache_->SetShouldAggressivelyFreeResources(false);
-  }
   if (resource_pool_)
     resource_pool_->OnMemoryPressure(level);
 
   tile_manager_.decoded_image_tracker().UnlockAllImages();
+
+  // There is no need to notify the |image_decode_cache| about the memory
+  // pressure as it (the gpu one as the software one doesn't keep outstanding
+  // images pinned) listens to memory pressure events and purges memory base on
+  // the ImageDecodeCacheUtils::ShouldEvictCaches' return value.
 }
 
 void LayerTreeHostImpl::SetVisible(bool visible) {

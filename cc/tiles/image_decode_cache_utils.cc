@@ -15,6 +15,7 @@
 
 namespace cc {
 
+// static
 bool ImageDecodeCacheUtils::ScaleToHalfFloatPixmapUsingN32Intermediate(
     const SkPixmap& source_pixmap,
     SkPixmap* scaled_pixmap,
@@ -49,6 +50,20 @@ bool ImageDecodeCacheUtils::ScaleToHalfFloatPixmapUsingN32Intermediate(
     return false;
   // Convert back to f16 and return
   return n32_resized_bitmap.readPixels(*scaled_pixmap, 0, 0);
+}
+
+// static
+bool ImageDecodeCacheUtils::ShouldEvictCaches(
+    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+  switch (memory_pressure_level) {
+    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE:
+    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE:
+      return false;
+    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL:
+      return true;
+  }
+  NOTREACHED();
+  return false;
 }
 
 }  // namespace cc

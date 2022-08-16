@@ -5,6 +5,7 @@
 #ifndef CC_TILES_IMAGE_DECODE_CACHE_UTILS_H_
 #define CC_TILES_IMAGE_DECODE_CACHE_UTILS_H_
 
+#include "base/memory/memory_pressure_listener.h"
 #include "build/build_config.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkPixmap.h"
@@ -35,6 +36,9 @@ class ImageDecodeCacheUtils {
       const SkPixmap& source_pixmap,
       SkPixmap* scaled_pixmap,
       PaintFlags::FilterQuality filter_quality);
+
+  static bool ShouldEvictCaches(
+      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
 };
 
 }  // namespace cc

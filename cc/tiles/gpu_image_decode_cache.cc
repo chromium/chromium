@@ -3027,16 +3027,12 @@ bool GpuImageDecodeCache::NeedsDarkModeFilterForTesting(
 
 void GpuImageDecodeCache::OnMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel level) {
+  if (!ImageDecodeCacheUtils::ShouldEvictCaches(level))
+    return;
+
   base::AutoLock lock(lock_);
-  switch (level) {
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE:
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE:
-      break;
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL:
-      base::AutoReset<bool> reset(&aggressively_freeing_resources_, true);
-      EnsureCapacity(0);
-      break;
-  }
+  base::AutoReset<bool> reset(&aggressively_freeing_resources_, true);
+  EnsureCapacity(0);
 }
 
 bool GpuImageDecodeCache::SupportsColorSpaceConversion() const {
