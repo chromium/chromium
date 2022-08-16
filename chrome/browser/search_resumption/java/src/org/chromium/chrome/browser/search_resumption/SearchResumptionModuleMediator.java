@@ -101,19 +101,19 @@ public class SearchResumptionModuleMediator implements OnSuggestionsReceivedList
     @Override
     public void syncStateChanged() {
         mHasKeepEverythingSynced = mSyncService.hasKeepEverythingSynced();
-        updateVisbility();
+        updateVisibility();
     }
 
     @Override
     public void onSignedIn() {
         mIsSignedIn = true;
-        updateVisbility();
+        updateVisibility();
     }
 
     @Override
     public void onSignedOut() {
         mIsSignedIn = false;
-        updateVisbility();
+        updateVisibility();
     }
 
     /**
@@ -277,7 +277,7 @@ public class SearchResumptionModuleMediator implements OnSuggestionsReceivedList
         return true;
     }
 
-    private void updateVisbility() {
+    private void updateVisibility() {
         if (mModel != null) {
             mModel.set(SearchResumptionModuleProperties.IS_VISIBLE,
                     mIsDefaultSearchEngineGoogle && mIsSignedIn && mHasKeepEverythingSynced);
@@ -299,6 +299,6 @@ public class SearchResumptionModuleMediator implements OnSuggestionsReceivedList
     void onTemplateURLServiceChanged() {
         mIsDefaultSearchEngineGoogle =
                 TemplateUrlServiceFactory.get().isDefaultSearchEngineGoogle();
-        updateVisbility();
+        updateVisibility();
     }
 }
