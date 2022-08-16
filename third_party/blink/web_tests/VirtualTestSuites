@@ -232,7 +232,7 @@
   },
   {
     "prefix": "compute-pressure",
-    "platforms": ["Linux", "Mac", "Win"],
+    "platforms": ["Linux", "Mac"],
     "bases": ["external/wpt/compute-pressure"],
     "args": ["--enable-features=ComputePressure"]
   },
