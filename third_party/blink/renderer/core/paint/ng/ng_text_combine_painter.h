@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_NG_NG_TEXT_COMBINE_PAINTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_NG_NG_TEXT_COMBINE_PAINTER_H_
 
-#include "third_party/blink/renderer/core/paint/text_painter_base.h"
+#include "third_party/blink/renderer/core/paint/ng/ng_text_painter_base.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 
 namespace blink {
@@ -16,7 +16,7 @@ class LayoutNGTextCombine;
 
 // The painter for painting text decorations and emphasis marks for
 // LayoutNGTextCombine.
-class NGTextCombinePainter final : public TextPainterBase {
+class NGTextCombinePainter final : public NGTextPainterBase {
  public:
   NGTextCombinePainter(GraphicsContext& context,
                        const ComputedStyle& style,
@@ -29,11 +29,13 @@ class NGTextCombinePainter final : public TextPainterBase {
 
   static bool ShouldPaint(const LayoutNGTextCombine& text_combine);
 
- private:
-  void ClipDecorationsStripe(float upper,
+ protected:
+  void ClipDecorationsStripe(const NGTextFragmentPaintInfo&,
+                             float upper,
                              float stripe_width,
                              float dilation) override;
 
+ private:
   void PaintDecorations(const PaintInfo& paint_info,
                         const TextPaintStyle& text_style);
   void PaintEmphasisMark(const TextPaintStyle& text_style,

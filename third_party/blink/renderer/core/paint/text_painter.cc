@@ -217,4 +217,24 @@ void TextPainter::ClipDecorationsStripe(float upper,
   DecorationsStripeIntercepts(upper, stripe_width, dilation, text_intercepts);
 }
 
+void TextPainter::PaintDecorationUnderOrOverLine(
+    GraphicsContext& context,
+    TextDecorationInfo& decoration_info,
+    TextDecorationLine line,
+    const cc::PaintFlags* flags) {
+  AppliedDecorationPainter decoration_painter(context, decoration_info);
+  if (decoration_info.TargetStyle().TextDecorationSkipInk() ==
+      ETextDecorationSkipInk::kAuto) {
+    // In order to ignore intersects less than 0.5px, inflate by -0.5.
+    gfx::RectF decoration_bounds = decoration_info.Bounds();
+    decoration_bounds.Inset(gfx::InsetsF::VH(0.5, 0));
+    ClipDecorationsStripe(
+        decoration_info.InkSkipClipUpper(decoration_bounds.y()),
+        decoration_bounds.height(),
+        std::min(decoration_info.ResolvedThickness(),
+                 kDecorationClipMaxDilation));
+  }
+  decoration_painter.Paint(flags);
+}
+
 }  // namespace blink

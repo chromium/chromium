@@ -7,7 +7,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_style_variant.h"
-#include "third_party/blink/renderer/core/paint/text_painter_base.h"
+#include "third_party/blink/renderer/core/paint/ng/ng_text_painter_base.h"
 #include "third_party/blink/renderer/platform/fonts/ng_text_fragment_paint_info.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 
@@ -24,7 +24,7 @@ struct NGTextFragmentPaintInfo;
 // Operates on NGPhysicalTextFragments and only paints text and decorations.
 // Border painting etc is handled by the NGTextFragmentPainter class.
 // TODO(layout-dev): Does this distinction make sense?
-class CORE_EXPORT NGTextPainter : public TextPainterBase {
+class CORE_EXPORT NGTextPainter : public NGTextPainterBase {
   STACK_ALLOCATED();
 
  public:
@@ -65,51 +65,48 @@ class CORE_EXPORT NGTextPainter : public TextPainterBase {
 
   NGTextPainter(GraphicsContext& context,
                 const Font& font,
-                const NGTextFragmentPaintInfo& fragment_paint_info,
                 const gfx::Rect& visual_rect,
                 const PhysicalOffset& text_origin,
                 const PhysicalRect& text_frame_rect,
                 NGInlinePaintContext* inline_context,
                 bool horizontal)
-      : TextPainterBase(context,
-                        font,
-                        text_origin,
-                        text_frame_rect,
-                        inline_context,
-                        horizontal),
-        fragment_paint_info_(fragment_paint_info),
+      : NGTextPainterBase(context,
+                          font,
+                          text_origin,
+                          text_frame_rect,
+                          inline_context,
+                          horizontal),
         visual_rect_(visual_rect) {
     DCHECK(inline_context_);
   }
   ~NGTextPainter() = default;
 
-  void ClipDecorationsStripe(float upper,
-                             float stripe_width,
-                             float dilation) override;
-  void Paint(unsigned start_offset,
-             unsigned end_offset,
-             unsigned length,
+  void Paint(const NGTextFragmentPaintInfo& fragment_paint_info,
+             unsigned truncation_point,
              const TextPaintStyle&,
              DOMNodeId,
              const AutoDarkMode& auto_dark_mode,
              ShadowMode = kBothShadowsAndTextProper);
 
-  void PaintSelectedText(unsigned start_offset,
-                         unsigned end_offset,
-                         unsigned length,
+  void PaintSelectedText(const NGTextFragmentPaintInfo& fragment_paint_info,
+                         unsigned selection_start,
+                         unsigned selection_end,
+                         unsigned truncation_point,
                          const TextPaintStyle& text_style,
                          const TextPaintStyle& selection_style,
                          const PhysicalRect& selection_rect,
                          DOMNodeId node_id,
                          const AutoDarkMode& auto_dark_mode);
 
-  void PaintDecorationsExceptLineThrough(const NGFragmentItem& text_item,
-                                         const PaintInfo& paint_info,
-                                         const ComputedStyle& style,
-                                         const TextPaintStyle& text_style,
-                                         TextDecorationInfo& decoration_info,
-                                         TextDecorationLine lines_to_paint,
-                                         const PhysicalRect& decoration_rect);
+  void PaintDecorationsExceptLineThrough(
+      const NGTextFragmentPaintInfo& fragment_paint_info,
+      const NGFragmentItem& text_item,
+      const PaintInfo& paint_info,
+      const ComputedStyle& style,
+      const TextPaintStyle& text_style,
+      TextDecorationInfo& decoration_info,
+      TextDecorationLine lines_to_paint,
+      const PhysicalRect& decoration_rect);
 
   void PaintDecorationsOnlyLineThrough(const NGFragmentItem& text_item,
                                        const PaintInfo& paint_info,
@@ -127,23 +124,29 @@ class CORE_EXPORT NGTextPainter : public TextPainterBase {
                                  Color text_match_color);
   SvgTextPaintState* GetSvgState();
 
+ protected:
+  void ClipDecorationsStripe(const NGTextFragmentPaintInfo&,
+                             float upper,
+                             float stripe_width,
+                             float dilation) override;
+
  private:
   template <PaintInternalStep step>
-  void PaintInternalFragment(unsigned from,
-                             unsigned to,
+  void PaintInternalFragment(const NGTextFragmentPaintInfo&,
                              DOMNodeId node_id,
                              const AutoDarkMode& auto_dark_mode);
 
   template <PaintInternalStep step>
-  void PaintInternal(unsigned start_offset,
-                     unsigned end_offset,
+  void PaintInternal(const NGTextFragmentPaintInfo&,
                      unsigned truncation_point,
                      DOMNodeId node_id,
                      const AutoDarkMode& auto_dark_mode);
 
-  void PaintSvgTextFragment(DOMNodeId node_id,
+  void PaintSvgTextFragment(const NGTextFragmentPaintInfo&,
+                            DOMNodeId node_id,
                             const AutoDarkMode& auto_dark_mode);
   void PaintSvgDecorationsExceptLineThrough(
+      const NGTextFragmentPaintInfo&,
       const TextDecorationOffsetBase& decoration_offset,
       TextDecorationInfo& decoration_info,
       TextDecorationLine lines_to_paint,
@@ -156,7 +159,6 @@ class CORE_EXPORT NGTextPainter : public TextPainterBase {
       const Vector<AppliedTextDecoration>& decorations,
       const TextPaintStyle& text_style);
 
-  NGTextFragmentPaintInfo fragment_paint_info_;
   const gfx::Rect visual_rect_;
   absl::optional<SvgTextPaintState> svg_text_paint_state_;
 };

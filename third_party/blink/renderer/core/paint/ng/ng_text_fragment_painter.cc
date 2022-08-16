@@ -326,9 +326,8 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
           ? text_combine->AdjustTextTopForPaint(physical_box.offset.top)
           : physical_box.offset.top + ascent);
 
-  NGTextPainter text_painter(context, font, fragment_paint_info, visual_rect,
-                             text_origin, physical_box, inline_context_,
-                             is_horizontal);
+  NGTextPainter text_painter(context, font, visual_rect, text_origin,
+                             physical_box, inline_context_, is_horizontal);
   NGTextDecorationPainter decoration_painter(text_painter, text_item,
                                              paint_info, style, text_style,
                                              rotated_box, selection);
@@ -417,28 +416,25 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
   AutoDarkMode auto_dark_mode(
       PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kForeground));
 
-  const unsigned length = fragment_paint_info.to - fragment_paint_info.from;
-  const unsigned start_offset = fragment_paint_info.from;
-  const unsigned end_offset = fragment_paint_info.to;
   NGHighlightPainter::Case highlight_case = highlight_painter.PaintCase();
   switch (highlight_case) {
     case NGHighlightPainter::kNoHighlights:
       // Fast path: just paint the text, including its decorations.
       decoration_painter.Begin(NGTextDecorationPainter::kOriginating);
-      decoration_painter.PaintExceptLineThrough();
-      text_painter.Paint(start_offset, end_offset, length, text_style, node_id,
-                         auto_dark_mode);
+      decoration_painter.PaintExceptLineThrough(fragment_paint_info);
+      text_painter.Paint(fragment_paint_info, fragment_paint_info.Length(),
+                         text_style, node_id, auto_dark_mode);
       decoration_painter.PaintOnlyLineThrough();
       break;
     case NGHighlightPainter::kFastSpellingGrammar:
-      text_painter.Paint(start_offset, end_offset, length, text_style, node_id,
-                         auto_dark_mode);
+      text_painter.Paint(fragment_paint_info, fragment_paint_info.Length(),
+                         text_style, node_id, auto_dark_mode);
       highlight_painter.FastPaintSpellingGrammarDecorations();
       break;
     case NGHighlightPainter::kFastSelection:
       highlight_painter.Selection()->PaintSuppressingTextProperWhereSelected(
-          text_painter, start_offset, end_offset, length, text_style, node_id,
-          auto_dark_mode);
+          text_painter, fragment_paint_info, fragment_paint_info.Length(),
+          text_style, node_id, auto_dark_mode);
       break;
     case NGHighlightPainter::kOverlay:
       // Slow path: paint suppressing text proper where highlighted, then
@@ -450,10 +446,10 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
     case NGHighlightPainter::kOldSelection:
       // Slow path: paint suppressing text proper where ::selection active.
       decoration_painter.Begin(NGTextDecorationPainter::kOriginating);
-      decoration_painter.PaintExceptLineThrough();
+      decoration_painter.PaintExceptLineThrough(fragment_paint_info);
       highlight_painter.Selection()->PaintSuppressingTextProperWhereSelected(
-          text_painter, start_offset, end_offset, length, text_style, node_id,
-          auto_dark_mode);
+          text_painter, fragment_paint_info, fragment_paint_info.Length(),
+          text_style, node_id, auto_dark_mode);
       decoration_painter.PaintOnlyLineThrough();
       break;
     case NGHighlightPainter::kSelectionOnly:
@@ -481,14 +477,16 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
     switch (highlight_case) {
       case NGHighlightPainter::kFastSelection:
         highlight_painter.Selection()->PaintSelectedText(
-            text_painter, length, text_style, node_id, auto_dark_mode);
+            text_painter, fragment_paint_info, fragment_paint_info.Length(),
+            text_style, node_id, auto_dark_mode);
         break;
       case NGHighlightPainter::kSelectionOnly:
       case NGHighlightPainter::kOldSelection:
         decoration_painter.Begin(NGTextDecorationPainter::kSelection);
-        decoration_painter.PaintExceptLineThrough();
+        decoration_painter.PaintExceptLineThrough(fragment_paint_info);
         highlight_painter.Selection()->PaintSelectedText(
-            text_painter, length, text_style, node_id, auto_dark_mode);
+            text_painter, fragment_paint_info, fragment_paint_info.Length(),
+            text_style, node_id, auto_dark_mode);
         decoration_painter.PaintOnlyLineThrough();
         break;
       case NGHighlightPainter::kOverlay:

@@ -1854,7 +1854,7 @@ crbug.com/1035708 external/wpt/css/css-pseudo/target-text-dynamic-003.html [ Fai
 crbug.com/1035708 external/wpt/css/css-pseudo/target-text-dynamic-004.html [ Failure ]
 crbug.com/1024156 external/wpt/css/css-pseudo/highlight-currentcolor-root-implicit-default-001.html [ Failure ]
 crbug.com/1024156 virtual/css-highlight-inheritance/external/wpt/css/css-pseudo/highlight-currentcolor-root-implicit-default-001.html [ Pass ]
-crbug.com/1350469 external/wpt/css/css-pseudo/highlight-currentcolor-painting-properties-001.html [ Failure ]
+crbug.com/1147859 [ Mac ] external/wpt/css/css-pseudo/highlight-currentcolor-painting-properties-001.html [ Failure ]
 crbug.com/1147859 [ Mac ] external/wpt/css/css-pseudo/highlight-currentcolor-painting-properties-002.html [ Failure ]
 crbug.com/1350475 external/wpt/css/css-pseudo/highlight-currentcolor-painting-text-shadow-001.html [ Failure ]
 crbug.com/1350475 external/wpt/css/css-pseudo/highlight-currentcolor-painting-text-shadow-002.html [ Failure ]

@@ -114,7 +114,8 @@ void NGTextDecorationPainter::Begin(Phase phase) {
   step_ = kExcept;
 }
 
-void NGTextDecorationPainter::PaintExceptLineThrough() {
+void NGTextDecorationPainter::PaintExceptLineThrough(
+    const NGTextFragmentPaintInfo& fragment_paint_info) {
   DCHECK(step_ == kExcept);
 
   // Clipping the canvas unnecessarily is expensive, so avoid doing it if the
@@ -125,8 +126,8 @@ void NGTextDecorationPainter::PaintExceptLineThrough() {
     ClipIfNeeded(state_saver);
 
     text_painter_.PaintDecorationsExceptLineThrough(
-        text_item_, paint_info_, style_, text_style_, *decoration_info_,
-        ~TextDecorationLine::kNone, decoration_rect_);
+        fragment_paint_info, text_item_, paint_info_, style_, text_style_,
+        *decoration_info_, ~TextDecorationLine::kNone, decoration_rect_);
   }
 
   step_ = kOnly;

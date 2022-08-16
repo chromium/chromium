@@ -619,6 +619,7 @@ component("platform") {
     "fonts/generic_font_family_settings.h",
     "fonts/glyph_metrics_map.h",
     "fonts/lock_for_parallel_text_shaping.h",
+    "fonts/ng_text_fragment_paint_info.cc",
     "fonts/ng_text_fragment_paint_info.h",
     "fonts/opentype/font_format_check.cc",
     "fonts/opentype/font_format_check.h",

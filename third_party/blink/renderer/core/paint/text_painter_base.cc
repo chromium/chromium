@@ -22,17 +22,6 @@
 
 namespace blink {
 
-namespace {
-
-// We usually use the text decoration thickness to determine how far
-// ink-skipped text decorations should be away from the glyph
-// contours. Cap this at 5 CSS px in each direction when thickness
-// growths larger than that. A value of 13 closely matches FireFox'
-// implementation.
-constexpr float kDecorationClipMaxDilation = 13;
-
-}  // anonymous namespace
-
 TextPainterBase::TextPainterBase(GraphicsContext& context,
                                  const Font& font,
                                  const PhysicalOffset& text_origin,
@@ -219,58 +208,6 @@ void TextPainterBase::DecorationsStripeIntercepts(
   }
 }
 
-void TextPainterBase::PaintDecorationsExceptLineThrough(
-    const TextDecorationOffsetBase& decoration_offset,
-    TextDecorationInfo& decoration_info,
-    TextDecorationLine lines_to_paint,
-    const PaintInfo& paint_info,
-    const Vector<AppliedTextDecoration>& decorations,
-    const TextPaintStyle& text_style,
-    const cc::PaintFlags* flags) {
-  // Updating the graphics context and looping through applied decorations is
-  // expensive, so avoid doing it if there are no decorations of the given
-  // |lines_to_paint|, or the only decoration was a ‘line-through’.
-  if (!decoration_info.HasAnyLine(lines_to_paint &
-                                  ~TextDecorationLine::kLineThrough))
-    return;
-
-  GraphicsContext& context = paint_info.context;
-  GraphicsContextStateSaver state_saver(context);
-  UpdateGraphicsContext(context, text_style, state_saver);
-
-  for (wtf_size_t applied_decoration_index = 0;
-       applied_decoration_index < decorations.size();
-       ++applied_decoration_index) {
-    decoration_info.SetDecorationIndex(applied_decoration_index);
-    context.SetStrokeThickness(decoration_info.ResolvedThickness());
-
-    if (decoration_info.HasSpellingOrGrammerError() &&
-        EnumHasFlags(lines_to_paint, TextDecorationLine::kSpellingError |
-                                         TextDecorationLine::kGrammarError)) {
-      decoration_info.SetSpellingOrGrammarErrorLineData(decoration_offset);
-      // We ignore "text-decoration-skip-ink: auto" for spelling and grammar
-      // error markers.
-      AppliedDecorationPainter decoration_painter(context, decoration_info);
-      decoration_painter.Paint(flags);
-      continue;
-    }
-
-    if (decoration_info.HasUnderline() && decoration_info.FontData() &&
-        EnumHasFlags(lines_to_paint, TextDecorationLine::kUnderline)) {
-      decoration_info.SetUnderlineLineData(decoration_offset);
-      PaintDecorationUnderOrOverLine(context, decoration_info,
-                                     TextDecorationLine::kUnderline, flags);
-    }
-
-    if (decoration_info.HasOverline() && decoration_info.FontData() &&
-        EnumHasFlags(lines_to_paint, TextDecorationLine::kOverline)) {
-      decoration_info.SetOverlineLineData(decoration_offset);
-      PaintDecorationUnderOrOverLine(context, decoration_info,
-                                     TextDecorationLine::kOverline, flags);
-    }
-  }
-}
-
 void TextPainterBase::PaintDecorationsOnlyLineThrough(
     TextDecorationInfo& decoration_info,
     const PaintInfo& paint_info,
@@ -304,26 +241,6 @@ void TextPainterBase::PaintDecorationsOnlyLineThrough(
       decoration_painter.Paint(flags);
     }
   }
-}
-
-void TextPainterBase::PaintDecorationUnderOrOverLine(
-    GraphicsContext& context,
-    TextDecorationInfo& decoration_info,
-    TextDecorationLine line,
-    const cc::PaintFlags* flags) {
-  AppliedDecorationPainter decoration_painter(context, decoration_info);
-  if (decoration_info.TargetStyle().TextDecorationSkipInk() ==
-      ETextDecorationSkipInk::kAuto) {
-    // In order to ignore intersects less than 0.5px, inflate by -0.5.
-    gfx::RectF decoration_bounds = decoration_info.Bounds();
-    decoration_bounds.Inset(gfx::InsetsF::VH(0.5, 0));
-    ClipDecorationsStripe(
-        decoration_info.InkSkipClipUpper(decoration_bounds.y()),
-        decoration_bounds.height(),
-        std::min(decoration_info.ResolvedThickness(),
-                 kDecorationClipMaxDilation));
-  }
-  decoration_painter.Paint(flags);
 }
 
 void TextPainterBase::PaintEmphasisMarkForCombinedText(

@@ -14,6 +14,11 @@ class ShapeResultView;
 
 // Bridge struct for painting text. Encapsulates info needed by the paint code.
 struct PLATFORM_EXPORT NGTextFragmentPaintInfo {
+  NGTextFragmentPaintInfo Slice(unsigned from, unsigned to) const;
+  NGTextFragmentPaintInfo WithStartOffset(unsigned from) const;
+  NGTextFragmentPaintInfo WithEndOffset(unsigned to) const;
+  unsigned Length() const { return to - from; }
+
   // The string to paint. May include surrounding context.
   const StringView text;
 

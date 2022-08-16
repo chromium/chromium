@@ -85,6 +85,7 @@ class CORE_EXPORT NGHighlightPainter {
         const absl::optional<AffineTransform>& rotation);
 
     void PaintSelectedText(NGTextPainter& text_painter,
+                           const NGTextFragmentPaintInfo&,
                            unsigned length,
                            const TextPaintStyle& text_style,
                            DOMNodeId node_id,
@@ -92,8 +93,7 @@ class CORE_EXPORT NGHighlightPainter {
 
     void PaintSuppressingTextProperWhereSelected(
         NGTextPainter& text_painter,
-        unsigned start_offset,
-        unsigned end_offset,
+        const NGTextFragmentPaintInfo&,
         unsigned length,
         const TextPaintStyle& text_style,
         DOMNodeId node_id,

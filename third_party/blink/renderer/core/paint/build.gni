@@ -134,6 +134,8 @@ blink_core_sources_paint = [
   "ng/ng_text_fragment_painter.h",
   "ng/ng_text_painter.cc",
   "ng/ng_text_painter.h",
+  "ng/ng_text_painter_base.cc",
+  "ng/ng_text_painter_base.h",
   "nine_piece_image_grid.cc",
   "nine_piece_image_grid.h",
   "nine_piece_image_painter.cc",
