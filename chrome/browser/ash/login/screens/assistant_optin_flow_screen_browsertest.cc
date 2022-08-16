@@ -194,21 +194,20 @@ class ScopedAssistantSettings : public assistant::AssistantSettings {
 
   void GetSettingsWithHeader(const std::string& selector,
                              GetSettingsCallback callback) override {
-    chromeos::assistant::SettingsUiSelector selector_proto;
+    assistant::SettingsUiSelector selector_proto;
     ASSERT_TRUE(selector_proto.ParseFromString(selector));
     EXPECT_FALSE(selector_proto.about_me_settings());
     EXPECT_TRUE(selector_proto.has_consent_flow_ui_selector());
-    EXPECT_EQ(chromeos::assistant::ActivityControlSettingsUiSelector::
+    EXPECT_EQ(assistant::ActivityControlSettingsUiSelector::
                   ASSISTANT_SUW_ONBOARDING_ON_CHROME_OS,
               selector_proto.consent_flow_ui_selector().flow_id());
 
-    chromeos::assistant::GetSettingsUiResponse response;
+    assistant::GetSettingsUiResponse response;
 
     if (is_minor_user_) {
       auto* header = response.mutable_header();
       header->set_footer_button_layout(
-          chromeos::assistant::
-              SettingsResponseHeader_AcceptRejectLayout_EQUAL_WEIGHT);
+          assistant::SettingsResponseHeader_AcceptRejectLayout_EQUAL_WEIGHT);
     }
 
     auto* settings_ui = response.mutable_settings();
@@ -221,7 +220,7 @@ class ScopedAssistantSettings : public assistant::AssistantSettings {
 
     auto* consent_flow_ui = settings_ui->mutable_consent_flow_ui();
     consent_flow_ui->set_consent_status(
-        chromeos::assistant::ConsentFlowUi_ConsentStatus_ASK_FOR_CONSENT);
+        assistant::ConsentFlowUi_ConsentStatus_ASK_FOR_CONSENT);
     consent_flow_ui->mutable_consent_ui()->set_accept_button_text("OK");
     consent_flow_ui->mutable_consent_ui()->set_reject_button_text(
         "No, thank you");
@@ -240,7 +239,7 @@ class ScopedAssistantSettings : public assistant::AssistantSettings {
   }
 
   void PopulateActivityControlData(
-      chromeos::assistant::ConsentFlowUi_ConsentUi* consent_ui) {
+      assistant::ConsentFlowUi_ConsentUi* consent_ui) {
     auto* activity_control_ui = consent_ui->mutable_activity_control_ui();
     activity_control_ui->set_consent_token(kAssistantConsentToken);
     activity_control_ui->set_ui_audit_key(kAssistantUiAuditKey);
@@ -257,28 +256,28 @@ class ScopedAssistantSettings : public assistant::AssistantSettings {
     setting->add_additional_info_paragraph();
     setting->set_additional_info_paragraph(0, "And it's really cool");
     setting->set_icon_uri("assistant_icon");
-    setting->set_setting_set_id(chromeos::assistant::SettingSetId::WAA);
+    setting->set_setting_set_id(assistant::SettingSetId::WAA);
   }
 
   void UpdateSettings(const std::string& update,
                       UpdateSettingsCallback callback) override {
-    chromeos::assistant::SettingsUiUpdate update_proto;
+    assistant::SettingsUiUpdate update_proto;
     ASSERT_TRUE(update_proto.ParseFromString(update));
     EXPECT_FALSE(update_proto.has_about_me_settings_update());
     EXPECT_FALSE(update_proto.has_assistant_device_settings_update());
 
-    chromeos::assistant::SettingsUiUpdateResult update_result;
+    assistant::SettingsUiUpdateResult update_result;
     if (update_proto.has_consent_flow_ui_update()) {
       EXPECT_EQ(kAssistantConsentToken,
                 update_proto.consent_flow_ui_update().consent_token());
       EXPECT_FALSE(
           update_proto.consent_flow_ui_update().saw_third_party_disclosure());
-      EXPECT_EQ(chromeos::assistant::ActivityControlSettingsUiSelector::
+      EXPECT_EQ(assistant::ActivityControlSettingsUiSelector::
                     ASSISTANT_SUW_ONBOARDING_ON_CHROME_OS,
                 update_proto.consent_flow_ui_update().flow_id());
       collected_optins_.insert(OptIn::ACTIVITY_CONTROL);
       update_result.mutable_consent_flow_update_result()->set_update_status(
-          chromeos::assistant::ConsentFlowUiUpdateResult::SUCCESS);
+          assistant::ConsentFlowUiUpdateResult::SUCCESS);
     }
     std::string message;
     EXPECT_TRUE(update_result.SerializeToString(&message));

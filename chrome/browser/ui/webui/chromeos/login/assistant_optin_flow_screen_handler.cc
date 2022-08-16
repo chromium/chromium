@@ -36,6 +36,18 @@
 
 namespace chromeos {
 
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace assistant {
+using ::ash::assistant::ConsentFlowUi_ConsentStatus_ALREADY_CONSENTED;
+using ::ash::assistant::ConsentFlowUi_ConsentStatus_ASK_FOR_CONSENT;
+using ::ash::assistant::ConsentFlowUiUpdateResult;
+using ::ash::assistant::EmailOptInUpdateResult;
+using ::ash::assistant::GetSettingsUiResponse;
+using ::ash::assistant::SettingsResponseHeader_AcceptRejectLayout_EQUAL_WEIGHT;
+using ::ash::assistant::SettingsUiSelector;
+using ::ash::assistant::SettingsUiUpdateResult;
+}  // namespace assistant
+
 namespace {
 
 constexpr char kSkipPressed[] = "skip-pressed";

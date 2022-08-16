@@ -6,7 +6,7 @@ syntax = "proto2";
 
 option optimize_for = LITE_RUNTIME;
 
-package chromeos.assistant;
+package ash.assistant;
 
 message AboutMeSettingsUi {
   // Nickname and its pronunciation. These fields would be empty if user has

@@ -19,14 +19,6 @@
 
 namespace ash::assistant {
 
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace {
-using ::chromeos::assistant::ActivityControlSettingsUiSelector;
-using ::chromeos::assistant::ConsentFlowUiSelector;
-using ::chromeos::assistant::SettingsUi;
-using ::chromeos::assistant::SettingsUiSelector;
-}  // namespace
-
 AssistantSettingsImpl::AssistantSettingsImpl(ServiceContext* context)
     : context_(context) {}
 

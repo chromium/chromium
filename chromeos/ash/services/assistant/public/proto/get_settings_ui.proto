@@ -6,7 +6,7 @@ syntax = "proto2";
 
 option optimize_for = LITE_RUNTIME;
 
-package chromeos.assistant;
+package ash.assistant;
 
 import "header.proto";
 import "settings_ui.proto";

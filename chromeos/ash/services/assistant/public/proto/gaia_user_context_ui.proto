@@ -6,7 +6,7 @@ syntax = "proto2";
 
 option optimize_for = LITE_RUNTIME;
 
-package chromeos.assistant;
+package ash.assistant;
 
 // Parameters about the GAIA user's context.
 // It only applies to the primary user under the multi-user scenario.

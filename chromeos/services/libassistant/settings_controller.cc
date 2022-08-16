@@ -23,8 +23,16 @@
 #include "third_party/icu/source/common/unicode/locid.h"
 
 namespace chromeos {
-namespace libassistant {
 
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace assistant {
+using ::ash::assistant::AssistantDevice;
+using ::ash::assistant::AssistantDeviceSettings;
+using ::ash::assistant::AssistantDeviceSettingsUpdate;
+using ::ash::assistant::SettingsUiUpdate;
+}  // namespace assistant
+
+namespace libassistant {
 namespace {
 
 // Each authentication token exists of a [gaia_id, access_token] tuple.

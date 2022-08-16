@@ -12,13 +12,6 @@
 
 namespace ash::assistant {
 
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace {
-using ::chromeos::assistant::ConsentFlowUi_ConsentStatus_ALREADY_CONSENTED;
-using ::chromeos::assistant::GetSettingsUiResponse;
-using ::chromeos::assistant::SettingsUi;
-}  // namespace
-
 FakeAssistantSettingsImpl::FakeAssistantSettingsImpl() = default;
 
 FakeAssistantSettingsImpl::~FakeAssistantSettingsImpl() = default;

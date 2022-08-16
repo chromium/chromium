@@ -31,6 +31,19 @@ using AssistantActivityControlConsent =
 
 namespace chromeos {
 
+// TODO(https://crbug.com/1164001): move to forward declaration
+namespace assistant {
+using ::ash::assistant::ActivityControlSettingsUiSelector;
+using ::ash::assistant::ClassicActivityControlUiTexts;
+using ::ash::assistant::ConsentFlowUi;
+using ::ash::assistant::ConsentFlowUiSelector;
+using ::ash::assistant::ConsentFlowUiUpdate;
+using ::ash::assistant::SettingSetId;
+using ::ash::assistant::SettingsUi;
+using ::ash::assistant::SettingsUiSelector;
+using ::ash::assistant::SettingsUiUpdate;
+}  // namespace assistant
+
 namespace {
 
 // Possible native assistant icons

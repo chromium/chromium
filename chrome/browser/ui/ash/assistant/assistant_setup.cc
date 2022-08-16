@@ -24,7 +24,7 @@
 #include "components/prefs/pref_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-using chromeos::assistant::ConsentFlowUi;
+using ::ash::assistant::ConsentFlowUi;
 
 namespace {
 
@@ -101,11 +101,11 @@ void AssistantSetup::OnAssistantStatusChanged(
 }
 
 void AssistantSetup::SyncSettingsState() {
-  chromeos::assistant::SettingsUiSelector selector;
-  chromeos::assistant::ConsentFlowUiSelector* consent_flow_ui =
+  ash::assistant::SettingsUiSelector selector;
+  ash::assistant::ConsentFlowUiSelector* consent_flow_ui =
       selector.mutable_consent_flow_ui_selector();
   consent_flow_ui->set_flow_id(
-      chromeos::assistant::ActivityControlSettingsUiSelector::
+      ash::assistant::ActivityControlSettingsUiSelector::
           ASSISTANT_SUW_ONBOARDING_ON_CHROME_OS);
   ash::assistant::AssistantSettings::Get()->GetSettings(
       selector.SerializeAsString(),
@@ -114,7 +114,7 @@ void AssistantSetup::SyncSettingsState() {
 }
 
 void AssistantSetup::OnGetSettingsResponse(const std::string& settings) {
-  chromeos::assistant::SettingsUi settings_ui;
+  ash::assistant::SettingsUi settings_ui;
   if (!settings_ui.ParseFromString(settings))
     return;
 

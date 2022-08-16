@@ -6,7 +6,7 @@ syntax = "proto2";
 
 option optimize_for = LITE_RUNTIME;
 
-package chromeos.assistant;
+package ash.assistant;
 
 // UI texts for the ClassicActivityControl UI type which follows the "classic"
 // pattern of: title, intro text, one zippy per setting with [name, short

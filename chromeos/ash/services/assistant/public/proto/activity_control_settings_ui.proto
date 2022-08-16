@@ -6,7 +6,7 @@ syntax = "proto2";
 
 option optimize_for = LITE_RUNTIME;
 
-package chromeos.assistant;
+package ash.assistant;
 
 message ActivityControlSettingsUiSelector {
   // An ID that uniquely identifies a single consent screen / client integration
