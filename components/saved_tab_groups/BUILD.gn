@@ -11,6 +11,7 @@ source_set("core") {
   ]
   deps = [
     "//base",
+    "//components/sync",
     "//components/tab_groups",
     "//ui/gfx",
     "//url",
@@ -20,6 +21,15 @@ source_set("core") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = []
-  deps = [ ":core" ]
+  sources = [ "saved_tab_group_proto_conversion_unittest.cc" ]
+  deps = [
+    ":core",
+    "//base",
+    "//base/test:test_support",
+    "//components/sync",
+    "//components/sync:test_support",
+    "//components/tab_groups",
+    "//testing/gtest",
+    "//url",
+  ]
 }

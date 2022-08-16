@@ -11,6 +11,7 @@
 #include "base/guid.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "components/sync/protocol/saved_tab_group_specifics.pb.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -67,6 +68,14 @@ class SavedTabGroupTab {
     return *this;
   }
 
+  // Converts a `SavedTabGroupSpecifics` retrieved from sync into a
+  // `SavedTabGroupTab`.
+  static SavedTabGroupTab FromSpecifics(
+      const sync_pb::SavedTabGroupSpecifics& specific);
+
+  // Converts this `SavedTabGroupTab` into a `SavedTabGroupSpecifics` for sync.
+  std::unique_ptr<sync_pb::SavedTabGroupSpecifics> ToSpecifics();
+
  private:
   // The ID used to represent the tab in sync.
   base::GUID guid_;
@@ -87,10 +96,11 @@ class SavedTabGroupTab {
   // The favicon of the website this SavedTabGroupTab represents.
   absl::optional<gfx::Image> favicon_;
 
-  // Timestamp for when the tab was created.
+  // Timestamp for when the tab was created using windows epoch microseconds.
   base::Time creation_time_windows_epoch_micros_;
 
-  // Timestamp for when the tab was last updated.
+  // Timestamp for when the tab was last updated using windows epoch
+  // microseconds.
   base::Time update_time_windows_epoch_micros_;
 };
 

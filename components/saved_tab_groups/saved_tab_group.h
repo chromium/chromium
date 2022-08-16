@@ -10,6 +10,7 @@
 
 #include "base/guid.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
+#include "components/sync/protocol/saved_tab_group_specifics.pb.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -40,6 +41,12 @@ class SavedTabGroup {
   const absl::optional<tab_groups::TabGroupId>& tab_group_id() const {
     return tab_group_id_;
   }
+  const base::Time& creation_time_windows_epoch_micros() const {
+    return creation_time_windows_epoch_micros_;
+  }
+  const base::Time& update_time_windows_epoch_micros() const {
+    return update_time_windows_epoch_micros_;
+  }
   const std::u16string& title() const { return title_; }
   const tab_groups::TabGroupColorId& color() const { return color_; }
   const std::vector<SavedTabGroupTab>& saved_tabs() const {
@@ -61,6 +68,23 @@ class SavedTabGroup {
     return *this;
   }
 
+  // Converts a `SavedTabGroupSpecifics` retrieved from sync into a
+  // `SavedTabGroupTab`.
+  static SavedTabGroup FromSpecifics(
+      const sync_pb::SavedTabGroupSpecifics& specific);
+
+  // Converts a `SavedTabGroupTab` into a `SavedTabGroupSpecifics` for sync.
+  std::unique_ptr<sync_pb::SavedTabGroupSpecifics> ToSpecifics();
+
+  // Converts tab group color ids into the sync data type for saved tab group
+  // colors.
+  static ::sync_pb::SavedTabGroup_SavedTabGroupColor TabGroupColorToSyncColor(
+      const tab_groups::TabGroupColorId color);
+
+  // Converts sync group colors into tab group colors ids.
+  static tab_groups::TabGroupColorId SyncColorToTabGroupColor(
+      const sync_pb::SavedTabGroup::SavedTabGroupColor color);
+
  private:
   // The ID used to represent the group in sync.
   base::GUID saved_guid_;
@@ -79,10 +103,11 @@ class SavedTabGroup {
   // The URLS and later webcontents (such as favicons) of the saved tab group.
   std::vector<SavedTabGroupTab> saved_tabs_;
 
-  // Timestamp for when the tab was created.
+  // Timestamp for when the tab was created using windows epoch microseconds.
   base::Time creation_time_windows_epoch_micros_;
 
-  // Timestamp for when the tab was last updated.
+  // Timestamp for when the tab was last updated using windows epoch
+  // microseconds.
   base::Time update_time_windows_epoch_micros_;
 };
 
