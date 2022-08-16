@@ -12,7 +12,10 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/shelf_types.h"
+#include "ash/shelf/shelf.h"
+#include "ash/shelf/shelf_observer.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/display/display_observer.h"
@@ -35,7 +38,8 @@ enum class AppListSortOrder;
 class ASH_EXPORT AppListBubblePresenter
     : public views::WidgetObserver,
       public aura::client::FocusChangeObserver,
-      public display::DisplayObserver {
+      public display::DisplayObserver,
+      public ShelfObserver {
  public:
   explicit AppListBubblePresenter(AppListControllerImpl* controller);
   AppListBubblePresenter(const AppListBubblePresenter&) = delete;
@@ -92,6 +96,9 @@ class ASH_EXPORT AppListBubblePresenter
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t changed_metrics) override;
 
+  // ShelfObserver:
+  void OnShelfShuttingDown() override;
+
   views::Widget* bubble_widget_for_test() { return bubble_widget_; }
   AppListBubbleView* bubble_view_for_test() { return bubble_view_; }
 
@@ -132,6 +139,8 @@ class ASH_EXPORT AppListBubblePresenter
 
   // Observes display configuration changes.
   display::ScopedDisplayObserver display_observer_{this};
+
+  base::ScopedObservation<Shelf, ShelfObserver> shelf_observer_{this};
 
   base::WeakPtrFactory<AppListBubblePresenter> weak_factory_{this};
 };

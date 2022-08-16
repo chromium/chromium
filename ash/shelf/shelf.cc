@@ -448,6 +448,9 @@ void Shelf::CreateShelfWidget(aura::Window* root) {
 }
 
 void Shelf::ShutdownShelfWidget() {
+  for (auto& observer : observers_)
+    observer.OnShelfShuttingDown();
+
   // Remove observers prior to destroying child widgets, this prevents
   // activation changes from triggering during shutdown, see
   // https://crbug.com/1307898.

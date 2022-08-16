@@ -360,6 +360,7 @@ void AppListBubbleAppsPage::AnimateShowLauncher(bool is_side_shelf) {
 void AppListBubbleAppsPage::PrepareForHideLauncher() {
   // Remove the gradient mask from the scroll view to improve performance.
   gradient_helper_.reset();
+  scrollable_apps_grid_view_->EndDrag(/*cancel=*/true);
 }
 
 void AppListBubbleAppsPage::AnimateShowPage() {

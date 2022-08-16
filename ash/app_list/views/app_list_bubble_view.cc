@@ -229,7 +229,6 @@ void AppListBubbleView::UpdateSuggestions() {
 
 void AppListBubbleView::SetDragAndDropHostOfCurrentAppList(
     ApplicationDragAndDropHost* drag_and_drop_host) {
-  DCHECK(drag_and_drop_host);
   apps_page_->scrollable_apps_grid_view()->SetDragAndDropHostOfCurrentAppList(
       drag_and_drop_host);
   folder_view_->items_grid_view()->SetDragAndDropHostOfCurrentAppList(

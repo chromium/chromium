@@ -81,6 +81,7 @@
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace ash {
 namespace test {
@@ -258,7 +259,7 @@ class BoundsChangeCounter : public views::ViewObserver {
 
 // Subclasses should set `is_rtl_`, `create_as_tablet_mode_`, etc. in their
 // constructors to indicate which mode to test.
-class AppsGridViewTest : public AshTestBase {
+class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
  public:
   AppsGridViewTest() = default;
   AppsGridViewTest(const AppsGridViewTest&) = delete;
@@ -346,14 +347,35 @@ class AppsGridViewTest : public AshTestBase {
     test_api_ = std::make_unique<AppsGridViewTestApi>(apps_grid_view_);
     ui::PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
         true);
+
+    // When root window where app list was last shown gets removed, the app list
+    // view hierarchy gets reset (and rebuilt on next show). If a test removes a
+    // display where app list is shown, all view pointers cached will become
+    // invalid - add a app list widget observer to clean up the state if the app
+    // list view gets removed before the test end.
+    apps_grid_view_->GetWidget()->AddObserver(this);
   }
 
   void TearDown() override {
+    if (apps_grid_view_)
+      apps_grid_view_->GetWidget()->RemoveObserver(this);
     page_flip_waiter_.reset();
     ui::PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
         false);
     haptics_tracker_.reset();
     AshTestBase::TearDown();
+  }
+
+  // views::WidgetObserver:
+  void OnWidgetDestroying(views::Widget* widget) override {
+    apps_grid_view_ = nullptr;
+    paged_apps_grid_view_ = nullptr;
+    app_list_folder_view_ = nullptr;
+    search_box_view_ = nullptr;
+    suggestions_container_ = nullptr;
+    expand_arrow_view_ = nullptr;
+    test_api_.reset();
+    page_flip_waiter_.reset();
   }
 
  protected:
@@ -4474,6 +4496,118 @@ TEST_P(AppsGridViewDragTest, DragAnItemFromFolderToAndFromShelf) {
   generator->ReleaseLeftButton();
   EXPECT_EQ(1, GetHapticTickEventsCount());
 
+  EXPECT_FALSE(ShelfModel::Get()->IsAppPinned("Item 1"));
+  EXPECT_TRUE(ShelfModel::Get()->items().empty());
+}
+
+TEST_P(AppsGridViewDragTest, RemoveDisplayWhileDraggingItemOntoShelf) {
+  UpdateDisplay("1024x768,1024x768");
+  model_->PopulateApps(3);
+
+  // Show the app list on the secondary display.
+  GetAppListTestHelper()->Dismiss();
+  GetAppListTestHelper()->ShowAndRunLoop(GetSecondaryDisplay().id());
+  if (!is_productivity_launcher_enabled_) {
+    GetAppListTestHelper()->GetAppListView()->SetState(
+        AppListViewState::kFullscreenAllApps);
+  }
+
+  AppListItemView* const item_view = GetItemViewInTopLevelGrid(1);
+
+  auto* generator = GetEventGenerator();
+  generator->MoveMouseTo(item_view->GetBoundsInScreen().CenterPoint());
+  generator->PressLeftButton();
+  item_view->FireMouseDragTimerForTest();
+  generator->MoveMouseBy(10, 10);
+  EXPECT_EQ(1, GetHapticTickEventsCount());
+
+  // Verify that item drag has started.
+  ASSERT_TRUE(apps_grid_view_->drag_item());
+  ASSERT_TRUE(apps_grid_view_->IsDragging());
+  ASSERT_EQ(item_view->item(), apps_grid_view_->drag_item());
+
+  Shelf* const secondary_shelf =
+      Shell::GetRootWindowControllerWithDisplayId(GetSecondaryDisplay().id())
+          ->shelf();
+
+  // Shelf should start handling the drag if it moves within its bounds.
+  ShelfView* shelf_view = secondary_shelf->GetShelfViewForTesting();
+  generator->MoveMouseTo(shelf_view->GetBoundsInScreen().left_center());
+  ASSERT_TRUE(apps_grid_view_->FireDragToShelfTimerForTest());
+
+  EXPECT_EQ("Item 1", shelf_view->drag_and_drop_shelf_id().app_id);
+
+  // Enable animations to catch potential crashes during display removal.
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Remove display while drag is over the shelf bounds, verify that the shelf
+  // model does not change.
+  UpdateDisplay("1024x768");
+  EXPECT_FALSE(ShelfModel::Get()->IsAppPinned("Item 1"));
+  EXPECT_TRUE(ShelfModel::Get()->items().empty());
+}
+
+TEST_P(AppsGridViewDragTest, RemoveDisplayWhileDraggingFolderItemOntoShelf) {
+  UpdateDisplay("1024x768,1024x768");
+
+  // Creates a folder item - the folder size was chosen arbitrarily.
+  model_->CreateAndPopulateFolderWithApps(5);
+  // Add more apps to the root apps grid.
+  model_->PopulateApps(2);
+
+  // Show the app list on the secondary display.
+  GetAppListTestHelper()->Dismiss();
+  GetAppListTestHelper()->ShowAndRunLoop(GetSecondaryDisplay().id());
+  if (!is_productivity_launcher_enabled_) {
+    GetAppListTestHelper()->GetAppListView()->SetState(
+        AppListViewState::kFullscreenAllApps);
+  }
+
+  // Open the folder.
+  test_api_->PressItemAt(0);
+
+  AppListItemView* const item_view =
+      GetItemViewInAppsGridAt(1, folder_apps_grid_view());
+
+  auto* generator = GetEventGenerator();
+  generator->MoveMouseTo(item_view->GetBoundsInScreen().CenterPoint());
+  generator->PressLeftButton();
+  item_view->FireMouseDragTimerForTest();
+  generator->MoveMouseBy(10, 10);
+  EXPECT_EQ(1, GetHapticTickEventsCount());
+
+  // Verify app list item drag has started.
+  ASSERT_TRUE(folder_apps_grid_view()->drag_item());
+  ASSERT_TRUE(folder_apps_grid_view()->IsDragging());
+  ASSERT_EQ(item_view->item(), folder_apps_grid_view()->drag_item());
+
+  generator->MoveMouseTo(
+      app_list_folder_view()->GetBoundsInScreen().right_center() +
+      gfx::Vector2d(20, 0));
+
+  // Fire the reparent timer that should be started when an item is dragged out
+  // of folder bounds.
+  ASSERT_TRUE(folder_apps_grid_view()->FireFolderItemReparentTimerForTest());
+
+  Shelf* const secondary_shelf =
+      Shell::GetRootWindowControllerWithDisplayId(GetSecondaryDisplay().id())
+          ->shelf();
+
+  // Shelf should start handling the drag if it moves within its bounds.
+  ShelfView* shelf_view = secondary_shelf->GetShelfViewForTesting();
+  generator->MoveMouseTo(shelf_view->GetBoundsInScreen().left_center());
+  ASSERT_TRUE(folder_apps_grid_view()->FireDragToShelfTimerForTest());
+
+  EXPECT_EQ("Item 1", shelf_view->drag_and_drop_shelf_id().app_id);
+
+  // Enable animations to catch potential crashes during display removal.
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Remove display while drag is over the shelf bounds, verify that the shelf
+  // model does not change.
+  UpdateDisplay("1024x768");
   EXPECT_FALSE(ShelfModel::Get()->IsAppPinned("Item 1"));
   EXPECT_TRUE(ShelfModel::Get()->items().empty());
 }

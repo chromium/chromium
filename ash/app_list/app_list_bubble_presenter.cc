@@ -260,6 +260,7 @@ void AppListBubblePresenter::OnZeroStateSearchDone(int64_t display_id) {
     aura::client::GetFocusClient(bubble_widget_->GetNativeWindow())
         ->RemoveObserver(this);
   }
+
   // The widget bounds sometimes depend on the height of the apps grid, so set
   // the bounds after creating and setting the contents. This may cause the
   // bubble to change displays.
@@ -273,6 +274,9 @@ void AppListBubblePresenter::OnZeroStateSearchDone(int64_t display_id) {
   // time the bubble is shown to make sure it tracks the right display.
   aura::client::GetFocusClient(bubble_widget_->GetNativeWindow())
       ->AddObserver(this);
+
+  shelf_observer_.Reset();
+  shelf_observer_.Observe(shelf);
 
   bubble_widget_->Show();
   // The page must be set before triggering the show animation so the correct
@@ -330,6 +334,10 @@ void AppListBubblePresenter::Dismiss() {
 
   // Clean up assistant if it is showing.
   controller_->ScheduleCloseAssistant();
+
+  shelf_observer_.Reset();
+  if (bubble_view_)
+    bubble_view_->SetDragAndDropHostOfCurrentAppList(nullptr);
 }
 
 aura::Window* AppListBubblePresenter::GetWindow() const {
@@ -431,6 +439,12 @@ void AppListBubblePresenter::OnDisplayMetricsChanged(
   aura::Window* root_window =
       bubble_widget_->GetNativeWindow()->GetRootWindow();
   bubble_widget_->SetBounds(ComputeBubbleBounds(root_window, bubble_view_));
+}
+
+void AppListBubblePresenter::OnShelfShuttingDown() {
+  shelf_observer_.Reset();
+  if (bubble_view_)
+    bubble_view_->SetDragAndDropHostOfCurrentAppList(nullptr);
 }
 
 void AppListBubblePresenter::OnPressOutsideBubble() {

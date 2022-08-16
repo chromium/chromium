@@ -968,7 +968,12 @@ void AppsGridView::ClearDragState() {
 
 void AppsGridView::SetDragAndDropHostOfCurrentAppList(
     ApplicationDragAndDropHost* drag_and_drop_host) {
+  if (drag_and_drop_host_ == drag_and_drop_host)
+    return;
   drag_and_drop_host_ = drag_and_drop_host;
+  forward_events_to_drag_and_drop_host_ = false;
+  if (host_drag_start_timer_.IsRunning())
+    host_drag_start_timer_.AbandonAndStop();
 }
 
 bool AppsGridView::IsAnimatingView(AppListItemView* view) {
@@ -3192,6 +3197,8 @@ void AppsGridView::OnAppListItemViewActivated(
 }
 
 void AppsGridView::OnHostDragStartTimerFired() {
+  DCHECK(drag_and_drop_host_);
+
   gfx::Point last_drag_point_in_screen = last_drag_point_;
   views::View::ConvertPointToScreen(this, &last_drag_point_in_screen);
   if (drag_and_drop_host_->StartDrag(drag_view_->item()->id(),
