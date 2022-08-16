@@ -181,11 +181,11 @@ OptRecordRdata::OptRecordRdata() = default;
 
 OptRecordRdata::~OptRecordRdata() = default;
 
-bool OptRecordRdata::operator==(const RecordRdata& other) const {
+bool OptRecordRdata::operator==(const OptRecordRdata& other) const {
   return IsEqual(&other);
 }
 
-bool OptRecordRdata::operator!=(const RecordRdata& other) const {
+bool OptRecordRdata::operator!=(const OptRecordRdata& other) const {
   return !IsEqual(&other);
 }
 
