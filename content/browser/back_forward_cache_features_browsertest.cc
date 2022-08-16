@@ -1554,7 +1554,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // blocklist we care about.
   base::HistogramBase::Sample sample = base::HistogramBase::Sample(
       blink::scheduler::WebSchedulerTrackedFeature::kPaymentManager);
-  std::vector<base::Bucket> blocklist_values = histogram_tester_.GetAllSamples(
+  std::vector<base::Bucket> blocklist_values = histogram_tester().GetAllSamples(
       "BackForwardCache.HistoryNavigationOutcome."
       "BlocklistedFeature");
   auto it = std::find_if(
@@ -1563,7 +1563,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(it != blocklist_values.end());
 
   std::vector<base::Bucket> all_sites_blocklist_values =
-      histogram_tester_.GetAllSamples(
+      histogram_tester().GetAllSamples(
           "BackForwardCache.AllSites.HistoryNavigationOutcome."
           "BlocklistedFeature");
 

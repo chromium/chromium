@@ -17,7 +17,28 @@
 namespace content {
 
 // `BackForwardCacheMetricsTestMatcher` provides common matchers and
-// expectations to help make test assertions on BackForwardCache-related states.
+// expectations to help make test assertions on BackForwardCache-related
+// metrics.
+//
+// This class tries to remove the efforts to reset HistogramTester by keeping
+// local copies of expected metrics in expected_* members such that subsequent
+// calls to Expect*() won't need to take previous metrics into account.
+//
+// For example:
+// ...
+//   DoActionCauseFeatureA();
+//   // The implementation compares {FeatureA} with metrics from
+//   // `histogram_tester()`, which is {FeatureA}.
+//   // FeatureA will be stored in in `expected_blocklisted_features_`.
+//   ExpectBlocklistedFeature(FeatureA);
+//
+//   // `histogram_tester()` keeps FeatureA and continues to accumulate metrics.
+//
+//   DoActionCauseFeatureB();
+//   // The implementation compares {FeatureA, FeatureB} with accumulated
+//   // metrics from `histogram_tester()`, which is also {FeatureA, FeatureB}.
+//   ExpectBlocklistedFeature(FeatureB);
+//
 class BackForwardCacheMetricsTestMatcher {
  protected:
   using UkmMetrics = ukm::TestUkmRecorder::HumanReadableUkmMetrics;
@@ -61,21 +82,18 @@ class BackForwardCacheMetricsTestMatcher {
   void ExpectBucketCount(base::StringPiece name,
                          T sample,
                          base::HistogramBase::Count expected_count) {
-    histogram_tester_.ExpectBucketCount(name, sample, expected_count);
+    histogram_tester().ExpectBucketCount(name, sample, expected_count);
   }
 
   // Implementation needs to provide access to their own ukm_recorder.
   // Note that TestAutoSetUkmRecorder's ctor requires a sequenced context.
-  virtual ukm::TestAutoSetUkmRecorder* ukm_recorder() = 0;
+  virtual const ukm::TestAutoSetUkmRecorder& ukm_recorder() = 0;
 
-  base::HistogramTester histogram_tester_;
+  // Implementation needs to provide access to their own histogram_tester.
+  // Note that HistogramTester accumulates all data after it is constructed.
+  virtual const base::HistogramTester& histogram_tester() = 0;
 
  private:
-  // TODO(crbug.com/1352894): Move the following methods into .cc as local
-  // functions.
-  void AddSampleToBuckets(std::vector<base::Bucket>* buckets,
-                          base::HistogramBase::Sample sample);
-
   // Adds a new outcome to the set of expected outcomes (restored or not) and
   // tests that it occurred.
   void ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome outcome,
@@ -109,9 +127,6 @@ class BackForwardCacheMetricsTestMatcher {
       const std::vector<ShouldSwapBrowsingInstance>& reasons,
       base::Location location);
 
-  // TODO(crbug.com/1352894): Investigate to remove these members. Private
-  // methods currently have random assumptions on whether these members will be
-  // set before calling.
   std::vector<base::Bucket> expected_outcomes_;
   std::vector<base::Bucket> expected_not_restored_;
   std::vector<base::Bucket> expected_blocklisted_features_;

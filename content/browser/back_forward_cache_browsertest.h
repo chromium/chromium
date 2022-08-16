@@ -165,7 +165,8 @@ class BackForwardCacheBrowserTest
   // `AddBlocklistedFeature`.
   void ExpectNotRestoredDueToBlocklistedFeature(base::Location location);
 
-  ukm::TestAutoSetUkmRecorder* ukm_recorder() override;
+  const ukm::TestAutoSetUkmRecorder& ukm_recorder() override;
+  const base::HistogramTester& histogram_tester() override;
 
   bool same_site_back_forward_cache_enabled_ = true;
   bool skip_same_site_if_unload_exists_ = false;
@@ -189,6 +190,7 @@ class BackForwardCacheBrowserTest
   std::vector<base::Feature> disabled_features_;
 
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
+  std::unique_ptr<base::HistogramTester> histogram_tester_;
 
   // Store the tree result of NotRestoredReasons for the last main frame
   // navigation.

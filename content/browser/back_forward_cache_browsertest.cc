@@ -16,6 +16,7 @@
 #include "base/system/sys_info.h"
 #include "base/task/common/task_annotator.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -24,6 +25,7 @@
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/renderer_host/back_forward_cache_can_store_document_result.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
@@ -133,7 +135,7 @@ BackForwardCacheBrowserTest::~BackForwardCacheBrowserTest() {
     // If this is triggered, see MojoInterfaceName in
     // tools/metrics/histograms/enums.xml for which values correspond which
     // messages.
-    EXPECT_THAT(histogram_tester_.GetAllSamples(
+    EXPECT_THAT(histogram_tester().GetAllSamples(
                     "BackForwardCache.UnexpectedRendererToBrowserMessage."
                     "InterfaceName"),
                 testing::ElementsAre());
@@ -231,6 +233,7 @@ void BackForwardCacheBrowserTest::SetUpOnMainThread() {
   host_resolver()->AddRule("*", "127.0.0.1");
   // TestAutoSetUkmRecorder's constructor requires a sequenced context.
   ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+  histogram_tester_ = std::make_unique<base::HistogramTester>();
   ContentBrowserTest::SetUpOnMainThread();
 }
 
@@ -2646,8 +2649,12 @@ void BackForwardCacheBrowserTest::ExpectNotRestoredDueToBlocklistedFeature(
       {}, location);
 }
 
-ukm::TestAutoSetUkmRecorder* BackForwardCacheBrowserTest::ukm_recorder() {
-  return ukm_recorder_.get();
+const ukm::TestAutoSetUkmRecorder& BackForwardCacheBrowserTest::ukm_recorder() {
+  return *ukm_recorder_;
+}
+
+const base::HistogramTester& BackForwardCacheBrowserTest::histogram_tester() {
+  return *histogram_tester_;
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,

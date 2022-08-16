@@ -560,7 +560,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   for (base::HistogramBase::Sample sample : samples) {
     FetchHistogramsFromChildProcesses();
     EXPECT_TRUE(HistogramContainsIntValue(
-        sample, histogram_tester_.GetAllSamples(
+        sample, histogram_tester().GetAllSamples(
                     "BackForwardCache.Experimental."
                     "UnexpectedIPCMessagePostedToCachedFrame.MethodHash")));
   }
@@ -2239,7 +2239,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, PageshowMetrics) {
 
   // Expect the back-forward restore without pageshow to be detected.
   content::FetchHistogramsFromChildProcesses();
-  EXPECT_THAT(histogram_tester_.GetAllSamples(kHistogramName),
+  EXPECT_THAT(histogram_tester().GetAllSamples(kHistogramName),
               ElementsAre(base::Bucket(0, 1)));
 
   EXPECT_TRUE(ExecJs(current_frame_host(), R"(
@@ -2256,7 +2256,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, PageshowMetrics) {
 
   // Expect the back-forward restore with pageshow to be detected.
   content::FetchHistogramsFromChildProcesses();
-  EXPECT_THAT(histogram_tester_.GetAllSamples(kHistogramName),
+  EXPECT_THAT(histogram_tester().GetAllSamples(kHistogramName),
               ElementsAre(base::Bucket(0, 1), base::Bucket(1, 1)));
 }
 
