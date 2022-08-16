@@ -313,7 +313,12 @@ struct Dispatcher::Impl {
   internal::DispatchData dispatch_data_;
 #if DCHECK_IS_ON()
   // Indicator if the dispatcher has been initialized before.
+#if !defined(__cpp_lib_atomic_value_initialization) || \
+    __cpp_lib_atomic_value_initialization < 201911L
   std::atomic_flag is_initialized_check_flag_ = ATOMIC_FLAG_INIT;
+#else
+  std::atomic_flag is_initialized_check_flag_;
+#endif
 #endif
 };
 
