@@ -40,6 +40,7 @@ base::StringPiece ParseStatusCodeToString(ParseStatusCode code) {
     PARSE_STATUS_CODE_CASE(kMediaSegmentExceedsTargetDuration);
     PARSE_STATUS_CODE_CASE(kPlaylistHasDuplicateTags);
     PARSE_STATUS_CODE_CASE(kPlaylistHasUnsupportedVersion);
+    PARSE_STATUS_CODE_CASE(kPlaylistHasVersionMismatch);
     PARSE_STATUS_CODE_CASE(kMediaPlaylistHasMultivariantPlaylistTag);
     PARSE_STATUS_CODE_CASE(kMultivariantPlaylistHasMediaPlaylistTag);
     PARSE_STATUS_CODE_CASE(kVariableUndefined);

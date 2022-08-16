@@ -39,7 +39,14 @@ Playlist::Kind MultivariantPlaylist::GetKind() const {
 // static
 ParseStatus::Or<MultivariantPlaylist> MultivariantPlaylist::Parse(
     base::StringPiece source,
-    GURL uri) {
+    GURL uri,
+    types::DecimalInteger version) {
+  DCHECK(version != 0);
+  if (version < Playlist::kMinSupportedVersion ||
+      version > Playlist::kMaxSupportedVersion) {
+    return ParseStatusCode::kPlaylistHasUnsupportedVersion;
+  }
+
   if (!uri.is_valid()) {
     return ParseStatusCode::kInvalidUri;
   }
@@ -167,7 +174,12 @@ ParseStatus::Or<MultivariantPlaylist> MultivariantPlaylist::Parse(
     return ParseStatusCode::kXStreamInfTagNotFollowedByUri;
   }
 
-  return MultivariantPlaylist(std::move(uri), common_state.GetVersion(),
+  // Version must match what was expected.
+  if (!common_state.CheckVersion(version)) {
+    return ParseStatusCode::kPlaylistHasVersionMismatch;
+  }
+
+  return MultivariantPlaylist(std::move(uri), version,
                               common_state.independent_segments_tag.has_value(),
                               std::move(variants),
                               std::move(common_state.variable_dict));

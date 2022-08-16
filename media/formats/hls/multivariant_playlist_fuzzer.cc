@@ -39,11 +39,11 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   const base::StringPiece source(reinterpret_cast<const char*>(data), size);
 
   // Determine playlist version (ignoring type mismatch)
-  GetPlaylistVersion(source);
+  const auto version = GetPlaylistVersion(source);
 
   // Try to parse it as a multivariant playlist
   media::hls::MultivariantPlaylist::Parse(
-      source, GURL("http://localhost/playlist.m3u8"));
+      source, GURL("http://localhost/playlist.m3u8"), version);
 
   return 0;
 }

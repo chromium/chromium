@@ -130,14 +130,19 @@ class MEDIA_EXPORT MediaPlaylist final : public Playlist {
   bool CanBlockReload() const { return can_block_reload_; }
 
   // Attempts to parse the media playlist represented by `source`. `uri` must be
-  // a valid, non-empty GURL referring to the URI of this playlist. If this
-  // playlist was found through a multivariant playlist, `parent_playlist` must
-  // point to that playlist in order to support persistent properties and
-  // imported variables. Otherwise, it should be `nullptr`. If `source` is
-  // invalid, this returns an error. Otherwise, the parsed playlist is returned.
+  // a valid, non-empty GURL referring to the URI of this playlist.
+  // `version` is the HLS version expected to be given by a
+  // `EXT-X-VERSION` tag in this playlist (or `Playlist::kDefaultVersion` if
+  // none), which may be determined via `Playlist::IdentifyPlaylist`, or from a
+  // previous version of this playlist. If this playlist was found through a
+  // multivariant playlist, `parent_playlist` must point to that playlist in
+  // order to support persistent properties and imported variables. Otherwise,
+  // it should be `nullptr`. If `source` is invalid, this returns an error.
+  // Otherwise, the parsed playlist is returned.
   static ParseStatus::Or<MediaPlaylist> Parse(
       base::StringPiece source,
       GURL uri,
+      types::DecimalInteger version,
       const MultivariantPlaylist* parent_playlist);
 
  private:

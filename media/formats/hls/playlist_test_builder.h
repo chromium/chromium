@@ -33,6 +33,9 @@ class PlaylistTestBuilder {
   // Sets the URI for the playlist being built.
   void SetUri(GURL uri) { uri_ = std::move(uri); }
 
+  // Sets the expected version for the playlist being built.
+  void SetVersion(types::DecimalInteger version) { version_ = version; }
+
   // Appends fragments of text to the playlist, without a trailing newline.
   template <typename... T>
   void Append(base::StringPiece text1, T&&... rem) {
@@ -66,7 +69,8 @@ class PlaylistTestBuilder {
   void ExpectError(ParseStatusCode code,
                    const base::Location& from,
                    Args&&... args) const {
-    auto result = PlaylistT::Parse(source_, uri_, std::forward<Args>(args)...);
+    auto result =
+        PlaylistT::Parse(source_, uri_, version_, std::forward<Args>(args)...);
     ASSERT_TRUE(result.has_error()) << from.ToString();
 
     auto actual_code = std::move(result).error().code();
@@ -80,12 +84,16 @@ class PlaylistTestBuilder {
   // expectations.
   template <typename... Args>
   void ExpectOk(const base::Location& from, Args&&... args) const {
-    auto result = PlaylistT::Parse(source_, uri_, std::forward<Args>(args)...);
+    auto result =
+        PlaylistT::Parse(source_, uri_, version_, std::forward<Args>(args)...);
     ASSERT_TRUE(result.has_value())
         << "Error: "
         << ParseStatusCodeToString(std::move(result).error().code()) << "\n"
         << from.ToString();
     auto playlist = std::move(result).value();
+
+    // Ensure that playlist has expected version
+    EXPECT_EQ(playlist.GetVersion(), version_) << from.ToString();
 
     for (const auto& expectation : playlist_expectations_) {
       expectation.Run(playlist);
@@ -101,15 +109,9 @@ class PlaylistTestBuilder {
   std::vector<base::RepeatingCallback<void(const PlaylistT&)>>
       playlist_expectations_;
   GURL uri_ = GURL("http://localhost/playlist.m3u8");
+  types::DecimalInteger version_ = Playlist::kDefaultVersion;
   std::string source_;
 };
-
-// Checks that the playlist has the given version.
-inline void HasVersion(types::DecimalInteger version,
-                       const base::Location& from,
-                       const Playlist& playlist) {
-  EXPECT_EQ(playlist.GetVersion(), version) << from.ToString();
-}
 
 // Checks the playlist's `AreSegmentsIndependent` property against the given
 // value.

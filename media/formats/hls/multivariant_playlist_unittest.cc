@@ -20,7 +20,7 @@ TEST(HlsMultivariantPlaylistTest, VariableSubstitution) {
   MultivariantPlaylistTestBuilder builder;
   builder.AppendLine("#EXTM3U");
   builder.AppendLine("#EXT-X-VERSION:8");
-  builder.ExpectPlaylist(HasVersion, 8);
+  builder.SetVersion(8);
 
   builder.AppendLine(
       R"(#EXT-X-DEFINE:NAME="HOST",VALUE="http://www.example.com")");

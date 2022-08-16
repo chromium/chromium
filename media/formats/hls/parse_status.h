@@ -37,6 +37,7 @@ enum class ParseStatusCode : StatusCodeType {
   kMediaSegmentExceedsTargetDuration,
   kPlaylistHasDuplicateTags,
   kPlaylistHasUnsupportedVersion,
+  kPlaylistHasVersionMismatch,
   kMediaPlaylistHasMultivariantPlaylistTag,
   kMultivariantPlaylistHasMediaPlaylistTag,
   kVariableUndefined,

@@ -48,10 +48,10 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
         data_provider.ConsumeRandomLengthString();
 
     // Determine playlist version (ignore type mismatch)
-    GetPlaylistVersion(multivariant_playlist_source);
+    const auto version = GetPlaylistVersion(multivariant_playlist_source);
     auto multivariant_playlist_result = media::hls::MultivariantPlaylist::Parse(
         multivariant_playlist_source,
-        GURL("http://localhost/multi_playlist.m3u8"));
+        GURL("http://localhost/multi_playlist.m3u8"), version);
     if (multivariant_playlist_result.has_error()) {
       return 0;
     }
@@ -63,10 +63,10 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   auto media_playlist_source = data_provider.ConsumeRemainingBytesAsString();
 
   // Determine playlist version (ignore type mismatch)
-  GetPlaylistVersion(media_playlist_source);
+  const auto version = GetPlaylistVersion(media_playlist_source);
   media::hls::MediaPlaylist::Parse(media_playlist_source,
                                    GURL("http://localhost/playlist.m3u8"),
-                                   multivariant_playlist.get());
+                                   version, multivariant_playlist.get());
 
   return 0;
 }

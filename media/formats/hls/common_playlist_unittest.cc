@@ -106,7 +106,6 @@ TYPED_TEST(HlsCommonPlaylistTest, VersionChecks) {
   {
     // Default version is 1
     auto fork = builder;
-    fork.ExpectPlaylist(HasVersion, 1);
     fork.ExpectOk();
   }
 
@@ -127,16 +126,24 @@ TYPED_TEST(HlsCommonPlaylistTest, VersionChecks) {
   for (int i = 1; i <= 10; ++i) {
     auto fork = builder;
     fork.AppendLine("#EXT-X-VERSION:" + base::NumberToString(i));
-    fork.ExpectPlaylist(HasVersion, i);
+    fork.SetVersion(i);
     fork.ExpectOk();
   }
 
   for (int i : {11, 12, 100, 999}) {
-    // Versions 11+ are not supported by this parser
+    // Versions 11+ are not supported by this implementation
     auto fork = builder;
     fork.AppendLine("#EXT-X-VERSION:" + base::NumberToString(i));
+    fork.SetVersion(i);
     fork.ExpectError(ParseStatusCode::kPlaylistHasUnsupportedVersion);
   }
+
+  // Version must match what's expected
+  builder.SetVersion(5);
+  builder.ExpectError(ParseStatusCode::kPlaylistHasVersionMismatch);
+
+  builder.AppendLine("#EXT-X-VESION:3");
+  builder.ExpectError(ParseStatusCode::kPlaylistHasVersionMismatch);
 }
 
 TYPED_TEST(HlsCommonPlaylistTest, XIndependentSegmentsTag) {

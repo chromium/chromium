@@ -31,9 +31,10 @@ struct CommonParserState {
   // playlist, or a media playlist without other variants).
   raw_ptr<const VariableDictionary> parent_variable_dict = nullptr;
 
-  // Returns the version specified by `version_tag`, or the default version if
-  // the playlist did not contain a version tag.
-  types::DecimalInteger GetVersion() const;
+  // Checks that the versions given by `expected_version` and `version_tag`
+  // match. If `version_tag` is `absl::nullopt`, the version given is implicitly
+  // `Playlist::kDefaultVersion`.
+  bool CheckVersion(types::DecimalInteger expected_version) const;
 };
 
 // Validates that the first line of the given SourceLineIterator contains a

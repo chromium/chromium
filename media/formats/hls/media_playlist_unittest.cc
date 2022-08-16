@@ -14,6 +14,7 @@
 #include "media/formats/hls/media_playlist_test_builder.h"
 #include "media/formats/hls/multivariant_playlist.h"
 #include "media/formats/hls/parse_status.h"
+#include "media/formats/hls/playlist.h"
 #include "media/formats/hls/tags.h"
 #include "media/formats/hls/test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,7 +26,8 @@ namespace {
 
 MultivariantPlaylist CreateMultivariantPlaylist(
     std::initializer_list<base::StringPiece> lines,
-    GURL uri = GURL("http://localhost/multi_playlist.m3u8")) {
+    GURL uri = GURL("http://localhost/multi_playlist.m3u8"),
+    types::DecimalInteger version = Playlist::kDefaultVersion) {
   std::string source;
   for (auto line : lines) {
     source.append(line.data(), line.size());
@@ -34,7 +36,7 @@ MultivariantPlaylist CreateMultivariantPlaylist(
 
   // Parse the given source. Failure here isn't supposed to be part of the test,
   // so use a CHECK.
-  auto result = MultivariantPlaylist::Parse(source, std::move(uri));
+  auto result = MultivariantPlaylist::Parse(source, std::move(uri), version);
   CHECK(result.has_value());
   return std::move(result).value();
 }
@@ -46,7 +48,7 @@ TEST(HlsMediaPlaylistTest, Segments) {
   builder.AppendLine("#EXTM3U");
   builder.AppendLine("#EXT-X-TARGETDURATION:10");
   builder.AppendLine("#EXT-X-VERSION:5");
-  builder.ExpectPlaylist(HasVersion, 5);
+  builder.SetVersion(5);
   builder.ExpectPlaylist(HasTargetDuration, base::Seconds(10));
 
   builder.AppendLine("#EXTINF:9.2,\t");
@@ -150,7 +152,7 @@ TEST(HlsMediaPlaylistTest, VariableSubstitution) {
   builder.AppendLine("#EXTM3U");
   builder.AppendLine("#EXT-X-TARGETDURATION:10");
   builder.AppendLine("#EXT-X-VERSION:8");
-  builder.ExpectPlaylist(HasVersion, 8);
+  builder.SetVersion(8);
   builder.ExpectPlaylist(HasTargetDuration, base::Seconds(10));
 
   builder.AppendLine(R"(#EXT-X-DEFINE:NAME="ROOT",VALUE="http://video.com")");
@@ -199,7 +201,8 @@ TEST(HlsMediaPlaylistTest, VariableSubstitution) {
   // Test importing variables in a playlist with a parent
   auto parent = CreateMultivariantPlaylist(
       {"#EXTM3U", "#EXT-X-VERSION:8",
-       R"(#EXT-X-DEFINE:NAME="IMPORTED",VALUE="HELLO")"});
+       R"(#EXT-X-DEFINE:NAME="IMPORTED",VALUE="HELLO")"},
+      GURL("http://localhost/multi_playlist.m3u8"), 8);
   {
     // Referring to a parent playlist variable without importing it is an error
     auto fork = builder;
@@ -633,7 +636,6 @@ TEST(HlsMediaPlaylistTest, XDiscontinuityTag) {
   MediaPlaylistTestBuilder builder;
   builder.AppendLine("#EXTM3U");
   builder.AppendLine("#EXT-X-TARGETDURATION:10");
-  builder.ExpectPlaylist(HasVersion, 1);
   builder.ExpectPlaylist(HasTargetDuration, base::Seconds(10));
 
   // Default discontinuity state is false
@@ -849,7 +851,6 @@ TEST(HlsMediaPlaylistTest, XGapTag) {
   MediaPlaylistTestBuilder builder;
   builder.AppendLine("#EXTM3U");
   builder.AppendLine("#EXT-X-TARGETDURATION:10");
-  builder.ExpectPlaylist(HasVersion, 1);
   builder.ExpectPlaylist(HasTargetDuration, base::Seconds(10));
 
   // Default gap state is false

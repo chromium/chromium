@@ -39,13 +39,13 @@ class MEDIA_EXPORT MultivariantPlaylist final : public Playlist {
   Kind GetKind() const override;
 
   // Attempts to parse the multivariant playlist represented by `source`. `uri`
-  // must be a valid, non-empty GURL referring to the URI of this playlist. If
-  // the playlist source is invalid, returns an error. If the playlist source
-  // contains tags specific to media playlists, the error code will be
-  // `kMultivariantPlaylistHasMediaPlaylistTag`, at which point the caller may
-  // choose to parse it as a media playlist instead.
-  static ParseStatus::Or<MultivariantPlaylist> Parse(base::StringPiece source,
-                                                     GURL uri);
+  // must be a valid, non-empty GURL referring to the URI of this playlist.
+  // `version` is the HLS version expected to be given by an `EXT-X-VERSION` tag
+  // in this playlist (or `Playlist::kDefaultVersion` if none), which may be
+  // determined via `Playlist::IdentifyPlaylist`. If the playlist source is
+  // invalid, returns an error.
+  static ParseStatus::Or<MultivariantPlaylist>
+  Parse(base::StringPiece source, GURL uri, types::DecimalInteger version);
 
  private:
   MultivariantPlaylist(GURL uri,

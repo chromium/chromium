@@ -15,6 +15,7 @@
 #include "media/formats/hls/media_segment.h"
 #include "media/formats/hls/multivariant_playlist.h"
 #include "media/formats/hls/parse_status.h"
+#include "media/formats/hls/playlist.h"
 #include "media/formats/hls/playlist_common.h"
 #include "media/formats/hls/source_string.h"
 #include "media/formats/hls/tags.h"
@@ -59,7 +60,14 @@ Playlist::Kind MediaPlaylist::GetKind() const {
 ParseStatus::Or<MediaPlaylist> MediaPlaylist::Parse(
     base::StringPiece source,
     GURL uri,
+    types::DecimalInteger version,
     const MultivariantPlaylist* parent_playlist) {
+  DCHECK(version != 0);
+  if (version < Playlist::kMinSupportedVersion ||
+      version > Playlist::kMaxSupportedVersion) {
+    return ParseStatusCode::kPlaylistHasUnsupportedVersion;
+  }
+
   if (!uri.is_valid()) {
     return ParseStatusCode::kInvalidUri;
   }
@@ -400,6 +408,11 @@ ParseStatus::Or<MediaPlaylist> MediaPlaylist::Parse(
     byterange_tag.reset();
   }
 
+  // Version must match what was expected.
+  if (!common_state.CheckVersion(version)) {
+    return ParseStatusCode::kPlaylistHasVersionMismatch;
+  }
+
   if (!target_duration_tag.has_value()) {
     return ParseStatusCode::kMediaPlaylistMissingTargetDuration;
   }
@@ -507,7 +520,7 @@ ParseStatus::Or<MediaPlaylist> MediaPlaylist::Parse(
 
   return MediaPlaylist(
       CtorArgs{.uri = std::move(uri),
-               .version = common_state.GetVersion(),
+               .version = version,
                .independent_segments = independent_segments,
                .target_duration = target_duration,
                .partial_segment_info = std::move(partial_segment_info),

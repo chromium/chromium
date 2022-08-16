@@ -6,14 +6,16 @@
 
 #include "base/notreached.h"
 #include "media/formats/hls/playlist.h"
+#include "media/formats/hls/types.h"
 
 namespace media::hls {
 
-types::DecimalInteger CommonParserState::GetVersion() const {
+bool CommonParserState::CheckVersion(
+    types::DecimalInteger expected_version) const {
   if (version_tag.has_value()) {
-    return version_tag.value().version;
+    return expected_version == version_tag->version;
   } else {
-    return Playlist::kDefaultVersion;
+    return expected_version == Playlist::kDefaultVersion;
   }
 }
 
@@ -103,11 +105,6 @@ absl::optional<ParseStatus> ParseCommonTag(TagItem tag,
       auto error = ParseUniqueTag(tag, state->version_tag);
       if (error.has_value()) {
         return error;
-      }
-
-      // Max supported playlist version is 10
-      if (state->version_tag->version > 10) {
-        return ParseStatusCode::kPlaylistHasUnsupportedVersion;
       }
       break;
     }
