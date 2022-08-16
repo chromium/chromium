@@ -56,6 +56,14 @@ MultiTabLoadingPageLoadMetricsObserver::OnFencedFramesStart(
   return STOP_OBSERVING;
 }
 
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+MultiTabLoadingPageLoadMetricsObserver::OnPrerenderStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  // This class will be deprecated. No need to support.
+  return STOP_OBSERVING;
+}
+
 #define RECORD_HISTOGRAMS(suffix, sample)                                      \
   do {                                                                         \
     base::TimeDelta sample_value(sample);                                      \

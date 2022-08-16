@@ -42,6 +42,9 @@ class MultiTabLoadingPageLoadMetricsObserver
   page_load_metrics::PageLoadMetricsObserver::ObservePolicy OnFencedFramesStart(
       content::NavigationHandle* navigation_handle,
       const GURL& currently_committed_url) override;
+  page_load_metrics::PageLoadMetricsObserver::ObservePolicy OnPrerenderStart(
+      content::NavigationHandle* navigation_handle,
+      const GURL& currently_committed_url) override;
   void OnFirstContentfulPaintInPage(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
   void OnFirstMeaningfulPaintInMainFrameDocument(
