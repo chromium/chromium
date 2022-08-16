@@ -42,12 +42,12 @@ class TestFilterSourceStreamBase : public FilterSourceStream {
   // Writes contents of |buffer_| to |output_buffer| and returns the number of
   // bytes written or an error code. Additionally removes consumed data from
   // |buffer_|.
-  int WriteBufferToOutput(IOBuffer* output_buffer, int output_buffer_size) {
-    size_t bytes_to_filter =
-        std::min(buffer_.length(), static_cast<size_t>(output_buffer_size));
+  size_t WriteBufferToOutput(IOBuffer* output_buffer,
+                             size_t output_buffer_size) {
+    size_t bytes_to_filter = std::min(buffer_.length(), output_buffer_size);
     memcpy(output_buffer->data(), buffer_.data(), bytes_to_filter);
     buffer_.erase(0, bytes_to_filter);
-    return base::checked_cast<int>(bytes_to_filter);
+    return bytes_to_filter;
   }
 
   // Buffer used by subclasses to hold data that is yet to be passed to the
@@ -72,12 +72,12 @@ class NeedsAllInputFilterSourceStream : public TestFilterSourceStreamBase {
   NeedsAllInputFilterSourceStream& operator=(
       const NeedsAllInputFilterSourceStream&) = delete;
 
-  int FilterData(IOBuffer* output_buffer,
-                 int output_buffer_size,
-                 IOBuffer* input_buffer,
-                 int input_buffer_size,
-                 int* consumed_bytes,
-                 bool upstream_eof_reached) override {
+  base::expected<size_t, Error> FilterData(IOBuffer* output_buffer,
+                                           size_t output_buffer_size,
+                                           IOBuffer* input_buffer,
+                                           size_t input_buffer_size,
+                                           size_t* consumed_bytes,
+                                           bool upstream_eof_reached) override {
     buffer_.append(input_buffer->data(), input_buffer_size);
     EXPECT_GE(expected_input_bytes_, input_buffer_size);
     expected_input_bytes_ -= input_buffer_size;
@@ -86,13 +86,13 @@ class NeedsAllInputFilterSourceStream : public TestFilterSourceStreamBase {
       // Keep returning 0 bytes read until all input has been consumed.
       return 0;
     }
-    EXPECT_EQ(0, expected_input_bytes_);
+    EXPECT_EQ(0u, expected_input_bytes_);
     return WriteBufferToOutput(output_buffer, output_buffer_size);
   }
 
  private:
   // Expected remaining bytes to be received from |upstream|.
-  int expected_input_bytes_;
+  size_t expected_input_bytes_;
 };
 
 // A FilterSourceStream that repeat every input byte by |multiplier| amount of
@@ -106,13 +106,14 @@ class MultiplySourceStream : public TestFilterSourceStreamBase {
   MultiplySourceStream(const MultiplySourceStream&) = delete;
   MultiplySourceStream& operator=(const MultiplySourceStream&) = delete;
 
-  int FilterData(IOBuffer* output_buffer,
-                 int output_buffer_size,
-                 IOBuffer* input_buffer,
-                 int input_buffer_size,
-                 int* consumed_bytes,
-                 bool /*upstream_eof_reached*/) override {
-    for (int i = 0; i < input_buffer_size; i++) {
+  base::expected<size_t, Error> FilterData(
+      IOBuffer* output_buffer,
+      size_t output_buffer_size,
+      IOBuffer* input_buffer,
+      size_t input_buffer_size,
+      size_t* consumed_bytes,
+      bool /*upstream_eof_reached*/) override {
+    for (size_t i = 0; i < input_buffer_size; i++) {
       for (int j = 0; j < multiplier_; j++)
         buffer_.append(input_buffer->data() + i, 1);
     }
@@ -134,12 +135,13 @@ class PassThroughFilterSourceStream : public TestFilterSourceStreamBase {
   PassThroughFilterSourceStream& operator=(
       const PassThroughFilterSourceStream&) = delete;
 
-  int FilterData(IOBuffer* output_buffer,
-                 int output_buffer_size,
-                 IOBuffer* input_buffer,
-                 int input_buffer_size,
-                 int* consumed_bytes,
-                 bool /*upstream_eof_reached*/) override {
+  base::expected<size_t, Error> FilterData(
+      IOBuffer* output_buffer,
+      size_t output_buffer_size,
+      IOBuffer* input_buffer,
+      size_t input_buffer_size,
+      size_t* consumed_bytes,
+      bool /*upstream_eof_reached*/) override {
     buffer_.append(input_buffer->data(), input_buffer_size);
     *consumed_bytes = input_buffer_size;
     return WriteBufferToOutput(output_buffer, output_buffer_size);
@@ -156,15 +158,16 @@ class ThrottleSourceStream : public TestFilterSourceStreamBase {
   ThrottleSourceStream(const ThrottleSourceStream&) = delete;
   ThrottleSourceStream& operator=(const ThrottleSourceStream&) = delete;
 
-  int FilterData(IOBuffer* output_buffer,
-                 int output_buffer_size,
-                 IOBuffer* input_buffer,
-                 int input_buffer_size,
-                 int* consumed_bytes,
-                 bool /*upstream_eof_reached*/) override {
+  base::expected<size_t, Error> FilterData(
+      IOBuffer* output_buffer,
+      size_t output_buffer_size,
+      IOBuffer* input_buffer,
+      size_t input_buffer_size,
+      size_t* consumed_bytes,
+      bool /*upstream_eof_reached*/) override {
     buffer_.append(input_buffer->data(), input_buffer_size);
     *consumed_bytes = input_buffer_size;
-    int bytes_to_read = std::min(1, static_cast<int>(buffer_.size()));
+    size_t bytes_to_read = std::min(size_t{1}, buffer_.size());
     memcpy(output_buffer->data(), buffer_.data(), bytes_to_read);
     buffer_.erase(0, bytes_to_read);
     return bytes_to_read;
@@ -182,24 +185,25 @@ class NoOutputSourceStream : public TestFilterSourceStreamBase {
   NoOutputSourceStream(const NoOutputSourceStream&) = delete;
   NoOutputSourceStream& operator=(const NoOutputSourceStream&) = delete;
 
-  int FilterData(IOBuffer* output_buffer,
-                 int output_buffer_size,
-                 IOBuffer* input_buffer,
-                 int input_buffer_size,
-                 int* consumed_bytes,
-                 bool /*upstream_eof_reached*/) override {
+  base::expected<size_t, Error> FilterData(
+      IOBuffer* output_buffer,
+      size_t output_buffer_size,
+      IOBuffer* input_buffer,
+      size_t input_buffer_size,
+      size_t* consumed_bytes,
+      bool /*upstream_eof_reached*/) override {
+    EXPECT_GE(expected_input_size_, input_buffer_size);
     expected_input_size_ -= input_buffer_size;
     *consumed_bytes = input_buffer_size;
-    EXPECT_LE(0, expected_input_size_);
     consumed_all_input_ = (expected_input_size_ == 0);
-    return OK;
+    return 0;
   }
 
   bool consumed_all_input() const { return consumed_all_input_; }
 
  private:
   // Expected remaining bytes to be received from |upstream|.
-  int expected_input_size_;
+  size_t expected_input_size_;
   bool consumed_all_input_ = false;
 };
 
@@ -212,13 +216,14 @@ class ErrorFilterSourceStream : public FilterSourceStream {
   ErrorFilterSourceStream(const ErrorFilterSourceStream&) = delete;
   ErrorFilterSourceStream& operator=(const ErrorFilterSourceStream&) = delete;
 
-  int FilterData(IOBuffer* output_buffer,
-                 int output_buffer_size,
-                 IOBuffer* input_buffer,
-                 int input_buffer_size,
-                 int* consumed_bytes,
-                 bool /*upstream_eof_reached*/) override {
-    return ERR_CONTENT_DECODING_FAILED;
+  base::expected<size_t, Error> FilterData(
+      IOBuffer* output_buffer,
+      size_t output_buffer_size,
+      IOBuffer* input_buffer,
+      size_t input_buffer_size,
+      size_t* consumed_bytes,
+      bool /*upstream_eof_reached*/) override {
+    return base::unexpected(ERR_CONTENT_DECODING_FAILED);
   }
   std::string GetTypeAsString() const override { return ""; }
 };

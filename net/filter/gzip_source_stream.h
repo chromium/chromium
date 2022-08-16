@@ -75,12 +75,12 @@ class NET_EXPORT_PRIVATE GzipSourceStream : public FilterSourceStream {
 
   // SourceStream implementation
   std::string GetTypeAsString() const override;
-  int FilterData(IOBuffer* output_buffer,
-                 int output_buffer_size,
-                 IOBuffer* input_buffer,
-                 int input_buffer_size,
-                 int* consumed_bytes,
-                 bool upstream_end_reached) override;
+  base::expected<size_t, Error> FilterData(IOBuffer* output_buffer,
+                                           size_t output_buffer_size,
+                                           IOBuffer* input_buffer,
+                                           size_t input_buffer_size,
+                                           size_t* consumed_bytes,
+                                           bool upstream_end_reached) override;
 
   // Inserts a zlib header to the data stream before calling zlib inflate.
   // This is used to work around server bugs. The function returns true on

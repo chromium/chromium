@@ -80,19 +80,20 @@ class BrotliSourceStream : public FilterSourceStream {
   // SourceStream implementation
   std::string GetTypeAsString() const override { return kBrotli; }
 
-  int FilterData(IOBuffer* output_buffer,
-                 int output_buffer_size,
-                 IOBuffer* input_buffer,
-                 int input_buffer_size,
-                 int* consumed_bytes,
-                 bool /*upstream_eof_reached*/) override {
+  base::expected<size_t, Error> FilterData(
+      IOBuffer* output_buffer,
+      size_t output_buffer_size,
+      IOBuffer* input_buffer,
+      size_t input_buffer_size,
+      size_t* consumed_bytes,
+      bool /*upstream_eof_reached*/) override {
     if (decoding_status_ == DecodingStatus::DECODING_DONE) {
       *consumed_bytes = input_buffer_size;
-      return OK;
+      return 0;
     }
 
     if (decoding_status_ != DecodingStatus::DECODING_IN_PROGRESS)
-      return ERR_CONTENT_DECODING_FAILED;
+      return base::unexpected(ERR_CONTENT_DECODING_FAILED);
 
     const uint8_t* next_in = base::bit_cast<uint8_t*>(input_buffer->data());
     size_t available_in = input_buffer_size;
@@ -105,8 +106,8 @@ class BrotliSourceStream : public FilterSourceStream {
 
     size_t bytes_used = input_buffer_size - available_in;
     size_t bytes_written = output_buffer_size - available_out;
-    CHECK_GE(bytes_used, 0u);
-    CHECK_GE(bytes_written, 0u);
+    CHECK_GE(input_buffer_size, available_in);
+    CHECK_GE(output_buffer_size, available_out);
     produced_bytes_ += bytes_written;
     consumed_bytes_ += bytes_used;
 
@@ -129,7 +130,7 @@ class BrotliSourceStream : public FilterSourceStream {
       // If the decompressor threw an error, fail synchronously.
       default:
         decoding_status_ = DecodingStatus::DECODING_ERROR;
-        return ERR_CONTENT_DECODING_FAILED;
+        return base::unexpected(ERR_CONTENT_DECODING_FAILED);
     }
   }
 

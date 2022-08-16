@@ -84,16 +84,17 @@ std::string GzipSourceStream::GetTypeAsString() const {
   }
 }
 
-int GzipSourceStream::FilterData(IOBuffer* output_buffer,
-                                 int output_buffer_size,
-                                 IOBuffer* input_buffer,
-                                 int input_buffer_size,
-                                 int* consumed_bytes,
-                                 bool upstream_end_reached) {
+base::expected<size_t, Error> GzipSourceStream::FilterData(
+    IOBuffer* output_buffer,
+    size_t output_buffer_size,
+    IOBuffer* input_buffer,
+    size_t input_buffer_size,
+    size_t* consumed_bytes,
+    bool upstream_end_reached) {
   *consumed_bytes = 0;
   char* input_data = input_buffer->data();
-  int input_data_size = input_buffer_size;
-  int bytes_out = 0;
+  size_t input_data_size = input_buffer_size;
+  size_t bytes_out = 0;
   bool state_compressed_entered = false;
   while (input_data_size > 0 && bytes_out < output_buffer_size) {
     InputState state = input_state_;
@@ -103,7 +104,7 @@ int GzipSourceStream::FilterData(IOBuffer* output_buffer,
           input_state_ = STATE_SNIFFING_DEFLATE_HEADER;
           break;
         }
-        DCHECK_LT(0, input_data_size);
+        DCHECK_GT(input_data_size, 0u);
         input_state_ = STATE_GZIP_HEADER;
         break;
       }
@@ -120,12 +121,12 @@ int GzipSourceStream::FilterData(IOBuffer* output_buffer,
         } else if (status == GZipHeader::COMPLETE_HEADER) {
           // If there is a valid header, there should also be a valid footer.
           gzip_footer_bytes_left_ = kGzipFooterBytes;
-          int bytes_consumed = end - input_data;
+          size_t bytes_consumed = static_cast<size_t>(end - input_data);
           input_data += bytes_consumed;
           input_data_size -= bytes_consumed;
           input_state_ = STATE_COMPRESSED_BODY;
         } else if (status == GZipHeader::INVALID_HEADER) {
-          return ERR_CONTENT_DECODING_FAILED;
+          return base::unexpected(ERR_CONTENT_DECODING_FAILED);
         }
         break;
       }
@@ -146,7 +147,7 @@ int GzipSourceStream::FilterData(IOBuffer* output_buffer,
         // calls needs to be replayed.
         if (ret != Z_STREAM_END && ret != Z_OK) {
           if (!InsertZlibHeader())
-            return ERR_CONTENT_DECODING_FAILED;
+            return base::unexpected(ERR_CONTENT_DECODING_FAILED);
 
           input_state_ = STATE_REPLAY_DATA;
           // |replay_state_| should still have its initial value.
@@ -154,7 +155,7 @@ int GzipSourceStream::FilterData(IOBuffer* output_buffer,
           break;
         }
 
-        int bytes_used = input_data_size - zlib_stream_.get()->avail_in;
+        size_t bytes_used = input_data_size - zlib_stream_.get()->avail_in;
         bytes_out = output_buffer_size - zlib_stream_.get()->avail_out;
         // If any bytes are output, enough total bytes have been received, or at
         // the end of the stream, assume the response had a valid Zlib header.
@@ -188,10 +189,10 @@ int GzipSourceStream::FilterData(IOBuffer* output_buffer,
         // |replay_data_| and |input_buffer| much simpler than the alternative
         // operations, though it's not pretty.
         input_state_ = replay_state_;
-        int bytes_used;
+        size_t bytes_used;
         scoped_refptr<IOBuffer> replay_buffer =
             base::MakeRefCounted<WrappedIOBuffer>(replay_data_.data());
-        int result =
+        base::expected<size_t, Error> result =
             FilterData(output_buffer, output_buffer_size, replay_buffer.get(),
                        replay_data_.size(), &bytes_used, upstream_end_reached);
         replay_data_.erase(0, bytes_used);
@@ -199,16 +200,14 @@ int GzipSourceStream::FilterData(IOBuffer* output_buffer,
         replay_state_ = input_state_;
         input_state_ = STATE_REPLAY_DATA;
 
-        // On error, or if bytes were read, just return result immediately.
         // Could continue consuming data in the success case, but simplest not
         // to.
-        if (result != 0)
+        if (!result.has_value() || result.value() != 0)
           return result;
         break;
       }
       case STATE_COMPRESSED_BODY: {
         DCHECK(!state_compressed_entered);
-        DCHECK_LE(0, input_data_size);
 
         state_compressed_entered = true;
         zlib_stream_.get()->next_in = base::bit_cast<Bytef*>(input_data);
@@ -219,9 +218,9 @@ int GzipSourceStream::FilterData(IOBuffer* output_buffer,
 
         int ret = inflate(zlib_stream_.get(), Z_NO_FLUSH);
         if (ret != Z_STREAM_END && ret != Z_OK)
-          return ERR_CONTENT_DECODING_FAILED;
+          return base::unexpected(ERR_CONTENT_DECODING_FAILED);
 
-        int bytes_used = input_data_size - zlib_stream_.get()->avail_in;
+        size_t bytes_used = input_data_size - zlib_stream_.get()->avail_in;
         bytes_out = output_buffer_size - zlib_stream_.get()->avail_out;
         input_data_size -= bytes_used;
         input_data += bytes_used;
@@ -233,8 +232,7 @@ int GzipSourceStream::FilterData(IOBuffer* output_buffer,
         break;
       }
       case STATE_GZIP_FOOTER: {
-        size_t to_read = std::min(gzip_footer_bytes_left_,
-                                  base::checked_cast<size_t>(input_data_size));
+        size_t to_read = std::min(gzip_footer_bytes_left_, input_data_size);
         gzip_footer_bytes_left_ -= to_read;
         input_data_size -= to_read;
         input_data += to_read;

@@ -35,12 +35,13 @@ std::string I18nSourceStream::GetTypeAsString() const {
   return "i18n";
 }
 
-int I18nSourceStream::FilterData(net::IOBuffer* output_buffer,
-                                 int output_buffer_size,
-                                 net::IOBuffer* input_buffer,
-                                 int input_buffer_size,
-                                 int* consumed_bytes,
-                                 bool upstream_end_reached) {
+base::expected<size_t, net::Error> I18nSourceStream::FilterData(
+    net::IOBuffer* output_buffer,
+    size_t output_buffer_size,
+    net::IOBuffer* input_buffer,
+    size_t input_buffer_size,
+    size_t* consumed_bytes,
+    bool upstream_end_reached) {
   // |input_| is often empty (or it may have something from the prior call).
   input_.append(input_buffer->data(), input_buffer_size);
   *consumed_bytes = input_buffer_size;
@@ -61,8 +62,7 @@ int I18nSourceStream::FilterData(net::IOBuffer* output_buffer,
   }
 
   output_.append(ReplaceTemplateExpressions(to_process, *replacements_));
-  int bytes_out =
-      std::min(output_.size(), static_cast<size_t>(output_buffer_size));
+  size_t bytes_out = std::min(output_.size(), output_buffer_size);
   output_.copy(output_buffer->data(), bytes_out);
   output_.erase(0, bytes_out);
   return bytes_out;

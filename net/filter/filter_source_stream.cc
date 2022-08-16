@@ -56,7 +56,7 @@ int FilterSourceStream::Read(IOBuffer* read_buffer,
   }
 
   output_buffer_ = read_buffer;
-  output_buffer_size_ = read_buffer_size;
+  output_buffer_size_ = base::checked_cast<size_t>(read_buffer_size);
   int rv = DoLoop(OK);
 
   if (rv == ERR_IO_PENDING)
@@ -152,30 +152,40 @@ int FilterSourceStream::DoFilterData() {
   DCHECK(output_buffer_);
   DCHECK(drainable_input_buffer_);
 
-  int consumed_bytes = 0;
-  int bytes_output = FilterData(output_buffer_.get(), output_buffer_size_,
-                                drainable_input_buffer_.get(),
-                                drainable_input_buffer_->BytesRemaining(),
-                                &consumed_bytes, upstream_end_reached_);
-  DCHECK_LE(consumed_bytes, drainable_input_buffer_->BytesRemaining());
-  DCHECK(bytes_output != 0 ||
-         consumed_bytes == drainable_input_buffer_->BytesRemaining());
+  size_t consumed_bytes = 0;
+  base::expected<size_t, Error> bytes_output = FilterData(
+      output_buffer_.get(), output_buffer_size_, drainable_input_buffer_.get(),
+      drainable_input_buffer_->BytesRemaining(), &consumed_bytes,
+      upstream_end_reached_);
 
+  const auto bytes_remaining =
+      base::checked_cast<size_t>(drainable_input_buffer_->BytesRemaining());
+  if (bytes_output.has_value() && bytes_output.value() == 0) {
+    DCHECK_EQ(consumed_bytes, bytes_remaining);
+  } else {
+    DCHECK_LE(consumed_bytes, bytes_remaining);
+  }
   // FilterData() is not allowed to return ERR_IO_PENDING.
-  DCHECK_NE(ERR_IO_PENDING, bytes_output);
+  if (!bytes_output.has_value())
+    DCHECK_NE(ERR_IO_PENDING, bytes_output.error());
 
   if (consumed_bytes > 0)
     drainable_input_buffer_->DidConsume(consumed_bytes);
 
   // Received data or encountered an error.
-  if (bytes_output != 0)
-    return bytes_output;
+  if (!bytes_output.has_value()) {
+    CHECK_LT(bytes_output.error(), 0);
+    return bytes_output.error();
+  }
+  if (bytes_output.value() != 0)
+    return base::checked_cast<int>(bytes_output.value());
+
   // If no data is returned, continue reading if |this| needs more input.
   if (NeedMoreData()) {
     DCHECK_EQ(0, drainable_input_buffer_->BytesRemaining());
     next_state_ = STATE_READ_DATA;
   }
-  return bytes_output;
+  return 0;
 }
 
 void FilterSourceStream::OnIOComplete(int result) {
