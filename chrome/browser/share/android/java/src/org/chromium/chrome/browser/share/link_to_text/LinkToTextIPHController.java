@@ -58,7 +58,16 @@ public class LinkToTextIPHController {
 
                 if (!LinkToTextHelper.hasTextFragment(url)) return;
 
-                mTracker = TrackerFactory.getTrackerForProfile(profileSupplier.get());
+                Profile profile = profileSupplier.get();
+                // In some cases, ProfileSupplier.get() will return null or will not be initialized
+                // in Native. See https://crbug.com/1346710 and https://crbug.com/1353138.
+                if (profile == null || !profile.isNativeInitialized()) {
+                    profile = Profile.getLastUsedRegularProfile();
+                }
+                if (profile == null) {
+                    return;
+                }
+                mTracker = TrackerFactory.getTrackerForProfile(profile);
                 if (!mTracker.wouldTriggerHelpUI(FEATURE_NAME)) {
                     return;
                 }
