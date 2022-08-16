@@ -51,6 +51,9 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
 // Add button for the toolbar.
 @property(nonatomic, strong) UIBarButtonItem* addButtonInToolbar;
 
+// Settings button for the toolbar.
+@property(nonatomic, strong) UIBarButtonItem* settingsButtonInToolbar;
+
 // Item displayed before the user interactions are prevented. This is used to
 // store the item while the interaction is prevented.
 @property(nonatomic, strong) UIBarButtonItem* savedBarButtonItem;
@@ -102,6 +105,13 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
   if (self.shouldHideToolbar) {
     return;
   }
+
+  // `shouldShowAddButtonInToolbar` and `shouldShowSettingsButtonInToolbar`
+  // should not both be YES at the same time, as they conflict with each other
+  // (both occupy the same space in the toolbar).
+  DCHECK(!(self.shouldShowAddButtonInToolbar &&
+           self.shouldShowSettingsButtonInToolbar));
+
   UIBarButtonItem* flexibleSpace = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
                            target:nil
@@ -112,6 +122,8 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
     toolbarLeftButton = self.deleteButton;
   } else if (self.shouldShowAddButtonInToolbar) {
     toolbarLeftButton = self.addButtonInToolbar;
+  } else if (self.shouldShowSettingsButtonInToolbar) {
+    toolbarLeftButton = self.settingsButtonInToolbar;
   }
 
   UIBarButtonItem* editOrDoneButton =
@@ -156,6 +168,20 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
     _addButtonInToolbar.accessibilityIdentifier = kSettingsToolbarAddButtonId;
   }
   return _addButtonInToolbar;
+}
+
+- (UIBarButtonItem*)settingsButtonInToolbar {
+  if (!_settingsButtonInToolbar) {
+    _settingsButtonInToolbar = [[UIBarButtonItem alloc]
+        initWithTitle:l10n_util::GetNSString(
+                          IDS_IOS_SETTINGS_TOOLBAR_SETTINGS_SUBMENU)
+                style:UIBarButtonItemStylePlain
+               target:self
+               action:@selector(settingsButtonCallback)];
+    _settingsButtonInToolbar.accessibilityIdentifier =
+        kSettingsToolbarSettingsButtonId;
+  }
+  return _settingsButtonInToolbar;
 }
 
 #pragma mark - UIViewController
@@ -431,6 +457,11 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
 }
 
 - (void)addButtonCallback {
+  // Subclasses should implement.
+  NOTREACHED();
+}
+
+- (void)settingsButtonCallback {
   // Subclasses should implement.
   NOTREACHED();
 }

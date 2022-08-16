@@ -17,3 +17,6 @@ NSString* const kSettingsToolbarEditButtonId = @"SettingsToolbarEditButtonId";
 
 NSString* const kSettingsToolbarEditDoneButtonId =
     @"kSettingsToolbarEditDoneButtonId";
+
+NSString* const kSettingsToolbarSettingsButtonId =
+    @"kSettingsToolbarSettingsButtonId";

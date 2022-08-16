@@ -2567,6 +2567,9 @@ Try to use a unique password for every site.
       <message name="IDS_IOS_SETTINGS_TOOLBAR_ADD" desc="Label of the button displayed on the bottom toolbar of the settings' collections. Pressing this button opens the Add view. For example: Clicking this button in the Password settings would open the add password view.">
         Add
       </message>
+      <message name="IDS_IOS_SETTINGS_TOOLBAR_SETTINGS_SUBMENU" desc="Button text in a toolbar that will take the user to a submenu with settings related to the currently-displayed content.">
+        Settings
+      </message>
         <message name="IDS_IOS_SETTINGS_SWIPE_DOWN_MESSAGE" desc="Message displayed whenever a user tries to dismiss a Settings screen which is being edited, or information is being added to it.">
         Are you sure you want to discard your changes?
       </message>

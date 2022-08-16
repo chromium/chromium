@@ -25,6 +25,9 @@
 // Add button for the toolbar.
 @property(nonatomic, strong, readonly) UIBarButtonItem* addButtonInToolbar;
 
+// Settings button for the toolbar.
+@property(nonatomic, strong, readonly) UIBarButtonItem* settingsButtonInToolbar;
+
 // Whether this table view controller should hide the "Done" button (the right
 // navigation bar button). Default is NO.
 @property(nonatomic, assign) BOOL shouldHideDoneButton;
@@ -34,11 +37,17 @@
 @property(nonatomic, assign) BOOL shouldDisableDoneButtonOnEdit;
 
 // Whether this table view controller should show the "Add" button in the
-// toolbar(bottom left). Default is NO.
+// toolbar(bottom left). Cannot be set to YES if
+// `shouldShowSettingsButtonInToolbar` is already enabled. Default is NO.
 @property(nonatomic, assign) BOOL shouldShowAddButtonInToolbar;
 
+// Whether this table view controller should show the "Settings" button in the
+// toolbar(bottom left). Cannot be set to YES if `shouldShowAddButtonInToolbar`
+// is already enabled. Default is NO.
+@property(nonatomic, assign) BOOL shouldShowSettingsButtonInToolbar;
+
 // Whether this table view controller should show the "Delete" button in the
-// toolbar(bottom left). Default is YES. Set in `viewDidLoad`.
+// toolbar(bottom left) in edit mode. Default is YES. Set in `viewDidLoad`.
 @property(nonatomic, assign) BOOL shouldShowDeleteButtonInToolbar;
 
 // Updates the edit or done button to reflect editing state.  If the
@@ -108,9 +117,13 @@
 // * Removes the transparent veil.
 - (void)allowUserInteraction;
 
-// Called when the add button in the toolbar is pressed. Subclasses should
-// override this method.
+// Called when the add button in the toolbar is pressed. Subclasses must
+// override this method if `shouldShowAddButtonInToolbar` is set to YES.
 - (void)addButtonCallback;
+
+// Called when the add button in the toolbar is pressed. Subclasses must
+// override this method if `shouldShowSettingsButtonInToolbar` is set to YES.
+- (void)settingsButtonCallback;
 
 @end
 
