@@ -27,11 +27,6 @@
 namespace enterprise_reporting {
 namespace {
 
-bool IsRequestInDict(const std::string& extension_id,
-                     const base::Value* requests) {
-  return requests->FindKey(extension_id) != nullptr;
-}
-
 // Create the ExtensionsWorkflowEvent based on the |extension_id| and
 // |request_data|. |request_data| is nullptr for remove-request and used for
 // add-request.
@@ -102,12 +97,12 @@ ExtensionRequestReportGenerator::GenerateForProfile(Profile* profile) {
   std::string webstore_update_url =
       extension_urls::GetDefaultWebstoreUpdateUrl().spec();
 
-  const base::Value* pending_requests =
-      profile->GetPrefs()->GetDictionary(prefs::kCloudExtensionRequestIds);
-  const base::Value* uploaded_requests =
-      profile->GetPrefs()->GetDictionary(kCloudExtensionRequestUploadedIds);
+  const base::Value::Dict& pending_requests =
+      profile->GetPrefs()->GetValueDict(prefs::kCloudExtensionRequestIds);
+  const base::Value::Dict& uploaded_requests =
+      profile->GetPrefs()->GetValueDict(kCloudExtensionRequestUploadedIds);
 
-  for (auto it : pending_requests->DictItems()) {
+  for (auto it : pending_requests) {
     const std::string& extension_id = it.first;
     if (!ShouldUploadExtensionRequest(extension_id, webstore_update_url,
                                       extension_management)) {
@@ -115,18 +110,18 @@ ExtensionRequestReportGenerator::GenerateForProfile(Profile* profile) {
     }
 
     // Request has already been uploaded.
-    if (IsRequestInDict(extension_id, uploaded_requests))
+    if (uploaded_requests.contains(extension_id))
       continue;
 
     reports.push_back(
         GenerateReport(extension_id, /*request_data=*/&it.second));
   }
 
-  for (auto it : uploaded_requests->DictItems()) {
+  for (auto it : uploaded_requests) {
     const std::string& extension_id = it.first;
 
     // Request is still pending, no need to send remove request.
-    if (IsRequestInDict(extension_id, pending_requests))
+    if (pending_requests.contains(extension_id))
       continue;
 
     reports.push_back(GenerateReport(extension_id, /*request_data=*/nullptr));
