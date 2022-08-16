@@ -12,6 +12,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
 
@@ -28,6 +29,7 @@ import android.widget.TextView;
 import androidx.annotation.IdRes;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
+import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matcher;
@@ -40,18 +42,24 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.CommandLine;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.locale.LocaleManagerDelegate;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
 import org.chromium.chrome.browser.signin.SigninFirstRunFragment;
+import org.chromium.chrome.browser.signin.services.FREMobileIdentityConsistencyFieldTrial;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
@@ -59,6 +67,10 @@ import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.policy.test.annotations.Policies;
+import org.chromium.components.signin.base.AccountInfo;
+import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -67,6 +79,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.FORCE_ENABLE_SIGNIN_FRE})
+@DoNotBatch(reason = "This test interacts with native initialization")
 public class FirstRunActivitySigninAndSyncTest {
     private static final String TEST_EMAIL = "test.account@gmail.com";
     private static final String CHILD_EMAIL = "child.account@gmail.com";
@@ -137,6 +150,73 @@ public class FirstRunActivitySigninAndSyncTest {
         clickButton(R.id.signin_fre_continue_button);
 
         waitUntilCurrentPageIs(SyncConsentFirstRunFragment.class);
+    }
+
+    @Test
+    @LargeTest
+    public void continueButtonCanBeClickedBeforeNativeIsLoaded() {
+        FREMobileIdentityConsistencyFieldTrial.setFirstRunTrialGroupForTesting(
+                FREMobileIdentityConsistencyFieldTrial.INITIALIZATION_FLOW_NEW_GROUP);
+        // Suppress native initialization to verify that SigninFirstRunFragment doesn't require it
+        // to proceed past the initial loading spinner.
+        CommandLine.getInstance().appendSwitch(ChromeSwitches.DISABLE_NATIVE_INITIALIZATION);
+        AccountInfo accountInfo = mAccountManagerTestRule.addAccount(TEST_EMAIL);
+
+        launchFirstRunActivity();
+        waitUntilCurrentPageIs(SigninFirstRunFragment.class);
+        onView(withId(R.id.signin_fre_selected_account)).check(matches(isDisplayed()));
+
+        clickButton(R.id.signin_fre_continue_button);
+
+        // Native should still be uninitialized.
+        assertFalse(ChromeBrowserInitializer.getInstance().isFullBrowserInitialized());
+
+        CommandLine.getInstance().removeSwitch(ChromeSwitches.DISABLE_NATIVE_INITIALIZATION);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mFirstRunActivity.startDelayedNativeInitializationForTests());
+
+        waitUntilCurrentPageIs(SyncConsentFirstRunFragment.class);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
+                    Profile.getLastUsedRegularProfile());
+            assertEquals(CoreAccountInfo.getIdFrom(
+                                 identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)),
+                    accountInfo.getId());
+        });
+    }
+
+    @Test
+    @LargeTest
+    public void dismissButtonCanBeClickedBeforeNativeIsLoaded() {
+        FREMobileIdentityConsistencyFieldTrial.setFirstRunTrialGroupForTesting(
+                FREMobileIdentityConsistencyFieldTrial.INITIALIZATION_FLOW_NEW_GROUP);
+        // Suppress native initialization to verify that SigninFirstRunFragment doesn't require it
+        // to proceed past the initial loading spinner.
+        CommandLine.getInstance().appendSwitch(ChromeSwitches.DISABLE_NATIVE_INITIALIZATION);
+        mAccountManagerTestRule.addAccount(TEST_EMAIL);
+
+        launchFirstRunActivity();
+        waitUntilCurrentPageIs(SigninFirstRunFragment.class);
+        onView(withId(R.id.signin_fre_selected_account)).check(matches(isDisplayed()));
+
+        clickButton(R.id.signin_fre_dismiss_button);
+
+        // Native should still be uninitialized.
+        assertFalse(ChromeBrowserInitializer.getInstance().isFullBrowserInitialized());
+
+        CommandLine.getInstance().removeSwitch(ChromeSwitches.DISABLE_NATIVE_INITIALIZATION);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mFirstRunActivity.startDelayedNativeInitializationForTests());
+
+        // When the native is loaded, First Run should be completed.
+        ApplicationTestUtils.waitForActivityState(mFirstRunActivity, Stage.DESTROYED);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
+                    Profile.getLastUsedRegularProfile());
+            assertNull(identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN));
+        });
     }
 
     @Test
@@ -329,6 +409,12 @@ public class FirstRunActivitySigninAndSyncTest {
     }
 
     private void launchFirstRunActivityAndWaitForNativeInitialization() {
+        launchFirstRunActivity();
+        CriteriaHelper.pollUiThread(
+                () -> mFirstRunActivity.getNativeInitializationPromise().isFulfilled());
+    }
+
+    private void launchFirstRunActivity() {
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         // The FirstRunActivity relaunches the original intent when it finishes, see
         // FirstRunActivityBase.EXTRA_FRE_COMPLETE_LAUNCH_INTENT. So to guarantee that
@@ -339,8 +425,6 @@ public class FirstRunActivitySigninAndSyncTest {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         mFirstRunActivity = ApplicationTestUtils.waitForActivityWithClass(
                 FirstRunActivity.class, Stage.RESUMED, () -> context.startActivity(intent));
-        CriteriaHelper.pollUiThread(
-                () -> mFirstRunActivity.getNativeInitializationPromise().isFulfilled());
     }
 
     private static class LinkClick implements ViewAction {

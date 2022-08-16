@@ -42,6 +42,27 @@ public class FREMobileIdentityConsistencyFieldTrial {
     public static final String OLD_FRE_WITH_UMA_DIALOG_GROUP = "OldFreWithUmaDialog6";
 
     /**
+     * Shows the new flow with separate sign-in and sync pages. Uses the new initialization logic
+     * that doesn't require native initialization to be finished for showing continue/dismiss
+     * buttons on the welcome screen.
+     */
+    @VisibleForTesting
+    public static final String INITIALIZATION_FLOW_NEW_GROUP = "InitializationFlowNew";
+    /**
+     * Shows the new flow with separate sign-in and sync pages. Uses the old initialization logic
+     * in which continue/dismiss buttons on the welcome screen are shown after native is
+     * initialized. This group is used to check the effect of the delay introduced by the native
+     * initialization.
+     */
+    public static final String INITIALIZATION_FLOW_OLD_GROUP = "InitializationFlowOld";
+    /**
+     * Shows the flow without the sign-in page but with UMA controls in a dialog.
+     * This group is used as control for {@link #INITIALIZATION_FLOW_NEW_GROUP} and
+     * {@link #INITIALIZATION_FLOW_OLD_GROUP}.
+     */
+    private static final String INITIALIZATION_FLOW_CONTROL_GROUP = "InitializationFlowControl";
+
+    /**
      * The group variation values should be consecutive starting from zero. WELCOME_TO_CHROME acts
      * as the control group of the experiment.
      * If a new group needs to be added then another control group must also be added.
@@ -111,10 +132,17 @@ public class FREMobileIdentityConsistencyFieldTrial {
         if (CommandLine.getInstance().hasSwitch(ChromeSwitches.FORCE_DISABLE_SIGNIN_FRE)) {
             return false;
         }
+        if (CommandLine.getInstance().hasSwitch(ChromeSwitches.FORCE_ENABLE_SIGNIN_FRE)) {
+            return true;
+        }
+        if (getFirstRunTrialGroup().equals(INITIALIZATION_FLOW_NEW_GROUP)
+                || getFirstRunTrialGroup().equals(INITIALIZATION_FLOW_OLD_GROUP)) {
+            return true;
+        }
+
         // Group names were changed from 'Enabled' to 'Enabled2' starting from Beta experiment.
         // getFirstRunTrialGroup.startWith() matches old groups alongside new groups.
-        return CommandLine.getInstance().hasSwitch(ChromeSwitches.FORCE_ENABLE_SIGNIN_FRE)
-                || getFirstRunTrialGroup().startsWith("Enabled");
+        return getFirstRunTrialGroup().startsWith("Enabled");
     }
 
     @MainThread
@@ -123,7 +151,16 @@ public class FREMobileIdentityConsistencyFieldTrial {
         if (CommandLine.getInstance().hasSwitch(ChromeSwitches.FORCE_DISABLE_SIGNIN_FRE)) {
             return false;
         }
-        return OLD_FRE_WITH_UMA_DIALOG_GROUP.equals(getFirstRunTrialGroup());
+        return OLD_FRE_WITH_UMA_DIALOG_GROUP.equals(getFirstRunTrialGroup())
+                || INITIALIZATION_FLOW_CONTROL_GROUP.equals(getFirstRunTrialGroup());
+    }
+
+    @MainThread
+    public static boolean shouldUseNewInitializationFlow() {
+        if (CommandLine.getInstance().hasSwitch(ChromeSwitches.FORCE_DISABLE_SIGNIN_FRE)) {
+            return false;
+        }
+        return getFirstRunTrialGroup().equals(INITIALIZATION_FLOW_NEW_GROUP);
     }
 
     @CalledByNative

@@ -17,6 +17,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.firstrun.MobileFreProgress;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.FREMobileIdentityConsistencyFieldTrial;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -74,7 +75,8 @@ public class SigninFirstRunMediator
     private boolean mDestroyed;
 
     private @LoadPoint int mSlowestLoadPoint;
-    private boolean mNativePolicyAndChildStatusLoaded;
+    /** Whether the initial load phase has been completed. See {@link #onInitialLoadCompleted}. */
+    private boolean mInitialLoadCompleted;
 
     private AccountPickerDialogCoordinator mDialogCoordinator;
     private @Nullable String mSelectedAccountName;
@@ -128,42 +130,62 @@ public class SigninFirstRunMediator
 
         mSlowestLoadPoint = LoadPoint.NATIVE_INITIALIZATION;
         mDelegate.recordNativeInitializedHistogram();
-        checkWhetherNativePolicyAndChildStatusAreLoaded();
+        checkWhetherInitialLoadCompleted();
     }
 
     private void onChildAccountStatusAvailable() {
         mSlowestLoadPoint = LoadPoint.CHILD_STATUS_LOAD;
-        checkWhetherNativePolicyAndChildStatusAreLoaded();
+        checkWhetherInitialLoadCompleted();
     }
 
     private void onPolicyLoad() {
         mSlowestLoadPoint = LoadPoint.POLICY_LOAD;
-        checkWhetherNativePolicyAndChildStatusAreLoaded();
+        checkWhetherInitialLoadCompleted();
     }
 
-    private void checkWhetherNativePolicyAndChildStatusAreLoaded() {
+    /** Checks the initial load status. See {@link #onInitialLoadCompleted} for details. */
+    private void checkWhetherInitialLoadCompleted() {
         // This happens asynchronously, so this check is necessary to ensure we don't interact with
         // the delegate after the mediator is destroyed. See https://crbug.com/1294998.
         if (mDestroyed) return;
 
-        if (mDelegate.getNativeInitializationPromise().isFulfilled()
-                && mDelegate.getChildAccountStatusSupplier().get() != null
-                && mDelegate.getPolicyLoadListener().get() != null
-                && !mNativePolicyAndChildStatusLoaded) {
-            mNativePolicyAndChildStatusLoaded = true;
-            onNativeAndPolicyLoaded(mDelegate.getPolicyLoadListener().get());
+        if (!shouldUseNewInitializationFlow()) {
+            // Old initialization flow requires native to be ready before the initial loading
+            // spinner can be hidden.
+            if (!mDelegate.getNativeInitializationPromise().isFulfilled()) return;
+        }
+
+        if (mDelegate.getChildAccountStatusSupplier().get() != null
+                && mDelegate.getPolicyLoadListener().get() != null && !mInitialLoadCompleted) {
+            mInitialLoadCompleted = true;
+            onInitialLoadCompleted(mDelegate.getPolicyLoadListener().get());
+            // TODO(https://crbug.com/1353330): Rename this method and the corresponding histogram.
             mDelegate.recordNativePolicyAndChildStatusLoadedHistogram();
             RecordHistogram.recordEnumeratedHistogram(
                     "MobileFre.SlowestLoadPoint", mSlowestLoadPoint, LoadPoint.MAX);
         }
     }
 
-    void onNativeAndPolicyLoaded(boolean hasPolicies) {
+    /**
+     * Called when the initial load phase is completed.
+     *
+     * After creation, {@link SigninFirstRunView} displays a loading spinner that is shown until
+     * policies and the child account status are being checked. If needed, that phase also waits for
+     * the native to be loaded (for example, if any app restrictions are detected). This method is
+     * invoked when this initial waiting phase is over and the "Continue" button can be displayed.
+     * It checks policies and child accounts to decide which version of the UI to display.
+     *
+     * @param hasPolicies Whether any enterprise policies have been found on the device. 'true' here
+     *                    also means that native has been initialized.
+     */
+    void onInitialLoadCompleted(boolean hasPolicies) {
         mModel.set(SigninFirstRunProperties.SHOW_INITIAL_LOAD_PROGRESS_SPINNER, false);
 
         boolean isSigninDisabledByPolicy = false;
         boolean isMetricsReportingDisabledByPolicy = false;
         if (hasPolicies) {
+            assert mDelegate.getNativeInitializationPromise().isFulfilled()
+                : "Must wait for native initialization if enterprise policies were found!";
             isSigninDisabledByPolicy =
                     IdentityServicesProvider.get()
                             .getSigninManager(Profile.getLastUsedRegularProfile())
@@ -232,9 +254,22 @@ public class SigninFirstRunMediator
      */
     private void onContinueAsClicked() {
         if (isContinueOrDismissClicked()) return;
+        assert !mModel.get(SigninFirstRunProperties.SHOW_INITIAL_LOAD_PROGRESS_SPINNER)
+            : "The continue button shouldn't be visible while the load spinner is shown!";
+
         if (!mModel.get(SigninFirstRunProperties.IS_SIGNIN_SUPPORTED)) {
-            mDelegate.acceptTermsOfService(mAllowCrashUpload);
-            mDelegate.advanceToNextPage();
+            if (mDelegate.getNativeInitializationPromise().isFulfilled()) {
+                mDelegate.acceptTermsOfService(mAllowCrashUpload);
+                mDelegate.advanceToNextPage();
+            } else {
+                // Show the progress spinner while the native finishes loading.
+                mModel.set(SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER, true);
+                mDelegate.getNativeInitializationPromise().then(ignored -> {
+                    // When the native is loaded - mark ToS as accepted and move to the next page.
+                    mDelegate.acceptTermsOfService(mAllowCrashUpload);
+                    mDelegate.advanceToNextPage();
+                });
+            }
             return;
         }
         if (mSelectedAccountName == null) {
@@ -242,7 +277,17 @@ public class SigninFirstRunMediator
             return;
         }
 
-        // In all other cases, the button text is "Continue as ...", so mark ToS as accepted.
+        if (mDelegate.getNativeInitializationPromise().isFulfilled()) {
+            handleContinueWithNative();
+            return;
+        }
+        mModel.set(SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER_WITH_TEXT, true);
+        mDelegate.getNativeInitializationPromise().then(ignored -> { handleContinueWithNative(); });
+    }
+
+    private void handleContinueWithNative() {
+        assert mDelegate.getNativeInitializationPromise().isFulfilled();
+
         // This is needed to get metrics/crash reports from the sign-in flow itself.
         mDelegate.acceptTermsOfService(mAllowCrashUpload);
         if (mModel.get(SigninFirstRunProperties.IS_SELECTED_ACCOUNT_SUPERVISED)) {
@@ -250,8 +295,6 @@ public class SigninFirstRunMediator
             mDelegate.advanceToNextPage();
             return;
         }
-        assert !mModel.get(SigninFirstRunProperties.SHOW_INITIAL_LOAD_PROGRESS_SPINNER)
-            : "The continue button shouldn't be visible while the load spinner is shown!";
         mDelegate.recordFreProgressHistogram(
                 TextUtils.equals(mDefaultAccountName, mSelectedAccountName)
                         ? MobileFreProgress.WELCOME_SIGNIN_WITH_DEFAULT_ACCOUNT
@@ -297,6 +340,18 @@ public class SigninFirstRunMediator
         if (isContinueOrDismissClicked()) return;
         assert !mModel.get(SigninFirstRunProperties.SHOW_INITIAL_LOAD_PROGRESS_SPINNER)
             : "The dismiss button shouldn't be visible while the load spinner is shown!";
+
+        if (mDelegate.getNativeInitializationPromise().isFulfilled()) {
+            handleDismissWithNative();
+            return;
+        }
+        mModel.set(SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER, true);
+        mDelegate.getNativeInitializationPromise().then(ignored -> { handleDismissWithNative(); });
+    }
+
+    private void handleDismissWithNative() {
+        assert mDelegate.getNativeInitializationPromise().isFulfilled();
+
         mDelegate.recordFreProgressHistogram(MobileFreProgress.WELCOME_DISMISS);
         mDelegate.acceptTermsOfService(mAllowCrashUpload);
         if (IdentityServicesProvider.get()
@@ -393,5 +448,9 @@ public class SigninFirstRunMediator
 
         // Apply spans to footer string.
         return SpanApplier.applySpans(footerString, spans.toArray(new SpanApplier.SpanInfo[0]));
+    }
+
+    private static boolean shouldUseNewInitializationFlow() {
+        return FREMobileIdentityConsistencyFieldTrial.shouldUseNewInitializationFlow();
     }
 }
