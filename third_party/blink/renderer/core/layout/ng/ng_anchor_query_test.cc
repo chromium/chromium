@@ -35,6 +35,17 @@ class NGAnchorQueryTest : public RenderingTest,
       return AnchorQuery(*element);
     return nullptr;
   }
+
+  Vector<AtomicString> ValidAnchorNames(const Element& element) const {
+    Vector<AtomicString> names;
+    if (const NGPhysicalAnchorQuery* anchor_query = AnchorQuery(element)) {
+      for (const auto& it : *anchor_query) {
+        if (!it.value->is_invalid)
+          names.push_back(it.key);
+      }
+    }
+    return names;
+  }
 };
 
 struct AnchorTestData {
@@ -163,6 +174,41 @@ TEST_F(NGAnchorQueryTest, AnchorNameRemove) {
   UpdateAllLifecyclePhasesForTest();
   anchor_query = AnchorQuery(*container);
   EXPECT_FALSE(anchor_query);
+}
+
+// https://tabatkins.github.io/specs/css-anchor-position/#determining
+TEST_F(NGAnchorQueryTest, AnchorNameValid) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="container" style="position: relative">
+      <div id="static1">
+        <div id="rel2" style="position: relative">
+          <div id="rel1" style="position: relative">
+            <div style="anchor-name: --static"></div>
+            <div style="anchor-name: --abspos; position: absolute"></div>
+          </div>
+      </div>
+    </div>
+  )HTML");
+  // For `rel1`, only `--static` is valid because "if el has the same containing
+  // block as the querying element, el is not positioned."
+  EXPECT_THAT(ValidAnchorNames(*GetElementById("rel1")),
+              testing::ElementsAre("--static"));
+  // For `rel2`, nothing is valid because "if el has a different containing
+  // block from the querying element, the last containing block in el's
+  // containing block chain before reaching the querying element's containing
+  // block is not positioned." The "last containing block" is `rel1`, which is
+  // positioned (has `position: relative`.)
+  EXPECT_THAT(ValidAnchorNames(*GetElementById("rel2")),
+              testing::ElementsAre());
+  // Same for `static1`. Its last containing block is `rel2`. It's not visible
+  // to the web though, as the `static1` can't be a containing block of
+  // positioned objects. This is to test the internal propagation mechanism.
+  EXPECT_THAT(ValidAnchorNames(*GetElementById("static1")),
+              testing::ElementsAre());
+  // For `container`, the last containing block is `static1`, which is not
+  // positioned, so all anchor names are valid.
+  EXPECT_THAT(ValidAnchorNames(*GetElementById("container")),
+              testing::ElementsAre("--abspos", "--static"));
 }
 
 TEST_F(NGAnchorQueryTest, BlockFlow) {

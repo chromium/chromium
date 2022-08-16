@@ -143,6 +143,11 @@ class CORE_EXPORT NGPhysicalFragment
   bool IsFloatingOrOutOfFlowPositioned() const {
     return IsFloating() || IsOutOfFlowPositioned();
   }
+  bool IsPositioned() const {
+    if (const LayoutObject* layout_object = GetLayoutObject())
+      return layout_object->IsPositioned();
+    return false;
+  }
   // Return true if this is the legend child of a fieldset that gets special
   // treatment (i.e. placed over the block-start border).
   bool IsRenderedLegend() const {

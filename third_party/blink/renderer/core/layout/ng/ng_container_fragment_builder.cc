@@ -50,11 +50,9 @@ void NGContainerFragmentBuilder::PropagateChildData(
         !anchor_name.IsNull()) {
       DCHECK(RuntimeEnabledFeatures::CSSAnchorPositioningEnabled());
       anchor_query_.Set(
-          anchor_name,
-          NGLogicalAnchorReference{
-              LogicalRect{child_offset + relative_offset,
-                          child.Size().ConvertToLogical(GetWritingMode())},
-              &child});
+          anchor_name, child,
+          LogicalRect{child_offset + relative_offset,
+                      child.Size().ConvertToLogical(GetWritingMode())});
     }
   }
 
@@ -405,8 +403,10 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
   }
 
   // Collect any anchor references.
-  if (const NGPhysicalAnchorQuery* anchor_query = fragment.AnchorQuery())
-    anchor_query_.SetFromPhysical(*anchor_query, converter, adjusted_offset);
+  if (const NGPhysicalAnchorQuery* anchor_query = fragment.AnchorQuery()) {
+    anchor_query_.SetFromPhysical(*anchor_query, converter, adjusted_offset,
+                                  fragment.IsPositioned());
+  }
 
   NGFragmentedOutOfFlowData* oof_data = fragment.FragmentedOutOfFlowData();
   if (!oof_data)

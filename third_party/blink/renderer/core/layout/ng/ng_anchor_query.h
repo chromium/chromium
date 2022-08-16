@@ -22,18 +22,19 @@ namespace blink {
 class NGLogicalAnchorQuery;
 class NGPhysicalFragment;
 class WritingModeConverter;
+struct NGLogicalAnchorReference;
 struct NGLogicalLink;
 
 struct CORE_EXPORT NGPhysicalAnchorReference
     : public GarbageCollected<NGPhysicalAnchorReference> {
-  NGPhysicalAnchorReference(PhysicalRect rect,
-                            const NGPhysicalFragment* fragment)
-      : rect(rect), fragment(fragment) {}
+  NGPhysicalAnchorReference(const NGLogicalAnchorReference& logical_reference,
+                            const WritingModeConverter& converter);
 
   void Trace(Visitor* visitor) const;
 
   PhysicalRect rect;
   Member<const NGPhysicalFragment> fragment;
+  bool is_invalid = false;
 };
 
 class CORE_EXPORT NGPhysicalAnchorQuery {
@@ -73,6 +74,7 @@ struct CORE_EXPORT NGLogicalAnchorReference {
  public:
   LogicalRect rect;
   const NGPhysicalFragment* fragment;
+  bool is_invalid = false;
 };
 
 class CORE_EXPORT NGLogicalAnchorQuery {
@@ -86,10 +88,13 @@ class CORE_EXPORT NGLogicalAnchorQuery {
   const LogicalRect* Rect(const AtomicString& name) const;
   const NGPhysicalFragment* Fragment(const AtomicString& name) const;
 
-  void Set(const AtomicString& name, const NGLogicalAnchorReference& reference);
+  void Set(const AtomicString& name,
+           const NGPhysicalFragment& fragment,
+           const LogicalRect& rect);
   void SetFromPhysical(const NGPhysicalAnchorQuery& physical_query,
                        const WritingModeConverter& converter,
-                       const LogicalOffset& additional_offset);
+                       const LogicalOffset& additional_offset,
+                       bool is_positioned);
   void SetAsStitched(base::span<const NGLogicalLink> children,
                      WritingDirectionMode writing_direction);
 
@@ -110,6 +115,8 @@ class CORE_EXPORT NGLogicalAnchorQuery {
 
  private:
   friend class NGPhysicalAnchorQuery;
+
+  void Set(const AtomicString& name, const NGLogicalAnchorReference& reference);
 
   HashMap<AtomicString, NGLogicalAnchorReference> anchor_references_;
 };

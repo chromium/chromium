@@ -10,11 +10,21 @@
 
 namespace blink {
 
+NGPhysicalAnchorReference::NGPhysicalAnchorReference(
+    const NGLogicalAnchorReference& logical_reference,
+    const WritingModeConverter& converter)
+    : rect(converter.ToPhysical(logical_reference.rect)),
+      fragment(logical_reference.fragment),
+      is_invalid(logical_reference.is_invalid) {}
+
 const NGPhysicalAnchorReference* NGPhysicalAnchorQuery::AnchorReference(
     const AtomicString& name) const {
   const auto& it = anchor_references_.find(name);
-  if (it != anchor_references_.end())
-    return it->value.Get();
+  if (it != anchor_references_.end()) {
+    const NGPhysicalAnchorReference& result = *it->value;
+    if (!result.is_invalid)
+      return &result;
+  }
   return nullptr;
 }
 
@@ -35,8 +45,11 @@ const NGPhysicalFragment* NGPhysicalAnchorQuery::Fragment(
 const NGLogicalAnchorReference* NGLogicalAnchorQuery::AnchorReference(
     const AtomicString& name) const {
   const auto& it = anchor_references_.find(name);
-  if (it != anchor_references_.end())
-    return &it->value;
+  if (it != anchor_references_.end()) {
+    const NGLogicalAnchorReference& result = it->value;
+    if (!result.is_invalid)
+      return &result;
+  }
   return nullptr;
 }
 
@@ -51,6 +64,13 @@ const NGPhysicalFragment* NGLogicalAnchorQuery::Fragment(
   if (const NGLogicalAnchorReference* reference = AnchorReference(name))
     return reference->fragment;
   return nullptr;
+}
+
+void NGLogicalAnchorQuery::Set(const AtomicString& name,
+                               const NGPhysicalFragment& fragment,
+                               const LogicalRect& rect) {
+  DCHECK(fragment.GetLayoutObject());
+  Set(name, NGLogicalAnchorReference{rect, &fragment, fragment.IsPositioned()});
 }
 
 void NGLogicalAnchorQuery::Set(const AtomicString& name,
@@ -77,19 +97,21 @@ void NGPhysicalAnchorQuery::SetFromLogical(
   for (const auto& it : logical_query.anchor_references_) {
     DCHECK_EQ(AnchorReference(it.key), nullptr);
     anchor_references_.Set(
-        it.key, MakeGarbageCollected<NGPhysicalAnchorReference>(
-                    converter.ToPhysical(it.value.rect), it.value.fragment));
+        it.key,
+        MakeGarbageCollected<NGPhysicalAnchorReference>(it.value, converter));
   }
 }
 
 void NGLogicalAnchorQuery::SetFromPhysical(
     const NGPhysicalAnchorQuery& physical_query,
     const WritingModeConverter& converter,
-    const LogicalOffset& additional_offset) {
+    const LogicalOffset& additional_offset,
+    bool is_positioned) {
   for (const auto& it : physical_query.anchor_references_) {
     LogicalRect rect = converter.ToLogical(it.value->rect);
     rect.offset += additional_offset;
-    Set(it.key, NGLogicalAnchorReference{rect, it.value->fragment.Get()});
+    Set(it.key, NGLogicalAnchorReference{rect, it.value->fragment.Get(),
+                                         is_positioned});
   }
 }
 
