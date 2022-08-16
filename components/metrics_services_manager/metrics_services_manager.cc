@@ -69,8 +69,8 @@ void MetricsServicesManager::LoadingStateChanged(bool is_loading) {
 }
 
 std::unique_ptr<const base::FieldTrial::EntropyProvider>
-MetricsServicesManager::CreateEntropyProviderForTesting() {
-  return client_->GetMetricsStateManager()->CreateDefaultEntropyProvider();
+MetricsServicesManager::CreateLowEntropyProviderForTesting() {
+  return client_->GetMetricsStateManager()->CreateLowEntropyProvider();
 }
 
 metrics::MetricsServiceClient*
