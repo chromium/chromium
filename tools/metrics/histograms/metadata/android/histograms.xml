@@ -63,7 +63,7 @@ chromium-metrics-reviews@google.com.
   <variant name="ContentWaived"
       summary="Waived binding excluding BindingManager bindings"/>
   <variant name="Moderate" summary="strongest binding of Moderate"/>
-  <variant name="Not Perceptible"
+  <variant name="NotPerceptible"
       summary="strongest binding of Not Perceptible"/>
   <variant name="Strong" summary="strongest binding of Strong"/>
   <variant name="Visible" summary="strongest binding of Visible"/>
