@@ -25,6 +25,8 @@ const char* TaskTypeNames::TaskTypeToString(TaskType task_type) {
       return "NetworkingUnfreezable";
     case TaskType::kNetworkingControl:
       return "NetworkingControl";
+    case TaskType::kLowPriorityScriptExecution:
+      return "LowPriorityScriptExecution";
     case TaskType::kHistoryTraversal:
       return "HistoryTraversal";
     case TaskType::kEmbed:

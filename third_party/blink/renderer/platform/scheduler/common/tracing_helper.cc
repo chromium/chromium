@@ -35,6 +35,9 @@ RendererMainThreadTaskExecution::TaskType TaskTypeToProto(TaskType task_type) {
       return RendererMainThreadTaskExecution::TASK_TYPE_NETWORKING;
     case TaskType::kNetworkingControl:
       return RendererMainThreadTaskExecution::TASK_TYPE_NETWORKING_CONTROL;
+    case TaskType::kLowPriorityScriptExecution:
+      return RendererMainThreadTaskExecution::
+          TASK_TYPE_LOW_PRIORITY_SCRIPT_EXECUTION;
     case TaskType::kHistoryTraversal:
       return RendererMainThreadTaskExecution::TASK_TYPE_HISTORY_TRAVERSAL;
     case TaskType::kEmbed:

@@ -129,6 +129,7 @@ class CORE_EXPORT ScriptRunner final : public GarbageCollected<ScriptRunner>,
   wtf_size_t pending_force_in_order_scripts_count_ = 0;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  scoped_refptr<base::SingleThreadTaskRunner> low_priority_task_runner_;
 
   DelayReasons active_delay_reasons_ = 0;
 };
@@ -151,6 +152,14 @@ class CORE_EXPORT ScriptRunnerDelayer final
   const ScriptRunner::DelayReason delay_reason_;
   bool activated_ = false;
 };
+
+// This function is exported for testing purposes only.
+void CORE_EXPORT PostTaskWithLowPriorityUntilTimeoutForTesting(
+    const base::Location& from_here,
+    base::OnceClosure task,
+    base::TimeDelta timeout,
+    scoped_refptr<base::SingleThreadTaskRunner> lower_priority_task_runner,
+    scoped_refptr<base::SingleThreadTaskRunner> normal_priority_task_runner);
 
 }  // namespace blink
 

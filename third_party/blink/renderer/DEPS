@@ -53,6 +53,7 @@ include_rules = [
     "+base/test/gmock_callback_support.h",
     "+base/test/metrics/histogram_tester.h",
     "+base/test/mock_callback.h",
+    "+base/test/null_task_runner.h",
     "+base/test/scoped_feature_list.h",
     "+base/test/test_simple_task_runner.h",
     "+base/thread_annotations.h",
