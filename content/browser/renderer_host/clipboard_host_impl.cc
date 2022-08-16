@@ -475,9 +475,7 @@ bool ClipboardHostImpl::IsUnsanitizedCustomFormatContentAllowed() {
     return false;
   }
 
-  if (render_frame_host().HasTransientUserActivation())
-    return true;
-  return false;
+  return render_frame_host().HasTransientUserActivation();
 }
 
 void ClipboardHostImpl::ReadAvailableCustomAndStandardFormats(

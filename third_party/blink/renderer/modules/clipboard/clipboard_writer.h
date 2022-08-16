@@ -53,7 +53,7 @@ class SystemClipboard;
 class ClipboardWriter : public GarbageCollected<ClipboardWriter>,
                         public FileReaderLoaderClient {
  public:
-  // For writing sanitized MIME types.
+  // For writing sanitized and custom MIME types.
   // IsValidType() must return true on types passed into `mime_type`.
   static ClipboardWriter* Create(SystemClipboard* system_clipboard,
                                  const String& mime_type,

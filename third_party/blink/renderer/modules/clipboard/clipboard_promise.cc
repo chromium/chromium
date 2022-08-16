@@ -367,11 +367,9 @@ void ClipboardPromise::ReadNextRepresentation() {
     return;
   }
 
-  String format_name =
-      clipboard_item_data_[clipboard_representation_index_].first;
-
   ClipboardReader* clipboard_reader = ClipboardReader::Create(
-      GetLocalFrame()->GetSystemClipboard(), format_name, this);
+      GetLocalFrame()->GetSystemClipboard(),
+      clipboard_item_data_[clipboard_representation_index_].first, this);
   if (!clipboard_reader) {
     OnRead(nullptr);
     return;
@@ -566,7 +564,7 @@ void ClipboardPromise::RequestPermission(
   }
 
   auto permission_descriptor = CreateClipboardPermissionDescriptor(
-      permission, false, allow_without_sanitization);
+      permission, /*allow_without_gesture=*/false, allow_without_sanitization);
   if (permission == mojom::blink::PermissionName::CLIPBOARD_WRITE &&
       !allow_without_sanitization) {
     // Check permission (but do not query the user).
@@ -578,7 +576,7 @@ void ClipboardPromise::RequestPermission(
   // Check permission, and query if necessary.
   // See crbug.com/795929 for moving this check into the Browser process.
   permission_service_->RequestPermission(std::move(permission_descriptor),
-                                         /*user_gesture*/ false,
+                                         /*user_gesture=*/false,
                                          std::move(callback));
 }
 

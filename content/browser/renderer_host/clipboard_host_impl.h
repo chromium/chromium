@@ -101,7 +101,7 @@ class CONTENT_EXPORT ClipboardHostImpl
 
   // Performs a check to see if pasting `data` is allowed by data transfer
   // policies and invokes PasteIfPolicyAllowedCallback upon completion.
-  // PerformPasteIfContentAllowed maybe be invoked immediately if the policy
+  // PerformPasteIfContentAllowed may be invoked immediately if the policy
   // controller doesn't exist.
   void PasteIfPolicyAllowed(ui::ClipboardBuffer clipboard_buffer,
                             const ui::ClipboardFormatType& data_type,

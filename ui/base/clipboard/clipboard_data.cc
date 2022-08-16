@@ -30,7 +30,7 @@ std::vector<uint8_t> ClipboardData::EncodeBitmapData(const SkBitmap& bitmap) {
   return data;
 }
 
-ClipboardData::ClipboardData() : web_smart_paste_(false), format_(0) {}
+ClipboardData::ClipboardData() = default;
 
 ClipboardData::ClipboardData(const ClipboardData& other) {
   format_ = other.format_;

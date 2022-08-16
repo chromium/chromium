@@ -143,7 +143,7 @@ class ClipboardHtmlReader final : public ClipboardReader {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     LocalFrame* frame = promise_->GetLocalFrame();
-    if (html_string.IsEmpty()) {
+    if (!frame || html_string.IsEmpty()) {
       NextRead(Vector<uint8_t>());
       return;
     }
@@ -166,6 +166,7 @@ class ClipboardHtmlReader final : public ClipboardReader {
                             WrapCrossThreadPersistent(this),
                             std::move(clipboard_task_runner_)));
   }
+
   static void EncodeOnBackgroundThread(
       String plain_text,
       ClipboardHtmlReader* reader,
@@ -317,9 +318,10 @@ ClipboardReader* ClipboardReader::Create(SystemClipboard* system_clipboard,
     return MakeGarbageCollected<ClipboardCustomFormatReader>(
         system_clipboard, promise, mime_type);
   }
-  if (mime_type == kMimeTypeImagePng) {
+
+  if (mime_type == kMimeTypeImagePng)
     return MakeGarbageCollected<ClipboardPngReader>(system_clipboard, promise);
-  }
+
   if (mime_type == kMimeTypeTextPlain)
     return MakeGarbageCollected<ClipboardTextReader>(system_clipboard, promise);
 
@@ -327,8 +329,9 @@ ClipboardReader* ClipboardReader::Create(SystemClipboard* system_clipboard,
     return MakeGarbageCollected<ClipboardHtmlReader>(system_clipboard, promise);
 
   if (mime_type == kMimeTypeImageSvg &&
-      RuntimeEnabledFeatures::ClipboardSvgEnabled())
+      RuntimeEnabledFeatures::ClipboardSvgEnabled()) {
     return MakeGarbageCollected<ClipboardSvgReader>(system_clipboard, promise);
+  }
 
   NOTREACHED()
       << "IsValidType() and Create() have inconsistent implementations.";

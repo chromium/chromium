@@ -197,9 +197,8 @@ Clipboard::ReadAvailableStandardAndCustomFormatNames(
       ExtractCustomPlatformNames(buffer, data_dst);
   for (const auto& items : custom_format_names)
     format_names.push_back(base::ASCIIToUTF16(items.first));
-  for (const auto& item : GetStandardFormats(buffer, data_dst)) {
+  for (const auto& item : GetStandardFormats(buffer, data_dst))
     format_names.push_back(item);
-  }
   return format_names;
 }
 

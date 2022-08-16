@@ -143,24 +143,20 @@ class ClipboardHtmlWriter final : public ClipboardWriter {
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+    LocalFrame* local_frame = promise_->GetLocalFrame();
     auto* execution_context = promise_->GetExecutionContext();
-    if (!execution_context)
+    if (!local_frame || !execution_context)
       return;
     execution_context->CountUse(WebFeature::kHtmlClipboardApiWrite);
 
+    // Sanitizing on the main thread because HTML DOM nodes can only be used
+    // on the main thread.
     String html_string =
         String::FromUTF8(reinterpret_cast<const LChar*>(html_data->Data()),
                          html_data->ByteLength());
-
-    // Sanitizing on the main thread because HTML DOM nodes can only be used
-    // on the main thread.
     KURL url;
     unsigned fragment_start = 0;
     unsigned fragment_end = html_string.length();
-
-    LocalFrame* local_frame = promise_->GetLocalFrame();
-    if (!local_frame)
-      return;
     Document* document = local_frame->GetDocument();
     String sanitized_html = CreateSanitizedMarkupWithContext(
         *document, html_string, fragment_start, fragment_end, url, kIncludeNode,
@@ -271,10 +267,12 @@ ClipboardWriter* ClipboardWriter::Create(SystemClipboard* system_clipboard,
     return MakeGarbageCollected<ClipboardCustomFormatWriter>(
         system_clipboard, promise, web_custom_format);
   }
+
   if (mime_type == kMimeTypeImagePng) {
     return MakeGarbageCollected<ClipboardImageWriter>(system_clipboard,
                                                       promise);
   }
+
   if (mime_type == kMimeTypeTextPlain)
     return MakeGarbageCollected<ClipboardTextWriter>(system_clipboard, promise);
 
@@ -282,8 +280,9 @@ ClipboardWriter* ClipboardWriter::Create(SystemClipboard* system_clipboard,
     return MakeGarbageCollected<ClipboardHtmlWriter>(system_clipboard, promise);
 
   if (mime_type == kMimeTypeImageSvg &&
-      RuntimeEnabledFeatures::ClipboardSvgEnabled())
+      RuntimeEnabledFeatures::ClipboardSvgEnabled()) {
     return MakeGarbageCollected<ClipboardSvgWriter>(system_clipboard, promise);
+  }
 
   NOTREACHED()
       << "IsValidType() and Create() have inconsistent implementations.";

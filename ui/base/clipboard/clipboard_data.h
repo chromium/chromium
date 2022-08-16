@@ -198,7 +198,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardData {
   std::string custom_data_data_;
 
   // WebKit smart paste data.
-  bool web_smart_paste_;
+  bool web_smart_paste_ = false;
 
   // Svg data.
   std::string svg_data_;
@@ -206,7 +206,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardData {
   // text/uri-list filenames data.
   std::vector<ui::FileInfo> filenames_;
 
-  int format_;
+  int format_ = 0;
 
   // The source of the data.
   std::unique_ptr<DataTransferEndpoint> src_;
