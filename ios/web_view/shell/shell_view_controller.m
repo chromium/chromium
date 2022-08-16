@@ -25,6 +25,7 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
 
 @interface ShellViewController () <CWVAutofillDataManagerObserver,
                                    CWVDownloadTaskDelegate,
+                                   CWVLeakCheckServiceObserver,
                                    CWVNavigationDelegate,
                                    CWVUIDelegate,
                                    CWVScriptCommandHandler,
@@ -65,6 +66,11 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
 // The newly opened popup windows e.g., by JavaScript function "window.open()",
 // HTML "<a target='_blank'>".
 @property(nonatomic, strong) NSMutableArray<CWVWebView*>* popupWebViews;
+// A list of active leak checks. These map to a list of passwords since
+// you can have multiple passwords that map to the same canonical leak check.
+@property(nonatomic, strong)
+    NSMutableDictionary<CWVLeakCheckCredential*, NSMutableArray<CWVPassword*>*>*
+        pendingLeakChecks;
 
 - (void)back;
 - (void)forward;
@@ -94,6 +100,7 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
 @synthesize authService = _authService;
 @synthesize trustedVaultProvider = _trustedVaultProvider;
 @synthesize popupWebViews = _popupWebViews;
+@synthesize pendingLeakChecks = _pendingLeakChecks;
 
 - (void)viewDidLoad {
   [super viewDidLoad];
@@ -274,10 +281,13 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
       [[ShellTrustedVaultProvider alloc] initWithAuthService:_authService];
   CWVSyncController.trustedVaultProvider = _trustedVaultProvider;
 
+  _pendingLeakChecks = [NSMutableDictionary dictionary];
+
   CWVWebViewConfiguration* configuration =
       [CWVWebViewConfiguration defaultConfiguration];
   [configuration.autofillDataManager addObserver:self];
   configuration.syncController.delegate = self;
+  [configuration.leakCheckService addObserver:self];
   self.webView = [self createWebViewWithConfiguration:configuration];
 }
 
@@ -681,6 +691,12 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
                                          [weakSelf showPasswordData];
                                        }]];
   [alertController
+      addAction:[UIAlertAction actionWithTitle:@"Check leaked passwords"
+                                         style:UIAlertActionStyleDefault
+                                       handler:^(UIAlertAction* action) {
+                                         [weakSelf checkLeakedPasswords];
+                                       }]];
+  [alertController
       addAction:[UIAlertAction actionWithTitle:@"Cancel"
                                          style:UIAlertActionStyleCancel
                                        handler:nil]];
@@ -851,6 +867,35 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
                                          style:UIAlertActionStyleCancel
                                        handler:nil]];
   [self presentViewController:alertController animated:YES completion:nil];
+}
+
+- (void)checkLeakedPasswords {
+  CWVAutofillDataManager* dataManager =
+      _webView.configuration.autofillDataManager;
+
+  // Request a check for any password in autofill data manager that is not
+  // currently being requested.
+  [dataManager fetchPasswordsWithCompletionHandler:^(
+                   NSArray<CWVPassword*>* _Nonnull passwords) {
+    NSMutableArray<CWVLeakCheckCredential*>* credentialsToCheck =
+        [NSMutableArray array];
+    for (CWVPassword* password in passwords) {
+      CWVLeakCheckCredential* credential = [CWVLeakCheckCredential
+          canonicalLeakCheckCredentialWithPassword:password];
+      NSMutableArray<CWVPassword*>* passwordsForCredential =
+          self.pendingLeakChecks[credential];
+      if (!passwordsForCredential) {
+        passwordsForCredential = [NSMutableArray array];
+        self.pendingLeakChecks[credential] = passwordsForCredential;
+        [credentialsToCheck addObject:credential];
+      }
+      [passwordsForCredential addObject:password];
+    }
+
+    NSLog(@"Checking leaks for %@ credentials.", @(credentialsToCheck.count));
+    [self.webView.configuration.leakCheckService
+        checkCredentials:credentialsToCheck];
+  }];
 }
 
 - (void)showEvaluateJavaScriptUI {
@@ -1435,6 +1480,39 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
 
 - (void)syncControllerDidUpdateState:(CWVSyncController*)syncController {
   NSLog(@"%@", NSStringFromSelector(_cmd));
+}
+
+#pragma mark CWVLeakCheckServiceObserver
+
+- (void)leakCheckServiceDidChangeState:(CWVLeakCheckService*)leakCheckService {
+  NSLog(@"%@:%d", NSStringFromSelector(_cmd), (int)leakCheckService.state);
+  if (leakCheckService.state != CWVLeakCheckServiceStateRunning) {
+    [self.pendingLeakChecks removeAllObjects];
+  }
+}
+
+- (void)leakCheckService:(CWVLeakCheckService*)leakCheckService
+      didCheckCredential:(CWVLeakCheckCredential*)credential
+                isLeaked:(BOOL)isLeaked {
+  NSMutableArray<CWVPassword*>* passwordsForCredential =
+      [self.pendingLeakChecks objectForKey:credential];
+  if (!passwordsForCredential) {
+    NSLog(@"No passwords for CWVLeakCheckCredential!");
+    return;
+  }
+
+  [self.pendingLeakChecks removeObjectForKey:credential];
+
+  NSMutableArray<NSString*>* passwordDescriptions = [passwordsForCredential
+      valueForKey:NSStringFromSelector(@selector(debugDescription))];
+  NSString* passwordsDescription =
+      [passwordDescriptions componentsJoinedByString:@"\n\n"];
+  NSString* message = [NSString
+      stringWithFormat:@"Leak check returned %@ for %@ passwords:\n%@",
+                       isLeaked ? @"LEAKED" : @"OK",
+                       @(passwordsForCredential.count), passwordsDescription];
+  NSLog(@"%@", message);
+  NSLog(@"%@ Leak checks remaining...", @(self.pendingLeakChecks.count));
 }
 
 #pragma mark UIScrollViewDelegate

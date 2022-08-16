@@ -42,6 +42,7 @@
 #include "ios/web_view/internal/language/web_view_language_model_manager_factory.h"
 #include "ios/web_view/internal/language/web_view_url_language_histogram_factory.h"
 #include "ios/web_view/internal/passwords/web_view_account_password_store_factory.h"
+#import "ios/web_view/internal/passwords/web_view_bulk_leak_check_service_factory.h"
 #import "ios/web_view/internal/passwords/web_view_password_manager_log_router_factory.h"
 #import "ios/web_view/internal/passwords/web_view_password_requirements_service_factory.h"
 #include "ios/web_view/internal/passwords/web_view_password_store_factory.h"
@@ -203,6 +204,7 @@ void WebViewBrowserState::RegisterPrefs(
   WebViewProfileInvalidationProviderFactory::GetInstance();
   WebViewSyncServiceFactory::GetInstance();
   WebViewModelTypeStoreServiceFactory::GetInstance();
+  WebViewBulkLeakCheckServiceFactory::GetInstance();
 
   BrowserStateDependencyManager::GetInstance()
       ->RegisterBrowserStatePrefsForServices(pref_registry);

@@ -69,4 +69,7 @@
 // Supports -[CWVWebView evaluateJavaScript:completion:].
 #define IOS_WEB_VIEW_SUPPORTS_MODERN_JS_EVALUATION 1
 
+// Supports -[CWVWebViewConfiguration leakCheckService].
+#define IOS_WEB_VIEW_SUPPORTS_LEAK_CHECK_SERVICE 1
+
 #endif  // IOS_WEB_VIEW_PUBLIC_CWV_DEFINES_H_

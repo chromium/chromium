@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class CWVAutofillDataManager;
 @class CWVPreferences;
+@class CWVLeakCheckService;
 @class CWVSyncController;
 @class CWVUserContentController;
 @class CWVWebsiteDataStore;
@@ -51,6 +52,10 @@ CWV_EXPORT
 // nil if -[CWVWebViewConfiguration isPersistent] is NO.
 @property(nonatomic, readonly, nullable)
     CWVAutofillDataManager* autofillDataManager;
+
+// This web view configuration's leak check service.
+// nil if -[CWVWebViewConfiguration isPersistent] is NO.
+@property(nonatomic, readonly, nullable) CWVLeakCheckService* leakCheckService;
 
 // YES if this is a configuration with a persistent data store which stores all
 // data on disk, for example cookies.
