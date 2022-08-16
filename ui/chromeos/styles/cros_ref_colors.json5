@@ -16,6 +16,10 @@
     ColorMappings: {
       set_name: 'CrosRef',
     },
+    proto: {
+      field_name: 'palette_colors',
+      field_id: 1,
+    },
   },
   colors: {
     primary0: '#000000',

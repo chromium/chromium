@@ -185,6 +185,13 @@ class ProtoStyleGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
         self.assertEqualToFile(self.generator.Render(),
                                self.expected_output_file)
 
+    def testTokenStyleNames(self):
+        self.generator = ProtoStyleGenerator()
+        self.AddJSONFilesToModel(
+            ['colors_ref_tokens_test.json5', 'colors_sys_tokens_test.json5'])
+        expected_file_name = 'colors_tokens_test_expected.proto'
+        self.assertEqualToFile(self.generator.Render(), expected_file_name)
+
 
 class ProtoJSONStyleGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
     def setUp(self):
@@ -202,6 +209,13 @@ class ProtoJSONStyleGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
     def testColorTestJSON(self):
         self.assertEqualToFile(self.generator.Render(),
                                self.expected_output_file)
+
+    def testTokenStyleNames(self):
+        self.generator = ProtoJSONStyleGenerator()
+        self.AddJSONFilesToModel(
+            ['colors_ref_tokens_test.json5', 'colors_sys_tokens_test.json5'])
+        expected_file_name = 'colors_tokens_test_expected.protojson'
+        self.assertEqualToFile(self.generator.Render(), expected_file_name)
 
 
 class JSONStyleGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):

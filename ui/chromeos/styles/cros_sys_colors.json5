@@ -13,6 +13,10 @@
     ColorMappings: {
       set_name: 'CrosSys',
     },
+    proto: {
+      field_name: 'palette_colors',
+      field_id: 1,
+    },
   },
   colors: {
     /* Primary */
