@@ -153,9 +153,11 @@
     [self scheduleBackgroundRefresh];
   }
   task.expirationHandler = ^{
-    // This is expected to crash if FeedService is not available.
-    [self feedService]->HandleBackgroundRefreshTaskExpiration();
-    [self maybeNotifyRefreshSuccess:NO];
+    dispatch_async(dispatch_get_main_queue(), ^{
+      // This is expected to crash if FeedService is not available.
+      [self feedService]->HandleBackgroundRefreshTaskExpiration();
+      [self maybeNotifyRefreshSuccess:NO];
+    });
   };
   // This is expected to crash if FeedService is not available.
   [self feedService]->PerformBackgroundRefreshes(^(BOOL success) {
