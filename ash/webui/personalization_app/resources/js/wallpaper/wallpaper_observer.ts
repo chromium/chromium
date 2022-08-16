@@ -5,7 +5,7 @@
 import {CurrentWallpaper, WallpaperObserverInterface, WallpaperObserverReceiver, WallpaperProviderInterface, WallpaperType} from '../personalization_app.mojom-webui.js';
 import {PersonalizationStore} from '../personalization_store.js';
 
-import {setSelectedImageAction, setUpdatedDailyRefreshImageAction} from './wallpaper_actions.js';
+import {setFullscreenEnabledAction, setSelectedImageAction, setUpdatedDailyRefreshImageAction} from './wallpaper_actions.js';
 import {getDailyRefreshState} from './wallpaper_controller.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
 
@@ -48,6 +48,11 @@ export class WallpaperObserver implements WallpaperObserverInterface {
 
   private receiver_: WallpaperObserverReceiver =
       initWallpaperObserver(getWallpaperProvider(), this);
+
+  onWallpaperPreviewEnded() {
+    const store = PersonalizationStore.getInstance();
+    store.dispatch(setFullscreenEnabledAction(false));
+  }
 
   onWallpaperChanged(currentWallpaper: CurrentWallpaper|null) {
     // Ignore updates while in fullscreen preview mode. The attribution

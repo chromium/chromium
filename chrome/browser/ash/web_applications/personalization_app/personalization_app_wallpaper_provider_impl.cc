@@ -437,7 +437,11 @@ void PersonalizationAppWallpaperProviderImpl::OnWallpaperChanged() {
 }
 
 void PersonalizationAppWallpaperProviderImpl::OnWallpaperPreviewEnded() {
-  PersonalizationAppWallpaperProviderImpl::OnWallpaperChanged();
+  DCHECK(wallpaper_observer_remote_.is_bound());
+  wallpaper_observer_remote_->OnWallpaperPreviewEnded();
+  // Make sure to fire another |OnWallpaperChanged| after preview is over so
+  // that personalization app ends up with correct wallpaper state.
+  OnWallpaperChanged();
 }
 
 void PersonalizationAppWallpaperProviderImpl::SelectWallpaper(

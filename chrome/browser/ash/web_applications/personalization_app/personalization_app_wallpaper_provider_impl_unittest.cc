@@ -187,6 +187,9 @@ std::unique_ptr<KeyedService> MakeMockPersonalizationAppManager(
 class TestWallpaperObserver
     : public ash::personalization_app::mojom::WallpaperObserver {
  public:
+  // WallpaperObserver:
+  void OnWallpaperPreviewEnded() override {}
+
   void OnWallpaperChanged(
       ash::personalization_app::mojom::CurrentWallpaperPtr image) override {
     current_wallpaper_ = std::move(image);

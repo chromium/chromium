@@ -13,7 +13,7 @@ import '../../common/icons.html.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
-import {CurrentWallpaper, WallpaperLayout, WallpaperProviderInterface} from '../personalization_app.mojom-webui.js';
+import {CurrentWallpaper, WallpaperLayout} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
 import {DisplayableImage} from './constants.js';
@@ -68,14 +68,20 @@ export class WallpaperFullscreen extends WithPersonalizationStore {
   private pendingSelected_: DisplayableImage|null = null;
   private selectedLayout_: WallpaperLayout|null = null;
 
-  private wallpaperProvider_: WallpaperProviderInterface;
+  private onVisibilityChange_ = () => {
+    if (document.visibilityState === 'hidden' && this.visible_) {
+      // Cancel preview immediately instead of waiting for fullscreenchange
+      // event.
+      cancelPreviewWallpaper(getWallpaperProvider());
+    }
+  };
 
-  constructor() {
-    super();
-    this.wallpaperProvider_ = getWallpaperProvider();
-  }
+  private onPopState_ = () => {
+    if (this.visible_) {
+      cancelPreviewWallpaper(getWallpaperProvider());
+    }
+  };
 
-  /** Add override when tsc is updated to 4.3+. */
   override connectedCallback() {
     super.connectedCallback();
     this.$.container.addEventListener(
@@ -95,15 +101,14 @@ export class WallpaperFullscreen extends WithPersonalizationStore {
 
     // Visibility change will fire in case of alt+tab, closing the window, or
     // anything else that exits out of full screen mode.
-    window.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'hidden' &&
-          !!this.getFullscreenElement()) {
-        this.exitFullscreen();
-        // Cancel preview immediately instead of waiting for fullscreenchange
-        // event.
-        cancelPreviewWallpaper(this.wallpaperProvider_);
-      }
-    });
+    window.addEventListener('visibilitychange', this.onVisibilityChange_);
+    window.addEventListener('popstate', this.onPopState_);
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    window.removeEventListener('visibilitychange', this.onVisibilityChange_);
+    window.removeEventListener('popstate', this.onPopState_);
   }
 
   /** Wrapper function to mock out for testing. */
@@ -136,7 +141,7 @@ export class WallpaperFullscreen extends WithPersonalizationStore {
       // case, the preview mode may be still on so we have to call cancel
       // preview. This call is no-op when the user clicks on set as wallpaper
       // button.
-      cancelPreviewWallpaper(this.wallpaperProvider_);
+      cancelPreviewWallpaper(getWallpaperProvider());
       this.dispatch(setFullscreenEnabledAction(/*enabled=*/ false));
       document.body.classList.remove(fullscreenClass);
     } else {
@@ -146,14 +151,14 @@ export class WallpaperFullscreen extends WithPersonalizationStore {
 
   private async onClickExit_() {
     await this.exitFullscreen();
-    await cancelPreviewWallpaper(this.wallpaperProvider_);
+    await cancelPreviewWallpaper(getWallpaperProvider());
   }
 
   private async onClickConfirm_() {
     // Begin to exit fullscreen mode before confirming preview wallpaper. This
     // makes local images and online images execute updates in the same order.
     await this.exitFullscreen();
-    await confirmPreviewWallpaper(this.wallpaperProvider_);
+    await confirmPreviewWallpaper(getWallpaperProvider());
   }
 
   private async onClickLayout_(event: MouseEvent) {
@@ -164,8 +169,7 @@ export class WallpaperFullscreen extends WithPersonalizationStore {
     const layout = getWallpaperLayoutEnum(
         (event.currentTarget as HTMLButtonElement).dataset['layout']!);
     await selectWallpaper(
-        this.pendingSelected_, this.wallpaperProvider_, this.getStore(),
-        layout);
+        this.pendingSelected_, getWallpaperProvider(), this.getStore(), layout);
     this.selectedLayout_ = layout;
   }
 

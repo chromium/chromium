@@ -187,6 +187,9 @@ struct CurrentWallpaper {
 
 // Receives updated wallpaper information whenever it is changed.
 interface WallpaperObserver {
+  // Triggered by |WallpaperControllerObserver::OnWallpaperPreviewEnded|.
+  OnWallpaperPreviewEnded();
+
   // Triggered by |WallpaperControllerObserver::OnWallpaperChanged|. Retrieves
   // updated wallpaper information and calls the observer. |image| will be null
   // if there is an error retrieving wallpaper information.
