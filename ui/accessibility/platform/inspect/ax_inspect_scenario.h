@@ -10,6 +10,7 @@
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_export.h"
+#include "ui/accessibility/platform/inspect/ax_inspect.h"
 
 namespace base {
 class FilePath;
@@ -17,8 +18,6 @@ class FilePath;
 
 namespace ui {
 
-struct AXPropertyFilter;
-struct AXNodeFilter;
 class AXScriptInstruction;
 
 // Describes the test execution flow, which is parsed from a sequence

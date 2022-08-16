@@ -70,6 +70,11 @@ ToVectorAudioInputDeviceCapabilitiesPtr(
 
 }  // namespace
 
+struct MediaDevicesDispatcherHost::AudioInputCapabilitiesRequest {
+  MediaDeviceSaltAndOrigin salt_and_origin;
+  GetAudioInputCapabilitiesCallback client_callback;
+};
+
 // static
 void MediaDevicesDispatcherHost::Create(
     int render_process_id,
@@ -449,11 +454,6 @@ void MediaDevicesDispatcherHost::GetVideoInputDeviceFormatsWithRawId(
       .Run(media_stream_manager_->media_devices_manager()->GetVideoInputFormats(
           *raw_id, try_in_use_first));
 }
-
-struct MediaDevicesDispatcherHost::AudioInputCapabilitiesRequest {
-  MediaDeviceSaltAndOrigin salt_and_origin;
-  GetAudioInputCapabilitiesCallback client_callback;
-};
 
 void MediaDevicesDispatcherHost::GetDefaultAudioInputDeviceID(
     GetAudioInputCapabilitiesCallback client_callback,

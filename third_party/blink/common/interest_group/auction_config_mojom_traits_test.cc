@@ -19,6 +19,8 @@
 
 namespace blink {
 
+bool operator==(const AuctionConfig& a, const AuctionConfig& b);
+
 bool operator==(const AuctionConfig::NonSharedParams& a,
                 const AuctionConfig::NonSharedParams& b) {
   return std::tie(a.interest_group_buyers, a.auction_signals, a.seller_signals,

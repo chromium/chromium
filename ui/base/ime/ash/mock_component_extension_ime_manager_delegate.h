@@ -8,6 +8,7 @@
 #include <set>
 
 #include "base/component_export.h"
+#include "ui/base/ime/ash/component_extension_ime_manager.h"
 #include "ui/base/ime/ash/component_extension_ime_manager_delegate.h"
 
 namespace ash {

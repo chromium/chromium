@@ -17,6 +17,7 @@
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
+#include "media/gpu/test/video_frame_helpers.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
@@ -24,7 +25,6 @@ namespace test {
 
 class FrameRendererDummy;
 class Video;
-class VideoFrameProcessor;
 class DecoderWrapper;
 struct DecoderWrapperConfig;
 
