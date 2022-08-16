@@ -123,7 +123,7 @@ class ReportingClient::Uploader : public UploaderInterface {
     void Completed(Status final_status);
 
    private:
-    bool completed_{false};
+    bool completed_ GUARDED_BY_CONTEXT(sequence_checker_){false};
     const bool need_encryption_key_;
     std::vector<EncryptedRecord> encrypted_records_;
     ScopedReservation encrypted_records_reservation_;
