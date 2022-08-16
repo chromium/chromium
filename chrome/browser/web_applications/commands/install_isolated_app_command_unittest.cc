@@ -62,7 +62,7 @@ using ::testing::UnorderedElementsAre;
 
 blink::mojom::ManifestPtr CreateDefaultManifest() {
   auto manifest = blink::mojom::Manifest::New();
-  manifest->id = u"some default test manifest id";
+  manifest->id = u"/";
   manifest->start_url = GURL{"http://default-test.com/"},
   manifest->scope = GURL{"/scope"},
   manifest->display = DisplayMode::kStandalone;
@@ -341,15 +341,25 @@ TEST_F(InstallIsolatedAppCommandManifestTest,
               Not(IsInstallationOk()));
 }
 
-TEST_F(InstallIsolatedAppCommandManifestTest, PassesManifestIdToFinalizer) {
+TEST_F(InstallIsolatedAppCommandManifestTest,
+       PassesManifestIdToFinalizerWhenManifestIdIsSlash) {
   blink::mojom::ManifestPtr manifest = CreateDefaultManifest();
-  manifest->id = u"test manifest id";
+  manifest->id = u"/";
 
   EXPECT_THAT(ExecuteCommandWithManifest(manifest.Clone()), IsInstallationOk());
 
   EXPECT_THAT(install_finalizer().web_app_info(),
               Pointee(Field(&WebAppInstallInfo::manifest_id,
-                            Optional(std::string{"test manifest id"}))));
+                            Optional(std::string{"/"}))));
+}
+
+TEST_F(InstallIsolatedAppCommandManifestTest, FailsWhenManifestIdIsNotSlash) {
+  blink::mojom::ManifestPtr manifest = CreateDefaultManifest();
+  manifest->id = u"test-manifest-id";
+
+  EXPECT_THAT(ExecuteCommandWithManifest(manifest.Clone()),
+              Not(IsInstallationOk()));
+  EXPECT_THAT(install_finalizer().web_app_info(), IsNull());
 }
 
 TEST_F(InstallIsolatedAppCommandManifestTest, PassesManifestNameAsTitle) {
@@ -493,6 +503,19 @@ TEST_F(InstallIsolatedAppCommandMetricsTest, ReportFailureWhenManifestIsNull) {
                              std::move(fake_data_retriever)),
               Not(IsInstallationOk()));
 
+  EXPECT_THAT(histogram_tester.GetAllSamples("WebApp.Install.Result"),
+              BucketsAre(base::Bucket(false, 1)));
+}
+
+TEST_F(InstallIsolatedAppCommandMetricsTest,
+       ReportFailureWhenManifestIdIsNotSlash) {
+  blink::mojom::ManifestPtr manifest = CreateDefaultManifest();
+  manifest->id = u"test manifest id";
+
+  base::HistogramTester histogram_tester;
+
+  EXPECT_THAT(ExecuteCommandWithManifest(manifest.Clone()),
+              Not(IsInstallationOk()));
   EXPECT_THAT(histogram_tester.GetAllSamples("WebApp.Install.Result"),
               BucketsAre(base::Bucket(false, 1)));
 }

@@ -148,12 +148,16 @@ InstallIsolatedAppCommand::CreateInstallInfoFromManifest(
 
   // In other installations the best-effort encoding is fine, but for isolated
   // apps we have the opportunity to report this error.
-  if (absl::optional<std::string> encoded_id = UTF16ToUTF8(*manifest.id);
-      encoded_id.has_value()) {
-    info.manifest_id = *encoded_id;
-  } else {
+  absl::optional<std::string> encoded_id = UTF16ToUTF8(*manifest.id);
+  if (!encoded_id.has_value()) {
     return absl::nullopt;
   }
+
+  if (*encoded_id != "/") {
+    return absl::nullopt;
+  }
+
+  info.manifest_id = *encoded_id;
 
   return info;
 }
