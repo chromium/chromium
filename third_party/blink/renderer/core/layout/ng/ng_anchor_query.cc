@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_anchor_query.h"
 
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_logical_link.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_fragment.h"
 
 namespace blink {
@@ -90,6 +91,69 @@ void NGLogicalAnchorQuery::SetFromPhysical(
     rect.offset += additional_offset;
     Set(it.key, NGLogicalAnchorReference{rect, it.value->fragment.Get()});
   }
+}
+
+void NGLogicalAnchorQuery::SetAsStitched(
+    base::span<const NGLogicalLink> children,
+    WritingDirectionMode writing_direction) {
+  // This struct is a variation of |NGAnchorReference|, using the stitched
+  // coordinate system for the block-fragmented out-of-flow positioned objects.
+  struct NGStitchedAnchorReference {
+    STACK_ALLOCATED();
+
+   public:
+    LogicalRect StitchedRect() const {
+      LogicalRect stitched_rect = reference.rect;
+      stitched_rect.offset.block_offset += first_container_stitched_offset;
+      return stitched_rect;
+    }
+
+    NGLogicalAnchorReference StitchedAnchorReference() const {
+      return {StitchedRect(), reference.fragment};
+    }
+
+    void Unite(const LogicalRect& rect, const LogicalOffset& container_offset) {
+      // To unite fragments in the physical coordinate system as defined in the
+      // spec while keeping the |reference.rect| relative to the first
+      // container, make the |container_offset| relative to the first container.
+      const LogicalRect rect_in_first_container =
+          rect + (container_offset - first_container_offset);
+      reference.rect.Unite(rect_in_first_container);
+    }
+
+    // The |reference| is relative to the first container, so that it can a)
+    // unite following fragments in the physical coordinate system, and b)
+    // compute the result in the stitched coordinate system.
+    NGLogicalAnchorReference reference;
+    LogicalOffset first_container_offset;
+    LayoutUnit first_container_stitched_offset;
+  };
+  HashMap<AtomicString, NGStitchedAnchorReference> anchors;
+  LayoutUnit stitched_offset;
+  for (const NGLogicalLink& child : children) {
+    if (const NGPhysicalAnchorQuery* child_anchor_query =
+            child->AnchorQuery()) {
+      DCHECK_EQ(child->Style().GetWritingDirection(), writing_direction);
+      const WritingModeConverter converter(writing_direction, child->Size());
+      for (const auto& it : *child_anchor_query) {
+        const LogicalRect rect = converter.ToLogical(it.value->rect);
+        const auto result = anchors.insert(
+            it.key,
+            NGStitchedAnchorReference{
+                {rect, it.value->fragment}, child.offset, stitched_offset});
+        if (!result.is_new_entry)
+          result.stored_value->value.Unite(rect, child.offset);
+      }
+    }
+    stitched_offset += child->Size()
+                           .ConvertToLogical(writing_direction.GetWritingMode())
+                           .block_size;
+  }
+
+  // Convert the united anchor references to the stitched coordinate system.
+  DCHECK(IsEmpty());
+  for (const auto& it : anchors)
+    Set(it.key, it.value.StitchedAnchorReference());
 }
 
 absl::optional<LayoutUnit> NGLogicalAnchorQuery::EvaluateAnchor(

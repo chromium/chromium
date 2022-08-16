@@ -1098,6 +1098,11 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
                         container_builder_->BorderScrollbarPadding())
           .block_size;
 
+  NGLogicalAnchorQuery stitched_anchor_query;
+  stitched_anchor_query.SetAsStitched(
+      container_builder_->Children(),
+      container_builder_->GetWritingDirection());
+
   HeapVector<HeapVector<NodeToLayout>> descendants_to_layout;
   ClearCollectionScope<HeapVector<HeapVector<NodeToLayout>>>
       descendants_to_layout_scope(&descendants_to_layout);
@@ -1123,7 +1128,9 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
       }
       NodeInfo node_info = SetupNodeInfo(descendant);
       NodeToLayout node_to_layout = {
-          node_info, CalculateOffset(node_info, /* only_layout */ nullptr)};
+          node_info,
+          CalculateOffset(node_info, /* only_layout */ nullptr,
+                          /* is_first_run */ true, &stitched_anchor_query)};
       node_to_layout.containing_block_fragment =
           descendant.containing_block.Fragment();
       node_to_layout.offset_info.original_offset =
@@ -1371,7 +1378,8 @@ const NGLayoutResult* NGOutOfFlowLayoutPart::LayoutOOFNode(
 NGOutOfFlowLayoutPart::OffsetInfo NGOutOfFlowLayoutPart::CalculateOffset(
     const NodeInfo& node_info,
     const LayoutBox* only_layout,
-    bool is_first_run) {
+    bool is_first_run,
+    const NGLogicalAnchorQuery* stitched_anchor_query) {
   const ComputedStyle* style = &node_info.node.Style();
 
   // If `@position-fallback` exists, let |TryCalculateOffset| check if the
@@ -1395,8 +1403,8 @@ NGOutOfFlowLayoutPart::OffsetInfo NGOutOfFlowLayoutPart::CalculateOffset(
     const bool test_if_margin_box_fits = next_fallback_style;
     OffsetInfo offset_info;
     if (TryCalculateOffset(node_info, *style, only_layout,
-                           test_if_margin_box_fits, is_first_run,
-                           &offset_info)) {
+                           stitched_anchor_query, test_if_margin_box_fits,
+                           is_first_run, &offset_info)) {
       return offset_info;
     }
 
@@ -1412,6 +1420,7 @@ bool NGOutOfFlowLayoutPart::TryCalculateOffset(
     const NodeInfo& node_info,
     const ComputedStyle& candidate_style,
     const LayoutBox* only_layout,
+    const NGLogicalAnchorQuery* stitched_anchor_query,
     bool test_if_margin_box_fits,
     bool is_first_run,
     OffsetInfo* const offset_info) {
@@ -1444,15 +1453,29 @@ bool NGOutOfFlowLayoutPart::TryCalculateOffset(
     }
   }
 
+  absl::optional<NGAnchorEvaluatorImpl> anchor_evaluator_storage;
   const WritingModeConverter container_converter(
       container_writing_direction, node_info.container_physical_content_size);
-  NGAnchorEvaluatorImpl anchor_evaluator(
-      container_builder_->AnchorQuery(), container_converter,
-      container_converter.ToPhysical(node_info.container_info.rect).offset,
-      candidate_writing_direction.GetWritingMode());
+  if (stitched_anchor_query) {
+    // When the containing block is block-fragmented, the |container_builder_|
+    // is the fragmentainer, not the containing block, and the coordinate system
+    // is stitched. Use the given |anchor_query|.
+    anchor_evaluator_storage.emplace(
+        *stitched_anchor_query, container_converter,
+        container_converter.ToPhysical(node_info.container_info.rect).offset,
+        candidate_writing_direction.GetWritingMode());
+  } else {
+    // Otherwise the |container_builder_| is the containing block.
+    anchor_evaluator_storage.emplace(
+        container_builder_->AnchorQuery(), container_converter,
+        container_converter.ToPhysical(node_info.container_info.rect).offset,
+        candidate_writing_direction.GetWritingMode());
+  }
+  NGAnchorEvaluatorImpl* anchor_evaluator = &*anchor_evaluator_storage;
+
   const NGLogicalOutOfFlowInsets insets = ComputeOutOfFlowInsets(
       candidate_style, node_info.constraint_space.AvailableSize(),
-      &anchor_evaluator);
+      anchor_evaluator);
 
   const LogicalSize computed_available_size =
       ComputeOutOfFlowAvailableSize(node_info.node, node_info.constraint_space,
@@ -1466,7 +1489,7 @@ bool NGOutOfFlowLayoutPart::TryCalculateOffset(
   if (node_info.node.IsReplaced()) {
     replaced_size = ComputeReplacedSize(
         node_info.node, node_info.constraint_space, border_padding,
-        computed_available_size, ReplacedSizeMode::kNormal, &anchor_evaluator);
+        computed_available_size, ReplacedSizeMode::kNormal, anchor_evaluator);
   }
 
   NGLogicalOutOfFlowDimensions& node_dimensions = offset_info->node_dimensions;
@@ -1474,7 +1497,7 @@ bool NGOutOfFlowLayoutPart::TryCalculateOffset(
       ComputeOutOfFlowInlineDimensions(
           node_info.node, candidate_style, node_info.constraint_space, insets,
           border_padding, node_info.static_position, computed_available_size,
-          replaced_size, container_writing_direction, &anchor_evaluator,
+          replaced_size, container_writing_direction, anchor_evaluator,
           &node_dimensions);
 
   // Check if the inline dimension fits.
@@ -1496,7 +1519,7 @@ bool NGOutOfFlowLayoutPart::TryCalculateOffset(
     offset_info->initial_layout_result = ComputeOutOfFlowBlockDimensions(
         node_info.node, candidate_style, node_info.constraint_space, insets,
         border_padding, node_info.static_position, computed_available_size,
-        replaced_size, container_writing_direction, &anchor_evaluator,
+        replaced_size, container_writing_direction, anchor_evaluator,
         &node_dimensions);
   }
 
@@ -1510,7 +1533,7 @@ bool NGOutOfFlowLayoutPart::TryCalculateOffset(
   }
 
   offset_info->disable_first_tier_cache |=
-      anchor_evaluator.HasAnchorFunctions();
+      anchor_evaluator->HasAnchorFunctions();
   offset_info->block_estimate = node_dimensions.size.block_size;
 
   // Calculate the offsets.

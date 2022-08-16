@@ -318,12 +318,15 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
 
   // TODO(almaher): We are calculating more than just the offset. Consider
   // changing this to a more accurate name.
-  OffsetInfo CalculateOffset(const NodeInfo& node_info,
-                             const LayoutBox* only_layout,
-                             bool is_first_run = true);
+  OffsetInfo CalculateOffset(
+      const NodeInfo& node_info,
+      const LayoutBox* only_layout,
+      bool is_first_run = true,
+      const NGLogicalAnchorQuery* stitched_anchor_query = nullptr);
   bool TryCalculateOffset(const NodeInfo& node_info,
                           const ComputedStyle& style,
                           const LayoutBox* only_layout,
+                          const NGLogicalAnchorQuery* stitched_anchor_query,
                           bool try_fit_container_rect,
                           bool is_first_run,
                           OffsetInfo* const offset_info);

@@ -27,6 +27,12 @@ class CORE_EXPORT WritingModeConverter {
                        const PhysicalSize& outer_size)
       : writing_direction_(writing_direction), outer_size_(outer_size) {}
 
+  WritingModeConverter(WritingDirectionMode writing_direction,
+                       const LogicalSize& outer_size)
+      : writing_direction_(writing_direction),
+        outer_size_(
+            ToPhysicalSize(outer_size, writing_direction.GetWritingMode())) {}
+
   // Construct without |outer_size|. Caller should call |SetOuterSize| before
   // conversions.
   explicit WritingModeConverter(WritingDirectionMode writing_direction)

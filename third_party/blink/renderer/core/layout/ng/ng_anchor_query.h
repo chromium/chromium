@@ -22,6 +22,7 @@ namespace blink {
 class NGLogicalAnchorQuery;
 class NGPhysicalFragment;
 class WritingModeConverter;
+struct NGLogicalLink;
 
 struct CORE_EXPORT NGPhysicalAnchorReference
     : public GarbageCollected<NGPhysicalAnchorReference> {
@@ -89,6 +90,8 @@ class CORE_EXPORT NGLogicalAnchorQuery {
   void SetFromPhysical(const NGPhysicalAnchorQuery& physical_query,
                        const WritingModeConverter& converter,
                        const LogicalOffset& additional_offset);
+  void SetAsStitched(base::span<const NGLogicalLink> children,
+                     WritingDirectionMode writing_direction);
 
   // Evaluate the |anchor_name| for the |anchor_value|. Returns |nullopt| if
   // the query is invalid (e.g., no targets or wrong axis.)
