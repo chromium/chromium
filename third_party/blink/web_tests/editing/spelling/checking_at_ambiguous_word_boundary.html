@@ -1,0 +1,43 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script src="spellcheck_test.js"></script>
+<script>
+// This test asserts that during active typing, we don't immediately check it
+// if the caret ends at an ambiguous word boundary (i.e., "don'|"). We'll check
+// it after typing more contents or when the page is left idle for a while.
+
+spellcheck_test(
+    "<div contenteditable>|</div>",
+    "InsertText zz'",
+    "<div contenteditable>zz'</div>",
+    {
+      title: '1 Do not immediately check at ambiguous word boundary',
+      callback: sample => spellcheck_test(
+          sample,
+          "InsertText t forget to mark me. ",
+          "<div contenteditable>#zz't# forget to mark me.\u00A0</div>",
+          '1 But check after typing more contents',
+      )
+    }
+);
+
+spellcheck_test(
+    "<div contenteditable>|</div>",
+    "InsertText zz'",
+    "<div contenteditable>zz'</div>",
+    {
+      title: '2 Do not immediately check at ambiguous word boundary',
+      callback: sample => spellcheck_test(
+          sample,
+          () => {},
+          "<div contenteditable>#zz#'</div>",
+          {
+            title: '2 But check after the page is left idle for a while',
+            needsFullCheck: true,
+          }
+      )
+    }
+);
+</script>

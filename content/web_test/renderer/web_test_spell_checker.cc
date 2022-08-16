@@ -154,12 +154,15 @@ bool WebTestSpellChecker::InitializeIfNeeded() {
   // well-spelled words, it is easier to compare the given word with misspelled
   // ones than to compare with well-spelled ones.
   static const char* misspelled_words[] = {
-      // These words are known misspelled words in webkit tests.
-      // If there are other misspelled words in webkit tests, please add them in
+      // These words are known misspelled words in web tests.
+      // If there are other misspelled words in web tests, please add them in
       // this array.
       "foo", "Foo", "baz", "fo", "LibertyF", "chello", "xxxtestxxx", "XXxxx",
       "Textx", "blockquoted", "asd", "Lorem", "Nunc", "Curabitur", "eu", "adlj",
-      "adaasj", "sdklj", "jlkds", "jsaada", "jlda", "zz", "contentEditable",
+      "adaasj", "sdklj", "jlkds", "jsaada", "jlda", "contentEditable",
+      // Prefer to match the full word than a partial word when there's an
+      // ambiguous boundary.
+      "zz't", "zz",
       // The following words are used by unit tests.
       "ifmmp", "qwertyuiopasd", "qwertyuiopasdf", "upper case", "wellcome"};
 

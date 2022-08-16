@@ -308,8 +308,6 @@ blink_core_sources_editing = [
   "spellcheck/spell_checker.cc",
   "spellcheck/spell_checker.h",
   "spellcheck/text_checking.h",
-  "spellcheck/text_checking_paragraph.cc",
-  "spellcheck/text_checking_paragraph.h",
   "state_machines/backspace_state_machine.cc",
   "state_machines/backspace_state_machine.h",
   "state_machines/backward_code_point_state_machine.cc",
