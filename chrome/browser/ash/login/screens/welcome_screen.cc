@@ -16,7 +16,6 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/default_tick_clock.h"
-#include "build/config/chromebox_for_meetings/buildflags.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/ash/base/locale_util.h"
@@ -152,12 +151,8 @@ void RecordA11yUserAction(const std::string& action_id) {
 // for testing. Note: Can be overridden with the command line switch
 // --enable-requisition-edits.
 bool IsRemoraRequisitionConfigurable() {
-#if BUILDFLAG(PLATFORM_CFM)
-  return true;
-#else
-  return policy::EnrollmentRequisitionManager::IsRemoraRequisition() ||
+  return policy::EnrollmentRequisitionManager::IsMeetDevice() ||
          switches::IsDeviceRequisitionConfigurable();
-#endif
 }
 
 }  // namespace

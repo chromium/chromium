@@ -2113,6 +2113,12 @@ void WizardController::UpdateOobeConfiguration() {
             << requisition_value->GetString();
     policy::EnrollmentRequisitionManager::SetDeviceRequisition(
         requisition_value->GetString());
+  } else if (policy::EnrollmentRequisitionManager::IsMeetDevice()) {
+    VLOG(1)
+        << "Using default Device Requisition value for CFM build configuration"
+        << policy::EnrollmentRequisitionManager::kRemoraRequisition;
+    policy::EnrollmentRequisitionManager::SetDeviceRequisition(
+        policy::EnrollmentRequisitionManager::kRemoraRequisition);
   }
 
   auto* network_config_value = wizard_context_->configuration.FindKeyOfType(
