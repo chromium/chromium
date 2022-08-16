@@ -37,6 +37,7 @@ class ZeroStateDriveProvider : public SearchProvider,
   ZeroStateDriveProvider(Profile* profile,
                          SearchController* search_controller,
                          drive::DriveIntegrationService* drive_service,
+                         session_manager::SessionManager* session_manager,
                          std::unique_ptr<ItemSuggestCache> item_suggest_cache);
   ~ZeroStateDriveProvider() override;
 
@@ -59,11 +60,6 @@ class ZeroStateDriveProvider : public SearchProvider,
   void ViewClosing() override;
   ash::AppListSearchResultType ResultType() const override;
   bool ShouldBlockZeroState() const override;
-
-  void set_session_manager_for_testing(
-      session_manager::SessionManager* session_manager) {
-    session_manager_ = session_manager;
-  }
 
   // The minimum time between hypothetical queries.
   // These values persist to logs. Entries should not be renumbered and numeric
@@ -111,9 +107,7 @@ class ZeroStateDriveProvider : public SearchProvider,
 
   Profile* const profile_;
   drive::DriveIntegrationService* const drive_service_;
-  session_manager::SessionManager* session_manager_;
-
-  const base::Time construction_time_;
+  session_manager::SessionManager* const session_manager_;
 
   std::unique_ptr<ItemSuggestCache> item_suggest_cache_;
   base::CallbackListSubscription item_suggest_subscription_;
@@ -123,6 +117,7 @@ class ZeroStateDriveProvider : public SearchProvider,
   // OnFilePathsLocated has finished.
   absl::optional<ItemSuggestCache::Results> cache_results_;
 
+  const base::Time construction_time_;
   base::TimeTicks query_start_time_;
 
   // The time we last logged a hypothetical query, keyed by the minimum time

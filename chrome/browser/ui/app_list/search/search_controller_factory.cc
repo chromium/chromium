@@ -43,6 +43,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
+#include "components/session_manager/core/session_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 
@@ -161,6 +162,7 @@ std::unique_ptr<SearchController> CreateSearchController(
         controller->AddGroup(kMaxZeroStateFileResults);
     controller->AddProvider(zero_state_files_group_id,
                             std::make_unique<ZeroStateFileProvider>(profile));
+
     size_t drive_zero_state_group_id =
         controller->AddGroup(kMaxZeroStateDriveResults);
     controller->AddProvider(
@@ -168,6 +170,7 @@ std::unique_ptr<SearchController> CreateSearchController(
         std::make_unique<ZeroStateDriveProvider>(
             profile, controller.get(),
             drive::DriveIntegrationServiceFactory::GetForProfile(profile),
+            session_manager::SessionManager::Get(),
             std::make_unique<ItemSuggestCache>(
                 profile, profile->GetDefaultStoragePartition()
                              ->GetURLLoaderFactoryForBrowserProcess())));

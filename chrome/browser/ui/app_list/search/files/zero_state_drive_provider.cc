@@ -148,12 +148,13 @@ ZeroStateDriveProvider::ZeroStateDriveProvider(
     Profile* profile,
     SearchController* search_controller,
     drive::DriveIntegrationService* drive_service,
+    session_manager::SessionManager* session_manager,
     std::unique_ptr<ItemSuggestCache> item_suggest_cache)
     : profile_(profile),
       drive_service_(drive_service),
-      session_manager_(session_manager::SessionManager::Get()),
-      construction_time_(base::Time::Now()),
+      session_manager_(session_manager),
       item_suggest_cache_(std::move(item_suggest_cache)),
+      construction_time_(base::Time::Now()),
       max_last_modified_time_(base::Days(base::GetFieldTrialParamByFeatureAsInt(
           ash::features::kProductivityLauncher,
           "max_last_modified_time",
