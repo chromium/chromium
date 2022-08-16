@@ -165,6 +165,8 @@ class MODULES_EXPORT UserMediaRequest final
   bool IsTransferredTrackRequest() const {
     return !!transferred_track_session_id_;
   }
+  void SetTransferredTrackComponent(MediaStreamComponent* component);
+
   void Trace(Visitor*) const override;
 
  private:

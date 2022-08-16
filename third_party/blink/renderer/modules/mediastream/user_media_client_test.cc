@@ -31,6 +31,7 @@
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/modules/mediastream/web_media_stream_device_observer.h"
 #include "third_party/blink/public/web/web_heap.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util.h"
@@ -39,6 +40,7 @@
 #include "third_party/blink/renderer/modules/mediastream/mock_constraint_factory.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_mojo_media_stream_dispatcher_host.h"
+#include "third_party/blink/renderer/modules/mediastream/transferred_media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_request.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_processor_options.h"
@@ -550,6 +552,17 @@ class UserMediaClientUnderTest : public UserMediaClient {
     RequestUserMediaForTest(user_media_request);
   }
 
+  void CallGetOpenDevice(
+      const base::UnguessableToken& session_id,
+      TransferredMediaStreamTrack* transferred_media_stream_track) {
+    UserMediaRequest* user_media_request = UserMediaRequest::CreateForTesting(
+        CreateDefaultConstraints(), CreateDefaultConstraints());
+
+    user_media_request->SetTransferData(session_id,
+                                        transferred_media_stream_track);
+    RequestUserMediaForTest(user_media_request);
+  }
+
  private:
   RequestState* state_;
 };
@@ -746,6 +759,69 @@ TEST_F(UserMediaClientTest, GenerateMediaStream) {
   // Generate a stream with both audio and video.
   MediaStreamDescriptor* mixed_desc = RequestLocalMediaStream();
   EXPECT_TRUE(mixed_desc);
+}
+
+TEST_F(UserMediaClientTest, GetOpenDeviceVideo) {
+  V8TestingScope scope;
+  MediaStreamTrack::TransferredValues data{
+      .session_id = base::UnguessableToken::Create(),
+      .kind = "video",
+      .id = "transferred_id",
+      .label = "label",
+      .enabled = true,
+      .muted = false,
+      .content_hint = WebMediaStreamTrack::ContentHintType::kNone,
+      .ready_state = MediaStreamSource::kReadyStateLive};
+  TransferredMediaStreamTrack* transferred_media_stream_track =
+      MakeGarbageCollected<TransferredMediaStreamTrack>(
+          scope.GetExecutionContext(), data);
+
+  blink::mojom::blink::StreamDevices stream_devices;
+  stream_devices.video_device =
+      MediaStreamDevice(mojom::blink::MediaStreamType::DISPLAY_VIDEO_CAPTURE,
+                        data.session_id.ToString(), "usb video camera");
+  stream_devices.video_device.value().set_session_id(data.session_id);
+  mock_dispatcher_host_.SetStreamDevices(stream_devices);
+
+  user_media_client_impl_->CallGetOpenDevice(data.session_id,
+                                             transferred_media_stream_track);
+  StartMockedVideoSource();
+
+  EXPECT_EQ(kRequestSucceeded, request_state());
+  EXPECT_EQ("usb video camera",
+            transferred_media_stream_track->Component()->GetSourceName());
+}
+
+TEST_F(UserMediaClientTest, GetOpenDeviceAudio) {
+  EXPECT_CALL(mock_dispatcher_host_, OnStreamStarted(_));
+
+  V8TestingScope scope;
+  MediaStreamTrack::TransferredValues data{
+      .session_id = base::UnguessableToken::Create(),
+      .kind = "audio",
+      .id = "transferred_id",
+      .label = "label",
+      .enabled = true,
+      .muted = false,
+      .content_hint = WebMediaStreamTrack::ContentHintType::kNone,
+      .ready_state = MediaStreamSource::kReadyStateLive};
+  TransferredMediaStreamTrack* transferred_media_stream_track =
+      MakeGarbageCollected<TransferredMediaStreamTrack>(
+          scope.GetExecutionContext(), data);
+
+  blink::mojom::blink::StreamDevices stream_devices;
+  stream_devices.audio_device =
+      MediaStreamDevice(mojom::blink::MediaStreamType::DISPLAY_AUDIO_CAPTURE,
+                        data.session_id.ToString(), "microphone");
+  stream_devices.audio_device.value().set_session_id(data.session_id);
+  mock_dispatcher_host_.SetStreamDevices(stream_devices);
+
+  user_media_client_impl_->CallGetOpenDevice(data.session_id,
+                                             transferred_media_stream_track);
+
+  EXPECT_EQ(kRequestSucceeded, request_state());
+  EXPECT_EQ("microphone",
+            transferred_media_stream_track->Component()->GetSourceName());
 }
 
 // Test that the same source object is used if two MediaStreams are generated

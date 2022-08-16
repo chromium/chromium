@@ -37,6 +37,8 @@ class PLATFORM_EXPORT TransferredMediaStreamComponent final
   TransferredMediaStreamComponent& operator=(
       const TransferredMediaStreamComponent&) = delete;
 
+  void SetImplementation(MediaStreamComponent* component);
+
   MediaStreamComponent* Clone(
       std::unique_ptr<MediaStreamTrackPlatform> cloned_platform_track =
           nullptr) const override;

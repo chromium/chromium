@@ -246,6 +246,11 @@ void TransferredMediaStreamTrack::SetImplementation(MediaStreamTrack* track) {
   observers_.clear();
 }
 
+void TransferredMediaStreamTrack::SetComponentImplementation(
+    MediaStreamComponent* component) {
+  transferred_component_->SetImplementation(component);
+}
+
 void TransferredMediaStreamTrack::SetConstraints(
     const MediaConstraints& constraints) {
   if (track_) {

@@ -60,6 +60,7 @@ class MODULES_EXPORT TransferredMediaStreamTrack : public MediaStreamTrack {
 
   bool HasImplementation() const { return !!track_; }
   void SetImplementation(MediaStreamTrack* track);
+  void SetComponentImplementation(MediaStreamComponent* component);
 
   void SetConstraints(const MediaConstraints&) override;
 

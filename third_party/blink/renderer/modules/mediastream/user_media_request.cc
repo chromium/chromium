@@ -663,6 +663,11 @@ void UserMediaRequest::ContextDestroyed() {
   }
 }
 
+void UserMediaRequest::SetTransferredTrackComponent(
+    MediaStreamComponent* component) {
+  transferred_track_->SetComponentImplementation(component);
+}
+
 void UserMediaRequest::Trace(Visitor* visitor) const {
   visitor->Trace(client_);
   visitor->Trace(callbacks_);

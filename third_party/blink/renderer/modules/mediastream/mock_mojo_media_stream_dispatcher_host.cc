@@ -63,6 +63,39 @@ void MockMojoMediaStreamDispatcherHost::GenerateStreams(
   }
 }
 
+void MockMojoMediaStreamDispatcherHost::GetOpenDevice(
+    int32_t request_id,
+    const base::UnguessableToken&,
+    const base::UnguessableToken&,
+    GetOpenDeviceCallback callback) {
+  request_id_ = request_id;
+  ++request_stream_counter_;
+
+  if (do_not_run_cb_) {
+    get_open_device_cb_ = std::move(callback);
+  } else {
+    blink::mojom::blink::StreamDevicesSetPtr stream_devices_set =
+        blink::mojom::blink::StreamDevicesSet::New();
+    stream_devices_set->stream_devices.emplace_back(stream_devices_.Clone());
+    if (stream_devices_.video_device) {
+      std::move(callback).Run(mojom::blink::MediaStreamRequestResult::OK,
+                              mojom::blink::GetOpenDeviceResponse::New(
+                                  String("dummy") + String::Number(request_id_),
+                                  *stream_devices_.video_device,
+                                  /*pan_tilt_zoom_allowed=*/false));
+    } else if (stream_devices_.audio_device) {
+      std::move(callback).Run(mojom::blink::MediaStreamRequestResult::OK,
+                              mojom::blink::GetOpenDeviceResponse::New(
+                                  String("dummy") + String::Number(request_id_),
+                                  *stream_devices_.audio_device,
+                                  /*pan_tilt_zoom_allowed=*/false));
+    } else {
+      std::move(callback).Run(
+          mojom::blink::MediaStreamRequestResult::INVALID_STATE, nullptr);
+    }
+  }
+}
+
 void MockMojoMediaStreamDispatcherHost::CancelRequest(int32_t request_id) {
   EXPECT_EQ(request_id, request_id_);
 }

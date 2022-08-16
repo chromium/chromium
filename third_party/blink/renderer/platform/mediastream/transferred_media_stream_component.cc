@@ -14,6 +14,11 @@ TransferredMediaStreamComponent::TransferredMediaStreamComponent(
     const TransferredValues& data)
     : data_(data) {}
 
+void TransferredMediaStreamComponent::SetImplementation(
+    MediaStreamComponent* component) {
+  component_ = component;
+}
+
 MediaStreamComponent* TransferredMediaStreamComponent::Clone(
     std::unique_ptr<MediaStreamTrackPlatform> cloned_platform_track) const {
   if (component_) {
