@@ -3885,8 +3885,16 @@ if (enable_java_templates) {
       action("${invoker.target_name}__rts_filters") {
         script = "//build/add_rts_filters.py"
         rts_file = "${root_build_dir}/gen/rts/${invoker.target_name}.filter"
-        args = [ rebase_path(rts_file, root_build_dir) ]
-        outputs = [ rts_file ]
+        inverted_rts_file =
+            "${root_build_dir}/gen/rts/${invoker.target_name}_inverted.filter"
+        args = [
+          rebase_path(rts_file, root_build_dir),
+          rebase_path(inverted_rts_file, root_build_dir),
+        ]
+        outputs = [
+          rts_file,
+          inverted_rts_file,
+        ]
       }
     }
     _incremental_apk = !(defined(invoker.never_incremental) &&
