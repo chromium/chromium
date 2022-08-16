@@ -254,6 +254,12 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
                                  std::vector<ui::AXTreeUpdate>& updates,
                                  bool invalidate_plugin_subtree);
 
+  void AddImageAnnotations(const blink::WebDocument& document,
+                           std::vector<ui::AXNodeData>&);
+  void AddImageAnnotationsForNode(blink::WebAXObject& src, ui::AXNodeData* dst);
+
+  static void IgnoreProtocolChecksForTesting();
+
   // The initial accessibility tree root still needs to be created. Like other
   // accessible objects, it must be created when layout is clean.
   bool needs_initial_ax_tree_root_ = true;
@@ -326,6 +332,12 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   // slowest_serialization_ms_. We report UKM before the user navigates
   // away, or every few minutes.
   ukm::SourceId last_ukm_source_id_;
+
+  // The AxID of the first unlabeled image we have encountered in this tree.
+  //
+  // Used to ensure that the tutor message that explains to screen reader users
+  // how to turn on automatic image labels is provided only once.
+  mutable absl::optional<int32_t> first_unlabeled_image_id_ = absl::nullopt;
 
   // So we can queue up tasks to be executed later.
   base::WeakPtrFactory<RenderAccessibilityImpl>

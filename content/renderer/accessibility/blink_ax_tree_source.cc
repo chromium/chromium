@@ -64,11 +64,6 @@ namespace content {
 
 namespace {
 
-// Images smaller than this number, in CSS pixels, will never get annotated.
-// Note that OCR works on pretty small images, so this shouldn't be too large.
-const int kMinImageAnnotationWidth = 16;
-const int kMinImageAnnotationHeight = 16;
-
 #if DCHECK_IS_ON()
 WebAXObject ParentObjectUnignored(WebAXObject child) {
   WebAXObject parent = child.ParentObject();
@@ -88,60 +83,6 @@ void CheckParentUnignoredOf(WebAXObject parent, WebAXObject child) {
 }
 #endif
 
-// Helper function that searches in the subtree of |obj| to a max
-// depth of |max_depth| for an image.
-//
-// Returns true on success, or false if it finds more than one image,
-// or any node with a name, or anything deeper than |max_depth|.
-bool SearchForExactlyOneInnerImage(WebAXObject obj,
-                                   WebAXObject* inner_image,
-                                   int max_depth) {
-  DCHECK(inner_image);
-
-  // If it's the first image, set |inner_image|. If we already
-  // found an image, fail.
-  if (ui::IsImage(obj.Role())) {
-    if (!inner_image->IsDetached())
-      return false;
-    *inner_image = obj;
-  } else {
-    // If we found something else with a name, fail.
-    if (!ui::IsPlatformDocument(obj.Role()) && !ui::IsLink(obj.Role())) {
-      blink::WebString web_name = obj.GetName();
-      if (!base::ContainsOnlyChars(web_name.Utf8(), base::kWhitespaceASCII)) {
-        return false;
-      }
-    }
-  }
-
-  // Fail if we recursed to |max_depth| and there's more of a subtree.
-  if (max_depth == 0 && obj.ChildCount())
-    return false;
-
-  // Don't count ignored nodes toward depth.
-  int next_depth = obj.AccessibilityIsIgnored() ? max_depth : max_depth - 1;
-
-  // Recurse.
-  for (unsigned int i = 0; i < obj.ChildCount(); i++) {
-    if (!SearchForExactlyOneInnerImage(obj.ChildAt(i), inner_image, next_depth))
-      return false;
-  }
-
-  return !inner_image->IsDetached();
-}
-
-// Return true if the subtree of |obj|, to a max depth of 3, contains
-// exactly one image. Return that image in |inner_image|.
-bool FindExactlyOneInnerImageInMaxDepthThree(WebAXObject obj,
-                                             WebAXObject* inner_image) {
-  DCHECK(inner_image);
-  return SearchForExactlyOneInnerImage(obj, inner_image, /* max_depth = */ 3);
-}
-
-// Ignore code that limits based on the protocol (like https, file, etc.)
-// to enable tests to run.
-bool g_ignore_protocol_checks_for_testing;
-
 }  // namespace
 
 ScopedFreezeBlinkAXTreeSource::ScopedFreezeBlinkAXTreeSource(
@@ -156,11 +97,7 @@ ScopedFreezeBlinkAXTreeSource::~ScopedFreezeBlinkAXTreeSource() {
 
 BlinkAXTreeSource::BlinkAXTreeSource(RenderFrameImpl* render_frame,
                                      ui::AXMode mode)
-    : render_frame_(render_frame), accessibility_mode_(mode), frozen_(false) {
-  image_annotation_debugging_ =
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          ::switches::kEnableExperimentalAccessibilityLabelsDebugging);
-}
+    : render_frame_(render_frame), accessibility_mode_(mode), frozen_(false) {}
 
 BlinkAXTreeSource::~BlinkAXTreeSource() {}
 
@@ -466,20 +403,6 @@ void BlinkAXTreeSource::SerializeNode(WebAXObject src,
     return;
   }
 
-  if (ui::IsImage(dst->role))
-    AddImageAnnotations(src, dst);
-
-  // If a link or web area isn't otherwise labeled and contains exactly one
-  // image (searching only to a max depth of 2), and the link doesn't have
-  // accessible text from an attribute like aria-label, then annotate the
-  // link/web area with the image's annotation, too.
-  if ((ui::IsLink(dst->role) || ui::IsPlatformDocument(dst->role)) &&
-      dst->GetNameFrom() != ax::mojom::NameFrom::kAttribute) {
-    WebAXObject inner_image;
-    if (FindExactlyOneInnerImageInMaxDepthThree(src, &inner_image))
-      AddImageAnnotations(inner_image, dst);
-  }
-
   if (dst->id == image_data_node_id_) {
     // In general, string attributes should be truncated using
     // TruncateAndAddStringAttribute, but ImageDataUrl contains a data url
@@ -492,11 +415,6 @@ void BlinkAXTreeSource::SerializeNode(WebAXObject src,
 blink::WebDocument BlinkAXTreeSource::GetMainDocument() const {
   CHECK(frozen_);
   return document_;
-}
-
-// static
-void BlinkAXTreeSource::IgnoreProtocolChecksForTesting() {
-  g_ignore_protocol_checks_for_testing = true;
 }
 
 WebAXObject BlinkAXTreeSource::ComputeRoot() const {
@@ -524,130 +442,6 @@ void BlinkAXTreeSource::TruncateAndAddStringAttribute(
     dst->AddStringAttribute(attribute, truncated);
   } else {
     dst->AddStringAttribute(attribute, value);
-  }
-}
-
-void BlinkAXTreeSource::AddImageAnnotations(blink::WebAXObject& src,
-                                            ui::AXNodeData* dst) const {
-  // Reject ignored objects
-  if (src.AccessibilityIsIgnored()) {
-    return;
-  }
-
-  // Reject images that are explicitly empty, or that have a
-  // meaningful name already.
-  ax::mojom::NameFrom name_from;
-  blink::WebVector<WebAXObject> name_objects;
-  blink::WebString web_name = src.GetName(name_from, name_objects);
-
-  // If an image has a nonempty name, compute whether we should add an
-  // image annotation or not.
-  bool should_annotate_image_with_nonempty_name = false;
-
-  // When visual debugging is enabled, the "title" attribute is set to a
-  // string beginning with a "%". If the name comes from that string we
-  // can ignore it, and treat the name as empty.
-  if (image_annotation_debugging_ &&
-      base::StartsWith(web_name.Utf8(), "%", base::CompareCase::SENSITIVE))
-    should_annotate_image_with_nonempty_name = true;
-
-  if (features::IsAugmentExistingImageLabelsEnabled()) {
-    // If the name consists of mostly stopwords, we can add an image
-    // annotations. See ax_image_stopwords.h for details.
-    if (image_annotator_->ImageNameHasMostlyStopwords(web_name.Utf8()))
-      should_annotate_image_with_nonempty_name = true;
-  }
-
-  // If the image's name is explicitly empty, or if it has a name (and
-  // we're not treating the name as empty), then it's ineligible for
-  // an annotation.
-  if ((name_from == ax::mojom::NameFrom::kAttributeExplicitlyEmpty ||
-       !web_name.IsEmpty()) &&
-      !should_annotate_image_with_nonempty_name) {
-    dst->SetImageAnnotationStatus(
-        ax::mojom::ImageAnnotationStatus::kIneligibleForAnnotation);
-    return;
-  }
-
-  // If the name of a document (root web area) starts with the filename,
-  // it probably means the user opened an image in a new tab.
-  // If so, we can treat the name as empty and give it an annotation.
-  std::string dst_name =
-      dst->GetStringAttribute(ax::mojom::StringAttribute::kName);
-  if (ui::IsPlatformDocument(dst->role)) {
-    std::string filename = GURL(document().Url()).ExtractFileName();
-    if (base::StartsWith(dst_name, filename, base::CompareCase::SENSITIVE))
-      should_annotate_image_with_nonempty_name = true;
-  }
-
-  // |dst| may be a document or link containing an image. Skip annotating
-  // it if it already has text other than whitespace.
-  if (!base::ContainsOnlyChars(dst_name, base::kWhitespaceASCII) &&
-      !should_annotate_image_with_nonempty_name) {
-    dst->SetImageAnnotationStatus(
-        ax::mojom::ImageAnnotationStatus::kIneligibleForAnnotation);
-    return;
-  }
-
-  // Skip images that are too small to label. This also catches
-  // unloaded images where the size is unknown.
-  WebAXObject offset_container;
-  gfx::RectF bounds;
-  gfx::Transform container_transform;
-  bool clips_children = false;
-  src.GetRelativeBounds(offset_container, bounds, container_transform,
-                        &clips_children);
-  if (bounds.width() < kMinImageAnnotationWidth ||
-      bounds.height() < kMinImageAnnotationHeight) {
-    dst->SetImageAnnotationStatus(
-        ax::mojom::ImageAnnotationStatus::kIneligibleForAnnotation);
-    return;
-  }
-
-  // Skip images in documents which are not http, https, file and data schemes.
-  blink::WebString protocol = document().GetSecurityOrigin().Protocol();
-  if (!g_ignore_protocol_checks_for_testing && protocol != url::kHttpScheme &&
-      protocol != url::kHttpsScheme && protocol != url::kFileScheme &&
-      protocol != url::kDataScheme) {
-    dst->SetImageAnnotationStatus(
-        ax::mojom::ImageAnnotationStatus::kWillNotAnnotateDueToScheme);
-    return;
-  }
-
-  // Skip images that do not have an image_src url (e.g. SVGs), or are in
-  // documents that do not have a document_url.
-  // TODO(accessibility): Remove this check when support for SVGs is added.
-  if (!g_ignore_protocol_checks_for_testing &&
-      (src.Url().GetString().Utf8().empty() ||
-       document().Url().GetString().Utf8().empty()))
-    return;
-
-  if (!image_annotator_) {
-    if (!first_unlabeled_image_id_.has_value() ||
-        first_unlabeled_image_id_.value() == src.AxID()) {
-      dst->SetImageAnnotationStatus(
-          ax::mojom::ImageAnnotationStatus::kEligibleForAnnotation);
-      first_unlabeled_image_id_ = src.AxID();
-    } else {
-      dst->SetImageAnnotationStatus(
-          ax::mojom::ImageAnnotationStatus::kSilentlyEligibleForAnnotation);
-    }
-    return;
-  }
-
-  if (image_annotator_->HasAnnotationInCache(src)) {
-    dst->AddStringAttribute(ax::mojom::StringAttribute::kImageAnnotation,
-                            image_annotator_->GetImageAnnotation(src));
-    dst->SetImageAnnotationStatus(
-        image_annotator_->GetImageAnnotationStatus(src));
-  } else if (image_annotator_->HasImageInCache(src)) {
-    image_annotator_->OnImageUpdated(src);
-    dst->SetImageAnnotationStatus(
-        ax::mojom::ImageAnnotationStatus::kAnnotationPending);
-  } else if (!image_annotator_->HasImageInCache(src)) {
-    image_annotator_->OnImageAdded(src);
-    dst->SetImageAnnotationStatus(
-        ax::mojom::ImageAnnotationStatus::kAnnotationPending);
   }
 }
 
