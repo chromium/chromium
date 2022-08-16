@@ -9629,7 +9629,8 @@
       'owners': ['robsc@chromium.org', 'bartfab@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': ['chrome_os:75-'],
+      'supported_on': ['chrome_os:75-99'],
+      'deprecated': True,
       'features': {
         'per_profile': True,
         'dynamic_refresh': True
@@ -9648,7 +9649,9 @@
       'id': 563,
       'caption': '''Enable App Recommendations in Zero State of Search Box''',
       'tags': [],
-      'desc': '''Setting this policy to Enabled will cause recommendations for apps previously installed by the user on other devices. These recommendations will appear in the launcher after the local app recomendations, if no search text has been entered.
+      'desc': '''This feature has been removed in Chrome 100.
+
+      Setting this policy to Enabled will cause recommendations for apps previously installed by the user on other devices. These recommendations will appear in the launcher after the local app recomendations, if no search text has been entered.
 
       Setting this policy as Disabled or leaving it unset means these recommendations do not appear.
 
