@@ -32,7 +32,16 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 ChromeContentGpuClient::ChromeContentGpuClient()
-    : main_thread_profiler_(ThreadProfiler::CreateAndStartOnMainThread()) {
+    : main_thread_profiler_(
+#if BUILDFLAG(IS_CHROMEOS)
+          // The profiler can't start before the sandbox is initialized on
+          // ChromeOS due to ChromeOS's sandbox initialization code's use of
+          // AssertSingleThreaded().
+          nullptr
+#else
+          ThreadProfiler::CreateAndStartOnMainThread()
+#endif
+      ) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   protected_buffer_manager_ = new arc::ProtectedBufferManager();
 #endif
@@ -87,6 +96,13 @@ void ChromeContentGpuClient::ExposeInterfacesToBrowser(
   // security review coverage.
   ExposeChromeGpuInterfacesToBrowser(this, gpu_preferences, gpu_workarounds,
                                      binders);
+}
+
+void ChromeContentGpuClient::PostSandboxInitialized() {
+#if BUILDFLAG(IS_CHROMEOS)
+  DCHECK(!main_thread_profiler_);
+  main_thread_profiler_ = ThreadProfiler::CreateAndStartOnMainThread();
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void ChromeContentGpuClient::PostIOThreadCreated(

@@ -34,6 +34,7 @@ class ChromeContentGpuClient : public content::ContentGpuClient {
       const gpu::GpuPreferences& gpu_preferences,
       const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
       mojo::BinderMap* binders) override;
+  void PostSandboxInitialized() override;
   void PostIOThreadCreated(
       base::SingleThreadTaskRunner* io_task_runner) override;
   void PostCompositorThreadCreated(

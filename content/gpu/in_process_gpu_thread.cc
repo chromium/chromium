@@ -11,6 +11,7 @@
 #include "content/gpu/gpu_child_thread.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/gpu/content_gpu_client.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/ipc/service/gpu_init.h"
 #include "media/gpu/buildflags.h"
@@ -40,6 +41,12 @@ InProcessGpuThread::~InProcessGpuThread() {
 void InProcessGpuThread::Init() {
   base::ThreadType io_thread_type = base::ThreadType::kDefault;
 
+  // In single-process mode, we never enter the sandbox, so run the post-sandbox
+  // code now.
+  content::ContentGpuClient* client = GetContentClient()->gpu();
+  if (client) {
+    client->PostSandboxInitialized();
+  }
 #if BUILDFLAG(IS_ANDROID)
   // Call AttachCurrentThreadWithName, before any other AttachCurrentThread()
   // calls. The latter causes Java VM to assign Thread-??? to the thread name.

@@ -40,6 +40,8 @@ class CONTENT_EXPORT ContentGpuClient {
       const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
       mojo::BinderMap* binders) {}
 
+  // Called immediately after the sandbox is initialized on the main thread.
+  virtual void PostSandboxInitialized() {}
   // Called right after the IO/compositor thread is created.
   virtual void PostIOThreadCreated(
       base::SingleThreadTaskRunner* io_task_runner) {}

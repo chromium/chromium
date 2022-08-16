@@ -323,6 +323,11 @@ int GpuMain(MainFunctionParams parameters) {
       const_cast<base::CommandLine*>(&command_line), gpu_preferences);
   const bool dead_on_arrival = !init_success;
 
+  auto* client = GetContentClient()->gpu();
+  if (client) {
+    client->PostSandboxInitialized();
+  }
+
   GetContentClient()->SetGpuInfo(gpu_init->gpu_info());
 
   base::ThreadType io_thread_type = base::ThreadType::kCompositing;
@@ -337,9 +342,9 @@ int GpuMain(MainFunctionParams parameters) {
   ChildProcess gpu_process(io_thread_type);
   DCHECK(base::ThreadPoolInstance::Get()->WasStarted());
 
-  auto* client = GetContentClient()->gpu();
-  if (client)
+  if (client) {
     client->PostIOThreadCreated(gpu_process.io_task_runner());
+  }
 
   base::RunLoop run_loop;
   GpuChildThread* child_thread =
