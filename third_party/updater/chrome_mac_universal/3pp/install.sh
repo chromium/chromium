@@ -11,4 +11,4 @@ set -o pipefail
 # The commands below should output the built product to this directory.
 PREFIX="$1"
 
-mv updater/GoogleUpdater_test.app "$PREFIX"
+mv GoogleUpdater_test.app "$PREFIX"

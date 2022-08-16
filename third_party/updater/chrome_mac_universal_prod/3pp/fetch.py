@@ -11,7 +11,7 @@ import sys
 import urllib.request
 
 # TODO(crbug.com/1336630): This is compared lexically. Remove it before M1000.
-MIN_VERSION = '105.0.5151.0'
+MIN_VERSION = '106.0.5243.0'
 
 def fetch():
     """
