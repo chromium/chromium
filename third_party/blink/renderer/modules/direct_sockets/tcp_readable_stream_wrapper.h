@@ -67,7 +67,8 @@ class MODULES_EXPORT TCPReadableStreamWrapper
   // Indicates whether peer closed gracefully (EOF).
   bool graceful_peer_shutdown_ = false;
 
-  Member<DOMException> pending_exception_;
+  // Stores a v8::Local<v8::Value> V8DOMException inside.
+  ScriptValue pending_exception_;
 };
 
 }  // namespace blink

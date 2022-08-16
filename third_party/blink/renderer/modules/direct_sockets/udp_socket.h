@@ -90,7 +90,7 @@ class MODULES_EXPORT UDPSocket final
 
   void CloseOnError();
 
-  void OnBothStreamsClosed(std::vector<bool> args);
+  void OnBothStreamsClosed(std::vector<ScriptValue> args);
 
   const Member<UDPSocketMojoRemote> udp_socket_;
   HeapMojoReceiver<network::mojom::blink::UDPSocketListener, UDPSocket>

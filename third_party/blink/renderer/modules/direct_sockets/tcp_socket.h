@@ -95,7 +95,7 @@ class MODULES_EXPORT TCPSocket final
   void OnReadError(int32_t net_error) override;
   void OnWriteError(int32_t net_error) override;
 
-  void OnBothStreamsClosed(std::vector<bool> args);
+  void OnBothStreamsClosed(std::vector<ScriptValue> args);
 
   HeapMojoRemote<network::mojom::blink::TCPConnectedSocket> tcp_socket_;
   HeapMojoReceiver<network::mojom::blink::SocketObserver, TCPSocket>

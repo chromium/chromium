@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_state_observer.h"
 #include "third_party/blink/renderer/modules/direct_sockets/direct_sockets_service_mojo_remote.h"
@@ -53,8 +54,11 @@ class MODULES_EXPORT Socket : public ExecutionContextLifecycleStateObserver {
   bool Initialized() const;
   bool HasPendingActivity() const;
 
-  // Resolves or rejects |closed| promise.
-  void ResolveOrRejectClosed(bool error);
+  // Resolves |closed| promise.
+  void ResolveClosed();
+
+  // Rejects |closed| promise with the given |exception|.
+  void RejectClosed(ScriptValue exception);
 
   // Closes |service_| and resets |feature_handle_for_scheduler_|.
   void CloseServiceAndResetFeatureHandle();

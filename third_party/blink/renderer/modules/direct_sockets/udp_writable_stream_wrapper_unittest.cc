@@ -85,7 +85,9 @@ class StreamCreator : public GarbageCollected<StreamCreator> {
   bool CloseCalledWith(bool error) { return close_called_with_ == error; }
 
  private:
-  void Close(bool error) { close_called_with_ = error; }
+  void Close(ScriptValue exception) {
+    close_called_with_ = !exception.IsEmpty();
+  }
 
   absl::optional<bool> close_called_with_;
   std::unique_ptr<FakeDirectUDPSocket> fake_udp_socket_;

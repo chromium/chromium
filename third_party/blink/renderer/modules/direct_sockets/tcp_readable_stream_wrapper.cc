@@ -139,7 +139,7 @@ void TCPReadableStreamWrapper::CloseStream() {
   }
 
   ResetPipe();
-  std::move(on_close_).Run(/*error=*/false);
+  std::move(on_close_).Run(ScriptValue());
   return;
 }
 
@@ -153,16 +153,24 @@ void TCPReadableStreamWrapper::ErrorStream(int32_t error_code) {
     SetState(State::kClosed);
     if (!data_pipe_) {
       Controller()->Close();
-      std::move(on_close_).Run(/*error=*/false);
+      std::move(on_close_).Run(ScriptValue());
     }
     return;
   }
 
   SetState(State::kAborted);
 
-  auto* exception = MakeGarbageCollected<DOMException>(
-      DOMExceptionCode::kNetworkError, String{"Stream aborted by the remote: " +
-                                              net::ErrorToString(error_code)});
+  auto* script_state = GetScriptState();
+  // Scope is needed because there's no ScriptState* on the call stack for
+  // ScriptValue::From.
+  ScriptState::Scope scope{script_state};
+
+  auto exception = ScriptValue::From(
+      script_state,
+      V8ThrowDOMException::CreateOrDie(script_state->GetIsolate(),
+                                       DOMExceptionCode::kNetworkError,
+                                       String{"Stream aborted by the remote: " +
+                                              net::ErrorToString(error_code)}));
 
   if (data_pipe_) {
     pending_exception_ = exception;
@@ -170,7 +178,7 @@ void TCPReadableStreamWrapper::ErrorStream(int32_t error_code) {
   }
 
   Controller()->Error(exception);
-  std::move(on_close_).Run(/*error=*/true);
+  std::move(on_close_).Run(exception);
 }
 
 void TCPReadableStreamWrapper::ResetPipe() {
@@ -189,8 +197,8 @@ void TCPReadableStreamWrapper::OnHandleReset(MojoResult result,
   DCHECK_EQ(result, MOJO_RESULT_OK);
   DCHECK(data_pipe_);
   DCHECK(on_close_);
-  DCHECK(!(pending_exception_ && graceful_peer_shutdown_));
-  if (pending_exception_ || graceful_peer_shutdown_) {
+  DCHECK(!(!pending_exception_.IsEmpty() && graceful_peer_shutdown_));
+  if (!pending_exception_.IsEmpty() || graceful_peer_shutdown_) {
     DCHECK_NE(GetState(), State::kOpen);
   } else {
     DCHECK_EQ(GetState(), State::kOpen);
@@ -199,18 +207,18 @@ void TCPReadableStreamWrapper::OnHandleReset(MojoResult result,
 
   ResetPipe();
 
-  if (pending_exception_) {
+  if (!pending_exception_.IsEmpty()) {
     Controller()->Error(pending_exception_);
 
     SetState(State::kAborted);
-    std::move(on_close_).Run(/*error=*/true);
+    std::move(on_close_).Run(pending_exception_);
 
-    pending_exception_ = nullptr;
+    pending_exception_.Clear();
   } else if (graceful_peer_shutdown_) {
     Controller()->Close();
 
     SetState(State::kClosed);
-    std::move(on_close_).Run(/*error=*/false);
+    std::move(on_close_).Run(ScriptValue());
   }
 }
 

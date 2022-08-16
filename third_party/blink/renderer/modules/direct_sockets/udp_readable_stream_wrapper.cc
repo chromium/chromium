@@ -8,6 +8,7 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "net/base/net_errors.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_underlying_source.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_udp_message.h"
@@ -21,6 +22,7 @@
 #include "third_party/blink/renderer/modules/direct_sockets/stream_wrapper.h"
 #include "third_party/blink/renderer/modules/direct_sockets/udp_writable_stream_wrapper.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -90,7 +92,7 @@ void UDPReadableStreamWrapper::CloseStream() {
   }
   SetState(State::kClosed);
 
-  std::move(on_close_).Run(/*error=*/false);
+  std::move(on_close_).Run(/*exception=*/ScriptValue());
 }
 
 void UDPReadableStreamWrapper::ErrorStream(int32_t error_code) {
@@ -99,12 +101,21 @@ void UDPReadableStreamWrapper::ErrorStream(int32_t error_code) {
   }
   SetState(State::kAborted);
 
-  auto* exception = MakeGarbageCollected<DOMException>(
-      DOMExceptionCode::kNetworkError, String{"Stream aborted by the remote: " +
-                                              net::ErrorToString(error_code)});
+  auto* script_state = GetScriptState();
+  // Scope is needed because there's no ScriptState* on the call stack for
+  // ScriptValue::From.
+  ScriptState::Scope scope{script_state};
+
+  auto exception = ScriptValue::From(
+      script_state,
+      V8ThrowDOMException::CreateOrDie(script_state->GetIsolate(),
+                                       DOMExceptionCode::kNetworkError,
+                                       String{"Stream aborted by the remote: " +
+                                              net::ErrorToString(error_code)}));
+
   Controller()->Error(exception);
 
-  std::move(on_close_).Run(/*error=*/true);
+  std::move(on_close_).Run(exception);
 }
 
 }  // namespace blink

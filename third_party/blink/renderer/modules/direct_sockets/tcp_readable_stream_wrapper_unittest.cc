@@ -129,7 +129,9 @@ class StreamCreator : public GarbageCollected<StreamCreator> {
   void Trace(Visitor* visitor) const { visitor->Trace(stream_wrapper_); }
 
  private:
-  void Close(bool error) { close_called_with_ = error; }
+  void Close(ScriptValue exception) {
+    close_called_with_ = !exception.IsEmpty();
+  }
 
   absl::optional<bool> close_called_with_;
   mojo::ScopedDataPipeProducerHandle data_pipe_producer_;

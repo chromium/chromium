@@ -37,7 +37,7 @@ namespace blink {
 
 class MODULES_EXPORT StreamWrapper : public GarbageCollectedMixin {
  public:
-  using CloseOnceCallback = base::OnceCallback<void(bool error)>;
+  using CloseOnceCallback = base::OnceCallback<void(ScriptValue exception)>;
 
   enum class State { kOpen, kAborted, kClosed };
 

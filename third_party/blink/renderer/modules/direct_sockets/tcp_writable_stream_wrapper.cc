@@ -245,7 +245,7 @@ void TCPWritableStreamWrapper::CloseStream() {
   }
 
   ResetPipe();
-  std::move(on_close_).Run(/*error=*/false);
+  std::move(on_close_).Run(/*exception=*/ScriptValue());
 }
 
 void TCPWritableStreamWrapper::ErrorStream(int32_t error_code) {
@@ -256,29 +256,32 @@ void TCPWritableStreamWrapper::ErrorStream(int32_t error_code) {
 
   auto message =
       String{"Stream aborted by the remote: " + net::ErrorToString(error_code)};
-  auto* exception = MakeGarbageCollected<DOMException>(
-      DOMExceptionCode::kNetworkError, message);
+
+  auto* script_state = write_promise_resolver_
+                           ? write_promise_resolver_->GetScriptState()
+                           : GetScriptState();
+  // Scope is needed because there's no ScriptState* on the call stack for
+  // ScriptValue::From.
+  ScriptState::Scope scope{script_state};
+
+  auto exception = ScriptValue::From(
+      script_state, V8ThrowDOMException::CreateOrDie(
+                        script_state->GetIsolate(),
+                        DOMExceptionCode::kNetworkError, message));
 
   // Can be already reset due to HandlePipeClosed() called previously.
   if (data_pipe_) {
     ResetPipe();
   }
 
-  auto* script_state = GetScriptState();
-  DCHECK(script_state->ContextIsValid());
-
-  ScriptState::Scope scope{script_state};
   if (write_promise_resolver_) {
-    write_promise_resolver_->RejectWithDOMException(
-        DOMExceptionCode::kNetworkError, message);
+    write_promise_resolver_->Reject(exception);
     write_promise_resolver_ = nullptr;
   } else {
-    auto* script_state = GetScriptState();
-    Controller()->error(script_state,
-                        ScriptValue::From(script_state, exception));
+    Controller()->error(script_state, exception);
   }
 
-  std::move(on_close_).Run(/*error=*/true);
+  std::move(on_close_).Run(exception);
 }
 
 void TCPWritableStreamWrapper::ResetPipe() {

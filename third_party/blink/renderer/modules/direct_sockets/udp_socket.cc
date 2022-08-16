@@ -6,6 +6,7 @@
 
 #include "base/barrier_callback.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "net/base/net_errors.h"
 #include "third_party/blink/public/mojom/direct_sockets/direct_sockets.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -115,7 +116,7 @@ void UDPSocket::Init(int32_t result,
                      const absl::optional<net::IPEndPoint>& local_addr,
                      const absl::optional<net::IPEndPoint>& peer_addr) {
   if (result == net::OK && peer_addr) {
-    auto close_callback = base::BarrierCallback<bool>(
+    auto close_callback = base::BarrierCallback<ScriptValue>(
         /*num_callbacks=*/2,
         WTF::Bind(&UDPSocket::OnBothStreamsClosed, WrapWeakPersistent(this)));
 
@@ -227,13 +228,19 @@ void UDPSocket::CloseOnError() {
   writable_stream_wrapper_->ErrorStream(net::ERR_CONNECTION_ABORTED);
 }
 
-void UDPSocket::OnBothStreamsClosed(std::vector<bool> args) {
+void UDPSocket::OnBothStreamsClosed(std::vector<ScriptValue> args) {
   DCHECK_EQ(args.size(), 2U);
-  // At least one callback was invoked with error = true.
-  bool error = base::ranges::any_of(args, base::identity());
 
+  // Finds first actual exception and rejects |closed| with it.
+  // If neither of the streams was errored, resolves |closed|.
+  if (auto it = base::ranges::find_if(
+          args, [](ScriptValue exception) { return !exception.IsEmpty(); });
+      it != args.end()) {
+    RejectClosed(*it);
+  } else {
+    ResolveClosed();
+  }
   CloseServiceAndResetFeatureHandle();
-  ResolveOrRejectClosed(error);
 
   socket_listener_.reset();
 

@@ -175,12 +175,13 @@ bool Socket::HasPendingActivity() const {
          writable_stream_wrapper_->HasPendingWrite();
 }
 
-void Socket::ResolveOrRejectClosed(bool error) {
-  if (error) {
-    closed_resolver_->Reject();
-  } else {
-    closed_resolver_->Resolve();
-  }
+void Socket::ResolveClosed() {
+  closed_resolver_->Resolve();
+  closed_resolver_ = nullptr;
+}
+
+void Socket::RejectClosed(ScriptValue exception) {
+  closed_resolver_->Reject(exception);
   closed_resolver_ = nullptr;
 }
 

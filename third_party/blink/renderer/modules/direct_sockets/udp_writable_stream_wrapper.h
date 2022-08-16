@@ -48,7 +48,7 @@ class MODULES_EXPORT UDPWritableStreamWrapper final
   CloseOnceCallback on_close_;
 
   const Member<UDPSocketMojoRemote> udp_socket_;
-  Member<ScriptPromiseResolver> send_resolver_;
+  Member<ScriptPromiseResolver> write_promise_resolver_;
 };
 
 }  // namespace blink
