@@ -101,19 +101,29 @@ TEST_F(CSVPasswordParserImplTest, ParseFileMissingPassword) {
   ParseCSV(raw_csv, base::BindLambdaForTesting(
                         [&](mojom::CSVPasswordSequencePtr sequence) {
                           EXPECT_TRUE(sequence);
-                          EXPECT_THAT(sequence->csv_passwords, IsEmpty());
+                          EXPECT_EQ(1u, sequence->csv_passwords.size());
+                          EXPECT_EQ("Bob",
+                                    sequence->csv_passwords[0].GetUsername());
+                          EXPECT_EQ(GURL("https://example.org"),
+                                    sequence->csv_passwords[0].GetURL());
                         }));
 }
 
 TEST_F(CSVPasswordParserImplTest, ParseFileMissingFields) {
   const std::string raw_csv =
       R"(Display Name,   ,Login,Secret Question,Password,URL,Timestamp
-        :)            Bob,ABCD!,blabla,https://example.org,132)";
+        :)        Bob,ABCD!,blabla,https://example.org,132)";
 
   ParseCSV(raw_csv, base::BindLambdaForTesting(
                         [&](mojom::CSVPasswordSequencePtr sequence) {
                           EXPECT_TRUE(sequence);
-                          EXPECT_THAT(sequence->csv_passwords, IsEmpty());
+                          EXPECT_EQ(1u, sequence->csv_passwords.size());
+                          EXPECT_EQ("blabla",
+                                    sequence->csv_passwords[0].GetUsername());
+                          EXPECT_EQ("132",
+                                    sequence->csv_passwords[0].GetPassword());
+                          EXPECT_EQ(GURL(""),
+                                    sequence->csv_passwords[0].GetURL());
                         }));
 }
 

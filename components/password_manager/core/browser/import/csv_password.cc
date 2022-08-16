@@ -39,14 +39,13 @@ CSVPassword::CSVPassword(GURL url, std::string username, std::string password)
       status_(Status::kOK) {}
 
 CSVPassword::CSVPassword(const ColumnMap& map, base::StringPiece row) {
-  if (map.size() != kLabelCount) {
+  if (row.empty() || map.size() != kLabelCount) {
     status_ = Status::kSemanticError;
     return;
   }
 
   size_t field_idx = 0;
   CSVFieldParser parser(row);
-  bool username_set = false;
   status_ = Status::kOK;
 
   while (parser.HasMoreFields()) {
@@ -60,26 +59,15 @@ CSVPassword::CSVPassword(const ColumnMap& map, base::StringPiece row) {
       continue;
     switch (meaning_it->second) {
       case Label::kOrigin:
-        if (!base::IsStringASCII(field)) {
-          status_ = Status::kSyntaxError;
-          return;
-        }
         url_ = GURL(field);
         break;
       case Label::kUsername:
         username_ = ConvertUTF8(field);
-        username_set = true;
         break;
       case Label::kPassword:
         password_ = ConvertUTF8(field);
         break;
     }
-  }
-  // While all of origin, username and password must be set in the CSV data
-  // row, username is permitted to be an empty string, while password and
-  // origin are not.
-  if (!url_.is_valid() || !username_set || password_.empty()) {
-    status_ = Status::kSemanticError;
   }
 }
 

@@ -76,22 +76,18 @@ TEST(CSVPasswordSequenceTest, InvalidCSVHeader) {
   EXPECT_EQ(seq.begin(), seq.end());
 }
 
-TEST(CSVPasswordSequenceTest, InvalidCSV) {
-  static constexpr char kQuotes[] =
-      "Display Name,Login,Secret Question,Password,URL,Timestamp\n"
-      ":),Bob,ABCD!,odd,https://example.org,\"\n";
-  CSVPasswordSequence seq(kQuotes);
-  EXPECT_EQ(CSVPassword::Status::kOK, seq.result());
-  EXPECT_EQ(seq.begin(), seq.end());
-}
-
-TEST(CSVPasswordSequenceTest, MissingData) {
+TEST(CSVPasswordSequenceTest, SkipsEmptyLines) {
   static constexpr char kNoUrl[] =
       "Display Name,Login,Secret Question,Password,URL,Timestamp\n"
-      ":),Bob,ABCD!,odd\n";
+      "\n"
+      "\t\t\t\r\n"
+      "            \n"
+      "non_empty,pwd\n"
+      "non_empty,pwd\n"
+      "    ";
   CSVPasswordSequence seq(kNoUrl);
   EXPECT_EQ(CSVPassword::Status::kOK, seq.result());
-  EXPECT_EQ(seq.begin(), seq.end());
+  ASSERT_EQ(2, std::distance(seq.begin(), seq.end()));
 }
 
 TEST(CSVPasswordSequenceTest, Iteration) {
