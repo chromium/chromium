@@ -255,7 +255,7 @@ ApcClientImpl::CreateApcExternalActionDelegate() {
   DCHECK(website_login_manager_);
 
   return std::make_unique<ApcExternalActionDelegate>(
-      side_panel_coordinator_.get(), scrim_manager_.get(),
+      &GetWebContents(), side_panel_coordinator_.get(), scrim_manager_.get(),
       website_login_manager_.get());
 }
 

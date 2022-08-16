@@ -16,10 +16,12 @@
 #include "chrome/browser/ui/autofill_assistant/password_change/mock_password_change_run_display.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/password_change_run_display.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill_assistant/browser/public/external_action.pb.h"
 #include "components/autofill_assistant/browser/public/password_change/mock_website_login_manager.h"
 #include "components/autofill_assistant/browser/public/password_change/proto/actions.pb.h"
 #include "components/autofill_assistant/browser/public/rectf.h"
+#include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -147,14 +149,15 @@ autofill_assistant::external::Action CreateAction(
 
 }  // namespace
 
-class ApcExternalActionDelegateTest : public ::testing::Test {
+class ApcExternalActionDelegateTest : public ChromeRenderViewHostTestHarness {
  public:
-  ApcExternalActionDelegateTest() {
-    action_delegate_ = std::make_unique<ApcExternalActionDelegate>(
-        display_delegate(), apc_scrim_manager(), website_login_manager());
-  }
-
   void SetUp() override {
+    content::RenderViewHostTestHarness::SetUp();
+
+    action_delegate_ = std::make_unique<ApcExternalActionDelegate>(
+        web_contents(), display_delegate(), apc_scrim_manager(),
+        website_login_manager());
+
     EXPECT_CALL(*display(), Show);
     action_delegate()->Show(display()->GetWeakPtr());
   }

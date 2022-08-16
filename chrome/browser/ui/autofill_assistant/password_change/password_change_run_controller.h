@@ -70,11 +70,14 @@ class PasswordChangeRunController {
   virtual void ShowCompletionScreen(
       base::RepeatingClosure done_button_callback) = 0;
 
+  // Opens Chrome's password manager.
+  virtual void OpenPasswordManager() = 0;
+
   // Shows the error screen.
   virtual void ShowErrorScreen() = 0;
 
-  // Whether a password change run has resulted in the password being
-  // successfully changed.
+  // Returns whether a password change run has resulted in a successfully
+  // changed password.
   virtual bool PasswordWasSuccessfullyChanged() = 0;
 
   // Returns a weak pointer to this controller.

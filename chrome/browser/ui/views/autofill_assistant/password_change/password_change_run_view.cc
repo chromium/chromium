@@ -315,13 +315,10 @@ void PasswordChangeRunView::OnShowCompletionScreen() {
           .SetTextContext(views::style::CONTEXT_LABEL)
           .SetID(static_cast<int>(ChildrenViewsIds::kDescription))
           .Build());
-
-  // TODO(crbug.com/1329179): Navidate user to password manager
-  // components/password_manager/core/browser/manage_passwords_referrer.h
   description_view->AddStyleRange(
       gfx::Range(offset, offset + password_manager_link.length()),
-      views::StyledLabel::RangeStyleInfo::CreateForLink(
-          static_cast<base::RepeatingClosure>(base::DoNothing())));
+      views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
+          &PasswordChangeRunController::OpenPasswordManager, controller_)));
 
   views::View* button_container = body_->AddChildView(CreateButtonContainer());
   button_container->AddChildView(CreateButton(

@@ -21,10 +21,12 @@ class GURL;
 
 namespace autofill_assistant {
 struct RectF;
-}
-namespace autofill_assistant {
 class WebsiteLoginManager;
 }  // namespace autofill_assistant
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 // Receives actions from the `HeadlessScriptController` and passes them on an
 // implementation of a `PasswordChangeRunDisplay`.
@@ -36,6 +38,7 @@ class ApcExternalActionDelegate
       public PasswordChangeRunController {
  public:
   explicit ApcExternalActionDelegate(
+      content::WebContents* web_contents,
       AssistantDisplayDelegate* display_delegate,
       ApcScrimManager* apc_scrim_manager,
       autofill_assistant::WebsiteLoginManager* website_login_manager);
@@ -82,6 +85,7 @@ class ApcExternalActionDelegate
   void ShowStartingScreen(const GURL& url) override;
   void ShowCompletionScreen(
       base::RepeatingClosure onShowCompletionScreenDoneButtonClicked) override;
+  void OpenPasswordManager() override;
   void ShowErrorScreen() override;
   bool PasswordWasSuccessfullyChanged() override;
 
@@ -114,6 +118,9 @@ class ApcExternalActionDelegate
 
   void OnBasePromptDomUpdateReceived(
       const autofill_assistant::external::ElementConditionsUpdate& update);
+
+  // The `WebContents` on which the run is performed.
+  const raw_ptr<content::WebContents> web_contents_;
 
   // The callback that terminates the current action.
   base::OnceCallback<void(const autofill_assistant::external::Result& result)>

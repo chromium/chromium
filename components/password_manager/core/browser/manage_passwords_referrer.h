@@ -58,7 +58,11 @@ enum class ManagePasswordsReferrer {
   // Corresponds to the situation when Chrome opens native Password Manager UI
   // when navigating to specified website.
   kPasswordsGoogleWebsite = 13,
-  kMaxValue = kPasswordsGoogleWebsite,
+  // Corresponds to the user clicking the "Check your passwords any time in
+  // password manager" after a successful automated password change run.
+  // Only used on Desktop.
+  kAutomatedPasswordChangeSuccessLink = 14,
+  kMaxValue = kAutomatedPasswordChangeSuccessLink,
 };
 
 }  // namespace password_manager

@@ -54,10 +54,12 @@ constexpr int kDescriptionId2 = 17;
 class MockApcExternalActionDelegate : public ApcExternalActionDelegate {
  public:
   MockApcExternalActionDelegate(
+      content::WebContents* web_contents,
       AssistantDisplayDelegate* display_delegate,
       ApcScrimManager* apc_scrim_manager,
       autofill_assistant::WebsiteLoginManager* website_login_manager)
-      : ApcExternalActionDelegate(display_delegate,
+      : ApcExternalActionDelegate(web_contents,
+                                  display_delegate,
                                   apc_scrim_manager,
                                   website_login_manager) {}
   ~MockApcExternalActionDelegate() override = default;
@@ -257,7 +259,8 @@ class ApcClientImplTest : public ChromeRenderViewHostTestHarness {
     // Prepare the ApcExternalActionDelegate.
     auto apc_external_action_delegate =
         std::make_unique<MockApcExternalActionDelegate>(
-            side_panel_ref_, scrim_manager_ref_, website_login_manager_ref_);
+            web_contents(), side_panel_ref_, scrim_manager_ref_,
+            website_login_manager_ref_);
     apc_external_action_delegate_ref_ = apc_external_action_delegate.get();
     // As default, assume a password change run as successful.
     ON_CALL(*apc_external_action_delegate_ref_, PasswordWasSuccessfullyChanged)
