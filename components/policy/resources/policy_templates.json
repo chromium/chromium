@@ -18000,7 +18000,7 @@
         {
           'name': 'SAML_INTERSTITIAL',
           'value': 1,
-          'caption': '''Redirect to SAML IdP after user confirmation''',
+          'caption': '''Redirect to SAML IdP by default (prior to <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> 99 user confirmation is needed)''',
         },
       ],
       'supported_on': ['chrome_os:51-'],
@@ -18017,7 +18017,9 @@
 
       If set to GAIA, login will be done via the normal GAIA authentication flow.
 
-      If set to SAML_INTERSTITIAL, login will show an interstitial screen offering the user to go forward with authentication via the SAML IdP of the device's enrollment domain, or go back to the normal GAIA login flow.'''
+      If set to SAML_INTERSTITIAL, login will automatically redirect to SAML IdP by default. The user is still allowed to go back to the normal GAIA login flow.
+
+      Note: the additional user confirmation screen, which was shown on <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> until version 99, isn't displayed anymore. If SAML IdP isn't configured and this policy is set to SAML_INTERSTITIAL, redirect will fail with the 400 error.'''
     },
     {
       'name': 'UsbDetachableWhitelist',
