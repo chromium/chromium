@@ -8,6 +8,7 @@
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/ime/test_ime_controller_client.h"
 #include "ash/public/cpp/ime_info.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/ime_menu/ime_list_view.h"
 #include "ash/system/status_area_widget.h"
@@ -34,6 +35,7 @@ namespace ash {
 namespace {
 
 const int kEmojiButtonId = 1;
+const int kSettingsButtonId = 2;
 
 ImeMenuTray* GetTray() {
   return StatusAreaWidgetTestHelper::GetStatusAreaWidget()->ime_menu_tray();
@@ -85,6 +87,17 @@ class ImeMenuTrayTest : public AshTestBase {
   views::Button* GetEmojiButton() const {
     return static_cast<views::Button*>(
         GetTray()->bubble_->bubble_view()->GetViewByID(kEmojiButtonId));
+  }
+
+  views::View* GetSettingsButton() const {
+    return static_cast<views::View*>(
+        GetTray()->bubble_->bubble_view()->GetViewByID(kSettingsButtonId));
+  }
+
+  void SetUpKioskSession() {
+    SessionInfo info;
+    info.is_running_in_app_mode = true;
+    Shell::Get()->session_controller()->SetSessionInfo(info);
   }
 
   // Verifies the IME menu list has been updated with the right IME list.
@@ -415,6 +428,33 @@ TEST_F(ImeMenuTrayTest, ShouldShowBottomButtonsSeperate) {
   EXPECT_TRUE(IsEmojiEnabled());
   EXPECT_FALSE(IsHandwritingEnabled());
   EXPECT_FALSE(IsVoiceEnabled());
+}
+
+TEST_F(ImeMenuTrayTest, KioskImeTraySettingsButton) {
+  SetUpKioskSession();
+  Shell::Get()->ime_controller()->ShowImeMenuOnShelf(true);
+  ASSERT_TRUE(IsVisible());
+
+  // Open the menu.
+  ui::GestureEvent tap(0, 0, 0, base::TimeTicks(),
+                       ui::GestureEventDetails(ui::ET_GESTURE_TAP));
+  GetTray()->PerformAction(tap);
+
+  views::View* settings_button = GetSettingsButton();
+  EXPECT_FALSE(settings_button);
+}
+
+TEST_F(ImeMenuTrayTest, UserSessionImeTraySettingsButton) {
+  Shell::Get()->ime_controller()->ShowImeMenuOnShelf(true);
+  ASSERT_TRUE(IsVisible());
+
+  // Open the menu.
+  ui::GestureEvent tap(0, 0, 0, base::TimeTicks(),
+                       ui::GestureEventDetails(ui::ET_GESTURE_TAP));
+  GetTray()->PerformAction(tap);
+
+  views::View* settings_button = GetSettingsButton();
+  EXPECT_TRUE(settings_button);
 }
 
 TEST_F(ImeMenuTrayTest, ShowOnScreenKeyboardToggle) {

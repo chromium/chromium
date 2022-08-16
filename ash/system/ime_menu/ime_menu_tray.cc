@@ -59,6 +59,7 @@ namespace {
 
 // Used for testing.
 const int kEmojiButtonId = 1;
+const int kSettingsButtonId = 2;
 
 // Insets for the title view (dp).
 constexpr auto kTitleViewPadding = gfx::Insets::TLBR(0, 0, 0, 16);
@@ -84,6 +85,11 @@ bool IsInLoginOrLockScreen() {
 bool IsInPasswordInputContext() {
   return ui::IMEBridge::Get()->GetCurrentInputContext().type ==
          ui::TEXT_INPUT_TYPE_PASSWORD;
+}
+
+// Returns true if it is Kiosk Session.
+bool IsKioskSession() {
+  return Shell::Get()->session_controller()->IsRunningInAppMode();
 }
 
 class ImeMenuLabel : public views::Label {
@@ -153,15 +159,19 @@ class ImeTitleView : public views::BoxLayoutView {
                                      TrayPopupUtils::FontStyle::kPodMenuHeader);
     SetFlexForView(title_label, 1);
 
-    settings_button_ = AddChildView(std::make_unique<IconButton>(
-        base::BindRepeating([]() {
-          base::RecordAction(
-              base::UserMetricsAction("StatusArea_IME_Detailed"));
-          Shell::Get()->system_tray_model()->client()->ShowIMESettings();
-        }),
-        IconButton::Type::kSmall, &kSystemMenuSettingsIcon,
-        IDS_ASH_STATUS_TRAY_IME_SETTINGS));
-    settings_button_->SetEnabled(TrayPopupUtils::CanOpenWebUISettings());
+    // Don't create Settings Button if it is Kiosk session.
+    if (!IsKioskSession()) {
+      settings_button_ = AddChildView(std::make_unique<IconButton>(
+          base::BindRepeating([]() {
+            base::RecordAction(
+                base::UserMetricsAction("StatusArea_IME_Detailed"));
+            Shell::Get()->system_tray_model()->client()->ShowIMESettings();
+          }),
+          IconButton::Type::kSmall, &kSystemMenuSettingsIcon,
+          IDS_ASH_STATUS_TRAY_IME_SETTINGS));
+      settings_button_->SetEnabled(TrayPopupUtils::CanOpenWebUISettings());
+      settings_button_->SetID(kSettingsButtonId);
+    }
   }
   ImeTitleView(const ImeTitleView&) = delete;
   ImeTitleView& operator=(const ImeTitleView&) = delete;
