@@ -304,6 +304,12 @@ bool TrayBackgroundView::IsShowingMenu() const {
   return context_menu_runner_ && context_menu_runner_->IsRunning();
 }
 
+void TrayBackgroundView::SetRoundedCornerBehavior(
+    RoundedCornerBehavior corner_behavior) {
+  corner_behavior_ = corner_behavior;
+  UpdateBackground();
+}
+
 gfx::RoundedCornersF TrayBackgroundView::GetRoundedCorners() {
   const float radius = ShelfConfig::Get()->control_border_radius();
   if (shelf_->IsHorizontalAlignment()) {
@@ -314,6 +320,10 @@ gfx::RoundedCornersF TrayBackgroundView::GetRoundedCorners() {
                                         radius, radius,
                                         kUnifiedTrayNonRoundedSideRadius};
     switch (corner_behavior_) {
+      case kNotRounded:
+        return {
+            kUnifiedTrayNonRoundedSideRadius, kUnifiedTrayNonRoundedSideRadius,
+            kUnifiedTrayNonRoundedSideRadius, kUnifiedTrayNonRoundedSideRadius};
       case kAllRounded:
         return {radius, radius, radius, radius};
       case kStartRounded:
@@ -324,6 +334,10 @@ gfx::RoundedCornersF TrayBackgroundView::GetRoundedCorners() {
   }
 
   switch (corner_behavior_) {
+    case kNotRounded:
+      return {
+          kUnifiedTrayNonRoundedSideRadius, kUnifiedTrayNonRoundedSideRadius,
+          kUnifiedTrayNonRoundedSideRadius, kUnifiedTrayNonRoundedSideRadius};
     case kAllRounded:
       return {radius, radius, radius, radius};
     case kStartRounded:

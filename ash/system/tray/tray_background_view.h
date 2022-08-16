@@ -43,7 +43,12 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
  public:
   METADATA_HEADER(TrayBackgroundView);
 
-  enum RoundedCornerBehavior { kStartRounded, kEndRounded, kAllRounded };
+  enum RoundedCornerBehavior {
+    kNotRounded,
+    kStartRounded,
+    kEndRounded,
+    kAllRounded
+  };
 
   TrayBackgroundView(Shelf* shelf,
                      RoundedCornerBehavior corner_behavior = kAllRounded);
@@ -178,6 +183,9 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   // Returns true if the view is showing a context menu.
   bool IsShowingMenu() const;
 
+  // Set the rounded corner behavior for this tray item.
+  void SetRoundedCornerBehavior(RoundedCornerBehavior corner_behavior);
+
   // Returns the corners based on the `corner_behavior_`;
   gfx::RoundedCornersF GetRoundedCorners();
 
@@ -295,7 +303,7 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
 
   // The shape of this tray which is only applied to the horizontal tray.
   // Defaults to `kAllRounded`.
-  const RoundedCornerBehavior corner_behavior_;
+  RoundedCornerBehavior corner_behavior_;
 
   std::unique_ptr<TrayWidgetObserver> widget_observer_;
   std::unique_ptr<TrayEventFilter> tray_event_filter_;
