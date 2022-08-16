@@ -486,7 +486,7 @@ void OmahaService::StopInternal() {
 
 // static
 void OmahaService::GetDebugInformation(
-    base::OnceCallback<void(base::DictionaryValue*)> callback) {
+    base::OnceCallback<void(base::Value::Dict)> callback) {
   if (OmahaService::IsEnabled()) {
     OmahaService* service = GetInstance();
     web::GetIOThreadTaskRunner({})->PostTask(
@@ -495,11 +495,9 @@ void OmahaService::GetDebugInformation(
                        base::Unretained(service), std::move(callback)));
 
   } else {
-    auto result = std::make_unique<base::DictionaryValue>();
     // Invoke the callback with an empty response.
     web::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), base::Owned(result.release())));
+        FROM_HERE, base::BindOnce(std::move(callback), base::Value::Dict()));
   }
 }
 
@@ -788,33 +786,29 @@ void OmahaService::OnURLLoadComplete(
 }
 
 void OmahaService::GetDebugInformationOnIOThread(
-    base::OnceCallback<void(base::DictionaryValue*)> callback) {
-  auto result = std::make_unique<base::DictionaryValue>();
+    base::OnceCallback<void(base::Value::Dict)> callback) {
+  base::Value::Dict result;
 
-  result->SetString("message", GetCurrentPingContent());
-  result->SetString("last_sent_time",
-                    base::TimeFormatShortDateAndTime(last_sent_time_));
-  result->SetString("next_tries_time",
-                    base::TimeFormatShortDateAndTime(next_tries_time_));
-  result->SetString("current_ping_time",
-                    base::TimeFormatShortDateAndTime(current_ping_time_));
-  result->SetString("last_sent_version", last_sent_version_.GetString());
-  result->SetString("number_of_tries",
-                    base::StringPrintf("%d", number_of_tries_));
-  result->SetString("timer_running",
-                    base::StringPrintf("%d", timer_.IsRunning()));
-  result->SetString(
-      "timer_current_delay",
-      base::StringPrintf("%llds", timer_.GetCurrentDelay().InSeconds()));
-  result->SetString("timer_desired_run_time",
-                    base::TimeFormatShortDateAndTime(
-                        base::Time::Now() +
-                        (timer_.desired_run_time() - base::TimeTicks::Now())));
+  result.Set("message", GetCurrentPingContent());
+  result.Set("last_sent_time",
+             base::TimeFormatShortDateAndTime(last_sent_time_));
+  result.Set("next_tries_time",
+             base::TimeFormatShortDateAndTime(next_tries_time_));
+  result.Set("current_ping_time",
+             base::TimeFormatShortDateAndTime(current_ping_time_));
+  result.Set("last_sent_version", last_sent_version_.GetString());
+  result.Set("number_of_tries", base::StringPrintf("%d", number_of_tries_));
+  result.Set("timer_running", base::StringPrintf("%d", timer_.IsRunning()));
+  result.Set("timer_current_delay",
+             base::StringPrintf("%llds", timer_.GetCurrentDelay().InSeconds()));
+  result.Set("timer_desired_run_time",
+             base::TimeFormatShortDateAndTime(
+                 base::Time::Now() +
+                 (timer_.desired_run_time() - base::TimeTicks::Now())));
 
   // Sending the value to the callback.
   web::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), base::Owned(result.release())));
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
 }
 
 bool OmahaService::IsNextPingInstallRetry() {
