@@ -10,6 +10,7 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "crypto/secure_hash.h"
 #include "crypto/sha2.h"
@@ -26,8 +27,11 @@ bool BinaryFeatureExtractor::ExtractImageFeatures(
     ClientDownloadRequest_ImageHeaders* image_headers,
     google::protobuf::RepeatedPtrField<std::string>* signed_data) {
   base::MemoryMappedFile mapped_file;
+  base::Time start_time = base::Time::Now();
   if (!mapped_file.Initialize(file_path))
     return false;
+  base::UmaHistogramMediumTimes("SBClientDownload.MemoryMapFileDuration",
+                                base::Time::Now() - start_time);
   return ExtractImageFeaturesFromData(mapped_file.data(), mapped_file.length(),
       options, image_headers, signed_data);
 }

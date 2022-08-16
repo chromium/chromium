@@ -214,6 +214,24 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="SBClientDownload.DownloadRequestDurationMedium" units="ms"
+    expires_after="2022-12-25">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the total time it takes for the SafeBrowsing download service to
+    check whether the content of a download is malicious or not, including file
+    feature extraction, allowlist checking, and server ping. This histogram only
+    includes checks that sent a ping to the SafeBrowsing server. It does not
+    include requests that were cancelled, but does include requests that
+    received a bad response.
+
+    This histogram is a &quot;medium&quot; version of
+    SBClientDownload.DownloadRequestDuration. It has a maximum of 3 minutes to
+    help investigate long-tail downloads.
+  </summary>
+</histogram>
+
 <histogram name="SBClientDownload.DownloadRequestNetError" enum="NetErrorCodes"
     expires_after="2023-04-24">
   <owner>drubery@chromium.org</owner>
@@ -306,6 +324,27 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="SBClientDownload.FileFeatureExtractionDuration" units="ms"
+    expires_after="2022-12-15">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records how long it takes to extract features from a downloaded file. This
+    is aggregated over all file types. It is recorded once per download.
+  </summary>
+</histogram>
+
+<histogram name="SBClientDownload.GetTabRedirectsDuration" units="ms"
+    expires_after="2022-12-15">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records how long it takes to get tab redirects when populating a
+    ClientDownloadRequest. This is aggregated over all file types. It is
+    recorded once per download.
+  </summary>
+</histogram>
+
 <histogram name="SBClientDownload.MalwareDeepScanResult.{trigger}"
     enum="SBClientDownloadCheckResult" expires_after="2023-04-28">
   <owner>drubery@chromium.org</owner>
@@ -325,6 +364,18 @@ chromium-metrics-reviews@google.com.
     <variant name="Policy" summary="Triggered by enterprise policy"/>
     <variant name="Unknown" summary="Unknown trigger"/>
   </token>
+</histogram>
+
+<histogram name="SBClientDownload.MemoryMapFileDuration" units="ms"
+    expires_after="2022-12-15">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records how long it takes to load the download as a memory-mapped file for
+    the purpose of extracting executable features. This is aggregated over all
+    file types that are checked as executables. It is recorded once per
+    download.
+  </summary>
 </histogram>
 
 <histogram name="SBClientDownload.SafeDownloadOpenedLatency2.{ShowAction}"

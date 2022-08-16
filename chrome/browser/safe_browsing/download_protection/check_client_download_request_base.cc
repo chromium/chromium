@@ -558,30 +558,46 @@ void CheckClientDownloadRequestBase::OnURLLoaderComplete(
           .inspection_type();
   switch (inspection_type) {
     case DownloadFileType::NONE:
-      UMA_HISTOGRAM_TIMES("SBClientDownload.DownloadRequestDuration.None",
-                          base::TimeTicks::Now() - start_time_);
+      base::UmaHistogramTimes("SBClientDownload.DownloadRequestDuration.None",
+                              base::TimeTicks::Now() - start_time_);
+      base::UmaHistogramMediumTimes(
+          "SBClientDownload.DownloadRequestDurationMedium.None",
+          base::TimeTicks::Now() - start_time_);
       break;
     case DownloadFileType::ZIP:
-      UMA_HISTOGRAM_TIMES("SBClientDownload.DownloadRequestDuration.Zip",
-                          base::TimeTicks::Now() - start_time_);
+      base::UmaHistogramTimes("SBClientDownload.DownloadRequestDuration.Zip",
+                              base::TimeTicks::Now() - start_time_);
+      base::UmaHistogramMediumTimes(
+          "SBClientDownload.DownloadRequestDurationMedium.Zip",
+          base::TimeTicks::Now() - start_time_);
       break;
     case DownloadFileType::RAR:
-      UMA_HISTOGRAM_TIMES("SBClientDownload.DownloadRequestDuration.Rar",
-                          base::TimeTicks::Now() - start_time_);
+      base::UmaHistogramTimes("SBClientDownload.DownloadRequestDuration.Rar",
+                              base::TimeTicks::Now() - start_time_);
+      base::UmaHistogramMediumTimes(
+          "SBClientDownload.DownloadRequestDurationMedium.Rar",
+          base::TimeTicks::Now() - start_time_);
       break;
     case DownloadFileType::DMG:
-      UMA_HISTOGRAM_TIMES("SBClientDownload.DownloadRequestDuration.Dmg",
-                          base::TimeTicks::Now() - start_time_);
+      base::UmaHistogramTimes("SBClientDownload.DownloadRequestDuration.Dmg",
+                              base::TimeTicks::Now() - start_time_);
+      base::UmaHistogramMediumTimes(
+          "SBClientDownload.DownloadRequestDurationMedium.Dmg",
+          base::TimeTicks::Now() - start_time_);
       break;
     case DownloadFileType::OFFICE_DOCUMENT:
-      UMA_HISTOGRAM_TIMES("SBClientDownload.DownloadRequestDuration.Document",
-                          base::TimeTicks::Now() - start_time_);
+      base::UmaHistogramTimes(
+          "SBClientDownload.DownloadRequestDuration.Document",
+          base::TimeTicks::Now() - start_time_);
+      base::UmaHistogramMediumTimes(
+          "SBClientDownload.DownloadRequestDurationMedium.Document",
+          base::TimeTicks::Now() - start_time_);
       break;
   }
-  UMA_HISTOGRAM_TIMES("SBClientDownload.DownloadRequestDuration",
-                      base::TimeTicks::Now() - start_time_);
-  UMA_HISTOGRAM_TIMES("SBClientDownload.DownloadRequestNetworkDuration",
-                      base::TimeTicks::Now() - request_start_time_);
+  base::UmaHistogramTimes("SBClientDownload.DownloadRequestDuration",
+                          base::TimeTicks::Now() - start_time_);
+  base::UmaHistogramTimes("SBClientDownload.DownloadRequestNetworkDuration",
+                          base::TimeTicks::Now() - request_start_time_);
 
   FinishRequest(result, reason);
 }

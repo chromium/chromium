@@ -93,6 +93,9 @@ class DownloadRequestMaker {
 
   Callback callback_;
 
+  // Start time of a given asynchronous task. Used for metrics.
+  base::Time start_time_;
+
   base::WeakPtrFactory<DownloadRequestMaker> weakptr_factory_{this};
 };
 
