@@ -8240,24 +8240,30 @@ bool RenderFrameHostImpl::CanSubframeCommitOriginAndUrl(
   if (nav_entry_id == 0)
     return true;
 
-  const int last_nav_entry_index =
-      frame_tree_node_->navigator().controller().GetLastCommittedEntryIndex();
-  const int dest_nav_entry_index =
-      frame_tree_node_->navigator().controller().GetEntryIndexWithUniqueID(
-          nav_entry_id);
+  const int last_nav_entry_index = navigation_request->frame_tree_node()
+                                       ->navigator()
+                                       .controller()
+                                       .GetLastCommittedEntryIndex();
+  const int dest_nav_entry_index = navigation_request->frame_tree_node()
+                                       ->navigator()
+                                       .controller()
+                                       .GetEntryIndexWithUniqueID(nav_entry_id);
   if (dest_nav_entry_index <= 0 || dest_nav_entry_index == last_nav_entry_index)
     return true;
 
   NavigationEntryImpl* dest_nav_entry =
-      frame_tree_node_->navigator().controller().GetEntryAtIndex(
-          dest_nav_entry_index);
+      navigation_request->frame_tree_node()
+          ->navigator()
+          .controller()
+          .GetEntryAtIndex(dest_nav_entry_index);
   auto dest_main_frame_fne = dest_nav_entry->root_node()->frame_entry;
 
   // A subframe navigation should never lead to a NavigationEntry that looks
   // like a cross-document navigation in the main frame, since cross-document
   // navigations destroy all subframes.
   int64_t dest_main_frame_dsn = dest_main_frame_fne->document_sequence_number();
-  int64_t actual_main_frame_dsn = frame_tree_node_->navigator()
+  int64_t actual_main_frame_dsn = navigation_request->frame_tree_node()
+                                      ->navigator()
                                       .controller()
                                       .GetLastCommittedEntry()
                                       ->root_node()
