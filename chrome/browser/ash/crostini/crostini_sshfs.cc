@@ -159,7 +159,7 @@ void CrostiniSshfs::OnGetContainerSshKeys(
                   file_manager::util::GetCrostiniMountOptions(
                       hostname, host_private_key, container_public_key),
                   ash::MountType::kNetworkStorage,
-                  chromeos::MOUNT_ACCESS_MODE_READ_WRITE,
+                  ash::MountAccessMode::kReadWrite,
                   base::BindOnce(&CrostiniSshfs::OnMountEvent,
                                  weak_ptr_factory_.GetWeakPtr()));
 }

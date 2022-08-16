@@ -36,7 +36,7 @@ class MountPointTest : public testing::Test {
 TEST_F(MountPointTest, Mount) {
   EXPECT_CALL(disk_mount_manager_,
               MountPath(kSourcePath, "", "", _, MountType::kDevice,
-                        MOUNT_ACCESS_MODE_READ_WRITE, _))
+                        MountAccessMode::kReadWrite, _))
       .WillOnce(RunOnceCallback<6>(
           MountError::kNone, DiskMountManager::MountPoint{
                                  kSourcePath, kMountPath, MountType::kDevice}));
@@ -44,7 +44,7 @@ TEST_F(MountPointTest, Mount) {
 
   base::RunLoop run_loop;
   MountPoint::Mount(&disk_mount_manager_, kSourcePath, "", "", {},
-                    MountType::kDevice, MOUNT_ACCESS_MODE_READ_WRITE,
+                    MountType::kDevice, MountAccessMode::kReadWrite,
                     base::BindLambdaForTesting(
                         [&run_loop](MountError mount_error,
                                     std::unique_ptr<MountPoint> mount) {
@@ -58,7 +58,7 @@ TEST_F(MountPointTest, Mount) {
 TEST_F(MountPointTest, MountFailure) {
   EXPECT_CALL(disk_mount_manager_,
               MountPath(kSourcePath, "", "", _, MountType::kDevice,
-                        MOUNT_ACCESS_MODE_READ_WRITE, _))
+                        MountAccessMode::kReadWrite, _))
       .WillOnce(RunOnceCallback<6>(
           MountError::kUnknown, DiskMountManager::MountPoint{
                                     kSourcePath, kMountPath, MountType::kDevice,
@@ -67,7 +67,7 @@ TEST_F(MountPointTest, MountFailure) {
 
   base::RunLoop run_loop;
   MountPoint::Mount(&disk_mount_manager_, kSourcePath, "", "", {},
-                    MountType::kDevice, MOUNT_ACCESS_MODE_READ_WRITE,
+                    MountType::kDevice, MountAccessMode::kReadWrite,
                     base::BindLambdaForTesting(
                         [&run_loop](MountError mount_error,
                                     std::unique_ptr<MountPoint> mount) {

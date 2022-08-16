@@ -621,7 +621,7 @@ TEST_F(VolumeManagerTest, OnAutoMountableDiskEvent_Changed) {
   EXPECT_EQ(1U, disk_mount_manager_->mount_requests().size());
   EXPECT_EQ(0U, disk_mount_manager_->unmount_requests().size());
   // Read-write mode by default.
-  EXPECT_EQ(chromeos::MOUNT_ACCESS_MODE_READ_WRITE,
+  EXPECT_EQ(ash::MountAccessMode::kReadWrite,
             disk_mount_manager_->mount_requests()[0].access_mode);
 
   volume_manager()->RemoveObserver(&observer);
@@ -643,8 +643,8 @@ TEST_F(VolumeManagerTest, OnAutoMountableDiskEvent_ChangedInReadonly) {
   EXPECT_EQ(1U, observer.events().size());
   EXPECT_EQ(1U, disk_mount_manager_->mount_requests().size());
   EXPECT_EQ(0U, disk_mount_manager_->unmount_requests().size());
-  // Shoule mount a disk in read-only mode.
-  EXPECT_EQ(chromeos::MOUNT_ACCESS_MODE_READ_ONLY,
+  // Should mount a disk in read-only mode.
+  EXPECT_EQ(ash::MountAccessMode::kReadOnly,
             disk_mount_manager_->mount_requests()[0].access_mode);
 
   volume_manager()->RemoveObserver(&observer);
@@ -725,7 +725,7 @@ TEST_F(VolumeManagerTest, OnMountEvent_Remounting) {
                                    .Build();
   disk_mount_manager_->AddDiskForTest(std::move(disk));
   disk_mount_manager_->MountPath("device1", "", "", {}, ash::MountType::kDevice,
-                                 chromeos::MOUNT_ACCESS_MODE_READ_WRITE,
+                                 ash::MountAccessMode::kReadWrite,
                                  base::DoNothing());
 
   const DiskMountManager::MountPoint kMountPoint{"device1", "mount1",
@@ -950,17 +950,17 @@ TEST_F(VolumeManagerTest, OnPartitionEvent_CompletedFailed) {
 TEST_F(VolumeManagerTest, OnExternalStorageDisabledChanged) {
   // Here create four mount points.
   disk_mount_manager_->MountPath("mount1", "", "", {}, ash::MountType::kDevice,
-                                 chromeos::MOUNT_ACCESS_MODE_READ_WRITE,
+                                 ash::MountAccessMode::kReadWrite,
                                  base::DoNothing());
   disk_mount_manager_->MountPath("mount2", "", "", {}, ash::MountType::kDevice,
-                                 chromeos::MOUNT_ACCESS_MODE_READ_ONLY,
+                                 ash::MountAccessMode::kReadOnly,
                                  base::DoNothing());
   disk_mount_manager_->MountPath(
       "mount3", "", "", {}, ash::MountType::kNetworkStorage,
-      chromeos::MOUNT_ACCESS_MODE_READ_ONLY, base::DoNothing());
+      ash::MountAccessMode::kReadOnly, base::DoNothing());
   disk_mount_manager_->MountPath(
       "failed_unmount", "", "", {}, ash::MountType::kDevice,
-      chromeos::MOUNT_ACCESS_MODE_READ_WRITE, base::DoNothing());
+      ash::MountAccessMode::kReadWrite, base::DoNothing());
   disk_mount_manager_->FailUnmountRequest("failed_unmount",
                                           ash::MountError::kUnknown);
 
@@ -1062,12 +1062,10 @@ TEST_F(VolumeManagerTest, OnExternalStorageReadOnlyChanged) {
   ASSERT_EQ(2U, disk_mount_manager_->remount_all_requests().size());
   const FakeDiskMountManager::RemountAllRequest& remount_request1 =
       disk_mount_manager_->remount_all_requests()[0];
-  EXPECT_EQ(chromeos::MOUNT_ACCESS_MODE_READ_ONLY,
-            remount_request1.access_mode);
+  EXPECT_EQ(ash::MountAccessMode::kReadOnly, remount_request1.access_mode);
   const FakeDiskMountManager::RemountAllRequest& remount_request2 =
       disk_mount_manager_->remount_all_requests()[1];
-  EXPECT_EQ(chromeos::MOUNT_ACCESS_MODE_READ_WRITE,
-            remount_request2.access_mode);
+  EXPECT_EQ(ash::MountAccessMode::kReadWrite, remount_request2.access_mode);
 }
 
 TEST_F(VolumeManagerTest, GetVolumeList) {

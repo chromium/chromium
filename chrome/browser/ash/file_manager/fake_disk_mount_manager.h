@@ -26,7 +26,7 @@ class FakeDiskMountManager : public ash::disks::DiskMountManager {
                  const std::string& mount_label,
                  const std::vector<std::string>& mount_options,
                  ash::MountType type,
-                 chromeos::MountAccessMode access_mode);
+                 ash::MountAccessMode access_mode);
     MountRequest(const MountRequest& other);
     ~MountRequest();
 
@@ -35,12 +35,12 @@ class FakeDiskMountManager : public ash::disks::DiskMountManager {
     std::string mount_label;
     std::vector<std::string> mount_options;
     ash::MountType type;
-    chromeos::MountAccessMode access_mode;
+    ash::MountAccessMode access_mode;
   };
 
   struct RemountAllRequest {
-    explicit RemountAllRequest(chromeos::MountAccessMode access_mode);
-    chromeos::MountAccessMode access_mode;
+    explicit RemountAllRequest(ash::MountAccessMode access_mode);
+    ash::MountAccessMode access_mode;
   };
 
   FakeDiskMountManager();
@@ -83,15 +83,14 @@ class FakeDiskMountManager : public ash::disks::DiskMountManager {
                  const std::string& mount_label,
                  const std::vector<std::string>& mount_options,
                  ash::MountType type,
-                 chromeos::MountAccessMode access_mode,
+                 ash::MountAccessMode access_mode,
                  MountPathCallback) override;
   // In order to simulate asynchronous invocation of callbacks after unmount
   // is finished, |callback| will be invoked only when
   // |FinishAllUnmountRequest()| is called.
   void UnmountPath(const std::string& mount_path,
                    UnmountPathCallback callback) override;
-  void RemountAllRemovableDrives(
-      chromeos::MountAccessMode access_mode) override;
+  void RemountAllRemovableDrives(ash::MountAccessMode access_mode) override;
   void FormatMountedDevice(const std::string& mount_path,
                            ash::disks::FormatFileSystemType filesystem,
                            const std::string& label) override;

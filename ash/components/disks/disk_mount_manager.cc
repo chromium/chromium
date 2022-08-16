@@ -110,7 +110,7 @@ class DiskMountManagerImpl : public DiskMountManager,
 
     cros_disks_client_->Mount(
         source_path, source_format, mount_label, mount_options, access_mode,
-        REMOUNT_OPTION_MOUNT_NEW_DEVICE,
+        RemountOption::kMountNewDevice,
         BindOnce(&DiskMountManagerImpl::OnMount, weak_ptr_factory_.GetWeakPtr(),
                  source_path, type));
 
@@ -400,7 +400,7 @@ class DiskMountManagerImpl : public DiskMountManager,
 
     cros_disks_client_->Mount(
         source_path, std::string(), std::string(), {}, access_mode,
-        REMOUNT_OPTION_REMOUNT_EXISTING_DEVICE,
+        RemountOption::kRemountExistingDevice,
         BindOnce(&DiskMountManagerImpl::OnMount, weak_ptr_factory_.GetWeakPtr(),
                  source_path, mount_point->mount_type));
   }
@@ -498,7 +498,7 @@ class DiskMountManagerImpl : public DiskMountManager,
         // Store whether the disk was mounted in read-only mode due to a policy.
         disk->set_write_disabled_by_policy(
             it != access_modes_.end() && !disk->is_read_only_hardware() &&
-            it->second == MOUNT_ACCESS_MODE_READ_ONLY);
+            it->second == MountAccessMode::kReadOnly);
         disk->SetMountPath(mount_info.mount_path);
         // Only set the mount path if the disk is actually mounted. Right now, a
         // number of code paths (format, rename, unmount) rely on the mount path
@@ -844,7 +844,7 @@ class DiskMountManagerImpl : public DiskMountManager,
     auto access_mode = access_modes_.find(disk_info.device_path());
     bool write_disabled_by_policy =
         access_mode != access_modes_.end() &&
-        access_mode->second == chromeos::MOUNT_ACCESS_MODE_READ_ONLY;
+        access_mode->second == MountAccessMode::kReadOnly;
     std::unique_ptr<Disk> disk = std::make_unique<Disk>(
         disk_info, write_disabled_by_policy, base_mount_path);
     if (!is_new) {
@@ -921,7 +921,7 @@ class DiskMountManagerImpl : public DiskMountManager,
     // Take a copy of the argument so we can modify it below.
     std::string device_path = device_path_arg;
     switch (event) {
-      case CROS_DISKS_DISK_ADDED: {
+      case MountEventType::kDiskAdded: {
         // Ensure we have an entry indicating we're waiting for
         // GetDeviceProperties() to complete.
         deferred_mount_events_[device_path];
@@ -932,7 +932,7 @@ class DiskMountManagerImpl : public DiskMountManager,
             base::DoNothing());
         break;
       }
-      case CROS_DISKS_DISK_REMOVED: {
+      case MountEventType::kDiskRemoved: {
         // Search and remove disks that are no longer present.
         DiskMountManager::Disks::iterator iter = disks_.find(device_path);
         if (iter != disks_.end()) {
@@ -942,20 +942,20 @@ class DiskMountManagerImpl : public DiskMountManager,
         }
         break;
       }
-      case CROS_DISKS_DEVICE_ADDED: {
+      case MountEventType::kDeviceAdded: {
         NotifyDeviceStatusUpdate(DEVICE_ADDED, device_path);
         break;
       }
-      case CROS_DISKS_DEVICE_REMOVED: {
+      case MountEventType::kDeviceRemoved: {
         NotifyDeviceStatusUpdate(DEVICE_REMOVED, device_path);
         break;
       }
-      case CROS_DISKS_DEVICE_SCANNED: {
+      case MountEventType::kDeviceScanned: {
         NotifyDeviceStatusUpdate(DEVICE_SCANNED, device_path);
         break;
       }
       default: {
-        LOG(ERROR) << "Unknown event: " << event;
+        LOG(ERROR) << "Unknown event: " << static_cast<int>(event);
       }
     }
   }
@@ -1050,7 +1050,7 @@ class DiskMountManagerImpl : public DiskMountManager,
 
   // Whether the instance attempted to mount a device in read-only mode for
   // each source path.
-  typedef std::map<std::string, chromeos::MountAccessMode> AccessModeMap;
+  typedef std::map<std::string, MountAccessMode> AccessModeMap;
   AccessModeMap access_modes_;
 
   base::WeakPtrFactory<DiskMountManagerImpl> weak_ptr_factory_{this};

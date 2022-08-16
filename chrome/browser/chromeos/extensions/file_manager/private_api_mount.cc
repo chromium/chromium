@@ -127,7 +127,7 @@ void FileManagerPrivateAddMountFunction::FinishMounting() {
   disk_mount_manager->MountPath(path_.AsUTF8Unsafe(), std::move(extension_),
                                 path_.BaseName().AsUTF8Unsafe(),
                                 std::move(options_), ash::MountType::kArchive,
-                                chromeos::MOUNT_ACCESS_MODE_READ_WRITE,
+                                chromeos::MountAccessMode::kReadWrite,
                                 base::DoNothing());
 }
 

@@ -334,12 +334,12 @@ class CrosDisksClientImpl : public CrosDisksClient {
 
     // Register handlers for D-Bus signals.
     constexpr SignalEventTuple kSignalEventTuples[] = {
-        {cros_disks::kDeviceAdded, CROS_DISKS_DEVICE_ADDED},
-        {cros_disks::kDeviceScanned, CROS_DISKS_DEVICE_SCANNED},
-        {cros_disks::kDeviceRemoved, CROS_DISKS_DEVICE_REMOVED},
-        {cros_disks::kDiskAdded, CROS_DISKS_DISK_ADDED},
-        {cros_disks::kDiskChanged, CROS_DISKS_DISK_CHANGED},
-        {cros_disks::kDiskRemoved, CROS_DISKS_DISK_REMOVED},
+        {cros_disks::kDeviceAdded, MountEventType::kDeviceAdded},
+        {cros_disks::kDeviceScanned, MountEventType::kDeviceScanned},
+        {cros_disks::kDeviceRemoved, MountEventType::kDeviceRemoved},
+        {cros_disks::kDiskAdded, MountEventType::kDiskAdded},
+        {cros_disks::kDiskChanged, MountEventType::kDiskChanged},
+        {cros_disks::kDiskRemoved, MountEventType::kDiskRemoved},
     };
     for (const auto& entry : kSignalEventTuples) {
       proxy_->ConnectToSignal(
@@ -969,14 +969,14 @@ std::vector<std::string> CrosDisksClient::ComposeMountOptions(
     RemountOption remount) {
   std::vector<std::string> mount_options = options;
   switch (access_mode) {
-    case MOUNT_ACCESS_MODE_READ_ONLY:
+    case MountAccessMode::kReadOnly:
       mount_options.push_back(kReadOnlyOption);
       break;
-    case MOUNT_ACCESS_MODE_READ_WRITE:
+    case MountAccessMode::kReadWrite:
       mount_options.push_back(kReadWriteOption);
       break;
   }
-  if (remount == REMOUNT_OPTION_REMOUNT_EXISTING_DEVICE) {
+  if (remount == RemountOption::kRemountExistingDevice) {
     mount_options.push_back(kRemountOption);
   }
 

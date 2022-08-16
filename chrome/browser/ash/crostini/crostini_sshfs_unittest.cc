@@ -123,7 +123,7 @@ class CrostiniSshfsHelperTest : public testing::Test {
       const std::string& mount_label,
       const std::vector<std::string>& mount_options,
       ash::MountType type,
-      chromeos::MountAccessMode access_mode,
+      ash::MountAccessMode access_mode,
       ash::disks::DiskMountManager::MountPathCallback callback) {
     auto event = DiskMountManager::MountEvent::MOUNTING;
     auto code = ash::MountError::kNone;
@@ -135,11 +135,10 @@ class CrostiniSshfsHelperTest : public testing::Test {
   }
 
   void ExpectMountCalls(int n) {
-    EXPECT_CALL(
-        *disk_manager_,
-        MountPath("sshfs://username@hostname:", "", kMountName,
-                  default_mount_options_, ash::MountType::kNetworkStorage,
-                  chromeos::MOUNT_ACCESS_MODE_READ_WRITE, _))
+    EXPECT_CALL(*disk_manager_, MountPath("sshfs://username@hostname:", "",
+                                          kMountName, default_mount_options_,
+                                          ash::MountType::kNetworkStorage,
+                                          ash::MountAccessMode::kReadWrite, _))
         .Times(n)
         .WillRepeatedly(
             Invoke(this, &CrostiniSshfsHelperTest::NotifyMountEvent));

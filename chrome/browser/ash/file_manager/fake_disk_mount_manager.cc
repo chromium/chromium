@@ -17,7 +17,7 @@ FakeDiskMountManager::MountRequest::MountRequest(
     const std::string& mount_label,
     const std::vector<std::string>& mount_options,
     ash::MountType type,
-    chromeos::MountAccessMode access_mode)
+    ash::MountAccessMode access_mode)
     : source_path(source_path),
       source_format(source_format),
       mount_label(mount_label),
@@ -31,7 +31,7 @@ FakeDiskMountManager::MountRequest::MountRequest(const MountRequest& other) =
 FakeDiskMountManager::MountRequest::~MountRequest() = default;
 
 FakeDiskMountManager::RemountAllRequest::RemountAllRequest(
-    chromeos::MountAccessMode access_mode)
+    ash::MountAccessMode access_mode)
     : access_mode(access_mode) {}
 
 FakeDiskMountManager::FakeDiskMountManager() = default;
@@ -75,7 +75,7 @@ void FakeDiskMountManager::MountPath(
     const std::string& mount_label,
     const std::vector<std::string>& mount_options,
     ash::MountType type,
-    chromeos::MountAccessMode access_mode,
+    ash::MountAccessMode access_mode,
     MountPathCallback callback) {
   mount_requests_.emplace_back(source_path, source_format, mount_label,
                                mount_options, type, access_mode);
@@ -120,7 +120,7 @@ void FakeDiskMountManager::UnmountPath(const std::string& mount_path,
 }
 
 void FakeDiskMountManager::RemountAllRemovableDrives(
-    chromeos::MountAccessMode access_mode) {
+    ash::MountAccessMode access_mode) {
   remount_all_requests_.emplace_back(access_mode);
 }
 

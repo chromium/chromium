@@ -116,7 +116,7 @@ class GuestOsMountProviderInner : public CachedCallback<ScopedVolume, bool> {
 
     dmgr->MountPath(source_path, "", mount_label_, {},
                     ash::MountType::kNetworkStorage,
-                    chromeos::MOUNT_ACCESS_MODE_READ_WRITE,
+                    ash::MountAccessMode::kReadWrite,
                     base::BindOnce(&GuestOsMountProviderInner::OnMountEvent,
                                    weak_ptr_factory_.GetWeakPtr(),
                                    std::move(callback), remote_path));

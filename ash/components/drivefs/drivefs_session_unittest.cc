@@ -52,7 +52,7 @@ class DriveFsDiskMounterTest : public testing::Test {
                       testing::Contains(
                           "datadir=/path/to/profile/GCache/v2/salt-g-ID"),
                       testing::Contains("myfiles=/path/to/profile/MyFiles")),
-                  _, chromeos::MOUNT_ACCESS_MODE_READ_WRITE, _))
+                  _, ash::MountAccessMode::kReadWrite, _))
         .WillOnce(testing::DoAll(testing::SaveArg<0>(&source),
                                  MoveArg<6>(&mount_callback_)));
 

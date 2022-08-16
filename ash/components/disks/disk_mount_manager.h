@@ -234,7 +234,7 @@ class COMPONENT_EXPORT(ASH_DISKS) DiskMountManager {
 
   // Remounts mounted removable devices to change the read-only mount option.
   // Devices that can be mounted only in its read-only mode will be ignored.
-  virtual void RemountAllRemovableDrives(chromeos::MountAccessMode mode) = 0;
+  virtual void RemountAllRemovableDrives(MountAccessMode mode) = 0;
 
   // Formats device mounted at |mount_path| with the given filesystem and label.
   // Also unmounts the device before formatting.

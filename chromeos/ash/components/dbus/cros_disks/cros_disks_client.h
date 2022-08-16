@@ -136,6 +136,35 @@ enum class PartitionError {
   kDeviceNotAllowed = 7,
 };
 
+// Event type each corresponding to a signal sent from cros-disks.
+enum class MountEventType {
+  kDiskAdded,
+  kDiskRemoved,
+  kDiskChanged,
+  kDeviceAdded,
+  kDeviceRemoved,
+  kDeviceScanned,
+};
+
+// Mount option to control write permission to a device.
+enum class MountAccessMode {
+  kReadWrite,
+  kReadOnly,
+};
+
+// Whether to mount to a new path or remount a device already mounted.
+enum RemountOption {
+  // Mount a new device. If the device is already mounted, the mount status
+  // is
+  // unchanged and the callback for MountCompleted will receive
+  // MountError::kPathAlreadyMounted error code.
+  kMountNewDevice,
+  // Remount a device that is already mounted. If the device is not mounted
+  // yet, it will do nothing and the callback for MountCompleted will
+  // receive
+  // MountError::kPathNotMounted error code.
+  kRemountExistingDevice,
+};
 }  // namespace ash
 
 namespace chromeos {
@@ -143,38 +172,13 @@ namespace chromeos {
 // TODO(https://crbug.com/1164001): remove when the migration is finished.
 using ::ash::DeviceType;
 using ::ash::FormatError;
+using ::ash::MountAccessMode;
 using ::ash::MountError;
+using ::ash::MountEventType;
 using ::ash::MountType;
 using ::ash::PartitionError;
+using ::ash::RemountOption;
 using ::ash::RenameError;
-
-// Event type each corresponding to a signal sent from cros-disks.
-enum MountEventType {
-  CROS_DISKS_DISK_ADDED,
-  CROS_DISKS_DISK_REMOVED,
-  CROS_DISKS_DISK_CHANGED,
-  CROS_DISKS_DEVICE_ADDED,
-  CROS_DISKS_DEVICE_REMOVED,
-  CROS_DISKS_DEVICE_SCANNED,
-};
-
-// Mount option to control write permission to a device.
-enum MountAccessMode {
-  MOUNT_ACCESS_MODE_READ_WRITE,
-  MOUNT_ACCESS_MODE_READ_ONLY,
-};
-
-// Whether to mount to a new path or remount a device already mounted.
-enum RemountOption {
-  // Mount a new device. If the device is already mounted, the mount status is
-  // unchanged and the callback for MountCompleted will receive
-  // MountError::kPathAlreadyMounted error code.
-  REMOUNT_OPTION_MOUNT_NEW_DEVICE,
-  // Remount a device that is already mounted. If the device is not mounted
-  // yet, it will do nothing and the callback for MountCompleted will receive
-  // MountError::kPathNotMounted error code.
-  REMOUNT_OPTION_REMOUNT_EXISTING_DEVICE,
-};
 
 // A class to represent information about a disk sent from cros-disks.
 class COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS) DiskInfo {
@@ -450,20 +454,9 @@ class COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS) CrosDisksClient
 
 // TODO(https://crbug.com/1164001): remove when //chromeos/dbus moved to ash.
 namespace ash {
-using ::chromeos::CROS_DISKS_DEVICE_ADDED;
-using ::chromeos::CROS_DISKS_DEVICE_REMOVED;
-using ::chromeos::CROS_DISKS_DEVICE_SCANNED;
-using ::chromeos::CROS_DISKS_DISK_ADDED;
-using ::chromeos::CROS_DISKS_DISK_REMOVED;
 using ::chromeos::CrosDisksClient;
 using ::chromeos::DiskInfo;
-using ::chromeos::MOUNT_ACCESS_MODE_READ_ONLY;
-using ::chromeos::MOUNT_ACCESS_MODE_READ_WRITE;
-using ::chromeos::MountAccessMode;
 using ::chromeos::MountEntry;
-using ::chromeos::MountEventType;
-using ::chromeos::REMOUNT_OPTION_MOUNT_NEW_DEVICE;
-using ::chromeos::REMOUNT_OPTION_REMOUNT_EXISTING_DEVICE;
 }  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_CROS_DISKS_CROS_DISKS_CLIENT_H_

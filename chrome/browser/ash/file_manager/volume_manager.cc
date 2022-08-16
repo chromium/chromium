@@ -210,10 +210,10 @@ std::string GetMountPointNameForMediaStorage(
   return name;
 }
 
-chromeos::MountAccessMode GetExternalStorageAccessMode(const Profile* profile) {
+ash::MountAccessMode GetExternalStorageAccessMode(const Profile* profile) {
   return profile->GetPrefs()->GetBoolean(disks::prefs::kExternalStorageReadOnly)
-             ? chromeos::MOUNT_ACCESS_MODE_READ_ONLY
-             : chromeos::MOUNT_ACCESS_MODE_READ_WRITE;
+             ? ash::MountAccessMode::kReadOnly
+             : ash::MountAccessMode::kReadWrite;
 }
 
 void RecordDownloadsDiskUsageStats(base::FilePath downloads_path) {
@@ -1564,8 +1564,7 @@ void VolumeManager::DoAttachMtpStorage(
   const bool read_only =
       mtp_storage_info->access_capability != kAccessCapabilityReadWrite ||
       mtp_storage_info->filesystem_type != kFilesystemTypeGenericHierarchical ||
-      GetExternalStorageAccessMode(profile_) ==
-          chromeos::MOUNT_ACCESS_MODE_READ_ONLY;
+      GetExternalStorageAccessMode(profile_) == ash::MountAccessMode::kReadOnly;
 
   const base::FilePath path = base::FilePath::FromUTF8Unsafe(info.location());
   const std::string fsid = GetMountPointNameForMediaStorage(info);

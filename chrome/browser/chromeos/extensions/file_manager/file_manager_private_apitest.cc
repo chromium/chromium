@@ -348,7 +348,7 @@ class FileManagerPrivateApiTest : public extensions::ExtensionApiTest {
                 MountPath("sshfs://testuser@hostname:", "",
                           "crostini_user_termina_penguin", mount_options,
                           ash::MountType::kNetworkStorage,
-                          chromeos::MOUNT_ACCESS_MODE_READ_WRITE, _))
+                          chromeos::MountAccessMode::kReadWrite, _))
         .WillOnce(Invoke(this, &FileManagerPrivateApiTest::SshfsMount));
   }
 

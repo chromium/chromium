@@ -141,7 +141,7 @@ class KioskFakeDiskMountManager : public file_manager::FakeDiskMountManager {
   void MountUsbStick() {
     DCHECK(!usb_mount_path_.empty());
     MountPath(usb_mount_path_, "", "", {}, MountType::kDevice,
-              chromeos::MOUNT_ACCESS_MODE_READ_ONLY, base::DoNothing());
+              MountAccessMode::kReadOnly, base::DoNothing());
   }
 
   void UnMountUsbStick() {
