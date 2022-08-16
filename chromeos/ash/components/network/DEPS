@@ -10,6 +10,7 @@ include_rules = [
   "+chromeos/dbus",
   "+chromeos/components/onc",
   "+chromeos/login/login_state",
+  "+chromeos/services/hotspot_config/public",
   "+chromeos/services/network_config/public",
   "+components/account_id",
   "+components/certificate_matching",

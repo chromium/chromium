@@ -2311,6 +2311,7 @@ component("ash") {
     "//chromeos/metrics",
     "//chromeos/services/bluetooth_config/public/cpp",
     "//chromeos/services/bluetooth_config/public/mojom",
+    "//chromeos/services/hotspot_config/public/mojom",
     "//chromeos/services/libassistant/public/cpp:structs",
     "//chromeos/services/libassistant/public/mojom",
     "//chromeos/services/network_config/public/cpp",

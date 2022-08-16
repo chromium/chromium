@@ -5231,6 +5231,7 @@ static_library("browser") {
       "//chromeos/login/login_state",
       "//chromeos/services/bluetooth_config",
       "//chromeos/services/bluetooth_config/public/mojom",
+      "//chromeos/services/hotspot_config/public/mojom",
       "//chromeos/services/network_config",
       "//chromeos/services/network_config:in_process_instance",
       "//chromeos/services/network_config/public/mojom",
