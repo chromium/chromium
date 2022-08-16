@@ -77,9 +77,6 @@ public abstract class SyncConsentFragmentBase
 
     private static final String ARGUMENT_ACCOUNT_NAME = "SyncConsentFragmentBase.AccountName";
 
-    /** Field trial group param for the tangible sync experiment. */
-    private static final String PARAM_TANGIBLE_SYNC_GROUP = "group_id";
-
     // This bundle argument is optional; it is set only if the child status cannot be reliably
     // inferred by looking at the last used regular profile, because child sign auto sign in may
     // not have completed.
@@ -96,15 +93,6 @@ public abstract class SyncConsentFragmentBase
         int DEFAULT = 0;
         int CHOOSE_ACCOUNT = 1;
         int ADD_ACCOUNT = 2;
-    }
-
-    /** Group name for different UIs in tangible sync experiment. */
-    @IntDef({TangibleSyncGroup.GROUP_A, TangibleSyncGroup.GROUP_B, TangibleSyncGroup.GROUP_C})
-    @Retention(RetentionPolicy.SOURCE)
-    @interface TangibleSyncGroup {
-        int GROUP_A = 1;
-        int GROUP_B = 2;
-        int GROUP_C = 3;
     }
 
     private final AccountManagerFacade mAccountManagerFacade;
@@ -501,41 +489,10 @@ public abstract class SyncConsentFragmentBase
         }
     }
 
-    private static @TangibleSyncGroup int getTangibleSyncGroup() {
-        return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(ChromeFeatureList.TANGIBLE_SYNC,
-                PARAM_TANGIBLE_SYNC_GROUP, TangibleSyncGroup.GROUP_A);
-    }
-
-    private static @StringRes int getSyncConsentViewTitleText() {
-        switch (getTangibleSyncGroup()) {
-            case TangibleSyncGroup.GROUP_A:
-                return R.string.sync_consent_title;
-            case TangibleSyncGroup.GROUP_B:
-                return R.string.sync_consent_title_variation;
-            case TangibleSyncGroup.GROUP_C:
-                return R.string.sync_consent_title;
-            default:
-                throw new IllegalStateException("Invalid group id");
-        }
-    }
-
-    private static @StringRes int getSyncConsentViewSubtitleText() {
-        switch (getTangibleSyncGroup()) {
-            case TangibleSyncGroup.GROUP_A:
-                return R.string.sync_consent_subtitle;
-            case TangibleSyncGroup.GROUP_B:
-                return R.string.sync_consent_subtitle;
-            case TangibleSyncGroup.GROUP_C:
-                return R.string.sync_consent_subtitle_variation;
-            default:
-                throw new IllegalStateException("Invalid group id");
-        }
-    }
-
     private void updateSyncConsentViewText(@StringRes int refuseButtonTextId) {
-        mConsentTextTracker.setText(mSyncConsentView.getTitleView(), getSyncConsentViewTitleText());
+        mConsentTextTracker.setText(mSyncConsentView.getTitleView(), R.string.sync_consent_title);
         mConsentTextTracker.setText(
-                mSyncConsentView.getSubtitleView(), getSyncConsentViewSubtitleText());
+                mSyncConsentView.getSubtitleView(), R.string.sync_consent_subtitle);
 
         mConsentTextTracker.setText(
                 mSyncConsentView.getBookmarksRow(), R.string.sync_consent_bookmarks_text);
