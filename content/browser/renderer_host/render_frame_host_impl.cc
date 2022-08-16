@@ -5183,8 +5183,7 @@ void RenderFrameHostImpl::RunJavaScriptDialog(
   // shadow DOM to MPArch is complete, remove the last part of the condition.
   // TODO(crbug.com/1244137): We have to check portals explicitly as they are
   // considered primary. Remove check after we migrate portals to MPArch.
-  if (!IsActive() || !GetPage().IsPrimary() ||
-      frame_tree_node_->IsInFencedFrameTree() ||
+  if (!IsActive() || !GetPage().IsPrimary() || IsNestedWithinFencedFrame() ||
       frame_tree()->delegate()->IsPortal()) {
     std::move(ipc_response_callback).Run(/*success=*/false, std::u16string());
     return;
@@ -5214,8 +5213,7 @@ void RenderFrameHostImpl::RunBeforeUnloadConfirm(
   // TODO(https://crbug.com/1262022): Have to check fenced frames explicitly
   // since they are not yet implemented with MPArch. Once the transition from
   // shadow DOM to MPArch is complete, remove the last part of the condition.
-  if (!IsActive() || !GetPage().IsPrimary() ||
-      frame_tree_node_->IsInFencedFrameTree() ||
+  if (!IsActive() || !GetPage().IsPrimary() || IsNestedWithinFencedFrame() ||
       frame_tree()->delegate()->IsPortal()) {
     std::move(ipc_response_callback).Run(/*success=*/false);
     return;
@@ -13101,9 +13099,8 @@ void RenderFrameHostImpl::
                                        browser_should_replace_current_entry,
                                        renderer_load_type);
 
-  const ui::PageTransition browser_transition =
-      CalculateTransition(request, renderer_load_type, params,
-                          frame_tree_node_->IsInFencedFrameTree());
+  const ui::PageTransition browser_transition = CalculateTransition(
+      request, renderer_load_type, params, IsNestedWithinFencedFrame());
 
   const bool browser_history_list_was_cleared =
       request->commit_params().should_clear_history_list;
