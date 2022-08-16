@@ -5037,12 +5037,12 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Connect with QR Code?
       </message>
 
-      <message name="IDS_CABLEV2_QR_BODY_PHONE" desc="The body text on a screen that confirms that the user wants to connect to a computer that displayed a QR code. This message is specific to phones and won't appear on tablets.">
-        You can use this phone to sign in on the computer that’s displaying this QR code.
+      <message name="IDS_CABLEV2_QR_BODY_PHONE" desc="The body text on a screen that confirms that the user wants to connect to a device that displayed a QR code. This message is specific to phones and won't appear on tablets. The device displaying the QR code might be a computer, laptop, phone, table, or even TV.">
+        You can use this phone to sign in on the device that’s displaying this QR code.
       </message>
 
-      <message name="IDS_CABLEV2_QR_BODY_TABLET" desc="The body text on a screen that confirms that the user wants to connect to a computer that displayed a QR code. This message is specific to tablets and won't appear on phones.">
-        You can use this tablet to sign in on the computer that’s displaying this QR code.
+      <message name="IDS_CABLEV2_QR_BODY_TABLET" desc="The body text on a screen that confirms that the user wants to connect to a device that displayed a QR code. This message is specific to tablets and won't appear on phones. The device displaying the QR code might be a computer, laptop, phone, table, or even TV.">
+        You can use this tablet to sign in on the device that’s displaying this QR code.
       </message>
 
       <message name="IDS_CABLEV2_QR_REMEMBER" desc="The label of a checkbox that appears on a screen confirming that the user wants to connect to a computer from which they just scanned a QR code. If the computer is 'remembered' then it'll be able to connect to the phone automatically in the future. The 'computer' is a laptop, desktop, or (eventually) another phone or tablet.">
