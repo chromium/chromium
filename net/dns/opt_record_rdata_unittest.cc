@@ -61,10 +61,15 @@ TEST(OptRecordRdataTest, ParseOptRecord) {
   // character will be truncated.
   // https://crbug.com/1348679
 
-  ASSERT_EQ(*(rdata_obj->GetOpts()[0]),
-            OptRecordRdata::Opt(1, std::string("\xde\xad", 2)));
-  ASSERT_EQ(*(rdata_obj->GetOpts()[1]),
-            OptRecordRdata::Opt(255, std::string("\xde\xad\xbe\xef", 4)));
+  std::unique_ptr<OptRecordRdata::UnknownOpt> opt0 =
+      OptRecordRdata::UnknownOpt::CreateForTesting(1,
+                                                   std::string("\xde\xad", 2));
+  std::unique_ptr<OptRecordRdata::UnknownOpt> opt1 =
+      OptRecordRdata::UnknownOpt::CreateForTesting(
+          255, std::string("\xde\xad\xbe\xef", 4));
+
+  ASSERT_EQ(*(rdata_obj->GetOpts()[0]), *(opt0.get()));
+  ASSERT_EQ(*(rdata_obj->GetOpts()[1]), *(opt1.get()));
 }
 
 TEST(OptRecordRdataTest, ParseOptRecordWithShorterSizeThanData) {
@@ -101,19 +106,25 @@ TEST(OptRecordRdataTest, ParseOptRecordWithLongerSizeThanData) {
   ASSERT_THAT(rdata_obj, IsNull());
 }
 
-TEST(OptRecordRdataTest, AddOptToOptRecord) {
-  // This is just the rdata portion of an OPT record, rather than a complete
-  // record.
-  const uint8_t expected_rdata[] = {
-      0x00, 0xFF,             // OPT code
-      0x00, 0x04,             // OPT data size
-      0xDE, 0xAD, 0xBE, 0xEF  // OPT data
-  };
+TEST(OptRecordRdataTest, CreateEdeOpt) {
+  OptRecordRdata::EdeOpt opt0(22, std::string("Don Quixote"));
 
-  OptRecordRdata rdata;
-  rdata.AddOpt(std::make_unique<OptRecordRdata::Opt>(
-      255, std::string("\xde\xad\xbe\xef", 4)));
-  EXPECT_THAT(rdata.buf(), ElementsAreArray(expected_rdata));
+  ASSERT_EQ(opt0.data(), std::string("\x00\x16"
+                                     "Don Quixote",
+                                     13));
+  ASSERT_EQ(opt0.info_code(), 22u);
+  ASSERT_EQ(opt0.extra_text(), std::string("Don Quixote"));
+
+  std::unique_ptr<OptRecordRdata::EdeOpt> opt1 =
+      OptRecordRdata::EdeOpt::Create(std::string("\x00\x08"
+                                                 "Manhattan",
+                                                 11));
+
+  ASSERT_EQ(opt1->data(), std::string("\x00\x08"
+                                      "Manhattan",
+                                      11));
+  ASSERT_EQ(opt1->info_code(), 8u);
+  ASSERT_EQ(opt1->extra_text(), std::string("Manhattan"));
 }
 
 TEST(OptRecordRdataTest, TestEdeInfoCode) {
@@ -146,13 +157,13 @@ TEST(OptRecordRdataTest, ParseEdeOptRecords) {
       0x00, 0x0F,     // OPT code (15 for EDE)
       0x00, 0x05,     // OPT data size (info code + extra text)
       0x00, 0x0D,     // EDE info code (13 for Cached Error)
-      'U', 'S', 'A',  // UTF-8 EDE extra text ("USA")
+      'M', 'T', 'A',  // UTF-8 EDE extra text ("MTA")
 
       // Third OPT (EDE record)
       0x00, 0x0F,         // OPT code (15 for EDE)
       0x00, 0x06,         // OPT data size (info code + extra text)
       0x00, 0x10,         // EDE info code (16 for Censored)
-      'B', 'I', 'O', 'S'  // UTF-8 EDE extra text ("BIOS")
+      'M', 'B', 'T', 'A'  // UTF-8 EDE extra text ("MBTA")
   };
 
   base::StringPiece rdata_strpiece = MakeStringPiece(rdata, sizeof(rdata));
@@ -163,23 +174,17 @@ TEST(OptRecordRdataTest, ParseEdeOptRecords) {
   ASSERT_THAT(rdata_obj, NotNull());
   ASSERT_EQ(rdata_obj->OptCount(), 3u);
 
-  // Test Non EDE (all opts in OPT format)
-  OptRecordRdata::Opt opt0(6, std::string("\xb0\xba\xfe\x77", 4));
-  OptRecordRdata::Opt opt1(15, std::string("\x00\x0d"
-                                           "USA",
-                                           5));
-  OptRecordRdata::Opt opt2(15, std::string("\x00\x10"
-                                           "BIOS",
-                                           6));
+  // Test Unknown Opt
+  std::unique_ptr<OptRecordRdata::UnknownOpt> opt0 =
+      OptRecordRdata::UnknownOpt::CreateForTesting(
+          6, std::string("\xb0\xba\xfe\x77", 4));
 
   ASSERT_THAT(rdata_obj->GetOpts(), SizeIs(3));
-  ASSERT_EQ(*rdata_obj->GetOpts()[0], opt0);
-  ASSERT_EQ(*rdata_obj->GetOpts()[1], opt1);
-  ASSERT_EQ(*rdata_obj->GetOpts()[2], opt2);
+  ASSERT_EQ(*rdata_obj->GetOpts()[0], *opt0.get());
 
   // Test EDE
-  OptRecordRdata::EdeOpt edeOpt0(13, std::string("USA", 3));
-  OptRecordRdata::EdeOpt edeOpt1(16, std::string("BIOS", 4));
+  OptRecordRdata::EdeOpt edeOpt0(13, std::string("MTA", 3));
+  OptRecordRdata::EdeOpt edeOpt1(16, std::string("MBTA", 4));
 
   ASSERT_THAT(rdata_obj->GetEdeOpts(), SizeIs(2));
   ASSERT_EQ(*rdata_obj->GetEdeOpts()[0], edeOpt0);
@@ -189,8 +194,8 @@ TEST(OptRecordRdataTest, ParseEdeOptRecords) {
   ASSERT_EQ(rdata_obj->GetEdeOpts()[0]->data(), edeOpt0.data());
   ASSERT_EQ(rdata_obj->GetEdeOpts()[1]->data(), edeOpt1.data());
 
-  ASSERT_EQ(rdata_obj->GetEdeOpts()[0]->extra_text(), std::string("USA", 3));
-  ASSERT_EQ(rdata_obj->GetEdeOpts()[1]->extra_text(), std::string("BIOS", 4));
+  ASSERT_EQ(rdata_obj->GetEdeOpts()[0]->extra_text(), std::string("MTA", 3));
+  ASSERT_EQ(rdata_obj->GetEdeOpts()[1]->extra_text(), std::string("MBTA", 4));
 
   ASSERT_EQ(rdata_obj->GetEdeOpts()[0]->info_code(), edeOpt0.info_code());
   ASSERT_EQ(rdata_obj->GetEdeOpts()[1]->info_code(), edeOpt1.info_code());
@@ -202,7 +207,7 @@ TEST(OptRecordRdataTest, OptEquality) {
   // `rdata_obj1` second opt has extra text "BIOO"
   // Note: rdata_obj0 and rdata_obj1 have 2 common Opts and 1 different one.
   OptRecordRdata rdata_obj0;
-  rdata_obj0.AddOpt(std::make_unique<OptRecordRdata::Opt>(
+  rdata_obj0.AddOpt(OptRecordRdata::UnknownOpt::CreateForTesting(
       6, std::string("\xb0\xba\xfe\x77", 4)));
   rdata_obj0.AddOpt(
       std::make_unique<OptRecordRdata::EdeOpt>(13, std::string("USA", 3)));
@@ -211,7 +216,7 @@ TEST(OptRecordRdataTest, OptEquality) {
   ASSERT_EQ(rdata_obj0.OptCount(), 3u);
 
   OptRecordRdata rdata_obj1;
-  rdata_obj1.AddOpt(std::make_unique<OptRecordRdata::Opt>(
+  rdata_obj1.AddOpt(OptRecordRdata::UnknownOpt::CreateForTesting(
       6, std::string("\xb0\xba\xfe\x77", 4)));
   rdata_obj1.AddOpt(
       std::make_unique<OptRecordRdata::EdeOpt>(13, std::string("USA", 3)));
@@ -300,10 +305,10 @@ TEST(OptRecordRdataTest, EdeRecordExtraTextNonUTF8) {
 // Check that an EDE record with an unknown info code is parsed correctly.
 TEST(OptRecordRdataTest, EdeRecordUnknownInfoCode) {
   const uint8_t rdata[] = {
-      0x00, 0x0F,           // OPT code (15 for EDE)
-      0x00, 0x06,           // OPT data size (info code + extra text)
-      0x00, 0x44,           // Info Code (68 doesn't exist)
-      'R',  '2',  'D', '2'  // Extra Text ("R2D2")
+      0x00, 0x0F,                     // OPT code (15 for EDE)
+      0x00, 0x08,                     // OPT data size (info code + extra text)
+      0x00, 0x44,                     // Info Code (68 doesn't exist)
+      'B',  'O',  'S', 'T', 'O', 'N'  // Extra Text ("BOSTON")
   };
 
   base::StringPiece rdata_strpiece = MakeStringPiece(rdata, sizeof(rdata));
@@ -313,28 +318,87 @@ TEST(OptRecordRdataTest, EdeRecordUnknownInfoCode) {
   ASSERT_THAT(rdata_obj->GetEdeOpts(), SizeIs(1));
   auto* opt = rdata_obj->GetEdeOpts()[0];
   ASSERT_EQ(opt->data(), std::string("\x00\x44"
-                                     "R2D2",
-                                     6));
+                                     "BOSTON",
+                                     8));
   ASSERT_EQ(opt->info_code(), 68u);
-  ASSERT_EQ(opt->extra_text(), std::string("R2D2", 4));
+  ASSERT_EQ(opt->extra_text(), std::string("BOSTON", 6));
   ASSERT_EQ(opt->GetEnumFromInfoCode(),
             OptRecordRdata::EdeOpt::EdeInfoCode::kUnrecognizedErrorCode);
 }
 
-TEST(OptRecordRdataTest, EqualityIsOptOrderInsensitive) {
+TEST(OptRecordRdataTest, CreatePaddingOpt) {
+  std::unique_ptr<OptRecordRdata::PaddingOpt> opt0 =
+      std::make_unique<OptRecordRdata::PaddingOpt>(12);
+
+  ASSERT_EQ(opt0->data(), std::string(12, '\0'));
+  ASSERT_THAT(opt0->data(), SizeIs(12u));
+
+  std::unique_ptr<OptRecordRdata::PaddingOpt> opt1 =
+      std::make_unique<OptRecordRdata::PaddingOpt>("MASSACHUSETTS");
+
+  ASSERT_EQ(opt1->data(), std::string("MASSACHUSETTS"));
+  ASSERT_THAT(opt1->data(), SizeIs(13u));
+}
+
+TEST(OptRecordRdataTest, ParsePaddingOpt) {
+  const uint8_t rdata[] = {
+      // First OPT
+      0x00, 0x0C,  // OPT code
+      0x00, 0x07,  // OPT data size
+      0xB0, 0x03,  // OPT data padding (Book of Boba Fett)
+      0x0F, 0xB0, 0xBA, 0xFE, 0x77,
+  };
+
+  base::StringPiece rdata_strpiece = MakeStringPiece(rdata, sizeof(rdata));
+  std::unique_ptr<OptRecordRdata> rdata_obj =
+      OptRecordRdata::Create(rdata_strpiece);
+
+  ASSERT_THAT(rdata_obj, NotNull());
+  ASSERT_EQ(rdata_obj->OptCount(), 1u);
+  ASSERT_THAT(rdata_obj->GetOpts(), SizeIs(1));
+  ASSERT_THAT(rdata_obj->GetPaddingOpts(), SizeIs(1));
+
+  // Check elements
+  OptRecordRdata::PaddingOpt opt0(
+      std::string("\xb0\x03\x0f\xb0\xba\xfe\x77", 7));
+
+  ASSERT_EQ(*(rdata_obj->GetOpts()[0]), opt0);
+  ASSERT_EQ(*(rdata_obj->GetPaddingOpts()[0]), opt0);
+  ASSERT_THAT(opt0.data(), SizeIs(7u));
+}
+
+TEST(OptRecordRdataTest, AddOptToOptRecord) {
+  // This is just the rdata portion of an OPT record, rather than a complete
+  // record.
+  const uint8_t expected_rdata[] = {
+      0x00, 0xFF,             // OPT code
+      0x00, 0x04,             // OPT data size
+      0xDE, 0xAD, 0xBE, 0xEF  // OPT data
+  };
+
+  OptRecordRdata rdata;
+  rdata.AddOpt(OptRecordRdata::UnknownOpt::CreateForTesting(
+      255, std::string("\xde\xad\xbe\xef", 4)));
+  EXPECT_THAT(rdata.buf(), ElementsAreArray(expected_rdata));
+}
+
+// Test the OptRecordRdata equality operator.
+// Equality must be order sensitive. If Opts are same but inserted in different
+// order, test will fail epically.
+TEST(OptRecordRdataTest, EqualityIsOptOrderSensitive) {
   // Control rdata
   OptRecordRdata rdata_obj0;
-  rdata_obj0.AddOpt(std::make_unique<OptRecordRdata::Opt>(
+  rdata_obj0.AddOpt(OptRecordRdata::UnknownOpt::CreateForTesting(
       1, std::string("\xb0\xba\xfe\x77", 4)));
-  rdata_obj0.AddOpt(std::make_unique<OptRecordRdata::Opt>(
+  rdata_obj0.AddOpt(OptRecordRdata::UnknownOpt::CreateForTesting(
       2, std::string("\xb1\x05\xf0\x0d", 4)));
   ASSERT_EQ(rdata_obj0.OptCount(), 2u);
 
   // Same as `rdata_obj0`
   OptRecordRdata rdata_obj1;
-  rdata_obj1.AddOpt(std::make_unique<OptRecordRdata::Opt>(
+  rdata_obj1.AddOpt(OptRecordRdata::UnknownOpt::CreateForTesting(
       1, std::string("\xb0\xba\xfe\x77", 4)));
-  rdata_obj1.AddOpt(std::make_unique<OptRecordRdata::Opt>(
+  rdata_obj1.AddOpt(OptRecordRdata::UnknownOpt::CreateForTesting(
       2, std::string("\xb1\x05\xf0\x0d", 4)));
   ASSERT_EQ(rdata_obj1.OptCount(), 2u);
 
@@ -342,9 +406,9 @@ TEST(OptRecordRdataTest, EqualityIsOptOrderInsensitive) {
 
   // Same contents as `rdata_obj0` & `rdata_obj1`, but different order
   OptRecordRdata rdata_obj2;
-  rdata_obj2.AddOpt(std::make_unique<OptRecordRdata::Opt>(
+  rdata_obj2.AddOpt(OptRecordRdata::UnknownOpt::CreateForTesting(
       2, std::string("\xb1\x05\xf0\x0d", 4)));
-  rdata_obj2.AddOpt(std::make_unique<OptRecordRdata::Opt>(
+  rdata_obj2.AddOpt(OptRecordRdata::UnknownOpt::CreateForTesting(
       1, std::string("\xb0\xba\xfe\x77", 4)));
   ASSERT_EQ(rdata_obj2.OptCount(), 2u);
 
@@ -354,13 +418,13 @@ TEST(OptRecordRdataTest, EqualityIsOptOrderInsensitive) {
   // Contains only `rdata_obj0` first opt
   // 2nd opt is added later
   OptRecordRdata rdata_obj3;
-  rdata_obj3.AddOpt(std::make_unique<OptRecordRdata::Opt>(
+  rdata_obj3.AddOpt(OptRecordRdata::UnknownOpt::CreateForTesting(
       1, std::string("\xb0\xba\xfe\x77", 4)));
   ASSERT_EQ(rdata_obj3.OptCount(), 1u);
 
   ASSERT_FALSE(rdata_obj0.IsEqual(&rdata_obj3));
 
-  rdata_obj3.AddOpt(std::make_unique<OptRecordRdata::Opt>(
+  rdata_obj3.AddOpt(OptRecordRdata::UnknownOpt::CreateForTesting(
       2, std::string("\xb1\x05\xf0\x0d", 4)));
 
   ASSERT_TRUE(rdata_obj0.IsEqual(&rdata_obj3));
@@ -375,12 +439,12 @@ TEST(OptRecordRdataTest, EqualityIsOptOrderInsensitive) {
 // Sort by key, then by insertion order.
 TEST(OptRecordRdataTest, TestGetOptsOrder) {
   OptRecordRdata rdata_obj0;
-  rdata_obj0.AddOpt(
-      std::make_unique<OptRecordRdata::Opt>(10, std::string("\x33\x33", 2)));
-  rdata_obj0.AddOpt(
-      std::make_unique<OptRecordRdata::Opt>(5, std::string("\x11\x11", 2)));
-  rdata_obj0.AddOpt(
-      std::make_unique<OptRecordRdata::Opt>(5, std::string("\x22\x22", 2)));
+  rdata_obj0.AddOpt(OptRecordRdata::UnknownOpt::CreateForTesting(
+      10, std::string("\x33\x33", 2)));
+  rdata_obj0.AddOpt(OptRecordRdata::UnknownOpt::CreateForTesting(
+      5, std::string("\x11\x11", 2)));
+  rdata_obj0.AddOpt(OptRecordRdata::UnknownOpt::CreateForTesting(
+      5, std::string("\x22\x22", 2)));
   ASSERT_EQ(rdata_obj0.OptCount(), 3u);
 
   auto opts = rdata_obj0.GetOpts();

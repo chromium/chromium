@@ -124,7 +124,7 @@ TEST(DnsQueryTest, EDNS0) {
   base::StringPiece qname(kQNameData, sizeof(kQNameData));
   OptRecordRdata opt_rdata;
   opt_rdata.AddOpt(
-      std::make_unique<OptRecordRdata::Opt>(255, "\xde\xad\xbe\xef"));
+      OptRecordRdata::UnknownOpt::CreateForTesting(255, "\xde\xad\xbe\xef"));
   DnsQuery q1(0xbeef, qname, dns_protocol::kTypeA, &opt_rdata);
   EXPECT_EQ(dns_protocol::kTypeA, q1.qtype());
 

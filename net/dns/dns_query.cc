@@ -87,11 +87,8 @@ std::unique_ptr<OptRecordRdata> AddPaddingIfNecessary(
     // OPT header is the minimum amount of padding.
     DCHECK(padding_size >= OptRecordRdata::Opt::kHeaderSize);
 
-    std::unique_ptr<OptRecordRdata::Opt> opt =
-        std::make_unique<OptRecordRdata::Opt>(
-            dns_protocol::kEdnsPadding,
-            std::string(padding_size - OptRecordRdata::Opt::kHeaderSize, 0));
-    merged_opt_rdata->AddOpt(std::move(opt));
+    merged_opt_rdata->AddOpt(std::make_unique<OptRecordRdata::PaddingOpt>(
+        padding_size - OptRecordRdata::Opt::kHeaderSize));
   }
 
   return merged_opt_rdata;

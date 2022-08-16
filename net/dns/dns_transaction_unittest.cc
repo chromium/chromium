@@ -983,9 +983,9 @@ TEST_F(DnsTransactionTest, LookupWithEDNSOption) {
   OptRecordRdata expected_opt_rdata;
 
   transaction_factory_->AddEDNSOption(
-      std::make_unique<OptRecordRdata::Opt>(123, "\xbe\xef"));
+      OptRecordRdata::UnknownOpt::CreateForTesting(123, "\xbe\xef"));
   expected_opt_rdata.AddOpt(
-      std::make_unique<OptRecordRdata::Opt>(123, "\xbe\xef"));
+      OptRecordRdata::UnknownOpt::CreateForTesting(123, "\xbe\xef"));
 
   AddAsyncQueryAndResponse(0 /* id */, kT0HostName, kT0Qtype,
                            kT0ResponseDatagram, std::size(kT0ResponseDatagram),
@@ -1009,9 +1009,10 @@ TEST_F(DnsTransactionTest, LookupWithMultipleEDNSOptions) {
 
   for (auto& param : params) {
     transaction_factory_->AddEDNSOption(
-        std::make_unique<OptRecordRdata::Opt>(param.first, param.second));
-    expected_opt_rdata.AddOpt(
-        std::make_unique<OptRecordRdata::Opt>(param.first, param.second));
+        OptRecordRdata::UnknownOpt::CreateForTesting(param.first,
+                                                     param.second));
+    expected_opt_rdata.AddOpt(OptRecordRdata::UnknownOpt::CreateForTesting(
+        param.first, param.second));
   }
 
   AddAsyncQueryAndResponse(0 /* id */, kT0HostName, kT0Qtype,

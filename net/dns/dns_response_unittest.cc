@@ -1322,7 +1322,7 @@ TEST(DnsResponseWriteTest, SingleARecordAnswerWithQuestion) {
 
   OptRecordRdata opt_rdata;
   opt_rdata.AddOpt(
-      std::make_unique<OptRecordRdata::Opt>(255, "\xde\xad\xbe\xef"));
+      OptRecordRdata::UnknownOpt::CreateForTesting(255, "\xde\xad\xbe\xef"));
 
   absl::optional<DnsQuery> query;
   query.emplace(0x1234 /* id */, dns_name, dns_protocol::kTypeA, &opt_rdata);

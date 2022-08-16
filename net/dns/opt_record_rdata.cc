@@ -5,17 +5,18 @@
 #include "net/dns/opt_record_rdata.h"
 
 #include <algorithm>
+#include <memory>
 #include <numeric>
 #include <utility>
 
 #include "base/big_endian.h"
-#include "base/check_op.h"
+#include "base/check_is_test.h"
+#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
-#include "net/base/io_buffer.h"
-#include "net/dns/dns_response.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "net/dns/public/dns_protocol.h"
 
 namespace net {
 
@@ -30,8 +31,7 @@ std::string SerializeEdeOpt(uint16_t info_code, base::StringPiece extra_text) {
 }
 }  // namespace
 
-OptRecordRdata::Opt::Opt(uint16_t code, std::string data)
-    : code_(code), data_(std::move(data)) {}
+OptRecordRdata::Opt::Opt(std::string data) : data_(std::move(data)) {}
 
 bool OptRecordRdata::Opt::operator==(const OptRecordRdata::Opt& other) const {
   return IsEqual(other);
@@ -42,11 +42,11 @@ bool OptRecordRdata::Opt::operator!=(const OptRecordRdata::Opt& other) const {
 }
 
 bool OptRecordRdata::Opt::IsEqual(const OptRecordRdata::Opt& other) const {
-  return code_ == other.code_ && data() == other.data();
+  return GetCode() == other.GetCode() && data() == other.data();
 }
 
 OptRecordRdata::EdeOpt::EdeOpt(uint16_t info_code, std::string extra_text)
-    : Opt(EdeOpt::kOptCode, SerializeEdeOpt(info_code, extra_text)),
+    : Opt(SerializeEdeOpt(info_code, extra_text)),
       info_code_(info_code),
       extra_text_(std::move(extra_text)) {
   CHECK(base::IsStringUTF8(extra_text_));
@@ -72,6 +72,10 @@ std::unique_ptr<OptRecordRdata::EdeOpt> OptRecordRdata::EdeOpt::Create(
 
   std::string extra_text_str(extra_text.data(), extra_text.size());
   return std::make_unique<EdeOpt>(info_code, std::move(extra_text_str));
+}
+
+uint16_t OptRecordRdata::EdeOpt::GetCode() const {
+  return EdeOpt::kOptCode;
 }
 
 OptRecordRdata::EdeOpt::EdeInfoCode
@@ -143,7 +147,35 @@ OptRecordRdata::EdeOpt::EdeInfoCode OptRecordRdata::EdeOpt::GetEnumFromInfoCode(
   }
 }
 
-OptRecordRdata::EdeOpt::EdeOpt() = default;
+OptRecordRdata::PaddingOpt::PaddingOpt(std::string padding)
+    : Opt(std::move(padding)) {}
+
+OptRecordRdata::PaddingOpt::PaddingOpt(uint16_t padding_len)
+    : Opt(std::string(base::checked_cast<size_t>(padding_len), '\0')) {}
+
+OptRecordRdata::PaddingOpt::~PaddingOpt() = default;
+
+uint16_t OptRecordRdata::PaddingOpt::GetCode() const {
+  return PaddingOpt::kOptCode;
+}
+
+OptRecordRdata::UnknownOpt::~UnknownOpt() = default;
+
+std::unique_ptr<OptRecordRdata::UnknownOpt>
+OptRecordRdata::UnknownOpt::CreateForTesting(uint16_t code, std::string data) {
+  CHECK_IS_TEST();
+  return base::WrapUnique(
+      new OptRecordRdata::UnknownOpt(code, std::move(data)));
+}
+
+OptRecordRdata::UnknownOpt::UnknownOpt(uint16_t code, std::string data)
+    : Opt(std::move(data)), code_(code) {
+  CHECK(!base::Contains(kOptsWithDedicatedClasses, code));
+}
+
+uint16_t OptRecordRdata::UnknownOpt::GetCode() const {
+  return code_;
+}
 
 OptRecordRdata::OptRecordRdata() = default;
 
@@ -181,11 +213,17 @@ std::unique_ptr<OptRecordRdata> OptRecordRdata::Create(base::StringPiece data) {
 
     std::unique_ptr<Opt> opt;
 
-    if (opt_code == dns_protocol::kEdnsExtendedDnsError) {
-      opt = OptRecordRdata::EdeOpt::Create(std::move(opt_data));
-    } else {
-      opt =
-          std::make_unique<OptRecordRdata::Opt>(opt_code, std::move(opt_data));
+    switch (opt_code) {
+      case dns_protocol::kEdnsPadding:
+        opt = std::make_unique<OptRecordRdata::PaddingOpt>(std::move(opt_data));
+        break;
+      case dns_protocol::kEdnsExtendedDnsError:
+        opt = OptRecordRdata::EdeOpt::Create(std::move(opt_data));
+        break;
+      default:
+        opt = base::WrapUnique(
+            new OptRecordRdata::UnknownOpt(opt_code, std::move(opt_data)));
+        break;
     }
 
     // Confirm that opt is not null, which would be the result of a failed
@@ -205,8 +243,9 @@ uint16_t OptRecordRdata::Type() const {
 }
 
 bool OptRecordRdata::IsEqual(const RecordRdata* other) const {
-  if (other->Type() != Type())
+  if (other->Type() != Type()) {
     return false;
+  }
   const OptRecordRdata* opt_other = static_cast<const OptRecordRdata*>(other);
   return opt_other->buf_ == buf_;
 }
@@ -221,12 +260,12 @@ void OptRecordRdata::AddOpt(std::unique_ptr<Opt> opt) {
   // Start writing from the end of the existing rdata.
   base::BigEndianWriter writer(buf_.data(), buf_.size());
   CHECK(writer.Skip(orig_rdata_size));
-  bool success = writer.WriteU16(opt->code()) &&
+  bool success = writer.WriteU16(opt->GetCode()) &&
                  writer.WriteU16(opt_data.size()) &&
                  writer.WriteBytes(opt_data.data(), opt_data.size());
   DCHECK(success);
 
-  opts_.emplace(opt->code(), std::move(opt));
+  opts_.emplace(opt->GetCode(), std::move(opt));
 }
 
 bool OptRecordRdata::ContainsOptCode(uint16_t opt_code) const {
@@ -238,6 +277,16 @@ std::vector<const OptRecordRdata::Opt*> OptRecordRdata::GetOpts() const {
   opts.reserve(OptCount());
   for (const auto& elem : opts_) {
     opts.push_back(elem.second.get());
+  }
+  return opts;
+}
+
+std::vector<const OptRecordRdata::PaddingOpt*> OptRecordRdata::GetPaddingOpts()
+    const {
+  std::vector<const OptRecordRdata::PaddingOpt*> opts;
+  auto range = opts_.equal_range(dns_protocol::kEdnsPadding);
+  for (auto it = range.first; it != range.second; ++it) {
+    opts.push_back(static_cast<const PaddingOpt*>(it->second.get()));
   }
   return opts;
 }
