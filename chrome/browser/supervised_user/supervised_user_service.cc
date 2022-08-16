@@ -908,9 +908,9 @@ void SupervisedUserService::RefreshApprovedExtensionsFromPrefs() {
   // version information stored in the values is unnecessary. It is only there
   // for backwards compatibility. Remove the version information once sufficient
   // users have migrated away from M83.
-  const base::Value* dict = profile_->GetPrefs()->GetDictionary(
+  const base::Value::Dict& dict = profile_->GetPrefs()->GetValueDict(
       prefs::kSupervisedUserApprovedExtensions);
-  for (auto it : dict->DictItems()) {
+  for (auto it : dict) {
     approved_extensions_set_.insert(it.first);
     extensions_to_be_checked.insert(it.first);
   }
