@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
@@ -99,11 +100,16 @@ void VideoCaptureDeviceLinux::StopAndDeAllocate() {
   if (!capture_impl_)
     return;  // Wrong state.
 
-  task_runner_->PostTask(FROM_HERE,
-                         base::BindOnce(&V4L2CaptureDelegate::StopAndDeAllocate,
-                                        capture_impl_->GetWeakPtr()));
-  task_runner_->DeleteSoon(FROM_HERE, std::move(capture_impl_));
-  capture_impl_ = nullptr;
+  // Shutdown must be synchronous, otherwise the next created capture device
+  // may conflict.
+  base::WaitableEvent waiter(base::WaitableEvent::ResetPolicy::MANUAL,
+                             base::WaitableEvent::InitialState::NOT_SIGNALED);
+  if (task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(&VideoCaptureDeviceLinux::StopAndDeAllocateInternal,
+                         base::Unretained(this), base::Unretained(&waiter)))) {
+    waiter.Wait();
+  }
 }
 
 void VideoCaptureDeviceLinux::TakePhoto(TakePhotoCallback callback) {
@@ -142,6 +148,15 @@ void VideoCaptureDeviceLinux::SetRotation(int rotation) {
   task_runner_->PostTask(FROM_HERE,
                          base::BindOnce(&V4L2CaptureDelegate::SetRotation,
                                         capture_impl_->GetWeakPtr(), rotation));
+}
+
+void VideoCaptureDeviceLinux::StopAndDeAllocateInternal(
+    base::WaitableEvent* waiter) {
+  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(capture_impl_);
+  capture_impl_->StopAndDeAllocate();
+  capture_impl_.reset();
+  waiter->Signal();
 }
 
 }  // namespace media

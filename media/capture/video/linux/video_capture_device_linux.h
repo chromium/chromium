@@ -18,6 +18,10 @@
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video_capture_types.h"
 
+namespace base {
+class WaitableEvent;
+}
+
 namespace media {
 
 class V4L2CaptureDelegate;
@@ -54,6 +58,8 @@ class VideoCaptureDeviceLinux : public VideoCaptureDevice {
   const VideoCaptureDeviceDescriptor device_descriptor_;
 
  private:
+  void StopAndDeAllocateInternal(base::WaitableEvent* waiter);
+
   const scoped_refptr<V4L2CaptureDevice> v4l2_;
 
   // Internal delegate doing the actual capture setting, buffer allocation and
