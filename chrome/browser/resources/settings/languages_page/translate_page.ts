@@ -124,7 +124,8 @@ export class SettingsTranslatePageElement extends
    */
   private onAddNeverTranslateLanguagesClick_(e: Event) {
     e.preventDefault();
-    this.addLanguagesDialogLanguages_ = this.languages!.supported.filter(
+    const translatableLanguages = this.getTranslatableLanguages_();
+    this.addLanguagesDialogLanguages_ = translatableLanguages.filter(
         language => !this.languages!.neverTranslate.includes(language));
     this.showAddNeverTranslateDialog_ = true;
   }
