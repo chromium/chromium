@@ -34,6 +34,11 @@ class BrowserAccessibilityStateImplTest : public ::testing::Test {
     state_ = BrowserAccessibilityStateImpl::GetInstance();
   }
 
+  void TearDown() override {
+    // Disable accessibility so that it does not impact subsequent tests.
+    state_->DisableAccessibility();
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
   base::SimpleTestTickClock clock_;
   raw_ptr<BrowserAccessibilityStateImpl> state_;
