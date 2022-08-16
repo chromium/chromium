@@ -328,34 +328,6 @@ public class MainSettingsFragmentTest {
     }
 
     @Test
-    @MediumTest
-    public void testSigninRowLaunchesSignInFlowForSignedOutAccounts() {
-        launchSettingsActivity();
-
-        onView(withText(R.string.sync_promo_turn_on_sync)).perform(click());
-
-        verify(mMockSyncConsentActivityLauncher)
-                .launchActivityIfAllowed(
-                        any(Activity.class), eq(SigninAccessPoint.SETTINGS_SYNC_OFF_ROW));
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures(ChromeFeatureList.TANGIBLE_SYNC)
-    public void testSigninRowLaunchesTangibleSignInFlowForSignedOutAccounts() {
-        launchSettingsActivity();
-
-        onView(withText(R.string.sync_promo_turn_on_sync)).perform(click());
-
-        onView(withText(R.string.signin_account_picker_dialog_title))
-                .inRoot(isDialog())
-                .check(matches(isDisplayed()));
-        onView(withText(R.string.signin_add_account_to_device))
-                .inRoot(isDialog())
-                .check(matches(isDisplayed()));
-    }
-
-    @Test
     @SmallTest
     public void testSyncRowLaunchesSignInFlowForSignedInAccounts() {
         CoreAccountInfo accountInfo = mSyncTestRule.setUpAccountAndSignInForTesting();
