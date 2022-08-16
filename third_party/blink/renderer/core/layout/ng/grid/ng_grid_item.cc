@@ -115,44 +115,73 @@ AxisEdge AxisEdgeFromItemPosition(const bool is_inline_axis,
   }
 }
 
-// Determines whether the track direction, grid container writing mode, and
-// grid item writing mode are part of the same alignment context as specified in
-// https://www.w3.org/TR/css-align-3/#baseline-sharing-group
-// In particular, 'Boxes share an alignment context, along a particular axis,
-// and established by a particular box, when they are grid items in the same
-// row, along the grid’s row (inline) axis, established by the grid container.'
-//
-// TODO(kschmi): Some of these conditions are non-intuitive, so investigate
-// whether these conditions are correct or if the test expectations are off.
-BaselineGroup DetermineBaselineGroup(
+// Determines the writing-mode to read a baseline from a fragment.
+WritingMode DetermineBaselineWritingMode(
     const GridTrackSizingDirection track_direction,
     const WritingMode container_writing_mode,
     const WritingMode child_writing_mode) {
-  bool is_major = false;
-  switch (container_writing_mode) {
-    case WritingMode::kHorizontalTb:
-      is_major = (track_direction == kForRows)
-                     ? true
-                     : (child_writing_mode == WritingMode::kVerticalLr ||
-                        child_writing_mode == WritingMode::kHorizontalTb);
-      break;
-    case WritingMode::kVerticalLr:
-      is_major = (track_direction == kForRows)
-                     ? (child_writing_mode == WritingMode::kVerticalLr ||
-                        child_writing_mode == WritingMode::kHorizontalTb)
-                     : true;
-      break;
-    case WritingMode::kVerticalRl:
-      is_major = (track_direction == kForRows)
-                     ? (child_writing_mode == WritingMode::kVerticalRl ||
-                        child_writing_mode == WritingMode::kHorizontalTb)
-                     : true;
-      break;
-    default:
-      is_major = true;
-      break;
+  // From: https://drafts.csswg.org/css-align-3/#generate-baselines
+  //
+  // kForRows:
+  //   "If the box establishing the alignment context has a block flow
+  //    direction that is orthogonal to the axis of the alignment context, use
+  //    its writing mode."
+  //
+  // kForColumns:
+  //   "If the child's writing-mode isn't parallel to the alignment context use
+  //    either "horizontal-tb" or "vertical-lr" whichever is orthogonal."
+  const auto orthogonal_writing_mode =
+      (track_direction == kForRows)
+          ? container_writing_mode
+          : ((child_writing_mode == WritingMode::kHorizontalTb)
+                 ? WritingMode::kVerticalLr
+                 : WritingMode::kHorizontalTb);
+  const bool is_parallel =
+      IsParallelWritingMode(container_writing_mode, child_writing_mode);
+
+  if (track_direction == kForRows)
+    return is_parallel ? child_writing_mode : orthogonal_writing_mode;
+  else
+    return is_parallel ? orthogonal_writing_mode : child_writing_mode;
+}
+
+// There are potentially two different baseline groups for a column/row.
+// See: https://www.w3.org/TR/css-align-3/#baseline-sharing-group
+//
+// We label these "major"/"minor" to separate them. The "major" group should be
+// aligned to the appropriate "start" axis.
+BaselineGroup DetermineBaselineGroup(
+    const GridTrackSizingDirection track_direction,
+    const WritingDirectionMode container_writing_direction,
+    const WritingMode baseline_writing_mode) {
+  const auto container_writing_mode =
+      container_writing_direction.GetWritingMode();
+  const bool is_parallel =
+      IsParallelWritingMode(container_writing_mode, baseline_writing_mode);
+  if (track_direction == kForRows) {
+    DCHECK(is_parallel);
+    return (baseline_writing_mode == container_writing_mode)
+               ? BaselineGroup::kMajor
+               : BaselineGroup::kMinor;
   }
-  return is_major ? BaselineGroup::kMajor : BaselineGroup::kMinor;
+
+  // kForColumns
+  DCHECK(!is_parallel);
+
+  // For each writing-mode the "major" group is aligned with the container's
+  // direction. This is to ensure the inline-start offset (for the grid-item)
+  // matches the baseline offset we calculate.
+  const bool is_ltr = container_writing_direction.IsLtr();
+  if ((baseline_writing_mode == WritingMode::kHorizontalTb) == is_ltr)
+    return BaselineGroup::kMajor;
+
+  if ((baseline_writing_mode == WritingMode::kVerticalLr) == is_ltr)
+    return BaselineGroup::kMajor;
+
+  if ((baseline_writing_mode == WritingMode::kVerticalRl) == !is_ltr)
+    return BaselineGroup::kMajor;
+
+  return BaselineGroup::kMinor;
 }
 
 }  // namespace
@@ -184,12 +213,21 @@ GridItemData::GridItemData(const NGBlockNode node,
       container_style, &block_auto_behavior, &is_overflow_safe);
   is_block_axis_overflow_safe = is_overflow_safe;
 
-  const auto container_writing_mode = container_style.GetWritingMode();
+  const auto container_writing_direction =
+      container_style.GetWritingDirection();
   const auto item_writing_mode = style.GetWritingMode();
+
+  column_baseline_writing_mode = DetermineBaselineWritingMode(
+      kForColumns, container_writing_direction.GetWritingMode(),
+      item_writing_mode);
+  row_baseline_writing_mode = DetermineBaselineWritingMode(
+      kForRows, container_writing_direction.GetWritingMode(),
+      item_writing_mode);
+
   column_baseline_group = DetermineBaselineGroup(
-      kForColumns, container_writing_mode, item_writing_mode);
-  row_baseline_group = DetermineBaselineGroup(kForRows, container_writing_mode,
-                                              item_writing_mode);
+      kForColumns, container_writing_direction, column_baseline_writing_mode);
+  row_baseline_group = DetermineBaselineGroup(
+      kForRows, container_writing_direction, row_baseline_writing_mode);
 }
 
 void GridItemData::SetAlignmentFallback(

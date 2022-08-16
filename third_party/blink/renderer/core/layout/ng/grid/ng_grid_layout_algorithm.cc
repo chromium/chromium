@@ -859,76 +859,17 @@ const NGLayoutResult* LayoutGridItemForMeasure(
   return node.Layout(constraint_space);
 }
 
-LayoutUnit GetLogicalBaseline(const NGBoxFragment& fragment,
-                              const GridTrackSizingDirection track_direction,
-                              const WritingMode writing_mode) {
-  const auto child_writing_mode =
-      fragment.GetWritingDirection().GetWritingMode();
-  const bool is_for_columns = (track_direction == kForColumns);
-
-  // TODO(kschmi): Reconcile this with layout experts to see if this makes
-  // sense. Some of the entries here are non-intuitive.
-  switch (writing_mode) {
-    case WritingMode::kHorizontalTb:
-      switch (child_writing_mode) {
-        case WritingMode::kHorizontalTb:
-          return is_for_columns
-                     ? LayoutUnit()
-                     : fragment.Baseline().value_or(fragment.BlockSize());
-        case WritingMode::kVerticalLr:
-          return is_for_columns ? fragment.Baseline().value_or(LayoutUnit())
-                                : fragment.InlineSize();
-        case WritingMode::kVerticalRl:
-          return is_for_columns ? (fragment.BlockSize() -
-                                   fragment.Baseline().value_or(LayoutUnit()))
-                                : fragment.InlineSize();
-        default:
-          NOTREACHED();
-          return LayoutUnit();
-      }
-    case WritingMode::kVerticalLr:
-      switch (child_writing_mode) {
-        case WritingMode::kHorizontalTb:
-          return is_for_columns
-                     ? fragment.Baseline().value_or(fragment.BlockSize())
-                     : LayoutUnit();
-        case WritingMode::kVerticalLr:
-          return is_for_columns ? fragment.InlineSize()
-                                : fragment.Baseline().value_or(LayoutUnit());
-        case WritingMode::kVerticalRl:
-          return is_for_columns ? fragment.InlineSize()
-                                : (fragment.BlockSize() -
-                                   fragment.Baseline().value_or(LayoutUnit()));
-        default:
-          NOTREACHED();
-          return LayoutUnit();
-      }
-    case WritingMode::kVerticalRl:
-      switch (child_writing_mode) {
-        case WritingMode::kHorizontalTb:
-          return is_for_columns
-                     ? fragment.Baseline().value_or(fragment.BlockSize())
-                     : fragment.InlineSize();
-        case WritingMode::kVerticalLr:
-          return is_for_columns
-                     ? fragment.InlineSize()
-                     : (fragment.BlockSize() -
-                        fragment.Baseline().value_or(fragment.BlockSize()));
-        case WritingMode::kVerticalRl:
-          return is_for_columns
-                     ? fragment.InlineSize()
-                     : fragment.Baseline().value_or(fragment.BlockSize());
-        default:
-          NOTREACHED();
-          return LayoutUnit();
-      }
-    default:
-      NOTREACHED();
-      return LayoutUnit();
-  }
-}
-
 }  // namespace
+
+LayoutUnit NGGridLayoutAlgorithm::GetLogicalBaseline(
+    const NGBoxFragment& baseline_fragment,
+    BaselineGroup baseline_group) const {
+  const auto baseline =
+      baseline_fragment.BaselineOrSynthesize(Style().GetFontBaseline());
+  return (baseline_group == BaselineGroup::kMajor)
+             ? baseline
+             : baseline_fragment.BlockSize() - baseline;
+}
 
 LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
     const NGGridLayoutData& layout_data,
@@ -1012,8 +953,8 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
       result = LayoutGridItemForMeasure(*grid_item, space, sizing_constraint);
     }
 
-    NGBoxFragment fragment(
-        item_style.GetWritingDirection(),
+    NGBoxFragment baseline_fragment(
+        grid_item->BaselineWritingDirection(track_direction),
         To<NGPhysicalBoxFragment>(result->PhysicalFragment()));
 
     if (grid_item->IsBaselineAlignedForDirection(track_direction)) {
@@ -1025,9 +966,8 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
       if (track_baseline != LayoutUnit::Min()) {
         baseline_shim =
             track_baseline -
-            GetLogicalBaseline(
-                fragment, track_direction,
-                ConstraintSpace().GetWritingDirection().GetWritingMode());
+            GetLogicalBaseline(baseline_fragment,
+                               grid_item->BaselineGroup(track_direction));
 
         // Subtract out the start margin so it doesn't get added a second time
         // at the end of |NGGridLayoutAlgorithm::ContributionSizeForGridItem|.
@@ -1035,7 +975,7 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
             is_for_columns ? margins.inline_start : margins.block_start;
       }
     }
-    return fragment.BlockSize() + baseline_shim;
+    return baseline_fragment.BlockSize() + baseline_shim;
   };
 
   const LayoutUnit margin_sum =
@@ -1379,62 +1319,6 @@ void NGGridLayoutAlgorithm::BuildBlockTrackCollection(
   track_collection->FinalizeRanges();
 }
 
-namespace {
-
-bool HasSynthesizedBaseline(const GridTrackSizingDirection track_direction,
-                            const NGBoxFragment& fragment,
-                            const WritingMode writing_mode) {
-  const auto child_writing_mode =
-      fragment.GetWritingDirection().GetWritingMode();
-  const bool is_for_columns = (track_direction == kForColumns);
-
-  // TODO(kschmi): Reconcile this with layout experts to see if this makes
-  // sense. Some of the entries here are non-intuitive.
-  switch (writing_mode) {
-    case WritingMode::kHorizontalTb:
-      switch (child_writing_mode) {
-        case WritingMode::kHorizontalTb:
-          return is_for_columns ? true : !fragment.Baseline().has_value();
-        case WritingMode::kVerticalLr:
-          return is_for_columns ? !fragment.Baseline().has_value() : true;
-        case WritingMode::kVerticalRl:
-          return is_for_columns ? (!fragment.Baseline().has_value()) : true;
-        default:
-          NOTREACHED();
-          return false;
-      }
-    case WritingMode::kVerticalLr:
-      switch (child_writing_mode) {
-        case WritingMode::kHorizontalTb:
-          return is_for_columns ? !fragment.Baseline().has_value() : true;
-        case WritingMode::kVerticalLr:
-          return is_for_columns ? true : !fragment.Baseline().has_value();
-        case WritingMode::kVerticalRl:
-          return is_for_columns ? true : !fragment.Baseline().has_value();
-        default:
-          NOTREACHED();
-          return false;
-      }
-    case WritingMode::kVerticalRl:
-      switch (child_writing_mode) {
-        case WritingMode::kHorizontalTb:
-          return is_for_columns ? !fragment.Baseline().has_value() : true;
-        case WritingMode::kVerticalLr:
-          return is_for_columns ? true : !fragment.Baseline().has_value();
-        case WritingMode::kVerticalRl:
-          return is_for_columns ? true : !fragment.Baseline().has_value();
-        default:
-          NOTREACHED();
-          return false;
-      }
-    default:
-      NOTREACHED();
-      return false;
-  }
-}
-
-}  // namespace
-
 void NGGridLayoutAlgorithm::CalculateAlignmentBaselines(
     const NGGridLayoutData& layout_data,
     const SizingConstraint sizing_constraint,
@@ -1487,24 +1371,21 @@ void NGGridLayoutAlgorithm::CalculateAlignmentBaselines(
     const auto* result =
         LayoutGridItemForMeasure(grid_item, space, sizing_constraint);
 
-    NGBoxFragment fragment(
-        item_style.GetWritingDirection(),
+    NGBoxFragment baseline_fragment(
+        grid_item.BaselineWritingDirection(track_direction),
         To<NGPhysicalBoxFragment>(result->PhysicalFragment()));
 
-    const auto& container_space = ConstraintSpace();
-    const auto container_writing_mode =
-        container_space.GetWritingDirection().GetWritingMode();
+    grid_item.SetAlignmentFallback(track_direction, Style(),
+                                   /* has_synthesized_baseline */
+                                   !baseline_fragment.Baseline().has_value());
 
-    grid_item.SetAlignmentFallback(
-        track_direction, Style(),
-        HasSynthesizedBaseline(track_direction, fragment,
-                               container_writing_mode));
-
-    const auto margins = ComputeMarginsFor(space, item_style, container_space);
+    const auto margins =
+        ComputeMarginsFor(space, item_style, ConstraintSpace());
     LayoutUnit baseline =
         ((track_direction == kForColumns) ? margins.inline_start
                                           : margins.block_start) +
-        GetLogicalBaseline(fragment, track_direction, container_writing_mode);
+        GetLogicalBaseline(baseline_fragment,
+                           grid_item.BaselineGroup(track_direction));
 
     // TODO(kschmi): The IsReplaced() check here is a bit strange, but is
     // necessary to pass some of the tests. Follow-up to see if there's
@@ -3005,17 +2886,17 @@ void NGGridLayoutAlgorithm::PlaceGridItems(
     auto* result = grid_item.node.Layout(space);
     const auto& physical_fragment =
         To<NGPhysicalBoxFragment>(result->PhysicalFragment());
-    NGBoxFragment logical_fragment(item_style.GetWritingDirection(),
-                                   physical_fragment);
 
     auto BaselineOffset =
         [&](const GridTrackSizingDirection track_direction) -> LayoutUnit {
       if (grid_item.IsBaselineAlignedForDirection(track_direction)) {
+        NGBoxFragment baseline_fragment(
+            grid_item.BaselineWritingDirection(track_direction),
+            physical_fragment);
         // The baseline offset is the difference between the grid item's
         // baseline and its track baseline.
         const LayoutUnit item_baseline = GetLogicalBaseline(
-            logical_fragment, track_direction,
-            container_space.GetWritingDirection().GetWritingMode());
+            baseline_fragment, grid_item.BaselineGroup(track_direction));
         const LayoutUnit track_baseline =
             Baseline(layout_data, grid_item, track_direction);
 

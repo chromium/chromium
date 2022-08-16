@@ -73,6 +73,15 @@ struct CORE_EXPORT GridItemData : public GarbageCollected<GridItemData> {
                                             : row_baseline_group;
   }
 
+  WritingDirectionMode BaselineWritingDirection(
+      const GridTrackSizingDirection track_direction) const {
+    // NOTE: For reading the baseline from a fragment the direction doesn't
+    // matter - just use the default.
+    return {(track_direction == kForColumns) ? column_baseline_writing_mode
+                                             : row_baseline_writing_mode,
+            TextDirection::kLtr};
+  }
+
   const GridItemIndices& SetIndices(
       const GridTrackSizingDirection track_direction) const {
     return (track_direction == kForColumns) ? column_set_indices
@@ -184,6 +193,9 @@ struct CORE_EXPORT GridItemData : public GarbageCollected<GridItemData> {
 
   enum BaselineGroup column_baseline_group;
   enum BaselineGroup row_baseline_group;
+
+  WritingMode column_baseline_writing_mode;
+  WritingMode row_baseline_writing_mode;
 
   TrackSpanProperties column_span_properties;
   TrackSpanProperties row_span_properties;
