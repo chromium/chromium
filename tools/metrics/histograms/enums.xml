@@ -41238,7 +41238,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="1" label="TooManyRequests"/>
   <int value="2" label="Aborted"/>
   <int value="3" label="UnhandledRequest"/>
-  <int value="4" label="RpNotPotentiallyTrustworthy"/>
+  <int value="4" label="IdpNotPotentiallyTrustworthy"/>
   <int value="5" label="NotSelectAccount"/>
   <int value="6" label="ManifestHttpNotFound"/>
   <int value="7" label="ManifestNoResponse"/>

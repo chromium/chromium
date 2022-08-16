@@ -317,7 +317,7 @@ void FederatedAuthRequestImpl::RequestToken(
   if (!network::IsOriginPotentiallyTrustworthy(
           url::Origin::Create(identity_provider_ptr->config_url))) {
     fedcm_metrics_->RecordRequestTokenStatus(
-        TokenStatus::kRpNotPotentiallyTrustworthy);
+        TokenStatus::kIdpNotPotentiallyTrustworthy);
     CompleteRequest(FederatedAuthRequestResult::kError, "",
                     /*should_delay_callback=*/false);
     return;

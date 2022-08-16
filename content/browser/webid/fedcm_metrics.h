@@ -24,7 +24,7 @@ enum class FedCmRequestIdTokenStatus {
   kTooManyRequests,
   kAborted,
   kUnhandledRequest,
-  kRpNotPotentiallyTrustworthy,
+  kIdpNotPotentiallyTrustworthy,
   kNotSelectAccount,
   kManifestHttpNotFound,
   kManifestNoResponse,
