@@ -122,7 +122,8 @@ class CORE_EXPORT CSSParserImpl {
       bool allow_import_rules = true,
       std::unique_ptr<CSSTokenizerBase> tokenizer = nullptr);
   static CSSSelectorList ParsePageSelector(CSSParserTokenRange,
-                                           StyleSheetContents*);
+                                           StyleSheetContents*,
+                                           const CSSParserContext& context);
 
   static std::unique_ptr<Vector<double>> ParseKeyframeKeyList(const String&);
 

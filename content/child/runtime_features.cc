@@ -365,6 +365,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"FontSrcLocalMatching", features::kFontSrcLocalMatching},
           {"HTMLParamElementUrlSupport",
            blink::features::kHTMLParamElementUrlSupport},
+          {"HTMLPopupAttribute", blink::features::kHTMLPopupAttribute},
           {"LayoutNG", blink::features::kLayoutNG},
           {"LegacyWindowsDWriteFontFallback",
            features::kLegacyWindowsDWriteFontFallback},

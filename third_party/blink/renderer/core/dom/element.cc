@@ -2394,7 +2394,8 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
 
   if (params.reason == AttributeModificationReason::kByParser &&
       name == html_names::kDefaultopenAttr && HasValidPopupAttribute()) {
-    DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
+    DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
+        GetDocument().GetExecutionContext()));
     DCHECK(!isConnected());
     GetPopupData()->setHadDefaultOpenWhenParsed(true);
   }
@@ -2414,7 +2415,8 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
 }
 
 void Element::UpdatePopupAttribute(String value) {
-  if (!RuntimeEnabledFeatures::HTMLPopupAttributeEnabled()) {
+  if (!RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
+          GetDocument().GetExecutionContext())) {
     // If the feature flag isn't enabled, give a console warning about this
     // usage of the 'popup' attribute, which is likely to cause breakage when
     // the feature ships.
@@ -2486,7 +2488,8 @@ PopupValueType Element::PopupType() const {
 
 // This should be true when :top-layer should match.
 bool Element::popupOpen() const {
-  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
+  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
+      GetDocument().GetExecutionContext()));
   if (auto* popup_data = GetPopupData())
     return popup_data->visibilityState() == PopupVisibilityState::kShowing;
   return false;
@@ -2501,7 +2504,8 @@ bool Element::popupOpen() const {
 // 3. Set the :top-layer pseudo class.
 // 4. Update style. (Animations/transitions happen here.)
 void Element::showPopUp(ExceptionState& exception_state) {
-  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
+  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
+      GetDocument().GetExecutionContext()));
   if (!HasValidPopupAttribute()) {
     return exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
@@ -2536,7 +2540,7 @@ void Element::showPopUp(ExceptionState& exception_state) {
             HidePopupForcingLevel::kHideAfterAnimations);
       }
       // Then hide open pop-ups that aren't ancestors of this hint.
-      if (const Element* hint_ancestor = NearestOpenAncestralPopup(this)) {
+      if (const Element* hint_ancestor = NearestOpenAncestralPopup(*this)) {
         HideAllPopupsUntil(hint_ancestor, document,
                            HidePopupFocusBehavior::kNone,
                            HidePopupForcingLevel::kHideAfterAnimations,
@@ -2547,7 +2551,7 @@ void Element::showPopUp(ExceptionState& exception_state) {
       // stack, and hide any hint pop-ups. Because this pop-up isn't yet in the
       // stack, we call NearestOpenAncestralPopup to find this pop-up's
       // ancestor, if any.
-      const Element* auto_ancestor = NearestOpenAncestralPopup(this);
+      const Element* auto_ancestor = NearestOpenAncestralPopup(*this);
       HideAllPopupsUntil(auto_ancestor, document, HidePopupFocusBehavior::kNone,
                          HidePopupForcingLevel::kHideAfterAnimations,
                          HidePopupIndependence::kHideUnrelated);
@@ -2610,7 +2614,8 @@ void Element::HideAllPopupsUntil(const Element* endpoint,
                                  HidePopupFocusBehavior focus_behavior,
                                  HidePopupForcingLevel forcing_level,
                                  HidePopupIndependence popup_independence) {
-  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
+  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
+      document.GetExecutionContext()));
   DCHECK(!endpoint || endpoint->HasValidPopupAttribute());
 
   // If we're forcing a popup to hide immediately, first hide any other popups
@@ -2640,7 +2645,7 @@ void Element::HideAllPopupsUntil(const Element* endpoint,
       // If there is a hint showing that is a descendant of something on the
       // stack, then the hint should be hidden before that ancestor is hidden,
       // regardless of popup_independence.
-      hint_ancestor = NearestOpenAncestralPopup(document.PopupHintShowing());
+      hint_ancestor = NearestOpenAncestralPopup(*document.PopupHintShowing());
       if (!hint_ancestor &&
           popup_independence == HidePopupIndependence::kHideUnrelated) {
         document.PopupHintShowing()->HidePopUpInternal(focus_behavior,
@@ -2663,7 +2668,8 @@ void Element::HideAllPopupsUntil(const Element* endpoint,
 }
 
 void Element::hidePopUp(ExceptionState& exception_state) {
-  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
+  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
+      GetDocument().GetExecutionContext()));
   if (!HasValidPopupAttribute()) {
     return exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
@@ -2698,7 +2704,8 @@ void Element::hidePopUp(ExceptionState& exception_state) {
 // 6. Update style.
 void Element::HidePopUpInternal(HidePopupFocusBehavior focus_behavior,
                                 HidePopupForcingLevel forcing_level) {
-  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
+  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
+      GetDocument().GetExecutionContext()));
   DCHECK(HasValidPopupAttribute());
   auto& document = GetDocument();
   if (PopupType() == PopupValueType::kAuto ||
@@ -2796,7 +2803,8 @@ void Element::HidePopUpInternal(HidePopupFocusBehavior focus_behavior,
 }
 
 void Element::PopupHideFinishIfNeeded() {
-  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
+  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
+      GetDocument().GetExecutionContext()));
   GetDocument().PopupsWaitingToHide().erase(this);
   GetDocument().RemoveFromTopLayer(this);
   // Re-apply display:none.
@@ -2808,7 +2816,8 @@ void Element::PopupHideFinishIfNeeded() {
 }
 
 void Element::SetPopupFocusOnShow() {
-  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
+  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
+      GetDocument().GetExecutionContext()));
   // The layout must be updated here because we call Element::isFocusable,
   // which requires an up-to-date layout.
   GetDocument().UpdateStyleAndLayoutTreeForNode(this);
@@ -2854,7 +2863,8 @@ void Element::SetPopupFocusOnShow() {
 // https://html.spec.whatwg.org/multipage/interaction.html#get-the-focusable-area
 // does not include dialogs or popups yet.
 Element* Element::GetPopupFocusableArea(bool autofocus_only) const {
-  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
+  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
+      GetDocument().GetExecutionContext()));
   Node* next = nullptr;
   for (Node* node = FlatTreeTraversal::FirstChild(*this); node; node = next) {
     next = FlatTreeTraversal::Next(*node, this);
@@ -2950,10 +2960,10 @@ const Element* NearestOpenAncestralPopupRecursive(
 // pop-up found during the tree-walk is included in the search. If it is false,
 // the |node| parameter must be a pop-up, and the highest pop-up *below* that
 // starting pop- up will be returned.
-const Element* Element::NearestOpenAncestralPopup(const Node* node,
+const Element* Element::NearestOpenAncestralPopup(const Node& node,
                                                   bool inclusive) {
-  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
-  DCHECK(node);
+  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
+      node.GetDocument().GetExecutionContext()));
   // popup_positions is a map from all showing (or about-to-show) pop-ups to
   // their position in the pop-up stack.
   HeapHashMap<Member<const Element>, int> popup_positions;
@@ -2961,12 +2971,12 @@ const Element* Element::NearestOpenAncestralPopup(const Node* node,
   // back to the pop-up itself.
   HeapHashMap<Member<const Element>, Member<const Element>> anchors_to_popups;
   int indx = 0;
-  for (auto popup : node->GetDocument().PopupStack()) {
+  for (auto popup : node.GetDocument().PopupStack()) {
     popup_positions.Set(popup, indx++);
     if (popup->anchorElement())
       anchors_to_popups.Set(popup->anchorElement(), popup);
   }
-  auto* hint_showing = node->GetDocument().PopupHintShowing();
+  auto* hint_showing = node.GetDocument().PopupHintShowing();
   if (hint_showing) {
     popup_positions.Set(hint_showing, indx++);
     if (hint_showing->anchorElement()) {
@@ -2991,7 +3001,7 @@ const Element* Element::NearestOpenAncestralPopup(const Node* node,
     // For inclusive mode, we need to walk up the tree until we find an open
     // pop-up, or an invoker for an open pop-up, and then modify the upper bound
     // to include the highest such pop-up found, if any.
-    for (const Node* current_node = node; current_node;
+    for (const Node* current_node = &node; current_node;
          current_node = FlatTreeTraversal::Parent(*current_node)) {
       if (auto* current_element = DynamicTo<Element>(current_node);
           current_element && current_element->HasValidPopupAttribute() &&
@@ -3013,12 +3023,11 @@ const Element* Element::NearestOpenAncestralPopup(const Node* node,
   }
   HashSet<Member<const Node>> seen;
   return NearestOpenAncestralPopupRecursive(
-      node, popup_positions, anchors_to_popups, upper_bound, seen);
+      &node, popup_positions, anchors_to_popups, upper_bound, seen);
 }
 
 // static
 void Element::HandlePopupLightDismiss(const Event& event) {
-  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
   if (event.GetEventPath().IsEmpty())
     return;
   DCHECK_NE(Event::PhaseType::kNone, event.eventPhase());
@@ -3030,11 +3039,13 @@ void Element::HandlePopupLightDismiss(const Event& event) {
   if (!target_node)
     return;
   auto& document = target_node->GetDocument();
+  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
+      document.GetExecutionContext()));
   DCHECK(document.TopmostPopupAutoOrHint());
   const AtomicString& event_type = event.type();
   if (event_type == event_type_names::kMousedown) {
     document.SetPopUpMousedownTarget(
-        NearestOpenAncestralPopup(target_node, /*inclusive*/ true));
+        NearestOpenAncestralPopup(*target_node, /*inclusive*/ true));
   } else if (event_type == event_type_names::kMouseup) {
     // Hide everything up to the clicked element. We do this on mouseup,
     // rather than mousedown or click, primarily for accessibility concerns.
@@ -3045,7 +3056,7 @@ void Element::HandlePopupLightDismiss(const Event& event) {
     // mouse-drag on a pop-up, and finishes off the pop-up (to highlight text),
     // the ancestral pop-up is stored in mousedown and compared here.
     auto* ancestor_pop_up =
-        NearestOpenAncestralPopup(target_node, /*inclusive*/ true);
+        NearestOpenAncestralPopup(*target_node, /*inclusive*/ true);
     bool same_target = ancestor_pop_up == document.PopUpMousedownTarget();
     document.SetPopUpMousedownTarget(nullptr);
     if (same_target) {
@@ -3066,7 +3077,7 @@ void Element::HandlePopupLightDismiss(const Event& event) {
     // If we focus an element, hide all pop-ups outside the that element's
     // pop-up tree, including unrelated pop-ups.
     HideAllPopupsUntil(
-        NearestOpenAncestralPopup(target_node, /*inclusive*/ true), document,
+        NearestOpenAncestralPopup(*target_node, /*inclusive*/ true), document,
         HidePopupFocusBehavior::kNone,
         HidePopupForcingLevel::kHideAfterAnimations,
         HidePopupIndependence::kHideUnrelated);
@@ -3075,14 +3086,16 @@ void Element::HandlePopupLightDismiss(const Event& event) {
 
 void Element::InvokePopup(Element* invoker) {
   DCHECK(invoker);
-  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
+  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
+      GetDocument().GetExecutionContext()));
   DCHECK(HasValidPopupAttribute());
   GetPopupData()->setInvoker(invoker);
   showPopUp(ASSERT_NO_EXCEPTION);
 }
 
 Element* Element::anchorElement() const {
-  if (!RuntimeEnabledFeatures::HTMLPopupAttributeEnabled())
+  if (!RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
+          GetDocument().GetExecutionContext()))
     return nullptr;
   if (!HasValidPopupAttribute())
     return nullptr;
@@ -3095,7 +3108,8 @@ Element* Element::anchorElement() const {
 }
 
 Element* Element::PopupHoverTargetElement() const {
-  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
+  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
+      GetDocument().GetExecutionContext()));
   if (!FastHasAttribute(html_names::kPopuphovertargetAttr))
     return nullptr;
   Element* popup_element = GetTreeScope().getElementById(
@@ -3114,7 +3128,8 @@ Element* Element::PopupHoverTargetElement() const {
 // property, which works for all pop-up types, and needs to keep pop-ups open
 // when a descendant is hovered.
 bool Element::IsNodePopUpDescendant(const Node& node) const {
-  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
+  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
+      GetDocument().GetExecutionContext()));
   DCHECK(HasValidPopupAttribute());
   if (PopupType() == PopupValueType::kManual) {
     for (const Node& ancestor : FlatTreeTraversal::InclusiveAncestorsOf(node)) {
@@ -3123,8 +3138,8 @@ bool Element::IsNodePopUpDescendant(const Node& node) const {
     }
   } else {
     for (const Element* ancestor =
-             NearestOpenAncestralPopup(&node, /*inclusive*/ true);
-         ancestor; ancestor = NearestOpenAncestralPopup(ancestor)) {
+             NearestOpenAncestralPopup(node, /*inclusive*/ true);
+         ancestor; ancestor = NearestOpenAncestralPopup(*ancestor)) {
       if (ancestor == this)
         return true;
     }
@@ -3133,7 +3148,8 @@ bool Element::IsNodePopUpDescendant(const Node& node) const {
 }
 
 void Element::MaybeQueuePopupHideEvent() {
-  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
+  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
+      GetDocument().GetExecutionContext()));
   DCHECK(HasValidPopupAttribute());
   // If the pop-up isn't showing, or it has an infinite PopUpHideDelay, do
   // nothing.
@@ -3168,7 +3184,11 @@ void Element::MaybeQueuePopupHideEvent() {
 // static
 void Element::HoveredElementChanged(Element* old_element,
                                     Element* new_element) {
-  if (!RuntimeEnabledFeatures::HTMLPopupAttributeEnabled())
+  auto* document_for_ot =
+      old_element ? &old_element->GetDocument()
+                  : (new_element ? &new_element->GetDocument() : nullptr);
+  if (!document_for_ot || !RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
+                              document_for_ot->GetExecutionContext()))
     return;
   if (old_element) {
     // For the previously-hovered element: loop through all showing popups
@@ -3194,7 +3214,8 @@ void Element::HoveredElementChanged(Element* old_element,
 }
 
 void Element::HandlePopupHovered(bool hovered) {
-  if (!RuntimeEnabledFeatures::HTMLPopupAttributeEnabled())
+  if (!RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
+          GetDocument().GetExecutionContext()))
     return;
   if (!IsInTreeScope())
     return;
@@ -3263,7 +3284,8 @@ void Element::HandlePopupHovered(bool hovered) {
 
 void Element::SetNeedsRepositioningForSelectMenu(bool flag) {
   DCHECK(RuntimeEnabledFeatures::HTMLSelectMenuElementEnabled());
-  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
+  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
+      GetDocument().GetExecutionContext()));
   DCHECK(HasValidPopupAttribute());
   auto& popup_data = EnsureElementRareData().EnsurePopupData();
   if (popup_data.needsRepositioningForSelectMenu() == flag)
@@ -3279,7 +3301,8 @@ void Element::SetNeedsRepositioningForSelectMenu(bool flag) {
 
 void Element::SetOwnerSelectMenuElement(HTMLSelectMenuElement* element) {
   DCHECK(RuntimeEnabledFeatures::HTMLSelectMenuElementEnabled());
-  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
+  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
+      GetDocument().GetExecutionContext()));
   DCHECK(HasValidPopupAttribute());
   EnsureElementRareData().EnsurePopupData().setOwnerSelectMenuElement(element);
 }
@@ -3584,7 +3607,8 @@ Node::InsertionNotificationRequest Element::InsertedInto(
   if (GetPopupData() && GetPopupData()->hadDefaultOpenWhenParsed()) {
     // If a Popup element has the `defaultopen` attribute upon page
     // load, and it is the *first* such popup, show it.
-    DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
+    DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
+        GetDocument().GetExecutionContext()));
     DCHECK(isConnected());
     GetPopupData()->setHadDefaultOpenWhenParsed(false);
     auto maybe_show_popup = [](Element* popup) {
@@ -6769,9 +6793,9 @@ const AtomicString& Element::ShadowPseudoId() const {
 }
 
 void Element::SetShadowPseudoId(const AtomicString& id) {
-  DCHECK(CSSSelectorParser::ParsePseudoType(id, false) ==
+  DCHECK(CSSSelectorParser::ParsePseudoType(id, false, &GetDocument()) ==
              CSSSelector::kPseudoWebKitCustomElement ||
-         CSSSelectorParser::ParsePseudoType(id, false) ==
+         CSSSelectorParser::ParsePseudoType(id, false, &GetDocument()) ==
              CSSSelector::kPseudoBlinkInternalElement);
   setAttribute(html_names::kPseudoAttr, id);
 }
@@ -8032,7 +8056,8 @@ scoped_refptr<ComputedStyle> Element::CustomStyleForLayoutObject(
   if (HasValidPopupAttribute() &&
       GetPopupData()->needsRepositioningForSelectMenu()) {
     DCHECK(RuntimeEnabledFeatures::HTMLSelectMenuElementEnabled());
-    DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
+    DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
+        GetDocument().GetExecutionContext()));
     AdjustPopupPositionForSelectMenu(*style);
   }
   return style;

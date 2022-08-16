@@ -1038,7 +1038,8 @@
     "prefix": "popup-disabled",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [],
-    "args": ["--stable-release-mode"]
+    "args": ["--stable-release-mode",
+             "--disable-features=HTMLPopupAttribute"]
   },
   {
     "prefix": "dialogfocus-old-behavior",

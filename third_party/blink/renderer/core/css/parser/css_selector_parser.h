@@ -50,7 +50,8 @@ class CORE_EXPORT CSSSelectorParser {
                                       const CSSParserContext*);
 
   static CSSSelector::PseudoType ParsePseudoType(const AtomicString&,
-                                                 bool has_arguments);
+                                                 bool has_arguments,
+                                                 const Document*);
   static PseudoId ParsePseudoElement(const String&, const Node*);
   // Returns the argument of a parameterized pseudo-element. For example, for
   // '::highlight(foo)' it returns 'foo'.

@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -510,8 +511,10 @@ const static NameToPseudoStruct kPseudoTypeWithArgumentsMap[] = {
     {"where", CSSSelector::kPseudoWhere},
 };
 
-CSSSelector::PseudoType CSSSelector::NameToPseudoType(const AtomicString& name,
-                                                      bool has_arguments) {
+CSSSelector::PseudoType CSSSelector::NameToPseudoType(
+    const AtomicString& name,
+    bool has_arguments,
+    const Document* document) {
   if (name.IsNull() || !name.Is8Bit())
     return CSSSelector::kPseudoUnknown;
 
@@ -564,12 +567,17 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(const AtomicString& name,
       !RuntimeEnabledFeatures::CSSPseudoPlayingPausedEnabled())
     return CSSSelector::kPseudoUnknown;
 
-  if (match->type == CSSSelector::kPseudoTopLayer &&
-      !RuntimeEnabledFeatures::HTMLPopupAttributeEnabled())
+  // We enable parsing of the pop-up pseudo classes in the case that we *don't*
+  // have a document, since that mostly/always occurs when parsing UA
+  // stylesheets.
+  bool popup_attribute_enabled =
+      !document || RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
+                       document->GetExecutionContext());
+  if (match->type == CSSSelector::kPseudoTopLayer && !popup_attribute_enabled)
     return CSSSelector::kPseudoUnknown;
 
   if (match->type == CSSSelector::kPseudoPopupHidden &&
-      !RuntimeEnabledFeatures::HTMLPopupAttributeEnabled())
+      !popup_attribute_enabled)
     return CSSSelector::kPseudoUnknown;
 
   if (match->type == CSSSelector::kPseudoHighlight &&
@@ -630,10 +638,11 @@ void CSSSelector::Show() const {
 }
 #endif
 
-void CSSSelector::UpdatePseudoPage(const AtomicString& value) {
+void CSSSelector::UpdatePseudoPage(const AtomicString& value,
+                                   const Document* document) {
   DCHECK_EQ(Match(), kPagePseudoClass);
   SetValue(value);
-  PseudoType type = CSSSelectorParser::ParsePseudoType(value, false);
+  PseudoType type = CSSSelectorParser::ParsePseudoType(value, false, document);
   if (type != kPseudoFirstPage && type != kPseudoLeftPage &&
       type != kPseudoRightPage) {
     type = kPseudoUnknown;
@@ -647,8 +656,8 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
                                    CSSParserMode mode) {
   DCHECK(match_ == kPseudoClass || match_ == kPseudoElement);
   AtomicString lower_value = value.LowerASCII();
-  PseudoType pseudo_type =
-      CSSSelectorParser::ParsePseudoType(lower_value, has_arguments);
+  PseudoType pseudo_type = CSSSelectorParser::ParsePseudoType(
+      lower_value, has_arguments, context.GetDocument());
   SetPseudoType(pseudo_type);
   SetValue(pseudo_type == kPseudoState ? value : lower_value);
 

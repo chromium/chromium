@@ -204,7 +204,8 @@ void GoFullscreen(Element& element,
     DCHECK(!HasFullscreenFlag(element));
 
   // If there are any open popups, close them immediately.
-  if (RuntimeEnabledFeatures::HTMLPopupAttributeEnabled()) {
+  if (RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
+          document.GetExecutionContext())) {
     Element::HideAllPopupsUntil(nullptr, document,
                                 HidePopupFocusBehavior::kNone,
                                 HidePopupForcingLevel::kHideImmediately,

@@ -83,8 +83,8 @@ class CORE_EXPORT CSSParserSelector {
                         CSSParserMode mode) const {
     selector_->UpdatePseudoType(value, context, has_arguments, mode);
   }
-  void UpdatePseudoPage(const AtomicString& value) {
-    selector_->UpdatePseudoPage(value);
+  void UpdatePseudoPage(const AtomicString& value, const Document* document) {
+    selector_->UpdatePseudoPage(value, document);
   }
 
   void AdoptSelectorVector(CSSSelectorVector& selector_vector);

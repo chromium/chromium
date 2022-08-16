@@ -1842,6 +1842,7 @@ interface Element : Node
     getter clientLeft
     getter clientTop
     getter clientWidth
+    getter defaultOpen
     getter elementTiming
     getter firstElementChild
     getter id
@@ -1860,6 +1861,10 @@ interface Element : Node
     getter onwebkitfullscreenerror
     getter outerHTML
     getter part
+    getter popUp
+    getter popUpHideTarget
+    getter popUpShowTarget
+    getter popUpToggleTarget
     getter prefix
     getter previousElementSibling
     getter role
@@ -1895,6 +1900,7 @@ interface Element : Node
     method hasAttributeNS
     method hasAttributes
     method hasPointerCapture
+    method hidePopUp
     method insertAdjacentElement
     method insertAdjacentHTML
     method insertAdjacentText
@@ -1922,6 +1928,7 @@ interface Element : Node
     method setAttributeNodeNS
     method setHTML
     method setPointerCapture
+    method showPopUp
     method toggleAttribute
     method webkitMatchesSelector
     method webkitRequestFullScreen
@@ -1967,6 +1974,7 @@ interface Element : Node
     setter ariaValueText
     setter classList
     setter className
+    setter defaultOpen
     setter elementTiming
     setter id
     setter innerHTML
@@ -1980,6 +1988,10 @@ interface Element : Node
     setter onwebkitfullscreenerror
     setter outerHTML
     setter part
+    setter popUp
+    setter popUpHideTarget
+    setter popUpShowTarget
+    setter popUpToggleTarget
     setter role
     setter scrollLeft
     setter scrollTop

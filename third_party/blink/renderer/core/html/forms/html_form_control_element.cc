@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/listed_element.h"
@@ -334,7 +335,8 @@ HTMLFormControlElement::popupTargetElement() const {
   const PopupTargetElement no_element{.element = nullptr,
                                       .action = PopupTriggerAction::kNone,
                                       .attribute_name = g_null_name};
-  if (!RuntimeEnabledFeatures::HTMLPopupAttributeEnabled() ||
+  if (!RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
+          GetDocument().GetExecutionContext()) ||
       !IsInTreeScope() ||
       SupportsPopupTriggering() == PopupTriggerSupport::kNone) {
     return no_element;

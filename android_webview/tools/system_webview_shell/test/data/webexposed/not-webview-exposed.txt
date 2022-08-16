@@ -266,6 +266,23 @@ interface FontData
 interface Event
     getter path                        # crbug.com/1277431
 
+# The Pop-Up API (crbug.com/1307772) is enabled by the fieldtrial_testing_config,
+# but only for desktop and Android platforms. It is not shipped to stable yet,
+# on any platform.
+interface Element : Node
+	  getter popUp
+	  method hidePopUp
+	  getter popUpHideTarget
+	  setter popUpShowTarget
+	  getter popUpShowTarget
+	  setter defaultOpen
+	  setter popUpToggleTarget
+	  getter popUpToggleTarget
+	  method showPopUp
+	  setter popUp
+	  getter defaultOpen
+	  setter popUpHideTarget
+
 # FedCM API is not implemented on WebView. crbug.com/1340252
 interface IdentityCredential : Credential
     getter token

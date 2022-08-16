@@ -60,7 +60,7 @@ CSSSelectorList CSSParser::ParsePageSelector(
   CSSTokenizer tokenizer(selector);
   const auto tokens = tokenizer.TokenizeToEOF();
   return CSSParserImpl::ParsePageSelector(CSSParserTokenRange(tokens),
-                                          style_sheet_contents);
+                                          style_sheet_contents, context);
 }
 
 StyleRuleBase* CSSParser::ParseRule(const CSSParserContext* context,

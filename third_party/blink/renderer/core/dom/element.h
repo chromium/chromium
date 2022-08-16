@@ -588,7 +588,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void HidePopUpInternal(HidePopupFocusBehavior focus_behavior,
                          HidePopupForcingLevel forcing_level);
   void PopupHideFinishIfNeeded();
-  static const Element* NearestOpenAncestralPopup(const Node* node,
+  static const Element* NearestOpenAncestralPopup(const Node& node,
                                                   bool inclusive = false);
   // Retrieves the element pointed to by this element's 'anchor' content
   // attribute, if that element exists, and if this element is a pop-up.

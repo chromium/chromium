@@ -336,9 +336,11 @@ ParseSheetResult CSSParserImpl::ParseStyleSheet(
   return result;
 }
 
+// static
 CSSSelectorList CSSParserImpl::ParsePageSelector(
     CSSParserTokenRange range,
-    StyleSheetContents* style_sheet) {
+    StyleSheetContents* style_sheet,
+    const CSSParserContext& context) {
   // We only support a small subset of the css-page spec.
   range.ConsumeWhitespace();
   AtomicString type_selector;
@@ -365,7 +367,7 @@ CSSSelectorList CSSParserImpl::ParsePageSelector(
     selector = std::make_unique<CSSParserSelector>();
     if (!pseudo.IsNull()) {
       selector->SetMatch(CSSSelector::kPagePseudoClass);
-      selector->UpdatePseudoPage(pseudo.LowerASCII());
+      selector->UpdatePseudoPage(pseudo.LowerASCII(), context.GetDocument());
       if (selector->GetPseudoType() == CSSSelector::kPseudoUnknown)
         return CSSSelectorList();
     }
@@ -993,7 +995,8 @@ StyleRulePage* CSSParserImpl::ConsumePageRule(CSSParserTokenStream& stream) {
     return nullptr;
   CSSParserTokenStream::BlockGuard guard(stream);
 
-  CSSSelectorList selector_list = ParsePageSelector(prelude, style_sheet_);
+  CSSSelectorList selector_list =
+      ParsePageSelector(prelude, style_sheet_, *context_);
   if (!selector_list.IsValid())
     return nullptr;  // Parse error, invalid @page selector
 

@@ -186,7 +186,8 @@ void HTMLDialogElement::show() {
   SetBooleanAttribute(html_names::kOpenAttr, true);
 
   // Showing a <dialog> should hide all open popups, immediately.
-  if (RuntimeEnabledFeatures::HTMLPopupAttributeEnabled()) {
+  if (RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
+          GetDocument().GetExecutionContext())) {
     Element::HideAllPopupsUntil(nullptr, GetDocument(),
                                 HidePopupFocusBehavior::kNone,
                                 HidePopupForcingLevel::kHideImmediately,
@@ -247,7 +248,8 @@ void HTMLDialogElement::showModal(ExceptionState& exception_state) {
   }
 
   // Showing a <dialog> should hide all open popups, immediately.
-  if (RuntimeEnabledFeatures::HTMLPopupAttributeEnabled()) {
+  if (RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
+          document.GetExecutionContext())) {
     Element::HideAllPopupsUntil(nullptr, document,
                                 HidePopupFocusBehavior::kNone,
                                 HidePopupForcingLevel::kHideImmediately,

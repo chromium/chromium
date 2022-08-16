@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/dom/synchronous_mutation_observer.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
@@ -184,8 +185,9 @@ void HTMLSelectMenuElement::SelectMutationCallback::SlotChanged(
 HTMLSelectMenuElement::HTMLSelectMenuElement(Document& document)
     : HTMLFormControlElementWithState(html_names::kSelectmenuTag, document) {
   DCHECK(RuntimeEnabledFeatures::HTMLSelectMenuElementEnabled());
-  DCHECK(RuntimeEnabledFeatures::RuntimeEnabledFeatures::
-             HTMLPopupAttributeEnabled());
+  DCHECK(
+      RuntimeEnabledFeatures::RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
+          document.GetExecutionContext()));
   UseCounter::Count(document, WebFeature::kSelectMenuElement);
 
   EnsureUserAgentShadowRoot();

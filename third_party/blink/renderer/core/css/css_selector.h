@@ -37,6 +37,7 @@ namespace blink {
 
 class CSSParserContext;
 class CSSSelectorList;
+class Document;
 
 // This class represents a simple selector for a StyleRule.
 
@@ -322,8 +323,10 @@ class CORE_EXPORT CSSSelector {
                         const CSSParserContext&,
                         bool has_arguments,
                         CSSParserMode);
-  void UpdatePseudoPage(const AtomicString&);
-  static PseudoType NameToPseudoType(const AtomicString&, bool has_arguments);
+  void UpdatePseudoPage(const AtomicString&, const Document*);
+  static PseudoType NameToPseudoType(const AtomicString&,
+                                     bool has_arguments,
+                                     const Document* document);
   static PseudoId GetPseudoId(PseudoType);
 
   // Selectors are kept in an array by CSSSelectorList. The next component of

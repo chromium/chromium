@@ -561,6 +561,9 @@ extern const base::FeatureParam<int> kMaxNumOfThrottleableRequestsInTightMode;
 // blink::features::kHTMLParamElementUrlSupport.
 BLINK_COMMON_EXPORT extern const base::Feature kHTMLParamElementUrlSupport;
 
+// TODO(crbug.com/1307772): Enables the Pop-up API.
+BLINK_COMMON_EXPORT extern const base::Feature kHTMLPopupAttribute;
+
 // The HTTP RTT threshold: decide whether the
 // `kDelayLowPriorityRequestsAccordingToNetworkState` feature can take effect
 // practically according to the network connection state.
