@@ -1098,6 +1098,7 @@ message ActionProto {
     SetNativeValueProto set_native_value = 96;
     SetNativeCheckedProto set_native_checked = 97;
     PromptQrCodeScanProto prompt_qr_code_scan = 98;
+    ReportProgressProto report_progress = 99;
   }
 
   // Set to true to make the client remove any contextual information if the

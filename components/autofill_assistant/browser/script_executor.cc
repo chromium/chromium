@@ -1207,4 +1207,22 @@ const std::string ScriptExecutor::GetLocale() const {
   return delegate_->GetLocale();
 }
 
+void ScriptExecutor::ReportProgress(const std::string& payload,
+                                    base::OnceCallback<void(bool)> callback) {
+  auto* service = delegate_->GetService();
+  DCHECK(service);
+  service->ReportProgress(
+      report_token_, payload,
+      base::BindOnce(&ScriptExecutor::OnReportProgress,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ScriptExecutor::OnReportProgress(
+    base::OnceCallback<void(bool)> callback,
+    int http_status,
+    const std::string& response,
+    const ServiceRequestSender::ResponseInfo& response_info) {
+  std::move(callback).Run(http_status == net::HTTP_OK);
+}
+
 }  // namespace autofill_assistant

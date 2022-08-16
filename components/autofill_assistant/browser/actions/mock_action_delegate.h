@@ -240,6 +240,9 @@ class MockActionDelegate : public ActionDelegate {
                void(const ProcessedActionProto& processed_action));
   MOCK_CONST_METHOD0(GetIntent, absl::optional<std::string>());
   MOCK_CONST_METHOD0(GetLocale, const std::string());
+  MOCK_METHOD2(ReportProgress,
+               void(const std::string& payload,
+                    base::OnceCallback<void(bool)> callback));
 
   base::WeakPtr<ActionDelegate> GetWeakPtr() const override {
     return weak_ptr_factory_.GetWeakPtr();

@@ -34,6 +34,7 @@
 #include "components/autofill_assistant/browser/actions/prompt_qr_code_scan_action.h"
 #include "components/autofill_assistant/browser/actions/register_password_reset_request_action.h"
 #include "components/autofill_assistant/browser/actions/release_elements_action.h"
+#include "components/autofill_assistant/browser/actions/report_progress_action.h"
 #include "components/autofill_assistant/browser/actions/reset_pending_credentials_action.h"
 #include "components/autofill_assistant/browser/actions/save_generated_password_action.h"
 #include "components/autofill_assistant/browser/actions/save_submitted_password_action.h"
@@ -481,6 +482,8 @@ std::unique_ptr<Action> ProtocolUtils::CreateAction(ActionDelegate* delegate,
                          action.set_native_checked().checked()));
     case ActionProto::ActionInfoCase::kPromptQrCodeScan:
       return std::make_unique<PromptQrCodeScanAction>(delegate, action);
+    case ActionProto::ActionInfoCase::kReportProgress:
+      return std::make_unique<ReportProgressAction>(delegate, action);
     case ActionProto::ActionInfoCase::ACTION_INFO_NOT_SET: {
       VLOG(1) << "Encountered action with ACTION_INFO_NOT_SET";
       return std::make_unique<UnsupportedAction>(delegate, action);
@@ -765,6 +768,10 @@ absl::optional<ActionProto> ProtocolUtils::ParseFromString(
     case ActionProto::ActionInfoCase::kPromptQrCodeScan:
       success = ParseActionFromString(action_id, bytes, error_message,
                                       proto.mutable_prompt_qr_code_scan());
+      break;
+    case ActionProto::ActionInfoCase::kReportProgress:
+      success = ParseActionFromString(action_id, bytes, error_message,
+                                      proto.mutable_report_progress());
       break;
     case ActionProto::ActionInfoCase::ACTION_INFO_NOT_SET:
       // This is an "unknown action", handled as such in CreateAction.

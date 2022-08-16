@@ -519,5 +519,23 @@ IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, WaitForDomFails) {
       CreateRunNativeActionCallReturn(&wait_for_dom, ActionProto::kWaitForDom),
       ELEMENT_RESOLUTION_FAILED);
 }
+
+IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, ReportProgress) {
+  ActionsResponseProto actions_response;
+  *actions_response.add_actions()
+       ->mutable_report_progress()
+       ->mutable_payload() = "payload";
+
+  EXPECT_CALL(mock_service_, ReportProgress(_, "payload", _))
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, std::string(),
+                                   ServiceRequestSender::ResponseInfo{}));
+  EXPECT_CALL(mock_service_, GetNextActions)
+      .WillRepeatedly(RunOnceCallback<6>(net::HTTP_OK, /* response= */ "",
+                                         ServiceRequestSender::ResponseInfo{}));
+  EXPECT_CALL(executor_callback_,
+              Run(Field(&ScriptExecutor::Result::success, true)));
+
+  Run(actions_response);
+}
 }  // namespace
 }  // namespace autofill_assistant

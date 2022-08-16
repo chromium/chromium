@@ -287,6 +287,8 @@ class ScriptExecutor : public ActionDelegate,
       const ProcessedActionProto& processed_action) override;
   absl::optional<std::string> GetIntent() const override;
   const std::string GetLocale() const override;
+  void ReportProgress(const std::string& payload,
+                      base::OnceCallback<void(bool)> callback) override;
 
  private:
   // TODO(b/220079189): remove this friend declaration.
@@ -363,6 +365,12 @@ class ScriptExecutor : public ActionDelegate,
       const bool prompt,
       base::OnceCallback<void(const external::Result& result)> callback,
       const external::Result& result);
+  void OnResume();
+  void OnReportProgress(
+      base::OnceCallback<void(bool)> callback,
+      int http_status,
+      const std::string& response,
+      const ServiceRequestSender::ResponseInfo& response_info);
 
   // Maybe shows the message specified in a callout, depending on the current
   // state and client settings.

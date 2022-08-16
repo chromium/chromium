@@ -15,6 +15,7 @@
 #include "components/autofill_assistant/browser/actions/action_test_utils.h"
 #include "components/autofill_assistant/browser/fake_script_executor_delegate.h"
 #include "components/autofill_assistant/browser/fake_script_executor_ui_delegate.h"
+#include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/service/mock_service.h"
 #include "components/autofill_assistant/browser/service/service.h"
 #include "components/autofill_assistant/browser/test_util.h"
@@ -2450,6 +2451,38 @@ TEST_F(ScriptExecutorTest, ExternalActionAppliesAndRestoresTouchableArea) {
   EXPECT_THAT(delegate_.GetStateHistory(),
               ElementsAre(AutofillAssistantState::PROMPT,
                           AutofillAssistantState::RUNNING));
+}
+
+TEST_F(ScriptExecutorTest, ReportProgress) {
+  EXPECT_CALL(mock_service_, ReportProgress)
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, std::string(),
+                                   ServiceRequestSender::ResponseInfo{}));
+
+  base::MockCallback<base::OnceCallback<void(bool)>> mock_callback;
+  EXPECT_CALL(mock_callback, Run(true));
+
+  std::string payload = "payload";
+  executor_->ReportProgress(payload, mock_callback.Get());
+}
+
+TEST_F(ScriptExecutorTest, ReportProgressApplied) {
+  ActionsResponseProto actions_response;
+  *actions_response.add_actions()
+       ->mutable_report_progress()
+       ->mutable_payload() = "payload";
+
+  EXPECT_CALL(mock_service_, GetActions)
+      .WillOnce(RunOnceCallback<5>(net::HTTP_OK, Serialize(actions_response),
+                                   ServiceRequestSender::ResponseInfo{}));
+  EXPECT_CALL(mock_service_, ReportProgress)
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, std::string(),
+                                   ServiceRequestSender::ResponseInfo{}));
+  EXPECT_CALL(mock_service_, GetNextActions)
+      .WillRepeatedly(RunOnceCallback<6>(net::HTTP_OK, /* response= */ "",
+                                         ServiceRequestSender::ResponseInfo{}));
+  EXPECT_CALL(executor_callback_,
+              Run(Field(&ScriptExecutor::Result::success, true)));
+  executor_->Run(&user_data_, executor_callback_.Get());
 }
 
 }  // namespace

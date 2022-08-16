@@ -521,6 +521,10 @@ class ActionDelegate {
 
   virtual base::WeakPtr<ActionDelegate> GetWeakPtr() const = 0;
 
+  // Make a fire-and-forget call to report progress.
+  virtual void ReportProgress(const std::string& payload,
+                              base::OnceCallback<void(bool)> callback) = 0;
+
  protected:
   ActionDelegate() = default;
 };
