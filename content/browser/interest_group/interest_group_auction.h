@@ -26,6 +26,7 @@
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
@@ -63,7 +64,8 @@ class InterestGroupManagerImpl;
 //
 // * ReportResult / ReportWin phase: This phase invokes ReportResult() on
 // winning seller worklets and ReportWin() in the winning bidder worklet.
-class CONTENT_EXPORT InterestGroupAuction {
+class CONTENT_EXPORT InterestGroupAuction
+    : public auction_worklet::mojom::ScoreAdClient {
  public:
   // Post auction signals (signals only available after auction completes such
   // as winning bid) for debug loss/win reporting.
@@ -248,18 +250,18 @@ class CONTENT_EXPORT InterestGroupAuction {
 
     // InterestGroup that made the bid. Owned by the BidState of that
     // InterestGroup.
-    const raw_ptr<const blink::InterestGroup, DanglingUntriaged> interest_group;
+    const raw_ptr<const blink::InterestGroup> interest_group;
 
     // Points to the InterestGroupAd within `interest_group`.
-    const raw_ptr<const blink::InterestGroup::Ad, DanglingUntriaged> bid_ad;
+    const raw_ptr<const blink::InterestGroup::Ad> bid_ad;
 
     // `bid_state` of the InterestGroup that made the bid. This should not be
     // written to, except for adding seller debug reporting URLs.
-    const raw_ptr<BidState, DanglingUntriaged> bid_state;
+    const raw_ptr<BidState> bid_state;
 
     // The Auction with the interest group that made this bid. Important in the
     // case of component auctions.
-    const raw_ptr<InterestGroupAuction, DanglingUntriaged> auction;
+    const raw_ptr<InterestGroupAuction> auction;
   };
 
   // Combines a Bid with seller score and seller state needed to invoke its
@@ -310,7 +312,7 @@ class CONTENT_EXPORT InterestGroupAuction {
   InterestGroupAuction(const InterestGroupAuction&) = delete;
   InterestGroupAuction& operator=(const InterestGroupAuction&) = delete;
 
-  ~InterestGroupAuction();
+  ~InterestGroupAuction() override;
 
   // Starts loading the interest groups that can participate in an auction.
   //
@@ -501,17 +503,27 @@ class CONTENT_EXPORT InterestGroupAuction {
   // Calls into the seller asynchronously to score the passed in bid.
   void ScoreBidIfReady(std::unique_ptr<Bid> bid);
 
-  // Callback from ScoreBid().
-  void OnBidScored(std::unique_ptr<Bid> bid,
-                   double score,
-                   auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr
-                       component_auction_modified_bid_params,
-                   uint32_t scoring_signals_data_version,
-                   bool has_scoring_signals_data_version,
-                   const absl::optional<GURL>& debug_loss_report_url,
-                   const absl::optional<GURL>& debug_win_report_url,
-                   PrivateAggregationRequests pa_requests,
-                   const std::vector<std::string>& errors);
+  // Validates the passed in result from ScoreBidComplete(). On failure, reports
+  // a bad message to the active receiver in `score_ad_receivers_` and returns
+  // false.
+  bool ValidateScoreBidCompleteResult(
+      double score,
+      auction_worklet::mojom::ComponentAuctionModifiedBidParams*
+          component_auction_modified_bid_params,
+      const absl::optional<GURL>& debug_loss_report_url,
+      const absl::optional<GURL>& debug_win_report_url);
+
+  // auction_worklet::mojom::ScoreAdClient implementation:
+  void OnScoreAdComplete(
+      double score,
+      auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr
+          component_auction_modified_bid_params,
+      uint32_t scoring_signals_data_version,
+      bool has_scoring_signals_data_version,
+      const absl::optional<GURL>& debug_loss_report_url,
+      const absl::optional<GURL>& debug_win_report_url,
+      PrivateAggregationRequests pa_requests,
+      const std::vector<std::string>& errors) override;
 
   // Invoked when the bid becomes the new highest scoring other bid, to handle
   // calculation of post auction signals. `owner` is nullptr in the event the
@@ -757,6 +769,12 @@ class CONTENT_EXPORT InterestGroupAuction {
   // seller failed to load, since neither the bids nor the bidders were the
   // problem).
   bool all_bids_scored_ = false;
+
+  // Receivers for OnScoreAd() callbacks. Owns Bids, which have raw pointers to
+  // other objects, so must be last, to avoid triggering tooling to check for
+  // dangling pointers.
+  mojo::ReceiverSet<auction_worklet::mojom::ScoreAdClient, std::unique_ptr<Bid>>
+      score_ad_receivers_;
 
   base::WeakPtrFactory<InterestGroupAuction> weak_ptr_factory_{this};
 };

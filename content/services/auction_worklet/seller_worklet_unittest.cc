@@ -24,6 +24,8 @@
 #include "content/services/auction_worklet/worklet_devtools_debug_test_util.h"
 #include "content/services/auction_worklet/worklet_test_util.h"
 #include "content/services/auction_worklet/worklet_v8_debug_test_util.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "net/http/http_status_code.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -97,6 +99,57 @@ std::string CreateReportToScript(const std::string& raw_return_value,
          base::StringPrintf(kBasicSellerScript, extra_code.c_str(),
                             raw_return_value.c_str());
 }
+
+// A ScoreAdClient that takes a callback to call in OnScoreAdComplete().
+class TestScoreAdClient : public mojom::ScoreAdClient {
+ public:
+  using ScoreAdCompleteCallback = base::OnceCallback<void(
+      double score,
+      auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr
+          component_auction_modified_bid_params,
+      uint32_t scoring_signals_data_version,
+      bool has_scoring_signals_data_version,
+      const absl::optional<GURL>& debug_loss_report_url,
+      const absl::optional<GURL>& debug_win_report_url,
+      PrivateAggregationRequests pa_requests,
+      const std::vector<std::string>& errors)>;
+
+  explicit TestScoreAdClient(ScoreAdCompleteCallback score_ad_complete_callback)
+      : score_ad_complete_callback_(std::move(score_ad_complete_callback)) {}
+
+  ~TestScoreAdClient() override = default;
+
+  // Helper that creates a TestScoreAdClient owned by a SelfOwnedReceiver.
+  static mojo::PendingRemote<mojom::ScoreAdClient> Create(
+      ScoreAdCompleteCallback score_ad_complete_callback) {
+    mojo::PendingRemote<mojom::ScoreAdClient> client_remote;
+    mojo::MakeSelfOwnedReceiver(std::make_unique<TestScoreAdClient>(
+                                    std::move(score_ad_complete_callback)),
+                                client_remote.InitWithNewPipeAndPassReceiver());
+    return client_remote;
+  }
+
+  // mojom::ScoreAdClient implementation:
+  void OnScoreAdComplete(
+      double score,
+      auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr
+          component_auction_modified_bid_params,
+      uint32_t scoring_signals_data_version,
+      bool has_scoring_signals_data_version,
+      const absl::optional<GURL>& debug_loss_report_url,
+      const absl::optional<GURL>& debug_win_report_url,
+      PrivateAggregationRequests pa_requests,
+      const std::vector<std::string>& errors) override {
+    std::move(score_ad_complete_callback_)
+        .Run(score, std::move(component_auction_modified_bid_params),
+             scoring_signals_data_version, has_scoring_signals_data_version,
+             debug_loss_report_url, debug_win_report_url,
+             std::move(pa_requests), errors);
+  }
+
+ private:
+  ScoreAdCompleteCallback score_ad_complete_callback_;
+};
 
 class SellerWorkletTest : public testing::Test {
  public:
@@ -260,7 +313,7 @@ class SellerWorkletTest : public testing::Test {
         browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
         seller_timeout_,
         /*trace_id=*/1,
-        base::BindOnce(
+        TestScoreAdClient::Create(base::BindOnce(
             [](double expected_score,
                mojom::ComponentAuctionModifiedBidParamsPtr
                    expected_component_auction_modified_bid_params,
@@ -307,7 +360,7 @@ class SellerWorkletTest : public testing::Test {
             std::move(expected_component_auction_modified_bid_params),
             expected_data_version, expected_debug_loss_report_url,
             expected_debug_win_report_url, std::move(expected_pa_requests),
-            expected_errors, std::move(done_closure)));
+            expected_errors, std::move(done_closure))));
   }
 
   void RunScoreAdOnWorkletExpectingCallbackNeverInvoked(
@@ -319,17 +372,18 @@ class SellerWorkletTest : public testing::Test {
         browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
         seller_timeout_,
         /*trace_id=*/1,
-        base::BindOnce([](double score,
-                          mojom::ComponentAuctionModifiedBidParamsPtr
-                              component_auction_modified_bid_params,
-                          uint32_t scoring_signals_data_version,
-                          bool has_scoring_signals_data_version,
-                          const absl::optional<GURL>& debug_loss_report_url,
-                          const absl::optional<GURL>& debug_win_report_url,
-                          PrivateAggregationRequests pa_requests,
-                          const std::vector<std::string>& errors) {
-          ADD_FAILURE() << "This should not be invoked";
-        }));
+        TestScoreAdClient::Create(
+            base::BindOnce([](double score,
+                              mojom::ComponentAuctionModifiedBidParamsPtr
+                                  component_auction_modified_bid_params,
+                              uint32_t scoring_signals_data_version,
+                              bool has_scoring_signals_data_version,
+                              const absl::optional<GURL>& debug_loss_report_url,
+                              const absl::optional<GURL>& debug_win_report_url,
+                              PrivateAggregationRequests pa_requests,
+                              const std::vector<std::string>& errors) {
+              ADD_FAILURE() << "This should not be invoked";
+            })));
   }
 
   // Loads and runs a scode_ad() script, expecting the supplied result.
@@ -2284,7 +2338,7 @@ TEST_F(SellerWorkletTest, ScriptIsolation) {
           browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
           seller_timeout_,
           /*trace_id=*/1,
-          base::BindLambdaForTesting(
+          TestScoreAdClient::Create(base::BindLambdaForTesting(
               [&run_loop](double score,
                           mojom::ComponentAuctionModifiedBidParamsPtr
                               component_auction_modified_bid_params,
@@ -2298,7 +2352,7 @@ TEST_F(SellerWorkletTest, ScriptIsolation) {
                 EXPECT_FALSE(has_scoring_signals_data_version);
                 EXPECT_TRUE(errors.empty());
                 run_loop.Quit();
-              }));
+              })));
       run_loop.Run();
     }
 
@@ -2344,17 +2398,20 @@ TEST_F(SellerWorkletTest, DeleteBeforeScoreAdCallback) {
       browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
       seller_timeout_,
       /*trace_id=*/1,
-      base::BindOnce([](double score,
-                        mojom::ComponentAuctionModifiedBidParamsPtr
-                            component_auction_modified_bid_params,
-                        uint32_t scoring_signals_data_version,
-                        bool has_scoring_signals_data_version,
-                        const absl::optional<GURL>& debug_loss_report_url,
-                        const absl::optional<GURL>& debug_win_report_url,
-                        PrivateAggregationRequests pa_requests,
-                        const std::vector<std::string>& errors) {
-        ADD_FAILURE() << "Callback should not be invoked since worklet deleted";
-      }));
+      TestScoreAdClient::Create(
+          base::BindOnce(
+              [](double score,
+                 mojom::ComponentAuctionModifiedBidParamsPtr
+                     component_auction_modified_bid_params,
+                 uint32_t scoring_signals_data_version,
+                 bool has_scoring_signals_data_version,
+                 const absl::optional<GURL>& debug_loss_report_url,
+                 const absl::optional<GURL>& debug_win_report_url,
+                 PrivateAggregationRequests pa_requests,
+                 const std::vector<std::string>& errors) {
+                ADD_FAILURE()
+                    << "Callback should not be invoked since worklet deleted";
+              })));
   base::RunLoop().RunUntilIdle();
   seller_worklet.reset();
   event_handle->Signal();
@@ -3233,7 +3290,7 @@ TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
         browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
         seller_timeout_,
         /*trace_id=*/1,
-        base::BindLambdaForTesting(
+        TestScoreAdClient::Create(base::BindLambdaForTesting(
             [&run_loop](double score,
                         mojom::ComponentAuctionModifiedBidParamsPtr
                             component_auction_modified_bid_params,
@@ -3255,7 +3312,7 @@ TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
                 EXPECT_EQ(absl::nullopt, debug_win_report_url);
               }
               run_loop.Quit();
-            }));
+            })));
     run_loop.Run();
   }
 }

@@ -278,7 +278,8 @@ void SellerWorklet::ScoreAd(
     uint32_t browser_signal_bidding_duration_msecs,
     const absl::optional<base::TimeDelta> seller_timeout,
     uint64_t trace_id,
-    ScoreAdCallback callback) {
+    mojo::PendingRemote<auction_worklet::mojom::ScoreAdClient>
+        score_ad_client) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
   score_ad_tasks_.emplace_front();
 
@@ -299,7 +300,7 @@ void SellerWorklet::ScoreAd(
       browser_signal_bidding_duration_msecs;
   score_ad_task->seller_timeout = seller_timeout;
   score_ad_task->trace_id = trace_id;
-  score_ad_task->callback = std::move(callback);
+  score_ad_task->score_ad_client.Bind(std::move(score_ad_client));
 
   // If `trusted_signals_request_manager_` exists, there's a trusted scoring
   // signals URL which needs to be fetched before the auction can be run.
@@ -1010,11 +1011,17 @@ void SellerWorklet::DeliverScoreAdCallbackOnUserThread(
   if (task->trusted_scoring_signals_error_msg)
     errors.insert(errors.begin(), *task->trusted_scoring_signals_error_msg);
 
-  std::move(task->callback)
-      .Run(score, std::move(component_auction_modified_bid_params),
-           scoring_signals_data_version.value_or(0),
-           scoring_signals_data_version.has_value(), debug_loss_report_url,
-           debug_win_report_url, std::move(pa_requests), std::move(errors));
+  // This is safe to do, even if the pipe was closed - the message will just be
+  // dropped.
+  //
+  // TOOD(mmenke): Consider watching for the pipe closing and aborting work if
+  // it does. Only useful if the SellerWorklet object is still in use, so
+  // unclear how useful it would be.
+  task->score_ad_client->OnScoreAdComplete(
+      score, std::move(component_auction_modified_bid_params),
+      scoring_signals_data_version.value_or(0),
+      scoring_signals_data_version.has_value(), debug_loss_report_url,
+      debug_win_report_url, std::move(pa_requests), std::move(errors));
   score_ad_tasks_.erase(task);
 }
 

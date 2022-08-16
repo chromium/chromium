@@ -95,7 +95,8 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
       uint32_t browser_signal_bidding_duration_msecs,
       const absl::optional<base::TimeDelta> seller_timeout,
       uint64_t trace_id,
-      ScoreAdCallback callback) override;
+      mojo::PendingRemote<auction_worklet::mojom::ScoreAdClient>
+          score_ad_client) override;
   void SendPendingSignalsRequests() override;
   void ReportResult(
       const blink::AuctionConfig::NonSharedParams&
@@ -140,7 +141,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
     absl::optional<base::TimeDelta> seller_timeout;
     uint64_t trace_id;
 
-    ScoreAdCallback callback;
+    mojo::Remote<auction_worklet::mojom::ScoreAdClient> score_ad_client;
 
     std::unique_ptr<TrustedSignalsRequestManager::Request>
         trusted_scoring_signals_request;

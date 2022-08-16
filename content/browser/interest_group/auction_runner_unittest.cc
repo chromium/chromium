@@ -1042,7 +1042,7 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
  public:
   // Subset of parameters passed to SellerWorklet's ScoreAd method.
   struct ScoreAdParams {
-    ScoreAdCallback callback;
+    mojo::PendingRemote<auction_worklet::mojom::ScoreAdClient> score_ad_client;
     double bid;
     url::Origin interest_group_owner;
   };
@@ -1077,7 +1077,8 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
                uint32_t browser_signal_bidding_duration_msecs,
                const absl::optional<base::TimeDelta> seller_timeout,
                uint64_t trace_id,
-               ScoreAdCallback score_ad_callback) override {
+               mojo::PendingRemote<auction_worklet::mojom::ScoreAdClient>
+                   score_ad_client) override {
     // SendPendingSignalsRequests() should only be called once all ads are
     // scored.
     EXPECT_FALSE(send_pending_signals_requests_called_);
@@ -1089,7 +1090,7 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
     EXPECT_EQ(seller_timeout.value(), base::Milliseconds(500));
 
     ScoreAdParams score_ad_params;
-    score_ad_params.callback = std::move(score_ad_callback);
+    score_ad_params.score_ad_client = std::move(score_ad_client);
     score_ad_params.bid = bid;
     score_ad_params.interest_group_owner = browser_signal_interest_group_owner;
     score_ad_params_.emplace_front(std::move(score_ad_params));
@@ -5784,14 +5785,16 @@ TEST_F(AuctionRunnerTest, BidderCrashBeforeBidding) {
     auto score_ad_params = seller_worklet->WaitForScoreAd();
     EXPECT_EQ(kBidder2, score_ad_params.interest_group_owner);
     EXPECT_EQ(7, score_ad_params.bid);
-    std::move(score_ad_params.callback)
-        .Run(/*score=*/11,
-             auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-             /*data_version=*/0,
-             /*has_data_version=*/false,
-             /*debug_loss_report_url=*/absl::nullopt,
-             /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
-             /*errors=*/{});
+    mojo::Remote<auction_worklet::mojom::ScoreAdClient>(
+        std::move(score_ad_params.score_ad_client))
+        ->OnScoreAdComplete(
+            /*score=*/11,
+            auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
+            /*data_version=*/0,
+            /*has_data_version=*/false,
+            /*debug_loss_report_url=*/absl::nullopt,
+            /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
+            /*errors=*/{});
 
     // Finish the auction.
     seller_worklet->WaitForReportResult();
@@ -5880,14 +5883,16 @@ TEST_F(AuctionRunnerTest, WinningBidderCrashWhileReporting) {
   PrivateAggregationRequests score_ad_1_pa_requests;
   score_ad_1_pa_requests.push_back(
       kExpectedScoreAdPrivateAggregationRequest.Clone());
-  std::move(score_ad_params.callback)
-      .Run(/*score=*/11,
-           auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-           /*data_version=*/0, /*has_data_version=*/false,
-           /*debug_loss_report_url=*/absl::nullopt,
-           /*debug_win_report_url=*/absl::nullopt,
-           std::move(score_ad_1_pa_requests),
-           /*errors=*/{});
+  mojo::Remote<auction_worklet::mojom::ScoreAdClient>(
+      std::move(score_ad_params.score_ad_client))
+      ->OnScoreAdComplete(
+          /*score=*/11,
+          auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
+          /*data_version=*/0, /*has_data_version=*/false,
+          /*debug_loss_report_url=*/absl::nullopt,
+          /*debug_win_report_url=*/absl::nullopt,
+          std::move(score_ad_1_pa_requests),
+          /*errors=*/{});
 
   // Score Bidder2's bid.
   score_ad_params = seller_worklet->WaitForScoreAd();
@@ -5896,14 +5901,16 @@ TEST_F(AuctionRunnerTest, WinningBidderCrashWhileReporting) {
   PrivateAggregationRequests score_ad_2_pa_requests;
   score_ad_2_pa_requests.push_back(
       kExpectedScoreAdPrivateAggregationRequest.Clone());
-  std::move(score_ad_params.callback)
-      .Run(/*score=*/10,
-           auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-           /*data_version=*/0, /*has_data_version=*/false,
-           /*debug_loss_report_url=*/absl::nullopt,
-           /*debug_win_report_url=*/absl::nullopt,
-           std::move(score_ad_2_pa_requests),
-           /*errors=*/{});
+  mojo::Remote<auction_worklet::mojom::ScoreAdClient>(
+      std::move(score_ad_params.score_ad_client))
+      ->OnScoreAdComplete(
+          /*score=*/10,
+          auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
+          /*data_version=*/0, /*has_data_version=*/false,
+          /*debug_loss_report_url=*/absl::nullopt,
+          /*debug_win_report_url=*/absl::nullopt,
+          std::move(score_ad_2_pa_requests),
+          /*errors=*/{});
 
   PrivateAggregationRequests report_result_pa_requests;
   report_result_pa_requests.push_back(
@@ -6040,24 +6047,28 @@ TEST_F(AuctionRunnerTest, SellerCrash) {
       bidder1_worklet.reset();
       EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
       EXPECT_EQ(5, score_ad_params.bid);
-      std::move(score_ad_params.callback)
-          .Run(/*score=*/10,
-               auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-               /*data_version=*/0, /*has_data_version=*/false,
-               /*debug_loss_report_url=*/absl::nullopt,
-               /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
-               /*errors=*/{});
+      mojo::Remote<auction_worklet::mojom::ScoreAdClient>(
+          std::move(score_ad_params.score_ad_client))
+          ->OnScoreAdComplete(
+              /*score=*/10,
+              auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
+              /*data_version=*/0, /*has_data_version=*/false,
+              /*debug_loss_report_url=*/absl::nullopt,
+              /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
+              /*errors=*/{});
 
       // Score Bidder2's bid.
       EXPECT_EQ(kBidder2, score_ad_params2.interest_group_owner);
       EXPECT_EQ(7, score_ad_params2.bid);
-      std::move(score_ad_params2.callback)
-          .Run(/*score=*/11,
-               auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-               /*data_version=*/0, /*has_data_version=*/false,
-               /*debug_loss_report_url=*/absl::nullopt,
-               /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
-               /*errors=*/{});
+      mojo::Remote<auction_worklet::mojom::ScoreAdClient>(
+          std::move(score_ad_params2.score_ad_client))
+          ->OnScoreAdComplete(
+              /*score=*/11,
+              auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
+              /*data_version=*/0, /*has_data_version=*/false,
+              /*debug_loss_report_url=*/absl::nullopt,
+              /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
+              /*errors=*/{});
 
       seller_worklet->WaitForReportResult();
       DCHECK_EQ(CrashPhase::kReportResult, crash_phase);
@@ -6162,16 +6173,18 @@ TEST_F(AuctionRunnerTest, ComponentAuctionOneBidderCrashesBeforeBidding) {
   auto score_ad_params = component_seller_worklet->WaitForScoreAd();
   EXPECT_EQ(kBidder2, score_ad_params.interest_group_owner);
   EXPECT_EQ(2, score_ad_params.bid);
-  std::move(score_ad_params.callback)
-      .Run(/*score=*/3,
-           auction_worklet::mojom::ComponentAuctionModifiedBidParams::New(
-               /*ad=*/"null",
-               /*bid=*/0,
-               /*has_bid=*/false),
-           /*data_version=*/0, /*has_data_version=*/false,
-           /*debug_loss_report_url=*/absl::nullopt,
-           /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
-           /*errors=*/{});
+  mojo::Remote<auction_worklet::mojom::ScoreAdClient>(
+      std::move(score_ad_params.score_ad_client))
+      ->OnScoreAdComplete(
+          /*score=*/3,
+          auction_worklet::mojom::ComponentAuctionModifiedBidParams::New(
+              /*ad=*/"null",
+              /*bid=*/0,
+              /*has_bid=*/false),
+          /*data_version=*/0, /*has_data_version=*/false,
+          /*debug_loss_report_url=*/absl::nullopt,
+          /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
+          /*errors=*/{});
 
   // Top-level seller worklet scores the bid.
   auto top_level_seller_worklet =
@@ -6180,13 +6193,15 @@ TEST_F(AuctionRunnerTest, ComponentAuctionOneBidderCrashesBeforeBidding) {
   score_ad_params = top_level_seller_worklet->WaitForScoreAd();
   EXPECT_EQ(kBidder2, score_ad_params.interest_group_owner);
   EXPECT_EQ(2, score_ad_params.bid);
-  std::move(score_ad_params.callback)
-      .Run(/*score=*/4,
-           auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-           /*data_version=*/0, /*has_data_version=*/false,
-           /*debug_loss_report_url=*/absl::nullopt,
-           /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
-           /*errors=*/{});
+  mojo::Remote<auction_worklet::mojom::ScoreAdClient>(
+      std::move(score_ad_params.score_ad_client))
+      ->OnScoreAdComplete(
+          /*score=*/4,
+          auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
+          /*data_version=*/0, /*has_data_version=*/false,
+          /*debug_loss_report_url=*/absl::nullopt,
+          /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
+          /*errors=*/{});
 
   // Top-level seller worklet returns a report url.
   top_level_seller_worklet->WaitForReportResult();
@@ -6275,16 +6290,18 @@ TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellersReportResultFails) {
     auto score_ad_params = component_seller_worklet->WaitForScoreAd();
     EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
     EXPECT_EQ(2, score_ad_params.bid);
-    std::move(score_ad_params.callback)
-        .Run(/*score=*/3,
-             auction_worklet::mojom::ComponentAuctionModifiedBidParams::New(
-                 /*ad=*/"null",
-                 /*bid=*/0,
-                 /*has_bid=*/false),
-             /*data_version=*/0, /*has_data_version=*/false,
-             /*debug_loss_report_url=*/absl::nullopt,
-             /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
-             /*errors=*/{});
+    mojo::Remote<auction_worklet::mojom::ScoreAdClient>(
+        std::move(score_ad_params.score_ad_client))
+        ->OnScoreAdComplete(
+            /*score=*/3,
+            auction_worklet::mojom::ComponentAuctionModifiedBidParams::New(
+                /*ad=*/"null",
+                /*bid=*/0,
+                /*has_bid=*/false),
+            /*data_version=*/0, /*has_data_version=*/false,
+            /*debug_loss_report_url=*/absl::nullopt,
+            /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
+            /*errors=*/{});
 
     // Top-level seller worklet scores the bid.
     auto top_level_seller_worklet =
@@ -6293,13 +6310,15 @@ TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellersReportResultFails) {
     score_ad_params = top_level_seller_worklet->WaitForScoreAd();
     EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
     EXPECT_EQ(2, score_ad_params.bid);
-    std::move(score_ad_params.callback)
-        .Run(/*score=*/4,
-             auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-             /*data_version=*/0, /*has_data_version=*/false,
-             /*debug_loss_report_url=*/absl::nullopt,
-             /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
-             /*errors=*/{});
+    mojo::Remote<auction_worklet::mojom::ScoreAdClient>(
+        std::move(score_ad_params.score_ad_client))
+        ->OnScoreAdComplete(
+            /*score=*/4,
+            auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
+            /*data_version=*/0, /*has_data_version=*/false,
+            /*debug_loss_report_url=*/absl::nullopt,
+            /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
+            /*errors=*/{});
 
     // Top-level seller worklet returns a report url.
     top_level_seller_worklet->WaitForReportResult();
@@ -6498,12 +6517,14 @@ TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellerBadBidParams) {
     auto score_ad_params = component_seller_worklet->WaitForScoreAd();
     EXPECT_EQ(kBidder2, score_ad_params.interest_group_owner);
     EXPECT_EQ(2, score_ad_params.bid);
-    std::move(score_ad_params.callback)
-        .Run(/*score=*/3, test_case.params.Clone(),
-             /*data_version=*/0, /*has_data_version=*/false,
-             /*debug_loss_report_url=*/absl::nullopt,
-             /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
-             /*errors=*/{});
+    mojo::Remote<auction_worklet::mojom::ScoreAdClient>(
+        std::move(score_ad_params.score_ad_client))
+        ->OnScoreAdComplete(/*score=*/3, test_case.params.Clone(),
+                            /*data_version=*/0, /*has_data_version=*/false,
+                            /*debug_loss_report_url=*/absl::nullopt,
+                            /*debug_win_report_url=*/absl::nullopt,
+                            /*pa_requests=*/{},
+                            /*errors=*/{});
 
     // The auction fails, because of the bad ComponentAuctionModifiedBidParams.
     auction_run_loop_->Run();
@@ -6552,16 +6573,18 @@ TEST_F(AuctionRunnerTest, TopLevelSellerBadBidParams) {
   auto score_ad_params = seller_worklet->WaitForScoreAd();
   EXPECT_EQ(kBidder2, score_ad_params.interest_group_owner);
   EXPECT_EQ(2, score_ad_params.bid);
-  std::move(score_ad_params.callback)
-      .Run(/*score=*/3,
-           auction_worklet::mojom::ComponentAuctionModifiedBidParams::New(
-               /*ad=*/"null",
-               /*bid=*/0,
-               /*has_bid=*/false),
-           /*data_version=*/0, /*has_data_version=*/false,
-           /*debug_loss_report_url=*/absl::nullopt,
-           /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
-           /*errors=*/{});
+  mojo::Remote<auction_worklet::mojom::ScoreAdClient>(
+      std::move(score_ad_params.score_ad_client))
+      ->OnScoreAdComplete(
+          /*score=*/3,
+          auction_worklet::mojom::ComponentAuctionModifiedBidParams::New(
+              /*ad=*/"null",
+              /*bid=*/0,
+              /*has_bid=*/false),
+          /*data_version=*/0, /*has_data_version=*/false,
+          /*debug_loss_report_url=*/absl::nullopt,
+          /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
+          /*errors=*/{});
 
   auction_run_loop_->Run();
 
@@ -6619,13 +6642,15 @@ TEST_F(AuctionRunnerTest, NullAdComponents) {
       auto score_ad_params = seller_worklet->WaitForScoreAd();
       EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
       EXPECT_EQ(1, score_ad_params.bid);
-      std::move(score_ad_params.callback)
-          .Run(/*score=*/11,
-               auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-               /*data_version=*/0, /*has_data_version=*/false,
-               /*debug_loss_report_url=*/absl::nullopt,
-               /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
-               /*errors=*/{});
+      mojo::Remote<auction_worklet::mojom::ScoreAdClient>(
+          std::move(score_ad_params.score_ad_client))
+          ->OnScoreAdComplete(
+              /*score=*/11,
+              auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
+              /*data_version=*/0, /*has_data_version=*/false,
+              /*debug_loss_report_url=*/absl::nullopt,
+              /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
+              /*errors=*/{});
 
       // Finish the auction.
       seller_worklet->WaitForReportResult();
@@ -6713,13 +6738,15 @@ TEST_F(AuctionRunnerTest, AdComponentsLimit) {
       auto score_ad_params = seller_worklet->WaitForScoreAd();
       EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
       EXPECT_EQ(1, score_ad_params.bid);
-      std::move(score_ad_params.callback)
-          .Run(/*score=*/11,
-               auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-               /*data_version=*/0, /*has_data_version=*/false,
-               /*debug_loss_report_url=*/absl::nullopt,
-               /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
-               /*errors=*/{});
+      mojo::Remote<auction_worklet::mojom::ScoreAdClient>(
+          std::move(score_ad_params.score_ad_client))
+          ->OnScoreAdComplete(
+              /*score=*/11,
+              auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
+              /*data_version=*/0, /*has_data_version=*/false,
+              /*debug_loss_report_url=*/absl::nullopt,
+              /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
+              /*errors=*/{});
 
       // Finish the auction.
       seller_worklet->WaitForReportResult();
@@ -6947,13 +6974,15 @@ TEST_F(AuctionRunnerTest, BadSellerReportUrl) {
   auto score_ad_params = seller_worklet->WaitForScoreAd();
   EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
   EXPECT_EQ(5, score_ad_params.bid);
-  std::move(score_ad_params.callback)
-      .Run(/*score=*/10,
-           auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-           /*data_version=*/0, /*has_data_version=*/false,
-           /*debug_loss_report_url=*/absl::nullopt,
-           /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
-           /*errors=*/{});
+  mojo::Remote<auction_worklet::mojom::ScoreAdClient>(
+      std::move(score_ad_params.score_ad_client))
+      ->OnScoreAdComplete(
+          /*score=*/10,
+          auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
+          /*data_version=*/0, /*has_data_version=*/false,
+          /*debug_loss_report_url=*/absl::nullopt,
+          /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
+          /*errors=*/{});
 
   // Bidder1 never gets to report anything, since the seller providing a bad
   // report URL aborts the auction.
@@ -7003,13 +7032,15 @@ TEST_F(AuctionRunnerTest, BadSellerBeaconUrl) {
   auto score_ad_params = seller_worklet->WaitForScoreAd();
   EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
   EXPECT_EQ(5, score_ad_params.bid);
-  std::move(score_ad_params.callback)
-      .Run(/*score=*/10,
-           auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-           /*data_version=*/0, /*has_data_version=*/false,
-           /*debug_loss_report_url=*/absl::nullopt,
-           /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
-           /*errors=*/{});
+  mojo::Remote<auction_worklet::mojom::ScoreAdClient>(
+      std::move(score_ad_params.score_ad_client))
+      ->OnScoreAdComplete(
+          /*score=*/10,
+          auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
+          /*data_version=*/0, /*has_data_version=*/false,
+          /*debug_loss_report_url=*/absl::nullopt,
+          /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
+          /*errors=*/{});
 
   // Bidder1 never gets to report anything, since the seller providing a bad
   // report URL aborts the auction.
@@ -7069,28 +7100,32 @@ TEST_F(AuctionRunnerTest, BadComponentSellerReportUrl) {
   auto score_ad_params = component_seller_worklet->WaitForScoreAd();
   EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
   EXPECT_EQ(5, score_ad_params.bid);
-  std::move(score_ad_params.callback)
-      .Run(/*score=*/10,
-           auction_worklet::mojom::ComponentAuctionModifiedBidParams::New(
-               /*ad=*/"null",
-               /*bid=*/0,
-               /*has_bid=*/false),
-           /*data_version=*/0, /*has_data_version=*/false,
-           /*debug_loss_report_url=*/absl::nullopt,
-           /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
-           /*errors=*/{});
+  mojo::Remote<auction_worklet::mojom::ScoreAdClient>(
+      std::move(score_ad_params.score_ad_client))
+      ->OnScoreAdComplete(
+          /*score=*/10,
+          auction_worklet::mojom::ComponentAuctionModifiedBidParams::New(
+              /*ad=*/"null",
+              /*bid=*/0,
+              /*has_bid=*/false),
+          /*data_version=*/0, /*has_data_version=*/false,
+          /*debug_loss_report_url=*/absl::nullopt,
+          /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
+          /*errors=*/{});
 
   // Top-level seller scores the bid.
   score_ad_params = seller_worklet->WaitForScoreAd();
   EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
   EXPECT_EQ(5, score_ad_params.bid);
-  std::move(score_ad_params.callback)
-      .Run(/*score=*/10,
-           auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-           /*data_version=*/0, /*has_data_version=*/false,
-           /*debug_loss_report_url=*/absl::nullopt,
-           /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
-           /*errors=*/{});
+  mojo::Remote<auction_worklet::mojom::ScoreAdClient>(
+      std::move(score_ad_params.score_ad_client))
+      ->OnScoreAdComplete(
+          /*score=*/10,
+          auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
+          /*data_version=*/0, /*has_data_version=*/false,
+          /*debug_loss_report_url=*/absl::nullopt,
+          /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
+          /*errors=*/{});
 
   // Top-level seller worklet returns a valid HTTPS report URL.
   seller_worklet->WaitForReportResult();
@@ -7150,13 +7185,15 @@ TEST_F(AuctionRunnerTest, BadBidderReportUrl) {
   auto score_ad_params = seller_worklet->WaitForScoreAd();
   EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
   EXPECT_EQ(5, score_ad_params.bid);
-  std::move(score_ad_params.callback)
-      .Run(/*score=*/10,
-           auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-           /*data_version=*/0, /*has_data_version=*/false,
-           /*debug_loss_report_url=*/absl::nullopt,
-           /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
-           /*errors=*/{});
+  mojo::Remote<auction_worklet::mojom::ScoreAdClient>(
+      std::move(score_ad_params.score_ad_client))
+      ->OnScoreAdComplete(
+          /*score=*/10,
+          auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
+          /*data_version=*/0, /*has_data_version=*/false,
+          /*debug_loss_report_url=*/absl::nullopt,
+          /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
+          /*errors=*/{});
 
   seller_worklet->WaitForReportResult();
   seller_worklet->InvokeReportResultCallback(
@@ -7210,13 +7247,15 @@ TEST_F(AuctionRunnerTest, BadBidderBeaconUrl) {
   auto score_ad_params = seller_worklet->WaitForScoreAd();
   EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
   EXPECT_EQ(5, score_ad_params.bid);
-  std::move(score_ad_params.callback)
-      .Run(/*score=*/10,
-           auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-           /*data_version=*/0, /*has_data_version=*/false,
-           /*debug_loss_report_url=*/absl::nullopt,
-           /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
-           /*errors=*/{});
+  mojo::Remote<auction_worklet::mojom::ScoreAdClient>(
+      std::move(score_ad_params.score_ad_client))
+      ->OnScoreAdComplete(
+          /*score=*/10,
+          auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
+          /*data_version=*/0, /*has_data_version=*/false,
+          /*debug_loss_report_url=*/absl::nullopt,
+          /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
+          /*errors=*/{});
 
   seller_worklet->WaitForReportResult();
   seller_worklet->InvokeReportResultCallback(
@@ -7275,13 +7314,15 @@ TEST_F(AuctionRunnerTest, DestroyBidderWorkletWithoutBid) {
   auto score_ad_params = seller_worklet->WaitForScoreAd();
   EXPECT_EQ(kBidder2, score_ad_params.interest_group_owner);
   EXPECT_EQ(7, score_ad_params.bid);
-  std::move(score_ad_params.callback)
-      .Run(/*score=*/11,
-           auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-           /*data_version=*/0, /*has_data_version=*/false,
-           /*debug_loss_report_url=*/absl::nullopt,
-           /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
-           /*errors=*/{});
+  mojo::Remote<auction_worklet::mojom::ScoreAdClient>(
+      std::move(score_ad_params.score_ad_client))
+      ->OnScoreAdComplete(
+          /*score=*/11,
+          auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
+          /*data_version=*/0, /*has_data_version=*/false,
+          /*debug_loss_report_url=*/absl::nullopt,
+          /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
+          /*errors=*/{});
 
   // Finish the auction.
   seller_worklet->WaitForReportResult();
@@ -7337,13 +7378,15 @@ TEST_F(AuctionRunnerTest, Tie) {
     auto score_ad_params = seller_worklet->WaitForScoreAd();
     EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
     EXPECT_EQ(5, score_ad_params.bid);
-    std::move(score_ad_params.callback)
-        .Run(/*score=*/10,
-             auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-             /*data_version=*/0, /*has_data_version=*/false,
-             /*debug_loss_report_url=*/absl::nullopt,
-             /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
-             /*errors=*/{});
+    mojo::Remote<auction_worklet::mojom::ScoreAdClient>(
+        std::move(score_ad_params.score_ad_client))
+        ->OnScoreAdComplete(
+            /*score=*/10,
+            auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
+            /*data_version=*/0, /*has_data_version=*/false,
+            /*debug_loss_report_url=*/absl::nullopt,
+            /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
+            /*errors=*/{});
 
     // Bidder2 returns a bid, which is then scored.
     bidder2_worklet->InvokeGenerateBidCallback(/*bid=*/5,
@@ -7351,13 +7394,15 @@ TEST_F(AuctionRunnerTest, Tie) {
     score_ad_params = seller_worklet->WaitForScoreAd();
     EXPECT_EQ(kBidder2, score_ad_params.interest_group_owner);
     EXPECT_EQ(5, score_ad_params.bid);
-    std::move(score_ad_params.callback)
-        .Run(/*score=*/10,
-             auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-             /*data_version=*/0, /*has_data_version=*/false,
-             /*debug_loss_report_url=*/absl::nullopt,
-             /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
-             /*errors=*/{});
+    mojo::Remote<auction_worklet::mojom::ScoreAdClient>(
+        std::move(score_ad_params.score_ad_client))
+        ->OnScoreAdComplete(
+            /*score=*/10,
+            auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
+            /*data_version=*/0, /*has_data_version=*/false,
+            /*debug_loss_report_url=*/absl::nullopt,
+            /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
+            /*errors=*/{});
     // Need to flush the service pipe to make sure the AuctionRunner has
     // received the score.
     seller_worklet->Flush();
@@ -7482,27 +7527,31 @@ TEST_F(AuctionRunnerTest, WorkletOrder) {
             EXPECT_EQ(10, score_ad_params2.bid);
             break;
           case Event::kBid1Scored:
-            std::move(score_ad_params1.callback)
-                .Run(/*score=*/bidder1_wins ? 11 : 9,
-                     auction_worklet::mojom::
-                         ComponentAuctionModifiedBidParamsPtr(),
-                     /*data_version=*/0, /*has_data_version=*/false,
-                     /*debug_loss_report_url=*/absl::nullopt,
-                     /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
-                     /*errors=*/{});
+            mojo::Remote<auction_worklet::mojom::ScoreAdClient>(
+                std::move(score_ad_params1.score_ad_client))
+                ->OnScoreAdComplete(
+                    /*score=*/bidder1_wins ? 11 : 9,
+                    auction_worklet::mojom::
+                        ComponentAuctionModifiedBidParamsPtr(),
+                    /*data_version=*/0, /*has_data_version=*/false,
+                    /*debug_loss_report_url=*/absl::nullopt,
+                    /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
+                    /*errors=*/{});
             // Wait for the AuctionRunner to receive the score.
             task_environment_.RunUntilIdle();
             break;
           case Event::kBid2Scored:
-            std::move(score_ad_params2.callback)
-                .Run(/*score=*/10,
-                     auction_worklet::mojom::
-                         ComponentAuctionModifiedBidParamsPtr(),
-                     /*data_version=*/0,
-                     /*has_data_version=*/false,
-                     /*debug_loss_report_url=*/absl::nullopt,
-                     /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
-                     /*errors=*/{});
+            mojo::Remote<auction_worklet::mojom::ScoreAdClient>(
+                std::move(score_ad_params2.score_ad_client))
+                ->OnScoreAdComplete(/*score=*/10,
+                                    auction_worklet::mojom::
+                                        ComponentAuctionModifiedBidParamsPtr(),
+                                    /*data_version=*/0,
+                                    /*has_data_version=*/false,
+                                    /*debug_loss_report_url=*/absl::nullopt,
+                                    /*debug_win_report_url=*/absl::nullopt,
+                                    /*pa_requests=*/{},
+                                    /*errors=*/{});
             // Wait for the AuctionRunner to receive the score.
             task_environment_.RunUntilIdle();
             break;
@@ -8861,13 +8910,15 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
     auto score_ad_params = seller_worklet->WaitForScoreAd();
     EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
     EXPECT_EQ(5, score_ad_params.bid);
-    std::move(score_ad_params.callback)
-        .Run(/*score=*/10,
-             auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-             /*data_version=*/0, /*has_data_version=*/false,
-             test_case.seller_debug_loss_report_url,
-             test_case.seller_debug_win_report_url, /*pa_requests=*/{},
-             /*errors=*/{});
+    mojo::Remote<auction_worklet::mojom::ScoreAdClient>(
+        std::move(score_ad_params.score_ad_client))
+        ->OnScoreAdComplete(
+            /*score=*/10,
+            auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
+            /*data_version=*/0, /*has_data_version=*/false,
+            test_case.seller_debug_loss_report_url,
+            test_case.seller_debug_win_report_url, /*pa_requests=*/{},
+            /*errors=*/{});
     auction_run_loop_->Run();
     EXPECT_EQ(test_case.expected_error_message, TakeBadMessage());
 
@@ -8921,13 +8972,15 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
   auto score_ad_params = seller_worklet->WaitForScoreAd();
   EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
   EXPECT_EQ(5, score_ad_params.bid);
-  std::move(score_ad_params.callback)
-      .Run(/*score=*/10,
-           auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-           /*data_version=*/0, /*has_data_version=*/false,
-           GURL("https://seller-debug-loss-reporting.com/1"),
-           GURL("https://seller-debug-win-reporting.com/1"), /*pa_requests=*/{},
-           /*errors=*/{});
+  mojo::Remote<auction_worklet::mojom::ScoreAdClient>(
+      std::move(score_ad_params.score_ad_client))
+      ->OnScoreAdComplete(
+          /*score=*/10,
+          auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
+          /*data_version=*/0, /*has_data_version=*/false,
+          GURL("https://seller-debug-loss-reporting.com/1"),
+          GURL("https://seller-debug-win-reporting.com/1"), /*pa_requests=*/{},
+          /*errors=*/{});
 
   seller_worklet->WaitForReportResult();
   seller_worklet->InvokeReportResultCallback();

@@ -275,7 +275,7 @@ class InterestGroupAuction::BuyerHelper {
   // Closes all Mojo pipes and release all weak pointers.
   void ClosePipes() {
     // This is needed in addition to closing worklet pipes since the callbacks
-    // passed to Mojo aren't currently cancellable.
+    // passed to Mojo pipes this class doesn't own aren't cancellable.
     weak_ptr_factory_.InvalidateWeakPtrs();
 
     for (BidState& bid_state : bid_states_) {
@@ -835,8 +835,10 @@ void InterestGroupAuction::StartReportingPhase(
 
 void InterestGroupAuction::ClosePipes() {
   // This is needed in addition to closing worklet pipes since the callbacks
-  // passed to Mojo aren't currently cancellable.
+  // passed to Mojo pipes this class doesn't own aren't cancellable.
   weak_ptr_factory_.InvalidateWeakPtrs();
+
+  score_ad_receivers_.Clear();
 
   for (auto& buyer_helper : buyer_helpers_) {
     buyer_helper->ClosePipes();
@@ -1299,18 +1301,64 @@ void InterestGroupAuction::ScoreBidIfReady(std::unique_ptr<Bid> bid) {
 
   ++bids_being_scored_;
   Bid* bid_raw = bid.get();
+
+  mojo::PendingRemote<auction_worklet::mojom::ScoreAdClient> score_ad_remote;
+  score_ad_receivers_.Add(
+      this, score_ad_remote.InitWithNewPipeAndPassReceiver(), std::move(bid));
   seller_worklet_handle_->GetSellerWorklet()->ScoreAd(
       bid_raw->ad_metadata, bid_raw->bid, config_->non_shared_params,
       GetOtherSellerParam(*bid_raw), bid_raw->interest_group->owner,
       bid_raw->render_url, bid_raw->ad_components,
       bid_raw->bid_duration.InMilliseconds(), SellerTimeout(),
-      *bid_raw->bid_state->trace_id,
-      base::BindOnce(&InterestGroupAuction::OnBidScored,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(bid)));
+      *bid_raw->bid_state->trace_id, std::move(score_ad_remote));
 }
 
-void InterestGroupAuction::OnBidScored(
-    std::unique_ptr<Bid> bid,
+bool InterestGroupAuction::ValidateScoreBidCompleteResult(
+    double score,
+    auction_worklet::mojom::ComponentAuctionModifiedBidParams*
+        component_auction_modified_bid_params,
+    const absl::optional<GURL>& debug_loss_report_url,
+    const absl::optional<GURL>& debug_win_report_url) {
+  // If `debug_loss_report_url` or `debug_win_report_url` is not a valid HTTPS
+  // URL, the auction should fail because the worklet is compromised.
+  if (debug_loss_report_url.has_value() &&
+      !IsUrlValid(debug_loss_report_url.value())) {
+    score_ad_receivers_.ReportBadMessage(
+        "Invalid seller debugging loss report URL");
+    return false;
+  }
+  if (debug_win_report_url.has_value() &&
+      !IsUrlValid(debug_win_report_url.value())) {
+    score_ad_receivers_.ReportBadMessage(
+        "Invalid seller debugging win report URL");
+    return false;
+  }
+
+  // Only validate `component_auction_modified_bid_params` if the bid was
+  // accepted.
+  if (score > 0) {
+    // If they accept a bid / return a positive score, component auction
+    // SellerWorklets must return a `component_auction_modified_bid_params`,
+    // and top-level auctions must not.
+    if ((parent_ == nullptr) !=
+        (component_auction_modified_bid_params == nullptr)) {
+      score_ad_receivers_.ReportBadMessage(
+          "Invalid component_auction_modified_bid_params");
+      return false;
+    }
+    // If a component seller modified the bid, the new bid must also be valid.
+    if (component_auction_modified_bid_params &&
+        component_auction_modified_bid_params->has_bid &&
+        !IsValidBid(component_auction_modified_bid_params->bid)) {
+      score_ad_receivers_.ReportBadMessage(
+          "Invalid component_auction_modified_bid_params bid");
+      return false;
+    }
+  }
+  return true;
+}
+
+void InterestGroupAuction::OnScoreAdComplete(
     double score,
     auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr
         component_auction_modified_bid_params,
@@ -1321,6 +1369,17 @@ void InterestGroupAuction::OnBidScored(
     PrivateAggregationRequests pa_requests,
     const std::vector<std::string>& errors) {
   DCHECK_GT(bids_being_scored_, 0);
+
+  if (!ValidateScoreBidCompleteResult(
+          score, component_auction_modified_bid_params.get(),
+          debug_loss_report_url, debug_win_report_url)) {
+    OnBiddingAndScoringComplete(AuctionResult::kBadMojoMessage);
+    return;
+  }
+
+  std::unique_ptr<Bid> bid = std::move(score_ad_receivers_.current_context());
+  score_ad_receivers_.Remove(score_ad_receivers_.current_receiver());
+
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "seller_worklet_score_ad",
                                   *bid->bid_state->trace_id);
   bid->bid_state->EndTracing();
@@ -1340,20 +1399,6 @@ void InterestGroupAuction::OnBidScored(
                                   std::move_iterator(pa_requests.end()));
   }
 
-  // If `debug_loss_report_url` or `debug_win_report_url` is not a valid HTTPS
-  // URL, the auction should fail because the worklet is compromised.
-  if (debug_loss_report_url.has_value() &&
-      !IsUrlValid(debug_loss_report_url.value())) {
-    mojo::ReportBadMessage("Invalid seller debugging loss report URL");
-    OnBiddingAndScoringComplete(AuctionResult::kBadMojoMessage);
-    return;
-  }
-  if (debug_win_report_url.has_value() &&
-      !IsUrlValid(debug_win_report_url.value())) {
-    mojo::ReportBadMessage("Invalid seller debugging win report URL");
-    OnBiddingAndScoringComplete(AuctionResult::kBadMojoMessage);
-    return;
-  }
   errors_.insert(errors_.end(), errors.begin(), errors.end());
 
   // Use separate fields for component and top-level seller reports, so both can
@@ -1372,24 +1417,12 @@ void InterestGroupAuction::OnBidScored(
 
   // A score <= 0 means the seller rejected the bid.
   if (score <= 0) {
+    // Need to delete `bid` because OnBiddingAndScoringComplete() may delete
+    // this, which leaves danging pointers on the stack. While this is safe to
+    // do (nothing has access to `bid` to dereference them), it makes the
+    // dangling pointer tooling sad.
+    bid.reset();
     MaybeCompleteBiddingAndScoringPhase();
-    return;
-  }
-
-  // If they accept a bid / return a positive score, component auction
-  // SellerWorklets must return a `component_auction_modified_bid_params`, and
-  // top-level auctions must not.
-  if (component_auction_modified_bid_params.is_null() != (parent_ == nullptr)) {
-    mojo::ReportBadMessage("Invalid component_auction_modified_bid_params");
-    OnBiddingAndScoringComplete(AuctionResult::kBadMojoMessage);
-    return;
-  }
-  // If a component seller modified the bid, the new bid must also be valid.
-  if (component_auction_modified_bid_params &&
-      component_auction_modified_bid_params->has_bid &&
-      !IsValidBid(component_auction_modified_bid_params->bid)) {
-    mojo::ReportBadMessage("Invalid component_auction_modified_bid_params bid");
-    OnBiddingAndScoringComplete(AuctionResult::kBadMojoMessage);
     return;
   }
 
@@ -1435,6 +1468,7 @@ void InterestGroupAuction::OnBidScored(
         std::move(bid), std::move(component_auction_modified_bid_params));
   }
 
+  bid.reset();
   MaybeCompleteBiddingAndScoringPhase();
 }
 

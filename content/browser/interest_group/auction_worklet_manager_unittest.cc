@@ -277,7 +277,8 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
                uint32_t browser_signal_bidding_duration_msecs,
                const absl::optional<base::TimeDelta> seller_timeout,
                uint64_t trace_id,
-               ScoreAdCallback score_ad_callback) override {
+               mojo::PendingRemote<auction_worklet::mojom::ScoreAdClient>
+                   score_ad_client) override {
     NOTREACHED();
   }
 
