@@ -1,7 +1,7 @@
 # raw_ptr&lt;T&gt; (aka MiraclePtr, aka BackupRefPtr)
 
 `raw_ptr<T>` is a non-owning smart pointer that has improved memory-safety over
-over raw pointers.  It behaves just like a raw pointer on platforms where
+raw pointers.  It behaves just like a raw pointer on platforms where
 USE_BACKUP_REF_PTR is off, and almost like one when it's on. The main
 difference is that when USE_BACKUP_REF_PTR is enabled, it's zero-initialized and
 cleared on destruction and move. (You should continue to explicitly initialize
@@ -50,7 +50,7 @@ exclusions via:
     - Code that cannot depend on `//base`
     - Code in `//ppapi`
 - `RAW_PTR_EXCLUSION` C++ attribute to exclude individual fields.  Examples:
-    - Cases where `raw_ptr<T>` won't compile (e.g. cases coverd in
+    - Cases where `raw_ptr<T>` won't compile (e.g. cases covered in
       [the "Unsupported cases leading to compile errors" section](#Unsupported-cases-leading-to-compile-errors)).
       Make sure to also look at
       [the "Recoverable compile-time problems" section](#Recoverable-compile_time-problems).
