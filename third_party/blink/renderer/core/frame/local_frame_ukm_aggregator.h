@@ -111,7 +111,7 @@ enum class DocumentUpdateReason;
 // }
 //
 // |ukm_enum| should be an entry in LocalFrameUkmAggregator's enum of
-// metric names (which in turn corresponds to names in from ukm.xml).
+// metric names (which in turn corresponds to names from ukm.xml).
 #define SCOPED_UMA_AND_UKM_TIMER(aggregator, ukm_enum) \
   auto scoped_ukm_hierarchical_timer =                 \
       aggregator.GetScopedTimer(static_cast<size_t>(ukm_enum));
