@@ -69,6 +69,9 @@ extension_harness_additional_script = r"""
 SERIAL_TESTS = {
     # crbug.com/1347970.
     'conformance/textures/misc/texture-video-transparent.html',
+    # crbug.com/1345755, crbug.com/1345782. Can be removed onced OpenGL is no
+    # longer used on Mac.
+    'deqp/functional/gles3/shaderindexing/uniform.html',
 }
 
 SERIAL_TEST_GLOBS = {
