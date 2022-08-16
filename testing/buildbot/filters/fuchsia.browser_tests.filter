@@ -449,10 +449,6 @@
 -RssLinksFetcherTest.FetchSuccessfulFromHead
 -StartupMetricsTest.ReportsValues
 
-# TODO(crbug.com/1322341): Desktop capture not yet supported
--DesktopCaptureApiTest.ChooseDesktopMedia
--DesktopCaptureApiTest.Delegation
-
 # TODO(crbug.com/1251347): Bluetooth not yet supported
 -BluetoothApiTest.DeviceEvents
 -BluetoothApiTest.DeviceInfo
