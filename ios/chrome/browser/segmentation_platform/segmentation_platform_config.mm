@@ -41,7 +41,8 @@ std::unique_ptr<Config> GetConfigForFeedSegments() {
       stats::OptimizationTargetToHistogramVariant(segment_id);
   config->segments.insert(
       {segment_id,
-       std::make_unique<Config::SegmentMetadata>(feed_segment_name)});
+       std::make_unique<Config::SegmentMetadata>(
+           feed_segment_name, std::make_unique<FeedUserSegment>())});
   config->segment_selection_ttl =
       base::Days(base::GetFieldTrialParamByFeatureAsInt(
           features::kSegmentationPlatformFeedSegmentFeature,
@@ -68,16 +69,6 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig() {
   // Add new configs here.
 
   return configs;
-}
-
-std::unique_ptr<ModelProvider> GetDefaultModelProvider(
-    proto::SegmentId target) {
-  if (target == proto::OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER) {
-    return std::make_unique<FeedUserSegment>();
-  }
-
-  // Add default models here.
-  return nullptr;
 }
 
 IOSFieldTrialRegisterImpl::IOSFieldTrialRegisterImpl() = default;

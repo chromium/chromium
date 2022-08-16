@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/segmentation_platform/model_provider_factory_impl.h"
+#include "components/segmentation_platform/embedder/model_provider_factory_impl.h"
 
-#include "chrome/browser/segmentation_platform/segmentation_platform_config.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/segmentation_platform/internal/execution/optimization_guide/optimization_guide_segmentation_model_provider.h"
 #include "components/segmentation_platform/public/config.h"

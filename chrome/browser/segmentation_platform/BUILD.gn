@@ -36,6 +36,7 @@ static_library("test_utils") {
   deps = [
     "//base/test:test_support",
     "//chrome/browser",
+    "//components/segmentation_platform/embedder",
     "//components/segmentation_platform/internal",
     "//components/segmentation_platform/internal:test_support",
     "//components/segmentation_platform/internal/proto",

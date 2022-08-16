@@ -2,31 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
+#import "ios/chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 
-#include "base/feature_list.h"
-#include "base/scoped_observation.h"
-#include "base/supports_user_data.h"
-#include "base/task/sequenced_task_runner.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
-#include "base/time/default_clock.h"
-#include "components/keyed_service/core/service_access_type.h"
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
-#include "components/segmentation_platform/internal/dummy_ukm_data_manager.h"
-#include "components/segmentation_platform/internal/segmentation_platform_service_impl.h"
-#include "components/segmentation_platform/internal/ukm_data_manager.h"
-#include "components/segmentation_platform/public/config.h"
-#include "components/segmentation_platform/public/features.h"
-#include "ios/chrome/browser/application_context.h"
-#include "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/history/history_service_factory.h"
-#include "ios/chrome/browser/optimization_guide/optimization_guide_service.h"
-#include "ios/chrome/browser/optimization_guide/optimization_guide_service_factory.h"
-#include "ios/chrome/browser/segmentation_platform/model_provider_factory_impl.h"
-#include "ios/chrome/browser/segmentation_platform/otr_web_state_observer.h"
-#include "ios/chrome/browser/segmentation_platform/segmentation_platform_config.h"
+#import "base/feature_list.h"
+#import "base/scoped_observation.h"
+#import "base/supports_user_data.h"
+#import "base/task/sequenced_task_runner.h"
+#import "base/task/task_traits.h"
+#import "base/task/thread_pool.h"
+#import "base/time/default_clock.h"
+#import "components/keyed_service/core/service_access_type.h"
+#import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "components/segmentation_platform/embedder/model_provider_factory_impl.h"
+#import "components/segmentation_platform/internal/dummy_ukm_data_manager.h"
+#import "components/segmentation_platform/internal/segmentation_platform_service_impl.h"
+#import "components/segmentation_platform/internal/ukm_data_manager.h"
+#import "components/segmentation_platform/public/config.h"
+#import "components/segmentation_platform/public/features.h"
+#import "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/history/history_service_factory.h"
+#import "ios/chrome/browser/optimization_guide/optimization_guide_service.h"
+#import "ios/chrome/browser/optimization_guide/optimization_guide_service_factory.h"
+#import "ios/chrome/browser/segmentation_platform/otr_web_state_observer.h"
+#import "ios/chrome/browser/segmentation_platform/segmentation_platform_config.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -102,12 +102,12 @@ std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
   params->db_provider = protodb_provider;
   params->clock = base::DefaultClock::GetInstance();
 
-  params->model_provider = std::make_unique<ModelProviderFactoryImpl>(
-      optimization_guide, params->task_runner);
   params->ukm_data_manager = GetUkmDataManager();
   params->profile_prefs = chrome_browser_state->GetPrefs();
 
   params->configs = GetSegmentationPlatformConfig();
+  params->model_provider = std::make_unique<ModelProviderFactoryImpl>(
+      optimization_guide, params->configs, params->task_runner);
   params->field_trial_register = std::make_unique<IOSFieldTrialRegisterImpl>();
 
   auto service =

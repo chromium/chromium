@@ -18,9 +18,6 @@ class ModelProvider;
 // Returns a Config created from the finch feature params.
 std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig();
 
-// Returns a default model provider for the `target`.
-std::unique_ptr<ModelProvider> GetDefaultModelProvider(proto::SegmentId target);
-
 // Implementation of FieldTrialRegister that uses synthetic field trials to
 // record segmentation groups.
 class IOSFieldTrialRegisterImpl : public FieldTrialRegister {

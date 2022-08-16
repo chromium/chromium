@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SEGMENTATION_PLATFORM_MODEL_PROVIDER_FACTORY_IMPL_H_
-#define IOS_CHROME_BROWSER_SEGMENTATION_PLATFORM_MODEL_PROVIDER_FACTORY_IMPL_H_
+#ifndef COMPONENTS_SEGMENTATION_PLATFORM_EMBEDDER_MODEL_PROVIDER_FACTORY_IMPL_H_
+#define COMPONENTS_SEGMENTATION_PLATFORM_EMBEDDER_MODEL_PROVIDER_FACTORY_IMPL_H_
 
 #include <memory>
 
 #include "base/containers/flat_map.h"
+#include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
@@ -18,13 +19,14 @@ class OptimizationGuideModelProvider;
 
 namespace segmentation_platform {
 
-// Implements model provider factory for segmentation, which is the source of
-// models for segmentation service.
+struct Config;
+
 class ModelProviderFactoryImpl : public ModelProviderFactory {
  public:
   ModelProviderFactoryImpl(
       optimization_guide::OptimizationGuideModelProvider*
           optimization_guide_provider,
+      std::vector<std::unique_ptr<Config>>& configs,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner);
 
   ~ModelProviderFactoryImpl() override;
@@ -41,9 +43,35 @@ class ModelProviderFactoryImpl : public ModelProviderFactory {
  private:
   raw_ptr<optimization_guide::OptimizationGuideModelProvider>
       optimization_guide_provider_;
+  base::flat_map<proto::SegmentId, std::unique_ptr<ModelProvider>>
+      default_models_;
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
+};
+
+// Used only in tests to override the default model.
+class TestDefaultModelOverride {
+ public:
+  static TestDefaultModelOverride& GetInstance();
+
+  ~TestDefaultModelOverride();
+  TestDefaultModelOverride(const TestDefaultModelOverride& client) = delete;
+  TestDefaultModelOverride& operator=(const TestDefaultModelOverride& client) =
+      delete;
+
+  std::unique_ptr<ModelProvider> TakeOwnershipOfModelProvider(
+      proto::SegmentId target);
+
+  void SetModelForTesting(proto::SegmentId target,
+                          std::unique_ptr<ModelProvider>);
+
+ private:
+  friend class base::NoDestructor<TestDefaultModelOverride>;
+
+  TestDefaultModelOverride();
+
+  std::map<proto::SegmentId, std::unique_ptr<ModelProvider>> providers_;
 };
 
 }  // namespace segmentation_platform
 
-#endif  // IOS_CHROME_BROWSER_SEGMENTATION_PLATFORM_MODEL_PROVIDER_FACTORY_IMPL_H_
+#endif  // COMPONENTS_SEGMENTATION_PLATFORM_EMBEDDER_MODEL_PROVIDER_FACTORY_IMPL_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/segmentation_platform/model_provider_factory_impl.h"
+#include "components/segmentation_platform/embedder/model_provider_factory_impl.h"
 
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
