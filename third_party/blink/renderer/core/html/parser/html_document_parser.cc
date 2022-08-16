@@ -67,8 +67,8 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/cooperative_scheduling_manager.h"
+#include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -128,8 +128,8 @@ Thread* GetPreloadScannerThread() {
   // collected objects. This means the thread the scanning runs on must be GC
   // enabled.
   DEFINE_STATIC_LOCAL(
-      std::unique_ptr<Thread>, preload_scanner_thread,
-      (Thread::CreateThread(
+      std::unique_ptr<NonMainThread>, preload_scanner_thread,
+      (NonMainThread::CreateThread(
           ThreadCreationParams(ThreadType::kPreloadScannerThread)
               .SetSupportsGC(true))));
   return preload_scanner_thread.get();

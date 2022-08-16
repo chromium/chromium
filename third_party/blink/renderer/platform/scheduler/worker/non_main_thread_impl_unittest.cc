@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/scheduler/worker/worker_thread.h"
+#include "third_party/blink/renderer/platform/scheduler/worker/non_main_thread_impl.h"
 
 #include "base/bind.h"
 #include "base/location.h"
@@ -68,17 +68,17 @@ void ShutdownOnThread(Thread* thread) {
   thread->Scheduler()->Shutdown();
 }
 
-class WorkerThreadTest : public testing::Test {
+class NonMainThreadImplTest : public testing::Test {
  public:
-  WorkerThreadTest() = default;
-  WorkerThreadTest(const WorkerThreadTest&) = delete;
-  WorkerThreadTest& operator=(const WorkerThreadTest&) = delete;
+  NonMainThreadImplTest() = default;
+  NonMainThreadImplTest(const NonMainThreadImplTest&) = delete;
+  NonMainThreadImplTest& operator=(const NonMainThreadImplTest&) = delete;
 
-  ~WorkerThreadTest() override = default;
+  ~NonMainThreadImplTest() override = default;
 
   void SetUp() override {
-    thread_ =
-        Thread::CreateThread(ThreadCreationParams(ThreadType::kTestThread));
+    thread_ = NonMainThread::CreateThread(
+        ThreadCreationParams(ThreadType::kTestThread));
   }
 
   void RunOnWorkerThread(const base::Location& from_here,
@@ -88,7 +88,7 @@ class WorkerThreadTest : public testing::Test {
         base::WaitableEvent::InitialState::NOT_SIGNALED);
     thread_->GetTaskRunner()->PostTask(
         from_here,
-        base::BindOnce(&WorkerThreadTest::RunOnWorkerThreadTask,
+        base::BindOnce(&NonMainThreadImplTest::RunOnWorkerThreadTask,
                        base::Unretained(this), std::move(task), &completion));
     completion.Wait();
   }
@@ -100,10 +100,10 @@ class WorkerThreadTest : public testing::Test {
     completion->Signal();
   }
 
-  std::unique_ptr<Thread> thread_;
+  std::unique_ptr<NonMainThread> thread_;
 };
 
-TEST_F(WorkerThreadTest, TestDefaultTask) {
+TEST_F(NonMainThreadImplTest, TestDefaultTask) {
   MockTask task;
   base::WaitableEvent completion(
       base::WaitableEvent::ResetPolicy::AUTOMATIC,
@@ -120,7 +120,7 @@ TEST_F(WorkerThreadTest, TestDefaultTask) {
   completion.Wait();
 }
 
-TEST_F(WorkerThreadTest, TestTaskObserver) {
+TEST_F(NonMainThreadImplTest, TestTaskObserver) {
   StringBuilder calls;
   TestObserver observer(&calls);
 
@@ -141,7 +141,7 @@ TEST_F(WorkerThreadTest, TestTaskObserver) {
               testing::HasSubstr("willProcessTask run didProcessTask"));
 }
 
-TEST_F(WorkerThreadTest, TestShutdown) {
+TEST_F(NonMainThreadImplTest, TestShutdown) {
   MockTask task;
   MockTask delayed_task;
 

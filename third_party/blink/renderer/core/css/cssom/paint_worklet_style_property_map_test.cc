@@ -20,8 +20,8 @@
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
@@ -108,7 +108,7 @@ class PaintWorkletStylePropertyMapTest : public PageTestBase {
   }
 
  protected:
-  std::unique_ptr<blink::Thread> thread_;
+  std::unique_ptr<blink::NonMainThread> thread_;
 };
 
 TEST_F(PaintWorkletStylePropertyMapTest, UnregisteredCustomProperty) {
@@ -137,7 +137,7 @@ TEST_F(PaintWorkletStylePropertyMapTest, UnregisteredCustomProperty) {
           std::move(input_arguments), std::move(property_keys));
   ASSERT_TRUE(input);
 
-  thread_ = blink::Thread::CreateThread(
+  thread_ = blink::NonMainThread::CreateThread(
       ThreadCreationParams(ThreadType::kTestThread).SetSupportsGC(true));
   base::WaitableEvent waitable_event;
   PostCrossThreadTask(
@@ -185,7 +185,7 @@ TEST_F(PaintWorkletStylePropertyMapTest, SupportedCrossThreadData) {
           std::move(input_arguments), std::move(property_keys));
   DCHECK(input);
 
-  thread_ = blink::Thread::CreateThread(
+  thread_ = blink::NonMainThread::CreateThread(
       ThreadCreationParams(ThreadType::kTestThread).SetSupportsGC(true));
   base::WaitableEvent waitable_event;
   PostCrossThreadTask(

@@ -34,7 +34,7 @@
 #include "base/thread_annotations.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
@@ -75,7 +75,7 @@ class DatabaseThread final : public GarbageCollected<DatabaseThread> {
   void CleanupDatabaseThread();
   void CleanupDatabaseThreadCompleted();
 
-  std::unique_ptr<blink::Thread> thread_;
+  std::unique_ptr<blink::NonMainThread> thread_;
 
   // This set keeps track of the open databases that have been used on this
   // thread.  This must be updated in the database thread though it is

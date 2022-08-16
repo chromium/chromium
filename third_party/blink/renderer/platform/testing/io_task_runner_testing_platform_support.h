@@ -8,7 +8,7 @@
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 
 #include "base/memory/scoped_refptr.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -23,7 +23,7 @@ class IOTaskRunnerTestingPlatformSupport : public TestingPlatformSupport {
   scoped_refptr<base::SingleThreadTaskRunner> GetIOTaskRunner() const override;
 
  private:
-  std::unique_ptr<Thread> io_thread_;
+  std::unique_ptr<NonMainThread> io_thread_;
 };
 
 }  // namespace blink

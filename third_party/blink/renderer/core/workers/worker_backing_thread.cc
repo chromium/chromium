@@ -56,7 +56,7 @@ void MemoryPressureNotificationToWorkerThreadIsolates(
 }
 
 WorkerBackingThread::WorkerBackingThread(const ThreadCreationParams& params)
-    : backing_thread_(blink::Thread::CreateThread(
+    : backing_thread_(blink::NonMainThread::CreateThread(
           ThreadCreationParams(params).SetSupportsGC(true))) {}
 
 WorkerBackingThread::~WorkerBackingThread() = default;

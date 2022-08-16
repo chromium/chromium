@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -17,7 +17,7 @@ TEST(ThreadTest, IsBeforeThreadCreated) {
   EXPECT_TRUE(WTF::IsBeforeThreadCreated());
 
   ThreadCreationParams params(ThreadType::kTestThread);
-  std::unique_ptr<Thread> thread = Thread::CreateThread(params);
+  std::unique_ptr<NonMainThread> thread = NonMainThread::CreateThread(params);
   thread.reset();
 
   EXPECT_FALSE(WTF::IsBeforeThreadCreated());

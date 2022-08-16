@@ -22,8 +22,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/scheduler/common/scheduler_helper.h"
 #include "third_party/blink/renderer/platform/scheduler/common/single_thread_idle_task_runner.h"
+#include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/non_main_thread_scheduler_helper.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
@@ -1104,9 +1104,9 @@ class MultiThreadedIdleHelperTest : public IdleHelperTest {
   }
 
   void PostDelayedIdleTaskFromNewThread(base::TimeDelta delay, int* run_count) {
-    std::unique_ptr<Thread> thread =
-        Thread::CreateThread(ThreadCreationParams(ThreadType::kTestThread)
-                                 .SetThreadNameForTest("TestBackgroundThread"));
+    std::unique_ptr<NonMainThread> thread = NonMainThread::CreateThread(
+        ThreadCreationParams(ThreadType::kTestThread)
+            .SetThreadNameForTest("TestBackgroundThread"));
     PostCrossThreadTask(
         *thread->GetTaskRunner(), FROM_HERE,
         CrossThreadBindOnce(&PostIdleTaskFromBackgroundThread,

@@ -2,11 +2,11 @@ specific_include_rules = {
   "non_main_thread_task_queue.h": [
     "+base/task/sequence_manager/task_queue_impl.h",
   ],
-  "worker_thread.h": [
+  "non_main_thread_impl.h": [
     "+base/threading/simple_thread.h",
     "+third_party/blink/renderer/platform/heap/gc_task_runner.h",
   ],
-  "worker_thread.cc": [
+  "non_main_thread_impl.cc": [
     "+base/message_loop/message_pump_type.h",
     "+third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h",
     "+third_party/blink/renderer/platform/heap/blink_gc_memory_dump_provider.h",

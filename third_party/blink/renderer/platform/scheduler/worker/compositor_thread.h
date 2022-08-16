@@ -5,12 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_WORKER_COMPOSITOR_THREAD_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_WORKER_COMPOSITOR_THREAD_H_
 
-#include "third_party/blink/renderer/platform/scheduler/worker/worker_thread.h"
+#include "third_party/blink/renderer/platform/scheduler/worker/non_main_thread_impl.h"
 
 namespace blink {
 namespace scheduler {
 
-class PLATFORM_EXPORT CompositorThread : public WorkerThread {
+class PLATFORM_EXPORT CompositorThread : public NonMainThreadImpl {
  public:
   explicit CompositorThread(const ThreadCreationParams& params);
   CompositorThread(const CompositorThread&) = delete;

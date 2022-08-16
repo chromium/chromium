@@ -29,10 +29,6 @@
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
-namespace base {
-class Thread;
-}  // namespace base
-
 namespace cc {
 class PaintCanvas;
 }  // namespace cc
@@ -66,7 +62,7 @@ struct CrossThreadCopier<media::WebmMuxer::VideoParameters> {
 namespace blink {
 
 class MediaStreamVideoTrack;
-class Thread;
+class NonMainThread;
 class WebGraphicsContext3DProvider;
 
 // Base class serving as interface for eventually saving encoded frames stemming
@@ -221,7 +217,7 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
     SEQUENCE_CHECKER(encoding_sequence_checker_);
 
     // Optional thread for encoding. Active for the lifetime of VpxEncoder.
-    std::unique_ptr<Thread> encoding_thread_;
+    std::unique_ptr<NonMainThread> encoding_thread_;
 
     // While |paused_|, frames are not encoded. Used only from
     // |encoding_thread_|.

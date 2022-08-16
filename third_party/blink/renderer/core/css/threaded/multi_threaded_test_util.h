@@ -12,8 +12,8 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -53,11 +53,11 @@ class MultiThreadedTest : public testing::Test {
   // The default for this is 10*100 = 1000 times.
   template <typename FunctionType, typename... Ps>
   void RunOnThreads(FunctionType function, Ps&&... parameters) {
-    Vector<std::unique_ptr<blink::Thread>> threads;
+    Vector<std::unique_ptr<blink::NonMainThread>> threads;
     Vector<std::unique_ptr<base::WaitableEvent>> waits;
 
     for (int i = 0; i < num_threads_; ++i) {
-      threads.push_back(blink::Thread::CreateThread(
+      threads.push_back(blink::NonMainThread::CreateThread(
           ThreadCreationParams(ThreadType::kTestThread).SetSupportsGC(true)));
       waits.push_back(std::make_unique<base::WaitableEvent>());
     }

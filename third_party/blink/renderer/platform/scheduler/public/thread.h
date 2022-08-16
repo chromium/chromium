@@ -90,10 +90,6 @@ class PLATFORM_EXPORT Thread {
   // TaskObserver is an observer fired before and after a task is executed.
   using TaskObserver = base::TaskObserver;
 
-  // Creates a new thread. This may be called from a non-main thread (e.g.
-  // nested Web workers).
-  static std::unique_ptr<Thread> CreateThread(const ThreadCreationParams&);
-
   // Create and save (as a global variable) the compositor thread. The thread
   // will be accessible through CompositorThread().
   static void CreateAndSetCompositorThread();

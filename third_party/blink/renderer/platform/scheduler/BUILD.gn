@@ -124,6 +124,7 @@ blink_platform_sources("scheduler") {
     "public/frame_scheduler.h",
     "public/frame_status.h",
     "public/main_thread_scheduler.h",
+    "public/non_main_thread.h",
     "public/page_lifecycle_state.h",
     "public/page_scheduler.h",
     "public/post_cancellable_task.h",
@@ -148,6 +149,8 @@ blink_platform_sources("scheduler") {
     "worker/compositor_thread.h",
     "worker/compositor_thread_scheduler_impl.cc",
     "worker/compositor_thread_scheduler_impl.h",
+    "worker/non_main_thread_impl.cc",
+    "worker/non_main_thread_impl.h",
     "worker/non_main_thread_scheduler_base.cc",
     "worker/non_main_thread_scheduler_base.h",
     "worker/non_main_thread_scheduler_helper.cc",
@@ -162,8 +165,6 @@ blink_platform_sources("scheduler") {
     "worker/worker_scheduler_impl.h",
     "worker/worker_scheduler_proxy.cc",
     "worker/worker_scheduler_proxy.h",
-    "worker/worker_thread.cc",
-    "worker/worker_thread.h",
     "worker/worker_thread_scheduler.cc",
     "worker/worker_thread_scheduler.h",
   ]
@@ -251,10 +252,10 @@ source_set("unit_tests") {
     "main_thread/pending_user_input_unittest.cc",
     "main_thread/render_widget_signals_unittest.cc",
     "main_thread/user_model_unittest.cc",
+    "worker/non_main_thread_impl_unittest.cc",
     "worker/worker_scheduler_impl_unittest.cc",
     "worker/worker_scheduler_proxy_unittest.cc",
     "worker/worker_thread_scheduler_unittest.cc",
-    "worker/worker_thread_unittest.cc",
   ]
 
   deps = [

@@ -15,8 +15,8 @@
 #include "third_party/blink/renderer/platform/scheduler/main_thread/frame_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/page_scheduler_impl.h"
+#include "third_party/blink/renderer/platform/scheduler/worker/non_main_thread_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/worker_scheduler_impl.h"
-#include "third_party/blink/renderer/platform/scheduler/worker/worker_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/worker_thread_scheduler.h"
 
 namespace blink {
@@ -45,12 +45,12 @@ class WorkerThreadSchedulerForTest : public WorkerThreadScheduler {
   base::WaitableEvent* throtting_state_changed_;
 };
 
-class WorkerThreadForTest : public WorkerThread {
+class WorkerThreadForTest : public NonMainThreadImpl {
  public:
   WorkerThreadForTest(FrameScheduler* frame_scheduler,
                       base::WaitableEvent* throtting_state_changed)
-      : WorkerThread(ThreadCreationParams(ThreadType::kTestThread)
-                         .SetFrameOrWorkerScheduler(frame_scheduler)),
+      : NonMainThreadImpl(ThreadCreationParams(ThreadType::kTestThread)
+                              .SetFrameOrWorkerScheduler(frame_scheduler)),
         throtting_state_changed_(throtting_state_changed) {}
 
   ~WorkerThreadForTest() override {

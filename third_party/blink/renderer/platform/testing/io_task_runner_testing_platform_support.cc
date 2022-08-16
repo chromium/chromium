@@ -9,9 +9,8 @@
 namespace blink {
 
 IOTaskRunnerTestingPlatformSupport::IOTaskRunnerTestingPlatformSupport()
-    : io_thread_(
-          Thread::CreateThread(ThreadCreationParams(ThreadType::kTestThread))) {
-}
+    : io_thread_(NonMainThread::CreateThread(
+          ThreadCreationParams(ThreadType::kTestThread))) {}
 
 scoped_refptr<base::SingleThreadTaskRunner>
 IOTaskRunnerTestingPlatformSupport::GetIOTaskRunner() const {

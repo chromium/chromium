@@ -37,7 +37,7 @@
 #include "third_party/blink/renderer/platform/audio/reverb_convolver_stage.h"
 #include "third_party/blink/renderer/platform/audio/reverb_input_buffer.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -96,7 +96,7 @@ class PLATFORM_EXPORT ReverbConvolver {
   unsigned max_realtime_fft_size_;
 
   // Background thread and synchronization
-  std::unique_ptr<Thread> background_thread_;
+  std::unique_ptr<NonMainThread> background_thread_;
 };
 
 }  // namespace blink

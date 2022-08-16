@@ -62,7 +62,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/worker_resource_timing_notifier.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/scheduler/public/worker_scheduler.h"
-#include "third_party/blink/renderer/platform/scheduler/worker/worker_thread.h"
+#include "third_party/blink/renderer/platform/scheduler/worker/non_main_thread_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/worker_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
@@ -535,10 +535,10 @@ void WorkerThread::InitializeSchedulerOnWorkerThread(
   DCHECK(IsCurrentThread());
   DCHECK(!worker_scheduler_);
 
-  // TODO(hajimehoshi, nhiroki): scheduler::WorkerThread and scheduler::
+  // TODO(hajimehoshi, nhiroki): scheduler::NonMainThreadImpl and scheduler::
   // WorkerThreadScheduler are not in scheduler/public, then using them is a
   // layer violation. Fix this.
-  auto& worker_thread = static_cast<scheduler::WorkerThread&>(
+  auto& worker_thread = static_cast<scheduler::NonMainThreadImpl&>(
       GetWorkerBackingThread().BackingThread());
   worker_scheduler_ = scheduler::WorkerScheduler::CreateWorkerScheduler(
       static_cast<scheduler::WorkerThreadScheduler*>(

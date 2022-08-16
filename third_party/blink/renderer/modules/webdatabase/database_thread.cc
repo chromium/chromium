@@ -60,7 +60,7 @@ void DatabaseThread::Start() {
   DCHECK(IsMainThread());
   if (thread_)
     return;
-  thread_ = blink::Thread::CreateThread(
+  thread_ = blink::NonMainThread::CreateThread(
       ThreadCreationParams(ThreadType::kDatabaseThread).SetSupportsGC(true));
   PostCrossThreadTask(*thread_->GetTaskRunner(), FROM_HERE,
                       CrossThreadBindOnce(&DatabaseThread::SetupDatabaseThread,

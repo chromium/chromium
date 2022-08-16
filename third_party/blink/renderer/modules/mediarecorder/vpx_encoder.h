@@ -25,7 +25,7 @@ class VpxEncoder final : public VideoTrackRecorder::Encoder {
   typedef std::unique_ptr<vpx_codec_ctx_t, VpxCodecDeleter>
       ScopedVpxCodecCtxPtr;
 
-  static void ShutdownEncoder(std::unique_ptr<Thread> encoding_thread,
+  static void ShutdownEncoder(std::unique_ptr<NonMainThread> encoding_thread,
                               ScopedVpxCodecCtxPtr encoder);
 
   VpxEncoder(bool use_vp9,

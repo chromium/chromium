@@ -10,8 +10,8 @@
 #include "base/synchronization/waitable_event.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
+#include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -33,7 +33,7 @@ class FIFOClient {
       : fifo_(fifo),
         bus_(AudioBus::Create(fifo->GetStateForTest().number_of_channels,
                               bus_length)),
-        client_thread_(Thread::CreateThread(
+        client_thread_(NonMainThread::CreateThread(
             ThreadCreationParams(ThreadType::kTestThread)
                 .SetThreadNameForTest("FIFOClientThread"))),
         done_event_(std::make_unique<base::WaitableEvent>(
@@ -83,7 +83,7 @@ class FIFOClient {
 
   PushPullFIFO* fifo_;
   scoped_refptr<AudioBus> bus_;
-  std::unique_ptr<Thread> client_thread_;
+  std::unique_ptr<NonMainThread> client_thread_;
   std::unique_ptr<base::WaitableEvent> done_event_;
 
   // Test duration.

@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/compositor_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/compositor_thread_scheduler_impl.h"
-#include "third_party/blink/renderer/platform/scheduler/worker/worker_thread.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
@@ -75,16 +74,6 @@ ThreadCreationParams& ThreadCreationParams::SetFrameOrWorkerScheduler(
 ThreadCreationParams& ThreadCreationParams::SetSupportsGC(bool gc_enabled) {
   supports_gc = gc_enabled;
   return *this;
-}
-
-std::unique_ptr<Thread> Thread::CreateThread(
-    const ThreadCreationParams& params) {
-#if DCHECK_IS_ON()
-  WTF::WillCreateThread();
-#endif
-  auto thread = std::make_unique<scheduler::WorkerThread>(params);
-  thread->Init();
-  return std::move(thread);
 }
 
 void Thread::CreateAndSetCompositorThread() {

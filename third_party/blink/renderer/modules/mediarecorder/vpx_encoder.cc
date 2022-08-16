@@ -12,8 +12,8 @@
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -41,7 +41,7 @@ static int GetNumberOfThreadsForEncoding() {
 }
 
 // static
-void VpxEncoder::ShutdownEncoder(std::unique_ptr<Thread> encoding_thread,
+void VpxEncoder::ShutdownEncoder(std::unique_ptr<NonMainThread> encoding_thread,
                                  ScopedVpxCodecCtxPtr encoder) {
   DCHECK(encoding_thread);
   // Both |encoding_thread| and |encoder| will be destroyed at end-of-scope.

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/scheduler/worker/worker_thread.h"
+#include "third_party/blink/renderer/platform/scheduler/worker/non_main_thread_impl.h"
 
 #include <memory>
 #include "base/bind.h"
@@ -26,9 +26,20 @@
 #include "third_party/blink/renderer/platform/scheduler/worker/worker_thread_scheduler.h"
 
 namespace blink {
+
+std::unique_ptr<NonMainThread> NonMainThread::CreateThread(
+    const ThreadCreationParams& params) {
+#if DCHECK_IS_ON()
+  WTF::WillCreateThread();
+#endif
+  auto thread = std::make_unique<scheduler::NonMainThreadImpl>(params);
+  thread->Init();
+  return std::move(thread);
+}
+
 namespace scheduler {
 
-WorkerThread::WorkerThread(const ThreadCreationParams& params)
+NonMainThreadImpl::NonMainThreadImpl(const ThreadCreationParams& params)
     : thread_type_(params.thread_type),
       worker_scheduler_proxy_(params.frame_or_worker_scheduler
                                   ? std::make_unique<WorkerSchedulerProxy>(
@@ -39,55 +50,55 @@ WorkerThread::WorkerThread(const ThreadCreationParams& params)
   options.thread_type = params.base_thread_type;
   thread_ = std::make_unique<SimpleThreadImpl>(
       params.name ? params.name : String(), options, supports_gc_,
-      const_cast<scheduler::WorkerThread*>(this));
+      const_cast<scheduler::NonMainThreadImpl*>(this));
   if (supports_gc_) {
     MemoryPressureListenerRegistry::Instance().RegisterThread(
-        const_cast<scheduler::WorkerThread*>(this));
+        const_cast<scheduler::NonMainThreadImpl*>(this));
   }
 }
 
-WorkerThread::~WorkerThread() {
+NonMainThreadImpl::~NonMainThreadImpl() {
   if (supports_gc_) {
     MemoryPressureListenerRegistry::Instance().UnregisterThread(
-        const_cast<scheduler::WorkerThread*>(this));
+        const_cast<scheduler::NonMainThreadImpl*>(this));
   }
   thread_->Quit();
   base::ScopedAllowBaseSyncPrimitives allow_wait;
   thread_->Join();
 }
 
-void WorkerThread::Init() {
+void NonMainThreadImpl::Init() {
   thread_->CreateScheduler();
   thread_->StartAsync();
 }
 
 std::unique_ptr<NonMainThreadSchedulerBase>
-WorkerThread::CreateNonMainThreadScheduler(
+NonMainThreadImpl::CreateNonMainThreadScheduler(
     base::sequence_manager::SequenceManager* sequence_manager) {
   return std::make_unique<WorkerThreadScheduler>(thread_type_, sequence_manager,
                                                  worker_scheduler_proxy_.get());
 }
 
-blink::ThreadScheduler* WorkerThread::Scheduler() {
+blink::ThreadScheduler* NonMainThreadImpl::Scheduler() {
   return static_cast<WorkerThreadScheduler*>(
       thread_->GetNonMainThreadScheduler());
 }
 
-scoped_refptr<base::SingleThreadTaskRunner> WorkerThread::GetTaskRunner()
+scoped_refptr<base::SingleThreadTaskRunner> NonMainThreadImpl::GetTaskRunner()
     const {
   return thread_->GetDefaultTaskRunner();
 }
 
-void WorkerThread::ShutdownOnThread() {
+void NonMainThreadImpl::ShutdownOnThread() {
   thread_->ShutdownOnThread();
   Scheduler()->Shutdown();
 }
 
-WorkerThread::SimpleThreadImpl::SimpleThreadImpl(
+NonMainThreadImpl::SimpleThreadImpl::SimpleThreadImpl(
     const WTF::String& name_prefix,
     const base::SimpleThread ::Options& options,
     bool supports_gc,
-    WorkerThread* worker_thread)
+    NonMainThreadImpl* worker_thread)
     : SimpleThread(name_prefix.Utf8(), options),
       thread_(worker_thread),
       supports_gc_(supports_gc) {
@@ -104,7 +115,7 @@ WorkerThread::SimpleThreadImpl::SimpleThreadImpl(
       base::sequence_manager::kTaskTypeNone);
 }
 
-void WorkerThread::SimpleThreadImpl::CreateScheduler() {
+void NonMainThreadImpl::SimpleThreadImpl::CreateScheduler() {
   DCHECK(!non_main_thread_scheduler_);
   DCHECK(!default_task_runner_);
   DCHECK(sequence_manager_);
@@ -117,7 +128,7 @@ void WorkerThread::SimpleThreadImpl::CreateScheduler() {
           TaskType::kWorkerThreadTaskQueueDefault);
 }
 
-WorkerThread::GCSupport::GCSupport(WorkerThread* thread) {
+NonMainThreadImpl::GCSupport::GCSupport(NonMainThreadImpl* thread) {
   ThreadState* thread_state = ThreadState::AttachCurrentThread();
   gc_task_runner_ = std::make_unique<GCTaskRunner>(thread);
   blink_gc_memory_dump_provider_ = std::make_unique<BlinkGCMemoryDumpProvider>(
@@ -125,7 +136,7 @@ WorkerThread::GCSupport::GCSupport(WorkerThread* thread) {
       BlinkGCMemoryDumpProvider::HeapType::kBlinkWorkerThread);
 }
 
-WorkerThread::GCSupport::~GCSupport() {
+NonMainThreadImpl::GCSupport::~GCSupport() {
   // Ensure no posted tasks will run from this point on.
   gc_task_runner_.reset();
   blink_gc_memory_dump_provider_.reset();
@@ -133,11 +144,11 @@ WorkerThread::GCSupport::~GCSupport() {
   ThreadState::DetachCurrentThread();
 }
 
-void WorkerThread::SimpleThreadImpl::ShutdownOnThread() {
+void NonMainThreadImpl::SimpleThreadImpl::ShutdownOnThread() {
   gc_support_.reset();
 }
 
-void WorkerThread::SimpleThreadImpl::Run() {
+void NonMainThreadImpl::SimpleThreadImpl::Run() {
   DCHECK(non_main_thread_scheduler_)
       << "CreateScheduler() should be called before starting the thread.";
   non_main_thread_scheduler_->AttachToCurrentThread();
@@ -160,10 +171,10 @@ void WorkerThread::SimpleThreadImpl::Run() {
   run_loop_ = nullptr;
 }
 
-void WorkerThread::SimpleThreadImpl::Quit() {
+void NonMainThreadImpl::SimpleThreadImpl::Quit() {
   if (!internal_task_runner_->RunsTasksInCurrentSequence()) {
     internal_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&WorkerThread::SimpleThreadImpl::Quit,
+        FROM_HERE, base::BindOnce(&NonMainThreadImpl::SimpleThreadImpl::Quit,
                                   base::Unretained(this)));
     return;
   }

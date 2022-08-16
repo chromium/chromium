@@ -12,7 +12,7 @@
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_destination_node.h"
 #include "third_party/blink/renderer/modules/webaudio/offline_audio_context.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 
 namespace blink {
 
@@ -132,7 +132,7 @@ class OfflineAudioDestinationHandler final : public AudioDestinationHandler {
 
   // The rendering thread for the non-AudioWorklet mode. For the AudioWorklet
   // node, AudioWorkletThread will drive the rendering.
-  std::unique_ptr<Thread> render_thread_;
+  std::unique_ptr<NonMainThread> render_thread_;
 
   scoped_refptr<base::SingleThreadTaskRunner> render_thread_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;

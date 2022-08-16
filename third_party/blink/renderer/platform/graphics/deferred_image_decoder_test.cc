@@ -38,8 +38,8 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/test/mock_image_decoder.h"
+#include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_skia.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
@@ -269,9 +269,9 @@ TEST_F(DeferredImageDecoderTest, MAYBE_decodeOnOtherThread) {
   EXPECT_EQ(0, decode_request_count_);
 
   // Create a thread to rasterize PaintRecord.
-  std::unique_ptr<Thread> thread =
-      Thread::CreateThread(ThreadCreationParams(ThreadType::kTestThread)
-                               .SetThreadNameForTest("RasterThread"));
+  std::unique_ptr<NonMainThread> thread =
+      NonMainThread::CreateThread(ThreadCreationParams(ThreadType::kTestThread)
+                                      .SetThreadNameForTest("RasterThread"));
   PostCrossThreadTask(
       *thread->GetTaskRunner(), FROM_HERE,
       CrossThreadBindOnce(&RasterizeMain, CrossThreadUnretained(canvas_.get()),

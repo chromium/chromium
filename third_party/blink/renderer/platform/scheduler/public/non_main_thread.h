@@ -1,0 +1,32 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_PUBLIC_NON_MAIN_THREAD_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_PUBLIC_NON_MAIN_THREAD_H_
+
+#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+
+namespace blink {
+
+// The interface of a non-main thread in Blink.
+//
+// This class will have an unrestricted GetTaskRunner method, anyone can use
+// it. For main thread a frame based task runner should likely be used,
+// so `Thread::GetTaskRunner` will eventually be removed or restricted via a
+// pass key.
+//
+class PLATFORM_EXPORT NonMainThread : public Thread {
+ public:
+  // Creates a new non-main thread. This may be called from a non-main thread
+  // (e.g. nested Web workers).
+  static std::unique_ptr<NonMainThread> CreateThread(
+      const ThreadCreationParams&);
+
+  // TODO(dtapuska): Add GetTaskRunner here and rename Thread::GetTaskRunner
+  // to Thread::GetTaskRunnerDeprecated.
+};
+
+}  // namespace blink
+
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_PUBLIC_NON_MAIN_THREAD_H_

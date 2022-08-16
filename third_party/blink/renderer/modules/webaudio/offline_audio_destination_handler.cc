@@ -17,7 +17,7 @@
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/audio/denormal_disabler.h"
 #include "third_party/blink/renderer/platform/audio/hrtf_database_loader.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
@@ -339,7 +339,7 @@ void OfflineAudioDestinationHandler::PrepareTaskRunnerForRendering() {
   } else {
     if (!render_thread_) {
       // The context started from the non-AudioWorklet mode.
-      render_thread_ = Thread::CreateThread(
+      render_thread_ = NonMainThread::CreateThread(
           ThreadCreationParams(ThreadType::kOfflineAudioRenderThread));
       render_thread_task_runner_ = render_thread_->GetTaskRunner();
     }

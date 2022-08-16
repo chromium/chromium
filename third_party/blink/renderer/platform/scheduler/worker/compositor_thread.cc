@@ -11,7 +11,7 @@ namespace blink {
 namespace scheduler {
 
 CompositorThread::CompositorThread(const ThreadCreationParams& params)
-    : WorkerThread(params) {}
+    : NonMainThreadImpl(params) {}
 
 CompositorThread::~CompositorThread() = default;
 

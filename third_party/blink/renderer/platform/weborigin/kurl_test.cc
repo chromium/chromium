@@ -36,7 +36,7 @@
 #include <stdint.h>
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -924,8 +924,8 @@ TEST(KURLTest, ThreadSafesStaticKurlGetters) {
   KURL null_url = NullURL();
   EXPECT_TRUE(null_url.IsNull());
 
-  auto thread =
-      Thread::CreateThread(ThreadCreationParams(ThreadType::kTestThread));
+  auto thread = NonMainThread::CreateThread(
+      ThreadCreationParams(ThreadType::kTestThread));
   thread->GetTaskRunner()->PostTask(FROM_HERE, base::BindOnce([]() {
                                       // Reference each of the static KURLs
                                       // again, from the background thread,

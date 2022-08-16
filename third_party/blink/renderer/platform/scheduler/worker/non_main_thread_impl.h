@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_WORKER_WORKER_THREAD_H_
-#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_WORKER_WORKER_THREAD_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_WORKER_NON_MAIN_THREAD_IMPL_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_WORKER_NON_MAIN_THREAD_IMPL_H_
 
 #include "base/callback_forward.h"
 #include "base/run_loop.h"
@@ -13,13 +13,13 @@
 #include "base/threading/simple_thread.h"
 #include "third_party/blink/public/platform/web_private_ptr.h"
 #include "third_party/blink/renderer/platform/heap/gc_task_runner.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 class BlinkGCMemoryDumpProvider;
 class ThreadScheduler;
-}
+}  // namespace blink
 
 namespace blink {
 namespace scheduler {
@@ -31,12 +31,10 @@ class WorkerSchedulerProxy;
 // "worker", the thread represented by this class is used not only for Web
 // Workers but for many other use cases, like for WebAudio, Web Database, etc.
 //
-// TODO(yutak): This could be a misnomer, as we already have WorkerThread in
-// core/ (though this is under blink::scheduler namespace).
-class PLATFORM_EXPORT WorkerThread : public Thread {
+class PLATFORM_EXPORT NonMainThreadImpl : public NonMainThread {
  public:
-  explicit WorkerThread(const ThreadCreationParams& params);
-  ~WorkerThread() override;
+  explicit NonMainThreadImpl(const ThreadCreationParams& params);
+  ~NonMainThreadImpl() override;
 
   // Thread implementation.
   void Init() override;
@@ -72,7 +70,7 @@ class PLATFORM_EXPORT WorkerThread : public Thread {
     explicit SimpleThreadImpl(const WTF::String& name_prefix,
                               const base::SimpleThread::Options& options,
                               bool supports_gc,
-                              WorkerThread* worker_thread);
+                              NonMainThreadImpl* worker_thread);
 
     // Creates the thread's scheduler. Must be invoked before starting the
     // thread or accessing the default TaskRunner.
@@ -92,7 +90,7 @@ class PLATFORM_EXPORT WorkerThread : public Thread {
 
     // SimpleThreadImpl automatically calls this after exiting the Run() but
     // there are some use cases in which clients must call it before. See
-    // WorkerThread::ShutdownOnThread().
+    // NonMainThreadImpl::ShutdownOnThread().
     void ShutdownOnThread();
 
     // Makes sure that Run will eventually finish and thus the thread can be
@@ -109,7 +107,7 @@ class PLATFORM_EXPORT WorkerThread : public Thread {
     // loop.
     scoped_refptr<base::SingleThreadTaskRunner> internal_task_runner_;
 
-    WorkerThread* thread_;
+    NonMainThreadImpl* thread_;
 
     // The following variables are "owned" by the worker thread
     std::unique_ptr<base::sequence_manager::SequenceManager> sequence_manager_;
@@ -124,7 +122,7 @@ class PLATFORM_EXPORT WorkerThread : public Thread {
 
   class GCSupport final {
    public:
-    explicit GCSupport(WorkerThread* thread);
+    explicit GCSupport(NonMainThreadImpl* thread);
     ~GCSupport();
 
    private:
@@ -141,4 +139,4 @@ class PLATFORM_EXPORT WorkerThread : public Thread {
 }  // namespace scheduler
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_WORKER_WORKER_THREAD_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_WORKER_NON_MAIN_THREAD_IMPL_H_

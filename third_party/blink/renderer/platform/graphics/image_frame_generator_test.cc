@@ -33,8 +33,8 @@
 #include "third_party/blink/renderer/platform/graphics/image_decoding_store.h"
 #include "third_party/blink/renderer/platform/graphics/test/mock_image_decoder.h"
 #include "third_party/blink/renderer/platform/image-decoders/segment_reader.h"
+#include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
@@ -306,9 +306,9 @@ TEST_F(ImageFrameGeneratorTest,
   // LocalFrame can now be decoded completely.
   SetFrameStatus(ImageFrame::kFrameComplete);
   AddNewData();
-  std::unique_ptr<Thread> thread =
-      Thread::CreateThread(ThreadCreationParams(ThreadType::kTestThread)
-                               .SetThreadNameForTest("DecodeThread"));
+  std::unique_ptr<NonMainThread> thread =
+      NonMainThread::CreateThread(ThreadCreationParams(ThreadType::kTestThread)
+                                      .SetThreadNameForTest("DecodeThread"));
   PostCrossThreadTask(
       *thread->GetTaskRunner(), FROM_HERE,
       CrossThreadBindOnce(&DecodeThreadMain, WTF::RetainedRef(generator_),

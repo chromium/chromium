@@ -20,5 +20,5 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "kurl_test.cc": [ "+third_party/blink/renderer/platform/scheduler/public/thread.h" ],
+  "kurl_test.cc": [ "+third_party/blink/renderer/platform/scheduler/public/non_main_thread.h" ],
 }

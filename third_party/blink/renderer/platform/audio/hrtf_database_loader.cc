@@ -98,7 +98,7 @@ void HRTFDatabaseLoader::LoadAsynchronously() {
   DCHECK(!thread_);
 
   // Start the asynchronous database loading process.
-  thread_ = Thread::CreateThread(
+  thread_ = NonMainThread::CreateThread(
       ThreadCreationParams(ThreadType::kHRTFDatabaseLoaderThread));
   // TODO(alexclarke): Should this be posted as a loading task?
   PostCrossThreadTask(*thread_->GetTaskRunner(), FROM_HERE,
