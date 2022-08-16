@@ -13,7 +13,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/updater/app/app.h"
 #include "chrome/updater/app/app_server.h"
-#include "chrome/updater/configurator.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/update_service_internal.h"
 
@@ -42,6 +41,9 @@ class ComServerApp : public AppServer {
  public:
   ComServerApp();
 
+  using AppServer::config;
+  using AppServer::prefs;
+
   scoped_refptr<base::SequencedTaskRunner> main_task_runner() {
     return main_task_runner_;
   }
@@ -53,10 +55,6 @@ class ComServerApp : public AppServer {
     CHECK(update_service_internal_);
     return update_service_internal_;
   }
-
-  scoped_refptr<const UpdaterPrefs> prefs() const { return AppServer::prefs(); }
-
-  scoped_refptr<Configurator> config() const { return AppServer::config(); }
 
   // Handles COM factory unregistration then triggers program shutdown. This
   // function runs on a COM RPC thread when the WRL module is destroyed.

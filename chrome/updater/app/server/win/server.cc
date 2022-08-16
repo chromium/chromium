@@ -31,9 +31,7 @@
 #include "chrome/installer/util/work_item_list.h"
 #include "chrome/updater/app/server/win/com_classes.h"
 #include "chrome/updater/app/server/win/com_classes_legacy.h"
-#include "chrome/updater/configurator.h"
 #include "chrome/updater/constants.h"
-#include "chrome/updater/prefs.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/update_service_internal.h"
@@ -44,7 +42,6 @@
 #include "chrome/updater/win/setup/uninstall.h"
 #include "chrome/updater/win/win_constants.h"
 #include "chrome/updater/win/win_util.h"
-#include "components/prefs/pref_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
