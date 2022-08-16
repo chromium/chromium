@@ -20,6 +20,7 @@
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
 #include "chrome/browser/web_applications/web_app_data_retriever.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -56,7 +57,7 @@ InstallIsolatedAppCommand::InstallIsolatedAppCommand(
     WebAppInstallFinalizer& install_finalizer,
     base::OnceCallback<void(InstallIsolatedAppCommandResult)> callback)
     : lock_(std::make_unique<SharedWebContentsWithAppLock>(
-          base::flat_set<AppId>{"some random app id"})),
+          base::flat_set<AppId>{GenerateAppId("/", GURL{url})})),
       url_(url),
       url_loader_(url_loader),
       install_finalizer_(install_finalizer),
@@ -77,9 +78,7 @@ void InstallIsolatedAppCommand::SetDataRetrieverForTesting(
   data_retriever_ = std::move(data_retriever);
 }
 
-InstallIsolatedAppCommand::~InstallIsolatedAppCommand() {
-  DCHECK(callback_.is_null());
-}
+InstallIsolatedAppCommand::~InstallIsolatedAppCommand() = default;
 
 Lock& InstallIsolatedAppCommand::lock() const {
   return *lock_;

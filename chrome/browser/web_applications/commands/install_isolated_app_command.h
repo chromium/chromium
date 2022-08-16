@@ -38,6 +38,12 @@ class InstallIsolatedAppCommand : public WebAppCommand {
   // TODO(kuragin): Consider to create an instance of |GURL| instead of passing
   // a string and probably introduce factory function in order to handle invalid
   // urls.
+  //
+  // |application_url| is the url for the app to be installed.
+  //
+  // |callback| must be not null.
+  //
+  // The `id` in the application's manifest must equal "/".
   explicit InstallIsolatedAppCommand(
       base::StringPiece application_url,
       WebAppUrlLoader& url_loader,
