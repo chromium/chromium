@@ -27,7 +27,7 @@
 #include "chrome/browser/password_manager/android/password_store_operation_target.h"
 #include "chrome/browser/password_manager/android/password_sync_controller_delegate_android.h"
 #include "chrome/browser/password_manager/android/password_sync_controller_delegate_bridge_impl.h"
-#include "components/autofill/core/browser/autofill_regexes.h"
+#include "components/autofill/core/common/autofill_regexes.h"
 #include "components/password_manager/core/browser/login_database.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store_backend.h"

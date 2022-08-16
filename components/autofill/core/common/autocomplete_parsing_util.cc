@@ -1,15 +1,15 @@
 // Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#include "components/autofill/core/browser/form_processing/autocomplete_attribute_processing_util.h"
+#include "components/autofill/core/common/autocomplete_parsing_util.h"
 
 #include <vector>
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/autofill_regexes.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_regexes.h"
 #include "components/autofill/core/common/autofill_util.h"
 
 namespace autofill {
@@ -53,7 +53,7 @@ bool ContactTypeHintMatchesFieldType(const std::string& token,
 // might indicate a 4 digit year.
 // In case no rationalization rule applies, the original type is returned.
 HtmlFieldType RationalizeAutocompleteType(HtmlFieldType type,
-                                          const AutofillField& field) {
+                                          const FormFieldData& field) {
   // (original-type, max-length) -> new-type
   static constexpr auto rules =
       base::MakeFixedFlatMap<std::pair<HtmlFieldType, uint64_t>, HtmlFieldType>(
@@ -188,7 +188,7 @@ bool ShouldIgnoreAutocompleteValue(base::StringPiece value) {
 
 HtmlFieldType FieldTypeFromAutocompleteAttributeValue(
     std::string value,
-    const AutofillField& field) {
+    const FormFieldData& field) {
   if (value.empty())
     return HTML_TYPE_UNSPECIFIED;
 
@@ -222,7 +222,7 @@ HtmlFieldType FieldTypeFromAutocompleteAttributeValue(
 }
 
 absl::optional<AutocompleteParsingResult> ParseAutocompleteAttribute(
-    const AutofillField& field) {
+    const FormFieldData& field) {
   std::vector<std::string> tokens =
       LowercaseAndTokenizeAttributeString(field.autocomplete_attribute);
 

@@ -16,10 +16,10 @@
 #include "base/logging.h"
 #include "base/ranges/ranges.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/autofill_regexes.h"
 #include "components/autofill/core/browser/form_parsing/buildflags.h"
 #include "components/autofill/core/browser/form_parsing/regex_patterns_inl.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_regexes.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

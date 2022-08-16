@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PROCESSING_AUTOCOMPLETE_ATTRIBUTE_PROCESSING_UTIL_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PROCESSING_AUTOCOMPLETE_ATTRIBUTE_PROCESSING_UTIL_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_COMMON_AUTOCOMPLETE_PARSING_UTIL_H_
+#define COMPONENTS_AUTOFILL_CORE_COMMON_AUTOCOMPLETE_PARSING_UTIL_H_
 
 #include <string>
 
 #include "base/strings/string_piece.h"
-#include "components/autofill/core/browser/autofill_field.h"
-#include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/html_field_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
@@ -34,7 +34,7 @@ struct AutocompleteParsingResult {
   // webauthn is parsed, but otherwise unused.
 };
 absl::optional<AutocompleteParsingResult> ParseAutocompleteAttribute(
-    const AutofillField& field);
+    const FormFieldData& field);
 
 // Checks if `autocomplete` is one of "on", "off" or "false". These values are
 // currently ignored by Autofill.
@@ -48,8 +48,8 @@ bool ShouldIgnoreAutocompleteAttribute(base::StringPiece autocomplete);
 // Otherwise HTML_TYPE_UNRECOGNIZED is returned.
 HtmlFieldType FieldTypeFromAutocompleteAttributeValue(
     std::string value,
-    const AutofillField& field);
+    const FormFieldData& field);
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PROCESSING_AUTOCOMPLETE_ATTRIBUTE_PROCESSING_UTIL_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_COMMON_AUTOCOMPLETE_PARSING_UTIL_H_

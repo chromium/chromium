@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/form_processing/autocomplete_attribute_processing_util.h"
+#include "components/autofill/core/common/autocomplete_parsing_util.h"
 
 #include <string>
 
 #include "base/strings/string_piece.h"
-#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -92,7 +91,7 @@ TEST_P(AutocompleteAttributeProcessingUtilTest, ParseAutocompleteAttribute) {
   if (test.max_length)
     field.max_length = test.max_length;
 
-  auto result = ParseAutocompleteAttribute(AutofillField(field));
+  auto result = ParseAutocompleteAttribute(field);
   ASSERT_EQ(result.has_value(), test.expected_result.has_value());
   if (result.has_value()) {
     EXPECT_EQ(result->section, test.expected_result->section);

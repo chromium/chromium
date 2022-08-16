@@ -9,7 +9,6 @@
 
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/autofill_regexes.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

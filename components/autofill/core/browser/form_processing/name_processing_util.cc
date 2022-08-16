@@ -6,9 +6,9 @@
 
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/autofill_regexes.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_regexes.h"
 
 namespace autofill {
 

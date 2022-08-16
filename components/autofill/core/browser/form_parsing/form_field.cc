@@ -17,7 +17,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_field.h"
-#include "components/autofill/core/browser/autofill_regexes.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/address_field.h"
@@ -34,7 +33,7 @@
 #include "components/autofill/core/browser/form_parsing/search_field.h"
 #include "components/autofill/core/browser/form_parsing/standalone_cvc_field.h"
 #include "components/autofill/core/browser/form_parsing/travel_field.h"
-#include "components/autofill/core/browser/form_processing/autocomplete_attribute_processing_util.h"
+#include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/common/autofill_constants.h"
@@ -42,6 +41,7 @@
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/autofill/core/common/autofill_regexes.h"
 #include "components/autofill/core/common/autofill_util.h"
 
 namespace autofill {

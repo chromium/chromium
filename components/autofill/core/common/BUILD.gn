@@ -5,6 +5,8 @@
 static_library("common") {
   sources = [
     "aliases.h",
+    "autocomplete_parsing_util.cc",
+    "autocomplete_parsing_util.h",
     "autofill_clock.cc",
     "autofill_clock.h",
     "autofill_constants.cc",
@@ -21,6 +23,9 @@ static_library("common") {
     "autofill_payments_features.h",
     "autofill_prefs.cc",
     "autofill_prefs.h",
+    "autofill_regex_constants.h",
+    "autofill_regexes.cc",
+    "autofill_regexes.h",
     "autofill_switches.cc",
     "autofill_switches.h",
     "autofill_tick_clock.cc",
@@ -99,10 +104,12 @@ component("features") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "autocomplete_parsing_util_unittest.cc",
     "autofill_internals/log_message_unittest.cc",
     "autofill_internals/logging_scope_unittest.cc",
     "autofill_l10n_util_unittest.cc",
     "autofill_prefs_unittest.cc",
+    "autofill_regexes_unittest.cc",
     "autofill_util_unittest.cc",
     "dense_set_unittest.cc",
     "field_data_manager_unittest.cc",
