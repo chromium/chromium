@@ -514,65 +514,62 @@ bool StateSnapshot::operator==(const StateSnapshot& other) const {
 }
 
 std::ostream& operator<<(std::ostream& os, const StateSnapshot& snapshot) {
-  base::Value root(base::Value::Type::DICTIONARY);
-  base::Value& profiles_value =
-      *root.SetKey("profiles", base::Value(base::Value::Type::DICTIONARY));
+  base::Value::Dict root;
+  base::Value::Dict& profiles_dict = *root.EnsureDict("profiles");
   for (const auto& profile_pair : snapshot.profiles) {
-    base::Value profile_value(base::Value::Type::DICTIONARY);
+    base::Value::Dict profile_dict;
 
-    base::Value browsers_value(base::Value::Type::DICTIONARY);
+    base::Value::Dict browsers_dict;
     const ProfileState& profile = profile_pair.second;
     for (const auto& browser_pair : profile.browsers) {
-      base::Value browser_value(base::Value::Type::DICTIONARY);
+      base::Value::Dict browser_dict;
       const BrowserState& browser = browser_pair.second;
 
-      browser_value.SetStringKey("browser",
-                                 base::StringPrintf("%p", browser.browser));
+      browser_dict.Set("browser", base::StringPrintf("%p", browser.browser));
 
-      base::Value tab_values(base::Value::Type::DICTIONARY);
+      base::Value::Dict tab_dicts;
       for (const auto& tab_pair : browser.tabs) {
-        base::Value tab_value(base::Value::Type::DICTIONARY);
+        base::Value::Dict tab_dict;
         const TabState& tab = tab_pair.second;
-        tab_value.SetStringKey("url", tab.url.spec());
-        tab_value.SetBoolKey("is_installable", tab.is_installable);
-        tab_values.SetKey(base::StringPrintf("%p", tab_pair.first),
-                          std::move(tab_value));
+        tab_dict.Set("url", tab.url.spec());
+        tab_dict.Set("is_installable", tab.is_installable);
+        tab_dicts.Set(base::StringPrintf("%p", tab_pair.first),
+                      std::move(tab_dict));
       }
-      browser_value.SetKey("tabs", std::move(tab_values));
-      browser_value.SetStringKey("active_tab",
-                                 base::StringPrintf("%p", browser.active_tab));
-      browser_value.SetStringKey("app_id", browser.app_id);
-      browser_value.SetBoolKey("install_icon_shown",
-                               browser.install_icon_shown);
-      browser_value.SetBoolKey("launch_icon_shown", browser.launch_icon_shown);
+      browser_dict.Set("tabs", std::move(tab_dicts));
+      browser_dict.Set("active_tab",
+                       base::StringPrintf("%p", browser.active_tab));
+      browser_dict.Set("app_id", browser.app_id);
+      browser_dict.Set("install_icon_shown", browser.install_icon_shown);
+      browser_dict.Set("launch_icon_shown", browser.launch_icon_shown);
 
-      browsers_value.SetKey(base::StringPrintf("%p", browser_pair.first),
-                            std::move(browser_value));
+      browsers_dict.Set(base::StringPrintf("%p", browser_pair.first),
+                        std::move(browser_dict));
     }
-    base::Value app_values(base::Value::Type::DICTIONARY);
+    base::Value::Dict app_dicts;
     for (const auto& app_pair : profile.apps) {
-      base::Value app_value(base::Value::Type::DICTIONARY);
+      base::Value::Dict app_dict;
       const AppState& app = app_pair.second;
 
-      app_value.SetStringKey("id", app.id);
-      app_value.SetStringKey("name", app.name);
-      app_value.SetIntKey("effective_display_mode",
-                          static_cast<int>(app.effective_display_mode));
-      app_value.SetIntKey("user_display_mode",
-                          static_cast<int>(app.effective_display_mode));
-      app_value.SetStringKey("manifest_launcher_icon_filename",
-                             app.manifest_launcher_icon_filename);
-      app_value.SetBoolKey("is_installed_locally", app.is_installed_locally);
-      app_value.SetBoolKey("is_shortcut_created", app.is_shortcut_created);
-      app_value.SetBoolKey("is_isolated", app.is_isolated);
+      app_dict.Set("id", app.id);
+      app_dict.Set("name", app.name);
+      app_dict.Set("effective_display_mode",
+                   static_cast<int>(app.effective_display_mode));
+      app_dict.Set("user_display_mode",
+                   static_cast<int>(app.effective_display_mode));
+      app_dict.Set("manifest_launcher_icon_filename",
+                   app.manifest_launcher_icon_filename);
+      app_dict.Set("is_installed_locally", app.is_installed_locally);
+      app_dict.Set("is_shortcut_created", app.is_shortcut_created);
+      app_dict.Set("is_isolated", app.is_isolated);
 
-      app_values.SetKey(app_pair.first, std::move(app_value));
+      app_dicts.Set(app_pair.first, std::move(app_dict));
     }
 
-    profile_value.SetKey("browsers", std::move(browsers_value));
-    profile_value.SetKey("apps", std::move(app_values));
-    profiles_value.SetKey(base::StringPrintf("%p", profile_pair.first),
-                          std::move(profile_value));
+    profile_dict.Set("browsers", std::move(browsers_dict));
+    profile_dict.Set("apps", std::move(app_dicts));
+    profiles_dict.Set(base::StringPrintf("%p", profile_pair.first),
+                      std::move(profile_dict));
   }
   os << root.DebugString();
   return os;
@@ -916,7 +913,7 @@ void WebAppIntegrationTestDriver::RemoveRunOnOsLoginPolicy(Site site) {
   {
     ListPrefUpdate updateList(profile()->GetPrefs(), prefs::kWebAppSettings);
     updateList->GetList().EraseIf([&](const base::Value& item) {
-      return item.FindKey(kManifestId)->GetString() == url.spec();
+      return *item.GetDict().FindString(kManifestId) == url.spec();
     });
   }
   AfterStateChangeAction();
@@ -1509,8 +1506,8 @@ void WebAppIntegrationTestDriver::UninstallPolicyApp(Site site) {
     ListPrefUpdate update(profile()->GetPrefs(),
                           prefs::kWebAppInstallForceList);
     size_t removed_count =
-        update->EraseListValueIf([&](const base::Value& item) {
-          const base::Value* url_value = item.FindKey(kUrlKey);
+        update->GetList().EraseIf([&](const base::Value& item) {
+          const base::Value* url_value = item.GetDict().Find(kUrlKey);
           return url_value && url_value->GetString() == url.spec();
         });
     ASSERT_GT(removed_count, 0U);
@@ -2358,14 +2355,13 @@ void WebAppIntegrationTestDriver::InstallPolicyAppInternal(
   WebAppTestInstallWithOsHooksObserver observer(profile());
   observer.BeginListening();
   {
-    base::Value item(base::Value::Type::DICTIONARY);
-    item.SetKey(kUrlKey, base::Value(url.spec()));
-    item.SetKey(kDefaultLaunchContainerKey,
-                std::move(default_launch_container));
-    item.SetKey(kCreateDesktopShortcutKey, base::Value(create_shortcut));
+    base::Value::Dict item;
+    item.Set(kUrlKey, url.spec());
+    item.Set(kDefaultLaunchContainerKey, std::move(default_launch_container));
+    item.Set(kCreateDesktopShortcutKey, create_shortcut);
     ListPrefUpdate update(profile()->GetPrefs(),
                           prefs::kWebAppInstallForceList);
-    update->Append(item.Clone());
+    update->GetList().Append(std::move(item));
   }
   active_app_id_ = observer.Wait();
 }
@@ -2374,16 +2370,17 @@ void WebAppIntegrationTestDriver::ApplyRunOnOsLoginPolicy(Site site,
                                                           const char* policy) {
   GURL url = GetAppStartURL(site);
   {
-    ListPrefUpdate updateList(profile()->GetPrefs(), prefs::kWebAppSettings);
-    updateList->EraseListValueIf([&](const base::Value& item) {
-      return item.FindKey(kManifestId)->GetString() == url.spec();
+    ListPrefUpdate update(profile()->GetPrefs(), prefs::kWebAppSettings);
+    base::Value::List& update_list = update->GetList();
+    update_list.EraseIf([&](const base::Value& item) {
+      return *item.GetDict().FindString(kManifestId) == url.spec();
     });
 
-    base::Value dictItem(base::Value::Type::DICTIONARY);
-    dictItem.SetKey(kManifestId, base::Value(url.spec()));
-    dictItem.SetKey(kRunOnOsLogin, base::Value(policy));
+    base::Value::Dict dict_item;
+    dict_item.Set(kManifestId, url.spec());
+    dict_item.Set(kRunOnOsLogin, policy);
 
-    updateList.Get()->Append(std::move(dictItem));
+    update_list.Append(std::move(dict_item));
   }
 }
 
@@ -2408,8 +2405,8 @@ void WebAppIntegrationTestDriver::UninstallPolicyAppById(const AppId& id) {
     ListPrefUpdate update(profile()->GetPrefs(),
                           prefs::kWebAppInstallForceList);
     size_t removed_count =
-        update->EraseListValueIf([&](const base::Value& item) {
-          const base::Value* url_value = item.FindKey(kUrlKey);
+        update->GetList().EraseIf([&](const base::Value& item) {
+          const base::Value* url_value = item.GetDict().Find(kUrlKey);
           return url_value && url_value->GetString() == url_spec;
         });
     ASSERT_GT(removed_count, 0U);
