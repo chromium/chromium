@@ -1,0 +1,151 @@
+<head>
+  <title>
+    Color Contrast Companion
+  </title>
+  <style>
+    .logo {
+      float: left;
+    }
+    h1 {
+      padding-top: 24px;
+    }
+    body, div, p {
+      font-family: system-ui, sans-serif;
+      font-size: 14pt;
+      line-height: 1.5;
+    }
+    p {
+      margin: 24px 0;
+    }
+    body {
+      background-color: #eee;
+      padding: 0;
+      margin: 0;
+    }
+    #main {
+      background-color: #fff;
+      width: 780px;
+      margin: 0 auto;
+      border-left: 1px solid #444;
+      border-right: 1px solid #444;
+      padding: 24px;
+      min-height: 500px;
+    }
+    .top {
+      width: 100%;
+      float: left;
+    }
+    .note {
+      padding: 0 16px;
+      border: 1px solid #88e;
+    }
+  </style>
+</head>
+<body>
+  <div id="main">
+    <div class="top">
+      <div class="logo">
+        <img src="contrast-128.png" alt="Color Contrast Companion logo">
+      </div>
+      <h1>Color Contrast Companion</h2>
+      <p>
+        <i>Quickly compute the color contrast of pixels anywhere on your screen.</i>
+      </p>
+    </div>
+
+    <p>
+      This is a tool to compute the contrast between a foreground and
+      background color, to help test whether an application is
+      providing enough contrast so that text can be read by people
+      with moderately low vision.
+    </p>
+
+    <p>
+      <a href="https://www.w3.org/TR/WCAG21/#contrast-minimum">WCAG</a>
+      recommends these contrast ratios:
+      <ul>
+        <li> AA: 4.5:1 for all text, 3:1 for 18 pts and larger.
+        <li> AAA: 7:1 for all text, 4.5:1 for 18 pts and larger.
+        <li> Focus indicators: 3:1 if 3px thick, 4.5:1 if less.
+          <a href="https://www.w3.org/WAI/GL/low-vision-a11y-tf/wiki/Contrast_(Minimum)#Focus_Indicators">(Source)</a>
+      </ul>
+    </p>
+    <p>
+      For more information, see the links at the bottom of this page.
+    </p>
+
+    <h2>How to use Color Contrast Companion</h2>
+
+    <div class="note">
+      <p>
+        <b>Note</b>:
+        If you're a web developer or if you're testing a web app, you already
+        have great color contrast tools built directly into Chrome's
+        Developer Tools! For more information, see
+        <a href="https://developers.google.com/web/updates/2018/01/devtools#contrast">
+          Contrast ratio in the Color Picker</a>.
+      </p>
+      <p>
+        However, there are cases where you might want to check the contrast of
+        something on your screen that you can't inspect in Chrome's Developer Tools -
+        such as Chrome's UI, text inside an image, or another app outside of Chrome.
+        For those cases, this extension can help!
+      </p>
+    </div>
+
+    <p>
+      <b>Step 1</b>:
+      Click on the Color Contrast Companion icon on the right side of the
+      Chrome toolbar. If you have a lot of extensions installed, the icon
+      might be inside the Chrome menu (the three dots).
+    </p>
+
+    <p>
+      <img src="browser_action.png" alt="Image of icon in Chrome toolbar">
+    </p>
+
+    <p>
+      <b>Step 2</b>:
+      A <b>Share Your Screen</b> dialog pops up asking for your permission to
+      share your entire screen with Color Contrast Companion.
+      This is necessary for Color Contrast Companion to take a screenshot of
+      your entire desktop. This image is never saved or sent to any server, it's
+      only used to let you pick colors. Click the Share button.
+    </p>
+
+    <p>
+      <b>Step 3</b>:
+      A window opens up showing a screenshot of your computer screen, magnified.
+      Scroll to the portion of the screen containing the pixels you're interested
+      in. Click once to pick the foreground color, click again to pick the
+      background color. Keep clicking as many times as necessary if you're not
+      happy with the colors you picked the first time.
+    </p>
+
+    <p>
+      <b>Step 4</b>:
+      The contrast ratio is shown at the top of the page. Copy the text from the
+      text box and paste it directly into a bug report if necessary, then click
+      the Close button.
+    </p>
+
+    <h2>Further reading</h2>
+
+    <p>
+      <ul>
+        <li>
+          <a href="https://www.w3.org/TR/WCAG21/#contrast-minimum">
+            Web Contents Accessibility Guidelines (WCAG) 2.1 spec
+          </a>
+        <li>
+
+          <a href="https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum.html">
+            Understanding Success Criterion 1.4.3: Contrast (Minimum)
+          </a>
+        </li>
+      </ul>
+    </p>
+
+  </div>
+
+</body>

@@ -1,0 +1,130 @@
+<head>
+  <style>
+    #top_panel {
+        position: fixed;
+        top: 0px;
+        left: 0px;
+        right: 0px;
+        height: 96px;
+        display: flex;
+    }
+    #img_panel {
+        cursor: crosshair;
+        position: fixed;
+        bottom: 0px;
+        left: 0px;
+        right: 0px;
+        top: 96px;
+        overflow: scroll;
+        padding: 4px;
+        border: 4px solid #ff9900;
+    }
+    .color {
+        margin: 8px;
+        width: 128px;
+        height: 48px;
+        border: 1px solid #000;
+    }
+    .rgb {
+    }
+    .ratio {
+        width: 88px;
+        height: 48px;
+        border: 1px solid #000;
+        text-align: center;
+        line-height: 48px;
+        font-size: 18px;
+        margin: 8px;
+    }
+    #details {
+        width: 148px;
+        height: 72px;
+        margin: 8px;
+    }
+    .current {
+        outline: 3px solid #f00;
+    }
+    .group {
+    }
+    .gtop {
+    }
+    .caption {
+        margin-left: 8px;
+    }
+    button {
+        width: 90px;
+        height: 32px;
+        margin: 8px 8px 0 8px;
+        color: #000;
+        font-weight: bold;
+        background-color: #fc9;
+    }
+    button:disabled {
+        color: #999;
+    }
+    canvas {
+      image-rendering: pixelated;
+      transform-origin: top left;
+    }
+    #highlight_container {
+      position: relative;
+      width: 0;
+      height: 0;
+      overflow: visible;
+    }
+    #highlight {
+      position: absolute;
+      outline: 2px solid #ff9900;
+      outline-offset: 2px;
+      z-index: 2;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="top_panel">
+    <div style="width:96px">
+      <img src="contrast-128.png" width=96 height=96 >
+    </div>
+    <div class="group">
+      <div class="gtop">
+        <div class="color" id="hover"></div>
+      </div>
+      <div class="caption">Hover: <span class="rgb" id="hoverrgb"></span></div>
+    </div>
+    <div class="group">
+      <div class="gtop">
+        <div class="color" id="fg"></div>
+      </div>
+      <div class="caption">Foreground: <span class="rgb" id="fgrgb"><span></div>
+    </div>
+    <div class="group">
+      <div class="gtop">
+        <div class="color" id="bg"></div>
+      </div>
+      <div class="caption">Background: <span class="rgb" id="bgrgb"></span></div>
+    </div>
+    <div>
+      <div class="ratio" id="ratio"></div>
+      <div class="caption">Contrast Ratio</div>
+    </div>
+    <div>
+      <textarea id="details"></textarea>
+    </div>
+    <div style="width: 104px">
+      <button id="zoomin">Zoom In (+)</button>
+      <button id="zoomout">Zoom Out (-)</button>
+    </div>
+    <div style="width: 104px">
+      <button id="close">Close</button>
+      <button id="help">Help</button>
+    </div>
+  </div>
+  <div id="img_panel">
+    <div id="highlight_container">
+      <div id="highlight"></div>
+    </div>
+    <canvas></canvas>
+  </div>
+  <script src="ui.js"></script>
+</body>
