@@ -5193,6 +5193,82 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="ChromeOS.WebsiteUsageTime">
+  <owner>nancylingwang@chromium.org</owner>
+  <owner>dominickn@chromium.org</owner>
+  <summary>
+    Records the amount of time that the focused and activated website was
+    accessed in last two hours on Chrome OS. This is logged each two hours, and
+    only when the website is not installed as a PWA or Chrome app.
+  </summary>
+  <metric name="Duration">
+    <summary>
+      The milliseconds that the website was accessed in the focused tab and the
+      activated browser window. The accessing time is calculated each five
+      minutes, then the noise is applied, and sum the running time for five
+      minutes with noise to calculate the two hours accessing time. For example
+      the running time in the past 2 hours = time1 * noise1 + time2 * noise2 +
+      time3 * noise3....
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="IsFromLastLogin" enum="Boolean">
+    <summary>
+      Whether the metrics is read from the user pref on disk, recorded for the
+      last login.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Promotable" enum="Boolean">
+    <summary>
+      Whether the website can be an installable web app.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="UrlContent" enum="URLContent">
+    <summary>
+      The url content, e.g. full url, scope.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="UserDeviceMatrix" enum="UserDeviceMatrix">
+    <summary>
+      An enum that records the user type and the device type.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="ChromeOSApp.InputEvent">
   <owner>nancylingwang@chromium.org</owner>
   <owner>dominickn@chromium.org</owner>

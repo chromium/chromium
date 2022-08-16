@@ -4,8 +4,12 @@
 
 #include "chrome/browser/apps/app_service/metrics/website_metrics.h"
 
+#include <random>
+
 #include "base/containers/contains.h"
 #include "base/json/values_util.h"
+#include "base/rand_util.h"
+#include "chrome/browser/apps/app_service/metrics/app_platform_metrics_utils.h"
 #include "chrome/browser/apps/app_service/web_contents_app_id_utils.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -13,6 +17,9 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "components/history/core/browser/history_types.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/mojom/installation/installation.mojom.h"
@@ -21,6 +28,17 @@
 #include "ui/wm/core/window_util.h"
 
 namespace {
+
+const double mean = 1.0;
+const double stddev = 0.025;
+
+std::default_random_engine random_generator(base::RandDouble());
+std::normal_distribution<double> distribution(mean, stddev);
+
+// Generate random noise following normal_distribution.
+double GetRandomNoise() {
+  return distribution(random_generator);
+}
 
 // Checks if a given browser is running a windowed app. It will return true for
 // web apps, hosted apps, and packaged V1 apps.
@@ -141,6 +159,7 @@ WebsiteMetrics::WebsiteMetrics(Profile* profile)
     : profile_(profile), browser_tab_strip_tracker_(this, nullptr) {
   BrowserList::GetInstance()->AddObserver(this);
   browser_tab_strip_tracker_.Init();
+  user_type_by_device_type_ = GetUserTypeByDeviceTypeMetrics();
   history::HistoryService* history_service =
       HistoryServiceFactory::GetForProfileWithoutCreating(profile);
   if (history_service) {
@@ -480,8 +499,10 @@ void WebsiteMetrics::SaveUsageTime() {
       it.second.start_time = current_time;
     }
     if (!it.second.running_time_in_five_minutes.is_zero()) {
+      // Based on the privacy review result, randomly multiply a noise factor to
+      // the raw data collected in a 5 minutes slot.
       it.second.running_time_in_two_hours +=
-          it.second.running_time_in_five_minutes;
+          GetRandomNoise() * it.second.running_time_in_five_minutes;
       dict.Set(it.first.spec(), it.second.ConvertToValue());
       it.second.running_time_in_five_minutes = base::TimeDelta();
     }
@@ -491,7 +512,9 @@ void WebsiteMetrics::SaveUsageTime() {
 void WebsiteMetrics::RecordUsageTime() {
   for (auto& it : url_infos_) {
     if (!it.second.running_time_in_two_hours.is_zero()) {
-      // TODO(crbug.com/1334173): Records the usage time UKM.
+      EmitUkm(it.first, it.second.running_time_in_two_hours.InMilliseconds(),
+              it.second.url_content, it.second.promotable,
+              /*is_from_last_login=*/false);
       it.second.running_time_in_two_hours = base::TimeDelta();
     }
   }
@@ -513,8 +536,27 @@ void WebsiteMetrics::RecordUsageTimeFromPref() {
   for (const auto [url, url_info_value] : usage_time_update->GetDict()) {
     auto url_info = std::make_unique<UrlInfo>(url_info_value);
     if (!url_info->running_time_in_two_hours.is_zero()) {
-      // TODO(crbug.com/1334173): Records the usage time UKM.
+      EmitUkm(GURL(url), url_info->running_time_in_two_hours.InMilliseconds(),
+              url_info->url_content, url_info->promotable,
+              /*is_from_last_login=*/true);
     }
+  }
+}
+
+void WebsiteMetrics::EmitUkm(const GURL& url,
+                             int64_t usage_time,
+                             UrlContent url_content,
+                             bool promotable,
+                             bool is_from_last_login) {
+  auto source_id = ukm::UkmRecorder::GetSourceIdForWebsiteUrl(url);
+  if (source_id != ukm::kInvalidSourceId) {
+    ukm::builders::ChromeOS_WebsiteUsageTime builder(source_id);
+    builder.SetDuration(usage_time)
+        .SetUrlContent(static_cast<int>(url_content))
+        .SetIsFromLastLogin(is_from_last_login)
+        .SetPromotable(promotable)
+        .SetUserDeviceMatrix(user_type_by_device_type_)
+        .Record(ukm::UkmRecorder::Get());
   }
 }
 

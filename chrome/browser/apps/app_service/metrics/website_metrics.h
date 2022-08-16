@@ -199,6 +199,12 @@ class WebsiteMetrics : public BrowserListObserver,
   // after the user logs in.
   void RecordUsageTimeFromPref();
 
+  void EmitUkm(const GURL& url,
+               int64_t usage_time,
+               UrlContent url_content,
+               bool promotable,
+               bool is_from_last_login);
+
   const raw_ptr<Profile> profile_;
 
   BrowserTabStripTracker browser_tab_strip_tracker_;
@@ -223,6 +229,8 @@ class WebsiteMetrics : public BrowserListObserver,
   // Saves the usage info for the activated urls in activated windows for the
   // UKM records. `url_infos_` is cleared after recording the UKM each 2 hours.
   std::map<GURL, UrlInfo> url_infos_;
+
+  int user_type_by_device_type_ = 0;
 
   bool should_record_ukm_from_pref_ = true;
 

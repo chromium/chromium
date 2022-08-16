@@ -19,6 +19,10 @@ class DIPSBounceDetector;
 class PermissionUmaUtil;
 class WebApkUkmRecorder;
 
+namespace apps {
+class WebsiteMetrics;
+}  // namespace apps
+
 namespace metrics {
 class UkmRecorderInterface;
 }  // namespace metrics
@@ -85,12 +89,6 @@ class METRICS_EXPORT UkmRecorder {
       base::PassKey<WebApkUkmRecorder>,
       const GURL& manifest_url);
 
-  // Gets new source ID for a desktop web app, using the start_url from the web
-  // app manifest. This method should only be called by DailyMetricsHelper.
-  static SourceId GetSourceIdForDesktopWebAppStartUrl(
-      base::PassKey<web_app::DesktopWebAppUkmRecorder>,
-      const GURL& start_url);
-
   // Gets new source Id for PAYMENT_APP_ID type and updates the source url to
   // the scope of the app. This method should only be called by
   // PaymentAppProviderUtil class when the payment app window is opened.
@@ -137,6 +135,17 @@ class METRICS_EXPORT UkmRecorder {
   friend PermissionUmaUtil;
   friend content::RenderFrameHostImpl;
 
+  // WebsiteMetrics and DesktopWebAppUkmRecorder record metrics about
+  // websites and installed web apps. Instead of using
+  // the current main frame URL, we want to record the URL which identifies the
+  // current app: the web app manifest url or start url, respectively.
+  // Therefore, they need to be friends so that they can access the private
+  // GetSourceIdForWebsiteUrl() method.
+  // TODO(crbug.com/1340241): Use PassKeys in UkmRecorder, and remove these
+  // friend classes.
+  friend apps::WebsiteMetrics;
+  friend web_app::DesktopWebAppUkmRecorder;
+
   // Associates the SourceId with a URL. Most UKM recording code should prefer
   // to use a shared SourceId that is already associated with a URL, rather
   // than using this API directly. New uses of this API must be audited to
@@ -148,6 +157,9 @@ class METRICS_EXPORT UkmRecorder {
   virtual void UpdateAppURL(SourceId source_id,
                             const GURL& url,
                             const AppType app_type) = 0;
+
+  // Gets new SourceId for a website Url.
+  static SourceId GetSourceIdForWebsiteUrl(const GURL& start_url);
 
   // Associates navigation data with the UkmSource keyed by |source_id|. This
   // should only be called by SourceUrlRecorderWebContentsObserver, for

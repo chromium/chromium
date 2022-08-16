@@ -97435,6 +97435,12 @@ Full version information for the fingerprint enum values:
   <int value="1" label="Upload was offered for newly-seen card"/>
 </enum>
 
+<enum name="URLContent">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="FullUrl"/>
+  <int value="2" label="Scope"/>
+</enum>
+
 <enum name="URLHostEscapedChar">
   <obsolete>
     Removed in M100.
