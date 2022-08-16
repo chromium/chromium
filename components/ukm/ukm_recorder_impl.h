@@ -33,6 +33,7 @@ class UkmBrowserTestBase;
 }
 
 namespace ukm {
+class Aggregate;
 class Report;
 class UkmRecorderImplTest;
 class UkmRecorderObserver;
@@ -135,6 +136,12 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
   // Writes recordings into a report proto, and clears recordings.
   void StoreRecordingsInReport(Report* report);
 
+  // Prunes data after storing records in the report. Returns the time elapsed
+  // in seconds from the moment the newest truncated source was created to the
+  // moment it was discarded from memory, if pruning happened  due to number
+  // of sources exceeding the max threshold.
+  int PruneData(std::set<SourceId>& source_ids_seen);
+
   // Deletes Sources and Events with these source_ids.
   void PurgeSourcesAndEventsBySourceIds(
       const std::unordered_set<SourceId>& source_ids);
@@ -194,6 +201,9 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
   struct EventAggregate {
     EventAggregate();
     ~EventAggregate();
+
+    // Fills the proto message from the struct.
+    void FillProto(Aggregate* proto_aggregate) const;
 
     base::flat_map<uint64_t, MetricAggregate> metrics;
     uint64_t total_count = 0;
