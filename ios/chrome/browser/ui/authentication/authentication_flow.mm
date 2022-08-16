@@ -98,12 +98,10 @@ enum AuthenticationState {
   AuthenticationState _state;
   BOOL _didSignIn;
   BOOL _failedOrCancelled;
-  BOOL _shouldSignIn;
   BOOL _shouldSignOut;
   // YES if the signed in account is a managed account and the sign-in flow
   // includes sync.
   BOOL _shouldShowManagedConfirmation;
-  BOOL _shouldCommitSync;
   // YES if user policies have to be fetched.
   BOOL _shouldFetchUserPolicy;
 
@@ -214,10 +212,7 @@ enum AuthenticationState {
     case BEGIN:
       return CHECK_SIGNIN_STEPS;
     case CHECK_SIGNIN_STEPS:
-      if (_shouldSignIn)
-        return FETCH_MANAGED_STATUS;
-      else
-        return CHECK_MERGE_CASE;
+      return FETCH_MANAGED_STATUS;
     case FETCH_MANAGED_STATUS:
       return CHECK_MERGE_CASE;
     case CHECK_MERGE_CASE:
@@ -231,19 +226,15 @@ enum AuthenticationState {
         return SIGN_OUT_IF_NEEDED;
       else if (self.localDataClearingStrategy == SHOULD_CLEAR_DATA_CLEAR_DATA)
         return CLEAR_DATA;
-      else if (_shouldSignIn)
-        return SIGN_IN;
       else
-        return COMPLETE_WITH_SUCCESS;
+        return SIGN_IN;
     case SHOW_MANAGED_CONFIRMATION:
       if (_shouldSignOut)
         return SIGN_OUT_IF_NEEDED;
       else if (self.localDataClearingStrategy == SHOULD_CLEAR_DATA_CLEAR_DATA)
         return CLEAR_DATA;
-      else if (_shouldSignIn)
-        return SIGN_IN;
       else
-        return COMPLETE_WITH_SUCCESS;
+        return SIGN_IN;
     case SIGN_OUT_IF_NEEDED:
       return self.localDataClearingStrategy == SHOULD_CLEAR_DATA_CLEAR_DATA
                  ? CLEAR_DATA
@@ -251,10 +242,12 @@ enum AuthenticationState {
     case CLEAR_DATA:
       return SIGN_IN;
     case SIGN_IN:
-      if (_shouldCommitSync)
-        return COMMIT_SYNC;
-      else
-        return COMPLETE_WITH_SUCCESS;
+      switch (_postSignInAction) {
+        case POST_SIGNIN_ACTION_COMMIT_SYNC:
+          return COMMIT_SYNC;
+        case POST_SIGNIN_ACTION_NONE:
+          return COMPLETE_WITH_SUCCESS;
+      }
     case COMMIT_SYNC:
       if (policy::IsUserPolicyEnabled() && _shouldFetchUserPolicy)
         return REGISTER_FOR_USER_POLICY;
@@ -416,8 +409,6 @@ enum AuthenticationState {
     // sign-out is required.
     _shouldSignOut = YES;
   }
-  _shouldSignIn = YES;
-  _shouldCommitSync = _postSignInAction == POST_SIGNIN_ACTION_COMMIT_SYNC;
 }
 
 - (void)signInIdentity:(ChromeIdentity*)identity {
@@ -456,7 +447,7 @@ enum AuthenticationState {
     bool isManagedAccount = _identityToSignInHostedDomain.length > 0;
     signin_metrics::RecordSigninAccountType(signin::ConsentLevel::kSignin,
                                             isManagedAccount);
-    if (_shouldCommitSync)
+    if (_postSignInAction == POST_SIGNIN_ACTION_COMMIT_SYNC)
       signin_metrics::RecordSigninAccountType(signin::ConsentLevel::kSync,
                                               isManagedAccount);
   }
