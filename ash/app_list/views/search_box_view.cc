@@ -109,13 +109,6 @@ bool IsTrimmedQueryEmpty(const std::u16string& query) {
   return trimmed_query.empty();
 }
 
-SearchBoxView::PlaceholderTextType SelectPlaceholderText() {
-  if (chromeos::features::IsCloudGamingDeviceEnabled()) {
-    return kGamingPlaceholders[rand() % std::size(kGamingPlaceholders)];
-  }
-  return kDefaultPlaceholders[rand() % std::size(kDefaultPlaceholders)];
-}
-
 std::u16string GetCategoryName(SearchResult* search_result) {
   switch (search_result->category()) {
     case ash::AppListSearchResultCategory::kApps:
@@ -1023,6 +1016,17 @@ void SearchBoxView::SetAutocompleteText(
     MaybeSetAutocompleteGhostText(std::u16string(), std::u16string());
 }
 
+SearchBoxView::PlaceholderTextType SearchBoxView::SelectPlaceholderText()
+    const {
+  if (use_fixed_placeholder_text_for_test_)
+    return kDefaultPlaceholders[0];
+
+  if (chromeos::features::IsCloudGamingDeviceEnabled())
+    return kGamingPlaceholders[rand() % std::size(kGamingPlaceholders)];
+
+  return kDefaultPlaceholders[rand() % std::size(kDefaultPlaceholders)];
+}
+
 void SearchBoxView::UpdateQuery(const std::u16string& new_query) {
   search_box()->SetText(new_query);
   ContentsChanged(search_box(), new_query);
@@ -1044,6 +1048,14 @@ void SearchBoxView::SetA11yActiveDescendant(
   a11y_active_descendant_ = active_descendant;
   search_box()->NotifyAccessibilityEvent(
       ax::mojom::Event::kActiveDescendantChanged, true);
+}
+
+void SearchBoxView::UseFixedPlaceholderTextForTest() {
+  if (use_fixed_placeholder_text_for_test_)
+    return;
+
+  use_fixed_placeholder_text_for_test_ = true;
+  UpdatePlaceholderTextAndAccessibleName();
 }
 
 bool SearchBoxView::HandleKeyEvent(views::Textfield* sender,

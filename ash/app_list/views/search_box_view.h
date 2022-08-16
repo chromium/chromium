@@ -153,6 +153,10 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   void SetA11yActiveDescendant(
       const absl::optional<int32_t>& active_descendant);
 
+  // Refreshes the placeholder text with a fixed one rather than the one picked
+  // up randomly
+  void UseFixedPlaceholderTextForTest();
+
   void set_contents_view(ContentsView* contents_view) {
     contents_view_ = contents_view;
   }
@@ -209,6 +213,9 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // After verifying autocomplete text is valid, sets the current searchbox
   // text to the autocomplete text and sets the text highlight.
   void SetAutocompleteText(const std::u16string& autocomplete_text);
+
+  // Returns the text shown in the text field when there is no text inputs.
+  SearchBoxView::PlaceholderTextType SelectPlaceholderText() const;
 
   // Overridden from views::TextfieldController:
   void OnBeforeUserAction(views::Textfield* sender) override;
@@ -285,6 +292,10 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // user. Used in metrics. Metrics are only recorded for search model updates
   // that occur after a search has been initiated.
   base::TimeTicks user_initiated_model_update_time_;
+
+  // If true, `SelectPlaceholderText()` always returns a fixed placeholder text
+  // instead of the one picked randomly.
+  bool use_fixed_placeholder_text_for_test_ = false;
 
   base::ScopedObservation<SearchBoxModel, SearchBoxModelObserver>
       search_box_model_observer_{this};

@@ -29,11 +29,16 @@ class AppListViewPixelRTLTest
   ~AppListViewPixelRTLTest() override = default;
 
   void ShowAppListAndHideCursor() {
-    GetAppListTestHelper()->ShowAppList();
+    AppListTestHelper* test_helper = GetAppListTestHelper();
+    test_helper->ShowAppList();
 
-    // Hide the search box cursor to avoid the flakiness due to the blinking.
-    views::TextfieldTestApi(
-        GetAppListTestHelper()->GetBubbleSearchBoxView()->search_box())
+    // Use a fixed placeholder text instead of the one picked randomly to
+    // avoid the test flakiness.
+    test_helper->GetSearchBoxView()->UseFixedPlaceholderTextForTest();
+
+    // Hide the search box cursor to avoid the flakiness due to the
+    // blinking.
+    views::TextfieldTestApi(test_helper->GetBubbleSearchBoxView()->search_box())
         .SetCursorLayerOpacity(0.f);
   }
 
