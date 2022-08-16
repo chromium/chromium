@@ -863,6 +863,7 @@ blink_core_tests_layout = [
   "layout_object_factory_test.cc",
   "layout_object_test.cc",
   "layout_progress_test.cc",
+  "layout_quote_test.cc",
   "layout_replaced_test.cc",
   "layout_shift_region_test.cc",
   "layout_shift_tracker_test.cc",

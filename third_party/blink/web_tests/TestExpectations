@@ -1792,7 +1792,7 @@ crbug.com/753671 [ Mac11 ] external/wpt/css/css-content/quotes-020.html [ Failur
 crbug.com/753671 [ Mac11-arm64 ] external/wpt/css/css-content/quotes-020.html [ Failure ]
 crbug.com/753671 [ Mac12 ] external/wpt/css/css-content/quotes-020.html [ Failure ]
 crbug.com/753671 [ Mac12-arm64 ] external/wpt/css/css-content/quotes-020.html [ Failure ]
-crbug.com/753671 external/wpt/css/css-content/quotes-030.html [ Failure ]
+crbug.com/753671 [ Win ] external/wpt/css/css-content/quotes-030.html [ Failure ]
 crbug.com/1067277 external/wpt/css/css-content/element-replacement-on-replaced-element.tentative.html [ Failure ]
 
 crbug.com/1335893 external/wpt/css/css-content/content-none-root-columns.html [ Failure ]

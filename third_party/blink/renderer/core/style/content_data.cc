@@ -114,11 +114,26 @@ LayoutObject* QuoteContentData::CreateLayoutObject(
     PseudoElement& pseudo,
     const ComputedStyle& pseudo_style,
     LegacyLayout legacy) const {
+  // For quote, pseudo_style should use parent's locale
+  // https://github.com/w3c/csswg-drafts/issues/5478
+  Element* quote = pseudo.ParentOrShadowHostElement();
+  Element* parent = quote->ParentOrShadowHostElement();
+  scoped_refptr<ComputedStyle> pseudo_style_copy =
+      ComputedStyle::Clone(pseudo_style);
+  FontDescription font_description = pseudo_style_copy->GetFontDescription();
+  if (parent) {
+    font_description.SetLocale(
+        LayoutLocale::Get(parent->ComputeInheritedLanguage()));
+  } else {
+    font_description.SetLocale(&LayoutLocale::GetDefault());
+  }
+  pseudo_style_copy->SetFontDescription(font_description);
+
   LayoutObject* layout_object =
       MakeGarbageCollected<LayoutQuote>(pseudo, quote_);
   if (legacy == LegacyLayout::kForce)
     layout_object->SetForceLegacyLayout();
-  layout_object->SetPseudoElementStyle(&pseudo_style);
+  layout_object->SetPseudoElementStyle(pseudo_style_copy);
   return layout_object;
 }
 
