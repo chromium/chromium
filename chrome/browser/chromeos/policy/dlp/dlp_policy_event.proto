@@ -37,6 +37,7 @@ message DlpPolicyEvent {
     SCREENCAST = 3;
     PRINTING = 4;
     EPRIVACY = 5;
+    FILES = 6;
   }
   // The mode of the applied restriction.
   enum Mode {

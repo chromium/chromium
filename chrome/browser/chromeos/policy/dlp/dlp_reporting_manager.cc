@@ -62,6 +62,7 @@ DlpPolicyEvent_Restriction DlpRulesManagerRestriction2DlpEventRestriction(
     case DlpRulesManager::Restriction::kClipboard:
       return DlpPolicyEvent_Restriction_CLIPBOARD;
     case DlpRulesManager::Restriction::kFiles:
+      return DlpPolicyEvent_Restriction_FILES;
     case DlpRulesManager::Restriction::kUnknownRestriction:
       return DlpPolicyEvent_Restriction_UNDEFINED_RESTRICTION;
   }
@@ -81,6 +82,8 @@ DlpRulesManager::Restriction DlpEventRestriction2DlpRulesManagerRestriction(
       return DlpRulesManager::Restriction::kPrivacyScreen;
     case DlpPolicyEvent_Restriction_CLIPBOARD:
       return DlpRulesManager::Restriction::kClipboard;
+    case DlpPolicyEvent_Restriction_FILES:
+      return DlpRulesManager::Restriction::kFiles;
     case DlpPolicyEvent_Restriction_UNDEFINED_RESTRICTION:
       return DlpRulesManager::Restriction::kUnknownRestriction;
   }

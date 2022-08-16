@@ -278,8 +278,7 @@ TEST_F(DlpReportingManagerTest, CreateEventForFilesRestriction) {
       DlpRulesManager::Level::kAllow);
   EXPECT_EQ(event.source().url(), kCompanyPattern);
   EXPECT_FALSE(event.has_destination());
-  EXPECT_EQ(event.restriction(),
-            DlpPolicyEvent_Restriction_UNDEFINED_RESTRICTION);
+  EXPECT_EQ(event.restriction(), DlpPolicyEvent_Restriction_FILES);
   EXPECT_EQ(event.mode(), DlpPolicyEvent_Mode_UNDEFINED_MODE);
 }
 
