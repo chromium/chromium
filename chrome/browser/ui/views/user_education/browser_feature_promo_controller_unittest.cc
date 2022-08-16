@@ -67,6 +67,8 @@ base::Feature kTutorialIPHFeature{"TutorialTestIPHFeature",
                                   base::FEATURE_ENABLED_BY_DEFAULT};
 base::Feature kCustomActionIPHFeature{"CustomActionTestIPHFeature",
                                       base::FEATURE_ENABLED_BY_DEFAULT};
+base::Feature kDefaultCustomActionIPHFeature{
+    "DefaultCustomActionTestIPHFeature", base::FEATURE_ENABLED_BY_DEFAULT};
 constexpr char kTestTutorialIdentifier[] = "Test Tutorial";
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOneOffIPHElementId);
 }  // namespace
@@ -136,7 +138,18 @@ class BrowserFeaturePromoControllerTest : public TestWithBrowserView {
             IDS_REOPEN_TAB_PROMO, IDS_REOPEN_TAB_PROMO,
             base::BindRepeating(
                 &BrowserFeaturePromoControllerTest::OnCustomPromoAction,
-                base::Unretained(this))));
+                base::Unretained(this),
+                base::Unretained(&kCustomActionIPHFeature))));
+
+    auto default_custom = FeaturePromoSpecification::CreateForCustomAction(
+        kDefaultCustomActionIPHFeature, kAppMenuButtonElementId,
+        IDS_REOPEN_TAB_PROMO, IDS_REOPEN_TAB_PROMO,
+        base::BindRepeating(
+            &BrowserFeaturePromoControllerTest::OnCustomPromoAction,
+            base::Unretained(this),
+            base::Unretained(&kDefaultCustomActionIPHFeature)));
+    default_custom.SetCustomActionIsDefault(true);
+    registry()->RegisterFeature(std::move(default_custom));
 
     // Make sure the browser view is visible for the tests.
     browser_view()->GetWidget()->Show();
@@ -197,14 +210,15 @@ class BrowserFeaturePromoControllerTest : public TestWithBrowserView {
         &kTestIPHFeature, kAppMenuButtonElementId, IDS_REOPEN_TAB_PROMO);
   }
 
-  void OnCustomPromoAction(ui::ElementContext context,
+  void OnCustomPromoAction(const base::Feature* feature,
+                           ui::ElementContext context,
                            FeaturePromoHandle promo_handle) {
     ++custom_callback_count_;
     EXPECT_TRUE(promo_handle.is_valid());
-    EXPECT_TRUE(controller_->IsPromoActive(kCustomActionIPHFeature, true));
+    EXPECT_TRUE(controller_->IsPromoActive(*feature, true));
     EXPECT_EQ(browser()->window()->GetElementContext(), context);
     promo_handle.Release();
-    EXPECT_FALSE(controller_->IsPromoActive(kCustomActionIPHFeature, true));
+    EXPECT_FALSE(controller_->IsPromoActive(*feature, true));
   }
 
   raw_ptr<BrowserFeaturePromoController> controller_;
@@ -852,6 +866,26 @@ TEST_F(BrowserFeaturePromoControllerTest, PerformsCustomAction) {
   EXPECT_EQ(1, custom_callback_count_);
 }
 
+// Test that a feature promo can perform a custom action that is the default.
+TEST_F(BrowserFeaturePromoControllerTest, PerformsCustomActionAsDefault) {
+  // Launch a feature promo that has a tutorial.
+  EXPECT_CALL(*mock_tracker_,
+              ShouldTriggerHelpUI(Ref(kDefaultCustomActionIPHFeature)))
+      .Times(1)
+      .WillOnce(Return(true));
+  ASSERT_TRUE(controller_->MaybeShowPromo(kDefaultCustomActionIPHFeature));
+
+  // Simulate clicking the "Show Tutorial" button.
+  auto* const bubble = GetPromoBubble();
+  ASSERT_TRUE(bubble);
+  views::test::WidgetDestroyedWaiter waiter(bubble->GetWidget());
+  views::test::InteractionTestUtilSimulatorViews::PressButton(
+      bubble->GetDefaultButtonForTesting());
+  waiter.Wait();
+
+  EXPECT_EQ(1, custom_callback_count_);
+}
+
 // Test that a feature promo does not perform a custom action when the default
 // "Got it" button is clicked.
 TEST_F(BrowserFeaturePromoControllerTest, DoesNotPerformCustomAction) {
@@ -867,6 +901,27 @@ TEST_F(BrowserFeaturePromoControllerTest, DoesNotPerformCustomAction) {
   views::test::WidgetDestroyedWaiter waiter(bubble->GetWidget());
   views::test::InteractionTestUtilSimulatorViews::PressButton(
       bubble->GetDefaultButtonForTesting());
+  waiter.Wait();
+
+  EXPECT_EQ(0, custom_callback_count_);
+}
+
+// Test that a feature promo does not perform a custom action when a non-default
+// "Got it" button is clicked.
+TEST_F(BrowserFeaturePromoControllerTest, DoesNotPerformDefaultCustomAction) {
+  // Launch a feature promo that has a tutorial.
+  EXPECT_CALL(*mock_tracker_,
+              ShouldTriggerHelpUI(Ref(kDefaultCustomActionIPHFeature)))
+      .Times(1)
+      .WillOnce(Return(true));
+  ASSERT_TRUE(controller_->MaybeShowPromo(kDefaultCustomActionIPHFeature));
+
+  // Simulate clicking the "Show Tutorial" button.
+  auto* const bubble = GetPromoBubble();
+  ASSERT_TRUE(bubble);
+  views::test::WidgetDestroyedWaiter waiter(bubble->GetWidget());
+  views::test::InteractionTestUtilSimulatorViews::PressButton(
+      bubble->GetNonDefaultButtonForTesting(0));
   waiter.Wait();
 
   EXPECT_EQ(0, custom_callback_count_);

@@ -70,7 +70,7 @@ class FeaturePromoSpecification {
     kSnooze,
     // A tutorial promo.
     kTutorial,
-    // A promo where the non-default button is replaced by a custom action.
+    // A promo where one button is replaced by a custom action.
     kCustomAction,
     // A simple promo that acts like a toast but without the required
     // accessibility data.
@@ -212,6 +212,13 @@ class FeaturePromoSpecification {
     return custom_action_caption_;
   }
 
+  // Sets whether the custom action button is the default button on the help
+  // bubble (default is false). It is an error to call this method for a promo
+  // not created with CreateForCustomAction().
+  FeaturePromoSpecification& SetCustomActionIsDefault(
+      bool custom_action_is_default);
+  bool custom_action_is_default() const { return custom_action_is_default_; }
+
   // Used to claim the callback when creating the bubble.
   CustomActionCallback custom_action_callback() const {
     return custom_action_callback_;
@@ -276,6 +283,9 @@ class FeaturePromoSpecification {
 
   // Custom action button action.
   CustomActionCallback custom_action_callback_;
+
+  // Whether the custom action is the default button.
+  bool custom_action_is_default_ = false;
 };
 
 }  // namespace user_education

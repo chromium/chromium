@@ -191,6 +191,13 @@ FeaturePromoSpecification& FeaturePromoSpecification::SetDemoPageInfo(
   return *this;
 }
 
+FeaturePromoSpecification& FeaturePromoSpecification::SetCustomActionIsDefault(
+    bool custom_action_is_default) {
+  DCHECK(!custom_action_callback_.is_null());
+  custom_action_is_default_ = custom_action_is_default;
+  return *this;
+}
+
 ui::TrackedElement* FeaturePromoSpecification::GetAnchorElement(
     ui::ElementContext context) const {
   auto* const element_tracker = ui::ElementTracker::GetElementTracker();
