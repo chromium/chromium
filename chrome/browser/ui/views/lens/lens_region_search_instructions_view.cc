@@ -36,8 +36,9 @@ LensRegionSearchInstructionsView::LensRegionSearchInstructionsView(
     views::View* anchor_view,
     base::OnceClosure close_callback,
     base::OnceClosure escape_callback)
-    : views::BubbleDialogDelegateView(anchor_view,
-                                      views::BubbleBorder::Arrow::TOP_CENTER) {
+    : views::BubbleDialogDelegateView(
+          anchor_view,
+          views::BubbleBorder::Arrow::BOTTOM_CENTER) {
   // The cancel close_callback is called when VKEY_ESCAPE is hit.
   SetCancelCallback(std::move(escape_callback));
 
@@ -100,9 +101,9 @@ void LensRegionSearchInstructionsView::Init() {
 
 gfx::Rect LensRegionSearchInstructionsView::GetBubbleBounds() {
   gfx::Rect bubble_rect = views::BubbleDialogDelegateView::GetBubbleBounds();
-  // Since we should be centered and positioned under the toolbar, adjust the
-  // bubble position to contain a top margin to the toolbar.
-  bubble_rect.set_y(bubble_rect.y() +
+  // Since we should be centered and positioned on top of the web view, adjust
+  // the bubble position to contain a top margin to the top container view.
+  bubble_rect.set_y(bubble_rect.y() + bubble_rect.height() +
                     ChromeLayoutProvider::Get()->GetDistanceMetric(
                         DISTANCE_RELATED_CONTROL_VERTICAL_SMALL));
   return bubble_rect;
