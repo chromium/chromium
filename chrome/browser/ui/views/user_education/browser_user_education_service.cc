@@ -303,8 +303,6 @@ void MaybeRegisterChromeTutorials(
         0, IDS_TUTORIAL_ADD_TAB_TO_GROUP_WITH_EXISTING_GROUP_IN_TAB_STRIP,
         ui::InteractionSequence::StepType::kShown, kTabStripRegionElementId,
         std::string(), HelpBubbleArrow::kNone);
-    without_group_description.steps.emplace_back(
-        create_tabgroup_with_existing_group_step);
     with_group_description.steps.emplace_back(
         create_tabgroup_with_existing_group_step);
 
