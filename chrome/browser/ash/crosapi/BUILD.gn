@@ -319,7 +319,6 @@ source_set("crosapi") {
     "//extensions/browser/api/networking_private",
     "//extensions/common",
     "//media/mojo/mojom/stable:stable_video_decoder",
-    "//printing",
     "//printing/backend",
     "//remoting/host/chromeos:remoting_service",
     "//services/device/wake_lock/power_save_blocker",
@@ -346,6 +345,7 @@ source_set("crosapi") {
   public_deps = [
     ":browser_util",
     "//media/gpu:buildflags",
+    "//printing",
   ]
 }
 
