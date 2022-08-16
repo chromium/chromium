@@ -80,13 +80,20 @@ class DeskModel {
   DeskModel& operator=(const DeskModel&) = delete;
   virtual ~DeskModel();
 
+  // Stores GetAllEntries result.
+  struct GetAllEntriesResult {
+    GetAllEntriesResult(GetAllEntriesStatus status,
+                        std::vector<const ash::DeskTemplate*> entries);
+    ~GetAllEntriesResult();
+
+    GetAllEntriesStatus status;
+    std::vector<const ash::DeskTemplate*> entries;
+  };
+
   // TODO(crbug.com/1320805): Once DeskSyncBridge is set to support saved desk,
   // add methods to support operations on both types of templates.
-  using GetAllEntriesCallback = base::OnceCallback<void(
-      GetAllEntriesStatus status,
-      const std::vector<const ash::DeskTemplate*>& entries)>;
-  // Returns a vector of entries in the model.
-  virtual void GetAllEntries(GetAllEntriesCallback callback) = 0;
+  // Returns all entries in the model.
+  virtual GetAllEntriesResult GetAllEntries() = 0;
 
   using GetEntryByUuidCallback =
       base::OnceCallback<void(GetEntryByUuidStatus status,

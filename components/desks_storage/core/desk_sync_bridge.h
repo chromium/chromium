@@ -64,7 +64,7 @@ class DeskSyncBridge : public syncer::ModelTypeSyncBridge, public DeskModel {
   std::string GetStorageKey(const syncer::EntityData& entity_data) override;
 
   // DeskModel overrides.
-  void GetAllEntries(GetAllEntriesCallback callback) override;
+  DeskModel::GetAllEntriesResult GetAllEntries() override;
   void GetEntryByUUID(const std::string& uuid,
                       GetEntryByUuidCallback callback) override;
   void AddOrUpdateEntry(std::unique_ptr<ash::DeskTemplate> new_entry,

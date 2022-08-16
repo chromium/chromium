@@ -1137,25 +1137,17 @@ TEST_F(DeskSyncBridgeTest, GetAllEntriesIncludesPolicyEntries) {
 
   EXPECT_EQ(4ul, bridge()->GetAllEntryUuids().size());
 
-  base::RunLoop loop;
-  bridge()->GetAllEntries(base::BindLambdaForTesting(
-      [&](DeskModel::GetAllEntriesStatus status,
-          const std::vector<const ash::DeskTemplate*>& entries) {
-        EXPECT_EQ(status, DeskModel::GetAllEntriesStatus::kOk);
-        EXPECT_EQ(entries.size(), 4ul);
+  auto result = bridge()->GetAllEntries();
+  EXPECT_EQ(result.status, DeskModel::GetAllEntriesStatus::kOk);
+  EXPECT_EQ(result.entries.size(), 4ul);
 
-        // Two of these templates should be from policy.
-        EXPECT_EQ(
-            base::ranges::count_if(entries,
+  // Two of these templates should be from policy.
+  EXPECT_EQ(base::ranges::count_if(result.entries,
                                    [](const ash::DeskTemplate* entry) {
                                      return entry->source() ==
                                             ash::DeskTemplateSource::kPolicy;
                                    }),
             2l);
-
-        loop.Quit();
-      }));
-  loop.Run();
 
   bridge()->SetPolicyDeskTemplates("");
 }

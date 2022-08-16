@@ -162,33 +162,26 @@ LocalDeskDataManager::LocalDeskDataManager(
 
 LocalDeskDataManager::~LocalDeskDataManager() = default;
 
-void LocalDeskDataManager::GetAllEntries(
-    DeskModel::GetAllEntriesCallback callback) {
-  auto status = std::make_unique<DeskModel::GetAllEntriesStatus>();
-  auto entries = std::make_unique<std::vector<const ash::DeskTemplate*>>();
+DeskModel::GetAllEntriesResult LocalDeskDataManager::GetAllEntries() {
+  DeskModel::GetAllEntriesStatus status = DeskModel::GetAllEntriesStatus::kOk;
+  auto entries = std::vector<const ash::DeskTemplate*>();
+
   if (cache_status_ != CacheStatus::kOk) {
-    *status = DeskModel::GetAllEntriesStatus::kFailure;
-    std::move(callback).Run(*status, *entries);
-    return;
+    status = DeskModel::GetAllEntriesStatus::kFailure;
+    return DeskModel::GetAllEntriesResult(status, std::move(entries));
   }
+
   for (const auto& it : policy_entries_)
-    entries->push_back(it.get());
+    entries.push_back(it.get());
 
   for (auto& saved_desk : saved_desks_list_) {
     for (auto& [uuid, template_entry] : saved_desk.second) {
       DCHECK_EQ(uuid, template_entry->uuid());
-      entries->push_back(template_entry.get());
+      entries.push_back(template_entry.get());
     }
   }
-  // It's safe to pass base::Unretained(this) since the LocalDeskDataManager is
-  // a long-lived object that should persist during user session.
-  task_runner_->PostTaskAndReply(
-      FROM_HERE,
-      base::BindOnce(&LocalDeskDataManager::GetAllEntriesTask,
-                     base::Unretained(this), status.get()),
-      base::BindOnce(&LocalDeskDataManager::OnGetAllEntries,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(status),
-                     std::move(entries), std::move(callback)));
+
+  return DeskModel::GetAllEntriesResult(status, std::move(entries));
 }
 
 void LocalDeskDataManager::GetEntryByUUID(
@@ -474,25 +467,6 @@ void LocalDeskDataManager::EnsureCacheIsLoaded(
 
   *cache_status_ptr = CacheStatus::kOk;
   return;
-}
-
-void LocalDeskDataManager::GetAllEntriesTask(
-    DeskModel::GetAllEntriesStatus* out_status_ptr) {
-  if (cache_status_ == CacheStatus::kInvalidPath) {
-    *out_status_ptr = DeskModel::GetAllEntriesStatus::kFailure;
-  }
-  if (cache_status_ == CacheStatus::kOk) {
-    *out_status_ptr = DeskModel::GetAllEntriesStatus::kOk;
-  } else {
-    *out_status_ptr = DeskModel::GetAllEntriesStatus::kPartialFailure;
-  }
-}
-
-void LocalDeskDataManager::OnGetAllEntries(
-    std::unique_ptr<DeskModel::GetAllEntriesStatus> status_ptr,
-    std::unique_ptr<std::vector<const ash::DeskTemplate*>> entries_ptr,
-    DeskModel::GetAllEntriesCallback callback) {
-  std::move(callback).Run(*status_ptr, *entries_ptr);
 }
 
 void LocalDeskDataManager::GetEntryByUuidTask(

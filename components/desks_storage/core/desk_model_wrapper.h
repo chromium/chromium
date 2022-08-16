@@ -34,7 +34,7 @@ class DeskModelWrapper : public DeskModel {
   ~DeskModelWrapper() override;
 
   // DeskModel:
-  void GetAllEntries(GetAllEntriesCallback callback) override;
+  DeskModel::GetAllEntriesResult GetAllEntries() override;
   void GetEntryByUUID(const std::string& uuid,
                       GetEntryByUuidCallback callback) override;
   void AddOrUpdateEntry(std::unique_ptr<ash::DeskTemplate> new_entry,
@@ -63,14 +63,6 @@ class DeskModelWrapper : public DeskModel {
 
  private:
   desks_storage::DeskSyncBridge* GetDeskTemplateModel() const;
-
-  // Wrapper for GetAllEntriesCallback to consolidate entries from both storage
-  // models into one.
-  void OnGetAllEntries(
-      const std::vector<const ash::DeskTemplate*>& template_entries,
-      DeskModel::GetAllEntriesCallback callback,
-      desks_storage::DeskModel::GetAllEntriesStatus status,
-      const std::vector<const ash::DeskTemplate*>& entries);
 
   // Wrapper for DeleteEntryCallback to consolidate deleting all entries from
   // both storage models.

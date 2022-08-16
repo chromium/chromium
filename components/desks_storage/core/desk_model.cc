@@ -39,6 +39,12 @@ DeskModel::~DeskModel() {
     observer.OnDeskModelDestroying();
 }
 
+DeskModel::GetAllEntriesResult::GetAllEntriesResult(
+    GetAllEntriesStatus status,
+    std::vector<const ash::DeskTemplate*> entries)
+    : status(status), entries(std::move(entries)) {}
+DeskModel::GetAllEntriesResult::~GetAllEntriesResult() = default;
+
 void DeskModel::AddObserver(DeskModelObserver* observer) {
   DCHECK(observer);
   observers_.AddObserver(observer);

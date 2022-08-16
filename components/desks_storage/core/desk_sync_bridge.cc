@@ -1053,12 +1053,10 @@ std::string DeskSyncBridge::GetStorageKey(
   return entity_data.specifics.workspace_desk().uuid();
 }
 
-void DeskSyncBridge::GetAllEntries(GetAllEntriesCallback callback) {
+DeskModel::GetAllEntriesResult DeskSyncBridge::GetAllEntries() {
   std::vector<const DeskTemplate*> entries;
-
   GetAllEntriesStatus status = GetAllEntries(entries);
-
-  std::move(callback).Run(status, std::move(entries));
+  return GetAllEntriesResult(status, std::move(entries));
 }
 
 DeskModel::GetAllEntriesStatus DeskSyncBridge::GetAllEntries(

@@ -96,14 +96,6 @@ class ASH_EXPORT SavedDeskPresenter : desks_storage::DeskModelObserver {
  private:
   friend class SavedDeskPresenterTestApi;
 
-  // Callback ran after querying the model for a list of entries. This function
-  // also contains logic for updating the UI.
-  void OnGetAllEntries(const base::GUID& item_to_focus,
-                       const std::u16string& saved_desk_name,
-                       aura::Window* const root_window,
-                       desks_storage::DeskModel::GetAllEntriesStatus status,
-                       const std::vector<const DeskTemplate*>& entries);
-
   // Callback after deleting an entry. Will then call `RemoveUIEntries` to
   // update the UI by removing the deleted saved desk.
   void OnDeleteEntry(const std::string& uuid,

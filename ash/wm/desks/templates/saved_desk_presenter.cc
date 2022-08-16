@@ -345,15 +345,6 @@ void SavedDeskPresenter::UpdateDesksTemplatesUI() {
   }
 }
 
-void SavedDeskPresenter::GetAllEntries(const base::GUID& item_to_focus,
-                                       const std::u16string& saved_desk_name,
-                                       aura::Window* const root_window) {
-  weak_ptr_factory_.InvalidateWeakPtrs();
-  GetDeskModel()->GetAllEntries(base::BindOnce(
-      &SavedDeskPresenter::OnGetAllEntries, weak_ptr_factory_.GetWeakPtr(),
-      item_to_focus, saved_desk_name, root_window));
-}
-
 void SavedDeskPresenter::DeleteEntry(
     const std::string& uuid,
     absl::optional<DeskTemplateType> record_for_type) {
@@ -461,13 +452,12 @@ void SavedDeskPresenter::EntriesRemovedRemotely(
   RemoveUIEntries(uuids);
 }
 
-void SavedDeskPresenter::OnGetAllEntries(
-    const base::GUID& item_to_focus,
-    const std::u16string& saved_desk_name,
-    aura::Window* const root_window,
-    desks_storage::DeskModel::GetAllEntriesStatus status,
-    const std::vector<const DeskTemplate*>& entries) {
-  if (status != desks_storage::DeskModel::GetAllEntriesStatus::kOk)
+void SavedDeskPresenter::GetAllEntries(const base::GUID& item_to_focus,
+                                       const std::u16string& saved_desk_name,
+                                       aura::Window* const root_window) {
+  auto result = GetDeskModel()->GetAllEntries();
+
+  if (result.status != desks_storage::DeskModel::GetAllEntriesStatus::kOk)
     return;
 
   // This updates `should_show_templates_ui_`.
@@ -477,7 +467,7 @@ void SavedDeskPresenter::OnGetAllEntries(
     // Populate `SavedDeskLibraryView` with the desk template entries.
     if (SavedDeskLibraryView* library_view =
             overview_grid->GetSavedDeskLibraryView()) {
-      library_view->PopulateGridUI(entries,
+      library_view->PopulateGridUI(result.entries,
                                    overview_grid->GetGridEffectiveBounds(),
                                    /*last_saved_desk_uuid=*/item_to_focus);
       SavedDeskItemView* item_view =

@@ -278,9 +278,14 @@ void DesksClient::GetDeskTemplates(GetDeskTemplatesCallback callback) {
     return;
   }
 
-  GetDeskModel()->GetAllEntries(base::BindOnce(&DesksClient::OnGetAllTemplates,
-                                               weak_ptr_factory_.GetWeakPtr(),
-                                               std::move(callback)));
+  auto result = GetDeskModel()->GetAllEntries();
+
+  std::move(callback).Run(
+      result.entries,
+      std::string(result.status !=
+                          desks_storage::DeskModel::GetAllEntriesStatus::kOk
+                      ? kStorageError
+                      : ""));
 }
 
 void DesksClient::GetTemplateJson(const std::string uuid,
@@ -614,17 +619,6 @@ void DesksClient::OnGetTemplateToBeUpdated(
       std::move(entry),
       base::BindOnce(&DesksClient::OnUpdateDeskTemplate,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void DesksClient::OnGetAllTemplates(
-    GetDeskTemplatesCallback callback,
-    desks_storage::DeskModel::GetAllEntriesStatus status,
-    const std::vector<const ash::DeskTemplate*>& entries) {
-  std::move(callback).Run(
-      entries,
-      std::string(status != desks_storage::DeskModel::GetAllEntriesStatus::kOk
-                      ? kStorageError
-                      : ""));
 }
 
 void DesksClient::OnCapturedDeskTemplate(

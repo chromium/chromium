@@ -20,8 +20,7 @@ DeskModelWrapper::DeskModelWrapper(
 
 DeskModelWrapper::~DeskModelWrapper() = default;
 
-void DeskModelWrapper::GetAllEntries(
-    DeskModel::GetAllEntriesCallback callback) {
+DeskModel::GetAllEntriesResult DeskModelWrapper::GetAllEntries() {
   auto template_entries = std::vector<const ash::DeskTemplate*>();
   auto desk_template_status =
       GetDeskTemplateModel()->GetAllEntries(template_entries);
@@ -29,14 +28,26 @@ void DeskModelWrapper::GetAllEntries(
     template_entries.push_back(it.get());
 
   if (desk_template_status != DeskModel::GetAllEntriesStatus::kOk) {
-    std::move(callback).Run(DeskModel::GetAllEntriesStatus::kFailure,
-                            template_entries);
-    return;
+    return DeskModel::GetAllEntriesResult(
+        DeskModel::GetAllEntriesStatus::kFailure, std::move(template_entries));
   }
 
-  save_and_recall_desks_model_->GetAllEntries(base::BindOnce(
-      &DeskModelWrapper::OnGetAllEntries, weak_ptr_factory_.GetWeakPtr(),
-      template_entries, std::move(callback)));
+  auto save_and_recall_entries_result =
+      save_and_recall_desks_model_->GetAllEntries();
+
+  if (save_and_recall_entries_result.status !=
+      DeskModel::GetAllEntriesStatus::kOk) {
+    return DeskModel::GetAllEntriesResult(save_and_recall_entries_result.status,
+                                          std::move(template_entries));
+  }
+
+  auto all_entries = template_entries;
+
+  for (auto* const entry : save_and_recall_entries_result.entries)
+    all_entries.push_back(entry);
+
+  return DeskModel::GetAllEntriesResult(save_and_recall_entries_result.status,
+                                        std::move(all_entries));
 }
 
 void DeskModelWrapper::GetEntryByUUID(
@@ -163,24 +174,6 @@ ash::DeskTemplate* DeskModelWrapper::FindOtherEntryWithName(
 desks_storage::DeskSyncBridge* DeskModelWrapper::GetDeskTemplateModel() const {
   DCHECK(desk_template_model_);
   return desk_template_model_;
-}
-
-void DeskModelWrapper::OnGetAllEntries(
-    const std::vector<const ash::DeskTemplate*>& template_entries,
-    DeskModel::GetAllEntriesCallback callback,
-    desks_storage::DeskModel::GetAllEntriesStatus status,
-    const std::vector<const ash::DeskTemplate*>& entries) {
-  if (status != DeskModel::GetAllEntriesStatus::kOk) {
-    std::move(callback).Run(status, template_entries);
-    return;
-  }
-
-  auto all_entries = template_entries;
-
-  for (auto* const entry : entries)
-    all_entries.push_back(entry);
-
-  std::move(callback).Run(status, all_entries);
 }
 
 void DeskModelWrapper::OnDeleteAllEntries(
