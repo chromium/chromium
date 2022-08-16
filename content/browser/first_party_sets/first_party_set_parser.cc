@@ -30,6 +30,8 @@ namespace content {
 
 namespace {
 
+using ParseError = FirstPartySetParser::ParseError;
+
 // Ensures that the string represents an origin that is non-opaque and HTTPS.
 // Returns the registered domain.
 absl::optional<net::SchemefulSite> Canonicalize(base::StringPiece origin_string,
@@ -67,6 +69,35 @@ const char kFirstPartySetMembersField[] = "members";
 const char kFirstPartySetPolicyReplacementsField[] = "replacements";
 const char kFirstPartySetPolicyAdditionsField[] = "additions";
 
+// Parses a single base::Value into a net::SchemefulSite, and verifies that it
+// is not already included in this set or any other.
+base::expected<net::SchemefulSite, ParseError> ParseSiteAndValidate(
+    const base::Value& item,
+    const std::vector<std::pair<net::SchemefulSite, net::FirstPartySetEntry>>&
+        set_entries,
+    const base::flat_set<net::SchemefulSite>& other_sets_sites) {
+  if (!item.is_string())
+    return base::unexpected(ParseError::kInvalidType);
+
+  const absl::optional<net::SchemefulSite> maybe_site =
+      Canonicalize(item.GetString(), false /* emit_errors */);
+  if (!maybe_site.has_value())
+    return base::unexpected(ParseError::kInvalidOrigin);
+
+  const net::SchemefulSite& site = *maybe_site;
+  if (base::ranges::any_of(
+          set_entries,
+          [&](const std::pair<net::SchemefulSite, net::FirstPartySetEntry>&
+                  site_and_entry) { return site_and_entry.first == site; })) {
+    return base::unexpected(ParseError::kRepeatedDomain);
+  }
+
+  if (other_sets_sites.contains(site))
+    return base::unexpected(ParseError::kNonDisjointSets);
+
+  return site;
+}
+
 // Validates a single First-Party Set and parses it into a SingleSet.
 // Note that this is intended for use *only* on sets that were received via the
 // Component Updater or from enterprise policy, so this does not check
@@ -75,77 +106,58 @@ const char kFirstPartySetPolicyAdditionsField[] = "additions";
 // with `elements`), and singleton sets (i.e. sets must have an owner and at
 // least one valid member).
 //
-// Uses `elements` to check disjointness of sets; outputs the set as `out_set`;
-// and augments `elements` to include the elements of the set that was parsed.
+// Uses `elements` to check disjointness of sets; augments `elements` to include
+// the elements of the set that was parsed.
 //
 // Returns the parsed set if parsing and validation were successful; otherwise,
 // returns an appropriate FirstPartySetParser::ParseError.
-base::expected<FirstPartySetParser::SingleSet, FirstPartySetParser::ParseError>
-ParseSet(const base::Value& value,
-         bool keep_indices,
-         base::flat_set<net::SchemefulSite>& elements) {
+base::expected<FirstPartySetParser::SingleSet, ParseError> ParseSet(
+    const base::Value& value,
+    bool keep_indices,
+    base::flat_set<net::SchemefulSite>& elements) {
   if (!value.is_dict())
-    return base::unexpected(FirstPartySetParser::ParseError::kInvalidType);
+    return base::unexpected(ParseError::kInvalidType);
+
+  const base::Value::Dict& dict = value.GetDict();
 
   // Confirm that the set has an owner, and the owner is a string.
-  const std::string* maybe_owner =
-      value.GetDict().FindString(kFirstPartySetOwnerField);
-  if (!maybe_owner)
-    return base::unexpected(FirstPartySetParser::ParseError::kInvalidType);
+  const base::Value* primary_item = dict.Find(kFirstPartySetOwnerField);
+  if (!primary_item)
+    return base::unexpected(ParseError::kInvalidType);
 
-  absl::optional<net::SchemefulSite> canonical_owner =
-      Canonicalize(std::move(*maybe_owner), false /* emit_errors */);
-  if (!canonical_owner.has_value())
-    return base::unexpected(FirstPartySetParser::ParseError::kInvalidOrigin);
+  base::expected<net::SchemefulSite, ParseError> primary_or_error =
+      ParseSiteAndValidate(*primary_item, /*set_entries=*/{}, elements);
+  if (!primary_or_error.has_value()) {
+    return base::unexpected(primary_or_error.error());
+  }
+  const net::SchemefulSite& primary = primary_or_error.value();
 
-  // An owner may not be a member of another set.
-  if (elements.contains(*canonical_owner))
-    return base::unexpected(FirstPartySetParser::ParseError::kNonDisjointSets);
+  std::vector<std::pair<net::SchemefulSite, net::FirstPartySetEntry>>
+      set_entries(
+          {{primary, net::FirstPartySetEntry(primary, net::SiteType::kPrimary,
+                                             absl::nullopt)}});
 
   // Confirm that the members field is present, and is an array of strings.
-  const base::Value* maybe_members_list =
-      value.FindListKey(kFirstPartySetMembersField);
+  const base::Value::List* maybe_members_list =
+      dict.FindList(kFirstPartySetMembersField);
   if (!maybe_members_list)
-    return base::unexpected(FirstPartySetParser::ParseError::kInvalidType);
+    return base::unexpected(ParseError::kInvalidType);
 
-  if (maybe_members_list->GetListDeprecated().empty())
-    return base::unexpected(FirstPartySetParser::ParseError::kSingletonSet);
+  if (maybe_members_list->empty())
+    return base::unexpected(ParseError::kSingletonSet);
 
-  std::vector<std::pair<net::SchemefulSite, net::FirstPartySetEntry>> sites;
-  sites.emplace_back(
-      *canonical_owner,
-      net::FirstPartySetEntry(*canonical_owner, net::SiteType::kPrimary,
-                              absl::nullopt));
-  // Add each member to our mapping (assuming the member is a string).
+  // Add each member to our mapping (after validating).
   uint32_t index = 0;
-  for (const auto& item : maybe_members_list->GetListDeprecated()) {
-    // Members may not be a member of another set, and may not be an owner of
-    // another set.
-    if (!item.is_string())
-      return base::unexpected(FirstPartySetParser::ParseError::kInvalidType);
-    absl::optional<net::SchemefulSite> member =
-        Canonicalize(item.GetString(), false /* emit_errors */);
-    if (!member.has_value())
-      return base::unexpected(FirstPartySetParser::ParseError::kInvalidOrigin);
-
-    if (*member == *canonical_owner ||
-        base::ranges::any_of(
-            sites,
-            [&](const std::pair<net::SchemefulSite, net::FirstPartySetEntry>&
-                    site_and_entry) {
-              return site_and_entry.first == member;
-            })) {
-      return base::unexpected(FirstPartySetParser::ParseError::kRepeatedDomain);
+  for (const auto& item : *maybe_members_list) {
+    base::expected<net::SchemefulSite, ParseError> site_or_error =
+        ParseSiteAndValidate(item, set_entries, elements);
+    if (!site_or_error.has_value()) {
+      return base::unexpected(site_or_error.error());
     }
-
-    if (elements.contains(*member))
-      return base::unexpected(
-          FirstPartySetParser::ParseError::kNonDisjointSets);
-
-    sites.emplace_back(
-        *member,
+    set_entries.emplace_back(
+        site_or_error.value(),
         net::FirstPartySetEntry(
-            *canonical_owner, net::SiteType::kAssociated,
+            primary, net::SiteType::kAssociated,
             keep_indices
                 ? absl::make_optional(net::FirstPartySetEntry::SiteIndex(index))
                 : absl::nullopt));
@@ -153,12 +165,12 @@ ParseSet(const base::Value& value,
   }
 
   for (const std::pair<net::SchemefulSite, net::FirstPartySetEntry>&
-           site_and_entry : sites) {
+           site_and_entry : set_entries) {
     bool inserted = elements.insert(site_and_entry.first).second;
     DCHECK(inserted);
   }
 
-  return FirstPartySetParser::SingleSet(sites);
+  return FirstPartySetParser::SingleSet(set_entries);
 }
 
 // Parses each set in `policy_sets` by calling ParseSet on each one.
@@ -175,9 +187,8 @@ GetPolicySetsFromList(const base::Value::List* policy_sets,
 
   std::vector<FirstPartySetParser::SingleSet> parsed_sets;
   for (int i = 0; i < static_cast<int>(policy_sets->size()); i++) {
-    base::expected<FirstPartySetParser::SingleSet,
-                   FirstPartySetParser::ParseError>
-        parsed = ParseSet((*policy_sets)[i], /*keep_indices=*/false, elements);
+    base::expected<FirstPartySetParser::SingleSet, ParseError> parsed =
+        ParseSet((*policy_sets)[i], /*keep_indices=*/false, elements);
     if (!parsed.has_value()) {
       return base::unexpected(
           FirstPartySetParser::PolicyParsingError{parsed.error(), set_type, i});
@@ -296,11 +307,10 @@ FirstPartySetParser::SetsMap FirstPartySetParser::ParseSetsFromStream(
         trimmed, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
     if (!maybe_value.has_value())
       return {};
-    base::expected<FirstPartySetParser::SingleSet,
-                   FirstPartySetParser::ParseError>
-        parsed = ParseSet(*maybe_value, /*keep_indices=*/true, elements);
+    base::expected<FirstPartySetParser::SingleSet, ParseError> parsed =
+        ParseSet(*maybe_value, /*keep_indices=*/true, elements);
     if (!parsed.has_value()) {
-      if (parsed.error() == FirstPartySetParser::ParseError::kInvalidOrigin) {
+      if (parsed.error() == ParseError::kInvalidOrigin) {
         // Ignore sets that include an invalid domain (which might have been
         // caused by a PSL update), but don't let that break other sets.
         continue;
