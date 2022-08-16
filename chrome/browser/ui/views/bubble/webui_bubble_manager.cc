@@ -24,7 +24,15 @@ WebUIBubbleManager::WebUIBubbleManager()
           base::BindRepeating(&WebUIBubbleManager::ResetContentsWrapper,
                               base::Unretained(this)))) {}
 
-WebUIBubbleManager::~WebUIBubbleManager() = default;
+WebUIBubbleManager::~WebUIBubbleManager() {
+  // The bubble manager may be destroyed before the bubble in certain
+  // situations. Ensure we forcefully close the managed bubble during
+  // destruction to mitigate the risk of UAFs (see crbug.com/1345546).
+  if (bubble_view_) {
+    DCHECK(bubble_view_->GetWidget());
+    bubble_view_->GetWidget()->CloseNow();
+  }
+}
 
 bool WebUIBubbleManager::ShowBubble(const absl::optional<gfx::Rect>& anchor,
                                     ui::ElementIdentifier identifier) {
