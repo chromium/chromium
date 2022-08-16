@@ -751,6 +751,14 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<DelayAsyncScriptDelayType>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
     kDelayAsyncScriptExecutionCrossSiteOnlyParam;
 
+// If enabled, async scripts will be run on a lower priority task queue.
+// See https://crbug.com/1348467.
+BLINK_COMMON_EXPORT extern const base::Feature kLowPriorityAsyncScriptExecution;
+// The timeout value for kLowPriorityAsyncScriptExecution. Async scripts run on
+// lower priority queue until this timeout elapsed.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kTimeoutForLowPriorityAsyncScriptExecution;
+
 // If enabled, parser-blocking scripts are force-deferred.
 // https://crbug.com/1339112
 BLINK_COMMON_EXPORT extern const base::Feature kForceDeferScriptIntervention;

@@ -4,7 +4,9 @@
 
 #include "third_party/blink/renderer/core/script/script_runner.h"
 
+#include "base/test/null_task_runner.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink.h"
@@ -550,6 +552,71 @@ TEST_F(ScriptRunnerTest, DelayReasons) {
   delayer2->Deactivate();
   checkpoint.Call(9);
   platform_->RunUntilIdle();
+}
+
+class PostTaskWithLowPriorityUntilTimeoutTest : public testing::Test {
+ public:
+  PostTaskWithLowPriorityUntilTimeoutTest()
+      : task_runner_(platform_->test_task_runner()),
+        null_task_runner_(base::MakeRefCounted<base::NullTaskRunner>()) {}
+
+ protected:
+  ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
+      platform_;
+  scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
+  scoped_refptr<base::NullTaskRunner> null_task_runner_;
+};
+
+TEST_F(PostTaskWithLowPriorityUntilTimeoutTest, RunTaskOnce) {
+  int counter = 0;
+  base::OnceClosure task =
+      WTF::Bind([](int* counter) { (*counter)++; }, WTF::Unretained(&counter));
+
+  PostTaskWithLowPriorityUntilTimeoutForTesting(
+      FROM_HERE, std::move(task), base::Seconds(1),
+      /*lower_priority_task_runner=*/task_runner_,
+      /*normal_priority_task_runner=*/task_runner_);
+
+  EXPECT_EQ(0, counter);
+  EXPECT_EQ(2u, task_runner_->GetPendingTaskCount());
+  platform_->SetAutoAdvanceNowToPendingTasks(true);
+  platform_->RunUntilIdle();
+  EXPECT_EQ(1, counter);
+  EXPECT_EQ(0u, task_runner_->GetPendingTaskCount());
+}
+
+TEST_F(PostTaskWithLowPriorityUntilTimeoutTest, RunOnLowerPriorityTaskRunner) {
+  int counter = 0;
+  base::OnceClosure task =
+      WTF::Bind([](int* counter) { (*counter)++; }, WTF::Unretained(&counter));
+
+  PostTaskWithLowPriorityUntilTimeoutForTesting(
+      FROM_HERE, std::move(task), base::Seconds(1),
+      /*lower_priority_task_runner=*/task_runner_,
+      /*normal_priority_task_runner=*/null_task_runner_);
+
+  EXPECT_EQ(0, counter);
+  EXPECT_EQ(1u, task_runner_->GetPendingTaskCount());
+  platform_->RunSingleTask();
+  EXPECT_EQ(1, counter);
+  EXPECT_EQ(0u, task_runner_->GetPendingTaskCount());
+}
+
+TEST_F(PostTaskWithLowPriorityUntilTimeoutTest, RunOnNormalPriorityTaskRunner) {
+  int counter = 0;
+  base::OnceClosure task =
+      WTF::Bind([](int* counter) { (*counter)++; }, WTF::Unretained(&counter));
+
+  PostTaskWithLowPriorityUntilTimeoutForTesting(
+      FROM_HERE, std::move(task), base::Seconds(1),
+      /*lower_priority_task_runner=*/null_task_runner_,
+      /*normal_priority_task_runner=*/task_runner_);
+
+  EXPECT_EQ(0, counter);
+  EXPECT_EQ(1u, task_runner_->GetPendingTaskCount());
+  platform_->RunSingleTask();
+  EXPECT_EQ(1, counter);
+  EXPECT_EQ(0u, task_runner_->GetPendingTaskCount());
 }
 
 }  // namespace blink

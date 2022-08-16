@@ -110,6 +110,7 @@ constexpr TaskType kAllFrameTaskTypes[] = {
     TaskType::kNetworking,
     TaskType::kNetworkingUnfreezable,
     TaskType::kNetworkingControl,
+    TaskType::kLowPriorityScriptExecution,
     TaskType::kDOMManipulation,
     TaskType::kHistoryTraversal,
     TaskType::kEmbed,
@@ -158,7 +159,7 @@ constexpr TaskType kAllFrameTaskTypes[] = {
     TaskType::kInternalNavigationCancellation};
 
 static_assert(
-    static_cast<int>(TaskType::kMaxValue) == 80,
+    static_cast<int>(TaskType::kMaxValue) == 81,
     "When adding a TaskType, make sure that kAllFrameTaskTypes is updated.");
 
 void AppendToVectorTestTask(Vector<String>* vector, String value) {
@@ -2493,6 +2494,14 @@ TEST_F(FrameSchedulerImplTest, ComputePriorityForDetachedFrame) {
   // Just check that it does not crash.
   page_scheduler_.reset();
   frame_scheduler_->ComputePriority(task_queue.get());
+}
+
+TEST_F(FrameSchedulerImplTest,
+       LowPriorityScriptExecutionHasBestEffortPriority) {
+  auto task_queue = GetTaskQueue(TaskType::kLowPriorityScriptExecution);
+
+  EXPECT_EQ(TaskQueue::QueuePriority::kBestEffortPriority,
+            task_queue->GetQueuePriority());
 }
 
 namespace {

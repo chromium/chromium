@@ -83634,6 +83634,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="77" label="InternalInputBlocking"/>
   <int value="78" label="WebGL"/>
   <int value="79" label="InternalPostMessageForwarding"/>
+  <int value="80" label="InternalNavigationCancellation"/>
+  <int value="81" label="LowPriorityScriptExecution"/>
 </enum>
 
 <enum name="RendererSchedulerTaskUseCase">
