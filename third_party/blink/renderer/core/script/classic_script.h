@@ -115,10 +115,14 @@ class CORE_EXPORT ClassicScript final : public Script {
       LocalDOMWindow*,
       int32_t world_id);
 
+  v8::ScriptOrigin CreateScriptOrigin(v8::Isolate* isolate) const;
+
  private:
   mojom::blink::ScriptType GetScriptType() const override {
     return mojom::blink::ScriptType::kClassic;
   }
+
+  v8::Local<v8::Data> CreateHostDefinedOptions(v8::Isolate* isolate) const;
 
   const ParkableString source_text_;
 

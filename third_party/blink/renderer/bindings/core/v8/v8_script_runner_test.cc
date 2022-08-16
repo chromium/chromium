@@ -84,12 +84,12 @@ class V8ScriptRunnerTest : public testing::Test {
     v8::ScriptCompiler::CompileOptions compile_options;
     V8CodeCache::ProduceCacheOptions produce_cache_options;
     v8::ScriptCompiler::NoCacheReason no_cache_reason;
-    v8::Local<v8::Data> host_defined_options;
     std::tie(compile_options, produce_cache_options, no_cache_reason) =
         V8CodeCache::GetCompileOptions(cache_options, classic_script);
     v8::MaybeLocal<v8::Script> compiled_script = V8ScriptRunner::CompileScript(
-        script_state, classic_script, compile_options, no_cache_reason,
-        host_defined_options);
+        script_state, classic_script,
+        classic_script.CreateScriptOrigin(isolate), compile_options,
+        no_cache_reason);
     if (compiled_script.IsEmpty()) {
       return false;
     }
@@ -114,10 +114,10 @@ class V8ScriptRunnerTest : public testing::Test {
           ExecutionContext::GetCodeCacheHostFromContext(execution_context),
           classic_script.SourceText());
     }
-    v8::Local<v8::Data> host_defined_options;
     v8::MaybeLocal<v8::Script> compiled_script = V8ScriptRunner::CompileScript(
-        script_state, classic_script, compile_options, no_cache_reason,
-        host_defined_options);
+        script_state, classic_script,
+        classic_script.CreateScriptOrigin(isolate), compile_options,
+        no_cache_reason);
     if (compiled_script.IsEmpty()) {
       return false;
     }

@@ -262,7 +262,6 @@ TEST_F(ScriptStreamingTest, CompilingStreamedScript) {
   EXPECT_TRUE(classic_script->Streamer());
   v8::TryCatch try_catch(scope.GetIsolate());
   v8::Local<v8::Script> script;
-  v8::Local<v8::Data> host_defined_options;
   v8::ScriptCompiler::CompileOptions compile_options;
   V8CodeCache::ProduceCacheOptions produce_cache_options;
   v8::ScriptCompiler::NoCacheReason no_cache_reason;
@@ -270,8 +269,9 @@ TEST_F(ScriptStreamingTest, CompilingStreamedScript) {
       V8CodeCache::GetCompileOptions(mojom::blink::V8CacheOptions::kDefault,
                                      *classic_script);
   EXPECT_TRUE(V8ScriptRunner::CompileScript(
-                  scope.GetScriptState(), *classic_script, compile_options,
-                  no_cache_reason, host_defined_options)
+                  scope.GetScriptState(), *classic_script,
+                  classic_script->CreateScriptOrigin(scope.GetIsolate()),
+                  compile_options, no_cache_reason)
                   .ToLocal(&script));
   EXPECT_FALSE(try_catch.HasCaught());
 }
@@ -297,7 +297,6 @@ TEST_F(ScriptStreamingTest, CompilingStreamedScriptWithParseError) {
   EXPECT_TRUE(classic_script->Streamer());
   v8::TryCatch try_catch(scope.GetIsolate());
   v8::Local<v8::Script> script;
-  v8::Local<v8::Data> host_defined_options;
   v8::ScriptCompiler::CompileOptions compile_options;
   V8CodeCache::ProduceCacheOptions produce_cache_options;
   v8::ScriptCompiler::NoCacheReason no_cache_reason;
@@ -305,8 +304,9 @@ TEST_F(ScriptStreamingTest, CompilingStreamedScriptWithParseError) {
       V8CodeCache::GetCompileOptions(mojom::blink::V8CacheOptions::kDefault,
                                      *classic_script);
   EXPECT_FALSE(V8ScriptRunner::CompileScript(
-                   scope.GetScriptState(), *classic_script, compile_options,
-                   no_cache_reason, host_defined_options)
+                   scope.GetScriptState(), *classic_script,
+                   classic_script->CreateScriptOrigin(scope.GetIsolate()),
+                   compile_options, no_cache_reason)
                    .ToLocal(&script));
   EXPECT_TRUE(try_catch.HasCaught());
 }
@@ -449,7 +449,6 @@ TEST_F(ScriptStreamingTest, ScriptsWithSmallFirstChunk) {
   EXPECT_TRUE(classic_script->Streamer());
   v8::TryCatch try_catch(scope.GetIsolate());
   v8::Local<v8::Script> script;
-  v8::Local<v8::Data> host_defined_options;
   v8::ScriptCompiler::CompileOptions compile_options;
   V8CodeCache::ProduceCacheOptions produce_cache_options;
   v8::ScriptCompiler::NoCacheReason no_cache_reason;
@@ -457,8 +456,9 @@ TEST_F(ScriptStreamingTest, ScriptsWithSmallFirstChunk) {
       V8CodeCache::GetCompileOptions(mojom::blink::V8CacheOptions::kDefault,
                                      *classic_script);
   EXPECT_TRUE(V8ScriptRunner::CompileScript(
-                  scope.GetScriptState(), *classic_script, compile_options,
-                  no_cache_reason, host_defined_options)
+                  scope.GetScriptState(), *classic_script,
+                  classic_script->CreateScriptOrigin(scope.GetIsolate()),
+                  compile_options, no_cache_reason)
                   .ToLocal(&script));
   EXPECT_FALSE(try_catch.HasCaught());
 }
@@ -483,7 +483,6 @@ TEST_F(ScriptStreamingTest, EncodingChanges) {
   EXPECT_TRUE(classic_script->Streamer());
   v8::TryCatch try_catch(scope.GetIsolate());
   v8::Local<v8::Script> script;
-  v8::Local<v8::Data> host_defined_options;
   v8::ScriptCompiler::CompileOptions compile_options;
   V8CodeCache::ProduceCacheOptions produce_cache_options;
   v8::ScriptCompiler::NoCacheReason no_cache_reason;
@@ -491,8 +490,9 @@ TEST_F(ScriptStreamingTest, EncodingChanges) {
       V8CodeCache::GetCompileOptions(mojom::blink::V8CacheOptions::kDefault,
                                      *classic_script);
   EXPECT_TRUE(V8ScriptRunner::CompileScript(
-                  scope.GetScriptState(), *classic_script, compile_options,
-                  no_cache_reason, host_defined_options)
+                  scope.GetScriptState(), *classic_script,
+                  classic_script->CreateScriptOrigin(scope.GetIsolate()),
+                  compile_options, no_cache_reason)
                   .ToLocal(&script));
   EXPECT_FALSE(try_catch.HasCaught());
 }
@@ -518,7 +518,6 @@ TEST_F(ScriptStreamingTest, EncodingFromBOM) {
   EXPECT_TRUE(classic_script->Streamer());
   v8::TryCatch try_catch(scope.GetIsolate());
   v8::Local<v8::Script> script;
-  v8::Local<v8::Data> host_defined_options;
   v8::ScriptCompiler::CompileOptions compile_options;
   V8CodeCache::ProduceCacheOptions produce_cache_options;
   v8::ScriptCompiler::NoCacheReason no_cache_reason;
@@ -526,8 +525,9 @@ TEST_F(ScriptStreamingTest, EncodingFromBOM) {
       V8CodeCache::GetCompileOptions(mojom::blink::V8CacheOptions::kDefault,
                                      *classic_script);
   EXPECT_TRUE(V8ScriptRunner::CompileScript(
-                  scope.GetScriptState(), *classic_script, compile_options,
-                  no_cache_reason, host_defined_options)
+                  scope.GetScriptState(), *classic_script,
+                  classic_script->CreateScriptOrigin(scope.GetIsolate()),
+                  compile_options, no_cache_reason)
                   .ToLocal(&script));
   EXPECT_FALSE(try_catch.HasCaught());
 }
