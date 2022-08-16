@@ -73,7 +73,20 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
     kMaxValue = kEmptyPassword,
   };
 
-  enum class AddResult { kSuccess, kInvalid, kAlreadyExisits };
+  // Result of AddCredentialsCallback.
+  enum class AddResult {
+    // Credential is expected to be added successfully.
+    kSuccess,
+    // Credential is invalid.
+    kInvalid,
+    // Credential already exists in the profile store.
+    kExistsInProfileStore,
+    // Credential already exists in the account store.
+    kExistsInAccountStore,
+    // Credential already exists in the profile and account store.
+    kExistsInProfileAndAccountStore,
+    kMaxValue = kExistsInProfileAndAccountStore,
+  };
 
   using AddCredentialsCallback =
       base::OnceCallback<void(const std::vector<AddResult>&)>;
