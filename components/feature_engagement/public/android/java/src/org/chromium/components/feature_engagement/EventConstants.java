@@ -243,6 +243,9 @@ public final class EventConstants {
     /** Sharing Hub link toggle events. */
     public static final String SHARING_HUB_LINK_TOGGLE_CLICKED = "sharing_hub_link_toggle_clicked";
 
+    /** Crow events. */
+    public static final String CROW_TAB_MENU_ITEM_CLICKED = "crow_tab_menu_item_clicked";
+
     /** Mic toolbar IPH event */
     public static final String SUCCESSFUL_VOICE_SEARCH = "successful_voice_search";
 
