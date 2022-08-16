@@ -81,11 +81,12 @@ std::string GetCrosEulaOnlineUrl() {
 std::string ConsolidatedConsentScreen::GetResultString(Result result) {
   switch (result) {
     case Result::ACCEPTED:
+      return "AcceptedRegular";
     case Result::ACCEPTED_DEMO_ONLINE:
     case Result::ACCEPTED_DEMO_OFFLINE:
-      return "Accepted";
+      return "AcceptedDemo";
     case Result::BACK_DEMO:
-      return "Back";
+      return "BackDemo";
     case Result::NOT_APPLICABLE:
       return BaseScreen::kNotApplicable;
   }
