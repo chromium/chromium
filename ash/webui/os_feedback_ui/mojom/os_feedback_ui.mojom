@@ -81,6 +81,9 @@ struct FeedbackContext {
   // file, zipped, and then attached to the report.
   // Example value: "Failed to connect to wifi network.".
   string? extra_diagnostics;
+  // When a report is sent with bluetooth logs, the category_tag will be set
+  // to BluetoothReportWithLogs.
+  string? category_tag;
 };
 
 // Status of the sending of a feedback report.
@@ -123,6 +126,9 @@ struct Report {
   // Whether or not consent has been granted to Google for to contact user in
   // reference to report. See (go/feedback-user-consent-faq).
   bool contact_user_consent_granted;
+  // Whether or not the report has sendBluetoothLogs
+  // flag set true by internal google account only.
+  bool send_bluetooth_logs;
 };
 
 // The first action taken on the confirmation page.

@@ -167,6 +167,7 @@ void ChromeOsFeedbackDelegate::SendReport(
   feedback_params.form_submit_time = base::TimeTicks::Now();
   feedback_params.load_system_info = report->include_system_logs_and_histograms;
   feedback_params.send_histograms = report->include_system_logs_and_histograms;
+  feedback_params.send_bluetooth_logs = report->send_bluetooth_logs;
 
   base::WeakPtr<feedback::FeedbackUploader> uploader =
       base::AsWeakPtr(GetFeedbackUploaderForContext(profile_));
@@ -187,6 +188,9 @@ void ChromeOsFeedbackDelegate::SendReport(
       !feedback_context->extra_diagnostics.value().empty()) {
     feedback_data->AddLog(kExtraDiagnosticsKey,
                           feedback_context->extra_diagnostics.value());
+  }
+  if (feedback_context->category_tag.has_value()) {
+    feedback_data->set_category_tag(feedback_context->category_tag.value());
   }
 
   scoped_refptr<base::RefCountedMemory> png_data = GetScreenshotData();

@@ -248,6 +248,7 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
           !!this.getElement_('#screenshotImage').src,
       contactUserConsentGranted:
           this.getElement_('#userConsentCheckbox').checked,
+      sendBluetoothLogs: this.getElement_('#bluetoothLogsCheckbox').checked,
     });
 
     report.attachedFile =
@@ -273,6 +274,10 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
         this.getElement_('#sysInfoCheckbox').checked) {
       report.feedbackContext.extraDiagnostics =
           this.feedbackContext.extraDiagnostics;
+    }
+
+    if (this.getElement_('#bluetoothLogsCheckbox').checked) {
+      report.feedbackContext.categoryTag = 'BluetoothReportWithLogs';
     }
 
     return report;

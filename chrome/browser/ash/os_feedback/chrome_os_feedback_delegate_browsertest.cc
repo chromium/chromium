@@ -67,6 +67,7 @@ constexpr char kSignedInUserEmail[] = "test_user_email@gmail.com";
 constexpr char kFeedbackUserConsentKey[] = "feedbackUserCtlConsent";
 constexpr char kFeedbackUserConsentGrantedValue[] = "true";
 constexpr char kFeedbackUserConsentDeniedValue[] = "false";
+constexpr char kFeedbackCategoryTag[] = "BluetoothReportWithLogs";
 const std::u16string kDescription = u"This is a fake description";
 
 }  // namespace
@@ -205,8 +206,8 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, GetSignedInUserEmail) {
 // - Screenshot is included.
 // - Consent granted.
 // - Non-empty extra_diagnostics provided.
-// TODO(xiangdongkong): Add tests for other flags once they are supported.
-// Currently, only load_system_info and send_histograms flags are implemented.
+// - sentBluetoothLog flag is set true.
+// - category_tag is set to "BluetoothReportWithLogs".
 IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
                        FeedbackDataPopulatedIncludeSysLogsAndScreenshot) {
   ReportPtr report = Report::New();
@@ -215,13 +216,14 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
   report->include_screenshot = true;
   report->contact_user_consent_granted = true;
   report->feedback_context->extra_diagnostics = kFakeExtraDiagnosticsValue;
-
+  report->send_bluetooth_logs = true;
+  report->feedback_context->category_tag = kFeedbackCategoryTag;
   report->include_system_logs_and_histograms = true;
   const FeedbackParams expected_params{/*is_internal_email=*/false,
                                        /*load_system_info=*/true,
                                        /*send_tab_titles=*/false,
                                        /*send_histograms=*/true,
-                                       /*send_bluetooth_logs=*/false};
+                                       /*send_bluetooth_logs=*/true};
 
   scoped_refptr<FeedbackData> feedback_data;
   RunSendReport(std::move(report), expected_params, feedback_data);
@@ -241,6 +243,8 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
       feedback_data->sys_info()->find(kExtraDiagnosticsKey);
   EXPECT_EQ(kExtraDiagnosticsKey, extra_diagnostics->first);
   EXPECT_EQ(kFakeExtraDiagnosticsValue, extra_diagnostics->second);
+  // Verify category_tag is marked as BluetoothReportWithLogs in the report.
+  EXPECT_EQ(kFeedbackCategoryTag, feedback_data->category_tag());
 }
 
 // Test that feedback params and data are populated with correct data before
@@ -248,6 +252,8 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
 // - System logs and histograms are not included.
 // - Screenshot is not included.
 // - Consent not granted.
+// - sentBluetoothLogs flag is set false.
+// - category_tag is not set to "BluetoothReportWithLogs".
 // - Empty string Extra Diagnostics provided.
 IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
                        FeedbackDataPopulatedNotIncludeSysLogsOrScreenshot) {
@@ -259,6 +265,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
   report->description = kDescription;
   report->include_screenshot = false;
   report->contact_user_consent_granted = false;
+  report->send_bluetooth_logs = false;
 
   report->include_system_logs_and_histograms = false;
   const FeedbackParams expected_params{/*is_internal_email=*/false,
@@ -284,6 +291,8 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
   auto extra_diagnostics =
       feedback_data->sys_info()->find(kExtraDiagnosticsKey);
   EXPECT_EQ(feedback_data->sys_info()->end(), extra_diagnostics);
+  // Verify category_tag is not marked as BluetoothReportWithLogs.
+  EXPECT_NE(kFeedbackCategoryTag, feedback_data->category_tag());
 }
 
 // Test GetScreenshot returns correct data when there is a screenshot.

@@ -15,7 +15,7 @@ import {mojoString16ToString, stringToMojoString16} from 'chrome://resources/ash
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertArrayEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
 import {eventToPromise, flushTasks, isVisible} from '../../test_util.js';
 
 /** @type {string} */
@@ -643,5 +643,57 @@ export function shareDataPageTestSuite() {
 
     assertEquals(
         1, feedbackServiceProvider.getOpenBluetoothLogsInfoDialogCallCount());
+  });
+
+  /**
+   * Test that sendBluetoothLogs flag is true and categoryTag is marked as
+   * 'BluetoothReportWithLogs' when bluetooth logs checkbox is checked.
+   */
+  test('sendReportWithBluetoothLogsFlagChecked', async () => {
+    await initializePage();
+    page.feedbackContext = fakeFeedbackContext;
+
+    const bluetoothLogsCheckbox = getElement('#bluetoothLogsCheckbox');
+
+    // Check the bluetoothLogs checkbox, it is default to be checked.
+    assertTrue(!!bluetoothLogsCheckbox);
+    assertTrue(bluetoothLogsCheckbox.checked);
+
+    // Report should have sendBluetoothLogs flag true,and category marked as
+    // "BluetoothReportWithLogs".
+    const requestWithBluetoothFlag = (await clickSendAndWait(page)).report;
+
+    assertTrue(requestWithBluetoothFlag.sendBluetoothLogs);
+    assertTrue(!!requestWithBluetoothFlag.feedbackContext.categoryTag);
+    assertEquals(
+        'BluetoothReportWithLogs',
+        requestWithBluetoothFlag.feedbackContext.categoryTag);
+  });
+
+  /**
+   * Test that sendBluetoothLogs flag is false and categoryTag is not marked as
+   * 'BluetoothReportWithLogs' when bluetooth logs checkbox is unchecked.
+   */
+  test('sendReportWithoutBluetoothLogsFlagChecked', async () => {
+    await initializePage();
+    page.feedbackContext = fakeFeedbackContext;
+
+    const bluetoothLogsCheckbox = getElement('#bluetoothLogsCheckbox');
+
+    // BluetoothLogs checkbox is default to be checked.
+    assertTrue(!!bluetoothLogsCheckbox);
+    assertTrue(bluetoothLogsCheckbox.checked);
+
+    // Verify that unchecking the checkbox will remove the flag in the report.
+    bluetoothLogsCheckbox.click();
+    assertFalse(bluetoothLogsCheckbox.checked);
+    await flushTasks();
+
+    // Report should not have sendBluetoothLogs flag,
+    // and category marked as "BluetoothReportWithLogs".
+    const requestWithoutBluetoothFlag = (await clickSendAndWait(page)).report;
+
+    assertFalse(requestWithoutBluetoothFlag.sendBluetoothLogs);
+    assertFalse(!!requestWithoutBluetoothFlag.feedbackContext.categoryTag);
   });
 }
