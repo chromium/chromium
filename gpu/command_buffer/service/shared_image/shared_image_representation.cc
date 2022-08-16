@@ -27,7 +27,9 @@ SharedImageRepresentation::SharedImageRepresentation(
   // TODO(hitawala): Rewrite the reference counting so that
   // SharedImageRepresentation does not need manager and manager attaches to
   // backing in Register().
-  if (manager_ && backing_->is_reference_counted()) {
+  // If mailbox is zero this is owned by a compound backing and not reference
+  // counted.
+  if (manager_ && !backing_->mailbox().IsZero()) {
     backing_->AddRef(this);
   }
 }
@@ -37,7 +39,9 @@ SharedImageRepresentation::~SharedImageRepresentation() {
   // error is.
   CHECK(!has_scoped_access_) << "Destroying a SharedImageRepresentation with "
                                 "outstanding Scoped*Access objects.";
-  if (manager_ && backing_->is_reference_counted()) {
+  // If mailbox is zero this is owned by a compound backing and not reference
+  // counted.
+  if (manager_ && !backing_->mailbox().IsZero()) {
     manager_->OnRepresentationDestroyed(backing_->mailbox(), this);
   }
 }

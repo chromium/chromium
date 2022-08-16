@@ -42,7 +42,6 @@
 #include "ui/gl/gl_image_native_pixmap.h"
 #include "ui/gl/gl_image_shared_memory.h"
 #include "ui/gl/gl_implementation.h"
-#include "ui/gl/gl_utils.h"
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/scoped_binders.h"
 #include "ui/gl/scoped_make_current.h"
@@ -160,30 +159,6 @@ void GLTextureImageBacking::SetClearedRect(const gfx::Rect& cleared_rect) {
   ClearTrackingSharedImageBacking::SetClearedRect(cleared_rect);
 }
 
-void GLTextureImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {}
-
-bool GLTextureImageBacking::UploadFromMemory(const SkPixmap& pixmap) {
-  DCHECK(gl::GLContext::GetCurrent());
-
-  const GLuint texture_id = GetGLServiceId();
-  const GLenum gl_format = texture_params_.format;
-  const GLenum gl_type = texture_params_.type;
-  const GLenum gl_target = texture_params_.target;
-
-  gl::GLApi* api = gl::g_current_gl_context;
-  gl::ScopedTextureBinder scoped_texture_binder(gl_target, texture_id);
-  gl::ScopedPixelStore unpack_row_length(GL_UNPACK_ROW_LENGTH, 0);
-  gl::ScopedPixelStore unpack_skip_pixels(GL_UNPACK_SKIP_PIXELS, 0);
-  gl::ScopedPixelStore unpack_skip_rows(GL_UNPACK_SKIP_ROWS, 0);
-  gl::ScopedPixelStore unpack_alignment(GL_UNPACK_ALIGNMENT, 4);
-
-  api->glTexSubImage2DFn(gl_target, 0, 0, 0, size().width(), size().height(),
-                         gl_format, gl_type, pixmap.addr());
-  DCHECK_EQ(api->glGetErrorFn(), static_cast<GLenum>(GL_NO_ERROR));
-
-  return true;
-}
-
 bool GLTextureImageBacking::ProduceLegacyMailbox(
     MailboxManager* mailbox_manager) {
   if (IsPassthrough())
@@ -256,6 +231,8 @@ std::unique_ptr<SkiaImageRepresentation> GLTextureImageBacking::ProduceSkia(
       tracker);
 }
 
+void GLTextureImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {}
+
 void GLTextureImageBacking::InitializeGLTexture(
     GLuint service_id,
     const InitializeGLTextureParams& params) {
@@ -263,7 +240,7 @@ void GLTextureImageBacking::InitializeGLTexture(
       params.target, service_id, params.framebuffer_attachment_angle,
       IsPassthrough() ? &passthrough_texture_ : nullptr,
       IsPassthrough() ? nullptr : &texture_);
-  texture_params_ = params;
+
   if (IsPassthrough()) {
     passthrough_texture_->SetEstimatedSize(EstimatedSize(format(), size()));
     SetClearedRect(params.is_cleared ? gfx::Rect(size()) : gfx::Rect());

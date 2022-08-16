@@ -71,7 +71,7 @@ class IOSurfaceImageBackingFactoryTest : public testing::Test {
     backing_factory_ = std::make_unique<GLImageBackingFactory>(
         preferences, workarounds, context_state_->feature_info(),
         &image_factory_,
-        /*progress_reporter=*/nullptr);
+        /*progress_reporter=*/nullptr, /*for_shared_memory_gmbs=*/false);
 
     memory_type_tracker_ = std::make_unique<MemoryTypeTracker>(nullptr);
     shared_image_representation_factory_ =

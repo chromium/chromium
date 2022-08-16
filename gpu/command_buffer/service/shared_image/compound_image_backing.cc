@@ -306,19 +306,17 @@ std::unique_ptr<SharedImageBacking> CompoundImageBacking::CreateSharedMemory(
   }
 
   auto shm_backing = std::make_unique<SharedMemoryImageBacking>(
-      mailbox, format, size, color_space, surface_origin, alpha_type,
+      gpu::Mailbox(), format, size, color_space, surface_origin, alpha_type,
       SHARED_IMAGE_USAGE_CPU_WRITE, std::move(shm_wrapper));
-  shm_backing->SetNotReferencedCounted();
 
   auto gpu_backing = gpu_backing_factory->CreateSharedImage(
-      mailbox, format, surface_handle, size, color_space, surface_origin,
+      gpu::Mailbox(), format, surface_handle, size, color_space, surface_origin,
       alpha_type, usage | SHARED_IMAGE_USAGE_CPU_UPLOAD,
       /*is_thread_safe=*/false);
   if (!gpu_backing) {
     DLOG(ERROR) << "Failed to create GPU backing";
     return nullptr;
   }
-  gpu_backing->SetNotReferencedCounted();
 
   return std::make_unique<CompoundImageBacking>(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
