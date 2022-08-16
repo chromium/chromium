@@ -167,22 +167,4 @@ class BrowserFragmentDelegate extends IBrowserFragmentDelegate.Stub {
             });
         });
     }
-
-    @Override
-    public void createTab(ITabCallback callback) {
-        mHandler.post(() -> {
-            Tab newTab = mFragment.getBrowser().createTab();
-            try {
-                ITabParams tabParams =
-                        new TabParams.Builder()
-                                .setTabProxy(new TabProxy(newTab))
-                                .setGuid(newTab.getGuid())
-                                .setNavigationController(new TabNavigationControllerProxy(
-                                        newTab.getNavigationController()))
-                                .getParcelable();
-                callback.onResult(tabParams);
-            } catch (RemoteException e) {
-            }
-        });
-    }
 }

@@ -21,15 +21,7 @@ class BrowserFragmentTabDelegate extends TabListCallback {
 
     private final NewTabCallback mNewTabCallback = new NewTabCallback() {
         @Override
-        public void onNewTab(@NonNull Tab tab, @NewTabType int type) {
-            // Set foreground tabs and tabs in new windows by default to active.
-            switch (type) {
-                case NewTabType.FOREGROUND_TAB:
-                case NewTabType.NEW_WINDOW:
-                    tab.getBrowser().setActiveTab(tab);
-                    break;
-            }
-        }
+        public void onNewTab(@NonNull Tab tab, @NewTabType int type) {}
     };
 
     void setObserver(ITabObserverDelegate observer) {

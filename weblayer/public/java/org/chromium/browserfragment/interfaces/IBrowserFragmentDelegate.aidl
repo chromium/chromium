@@ -30,10 +30,8 @@ oneway interface IBrowserFragmentDelegate {
     // ViewModel events.
     void onCleared() = 16;
 
-    // TODO(swestphal): Move these to their own interface.
     // Tab operations.
     void getActiveTab(ITabCallback callback) = 14;
     void setTabObserverDelegate(ITabObserverDelegate tabObserverDelegate) = 15;
     void tryNavigateBack(IBooleanCallback callback) = 17;
-    void createTab(ITabCallback callback) = 18;
 }
