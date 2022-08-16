@@ -286,6 +286,13 @@ NSInteger kFeedSymbolPointSize = 17;
   [self applyHeaderConstraints];
 }
 
+- (void)updateForSelectedFeed {
+  FeedType selectedFeed = [self.feedControlDelegate selectedFeed];
+  self.segmentedControl.selectedSegmentIndex =
+      static_cast<NSInteger>(selectedFeed);
+  self.sortButton.alpha = selectedFeed == FeedTypeDiscover ? 0 : 1;
+}
+
 #pragma mark - Setters
 
 // Sets `followingFeedSortType` and recreates the sort menu to assign the active

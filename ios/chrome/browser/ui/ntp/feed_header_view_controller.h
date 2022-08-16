@@ -64,6 +64,9 @@
 // Updates the header for when the Following Feed visibility has changed.
 - (void)updateForFollowingFeedVisibilityChanged;
 
+// Updates the segmented control and sort button for the current feed type.
+- (void)updateForSelectedFeed;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_FEED_HEADER_VIEW_CONTROLLER_H_
