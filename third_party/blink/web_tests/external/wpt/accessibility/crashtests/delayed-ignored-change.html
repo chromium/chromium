@@ -8,9 +8,11 @@
 </rb>
 <script>
 document.addEventListener('load', () => {
-  window.requestIdleCallback(() => {
-    document.querySelector('style').remove();
-    document.documentElement.className = '';
+  window.requestAnimationFrame(() => {
+    window.requestAnimationFrame(() => {
+      document.querySelector('style').remove();
+      document.documentElement.className = '';
+    });
   });
 }, true);
 </script>
